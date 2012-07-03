@@ -21,13 +21,10 @@ Viewbox coordinates: xv,yv (where data are drawn)
 			zoom we will move the individual points.
 */
 
-// for backward compatibility...
-function scatter_plot(divid, data, layout) {plot(divid, data, layout);}
-
 function plot(divid, data, layout) {
 	// Get the container div: we will store all variables as properties of this div
 	// (for extension to multiple graphs per page)
-	// some callers send this in already by dom element
+	// some callers send this in by dom element, others by id (string)
 	var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
 
 /*  data should be an array of objects, one per trace. allowed keys:
@@ -155,9 +152,6 @@ function plot(divid, data, layout) {
 	return('*ta-da*')
 }
 
-// for compatibility until we update shelly
-function new_plot(divid, layout) {newPlot(divid, layout);}
-
 function newPlot(divid, layout) {
 	// Get the container div: we will store all variables as properties of this div
 	// (for extension to multiple graphs per page)
@@ -205,6 +199,7 @@ function newPlot(divid, layout) {
 	gd.plotbg=gd.plot.rect(-screen.width,-screen.height,
 		gd.plotwidth+2*screen.width,gd.plotheight+2*screen.height);
 	gd.plotbg.attr({'fill':gl.plot_bgcolor,'stroke':''});
+	gd.plotbg.node.style.cursor='move';
 
 	// make the ticks, grids, and titles
 	doXTicks(gd);doYTicks(gd);doXGrid(gd);doYGrid(gd);
@@ -229,56 +224,89 @@ function newPlot(divid, layout) {
 	gd.paper.setStart();
 	gd.xdrag=gd.paper.rect(x1*0.9+x2*0.1,y1,(x2-x1)*0.8,y0-y1);
 	gd.xdrag.node.style.cursor='ew-resize';
-	gd.x0drag=gd.paper.path(Raphael.format('M{0},{1}H{2}V{3}H{4}Z',
-		x1, y1, x1*0.9+x2*0.1, y0, x0));
+	gd.x0drag=gd.paper.rect(x1,y1,(x2-x1)*0.1,y0-y1);
 	gd.x0drag.node.style.cursor='w-resize';
-	gd.x1drag=gd.paper.path(Raphael.format('M{0},{1}H{2}V{3}H{4}Z',
-		x2, y1, x1*0.1+x2*0.9, y0, x2+x1-x0));
+	gd.x1drag=gd.paper.rect(x1*0.1+x2*0.9,y1,(x2-x1)*0.1,y0-y1);
 	gd.x1drag.node.style.cursor='e-resize';
 
 	gd.ydrag=gd.paper.rect(x0,y2*0.9+y1*0.1,x1-x0,(y1-y2)*0.8);
 	gd.ydrag.node.style.cursor='ns-resize';
-	gd.y0drag=gd.paper.path(Raphael.format('M{0},{1}V{2}H{3}V{4}Z',
-		x1, y1, y1*0.9+y2*0.1, x0, y0));
+	gd.y0drag=gd.paper.rect(x0,y1*0.9+y2*0.1,x1-x0,(y1-y2)*0.1);
 	gd.y0drag.node.style.cursor='s-resize';
-	gd.y1drag=gd.paper.path(Raphael.format('M{0},{1}V{2}H{3}V{4}Z',
-		x1, y2, y1*0.1+y2*0.9, x0, y2+y1-y0));
+	gd.y1drag=gd.paper.rect(x0,y2,x1-x0,(y1-y2)*0.1);
 	gd.y1drag.node.style.cursor='n-resize';
+	
+	gd.nwdrag=gd.paper.rect(x0,y2+y1-y0,x1-x0,y0-y1);
+	gd.nwdrag.node.style.cursor='nw-resize';
+	gd.nedrag=gd.paper.rect(x2,y2+y1-y0,x1-x0,y0-y1);
+	gd.nedrag.node.style.cursor='ne-resize';
+	gd.swdrag=gd.paper.rect(x0,y1,x1-x0,y0-y1);
+	gd.swdrag.node.style.cursor='sw-resize';
+	gd.sedrag=gd.paper.rect(x2,y1,x1-x0,y0-y1);
+	gd.sedrag.node.style.cursor='se-resize';
 
 	gd.axdrags=gd.paper.setFinish();
 	gd.axdrags.attr({'stroke':'','fill':'rgba(0,0,0,0)'});
 
-	// plot area dragging - the 'gd's at the end become 'this' in the fcns
+	// the 'gd's at the end become 'this' in the fcns
 	gd.plotbg.drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
-
 	gd.xdrag.drag(xDrag,xDragStart,resetViewBox,gd,gd,gd);
+	gd.ydrag.drag(yDrag,yDragStart,resetViewBox,gd,gd,gd);
+
+	gd.nwdrag.drag(nwDrag,plotDragStart,zoomEnd,gd,gd,gd);
+	gd.nedrag.drag(neDrag,plotDragStart,zoomEnd,gd,gd,gd);
+	gd.swdrag.drag(swDrag,plotDragStart,zoomEnd,gd,gd,gd);
+	gd.sedrag.drag(seDrag,plotDragStart,zoomEnd,gd,gd,gd);
+
 	gd.x0drag.drag(x0Drag,xDragStart,zoomEnd,gd,gd,gd);
 	gd.x1drag.drag(x1Drag,xDragStart,zoomEnd,gd,gd,gd);
-
-	gd.ydrag.drag(yDrag,yDragStart,resetViewBox,gd,gd,gd);
 	gd.y0drag.drag(y0Drag,yDragStart,zoomEnd,gd,gd,gd);
 	gd.y1drag.drag(y1Drag,yDragStart,zoomEnd,gd,gd,gd);
 	
+}
+
+function dZoom(d,scale) {
+	//dragging one end of an axis: d>0 is compressing scale, d<0 is expanding
+	if(d>=0) return 1 - Math.min(d/scale,0.9);
+	else return 1 - 1/(1/Math.max(d/scale,-0.3)+3.222);
+}
+
+function plotDragStart(x,y) {
+	var gx=this.layout.xaxis, gy=this.layout.yaxis;
+	gx.r0=[gx.range[0],gx.range[1]];
+	gy.r0=[gy.range[0],gy.range[1]];
+	gx.autorange=0;gy.autorange=0;
+}
+
+function xDragStart(x,y) {
+	var gx=this.layout.xaxis;
+	gx.r0=[gx.range[0],gx.range[1]];
+	gx.autorange=0;
+}
+
+function yDragStart(x,y) {
+	var gy=this.layout.yaxis;
+	gy.r0=[gy.range[0],gy.range[1]];
+	gy.autorange=0;
+}
+
+function dragTail(gd) {
+	doXTicks(gd);doYTicks(gd);
+	doXGrid(gd);doYGrid(gd);
+	gd.axdrags.toFront();
+	plot(gd,'','');
 }
 
 function resetViewBox() {
 	this.viewbox={x:0,y:0};
 	this.plot.setViewBox(0,0,this.plotwidth,this.plotheight,false);
 	this.plotbg.attr({'x':-screen.width, 'y':-screen.height})
-	doXGrid(this);
-	doYGrid(this);
-	plot(this,'','');
-	this.axdrags.toFront();
-	this.plotbg.node.style.cursor='';
+	dragTail(this);
 }
 
-function plotDragStart(x,y) {
-	var gx=this.layout.xaxis, gy=this.layout.yaxis;
-	this.plotbg.node.style.cursor='move';
-	gx.r0=[gx.range[0],gx.range[1]];
-	gy.r0=[gy.range[0],gy.range[1]];
-	gx.autorange=0;
-	gy.autorange=0;
+function zoomEnd() {
+	//nothing to do here any more...
+	var vb=this.viewbox;
 }
 
 function plotDrag(dx,dy) {
@@ -291,61 +319,12 @@ function plotDrag(dx,dy) {
 	doXTicks(this);doYTicks(this);
 }
 
-function xDragStart(x,y) {
-	var gx=this.layout.xaxis;
-	gx.r0=[gx.range[0],gx.range[1]];
-	gx.autorange=0;
-}
-
 function xDrag(dx,dy) {
 	var gx=this.layout.xaxis;
 	this.viewbox.x=-dx;
 	this.plot.setViewBox(-dx,0,this.plotwidth,this.plotheight,false);
 	gx.range=[gx.r0[0]-dx/gx.m,gx.r0[1]-dx/gx.m];
 	doXTicks(this);
-}
-
-function x0Drag(dx,dy) {
-	var ga=this.layout.xaxis;
-	var pw=this.plotwidth;
-	var dx2;
-	if(dx>=0) dx2=Math.min(dx,0.9*pw);
-	else {
-		var mx=0.3*pw;
-		dx2=1/(1/Math.max(dx,-mx)+1/mx-1/(9*pw));
-	}
-	ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])*pw/(pw-dx2);
-	doXTicks(this);
-	doXGrid(this);
-	this.axdrags.toFront();
-	plot(this,'','');
-}
-
-function x1Drag(dx,dy) {
-	var ga=this.layout.xaxis;
-	var pw=this.plotwidth;
-	var dx2;
-	if(dx<=0) dx2=Math.max(dx,-0.9*pw);
-	else {
-		var mx=0.3*pw;
-		dx2=1/(1/Math.min(dx,mx)-1/mx+1/(9*pw));
-	}
-	ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])*pw/(pw+dx2);
-	doXTicks(this);
-	doXGrid(this);
-	this.axdrags.toFront();
-	plot(this,'','');
-}
-
-function zoomEnd() {
-	//nothing to do here any more...
-	var vb=this.viewbox;
-}
-
-function yDragStart(x,y) {
-	var gy=this.layout.yaxis;
-	gy.r0=[gy.range[0],gy.range[1]];
-	gy.autorange=0;
 }
 
 function yDrag(dx,dy) {
@@ -356,36 +335,64 @@ function yDrag(dx,dy) {
 	doYTicks(this);
 }
 
+function nwDrag(dx,dy) {
+	var gx=this.layout.xaxis, gy=this.layout.yaxis;
+	var pw=this.plotwidth, ph=this.plotheight;
+	gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx,pw);
+	gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy,ph);
+	dragTail(this);
+}
+
+function neDrag(dx,dy) {
+	var gx=this.layout.xaxis, gy=this.layout.yaxis;
+	var pw=this.plotwidth, ph=this.plotheight;
+	gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx,pw);
+	gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy,ph);
+	dragTail(this);
+}
+
+function swDrag(dx,dy) {
+	var gx=this.layout.xaxis, gy=this.layout.yaxis;
+	var pw=this.plotwidth, ph=this.plotheight;
+	gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx,pw);
+	gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy,ph);
+	dragTail(this);
+}
+
+function seDrag(dx,dy) {
+	var gx=this.layout.xaxis, gy=this.layout.yaxis;
+	var pw=this.plotwidth, ph=this.plotheight;
+	gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx,pw);
+	gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy,ph);
+	dragTail(this);
+}
+
+function x0Drag(dx,dy) {
+	var ga=this.layout.xaxis;
+	var pw=this.plotwidth;
+	ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(dx,pw);
+	dragTail(this);
+}
+
+function x1Drag(dx,dy) {
+	var ga=this.layout.xaxis;
+	var pw=this.plotwidth;
+	ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(-dx,pw);
+	dragTail(this);
+}
+
 function y1Drag(dx,dy) {
 	var ga=this.layout.yaxis;
 	var ph=this.plotheight;
-	var dy2;
-	if(dy>=0) dy2=Math.min(dy,0.9*ph);
-	else {
-		var mx=0.3*ph;
-		dy2=1/(1/Math.max(dy,-mx)+1/mx-1/(9*ph));
-	}
-	ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])*ph/(ph-dy2);
-	doYTicks(this);
-	doYGrid(this);
-	this.axdrags.toFront();
-	plot(this,'','');
+	ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(dy,ph);
+	dragTail(this);
 }
 
 function y0Drag(dx,dy) {
 	var ga=this.layout.yaxis;
 	var ph=this.plotheight;
-	var dy2;
-	if(dy<=0) dy2=Math.max(dy,-0.9*ph);
-	else {
-		var mx=0.3*ph;
-		dy2=1/(1/Math.min(dy,mx)-1/mx+1/(9*ph));
-	}
-	ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])*ph/(ph+dy2);
-	doYTicks(this);
-	doYGrid(this);
-	this.axdrags.toFront();
-	plot(this,'','');
+	ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(-dy,ph);
+	dragTail(this);
 }
 
 function autoTicks(a) {
