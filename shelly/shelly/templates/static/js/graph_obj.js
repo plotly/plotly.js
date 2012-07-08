@@ -166,8 +166,8 @@ function newPlot(divid, layout) {
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
             title:'pH',unit:''},
-        width:400,
-        height:300,
+        width:600,
+        height:450,
         margin:{l:50,r:10,t:30,b:40,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff' };
