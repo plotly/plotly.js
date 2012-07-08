@@ -26,6 +26,7 @@ function plot(divid, data, layout) {
     // (for extension to multiple graphs per page)
     // some callers send this in by dom element, others by id (string)
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+	var defaultColors=['#00e','#a00','#0c0','#000']
 
 /*  data should be an array of objects, one per trace. allowed keys:
 
@@ -59,6 +60,12 @@ function plot(divid, data, layout) {
 
     eventually I'd like to make all of the marker and line properties accept arrays
     to modify properties point-by-point
+    
+    any array also has a corresponding src attribute, ie xsrc for x
+    this is a string:
+    	<id>/<colname> for your own data, 
+    	<user>/<id>/<colname> for shared data
+    
 */  
 
     // if there is already data on the graph, append the new data
@@ -75,6 +82,8 @@ function plot(divid, data, layout) {
     var gl=gd.layout, vb=gd.viewbox, gdd=gd.data, gp=gd.plot;
     var xa=gl.xaxis, ya=gl.yaxis, xdr=gl.xaxis.drange, ydr=gl.yaxis.drange;
     var x, xy, y, i, serieslen;
+    xdr=[null,null];
+    ydr=[null,null];
 
     //remove all existing plotted data, make the drawing containers
     for(curve in gdd) {
@@ -87,14 +96,8 @@ function plot(divid, data, layout) {
     // go through all the data twice, first for finding the range, second for plotting
     for(iter=Math.max(xa.autorange,ya.autorange)?0:1; iter<2; iter++) {
         for(curve in gdd) { 
-            if('xy' in gdd[curve]) { // outmoded, but keep until we get it out of shelly
-                gdd[curve].x=[];
-                gdd[curve].y=[];
-                for(i in gdd[curve].xy) {
-                    gdd[curve].x.push(gdd[curve].xy[i][0]);
-                    gdd[curve].y.push(gdd[curve].xy[i][1]);
-                }
-            }
+            if('color' in gdd[curve]) color=gdd[curve].color;
+            else color=defaultColors[curve % defaultColors.length];
             
             //default type is scatter
             if(!('type' in gdd[curve]) || (gdd[curve].type=='scatter')) {
@@ -116,29 +119,39 @@ function plot(divid, data, layout) {
                 }
                 serieslen=Math.min(x.length,y.length);
                 if(iter==0) {
-                    if(curve==0) {
-                        xdr=[Math.min.apply(null,x),Math.max.apply(null,x)];
-                        ydr=[Math.min.apply(null,y),Math.max.apply(null,y)];
-                    }
-                    else {
-                        xdr=[Math.min(xdr[0],Math.min.apply(null,x)),Math.max(xdr[1],Math.max.apply(null,x))];
-                        ydr=[Math.min(ydr[0],Math.min.apply(null,y)),Math.max(ydr[1],Math.max.apply(null,y))];
-                    }
+                	xdr=[aggNums(Math.min,xdr[0],x,serieslen),aggNums(Math.max,xdr[1],x,serieslen)];
+                	ydr=[aggNums(Math.min,ydr[0],y,serieslen),aggNums(Math.max,ydr[1],y,serieslen)];
+//                     if(curve==0) {
+//                         xdr=[Math.min.apply(null,x),Math.max.apply(null,x)];
+//                         ydr=[Math.min.apply(null,y),Math.max.apply(null,y)];
+//                     }
+//                     else {
+//                         xdr=[Math.min(xdr[0],Math.min.apply(null,x)),Math.max(xdr[1],Math.max.apply(null,x))];
+//                         ydr=[Math.min(ydr[0],Math.min.apply(null,y)),Math.max(ydr[1],Math.max.apply(null,y))];
+//                     }
                 }
                 else {
                     // lines
                     gp.setStart();
-                    for(i=1; i<serieslen; i++) {if(i>0){gp.path(Raphael.format('M{0},{1}L{2},{3}',
-                        xa.b+xa.m*x[i-1]+vb.x,ya.b+ya.m*y[i-1]+vb.y,
-                        xa.b+xa.m*x[i]+vb.x,ya.b+ya.m*y[i]+vb.y));}}
+                    for(i=1; i<serieslen; i++) {
+                    	if(i>0 && $.isNumeric(x[i-1]) && $.isNumeric(x[i]) &&
+                    		$.isNumeric(y[i-1]) && $.isNumeric(y[i])){
+                    			gp.path(Raphael.format('M{0},{1}L{2},{3}',
+                        		xa.b+xa.m*x[i-1]+vb.x,ya.b+ya.m*y[i-1]+vb.y,
+                        		xa.b+xa.m*x[i]+vb.x,ya.b+ya.m*y[i]+vb.y));
+                        }
+                    }
                     gdd[curve].drawing['lines']=gp.setFinish();
-                    gdd[curve].drawing['lines'].attr({'stroke':gdd[curve].color});
+                    gdd[curve].drawing['lines'].attr({'stroke':color});
                     
                     // points
                     gp.setStart();
-                    for(i=0; i<serieslen; i++) {gp.circle(xa.b+xa.m*x[i]+vb.x,ya.b+ya.m*y[i]+vb.y,3);}
+                    for(i=0; i<serieslen; i++) {
+                    	if($.isNumeric(x[i]) && $.isNumeric(y[i]))
+	                    	gp.circle(xa.b+xa.m*x[i]+vb.x,ya.b+ya.m*y[i]+vb.y,3);
+                    }
                     gdd[curve].drawing['points']=gp.setFinish();
-                    gdd[curve].drawing['points'].attr({'fill':gdd[curve].color,'stroke-width':0});
+                    gdd[curve].drawing['points'].attr({'fill':color,'stroke-width':0});
                 }
             }
         }
@@ -150,6 +163,18 @@ function plot(divid, data, layout) {
         }
     }
     return('*ta-da*')
+}
+
+function aggNums(fcn,val,arr,len) {
+	var out=($.isNumeric(val)) ? val : null;
+	for(var i=0; i<len; i++) {
+		if($.isNumeric(arr[i])) out=($.isNumeric(out)) ? fcn(out,arr[i]) : arr[i];
+	}
+	return out
+// 	var x=[];
+// 	if($.isNumeric(val)) x.push(val);
+// 	for(var i in arr) {if($.isNumeric(arr[i])) x.push(arr[i]);}
+// 	return fcn.apply(null,x);
 }
 
 function newPlot(divid, layout) {
