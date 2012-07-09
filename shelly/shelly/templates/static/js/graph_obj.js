@@ -92,7 +92,7 @@ function plot(divid, data, layout) {
         gdd[curve].drawing={};
     }
 
-    //plot all the data
+    // plot all the data
     // go through all the data twice, first for finding the range, second for plotting
     for(iter=Math.max(xa.autorange,ya.autorange)?0:1; iter<2; iter++) {
         for(curve in gdd) { 
@@ -121,14 +121,6 @@ function plot(divid, data, layout) {
                 if(iter==0) {
                 	xdr=[aggNums(Math.min,xdr[0],x,serieslen),aggNums(Math.max,xdr[1],x,serieslen)];
                 	ydr=[aggNums(Math.min,ydr[0],y,serieslen),aggNums(Math.max,ydr[1],y,serieslen)];
-//                     if(curve==0) {
-//                         xdr=[Math.min.apply(null,x),Math.max.apply(null,x)];
-//                         ydr=[Math.min.apply(null,y),Math.max.apply(null,y)];
-//                     }
-//                     else {
-//                         xdr=[Math.min(xdr[0],Math.min.apply(null,x)),Math.max(xdr[1],Math.max.apply(null,x))];
-//                         ydr=[Math.min(ydr[0],Math.min.apply(null,y)),Math.max(ydr[1],Math.max.apply(null,y))];
-//                     }
                 }
                 else {
                     // lines
@@ -155,7 +147,7 @@ function plot(divid, data, layout) {
                 }
             }
         }
-        if((iter==0) && (xdr[0]!==null)) {
+        if((iter==0) && ($.isNumeric(xdr[0]))) {
             if(xa.autorange) xa.range=[1.05*xdr[0]-0.05*xdr[1],1.05*xdr[1]-0.05*xdr[0]];
             if(ya.autorange) ya.range=[1.05*ydr[0]-0.05*ydr[1],1.05*ydr[1]-0.05*ydr[0]];
             doXTicks(gd);doYTicks(gd);doXGrid(gd);doYGrid(gd);
@@ -165,16 +157,10 @@ function plot(divid, data, layout) {
     return('*ta-da*')
 }
 
-function aggNums(fcn,val,arr,len) {
-	var out=($.isNumeric(val)) ? val : null;
-	for(var i=0; i<len; i++) {
-		if($.isNumeric(arr[i])) out=($.isNumeric(out)) ? fcn(out,arr[i]) : arr[i];
-	}
-	return out
-// 	var x=[];
-// 	if($.isNumeric(val)) x.push(val);
-// 	for(var i in arr) {if($.isNumeric(arr[i])) x.push(arr[i]);}
-// 	return fcn.apply(null,x);
+function aggNums(f,v,a,len) {
+	var r=($.isNumeric(v)) ? v : null;
+	for(var i=0; i<len; i++) if($.isNumeric(a[i])) r=($.isNumeric(r)) ? f(r,a[i]) : a[i];
+	return r;
 }
 
 function newPlot(divid, layout) {
