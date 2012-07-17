@@ -191,6 +191,7 @@ function newPlot(divid, layout) {
     // First one (paper) is for the axes
     var gl=gd.layout;
     gd.paper=Raphael(divid,gl.width,gl.height);
+    gd.paper.gd=gd; // so any element can get gd from this.paper.gd
     gd.plotwidth=gl.width-gl.margin.l-gl.margin.r;
     gd.plotheight=gl.height-gl.margin.t-gl.margin.b;
     gd.ax=gd.paper.rect(gl.margin.l-gl.margin.pad,
@@ -202,6 +203,7 @@ function newPlot(divid, layout) {
 
     // Second one (plot) is for the data
     gd.plot=Raphael(gd.paperDOM,gd.plotwidth,gd.plotheight);
+    gd.plot.gd=gd; // so any element can get gd from this.paper.gd
     gd.plotDOM=gd.paperDOM.childNodes[0];
     gd.plotDOM.style.position='';
     gd.plotDOM.setAttribute('x',gl.margin.l);
@@ -261,7 +263,9 @@ function newPlot(divid, layout) {
 
     // the 'gd's at the end become 'this' in the fcns
     gd.plotbg.drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
-    gd.xdrag.drag(xDrag,xDragStart,resetViewBox,gd,gd,gd);
+    //gd.xdrag.dblclick(xAuto);
+    //gd.xdrag.drag(xDrag,xDragStart,resetViewBox,gd,gd,gd);
+    //gd.ydrag.dblclick(yAuto);
     gd.ydrag.drag(yDrag,yDragStart,resetViewBox,gd,gd,gd);
 
     gd.nwdrag.drag(nwDrag,plotDragStart,zoomEnd,gd,gd,gd);
@@ -273,7 +277,74 @@ function newPlot(divid, layout) {
     gd.x1drag.drag(x1Drag,xDragStart,zoomEnd,gd,gd,gd);
     gd.y0drag.drag(y0Drag,yDragStart,zoomEnd,gd,gd,gd);
     gd.y1drag.drag(y1Drag,yDragStart,zoomEnd,gd,gd,gd);
+
+	// Remove the hover title "Raphael's object" that Raphael makes...
+    gd.removeAttribute('title');    
+
+    // gd.mouseUp stores ms of last mouseup event on the drag bars
+    // so we can check for doubleclick when we see two mouseup events within
+    // gd.dblclickdelay ms 
+    // gd.dragged stores whether a drag has occurred, so we don't have to
+    // resetViewBox unnecessarily (ie if no move bigger than gd.mindrag pixels)
+    gd.mouseUp=0;
+    gd.dblclickdelay=300;
+    gd.mindrag=3; 
     
+    gd.xdrag.node.onmousedown = function(e) {
+        xDragStart.call(gd,null,null);
+        gd.dragged = false;
+        window.onmousemove = function(e2) {
+            gd.dragged=(Math.abs(e2.clientX-e.clientX)>gd.mindrag);
+            if(gd.dragged) xDrag.call(gd,e2.clientX-e.clientX,0);
+            pauseEvent(e2);
+        }
+        window.onmouseup = function(e2) {
+            var d=(new Date()).getTime();
+            if(d-gd.mouseUp<gd.dblclickdelay) xAuto.call(gd);
+            else if(gd.dragged) resetViewBox.call(gd);
+            gd.mouseUp = d;
+            window.onmousemove = null; window.onmouseup = null;
+        }
+        pauseEvent(e);
+    }
+    
+    gd.ydrag.node.onmousedown = function(e) {
+        yDragStart.call(gd,null,null);
+        gd.dragged = false;
+        window.onmousemove = function(e2) {
+            gd.dragged=(Math.abs(e2.clientY-e.clientY)>gd.mindrag);
+            if(gd.dragged) yDrag.call(gd,0,e2.clientY-e.clientY);
+            pauseEvent(e2);
+        }
+        window.onmouseup = function(e2) {
+            var d=(new Date()).getTime();
+            if(d-gd.mouseUp<gd.dblclickdelay) yAuto.call(gd);
+            else if(gd.dragged) resetViewBox.call(gd);
+            gd.mouseUp = d;
+            window.onmousemove = null; window.onmouseup = null;
+        }
+        pauseEvent(e);
+    }
+
+}
+
+// to prevent text selection during drag, see http://stackoverflow.com/questions/5429827/how-can-i-prevent-text-element-selection-with-cursor-drag
+function pauseEvent(e){
+    if(e.stopPropagation) e.stopPropagation();
+    if(e.preventDefault) e.preventDefault();
+    e.cancelBubble=true;
+    e.returnValue=false;
+    return false;
+}
+
+function xAuto() {
+    this.layout.xaxis.autorange=1;
+    plot(this,'','');
+}
+
+function yAuto() {
+    this.layout.yaxis.autorange=1;
+    plot(this,'','');
 }
 
 function dZoom(d,scale) {
