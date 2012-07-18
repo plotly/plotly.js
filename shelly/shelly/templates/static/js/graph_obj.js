@@ -21,6 +21,10 @@ Viewbox coordinates: xv,yv (where data are drawn)
             zoom we will move the individual points.
 */
 
+// ----------------------------------------------------
+// Main plot-creation function. Note: will call newPlot
+// if necessary to create the framework
+// ----------------------------------------------------
 function plot(divid, data, layout) {
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
@@ -70,14 +74,16 @@ function plot(divid, data, layout) {
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-object (null, '', whatever) for data
+    var graphwasempty = (typeof gd.data==='undefined')
     if(typeof data=='object') {
-        if(typeof gd.data==='undefined') gd.data=data;
+        if(graphwasempty) gd.data=data;
         else gd.data.push.apply(gd.data,data);
     }
 
     // make the graph container and axes, if they don't already exist
     // note: if they do already exist, the new layout gets ignored (as it should)
-    if(typeof gd.layout==='undefined') newPlot(divid, layout);  
+    // unless there's no data there yet... then it should destroy and remake the plot
+    if((typeof gd.layout==='undefined')||graphwasempty) newPlot(divid, layout);
 
     var gl=gd.layout, vb=gd.viewbox, gdd=gd.data, gp=gd.plot;
     var xa=gl.xaxis, ya=gl.yaxis, xdr=gl.xaxis.drange, ydr=gl.yaxis.drange;
@@ -157,19 +163,29 @@ function plot(divid, data, layout) {
     return('*ta-da*')
 }
 
+// convenience function to aggregate value v and array a (up to len)
+// using function f (ie Math.min, etc)
+// throwing out non-numeric values
 function aggNums(f,v,a,len) {
 	var r=($.isNumeric(v)) ? v : null;
 	for(var i=0; i<len; i++) if($.isNumeric(a[i])) r=($.isNumeric(r)) ? f(r,a[i]) : a[i];
 	return r;
 }
 
+// ----------------------------------------------------
+// Create the plot container and axes
+// ----------------------------------------------------
 function newPlot(divid, layout) {
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
 
-    // Get the layout info (hard code this for now)
+    // destroy any plot that already exists in this div
+    if('plot' in gd) gd.plot.remove();
+    if('paper' in gd) gd.paper.remove();
+
+    // Get the layout info (this is the defaults)
     gd.layout={title:'Glass Washer',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
@@ -177,14 +193,17 @@ function newPlot(divid, layout) {
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
             title:'pH',unit:''},
-        width:1000,
-        height:650,
+        width:600,
+        height:400,
         margin:{l:50,r:10,t:30,b:40,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff' };
         // TODO: add font size controls, and label positioning
         // TODO: add legend
         // TODO: use hard coded one for defaults, take any new properties from input param
+
+    // look for elements of gd.layout to replace with the equivalent elements in layout
+    gd.layout=updateObject(gd.layout,layout);
 
     // Make the graph containers
     // We use a hack to get two nested Raphael objects (Raphael 2.0.1)
@@ -220,9 +239,9 @@ function newPlot(divid, layout) {
     gl.yaxis.r0=gl.yaxis.range[0];
 
     gd.xtitle=gd.paper.text((gl.width+gl.margin.l-gl.margin.r)/2,gl.height-10,
-        axtitle(gl.xaxis)).attr({'font-size':14});
+        axTitle(gl.xaxis)).attr({'font-size':14});
     gd.ytitle=gd.paper.text(20,(gl.height+gl.margin.t-gl.margin.b)/2,
-        axtitle(gl.yaxis)).rotate(-90).attr({'font-size':14});
+        axTitle(gl.yaxis)).rotate(-90).attr({'font-size':14});
     gd.title=gd.paper.text(gl.width/2,gl.margin.t/2,gl.title).attr({'font-size':16});
     
     //make the axis drag objects
@@ -263,11 +282,8 @@ function newPlot(divid, layout) {
 
     // the 'gd's at the end become 'this' in the fcns
     gd.plotbg.drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
-    //gd.xdrag.dblclick(xAuto);
-    //gd.xdrag.drag(xDrag,xDragStart,resetViewBox,gd,gd,gd);
-    //gd.ydrag.dblclick(yAuto);
-    gd.ydrag.drag(yDrag,yDragStart,resetViewBox,gd,gd,gd);
 
+    
     gd.nwdrag.drag(nwDrag,plotDragStart,zoomEnd,gd,gd,gd);
     gd.nedrag.drag(neDrag,plotDragStart,zoomEnd,gd,gd,gd);
     gd.swdrag.drag(swDrag,plotDragStart,zoomEnd,gd,gd,gd);
@@ -281,6 +297,10 @@ function newPlot(divid, layout) {
 	// Remove the hover title "Raphael's object" that Raphael makes...
     gd.removeAttribute('title');    
 
+    // some drag events need to be built by hand from mousedown, mousemove, mouseup
+    // because dblclick doesn't register otherwise. Probably eventually all
+    // drag events will need to be this way, once we layer on enough functions...
+
     // gd.mouseUp stores ms of last mouseup event on the drag bars
     // so we can check for doubleclick when we see two mouseup events within
     // gd.dblclickdelay ms 
@@ -288,7 +308,7 @@ function newPlot(divid, layout) {
     // resetViewBox unnecessarily (ie if no move bigger than gd.mindrag pixels)
     gd.mouseUp=0;
     gd.dblclickdelay=300;
-    gd.mindrag=3; 
+    gd.mindrag=5; 
     
     gd.xdrag.node.onmousedown = function(e) {
         xDragStart.call(gd,null,null);
@@ -296,6 +316,7 @@ function newPlot(divid, layout) {
         window.onmousemove = function(e2) {
             gd.dragged=(Math.abs(e2.clientX-e.clientX)>gd.mindrag);
             if(gd.dragged) xDrag.call(gd,e2.clientX-e.clientX,0);
+            else xDrag.call(gd,0,0);
             pauseEvent(e2);
         }
         window.onmouseup = function(e2) {
@@ -314,6 +335,7 @@ function newPlot(divid, layout) {
         window.onmousemove = function(e2) {
             gd.dragged=(Math.abs(e2.clientY-e.clientY)>gd.mindrag);
             if(gd.dragged) yDrag.call(gd,0,e2.clientY-e.clientY);
+            else yDrag.call(gd,0,0);
             pauseEvent(e2);
         }
         window.onmouseup = function(e2) {
@@ -326,9 +348,34 @@ function newPlot(divid, layout) {
         pauseEvent(e);
     }
 
+    // add the graph menu
+    var menudiv=document.createElement('div');
+    gd.appendChild(menudiv);
+    menudiv.innerHTML=
+    "<ul class='nav nav-pills'><li class='dropdown' id='menu-" + gd.id + "'>" +
+    "<a class='dropdown-toggle' data-toggle='dropdown' href='#menu-" + gd.id + "'>" +
+    "<img src='/static/bootstrap/img/png/glyphicons_019_cogwheel.png'/>" +
+    "<b class='caret'></b></a><ul class='dropdown-menu'>" +
+        "<li><a href='#' onclick='saveGraph(\"" + gd.id + "\")'>Save</a></li>" +
+    "</ul></li></ul>";
+    
 }
 
-// to prevent text selection during drag, see http://stackoverflow.com/questions/5429827/how-can-i-prevent-text-element-selection-with-cursor-drag
+function updateObject(i,up) {
+    if(!$.isPlainObject(up)) return i;
+    up.o={}; // seems like JS doesn't fully implement recursion... if I say o={} here then each level destroys the previous.
+    for(key in i) {
+        if(key in up) {
+            if($.isPlainObject(i[key])) up.o[key]=updateObject(i[key],up[key]);
+            else up.o[key]=up[key];
+        }
+        else up.o[key]=i[key];
+    }
+    return up.o;
+}
+
+// to prevent text selection during drag.
+// see http://stackoverflow.com/questions/5429827/how-can-i-prevent-text-element-selection-with-cursor-drag
 function pauseEvent(e){
     if(e.stopPropagation) e.stopPropagation();
     if(e.preventDefault) e.preventDefault();
@@ -337,6 +384,7 @@ function pauseEvent(e){
     return false;
 }
 
+// autoscale one axis
 function xAuto() {
     this.layout.xaxis.autorange=1;
     plot(this,'','');
@@ -347,10 +395,15 @@ function yAuto() {
     plot(this,'','');
 }
 
-function dZoom(d,scale) {
-    //dragging one end of an axis: d>0 is compressing scale, d<0 is expanding
-    if(d>=0) return 1 - Math.min(d/scale,0.9);
-    else return 1 - 1/(1/Math.max(d/scale,-0.3)+3.222);
+// ----------------------------------------------------
+// Axis dragging functions
+// ----------------------------------------------------
+
+// common transform for dragging one end of an axis
+// d>0 is compressing scale, d<0 is expanding
+function dZoom(d) {
+    if(d>=0) return 1 - Math.min(d,0.9);
+    else return 1 - 1/(1/Math.max(d,-0.3)+3.222);
 }
 
 function plotDragStart(x,y) {
@@ -420,63 +473,69 @@ function yDrag(dx,dy) {
 function nwDrag(dx,dy) {
     var gx=this.layout.xaxis, gy=this.layout.yaxis;
     var pw=this.plotwidth, ph=this.plotheight;
-    gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx,pw);
-    gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy,ph);
+    gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx/pw);
+    gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy/ph);
     dragTail(this);
 }
 
 function neDrag(dx,dy) {
     var gx=this.layout.xaxis, gy=this.layout.yaxis;
     var pw=this.plotwidth, ph=this.plotheight;
-    gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx,pw);
-    gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy,ph);
+    gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx/pw);
+    gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy/ph);
     dragTail(this);
 }
 
 function swDrag(dx,dy) {
     var gx=this.layout.xaxis, gy=this.layout.yaxis;
     var pw=this.plotwidth, ph=this.plotheight;
-    gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx,pw);
-    gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy,ph);
+    gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx/pw);
+    gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy/ph);
     dragTail(this);
 }
 
 function seDrag(dx,dy) {
     var gx=this.layout.xaxis, gy=this.layout.yaxis;
     var pw=this.plotwidth, ph=this.plotheight;
-    gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx,pw);
-    gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy,ph);
+    gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx/pw);
+    gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy/ph);
     dragTail(this);
 }
 
 function x0Drag(dx,dy) {
     var ga=this.layout.xaxis;
     var pw=this.plotwidth;
-    ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(dx,pw);
+    ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(dx/pw);
     dragTail(this);
 }
 
 function x1Drag(dx,dy) {
     var ga=this.layout.xaxis;
     var pw=this.plotwidth;
-    ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(-dx,pw);
+    ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(-dx/pw);
     dragTail(this);
 }
 
 function y1Drag(dx,dy) {
     var ga=this.layout.yaxis;
     var ph=this.plotheight;
-    ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(dy,ph);
+    ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(dy/ph);
     dragTail(this);
 }
 
 function y0Drag(dx,dy) {
     var ga=this.layout.yaxis;
     var ph=this.plotheight;
-    ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(-dy,ph);
+    ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(-dy/ph);
     dragTail(this);
 }
 
+// ----------------------------------------------------
+// Ticks and grids
+// ----------------------------------------------------
+
+// if ticks are set to automatic, determine the right values (tick0,dtick)
+// in any case, return how many digits to round tick labels to
 function autoTicks(a) {
     if(a.autotick) {
         // auto ticks always start at 0
@@ -574,8 +633,52 @@ function doYGrid(gd) { // assumes doYticks has been called recently, to set m an
     gd.plotbg.toBack();
 }
 
-function axtitle(axis) {
+function axTitle(axis) {
     if((axis.unit=='')||(axis.unit==undefined)) return axis.title;
     else return axis.title+' ('+axis.unit+')';
 }
 
+// ----------------------------------------------------
+// Graph file operations
+// ----------------------------------------------------
+
+function saveGraph(divid) {
+    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+    if(typeof gd.fileid !='string') gd.fileid='';
+
+    // jsonify the graph data and layout
+    var data = [];
+    for(d in gd.data) data.push(stripSrc(gd.data[d]));
+    var gj = JSON.stringify({'layout':gd.layout,'data':data});
+    
+    // for now use the graph title as the filename
+    var fn = gd.layout.title;
+
+    $.post("/savegraph/", {'graph':gj, 'fid':gd.fileid, 'fn':fn}, saveGraphResp);
+}
+
+function saveGraphResp(res) {
+    var resJ=JSON.parse(res);
+    if(resJ.err != '') alert(resJ.err);
+    if(resJ.fid != '') $("#privatetree").jstree("create", null, "last",
+        {"data":resJ.fn, "attr":{"id":resJ.fid, "rel":"graph"} });
+}
+
+// return JSON for saving the graph in gd to userdata
+function graphJSON(gd) {
+}
+
+// create a copy of data, with all dereferenced src elements stripped
+// so if there's xsrc present, strip out x
+// needs to do this recursively because some src can be inside sub-objects
+// also strip "drawing" element, which is a reference to the Raphael objects
+function stripSrc(d) {
+    var o={};
+    for(v in d) {
+        if((v!='drawing') && !(v+'src' in d)) {
+            if($.isPlainObject(d[v])) o[v]=stripSrc(d[v]);
+            else o[v]=d[v];
+        }
+    }
+    return o;
+}
