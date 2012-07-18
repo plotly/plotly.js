@@ -182,8 +182,7 @@ function newPlot(divid, layout) {
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
 
     // destroy any plot that already exists in this div
-    if('plot' in gd) gd.plot.remove();
-    if('paper' in gd) gd.paper.remove();
+    gd.innerHTML='';
 
     // Get the layout info (this is the defaults)
     gd.layout={title:'Glass Washer',
@@ -351,6 +350,7 @@ function newPlot(divid, layout) {
     // add the graph menu
     var menudiv=document.createElement('div');
     gd.appendChild(menudiv);
+    menudiv.id='mdiv-'+gd.id;
     menudiv.innerHTML=
     "<ul class='nav nav-pills'><li class='dropdown' id='menu-" + gd.id + "'>" +
     "<a class='dropdown-toggle' data-toggle='dropdown' href='#menu-" + gd.id + "'>" +
