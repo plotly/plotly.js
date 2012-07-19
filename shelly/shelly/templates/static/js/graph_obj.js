@@ -350,6 +350,7 @@ function newPlot(divid, layout) {
     // add the graph menu
     var menudiv=document.createElement('div');
     $(gd).prepend(menudiv);
+    $(menudiv).css({'position':'absolute','top':95,'left':620,'z-index':5000})
     menudiv.id='mdiv-'+gd.id;
     menudiv.innerHTML=
     "<ul class='nav nav-pills'><li class='dropdown' id='menu-" + gd.id + "'>" +
