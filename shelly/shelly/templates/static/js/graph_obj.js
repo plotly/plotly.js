@@ -349,16 +349,23 @@ function newPlot(divid, layout) {
 
     // add the graph menu
     var menudiv=document.createElement('div');
-    gd.appendChild(menudiv);
+    $(gd).prepend(menudiv);
     menudiv.id='mdiv-'+gd.id;
     menudiv.innerHTML=
     "<ul class='nav nav-pills'><li class='dropdown' id='menu-" + gd.id + "'>" +
     "<a class='dropdown-toggle' data-toggle='dropdown' href='#menu-" + gd.id + "'>" +
-    "<img src='/static/bootstrap/img/png/glyphicons_019_cogwheel.png'/>" +
-    "<b class='caret'></b></a><ul class='dropdown-menu'>" +
+    "<img src='/static/bootstrap/img/png/glyphicons_019_cogwheel.png'/>" +	
+	"<b class='caret'></b></a><ul class='dropdown-menu' style='width:50px'>" +
         "<li><a href='#' onclick='saveGraph(\"" + gd.id + "\")'>Save</a></li>" +
     "</ul></li></ul>";
-    
+ 
+//       '<div class="btn-group">' +
+//          '<button class="btn btn-inverse dropdown-toggle" data-toggle="dropdown"><img src="/static/bootstrap/img/png/glyphicons_019_cogwheel.png"/><span class="caret"></span></button>' +
+//          '<ul class="dropdown-menu">' +
+//            '<li><a href="#">Action</a></li>' +
+//          '</ul>' +
+//        '</div>'
+
 }
 
 function updateObject(i,up) {
