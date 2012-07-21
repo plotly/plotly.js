@@ -349,15 +349,16 @@ function newPlot(divid, layout) {
 
     // add the graph menu
     var menudiv=document.createElement('div');
-    $(gd).prepend(menudiv);
-    $(menudiv).css({'position':'absolute','top':95,'left':620,'z-index':5000})
+    $(gd).prepend(menudiv).css({'position':'relative'});
+    $(menudiv).css({'position':'absolute','top':0,'left':620,'z-index':5000})
     menudiv.id='mdiv-'+gd.id;
     menudiv.innerHTML=
-    "<ul class='nav nav-pills'><li class='dropdown' id='menu-" + gd.id + "'>" +
+	"<ul class='nav nav-pills' style='width: 50px;'><li class='dropdown' id='menu-" + gd.id + "'>" +
     "<a class='dropdown-toggle' data-toggle='dropdown' href='#menu-" + gd.id + "'>" +
     "<img src='/static/bootstrap/img/png/glyphicons_019_cogwheel.png'/>" +	
-	"<b class='caret'></b></a><ul class='dropdown-menu' style='width:50px'>" +
-        "<li><a href='#' onclick='saveGraph(\"" + gd.id + "\")'>Save</a></li>" +
+	"<b class='caret'></b></a><ul class='dropdown-menu' style='width:0px'>" +
+        "<li><a href='#' onclick='saveGraph(\"" + gd.id + "\")'><i class='icon-share-alt' style='width:20px; height:20px;'></i> Save Graph</a></li>" +
+        "<li><a href='#' id='cmdlntog' onclick='togCmdLn()' data-state='hide'><img src='/static/img/scipyshiny_small.png' style='display:inline'/> Show Numpy</a></li>" +
     "</ul></li></ul>";
  
 //       '<div class="btn-group">' +
