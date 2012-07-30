@@ -346,28 +346,38 @@ function newPlot(divid, layout) {
         }
         pauseEvent(e);
     }
+    drawMenu(gd);
+}
 
+function drawMenu(gd, menutype){
     // add the graph menu
     var menudiv=document.createElement('div');
     $(gd).prepend(menudiv).css({'position':'relative'});
     $(menudiv).css({'position':'absolute','top':0,'left':620,'z-index':5000})
     menudiv.id='mdiv-'+gd.id;
-    menudiv.innerHTML=
-	"<ul class='nav nav-pills' style='width: 50px;'><li class='dropdown' id='menu-" + gd.id + "'>" +
-    "<a class='dropdown-toggle' data-toggle='dropdown' href='#menu-" + gd.id + "'>" +
-    "<img src='/static/bootstrap/img/png/glyphicons_019_cogwheel.png'/>" +	
-	"<b class='caret'></b></a><ul class='dropdown-menu' style='width:0px'>" +
-        "<li><a href='#' onclick='saveGraph(\"" + gd.id + "\")'><i class='icon-share-alt' style='width:20px; height:20px;'></i> Save Graph</a></li>" +
-        "<li><a href='#' id='cmdlntog' onclick='togCmdLn()' data-state='hide'><img src='/static/img/scipyshiny_small.png' style='display:inline'/> Show Numpy</a></li>" +
-    "</ul></li></ul>";
- 
-//       '<div class="btn-group">' +
-//          '<button class="btn btn-inverse dropdown-toggle" data-toggle="dropdown"><img src="/static/bootstrap/img/png/glyphicons_019_cogwheel.png"/><span class="caret"></span></button>' +
-//          '<ul class="dropdown-menu">' +
-//            '<li><a href="#">Action</a></li>' +
-//          '</ul>' +
-//        '</div>'
 
+    if( menutype=='script' ){
+        menudiv.innerHTML=
+	"<ul class='nav nav-pills' style='width: 50px;'><li class='dropdown' id='menu-" + gd.id + "'>" +
+        "<a class='dropdown-toggle' data-toggle='dropdown' href='#menu-" + gd.id + "'>" +
+        "<img src='/static/bootstrap/img/png/glyphicons_019_cogwheel.png'/>" +	
+	"<b class='caret'></b></a><ul class='dropdown-menu' style='width:0px'>" +
+        "<li><a href='#' onclick='saveScript(\"" + gd.id + "\")'><i class='icon-share-alt'></i> Save Script</a></li>" +
+        "<li><a href='#' onclick='addTab(\"" + 'script' + "\")'><i class='icon-python'></i> New Script</a></li>" +
+        "<li><a href='#' id='cmdlntog' onclick='togCmdLn()' data-state='hide'><i class='icon-eye-open'></i> Show CLI</a></li>" +
+        "</ul></li></ul>";
+    }
+    else{
+        menudiv.innerHTML=
+	"<ul class='nav nav-pills' style='width: 50px;'><li class='dropdown' id='menu-" + gd.id + "'>" +
+        "<a class='dropdown-toggle' data-toggle='dropdown' href='#menu-" + gd.id + "'>" +
+        "<img src='/static/bootstrap/img/png/glyphicons_019_cogwheel.png'/>" +	
+	"<b class='caret'></b></a><ul class='dropdown-menu' style='width:0px'>" +
+        "<li><a href='#' onclick='saveGraph(\"" + gd.id + "\")'><i class='icon-share-alt'></i> Save Graph</a></li>" +
+        "<li><a href='#' onclick='addTab(\"" + 'script' + "\")'><i class='icon-python'></i> New Script</a></li>" +
+        "<li><a href='#' id='cmdlntog' onclick='togCmdLn()' data-state='hide'><i class='icon-eye-open'></i> Show CLI</a></li>" +
+        "</ul></li></ul>";
+    }
 }
 
 function updateObject(i,up) {
@@ -645,6 +655,26 @@ function doYGrid(gd) { // assumes doYticks has been called recently, to set m an
 function axTitle(axis) {
     if((axis.unit=='')||(axis.unit==undefined)) return axis.title;
     else return axis.title+' ('+axis.unit+')';
+}
+
+// ----------------------------------------------------
+// Script file operations
+// ----------------------------------------------------
+
+function saveScript(divid){
+    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+    if(typeof gd.fileid !='string') gd.fileid='';
+    txt=$('#tabs-one-line div.ui-tabs-panel:not(.ui-tabs-hide)').children('textarea').val();
+    $.post("/writef/", {'txt':txt}, saveScriptResp);
+}
+
+function saveScriptResp(res){
+    res=JSON.parse(res);                                                                                                                                                                                                
+    err=res.err;                                                                                                                                                                                                        
+    if(err!='') alert(err);                                                                                                                                                                                             
+    fn=res['fn'];                                                                                                                                                                                                   
+    fid=res['fid'].toString(); 
+    $("#privatetree").jstree("create", null, "last", {"data":fn, "attr":{"id":fid, "rel":"script"} });
 }
 
 // ----------------------------------------------------
