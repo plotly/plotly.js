@@ -185,15 +185,15 @@ function newPlot(divid, layout) {
     gd.innerHTML='';
 
     // Get the layout info (this is the defaults)
-    gd.layout={title:'Glass Washer',
+    gd.layout={title:'Plot Title',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'Time',unit:'hours'},
+            title:'x-axis',unit:'unit'},
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'pH',unit:''},
-        width:600,
-        height:400,
+            title:'y-axis',unit:''},
+        width:750,
+        height:500,
         margin:{l:50,r:10,t:30,b:40,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff' };
@@ -353,7 +353,7 @@ function drawMenu(gd, menutype){
     // add the graph menu
     var menudiv=document.createElement('div');
     $(gd).prepend(menudiv).css({'position':'relative'});
-    $(menudiv).css({'position':'absolute','top':0,'left':620,'z-index':5000})
+    $(menudiv).css({'position':'absolute','top':0,'left':770,'z-index':5000})
     menudiv.id='mdiv-'+gd.id;
 
     if( menutype=='script' ){
@@ -362,9 +362,12 @@ function drawMenu(gd, menutype){
         "<a class='dropdown-toggle' data-toggle='dropdown' href='#menu-" + gd.id + "'>" +
         "<img src='/static/bootstrap/img/png/glyphicons_019_cogwheel.png'/>" +	
 	"<b class='caret'></b></a><ul class='dropdown-menu' style='width:0px'>" +
-        "<li><a href='#' onclick='saveScript(\"" + gd.id + "\")'><i class='icon-share-alt'></i> Save Script</a></li>" +
+        "<li><a href='#' onclick='saveScript(\"" + gd.id + "\")'><i class='icon-download-alt'></i> Save Script</a></li>" +
         "<li><a href='#' onclick='addTab(\"" + 'script' + "\")'><i class='icon-python'></i> New Script</a></li>" +
-        "<li><a href='#' id='cmdlntog' onclick='togCmdLn()' data-state='hide'><i class='icon-eye-open'></i> Show CLI</a></li>" +
+        "<li><a href='#' id='cmdlntog' onclick='togCmdLn()' data-state='hide'><i class='icon-eye-open'></i> Show NumPy</a></li>" +
+        "<li><a href='#' id='filewelltog' onclick='togFileWell()' data-state='hide'><i class='icon-file'></i> Show Files</a></li>" +
+        "<li><a href='/remote'><i class='icon-globe'></i> Remote Sensing</a></li>" +
+        "<li><a href='/examples'><i class='icon-info-sign'></i> Examples</a></li>" +
         "</ul></li></ul>";
     }
     else{
@@ -373,9 +376,13 @@ function drawMenu(gd, menutype){
         "<a class='dropdown-toggle' data-toggle='dropdown' href='#menu-" + gd.id + "'>" +
         "<img src='/static/bootstrap/img/png/glyphicons_019_cogwheel.png'/>" +	
 	"<b class='caret'></b></a><ul class='dropdown-menu' style='width:0px'>" +
-        "<li><a href='#' onclick='saveGraph(\"" + gd.id + "\")'><i class='icon-share-alt'></i> Save Graph</a></li>" +
+        "<li><a href='#' onclick='saveGraph(\"" + gd.id + "\")'><i class='icon-download-alt'></i> Save Graph</a></li>" +
+        "<li><a href='#' onclick='shareGraph(\"" + gd.id + "\")'><i class='icon-share'></i> Share Graph</a></li>" +
         "<li><a href='#' onclick='addTab(\"" + 'script' + "\")'><i class='icon-python'></i> New Script</a></li>" +
-        "<li><a href='#' id='cmdlntog' onclick='togCmdLn()' data-state='hide'><i class='icon-eye-open'></i> Show CLI</a></li>" +
+        "<li><a href='#' id='cmdlntog' onclick='togCmdLn()' data-state='hide'><i class='icon-eye-open'></i> Show Numpy</a></li>" +
+        "<li><a href='#' id='filewelltog' onclick='togFileWell()' data-state='hide'><i class='icon-file'></i> Show Files</a></li>" +
+        "<li><a href='/remote'><i class='icon-globe'></i> Remote Sensing</a></li>" +
+        "<li><a href='/examples'><i class='icon-info-sign'></i> Examples</a></li>" +
         "</ul></li></ul>";
     }
 }
@@ -701,6 +708,15 @@ function saveGraphResp(res) {
     if(resJ.err != '') alert(resJ.err);
     if(resJ.fid != '') $("#privatetree").jstree("create", null, "last",
         {"data":resJ.fn, "attr":{"id":resJ.fid, "rel":"graph"} });
+}
+
+function shareGraph(divid){
+    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+    if(typeof gd.fileid !='string') gd.fileid='';
+    url='http://ec2-23-20-77-37.compute-1.amazonaws.com/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fileid;
+    $('#linktoshare').val(url);
+    $('#linkModal').modal('toggle');
+    document.getElementById("linktoshare").select();
 }
 
 // return JSON for saving the graph in gd to userdata
