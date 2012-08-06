@@ -185,13 +185,13 @@ function newPlot(divid, layout) {
     gd.innerHTML='';
 
     // Get the layout info (this is the defaults)
-    gd.layout={title:'Plot Title',
+    gd.layout={title:'',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'x-axis',unit:'unit'},
+            title:'',unit:''},
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'y-axis',unit:''},
+            title:'',unit:''},
         width:750,
         height:500,
         margin:{l:50,r:10,t:30,b:40,pad:2},
@@ -676,11 +676,8 @@ function saveScript(divid){
 }
 
 function saveScriptResp(res){
-    res=JSON.parse(res);                                                                                                                                                                                                
-    err=res.err;                                                                                                                                                                                                        
-    if(err!='') alert(err);                                                                                                                                                                                             
-    fn=res['fn'];                                                                                                                                                                                                   
-    fid=res['fid'].toString(); 
+    res=JSON.parse(res);                                                                                                                                        err=res.err;
+    if(err!='') alert(err);                                                                                                                                     fn=res['fn'];                                                                                                                                               fid=res['fid'].toString(); 
     $("#privatetree").jstree("create", null, "last", {"data":fn, "attr":{"id":fid, "rel":"script"} });
 }
 
