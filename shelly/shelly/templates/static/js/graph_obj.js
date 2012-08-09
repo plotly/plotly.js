@@ -353,38 +353,31 @@ function drawMenu(gd, menutype){
     // add the graph menu
     var menudiv=document.createElement('div');
     $(gd).prepend(menudiv).css({'position':'relative'});
-    $(menudiv).css({'position':'absolute','top':0,'left':770,'z-index':5000})
+    right=3500;
+    $(menudiv).css({'position':'absolute','top':0,'right':350,'z-index':5000})
     menudiv.id='mdiv-'+gd.id;
+    if(menutype != 'grid' || menutype != 'script'){menutype='graph'};
+    // capitalize 'script' or 'grid' or 'graph'
+    menutypeupper=menutype.charAt(0).toUpperCase()+menutype.substr(1);
 
-    if( menutype=='script' ){
-        menudiv.innerHTML=
+    menudiv.innerHTML=
 	"<ul class='nav nav-pills' style='width: 50px;'><li class='dropdown' id='menu-" + gd.id + "'>" +
         "<a class='dropdown-toggle' data-toggle='dropdown' href='#menu-" + gd.id + "'>" +
         "<img src='/static/bootstrap/img/png/glyphicons_019_cogwheel.png'/>" +	
 	"<b class='caret'></b></a><ul class='dropdown-menu' style='width:0px'>" +
-        "<li><a href='#' onclick='saveScript(\"" + gd.id + "\")'><i class='icon-download-alt'></i> Save Script</a></li>" +
+        "<li><a href='#' onclick='save"+menutypeupper+"(\"" + gd.id + "\")'><i class='icon-download-alt'></i> Save "+menutypeupper+"</a></li>" +
+        "<li><a href='#' onclick='share"+menutypeupper+"(\"" + gd.id + "\")'><i class='icon-share'></i> Share "+menutypeupper+"</a></li>" +
+        "<li class='divider'></li>" +
         "<li><a href='#' onclick='addTab(\"" + 'script' + "\")'><i class='icon-python'></i> New Script</a></li>" +
-        "<li><a href='#' id='cmdlntog' onclick='togCmdLn()' data-state='hide'><i class='icon-eye-open'></i> Show NumPy</a></li>" +
-        "<li><a href='#' id='filewelltog' onclick='togFileWell()' data-state='hide'><i class='icon-file'></i> Show Files</a></li>" +
-        "<li><a href='/remote'><i class='icon-globe'></i> Remote Sensing</a></li>" +
-        "<li><a href='/examples'><i class='icon-info-sign'></i> Examples</a></li>" +
+        "<li><a href='#' onclick='addTab(\"" + 'grid' + "\")'><i class='icon-th'></i> New Grid</a></li>" +
+        "<li class='divider'></li>" +
+        "<li><a href='#' class='cmdlntog' onclick='togCmdLn()' data-state='hide'><i class='icon-scipy'></i> Show NumPy</a></li>" +
+        "<li><a href='#' class='filewelltog' onclick='togFileWell()' data-state='hide'><i class='icon-file'></i> Show Files</a></li>" +
+        //"<li><a href='/remote'><i class='icon-globe'></i> Remote Sensing</a></li>" +
+        //"<li><a href='/examples'><i class='icon-info-sign'></i> Examples</a></li>" +
         "</ul></li></ul>";
-    }
-    else{
-        menudiv.innerHTML=
-	"<ul class='nav nav-pills' style='width: 50px;'><li class='dropdown' id='menu-" + gd.id + "'>" +
-        "<a class='dropdown-toggle' data-toggle='dropdown' href='#menu-" + gd.id + "'>" +
-        "<img src='/static/bootstrap/img/png/glyphicons_019_cogwheel.png'/>" +	
-	"<b class='caret'></b></a><ul class='dropdown-menu' style='width:0px'>" +
-        "<li><a href='#' onclick='saveGraph(\"" + gd.id + "\")'><i class='icon-download-alt'></i> Save Graph</a></li>" +
-        "<li><a href='#' onclick='shareGraph(\"" + gd.id + "\")'><i class='icon-share'></i> Share Graph</a></li>" +
-        "<li><a href='#' onclick='addTab(\"" + 'script' + "\")'><i class='icon-python'></i> New Script</a></li>" +
-        "<li><a href='#' id='cmdlntog' onclick='togCmdLn()' data-state='hide'><i class='icon-eye-open'></i> Show Numpy</a></li>" +
-        "<li><a href='#' id='filewelltog' onclick='togFileWell()' data-state='hide'><i class='icon-file'></i> Show Files</a></li>" +
-        "<li><a href='/remote'><i class='icon-globe'></i> Remote Sensing</a></li>" +
-        "<li><a href='/examples'><i class='icon-info-sign'></i> Examples</a></li>" +
-        "</ul></li></ul>";
-    }
+
+    return(menudiv);
 }
 
 function updateObject(i,up) {
