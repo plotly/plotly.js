@@ -185,13 +185,13 @@ function newPlot(divid, layout) {
     gd.innerHTML='';
 
     // Get the layout info (this is the defaults)
-    gd.layout={title:'',
+    gd.layout={title:'Damped Oscillators',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'',unit:''},
+            title:'Time',unit:'ms'},
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'',unit:''},
+            title:'Response',unit:'mV'},
         width:750,
         height:500,
         margin:{l:50,r:10,t:30,b:40,pad:2},
@@ -367,6 +367,8 @@ function drawMenu(gd, menutype){
 	"<b class='caret'></b></a><ul class='dropdown-menu' style='width:0px'>" +
         "<li><a href='#' onclick='save"+menutypeupper+"(\"" + gd.id + "\")'><i class='icon-download-alt'></i> Save "+menutypeupper+"</a></li>" +
         "<li><a href='#' onclick='share"+menutypeupper+"(\"" + gd.id + "\")'><i class='icon-share'></i> Share "+menutypeupper+"</a></li>" +
+        //"<li><a href='http://www.stat.colostate.edu/~estep/bike/bikelaws.pdf' onclick='exportGraph()' download='oscilloscope_response'><i class='icon-download'></i> PDF Export</a></li>" +
+        "<li><a href='http://ec2-107-21-79-83.compute-1.amazonaws.com/static/img/damped_oscillators.pdf' download='damped_oscillators'><i class='icon-download'></i> PDF Export</a></li>" +
         "<li class='divider'></li>" +
         "<li><a href='#' onclick='addTab(\"" + 'script' + "\")'><i class='icon-python'></i> New Script</a></li>" +
         "<li><a href='#' onclick='addTab(\"" + 'grid' + "\")'><i class='icon-th'></i> New Grid</a></li>" +
@@ -678,6 +680,10 @@ function saveScriptResp(res){
 // Graph file operations
 // ----------------------------------------------------
 
+function exportGraph() {
+    //alert('filed dwnld');
+}
+
 function saveGraph(divid) {
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
     if(typeof gd.fileid !='string') gd.fileid='';
@@ -701,9 +707,11 @@ function saveGraphResp(res) {
 }
 
 function shareGraph(divid){
+    alert(divid);
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
     if(typeof gd.fileid !='string') gd.fileid='';
-    url='http://ec2-23-20-77-37.compute-1.amazonaws.com/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fileid;
+    //if(gd.fileid==''){saveGraph(divid); shareGraph(divid);}
+    url='http://plot.ly/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fileid;
     $('#linktoshare').val(url);
     $('#linkModal').modal('toggle');
     document.getElementById("linktoshare").select();
