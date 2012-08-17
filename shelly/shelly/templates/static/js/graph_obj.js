@@ -74,7 +74,7 @@ function plot(divid, data, layout) {
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-object (null, '', whatever) for data
-    var graphwasempty = (typeof gd.data==='undefined')
+    var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if(typeof data=='object') {
         if(graphwasempty) gd.data=data;
         else gd.data.push.apply(gd.data,data);
@@ -237,11 +237,7 @@ function newPlot(divid, layout) {
     gl.xaxis.r0=gl.xaxis.range[0];
     gl.yaxis.r0=gl.yaxis.range[0];
 
-    gd.xtitle=gd.paper.text((gl.width+gl.margin.l-gl.margin.r)/2,gl.height-10,
-        axTitle(gl.xaxis)).attr({'font-size':14});
-    gd.ytitle=gd.paper.text(20,(gl.height+gl.margin.t-gl.margin.b)/2,
-        axTitle(gl.yaxis)).rotate(-90).attr({'font-size':14});
-    gd.title=gd.paper.text(gl.width/2,gl.margin.t/2,gl.title).attr({'font-size':16});
+    makeTitles(gd,'');
     
     //make the axis drag objects
     var x0=gd.ylabels.getBBox().x;
@@ -282,7 +278,6 @@ function newPlot(divid, layout) {
     // the 'gd's at the end become 'this' in the fcns
     gd.plotbg.drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
 
-    
     gd.nwdrag.drag(nwDrag,plotDragStart,zoomEnd,gd,gd,gd);
     gd.nedrag.drag(neDrag,plotDragStart,zoomEnd,gd,gd,gd);
     gd.swdrag.drag(swDrag,plotDragStart,zoomEnd,gd,gd,gd);
@@ -360,14 +355,43 @@ function newPlot(divid, layout) {
         "<li><a href='#' onclick='saveGraph(\"" + gd.id + "\")'><i class='icon-share-alt' style='width:20px; height:20px;'></i> Save Graph</a></li>" +
         "<li><a href='#' id='cmdlntog' onclick='togCmdLn()' data-state='hide'><img src='/static/img/scipyshiny_small.png' style='display:inline'/> Show Numpy</a></li>" +
     "</ul></li></ul>";
- 
-//       '<div class="btn-group">' +
-//          '<button class="btn btn-inverse dropdown-toggle" data-toggle="dropdown"><img src="/static/bootstrap/img/png/glyphicons_019_cogwheel.png"/><span class="caret"></span></button>' +
-//          '<ul class="dropdown-menu">' +
-//            '<li><a href="#">Action</a></li>' +
-//          '</ul>' +
-//        '</div>'
+}
 
+function makeTitles(gd,title) {
+    var gl=gd.layout;
+    if(title in {'':0,'xtitle':0}) {
+        if(gl.xaxis.title=='')
+            gd.xtitle=hoverBox(gd, (gl.margin.l-gl.margin.r)/2+gl.width/4, gl.height-10-(14/2), gl.width/2, 14)
+        else
+            gd.xtitle=gd.paper.text((gl.width+gl.margin.l-gl.margin.r)/2, gl.height-10, gl.xaxis.title)
+                .attr({'font-size':14});
+        gd.xtitle.dblclick(function(){autoGrowInput(gd,'xtitle', gl.xaxis, 'title', {});});
+    }
+    if(title in {'':0,'ytitle':0}) {
+        if(gl.yaxis.title=='')
+            gd.ytitle=hoverBox(gd, 20-14/2, (gl.margin.t-gl.margin.b)/2+gl.height/4, 14, gl.height/2)
+        else
+            gd.ytitle=gd.paper.text(20, (gl.height+gl.margin.t-gl.margin.b)/2, gl.yaxis.title)
+                .rotate(-90).attr({'font-size':14})
+        gd.ytitle.dblclick(function(){autoGrowInput(gd,'ytitle', gl.yaxis, 'title', {center: 0});});
+    }
+    if(title in {'':0,'gtitle':0}) {
+        if(gl.title=='')
+            gd.gtitle=hoverBox(gd, gl.width/4, gl.margin.t/2-16/2, gl.width/2, 16)
+        else
+            gd.gtitle=gd.paper.text(gl.width/2,gl.margin.t/2,gl.title)
+                .attr({'font-size':16})
+        gd.gtitle.dblclick(function(){autoGrowInput(gd,'gtitle', gl, 'title', {});});
+    }
+}
+
+function hoverBox(gd,l,t,w,h) {
+    box=gd.paper.rect(l,t,w,h)
+            .attr({'stroke':'','fill':'rgba(0,0,0,0)'})
+            .hover(function(){this.attr('stroke','rgba(0,0,0,0.5)');},
+                function(){this.attr('stroke','rgba(0,0,0,0)');});
+    box.node.style.cursor='text';
+    return box;
 }
 
 function updateObject(i,up) {
@@ -391,6 +415,128 @@ function pauseEvent(e){
     e.cancelBubble=true;
     e.returnValue=false;
     return false;
+}
+
+// auto-grow text input field, for editing graph items
+// from http://jsbin.com/ahaxe, heavily edited
+// to grow centered, set o.center!=0
+// el is the raphael element containing the edited text (eg gd.xtitle)
+// cont is the location the value is stored (eg gd.layout.xaxis)
+// prop is the property name in that container (eg 'title')
+// o is the settings for the input box (can be left blank to use defaults below)
+// This is a bit ugly... but it's the only way I could find to pass in the element
+// (and layout var) totally by reference...
+function autoGrowInput(gd,el,cont,prop,o) {
+    // if box is initially empty, it's a hover box so we can't grab its properties:
+    // so make a dummy element to get the right properties; it will be deleted
+    // immediately after grabbing properties.
+    if($.trim(cont[prop])=='') {
+        gd[el].remove();
+        cont[prop]='l'; // very narrow string, so we can ignore its width
+        makeTitles(gd,el);
+        cont[prop]='';
+    }
+    
+    o = $.extend({
+        maxWidth: 1000,
+        minWidth: 20,
+        comfortZone: gd[el].attr('font-size')+3,
+        center: 1
+    }, o);
+
+    var elTstr=gd[el].transform(),
+        elFs=gd[el].attr('font-size'),
+        elX=gd[el].attr('x'),
+        elY=gd[el].attr('y');
+
+    var inbox=document.createElement('input'),
+        pos=$(gd[el].node).position(),
+        gpos=$(gd.paperDOM).position(),
+        bbox=gd[el].getBBox();
+
+    $(gd).prepend(inbox);
+    var input=$(inbox);
+    
+    input.css({
+        position:'absolute',
+        top: ((elTstr.length>0 && elTstr[0][0]=='r' && elTstr[0][1]!=0) ?
+            (bbox.height-bbox.width)/2 : 0) + pos.top + gpos.top - 4,
+        left: pos.left + gpos.left - 4, // shouldn't hard-code these -4's, but can't figure out how to determine them
+        'z-index':6000,
+        // not sure how many of these are needed, but they don't seem to hurt...
+        //TODO: this can't find the right vals if the box is blank...
+        fontSize: gd[el].attr('font-size'),
+        fontFamily: gd[el].attr('font-family'),
+        fontWeight: gd[el].attr('font-weight'),
+        fontStyle: gd[el].attr('font-style'),
+        fontStretch: gd[el].attr('font-stretch'),
+        fontVariant: gd[el].attr('font-variant'),
+        letterSpacing: gd[el].attr('letter-spacing'),
+        wordSpacing: gd[el].attr('word-spacing')
+    });
+    input.val($.trim(cont[prop]));
+
+    var minWidth = o.minWidth || input.width(),
+        val = input.val(),
+        testSubject = $('<tester/>').css({
+            position: 'absolute',
+            top: -9999,
+            left: -9999,
+            width: 'auto',
+            fontSize: input.css('fontSize'),
+            fontFamily: input.css('fontFamily'),
+            fontWeight: input.css('fontWeight'),
+            fontStyle: input.css('fontStyle'),
+            fontStretch: input.css('fontStretch'),
+            fontVariant: input.css('fontVariant'),
+            letterSpacing: input.css('letterSpacing'),
+            wordSpacing: input.css('wordSpacing'),
+            whiteSpace: 'nowrap'
+        });
+    testSubject.insertAfter(input);
+    testSubject.html(escaped(val));
+    input.width(Math.max(testSubject.width()*1.2+o.comfortZone,minWidth));
+
+    var left0=input.position().left+(input.width()/2);
+    
+    // take away the existing one as soon as the input box is made
+    gd[el].remove()
+    inbox.select();
+    
+    input.bind('keyup keydown blur update',function(e) {
+        var valold=val;
+        val=input.val();
+        
+        // leave the input or press return: accept the change
+        if((e.type=='blur') || (e.type=='keydown' && e.which==13)) {
+            cont[prop]=$.trim(val);
+            makeTitles(gd,el);
+            input.remove();
+        }
+        // press escape: revert the change
+        else if(e.type=='keydown' && e.which==27) {
+            input.remove();
+        }
+        // otherwise, if no change to val, stop
+        if(val === valold) return;
+
+        // Enter new content into testSubject
+        testSubject.html(escaped(val));
+
+        // Calculate new width + whether to change
+        var newWidth = Math.max(testSubject.width()+o.comfortZone,minWidth),
+            currentWidth = input.width();
+
+        // Animate width
+        if((newWidth < currentWidth && newWidth >= minWidth) || (newWidth > minWidth && newWidth < o.maxWidth)) {
+            if(o.center!=0) input.css('left', left0-newWidth/2);//input.position().left+(currentWidth-newWidth)/2);
+            input.width(newWidth);
+        }
+    });
+}
+
+function escaped(val) {
+    return val.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\s/g, '&nbsp;');
 }
 
 // autoscale one axis
