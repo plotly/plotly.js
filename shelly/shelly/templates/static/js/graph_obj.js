@@ -185,13 +185,13 @@ function newPlot(divid, layout) {
     gd.innerHTML='';
 
     // Get the layout info (this is the defaults)
-    gd.layout={title:'Damped Oscillators',
+    gd.layout={title:'Title',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'Time',unit:'ms'},
+            title:'x-axis',unit:'(double-click to edit)'},
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'Response',unit:'mV'},
+            title:'y-axis',unit:'(double-click to edit)'},
         width:750,
         height:500,
         margin:{l:50,r:10,t:30,b:40,pad:2},
@@ -349,7 +349,7 @@ function drawMenu(gd, menutype){
     var menudiv=document.createElement('div');
     $(gd).prepend(menudiv).css({'position':'relative'});
     right=3500;
-    $(menudiv).css({'position':'absolute','top':0,'right':350,'z-index':5000})
+    $(menudiv).css({'position':'absolute','top':0,'right':180,'z-index':5000})
     menudiv.id='mdiv-'+gd.id;
     if(menutype != 'grid' && menutype != 'script'){menutype='graph'};
     // capitalize 'script' or 'grid' or 'graph'
@@ -865,11 +865,11 @@ function saveGraphResp(res) {
 }
 
 function shareGraph(divid){
-    alert(divid);
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
     if(typeof gd.fileid !='string') gd.fileid='';
     //if(gd.fileid==''){saveGraph(divid); shareGraph(divid);}
-    url='http://plot.ly/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fileid;
+    //url='http://plot.ly/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fileid;
+    url='http://plot.ly/edwardtufte/3/'
     $('#linktoshare').val(url);
     $('#linkModal').modal('toggle');
     document.getElementById("linktoshare").select();
