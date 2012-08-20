@@ -349,7 +349,7 @@ function drawMenu(gd, menutype){
     var menudiv=document.createElement('div');
     $(gd).prepend(menudiv).css({'position':'relative'});
     right=3500;
-    $(menudiv).css({'position':'absolute','top':0,'right':180,'z-index':5000})
+    $(menudiv).css({'position':'absolute','top':0,'right':350,'z-index':5000})
     menudiv.id='mdiv-'+gd.id;
     if(menutype != 'grid' && menutype != 'script'){menutype='graph'};
     // capitalize 'script' or 'grid' or 'graph'
