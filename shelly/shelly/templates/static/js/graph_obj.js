@@ -349,7 +349,7 @@ function drawMenu(gd, menutype){
     var menudiv=document.createElement('div');
     $(gd).prepend(menudiv).css({'position':'relative'});
     right=3500;
-    $(menudiv).css({'position':'absolute','top':0,'right':350,'z-index':5000})
+    $(menudiv).css({'position':'absolute','top':0,'right':180,'z-index':5000})
     menudiv.id='mdiv-'+gd.id;
     if(menutype != 'grid' && menutype != 'script'){menutype='graph'};
     // capitalize 'script' or 'grid' or 'graph'
@@ -368,7 +368,7 @@ function drawMenu(gd, menutype){
         "<li><a href='#' onclick='addTab(\"" + 'script' + "\")'><i class='icon-python'></i> New Script</a></li>" +
         "<li><a href='#' onclick='addTab(\"" + 'grid' + "\")'><i class='icon-th'></i> New Grid</a></li>" +
         "<li class='divider'></li>" +
-        "<li><a href='#' class='cmdlntog' onclick='togCmdLn()' data-state='hide'><i class='icon-scipy'></i> Show NumPy</a></li>" +
+        "<li><a href='#' class='cmdlntog' onclick='togCmdLn()' data-state='hide'><i class='icon-scipy'></i> Command-Line</a></li>" +
         "<li><a href='#' class='filewelltog' onclick='togFileWell()' data-state='hide'><i class='icon-file'></i> Show Files</a></li>" +
         //"<li><a href='/remote'><i class='icon-globe'></i> Remote Sensing</a></li>" +
         //"<li><a href='/examples'><i class='icon-info-sign'></i> Examples</a></li>" +
