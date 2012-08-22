@@ -348,9 +348,11 @@ function drawMenu(gd, menutype){
     // add the graph menu
     var menudiv=document.createElement('div');
     $(gd).prepend(menudiv).css({'position':'relative'});
-    right=3500;
-    $(menudiv).css({'position':'absolute','top':0,'right':180,'z-index':5000})
+    right=140;
+    if($('#filewell').css('display')=='block'){right=340;}
+    $(menudiv).css({'position':'absolute','top':0,'right':right,'z-index':5000})
     menudiv.id='mdiv-'+gd.id;
+    $(menudiv).addClass('cogmenus');
     if(menutype != 'grid' && menutype != 'script'){menutype='graph'};
     // capitalize 'script' or 'grid' or 'graph'
     menutypeupper=menutype.charAt(0).toUpperCase()+menutype.substr(1);
@@ -829,9 +831,13 @@ function saveScript(divid){
 }
 
 function saveScriptResp(res){
-    res=JSON.parse(res);                                                                                                                                        err=res.err;
-    if(err!='') alert(err);                                                                                                                                     fn=res['fn'];                                                                                                                                               fid=res['fid'].toString(); 
+    res=JSON.parse(res);
+    err=res.err;
+    if(err!='') alert(err);
+    fn=res['fn'];
+    fid=res['fid'].toString(); 
     $("#privatetree").jstree("create", null, "last", {"data":fn, "attr":{"id":fid, "rel":"script"} });
+    togFileWell("show");
 }
 
 // ----------------------------------------------------
@@ -862,6 +868,7 @@ function saveGraphResp(res) {
     if(resJ.err != '') alert(resJ.err);
     if(resJ.fid != '') $("#privatetree").jstree("create", null, "last",
         {"data":resJ.fn, "attr":{"id":resJ.fid, "rel":"graph"} });
+    togFileWell("show");
 }
 
 function shareGraph(divid){
