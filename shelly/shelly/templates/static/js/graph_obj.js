@@ -792,9 +792,13 @@ function saveScript(divid){
 }
 
 function saveScriptResp(res){
-    res=JSON.parse(res);                                                                                                                                        err=res.err;
-    if(err!='') alert(err);                                                                                                                                     fn=res['fn'];                                                                                                                                               fid=res['fid'].toString(); 
+    res=JSON.parse(res);
+    err=res.err;
+    if(err!='') alert(err);
+    fn=res['fn'];
+    fid=res['fid'].toString(); 
     $("#privatetree").jstree("create", null, "last", {"data":fn, "attr":{"id":fid, "rel":"script"} });
+    togFileWell("show");
 }
 
 // ----------------------------------------------------
@@ -825,6 +829,7 @@ function saveGraphResp(res) {
     if(resJ.err != '') alert(resJ.err);
     if(resJ.fid != '') $("#privatetree").jstree("create", null, "last",
         {"data":resJ.fn, "attr":{"id":resJ.fid, "rel":"graph"} });
+    togFileWell("show");
 }
 
 function shareGraph(divid){
