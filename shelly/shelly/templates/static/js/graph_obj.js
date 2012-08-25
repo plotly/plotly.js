@@ -185,13 +185,13 @@ function newPlot(divid, layout) {
     gd.innerHTML='';
 
     // Get the layout info (this is the defaults)
-    gd.layout={title:'Title',
+    gd.layout={title:'Damped Oscillators',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'x-axis',unit:'(double-click to edit)'},
+            title:'Time',unit:'ms'},
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'y-axis',unit:'(double-click to edit)'},
+            title:'Response',unit:'mV'},
         width:750,
         height:500,
         margin:{l:50,r:10,t:30,b:40,pad:2},
@@ -342,43 +342,6 @@ function newPlot(divid, layout) {
         pauseEvent(e);
     }
     drawMenu(gd);
-}
-
-function drawMenu(gd, menutype){
-    // add the graph menu
-    var menudiv=document.createElement('div');
-    $(gd).prepend(menudiv).css({'position':'relative'});
-    right=3500;
-    $(menudiv).css({'position':'absolute','top':0,'right':350,'z-index':5000})
-    menudiv.id='mdiv-'+gd.id;
-    if(menutype != 'grid' && menutype != 'script'){menutype='graph'};
-    // capitalize 'script' or 'grid' or 'graph'
-    menutypeupper=menutype.charAt(0).toUpperCase()+menutype.substr(1);
-
-    menudiv.innerHTML=
-	"<ul class='nav nav-pills' style='width: 50px;'><li class='dropdown' id='menu-" + gd.id + "'>" +
-        "<a class='dropdown-toggle' data-toggle='dropdown' href='#menu-" + gd.id + "'>" +
-        "<img src='/static/bootstrap/img/png/glyphicons_019_cogwheel.png'/>" +	
-	"<b class='caret'></b></a><ul class='dropdown-menu' style='width:0px'>" +
-        "<li><a href='#' onclick='save"+menutypeupper+"(\"" + gd.id + "\")'><i class='icon-download-alt'></i> Save "+menutypeupper+"</a></li>" +
-        "<li><a href='#' onclick='share"+menutypeupper+"(\"" + gd.id + "\")'><i class='icon-share'></i> Share "+menutypeupper+"</a></li>" +
-        //"<li><a href='http://www.stat.colostate.edu/~estep/bike/bikelaws.pdf' onclick='exportGraph()' download='oscilloscope_response'><i class='icon-download'></i> PDF Export</a></li>" +
-        "<li><a href='http://ec2-107-21-79-83.compute-1.amazonaws.com/static/img/damped_oscillators.pdf' download='damped_oscillators'><i class='icon-download'></i> PDF Export</a></li>" +
-        "<li class='divider'></li>" +
-        "<li><a href='#' onclick='addTab(\"" + 'script' + "\")'><i class='icon-python'></i> New Script</a></li>" +
-        "<li><a href='#' onclick='addTab(\"" + 'grid' + "\")'><i class='icon-th'></i> New Grid</a></li>" +
-        "<li class='divider'></li>" +
-        "<li><a href='#' class='cmdlntog' onclick='togCmdLn()' data-state='hide'><i class='icon-scipy'></i> Show NumPy</a></li>" +
-        "<li><a href='#' class='filewelltog' onclick='togFileWell()' data-state='hide'><i class='icon-file'></i> Show Files</a></li>" +
-        //"<li><a href='/remote'><i class='icon-globe'></i> Remote Sensing</a></li>" +
-        //"<li><a href='/examples'><i class='icon-info-sign'></i> Examples</a></li>" +
-        "</ul></li></ul>";
-
-    return(menudiv);
-
-//        "<li><a href='#' onclick='saveGraph(\"" + gd.id + "\")'><i class='icon-share-alt' style='width:20px; height:20px;'></i> Save Graph</a></li>" +
-//        "<li><a href='#' id='cmdlntog' onclick='togCmdLn()' data-state='hide'><img src='/static/img/scipyshiny_small.png' style='display:inline'/> Show Numpy</a></li>" +
-//    "</ul></li></ul>";
 }
 
 function makeTitles(gd,title) {
@@ -865,11 +828,11 @@ function saveGraphResp(res) {
 }
 
 function shareGraph(divid){
+    alert(divid);
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
     if(typeof gd.fileid !='string') gd.fileid='';
     //if(gd.fileid==''){saveGraph(divid); shareGraph(divid);}
-    //url='http://plot.ly/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fileid;
-    url='http://plot.ly/edwardtufte/3/'
+    url='http://plot.ly/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fileid;
     $('#linktoshare').val(url);
     $('#linkModal').modal('toggle');
     document.getElementById("linktoshare").select();
