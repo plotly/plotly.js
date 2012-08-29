@@ -714,35 +714,85 @@ function y0Drag(dx,dy) {
 
 // if ticks are set to automatic, determine the right values (tick0,dtick)
 // in any case, return how many digits to round tick labels to
-// for dates, return the formatting of the tick labels
+// for dates, return the formatting of the tick labels, in $.datepicker format
 // TODO: extension for the axis label to show omitted date parts? extend first or last tick label?
 function autoTicks(a) {
+    var nt=10; // max number of ticks to display
+    var rt=Math.abs(a.range[1]-a.range[0])/nt; // min tick spacing
+    var base;
     if(a.isdate){
         if(a.autotick){
-            var r=Math.abs(a.range[1]-a.range[0]);
-            // TODO: finish this section!!!
             a.tick0=new Date('2000-01-01 00:00:00').getTime();
-            a.dtick='M1';
-            return 'M yy'; // jquery datepicker formatter
-        }        
+            if(rt>1000*3600*24*365.25/2){ // years if rt>6mo
+                rt/=1000*3600*24*365.25;
+                var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+                a.dtick='M'+String(12*rtexp*roundUp(rt/rtexp,[2,5,10]));
+                a.tickround='y';
+            }
+            else if(rt>1000*3600*24*14){ // months if rt>2wk
+                base=1000*3600*24*365.25/12;
+                a.dtick='M'+roundUp(rt/base,[1,2,3,6]);
+                a.tickround='m';
+            }
+            else if(rt>1000*3600*12){ // days if rt>12h
+                base=1000*3600*24;
+                a.tick0=new Date('2000-01-02 00:00:00').getTime(); // get week ticks on sunday
+                a.dtick=base*roundUp(rt/base,[1,2,3,7,14]); // 2&3 days are weird. but need something btwn 1,7
+                a.tickround='d';
+            }
+            else if(rt>1000*1800){ // hours if rt>30m
+                base=1000*3600;
+                a.dtick=base*roundUp(rt/base,[1,2,3,6,12]);
+                a.tickround='H';
+            }
+            else if(rt>1000*30){ // minutes if rt>30sec
+                base=60000;
+                a.dtick=base*roundUp(rt/base,[1,2,5,10,15,30]);
+                a.tickround='M';
+            }
+            else if(rt>500){ // seconds if rt>0.5sec
+                base=1000;
+                a.dtick=base*roundUp(rt/base,[1,2,5,10,15,30]);
+                a.tickround='S';
+            }
+            else { //milliseconds
+                var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+                a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
+                a.tickround=Math.pow(10,3-Math.round(Math.log(a.dtick/2)/Math.LN10));
+            }
+        }
     }
     else{
         if(a.autotick){
             // auto ticks always start at 0
             a.tick0=0;
-            var nt=10; // max number of ticks to display
-            var rt=Math.abs(a.range[1]-a.range[0])/nt;
             var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-            var rtmantissa=rt/rtexp;
-            
-            // round tick spacing up 1-2->2, 2-5->5, 5-10->10
-            if(rtmantissa>5) a.dtick=rtexp*10;
-            else if(rtmantissa>2) a.dtick=rtexp*5;
-            else a.dtick=rtexp*2;
+//             var rtmantissa=rt/rtexp;
+//             
+//             // round tick spacing up 1-2->2, 2-5->5, 5-10->10
+//             if(rtmantissa>5) a.dtick=rtexp*10;
+//             else if(rtmantissa>2) a.dtick=rtexp*5;
+//             else a.dtick=rtexp*2;
+            a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
         }
         //round tick labels to 2 digits past largest digit of dtick
-        return Math.pow(10,2-Math.round(Math.log(a.dtick)/Math.LN10));
+        a.tickround=Math.pow(10,2-Math.round(Math.log(a.dtick)/Math.LN10));
     }
+}
+
+// return the smallest element from (sorted) array a that's bigger than val
+// used to find the best tick given the minimum (non-rounded) tick
+// particularly useful for date/time where things are not powers of 10
+// binary search is probably overkill here...
+function roundUp(val,a){
+    var low=0, high=a.length-1, mid;
+    while(low<high){
+        mid=Math.floor((low+high)/2)
+        if(a[mid]<=val) low=mid+1;
+        else high=mid;
+//         console.log(low,high,mid);
+    }
+    return a[low];
 }
 
 // months and years don't have constant millisecond values
@@ -760,6 +810,7 @@ function tickIncrement(x,dtick){
     else throw "unrecognized dtick "+String(dtick);
 }
 
+// calculate the first tick on an axis
 function tickFirst(a){
     if($.isNumeric(a.dtick))
         return Math.ceil((a.range[0]-a.tick0)/a.dtick)*a.dtick+a.tick0;
@@ -773,6 +824,36 @@ function tickFirst(a){
     else throw "unrecognized dtick "+String(a.dtick);
 }
 
+function lpad(val,digits){
+    return String(val+Math.pow(10,digits)).substr(1);
+}
+
+function tickText(a,x){
+    if(a.isdate){
+        var d=new Date(x), suffix='';
+        // suffix completes the full date info, to be included with only the first tick
+        if(x==a.tmin) suffix='\n'+$.datepicker.formatDate('yy', d);
+        if(a.tickround=='y')
+            return $.datepicker.formatDate('yy', d);
+        else if(a.tickround=='m')
+            return $.datepicker.formatDate('M yy', d);
+        else if(a.tickround=='d')
+            return $.datepicker.formatDate('M d', d)+suffix;
+        else if(a.tickround=='H')
+            return $.datepicker.formatDate('M d', d)+' '+lpad(d.getHours(),2)+'h'+suffix;
+        else {
+            if(x==a.tmin) suffix='\n'+$.datepicker.formatDate('M d, yy', d);
+            var out=lpad(d.getHours(),2)+':'+lpad(d.getMinutes(),2);
+            if(a.tickround=='M') return out+suffix;
+            out+=':'+lpad(d.getSeconds(),2);
+            if(a.tickround=='S') return out+suffix;
+            return out+String(Math.round(((x/1000)%1)*a.tickround)/a.tickround).substr(1)+suffix;
+        }
+    }
+    else
+        return String(Math.round(x*a.tickround)/a.tickround);
+}
+
 function doXTicks(gd) {
     if(typeof gd.xticks != 'undefined') {gd.xticks.remove();gd.xlabels.remove();}
     var gl=gd.layout;
@@ -780,8 +861,8 @@ function doXTicks(gd) {
     var a=gl.xaxis;
     var y1=gl.height-gm.b+gm.pad;
     
-    var tickround=autoTicks(a);
-    a.tickround=tickround;
+    autoTicks(a);
+//     a.tickround=tickround;
     
     // ticks
     gd.paper.setStart();
@@ -794,11 +875,8 @@ function doXTicks(gd) {
     
     // tick labels
     gd.paper.setStart();
-    for(x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
-        gd.paper.text(gm.l+a.m*x+a.b, y1+a.ticklen,
-            (a.isdate)
-                ? '\n'+$.datepicker.formatDate(tickround, new Date(x))
-                : '\n'+Math.round(x*tickround)/tickround)}
+    for(x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
+        gd.paper.text(gm.l+a.m*x+a.b, y1+a.ticklen, '\n'+tickText(a,x));
     gd.xlabels=gd.paper.setFinish();
     gd.xlabels.attr({'font-size':12});
 }
@@ -810,24 +888,21 @@ function doYTicks(gd) {
     var a=gl.yaxis;
     var x1=gm.l-gm.pad;
 
-    var tickround=autoTicks(a);
+    autoTicks(a);
     
     // ticks
     gd.paper.setStart();
     a.m=gd.plotheight/(a.range[0]-a.range[1]);
     a.b=-a.m*a.range[1];
     a.tmin=tickFirst(a);
-    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
-        gd.paper.path(Raphael.format('M{0},{1}h{2}', x1, gm.t+a.m*x+a.b, -a.ticklen))}
+    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
+        gd.paper.path(Raphael.format('M{0},{1}h{2}', x1, gm.t+a.m*x+a.b, -a.ticklen));
     gd.yticks=gd.paper.setFinish();
 
     // tick labels
     gd.paper.setStart();
-    for(x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
-        gd.paper.text(x1-a.ticklen, gm.t+a.m*x+a.b,
-            (a.isdate)
-                ? $.datepicker.formatDate(tickround, new Date(x))
-                : String(Math.round(x*tickround)/tickround))}
+    for(x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
+        gd.paper.text(x1-a.ticklen, gm.t+a.m*x+a.b,tickText(a,x));
     gd.ylabels=gd.paper.setFinish();
     gd.ylabels.attr({'font-size':12,'text-anchor':'end'});
 }
@@ -836,9 +911,9 @@ function doXGrid(gd) { // assumes doXticks has been called recently, to set m an
     if(typeof gd.xgrid != 'undefined') {gd.xgrid.remove();}
     var a=gd.layout.xaxis;
     gd.plot.setStart();
-    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
+    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
         gd.plot.path(Raphael.format('M{0},{1}v{2}',a.m*x+a.b+gd.viewbox.x,
-            gd.viewbox.y-screen.height,gd.plotheight+2*screen.height))}
+            gd.viewbox.y-screen.height,gd.plotheight+2*screen.height));
     gd.xgrid=gd.plot.setFinish();
     gd.xgrid.attr({'stroke':'#ccc'}).toBack().drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
     gd.plotbg.toBack();
@@ -848,9 +923,9 @@ function doYGrid(gd) { // assumes doYticks has been called recently, to set m an
     if(typeof gd.ygrid != 'undefined') {gd.ygrid.remove();}
     var a=gd.layout.yaxis;
     gd.plot.setStart();
-    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
+    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
         gd.plot.path(Raphael.format('M{0},{1}h{2}',gd.viewbox.x-screen.width,
-            a.m*x+a.b+gd.viewbox.y,gd.plotwidth+2*screen.width))}
+            a.m*x+a.b+gd.viewbox.y,gd.plotwidth+2*screen.width));
     gd.ygrid=gd.plot.setFinish();
     gd.ygrid.attr({'stroke':'#ccc'}).toBack().drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
     gd.plotbg.toBack();
