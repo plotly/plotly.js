@@ -42,6 +42,12 @@ function plot(divid, data, layout) {
     y: (float array), or y0:(float) and dy:(float)
         if neither y, y0, or dy exists, defaults to y0:0, dy:1
         you may provide x and/or y arrays, but not neither
+    
+    All of these can also be date strings, in the format 'YYYY-mm-dd HH:MM:SS'
+    This format can handle anything from year 0 to year 9999, but the underlying JS
+    can extend this to year -271820 to 275760 
+    based on converting to ms since start of 1970 for plotting
+    could at some point extend beyond 0-9999 limitation...
 
     marker: (object):
         symbol: (string) circle (default)
@@ -87,7 +93,7 @@ function plot(divid, data, layout) {
 
     var gl=gd.layout, vb=gd.viewbox, gdd=gd.data, gp=gd.plot;
     var xa=gl.xaxis, ya=gl.yaxis, xdr=gl.xaxis.drange, ydr=gl.yaxis.drange;
-    var x, xy, y, i, serieslen;
+    var x, xy, y, i, serieslen, dcnt, ncnt, v0, dv, gdc;
     xdr=[null,null];
     ydr=[null,null];
 
@@ -98,30 +104,44 @@ function plot(divid, data, layout) {
         gdd[curve].drawing={};
     }
 
+    // figure out if axes are dates
+    // use the first trace only.
+    // If the axis has data, see whether more looks like dates or like numbers
+    // If it has x0 & dx (etc), go by x0 (if x0 is a date and dx is a number, perhaps guess days?)
+    // If it has none of these, it will default to x0=0, dx=1, so choose number
+    if(!isBoolean(xa.isdate) && (gdd.length>0))
+        xa.isdate = ('x' in gdd[0]) ? moreDates(gdd[0].x) : (isDateTime(gdd[0].x0)===true);
+
+    if(!isBoolean(ya.isdate) && (gdd.length>0))
+        ya.isdate = ('y' in gdd[0]) ? moreDates(gdd[0].y) : (isDateTime(gdd[0].y0)===true);
+
     // plot all the data
     // go through all the data twice, first for finding the range, second for plotting
     for(iter=Math.max(xa.autorange,ya.autorange)?0:1; iter<2; iter++) {
-        for(curve in gdd) { 
-            if('color' in gdd[curve]) color=gdd[curve].color;
+        for(curve in gdd) {
+            gdc=gdd[curve];
+            if('color' in gdc) color=gdc.color;
             else color=defaultColors[curve % defaultColors.length];
             
             //default type is scatter
-            if(!('type' in gdd[curve]) || (gdd[curve].type=='scatter')) {
+            if(!('type' in gdc) || (gdc.type=='scatter')) {
                 // verify that data exists, and make scaled data if necessary
-                if(!('y' in gdd[curve]) && !('x' in gdd[curve])) continue; // no data!
+                if(!('y' in gdc) && !('x' in gdc)) continue; // no data!
                 
-                if('y' in gdd[curve]) y=gdd[curve].y;
-                else if(!('y0' in gdd[curve]) && !('dy' in gdd[curve])) continue; // no scaling!
+                if('y' in gdc) y=convertIfDate(gdc.y,ya.isdate);
                 else {
+                    v0 = ('y0' in gdc) ? convertIfDate(gdc.y0, ya.isdate) : 0;
+                    dv = ('dy' in gdc) ? convertIfDate(gdc.dy, ya.isdate) : 1;
                     y=[];
-                    for(i in x) y.push(gdd[curve].y0+i*gdd[curve].dy);
+                    for(i in x) y.push(v0+i*dv);
                 }
     
-                if('x' in gdd[curve]) x=gdd[curve].x;
-                else if(!('x0' in gdd[curve]) && !('dx' in gdd[curve])) continue; // no scaling!
+                if('x' in gdc) x=convertIfDate(gdc.x,xa.isdate);
                 else {
+                    v0 = ('x0' in gdc) ? convertIfDate(gdc.x0, xa.isdate) : 0;
+                    dv = ('dx' in gdc) ? convertIfDate(gdc.dx, xa.isdate) : 1;
                     x=[];
-                    for(i in y) x.push(gdd[curve].x0+i*gdd[curve].dx);
+                    for(i in y) x.push(v0+i*dv);
                 }
                 serieslen=Math.min(x.length,y.length);
                 if(iter==0) {
@@ -139,8 +159,8 @@ function plot(divid, data, layout) {
                         		xa.b+xa.m*x[i]+vb.x,ya.b+ya.m*y[i]+vb.y));
                         }
                     }
-                    gdd[curve].drawing['lines']=gp.setFinish();
-                    gdd[curve].drawing['lines'].attr({'stroke':color});
+                    gdc.drawing['lines']=gp.setFinish();
+                    gdc.drawing['lines'].attr({'stroke':color});
                     
                     // points
                     gp.setStart();
@@ -148,8 +168,8 @@ function plot(divid, data, layout) {
                     	if($.isNumeric(x[i]) && $.isNumeric(y[i]))
 	                    	gp.circle(xa.b+xa.m*x[i]+vb.x,ya.b+ya.m*y[i]+vb.y,3);
                     }
-                    gdd[curve].drawing['points']=gp.setFinish();
-                    gdd[curve].drawing['points'].attr({'fill':color,'stroke-width':0});
+                    gdc.drawing['points']=gp.setFinish();
+                    gdc.drawing['points'].attr({'fill':color,'stroke-width':0});
                 }
             }
         }
@@ -170,6 +190,30 @@ function aggNums(f,v,a,len) {
 	var r=($.isNumeric(v)) ? v : null;
 	for(var i=0; i<len; i++) if($.isNumeric(a[i])) r=($.isNumeric(r)) ? f(r,a[i]) : a[i];
 	return r;
+}
+
+// does the array a have more dates than numbers?
+// note: some values can be neither (such as blanks, text)
+// 2- or 4-digit integers can be both (though if all the data set has is such
+// integers, it will stick with numeric to break the symmetry)
+function moreDates(a) {
+    var dcnt=0, ncnt=0;
+    for(var i in a) {
+        if(isDateTime(a[i])) dcnt+=1;
+        if($.isNumeric(a[i])) ncnt+=1;
+    }
+    return (dcnt>ncnt);
+}
+
+// if isdate, convert value (or all values) from dates to milliseconds
+function convertIfDate(o,isdate){
+    if(!isdate) return o;
+    if($.isArray(o)){
+        var r=[];
+        for(i in o) r.push(DateTime2ms(o[i]));
+        return r;
+    }
+    else return DateTime2ms(o);
 }
 
 // ----------------------------------------------------
@@ -614,61 +658,53 @@ function yDrag(dx,dy) {
 
 function nwDrag(dx,dy) {
     var gx=this.layout.xaxis, gy=this.layout.yaxis;
-    var pw=this.plotwidth, ph=this.plotheight;
-    gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx/pw);
-    gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy/ph);
+    gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx/this.plotwidth);
+    gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy/this.plotheight);
     dragTail(this);
 }
 
 function neDrag(dx,dy) {
     var gx=this.layout.xaxis, gy=this.layout.yaxis;
-    var pw=this.plotwidth, ph=this.plotheight;
-    gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx/pw);
-    gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy/ph);
+    gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx/this.plotwidth);
+    gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy/this.plotheight);
     dragTail(this);
 }
 
 function swDrag(dx,dy) {
     var gx=this.layout.xaxis, gy=this.layout.yaxis;
-    var pw=this.plotwidth, ph=this.plotheight;
-    gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx/pw);
-    gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy/ph);
+    gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx/this.plotwidth);
+    gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy/this.plotheight);
     dragTail(this);
 }
 
 function seDrag(dx,dy) {
     var gx=this.layout.xaxis, gy=this.layout.yaxis;
-    var pw=this.plotwidth, ph=this.plotheight;
-    gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx/pw);
-    gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy/ph);
+    gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx/this.plotwidth);
+    gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy/this.plotheight);
     dragTail(this);
 }
 
 function x0Drag(dx,dy) {
     var ga=this.layout.xaxis;
-    var pw=this.plotwidth;
-    ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(dx/pw);
+    ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(dx/this.plotwidth);
     dragTail(this);
 }
 
 function x1Drag(dx,dy) {
     var ga=this.layout.xaxis;
-    var pw=this.plotwidth;
-    ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(-dx/pw);
+    ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(-dx/this.plotwidth);
     dragTail(this);
 }
 
 function y1Drag(dx,dy) {
     var ga=this.layout.yaxis;
-    var ph=this.plotheight;
-    ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(dy/ph);
+    ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(dy/this.plotheight);
     dragTail(this);
 }
 
 function y0Drag(dx,dy) {
     var ga=this.layout.yaxis;
-    var ph=this.plotheight;
-    ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(-dy/ph);
+    ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(-dy/this.plotheight);
     dragTail(this);
 }
 
@@ -678,22 +714,63 @@ function y0Drag(dx,dy) {
 
 // if ticks are set to automatic, determine the right values (tick0,dtick)
 // in any case, return how many digits to round tick labels to
+// for dates, return the formatting of the tick labels
+// TODO: extension for the axis label to show omitted date parts? extend first or last tick label?
 function autoTicks(a) {
-    if(a.autotick) {
-        // auto ticks always start at 0
-        a.tick0=0;
-        var nt=10; // max number of ticks to display
-        var rt=Math.abs(a.range[1]-a.range[0])/nt;
-        var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-        var rtmantissa=rt/rtexp;
-        
-        // round tick spacing up 1-2->2, 2-5->5, 5-10->10
-        if(rtmantissa>5) a.dtick=rtexp*10;
-        else if(rtmantissa>2) a.dtick=rtexp*5;
-        else a.dtick=rtexp*2;
+    if(a.isdate){
+        if(a.autotick){
+            var r=Math.abs(a.range[1]-a.range[0]);
+            // TODO: finish this section!!!
+            a.tick0=new Date('2000-01-01 00:00:00').getTime();
+            a.dtick='M1';
+            return 'M yy'; // jquery datepicker formatter
+        }        
     }
-    //round tick labels to 2 digits past largest digit of dtick
-    return Math.pow(10,2-Math.round(Math.log(a.dtick)/Math.LN10));
+    else{
+        if(a.autotick){
+            // auto ticks always start at 0
+            a.tick0=0;
+            var nt=10; // max number of ticks to display
+            var rt=Math.abs(a.range[1]-a.range[0])/nt;
+            var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+            var rtmantissa=rt/rtexp;
+            
+            // round tick spacing up 1-2->2, 2-5->5, 5-10->10
+            if(rtmantissa>5) a.dtick=rtexp*10;
+            else if(rtmantissa>2) a.dtick=rtexp*5;
+            else a.dtick=rtexp*2;
+        }
+        //round tick labels to 2 digits past largest digit of dtick
+        return Math.pow(10,2-Math.round(Math.log(a.dtick)/Math.LN10));
+    }
+}
+
+// months and years don't have constant millisecond values
+// (but a year is always 12 months so we only need months)
+// numeric ticks always have constant differences, other datetime ticks
+// can all be calculated as constant number of milliseconds
+function tickIncrement(x,dtick){
+    if($.isNumeric(dtick))
+        return x+dtick;
+    else if(dtick.charAt(0)=='M'){
+        var y=new Date(x);
+        // is this browser consistent? setMonth edits a date but returns that date's milliseconds
+        return y.setMonth(y.getMonth()+Number(dtick.substr(1)));
+    }
+    else throw "unrecognized dtick "+String(dtick);
+}
+
+function tickFirst(a){
+    if($.isNumeric(a.dtick))
+        return Math.ceil((a.range[0]-a.tick0)/a.dtick)*a.dtick+a.tick0;
+    else if(a.dtick.charAt(0)=='M'){
+        var mtick=Number(a.dtick.substr(1)), t0=new Date(a.tick0), r0=new Date(a.range[0]);
+        var mdif=(r0.getFullYear()-t0.getFullYear())*12+r0.getMonth()-t0.getMonth()
+        var t1=t0.setMonth(t0.getMonth()+(Math.floor(mdif/mtick)-1)*mtick);
+        while(t1<a.range[0]) t1=tickIncrement(t1,a.dtick);
+        return t1;    
+    }
+    else throw "unrecognized dtick "+String(a.dtick);
 }
 
 function doXTicks(gd) {
@@ -710,16 +787,18 @@ function doXTicks(gd) {
     gd.paper.setStart();
     a.m=gd.plotwidth/(a.range[1]-a.range[0]);
     a.b=-a.m*a.range[0];
-    a.tmin=Math.ceil((a.range[0]-a.tick0)/a.dtick)*a.dtick+a.tick0;
-    for(var x=a.tmin;x<=a.range[1];x+=a.dtick){
+    a.tmin=tickFirst(a);
+    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
         gd.paper.path(Raphael.format('M{0},{1}v{2}', gm.l+a.m*x+a.b, y1, a.ticklen))}
     gd.xticks=gd.paper.setFinish();
     
     // tick labels
     gd.paper.setStart();
-    for(x=a.tmin;x<=a.range[1];x+=a.dtick){
+    for(x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
         gd.paper.text(gm.l+a.m*x+a.b, y1+a.ticklen,
-            Raphael.format('\n{0}', Math.round(x*tickround)/tickround))}
+            (a.isdate)
+                ? '\n'+$.datepicker.formatDate(tickround, new Date(x))
+                : '\n'+Math.round(x*tickround)/tickround)}
     gd.xlabels=gd.paper.setFinish();
     gd.xlabels.attr({'font-size':12});
 }
@@ -737,16 +816,18 @@ function doYTicks(gd) {
     gd.paper.setStart();
     a.m=gd.plotheight/(a.range[0]-a.range[1]);
     a.b=-a.m*a.range[1];
-    a.tmin=Math.ceil((a.range[0]-a.tick0)/a.dtick)*a.dtick+a.tick0;
-    for(var x=a.tmin;x<=a.range[1];x+=a.dtick){
+    a.tmin=tickFirst(a);
+    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
         gd.paper.path(Raphael.format('M{0},{1}h{2}', x1, gm.t+a.m*x+a.b, -a.ticklen))}
     gd.yticks=gd.paper.setFinish();
 
     // tick labels
     gd.paper.setStart();
-    for(x=a.tmin;x<=a.range[1];x+=a.dtick){
+    for(x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
         gd.paper.text(x1-a.ticklen, gm.t+a.m*x+a.b,
-            Raphael.format('{0}',Math.round(x*tickround)/tickround))}
+            (a.isdate)
+                ? $.datepicker.formatDate(tickround, new Date(x))
+                : String(Math.round(x*tickround)/tickround))}
     gd.ylabels=gd.paper.setFinish();
     gd.ylabels.attr({'font-size':12,'text-anchor':'end'});
 }
@@ -755,7 +836,7 @@ function doXGrid(gd) { // assumes doXticks has been called recently, to set m an
     if(typeof gd.xgrid != 'undefined') {gd.xgrid.remove();}
     var a=gd.layout.xaxis;
     gd.plot.setStart();
-    for(var x=a.tmin;x<=a.range[1];x+=a.dtick){
+    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
         gd.plot.path(Raphael.format('M{0},{1}v{2}',a.m*x+a.b+gd.viewbox.x,
             gd.viewbox.y-screen.height,gd.plotheight+2*screen.height))}
     gd.xgrid=gd.plot.setFinish();
@@ -767,7 +848,7 @@ function doYGrid(gd) { // assumes doYticks has been called recently, to set m an
     if(typeof gd.ygrid != 'undefined') {gd.ygrid.remove();}
     var a=gd.layout.yaxis;
     gd.plot.setStart();
-    for(var x=a.tmin;x<=a.range[1];x+=a.dtick){
+    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
         gd.plot.path(Raphael.format('M{0},{1}h{2}',gd.viewbox.x-screen.width,
             a.m*x+a.b+gd.viewbox.y,gd.plotwidth+2*screen.width))}
     gd.ygrid=gd.plot.setFinish();
