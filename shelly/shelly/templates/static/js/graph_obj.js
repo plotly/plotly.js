@@ -104,16 +104,23 @@ function plot(divid, data, layout) {
         gdd[curve].drawing={};
     }
 
-    // figure out if axes are dates
-    // use the first trace only.
-    // If the axis has data, see whether more looks like dates or like numbers
-    // If it has x0 & dx (etc), go by x0 (if x0 is a date and dx is a number, perhaps guess days?)
-    // If it has none of these, it will default to x0=0, dx=1, so choose number
-    if(!isBoolean(xa.isdate) && (gdd.length>0))
-        xa.isdate = ('x' in gdd[0]) ? moreDates(gdd[0].x) : (isDateTime(gdd[0].x0)===true);
-
-    if(!isBoolean(ya.isdate) && (gdd.length>0))
-        ya.isdate = ('y' in gdd[0]) ? moreDates(gdd[0].y) : (isDateTime(gdd[0].y0)===true);
+    if(gdd.length>0){
+        // figure out if axes are dates
+        // use the first trace only.
+        // If the axis has data, see whether more looks like dates or like numbers
+        // If it has x0 & dx (etc), go by x0 (if x0 is a date and dx is a number, perhaps guess days?)
+        // If it has none of these, it will default to x0=0, dx=1, so choose number
+        // -> If not date, figure out if a log axis makes sense, using all axis data 
+        if(!isBoolean(xa.isdate))
+            xa.isdate = ('x' in gdd[0]) ? moreDates(gdd[0].x) : (isDateTime(gdd[0].x0)===true);
+        else if(!isBoolean(xa.islog))
+            xa.islog = loggy(gdd,'x');
+    
+        if(!isBoolean(ya.isdate))
+            ya.isdate = ('y' in gdd[0]) ? moreDates(gdd[0].y) : (isDateTime(gdd[0].y0)===true);
+        else if(!isBoolean(ya.islog))
+            ya.islog = loggy(gdd,'y');
+    }
 
     // plot all the data
     // go through all the data twice, first for finding the range, second for plotting
@@ -205,15 +212,51 @@ function moreDates(a) {
     return (dcnt>ncnt);
 }
 
-// if isdate, convert value (or all values) from dates to milliseconds
-function convertIfDate(o,isdate){
-    if(!isdate) return o;
-    if($.isArray(o)){
-        var r=[];
-        for(i in o) r.push(DateTime2ms(o[i]));
-        return r;
+// does the array look like something that should be plotted on a log axis?
+// it should all be >0 or non-numeric
+// then it should have a range max/min at least 100
+// and at least 1/4 of distinct values <max/10
+function loggy(d,ax) {
+    var vals=[],v,c;
+    var ax2= (ax=='x') ? 'y' : 'x';
+    for(curve in d){
+        c=d[curve];
+        // curve has data: test each numeric point for <=0 and add if unique
+        if(ax in c) {
+            for(i in c[ax]) {
+                v=c[ax][i];
+                if($.isNumeric(v){
+                    if(v<=0) return false;
+                    else if(vals.indexOf(v)<0) vals.push(v);
+                }
+            }
+        }
+        // curve has linear scaling: test endpoints for <=0 and add all points if unique
+        else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
+            if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) return false;
+            for(i in d[curve][ax2]) {
+                v=c[ax+'0']+c['d'+ax]*i;
+                if(vals.indexOf(v)<0) vals.push(v);
+            }
+        }
     }
-    else return DateTime2ms(o);
+    // now look for range and distribution
+    var mx=Math.max.apply(Math,vals), mn=Math.min.apply(Math,vals);
+    return ((mx/mn>=100)&&(vals.sort()[Math.ceil(vals.length/4)]<mx/10);
+}
+
+// if isdate, convert value (or all values) from dates to milliseconds
+// if islog, take the log here
+function convertToAxis(o,a){
+    if(a.isdate||a.islog){
+        if($.isArray(o)){
+            var r=[];
+            for(i in o) r.push(a.isdate ? DateTime2ms(o[i]) : Math.log(o[i])/Math.LN10);
+            return r;
+        }
+        else return a.isdate ? DateTime2ms(o) : Math.log(o)/Math.LN10;
+    }
+    else return o;
 }
 
 // ----------------------------------------------------
