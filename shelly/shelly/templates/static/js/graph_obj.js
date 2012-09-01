@@ -104,16 +104,23 @@ function plot(divid, data, layout) {
         gdd[curve].drawing={};
     }
 
-    // figure out if axes are dates
-    // use the first trace only.
-    // If the axis has data, see whether more looks like dates or like numbers
-    // If it has x0 & dx (etc), go by x0 (if x0 is a date and dx is a number, perhaps guess days?)
-    // If it has none of these, it will default to x0=0, dx=1, so choose number
-    if(!isBoolean(xa.isdate) && (gdd.length>0))
-        xa.isdate = ('x' in gdd[0]) ? moreDates(gdd[0].x) : (isDateTime(gdd[0].x0)===true);
-
-    if(!isBoolean(ya.isdate) && (gdd.length>0))
-        ya.isdate = ('y' in gdd[0]) ? moreDates(gdd[0].y) : (isDateTime(gdd[0].y0)===true);
+    if(gdd.length>0){
+        // figure out if axes are dates
+        // use the first trace only.
+        // If the axis has data, see whether more looks like dates or like numbers
+        // If it has x0 & dx (etc), go by x0 (if x0 is a date and dx is a number, perhaps guess days?)
+        // If it has none of these, it will default to x0=0, dx=1, so choose number
+        // -> If not date, figure out if a log axis makes sense, using all axis data 
+        if(!isBoolean(xa.isdate))
+            xa.isdate = ('x' in gdd[0]) ? moreDates(gdd[0].x) : (isDateTime(gdd[0].x0)===true);
+        if(!xa.isdate && !isBoolean(xa.islog))
+            xa.islog = loggy(gdd,'x');
+    
+        if(!isBoolean(ya.isdate))
+            ya.isdate = ('y' in gdd[0]) ? moreDates(gdd[0].y) : (isDateTime(gdd[0].y0)===true);
+        if(!ya.isdate && !isBoolean(ya.islog))
+            ya.islog = loggy(gdd,'y');
+    }
 
     // plot all the data
     // go through all the data twice, first for finding the range, second for plotting
@@ -128,18 +135,18 @@ function plot(divid, data, layout) {
                 // verify that data exists, and make scaled data if necessary
                 if(!('y' in gdc) && !('x' in gdc)) continue; // no data!
                 
-                if('y' in gdc) y=convertIfDate(gdc.y,ya.isdate);
+                if('y' in gdc) y=convertToAxis(gdc.y,ya);
                 else {
-                    v0 = ('y0' in gdc) ? convertIfDate(gdc.y0, ya.isdate) : 0;
-                    dv = ('dy' in gdc) ? convertIfDate(gdc.dy, ya.isdate) : 1;
+                    v0 = ('y0' in gdc) ? convertToAxis(gdc.y0, ya) : 0;
+                    dv = ('dy' in gdc) ? convertToAxis(gdc.dy, ya) : 1;
                     y=[];
                     for(i in x) y.push(v0+i*dv);
                 }
     
-                if('x' in gdc) x=convertIfDate(gdc.x,xa.isdate);
+                if('x' in gdc) x=convertToAxis(gdc.x,xa);
                 else {
-                    v0 = ('x0' in gdc) ? convertIfDate(gdc.x0, xa.isdate) : 0;
-                    dv = ('dx' in gdc) ? convertIfDate(gdc.dx, xa.isdate) : 1;
+                    v0 = ('x0' in gdc) ? convertToAxis(gdc.x0, xa) : 0;
+                    dv = ('dx' in gdc) ? convertToAxis(gdc.dx, xa) : 1;
                     x=[];
                     for(i in y) x.push(v0+i*dv);
                 }
@@ -205,15 +212,51 @@ function moreDates(a) {
     return (dcnt>ncnt);
 }
 
-// if isdate, convert value (or all values) from dates to milliseconds
-function convertIfDate(o,isdate){
-    if(!isdate) return o;
-    if($.isArray(o)){
-        var r=[];
-        for(i in o) r.push(DateTime2ms(o[i]));
-        return r;
+// does the array look like something that should be plotted on a log axis?
+// it should all be >0 or non-numeric
+// then it should have a range max/min at least 100
+// and at least 1/4 of distinct values <max/10
+function loggy(d,ax) {
+    var vals=[],v,c;
+    var ax2= (ax=='x') ? 'y' : 'x';
+    for(curve in d){
+        c=d[curve];
+        // curve has data: test each numeric point for <=0 and add if unique
+        if(ax in c) {
+            for(i in c[ax]) {
+                v=c[ax][i];
+                if($.isNumeric(v)){
+                    if(v<=0) return false;
+                    else if(vals.indexOf(v)<0) vals.push(v);
+                }
+            }
+        }
+        // curve has linear scaling: test endpoints for <=0 and add all points if unique
+        else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
+            if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) return false;
+            for(i in d[curve][ax2]) {
+                v=c[ax+'0']+c['d'+ax]*i;
+                if(vals.indexOf(v)<0) vals.push(v);
+            }
+        }
     }
-    else return DateTime2ms(o);
+    // now look for range and distribution
+    var mx=Math.max.apply(Math,vals), mn=Math.min.apply(Math,vals);
+    return ((mx/mn>=100)&&(vals.sort()[Math.ceil(vals.length/4)]<mx/10));
+}
+
+// if isdate, convert value (or all values) from dates to milliseconds
+// if islog, take the log here
+function convertToAxis(o,a){
+    if(a.isdate||a.islog){
+        if($.isArray(o)){
+            var r=[];
+            for(i in o) r.push(a.isdate ? DateTime2ms(o[i]) : Math.log(o[i])/Math.LN10);
+            return r;
+        }
+        else return a.isdate ? DateTime2ms(o) : Math.log(o)/Math.LN10;
+    }
+    else return o;
 }
 
 // ----------------------------------------------------
@@ -719,33 +762,33 @@ function y0Drag(dx,dy) {
 function autoTicks(a) {
     var nt=10; // max number of ticks to display
     var rt=Math.abs(a.range[1]-a.range[0])/nt; // min tick spacing
-    var base;
     if(a.isdate){
         if(a.autotick){
+            var base;
             a.tick0=new Date('2000-01-01 00:00:00').getTime();
-            if(rt>1000*3600*24*365.25/2){ // years if rt>6mo
-                rt/=1000*3600*24*365.25;
+            if(rt>15778800000){ // years if rt>6mo
+                rt/=31557600000;
                 var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
                 a.dtick='M'+String(12*rtexp*roundUp(rt/rtexp,[2,5,10]));
                 a.tickround='y';
             }
-            else if(rt>1000*3600*24*14){ // months if rt>2wk
-                base=1000*3600*24*365.25/12;
-                a.dtick='M'+roundUp(rt/base,[1,2,3,6]);
+            else if(rt>1209600000){ // months if rt>2wk
+                rt/=2629800000;
+                a.dtick='M'+roundUp(rt,[1,2,3,6]);
                 a.tickround='m';
             }
-            else if(rt>1000*3600*12){ // days if rt>12h
-                base=1000*3600*24;
+            else if(rt>43200000){ // days if rt>12h
+                base=86400000;
                 a.tick0=new Date('2000-01-02 00:00:00').getTime(); // get week ticks on sunday
-                a.dtick=base*roundUp(rt/base,[1,2,3,7,14]); // 2&3 days are weird. but need something btwn 1,7
+                a.dtick=base*roundUp(rt/base,[1,2,3,7,14]); // 2&3 day ticks are weird, but need something btwn 1,7
                 a.tickround='d';
             }
-            else if(rt>1000*1800){ // hours if rt>30m
-                base=1000*3600;
+            else if(rt>1800000){ // hours if rt>30m
+                base=3600000;
                 a.dtick=base*roundUp(rt/base,[1,2,3,6,12]);
                 a.tickround='H';
             }
-            else if(rt>1000*30){ // minutes if rt>30sec
+            else if(rt>30000){ // minutes if rt>30sec
                 base=60000;
                 a.dtick=base*roundUp(rt/base,[1,2,5,10,15,30]);
                 a.tickround='M';
@@ -762,17 +805,42 @@ function autoTicks(a) {
             }
         }
     }
+    else if(a.islog){
+        if(a.autotick){
+            a.tick0=0;
+            if(rt>0.7){ //only show powers of 10 
+                a.dtick=Math.ceil(rt);
+            }
+            else if(rt*nt<1){ // likely no power of 10 visible
+                // ticks on a linear scale, labeled fully
+                rt=Math.abs(Math.pow(10,a.range[1])-Math.pow(10,a.range[0]))/nt;
+                var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+                a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
+                //round tick labels to 2 digits past largest digit of dtick
+                a.tickround=Math.pow(10,2-Math.round(Math.log(a.dtick)/Math.LN10));
+                a.dtick='L'+String(a.dtick);
+            }
+            else { // include intermediates between powers of 10, labeled with small digits
+                // a.dtick="D2" (show 2 and 5) or "D1" (show all digits)
+                // use a.tickround to store the first tick
+                var vmin=Math.pow(10,Math.min(a.range[1],a.range[0]));
+                var minexp=Math.pow(10,Math.floor(Math.log(vmin)/Math.LN10));
+                if(rt>0.3){
+                    a.dtick='D2';
+                    a.tickround=minexp*roundUp(vmin/minexp,[2,5,10]);
+                }
+                else {
+                    a.dtick='D1';
+                    a.tickround=minexp*roundUp(vmin/minexp,[2,3,4,5,6,7,8,9,10]);
+                }
+            }
+        }
+    }
     else{
         if(a.autotick){
             // auto ticks always start at 0
             a.tick0=0;
             var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-//             var rtmantissa=rt/rtexp;
-//             
-//             // round tick spacing up 1-2->2, 2-5->5, 5-10->10
-//             if(rtmantissa>5) a.dtick=rtexp*10;
-//             else if(rtmantissa>2) a.dtick=rtexp*5;
-//             else a.dtick=rtexp*2;
             a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
         }
         //round tick labels to 2 digits past largest digit of dtick
@@ -790,23 +858,32 @@ function roundUp(val,a){
         mid=Math.floor((low+high)/2)
         if(a[mid]<=val) low=mid+1;
         else high=mid;
-//         console.log(low,high,mid);
     }
     return a[low];
 }
 
 // months and years don't have constant millisecond values
 // (but a year is always 12 months so we only need months)
+// log-scale ticks are also not consistently spaced, except for pure powers of 10
 // numeric ticks always have constant differences, other datetime ticks
 // can all be calculated as constant number of milliseconds
 function tickIncrement(x,dtick){
-    if($.isNumeric(dtick))
+    if($.isNumeric(dtick)) // includes all dates smaller than month, and pure 10^n in log
         return x+dtick;
-    else if(dtick.charAt(0)=='M'){
+    
+    var tType=dtick.charAt(0);
+    // Dates: months (or years)
+    if(tType=='M'){
         var y=new Date(x);
         // is this browser consistent? setMonth edits a date but returns that date's milliseconds
         return y.setMonth(y.getMonth()+Number(dtick.substr(1)));
     }
+    // Log scales: Linear, Digits
+    else if(tType=='L')
+        return Math.log(Math.pow(10,x)+Number(dtick.substr(1)))/Math.LN10;
+    else if(tType=='D') //log10 of 2,5,10, or all digits
+        return Math.floor(x+0.01)+roundUp(mod(x+0.01,1), (dtick=='D2')?
+            [0.301,0.699,1]:[0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1]);
     else throw "unrecognized dtick "+String(dtick);
 }
 
@@ -814,55 +891,106 @@ function tickIncrement(x,dtick){
 function tickFirst(a){
     if($.isNumeric(a.dtick))
         return Math.ceil((a.range[0]-a.tick0)/a.dtick)*a.dtick+a.tick0;
-    else if(a.dtick.charAt(0)=='M'){
-        var mtick=Number(a.dtick.substr(1)), t0=new Date(a.tick0), r0=new Date(a.range[0]);
+
+    var tType=a.dtick.charAt(0), dt=Number(a.dtick.substr(1));
+    // Dates: months (or years)
+    if(tType=='M'){
+        var t0=new Date(a.tick0), r0=new Date(a.range[0]);
         var mdif=(r0.getFullYear()-t0.getFullYear())*12+r0.getMonth()-t0.getMonth()
-        var t1=t0.setMonth(t0.getMonth()+(Math.floor(mdif/mtick)-1)*mtick);
+        var t1=t0.setMonth(t0.getMonth()+(Math.floor(mdif/dt)-1)*dt);
         while(t1<a.range[0]) t1=tickIncrement(t1,a.dtick);
         return t1;    
     }
+    // Log scales: Linear, Digits
+    else if(tType=='L')
+        return Math.log(Math.ceil((Math.pow(10,a.range[0])-a.tick0)/dt)*dt+a.tick0)/Math.LN10;
+    else if(tType=='D')
+        return Math.floor(a.range[0])+roundUp(mod(a.range[0],1), (a.dtick=='D2')?
+            [0.301,0.699,1]:[0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1]);
     else throw "unrecognized dtick "+String(a.dtick);
 }
 
-function lpad(val,digits){
-    return String(val+Math.pow(10,digits)).substr(1);
-}
+// pad a number with zeroes, to given # of digits before the decimal point
+function lpad(val,digits){ return String(val+Math.pow(10,digits)).substr(1);}
 
-function tickText(a,x){
+// draw the text for one tick.
+// px,py are the location on gd.paper
+// prefix is there so the x axis ticks can be dropped a line
+// a is the axis layout, x is the tick value
+// TODO: 1,2,3 superscripts are below all the others
+// TODO: move the axis labels away if they overlap the tick labels
+function ticktext(gd, px, py, prefix, a, x){
+    var fontSize=12; // TODO: add to layout
     if(a.isdate){
-        var d=new Date(x), suffix='';
+        var d=new Date(x), suffix='', tt;
         // suffix completes the full date info, to be included with only the first tick
-        if(x==a.tmin) suffix='\n'+$.datepicker.formatDate('yy', d);
         if(a.tickround=='y')
-            return $.datepicker.formatDate('yy', d);
+            tt=$.datepicker.formatDate('yy', d);
         else if(a.tickround=='m')
-            return $.datepicker.formatDate('M yy', d);
-        else if(a.tickround=='d')
-            return $.datepicker.formatDate('M d', d)+suffix;
-        else if(a.tickround=='H')
-            return $.datepicker.formatDate('M d', d)+' '+lpad(d.getHours(),2)+'h'+suffix;
+            tt=$.datepicker.formatDate('M yy', d);
         else {
-            if(x==a.tmin) suffix='\n'+$.datepicker.formatDate('M d, yy', d);
-            var out=lpad(d.getHours(),2)+':'+lpad(d.getMinutes(),2);
-            if(a.tickround=='M') return out+suffix;
-            out+=':'+lpad(d.getSeconds(),2);
-            if(a.tickround=='S') return out+suffix;
-            return out+String(Math.round(((x/1000)%1)*a.tickround)/a.tickround).substr(1)+suffix;
+            if(x==a.tmin) suffix='\n'+$.datepicker.formatDate('yy', d);
+            if(a.tickround=='d')
+                tt=$.datepicker.formatDate('M d', d);
+            else if(a.tickround=='H')
+                tt=$.datepicker.formatDate('M d ', d)+lpad(d.getHours(),2)+'h';
+            else {
+                if(x==a.tmin) suffix='\n'+$.datepicker.formatDate('M d, yy', d);
+                tt=lpad(d.getHours(),2)+':'+lpad(d.getMinutes(),2);
+                if(a.tickround!='M'){
+                    tt+=':'+lpad(d.getSeconds(),2);
+                    if(a.tickround!='S')
+                        tt+=String(Math.round(mod(x/1000,1)*a.tickround)/a.tickround).substr(1);
+                }
+            }
         }
     }
+    else if(a.islog){
+        if($.isNumeric(a.dtick)||((a.dtick.charAt(0)=='D')&&(mod(x+.01,1)<.1))) {
+            tt=(Math.round(x)==0)?'1':(Math.round(x)==1)?'10':'10'+unicodeSuper(Math.round(x));
+            fontSize*=1.25;
+        }
+        else if(a.dtick.charAt(0)=='D') {
+            tt=Math.round(Math.pow(10,mod(x,1)));
+            fontSize*=0.75;
+        }
+        else if(a.dtick.charAt(0)=='L')
+            tt=String(Math.round(Math.pow(10,x)*a.tickround)/a.tickround);
+        else throw "unrecognized dtick "+String(a.dtick);
+    }
     else
-        return String(Math.round(x*a.tickround)/a.tickround);
+        tt=String(Math.round(x*a.tickround)/a.tickround);
+    // if 9's are printed on log scale, move the 10's away a bit
+    if((a.dtick=='D1') && (String(tt).charAt(0)=='1')){
+        if(prefix=='') px-=fontSize/4;
+        else py+=fontSize/3;
+    }
+    gd.paper.text(px, py, prefix+tt).attr({'font-size':fontSize});
+}
+
+function unicodeSuper(num){
+    var code={'-':'\u207b', '0':'\u2070', '1':'\u00b9', '2':'\u00b2',
+            '3':'\u00b3', '4':'\u2074', '5':'\u2075', '6':'\u2076',
+            '7':'\u2077', '8':'\u2078', '9':'\u2079'};
+    var nstr=String(num),ustr='';
+    for(i=0;i<nstr.length;i++) ustr+=code[nstr.charAt(i)];
+    return ustr;
+}
+
+function unicodeSub(num){
+    var code={'-':'\u208b', '0':'\u2080', '1':'\u2081', '2':'\u2082',
+            '3':'\u2083', '4':'\u2084', '5':'\u2085', '6':'\u2086',
+            '7':'\u2087', '8':'\u2088', '9':'\u2089'};
+    var nstr=String(num),ustr='';
+    for(i=0;i<nstr.length;i++) ustr+=code[nstr.charAt(i)];
+    return ustr;
 }
 
 function doXTicks(gd) {
     if(typeof gd.xticks != 'undefined') {gd.xticks.remove();gd.xlabels.remove();}
-    var gl=gd.layout;
-    var gm=gl.margin;
-    var a=gl.xaxis;
-    var y1=gl.height-gm.b+gm.pad;
+    var gl=gd.layout, gm=gl.margin, a=gl.xaxis, y1=gl.height-gm.b+gm.pad;
     
     autoTicks(a);
-//     a.tickround=tickround;
     
     // ticks
     gd.paper.setStart();
@@ -876,17 +1004,13 @@ function doXTicks(gd) {
     // tick labels
     gd.paper.setStart();
     for(x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
-        gd.paper.text(gm.l+a.m*x+a.b, y1+a.ticklen, '\n'+tickText(a,x));
+        ticktext(gd, gm.l+a.m*x+a.b, y1+a.ticklen, '\n', a, x);
     gd.xlabels=gd.paper.setFinish();
-    gd.xlabels.attr({'font-size':12});
 }
 
 function doYTicks(gd) {
     if(typeof gd.yticks != 'undefined') {gd.yticks.remove();gd.ylabels.remove();}
-    var gl=gd.layout;
-    var gm=gl.margin;
-    var a=gl.yaxis;
-    var x1=gm.l-gm.pad;
+    var gl=gd.layout, gm=gl.margin, a=gl.yaxis, x1=gm.l-gm.pad;
 
     autoTicks(a);
     
@@ -902,18 +1026,21 @@ function doYTicks(gd) {
     // tick labels
     gd.paper.setStart();
     for(x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
-        gd.paper.text(x1-a.ticklen, gm.t+a.m*x+a.b,tickText(a,x));
+        ticktext(gd, x1-a.ticklen, gm.t+a.m*x+a.b, '', a, x);
     gd.ylabels=gd.paper.setFinish();
-    gd.ylabels.attr({'font-size':12,'text-anchor':'end'});
+    gd.ylabels.attr({'text-anchor':'end'});
 }
 
 function doXGrid(gd) { // assumes doXticks has been called recently, to set m and b
     if(typeof gd.xgrid != 'undefined') {gd.xgrid.remove();}
-    var a=gd.layout.xaxis;
+    var a=gd.layout.xaxis, o;
     gd.plot.setStart();
-    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
-        gd.plot.path(Raphael.format('M{0},{1}v{2}',a.m*x+a.b+gd.viewbox.x,
+    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
+        o=gd.plot.path(Raphael.format('M{0},{1}v{2}',a.m*x+a.b+gd.viewbox.x,
             gd.viewbox.y-screen.height,gd.plotheight+2*screen.height));
+        if(typeof(a.dtick)=='string' && a.dtick.charAt(0)=='D' && mod(x+0.01,1)>0.1)
+            o.attr({'stroke-dasharray':'. '});
+    }
     gd.xgrid=gd.plot.setFinish();
     gd.xgrid.attr({'stroke':'#ccc'}).toBack().drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
     gd.plotbg.toBack();
@@ -921,11 +1048,14 @@ function doXGrid(gd) { // assumes doXticks has been called recently, to set m an
 
 function doYGrid(gd) { // assumes doYticks has been called recently, to set m and b
     if(typeof gd.ygrid != 'undefined') {gd.ygrid.remove();}
-    var a=gd.layout.yaxis;
+    var a=gd.layout.yaxis, o;
     gd.plot.setStart();
-    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
-        gd.plot.path(Raphael.format('M{0},{1}h{2}',gd.viewbox.x-screen.width,
+    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
+        o=gd.plot.path(Raphael.format('M{0},{1}h{2}',gd.viewbox.x-screen.width,
             a.m*x+a.b+gd.viewbox.y,gd.plotwidth+2*screen.width));
+        if(typeof(a.dtick)=='string' && a.dtick.charAt(0)=='D' && mod(x+0.01,1)>0.1)
+            o.attr({'stroke-dasharray':'. '});
+    }
     gd.ygrid=gd.plot.setFinish();
     gd.ygrid.attr({'stroke':'#ccc'}).toBack().drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
     gd.plotbg.toBack();
