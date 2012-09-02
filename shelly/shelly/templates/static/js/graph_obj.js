@@ -272,13 +272,13 @@ function newPlot(divid, layout) {
     gd.innerHTML='';
 
     // Get the layout info (this is the defaults)
-    gd.layout={title:'Damped Oscillators',
+    gd.layout={title:'Title (double-click to edit)',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'Time',unit:'ms'},
+            title:'x-axis',unit:''},
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'Response',unit:'mV'},
+            title:'y-axis',unit:''},
         width:750,
         height:500,
         margin:{l:50,r:10,t:30,b:40,pad:2},
