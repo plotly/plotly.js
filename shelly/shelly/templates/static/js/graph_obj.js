@@ -272,7 +272,7 @@ function newPlot(divid, layout) {
     gd.innerHTML='';
 
     // Get the layout info (this is the defaults)
-    gd.layout={title:'Title (double-click to edit)',
+    gd.layout={title:'Title',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
             title:'x-axis',unit:''},
@@ -428,6 +428,7 @@ function newPlot(divid, layout) {
         }
         pauseEvent(e);
     }
+    // in main.js
     drawMenu(gd);
 }
 
