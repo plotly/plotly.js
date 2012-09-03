@@ -1074,7 +1074,8 @@ function axTitle(axis) {
 function saveScript(divid){
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
     if(typeof gd.fileid !='string') gd.fileid='';
-    txt=$('#tabs-one-line div.ui-tabs-panel:not(.ui-tabs-hide)').children('textarea').val();
+    td=$('#tabs-one-line div.ui-tabs-panel:not(.ui-tabs-hide)')[0];
+    var txt=td.editor.getValue();
     $.post("/writef/", {'script':txt}, saveScriptResp);
 }
 
