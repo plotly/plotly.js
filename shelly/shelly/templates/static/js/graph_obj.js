@@ -104,7 +104,7 @@ function plot(divid, data, layout) {
         gdd[curve].drawing={};
     }
 
-    if(gdd.length>0){
+    if(gdd&&(gdd.length>0)){
         // figure out if axes are dates
         // use the first trace only.
         // If the axis has data, see whether more looks like dates or like numbers
@@ -324,7 +324,7 @@ function newPlot(divid, layout) {
     gl.xaxis.r0=gl.xaxis.range[0];
     gl.yaxis.r0=gl.yaxis.range[0];
 
-    makeTitles(gd,'');
+    makeTitles(gd,''); // happens after ticks, so we can scoot titles out of the way if needed
     
     //make the axis drag objects
     var x0=gd.ylabels.getBBox().x;
@@ -435,22 +435,41 @@ function newPlot(divid, layout) {
 function makeTitles(gd,title) {
     var gl=gd.layout;
     if(title in {'':0,'xtitle':0}) {
+        if(gd.xtitle) gd.xtitle.remove();
         if(gl.xaxis.title=='')
             gd.xtitle=hoverBox(gd, (gl.margin.l-gl.margin.r)/2+gl.width/4, gl.height-10-(14/2), gl.width/2, 14)
-        else
+        else {
             gd.xtitle=gd.paper.text((gl.width+gl.margin.l-gl.margin.r)/2, gl.height-10, gl.xaxis.title)
                 .attr({'font-size':14});
+            var titlebb=gd.xtitle.getBBox(), ticky=0, lbb;
+            for(var i=0; i<gd.xlabels.length; i++){
+                lbb=gd.xlabels[i].getBBox();
+                if(Raphael.isBBoxIntersect(titlebb,lbb))
+                    ticky=Math.min(Math.max(ticky,lbb.y2),gl.height-titlebb.height);
+            }
+            if(ticky>titlebb.y) gd.xtitle.transform('t0,'+(ticky-titlebb.y)+'...');
+        }
         gd.xtitle.dblclick(function(){autoGrowInput(gd,'xtitle', gl.xaxis, 'title', {});});
     }
     if(title in {'':0,'ytitle':0}) {
+        if(gd.ytitle) gd.ytitle.remove();
         if(gl.yaxis.title=='')
             gd.ytitle=hoverBox(gd, 20-14/2, (gl.margin.t-gl.margin.b)/2+gl.height/4, 14, gl.height/2)
-        else
+        else {
             gd.ytitle=gd.paper.text(20, (gl.height+gl.margin.t-gl.margin.b)/2, gl.yaxis.title)
-                .rotate(-90).attr({'font-size':14})
+                .rotate(-90).attr({'font-size':14});
+            var titlebb=gd.ytitle.getBBox(), tickx=gl.width, lbb;
+            for(var i=0; i<gd.ylabels.length; i++){
+                lbb=gd.ylabels[i].getBBox();
+                if(Raphael.isBBoxIntersect(titlebb,lbb))
+                    tickx=Math.max(Math.min(tickx,lbb.x),titlebb.width);
+            }
+            if(tickx<titlebb.x2) gd.ytitle.transform('t'+(tickx-titlebb.x2)+',0...');
+        }
         gd.ytitle.dblclick(function(){autoGrowInput(gd,'ytitle', gl.yaxis, 'title', {center: 0});});
     }
     if(title in {'':0,'gtitle':0}) {
+        if(gd.gtitle) gd.gtitle.remove();
         if(gl.title=='')
             gd.gtitle=hoverBox(gd, gl.width/4, gl.margin.t/2-16/2, gl.width/2, 16)
         else
@@ -507,7 +526,7 @@ function autoGrowInput(gd,el,cont,prop,o) {
     // immediately after grabbing properties.
     if($.trim(cont[prop])=='') {
         gd[el].remove();
-        cont[prop]='l'; // very narrow string, so we can ignore its width
+        cont[prop]='.'; // very narrow string, so we can ignore its width
         makeTitles(gd,el);
         cont[prop]='';
     }
@@ -520,23 +539,23 @@ function autoGrowInput(gd,el,cont,prop,o) {
     }, o);
 
     var elTstr=gd[el].transform(),
-        elFs=gd[el].attr('font-size'),
-        elX=gd[el].attr('x'),
-        elY=gd[el].attr('y');
-
-    var inbox=document.createElement('input'),
+        inbox=document.createElement('input'),
         pos=$(gd[el].node).position(),
         gpos=$(gd.paperDOM).position(),
-        bbox=gd[el].getBBox();
+        bbox=gd[el].getBBox(),
+        posx=pos.left + gpos.left + $(gd).scrollLeft(),
+        posy=pos.top + gpos.top + $(gd).scrollTop();
+        // TODO: explicitly getting positions and adding scrolls seems silly...
+        // gotta be a better (and less fragile) way to do this.
 
-    $(gd).prepend(inbox);
+    $(gd).append(inbox);
     var input=$(inbox);
     
     input.css({
         position:'absolute',
-        top: ((elTstr.length>0 && elTstr[0][0]=='r' && elTstr[0][1]!=0) ?
-            (bbox.height-bbox.width)/2 : 0) + pos.top + gpos.top - 4,
-        left: pos.left + gpos.left - 4, // shouldn't hard-code these -4's, but can't figure out how to determine them
+        top: ((elTstr.length>0 && elTstr[elTstr.length-1][0]=='r' && elTstr[elTstr.length-1][1]!=0) ?
+            (bbox.height-bbox.width)/2 : 0) + posy - 2,
+        left: posx - 2, // shouldn't hard-code these -4's, but can't figure out how to determine them
         'z-index':6000,
         // not sure how many of these are needed, but they don't seem to hurt...
         //TODO: this can't find the right vals if the box is blank...
@@ -667,11 +686,11 @@ function resetViewBox() {
     this.plot.setViewBox(0,0,this.plotwidth,this.plotheight,false);
     this.plotbg.attr({'x':-screen.width, 'y':-screen.height})
     dragTail(this);
+    makeTitles(this,''); // so it can scoot titles out of the way if needed
 }
 
 function zoomEnd() {
-    //nothing to do here any more...
-    var vb=this.viewbox;
+    makeTitles(this,''); // so it can scoot titles out of the way if needed
 }
 
 function plotDrag(dx,dy) {
