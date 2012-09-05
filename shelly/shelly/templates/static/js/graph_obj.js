@@ -21,6 +21,10 @@ Viewbox coordinates: xv,yv (where data are drawn)
             zoom we will move the individual points.
 */
 
+// new way of zooming with viewbox: warps points while zooming, but it's super fast.
+// set fastscale=true to use
+var fastscale=true;
+
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
 // if necessary to create the framework
@@ -660,18 +664,21 @@ function plotDragStart(x,y) {
     gx.r0=[gx.range[0],gx.range[1]];
     gy.r0=[gy.range[0],gy.range[1]];
     gx.autorange=0;gy.autorange=0;
+    this.plotDOM.setAttribute('preserveAspectRatio','none'); // for fast scaling
 }
 
 function xDragStart(x,y) {
     var gx=this.layout.xaxis;
     gx.r0=[gx.range[0],gx.range[1]];
     gx.autorange=0;
+    this.plotDOM.setAttribute('preserveAspectRatio','none');
 }
 
 function yDragStart(x,y) {
     var gy=this.layout.yaxis;
     gy.r0=[gy.range[0],gy.range[1]];
     gy.autorange=0;
+    this.plotDOM.setAttribute('preserveAspectRatio','none');
 }
 
 function dragTail(gd) {
@@ -690,7 +697,8 @@ function resetViewBox() {
 }
 
 function zoomEnd() {
-    makeTitles(this,''); // so it can scoot titles out of the way if needed
+    if(fastscale) resetViewBox.call(this);
+    else makeTitles(this,''); // so it can scoot titles out of the way if needed
 }
 
 function plotDrag(dx,dy) {
@@ -723,52 +731,104 @@ function nwDrag(dx,dy) {
     var gx=this.layout.xaxis, gy=this.layout.yaxis;
     gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx/this.plotwidth);
     gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy/this.plotheight);
-    dragTail(this);
+    if(fastscale){
+        var dx=this.plotwidth*(gx.r0[0]-gx.range[0])/(gx.r0[0]-gx.r0[1]);
+        var dy=this.plotheight*(gy.r0[1]-gy.range[1])/(gy.r0[1]-gy.r0[0]);
+        this.plotDOM.setAttribute('viewBox',
+            Raphael.format('{0} {1} {2} {3}',dx,dy,this.plotwidth-dx,this.plotheight-dy));
+        doXTicks(this);doYTicks(this);
+    }
+    else dragTail(this);
 }
 
 function neDrag(dx,dy) {
     var gx=this.layout.xaxis, gy=this.layout.yaxis;
     gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx/this.plotwidth);
     gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy/this.plotheight);
-    dragTail(this);
+    if(fastscale){
+        var dx=this.plotwidth*(gx.r0[1]-gx.range[1])/(gx.r0[1]-gx.r0[0]);
+        var dy=this.plotheight*(gy.r0[1]-gy.range[1])/(gy.r0[1]-gy.r0[0]);
+        this.plotDOM.setAttribute('viewBox',
+            Raphael.format('0 {0} {1} {2}',dy,this.plotwidth-dx,this.plotheight-dy));
+        doXTicks(this);doYTicks(this);
+    }
+    else dragTail(this);
 }
 
 function swDrag(dx,dy) {
     var gx=this.layout.xaxis, gy=this.layout.yaxis;
     gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx/this.plotwidth);
     gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy/this.plotheight);
-    dragTail(this);
+    if(fastscale){
+        var dx=this.plotwidth*(gx.r0[0]-gx.range[0])/(gx.r0[0]-gx.r0[1]);
+        var dy=this.plotheight*(gy.r0[0]-gy.range[0])/(gy.r0[0]-gy.r0[1]);
+        this.plotDOM.setAttribute('viewBox',
+            Raphael.format('{0} 0 {1} {2}',dx,this.plotwidth-dx,this.plotheight-dy));
+        doXTicks(this);doYTicks(this);
+    }
+    else dragTail(this);
 }
 
 function seDrag(dx,dy) {
     var gx=this.layout.xaxis, gy=this.layout.yaxis;
     gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx/this.plotwidth);
     gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy/this.plotheight);
-    dragTail(this);
+    if(fastscale){
+        var dx=this.plotwidth*(gx.r0[1]-gx.range[1])/(gx.r0[1]-gx.r0[0]);
+        var dy=this.plotheight*(gy.r0[0]-gy.range[0])/(gy.r0[0]-gy.r0[1]);
+        this.plotDOM.setAttribute('viewBox',
+            Raphael.format('0 0 {0} {1}',this.plotwidth-dx,this.plotheight-dy));
+        doXTicks(this);doYTicks(this);
+    }
+    else dragTail(this);
 }
 
 function x0Drag(dx,dy) {
     var ga=this.layout.xaxis;
     ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(dx/this.plotwidth);
-    dragTail(this);
+    if(fastscale){
+        var dx=this.plotwidth*(ga.r0[0]-ga.range[0])/(ga.r0[0]-ga.r0[1]);
+        this.plotDOM.setAttribute('viewBox',
+            Raphael.format('{0} 0 {1} {2}',dx,this.plotwidth-dx,this.plotheight));
+        doXTicks(this);
+    }
+    else dragTail(this);
 }
 
 function x1Drag(dx,dy) {
     var ga=this.layout.xaxis;
     ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(-dx/this.plotwidth);
-    dragTail(this);
+    if(fastscale){
+        var dx=this.plotwidth*(ga.r0[1]-ga.range[1])/(ga.r0[1]-ga.r0[0]);
+        this.plotDOM.setAttribute('viewBox',
+            Raphael.format('0 0 {0} {1}',this.plotwidth-dx,this.plotheight));
+        doXTicks(this);
+    }
+    else dragTail(this);
 }
 
 function y1Drag(dx,dy) {
     var ga=this.layout.yaxis;
     ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(dy/this.plotheight);
-    dragTail(this);
+    if(fastscale){
+        var dy=this.plotheight*(ga.r0[1]-ga.range[1])/(ga.r0[1]-ga.r0[0]);
+        this.plotDOM.setAttribute('viewBox',
+            Raphael.format('0 {0} {1} {2}',dy,this.plotwidth,this.plotheight-dy));
+        doYTicks(this);
+    }
+    else dragTail(this);
 }
 
 function y0Drag(dx,dy) {
     var ga=this.layout.yaxis;
     ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(-dy/this.plotheight);
-    dragTail(this);
+    if(fastscale){
+        var dy=this.plotheight*(ga.r0[0]-ga.range[0])/(ga.r0[0]-ga.r0[1]);
+        this.plotDOM.setAttribute('viewBox',
+            Raphael.format('0 0 {0} {1}',this.plotwidth,this.plotheight-dy));
+        doYTicks(this);
+    }
+    else dragTail(this);
 }
 
 // ----------------------------------------------------
