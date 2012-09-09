@@ -83,20 +83,31 @@ function plot(divid, data, layout) {
 */  
     // interpolate data if >1000 points
     // jp added 9_8_2012
+    var LARGESET=2000;
     for(var i=0;i<data.length;i++){
-        if(data[i]['x'].length>1000){
-            // alert('>1000');
+        if(data[i]['x'].length>LARGESET){
+            // for large datasets, assume unsorted
+            var xsort=[];
+            var ysort=[];
+            xy=$.zip(data[i]['x'],data[i]['y']);
+            xy=sortobj(xy);
+            $.each(xy, function(k, v){xsort.push(k); ysort.push(v);});
+            console.log('xsort');
+	    console.log(xsort);
+            console.log('ysort');
+	    console.log(ysort);
             // i_f = "interpolation factor" - size of chunk to average
-            // Ex: 10000 points -> make new array by averaging over every 10 y values
-            i_f=Math.round(data[i]['x'].length/1000);
+            // Ex: If LARGESET=1000 and  there are 10000 points -> 
+            // make new array by averaging over every 10 y values
+            i_f=Math.round(xsort.length/LARGESET);
             new_x=[]
             new_y=[]
-            for(var j=0;j<data[i]['x'].length;j++){
-                if(j%i_f==0 && $.isNumeric(data[i]['x'][j])){
-                    new_x.push(data[i]['x'][j]);
-                    y_slice=data[i]['y'].slice(j,j+i_f)
+            for(var j=0;j<xsort.length;j++){
+                if(j%i_f==0 && $.isNumeric(xsort[j])){
+                    new_x.push(xsort[j]);
+                    y_slice=ysort.slice(j,j+i_f)
                     // Filter out any string values in y_slice
-                    for(var k=0;k<y_slice.length;k++){if($.isNumeric(y_slice[k])==false){y_slice.splice(j,1)}}
+                    for(var k=0;k<y_slice.length;k++){if($.isNumeric(y_slice[k])==false){y_slice.splice(k,1)}}
                     avg=eval(y_slice.join('+'))/y_slice.length;
                     new_y.push(avg);
                 }
@@ -107,7 +118,7 @@ function plot(divid, data, layout) {
             data[i]['x']=new_x;
             data[i]['y']=new_y;           
         }
-    }
+    } // end jp edit 9_8_2012
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-object (null, '', whatever) for data
