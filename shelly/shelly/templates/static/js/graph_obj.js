@@ -267,7 +267,6 @@ function newPlot(divid, layout) {
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-
     // destroy any plot that already exists in this div
     gd.innerHTML='';
 
@@ -1121,7 +1120,6 @@ function saveGraphResp(res) {
 }
 
 function shareGraph(divid){
-    alert(divid);
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
     if(typeof gd.fileid !='string') gd.fileid='';
     //if(gd.fileid==''){saveGraph(divid); shareGraph(divid);}
