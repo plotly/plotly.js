@@ -81,6 +81,33 @@ function plot(divid, data, layout) {
     	<user>/<id>/<colname> for shared data
     
 */  
+    // interpolate data if >1000 points
+    // jp added 9_8_2012
+    for(var i=0;i<data.length;i++){
+        if(data[i]['x'].length>1000){
+            // alert('>1000');
+            // i_f = "interpolation factor" - size of chunk to average
+            // Ex: 10000 points -> make new array by averaging over every 10 y values
+            i_f=Math.round(data[i]['x'].length/1000);
+            new_x=[]
+            new_y=[]
+            for(var j=0;j<data[i]['x'].length;j++){
+                if(j%i_f==0 && $.isNumeric(data[i]['x'][j])){
+                    new_x.push(data[i]['x'][j]);
+                    y_slice=data[i]['y'].slice(j,j+i_f)
+                    // Filter out any string values in y_slice
+                    for(var k=0;k<y_slice.length;k++){if($.isNumeric(y_slice[k])==false){y_slice.splice(j,1)}}
+                    avg=eval(y_slice.join('+'))/y_slice.length;
+                    new_y.push(avg);
+                }
+            }
+            // console.log('interpolated arrays');
+            // console.log(new_x);
+            // console.log(new_y);
+            data[i]['x']=new_x;
+            data[i]['y']=new_y;           
+        }
+    }
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-object (null, '', whatever) for data
