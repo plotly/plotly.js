@@ -124,8 +124,7 @@ function plot(divid, data, layout) {
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-object (null, '', whatever) for data
-    // var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
-    var graphwasempty = (typeof gd.data==='undefined');
+    var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if(typeof data=='object') {
         if(graphwasempty) gd.data=data;
         else gd.data.push.apply(gd.data,data);
