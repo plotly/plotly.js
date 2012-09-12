@@ -1040,9 +1040,10 @@ function lpad(val,digits){ return String(val+Math.pow(10,digits)).substr(1);}
 // TODO: move the axis labels away if they overlap the tick labels
 function ticktext(gd, px, py, prefix, a, x){
     var fontSize=12; // TODO: add to layout
+    var suffix=''; // completes the full date info, to be included with only the first tick
+    var tt;
     if(a.isdate){
-        var d=new Date(x), suffix='', tt;
-        // suffix completes the full date info, to be included with only the first tick
+        var d=new Date(x);
         if(a.tickround=='y')
             tt=$.datepicker.formatDate('yy', d);
         else if(a.tickround=='m')
@@ -1084,7 +1085,7 @@ function ticktext(gd, px, py, prefix, a, x){
         if(prefix=='') px-=fontSize/4;
         else py+=fontSize/3;
     }
-    gd.paper.text(px, py, prefix+tt).attr({'font-size':fontSize});
+    gd.paper.text(px, py, prefix+tt+suffix).attr({'font-size':fontSize});
 }
 
 function unicodeSuper(num){
@@ -1183,28 +1184,6 @@ function doYGrid(gd) { // assumes doYticks has been called recently, to set m an
 function axTitle(axis) {
     if((axis.unit=='')||(axis.unit==undefined)) return axis.title;
     else return axis.title+' ('+axis.unit+')';
-}
-
-// ----------------------------------------------------
-// Script file operations
-// ----------------------------------------------------
-
-function saveScript(divid){
-    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-    if(typeof gd.fileid !='string') gd.fileid='';
-    td=$('#tabs-one-line div.ui-tabs-panel:not(.ui-tabs-hide)')[0];
-    var txt=td.editor.getValue();
-    $.post("/writef/", {'script':txt}, saveScriptResp);
-}
-
-function saveScriptResp(res){
-    res=JSON.parse(res);
-    err=res.err;
-    if(err!='') alert(err);
-    fn=res['fn'];
-    fid=res['fid'].toString(); 
-    $("#privatetree").jstree("create", null, "last", {"data":fn, "attr":{"id":fid, "rel":"script"} });
-    togFileWell("show");
 }
 
 // ----------------------------------------------------
