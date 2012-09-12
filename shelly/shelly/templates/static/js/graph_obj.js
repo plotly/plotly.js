@@ -33,8 +33,10 @@ function plot(divid, data, layout) {
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in by dom element, others by id (string)
+    //console.log(divid);
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
 	var defaultColors=['#00e','#a00','#0c0','#000']
+    //console.log(gd);
 
 /*  data should be an array of objects, one per trace. allowed keys:
 
@@ -122,7 +124,8 @@ function plot(divid, data, layout) {
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-object (null, '', whatever) for data
-    var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
+    // var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
+    var graphwasempty = (typeof gd.data==='undefined');
     if(typeof data=='object') {
         if(graphwasempty) gd.data=data;
         else gd.data.push.apply(gd.data,data);
@@ -313,7 +316,7 @@ function newPlot(divid, layout) {
     gd.innerHTML='';
 
     // Get the layout info (this is the defaults)
-    gd.layout={title:'Title',
+    gd.layout={title:'Untitled',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
             title:'x-axis',unit:''},
