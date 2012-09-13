@@ -83,44 +83,6 @@ function plot(divid, data, layout) {
     	<user>/<id>/<colname> for shared data
     
 */  
-    // interpolate data if >1000 points
-    // jp added 9_8_2012
-    var LARGESET=2000;
-    for(var i=0;i<data.length;i++){
-        if(data[i]['x'].length>LARGESET){
-            // for large datasets, assume unsorted
-            var xsort=[];
-            var ysort=[];
-            xy=$.zip(data[i]['x'],data[i]['y']);
-            xy=sortobj(xy);
-            $.each(xy, function(k, v){xsort.push(k); ysort.push(v);});
-            console.log('xsort');
-	    console.log(xsort);
-            console.log('ysort');
-	    console.log(ysort);
-            // i_f = "interpolation factor" - size of chunk to average
-            // Ex: If LARGESET=1000 and  there are 10000 points -> 
-            // make new array by averaging over every 10 y values
-            i_f=Math.round(xsort.length/LARGESET);
-            new_x=[]
-            new_y=[]
-            for(var j=0;j<xsort.length;j++){
-                if(j%i_f==0 && $.isNumeric(xsort[j])){
-                    new_x.push(xsort[j]);
-                    y_slice=ysort.slice(j,j+i_f)
-                    // Filter out any string values in y_slice
-                    for(var k=0;k<y_slice.length;k++){if($.isNumeric(y_slice[k])==false){y_slice.splice(k,1)}}
-                    avg=eval(y_slice.join('+'))/y_slice.length;
-                    new_y.push(avg);
-                }
-            }
-            // console.log('interpolated arrays');
-            // console.log(new_x);
-            // console.log(new_y);
-            data[i]['x']=new_x;
-            data[i]['y']=new_y;           
-        }
-    } // end jp edit 9_8_2012
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-object (null, '', whatever) for data
@@ -128,6 +90,47 @@ function plot(divid, data, layout) {
     if(typeof data=='object') {
         if(graphwasempty) gd.data=data;
         else gd.data.push.apply(gd.data,data);
+    }
+
+    // interpolate data if >1000 points
+    // jp added 9_8_2012
+    if(!graphwasempty){
+        var LARGESET=2000;
+        for(var i=0;i<data.length;i++){
+            if(data[i]['x'].length>LARGESET){
+                // for large datasets, assume unsorted
+                var xsort=[];
+                var ysort=[];
+                xy=$.zip(data[i]['x'],data[i]['y']);
+                xy=sortobj(xy);
+                $.each(xy, function(k, v){xsort.push(k); ysort.push(v);});
+                console.log('xsort');
+      	        console.log(xsort);
+                console.log('ysort');
+    	        console.log(ysort);
+                // i_f = "interpolation factor" - size of chunk to average
+                // Ex: If LARGESET=1000 and  there are 10000 points -> 
+                // make new array by averaging over every 10 y values
+                i_f=Math.round(xsort.length/LARGESET);
+                new_x=[]
+                new_y=[]
+                for(var j=0;j<xsort.length;j++){
+                    if(j%i_f==0 && $.isNumeric(xsort[j])){
+                        new_x.push(xsort[j]);
+                        y_slice=ysort.slice(j,j+i_f)
+                        // Filter out any string values in y_slice
+                        for(var k=0;k<y_slice.length;k++){if($.isNumeric(y_slice[k])==false){y_slice.splice(k,1)}}
+                        avg=eval(y_slice.join('+'))/y_slice.length;
+                        new_y.push(avg);
+                    }
+                }
+                // console.log('interpolated arrays');
+                // console.log(new_x);
+                // console.log(new_y);
+                data[i]['x']=new_x;
+                data[i]['y']=new_y;           
+            }
+        } // end jp edit 9_8_2012
     }
 
     // make the graph container and axes, if they don't already exist
@@ -1196,7 +1199,7 @@ function exportGraph() {
 
 function saveGraph(divid) {
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-    if(typeof gd.fileid !='string') gd.fileid='';
+    if(typeof gd.fid !='string') gd.fid='';
 
     // jsonify the graph data and layout
     var data = [];
@@ -1206,25 +1209,43 @@ function saveGraph(divid) {
     // for now use the graph title as the filename
     var fn = gd.layout.title;
 
-    $.post("/savegraph/", {'graph':gj, 'fid':gd.fileid, 'fn':fn}, saveGraphResp);
+    $.post("/savegraph/", {'graph':gj, 'fid':gd.fid, 'fn':fn}, saveGraphResp);
 }
 
 function saveGraphResp(res) {
     var resJ=JSON.parse(res);
     if(resJ.err != '') alert(resJ.err);
-    if(resJ.fid != '') $("#privatetree").jstree("create", null, "last",
-        {"data":resJ.fn, "attr":{"id":resJ.fid, "rel":"graph"} });
-    togFileWell("show");
+    if(resJ.fid != '' && resJ.fid !== undefined){
+        var fid=resJ.fid;
+        $("#privatetree").jstree("create", null, "last",{"data":resJ.fn, "attr":{"id":resJ.fid, "rel":"graph"} });
+        gd=gettab();
+        //alert(fid);
+        gd.fid=fid;
+    }
+    else{alert('failed to return graphid');}
 }
 
 function shareGraph(divid){
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-    if(typeof gd.fileid !='string') gd.fileid='';
-    //if(gd.fileid==''){saveGraph(divid); shareGraph(divid);}
-    url='http://plot.ly/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fileid;
-    $('#linktoshare').val(url);
-    $('#linkModal').modal('toggle');
-    document.getElementById("linktoshare").select();
+    if(typeof gd.fid !='string') gd.fid='';
+    if(gd.fid==''){
+        saveGraph(divid);
+        // give graph 1 second to save
+        setTimeout(function(){
+            // reload div
+            var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+            url=window.location.origin+'/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fid;
+            $('#linktoshare').val(url);
+            $('#linkModal').modal('toggle');
+            document.getElementById("linktoshare").select();
+        }, 1000);  
+    }
+    else{
+        url=window.location.origin+'/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fid;
+        $('#linktoshare').val(url);
+        $('#linkModal').modal('toggle');
+        document.getElementById("linktoshare").select();
+    }
 }
 
 // return JSON for saving the graph in gd to userdata
