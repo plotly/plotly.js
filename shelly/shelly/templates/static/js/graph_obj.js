@@ -1238,10 +1238,8 @@ function shareGraph(divid){
 
 function graphToGrid(){
     var gd=gettab();
-    if(gd.fid !== undefined){
-        //alert(fid);
+    if(gd.fid !== undefined)
         $.post("/pullf/", {'csrfmiddlewaretoken': '{{ csrf_token }}', 'fid': gd.fid, 'ft':'grid'}, fileResp);
-    }
     else {
         var data = [];
         for(d in gd.data) data.push(stripSrc(gd.data[d]));
