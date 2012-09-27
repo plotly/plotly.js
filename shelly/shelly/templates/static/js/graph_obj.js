@@ -88,6 +88,7 @@ function plot(divid, data, layout) {
     if(typeof data=='object') {
         if(graphwasempty) gd.data=data;
         else gd.data.push.apply(gd.data,data);
+        gd.empty=false;
     }
 
     // interpolate data if >1000 points
