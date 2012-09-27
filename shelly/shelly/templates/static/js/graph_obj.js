@@ -33,10 +33,8 @@ function plot(divid, data, layout) {
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in by dom element, others by id (string)
-    //console.log(divid);
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-	var defaultColors=['#00e','#a00','#0c0','#000']
-    //console.log(gd);
+	var defaultColors=['#00e','#a00','#0c0','#000'];
 
 /*  data should be an array of objects, one per trace. allowed keys:
 
@@ -114,12 +112,13 @@ function plot(divid, data, layout) {
                 i_f=Math.round(xsort.length/LARGESET);
                 new_x=[]
                 new_y=[]
-                for(var j=0;j<xsort.length;j++){
+                for(var j in xsort){
                     if(j%i_f==0 && $.isNumeric(xsort[j])){
                         new_x.push(xsort[j]);
                         y_slice=ysort.slice(j,j+i_f)
                         // Filter out any string values in y_slice
-                        for(var k=0;k<y_slice.length;k++){if($.isNumeric(y_slice[k])==false){y_slice.splice(k,1)}}
+                        for(var k in y_slice){
+                            if($.isNumeric(y_slice[k])==false) y_slice.splice(k,1);}
                         avg=eval(y_slice.join('+'))/y_slice.length;
                         new_y.push(avg);
                     }
@@ -246,17 +245,18 @@ function aggNums(f,v,a,len) {
 	return r;
 }
 
-// does the array a have more dates than numbers?
+// does the array a have mostly dates rather than numbers?
 // note: some values can be neither (such as blanks, text)
-// 2- or 4-digit integers can be both (though if all the data set has is such
-// integers, it will stick with numeric to break the symmetry)
+// 2- or 4-digit integers can be both, so require twice as many
+// dates as non-dates, to exclude cases with mostly 2 & 4 digit
+// numbers and a few dates
 function moreDates(a) {
     var dcnt=0, ncnt=0;
     for(var i in a) {
         if(isDateTime(a[i])) dcnt+=1;
         if($.isNumeric(a[i])) ncnt+=1;
     }
-    return (dcnt>ncnt);
+    return (dcnt>ncnt*2); 
 }
 
 // does the array look like something that should be plotted on a log axis?
@@ -314,6 +314,7 @@ function newPlot(divid, layout) {
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+    if(!layout) layout={};
     // destroy any plot that already exists in this div
     gd.innerHTML='';
 
@@ -1193,10 +1194,6 @@ function axTitle(axis) {
 // Graph file operations
 // ----------------------------------------------------
 
-function exportGraph() {
-    //alert('filed dwnld');
-}
-
 function saveGraph(divid) {
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
     if(typeof gd.fid !='string') gd.fid='';
@@ -1206,23 +1203,12 @@ function saveGraph(divid) {
     for(d in gd.data) data.push(stripSrc(gd.data[d]));
     var gj = JSON.stringify({'layout':gd.layout,'data':data});
     
-    // for now use the graph title as the filename
-    var fn = gd.layout.title;
+    // Use the graph title as the filename, unless the tab already has one
+    var fn = (gd.fn) ? gd.fn : gd.layout.title;
 
-    $.post("/savegraph/", {'graph':gj, 'fid':gd.fid, 'fn':fn}, saveGraphResp);
-}
-
-function saveGraphResp(res) {
-    var resJ=JSON.parse(res);
-    if(resJ.err != '') alert(resJ.err);
-    if(resJ.fid != '' && resJ.fid !== undefined){
-        var fid=resJ.fid;
-        $("#privatetree").jstree("create", null, "last",{"data":resJ.fn, "attr":{"id":resJ.fid, "rel":"graph"} });
-        gd=gettab();
-        //alert(fid);
-        gd.fid=fid;
-    }
-    else{alert('failed to return graphid');}
+    $.post("/save/",
+        {data:gj, ft:'plot', fid:gd.fid, fn:fn, ts:gd.ts},
+        function(res){saveResp(res,gd)});
 }
 
 function shareGraph(divid){
@@ -1248,8 +1234,17 @@ function shareGraph(divid){
     }
 }
 
-// return JSON for saving the graph in gd to userdata
-function graphJSON(gd) {
+// ------------------------------- graphToGrid
+
+function graphToGrid(){
+    var gd=gettab();
+    if(gd.fid !== undefined)
+        $.post("/pullf/", {'csrfmiddlewaretoken': '{{ csrf_token }}', 'fid': gd.fid, 'ft':'grid'}, fileResp);
+    else {
+        var data = [];
+        for(d in gd.data) data.push(stripSrc(gd.data[d]));
+        $.post("/pullf/", {'csrfmiddlewaretoken': '{{ csrf_token }}', 'data': JSON.stringify({'data':data}), 'ft':'grid'}, fileResp);
+    }
 }
 
 // create a copy of data, with all dereferenced src elements stripped
