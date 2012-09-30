@@ -234,7 +234,6 @@ function plot(divid, data, layout) {
             gd.axdrags.toFront();
         }
     }
-    return('*ta-da*')
 }
 
 // convenience function to aggregate value v and array a (up to len)
@@ -476,8 +475,42 @@ function newPlot(divid, layout) {
         }
         pauseEvent(e);
     }
-    // in main.js
-    drawMenu(gd);
+
+    // ------------------------------------------------------------ graphing toolbar
+    // This section is super-finicky. Maybe because we somehow didn't get the
+    // "btn-group-vertical" class from bootstrap initially, I had to bring it in myself
+    // to plotly.css and maybe didn't do it right...
+    // For instance, a and button behave differently in weird ways, button nearly gets
+    // everything right but spacing between groups is different and I can't fix it,
+    // easier to use a throughout and then manually set width.
+    // Maybe if we re-download bootstrap this will be fixed?
+    var menudiv =
+        '<div class="graphbar">'+
+            '<div class="btn-group btn-stack">'+
+                '<a class="btn" id="graphtogrid" onclick="graphToGrid()" rel="tooltip" title="Show in Grid">'+
+                    '<i class="icon-th"></i></a>'+
+            '</div>'+
+            '<div class="btn-group btn-group-vertical btn-stack">'+
+                '<a class="btn" id="pdfexport" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Download as PDF">'+
+                    '<img src="/static/img/pdf.png" /></a>'+
+//                     '<i class="icon-download-alt"></i></a>'+
+                '<a class="btn" id="pngexport" onclick="pdfexport(\'png\')" rel="tooltip" title="Download as PNG">'+
+//                     '<img src="/static/img/png.png" /></a>'+
+                    '<i class="icon-picture"></i></a>'+
+            '</div>'+
+            '<div class="btn-group btn-stack">'+
+                '<a class="btn" onclick="saveGraph(\'gettab()\')" rel="tooltip" title="Save">'+
+                    '<i class="icon-hdd"></i></a>'+
+            '</div>'+
+            '<div class="btn-group btn-stack">'+
+                '<a class="btn" onclick="shareGraph(\'gettab()\')" rel="tooltip" title="Share">'+
+                    '<i class="icon-globe"></i></a>'+
+            '</div>'+
+        '</div>'  
+
+    $(gd).prepend(menudiv);
+    $(gd).find('.graphbar').css({'position':'absolute','left':'770px','top':'30px'});
+    $(gd).find('.btn').tooltip({'placement':'left'}).width(14);
 }
 
 function makeTitles(gd,title) {
