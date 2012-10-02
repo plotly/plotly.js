@@ -1229,7 +1229,8 @@ function axTitle(axis) {
 // ----------------------------------------------------
 
 function saveGraph(divid) {
-    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+    var gd=gettab();
+    //var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
     if(typeof gd.fid !='string') gd.fid='';
 
     // jsonify the graph data and layout
