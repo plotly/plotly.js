@@ -24,6 +24,8 @@ Viewbox coordinates: xv,yv (where data are drawn)
 // new way of zooming with viewbox: warps points while zooming, but it's super fast.
 // set fastscale=true to use
 var fastscale=true;
+// getting ready to probably switch to D3
+var plotter='Raphael';
 
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
@@ -204,26 +206,30 @@ function plot(divid, data, layout) {
                 }
                 else {
                     // lines
-                    gp.setStart();
-                    for(i=1; i<serieslen; i++) {
-                    	if(i>0 && $.isNumeric(x[i-1]) && $.isNumeric(x[i]) &&
-                    		$.isNumeric(y[i-1]) && $.isNumeric(y[i])){
-                    			gp.path(Raphael.format('M{0},{1}L{2},{3}',
-                        		xa.b+xa.m*x[i-1]+vb.x,ya.b+ya.m*y[i-1]+vb.y,
-                        		xa.b+xa.m*x[i]+vb.x,ya.b+ya.m*y[i]+vb.y));
+                    if(plotter=='Raphael'){
+                        gp.setStart();
+                        for(i=1; i<serieslen; i++) {
+                            if(i>0 && $.isNumeric(x[i-1]) && $.isNumeric(x[i]) &&
+                                $.isNumeric(y[i-1]) && $.isNumeric(y[i])){
+                                    gp.path(Raphael.format('M{0},{1}L{2},{3}',
+                                    xa.b+xa.m*x[i-1]+vb.x,ya.b+ya.m*y[i-1]+vb.y,
+                                    xa.b+xa.m*x[i]+vb.x,ya.b+ya.m*y[i]+vb.y));
+                            }
                         }
+                        gdc.drawing['lines']=gp.setFinish();
+                        gdc.drawing['lines'].attr({'stroke':color});
+                        
+                        // points
+                        gp.setStart();
+                        for(i=0; i<serieslen; i++) {
+                            if($.isNumeric(x[i]) && $.isNumeric(y[i]))
+                                gp.circle(xa.b+xa.m*x[i]+vb.x,ya.b+ya.m*y[i]+vb.y,3);
+                        }
+                        gdc.drawing['points']=gp.setFinish();
+                        gdc.drawing['points'].attr({'fill':color,'stroke-width':0});
                     }
-                    gdc.drawing['lines']=gp.setFinish();
-                    gdc.drawing['lines'].attr({'stroke':color});
-                    
-                    // points
-                    gp.setStart();
-                    for(i=0; i<serieslen; i++) {
-                    	if($.isNumeric(x[i]) && $.isNumeric(y[i]))
-	                    	gp.circle(xa.b+xa.m*x[i]+vb.x,ya.b+ya.m*y[i]+vb.y,3);
+                    else if(plotter=='D3'){
                     }
-                    gdc.drawing['points']=gp.setFinish();
-                    gdc.drawing['points'].attr({'fill':color,'stroke-width':0});
                 }
             }
         }
@@ -231,7 +237,7 @@ function plot(divid, data, layout) {
             if(xa.autorange) xa.range=[1.05*xdr[0]-0.05*xdr[1],1.05*xdr[1]-0.05*xdr[0]];
             if(ya.autorange) ya.range=[1.05*ydr[0]-0.05*ydr[1],1.05*ydr[1]-0.05*ydr[0]];
             doXTicks(gd);doYTicks(gd);doXGrid(gd);doYGrid(gd);
-            gd.axdrags.toFront();
+            if(plotter=='Raphael') gd.axdrags.toFront();
         }
     }
 }
@@ -337,145 +343,149 @@ function newPlot(divid, layout) {
 
     // look for elements of gd.layout to replace with the equivalent elements in layout
     gd.layout=updateObject(gd.layout,layout);
-
-    // Make the graph containers
-    // We use a hack to get two nested Raphael objects (Raphael 2.0.1)
-    // First one (paper) is for the axes
     var gl=gd.layout;
-    gd.paper=Raphael(divid,gl.width,gl.height);
-    gd.paper.gd=gd; // so any element can get gd from this.paper.gd
-    gd.plotwidth=gl.width-gl.margin.l-gl.margin.r;
-    gd.plotheight=gl.height-gl.margin.t-gl.margin.b;
-    gd.ax=gd.paper.rect(gl.margin.l-gl.margin.pad,
-        gl.margin.t-gl.margin.pad,
-        gd.plotwidth+2*gl.margin.pad,
-        gd.plotheight+2*gl.margin.pad);
-    gd.paperDOM=gd.firstChild;
-    gd.paperDOM.style['background-color']=gl.paper_bgcolor;
 
-    // Second one (plot) is for the data
-    gd.plot=Raphael(gd.paperDOM,gd.plotwidth,gd.plotheight);
-    gd.plot.gd=gd; // so any element can get gd from this.paper.gd
-    gd.plotDOM=gd.paperDOM.childNodes[0];
-    gd.plotDOM.style.position='';
-    gd.plotDOM.setAttribute('x',gl.margin.l);
-    gd.plotDOM.setAttribute('y',gl.margin.t);
-    gd.viewbox={x:0,y:0};
-    gd.plotbg=gd.plot.rect(-screen.width,-screen.height,
-        gd.plotwidth+2*screen.width,gd.plotheight+2*screen.height);
-    gd.plotbg.attr({'fill':gl.plot_bgcolor,'stroke':''});
-    gd.plotbg.node.style.cursor='move';
-
-    // make the ticks, grids, and titles
-    doXTicks(gd);doYTicks(gd);doXGrid(gd);doYGrid(gd);
-    gl.xaxis.r0=gl.xaxis.range[0];
-    gl.yaxis.r0=gl.yaxis.range[0];
-
-    makeTitles(gd,''); // happens after ticks, so we can scoot titles out of the way if needed
+    if(plotter=='Raphael') {
+        // Make the graph containers
+        // We use a hack to get two nested Raphael objects (Raphael 2.0.1)
+        // First one (paper) is for the axes
+        gd.paper=Raphael(divid,gl.width,gl.height);
+        gd.paper.gd=gd; // so any element can get gd from this.paper.gd
+        gd.plotwidth=gl.width-gl.margin.l-gl.margin.r;
+        gd.plotheight=gl.height-gl.margin.t-gl.margin.b;
+        gd.ax=gd.paper.rect(gl.margin.l-gl.margin.pad,
+            gl.margin.t-gl.margin.pad,
+            gd.plotwidth+2*gl.margin.pad,
+            gd.plotheight+2*gl.margin.pad);
+        gd.paperDOM=gd.firstChild;
+        gd.paperDOM.style['background-color']=gl.paper_bgcolor;
     
-    //make the axis drag objects
-    var x0=gd.ylabels.getBBox().x;
-    var x1=gd.ax.attr('x');
-    var x2=x1+gd.ax.attr('width');
-    var y2=gd.ax.attr('y');
-    var y1=y2+gd.ax.attr('height');
-    var yb=gd.xlabels.getBBox();
-    var y0=yb.y+yb.height;
+        // Second one (plot) is for the data
+        gd.plot=Raphael(gd.paperDOM,gd.plotwidth,gd.plotheight);
+        gd.plot.gd=gd; // so any element can get gd from this.paper.gd
+        gd.plotDOM=gd.paperDOM.childNodes[0];
+        gd.plotDOM.style.position='';
+        gd.plotDOM.setAttribute('x',gl.margin.l);
+        gd.plotDOM.setAttribute('y',gl.margin.t);
+        gd.viewbox={x:0,y:0};
+        gd.plotbg=gd.plot.rect(-screen.width,-screen.height,
+            gd.plotwidth+2*screen.width,gd.plotheight+2*screen.height);
+        gd.plotbg.attr({'fill':gl.plot_bgcolor,'stroke':''});
+        gd.plotbg.node.style.cursor='move';
     
-    gd.paper.setStart();
-    gd.xdrag=gd.paper.rect(x1*0.9+x2*0.1,y1,(x2-x1)*0.8,y0-y1);
-    gd.xdrag.node.style.cursor='ew-resize';
-    gd.x0drag=gd.paper.rect(x1,y1,(x2-x1)*0.1,y0-y1);
-    gd.x0drag.node.style.cursor='w-resize';
-    gd.x1drag=gd.paper.rect(x1*0.1+x2*0.9,y1,(x2-x1)*0.1,y0-y1);
-    gd.x1drag.node.style.cursor='e-resize';
-
-    gd.ydrag=gd.paper.rect(x0,y2*0.9+y1*0.1,x1-x0,(y1-y2)*0.8);
-    gd.ydrag.node.style.cursor='ns-resize';
-    gd.y0drag=gd.paper.rect(x0,y1*0.9+y2*0.1,x1-x0,(y1-y2)*0.1);
-    gd.y0drag.node.style.cursor='s-resize';
-    gd.y1drag=gd.paper.rect(x0,y2,x1-x0,(y1-y2)*0.1);
-    gd.y1drag.node.style.cursor='n-resize';
+        // make the ticks, grids, and titles
+        doXTicks(gd);doYTicks(gd);doXGrid(gd);doYGrid(gd);
+        gl.xaxis.r0=gl.xaxis.range[0];
+        gl.yaxis.r0=gl.yaxis.range[0];
     
-    gd.nwdrag=gd.paper.rect(x0,y2+y1-y0,x1-x0,y0-y1);
-    gd.nwdrag.node.style.cursor='nw-resize';
-    gd.nedrag=gd.paper.rect(x2,y2+y1-y0,x1-x0,y0-y1);
-    gd.nedrag.node.style.cursor='ne-resize';
-    gd.swdrag=gd.paper.rect(x0,y1,x1-x0,y0-y1);
-    gd.swdrag.node.style.cursor='sw-resize';
-    gd.sedrag=gd.paper.rect(x2,y1,x1-x0,y0-y1);
-    gd.sedrag.node.style.cursor='se-resize';
-
-    gd.axdrags=gd.paper.setFinish();
-    gd.axdrags.attr({'stroke':'','fill':'rgba(0,0,0,0)'});
-
-    // the 'gd's at the end become 'this' in the fcns
-    gd.plotbg.drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
-
-    gd.nwdrag.drag(nwDrag,plotDragStart,zoomEnd,gd,gd,gd);
-    gd.nedrag.drag(neDrag,plotDragStart,zoomEnd,gd,gd,gd);
-    gd.swdrag.drag(swDrag,plotDragStart,zoomEnd,gd,gd,gd);
-    gd.sedrag.drag(seDrag,plotDragStart,zoomEnd,gd,gd,gd);
-
-    gd.x0drag.drag(x0Drag,xDragStart,zoomEnd,gd,gd,gd);
-    gd.x1drag.drag(x1Drag,xDragStart,zoomEnd,gd,gd,gd);
-    gd.y0drag.drag(y0Drag,yDragStart,zoomEnd,gd,gd,gd);
-    gd.y1drag.drag(y1Drag,yDragStart,zoomEnd,gd,gd,gd);
-
-	// Remove the hover title "Raphael's object" that Raphael makes...
-    gd.removeAttribute('title');    
-
-    // some drag events need to be built by hand from mousedown, mousemove, mouseup
-    // because dblclick doesn't register otherwise. Probably eventually all
-    // drag events will need to be this way, once we layer on enough functions...
-
-    // gd.mouseUp stores ms of last mouseup event on the drag bars
-    // so we can check for doubleclick when we see two mouseup events within
-    // gd.dblclickdelay ms 
-    // gd.dragged stores whether a drag has occurred, so we don't have to
-    // resetViewBox unnecessarily (ie if no move bigger than gd.mindrag pixels)
-    gd.mouseUp=0;
-    gd.dblclickdelay=300;
-    gd.mindrag=5; 
+        makeTitles(gd,''); // happens after ticks, so we can scoot titles out of the way if needed
+        
+        //make the axis drag objects
+        var x0=gd.ylabels.getBBox().x;
+        var x1=gd.ax.attr('x');
+        var x2=x1+gd.ax.attr('width');
+        var y2=gd.ax.attr('y');
+        var y1=y2+gd.ax.attr('height');
+        var yb=gd.xlabels.getBBox();
+        var y0=yb.y+yb.height;
+        
+        gd.paper.setStart();
+        gd.xdrag=gd.paper.rect(x1*0.9+x2*0.1,y1,(x2-x1)*0.8,y0-y1);
+        gd.xdrag.node.style.cursor='ew-resize';
+        gd.x0drag=gd.paper.rect(x1,y1,(x2-x1)*0.1,y0-y1);
+        gd.x0drag.node.style.cursor='w-resize';
+        gd.x1drag=gd.paper.rect(x1*0.1+x2*0.9,y1,(x2-x1)*0.1,y0-y1);
+        gd.x1drag.node.style.cursor='e-resize';
     
-    gd.xdrag.node.onmousedown = function(e) {
-        xDragStart.call(gd,null,null);
-        gd.dragged = false;
-        window.onmousemove = function(e2) {
-            gd.dragged=(Math.abs(e2.clientX-e.clientX)>gd.mindrag);
-            if(gd.dragged) xDrag.call(gd,e2.clientX-e.clientX,0);
-            else xDrag.call(gd,0,0);
-            pauseEvent(e2);
+        gd.ydrag=gd.paper.rect(x0,y2*0.9+y1*0.1,x1-x0,(y1-y2)*0.8);
+        gd.ydrag.node.style.cursor='ns-resize';
+        gd.y0drag=gd.paper.rect(x0,y1*0.9+y2*0.1,x1-x0,(y1-y2)*0.1);
+        gd.y0drag.node.style.cursor='s-resize';
+        gd.y1drag=gd.paper.rect(x0,y2,x1-x0,(y1-y2)*0.1);
+        gd.y1drag.node.style.cursor='n-resize';
+        
+        gd.nwdrag=gd.paper.rect(x0,y2+y1-y0,x1-x0,y0-y1);
+        gd.nwdrag.node.style.cursor='nw-resize';
+        gd.nedrag=gd.paper.rect(x2,y2+y1-y0,x1-x0,y0-y1);
+        gd.nedrag.node.style.cursor='ne-resize';
+        gd.swdrag=gd.paper.rect(x0,y1,x1-x0,y0-y1);
+        gd.swdrag.node.style.cursor='sw-resize';
+        gd.sedrag=gd.paper.rect(x2,y1,x1-x0,y0-y1);
+        gd.sedrag.node.style.cursor='se-resize';
+    
+        gd.axdrags=gd.paper.setFinish();
+        gd.axdrags.attr({'stroke':'','fill':'rgba(0,0,0,0)'});
+    
+        // the 'gd's at the end become 'this' in the fcns
+        gd.plotbg.drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
+    
+        gd.nwdrag.drag(nwDrag,plotDragStart,zoomEnd,gd,gd,gd);
+        gd.nedrag.drag(neDrag,plotDragStart,zoomEnd,gd,gd,gd);
+        gd.swdrag.drag(swDrag,plotDragStart,zoomEnd,gd,gd,gd);
+        gd.sedrag.drag(seDrag,plotDragStart,zoomEnd,gd,gd,gd);
+    
+        gd.x0drag.drag(x0Drag,xDragStart,zoomEnd,gd,gd,gd);
+        gd.x1drag.drag(x1Drag,xDragStart,zoomEnd,gd,gd,gd);
+        gd.y0drag.drag(y0Drag,yDragStart,zoomEnd,gd,gd,gd);
+        gd.y1drag.drag(y1Drag,yDragStart,zoomEnd,gd,gd,gd);
+    
+        // Remove the hover title "Raphael's object" that Raphael makes...
+        gd.removeAttribute('title');    
+    
+        // some drag events need to be built by hand from mousedown, mousemove, mouseup
+        // because dblclick doesn't register otherwise. Probably eventually all
+        // drag events will need to be this way, once we layer on enough functions...
+    
+        // gd.mouseUp stores ms of last mouseup event on the drag bars
+        // so we can check for doubleclick when we see two mouseup events within
+        // gd.dblclickdelay ms 
+        // gd.dragged stores whether a drag has occurred, so we don't have to
+        // resetViewBox unnecessarily (ie if no move bigger than gd.mindrag pixels)
+        gd.mouseUp=0;
+        gd.dblclickdelay=300;
+        gd.mindrag=5; 
+        
+        gd.xdrag.node.onmousedown = function(e) {
+            xDragStart.call(gd,null,null);
+            gd.dragged = false;
+            window.onmousemove = function(e2) {
+                gd.dragged=(Math.abs(e2.clientX-e.clientX)>gd.mindrag);
+                if(gd.dragged) xDrag.call(gd,e2.clientX-e.clientX,0);
+                else xDrag.call(gd,0,0);
+                pauseEvent(e2);
+            }
+            window.onmouseup = function(e2) {
+                var d=(new Date()).getTime();
+                if(d-gd.mouseUp<gd.dblclickdelay) xAuto.call(gd);
+                else if(gd.dragged) resetViewBox.call(gd);
+                gd.mouseUp = d;
+                window.onmousemove = null; window.onmouseup = null;
+            }
+            pauseEvent(e);
         }
-        window.onmouseup = function(e2) {
-            var d=(new Date()).getTime();
-            if(d-gd.mouseUp<gd.dblclickdelay) xAuto.call(gd);
-            else if(gd.dragged) resetViewBox.call(gd);
-            gd.mouseUp = d;
-            window.onmousemove = null; window.onmouseup = null;
+        
+        gd.ydrag.node.onmousedown = function(e) {
+            yDragStart.call(gd,null,null);
+            gd.dragged = false;
+            window.onmousemove = function(e2) {
+                gd.dragged=(Math.abs(e2.clientY-e.clientY)>gd.mindrag);
+                if(gd.dragged) yDrag.call(gd,0,e2.clientY-e.clientY);
+                else yDrag.call(gd,0,0);
+                pauseEvent(e2);
+            }
+            window.onmouseup = function(e2) {
+                var d=(new Date()).getTime();
+                if(d-gd.mouseUp<gd.dblclickdelay) yAuto.call(gd);
+                else if(gd.dragged) resetViewBox.call(gd);
+                gd.mouseUp = d;
+                window.onmousemove = null; window.onmouseup = null;
+            }
+            pauseEvent(e);
         }
-        pauseEvent(e);
     }
+    else if(plotter=='D3') {
     
-    gd.ydrag.node.onmousedown = function(e) {
-        yDragStart.call(gd,null,null);
-        gd.dragged = false;
-        window.onmousemove = function(e2) {
-            gd.dragged=(Math.abs(e2.clientY-e.clientY)>gd.mindrag);
-            if(gd.dragged) yDrag.call(gd,0,e2.clientY-e.clientY);
-            else yDrag.call(gd,0,0);
-            pauseEvent(e2);
-        }
-        window.onmouseup = function(e2) {
-            var d=(new Date()).getTime();
-            if(d-gd.mouseUp<gd.dblclickdelay) yAuto.call(gd);
-            else if(gd.dragged) resetViewBox.call(gd);
-            gd.mouseUp = d;
-            window.onmousemove = null; window.onmouseup = null;
-        }
-        pauseEvent(e);
     }
-
     // ------------------------------------------------------------ graphing toolbar
     // This section is super-finicky. Maybe because we somehow didn't get the
     // "btn-group-vertical" class from bootstrap initially, I had to bring it in myself
@@ -515,48 +525,53 @@ function newPlot(divid, layout) {
 
 function makeTitles(gd,title) {
     var gl=gd.layout;
-    if(title in {'':0,'xtitle':0}) {
-        if(gd.xtitle) gd.xtitle.remove();
-        if(gl.xaxis.title=='')
-            gd.xtitle=hoverBox(gd, (gl.margin.l-gl.margin.r)/2+gl.width/4, gl.height-10-(14/2), gl.width/2, 14)
-        else {
-            gd.xtitle=gd.paper.text((gl.width+gl.margin.l-gl.margin.r)/2, gl.height-10, gl.xaxis.title)
-                .attr({'font-size':14});
-            var titlebb=gd.xtitle.getBBox(), ticky=0, lbb;
-            for(var i=0; i<gd.xlabels.length; i++){
-                lbb=gd.xlabels[i].getBBox();
-                if(Raphael.isBBoxIntersect(titlebb,lbb))
-                    ticky=Math.min(Math.max(ticky,lbb.y2),gl.height-titlebb.height);
+    if(plotter=='Raphael'){
+        if(title in {'':0,'xtitle':0}) {
+            if(gd.xtitle) gd.xtitle.remove();
+            if(gl.xaxis.title=='')
+                gd.xtitle=hoverBox(gd, (gl.margin.l-gl.margin.r)/2+gl.width/4, gl.height-10-(14/2), gl.width/2, 14)
+            else {
+                gd.xtitle=gd.paper.text((gl.width+gl.margin.l-gl.margin.r)/2, gl.height-10, gl.xaxis.title)
+                    .attr({'font-size':14});
+                var titlebb=gd.xtitle.getBBox(), ticky=0, lbb;
+                for(var i=0; i<gd.xlabels.length; i++){
+                    lbb=gd.xlabels[i].getBBox();
+                    if(Raphael.isBBoxIntersect(titlebb,lbb))
+                        ticky=Math.min(Math.max(ticky,lbb.y2),gl.height-titlebb.height);
+                }
+                if(ticky>titlebb.y) gd.xtitle.transform('t0,'+(ticky-titlebb.y)+'...');
             }
-            if(ticky>titlebb.y) gd.xtitle.transform('t0,'+(ticky-titlebb.y)+'...');
+            gd.xtitle.dblclick(function(){autoGrowInput(gd,'xtitle', gl.xaxis, 'title', {});});
         }
-        gd.xtitle.dblclick(function(){autoGrowInput(gd,'xtitle', gl.xaxis, 'title', {});});
-    }
-    if(title in {'':0,'ytitle':0}) {
-        if(gd.ytitle) gd.ytitle.remove();
-        if(gl.yaxis.title=='')
-            gd.ytitle=hoverBox(gd, 20-14/2, (gl.margin.t-gl.margin.b)/2+gl.height/4, 14, gl.height/2)
-        else {
-            gd.ytitle=gd.paper.text(20, (gl.height+gl.margin.t-gl.margin.b)/2, gl.yaxis.title)
-                .rotate(-90).attr({'font-size':14});
-            var titlebb=gd.ytitle.getBBox(), tickx=gl.width, lbb;
-            for(var i=0; i<gd.ylabels.length; i++){
-                lbb=gd.ylabels[i].getBBox();
-                if(Raphael.isBBoxIntersect(titlebb,lbb))
-                    tickx=Math.max(Math.min(tickx,lbb.x),titlebb.width);
+        if(title in {'':0,'ytitle':0}) {
+            if(gd.ytitle) gd.ytitle.remove();
+            if(gl.yaxis.title=='')
+                gd.ytitle=hoverBox(gd, 20-14/2, (gl.margin.t-gl.margin.b)/2+gl.height/4, 14, gl.height/2)
+            else {
+                gd.ytitle=gd.paper.text(20, (gl.height+gl.margin.t-gl.margin.b)/2, gl.yaxis.title)
+                    .rotate(-90).attr({'font-size':14});
+                var titlebb=gd.ytitle.getBBox(), tickx=gl.width, lbb;
+                for(var i=0; i<gd.ylabels.length; i++){
+                    lbb=gd.ylabels[i].getBBox();
+                    if(Raphael.isBBoxIntersect(titlebb,lbb))
+                        tickx=Math.max(Math.min(tickx,lbb.x),titlebb.width);
+                }
+                if(tickx<titlebb.x2) gd.ytitle.transform('t'+(tickx-titlebb.x2)+',0...');
             }
-            if(tickx<titlebb.x2) gd.ytitle.transform('t'+(tickx-titlebb.x2)+',0...');
+            gd.ytitle.dblclick(function(){autoGrowInput(gd,'ytitle', gl.yaxis, 'title', {center: 0});});
         }
-        gd.ytitle.dblclick(function(){autoGrowInput(gd,'ytitle', gl.yaxis, 'title', {center: 0});});
+        if(title in {'':0,'gtitle':0}) {
+            if(gd.gtitle) gd.gtitle.remove();
+            if(gl.title=='')
+                gd.gtitle=hoverBox(gd, gl.width/4, gl.margin.t/2-16/2, gl.width/2, 16)
+            else
+                gd.gtitle=gd.paper.text(gl.width/2,gl.margin.t/2,gl.title)
+                    .attr({'font-size':16})
+            gd.gtitle.dblclick(function(){autoGrowInput(gd,'gtitle', gl, 'title', {});});
+        }
     }
-    if(title in {'':0,'gtitle':0}) {
-        if(gd.gtitle) gd.gtitle.remove();
-        if(gl.title=='')
-            gd.gtitle=hoverBox(gd, gl.width/4, gl.margin.t/2-16/2, gl.width/2, 16)
-        else
-            gd.gtitle=gd.paper.text(gl.width/2,gl.margin.t/2,gl.title)
-                .attr({'font-size':16})
-        gd.gtitle.dblclick(function(){autoGrowInput(gd,'gtitle', gl, 'title', {});});
+    else if(plotter=='D3'){
+    
     }
 }
 
@@ -569,17 +584,18 @@ function hoverBox(gd,l,t,w,h) {
     return box;
 }
 
+uoStack=[];
+// merge objects i and up recursively
 function updateObject(i,up) {
     if(!$.isPlainObject(up)) return i;
-    up.o={}; // seems like JS doesn't fully implement recursion... if I say o={} here then each level destroys the previous.
-    for(key in i) {
-        if(key in up) {
-            if($.isPlainObject(i[key])) up.o[key]=updateObject(i[key],up[key]);
-            else up.o[key]=up[key];
-        }
-        else up.o[key]=i[key];
+    var o = uoStack[uoStack.push({})-1]; // seems like JS doesn't fully implement recursion... if I say o={} here then each level destroys the previous.
+    for(key in i) o[key]=i[key];
+    for(key in up) {
+        if($.isPlainObject(up[key]))
+            o[key]=updateObject($.isPlainObject(i[key]) ? i[key] : {}, up[key]);
+        else o[key]=up[key];
     }
-    return up.o;
+    return uoStack.pop();
 }
 
 // to prevent text selection during drag.
@@ -602,53 +618,59 @@ function pauseEvent(e){
 // This is a bit ugly... but it's the only way I could find to pass in the element
 // (and layout var) totally by reference...
 function autoGrowInput(gd,el,cont,prop,o) {
-    // if box is initially empty, it's a hover box so we can't grab its properties:
-    // so make a dummy element to get the right properties; it will be deleted
-    // immediately after grabbing properties.
-    if($.trim(cont[prop])=='') {
-        gd[el].remove();
-        cont[prop]='.'; // very narrow string, so we can ignore its width
-        makeTitles(gd,el);
-        cont[prop]='';
+    if(plotter=='Raphael'){
+        // if box is initially empty, it's a hover box so we can't grab its properties:
+        // so make a dummy element to get the right properties; it will be deleted
+        // immediately after grabbing properties.
+        if($.trim(cont[prop])=='') {
+            gd[el].remove();
+            cont[prop]='.'; // very narrow string, so we can ignore its width
+            makeTitles(gd,el);
+            cont[prop]='';
+        }
+        
+        o = $.extend({
+            maxWidth: 1000,
+            minWidth: 20,
+            comfortZone: gd[el].attr('font-size')+3,
+            center: 1
+        }, o);
+    
+        var elTstr=gd[el].transform(),
+            inbox=document.createElement('input'),
+            pos=$(gd[el].node).position(),
+            gpos=$(gd.paperDOM).position(),
+            bbox=(plotter=='Raphael') ? gd[el].getBBox() : {},
+            posx=pos.left + gpos.left + $(gd).scrollLeft(),
+            posy=pos.top + gpos.top + $(gd).scrollTop();
+            // TODO: explicitly getting positions and adding scrolls seems silly...
+            // gotta be a better (and less fragile) way to do this.
+    
+        $(gd).append(inbox);
+        var input=$(inbox);
+        
+        input.css({
+            position:'absolute',
+            top: ((elTstr.length>0 && elTstr[elTstr.length-1][0]=='r' && elTstr[elTstr.length-1][1]!=0) ?
+                (bbox.height-bbox.width)/2 : 0) + posy - 2,
+            left: posx - 2, // shouldn't hard-code these -4's, but can't figure out how to determine them
+            'z-index':6000,
+            // not sure how many of these are needed, but they don't seem to hurt...
+            //TODO: this can't find the right vals if the box is blank...
+            fontSize: gd[el].attr('font-size'),
+            fontFamily: gd[el].attr('font-family'),
+            fontWeight: gd[el].attr('font-weight'),
+            fontStyle: gd[el].attr('font-style'),
+            fontStretch: gd[el].attr('font-stretch'),
+            fontVariant: gd[el].attr('font-variant'),
+            letterSpacing: gd[el].attr('letter-spacing'),
+            wordSpacing: gd[el].attr('word-spacing')
+        });
     }
+    else if(plotter=='D3'){
     
-    o = $.extend({
-        maxWidth: 1000,
-        minWidth: 20,
-        comfortZone: gd[el].attr('font-size')+3,
-        center: 1
-    }, o);
+    }
 
-    var elTstr=gd[el].transform(),
-        inbox=document.createElement('input'),
-        pos=$(gd[el].node).position(),
-        gpos=$(gd.paperDOM).position(),
-        bbox=gd[el].getBBox(),
-        posx=pos.left + gpos.left + $(gd).scrollLeft(),
-        posy=pos.top + gpos.top + $(gd).scrollTop();
-        // TODO: explicitly getting positions and adding scrolls seems silly...
-        // gotta be a better (and less fragile) way to do this.
-
-    $(gd).append(inbox);
-    var input=$(inbox);
-    
-    input.css({
-        position:'absolute',
-        top: ((elTstr.length>0 && elTstr[elTstr.length-1][0]=='r' && elTstr[elTstr.length-1][1]!=0) ?
-            (bbox.height-bbox.width)/2 : 0) + posy - 2,
-        left: posx - 2, // shouldn't hard-code these -4's, but can't figure out how to determine them
-        'z-index':6000,
-        // not sure how many of these are needed, but they don't seem to hurt...
-        //TODO: this can't find the right vals if the box is blank...
-        fontSize: gd[el].attr('font-size'),
-        fontFamily: gd[el].attr('font-family'),
-        fontWeight: gd[el].attr('font-weight'),
-        fontStyle: gd[el].attr('font-style'),
-        fontStretch: gd[el].attr('font-stretch'),
-        fontVariant: gd[el].attr('font-variant'),
-        letterSpacing: gd[el].attr('letter-spacing'),
-        wordSpacing: gd[el].attr('word-spacing')
-    });
     input.val($.trim(cont[prop]));
 
     var minWidth = o.minWidth || input.width(),
@@ -675,7 +697,9 @@ function autoGrowInput(gd,el,cont,prop,o) {
     var left0=input.position().left+(input.width()/2);
     
     // take away the existing one as soon as the input box is made
-    gd[el].remove()
+    if(plotter=='Raphael')
+        gd[el].remove();
+    else if(plotter=='D3') { };
     inbox.select();
     
     input.bind('keyup keydown blur update',function(e) {
@@ -759,16 +783,21 @@ function yDragStart(x,y) {
 }
 
 function dragTail(gd) {
-    doXTicks(gd);doYTicks(gd);
-    doXGrid(gd);doYGrid(gd);
-    gd.axdrags.toFront();
+//     doXTicks(gd);doYTicks(gd); // TODO: plot does all of these things at the end... do we need to do them here?
+//     doXGrid(gd);doYGrid(gd);
+//     gd.axdrags.toFront();
     plot(gd,'','');
 }
 
 function resetViewBox() {
     this.viewbox={x:0,y:0};
-    this.plot.setViewBox(0,0,this.plotwidth,this.plotheight,false);
-    this.plotbg.attr({'x':-screen.width, 'y':-screen.height})
+    if(plotter=='Raphael'){
+        this.plot.setViewBox(0,0,this.plotwidth,this.plotheight,false);
+        this.plotbg.attr({'x':-screen.width, 'y':-screen.height})
+    }
+    else if(plotter=='D3'){
+    
+    }
     dragTail(this);
     makeTitles(this,''); // so it can scoot titles out of the way if needed
 }
@@ -782,7 +811,9 @@ function plotDrag(dx,dy) {
     var gx=this.layout.xaxis;
     var gy=this.layout.yaxis;
     this.viewbox={x:-dx,y:-dy};
-    this.plot.setViewBox(-dx,-dy,this.plotwidth,this.plotheight,false);
+    if(plotter=='Raphael')
+        this.plot.setViewBox(-dx,-dy,this.plotwidth,this.plotheight,false);
+    else if(plotter=='D3'){ };
     gx.range=[gx.r0[0]-dx/gx.m,gx.r0[1]-dx/gx.m];
     gy.range=[gy.r0[0]-dy/gy.m,gy.r0[1]-dy/gy.m];
     doXTicks(this);doYTicks(this);
@@ -791,7 +822,9 @@ function plotDrag(dx,dy) {
 function xDrag(dx,dy) {
     var gx=this.layout.xaxis;
     this.viewbox.x=-dx;
-    this.plot.setViewBox(-dx,0,this.plotwidth,this.plotheight,false);
+    if(plotter=='Raphael')
+        this.plot.setViewBox(-dx,0,this.plotwidth,this.plotheight,false);
+    else if(plotter=='D3'){ };
     gx.range=[gx.r0[0]-dx/gx.m,gx.r0[1]-dx/gx.m];
     doXTicks(this);
 }
@@ -799,7 +832,9 @@ function xDrag(dx,dy) {
 function yDrag(dx,dy) {
     var gy=this.layout.yaxis;
     this.viewbox.y=-dy;
-    this.plot.setViewBox(0,-dy,this.plotwidth,this.plotheight,false);
+    if(plotter=='Raphael')
+        this.plot.setViewBox(0,-dy,this.plotwidth,this.plotheight,false);
+    else if(plotter=='D3'){ };
     gy.range=[gy.r0[0]-dy/gy.m,gy.r0[1]-dy/gy.m];
     doYTicks(this);
 }
@@ -811,8 +846,10 @@ function nwDrag(dx,dy) {
     if(fastscale){
         var dx=this.plotwidth*(gx.r0[0]-gx.range[0])/(gx.r0[0]-gx.r0[1]);
         var dy=this.plotheight*(gy.r0[1]-gy.range[1])/(gy.r0[1]-gy.r0[0]);
-        this.plotDOM.setAttribute('viewBox',
-            Raphael.format('{0} {1} {2} {3}',dx,dy,this.plotwidth-dx,this.plotheight-dy));
+        if(plotter=='Raphael')
+            this.plotDOM.setAttribute('viewBox',
+                Raphael.format('{0} {1} {2} {3}',dx,dy,this.plotwidth-dx,this.plotheight-dy));
+        else if(plotter=='D3'){ };
         doXTicks(this);doYTicks(this);
     }
     else dragTail(this);
@@ -825,8 +862,10 @@ function neDrag(dx,dy) {
     if(fastscale){
         var dx=this.plotwidth*(gx.r0[1]-gx.range[1])/(gx.r0[1]-gx.r0[0]);
         var dy=this.plotheight*(gy.r0[1]-gy.range[1])/(gy.r0[1]-gy.r0[0]);
-        this.plotDOM.setAttribute('viewBox',
-            Raphael.format('0 {0} {1} {2}',dy,this.plotwidth-dx,this.plotheight-dy));
+        if(plotter=='Raphael')
+            this.plotDOM.setAttribute('viewBox',
+                Raphael.format('0 {0} {1} {2}',dy,this.plotwidth-dx,this.plotheight-dy));
+        else if(plotter=='D3'){ };
         doXTicks(this);doYTicks(this);
     }
     else dragTail(this);
@@ -839,8 +878,10 @@ function swDrag(dx,dy) {
     if(fastscale){
         var dx=this.plotwidth*(gx.r0[0]-gx.range[0])/(gx.r0[0]-gx.r0[1]);
         var dy=this.plotheight*(gy.r0[0]-gy.range[0])/(gy.r0[0]-gy.r0[1]);
-        this.plotDOM.setAttribute('viewBox',
-            Raphael.format('{0} 0 {1} {2}',dx,this.plotwidth-dx,this.plotheight-dy));
+        if(plotter=='Raphael')
+            this.plotDOM.setAttribute('viewBox',
+                Raphael.format('{0} 0 {1} {2}',dx,this.plotwidth-dx,this.plotheight-dy));
+        else if(plotter=='D3'){ };
         doXTicks(this);doYTicks(this);
     }
     else dragTail(this);
@@ -853,8 +894,10 @@ function seDrag(dx,dy) {
     if(fastscale){
         var dx=this.plotwidth*(gx.r0[1]-gx.range[1])/(gx.r0[1]-gx.r0[0]);
         var dy=this.plotheight*(gy.r0[0]-gy.range[0])/(gy.r0[0]-gy.r0[1]);
-        this.plotDOM.setAttribute('viewBox',
-            Raphael.format('0 0 {0} {1}',this.plotwidth-dx,this.plotheight-dy));
+        if(plotter=='Raphael')
+            this.plotDOM.setAttribute('viewBox',
+                Raphael.format('0 0 {0} {1}',this.plotwidth-dx,this.plotheight-dy));
+        else if(plotter=='D3'){ };
         doXTicks(this);doYTicks(this);
     }
     else dragTail(this);
@@ -865,8 +908,10 @@ function x0Drag(dx,dy) {
     ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(dx/this.plotwidth);
     if(fastscale){
         var dx=this.plotwidth*(ga.r0[0]-ga.range[0])/(ga.r0[0]-ga.r0[1]);
-        this.plotDOM.setAttribute('viewBox',
-            Raphael.format('{0} 0 {1} {2}',dx,this.plotwidth-dx,this.plotheight));
+        if(plotter=='Raphael')
+            this.plotDOM.setAttribute('viewBox',
+                Raphael.format('{0} 0 {1} {2}',dx,this.plotwidth-dx,this.plotheight));
+        else if(plotter=='D3'){ };
         doXTicks(this);
     }
     else dragTail(this);
@@ -877,8 +922,10 @@ function x1Drag(dx,dy) {
     ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(-dx/this.plotwidth);
     if(fastscale){
         var dx=this.plotwidth*(ga.r0[1]-ga.range[1])/(ga.r0[1]-ga.r0[0]);
-        this.plotDOM.setAttribute('viewBox',
-            Raphael.format('0 0 {0} {1}',this.plotwidth-dx,this.plotheight));
+        if(plotter=='Raphael')
+            this.plotDOM.setAttribute('viewBox',
+                Raphael.format('0 0 {0} {1}',this.plotwidth-dx,this.plotheight));
+        else if(plotter=='D3'){ };
         doXTicks(this);
     }
     else dragTail(this);
@@ -889,8 +936,10 @@ function y1Drag(dx,dy) {
     ga.range[1]=ga.r0[0]+(ga.r0[1]-ga.r0[0])/dZoom(dy/this.plotheight);
     if(fastscale){
         var dy=this.plotheight*(ga.r0[1]-ga.range[1])/(ga.r0[1]-ga.r0[0]);
-        this.plotDOM.setAttribute('viewBox',
-            Raphael.format('0 {0} {1} {2}',dy,this.plotwidth,this.plotheight-dy));
+        if(plotter=='Raphael')
+            this.plotDOM.setAttribute('viewBox',
+                Raphael.format('0 {0} {1} {2}',dy,this.plotwidth,this.plotheight-dy));
+        else if(plotter=='D3'){ };
         doYTicks(this);
     }
     else dragTail(this);
@@ -901,8 +950,10 @@ function y0Drag(dx,dy) {
     ga.range[0]=ga.r0[1]+(ga.r0[0]-ga.r0[1])/dZoom(-dy/this.plotheight);
     if(fastscale){
         var dy=this.plotheight*(ga.r0[0]-ga.range[0])/(ga.r0[0]-ga.r0[1]);
-        this.plotDOM.setAttribute('viewBox',
-            Raphael.format('0 0 {0} {1}',this.plotwidth,this.plotheight-dy));
+        if(plotter=='Raphael')
+            this.plotDOM.setAttribute('viewBox',
+                Raphael.format('0 0 {0} {1}',this.plotwidth,this.plotheight-dy));
+        else if(plotter=='D3'){ };
         doYTicks(this);
     }
     else dragTail(this);
@@ -915,7 +966,6 @@ function y0Drag(dx,dy) {
 // if ticks are set to automatic, determine the right values (tick0,dtick)
 // in any case, return how many digits to round tick labels to
 // for dates, return the formatting of the tick labels, in $.datepicker format
-// TODO: extension for the axis label to show omitted date parts? extend first or last tick label?
 function autoTicks(a) {
     var nt=10; // max number of ticks to display
     var rt=Math.abs(a.range[1]-a.range[0])/nt; // min tick spacing
@@ -1038,7 +1088,7 @@ function tickIncrement(x,dtick){
     // Log scales: Linear, Digits
     else if(tType=='L')
         return Math.log(Math.pow(10,x)+Number(dtick.substr(1)))/Math.LN10;
-    else if(tType=='D') //log10 of 2,5,10, or all digits
+    else if(tType=='D') //log10 of 2,5,10, or all digits (logs just have to be close enough to round)
         return Math.floor(x+0.01)+roundUp(mod(x+0.01,1), (dtick=='D2')?
             [0.301,0.699,1]:[0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1]);
     else throw "unrecognized dtick "+String(dtick);
@@ -1123,7 +1173,9 @@ function ticktext(gd, px, py, prefix, a, x){
         if(prefix=='') px-=fontSize/4;
         else py+=fontSize/3;
     }
-    gd.paper.text(px, py, prefix+tt+suffix).attr({'font-size':fontSize});
+    if(plotter=='Raphael')
+        gd.paper.text(px, py, prefix+tt+suffix).attr({'font-size':fontSize});
+    else if(plotter=='D3') { };
 }
 
 function unicodeSuper(num){
@@ -1145,78 +1197,90 @@ function unicodeSub(num){
 }
 
 function doXTicks(gd) {
-    if(typeof gd.xticks != 'undefined') {gd.xticks.remove();gd.xlabels.remove();}
     var gl=gd.layout, gm=gl.margin, a=gl.xaxis, y1=gl.height-gm.b+gm.pad;
     
     autoTicks(a);
-    
-    // ticks
-    gd.paper.setStart();
     a.m=gd.plotwidth/(a.range[1]-a.range[0]);
     a.b=-a.m*a.range[0];
     a.tmin=tickFirst(a);
-    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
-        gd.paper.path(Raphael.format('M{0},{1}v{2}', gm.l+a.m*x+a.b, y1, a.ticklen))}
-    gd.xticks=gd.paper.setFinish();
     
-    // tick labels
-    gd.paper.setStart();
-    for(x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
-        ticktext(gd, gm.l+a.m*x+a.b, y1+a.ticklen, '\n', a, x);
-    gd.xlabels=gd.paper.setFinish();
+    if(plotter=='Raphael'){
+        if(typeof gd.xticks != 'undefined') {gd.xticks.remove();gd.xlabels.remove();}
+        // ticks
+        gd.paper.setStart();
+        for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
+            gd.paper.path(Raphael.format('M{0},{1}v{2}', gm.l+a.m*x+a.b, y1, a.ticklen))}
+        gd.xticks=gd.paper.setFinish();
+        
+        // tick labels
+        gd.paper.setStart();
+        for(x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
+            ticktext(gd, gm.l+a.m*x+a.b, y1+a.ticklen, '\n', a, x);
+        gd.xlabels=gd.paper.setFinish();
+    }
+    else if(plotter=='D3') { };
 }
 
 function doYTicks(gd) {
-    if(typeof gd.yticks != 'undefined') {gd.yticks.remove();gd.ylabels.remove();}
     var gl=gd.layout, gm=gl.margin, a=gl.yaxis, x1=gm.l-gm.pad;
 
     autoTicks(a);
-    
-    // ticks
-    gd.paper.setStart();
     a.m=gd.plotheight/(a.range[0]-a.range[1]);
     a.b=-a.m*a.range[1];
     a.tmin=tickFirst(a);
-    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
-        gd.paper.path(Raphael.format('M{0},{1}h{2}', x1, gm.t+a.m*x+a.b, -a.ticklen));
-    gd.yticks=gd.paper.setFinish();
-
-    // tick labels
-    gd.paper.setStart();
-    for(x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
-        ticktext(gd, x1-a.ticklen, gm.t+a.m*x+a.b, '', a, x);
-    gd.ylabels=gd.paper.setFinish();
-    gd.ylabels.attr({'text-anchor':'end'});
+    
+    if(plotter=='Raphael'){
+        if(typeof gd.yticks != 'undefined') {gd.yticks.remove();gd.ylabels.remove();}
+        // ticks
+        gd.paper.setStart();
+        for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
+            gd.paper.path(Raphael.format('M{0},{1}h{2}', x1, gm.t+a.m*x+a.b, -a.ticklen));
+        gd.yticks=gd.paper.setFinish();
+    
+        // tick labels
+        gd.paper.setStart();
+        for(x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
+            ticktext(gd, x1-a.ticklen, gm.t+a.m*x+a.b, '', a, x);
+        gd.ylabels=gd.paper.setFinish();
+        gd.ylabels.attr({'text-anchor':'end'});
+    }
+    else if(plotter=='D3') { };
 }
 
 function doXGrid(gd) { // assumes doXticks has been called recently, to set m and b
-    if(typeof gd.xgrid != 'undefined') {gd.xgrid.remove();}
     var a=gd.layout.xaxis, o;
-    gd.plot.setStart();
-    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
-        o=gd.plot.path(Raphael.format('M{0},{1}v{2}',a.m*x+a.b+gd.viewbox.x,
-            gd.viewbox.y-screen.height,gd.plotheight+2*screen.height));
-        if(typeof(a.dtick)=='string' && a.dtick.charAt(0)=='D' && mod(x+0.01,1)>0.1)
-            o.attr({'stroke-dasharray':'. '});
+    if(plotter=='Raphael'){
+        if(typeof gd.xgrid != 'undefined') {gd.xgrid.remove();}
+        gd.plot.setStart();
+        for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
+            o=gd.plot.path(Raphael.format('M{0},{1}v{2}',a.m*x+a.b+gd.viewbox.x,
+                gd.viewbox.y-screen.height,gd.plotheight+2*screen.height));
+            if(typeof(a.dtick)=='string' && a.dtick.charAt(0)=='D' && mod(x+0.01,1)>0.1)
+                o.attr({'stroke-dasharray':'. '});
+        }
+        gd.xgrid=gd.plot.setFinish();
+        gd.xgrid.attr({'stroke':'#ccc'}).toBack().drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
+        gd.plotbg.toBack();
     }
-    gd.xgrid=gd.plot.setFinish();
-    gd.xgrid.attr({'stroke':'#ccc'}).toBack().drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
-    gd.plotbg.toBack();
+    else if(plotter=='D3') { };
 }
 
 function doYGrid(gd) { // assumes doYticks has been called recently, to set m and b
-    if(typeof gd.ygrid != 'undefined') {gd.ygrid.remove();}
     var a=gd.layout.yaxis, o;
-    gd.plot.setStart();
-    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
-        o=gd.plot.path(Raphael.format('M{0},{1}h{2}',gd.viewbox.x-screen.width,
-            a.m*x+a.b+gd.viewbox.y,gd.plotwidth+2*screen.width));
-        if(typeof(a.dtick)=='string' && a.dtick.charAt(0)=='D' && mod(x+0.01,1)>0.1)
-            o.attr({'stroke-dasharray':'. '});
+    if(plotter=='Raphael'){
+        if(typeof gd.ygrid != 'undefined') {gd.ygrid.remove();}
+        gd.plot.setStart();
+        for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick)){
+            o=gd.plot.path(Raphael.format('M{0},{1}h{2}',gd.viewbox.x-screen.width,
+                a.m*x+a.b+gd.viewbox.y,gd.plotwidth+2*screen.width));
+            if(typeof(a.dtick)=='string' && a.dtick.charAt(0)=='D' && mod(x+0.01,1)>0.1)
+                o.attr({'stroke-dasharray':'. '});
+        }
+        gd.ygrid=gd.plot.setFinish();
+        gd.ygrid.attr({'stroke':'#ccc'}).toBack().drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
+        gd.plotbg.toBack();
     }
-    gd.ygrid=gd.plot.setFinish();
-    gd.ygrid.attr({'stroke':'#ccc'}).toBack().drag(plotDrag,plotDragStart,resetViewBox,gd,gd,gd);
-    gd.plotbg.toBack();
+    else if(plotter=='D3') { };
 }
 
 function axTitle(axis) {
