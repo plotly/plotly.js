@@ -1296,24 +1296,6 @@ function axTitle(axis) {
 // Graph file operations
 // ----------------------------------------------------
 
-function saveGraph(divid) {
-    var gd=gettab();
-    //var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-    if(typeof gd.fid !='string') gd.fid='';
-
-    // jsonify the graph data and layout
-    var data = [];
-    for(d in gd.data) data.push(stripSrc(gd.data[d]));
-    var gj = JSON.stringify({'layout':gd.layout,'data':data});
-    
-    // Use the graph title as the filename, unless the tab already has one
-    var fn = (gd.fn) ? gd.fn : gd.layout.title;
-
-    $.post("/save/",
-        {data:gj, ft:'plot', fid:gd.fid, fn:fn, ts:gd.ts},
-        function(res){saveResp(res,gd)});
-}
-
 function shareGraph(divid){
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
     if(typeof gd.fid !='string') gd.fid='';
