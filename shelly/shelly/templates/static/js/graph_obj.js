@@ -1297,8 +1297,12 @@ function axTitle(axis) {
 // ----------------------------------------------------
 
 function shareGraph(divid){
-    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-    if(typeof gd.fid !='string') gd.fid='';
+    //var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+    //if(typeof gd.fid !='string') gd.fid='';
+    gd=gettab();
+    if(gd.fid===undefined){
+        gd.fid='';
+    }
     if(gd.fid==''){
         saveGraph(divid);
         // give graph 1 second to save
