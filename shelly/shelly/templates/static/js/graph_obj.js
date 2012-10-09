@@ -27,6 +27,10 @@ var fastscale=true;
 // getting ready to probably switch to D3
 var plotter='Raphael';
 
+GRAPH_HEIGHT=500*1.2
+GRAPH_WIDTH=750*1.2;
+TOOLBAR_LEFT='920px';
+TOOLBAR_TOP='30px';
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
 // if necessary to create the framework
@@ -332,8 +336,8 @@ function newPlot(divid, layout) {
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
             title:'y-axis',unit:''},
-        width:750,
-        height:500,
+        width:GRAPH_WIDTH,
+        height:GRAPH_HEIGHT,
         margin:{l:50,r:10,t:30,b:40,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff' };
@@ -519,7 +523,7 @@ function newPlot(divid, layout) {
         '</div>'  
 
     $(gd).prepend(menudiv);
-    $(gd).find('.graphbar').css({'position':'absolute','left':'770px','top':'30px'});
+    $(gd).find('.graphbar').css({'position':'absolute','left':TOOLBAR_LEFT,'top':TOOLBAR_TOP});
     $(gd).find('.btn').tooltip({'placement':'left'}).width(14);
 }
 
@@ -1292,27 +1296,13 @@ function axTitle(axis) {
 // Graph file operations
 // ----------------------------------------------------
 
-function saveGraph(divid) {
-    var gd=gettab();
-    //var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-    if(typeof gd.fid !='string') gd.fid='';
-
-    // jsonify the graph data and layout
-    var data = [];
-    for(d in gd.data) data.push(stripSrc(gd.data[d]));
-    var gj = JSON.stringify({'layout':gd.layout,'data':data});
-    
-    // Use the graph title as the filename, unless the tab already has one
-    var fn = (gd.fn) ? gd.fn : gd.layout.title;
-
-    $.post("/save/",
-        {data:gj, ft:'plot', fid:gd.fid, fn:fn, ts:gd.ts},
-        function(res){saveResp(res,gd)});
-}
-
 function shareGraph(divid){
-    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-    if(typeof gd.fid !='string') gd.fid='';
+    //var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+    //if(typeof gd.fid !='string') gd.fid='';
+    gd=gettab();
+    if(gd.fid===undefined){
+        gd.fid='';
+    }
     if(gd.fid==''){
         saveGraph(divid);
         // give graph 1 second to save
