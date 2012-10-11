@@ -1299,6 +1299,7 @@ function axTitle(axis) {
 function shareGraph(divid){
     //var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
     //if(typeof gd.fid !='string') gd.fid='';
+    if(signedin()==false){return;}
     gd=gettab();
     if(gd.fid===undefined){
         gd.fid='';
