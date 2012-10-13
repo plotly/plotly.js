@@ -370,13 +370,13 @@ function newPlot(divid, layout) {
     gd.innerHTML='';
 
     // Get the layout info (this is the defaults)
-    gd.layout={title:'Untitled',
+    gd.layout={title:'Click to change title',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'x-axis',unit:''},
+            title:'Click to change x-axis label',unit:''},
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'y-axis',unit:''},
+            title:'Click to change y-axis label',unit:''},
         width:GRAPH_WIDTH,
         height:GRAPH_HEIGHT,
         margin:{l:50,r:10,t:30,b:40,pad:2},
