@@ -393,11 +393,11 @@ function newPlot(divid, layout) {
     //make the axis drag objects
     var x1=gl.margin.l;
     var x2=x1+gd.plotwidth;
-    var a=$('text.ytlabel').get().map(function(e){return e.getBBox().x});
+    var a=$(gd).find('text.ytlabel').get().map(function(e){return e.getBBox().x});
     var x0=Math.min.apply(a,a); // gotta be a better way to do this...
     var y2=gl.margin.t;
     var y1=y2+gd.plotheight;
-    var a=$('text.xtlabel').get().map(function(e){var bb=e.getBBox(); return bb.y+bb.height});
+    var a=$(gd).find('text.xtlabel').get().map(function(e){var bb=e.getBBox(); return bb.y+bb.height});
     var y0=Math.max.apply(a,a); // again, gotta be a better way...
 
     // drag box goes over the grids and data... we can use just this hover for all data hover effects)
@@ -552,7 +552,7 @@ function makeTitles(gd,title) {
                     .on('mouseover',function(){d3.select(this).style('opacity',1);})
                     .on('mouseout',function(){d3.select(this).style('opacity',0);})
                   .transition()
-                    .delay(5000)
+                    .delay(2000)
                     .duration(2000)
                     .style('opacity',0);
             else
@@ -822,7 +822,7 @@ function plotDrag(dx,dy,ns,ew) {
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
 // TODO: so far it's all autotick=true, but when it's not date and log scales will need things done.
-function calcTicks(gd,a,pxrange) {
+function calcTicks(gd,a) {
     var nt=10; // max number of ticks to display
     var rt=Math.abs(a.range[1]-a.range[0])/nt; // min tick spacing
     if(a.isdate){
@@ -910,9 +910,17 @@ function calcTicks(gd,a,pxrange) {
         a.tickround=Math.pow(10,2-Math.round(Math.log(a.dtick)/Math.LN10));
     }
     
-    // set scaling to pixels, and first tick val
-    a.m=pxrange/(a.range[0]-a.range[1]);
-    a.b=-a.m*a.range[1];
+    // set scaling to pixels
+    if(a===gd.layout.yaxis) {
+        a.m=gd.plotheight/(a.range[0]-a.range[1]);
+        a.b=-a.m*a.range[1];
+    }
+    else {
+        a.m=gd.plotwidth/(a.range[1]-a.range[0]);
+        a.b=-a.m*a.range[0];    
+    }
+    
+    // find the first tick
     a.tmin=tickFirst(a);
     
     // return the full set of tick vals
@@ -1061,7 +1069,7 @@ function unicodeSub(num){
 
 function doXTicks(gd) {
     var gl=gd.layout, gm=gl.margin, a=gl.xaxis, y1=gl.height-gm.b+gm.pad;
-    var vals=calcTicks(gd,a,gd.plotwidth);
+    var vals=calcTicks(gd,a);
 
     // ticks
     var xt=gd.axislayer.selectAll('line.xtick').data(vals);
@@ -1109,7 +1117,7 @@ function doXTicks(gd) {
 
 function doYTicks(gd) {
     var gl=gd.layout, gm=gl.margin, a=gl.yaxis, x1=gm.l-gm.pad;
-    var vals=calcTicks(gd,a,gd.plotheight);
+    var vals=calcTicks(gd,a);
     
     // ticks
     var yt=gd.axislayer.selectAll('line.ytick').data(vals);
