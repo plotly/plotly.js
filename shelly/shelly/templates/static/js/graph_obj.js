@@ -336,13 +336,13 @@ function newPlot(divid, layout) {
     gd.innerHTML='';
 
     // Get the layout info (this is the defaults)
-    gd.layout={title:'Click to change title',
+    gd.layout={title:'',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'Click to change x-axis label',unit:''},
+            title:'',unit:''},
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'Click to change y-axis label',unit:''},
+            title:'',unit:''},
         width:GRAPH_WIDTH,
         height:GRAPH_HEIGHT,
         margin:{l:50,r:10,t:30,b:40,pad:2},
@@ -548,9 +548,13 @@ function makeTitles(gd,title) {
                 .on('click',function(){autoGrowInput(gd,this)});
             if(!t.cont.title)
                 el.text('Click to enter '+t.name+' title')
-                    .style('opacity',0)
-                    .on('mouseover',function(){d3.select(this).style('opacity',0.5);})
-                    .on('mouseout',function(){d3.select(this).style('opacity',0);});
+                    .style('opacity',1)
+                    .on('mouseover',function(){d3.select(this).style('opacity',1);})
+                    .on('mouseout',function(){d3.select(this).style('opacity',0);})
+                  .transition()
+                    .delay(5000)
+                    .duration(2000)
+                    .style('opacity',0);
             else
                 el.text(t.cont.title+ (!t.cont.unit ? '' : (' ('+t.cont.unit+')')));
             var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paper.node().getBoundingClientRect();
