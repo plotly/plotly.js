@@ -390,15 +390,22 @@ function newPlot(divid, layout) {
     // Maybe if we re-download bootstrap this will be fixed?
     var menudiv =
         '<div class="graphbar">'+
-            '<div class="btn-group btn-stack">'+
-                '<a class="btn" id="graphtogrid" onclick="graphToGrid()" rel="tooltip" title="Show in Grid">'+
-                    '<i class="icon-th"></i></a>'+
-            '</div>'+
+            '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data" class="btn-stack">'+
+                '<div class="btn-group btn-group-vertical">'+
+                    '<span class="btn fileinput-button">'+
+                        '<i class="icon-upload"></i>'+
+                        '<input type="file" name="files[]" multiple></span>'+
+                '</div>'+
+            '</form>'+            
             '<div class="btn-group btn-group-vertical btn-stack">'+
                 '<a class="btn" id="pdfexport" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Download as PDF">'+
                     '<img src="/static/img/pdf.png" /></a>'+
                 '<a class="btn" id="pngexport" onclick="pdfexport(\'png\')" rel="tooltip" title="Download as PNG">'+
                     '<i class="icon-picture"></i></a>'+
+            '</div>'+
+            '<div class="btn-group btn-stack">'+
+                '<a class="btn" id="graphtogrid" onclick="graphToGrid()" rel="tooltip" title="Show in Grid">'+
+                    '<i class="icon-th"></i></a>'+
             '</div>'+
             '<div class="btn-group btn-stack">'+
                 '<a class="btn" onclick="saveGraph(\'gettab()\')" rel="tooltip" title="Save">'+
