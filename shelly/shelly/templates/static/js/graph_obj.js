@@ -48,7 +48,8 @@ data should be an array of objects, one per trace. allowed keys:
     line: (object):
         color: (cstring), or (cstring array)
         width: (float px), default 1
-        
+    
+    color: (cstring), or (cstring array)    
     text: (string array) hover text for each point
 
     name: <string for legend>
@@ -169,10 +170,17 @@ function plot(divid, data, layout) {
     }
 
     // prepare the data and find the autorange
-    var calcdata=[]
+    gd.calcdata=[]
     for(curve in gdd) {
         gdc=gdd[curve];
-        var color = ('color' in gdc) ? gdc.color : defaultColors[curve % defaultColors.length];
+        if(!('color' in gdc)) gdc.color = defaultColors[curve % defaultColors.length];
+        if(!('name' in gdc)) {
+            if('ysrc' in gdc) {
+                var ns=gdc.ysrc.split('/')
+                gdc.name=ns[ns.length-1].replace('\n',' ');
+            }
+            else gdc.name='trace '+curve;
+        }
         
         //default type is scatter
         if(!('type' in gdc) || (gdc.type=='scatter')) {
@@ -198,17 +206,28 @@ function plot(divid, data, layout) {
             serieslen=Math.min(x.length,y.length);
             if(xa.autorange) xdr=[aggNums(Math.min,xdr[0],x,serieslen),aggNums(Math.max,xdr[1],x,serieslen)];
             if(ya.autorange) ydr=[aggNums(Math.min,ydr[0],y,serieslen),aggNums(Math.max,ydr[1],y,serieslen)];
+            // create the "calculated data" to plot
             var cd=[];
             for(i=0;i<serieslen;i++) cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ? {x:x[i],y:y[i]} : {x:false,y:false});
-            cd[0].t={color:color}; // TODO: put other trace attributes here, and other point attributes above
-            calcdata.push(cd);
+            // add the trace-wide properties to the first point
+            // TODO: this won't get things inside marker and line objects, once we get to those...
+            //   either change the object format, or make this recursive on plain objects
+            cd[0].t={};
+            for(key in gdc) {
+                if(key.indexOf('src')==-1 && ['string','number'].indexOf(typeof gdc[key])!=-1)
+                    cd[0].t[key]=gdc[key];
             }
-            CD=[calcdata,xdr,ydr];
+            gd.calcdata.push(cd);
         }
-    if($.isNumeric(xdr[0])) {
-        if(xa.autorange) xa.range=[1.05*xdr[0]-0.05*xdr[1],1.05*xdr[1]-0.05*xdr[0]];
-        if(ya.autorange) ya.range=[1.05*ydr[0]-0.05*ydr[1],1.05*ydr[1]-0.05*ydr[0]];
-        doXTicks(gd);doYTicks(gd);
+        CD=[gd.calcdata,xdr,ydr];
+    }
+    if(xa.autorange && $.isNumeric(xdr[0])) {
+        xa.range=[1.05*xdr[0]-0.05*xdr[1],1.05*xdr[1]-0.05*xdr[0]];
+        doXTicks(gd);
+    }
+    if(ya.autorange && $.isNumeric(ydr[0])) {
+        ya.range=[1.05*ydr[0]-0.05*ydr[1],1.05*ydr[1]-0.05*ydr[0]];
+        doYTicks(gd);
     }
 
     // now plot the data
@@ -216,14 +235,12 @@ function plot(divid, data, layout) {
     gp.selectAll('g.trace').remove();
     
     var traces = gp.selectAll('g.trace')
-        .data(calcdata)
+        .data(gd.calcdata)
         .enter().append('g')
         .attr('class','trace');
 
     traces.append('polyline') // TODO: break this into multiple polylines on non-numerics
-        .attr('stroke',function(d){return d[0].t.color})
-        .attr('stroke-width',1)
-        .style('fill','none')
+        .call(lineGroupStyle)
         .attr('points',function(d){out=''
             for(var i=0;i<d.length;i++)
                 if($.isNumeric(d[i].x)&&$.isNumeric(d[i].y))
@@ -233,94 +250,36 @@ function plot(divid, data, layout) {
     
     var pointgroups=traces.append('g')
         .attr('class','points')
-        .attr('stroke-width',0)
-        .style('fill',function(d){return d[0].t.color});
+        .call(pointGroupStyle);
     pointgroups.selectAll('circle')
         .data(function(d){return d})
         .enter().append('circle')
-        .attr('r',3)
+        .call(pointStyle)
         .each(function(d){
-            var x=xa.b+xa.m*d.x+vb.x, y=ya.b+ya.m*d.y+vb.y;
-            if($.isNumeric(x)&&$.isNumeric(y)) // do we need to do anything with non-numeric points, or just leave their positions undefined?
-                d3.select(this).attr('cx',x).attr('cy',y);
+            if($.isNumeric(d.x)&&$.isNumeric(d.y))
+                d3.select(this)
+                    .attr('cx',xa.b+xa.m*d.x+vb.x)
+                    .attr('cy',ya.b+ya.m*d.y+vb.y);
             else d3.select(this).remove();
         });
+
+    // show the legend
+    if(gd.calcdata.length>1) legend(gd);
 }
 
-// convenience function to aggregate value v and array a (up to len)
-// using function f (ie Math.min, etc)
-// throwing out non-numeric values
-function aggNums(f,v,a,len) {
-	var r=($.isNumeric(v)) ? v : false;
-	for(i=0; i<len; i++) {
-	    if(!$.isNumeric(r)) r=a[i];
-	    else if($.isNumeric(a[i])) r=f(r,a[i]);
-	}
-	return r;
+function lineGroupStyle(s) {
+    s.attr('stroke-width',1)
+     .attr('stroke',function(d){return d[0].t.color})
+     .style('fill','none');
 }
 
-// does the array a have mostly dates rather than numbers?
-// note: some values can be neither (such as blanks, text)
-// 2- or 4-digit integers can be both, so require twice as many
-// dates as non-dates, to exclude cases with mostly 2 & 4 digit
-// numbers and a few dates
-function moreDates(a) {
-    var dcnt=0, ncnt=0;
-    for(var i in a) {
-        if(isDateTime(a[i])) dcnt+=1;
-        if($.isNumeric(a[i])) ncnt+=1;
-    }
-    return (dcnt>ncnt*2); 
+function pointGroupStyle(s) {
+    s.attr('stroke-width',0)
+     .style('fill',function(d){return d[0].t.color});
 }
 
-// does the array look like something that should be plotted on a log axis?
-// it should all be >0 or non-numeric
-// then it should have a range max/min at least 100
-// and at least 1/4 of distinct values <max/10
-function loggy(d,ax) {
-    var vals=[],v,c;
-    var ax2= (ax=='x') ? 'y' : 'x';
-    for(curve in d){
-        c=d[curve];
-        // curve has data: test each numeric point for <=0 and add if unique
-        if(ax in c) {
-            for(i in c[ax]) {
-                v=c[ax][i];
-                if($.isNumeric(v)){
-                    if(v<=0) return false;
-                    else if(vals.indexOf(v)<0) vals.push(v);
-                }
-            }
-        }
-        // curve has linear scaling: test endpoints for <=0 and add all points if unique
-        else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
-            if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) return false;
-            for(i in d[curve][ax2]) {
-                v=c[ax+'0']+c['d'+ax]*i;
-                if(vals.indexOf(v)<0) vals.push(v);
-            }
-        }
-    }
-    // now look for range and distribution
-    var mx=Math.max.apply(Math,vals), mn=Math.min.apply(Math,vals);
-    return ((mx/mn>=100)&&(vals.sort()[Math.ceil(vals.length/4)]<mx/10));
-}
-
-// if isdate, convert value (or all values) from dates to milliseconds
-// if islog, take the log here
-function convertToAxis(o,a){
-    if(a.isdate||a.islog){
-        if($.isArray(o)){
-            var r=[];
-            for(i in o) r.push(a.isdate ? DateTime2ms(o[i]) : (o[i]>0) ? Math.log(o[i])/Math.LN10 : null);
-            return r;
-        }
-        else return a.isdate ? DateTime2ms(o) : (o>0) ? Math.log(o)/Math.LN10 : null;
-    }
-    else if($.isArray(o))
-        return o.map(function(d){return $.isNumeric(d) ? d : null})
-    else
-        return $.isNumeric(o) ? o : null;
+function pointStyle(s) {
+        s.attr('r',3);
 }
 
 // ----------------------------------------------------
@@ -420,7 +379,7 @@ function newPlot(divid, layout) {
         .style('fill','black')
         .style('opacity',0)
         .attr('stroke-width',0);
-    
+
     // ------------------------------------------------------------ graphing toolbar
     // This section is super-finicky. Maybe because we somehow didn't get the
     // "btn-group-vertical" class from bootstrap initially, I had to bring it in myself
@@ -449,6 +408,10 @@ function newPlot(divid, layout) {
                 '<a class="btn" onclick="shareGraph(\'gettab()\')" rel="tooltip" title="Share">'+
                     '<i class="icon-globe"></i></a>'+
             '</div>'+
+            '<div class="btn-group btn-stack">'+
+                '<a class="btn" onclick="toggleLegend(gettab())" rel="tooltip" title="Legend">'+
+                    '<i class="icon-list"></i></a>'+
+            '</div>'+
         '</div>'  
 
     $(gd).prepend(menudiv);
@@ -456,23 +419,29 @@ function newPlot(divid, layout) {
     $(gd).find('.btn').tooltip({'placement':'left'}).width(14);
 }
 
+// ----------------------------------------------------
+// Axis dragging functions
+// ----------------------------------------------------
+
 function dragBox(gd,x,y,w,h,ns,ew) {
     // some drag events need to be built by hand from mousedown, mousemove, mouseup
     // because dblclick doesn't register otherwise. Probably eventually all
     // drag events will need to be this way, once we layer on enough functions...
 
-    // gd.mouseUp stores ms of last mouseup event on the drag bars
-    // so we can check for doubleclick when we see two mouseup events within
-    // gd.dblclickdelay ms 
+    // gd.mouseDown stores ms of first mousedown event in the last dblclickDelay ms on the drag bars
+    // and gd.numClicks stores how many mousedowns have been seen within dblclickDelay
+    // so we can check for click or doubleclick events
     // gd.dragged stores whether a drag has occurred, so we don't have to
     // resetViewBox unnecessarily (ie if no move bigger than gd.mindrag pixels)
-    gd.mouseUp=0;
-    gd.dblclickdelay=300;
+    gd.mouseDown=0;
+    gd.numClicks=1;
+    gd.dblclickDelay=600;
     gd.mindrag=5; 
     
     var cursor=(ns+ew).toLowerCase()+'-resize';
     if(cursor=='nsew-resize') cursor='move';
-    dragger=gd.paper.append('rect').attr('class','drag')
+    dragger=gd.paper.append('rect').classed('drag',true)
+        .classed(ns+ew+'drag',true)
         .attr('x',x)
         .attr('y',y)
         .attr('width',w)
@@ -480,6 +449,18 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         .style('cursor',cursor);
 
     dragger.node().onmousedown = function(e) {
+        var eln=this;
+        var d=(new Date()).getTime();
+        if(d-gd.mouseDown<gd.dblclickDelay)
+            gd.numClicks+=1; // in a click train
+        else { // new click train
+            gd.numClicks=1;
+            gd.mouseDown=d;
+        }
+        // because we cancel event bubbling, input won't receive its blur event.
+        // TODO: anything else we need to manually bubble? any more restricted way to cancel bubbling?
+        if(gd.input) gd.input.trigger('blur');
+        
         if(ew) {
             var gx=gd.layout.xaxis;
             gx.r0=[gx.range[0],gx.range[1]];
@@ -494,8 +475,8 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         window.onmousemove = function(e2) {
             // clamp tiny drags to the origin
             gd.dragged=(( (!ns) ? Math.abs(e2.clientX-e.clientX) :
-                (!ew) ? Math.abs(e2.clientY-e.clientY) :
-                Math.abs(e2.clientX-e.clientX,2)+Math.abs(e2.clientY-e.clientY,2)
+                    (!ew) ? Math.abs(e2.clientY-e.clientY) :
+                    Math.abs(e2.clientX-e.clientX,2)+Math.abs(e2.clientY-e.clientY,2)
                 ) > gd.mindrag);
             // execute the drag
             if(gd.dragged) plotDrag.call(gd,e2.clientX-e.clientX,e2.clientY-e.clientY,ns,ew);
@@ -503,243 +484,28 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             pauseEvent(e2);
         }
         window.onmouseup = function(e2) {
+            window.onmousemove = null; window.onmouseup = null;
             var d=(new Date()).getTime();
-            if(d-gd.mouseUp<gd.dblclickdelay) { // doubleclick event
-                if(ew=='ew') xAuto.call(gd);
-                if(ns=='ns') yAuto.call(gd);
-            }
-            else if(gd.dragged) // finish the drag
+            if(gd.dragged) // finish the drag
                 if(ns=='ns'||ew=='ew') resetViewBox.call(gd);
                 else zoomEnd.call(gd);
-            gd.mouseUp = d;
-            window.onmousemove = null; window.onmouseup = null;
+            else if(d-gd.mouseDown<gd.dblclickDelay) {
+                if(gd.numClicks==2) { // double click
+                    if(ew=='ew') gd.layout.xaxis.autorange=1;
+                    if(ns=='ns') gd.layout.yaxis.autorange=1;
+                    if(ns=='ns'||ew=='ew') plot(gd,'','');
+                }
+                else if(gd.numClicks==1) { // single click
+                    if(['n','s','e','w'].indexOf(ns+ew)>=0)// click on ends of ranges
+                        autoGrowInput(gd,eln);
+                }
+            }
         }
         pauseEvent(e);
     }
 
     return dragger;
 }
-
-function makeTitles(gd,title) {
-    var gl=gd.layout;
-    var titles={
-        'xtitle':{x: (gl.width+gl.margin.l-gl.margin.r)/2, y: gl.height-14*0.75,
-            w: gl.width/2, h: 14,
-            cont: gl.xaxis, fontSize: 14, name: 'X axis',
-            transform: '', attr: {}},
-        'ytitle':{x: 20, y: (gl.height+gl.margin.t-gl.margin.b)/2,
-            w: 14, h: gl.height/2,
-            cont: gl.yaxis, fontSize: 14, name: 'Y axis',
-            transform: 'rotate(-90,x,y)', attr: {center: 0}},
-        'gtitle':{x: gl.width/2, y: gl.margin.t/2,
-            w: gl.width/2, h: 16,
-            cont: gl, fontSize: 16, name: 'Plot',
-            transform: '', attr: {}}};
-    for(k in titles){
-        if(title==k || title==''){
-            var t=titles[k];
-            gd.paper.select('.'+k).remove();
-            var el=gd.paper.append('text').attr('class',k)
-                .attr('x',t.x)
-                .attr('y',t.y)
-                .attr('font-size',t.fontSize)
-                .attr('text-anchor','middle')
-                .attr('transform',t.transform.replace('x',t.x).replace('y',t.y))
-                .on('click',function(){autoGrowInput(gd,this)});
-            if(!t.cont.title)
-                el.text('Click to enter '+t.name+' title')
-                    .style('opacity',1)
-                    .on('mouseover',function(){d3.select(this).style('opacity',1);})
-                    .on('mouseout',function(){d3.select(this).style('opacity',0);})
-                  .transition()
-                    .delay(2000)
-                    .duration(2000)
-                    .style('opacity',0);
-            else
-                el.text(t.cont.title+ (!t.cont.unit ? '' : (' ('+t.cont.unit+')')));
-            var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paper.node().getBoundingClientRect();
-            if(k=='xtitle'){
-                var labels=gd.paper.selectAll('.xtlabel')[0], ticky=0;
-                for(var i=0;i<labels.length;i++){
-                    var lbb=labels[i].getBoundingClientRect();
-                    if(bBoxIntersect(titlebb,lbb))
-                        ticky=Math.min(Math.max(ticky,lbb.bottom),gdbb.bottom-titlebb.height);
-                }
-                if(ticky>titlebb.top)
-                    el.attr('transform','translate(0,'+(ticky-titlebb.top)+') '+el.attr('transform'));
-            }
-            if(k=='ytitle'){
-                var labels=gd.paper.selectAll('.ytlabel')[0], tickx=screen.width;
-                for(var i=0;i<labels.length;i++){
-                    var lbb=labels[i].getBoundingClientRect();
-                    if(bBoxIntersect(titlebb,lbb))
-                        tickx=Math.max(Math.min(tickx,lbb.left),gdbb.left+titlebb.width);
-                }
-                if(tickx<titlebb.right)
-                    el.attr('transform','translate('+(tickx-titlebb.right)+') '+el.attr('transform'));
-            }
-        }
-    }
-}
-
-uoStack=[];
-// merge objects i and up recursively
-function updateObject(i,up) {
-    if(!$.isPlainObject(up)) return i;
-    var o = uoStack[uoStack.push({})-1]; // seems like JS doesn't fully implement recursion... if I say o={} here then each level destroys the previous.
-    for(key in i) o[key]=i[key];
-    for(key in up) {
-        if($.isPlainObject(up[key]))
-            o[key]=updateObject($.isPlainObject(i[key]) ? i[key] : {}, up[key]);
-        else o[key]=up[key];
-    }
-    return uoStack.pop();
-}
-
-// auto-grow text input field, for editing graph items
-// from http://jsbin.com/ahaxe, heavily edited
-// to grow centered, set o.center!=0
-// el is the raphael element containing the edited text (eg gd.xtitle)
-// cont is the location the value is stored (eg gd.layout.xaxis)
-// prop is the property name in that container (eg 'title')
-// o is the settings for the input box (can be left blank to use defaults below)
-// This is a bit ugly... but it's the only way I could find to pass in the element
-// (and layout var) totally by reference...
-function autoGrowInput(gd,el,cont,prop,o) {
-    if(typeof el != 'string') {
-        el = d3.select(el).attr('class');
-        cont =  el=='xtitle' ? gd.layout.xaxis :
-                el=='ytitle' ? gd.layout.yaxis : gd.layout;
-        prop = 'title';
-        o = el=='ytitle' ? {center: 0} : {};
-    }
-    // if box is initially empty, it's a hover box so we can't grab its properties:
-    // so make a dummy element to get the right properties; it will be deleted
-    // immediately after grabbing properties.
-    if($.trim(cont[prop])=='') {
-        gd.paper.selectAll('.'+el).remove();
-        cont[prop]='.'; // very narrow string, so we can ignore its width
-        makeTitles(gd,el);
-        cont[prop]='';
-    }
-    var el3 = gd.paper.selectAll('.'+el),eln=el3.node();
-    o = $.extend({
-        maxWidth: 1000,
-        minWidth: 20,
-        comfortZone: Number(el3.attr('font-size'))+3,
-        center: 1
-    }, o);
-
-    var eltrans=el3.attr('transform'),
-        inbox=document.createElement('input'),
-        pos=$(eln).position(),
-        gpos=$(gd.paper.node()).position(),
-        bbox=eln.getBoundingClientRect(),
-        posx=pos.left + gpos.left + $(gd).scrollLeft(),
-        posy=pos.top + gpos.top + $(gd).scrollTop();
-        // TODO: explicitly getting positions and adding scrolls seems silly...
-        // gotta be a better (and less fragile) way to do this.
-
-    $(gd).append(inbox);
-    var input=$(inbox);
-    
-    input.css({
-        position:'absolute',
-        top: (eltrans.indexOf('rotate')>=0 ?
-            (bbox.height-bbox.width)/2 : 0) + posy - 2,
-        left: posx - 2, // shouldn't hard-code these -4's, but can't figure out how to determine them
-        'z-index':6000,
-        // not sure how many of these are needed, but they don't seem to hurt...
-        fontSize: el3.attr('font-size'),
-        fontFamily: el3.attr('font-family'),
-        fontWeight: el3.attr('font-weight'),
-        fontStyle: el3.attr('font-style'),
-        fontStretch: el3.attr('font-stretch'),
-        fontVariant: el3.attr('font-variant'),
-        letterSpacing: el3.attr('letter-spacing'),
-        wordSpacing: el3.attr('word-spacing')
-    });
-
-    input.val($.trim(cont[prop]));
-    var minWidth = o.minWidth || input.width(),
-        val = input.val(),
-        testSubject = $('<tester/>').css({
-            position: 'absolute',
-            top: -9999,
-            left: -9999,
-            width: 'auto',
-            fontSize: input.css('fontSize'),
-            fontFamily: input.css('fontFamily'),
-            fontWeight: input.css('fontWeight'),
-            fontStyle: input.css('fontStyle'),
-            fontStretch: input.css('fontStretch'),
-            fontVariant: input.css('fontVariant'),
-            letterSpacing: input.css('letterSpacing'),
-            wordSpacing: input.css('wordSpacing'),
-            whiteSpace: 'nowrap'
-        });
-    testSubject.insertAfter(input);
-    testSubject.html(escaped(val));
-
-    input.width(Math.max(testSubject.width()*1.2+o.comfortZone,minWidth));
-
-    var left0=input.position().left+(input.width()/2);
-    
-    // take away the existing one as soon as the input box is made
-    gd.paper.selectAll('.'+el).remove();
-    inbox.select();
-    
-    input.bind('keyup keydown blur update',function(e) {
-        var valold=val;
-        val=input.val();
-        
-        // leave the input or press return: accept the change
-        if((e.type=='blur') || (e.type=='keydown' && e.which==13)) {
-            cont[prop]=$.trim(val);
-            makeTitles(gd,el);
-            input.remove();
-        }
-        // press escape: revert the change
-        else if(e.type=='keydown' && e.which==27) {
-            makeTitles(gd,el);
-            input.remove();
-        }
-        // otherwise, if no change to val, stop
-        if(val === valold) return;
-
-        // Enter new content into testSubject
-        testSubject.html(escaped(val));
-
-        // Calculate new width + whether to change
-        var newWidth = Math.max(testSubject.width()+o.comfortZone,minWidth),
-            currentWidth = input.width();
-
-        // Animate width
-        if((newWidth < currentWidth && newWidth >= minWidth) || (newWidth > minWidth && newWidth < o.maxWidth)) {
-            if(o.center!=0) input.css('left', left0-newWidth/2);//input.position().left+(currentWidth-newWidth)/2);
-            input.width(newWidth);
-        }
-    });
-}
-
-function escaped(val) {
-    return val.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\s/g, '&nbsp;');
-}
-
-// autoscale one axis
-function xAuto() {
-    this.layout.xaxis.autorange=1;
-    plot(this,'','');
-}
-
-function yAuto() {
-    this.layout.yaxis.autorange=1;
-    plot(this,'','');
-}
-
-// ----------------------------------------------------
-// Axis dragging functions
-// ----------------------------------------------------
 
 // common transform for dragging one end of an axis
 // d>0 is compressing scale, d<0 is expanding
@@ -811,6 +577,375 @@ function plotDrag(dx,dy,ns,ew) {
         if(ns) doYTicks(this);
     }
     else dragTail(this);
+}
+
+// ----------------------------------------------------
+// Titles and text inputs
+// ----------------------------------------------------
+
+function makeTitles(gd,title) {
+    var gl=gd.layout;
+    var titles={
+        'xtitle':{x: (gl.width+gl.margin.l-gl.margin.r)/2, y: gl.height-14*0.75,
+            w: gl.width/2, h: 14,
+            cont: gl.xaxis, fontSize: 14, name: 'X axis',
+            transform: '', attr: {}},
+        'ytitle':{x: 20, y: (gl.height+gl.margin.t-gl.margin.b)/2,
+            w: 14, h: gl.height/2,
+            cont: gl.yaxis, fontSize: 14, name: 'Y axis',
+            transform: 'rotate(-90,x,y)', attr: {center: 0}},
+        'gtitle':{x: gl.width/2, y: gl.margin.t/2,
+            w: gl.width/2, h: 16,
+            cont: gl, fontSize: 16, name: 'Plot',
+            transform: '', attr: {}}};
+    for(k in titles){
+        if(title==k || title==''){
+            var t=titles[k];
+            gd.paper.select('.'+k).remove();
+            var el=gd.paper.append('text').attr('class',k)
+                .attr('x',t.x)
+                .attr('y',t.y)
+                .attr('font-size',t.fontSize)
+                .attr('text-anchor','middle')
+                .attr('transform',t.transform.replace('x',t.x).replace('y',t.y))
+                .on('click',function(){autoGrowInput(gd,this)});
+            if(t.cont.title)
+                el.each(function(){styleText(this,t.cont.title+ (!t.cont.unit ? '' : (' ('+t.cont.unit+')')))});
+            else
+                el.text('Click to enter '+t.name+' title')
+                    .style('opacity',1)
+                    .on('mouseover',function(){d3.select(this).transition().duration(100).style('opacity',1);})
+                    .on('mouseout',function(){d3.select(this).transition().duration(1000).style('opacity',0);})
+                  .transition()
+                    .delay(2000)
+                    .duration(2000)
+                    .style('opacity',0);
+            var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paper.node().getBoundingClientRect();
+            if(k=='xtitle'){
+                var labels=gd.paper.selectAll('.xtlabel')[0], ticky=0;
+                for(var i=0;i<labels.length;i++){
+                    var lbb=labels[i].getBoundingClientRect();
+                    if(bBoxIntersect(titlebb,lbb))
+                        ticky=Math.min(Math.max(ticky,lbb.bottom),gdbb.bottom-titlebb.height);
+                }
+                if(ticky>titlebb.top)
+                    el.attr('transform','translate(0,'+(ticky-titlebb.top)+') '+el.attr('transform'));
+            }
+            if(k=='ytitle'){
+                var labels=gd.paper.selectAll('.ytlabel')[0], tickx=screen.width;
+                for(var i=0;i<labels.length;i++){
+                    var lbb=labels[i].getBoundingClientRect();
+                    if(bBoxIntersect(titlebb,lbb))
+                        tickx=Math.max(Math.min(tickx,lbb.left),gdbb.left+titlebb.width);
+                }
+                if(tickx<titlebb.right)
+                    el.attr('transform','translate('+(tickx-titlebb.right)+') '+el.attr('transform'));
+            }
+        }
+    }
+}
+
+function toggleLegend(gd) {
+    if(gd.legend) {
+        gd.paper.selectAll('.legend').remove();
+        gd.legend=undefined;
+    }
+    else legend(gd);
+}
+
+function legend(gd) {
+    var gl=gd.layout;
+    if(!gl.legend) gl.legend={};
+    gd.paper.selectAll('.legend').remove();
+    if(!gd.calcdata) return;
+
+    var ldata=[]
+    for(var i=0;i<gd.calcdata.length;i++) ldata.push([gd.calcdata[i][0]]);
+    
+    gd.legend=gd.paper.append('svg')
+        .attr('class','legend');
+
+    gd.legend.append('rect')
+        .attr('class','bg')
+        .attr('stroke','black')
+        .attr('stroke-width',1)
+        .style('fill',gl.paper_bgcolor)
+        .attr('x',1)
+        .attr('y',1);
+
+    var traces = gd.legend.selectAll('g.traces')
+        .data(ldata)
+      .enter().append('g')
+        .attr('class','trace');
+
+    traces.append('line')
+        .call(lineGroupStyle)
+        .attr('x1',5)
+        .attr('x2',35)
+        .attr('y1',0)
+        .attr('y2',0);
+        
+    traces.append('g')
+        .attr('class','legendpoints')
+        .call(pointGroupStyle)
+      .selectAll('circle')
+        .data(function(d){return d})
+      .enter().append('circle')
+        .call(pointStyle)
+        .attr('cx',20)
+        .attr('cy',0);
+
+    traces.append('text')
+        .attr('class',function(d,i){return 'legendtext text-'+i})
+        .attr('x',40)
+        .attr('y',0)
+        .attr('text-anchor','start')
+        .attr('font-size',12)
+        .each(function(d){styleText(this,d[0].t.name)})
+        .on('click',function(){autoGrowInput(gd,this)});
+
+    var legendwidth=0, legendheight=0;
+    traces.each(function(){
+        var g=d3.select(this), t=g.select('text'), l=g.select('line');
+        var tbb=t.node().getBoundingClientRect(),lbb=l.node().getBoundingClientRect();
+        t.attr('y',(lbb.top+lbb.bottom-tbb.top-tbb.bottom)/2);
+        var gbb=this.getBoundingClientRect();
+        legendwidth=Math.max(legendwidth,tbb.width);
+        g.attr('transform','translate(0,'+(5+legendheight+gbb.height/2)+')');
+        legendheight+=gbb.height+3;
+    });
+    legendwidth+=45;
+    legendheight+=10;
+
+//     if(!gl.legend.x) 
+    gl.legend.x=gl.width-gl.margin.r-legendwidth-10;
+//     if(!gl.legend.y) 
+    gl.legend.y=gl.margin.t+10;
+    gd.legend.attr('x',gl.legend.x)
+        .attr('y',gl.legend.y)
+        .attr('width',legendwidth)
+        .attr('height',legendheight);
+    gd.legend.selectAll('.bg')
+        .attr('width',legendwidth-2)
+        .attr('height',legendheight-2);
+}
+
+uoStack=[];
+// merge objects i and up recursively
+function updateObject(i,up) {
+    if(!$.isPlainObject(up)) return i;
+    var o = uoStack[uoStack.push({})-1]; // seems like JS doesn't fully implement recursion... if I say o={} here then each level destroys the previous.
+    for(key in i) o[key]=i[key];
+    for(key in up) {
+        if($.isPlainObject(up[key]))
+            o[key]=updateObject($.isPlainObject(i[key]) ? i[key] : {}, up[key]);
+        else o[key]=up[key];
+    }
+    return uoStack.pop();
+}
+
+// auto-grow text input field, for editing graph items
+// from http://jsbin.com/ahaxe, heavily edited
+// to grow centered, set o.align='center'
+// el is the raphael element containing the edited text (eg gd.xtitle)
+// cont is the location the value is stored (eg gd.layout.xaxis)
+// prop is the property name in that container (eg 'title')
+// o is the settings for the input box (can be left blank to use defaults below)
+// This is a bit ugly... but it's the only way I could find to pass in the element
+// (and layout var) totally by reference...
+function autoGrowInput(gd,eln) {
+    $(eln).tooltip('destroy'); // TODO: would like to leave this visible longer but then it loses its parent... how to avoid?
+    var el3 = d3.select(eln), el = el3.attr('class'), cont, prop, ref=el3;
+    var o = {maxWidth: 1000, minWidth: 20}, fontCss={};
+    var mode = (el.slice(1,6)=='title') ? 'title' : 
+                (el.slice(0,4)=='drag') ? 'drag' :
+                (el.slice(0,6)=='legend') ? 'legend' : 
+                    'unknown';
+    
+    if(mode=='unknown') {
+        console.log('oops, autoGrowInput doesn\'t recognize this field',el,eln);
+        return
+    }
+    
+    // are we editing a title?
+    if(mode=='title') {
+        cont =  el=='xtitle' ? gd.layout.xaxis :
+                el=='ytitle' ? gd.layout.yaxis : 
+                el=='gtitle' ? gd.layout : 
+                null;
+        prop = 'title';
+        // if box is initially empty, it's a hover box so we can't grab its properties:
+        // so make a dummy element to get the right properties; it will be deleted
+        // immediately after grabbing properties.
+        if($.trim(cont[prop])=='') {
+            el3.remove();
+            cont[prop]='.'; // very narrow string, so we can ignore its width
+            makeTitles(gd,el);
+            cont[prop]='';
+            el3=gd.paper.select('.'+el);
+            eln=el3.node();
+        }
+        o.align = el=='ytitle' ? 'left' : 'center';
+    }
+    // how about an axis endpoint?
+    else if(mode=='drag') {
+        if(el=='drag ndrag') cont=gd.layout.yaxis, prop=1;
+        else if(el=='drag sdrag') cont=gd.layout.yaxis, prop=0;
+        else if(el=='drag wdrag') cont=gd.layout.xaxis, prop=0;
+        else if(el=='drag edrag') cont=gd.layout.xaxis, prop=1;
+        o.align = (el=='drag edrag') ? 'right' : 'left';
+        ref=gd.paper.select('.xtitle'); // font properties reference
+    }
+    // legend text?
+    else if(mode=='legend') {
+        var tn = Number(el.split('-')[1])
+        cont = gd.data[tn], prop='name';
+        var cont2 = gd.calcdata[tn][0].t;
+        o.align = 'left';
+    }
+
+    // not sure how many of these are needed, but they don't seem to hurt...
+    fontCss={
+        fontSize: ref.attr('font-size'),
+        fontFamily: ref.attr('font-family'),
+        fontWeight: ref.attr('font-weight'),
+        fontStyle: ref.attr('font-style'),
+        fontStretch: ref.attr('font-stretch'),
+        fontVariant: ref.attr('font-variant'),
+        letterSpacing: ref.attr('letter-spacing'),
+        wordSpacing: ref.attr('word-spacing')
+    }
+
+    o.comfortZone = Number(ref.attr('font-size'))+3;
+
+    var eltrans=el3.attr('transform'),
+        inbox=document.createElement('input'),
+        pos=$(eln).position(),
+        gpos=$(gd.paper.node()).position(),
+        bbox=eln.getBoundingClientRect(),
+        posx=pos.left + gpos.left + $(gd).scrollLeft(),
+        posy=pos.top + gpos.top + $(gd).scrollTop();
+        // TODO: explicitly getting positions and adding scrolls seems silly...
+        // gotta be a better (and less fragile) way to do this.
+
+    $(gd).append(inbox);
+    var input=$(inbox);
+    gd.input=input;
+    
+    input.css(fontCss)
+        .css({
+            position:'absolute',
+            top: (eltrans && eltrans.indexOf('rotate')>=0 ?
+                (bbox.height-bbox.width)/2 : 0) + posy - 2,
+            left: posx - 2,
+            'z-index':6000
+        });
+    
+    if(mode=='drag') {
+        var v=cont.range[prop];
+        if(cont.islog) input.val(Math.pow(10,cont.range[prop]));
+        else if(cont.isdate){
+            var d=new Date(cont.range[prop]);
+            input.val($.datepicker.formatDate('yy-mm-dd',d)+' '+
+                lpad(d.getHours(),2)+':'+
+                lpad(d.getMinutes(),2)+ ':'+
+                lpad(d.getSeconds(),2)+'.'+
+                lpad(d.getMilliseconds(),3));
+        }
+        else input.val(cont.range[prop]);
+    }
+    else input.val($.trim(cont[prop]).replace(/[\r\n]/g,'<br>'));
+
+    var minWidth = o.minWidth || input.width(),
+        val = input.val(),
+        testSubject = $('<tester/>').css({
+            position: 'absolute',
+            top: -9999,
+            left: -9999,
+            width: 'auto',
+            whiteSpace: 'nowrap'
+        })
+        .css(fontCss)
+        .insertAfter(input)
+        .html(escaped(val));
+
+    input.width(Math.max(testSubject.width()*1.2+o.comfortZone,minWidth));
+
+    var ibbox=inbox.getBoundingClientRect();
+    if(mode=='drag') {
+        // fix positioning, since the drag boxes are not the same size as the input boxes
+        if(el=='drag sdrag') input.css('top', (input.position().top + bbox.bottom - ibbox.bottom)+'px');
+        if(el=='drag edrag') input.css('left', (input.position().left + bbox.width - ibbox.width)+'px');
+    }
+    else if(o.align=='right')
+        input.css('left',(input.position().left + bbox.width - ibbox.width)+'px');
+    else if(o.align=='center')
+        input.css('left',(input.position().left + (bbox.width - ibbox.width)/2)+'px');
+
+    var left0=input.position().left+(input.width()/2);
+    
+    // for titles, take away the existing one as soon as the input box is made
+    if(mode!='drag') gd.paper.selectAll('[class="'+el+'"]').remove();
+    inbox.select();
+    
+    input.bind('keyup keydown blur update',function(e) {
+        var valold=val;
+        val=input.val();
+        
+        // leave the input or press return: accept the change
+        if((e.type=='blur') || (e.type=='keydown' && e.which==13)) {
+            
+            if(mode=='title') {
+                cont[prop]=$.trim(val);
+                makeTitles(gd,el);
+            }
+            else if(mode=='drag') {
+                var v= (cont.islog) ? Math.log(Number($.trim(val)))/Math.LN10 :
+                    (cont.isdate) ? DateTime2ms($.trim(val)) :
+                        Number($.trim(val));
+                if($.isNumeric(v)) {
+                    cont.range[prop]=v;
+                    dragTail(gd);
+                }
+            }
+            else if(mode=='legend') {
+                cont[prop]=$.trim(val);
+                cont2[prop]=$.trim(val);
+                legend(gd);
+            }
+            input.remove();
+            testSubject.remove();
+            gd.input=null;
+            return;
+        }
+        // press escape: revert the change
+        else if(e.type=='keydown' && e.which==27) {
+            if(mode=='title') makeTitles(gd,el);
+            else if(mode=='legend') legend(gd);
+            input.remove();
+            testSubject.remove();
+            return;
+        }
+        // otherwise, if no change to val, stop
+        if(val === valold) return;
+
+        // Enter new content into testSubject
+        testSubject.html(escaped(val));
+
+        // Calculate new width + whether to change
+        var newWidth = Math.max(testSubject.width()+o.comfortZone,minWidth),
+            currentWidth = input.width();
+
+        // Animate width and update position
+        if((newWidth < currentWidth && newWidth >= minWidth) || (newWidth > minWidth && newWidth < o.maxWidth)) {
+            if(o.align!='left') input.css('left', left0-newWidth/(o.align=='center' ? 2 : 1));
+            input.width(newWidth);
+        }
+    });
+}
+
+function escaped(val) {
+    return val.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\s/g, '&nbsp;');
 }
 
 // ----------------------------------------------------
@@ -1010,13 +1145,13 @@ function tickText(gd, a, x){
         else if(a.tickround=='m')
             tt=$.datepicker.formatDate('M yy', d);
         else {
-            if(x==a.tmin) suffix='\n'+$.datepicker.formatDate('yy', d);
+            if(x==a.tmin) suffix='<br>'+$.datepicker.formatDate('yy', d);
             if(a.tickround=='d')
                 tt=$.datepicker.formatDate('M d', d);
             else if(a.tickround=='H')
                 tt=$.datepicker.formatDate('M d ', d)+lpad(d.getHours(),2)+'h';
             else {
-                if(x==a.tmin) suffix='\n'+$.datepicker.formatDate('M d, yy', d);
+                if(x==a.tmin) suffix='<br>'+$.datepicker.formatDate('M d, yy', d);
                 tt=lpad(d.getHours(),2)+':'+lpad(d.getMinutes(),2);
                 if(a.tickround!='M'){
                     tt+=':'+lpad(d.getSeconds(),2);
@@ -1028,7 +1163,7 @@ function tickText(gd, a, x){
     }
     else if(a.islog){
         if($.isNumeric(a.dtick)||((a.dtick.charAt(0)=='D')&&(mod(x+.01,1)<.1))) {
-            tt=(Math.round(x)==0)?'1':(Math.round(x)==1)?'10':'10'+unicodeSuper(Math.round(x));
+            tt=(Math.round(x)==0)?'1':(Math.round(x)==1)?'10':'10'+String(Math.round(x)).sup()
             fontSize*=1.25;
         }
         else if(a.dtick.charAt(0)=='D') {
@@ -1043,28 +1178,10 @@ function tickText(gd, a, x){
         tt=String(Math.round(x*a.tickround)/a.tickround);
     // if 9's are printed on log scale, move the 10's away a bit
     if((a.dtick=='D1') && (String(tt).charAt(0)=='1')){
-        if(a===gd.layout.xaxis) px-=fontSize/4;
+        if(a===gd.layout.yaxis) px-=fontSize/4;
         else py+=fontSize/3;
     }
     return {dx:px, dy:py, text:tt+suffix, fontSize:fontSize, x:x};
-}
-
-function unicodeSuper(num){
-    var code={'-':'\u207b', '0':'\u2070', '1':'\u00b9', '2':'\u00b2',
-            '3':'\u00b3', '4':'\u2074', '5':'\u2075', '6':'\u2076',
-            '7':'\u2077', '8':'\u2078', '9':'\u2079'};
-    var nstr=String(num),ustr='';
-    for(i=0;i<nstr.length;i++) ustr+=code[nstr.charAt(i)];
-    return ustr;
-}
-
-function unicodeSub(num){
-    var code={'-':'\u208b', '0':'\u2080', '1':'\u2081', '2':'\u2082',
-            '3':'\u2083', '4':'\u2084', '5':'\u2085', '6':'\u2086',
-            '7':'\u2087', '8':'\u2088', '9':'\u2089'};
-    var nstr=String(num),ustr='';
-    for(i=0;i<nstr.length;i++) ustr+=code[nstr.charAt(i)];
-    return ustr;
 }
 
 function doXTicks(gd) {
@@ -1096,23 +1213,16 @@ function doXTicks(gd) {
     xg.exit().remove();
     
     // tick labels
-    var xl=gd.axislayer.selectAll('text.xtlabel').data(vals,function(d){return d.text});
+    gd.axislayer.selectAll('text.xtlabel').remove(); // TODO: problems with reusing labels... shouldn't need this
+    var xl=gd.axislayer.selectAll('text.xtlabel').data(vals,function(d){return d});
     xl.enter().append('text').attr('class','xtlabel')
         .attr('x',function(d){return d.dx+gm.l})
         .attr('y',function(d){return d.dy+y1+a.ticklen+d.fontSize})
-        .each(function(d){
-            var dt=d.text.split('\n'), s=d3.select(this);
-            s.text(dt[0]);
-            for(var i=1;i<dt.length;i++)
-                s.append('tspan')
-                    .attr('x',s.attr('x'))
-                    .attr('dy',1.3*d.fontSize)
-                    .text(dt[i]);
-        })
         .attr('font-size',function(d){return d.fontSize})
-        .attr('text-anchor','middle');
+        .attr('text-anchor','middle')
+        .each(function(d){styleText(this,d.text)});
     xl.attr('transform',function(d){return 'translate('+(a.m*d.x+a.b)+',0)'});
-    xl.exit().remove();
+   xl.exit().remove();
 }
 
 function doYTicks(gd) {
@@ -1144,15 +1254,83 @@ function doYTicks(gd) {
     yg.exit().remove();
     
     // tick labels
-    var yl=gd.axislayer.selectAll('text.ytlabel').data(vals,function(d){return d.text});
+    gd.axislayer.selectAll('text.ytlabel').remove(); // TODO: problems with reusing labels... shouldn't need this.
+    var yl=gd.axislayer.selectAll('text.ytlabel').data(vals,function(d){return d});
     yl.enter().append('text').attr('class','ytlabel')
         .attr('x',function(d){return d.dx+x1-a.ticklen})
         .attr('y',function(d){return d.dy+gm.t+d.fontSize/2})
-        .text(function(d){return d.text})
         .attr('font-size',function(d){return d.fontSize})
-        .attr('text-anchor','end');
+        .attr('text-anchor','end')
+        .each(function(d){styleText(this,d.text)});
     yl.attr('transform',function(d){return 'translate(0,'+(a.m*d.x+a.b)+')'});
     yl.exit().remove();
+}
+
+// styling for svg text, in ~HTML format
+// <br> or \n makes a new line (translated to opening and closing <l> tags)
+// others need opening and closing tags:
+// <sup> makes superscripts
+// <sub> makes subscripts
+// <b>, <i> make bold and italic
+// <font> with any of style, weight, size, family, and color attributes changes the font
+// tries to find < and > that aren't part of a tag and convert to &lt; and &gt;
+// but if it fails, displays the unparsed text with a tooltip about the error
+function styleText(sn,t) {
+    var s=d3.select(sn);
+    var t1=t.replace(/((^|>)[^<>]*)>/g,'$1&gt;').replace(/(&gt;[^<>]*)>/g,'$1&gt;')
+            .replace(/<([^<>]*($|<))/g,'&lt;$1').replace(/<([^<>]*&lt;)/g,'&lt;$1')
+            .replace(/(<br(\s[^<>]*)?\/?>|\n)/g, '</l><l>');
+    lines=new DOMParser()
+        .parseFromString('<t><l>'+t1+'</l></t>','text/xml')
+        .getElementsByTagName('t')[0]
+        .childNodes;
+//     ST=lines;console.log(ST);
+    if(lines[0].nodeName=='parsererror') {
+        s.text(t);
+        $(s).tooltip({title:"Oops! We didn't get that. You can style text with "+
+                "HTML-like tags, but all tags except &lt;br&gt; must be closed, and "+
+                "sometimes you have to use &amp;gt; for &gt; and &amp;lt; for &lt;."})
+            .tooltip('show');
+    }
+    else for(var i=0; i<lines.length;i++){
+        var l=s.append('tspan').attr('class','nl');
+        if(i>0) l.attr('x',s.attr('x')).attr('dy',1.3*s.attr('font-size'));
+        styleTextInner(l,lines[i].childNodes);
+    }
+}
+
+function styleTextInner(s,n) {
+    for(var i=0; i<n.length;i++) {
+        if(n[i].nodeName=='#text') s.text(n[i].nodeValue);
+        else if(n[i].nodeName=='sup')
+            styleTextInner(s.append('tspan')
+                .attr('baseline-shift','super')
+                .attr('font-size','70%'),
+              n[i].childNodes);
+        else if(n[i].nodeName=='sub')
+            styleTextInner(s.append('tspan')
+                .attr('baseline-shift','sub')
+                .attr('font-size','70%'),
+              n[i].childNodes);
+        else if(n[i].nodeName=='b')
+            styleTextInner(s.append('tspan')
+                .attr('font-weight','bold'),
+              n[i].childNodes);
+        else if(n[i].nodeName=='i')
+            styleTextInner(s.append('tspan')
+                .attr('font-style','italic'),
+              n[i].childNodes);
+        else if(n[i].nodeName=='font') {
+            var ts=s.append('tspan');
+            if(n[i].hasAttribute('style')) ts.attr('font-style',n[i].getAttribute('style'));
+            if(n[i].hasAttribute('weight')) ts.attr('font-weight',n[i].getAttribute('weight'));
+            if(n[i].hasAttribute('size')) ts.attr('font-size',n[i].getAttribute('size'));
+            if(n[i].hasAttribute('family')) ts.attr('font-family',n[i].getAttribute('family'));
+            if(n[i].hasAttribute('color')) ts.attr('fill',n[i].getAttribute('color'));
+            styleTextInner(ts, n[i].childNodes);
+        }
+        // TODO: else?
+    }
 }
 
 // ----------------------------------------------------
@@ -1200,6 +1378,82 @@ function graphToGrid(){
 // ----------------------------------------------------
 // Utility functions
 // ----------------------------------------------------
+
+// aggregate value v and array a (up to len)
+// using function f (ie Math.min, etc)
+// throwing out non-numeric values
+function aggNums(f,v,a,len) {
+	var r=($.isNumeric(v)) ? v : false;
+	for(i=0; i<len; i++) {
+	    if(!$.isNumeric(r)) r=a[i];
+	    else if($.isNumeric(a[i])) r=f(r,a[i]);
+	}
+	return r;
+}
+
+// does the array a have mostly dates rather than numbers?
+// note: some values can be neither (such as blanks, text)
+// 2- or 4-digit integers can be both, so require twice as many
+// dates as non-dates, to exclude cases with mostly 2 & 4 digit
+// numbers and a few dates
+function moreDates(a) {
+    var dcnt=0, ncnt=0;
+    for(var i in a) {
+        if(isDateTime(a[i])) dcnt+=1;
+        if($.isNumeric(a[i])) ncnt+=1;
+    }
+    return (dcnt>ncnt*2); 
+}
+
+// does the array look like something that should be plotted on a log axis?
+// it should all be >0 or non-numeric
+// then it should have a range max/min at least 100
+// and at least 1/4 of distinct values <max/10
+function loggy(d,ax) {
+    var vals=[],v,c;
+    var ax2= (ax=='x') ? 'y' : 'x';
+    for(curve in d){
+        c=d[curve];
+        // curve has data: test each numeric point for <=0 and add if unique
+        if(ax in c) {
+            for(i in c[ax]) {
+                v=c[ax][i];
+                if($.isNumeric(v)){
+                    if(v<=0) return false;
+                    else if(vals.indexOf(v)<0) vals.push(v);
+                }
+            }
+        }
+        // curve has linear scaling: test endpoints for <=0 and add all points if unique
+        else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
+            if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) return false;
+            for(i in d[curve][ax2]) {
+                v=c[ax+'0']+c['d'+ax]*i;
+                if(vals.indexOf(v)<0) vals.push(v);
+            }
+        }
+    }
+    // now look for range and distribution
+    var mx=Math.max.apply(Math,vals), mn=Math.min.apply(Math,vals);
+    return ((mx/mn>=100)&&(vals.sort()[Math.ceil(vals.length/4)]<mx/10));
+}
+
+// if isdate, convert value (or all values) from dates to milliseconds
+// if islog, take the log here
+function convertToAxis(o,a){
+    if(a.isdate||a.islog){
+        if($.isArray(o)){
+            var r=[];
+            for(i in o) r.push(a.isdate ? DateTime2ms(o[i]) : (o[i]>0) ? Math.log(o[i])/Math.LN10 : null);
+            return r;
+        }
+        else return a.isdate ? DateTime2ms(o) : (o>0) ? Math.log(o)/Math.LN10 : null;
+    }
+    else if($.isArray(o))
+        return o.map(function(d){return $.isNumeric(d) ? d : null})
+    else
+        return $.isNumeric(o) ? o : null;
+}
 
 // do two bounding boxes from getBoundingClientRect,
 // ie {left,right,top,bottom,width,height}, overlap?
