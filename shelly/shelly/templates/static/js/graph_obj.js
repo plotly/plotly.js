@@ -391,8 +391,8 @@ function newPlot(divid, layout) {
     var menudiv =
         '<div class="graphbar">'+
             '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data" class="btn-stack">'+
-                '<div class="btn-group btn-group-vertical">'+
-                    '<span class="btn fileinput-button">'+
+                '<div class="btn-group btn-stack">'+
+                    '<span class="btn fileinput-button" rel="tooltip" title="Upload to Graph">'+
                         '<i class="icon-upload"></i>'+
                         '<input type="file" name="files[]" multiple></span>'+
                 '</div>'+
@@ -408,15 +408,15 @@ function newPlot(divid, layout) {
                     '<i class="icon-th"></i></a>'+
             '</div>'+
             '<div class="btn-group btn-stack">'+
-                '<a class="btn" onclick="saveGraph(\'gettab()\')" rel="tooltip" title="Save">'+
+                '<a class="btn" onclick="saveGraph(gettab())" rel="tooltip" title="Save">'+
                     '<i class="icon-hdd"></i></a>'+
             '</div>'+
             '<div class="btn-group btn-stack">'+
-                '<a class="btn" onclick="shareGraph(\'gettab()\')" rel="tooltip" title="Share">'+
+                '<a class="btn" onclick="shareGraph(gettab())" rel="tooltip" title="Share">'+
                     '<i class="icon-globe"></i></a>'+
             '</div>'+
             '<div class="btn-group btn-stack">'+
-                '<a class="btn" onclick="toggleLegend(gettab())" rel="tooltip" title="Legend">'+
+                '<a class="btn" onclick="toggleLegend(gettab())" rel="tooltip" title="Toggle Legend">'+
                     '<i class="icon-list"></i></a>'+
             '</div>'+
         '</div>'  
@@ -849,19 +849,31 @@ function autoGrowInput(gd,eln) {
         });
     
     if(mode=='drag') {
-        var v=cont.range[prop];
-        if(cont.islog) input.val(Math.pow(10,cont.range[prop]));
-        else if(cont.isdate){
-            var d=new Date(cont.range[prop]);
-            input.val($.datepicker.formatDate('yy-mm-dd',d)+' '+
-                lpad(d.getHours(),2)+':'+
-                lpad(d.getMinutes(),2)+ ':'+
-                lpad(d.getSeconds(),2)+'.'+
-                lpad(d.getMilliseconds(),3));
+        // show enough digits to specify the position to about a pixel, but not more
+        var v=cont.range[prop], diff=Math.abs(v-cont.range[1-prop]);
+        if(cont.islog) {
+            var dig=Math.ceil(Math.max(0,-Math.log(diff)/Math.LN10))+3;
+            input.val(d3.format('.'+String(dig)+'g')(Math.pow(10,v)));
         }
-        else input.val(cont.range[prop]);
+        else if(cont.isdate){
+            var d=new Date(v); // dates are stored in ms
+            var ds=$.datepicker.formatDate('yy-mm-dd',d);
+            if(diff<1000*3600*24*30) // <30 days: add hours
+                ds+=' '+lpad(d.getHours(),2);
+            if(diff<1000*3600*24*2) // <2 days: add minutes
+                ds+=':'+lpad(d.getMinutes(),2);
+            if(diff<1000*3600*3) // <3 hours: add seconds
+                ds+=':'+lpad(d.getSeconds(),2);
+            if(diff<1000*300) // <5 minutes: add ms
+                ds+='.'+lpad(d.getMilliseconds(),3);
+            input.val(ds);
+        }
+        else {
+            var dig=Math.floor(Math.log(Math.abs(v))/Math.LN10)-Math.floor(Math.log(diff)/Math.LN10)+4;
+            input.val(d3.format('.'+String(dig)+'g')(v));
+        }
     }
-    else input.val($.trim(cont[prop]).replace(/[\r\n]/g,'<br>'));
+    else input.val($.trim(cont[prop]).replace(/(\r\n?|\n\r?)/g,'<br>'));
 
     var minWidth = o.minWidth || input.width(),
         val = input.val(),
@@ -1061,27 +1073,33 @@ function calcTicks(gd,a) {
         a.m=gd.plotwidth/(a.range[1]-a.range[0]);
         a.b=-a.m*a.range[0];    
     }
-    
+        
     // find the first tick
     a.tmin=tickFirst(a);
     
+    // check for reversed axis
+    var axrev=(a.range[1]<a.range[0]);
+    
     // return the full set of tick vals
     var vals=[];
-    for(var x=a.tmin;x<=a.range[1];x=tickIncrement(x,a.dtick))
+    for(var x=a.tmin;(axrev)?(x>=a.range[1]):(x<=a.range[1]);x=tickIncrement(x,a.dtick,axrev))
         vals.push(tickText(gd, a, x));
     return vals;
 }
 
 // return the smallest element from (sorted) array a that's bigger than val
+// UPDATE: now includes option to reverse, ie find the largest element smaller than val
 // used to find the best tick given the minimum (non-rounded) tick
 // particularly useful for date/time where things are not powers of 10
 // binary search is probably overkill here...
-function roundUp(val,a){
+function roundUp(val,a,reverse){
     var low=0, high=a.length-1, mid;
+    if(reverse) var dlow=0, dhigh=1,sRound=Math.ceil;
+    else var dlow=1, dhigh=0,sRound=Math.floor;
     while(low<high){
-        mid=Math.floor((low+high)/2)
-        if(a[mid]<=val) low=mid+1;
-        else high=mid;
+        mid=sRound((low+high)/2)
+        if(a[mid]<=val) low=mid+dlow;
+        else high=mid-dhigh;
     }
     return a[low];
 }
@@ -1091,46 +1109,59 @@ function roundUp(val,a){
 // log-scale ticks are also not consistently spaced, except for pure powers of 10
 // numeric ticks always have constant differences, other datetime ticks
 // can all be calculated as constant number of milliseconds
-function tickIncrement(x,dtick){
+function tickIncrement(x,dtick,axrev){
     if($.isNumeric(dtick)) // includes all dates smaller than month, and pure 10^n in log
-        return x+dtick;
+        return x+(axrev?-dtick:dtick);
     
     var tType=dtick.charAt(0);
+    var dtnum=Number(dtick.substr(1)),dtSigned=(axrev?-dtnum:dtnum);
     // Dates: months (or years)
     if(tType=='M'){
         var y=new Date(x);
         // is this browser consistent? setMonth edits a date but returns that date's milliseconds
-        return y.setMonth(y.getMonth()+Number(dtick.substr(1)));
+        return y.setMonth(y.getMonth()+dtSigned);
     }
     // Log scales: Linear, Digits
     else if(tType=='L')
-        return Math.log(Math.pow(10,x)+Number(dtick.substr(1)))/Math.LN10;
-    else if(tType=='D') //log10 of 2,5,10, or all digits (logs just have to be close enough to round)
-        return Math.floor(x+0.01)+roundUp(mod(x+0.01,1), (dtick=='D2')?
-            [0.301,0.699,1]:[0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1]);
+        return Math.log(Math.pow(10,x)+dtSigned)/Math.LN10;
+    else if(tType=='D') {//log10 of 2,5,10, or all digits (logs just have to be close enough to round)
+        var tickset=(dtick=='D2')?
+            [-0.301,0,0.301,0.699,1]:[-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
+        var x2=x+(axrev ? -0.01 : 0.01);
+        var frac=roundUp(mod(x2,1), tickset, axrev);
+//         if(axrev) frac=tickset[tickset.indexOf(frac)-2];
+//         if(frac<0) {x-=1; frac+=1;}
+        return Math.floor(x2)+Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
+    }
     else throw "unrecognized dtick "+String(dtick);
 }
 
 // calculate the first tick on an axis
 function tickFirst(a){
+    var axrev=(a.range[1]<a.range[0]), sRound=(axrev ? Math.floor : Math.ceil);
     if($.isNumeric(a.dtick))
-        return Math.ceil((a.range[0]-a.tick0)/a.dtick)*a.dtick+a.tick0;
+        return sRound((a.range[0]-a.tick0)/a.dtick)*a.dtick+a.tick0;
 
     var tType=a.dtick.charAt(0), dt=Number(a.dtick.substr(1));
     // Dates: months (or years)
     if(tType=='M'){
         var t0=new Date(a.tick0), r0=new Date(a.range[0]);
-        var mdif=(r0.getFullYear()-t0.getFullYear())*12+r0.getMonth()-t0.getMonth()
-        var t1=t0.setMonth(t0.getMonth()+(Math.floor(mdif/dt)-1)*dt);
-        while(t1<a.range[0]) t1=tickIncrement(t1,a.dtick);
+        var mdif=(r0.getFullYear()-t0.getFullYear())*12+r0.getMonth()-t0.getMonth();
+        var t1=t0.setMonth(t0.getMonth()+(Math.round(+mdif/dt)+(axrev?1:-1))*dt);
+        while(axrev ? t1>a.range[0] : t1<a.range[0]) t1=tickIncrement(t1,a.dtick,axrev);
         return t1;    
     }
     // Log scales: Linear, Digits
     else if(tType=='L')
-        return Math.log(Math.ceil((Math.pow(10,a.range[0])-a.tick0)/dt)*dt+a.tick0)/Math.LN10;
-    else if(tType=='D')
-        return Math.floor(a.range[0])+roundUp(mod(a.range[0],1), (a.dtick=='D2')?
-            [0.301,0.699,1]:[0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1]);
+        return Math.log(sRound((Math.pow(10,a.range[0])-a.tick0)/dt)*dt+a.tick0)/Math.LN10;
+    else if(tType=='D') {
+//         return Math.floor(a.range[0])+roundUp(mod(a.range[0],1), (a.dtick=='D2')?
+//             [0.301,0.699,1]:[0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1]);
+        var tickset=(a.dtick=='D2')?
+            [-0.301,0,0.301,0.699,1]:[-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
+        var frac=roundUp(mod(a.range[0],1), tickset, axrev);
+        return Math.floor(a.range[0])+Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
+    }
     else throw "unrecognized dtick "+String(a.dtick);
 }
 
@@ -1274,24 +1305,44 @@ function doYTicks(gd) {
 }
 
 // styling for svg text, in ~HTML format
-// <br> or \n makes a new line (translated to opening and closing <l> tags)
+//   <br> or \n makes a new line (translated to opening and closing <l> tags)
 // others need opening and closing tags:
-// <sup> makes superscripts
-// <sub> makes subscripts
-// <b>, <i> make bold and italic
-// <font> with any of style, weight, size, family, and color attributes changes the font
+//   <sup>: superscripts
+//   <sub>: subscripts
+//   <b>: bold
+//   <i>: italic
+//   <font>: with any of style, weight, size, family, and color attributes changes the font
 // tries to find < and > that aren't part of a tag and convert to &lt; and &gt;
 // but if it fails, displays the unparsed text with a tooltip about the error
+// TODO: will barf on tags crossing newlines... need to close and reopen any such tags if we want to allow this.
 function styleText(sn,t) {
     var s=d3.select(sn);
-    var t1=t.replace(/((^|>)[^<>]*)>/g,'$1&gt;').replace(/(&gt;[^<>]*)>/g,'$1&gt;')
-            .replace(/<([^<>]*($|<))/g,'&lt;$1').replace(/<([^<>]*&lt;)/g,'&lt;$1')
-            .replace(/(<br(\s[^<>]*)?\/?>|\n)/g, '</l><l>');
+    // whitelist of tags we accept - make sure new tags get added here as well as styleTextInner
+    var tags=['sub','sup','b','i','font'];
+    var tagRE='\x01(\\/?(br|'+tags.join('|')+')(\\s[^\x01\x02]*)?\\/?)\x02';
+    // take the most permissive reading we can of the text:
+    // if we don't recognize a tag, treat it as literal text
+    var t1=t.replace(/</g,'\x01') // first turn all <, > to non-printing \x01, \x02
+            .replace(/>/g,'\x02')
+            .replace(new RegExp(tagRE,'gi'),'<$1>') // next turn good tags back to <...>
+            .replace(/(<br(\s[^<>]*)?\/?>|\n)/gi, '</l><l>') // translate <br> and \n
+            .replace(/\x01/g,'&lt;') // finally turn any remaining \x01, \x02 into &lt;, &gt;
+            .replace(/\x02/g,'&gt;');
+    // close unclosed tags
+    for(i in tags) {
+        var om=t1.match(new RegExp('<'+tags[i],'gi')), opens=om?om.length:0;
+        var cm=t1.match(new RegExp('<\\/'+tags[i],'gi')), closes=cm?cm.length:0;
+        while(closes<opens) { closes++; t1+='</'+tags[i]+'>'}
+    }
+    // quote unquoted attributes
+    var attrRE=/(<[^<>]*=\s*)([^<>\s"']+)(\s|>)/g;
+    while(t1.match(attrRE)) t1=t1.replace(attrRE,'$1"$2"$3');
+    
+    // parse the text into an xml tree
     lines=new DOMParser()
         .parseFromString('<t><l>'+t1+'</l></t>','text/xml')
         .getElementsByTagName('t')[0]
         .childNodes;
-//     ST=lines;console.log(ST);
     if(lines[0].nodeName=='parsererror') {
         s.text(t);
         $(s).tooltip({title:"Oops! We didn't get that. You can style text with "+
@@ -1299,44 +1350,56 @@ function styleText(sn,t) {
                 "sometimes you have to use &amp;gt; for &gt; and &amp;lt; for &lt;."})
             .tooltip('show');
     }
+    // create the styled output
     else for(var i=0; i<lines.length;i++){
         var l=s.append('tspan').attr('class','nl');
         if(i>0) l.attr('x',s.attr('x')).attr('dy',1.3*s.attr('font-size'));
         styleTextInner(l,lines[i].childNodes);
     }
+    // if the user did something weird and produced an empty output, give it some size
+    // and make it transparent, so they can get it back again
+    var bb=sn.getBoundingClientRect();
+    if(bb.width==0 || bb.height==0) {
+        s.selectAll('tspan').remove();
+        styleText(sn,'XXXXX');
+        s.attr('opacity',0);
+    }
 }
 
 function styleTextInner(s,n) {
     for(var i=0; i<n.length;i++) {
-        if(n[i].nodeName=='#text') s.text(n[i].nodeValue);
-        else if(n[i].nodeName=='sup')
+        var nn=n[i].nodeName.toLowerCase();
+        if(nn=='#text') s.text(n[i].nodeValue);
+        else if(nn=='sup')
             styleTextInner(s.append('tspan')
                 .attr('baseline-shift','super')
                 .attr('font-size','70%'),
               n[i].childNodes);
-        else if(n[i].nodeName=='sub')
+        else if(nn=='sub')
             styleTextInner(s.append('tspan')
                 .attr('baseline-shift','sub')
                 .attr('font-size','70%'),
               n[i].childNodes);
-        else if(n[i].nodeName=='b')
+        else if(nn=='b')
             styleTextInner(s.append('tspan')
                 .attr('font-weight','bold'),
               n[i].childNodes);
-        else if(n[i].nodeName=='i')
+        else if(nn=='i')
             styleTextInner(s.append('tspan')
                 .attr('font-style','italic'),
               n[i].childNodes);
-        else if(n[i].nodeName=='font') {
+        else if(nn=='font') {
             var ts=s.append('tspan');
-            if(n[i].hasAttribute('style')) ts.attr('font-style',n[i].getAttribute('style'));
-            if(n[i].hasAttribute('weight')) ts.attr('font-weight',n[i].getAttribute('weight'));
-            if(n[i].hasAttribute('size')) ts.attr('font-size',n[i].getAttribute('size'));
-            if(n[i].hasAttribute('family')) ts.attr('font-family',n[i].getAttribute('family'));
-            if(n[i].hasAttribute('color')) ts.attr('fill',n[i].getAttribute('color'));
+            for(var j=0; j<n[i].attributes.length; j++) {
+                var at=n[i].attributes[j],atl=at.name.toLowerCase(),atv=at.nodeValue;
+                if(atl=='style') ts.attr('font-style',atv);
+                else if(atl=='weight') ts.attr('font-weight',atv);
+                else if(atl=='size') ts.attr('font-size',atv);
+                else if(atl=='family') ts.attr('font-family',atv);
+                else if(atl=='color') ts.attr('fill',atv);
+            }
             styleTextInner(ts, n[i].childNodes);
         }
-        // TODO: else?
     }
 }
 
