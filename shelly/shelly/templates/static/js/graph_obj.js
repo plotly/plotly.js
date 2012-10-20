@@ -390,11 +390,11 @@ function newPlot(divid, layout) {
     // Maybe if we re-download bootstrap this will be fixed?
     var menudiv =
         '<div class="graphbar">'+
-            '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data" class="btn-stack">'+
+            '<form id="fileUploadForm" action="/writef/" method="POST" enctype="multipart/form-data" class="btn-stack">'+
                 '<div class="btn-group btn-group-vertical">'+
-                    '<span class="btn fileinput-button">'+
+                    '<span class="btn fileinput-button" rel="tooltip" title="Upload your Data">'+
                         '<i class="icon-upload"></i>'+
-                        '<input type="file" name="files[]" multiple></span>'+
+                        '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/></span>'+
                 '</div>'+
             '</form>'+            
             '<div class="btn-group btn-group-vertical btn-stack">'+
