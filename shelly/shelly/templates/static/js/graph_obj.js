@@ -1414,22 +1414,21 @@ function shareGraph(divid){
     gd=gettab();
     if(gd.fid===undefined || gd.fid==''){
         saveGraph(divid); // TODO: instead of a timeout, use a callback on finishing saveGraph
-        // give graph 1 second to save
-        setTimeout(function(){
-            // reload div
-            var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-            url=window.location.origin+'/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fid;
-            $('#linktoshare').val(url);
-            $('#linkModal').modal('toggle');
-            document.getElementById("linktoshare").select();
-        }, 1000);  
     }
-    else{
+    var spinner=new Spinner(opts).spin(gd);
+
+    // give graph 2.5 second to save and load iframe
+    setTimeout(function(){
+        // reload div
+        var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
         url=window.location.origin+'/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fid;
         $('#linktoshare').val(url);
+        $('#igraph').attr('src',url+'/500/300/');
+        $('#iframetoshare').text($('#igraphcontainer').html().replace(/^\s*/, '').replace(/\s*$/, ''));
         $('#linkModal').modal('toggle');
         document.getElementById("linktoshare").select();
-    }
+        spinner.stop();
+    }, 1000);  
 }
 
 // ------------------------------- graphToGrid
