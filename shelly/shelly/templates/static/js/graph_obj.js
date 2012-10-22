@@ -420,7 +420,7 @@ function newPlot(divid, layout) {
                     '<div class="btn-group btn-stack">'+
                         '<span class="btn fileinput-button" rel="tooltip" title="Upload to Graph">'+
                             '<i class="icon-upload"></i>'+
-                            '<input type="file" name="files[]" multiple></span>'+
+                            '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/></span>'+
                     '</div>'+
                 '</form>'+            
                 '<div class="btn-group btn-group-vertical btn-stack">'+
@@ -912,7 +912,7 @@ function autoGrowInput(gd,eln) {
     else if(o.align=='center') ileft+=(bbox.width+o.comfortZone-ibbox.width)/2;
     input.css('left',ileft+'px');
 
-    var leftshift={left:0, center:0.5, right:1}[o.align]
+    var leftshift={left:0, center:0.5, right:1}[o.align];
     var left0=input.position().left+input.width()*leftshift;
     
     // for titles, take away the existing one as soon as the input box is made
@@ -1413,22 +1413,21 @@ function shareGraph(divid){
     gd=gettab();
     if(gd.fid===undefined || gd.fid==''){
         saveGraph(divid); // TODO: instead of a timeout, use a callback on finishing saveGraph
-        // give graph 1 second to save
-        setTimeout(function(){
-            // reload div
-            var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-            url=window.location.origin+'/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fid;
-            $('#linktoshare').val(url);
-            $('#linkModal').modal('toggle');
-            document.getElementById("linktoshare").select();
-        }, 1000);  
     }
-    else{
+    var spinner=new Spinner(opts).spin(gd);
+
+    // give graph 2.5 second to save and load iframe
+    setTimeout(function(){
+        // reload div
+        var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
         url=window.location.origin+'/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fid;
         $('#linktoshare').val(url);
+        $('#igraph').attr('src',url+'/500/300/');
+        $('#iframetoshare').text($('#igraphcontainer').html().replace(/^\s*/, '').replace(/\s*$/, ''));
         $('#linkModal').modal('toggle');
         document.getElementById("linktoshare").select();
-    }
+        spinner.stop();
+    }, 1000);  
 }
 
 // ------------------------------- graphToGrid
