@@ -38,24 +38,22 @@ data should be an array of objects, one per trace. allowed keys:
     based on converting to ms since start of 1970 for plotting
     so we could at some point extend beyond 0-9999 limitation...
 
-    marker: (object):
-        symbol: (string) circle (default)
-        color: (cstring), or (cstring array)
-        line: (object):
-            color: (cstring), or (cstring array)
-            width: (float px), default 0
-
-    line: (object):
-        color: (cstring), or (cstring array)
-        width: (float px), default 1
+    marker: (string) default 'circle', or (string array)
+    markersize: (float px) default 6, or (float array)
+    markercolor: (cstring), or (cstring array)
+    markerlinecolor: (cstring), or (cstring array)
+    markerlinewidth: (float px) default 0, or (float array)
     
-    color: (cstring), or (cstring array)    
+    line: (string) default 'solid'
+    linecolor: (cstring), or (cstring array)
+    linewidth: (float px) default 1
+    
     text: (string array) hover text for each point
 
     name: <string for legend>
     
     cstring is a string with any valid HTML color
-    if any one color is provided, all others not provided will copy it
+    if any color is missing, all others not provided will copy it
     if no colors are provided, choose one from a default set based on the trace number
 
     eventually I'd like to make all of the marker and line properties accept arrays
@@ -86,7 +84,9 @@ function plot(divid, data, layout) {
     // (for extension to multiple graphs per page)
     // some callers send this in by dom element, others by id (string)
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-	var defaultColors=['#00e','#a00','#0c0','#000'];
+	var defaultColors=['#00e','#a00','#0c0','#000','#888'];
+	// test if this is on the main site or embedded
+	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-object (null, '', whatever) for data
@@ -221,47 +221,69 @@ function plot(divid, data, layout) {
         }
         CD=[gd.calcdata,xdr,ydr];
     }
+    // autorange... if axis is currently reversed, preserve this.
     if(xa.autorange && $.isNumeric(xdr[0])) {
-        xa.range=[1.05*xdr[0]-0.05*xdr[1],1.05*xdr[1]-0.05*xdr[0]];
-        doXTicks(gd);
+        if(xa.range && xa.range[1]<xa.range[0])
+            xa.range=[1.05*xdr[1]-0.05*xdr[0],1.05*xdr[0]-0.05*xdr[1]];
+        else
+            xa.range=[1.05*xdr[0]-0.05*xdr[1],1.05*xdr[1]-0.05*xdr[0]];
     }
     if(ya.autorange && $.isNumeric(ydr[0])) {
+        if(ya.range && ya.range[1]<ya.range[0])
+            ya.range=[1.05*ydr[1]-0.05*ydr[0],1.05*ydr[0]-0.05*ydr[1]];
+        else
+            ya.range=[1.05*ydr[0]-0.05*ydr[1],1.05*ydr[1]-0.05*ydr[0]];
         ya.range=[1.05*ydr[0]-0.05*ydr[1],1.05*ydr[1]-0.05*ydr[0]];
-        doYTicks(gd);
     }
 
-    // now plot the data
-    // TODO: to start we redraw each time. later we should be able to do way better on redraws...
-    gp.selectAll('g.trace').remove();
+    doXTicks(gd);
+    doYTicks(gd);
     
-    var traces = gp.selectAll('g.trace')
-        .data(gd.calcdata)
-        .enter().append('g')
-        .attr('class','trace');
-
-    traces.append('polyline') // TODO: break this into multiple polylines on non-numerics
-        .call(lineGroupStyle)
-        .attr('points',function(d){out=''
-            for(var i=0;i<d.length;i++)
-                if($.isNumeric(d[i].x)&&$.isNumeric(d[i].y))
-                    out+=(xa.b+xa.m*d[i].x+vb.x)+','+(ya.b+ya.m*d[i].y+vb.y)+' ';
-            return out;
-        });
+    if(!$.isNumeric(vb.x) || !$.isNumeric(vb.y)) {
+        gd.viewbox={x:0, y:0};
+        vb=gd.viewbox;
+    }
+    if($.isNumeric(xa.m) && $.isNumeric(xa.b) && $.isNumeric(ya.m) && $.isNumeric(ya.b)) {
+        var xf=function(d){return d3.round(xa.b+xa.m*d.x+vb.x,2)};
+        var yf=function(d){return d3.round(ya.b+ya.m*d.y+vb.y,2)};
+        // now plot the data
+        // TODO: to start we redraw each time. later we should be able to do way better on redraws...
+        gp.selectAll('g.trace').remove();
+        
+        var traces = gp.selectAll('g.trace')
+            .data(gd.calcdata)
+          .enter().append('g')
+            .attr('class','trace');
     
-    var pointgroups=traces.append('g')
-        .attr('class','points')
-        .call(pointGroupStyle);
-    pointgroups.selectAll('circle')
-        .data(function(d){return d})
-        .enter().append('circle')
-        .call(pointStyle)
-        .each(function(d){
-            if($.isNumeric(d.x)&&$.isNumeric(d.y))
-                d3.select(this)
-                    .attr('cx',xa.b+xa.m*d.x+vb.x)
-                    .attr('cy',ya.b+ya.m*d.y+vb.y);
-            else d3.select(this).remove();
+        traces.each(function(d){
+            var i=-1,t=d3.select(this);
+            while(i<d.length) {
+                var pts='';
+                for(i++; i<d.length && $.isNumeric(d[i].x) && $.isNumeric(d[i].y); i++)
+                    pts+=xf(d[i])+','+yf(d[i])+' ';
+                if(pts)
+                    t.append('polyline')
+                        .call(lineGroupStyle)
+                        .attr('points',pts);
+            }
         });
+        
+        var pointgroups=traces.append('g')
+            .attr('class','points')
+            .call(pointGroupStyle);
+        pointgroups.selectAll('circle')
+            .data(function(d){return d})
+          .enter().append('circle')
+            .each(function(d){
+                if($.isNumeric(d.x) && $.isNumeric(d.y))
+                    d3.select(this)
+                        .call(pointStyle)
+                        .attr('cx',xf(d))
+                        .attr('cy',yf(d));
+                else d3.select(this).remove();
+            });
+    }
+    else console.log('error with axis scaling',xa.m,xa.b,ya.m,ya.b);
 
     // show the legend
     if(gd.calcdata.length>1) legend(gd);
@@ -285,6 +307,7 @@ function pointStyle(s) {
 // ----------------------------------------------------
 // Create the plot container and axes
 // ----------------------------------------------------
+// TODO: check structure (?) to make faster selector queries when there's lots of data in the graph
 function newPlot(divid, layout) {
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
@@ -293,6 +316,8 @@ function newPlot(divid, layout) {
     if(!layout) layout={};
     // destroy any plot that already exists in this div
     gd.innerHTML='';
+	// test if this is on the main site or embedded
+	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
     // Get the layout info (this is the defaults)
     gd.layout={title:'',
@@ -380,50 +405,52 @@ function newPlot(divid, layout) {
         .style('opacity',0)
         .attr('stroke-width',0);
 
-    // ------------------------------------------------------------ graphing toolbar
-    // This section is super-finicky. Maybe because we somehow didn't get the
-    // "btn-group-vertical" class from bootstrap initially, I had to bring it in myself
-    // to plotly.css and maybe didn't do it right...
-    // For instance, a and button behave differently in weird ways, button nearly gets
-    // everything right but spacing between groups is different and I can't fix it,
-    // easier to use a throughout and then manually set width.
-    // Maybe if we re-download bootstrap this will be fixed?
-    var menudiv =
-        '<div class="graphbar">'+
-            '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data" class="btn-stack">'+
-                '<div class="btn-group btn-stack">'+
-                    '<span class="btn fileinput-button" rel="tooltip" title="Upload to Graph">'+
-                        '<i class="icon-upload"></i>'+
-                        '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/></span>'+
+    if(gd.mainsite) {
+        // ------------------------------------------------------------ graphing toolbar
+        // This section is super-finicky. Maybe because we somehow didn't get the
+        // "btn-group-vertical" class from bootstrap initially, I had to bring it in myself
+        // to plotly.css and maybe didn't do it right...
+        // For instance, a and button behave differently in weird ways, button nearly gets
+        // everything right but spacing between groups is different and I can't fix it,
+        // easier to use a throughout and then manually set width.
+        // Maybe if we re-download bootstrap this will be fixed?
+        var menudiv =
+            '<div class="graphbar">'+
+                '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data" class="btn-stack">'+
+                    '<div class="btn-group btn-stack">'+
+                        '<span class="btn fileinput-button" rel="tooltip" title="Upload to Graph">'+
+                            '<i class="icon-upload"></i>'+
+                            '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/></span>'+
+                    '</div>'+
+                '</form>'+            
+                '<div class="btn-group btn-group-vertical btn-stack">'+
+                    '<a class="btn" id="pdfexport" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Download as PDF">'+
+                        '<img src="/static/img/pdf.png" /></a>'+
+                    '<a class="btn" id="pngexport" onclick="pdfexport(\'png\')" rel="tooltip" title="Download as PNG">'+
+                        '<i class="icon-picture"></i></a>'+
                 '</div>'+
-            '</form>'+            
-            '<div class="btn-group btn-group-vertical btn-stack">'+
-                '<a class="btn" id="pdfexport" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Download as PDF">'+
-                    '<img src="/static/img/pdf.png" /></a>'+
-                '<a class="btn" id="pngexport" onclick="pdfexport(\'png\')" rel="tooltip" title="Download as PNG">'+
-                    '<i class="icon-picture"></i></a>'+
-            '</div>'+
-            '<div class="btn-group btn-stack">'+
-                '<a class="btn" id="graphtogrid" onclick="graphToGrid()" rel="tooltip" title="Show in Grid">'+
-                    '<i class="icon-th"></i></a>'+
-            '</div>'+
-            '<div class="btn-group btn-stack">'+
-                '<a class="btn" onclick="saveGraph(gettab())" rel="tooltip" title="Save">'+
-                    '<i class="icon-hdd"></i></a>'+
-            '</div>'+
-            '<div class="btn-group btn-stack">'+
-                '<a class="btn" onclick="shareGraph(gettab())" rel="tooltip" title="Share">'+
-                    '<i class="icon-globe"></i></a>'+
-            '</div>'+
-            '<div class="btn-group btn-stack">'+
-                '<a class="btn" onclick="toggleLegend(gettab())" rel="tooltip" title="Toggle Legend">'+
-                    '<i class="icon-list"></i></a>'+
-            '</div>'+
-        '</div>'  
-
-    $(gd).prepend(menudiv);
-    $(gd).find('.graphbar').css({'position':'absolute','left':TOOLBAR_LEFT,'top':TOOLBAR_TOP});
-    $(gd).find('.btn').tooltip({'placement':'left'}).width(14);
+                '<div class="btn-group btn-stack">'+
+                    '<a class="btn" id="graphtogrid" onclick="graphToGrid()" rel="tooltip" title="Show in Grid">'+
+                        '<i class="icon-th"></i></a>'+
+                '</div>'+
+                '<div class="btn-group btn-stack">'+
+                    '<a class="btn" onclick="saveGraph(gettab())" rel="tooltip" title="Save">'+
+                        '<i class="icon-hdd"></i></a>'+
+                '</div>'+
+                '<div class="btn-group btn-stack">'+
+                    '<a class="btn" onclick="shareGraph(gettab())" rel="tooltip" title="Share">'+
+                        '<i class="icon-globe"></i></a>'+
+                '</div>'+
+                '<div class="btn-group btn-stack">'+
+                    '<a class="btn" onclick="toggleLegend(gettab())" rel="tooltip" title="Toggle Legend">'+
+                        '<i class="icon-list"></i></a>'+
+                '</div>'+
+            '</div>'  
+    
+        $(gd).prepend(menudiv);
+        $(gd).find('.graphbar').css({'position':'absolute','left':TOOLBAR_LEFT,'top':TOOLBAR_TOP});
+        $(gd).find('.btn').tooltip({'placement':'left'}).width(14);
+    }
 }
 
 // ----------------------------------------------------
@@ -615,10 +642,12 @@ function makeTitles(gd,title) {
                 .attr('font-size',t.fontSize)
                 .attr('text-anchor','middle')
                 .attr('transform',t.transform.replace('x',t.x).replace('y',t.y))
-                .on('click',function(){autoGrowInput(gd,this)});
+            if(gd.mainsite)
+                el.on('click',function(){autoGrowInput(gd,this)});
+            
             if(t.cont.title)
                 el.each(function(){styleText(this,t.cont.title+ (!t.cont.unit ? '' : (' ('+t.cont.unit+')')))});
-            else
+            else if(gd.mainsite)
                 el.text('Click to enter '+t.name+' title')
                     .style('opacity',1)
                     .on('mouseover',function(){d3.select(this).transition().duration(100).style('opacity',1);})
@@ -627,6 +656,7 @@ function makeTitles(gd,title) {
                     .delay(2000)
                     .duration(2000)
                     .style('opacity',0);
+            else el.remove();
             var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paper.node().getBoundingClientRect();
             if(k=='xtitle'){
                 var labels=gd.paper.selectAll('.xtlabel')[0], ticky=0;
@@ -702,14 +732,15 @@ function legend(gd) {
         .attr('cx',20)
         .attr('cy',0);
 
-    traces.append('text')
+    var tracetext=traces.append('text')
         .attr('class',function(d,i){return 'legendtext text-'+i})
         .attr('x',40)
         .attr('y',0)
         .attr('text-anchor','start')
         .attr('font-size',12)
         .each(function(d){styleText(this,d[0].t.name)})
-        .on('click',function(){autoGrowInput(gd,this)});
+    if(gd.mainsite)
+        tracetext.on('click',function(){autoGrowInput(gd,this)});
 
     var legendwidth=0, legendheight=0;
     traces.each(function(){
@@ -762,7 +793,7 @@ function updateObject(i,up) {
 // (and layout var) totally by reference...
 function autoGrowInput(gd,eln) {
     $(eln).tooltip('destroy'); // TODO: would like to leave this visible longer but then it loses its parent... how to avoid?
-    var el3 = d3.select(eln), el = el3.attr('class'), cont, prop, ref=el3;
+    var el3 = d3.select(eln), el = el3.attr('class'), cont, prop, ref=$(eln);
     var o = {maxWidth: 1000, minWidth: 20}, fontCss={};
     var mode = (el.slice(1,6)=='title') ? 'title' : 
                 (el.slice(0,4)=='drag') ? 'drag' :
@@ -771,17 +802,18 @@ function autoGrowInput(gd,eln) {
     
     if(mode=='unknown') {
         console.log('oops, autoGrowInput doesn\'t recognize this field',el,eln);
-        return
+        return;
+    }
+    if(!gd.mainsite && mode!='drag') {
+        console.log('not on the main site but tried to edit text. ???',el,eln);
+        return;
     }
     
     // are we editing a title?
     if(mode=='title') {
-        cont =  el=='xtitle' ? gd.layout.xaxis :
-                el=='ytitle' ? gd.layout.yaxis : 
-                el=='gtitle' ? gd.layout : 
-                null;
+        cont =  {xtitle:gd.layout.xaxis, ytitle:gd.layout.yaxis, gtitle:gd.layout}[el];
         prop = 'title';
-        // if box is initially empty, it's a hover box so we can't grab its properties:
+        // if box is initially empty, it's cue text so we can't grab its properties:
         // so make a dummy element to get the right properties; it will be deleted
         // immediately after grabbing properties.
         if($.trim(cont[prop])=='') {
@@ -801,7 +833,7 @@ function autoGrowInput(gd,eln) {
         else if(el=='drag wdrag') cont=gd.layout.xaxis, prop=0;
         else if(el=='drag edrag') cont=gd.layout.xaxis, prop=1;
         o.align = (el=='drag edrag') ? 'right' : 'left';
-        ref=gd.paper.select('.xtitle'); // font properties reference
+        ref=$(gd).find('.xtitle'); // font properties reference
     }
     // legend text?
     else if(mode=='legend') {
@@ -811,72 +843,53 @@ function autoGrowInput(gd,eln) {
         o.align = 'left';
     }
 
-    // not sure how many of these are needed, but they don't seem to hurt...
-    fontCss={
-        fontSize: ref.attr('font-size'),
-        fontFamily: ref.attr('font-family'),
-        fontWeight: ref.attr('font-weight'),
-        fontStyle: ref.attr('font-style'),
-        fontStretch: ref.attr('font-stretch'),
-        fontVariant: ref.attr('font-variant'),
-        letterSpacing: ref.attr('letter-spacing'),
-        wordSpacing: ref.attr('word-spacing')
+    var fa=['font-size','font-family','font-weight','font-style','font-stretch',
+        'font-variant','letter-spacing','word-spacing'];
+    var fapx=['font-size','letter-spacing','word-spacing'];
+    for(i in fa) {
+        var ra=ref.attr(fa[i]);
+        if(fapx.indexOf(fa[i])>=0 && Number(ra)>0) ra+='px';
+        if(ra) fontCss[fa[i]]=ra;
     }
 
-    o.comfortZone = Number(ref.attr('font-size'))+3;
+    o.comfortZone = (Number(String(fontCss['font-size']).split('px')[0]) || 20) + 3;
 
     var eltrans=el3.attr('transform'),
         inbox=document.createElement('input'),
-        pos=$(eln).position(),
-        gpos=$(gd.paper.node()).position(),
-        bbox=eln.getBoundingClientRect(),
-        posx=pos.left + gpos.left + $(gd).scrollLeft(),
-        posy=pos.top + gpos.top + $(gd).scrollTop();
-        // TODO: explicitly getting positions and adding scrolls seems silly...
-        // gotta be a better (and less fragile) way to do this.
+        bbox=eln.getBoundingClientRect();
 
     $(gd).append(inbox);
     var input=$(inbox);
     gd.input=input;
     
+    // first put the input box at 0,0, then calculate the correct offset vs orig. element
     input.css(fontCss)
-        .css({
-            position:'absolute',
-            top: (eltrans && eltrans.indexOf('rotate')>=0 ?
-                (bbox.height-bbox.width)/2 : 0) + posy - 2,
-            left: posx - 2,
-            'z-index':6000
-        });
+        .css({position:'absolute', top:0, left:0, 'z-index':6000});
     
     if(mode=='drag') {
         // show enough digits to specify the position to about a pixel, but not more
         var v=cont.range[prop], diff=Math.abs(v-cont.range[1-prop]);
-        if(cont.islog) {
+        if(cont.isdate){
+            var d=new Date(v); // dates are stored in ms
+            var ds=$.datepicker.formatDate('yy-mm-dd',d); // always show the date part
+            if(diff<1000*3600*24*30) ds+=' '+lpad(d.getHours(),2);  // <30 days: add hours
+            if(diff<1000*3600*24*2) ds+=':'+lpad(d.getMinutes(),2); // <2 days: add minutes
+            if(diff<1000*3600*3) ds+=':'+lpad(d.getSeconds(),2);    // <3 hours: add seconds
+            if(diff<1000*300) ds+='.'+lpad(d.getMilliseconds(),3);  // <5 minutes: add ms
+            input.val(ds);
+        }
+        else if(cont.islog) {
             var dig=Math.ceil(Math.max(0,-Math.log(diff)/Math.LN10))+3;
             input.val(d3.format('.'+String(dig)+'g')(Math.pow(10,v)));
         }
-        else if(cont.isdate){
-            var d=new Date(v); // dates are stored in ms
-            var ds=$.datepicker.formatDate('yy-mm-dd',d);
-            if(diff<1000*3600*24*30) // <30 days: add hours
-                ds+=' '+lpad(d.getHours(),2);
-            if(diff<1000*3600*24*2) // <2 days: add minutes
-                ds+=':'+lpad(d.getMinutes(),2);
-            if(diff<1000*3600*3) // <3 hours: add seconds
-                ds+=':'+lpad(d.getSeconds(),2);
-            if(diff<1000*300) // <5 minutes: add ms
-                ds+='.'+lpad(d.getMilliseconds(),3);
-            input.val(ds);
-        }
-        else {
+        else { // linear numeric
             var dig=Math.floor(Math.log(Math.abs(v))/Math.LN10)-Math.floor(Math.log(diff)/Math.LN10)+4;
             input.val(d3.format('.'+String(dig)+'g')(v));
         }
     }
     else input.val($.trim(cont[prop]).replace(/(\r\n?|\n\r?)/g,'<br>'));
 
-    var minWidth = o.minWidth || input.width(),
-        val = input.val(),
+    var val = input.val(),
         testSubject = $('<tester/>').css({
             position: 'absolute',
             top: -9999,
@@ -888,25 +901,30 @@ function autoGrowInput(gd,eln) {
         .insertAfter(input)
         .html(escaped(val));
 
-    input.width(Math.max(testSubject.width()*1.2+o.comfortZone,minWidth));
-
-    var ibbox=inbox.getBoundingClientRect();
-    if(mode=='drag') {
-        // fix positioning, since the drag boxes are not the same size as the input boxes
-        if(el=='drag sdrag') input.css('top', (input.position().top + bbox.bottom - ibbox.bottom)+'px');
-        if(el=='drag edrag') input.css('left', (input.position().left + bbox.width - ibbox.width)+'px');
+    var testWidth=function(){
+        return Math.min(Math.max(testSubject.width()+o.comfortZone,o.minWidth),o.maxWidth)
     }
-    else if(o.align=='right')
-        input.css('left',(input.position().left + bbox.width - ibbox.width)+'px');
-    else if(o.align=='center')
-        input.css('left',(input.position().left + (bbox.width - ibbox.width)/2)+'px');
+    input.width(testWidth());
 
-    var left0=input.position().left+(input.width()/2);
+    var ibbox=inbox.getBoundingClientRect(),ileft=bbox.left-ibbox.left;
+    input.css('top',(bbox.top-ibbox.top+(bbox.height-ibbox.height)/2)+'px');
+    if(o.align=='right') ileft+=bbox.width-ibbox.width;
+    else if(o.align=='center') ileft+=(bbox.width+o.comfortZone-ibbox.width)/2;
+    input.css('left',ileft+'px');
+
+    var leftshift={left:0, center:0.5, right:1}[o.align];
+    var left0=input.position().left+input.width()*leftshift;
     
     // for titles, take away the existing one as soon as the input box is made
     if(mode!='drag') gd.paper.selectAll('[class="'+el+'"]').remove();
     inbox.select();
-    
+
+    var removeInput=function(){
+        input.remove();
+        testSubject.remove();
+        gd.input=null;
+    }
+
     input.bind('keyup keydown blur update',function(e) {
         var valold=val;
         val=input.val();
@@ -920,8 +938,7 @@ function autoGrowInput(gd,eln) {
             }
             else if(mode=='drag') {
                 var v= (cont.islog) ? Math.log(Number($.trim(val)))/Math.LN10 :
-                    (cont.isdate) ? DateTime2ms($.trim(val)) :
-                        Number($.trim(val));
+                    (cont.isdate) ? DateTime2ms($.trim(val)) : Number($.trim(val));
                 if($.isNumeric(v)) {
                     cont.range[prop]=v;
                     dragTail(gd);
@@ -932,39 +949,21 @@ function autoGrowInput(gd,eln) {
                 cont2[prop]=$.trim(val);
                 legend(gd);
             }
-            input.remove();
-            testSubject.remove();
-            gd.input=null;
-            return;
+            removeInput();
         }
         // press escape: revert the change
         else if(e.type=='keydown' && e.which==27) {
             if(mode=='title') makeTitles(gd,el);
             else if(mode=='legend') legend(gd);
-            input.remove();
-            testSubject.remove();
-            return;
+            removeInput();
         }
-        // otherwise, if no change to val, stop
-        if(val === valold) return;
-
-        // Enter new content into testSubject
-        testSubject.html(escaped(val));
-
-        // Calculate new width + whether to change
-        var newWidth = Math.max(testSubject.width()+o.comfortZone,minWidth),
-            currentWidth = input.width();
-
-        // Animate width and update position
-        if((newWidth < currentWidth && newWidth >= minWidth) || (newWidth > minWidth && newWidth < o.maxWidth)) {
-            if(o.align!='left') input.css('left', left0-newWidth/(o.align=='center' ? 2 : 1));
-            input.width(newWidth);
+        else if(val!=valold) {
+            // If content has changed, enter in testSubject and update input width & position
+            testSubject.html(escaped(val));
+            var newWidth = testWidth();
+            input.css({width: newWidth, left: left0-newWidth*leftshift});
         }
     });
-}
-
-function escaped(val) {
-    return val.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\s/g, '&nbsp;');
 }
 
 // ----------------------------------------------------
@@ -1147,7 +1146,7 @@ function tickFirst(a){
     if(tType=='M'){
         var t0=new Date(a.tick0), r0=new Date(a.range[0]);
         var mdif=(r0.getFullYear()-t0.getFullYear())*12+r0.getMonth()-t0.getMonth();
-        var t1=t0.setMonth(t0.getMonth()+(Math.round(+mdif/dt)+(axrev?1:-1))*dt);
+        var t1=t0.setMonth(t0.getMonth()+(Math.round(mdif/dt)+(axrev?1:-1))*dt);
         while(axrev ? t1>a.range[0] : t1<a.range[0]) t1=tickIncrement(t1,a.dtick,axrev);
         return t1;    
     }
@@ -1530,9 +1529,6 @@ function bBoxIntersect(a,b){
     if(a.left>b.right || b.left>a.right || a.top>b.bottom || b.top>a.bottom) return false;
     return true;
 }
-
-// pad a number with zeroes, to given # of digits before the decimal point
-function lpad(val,digits){ return String(val+Math.pow(10,digits)).substr(1);}
 
 // create a copy of data, with all dereferenced src elements stripped
 // so if there's xsrc present, strip out x
