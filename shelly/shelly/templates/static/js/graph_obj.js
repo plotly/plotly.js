@@ -38,23 +38,35 @@ data should be an array of objects, one per trace. allowed keys:
     based on converting to ms since start of 1970 for plotting
     so we could at some point extend beyond 0-9999 limitation...
 
-    marker: (string) default 'circle', or (string array)
-    markersize: (float px) default 6, or (float array)
-    markercolor: (cstring), or (cstring array)
-    markerlinecolor: (cstring), or (cstring array)
-    markerlinewidth: (float px) default 0, or (float array)
-    
-    line: (string) default 'solid'
-    linecolor: (cstring), or (cstring array)
-    linewidth: (float px) default 1
+    mode: (string) 'lines','markers','lines+markers'
+        default 'lines+markers' for <20 points, else 'lines'
+
+    line: {
+        dash: (string) default 'solid', also 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot',
+            all of the above dashes based on linewidth, can also pass in explicit dasharray
+        color: (cstring), or (cstring array)
+        width: (float px) default 1
+    }
+
+    marker: {
+        symbol: (string) default 'circle', or (string array)
+            can also be 'square', 'triangle-[up|down|left|right]', 'cross'
+        size: (float px) default 6, or (float array)
+        color: (cstring), or (cstring array)
+        line {
+            color: (cstring), or (cstring array)
+            width: (float px) default 0, or (float array)
+        }
+    }
     
     text: (string array) hover text for each point
 
     name: <string for legend>
     
     cstring is a string with any valid HTML color
-    if any color is missing, all others not provided will copy it
-    if no colors are provided, choose one from a default set based on the trace number
+    marker and linecolor will copy each other if only one is present
+    if neither is provided, choose one from a default set based on the trace number
+    if markerlinecolor is missing it will copy linecolor ONLY if it's different from marker color, otherwise black.
 
     eventually I'd like to make all of the marker and line properties accept arrays
     to modify properties point-by-point
@@ -75,6 +87,9 @@ GRAPH_HEIGHT=500*1.2
 GRAPH_WIDTH=750*1.2;
 TOOLBAR_LEFT='920px';
 TOOLBAR_TOP='30px';
+
+var defaultColors=['#00e','#a00','#0c0','#000','#888'];
+
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
 // if necessary to create the framework
@@ -84,7 +99,6 @@ function plot(divid, data, layout) {
     // (for extension to multiple graphs per page)
     // some callers send this in by dom element, others by id (string)
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-	var defaultColors=['#00e','#a00','#0c0','#000','#888'];
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
@@ -173,7 +187,7 @@ function plot(divid, data, layout) {
     gd.calcdata=[]
     for(curve in gdd) {
         gdc=gdd[curve];
-        if(!('color' in gdc)) gdc.color = defaultColors[curve % defaultColors.length];
+        //if(!('color' in gdc)) gdc.color = defaultColors[curve % defaultColors.length];
         if(!('name' in gdc)) {
             if('ysrc' in gdc) {
                 var ns=gdc.ysrc.split('/')
@@ -209,17 +223,33 @@ function plot(divid, data, layout) {
             // create the "calculated data" to plot
             var cd=[];
             for(i=0;i<serieslen;i++) cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ? {x:x[i],y:y[i]} : {x:false,y:false});
-            // add the trace-wide properties to the first point
-            // TODO: this won't get things inside marker and line objects, once we get to those...
-            //   either change the object format, or make this recursive on plain objects
+            // add the trace-wide properties to the first point, per point properties to every point
             cd[0].t={};
-            for(key in gdc) {
-                if(key.indexOf('src')==-1 && ['string','number'].indexOf(typeof gdc[key])!=-1)
-                    cd[0].t[key]=gdc[key];
-            }
+            if(!('line' in gdc)) gdc.line={};
+            if(!('marker' in gdc)) gdc.marker={};
+            if(!('line' in gdc.marker)) gdc.marker.line={};
+
+//             for(key in gdc) {
+//                 if(key.indexOf('src')==-1 && ['string','number'].indexOf(typeof gdc[key])!=-1)
+//                     cd[0].t[key]=gdc[key];
+//             }
+            // set display params per trace to default or provided value
+            // mergeattr puts single values into cd[0].t, and all others into each individual point
+            mergeattr(cd,gdc.mode,'mode',[(cd.length>20) ? 'lines' : 'lines+markers']);
+            mergeattr(cd,gdc.line.dash,'ld',['solid']);
+            mergeattr(cd,gdc.line.color,'lc',[gdc.marker.color, defaultColors[curve % defaultColors.length]]);
+            mergeattr(cd,gdc.line.width,'lw',[1]);
+            mergeattr(cd,gdc.marker.symbol,'mx',['circle']);
+            mergeattr(cd,gdc.marker.size,'ms',[6]);
+            mergeattr(cd,gdc.marker.color,'mc',[cd[0].t.lc]);
+            mergeattr(cd,gdc.marker.line.color,'mlc',[((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000')]);
+            mergeattr(cd,gdc.marker.line.width,'mlw',[0]);
+            mergeattr(cd,gdc.text,'tx',['']);
+            mergeattr(cd,gdc.name,'name',['trace '+curve]);
+
             gd.calcdata.push(cd);
         }
-        CD=[gd.calcdata,xdr,ydr];
+        CD=[gd.calcdata,xdr,ydr]; // for debug
     }
     // autorange... if axis is currently reversed, preserve this.
     if(xa.autorange && $.isNumeric(xdr[0])) {
@@ -256,52 +286,132 @@ function plot(divid, data, layout) {
             .attr('class','trace');
     
         traces.each(function(d){
+            if(d[0].t.mode.indexOf('lines')==-1) return;
             var i=-1,t=d3.select(this);
             while(i<d.length) {
                 var pts='';
                 for(i++; i<d.length && $.isNumeric(d[i].x) && $.isNumeric(d[i].y); i++)
                     pts+=xf(d[i])+','+yf(d[i])+' ';
                 if(pts)
-                    t.append('polyline')
-                        .call(lineGroupStyle)
-                        .attr('points',pts);
+                    t.append('polyline').attr('points',pts).call(lineGroupStyle);
             }
         });
         
         var pointgroups=traces.append('g')
             .attr('class','points')
             .call(pointGroupStyle);
-        pointgroups.selectAll('circle')
-            .data(function(d){return d})
-          .enter().append('circle')
-            .each(function(d){
-                if($.isNumeric(d.x) && $.isNumeric(d.y))
-                    d3.select(this)
-                        .call(pointStyle)
-                        .attr('cx',xf(d))
-                        .attr('cy',yf(d));
-                else d3.select(this).remove();
-            });
+            
+        pointgroups.each(function(d){
+            var t=d[0].t;
+            if(t.mode.indexOf('markers')==-1) return;
+            d3.select(this).selectAll('path')
+                .data(function(d){return d})
+              .enter().append('path')
+                .each(function(d){
+                    if($.isNumeric(d.x) && $.isNumeric(d.y))
+                        d3.select(this)
+                            .call(pointStyle,t)
+                            .attr('transform','translate('+xf(d)+','+yf(d)+')');
+                    else d3.select(this).remove();
+                });
+        });
     }
     else console.log('error with axis scaling',xa.m,xa.b,ya.m,ya.b);
 
     // show the legend
-    if(gd.calcdata.length>1) legend(gd);
+    if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!=false)) legend(gd);
 }
 
+// merge object a (which may be an array or a single value) into o...
+// search the array defaults in case a is missing (and for a default val
+// if some points of o are missing from a)
+function mergeattr(o,a,attr,defaults) {
+    if($.isArray(a)) {
+        var l=Math.max(o.length,a.length);
+        for(var i=0; i<l; i++) o[i][attr]=a[i];
+        o[0].t[attr]=defaults[defaults.length-1];
+    }
+    else if(typeof a != 'undefined')
+        o[0].t[attr]=a;
+    else {
+        for(var i=0; i<defaults.length; i++) {
+            if(typeof defaults[i] != 'undefined') {
+                o[0].t[attr]=defaults[i];
+                break
+            }
+        }
+    }
+}
+
+// styling functions for plot elements
+
 function lineGroupStyle(s) {
-    s.attr('stroke-width',1)
-     .attr('stroke',function(d){return d[0].t.color})
-     .style('fill','none');
+    s.attr('stroke-width',function(d){return d[0].t.lw})
+    .attr('stroke',function(d){return d[0].t.lc;})
+    .style('fill','none')
+    .attr('stroke-dasharray',function(d){
+        var da=d[0].t.ld,lw=Math.max(d[0].t.lw,3);
+        if(da=='solid') return '';
+        if(da=='dot') return lw+','+lw;
+        if(da=='dash') return (3*lw)+','+(3*lw);
+        if(da=='longdash') return (5*lw)+','+(5*lw);
+        if(da=='dashdot') return (3*lw)+','+lw+','+lw+','+lw;
+        if(da=='longdashdot') return (5*lw)+','+(2*lw)+','+lw+','+(2*lw);
+        return da; // user writes the dasharray themselves
+    });
 }
 
 function pointGroupStyle(s) {
-    s.attr('stroke-width',0)
-     .style('fill',function(d){return d[0].t.color});
+    s.each(function(d) {
+        var w=d[0].t.mlw;
+        d3.select(this).attr('stroke-width',w);
+        if(w) d3.select(this).attr('stroke',d[0].t.mlc);
+    })
+    .style('fill',function(d){return d[0].t.mc});
 }
 
-function pointStyle(s) {
-        s.attr('r',3);
+function pointStyle(s,t) {
+//     s.attr('r',function(d){return ((d.ms+1 || t.ms+1 || d.t.ms+1)-1)/2});
+    s.attr('d',function(d){
+        var r=((d.ms+1 || t.ms+1 || d.t.ms+1)-1)/2,rt=r*2/Math.sqrt(3),rc=r/3,rd=r*Math.sqrt(2);
+        var x=(d.mx || t.mx || d.t.mx);
+        if(x=='square')
+            return 'M'+r+','+r+'H'+(-r)+'V'+(-r)+'H'+r+'Z';
+        if(x=='diamond')
+            return 'M'+rd+',0L0,'+rd+'L'+(-rd)+',0L0,'+(-rd)+'Z';
+        if(x=='triangle-up')
+            return 'M'+(-rt)+','+(r/2)+'H'+rt+'L0,'+(-r)+'Z';
+        if(x=='triangle-down')
+            return 'M'+(-rt)+','+(-r/2)+'H'+rt+'L0,'+r+'Z';
+        if(x=='triangle-right')
+            return 'M'+(-r/2)+','+(-rt)+'V'+rt+'L'+r+',0Z';
+        if(x=='triangle-left')
+            return 'M'+(r/2)+','+(-rt)+'V'+rt+'L'+(-r)+',0Z';
+        if(x=='cross')
+            return 'M'+r+','+rc+'H'+rc+'V'+r+'H'+(-rc)+'V'+rc+'H'+(-r)+'V'+(-rc)+'H'+(-rc)+'V'+(-r)+'H'+rc+'V'+(-rc)+'H'+r+'Z'
+        // circle is default
+        return 'M'+r+',0A'+r+','+r+' 0 1,1 0,'+(-r)+'A'+r+','+r+' 0 1,1 0,'+r+'Z';
+        
+    })
+}
+
+// change style in an existing plot
+// astr is the attr name, like 'marker.symbol'
+// val is the new value to use
+// traces is a trace number or an array of trace numbers to change (blank for all)
+function restyle(gd,astr,val,traces) {
+    if($.isNumeric(traces)) traces=[traces];
+    else if(!$.isArray(traces) || !traces.length) {
+        traces=[];
+        for(var i=0; i<gd.data.length; i++) traces.push(i);
+    }
+    var aa=astr.split('.')
+    for(i=0; i<traces.length; i++) {
+        var cont=gd.data[traces[i]];
+        for(var j=0; j<aa.length-1; j++) cont=cont[aa[j]];
+        cont[aa[j]]=val;
+    }
+    plot(gd,'','');
 }
 
 // ----------------------------------------------------
@@ -686,8 +796,12 @@ function toggleLegend(gd) {
     if(gd.legend) {
         gd.paper.selectAll('.legend').remove();
         gd.legend=undefined;
+        gd.layout.showlegend=false;
     }
-    else legend(gd);
+    else {
+        legend(gd);
+        gd.layout.showlegend=true;
+    }
 }
 
 function legend(gd) {
@@ -715,23 +829,27 @@ function legend(gd) {
       .enter().append('g')
         .attr('class','trace');
 
-    traces.append('line')
-        .call(lineGroupStyle)
-        .attr('x1',5)
-        .attr('x2',35)
-        .attr('y1',0)
-        .attr('y2',0);
+    traces.each(function(d){
+        if(d[0].t.mode.indexOf('lines')==-1) return;
+        d3.select(this).append('line')
+            .call(lineGroupStyle)
+            .attr('x1',5)
+            .attr('x2',35)
+            .attr('y1',0)
+            .attr('y2',0);
+    });
         
-    traces.append('g')
-        .attr('class','legendpoints')
-        .call(pointGroupStyle)
-      .selectAll('circle')
-        .data(function(d){return d})
-      .enter().append('circle')
-        .call(pointStyle)
-        .attr('cx',20)
-        .attr('cy',0);
-
+    traces.each(function(d){
+        if(d[0].t.mode.indexOf('markers')==-1) return;
+        d3.select(this).append('g')
+            .attr('class','legendpoints')
+            .call(pointGroupStyle)
+          .selectAll('path')
+            .data(function(d){return d})
+          .enter().append('path')
+            .call(pointStyle,{})
+            .attr('transform','translate(20,0)');
+    });
     var tracetext=traces.append('text')
         .attr('class',function(d,i){return 'legendtext text-'+i})
         .attr('x',40)
@@ -744,16 +862,18 @@ function legend(gd) {
 
     var legendwidth=0, legendheight=0;
     traces.each(function(){
-        var g=d3.select(this), t=g.select('text'), l=g.select('line');
-        var tbb=t.node().getBoundingClientRect(),lbb=l.node().getBoundingClientRect();
+        var g=d3.select(this), t=g.select('text'), l=g.select('.legendpoints');
+        var tbb = t.node().getBoundingClientRect();
+        if(!l.node()) l=g.select('line');
+        var lbb = (!l.node()) ? tbb : l.node().getBoundingClientRect();
         t.attr('y',(lbb.top+lbb.bottom-tbb.top-tbb.bottom)/2);
-        var gbb=this.getBoundingClientRect();
-        legendwidth=Math.max(legendwidth,tbb.width);
+        var gbb = this.getBoundingClientRect();
+        legendwidth = Math.max(legendwidth,tbb.width);
         g.attr('transform','translate(0,'+(5+legendheight+gbb.height/2)+')');
-        legendheight+=gbb.height+3;
+        legendheight += gbb.height+3;
     });
-    legendwidth+=45;
-    legendheight+=10;
+    legendwidth += 45;
+    legendheight += 10;
 
 //     if(!gl.legend.x) 
     gl.legend.x=gl.width-gl.margin.r-legendwidth-10;
@@ -947,6 +1067,7 @@ function autoGrowInput(gd,eln) {
             else if(mode=='legend') {
                 cont[prop]=$.trim(val);
                 cont2[prop]=$.trim(val);
+                gd.layout.showlegend=true;
                 legend(gd);
             }
             removeInput();
