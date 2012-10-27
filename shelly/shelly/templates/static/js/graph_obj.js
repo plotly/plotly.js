@@ -434,11 +434,11 @@ function newPlot(divid, layout) {
                         '<i class="icon-th"></i></a>'+
                 '</div>'+
                 '<div class="btn-group btn-stack">'+
-                    '<a class="btn" onclick="saveGraph(gettab())" rel="tooltip" title="Save">'+
+                    '<a class="btn" onclick="saveGraph()" rel="tooltip" title="Save">'+
                         '<i class="icon-hdd"></i></a>'+
                 '</div>'+
                 '<div class="btn-group btn-stack">'+
-                    '<a class="btn" onclick="shareGraph(gettab())" rel="tooltip" title="Share">'+
+                    '<a class="btn" onclick="showAlert(\'worldreadable\')" rel="tooltip" title="Share">'+
                         '<i class="icon-globe"></i></a>'+
                 '</div>'+
                 '<div class="btn-group btn-stack">'+
@@ -1407,12 +1407,13 @@ function styleTextInner(s,n) {
 // ----------------------------------------------------
 
 function shareGraph(divid){
-    //var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-    //if(typeof gd.fid !='string') gd.fid='';
+    $('#worldreadable').hide();
+    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+    if(typeof gd.fid !='string') gd.fid='';
     if(signedin()==false) return;
-    gd=gettab();
+    var gd=gettab();
     if(gd.fid===undefined || gd.fid==''){
-        saveGraph(divid); // TODO: instead of a timeout, use a callback on finishing saveGraph
+        saveGraph(gd); // TODO: instead of a timeout, use a callback on finishing saveGraph
     }
     var spinner=new Spinner(opts).spin(gd);
 
@@ -1420,14 +1421,17 @@ function shareGraph(divid){
     setTimeout(function(){
         // reload div
         var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-        url=window.location.origin+'/'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fid;
-        $('#linktoshare').val(url);
-        $('#igraph').attr('src',url+'/500/300/');
-        $('#iframetoshare').text($('#igraphcontainer').html().replace(/^\s*/, '').replace(/\s*$/, ''));
-        $('#linkModal').modal('toggle');
-        document.getElementById("linktoshare").select();
+        // set worldreadable flag on file to true
+        $.post("/worldreadable/", {'readable':true,'fid':gd.fid}, function(){
+            url=window.location.origin+'/~'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fid;
+            $('#linktoshare').val(url);
+            $('#igraph').attr('src',url+'/500/300/');
+            $('#iframetoshare').text($('#igraphcontainer').html().replace(/^\s*/, '').replace(/\s*$/, ''));
+            $('#linkModal').modal('toggle');
+            document.getElementById("linktoshare").select();
+        });
         spinner.stop();
-    }, 1000);  
+    }, 2500);  
 }
 
 // ------------------------------- graphToGrid
