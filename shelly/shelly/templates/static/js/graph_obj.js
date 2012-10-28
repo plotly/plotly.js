@@ -1559,12 +1559,13 @@ function shareGraph(divid){
 
 function graphToGrid(){
     var gd=gettab();
-    if(gd.fid !== undefined)
-        $.post("/pullf/", {'csrfmiddlewaretoken': '{{ csrf_token }}', 'fid': gd.fid, 'ft':'grid'}, fileResp);
+    var csrftoken=$.cookie('csrftoken');
+    if(gd.fid !== undefined)        
+        $.post("/pullf/", {'csrfmiddlewaretoken':csrftoken, 'fid': gd.fid, 'ft':'grid'}, fileResp);
     else {
         var data = [];
         for(d in gd.data) data.push(stripSrc(gd.data[d]));
-        $.post("/pullf/", {'csrfmiddlewaretoken': '{{ csrf_token }}', 'data': JSON.stringify({'data':data}), 'ft':'grid'}, fileResp);
+        $.post("/pullf/", {'csrfmiddlewaretoken':csrf_token, 'data': JSON.stringify({'data':data}), 'ft':'grid'}, fileResp);
     }
 }
 
