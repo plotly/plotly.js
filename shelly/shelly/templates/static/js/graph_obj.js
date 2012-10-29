@@ -544,7 +544,7 @@ function newPlot(divid, layout) {
                         '<i class="icon-hdd"></i></a>'+
                 '</div>'+
                 '<div class="btn-group btn-stack">'+
-                    '<a class="btn" onclick="showAlert(\'worldreadable\')" rel="tooltip" title="Share">'+
+                    '<a class="btn" onclick="shareGraph(gettab());" rel="tooltip" title="Share">'+
                         '<i class="icon-globe"></i></a>'+
                 '</div>'+
                 '<div class="btn-group btn-stack">'+
