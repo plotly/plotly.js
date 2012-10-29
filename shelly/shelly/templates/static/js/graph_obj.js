@@ -229,10 +229,6 @@ function plot(divid, data, layout) {
             if(!('marker' in gdc)) gdc.marker={};
             if(!('line' in gdc.marker)) gdc.marker.line={};
 
-//             for(key in gdc) {
-//                 if(key.indexOf('src')==-1 && ['string','number'].indexOf(typeof gdc[key])!=-1)
-//                     cd[0].t[key]=gdc[key];
-//             }
             // set display params per trace to default or provided value
             // mergeattr puts single values into cd[0].t, and all others into each individual point
             mergeattr(cd,gdc.mode,'mode',[(cd.length>20) ? 'lines' : 'lines+markers']);
@@ -560,6 +556,7 @@ function newPlot(divid, layout) {
         $(gd).prepend(menudiv);
         $(gd).find('.graphbar').css({'position':'absolute','left':TOOLBAR_LEFT,'top':TOOLBAR_TOP});
         $(gd).find('.btn').tooltip({'placement':'left'}).width(14);
+//             .css('margin','4px 10px');
     }
 }
 
@@ -1565,7 +1562,7 @@ function graphToGrid(){
     else {
         var data = [];
         for(d in gd.data) data.push(stripSrc(gd.data[d]));
-        $.post("/pullf/", {'csrfmiddlewaretoken':csrf_token, 'data': JSON.stringify({'data':data}), 'ft':'grid'}, fileResp);
+        $.post("/pullf/", {'csrfmiddlewaretoken':csrftoken, 'data': JSON.stringify({'data':data}), 'ft':'grid'}, fileResp);
     }
 }
 
