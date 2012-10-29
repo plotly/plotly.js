@@ -1562,7 +1562,7 @@ function graphToGrid(){
     else {
         var data = [];
         for(d in gd.data) data.push(stripSrc(gd.data[d]));
-        $.post("/pullf/", {'csrfmiddlewaretoken':csrf_token, 'data': JSON.stringify({'data':data}), 'ft':'grid'}, fileResp);
+        $.post("/pullf/", {'csrfmiddlewaretoken':csrftoken, 'data': JSON.stringify({'data':data}), 'ft':'grid'}, fileResp);
     }
 }
 
