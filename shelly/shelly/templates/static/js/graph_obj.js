@@ -1454,7 +1454,7 @@ function styleText(sn,t) {
     // quote unquoted attributes
     var attrRE=/(<[^<>]*=\s*)([^<>\s"']+)(\s|>)/g;
     while(t1.match(attrRE)) t1=t1.replace(attrRE,'$1"$2"$3');
-    
+    console.log(t1);
     // parse the text into an xml tree
     lines=new DOMParser()
         .parseFromString('<t><l>'+t1+'</l></t>','text/xml')
@@ -1486,7 +1486,10 @@ function styleText(sn,t) {
 function styleTextInner(s,n) {
     for(var i=0; i<n.length;i++) {
         var nn=n[i].nodeName.toLowerCase();
-        if(nn=='#text') s.text(n[i].nodeValue);
+        if(nn=='#text') {
+            if(s.text()) s.append('tspan').text(n[i].nodeValue);
+            else s.text(n[i].nodeValue);
+        }
         else if(nn=='sup')
             styleTextInner(s.append('tspan')
                 .attr('baseline-shift','super')
