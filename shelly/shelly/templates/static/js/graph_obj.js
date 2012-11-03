@@ -1454,7 +1454,7 @@ function styleText(sn,t) {
     // quote unquoted attributes
     var attrRE=/(<[^<>]*=\s*)([^<>\s"']+)(\s|>)/g;
     while(t1.match(attrRE)) t1=t1.replace(attrRE,'$1"$2"$3');
-    console.log(t1);
+    // console.log(t1);
     // parse the text into an xml tree
     lines=new DOMParser()
         .parseFromString('<t><l>'+t1+'</l></t>','text/xml')
