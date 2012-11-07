@@ -157,6 +157,9 @@ function plot(divid, data, layout) {
     // note: if they do already exist, the new layout gets ignored (as it should)
     // unless there's no data there yet... then it should destroy and remake the plot
     if((typeof gd.layout==='undefined')||graphwasempty) newPlot(divid, layout);
+    
+    // enable or disable formatting buttons
+    $(gd).find('.data-only').attr('disabled', gd.data.length==0);
 
     var gl=gd.layout, vb=gd.viewbox, gdd=gd.data, gp=gd.plot;
     var xa=gl.xaxis, ya=gl.yaxis, xdr=gl.xaxis.drange, ydr=gl.yaxis.drange;
@@ -386,7 +389,7 @@ function pointStyle(s,t) {
         if(x=='cross')
             return 'M'+r+','+rc+'H'+rc+'V'+r+'H'+(-rc)+'V'+rc+'H'+(-r)+'V'+(-rc)+'H'+(-rc)+'V'+(-r)+'H'+rc+'V'+(-rc)+'H'+r+'Z'
         // circle is default
-        return 'M'+r+',0A'+r+','+r+' 0 1,1 0,'+(-r)+'A'+r+','+r+' 0 1,1 0,'+r+'Z';
+        return 'M'+r+',0A'+r+','+r+' 0 1,1 0,'+(-r)+'A'+r+','+r+' 0 0,1 '+r+',0Z';
         
     })
 }
@@ -524,7 +527,7 @@ function newPlot(divid, layout) {
             '<div class="graphbar">'+
                 '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data" class="btn-stack">'+
                     '<div class="btn-group btn-stack">'+
-                        '<span class="btn fileinput-button" rel="tooltip" title="Upload to Graph">'+
+                        '<span class="btn fileinput-button btn-stack" rel="tooltip" title="Upload to Graph">'+
                             '<i class="icon-upload"></i>'+
                             '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/></span>'+
                     '</div>'+
@@ -548,8 +551,12 @@ function newPlot(divid, layout) {
                         '<i class="icon-globe"></i></a>'+
                 '</div>'+
                 '<div class="btn-group btn-stack">'+
-                    '<a class="btn" onclick="toggleLegend(gettab())" rel="tooltip" title="Toggle Legend">'+
-                        '<i class="icon-list"></i></a>'+
+                    '<a class="btn data-only" onclick="toggleLegend(gettab())" rel="tooltip" title="Toggle Legend" disabled="disabled">'+
+                        '<i class="icon-th-list"></i></a>'+
+                '</div>'+
+                '<div class="btn-group btn-stack">'+
+                    '<a class="btn data-only" onclick="styleBox(gettab(),this.getBoundingClientRect(),-1)" rel="tooltip" title="Format Traces" disabled="disabled">'+
+                        '<i class="icon-pencil"></i></a>'+
                 '</div>'+
             '</div>'  
     
@@ -590,6 +597,9 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         .style('cursor',cursor);
 
     dragger.node().onmousedown = function(e) {
+        // explicitly disable dragging when a popover is present
+        if($('.popover').length) return true;
+        
         var eln=this;
         var d=(new Date()).getTime();
         if(d-gd.mouseDown<gd.dblclickDelay)
@@ -826,34 +836,9 @@ function legend(gd) {
       .enter().append('g')
         .attr('class','trace');
 
-    traces.each(function(d){
-        if(d[0].t.mode.indexOf('lines')==-1) return;
-        d3.select(this).append('line')
-            .call(lineGroupStyle)
-            .attr('x1',5)
-            .attr('x2',35)
-            .attr('y1',0)
-            .attr('y2',0);
-    });
-        
-    traces.each(function(d){
-        if(d[0].t.mode.indexOf('markers')==-1) return;
-        d3.select(this).append('g')
-            .attr('class','legendpoints')
-            .call(pointGroupStyle)
-          .selectAll('path')
-            .data(function(d){return d})
-          .enter().append('path')
-            .call(pointStyle,{})
-            .attr('transform','translate(20,0)');
-    });
-    var tracetext=traces.append('text')
-        .attr('class',function(d,i){return 'legendtext text-'+i})
-        .attr('x',40)
-        .attr('y',0)
-        .attr('text-anchor','start')
-        .attr('font-size',12)
-        .each(function(d){styleText(this,d[0].t.name)})
+    traces.each(legendLines);
+    traces.each(legendPoints);
+    var tracetext=traces.call(legendText);
     if(gd.mainsite)
         tracetext.on('click',function(){autoGrowInput(gd,this)});
 
@@ -883,6 +868,315 @@ function legend(gd) {
     gd.legend.selectAll('.bg')
         .attr('width',legendwidth-2)
         .attr('height',legendheight-2);
+}
+
+// make a styling gui for div gd at pos ({x,y} or {left,top,width,height}) for trace tracenum 
+// use tracenum=-1 for all traces
+function styleBox(gd,pos,tracenum) {
+    if(!gd.data){
+        console.log('no data to style',gd);
+        return;
+    }
+    
+    if(!('x' in pos)) pos.x=pos.left+pos.width;
+    if(!('y' in pos)) pos.y=pos.top+(pos.height/2);
+    
+    // copy current styling, so we can undo if desired
+//     gd.savestyles = [];
+//     for(d in gd.data) gd.savestyles.push(stripSrc(gd.data[d]));
+
+
+    // make the container
+    // initially put it at 0,0, then fix once we know its size
+    var popover=$(
+        '<div class="popover right stylebox" style="top:0px;left:0px;display:block;">'+
+            '<div class="arrow"></div>'+
+            '<div class="popover-inner">'+
+                '<div class="popover-title"></div>'+
+                '<div class="popover-content"></div>'+
+            '</div>'+
+        '</div>').appendTo('body');
+    popover[0].gd=gd;
+
+    // make the tracelist (and then the attribute selectors)
+    styleBoxTraces(popover,tracenum);
+    
+    // fix positioning
+    var pbb=popover[0].getBoundingClientRect();
+    var wbb=$('#tabs-one-line').get(0).getBoundingClientRect(); // whole window
+    var newtop=pos.y-(pbb.top+pbb.bottom)/2;
+    var maxtop=wbb.top+wbb.height-pbb.height;
+    var newleft=pos.x-pbb.left;
+    var maxleft=wbb.left+wbb.width-pbb.width;
+    popover.css({top:Math.min(newtop, maxtop)+'px', left:Math.min(newleft, maxleft)+'px'});
+    // if box is not where it wanted to be, take off the arrow because it's not pointing to anything
+    if(newleft>=maxleft || newtop>=maxtop) popover.find('.arrow').remove();
+
+    // add interactions
+    window.onmouseup = function(e) {
+        // see http://stackoverflow.com/questions/1403615/use-jquery-to-hide-a-div-when-the-user-clicks-outside-of-it
+        // need to separately check for colorpicker clicks, as spectrum doesn't make them children of the popover
+        // and need to separately kill the colorpickers for the same reason
+        if(popover.has(e.target).length===0 && $(e.target).parents('.sp-container').length===0) {
+            window.onmouseup = null;
+            popover.find('.styleboxcolor').spectrum('destroy');
+            popover.remove();
+        }
+    }
+}
+
+function styleBoxTraces(popover,tracenum){
+    // same ldata as legend plus first item, 'all traces'
+    // also makes short name for traces from ysrc
+    var tDefault={name:'',lc:'#000',ld:'solid',lw:1,mc:'#000',mlc:'#000',mlw:0,
+                mode:'lines+markers',ms:6,mx:'circle',tx:''};
+    var ldata=tModify(tDefault,{name:'All Traces', mode:'none'});
+    for(var i=0;i<popover[0].gd.calcdata.length;i++) {
+        var o = stripSrc(popover[0].gd.calcdata[i][0]);
+        o.t.name=popover[0].gd.data[i].ysrc
+            .replace(/[\s\n\r]+/gm,' ')
+            .replace(/^([A-z0-9\-_]+[\/:])?[0-9]+[\/:]/,'');
+        ldata.push([o]);    
+    }
+
+    // make the trace selector dropdown (after removing any previous)
+    styleBoxDrop(popover.find('.popover-title').html(''),'trace',selectTrace,'',ldata);
+
+    // select the desired trace (and build the attribute selectors)
+    selectTrace.call(popover.find('.select-trace li').get(0),ldata[tracenum+1],tracenum+1);
+}
+
+function selectTrace(d,i){
+    var popover=$(this).parents('.popover');
+    var menu=$(this).parents('.btn-group');
+    menu.find('.selected-val').html(menu.find('li')[i].innerHTML);
+
+    // save the selection value for later use
+    popover[0].selectedTrace=i-1;
+
+    // remove previous attribute selectors (spectra get destroyed separately because
+    // they're not children of popover)
+    if($('.sp-container').length)
+        popover.find('.styleboxcolor').spectrum('destroy');
+    var attrs=popover.find('.popover-content').html('');
+
+    // make each of the attribute selection dropdowns
+    styleBoxDrop(attrs,'mode',selectAttr,'Mode',d,
+        tModify(d[0].t,[
+            {mode:'lines',name:''},
+            {mode:'markers',name:''},
+            {mode:'lines+markers',name:''}]));
+    attrs.append('<div class="newline"></div>');
+    styleBoxDrop(attrs,'ld',selectAttr,'Line',d,
+        tModify(d[0].t,[
+            {mode:'lines',name:'',ld:'solid'},
+            {mode:'lines',name:'',ld:'dot'},
+            {mode:'lines',name:'',ld:'dash'},
+            {mode:'lines',name:'',ld:'longdash'},
+            {mode:'lines',name:'',ld:'dashdot'},
+            {mode:'lines',name:'',ld:'longdashdot'}]));
+    popover.find('.select-ld svg')
+        .attr('width','70')
+      .find('line')
+        .attr('x2',65);
+    styleBoxColor(attrs,'lc',selectColor,'&nbsp;&nbsp;&nbsp;Color','Line Color',d);
+    styleBoxDrop(attrs,'lw',selectAttr,'&nbsp;&nbsp;&nbsp;Width',d,
+        tModify(d[0].t,[
+            {mode:'lines',lw:0.5,name:'0.5'},
+            {mode:'lines',lw:1,name:'1'},
+            {mode:'lines',lw:2,name:'2'},
+            {mode:'lines',lw:3,name:'3'},
+            {mode:'lines',lw:4,name:'4'},
+            {mode:'lines',lw:6,name:'6'}]));
+    attrs.append('<div class="newline"></div>');
+    styleBoxDrop(attrs,'mx',selectAttr,'Marker',d,
+        tModify(d[0].t,[
+            {mode:'markers',name:'',mx:'circle'},
+            {mode:'markers',name:'',mx:'square'},
+            {mode:'markers',name:'',mx:'cross'},
+            {mode:'markers',name:'',mx:'triangle-up'},
+            {mode:'markers',name:'',mx:'triangle-down'},
+            {mode:'markers',name:'',mx:'triangle-left'},
+            {mode:'markers',name:'',mx:'triangle-right'}]));
+    styleBoxColor(attrs,'mc',selectColor,'&nbsp;&nbsp;&nbsp;Color','Marker Color',d);
+    styleBoxDrop(attrs,'ms',selectAttr,'&nbsp;&nbsp;&nbsp;Size',d,
+        tModify(d[0].t,[
+            {mode:'markers',ms:1,name:'1'},
+            {mode:'markers',ms:2,name:'2'},
+            {mode:'markers',ms:3,name:'3'},
+            {mode:'markers',ms:4,name:'4'},
+            {mode:'markers',ms:6,name:'6'},
+            {mode:'markers',ms:8,name:'8'},
+            {mode:'markers',ms:12,name:'12'}]));
+    styleBoxDrop(attrs,'mlw',selectAttr,'&nbsp;&nbsp;&nbsp;Line width',d,
+        tModify(d[0].t,[
+            {mode:'markers',mlw:0,name:'0'},
+            {mode:'markers',mlw:0.5,name:'0.5'},
+            {mode:'markers',mlw:1,name:'1'},
+            {mode:'markers',mlw:2,name:'2'},
+            {mode:'markers',mlw:3,name:'3'}]));
+    styleBoxColor(attrs,'mlc',selectColor,'&nbsp;&nbsp;&nbsp;Line color','Marker Line Color',d);
+}
+
+// routine for making modified-default attribute lists
+function tModify(tDefault,o){
+    if($.isPlainObject(o)) o=[o];
+    var out=[];
+    for(i in o) {
+        var outi={}
+        for(el in tDefault) outi[el] = (el in o[i]) ? o[i][el] : tDefault[el];
+        out.push([{t:outi}]);
+    }
+    return out;
+}
+
+// html for a bootstrap dropdown with class cls
+function dropdown(cls,title){
+    return '<div class="styleboxselector '+cls+'">'+
+        ((title) ? ('<div class="pull-left styleboxtitle">'+title+'</div>') : '')+
+        '<div class="btn-group pull-left">'+
+            '<a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">'+
+                '<span class="pull-left selected-val"></span>'+
+                '<span class="caret pull-left styleboxcaret"></span>'+
+            '</a>'+
+            '<ul class="dropdown-menu"></ul>'+
+        '</div>'+
+    '</div>';
+}
+
+function styleBoxDrop(s,cls,clickfn,title,d0,d){
+    if(!d) {
+        d=d0;
+        var noset=true;
+    }
+    else var noset=false;
+    
+    var dn = $(dropdown('select-'+cls,title)).appendTo(s).get(0),
+        dd=d3.select(dn);
+    dn.attr=cls;
+    var opts=dd.select('ul').selectAll('li')
+        .data(d)
+      .enter().append('li')
+        .on('click',clickfn);
+
+    var tw=40, th=20;
+    
+    opts.append('svg')
+        .attr('width',tw)
+        .attr('height',th)
+        .style('position','relative')
+        .style('top','2px') // why do I have to do this? better way?
+        .append('g').attr('transform','translate(0,'+th/2+')')
+        .each(legendLines)
+        .each(legendPoints);
+    opts.append('span')
+        .style('font-size','14px')
+        .style('position','relative')
+        .style('top','-4px') // why do I have to do this? better way?
+        .html(function(d){return d[0].t.name+'&nbsp;'});
+    // set default value
+    if(!noset) {
+        for(var i=0; i<d.length && d[i][0].t[cls]!=d0[0].t[cls]; i++);
+        i = i % d.length; // TODO: add custom entry and use it in this case
+        $(dd.node()).find('.btn-group .selected-val').html($(dd.node()).find('li')[i].innerHTML);
+    }
+}
+
+function styleBoxColor(s,cls,clickfn,title,title2,d){
+    var dd = $('<div class="styleboxselector select-'+cls+'">'+
+        ((title) ? ('<div class="pull-left styleboxtitle">'+title+'</div>') : '')+
+        '<input class="styleboxcolor" type="text" />'+
+        '</div>').appendTo(s);
+    dd[0].attr=cls;
+    dd.find('input').spectrum({
+        color: d[0].t[cls.replace('select-','')],
+        showInput: true,
+        showInitial: false,
+        showAlpha: true,
+        localStorageKey: 'spectrum.palette',
+        showPalette: true,
+        showPaletteOnly: false,
+        showSelectionPalette: true,
+        clickoutFiresChange: true,
+        cancelText: 'Cancel',
+        chooseText: title2 ? ('Set '+title2) : 'OK',
+        showButtons: true,
+        className: cls,
+        preferredFormat: 'rgb',
+        maxSelectionSize: 16,
+        palette: [defaultColors,
+            ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
+            "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
+            ["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
+            "rgb(0, 255, 255)", "rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"], 
+            ["rgb(230, 184, 175)", "rgb(244, 204, 204)", "rgb(252, 229, 205)", "rgb(255, 242, 204)", "rgb(217, 234, 211)", 
+            "rgb(208, 224, 227)", "rgb(201, 218, 248)", "rgb(207, 226, 243)", "rgb(217, 210, 233)", "rgb(234, 209, 220)", 
+            "rgb(221, 126, 107)", "rgb(234, 153, 153)", "rgb(249, 203, 156)", "rgb(255, 229, 153)", "rgb(182, 215, 168)", 
+            "rgb(162, 196, 201)", "rgb(164, 194, 244)", "rgb(159, 197, 232)", "rgb(180, 167, 214)", "rgb(213, 166, 189)", 
+            "rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(255, 217, 102)", "rgb(147, 196, 125)", 
+            "rgb(118, 165, 175)", "rgb(109, 158, 235)", "rgb(111, 168, 220)", "rgb(142, 124, 195)", "rgb(194, 123, 160)",
+            "rgb(166, 28, 0)", "rgb(204, 0, 0)", "rgb(230, 145, 56)", "rgb(241, 194, 50)", "rgb(106, 168, 79)",
+            "rgb(69, 129, 142)", "rgb(60, 120, 216)", "rgb(61, 133, 198)", "rgb(103, 78, 167)", "rgb(166, 77, 121)",
+            "rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)", 
+            "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]],
+        change: function(color){clickfn(dd[0],color)}
+//         selectionPalette: d
+    });
+}
+
+var traceAttrs = {mode:'mode',ld:'line.dash',lc:'line.color',lw:'line.width',
+    mx:'marker.symbol',ms:'marker.size',mc:'marker.color',mlc:'marker.line.color',
+    mlw:'marker.line.width'};
+
+function selectAttr(d,i){
+    var menu = $(this).parents('.btn-group'),
+        popover = $(this).parents('.popover');
+    menu.find('.selected-val').html(menu.find('li')[i].innerHTML);
+    var selectedTrace = popover[0].selectedTrace,
+        a=$(this).parents('.styleboxselector')[0].attr,
+        astr=traceAttrs[a];
+    restyle(popover[0].gd,astr,d[0].t[a],selectedTrace>=0 ? selectedTrace : null);
+    styleBoxTraces(popover,selectedTrace);
+}
+
+function selectColor(dropnode,color){
+    var popover = $(dropnode).parents('.popover'),
+        selectedTrace = popover[0].selectedTrace,
+        astr = traceAttrs[dropnode.attr],
+        val = color.toRgbString();
+    restyle(popover[0].gd,astr,val,selectedTrace>=0 ? selectedTrace : null);
+}
+
+function legendLines(d){
+    if(d[0].t.mode.indexOf('lines')==-1) return;
+    d3.select(this).append('line')
+        .call(lineGroupStyle)
+        .attr('x1',5)
+        .attr('x2',35)
+        .attr('y1',0)
+        .attr('y2',0);
+}
+
+function legendPoints(d){
+    if(d[0].t.mode.indexOf('markers')==-1) return;
+    d3.select(this).append('g')
+        .attr('class','legendpoints')
+        .call(pointGroupStyle)
+      .selectAll('path')
+        .data(function(d){return d})
+      .enter().append('path')
+        .call(pointStyle,{})
+        .attr('transform','translate(20,0)');
+}
+
+function legendText(s){
+    return s.append('text')
+        .attr('class',function(d,i){return 'legendtext text-'+i})
+        .attr('x',40)
+        .attr('y',0)
+        .attr('text-anchor','start')
+        .attr('font-size',12)
+        .each(function(d){styleText(this,d[0].t.name,d[0].t.noretrieve)});
 }
 
 uoStack=[];
@@ -1454,7 +1748,6 @@ function styleText(sn,t) {
     // quote unquoted attributes
     var attrRE=/(<[^<>]*=\s*)([^<>\s"']+)(\s|>)/g;
     while(t1.match(attrRE)) t1=t1.replace(attrRE,'$1"$2"$3');
-    // console.log(t1);
     // parse the text into an xml tree
     lines=new DOMParser()
         .parseFromString('<t><l>'+t1+'</l></t>','text/xml')
