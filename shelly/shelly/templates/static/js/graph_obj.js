@@ -159,7 +159,7 @@ function plot(divid, data, layout) {
     if((typeof gd.layout==='undefined')||graphwasempty) newPlot(divid, layout);
     
     // enable or disable formatting buttons
-    $(gd).find('.data-only').attr('disabled', gd.data.length==0);
+    $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length==0);
 
     var gl=gd.layout, vb=gd.viewbox, gdd=gd.data, gp=gd.plot;
     var xa=gl.xaxis, ya=gl.yaxis, xdr=gl.xaxis.drange, ydr=gl.yaxis.drange;
@@ -928,10 +928,11 @@ function styleBox(gd,pos,tracenum) {
 function styleBoxTraces(popover,tracenum){
     // same ldata as legend plus first item, 'all traces'
     // also makes short name for traces from ysrc
-    var tDefault={name:'',lc:'#000',ld:'solid',lw:1,mc:'#000',mlc:'#000',mlw:0,
+    var tDefault = {name:'',lc:'#000',ld:'solid',lw:1,mc:'#000',mlc:'#000',mlw:0,
                 mode:'lines+markers',ms:6,mx:'circle',tx:''};
-    var ldata=tModify(tDefault,{name:'All Traces', mode:'none'});
-    for(var i=0;i<popover[0].gd.calcdata.length;i++) {
+    var ldata = (popover[0].gd.calcdata.length<2) ? [] :
+        tModify(tDefault,{name:'All Traces', mode:'none'});
+    for(var i=0; i<popover[0].gd.calcdata.length; i++) {
         var o = stripSrc(popover[0].gd.calcdata[i][0]);
         o.t.name=popover[0].gd.data[i].ysrc
             .replace(/[\s\n\r]+/gm,' ')
@@ -1638,10 +1639,9 @@ function doXTicks(gd) {
     var vals=calcTicks(gd,a);
 
     // ticks
-    var xt=gd.axislayer.selectAll('line.xtick').data(vals);
+    var xt=gd.axislayer.selectAll('line.xtick').data(vals,function(d){return d.text});
     xt.enter().append('line').attr('class','xtick')
-        .attr('stroke','black')
-        .attr('stroke-width',1)
+        .call(tickStyle,a)
         .attr('x1',gm.l)
         .attr('x2',gm.l)
         .attr('y1',y1)
@@ -1650,10 +1650,9 @@ function doXTicks(gd) {
     xt.exit().remove();
 
     // grid
-    var xg=gd.axislayer.selectAll('line.xgrid').data(vals);
+    var xg=gd.axislayer.selectAll('line.xgrid').data(vals,function(d){return d.text});
     xg.enter().append('line').attr('class','xgrid')
-        .attr('stroke','#ddd')
-        .attr('stroke-width',1)
+        .call(gridStyle,a)
         .attr('x1',gm.l)
         .attr('x2',gm.l)
         .attr('y1',gl.height-gm.b)
@@ -1663,7 +1662,7 @@ function doXTicks(gd) {
     
     // tick labels
     gd.axislayer.selectAll('text.xtlabel').remove(); // TODO: problems with reusing labels... shouldn't need this
-    var xl=gd.axislayer.selectAll('text.xtlabel').data(vals,function(d){return d});
+    var xl=gd.axislayer.selectAll('text.xtlabel').data(vals,function(d){return d.text});
     xl.enter().append('text').attr('class','xtlabel')
         .attr('x',function(d){return d.dx+gm.l})
         .attr('y',function(d){return d.dy+y1+a.ticklen+d.fontSize})
@@ -1671,7 +1670,7 @@ function doXTicks(gd) {
         .attr('text-anchor','middle')
         .each(function(d){styleText(this,d.text)});
     xl.attr('transform',function(d){return 'translate('+(a.m*d.x+a.b)+',0)'});
-   xl.exit().remove();
+    xl.exit().remove();
 }
 
 function doYTicks(gd) {
@@ -1679,10 +1678,9 @@ function doYTicks(gd) {
     var vals=calcTicks(gd,a);
     
     // ticks
-    var yt=gd.axislayer.selectAll('line.ytick').data(vals);
+    var yt=gd.axislayer.selectAll('line.ytick').data(vals,function(d){return d.text});
     yt.enter().append('line').attr('class','ytick')
-        .attr('stroke','black')
-        .attr('stroke-width',1)
+        .call(tickStyle,a)
         .attr('x1',x1)
         .attr('x2',x1-a.ticklen)
         .attr('y1',gm.t)
@@ -1691,10 +1689,9 @@ function doYTicks(gd) {
     yt.exit().remove();
 
     // grid
-    var yg=gd.axislayer.selectAll('line.ygrid').data(vals);
+    var yg=gd.axislayer.selectAll('line.ygrid').data(vals,function(d){return d.text});
     yg.enter().append('line').attr('class','ygrid')
-        .attr('stroke','#ddd')
-        .attr('stroke-width',1)
+        .call(gridStyle,a)
         .attr('x1',gm.l)
         .attr('x2',gl.width-gm.r)
         .attr('y1',gm.t)
@@ -1704,7 +1701,7 @@ function doYTicks(gd) {
     
     // tick labels
     gd.axislayer.selectAll('text.ytlabel').remove(); // TODO: problems with reusing labels... shouldn't need this.
-    var yl=gd.axislayer.selectAll('text.ytlabel').data(vals,function(d){return d});
+    var yl=gd.axislayer.selectAll('text.ytlabel').data(vals,function(d){return d.text});
     yl.enter().append('text').attr('class','ytlabel')
         .attr('x',function(d){return d.dx+x1-a.ticklen})
         .attr('y',function(d){return d.dy+gm.t+d.fontSize/2})
@@ -1714,6 +1711,23 @@ function doYTicks(gd) {
     yl.attr('transform',function(d){return 'translate(0,'+(a.m*d.x+a.b)+')'});
     yl.exit().remove();
 }
+
+function tickStyle(s,a){
+    s.attr('stroke','black')
+    .attr('stroke-width',1);
+}
+
+function gridStyle(s,a){
+    s.attr('stroke',function(d){
+        // draw zero lines in black
+        if(!a.islog && !a.isdate && d.text=='0')
+            return '#000';
+        else return '#ddd';
+    })
+    .attr('stroke-width',1)
+}
+
+function ident(d){return d}
 
 // styling for svg text, in ~HTML format
 //   <br> or \n makes a new line (translated to opening and closing <l> tags)
