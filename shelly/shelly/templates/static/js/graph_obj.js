@@ -429,13 +429,13 @@ function newPlot(divid, layout) {
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
     // Get the layout info (this is the defaults)
-    gd.layout={title:'',
+    gd.layout={title:'Click to enter Plot title',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'',unit:''},
+            title:'Click to enter X axis title',unit:''},
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
-            title:'',unit:''},
+            title:'Click to enter Y axis title',unit:''},
         width:GRAPH_WIDTH,
         height:GRAPH_HEIGHT,
         margin:{l:50,r:10,t:30,b:40,pad:2},
@@ -762,18 +762,24 @@ function makeTitles(gd,title) {
             if(gd.mainsite)
                 el.on('click',function(){autoGrowInput(gd,this)});
             
-            if(t.cont.title)
-                el.each(function(){styleText(this,t.cont.title+ (!t.cont.unit ? '' : (' ('+t.cont.unit+')')))});
+            var txt=t.cont.title;
+            if(txt.match(/^Click to enter (Plot|X axis|Y axis) title$/))
+                if(gd.mainsite) el.style('fill','#999'); // cues in gray
+                else txt=''; // don't show cues in embedded plots
+            
+            if(txt)
+                el.each(function(){styleText(this,txt+ (!t.cont.unit ? '' : (' ('+t.cont.unit+')')))});
             else if(gd.mainsite)
                 el.text('Click to enter '+t.name+' title')
                     .style('opacity',1)
                     .on('mouseover',function(){d3.select(this).transition().duration(100).style('opacity',1);})
                     .on('mouseout',function(){d3.select(this).transition().duration(1000).style('opacity',0);})
                   .transition()
-                    .delay(2000)
                     .duration(2000)
                     .style('opacity',0);
             else el.remove();
+            
+            // move labels out of the way, if possible, when tick labels interfere
             var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paper.node().getBoundingClientRect();
             if(k=='xtitle'){
                 var labels=gd.paper.selectAll('.xtlabel')[0], ticky=0;
@@ -832,13 +838,14 @@ function legend(gd) {
         .attr('y',1);
 
     var traces = gd.legend.selectAll('g.traces')
-        .data(ldata)
-      .enter().append('g')
+        .data(ldata);
+    traces.enter().append('g')
         .attr('class','trace');
+//         .attr('class',function(d,i){return 'trace-'+i});
 
     traces.each(legendLines);
     traces.each(legendPoints);
-    var tracetext=traces.call(legendText);
+    var tracetext=traces.call(legendText).selectAll('text');
     if(gd.mainsite)
         tracetext.on('click',function(){autoGrowInput(gd,this)});
 
@@ -1727,8 +1734,6 @@ function gridStyle(s,a){
     })
     .attr('stroke-width',1)
 }
-
-function ident(d){return d}
 
 // styling for svg text, in ~HTML format
 //   <br> or \n makes a new line (translated to opening and closing <l> tags)
