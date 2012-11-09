@@ -1091,7 +1091,7 @@ function styleBoxColor(s,cls,clickfn,title,title2,d){
         '</div>').appendTo(s);
     dd[0].attr=cls;
     dd.find('input').spectrum({
-        color: d[0].t[cls.replace('select-','')],
+        color: d[0].t[cls],
         showInput: true,
         showInitial: false,
         showAlpha: true,
@@ -1103,7 +1103,7 @@ function styleBoxColor(s,cls,clickfn,title,title2,d){
         cancelText: 'Cancel',
         chooseText: title2 ? ('Set '+title2) : 'OK',
         showButtons: true,
-        className: cls,
+        className: 'spectrum-'+cls,
         preferredFormat: 'rgb',
         maxSelectionSize: 16,
         palette: [defaultColors,
