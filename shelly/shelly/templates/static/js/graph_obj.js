@@ -887,6 +887,7 @@ function styleBox(gd,pos,tracenum) {
 
 
     // make the container
+    // using Bootstrap popovers for styling, but not their actions...
     // initially put it at 0,0, then fix once we know its size
     var popover=$(
         '<div class="popover right stylebox" style="top:0px;left:0px;display:block;">'+
