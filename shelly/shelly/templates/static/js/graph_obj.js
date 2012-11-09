@@ -45,7 +45,7 @@ data should be an array of objects, one per trace. allowed keys:
         dash: (string) default 'solid', also 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot',
             all of the above dashes based on linewidth, can also pass in explicit dasharray
         color: (cstring), or (cstring array)
-        width: (float px) default 1
+        width: (float px) default 2
     }
 
     marker: {
@@ -237,7 +237,7 @@ function plot(divid, data, layout) {
             mergeattr(cd,gdc.mode,'mode',[(cd.length>20) ? 'lines' : 'lines+markers']);
             mergeattr(cd,gdc.line.dash,'ld',['solid']);
             mergeattr(cd,gdc.line.color,'lc',[gdc.marker.color, defaultColors[curve % defaultColors.length]]);
-            mergeattr(cd,gdc.line.width,'lw',[1]);
+            mergeattr(cd,gdc.line.width,'lw',[2]);
             mergeattr(cd,gdc.marker.symbol,'mx',['circle']);
             mergeattr(cd,gdc.marker.size,'ms',[6]);
             mergeattr(cd,gdc.marker.color,'mc',[cd[0].t.lc]);
@@ -1003,13 +1003,13 @@ function selectTrace(d,i){
     styleBoxColor(attrs,'mc',selectColor,'&nbsp;&nbsp;&nbsp;Color','Marker Color',d);
     styleBoxDrop(attrs,'ms',selectAttr,'&nbsp;&nbsp;&nbsp;Size',d,
         tModify(d[0].t,[
-            {mode:'markers',ms:1,name:'1'},
             {mode:'markers',ms:2,name:'2'},
             {mode:'markers',ms:3,name:'3'},
             {mode:'markers',ms:4,name:'4'},
             {mode:'markers',ms:6,name:'6'},
             {mode:'markers',ms:8,name:'8'},
-            {mode:'markers',ms:12,name:'12'}]));
+            {mode:'markers',ms:12,name:'12'},
+            {mode:'markers',ms:16,name:'16'}]));
     styleBoxDrop(attrs,'mlw',selectAttr,'&nbsp;&nbsp;&nbsp;Line width',d,
         tModify(d[0].t,[
             {mode:'markers',mlw:0,name:'0'},
