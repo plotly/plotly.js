@@ -1855,9 +1855,17 @@ function shareGraph(divid){
     setTimeout(function(){
         // reload div
         var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+        if(gd.fid.split(':').length==2){
+	    var un=gd.fid.split(':')[0]
+	    var fid=gd.fid.split(':')[1]
+	}
+        else{
+	    var un=$('#signin').text().replace(/^\s+|\s+$/g, '');
+	    var fid=gd.fid
+        }
         // set worldreadable flag on file to true
         $.post("/worldreadable/", {'readable':true,'fid':gd.fid}, function(){
-            url=window.location.origin+'/~'+$('#signin').text().replace(/^\s+|\s+$/g, '')+'/'+gd.fid;
+            url=window.location.origin+'/~'+un+'/'+fid;
             $('#linktoshare').val(url);
             $('#igraph').attr('src',url+'/500/300/');
             $('#iframetoshare').text($('#igraphcontainer').html().replace(/^\s*/, '').replace(/\s*$/, ''));
