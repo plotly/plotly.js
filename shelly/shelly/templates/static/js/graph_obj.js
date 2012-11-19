@@ -85,8 +85,8 @@ var fastscale=true;
 
 GRAPH_HEIGHT=500*1.2
 GRAPH_WIDTH=750*1.2;
-TOOLBAR_LEFT='920px';
-TOOLBAR_TOP='30px';
+TOOLBAR_LEFT='40px';
+TOOLBAR_TOP='-30px';
 
 var defaultColors=['#00e','#a00','#0c0','#000','#888'];
 
@@ -523,47 +523,63 @@ function newPlot(divid, layout) {
         // everything right but spacing between groups is different and I can't fix it,
         // easier to use a throughout and then manually set width.
         // Maybe if we re-download bootstrap this will be fixed?
+        var c1='333A40';
+        var c2='4C5E5E';
+        var c3='344059';
+        var c4='465973';
+        c1=c2=c3=c4='4C5E5E';
+        //c4=c2;
+	//c3=c2=c1;
+
         var menudiv =
-            '<div class="graphbar">'+
-                '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data" class="btn-stack">'+
-                    '<div class="btn-group btn-stack">'+
-                        '<span class="btn fileinput-button btn-stack" rel="tooltip" title="Upload to Graph">'+
-                            '<i class="icon-upload"></i>'+
-                            '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/></span>'+
-                    '</div>'+
-                '</form>'+            
-                '<div class="btn-group btn-group-vertical btn-stack">'+
-                    '<a class="btn" id="pdfexport" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Download as PDF">'+
-                        '<img src="/static/img/pdf.png" /></a>'+
-                    '<a class="btn" id="pngexport" onclick="pdfexport(\'png\')" rel="tooltip" title="Download as PNG">'+
-                        '<i class="icon-picture"></i></a>'+
+            '<div class="graphbar btn-toolbar">'+
+                
+                '<div class="btn-group" style="font-size: 32px !important; margin-right:10px;">'+
+                    '<a href="/" style="text-decoration:none;">Plotly</a>'+
                 '</div>'+
-                '<div class="btn-group btn-stack">'+
-                    '<a class="btn" id="graphtogrid" onclick="graphToGrid()" rel="tooltip" title="Show in Grid">'+
-                        '<i class="icon-th"></i></a>'+
+                
+                '<div class="btn-group toolbar_spacing">'+
+                    '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data">'+
+                        '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph">'+
+                            '<img class="invert toolbar_img" src="/static/img/glyphicons_201_upload.png"></img>'+
+                            '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/>'+
+                        '</span>'+ 
+                    '</form>'+            
                 '</div>'+
-                '<div class="btn-group btn-stack">'+
-                    '<a class="btn" onclick="saveGraph()" rel="tooltip" title="Save">'+
-                        '<i class="icon-hdd"></i></a>'+
+
+                '<div class="btn-group toolbar_spacing" id="edit_traces">'+
+                    '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this.getBoundingClientRect(),-1)" rel="tooltip" title="Format Traces">'+
+                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_151_edit.png" style=""/>'+
+                    '</a>'+ 
+                '</div>'+ 
+
+                '<div class="btn-group toolbar_spacing">'+
+                    '<a class="btn toolbar_anchor" onclick="shareGraph(gettab());" rel="tooltip" title="Share">'+
+                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_326_share.png"/>'+
                 '</div>'+
-                '<div class="btn-group btn-stack">'+
-                    '<a class="btn" onclick="shareGraph(gettab());" rel="tooltip" title="Share">'+
-                        '<i class="icon-globe"></i></a>'+
+
+                '<div class="btn-group" style="margin-right:10px; margin-left:10px;">'+
+	            '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown" href="#">'+              
+                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_023_cogwheels.png"/>'+
+                        '<span class="caret invert" style="vertical-align:middle;"></span>'+
+                    '</a>'+
+	                '<ul class="dropdown-menu">'+ 
+                        '<li><a onclick="saveGraph()"><i class="icon-hdd"></i> Save Changes</a></li>'+
+                        '<li><a id="pdfexport" onclick="pdfexport(\'pdf\')"><img src="/static/img/lil_pdf.png"></img> PDF Download</a></li>'+   
+                        '<li><a id="pngexport" onclick="pdfexport(\'png\')"><i class="icon-picture"></i> PNG Download</a></li>'+   
+                        '<li><a class="data-only" onclick="graphToGrid()" disabled="disabled"><i class="icon-th"></i> Show Graph Data</a></li>'+
+                        '<li><a class="data-only" onclick="toggleLegend(gettab())" disabled="disabled"><i class="icon-th-list"></i> Toggle Legend</a><li>'+
+                    '</ul>'+
                 '</div>'+
-                '<div class="btn-group btn-stack">'+
-                    '<a class="btn data-only" onclick="toggleLegend(gettab())" rel="tooltip" title="Toggle Legend" disabled="disabled">'+
-                        '<i class="icon-th-list"></i></a>'+
-                '</div>'+
-                '<div class="btn-group btn-stack">'+
-                    '<a class="btn data-only" onclick="styleBox(gettab(),this.getBoundingClientRect(),-1)" rel="tooltip" title="Format Traces" disabled="disabled">'+
-                        '<i class="icon-pencil"></i></a>'+
-                '</div>'+
-            '</div>'  
+	        '</div>'  
     
         $(gd).prepend(menudiv);
-        $(gd).find('.graphbar').css({'position':'absolute','left':TOOLBAR_LEFT,'top':TOOLBAR_TOP});
-        $(gd).find('.btn').tooltip({'placement':'left'}).width(14);
-//             .css('margin','4px 10px');
+        //$(gd).find('.graphbar').css({'position':'absolute','left':TOOLBAR_LEFT,'top':TOOLBAR_TOP});
+        $(gd).find('.btn').tooltip({'placement':'bottom'});
+        $('.btn-group').hover(
+	        function(){ $(this).find('.invert').addClass('lightswitch') },
+	        function(){ $(this).find('.invert').removeClass('lightswitch') }
+	    )
     }
 }
 
@@ -897,7 +913,7 @@ function styleBox(gd,pos,tracenum) {
     // using Bootstrap popovers for styling, but not their actions...
     // initially put it at 0,0, then fix once we know its size
     var popover=$(
-        '<div class="popover right stylebox" style="top:0px;left:0px;display:block;">'+
+        '<div class="popover bottom stylebox" style="top:0px;left:0px;display:block;">'+
             '<div class="arrow"></div>'+
             '<div class="popover-inner">'+
                 '<div class="popover-title"></div>'+
@@ -912,9 +928,15 @@ function styleBox(gd,pos,tracenum) {
     // fix positioning
     var pbb=popover[0].getBoundingClientRect();
     var wbb=$('#tabs-one-line').get(0).getBoundingClientRect(); // whole window
-    var newtop=pos.y-(pbb.top+pbb.bottom)/2;
+    //var newtop=pos.y-(pbb.top+pbb.bottom)/2;
+    var btn_wd=$('#edit_traces').width()/2
+    var btn_ht=$('#edit_traces').height()/2
+    var newtop=pos.y-(pbb.top)/2+btn_ht;
     var maxtop=wbb.top+wbb.height-pbb.height;
-    var newleft=pos.x-pbb.left;
+    //var newleft=pos.x-pbb.left;
+    console.log(pbb);
+    console.log(pos);
+    var newleft=pos.x-pbb.width/2-btn_wd;
     var maxleft=wbb.left+wbb.width-pbb.width;
     popover.css({top:Math.min(newtop, maxtop)+'px', left:Math.min(newleft, maxleft)+'px'});
     // if box is not where it wanted to be, take off the arrow because it's not pointing to anything
@@ -1846,7 +1868,8 @@ function shareGraph(divid){
     if(typeof gd.fid !='string') gd.fid='';
     if(signedin()==false) return;
     var gd=gettab();
-    if(gd.fid===undefined || gd.fid==''){
+    if(gd.fid===undefined) gd.fid='';
+    if(gd.fid==''){
         saveGraph(gd); // TODO: instead of a timeout, use a callback on finishing saveGraph
     }
     var spinner=new Spinner(opts).spin(gd);
@@ -1855,7 +1878,7 @@ function shareGraph(divid){
     setTimeout(function(){
         // reload div
         var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-        if(gd.fid.split(':').length==2){
+        if(gd.fid.toString().split(':').length==2){
 	    var un=gd.fid.split(':')[0]
 	    var fid=gd.fid.split(':')[1]
 	}
