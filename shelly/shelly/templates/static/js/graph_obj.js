@@ -417,7 +417,6 @@ function restyle(gd,astr,val,traces) {
 // change layout in an existing plot
 // astr and val are like restyle, or 2nd arg can be json {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
-    console.log('relayout',astr,val);
     var layout = gd.layout, aobj = {};
     if(typeof astr == 'string')
         aobj[astr] = val;
@@ -452,7 +451,6 @@ function relayout(gd,astr,val) {
 // check whether to resize a plot to the container
 function plotResize() {
     var gd=gettab();
-    console.log('plotresize',gd);
     if(gd.layout && gd.layout.autosize)
         relayout(gd, {autosize:1});
 }
