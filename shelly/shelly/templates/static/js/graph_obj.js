@@ -394,6 +394,7 @@ function pointStyle(s,t) {
     })
 }
 
+// TODO: rework plot and newplot so restyle and relayout don't have to completely redraw
 // change style in an existing plot
 // astr is the attr name, like 'marker.symbol'
 // val is the new value to use
@@ -404,13 +405,56 @@ function restyle(gd,astr,val,traces) {
         traces=[];
         for(var i=0; i<gd.data.length; i++) traces.push(i);
     }
-    var aa=astr.split('.')
+    var aa=astr.split('.');
     for(i=0; i<traces.length; i++) {
         var cont=gd.data[traces[i]];
         for(var j=0; j<aa.length-1; j++) cont=cont[aa[j]];
         cont[aa[j]]=val;
     }
     plot(gd,'','');
+}
+
+// change layout in an existing plot
+// astr and val are like restyle, or 2nd arg can be json {astr1:val1, astr2:val2...}
+function relayout(gd,astr,val) {
+    console.log('relayout',astr,val);
+    var layout = gd.layout, aobj = {};
+    if(typeof astr == 'string')
+        aobj[astr] = val;
+    else if($.isPlainObject(astr))
+        aobj = astr;
+    for(var i in aobj) {
+        // if a specific dimension is specified, disable autosizing
+        if(i=='height' || i=='width') layout.autosize=0;
+        var aa = i.split('.');
+        var cont=layout;
+        for(var j=0; j<aa.length-1; j++) cont=cont[aa[j]];
+        cont[aa[j]]=aobj[i];
+    }
+    
+    // calculate autosizing
+    if(aobj.autosize) {
+        var plotBB=gd.paper.node().getBoundingClientRect();
+        var gdBB=gd.getBoundingClientRect();
+        var ftBB=$('#filetab')[0].getBoundingClientRect();
+        var newheight = gdBB.bottom-plotBB.top;
+        var newwidth = (ftBB.width ? ftBB.left : gdBB.right) - plotBB.left;
+        if(Math.abs(gd.layout.width-newwidth)>1 || Math.abs(gd.layout.height-newheight)>1) {
+            layout.height=newheight;
+            layout.width=newwidth;
+        }
+    }
+
+    gd.layout=undefined; // force plot to redo the layout
+    plot(gd,'',layout);
+}
+
+// check whether to resize a plot to the container
+function plotResize() {
+    var gd=gettab();
+    console.log('plotresize',gd);
+    if(gd.layout && gd.layout.autosize)
+        relayout(gd, {autosize:1});
 }
 
 // ----------------------------------------------------
