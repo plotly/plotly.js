@@ -941,7 +941,8 @@ function styleBox(gd,pos,tracenum) {
     console.log(pos);
     var newleft=pos.x-pbb.width/2-btn_wd;
     var maxleft=wbb.left+wbb.width-pbb.width;
-    popover.css({top:Math.min(newtop, maxtop)+'px', left:Math.min(newleft, maxleft)+'px'});
+    var JACKS_OFFSET=35;
+    popover.css({top:Math.min(newtop, maxtop)+'px', left:Math.min(newleft, maxleft)+JACKS_OFFSET+'px'});
     // if box is not where it wanted to be, take off the arrow because it's not pointing to anything
     if(newleft>=maxleft || newtop>=maxtop) popover.find('.arrow').remove();
 
