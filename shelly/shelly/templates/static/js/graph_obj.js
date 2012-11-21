@@ -83,8 +83,8 @@ data should be an array of objects, one per trace. allowed keys:
 var fastscale=true;
 // var fastscale=false;
 
-GRAPH_HEIGHT=500*1.2
-GRAPH_WIDTH=750*1.2;
+GRAPH_HEIGHT=450;
+GRAPH_WIDTH=700;
 TOOLBAR_LEFT='40px';
 TOOLBAR_TOP='-30px';
 
@@ -533,53 +533,56 @@ function newPlot(divid, layout) {
 
         var menudiv =
             '<div class="graphbar btn-toolbar">'+
-                
-                '<div class="btn-group" style="font-size: 32px !important; margin-right:10px;">'+
-                    '<a href="/" style="text-decoration:none;">Plotly</a>'+
-                '</div>'+
-                
-                '<div class="btn-group toolbar_spacing">'+
+                '<div class="btn-group" style="margin-left:10px;">'+
                     '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data">'+
-                        '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph">'+
+                        '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph" style="width:50px!important;text-align:right;margin-right:10px!important;">'+
                             '<img class="invert toolbar_img" src="/static/img/glyphicons_201_upload.png"></img>'+
-                            '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/>'+
+                            '&nbsp;Upload'+
+                            '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();" style="margin-right:0px;"/>'+
                         '</span>'+ 
                     '</form>'+            
                 '</div>'+
-
-                '<div class="btn-group toolbar_spacing" id="edit_traces">'+
-                    '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this.getBoundingClientRect(),-1)" rel="tooltip" title="Format Traces">'+
-                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_151_edit.png" style=""/>'+
+                '<div class="btn-group" id="edit_traces" style="margin-left:0px">'+
+                    '<a class="btn toolbar_anchor toolbar_anchor_long" onclick="styleBox(gettab(),this.getBoundingClientRect(),-1)" rel="tooltip" title="Format Traces">'+
+                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>'+
+                        '&nbsp;Traces'+
                     '</a>'+ 
-                '</div>'+ 
-
-                '<div class="btn-group toolbar_spacing">'+
-                    '<a class="btn toolbar_anchor" onclick="shareGraph(gettab());" rel="tooltip" title="Share">'+
-                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_326_share.png"/>'+
-                '</div>'+
-
-                '<div class="btn-group" style="margin-right:10px; margin-left:10px;">'+
-	            '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown" href="#">'+              
-                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_023_cogwheels.png"/>'+
-                        '<span class="caret invert" style="vertical-align:middle;"></span>'+
-                    '</a>'+
-	                '<ul class="dropdown-menu">'+ 
-                        '<li><a onclick="saveGraph()"><i class="icon-hdd"></i> Save Changes</a></li>'+
-                        '<li><a id="pdfexport" onclick="pdfexport(\'pdf\')"><img src="/static/img/lil_pdf.png"></img> PDF Download</a></li>'+   
-                        '<li><a id="pngexport" onclick="pdfexport(\'png\')"><i class="icon-picture"></i> PNG Download</a></li>'+   
-                        '<li><a class="data-only" onclick="graphToGrid()" disabled="disabled"><i class="icon-th"></i> Show Graph Data</a></li>'+
-                        '<li><a class="data-only" onclick="toggleLegend(gettab())" disabled="disabled"><i class="icon-th-list"></i> Toggle Legend</a><li>'+
-                    '</ul>'+
-                '</div>'+
+                '</div>'+              
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor toolbar_anchor_long" onclick="toggleLegend(gettab())" rel="tooltip" title="Toggle Legend">'+
+                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>'+
+                        '&nbsp;Legend'+
+                    '</a>'+ 
+                '</div>'+                
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="saveGraph();" rel="tooltip" title="Save Changes">'+
+                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>'+
+                        '&nbsp;Save'+                        
+                '</div>'+             
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
+                        '<img class="invert toolbar_img" style="margin-left:-8px;" src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>'+
+                    '&nbsp;Data'+
+                '</div>'+                   
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Export to pdf">'+
+                        '<img class="invert toolbar_img" src="/static/img/pdf.png"/>'+
+                        '&nbsp;PDF'+
+                '</div>'+           
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'png\')" rel="tooltip" title="Export to png">'+
+                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>'+
+                        '&nbsp;PNG'+                        
+                '</div>'+     
+                '<div class="btn-group">'+
+                    '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph with URL" style="margin-bottom:20px;">'+
+                        '<img class="toolbar_img" src="/static/img/lil_share_white.png"/>'+
+                        '&nbsp;Share'+                        
+                '</div>'+                       
 	        '</div>'  
     
         $(gd).prepend(menudiv);
-        //$(gd).find('.graphbar').css({'position':'absolute','left':TOOLBAR_LEFT,'top':TOOLBAR_TOP});
         $(gd).find('.btn').tooltip({'placement':'bottom'});
-        $('.btn-group').hover(
-	        function(){ $(this).find('.invert').addClass('lightswitch') },
-	        function(){ $(this).find('.invert').removeClass('lightswitch') }
-	    )
     }
 }
 
