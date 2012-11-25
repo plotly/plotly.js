@@ -423,29 +423,36 @@ function relayout(gd,astr,val) {
     else if($.isPlainObject(astr))
         aobj = astr;
     for(var i in aobj) {
-        // if a specific dimension is specified, disable autosizing
-        if(i=='height' || i=='width') layout.autosize=0;
+        // if a specific dimension is specified without autosize, disable autosizing
+        if((i=='height' || i=='width') && !aobj.autosize) layout.autosize=0;
         var aa = i.split('.');
-        var cont=layout;
-        for(var j=0; j<aa.length-1; j++) cont=cont[aa[j]];
-        cont[aa[j]]=aobj[i];
+        var cont = layout;
+        for(var j=0; j<aa.length-1; j++)
+            cont = cont[aa[j]];
+        cont[aa[j]] = aobj[i];
     }
     
     // calculate autosizing
     if(aobj.autosize) {
-        var plotBB=gd.paper.node().getBoundingClientRect();
-        var gdBB=gd.getBoundingClientRect();
-        var ftBB=$('#filetab')[0].getBoundingClientRect();
-        var newheight = gdBB.bottom-plotBB.top;
-        var newwidth = (ftBB.width ? ftBB.left : gdBB.right) - plotBB.left;
-        if(Math.abs(gd.layout.width-newwidth)>1 || Math.abs(gd.layout.height-newheight)>1) {
-            layout.height=newheight;
-            layout.width=newwidth;
+        var plotBB = gd.paper.node().getBoundingClientRect();
+        var gdBB = gd.getBoundingClientRect();
+        var ftBB = $('#filetab')[0].getBoundingClientRect();
+        var newheight = Math.round(gdBB.bottom-plotBB.top);
+        var newwidth = Math.round((ftBB.width ? ftBB.left : gdBB.right) - plotBB.left);
+        if(gd.layout.width!=newwidth || gd.layout.height!=newheight) {
+            layout.height = newheight;
+            layout.width = newwidth;
+        }
+        else { // if there's no size change, update layout but don't need to redraw
+            delete(aobj.autosize);
+            gd.layout.autosize = 1;
         }
     }
-
-    gd.layout=undefined; // force plot to redo the layout
-    plot(gd,'',layout);
+    
+    if(Object.keys(aobj).length) { // check if there's anything to do
+        gd.layout = undefined; // force plot to redo the layout
+        plot(gd,'',layout);
+    }
 }
 
 // check whether to resize a plot to the container
@@ -474,13 +481,15 @@ function newPlot(divid, layout) {
     gd.layout={title:'Click to enter Plot title',
         xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
+            zeroline:1,
             title:'Click to enter X axis title',unit:''},
         yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
+            zeroline:1,
             title:'Click to enter Y axis title',unit:''},
         width:GRAPH_WIDTH,
         height:GRAPH_HEIGHT,
-        margin:{l:50,r:10,t:30,b:40,pad:2},
+        margin:{l:70,r:40,t:60,b:60,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff' };
         // TODO: add font size controls, and label positioning
@@ -575,56 +584,56 @@ function newPlot(divid, layout) {
 
         var menudiv =
             '<div class="graphbar btn-toolbar">'+
-                '<div class="btn-group" style="margin-left:10px;">'+
+                '<div class="btn-group">'+
                     '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data">'+
-                        '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph" style="width:50px!important;text-align:right;margin-right:10px!important;">'+
-                            '<img class="invert toolbar_img" src="/static/img/glyphicons_201_upload.png"></img>'+
+                        '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph">'+
+                            '<img src="/static/img/glyphicons_201_upload.png"></img>'+
                             '&nbsp;Upload'+
-                            '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();" style="margin-right:0px;"/>'+
+                            '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/>'+
                         '</span>'+ 
                     '</form>'+            
                 '</div>'+
-                '<div class="btn-group" id="edit_traces" style="margin-left:0px">'+
-                    '<a class="btn toolbar_anchor toolbar_anchor_long" onclick="styleBox(gettab(),this.getBoundingClientRect(),-1)" rel="tooltip" title="Format Traces">'+
-                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>'+
+                '<div class="btn-group" id="edit_traces">'+
+                    '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this.getBoundingClientRect(),-1)" rel="tooltip" title="Format Traces">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>'+
                         '&nbsp;Traces'+
                     '</a>'+ 
                 '</div>'+              
                 '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor toolbar_anchor_long" onclick="toggleLegend(gettab())" rel="tooltip" title="Toggle Legend">'+
-                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>'+
+                    '<a class="btn toolbar_anchor" onclick="toggleLegend()" rel="tooltip" title="Toggle Legend">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>'+
                         '&nbsp;Legend'+
                     '</a>'+ 
                 '</div>'+                
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="saveGraph();" rel="tooltip" title="Save Changes">'+
-                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>'+
                         '&nbsp;Save'+                        
                 '</div>'+             
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
-                        '<img class="invert toolbar_img" style="margin-left:-8px;" src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>'+
                     '&nbsp;Data'+
                 '</div>'+                   
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Export to pdf">'+
-                        '<img class="invert toolbar_img" src="/static/img/pdf.png"/>'+
+                        '<img src="/static/img/pdf.png"/>'+
                         '&nbsp;PDF'+
                 '</div>'+           
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="pdfexport(\'png\')" rel="tooltip" title="Export to png">'+
-                        '<img class="invert toolbar_img" src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>'+
                         '&nbsp;PNG'+                        
                 '</div>'+     
                 '<div class="btn-group">'+
-                    '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph with URL" style="margin-bottom:20px;">'+
-                        '<img class="toolbar_img" src="/static/img/lil_share_white.png"/>'+
+                    '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph with URL">'+
+                        '<img src="/static/img/lil_share_white.png"/>'+
                         '&nbsp;Share'+                        
                 '</div>'+                       
 	        '</div>'  
     
         $(gd).prepend(menudiv);
-        $(gd).find('.btn').tooltip({'placement':'bottom'});
+        $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
     }
 }
 
@@ -867,6 +876,7 @@ function makeTitles(gd,title) {
 }
 
 function toggleLegend(gd) {
+    if(gd===undefined) gd=gettab();
     if(gd.legend) {
         gd.paper.selectAll('.legend').remove();
         gd.legend=undefined;
@@ -946,8 +956,8 @@ function styleBox(gd,pos,tracenum) {
         return;
     }
     
-    if(!('x' in pos)) pos.x=pos.left+pos.width;
-    if(!('y' in pos)) pos.y=pos.top+(pos.height/2);
+    if(!('x' in pos)) pos.x=pos.left+(pos.width/2);
+    if(!('y' in pos)) pos.y=pos.top+pos.height;
     
     // copy current styling, so we can undo if desired
 //     gd.savestyles = [];
@@ -971,20 +981,13 @@ function styleBox(gd,pos,tracenum) {
     styleBoxTraces(popover,tracenum);
     
     // fix positioning
-    var pbb=popover[0].getBoundingClientRect();
+    var pbb=popover[0].getBoundingClientRect(); // popover, at initial position
     var wbb=$('#tabs-one-line').get(0).getBoundingClientRect(); // whole window
-    //var newtop=pos.y-(pbb.top+pbb.bottom)/2;
-    var btn_wd=$('#edit_traces').width()/2
-    var btn_ht=$('#edit_traces').height()/2
-    var newtop=pos.y-(pbb.top)/2+btn_ht;
+    var newtop=pos.y-pbb.top;
     var maxtop=wbb.top+wbb.height-pbb.height;
-    //var newleft=pos.x-pbb.left;
-    console.log(pbb);
-    console.log(pos);
-    var newleft=pos.x-pbb.width/2-btn_wd;
+    var newleft=pos.x-pbb.left-(pbb.width/2);
     var maxleft=wbb.left+wbb.width-pbb.width;
-    var JACKS_OFFSET=35;
-    popover.css({top:Math.min(newtop, maxtop)+'px', left:Math.min(newleft, maxleft)+JACKS_OFFSET+'px'});
+    popover.css({top:Math.min(newtop, maxtop)+'px', left:Math.min(newleft, maxleft)+'px'});
     // if box is not where it wanted to be, take off the arrow because it's not pointing to anything
     if(newleft>=maxleft || newtop>=maxtop) popover.find('.arrow').remove();
 
@@ -1796,6 +1799,7 @@ function tickStyle(s,a){
 function gridStyle(s,a){
     s.attr('stroke',function(d){
         // draw zero lines in black
+        // TODO: look for zeroline in layout, remove this one and add one on top
         if(!a.islog && !a.isdate && d.text=='0')
             return '#000';
         else return '#ddd';
