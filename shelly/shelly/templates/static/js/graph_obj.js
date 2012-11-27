@@ -499,19 +499,26 @@ function newPlot(divid, layout) {
     gd.layout=updateObject(gd.layout,layout);
     var gl=gd.layout, gd3=d3.select(gd)
 
+    // adjust margins for outside legends
+    var ml = gl.margin.l-(gd.lw<0 ? gd.lw : 0),
+        mr = gl.margin.r+(gd.lw>0 ? gd.lw : 0),
+        mt = gl.margin.t+(gd.lh>0 ? gd.lh : 0),
+        mb = gl.margin.b-(gd.lh<0 ? gd.lh : 0),
+        mp = gl.margin.pad;
+
     // Make the graph containers
     // First svg (paper) is for the axes
     gd.paper=gd3.append('svg')
         .attr('width',gl.width)
         .attr('height',gl.height)
         .style('background-color',gl.paper_bgcolor);
-    gd.plotwidth=gl.width-gl.margin.l-gl.margin.r;
-    gd.plotheight=gl.height-gl.margin.t-gl.margin.b;
+    gd.plotwidth=gl.width-ml-mr;
+    gd.plotheight=gl.height-mt-mb;
     gd.plotbg=gd.paper.append('rect')
-        .attr('x',gl.margin.l-gl.margin.pad)
-        .attr('y',gl.margin.t-gl.margin.pad)
-        .attr('width',gd.plotwidth+2*gl.margin.pad)
-        .attr('height',gd.plotheight+2*gl.margin.pad)
+        .attr('x',ml-mp)
+        .attr('y',mt-mp)
+        .attr('width',gd.plotwidth+2*mp)
+        .attr('height',gd.plotheight+2*mp)
         .style('fill',gl.plot_bgcolor)
         .attr('stroke','black')
         .attr('stroke-width',1);
@@ -526,8 +533,8 @@ function newPlot(divid, layout) {
     
     // Second svg (plot) is for the data
     gd.plot=gd.paper.append('svg')
-        .attr('x',gl.margin.l)
-        .attr('y',gl.margin.t)
+        .attr('x',ml)
+        .attr('y',mt)
         .attr('width',gd.plotwidth)
         .attr('height',gd.plotheight)
         .attr('preserveAspectRatio','none')
@@ -535,11 +542,11 @@ function newPlot(divid, layout) {
     gd.viewbox={x:0,y:0};
 
     //make the axis drag objects
-    var x1=gl.margin.l;
+    var x1=ml;
     var x2=x1+gd.plotwidth;
     var a=$(gd).find('text.ytlabel').get().map(function(e){return e.getBBox().x});
     var x0=Math.min.apply(a,a); // gotta be a better way to do this...
-    var y2=gl.margin.t;
+    var y2=mt;
     var y1=y2+gd.plotheight;
     var a=$(gd).find('text.xtlabel').get().map(function(e){var bb=e.getBBox(); return bb.y+bb.height});
     var y0=Math.max.apply(a,a); // again, gotta be a better way...
@@ -567,20 +574,22 @@ function newPlot(divid, layout) {
 
     if(gd.mainsite) {
         // ------------------------------------------------------------ graphing toolbar
-        // This section is super-finicky. Maybe because we somehow didn't get the
-        // "btn-group-vertical" class from bootstrap initially, I had to bring it in myself
-        // to plotly.css and maybe didn't do it right...
-        // For instance, a and button behave differently in weird ways, button nearly gets
-        // everything right but spacing between groups is different and I can't fix it,
-        // easier to use a throughout and then manually set width.
-        // Maybe if we re-download bootstrap this will be fixed?
-        var c1='333A40';
-        var c2='4C5E5E';
-        var c3='344059';
-        var c4='465973';
-        c1=c2=c3=c4='4C5E5E';
-        //c4=c2;
-	//c3=c2=c1;
+
+// 
+//         // This section is super-finicky. Maybe because we somehow didn't get the
+//         // "btn-group-vertical" class from bootstrap initially, I had to bring it in myself
+//         // to plotly.css and maybe didn't do it right...
+//         // For instance, a and button behave differently in weird ways, button nearly gets
+//         // everything right but spacing between groups is different and I can't fix it,
+//         // easier to use a throughout and then manually set width.
+//         // Maybe if we re-download bootstrap this will be fixed?
+//         var c1='333A40';
+//         var c2='4C5E5E';
+//         var c3='344059';
+//         var c4='465973';
+//         c1=c2=c3=c4='4C5E5E';
+//         //c4=c2;
+// 	//c3=c2=c1;
 
         var menudiv =
             '<div class="graphbar btn-toolbar">'+
@@ -593,42 +602,40 @@ function newPlot(divid, layout) {
                         '</span>'+ 
                     '</form>'+            
                 '</div>'+
-                '<div class="btn-group" id="edit_traces">'+
+                '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this.getBoundingClientRect(),-1)" rel="tooltip" title="Format Traces">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>'+
-                        '&nbsp;Traces'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>&nbsp;Traces'+
                     '</a>'+ 
                 '</div>'+              
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="toggleLegend()" rel="tooltip" title="Toggle Legend">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>'+
-                        '&nbsp;Legend'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>&nbsp;Legend'+
                     '</a>'+ 
                 '</div>'+                
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="saveGraph();" rel="tooltip" title="Save Changes">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>'+
-                        '&nbsp;Save'+                        
+                        '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>&nbsp;Save'+                        
+                    '</a>'+ 
                 '</div>'+             
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>'+
-                    '&nbsp;Data'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>&nbsp;Data'+
+                    '</a>'+ 
                 '</div>'+                   
                 '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Export to pdf">'+
-                        '<img src="/static/img/pdf.png"/>'+
-                        '&nbsp;PDF'+
+                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Export to PDF">'+
+                        '<img src="/static/img/pdf.png"/>&nbsp;PDF'+
+                    '</a>'+ 
                 '</div>'+           
                 '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'png\')" rel="tooltip" title="Export to png">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>'+
-                        '&nbsp;PNG'+                        
+                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'png\')" rel="tooltip" title="Export to PNG">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>&nbsp;PNG'+                        
+                    '</a>'+ 
                 '</div>'+     
                 '<div class="btn-group">'+
-                    '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph with URL">'+
-                        '<img src="/static/img/lil_share_white.png"/>'+
-                        '&nbsp;Share'+                        
+                    '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph by URL">'+
+                        '<img src="/static/img/lil_share_white.png"/>&nbsp;Share'+                        
+                    '</a>'+ 
                 '</div>'+                       
 	        '</div>'  
     
@@ -667,8 +674,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         .style('cursor',cursor);
 
     dragger.node().onmousedown = function(e) {
-        // explicitly disable dragging when a popover is present
-        if($('.popover').length) return true;
+        if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
         
         var eln=this;
         var d=(new Date()).getTime();
@@ -678,9 +684,6 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             gd.numClicks=1;
             gd.mouseDown=d;
         }
-        // because we cancel event bubbling, input won't receive its blur event.
-        // TODO: anything else we need to manually bubble? any more restricted way to cancel bubbling?
-        if(gd.input) gd.input.trigger('blur');
         
         if(ew) {
             var gx=gd.layout.xaxis;
@@ -697,7 +700,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             // clamp tiny drags to the origin
             gd.dragged=(( (!ns) ? Math.abs(e2.clientX-e.clientX) :
                     (!ew) ? Math.abs(e2.clientY-e.clientY) :
-                    Math.abs(e2.clientX-e.clientX,2)+Math.abs(e2.clientY-e.clientY,2)
+                    Math.abs(e2.clientX-e.clientX)+Math.abs(e2.clientY-e.clientY)
                 ) > gd.mindrag);
             // execute the drag
             if(gd.dragged) plotDrag.call(gd,e2.clientX-e.clientX,e2.clientY-e.clientY,ns,ew);
@@ -807,12 +810,14 @@ function plotDrag(dx,dy,ns,ew) {
 function makeTitles(gd,title) {
     var gl=gd.layout;
     var titles={
-        'xtitle':{x: (gl.width+gl.margin.l-gl.margin.r)/2, y: gl.height-14*0.75,
-            w: gl.width/2, h: 14,
+        'xtitle':{x: (gl.width+gl.margin.l-gl.margin.r-(gd.lw ? gd.lw : 0))/2,
+            y: gl.height+(gd.lh<0 ? gd.lh : 0) - 14*0.75,
+            w: gd.plotwidth/2, h: 14,
             cont: gl.xaxis, fontSize: 14, name: 'X axis',
             transform: '', attr: {}},
-        'ytitle':{x: 20, y: (gl.height+gl.margin.t-gl.margin.b)/2,
-            w: 14, h: gl.height/2,
+        'ytitle':{x: 20-(gd.lw<0 ? gd.lw : 0),
+            y: (gl.height+gl.margin.t-gl.margin.b+(gd.lh ? gd.lh : 0))/2,
+            w: 14, h: gd.plotheight/2,
             cont: gl.yaxis, fontSize: 14, name: 'Y axis',
             transform: 'rotate(-90,x,y)', attr: {center: 0}},
         'gtitle':{x: gl.width/2, y: gl.margin.t/2,
@@ -877,20 +882,19 @@ function makeTitles(gd,title) {
 
 function toggleLegend(gd) {
     if(gd===undefined) gd=gettab();
-    if(gd.legend) {
+    if(gd.layout.showlegend) {
         gd.paper.selectAll('.legend').remove();
-        gd.legend=undefined;
         gd.layout.showlegend=false;
     }
-    else {
+    else
         legend(gd);
-        gd.layout.showlegend=true;
-    }
 }
 
 function legend(gd) {
-    var gl=gd.layout;
+    var gl=gd.layout,gm=gl.margin;
+    gl.showlegend = true;
     if(!gl.legend) gl.legend={};
+    var gll = gl.legend;
     gd.paper.selectAll('.legend').remove();
     if(!gd.calcdata) return;
 
@@ -912,7 +916,6 @@ function legend(gd) {
         .data(ldata);
     traces.enter().append('g')
         .attr('class','trace');
-//         .attr('class',function(d,i){return 'trace-'+i});
 
     traces.each(legendLines);
     traces.each(legendPoints);
@@ -920,9 +923,14 @@ function legend(gd) {
     if(gd.mainsite)
         tracetext.on('click',function(){autoGrowInput(gd,this)});
 
+    // add the legend elements, keeping track of the legend size (in px) as we go
     var legendwidth=0, legendheight=0;
-    traces.each(function(){
+    traces.each(function(d){
         var g=d3.select(this), t=g.select('text'), l=g.select('.legendpoints');
+        if(d[0].t.showinlegend===false) {
+            g.remove();
+            return;
+        }
         var tbb = t.node().getBoundingClientRect();
         if(!l.node()) l=g.select('line');
         var lbb = (!l.node()) ? tbb : l.node().getBoundingClientRect();
@@ -935,17 +943,176 @@ function legend(gd) {
     legendwidth += 45;
     legendheight += 10;
 
-//     if(!gl.legend.x) 
-    gl.legend.x=gl.width-gl.margin.r-legendwidth-10;
-//     if(!gl.legend.y) 
-    gl.legend.y=gl.margin.t+10;
-    gd.legend.attr('x',gl.legend.x)
-        .attr('y',gl.legend.y)
+    // now position the legend. for both x,y the positions are recorded as fractions
+    // of the plot area (left, bottom = 0,0). Outside the plot area is allowed but
+    // position will be clipped to the plot area. Special values +/-100 auto-increase
+    // the margin to put the legend entirely outside the plot area on the high/low side.
+    // Otherwise, values <1/3 align the low side at that fraction, 1/3-2/3 align the
+    // center at that fraction, >2/3 align the right at that fraction
+    var pw = gl.width-gm.l-gm.r,
+        ph = gl.height-gm.t-gm.b;
+    // defaults... the check for >10 and !=100 is to remove old style positioning in px
+    if(!$.isNumeric(gll.x) || (gll.x>10 && gll.x!=100)) gll.x=0.98;
+    if(!$.isNumeric(gll.y) || (gll.y>10 && gll.y!=100)) gll.y=0.98;
+    
+    var lx = gm.l+pw*gll.x,
+        ly = gm.t+ph*(1-gll.y),
+        pad = 3; // pix of padding if legend is outside plot
+
+    // don't let legend be outside plot in both x and y... that would just make big blank
+    // boxes. Put the legend centered in y if we somehow get there.
+    if(Math.abs(gll.x)==100 && Math.abs(gll.y)==100) gll.y=0.5;
+
+    if(gll.x==-100) {
+        lx=pad;
+        if(gd.lw!=-legendwidth-2*pad) { // if we haven't already, redraw with extra margin
+            gd.lw=-legendwidth-2*pad; // make gd.lw to tell newplot how much extra margin to give
+            relayout(gd,'margin.l',gm.l); // doesn't change setting, just forces redraw
+            return;
+        }
+    }
+    else if(gll.x==100) {
+        lx=gl.width-legendwidth-pad;
+        if(gd.lw!=legendwidth+2*pad) {
+            gd.lw=legendwidth+2*pad;
+            relayout(gd,'margin.r',gm.r);
+            return;
+        }
+    }
+    else {
+        if(gd.lw) {
+            delete gd.lw;
+            relayout(gd,'margin.r',gm.r);
+            return;
+        }
+        if(gll.x>2/3) lx -= legendwidth;
+        else if(gll.x>1/3) lx -= legendwidth/2;
+    }
+
+    if(gll.y==-100) {
+        ly=gl.height-legendheight-pad;
+        if(gd.lh!=-legendheight-2*pad) {
+            gd.lh=-legendheight-2*pad;
+            relayout(gd,'margin.b',gm.b);
+            return;
+        }
+    }
+    else if(gll.y==100) {
+        ly=pad+16; // Graph title goes above legend regardless. TODO: get real title size
+        if(gd.lh!=legendheight+2*pad) {
+            gd.lh=legendheight+2*pad;
+            relayout(gd,'margin.t',gm.t);
+            return;
+        }
+    }
+    else {
+        if(gd.lh) {
+            delete gd.lh;
+            relayout(gd,'margin.t',gm.t);
+            return;
+        }
+        if(gll.y<1/3) ly -= legendheight;
+        else if(gll.y<2/3) ly -= legendheight/2;
+    }
+
+    // push the legend back onto the page if it extends off, making sure if nothing else
+    // that the top left of the legend is visible
+    if(lx+legendwidth>gl.width) lx=gl.width-legendwidth;
+    if(lx<0) lx=0;
+    if(ly+legendheight>gl.height) ly=gl.height-legendheight;
+    if(ly<0) ly=0;
+
+    gd.legend.attr('x',lx)
+        .attr('y',ly)
         .attr('width',legendwidth)
         .attr('height',legendheight);
     gd.legend.selectAll('.bg')
         .attr('width',legendwidth-2)
         .attr('height',legendheight-2);
+    // TODO: let user drag the legend
+    // choose left/center/right align via:
+    //  xl=(left-ml)/plotwidth, xc=(center-ml/plotwidth), xr=(right-ml)/plotwidth
+    //  if(xl<2/3-xc) gll.x=xl;
+    //  else if(xr>4/3-xc) gll.x=xr;
+    //  else gll.x=xc;
+    gd.legend.node().onmousedown = function(e) {
+        if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
+        
+        var eln=this, el3=d3.select(this);
+        var x0=Number(el3.attr('x')), y0=Number(el3.attr('y'));
+        var xf=undefined, yf=undefined;
+        window.onmousemove = function(e2) {
+            var dx = e2.clientX-e.clientX,
+                dy = e2.clientY-e.clientY;
+            if(Math.abs(dx)<gd.mindrag) dx=0;
+            if(Math.abs(dy)<gd.mindrag) dy=0;
+            el3.attr('x',x0+dx)
+                .attr('y',y0+dy);
+            var pbb = gd.paper.node().getBoundingClientRect();
+            // drag to within a couple px of edge to take the legend outside the plot
+            if(e2.clientX>pbb.right-3*gd.mindrag || (gd.lw>0 && dx>-gd.mindrag))
+                xf=100;
+            else if(e2.clientX<pbb.left+3*gd.mindrag || (gd.lw<0 && dx<gd.mindrag))
+                xf=-100;
+            else {
+                var xl=(x0+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0)),
+                    xr=xl+legendwidth/(gl.width-gm.l-gm.r),
+                    xc=(xl+xr)/2;
+                if(xl<(2/3)-xc) xf=xl;
+                else if(xr>4/3-xc) xf=xr;
+                else xf=xc;
+            }
+            if(e2.clientY>pbb.bottom-3*gd.mindrag || (gd.lh<0 && dy>-gd.mindrag))
+                yf=-100;
+            else if(e2.clientY<pbb.top+3*gd.mindrag || (gd.lh>0 && dy<gd.mindrag))
+                yf=100;
+            else {
+                var yt=(y0+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0)),
+                    yb=yt+legendheight/(gl.height-gm.t-gm.b),
+                    yc=(yt+yb)/2;
+                if(yt<(2/3)-yc) yf=1-yt;
+                else if(yb>4/3-yc) yf=1-yb;
+                else yf=1-yc;
+            }
+            // now set the mouse cursor so user can see how the legend will be aligned
+            var csr='';
+            if(Math.abs(xf)==100) csr='col-resize';
+            else if(Math.abs(yf)==100) csr='row-resize';
+            else if(xf<1/3) {
+                if(yf<1/3) csr='sw-resize';
+                else if(yf<2/3) csr='w-resize';
+                else csr='nw-resize';
+            }
+            else if(xf<2/3) {
+                if(yf<1/3) csr='s-resize';
+                else if(yf<2/3) csr='move';
+                else csr='n-resize';
+            }
+            else {
+                if(yf<1/3) csr='se-resize';
+                else if(yf<2/3) csr='e-resize';
+                else csr='ne-resize';
+            }
+            $(eln).css('cursor',csr);
+            pauseEvent(e2);
+        }
+        window.onmouseup = function(e2) {
+            window.onmousemove = null; window.onmouseup = null;
+            $(eln).css('cursor','');
+            if(xf===undefined || yf===undefined) return;
+            relayout(gd,{'legend.x':xf,'legend.y':yf});
+        }
+    }
+}
+
+// since our drag events cancel event bubbling, need to explicitly deal with other elements
+function dragClear(gd) {
+    // explicitly disable dragging when a popover is present
+    if($('.popover').length) return true;
+    // because we cancel event bubbling, input won't receive its blur event.
+    // TODO: anything else we need to manually bubble? any more restricted way to cancel bubbling?
+    if(gd.input) gd.input.trigger('blur');
+    return false;
 }
 
 // make a styling gui for div gd at pos ({x,y} or {left,top,width,height}) for trace tracenum 
@@ -1419,6 +1586,7 @@ function autoGrowInput(gd,eln) {
     input.bind('keyup keydown blur update',function(e) {
         var valold=val;
         val=input.val();
+        if(!gd.input || !gd.layout) return; // occasionally we get two events firing...
         
         // leave the input or press return: accept the change
         if((e.type=='blur') || (e.type=='keydown' && e.which==13)) {
@@ -1436,6 +1604,7 @@ function autoGrowInput(gd,eln) {
                 }
             }
             else if(mode=='legend') {
+                console.log(gd.layout);
                 cont[prop]=$.trim(val);
                 cont2[prop]=$.trim(val);
                 gd.layout.showlegend=true;
@@ -1714,15 +1883,21 @@ function tickText(gd, a, x){
 }
 
 function doXTicks(gd) {
-    var gl=gd.layout, gm=gl.margin, a=gl.xaxis, y1=gl.height-gm.b+gm.pad;
+    var gl=gd.layout, gm=gl.margin, a=gl.xaxis;
     var vals=calcTicks(gd,a);
+    var ml = gm.l-(gd.lw<0 ? gd.lw : 0),
+        mr = gm.r+(gd.lw>0 ? gd.lw : 0),
+        mt = gm.t+(gd.lh>0 ? gd.lh : 0),
+        mb = gm.b-(gd.lh<0 ? gd.lh : 0),
+        y1=gl.height-mb+gm.pad;
+
 
     // ticks
     var xt=gd.axislayer.selectAll('line.xtick').data(vals,function(d){return d.text});
     xt.enter().append('line').attr('class','xtick')
         .call(tickStyle,a)
-        .attr('x1',gm.l)
-        .attr('x2',gm.l)
+        .attr('x1',ml)
+        .attr('x2',ml)
         .attr('y1',y1)
         .attr('y2',y1+a.ticklen)
     xt.attr('transform',function(d){return 'translate('+(a.m*d.x+a.b)+',0)'});
@@ -1732,10 +1907,10 @@ function doXTicks(gd) {
     var xg=gd.axislayer.selectAll('line.xgrid').data(vals,function(d){return d.text});
     xg.enter().append('line').attr('class','xgrid')
         .call(gridStyle,a)
-        .attr('x1',gm.l)
-        .attr('x2',gm.l)
-        .attr('y1',gl.height-gm.b)
-        .attr('y2',gm.t);
+        .attr('x1',ml)
+        .attr('x2',ml)
+        .attr('y1',gl.height-mb)
+        .attr('y2',mt);
     xg.attr('transform',function(d){return 'translate('+(a.m*d.x+a.b)+',0)'});
     xg.exit().remove();
     
@@ -1743,7 +1918,7 @@ function doXTicks(gd) {
     gd.axislayer.selectAll('text.xtlabel').remove(); // TODO: problems with reusing labels... shouldn't need this
     var xl=gd.axislayer.selectAll('text.xtlabel').data(vals,function(d){return d.text});
     xl.enter().append('text').attr('class','xtlabel')
-        .attr('x',function(d){return d.dx+gm.l})
+        .attr('x',function(d){return d.dx+ml})
         .attr('y',function(d){return d.dy+y1+a.ticklen+d.fontSize})
         .attr('font-size',function(d){return d.fontSize})
         .attr('text-anchor','middle')
@@ -1753,8 +1928,13 @@ function doXTicks(gd) {
 }
 
 function doYTicks(gd) {
-    var gl=gd.layout, gm=gl.margin, a=gl.yaxis, x1=gm.l-gm.pad;
+    var gl=gd.layout, gm=gl.margin, a=gl.yaxis;
     var vals=calcTicks(gd,a);
+    var ml = gm.l-(gd.lw<0 ? gd.lw : 0),
+        mr = gm.r+(gd.lw>0 ? gd.lw : 0),
+        mt = gm.t+(gd.lh>0 ? gd.lh : 0),
+        mb = gm.b-(gd.lh<0 ? gd.lh : 0),
+        x1 = ml-gm.pad;
     
     // ticks
     var yt=gd.axislayer.selectAll('line.ytick').data(vals,function(d){return d.text});
@@ -1762,8 +1942,8 @@ function doYTicks(gd) {
         .call(tickStyle,a)
         .attr('x1',x1)
         .attr('x2',x1-a.ticklen)
-        .attr('y1',gm.t)
-        .attr('y2',gm.t);
+        .attr('y1',mt)
+        .attr('y2',mt);
     yt.attr('transform',function(d){return 'translate(0,'+(a.m*d.x+a.b)+')'});
     yt.exit().remove();
 
@@ -1771,10 +1951,10 @@ function doYTicks(gd) {
     var yg=gd.axislayer.selectAll('line.ygrid').data(vals,function(d){return d.text});
     yg.enter().append('line').attr('class','ygrid')
         .call(gridStyle,a)
-        .attr('x1',gm.l)
-        .attr('x2',gl.width-gm.r)
-        .attr('y1',gm.t)
-        .attr('y2',gm.t);
+        .attr('x1',ml)
+        .attr('x2',gl.width-mr)
+        .attr('y1',mt)
+        .attr('y2',mt);
     yg.attr('transform',function(d){return 'translate(0,'+(a.m*d.x+a.b)+')'});
     yg.exit().remove();
     
@@ -1783,7 +1963,7 @@ function doYTicks(gd) {
     var yl=gd.axislayer.selectAll('text.ytlabel').data(vals,function(d){return d.text});
     yl.enter().append('text').attr('class','ytlabel')
         .attr('x',function(d){return d.dx+x1-a.ticklen})
-        .attr('y',function(d){return d.dy+gm.t+d.fontSize/2})
+        .attr('y',function(d){return d.dy+mt+d.fontSize/2})
         .attr('font-size',function(d){return d.fontSize})
         .attr('text-anchor','end')
         .each(function(d){styleText(this,d.text)});
