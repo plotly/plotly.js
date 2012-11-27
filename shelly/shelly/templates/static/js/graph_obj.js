@@ -619,12 +619,17 @@ function newPlot(divid, layout) {
                     '<a class="btn toolbar_anchor" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Export to pdf">'+
                         '<img src="/static/img/pdf.png"/>'+
                         '&nbsp;PDF'+
-                '</div>'+           
+                '</div>'+                  
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="pdfexport(\'png\')" rel="tooltip" title="Export to png">'+
                         '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>'+
                         '&nbsp;PNG'+                        
                 '</div>'+     
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="litebox()" rel="tooltip" title="Toggle help on / off">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"/>'+
+                        '&nbsp;Help'+                        
+                '</div>'+                           
                 '<div class="btn-group">'+
                     '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph with URL">'+
                         '<img src="/static/img/lil_share_white.png"/>'+
@@ -955,6 +960,7 @@ function styleBox(gd,pos,tracenum) {
         console.log('no data to style',gd);
         return;
     }
+    hidebox();
     
     if(!('x' in pos)) pos.x=pos.left+(pos.width/2);
     if(!('y' in pos)) pos.y=pos.top+pos.height;
