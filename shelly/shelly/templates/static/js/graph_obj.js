@@ -656,12 +656,15 @@ function newPlot(divid, layout) {
                     '</a>'+
                 '</div>'+
                 '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="litebox()" rel="tooltip" title="Toggle help on / off">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"/>&nbsp;Help'+
+                '</div>'+
+                '<div class="btn-group">'+
                     '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph by URL">'+
                         '<img src="/static/img/lil_share_white.png"/>&nbsp;Share'+
                     '</a>'+
                 '</div>'+
-	        '</div>'
-
+	        '</div>';
         $(gd).prepend(menudiv);
         $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
     }
@@ -1145,6 +1148,7 @@ function styleBox(gd,pos,tracenum) {
         console.log('no data to style',gd);
         return;
     }
+    hidebox();
 
     if(!('x' in pos)) pos.x=pos.left+(pos.width/2);
     if(!('y' in pos)) pos.y=pos.top+pos.height;
