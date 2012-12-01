@@ -95,6 +95,7 @@ var defaultColors=['#00e','#a00','#0c0','#000','#888'];
 // if necessary to create the framework
 // ----------------------------------------------------
 function plot(divid, data, layout) {
+    console.log(data);
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in by dom element, others by id (string)
@@ -106,6 +107,7 @@ function plot(divid, data, layout) {
     // if you only want to redraw, pass non-object (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if(typeof data=='object') {
+        console.log(data);
         if(graphwasempty) gd.data=data;
         else gd.data.push.apply(gd.data,data);
         gd.empty=false;
@@ -1184,9 +1186,11 @@ function styleBoxTraces(popover,tracenum){
         tModify(tDefault,{name:'All Traces', mode:'none'});
     for(var i=0; i<popover[0].gd.calcdata.length; i++) {
         var o = stripSrc(popover[0].gd.calcdata[i][0]);
-        o.t.name=popover[0].gd.data[i].ysrc
-            .replace(/[\s\n\r]+/gm,' ')
-            .replace(/^([A-z0-9\-_]+[\/:])?[0-9]+[\/:]/,'');
+        console.log(o);
+        var trc_nm = popover[0].gd.data[i].ysrc;
+        if( trc_nm === undefined ) trc_nm = popover[0].gd.data[i].name;
+        console.log(trc_nm);
+        o.t.name=trc_nm.replace(/[\s\n\r]+/gm,' ').replace(/^([A-z0-9\-_]+[\/:])?[0-9]+[\/:]/,'');
         ldata.push([o]);    
     }
 
