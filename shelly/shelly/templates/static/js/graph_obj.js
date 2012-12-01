@@ -31,10 +31,10 @@ data should be an array of objects, one per trace. allowed keys:
     y: (float array), or y0:(float) and dy:(float)
         if neither y, y0, or dy exists, defaults to y0:0, dy:1
         you may provide x and/or y arrays, but not neither
-    
+
     All of these can also be date strings, in the format 'YYYY-mm-dd HH:MM:SS'
     This format can handle anything from year 0 to year 9999, but the underlying JS
-    can extend this to year -271820 to 275760 
+    can extend this to year -271820 to 275760
     based on converting to ms since start of 1970 for plotting
     so we could at some point extend beyond 0-9999 limitation...
 
@@ -58,11 +58,11 @@ data should be an array of objects, one per trace. allowed keys:
             width: (float px) default 0, or (float array)
         }
     }
-    
+
     text: (string array) hover text for each point
 
     name: <string for legend>
-    
+
     cstring is a string with any valid HTML color
     marker and linecolor will copy each other if only one is present
     if neither is provided, choose one from a default set based on the trace number
@@ -70,13 +70,13 @@ data should be an array of objects, one per trace. allowed keys:
 
     eventually I'd like to make all of the marker and line properties accept arrays
     to modify properties point-by-point
-    
+
     any array also has a corresponding src attribute, ie xsrc for x
     this is a string:
-    	<id>/<colname> for your own data, 
+    	<id>/<colname> for your own data,
     	<user>/<id>/<colname> for shared data
-    
-*/  
+
+*/
 
 // new way of zooming with viewbox: warps points while zooming, but it's super fast.
 // set fastscale=true to use
@@ -130,7 +130,7 @@ function plot(divid, data, layout) {
                 console.log('ysort');
     	        console.log(ysort);
                 // i_f = "interpolation factor" - size of chunk to average
-                // Ex: If LARGESET=1000 and  there are 10000 points -> 
+                // Ex: If LARGESET=1000 and  there are 10000 points ->
                 // make new array by averaging over every 10 y values
                 i_f=Math.round(xsort.length/LARGESET);
                 new_x=[]
@@ -150,7 +150,7 @@ function plot(divid, data, layout) {
                 // console.log(new_x);
                 // console.log(new_y);
                 data[i]['x']=new_x;
-                data[i]['y']=new_y;           
+                data[i]['y']=new_y;
             }
         } // end jp edit 9_8_2012
     }
@@ -159,7 +159,7 @@ function plot(divid, data, layout) {
     // note: if they do already exist, the new layout gets ignored (as it should)
     // unless there's no data there yet... then it should destroy and remake the plot
     if((typeof gd.layout==='undefined')||graphwasempty) newPlot(divid, layout);
-    
+
     // enable or disable formatting buttons
     $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length==0);
 
@@ -181,7 +181,7 @@ function plot(divid, data, layout) {
             xa.isdate = ('x' in gdd[0]) ? moreDates(gdd[0].x) : (isDateTime(gdd[0].x0)===true);
         if(!xa.isdate && !isBoolean(xa.islog))
             xa.islog = loggy(gdd,'x');
-    
+
         if(!isBoolean(ya.isdate))
             ya.isdate = ('y' in gdd[0]) ? moreDates(gdd[0].y) : (isDateTime(gdd[0].y0)===true);
         if(!ya.isdate && !isBoolean(ya.islog))
@@ -200,12 +200,12 @@ function plot(divid, data, layout) {
             }
             else gdc.name='trace '+curve;
         }
-        
+
         //default type is scatter
         if(!('type' in gdc) || (gdc.type=='scatter')) {
             // verify that data exists, and make scaled data if necessary
             if(!('y' in gdc) && !('x' in gdc)) continue; // no data!
-            
+
             if('y' in gdc) y=convertToAxis(gdc.y,ya);
             else {
                 v0 = ('y0' in gdc) ? convertToAxis(gdc.y0, ya) : 0;
@@ -221,7 +221,7 @@ function plot(divid, data, layout) {
                 x=[];
                 for(i in y) x.push(v0+i*dv);
             }
-            
+
             serieslen=Math.min(x.length,y.length);
             if(xa.autorange) xdr=[aggNums(Math.min,xdr[0],x,serieslen),aggNums(Math.max,xdr[1],x,serieslen)];
             if(ya.autorange) ydr=[aggNums(Math.min,ydr[0],y,serieslen),aggNums(Math.max,ydr[1],y,serieslen)];
@@ -229,29 +229,20 @@ function plot(divid, data, layout) {
             var cd=[];
             for(i=0;i<serieslen;i++) cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ? {x:x[i],y:y[i]} : {x:false,y:false});
             // add the trace-wide properties to the first point, per point properties to every point
-            cd[0].t={};
+            // t is the holder for trace-wide properties, start it with the curve num from gd.data
+            // in case some curves don't plot
+            cd[0].t={curve:curve};
             if(!('line' in gdc)) gdc.line={};
             if(!('marker' in gdc)) gdc.marker={};
             if(!('line' in gdc.marker)) gdc.marker.line={};
 
-            // set display params per trace to default or provided value
-            // mergeattr puts single values into cd[0].t, and all others into each individual point
-            mergeattr(cd,gdc.mode,'mode',[(cd.length>20) ? 'lines' : 'lines+markers']);
-            mergeattr(cd,gdc.line.dash,'ld',['solid']);
-            mergeattr(cd,gdc.line.color,'lc',[gdc.marker.color, defaultColors[curve % defaultColors.length]]);
-            mergeattr(cd,gdc.line.width,'lw',[2]);
-            mergeattr(cd,gdc.marker.symbol,'mx',['circle']);
-            mergeattr(cd,gdc.marker.size,'ms',[6]);
-            mergeattr(cd,gdc.marker.color,'mc',[cd[0].t.lc]);
-            mergeattr(cd,gdc.marker.line.color,'mlc',[((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000')]);
-            mergeattr(cd,gdc.marker.line.width,'mlw',[0]);
-            mergeattr(cd,gdc.text,'tx',['']);
-            mergeattr(cd,gdc.name,'name',['trace '+curve]);
-
             gd.calcdata.push(cd);
         }
-        CD=[gd.calcdata,xdr,ydr]; // for debug
     }
+    // put the styling info into the calculated traces
+    // has to be done separate from applyStyles so we know the mode (ie which objects to draw)
+    setStyles(gd);
+
     // autorange... if axis is currently reversed, preserve this.
     if(xa.autorange && $.isNumeric(xdr[0])) {
         if(xa.range && xa.range[1]<xa.range[0])
@@ -269,23 +260,24 @@ function plot(divid, data, layout) {
 
     doXTicks(gd);
     doYTicks(gd);
-    
+
     if(!$.isNumeric(vb.x) || !$.isNumeric(vb.y)) {
         gd.viewbox={x:0, y:0};
         vb=gd.viewbox;
     }
+
     if($.isNumeric(xa.m) && $.isNumeric(xa.b) && $.isNumeric(ya.m) && $.isNumeric(ya.b)) {
         var xf=function(d){return d3.round(xa.b+xa.m*d.x+vb.x,2)};
         var yf=function(d){return d3.round(ya.b+ya.m*d.y+vb.y,2)};
         // now plot the data
         // TODO: to start we redraw each time. later we should be able to do way better on redraws...
         gp.selectAll('g.trace').remove();
-        
+
         var traces = gp.selectAll('g.trace')
             .data(gd.calcdata)
           .enter().append('g')
             .attr('class','trace');
-    
+
         traces.each(function(d){
             if(d[0].t.mode.indexOf('lines')==-1) return;
             var i=-1,t=d3.select(this);
@@ -294,33 +286,58 @@ function plot(divid, data, layout) {
                 for(i++; i<d.length && $.isNumeric(d[i].x) && $.isNumeric(d[i].y); i++)
                     pts+=xf(d[i])+','+yf(d[i])+' ';
                 if(pts)
-                    t.append('polyline').attr('points',pts).call(lineGroupStyle);
+                    t.append('polyline').attr('points',pts);
             }
         });
-        
-        var pointgroups=traces.append('g')
+
+        traces.append('g')
             .attr('class','points')
-            .call(pointGroupStyle);
-            
-        pointgroups.each(function(d){
-            var t=d[0].t;
-            if(t.mode.indexOf('markers')==-1) return;
-            d3.select(this).selectAll('path')
-                .data(function(d){return d})
-              .enter().append('path')
-                .each(function(d){
-                    if($.isNumeric(d.x) && $.isNumeric(d.y))
-                        d3.select(this)
-                            .call(pointStyle,t)
-                            .attr('transform','translate('+xf(d)+','+yf(d)+')');
-                    else d3.select(this).remove();
-                });
-        });
+            .each(function(d){
+                var t=d[0].t;
+                if(t.mode.indexOf('markers')==-1) return;
+                d3.select(this).selectAll('path')
+                    .data(function(d){return d})
+                  .enter().append('path')
+                    .each(function(d){
+                        if($.isNumeric(d.x) && $.isNumeric(d.y))
+                            d3.select(this)
+                                .attr('transform','translate('+xf(d)+','+yf(d)+')');
+                        else d3.select(this).remove();
+                    });
+            });
+
+        //styling separate from drawing
+        applyStyle(gp);
     }
     else console.log('error with axis scaling',xa.m,xa.b,ya.m,ya.b);
 
     // show the legend
     if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!=false)) legend(gd);
+}
+
+// set display params per trace to default or provided value
+function setStyles(gd) {
+    for(var i in gd.calcdata){
+        var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
+        // mergeattr puts single values into cd[0].t, and all others into each individual point
+        mergeattr(cd,gdc.mode,'mode',[(cd.length>20) ? 'lines' : 'lines+markers']);
+        mergeattr(cd,gdc.line.dash,'ld',['solid']);
+        mergeattr(cd,gdc.line.color,'lc',[gdc.marker.color, defaultColors[c % defaultColors.length]]);
+        mergeattr(cd,gdc.line.width,'lw',[2]);
+        mergeattr(cd,gdc.marker.symbol,'mx',['circle']);
+        mergeattr(cd,gdc.marker.size,'ms',[6]);
+        mergeattr(cd,gdc.marker.color,'mc',[cd[0].t.lc]);
+        mergeattr(cd,gdc.marker.line.color,'mlc',[((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000')]);
+        mergeattr(cd,gdc.marker.line.width,'mlw',[0]);
+        mergeattr(cd,gdc.text,'tx',['']);
+        mergeattr(cd,gdc.name,'name',['trace '+c]);
+    }
+}
+
+function applyStyle(gp) {
+    gp.selectAll('g.points').call(pointGroupStyle)
+        .each(function(d){d3.select(this).selectAll('path').call(pointStyle,d[0].t);})
+    gp.selectAll('g.trace polyline').call(lineGroupStyle);
 }
 
 // merge object a (which may be an array or a single value) into o...
@@ -372,7 +389,6 @@ function pointGroupStyle(s) {
 }
 
 function pointStyle(s,t) {
-//     s.attr('r',function(d){return ((d.ms+1 || t.ms+1 || d.t.ms+1)-1)/2});
     s.attr('d',function(d){
         var r=((d.ms+1 || t.ms+1 || d.t.ms+1)-1)/2,rt=r*2/Math.sqrt(3),rc=r/3,rd=r*Math.sqrt(2);
         var x=(d.mx || t.mx || d.t.mx);
@@ -392,7 +408,7 @@ function pointStyle(s,t) {
             return 'M'+r+','+rc+'H'+rc+'V'+r+'H'+(-rc)+'V'+rc+'H'+(-r)+'V'+(-rc)+'H'+(-rc)+'V'+(-r)+'H'+rc+'V'+(-rc)+'H'+r+'Z'
         // circle is default
         return 'M'+r+',0A'+r+','+r+' 0 1,1 0,'+(-r)+'A'+r+','+r+' 0 0,1 '+r+',0Z';
-        
+
     })
 }
 
@@ -413,7 +429,13 @@ function restyle(gd,astr,val,traces) {
         for(var j=0; j<aa.length-1; j++) cont=cont[aa[j]];
         cont[aa[j]]=val;
     }
-    plot(gd,'','');
+    // need to replot if mode changes, because the right objects don't exist
+    if(astr=='mode')
+        plot(gd,'','');
+    else {
+        setStyles(gd);
+        applyStyle(gd.plot);
+    }
 }
 
 // change layout in an existing plot
@@ -433,7 +455,7 @@ function relayout(gd,astr,val) {
             cont = cont[aa[j]];
         cont[aa[j]] = aobj[i];
     }
-    
+
     // calculate autosizing
     if(aobj.autosize) {
         var plotBB = gd.paper.node().getBoundingClientRect();
@@ -450,7 +472,7 @@ function relayout(gd,astr,val) {
             gd.layout.autosize = 1;
         }
     }
-    
+
     if(Object.keys(aobj).length) { // check if there's anything to do
         gd.layout = undefined; // force plot to redo the layout
         plot(gd,'',layout);
@@ -491,6 +513,7 @@ function newPlot(divid, layout) {
             title:'Click to enter Y axis title',unit:''},
         width:GRAPH_WIDTH,
         height:GRAPH_HEIGHT,
+        autosize:false,
         margin:{l:70,r:40,t:60,b:60,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff' };
@@ -532,7 +555,7 @@ function newPlot(divid, layout) {
     gl.yaxis.r0=gl.yaxis.range[0];
 
     makeTitles(gd,''); // happens after ticks, so we can scoot titles out of the way if needed
-    
+
     // Second svg (plot) is for the data
     gd.plot=gd.paper.append('svg')
         .attr('x',ml)
@@ -577,7 +600,7 @@ function newPlot(divid, layout) {
     if(gd.mainsite) {
         // ------------------------------------------------------------ graphing toolbar
 
-// 
+//
 //         // This section is super-finicky. Maybe because we somehow didn't get the
 //         // "btn-group-vertical" class from bootstrap initially, I had to bring it in myself
 //         // to plotly.css and maybe didn't do it right...
@@ -601,49 +624,49 @@ function newPlot(divid, layout) {
                             '<img src="/static/img/glyphicons_201_upload.png"></img>'+
                             '&nbsp;Upload'+
                             '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/>'+
-                        '</span>'+ 
-                    '</form>'+            
+                        '</span>'+
+                    '</form>'+
                 '</div>'+
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this.getBoundingClientRect(),-1)" rel="tooltip" title="Format Traces">'+
                         '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>&nbsp;Traces'+
-                    '</a>'+ 
-                '</div>'+              
+                    '</a>'+
+                '</div>'+
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="toggleLegend()" rel="tooltip" title="Toggle Legend">'+
                         '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>&nbsp;Legend'+
-                    '</a>'+ 
-                '</div>'+                
+                    '</a>'+
+                '</div>'+
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="saveGraph();" rel="tooltip" title="Save Changes">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>&nbsp;Save'+                        
-                    '</a>'+ 
-                '</div>'+             
+                        '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>&nbsp;Save'+
+                    '</a>'+
+                '</div>'+
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
                         '<img src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>&nbsp;Data'+
-                    '</a>'+ 
-                '</div>'+                   
+                    '</a>'+
+                '</div>'+
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Export to PDF">'+
                         '<img src="/static/img/pdf.png"/>&nbsp;PDF'+
-                    '</a>'+ 
-                '</div>'+           
+                    '</a>'+
+                '</div>'+
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="pdfexport(\'png\')" rel="tooltip" title="Export to PNG">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>&nbsp;PNG'+                        
-                    '</a>'+ 
-                '</div>'+     
+                        '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>&nbsp;PNG'+
+                    '</a>'+
+                '</div>'+
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="litebox()" rel="tooltip" title="Toggle help on / off">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"/>&nbsp;Help'+                        
-                '</div>'+                           
+                        '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"/>&nbsp;Help'+
+                '</div>'+
                 '<div class="btn-group">'+
                     '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph by URL">'+
-                        '<img src="/static/img/lil_share_white.png"/>&nbsp;Share'+                        
-                    '</a>'+ 
-	        '</div>'  
-    
+                        '<img src="/static/img/lil_share_white.png"/>&nbsp;Share'+
+                    '</a>'+
+                '</div>'+
+	        '</div>';
         $(gd).prepend(menudiv);
         $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
     }
@@ -666,8 +689,8 @@ function dragBox(gd,x,y,w,h,ns,ew) {
     gd.mouseDown=0;
     gd.numClicks=1;
     gd.dblclickDelay=600;
-    gd.mindrag=5; 
-    
+    gd.mindrag=5;
+
     var cursor=(ns+ew).toLowerCase()+'-resize';
     if(cursor=='nsew-resize') cursor='move';
     dragger=gd.paper.append('rect').classed('drag',true)
@@ -680,7 +703,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
 
     dragger.node().onmousedown = function(e) {
         if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
-        
+
         var eln=this;
         var d=(new Date()).getTime();
         if(d-gd.mouseDown<gd.dblclickDelay)
@@ -689,7 +712,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             gd.numClicks=1;
             gd.mouseDown=d;
         }
-        
+
         if(ew) {
             var gx=gd.layout.xaxis;
             gx.r0=[gx.range[0],gx.range[1]];
@@ -766,18 +789,18 @@ function plotDrag(dx,dy,ns,ew) {
         if(ew) {
             this.viewbox.x=-dx;
             gx.range=[gx.r0[0]-dx/gx.m,gx.r0[1]-dx/gx.m];
-            doXTicks(this);        
+            doXTicks(this);
         }
         if(ns) {
             this.viewbox.y=-dy;
             gy.range=[gy.r0[0]-dy/gy.m,gy.r0[1]-dy/gy.m];
-            doYTicks(this);        
+            doYTicks(this);
         }
         this.plot.attr('viewBox',(ew ? -dx : 0)+' '+(ns ? -dy : 0)+
             ' '+this.plotwidth+' '+this.plotheight);
         return;
     }
-    
+
     if(ew=='w') {
         gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx/this.plotwidth);
         dx=this.plotwidth*(gx.r0[0]-gx.range[0])/(gx.r0[0]-gx.r0[1]);
@@ -787,7 +810,7 @@ function plotDrag(dx,dy,ns,ew) {
         dx=this.plotwidth*(gx.r0[1]-gx.range[1])/(gx.r0[1]-gx.r0[0]);
     }
     else if(ew=='') dx=0;
-    
+
     if(ns=='n') {
         gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy/this.plotheight);
         dy=this.plotheight*(gy.r0[1]-gy.range[1])/(gy.r0[1]-gy.r0[0]);
@@ -797,7 +820,7 @@ function plotDrag(dx,dy,ns,ew) {
         dy=this.plotheight*(gy.r0[0]-gy.range[0])/(gy.r0[0]-gy.r0[1]);
     }
     else if(ns=='') dy=0;
-    
+
     if(fastscale){
         this.plot.attr('viewBox',
             ((ew=='w')?dx:0)+' '+((ns=='n')?dy:0)+' '+
@@ -841,12 +864,12 @@ function makeTitles(gd,title) {
                 .attr('transform',t.transform.replace('x',t.x).replace('y',t.y))
             if(gd.mainsite)
                 el.on('click',function(){autoGrowInput(gd,this)});
-            
+
             var txt=t.cont.title;
             if(txt.match(/^Click to enter (Plot|X axis|Y axis) title$/))
                 if(gd.mainsite) el.style('fill','#999'); // cues in gray
                 else txt=''; // don't show cues in embedded plots
-            
+
             if(txt)
                 el.each(function(){styleText(this,txt+ (!t.cont.unit ? '' : (' ('+t.cont.unit+')')))});
             else if(gd.mainsite)
@@ -858,7 +881,7 @@ function makeTitles(gd,title) {
                     .duration(2000)
                     .style('opacity',0);
             else el.remove();
-            
+
             // move labels out of the way, if possible, when tick labels interfere
             var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paper.node().getBoundingClientRect();
             if(k=='xtitle'){
@@ -905,7 +928,7 @@ function legend(gd) {
 
     var ldata=[]
     for(var i=0;i<gd.calcdata.length;i++) ldata.push([gd.calcdata[i][0]]);
-    
+
     gd.legend=gd.paper.append('svg')
         .attr('class','legend');
 
@@ -937,7 +960,7 @@ function legend(gd) {
             return;
         }
         var tbb = t.node().getBoundingClientRect();
-        if(!l.node()) l=g.select('line');
+        if(!l.node()) l=g.select('polyline');
         var lbb = (!l.node()) ? tbb : l.node().getBoundingClientRect();
         t.attr('y',(lbb.top+lbb.bottom-tbb.top-tbb.bottom)/2);
         var gbb = this.getBoundingClientRect();
@@ -959,7 +982,7 @@ function legend(gd) {
     // defaults... the check for >10 and !=100 is to remove old style positioning in px
     if(!$.isNumeric(gll.x) || (gll.x>10 && gll.x!=100)) gll.x=0.98;
     if(!$.isNumeric(gll.y) || (gll.y>10 && gll.y!=100)) gll.y=0.98;
-    
+
     var lx = gm.l+pw*gll.x,
         ly = gm.t+ph*(1-gll.y),
         pad = 3; // pix of padding if legend is outside plot
@@ -1042,7 +1065,7 @@ function legend(gd) {
     //  else gll.x=xc;
     gd.legend.node().onmousedown = function(e) {
         if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
-        
+
         var eln=this, el3=d3.select(this);
         var x0=Number(el3.attr('x')), y0=Number(el3.attr('y'));
         var xf=undefined, yf=undefined;
@@ -1120,7 +1143,7 @@ function dragClear(gd) {
     return false;
 }
 
-// make a styling gui for div gd at pos ({x,y} or {left,top,width,height}) for trace tracenum 
+// make a styling gui for div gd at pos ({x,y} or {left,top,width,height}) for trace tracenum
 // use tracenum=-1 for all traces
 function styleBox(gd,pos,tracenum) {
     if(!gd.data){
@@ -1128,10 +1151,10 @@ function styleBox(gd,pos,tracenum) {
         return;
     }
     hidebox();
-    
+
     if(!('x' in pos)) pos.x=pos.left+(pos.width/2);
     if(!('y' in pos)) pos.y=pos.top+pos.height;
-    
+
     // copy current styling, so we can undo if desired
 //     gd.savestyles = [];
 //     for(d in gd.data) gd.savestyles.push(stripSrc(gd.data[d]));
@@ -1152,7 +1175,7 @@ function styleBox(gd,pos,tracenum) {
 
     // make the tracelist (and then the attribute selectors)
     styleBoxTraces(popover,tracenum);
-    
+
     // fix positioning
     var pbb=popover[0].getBoundingClientRect(); // popover, at initial position
     var wbb=$('#tabs-one-line').get(0).getBoundingClientRect(); // whole window
@@ -1186,10 +1209,10 @@ function styleBoxTraces(popover,tracenum){
         tModify(tDefault,{name:'All Traces', mode:'none'});
     for(var i=0; i<popover[0].gd.calcdata.length; i++) {
         var o = stripSrc(popover[0].gd.calcdata[i][0]);
-        console.log(o);
+        // console.log(o);
         var trc_nm = popover[0].gd.data[i].ysrc;
         if( trc_nm === undefined ) trc_nm = popover[0].gd.data[i].name;
-        console.log(trc_nm);
+        // console.log(trc_nm);
         o.t.name=trc_nm.replace(/[\s\n\r]+/gm,' ').replace(/^([A-z0-9\-_]+[\/:])?[0-9]+[\/:]/,'');
         ldata.push([o]);    
     }
@@ -1232,8 +1255,8 @@ function selectTrace(d,i){
             {mode:'lines',name:'',ld:'longdashdot'}]));
     popover.find('.select-ld svg')
         .attr('width','70')
-      .find('line')
-        .attr('x2',65);
+      .find('polyline')
+        .attr('points','5,0 65,0');
     styleBoxColor(attrs,'lc',selectColor,'&nbsp;&nbsp;&nbsp;Color','Line Color',d);
     styleBoxDrop(attrs,'lw',selectAttr,'&nbsp;&nbsp;&nbsp;Width',d,
         tModify(d[0].t,[
@@ -1305,7 +1328,7 @@ function styleBoxDrop(s,cls,clickfn,title,d0,d){
         var noset=true;
     }
     else var noset=false;
-    
+
     var dn = $(dropdown('select-'+cls,title)).appendTo(s).get(0),
         dd=d3.select(dn);
     dn.attr=cls;
@@ -1315,7 +1338,7 @@ function styleBoxDrop(s,cls,clickfn,title,d0,d){
         .on('click',clickfn);
 
     var tw=40, th=20;
-    
+
     opts.append('svg')
         .attr('width',tw)
         .attr('height',th)
@@ -1363,16 +1386,16 @@ function styleBoxColor(s,cls,clickfn,title,title2,d){
             ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
             "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
             ["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
-            "rgb(0, 255, 255)", "rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"], 
-            ["rgb(230, 184, 175)", "rgb(244, 204, 204)", "rgb(252, 229, 205)", "rgb(255, 242, 204)", "rgb(217, 234, 211)", 
-            "rgb(208, 224, 227)", "rgb(201, 218, 248)", "rgb(207, 226, 243)", "rgb(217, 210, 233)", "rgb(234, 209, 220)", 
-            "rgb(221, 126, 107)", "rgb(234, 153, 153)", "rgb(249, 203, 156)", "rgb(255, 229, 153)", "rgb(182, 215, 168)", 
-            "rgb(162, 196, 201)", "rgb(164, 194, 244)", "rgb(159, 197, 232)", "rgb(180, 167, 214)", "rgb(213, 166, 189)", 
-            "rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(255, 217, 102)", "rgb(147, 196, 125)", 
+            "rgb(0, 255, 255)", "rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"],
+            ["rgb(230, 184, 175)", "rgb(244, 204, 204)", "rgb(252, 229, 205)", "rgb(255, 242, 204)", "rgb(217, 234, 211)",
+            "rgb(208, 224, 227)", "rgb(201, 218, 248)", "rgb(207, 226, 243)", "rgb(217, 210, 233)", "rgb(234, 209, 220)",
+            "rgb(221, 126, 107)", "rgb(234, 153, 153)", "rgb(249, 203, 156)", "rgb(255, 229, 153)", "rgb(182, 215, 168)",
+            "rgb(162, 196, 201)", "rgb(164, 194, 244)", "rgb(159, 197, 232)", "rgb(180, 167, 214)", "rgb(213, 166, 189)",
+            "rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(255, 217, 102)", "rgb(147, 196, 125)",
             "rgb(118, 165, 175)", "rgb(109, 158, 235)", "rgb(111, 168, 220)", "rgb(142, 124, 195)", "rgb(194, 123, 160)",
             "rgb(166, 28, 0)", "rgb(204, 0, 0)", "rgb(230, 145, 56)", "rgb(241, 194, 50)", "rgb(106, 168, 79)",
             "rgb(69, 129, 142)", "rgb(60, 120, 216)", "rgb(61, 133, 198)", "rgb(103, 78, 167)", "rgb(166, 77, 121)",
-            "rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)", 
+            "rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)",
             "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]],
         change: function(color){clickfn(dd[0],color)}
 //         selectionPalette: d
@@ -1400,16 +1423,14 @@ function selectColor(dropnode,color){
         astr = traceAttrs[dropnode.attr],
         val = color.toRgbString();
     restyle(popover[0].gd,astr,val,selectedTrace>=0 ? selectedTrace : null);
+    styleBoxTraces(popover,selectedTrace);
 }
 
 function legendLines(d){
     if(d[0].t.mode.indexOf('lines')==-1) return;
-    d3.select(this).append('line')
+    d3.select(this).append('polyline')
         .call(lineGroupStyle)
-        .attr('x1',5)
-        .attr('x2',35)
-        .attr('y1',0)
-        .attr('y2',0);
+        .attr('points','5,0 35,0');
 }
 
 function legendPoints(d){
@@ -1461,11 +1482,11 @@ function autoGrowInput(gd,eln) {
     $(eln).tooltip('destroy'); // TODO: would like to leave this visible longer but then it loses its parent... how to avoid?
     var el3 = d3.select(eln), el = el3.attr('class'), cont, prop, ref=$(eln);
     var o = {maxWidth: 1000, minWidth: 20}, fontCss={};
-    var mode = (el.slice(1,6)=='title') ? 'title' : 
+    var mode = (el.slice(1,6)=='title') ? 'title' :
                 (el.slice(0,4)=='drag') ? 'drag' :
-                (el.slice(0,6)=='legend') ? 'legend' : 
+                (el.slice(0,6)=='legend') ? 'legend' :
                     'unknown';
-    
+
     if(mode=='unknown') {
         console.log('oops, autoGrowInput doesn\'t recognize this field',el,eln);
         return;
@@ -1474,7 +1495,7 @@ function autoGrowInput(gd,eln) {
         console.log('not on the main site but tried to edit text. ???',el,eln);
         return;
     }
-    
+
     // are we editing a title?
     if(mode=='title') {
         cont =  {xtitle:gd.layout.xaxis, ytitle:gd.layout.yaxis, gtitle:gd.layout}[el];
@@ -1527,11 +1548,11 @@ function autoGrowInput(gd,eln) {
     $(gd).append(inbox);
     var input=$(inbox);
     gd.input=input;
-    
+
     // first put the input box at 0,0, then calculate the correct offset vs orig. element
     input.css(fontCss)
         .css({position:'absolute', top:0, left:0, 'z-index':6000});
-    
+
     if(mode=='drag') {
         // show enough digits to specify the position to about a pixel, but not more
         var v=cont.range[prop], diff=Math.abs(v-cont.range[1-prop]);
@@ -1580,7 +1601,7 @@ function autoGrowInput(gd,eln) {
 
     var leftshift={left:0, center:0.5, right:1}[o.align];
     var left0=input.position().left+input.width()*leftshift;
-    
+
     // for titles, take away the existing one as soon as the input box is made
     if(mode!='drag') gd.paper.selectAll('[class="'+el+'"]').remove();
     inbox.select();
@@ -1595,10 +1616,10 @@ function autoGrowInput(gd,eln) {
         var valold=val;
         val=input.val();
         if(!gd.input || !gd.layout) return; // occasionally we get two events firing...
-        
+
         // leave the input or press return: accept the change
         if((e.type=='blur') || (e.type=='keydown' && e.which==13)) {
-            
+
             if(mode=='title') {
                 cont[prop]=$.trim(val);
                 makeTitles(gd,el);
@@ -1693,7 +1714,7 @@ function calcTicks(gd,a) {
     else if(a.islog){
         if(a.autotick){
             a.tick0=0;
-            if(rt>0.7){ //only show powers of 10 
+            if(rt>0.7){ //only show powers of 10
                 a.dtick=Math.ceil(rt);
             }
             else if(rt*nt<1){ // likely no power of 10 visible
@@ -1731,7 +1752,7 @@ function calcTicks(gd,a) {
         //round tick labels to 2 digits past largest digit of dtick
         a.tickround=Math.pow(10,2-Math.round(Math.log(a.dtick)/Math.LN10));
     }
-    
+
     // set scaling to pixels
     if(a===gd.layout.yaxis) {
         a.m=gd.plotheight/(a.range[0]-a.range[1]);
@@ -1739,15 +1760,15 @@ function calcTicks(gd,a) {
     }
     else {
         a.m=gd.plotwidth/(a.range[1]-a.range[0]);
-        a.b=-a.m*a.range[0];    
+        a.b=-a.m*a.range[0];
     }
-        
+
     // find the first tick
     a.tmin=tickFirst(a);
-    
+
     // check for reversed axis
     var axrev=(a.range[1]<a.range[0]);
-    
+
     // return the full set of tick vals
     var vals=[];
     for(var x=a.tmin;(axrev)?(x>=a.range[1]):(x<=a.range[1]);x=tickIncrement(x,a.dtick,axrev))
@@ -1780,7 +1801,7 @@ function roundUp(val,a,reverse){
 function tickIncrement(x,dtick,axrev){
     if($.isNumeric(dtick)) // includes all dates smaller than month, and pure 10^n in log
         return x+(axrev?-dtick:dtick);
-    
+
     var tType=dtick.charAt(0);
     var dtnum=Number(dtick.substr(1)),dtSigned=(axrev?-dtnum:dtnum);
     // Dates: months (or years)
@@ -1817,7 +1838,7 @@ function tickFirst(a){
         var mdif=(r0.getFullYear()-t0.getFullYear())*12+r0.getMonth()-t0.getMonth();
         var t1=t0.setMonth(t0.getMonth()+(Math.round(mdif/dt)+(axrev?1:-1))*dt);
         while(axrev ? t1>a.range[0] : t1<a.range[0]) t1=tickIncrement(t1,a.dtick,axrev);
-        return t1;    
+        return t1;
     }
     // Log scales: Linear, Digits
     else if(tType=='L')
@@ -1921,7 +1942,7 @@ function doXTicks(gd) {
         .attr('y2',mt);
     xg.attr('transform',function(d){return 'translate('+(a.m*d.x+a.b)+',0)'});
     xg.exit().remove();
-    
+
     // tick labels
     gd.axislayer.selectAll('text.xtlabel').remove(); // TODO: problems with reusing labels... shouldn't need this
     var xl=gd.axislayer.selectAll('text.xtlabel').data(vals,function(d){return d.text});
@@ -1943,7 +1964,7 @@ function doYTicks(gd) {
         mt = gm.t+(gd.lh>0 ? gd.lh : 0),
         mb = gm.b-(gd.lh<0 ? gd.lh : 0),
         x1 = ml-gm.pad;
-    
+
     // ticks
     var yt=gd.axislayer.selectAll('line.ytick').data(vals,function(d){return d.text});
     yt.enter().append('line').attr('class','ytick')
@@ -1965,7 +1986,7 @@ function doYTicks(gd) {
         .attr('y2',mt);
     yg.attr('transform',function(d){return 'translate(0,'+(a.m*d.x+a.b)+')'});
     yg.exit().remove();
-    
+
     // tick labels
     gd.axislayer.selectAll('text.ytlabel').remove(); // TODO: problems with reusing labels... shouldn't need this.
     var yl=gd.axislayer.selectAll('text.ytlabel').data(vals,function(d){return d.text});
@@ -2134,7 +2155,7 @@ function shareGraph(divid){
             document.getElementById("linktoshare").select();
         });
         spinner.stop();
-    }, 2500);  
+    }, 2500);
 }
 
 // ------------------------------- graphToGrid
@@ -2142,7 +2163,7 @@ function shareGraph(divid){
 function graphToGrid(){
     var gd=gettab();
     var csrftoken=$.cookie('csrftoken');
-    if(gd.fid !== undefined)        
+    if(gd.fid !== undefined)
         $.post("/pullf/", {'csrfmiddlewaretoken':csrftoken, 'fid': gd.fid, 'ft':'grid'}, fileResp);
     else {
         var data = [];
@@ -2178,7 +2199,7 @@ function moreDates(a) {
         if(isDateTime(a[i])) dcnt+=1;
         if($.isNumeric(a[i])) ncnt+=1;
     }
-    return (dcnt>ncnt*2); 
+    return (dcnt>ncnt*2);
 }
 
 // does the array look like something that should be plotted on a log axis?
