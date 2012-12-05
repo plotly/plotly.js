@@ -95,7 +95,6 @@ var defaultColors=['#00e','#a00','#0c0','#000','#888'];
 // if necessary to create the framework
 // ----------------------------------------------------
 function plot(divid, data, layout) {
-    console.log(data);
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in by dom element, others by id (string)
@@ -107,7 +106,6 @@ function plot(divid, data, layout) {
     // if you only want to redraw, pass non-object (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if(typeof data=='object') {
-        console.log(data);
         if(graphwasempty) gd.data=data;
         else gd.data.push.apply(gd.data,data);
         gd.empty=false;
@@ -457,21 +455,7 @@ function relayout(gd,astr,val) {
     }
 
     // calculate autosizing
-    if(aobj.autosize) {
-        var plotBB = gd.paper.node().getBoundingClientRect();
-        var gdBB = gd.getBoundingClientRect();
-        var ftBB = $('#filetab')[0].getBoundingClientRect();
-        var newheight = Math.round(gdBB.bottom-plotBB.top);
-        var newwidth = Math.round((ftBB.width ? ftBB.left : gdBB.right) - plotBB.left);
-        if(gd.layout.width!=newwidth || gd.layout.height!=newheight) {
-            layout.height = newheight;
-            layout.width = newwidth;
-        }
-        else { // if there's no size change, update layout but don't need to redraw
-            delete(aobj.autosize);
-            gd.layout.autosize = 1;
-        }
-    }
+    if(aobj.autosize) aobj=plotAutoSize(gd,aobj);
 
     if(Object.keys(aobj).length) { // check if there's anything to do
         gd.layout = undefined; // force plot to redo the layout
@@ -479,11 +463,33 @@ function relayout(gd,astr,val) {
     }
 }
 
-// check whether to resize a plot to the container
-function plotResize() {
-    var gd=gettab();
-    if(gd.layout && gd.layout.autosize)
-        relayout(gd, {autosize:1});
+function plotAutoSize(gd,aobj) {
+    var plotBB = gd.paper.node().getBoundingClientRect();
+    var gdBB = gd.getBoundingClientRect();
+    var ftBB = $('#filetab')[0].getBoundingClientRect();
+    var newheight = Math.round(gdBB.bottom-plotBB.top);
+    var newwidth = Math.round((ftBB.width ? ftBB.left : gdBB.right) - plotBB.left);
+    if(Math.abs(gd.layout.width-newwidth)>1 || Math.abs(gd.layout.height-newheight)>1) {
+        gd.layout.height = newheight;
+        gd.layout.width = newwidth;
+    }
+    else { // if there's no size change, update layout but don't need to redraw
+        delete(aobj.autosize);
+        gd.layout.autosize = 1;
+    }
+    return aobj
+}
+
+// check whether to resize a tab (if it's a plot) to the container
+function plotResize(gd) {
+    if(gd.tabtype=='plot' && gd.layout && gd.layout.autosize)
+        setTimeout(function(){
+            relayout(gd, {autosize:1});
+            if(LIT) {
+                hidebox();
+                litebox();
+            }
+        }, 500);
 }
 
 // ----------------------------------------------------
@@ -501,28 +507,104 @@ function newPlot(divid, layout) {
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
+    if(gd.mainsite) {
+        // ------------------------------------------------------------ graphing toolbar
+        var menudiv =
+            '<div class="graphbar btn-toolbar">'+
+                // save
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="saveGraph();" rel="tooltip" title="Save Changes">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>&nbsp;Save'+
+                    '</a>'+
+                '</div>'+
+                // show in grid
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>&nbsp;Data'+
+                    '</a>'+
+                '</div>'+
+                // upload a file
+                '<div class="btn-group">'+
+                    '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data">'+
+                        '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph">'+
+                            '<img src="/static/img/glyphicons_201_upload.png"></img>&nbsp;Upload'+
+                            '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/>'+
+                        '</span>'+
+                    '</form>'+
+                '</div>'+
+                // export pdf
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Export to PDF">'+
+                        '<img src="/static/img/pdf.png"/>&nbsp;PDF'+
+                    '</a>'+
+                '</div>'+
+                // export png
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'png\')" rel="tooltip" title="Export to PNG">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>&nbsp;PNG'+
+                    '</a>'+
+                '</div>'+
+                // style traces
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this.getBoundingClientRect(),-1)" rel="tooltip" title="Format Traces">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>&nbsp;Traces'+
+                    '</a>'+
+                '</div>'+
+                // toggle legend
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="toggleLegend()" rel="tooltip" title="Toggle Legend">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>&nbsp;Legend'+
+                    '</a>'+
+                '</div>'+
+                // show help
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="litebox()" rel="tooltip" title="Toggle help on / off">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"/>&nbsp;Help'+
+                '</div>'+
+                // share
+                '<div class="btn-group">'+
+                    '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph by URL">'+
+                        '<img src="/static/img/lil_share_white.png"/>&nbsp;Share'+
+                    '</a>'+
+                '</div>'+
+	        '</div>';
+        $(gd).prepend(menudiv);
+        $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
+    }
+
     // Get the layout info (this is the defaults)
     gd.layout={title:'Click to enter Plot title',
-        xaxis:{range:[-5,5],tick0:0,dtick:2,ticklen:5,
+        xaxis:{range:[-1,6],tick0:0,dtick:2,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
             zeroline:1,
             title:'Click to enter X axis title',unit:''},
-        yaxis:{range:[-4,4],tick0:0,dtick:1,ticklen:5,
+        yaxis:{range:[-1,4],tick0:0,dtick:1,ticklen:5,
             autorange:1,autotick:1,drange:[null,null],
             zeroline:1,
             title:'Click to enter Y axis title',unit:''},
         width:GRAPH_WIDTH,
         height:GRAPH_HEIGHT,
-        autosize:false,
+        autosize:2, // 2 is code for initial autosize... after initial autosize reverts to 1
         margin:{l:70,r:40,t:60,b:60,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff' };
         // TODO: add font size controls, and label positioning
-        // TODO: add legend
+        // TODO: add legend controls
 
     // look for elements of gd.layout to replace with the equivalent elements in layout
     gd.layout=updateObject(gd.layout,layout);
+
     var gl=gd.layout, gd3=d3.select(gd)
+
+    // initial autosize
+    if(gl.autosize==2) {
+        gd.paper=gd3.append('svg')
+            .attr('width',gl.width)
+            .attr('height',gl.height);
+        plotAutoSize(gd,{});
+        gd.paper.remove();
+        gl.autosize=1;
+    }
 
     // adjust margins for outside legends
     var ml = gl.margin.l-(gd.lw<0 ? gd.lw : 0),
@@ -596,80 +678,6 @@ function newPlot(divid, layout) {
         .style('fill','black')
         .style('opacity',0)
         .attr('stroke-width',0);
-
-    if(gd.mainsite) {
-        // ------------------------------------------------------------ graphing toolbar
-
-//
-//         // This section is super-finicky. Maybe because we somehow didn't get the
-//         // "btn-group-vertical" class from bootstrap initially, I had to bring it in myself
-//         // to plotly.css and maybe didn't do it right...
-//         // For instance, a and button behave differently in weird ways, button nearly gets
-//         // everything right but spacing between groups is different and I can't fix it,
-//         // easier to use a throughout and then manually set width.
-//         // Maybe if we re-download bootstrap this will be fixed?
-//         var c1='333A40';
-//         var c2='4C5E5E';
-//         var c3='344059';
-//         var c4='465973';
-//         c1=c2=c3=c4='4C5E5E';
-//         //c4=c2;
-// 	//c3=c2=c1;
-
-        var menudiv =
-            '<div class="graphbar btn-toolbar">'+
-                '<div class="btn-group">'+
-                    '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data">'+
-                        '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph">'+
-                            '<img src="/static/img/glyphicons_201_upload.png"></img>'+
-                            '&nbsp;Upload'+
-                            '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/>'+
-                        '</span>'+
-                    '</form>'+
-                '</div>'+
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this.getBoundingClientRect(),-1)" rel="tooltip" title="Format Traces">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>&nbsp;Traces'+
-                    '</a>'+
-                '</div>'+
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="toggleLegend()" rel="tooltip" title="Toggle Legend">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>&nbsp;Legend'+
-                    '</a>'+
-                '</div>'+
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="saveGraph();" rel="tooltip" title="Save Changes">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>&nbsp;Save'+
-                    '</a>'+
-                '</div>'+
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>&nbsp;Data'+
-                    '</a>'+
-                '</div>'+
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Export to PDF">'+
-                        '<img src="/static/img/pdf.png"/>&nbsp;PDF'+
-                    '</a>'+
-                '</div>'+
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'png\')" rel="tooltip" title="Export to PNG">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>&nbsp;PNG'+
-                    '</a>'+
-                '</div>'+
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="litebox()" rel="tooltip" title="Toggle help on / off">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"/>&nbsp;Help'+
-                '</div>'+
-                '<div class="btn-group">'+
-                    '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph by URL">'+
-                        '<img src="/static/img/lil_share_white.png"/>&nbsp;Share'+
-                    '</a>'+
-                '</div>'+
-	        '</div>';
-        $(gd).prepend(menudiv);
-        $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
-    }
 }
 
 // ----------------------------------------------------
@@ -1209,12 +1217,10 @@ function styleBoxTraces(popover,tracenum){
         tModify(tDefault,{name:'All Traces', mode:'none'});
     for(var i=0; i<popover[0].gd.calcdata.length; i++) {
         var o = stripSrc(popover[0].gd.calcdata[i][0]);
-        // console.log(o);
-        var trc_nm = popover[0].gd.data[i].ysrc;
-        if( trc_nm === undefined ) trc_nm = popover[0].gd.data[i].name;
-        // console.log(trc_nm);
-        o.t.name=trc_nm.replace(/[\s\n\r]+/gm,' ').replace(/^([A-z0-9\-_]+[\/:])?[0-9]+[\/:]/,'');
-        ldata.push([o]);    
+        o.t.name=popover[0].gd.data[i].ysrc
+            .replace(/[\s\n\r]+/gm,' ')
+            .replace(/^([A-z0-9\-_]+[\/:])?[0-9]+[\/:]/,'');
+        ldata.push([o]);
     }
 
     // make the trace selector dropdown (after removing any previous)
@@ -1671,7 +1677,7 @@ function calcTicks(gd,a) {
     if(a.isdate){
         if(a.autotick){
             var base;
-            a.tick0=new Date('2000-01-01 00:00:00').getTime();
+            a.tick0=new Date(2000,0,1).getTime();
             if(rt>15778800000){ // years if rt>6mo
                 rt/=31557600000;
                 var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
@@ -1685,7 +1691,7 @@ function calcTicks(gd,a) {
             }
             else if(rt>43200000){ // days if rt>12h
                 base=86400000;
-                a.tick0=new Date('2000-01-02 00:00:00').getTime(); // get week ticks on sunday
+                a.tick0=new Date(2000,0,2).getTime(); // get week ticks on sunday
                 a.dtick=base*roundUp(rt/base,[1,2,3,7,14]); // 2&3 day ticks are weird, but need something btwn 1,7
                 a.tickround='d';
             }
