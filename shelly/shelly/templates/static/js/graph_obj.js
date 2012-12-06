@@ -571,6 +571,9 @@ function newPlot(divid, layout) {
         $(gd).prepend(menudiv);
         $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
     }
+//     else { // not mainsite, ie embedded - disable autosize
+//         gl.autosize=false;
+//     }
 
     // Get the layout info (this is the defaults)
     gd.layout={title:'Click to enter Plot title',
