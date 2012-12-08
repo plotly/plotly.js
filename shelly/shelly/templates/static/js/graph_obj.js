@@ -1220,7 +1220,8 @@ function styleBoxTraces(popover,tracenum){
         tModify(tDefault,{name:'All Traces', mode:'none'});
     for(var i=0; i<popover[0].gd.calcdata.length; i++) {
         var o = stripSrc(popover[0].gd.calcdata[i][0]);
-        o.t.name=popover[0].gd.data[i].ysrc
+        var tn = popover[0].gd.data[i].ysrc;
+        o.t.name = (tn ? tn : 'Trace '+i)
             .replace(/[\s\n\r]+/gm,' ')
             .replace(/^([A-z0-9\-_]+[\/:])?[0-9]+[\/:]/,'');
         ldata.push([o]);
