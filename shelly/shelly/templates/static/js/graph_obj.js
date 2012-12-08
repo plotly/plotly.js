@@ -528,7 +528,7 @@ function newPlot(divid, layout) {
                     '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data">'+
                         '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph">'+
                             '<img src="/static/img/glyphicons_201_upload.png"></img>&nbsp;Upload'+
-                            '<input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/>'+
+                            '<input type="file" name="fileToUpload" id="fileToUpload'+divid+'" onchange="fileSelected();"/>'+
                         '</span>'+
                     '</form>'+
                 '</div>'+
