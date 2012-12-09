@@ -87,6 +87,7 @@ GRAPH_HEIGHT=450;
 GRAPH_WIDTH=700;
 TOOLBAR_LEFT='40px';
 TOOLBAR_TOP='-30px';
+PTS_LINESONLY=20;
 
 var defaultColors=['#00e','#a00','#0c0','#000','#888'];
 
@@ -187,9 +188,10 @@ function plot(divid, data, layout) {
     }
 
     // prepare the data and find the autorange
-    gd.calcdata=[]
+    gd.calcdata=[];
     for(curve in gdd) {
-        gdc=gdd[curve];
+        var gdc=gdd[curve];
+        var cd=[];
         //if(!('color' in gdc)) gdc.color = defaultColors[curve % defaultColors.length];
         if(!('name' in gdc)) {
             if('ysrc' in gdc) {
@@ -204,28 +206,35 @@ function plot(divid, data, layout) {
             // verify that data exists, and make scaled data if necessary
             if(!('y' in gdc) && !('x' in gdc)) continue; // no data!
 
-            if('y' in gdc) y=convertToAxis(gdc.y,ya);
-            else {
-                v0 = ('y0' in gdc) ? convertToAxis(gdc.y0, ya) : 0;
-                dv = ('dy' in gdc) ? convertToAxis(gdc.dy, ya) : 1;
-                y=[];
-                for(i in x) y.push(v0+i*dv);
-            }
+            // ignore as much processing as possible (and including in autorange) if trace is not visible
+            if(gdc.visible!=false) {
+                if('y' in gdc) y=convertToAxis(gdc.y,ya);
+                else {
+                    v0 = ('y0' in gdc) ? convertToAxis(gdc.y0, ya) : 0;
+                    dv = ('dy' in gdc) ? convertToAxis(gdc.dy, ya) : 1;
+                    y=[];
+                    for(i in x) y.push(v0+i*dv);
+                }
 
-            if('x' in gdc) x=convertToAxis(gdc.x,xa);
-            else {
-                v0 = ('x0' in gdc) ? convertToAxis(gdc.x0, xa) : 0;
-                dv = ('dx' in gdc) ? convertToAxis(gdc.dx, xa) : 1;
-                x=[];
-                for(i in y) x.push(v0+i*dv);
-            }
+                if('x' in gdc) x=convertToAxis(gdc.x,xa);
+                else {
+                    v0 = ('x0' in gdc) ? convertToAxis(gdc.x0, xa) : 0;
+                    dv = ('dx' in gdc) ? convertToAxis(gdc.dx, xa) : 1;
+                    x=[];
+                    for(i in y) x.push(v0+i*dv);
+                }
 
-            serieslen=Math.min(x.length,y.length);
-            if(xa.autorange) xdr=[aggNums(Math.min,xdr[0],x,serieslen),aggNums(Math.max,xdr[1],x,serieslen)];
-            if(ya.autorange) ydr=[aggNums(Math.min,ydr[0],y,serieslen),aggNums(Math.max,ydr[1],y,serieslen)];
-            // create the "calculated data" to plot
-            var cd=[];
-            for(i=0;i<serieslen;i++) cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ? {x:x[i],y:y[i]} : {x:false,y:false});
+                serieslen=Math.min(x.length,y.length);
+                if(xa.autorange) xdr=[aggNums(Math.min,xdr[0],x,serieslen),aggNums(Math.max,xdr[1],x,serieslen)];
+                if(ya.autorange) ydr=[aggNums(Math.min,ydr[0],y,serieslen),aggNums(Math.max,ydr[1],y,serieslen)];
+                // create the "calculated data" to plot
+                for(i=0;i<serieslen;i++) cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ? {x:x[i],y:y[i]} : {x:false, y:false});
+            }
+            // even if trace is not visible, need to figure out whether there are enough points to trigger auto-no-lines
+            else if(gdc.mode || ((!gdc.x || gdc.x.length<PTS_LINESONLY) && (!gdc.y || gdc.y.length<PTS_LINESONLY)))
+                cd=[{x:false, y:false}];
+            else
+                for(i=0; i<PTS_LINESONLY+1; i++) cd.push({x:false, y:false});
             // add the trace-wide properties to the first point, per point properties to every point
             // t is the holder for trace-wide properties, start it with the curve num from gd.data
             // in case some curves don't plot
@@ -237,6 +246,7 @@ function plot(divid, data, layout) {
             gd.calcdata.push(cd);
         }
     }
+    console.log(gd.calcdata);
     // put the styling info into the calculated traces
     // has to be done separate from applyStyles so we know the mode (ie which objects to draw)
     setStyles(gd);
@@ -277,7 +287,7 @@ function plot(divid, data, layout) {
             .attr('class','trace');
 
         traces.each(function(d){
-            if(d[0].t.mode.indexOf('lines')==-1) return;
+            if(d[0].t.mode.indexOf('lines')==-1 || d[0].t.visible==false) return;
             var i=-1,t=d3.select(this);
             while(i<d.length) {
                 var pts='';
@@ -292,7 +302,7 @@ function plot(divid, data, layout) {
             .attr('class','points')
             .each(function(d){
                 var t=d[0].t;
-                if(t.mode.indexOf('markers')==-1) return;
+                if(t.mode.indexOf('markers')==-1 || d[0].t.visible==false) return;
                 d3.select(this).selectAll('path')
                     .data(function(d){return d})
                   .enter().append('path')
@@ -318,7 +328,8 @@ function setStyles(gd) {
     for(var i in gd.calcdata){
         var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
         // mergeattr puts single values into cd[0].t, and all others into each individual point
-        mergeattr(cd,gdc.mode,'mode',[(cd.length>20) ? 'lines' : 'lines+markers']);
+        mergeattr(cd,gdc.visible,'visible',[true]);
+        mergeattr(cd,gdc.mode,'mode',[(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers']);
         mergeattr(cd,gdc.line.dash,'ld',['solid']);
         mergeattr(cd,gdc.line.color,'lc',[gdc.marker.color, defaultColors[c % defaultColors.length]]);
         mergeattr(cd,gdc.line.width,'lw',[2]);
@@ -427,8 +438,8 @@ function restyle(gd,astr,val,traces) {
         for(var j=0; j<aa.length-1; j++) cont=cont[aa[j]];
         cont[aa[j]]=val;
     }
-    // need to replot if mode changes, because the right objects don't exist
-    if(astr=='mode')
+    // need to replot if mode or visibility changes, because the right objects don't exist
+    if(['mode','visible'].indexOf(astr)>=0)
         plot(gd,'','');
     else {
         setStyles(gd);
@@ -546,7 +557,7 @@ function newPlot(divid, layout) {
                 '</div>'+
                 // style traces
                 '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this.getBoundingClientRect(),-1)" rel="tooltip" title="Format Traces">'+
+                    '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this.getBoundingClientRect(),0)" rel="tooltip" title="Format Traces">'+
                         '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>&nbsp;Traces'+
                     '</a>'+
                 '</div>'+
@@ -938,7 +949,10 @@ function legend(gd) {
     if(!gd.calcdata) return;
 
     var ldata=[]
-    for(var i=0;i<gd.calcdata.length;i++) ldata.push([gd.calcdata[i][0]]);
+    for(var i=0;i<gd.calcdata.length;i++) {
+        if(gd.calcdata[i][0].t.visible!=false)
+            ldata.push([gd.calcdata[i][0]]);
+    }
 
     gd.legend=gd.paper.append('svg')
         .attr('class','legend');
@@ -1215,9 +1229,9 @@ function styleBoxTraces(popover,tracenum){
     // same ldata as legend plus first item, 'all traces'
     // also makes short name for traces from ysrc
     var tDefault = {name:'',lc:'#000',ld:'solid',lw:1,mc:'#000',mlc:'#000',mlw:0,
-                mode:'lines+markers',ms:6,mx:'circle',tx:''};
+                visible:true, mode:'lines+markers',ms:6,mx:'circle',tx:''};
     var ldata = (popover[0].gd.calcdata.length<2) ? [] :
-        tModify(tDefault,{name:'All Traces', mode:'none'});
+        tModify(tDefault,{name:'All Traces', mode:'none', visible:null});
     for(var i=0; i<popover[0].gd.calcdata.length; i++) {
         var o = stripSrc(popover[0].gd.calcdata[i][0]);
         var tn = popover[0].gd.data[i].ysrc;
@@ -1225,6 +1239,18 @@ function styleBoxTraces(popover,tracenum){
             .replace(/[\s\n\r]+/gm,' ')
             .replace(/^([A-z0-9\-_]+[\/:])?[0-9]+[\/:]/,'');
         ldata.push([o]);
+    }
+    console.log(ldata);
+    // look for attributes that are equal for all traces, set the 'all traces' val if found
+    if(ldata.length>2) {
+        var attrs=Object.keys(tDefault);
+        for(a in tDefault) {
+            var v_equal=true;
+            for(i=2; i<ldata.length; i++)
+                if(ldata[i][0].t[a]!=ldata[1][0].t[a]) v_equal=false;
+            if(v_equal)
+                ldata[0][0].t[a]=ldata[1][0].t[a];
+        }
     }
 
     // make the trace selector dropdown (after removing any previous)
@@ -1249,6 +1275,7 @@ function selectTrace(d,i){
     var attrs=popover.find('.popover-content').html('');
 
     // make each of the attribute selection dropdowns
+    styleBoxPick(attrs,'visible','Visible?',selectPick,d,[{name:'Show',val:true},{name:'Hide',val:false}]);
     styleBoxDrop(attrs,'mode',selectAttr,'Mode',d,
         tModify(d[0].t,[
             {mode:'lines',name:''},
@@ -1318,6 +1345,23 @@ function tModify(tDefault,o){
     return out;
 }
 
+function styleBoxPick(s,cls,title,clickfn,d0,opts){
+    var pick = '<div class="styleboxpick '+cls+'">'+
+            ((title) ? ('<div class="pull-left styleboxtitle">'+title+'</div>') : '')+
+            '<div class="btn-group pull-left">',
+        val = d0[0].t[cls];
+    console.log(d0);
+    for(var i=0; i<opts.length; i++) {
+        pick += '<button class="btn btn-mini styleboxbutton '+cls+'-'+opts[i].name+' '+(val==opts[i].val ? ' disabled' : '')+'">'+
+            opts[i].name+'</button>'
+    }
+    pick += '</div></div>';
+    s.append(pick);
+    opts.forEach(function(o){
+        $(s).find('.'+cls+'-'+o.name).click({attr:cls,val:o.val},clickfn);
+    });
+}
+
 // html for a bootstrap dropdown with class cls
 function dropdown(cls,title){
     return '<div class="styleboxselector '+cls+'">'+
@@ -1332,12 +1376,18 @@ function dropdown(cls,title){
     '</div>';
 }
 
+// make a dropdown select for setting a style attribute
+// s: container
+// cls: class for this attribute
+// d0: the selected element
+// d: the modified styles
+// TODO: user input option
 function styleBoxDrop(s,cls,clickfn,title,d0,d){
+    var noset=false;
     if(!d) {
         d=d0;
-        var noset=true;
+        noset=true;
     }
-    else var noset=false;
 
     var dn = $(dropdown('select-'+cls,title)).appendTo(s).get(0),
         dd=d3.select(dn);
@@ -1412,9 +1462,18 @@ function styleBoxColor(s,cls,clickfn,title,title2,d){
     });
 }
 
-var traceAttrs = {mode:'mode',ld:'line.dash',lc:'line.color',lw:'line.width',
-    mx:'marker.symbol',ms:'marker.size',mc:'marker.color',mlc:'marker.line.color',
-    mlw:'marker.line.width'};
+var traceAttrs = {visible: 'visible', mode: 'mode',
+    ld:'line.dash', lc:'line.color', lw:'line.width',
+    mx:'marker.symbol', ms:'marker.size', mc:'marker.color',
+    mlc:'marker.line.color', mlw:'marker.line.width'};
+
+function selectPick(e) {
+    var popover = $(this).parents('.popover'),
+        selectedTrace = popover[0].selectedTrace,
+        astr=traceAttrs[e.data.attr];
+    restyle(popover[0].gd, astr, e.data.val, selectedTrace>=0 ? selectedTrace : null);
+    styleBoxTraces(popover, selectedTrace);
+}
 
 function selectAttr(d,i){
     var menu = $(this).parents('.btn-group'),
@@ -1423,8 +1482,8 @@ function selectAttr(d,i){
     var selectedTrace = popover[0].selectedTrace,
         a=$(this).parents('.styleboxselector')[0].attr,
         astr=traceAttrs[a];
-    restyle(popover[0].gd,astr,d[0].t[a],selectedTrace>=0 ? selectedTrace : null);
-    styleBoxTraces(popover,selectedTrace);
+    restyle(popover[0].gd, astr, d[0].t[a], selectedTrace>=0 ? selectedTrace : null);
+    styleBoxTraces(popover, selectedTrace);
 }
 
 function selectColor(dropnode,color){
@@ -1432,8 +1491,8 @@ function selectColor(dropnode,color){
         selectedTrace = popover[0].selectedTrace,
         astr = traceAttrs[dropnode.attr],
         val = color.toRgbString();
-    restyle(popover[0].gd,astr,val,selectedTrace>=0 ? selectedTrace : null);
-    styleBoxTraces(popover,selectedTrace);
+    restyle(popover[0].gd, astr, val, selectedTrace>=0 ? selectedTrace : null);
+    styleBoxTraces(popover, selectedTrace);
 }
 
 function legendLines(d){
