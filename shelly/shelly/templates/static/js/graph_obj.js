@@ -1866,7 +1866,7 @@ function layoutTakeInput(e) {
 
 // apply a new value from a button set
 function layoutSelectPick(e) {
-    if($(this).hasClass('disabled')
+    if($(this).hasClass('disabled'))
         return;
     var popover = $(this).parents('.popover');
     relayout(popover[0].gd, e.data.attr, e.data.val);
