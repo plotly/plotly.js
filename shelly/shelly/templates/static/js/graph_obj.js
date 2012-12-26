@@ -824,7 +824,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
 
         if(e.altKey || e.ctrlKey || e.metaKey)
             console.log('alt, ctrl, meta (cmd) click functionality not defined');
-        if(ns+ew=='nsew' && !e.shiftKey) // in the main plot area, unmodified drag makes a zoombox
+        else if(ns+ew=='nsew' && !e.shiftKey) // in the main plot area, unmodified drag makes a zoombox
             zoomBox(e);
         else
             dragRange(e);
