@@ -78,16 +78,13 @@ data should be an array of objects, one per trace. allowed keys:
 
 */
 
-// new way of zooming with viewbox: warps points while zooming, but it's super fast.
-// set fastscale=true to use
-var fastscale=true;
-// var fastscale=false;
-
-GRAPH_HEIGHT=450;
-GRAPH_WIDTH=700;
-TOOLBAR_LEFT='40px';
-TOOLBAR_TOP='-30px';
-PTS_LINESONLY=20;
+GRAPH_HEIGHT = 450;
+GRAPH_WIDTH = 700;
+TOOLBAR_LEFT = '40px';
+TOOLBAR_TOP = '-30px';
+PTS_LINESONLY = 20;
+DBLCLICKDELAY = 600; // ms between first mousedown and 2nd mouseup to constitute dblclick
+MINDRAG = 5; // pixels to move mouse before you stop clamping to starting point
 
 var defaultColors=['#00e','#a00','#0c0','#000','#888'];
 
@@ -768,20 +765,20 @@ function newPlot(divid, layout) {
         y0 = a.length ? Math.max.apply(a,a) : y1+10;
 
     // drag box goes over the grids and data... we can use just this hover for all data hover effects)
-    gd.plotdrag=dragBox(gd, x1, y2, x2-x1, y1-y2,'ns','ew');
+    dragBox(gd, x1, y2, x2-x1, y1-y2,'ns','ew');
 
-    gd.xdrag=dragBox(gd, x1*0.9+x2*0.1, y1,(x2-x1)*0.8, y0-y1,'','ew');
-    gd.x0drag=dragBox(gd, x1, y1, (x2-x1)*0.1, y0-y1,'','w');
-    gd.x1drag=dragBox(gd, x1*0.1+x2*0.9, y1, (x2-x1)*0.1, y0-y1,'','e');
+    dragBox(gd, x1*0.9+x2*0.1, y1,(x2-x1)*0.8, y0-y1,'','ew');
+    dragBox(gd, x1, y1, (x2-x1)*0.1, y0-y1,'','w');
+    dragBox(gd, x1*0.1+x2*0.9, y1, (x2-x1)*0.1, y0-y1,'','e');
 
-    gd.ydrag=dragBox(gd, x0, y2*0.9+y1*0.1, x1-x0, (y1-y2)*0.8,'ns','');
-    gd.y0drag=dragBox(gd, x0, y1*0.9+y2*0.1, x1-x0, (y1-y2)*0.1,'s','');
-    gd.y1drag=dragBox(gd, x0, y2, x1-x0, (y1-y2)*0.1,'n','');
+    dragBox(gd, x0, y2*0.9+y1*0.1, x1-x0, (y1-y2)*0.8,'ns','');
+    dragBox(gd, x0, y1*0.9+y2*0.1, x1-x0, (y1-y2)*0.1,'s','');
+    dragBox(gd, x0, y2, x1-x0, (y1-y2)*0.1,'n','');
 
-    gd.nwdrag=dragBox(gd, x0, y2+y1-y0, x1-x0, y0-y1,'n','w');
-    gd.nedrag=dragBox(gd, x2, y2+y1-y0, x1-x0, y0-y1,'n','e');
-    gd.swdrag=dragBox(gd, x0, y1, x1-x0, y0-y1,'s','w');
-    gd.sedrag=dragBox(gd, x2, y1, x1-x0, y0-y1,'s','e');
+    dragBox(gd, x0, y2+y1-y0, x1-x0, y0-y1,'n','w');
+    dragBox(gd, x2, y2+y1-y0, x1-x0, y0-y1,'n','e');
+    dragBox(gd, x0, y1, x1-x0, y0-y1,'s','w');
+    dragBox(gd, x2, y1, x1-x0, y0-y1,'s','e');
 
     gd3.selectAll('.drag')
         .style('fill','black')
@@ -794,49 +791,118 @@ function newPlot(divid, layout) {
 // ----------------------------------------------------
 
 function dragBox(gd,x,y,w,h,ns,ew) {
-    // some drag events need to be built by hand from mousedown, mousemove, mouseup
-    // because dblclick doesn't register otherwise. Probably eventually all
-    // drag events will need to be this way, once we layer on enough functions...
-
-    // gd.mouseDown stores ms of first mousedown event in the last dblclickDelay ms on the drag bars
-    // and gd.numClicks stores how many mousedowns have been seen within dblclickDelay
+    // mouseDown stores ms of first mousedown event in the last DBLCLICKDELAY ms on the drag bars
+    // and numClicks stores how many mousedowns have been seen within DBLCLICKDELAY
     // so we can check for click or doubleclick events
-    // gd.dragged stores whether a drag has occurred, so we don't have to
-    // resetViewBox unnecessarily (ie if no move bigger than gd.mindrag pixels)
-    gd.mouseDown=0;
-    gd.numClicks=1;
-    gd.dblclickDelay=600;
-    gd.mindrag=5;
+    // dragged stores whether a drag has occurred, so we don't have to
+    // resetViewBox unnecessarily (ie if no move bigger than MINDRAG pixels)
+    var mouseDown=0,
+        numClicks=1,
+        gx = gd.layout.xaxis,
+        gy = gd.layout.yaxis,
+        cursor = (ns+ew=='nsew') ? 'move' : (ns+ew).toLowerCase()+'-resize',
+        dragger = gd.paper.append('rect').classed('drag',true)
+            .classed(ns+ew+'drag',true)
+            .attr('x',x)
+            .attr('y',y)
+            .attr('width',w)
+            .attr('height',h)
+            .style('cursor',cursor)
+          .node();
 
-    var cursor=(ns+ew).toLowerCase()+'-resize';
-    if(cursor=='nsew-resize') cursor='move';
-    dragger=gd.paper.append('rect').classed('drag',true)
-        .classed(ns+ew+'drag',true)
-        .attr('x',x)
-        .attr('y',y)
-        .attr('width',w)
-        .attr('height',h)
-        .style('cursor',cursor);
-
-    dragger.node().onmousedown = function(e) {
+    dragger.onmousedown = function(e) {
         if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
 
-        var eln=this;
         var d=(new Date()).getTime();
-        if(d-gd.mouseDown<gd.dblclickDelay)
-            gd.numClicks+=1; // in a click train
+        if(d-mouseDown<DBLCLICKDELAY)
+            numClicks+=1; // in a click train
         else { // new click train
-            gd.numClicks=1;
-            gd.mouseDown=d;
+            numClicks=1;
+            mouseDown=d;
         }
 
+
+        if(e.altKey || e.ctrlKey || e.metaKey)
+            console.log('alt, ctrl, meta (cmd) click functionality not defined');
+        if(ns+ew=='nsew' && !e.shiftKey) // in the main plot area, unmodified drag makes a zoombox
+            zoomBox(e);
+        else
+            dragRange(e);
+        pauseEvent(e);
+    }
+
+    function zoomBox(e){
+        var gbb = $('.nsewdrag')[0].getBoundingClientRect(),
+            x0 = e.clientX,
+            y0 = e.clientY;
+        $('<div class="zoombox" style="left: '+x0+'px; top: '+y0+'px;"></div>').appendTo('body');
+        window.onmousemove = function(e2) {
+            var x1 = Math.max(gbb.left,Math.min(gbb.right,e2.clientX)),
+                y1 = Math.max(gbb.top,Math.min(gbb.bottom,e2.clientY));
+            $('.zoombox').css({
+                left: Math.min(x0,x1)+'px',
+                top: Math.min(y0,y1)+'px',
+                width: Math.abs(x0-x1)+'px',
+                height: Math.abs(y0-y1)+'px'
+            });
+        }
+        window.onmouseup = function(e2) {
+            window.onmousemove = null;
+            window.onmouseup = null;
+            var zbb = $('.zoombox')[0].getBoundingClientRect();
+            if(Math.min(zbb.height,zbb.width)<MINDRAG*2) {
+                if((new Date()).getTime()-mouseDown<DBLCLICKDELAY && numClicks==2) { // double click
+                    gx.autorange=true;
+                    gy.autorange=true;
+                    plot(gd,'','');
+                }
+                return finishZB();
+            }
+            $('<div class="modal-backdrop fade" id="zoomboxbackdrop"></div>'+
+                '<div class="open" id="zoomboxmenu"><ul class="dropdown-menu">'+
+                    '<li><a id="zoomboxin">Zoom In</a></li>'+
+                    '<li><a id="zoomboxout">Zoom Out</a></li>'+
+                '</ul></div>').appendTo('body');
+            var mbb = $('#zoomboxmenu ul')[0].getBoundingClientRect();
+            $('#zoomboxmenu ul').css({
+                left:Math.min(e2.clientX,gbb.right-mbb.width)+'px',
+                top:Math.min(e2.clientY,gbb.bottom-mbb.height)+'px',
+                'z-index':20001
+            });
+            $('#zoomboxbackdrop')[0].onclick = finishZB;
+            $('#zoomboxin')[0].onclick = function(){
+                gx.range=[gx.range[0]+(gx.range[1]-gx.range[0])*(zbb.left-gbb.left)/gbb.width,
+                          gx.range[0]+(gx.range[1]-gx.range[0])*(zbb.right-gbb.left)/gbb.width];
+                gy.range=[gy.range[0]+(gy.range[1]-gy.range[0])*(gbb.bottom-zbb.bottom)/gbb.height,
+                          gy.range[0]+(gy.range[1]-gy.range[0])*(gbb.bottom-zbb.top)/gbb.height];
+                finishZB();
+                gx.autorange=false;
+                gy.autorange=false;
+                dragTail(gd);
+            }
+            $('#zoomboxout')[0].onclick = function(){
+                gx.range=[(gx.range[0]*(zbb.right-gbb.left)+gx.range[1]*(gbb.left-zbb.left))/zbb.width,
+                          (gx.range[0]*(zbb.right-gbb.right)+gx.range[1]*(gbb.right-zbb.left))/zbb.width];
+                gy.range=[(gy.range[0]*(gbb.bottom-zbb.top)+gy.range[1]*(zbb.bottom-gbb.bottom))/zbb.height,
+                          (gy.range[0]*(gbb.top-zbb.top)+gy.range[1]*(zbb.bottom-gbb.top))/zbb.height];
+                finishZB();
+                gx.autorange=false;
+                gy.autorange=false;
+                dragTail(gd);
+            }
+        }
+
+        function finishZB(){
+            $('.zoombox,#zoomboxbackdrop,#zoomboxmenu').remove();
+        }
+    }
+
+    function dragRange(e){
         if(ew) {
-            var gx=gd.layout.xaxis;
             gx.r0=[gx.range[0],gx.range[1]];
             gx.autorange=false;
         }
         if(ns) {
-            var gy=gd.layout.yaxis;
             gy.r0=[gy.range[0],gy.range[1]];
             gy.autorange=false;
         }
@@ -846,113 +912,99 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             gd.dragged=(( (!ns) ? Math.abs(e2.clientX-e.clientX) :
                     (!ew) ? Math.abs(e2.clientY-e.clientY) :
                     Math.abs(e2.clientX-e.clientX)+Math.abs(e2.clientY-e.clientY)
-                ) > gd.mindrag);
+                ) > MINDRAG);
             // execute the drag
             if(gd.dragged)
-                plotDrag.call(gd,e2.clientX-e.clientX,e2.clientY-e.clientY,ns,ew);
-            else plotDrag.call(gd,0,0,ns,ew);
+                plotDrag(e2.clientX-e.clientX,e2.clientY-e.clientY,ns,ew);
+            else plotDrag(0,0,ns,ew);
             pauseEvent(e2);
         }
         window.onmouseup = function(e2) {
             window.onmousemove = null;
             window.onmouseup = null;
-            var d=(new Date()).getTime();
             if(gd.dragged) // finish the drag
-                if(ns=='ns'||ew=='ew')
-                    resetViewBox.call(gd);
-                else
-                    zoomEnd.call(gd);
-            else if(d-gd.mouseDown<gd.dblclickDelay) {
-                if(gd.numClicks==2) { // double click
+                resetViewBox();
+            else if((new Date()).getTime()-mouseDown<DBLCLICKDELAY) {
+                if(numClicks==2) { // double click
                     if(ew=='ew')
-                        gd.layout.xaxis.autorange=true;
+                        gx.autorange=true;
                     if(ns=='ns')
-                        gd.layout.yaxis.autorange=true;
+                        gy.autorange=true;
                     if(ns=='ns'||ew=='ew')
                         plot(gd,'','');
                 }
-                else if(gd.numClicks==1) { // single click
+                else if(numClicks==1) { // single click
                     if(['n','s','e','w'].indexOf(ns+ew)>=0)// click on ends of ranges
-                        autoGrowInput(gd,eln);
+                        autoGrowInput(gd,dragger);
                 }
             }
         }
-        pauseEvent(e);
     }
 
-    return dragger;
-}
+    function plotDrag(dx,dy,ns,ew) {
+        var pw = gd.plotwidth,
+            ph = gd.plotheight;
+        if(ew=='ew'||ns=='ns') {
+            if(ew) {
+                gd.viewbox.x=-dx;
+                gx.range=[gx.r0[0]-dx/gx.m,gx.r0[1]-dx/gx.m];
+                doTicks(gd,'x');
+            }
+            if(ns) {
+                gd.viewbox.y=-dy;
+                gy.range=[gy.r0[0]-dy/gy.m,gy.r0[1]-dy/gy.m];
+                doTicks(gd,'y');
+            }
+            gd.plot.attr('viewBox',(ew ? -dx : 0)+' '+(ns ? -dy : 0)+' '+pw+' '+ph);
+            return;
+        }
 
-// common transform for dragging one end of an axis
-// d>0 is compressing scale, d<0 is expanding
-function dZoom(d) {
-    if(d>=0) return 1 - Math.min(d,0.9);
-    else return 1 - 1/(1/Math.max(d,-0.3)+3.222);
+        if(ew=='w') {
+            gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx/pw);
+            dx=pw*(gx.r0[0]-gx.range[0])/(gx.r0[0]-gx.r0[1]);
+        }
+        else if(ew=='e') {
+            gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx/pw);
+            dx=pw*(gx.r0[1]-gx.range[1])/(gx.r0[1]-gx.r0[0]);
+        }
+        else if(!ew)
+            dx=0;
+
+        if(ns=='n') {
+            gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy/ph);
+            dy=ph*(gy.r0[1]-gy.range[1])/(gy.r0[1]-gy.r0[0]);
+        }
+        else if(ns=='s') {
+            gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy/ph);
+            dy=ph*(gy.r0[0]-gy.range[0])/(gy.r0[0]-gy.r0[1]);
+        }
+        else if(!ns)
+            dy=0;
+
+        gd.plot.attr('viewBox', ((ew=='w')?dx:0)+' '+((ns=='n')?dy:0)+' '+(pw-dx)+' '+(ph-dy));
+        if(ew) doTicks(gd,'x');
+        if(ns) doTicks(gd,'y');
+    }
+
+    // common transform for dragging one end of an axis
+    // d>0 is compressing scale, d<0 is expanding
+    function dZoom(d) {
+        if(d>=0)
+            return 1 - Math.min(d,0.9);
+        else
+            return 1 - 1/(1/Math.max(d,-0.3)+3.222);
+    }
+
+    function resetViewBox() {
+        gd.viewbox={x:0,y:0};
+        gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
+        dragTail(gd);
+    }
 }
 
 function dragTail(gd) {
     doTicks(gd); // TODO: plot does this again at the end... why do we need to do them here?
     plot(gd,'','');
-}
-
-function resetViewBox() {
-    this.viewbox={x:0,y:0};
-    this.plot.attr('viewBox','0 0 '+this.plotwidth+' '+this.plotheight);
-    dragTail(this);
-//     makeTitles(this,''); // so it can scoot titles out of the way if needed
-}
-
-function zoomEnd() {
-    if(fastscale) resetViewBox.call(this);
-    else makeTitles(this,''); // so it can scoot titles out of the way if needed
-}
-
-function plotDrag(dx,dy,ns,ew) {
-    var gx=this.layout.xaxis, gy=this.layout.yaxis;
-    if(ew=='ew'||ns=='ns') {
-        if(ew) {
-            this.viewbox.x=-dx;
-            gx.range=[gx.r0[0]-dx/gx.m,gx.r0[1]-dx/gx.m];
-            doTicks(this,'x');
-        }
-        if(ns) {
-            this.viewbox.y=-dy;
-            gy.range=[gy.r0[0]-dy/gy.m,gy.r0[1]-dy/gy.m];
-            doTicks(this,'y');
-        }
-        this.plot.attr('viewBox',(ew ? -dx : 0)+' '+(ns ? -dy : 0)+
-            ' '+this.plotwidth+' '+this.plotheight);
-        return;
-    }
-
-    if(ew=='w') {
-        gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx/this.plotwidth);
-        dx=this.plotwidth*(gx.r0[0]-gx.range[0])/(gx.r0[0]-gx.r0[1]);
-    }
-    else if(ew=='e') {
-        gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx/this.plotwidth);
-        dx=this.plotwidth*(gx.r0[1]-gx.range[1])/(gx.r0[1]-gx.r0[0]);
-    }
-    else if(ew=='') dx=0;
-
-    if(ns=='n') {
-        gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy/this.plotheight);
-        dy=this.plotheight*(gy.r0[1]-gy.range[1])/(gy.r0[1]-gy.r0[0]);
-    }
-    else if(ns=='s') {
-        gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy/this.plotheight);
-        dy=this.plotheight*(gy.r0[0]-gy.range[0])/(gy.r0[0]-gy.r0[1]);
-    }
-    else if(ns=='') dy=0;
-
-    if(fastscale){
-        this.plot.attr('viewBox',
-            ((ew=='w')?dx:0)+' '+((ns=='n')?dy:0)+' '+
-            (this.plotwidth-dx)+' '+(this.plotheight-dy));
-        if(ew) doTicks(this,'x');
-        if(ns) doTicks(this,'y');
-    }
-    else dragTail(this);
 }
 
 // ----------------------------------------------------
@@ -1062,8 +1114,7 @@ function legend(gd) {
 
     var traces = gd.legend.selectAll('g.traces')
         .data(ldata);
-    traces.enter().append('g')
-        .attr('class','trace');
+    traces.enter().append('g').attr('class','trace');
 
     traces.each(legendLines);
     traces.each(legendPoints);
@@ -1194,15 +1245,15 @@ function legend(gd) {
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
                 dy = e2.clientY-e.clientY;
-            if(Math.abs(dx)<gd.mindrag) dx=0;
-            if(Math.abs(dy)<gd.mindrag) dy=0;
+            if(Math.abs(dx)<MINDRAG) dx=0;
+            if(Math.abs(dy)<MINDRAG) dy=0;
             el3.attr('x',x0+dx)
                 .attr('y',y0+dy);
             var pbb = gd.paper.node().getBoundingClientRect();
             // drag to within a couple px of edge to take the legend outside the plot
-            if(e2.clientX>pbb.right-3*gd.mindrag || (gd.lw>0 && dx>-gd.mindrag))
+            if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG))
                 xf=100;
-            else if(e2.clientX<pbb.left+3*gd.mindrag || (gd.lw<0 && dx<gd.mindrag))
+            else if(e2.clientX<pbb.left+3*MINDRAG || (gd.lw<0 && dx<MINDRAG))
                 xf=-100;
             else {
                 var xl=(x0+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0)),
@@ -1212,9 +1263,9 @@ function legend(gd) {
                 else if(xr>4/3-xc) xf=xr;
                 else xf=xc;
             }
-            if(e2.clientY>pbb.bottom-3*gd.mindrag || (gd.lh<0 && dy>-gd.mindrag))
+            if(e2.clientY>pbb.bottom-3*MINDRAG || (gd.lh<0 && dy>-MINDRAG))
                 yf=-100;
-            else if(e2.clientY<pbb.top+3*gd.mindrag || (gd.lh>0 && dy<gd.mindrag))
+            else if(e2.clientY<pbb.top+3*MINDRAG || (gd.lh>0 && dy<MINDRAG))
                 yf=100;
             else {
                 var yt=(y0+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0)),
