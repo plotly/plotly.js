@@ -91,9 +91,9 @@ MINDRAG = 5; // pixels to move mouse before you stop clamping to starting point
 var defaultColors=['#00e', //blue
                    '#a00', //red
                    '#6fa8dc', //lite blue
-                   '#ffd966', //goldenrod 
-                   '#ff00ff', //elektrik purple 
-                   '#9900ff', //moody purple                                                                                             
+                   '#ffd966', //goldenrod
+                   '#ff00ff', //elektrik purple
+                   '#9900ff', //moody purple
                    '#0c0', // brite green
                    '#000']; // black
 
@@ -534,7 +534,6 @@ function relayout(gd,astr,val) {
             gd.paper.selectAll('.legend').remove();
             if(gl.showlegend)
                 legend(gd);
-            console.log('legend redraw only');
             return;
         }
 
@@ -664,7 +663,7 @@ function newPlot(divid, layout) {
                 '</div>'+
                 // legend
                 '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="legendBox(gettab(),this)" rel="tooltip" title="Toggle Legend">'+
+                    '<a class="btn toolbar_anchor" onclick="legendBox(gettab(),this)" rel="tooltip" title="Setup Legend">'+
                         '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>&nbsp;Legend'+
                     '</a>'+
                 '</div>'+
