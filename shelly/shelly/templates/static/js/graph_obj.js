@@ -86,7 +86,16 @@ PTS_LINESONLY = 20;
 DBLCLICKDELAY = 600; // ms between first mousedown and 2nd mouseup to constitute dblclick
 MINDRAG = 5; // pixels to move mouse before you stop clamping to starting point
 
-var defaultColors=['#00e','#a00','#0c0','#000','#888'];
+// var defaultColors=['#00e','#a00','#0c0','#000','#888'];
+
+var defaultColors=['#00e', //blue
+                   '#a00', //red
+                   '#6fa8dc', //lite blue
+                   '#ffd966', //goldenrod 
+                   '#ff00ff', //elektrik purple 
+                   '#9900ff', //moody purple                                                                                             
+                   '#0c0', // brite green
+                   '#000']; // black
 
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
