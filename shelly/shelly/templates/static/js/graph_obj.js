@@ -248,7 +248,7 @@ function plot(divid, data, layout) {
             gd.calcdata.push(cd);
         }
     }
-    console.log(gd.calcdata);
+//     console.log(gd.calcdata);
     // put the styling info into the calculated traces
     // has to be done separate from applyStyles so we know the mode (ie which objects to draw)
     setStyles(gd);
@@ -320,10 +320,12 @@ function plot(divid, data, layout) {
         //styling separate from drawing
         applyStyle(gp);
     }
-    else console.log('error with axis scaling',xa.m,xa.b,ya.m,ya.b);
+    else
+        console.log('error with axis scaling',xa.m,xa.b,ya.m,ya.b);
 
     // show the legend
-    if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!=false)) legend(gd);
+    if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!=false))
+        legend(gd);
 }
 
 // set display params per trace to default or provided value
@@ -347,9 +349,12 @@ function setStyles(gd) {
 }
 
 function applyStyle(gp) {
-    gp.selectAll('g.points').call(pointGroupStyle)
-        .each(function(d){d3.select(this).selectAll('path').call(pointStyle,d[0].t);})
-    gp.selectAll('g.trace polyline').call(lineGroupStyle);
+    gp.selectAll('g.points')
+        .call(pointGroupStyle)
+        .each(function(d){d3.select(this).selectAll('path')
+            .call(pointStyle,d[0].t);})
+    gp.selectAll('g.trace polyline')
+        .call(lineGroupStyle);
 }
 
 // merge object a (which may be an array or a single value) into o...
@@ -447,13 +452,15 @@ function restyle(gd,astr,val,traces) {
     else {
         setStyles(gd);
         applyStyle(gd.plot);
+        if($(gd).find('.legend').length)
+            legend(gd);
     }
 }
 
 // change layout in an existing plot
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
-    console.log('relayout',gd,astr,val);
+//     console.log('relayout',gd,astr,val);
     var gl = gd.layout, aobj = {};
     if(typeof astr == 'string')
         aobj[astr] = val;
@@ -845,6 +852,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                 width: Math.abs(x0-x1)+'px',
                 height: Math.abs(y0-y1)+'px'
             });
+            $('.zoombox').addClass(tinycolor(gd.layout.plot_bgcolor).toHsl().l>0.3 ? 'dark' : 'light');
         }
         window.onmouseup = function(e2) {
             window.onmousemove = null;
@@ -1366,10 +1374,11 @@ function newPopover(gd,pos,cls,contentfn,contentarg) {
     window.onmouseup = function(e) {
         // see http://stackoverflow.com/questions/1403615/use-jquery-to-hide-a-div-when-the-user-clicks-outside-of-it
         // need to separately check for colorpicker clicks, as spectrum doesn't make them children of the popover
-        // and need to separately kill the colorpickers for the same reason
+        // and need to separately kill the colorpickers and tooltips for the same reason
         if(popover.has(e.target).length===0 && $(e.target).parents('.sp-container').length===0) {
             window.onmouseup = null;
             popover.find('.pickcolor').spectrum('destroy');
+            popover.find('input').tooltip('destroy');
             popover.remove();
         }
     }
@@ -2175,9 +2184,15 @@ function autoGrowInput(gd,eln) {
 // if ticks are set to automatic, determine the right values (tick0,dtick)
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
-// TODO: so far it's all autotick=true, but when it's not date and log scales will need things done.
+// TODO: so far it's all autotick=true, but when it's not, date and log scales will need things done.
 function calcTicks(gd,a) {
-    var nt=10; // max number of ticks to display
+    // calculate max number of (auto) ticks to display based on plot size
+    // TODO: take account of actual label size here
+    if(a===gd.layout.yaxis)
+        var nt = Math.max(3,Math.min(10,gd.plotheight/40));
+    else
+        var nt = Math.max(3,Math.min(10,gd.plotwidth/80));
+
     var rt=Math.abs(a.range[1]-a.range[0])/nt; // min tick spacing
     if(a.isdate){
         if(a.autotick){
