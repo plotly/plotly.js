@@ -631,18 +631,54 @@ function newPlot(divid, layout) {
                         '</span>'+
                     '</form>'+
                 '</div>'+
-                // export pdf
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'pdf\')" rel="tooltip" title="Export to PDF">'+
-                        '<img src="/static/img/pdf.png"/>&nbsp;PDF'+
+                // export png or pdf
+                '<div class="btn-group graphbar_drop">'+
+                    '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
+                        '<span class="pull-left">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_200_download.png"></img>'+
+                            '&nbsp;PDF&nbsp;'+
+                        '</span>'+
+                        '<span class="caret pull-left"></span>'+
                     '</a>'+
+                    '<ul class="dropdown-menu pull-left">'+
+                        '<li><a onclick="pdfexport(\'pdf\')">'+
+                            '<img src="/static/img/pdf.png"/>'+
+                            '&nbsp;Download PDF</a>'+
+                        '</li>'+
+                        '<li><a onclick="pdfexport(\'png\')">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>'+
+                            '&nbsp;Download PNG</a>'+
+                        '</li>'+
+                    '</ul>'+
                 '</div>'+
-                // export png
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'png\')" rel="tooltip" title="Export to PNG">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>&nbsp;PNG'+
+                // help
+                '<div class="btn-group graphbar_drop">'+
+                    '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
+                        '<span class="pull-left">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"></img>'+
+                            '&nbsp;Help&nbsp;'+
+                        '</span>'+
+                        '<span class="caret pull-left"></span>'+
                     '</a>'+
-                '</div>'+
+                    '<ul class="dropdown-menu pull-left">'+
+                        '<li><a href="/gallery" target="_blank">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_154_show_big_thumbnails.png"/>'+
+                            '&nbsp;Graph Gallery</a>'+
+                        '</li>'+                     
+                        '<li><a onclick="litebox()">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_064_lightbulb.png"/>'+
+                            '&nbsp;Graph Tips</a>'+
+                        '</li>'+
+                        '<li><a href="/33">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_220_play_button.png"/>'+
+                            '&nbsp;Graph Demo</a>'+
+                        '</li>'+                        
+                        '<li><a href="/faq" target="_blank">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_194_circle_question_mark.png"/>'+
+                            '&nbsp;FAQ</a>'+
+                        '</li>'+                        
+                    '</ul>'+
+                '</div>'+                                
                 // style traces
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this)" rel="tooltip" title="Format Traces">'+
@@ -667,10 +703,11 @@ function newPlot(divid, layout) {
                         '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>&nbsp;Legend'+
                     '</a>'+
                 '</div>'+
-                // show help
+                // dashboard
                 '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="litebox()" rel="tooltip" title="Toggle help on / off">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"/>&nbsp;Help'+
+                    '<a class="btn toolbar_anchor" onclick="showurls()" rel="tooltip" title="Graph Dashboard">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_331_dashboard.png"/>&nbsp;Dash'+
+                    '</a>'+
                 '</div>'+
                 // share
                 '<div class="btn-group">'+
