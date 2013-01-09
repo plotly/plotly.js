@@ -335,6 +335,12 @@ function plot(divid, data, layout) {
     // show the legend
     if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!=false))
         legend(gd);
+
+    // show annotations
+    if(gl.annotations) {
+        for(var i=0; i<gl.annotations.length; i++)
+            annotation(gd,i);
+    }
 }
 
 // set display params per trace to default or provided value
@@ -414,6 +420,8 @@ function pointGroupStyle(s) {
     .style('fill',function(d){return d[0].t.mc});
 }
 
+// apply the marker to each point
+// draws the marker with diameter roughly markersize, centered at 0,0
 function pointStyle(s,t) {
     s.attr('d',function(d){
         var r=((d.ms+1 || t.ms+1 || d.t.ms+1)-1)/2,rt=r*2/Math.sqrt(3),rc=r/3,rd=r*Math.sqrt(2);
@@ -664,7 +672,7 @@ function newPlot(divid, layout) {
                         '<li><a href="/gallery" target="_blank">'+
                             '<img src="/static/bootstrap/img/png/glyphicons_154_show_big_thumbnails.png"/>'+
                             '&nbsp;Graph Gallery</a>'+
-                        '</li>'+                     
+                        '</li>'+
                         '<li><a onclick="litebox()">'+
                             '<img src="/static/bootstrap/img/png/glyphicons_064_lightbulb.png"/>'+
                             '&nbsp;Graph Tips</a>'+
@@ -672,13 +680,13 @@ function newPlot(divid, layout) {
                         '<li><a href="/33">'+
                             '<img src="/static/bootstrap/img/png/glyphicons_220_play_button.png"/>'+
                             '&nbsp;Graph Demo</a>'+
-                        '</li>'+                        
+                        '</li>'+
                         '<li><a href="/faq" target="_blank">'+
                             '<img src="/static/bootstrap/img/png/glyphicons_194_circle_question_mark.png"/>'+
                             '&nbsp;FAQ</a>'+
-                        '</li>'+                        
+                        '</li>'+
                     '</ul>'+
-                '</div>'+                                
+                '</div>'+
                 // style traces
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this)" rel="tooltip" title="Format Traces">'+
@@ -701,6 +709,12 @@ function newPlot(divid, layout) {
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="legendBox(gettab(),this)" rel="tooltip" title="Setup Legend">'+
                         '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>&nbsp;Legend'+
+                    '</a>'+
+                '</div>'+
+                // annotations
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="annotation(gettab())" rel="tooltip" title="New Text Annotation">'+
+                        '<img src="/static/bootstrap/img/png/glyphicons_309_comments.png"/>&nbsp;Annotation'+
                     '</a>'+
                 '</div>'+
                 // dashboard
@@ -772,11 +786,13 @@ function newPlot(divid, layout) {
         mp = gl.margin.pad;
 
     // Make the graph containers
-    // First svg (paper) is for the axes
     gd.paper=gd3.append('svg')
         .attr('width',gl.width)
         .attr('height',gl.height)
         .style('background-color',gl.paper_bgcolor);
+//         .attr('xmlns',"http://www.w3.org/2000/svg") // TODO: can't get marker defs to work... this didn't do it.
+//         .attr('xmlns:xlink',"http://www.w3.org/1999/xlink")
+//         .attr('version','1.1');
     gd.plotwidth=gl.width-ml-mr;
     gd.plotheight=gl.height-mt-mb;
     gd.plotbg=gd.paper.append('rect')
@@ -1067,13 +1083,13 @@ function dragTail(gd) {
 function makeTitles(gd,title) {
     var gl=gd.layout;
     var titles={
-        'xtitle':{x: (gl.width+gl.margin.l-gl.margin.r-(gd.lw ? gd.lw : 0))/2,
+        'xtitle':{x: (gl.width+gl.margin.l-gl.margin.r-(gd.lw || 0))/2,
             y: gl.height+(gd.lh<0 ? gd.lh : 0) - 14*0.75,
             w: gd.plotwidth/2, h: 14,
             cont: gl.xaxis, fontSize: 14, name: 'X axis',
             transform: '', attr: {}},
         'ytitle':{x: 20-(gd.lw<0 ? gd.lw : 0),
-            y: (gl.height+gl.margin.t-gl.margin.b+(gd.lh ? gd.lh : 0))/2,
+            y: (gl.height+gl.margin.t-gl.margin.b+(gd.lh || 0))/2,
             w: 14, h: gd.plotheight/2,
             cont: gl.yaxis, fontSize: 14, name: 'Y axis',
             transform: 'rotate(-90,x,y)', attr: {center: 0}},
@@ -1154,16 +1170,16 @@ function legend(gd) {
     gd.legend=gd.paper.append('svg')
         .attr('class','legend');
 
-    var bordercolor = gl.legend.bordercolor ? gl.legend.bordercolor : '#000',
-        borderwidth = gl.legend.borderwidth ? gl.legend.borderwidth : 1,
-        bgcolor = gl.legend.bgcolor ? gl.legend.bgcolor : (gl.paper_bgcolor ? gl.paper_bgcolor : '#fff');
+    var bordercolor = gl.legend.bordercolor || '#000',
+        borderwidth = gl.legend.borderwidth || 1,
+        bgcolor = gl.legend.bgcolor || gl.paper_bgcolor || '#fff';
     gd.legend.append('rect')
         .attr('class','bg')
         .attr('stroke',bordercolor)
         .attr('stroke-width',borderwidth)
         .style('fill',bgcolor)
-        .attr('x',1)
-        .attr('y',1);
+        .attr('x',borderwidth/2)
+        .attr('y',borderwidth/2);
 
     var traces = gd.legend.selectAll('g.traces')
         .data(ldata);
@@ -1189,11 +1205,11 @@ function legend(gd) {
         t.attr('y',(lbb.top+lbb.bottom-tbb.top-tbb.bottom)/2);
         var gbb = this.getBoundingClientRect();
         legendwidth = Math.max(legendwidth,tbb.width);
-        g.attr('transform','translate('+(borderwidth/2)+','+(5+borderwidth/2+legendheight+gbb.height/2)+')');
+        g.attr('transform','translate('+borderwidth+','+(5+borderwidth+legendheight+gbb.height/2)+')');
         legendheight += gbb.height+3;
     });
-    legendwidth += 45+borderwidth;
-    legendheight += 10+borderwidth;
+    legendwidth += 45+borderwidth*2;
+    legendheight += 10+borderwidth*2;
 
     // now position the legend. for both x,y the positions are recorded as fractions
     // of the plot area (left, bottom = 0,0). Outside the plot area is allowed but
@@ -1279,8 +1295,8 @@ function legend(gd) {
         .attr('width',legendwidth)
         .attr('height',legendheight);
     gd.legend.selectAll('.bg')
-        .attr('width',legendwidth-2)
-        .attr('height',legendheight-2);
+        .attr('width',legendwidth-borderwidth)
+        .attr('height',legendheight-borderwidth);
     // user dragging the legend
     // aligns left/right/center on resize or new text if drag pos
     // is in left 1/3, middle 1/3, right 1/3
@@ -1289,6 +1305,7 @@ function legend(gd) {
     //  if(xl<2/3-xc) gll.x=xl;
     //  else if(xr>4/3-xc) gll.x=xr;
     //  else gll.x=xc;
+    // similar logic for top/middle/bottom
     gd.legend.node().onmousedown = function(e) {
         if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
 
@@ -1357,6 +1374,397 @@ function legend(gd) {
             relayout(gd,{'legend.x':xf,'legend.y':yf});
         }
     }
+}
+
+// make or edit an annotation on the graph
+// annotations are stored in gd.layout.annotations, an array of objects
+// index can be non-numeric to simply add a new one
+// opt can be the full options object, or one key (to be set to value)
+// or undefined to simply redraw, or 'remove' to delete this annotation
+function annotation(gd,index,opt,value) {
+    var gl = gd.layout,gm = gl.margin;
+    if(!gl.annotations)
+        gl.annotations = [];
+    if(!$.isNumeric(index)) {
+        index = gl.annotations.length;
+        gl.annotations.push({});
+    }
+    // remove the existing annotation (and its record, if requested)
+    gd.paper.selectAll('.annotation[data-index="'+index+'"]').remove();
+    if(opt=='remove') {
+        gl.annotations.splice(index,1);
+        for(var i=index; i<gl.annotations.length; i++)
+            gd.paper.selectAll('.annotation[data-index="'+(i+1)+'"]')
+                .attr('data-index',String(i));
+        return;
+    }
+
+    // edit the options
+    var options = gl.annotations[index];
+    var oldref = options.ref,
+        xa = gd.layout.xaxis,
+        ya = gd.layout.yaxis;
+    if(typeof opt == 'string')
+        options[opt] = value;
+    else if(opt)
+        Object.keys(opt).forEach(function(k){ options[k] = opt[k] });
+    if(oldref && options.x && options.y) {
+        if(options.ref=='plot' && oldref=='paper') {
+            options.x = xa.range[0]+(xa.range[1]-xa.range[0])*options.x;
+            options.y = ya.range[0]+(ya.range[1]-ya.range[0])*options.y;
+        }
+        else if(options.ref=='paper' && oldref=='plot') {
+            options.x = (options.x-xa.range[0])/(xa.range[1]-xa.range[0]);
+            options.y = (options.y-ya.range[0])/(ya.range[1]-ya.range[0]);
+        }
+    }
+    // set default options (default x, y, ax, ay are set later)
+    if(!options.bordercolor) options.bordercolor = '';
+    if(!$.isNumeric(options.borderwidth)) options.borderwidth = 1;
+    if(!options.bgcolor) options.bgcolor = 'rgba(0,0,0,0)';
+    if(!options.text) options.text='new text';
+    if(!options.ref) options.ref='plot';
+    if(options.showarrow!=false) options.showarrow=true;
+    if(!$.isNumeric(options.borderpad)) options.borderpad=1;
+    if(!options.arrowcolor) options.arrowcolor = '';
+    if(!$.isNumeric(options.arrowhead)) options.arrowhead=1;
+    if(!$.isNumeric(options.arrowsize)) options.arrowsize=1;
+
+    var ann = gd.paper.append('svg')
+        .attr('class','annotation')
+        .attr('x',0)
+        .attr('y',0)
+        .attr('data-index',String(index));
+
+    var borderwidth = options.borderwidth;
+    var annbg = ann.append('rect')
+        .attr('class','bg')
+        .attr('stroke',options.bordercolor || 'rgba(0,0,0,0)')
+        .attr('stroke-width',borderwidth)
+        .style('fill',options.bgcolor)
+        .attr('x',borderwidth/2+1)
+        .attr('y',borderwidth/2+1);
+
+    if(!options.align) options.align='center';
+    var anntext = ann.append('text')
+        .attr('class','annotation')
+        .attr('x',0)
+        .attr('y',0)
+        .attr('text-anchor',{left:'start', center:'middle', right:'end'}[options.align])
+        .attr('font-size',12);
+    styleText(anntext.node(),options.text);
+
+    if(gd.mainsite)
+        anntext.on('click',function(){autoGrowInput(gd,this)});
+
+    // add the legend elements, sizing them to the text
+    var atbb = anntext.node().getBoundingClientRect(),
+        abb = ann.node().getBoundingClientRect(),
+        annwidth = atbb.width,
+        annheight = atbb.height;
+    if(!options.ax) options.ax=-10;
+    if(!options.ay) options.ay=-annheight/2-20;
+    // now position the annotation and arrow, based on options[x,y,ref,showarrow,ax,ay]
+
+    // position is either in plot coords (ref='plot') or
+    // in fraction of the plot area (ref='paper') as with legends,
+    // except that positions outside the plot are just numbers outside [0,1]
+    // but we will constrain the annotation center to be on the page,
+    // in case it gets dragged too far.
+
+    // if there's no arrow, alignment is as with legend (values <1/3 align the low side
+    // at that fraction, 1/3-2/3 align the center at that fraction, >2/3 align the right
+    // at that fraction) independent of the alignment of the text
+
+    // if there is an arrow, alignment is to the arrowhead, and ax and ay give the
+    // offset (in pixels) between the arrowhead and the center of the annotation
+
+    var paperbb = gd.paper.node().getBoundingClientRect(),
+        plotbb = d3.select(gd).select('.nsewdrag').node().getBoundingClientRect(),
+        x = plotbb.left-paperbb.left,
+        y = plotbb.top-paperbb.top;
+    if(options.ref=='paper') {
+        if(!$.isNumeric(options.x)) options.x=0.5;
+        if(!$.isNumeric(options.y)) options.y=0.8;
+        x += plotbb.width*options.x;
+        y += plotbb.height*(1-options.y);
+        if(!options.showarrow){
+            if(options.x>2/3) x -= annwidth/2;
+            else if(options.x<1/3) x += annwidth/2;
+
+            if(options.y<1/3) y -= annheight/2;
+            else if(options.y>2/3) y += annheight/2;
+        }
+    }
+    else {
+        // hide the annotation if it's pointing outside the visible plot
+        if((options.x-xa.range[0])*(options.x-xa.range[1])>0 || (options.y-ya.range[0])*(options.y-ya.range[1])>0) {
+            ann.remove();
+            return;
+        }
+        if(!$.isNumeric(options.x)) options.x=(xa.range[0]+xa.range[1])/2;
+        if(!$.isNumeric(options.y)) options.y=(ya.range[0]*0.2+ya.range[1]*0.8);
+        x += xa.b+options.x*xa.m;
+        y += ya.b+options.y*ya.m;
+    }
+
+    // if there's an arrow, it gets the position we just calculated, and the text gets offset by ax,ay
+    // and make sure the text and arrowhead are on the paper
+    if(options.showarrow){
+        var ax = constrain(x,1,paperbb.width-1),
+            ay = constrain(y,1,paperbb.height-1);
+        x += options.ax;
+        y += options.ay;
+    }
+    x = constrain(x,1,paperbb.width-1);
+    y = constrain(y,1,paperbb.height-1);
+
+    var borderpad = Number(options.borderpad),
+        borderfull = borderwidth+borderpad+1,
+        outerwidth = annwidth+2*borderfull,
+        outerheight = annheight+2*borderfull;
+    ann.attr('x',x-outerwidth/2)
+        .attr('y',y-outerheight/2)
+        .attr('width',outerwidth)
+        .attr('height',outerheight);
+    annbg.attr('width',annwidth+borderwidth+2*borderpad)
+        .attr('height',annheight+borderwidth+2*borderpad);
+    anntext.attr('x',paperbb.left-atbb.left+borderfull)
+        .attr('y',paperbb.top-atbb.top+borderfull)
+      .selectAll('tspan')
+        .attr('x',paperbb.left-atbb.left+borderfull);
+
+    // add the arrow
+    // uses options[arrowwidth,arrowcolor,arrowhead] for styling
+    var drawArrow = function(dx,dy){
+        $('g.annotation[data-index="'+index+'"]').remove();
+        // find where to start the arrow:
+        // at the border of the textbox, if that border is visible,
+        // or at the edge of the lines of text, if the border is hidden
+        // TODO: commented out for now... tspan bounding box fails in chrome
+        // looks like there may be a cross-browser solution, see
+        // http://stackoverflow.com/questions/5364980/how-to-get-the-width-of-an-svg-tspan-element
+        var ax0 = x+dx,
+            ay0 = y+dy,
+            showline = true;
+//         if(borderwidth && tinycolor(bordercolor).alpha) {
+            var boxes = [annbg.node().getBoundingClientRect()],
+                pad = 0;
+//         }
+//         else {
+//             var end_el = anntext.selectAll('tspan'),
+//                 pad = 3;
+//         }
+//         console.log(end_el);
+        boxes.forEach(function(bb){
+            var x1 = bb.left-paperbb.left-pad,
+                y1 = bb.top-paperbb.top-pad,
+                x2 = bb.right-paperbb.left+pad,
+                y2 = bb.bottom-paperbb.top+pad,
+                edges = [[x1,y1,x1,y2],[x1,y2,x2,y2],[x2,y2,x2,y1],[x2,y1,x1,y1]];
+            if(ax>x1 && ax<x2 && ay>y1 && ay<y2) { // remove the line if it ends inside the box
+                showline=false;
+                return;
+            }
+            edges.forEach(function(i){
+                var p = line_intersect(ax0,ay0,ax,ay,i[0],i[1],i[2],i[3]);
+                if(!p) return;
+                ax0 = p.x;
+                ay0 = p.y;
+            });
+        });
+        if(showline) {
+            var strokewidth = options.arrowwidth||borderwidth*2;
+            var arrowgroup = gd.paper.append('g')
+                .attr('class','annotation')
+                .attr('data-index',String(index));
+            var arrow = arrowgroup.append('path')
+                .attr('class','annotation')
+                .attr('data-index',String(index))
+                .attr('d','M'+ax0+','+ay0+'L'+ax+','+ay)
+                .attr('stroke-width',strokewidth)
+                .attr('stroke',options.arrowcolor || options.bordercolor || '#000');
+            arrowhead(arrow,options.arrowhead,'end',options.arrowsize)
+            var arrowdrag = arrowgroup.append('path')
+                .attr('class','annotation anndrag')
+                .attr('data-index',String(index))
+                .attr('d','M3,3H-3V-3H3ZM0,0L'+(ax0-ax)+','+(ay0-ay))
+                .attr('transform','translate('+ax+','+ay+')')
+                .attr('stroke-width',strokewidth+6)
+                .attr('stroke','rgba(0,0,0,0)')
+                .style('fill','rgba(0,0,0,0)');
+            arrowdrag.node().onmousedown = function(e) {
+                if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
+
+                var eln=this, el3=d3.select(this);
+                var annx0=Number(ann.attr('x')), anny0=Number(ann.attr('y'));
+                var xf=undefined, yf=undefined;
+                window.onmousemove = function(e2) {
+                    var dx = e2.clientX-e.clientX,
+                        dy = e2.clientY-e.clientY;
+                    if(Math.abs(dx)<MINDRAG) dx=0;
+                    if(Math.abs(dy)<MINDRAG) dy=0;
+                    arrowgroup.attr('transform','translate('+dx+','+dy+')');
+                    ann.attr('x',annx0+dx).attr('y',anny0+dy);
+                    if(options.ref=='paper') {
+                        xf=(ax+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0));
+                        yf=(ay+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0));
+                    }
+                    else {
+                        xf = options.x+dx/gd.layout.xaxis.m;
+                        yf = options.y+dy/gd.layout.yaxis.m;
+                    }
+                    pauseEvent(e2);
+                }
+                window.onmouseup = function(e2) {
+                    window.onmousemove = null; window.onmouseup = null;
+                    if($.isNumeric(xf) && $.isNumeric(yf))
+                        annotation(gd,index,{x:xf,y:yf});
+                }
+            }
+        }
+    }
+    if(options.showarrow)
+        drawArrow(0,0);
+
+    // user dragging the annotation
+    // aligns left/right/center on resize or new text if drag pos
+    // is in left 1/3, middle 1/3, right 1/3
+    // choose left/center/right align via:
+    //  xl=(left-ml)/plotwidth, xc=(center-ml/plotwidth), xr=(right-ml)/plotwidth
+    //  if(xl<2/3-xc) gll.x=xl;
+    //  else if(xr>4/3-xc) gll.x=xr;
+    //  else gll.x=xc;
+    ann.node().onmousedown = function(e) {
+        if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
+
+        var eln=this, el3=d3.select(this);
+        var x0=Number(el3.attr('x')), y0=Number(el3.attr('y'));
+        var xf=undefined, yf=undefined;
+        window.onmousemove = function(e2) {
+            var dx = e2.clientX-e.clientX,
+                dy = e2.clientY-e.clientY;
+            if(Math.abs(dx)<MINDRAG) dx=0;
+            if(Math.abs(dy)<MINDRAG) dy=0;
+            el3.attr('x',x0+dx)
+                .attr('y',y0+dy);
+            var csr='pointer';
+            if(options.showarrow) {
+                xf = options.ax+dx;
+                yf = options.ay+dy;
+                drawArrow(dx,dy);
+            }
+            else if(options.ref=='paper') {
+                var xl=(x0+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0)),
+                    xr=xl+legendwidth/(gl.width-gm.l-gm.r),
+                    xc=(xl+xr)/2;
+                if(xl<(2/3)-xc) xf=xl;
+                else if(xr>4/3-xc) xf=xr;
+                else xf=xc;
+                var yt=(y0+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0)),
+                    yb=yt+legendheight/(gl.height-gm.t-gm.b),
+                    yc=(yt+yb)/2;
+                if(yt<(2/3)-yc) yf=1-yt;
+                else if(yb>4/3-yc) yf=1-yb;
+                else yf=1-yc;
+                // now set the mouse cursor so user can see how the annotation will be aligned
+                if(xf<1/3) {
+                    if(yf<1/3) csr='sw-resize';
+                    else if(yf<2/3) csr='w-resize';
+                    else csr='nw-resize';
+                }
+                else if(xf<2/3) {
+                    if(yf<1/3) csr='s-resize';
+                    else if(yf<2/3) csr='move';
+                    else csr='n-resize';
+                }
+                else {
+                    if(yf<1/3) csr='se-resize';
+                    else if(yf<2/3) csr='e-resize';
+                    else csr='ne-resize';
+                }
+            }
+            else {
+                xf = options.x+dx/gd.layout.xaxis.m;
+                yf = options.y+dy/gd.layout.yaxis.m;
+            }
+            $(eln).css('cursor',csr);
+            pauseEvent(e2);
+        }
+        window.onmouseup = function(e2) {
+            window.onmousemove = null; window.onmouseup = null;
+            $(eln).css('cursor','');
+            if($.isNumeric(xf) && $.isNumeric(yf))
+                annotation(gd,index,options.showarrow ? {ax:xf,ay:yf} : {x:xf,y:yf});
+        }
+    }
+}
+
+// add arrowhead(s) to a path or line d3 element el3
+// style: 1-6, first 5 are pointers, 6 is circle, 7 is square
+// ends is 'start', 'end' (default), 'start+end'
+// mag is magnification vs. default (default 1)
+function arrowhead(el3,style,ends,mag) {
+    var el = el3.node();
+        s = [
+        'M-1,-2V2L1,0Z',
+        'M-2,-2V2L2,0Z',
+        'M-2,-2L0,0L-2,2L2,0Z',
+        'M-2.2,-2.2L0,0L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',
+        'M-4.2,-2.1L0,0L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',
+        'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',
+        'M2,2V-2H-2V2Z'
+    ][style-1];
+    if(!s) return;
+    if(typeof ends != 'string' || !ends) ends = 'end';
+
+    if(el.nodeName=='line') {
+        var start = {x:el3.attr('x1'),y:el3.attr('y1')},
+            end = {x:el3.attr('x2'),y:el3.attr('y2')},
+            dstart = end,
+            dend = start;
+    }
+    else if(el.nodeName=='path') {
+        var start = el.getPointAtLength(0),
+            dstart = el.getPointAtLength(0.1),
+            pathlen = el.getTotalLength(),
+            end = el.getPointAtLength(pathlen),
+            dend = el.getPointAtLength(pathlen-0.1);
+    }
+
+    var drawhead = function(p,q) {
+        var rot = Math.atan2(p.y-q.y,p.x-q.x)*180/Math.PI,
+            scale = (el3.attr('stroke-width') || 1)*(mag||1),
+            stroke = el3.attr('stroke') || '#000';
+        if(style>5) rot=0; // don't rotate square or circle
+        d3.select(el.parentElement).append('path')
+            .attr('class',el3.attr('class'))
+            .attr('data-index',el3.attr('data-index'))
+            .style('fill',stroke)
+            .attr('stroke-width',0)
+            .attr('d',s)
+            .attr('transform','translate('+p.x+','+p.y+')rotate('+rot+')scale('+scale+')');
+    }
+
+    if(ends.indexOf('start')>=0)
+        drawhead(start,dstart);
+    if(ends.indexOf('end')>=0)
+        drawhead(end,dend);
+}
+
+function constrain(v,v0,v1) { return Math.max(v0,Math.min(v1,v)) }
+
+// look for intersection of two line segments (1->2 and 3->4) - returns array [x,y] if they do, null if not
+// return the intersection and the fraction of the way from 1->2 (t) and 3->4 (u)
+function line_intersect(x1,y1,x2,y2,x3,y3,x4,y4) {
+    var a=x2-x1, b=x3-x1, c=x4-x3,
+        d=y2-y1, e=y3-y1, f=y4-y3,
+        det=a*f-c*d;
+    if(det==0) return null; // parallel lines, so intersection is undefined - ignore the case where they are colinear
+    var t=(b*f-c*e)/det,
+        u=(b*d-a*e)/det;
+    if(u<0 || u>1 || t<0 || t>1) return null; // segments do not intersect
+    return {x:x1+a*t, y:y1+d*t};
 }
 
 // since our drag events cancel event bubbling, need to explicitly deal with other elements
@@ -2050,6 +2458,7 @@ function autoGrowInput(gd,eln) {
     var mode = (el.slice(1,6)=='title') ? 'title' :
                 (el.slice(0,4)=='drag') ? 'drag' :
                 (el.slice(0,6)=='legend') ? 'legend' :
+                (el.slice(0,10)=='annotation') ? 'annotation' :
                     'unknown';
 
     if(mode=='unknown') {
@@ -2092,6 +2501,12 @@ function autoGrowInput(gd,eln) {
         var tn = Number(el.split('-')[1])
         cont = gd.data[tn], prop='name';
         var cont2 = gd.calcdata[tn][0].t;
+        o.align = 'left';
+    }
+    // annotation
+    else if(mode=='annotation') {
+        var an = Number(ref.parent().attr('data-index'));
+        cont = gd.layout.annotations[an], prop='text';
         o.align = 'left';
     }
 
@@ -2168,7 +2583,8 @@ function autoGrowInput(gd,eln) {
     var left0=input.position().left+input.width()*leftshift;
 
     // for titles, take away the existing one as soon as the input box is made
-    if(mode!='drag') gd.paper.selectAll('[class="'+el+'"]').remove();
+    if(mode=='annotation') gd.paper.selectAll('svg.annotation').remove(); // don't remove the arrow
+    else if(mode!='drag') gd.paper.selectAll('[class="'+el+'"]').remove();
     inbox.select();
 
     var removeInput=function(){
@@ -2198,11 +2614,13 @@ function autoGrowInput(gd,eln) {
                 }
             }
             else if(mode=='legend') {
-                console.log(gd.layout);
                 cont[prop]=$.trim(val);
                 cont2[prop]=$.trim(val);
                 gd.layout.showlegend=true;
                 legend(gd);
+            }
+            else if(mode=='annotation') {
+                annotation(gd,an,prop,$.trim(val));
             }
             removeInput();
         }
