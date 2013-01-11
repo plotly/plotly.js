@@ -452,6 +452,7 @@ function pointStyle(s,t) {
 // val is the new value to use
 // traces is a trace number or an array of trace numbers to change (blank for all)
 function restyle(gd,astr,val,traces) {
+    gd.changed = true;
     if($.isNumeric(traces)) traces=[traces];
     else if(!$.isArray(traces) || !traces.length) {
         traces=[];
@@ -477,6 +478,7 @@ function restyle(gd,astr,val,traces) {
 // change layout in an existing plot
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
+    gd.changed = true;
 //     console.log('relayout',gd,astr,val);
     var gl = gd.layout, aobj = {};
     if(typeof astr == 'string')
@@ -1072,6 +1074,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
 }
 
 function dragTail(gd) {
+    gd.changed = true;
     doTicks(gd); // TODO: plot does this again at the end... why do we need to do them here?
     plot(gd,'','');
 }
@@ -1618,8 +1621,10 @@ function annotation(gd,index,opt,value) {
                 }
                 window.onmouseup = function(e2) {
                     window.onmousemove = null; window.onmouseup = null;
-                    if($.isNumeric(xf) && $.isNumeric(yf))
+                    if($.isNumeric(xf) && $.isNumeric(yf)) {
+                        gd.changed = true;
                         annotation(gd,index,{x:xf,y:yf});
+                    }
                 }
             }
         }
@@ -2617,9 +2622,11 @@ function autoGrowInput(gd,eln) {
                 cont[prop]=$.trim(val);
                 cont2[prop]=$.trim(val);
                 gd.layout.showlegend=true;
+                gd.changed = true;
                 legend(gd);
             }
             else if(mode=='annotation') {
+                gd.changed = true;
                 annotation(gd,an,prop,$.trim(val));
             }
             removeInput();
