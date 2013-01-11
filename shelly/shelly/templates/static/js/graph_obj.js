@@ -3132,41 +3132,53 @@ function styleTextInner(s,n) {
 // ----------------------------------------------------
 
 function shareGraph(divid){
+    if(signedin()==false) return;
+    $('#igraph').attr('src',''); // clear iframe
+    $('#linktoshare').attr('src',''); // clear url
     $('#worldreadable').hide();
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-    if(typeof gd.fid !='string') gd.fid='';
-    if(signedin()==false) return;
-    var gd=gettab();
-    if(gd.fid===undefined) gd.fid='';
-    if(gd.fid==''){
-        saveGraph(gd); // TODO: instead of a timeout, use a callback on finishing saveGraph
+    if(gd.fid!==undefined){
+        if($('#'+gd.fid.toString()).attr('rel')=='grid') gd.fid='';
     }
-    var spinner=new Spinner(opts).spin(gd);
-
-    // give graph 2.5 second to save and load iframe
-    setTimeout(function(){
-        // reload div
-        var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-        if(gd.fid.toString().split(':').length==2){
-	    var un=gd.fid.split(':')[0]
-	    var fid=gd.fid.split(':')[1]
-	}
-        else{
-	    var un=$('#signin').text().replace(/^\s+|\s+$/g, '');
-	    var fid=gd.fid
-        }
-        // set worldreadable flag on file to true
-        $.post("/worldreadable/", {'readable':true,'fid':gd.fid}, function(){
-            url=window.location.origin+'/~'+un+'/'+fid;
-            $('#linktoshare').val(url);
-            $('#igraph').attr('src',url+'/500/300/');
-            $('#iframetoshare').text($('#igraphcontainer').html().replace(/^\s*/, '').replace(/\s*$/, ''));
-            $('#linkModal').modal('toggle');
-            document.getElementById("linktoshare").select();
-        });
-        spinner.stop();
-    }, 2500);
+    if(gd.changed!==undefined){
+        if(gd.changed==true){gd.fid='';}
+    }
+    console.log('shareGraph()');
+    console.log(gd.fid);
+    if(gd.spinner===undefined){
+        var spinner=new Spinner(opts).spin(gd);   
+        gd.spinner=spinner;
+    }    
+    if(gd.fid=='' || gd.fid===undefined){
+        saveGraph(gd,true); // second param is shareOnSave - calls showSharing modal after save if true 
+    }
+    showiGraphModal(gd);
 }
+
+// ------------------------------- showiGraphModal
+
+function showiGraphModal(gd){
+    if(gd.fid.toString().split(':').length==2){
+        var un=gd.fid.split(':')[0]
+        var fid=gd.fid.split(':')[1]
+    }
+    else{
+        var un=$('#signin').text().replace(/^\s+|\s+$/g, '');
+        var fid=gd.fid
+    }
+    console.log('showiGraphModal()');
+    console.log(fid);
+    // set worldreadable flag on file to true
+    $.post("/worldreadable/", {'readable':true,'fid':gd.fid}, function(){
+        url=window.location.origin+'/~'+un+'/'+fid;
+        $('#linktoshare').val(url);
+        $('#igraph').attr('src',url+'/500/300/');
+        $('#iframetoshare').text($('#igraphcontainer').html().replace(/^\s*/, '').replace(/\s*$/, ''));
+        $('#linkModal').modal('show');
+        document.getElementById("linktoshare").select();
+    });
+    if(gd.spinner!==undefined){gd.spinner.stop();}
+}    
 
 // ------------------------------- graphToGrid
 
