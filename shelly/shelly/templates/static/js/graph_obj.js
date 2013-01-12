@@ -452,6 +452,7 @@ function pointStyle(s,t) {
 // val is the new value to use
 // traces is a trace number or an array of trace numbers to change (blank for all)
 function restyle(gd,astr,val,traces) {
+    gd.changed = true;
     if($.isNumeric(traces)) traces=[traces];
     else if(!$.isArray(traces) || !traces.length) {
         traces=[];
@@ -477,6 +478,7 @@ function restyle(gd,astr,val,traces) {
 // change layout in an existing plot
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
+    gd.changed = true;
 //     console.log('relayout',gd,astr,val);
     var gl = gd.layout, aobj = {};
     if(typeof astr == 'string')
@@ -889,7 +891,6 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             mouseDown=d;
         }
 
-
         if(e.altKey || e.ctrlKey || e.metaKey)
             console.log('alt, ctrl, meta (cmd) click functionality not defined');
         else if(ns+ew=='nsew' && !e.shiftKey) // in the main plot area, unmodified drag makes a zoombox
@@ -900,25 +901,26 @@ function dragBox(gd,x,y,w,h,ns,ew) {
     }
 
     function zoomBox(e){
-        var gbb = $('.nsewdrag')[0].getBoundingClientRect(),
+        var gbb = $(gd).find('.nsewdrag')[0].getBoundingClientRect(),
             x0 = e.clientX,
-            y0 = e.clientY;
-        $('<div class="zoombox" style="left: '+x0+'px; top: '+y0+'px;"></div>').appendTo('body');
+            y0 = e.clientY,
+//         console.log(x0,y0,e,$('.nsewdrag'),gx.range,gy.range);
+            zb = $('<div id="zoombox" style="left: '+x0+'px; top: '+y0+'px;"></div>').appendTo('body');
         window.onmousemove = function(e2) {
             var x1 = Math.max(gbb.left,Math.min(gbb.right,e2.clientX)),
                 y1 = Math.max(gbb.top,Math.min(gbb.bottom,e2.clientY));
-            $('.zoombox').css({
+            zb.css({
                 left: Math.min(x0,x1)+'px',
                 top: Math.min(y0,y1)+'px',
                 width: Math.abs(x0-x1)+'px',
                 height: Math.abs(y0-y1)+'px'
-            });
-            $('.zoombox').addClass(tinycolor(gd.layout.plot_bgcolor).toHsl().l>0.3 ? 'dark' : 'light');
+            })
+            .addClass(tinycolor(gd.layout.plot_bgcolor).toHsl().l>0.3 ? 'dark' : 'light');
         }
         window.onmouseup = function(e2) {
             window.onmousemove = null;
             window.onmouseup = null;
-            var zbb = $('.zoombox')[0].getBoundingClientRect();
+            var zbb = zb[0].getBoundingClientRect();
             if(Math.min(zbb.height,zbb.width)<MINDRAG*2) {
                 if((new Date()).getTime()-mouseDown<DBLCLICKDELAY && numClicks==2) { // double click
                     gx.autorange=true;
@@ -938,8 +940,8 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                 top:Math.min(e2.clientY,gbb.bottom-mbb.height)+'px',
                 'z-index':20001
             });
-            $('#zoomboxbackdrop')[0].onclick = finishZB;
-            $('#zoomboxin')[0].onclick = function(){
+            $('#zoomboxbackdrop,#zoombox').click(finishZB);
+            $('#zoomboxin').click(function(){
                 gx.range=[gx.range[0]+(gx.range[1]-gx.range[0])*(zbb.left-gbb.left)/gbb.width,
                           gx.range[0]+(gx.range[1]-gx.range[0])*(zbb.right-gbb.left)/gbb.width];
                 gy.range=[gy.range[0]+(gy.range[1]-gy.range[0])*(gbb.bottom-zbb.bottom)/gbb.height,
@@ -948,8 +950,8 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                 gx.autorange=false;
                 gy.autorange=false;
                 dragTail(gd);
-            }
-            $('#zoomboxout')[0].onclick = function(){
+            })
+            $('#zoomboxout').click(function(){
                 gx.range=[(gx.range[0]*(zbb.right-gbb.left)+gx.range[1]*(gbb.left-zbb.left))/zbb.width,
                           (gx.range[0]*(zbb.right-gbb.right)+gx.range[1]*(gbb.right-zbb.left))/zbb.width];
                 gy.range=[(gy.range[0]*(gbb.bottom-zbb.top)+gy.range[1]*(zbb.bottom-gbb.bottom))/zbb.height,
@@ -958,11 +960,11 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                 gx.autorange=false;
                 gy.autorange=false;
                 dragTail(gd);
-            }
+            })
         }
 
         function finishZB(){
-            $('.zoombox,#zoomboxbackdrop,#zoomboxmenu').remove();
+            $('#zoombox,#zoomboxbackdrop,#zoomboxmenu').remove();
         }
     }
 
@@ -1072,6 +1074,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
 }
 
 function dragTail(gd) {
+    gd.changed = true;
     doTicks(gd); // TODO: plot does this again at the end... why do we need to do them here?
     plot(gd,'','');
 }
@@ -1618,8 +1621,10 @@ function annotation(gd,index,opt,value) {
                 }
                 window.onmouseup = function(e2) {
                     window.onmousemove = null; window.onmouseup = null;
-                    if($.isNumeric(xf) && $.isNumeric(yf))
+                    if($.isNumeric(xf) && $.isNumeric(yf)) {
+                        gd.changed = true;
                         annotation(gd,index,{x:xf,y:yf});
+                    }
                 }
             }
         }
@@ -2353,7 +2358,8 @@ function inputAxRange(isdate,islog){
     else
         return {test: $.isNumeric,
                 errortext: 'Must be a number',
-                converttoinput: function(v){return (v==null) ? '' : String(v)}};
+                converttoinput: function(v){return (v==null) ? '' : String(v)},
+                convertfrominput: function(v){return Number(v)}};
 }
 
 // apply a new value from an input box
@@ -2437,7 +2443,7 @@ function updateObject(i,up) {
     for(key in up) {
         if($.isPlainObject(up[key]))
             o[key]=updateObject($.isPlainObject(i[key]) ? i[key] : {}, up[key]);
-        else o[key]=up[key];
+        else o[key]=($.isNumeric(i[key]) && $.isNumeric(up[key])) ? Number(up[key]) : up[key]; // if the initial object had a number and the update can be a number, coerce it
     }
     return uoStack.pop();
 }
@@ -2507,7 +2513,7 @@ function autoGrowInput(gd,eln) {
     else if(mode=='annotation') {
         var an = Number(ref.parent().attr('data-index'));
         cont = gd.layout.annotations[an], prop='text';
-        o.align = 'left';
+        o.align = 'center';
     }
 
     var fa=['font-size','font-family','font-weight','font-style','font-stretch',
@@ -2522,11 +2528,8 @@ function autoGrowInput(gd,eln) {
     o.comfortZone = (Number(String(fontCss['font-size']).split('px')[0]) || 20) + 3;
 
     var eltrans=el3.attr('transform'),
-        inbox=document.createElement('input'),
-        bbox=eln.getBoundingClientRect();
-
-    $(gd).append(inbox);
-    var input=$(inbox);
+        bbox=eln.getBoundingClientRect(),
+        input = $('<input/>').appendTo(gd); // TODO: replace with textarea so we can multiline it
     gd.input=input;
 
     // first put the input box at 0,0, then calculate the correct offset vs orig. element
@@ -2573,7 +2576,7 @@ function autoGrowInput(gd,eln) {
     }
     input.width(testWidth());
 
-    var ibbox=inbox.getBoundingClientRect(),ileft=bbox.left-ibbox.left;
+    var ibbox=input[0].getBoundingClientRect(),ileft=bbox.left-ibbox.left;
     input.css('top',(bbox.top-ibbox.top+(bbox.height-ibbox.height)/2)+'px');
     if(o.align=='right') ileft+=bbox.width-ibbox.width;
     else if(o.align=='center') ileft+=(bbox.width+o.comfortZone-ibbox.width)/2;
@@ -2583,9 +2586,11 @@ function autoGrowInput(gd,eln) {
     var left0=input.position().left+input.width()*leftshift;
 
     // for titles, take away the existing one as soon as the input box is made
-    if(mode=='annotation') gd.paper.selectAll('svg.annotation').remove(); // don't remove the arrow
-    else if(mode!='drag') gd.paper.selectAll('[class="'+el+'"]').remove();
-    inbox.select();
+    if(mode=='annotation')
+        gd.paper.selectAll('svg.annotation[data-index="'+an+'"]').remove();
+    else if(mode!='drag')
+        gd.paper.selectAll('[class="'+el+'"]').remove();
+    input[0].select();
 
     var removeInput=function(){
         input.remove();
@@ -2609,7 +2614,7 @@ function autoGrowInput(gd,eln) {
                 var v= (cont.islog) ? Math.log(Number($.trim(val)))/Math.LN10 :
                     (cont.isdate) ? DateTime2ms($.trim(val)) : Number($.trim(val));
                 if($.isNumeric(v)) {
-                    cont.range[prop]=v;
+                    cont.range[prop]=Number(v);
                     dragTail(gd);
                 }
             }
@@ -2617,9 +2622,11 @@ function autoGrowInput(gd,eln) {
                 cont[prop]=$.trim(val);
                 cont2[prop]=$.trim(val);
                 gd.layout.showlegend=true;
+                gd.changed = true;
                 legend(gd);
             }
             else if(mode=='annotation') {
+                gd.changed = true;
                 annotation(gd,an,prop,$.trim(val));
             }
             removeInput();
