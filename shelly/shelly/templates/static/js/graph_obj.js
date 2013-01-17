@@ -620,12 +620,42 @@ function newPlot(divid, layout) {
         // ------------------------------------------------------------ graphing toolbar
         var menudiv =
             '<div class="graphbar btn-toolbar">'+
-                // save
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="saveGraph();" rel="tooltip" title="Save Changes">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>&nbsp;Save'+
+                // file
+                '<div class="btn-group graphbar_drop">'+
+                    '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
+                        '<span class="pull-left">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_036_file.png"/>'+
+                            '&nbsp;File&nbsp;'+
+                        '</span>'+
+                        '<span class="caret pull-left"></span>'+
                     '</a>'+
-                '</div>'+
+                    '<ul class="dropdown-menu pull-left">'+
+                        '<li><a onclick="saveGraph();">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>'+
+                            '&nbsp;Save</a>'+
+                        '</li>'+
+                        '<li><a onclick="if(gettab().fid!==undefined){gettab().fid=\'\';}saveGraph();">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_copy.png"/>'+
+                            '&nbsp;Save as Copy</a>'+
+                        '</li>'+
+                        '<li class="dropdown-submenu">'+
+                            '<a tabindex="-1" href="#">'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_200_download.png"></img>'+
+                                '&nbsp;Export Graph'+
+                            '</a>'+
+                            '<ul class="dropdown-menu">'+
+                                '<li><a onclick="pdfexport(\'pdf\')">'+
+                                    '<img src="/static/img/pdf.png"/>'+
+                                    '&nbsp;Download PDF</a>'+
+                                '</li>'+
+                                '<li><a onclick="pdfexport(\'png\')">'+
+                                    '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>'+
+                                    '&nbsp;Download PNG</a>'+
+                                '</li>'+
+                            '</ul>'+
+                        '</li>'+
+                    '</ul>'+
+                '</div>'+                
                 // show in grid
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
@@ -640,55 +670,7 @@ function newPlot(divid, layout) {
                             '<input type="file" name="fileToUpload" id="fileToUpload'+gettab().id+'" onchange="fileSelected();"/>'+
                         '</span>'+
                     '</form>'+
-                '</div>'+
-                // export png or pdf
-                '<div class="btn-group graphbar_drop">'+
-                    '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
-                        '<span class="pull-left">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_200_download.png"></img>'+
-                            '&nbsp;PDF&nbsp;'+
-                        '</span>'+
-                        '<span class="caret pull-left"></span>'+
-                    '</a>'+
-                    '<ul class="dropdown-menu pull-left">'+
-                        '<li><a onclick="pdfexport(\'pdf\')">'+
-                            '<img src="/static/img/pdf.png"/>'+
-                            '&nbsp;Download PDF</a>'+
-                        '</li>'+
-                        '<li><a onclick="pdfexport(\'png\')">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>'+
-                            '&nbsp;Download PNG</a>'+
-                        '</li>'+
-                    '</ul>'+
-                '</div>'+
-                // help
-                '<div class="btn-group graphbar_drop">'+
-                    '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
-                        '<span class="pull-left">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"></img>'+
-                            '&nbsp;Help&nbsp;'+
-                        '</span>'+
-                        '<span class="caret pull-left"></span>'+
-                    '</a>'+
-                    '<ul class="dropdown-menu pull-left">'+
-                        '<li><a href="/gallery" target="_blank">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_154_show_big_thumbnails.png"/>'+
-                            '&nbsp;Graph Gallery</a>'+
-                        '</li>'+
-                        '<li><a onclick="litebox()">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_064_lightbulb.png"/>'+
-                            '&nbsp;Graph Tips</a>'+
-                        '</li>'+
-                        '<li><a href="/33">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_220_play_button.png"/>'+
-                            '&nbsp;Graph Demo</a>'+
-                        '</li>'+
-                        '<li><a href="/faq" target="_blank">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_194_circle_question_mark.png"/>'+
-                            '&nbsp;FAQ</a>'+
-                        '</li>'+
-                    '</ul>'+
-                '</div>'+
+                '</div>'+            
                 // style traces
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this)" rel="tooltip" title="Format Traces">'+
@@ -731,6 +713,34 @@ function newPlot(divid, layout) {
                         '<img src="/static/img/lil_share_white.png"/>&nbsp;Share'+
                     '</a>'+
                 '</div>'+
+                // help
+                '<div class="btn-group graphbar_drop">'+
+                    '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
+                        '<span class="pull-left">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"></img>'+
+                            '&nbsp;Help&nbsp;'+
+                        '</span>'+
+                        '<span class="caret pull-left"></span>'+
+                    '</a>'+
+                    '<ul class="dropdown-menu pull-left">'+
+                        '<li><a href="/gallery" target="_blank">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_154_show_big_thumbnails.png"/>'+
+                            '&nbsp;Graph Gallery</a>'+
+                        '</li>'+
+                        '<li><a onclick="litebox()">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_064_lightbulb.png"/>'+
+                            '&nbsp;Graph Tips</a>'+
+                        '</li>'+
+                        '<li><a href="/33">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_220_play_button.png"/>'+
+                            '&nbsp;Graph Demo</a>'+
+                        '</li>'+
+                        '<li><a href="/faq" target="_blank">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_194_circle_question_mark.png"/>'+
+                            '&nbsp;FAQ</a>'+
+                        '</li>'+
+                    '</ul>'+
+                '</div>'+                
 	        '</div>';
         $(gd).prepend(menudiv);
         $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
@@ -3150,8 +3160,6 @@ function shareGraph(divid){
     if(gd.changed!==undefined){
         if(gd.changed==true){gd.fid='';}
     }
-    console.log('shareGraph()');
-    console.log(gd.fid);
     if(gd.spinner===undefined){
         var spinner=new Spinner(opts).spin(gd);   
         gd.spinner=spinner;
