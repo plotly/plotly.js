@@ -752,7 +752,7 @@ function newPlot(divid, layout) {
         $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
         
         var demodiv=
-            '<div class="demobar" style="display:'+gettab().demos+';">'+
+            '<div class="demobar" style="display:'+DEMOS+';">'+
                 '<ul>'+
                     '<li><img src="/static/img/tinys/3dgoggles.png" onclick="pulldemo(this);" name="demos:79"/></li>'+
                     '<li><img src="/static/img/tinys/andrews.png"  onclick="pulldemo(this);" name="demos:10"/></li>'+
