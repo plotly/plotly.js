@@ -701,24 +701,24 @@ function newPlot(divid, layout) {
                         '<img src="/static/bootstrap/img/png/glyphicons_309_comments.png"/>&nbsp;Annotation'+
                     '</a>'+
                 '</div>'+
+                // demos
+                '<div class="btn-group">'+
+                    '<a class="btn toolbar_anchor" onclick="demos();" rel="tooltip" title="Check out some demos">'+
+                        '<img src="/static/img/glyphicons/png/glyphicons_019_cogwheel.png"/>&nbsp;Demos'+
+                    '</a>'+
+                '</div>'+                    
                 // dashboard
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="showurls()" rel="tooltip" title="Graph Dashboard">'+
                         '<img src="/static/bootstrap/img/png/glyphicons_331_dashboard.png"/>&nbsp;Dash'+
                     '</a>'+
-                '</div>'+
+                '</div>'+              
                 // share
                 '<div class="btn-group">'+
                     '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph by URL">'+
                         '<img src="/static/img/lil_share_white.png"/>&nbsp;Share'+
                     '</a>'+
-                '</div>'+
-                // demos
-                '<div class="btn-group">'+
-                    '<a class="btn google_button" onclick="demos();" rel="tooltip" title="Check out some demos">'+
-                        '<img src="/static/img/lil_cog_white.png"/>&nbsp;Demos'+
-                    '</a>'+
-                '</div>'+                
+                '</div>'+              
                 // help
                 '<div class="btn-group graphbar_drop">'+
                     '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
