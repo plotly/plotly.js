@@ -765,7 +765,7 @@ function newPlot(divid, layout) {
                     '<li><img src="/static/img/tinys/opacity.png"  onclick="pulldemo(this);" name="demos:6"/></li>'+    
                     '<li><img src="/static/img/tinys/peak.png"  onclick="pulldemo(this);" name="demos:2"/></li>'+
                     '<li><img src="/static/img/tinys/sine.png" onclick="pulldemo(this);" name="demos:18"/></li>'+
-                    '<li><img src="/static/img/tinys/walk.png" onclick="pulldemo(this);" name="demos:70"/></li>'+                                                              
+                    '<li><img src="/static/img/tinys/walk.png" onclick="pulldemo(this);" name="demos:89"/></li>'+                                                              
                 '</ul>'+
             '</div>';
             
