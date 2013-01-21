@@ -759,7 +759,7 @@ function newPlot(divid, layout) {
                     '<li><img src="/static/img/tinys/hopf.png"  onclick="pulldemo(this);" name="demos:82"/></li>'+ 
                     '<li><img src="/static/img/tinys/intel.png"  onclick="pulldemo(this);" name="demos:84"/></li>'+
                     '<li><img src="/static/img/tinys/intersect.png"  onclick="pulldemo(this);" name="demos:81"/></li>'+
-                    '<li><img src="/static/img/tinys/launch.png"  onclick="pulldemo(this);" name="demos:85"/></li>'+
+                    '<li><img src="/static/img/tinys/launch.png"  onclick="pulldemo(this);" name="demos:91"/></li>'+
                     '<li><img src="/static/img/tinys/linden.png"  onclick="pulldemo(this);" name="demos:87"/></li>'+
                     '<li><img src="/static/img/tinys/logistic.png"  onclick="pulldemo(this);" name="demos:27"/></li>'+
                     '<li><img src="/static/img/tinys/opacity.png"  onclick="pulldemo(this);" name="demos:6"/></li>'+    
