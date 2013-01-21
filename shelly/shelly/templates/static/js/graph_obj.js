@@ -341,6 +341,11 @@ function plot(divid, data, layout) {
         for(var i=0; i<gl.annotations.length; i++)
             annotation(gd,i);
     }
+    
+    if(gettab().spinner !== undefined){
+        gd.spinner.stop();
+    }
+    $('#'+gd.id+' .spinner').remove();    
 }
 
 // set display params per trace to default or provided value
