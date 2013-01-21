@@ -713,6 +713,12 @@ function newPlot(divid, layout) {
                         '<img src="/static/img/lil_share_white.png"/>&nbsp;Share'+
                     '</a>'+
                 '</div>'+
+                // demos
+                '<div class="btn-group">'+
+                    '<a class="btn google_button" onclick="demos();" rel="tooltip" title="Check out some demos">'+
+                        '<img src="/static/img/lil_cog_white.png"/>&nbsp;Demos'+
+                    '</a>'+
+                '</div>'+                
                 // help
                 '<div class="btn-group graphbar_drop">'+
                     '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
@@ -744,6 +750,26 @@ function newPlot(divid, layout) {
 	        '</div>';
         $(gd).prepend(menudiv);
         $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
+        
+        var demodiv=
+            '<div class="demobar" style="display:'+gettab().demos+';">'+
+                '<ul>'+
+                    '<li><img src="/static/img/tinys/3dgoggles.png" onclick="pulldemo(this);" name="demos:79"/></li>'+
+                    '<li><img src="/static/img/tinys/andrews.png"  onclick="pulldemo(this);" name="demos:10"/></li>'+
+                    '<li><img src="/static/img/tinys/hopf.png"  onclick="pulldemo(this);" name="demos:82"/></li>'+ 
+                    '<li><img src="/static/img/tinys/intel.png"  onclick="pulldemo(this);" name="demos:84"/></li>'+
+                    '<li><img src="/static/img/tinys/intersect.png"  onclick="pulldemo(this);" name="demos:81"/></li>'+
+                    '<li><img src="/static/img/tinys/launch.png"  onclick="pulldemo(this);" name="demos:85"/></li>'+
+                    '<li><img src="/static/img/tinys/linden.png"  onclick="pulldemo(this);" name="demos:87"/></li>'+
+                    '<li><img src="/static/img/tinys/logistic.png"  onclick="pulldemo(this);" name="demos:27"/></li>'+
+                    '<li><img src="/static/img/tinys/opacity.png"  onclick="pulldemo(this);" name="demos:6"/></li>'+    
+                    '<li><img src="/static/img/tinys/peak.png"  onclick="pulldemo(this);" name="demos:2"/></li>'+
+                    '<li><img src="/static/img/tinys/sine.png" onclick="pulldemo(this);" name="demos:18"/></li>'+
+                    '<li><img src="/static/img/tinys/walk.png" onclick="pulldemo(this);" name="demos:70"/></li>'+                                                              
+                '</ul>'+
+            '</div>';
+            
+    $('#'+gettab().id+' .graphbar').after(demodiv);
     }
 //     else { // not mainsite, ie embedded - disable autosize
 //         gl.autosize=false;
