@@ -339,6 +339,11 @@ function plot(divid, data, layout) {
         for(var i=0; i<gl.annotations.length; i++)
             annotation(gd,i);
     }
+
+    if(gettab().spinner !== undefined){
+        gd.spinner.stop();
+    }
+    $('#'+gd.id+' .spinner').remove();
 }
 
 // set display params per trace to default or provided value
@@ -636,143 +641,178 @@ function newPlot(divid, layout) {
     // some callers send this in already by dom element
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
     if(!layout) layout={};
-    // destroy any plot that already exists in this div
-    gd.innerHTML='';
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
-    if(gd.mainsite) {
-        // ------------------------------------------------------------ graphing toolbar
-        var menudiv =
-            '<div class="graphbar btn-toolbar">'+
-                // file
-                '<div class="btn-group graphbar_drop">'+
-                    '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
-                        '<span class="pull-left">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_036_file.png"/>'+
-                            '&nbsp;File&nbsp;'+
-                        '</span>'+
-                        '<span class="caret pull-left"></span>'+
-                    '</a>'+
-                    '<ul class="dropdown-menu pull-left">'+
-                        '<li><a onclick="saveGraph();">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>'+
-                            '&nbsp;Save</a>'+
-                        '</li>'+
-                        '<li><a onclick="if(gettab().fid!==undefined){gettab().fid=\'\';}saveGraph();">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_copy.png"/>'+
-                            '&nbsp;Save as Copy</a>'+
-                        '</li>'+
-                        '<li class="dropdown-submenu">'+
-                            '<a tabindex="-1" href="#">'+
-                                '<img src="/static/bootstrap/img/png/glyphicons_200_download.png"></img>'+
-                                '&nbsp;Export Graph'+
-                            '</a>'+
-                            '<ul class="dropdown-menu">'+
-                                '<li><a onclick="pdfexport(\'pdf\')">'+
-                                    '<img src="/static/img/pdf.png"/>'+
-                                    '&nbsp;Download PDF</a>'+
-                                '</li>'+
-                                '<li><a onclick="pdfexport(\'png\')">'+
-                                    '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>'+
-                                    '&nbsp;Download PNG</a>'+
-                                '</li>'+
-                            '</ul>'+
-                        '</li>'+
-                    '</ul>'+
-                '</div>'+
-                // show in grid
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>&nbsp;Data'+
-                    '</a>'+
-                '</div>'+
-                // upload a file
-                '<div class="btn-group">'+
-                    '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data">'+
-                        '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph">'+
-                            '<img src="/static/img/glyphicons_201_upload.png"></img>&nbsp;Upload'+
-                            '<input type="file" name="fileToUpload" id="fileToUpload'+gettab().id+'" onchange="fileSelected();"/>'+
-                        '</span>'+
-                    '</form>'+
-                '</div>'+
-                // style traces
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this)" rel="tooltip" title="Format Traces">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>&nbsp;Traces'+
-                    '</a>'+
-                '</div>'+
-                // style layout
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="layoutBox(gettab(),this)" rel="tooltip" title="Edit Layout">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_099_vector_path_all.png"/>&nbsp;Layout'+
-                    '</a>'+
-                '</div>'+
-                // style axes
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="axesBox(gettab(),this)" rel="tooltip" title="Style Axes">'+
-                        '<img src="/static/img/axes.png"/>&nbsp;Axes'+
-                    '</a>'+
-                '</div>'+
-                // legend
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="legendBox(gettab(),this)" rel="tooltip" title="Setup Legend">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>&nbsp;Legend'+
-                    '</a>'+
-                '</div>'+
-                // annotations
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="annotation(gettab())" rel="tooltip" title="New Text Annotation">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_309_comments.png"/>&nbsp;Annotation'+
-                    '</a>'+
-                '</div>'+
-                // dashboard
-                '<div class="btn-group">'+
-                    '<a class="btn toolbar_anchor" onclick="showurls()" rel="tooltip" title="Graph Dashboard">'+
-                        '<img src="/static/bootstrap/img/png/glyphicons_331_dashboard.png"/>&nbsp;Dash'+
-                    '</a>'+
-                '</div>'+
-                // share
-                '<div class="btn-group">'+
-                    '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph by URL">'+
-                        '<img src="/static/img/lil_share_white.png"/>&nbsp;Share'+
-                    '</a>'+
-                '</div>'+
-                // help
-                '<div class="btn-group graphbar_drop">'+
-                    '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
-                        '<span class="pull-left">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"></img>'+
-                            '&nbsp;Help&nbsp;'+
-                        '</span>'+
-                        '<span class="caret pull-left"></span>'+
-                    '</a>'+
-                    '<ul class="dropdown-menu pull-left">'+
-                        '<li><a href="/gallery" target="_blank">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_154_show_big_thumbnails.png"/>'+
-                            '&nbsp;Graph Gallery</a>'+
-                        '</li>'+
-                        '<li><a onclick="litebox()">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_064_lightbulb.png"/>'+
-                            '&nbsp;Graph Tips</a>'+
-                        '</li>'+
-                        '<li><a href="/33">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_220_play_button.png"/>'+
-                            '&nbsp;Graph Demo</a>'+
-                        '</li>'+
-                        '<li><a href="/faq" target="_blank">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_194_circle_question_mark.png"/>'+
-                            '&nbsp;FAQ</a>'+
-                        '</li>'+
-                    '</ul>'+
-                '</div>'+
-	        '</div>';
-        $(gd).prepend(menudiv);
-        $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
+    // destroy any plot that already exists in this div
+    // first check if we can save the toolbars
+    if($(gd).children('.graphbar').length==1 &&
+            $(gd).children('.demobar').length==1 &&
+            $(gd).children('svg').length==1 &&
+            $(gd).children().length==3) {
+        $(gd).children('svg').remove();
     }
-//     else { // not mainsite, ie embedded - disable autosize
-//         gl.autosize=false;
-//     }
+    else { // not the right children (probably none, but in case something goes wrong redraw all)
+        gd.innerHTML='';
+        if(gd.mainsite) {
+            // ------------------------------------------------------------ graphing toolbar
+            var menudiv =
+                '<div class="graphbar btn-toolbar">'+
+                    // file
+                    '<div class="btn-group graphbar_drop">'+
+                        '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
+                            '<span class="pull-left">'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_036_file.png"/>'+
+                                '&nbsp;File&nbsp;'+
+                            '</span>'+
+                            '<span class="caret pull-left"></span>'+
+                        '</a>'+
+                        '<ul class="dropdown-menu pull-left">'+
+                            '<li><a onclick="saveGraph();">'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>'+
+                                '&nbsp;Save</a>'+
+                            '</li>'+
+                            '<li><a onclick="if(gettab().fid!==undefined){gettab().fid=\'\';}saveGraph();">'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_copy.png"/>'+
+                                '&nbsp;Save as Copy</a>'+
+                            '</li>'+
+                            '<li class="dropdown-submenu">'+
+                                '<a tabindex="-1" href="#">'+
+                                    '<img src="/static/bootstrap/img/png/glyphicons_200_download.png"></img>'+
+                                    '&nbsp;Export Graph'+
+                                '</a>'+
+                                '<ul class="dropdown-menu">'+
+                                    '<li><a onclick="pdfexport(\'pdf\')">'+
+                                        '<img src="/static/img/pdf.png"/>'+
+                                        '&nbsp;Download PDF</a>'+
+                                    '</li>'+
+                                    '<li><a onclick="pdfexport(\'png\')">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>'+
+                                        '&nbsp;Download PNG</a>'+
+                                    '</li>'+
+                                '</ul>'+
+                            '</li>'+
+                        '</ul>'+
+                    '</div>'+
+                    // show in grid
+                    '<div class="btn-group">'+
+                        '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>&nbsp;Data'+
+                        '</a>'+
+                    '</div>'+
+                    // upload a file
+                    '<div class="btn-group">'+
+                        '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data">'+
+                            '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph">'+
+                                '<img src="/static/img/glyphicons_201_upload.png"></img>&nbsp;Upload'+
+                                '<input type="file" name="fileToUpload" id="fileToUpload'+gd.id+'" onchange="fileSelected();"/>'+
+                            '</span>'+
+                        '</form>'+
+                    '</div>'+
+                    // style traces
+                    '<div class="btn-group">'+
+                        '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this)" rel="tooltip" title="Format Traces">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>&nbsp;Traces'+
+                        '</a>'+
+                    '</div>'+
+                    // style layout
+                    '<div class="btn-group">'+
+                        '<a class="btn toolbar_anchor" onclick="layoutBox(gettab(),this)" rel="tooltip" title="Edit Layout">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_099_vector_path_all.png"/>&nbsp;Layout'+
+                        '</a>'+
+                    '</div>'+
+                    // style axes
+                    '<div class="btn-group">'+
+                        '<a class="btn toolbar_anchor" onclick="axesBox(gettab(),this)" rel="tooltip" title="Style Axes">'+
+                            '<img src="/static/img/axes.png"/>&nbsp;Axes'+
+                        '</a>'+
+                    '</div>'+
+                    // legend
+                    '<div class="btn-group">'+
+                        '<a class="btn toolbar_anchor" onclick="legendBox(gettab(),this)" rel="tooltip" title="Setup Legend">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>&nbsp;Legend'+
+                        '</a>'+
+                    '</div>'+
+                    // annotations
+                    '<div class="btn-group">'+
+                        '<a class="btn toolbar_anchor" onclick="annotation(gettab())" rel="tooltip" title="New Text Annotation">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_309_comments.png"/>&nbsp;Annotation'+
+                        '</a>'+
+                    '</div>'+
+                    // demos
+                    '<div class="btn-group">'+
+                        '<a class="btn toolbar_anchor" onclick="demos(this);" rel="tooltip" title="Check out some demos">'+
+                            '<img src="/static/img/glyphicons/png/glyphicons_019_cogwheel.png"/>&nbsp;Demos'+
+                        '</a>'+
+                    '</div>'+
+                    // dashboard
+                    '<div class="btn-group">'+
+                        '<a class="btn toolbar_anchor" onclick="showurls()" rel="tooltip" title="Graph Dashboard">'+
+                            '<img src="/static/bootstrap/img/png/glyphicons_331_dashboard.png"/>&nbsp;Dash'+
+                        '</a>'+
+                    '</div>'+
+                    // share
+                    '<div class="btn-group">'+
+                        '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph by URL">'+
+                            '<img src="/static/img/lil_share_white.png"/>&nbsp;Share'+
+                        '</a>'+
+                    '</div>'+
+                    // help
+                    '<div class="btn-group graphbar_drop">'+
+                        '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
+                            '<span class="pull-left">'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"></img>'+
+                                '&nbsp;Help&nbsp;'+
+                            '</span>'+
+                            '<span class="caret pull-left"></span>'+
+                        '</a>'+
+                        '<ul class="dropdown-menu pull-left">'+
+                            '<li><a href="/gallery" target="_blank">'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_154_show_big_thumbnails.png"/>'+
+                                '&nbsp;Graph Gallery</a>'+
+                            '</li>'+
+                            '<li><a onclick="litebox()">'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_064_lightbulb.png"/>'+
+                                '&nbsp;Graph Tips</a>'+
+                            '</li>'+
+                            '<li><a href="/33">'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_220_play_button.png"/>'+
+                                '&nbsp;Graph Demo</a>'+
+                            '</li>'+
+                            '<li><a href="/faq" target="_blank">'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_194_circle_question_mark.png"/>'+
+                                '&nbsp;FAQ</a>'+
+                            '</li>'+
+                        '</ul>'+
+                    '</div>'+
+                '</div>';
+            $(gd).prepend(menudiv);
+            $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
+
+            var demodiv=
+                '<div class="demobar" style="display:'+(gd.demos ? 'block' : 'none')+';">'+
+                    '<ul>'+
+                        '<li><img src="/static/img/tinys/3dgoggles.png" onclick="pulldemo(this);" name="demos:79"/></li>'+
+                        '<li><img src="/static/img/tinys/andrews.png"  onclick="pulldemo(this);" name="demos:10"/></li>'+
+                        '<li><img src="/static/img/tinys/hopf.png"  onclick="pulldemo(this);" name="demos:82"/></li>'+
+                        '<li><img src="/static/img/tinys/intel.png"  onclick="pulldemo(this);" name="demos:84"/></li>'+
+                        '<li><img src="/static/img/tinys/intersect.png"  onclick="pulldemo(this);" name="demos:81"/></li>'+
+                        '<li><img src="/static/img/tinys/launch.png"  onclick="pulldemo(this);" name="demos:91"/></li>'+
+                        '<li><img src="/static/img/tinys/linden.png"  onclick="pulldemo(this);" name="demos:87"/></li>'+
+                        '<li><img src="/static/img/tinys/logistic.png"  onclick="pulldemo(this);" name="demos:27"/></li>'+
+                        '<li><img src="/static/img/tinys/opacity.png"  onclick="pulldemo(this);" name="demos:6"/></li>'+
+                        '<li><img src="/static/img/tinys/peak.png"  onclick="pulldemo(this);" name="demos:2"/></li>'+
+                        '<li><img src="/static/img/tinys/sine.png" onclick="pulldemo(this);" name="demos:18"/></li>'+
+                        '<li><img src="/static/img/tinys/walk.png" onclick="pulldemo(this);" name="demos:89"/></li>'+
+                    '</ul>'+
+                '</div>';
+
+            $('#'+gd.id+' .graphbar').after(demodiv);
+        }
+    //     else { // not mainsite, ie embedded - disable autosize
+    //         gl.autosize=false;
+    //     }
+    }
 
     // Get the layout info (this is the defaults)
     gd.layout={title:'Click to enter Plot title',
