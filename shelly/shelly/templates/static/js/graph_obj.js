@@ -276,7 +276,6 @@ function plot(divid, data, layout) {
             ya.range=[a1*ydr[1]-a0*ydr[0],a1*ydr[0]-a0*ydr[1]];
         else
             ya.range=[a1*ydr[0]-a0*ydr[1],a1*ydr[1]-a0*ydr[0]];
-//         ya.range=[1.05*ydr[0]-0.05*ydr[1],1.05*ydr[1]-0.05*ydr[0]];
     }
 
     doTicks(gd);
@@ -290,7 +289,6 @@ function plot(divid, data, layout) {
         var xf=function(d){return d3.round(xa.b+xa.m*d.x+vb.x,2)};
         var yf=function(d){return d3.round(ya.b+ya.m*d.y+vb.y,2)};
         // now plot the data
-        // TODO: to start we redraw each time. later we should be able to do way better on redraws...
         gp.selectAll('g.trace').remove();
 
         var traces = gp.selectAll('g.trace')
@@ -350,10 +348,12 @@ function setStyles(gd) {
         // mergeattr puts single values into cd[0].t, and all others into each individual point
         mergeattr(cd,gdc.visible,'visible',[true]);
         mergeattr(cd,gdc.mode,'mode',[(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers']);
+        mergeattr(cd,gdc.opacity,'op',[1]);
         mergeattr(cd,gdc.line.dash,'ld',['solid']);
         mergeattr(cd,gdc.line.color,'lc',[gdc.marker.color, defaultColors[c % defaultColors.length]]);
         mergeattr(cd,gdc.line.width,'lw',[2]);
         mergeattr(cd,gdc.marker.symbol,'mx',['circle']);
+        mergeattr(cd,gdc.marker.opacity,'mo',[1]);
         mergeattr(cd,gdc.marker.size,'ms',[6]);
         mergeattr(cd,gdc.marker.color,'mc',[cd[0].t.lc]);
         mergeattr(cd,gdc.marker.line.color,'mlc',[((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000')]);
@@ -364,8 +364,9 @@ function setStyles(gd) {
 }
 
 function applyStyle(gp) {
+    gp.selectAll('g.trace')
+        .call(traceStyle);
     gp.selectAll('g.points')
-        .call(pointGroupStyle)
         .each(function(d){d3.select(this).selectAll('path')
             .call(pointStyle,d[0].t);})
     gp.selectAll('g.trace polyline')
@@ -395,9 +396,34 @@ function mergeattr(o,a,attr,defaults) {
 
 // styling functions for plot elements
 
+function RgbOnly(cstr) {
+    var c = tinycolor(cstr).toRgb();
+    return 'rgb('+Math.round(c.r)+', '+Math.round(c.g)+', '+Math.round(c.b)+')';
+}
+
+function opacityOnly(cstr) { return tinycolor(cstr).alpha }
+
+function strokeColor(s,c) {
+    s.attr('stroke',RgbOnly(c))
+     .style('stroke-opacity',opacityOnly(c));
+}
+
+function fillColor(s,c) {
+    s.style('fill',RgbOnly(c))
+     .style('fill-opacity',opacityOnly(c));
+}
+
+function setPosition(s,x,y) { s.attr('x',x).attr('y',y) }
+function setSize(s,w,h) { s.attr('width',w).attr('height',h) }
+function setRect(s,x,y,w,h) { s.call(setPosition,x,y).call(setSize,w,h) }
+
+function traceStyle(s) {
+    s.style('opacity',function(d){return d[0].t.op});
+}
+
 function lineGroupStyle(s) {
     s.attr('stroke-width',function(d){return d[0].t.lw})
-    .attr('stroke',function(d){return d[0].t.lc;})
+    .each(function(d){d3.select(this).call(strokeColor,d[0].t.lc)})
     .style('fill','none')
     .attr('stroke-dasharray',function(d){
         var da=d[0].t.ld,lw=Math.max(d[0].t.lw,3);
@@ -411,53 +437,54 @@ function lineGroupStyle(s) {
     });
 }
 
-function pointGroupStyle(s) {
-    s.each(function(d) {
-        var w=d[0].t.mlw;
-        d3.select(this).attr('stroke-width',w);
-        if(w) d3.select(this).attr('stroke',d[0].t.mlc);
-    })
-    .style('fill',function(d){return d[0].t.mc});
-}
-
 // apply the marker to each point
 // draws the marker with diameter roughly markersize, centered at 0,0
 function pointStyle(s,t) {
     s.attr('d',function(d){
-        var r=((d.ms+1 || t.ms+1 || d.t.ms+1)-1)/2,rt=r*2/Math.sqrt(3),rc=r/3,rd=r*Math.sqrt(2);
-        var x=(d.mx || t.mx || d.t.mx);
+        var r=((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/2,
+            rt=String(r*2/Math.sqrt(3)),
+            rc=String(r/3),
+            rd=String(r*Math.sqrt(2)),
+            r2=String(r/2);
+        r=String(r)
+        var x=(d.mx || t.mx || (d.t ? d.t.mx : ''));
         if(x=='square')
-            return 'M'+r+','+r+'H'+(-r)+'V'+(-r)+'H'+r+'Z';
+            return 'M'+r+','+r+'H-'+r+'V-'+r+'H'+r+'Z';
         if(x=='diamond')
-            return 'M'+rd+',0L0,'+rd+'L'+(-rd)+',0L0,'+(-rd)+'Z';
+            return 'M'+rd+',0L0,'+rd+'L-'+rd+',0L0,-'+rd+'Z';
         if(x=='triangle-up')
-            return 'M'+(-rt)+','+(r/2)+'H'+rt+'L0,'+(-r)+'Z';
+            return 'M-'+rt+','+r2+'H'+rt+'L0,-'+r+'Z';
         if(x=='triangle-down')
-            return 'M'+(-rt)+','+(-r/2)+'H'+rt+'L0,'+r+'Z';
+            return 'M-'+rt+',-'+r2+'H'+rt+'L0,'+r+'Z';
         if(x=='triangle-right')
-            return 'M'+(-r/2)+','+(-rt)+'V'+rt+'L'+r+',0Z';
+            return 'M-'+r2+',-'+rt+'V'+rt+'L'+r+',0Z';
         if(x=='triangle-left')
-            return 'M'+(r/2)+','+(-rt)+'V'+rt+'L'+(-r)+',0Z';
+            return 'M'+r2+',-'+rt+'V'+rt+'L-'+r+',0Z';
         if(x=='cross')
-            return 'M'+r+','+rc+'H'+rc+'V'+r+'H'+(-rc)+'V'+rc+'H'+(-r)+'V'+(-rc)+'H'+(-rc)+'V'+(-r)+'H'+rc+'V'+(-rc)+'H'+r+'Z'
+            return 'M'+r+','+rc+'H'+rc+'V'+r+'H-'+rc+'V'+rc+'H-'+r+'V-'+rc+'H-'+rc+'V-'+r+'H'+rc+'V-'+rc+'H'+r+'Z'
         // circle is default
-        return 'M'+r+',0A'+r+','+r+' 0 1,1 0,'+(-r)+'A'+r+','+r+' 0 0,1 '+r+',0Z';
-
+        return 'M'+r+',0A'+r+','+r+' 0 1,1 0,-'+r+'A'+r+','+r+' 0 0,1 '+r+',0Z';
     })
+    .style('opacity',function(d){return (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1})
+    .each(function(d){
+        var w = (d.mlw+1 || t.mlw+1 || (d.t ? d.t.mlw : 0)+1) - 1,
+            p = d3.select(this);
+        p.attr('stroke-width',w)
+            .call(fillColor,d.mc || t.mc || (d.t ? d.t.mc : ''));
+        if(w)
+            p.call(strokeColor,d.mlc || t.mlc || (d.t ? d.t.mlc : ''))
+    });
 }
 
-// TODO: rework plot and newplot so restyle and relayout don't have to completely redraw
-// change style in an existing plot
 // astr is the attr name, like 'marker.symbol'
 // val is the new value to use
 // traces is a trace number or an array of trace numbers to change (blank for all)
 function restyle(gd,astr,val,traces) {
     gd.changed = true;
     if($.isNumeric(traces)) traces=[traces];
-    else if(!$.isArray(traces) || !traces.length) {
-        traces=[];
-        for(var i=0; i<gd.data.length; i++) traces.push(i);
-    }
+    else if(!$.isArray(traces) || !traces.length)
+        traces=gd.data.map(function(v,i){return i});
+
     var aa=astr.split('.');
     for(i=0; i<traces.length; i++) {
         var cont=gd.data[traces[i]];
@@ -479,7 +506,6 @@ function restyle(gd,astr,val,traces) {
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
     gd.changed = true;
-//     console.log('relayout',gd,astr,val);
     var gl = gd.layout, aobj = {};
     if(typeof astr == 'string')
         aobj[astr] = val;
@@ -553,8 +579,7 @@ function relayout(gd,astr,val) {
 }
 
 // convert a string (such as 'xaxis.range[0]')
-// representing a property of nested object o
-// into set and get methods
+// representing a property of nested object o into set and get methods
 function nestedProperty(o,s) {
     var cont = o,
         aa = s.split('.');
@@ -655,7 +680,7 @@ function newPlot(divid, layout) {
                             '</ul>'+
                         '</li>'+
                     '</ul>'+
-                '</div>'+                
+                '</div>'+
                 // show in grid
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
@@ -670,7 +695,7 @@ function newPlot(divid, layout) {
                             '<input type="file" name="fileToUpload" id="fileToUpload'+gettab().id+'" onchange="fileSelected();"/>'+
                         '</span>'+
                     '</form>'+
-                '</div>'+            
+                '</div>'+
                 // style traces
                 '<div class="btn-group">'+
                     '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this)" rel="tooltip" title="Format Traces">'+
@@ -740,7 +765,7 @@ function newPlot(divid, layout) {
                             '&nbsp;FAQ</a>'+
                         '</li>'+
                     '</ul>'+
-                '</div>'+                
+                '</div>'+
 	        '</div>';
         $(gd).prepend(menudiv);
         $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
@@ -773,7 +798,6 @@ function newPlot(divid, layout) {
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff' };
         // TODO: add font size controls, and label positioning
-        // TODO: add legend controls
 
     // look for elements of gd.layout to replace with the equivalent elements in layout
     gd.layout=updateObject(gd.layout,layout);
@@ -799,21 +823,16 @@ function newPlot(divid, layout) {
 
     // Make the graph containers
     gd.paper=gd3.append('svg')
-        .attr('width',gl.width)
-        .attr('height',gl.height)
-        .style('background-color',gl.paper_bgcolor);
-//         .attr('xmlns',"http://www.w3.org/2000/svg") // TODO: can't get marker defs to work... this didn't do it.
-//         .attr('xmlns:xlink',"http://www.w3.org/1999/xlink")
-//         .attr('version','1.1');
+        .call(setSize, gl.width, gl.height);
+    gd.paperbg=gd.paper.append('rect')
+        .call(setRect, 0, 0, gl.width, gl.height)
+        .call(fillColor, gl.paper_bgcolor);
     gd.plotwidth=gl.width-ml-mr;
     gd.plotheight=gl.height-mt-mb;
     gd.plotbg=gd.paper.append('rect')
-        .attr('x',ml-mp)
-        .attr('y',mt-mp)
-        .attr('width',gd.plotwidth+2*mp)
-        .attr('height',gd.plotheight+2*mp)
-        .style('fill',gl.plot_bgcolor)
-        .attr('stroke','black')
+        .call(setRect, ml-mp, mt-mp, gd.plotwidth+2*mp, gd.plotheight+2*mp)
+        .call(fillColor, gl.plot_bgcolor)
+        .attr('stroke','black') //TODO: axis colors, thicknesses, mirror on and off
         .attr('stroke-width',1);
 
     // make the ticks, grids, and titles
@@ -826,10 +845,7 @@ function newPlot(divid, layout) {
 
     // Second svg (plot) is for the data
     gd.plot=gd.paper.append('svg')
-        .attr('x',ml)
-        .attr('y',mt)
-        .attr('width',gd.plotwidth)
-        .attr('height',gd.plotheight)
+        .call(setRect, ml, mt, gd.plotwidth, gd.plotheight)
         .attr('preserveAspectRatio','none')
         .style('fill','none');
     gd.viewbox={x:0,y:0};
@@ -883,10 +899,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         cursor = (ns+ew=='nsew') ? 'move' : (ns+ew).toLowerCase()+'-resize',
         dragger = gd.paper.append('rect').classed('drag',true)
             .classed(ns+ew+'drag',true)
-            .attr('x',x)
-            .attr('y',y)
-            .attr('width',w)
-            .attr('height',h)
+            .call(setRect, x,y,w,h)
             .style('cursor',cursor)
           .node();
 
@@ -1115,8 +1128,7 @@ function makeTitles(gd,title) {
             var t=titles[k];
             gd.paper.select('.'+k).remove();
             var el=gd.paper.append('text').attr('class',k)
-                .attr('x',t.x)
-                .attr('y',t.y)
+                .call(setPosition, t.x, t.y)
                 .attr('font-size',t.fontSize)
                 .attr('text-anchor','middle')
                 .attr('transform',t.transform.replace('x',t.x).replace('y',t.y))
@@ -1188,18 +1200,20 @@ function legend(gd) {
         bgcolor = gl.legend.bgcolor || gl.paper_bgcolor || '#fff';
     gd.legend.append('rect')
         .attr('class','bg')
-        .attr('stroke',bordercolor)
+        .call(strokeColor,bordercolor)
         .attr('stroke-width',borderwidth)
-        .style('fill',bgcolor)
-        .attr('x',borderwidth/2)
-        .attr('y',borderwidth/2);
+        .call(fillColor,bgcolor)
+        .call(setPosition, borderwidth/2, borderwidth/2);
 
     var traces = gd.legend.selectAll('g.traces')
         .data(ldata);
     traces.enter().append('g').attr('class','trace');
 
-    traces.each(legendLines);
-    traces.each(legendPoints);
+    traces.append('g')
+        .call(traceStyle)
+        .each(legendLines)
+        .each(legendPoints);
+
     var tracetext=traces.call(legendText).selectAll('text');
     if(gd.mainsite)
         tracetext.on('click',function(){autoGrowInput(gd,this)});
@@ -1303,13 +1317,10 @@ function legend(gd) {
     if(ly+legendheight>gl.height) ly=gl.height-legendheight;
     if(ly<0) ly=0;
 
-    gd.legend.attr('x',lx)
-        .attr('y',ly)
-        .attr('width',legendwidth)
-        .attr('height',legendheight);
+    gd.legend.call(setRect, lx, ly, legendwidth, legendheight);
     gd.legend.selectAll('.bg')
-        .attr('width',legendwidth-borderwidth)
-        .attr('height',legendheight-borderwidth);
+        .call(setSize, legendwidth-borderwidth, legendheight-borderwidth);
+
     // user dragging the legend
     // aligns left/right/center on resize or new text if drag pos
     // is in left 1/3, middle 1/3, right 1/3
@@ -1330,8 +1341,7 @@ function legend(gd) {
                 dy = e2.clientY-e.clientY;
             if(Math.abs(dx)<MINDRAG) dx=0;
             if(Math.abs(dy)<MINDRAG) dy=0;
-            el3.attr('x',x0+dx)
-                .attr('y',y0+dy);
+            el3.call(setPosition, x0+dx, y0+dy);
             var pbb = gd.paper.node().getBoundingClientRect();
             // drag to within a couple px of edge to take the legend outside the plot
             if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG))
@@ -1445,24 +1455,21 @@ function annotation(gd,index,opt,value) {
 
     var ann = gd.paper.append('svg')
         .attr('class','annotation')
-        .attr('x',0)
-        .attr('y',0)
+        .call(setPosition,0,0)
         .attr('data-index',String(index));
 
     var borderwidth = options.borderwidth;
     var annbg = ann.append('rect')
         .attr('class','bg')
-        .attr('stroke',options.bordercolor || 'rgba(0,0,0,0)')
+        .call(strokeColor,options.bordercolor || 'rgba(0,0,0,0)')
         .attr('stroke-width',borderwidth)
-        .style('fill',options.bgcolor)
-        .attr('x',borderwidth/2+1)
-        .attr('y',borderwidth/2+1);
+        .call(fillColor,options.bgcolor)
+        .call(setPosition, borderwidth/2+1, borderwidth/2+1);
 
     if(!options.align) options.align='center';
     var anntext = ann.append('text')
         .attr('class','annotation')
-        .attr('x',0)
-        .attr('y',0)
+        .call(setPosition,0,0)
         .attr('text-anchor',{left:'start', center:'middle', right:'end'}[options.align])
         .attr('font-size',12);
     styleText(anntext.node(),options.text);
@@ -1536,14 +1543,9 @@ function annotation(gd,index,opt,value) {
         borderfull = borderwidth+borderpad+1,
         outerwidth = annwidth+2*borderfull,
         outerheight = annheight+2*borderfull;
-    ann.attr('x',x-outerwidth/2)
-        .attr('y',y-outerheight/2)
-        .attr('width',outerwidth)
-        .attr('height',outerheight);
-    annbg.attr('width',annwidth+borderwidth+2*borderpad)
-        .attr('height',annheight+borderwidth+2*borderpad);
-    anntext.attr('x',paperbb.left-atbb.left+borderfull)
-        .attr('y',paperbb.top-atbb.top+borderfull)
+    ann.call(setRect, x-outerwidth/2, y-outerheight/2, outerwidth, outerheight);
+    annbg.call(setSize, annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
+    anntext.call(setPosition, paperbb.left-atbb.left+borderfull, paperbb.top-atbb.top+borderfull)
       .selectAll('tspan')
         .attr('x',paperbb.left-atbb.left+borderfull);
 
@@ -1596,7 +1598,7 @@ function annotation(gd,index,opt,value) {
                 .attr('data-index',String(index))
                 .attr('d','M'+ax0+','+ay0+'L'+ax+','+ay)
                 .attr('stroke-width',strokewidth)
-                .attr('stroke',options.arrowcolor || options.bordercolor || '#000');
+                .call(strokeColor,options.arrowcolor || options.bordercolor || '#000');
             arrowhead(arrow,options.arrowhead,'end',options.arrowsize)
             var arrowdrag = arrowgroup.append('path')
                 .attr('class','annotation anndrag')
@@ -1604,8 +1606,8 @@ function annotation(gd,index,opt,value) {
                 .attr('d','M3,3H-3V-3H3ZM0,0L'+(ax0-ax)+','+(ay0-ay))
                 .attr('transform','translate('+ax+','+ay+')')
                 .attr('stroke-width',strokewidth+6)
-                .attr('stroke','rgba(0,0,0,0)')
-                .style('fill','rgba(0,0,0,0)');
+                .call(strokeColor,'rgba(0,0,0,0)')
+                .call(fillColor,'rgba(0,0,0,0)');
             arrowdrag.node().onmousedown = function(e) {
                 if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
 
@@ -1618,7 +1620,7 @@ function annotation(gd,index,opt,value) {
                     if(Math.abs(dx)<MINDRAG) dx=0;
                     if(Math.abs(dy)<MINDRAG) dy=0;
                     arrowgroup.attr('transform','translate('+dx+','+dy+')');
-                    ann.attr('x',annx0+dx).attr('y',anny0+dy);
+                    ann.call(setPosition, annx0+dx, anny0+dy);
                     if(options.ref=='paper') {
                         xf=(ax+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0));
                         yf=(ay+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0));
@@ -1661,8 +1663,7 @@ function annotation(gd,index,opt,value) {
                 dy = e2.clientY-e.clientY;
             if(Math.abs(dx)<MINDRAG) dx=0;
             if(Math.abs(dy)<MINDRAG) dy=0;
-            el3.attr('x',x0+dx)
-                .attr('y',y0+dy);
+            el3.call(setPosition, x0+dx, y0+dy);
             var csr='pointer';
             if(options.showarrow) {
                 xf = options.ax+dx;
@@ -1721,15 +1722,13 @@ function annotation(gd,index,opt,value) {
 // mag is magnification vs. default (default 1)
 function arrowhead(el3,style,ends,mag) {
     var el = el3.node();
-        s = [
-        'M-1,-2V2L1,0Z',
-        'M-2,-2V2L2,0Z',
-        'M-2,-2L0,0L-2,2L2,0Z',
-        'M-2.2,-2.2L0,0L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',
-        'M-4.2,-2.1L0,0L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',
-        'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',
-        'M2,2V-2H-2V2Z'
-    ][style-1];
+        s = ['M-1,-2V2L1,0Z',
+            'M-2,-2V2L2,0Z',
+            'M-2,-2L0,0L-2,2L2,0Z',
+            'M-2.2,-2.2L0,0L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',
+            'M-4.2,-2.1L0,0L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',
+            'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',
+            'M2,2V-2H-2V2Z'][style-1];
     if(!s) return;
     if(typeof ends != 'string' || !ends) ends = 'end';
 
@@ -1750,12 +1749,14 @@ function arrowhead(el3,style,ends,mag) {
     var drawhead = function(p,q) {
         var rot = Math.atan2(p.y-q.y,p.x-q.x)*180/Math.PI,
             scale = (el3.attr('stroke-width') || 1)*(mag||1),
-            stroke = el3.attr('stroke') || '#000';
+            stroke = el3.attr('stroke') || '#000',
+            opacity = el3.style('stroke-opacity') || 1;
         if(style>5) rot=0; // don't rotate square or circle
         d3.select(el.parentElement).append('path')
             .attr('class',el3.attr('class'))
             .attr('data-index',el3.attr('data-index'))
             .style('fill',stroke)
+            .style('fill-opacity',opacity)
             .attr('stroke-width',0)
             .attr('d',s)
             .attr('transform','translate('+p.x+','+p.y+')rotate('+rot+')scale('+scale+')');
@@ -1787,7 +1788,6 @@ function dragClear(gd) {
     // explicitly disable dragging when a popover is present
     if($('.popover').length) return true;
     // because we cancel event bubbling, input won't receive its blur event.
-    // TODO: anything else we need to manually bubble? any more restricted way to cancel bubbling?
     if(gd.input) gd.input.trigger('blur');
     return false;
 }
@@ -1925,7 +1925,7 @@ function selectTrace(d,i){
             {mode:'lines',name:''},
             {mode:'markers',name:''},
             {mode:'lines+markers',name:''}]));
-    a1.append('<div class="newline"></div>');
+    slider(a1,'op',selectSlider,'Opacity',d[0].t.op,[0,1],2);
     styleBoxDrop(a1,'ld',selectAttr,'Line',d,
         tModify(d[0].t,[
             {mode:'lines',name:'',ld:'solid'},
@@ -1956,6 +1956,7 @@ function selectTrace(d,i){
             {mode:'markers',name:'',mx:'triangle-down'},
             {mode:'markers',name:'',mx:'triangle-left'},
             {mode:'markers',name:'',mx:'triangle-right'}]));
+    slider(a2,'mo',selectSlider,'... Opacity',d[0].t.mo,[0,1],2);
     pickColor(a2,'mc',selectColor,'... Color','Marker Color',d[0].t.mc);
     styleBoxDrop(a2,'ms',selectAttr,'... Size',d,
         tModify(d[0].t,[
@@ -2047,6 +2048,7 @@ function styleBoxDrop(s,cls,clickfn,title,d0,d){
         .style('position','relative')
         .style('top','2px') // why do I have to do this? better way?
         .append('g').attr('transform','translate(0,'+th/2+')')
+        .call(traceStyle)
         .each(legendLines)
         .each(legendPoints);
     opts.append('span')
@@ -2089,7 +2091,7 @@ function pickColor(s,cls,clickfn,title,title2,val){
         className: 'spectrum-'+cls,
         preferredFormat: 'rgb',
         maxSelectionSize: 16,
-        palette: [defaultColors,
+        palette: [defaultColors, // TODO: make these colors cleaner and nicer
             ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
             "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
             ["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
@@ -2109,10 +2111,40 @@ function pickColor(s,cls,clickfn,title,title2,val){
     });
 }
 
-var traceAttrs = {visible: 'visible', mode: 'mode',
+function slider(s,cls,clickfn,title,val,bounds,digits){
+    var valfmt = function(v){ return v/Math.pow(10,digits) }
+    var slider = $('<div class="pickslider">'+
+        ((title) ? ('<div class="pull-left editboxtitle">'+title+'</div>') : '')+
+        '<div class="slider"></div><div class="slider-val">'+valfmt(val*Math.pow(10,digits))+'</div>'+
+        '</div>').appendTo(s);
+    slider[0].attr=cls;
+    slider.find('.slider').slider({
+        min: bounds[0]*Math.pow(10,digits),
+        max: bounds[1]*Math.pow(10,digits),
+        value: val*Math.pow(10,digits),
+        slide: function(e,ui){
+            slider.find('.slider-val').html(valfmt(ui.value));
+        },
+        stop: function(e,ui){
+            var valout = valfmt(ui.value);
+            slider.find('.slider-val').html(valout);
+            clickfn(slider[0],valout);
+        }
+    });
+}
+
+var traceAttrs = {visible: 'visible', mode: 'mode', op: 'opacity',
     ld:'line.dash', lc:'line.color', lw:'line.width',
-    mx:'marker.symbol', ms:'marker.size', mc:'marker.color',
+    mx:'marker.symbol', mo: 'marker.opacity', ms:'marker.size', mc:'marker.color',
     mlc:'marker.line.color', mlw:'marker.line.width'};
+
+function selectSlider(el,val){
+    var popover = $(el).parents('.popover'),
+        selectedTrace = popover[0].selectedTrace,
+        astr=traceAttrs[el.attr];
+    restyle(popover[0].gd, astr, val, selectedTrace>=0 ? selectedTrace : null);
+    styleBoxTraces(popover, selectedTrace);
+}
 
 function selectPick(e) {
     console.log(e);
@@ -2154,7 +2186,6 @@ function legendPoints(d){
     if(d[0].t.mode.indexOf('markers')==-1) return;
     d3.select(this).append('g')
         .attr('class','legendpoints')
-        .call(pointGroupStyle)
       .selectAll('path')
         .data(function(d){return d})
       .enter().append('path')
@@ -2165,8 +2196,7 @@ function legendPoints(d){
 function legendText(s){
     return s.append('text')
         .attr('class',function(d,i){return 'legendtext text-'+i})
-        .attr('x',40)
-        .attr('y',0)
+        .call(setPosition, 40, 0)
         .attr('text-anchor','start')
         .attr('font-size',12)
         .each(function(d){styleText(this,d[0].t.name,d[0].t.noretrieve)});
@@ -2398,7 +2428,7 @@ function layoutSelectPick(e) {
     if($(this).hasClass('disabled'))
         return;
     var popover = $(this).parents('.popover');
-    relayout(popover[0].gd, e.data.attr, e.data.val);
+    relayout(popover[0].gd, e.data.attr, e.data.val); //TODO: sometimes we're getting here after popover is destroyed?
     popover[0].redraw();
 }
 
@@ -2824,8 +2854,6 @@ function tickIncrement(x,dtick,axrev){
             [-0.301,0,0.301,0.699,1]:[-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
         var x2=x+(axrev ? -0.01 : 0.01);
         var frac=roundUp(mod(x2,1), tickset, axrev);
-//         if(axrev) frac=tickset[tickset.indexOf(frac)-2];
-//         if(frac<0) {x-=1; frac+=1;}
         return Math.floor(x2)+Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
     }
     else throw "unrecognized dtick "+String(dtick);
@@ -2850,8 +2878,6 @@ function tickFirst(a){
     else if(tType=='L')
         return Math.log(sRound((Math.pow(10,a.range[0])-a.tick0)/dt)*dt+a.tick0)/Math.LN10;
     else if(tType=='D') {
-//         return Math.floor(a.range[0])+roundUp(mod(a.range[0],1), (a.dtick=='D2')?
-//             [0.301,0.699,1]:[0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1]);
         var tickset=(a.dtick=='D2')?
             [-0.301,0,0.301,0.699,1]:[-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
         var frac=roundUp(mod(a.range[0],1), tickset, axrev);
@@ -2864,8 +2890,6 @@ function tickFirst(a){
 // px,py are the location on gd.paper
 // prefix is there so the x axis ticks can be dropped a line
 // a is the axis layout, x is the tick value
-// TODO: 1,2,3 superscripts are below all the others
-// TODO: move the axis labels away if they overlap the tick labels
 function tickText(gd, a, x){
     var fontSize=12; // TODO: add to layout
     var px=0, py=0;
@@ -2970,8 +2994,8 @@ function doTicks(gd,ax) {
     var ticks=gd.axislayer.selectAll('line.'+tcls).data(vals,datafn);
     if(a.ticks) {
         ticks.enter().append('line').classed(tcls,1).classed('ticks',1)
-            .attr('stroke', a.tickcolor ? a.tickcolor : '#000')
-            .attr('stroke-width', a.tickwidth ? a.tickwidth : 1)
+            .call(strokeColor, a.tickcolor || '#000')
+            .attr('stroke-width', a.tickwidth || 1)
             .attr('x1',t.x1)
             .attr('x2',t.x2)
             .attr('y1',t.y1)
@@ -2987,8 +3011,7 @@ function doTicks(gd,ax) {
     var yl=gd.axislayer.selectAll('text.'+tcls).data(vals,datafn);
     if(a.showticklabels) {
         yl.enter().append('text').classed(tcls,1)
-            .attr('x',tl.x)
-            .attr('y',tl.y)
+            .call(setPosition, tl.x, tl.y)
             .attr('font-size',function(d){return d.fontSize})
             .attr('text-anchor',tl.anchor)
             .each(function(d){styleText(this,d.text)});
@@ -3000,18 +3023,17 @@ function doTicks(gd,ax) {
 
     // grid
     // TODO: must be a better way to find & remove zero lines? this will fail when we get to manual ticks
-    var grid=gd.axislayer.selectAll('line.'+gcls).data(vals,datafn),
-        gridcolor = a.gridcolor ? a.gridcolor : '#ddd',
-        gridwidth = a.gridwidth ? a.gridwidth : 1;
+    var grid = gd.axislayer.selectAll('line.'+gcls).data(vals,datafn),
+        gridwidth = a.gridwidth || 1;
     if(a.showgrid!=false) {
         grid.enter().append('line').classed(gcls,1)
-            .attr('stroke', gridcolor)
+            .call(strokeColor, a.gridcolor || '#ddd')
             .attr('stroke-width', gridwidth)
             .attr('x1',g.x1)
             .attr('x2',g.x2)
             .attr('y1',g.y1)
             .attr('y2',g.y2)
-            .each(function(d) {if(!a.islog && !a.isdate && d.text=='0') d3.select(this).remove();});
+            .each(function(d) {if(a.zeroline && !a.islog && !a.isdate && d.text=='0') d3.select(this).remove();});
         grid.attr('transform',transfn);
         grid.exit().remove();
     }
@@ -3019,13 +3041,11 @@ function doTicks(gd,ax) {
         grid.remove();
 
     // zero line
-    var zl = gd.axislayer.selectAll('line.'+zcls).data(a.range[0]*a.range[1]<=0 ? [{x:0}] : []),
-        zlcolor = a.zerolinecolor ? a.zerolinecolor : '#000'
-        zlwidth = a.zerolinewidth ? a.zerolinewidth : gridwidth;
+    var zl = gd.axislayer.selectAll('line.'+zcls).data(a.range[0]*a.range[1]<=0 ? [{x:0}] : []);
     if(a.zeroline) {
         zl.enter().append('line').classed(zcls,1).classed('zl',1)
-            .attr('stroke', zlcolor)
-            .attr('stroke-width', zlwidth)
+            .call(strokeColor, a.zerolinecolor || '#000')
+            .attr('stroke-width', a.zerolinewidth || gridwidth)
             .attr('x1',g.x1)
             .attr('x2',g.x2)
             .attr('y1',g.y1)
@@ -3137,7 +3157,7 @@ function styleTextInner(s,n) {
                 else if(atl=='weight') ts.attr('font-weight',atv);
                 else if(atl=='size') ts.attr('font-size',atv);
                 else if(atl=='family') ts.attr('font-family',atv);
-                else if(atl=='color') ts.attr('fill',atv);
+                else if(atl=='color') ts.call(fillColor,atv);
             }
             styleTextInner(ts, n[i].childNodes);
         }
@@ -3161,11 +3181,11 @@ function shareGraph(divid){
         if(gd.changed==true){gd.fid='';}
     }
     if(gd.spinner===undefined){
-        var spinner=new Spinner(opts).spin(gd);   
+        var spinner=new Spinner(opts).spin(gd);
         gd.spinner=spinner;
-    }    
+    }
     if(gd.fid=='' || gd.fid===undefined){
-        saveGraph(gd,true); // second param is shareOnSave - calls showSharing modal after save if true 
+        saveGraph(gd,true); // second param is shareOnSave - calls showSharing modal after save if true
     }
     showiGraphModal(gd);
 }
@@ -3193,7 +3213,7 @@ function showiGraphModal(gd){
         document.getElementById("linktoshare").select();
     });
     if(gd.spinner!==undefined){gd.spinner.stop();}
-}    
+}
 
 // ------------------------------- graphToGrid
 
