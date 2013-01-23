@@ -1441,9 +1441,12 @@ function legend(gd) {
 
 // make or edit an annotation on the graph
 // annotations are stored in gd.layout.annotations, an array of objects
-// index can be non-numeric to simply add a new one
+// index can point to one item in this array,
+//  or non-numeric to simply add a new one
+//  or -1 to modify all existing
 // opt can be the full options object, or one key (to be set to value)
-// or undefined to simply redraw, or 'remove' to delete this annotation
+//  or undefined to simply redraw,
+//  or 'remove' to delete this annotation
 function annotation(gd,index,opt,value) {
     var gl = gd.layout,gm = gl.margin;
     if(!gl.annotations)
@@ -1452,13 +1455,18 @@ function annotation(gd,index,opt,value) {
         index = gl.annotations.length;
         gl.annotations.push({});
     }
+    else if(index==-1) {
+        for(var i=0; i<gl.annotations.length; i++) {annotation(gd,i,opt,value)}
+        return;
+    }
     // remove the existing annotation (and its record, if requested)
     gd.paper.selectAll('.annotation[data-index="'+index+'"]').remove();
     if(opt=='remove') {
         gl.annotations.splice(index,1);
-        for(var i=index; i<gl.annotations.length; i++)
+        for(var i=index; i<gl.annotations.length; i++) {
             gd.paper.selectAll('.annotation[data-index="'+(i+1)+'"]')
                 .attr('data-index',String(i));
+        }
         return;
     }
 
@@ -1485,13 +1493,14 @@ function annotation(gd,index,opt,value) {
     if(!options.bordercolor) options.bordercolor = '';
     if(!$.isNumeric(options.borderwidth)) options.borderwidth = 1;
     if(!options.bgcolor) options.bgcolor = 'rgba(0,0,0,0)';
-    if(!options.text) options.text='new text';
     if(!options.ref) options.ref='plot';
     if(options.showarrow!=false) options.showarrow=true;
     if(!$.isNumeric(options.borderpad)) options.borderpad=1;
+    if(!options.arrowwidth) options.arrowwidth = 0;
     if(!options.arrowcolor) options.arrowcolor = '';
     if(!$.isNumeric(options.arrowhead)) options.arrowhead=1;
     if(!$.isNumeric(options.arrowsize)) options.arrowsize=1;
+    if(!options.text) options.text=((options.showarrow && (options.text=='')) ? '' : 'new text');
 
     var ann = gd.paper.append('svg')
         .attr('class','annotation')
