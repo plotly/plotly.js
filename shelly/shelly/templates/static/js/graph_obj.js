@@ -340,7 +340,7 @@ function plot(divid, data, layout) {
             annotation(gd,i);
     }
 
-    if(gettab().spinner !== undefined){
+    if(gd.spinner !== undefined){
         gd.spinner.stop();
     }
     $('#'+gd.id+' .spinner').remove();
