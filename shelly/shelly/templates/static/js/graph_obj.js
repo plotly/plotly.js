@@ -340,10 +340,30 @@ function plot(divid, data, layout) {
             annotation(gd,i);
     }
 
-    if(gettab().spinner !== undefined){
-        gd.spinner.stop();
+    try{
+        if(gettab().spinner !== undefined){
+            gd.spinner.stop();
+        }
+        $('#'+gd.id+' .spinner').remove();
     }
-    $('#'+gd.id+' .spinner').remove();
+    catch(e){
+        console.log(e);
+    }
+}
+
+// ------------------------------------------------------------ gettab()
+// return the visible tab.
+// if tabtype is given, make sure it's the right type, otherwise make a new tab
+// if it's not a plot, also make sure it's empty, otherwise make a new tab
+// plots are special: if you bring new data in it will try to add it to the existing plot
+function gettab(tabtype,mode){
+    if(tabtype) console.log('gettab',tabtype,mode);
+    var td = $('.ui-tabs-panel:visible')[0];
+    if(tabtype){
+        if(!td || td.tabtype!=tabtype) td=addTab(tabtype);
+        else if(!td.empty && (td.tabtype!='plot' || mode=='new')) td=addTab(tabtype);
+    }
+    return td;
 }
 
 // set display params per trace to default or provided value
@@ -660,8 +680,11 @@ function newPlot(divid, layout) {
                 '<div id="menu-'+gettab().id+'" class="plotly-menu graphbar">'+
                     '<ol>'+
                         '<li>'+
-                            '<h2 data-subitems=6 style="padding-right:20px;" ><span>'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_036_file.png"/></span></h2>'+
+                            '<h2 data-subitems=6 >'+
+                            '<span>'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_036_file.png"/>'+
+                                '&nbsp;<img src="/static/img/dropleft.gif"/>'+
+                            '</span></h2>'+
                             '<div>'+
                                 '<span class="btn-group">'+
                                     '<a class="btn toolbar_anchor" onclick="saveGraph();" >'+
@@ -713,7 +736,11 @@ function newPlot(divid, layout) {
                             '</div>'+
                         '</li>'+
                         '<li>'+
-                            '<h2 data-subitems=5><span><img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/></span></h2>'+
+                            '<h2 data-subitems=5 >'+
+                            '<span>'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>'+
+                                '&nbsp;<img src="/static/img/dropleft.gif"/>'+
+                            '</span></h2>'+
                             '<div>'+
                             
                                 '<span class="btn-group">'+
@@ -755,7 +782,11 @@ function newPlot(divid, layout) {
                         '</li>'+
 
                         '<li>'+
-                            '<h2 data-subitems=2><span><img src="/static/bootstrap/img/png/glyphicons_194_circle_question_mark.png"/></span></h2>'+
+                            '<h2 data-subitems=2 >'+
+                            '<span>'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_194_circle_question_mark.png"/>'+
+                                '&nbsp;<img src="/static/img/dropleft.gif"/>'+
+                            '</span></h2>'+
                             '<div>'+
                             
                                 '<span class="btn-group">'+
@@ -776,24 +807,51 @@ function newPlot(divid, layout) {
                         '</li>'+
                         
                         '<li>'+
-                            '<h2 data-subitems=3><span><img src="/static/img/glyphicons/png/glyphicons_326_share.png"/></span></h2>'+
+                            '<h2 data-subitems=6 >'+
+                            '<span>'+
+                                '<img src="/static/img/glyphicons/png/glyphicons_326_share.png"/>'+
+                                '&nbsp;<img src="/static/img/dropleft.gif"/>'+
+                            '</span>'+
+                            '</h2>'+
                             '<div>'+
-                            
+
                                 '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="shareGraph(gettab());" rel="tooltip" title="Embed">'+
-                                        '<img src="/static/img/embed.png"/>'+
-                                        '&nbsp;Embed'+
+                                    '<a class="btn toolbar_anchor sharelink" onclick="shareGraph(gettab(),\'link\');" rel="tooltip" title="Share permalink">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_050_link.png"/>'+
+                                        '&nbsp;Link'+
                                     '</a>'+
                                 '</span>'+  
                                 
                                 '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="freezeImage()">'+
-                                        '<img src="/static/img/glyphicons/png/glyphicons_390_facebook.png"/>'+
+                                    '<a class="btn toolbar_anchor" onclick="shareGraph(gettab(),\'embed\');" rel="tooltip" title="Embed graph in your website">'+
+                                        '<img src="/static/img/embed.png"/>'+
+                                        '&nbsp;Embed'+
                                     '</a>'+
-                                '</span>'+
+                                '</span>'+ 
+                                
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="shareGraph(gettab(),\'image\');" rel="tooltip" title="Share graph image">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_011_camera.png"/>'+
+                                        '&nbsp;Image'+
+                                    '</a>'+
+                                '</span>'+                                
+                                
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="shareGraph(gettab(),\'tweet\');" rel="tooltip" title="Tweet graph">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_392_twitter.png"/>'+
+                                        '&nbsp;Tweet'+
+                                    '</a>'+
+                                '</span>'+                                
+                                
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="shareGraph(gettab(),\'facebook\');" rel="tooltip" title="Share graph on Facebook">'+
+                                        '<img src="/static/img/glyphicons/png/glyphicons_390_facebook.png"/>'+
+                                        '&nbsp;Fb'+
+                                    '</a>'+
+                                '</span>'+                                                                                       
                                                                                         
                                 '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="showurls()" rel="tooltip" title="Graph Dashboard">'+
+                                    '<a class="btn toolbar_anchor" onclick="showurls()" rel="tooltip" title="Manage graphs that you share">'+
                                         '<img src="/static/bootstrap/img/png/glyphicons_331_dashboard.png"/>'+
                                         '&nbsp;Dash'+
                                     '</a>'+
@@ -803,7 +861,7 @@ function newPlot(divid, layout) {
                         '</li>'+                        
                         
                         '<li>'+
-                            '<h2 data-subitems=1><span></span></h2>'+
+                            '<h2 data-subitems=1 style="border:none !important;"><span></span></h2>'+
                             '<div><span></span></div>'+
                         '</li>'+                        
                     '</ol>'+
