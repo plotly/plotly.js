@@ -349,23 +349,34 @@ function plot(divid, data, layout) {
 
 // set display params per trace to default or provided value
 function setStyles(gd) {
+    // merge object a (which may be an array or a single value) into cd...
+    // search the array defaults in case a is missing (and for a default val
+    // if some points of o are missing from a)
+    function mergeattr(a,attr,dflt) {
+        if($.isArray(a)) {
+            var l = Math.max(cd.length,a.length);
+            for(var i=0; i<l; i++) { cd[i][attr]=a[i] }
+            cd[0].t[attr] = dflt; // use the default for the trace-wide value
+        }
+        else { cd[0].t[attr] = (typeof a != 'undefined') ? a : dflt }
+    }
     for(var i in gd.calcdata){
         var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
         // mergeattr puts single values into cd[0].t, and all others into each individual point
-        mergeattr(cd,gdc.visible,'visible',[true]);
-        mergeattr(cd,gdc.mode,'mode',[(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers']);
-        mergeattr(cd,gdc.opacity,'op',[1]);
-        mergeattr(cd,gdc.line.dash,'ld',['solid']);
-        mergeattr(cd,gdc.line.color,'lc',[gdc.marker.color, defaultColors[c % defaultColors.length]]);
-        mergeattr(cd,gdc.line.width,'lw',[2]);
-        mergeattr(cd,gdc.marker.symbol,'mx',['circle']);
-        mergeattr(cd,gdc.marker.opacity,'mo',[1]);
-        mergeattr(cd,gdc.marker.size,'ms',[6]);
-        mergeattr(cd,gdc.marker.color,'mc',[cd[0].t.lc]);
-        mergeattr(cd,gdc.marker.line.color,'mlc',[((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000')]);
-        mergeattr(cd,gdc.marker.line.width,'mlw',[0]);
-        mergeattr(cd,gdc.text,'tx',['']);
-        mergeattr(cd,gdc.name,'name',['trace '+c]);
+        mergeattr(gdc.visible,'visible',true);
+        mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');
+        mergeattr(gdc.opacity,'op',1);
+        mergeattr(gdc.line.dash,'ld','solid');
+        mergeattr(gdc.line.color,'lc',gdc.marker.color || defaultColors[c % defaultColors.length]);
+        mergeattr(gdc.line.width,'lw',2);
+        mergeattr(gdc.marker.symbol,'mx','circle');
+        mergeattr(gdc.marker.opacity,'mo',1);
+        mergeattr(gdc.marker.size,'ms',6);
+        mergeattr(gdc.marker.color,'mc',cd[0].t.lc);
+        mergeattr(gdc.marker.line.color,'mlc',((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000'));
+        mergeattr(gdc.marker.line.width,'mlw',0);
+        mergeattr(gdc.text,'tx','');
+        mergeattr(gdc.name,'name','trace '+c);
     }
 }
 
@@ -379,26 +390,6 @@ function applyStyle(gp) {
         .call(lineGroupStyle);
 }
 
-// merge object a (which may be an array or a single value) into o...
-// search the array defaults in case a is missing (and for a default val
-// if some points of o are missing from a)
-function mergeattr(o,a,attr,defaults) {
-    if($.isArray(a)) {
-        var l=Math.max(o.length,a.length);
-        for(var i=0; i<l; i++) o[i][attr]=a[i];
-        o[0].t[attr]=defaults[defaults.length-1];
-    }
-    else if(typeof a != 'undefined')
-        o[0].t[attr]=a;
-    else {
-        for(var i=0; i<defaults.length; i++) {
-            if(typeof defaults[i] != 'undefined') {
-                o[0].t[attr]=defaults[i];
-                break
-            }
-        }
-    }
-}
 
 // styling functions for plot elements
 
