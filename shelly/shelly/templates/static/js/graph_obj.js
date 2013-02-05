@@ -86,6 +86,7 @@ PTS_LINESONLY = 20;
 DBLCLICKDELAY = 600; // ms between first mousedown and 2nd mouseup to constitute dblclick
 MINDRAG = 5; // pixels to move mouse before you stop clamping to starting point
 
+
 // var defaultColors=['#00e','#a00','#0c0','#000','#888'];
 
 var defaultColors=['#00e', //blue
@@ -340,10 +341,23 @@ function plot(divid, data, layout) {
             annotation(gd,i);
     }
 
-    if(gettab().spinner !== undefined){
-        gd.spinner.stop();
+    try{ killspin(); }
+    catch(e){ console.log(e); }
+}
+
+// ------------------------------------------------------------ gettab()
+// return the visible tab.
+// if tabtype is given, make sure it's the right type, otherwise make a new tab
+// if it's not a plot, also make sure it's empty, otherwise make a new tab
+// plots are special: if you bring new data in it will try to add it to the existing plot
+function gettab(tabtype,mode){
+    if(tabtype) console.log('gettab',tabtype,mode);
+    var td = $('.ui-tabs-panel:visible')[0];
+    if(tabtype){
+        if(!td || td.tabtype!=tabtype) td=addTab(tabtype);
+        else if(!td.empty && (td.tabtype!='plot' || mode=='new')) td=addTab(tabtype);
     }
-    $('#'+gd.id+' .spinner').remove();
+    return td;
 }
 
 // set display params per trace to default or provided value
@@ -657,135 +671,197 @@ function newPlot(divid, layout) {
         if(gd.mainsite) {
             // ------------------------------------------------------------ graphing toolbar
             var menudiv =
-                '<div class="graphbar btn-toolbar">'+
-                    // file
-                    '<div class="btn-group graphbar_drop">'+
-                        '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
-                            '<span class="pull-left">'+
+                '<div id="menu-'+gettab().id+'" class="plotly-menu graphbar">'+
+                    '<ol>'+
+                        '<li>'+
+                            '<h2 data-subitems=6 style="border-left:none !important">'+
+                            '<span>'+
                                 '<img src="/static/bootstrap/img/png/glyphicons_036_file.png"/>'+
-                                '&nbsp;File&nbsp;'+
-                            '</span>'+
-                            '<span class="caret pull-left"></span>'+
-                        '</a>'+
-                        '<ul class="dropdown-menu pull-left">'+
-                            '<li><a onclick="saveGraph();">'+
-                                '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>'+
-                                '&nbsp;Save</a>'+
-                            '</li>'+
-                            '<li><a onclick="if(gettab().fid!==undefined){gettab().fid=\'\';}saveGraph();">'+
-                                '<img src="/static/bootstrap/img/png/glyphicons_copy.png"/>'+
-                                '&nbsp;Save as Copy</a>'+
-                            '</li>'+
-                            '<li class="dropdown-submenu">'+
-                                '<a tabindex="-1" href="#">'+
-                                    '<img src="/static/bootstrap/img/png/glyphicons_200_download.png"></img>'+
-                                    '&nbsp;Export Graph'+
-                                '</a>'+
-                                '<ul class="dropdown-menu">'+
-                                    '<li><a onclick="pdfexport(\'pdf\')">'+
+                                '&nbsp;<img src="/static/img/dropleft.gif"/>'+
+                            '</span></h2>'+
+                            '<div>'+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="saveGraph(gettab());" >'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>'+
+                                        '&nbsp;Save'+
+                                    '</a>'+
+                                '</span>'+
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="if(gettab().fid!==undefined){gettab().fid=\'\';}saveGraph(gettab());"'+
+                                        'style="padding:6px;margin-top:10px;">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_copy.png"/>'+
+                                        '&nbsp;Copy'+
+                                    '</a>'+
+                                '</span>'+
+
+                                '<span class="btn-group">'+
+                                    '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data" style="display:inline;">'+
+                                        '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph"'+
+                                            'style="margin-top:12px;padding:4px;">'+
+                                            '<img src="/static/img/glyphicons_201_upload.png"></img>&nbsp;Upload'+
+                                            '<input type="file" name="fileToUpload" id="fileToUpload'+gd.id+'" onchange="fileSelected();"/>'+
+                                        '</span>'+
+                                    '</form>'+
+                                '</span>'+
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>'+
+                                        '&nbsp;Data'+
+                                    '</a>'+
+                                '</span>'+
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'pdf\')"'+
+                                        'style="padding:6px;margin-top:10px;">'+
                                         '<img src="/static/img/pdf.png"/>'+
-                                        '&nbsp;Download PDF</a>'+
-                                    '</li>'+
-                                    '<li><a onclick="pdfexport(\'png\')">'+
+                                        '&nbsp;PDF'+
+                                    '</a>'+
+                                '</span>'+
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'png\')">'+
                                         '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>'+
-                                        '&nbsp;Download PNG</a>'+
-                                    '</li>'+
-                                '</ul>'+
-                            '</li>'+
-                        '</ul>'+
-                    '</div>'+
-                    // show in grid
-                    '<div class="btn-group">'+
-                        '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>&nbsp;Data'+
-                        '</a>'+
-                    '</div>'+
-                    // upload a file
-                    '<div class="btn-group">'+
-                        '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data">'+
-                            '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph">'+
-                                '<img src="/static/img/glyphicons_201_upload.png"></img>&nbsp;Upload'+
-                                '<input type="file" name="fileToUpload" id="fileToUpload'+gd.id+'" onchange="fileSelected();"/>'+
-                            '</span>'+
-                        '</form>'+
-                    '</div>'+
-                    // style traces
-                    '<div class="btn-group">'+
-                        '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this)" rel="tooltip" title="Format Traces">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>&nbsp;Traces'+
-                        '</a>'+
-                    '</div>'+
-                    // style layout
-                    '<div class="btn-group">'+
-                        '<a class="btn toolbar_anchor" onclick="layoutBox(gettab(),this)" rel="tooltip" title="Edit Layout">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_099_vector_path_all.png"/>&nbsp;Layout'+
-                        '</a>'+
-                    '</div>'+
-                    // style axes
-                    '<div class="btn-group">'+
-                        '<a class="btn toolbar_anchor" onclick="axesBox(gettab(),this)" rel="tooltip" title="Style Axes">'+
-                            '<img src="/static/img/axes.png"/>&nbsp;Axes'+
-                        '</a>'+
-                    '</div>'+
-                    // legend
-                    '<div class="btn-group">'+
-                        '<a class="btn toolbar_anchor" onclick="legendBox(gettab(),this)" rel="tooltip" title="Setup Legend">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>&nbsp;Legend'+
-                        '</a>'+
-                    '</div>'+
-                    // annotations
-                    '<div class="btn-group">'+
-                        '<a class="btn toolbar_anchor" onclick="annotation(gettab())" rel="tooltip" title="New Text Annotation">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_309_comments.png"/>&nbsp;Annotation'+
-                        '</a>'+
-                    '</div>'+
-                    // demos
-                    '<div class="btn-group">'+
-                        '<a class="btn toolbar_anchor" onclick="demos(this);" rel="tooltip" title="Check out some demos">'+
-                            '<img src="/static/img/glyphicons/png/glyphicons_019_cogwheel.png"/>&nbsp;Demos'+
-                        '</a>'+
-                    '</div>'+
-                    // dashboard
-                    '<div class="btn-group">'+
-                        '<a class="btn toolbar_anchor" onclick="showurls()" rel="tooltip" title="Graph Dashboard">'+
-                            '<img src="/static/bootstrap/img/png/glyphicons_331_dashboard.png"/>&nbsp;Dash'+
-                        '</a>'+
-                    '</div>'+
-                    // share
-                    '<div class="btn-group">'+
-                        '<a class="btn google_button" onclick="shareGraph(gettab());" rel="tooltip" title="Share graph by URL">'+
-                            '<img src="/static/img/lil_share_white.png"/>&nbsp;Share'+
-                        '</a>'+
-                    '</div>'+
-                    // help
-                    '<div class="btn-group graphbar_drop">'+
-                        '<a class="btn dropdown-toggle toolbar_anchor" data-toggle="dropdown">'+
-                            '<span class="pull-left">'+
-                                '<img src="/static/bootstrap/img/png/glyphicons_195_circle_info.png"></img>'+
-                                '&nbsp;Help&nbsp;'+
-                            '</span>'+
-                            '<span class="caret pull-left"></span>'+
-                        '</a>'+
-                        '<ul class="dropdown-menu pull-left">'+
-                            '<li><a href="/gallery" target="_blank">'+
-                                '<img src="/static/bootstrap/img/png/glyphicons_154_show_big_thumbnails.png"/>'+
-                                '&nbsp;Graph Gallery</a>'+
-                            '</li>'+
-                            '<li><a onclick="litebox()">'+
-                                '<img src="/static/bootstrap/img/png/glyphicons_064_lightbulb.png"/>'+
-                                '&nbsp;Graph Tips</a>'+
-                            '</li>'+
-                            '<li><a href="/33">'+
-                                '<img src="/static/bootstrap/img/png/glyphicons_220_play_button.png"/>'+
-                                '&nbsp;Graph Demo</a>'+
-                            '</li>'+
-                            '<li><a href="/faq" target="_blank">'+
+                                        '&nbsp;PNG'+
+                                    '</a>'+
+                                '</span>'+
+
+                            '</div>'+
+                        '</li>'+
+                        '<li>'+
+                            '<h2 data-subitems=5 >'+
+                            '<span>'+
+                                '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>'+
+                                '&nbsp;<img src="/static/img/dropleft.gif"/>'+
+                            '</span></h2>'+
+                            '<div>'+
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this)" rel="tooltip" title="Format Traces">'+
+                                        '<img src="/static/img/edittraces.png" />'+
+                                        '&nbsp;Traces'+
+                                    '</a>'+
+                                '</span>'+
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="layoutBox(gettab(),this)" rel="tooltip" title="Edit Layout">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_099_vector_path_all.png"/>'+
+                                        '&nbsp;Layout'+
+                                    '</a>'+
+                                '</span>'+
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="axesBox(gettab(),this)" rel="tooltip" title="Style Axes">'+
+                                        '<img src="/static/img/axes.png"/>'+
+                                        '&nbsp;Axes'+
+                                    '</a>'+
+                                '</span>'+
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="legendBox(gettab(),this)" rel="tooltip" title="Setup Legend">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>'+
+                                        '&nbsp;Legend'+
+                                    '</a>'+
+                                '</span>'+
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="annotation(gettab())" rel="tooltip" title="New Text Annotation">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_309_comments.png"/>'+
+                                        '&nbsp;Annotate'+
+                                    '</a>'+
+                                '</span>'+
+
+                            '</div>'+
+                        '</li>'+
+
+                        '<li>'+
+                            '<h2 data-subitems=2 >'+
+                            '<span>'+
                                 '<img src="/static/bootstrap/img/png/glyphicons_194_circle_question_mark.png"/>'+
-                                '&nbsp;FAQ</a>'+
-                            '</li>'+
-                        '</ul>'+
-                    '</div>'+
+                                '&nbsp;<img src="/static/img/dropleft.gif"/>'+
+                            '</span></h2>'+
+                            '<div>'+
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="demos(this);" rel="tooltip" title="Check out some demos">'+
+                                        '<img src="/static/img/glyphicons/png/glyphicons_019_cogwheel.png"/>'+
+                                        '&nbsp;Demos'+
+                                    '</a>'+
+                                '</span>'+
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="litebox();" rel="tooltip" title="Get graph tips">'+
+                                        '<img src="/static/img/flashlite.png"/>'+
+                                        '&nbsp;Litebox'+
+                                    '</a>'+
+                                '</span>'+
+
+                            '</div>'+
+                        '</li>'+
+
+                        '<li>'+
+                            '<h2 data-subitems=6 >'+
+                            '<span>'+
+                                '<img src="/static/img/glyphicons/png/glyphicons_326_share.png"/>'+
+                                '&nbsp;<img src="/static/img/dropleft.gif"/>'+
+                            '</span>'+
+                            '</h2>'+
+                            '<div>'+
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor sharelink" onclick="saveGraph(gettab(),\'sharelink\');" rel="tooltip" title="Share permalink">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_050_link.png"/>'+
+                                        '&nbsp;Link'+
+                                    '</a>'+
+                                '</span>'+  
+                                
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="saveGraph(gettab(),\'embed\');" rel="tooltip" title="Embed graph in your website">'+
+                                        '<img src="/static/img/embed.png"/>'+
+                                        '&nbsp;Embed'+
+                                    '</a>'+
+                                '</span>'+ 
+                                
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor shareimage" onclick="saveGraph(gettab(),\'image\');" rel="tooltip" title="Share graph image">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_011_camera.png"/>'+
+                                        '&nbsp;Image'+
+                                    '</a>'+
+                                '</span>'+                                
+                                
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="saveGraph(gettab(),\'tweet\');" rel="tooltip" title="Tweet graph">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_392_twitter.png"/>'+
+                                        '&nbsp;Tweet'+
+                                    '</a>'+
+                                    '<a style="display:none" class="tweeturl" href="" target="_blank"></a>'+
+                                '</span>'+                                
+                                
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="saveGraph(gettab(),\'facebook\');" rel="tooltip" title="Share graph on Facebook">'+
+                                        '<img src="/static/img/glyphicons/png/glyphicons_390_facebook.png"/>'+
+                                        '&nbsp;Fb'+
+                                    '</a>'+
+                                '</span>'+                                                                                       
+
+                                '<span class="btn-group">'+
+                                    '<a class="btn toolbar_anchor" onclick="showurls()" rel="tooltip" title="Manage graphs that you share">'+
+                                        '<img src="/static/bootstrap/img/png/glyphicons_331_dashboard.png"/>'+
+                                        '&nbsp;Dash'+
+                                    '</a>'+
+                                '</span>'+
+
+                            '</div>'+
+                        '</li>'+
+
+                        '<li>'+
+                            '<h2 data-subitems=1><span></span></h2>'+
+                            '<div><span></span></div>'+
+                        '</li>'+
+                    '</ol>'+
                 '</div>';
+
             $(gd).prepend(menudiv);
             $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
 
@@ -808,10 +884,19 @@ function newPlot(divid, layout) {
                 '</div>';
 
             $('#'+gd.id+' .graphbar').after(demodiv);
+
+            $('#menu-'+gettab().id).liteAccordion({
+                    containerHeight : 50,
+                    headerWidth : 80,
+                    width : 500,
+                    firstSlide : 5,
+                    activateOn: 'click',
+                    theme: 'light'
+                });
+
+            $('#menu-'+gettab().id).css({'right':0,'left':0,'width':'100%'});
+
         }
-    //     else { // not mainsite, ie embedded - disable autosize
-    //         gl.autosize=false;
-    //     }
     }
 
     // Get the layout info (this is the defaults)
@@ -960,7 +1045,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             zoomBox(e);
         else
             dragRange(e);
-        pauseEvent(e);
+        return pauseEvent(e);
     }
 
     function zoomBox(e){
@@ -979,6 +1064,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                 height: Math.abs(y0-y1)+'px'
             })
             .addClass(tinycolor(gd.layout.plot_bgcolor).toHsl().l>0.3 ? 'dark' : 'light');
+            return pauseEvent(e);
         }
         window.onmouseup = function(e2) {
             window.onmousemove = null;
@@ -1024,6 +1110,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                 gy.autorange=false;
                 dragTail(gd);
             })
+            return pauseEvent(e2);
         }
 
         function finishZB(){
@@ -1051,7 +1138,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             if(gd.dragged)
                 plotDrag(e2.clientX-e.clientX,e2.clientY-e.clientY,ns,ew);
             else plotDrag(0,0,ns,ew);
-            pauseEvent(e2);
+            return pauseEvent(e2);
         }
         window.onmouseup = function(e2) {
             window.onmousemove = null;
@@ -1069,9 +1156,10 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                 }
                 else if(numClicks==1) { // single click
                     if(['n','s','e','w'].indexOf(ns+ew)>=0)// click on ends of ranges
-                        autoGrowInput(gd,dragger);
+                        autoGrowInput(dragger);
                 }
             }
+            return pauseEvent(e2);
         }
     }
 
@@ -1173,7 +1261,7 @@ function makeTitles(gd,title) {
                 .attr('text-anchor','middle')
                 .attr('transform',t.transform.replace('x',t.x).replace('y',t.y))
             if(gd.mainsite)
-                el.on('click',function(){autoGrowInput(gd,this)});
+                el.on('click',function(){autoGrowInput(this)});
 
             var txt=t.cont.title;
             if(txt.match(/^Click to enter (Plot|X axis|Y axis) title$/))
@@ -1256,7 +1344,7 @@ function legend(gd) {
 
     var tracetext=traces.call(legendText).selectAll('text');
     if(gd.mainsite)
-        tracetext.on('click',function(){autoGrowInput(gd,this)});
+        tracetext.on('click',function(){if(!gd.dragged) {autoGrowInput(this)}});
 
     // add the legend elements, keeping track of the legend size (in px) as we go
     var legendwidth=0, legendheight=0;
@@ -1373,14 +1461,19 @@ function legend(gd) {
     gd.legend.node().onmousedown = function(e) {
         if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
 
-        var eln=this, el3=d3.select(this);
-        var x0=Number(el3.attr('x')), y0=Number(el3.attr('y'));
-        var xf=undefined, yf=undefined;
+        var eln=this,
+            el3=d3.select(this),
+            x0=Number(el3.attr('x')),
+            y0=Number(el3.attr('y')),
+            xf=undefined,
+            yf=undefined;
+        gd.dragged = false;
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
                 dy = e2.clientY-e.clientY;
-            if(Math.abs(dx)<MINDRAG) dx=0;
-            if(Math.abs(dy)<MINDRAG) dy=0;
+            if(Math.abs(dx)<MINDRAG) {dx=0}
+            if(Math.abs(dy)<MINDRAG) {dy=0}
+            if(dx||dy) {gd.dragged = true}
             el3.call(setPosition, x0+dx, y0+dy);
             var pbb = gd.paper.node().getBoundingClientRect();
             // drag to within a couple px of edge to take the legend outside the plot
@@ -1412,30 +1505,19 @@ function legend(gd) {
             var csr='';
             if(Math.abs(xf)==100) csr='col-resize';
             else if(Math.abs(yf)==100) csr='row-resize';
-            else if(xf<1/3) {
-                if(yf<1/3) csr='sw-resize';
-                else if(yf<2/3) csr='w-resize';
-                else csr='nw-resize';
-            }
-            else if(xf<2/3) {
-                if(yf<1/3) csr='s-resize';
-                else if(yf<2/3) csr='move';
-                else csr='n-resize';
-            }
-            else {
-                if(yf<1/3) csr='se-resize';
-                else if(yf<2/3) csr='e-resize';
-                else csr='ne-resize';
-            }
+            else csr = nineCursors(xf,yf);
             $(eln).css('cursor',csr);
-            pauseEvent(e2);
+            return pauseEvent(e2);
         }
         window.onmouseup = function(e2) {
             window.onmousemove = null; window.onmouseup = null;
             $(eln).css('cursor','');
-            if(xf===undefined || yf===undefined) return;
-            relayout(gd,{'legend.x':xf,'legend.y':yf});
+            if(gd.dragged && xf!=undefined && yf!=undefined) {
+                relayout(gd,{'legend.x':xf,'legend.y':yf});
+            }
+            return pauseEvent(e2);
         }
+        return pauseEvent(e);
     }
 }
 
@@ -1502,10 +1584,19 @@ function annotation(gd,index,opt,value) {
     if(!$.isNumeric(options.arrowsize)) options.arrowsize=1;
     if(!options.text) options.text=((options.showarrow && (options.text=='')) ? '' : 'new text');
 
+    // get the paper and plot bounding boxes before adding pieces that go off screen
+    // firefox will include things that extend outside the original... can we avoid that?
+    var paperbb = gd.paper.node().getBoundingClientRect(),
+        plotbb = d3.select(gd).select('.nsewdrag').node().getBoundingClientRect(),
+        x = plotbb.left-paperbb.left,
+        y = plotbb.top-paperbb.top;
+
+    // create the components
     var ann = gd.paper.append('svg')
         .attr('class','annotation')
         .call(setPosition,0,0)
         .attr('data-index',String(index));
+    var abb = ann.node().getBoundingClientRect();
 
     var borderwidth = options.borderwidth;
     var annbg = ann.append('rect')
@@ -1524,11 +1615,9 @@ function annotation(gd,index,opt,value) {
     styleText(anntext.node(),options.text);
 
     if(gd.mainsite)
-        anntext.on('click',function(){autoGrowInput(gd,this)});
+        anntext.on('click',function(){if(!gd.dragged) {autoGrowInput(this)}});
 
-    // add the legend elements, sizing them to the text
     var atbb = anntext.node().getBoundingClientRect(),
-        abb = ann.node().getBoundingClientRect(),
         annwidth = atbb.width,
         annheight = atbb.height;
     if(!options.ax) options.ax=-10;
@@ -1548,10 +1637,6 @@ function annotation(gd,index,opt,value) {
     // if there is an arrow, alignment is to the arrowhead, and ax and ay give the
     // offset (in pixels) between the arrowhead and the center of the annotation
 
-    var paperbb = gd.paper.node().getBoundingClientRect(),
-        plotbb = d3.select(gd).select('.nsewdrag').node().getBoundingClientRect(),
-        x = plotbb.left-paperbb.left,
-        y = plotbb.top-paperbb.top;
     if(options.ref=='paper') {
         if(!$.isNumeric(options.x)) options.x=0.5;
         if(!$.isNumeric(options.y)) options.y=0.8;
@@ -1594,6 +1679,7 @@ function annotation(gd,index,opt,value) {
         outerheight = annheight+2*borderfull;
     ann.call(setRect, x-outerwidth/2, y-outerheight/2, outerwidth, outerheight);
     annbg.call(setSize, annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
+    console.log(paperbb.left,atbb.left,borderfull, paperbb.top,atbb.top);
     anntext.call(setPosition, paperbb.left-atbb.left+borderfull, paperbb.top-atbb.top+borderfull)
       .selectAll('tspan')
         .attr('x',paperbb.left-atbb.left+borderfull);
@@ -1660,14 +1746,19 @@ function annotation(gd,index,opt,value) {
             arrowdrag.node().onmousedown = function(e) {
                 if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
 
-                var eln=this, el3=d3.select(this);
-                var annx0=Number(ann.attr('x')), anny0=Number(ann.attr('y'));
-                var xf=undefined, yf=undefined;
+                var eln=this,
+                    el3=d3.select(this),
+                    annx0=Number(ann.attr('x')),
+                    anny0=Number(ann.attr('y')),
+                    xf=undefined,
+                    yf=undefined;
+                gd.dragged = false;
                 window.onmousemove = function(e2) {
                     var dx = e2.clientX-e.clientX,
                         dy = e2.clientY-e.clientY;
                     if(Math.abs(dx)<MINDRAG) dx=0;
                     if(Math.abs(dy)<MINDRAG) dy=0;
+                    if(dx||dy) {gd.dragged = true}
                     arrowgroup.attr('transform','translate('+dx+','+dy+')');
                     ann.call(setPosition, annx0+dx, anny0+dy);
                     if(options.ref=='paper') {
@@ -1678,20 +1769,21 @@ function annotation(gd,index,opt,value) {
                         xf = options.x+dx/gd.layout.xaxis.m;
                         yf = options.y+dy/gd.layout.yaxis.m;
                     }
-                    pauseEvent(e2);
+                    return pauseEvent(e2);
                 }
                 window.onmouseup = function(e2) {
                     window.onmousemove = null; window.onmouseup = null;
-                    if($.isNumeric(xf) && $.isNumeric(yf)) {
+                    if(gd.dragged && xf!=undefined && yf!=undefined) {
                         gd.changed = true;
                         annotation(gd,index,{x:xf,y:yf});
                     }
+                    return pauseEvent(e2);
                 }
+                return pauseEvent(e);
             }
         }
     }
-    if(options.showarrow)
-        drawArrow(0,0);
+    if(options.showarrow) {drawArrow(0,0)}
 
     // user dragging the annotation
     // aligns left/right/center on resize or new text if drag pos
@@ -1704,14 +1796,19 @@ function annotation(gd,index,opt,value) {
     ann.node().onmousedown = function(e) {
         if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
 
-        var eln=this, el3=d3.select(this);
-        var x0=Number(el3.attr('x')), y0=Number(el3.attr('y'));
-        var xf=undefined, yf=undefined;
+        var eln=this,
+            el3=d3.select(this),
+            x0=Number(el3.attr('x')),
+            y0=Number(el3.attr('y')),
+            xf=undefined,
+            yf=undefined;
+        gd.dragged = false;
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
                 dy = e2.clientY-e.clientY;
             if(Math.abs(dx)<MINDRAG) dx=0;
             if(Math.abs(dy)<MINDRAG) dy=0;
+            if(dx||dy) {gd.dragged = true}
             el3.call(setPosition, x0+dx, y0+dy);
             var csr='pointer';
             if(options.showarrow) {
@@ -1733,36 +1830,42 @@ function annotation(gd,index,opt,value) {
                 else if(yb>4/3-yc) yf=1-yb;
                 else yf=1-yc;
                 // now set the mouse cursor so user can see how the annotation will be aligned
-                if(xf<1/3) {
-                    if(yf<1/3) csr='sw-resize';
-                    else if(yf<2/3) csr='w-resize';
-                    else csr='nw-resize';
-                }
-                else if(xf<2/3) {
-                    if(yf<1/3) csr='s-resize';
-                    else if(yf<2/3) csr='move';
-                    else csr='n-resize';
-                }
-                else {
-                    if(yf<1/3) csr='se-resize';
-                    else if(yf<2/3) csr='e-resize';
-                    else csr='ne-resize';
-                }
+                csr = nineCursors(xf,yf);
             }
             else {
                 xf = options.x+dx/gd.layout.xaxis.m;
                 yf = options.y+dy/gd.layout.yaxis.m;
             }
             $(eln).css('cursor',csr);
-            pauseEvent(e2);
+            return pauseEvent(e2);
         }
         window.onmouseup = function(e2) {
             window.onmousemove = null; window.onmouseup = null;
             $(eln).css('cursor','');
-            if($.isNumeric(xf) && $.isNumeric(yf))
+            if(gd.dragged && xf!=undefined && yf!=undefined) {
                 annotation(gd,index,options.showarrow ? {ax:xf,ay:yf} : {x:xf,y:yf});
+            }
+            return pauseEvent(e2);
         }
+        return pauseEvent(e);
     }
+}
+
+// set cursors pointing toward the closest corner/side, to indicate alignment
+function nineCursors(x,y){
+    if(x<1/3) {
+        if(y<1/3) {return 'sw-resize'}
+        if(y<2/3) {return 'w-resize'}
+        return 'nw-resize';
+    }
+    if(x<2/3) {
+        if(y<1/3) {return 's-resize'}
+        if(y<2/3) {return 'move'}
+        return 'n-resize';
+    }
+    if(y<1/3) {return 'se-resize'}
+    if(y<2/3) {return 'e-resize'}
+    return 'ne-resize';
 }
 
 // add arrowhead(s) to a path or line d3 element el3
@@ -2546,7 +2649,8 @@ function updateObject(i,up) {
 // o is the settings for the input box (can be left blank to use defaults below)
 // This is a bit ugly... but it's the only way I could find to pass in the element
 // (and layout var) totally by reference...
-function autoGrowInput(gd,eln) {
+function autoGrowInput(eln) {
+    var gd=$(eln).parents('.ui-tabs-panel')[0];
     $(eln).tooltip('destroy'); // TODO: would like to leave this visible longer but then it loses its parent... how to avoid?
     var el3 = d3.select(eln), el = el3.attr('class'), cont, prop, ref=$(eln);
     var o = {maxWidth: 1000, minWidth: 20}, fontCss={};
@@ -3217,53 +3321,6 @@ function styleTextInner(s,n) {
 // Graph file operations
 // ----------------------------------------------------
 
-function shareGraph(divid){
-    if(signedin()==false) return;
-    $('#igraph').attr('src',''); // clear iframe
-    $('#linktoshare').attr('src',''); // clear url
-    $('#worldreadable').hide();
-    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-    if(gd.fid!==undefined){
-        if($('#'+gd.fid.toString()).attr('rel')=='grid') gd.fid='';
-    }
-    if(gd.changed!==undefined){
-        if(gd.changed==true){gd.fid='';}
-    }
-    if(gd.spinner===undefined){
-        var spinner=new Spinner(opts).spin(gd);
-        gd.spinner=spinner;
-    }
-    if(gd.fid=='' || gd.fid===undefined){
-        saveGraph(gd,true); // second param is shareOnSave - calls showSharing modal after save if true
-    }
-    showiGraphModal(gd);
-}
-
-// ------------------------------- showiGraphModal
-
-function showiGraphModal(gd){
-    if(gd.fid.toString().split(':').length==2){
-        var un=gd.fid.split(':')[0]
-        var fid=gd.fid.split(':')[1]
-    }
-    else{
-        var un=$('#signin').text().replace(/^\s+|\s+$/g, '');
-        var fid=gd.fid
-    }
-    console.log('showiGraphModal()');
-    console.log(fid);
-    // set worldreadable flag on file to true
-    $.post("/worldreadable/", {'readable':true,'fid':gd.fid}, function(){
-        url=window.location.origin+'/~'+un+'/'+fid;
-        $('#linktoshare').val(url);
-        $('#igraph').attr('src',url+'/500/300/');
-        $('#iframetoshare').text($('#igraphcontainer').html().replace(/^\s*/, '').replace(/\s*$/, ''));
-        $('#linkModal').modal('show');
-        document.getElementById("linktoshare").select();
-    });
-    if(gd.spinner!==undefined){gd.spinner.stop();}
-}
-
 // ------------------------------- graphToGrid
 
 function graphToGrid(){
@@ -3378,4 +3435,18 @@ function stripSrc(d) {
         }
     }
     return o;
+}
+
+function killspin(){
+    if(gettab().spinner !== undefined){
+        gettab().spinner.stop();
+    }
+    //$('#'+gettab().id+' .spinner').remove();
+    $('.spinner').remove();
+}
+
+function startspin(){
+    var gd=gettab();
+    var spinner=new Spinner(opts).spin(gd);
+    gd.spinner=spinner; 
 }
