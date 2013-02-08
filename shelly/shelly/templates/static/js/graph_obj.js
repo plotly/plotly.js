@@ -3326,7 +3326,7 @@ function styleTextInner(s,n) {
 function graphToGrid(){
     var gd=gettab();
     var csrftoken=$.cookie('csrftoken');
-    if(gd.fid !== undefined)
+    if(gd.fid !== undefined && gd.fid !='')
         $.post("/pullf/", {'csrfmiddlewaretoken':csrftoken, 'fid': gd.fid, 'ft':'grid'}, fileResp);
     else {
         var data = [];
