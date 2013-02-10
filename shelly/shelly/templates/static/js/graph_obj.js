@@ -362,23 +362,34 @@ function gettab(tabtype,mode){
 
 // set display params per trace to default or provided value
 function setStyles(gd) {
+    // merge object a (which may be an array or a single value) into cd...
+    // search the array defaults in case a is missing (and for a default val
+    // if some points of o are missing from a)
+    function mergeattr(a,attr,dflt) {
+        if($.isArray(a)) {
+            var l = Math.max(cd.length,a.length);
+            for(var i=0; i<l; i++) { cd[i][attr]=a[i] }
+            cd[0].t[attr] = dflt; // use the default for the trace-wide value
+        }
+        else { cd[0].t[attr] = (typeof a != 'undefined') ? a : dflt }
+    }
     for(var i in gd.calcdata){
         var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
         // mergeattr puts single values into cd[0].t, and all others into each individual point
-        mergeattr(cd,gdc.visible,'visible',[true]);
-        mergeattr(cd,gdc.mode,'mode',[(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers']);
-        mergeattr(cd,gdc.opacity,'op',[1]);
-        mergeattr(cd,gdc.line.dash,'ld',['solid']);
-        mergeattr(cd,gdc.line.color,'lc',[gdc.marker.color, defaultColors[c % defaultColors.length]]);
-        mergeattr(cd,gdc.line.width,'lw',[2]);
-        mergeattr(cd,gdc.marker.symbol,'mx',['circle']);
-        mergeattr(cd,gdc.marker.opacity,'mo',[1]);
-        mergeattr(cd,gdc.marker.size,'ms',[6]);
-        mergeattr(cd,gdc.marker.color,'mc',[cd[0].t.lc]);
-        mergeattr(cd,gdc.marker.line.color,'mlc',[((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000')]);
-        mergeattr(cd,gdc.marker.line.width,'mlw',[0]);
-        mergeattr(cd,gdc.text,'tx',['']);
-        mergeattr(cd,gdc.name,'name',['trace '+c]);
+        mergeattr(gdc.visible,'visible',true);
+        mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');
+        mergeattr(gdc.opacity,'op',1);
+        mergeattr(gdc.line.dash,'ld','solid');
+        mergeattr(gdc.line.color,'lc',gdc.marker.color || defaultColors[c % defaultColors.length]);
+        mergeattr(gdc.line.width,'lw',2);
+        mergeattr(gdc.marker.symbol,'mx','circle');
+        mergeattr(gdc.marker.opacity,'mo',1);
+        mergeattr(gdc.marker.size,'ms',6);
+        mergeattr(gdc.marker.color,'mc',cd[0].t.lc);
+        mergeattr(gdc.marker.line.color,'mlc',((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000'));
+        mergeattr(gdc.marker.line.width,'mlw',0);
+        mergeattr(gdc.text,'tx','');
+        mergeattr(gdc.name,'name','trace '+c);
     }
 }
 
@@ -392,26 +403,6 @@ function applyStyle(gp) {
         .call(lineGroupStyle);
 }
 
-// merge object a (which may be an array or a single value) into o...
-// search the array defaults in case a is missing (and for a default val
-// if some points of o are missing from a)
-function mergeattr(o,a,attr,defaults) {
-    if($.isArray(a)) {
-        var l=Math.max(o.length,a.length);
-        for(var i=0; i<l; i++) o[i][attr]=a[i];
-        o[0].t[attr]=defaults[defaults.length-1];
-    }
-    else if(typeof a != 'undefined')
-        o[0].t[attr]=a;
-    else {
-        for(var i=0; i<defaults.length; i++) {
-            if(typeof defaults[i] != 'undefined') {
-                o[0].t[attr]=defaults[i];
-                break
-            }
-        }
-    }
-}
 
 // styling functions for plot elements
 
@@ -525,7 +516,9 @@ function restyle(gd,astr,val,traces) {
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
     gd.changed = true;
-    var gl = gd.layout, aobj = {};
+    var gl = gd.layout,
+        aobj = {},
+        legendonly = true;
     if(typeof astr == 'string')
         aobj[astr] = val;
     else if($.isPlainObject(astr))
@@ -546,16 +539,18 @@ function relayout(gd,astr,val) {
     // alter gd.layout
     for(var i in aobj) {
         // check whether to disable autosize or autorange
-        if((i=='height' || i=='width') && !aobj.autosize)
+        if((i=='height' || i=='width') && !aobj.autosize) {
             gl.autosize=false;
+        }
         var m = i.match(/^(.)axis\.range\[[0|1]\]$/);
-        if(m && m.length==2)
+        if(m && m.length==2) {
             gl[m[1]+'axis'].autorange=false;
+        }
 
-        var aa = i.split('.');
+        var aa = propSplit(i);
         // toggling log without autorange: need to also recalculate ranges
         if(aa[1]=='islog'  && !gl[aa[0]].isdate && !gl[aa[0]].autorange &&
-            (gl[aa[0]].islog ? !val : val)) { // logical XOR (ie will islog actually change)
+            (gl[aa[0]].islog ? !aobj[i] : aobj[i])) { // logical XOR (ie will islog actually change)
             var r0 = gl[aa[0]].range[0],
                 r1 = gl[aa[0]].range[1];
             if(val) {
@@ -570,30 +565,38 @@ function relayout(gd,astr,val) {
                 if(!(aa[0]+'.range[1]' in aobj)) gl[aa[0]].range[1] = Math.pow(10, r1);
             }
         }
-        nestedProperty(gl,i).set(aobj[i]);
+        // send annotation mods one-by-one through annotation(), don't set via nestedProperty
+        if(aa[0]=='annotations') {
+            annotation(gd,aa[1],i.replace(/^annotations\[-?[0-9]*\][.]/,''),aobj[i]);
+            delete aobj[i];
+        }
+        // alter gd.layout
+        else {
+            if(aa[0].indexOf('legend')==-1) {
+                legendonly = false;
+            }
+            nestedProperty(gl,i).set(aobj[i]);
+        }
     }
 
     // calculate autosizing
     if(aobj.autosize) aobj=plotAutoSize(gd,aobj);
 
-    // replot
+    // redraw
+    // first check if there's still anything to do
     var ak = Object.keys(aobj);
-    if(ak.length) { // check if there's anything to do
-        // can we avoid a full redraw?
-        // check for specific changes we can do more simply
-        var legendonly = true;
-        ak.forEach(function(v){
-            if(v.split('.')[0].indexOf('legend')==-1) legendonly = false;
-        })
+    if(ak.length) {
+        // if all that's left is legend changes, no need to redraw the whole graph
         if(legendonly) {
             gd.paper.selectAll('.legend').remove();
-            if(gl.showlegend)
+            if(gl.showlegend) {
                 legend(gd);
-            return;
+            }
         }
-
-        gd.layout = undefined; // force plot to redo the layout
-        plot(gd,'',gl);
+        else {
+            gd.layout = undefined; // force plot to redo the layout
+            plot(gd,'',gl);
+        }
     }
 }
 
@@ -601,21 +604,26 @@ function relayout(gd,astr,val) {
 // representing a property of nested object o into set and get methods
 function nestedProperty(o,s) {
     var cont = o,
-        aa = s.split('.');
-    for(var j=0; j<aa.length-1; j++)
-        cont = cont[aa[j]];
-    var indexed = aa[j].match(/([^\[\]]*)\[([0-9]*)\]/);
-    if(indexed) {
-        cont = cont[indexed[1]];
-        var prop = Number(indexed[2]);
+        aa = propSplit(s);
+    for(var j=0; j<aa.length-1; j++) {
+        cont = cont[aa[j]]
     }
-    else
-        var prop = aa[j];
+    var prop = aa[j];
 
     return {set:function(v){cont[prop]=v},
             get:function(){return cont[prop]}};
 }
 
+function propSplit(s) {
+    var aa = s.split('.');
+    for(var j=0; j<aa.length; j++) {
+        var indexed = String(aa[j]).match(/([^\[\]]*)\[([0-9]*)\]/);
+        if(indexed) {
+            aa.splice(j,1,indexed[1],Number(indexed[2]));
+        }
+    }
+    return aa;
+}
 function plotAutoSize(gd,aobj) {
     var plotBB = gd.paper.node().getBoundingClientRect();
     var gdBB = gd.getBoundingClientRect();
@@ -766,7 +774,7 @@ function newPlot(divid, layout) {
                                 '</span>'+
 
                                 '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="annotation(gettab())" rel="tooltip" title="New Text Annotation">'+
+                                    '<a class="btn toolbar_anchor" onclick="annotationBox(gettab(),this)" rel="tooltip" title="New/Edit Text Annotation">'+
                                         '<img src="/static/bootstrap/img/png/glyphicons_309_comments.png"/>'+
                                         '&nbsp;Annotate'+
                                     '</a>'+
@@ -814,36 +822,35 @@ function newPlot(divid, layout) {
                                         '<img src="/static/bootstrap/img/png/glyphicons_050_link.png"/>'+
                                         '&nbsp;Link'+
                                     '</a>'+
-                                '</span>'+  
-                                
+                                '</span>'+
+
                                 '<span class="btn-group">'+
                                     '<a class="btn toolbar_anchor" onclick="saveGraph(gettab(),\'embed\');" rel="tooltip" title="Embed graph in your website">'+
                                         '<img src="/static/img/embed.png"/>'+
                                         '&nbsp;Embed'+
                                     '</a>'+
-                                '</span>'+ 
-                                
+                                '</span>'+
+
                                 '<span class="btn-group">'+
                                     '<a class="btn toolbar_anchor shareimage" onclick="saveGraph(gettab(),\'image\');" rel="tooltip" title="Share graph image">'+
                                         '<img src="/static/bootstrap/img/png/glyphicons_011_camera.png"/>'+
                                         '&nbsp;Image'+
                                     '</a>'+
-                                '</span>'+                                
-                                
+                                '</span>'+
+
                                 '<span class="btn-group">'+
                                     '<a class="btn toolbar_anchor" onclick="saveGraph(gettab(),\'tweet\');" rel="tooltip" title="Tweet graph">'+
                                         '<img src="/static/bootstrap/img/png/glyphicons_392_twitter.png"/>'+
                                         '&nbsp;Tweet'+
                                     '</a>'+
                                     '<a style="display:none" class="tweeturl" href="" target="_blank"></a>'+
-                                '</span>'+                                
-                                
+                                '</span>'+
                                 '<span class="btn-group">'+
                                     '<a class="btn toolbar_anchor" onclick="saveGraph(gettab(),\'facebook\');" rel="tooltip" title="Share graph on Facebook">'+
                                         '<img src="/static/img/glyphicons/png/glyphicons_390_facebook.png"/>'+
                                         '&nbsp;Fb'+
                                     '</a>'+
-                                '</span>'+                                                                                       
+                                '</span>'+
 
                                 '<span class="btn-group">'+
                                     '<a class="btn toolbar_anchor" onclick="showurls()" rel="tooltip" title="Manage graphs that you share">'+
@@ -1309,10 +1316,10 @@ function makeTitles(gd,title) {
 function legend(gd) {
     var gl=gd.layout,gm=gl.margin;
     gl.showlegend = true;
-    if(!gl.legend) gl.legend={};
+    if(!gl.legend) { gl.legend={} }
     var gll = gl.legend;
     gd.paper.selectAll('.legend').remove();
-    if(!gd.calcdata) return;
+    if(!gd.calcdata) { return }
 
     var ldata=[]
     for(var i=0;i<gd.calcdata.length;i++) {
@@ -1323,9 +1330,9 @@ function legend(gd) {
     gd.legend=gd.paper.append('svg')
         .attr('class','legend');
 
-    var bordercolor = gl.legend.bordercolor || '#000',
-        borderwidth = gl.legend.borderwidth || 1,
-        bgcolor = gl.legend.bgcolor || gl.paper_bgcolor || '#fff';
+    var bordercolor = gll.bordercolor || '#000',
+        borderwidth = gll.borderwidth || 1,
+        bgcolor = gll.bgcolor || gl.paper_bgcolor || '#fff';
     gd.legend.append('rect')
         .attr('class','bg')
         .call(strokeColor,bordercolor)
@@ -1561,6 +1568,7 @@ function annotation(gd,index,opt,value) {
         options[opt] = value;
     else if(opt)
         Object.keys(opt).forEach(function(k){ options[k] = opt[k] });
+
     if(oldref && options.x && options.y) {
         if(options.ref=='plot' && oldref=='paper') {
             options.x = xa.range[0]+(xa.range[1]-xa.range[0])*options.x;
@@ -1679,7 +1687,6 @@ function annotation(gd,index,opt,value) {
         outerheight = annheight+2*borderfull;
     ann.call(setRect, x-outerwidth/2, y-outerheight/2, outerwidth, outerheight);
     annbg.call(setSize, annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
-    console.log(paperbb.left,atbb.left,borderfull, paperbb.top,atbb.top);
     anntext.call(setPosition, paperbb.left-atbb.left+borderfull, paperbb.top-atbb.top+borderfull)
       .selectAll('tspan')
         .attr('x',paperbb.left-atbb.left+borderfull);
@@ -1687,7 +1694,7 @@ function annotation(gd,index,opt,value) {
     // add the arrow
     // uses options[arrowwidth,arrowcolor,arrowhead] for styling
     var drawArrow = function(dx,dy){
-        $('g.annotation[data-index="'+index+'"]').remove();
+        $(gd).find('g.annotation[data-index="'+index+'"]').remove();
         // find where to start the arrow:
         // at the border of the textbox, if that border is visible,
         // or at the edge of the lines of text, if the border is hidden
@@ -1920,6 +1927,30 @@ function arrowhead(el3,style,ends,mag) {
         drawhead(end,dend);
 }
 
+// allArrowheads: call twice to make an arrowheads dropdown.
+// once (with no container) for the data to send to layoutBoxDrop,
+// and again (with a container) to add arrowheads to the list
+function allArrowheads(container){
+    // with no args, output an array of elements for the dropdown list
+    if(!container) {
+        out=[];
+        for(var i=1; i<=7; i++){
+            out.push({val:i,
+                name:'<svg width="40" height="20" data-arrowhead="'+i+'" style="position: relative; top: 2px;">'+
+                    '<line stroke="rgb(0,0,0)" style="fill: none;" x1="5" y1="10" x2="25" y2="10" stroke-width="2">'+
+                    '</line></svg>'
+            });
+        }
+        return out;
+    }
+    // if a dom element is passed in, add appropriate arrowheads to every arrowhead selector in the container
+    else {
+        $(container).find('[data-arrowhead]').each(function(){
+            arrowhead(d3.select(this).select('line'),Number($(this).attr('data-arrowhead')));
+        });
+    }
+}
+
 function constrain(v,v0,v1) { return Math.max(v0,Math.min(v1,v)) }
 
 // look for intersection of two line segments (1->2 and 3->4) - returns array [x,y] if they do, null if not
@@ -1947,7 +1978,7 @@ function dragClear(gd) {
 // Make a new popover in div gd at overall pos ({x,y} or {left,top,width,height}
 // as from getBoundingClientRect, or a DOM element, will call getBoundingClientRect on it)
 // uses cls for styling the popover and calls contentfn(($)popover, contentarg) to fill it
-function newPopover(gd,pos,cls,contentfn,contentarg) {
+function newPopover(gd,pos,cls,contentfn,applyfn,contentarg) {
     if($('.popover.'+cls).length) // if this popover is already showing, quit so it will hide
         return;
     hidebox(); // hide the litebox.
@@ -1973,24 +2004,33 @@ function newPopover(gd,pos,cls,contentfn,contentarg) {
             '</div>'+
         '</div>').appendTo('body');
     popover[0].gd=gd;
+    // store the redraw and apply functions for use after changing values
+    popover[0].redraw = function(arg){contentfn(popover,arg)};
+    popover[0].applyChange = function(o){o.popover=popover; applyfn(o)}
 
     // fill the popover
     contentfn(popover,contentarg);
-    // store the draw function for use after changing values
-    popover[0].redraw = function(){contentfn(popover)};
 
     // fix positioning
-    var pbb=popover[0].getBoundingClientRect(); // popover, at initial position
-    var wbb=$('#tabs-one-line').get(0).getBoundingClientRect(); // whole window
-    var newtop=pos.y-pbb.top;
-    var maxtop=wbb.top+wbb.height-pbb.height;
-    var newleft=pos.x-pbb.left-(pbb.width/2);
-    var maxleft=wbb.left+wbb.width-pbb.width;
-    popover.css({top:Math.min(newtop, maxtop)+'px', left:Math.min(newleft, maxleft)+'px'});
-    // if box is not where it wanted to be, take off the arrow because it's not pointing to anything
-    if(newleft>=maxleft || newtop>=maxtop) popover.find('.arrow').remove();
+    var pbb = popover[0].getBoundingClientRect(), // popover, at initial position
+        wbb = $('#tabs-one-line').get(0).getBoundingClientRect(), // whole window
+        newtop = pos.y-pbb.top,
+        maxtop = wbb.top+wbb.height-pbb.height,
+        newleft = pos.x-pbb.left-(pbb.width/2),
+        maxleft = wbb.left+wbb.width-pbb.width,
+        setleft = Math.max(0,Math.min(newleft, maxleft)),
+        settop = Math.max(0,Math.min(newtop, maxtop));
+    popover.css({top:settop+'px', left:setleft+'px'});
+    // if box is shifted vertically, take off the arrow because it's not pointing to anything
+    if(newtop!=settop) { popover.find('.arrow').remove() }
+    // if it's shifted horizontally, try to shift the arrow (remove it if it's shifted too far)
+    else if(newleft!=setleft) {
+        var arrowpct = 100*(0.5+(newleft-setleft)/pbb.width);
+        if(arrowpct<5 || arrowpct>95) { popover.find('.arrow').remove() }
+        else { popover.find('.arrow').css('left',arrowpct+'%') }
+    }
 
-    // add interactions
+    // hide box when you click outside it
     window.onmouseup = function(e) {
         // see http://stackoverflow.com/questions/1403615/use-jquery-to-hide-a-div-when-the-user-clicks-outside-of-it
         // need to separately check for colorpicker clicks, as spectrum doesn't make them children of the popover
@@ -2007,19 +2047,20 @@ function newPopover(gd,pos,cls,contentfn,contentarg) {
 // make a styling popover starting with trace tracenum
 // use tracenum=-1 for all traces, defaults to first trace
 function styleBox(gd,pos,tracenum) {
-    if(tracenum==undefined) tracenum=0;
+    if(!tracenum) { tracenum=0 }
     if(!gd.data){
         console.log('no data to style',gd);
         return; // TODO: disable item unless data is present
     }
-    newPopover(gd,pos,'stylebox',styleBoxTraces,tracenum)
+    newPopover(gd,pos,'stylebox',styleBoxTraces,callRestyle,tracenum);
 }
 
 function styleBoxTraces(popover,tracenum){
     // same ldata as legend plus first item, 'all traces'
     // also makes short name for traces from ysrc
-    var tDefault = {name:'',lc:'#000',ld:'solid',lw:1,mc:'#000',mlc:'#000',mlw:0,
-                visible:true, mode:'lines+markers',ms:6,mx:'circle',tx:''};
+    var tDefault = {name:'', tx:'',
+        visible:true, mode:'lines+markers', op:1, ld:'solid', lc:'#000',lw:1,
+        mx:'circle', mo:1, mc:'#000', ms:6, mlw:0, mlc:'#000'};
     var ldata = (popover[0].gd.calcdata.length<2) ? [] :
         tModify(tDefault,{name:'All Traces', mode:'none', visible:null});
     for(var i=0; i<popover[0].gd.calcdata.length; i++) {
@@ -2030,35 +2071,37 @@ function styleBoxTraces(popover,tracenum){
             .replace(/^([A-z0-9\-_]+[\/:])?[0-9]+[\/:]/,'');
         ldata.push([o]);
     }
-//     console.log(ldata);
     // look for attributes that are equal for all traces, set the 'all traces' val if found
     if(ldata.length>2) {
         var attrs=Object.keys(tDefault);
-        for(a in tDefault) {
+        for(var a in tDefault) {
             var v_equal=true;
-            for(i=2; i<ldata.length; i++)
-                if(ldata[i][0].t[a]!=ldata[1][0].t[a]) v_equal=false;
-            if(v_equal)
+            for(i=2; i<ldata.length; i++) {
+                if(ldata[i][0].t[a]!=ldata[1][0].t[a]) {v_equal=false}
+            }
+            if(v_equal) {
                 ldata[0][0].t[a]=ldata[1][0].t[a];
+            }
         }
     }
 
     // make the trace selector dropdown (after removing any previous)
-    styleBoxDrop(popover.find('.popover-title>div').html(''),'trace',selectTrace,'',ldata);
+    styleBoxDrop(popover.find('.popover-title>div').html(''),'trace','',ldata,null,
+        function(o){o.popover=popover; selectTrace(o)});
 
     // select the desired trace (and build the attribute selectors)
     // choose all (or the only trace) if tracenum is invalid
     if(tracenum>=ldata.length-1 || tracenum<-1) tracenum=-1;
-    selectTrace.call(popover.find('.select-trace li').get(0),ldata[tracenum+1],tracenum+1);
+    selectTrace({popover:popover,d:ldata[tracenum+1],i:tracenum+1});
 }
 
-function selectTrace(d,i){
-    var popover=$(this).parents('.popover'),
-        menu=$(this).parents('.btn-group');
-    menu.find('.selected-val').html(menu.find('li')[i].innerHTML);
+function selectTrace(o){
+    var d = o.d,
+        popover = o.popover;
+    popover.find('.select-trace .selected-val').html(popover.find('.select-trace li')[o.i].innerHTML);
 
     // save the selection value for later use
-    popover[0].selectedTrace=i-1;
+    popover[0].selectedObj = o.i-1;
 
     // remove previous attribute selectors (spectra get destroyed separately because
     // they're not children of popover)
@@ -2069,16 +2112,16 @@ function selectTrace(d,i){
         a2 = attrs.find('.col2');
 
     // make each of the attribute selection dropdowns
-    pickOption(a1,'visible','Visible?',selectPick,d[0].t.visible,
+    pickOption(a1,'visible','Visible?',d[0].t.visible,
         [{name:'Show',val:true},{name:'Hide',val:false}]);
     a1.append('<div class="newline"></div>');
-    styleBoxDrop(a1,'mode',selectAttr,'Mode',d,
+    styleBoxDrop(a1,'mode','Mode',d,
         tModify(d[0].t,[
             {mode:'lines',name:''},
             {mode:'markers',name:''},
             {mode:'lines+markers',name:''}]));
-    slider(a1,'op',selectSlider,'Opacity',d[0].t.op,[0,1],2);
-    styleBoxDrop(a1,'ld',selectAttr,'Line',d,
+    slider(a1,'opacity','Opacity',d[0].t.op,[0,1],2);
+    styleBoxDrop(a1,'ld','Line',d,
         tModify(d[0].t,[
             {mode:'lines',name:'',ld:'solid'},
             {mode:'lines',name:'',ld:'dot'},
@@ -2090,8 +2133,8 @@ function selectTrace(d,i){
         .attr('width','70')
       .find('polyline')
         .attr('points','5,0 65,0');
-    pickColor(a1,'lc',selectColor,'... Color','Line Color',d[0].t.lc);
-    styleBoxDrop(a1,'lw',selectAttr,'... Width',d,
+    pickColor(a1,'line.color','... Color','Line Color',d[0].t.lc);
+    styleBoxDrop(a1,'lw','... Width',d,
         tModify(d[0].t,[
             {mode:'lines',lw:0.5,name:'0.5'},
             {mode:'lines',lw:1,name:'1'},
@@ -2099,7 +2142,7 @@ function selectTrace(d,i){
             {mode:'lines',lw:3,name:'3'},
             {mode:'lines',lw:4,name:'4'},
             {mode:'lines',lw:6,name:'6'}]));
-    styleBoxDrop(a2,'mx',selectAttr,'Marker',d,
+    styleBoxDrop(a2,'mx','Marker',d,
         tModify(d[0].t,[
             {mode:'markers',name:'',mx:'circle'},
             {mode:'markers',name:'',mx:'square'},
@@ -2108,9 +2151,9 @@ function selectTrace(d,i){
             {mode:'markers',name:'',mx:'triangle-down'},
             {mode:'markers',name:'',mx:'triangle-left'},
             {mode:'markers',name:'',mx:'triangle-right'}]));
-    slider(a2,'mo',selectSlider,'... Opacity',d[0].t.mo,[0,1],2);
-    pickColor(a2,'mc',selectColor,'... Color','Marker Color',d[0].t.mc);
-    styleBoxDrop(a2,'ms',selectAttr,'... Size',d,
+    slider(a2,'marker.opacity','... Opacity',d[0].t.mo,[0,1],2);
+    pickColor(a2,'marker.color','... Color','Marker Color',d[0].t.mc);
+    styleBoxDrop(a2,'ms','... Size',d,
         tModify(d[0].t,[
             {mode:'markers',ms:2,name:'2'},
             {mode:'markers',ms:3,name:'3'},
@@ -2119,14 +2162,14 @@ function selectTrace(d,i){
             {mode:'markers',ms:8,name:'8'},
             {mode:'markers',ms:12,name:'12'},
             {mode:'markers',ms:16,name:'16'}]));
-    styleBoxDrop(a2,'mlw',selectAttr,'... Line width',d,
+    styleBoxDrop(a2,'mlw','... Line width',d,
         tModify(d[0].t,[
             {mode:'markers',mlw:0,name:'0'},
             {mode:'markers',mlw:0.5,name:'0.5'},
             {mode:'markers',mlw:1,name:'1'},
             {mode:'markers',mlw:2,name:'2'},
             {mode:'markers',mlw:3,name:'3'}]));
-    pickColor(a2,'mlc',selectColor,'... Line color','Marker Line Color',d[0].t.mlc);
+    pickColor(a2,'marker.line.color','... Line color','Marker Line Color',d[0].t.mlc);
 }
 
 // routine for making modified-default attribute lists
@@ -2142,18 +2185,16 @@ function tModify(tDefault,o){
 }
 
 // pick from a button group
-function pickOption(s,cls,title,clickfn,val,opts){
-    var pick = '<div class="pickoption '+cls+'">'+
+function pickOption(s,astr,title,val,opts){
+    var pickbg = $('<div class="pickoption">'+
             ((title) ? ('<div class="pull-left editboxtitle">'+title+'</div>') : '')+
-            '<div class="btn-group pull-left">';
-    for(var i=0; i<opts.length; i++) {
-        pick += '<button class="btn editboxbutton '+opts[i].name+(val==opts[i].val ? ' disabled' : '')+'">'+
-            opts[i].name+'</button>';
-    }
-    pick += '</div></div>';
-    s.append(pick);
+            '<div class="btn-group pull-left"></div></div>').appendTo(s).find('.btn-group');
     opts.forEach(function(o){
-        $(s).find('.'+o.name).click({attr:cls,val:o.val},clickfn);
+        var ob = $('<button class="btn editboxbutton'+(val==o.val ? ' active' : '')+'">'+
+            o.name+'</button>').appendTo(pickbg)
+        if(val!=o.val) {
+            ob.click(function(){s.parents('.popover')[0].applyChange({astr:astr,val:o.val})})
+        }
     });
 }
 
@@ -2177,7 +2218,7 @@ function dropdown(cls,title){
 // d0: the selected element
 // d: the modified styles
 // TODO: user input option
-function styleBoxDrop(s,cls,clickfn,title,d0,d){
+function styleBoxDrop(s,cls,title,d0,d,clickfn){
     var noset=false;
     if(!d) {
         d=d0;
@@ -2186,11 +2227,15 @@ function styleBoxDrop(s,cls,clickfn,title,d0,d){
 
     var dn = $(dropdown('select-'+cls,title)).appendTo(s).get(0),
         dd=d3.select(dn);
-    dn.attr=cls;
     var opts=dd.select('ul').selectAll('li')
         .data(d)
       .enter().append('li')
-        .on('click',clickfn);
+        .on('click',function(d,i) {
+            var menu = $(this).parents('.btn-group');
+            menu.find('.selected-val').html(menu.find('li')[i].innerHTML);
+            var cfn = clickfn || $(this).parents('.popover')[0].applyChange;
+            cfn({astr:traceAttrs[cls],val:d[0].t[cls],d:d,i:i});
+        });
 
     var tw=40, th=20;
 
@@ -2221,12 +2266,11 @@ function styleBoxDrop(s,cls,clickfn,title,d0,d){
 // cls: class for this attribute
 // title: to show up in the main box
 // title3: to show up inside spectrum box
-function pickColor(s,cls,clickfn,title,title2,val){
-    var dd = $('<div class="editboxselector select-'+cls+'">'+
+function pickColor(s,astr,title,title2,val){
+    var dd = $('<div class="editboxselector">'+
         ((title) ? ('<div class="pull-left editboxtitle">'+title+'</div>') : '')+
         '<input class="pickcolor" type="text" />'+
         '</div>').appendTo(s);
-    dd[0].attr=cls;
     dd.find('input').spectrum({
         color: val,
         showInput: true,
@@ -2240,7 +2284,6 @@ function pickColor(s,cls,clickfn,title,title2,val){
         cancelText: 'Cancel',
         chooseText: title2 ? ('Set '+title2) : 'OK',
         showButtons: true,
-        className: 'spectrum-'+cls,
         preferredFormat: 'rgb',
         maxSelectionSize: 16,
         palette: [defaultColors, // TODO: make these colors cleaner and nicer
@@ -2258,18 +2301,17 @@ function pickColor(s,cls,clickfn,title,title2,val){
             "rgb(69, 129, 142)", "rgb(60, 120, 216)", "rgb(61, 133, 198)", "rgb(103, 78, 167)", "rgb(166, 77, 121)",
             "rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)",
             "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]],
-        change: function(color){clickfn(dd[0],color)}
+        change: function(color){dd.parents('.popover')[0].applyChange({astr:astr,val:color.toRgbString()})}
 //         selectionPalette: d
     });
 }
 
-function slider(s,cls,clickfn,title,val,bounds,digits){
+function slider(s,astr,title,val,bounds,digits){
     var valfmt = function(v){ return v/Math.pow(10,digits) }
     var slider = $('<div class="pickslider">'+
         ((title) ? ('<div class="pull-left editboxtitle">'+title+'</div>') : '')+
         '<div class="slider"></div><div class="slider-val">'+valfmt(val*Math.pow(10,digits))+'</div>'+
         '</div>').appendTo(s);
-    slider[0].attr=cls;
     slider.find('.slider').slider({
         min: bounds[0]*Math.pow(10,digits),
         max: bounds[1]*Math.pow(10,digits),
@@ -2280,7 +2322,7 @@ function slider(s,cls,clickfn,title,val,bounds,digits){
         stop: function(e,ui){
             var valout = valfmt(ui.value);
             slider.find('.slider-val').html(valout);
-            clickfn(slider[0],valout);
+            slider.parents('.popover')[0].applyChange({astr:astr,val:valout});
         }
     });
 }
@@ -2290,41 +2332,20 @@ var traceAttrs = {visible: 'visible', mode: 'mode', op: 'opacity',
     mx:'marker.symbol', mo: 'marker.opacity', ms:'marker.size', mc:'marker.color',
     mlc:'marker.line.color', mlw:'marker.line.width'};
 
-function selectSlider(el,val){
-    var popover = $(el).parents('.popover'),
-        selectedTrace = popover[0].selectedTrace,
-        astr=traceAttrs[el.attr];
-    restyle(popover[0].gd, astr, val, selectedTrace>=0 ? selectedTrace : null);
-    styleBoxTraces(popover, selectedTrace);
+// callRestyle: arg is {popover, astr, val}
+function callRestyle(o){
+    var po = o.popover[0],
+        selectedObj = po.selectedObj;
+    restyle(po.gd, o.astr, o.val, selectedObj>=0 ? selectedObj : null);
+    po.redraw(selectedObj);
 }
 
-function selectPick(e) {
-    console.log(e);
-    var popover = $(this).parents('.popover'),
-        selectedTrace = popover[0].selectedTrace,
-        astr=traceAttrs[e.data.attr];
-    restyle(popover[0].gd, astr, e.data.val, selectedTrace>=0 ? selectedTrace : null);
-    styleBoxTraces(popover, selectedTrace);
-}
-
-function selectAttr(d,i){
-    var menu = $(this).parents('.btn-group'),
-        popover = $(this).parents('.popover');
-    menu.find('.selected-val').html(menu.find('li')[i].innerHTML);
-    var selectedTrace = popover[0].selectedTrace,
-        a=$(this).parents('.editboxselector')[0].attr,
-        astr=traceAttrs[a];
-    restyle(popover[0].gd, astr, d[0].t[a], selectedTrace>=0 ? selectedTrace : null);
-    styleBoxTraces(popover, selectedTrace);
-}
-
-function selectColor(dropnode,color){
-    var popover = $(dropnode).parents('.popover'),
-        selectedTrace = popover[0].selectedTrace,
-        astr = traceAttrs[dropnode.attr],
-        val = color.toRgbString();
-    restyle(popover[0].gd, astr, val, selectedTrace>=0 ? selectedTrace : null);
-    styleBoxTraces(popover, selectedTrace);
+// callRelayout: arg is {popover, astr, val}
+function callRelayout(o){
+    var po = o.popover[0],
+        selectedObj = po.selectedObj;
+    relayout(po.gd, o.astr, o.val);
+    po.redraw(selectedObj);
 }
 
 function legendLines(d){
@@ -2356,7 +2377,7 @@ function legendText(s){
 
 // make a layout popover
 function layoutBox(gd,pos) {
-    newPopover(gd,pos,'layoutbox',layoutBoxContent);
+    newPopover(gd,pos,'layoutbox',layoutBoxContent,callRelayout);
 }
 
 function layoutBoxContent(popover){
@@ -2366,16 +2387,17 @@ function layoutBoxContent(popover){
         pc = popover.find('.popover-content').html('<div class="col1"></div><div class="col2"></div><br />'),
         a1 = pc.find('.col1'),
         a2 = pc.find('.col2');
+    popover[0].redraw = function(){}
 
-    pickOption(a1,'autosize','Autosize',layoutSelectPick,gl.autosize,
+    pickOption(a1,'autosize','Autosize',gl.autosize,
         [{name:'On',val:true},{name:'Off',val:false}]);
     a1.append('<div class="newline"></div>');
     layoutBoxInput(a1,'width','Width',gl.width,inputBetween(10,10000));
     layoutBoxInput(a1,'height','Height',gl.height,inputBetween(10,10000));
     a1.append('<div class="newline"></div>');
     // TODO: click on a color from the palette and color changes right away... click again and it doesn't
-    pickColor(a1,'paper_bgcolor',layoutSelectColor,'Margin Color','Margin Color',gl.paper_bgcolor);
-    pickColor(a1,'plot_bgcolor',layoutSelectColor,'Plot Color','Plot Color',gl.plot_bgcolor);
+    pickColor(a1,'paper_bgcolor','Margin Color','Margin Color',gl.paper_bgcolor);
+    pickColor(a1,'plot_bgcolor','Plot Color','Plot Color',gl.plot_bgcolor);
 
     layoutBoxInput(a2,'margin.t','Margin Top',gl.margin.t,inputBetween(0,1000));
     layoutBoxInput(a2,'margin.b','... Bottom',gl.margin.t,inputBetween(0,1000));
@@ -2388,7 +2410,7 @@ function layoutBoxContent(popover){
 // use axis='allaxes', 'xaxis or 'yaxis'
 function axesBox(gd,pos,axis) {
     if(axis==undefined) axis='xaxis';
-    newPopover(gd,pos,'axesbox',axesBoxContent,axis);
+    newPopover(gd,pos,'axesbox',axesBoxContent,callRelayout,axis);
 }
 
 function axesBoxContent(popover,axis){
@@ -2396,23 +2418,26 @@ function axesBoxContent(popover,axis){
         gl = gd.layout,
         pt = popover.find('.popover-title>div').html('');
         pc = popover.find('.popover-content').html('<div class="col1"></div><div class="col2"></div><br />');
-    if(axis)
+    if(axis) {
         popover[0].axis = axis;
-    else
+    }
+    else {
         axis = popover[0].axis;
+    }
 
     var axes = [{name:'All Axes', val:'allaxes'},{name:'X Axis',val:'xaxis'},{name:'Y Axis',val:'yaxis'}];
     popover[0].axes = axes;
     var axdata = {}, axi = 0;
     axes.forEach(function(a,i){if(a.val==axis) {axdata=a; axi=i}});
-    layoutBoxDrop(pt,'','',layoutSelectAxis,axdata,axes);
-    layoutSelectAxis.call(pt.find('li').get(axi),axdata,axi);
+    layoutBoxDrop(pt,'','',axdata,axes,function(o){o.popover=popover; layoutSelectAxis(o)});
+    layoutSelectAxis({popover:popover,d:axdata,i:axi});
 }
 
-function layoutSelectAxis(d,i) {
-    var popover = $(this).parents('.popover'),
-        menu = $(this).parents('.btn-group'),
-        a1 = popover.find('.popover-content .col1').html(''),
+function layoutSelectAxis(o) {
+    var d = o.d,
+        popover = o.popover;
+    popover.find('.popover-title .selected-val').html(popover.find('.popover-title li')[o.i].innerHTML);
+    var a1 = popover.find('.popover-content .col1').html(''),
         a2 = popover.find('.popover-content .col2').html(''),
         ax = d.val,
         gl = popover[0].gd.layout,
@@ -2420,59 +2445,44 @@ function layoutSelectAxis(d,i) {
         isdate = combineAxes(gl,axes,ax,'isdate'),
         islog = combineAxes(gl,axes,ax,'islog');
     popover[0].axis = ax;
-    menu.find('.selected-val').html(menu.find('li')[i].innerHTML);
     if(isdate || isdate=='null') // if one or more axes is date type, cannot modify this here
-        pickOption(a1,'','Axis Type',null,null,
+        pickOption(a1,'','Axis Type',null,
             [{name:isdate ? 'DateTime' : 'Mixed date/num',val:null}]);
     else // if axes are numeric, can toggle log here
-        pickOption(a1,ax+'.islog','Axis Type',layoutSelectPick, islog,
+        pickOption(a1,ax+'.islog','Axis Type', islog,
             [{name:'Linear',val:false},{name:'Log',val:true}]);
     a1.append('<div class="newline"></div>');
-    pickOption(a1,ax+'.autorange','Autorange',layoutSelectPick,
-        combineAxes(gl,axes,ax,'autorange'),
+    pickOption(a1,ax+'.autorange','Autorange',combineAxes(gl,axes,ax,'autorange'),
         [{name:'On',val:true},{name:'Off',val:false}]);
     a1.append('<div class="newline"></div>');
-    layoutBoxInput(a1,ax+'.range[0]','Start',
-        combineAxes(gl,axes,ax,'range[0]'),
+    layoutBoxInput(a1,ax+'.range[0]','Start',combineAxes(gl,axes,ax,'range[0]'),
         inputAxRange(isdate,islog));
-    layoutBoxInput(a1,ax+'.range[1]','End',
-        combineAxes(gl,axes,ax,'range[1]'),
+    layoutBoxInput(a1,ax+'.range[1]','End',combineAxes(gl,axes,ax,'range[1]'),
         inputAxRange(isdate,islog));
     a1.append('<div class="newline"></div>');
-    pickOption(a1,ax+'.ticks','Ticks',layoutSelectPick,
-        combineAxes(gl,axes,ax,'ticks'),
+    pickOption(a1,ax+'.ticks','Ticks',combineAxes(gl,axes,ax,'ticks'),
         [{name:'Outside',val:'outside'},{name:'Inside',val:'inside'},{name:'None',val:''}]);
     a1.append('<div class="newline"></div>');
-    layoutBoxInput(a1,ax+'.ticklen','... Length',
-        combineAxes(gl,axes,ax,'ticklen'),
+    layoutBoxInput(a1,ax+'.ticklen','... Length',combineAxes(gl,axes,ax,'ticklen'),
         inputBetween(1,1000));
-    layoutBoxInput(a1,ax+'.tickwidth','... Width',
-        combineAxes(gl,axes,ax,'tickwidth'),
+    layoutBoxInput(a1,ax+'.tickwidth','... Width',combineAxes(gl,axes,ax,'tickwidth'),
         inputBetween(0.1,100));
-    pickColor(a1,ax+'.tickcolor',layoutSelectColor,'... Color','Tick Color',
-        combineAxes(gl,axes,ax,'tickcolor'));
-    pickOption(a1,ax+'.showticklabels','... Labels',layoutSelectPick,
-        combineAxes(gl,axes,ax,'showticklabels'),
+    pickColor(a1,ax+'.tickcolor','... Color','Tick Color',combineAxes(gl,axes,ax,'tickcolor'));
+    pickOption(a1,ax+'.showticklabels','... Labels',combineAxes(gl,axes,ax,'showticklabels'),
         [{name:'On',val:true},{name:'Off',val:false}]);
 
-    pickOption(a2,ax+'.showgrid','Grid Lines',layoutSelectPick,
-        combineAxes(gl,axes,ax,'showgrid'),
+    pickOption(a2,ax+'.showgrid','Grid Lines',combineAxes(gl,axes,ax,'showgrid'),
         [{name:'On',val:true},{name:'Off',val:false}]);
     a2.append('<div class="newline"></div>');
-    layoutBoxInput(a2,ax+'.gridwidth','... Width',
-        combineAxes(gl,axes,ax,'gridwidth'),
+    layoutBoxInput(a2,ax+'.gridwidth','... Width',combineAxes(gl,axes,ax,'gridwidth'),
         inputBetween(0.1,100));
-    pickColor(a2,ax+'.gridcolor',layoutSelectColor,'... Color','Grid Color',
-        combineAxes(gl,axes,ax,'gridcolor'));
-    pickOption(a2,ax+'.zeroline','Zero Line',layoutSelectPick,
-        combineAxes(gl,axes,ax,'zeroline'),
+    pickColor(a2,ax+'.gridcolor','... Color','Grid Color',combineAxes(gl,axes,ax,'gridcolor'));
+    pickOption(a2,ax+'.zeroline','Zero Line',combineAxes(gl,axes,ax,'zeroline'),
         [{name:'On',val:true},{name:'Off',val:false}]);
     a2.append('<div class="newline"></div>');
-    layoutBoxInput(a2,ax+'.zerolinewidth','... Width',
-        combineAxes(gl,axes,ax,'zerolinewidth'),
+    layoutBoxInput(a2,ax+'.zerolinewidth','... Width',combineAxes(gl,axes,ax,'zerolinewidth'),
         inputBetween(0.1,100));
-    pickColor(a2,ax+'.zerolinecolor',layoutSelectColor,'... Color','Zero Line Color',
-        combineAxes(gl,axes,ax,'zerolinecolor'));
+    pickColor(a2,ax+'.zerolinecolor','... Color','Zero Line Color',combineAxes(gl,axes,ax,'zerolinecolor'));
 }
 
 // for axis='allaxes', check if all axes have the same value
@@ -2494,7 +2504,8 @@ function combineAxes(gl,axes,axis,attr) {
 
 // make a legend popover
 function legendBox(gd,pos) {
-    newPopover(gd,pos,'legendbox',legendBoxContent);
+    legend(gd);
+    newPopover(gd,pos,'legendbox',legendBoxContent,callRelayout);
 }
 
 function legendBoxContent(popover) {
@@ -2502,11 +2513,12 @@ function legendBoxContent(popover) {
         gl = gd.layout,
         pt = popover.find('.popover-title>div').html('Legend');
         pc = popover.find('.popover-content>div').html('');
-    pickOption(pc,'showlegend','Visible?',layoutSelectPick,gl.showlegend,
+
+    pickOption(pc,'showlegend','Visible?',gl.showlegend,
         [{name:'Show',val:true},{name:'Hide',val:false}]);
     pc.append('<div class="newline"></div>');
-    pickColor(pc,'legend.bgcolor',layoutSelectColor,'Background','Legend Background',gl.legend.bgcolor);
-    pickColor(pc,'legend.bordercolor',layoutSelectColor,'Border','Legend Border',gl.legend.bordercolor);
+    pickColor(pc,'legend.bgcolor','Background','Legend Background',gl.legend.bgcolor);
+    pickColor(pc,'legend.bordercolor','Border','Legend Border',gl.legend.bordercolor);
     layoutBoxInput(pc,'legend.borderwidth','Border Width',gl.legend.borderwidth,inputBetween(0.1,100));
 }
 
@@ -2575,29 +2587,25 @@ function layoutTakeInput(e) {
     }
 }
 
-// apply a new value from a button set
-function layoutSelectPick(e) {
-    if($(this).hasClass('disabled'))
-        return;
-    var popover = $(this).parents('.popover');
-    relayout(popover[0].gd, e.data.attr, e.data.val); //TODO: sometimes we're getting here after popover is destroyed?
-    popover[0].redraw();
-}
-
 // make a dropdown select for setting a layout attribute
 // s: container
 // astr: attribute in relayout format
 // val: the selected value
 // opts: the selectable options
 // TODO: user input option
-function layoutBoxDrop(s,astr,title,clickfn,val,opts){
+function layoutBoxDrop(s,astr,title,val,opts,clickfn){
     var dn = $(dropdown('select-layout',title)).appendTo(s).get(0),
         dd = d3.select(dn);
     dn.attr = astr;
-    var opts=dd.select('ul').selectAll('li')
+    dd.select('ul').selectAll('li')
         .data(opts)
       .enter().append('li')
-        .on('click',clickfn)
+        .on('click',function(d,i) {
+            var menu = $(this).parents('.btn-group');
+            menu.find('.selected-val').html(this.innerHTML);
+            var cfn = clickfn || $(this).parents('.popover')[0].applyChange;
+            cfn({astr:astr,val:d.val,d:d,i:i});
+        })
         .append('span')
             .style('font-size','14px')
             .style('position','relative')
@@ -2609,21 +2617,89 @@ function layoutBoxDrop(s,astr,title,clickfn,val,opts){
     $(dd.node()).find('.btn-group .selected-val').html($(dd.node()).find('li')[i].innerHTML);
 }
 
-function layoutSelectAttr(d,i){
-    var menu = $(this).parents('.btn-group'),
-        popover = $(this).parents('.popover'),
-        astr = $(this).parents('.select-layout')[0].attr;
-    menu.find('.selected-val').html(menu.find('li')[i].innerHTML);
-    relayout(popover[0].gd,astr,d.val);
-    popover[0].redraw();
+function annotationBox(gd,pos,anum) {
+    if(!gd.layout.annotations || !gd.layout.annotations.length) { annotation(gd) }
+    if(!anum || anum>=gd.layout.annotations.length) {anum=gd.layout.annotations.length-1}
+
+    // make the dropdown list of annotations
+    function abContent(popover,anum) {
+        var titlediv = popover.find('.popover-title>div').html(''),
+            anndrop = $(dropdown('select-ann')).appendTo(titlediv),
+            anndrop3 = d3.select(anndrop[0]),
+            annotations = gd.layout.annotations;
+        titlediv.find('a').removeClass('btn-mini');
+        titlediv.append('<button class="btn annbutton deleteann">Delete</button> '+
+            '<button class="btn annbutton newann">New</button>');
+        titlediv.find('.deleteann').click(function(){
+            var delnum = popover[0].selectedObj;
+            console.log(gd, delnum);
+            annotation(gd, delnum, 'remove');
+            popover.remove();
+            if(annotations.length) {annotationBox(gd,pos,delnum)}
+        });
+        titlediv.find('.newann').click(function(){
+            annotation(gd);
+            popover.remove();
+            annotationBox(gd,pos);
+        });
+        anndrop3.select('ul').selectAll('li')
+            .data(annotations)
+          .enter().append('li')
+            .on('click',selectAnnotation)
+            .append('span')
+                .style('font-size','14px')
+                .style('position','relative')
+                .style('padding','5px')
+                .html(function(d,i){
+                    var dt1 = d.text.replace(/<br>/,' ');
+                    return (i+1)+': '+dt1.substr(0,20)+(dt1.length>20 ? '...' : '')
+                });
+        var selected = anndrop.find('li')[anum];
+        selectAnnotation.call(selected,annotations[anum],anum);
+    }
+
+    newPopover(gd,pos,'annotationstyles',abContent,callRelayout,anum);
 }
 
-function layoutSelectColor(dropnode,color){
-    var popover = $(dropnode).parents('.popover'),
-        astr = dropnode.attr,
-        val = color.toRgbString();
-    relayout(popover[0].gd, astr, val);
-    popover[0].redraw();
+function selectAnnotation(d,i){
+    var popover = $(this).parents('.popover'),
+        menu = $(this).parents('.btn-group');
+    menu.find('.selected-val').html(menu.find('li')[i].innerHTML);
+
+    // save the selection value for later use
+    popover[0].selectedObj = i;
+
+    // remove previous attribute selectors (spectra get destroyed separately because
+    // they're not children of popover)
+    if($('.sp-container').length)
+        popover.find('.pickcolor').spectrum('destroy');
+    var attrs = popover.find('.popover-content').html('<div class="col1"></div><div class="col2"></div><br />'),
+        a1 = attrs.find('.col1'),
+        a2 = attrs.find('.col2'),
+        a = 'annotations['+i+'].';
+
+    // make each of the attribute selection dropdowns
+    pickOption(a1,a+'ref','Move with',d.ref,
+        [{name:'Data',val:'plot'},{name:'Page',val:'paper'}]);
+    a1.append('<div class="newline"></div>');
+    pickOption(a1,a+'showarrow','Arrow',d.showarrow,
+        [{name:'Show',val:true},{name:'Hide',val:false}]);
+    a1.append('<div class="newline"></div>');
+    pickColor(a1,a+'arrowcolor','... Color','Arrow Color',d.arrowcolor || d.bordercolor || '#000');
+    slider(a1,a+'arrowwidth','... Width',d.arrowwidth,[0,10],1);
+    layoutBoxDrop(a1,a+'arrowhead','Arrowhead',d.arrowhead,allArrowheads());
+    allArrowheads(a1);
+    slider(a1,a+'arrowsize','... Scale',d.arrowsize,[0,5],1);
+    pickOption(a2,a+'align','Text Alignment',d.align,
+        [{val:'left',name:'<i class="icon-align-left"></i>'},
+        {val:'center',name:'<i class="icon-align-center"></i>'},
+        {val:'right',name:'<i class="icon-align-right"></i>'}]);
+    a2.append('<div class="newline"></div>');
+    pickColor(a2,a+'bgcolor','Background Color','Background Color',d.bgcolor);
+    pickColor(a2,a+'bordercolor','Border Color','Border Color',d.bordercolor || 'rgba(0,0,0,0)');
+    slider(a2,a+'borderwidth','... Width',d.borderwidth,[0,10],1);
+    slider(a2,a+'borderpad','... Padding',d.borderpad,[0,10],1);
+
 }
 
 uoStack=[];
@@ -3448,5 +3524,5 @@ function killspin(){
 function startspin(){
     var gd=gettab();
     var spinner=new Spinner(opts).spin(gd);
-    gd.spinner=spinner; 
+    gd.spinner=spinner;
 }
