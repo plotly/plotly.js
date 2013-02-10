@@ -341,15 +341,8 @@ function plot(divid, data, layout) {
             annotation(gd,i);
     }
 
-    try{
-        if(gettab().spinner !== undefined){
-            gd.spinner.stop();
-        }
-        $('#'+gd.id+' .spinner').remove();
-    }
-    catch(e){
-        console.log(e);
-    }
+    try{ killspin(); }
+    catch(e){ console.log(e); }
 }
 
 // ------------------------------------------------------------ gettab()
@@ -689,21 +682,21 @@ function newPlot(divid, layout) {
                 '<div id="menu-'+gettab().id+'" class="plotly-menu graphbar">'+
                     '<ol>'+
                         '<li>'+
-                            '<h2 data-subitems=6 >'+
+                            '<h2 data-subitems=6 style="border-left:none !important">'+
                             '<span>'+
                                 '<img src="/static/bootstrap/img/png/glyphicons_036_file.png"/>'+
                                 '&nbsp;<img src="/static/img/dropleft.gif"/>'+
                             '</span></h2>'+
                             '<div>'+
                                 '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="saveGraph();" >'+
+                                    '<a class="btn toolbar_anchor" onclick="saveGraph(gettab());" >'+
                                         '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>'+
                                         '&nbsp;Save'+
                                     '</a>'+
                                 '</span>'+
 
                                 '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="if(gettab().fid!==undefined){gettab().fid=\'\';}saveGraph();"'+
+                                    '<a class="btn toolbar_anchor" onclick="if(gettab().fid!==undefined){gettab().fid=\'\';}saveGraph(gettab());"'+
                                         'style="padding:6px;margin-top:10px;">'+
                                         '<img src="/static/bootstrap/img/png/glyphicons_copy.png"/>'+
                                         '&nbsp;Copy'+
@@ -781,7 +774,7 @@ function newPlot(divid, layout) {
                                 '</span>'+
 
                                 '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="annotationBox(gettab(),this)" rel="tooltip" title="New Text Annotation">'+
+                                    '<a class="btn toolbar_anchor" onclick="annotationBox(gettab(),this)" rel="tooltip" title="New/Edit Text Annotation">'+
                                         '<img src="/static/bootstrap/img/png/glyphicons_309_comments.png"/>'+
                                         '&nbsp;Annotate'+
                                     '</a>'+
@@ -825,35 +818,35 @@ function newPlot(divid, layout) {
                             '<div>'+
 
                                 '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor sharelink" onclick="shareGraph(gettab(),\'link\');" rel="tooltip" title="Share permalink">'+
+                                    '<a class="btn toolbar_anchor sharelink" onclick="saveGraph(gettab(),\'sharelink\');" rel="tooltip" title="Share permalink">'+
                                         '<img src="/static/bootstrap/img/png/glyphicons_050_link.png"/>'+
                                         '&nbsp;Link'+
                                     '</a>'+
                                 '</span>'+
 
                                 '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="shareGraph(gettab(),\'embed\');" rel="tooltip" title="Embed graph in your website">'+
+                                    '<a class="btn toolbar_anchor" onclick="saveGraph(gettab(),\'embed\');" rel="tooltip" title="Embed graph in your website">'+
                                         '<img src="/static/img/embed.png"/>'+
                                         '&nbsp;Embed'+
                                     '</a>'+
                                 '</span>'+
 
                                 '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="shareGraph(gettab(),\'image\');" rel="tooltip" title="Share graph image">'+
+                                    '<a class="btn toolbar_anchor shareimage" onclick="saveGraph(gettab(),\'image\');" rel="tooltip" title="Share graph image">'+
                                         '<img src="/static/bootstrap/img/png/glyphicons_011_camera.png"/>'+
                                         '&nbsp;Image'+
                                     '</a>'+
                                 '</span>'+
 
                                 '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="shareGraph(gettab(),\'tweet\');" rel="tooltip" title="Tweet graph">'+
+                                    '<a class="btn toolbar_anchor" onclick="saveGraph(gettab(),\'tweet\');" rel="tooltip" title="Tweet graph">'+
                                         '<img src="/static/bootstrap/img/png/glyphicons_392_twitter.png"/>'+
                                         '&nbsp;Tweet'+
                                     '</a>'+
+                                    '<a style="display:none" class="tweeturl" href="" target="_blank"></a>'+
                                 '</span>'+
-
                                 '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="shareGraph(gettab(),\'facebook\');" rel="tooltip" title="Share graph on Facebook">'+
+                                    '<a class="btn toolbar_anchor" onclick="saveGraph(gettab(),\'facebook\');" rel="tooltip" title="Share graph on Facebook">'+
                                         '<img src="/static/img/glyphicons/png/glyphicons_390_facebook.png"/>'+
                                         '&nbsp;Fb'+
                                     '</a>'+
@@ -870,7 +863,7 @@ function newPlot(divid, layout) {
                         '</li>'+
 
                         '<li>'+
-                            '<h2 data-subitems=1 style="border:none !important;"><span></span></h2>'+
+                            '<h2 data-subitems=1><span></span></h2>'+
                             '<div><span></span></div>'+
                         '</li>'+
                     '</ol>'+
@@ -2657,7 +2650,10 @@ function annotationBox(gd,pos,anum) {
                 .style('font-size','14px')
                 .style('position','relative')
                 .style('padding','5px')
-                .html(function(d,i){return (i+1)+': '+d.text.substr(0,20)+(d.text.length>20 ? '...' : '')});
+                .html(function(d,i){
+                    var dt1 = d.text.replace(/<br>/,' ');
+                    return (i+1)+': '+dt1.substr(0,20)+(dt1.length>20 ? '...' : '')
+                });
         var selected = anndrop.find('li')[anum];
         selectAnnotation.call(selected,annotations[anum],anum);
     }
@@ -3406,7 +3402,7 @@ function styleTextInner(s,n) {
 function graphToGrid(){
     var gd=gettab();
     var csrftoken=$.cookie('csrftoken');
-    if(gd.fid !== undefined)
+    if(gd.fid !== undefined && gd.fid !='')
         $.post("/pullf/", {'csrfmiddlewaretoken':csrftoken, 'fid': gd.fid, 'ft':'grid'}, fileResp);
     else {
         var data = [];
@@ -3515,4 +3511,18 @@ function stripSrc(d) {
         }
     }
     return o;
+}
+
+function killspin(){
+    if(gettab().spinner !== undefined){
+        gettab().spinner.stop();
+    }
+    //$('#'+gettab().id+' .spinner').remove();
+    $('.spinner').remove();
+}
+
+function startspin(){
+    var gd=gettab();
+    var spinner=new Spinner(opts).spin(gd);
+    gd.spinner=spinner;
 }
