@@ -3506,7 +3506,7 @@ function convertToAxis(o,a){
     }
     else if($.isArray(o)) {
         return o.map(function(d){return $.isNumeric(d) ? d : null});
-    {
+    }
     else {
         return $.isNumeric(o) ? o : null;
     }
