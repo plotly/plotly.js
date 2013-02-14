@@ -404,7 +404,9 @@ function applyStyle(gp) {
 }
 
 
+// -----------------------------------------------------
 // styling functions for plot elements
+// -----------------------------------------------------
 
 function RgbOnly(cstr) {
     var c = tinycolor(cstr).toRgb();
@@ -485,6 +487,43 @@ function pointStyle(s,t) {
             p.call(strokeColor,d.mlc || t.mlc || (d.t ? d.t.mlc : ''))
     });
 }
+
+// -----------------------------------------------------
+// styling functions for traces in legends.
+// same functions for styling traces in the style box
+// -----------------------------------------------------
+
+function legendLines(d){
+    if(d[0].t.mode.indexOf('lines')==-1) return;
+    d3.select(this).append('polyline')
+        .call(lineGroupStyle)
+        .attr('points','5,0 35,0');
+}
+
+function legendPoints(d){
+    if(d[0].t.mode.indexOf('markers')==-1) return;
+    d3.select(this).append('g')
+        .attr('class','legendpoints')
+      .selectAll('path')
+        .data(function(d){return d})
+      .enter().append('path')
+        .call(pointStyle,{})
+        .attr('transform','translate(20,0)');
+}
+
+function legendText(s){
+    return s.append('text')
+        .attr('class',function(d,i){return 'legendtext text-'+i})
+        .call(setPosition, 40, 0)
+        .attr('text-anchor','start')
+        .attr('font-size',12)
+        .each(function(d){styleText(this,d[0].t.name,d[0].t.noretrieve)});
+}
+
+// -----------------------------------------------------
+// restyle and relayout: these two control all redrawing
+// for data (restyle) and everything else (relayout)
+// -----------------------------------------------------
 
 // astr is the attr name, like 'marker.symbol'
 // val is the new value to use
@@ -624,6 +663,7 @@ function propSplit(s) {
     }
     return aa;
 }
+
 function plotAutoSize(gd,aobj) {
     var plotBB = gd.paper.node().getBoundingClientRect();
     var gdBB = gd.getBoundingClientRect();
@@ -676,234 +716,7 @@ function newPlot(divid, layout) {
     }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
         gd.innerHTML='';
-        if(gd.mainsite) {
-            // ------------------------------------------------------------ graphing toolbar
-            var menudiv =
-                '<div id="menu-'+gettab().id+'" class="plotly-menu graphbar">'+
-                    '<ol>'+
-                        '<li>'+
-                            '<h2 data-subitems=6 style="border-left:none !important">'+
-                            '<span>'+
-                                '<img src="/static/bootstrap/img/png/glyphicons_036_file.png"/>'+
-                                '&nbsp;<img src="/static/img/dropleft.gif"/>'+
-                            '</span></h2>'+
-                            '<div>'+
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="saveGraph(gettab());" >'+
-                                        '<img src="/static/bootstrap/img/png/glyphicons_342_hdd.png"/>'+
-                                        '&nbsp;Save'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="if(gettab().fid!==undefined){gettab().fid=\'\';}saveGraph(gettab());"'+
-                                        'style="padding:6px;margin-top:10px;">'+
-                                        '<img src="/static/bootstrap/img/png/glyphicons_copy.png"/>'+
-                                        '&nbsp;Copy'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<form id="fileupload" action="/writef/" method="POST" enctype="multipart/form-data" style="display:inline;">'+
-                                        '<span class="btn fileinput-button toolbar_anchor" rel="tooltip" title="Upload Data to Graph"'+
-                                            'style="margin-top:12px;padding:4px;">'+
-                                            '<img src="/static/img/glyphicons_201_upload.png"></img>&nbsp;Upload'+
-                                            '<input type="file" name="fileToUpload" id="fileToUpload'+gd.id+'" onchange="fileSelected();"/>'+
-                                        '</span>'+
-                                    '</form>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="graphToGrid()" rel="tooltip" title="Show graph data">'+
-                                        '<img src="/static/bootstrap/img/png/glyphicons_155_show_thumbnails.png"/>'+
-                                        '&nbsp;Data'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'pdf\')"'+
-                                        'style="padding:6px;margin-top:10px;">'+
-                                        '<img src="/static/img/pdf.png"/>'+
-                                        '&nbsp;PDF'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="pdfexport(\'png\')">'+
-                                        '<img src="/static/bootstrap/img/png/glyphicons_159_picture.png"/>'+
-                                        '&nbsp;PNG'+
-                                    '</a>'+
-                                '</span>'+
-
-                            '</div>'+
-                        '</li>'+
-                        '<li>'+
-                            '<h2 data-subitems=5 >'+
-                            '<span>'+
-                                '<img src="/static/bootstrap/img/png/glyphicons_151_edit.png"/>'+
-                                '&nbsp;<img src="/static/img/dropleft.gif"/>'+
-                            '</span></h2>'+
-                            '<div>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="styleBox(gettab(),this)" rel="tooltip" title="Format Traces">'+
-                                        '<img src="/static/img/edittraces.png" />'+
-                                        '&nbsp;Traces'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="layoutBox(gettab(),this)" rel="tooltip" title="Edit Layout">'+
-                                        '<img src="/static/bootstrap/img/png/glyphicons_099_vector_path_all.png"/>'+
-                                        '&nbsp;Layout'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="axesBox(gettab(),this)" rel="tooltip" title="Style Axes">'+
-                                        '<img src="/static/img/axes.png"/>'+
-                                        '&nbsp;Axes'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="legendBox(gettab(),this)" rel="tooltip" title="Setup Legend">'+
-                                        '<img src="/static/bootstrap/img/png/glyphicons_156_show_thumbnails_with_lines.png"/>'+
-                                        '&nbsp;Legend'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="annotationBox(gettab(),this)" rel="tooltip" title="New/Edit Text Annotation">'+
-                                        '<img src="/static/bootstrap/img/png/glyphicons_309_comments.png"/>'+
-                                        '&nbsp;Annotate'+
-                                    '</a>'+
-                                '</span>'+
-
-                            '</div>'+
-                        '</li>'+
-
-                        '<li>'+
-                            '<h2 data-subitems=2 >'+
-                            '<span>'+
-                                '<img src="/static/bootstrap/img/png/glyphicons_194_circle_question_mark.png"/>'+
-                                '&nbsp;<img src="/static/img/dropleft.gif"/>'+
-                            '</span></h2>'+
-                            '<div>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="demos(this);" rel="tooltip" title="Check out some demos">'+
-                                        '<img src="/static/img/glyphicons/png/glyphicons_019_cogwheel.png"/>'+
-                                        '&nbsp;Demos'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="litebox();" rel="tooltip" title="Get graph tips">'+
-                                        '<img src="/static/img/flashlite.png"/>'+
-                                        '&nbsp;Litebox'+
-                                    '</a>'+
-                                '</span>'+
-
-                            '</div>'+
-                        '</li>'+
-
-                        '<li>'+
-                            '<h2 data-subitems=6 >'+
-                            '<span>'+
-                                '<img src="/static/img/glyphicons/png/glyphicons_326_share.png"/>'+
-                                '&nbsp;<img src="/static/img/dropleft.gif"/>'+
-                            '</span>'+
-                            '</h2>'+
-                            '<div>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor sharelink" onclick="saveGraph(gettab(),\'sharelink\');" rel="tooltip" title="Share permalink">'+
-                                        '<img src="/static/bootstrap/img/png/glyphicons_050_link.png"/>'+
-                                        '&nbsp;Link'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="saveGraph(gettab(),\'embed\');" rel="tooltip" title="Embed graph in your website">'+
-                                        '<img src="/static/img/embed.png"/>'+
-                                        '&nbsp;Embed'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor shareimage" onclick="saveGraph(gettab(),\'image\');" rel="tooltip" title="Share graph image">'+
-                                        '<img src="/static/bootstrap/img/png/glyphicons_011_camera.png"/>'+
-                                        '&nbsp;Image'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="saveGraph(gettab(),\'tweet\');" rel="tooltip" title="Tweet graph">'+
-                                        '<img src="/static/bootstrap/img/png/glyphicons_392_twitter.png"/>'+
-                                        '&nbsp;Tweet'+
-                                    '</a>'+
-                                    '<a style="display:none" class="tweeturl" href="" target="_blank"></a>'+
-                                '</span>'+
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="saveGraph(gettab(),\'facebook\');" rel="tooltip" title="Share graph on Facebook">'+
-                                        '<img src="/static/img/glyphicons/png/glyphicons_390_facebook.png"/>'+
-                                        '&nbsp;Fb'+
-                                    '</a>'+
-                                '</span>'+
-
-                                '<span class="btn-group">'+
-                                    '<a class="btn toolbar_anchor" onclick="showurls()" rel="tooltip" title="Manage graphs that you share">'+
-                                        '<img src="/static/bootstrap/img/png/glyphicons_331_dashboard.png"/>'+
-                                        '&nbsp;Dash'+
-                                    '</a>'+
-                                '</span>'+
-
-                            '</div>'+
-                        '</li>'+
-
-                        '<li>'+
-                            '<h2 data-subitems=1><span></span></h2>'+
-                            '<div><span></span></div>'+
-                        '</li>'+
-                    '</ol>'+
-                '</div>';
-
-            $(gd).prepend(menudiv);
-            $(gd).find('.btn').tooltip({placement:'bottom', delay:{show:700}});
-
-            var demodiv=
-                '<div class="demobar" style="display:'+(gd.demos ? 'block' : 'none')+';">'+
-                    '<ul>'+
-                        '<li><img src="/static/img/tinys/3dgoggles.png" onclick="pulldemo(this);" name="demos:79"/></li>'+
-                        '<li><img src="/static/img/tinys/andrews.png"  onclick="pulldemo(this);" name="demos:10"/></li>'+
-                        '<li><img src="/static/img/tinys/hopf.png"  onclick="pulldemo(this);" name="demos:82"/></li>'+
-                        '<li><img src="/static/img/tinys/intel.png"  onclick="pulldemo(this);" name="demos:84"/></li>'+
-                        '<li><img src="/static/img/tinys/intersect.png"  onclick="pulldemo(this);" name="demos:81"/></li>'+
-                        '<li><img src="/static/img/tinys/launch.png"  onclick="pulldemo(this);" name="demos:91"/></li>'+
-                        '<li><img src="/static/img/tinys/linden.png"  onclick="pulldemo(this);" name="demos:87"/></li>'+
-                        '<li><img src="/static/img/tinys/logistic.png"  onclick="pulldemo(this);" name="demos:27"/></li>'+
-                        '<li><img src="/static/img/tinys/opacity.png"  onclick="pulldemo(this);" name="demos:6"/></li>'+
-                        '<li><img src="/static/img/tinys/peak.png"  onclick="pulldemo(this);" name="demos:2"/></li>'+
-                        '<li><img src="/static/img/tinys/sine.png" onclick="pulldemo(this);" name="demos:18"/></li>'+
-                        '<li><img src="/static/img/tinys/walk.png" onclick="pulldemo(this);" name="demos:89"/></li>'+
-                    '</ul>'+
-                '</div>';
-
-            $('#'+gd.id+' .graphbar').after(demodiv);
-
-            $('#menu-'+gettab().id).liteAccordion({
-                    containerHeight : 50,
-                    headerWidth : 80,
-                    width : 500,
-                    firstSlide : 5,
-                    activateOn: 'click',
-                    theme: 'light'
-                });
-
-            $('#menu-'+gettab().id).css({'right':0,'left':0,'width':'100%'});
-
-        }
+        if(gd.mainsite) { graphbar(gd) }
     }
 
     // Get the layout info (this is the defaults)
@@ -1207,21 +1020,21 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy/ph);
             dy=ph*(gy.r0[0]-gy.range[0])/(gy.r0[0]-gy.r0[1]);
         }
-        else if(!ns)
+        else if(!ns) {
             dy=0;
+        }
 
         gd.plot.attr('viewBox', ((ew=='w')?dx:0)+' '+((ns=='n')?dy:0)+' '+(pw-dx)+' '+(ph-dy));
-        if(ew) doTicks(gd,'x');
-        if(ns) doTicks(gd,'y');
+        if(ew) { doTicks(gd,'x') }
+        if(ns) { doTicks(gd,'y') }
     }
 
     // common transform for dragging one end of an axis
     // d>0 is compressing scale, d<0 is expanding
     function dZoom(d) {
-        if(d>=0)
-            return 1 - Math.min(d,0.9);
+        if(d>=0) { return 1 - Math.min(d,0.9) }
         else
-            return 1 - 1/(1/Math.max(d,-0.3)+3.222);
+            { return 1 - 1/(1/Math.max(d,-0.3)+3.222) }
     }
 
     function resetViewBox() {
@@ -1316,6 +1129,10 @@ function makeTitles(gd,title) {
     }
 }
 
+// -----------------------------------------------------
+// legend drawing
+// -----------------------------------------------------
+
 function legend(gd) {
     var gl=gd.layout,gm=gl.margin;
     gl.showlegend = true;
@@ -1353,7 +1170,9 @@ function legend(gd) {
 
     var tracetext=traces.call(legendText).selectAll('text');
     if(gd.mainsite) {
-        tracetext.on('click',function(){if(!gd.dragged) {autoGrowInput(this)}});
+        tracetext.on('click',function(){
+            if(!gd.dragged) { autoGrowInput(this) }
+        });
     }
 
     // add the legend elements, keeping track of the legend size (in px) as we go
@@ -1535,7 +1354,10 @@ function legend(gd) {
     }
 }
 
+// -----------------------------------------------------
 // make or edit an annotation on the graph
+// -----------------------------------------------------
+
 // annotations are stored in gd.layout.annotations, an array of objects
 // index can point to one item in this array,
 //  or non-numeric to simply add a new one
@@ -1627,8 +1449,11 @@ function annotation(gd,index,opt,value) {
         .attr('font-size',12);
     styleText(anntext.node(),options.text);
 
-    if(gd.mainsite)
-        anntext.on('click',function(){if(!gd.dragged) {autoGrowInput(this)}});
+    if(gd.mainsite) {
+        anntext.on('click',function(){
+            if(!gd.dragged) {autoGrowInput(this)}
+        });
+    }
 
     var atbb = anntext.node().getBoundingClientRect(),
         annwidth = atbb.width,
@@ -1730,7 +1555,7 @@ function annotation(gd,index,opt,value) {
             }
             edges.forEach(function(i){
                 var p = line_intersect(ax0,ay0,ax,ay,i[0],i[1],i[2],i[3]);
-                if(!p) return;
+                if(!p) { return }
                 ax0 = p.x;
                 ay0 = p.y;
             });
@@ -1756,7 +1581,7 @@ function annotation(gd,index,opt,value) {
                 .call(strokeColor,'rgba(0,0,0,0)')
                 .call(fillColor,'rgba(0,0,0,0)');
             arrowdrag.node().onmousedown = function(e) {
-                if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
+                if(dragClear(gd)) { return true } // deal with other UI elements, and allow them to cancel dragging
 
                 var eln=this,
                     el3=d3.select(this),
@@ -1915,7 +1740,7 @@ function arrowhead(el3,style,ends,mag) {
             scale = (el3.attr('stroke-width') || 1)*(mag||1),
             stroke = el3.attr('stroke') || '#000',
             opacity = el3.style('stroke-opacity') || 1;
-        if(style>5) rot=0; // don't rotate square or circle
+        if(style>5) { rot=0 } // don't rotate square or circle
         d3.select(el.parentElement).append('path')
             .attr('class',el3.attr('class'))
             .attr('data-index',el3.attr('data-index'))
@@ -1926,10 +1751,8 @@ function arrowhead(el3,style,ends,mag) {
             .attr('transform','translate('+p.x+','+p.y+')rotate('+rot+')scale('+scale+')');
     }
 
-    if(ends.indexOf('start')>=0)
-        drawhead(start,dstart);
-    if(ends.indexOf('end')>=0)
-        drawhead(end,dend);
+    if(ends.indexOf('start')>=0) { drawhead(start,dstart) }
+    if(ends.indexOf('end')>=0) { drawhead(end,dend) }
 }
 
 // allArrowheads: call twice to make an arrowheads dropdown.
@@ -1940,7 +1763,8 @@ function allArrowheads(container){
     if(!container) {
         out=[];
         for(var i=1; i<=7; i++){
-            out.push({val:i,
+            out.push({
+                val:i,
                 name:'<svg width="40" height="20" data-arrowhead="'+i+'" style="position: relative; top: 2px;">'+
                     '<line stroke="rgb(0,0,0)" style="fill: none;" x1="5" y1="10" x2="25" y2="10" stroke-width="2">'+
                     '</line></svg>'
@@ -1964,10 +1788,10 @@ function line_intersect(x1,y1,x2,y2,x3,y3,x4,y4) {
     var a=x2-x1, b=x3-x1, c=x4-x3,
         d=y2-y1, e=y3-y1, f=y4-y3,
         det=a*f-c*d;
-    if(det==0) return null; // parallel lines, so intersection is undefined - ignore the case where they are colinear
+    if(det==0) { return null } // parallel lines, so intersection is undefined - ignore the case where they are colinear
     var t=(b*f-c*e)/det,
         u=(b*d-a*e)/det;
-    if(u<0 || u>1 || t<0 || t>1) return null; // segments do not intersect
+    if(u<0 || u>1 || t<0 || t>1) { return null } // segments do not intersect
     return {x:x1+a*t, y:y1+d*t};
 }
 
@@ -1978,744 +1802,6 @@ function dragClear(gd) {
     // because we cancel event bubbling, input won't receive its blur event.
     if(gd.input) gd.input.trigger('blur');
     return false;
-}
-
-// -----------------------------------------------------
-// Popovers and popover controls
-// -----------------------------------------------------
-
-// newPopover: make a popover in div gd at overall pos ({x,y} or {left,top,width,height}
-// as from getBoundingClientRect, or a DOM element, will call getBoundingClientRect on it)
-// uses cls for styling the popover and calls contentfn(($)popover, contentarg) to fill it
-function newPopover(gd,pos,cls,contentfn,applyfn,contentarg) {
-    if($('.popover.'+cls).length) // if this popover is already showing, quit so it will hide
-        return;
-    hidebox(); // hide the litebox.
-    // if pos is a DOM element, get its position
-    if(typeof pos.getBoundingClientRect=='function') {
-        $(pos).tooltip('hide'); // first check for a tooltip on this element to hide
-                                // this doesn't work perfectly... if it's in its show delay, it will still show.
-        pos=pos.getBoundingClientRect();
-    }
-    if(!('x' in pos)) pos.x=pos.left+(pos.width/2);
-    if(!('y' in pos)) pos.y=pos.top+pos.height;
-
-    // make the container
-    // using Bootstrap popovers for styling, but not their actions...
-    // initially put it at 0,0, then fix once we know its size
-    var popover=$(
-        '<div class="popover bottom editbox '+cls+'" style="top:0px;left:0px;display:block;">'+
-            '<div class="arrow"></div>'+
-            '<div class="popover-inner">'+
-                '<div class="popover-title"><div></div></div>'+
-                '<div class="popover-content"><div class="editcol"></div></div>'+
-            '</div>'+
-        '</div>').appendTo('body');
-
-    // store the graph and redraw and apply functions for use after changing values
-    popover[0].gd=gd;
-    popover[0].redraw = function(arg){contentfn(popover,arg)};
-    // after a change, applyChange gets called with arg {astr, val}
-    // astr is an attribute string per restyle or relayout, val is its new value
-    popover[0].applyChange = function(o){
-        var selectedObj = popover[0].selectedObj;
-        applyfn(popover[0].gd, o.astr, o.val, selectedObj>=0 ? selectedObj : null);
-        popover[0].redraw(selectedObj);
-    }
-
-    // create the contents
-    contentfn(popover,contentarg);
-
-    // fix positioning
-    var pbb = popover[0].getBoundingClientRect(), // popover, at initial position
-        wbb = $('#tabs-one-line').get(0).getBoundingClientRect(), // whole window
-        newtop = pos.y-pbb.top,
-        maxtop = wbb.top+wbb.height-pbb.height,
-        newleft = pos.x-pbb.left-(pbb.width/2),
-        maxleft = wbb.left+wbb.width-pbb.width,
-        setleft = Math.max(0,Math.min(newleft, maxleft)),
-        settop = Math.max(0,Math.min(newtop, maxtop));
-    popover.css({top:settop+'px', left:setleft+'px'});
-    // if box is shifted vertically, take off the arrow because it's not pointing to anything
-    if(newtop!=settop) { popover.find('.arrow').remove() }
-    // if it's shifted horizontally, try to shift the arrow (remove it if it's shifted too far)
-    else if(newleft!=setleft) {
-        var arrowpct = 100*(0.5+(newleft-setleft)/pbb.width);
-        if(arrowpct<5 || arrowpct>95) { popover.find('.arrow').remove() }
-        else { popover.find('.arrow').css('left',arrowpct+'%') }
-    }
-
-    // hide box when you click outside it
-    window.onmouseup = function(e) {
-        // see http://stackoverflow.com/questions/1403615/use-jquery-to-hide-a-div-when-the-user-clicks-outside-of-it
-        // need to separately check for colorpicker clicks, as spectrum doesn't make them children of the popover
-        // and need to separately kill the colorpickers and tooltips for the same reason
-        if(popover.has(e.target).length===0 && $(e.target).parents('.sp-container').length===0) {
-            window.onmouseup = null;
-            popover.find('.pickcolor').spectrum('destroy');
-            $('.sp-container').remove(); // this seems dangerous, but I've seen various cases where spectrum divs proliferate...
-            popover.find('input').tooltip('destroy');
-            popover.remove();
-        }
-    }
-}
-
-// pick from a button group
-function pickOption(s,astr,title,val,opts){
-    var pickbg = $('<div class="pickoption">'+
-            ((title) ? ('<div class="pull-left editboxtitle">'+title+'</div>') : '')+
-            '<div class="btn-group pull-left"></div></div>').appendTo(s).find('.btn-group');
-    opts.forEach(function(o){
-        var ob = $('<button class="btn editboxbutton'+(val==o.val ? ' active' : '')+'">'+
-            o.name+'</button>').appendTo(pickbg)
-        if(val!=o.val) {
-            ob.click(function(){s.parents('.popover')[0].applyChange({astr:astr,val:o.val})})
-        }
-    });
-}
-
-// html for a bootstrap dropdown with class cls
-function dropdown(cls,title){
-    return '<div class="editboxselector '+cls+'">'+
-        ((title) ? ('<div class="pull-left editboxtitle">'+title+'</div>') : '')+
-        '<div class="btn-group pull-left">'+
-            '<a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">'+
-                '<span class="pull-left selected-val"></span>'+
-                '<span class="caret pull-left editboxcaret"></span>'+
-            '</a>'+
-            '<ul class="dropdown-menu"></ul>'+
-        '</div>'+
-    '</div>';
-}
-
-// make a dropdown select for setting a style attribute
-// s: container
-// cls: class for this attribute
-// d0: the selected element
-// d: the modified styles
-// TODO: user input option
-function styleBoxDrop(s,cls,title,d0,d,clickfn){
-    var noset=false;
-    if(!d) {
-        d=d0;
-        noset=true;
-    }
-
-    var dn = $(dropdown('select-'+cls,title)).appendTo(s).get(0),
-        dd=d3.select(dn),
-        popover = $(s).parents('.popover');
-    var opts=dd.select('ul').selectAll('li')
-        .data(d)
-      .enter().append('li')
-        .on('click',function(d,i) {
-            var menu = $(this).parents('.btn-group');
-            menu.find('.selected-val').html(menu.find('li')[i].innerHTML);
-            var cfn = clickfn || popover[0].applyChange;
-            cfn({popover:popover, astr:traceAttrs[cls], val:d[0].t[cls], d:d, i:i});
-        });
-
-    var tw=40, th=20;
-
-    opts.append('svg')
-        .attr('width',tw)
-        .attr('height',th)
-        .style('position','relative')
-        .style('top','2px') // why do I have to do this? better way?
-        .append('g').attr('transform','translate(0,'+th/2+')')
-        .call(traceStyle)
-        .each(legendLines)
-        .each(legendPoints);
-    opts.append('span')
-        .style('font-size','14px')
-        .style('position','relative')
-        .style('top','-4px') // why do I have to do this? better way?
-        .html(function(d){return d[0].t.name+'&nbsp;'});
-    // set default value
-    if(!noset) {
-        for(var i=0; i<d.length && d[i][0].t[cls]!=d0[0].t[cls]; i++);
-        i = i % d.length; // TODO: add custom entry and use it in this case
-        $(dd.node()).find('.btn-group .selected-val').html($(dd.node()).find('li')[i].innerHTML);
-    }
-}
-
-// same for layout dropdowns, which are simpler
-function layoutBoxDrop(s,astr,title,val,opts,clickfn){
-    var dn = $(dropdown('select-layout',title)).appendTo(s).get(0),
-        dd = d3.select(dn),
-        popover = $(s).parents('.popover');
-    dn.attr = astr;
-    dd.select('ul').selectAll('li')
-        .data(opts)
-      .enter().append('li')
-        .on('click',function(d,i) {
-            var menu = $(this).parents('.btn-group');
-            menu.find('.selected-val').html(this.innerHTML);
-            var cfn = clickfn || popover[0].applyChange;
-            cfn({popover: popover, astr:astr, val:d.val, d:d, i:i});
-        })
-        .append('span')
-            .style('font-size','14px')
-            .style('position','relative')
-            .style('padding','5px')
-            .html(function(d){return d.name+'&nbsp;'});
-    // set default value
-    for(var i=0; i<opts.length && opts[i].val!=val; i++);
-    i = i % opts.length; // TODO: add custom entry and use it in this case
-    $(dd.node()).find('.btn-group .selected-val').html($(dd.node()).find('li')[i].innerHTML);
-}
-
-// pick a color (using spectrum)
-// s: container
-// cls: class for this attribute
-// title: to show up in the main box
-// title3: to show up inside spectrum box
-// TODO: click on a color from the palette and color changes right away... click again and it doesn't
-function pickColor(s,astr,title,title2,val){
-    var dd = $('<div class="editboxselector">'+
-        ((title) ? ('<div class="pull-left editboxtitle">'+title+'</div>') : '')+
-        '<input class="pickcolor" type="text" />'+
-        '</div>').appendTo(s);
-    dd.find('input').spectrum({
-        color: val,
-        showInput: true,
-        showInitial: false,
-        showAlpha: true,
-        localStorageKey: 'spectrum.palette',
-        showPalette: true,
-        showPaletteOnly: false,
-        showSelectionPalette: true,
-        clickoutFiresChange: true,
-        cancelText: 'Cancel',
-        chooseText: title2 ? ('Set '+title2) : 'OK',
-        showButtons: true,
-        preferredFormat: 'rgb',
-        maxSelectionSize: 16,
-        palette: [defaultColors, // TODO: make these colors cleaner and nicer
-            ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
-            "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
-            ["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
-            "rgb(0, 255, 255)", "rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"],
-            ["rgb(230, 184, 175)", "rgb(244, 204, 204)", "rgb(252, 229, 205)", "rgb(255, 242, 204)", "rgb(217, 234, 211)",
-            "rgb(208, 224, 227)", "rgb(201, 218, 248)", "rgb(207, 226, 243)", "rgb(217, 210, 233)", "rgb(234, 209, 220)",
-            "rgb(221, 126, 107)", "rgb(234, 153, 153)", "rgb(249, 203, 156)", "rgb(255, 229, 153)", "rgb(182, 215, 168)",
-            "rgb(162, 196, 201)", "rgb(164, 194, 244)", "rgb(159, 197, 232)", "rgb(180, 167, 214)", "rgb(213, 166, 189)",
-            "rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(255, 217, 102)", "rgb(147, 196, 125)",
-            "rgb(118, 165, 175)", "rgb(109, 158, 235)", "rgb(111, 168, 220)", "rgb(142, 124, 195)", "rgb(194, 123, 160)",
-            "rgb(166, 28, 0)", "rgb(204, 0, 0)", "rgb(230, 145, 56)", "rgb(241, 194, 50)", "rgb(106, 168, 79)",
-            "rgb(69, 129, 142)", "rgb(60, 120, 216)", "rgb(61, 133, 198)", "rgb(103, 78, 167)", "rgb(166, 77, 121)",
-            "rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)",
-            "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]],
-        change: function(color){dd.parents('.popover')[0].applyChange({astr:astr, val:color.toRgbString()})}
-//         selectionPalette: d
-    });
-}
-
-function slider(s,astr,title,val,bounds,digits){
-    var valfmt = function(v){ return v/Math.pow(10,digits) }
-    var slider = $('<div class="pickslider">'+
-        ((title) ? ('<div class="pull-left editboxtitle">'+title+'</div>') : '')+
-        '<div class="slider"></div><div class="slider-val">'+valfmt(val*Math.pow(10,digits))+'</div>'+
-        '</div>').appendTo(s);
-    slider.find('.slider').slider({
-        min: bounds[0]*Math.pow(10,digits),
-        max: bounds[1]*Math.pow(10,digits),
-        value: val*Math.pow(10,digits),
-        slide: function(e,ui){
-            slider.find('.slider-val').html(valfmt(ui.value));
-        },
-        stop: function(e,ui){
-            var valout = valfmt(ui.value);
-            slider.find('.slider-val').html(valout);
-            slider.parents('.popover')[0].applyChange({astr:astr, val:valout});
-        }
-    });
-}
-
-// text input box for layout numbers
-function textInput(s,astr,title,val,input){
-    var popover = $(s).parents('.popover'),
-        ib = $('<div class="editboxselector select-layout">'+
-        ((title) ? ('<div class="pull-left editboxtitle">'+title+'</div>') : '')+
-        '<input type="text" /></div>').appendTo(s).find('input');
-    if(input) {
-        var valin = input.converttoinput ? input.converttoinput(val) : val;
-        ib.val(valin).blur(input,function() {
-            var val = this.value;
-            if(val==valin) { // do nothing if the value is unchanged
-                return;
-            }
-            $(this).css('border',''); // clear potential error border
-            if(val=='') { // revert if value was cleared
-                this.value = valin;
-            }
-            else if(input.test(val)) { // take the new val if it passes validation test
-                popover[0].applyChange({astr:astr, val:input.convertfrominput ? input.convertfrominput(val) : val});
-            }
-            else {
-                $(this).css('border','1px solid red');
-                $(this).tooltip({placement:'right', title:input.errortext})
-                    .tooltip('show');
-            }
-        });
-    }
-    else { // no input var means disable this input
-        ib.attr('disabled',true);
-    }
-}
-
-// validator for bounded numeric range
-function inputBetween(vmin,vmax){
-    return {test: function(v) {return (v>=vmin && v<=vmax)},
-            errortext: 'Must be between '+String(vmin)+' and '+String(vmax),
-            converttoinput: function(v){return (v==null) ? '' : String(v)},
-            convertfrominput: function(v){return Number(v)}};
-}
-
-// validator for axis range inputs
-function inputAxRange(isdate,islog){
-    if(isdate==null || islog==null) {// disable setting all axes ranges if different types (flag==null)
-        return false;
-    }
-    else if(isdate) {
-        return {test: isDateTime,
-                errortext: 'Must be a date-time (eg "2012-12-31 19:33:01.234", may be truncated)',
-                converttoinput: ms2DateTime,
-                convertfrominput: DateTime2ms};
-    }
-    else if(islog) {
-        return {test: function(v) {return (v>0)},
-                errortext: 'Must be a positive number',
-                converttoinput: function(v){return (v==null) ? '' : String(Math.pow(10,v))},
-                convertfrominput: function(v){return Math.log(Number(v)>0 ? Number(v) : 1e-10)/Math.LN10}};
-    }
-    else {
-        return {test: $.isNumeric,
-                errortext: 'Must be a number',
-                converttoinput: function(v){return (v==null) ? '' : String(v)},
-                convertfrominput: function(v){return Number(v)}};
-    }
-}
-
-// -----------------------------------------------------
-// Trace styling popover
-// -----------------------------------------------------
-
-// starting with trace tracenum:
-// use tracenum=-1 for all traces, defaults to first trace
-function styleBox(gd,pos,tracenum) {
-    if(!tracenum) { tracenum=0 }
-    if(!gd.data){
-        console.log('no data to style',gd);
-        return; // TODO: disable item unless data is present
-    }
-    newPopover(gd,pos,'stylebox',styleBoxTraces,restyle,tracenum);
-}
-
-function styleBoxTraces(popover,tracenum){
-    // same ldata as legend plus first item, 'all traces'
-    // also makes short name for traces from ysrc
-    var tDefault = {name:'', tx:'',
-        visible:true, mode:'lines+markers', op:1, ld:'solid', lc:'#000',lw:1,
-        mx:'circle', mo:1, mc:'#000', ms:6, mlw:0, mlc:'#000'};
-    var ldata = (popover[0].gd.calcdata.length<2) ? [] :
-        tModify(tDefault,{name:'All Traces', mode:'none', visible:null});
-    for(var i=0; i<popover[0].gd.calcdata.length; i++) {
-        var o = stripSrc(popover[0].gd.calcdata[i][0]);
-        var tn = popover[0].gd.data[i].ysrc;
-        o.t.name = (tn ? tn : 'Trace '+i)
-            .replace(/[\s\n\r]+/gm,' ')
-            .replace(/^([A-z0-9\-_]+[\/:])?[0-9]+[\/:]/,'');
-        ldata.push([o]);
-    }
-    // look for attributes that are equal for all traces, set the 'all traces' val if found
-    if(ldata.length>2) {
-        for(var a in tDefault) {
-            var v_equal=true;
-            for(i=2; i<ldata.length; i++) {
-                if(ldata[i][0].t[a]!=ldata[1][0].t[a]) {v_equal=false}
-            }
-            if(v_equal) {
-                ldata[0][0].t[a]=ldata[1][0].t[a];
-            }
-        }
-    }
-
-    // make the trace selector dropdown (after removing any previous)
-    var pt = popover.find('.popover-title>div');
-    styleBoxDrop(pt.html(''),'trace','',ldata,null,selectTrace);
-    // the <br /> feels like a total hack... still don't get why this doesn't work with <div>
-    pt.append('<br/>');
-
-    // select the desired trace (and build the attribute selectors)
-    // choose all (or the only trace) if tracenum is invalid
-    if(tracenum>=ldata.length-1 || tracenum<-1) tracenum=-1;
-    selectTrace({popover:popover,d:ldata[tracenum+1],i:tracenum+1});
-}
-
-function selectTrace(o){
-    console.log(o);
-    var d = o.d,
-        popover = o.popover;
-    popover.find('.select-trace .selected-val')
-        .html(popover.find('.select-trace li')[o.i].innerHTML);
-
-    // save the selection value for later use
-    popover[0].selectedObj = o.i-1;
-
-    // remove previous attribute selectors (spectra get destroyed separately because
-    // they're not children of popover)
-    if($('.sp-container').length)
-        popover.find('.pickcolor').spectrum('destroy');
-    var attrs = popover.find('.popover-content')
-            .html('<div class="editcol col1"></div><div class="editcol col2"></div><br />'),
-        a1 = attrs.find('.col1'),
-        a2 = attrs.find('.col2');
-
-    // make each of the attribute selection dropdowns
-    pickOption(a1,'visible','Visible?',d[0].t.visible,[
-        {name:'Show',val:true},
-        {name:'Hide',val:false}]);
-    styleBoxDrop(a1,'mode','Mode',d,tModify(d[0].t,[
-        {mode:'lines',name:''},
-        {mode:'markers',name:''},
-        {mode:'lines+markers',name:''}]));
-    slider(a1,'opacity','Opacity',d[0].t.op,[0,1],2);
-    styleBoxDrop(a1,'ld','Line',d,tModify(d[0].t,[
-        {mode:'lines',name:'',ld:'solid'},
-        {mode:'lines',name:'',ld:'dot'},
-        {mode:'lines',name:'',ld:'dash'},
-        {mode:'lines',name:'',ld:'longdash'},
-        {mode:'lines',name:'',ld:'dashdot'},
-        {mode:'lines',name:'',ld:'longdashdot'}]));
-    popover.find('.select-ld svg') // line dash selector needs longer lines than the others
-        .attr('width','70')
-      .find('polyline')
-        .attr('points','5,0 65,0');
-    pickColor(a1,'line.color','... Color','Line Color',d[0].t.lc);
-    styleBoxDrop(a1,'lw','... Width',d,tModify(d[0].t,[
-        {mode:'lines',lw:0.5,name:'0.5'},
-        {mode:'lines',lw:1,name:'1'},
-        {mode:'lines',lw:2,name:'2'},
-        {mode:'lines',lw:3,name:'3'},
-        {mode:'lines',lw:4,name:'4'},
-        {mode:'lines',lw:6,name:'6'}]));
-    styleBoxDrop(a2,'mx','Marker',d,tModify(d[0].t,[
-        {mode:'markers',name:'',mx:'circle'},
-        {mode:'markers',name:'',mx:'square'},
-        {mode:'markers',name:'',mx:'cross'},
-        {mode:'markers',name:'',mx:'triangle-up'},
-        {mode:'markers',name:'',mx:'triangle-down'},
-        {mode:'markers',name:'',mx:'triangle-left'},
-        {mode:'markers',name:'',mx:'triangle-right'}]));
-    slider(a2,'marker.opacity','... Opacity',d[0].t.mo,[0,1],2);
-    pickColor(a2,'marker.color','... Color','Marker Color',d[0].t.mc);
-    styleBoxDrop(a2,'ms','... Size',d,tModify(d[0].t,[
-        {mode:'markers',ms:2,name:'2'},
-        {mode:'markers',ms:3,name:'3'},
-        {mode:'markers',ms:4,name:'4'},
-        {mode:'markers',ms:6,name:'6'},
-        {mode:'markers',ms:8,name:'8'},
-        {mode:'markers',ms:12,name:'12'},
-        {mode:'markers',ms:16,name:'16'}]));
-    styleBoxDrop(a2,'mlw','... Line width',d,tModify(d[0].t,[
-        {mode:'markers',mlw:0,name:'0'},
-        {mode:'markers',mlw:0.5,name:'0.5'},
-        {mode:'markers',mlw:1,name:'1'},
-        {mode:'markers',mlw:2,name:'2'},
-        {mode:'markers',mlw:3,name:'3'}]));
-    pickColor(a2,'marker.line.color','... Line color','Marker Line Color',d[0].t.mlc);
-}
-
-// routine for making modified-default attribute lists
-function tModify(tDefault,o){
-    if($.isPlainObject(o)) o=[o];
-    var out=[];
-    for(i in o) {
-        var outi={}
-        for(el in tDefault) outi[el] = (el in o[i]) ? o[i][el] : tDefault[el];
-        out.push([{t:outi}]);
-    }
-    return out;
-}
-
-var traceAttrs = {visible: 'visible', mode: 'mode', op: 'opacity',
-    ld:'line.dash', lc:'line.color', lw:'line.width',
-    mx:'marker.symbol', mo: 'marker.opacity', ms:'marker.size', mc:'marker.color',
-    mlc:'marker.line.color', mlw:'marker.line.width'};
-
-// same functions for styling traces as shown in the style box and in legends
-function legendLines(d){
-    if(d[0].t.mode.indexOf('lines')==-1) return;
-    d3.select(this).append('polyline')
-        .call(lineGroupStyle)
-        .attr('points','5,0 35,0');
-}
-
-function legendPoints(d){
-    if(d[0].t.mode.indexOf('markers')==-1) return;
-    d3.select(this).append('g')
-        .attr('class','legendpoints')
-      .selectAll('path')
-        .data(function(d){return d})
-      .enter().append('path')
-        .call(pointStyle,{})
-        .attr('transform','translate(20,0)');
-}
-
-function legendText(s){
-    return s.append('text')
-        .attr('class',function(d,i){return 'legendtext text-'+i})
-        .call(setPosition, 40, 0)
-        .attr('text-anchor','start')
-        .attr('font-size',12)
-        .each(function(d){styleText(this,d[0].t.name,d[0].t.noretrieve)});
-}
-
-// -----------------------------------------------------
-// Layout popover
-// -----------------------------------------------------
-
-function layoutBox(gd,pos) {
-    newPopover(gd, pos, 'layoutbox', layoutBoxContent, relayout);
-}
-
-function layoutBoxContent(popover){
-    var gd = popover[0].gd,
-        gl = gd.layout,
-        pt = popover.find('.popover-title>div').html('Plot Layout');
-        pc = popover.find('.popover-content')
-            .html('<div class="editcol col1"></div><div class="editcol col2"></div><br />'),
-        a1 = pc.find('.col1'),
-        a2 = pc.find('.col2');
-    popover[0].redraw = function(){}
-
-    pickOption(a1,'autosize','Autosize',gl.autosize,[
-        {name:'On',val:true},
-        {name:'Off',val:false}]);
-    textInput(a1,'width','Width',gl.width,inputBetween(10,10000));
-    textInput(a1,'height','Height',gl.height,inputBetween(10,10000));
-    pickColor(a1,'paper_bgcolor','Margin Color','Margin Color',gl.paper_bgcolor);
-    pickColor(a1,'plot_bgcolor','Plot Color','Plot Color',gl.plot_bgcolor);
-
-    textInput(a2,'margin.t','Margin Top',gl.margin.t,inputBetween(0,1000));
-    textInput(a2,'margin.b','... Bottom',gl.margin.t,inputBetween(0,1000));
-    textInput(a2,'margin.l','... Left',gl.margin.l,inputBetween(0,1000));
-    textInput(a2,'margin.r','... Right',gl.margin.r,inputBetween(0,1000));
-    textInput(a2,'margin.pad','Plot Padding',gl.margin.pad,inputBetween(0,1000));
-}
-
-// -----------------------------------------------------
-// Axes styling popover
-// -----------------------------------------------------
-
-// axis='allaxes', 'xaxis', or 'yaxis'
-function axesBox(gd,pos,axis) {
-    newPopover(gd, pos, 'axesbox', axesBoxContent, relayout, axis||'xaxis');
-}
-
-function axesBoxContent(popover,axis){
-    var gd = popover[0].gd,
-        gl = gd.layout,
-        pt = popover.find('.popover-title>div').html('');
-        pc = popover.find('.popover-content')
-            .html('<div class="editcol col1"></div><div class="editcol col2"></div><br />');
-
-    if(axis) { popover[0].axis = axis }
-    else { axis = popover[0].axis }
-
-    var axes = [{name:'All Axes', val:'allaxes'},{name:'X Axis',val:'xaxis'},{name:'Y Axis',val:'yaxis'}];
-    popover[0].axes = axes;
-    var axdata = {}, axi = 0;
-    axes.forEach(function(a,i){if(a.val==axis) {axdata=a; axi=i}});
-    layoutBoxDrop(pt,'','',axdata,axes,selectAxis);
-    // the <br /> feels like a total hack... still don't get why this doesn't work with <div>
-    pt.append('<br/>');
-
-    selectAxis({popover:popover,d:axdata,i:axi});
-}
-
-function selectAxis(o) {
-    var d = o.d,
-        popover = o.popover,
-        a1 = popover.find('.popover-content .col1').html(''),
-        a2 = popover.find('.popover-content .col2').html(''),
-        ax = d.val,
-        gl = popover[0].gd.layout,
-        axes = popover[0].axes;
-    popover.find('.popover-title .selected-val').html(popover.find('.popover-title li')[o.i].innerHTML);
-
-    // for axis='allaxes', check if all axes have the same value
-    // if yes, return it; otherwise return null
-    // for any single axis, just return the value
-    var combineAxes = function(attr,axis) {
-        if(!axis) { axis=ax }
-        if(axis==axes[0].val) {
-            var val = combineAxes(attr,axes[1].val);
-            for(var i=2; i<axes.length; i++) {
-                if(combineAxes(attr,axes[i].val)!=val) { return null }
-            }
-            return val;
-        }
-        else {
-            return nestedProperty(gl,axis+'.'+attr).get();
-        }
-    }
-
-    var isdate = combineAxes('isdate'), // gl,axes,ax,
-        islog = combineAxes('islog');
-    popover[0].axis = ax;
-    if(isdate || isdate=='null') {// if one or more axes is date type, cannot modify this here
-        pickOption(a1,'','Axis Type',null,[
-            {name:isdate ? 'DateTime' : 'Mixed date/num',val:null}]);
-    }
-    else {// if axes are numeric, can toggle log here
-        pickOption(a1,ax+'.islog','Axis Type', islog,[
-            {name:'Linear',val:false},
-            {name:'Log',val:true}]);
-    }
-    pickOption(a1,ax+'.autorange','Autorange',combineAxes('autorange'),[
-        {name:'On',val:true},
-        {name:'Off',val:false}]);
-    textInput(a1,ax+'.range[0]','Start',combineAxes('range[0]'),
-        inputAxRange(isdate,islog));
-    textInput(a1,ax+'.range[1]','End',combineAxes('range[1]'),
-        inputAxRange(isdate,islog));
-    pickOption(a1,ax+'.ticks','Ticks',combineAxes('ticks'),[
-        {name:'Outside',val:'outside'},
-        {name:'Inside',val:'inside'},
-        {name:'None',val:''}]);
-    textInput(a1,ax+'.ticklen','... Length',combineAxes('ticklen'),
-        inputBetween(1,1000));
-    textInput(a1,ax+'.tickwidth','... Width',combineAxes('tickwidth'),
-        inputBetween(0.1,100));
-    pickColor(a1,ax+'.tickcolor','... Color','Tick Color',combineAxes('tickcolor'));
-    pickOption(a1,ax+'.showticklabels','... Labels',combineAxes('showticklabels'),[
-        {name:'On',val:true},
-        {name:'Off',val:false}]);
-
-    pickOption(a2,ax+'.showgrid','Grid Lines',combineAxes('showgrid'),[
-        {name:'On',val:true},
-        {name:'Off',val:false}]);
-    textInput(a2,ax+'.gridwidth','... Width',combineAxes('gridwidth'),
-        inputBetween(0.1,100));
-    pickColor(a2,ax+'.gridcolor','... Color','Grid Color',combineAxes('gridcolor'));
-    pickOption(a2,ax+'.zeroline','Zero Line',combineAxes('zeroline'),[
-        {name:'On',val:true},
-        {name:'Off',val:false}]);
-    textInput(a2,ax+'.zerolinewidth','... Width',combineAxes('zerolinewidth'),
-        inputBetween(0.1,100));
-    pickColor(a2,ax+'.zerolinecolor','... Color','Zero Line Color',combineAxes('zerolinecolor'));
-}
-
-// -----------------------------------------------------
-// Legend styling popover
-// -----------------------------------------------------
-
-function legendBox(gd,pos) {
-    legend(gd);
-    newPopover(gd,pos,'legendbox',legendBoxContent,relayout);
-}
-
-function legendBoxContent(popover) {
-    var gd = popover[0].gd,
-        gl = gd.layout,
-        pt = popover.find('.popover-title>div').html('Legend');
-        pc = popover.find('.popover-content>div').html('');
-
-    pickOption(pc,'showlegend','Visible?',gl.showlegend,[
-        {name:'Show',val:true},
-        {name:'Hide',val:false}]);
-    pickColor(pc,'legend.bgcolor','Background','Legend Background',gl.legend.bgcolor);
-    pickColor(pc,'legend.bordercolor','Border','Legend Border',gl.legend.bordercolor);
-    textInput(pc,'legend.borderwidth','Border Width',gl.legend.borderwidth,
-        inputBetween(0.1,100));
-}
-
-// -----------------------------------------------------
-// Annotation management and styling popover
-// -----------------------------------------------------
-
-function annotationBox(gd,pos,anum) {
-    if(!gd.layout.annotations || !gd.layout.annotations.length) { annotation(gd) }
-    if(!anum || anum>=gd.layout.annotations.length) { anum=gd.layout.annotations.length-1 }
-
-    // make the dropdown list of annotations
-    function abContent(popover,anum) {
-        var titlediv = popover.find('.popover-title>div').html(''),
-            anndrop = $(dropdown('select-ann')).appendTo(titlediv),
-            anndrop3 = d3.select(anndrop[0]),
-            annotations = gd.layout.annotations;
-        titlediv.find('a').removeClass('btn-mini');
-        titlediv.append('<button class="btn annbutton deleteann">Delete</button> '+
-            '<button class="btn annbutton newann">New</button>');
-        titlediv.find('.deleteann').click(function(){
-            var delnum = popover[0].selectedObj;
-            console.log(gd, delnum);
-            annotation(gd, delnum, 'remove');
-            popover.remove();
-            if(annotations.length) {annotationBox(gd,pos,delnum)}
-        });
-        titlediv.find('.newann').click(function(){
-            annotation(gd);
-            popover.remove();
-            annotationBox(gd,pos);
-        });
-        anndrop3.select('ul').selectAll('li')
-            .data(annotations)
-          .enter().append('li')
-            .on('click',selectAnnotation)
-            .append('span')
-                .style('font-size','14px')
-                .style('position','relative')
-                .style('padding','5px')
-                .html(function(d,i){
-                    var dt1 = d.text.replace(/<br>/,' ');
-                    return (i+1)+': '+dt1.substr(0,20)+(dt1.length>20 ? '...' : '')
-                });
-        selectAnnotation.call(anndrop.find('li')[anum],annotations[anum],anum);
-    }
-
-    newPopover(gd,pos,'annotationstyles',abContent,relayout,anum);
-}
-
-function selectAnnotation(d,i){
-    var popover = $(this).parents('.popover'),
-        menu = $(this).parents('.btn-group');
-    menu.find('.selected-val').html(menu.find('li')[i].innerHTML);
-
-    // save the selection value for later use
-    popover[0].selectedObj = i;
-
-    // remove previous attribute selectors (spectra get destroyed separately because
-    // they're not children of popover)
-    if($('.sp-container').length)
-        popover.find('.pickcolor').spectrum('destroy');
-    var attrs = popover.find('.popover-content')
-        .html('<div class="editcol col1"></div><div class="editcol col2"></div><br />'),
-        a1 = attrs.find('.col1'),
-        a2 = attrs.find('.col2'),
-        a = 'annotations['+i+'].';
-
-    // make each of the attribute selection dropdowns
-    pickOption(a1,a+'ref','Move with',d.ref,[
-        {name:'Data',val:'plot'},
-        {name:'Page',val:'paper'}]);
-    pickOption(a1,a+'showarrow','Arrow',d.showarrow,[
-        {name:'Show',val:true},
-        {name:'Hide',val:false}]);
-    pickColor(a1,a+'arrowcolor','... Color','Arrow Color',d.arrowcolor || d.bordercolor || '#000');
-    slider(a1,a+'arrowwidth','... Width',d.arrowwidth,[0,10],1);
-    layoutBoxDrop(a1,a+'arrowhead','Arrowhead',d.arrowhead,allArrowheads());
-    allArrowheads(a1);
-    slider(a1,a+'arrowsize','... Scale',d.arrowsize,[0,5],1);
-    pickOption(a2,a+'align','Text Alignment',d.align,[
-        {val:'left',name:'<i class="icon-align-left"></i>'},
-        {val:'center',name:'<i class="icon-align-center"></i>'},
-        {val:'right',name:'<i class="icon-align-right"></i>'}]);
-    pickColor(a2,a+'bgcolor','Background Color','Background Color',d.bgcolor);
-    pickColor(a2,a+'bordercolor','Border Color','Border Color',d.bordercolor || 'rgba(0,0,0,0)');
-    slider(a2,a+'borderwidth','... Width',d.borderwidth,[0,10],1);
-    slider(a2,a+'borderpad','... Padding',d.borderpad,[0,10],1);
 }
 
 // -----------------------------------------------------
@@ -3297,7 +2383,10 @@ function doTicks(gd,ax) {
     al.find('.ticks').appendTo(al);
 }
 
+// ----------------------------------------------------
 // styling for svg text, in ~HTML format
+// ----------------------------------------------------
+
 //   <br> or \n makes a new line (translated to opening and closing <l> tags)
 // others need opening and closing tags:
 //   <sup>: superscripts
