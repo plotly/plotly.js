@@ -119,48 +119,6 @@ function plot(divid, data, layout) {
         gd.empty=false;
     }
 
-    // interpolate data if >1000 points
-    // jp added 9_8_2012
-    if(!graphwasempty){
-        var LARGESET=2000;
-        for(var i=0;i<data.length;i++){
-            if(data[i]['x'].length>LARGESET){
-                // for large datasets, assume unsorted
-                var xsort=[];
-                var ysort=[];
-                xy=$.zip(data[i]['x'],data[i]['y']);
-                xy=sortobj(xy);
-                $.each(xy, function(k, v){xsort.push(k); ysort.push(v);});
-                console.log('xsort');
-      	        console.log(xsort);
-                console.log('ysort');
-    	        console.log(ysort);
-                // i_f = "interpolation factor" - size of chunk to average
-                // Ex: If LARGESET=1000 and  there are 10000 points ->
-                // make new array by averaging over every 10 y values
-                i_f=Math.round(xsort.length/LARGESET);
-                new_x=[]
-                new_y=[]
-                for(var j in xsort){
-                    if(j%i_f==0 && $.isNumeric(xsort[j])){
-                        new_x.push(xsort[j]);
-                        y_slice=ysort.slice(j,j+i_f)
-                        // Filter out any string values in y_slice
-                        for(var k in y_slice){
-                            if($.isNumeric(y_slice[k])==false) y_slice.splice(k,1);}
-                        avg=eval(y_slice.join('+'))/y_slice.length;
-                        new_y.push(avg);
-                    }
-                }
-                // console.log('interpolated arrays');
-                // console.log(new_x);
-                // console.log(new_y);
-                data[i]['x']=new_x;
-                data[i]['y']=new_y;
-            }
-        } // end jp edit 9_8_2012
-    }
-
     // make the graph container and axes, if they don't already exist
     // note: if they do already exist, the new layout gets ignored (as it should)
     // unless there's no data there yet... then it should destroy and remake the plot
