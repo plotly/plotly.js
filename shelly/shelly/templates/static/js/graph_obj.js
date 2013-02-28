@@ -2583,8 +2583,10 @@ function stripSrc(d) {
 }
 
 function killspin(){
-    if(gettab().spinner !== undefined){
-        gettab().spinner.stop();
+    if(gettab()!==undefined){
+        if(gettab().spinner !== undefined){
+            gettab().spinner.stop();
+        }
     }
     //$('#'+gettab().id+' .spinner').remove();
     $('.spinner').remove();
