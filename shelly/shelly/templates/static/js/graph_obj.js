@@ -641,7 +641,25 @@ function plotAutoSize(gd,aobj) {
 
 // check whether to resize a tab (if it's a plot) to the container
 function plotResize(gd) {
-    if(gd.tabtype=='plot' && gd.layout && gd.layout.autosize)
+    setTimeout(function(){
+        var event;            
+        if (document.createEvent) {
+            event = document.createEvent("HTMLEvents");
+            event.initEvent("resize", true, true);
+        } else {
+            event = document.createEventObject();
+            event.eventType = "resize";
+        }
+                    
+        if (document.createEvent) {
+            gettab().dispatchEvent(event);
+        } else {
+            gettab().fireEvent("on" + event.eventType, event);
+        }        
+        return false;
+    }, 500);
+
+    if(gd.tabtype=='plot' && gd.layout && gd.layout.autosize) {
         setTimeout(function(){
             relayout(gd, {autosize:true});
             if(LIT) {
@@ -649,6 +667,7 @@ function plotResize(gd) {
                 litebox();
             }
         }, 500);
+    }
 }
 
 // ----------------------------------------------------
@@ -2364,17 +2383,17 @@ function styleText(sn,t) {
     // take the most permissive reading we can of the text:
     // if we don't recognize a tag, treat it as literal text
     var t1=t.replace(/</g,'\x01') // first turn all <, > to non-printing \x01, \x02
-            .replace(/>/g,'\x02')
-            .replace(new RegExp(tagRE,'gi'),'<$1>') // next turn good tags back to <...>
-            .replace(/(<br(\s[^<>]*)?\/?>|\n)/gi, '</l><l>') // translate <br> and \n
-            .replace(/\x01/g,'&lt;') // finally turn any remaining \x01, \x02 into &lt;, &gt;
-            .replace(/\x02/g,'&gt;');
+        .replace(/>/g,'\x02')
+        .replace(new RegExp(tagRE,'gi'),'<$1>') // next turn good tags back to <...>
+        .replace(/(<br(\s[^<>]*)?\/?>|\n)/gi, '</l><l>') // translate <br> and \n
+        .replace(/\x01/g,'&lt;') // finally turn any remaining \x01, \x02 into &lt;, &gt;
+        .replace(/\x02/g,'&gt;');
     // close unclosed tags
     for(i in tags) {
         var om=t1.match(new RegExp('<'+tags[i],'gi')), opens=om?om.length:0;
         var cm=t1.match(new RegExp('<\\/'+tags[i],'gi')), closes=cm?cm.length:0;
         while(closes<opens) { closes++; t1+='</'+tags[i]+'>'}
-    }
+    }   
     // quote unquoted attributes
     var attrRE=/(<[^<>]*=\s*)([^<>\s"']+)(\s|>)/g;
     while(t1.match(attrRE)) t1=t1.replace(attrRE,'$1"$2"$3');
