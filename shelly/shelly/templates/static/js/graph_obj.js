@@ -641,24 +641,6 @@ function plotAutoSize(gd,aobj) {
 
 // check whether to resize a tab (if it's a plot) to the container
 function plotResize(gd) {
-    setTimeout(function(){
-        var event;            
-        if (document.createEvent) {
-            event = document.createEvent("HTMLEvents");
-            event.initEvent("resize", true, true);
-        } else {
-            event = document.createEventObject();
-            event.eventType = "resize";
-        }
-                    
-        if (document.createEvent) {
-            gettab().dispatchEvent(event);
-        } else {
-            gettab().fireEvent("on" + event.eventType, event);
-        }        
-        return false;
-    }, 500);
-
     if(gd.tabtype=='plot' && gd.layout && gd.layout.autosize) {
         setTimeout(function(){
             relayout(gd, {autosize:true});
@@ -2393,7 +2375,7 @@ function styleText(sn,t) {
         var om=t1.match(new RegExp('<'+tags[i],'gi')), opens=om?om.length:0;
         var cm=t1.match(new RegExp('<\\/'+tags[i],'gi')), closes=cm?cm.length:0;
         while(closes<opens) { closes++; t1+='</'+tags[i]+'>'}
-    }   
+    }
     // quote unquoted attributes
     var attrRE=/(<[^<>]*=\s*)([^<>\s"']+)(\s|>)/g;
     while(t1.match(attrRE)) t1=t1.replace(attrRE,'$1"$2"$3');
