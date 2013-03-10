@@ -302,10 +302,10 @@ function plot(divid, data, layout) {
     try{ killspin(); }
     catch(e){ console.log(e); }
     setTimeout(function(){
-        if($(gettab()).find('#graphtips').length==0 && gd.data!==undefined){ 
+        if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false){ 
             showAlert('graphtips'); }
-        else if($(gettab()).find('#graphtips').css('display')=='none'){
-            $(gettab()).find('#graphtips').fadeIn(); }
+        else if($(gd).find('#graphtips').css('display')=='none'){
+            $(gd).find('#graphtips').fadeIn(); }
     },1000);
 }
 
@@ -676,7 +676,7 @@ function newPlot(divid, layout) {
     if($(gd).children('.graphbar').length==1 &&
             $(gd).children('.demobar').length==1 &&
             $(gd).children('svg').length==1 &&
-            $(gd).children().length==3) {
+            $(gd).children().length>=3) { /* 4th child is graph tips alert div */
         $(gd).children('svg').remove();
     }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
@@ -2460,6 +2460,7 @@ function styleTextInner(s,n) {
 // ------------------------------- graphToGrid
 
 function graphToGrid(){
+    startspin();
     var gd=gettab();
     var csrftoken=$.cookie('csrftoken');
     if(gd.fid !== undefined && gd.fid !='')
