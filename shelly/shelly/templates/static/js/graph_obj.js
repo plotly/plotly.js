@@ -301,6 +301,12 @@ function plot(divid, data, layout) {
 
     try{ killspin(); }
     catch(e){ console.log(e); }
+    setTimeout(function(){
+        if($(gettab()).find('#graphtips').length==0 && gd.data!==undefined){ 
+            showAlert('graphtips'); }
+        else if($(gettab()).find('#graphtips').css('display')=='none'){
+            $(gettab()).find('#graphtips').fadeIn(); }
+    },1000);
 }
 
 // ------------------------------------------------------------ gettab()
