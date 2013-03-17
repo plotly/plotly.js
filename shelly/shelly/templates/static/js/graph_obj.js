@@ -303,7 +303,9 @@ function plot(divid, data, layout) {
     catch(e){ console.log(e); }
     setTimeout(function(){
         if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false){ 
-            showAlert('graphtips'); }
+            try{ showAlert('graphtips'); }
+            catch(e){ console.log(e); } 
+        }
         else if($(gd).find('#graphtips').css('display')=='none'){
             $(gd).find('#graphtips').fadeIn(); }
     },1000);
