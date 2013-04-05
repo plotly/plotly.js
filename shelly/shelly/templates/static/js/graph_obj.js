@@ -86,29 +86,33 @@ PTS_LINESONLY = 20;
 DBLCLICKDELAY = 600; // ms between first mousedown and 2nd mouseup to constitute dblclick
 MINDRAG = 5; // pixels to move mouse before you stop clamping to starting point
 
+defaultColors=['#00e', //blue
+               '#a00', //red
+               '#6fa8dc', //lite blue
+               '#ffd966', //goldenrod
+               '#ff00ff', //elektrik purple
+               '#9900ff', //moody purple
+               '#0c0', // brite green
+               '#000']; // black
 
-// var defaultColors=['#00e','#a00','#0c0','#000','#888'];
-
-var defaultColors=['#00e', //blue
-                   '#a00', //red
-                   '#6fa8dc', //lite blue
-                   '#ffd966', //goldenrod
-                   '#ff00ff', //elektrik purple
-                   '#9900ff', //moody purple
-                   '#0c0', // brite green
-                   '#000']; // black
+defaultScale=[[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94, 168)"],
+    [0.375,"rgb(29, 145, 192)"],[0.5,"rgb(65, 182, 196)"],[0.625,"rgb(127, 205, 187)"],
+    [0.75,"rgb(199, 233, 180)"],[0.875,"rgb(237, 248, 217)"],[1,"rgb(255, 255, 217)"]];
 
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
 // if necessary to create the framework
 // ----------------------------------------------------
-function plot(divid, data, layout) {
+function plot(divid, data, layout, rdrw) {
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in by dom element, others by id (string)
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
+
+	// rdrw - whether to force the heatmap to redraw, true if calling plot() from restyle 
+    if(typeof rdrw==='undefined') rdrw=false;
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-object (null, '', whatever) for data
@@ -208,15 +212,34 @@ function plot(divid, data, layout) {
             // add the trace-wide properties to the first point, per point properties to every point
             // t is the holder for trace-wide properties, start it with the curve num from gd.data
             // in case some curves don't plot
-            cd[0].t={curve:curve};
+            cd[0].t={curve:curve}; // <-- curve is index of the data object in gd.data
             if(!('line' in gdc)) gdc.line={};
             if(!('marker' in gdc)) gdc.marker={};
             if(!('line' in gdc.marker)) gdc.marker.line={};
 
-            gd.calcdata.push(cd);
+            //gd.calcdata.push(cd);
         }
+        else if( gdc.type=='heatmap' ){
+            if(gdc.visible!=false) { 
+                // heatmap() builds a png heatmap on the coordinate system, see heatmap.js
+                // returns the L, R, T, B coordinates for autorange as { x:[L,R], y:[T,B] }
+                var bounds = hm_rect(gdc);
+                var serieslen=2;
+                if(xa.autorange)
+                    xdr = [aggNums(Math.min,xdr[0],bounds['x'],serieslen),aggNums(Math.max,xdr[1],bounds['x'],serieslen)];
+                if(ya.autorange)
+                    ydr = [aggNums(Math.min,ydr[0],bounds['y'],serieslen),aggNums(Math.max,ydr[1],bounds['y'],serieslen)];                
+            }
+            // calcdata ("cd") for heatmaps:
+            // curve: index of heatmap in gd.data
+            // type: used to distinguish heatmaps from traces in "Data" popover
+            var t={ curve:curve, type:'heatmap' }
+            cd.push({t:t});
+        }
+        gd.calcdata.push(cd);
     }
-//     console.log(gd.calcdata);
+
+    // console.log(gd.calcdata);
     // put the styling info into the calculated traces
     // has to be done separate from applyStyles so we know the mode (ie which objects to draw)
     setStyles(gd);
@@ -224,6 +247,10 @@ function plot(divid, data, layout) {
     // autorange... if axis is currently reversed, preserve this.
     var a0 = 0.05, // 5% extension of plot scale beyond last point
         a1 = 1+a0;
+        
+    // if there's a heatmap in the graph div data, get rid of 5% padding (jp edit 3/27)
+    $(gdd).each(function(i,v){ if(v.type=='heatmap') a0=0; a1=1; });        
+        
     if(xa.autorange && $.isNumeric(xdr[0])) {
         if(xa.range && xa.range[1]<xa.range[0])
             xa.range=[a1*xdr[1]-a0*xdr[0],a1*xdr[0]-a0*xdr[1]];
@@ -245,9 +272,17 @@ function plot(divid, data, layout) {
     }
 
     if($.isNumeric(xa.m) && $.isNumeric(xa.b) && $.isNumeric(ya.m) && $.isNumeric(ya.b)) {
-        var xf=function(d){return d3.round(xa.b+xa.m*d.x+vb.x,2)};
-        var yf=function(d){return d3.round(ya.b+ya.m*d.y+vb.y,2)};
         // now plot the data
+        
+        // draw heatmaps, if any (jp edit 3/27)        
+        for(var i in gd.calcdata){
+            var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c]; 
+            if(gdc.type=='heatmap'){ 
+                heatmap(c,gdc,cd,rdrw,gd);
+            }
+        }  
+        
+        // plot traces
         gp.selectAll('g.trace').remove();
 
         var traces = gp.selectAll('g.trace')
@@ -256,12 +291,13 @@ function plot(divid, data, layout) {
             .attr('class','trace');
 
         traces.each(function(d){
+            if(d[0].t.type=='heatmap') return;
             if(d[0].t.mode.indexOf('lines')==-1 || d[0].t.visible==false) return;
             var i=-1,t=d3.select(this);
             while(i<d.length) {
                 var pts='';
                 for(i++; i<d.length && $.isNumeric(d[i].x) && $.isNumeric(d[i].y); i++)
-                    pts+=xf(d[i])+','+yf(d[i])+' ';
+                    pts+=xf(d[i],gd)+','+yf(d[i],gd)+' ';
                 if(pts)
                     t.append('polyline').attr('points',pts);
             }
@@ -271,6 +307,7 @@ function plot(divid, data, layout) {
             .attr('class','points')
             .each(function(d){
                 var t=d[0].t;
+                if(t.type=='heatmap') return;                
                 if(t.mode.indexOf('markers')==-1 || d[0].t.visible==false) return;
                 d3.select(this).selectAll('path')
                     .data(function(d){return d})
@@ -278,7 +315,7 @@ function plot(divid, data, layout) {
                     .each(function(d){
                         if($.isNumeric(d.x) && $.isNumeric(d.y))
                             d3.select(this)
-                                .attr('transform','translate('+xf(d)+','+yf(d)+')');
+                                .attr('transform','translate('+xf(d,gd)+','+yf(d,gd)+')');
                         else d3.select(this).remove();
                     });
             });
@@ -311,13 +348,29 @@ function plot(divid, data, layout) {
     },1000);
 }
 
+// ------------------------------------------------------------ xf()
+// returns a plot x coordinate given a global x coordinate 
+function xf(d,gd){
+    var xa=gd.layout.xaxis;
+    var vb=gd.viewbox;   
+    return d3.round(xa.b+xa.m*d.x+vb.x,2)
+}
+
+// ------------------------------------------------------------ yf()
+// returns a plot x coordinate given a global x coordinate 
+function yf(d,gd){
+    var ya=gd.layout.yaxis;
+    var vb=gd.viewbox;    
+    return d3.round(ya.b+ya.m*d.y+vb.y,2)
+}
+
 // ------------------------------------------------------------ gettab()
 // return the visible tab.
 // if tabtype is given, make sure it's the right type, otherwise make a new tab
 // if it's not a plot, also make sure it's empty, otherwise make a new tab
 // plots are special: if you bring new data in it will try to add it to the existing plot
 function gettab(tabtype,mode){
-    if(tabtype) console.log('gettab',tabtype,mode);
+    //if(tabtype) console.log('gettab',tabtype,mode);
     var td = $('.ui-tabs-panel:visible')[0];
     if(tabtype){
         if(!td || td.tabtype!=tabtype) td=addTab(tabtype);
@@ -332,6 +385,7 @@ function setStyles(gd) {
     // search the array defaults in case a is missing (and for a default val
     // if some points of o are missing from a)
     function mergeattr(a,attr,dflt) {
+        //console.log(a); console.log(attr); console.log(dflt);
         if($.isArray(a)) {
             var l = Math.max(cd.length,a.length);
             for(var i=0; i<l; i++) { cd[i][attr]=a[i] }
@@ -341,21 +395,36 @@ function setStyles(gd) {
     }
     for(var i in gd.calcdata){
         var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
-        // mergeattr puts single values into cd[0].t, and all others into each individual point
-        mergeattr(gdc.visible,'visible',true);
-        mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');
-        mergeattr(gdc.opacity,'op',1);
-        mergeattr(gdc.line.dash,'ld','solid');
-        mergeattr(gdc.line.color,'lc',gdc.marker.color || defaultColors[c % defaultColors.length]);
-        mergeattr(gdc.line.width,'lw',2);
-        mergeattr(gdc.marker.symbol,'mx','circle');
-        mergeattr(gdc.marker.opacity,'mo',1);
-        mergeattr(gdc.marker.size,'ms',6);
-        mergeattr(gdc.marker.color,'mc',cd[0].t.lc);
-        mergeattr(gdc.marker.line.color,'mlc',((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000'));
-        mergeattr(gdc.marker.line.width,'mlw',0);
-        mergeattr(gdc.text,'tx','');
-        mergeattr(gdc.name,'name','trace '+c);
+        if(cd[0].t.type!=='heatmap'){
+            // mergeattr puts single values into cd[0].t, and all others into each individual point
+            mergeattr(gdc.visible,'visible',true);
+            mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');
+            mergeattr(gdc.opacity,'op',1);
+            mergeattr(gdc.line.dash,'ld','solid');
+            mergeattr(gdc.line.color,'lc',gdc.marker.color || defaultColors[c % defaultColors.length]);
+            mergeattr(gdc.line.width,'lw',2);
+            mergeattr(gdc.marker.symbol,'mx','circle');
+            mergeattr(gdc.marker.opacity,'mo',1);
+            mergeattr(gdc.marker.size,'ms',6);
+            mergeattr(gdc.marker.color,'mc',cd[0].t.lc);
+            mergeattr(gdc.marker.line.color,'mlc',((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000'));
+            mergeattr(gdc.marker.line.width,'mlw',0);
+            mergeattr(gdc.text,'tx','');
+            mergeattr(gdc.name,'name','trace '+c);
+        } else {
+            mergeattr(gdc.visible,'visible',true);        
+            // attributes in 1st column of heatmap styling popover
+            mergeattr(gdc.x0,'x0',2);
+            mergeattr(gdc.dx,'dx',0.5);
+            mergeattr(gdc.y0,'y0',2);            
+            mergeattr(gdc.dy,'dy',0.5);  
+            mergeattr(gdc.zmin,'zmin',-10);            
+            mergeattr(gdc.zmax,'zmax',10);                                  
+            // attributes in 2nd column of heatmap styling popover
+            //mergeattr(gdc.mincolor,'mnc',hMapMinColor);
+            //mergeattr(gdc.maxcolor,'mxc',hMapMaxColor);
+            mergeattr(JSON.stringify(gdc.scl),'scl',defaultScale);
+        }
     }
 }
 
@@ -460,6 +529,7 @@ function pointStyle(s,t) {
 // -----------------------------------------------------
 
 function legendLines(d){
+    if(d[0].t.type=='heatmap') return;
     if(d[0].t.mode.indexOf('lines')==-1) return;
     d3.select(this).append('polyline')
         .call(lineGroupStyle)
@@ -467,6 +537,7 @@ function legendLines(d){
 }
 
 function legendPoints(d){
+    if(d[0].t.type=='heatmap') return;
     if(d[0].t.mode.indexOf('markers')==-1) return;
     d3.select(this).append('g')
         .attr('class','legendpoints')
@@ -495,6 +566,7 @@ function legendText(s){
 // val is the new value to use
 // traces is a trace number or an array of trace numbers to change (blank for all)
 function restyle(gd,astr,val,traces) {
+    console.log(astr);console.log(val);console.log(traces);
     gd.changed = true;
     if($.isNumeric(traces)) traces=[traces];
     else if(!$.isArray(traces) || !traces.length)
@@ -507,8 +579,10 @@ function restyle(gd,astr,val,traces) {
         cont[aa[j]]=val;
     }
     // need to replot if mode or visibility changes, because the right objects don't exist
-    if(['mode','visible'].indexOf(astr)>=0)
-        plot(gd,'','');
+    // also need to replot if a heatmap
+    var hm_attr=['mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','scl'];
+    if(['mode','visible'].indexOf(astr)>=0||hm_attr.indexOf(astr)>=0)
+        plot(gd,'','',true); // <-- last arg is to force redrawing the heatmap
     else {
         setStyles(gd);
         applyStyle(gd.plot);
@@ -2366,6 +2440,7 @@ function doTicks(gd,ax) {
 // but if it fails, displays the unparsed text with a tooltip about the error
 // TODO: will barf on tags crossing newlines... need to close and reopen any such tags if we want to allow this.
 function styleText(sn,t) {
+    if(t===undefined) return;
     var s=d3.select(sn);
     // whitelist of tags we accept - make sure new tags get added here as well as styleTextInner
     var tags=['sub','sup','b','i','font'];
@@ -2470,6 +2545,8 @@ function graphToGrid(){
     else {
         var data = [];
         for(d in gd.data) data.push(stripSrc(gd.data[d]));
+        console.log('~ DATA ~');
+        console.log(data);
         $.post("/pullf/", {'csrfmiddlewaretoken':csrftoken, 'data': JSON.stringify({'data':data}), 'ft':'grid'}, fileResp);
     }
 }
