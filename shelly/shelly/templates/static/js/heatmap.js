@@ -37,7 +37,6 @@ function default_hm(gdc){
 // plot( gettab().id, [{'type':'heatmap','z':[[1,2],[3,4]], 'x0':2, 'y0':2, 'dx':0.5, 'dy':0.5}] )
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 function heatmap(i,gdc,cd,rdrw,gd){
-    //console.log(gdc); console.log(cd); console.log(cd[0].t.mnc);
     if(rdrw===undefined){ rdrw=false; }
     //var gd=gettab();
     // Set any missing keys to defaults
@@ -77,7 +76,6 @@ function heatmap(i,gdc,cd,rdrw,gd){
     var background = p.color(255, 0, 0, 0);        
         
     if($('#'+id).length>0 && rdrw==false){
-        console.log('heatmap already exists');
         // the heatmap already exists, we just need to move it (heatmap() was called because of a zoom or pan event)
         $('#'+id).hide().attr("x",x_px).attr("y",y_px-((m-1)*dy_px)).show().attr("width",p.width).attr("height",p.height).show();         
         return;
@@ -95,33 +93,26 @@ function heatmap(i,gdc,cd,rdrw,gd){
 
     if (typeof(scl)=="string") scl=eval(scl); // <-- convert colorscale string to array    
     var d=[]; // "domain"
-    for(var i=0; i<scl.length; i++){ d.push( min+(scl[i][0]*(max-min)) ); }
+    //for(var i=0; i<scl.length; i++){ d.push( min+(scl[i][0]*(max-min)) ); }
+    for(var i=0; i<scl.length; i++){ d.push( min+(scl[i][0]*(255)) ); }    
     var r=[]; // "range"
     for(var i=0; i<scl.length; i++){ r.push( scl[i][1] ); }    
     
-    //console.log('~ COLOR SCALE ~',scl,d,r);    
     s = d3.scale.linear()
         .domain(d)
         .interpolate(d3.interpolateRgb)
-        .range(r);
-        //.range([cd[0].t.mnc, cd[0].t.mxc]);
-        //.range(["#ff0000", "#0000ff"]);         
+        .range(r);         
 
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
     // build a brick at each z-matrix value  
-    var stest='';         
     for(var i=0; i<n; i++) {
         for(var j=0; j<m; j++) {            
-            var v=z[j][i]; // get z-value
-            stest+='0|';
-            bld_brck(p,v,i,j,dx_px,dy_px,s,gd); // build color brick!
+            var v=z[j][i], v_8b=Math.round(v/(max-min)*255); // get z-value, scale for 8-bit color by rounding z to an integer 0-255
+            bld_brck(p,v_8b,i,j,dx_px,dy_px,s,gd); // build color brick!
         }
-        stest+='\n';
     } 
-    
-    console.log(stest);
-
+        
     // http://stackoverflow.com/questions/6249664/does-svg-support-embedding-of-bitmap-images        
     // https://groups.google.com/forum/?fromgroups=#!topic/d3-js/aQSWnEDFxIc    
     gd.plot.append('svg:image') 
@@ -147,17 +138,20 @@ function heatmap(i,gdc,cd,rdrw,gd){
 // v: z value
 // dx: width of brick in px
 // dy: height of brick in px
-// s: d3 color function, returns an rgb value as a string
-function bld_brck(p,v,i,j,dx,dy,s,gd){                    
+// s: d3 color function, returns a hex color string interpolated for z
+function bld_brck(p,v,i,j,dx,dy,s,gd){
     var c = s(v).replace('#',''), r = '0x'+c.substr(0,2), g = '0x'+c.substr(2,2), b = '0x'+c.substr(4,2);
-    if(dx<=0 || dy<=0) alert('hold up!');
+                
+    /*if(p.color(r,g,b)=="\x00"){
+        console.log('zvalue',v);
+        console.log('missing brick at',i,j);    
+    }*/
     for(var x=0; x<dx; x++) { // TODO: Make brick spacing editable (ie x=1)
         for(var y=0; y<dy; y++) { // TODO: Make brick spacing editable
-            p.buffer[p.index((Number(i*dx)+Number(x)), (Number(j*dy)+Number(y)))] = p.color(r,g,b);
+            p.buffer[p.index((Number(i*dx)+Number(x)), (Number(j*dy)+Number(y)))] = p.color(r,g,b);            
         }
     }
     //p.buffer[p.index(Number(i), Number(j)) ] = p.color(r,g,b); // <--- single px brick experiment
-    console.log(i*dx,j*dy,' ----> ',Number(i*dx)+Number(x), Number(j*dy)+Number(y));
 }
 
 // Return MAX of an array of arrays
@@ -203,7 +197,7 @@ function insert_colorbar(gd,gdc,cb_id) {
             // TODO: colorbar spacing from plot (fixed at 50 right now)
             // should be a variable in gd.data and editable from a popover
             .attr("transform","translate("+(gl.width-gl.margin.r+50)+","+(gl.margin.t)+")")
-            .classed("colorbar",true)
+            .classed("colorbar",true);
         cb = colorBar().color(d3.scale.linear()
             .domain(d)
             .range(r))            
