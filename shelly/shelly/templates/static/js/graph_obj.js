@@ -249,7 +249,7 @@ function plot(divid, data, layout, rdrw) {
         a1 = 1+a0;
         
     // if there's a heatmap in the graph div data, get rid of 5% padding (jp edit 3/27)
-    $(gdd).each(function(i,v){ if(v.type=='heatmap') a0=0; a1=1; });        
+    $(gdd).each(function(i,v){ if(v.type=='heatmap'){ a0=0; a1=1; } });        
         
     if(xa.autorange && $.isNumeric(xdr[0])) {
         if(xa.range && xa.range[1]<xa.range[0])
