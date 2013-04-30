@@ -126,7 +126,7 @@ function plot(divid, data, layout, rdrw) {
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
-	// rdrw - whether to force the heatmap to redraw, true if calling plot() from restyle 
+	// rdrw - whether to force the heatmap to redraw, true if calling plot() from restyle
     if(typeof rdrw==='undefined') rdrw=false;
 
     // if there is already data on the graph, append the new data
@@ -381,15 +381,16 @@ function plot(divid, data, layout, rdrw) {
             mergeattr(gdc.marker.line.color,'mlc',((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000' ));
             mergeattr(gdc.marker.line.width,'mlw',0);*/                                  
         }        
-        else if( curvetype=='heatmap' ){
-            if(gdc.visible!=false) { 
-                // hm_rect() returns the L, R, T, B coordinates for autorange as { x:[L,R], y:[T,B] }
+        else if( gdc.type=='heatmap' ){
+            if(gdc.visible!=false) {
+                // heatmap() builds a png heatmap on the coordinate system, see heatmap.js
+                // returns the L, R, T, B coordinates for autorange as { x:[L,R], y:[T,B] }
                 var bounds = hm_rect(gdc);
                 var serieslen=2;
                 if(xa.autorange)
                     xdr = [aggNums(Math.min,xdr[0],bounds['x'],serieslen),aggNums(Math.max,xdr[1],bounds['x'],serieslen)];
                 if(ya.autorange)
-                    ydr = [aggNums(Math.min,ydr[0],bounds['y'],serieslen),aggNums(Math.max,ydr[1],bounds['y'],serieslen)];                
+                    ydr = [aggNums(Math.min,ydr[0],bounds['y'],serieslen),aggNums(Math.max,ydr[1],bounds['y'],serieslen)];
             }
             // calcdata ("cd") for heatmaps:
             // curve: index of heatmap in gd.data
@@ -408,7 +409,7 @@ function plot(divid, data, layout, rdrw) {
     // autorange... if axis is currently reversed, preserve this.
     var a0 = 0.05, // 5% extension of plot scale beyond last point
         a1 = 1+a0;
-        
+
     // if there's a heatmap in the graph div data, get rid of 5% padding (jp edit 3/27)
     $(gdd).each(function(i,v){ if(v.type=='heatmap'){ a0=0; a1=1; } });
     
@@ -447,11 +448,11 @@ function plot(divid, data, layout, rdrw) {
 
     if($.isNumeric(xa.m) && $.isNumeric(xa.b) && $.isNumeric(ya.m) && $.isNumeric(ya.b)) {
         // now plot the data
-        
-        // draw heatmaps, if any (jp edit 3/27)        
+
+        // draw heatmaps, if any (jp edit 3/27)
         for(var i in gd.calcdata){
-            var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c]; 
-            if(gdc.type=='heatmap'){ 
+            var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
+            if(gdc.type=='heatmap'){
                 heatmap(c,gdc,cd,rdrw,gd);
             }
         }  
@@ -459,6 +460,7 @@ function plot(divid, data, layout, rdrw) {
         // plot traces 
         // (gp is gd.plot, the inner svg object containing the traces)
         gp.selectAll('g.trace').remove(); // <-- remove old traces before we redraw
+
 
         var traces = gp.selectAll('g.trace') // <-- select trace group
             .data(gd.calcdata) // <-- bind calcdata to traces
@@ -545,6 +547,19 @@ function plot(divid, data, layout, rdrw) {
                             else d3.select(this).remove();
                         });                        
                 }
+
+                var t=d[0].t;
+                if(t.type=='heatmap') return;
+                if(t.mode.indexOf('markers')==-1 || d[0].t.visible==false) return;
+                d3.select(this).selectAll('path')
+                    .data(function(d){return d})
+                  .enter().append('path')
+                    .each(function(d){
+                        if($.isNumeric(d.x) && $.isNumeric(d.y))
+                            d3.select(this)
+                                .attr('transform','translate('+xf(d,gd)+','+yf(d,gd)+')');
+                        else d3.select(this).remove();
+                    });
             });
 
         //styling separate from drawing
@@ -566,9 +581,9 @@ function plot(divid, data, layout, rdrw) {
     try{ killspin(); }
     catch(e){ console.log(e); }
     setTimeout(function(){
-        if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false){ 
+        if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false){
             try{ showAlert('graphtips'); }
-            catch(e){ console.log(e); } 
+            catch(e){ console.log(e); }
         }
         else if($(gd).find('#graphtips').css('display')=='none'){
             $(gd).find('#graphtips').fadeIn(); }
@@ -576,18 +591,18 @@ function plot(divid, data, layout, rdrw) {
 }
 
 // ------------------------------------------------------------ xf()
-// returns a plot x coordinate given a global x coordinate 
+// returns a plot x coordinate given a global x coordinate
 function xf(d,gd){
     var xa=gd.layout.xaxis;
-    var vb=gd.viewbox;   
+    var vb=gd.viewbox;
     return d3.round(xa.b+xa.m*d.x+vb.x,2)
 }
 
 // ------------------------------------------------------------ yf()
-// returns a plot x coordinate given a global x coordinate 
+// returns a plot x coordinate given a global x coordinate
 function yf(d,gd){
     var ya=gd.layout.yaxis;
-    var vb=gd.viewbox;    
+    var vb=gd.viewbox;
     return d3.round(ya.b+ya.m*d.y+vb.y,2)
 }
 
@@ -648,8 +663,8 @@ function setStyles(gd) {
             mergeattr(gdc.y0,'y0',2);            
             mergeattr(gdc.dy,'dy',0.5);  
             mergeattr(gdc.zmin,'zmin',-10);            
-            mergeattr(gdc.zmax,'zmax',10);                                  
-            mergeattr(JSON.stringify(gdc.scl),'scl',defaultScale);
+            mergeattr(gdc.zmax,'zmax',10); 
+            mergeattr(JSON.stringify(gdc.scl),'scl',defaultScale);                                             
         }
         else if(cd[0].t.type==='bar'){
             mergeattr(gdc.type,'type','bar');
@@ -823,8 +838,9 @@ function legendBars(d){
 }
 
 function legendText(s){
+    // note: uses d[1] for the original trace number, in case of hidden traces
     return s.append('text')
-        .attr('class',function(d,i){return 'legendtext text-'+i})
+        .attr('class',function(d){return 'legendtext text-'+d[1]})
         .call(setPosition, 40, 0)
         .attr('text-anchor','start')
         .attr('font-size',12)
@@ -1468,9 +1484,11 @@ function legend(gd) {
     gd.paper.selectAll('.legend').remove();
     if(!gd.calcdata) { return }
 
-    var ldata=[]
+    var ldata=[];
     for(var i=0;i<gd.calcdata.length;i++) {
-        if(gd.calcdata[i][0].t.visible!=false) { ldata.push([gd.calcdata[i][0]]) }
+        if(gd.calcdata[i][0].t.visible!=false) {
+            ldata.push([gd.calcdata[i][0],i]); // i is appended as d[1] so we know which element of gd.data it refers to
+        }
     }
 
     gd.legend=gd.paper.append('svg')
