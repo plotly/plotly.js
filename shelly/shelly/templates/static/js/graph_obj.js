@@ -174,16 +174,6 @@ function plot(divid, data, layout, rdrw) {
         // If it has none of these, it will default to x0=0, dx=1, so choose number
         // -> If not date, figure out if a log axis makes sense, using all axis data
 
-        /*AXISTYPE if(!isBoolean(xa.isdate))
-            xa.isdate = ('x' in gdd[0]) ? moreDates(gdd[0].x) : (isDateTime(gdd[0].x0)===true);
-        if(!xa.isdate && !isBoolean(xa.islog))
-            xa.islog = loggy(gdd,'x');
-
-        if(!isBoolean(ya.isdate))
-            ya.isdate = ('y' in gdd[0]) ? moreDates(gdd[0].y) : (isDateTime(gdd[0].y0)===true);
-        if(!ya.isdate && !isBoolean(ya.islog))
-            ya.islog = loggy(gdd,'y');*/
-
         function setAxType(ax,axletter){
             // backward compatibility
             if(!ax.type) {
@@ -214,8 +204,8 @@ function plot(divid, data, layout, rdrw) {
         setAxType(ya,'y');
     }
 
-    console.log('********** X TYPE **********');
-    console.log(xa.type);
+//     console.log('********** X TYPE **********');
+//     console.log(xa.type);
 
     // prepare the data and find the autorange
     // TODO: only remake calcdata for new or changed traces
@@ -298,12 +288,6 @@ function plot(divid, data, layout, rdrw) {
             if(!('line' in gdc.marker)) gdc.marker.line={};
         }
         else if(curvetype=='bar') {
-            // DYLAN: create "cleaned" data to append to gd.calcdata, and update data ranges xdr,ydr
-            // I'm imagining this is where, if there are other bar series, we check
-            // whether to stack them or put them side-by-side, as we need to know this to
-            // calculate the data ranges. This might belong as an option in gd.layout,
-            // since it's a graph-wide option, not a per-trace option
-
             // ignore as much processing as possible (and including in autorange) if bar is not visible
             if(gdc.visible!=false) {
 //                 console.log('**** bar curve ****');
@@ -354,7 +338,7 @@ function plot(divid, data, layout, rdrw) {
                     barWidth /= (nVis||1);
                     var xOffset = nVis*barWidth*0.5;
                     ydr = outerBounds(ya,ydr,y,serieslen);
-                    console.log(ydr);
+//                     console.log(ydr);
                     ydr[0] = Math.min(ydr[0],0);    // cuz we want to view the whole bar.
                                                     // if the bar is less than 0, display it
                                                     // but otherwise, default to ymin = 0
@@ -651,7 +635,7 @@ function setStyles(gd) {
         }
         else { cd[0].t[attr] = (typeof a != 'undefined') ? a : dflt }
     }
-    console.log(gd.calcdata);
+//     console.log(gd.calcdata);
     for(var i in gd.calcdata){
         var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
         if(cd[0].t.type==='scatter' || cd[0].t.type===undefined){
@@ -686,15 +670,10 @@ function setStyles(gd) {
         else if(cd[0].t.type==='bar'){
             mergeattr(gdc.type,'type','bar');
             mergeattr(gdc.visible,'visible',true);
-//             mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');
             mergeattr(gdc.opacity,'op',1);
-//             mergeattr(gdc.line.dash,'ld','solid');
-//             mergeattr(gdc.line.color,'lc',gdc.marker.color || defaultColors[c % defaultColors.length]);
-//             mergeattr(gdc.line.width,'lw',2);
-//             mergeattr(gdc.marker.symbol,'mx','circle');
             mergeattr(gdc.marker.opacity,'mo',1);
-            mergeattr(gdc.marker.color,'mc',cd[0].t.lc || defaultColors[c % defaultColors.length]);
-            mergeattr(gdc.marker.line.color,'mlc', cd[0].t.lc || '#000' );
+            mergeattr(gdc.marker.color,'mc',defaultColors[c % defaultColors.length]);
+            mergeattr(gdc.marker.line.color,'mlc','#000' );
             mergeattr(gdc.marker.line.width,'mlw',0);
             mergeattr(gdc.text,'tx','');
             mergeattr(gdc.name,'name','trace '+c);
@@ -845,7 +824,6 @@ function legendPoints(d){
 
 function legendBars(d){
     if(d[0].t.type!='bar') return;
-//     if( d[0].t.name == 'All Traces' ) return; // <--- TODO: need a symbol for bar + scatter
     d3.select(this).append('g')
         .attr('class','legendpoints')
       .selectAll('path')
@@ -874,7 +852,6 @@ function legendText(s){
 // val is the new value to use
 // traces is a trace number or an array of trace numbers to change (blank for all)
 function restyle(gd,astr,val,traces) {
-    console.log(gd,astr,val,traces);
     gd.changed = true;
 
     // mode and gaps for bar charts are graph-wide attributes, but make
@@ -913,9 +890,6 @@ function restyle(gd,astr,val,traces) {
 // change layout in an existing plot
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
-    console.log('**** RELAYOUT ****');
-    console.log(gd,astr,val);
-
     gd.changed = true;
     var gl = gd.layout,
         aobj = {},
@@ -1241,7 +1215,6 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         var gbb = $(gd).find('.nsewdrag')[0].getBoundingClientRect(),
             x0 = e.clientX,
             y0 = e.clientY,
-//         console.log(x0,y0,e,$('.nsewdrag'),gx.range,gy.range);
             zb = $('<div id="zoombox" style="left: '+x0+'px; top: '+y0+'px;"></div>').appendTo('body');
         window.onmousemove = function(e2) {
             var x1 = Math.max(gbb.left,Math.min(gbb.right,e2.clientX)),
@@ -2991,8 +2964,8 @@ function category(d,ax) {
 // if isdate, convert value (or all values) from dates to milliseconds
 // if islog, take the log here
 function convertToAxis(o,a){
-    console.log('*** convert to axis ***');
-    console.log(o,a);
+//     console.log('*** convert to axis ***');
+//     console.log(o,a);
     //AXISTYPEif(a.isdate||a.islog){
     if(a.type=='date'||a.type=='log'){
         if($.isArray(o)){
