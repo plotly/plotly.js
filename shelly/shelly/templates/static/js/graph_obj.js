@@ -23,7 +23,7 @@ Viewbox coordinates: xv,yv (where data are drawn)
 Plot takes two params, data and layout. For layout see newplot.
 data should be an array of objects, one per trace. allowed keys:
 
-    type: (string) scatter (default)
+    type: (string) scatter (default), bar, heatmap
 
     x: (float array), or x0:(float) and dx:(float)
         if neither x, x0, or dx exists, defaults is x0:0, dx:1
@@ -93,7 +93,7 @@ defaultColors=['#00e', //blue
                '#ff00ff', //elektrik purple
                '#9900ff', //moody purple
                '#0c0', // brite green
-               '#000']; // black                           
+               '#000']; // black
 
 defaultScale=[[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94, 168)"],
     [0.375,"rgb(29, 145, 192)"],[0.5,"rgb(65, 182, 196)"],[0.625,"rgb(127, 205, 187)"],
@@ -111,7 +111,7 @@ var graphInfo = {
     },
     heatmap:{
         framework:newPlot
-    }    
+    }
 }
 
 // ----------------------------------------------------
@@ -140,7 +140,7 @@ function plot(divid, data, layout, rdrw) {
 
     var gdd=gd.data;
     var curve, x, xy, y, i, serieslen, dcnt, ncnt, v0, dv, gdc;
-    
+
     // figure out what framework (ie container, axes) to use,
     //  and whether this is different from what was already there
     // note: if they container already exists and has data,
@@ -167,13 +167,13 @@ function plot(divid, data, layout, rdrw) {
 
 
     if(gdd&&(gdd.length>0)){
-        // figure out if axes are dates
+        // figure out axis types (linear, log, date, category...)
         // use the first trace only.
         // If the axis has data, see whether more looks like dates or like numbers
         // If it has x0 & dx (etc), go by x0 (if x0 is a date and dx is a number, perhaps guess days?)
         // If it has none of these, it will default to x0=0, dx=1, so choose number
         // -> If not date, figure out if a log axis makes sense, using all axis data
-        
+
         /*AXISTYPE if(!isBoolean(xa.isdate))
             xa.isdate = ('x' in gdd[0]) ? moreDates(gdd[0].x) : (isDateTime(gdd[0].x0)===true);
         if(!xa.isdate && !isBoolean(xa.islog))
@@ -183,50 +183,58 @@ function plot(divid, data, layout, rdrw) {
             ya.isdate = ('y' in gdd[0]) ? moreDates(gdd[0].y) : (isDateTime(gdd[0].y0)===true);
         if(!ya.isdate && !isBoolean(ya.islog))
             ya.islog = loggy(gdd,'y');*/
-                
-        if(xa.type!=='date' && xa.type!=='log' && xa.type!=='linear'){
-            if( ( 'x' in gdd[0]) ? moreDates(gdd[0].x) : (isDateTime(gdd[0].x0)===true ) )
-                xa.type='date';
-            else if( loggy(gdd,'x') )
-                xa.type='log';
-            else if( category(gdd,'x') )
-                xa.type='category';                
+
+        function setAxType(ax,axletter){
+            // backward compatibility
+            if(!ax.type) {
+                if(ax.isdate)
+                    ax.type='date';
+                else if(ax.islog)
+                    ax.type='log';
+                else if(ax.isdate===false && ax.islog===false)
+                    ax.type='linear';
+            }
+            // now remove the obsolete properties
+            delete ax.islog;
+            delete ax.isdate;
+            // guess at axis type with the new property format
+            if(['date','log','linear','category'].indexOf(ax.type)!==-1)
+                return;
+            if( ( axletter in gdd[0]) ? moreDates(gdd[0][axletter]) : (isDateTime(gdd[0][axletter+'0'])===true ) )
+                ax.type='date';
+            else if( loggy(gdd,axletter) )
+                ax.type='log';
+            else if( category(gdd,axletter) )
+                ax.type='category';
             else
-                xa.type='linear';
+                ax.type='linear';
         }
-            
-        if(ya.type!=='date' && ya.type!=='log' && ya.type!=='linear'){            
-            if( ( 'y' in gdd[0]) ? moreDates(gdd[0].y) : (isDateTime(gdd[0].y0)===true ) )
-                ya.type='date';
-            else if( loggy(gdd,'y') )
-                ya.type='log';
-            else if( category(gdd,'y') )
-                ya.type='category';                
-            else
-                ya.type='linear';
-        }            
+
+        setAxType(xa,'x');
+        setAxType(ya,'y');
     }
-    
-    console.log('********** X TYPE **********');    
+
+    console.log('********** X TYPE **********');
     console.log(xa.type);
 
     // prepare the data and find the autorange
+    // TODO: only remake calcdata for new or changed traces
     gd.calcdata=[];
     computedStackHeight = false;
     computedXdr = false;
-    
+
     for(curve in gdd) {
         var gdc=gdd[curve],
             curvetype = gdc.type || 'scatter', //default type is scatter
-            typeinfo = graphInfo[curvetype],        
+            typeinfo = graphInfo[curvetype],
             cd=[];
-        
+
         if(typeinfo.framework!=gd.framework) {
             console.log('Oops, tried to put data of type '+(gdc.type || 'scatter')+
                 ' on an incompatible graph controlled by '+(gdd[0].type || 'scatter')+
                 ' data. Ignoring this dataset.');
             continue;
-        }        
+        }
         //if(!('color' in gdc)) gdc.color = defaultColors[curve % defaultColors.length];
         if(!('name' in gdc)) {
             if('ysrc' in gdc) {
@@ -248,13 +256,13 @@ function plot(divid, data, layout, rdrw) {
                 return counterdata.map(function(v,i){return v0+i*dv});
             }
         }
-        
+
         // this function returns the outer x or y limits of the curves processed so far
         var outerBounds = function(xa,xdr,x,serieslen) {
             if(xa.autorange)
                 return [aggNums(Math.min,xdr[0],x,serieslen),aggNums(Math.max,xdr[1],x,serieslen)];
             else
-                return xdr;            
+                return xdr;
         }
 
         if(curvetype=='scatter') {
@@ -265,7 +273,7 @@ function plot(divid, data, layout, rdrw) {
             if(gdc.visible!=false) {
 
                 y = convertOne('y',ya,gdc.x);
-                x = convertOne('x',xa,gdc.y);                                           
+                x = convertOne('x',xa,gdc.y);
 
                 serieslen = Math.min(x.length,y.length);
 
@@ -295,45 +303,44 @@ function plot(divid, data, layout, rdrw) {
             // whether to stack them or put them side-by-side, as we need to know this to
             // calculate the data ranges. This might belong as an option in gd.layout,
             // since it's a graph-wide option, not a per-trace option
-            
+
             // ignore as much processing as possible (and including in autorange) if bar is not visible
             if(gdc.visible!=false) {
-                console.log('**** bar curve ****');
-                console.log(gdc);
+//                 console.log('**** bar curve ****');
+//                 console.log(gdc);
 
                 y = convertOne('y',ya,gdc.x);
-                x = convertOne('x',xa,gdc.y); 
-                
-                console.log('*** x ***'); console.log(x);
-                console.log('*** y ***'); console.log(y);                
-                               
+                x = convertOne('x',xa,gdc.y);
+
+//                 console.log('*** x ***'); console.log(x);
+//                 console.log('*** y ***'); console.log(y);
+
                 var xMax = aggNums(Math.max, false, x, x.length);
                 var xMin = aggNums(Math.min, false, x, x.length);
-                var xDiff = xMax-xMin;                
-                var pad = 0;
-                var barWidth = xDiff/gdc.x.length - pad; // <--- TODO make pad a variable
+                var xDiff = xMax-xMin;
+                var barWidth = xDiff/(gdc.x.length-1);
                 var serieslen = Math.min(x.length,y.length);
-                
-                if((gl.barmode == 'stack' || gl.barmode === undefined) && !computedStackHeight){
-                    // to autoscale the y-axis for stacked bar charts 
-                    // we need to "find the highest and lowest stack" 
-                    // i.e. max( y1+y2+...+yn ), where yi is a data vector for a bar trace  
+
+                if((gl.barmode == 'stack') && !computedStackHeight){
+                    // to autoscale the y-axis for stacked bar charts
+                    // we need to "find the highest and lowest stack"
+                    // i.e. max( y1+y2+...+yn ), where yi is a data vector for a bar trace
                     // since we go through all the traces, we only do this operation once
-                    var yMax = 0; var yMin = 0;             
+                    var yMax = 0, yMin = 0;
                     for(var xi=0; xi<gdc.x.length; xi++){ // x-data index
-                        var ySum = 0;                  
+                        var ySum = 0;
                         for(var ti=0; ti<gdd.length; ti++){ // trace index
                             if(gdd[ti].type=='bar' && ((gdd[ti].visible===undefined) ? true : gdd[ti].visible) ){
                                 // add up all the y's at index xi (unless undefined, then add 0)
-                                ySum = ySum + ( gdd[ti].y[xi]==undefined ? 0 : Number(gdd[ti].y[xi]) ); 
+                                ySum = ySum + ( gdd[ti].y[xi]==undefined ? 0 : Number(gdd[ti].y[xi]) );
                             }
+                            yMax = Math.max(yMax,ySum); // moved these inside the loop so we capture true max and min if there are sign reversals within a stack
+                            yMin = Math.min(yMin,ySum); // TODO: might want the option to stack all the negatives below zero and all the positives above?
                         }
-                        yMax = Math.max(yMax,ySum);
-                        yMin = Math.min(yMin,ySum);
                         computedStackHeight = true; // ... so that we don't do this again
                     }
                     ydr = [yMin, yMax];
-                    xOffset = barWidth*0.5; 
+                    xOffset = barWidth*0.5;
                 }
                 else if(gl.barmode == 'group'){
                     // compute number of visible bar traces
@@ -344,15 +351,15 @@ function plot(divid, data, layout, rdrw) {
                         }
                     }
                     // divide barWidth by number of visible bar traces for drawing purposes
-                    barWidth = (nVis == 0) ? barWidth : barWidth/nVis;    
+                    barWidth /= (nVis||1);
                     var xOffset = nVis*barWidth*0.5;
                     ydr = outerBounds(ya,ydr,y,serieslen);
                     console.log(ydr);
                     ydr[0] = Math.min(ydr[0],0);    // cuz we want to view the whole bar.
                                                     // if the bar is less than 0, display it
-                                                    // but otherwise, default to ymin = 0        
+                                                    // but otherwise, default to ymin = 0
                 }
-                
+
                 // since we assume that all the bars have the same x-data
                 // we only need to compute this once
                 if(!computedXdr){
@@ -369,18 +376,18 @@ function plot(divid, data, layout, rdrw) {
                 cd=[{x:false, y:false}];
             // add the bar-wide properties to the first bar, per bar properties to every bar
             // t is the holder for bar-wide properties, start it with the curve num from gd.data
-            // in case some curves don't plot 
-            
-            cd[0].t={curve:curve,type:curvetype}; // <-- curve is index of the data object in gd.data 
-            if(!('barmode' in gl)) gl.barmode='stack';
-            if(!('line' in gdc)) gdc.line={};            
+            // in case some curves don't plot
+
+            cd[0].t={curve:curve,type:curvetype}; // <-- curve is index of the data object in gd.data
+//             if(!('barmode' in gl)) gl.barmode='stack';
+            if(!('line' in gdc)) gdc.line={};
             if(!('marker' in gdc)) gdc.marker={};
-            if(!('line' in gdc.marker)) gdc.marker.line={}; 
-            
-            /*mergeattr(gdc.marker.color,'mc',cd[0].t.lc);                        
+            if(!('line' in gdc.marker)) gdc.marker.line={};
+
+            /*mergeattr(gdc.marker.color,'mc',cd[0].t.lc);
             mergeattr(gdc.marker.line.color,'mlc',((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000' ));
-            mergeattr(gdc.marker.line.width,'mlw',0);*/                                  
-        }        
+            mergeattr(gdc.marker.line.width,'mlw',0);*/
+        }
         else if( gdc.type=='heatmap' ){
             if(gdc.visible!=false) {
                 // heatmap() builds a png heatmap on the coordinate system, see heatmap.js
@@ -412,12 +419,12 @@ function plot(divid, data, layout, rdrw) {
 
     // if there's a heatmap in the graph div data, get rid of 5% padding (jp edit 3/27)
     $(gdd).each(function(i,v){ if(v.type=='heatmap'){ a0=0; a1=1; } });
-    
-    // if there's a bar chart in the graph div data and 
-    // all y-values in graph are positive, get rid of bottom 5% padding  
+
+    // if there's a bar chart in the graph div data and
+    // all y-values in graph are positive, get rid of bottom 5% padding
     var positiveBarChart = false;
-    $(gdd).each(function(i,v){ if(v.type=='bar' && ydr[0]>=0 && ydr[1]>=0){ positiveBarChart = true; } });            
-        
+    $(gdd).each(function(i,v){ if(v.type=='bar' && ydr[0]>=0 && ydr[1]>=0){ positiveBarChart = true; } });
+
     if(xa.autorange && $.isNumeric(xdr[0])) {
         if(xa.range && xa.range[1]<xa.range[0])
             xa.range=[a1*xdr[1]-a0*xdr[0],a1*xdr[0]-a0*xdr[1]];
@@ -435,10 +442,9 @@ function plot(divid, data, layout, rdrw) {
             if(ya.range && ya.range[1]<ya.range[0])
                 ya.range=[ydr[1],a1*ydr[0]-a0*ydr[1]];
             else
-                ya.range=[ydr[0],a1*ydr[1]-a0*ydr[0]];        
+                ya.range=[ydr[0],a1*ydr[1]-a0*ydr[0]];
         }
-    }  
-
+    }
     doTicks(gd);
 
     if(!$.isNumeric(vb.x) || !$.isNumeric(vb.y)) {
@@ -449,21 +455,33 @@ function plot(divid, data, layout, rdrw) {
     if($.isNumeric(xa.m) && $.isNumeric(xa.b) && $.isNumeric(ya.m) && $.isNumeric(ya.b)) {
         // now plot the data
 
-        // draw heatmaps, if any (jp edit 3/27)
+        // calculate the final bar width and in-group delta based on gaps defined in gl
+        barWidth *= (1-gl.bargap);
+        var barDelta = barWidth;
+        barWidth *= (1-gl.bargroupgap);
+
+        // draw heatmaps, if any (jp edit 3/27), and reorder the other traces with bars first (ie behind)
+        var cdback = [], cdfront = [];
         for(var i in gd.calcdata){
             var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
-            if(gdc.type=='heatmap'){
+            if(gdc.type=='heatmap')
                 heatmap(c,gdc,cd,rdrw,gd);
-            }
-        }  
-        
-        // plot traces 
+            else if(gdc.type=='bar')
+                cdback.push(cd);
+            else
+                cdfront.push(cd);
+        }
+        cdback.push.apply(cdback,cdfront);
+
+        // reorder the rest of traces with bars first
+
+        // plot traces
         // (gp is gd.plot, the inner svg object containing the traces)
         gp.selectAll('g.trace').remove(); // <-- remove old traces before we redraw
 
 
         var traces = gp.selectAll('g.trace') // <-- select trace group
-            .data(gd.calcdata) // <-- bind calcdata to traces
+            .data(cdback) // <-- bind calcdata to traces
           .enter().append('g') // <-- add a trace for each calcdata
             .attr('class','trace');
 
@@ -481,7 +499,7 @@ function plot(divid, data, layout, rdrw) {
                     if(pts)
                         t.append('polyline').attr('points',pts);
                 }
-            }           
+            }
         });
 
         // BUILD TRACE POINTS
@@ -501,42 +519,41 @@ function plot(divid, data, layout, rdrw) {
                             else d3.select(this).remove();
                         });
                 }
-                else if(t.type=='bar'){ 
+                else if(t.type=='bar'){
                     d3.select(this).selectAll('rect')
                         .data(function(d){return d})
                         .enter().append('rect')
-                        .attr("width", Math.abs( xf({x:barWidth,y:0},gd) - xf({x:0,y:0},gd) ) )
+                        .attr("width", Math.abs( xf({x:barWidth,y:0},gd) - xf({x:0,y:0},gd) ))// * (1-gl.bargap) * (1-gl.bargroupgap) )
                         .attr("stroke", "black")
                         .attr("fill", defaultColors[t.curve])
                         .each(function(di,d_index){
                             if($.isNumeric(di.x) && $.isNumeric(di.y)){
                                 var barHeight = Math.abs(yf(di,gd)-yf({x:0,y:0},gd));
                                 var y_offset = 0;
-                                var x_offset = 0;
-                                if(gd.layout.barmode=='stack'){
-                                    x_offset = x_offset-barWidth*0.5;
+                                var x_offset = -barWidth*0.5;
+                                if(gl.barmode == 'stack'){
                                     // now compute y_offset:
                                     var ccn = t.curve;
                                     // look through all previous traces, add offsets
                                     for(var i=0; i<ccn; i++){
-                                        var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c]; 
+                                        var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
                                         if(gdc.type=='bar' && gd.calcdata[i][0].t.visible==true){
-                                            y_offset+=Number(gdc.y[d_index]);
+                                            y_offset += Number(gdc.y[d_index]);
                                         }
                                     }
                                 }
-                                else if(gd.layout.barmode=='group'){    
+                                else if(gl.barmode == 'group') {
                                     var prevVis = 0; // compute the number of visible bar traces before this one
                                     for(var i=0; i<t.curve; i++){
                                         if(gd.calcdata[i][0].t.visible==true && gd.calcdata[i][0].t.type==='bar'){
                                             prevVis += 1; // visibility of trace i
                                         }
-                                    }                                                      
-                                    // shift bar-widths away from previous traces to the right
+                                    }
+                                    // shift barDeltas away from previous traces to the right
                                     // and half total-widths to the left
-                                    x_offset=prevVis*barWidth - nVis*barWidth*0.5; 
+                                    x_offset+=barDelta*(prevVis - (nVis-1)*0.5);
                                 }
-                                var x_coord = xf({x:x_offset+Number(di.x), y:0}, gd);                                                                                           
+                                var x_coord = xf({x:x_offset+Number(di.x), y:0}, gd);
                                 var y_coord = yf({x:0, y:y_offset+Math.max(di.y,0)}, gd);
                                 //console.log('offset = ',y_offset,'y_coord=',y_coord)
                                 d3.select(this)
@@ -545,12 +562,12 @@ function plot(divid, data, layout, rdrw) {
                                 //console.log((di.y), ' ---> ' ,yf(di,gd));
                             }
                             else d3.select(this).remove();
-                        });                        
+                        });
                 }
 
                 var t=d[0].t;
                 if(t.type=='heatmap') return;
-                if(t.mode.indexOf('markers')==-1 || d[0].t.visible==false) return;
+                if(!t.mode || t.mode.indexOf('markers')==-1 || d[0].t.visible==false) return;
                 d3.select(this).selectAll('path')
                     .data(function(d){return d})
                   .enter().append('path')
@@ -634,7 +651,7 @@ function setStyles(gd) {
         }
         else { cd[0].t[attr] = (typeof a != 'undefined') ? a : dflt }
     }
-    console.log(gd.calcdata);    
+    console.log(gd.calcdata);
     for(var i in gd.calcdata){
         var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
         if(cd[0].t.type==='scatter' || cd[0].t.type===undefined){
@@ -654,33 +671,33 @@ function setStyles(gd) {
             mergeattr(gdc.marker.line.width,'mlw',0);
             mergeattr(gdc.text,'tx','');
             mergeattr(gdc.name,'name','trace '+c);
-        } 
+        }
         else if(cd[0].t.type==='heatmap'){
             mergeattr(gdc.type,'type','heatmap');
-            mergeattr(gdc.visible,'visible',true);        
+            mergeattr(gdc.visible,'visible',true);
             mergeattr(gdc.x0,'x0',2);
             mergeattr(gdc.dx,'dx',0.5);
-            mergeattr(gdc.y0,'y0',2);            
-            mergeattr(gdc.dy,'dy',0.5);  
-            mergeattr(gdc.zmin,'zmin',-10);            
-            mergeattr(gdc.zmax,'zmax',10); 
-            mergeattr(JSON.stringify(gdc.scl),'scl',defaultScale);                                             
+            mergeattr(gdc.y0,'y0',2);
+            mergeattr(gdc.dy,'dy',0.5);
+            mergeattr(gdc.zmin,'zmin',-10);
+            mergeattr(gdc.zmax,'zmax',10);
+            mergeattr(JSON.stringify(gdc.scl),'scl',defaultScale);
         }
         else if(cd[0].t.type==='bar'){
             mergeattr(gdc.type,'type','bar');
             mergeattr(gdc.visible,'visible',true);
-            mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');             
+//             mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');
             mergeattr(gdc.opacity,'op',1);
-            mergeattr(gdc.line.dash,'ld','solid');
-            mergeattr(gdc.line.color,'lc',gdc.marker.color || defaultColors[c % defaultColors.length]);
-            mergeattr(gdc.line.width,'lw',2);
-            mergeattr(gdc.marker.symbol,'mx','circle');                        
-            mergeattr(gdc.marker.opacity,'mo',1);            
-            mergeattr(gdc.marker.color,'mc',cd[0].t.lc || defaultColors[c % defaultColors.length]);                        
+//             mergeattr(gdc.line.dash,'ld','solid');
+//             mergeattr(gdc.line.color,'lc',gdc.marker.color || defaultColors[c % defaultColors.length]);
+//             mergeattr(gdc.line.width,'lw',2);
+//             mergeattr(gdc.marker.symbol,'mx','circle');
+            mergeattr(gdc.marker.opacity,'mo',1);
+            mergeattr(gdc.marker.color,'mc',cd[0].t.lc || defaultColors[c % defaultColors.length]);
             mergeattr(gdc.marker.line.color,'mlc', cd[0].t.lc || '#000' );
-            mergeattr(gdc.marker.line.width,'mlw',0); 
-            mergeattr(gdc.text,'tx','');            
-            mergeattr(gdc.name,'name','trace '+c);                                  
+            mergeattr(gdc.marker.line.width,'mlw',0);
+            mergeattr(gdc.text,'tx','');
+            mergeattr(gdc.name,'name','trace '+c);
         }
     }
 }
@@ -691,11 +708,11 @@ function applyStyle(gp) {
     gp.selectAll('g.points')
         .each(function(d){d3.select(this).selectAll('path')
             .call(pointStyle,d[0].t);});
-            
+
     gp.selectAll('g.points')
         .each(function(d){d3.select(this).selectAll('rect')
-            .call(pointStyle,d[0].t);});            
-            
+            .call(pointStyle,d[0].t);});
+
     gp.selectAll('g.trace polyline')
         .call(lineGroupStyle);
 }
@@ -750,8 +767,9 @@ function lineGroupStyle(s) {
 // draws the marker with diameter roughly markersize, centered at 0,0
 function pointStyle(s,t) {
     s.attr('d',function(d){
-        var r=((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/2,
-            rt=String(r*2/Math.sqrt(3)),
+        var r=((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/2;
+        if(!(r>=0)) r=3; // in case of "various" etc... set a visible default
+        var rt=String(r*2/Math.sqrt(3)),
             rc=String(r/3),
             rd=String(r*Math.sqrt(2)),
             r2=String(r/2);
@@ -806,16 +824,16 @@ function barStyle(s,t) {
 // -----------------------------------------------------
 
 function legendLines(d){
-    if(['heatmap','bar'].indexOf(d[0].t.type)>=0) return;
-    if(d[0].t.mode.indexOf('lines')==-1) return;
+    if(['scatter',undefined].indexOf(d[0].t.type)==-1) return;
+    if(!d[0].t.mode || d[0].t.mode.indexOf('lines')==-1) return;
     d3.select(this).append('polyline')
         .call(lineGroupStyle)
         .attr('points','5,0 35,0');
 }
 
 function legendPoints(d){
-    if(['heatmap','bar'].indexOf(d[0].t.type)>=0) return;
-    if(d[0].t.mode.indexOf('markers')==-1) return;
+    if(['scatter',undefined].indexOf(d[0].t.type)==-1) return;
+    if(!d[0].t.mode || d[0].t.mode.indexOf('markers')==-1) return;
     d3.select(this).append('g')
         .attr('class','legendpoints')
       .selectAll('path')
@@ -826,15 +844,15 @@ function legendPoints(d){
 }
 
 function legendBars(d){
-    if(['heatmap','scatter'].indexOf(d[0].t.type)>=0) return;
-    if( d[0].t.name == 'All Traces' ) return; // <--- TODO: need a symbol for bar + scatter
+    if(d[0].t.type!='bar') return;
+//     if( d[0].t.name == 'All Traces' ) return; // <--- TODO: need a symbol for bar + scatter
     d3.select(this).append('g')
-        .attr('class','legendbars')
+        .attr('class','legendpoints')
       .selectAll('path')
         .data(function(d){return d})
       .enter().append('path')
         .call(barStyle,{})
-        .attr('transform','translate(20,-5)');
+        .attr('transform','translate(20,0)');
 }
 
 function legendText(s){
@@ -856,13 +874,18 @@ function legendText(s){
 // val is the new value to use
 // traces is a trace number or an array of trace numbers to change (blank for all)
 function restyle(gd,astr,val,traces) {
+    console.log(gd,astr,val,traces);
     gd.changed = true;
-    
-    // mode for bar charts (stacked or grouped) is a graph-wide attribute, but makes
-    // more sense in the style box than the layout box. here we update gd.layout.barmode
-    // if astr is 'barmode', force a replot, then return
-    if( astr == 'barmode' ){ gd.layout.barmode = val; plot(gd,'',''); return; }
-    
+
+    // mode and gaps for bar charts are graph-wide attributes, but make
+    // more sense in the style box than the layout box. here we update gd.layout,
+    // force a replot, then return
+    if(['barmode','bargap','bargroupgap'].indexOf(astr)!=-1){
+        gd.layout[astr] = val;
+        plot(gd,'','');
+        return;
+    }
+
     if($.isNumeric(traces)) traces=[traces];
     else if(!$.isArray(traces) || !traces.length)
         traces=gd.data.map(function(v,i){return i});
@@ -930,7 +953,7 @@ function relayout(gd,astr,val) {
         /*AXISTYPEif(aa[1]=='islog'  && !gl[aa[0]].isdate && !gl[aa[0]].autorange &&
             (gl[aa[0]].islog ? !aobj[i] : aobj[i])) {*/ // logical XOR (ie will islog actually change)
         if(aa[1]=='type' && !gl[aa[0]].type=='date' && !gl[aa[0]].autorange &&
-                    (gl[aa[0]].type=='log' ? !aobj[i] : aobj[i])) {            
+                    (gl[aa[0]].type=='log' ? !aobj[i] : aobj[i])) {
             var r0 = gl[aa[0]].range[0],
                 r1 = gl[aa[0]].range[1];
             if(val) {
@@ -1084,7 +1107,10 @@ function newPlot(divid, layout) {
         autosize:'initial', // after initial autosize reverts to true
         margin:{l:70,r:40,t:60,b:60,pad:2},
         paper_bgcolor:'#fff',
-        plot_bgcolor:'#fff' };
+        plot_bgcolor:'#fff',
+        barmode:'stack',
+        bargap:0.2,
+        bargroupgap:0.0 };
         // TODO: add font size controls, and label positioning
 
     // look for elements of gd.layout to replace with the equivalent elements in layout
@@ -2245,7 +2271,7 @@ function autoGrowInput(eln) {
     if(mode=='drag') {
         // show enough digits to specify the position to about a pixel, but not more
         var v=cont.range[prop], diff=Math.abs(v-cont.range[1-prop]);
-        if(cont.isdate){
+        if(cont.type=='date'){
             var d=new Date(v); // dates are stored in ms
             var ds=$.datepicker.formatDate('yy-mm-dd',d); // always show the date part
             if(diff<1000*3600*24*30) ds+=' '+lpad(d.getHours(),2);  // <30 days: add hours
@@ -2254,7 +2280,7 @@ function autoGrowInput(eln) {
             if(diff<1000*300) ds+='.'+lpad(d.getMilliseconds(),3);  // <5 minutes: add ms
             input.val(ds);
         }
-        else if(cont.islog) {
+        else if(cont.type=='log') {
             var dig=Math.ceil(Math.max(0,-Math.log(diff)/Math.LN10))+3;
             input.val(d3.format('.'+String(dig)+'g')(Math.pow(10,v)));
         }
@@ -2317,8 +2343,8 @@ function autoGrowInput(eln) {
                 makeTitles(gd,el);
             }
             else if(mode=='drag') {
-                var v= (cont.islog) ? Math.log(Number($.trim(val)))/Math.LN10 :
-                    (cont.isdate) ? DateTime2ms($.trim(val)) : Number($.trim(val));
+                var v= (cont.type=='log') ? Math.log(Number($.trim(val)))/Math.LN10 :
+                    (cont.type=='date') ? DateTime2ms($.trim(val)) : Number($.trim(val));
                 if($.isNumeric(v)) {
                     cont.range[prop]=Number(v);
                     dragTail(gd);
@@ -2706,7 +2732,7 @@ function doTicks(gd,ax) {
             .attr('x2',g.x2)
             .attr('y1',g.y1)
             .attr('y2',g.y2)
-            .each(function(d) {if(a.zeroline && a.type!='log' && a.type!='date' && d.text=='0') d3.select(this).remove();});
+            .each(function(d) {if(a.zeroline && a.type=='linear' && d.text=='0') d3.select(this).remove();});
             //AXISTYPE.each(function(d) {if(a.zeroline && !a.islog && !a.isdate && d.text=='0') d3.select(this).remove();});
         grid.attr('transform',transfn);
         grid.exit().remove();
@@ -2959,7 +2985,7 @@ function category(d,ax) {
             return false;
         }
     }
-    return true;                         
+    return true;
 }
 
 // if isdate, convert value (or all values) from dates to milliseconds
@@ -2972,18 +2998,18 @@ function convertToAxis(o,a){
         if($.isArray(o)){
             var r=[];
             //AXISTYPEfor(i in o) r.push(a.isdate ? DateTime2ms(o[i]) : (o[i]>0) ? Math.log(o[i])/Math.LN10 : null);
-            for(i in o) r.push(a.type=='date' ? DateTime2ms(o[i]) : (o[i]>0) ? Math.log(o[i])/Math.LN10 : null);            
+            for(i in o) r.push(a.type=='date' ? DateTime2ms(o[i]) : (o[i]>0) ? Math.log(o[i])/Math.LN10 : null);
             return r;
         }
         else return a.type=='date' ? DateTime2ms(o) : (o>0) ? Math.log(o)/Math.LN10 : null;
-        //AXISTYPEelse return a.isdate ? DateTime2ms(o) : (o>0) ? Math.log(o)/Math.LN10 : null;        
+        //AXISTYPEelse return a.isdate ? DateTime2ms(o) : (o>0) ? Math.log(o)/Math.LN10 : null;
     }
     else if(a.type=='category' && $.isArray(o)){
         // [ 'Apple', 'Orange', 'Banana' ] ---> [ 0, 1, 2 ]
         var r=range(o.length);
         a.categories={};
         r.map(function(c){a.categories[c]=o[c]});
-        return r.map(function(d){return $.isNumeric(d) ? d : null});  
+        return r.map(function(d){return $.isNumeric(d) ? d : null});
     }
     else if($.isArray(o)) {
         return o.map(function(d){return $.isNumeric(d) ? d : null});
