@@ -833,13 +833,17 @@ function legendBars(d){
         .attr('transform','translate(20,0)');
 }
 
-function legendText(s){
+function legendText(s,gd){
+    var gf = gd.layout.font, lf = gd.layout.legend.font;
+    console.log(gd,lf);
     // note: uses d[1] for the original trace number, in case of hidden traces
     return s.append('text')
         .attr('class',function(d){return 'legendtext text-'+d[1]})
         .call(setPosition, 40, 0)
         .attr('text-anchor','start')
-        .attr('font-size',12)
+        .attr('font-size',lf.size||gf.size||12)
+        .attr('font-family',lf.family||gf.family||'Arial')
+        .style('fill',lf.color||gf.color||'#000')
         .each(function(d){styleText(this,d[0].t.name,d[0].t.noretrieve)});
 }
 
@@ -1067,15 +1071,20 @@ function newPlot(divid, layout) {
             showgrid:true,gridcolor:'#ddd',gridwidth:1,
             autorange:true,autotick:true,drange:[null,null],
             zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
-            title:'Click to enter X axis title',unit:''},
+            title:'Click to enter X axis title',unit:'',
+            titlefont:{family:'',size:0,color:''},
+            tickfont:{family:'',size:0,color:''}},
         yaxis:{range:[-1,4],
             tick0:0,dtick:1,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',
             showticklabels:true,
             showgrid:true,gridcolor:'#ddd',gridwidth:1,
             autorange:true,autotick:true,drange:[null,null],
             zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
-            title:'Click to enter Y axis title',unit:''},
-        legend:{bgcolor:'#fff',bordercolor:'#000',borderwidth:1},
+            title:'Click to enter Y axis title',unit:'',
+            titlefont:{family:'',size:0,color:''},
+            tickfont:{family:'',size:0,color:''}},
+        legend:{bgcolor:'#fff',bordercolor:'#000',borderwidth:1,
+            font:{family:'',size:0,color:''}},
         width:GRAPH_WIDTH,
         height:GRAPH_HEIGHT,
         autosize:'initial', // after initial autosize reverts to true
@@ -1084,7 +1093,9 @@ function newPlot(divid, layout) {
         plot_bgcolor:'#fff',
         barmode:'stack',
         bargap:0.2,
-        bargroupgap:0.0 };
+        bargroupgap:0.0,
+        font:{family:'Arial, sans-serif;',size:12,color:'#000'},
+        titlefont:{family:'',size:0,color:''} };
         // TODO: add font size controls, and label positioning
 
     // look for elements of gd.layout to replace with the equivalent elements in layout
@@ -1402,16 +1413,25 @@ function makeTitles(gd,title) {
         'xtitle':{x: (gl.width+gl.margin.l-gl.margin.r-(gd.lw || 0))/2,
             y: gl.height+(gd.lh<0 ? gd.lh : 0) - 14*0.75,
             w: gd.plotwidth/2, h: 14,
-            cont: gl.xaxis, fontSize: 14, name: 'X axis',
+            cont: gl.xaxis, name: 'X axis',
+            font: gl.xaxis.titlefont.family || gl.font.family || 'Arial',
+            fontSize: gl.xaxis.titlefont.size || (gl.font.size*1.2) || 14,
+            fontColor: gl.xaxis.titlefont.color || gl.font.color || '#000',
             transform: '', attr: {}},
         'ytitle':{x: 20-(gd.lw<0 ? gd.lw : 0),
             y: (gl.height+gl.margin.t-gl.margin.b+(gd.lh || 0))/2,
             w: 14, h: gd.plotheight/2,
-            cont: gl.yaxis, fontSize: 14, name: 'Y axis',
+            cont: gl.yaxis, name: 'Y axis',
+            font: gl.yaxis.titlefont.family || gl.font.family || 'Arial',
+            fontSize: gl.yaxis.titlefont.size || (gl.font.size*1.2) || 14,
+            fontColor: gl.yaxis.titlefont.color || gl.font.color || '#000',
             transform: 'rotate(-90,x,y)', attr: {center: 0}},
         'gtitle':{x: gl.width/2, y: gl.margin.t/2,
             w: gl.width/2, h: 16,
-            cont: gl, fontSize: 16, name: 'Plot',
+            cont: gl, name: 'Plot',
+            font: gl.titlefont.family || gl.font.family || 'Arial',
+            fontSize: gl.titlefont.size || gl.font.size*1.4 || 16,
+            fontColor: gl.titlefont.color || gl.font.color || '#000',
             transform: '', attr: {}}};
     for(k in titles){
         if(title==k || title==''){
@@ -1419,7 +1439,9 @@ function makeTitles(gd,title) {
             gd.paper.select('.'+k).remove();
             var el=gd.paper.append('text').attr('class',k)
                 .call(setPosition, t.x, t.y)
+                .attr('font-family',t.font)
                 .attr('font-size',t.fontSize)
+                .attr('fill',t.fontColor)
                 .attr('text-anchor','middle')
                 .attr('transform',t.transform.replace('x',t.x).replace('y',t.y))
             if(gd.mainsite)
@@ -1513,7 +1535,7 @@ function legend(gd) {
         .each(legendLines)
         .each(legendPoints);
 
-    var tracetext=traces.call(legendText).selectAll('text');
+    var tracetext=traces.call(legendText,gd).selectAll('text');
     if(gd.mainsite) {
         tracetext.on('click',function(){
             if(!gd.dragged) { autoGrowInput(this) }
@@ -1738,7 +1760,7 @@ function annotation(gd,index,opt,value) {
     var oldref = options.ref,
         xa = gd.layout.xaxis,
         ya = gd.layout.yaxis;
-    if(typeof opt == 'string') { options[opt] = value }
+    if(typeof opt == 'string') { nestedProperty(options,opt).set(value) }
     else if(opt) { Object.keys(opt).forEach(function(k){ options[k] = opt[k] }) }
 
     if(oldref && options.x && options.y) {
@@ -1763,6 +1785,7 @@ function annotation(gd,index,opt,value) {
     if(!$.isNumeric(options.arrowhead)) { options.arrowhead=1 }
     if(!$.isNumeric(options.arrowsize)) { options.arrowsize=1 }
     if(!options.text) { options.text=((options.showarrow && (options.text=='')) ? '' : 'new text') }
+    if(!options.font) { options.font={family:'',size:0,color:''} }
 
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
@@ -1791,7 +1814,9 @@ function annotation(gd,index,opt,value) {
         .attr('class','annotation')
         .call(setPosition,0,0)
         .attr('text-anchor',{left:'start', center:'middle', right:'end'}[options.align])
-        .attr('font-size',12);
+        .attr('font-size',options.font.size||gl.font.size||12)
+        .attr('font-family',options.font.family||gl.font.family||'Arial')
+        .style('fill',options.font.color||gl.font.color||'#000');
     styleText(anntext.node(),options.text);
 
     if(gd.mainsite) {
@@ -1821,7 +1846,7 @@ function annotation(gd,index,opt,value) {
     // offset (in pixels) between the arrowhead and the center of the annotation
 
     if(options.ref=='paper') {
-        if(!$.isNumeric(options.x)) options.x=0.5;
+        if(!$.isNumeric(options.x)) options.x=0.2;
         if(!$.isNumeric(options.y)) options.y=0.8;
         x += plotbb.width*options.x;
         y += plotbb.height*(1-options.y);
@@ -1839,7 +1864,7 @@ function annotation(gd,index,opt,value) {
             ann.remove();
             return;
         }
-        if(!$.isNumeric(options.x)) options.x=(xa.range[0]+xa.range[1])/2;
+        if(!$.isNumeric(options.x)) options.x=(xa.range[0]*0.8+xa.range[1]*0.2);
         if(!$.isNumeric(options.y)) options.y=(ya.range[0]*0.2+ya.range[1]*0.8);
         x += xa.b+options.x*xa.m;
         y += ya.b+options.y*ya.m;
@@ -2558,10 +2583,14 @@ function tickFirst(a){
 // prefix is there so the x axis ticks can be dropped a line
 // a is the axis layout, x is the tick value
 function tickText(gd, a, x){
-    var fontSize=12; // TODO: add to layout
-    var px=0, py=0;
-    var suffix=''; // completes the full date info, to be included with only the first tick
-    var tt;
+    var gf = gd.layout.font, tf = a.tickfont,
+        font = tf.family || gf.family || 'Arial',
+        fontSize = tf.size || gf.size || 12,
+        fontColor = tf.color || gf.color || '#000',
+        px=0,
+        py=0,
+        suffix='', // completes the full date info, to be included with only the first tick
+        tt;
     //AXISTYPEif(a.isdate){
     if(a.type=='date'){
         var d=new Date(x);
@@ -2610,7 +2639,7 @@ function tickText(gd, a, x){
         if(a===gd.layout.yaxis) px-=fontSize/4;
         else py+=fontSize/3;
     }
-    return {dx:px, dy:py, text:tt+suffix, fontSize:fontSize, x:x};
+    return {dx:px, dy:py, text:tt+suffix, fontSize:fontSize, font:font, fontColor:fontColor, x:x};
 }
 
 // ticks, grids, and tick labels for axis ax ('x' or 'y', or blank to do both)
@@ -2684,7 +2713,9 @@ function doTicks(gd,ax) {
     if(a.showticklabels) {
         yl.enter().append('text').classed(tcls,1)
             .call(setPosition, tl.x, tl.y)
+            .attr('font-family',function(d){return d.font})
             .attr('font-size',function(d){return d.fontSize})
+            .attr('fill',function(d){return d.fontColor})
             .attr('text-anchor',tl.anchor)
             .each(function(d){styleText(this,d.text)});
         yl.attr('transform',transfn);
