@@ -1213,13 +1213,50 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             mouseDown=d;
         }
 
-        if(e.altKey || e.ctrlKey || e.metaKey)
-            console.log('alt, ctrl, meta (cmd) click functionality not defined');
-        else if(ns+ew=='nsew' && !e.shiftKey) // in the main plot area, unmodified drag makes a zoombox
-            zoomBox(e);
-        else
-            dragRange(e);
+        console.log(e.altKey,e.ctrlKey,e.metaKey);
+        // in the main plot area, any drag except shift makes a zoombox
+        if(ns+ew=='nsew' && !e.shiftKey) { zoomBox(e) }
+        // otherwise, do pan (zoom on the ends/corners)
+        else { dragRange(e) }
         return pauseEvent(e);
+    }
+
+    // scroll zoom, on all draggers except corners
+    var scrollViewBox = [0,0,gd.plotwidth,gd.plotheight],
+        redrawTimer = null;
+    if(ns.length*ew.length!=1) {
+        $(dragger).on('mousewheel DOMMouseScroll', function(e) {
+            clearTimeout(redrawTimer);
+            var zoom = Math.exp(-Math.min(Math.max(e.originalEvent.wheelDelta,-50),50)/100),
+                gbb = $(gd).find('.nsewdrag')[0].getBoundingClientRect();
+            if(ew) {
+                var xfrac = (e.originalEvent.clientX-gbb.left)/gbb.width,
+                    x0 = gx.range[0]+(gx.range[1]-gx.range[0])*xfrac,
+                    vbx0 = scrollViewBox[0]+scrollViewBox[2]*xfrac;
+                gx.range = [x0+(gx.range[0]-x0)*zoom,x0+(gx.range[1]-x0)*zoom];
+                scrollViewBox[2] *= zoom;
+                scrollViewBox[0] = vbx0-scrollViewBox[2]*xfrac;
+                gx.autorange=false;
+            }
+            if(ns) {
+                var yfrac = (gbb.bottom-e.originalEvent.clientY)/gbb.height,
+                    y0 = gy.range[0]+(gy.range[1]-gy.range[0])*yfrac;
+                    vby0 = scrollViewBox[1]+scrollViewBox[3]*(1-yfrac);
+                gy.range = [y0+(gy.range[0]-y0)*zoom,y0+(gy.range[1]-y0)*zoom];
+                scrollViewBox[3] *= zoom;
+                scrollViewBox[1] = vby0-scrollViewBox[3]*(1-yfrac);
+                gy.autorange=false;
+            }
+            // viewbox redraw at first
+            gd.plot.attr('viewBox',scrollViewBox.join(' '));
+            if(ew) { doTicks(gd,'x') }
+            if(ns) { doTicks(gd,'y') }
+            // then replot after a delay to make sure no more scrolling is coming
+            redrawTimer = setTimeout(function(){
+                scrollViewBox = [0,0,gd.plotwidth,gd.plotheight];
+                resetViewBox();
+            },300);
+        });
     }
 
     function zoomBox(e){
@@ -1247,23 +1284,11 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                 if((new Date()).getTime()-mouseDown<DBLCLICKDELAY && numClicks==2) { // double click
                     gx.autorange=true;
                     gy.autorange=true;
-                    plot(gd,'','');
+                    dragTail(gd);
                 }
                 return finishZB();
             }
-            $('<div class="modal-backdrop fade" id="zoomboxbackdrop"></div>'+
-                '<div class="open" id="zoomboxmenu"><ul class="dropdown-menu">'+
-                    '<li><a id="zoomboxin">Zoom In</a></li>'+
-                    '<li><a id="zoomboxout">Zoom Out</a></li>'+
-                '</ul></div>').appendTo('body');
-            var mbb = $('#zoomboxmenu ul')[0].getBoundingClientRect();
-            $('#zoomboxmenu ul').css({
-                left:Math.min(e2.clientX,gbb.right-mbb.width)+'px',
-                top:Math.min(e2.clientY,gbb.bottom-mbb.height)+'px',
-                'z-index':20001
-            });
-            $('#zoomboxbackdrop,#zoombox').click(finishZB);
-            $('#zoomboxin').click(function(){
+            var zoomIn = function(){
                 gx.range=[gx.range[0]+(gx.range[1]-gx.range[0])*(zbb.left-gbb.left)/gbb.width,
                           gx.range[0]+(gx.range[1]-gx.range[0])*(zbb.right-gbb.left)/gbb.width];
                 gy.range=[gy.range[0]+(gy.range[1]-gy.range[0])*(gbb.bottom-zbb.bottom)/gbb.height,
@@ -1272,8 +1297,8 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                 gx.autorange=false;
                 gy.autorange=false;
                 dragTail(gd);
-            })
-            $('#zoomboxout').click(function(){
+            }
+            var zoomOut = function(){
                 gx.range=[(gx.range[0]*(zbb.right-gbb.left)+gx.range[1]*(gbb.left-zbb.left))/zbb.width,
                           (gx.range[0]*(zbb.right-gbb.right)+gx.range[1]*(gbb.right-zbb.left))/zbb.width];
                 gy.range=[(gy.range[0]*(gbb.bottom-zbb.top)+gy.range[1]*(zbb.bottom-gbb.bottom))/zbb.height,
@@ -1282,7 +1307,29 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                 gx.autorange=false;
                 gy.autorange=false;
                 dragTail(gd);
-            })
+            }
+
+            // drag box context menu if any modifier key (other than shift) was pressed during either mousedown or mouseup
+            if(e.altKey||e.ctrlKey||e.metaKey||e2.altKey||e2.ctrlKey||e2.metaKey) {
+                $('<div class="modal-backdrop fade" id="zoomboxbackdrop"></div>'+
+                    '<div class="open" id="zoomboxmenu"><ul class="dropdown-menu">'+
+                        '<li><a id="zoomboxin">Zoom In</a></li>'+
+                        '<li><a id="zoomboxout">Zoom Out</a></li>'+
+                    '</ul></div>').appendTo('body');
+                var mbb = $('#zoomboxmenu ul')[0].getBoundingClientRect();
+                $('#zoomboxmenu ul').css({
+                    left:Math.min(e2.clientX,gbb.right-mbb.width)+'px',
+                    top:Math.min(e2.clientY,gbb.bottom-mbb.height)+'px',
+                    'z-index':20001
+                });
+                $('#zoomboxbackdrop,#zoombox').click(finishZB);
+                $('#zoomboxin').click(zoomIn);
+                $('#zoomboxout').click(zoomOut);
+            }
+            // no modifiers: no context menu
+            else {
+                zoomIn();
+            }
             return pauseEvent(e2);
         }
 
