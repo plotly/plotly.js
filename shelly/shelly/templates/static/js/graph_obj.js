@@ -835,7 +835,7 @@ function legendBars(d){
 
 function legendText(s,gd){
     var gf = gd.layout.font, lf = gd.layout.legend.font;
-    console.log(gd,lf);
+    // console.log(gd,lf);
     // note: uses d[1] for the original trace number, in case of hidden traces
     return s.append('text')
         .attr('class',function(d){return 'legendtext text-'+d[1]})
