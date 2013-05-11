@@ -1268,9 +1268,10 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         window.onmousemove = function(e2) {
             var x1 = Math.max(gbb.left,Math.min(gbb.right,e2.clientX)),
                 y1 = Math.max(gbb.top,Math.min(gbb.bottom,e2.clientY));
+            // Not sure about the addition of window.scrollX/Y... seems to work but doesn't seem robust.
             zb.css({
-                left: Math.min(x0,x1)+'px',
-                top: Math.min(y0,y1)+'px',
+                left: (Math.min(x0,x1)+window.scrollX)+'px',
+                top: (Math.min(y0,y1)+window.scrollY)+'px',
                 width: Math.abs(x0-x1)+'px',
                 height: Math.abs(y0-y1)+'px'
             })
