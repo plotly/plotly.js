@@ -1227,9 +1227,10 @@ function dragBox(gd,x,y,w,h,ns,ew) {
     if(ns.length*ew.length!=1) {
         $(dragger).on('mousewheel DOMMouseScroll', function(e) {
             clearTimeout(redrawTimer);
-            var zoom = Math.exp(-Math.min(Math.max(e.originalEvent.wheelDelta,-50),50)/100),
+            var zoom = Math.exp(-Math.min(Math.max(e.originalEvent.wheelDelta,-50),50)/200),
                 gbb = $(gd).find('.nsewdrag')[0].getBoundingClientRect();
             if(ew) {
+                gx.range = [Number(gx.range[0]),Number(gx.range[1])]
                 var xfrac = (e.originalEvent.clientX-gbb.left)/gbb.width,
                     x0 = gx.range[0]+(gx.range[1]-gx.range[0])*xfrac,
                     vbx0 = scrollViewBox[0]+scrollViewBox[2]*xfrac;
@@ -1239,6 +1240,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                 gx.autorange=false;
             }
             if(ns) {
+                gy.range = [Number(gy.range[0]),Number(gy.range[1])]
                 var yfrac = (gbb.bottom-e.originalEvent.clientY)/gbb.height,
                     y0 = gy.range[0]+(gy.range[1]-gy.range[0])*yfrac;
                     vby0 = scrollViewBox[1]+scrollViewBox[3]*(1-yfrac);
@@ -2536,6 +2538,10 @@ function calcTicks(gd,a) {
     else {
         a.m=gd.plotwidth/(a.range[1]-a.range[0]);
         a.b=-a.m*a.range[0];
+    }
+    if(!a.dtick) {
+        console.log('dtick missing',a,rt);
+        return [];
     }
 
     // find the first tick
