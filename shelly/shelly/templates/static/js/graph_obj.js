@@ -928,8 +928,7 @@ function relayout(gd,astr,val) {
 
         var aa = propSplit(i);
         // toggling log without autorange: need to also recalculate ranges
-        /*AXISTYPEif(aa[1]=='islog'  && !gl[aa[0]].isdate && !gl[aa[0]].autorange &&
-            (gl[aa[0]].islog ? !aobj[i] : aobj[i])) {*/ // logical XOR (ie will islog actually change)
+        // logical XOR (ie will islog actually change)
         if(aa[1]=='type' && !gl[aa[0]].type=='date' && !gl[aa[0]].autorange &&
                     (gl[aa[0]].type=='log' ? !aobj[i] : aobj[i])) {
             var r0 = gl[aa[0]].range[0],
@@ -1269,9 +1268,10 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         window.onmousemove = function(e2) {
             var x1 = Math.max(gbb.left,Math.min(gbb.right,e2.clientX)),
                 y1 = Math.max(gbb.top,Math.min(gbb.bottom,e2.clientY));
+            // Not sure about the addition of window.scrollX/Y... seems to work but doesn't seem robust.
             zb.css({
-                left: Math.min(x0,x1)+'px',
-                top: Math.min(y0,y1)+'px',
+                left: (Math.min(x0,x1)+window.scrollX)+'px',
+                top: (Math.min(y0,y1)+window.scrollY)+'px',
                 width: Math.abs(x0-x1)+'px',
                 height: Math.abs(y0-y1)+'px'
             })
@@ -1835,6 +1835,26 @@ function annotation(gd,index,opt,value) {
     if(!$.isNumeric(options.arrowsize)) { options.arrowsize=1 }
     if(!options.text) { options.text=((options.showarrow && (options.text=='')) ? '' : 'new text') }
     if(!options.font) { options.font={family:'',size:0,color:''} }
+
+    // check for change between log and linear
+    if(options.ref=='plot') {
+        if(options.xatype=='log' && xa.type=='linear') {
+            options.x = Math.pow(10,options.x)
+        }
+        else if(options.xatype=='linear' && xa.type=='log') {
+            if(options.x>0) { options.x = Math.log(options.x)/Math.LN10 }
+            else { options.x = (xa.range[0]+xa.range[1])/2 } // log of negative - move it onscreen rather than failing
+        }
+        if(options.yatype=='log' && ya.type=='linear') {
+            options.y = Math.pow(10,options.y)
+        }
+        else if(options.yatype=='linear' && ya.type=='log') {
+            if(options.y>0) { options.y = Math.log(options.y)/Math.LN10 }
+            else { options.y = (ya.range[0]+ya.range[1])/2 } // log of negative - move it onscreen rather than failing
+        }
+    }
+    options.xatype=xa.type;
+    options.yatype=ya.type;
 
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
