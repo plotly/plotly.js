@@ -85,6 +85,7 @@ TOOLBAR_TOP = '-30px';
 PTS_LINESONLY = 20;
 DBLCLICKDELAY = 600; // ms between first mousedown and 2nd mouseup to constitute dblclick
 MINDRAG = 5; // pixels to move mouse before you stop clamping to starting point
+VERBOSE = false;
 
 defaultColors=['#00e', //blue
                '#a00', //red
@@ -119,6 +120,7 @@ var graphInfo = {
 // if necessary to create the framework
 // ----------------------------------------------------
 function plot(divid, data, layout, rdrw) {
+    plotlylog('+++++++++++++++IN: plot(divid, data, layout, rdrw)+++++++++++++++');
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in by dom element, others by id (string)
@@ -207,9 +209,6 @@ function plot(divid, data, layout, rdrw) {
         }            
     }
     
-    console.log('********** X TYPE **********');    
-    console.log(xa.type);
-
     // prepare the data and find the autorange
     gd.calcdata=[];
     computedStackHeight = false;
@@ -222,7 +221,7 @@ function plot(divid, data, layout, rdrw) {
             cd=[];
         
         if(typeinfo.framework!=gd.framework) {
-            console.log('Oops, tried to put data of type '+(gdc.type || 'scatter')+
+            plotlylog('Oops, tried to put data of type '+(gdc.type || 'scatter')+
                 ' on an incompatible graph controlled by '+(gdd[0].type || 'scatter')+
                 ' data. Ignoring this dataset.');
             continue;
@@ -298,14 +297,14 @@ function plot(divid, data, layout, rdrw) {
             
             // ignore as much processing as possible (and including in autorange) if bar is not visible
             if(gdc.visible!=false) {
-                console.log('**** bar curve ****');
-                console.log(gdc);
+                plotlylog('**** bar curve ****');
+                plotlylog(gdc);
 
                 y = convertOne('y',ya,gdc.x);
                 x = convertOne('x',xa,gdc.y); 
                 
-                console.log('*** x ***'); console.log(x);
-                console.log('*** y ***'); console.log(y);                
+                plotlylog('*** x ***'); plotlylog(x);
+                plotlylog('*** y ***'); plotlylog(y);                
                                
                 var xMax = aggNums(Math.max, false, x, x.length);
                 var xMin = aggNums(Math.min, false, x, x.length);
@@ -347,7 +346,7 @@ function plot(divid, data, layout, rdrw) {
                     barWidth = (nVis == 0) ? barWidth : barWidth/nVis;    
                     var xOffset = nVis*barWidth*0.5;
                     ydr = outerBounds(ya,ydr,y,serieslen);
-                    console.log(ydr);
+                    plotlylog(ydr);
                     ydr[0] = Math.min(ydr[0],0);    // cuz we want to view the whole bar.
                                                     // if the bar is less than 0, display it
                                                     // but otherwise, default to ymin = 0        
@@ -401,10 +400,11 @@ function plot(divid, data, layout, rdrw) {
         gd.calcdata.push(cd);
     }
 
-    // console.log(gd.calcdata);
     // put the styling info into the calculated traces
     // has to be done separate from applyStyles so we know the mode (ie which objects to draw)
     setStyles(gd);
+
+    ydr = errorbarsydr(gd,ydr);
 
     // autorange... if axis is currently reversed, preserve this.
     var a0 = 0.05, // 5% extension of plot scale beyond last point
@@ -457,14 +457,11 @@ function plot(divid, data, layout, rdrw) {
             }
         }  
         
-        // plot traces 
-        // (gp is gd.plot, the inner svg object containing the traces)
         gp.selectAll('g.trace').remove(); // <-- remove old traces before we redraw
-
 
         var traces = gp.selectAll('g.trace') // <-- select trace group
             .data(gd.calcdata) // <-- bind calcdata to traces
-          .enter().append('g') // <-- add a trace for each calcdata
+            .enter().append('g') // <-- add a trace for each calcdata
             .attr('class','trace');
 
 
@@ -502,6 +499,7 @@ function plot(divid, data, layout, rdrw) {
                         });
                 }
                 else if(t.type=='bar'){ 
+                    plotlylog('this: ', this); 
                     d3.select(this).selectAll('rect')
                         .data(function(d){return d})
                         .enter().append('rect')
@@ -538,11 +536,11 @@ function plot(divid, data, layout, rdrw) {
                                 }
                                 var x_coord = xf({x:x_offset+Number(di.x), y:0}, gd);                                                                                           
                                 var y_coord = yf({x:0, y:y_offset+Math.max(di.y,0)}, gd);
-                                //console.log('offset = ',y_offset,'y_coord=',y_coord)
+                                //plotlylog('offset = ',y_offset,'y_coord=',y_coord)
                                 d3.select(this)
                                     .attr('transform','translate('+x_coord+','+y_coord+')')
                                     .attr("height", barHeight);
-                                //console.log((di.y), ' ---> ' ,yf(di,gd));
+                                //plotlylog((di.y), ' ---> ' ,yf(di,gd));
                             }
                             else d3.select(this).remove();
                         });                        
@@ -561,12 +559,19 @@ function plot(divid, data, layout, rdrw) {
                         else d3.select(this).remove();
                     });
             });
+  
+        // DRAW ERROR BARS
+        console.log('errorbars');
+        errorbars(gd);    
+      
 
         //styling separate from drawing
         applyStyle(gp);
+
+
     }
     else
-        console.log('error with axis scaling',xa.m,xa.b,ya.m,ya.b);
+        plotlylog('error with axis scaling',xa.m,xa.b,ya.m,ya.b);
 
     // show the legend
     if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!=false))
@@ -578,17 +583,23 @@ function plot(divid, data, layout, rdrw) {
             annotation(gd,i);
     }
 
+
     try{ killspin(); }
-    catch(e){ console.log(e); }
+    catch(e){ plotlylog(e); }
     setTimeout(function(){
         if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false){
             try{ showAlert('graphtips'); }
-            catch(e){ console.log(e); }
+            catch(e){ plotlylog(e); }
         }
         else if($(gd).find('#graphtips').css('display')=='none'){
             $(gd).find('#graphtips').fadeIn(); }
     },1000);
+    plotlylog('+++++++++++++++OUT: plot(divid, data, layout, rdrw)+++++++++++++++');
+
 }
+
+
+
 
 // ------------------------------------------------------------ xf()
 // returns a plot x coordinate given a global x coordinate
@@ -612,7 +623,7 @@ function yf(d,gd){
 // if it's not a plot, also make sure it's empty, otherwise make a new tab
 // plots are special: if you bring new data in it will try to add it to the existing plot
 function gettab(tabtype,mode){
-    //if(tabtype) console.log('gettab',tabtype,mode);
+    //if(tabtype) plotlylog('gettab',tabtype,mode);
     var td = $('.ui-tabs-panel:visible')[0];
     if(tabtype){
         if(!td || td.tabtype!=tabtype) td=addTab(tabtype);
@@ -623,6 +634,8 @@ function gettab(tabtype,mode){
 
 // set display params per trace to default or provided value
 function setStyles(gd) {
+    plotlylog('+++++++++++++++IN: setStyles(gd)+++++++++++++++');
+
     // merge object a (which may be an array or a single value) into cd...
     // search the array defaults in case a is missing (and for a default val
     // if some points of o are missing from a)
@@ -634,9 +647,18 @@ function setStyles(gd) {
         }
         else { cd[0].t[attr] = (typeof a != 'undefined') ? a : dflt }
     }
-    console.log(gd.calcdata);    
     for(var i in gd.calcdata){
         var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
+        if( (gdc.error_y===undefined ? false : gdc.error_y.visible ) ){
+            mergeattr(gdc.error_y.visible,'ye_vis',false);
+            mergeattr(gdc.error_y.type,'ye_type','percent');
+            mergeattr(gdc.error_y.value,'ye_val',10);
+            mergeattr(gdc.error_y.traceref,'ye_tref',0);
+            mergeattr(gdc.error_y.color,'ye_clr',cd[0].t.ye_clr|| defaultColors[c % defaultColors.length]);
+            mergeattr(gdc.error_y.thickness,'ye_tkns',1);
+            mergeattr(gdc.error_y.width,'ye_w',4);
+            mergeattr(gdc.error_y.opacity,'ye_op',1);
+        }
         if(cd[0].t.type==='scatter' || cd[0].t.type===undefined){
             // mergeattr puts single values into cd[0].t, and all others into each individual point
             mergeattr(gdc.type,'type','scatter');
@@ -683,9 +705,13 @@ function setStyles(gd) {
             mergeattr(gdc.name,'name','trace '+c);                                  
         }
     }
+    plotlylog('+++++++++++++++OUT: setStyles(gd)+++++++++++++++');
+
 }
 
 function applyStyle(gp) {
+    plotlylog('+++++++++++++++IN: applyStyle(gp)+++++++++++++++');
+    plotlylog('gp = ', gp);
     gp.selectAll('g.trace')
         .call(traceStyle);
     gp.selectAll('g.points')
@@ -693,11 +719,27 @@ function applyStyle(gp) {
             .call(pointStyle,d[0].t);});
             
     gp.selectAll('g.points')
-        .each(function(d){d3.select(this).selectAll('rect')
-            .call(pointStyle,d[0].t);});            
+        .each(function(d){ d3.select(this).selectAll('rect')
+            .call(pointStyle,d[0].t); });            
             
     gp.selectAll('g.trace polyline')
         .call(lineGroupStyle);
+
+    // Error bars - change style attributes
+    es = ['g.errorbars_svg', 'g.errorshoes_svg', 'g.errorhats_svg']; // the 3 groups that are modified
+    ea = ['stroke', 'stroke-width','stroke-opacity'];   // the attribute
+    ev = ['ye_clr', 'ye_tkns', 'ye_op'];                // the cd names that correspond to the attributes above
+    for(var i=0; i<ea.length; i++){
+        for(var j=0; j<es.length; j++){
+            bars = gp.selectAll(es[j]);  // the set of error bars (for each trace)
+            bars.each(function(d,idx){   // for each set
+                $(bars[0][idx]).children('line')  // get the individual bars
+                .attr(ea[i],d[0].t[ev[i]])});   // and set the attribute
+        }
+    }
+
+    plotlylog('+++++++++++++++OUT: applyStyle(gp)+++++++++++++++');
+
 }
 
 
@@ -807,6 +849,7 @@ function barStyle(s,t) {
 
 function legendLines(d){
     if(['heatmap','bar'].indexOf(d[0].t.type)>=0) return;
+//    if(true).indexOf(d[0].t.ye_vis>1)
     if(d[0].t.mode.indexOf('lines')==-1) return;
     d3.select(this).append('polyline')
         .call(lineGroupStyle)
@@ -856,8 +899,10 @@ function legendText(s){
 // val is the new value to use
 // traces is a trace number or an array of trace numbers to change (blank for all)
 function restyle(gd,astr,val,traces) {
+    plotlylog('+++++++++++++++IN: restyle+++++++++++++++');
     gd.changed = true;
-    
+
+
     // mode for bar charts (stacked or grouped) is a graph-wide attribute, but makes
     // more sense in the style box than the layout box. here we update gd.layout.barmode
     // if astr is 'barmode', force a replot, then return
@@ -868,16 +913,30 @@ function restyle(gd,astr,val,traces) {
         traces=gd.data.map(function(v,i){return i});
 
     // set attribute in gd.data
+    
     var aa=astr.split('.');
     for(i=0; i<traces.length; i++) {
         var cont=gd.data[traces[i]];
-        for(var j=0; j<aa.length-1; j++) cont=cont[aa[j]];
-        cont[aa[j]]=val;
+        for(var j=0; j<aa.length-1; j++){
+            if(cont[aa[j]]===undefined){ 
+                cont[aa[j]] = {};       // CP edit: build the heiracrchy if it doesn't exist
+                                        // e.g. if setting error_y.clr="blue"
+                                        // and errorbar isn't defined, then initialize 
+                                        // errorbar and y
+            }
+            cont=cont[aa[j]];  // get to the 2nd-to-last level
+        }
+        cont[aa[j]]=val;    
     }
+
+
+
     // need to replot if mode or visibility changes, because the right objects don't exist
     // also need to replot if a heatmap
+    // also need to replot the error bars for several cases. TODO: if re-plotting error bars, don't re-plot scatter plots
     var hm_attr=['mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','scl'];
-    if(['mode','visible','type','barmode'].indexOf(astr)>=0||hm_attr.indexOf(astr)>=0)
+    var eb_attr=['error_y.visible','error_y.value','error_y.type','error_y.width', 'error_y.traceref', 'error_y.array'];
+    if(['mode','visible','type','barmode'].indexOf(astr)>=0||hm_attr.indexOf(astr)>=0||eb_attr.indexOf(astr)>=0)
         plot(gd,'','',true); // <-- last arg is to force redrawing the heatmap
     else {
         setStyles(gd);
@@ -885,13 +944,14 @@ function restyle(gd,astr,val,traces) {
         if($(gd).find('.legend').length)
             legend(gd);
     }
+    plotlylog('+++++++++++++++OUT: restyle+++++++++++++++');
 }
 
 // change layout in an existing plot
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
-    console.log('**** RELAYOUT ****');
-    console.log(gd,astr,val);
+    plotlylog('**** RELAYOUT ****');
+    plotlylog(gd,astr,val);
 
     gd.changed = true;
     var gl = gd.layout,
@@ -1203,7 +1263,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         }
 
         if(e.altKey || e.ctrlKey || e.metaKey)
-            console.log('alt, ctrl, meta (cmd) click functionality not defined');
+            plotlylog('alt, ctrl, meta (cmd) click functionality not defined');
         else if(ns+ew=='nsew' && !e.shiftKey) // in the main plot area, unmodified drag makes a zoombox
             zoomBox(e);
         else
@@ -1215,7 +1275,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         var gbb = $(gd).find('.nsewdrag')[0].getBoundingClientRect(),
             x0 = e.clientX,
             y0 = e.clientY,
-//         console.log(x0,y0,e,$('.nsewdrag'),gx.range,gy.range);
+//         plotlylog(x0,y0,e,$('.nsewdrag'),gx.range,gy.range);
             zb = $('<div id="zoombox" style="left: '+x0+'px; top: '+y0+'px;"></div>').appendTo('body');
         window.onmousemove = function(e2) {
             var x1 = Math.max(gbb.left,Math.min(gbb.right,e2.clientX)),
@@ -1888,7 +1948,7 @@ function annotation(gd,index,opt,value) {
 //             var end_el = anntext.selectAll('tspan'),
 //                 pad = 3;
 //         }
-//         console.log(end_el);
+//         plotlylog(end_el);
         boxes.forEach(function(bb){
             var x1 = bb.left-paperbb.left-pad,
                 y1 = bb.top-paperbb.top-pad,
@@ -2174,11 +2234,11 @@ function autoGrowInput(eln) {
                     'unknown';
 
     if(mode=='unknown') {
-        console.log('oops, autoGrowInput doesn\'t recognize this field',el,eln);
+        plotlylog('oops, autoGrowInput doesn\'t recognize this field',el,eln);
         return;
     }
     if(!gd.mainsite && mode!='drag') {
-        console.log('not on the main site but tried to edit text. ???',el,eln);
+        plotlylog('not on the main site but tried to edit text. ???',el,eln);
         return;
     }
 
@@ -2659,7 +2719,7 @@ function doTicks(gd,ax) {
                 anchor:'end'};
     }
     else {
-        console.log('unrecognized doTicks axis',ax);
+        plotlylog('unrecognized doTicks axis',ax);
         return;
     }
 
@@ -2857,8 +2917,8 @@ function graphToGrid(){
     else {
         var data = [];
         for(d in gd.data) data.push(stripSrc(gd.data[d]));
-        console.log('~ DATA ~');
-        console.log(data);
+        plotlylog('~ DATA ~');
+        plotlylog(data);
         $.post("/pullf/", {'csrfmiddlewaretoken':csrftoken, 'data': JSON.stringify({'data':data}), 'ft':'grid'}, fileResp);
     }
 }
@@ -2965,8 +3025,8 @@ function category(d,ax) {
 // if isdate, convert value (or all values) from dates to milliseconds
 // if islog, take the log here
 function convertToAxis(o,a){
-    console.log('*** convert to axis ***');
-    console.log(o,a);
+    plotlylog('*** convert to axis ***');
+    //plotlylog(o,a);
     //AXISTYPEif(a.isdate||a.islog){
     if(a.type=='date'||a.type=='log'){
         if($.isArray(o)){
@@ -3054,4 +3114,10 @@ function range(i){
     var x=[]; var j=0;
     while(x.push(j++)<i){};
     return x;
+}
+
+function plotlylog(str){
+    if(VERBOSE){
+        console.log(str);
+    }
 }
