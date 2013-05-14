@@ -2579,7 +2579,7 @@ function calcTicks(gd,a) {
             var nt = Math.max(3,Math.min(10,gd.plotwidth/80));
 
         var rt=Math.abs(a.range[1]-a.range[0])/nt; // min tick spacing
-        autoTicks(a,rt);
+        autoTicks(a,rt,nt);
     }
 
     // set scaling to pixels
@@ -2609,7 +2609,7 @@ function calcTicks(gd,a) {
     return vals;
 }
 
-function autoTicks(a,rt){
+function autoTicks(a,rt,nt){
     if(a.type=='date'){
         var base;
         a.tick0=new Date(2000,0,1).getTime();
