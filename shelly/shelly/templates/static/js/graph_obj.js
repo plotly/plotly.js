@@ -944,7 +944,7 @@ function restyle(gd,astr,val,traces) {
 // change layout in an existing plot
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
-    plotlylog('**** RELAYOUT ****');
+    plotlylog('+++++++++++++++ IN: RELAYOUT +++++++++++++++');
 
     gd.changed = true;
     var gl = gd.layout,
@@ -1030,6 +1030,7 @@ function relayout(gd,astr,val) {
             plot(gd,'',gl);
         }
     }
+    plotlylog('+++++++++++++++ OUT: RELAYOUT +++++++++++++++');
 }
 
 // convert a string (such as 'xaxis.range[0]')
