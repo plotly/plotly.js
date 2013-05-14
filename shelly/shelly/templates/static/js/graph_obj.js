@@ -193,6 +193,7 @@ function plot(divid, data, layout, rdrw) {
             if(['date','log','linear','category'].indexOf(ax.type)!==-1)
                 return;
             // first check for histograms, as they can change the axis types
+            if(gdd[0].type===undefined || gdd[0].type==='') gdd[0].type='scatter';
             if(( gdd[0].type.substr(1)=='histogram' && axletter==gdd[0].type.charAt(0) )) {
                 ax.type='linear';
             }
