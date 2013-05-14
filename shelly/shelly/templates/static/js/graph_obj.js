@@ -190,7 +190,12 @@ function plot(divid, data, layout, rdrw) {
             // guess at axis type with the new property format
             if(['date','log','linear','category'].indexOf(ax.type)!==-1)
                 return;
-            if( ( axletter in gdd[0]) ? moreDates(gdd[0][axletter]) : (isDateTime(gdd[0][axletter+'0'])===true ) )
+            // first check for histograms, as they can change the axis types
+            if(( gdd[0].type.substr(1)=='histogram' && axletter==gdd[0].type.charAt(0) )) {
+                ax.type='linear';
+            }
+            // then check the data supplied for that axis
+            else if( ( axletter in gdd[0]) ? moreDates(gdd[0][axletter]) : (isDateTime(gdd[0][axletter+'0'])===true ) )
                 ax.type='date';
             else if( loggy(gdd,axletter) )
                 ax.type='log';
@@ -253,6 +258,22 @@ function plot(divid, data, layout, rdrw) {
                 return [aggNums(Math.min,xdr[0],x,serieslen),aggNums(Math.max,xdr[1],x,serieslen)];
             else
                 return xdr;
+        }
+
+        var autobin = function(data,ax) {
+            var datamin = aggNums(Math.min,null,data,data.length),
+                datamax = aggNums(Math.max,null,data,data.length);
+            if(ax.type=='category') {
+                return {
+                    start: datamin-0.5,
+                    end: datamax+0.5,
+                    size: 1
+                }
+            }
+            else {
+                var size0 = 0.6*(datamax-datamin)/Math.sqrt(data.length);
+                // TODO
+            }
         }
 
         if(curvetype=='scatter') {
@@ -367,10 +388,48 @@ function plot(divid, data, layout, rdrw) {
             if(!('line' in gdc)) gdc.line={};
             if(!('marker' in gdc)) gdc.marker={};
             if(!('line' in gdc.marker)) gdc.marker.line={};
-
-            /*mergeattr(gdc.marker.color,'mc',cd[0].t.lc);
-            mergeattr(gdc.marker.line.color,'mlc',((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000' ));
-            mergeattr(gdc.marker.line.width,'mlw',0);*/
+        }
+        else if( gdc.type=='xhistogram' ){
+            x = convertOne('x',xa,gdc.x);
+            if(!('xbins' in gdc)) gdc.xbins = autobin(x,xa);
+            for(i=gdc.xbins.start+gdc.xbins.size/2; i<gdc.xbins.end; i+=gdc.xbins.size) {
+                cd.push({x:i,y:0});
+            }
+            for(i=0; i<x.length; i++) {
+                var n = Math.round((x[i]-xbins.start)/xbins.size);
+                if(n>=0 && n<cd.length) { cd[n].y+=1 }
+            }
+        }
+        else if( gdc.type=='yhistogram' ){
+            // TODO: same as xhistogram, but will need horizontal bars first
+        }
+        else if( gdc.type=='2dhistogram' ){
+            x = convertOne('x',xa,gdc.x);
+            y = convertOne('y',ya,gdc.y);
+            serieslen = Math.min(x.length,y.length);
+            if(!('xbins' in gdc)) gdc.xbins = autobin2d(x,xa,serieslen);
+            if(!('ybins' in gdc)) gdc.ybins = autobin2d(y,ya,serieslen);
+            gdc.z = [];
+            for(i=gdc.xbins.start+gdc.xbins.size/2; i<gdc.xbins.end; i+=gdc.xbins.size) {
+                var row = [];
+                for(i=gdc.ybins.start+gdc.ybins.size/2; i<gdc.ybins.end; i+=gdc.ybins.size) {
+                    row.push(0);
+                }
+                gdc.z.push(row);
+            }
+            for(i=0; i<serieslen; i++) {
+                var n = Math.round((x[i]-xbins.start)/xbins.size);
+                var m = Math.round((y[i]-ybins.start)/ybins.size);
+                if(n>=0 && n<gdc.z.length && m>=0 &&gdc.z[0].length) { gdc.z[n][m]+=1 }
+            }
+            gdc.x0 = gdc.xbins.start;
+            gdc.dx = gdc.xbins.size;
+            gdc.y0 = gdc.ybins.start;
+            gdc.dy = gdc.ybins.size;
+            gdc.zmin=zmin(gdc.z);
+            gdc.zmax=zmax(gdc.z);
+            if(!( 'scl' in gdc )){ gdc.scl=defaultScale; }
+            cd.push({t:{curve:curve, type:'2dhistogram'}})
         }
         else if( gdc.type=='heatmap' ){
             if(gdc.visible!=false) {
@@ -448,9 +507,9 @@ function plot(divid, data, layout, rdrw) {
         var cdback = [], cdfront = [];
         for(var i in gd.calcdata){
             var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
-            if(gdc.type=='heatmap')
+            if(gdc.type=='heatmap' || gdc.type=='2dhistogram')
                 heatmap(c,gdc,cd,rdrw,gd);
-            else if(gdc.type=='bar')
+            else if(gdc.type=='bar' || gdc.type=='xhistogram')
                 cdback.push(cd);
             else
                 cdfront.push(cd);
@@ -503,7 +562,7 @@ function plot(divid, data, layout, rdrw) {
                             else d3.select(this).remove();
                         });
                 }
-                else if(t.type=='bar'){
+                else if(t.type=='bar' || t.type=='xhistogram'){
                     d3.select(this).selectAll('rect')
                         .data(function(d){return d})
                         .enter().append('rect')
@@ -550,7 +609,7 @@ function plot(divid, data, layout, rdrw) {
                 }
 
                 var t=d[0].t;
-                if(t.type=='heatmap') return;
+                if(t.type=='heatmap' || t.type=='2dhistogram') return;
                 if(!t.mode || t.mode.indexOf('markers')==-1 || d[0].t.visible==false) return;
                 d3.select(this).selectAll('path')
                     .data(function(d){return d})
@@ -656,7 +715,7 @@ function setStyles(gd) {
             mergeattr(gdc.text,'tx','');
             mergeattr(gdc.name,'name','trace '+c);
         }
-        else if(cd[0].t.type==='heatmap'){
+        else if(cd[0].t.type==='heatmap' || cd[0].t.type==='2dhistogram'){
             mergeattr(gdc.type,'type','heatmap');
             mergeattr(gdc.visible,'visible',true);
             mergeattr(gdc.x0,'x0',2);
@@ -667,7 +726,7 @@ function setStyles(gd) {
             mergeattr(gdc.zmax,'zmax',10);
             mergeattr(JSON.stringify(gdc.scl),'scl',defaultScale);
         }
-        else if(cd[0].t.type==='bar'){
+        else if(cd[0].t.type==='bar' || cd[0].t.type==='xhistogram'){
             mergeattr(gdc.type,'type','bar');
             mergeattr(gdc.visible,'visible',true);
             mergeattr(gdc.opacity,'op',1);
@@ -2039,7 +2098,7 @@ function annotation(gd,index,opt,value) {
                     ann.call(setPosition, annx0+dx, anny0+dy);
                     if(options.ref=='paper') {
                         xf=(ax+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0));
-                        yf=(ay+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0));
+                        yf=1-((ay+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0)));
                     }
                     else {
                         xf = options.x+dx/gd.layout.xaxis.m;
@@ -2145,7 +2204,7 @@ function nineCursors(x,y){
 }
 
 // add arrowhead(s) to a path or line d3 element el3
-// style: 1-6, first 5 are pointers, 6 is circle, 7 is square
+// style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none
 // ends is 'start', 'end' (default), 'start+end'
 // mag is magnification vs. default (default 1)
 function arrowhead(el3,style,ends,mag) {
@@ -2156,7 +2215,8 @@ function arrowhead(el3,style,ends,mag) {
             'M-2.2,-2.2L0,0L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',
             'M-4.2,-2.1L0,0L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',
             'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',
-            'M2,2V-2H-2V2Z'][style-1];
+            'M2,2V-2H-2V2Z',
+            ''][style-1];
     if(!s) return;
     if(typeof ends != 'string' || !ends) ends = 'end';
 
@@ -2201,7 +2261,7 @@ function allArrowheads(container){
     // with no args, output an array of elements for the dropdown list
     if(!container) {
         out=[];
-        for(var i=1; i<=7; i++){
+        for(var i=1; i<=8; i++){
             out.push({
                 val:i,
                 name:'<svg width="40" height="20" data-arrowhead="'+i+'" style="position: relative; top: 2px;">'+
@@ -2457,97 +2517,16 @@ function autoGrowInput(eln) {
 function calcTicks(gd,a) {
     // calculate max number of (auto) ticks to display based on plot size
     // TODO: take account of actual label size here
-    if(a===gd.layout.yaxis)
-        var nt = Math.max(3,Math.min(10,gd.plotheight/40));
-    else
-        var nt = Math.max(3,Math.min(10,gd.plotwidth/80));
+    // TODO: allow non-auto ticks
+    // TODO: rotated ticks for categories or dates
+    if(true){//a.autotick){
+        if(a===gd.layout.yaxis)
+            var nt = Math.max(3,Math.min(10,gd.plotheight/40));
+        else
+            var nt = Math.max(3,Math.min(10,gd.plotwidth/80));
 
-    var rt=Math.abs(a.range[1]-a.range[0])/nt; // min tick spacing
-    //AXISTYPEif(a.isdate){
-    if(a.type=='date'){
-        if(a.autotick){
-            var base;
-            a.tick0=new Date(2000,0,1).getTime();
-            if(rt>15778800000){ // years if rt>6mo
-                rt/=31557600000;
-                var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-                a.dtick='M'+String(12*rtexp*roundUp(rt/rtexp,[2,5,10]));
-                a.tickround='y';
-            }
-            else if(rt>1209600000){ // months if rt>2wk
-                rt/=2629800000;
-                a.dtick='M'+roundUp(rt,[1,2,3,6]);
-                a.tickround='m';
-            }
-            else if(rt>43200000){ // days if rt>12h
-                base=86400000;
-                a.tick0=new Date(2000,0,2).getTime(); // get week ticks on sunday
-                a.dtick=base*roundUp(rt/base,[1,2,3,7,14]); // 2&3 day ticks are weird, but need something btwn 1,7
-                a.tickround='d';
-            }
-            else if(rt>1800000){ // hours if rt>30m
-                base=3600000;
-                a.dtick=base*roundUp(rt/base,[1,2,3,6,12]);
-                a.tickround='H';
-            }
-            else if(rt>30000){ // minutes if rt>30sec
-                base=60000;
-                a.dtick=base*roundUp(rt/base,[1,2,5,10,15,30]);
-                a.tickround='M';
-            }
-            else if(rt>500){ // seconds if rt>0.5sec
-                base=1000;
-                a.dtick=base*roundUp(rt/base,[1,2,5,10,15,30]);
-                a.tickround='S';
-            }
-            else { //milliseconds
-                var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-                a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
-                a.tickround=Math.pow(10,3-Math.round(Math.log(a.dtick/2)/Math.LN10));
-            }
-        }
-    }
-    //AXISTYPEelse if(a.islog){
-    else if(a.type=='log'){
-        if(a.autotick){
-            a.tick0=0;
-            if(rt>0.7){ //only show powers of 10
-                a.dtick=Math.ceil(rt);
-            }
-            else if(rt*nt<1){ // likely no power of 10 visible
-                // ticks on a linear scale, labeled fully
-                rt=Math.abs(Math.pow(10,a.range[1])-Math.pow(10,a.range[0]))/nt;
-                var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-                a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
-                //round tick labels to 2 digits past largest digit of dtick
-                a.tickround=Math.pow(10,2-Math.round(Math.log(a.dtick)/Math.LN10));
-                a.dtick='L'+String(a.dtick);
-            }
-            else { // include intermediates between powers of 10, labeled with small digits
-                // a.dtick="D2" (show 2 and 5) or "D1" (show all digits)
-                // use a.tickround to store the first tick
-                var vmin=Math.pow(10,Math.min(a.range[1],a.range[0]));
-                var minexp=Math.pow(10,Math.floor(Math.log(vmin)/Math.LN10));
-                if(rt>0.3){
-                    a.dtick='D2';
-                    a.tickround=minexp*roundUp(vmin/minexp,[2,5,10]);
-                }
-                else {
-                    a.dtick='D1';
-                    a.tickround=minexp*roundUp(vmin/minexp,[2,3,4,5,6,7,8,9,10]);
-                }
-            }
-        }
-    }
-    else{
-        if(a.autotick){
-            // auto ticks always start at 0
-            a.tick0=0;
-            var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-            a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
-        }
-        //round tick labels to 2 digits past largest digit of dtick
-        a.tickround=Math.pow(10,2-Math.round(Math.log(a.dtick)/Math.LN10));
+        var rt=Math.abs(a.range[1]-a.range[0])/nt; // min tick spacing
+        autoTicks(a,rt);
     }
 
     // set scaling to pixels
@@ -2575,6 +2554,91 @@ function calcTicks(gd,a) {
     for(var x=a.tmin;(axrev)?(x>=a.range[1]):(x<=a.range[1]);x=tickIncrement(x,a.dtick,axrev))
         vals.push(tickText(gd, a, x));
     return vals;
+}
+
+function autoTicks(a,rt){
+    if(a.type=='date'){
+        var base;
+        a.tick0=new Date(2000,0,1).getTime();
+        if(rt>15778800000){ // years if rt>6mo
+            rt/=31557600000;
+            var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+            a.dtick='M'+String(12*rtexp*roundUp(rt/rtexp,[2,5,10]));
+            a.tickround='y';
+        }
+        else if(rt>1209600000){ // months if rt>2wk
+            rt/=2629800000;
+            a.dtick='M'+roundUp(rt,[1,2,3,6]);
+            a.tickround='m';
+        }
+        else if(rt>43200000){ // days if rt>12h
+            base=86400000;
+            a.tick0=new Date(2000,0,2).getTime(); // get week ticks on sunday
+            a.dtick=base*roundUp(rt/base,[1,2,3,7,14]); // 2&3 day ticks are weird, but need something btwn 1,7
+            a.tickround='d';
+        }
+        else if(rt>1800000){ // hours if rt>30m
+            base=3600000;
+            a.dtick=base*roundUp(rt/base,[1,2,3,6,12]);
+            a.tickround='H';
+        }
+        else if(rt>30000){ // minutes if rt>30sec
+            base=60000;
+            a.dtick=base*roundUp(rt/base,[1,2,5,10,15,30]);
+            a.tickround='M';
+        }
+        else if(rt>500){ // seconds if rt>0.5sec
+            base=1000;
+            a.dtick=base*roundUp(rt/base,[1,2,5,10,15,30]);
+            a.tickround='S';
+        }
+        else { //milliseconds
+            var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+            a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
+            a.tickround=Math.pow(10,3-Math.round(Math.log(a.dtick/2)/Math.LN10));
+        }
+    }
+    else if(a.type=='log'){
+        a.tick0=0;
+        if(rt>0.7){ //only show powers of 10
+            a.dtick=Math.ceil(rt);
+        }
+        else if(rt*nt<1){ // likely no power of 10 visible
+            // ticks on a linear scale, labeled fully
+            rt=Math.abs(Math.pow(10,a.range[1])-Math.pow(10,a.range[0]))/nt;
+            var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+            a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
+            //round tick labels to 2 digits past largest digit of dtick
+            a.tickround=Math.pow(10,2-Math.round(Math.log(a.dtick)/Math.LN10));
+            a.dtick='L'+String(a.dtick);
+        }
+        else { // include intermediates between powers of 10, labeled with small digits
+            // a.dtick="D2" (show 2 and 5) or "D1" (show all digits)
+            // use a.tickround to store the first tick
+            var vmin=Math.pow(10,Math.min(a.range[1],a.range[0]));
+            var minexp=Math.pow(10,Math.floor(Math.log(vmin)/Math.LN10));
+            if(rt>0.3){
+                a.dtick='D2';
+                a.tickround=minexp*roundUp(vmin/minexp,[2,5,10]);
+            }
+            else {
+                a.dtick='D1';
+                a.tickround=minexp*roundUp(vmin/minexp,[2,3,4,5,6,7,8,9,10]);
+            }
+        }
+    }
+    else if(a.type=='category') {
+        a.tick0=0;
+        a.dtick=1;
+    }
+    else{
+        // auto ticks always start at 0
+        a.tick0=0;
+        var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+        a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
+        //round tick labels to 2 digits past largest digit of dtick
+        a.tickround=Math.pow(10,2-Math.round(Math.log(a.dtick)/Math.LN10));
+    }
 }
 
 // return the smallest element from (sorted) array a that's bigger than val
@@ -2819,7 +2883,7 @@ function doTicks(gd,ax) {
 
     // zero line
     var zl = gd.axislayer.selectAll('line.'+zcls).data(a.range[0]*a.range[1]<=0 ? [{x:0}] : []);
-    if(a.zeroline) {
+    if(a.zeroline && a.type=='linear') {
         zl.enter().append('line').classed(zcls,1).classed('zl',1)
             .call(strokeColor, a.zerolinecolor || '#000')
             .attr('stroke-width', a.zerolinewidth || gridwidth)
