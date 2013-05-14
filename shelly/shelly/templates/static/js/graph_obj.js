@@ -2260,6 +2260,7 @@ function nineCursors(x,y){
 // ends is 'start', 'end' (default), 'start+end'
 // mag is magnification vs. default (default 1)
 function arrowhead(el3,style,ends,mag) {
+    if(!$.isNumeric(mag)) { mag=1 }
     var el = el3.node();
         s = ['M-1,-2V2L1,0Z',
             'M-2,-2V2L2,0Z',
@@ -2288,7 +2289,7 @@ function arrowhead(el3,style,ends,mag) {
 
     var drawhead = function(p,q) {
         var rot = Math.atan2(p.y-q.y,p.x-q.x)*180/Math.PI,
-            scale = (el3.attr('stroke-width') || 1)*(mag||1),
+            scale = (el3.attr('stroke-width') || 1)*(mag),
             stroke = el3.attr('stroke') || '#000',
             opacity = el3.style('stroke-opacity') || 1;
         if(style>5) { rot=0 } // don't rotate square or circle
