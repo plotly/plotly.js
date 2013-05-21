@@ -1179,7 +1179,7 @@ function newPlot(divid, layout) {
     // Get the layout info (this is the defaults)
     gd.layout={title:'Click to enter Plot title',
         xaxis:{range:[-1,6],type:'-',
-            tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:5,
+            tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
             showticklabels:true,
             showgrid:true,gridcolor:'#ddd',gridwidth:1,
             autorange:true,autotick:true,drange:[null,null],
@@ -1188,7 +1188,7 @@ function newPlot(divid, layout) {
             titlefont:{family:'',size:0,color:''},
             tickfont:{family:'',size:0,color:''}},
         yaxis:{range:[-1,4],type:'-',
-            tick0:0,dtick:1,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:5,
+            tick0:0,dtick:1,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
             showticklabels:true,
             showgrid:true,gridcolor:'#ddd',gridwidth:1,
             autorange:true,autotick:true,drange:[null,null],
@@ -2568,15 +2568,13 @@ function autoGrowInput(eln) {
 // if ticks are set to automatic, determine the right values (tick0,dtick)
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
-// TODO: so far it's all autotick=true, but when it's not, date and log scales will need things done.
 function calcTicks(gd,a) {
     // calculate max number of (auto) ticks to display based on plot size
     // TODO: take account of actual label size here
     // TODO: rotated ticks for categories or dates
     if(a.autotick || !a.dtick){
-        var ya = (a===gd.layout.yaxis),
-            nt = (a.autotick=='semi') ? a.nticks :
-                Math.max(3,Math.min(10,(ya ? gd.plotheight : gd.plotwidth)/(ya ? 40 : 80)));
+        var nt = a.nticks ||
+                Math.max(3,Math.min(10,(a===gd.layout.yaxis) ? gd.plotheight/40 : gd.plotwidth/80));
         autoTicks(a,Math.abs(a.range[1]-a.range[0])/nt);
     }
 
