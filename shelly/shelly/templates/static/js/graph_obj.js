@@ -1252,6 +1252,7 @@ function plotAutoSize(gd,aobj) {
 
 // check whether to resize a tab (if it's a plot) to the container
 function plotResize(gd) {
+    if(gd===undefined) return;
     if(gd.tabtype=='plot' && gd.layout && gd.layout.autosize) {
         setTimeout(function(){
             relayout(gd, {autosize:true});
