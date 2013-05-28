@@ -15,7 +15,7 @@ function hm_rect(gdc){
 // same for y0, dy
 // z0 = minimum of colorscale
 // z1 = maximum of colorscale 
-function default_hm(gdc){
+function default_hm(gdc,i){
     if(!( 'z' in gdc )){ gdc.z=[[1,2],[3,4]]; }
     if(!( 'x0' in gdc )){ gdc.x0=2; }    
     if(!( 'y0' in gdc )){ gdc.y0=2; }   
@@ -40,7 +40,7 @@ function heatmap(i,gdc,cd,rdrw,gd){
     if(rdrw===undefined){ rdrw=false; }
     //var gd=gettab();
     // Set any missing keys to defaults
-    gdc=default_hm(gdc);
+    gdc=default_hm(gdc,i);
     var z=gdc.z, x0=gdc.x0, y0=gdc.y0, dx=gdc.dx, dy=gdc.dy, min=gdc.zmin, max=gdc.zmax, scl=gdc.scl;
     // console.log(min,max);
     // if this is the first time drawing the heatmap and it has never been saved it won't have an id

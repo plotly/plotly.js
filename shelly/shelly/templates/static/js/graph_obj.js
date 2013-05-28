@@ -192,7 +192,17 @@ function plot(divid, data, layout, rdrw) {
             // guess at axis type with the new property format
             if(['date','log','linear','category'].indexOf(ax.type)!==-1)
                 return;
+/*<<<<<<< HEAD
             if( ( axletter in gdd[0]) ? moreDates(gdd[0][axletter]) : (isDateTime(gdd[0][axletter+'0'])===true ) )
+=======*/
+            // first check for histograms, as they can change the axis types
+            if(gdd[0].type===undefined || gdd[0].type==='') gdd[0].type='scatter';
+            if(( gdd[0].type.substr(1)=='histogram' && axletter==gdd[0].type.charAt(0) )) {
+                ax.type='linear';
+            }
+            // then check the data supplied for that axis
+            else if( ( axletter in gdd[0]) ? moreDates(gdd[0][axletter]) : (isDateTime(gdd[0][axletter+'0'])===true ) )
+/*>>>>>>> 891800c0e60c48768f22339e71effe31b09856f6*/
                 ax.type='date';
             else if( loggy(gdd,axletter) )
                 ax.type='log';
@@ -1117,8 +1127,8 @@ function newPlot(divid, layout) {
 
     // Get the layout info (this is the defaults)
     gd.layout={title:'Click to enter Plot title',
-        xaxis:{range:[-1,6],
-            tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',
+        xaxis:{range:[-1,6],type:'-',
+            tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:5,
             showticklabels:true,
             showgrid:true,gridcolor:'#ddd',gridwidth:1,
             autorange:true,autotick:true,drange:[null,null],
@@ -1126,8 +1136,8 @@ function newPlot(divid, layout) {
             title:'Click to enter X axis title',unit:'',
             titlefont:{family:'',size:0,color:''},
             tickfont:{family:'',size:0,color:''}},
-        yaxis:{range:[-1,4],
-            tick0:0,dtick:1,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',
+        yaxis:{range:[-1,4],type:'-',
+            tick0:0,dtick:1,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:5,
             showticklabels:true,
             showgrid:true,gridcolor:'#ddd',gridwidth:1,
             autorange:true,autotick:true,drange:[null,null],
@@ -2509,6 +2519,7 @@ function autoGrowInput(eln) {
 function calcTicks(gd,a) {
     // calculate max number of (auto) ticks to display based on plot size
     // TODO: take account of actual label size here
+/*<<<<<<< HEAD
     if(a===gd.layout.yaxis)
         var nt = Math.max(3,Math.min(10,gd.plotheight/40));
     else
@@ -2600,7 +2611,24 @@ function calcTicks(gd,a) {
         }
         //round tick labels to 2 digits past largest digit of dtick
         a.tickround=Math.pow(10,2-Math.round(Math.log(a.dtick)/Math.LN10));
+=======*/
+    // TODO: rotated ticks for categories or dates
+    if(a.autotick || !a.dtick){
+        var ya = (a===gd.layout.yaxis),
+            nt = (a.autotick=='semi') ? a.nticks :
+                Math.max(3,Math.min(10,(ya ? gd.plotheight : gd.plotwidth)/(ya ? 40 : 80)));
+        autoTicks(a,Math.abs(a.range[1]-a.range[0])/nt);
     }
+
+    // check for missing tick0
+    if(!a.tick0) {
+        if(a.type=='date') { a.tick0 = new Date(2000,0,1).getTime() }
+        else { a.tick0 = 0 }
+/*>>>>>>> 891800c0e60c48768f22339e71effe31b09856f6*/
+    }
+
+    // now figure out rounding of tick values
+    a.tickround = autoTickRound(a);
 
     // set scaling to pixels
     if(a===gd.layout.yaxis) {
@@ -2610,10 +2638,6 @@ function calcTicks(gd,a) {
     else {
         a.m=gd.plotwidth/(a.range[1]-a.range[0]);
         a.b=-a.m*a.range[0];
-    }
-    if(!a.dtick) {
-        console.log('dtick missing',a,rt);
-        return [];
     }
 
     // find the first tick
@@ -2629,6 +2653,117 @@ function calcTicks(gd,a) {
     return vals;
 }
 
+/*<<<<<<< HEAD
+=======*/
+// autoTicks: calculate best guess at pleasant ticks for this axis
+// takes in the axis object a, and rough tick spacing rt
+// outputs (into a):
+//   tick0: starting point for ticks (not necessarily on the graph)
+//      usually 0 for numeric (=10^0=1 for log) or jan 1, 2000 for dates
+//   dtick: the actual, nice round tick spacing, somewhat larger than rt
+//      if the ticks are spaced linearly (linear scale, categories,
+//          log with only full powers, date ticks < month), this will just be a number
+//      months: M#
+//      years: M# where # is 12*number of years
+//      log with linear ticks: L# where # is the linear tick spacing
+//      log showing powers plus some intermediates: D1 shows all digits, D2 shows 2 and 5
+function autoTicks(a,rt){
+    if(a.type=='date'){
+        var base;
+        a.tick0=new Date(2000,0,1).getTime();
+        if(rt>15778800000){ // years if rt>6mo
+            rt/=31557600000;
+            var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+            a.dtick='M'+String(12*rtexp*roundUp(rt/rtexp,[2,5,10]));
+        }
+        else if(rt>1209600000){ // months if rt>2wk
+            rt/=2629800000;
+            a.dtick='M'+roundUp(rt,[1,2,3,6]);
+        }
+        else if(rt>43200000){ // days if rt>12h
+            base=86400000;
+            a.tick0=new Date(2000,0,2).getTime(); // get week ticks on sunday
+            a.dtick=base*roundUp(rt/base,[1,2,3,7,14]); // 2&3 day ticks are weird, but need something btwn 1&7
+        }
+        else if(rt>1800000){ // hours if rt>30m
+            base=3600000;
+            a.dtick=base*roundUp(rt/base,[1,2,3,6,12]);
+        }
+        else if(rt>30000){ // minutes if rt>30sec
+            base=60000;
+            a.dtick=base*roundUp(rt/base,[1,2,5,10,15,30]);
+        }
+        else if(rt>500){ // seconds if rt>0.5sec
+            base=1000;
+            a.dtick=base*roundUp(rt/base,[1,2,5,10,15,30]);
+        }
+        else { //milliseconds
+            var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+            a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
+        }
+    }
+    else if(a.type=='log'){
+        a.tick0=0;
+        if(rt>0.7){ //only show powers of 10
+            a.dtick=Math.ceil(rt);
+        }
+        else if(Math.abs(a.range[1]-a.range[0])<1){ // span is less then one power of 10
+            var nt = Math.abs((a.range[1]-a.range[0])/rt);
+            // ticks on a linear scale, labeled fully
+            rt=Math.abs(Math.pow(10,a.range[1])-Math.pow(10,a.range[0]))/nt;
+            var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+            a.dtick='L' + String(rtexp*roundUp(rt/rtexp,[2,5,10]));
+        }
+        else { // include intermediates between powers of 10, labeled with small digits
+            // a.dtick="D2" (show 2 and 5) or "D1" (show all digits)
+            // use a.tickround to store the first tick
+            // I don't think we're still using this... try to remove it
+            var vmin=Math.pow(10,Math.min(a.range[1],a.range[0]));
+            var minexp=Math.pow(10,Math.floor(Math.log(vmin)/Math.LN10));
+            a.dtick = (rt>0.3) ? 'D2' : 'D1';
+        }
+    }
+    else if(a.type=='category') {
+        a.tick0=0;
+        a.dtick=1;
+    }
+    else{
+        // auto ticks always start at 0
+        a.tick0=0;
+        var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+        a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
+    }
+}
+
+// after dtick is already known, find tickround = precision to display in tick labels
+//   for regular numeric ticks, integer # digits after . to round to
+//   for date ticks, the last date part to show (y,m,d,H,M,S) or an integer # digits past seconds
+function autoTickRound(a) {
+    var dt = a.dtick;
+    if(a.type=='category') {
+        return null;
+    }
+    else if($.isNumeric(dt) || dt.charAt(0)=='L') {
+        if(a.type=='date') {
+            if(dt>=86400000) { return 'd' }
+            else if(dt>=3600000) { return 'H' }
+            else if(dt>=60000) { return 'M' }
+            else if(dt>=1000) { return 'S' }
+            else { return Math.pow(10,3-Math.round(Math.log(dt/2)/Math.LN10)) }
+        }
+        else {
+            if(!$.isNumeric(dt)) { dt = Number(dt.substr(1)) }
+            // 2 digits past largest digit of dtick
+            return Math.pow(10,2-Math.round(Math.log(dt)/Math.LN10));
+        }
+    }
+    else if(dt.charAt(0)=='M') {
+        return (dt.length==2) ? 'm' : 'y';
+    }
+    else { return null }
+}
+
+/*>>>>>>> 891800c0e60c48768f22339e71effe31b09856f6*/
 // return the smallest element from (sorted) array a that's bigger than val
 // UPDATE: now includes option to reverse, ie find the largest element smaller than val
 // used to find the best tick given the minimum (non-rounded) tick
@@ -2716,7 +2851,6 @@ function tickText(gd, a, x){
         py=0,
         suffix='', // completes the full date info, to be included with only the first tick
         tt;
-    //AXISTYPEif(a.isdate){
     if(a.type=='date'){
         var d=new Date(x);
         if(a.tickround=='y')
@@ -2740,7 +2874,6 @@ function tickText(gd, a, x){
             }
         }
     }
-    //AXISTYPEelse if(a.islog){
     else if(a.type=='log'){
         if($.isNumeric(a.dtick)||((a.dtick.charAt(0)=='D')&&(mod(x+.01,1)<.1))) {
             tt=(Math.round(x)==0)?'1':(Math.round(x)==1)?'10':'10'+String(Math.round(x)).sup()
