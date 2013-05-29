@@ -527,7 +527,6 @@ function plot(divid, data, layout, rdrw) {
         var t=gd.calcdata[i][0].t;
         if(BARTYPES.indexOf(t.type)!=-1 && t.visible!=false) { barlist[t.bardir||'v'].push(i) }
     }
-    console.log(barlist);
     // then for each direction separately calculate the ranges and positions
     ['v','h'].forEach(function(dir){
         if(barlist[dir].length) { var bl = barlist[dir] }
@@ -715,7 +714,7 @@ function plot(divid, data, layout, rdrw) {
         scattertraces.each(function(d){ // <-- now, iterate through arrays of {x,y} objects
             var t=d[0].t; // <-- get trace-wide formatting object
             if(t.mode.indexOf('lines')==-1 || t.visible==false) { return }
-            var i=-1,t=d3.select(this);
+            var i=-1,tr=d3.select(this);
             while(i<d.length) {
                 var pts='';
                 for(i++; i<d.length; i++) {
@@ -723,7 +722,7 @@ function plot(divid, data, layout, rdrw) {
                     if(!$.isNumeric(x)||!$.isNumeric(y)) { break } // TODO: smart lines going off the edge?
                     pts+=x+','+y+' ';
                 }
-                if(pts) { t.append('polyline').attr('points',pts) }
+                if(pts) { tr.append('polyline').attr('points',pts) }
             }
         });
 
@@ -737,9 +736,9 @@ function plot(divid, data, layout, rdrw) {
                     .data(function(d){return d})
                     .enter().append('path')
                     .each(function(d){
-                        if($.isNumeric(d.x) && $.isNumeric(d.y)) {
-                            d3.select(this)
-                                .attr('transform','translate('+xf(d,gd)+','+yf(d,gd)+')');
+                        var x = xf(d,gd), y = yf(d,gd);
+                        if($.isNumeric(x) && $.isNumeric(y)) {
+                            d3.select(this).attr('transform','translate('+x+','+y+')');
                         }
                         else { d3.select(this).remove() }
                     });
