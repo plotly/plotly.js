@@ -87,14 +87,16 @@ DBLCLICKDELAY = 600; // ms between first mousedown and 2nd mouseup to constitute
 MINDRAG = 5; // pixels to move mouse before you stop clamping to starting point
 VERBOSE = false;
 
-defaultColors=['#00e', //blue
-               '#a00', //red
+// IMPORTANT - default colors should be in hex for grid.js
+// TODO - these colors suck, let's make some better palettes
+defaultColors=['#0000ee', //blue
+               '#aa0000', //red
                '#6fa8dc', //lite blue
                '#ffd966', //goldenrod
                '#ff00ff', //elektrik purple
                '#9900ff', //moody purple
-               '#0c0', // brite green
-               '#000']; // black
+               '#00cc00', // brite green
+               '#000000']; // black
 
 defaultScale=[[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94, 168)"],
     [0.375,"rgb(29, 145, 192)"],[0.5,"rgb(65, 182, 196)"],[0.625,"rgb(127, 205, 187)"],
