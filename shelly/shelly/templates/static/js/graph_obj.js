@@ -127,12 +127,21 @@ var graphInfo = {
 }
 
 var BARTYPES = ['bar','histogramx','histogramy'];
+var HEATMAPTYPES = ['heatmap','histogram2d'];
+var TIMER=0
+
+function markTime(s){
+    var t2 = new Date().getTime();
+    console.log(s,t2-TIMER,'(msec)');
+    TIMER=t2;
+}
 
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
 // if necessary to create the framework
 // ----------------------------------------------------
 function plot(divid, data, layout, rdrw) {
+    markTime('in plot')
     plotlylog('+++++++++++++++IN: plot(divid, data, layout, rdrw)+++++++++++++++');
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
@@ -169,7 +178,7 @@ function plot(divid, data, layout, rdrw) {
             framework(gd,layout);
         }
     }
-    else if((typeof gd.layout==='undefined')||graphwasempty) newPlot(divid, layout);
+    else if((typeof gd.layout==='undefined')||graphwasempty) { newPlot(gd, layout) }
 
     // enable or disable formatting buttons
     $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length==0);
@@ -181,7 +190,10 @@ function plot(divid, data, layout, rdrw) {
     var ydr=[null,null];
     var hasbars={h:false,v:false}; // whether we have h and/or v bars (so we can cut margins if an axis starts or ends at 0)
 
-    if(gdd&&(gdd.length>0)){
+    // do we need to check the axis types?
+    // to force axtypes to be called again, set gd.axtypesok to false before calling plot()
+    // this should be done if the first trace changes type, bardir, or data
+    if(gdd && gdd.length && gd.axtypesok!==true){
         // figure out axis types (linear, log, date, category...)
         // use the first trace only.
         // If the axis has data, see whether more looks like dates or like numbers
@@ -190,7 +202,8 @@ function plot(divid, data, layout, rdrw) {
         // -> If not date, figure out if a log axis makes sense, using all axis data
 
         function setAxType(ax,axletter){
-            if(!gdd[0].type) { gdd[0].type='scatter' }
+            var d0 = gdd[0];
+            if(!d0.type) { d0.type='scatter' }
             // backward compatibility
             if(!ax.type) {
                 if(ax.isdate) { ax.type='date' }
@@ -203,10 +216,10 @@ function plot(divid, data, layout, rdrw) {
             // guess at axis type with the new property format
             // first check for histograms, as they can change the axis types
             // whatever else happens, horz bars switch the roles of x and y axes
-            if((['histogramx','histogramy','bar'].indexOf(gdd[0].type)!=-1) && (gdd[0].bardir=='h')){
+            if((['histogramx','histogramy','bar'].indexOf(d0.type)!=-1) && (d0.bardir=='h')){
                 axletter={x:'y',y:'x'}[axletter];
             }
-            var hist = (['histogramx','histogramy'].indexOf(gdd[0].type)!=-1);
+            var hist = (['histogramx','histogramy'].indexOf(d0.type)!=-1);
             if(hist) {
                 if(axletter=='y') {
                     // always numeric data in the bar size direction
@@ -217,11 +230,11 @@ function plot(divid, data, layout, rdrw) {
                     // bin values may come from the x or y source data depending on type
                     // determine the type for the bar-to-bar direction from the bin source data
                     // so reset axletter, then do the tests below
-                    axletter = gdd[0].type.charAt(9);
+                    axletter = d0.type.charAt(9);
                 }
             }
             // then check the data supplied for that axis
-            if( ( axletter in gdd[0]) ? moreDates(gdd[0][axletter]) : (isDateTime(gdd[0][axletter+'0'])===true ) ) {
+            if( ( axletter in d0) ? moreDates(d0[axletter]) : (isDateTime(d0[axletter+'0'])===true ) ) {
                 ax.type='date';
             }
             else if( loggy(gdd,axletter) ) {
@@ -238,16 +251,22 @@ function plot(divid, data, layout, rdrw) {
 
         setAxType(xa,'x');
         setAxType(ya,'y');
-        var toLog = function(v){if(v<=0) { return null } return Math.log(v)/Math.LN10},
-            fromLog = function(v){return Math.pow(10,v)}
-        xa.toAxis = (xa.type=='log') ? toLog : Number;
-        ya.toAxis = (ya.type=='log') ? toLog : Number;
-        xa.toData = (xa.type=='log') ? fromLog : Number;
-        ya.toData = (ya.type=='log') ? fromLog : Number;
+        gd.axtypesok=true;
     }
+
+    // calcdata to axis mapping (identity except for log axes)
+    var toLog = function(v){if(v<=0) { return null } return Math.log(v)/Math.LN10},
+        fromLog = function(v){return Math.pow(10,v)}
+    xa.toAxis = (xa.type=='log') ? toLog : Number;
+    ya.toAxis = (ya.type=='log') ? toLog : Number;
+    xa.toData = (xa.type=='log') ? fromLog : Number;
+    ya.toData = (ya.type=='log') ? fromLog : Number;
+
     // prepare the data and find the autorange
     // TODO: only remake calcdata for new or changed traces
     gd.calcdata=[];
+
+    markTime('done setAxType');
 
     for(curve in gdd) {
         var gdc=gdd[curve],
@@ -304,7 +323,7 @@ function plot(divid, data, layout, rdrw) {
         }
 
         var autoBin = function(data,ax,nbins,is2d) {
-            console.log(data,ax,nbins,is2d);
+//             console.log(data,ax,nbins,is2d);
             var datamin = aggNums(Math.min,null,data),
                 datamax = aggNums(Math.max,null,data);
             if(ax.type=='category') {
@@ -317,7 +336,7 @@ function plot(divid, data, layout, rdrw) {
             else {
                 var size0 = nbins ? ((datamax-datamin)/nbins) :
                     2*stdev(data)/Math.pow(data.length,is2d ? 0.25 : 0.4);
-                console.log(size0,datamin,datamax);
+//                 console.log(size0,datamin,datamax);
                 // piggyback off autotick code to make "nice" bin sizes
                 var dummyax = {type:ax.type,range:[datamin,datamax]};
                 autoTicks(dummyax,size0);
@@ -456,7 +475,7 @@ function plot(divid, data, layout, rdrw) {
 
             cd[0].t={curve:curve,type:curvetype}; // <-- curve is index of the data object in gd.data
         }
-        else if(['heatmap','histogram2d'].indexOf(gdc.type)!=-1 ){
+        else if(HEATMAPTYPES.indexOf(gdc.type)!=-1 ){
             // calcdata ("cd") for heatmaps:
             // curve: index of heatmap in gd.data
             // type: used to distinguish heatmaps from traces in "Data" popover
@@ -469,9 +488,11 @@ function plot(divid, data, layout, rdrw) {
                 serieslen = Math.min(x.length,y.length);
                 if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen) }
                 if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen) }
+                markTime('done convert data');
                 // calculate the bins
                 if(gdc.autobinx || !('xbins' in gdc)) { gdc.xbins = autoBin(x,xa,gdc.nbinsx,'2d') }
                 if(gdc.autobiny || !('ybins' in gdc)) { gdc.ybins = autoBin(y,ya,gdc.nbinsy,'2d') }
+                markTime('done autoBin');
                 // make the empty bin array & scale the map
                 gdc.z = [];
                 var onecol = [],
@@ -493,16 +514,20 @@ function plot(divid, data, layout, rdrw) {
                 gdc.y0 = gdc.ybins.start;
                 gdc.dy = (i-gdc.y0)/ny;
                 gdc.y0+=gdc.dy/2;
+                markTime('done making bins');
                 // put data into bins
                 for(i=0; i<serieslen; i++) {
                     var n = findBin(x[i],xbins),
                         m = findBin(y[i],ybins);
                     // TODO: why is y upside down?
-                    if(n>=0 && n<nx && m>=0 && m<ny) { gdc.z[ny-1-m][n]+=1 }
+                    if(n>=0 && n<nx && m>=0 && m<ny) { gdc.z[m][n]+=1 }
                 }
+                markTime('done binning');
                 // make the rest of the heatmap info
-                gdc.zmin=zmin(gdc.z);
-                gdc.zmax=zmax(gdc.z);
+                if(gdc.zauto!==false) {
+                    gdc.zmin=zmin(gdc.z);
+                    gdc.zmax=zmax(gdc.z);
+                }
                 if(!( 'scl' in gdc )){ gdc.scl=defaultScale; }
             }
             // heatmap() builds a png heatmap on the coordinate system, see heatmap.js
@@ -515,6 +540,7 @@ function plot(divid, data, layout, rdrw) {
         if(!('marker' in gdc)) gdc.marker={};
         if(!('line' in gdc.marker)) gdc.marker.line={};
         gd.calcdata.push(cd);
+        markTime('done with calcdata for '+curve);
     }
 
     // put the styling info into the calculated traces
@@ -536,7 +562,6 @@ function plot(divid, data, layout, rdrw) {
 
         if(dir=='v') { var sa = ya, sdr = ydr, pa = xa, pdr = xdr }
         else { var sa = xa, sdr = xdr, pa = ya, pdr = ydr }
-        console.log('here');
         // bar size range calculation
         if(gl.barmode=='stack'){
             // for stacked bars, we need to evaluate every step in every stack,
@@ -584,7 +609,6 @@ function plot(divid, data, layout, rdrw) {
         }
         barDiff*=(1-gl.bargap);
         // position axis autorange
-        console.log(pa,pdr,pv2,pv2.length,barDiff*(1-gl.bargroupgap/bl.length)/2);
         expandBounds(pa,pdr,pv2,pv2.length,barDiff*(1-gl.bargroupgap/bl.length)/2);
         // bar widths and position offsets
         if(gl.barmode=='group') { barDiff/=bl.length }
@@ -594,15 +618,17 @@ function plot(divid, data, layout, rdrw) {
             t.poffset = (((gl.barmode=='group') ? (2*i+1-bl.length)*barDiff : 0 ) - t.barwidth)/2;
         }
     });
+    markTime('done with setstyles and bar chart ranging');
 
     // autorange for errorbars
     errorbarsydr(gd,ydr);
+    markTime('done errorbarsydr');
 
     // autorange
     var a0 = 0.05; // 5% extension of plot scale beyond last point
 
     // if there's a heatmap in the graph div data, get rid of 5% padding
-    $(gdd).each(function(i,v){ if(['heatmap','histogram2d'].indexOf(v.type)!=-1){ a0=0 } });
+    $(gdd).each(function(i,v){ if(HEATMAPTYPES.indexOf(v.type)!=-1){ a0=0 } });
 
     // if there are bars in a direction and one end of the axis is 0,
     // remove the 5% padding from that side
@@ -627,6 +653,7 @@ function plot(divid, data, layout, rdrw) {
     if(!gd.viewbox || !$.isNumeric(gd.viewbox.x) || !$.isNumeric(gd.viewbox.y)) {
         gd.viewbox={x:0, y:0};
     }
+    markTime('done autorange and ticks');
 
     if($.isNumeric(xa.m) && $.isNumeric(xa.b) && $.isNumeric(ya.m) && $.isNumeric(ya.b)) {
         // Now plot the data. Order is:
@@ -636,15 +663,18 @@ function plot(divid, data, layout, rdrw) {
         // 4. scatter
         var cdbar = [], cdscatter = [];
         for(var i in gd.calcdata){
-            var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
-            if(['heatmap','histogram2d'].indexOf(gdc.type)!=-1) {
-                heatmap(c,gdc,cd,rdrw,gd); // TODO: remove heatmaps that aren't heatmaps anymore
-            }
-            else if(BARTYPES.indexOf(gdc.type)!=-1) {
-                cdbar.push(cd);
+            var cd = gd.calcdata[i], type=cd[0].t.type;//, c = t.curve, gdc = gd.data[c];
+            if(HEATMAPTYPES.indexOf(type)!=-1) {
+                heatmap(cd,rdrw,gd);
+                markTime('done heatmap '+i);
             }
             else {
-                cdscatter.push(cd);
+                // in case this one was a heatmap previously, remove it and its colorbar
+                $('#'+gd.id+'-hm'+i).remove();
+                $('#'+gd.id+'-cb'+i).remove();
+
+                if(BARTYPES.indexOf(type)!=-1) { cdbar.push(cd) }
+                else { cdscatter.push(cd) }
             }
         }
 
@@ -701,9 +731,11 @@ function plot(divid, data, layout, rdrw) {
                             .attr('height',Math.abs(y1-y0) + extrah);
                     });
             });
+        markTime('done bars');
 
         // DRAW ERROR BARS on bar and scatter plots
         errorbars(gd,cdbar.concat(cdscatter));
+        markTime('done errorbars');
 
         // make the container for scatter plots (so error bars can find them along with bars)
         var scattertraces = gp.selectAll('g.trace.scatter') // <-- select trace group
@@ -745,9 +777,11 @@ function plot(divid, data, layout, rdrw) {
                         else { d3.select(this).remove() }
                     });
             });
+        markTime('done scatter');
 
         //styling separate from drawing
         applyStyle(gp);
+        markTime('done applyStyle');
     }
     else { console.log('error with axis scaling',xa.m,xa.b,ya.m,ya.b) }
 
@@ -771,7 +805,7 @@ function plot(divid, data, layout, rdrw) {
             $(gd).find('#graphtips').fadeIn(); }
     },1000);
     plotlylog('+++++++++++++++OUT: plot(divid, data, layout, rdrw)+++++++++++++++');
-
+    markTime('done plot');
 }
 
 
@@ -869,10 +903,11 @@ function setStyles(gd) {
             }
             mergeattr(gdc.type,'type','heatmap');
             mergeattr(gdc.visible,'visible',true);
-            mergeattr(gdc.x0,'x0',2);
-            mergeattr(gdc.dx,'dx',0.5);
-            mergeattr(gdc.y0,'y0',2);
-            mergeattr(gdc.dy,'dy',0.5);
+            mergeattr(gdc.x0,'x0',0);
+            mergeattr(gdc.dx,'dx',1);
+            mergeattr(gdc.y0,'y0',0);
+            mergeattr(gdc.dy,'dy',1);
+            mergeattr(gdc.zauto,'zauto',true);
             mergeattr(gdc.zmin,'zmin',-10);
             mergeattr(gdc.zmax,'zmax',10);
             mergeattr(JSON.stringify(gdc.scl),'scl',defaultScale);
@@ -1086,12 +1121,13 @@ function legendText(s,gd){
 function restyle(gd,astr,val,traces) {
     plotlylog('+++++++++++++++IN: restyle+++++++++++++++');
     gd.changed = true;
+    var gl = gd.layout;
 
     // mode and gaps for bar charts are graph-wide attributes, but make
     // more sense in the style box than the layout box. here we update gd.layout,
     // force a replot, then return
     if(['barmode','bargap','bargroupgap'].indexOf(astr)!=-1){
-        gd.layout[astr] = val;
+        gl[astr] = val;
         plot(gd,'','');
         return;
     }
@@ -1102,10 +1138,18 @@ function restyle(gd,astr,val,traces) {
     }
 
     // set attribute in gd.data
-
-    var aa=astr.split('.');
+    // also check whether we have heatmaps in the edited traces
+    var aa=astr.split('.'),
+        hasheatmap=false;
     for(i=0; i<traces.length; i++) {
         var cont=gd.data[traces[i]];
+        if(HEATMAPTYPES.indexOf(cont.type)!=-1) { hasheatmap=true }
+        // setting bin or z settings should turn off auto
+        if(['zmax','zmin'].indexOf(astr)!=-1) { cont.zauto=false }
+        else if(aa[0]=='xbins') { cont.autobinx=false }
+        else if(aa[0]=='ybins') { cont.autobiny=false }
+
+        // now dig into the heirarchy
         for(var j=0; j<aa.length-1; j++){
             if(cont[aa[j]]===undefined){
                 cont[aa[j]] = {};       // CP edit: build the heiracrchy if it doesn't exist
@@ -1115,24 +1159,37 @@ function restyle(gd,astr,val,traces) {
             }
             cont=cont[aa[j]];  // get to the 2nd-to-last level
         }
-        cont[aa[j]]=val;
+        cont[aa[j]]=val; // set the value
     }
 
+    // check if we need to call axis type
+    if((traces.indexOf(0)!=-1) && (['type','x','y','x0','y0','bardir'].indexOf(astr)!=-1)) {
+        gd.axtypesok=false;
+    }
 
+    // switching from auto to manual binning or z scaling doesn't actually do anything but
+    // change what you see in the styling box
+    if((['autobinx','autobiny','zauto'].indexOf(astr)!=-1) && val===false) {
+        setStyles(gd);
+        return;
+    }
 
     // need to replot if mode or visibility changes, because the right objects don't exist
     // also need to replot if a heatmap
     // also need to replot the error bars for several cases. TODO: if re-plotting error bars, don't re-plot scatter plots
     // TODO: lots of stuff here now... should we switch to looking for things that DON'T need plot?
     var main_attr=['mode','visible','type','bardir'],
-        hm_attr=['mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','scl'],
-        eb_attr=['error_y.visible','error_y.value','error_y.type','error_y.width', 'error_y.traceref', 'error_y.array'],
-        hist_attr=['autobinx','nbinsx','xbins.start','xbins.end','xbins.size'];
-    if(main_attr.concat(hm_attr,eb_attr,hist_attr).indexOf(astr)!=-1) {
+        hm_attr=['mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','zauto','scl'],
+        eb_attr=['error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array'],
+        hist_attr=[ 'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
+                    'autobiny','nbinsy','ybins.start','ybins.end','ybins.size'];
+    if(main_attr.concat(eb_attr,hist_attr).indexOf(astr)!=-1) {
         // major enough changes deserve an autoscale (and autobin) so people don't get confused
         if(['bardir','type'].indexOf(astr)) {
-            gd.layout.xaxis.autorange=true;
-            gd.layout.yaxis.autorange=true;
+            gl.xaxis.autorange=true;
+            gl.xaxis.range=[0,1]; // undo any axis reversal
+            gl.yaxis.autorange=true;
+            gl.yaxis.range=[0,1];
             if(astr=='type') {
                 for(i=0; i<traces.length; i++) {
                     gd.data[traces[i]].autobinx=true;
@@ -1140,7 +1197,15 @@ function restyle(gd,astr,val,traces) {
                 }
             }
         }
-        plot(gd,'','',true); // <-- last arg is to force redrawing the heatmap
+        // if we need to change margin for a heatmap, force a relayout first so we don't plot twice
+        if(heatmap_margin(gd)){
+            gd.layout = undefined;
+            plot(gd,'',gl,true);
+        }
+        else { plot(gd,'','',(hasheatmap && (hist_attr.indexOf(astr)!=-1))) } // redraw heatmap if its histogram attributes change
+    }
+    else if(hm_attr.indexOf(astr)!=-1) {
+        plot(gd,'','',true); // <-- last arg is to force redrawing the heatmap. TODO: if multiple heatmaps, only redraw one?
     }
     else {
         setStyles(gd);
@@ -1164,14 +1229,14 @@ function relayout(gd,astr,val) {
         aobj[astr] = val;
     else if($.isPlainObject(astr))
         aobj = astr;
-    // look for ?axis, split out into all axes
+    // look for 'allaxes', split out into all axes
     var keys = Object.keys(aobj),
         axes = ['xaxis','yaxis'];
     for(var i=0; i<keys.length; i++) {
         if(keys[i].indexOf('allaxes')==0) {
             for(var j=0; j<axes.length; j++) {
-                if(!aobj[keys[i].replace('allaxes',axes[j])])
-                    aobj[keys[i].replace('allaxes',axes[j])] = aobj[keys[i]];
+                var newkey = keys[i].replace('allaxes',axes[j]);
+                if(!aobj[newkey]) { aobj[newkey] = aobj[keys[i]] }
             }
             delete aobj[keys[i]];
         }
@@ -1186,6 +1251,17 @@ function relayout(gd,astr,val) {
         var m = i.match(/^(.)axis\.range\[[0|1]\]$/);
         if(m && m.length==2) {
             gl[m[1]+'axis'].autorange=false;
+        }
+
+        // handle axis reversal
+        var m = i.match(/^(.)axis\.reverse$/);
+        if(m && m.length==2) {
+            var ax = gl[m[1]+'axis'],
+                r0 = ax.range[0],
+                r1 = ax.range[1];
+            ax.range[0]=r1;
+            ax.range[1]=r0;
+            continue; // don't try to set 'reverse' flag (later in the loop) but don't delete the entry either, so we force a replot
         }
 
         var aa = propSplit(i);
@@ -1361,7 +1437,7 @@ function newPlot(divid, layout) {
         bargroupgap:0.0,
         font:{family:'Arial, sans-serif;',size:12,color:'#000'},
         titlefont:{family:'',size:0,color:''} };
-        // TODO: add font size controls, and label positioning
+        // TODO: add label positioning
 
     // look for elements of gd.layout to replace with the equivalent elements in layout
     gd.layout=updateObject(gd.layout,layout);
@@ -1377,6 +1453,8 @@ function newPlot(divid, layout) {
         gd.paper.remove();
         gl.autosize=true;
     }
+
+    heatmap_margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
 
     // adjust margins for outside legends
     var ml = gl.margin.l-(gd.lw<0 ? gd.lw : 0),
@@ -2771,12 +2849,17 @@ function calcTicks(gd,a) {
     a.tmin=tickFirst(a);
 
     // check for reversed axis
-    var axrev=(a.range[1]<a.range[0]);
+    var axrev = (a.range[1]<a.range[0]);
 
     // return the full set of tick vals
-    var vals=[];
-    for(var x=a.tmin;(axrev)?(x>=a.range[1]):(x<=a.range[1]);x=tickIncrement(x,a.dtick,axrev))
+    var vals = [],
+        endtick = a.range[1];
+    if(a.type=='category') {
+        endtick = (axrev) ? Math.max(-0.5,endtick) : Math.min(a.categories.length-0.5,endtick);
+    }
+    for(var x=a.tmin;(axrev)?(x>=endtick):(x<=endtick);x=tickIncrement(x,a.dtick,axrev)) {
         vals.push(tickText(gd, a, x));
+    }
     return vals;
 }
 
@@ -2938,8 +3021,15 @@ function tickIncrement(x,dtick,axrev){
 // calculate the first tick on an axis
 function tickFirst(a){
     var axrev=(a.range[1]<a.range[0]), sRound=(axrev ? Math.floor : Math.ceil);
-    if($.isNumeric(a.dtick))
-        return sRound((a.range[0]-a.tick0)/a.dtick)*a.dtick+a.tick0;
+    if($.isNumeric(a.dtick)) {
+        var tmin = sRound((a.range[0]-a.tick0)/a.dtick)*a.dtick+a.tick0;
+        // make sure no ticks outside the category list
+        if(a.type=='category') {
+            if(tmin<0) { tmin=0 }
+            if(tmin>a.categories.length-1) { tmin=a.categories.length-1 }
+        }
+        return tmin
+    }
 
     var tType=a.dtick.charAt(0), dt=Number(a.dtick.substr(1));
     // Dates: months (or years)
@@ -3012,7 +3102,9 @@ function tickText(gd, a, x){
         else throw "unrecognized dtick "+String(a.dtick);
     }
     else if(a.type=='category'){
-        tt=String(a.categories[Math.round(x)]);
+        var tt0 = a.categories[Math.round(x)];
+        if(tt0===undefined) { tt0='' }
+        tt=String(tt0);
     }
     else
         tt=String(Math.round(x*a.tickround)/a.tickround);
@@ -3296,12 +3388,13 @@ function updateObject(i,up) {
 //   or 0 for summation-type functions
 function aggNums(f,v,a,len) {
     if(!len) { len=a.length }
-	var r=($.isNumeric(v)) ? v : false;
+    if(!$.isNumeric(v)) { v=false }
+// 	var r=($.isNumeric(v)) ? v : false;
 	for(i=0; i<len; i++) {
-	    if(!$.isNumeric(r)) r=a[i];
-	    else if($.isNumeric(a[i])) r=f(r,a[i]);
+	    if(!$.isNumeric(v)) { v=a[i] }
+	    else if($.isNumeric(a[i])) { v=f(v,a[i]) }
 	}
-	return r;
+	return v;
 }
 
 // does the array a have mostly dates rather than numbers?
