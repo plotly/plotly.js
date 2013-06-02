@@ -131,6 +131,7 @@ var HEATMAPTYPES = ['heatmap','histogram2d'];
 var TIMER=0
 
 function markTime(s){
+    if(!VERBOSE) { return }
     var t2 = new Date().getTime();
     console.log(s,t2-TIMER,'(msec)');
     TIMER=t2;
