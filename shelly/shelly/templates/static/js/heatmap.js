@@ -3,12 +3,22 @@
 // zero or other falsy val disables
 MAX_PX_PER_BRICK=0;
 
-// returns the L, R, T, B coordinates of a heatmap as { x:[L,R], y:[T,B] }
+// returns the brick edge coordinates of a heatmap as { x:[x0,x1,...], y:[y0,y1...] }
+// we're returning all of them now so we can handle log heatmaps that go negative
 function hm_rect(gdc){
     // Set any missing keys to defaults
     default_hm(gdc,true);
-    return {'x':[gdc.x0-gdc.dx/2,gdc.x0+gdc.dx*(gdc.z[0].length-0.5)],
-            'y':[gdc.y0-gdc.dy/2,gdc.y0+gdc.dy*(gdc.z.length-0.5)]};
+    var y=gdc.y,m=gdc.z.length; // num rows
+    if(!$.isArray(y) || (y.length!=m+1) || (gdc.type=='histogram2d')) {
+        y=[];
+        for(var i=0; i<=m; i++) { y.push(gdc.y0+gdc.dy*(i-0.5)) }
+    }
+    var x=gdc.x,n=gdc.z[0].length; // num cols
+    if(!$.isArray(x) || (x.length!=n+1) || (gdc.type=='histogram2d')) {
+        x=[];
+        for(var i=0; i<=n; i++) { x.push(gdc.x0+gdc.dx*(i-0.5)) }
+    }
+    return {'x':x,'y':y};
 }
 
 // if the heatmap data object is missing any keys, fill them in
@@ -45,8 +55,12 @@ function heatmap(cd,rdrw,gd){
     var i = cd[0].t.curve,
         gdc = gd.data[i];
     // Set any missing keys to defaults
+    // note: gdc.x (same for gdc.y) will override gdc.x0,dx if it exists and is the right size
+    // should be an n+1 long array, containing all the pixel edges
     default_hm(gdc);
-    var z=gdc.z, x0=gdc.x0, y0=gdc.y0, dx=gdc.dx, dy=gdc.dy, min=gdc.zmin, max=gdc.zmax, scl=gdc.scl;
+    var z=gdc.z, min=gdc.zmin, max=gdc.zmax, scl=gdc.scl,
+        x0=gdc.x0, dx=gdc.dx, x=gdc.x,
+        y0=gdc.y0, dy=gdc.dy, y=gdc.y;
     // console.log(min,max);
     // if this is the first time drawing the heatmap and it has never been saved it won't have an id
     // TODO! If 2 heat maps are loaded from different files, they could have the same id
@@ -55,59 +69,80 @@ function heatmap(cd,rdrw,gd){
     var id=gdc.hm_id;
     //console.log('heatmap id: '+id);
 
-    // get z dims
+    // get z dims, and create the box boundary arrays if they don't already exist
     var m=z.length; // num rows
+    if(!$.isArray(y) || (y.length!=m+1) || (gdc.type=='histogram2d')) {
+        y=[];
+        for(var i=0; i<=m; i++) { y.push(y0+dy*(i-0.5)) }
+    }
     var n=z[0].length; // num cols
+    if(!$.isArray(x) || (x.length!=n+1) || (gdc.type=='histogram2d')) {
+        x=[];
+        for(var i=0; i<=n; i++) { x.push(x0+dx*(i-0.5)) }
+    }
 
     // Get edges of png in pixels (xf() maps axes coordinates to pixel coordinates)
     // figure out if either axis is reversed (y is usually reversed, in pixel coords)
-    var xrev = false, yrev = false;
-    var left=xf({x:x0-dx/2},gd), right=xf({x:x0+dx*(n-0.5)},gd);
+    // also clip the image to maximum 50% outside the visible plot area
+    // bigger image lets you pan more naturally, but slows performance.
+    // TODO: use low-resolution images outside the visible plot for panning
+    var xrev = false, left=undefined, right=undefined;
+    // these while loops find the first and last brick bounds that are defined (in case of log of a negative)
+    i=0; while(left===undefined && i<n) { left=xf({x:x[i]},gd); i++ }
+    i=n; while(right===undefined && i>0) { right=xf({x:x[i]},gd); i-- }
     if(right<left) {
         var temp = right;
         right = left;
         left = temp;
         xrev = true;
     }
-    var top=yf({y:y0-dy/2},gd), bottom=yf({y:y0+dy*(m-0.5)},gd);
+    left = Math.max(-0.5*gd.plotwidth,left);
+    right = Math.min(1.5*gd.plotwidth,right);
+
+    var yrev = false, top=undefined, bottom=undefined;
+    i=0; while(top===undefined && i<n) { top=yf({y:y[i]},gd); i++ }
+    i=n; while(bottom===undefined && i>0) { bottom=yf({y:y[i]},gd); i-- }
     if(bottom<top) {
         var temp = top;
         top = bottom;
         bottom = temp;
         yrev = true;
     }
+    top = Math.max(-0.5*gd.plotheight,top);
+    bottom = Math.min(1.5*gd.plotheight,bottom);
 
-    var wd=Math.round(right-left); //console.log('img width in px'); console.log(wd);
-    var ht=Math.round(bottom-top); //console.log('img height in px'); console.log(ht);
+    // make an image with max plotwidth*plotheight pixels, to keep time reasonable when you zoom in
+    var wd=Math.round(right-left);
+    var ht=Math.round(bottom-top),htf=ht/(bottom-top);
 
-    var dx_px=wd/n;
-    var dy_px=ht/m;
-
-    // option to change the number of pixels per brick
-    if(MAX_PX_PER_BRICK>0) {
-        dx_px=Math.min(MAX_PX_PER_BRICK,dx_px);
-        dy_px=Math.min(MAX_PX_PER_BRICK,dy_px);
-    }
-
-    function closeEnough(oldpx,newpx) {
-        if(oldpx<newpx/2) { return false } // if the existing image has less than half,
-        if(oldpx>newpx*5) { return false } // or more than 5x the pixels of the new one, force redraw
-        return true
-    }
-
-    // the heatmap already exists and hasn't changed size too much, we just need to move it
-    // (heatmap() was called because of a zoom or pan event)
-    if($('#'+id).length && !rdrw && closeEnough(gdc.dx_px,dx_px) && closeEnough(gdc.dy_px,dy_px)){
-        $('#'+id).hide().attr("x",left).attr("y",top).attr("width",wd).attr("height",ht).show();
-        return;
-    }
+//     var dx_px=wd/n;
+//     var dy_px=ht/m;
+//
+//     // option to change the number of pixels per brick
+//     if(MAX_PX_PER_BRICK>0) {
+//         dx_px=Math.min(MAX_PX_PER_BRICK,dx_px);
+//         dy_px=Math.min(MAX_PX_PER_BRICK,dy_px);
+//     }
+//
+//     function closeEnough(oldpx,newpx) {
+//         if(oldpx<newpx/2) { return false } // if the existing image has less than half,
+//         if(oldpx>newpx*5) { return false } // or more than 5x the pixels of the new one, force redraw
+//         return true
+//     }
+//
+//     // the heatmap already exists and hasn't changed size too much, we just need to move it
+//     // (heatmap() was called because of a zoom or pan event)
+//     if($('#'+id).length && !rdrw && closeEnough(gdc.dx_px,dx_px) && closeEnough(gdc.dy_px,dy_px)){
+//         $('#'+id).hide().attr("x",left).attr("y",top).attr("width",wd).attr("height",ht).show();
+//         return;
+//     }
     // now redraw
     $('#'+id).remove();
     // save the calculated pixel size for later
-    gdc.dx_px=dx_px;
-    gdc.dy_px=dy_px;
+//     gdc.dx_px=dx_px;
+//     gdc.dy_px=dy_px;
 
-    var p = new PNGlib(Math.round(n*dx_px),Math.round(m*dy_px), 256);
+    var p = new PNGlib(wd,ht, 256);
 
     // interpolate for color scale
     // https://github.com/mbostock/d3/wiki/Quantitative-Scales
@@ -122,19 +157,27 @@ function heatmap(cd,rdrw,gd){
         .interpolate(d3.interpolateRgb)
         .range(r);
 
+    // map brick boundaries to image pixels
+    function xpx(v){ return Math.max(0,Math.min(wd,Math.round(xf({x:v},gd)-left)))}
+    function ypx(v){ return Math.max(0,Math.min(ht,Math.round(yf({y:v},gd)-top)))}
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
     // build a brick at each z-matrix value
-    var y=y0=y1=0;
-    var i,j,x,x0,x1,c,pc,v;
+    var yi=ypx(y[0]),yb=[yi,yi];
+    var i,j,xi,x0,x1,c,pc,v;
+    var xbi = xrev?0:1, ybi = yrev?0:1;
     for(j=0; j<m; j++) {
-        col = z[yrev ? m-1-j : j];
-        y0 = y1;
-        y1 = Math.round((j+1)*dy_px);
-        x=x0=x1=0;
+        col = z[j];
+        yb.reverse();
+        yb[ybi] = ypx(y[j+1]);
+        if(yb[0]==yb[1]||yb[0]===undefined||yb[1]===undefined) { continue }
+        xi=xpx(x[0]),xb=[xi,xi];
         for(i=0; i<n; i++) {
             // build one color brick!
-            v=col[xrev ? n-1-i : i];
+            v=col[i];
+            xb.reverse();
+            xb[xbi] = xpx(x[i+1]);
+            if(xb[0]==xb[1]||xb[0]===undefined||xb[1]===undefined) { continue }
             if($.isNumeric(v)) {
                 // get z-value, scale for 8-bit color by rounding z to an integer 0-254
                 // (one value reserved for transparent (missing/non-numeric data)
@@ -142,11 +185,9 @@ function heatmap(cd,rdrw,gd){
                 pc = p.color('0x'+c.substr(1,2),'0x'+c.substr(3,2),'0x'+c.substr(5,2));
             }
             else { pc = p.color(0,0,0,0) } // non-numeric shows as transparent TODO: make this an option
-            x0 = x1;
-            x1 = Math.round((i+1)*dx_px);
-            for(x=x0; x<x1; x++) { // TODO: Make brick spacing editable (ie x=1)
-                for(y=y0; y<y1; y++) { // TODO: Make brick spacing editable
-                    p.buffer[p.index(x, y)] = pc;
+            for(xi=xb[0]; xi<xb[1]; xi++) { // TODO: Make brick spacing editable (ie x=1)
+                for(yi=yb[0]; yi<yb[1]; yi++) { // TODO: Make brick spacing editable
+                    p.buffer[p.index(xi, yi)] = pc;
                 }
             }
         }
@@ -173,29 +214,14 @@ function heatmap(cd,rdrw,gd){
     }
 }
 
-// Return MAX of an array of arrays
+// Return MAX and MIN of an array of arrays
 // moved to aggNums so we handle non-numerics correctly
 function zmax(z){
-    console.log('zmax');
     return aggNums(Math.max,null,z.map(function(row){return aggNums(Math.max,null,row)}));
-//     var m=z[0][0];
-//     for(var i=0;i<z.length;i++){
-//         rowmax=Math.max.apply( Math, z[i] );
-//         if(rowmax>m){ m=rowmax; }
-//     }
-//     return m;
 }
 
-// Return MIN of an array of arrays
 function zmin(z){
-    console.log('zmin');
     return aggNums(Math.min,null,z.map(function(row){return aggNums(Math.min,null,row)}));
-//     var m=z[0][0];
-//     for(var i=0;i<z.length;i++){
-//         rowmin=Math.min.apply( Math, z[i] );
-//         if(rowmin<m){ m=rowmin; }
-//     }
-//     return m;
 }
 
 // insert a colorbar
