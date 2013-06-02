@@ -483,8 +483,11 @@ function plot(divid, data, layout, rdrw) {
             if(gdc.visible==false) { continue }
             if(gdc.type=='histogram2d') {
                 // prepare the raw data
+                markTime('start convert data');
                 x = convertOne('x',xa,gdc.x);
+                markTime('done convert x');
                 y = convertOne('y',ya,gdc.y);
+                markTime('done convert y');
                 serieslen = Math.min(x.length,y.length);
                 if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen) }
                 if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen) }
