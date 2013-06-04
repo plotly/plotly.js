@@ -414,7 +414,7 @@ function plot(divid, data, layout, rdrw) {
             // add the trace-wide properties to the first point, per point properties to every point
             // t is the holder for trace-wide properties, start it with the curve num from gd.data
             // in case some curves don't plot
-            cd[0].t={curve:curve,type:curvetype}; // <-- curve is index of the data object in gd.data
+//             cd[0].t={curve:curve,type:curvetype}; // <-- curve is index of the data object in gd.data
         }
         else if(BARTYPES.indexOf(curvetype)!=-1) {
             // ignore as much processing as possible (and including in autorange) if bar is not visible
@@ -469,18 +469,18 @@ function plot(divid, data, layout, rdrw) {
                 }
             }
 
-            if(!cd) { cd=[{p:false,s:false,b:0}] }
+//             if(!cd) { cd=[{p:false,s:false,b:0}] }
             // add the bar-wide properties to the first bar, per bar properties to every bar
             // t is the holder for bar-wide properties, start it with the curve num from gd.data
             // in case some curves don't plot
 
-            cd[0].t={curve:curve,type:curvetype}; // <-- curve is index of the data object in gd.data
+//             cd[0].t={curve:curve,type:curvetype}; // <-- curve is index of the data object in gd.data
         }
-        else if(HEATMAPTYPES.indexOf(gdc.type)!=-1 ){
+        else if(HEATMAPTYPES.indexOf(curvetype)!=-1 ){
             // calcdata ("cd") for heatmaps:
             // curve: index of heatmap in gd.data
             // type: used to distinguish heatmaps from traces in "Data" popover
-            cd.push({t:{ curve:curve, type:gdc.type }});
+//             cd.push({t:{ curve:curve, type:gdc.type }});
             if(gdc.visible==false) { continue }
             if(gdc.type=='histogram2d') {
                 // prepare the raw data
@@ -543,6 +543,13 @@ function plot(divid, data, layout, rdrw) {
         if(!('line' in gdc)) gdc.line={};
         if(!('marker' in gdc)) gdc.marker={};
         if(!('line' in gdc.marker)) gdc.marker.line={};
+        if(!cd[0]) { cd.push({}) } // make sure there is a first point
+        // add the trace-wide properties to the first point, per point properties to every point
+        // t is the holder for trace-wide properties
+        cd[0].t={
+            curve:curve, // store the gd.data curve number that gave this trace
+            cdcurve:gd.calcdata.length, // store the calcdata curve number we're in
+        }
         gd.calcdata.push(cd);
         markTime('done with calcdata for '+curve);
     }
@@ -748,19 +755,48 @@ function plot(divid, data, layout, rdrw) {
             .attr('class','trace scatter');
 
 
-        // BUILD SCATTER LINES
+        // BUILD SCATTER LINES AND FILL
+        var prevpts='',tozero,tonext,nexttonext;
         scattertraces.each(function(d){ // <-- now, iterate through arrays of {x,y} objects
             var t=d[0].t; // <-- get trace-wide formatting object
-            if(t.mode.indexOf('lines')==-1 || t.visible==false) { return }
-            var i=-1,tr=d3.select(this);
+            if(t.visible==false) { return }
+            var i=-1,tr=d3.select(this),pts2='';
+            // make the fill-to-zero polyline now, so it shows behind the line
+            // have to break out of d3-style here (data-curve attribute) because fill to next
+            // puts the fill associated with one trace grouped with the previous
+            tozero = (t.fill.substr(0,6)=='tozero' || (t.fill.substr(0,2)=='to' && !prevpts)) ?
+                tr.append('polyline').classed('fill',true).attr('data-curve',t.cdcurve) : null;
+            // make the fill-to-next polyline now for the NEXT trace, so it shows behind both lines
+            // nexttonext was created last time, but tag it with this time's curve
+            if(nexttonext) { tonext = nexttonext.attr('data-curve',t.cdcurve) }
+            // now make a new nexttonext for next time
+            nexttonext = tr.append('polyline').classed('fill',true).attr('data-curve',0);
             while(i<d.length) {
-                var pts='';
+                var pts='',x0=y0=x1=y1=null;
                 for(i++; i<d.length; i++) {
                     var x=xf(d[i],gd),y=yf(d[i],gd);
                     if(!$.isNumeric(x)||!$.isNumeric(y)) { break } // TODO: smart lines going off the edge?
                     pts+=x+','+y+' ';
+                    if(x0==null) { x0=x; y0=y }
+                    x1=x; y1=y;
                 }
-                if(pts) { tr.append('polyline').attr('points',pts) }
+                if(pts) {
+                    pts2+=pts;
+                    if(t.mode.indexOf('lines')!=-1) {
+                        tr.append('polyline').classed('line',true).attr('points',pts)
+                    }
+                }
+            }
+            if(pts2) { // TODO: need to alter the order in case of fill to next... but how?
+                if(tozero) {
+                    if(t.fill.charAt(t.fill.length-1)=='y') { y0=y1=yf({y:0},gd,true) }
+                    else { x0=x1=xf({x:0},gd,true) }
+                    tozero.attr('points',pts+x1+','+y1+' '+x0+','+y0);
+                }
+                else if(t.fill.substr(0,6)=='tonext') {
+                    tonext.attr('points',pts+prevpts);
+                }
+                prevpts = pts2.split(' ').reverse().join(' ');
             }
         });
 
@@ -863,25 +899,28 @@ function setStyles(gd) {
     }
 
     for(var i in gd.calcdata){
-        var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c];
-        if( (gdc.error_y===undefined ? false : gdc.error_y.visible ) ){
+        var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c],
+            dc = defaultColors[c % defaultColors.length];
+        // all types have attributes type, visible, and opacity
+        // mergeattr puts single values into cd[0].t, and all others into each individual point
+        mergeattr(gdc.type,'type','scatter');
+        mergeattr(gdc.visible,'visible',true);
+        mergeattr(gdc.opacity,'op',1);
+        var type = cd[0].t.type;
+        if( (gdc.error_y && gdc.error_y.visible ) ){
             mergeattr(gdc.error_y.visible,'ye_vis',false);
             mergeattr(gdc.error_y.type,'ye_type','percent');
             mergeattr(gdc.error_y.value,'ye_val',10);
             mergeattr(gdc.error_y.traceref,'ye_tref',0);
-            mergeattr(gdc.error_y.color,'ye_clr',cd[0].t.ye_clr|| defaultColors[c % defaultColors.length]);
+            mergeattr(gdc.error_y.color,'ye_clr',cd[0].t.ye_clr|| dc);
             mergeattr(gdc.error_y.thickness,'ye_tkns',1);
             mergeattr(gdc.error_y.width,'ye_w',4);
             mergeattr(gdc.error_y.opacity,'ye_op',1);
         }
-        if(cd[0].t.type==='scatter' || cd[0].t.type===undefined){
-            // mergeattr puts single values into cd[0].t, and all others into each individual point
-            mergeattr(gdc.type,'type','scatter');
-            mergeattr(gdc.visible,'visible',true);
+        if(type==='scatter'){
             mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');
-            mergeattr(gdc.opacity,'op',1);
             mergeattr(gdc.line.dash,'ld','solid');
-            mergeattr(gdc.line.color,'lc',gdc.marker.color || defaultColors[c % defaultColors.length]);
+            mergeattr(gdc.line.color,'lc',gdc.marker.color || dc);
             mergeattr(gdc.line.width,'lw',2);
             mergeattr(gdc.marker.symbol,'mx','circle');
             mergeattr(gdc.marker.opacity,'mo',1);
@@ -889,11 +928,13 @@ function setStyles(gd) {
             mergeattr(gdc.marker.color,'mc',cd[0].t.lc);
             mergeattr(gdc.marker.line.color,'mlc',((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000'));
             mergeattr(gdc.marker.line.width,'mlw',0);
+            mergeattr(gdc.fill,'fill','none');
+            mergeattr(gdc.fillcolor,'fc',addOpacity(cd[0].t.lc,0.5));
             mergeattr(gdc.text,'tx','');
             mergeattr(gdc.name,'name','trace '+c);
         }
-        else if(cd[0].t.type==='heatmap' || cd[0].t.type==='histogram2d'){
-            if(cd[0].t.type==='histogram2d') {
+        else if(HEATMAPTYPES.indexOf(type)!=-1){
+            if(type==='histogram2d') {
                 mergeattr(gdc.autobinx,'autobinx',true);
                 mergeattr(gdc.nbinsx,'nbinsx',0);
                 mergeattr(gdc.xbins.start,'xbstart',0);
@@ -916,17 +957,15 @@ function setStyles(gd) {
             mergeattr(gdc.zmax,'zmax',10);
             mergeattr(JSON.stringify(gdc.scl),'scl',defaultScale);
         }
-        else if(BARTYPES.indexOf(cd[0].t.type)!=-1){
-            if(cd[0].t.type!='bar') {
+        else if(BARTYPES.indexOf(type)!=-1){
+            if(type!='bar') {
                 mergeattr(gdc.autobinx,'autobinx',true);
                 mergeattr(gdc.nbinsx,'nbinsx',0);
                 mergeattr(gdc.xbins.start,'xbstart',0);
                 mergeattr(gdc.xbins.end,'xbend',1);
                 mergeattr(gdc.xbins.size,'xbsize',1);
             }
-            mergeattr(gdc.type,'type','bar');
             mergeattr(gdc.bardir,'bardir','v');
-            mergeattr(gdc.visible,'visible',true);
             mergeattr(gdc.opacity,'op',1);
             mergeattr(gdc.marker.opacity,'mo',1);
             mergeattr(gdc.marker.color,'mc',defaultColors[c % defaultColors.length]);
@@ -951,8 +990,11 @@ function applyStyle(gp) {
             d3.select(this).selectAll('rect').call(pointStyle,d[0].t);
         });
 
-    gp.selectAll('g.trace polyline')
+    gp.selectAll('g.trace polyline.line')
         .call(lineGroupStyle);
+
+    gp.selectAll('g.trace polyline.fill')
+        .call(fillGroupStyle);
 
     gp.selectAll('g.errorbars')
         .call(errorbarStyle);
@@ -972,6 +1014,11 @@ function RgbOnly(cstr) {
 }
 
 function opacityOnly(cstr) { return tinycolor(cstr).alpha }
+
+function addOpacity(cstr,op) {
+    var c = tinycolor(cstr).toRgb();
+    return 'rgba('+Math.round(c.r)+', '+Math.round(c.g)+', '+Math.round(c.b)+', '+op+')';
+}
 
 function strokeColor(s,c) {
     s.attr('stroke',RgbOnly(c))
@@ -1004,6 +1051,21 @@ function lineGroupStyle(s) {
         if(da=='dashdot') return (3*lw)+','+lw+','+lw+','+lw;
         if(da=='longdashdot') return (5*lw)+','+(2*lw)+','+lw+','+(2*lw);
         return da; // user writes the dasharray themselves
+    });
+}
+
+function fillGroupStyle(s) {
+    s.attr('stroke-width',0)
+    .each(function(d){
+        var shape = d3.select(this),
+            // have to break out of d3 standard here, because the fill box may be
+            // grouped with the wrong trace (so it appears behind the appropriate lines)
+            gd = $(shape.node()).parents('div')[0];
+        try { shape.call(fillColor,gd.calcdata[shape.attr('data-curve')][0].t.fc) }
+        catch(e) {
+            try { shape.call(fillColor,d[0].t.fc) }
+            catch(e) { shape.remove() }
+        }
     });
 }
 
@@ -1070,33 +1132,44 @@ function barStyle(s,t) {
 // -----------------------------------------------------
 
 function legendLines(d){
+    var t = d[0].t;
     if(['scatter',undefined].indexOf(d[0].t.type)==-1) return;
-    if(!d[0].t.mode || d[0].t.mode.indexOf('lines')==-1) return;
+    if(t.fill && t.fill!='none' && $.isNumeric(t.cdcurve)) {
+        console.log(t.cdcurve);
+        d3.select(this).append('path')
+            .attr('data-curve',t.cdcurve)
+            .attr('d','M5,0h30v6h-30z')
+            .call(fillGroupStyle);
+    }
+    if(!t.mode || t.mode.indexOf('lines')==-1) return;
     d3.select(this).append('polyline')
         .call(lineGroupStyle)
         .attr('points','5,0 35,0');
+
 }
 
 function legendPoints(d){
-    if(['scatter',undefined].indexOf(d[0].t.type)==-1) return;
-    if(!d[0].t.mode || d[0].t.mode.indexOf('markers')==-1) return;
+    var t = d[0].t;
+    if(['scatter',undefined].indexOf(t.type)==-1) return;
+    if(!t.mode || t.mode.indexOf('markers')==-1) return;
     d3.select(this).append('g')
         .attr('class','legendpoints')
       .selectAll('path')
         .data(function(d){return d})
       .enter().append('path')
-        .call(pointStyle,d[0].t)
+        .call(pointStyle,t)
         .attr('transform','translate(20,0)');
 }
 
 function legendBars(d){
-    if(BARTYPES.indexOf(d[0].t.type)==-1) return;
+    var t = d[0].t;
+    if(BARTYPES.indexOf(t.type)==-1) return;
     d3.select(this).append('g')
         .attr('class','legendpoints')
       .selectAll('path')
         .data(function(d){return d})
       .enter().append('path')
-        .call(barStyle,d[0].t)
+        .call(barStyle,t)
         .attr('transform','translate(20,0)');
 }
 
@@ -1182,7 +1255,7 @@ function restyle(gd,astr,val,traces) {
     // also need to replot if a heatmap
     // also need to replot the error bars for several cases. TODO: if re-plotting error bars, don't re-plot scatter plots
     // TODO: lots of stuff here now... should we switch to looking for things that DON'T need plot?
-    var main_attr=['mode','visible','type','bardir'],
+    var main_attr=['mode','visible','type','bardir','fill'],
         hm_attr=['mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','zauto','scl'],
         eb_attr=['error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array'],
         hist_attr=[ 'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
@@ -1965,6 +2038,7 @@ function legend(gd) {
             return;
         }
         var tbb = t.node().getBoundingClientRect();
+        if(!l.node()) { l=g.select('path') }
         if(!l.node()) { l=g.select('polyline') }
         var lbb = (!l.node()) ? tbb : l.node().getBoundingClientRect();
         t.attr('y',(lbb.top+lbb.bottom-tbb.top-tbb.bottom)/2);
