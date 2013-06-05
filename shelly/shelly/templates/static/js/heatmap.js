@@ -1,47 +1,68 @@
-// returns the L, R, T, B coordinates of a heatmap as { x:[L,R], y:[T,B] }
+// option to limit number of pixels per color brick, for better speed
+// also, Firefox and IE seem to allow nearest-neighbor scaling, so could set to 1?
+// zero or other falsy val disables
+MAX_PX_PER_BRICK=0;
+
+// returns the brick edge coordinates of a heatmap as { x:[x0,x1,...], y:[y0,y1...] }
+// we're returning all of them now so we can handle log heatmaps that go negative
 function hm_rect(gdc){
     // Set any missing keys to defaults
-    gdc=default_hm(gdc);
-    var z=gdc.z, x0=gdc.x0, y0=gdc.y0, dx=gdc.dx, dy=gdc.dy, m=z.length, n=z[0].length;
-
-    return {'x':[x0-dx/2,x0+dx*n-dx/2], 'y':[y0-dy/2,y0+dy*m-dy/2]};
+    default_hm(gdc,true);
+    var y=gdc.y,m=gdc.z.length; // num rows
+    if(!$.isArray(y) || (y.length!=m+1) || (gdc.type=='histogram2d')) {
+        y=[];
+        for(var i=0; i<=m; i++) { y.push(gdc.y0+gdc.dy*(i-0.5)) }
+    }
+    var x=gdc.x,n=gdc.z[0].length; // num cols
+    if(!$.isArray(x) || (x.length!=n+1) || (gdc.type=='histogram2d')) {
+        x=[];
+        for(var i=0; i<=n; i++) { x.push(gdc.x0+gdc.dx*(i-0.5)) }
+    }
+    return {'x':x,'y':y};
 }
 
-// if the heatmap data object is missing any keys, fill them in 
+// if the heatmap data object is missing any keys, fill them in
 // keys expected in gdc:
 // z = 2D array of z values
-// x0 = middle of first color brick in x (on plotly's x-axis) 
-// dx = brick size in x (on plotly's x-axis) 
+// x0 = middle of first color brick in x (on plotly's x-axis)
+// dx = brick size in x (on plotly's x-axis)
 // same for y0, dy
 // z0 = minimum of colorscale
-// z1 = maximum of colorscale 
-function default_hm(gdc,i){
-    if(!( 'z' in gdc )){ gdc.z=[[1,2],[3,4]]; }
-    if(!( 'x0' in gdc )){ gdc.x0=2; }    
-    if(!( 'y0' in gdc )){ gdc.y0=2; }   
-    if(!( 'dx' in gdc )){ gdc.dx=0.5; }    
-    if(!( 'dy' in gdc )){ gdc.dy=0.5; }
-    if(!( 'zmin' in gdc )){ gdc.zmin=zmin(gdc.z); }    
-    if(!( 'zmax' in gdc )){ gdc.zmax=zmax(gdc.z); }
-    if(!( 'scl' in gdc )){ gdc.scl=defaultScale; }         
-    if(!( 'id' in gdc )){ gdc.id=i; }   
 
-    return gdc;
+// z1 = maximum of colorscale
+function default_hm(gdc,noZRange){
+    if(!( 'z' in gdc )){ gdc.z=[[1,2],[3,4]] }
+    if(!( 'x0' in gdc )){ gdc.x0=0 }
+    if(!( 'y0' in gdc )){ gdc.y0=0 }
+    if(!( 'dx' in gdc )){ gdc.dx=1 }
+    if(!( 'dy' in gdc )){ gdc.dy=1 }
+    if(!( 'zauto' in gdc)){ gdc.zauto=true }
+    if(!noZRange) { // can take a long time... only do once
+        if(!( 'zmin' in gdc )||(!(gdc.zauto==false))){ gdc.zmin=zmin(gdc.z) }
+        if(!( 'zmax' in gdc )||(!(gdc.zauto==false))){ gdc.zmax=zmax(gdc.z) }
+    }
+    if(!( 'scl' in gdc )){ gdc.scl=defaultScale }
+//     if(!( 'id' in gdc )){ gdc.id=i }
 }
 
 // Creates a heatmap image from a z matrix and embeds adds it to svg plot
 // Params are index of heatmap data object in gd.data, and the heatmap data object itself
-// gdc ("graph div curve") = data object for a single heatmap       
+// gdc ("graph div curve") = data object for a single heatmap
 // cd "calcdata" - contains styling information
-// Example usage: 
+// Example usage:
 // plot( gettab().id, [{'type':'heatmap','z':[[1,2],[3,4]], 'x0':2, 'y0':2, 'dx':0.5, 'dy':0.5}] )
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
-function heatmap(i,gdc,cd,rdrw,gd){
-    if(rdrw===undefined){ rdrw=false; }
-    //var gd=gettab();
+function heatmap(cd,rdrw,gd){
+    var i = cd[0].t.curve,
+        gdc = gd.data[i];
     // Set any missing keys to defaults
-    gdc=default_hm(gdc,i);
-    var z=gdc.z, x0=gdc.x0, y0=gdc.y0, dx=gdc.dx, dy=gdc.dy, min=gdc.zmin, max=gdc.zmax, scl=gdc.scl;
+
+    // note: gdc.x (same for gdc.y) will override gdc.x0,dx if it exists and is the right size
+    // should be an n+1 long array, containing all the pixel edges
+    default_hm(gdc);
+    var z=gdc.z, min=gdc.zmin, max=gdc.zmax, scl=gdc.scl,
+        x0=gdc.x0, dx=gdc.dx, x=gdc.x,
+        y0=gdc.y0, dy=gdc.dy, y=gdc.y;
     // console.log(min,max);
     // if this is the first time drawing the heatmap and it has never been saved it won't have an id
     // TODO! If 2 heat maps are loaded from different files, they could have the same id
@@ -50,160 +71,207 @@ function heatmap(i,gdc,cd,rdrw,gd){
     var id=gdc.hm_id;
     //console.log('heatmap id: '+id);
 
-    // get z dims
+    // get z dims, and create the box boundary arrays if they don't already exist
     var m=z.length; // num rows
+    if(!$.isArray(y) || (y.length!=m+1) || (gdc.type=='histogram2d')) {
+        y=[];
+        for(var i=0; i<=m; i++) { y.push(y0+dy*(i-0.5)) }
+    }
     var n=z[0].length; // num cols
+    if(!$.isArray(x) || (x.length!=n+1) || (gdc.type=='histogram2d')) {
+        x=[];
+        for(var i=0; i<=n; i++) { x.push(x0+dx*(i-0.5)) }
+    }
 
     // Get edges of png in pixels (xf() maps axes coordinates to pixel coordinates)
-    var bounds={'x':[x0-dx/2,x0+dx*n+dx/2], 'y':[y0-dy/2,y0+dy*m+dy/2]} // return this later this for autorange
-    var left=xf({'x':x0,'y':y0},gd), right=xf({'x':x0+dx*n,'y':y0+dy*m},gd);
-    var bottom=yf({'x':x0,'y':y0},gd), top=yf({'x':x0+dx*n,'y':y0+dy*m},gd);
-    
-    var wd=right-left; //console.log('img width in px'); console.log(wd);
-    var ht=bottom-top; //console.log('img height in px'); console.log(ht);
-        
-    var dx_px=Math.floor(wd/n);
-    var dy_px=Math.floor(ht/m);
-    
-    //var dx_px=Math.round(wd/n);
-    //var dy_px=Math.round(ht/m);         
+    // figure out if either axis is reversed (y is usually reversed, in pixel coords)
+    // also clip the image to maximum 50% outside the visible plot area
+    // bigger image lets you pan more naturally, but slows performance.
+    // TODO: use low-resolution images outside the visible plot for panning
+    var xrev = false, left=undefined, right=undefined;
+    // these while loops find the first and last brick bounds that are defined (in case of log of a negative)
+    i=0; while(left===undefined && i<n) { left=xf({x:x[i]},gd); i++ }
+    i=n; while(right===undefined && i>0) { right=xf({x:x[i]},gd); i-- }
+    if(right<left) {
+        var temp = right;
+        right = left;
+        left = temp;
+        xrev = true;
+    }
+    left = Math.max(-0.5*gd.plotwidth,left);
+    right = Math.min(1.5*gd.plotwidth,right);
 
-    var d={'x':x0-dx/2, 'y':y0+dy/2};
-    var x_px=xf(d,gd); // image x-position in pixels
-    var y_px=yf(d,gd); // image y-position in pixels
-        
-    var p = new PNGlib(dx_px*n, dy_px*m, 256);
-    var background = p.color(255, 0, 0, 0);        
-        
-    if($('#'+id).length>0 && rdrw==false){
-        // the heatmap already exists, we just need to move it (heatmap() was called because of a zoom or pan event)
-        $('#'+id).hide().attr("x",x_px).attr("y",y_px-((m-1)*dy_px)).show().attr("width",p.width).attr("height",p.height).show();         
-        return;
+    var yrev = false, top=undefined, bottom=undefined;
+    i=0; while(top===undefined && i<n) { top=yf({y:y[i]},gd); i++ }
+    i=n; while(bottom===undefined && i>0) { bottom=yf({y:y[i]},gd); i-- }
+    if(bottom<top) {
+        var temp = top;
+        top = bottom;
+        bottom = temp;
+        yrev = true;
     }
-    else if(rdrw==true){
-        $('#'+id).remove(); 
-    }
-        
-    var p = new PNGlib(dx_px*n, dy_px*m, 256);
-    var background = p.color(255, 0, 0, 0);
+    top = Math.max(-0.5*gd.plotheight,top);
+    bottom = Math.min(1.5*gd.plotheight,bottom);
+
+    // make an image with max plotwidth*plotheight pixels, to keep time reasonable when you zoom in
+    var wd=Math.round(right-left);
+    var ht=Math.round(bottom-top),htf=ht/(bottom-top);
+
+//     var dx_px=wd/n;
+//     var dy_px=ht/m;
+//
+//     // option to change the number of pixels per brick
+//     if(MAX_PX_PER_BRICK>0) {
+//         dx_px=Math.min(MAX_PX_PER_BRICK,dx_px);
+//         dy_px=Math.min(MAX_PX_PER_BRICK,dy_px);
+//     }
+//
+//     function closeEnough(oldpx,newpx) {
+//         if(oldpx<newpx/2) { return false } // if the existing image has less than half,
+//         if(oldpx>newpx*5) { return false } // or more than 5x the pixels of the new one, force redraw
+//         return true
+//     }
+//
+//     // the heatmap already exists and hasn't changed size too much, we just need to move it
+//     // (heatmap() was called because of a zoom or pan event)
+//     if($('#'+id).length && !rdrw && closeEnough(gdc.dx_px,dx_px) && closeEnough(gdc.dy_px,dy_px)){
+//         $('#'+id).hide().attr("x",left).attr("y",top).attr("width",wd).attr("height",ht).show();
+//         return;
+//     }
+    // now redraw
+    $('#'+id).remove();
+    // save the calculated pixel size for later
+//     gdc.dx_px=dx_px;
+//     gdc.dy_px=dy_px;
+
+    var p = new PNGlib(wd,ht, 256);
 
     // interpolate for color scale
     // https://github.com/mbostock/d3/wiki/Quantitative-Scales
     // http://nelsonslog.wordpress.com/2011/04/11/d3-scales-and-interpolation/
 
-    if (typeof(scl)=="string") scl=eval(scl); // <-- convert colorscale string to array    
-    var d=[]; // "domain"
-    //for(var i=0; i<scl.length; i++){ d.push( min+(scl[i][0]*(max-min)) ); }
-    for(var i=0; i<scl.length; i++){ d.push( min+(scl[i][0]*(255)) ); }    
-    var r=[]; // "range"
-    for(var i=0; i<scl.length; i++){ r.push( scl[i][1] ); }    
-    
+    if (typeof(scl)=="string") scl=eval(scl); // <-- convert colorscale string to array
+    var d = scl.map(function(si){return si[0]*255}),
+        r = scl.map(function(si){return si[1]});
+
     s = d3.scale.linear()
         .domain(d)
         .interpolate(d3.interpolateRgb)
-        .range(r);         
+        .range(r);
 
+    // map brick boundaries to image pixels
+    function xpx(v){ return Math.max(0,Math.min(wd,Math.round(xf({x:v},gd)-left)))}
+    function ypx(v){ return Math.max(0,Math.min(ht,Math.round(yf({y:v},gd)-top)))}
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
-    // build a brick at each z-matrix value  
-    for(var i=0; i<n; i++) {
-        for(var j=0; j<m; j++) {            
-            var v=z[j][i], v_8b=Math.round(v/(max-min)*255); // get z-value, scale for 8-bit color by rounding z to an integer 0-255
-            bld_brck(p,v_8b,i,j,dx_px,dy_px,s,gd); // build color brick!
+    // build a brick at each z-matrix value
+    var yi=ypx(y[0]),yb=[yi,yi];
+    var i,j,xi,x0,x1,c,pc,v;
+    var xbi = xrev?0:1, ybi = yrev?0:1;
+    for(j=0; j<m; j++) {
+        col = z[j];
+        yb.reverse();
+        yb[ybi] = ypx(y[j+1]);
+        if(yb[0]==yb[1]||yb[0]===undefined||yb[1]===undefined) { continue }
+        xi=xpx(x[0]),xb=[xi,xi];
+        for(i=0; i<n; i++) {
+            // build one color brick!
+            v=col[i];
+            xb.reverse();
+            xb[xbi] = xpx(x[i+1]);
+            if(xb[0]==xb[1]||xb[0]===undefined||xb[1]===undefined) { continue }
+            if($.isNumeric(v)) {
+                // get z-value, scale for 8-bit color by rounding z to an integer 0-254
+                // (one value reserved for transparent (missing/non-numeric data)
+                c=s(Math.round((v-min)*255/(max-min)));
+                pc = p.color('0x'+c.substr(1,2),'0x'+c.substr(3,2),'0x'+c.substr(5,2));
+            }
+            else { pc = p.color(0,0,0,0) } // non-numeric shows as transparent TODO: make this an option
+            for(xi=xb[0]; xi<xb[1]; xi++) { // TODO: Make brick spacing editable (ie x=1)
+                for(yi=yb[0]; yi<yb[1]; yi++) { // TODO: Make brick spacing editable
+                    p.buffer[p.index(xi, yi)] = pc;
+                }
+            }
         }
-    } 
-        
-    // http://stackoverflow.com/questions/6249664/does-svg-support-embedding-of-bitmap-images        
-    // https://groups.google.com/forum/?fromgroups=#!topic/d3-js/aQSWnEDFxIc    
-    gd.plot.append('svg:image') 
-        .attr("id",id)   
-        .attr("xmlns","http://www.w3.org/2000/svg")    
+    }
+
+    // http://stackoverflow.com/questions/6249664/does-svg-support-embedding-of-bitmap-images
+    // https://groups.google.com/forum/?fromgroups=#!topic/d3-js/aQSWnEDFxIc
+    gd.plot.append('svg:image')
+        .attr("id",id)
+        .attr('class','pixelated') // we can hope...
+        .attr("xmlns","http://www.w3.org/2000/svg")
         .attr("xlink:href", "data:image/png;base64,\n" +p.getBase64())
-        .attr("height",p.height)
-        .attr("width",p.width)
-        .attr("x",x_px)
-        .attr("y",y_px-((m-1)*dy_px))
+        .attr("height",ht)
+        .attr("width",wd)
+        .attr("x",left)
+        .attr("y",top)
         .attr('preserveAspectRatio','none');
-    
+
     $('svg > image').parent().attr("xmlns:xlink","http://www.w3.org/1999/xlink");
-        
+
     // show a colorscale
     if(gdc.showscale!=false){
         insert_colorbar(gd,gdc,cb_id);
-    }                     
-}
-
-// build one color brick at position i, j
-// p: png image object
-// v: z value
-// dx: width of brick in px
-// dy: height of brick in px
-// s: d3 color function, returns a hex color string interpolated for z
-function bld_brck(p,v,i,j,dx,dy,s,gd){
-    var c = s(v).replace('#',''), r = '0x'+c.substr(0,2), g = '0x'+c.substr(2,2), b = '0x'+c.substr(4,2);
-                
-    /*if(p.color(r,g,b)=="\x00"){
-        console.log('zvalue',v);
-        console.log('missing brick at',i,j);    
-    }*/
-    for(var x=0; x<dx; x++) { // TODO: Make brick spacing editable (ie x=1)
-        for(var y=0; y<dy; y++) { // TODO: Make brick spacing editable
-            p.buffer[p.index((Number(i*dx)+Number(x)), (Number(j*dy)+Number(y)))] = p.color(r,g,b);            
-        }
     }
-    //p.buffer[p.index(Number(i), Number(j)) ] = p.color(r,g,b); // <--- single px brick experiment
 }
 
-// Return MAX of an array of arrays
+// Return MAX and MIN of an array of arrays
+// moved to aggNums so we handle non-numerics correctly
 function zmax(z){
-    var m=z[0][0];
-    for(var i=0;i<z.length;i++){
-        rowmax=Math.max.apply( Math, z[i] );
-        if(rowmax>m){ m=rowmax; }
-    }
-    return m;
+    return aggNums(Math.max,null,z.map(function(row){return aggNums(Math.max,null,row)}));
 }
 
-// Return MIN of an array of arrays
 function zmin(z){
-    var m=z[0][0];
-    for(var i=0;i<z.length;i++){
-        rowmin=Math.min.apply( Math, z[i] );
-        if(rowmin<m){ m=rowmin; }
-    }
-    return m;
+    return aggNums(Math.min,null,z.map(function(row){return aggNums(Math.min,null,row)}));
 }
 
 // insert a colorbar
 function insert_colorbar(gd,gdc,cb_id) {
 
-    if(gd.layout.margin.r!=200){
+    if(gd.layout.margin.r<200){ // shouldn't get here anymore... take care of this in newPlot
+        console.log('warning: called relayout from insert_colorbar');
         relayout(gettab(),'margin.r',200);
     }
-    
+
     var scl=gdc.scl;
-    if (typeof(scl)=="string") scl=eval(scl); // <-- convert colorscale string to array    
+    if (typeof(scl)=="string") scl=eval(scl); // <-- convert colorscale string to array
     var d=[], min=gdc.zmin, max=gdc.zmax; // "colorbar domain" - interpolate numbers for colorscale
     for(var i=0; i<scl.length; i++){ d.push( min+(scl[i][0]*(max-min)) ); }
     var r=[]; // "colorbar range" - colors in gdc.colorscale
-    for(var i=0; i<scl.length; i++){ r.push( scl[i][1] ); }    
-    
+    for(var i=0; i<scl.length; i++){ r.push( scl[i][1] ); }
+
     //remove last colorbar, if any
-    $('#'+cb_id).remove(); 
-            
+    $('#'+cb_id).remove();
+
     var gl = gd.layout,
         g = gd.paper.append("g")
-            .attr("id",cb_id) 
+            .attr("id",cb_id)
             // TODO: colorbar spacing from plot (fixed at 50 right now)
             // should be a variable in gd.data and editable from a popover
             .attr("transform","translate("+(gl.width-gl.margin.r+50)+","+(gl.margin.t)+")")
-            .classed("colorbar",true);
+            .classed("colorbar",true),
         cb = colorBar().color(d3.scale.linear()
             .domain(d)
-            .range(r))            
+            .range(r))
             .size(gl.height-gl.margin.t-gl.margin.b)
             .lineWidth(30)
             .precision(2); // <-- gradient granularity TODO: should be a variable in colorbar popover
 
     g.call(cb);
+}
+
+// in order to avoid unnecessary redraws, check for heatmaps with colorscales
+// and expand right margin to fit
+function heatmap_margin(gd){
+    var gl = gd.layout;
+    if(gd.data && gd.data.length && gl.margin.r<200) {
+        for(curve in gd.data) {
+            if((HEATMAPTYPES.indexOf(gd.data[curve].type)!=-1) && (gd.data[curve].showscale!=false)) {
+                gl.margin.r=200;
+                return true;
+            }
+        }
+    }
+    return false;
 }
