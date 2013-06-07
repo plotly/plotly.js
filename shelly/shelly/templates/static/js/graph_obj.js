@@ -1135,7 +1135,7 @@ function legendLines(d){
     var t = d[0].t;
     if(['scatter',undefined].indexOf(d[0].t.type)==-1) return;
     if(t.fill && t.fill!='none' && $.isNumeric(t.cdcurve)) {
-        console.log(t.cdcurve);
+        //console.log(t.cdcurve);
         d3.select(this).append('path')
             .attr('data-curve',t.cdcurve)
             .attr('d','M5,0h30v6h-30z')
