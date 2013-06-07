@@ -257,11 +257,12 @@ function plot(divid, data, layout, rdrw) {
 
     // calcdata to axis mapping (identity except for log axes)
     var toLog = function(v){if(v<=0) { return null } return Math.log(v)/Math.LN10},
-        fromLog = function(v){return Math.pow(10,v)}
-    xa.toAxis = (xa.type=='log') ? toLog : Number;
-    ya.toAxis = (ya.type=='log') ? toLog : Number;
-    xa.toData = (xa.type=='log') ? fromLog : Number;
-    ya.toData = (ya.type=='log') ? fromLog : Number;
+        fromLog = function(v){return Math.pow(10,v)},
+        num = function(v){return $.isNumeric(v) ? v : null}
+    xa.toAxis = (xa.type=='log') ? toLog : num;
+    ya.toAxis = (ya.type=='log') ? toLog : num;
+    xa.toData = (xa.type=='log') ? fromLog : num;
+    ya.toData = (ya.type=='log') ? fromLog : num;
 
     // prepare the data and find the autorange
     // TODO: only remake calcdata for new or changed traces
@@ -860,7 +861,7 @@ function yf(d,gd,clip){ return pf(d.y,gd.layout.yaxis,gd.viewbox.y,clip) }
 function pf(v,ax,vb,clip){
     var va = ax.toAxis(v);
     if($.isNumeric(va)) { return d3.round(ax.b+ax.m*va+vb,2) }
-    if(clip) { // clip NaN (ie past negative infinity) to one axis length past the negative edge
+    if(clip && $.isNumeric(v)) { // clip NaN (ie past negative infinity) to one axis length past the negative edge
         var a = ax.range[0],
             b = ax.range[1];
         return d3.round(ax.b+ax.m*0.5*(a+b-3*Math.abs(a-b))+vb,2);
@@ -3566,9 +3567,9 @@ function convertToAxis(o,a){
             console.log('Error! Tried to convert single category to axis with no existing categories');
             return null;
         }
-        var fn = function(v){ return a.categories.indexOf(v) }
+        var fn = function(v){ var c = a.categories.indexOf(v); return c==-1 ? undefined : c }
     }
-    else { var fn = Number }
+    else { var fn = function(v){return $.isNumeric(v) ? Number(v) : undefined } }
 
     // do the conversion
     if($.isArray(o)) { return o.map(fn) }
