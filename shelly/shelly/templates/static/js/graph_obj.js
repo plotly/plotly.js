@@ -606,28 +606,40 @@ function plot(divid, data, layout, rdrw) {
         }
 
         // bar position offset and width calculation
-        // find the min. difference between any points in any traces
-        var pvals=[];
-        for(var i=0; i<bl.length; i++){
-            gd.calcdata[bl[i]].forEach(function(v){pvals.push(v.p)});
-        }
-        pvals.sort(function(a,b){return a-b});
-        var barDiff = (pvals[pvals.length-1]-pvals[0])||1,pv2=[pvals[0]];
-        for(var i=0;i<pvals.length-1;i++) {
-            if(pvals[i+1]>pvals[i]) {
-                barDiff=Math.min(barDiff,pvals[i+1]-pvals[i]);
-                pv2.push(pvals[i+1]);
+        function barposition(bl1) {
+            // find the min. difference between any points in any traces in bl1
+            var pvals=[];
+            for(var i=0; i<bl1.length; i++){
+                gd.calcdata[bl1[i]].forEach(function(v){pvals.push(v.p)});
+            }
+            pvals.sort(function(a,b){return a-b});
+            var barDiff = (pvals[pvals.length-1]-pvals[0])||1,pv2=[pvals[0]];
+            for(var i=0;i<pvals.length-1;i++) {
+                if(pvals[i+1]>pvals[i]) {
+                    barDiff=Math.min(barDiff,pvals[i+1]-pvals[i]);
+                    pv2.push(pvals[i+1]);
+                }
+            }
+            barDiff*=(1-gl.bargap);
+            // position axis autorange
+            expandBounds(pa,pdr,pv2,pv2.length,barDiff*(1-gl.bargroupgap/bl.length)/2);
+            // bar widths and position offsets
+            if(gl.barmode=='group') { barDiff/=bl.length }
+            for(var i=0; i<bl1.length; i++){
+                var t=gd.calcdata[bl1[i]][0].t;
+                t.barwidth = barDiff*(1-gl.bargroupgap);
+                t.poffset = (((gl.barmode=='group') ? (2*i+1-bl1.length)*barDiff : 0 ) - t.barwidth)/2;
             }
         }
-        barDiff*=(1-gl.bargap);
-        // position axis autorange
-        expandBounds(pa,pdr,pv2,pv2.length,barDiff*(1-gl.bargroupgap/bl.length)/2);
-        // bar widths and position offsets
-        if(gl.barmode=='group') { barDiff/=bl.length }
-        for(var i=0; i<bl.length; i++){
-            var t=gd.calcdata[bl[i]][0].t;
-            t.barwidth = barDiff*(1-gl.bargroupgap);
-            t.poffset = (((gl.barmode=='group') ? (2*i+1-bl.length)*barDiff : 0 ) - t.barwidth)/2;
+
+        // for overlaid bars, manage each bar trace independently
+        if(gl.barmode=='overlay') {
+            for(var i=0; i<bl.length; i++) { barposition([bl[i]]) }
+        }
+        // group or stack, make sure all bar positions are available for all traces
+        // by finding the closest two points in any of the traces
+        else {
+            barposition(bl);
         }
     });
     markTime('done with setstyles and bar chart ranging');
