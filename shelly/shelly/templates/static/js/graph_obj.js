@@ -715,14 +715,15 @@ function plot(divid, data, layout, rdrw) {
             .attr('class','points')
             .each(function(d,cdi){
                 var t=d[0].t; // <-- get trace-wide formatting object
-                // add half a pixel (quarter each side) if there are no gaps, no lines.
+                // add a pixel (half each side) if there are no gaps, no lines, no fill transparency.
                 // this prevents gaps being created by anti-aliasing routines
                 // TODO: originally I had this stop if the bar is narrower than 3px,
                 //  but I removed this restriction... is this going to cause any problems?
-                var extraw = 0, extrah = 0;
-                if(gl.bargap==0 && gl.bargroupgap==0 && !t.mlw){
+                var extraw = extrah = extraw2 = extrah2 = 0;
+                if(gl.bargap==0 && gl.bargroupgap==0 && !t.mlw && (!t.mc || opacityOnly(t.mc)==1)){
                     if(t.bardir=='v') { extraw = 0.5 }
                     else { extrah = 0.5 }
+                    extraw2 = extraw*2; extrah2 = extrah*2;
                 }
                 d3.select(this).selectAll('rect') // TODO: update to p,s notation
                     .data(function(d){return d})
@@ -750,9 +751,9 @@ function plot(divid, data, layout, rdrw) {
                             return;
                         }
                         d3.select(this)
-                            .attr('transform','translate('+Math.min(x0,x1)+','+Math.min(y0,y1)+')')
-                            .attr('width',Math.abs(x1-x0) + extraw)
-                            .attr('height',Math.abs(y1-y0) + extrah);
+                            .attr('transform','translate('+(Math.min(x0,x1)-extraw)+','+(Math.min(y0,y1)-extrah)+')')
+                            .attr('width',Math.abs(x1-x0) + extraw2)
+                            .attr('height',Math.abs(y1-y0) + extrah2);
                     });
             });
         markTime('done bars');
@@ -1230,10 +1231,12 @@ function restyle(gd,astr,val,traces) {
     // set attribute in gd.data
     // also check whether we have heatmaps in the edited traces
     var aa=astr.split('.'),
-        hasheatmap=false;
+        hasheatmap=false,
+        hasbars=false;
     for(i=0; i<traces.length; i++) {
         var cont=gd.data[traces[i]];
         if(HEATMAPTYPES.indexOf(cont.type)!=-1) { hasheatmap=true }
+        if(BARTYPES.indexOf(cont.type)!=-1) { hasbars=true }
         // setting bin or z settings should turn off auto
         if(['zmax','zmin'].indexOf(astr)!=-1) { cont.zauto=false }
         else if(aa[0]=='xbins') { cont.autobinx=false }
@@ -1296,6 +1299,9 @@ function restyle(gd,astr,val,traces) {
     }
     else if(hm_attr.indexOf(astr)!=-1) {
         plot(gd,'','',true); // <-- last arg is to force redrawing the heatmap. TODO: if multiple heatmaps, only redraw one?
+    }
+    else if(hasbars && ['marker.line.width','marker.color'].indexOf(astr)!=-1) {
+        plot(gd,'',''); // can change the antialiasing width correction on bar charts
     }
     else {
         setStyles(gd);
