@@ -30,7 +30,7 @@ function hm_rect(gdc){
 // z0 = minimum of colorscale
 // z1 = maximum of colorscale
 function default_hm(gdc,noZRange){
-    if(!( 'z' in gdc )){ gdc.z=[[1,2],[3,4]] }
+    if(!( 'z' in gdc )){ gdc.z=[[0,0],[0,0]] }
     if(!( 'x0' in gdc )){ gdc.x0=0 }
     if(!( 'y0' in gdc )){ gdc.y0=0 }
     if(!( 'dx' in gdc )){ gdc.dx=1 }
@@ -39,6 +39,7 @@ function default_hm(gdc,noZRange){
     if(!noZRange) { // can take a long time... only do once
         if(!( 'zmin' in gdc )||(!(gdc.zauto==false))){ gdc.zmin=zmin(gdc.z) }
         if(!( 'zmax' in gdc )||(!(gdc.zauto==false))){ gdc.zmax=zmax(gdc.z) }
+        if(gdc.zmin==gdc.zmax) { gdc.zmin-=0.5; gdc.zmax+=0.5 }
     }
     if(!( 'scl' in gdc )){ gdc.scl=defaultScale }
 //     if(!( 'id' in gdc )){ gdc.id=i }
