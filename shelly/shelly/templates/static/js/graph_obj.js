@@ -1513,7 +1513,7 @@ function newPlot(divid, layout) {
     gd.layout={title:'Click to enter Plot title',
         xaxis:{range:[-1,6],type:'-',mirror:true,linecolor:'#000',linewidth:1,
             tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
-            showticklabels:true,
+            showticklabels:true,tickangle:0,
             showgrid:true,gridcolor:'#ddd',gridwidth:1,
             autorange:true,autotick:true,drange:[null,null],
             zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
@@ -1522,7 +1522,7 @@ function newPlot(divid, layout) {
             tickfont:{family:'',size:0,color:''}},
         yaxis:{range:[-1,4],type:'-',mirror:true,linecolor:'#000',linewidth:1,
             tick0:0,dtick:1,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
-            showticklabels:true,
+            showticklabels:true,tickangle:0,
             showgrid:true,gridcolor:'#ddd',gridwidth:1,
             autorange:true,autotick:true,drange:[null,null],
             zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
@@ -3249,10 +3249,11 @@ function doTicks(gd,ax) {
             tickpath = 'M'+ml+','+y1+'v'+ty+
                 (a.mirror=='ticks' ? ('m0,'+(-gd.plotheight-2*(ty+pad))+'v'+ty): ''),
             g = {x1:ml, x2:ml, y1:gl.height-mb, y2:mt},
-            transfn = function(d){return 'translate('+(a.m*d.x+a.b)+',0)'},
             tl = {x:function(d){return d.dx+ml},
                 y:function(d){return d.dy+y1+(a.ticks=='outside' ? a.ticklen : a.linewidth+1)+d.fontSize},
-                anchor:'middle'};
+                anchor: (!a.tickangle || a.tickangle==180) ? 'middle' :
+                    (a.tickangle<0 ? 'end' : 'start')},
+            transfn = function(d){return 'translate('+(a.m*d.x+a.b)+',0)'};
     }
     else if(ax=='y') {
         var x1 = ml-pad,
@@ -3260,10 +3261,13 @@ function doTicks(gd,ax) {
             tickpath = 'M'+x1+','+mt+'h'+tx+
                 (a.mirror=='ticks' ? ('m'+(gd.plotwidth-2*(tx-pad))+',0h'+tx): ''),
             g = {x1:ml, x2:gl.width-mr, y1:mt, y2:mt},
-            transfn = function(d){return 'translate(0,'+(a.m*d.x+a.b)+')'},
-            tl = {x:function(d){return d.dx+x1-(a.ticks=='outside' ? a.ticklen : a.linewidth+1)},
+            tl = {x:function(d){return d.dx+x1 -
+                    (a.ticks=='outside' ? a.ticklen : a.linewidth+1) -
+                    (Math.abs(a.tickangle)==90 ? d.fontSize/2 : 0)
+                },
                 y:function(d){return d.dy+mt+d.fontSize/2},
-                anchor:'end'};
+                anchor: (Math.abs(a.tickangle)==90) ? 'middle' : 'end'},
+            transfn = function(d){return 'translate(0,'+(a.m*d.x+a.b)+')'};
     }
     else {
         plotlylog('unrecognized doTicks axis',ax);
@@ -3294,7 +3298,10 @@ function doTicks(gd,ax) {
             .attr('fill',function(d){return d.fontColor})
             .attr('text-anchor',tl.anchor)
             .each(function(d){styleText(this,d.text)});
-        yl.attr('transform',transfn);
+        yl.attr('transform',function(d){
+            return transfn(d) + (a.tickangle ?
+                (' rotate('+a.tickangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')') : '')
+        });
         yl.exit().remove();
     }
     else
