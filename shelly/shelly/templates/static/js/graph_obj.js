@@ -259,11 +259,12 @@ function plot(divid, data, layout, rdrw) {
 
     // calcdata to axis mapping (identity except for log axes)
     var toLog = function(v){if(v<=0) { return null } return Math.log(v)/Math.LN10},
-        fromLog = function(v){return Math.pow(10,v)}
-    xa.toAxis = (xa.type=='log') ? toLog : Number;
-    ya.toAxis = (ya.type=='log') ? toLog : Number;
-    xa.toData = (xa.type=='log') ? fromLog : Number;
-    ya.toData = (ya.type=='log') ? fromLog : Number;
+        fromLog = function(v){return Math.pow(10,v)},
+        num = function(v){return $.isNumeric(v) ? v : null}
+    xa.toAxis = (xa.type=='log') ? toLog : num;
+    ya.toAxis = (ya.type=='log') ? toLog : num;
+    xa.toData = (xa.type=='log') ? fromLog : num;
+    ya.toData = (ya.type=='log') ? fromLog : num;
 
     // prepare the data and find the autorange
     // TODO: only remake calcdata for new or changed traces
@@ -571,12 +572,53 @@ function plot(divid, data, layout, rdrw) {
     }
     // then for each direction separately calculate the ranges and positions
     ['v','h'].forEach(function(dir){
-        if(barlist[dir].length) { var bl = barlist[dir] }
-        else { return }
+        if(!barlist[dir].length) { return }
+        var bl = barlist[dir];
 
         if(dir=='v') { var sa = ya, sdr = ydr, pa = xa, pdr = xdr }
         else { var sa = xa, sdr = xdr, pa = ya, pdr = ydr }
-        // bar size range calculation
+
+        // bar position offset and width calculation
+        function barposition(bl1) {
+            // find the min. difference between any points in any traces in bl1
+            var pvals=[];
+            for(var i=0; i<bl1.length; i++){
+                gd.calcdata[bl1[i]].forEach(function(v){pvals.push(v.p)});
+            }
+            pvals.sort(function(a,b){return a-b});
+            var pl = pvals.length-1,
+                barDiff = (pvals[pl]-pvals[0])||1,
+                minDiff = barDiff/(pl||1)/100,
+                pv2=[pvals[0]];
+            for(var i=0;i<pl;i++) {
+                if(pvals[i+1]>pvals[i]+minDiff) { // make sure values aren't just off by a rounding error
+                    barDiff=Math.min(barDiff,pvals[i+1]-pvals[i]);
+                    pv2.push(pvals[i+1]);
+                }
+            }
+            barDiff*=(1-gl.bargap);
+            // position axis autorange
+            expandBounds(pa,pdr,pv2,pv2.length,barDiff*(1-gl.bargroupgap/bl.length)/2);
+            // bar widths and position offsets
+            if(gl.barmode=='group') { barDiff/=bl.length }
+            for(var i=0; i<bl1.length; i++){
+                var t=gd.calcdata[bl1[i]][0].t;
+                t.barwidth = barDiff*(1-gl.bargroupgap);
+                t.poffset = (((gl.barmode=='group') ? (2*i+1-bl1.length)*barDiff : 0 ) - t.barwidth)/2;
+            }
+        }
+
+        // for overlaid bars, manage each bar trace independently
+        if(gl.barmode=='overlay') {
+            for(var i=0; i<bl.length; i++) { barposition([bl[i]]) }
+        }
+        // group or stack, make sure all bar positions are available for all traces
+        // by finding the closest two points in any of the traces
+        else {
+            barposition(bl);
+        }
+
+        // bar size range and stacking calculation
         if(gl.barmode=='stack'){
             // for stacked bars, we need to evaluate every step in every stack,
             // because negative bars mean the extremes could be anywhere
@@ -584,13 +626,16 @@ function plot(divid, data, layout, rdrw) {
             var sMax = sa.toData(sa.toAxis(0)),
                 sMin = sMax,
                 sums={},
-                v=0;
+                v=0,
+                sumround = gd.calcdata[bl[0]][0].t.barwidth/100, // make sure...
+                sv = 0; //... if p is different only by rounding, we still stack
             for(var i=0; i<bl.length; i++){ // trace index
                 var ti = gd.calcdata[bl[i]];
                 for(var j=0; j<ti.length; j++) {
-                    ti[j].b=(sums[ti[j].p]||0);
+                    sv = Math.round(ti[j].p/sumround);
+                    ti[j].b=(sums[sv]||0);
                     v=ti[j].b+ti[j].s;
-                    sums[ti[j].p]=v;
+                    sums[sv]=v;
                     if($.isNumeric(sa.toAxis(v))) {
                         sMax = Math.max(sMax,v)
                         sMin = Math.min(sMin,v);
@@ -605,31 +650,6 @@ function plot(divid, data, layout, rdrw) {
             }
             // make sure we include zero so we see the whole bar
             if(xa.type=='linear') { expandBounds(sa,sdr,[0]) }
-        }
-
-        // bar position offset and width calculation
-        // find the min. difference between any points in any traces
-        var pvals=[];
-        for(var i=0; i<bl.length; i++){
-            gd.calcdata[bl[i]].forEach(function(v){pvals.push(v.p)});
-        }
-        pvals.sort(function(a,b){return a-b});
-        var barDiff = (pvals[pvals.length-1]-pvals[0])||1,pv2=[pvals[0]];
-        for(var i=0;i<pvals.length-1;i++) {
-            if(pvals[i+1]>pvals[i]) {
-                barDiff=Math.min(barDiff,pvals[i+1]-pvals[i]);
-                pv2.push(pvals[i+1]);
-            }
-        }
-        barDiff*=(1-gl.bargap);
-        // position axis autorange
-        expandBounds(pa,pdr,pv2,pv2.length,barDiff*(1-gl.bargroupgap/bl.length)/2);
-        // bar widths and position offsets
-        if(gl.barmode=='group') { barDiff/=bl.length }
-        for(var i=0; i<bl.length; i++){
-            var t=gd.calcdata[bl[i]][0].t;
-            t.barwidth = barDiff*(1-gl.bargroupgap);
-            t.poffset = (((gl.barmode=='group') ? (2*i+1-bl.length)*barDiff : 0 ) - t.barwidth)/2;
         }
     });
     markTime('done with setstyles and bar chart ranging');
@@ -705,17 +725,20 @@ function plot(divid, data, layout, rdrw) {
         bartraces.append('g')
             .attr('class','points')
             .each(function(d,cdi){
-                var t=d[0].t; // <-- get trace-wide formatting object
-                // add half a pixel (quarter each side) if there are no gaps, no lines.
+                var bt = d3.select(this),
+                    t = d[0].t; // <-- get trace-wide formatting object
+                // add a pixel (half each side) if there are no gaps, no lines, no fill transparency.
                 // this prevents gaps being created by anti-aliasing routines
                 // TODO: originally I had this stop if the bar is narrower than 3px,
                 //  but I removed this restriction... is this going to cause any problems?
-                var extraw = 0, extrah = 0;
-                if(gl.bargap==0 && gl.bargroupgap==0 && !t.mlw){
-                    if(t.bardir=='v') { extraw = 0.5 }
-                    else { extrah = 0.5 }
+                var extraw = extrah = extraw2 = extrah2 = 0;
+                if(gl.barmode=='stack' || (gl.bargap==0 && gl.bargroupgap==0 && !t.mlw)){// && (!t.mc || opacityOnly(t.mc)==1)){
+                    bt.attr('shape-rendering','crispEdges');
+//                     if(t.bardir=='v') { extraw = 0.5 }
+//                     else { extrah = 0.5 }
+//                     extraw2 = extraw*2; extrah2 = extrah*2;
                 }
-                d3.select(this).selectAll('rect') // TODO: update to p,s notation
+                bt.selectAll('rect') // TODO: update to p,s notation
                     .data(function(d){return d})
                     .enter().append('rect')
                     .each(function(di){
@@ -741,9 +764,9 @@ function plot(divid, data, layout, rdrw) {
                             return;
                         }
                         d3.select(this)
-                            .attr('transform','translate('+Math.min(x0,x1)+','+Math.min(y0,y1)+')')
-                            .attr('width',Math.abs(x1-x0) + extraw)
-                            .attr('height',Math.abs(y1-y0) + extrah);
+                            .attr('transform','translate('+(Math.min(x0,x1)-extraw)+','+(Math.min(y0,y1)-extrah)+')')
+                            .attr('width',Math.abs(x1-x0)+0.01)// + extraw2)
+                            .attr('height',Math.abs(y1-y0)+0.01)// + extrah2);
                     });
             });
         markTime('done bars');
@@ -864,7 +887,7 @@ function yf(d,gd,clip){ return pf(d.y,gd.layout.yaxis,gd.viewbox.y,clip) }
 function pf(v,ax,vb,clip){
     var va = ax.toAxis(v);
     if($.isNumeric(va)) { return d3.round(ax.b+ax.m*va+vb,2) }
-    if(clip) { // clip NaN (ie past negative infinity) to one axis length past the negative edge
+    if(clip && $.isNumeric(v)) { // clip NaN (ie past negative infinity) to one axis length past the negative edge
         var a = ax.range[0],
             b = ax.range[1];
         return d3.round(ax.b+ax.m*0.5*(a+b-3*Math.abs(a-b))+vb,2);
@@ -1225,10 +1248,12 @@ function restyle(gd,astr,val,traces) {
 
     // also check whether we have heatmaps in the edited traces
     var aa=astr.split('.'),
-        hasheatmap=false;
+        hasheatmap=false,
+        hasbars=false;
     for(i=0; i<traces.length; i++) {
         var cont=gd.data[traces[i]];
         if(HEATMAPTYPES.indexOf(cont.type)!=-1) { hasheatmap=true }
+        if(BARTYPES.indexOf(cont.type)!=-1) { hasbars=true }
         // setting bin or z settings should turn off auto
         if(['zmax','zmin'].indexOf(astr)!=-1) { cont.zauto=false }
         else if(aa[0]=='xbins') { cont.autobinx=false }
@@ -1271,7 +1296,7 @@ function restyle(gd,astr,val,traces) {
                     'autobiny','nbinsy','ybins.start','ybins.end','ybins.size'];
     if(main_attr.concat(eb_attr,hist_attr).indexOf(astr)!=-1) {
         // major enough changes deserve an autoscale (and autobin) so people don't get confused
-        if(['bardir','type'].indexOf(astr)) {
+        if(['bardir','type'].indexOf(astr)!=-1) {
             gl.xaxis.autorange=true;
             gl.xaxis.range=[0,1]; // undo any axis reversal
             gl.yaxis.autorange=true;
@@ -1292,6 +1317,9 @@ function restyle(gd,astr,val,traces) {
     }
     else if(hm_attr.indexOf(astr)!=-1) {
         plot(gd,'','',true); // <-- last arg is to force redrawing the heatmap. TODO: if multiple heatmaps, only redraw one?
+    }
+    else if(hasbars && ['marker.line.width','marker.color'].indexOf(astr)!=-1) {
+        plot(gd,'',''); // can change the antialiasing width correction on bar charts
     }
     else {
         setStyles(gd);
@@ -1494,7 +1522,7 @@ function newPlot(divid, layout) {
     gd.layout={title:'Click to enter Plot title',
         xaxis:{range:[-1,6],type:'-',mirror:true,linecolor:'#000',linewidth:1,
             tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
-            showticklabels:true,
+            showticklabels:true,tickangle:0,
             showgrid:true,gridcolor:'#ddd',gridwidth:1,
             autorange:true,autotick:true,drange:[null,null],
             zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
@@ -1503,7 +1531,7 @@ function newPlot(divid, layout) {
             tickfont:{family:'',size:0,color:''}},
         yaxis:{range:[-1,4],type:'-',mirror:true,linecolor:'#000',linewidth:1,
             tick0:0,dtick:1,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
-            showticklabels:true,
+            showticklabels:true,tickangle:0,
             showgrid:true,gridcolor:'#ddd',gridwidth:1,
             autorange:true,autotick:true,drange:[null,null],
             zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
@@ -3231,10 +3259,11 @@ function doTicks(gd,ax) {
             tickpath = 'M'+ml+','+y1+'v'+ty+
                 (a.mirror=='ticks' ? ('m0,'+(-gd.plotheight-2*(ty+pad))+'v'+ty): ''),
             g = {x1:ml, x2:ml, y1:gl.height-mb, y2:mt},
-            transfn = function(d){return 'translate('+(a.m*d.x+a.b)+',0)'},
             tl = {x:function(d){return d.dx+ml},
                 y:function(d){return d.dy+y1+(a.ticks=='outside' ? a.ticklen : a.linewidth+1)+d.fontSize},
-                anchor:'middle'};
+                anchor: (!a.tickangle || a.tickangle==180) ? 'middle' :
+                    (a.tickangle<0 ? 'end' : 'start')},
+            transfn = function(d){return 'translate('+(a.m*d.x+a.b)+',0)'};
     }
     else if(ax=='y') {
         var x1 = ml-pad,
@@ -3242,10 +3271,13 @@ function doTicks(gd,ax) {
             tickpath = 'M'+x1+','+mt+'h'+tx+
                 (a.mirror=='ticks' ? ('m'+(gd.plotwidth-2*(tx-pad))+',0h'+tx): ''),
             g = {x1:ml, x2:gl.width-mr, y1:mt, y2:mt},
-            transfn = function(d){return 'translate(0,'+(a.m*d.x+a.b)+')'},
-            tl = {x:function(d){return d.dx+x1-(a.ticks=='outside' ? a.ticklen : a.linewidth+1)},
+            tl = {x:function(d){return d.dx+x1 -
+                    (a.ticks=='outside' ? a.ticklen : a.linewidth+1) -
+                    (Math.abs(a.tickangle)==90 ? d.fontSize/2 : 0)
+                },
                 y:function(d){return d.dy+mt+d.fontSize/2},
-                anchor:'end'};
+                anchor: (Math.abs(a.tickangle)==90) ? 'middle' : 'end'},
+            transfn = function(d){return 'translate(0,'+(a.m*d.x+a.b)+')'};
     }
     else {
         plotlylog('unrecognized doTicks axis',ax);
@@ -3276,7 +3308,10 @@ function doTicks(gd,ax) {
             .attr('fill',function(d){return d.fontColor})
             .attr('text-anchor',tl.anchor)
             .each(function(d){styleText(this,d.text)});
-        yl.attr('transform',transfn);
+        yl.attr('transform',function(d){
+            return transfn(d) + (a.tickangle ?
+                (' rotate('+a.tickangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')') : '')
+        });
         yl.exit().remove();
     }
     else
@@ -3576,9 +3611,9 @@ function convertToAxis(o,a){
             console.log('Error! Tried to convert single category to axis with no existing categories');
             return null;
         }
-        var fn = function(v){ return a.categories.indexOf(v) }
+        var fn = function(v){ var c = a.categories.indexOf(v); return c==-1 ? undefined : c }
     }
-    else { var fn = Number }
+    else { var fn = function(v){return $.isNumeric(v) ? Number(v) : undefined } }
 
     // do the conversion
     if($.isArray(o)) { return o.map(fn) }
