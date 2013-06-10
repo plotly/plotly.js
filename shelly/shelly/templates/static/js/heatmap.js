@@ -54,7 +54,9 @@ function default_hm(gdc,noZRange){
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 function heatmap(cd,rdrw,gd){
     var i = cd[0].t.curve,
-        gdc = gd.data[i];
+        gdc = gd.data[i],
+        xa = gd.layout.xaxis,
+        ya = gd.layout.yaxis;
     // Set any missing keys to defaults
     // note: gdc.x (same for gdc.y) will override gdc.x0,dx if it exists and is the right size
     // should be an n+1 long array, containing all the pixel edges
@@ -69,15 +71,36 @@ function heatmap(cd,rdrw,gd){
     if( !('cb_id' in gdc) ){ var cb_id=gd.id+'-cb'+i; } // colorbar id
     var id=gdc.hm_id;
     //console.log('heatmap id: '+id);
+    console.log(x,xa,y,ya);
 
     // get z dims, and create the box boundary arrays if they don't already exist
     var m=z.length; // num rows
-    if(!$.isArray(y) || (y.length!=m+1) || (gdc.type=='histogram2d')) {
+    if(ya.type=='category' && $.isArray(y) && y.length==m) {
+        var cat=convertToAxis(y,ya); // add the categories to the category list
+        // TODO: if there are multiple overlapping categorical heatmaps,
+        // then the categories may not be sequential... may need to reorder and/or expand z
+
+        console.log(cat);
+        // now remake y
+        y=[];
+        for(var i=0; i<=cat.length; i++) { y.push(i-0.5) }
+    }
+    else if(!$.isArray(y) || (y.length!=m+1) || (gdc.type=='histogram2d')) {
         y=[];
         for(var i=0; i<=m; i++) { y.push(y0+dy*(i-0.5)) }
     }
+
     var n=z[0].length; // num cols
-    if(!$.isArray(x) || (x.length!=n+1) || (gdc.type=='histogram2d')) {
+    if(xa.type=='category' && $.isArray(x) && x.length==m) {
+        var cat=convertToAxis(x,xa); // add the categories to the category list
+        // TODO: if there are multiple overlapping categorical heatmaps,
+        // then the categories may not be sequential... may need to reorder and/or expand z
+
+        // now remake x
+        x=[];
+        for(var i=0; i<=cat.length; i++) { x.push(i-0.5) }
+    }
+    else if(!$.isArray(x) || (x.length!=n+1) || (gdc.type=='histogram2d')) {
         x=[];
         for(var i=0; i<=n; i++) { x.push(x0+dx*(i-0.5)) }
     }

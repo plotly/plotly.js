@@ -217,7 +217,7 @@ function plot(divid, data, layout, rdrw) {
             // guess at axis type with the new property format
             // first check for histograms, as they can change the axis types
             // whatever else happens, horz bars switch the roles of x and y axes
-            if((['histogramx','histogramy','bar'].indexOf(d0.type)!=-1) && (d0.bardir=='h')){
+            if((BARTYPES.indexOf(d0.type)!=-1) && (d0.bardir=='h')){
                 axletter={x:'y',y:'x'}[axletter];
             }
             var hist = (['histogramx','histogramy'].indexOf(d0.type)!=-1);
@@ -679,7 +679,10 @@ function plot(divid, data, layout, rdrw) {
     doAutoRange(xa,xdr,hasbars.h);
     doAutoRange(ya,ydr,hasbars.v);
 
-    doTicks(gd);
+    doTicks(gd); // Have to call doTicks twice for the moment... used to just be
+                 // here, but category heatmaps don't know their categories yet
+                 // so we also have to call it after plotting. This won't work
+                 // when we enable multiple heatmaps with overlapping categories...
 
     if(!gd.viewbox || !$.isNumeric(gd.viewbox.x) || !$.isNumeric(gd.viewbox.y)) {
         gd.viewbox={x:0, y:0};
@@ -847,6 +850,8 @@ function plot(divid, data, layout, rdrw) {
         markTime('done applyStyle');
     }
     else { console.log('error with axis scaling',xa.m,xa.b,ya.m,ya.b) }
+
+    doTicks(gd);
 
     // show the legend
     if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!=false)) { legend(gd) }
