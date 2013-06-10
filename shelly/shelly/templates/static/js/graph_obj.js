@@ -569,41 +569,11 @@ function plot(divid, data, layout, rdrw) {
     }
     // then for each direction separately calculate the ranges and positions
     ['v','h'].forEach(function(dir){
-        if(barlist[dir].length) { var bl = barlist[dir] }
-        else { return }
+        if(!barlist[dir].length) { return }
+        var bl = barlist[dir];
 
         if(dir=='v') { var sa = ya, sdr = ydr, pa = xa, pdr = xdr }
         else { var sa = xa, sdr = xdr, pa = ya, pdr = ydr }
-        // bar size range calculation
-        if(gl.barmode=='stack'){
-            // for stacked bars, we need to evaluate every step in every stack,
-            // because negative bars mean the extremes could be anywhere
-            // also stores the base (b) of each bar in calcdata so we don't have to redo this later
-            var sMax = sa.toData(sa.toAxis(0)),
-                sMin = sMax,
-                sums={},
-                v=0;
-            for(var i=0; i<bl.length; i++){ // trace index
-                var ti = gd.calcdata[bl[i]];
-                for(var j=0; j<ti.length; j++) {
-                    ti[j].b=(sums[ti[j].p]||0);
-                    v=ti[j].b+ti[j].s;
-                    sums[ti[j].p]=v;
-                    if($.isNumeric(sa.toAxis(v))) {
-                        sMax = Math.max(sMax,v)
-                        sMin = Math.min(sMin,v);
-                    }
-                }
-            }
-            expandBounds(sa,sdr,[sMin,sMax]);
-        }
-        else {
-            for(var i=0; i<bl.length; i++){
-                expandBounds(sa,sdr,gd.calcdata[bl[i]].map(function(v){return v.s}));
-            }
-            // make sure we include zero so we see the whole bar
-            if(xa.type=='linear') { expandBounds(sa,sdr,[0]) }
-        }
 
         // bar position offset and width calculation
         function barposition(bl1) {
@@ -613,9 +583,12 @@ function plot(divid, data, layout, rdrw) {
                 gd.calcdata[bl1[i]].forEach(function(v){pvals.push(v.p)});
             }
             pvals.sort(function(a,b){return a-b});
-            var barDiff = (pvals[pvals.length-1]-pvals[0])||1,pv2=[pvals[0]];
-            for(var i=0;i<pvals.length-1;i++) {
-                if(pvals[i+1]>pvals[i]) {
+            var pl = pvals.length-1,
+                barDiff = (pvals[pl]-pvals[0])||1,
+                minDiff = barDiff/(pl||1)/100,
+                pv2=[pvals[0]];
+            for(var i=0;i<pl;i++) {
+                if(pvals[i+1]>pvals[i]+minDiff) { // make sure values aren't just off by a rounding error
                     barDiff=Math.min(barDiff,pvals[i+1]-pvals[i]);
                     pv2.push(pvals[i+1]);
                 }
@@ -640,6 +613,40 @@ function plot(divid, data, layout, rdrw) {
         // by finding the closest two points in any of the traces
         else {
             barposition(bl);
+        }
+
+        // bar size range and stacking calculation
+        if(gl.barmode=='stack'){
+            // for stacked bars, we need to evaluate every step in every stack,
+            // because negative bars mean the extremes could be anywhere
+            // also stores the base (b) of each bar in calcdata so we don't have to redo this later
+            var sMax = sa.toData(sa.toAxis(0)),
+                sMin = sMax,
+                sums={},
+                v=0,
+                sumround = gd.calcdata[bl[0]][0].t.barwidth/100, // make sure...
+                sv = 0; //... if p is different only by rounding, we still stack
+            for(var i=0; i<bl.length; i++){ // trace index
+                var ti = gd.calcdata[bl[i]];
+                for(var j=0; j<ti.length; j++) {
+                    sv = Math.round(ti[j].p/sumround);
+                    ti[j].b=(sums[sv]||0);
+                    v=ti[j].b+ti[j].s;
+                    sums[sv]=v;
+                    if($.isNumeric(sa.toAxis(v))) {
+                        sMax = Math.max(sMax,v)
+                        sMin = Math.min(sMin,v);
+                    }
+                }
+            }
+            expandBounds(sa,sdr,[sMin,sMax]);
+        }
+        else {
+            for(var i=0; i<bl.length; i++){
+                expandBounds(sa,sdr,gd.calcdata[bl[i]].map(function(v){return v.s}));
+            }
+            // make sure we include zero so we see the whole bar
+            if(xa.type=='linear') { expandBounds(sa,sdr,[0]) }
         }
     });
     markTime('done with setstyles and bar chart ranging');
@@ -714,18 +721,20 @@ function plot(divid, data, layout, rdrw) {
         bartraces.append('g')
             .attr('class','points')
             .each(function(d,cdi){
-                var t=d[0].t; // <-- get trace-wide formatting object
+                var bt = d3.select(this),
+                    t = d[0].t; // <-- get trace-wide formatting object
                 // add a pixel (half each side) if there are no gaps, no lines, no fill transparency.
                 // this prevents gaps being created by anti-aliasing routines
                 // TODO: originally I had this stop if the bar is narrower than 3px,
                 //  but I removed this restriction... is this going to cause any problems?
                 var extraw = extrah = extraw2 = extrah2 = 0;
-                if(gl.bargap==0 && gl.bargroupgap==0 && !t.mlw && (!t.mc || opacityOnly(t.mc)==1)){
-                    if(t.bardir=='v') { extraw = 0.5 }
-                    else { extrah = 0.5 }
-                    extraw2 = extraw*2; extrah2 = extrah*2;
+                if(gl.barmode=='stack' || (gl.bargap==0 && gl.bargroupgap==0 && !t.mlw)){// && (!t.mc || opacityOnly(t.mc)==1)){
+                    bt.attr('shape-rendering','crispEdges');
+//                     if(t.bardir=='v') { extraw = 0.5 }
+//                     else { extrah = 0.5 }
+//                     extraw2 = extraw*2; extrah2 = extrah*2;
                 }
-                d3.select(this).selectAll('rect') // TODO: update to p,s notation
+                bt.selectAll('rect') // TODO: update to p,s notation
                     .data(function(d){return d})
                     .enter().append('rect')
                     .each(function(di){
@@ -752,8 +761,8 @@ function plot(divid, data, layout, rdrw) {
                         }
                         d3.select(this)
                             .attr('transform','translate('+(Math.min(x0,x1)-extraw)+','+(Math.min(y0,y1)-extrah)+')')
-                            .attr('width',Math.abs(x1-x0) + extraw2)
-                            .attr('height',Math.abs(y1-y0) + extrah2);
+                            .attr('width',Math.abs(x1-x0)+0.01)// + extraw2)
+                            .attr('height',Math.abs(y1-y0)+0.01)// + extrah2);
                     });
             });
         markTime('done bars');
@@ -1278,7 +1287,7 @@ function restyle(gd,astr,val,traces) {
                     'autobiny','nbinsy','ybins.start','ybins.end','ybins.size'];
     if(main_attr.concat(eb_attr,hist_attr).indexOf(astr)!=-1) {
         // major enough changes deserve an autoscale (and autobin) so people don't get confused
-        if(['bardir','type'].indexOf(astr)) {
+        if(['bardir','type'].indexOf(astr)!=-1) {
             gl.xaxis.autorange=true;
             gl.xaxis.range=[0,1]; // undo any axis reversal
             gl.yaxis.autorange=true;
