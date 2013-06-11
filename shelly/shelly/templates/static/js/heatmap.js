@@ -5,20 +5,34 @@ MAX_PX_PER_BRICK=0;
 
 // returns the brick edge coordinates of a heatmap as { x:[x0,x1,...], y:[y0,y1...] }
 // we're returning all of them now so we can handle log heatmaps that go negative
-function hm_rect(gdc){
+function heatmap_xy(gd,gdc){
     // Set any missing keys to defaults
     default_hm(gdc,true);
-    var y=gdc.y,m=gdc.z.length; // num rows
-    if(!$.isArray(y) || (y.length!=m+1) || (gdc.type=='histogram2d')) {
+    var y = gdc.y,
+        m = gdc.z.length, // num rows
+        ya = gd.layout.yaxis;
+    if($.isArray(y) && (y.length==m+1) && (gdc.type!='histogram2d') && (ya.type!='category')) {
+        y = convertToAxis(y,ya);
+    }
+    else {
         y=[];
-        for(var i=0; i<=m; i++) { y.push(gdc.y0+gdc.dy*(i-0.5)) }
+        var y0 = (typeof(gdc.y0)=='number') ?
+            gdc.y0 : convertToAxis(gdc.y0,ya);
+        for(var i=0; i<=m; i++) { y.push(y0+gdc.dy*(i-0.5)) }
     }
-    var x=gdc.x,n=gdc.z[0].length; // num cols
-    if(!$.isArray(x) || (x.length!=n+1) || (gdc.type=='histogram2d')) {
+    var x = gdc.x,
+        n = gdc.z[0].length, // num cols
+        xa = gd.layout.xaxis;
+    if($.isArray(x) && (x.length!=n+1) && (gdc.type!='histogram2d') && (xa.type!='category')) {
+        x = convertToAxis(x,xa);
+    }
+    else {
         x=[];
-        for(var i=0; i<=n; i++) { x.push(gdc.x0+gdc.dx*(i-0.5)) }
+        var x0 = (typeof(gdc.x0)=='number') ?
+            gdc.x0 : convertToAxis(gdc.x0,xa);
+        for(var i=0; i<=n; i++) { x.push(x0+gdc.dx*(i-0.5)) }
     }
-    return {'x':x,'y':y};
+    return {x:x,y:y};
 }
 
 // if the heatmap data object is missing any keys, fill them in
@@ -42,7 +56,6 @@ function default_hm(gdc,noZRange){
         if(gdc.zmin==gdc.zmax) { gdc.zmin-=0.5; gdc.zmax+=0.5 }
     }
     if(!( 'scl' in gdc )){ gdc.scl=defaultScale }
-//     if(!( 'id' in gdc )){ gdc.id=i }
 }
 
 // Creates a heatmap image from a z matrix and embeds adds it to svg plot
@@ -53,7 +66,8 @@ function default_hm(gdc,noZRange){
 // plot( gettab().id, [{'type':'heatmap','z':[[1,2],[3,4]], 'x0':2, 'y0':2, 'dx':0.5, 'dy':0.5}] )
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 function heatmap(cd,rdrw,gd){
-    var i = cd[0].t.curve,
+    var t = cd[0].t,
+        i = t.curve,
         gdc = gd.data[i],
         xa = gd.layout.xaxis,
         ya = gd.layout.yaxis;
@@ -62,8 +76,8 @@ function heatmap(cd,rdrw,gd){
     // should be an n+1 long array, containing all the pixel edges
     default_hm(gdc);
     var z=gdc.z, min=gdc.zmin, max=gdc.zmax, scl=gdc.scl,
-        x0=gdc.x0, dx=gdc.dx, x=gdc.x,
-        y0=gdc.y0, dy=gdc.dy, y=gdc.y;
+        x0=gdc.x0, dx=gdc.dx, x=t.x,
+        y0=gdc.y0, dy=gdc.dy, y=t.y;
     // console.log(min,max);
     // if this is the first time drawing the heatmap and it has never been saved it won't have an id
     // TODO! If 2 heat maps are loaded from different files, they could have the same id
@@ -71,39 +85,12 @@ function heatmap(cd,rdrw,gd){
     if( !('cb_id' in gdc) ){ var cb_id=gd.id+'-cb'+i; } // colorbar id
     var id=gdc.hm_id;
     //console.log('heatmap id: '+id);
-    console.log(x,xa,y,ya);
 
-    // get z dims, and create the box boundary arrays if they don't already exist
-    var m=z.length; // num rows
-    if(ya.type=='category' && $.isArray(y) && y.length==m) {
-        var cat=convertToAxis(y,ya); // add the categories to the category list
-        // TODO: if there are multiple overlapping categorical heatmaps,
-        // then the categories may not be sequential... may need to reorder and/or expand z
-
-        console.log(cat);
-        // now remake y
-        y=[];
-        for(var i=0; i<=cat.length; i++) { y.push(i-0.5) }
-    }
-    else if(!$.isArray(y) || (y.length!=m+1) || (gdc.type=='histogram2d')) {
-        y=[];
-        for(var i=0; i<=m; i++) { y.push(y0+dy*(i-0.5)) }
-    }
-
-    var n=z[0].length; // num cols
-    if(xa.type=='category' && $.isArray(x) && x.length==m) {
-        var cat=convertToAxis(x,xa); // add the categories to the category list
-        // TODO: if there are multiple overlapping categorical heatmaps,
-        // then the categories may not be sequential... may need to reorder and/or expand z
-
-        // now remake x
-        x=[];
-        for(var i=0; i<=cat.length; i++) { x.push(i-0.5) }
-    }
-    else if(!$.isArray(x) || (x.length!=n+1) || (gdc.type=='histogram2d')) {
-        x=[];
-        for(var i=0; i<=n; i++) { x.push(x0+dx*(i-0.5)) }
-    }
+    // get z dims
+    var m=z.length, n=z[0].length; // num rows, cols
+    // TODO: if there are multiple overlapping categorical heatmaps,
+    // or if we allow category sorting, then the categories may not be
+    // sequential... may need to reorder and/or expand z
 
     // Get edges of png in pixels (xf() maps axes coordinates to pixel coordinates)
     // figure out if either axis is reversed (y is usually reversed, in pixel coords)
@@ -162,9 +149,7 @@ function heatmap(cd,rdrw,gd){
 //     }
     // now redraw
     $('#'+id).remove();
-    // save the calculated pixel size for later
-//     gdc.dx_px=dx_px;
-//     gdc.dy_px=dy_px;
+    if(wd<=0 || ht<=0) { return } // image is so far off-screen, we shouldn't even draw it
 
     var p = new PNGlib(wd,ht, 256);
 
