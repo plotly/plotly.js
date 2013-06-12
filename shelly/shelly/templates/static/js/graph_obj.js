@@ -169,7 +169,7 @@ var HEATMAPTYPES = ['heatmap','histogram2d'];
 var TIMER=0
 
 function markTime(s){
-    if(!VERBOSE) { return }
+//     if(!VERBOSE) { return }
     var t2 = new Date().getTime();
     console.log(s,t2-TIMER,'(msec)');
     TIMER=t2;
@@ -710,10 +710,7 @@ function plot(divid, data, layout, rdrw) {
     doAutoRange(xa,xdr,hasbars.h);
     doAutoRange(ya,ydr,hasbars.v);
 
-    doTicks(gd); // Have to call doTicks twice for the moment... used to just be
-                 // here, but category heatmaps don't know their categories yet
-                 // so we also have to call it after plotting. This won't work
-                 // when we enable multiple heatmaps with overlapping categories...
+    doTicks(gd);
 
     if(!gd.viewbox || !$.isNumeric(gd.viewbox.x) || !$.isNumeric(gd.viewbox.y)) {
         gd.viewbox={x:0, y:0};
@@ -1357,6 +1354,7 @@ function relayout(gd,astr,val) {
         aobj = {},
         dolegend = false,
         doticks = false,
+        dolayoutstyle = false,
         doplot = false;
     if(typeof astr == 'string')
         aobj[astr] = val;
@@ -1378,13 +1376,9 @@ function relayout(gd,astr,val) {
     // alter gd.layout
     for(var i in aobj) {
         // check whether to disable autosize or autorange
-        if((i=='height' || i=='width') && !aobj.autosize) {
-            gl.autosize=false;
-        }
+        if((i=='height' || i=='width') && !aobj.autosize) { gl.autosize=false }
         var m = i.match(/^(.)axis\.range\[[0|1]\]$/);
-        if(m && m.length==2) {
-            gl[m[1]+'axis'].autorange=false;
-        }
+        if(m && m.length==2) { gl[m[1]+'axis'].autorange=false }
 
         // handle axis reversal
         var m = i.match(/^(.)axis\.reverse$/);
@@ -1429,8 +1423,18 @@ function relayout(gd,astr,val) {
         else {
             // check whether we can short-circuit a full redraw
             if(aa[0].indexOf('legend')!=-1) { dolegend = true }
-            else if(aa.length>1 && (aa[1].indexOf('tick')!=-1 ||
-                    aa[1].indexOf('exponent')!=-1)) { doticks = true }
+            else if(i.indexOf('title')!=-1) { doticks = true } // TODO: can do global font too if we update all annotations
+            else if(aa[0].indexOf('bgcolor')!=-1) { dolayoutstyle = true }
+            else if(aa.length>1 && (
+                aa[1].indexOf('tick')!=-1 ||
+                aa[1].indexOf('exponent')!=-1 ||
+                aa[1].indexOf('grid')!=-1 ||
+                aa[1].indexOf('zeroline')!=-1)) { doticks = true }
+            else if(aa.length>1 && (
+                aa[1].indexOf('line')!=-1 ||
+                aa[1].indexOf('mirror')!=-1 ||
+                (aa[1]=='margin' && aa[2]=='pad'))) { dolayoutstyle = true }
+            else if(i=='margin.pad') { doticks = dolayoutstyle = true }
             else { doplot = true }
             nestedProperty(gl,i).set(aobj[i]);
         }
@@ -1443,17 +1447,18 @@ function relayout(gd,astr,val) {
     // first check if there's still anything to do
     var ak = Object.keys(aobj);
     if(ak.length) {
-        // if all that's left is legend changes, no need to redraw the whole graph
         if(doplot) {
-            gd.layout = undefined; // force plot to redo the layout
-            plot(gd,'',gl);
-            return; // no point separately doing ticks or legend, plot does it all
+            gd.layout = undefined; // force plot() to redo the layout
+            plot(gd,'',gl); // pass in the modified layout
+            return;
         }
+        // if we didn't need to redraw the whole thing, just do the needed parts
         if(dolegend) {
             gd.paper.selectAll('.legend').remove();
             if(gl.showlegend) { legend(gd) }
         }
-        if(doticks) { doTicks(gd) }
+        if(doticks) { doTicks(gd,'redraw'); makeTitles(gd,'gtitle') }
+        if(dolayoutstyle) { layoutStyles(gd) }
     }
     plotlylog('+++++++++++++++ OUT: RELAYOUT +++++++++++++++');
 }
@@ -1476,9 +1481,7 @@ function propSplit(s) {
     var aa = s.split('.');
     for(var j=0; j<aa.length; j++) {
         var indexed = String(aa[j]).match(/([^\[\]]*)\[([0-9]*)\]/);
-        if(indexed) {
-            aa.splice(j,1,indexed[1],Number(indexed[2]));
-        }
+        if(indexed) { aa.splice(j,1,indexed[1],Number(indexed[2])) }
     }
     return aa;
 }
@@ -1543,7 +1546,7 @@ function newPlot(divid, layout) {
     // Get the layout info - take the default and update it with layout arg
     gd.layout=updateObject(defaultLayout(),layout);
 
-    var gl=gd.layout, gd3=d3.select(gd)
+    var gl=gd.layout, gd3=d3.select(gd), xa=gl.xaxis, ya=gl.yaxis;
 
     // initial autosize
     if(gl.autosize=='initial') {
@@ -1558,65 +1561,51 @@ function newPlot(divid, layout) {
     heatmap_margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
 
     // adjust margins for outside legends
-    var ml = gl.margin.l-(gd.lw<0 ? gd.lw : 0),
-        mr = gl.margin.r+(gd.lw>0 ? gd.lw : 0),
-        mt = gl.margin.t+(gd.lh>0 ? gd.lh : 0),
-        mb = gl.margin.b-(gd.lh<0 ? gd.lh : 0),
-        mp = gl.margin.pad;
+    // gl.margin is the requested margin, gd.margin is after adjustment
+    gd.margin = {
+        l:gl.margin.l-(gd.lw<0 ? gd.lw : 0),
+        r:gl.margin.r+(gd.lw>0 ? gd.lw : 0),
+        t:gl.margin.t+(gd.lh>0 ? gd.lh : 0),
+        b:gl.margin.b-(gd.lh<0 ? gd.lh : 0),
+        p:gl.margin.pad }
+    var gm = gd.margin;
+    gd.plotwidth=gl.width-gm.l-gm.r;
+    gd.plotheight=gl.height-gm.t-gm.b;
 
     // Make the graph containers
     gd.paper=gd3.append('svg')
         .call(setSize, gl.width, gl.height);
     gd.paperbg=gd.paper.append('rect')
         .call(setRect, 0, 0, gl.width, gl.height)
-        .call(fillColor, gl.paper_bgcolor);
-    gd.plotwidth=gl.width-ml-mr;
-    gd.plotheight=gl.height-mt-mb;
     gd.plotbg=gd.paper.append('rect')
-        .call(setRect, ml-mp, mt-mp, gd.plotwidth+2*mp, gd.plotheight+2*mp)
-        .call(fillColor, gl.plot_bgcolor)
+        .call(setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
         .attr('stroke-width',0);
-    var xlw = $.isNumeric(gl.xaxis.linewidth) ? gl.xaxis.linewidth : 1,
-        ylw = $.isNumeric(gl.yaxis.linewidth) ? gl.yaxis.linewidth : 1,
-        xp = mp+ylw/2,
-        yp = mp-xlw/2, // shorten y axis lines so they don't overlap x axis lines
-        yp2 = gl.xaxis.mirror ? 0 : xlw; // except at the top when there's no mirror x
     gd.axlines = {
-        x:gd.paper.append('path')
-            .attr('d', 'M'+(ml-xp)+','+(mt+gd.plotheight+mp)+'h'+(gd.plotwidth+2*xp) +
-                (gl.xaxis.mirror ? ('m0,-'+(gd.plotheight+2*mp)+'h-'+(gd.plotwidth+2*xp)) : ''))
-            .attr('stroke-width',xlw)
-            .call(strokeColor,gl.xaxis.linecolor)
-            .style('fill','none'),
-        y:gd.paper.append('path')
-            .attr('d', 'M'+(ml-mp)+','+(mt-yp-yp2)+'v'+(gd.plotheight+2*yp+yp2) +
-                (gl.yaxis.mirror ? ('m'+(gd.plotwidth+2*mp)+',0v-'+(gd.plotheight+2*yp+yp2)) : ''))
-            .attr('stroke-width',ylw)
-            .call(strokeColor,gl.yaxis.linecolor)
-            .style('fill','none')
+        x:gd.paper.append('path').style('fill','none'),
+        y:gd.paper.append('path').style('fill','none')
     }
 
     // make the ticks, grids, and titles
     gd.axislayer=gd.paper.append('g').attr('class','axislayer');
     doTicks(gd);
-    gl.xaxis.r0=gl.xaxis.range[0];
-    gl.yaxis.r0=gl.yaxis.range[0];
+    xa.r0=gl.xaxis.range[0];
+    ya.r0=gl.yaxis.range[0];
 
-//    makeTitles(gd,''); // happens after ticks, so we can scoot titles out of the way if needed
+    layoutStyles(gd);
 
     // Second svg (plot) is for the data
     gd.plot=gd.paper.append('svg')
-        .call(setRect, ml, mt, gd.plotwidth, gd.plotheight)
+        .call(setRect, gm.l, gm.t, gd.plotwidth, gd.plotheight)
         .attr('preserveAspectRatio','none')
         .style('fill','none');
     gd.viewbox={x:0,y:0};
 
     //make the axis drag objects
-    var x1 = ml,
+    var x1 = gm.l,
         x2 = x1+gd.plotwidth,
         a = $(gd).find('text.ytick').get().map(function(e){return e.getBBox().x}),
         x0 = a.length ? Math.min.apply(a,a) : x1-10,
-        y2 = mt,
+        y2 = gm.t,
         y1 = y2+gd.plotheight,
         a = $(gd).find('text.xtick').get().map(function(e){var bb=e.getBBox(); return bb.y+bb.height}),
         y0 = a.length ? Math.max.apply(a,a) : y1+10;
@@ -1641,6 +1630,29 @@ function newPlot(divid, layout) {
         .style('fill','black')
         .style('opacity',0)
         .attr('stroke-width',0);
+}
+
+// separate styling for plot layout elements, so we don't have to redraw to edit
+function layoutStyles(gd) {
+    var gl = gd.layout,xa = gl.xaxis, ya = gl.yaxis, gm = gd.margin;
+    gd.paperbg.call(fillColor, gl.paper_bgcolor);
+    gd.plotbg.call(fillColor, gl.plot_bgcolor);
+    var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
+        ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
+        xp = gm.p+ylw/2,
+        yp = gm.p-xlw/2, // shorten y axis lines so they don't overlap x axis lines
+        yp2 = xa.mirror ? 0 : xlw; // except at the top when there's no mirror x
+    gd.axlines.x
+        .attr('d', 'M'+(gm.l-xp)+','+(gm.t+gd.plotheight+gm.p)+'h'+(gd.plotwidth+2*xp) +
+            (xa.mirror ? ('m0,-'+(gd.plotheight+2*gm.p)+'h-'+(gd.plotwidth+2*xp)) : ''))
+        .attr('stroke-width',xlw)
+        .call(strokeColor,xa.linecolor);
+    gd.axlines.y
+        .attr('d', 'M'+(gm.l-gm.p)+','+(gm.t-yp-yp2)+'v'+(gd.plotheight+2*yp+yp2) +
+            (ya.mirror ? ('m'+(gd.plotwidth+2*gm.p)+',0v-'+(gd.plotheight+2*yp+yp2)) : ''))
+        .attr('stroke-width',ylw)
+        .call(strokeColor,ya.linecolor);
+    makeTitles(gd,'');
 }
 
 // ----------------------------------------------------
@@ -1919,9 +1931,9 @@ function dragTail(gd) {
 // ----------------------------------------------------
 
 function makeTitles(gd,title) {
-    var gl=gd.layout;
+    var gl=gd.layout,gm=gd.margin;
     var titles={
-        'xtitle':{x: (gl.width+gl.margin.l-gl.margin.r-(gd.lw || 0))/2,
+        'xtitle':{x: (gl.width+gm.l-gm.r)/2,
             y: gl.height+(gd.lh<0 ? gd.lh : 0) - 14*0.75,
             w: gd.plotwidth/2, h: 14,
             cont: gl.xaxis, name: 'X axis',
@@ -1930,7 +1942,7 @@ function makeTitles(gd,title) {
             fontColor: gl.xaxis.titlefont.color || gl.font.color || '#000',
             transform: '', attr: {}},
         'ytitle':{x: 20-(gd.lw<0 ? gd.lw : 0),
-            y: (gl.height+gl.margin.t-gl.margin.b+(gd.lh || 0))/2,
+            y: (gl.height+gm.t-gm.b)/2,
             w: 14, h: gd.plotheight/2,
             cont: gl.yaxis, name: 'Y axis',
             font: gl.yaxis.titlefont.family || gl.font.family || 'Arial',
@@ -2178,7 +2190,8 @@ function legend(gd) {
         gd.dragged = false;
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
-                dy = e2.clientY-e.clientY;
+                dy = e2.clientY-e.clientY,
+                gdm=gd.margin;
             if(Math.abs(dx)<MINDRAG) { dx=0 }
             if(Math.abs(dy)<MINDRAG) { dy=0 }
             if(dx||dy) { gd.dragged = true }
@@ -2192,8 +2205,8 @@ function legend(gd) {
                 xf=-100;
             }
             else {
-                var xl=(x0+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0)),
-                    xr=xl+legendwidth/(gl.width-gm.l-gm.r),
+                var xl=(x0+dx-gdm.l)/(gl.width-gdm.l-gdm.r),
+                    xr=xl+legendwidth/(gl.width-gdm.l-gdm.r),
                     xc=(xl+xr)/2;
                 if(xl<(2/3)-xc) xf=xl;
                 else if(xr>4/3-xc) xf=xr;
@@ -2206,8 +2219,8 @@ function legend(gd) {
                 yf=100;
             }
             else {
-                var yt=(y0+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0)),
-                    yb=yt+legendheight/(gl.height-gm.t-gm.b),
+                var yt=(y0+dy-gdm.t)/(gl.height-gdm.t-gdm.b),
+                    yb=yt+legendheight/(gl.height-gdm.t-gdm.b),
                     yc=(yt+yb)/2;
                 if(yt<(2/3)-yc) yf=1-yt;
                 else if(yb>4/3-yc) yf=1-yb;
@@ -2245,7 +2258,7 @@ function legend(gd) {
 //  or undefined to simply redraw,
 //  or 'remove' to delete this annotation
 function annotation(gd,index,opt,value) {
-    var gl = gd.layout,gm = gl.margin;
+    var gl = gd.layout,gm = gd.margin;
     if(!gl.annotations)
         gl.annotations = [];
     if(!$.isNumeric(index)) {
@@ -2501,8 +2514,8 @@ function annotation(gd,index,opt,value) {
                     arrowgroup.attr('transform','translate('+dx+','+dy+')');
                     ann.call(setPosition, annx0+dx, anny0+dy);
                     if(options.ref=='paper') {
-                        xf=(ax+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0));
-                        yf=1-((ay+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0)));
+                        xf=(ax+dx-gm.l)/(gl.width-gm.l-gm.r);
+                        yf=1-((ay+dy-gm.t)/(gl.height-gm.t-gm.b));
                     }
                     else {
                         xf = options.x+dx/gd.layout.xaxis.m;
@@ -2556,14 +2569,14 @@ function annotation(gd,index,opt,value) {
                 drawArrow(dx,dy);
             }
             else if(options.ref=='paper') {
-                var xl=(x0+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0)),
-                    xr=xl+legendwidth/(gl.width-gm.l-gm.r),
+                var xl=(x0+dx-gm.l)/(gl.width-gm.l-gm.r),
+                    xr=xl+annwidth/(gl.width-gm.l-gm.r),
                     xc=(xl+xr)/2;
                 if(xl<(2/3)-xc) xf=xl;
                 else if(xr>4/3-xc) xf=xr;
                 else xf=xc;
-                var yt=(y0+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0)),
-                    yb=yt+legendheight/(gl.height-gm.t-gm.b),
+                var yt=(y0+dy-gm.t)/(gl.height-gm.t-gm.b),
+                    yb=yt+annheight/(gl.height-gm.t-gm.b),
                     yc=(yt+yb)/2;
                 if(yt<(2/3)-yc) yf=1-yt;
                 else if(yb>4/3-yc) yf=1-yb;
@@ -3288,50 +3301,48 @@ function numFormat(v,a,fmtoverride) {
     return (n?'-':'')+v;
 }
 
-// ticks, grids, and tick labels for axis ax ('x' or 'y', or blank to do both)
+// ticks, grids, and tick labels for axis ax:
+// 'x' or 'y', blank to do both, 'redraw' to force full redraw
 function doTicks(gd,ax) {
-    if(!ax) {
+    if(ax=='redraw') { gd.axislayer.selectAll('text,path,line').remove() }
+    if(['x','y'].indexOf(ax)==-1) {
         doTicks(gd,'x');
         doTicks(gd,'y');
         return;
     }
     var gl=gd.layout,
-        gm=gl.margin,
+        gm=gd.margin,
         a={x:gl.xaxis, y:gl.yaxis}[ax],
         vals=calcTicks(gd,a),
         datafn = function(d){return d.text},
         tcls = ax+'tick',
         gcls = ax+'grid',
         zcls = ax+'zl',
-        ml = gm.l-(gd.lw<0 ? gd.lw : 0),
-        mr = gm.r+(gd.lw>0 ? gd.lw : 0),
-        mt = gm.t+(gd.lh>0 ? gd.lh : 0),
-        mb = gm.b-(gd.lh<0 ? gd.lh : 0),
-        pad = gm.pad+(a.ticks=='outside' ? 1 : -1) * ($.isNumeric(a.linewidth) ? a.linewidth : 1)/2;
+        pad = gm.p+(a.ticks=='outside' ? 1 : -1) * ($.isNumeric(a.linewidth) ? a.linewidth : 1)/2;
     // positioning arguments for x vs y axes
     if(ax=='x') {
-        var y1 = gl.height-mb+pad,
+        var y1 = gl.height-gm.b+pad,
             ty = (a.ticks=='inside' ? -1 : 1)*a.ticklen,
-            tickpath = 'M'+ml+','+y1+'v'+ty+
+            tickpath = 'M'+gm.l+','+y1+'v'+ty+
                 (a.mirror=='ticks' ? ('m0,'+(-gd.plotheight-2*(ty+pad))+'v'+ty): ''),
-            g = {x1:ml, x2:ml, y1:gl.height-mb, y2:mt},
-            tl = {x:function(d){return d.dx+ml},
+            g = {x1:gm.l, x2:gm.l, y1:gl.height-gm.b, y2:gm.t},
+            tl = {x:function(d){return d.dx+gm.l},
                 y:function(d){return d.dy+y1+(a.ticks=='outside' ? a.ticklen : a.linewidth+1)+d.fontSize},
                 anchor: (!a.tickangle || a.tickangle==180) ? 'middle' :
                     (a.tickangle<0 ? 'end' : 'start')},
             transfn = function(d){return 'translate('+(a.m*d.x+a.b)+',0)'};
     }
     else if(ax=='y') {
-        var x1 = ml-pad,
+        var x1 = gm.l-pad,
             tx = (a.ticks=='inside' ? 1 : -1)*a.ticklen,
-            tickpath = 'M'+x1+','+mt+'h'+tx+
+            tickpath = 'M'+x1+','+gm.t+'h'+tx+
                 (a.mirror=='ticks' ? ('m'+(gd.plotwidth-2*(tx-pad))+',0h'+tx): ''),
-            g = {x1:ml, x2:gl.width-mr, y1:mt, y2:mt},
+            g = {x1:gm.l, x2:gl.width-gm.r, y1:gm.t, y2:gm.t},
             tl = {x:function(d){return d.dx+x1 -
                     (a.ticks=='outside' ? a.ticklen : a.linewidth+1) -
                     (Math.abs(a.tickangle)==90 ? d.fontSize/2 : 0)
                 },
-                y:function(d){return d.dy+mt+d.fontSize/2},
+                y:function(d){return d.dy+gm.t+d.fontSize/2},
                 anchor: (Math.abs(a.tickangle)==90) ? 'middle' : 'end'},
             transfn = function(d){return 'translate(0,'+(a.m*d.x+a.b)+')'};
     }
