@@ -102,6 +102,44 @@ defaultScale=[[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94,
     [0.375,"rgb(29, 145, 192)"],[0.5,"rgb(65, 182, 196)"],[0.625,"rgb(127, 205, 187)"],
     [0.75,"rgb(199, 233, 180)"],[0.875,"rgb(237, 248, 217)"],[1,"rgb(255, 255, 217)"]];
 
+function defaultLayout(){
+    return {title:'Click to enter Plot title',
+        xaxis:{range:[-1,6],type:'-',mirror:true,linecolor:'#000',linewidth:1,
+            tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
+            showticklabels:true,tickangle:0,exponentformat:'e',showexponent:'all',
+            showgrid:true,gridcolor:'#ddd',gridwidth:1,
+            autorange:true,autotick:true,drange:[null,null],
+            zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
+            title:'Click to enter X axis title',unit:'',
+            titlefont:{family:'',size:0,color:''},
+            tickfont:{family:'',size:0,color:''}},
+        yaxis:{range:[-1,4],type:'-',mirror:true,linecolor:'#000',linewidth:1,
+            tick0:0,dtick:1,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
+            showticklabels:true,tickangle:0,exponentformat:'e',showexponent:'all',
+            showgrid:true,gridcolor:'#ddd',gridwidth:1,
+            autorange:true,autotick:true,drange:[null,null],
+            zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
+            title:'Click to enter Y axis title',unit:'',
+            titlefont:{family:'',size:0,color:''},
+            tickfont:{family:'',size:0,color:''}},
+        legend:{bgcolor:'#fff',bordercolor:'#000',borderwidth:1,
+            font:{family:'',size:0,color:''}},
+        width:GRAPH_WIDTH,
+        height:GRAPH_HEIGHT,
+        autosize:'initial', // after initial autosize reverts to true
+        margin:{l:70,r:40,t:60,b:60,pad:2},
+        paper_bgcolor:'#fff',
+        plot_bgcolor:'#fff',
+        barmode:'stack',
+        bargap:0.2,
+        bargroupgap:0.0,
+        font:{family:'Arial, sans-serif;',size:12,color:'#000'},
+        titlefont:{family:'',size:0,color:''}
+    }
+}
+// TODO: add label positioning
+
+
 // how to display each type of graph
 // AJ 3/4/13: I'm envisioning a lot of stuff that's hardcoded into plot,
 // setStyles etc will go here to make multiple graph types easier to manage
@@ -131,7 +169,7 @@ var HEATMAPTYPES = ['heatmap','histogram2d'];
 var TIMER=0
 
 function markTime(s){
-    if(!VERBOSE) { return }
+//     if(!VERBOSE) { return }
     var t2 = new Date().getTime();
     console.log(s,t2-TIMER,'(msec)');
     TIMER=t2;
@@ -218,7 +256,7 @@ function plot(divid, data, layout, rdrw) {
 
             // first check for histograms, as they can change the axis types
             // whatever else happens, horz bars switch the roles of x and y axes
-            if((['histogramx','histogramy','bar'].indexOf(d0.type)!=-1) && (d0.bardir=='h')){
+            if((BARTYPES.indexOf(d0.type)!=-1) && (d0.bardir=='h')){
                 axletter={x:'y',y:'x'}[axletter];
             }
             var hist = (['histogramx','histogramy'].indexOf(d0.type)!=-1);
@@ -276,7 +314,8 @@ function plot(divid, data, layout, rdrw) {
         var gdc=gdd[curve],
             curvetype = gdc.type || 'scatter', //default type is scatter
             typeinfo = graphInfo[curvetype],
-            cd=[];
+            cd=[],
+            cdtextras={}; // info (if anything) to add to cd[0].t
 
         if(typeinfo.framework!=gd.framework) {
             plotlylog('Oops, tried to put data of type '+(gdc.type || 'scatter')+
@@ -284,7 +323,6 @@ function plot(divid, data, layout, rdrw) {
                 ' data. Ignoring this dataset.');
             continue;
         }
-        //if(!('color' in gdc)) gdc.color = defaultColors[curve % defaultColors.length];
         if(!('name' in gdc)) {
             if('ysrc' in gdc) {
                 var ns=gdc.ysrc.split('/')
@@ -296,7 +334,7 @@ function plot(divid, data, layout, rdrw) {
         // this function takes an x or y value and converts it to a position on the axis object "ax"
         // data - a string, either 'x' or 'y'
         // ax - an x or y axis object
-        // counterdata - an x or y value, either gdc.x or gdc.y
+        // counterdata - the other axis data to compare to, either gdc.x or gdc.y
         var convertOne = function(data,ax,counterdata) {
             if(data in gdc) { return convertToAxis(gdc[data],ax) }
             else {
@@ -327,7 +365,6 @@ function plot(divid, data, layout, rdrw) {
         }
 
         var autoBin = function(data,ax,nbins,is2d) {
-//             console.log(data,ax,nbins,is2d);
             var datamin = aggNums(Math.min,null,data),
                 datamax = aggNums(Math.max,null,data);
             if(ax.type=='category') {
@@ -417,7 +454,6 @@ function plot(divid, data, layout, rdrw) {
             // add the trace-wide properties to the first point, per point properties to every point
             // t is the holder for trace-wide properties, start it with the curve num from gd.data
             // in case some curves don't plot
-//             cd[0].t={curve:curve,type:curvetype}; // <-- curve is index of the data object in gd.data
         }
         else if(BARTYPES.indexOf(curvetype)!=-1) {
             // ignore as much processing as possible (and including in autorange) if bar is not visible
@@ -472,27 +508,20 @@ function plot(divid, data, layout, rdrw) {
                 }
             }
 
-//             if(!cd) { cd=[{p:false,s:false,b:0}] }
-            // add the bar-wide properties to the first bar, per bar properties to every bar
-            // t is the holder for bar-wide properties, start it with the curve num from gd.data
-            // in case some curves don't plot
-
-
-//             cd[0].t={curve:curve,type:curvetype}; // <-- curve is index of the data object in gd.data
         }
         else if(HEATMAPTYPES.indexOf(curvetype)!=-1 ){
             // calcdata ("cd") for heatmaps:
             // curve: index of heatmap in gd.data
             // type: used to distinguish heatmaps from traces in "Data" popover
-//             cd.push({t:{ curve:curve, type:gdc.type }});
             if(gdc.visible==false) { continue }
+            // prepare the raw data
+            // run convertOne even for heatmaps, in case of category mappings
+            markTime('start convert data');
+            x = gdc.x ? convertOne('x',xa,gdc.x) : [];
+            markTime('done convert x');
+            y = gdc.y ? convertOne('y',ya,gdc.y) : [];
+            markTime('done convert y');
             if(gdc.type=='histogram2d') {
-                // prepare the raw data
-                markTime('start convert data');
-                x = convertOne('x',xa,gdc.x);
-                markTime('done convert x');
-                y = convertOne('y',ya,gdc.y);
-                markTime('done convert y');
                 serieslen = Math.min(x.length,y.length);
                 if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen) }
                 if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen) }
@@ -540,9 +569,10 @@ function plot(divid, data, layout, rdrw) {
             }
             // heatmap() builds a png heatmap on the coordinate system, see heatmap.js
             // returns the L, R, T, B coordinates for autorange as { x:[L,R], y:[T,B] }
-            var bounds = hm_rect(gdc);
-            expandBounds(xa,xdr,bounds.x);
-            expandBounds(ya,ydr,bounds.y);
+            var coords = heatmap_xy(gd,gdc);
+            expandBounds(xa,xdr,coords.x);
+            expandBounds(ya,ydr,coords.y);
+            cdtextras = coords; // store x and y arrays for later
         }
         if(!('line' in gdc)) gdc.line={};
         if(!('marker' in gdc)) gdc.marker={};
@@ -554,6 +584,7 @@ function plot(divid, data, layout, rdrw) {
             curve:curve, // store the gd.data curve number that gave this trace
             cdcurve:gd.calcdata.length, // store the calcdata curve number we're in
         }
+        for(key in cdtextras) { cd[0].t[key] = cdtextras[key] }
         gd.calcdata.push(cd);
         markTime('done with calcdata for '+curve);
     }
@@ -727,18 +758,12 @@ function plot(divid, data, layout, rdrw) {
             .each(function(d,cdi){
                 var bt = d3.select(this),
                     t = d[0].t; // <-- get trace-wide formatting object
-                // add a pixel (half each side) if there are no gaps, no lines, no fill transparency.
-                // this prevents gaps being created by anti-aliasing routines
-                // TODO: originally I had this stop if the bar is narrower than 3px,
-                //  but I removed this restriction... is this going to cause any problems?
-                var extraw = extrah = extraw2 = extrah2 = 0;
-                if(gl.barmode=='stack' || (gl.bargap==0 && gl.bargroupgap==0 && !t.mlw)){// && (!t.mc || opacityOnly(t.mc)==1)){
+                // for gapless cases (either stacked bars or neighboring bars)
+                // use crispEdges to turn off antialiasing.
+                if(gl.barmode=='stack' || (gl.bargap==0 && gl.bargroupgap==0 && !t.mlw)){
                     bt.attr('shape-rendering','crispEdges');
-//                     if(t.bardir=='v') { extraw = 0.5 }
-//                     else { extrah = 0.5 }
-//                     extraw2 = extraw*2; extrah2 = extrah*2;
                 }
-                bt.selectAll('rect') // TODO: update to p,s notation
+                bt.selectAll('rect')
                     .data(function(d){return d})
                     .enter().append('rect')
                     .each(function(di){
@@ -764,14 +789,15 @@ function plot(divid, data, layout, rdrw) {
                             return;
                         }
                         d3.select(this)
-                            .attr('transform','translate('+(Math.min(x0,x1)-extraw)+','+(Math.min(y0,y1)-extrah)+')')
-                            .attr('width',Math.abs(x1-x0)+0.01)// + extraw2)
-                            .attr('height',Math.abs(y1-y0)+0.01)// + extrah2);
+                            .attr('transform','translate('+Math.min(x0,x1)+','+Math.min(y0,y1)+')')
+                            .attr('width',Math.abs(x1-x0)+0.001)  // TODO: why do I need this extra? Without it occasionally
+                            .attr('height',Math.abs(y1-y0)+0.001) // there's an empty pixel in the non-antialiased (gapless) case
                     });
             });
         markTime('done bars');
 
-        // DRAW ERROR BARS on bar and scatter plots
+        // DRAW ERROR BARS for bar and scatter plots
+        // these come after (on top of) bars, and before (behind) scatter
         errorbars(gd,cdbar.concat(cdscatter));
         markTime('done errorbars');
 
@@ -852,15 +878,11 @@ function plot(divid, data, layout, rdrw) {
     }
     else { console.log('error with axis scaling',xa.m,xa.b,ya.m,ya.b) }
 
-    // show the legend
+    // show the legend and annotations
     if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!=false)) { legend(gd) }
+    if(gl.annotations) { for(var i in gl.annotations) { annotation(gd,i) } }
 
-    // show annotations
-    if(gl.annotations) {
-        for(var i=0; i<gl.annotations.length; i++) { annotation(gd,i) }
-    }
-
-
+    // finish up - spinner and tooltips
     try{ killspin(); }
     catch(e){ plotlylog(e); }
     setTimeout(function(){
@@ -906,6 +928,7 @@ function gettab(tabtype,mode){
         if(!td || td.tabtype!=tabtype) td=addTab(tabtype);
         else if(!td.empty && (td.tabtype!='plot' || mode=='new')) td=addTab(tabtype);
     }
+    else if(!td) { td=addTab() }
     return td;
 }
 
@@ -1338,7 +1361,10 @@ function relayout(gd,astr,val) {
     gd.changed = true;
     var gl = gd.layout,
         aobj = {},
-        legendonly = true;
+        dolegend = false,
+        doticks = false,
+        dolayoutstyle = false,
+        doplot = false;
     if(typeof astr == 'string')
         aobj[astr] = val;
     else if($.isPlainObject(astr))
@@ -1359,23 +1385,21 @@ function relayout(gd,astr,val) {
     // alter gd.layout
     for(var i in aobj) {
         // check whether to disable autosize or autorange
-        if((i=='height' || i=='width') && !aobj.autosize) {
-            gl.autosize=false;
-        }
+        if((i=='height' || i=='width') && !aobj.autosize) { gl.autosize=false }
         var m = i.match(/^(.)axis\.range\[[0|1]\]$/);
-        if(m && m.length==2) {
-            gl[m[1]+'axis'].autorange=false;
-        }
+        if(m && m.length==2) { gl[m[1]+'axis'].autorange=false }
 
         // handle axis reversal
         var m = i.match(/^(.)axis\.reverse$/);
         if(m && m.length==2) {
+            console.log('here');
             var ax = gl[m[1]+'axis'],
                 r0 = ax.range[0],
                 r1 = ax.range[1];
             ax.range[0]=r1;
             ax.range[1]=r0;
-            continue; // don't try to set 'reverse' flag (later in the loop) but don't delete the entry either, so we force a replot
+            doplot=true;
+            continue; // don't try to set 'reverse' flag (later in the loop)
         }
 
         var aa = propSplit(i);
@@ -1406,31 +1430,44 @@ function relayout(gd,astr,val) {
         }
         // alter gd.layout
         else {
-            if(aa[0].indexOf('legend')==-1) {
-                legendonly = false;
-            }
+            // check whether we can short-circuit a full redraw
+            if(aa[0].indexOf('legend')!=-1) { dolegend = true }
+            else if(i.indexOf('title')!=-1) { doticks = true } // TODO: can do global font too if we update all annotations
+            else if(aa[0].indexOf('bgcolor')!=-1) { dolayoutstyle = true }
+            else if(aa.length>1 && (
+                aa[1].indexOf('tick')!=-1 ||
+                aa[1].indexOf('exponent')!=-1 ||
+                aa[1].indexOf('grid')!=-1 ||
+                aa[1].indexOf('zeroline')!=-1)) { doticks = true }
+            else if(aa.length>1 && (
+                aa[1].indexOf('line')!=-1 ||
+                aa[1].indexOf('mirror')!=-1 ||
+                (aa[1]=='margin' && aa[2]=='pad'))) { dolayoutstyle = true }
+            else if(i=='margin.pad') { doticks = dolayoutstyle = true }
+            else { doplot = true }
             nestedProperty(gl,i).set(aobj[i]);
         }
     }
 
     // calculate autosizing
-    if(aobj.autosize) aobj=plotAutoSize(gd,aobj);
+    if(aobj.autosize) { aobj=plotAutoSize(gd,aobj) }
 
     // redraw
     // first check if there's still anything to do
     var ak = Object.keys(aobj);
     if(ak.length) {
-        // if all that's left is legend changes, no need to redraw the whole graph
-        if(legendonly) {
+        if(doplot) {
+            gd.layout = undefined; // force plot() to redo the layout
+            plot(gd,'',gl); // pass in the modified layout
+            return;
+        }
+        // if we didn't need to redraw the whole thing, just do the needed parts
+        if(dolegend) {
             gd.paper.selectAll('.legend').remove();
-            if(gl.showlegend) {
-                legend(gd);
-            }
+            if(gl.showlegend) { legend(gd) }
         }
-        else {
-            gd.layout = undefined; // force plot to redo the layout
-            plot(gd,'',gl);
-        }
+        if(doticks) { doTicks(gd,'redraw'); makeTitles(gd,'gtitle') }
+        if(dolayoutstyle) { layoutStyles(gd) }
     }
     plotlylog('+++++++++++++++ OUT: RELAYOUT +++++++++++++++');
 }
@@ -1453,9 +1490,7 @@ function propSplit(s) {
     var aa = s.split('.');
     for(var j=0; j<aa.length; j++) {
         var indexed = String(aa[j]).match(/([^\[\]]*)\[([0-9]*)\]/);
-        if(indexed) {
-            aa.splice(j,1,indexed[1],Number(indexed[2]));
-        }
+        if(indexed) { aa.splice(j,1,indexed[1],Number(indexed[2])) }
     }
     return aa;
 }
@@ -1514,49 +1549,13 @@ function newPlot(divid, layout) {
     }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
         gd.innerHTML='';
-
         if(gd.mainsite) { graphbar(gd) }
     }
 
-    // Get the layout info (this is the defaults)
-    gd.layout={title:'Click to enter Plot title',
-        xaxis:{range:[-1,6],type:'-',mirror:true,linecolor:'#000',linewidth:1,
-            tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
-            showticklabels:true,tickangle:0,
-            showgrid:true,gridcolor:'#ddd',gridwidth:1,
-            autorange:true,autotick:true,drange:[null,null],
-            zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
-            title:'Click to enter X axis title',unit:'',
-            titlefont:{family:'',size:0,color:''},
-            tickfont:{family:'',size:0,color:''}},
-        yaxis:{range:[-1,4],type:'-',mirror:true,linecolor:'#000',linewidth:1,
-            tick0:0,dtick:1,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
-            showticklabels:true,tickangle:0,
-            showgrid:true,gridcolor:'#ddd',gridwidth:1,
-            autorange:true,autotick:true,drange:[null,null],
-            zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
-            title:'Click to enter Y axis title',unit:'',
-            titlefont:{family:'',size:0,color:''},
-            tickfont:{family:'',size:0,color:''}},
-        legend:{bgcolor:'#fff',bordercolor:'#000',borderwidth:1,
-            font:{family:'',size:0,color:''}},
-        width:GRAPH_WIDTH,
-        height:GRAPH_HEIGHT,
-        autosize:'initial', // after initial autosize reverts to true
-        margin:{l:70,r:40,t:60,b:60,pad:2},
-        paper_bgcolor:'#fff',
-        plot_bgcolor:'#fff',
-        barmode:'stack',
-        bargap:0.2,
-        bargroupgap:0.0,
-        font:{family:'Arial, sans-serif;',size:12,color:'#000'},
-        titlefont:{family:'',size:0,color:''} };
-        // TODO: add label positioning
+    // Get the layout info - take the default and update it with layout arg
+    gd.layout=updateObject(defaultLayout(),layout);
 
-    // look for elements of gd.layout to replace with the equivalent elements in layout
-    gd.layout=updateObject(gd.layout,layout);
-
-    var gl=gd.layout, gd3=d3.select(gd)
+    var gl=gd.layout, gd3=d3.select(gd), xa=gl.xaxis, ya=gl.yaxis;
 
     // initial autosize
     if(gl.autosize=='initial') {
@@ -1571,65 +1570,51 @@ function newPlot(divid, layout) {
     heatmap_margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
 
     // adjust margins for outside legends
-    var ml = gl.margin.l-(gd.lw<0 ? gd.lw : 0),
-        mr = gl.margin.r+(gd.lw>0 ? gd.lw : 0),
-        mt = gl.margin.t+(gd.lh>0 ? gd.lh : 0),
-        mb = gl.margin.b-(gd.lh<0 ? gd.lh : 0),
-        mp = gl.margin.pad;
+    // gl.margin is the requested margin, gd.margin is after adjustment
+    gd.margin = {
+        l:gl.margin.l-(gd.lw<0 ? gd.lw : 0),
+        r:gl.margin.r+(gd.lw>0 ? gd.lw : 0),
+        t:gl.margin.t+(gd.lh>0 ? gd.lh : 0),
+        b:gl.margin.b-(gd.lh<0 ? gd.lh : 0),
+        p:gl.margin.pad }
+    var gm = gd.margin;
+    gd.plotwidth=gl.width-gm.l-gm.r;
+    gd.plotheight=gl.height-gm.t-gm.b;
 
     // Make the graph containers
     gd.paper=gd3.append('svg')
         .call(setSize, gl.width, gl.height);
     gd.paperbg=gd.paper.append('rect')
         .call(setRect, 0, 0, gl.width, gl.height)
-        .call(fillColor, gl.paper_bgcolor);
-    gd.plotwidth=gl.width-ml-mr;
-    gd.plotheight=gl.height-mt-mb;
     gd.plotbg=gd.paper.append('rect')
-        .call(setRect, ml-mp, mt-mp, gd.plotwidth+2*mp, gd.plotheight+2*mp)
-        .call(fillColor, gl.plot_bgcolor)
+        .call(setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
         .attr('stroke-width',0);
-    var xlw = $.isNumeric(gl.xaxis.linewidth) ? gl.xaxis.linewidth : 1,
-        ylw = $.isNumeric(gl.yaxis.linewidth) ? gl.yaxis.linewidth : 1,
-        xp = mp+ylw/2,
-        yp = mp-xlw/2, // shorten y axis lines so they don't overlap x axis lines
-        yp2 = gl.xaxis.mirror ? 0 : xlw; // except at the top when there's no mirror x
     gd.axlines = {
-        x:gd.paper.append('path')
-            .attr('d', 'M'+(ml-xp)+','+(mt+gd.plotheight+mp)+'h'+(gd.plotwidth+2*xp) +
-                (gl.xaxis.mirror ? ('m0,-'+(gd.plotheight+2*mp)+'h-'+(gd.plotwidth+2*xp)) : ''))
-            .attr('stroke-width',xlw)
-            .call(strokeColor,gl.xaxis.linecolor)
-            .style('fill','none'),
-        y:gd.paper.append('path')
-            .attr('d', 'M'+(ml-mp)+','+(mt-yp-yp2)+'v'+(gd.plotheight+2*yp+yp2) +
-                (gl.yaxis.mirror ? ('m'+(gd.plotwidth+2*mp)+',0v-'+(gd.plotheight+2*yp+yp2)) : ''))
-            .attr('stroke-width',ylw)
-            .call(strokeColor,gl.yaxis.linecolor)
-            .style('fill','none')
+        x:gd.paper.append('path').style('fill','none'),
+        y:gd.paper.append('path').style('fill','none')
     }
 
     // make the ticks, grids, and titles
     gd.axislayer=gd.paper.append('g').attr('class','axislayer');
     doTicks(gd);
-    gl.xaxis.r0=gl.xaxis.range[0];
-    gl.yaxis.r0=gl.yaxis.range[0];
+    xa.r0=gl.xaxis.range[0];
+    ya.r0=gl.yaxis.range[0];
 
-    makeTitles(gd,''); // happens after ticks, so we can scoot titles out of the way if needed
+    layoutStyles(gd);
 
     // Second svg (plot) is for the data
     gd.plot=gd.paper.append('svg')
-        .call(setRect, ml, mt, gd.plotwidth, gd.plotheight)
+        .call(setRect, gm.l, gm.t, gd.plotwidth, gd.plotheight)
         .attr('preserveAspectRatio','none')
         .style('fill','none');
     gd.viewbox={x:0,y:0};
 
     //make the axis drag objects
-    var x1 = ml,
+    var x1 = gm.l,
         x2 = x1+gd.plotwidth,
         a = $(gd).find('text.ytick').get().map(function(e){return e.getBBox().x}),
         x0 = a.length ? Math.min.apply(a,a) : x1-10,
-        y2 = mt,
+        y2 = gm.t,
         y1 = y2+gd.plotheight,
         a = $(gd).find('text.xtick').get().map(function(e){var bb=e.getBBox(); return bb.y+bb.height}),
         y0 = a.length ? Math.max.apply(a,a) : y1+10;
@@ -1654,6 +1639,29 @@ function newPlot(divid, layout) {
         .style('fill','black')
         .style('opacity',0)
         .attr('stroke-width',0);
+}
+
+// separate styling for plot layout elements, so we don't have to redraw to edit
+function layoutStyles(gd) {
+    var gl = gd.layout,xa = gl.xaxis, ya = gl.yaxis, gm = gd.margin;
+    gd.paperbg.call(fillColor, gl.paper_bgcolor);
+    gd.plotbg.call(fillColor, gl.plot_bgcolor);
+    var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
+        ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
+        xp = gm.p+ylw/2,
+        yp = gm.p-xlw/2, // shorten y axis lines so they don't overlap x axis lines
+        yp2 = xa.mirror ? 0 : xlw; // except at the top when there's no mirror x
+    gd.axlines.x
+        .attr('d', 'M'+(gm.l-xp)+','+(gm.t+gd.plotheight+gm.p)+'h'+(gd.plotwidth+2*xp) +
+            (xa.mirror ? ('m0,-'+(gd.plotheight+2*gm.p)+'h-'+(gd.plotwidth+2*xp)) : ''))
+        .attr('stroke-width',xlw)
+        .call(strokeColor,xa.linecolor);
+    gd.axlines.y
+        .attr('d', 'M'+(gm.l-gm.p)+','+(gm.t-yp-yp2)+'v'+(gd.plotheight+2*yp+yp2) +
+            (ya.mirror ? ('m'+(gd.plotwidth+2*gm.p)+',0v-'+(gd.plotheight+2*yp+yp2)) : ''))
+        .attr('stroke-width',ylw)
+        .call(strokeColor,ya.linecolor);
+    makeTitles(gd,'');
 }
 
 // ----------------------------------------------------
@@ -1932,9 +1940,9 @@ function dragTail(gd) {
 // ----------------------------------------------------
 
 function makeTitles(gd,title) {
-    var gl=gd.layout;
+    var gl=gd.layout,gm=gd.margin;
     var titles={
-        'xtitle':{x: (gl.width+gl.margin.l-gl.margin.r-(gd.lw || 0))/2,
+        'xtitle':{x: (gl.width+gm.l-gm.r)/2,
             y: gl.height+(gd.lh<0 ? gd.lh : 0) - 14*0.75,
             w: gd.plotwidth/2, h: 14,
             cont: gl.xaxis, name: 'X axis',
@@ -1943,7 +1951,7 @@ function makeTitles(gd,title) {
             fontColor: gl.xaxis.titlefont.color || gl.font.color || '#000',
             transform: '', attr: {}},
         'ytitle':{x: 20-(gd.lw<0 ? gd.lw : 0),
-            y: (gl.height+gl.margin.t-gl.margin.b+(gd.lh || 0))/2,
+            y: (gl.height+gm.t-gm.b)/2,
             w: 14, h: gd.plotheight/2,
             cont: gl.yaxis, name: 'Y axis',
             font: gl.yaxis.titlefont.family || gl.font.family || 'Arial',
@@ -2191,7 +2199,8 @@ function legend(gd) {
         gd.dragged = false;
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
-                dy = e2.clientY-e.clientY;
+                dy = e2.clientY-e.clientY,
+                gdm=gd.margin;
             if(Math.abs(dx)<MINDRAG) { dx=0 }
             if(Math.abs(dy)<MINDRAG) { dy=0 }
             if(dx||dy) { gd.dragged = true }
@@ -2205,8 +2214,8 @@ function legend(gd) {
                 xf=-100;
             }
             else {
-                var xl=(x0+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0)),
-                    xr=xl+legendwidth/(gl.width-gm.l-gm.r),
+                var xl=(x0+dx-gdm.l)/(gl.width-gdm.l-gdm.r),
+                    xr=xl+legendwidth/(gl.width-gdm.l-gdm.r),
                     xc=(xl+xr)/2;
                 if(xl<(2/3)-xc) xf=xl;
                 else if(xr>4/3-xc) xf=xr;
@@ -2219,8 +2228,8 @@ function legend(gd) {
                 yf=100;
             }
             else {
-                var yt=(y0+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0)),
-                    yb=yt+legendheight/(gl.height-gm.t-gm.b),
+                var yt=(y0+dy-gdm.t)/(gl.height-gdm.t-gdm.b),
+                    yb=yt+legendheight/(gl.height-gdm.t-gdm.b),
                     yc=(yt+yb)/2;
                 if(yt<(2/3)-yc) yf=1-yt;
                 else if(yb>4/3-yc) yf=1-yb;
@@ -2258,7 +2267,7 @@ function legend(gd) {
 //  or undefined to simply redraw,
 //  or 'remove' to delete this annotation
 function annotation(gd,index,opt,value) {
-    var gl = gd.layout,gm = gl.margin;
+    var gl = gd.layout,gm = gd.margin;
     if(!gl.annotations)
         gl.annotations = [];
     if(!$.isNumeric(index)) {
@@ -2514,8 +2523,13 @@ function annotation(gd,index,opt,value) {
                     arrowgroup.attr('transform','translate('+dx+','+dy+')');
                     ann.call(setPosition, annx0+dx, anny0+dy);
                     if(options.ref=='paper') {
+//<<<<<<< HEAD
                         xf=(ax+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0));
                         yf=(ay+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0));
+/*=======
+                        xf=(ax+dx-gm.l)/(gl.width-gm.l-gm.r);
+                        yf=1-((ay+dy-gm.t)/(gl.height-gm.t-gm.b));
+//>>>>>>> 53850630f1349f5ffaa9780837267c7636273054*/
                     }
                     else {
                         xf = options.x+dx/gd.layout.xaxis.m;
@@ -2569,14 +2583,14 @@ function annotation(gd,index,opt,value) {
                 drawArrow(dx,dy);
             }
             else if(options.ref=='paper') {
-                var xl=(x0+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0)),
-                    xr=xl+legendwidth/(gl.width-gm.l-gm.r),
+                var xl=(x0+dx-gm.l)/(gl.width-gm.l-gm.r),
+                    xr=xl+annwidth/(gl.width-gm.l-gm.r),
                     xc=(xl+xr)/2;
                 if(xl<(2/3)-xc) xf=xl;
                 else if(xr>4/3-xc) xf=xr;
                 else xf=xc;
-                var yt=(y0+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0)),
-                    yb=yt+legendheight/(gl.height-gm.t-gm.b),
+                var yt=(y0+dy-gm.t)/(gl.height-gm.t-gm.b),
+                    yb=yt+annheight/(gl.height-gm.t-gm.b),
                     yc=(yt+yb)/2;
                 if(yt<(2/3)-yc) yf=1-yt;
                 else if(yb>4/3-yc) yf=1-yb;
@@ -2876,7 +2890,7 @@ function autoGrowInput(eln) {
     input.bind('keyup keydown blur update',function(e) {
         var valold=val;
         val=input.val();
-        if(!gd.input || !gd.layout) return; // occasionally we get two events firing...
+        if(!gd.input || !gd.layout) { return } // occasionally we get two events firing...
 
         // leave the input or press return: accept the change
         if((e.type=='blur') || (e.type=='keydown' && e.which==13)) {
@@ -2908,8 +2922,8 @@ function autoGrowInput(eln) {
         }
         // press escape: revert the change
         else if(e.type=='keydown' && e.which==27) {
-            if(mode=='title') makeTitles(gd,el);
-            else if(mode=='legend') legend(gd);
+            if(mode=='title') { makeTitles(gd,el) }
+            else if(mode=='legend') { legend(gd) }
             removeInput();
         }
         else if(val!=valold) {
@@ -2947,7 +2961,7 @@ function calcTicks(gd,a) {
     }
 
     // now figure out rounding of tick values
-    a.tickround = autoTickRound(a);
+    autoTickRound(a);
 
     // set scaling to pixels
     if(a===gd.layout.yaxis) {
@@ -2972,9 +2986,10 @@ function calcTicks(gd,a) {
         endtick = (axrev) ? Math.max(-0.5,endtick) : Math.min(a.categories.length-0.5,endtick);
     }
     for(var x=a.tmin;(axrev)?(x>=endtick):(x<=endtick);x=tickIncrement(x,a.dtick,axrev)) {
-        vals.push(tickText(gd, a, x));
+        vals.push(x);
     }
-    return vals;
+    a.tmax=vals[vals.length-1]; // save the last tick as well as first, so we can eg show the exponent only on the last one
+    return vals.map(function(x){return tickText(gd, a, x)});
 }
 
 
@@ -3063,27 +3078,35 @@ function autoTicks(a,rt){
 //   for date ticks, the last date part to show (y,m,d,H,M,S) or an integer # digits past seconds
 function autoTickRound(a) {
     var dt = a.dtick;
+    a.tickexponent = 0;
     if(a.type=='category') {
-        return null;
+        a.tickround = null;
     }
     else if($.isNumeric(dt) || dt.charAt(0)=='L') {
         if(a.type=='date') {
-            if(dt>=86400000) { return 'd' }
-            else if(dt>=3600000) { return 'H' }
-            else if(dt>=60000) { return 'M' }
-            else if(dt>=1000) { return 'S' }
-            else { return Math.pow(10,3-Math.round(Math.log(dt/2)/Math.LN10)) }
+            if(dt>=86400000) { a.tickround = 'd' }
+            else if(dt>=3600000) { a.tickround = 'H' }
+            else if(dt>=60000) { a.tickround = 'M' }
+            else if(dt>=1000) { a.tickround = 'S' }
+            else { a.tickround = 3-Math.round(Math.log(dt/2)/Math.LN10) }
         }
         else {
             if(!$.isNumeric(dt)) { dt = Number(dt.substr(1)) }
             // 2 digits past largest digit of dtick
-            return Math.pow(10,2-Math.round(Math.log(dt)/Math.LN10));
+            a.tickround = 2-Math.floor(Math.log(dt)/Math.LN10+0.01);
+            if(a.type=='log') { var maxend = Math.pow(10,Math.max(a.range[0],a.range[1])) }
+            else { var maxend = Math.max(Math.abs(a.range[0]), Math.abs(a.range[1])) }
+            var rangeexp = Math.floor(Math.log(maxend)/Math.LN10+0.01);
+            if(Math.abs(rangeexp)>3) {
+                a.tickexponent = (['SI','B'].indexOf(a.exponentformat)!=-1) ?
+                    3*Math.round((rangeexp-1)/3) : rangeexp
+            }
         }
     }
     else if(dt.charAt(0)=='M') {
-        return (dt.length==2) ? 'm' : 'y';
+        a.tickround = (dt.length==2) ? 'm' : 'y';
     }
-    else { return null }
+    else { a.tickround = null }
 }
 
 /*>>>>>>> 891800c0e60c48768f22339e71effe31b09856f6*/
@@ -3177,10 +3200,12 @@ function tickText(gd, a, x){
         font = tf.family || gf.family || 'Arial',
         fontSize = tf.size || gf.size || 12,
         fontColor = tf.color || gf.color || '#000',
-        px=0,
-        py=0,
-        suffix='', // completes the full date info, to be included with only the first tick
-        tt;
+        px = 0,
+        py = 0,
+        suffix = '', // completes the full date info, to be included with only the first tick
+        tt,
+        hideexp = (a.showexponent!='all' && a.exponentformat!='none' &&
+            x!={first:a.tmin,last:a.tmax}[a.showexponent]) ? 'hide' : false;
     if(a.type=='date'){
         var d=new Date(x);
         if(a.tickround=='y')
@@ -3199,7 +3224,7 @@ function tickText(gd, a, x){
                 if(a.tickround!='M'){
                     tt+=':'+lpad(d.getSeconds(),2);
                     if(a.tickround!='S')
-                        tt+=String(Math.round(mod(x/1000,1)*a.tickround)/a.tickround).substr(1);
+                        tt+=numFormat(mod(x/1000,1),a,'none').substr(1);
                 }
             }
         }
@@ -3214,7 +3239,7 @@ function tickText(gd, a, x){
             fontSize*=0.75;
         }
         else if(a.dtick.charAt(0)=='L')
-            tt=String(Math.round(Math.pow(10,x)*a.tickround)/a.tickround);
+            tt=numFormat(Math.pow(10,x),a,hideexp);
         else throw "unrecognized dtick "+String(a.dtick);
     }
     else if(a.type=='category'){
@@ -3223,7 +3248,7 @@ function tickText(gd, a, x){
         tt=String(tt0);
     }
     else
-        tt=String(Math.round(x*a.tickround)/a.tickround);
+        tt=numFormat(x,a,hideexp);
     // if 9's are printed on log scale, move the 10's away a bit
     if((a.dtick=='D1') && (String(tt).charAt(0)=='1')){
         if(a===gd.layout.yaxis) px-=fontSize/4;
@@ -3232,50 +3257,107 @@ function tickText(gd, a, x){
     return {dx:px, dy:py, text:tt+suffix, fontSize:fontSize, font:font, fontColor:fontColor, x:x};
 }
 
-// ticks, grids, and tick labels for axis ax ('x' or 'y', or blank to do both)
+// format a number (tick value) according to the axis settings
+// new, more reliable procedure than d3.round or similar:
+// add half the rounding increment, then stringify and truncate
+// also automatically switch to sci. notation
+SIPREFIXES = ['f','p','n','&mu;','m','','k','M','G','T'];
+function numFormat(v,a,fmtoverride) {
+    var n = (v<0), // negative?
+        r = a.tickround, // max number of digits past decimal point to show
+        e = Math.pow(10,-r)/2, // 'epsilon' - rounding increment
+        d = a.tickexponent, // if nonzero, use a common exponent 10^d
+        fmt = fmtoverride||a.exponentformat||'e';
+    // fmt codes:
+    // 'e' (1.2e+6, default)
+    // 'E' (1.2E+6)
+    // 'SI' (1.2M)
+    // 'B' (same as SI except 10^9=B not G)
+    // 'none' (1200000)
+    // 'power' (1.2x10^6)
+    // 'hide' (1.2, use 3rd argument=='hide' to eg only show exponent on last tick)
+    if(fmt=='none') { d=0 }
+
+    // take the sign out, put it back manually at the end - makes cases easier
+    v=Math.abs(v);
+    if(v<e) { v = '0' } // 0 is just 0, but may get exponent if it's the last tick
+    else {
+        v += e;
+        // take out a common exponent, if any
+        if(d) {
+            v*=Math.pow(10,-d);
+            r+=d;
+        }
+        // round the mantissa
+        if(r==0) { v=String(Math.floor(v)) }
+        else if(r<0) {
+            v = String(Math.round(v));
+            v = v.substr(0,v.length+r);
+            for(var i=r; i<0; i++) { v+='0' }
+        }
+        else {
+            v = String(v)
+            v = v.substr(0,v.indexOf('.')+r+1).replace(/\.?0+$/,'');
+        }
+    }
+
+    // add exponent
+    if(d && fmt!='hide') {
+        if(fmt=='e' || ((fmt=='SI'||fmt=='B') && (d>12 || d<-15))) {
+            v += 'e'+(d>0 ? '+' : '')+d;
+        }
+        else if(fmt=='E') { v += 'E'+(d>0 ? '+' : '')+d }
+        else if(fmt=='power') { v += '&times;10'+String(d).sup() }
+        else if(fmt=='B' && d==9) { v += 'B' }
+        else if(fmt=='SI' || fmt=='B') { v += SIPREFIXES[d/3+5] }
+        else { console.log('unknown exponent format '+fmt) }
+    }
+    // put sign back in and return
+    return (n?'-':'')+v;
+}
+
+// ticks, grids, and tick labels for axis ax:
+// 'x' or 'y', blank to do both, 'redraw' to force full redraw
 function doTicks(gd,ax) {
-    if(!ax) {
+    if(ax=='redraw') { gd.axislayer.selectAll('text,path,line').remove() }
+    if(['x','y'].indexOf(ax)==-1) {
         doTicks(gd,'x');
         doTicks(gd,'y');
         return;
     }
     var gl=gd.layout,
-        gm=gl.margin,
+        gm=gd.margin,
         a={x:gl.xaxis, y:gl.yaxis}[ax],
         vals=calcTicks(gd,a),
         datafn = function(d){return d.text},
         tcls = ax+'tick',
         gcls = ax+'grid',
         zcls = ax+'zl',
-        ml = gm.l-(gd.lw<0 ? gd.lw : 0),
-        mr = gm.r+(gd.lw>0 ? gd.lw : 0),
-        mt = gm.t+(gd.lh>0 ? gd.lh : 0),
-        mb = gm.b-(gd.lh<0 ? gd.lh : 0),
-        pad = gm.pad+(a.ticks=='outside' ? 1 : -1) * ($.isNumeric(a.linewidth) ? a.linewidth : 1)/2;
+        pad = gm.p+(a.ticks=='outside' ? 1 : -1) * ($.isNumeric(a.linewidth) ? a.linewidth : 1)/2;
     // positioning arguments for x vs y axes
     if(ax=='x') {
-        var y1 = gl.height-mb+pad,
+        var y1 = gl.height-gm.b+pad,
             ty = (a.ticks=='inside' ? -1 : 1)*a.ticklen,
-            tickpath = 'M'+ml+','+y1+'v'+ty+
+            tickpath = 'M'+gm.l+','+y1+'v'+ty+
                 (a.mirror=='ticks' ? ('m0,'+(-gd.plotheight-2*(ty+pad))+'v'+ty): ''),
-            g = {x1:ml, x2:ml, y1:gl.height-mb, y2:mt},
-            tl = {x:function(d){return d.dx+ml},
+            g = {x1:gm.l, x2:gm.l, y1:gl.height-gm.b, y2:gm.t},
+            tl = {x:function(d){return d.dx+gm.l},
                 y:function(d){return d.dy+y1+(a.ticks=='outside' ? a.ticklen : a.linewidth+1)+d.fontSize},
                 anchor: (!a.tickangle || a.tickangle==180) ? 'middle' :
                     (a.tickangle<0 ? 'end' : 'start')},
             transfn = function(d){return 'translate('+(a.m*d.x+a.b)+',0)'};
     }
     else if(ax=='y') {
-        var x1 = ml-pad,
+        var x1 = gm.l-pad,
             tx = (a.ticks=='inside' ? 1 : -1)*a.ticklen,
-            tickpath = 'M'+x1+','+mt+'h'+tx+
+            tickpath = 'M'+x1+','+gm.t+'h'+tx+
                 (a.mirror=='ticks' ? ('m'+(gd.plotwidth-2*(tx-pad))+',0h'+tx): ''),
-            g = {x1:ml, x2:gl.width-mr, y1:mt, y2:mt},
+            g = {x1:gm.l, x2:gl.width-gm.r, y1:gm.t, y2:gm.t},
             tl = {x:function(d){return d.dx+x1 -
                     (a.ticks=='outside' ? a.ticklen : a.linewidth+1) -
                     (Math.abs(a.tickangle)==90 ? d.fontSize/2 : 0)
                 },
-                y:function(d){return d.dy+mt+d.fontSize/2},
+                y:function(d){return d.dy+gm.t+d.fontSize/2},
                 anchor: (Math.abs(a.tickangle)==90) ? 'middle' : 'end'},
             transfn = function(d){return 'translate(0,'+(a.m*d.x+a.b)+')'};
     }
@@ -3358,6 +3440,9 @@ function doTicks(gd,ax) {
     var al = $(gd.axislayer.node());
     al.find('.zl').appendTo(al);
     al.find('.ticks').appendTo(al);
+
+    // update the axis title (so it can move out of the way if needed)
+    makeTitles(gd,ax+'title');
 }
 
 // ----------------------------------------------------
@@ -3374,17 +3459,21 @@ function doTicks(gd,ax) {
 // tries to find < and > that aren't part of a tag and convert to &lt; and &gt;
 // but if it fails, displays the unparsed text with a tooltip about the error
 // TODO: will barf on tags crossing newlines... need to close and reopen any such tags if we want to allow this.
+
+SPECIALCHARS={'mu':'\u03bc','times':'\u00d7'}
+
 function styleText(sn,t) {
     if(t===undefined) return;
     var s=d3.select(sn);
     // whitelist of tags we accept - make sure new tags get added here as well as styleTextInner
     var tags=['sub','sup','b','i','font'];
-    var tagRE='\x01(\\/?(br|'+tags.join('|')+')(\\s[^\x01\x02]*)?\\/?)\x02';
+    var tagRE=new RegExp('\x01(\\/?(br|'+tags.join('|')+')(\\s[^\x01\x02]*)?\\/?)\x02','gi');
+    var charsRE=new RegExp('&('+Object.keys(SPECIALCHARS).join('|')+');','g');
     // take the most permissive reading we can of the text:
     // if we don't recognize a tag, treat it as literal text
     var t1=t.replace(/</g,'\x01') // first turn all <, > to non-printing \x01, \x02
         .replace(/>/g,'\x02')
-        .replace(new RegExp(tagRE,'gi'),'<$1>') // next turn good tags back to <...>
+        .replace(tagRE,'<$1>') // next turn good tags back to <...>
         .replace(/(<br(\s[^<>]*)?\/?>|\n)/gi, '</l><l>') // translate <br> and \n
         .replace(/\x01/g,'&lt;') // finally turn any remaining \x01, \x02 into &lt;, &gt;
         .replace(/\x02/g,'&gt;');
@@ -3397,6 +3486,8 @@ function styleText(sn,t) {
     // quote unquoted attributes
     var attrRE=/(<[^<>]*=\s*)([^<>\s"']+)(\s|>)/g;
     while(t1.match(attrRE)) t1=t1.replace(attrRE,'$1"$2"$3');
+    // make special characters into their own <c> tags
+    t1=t1.replace(charsRE,'<c>$1</c>');
     // parse the text into an xml tree
     lines=new DOMParser()
         .parseFromString('<t><l>'+t1+'</l></t>','text/xml')
@@ -3428,11 +3519,17 @@ function styleText(sn,t) {
 }
 
 function styleTextInner(s,n) {
+    function addtext(v) {
+        if(s.text()) { s.append('tspan').text(v) }
+        else { s.text(v) }
+    }
     for(var i=0; i<n.length;i++) {
         var nn=n[i].nodeName.toLowerCase();
         if(nn=='#text') {
-            if(s.text()) s.append('tspan').text(n[i].nodeValue);
-            else s.text(n[i].nodeValue);
+            addtext(n[i].nodeValue);
+        }
+        else if(nn=='c') {
+            addtext(SPECIALCHARS[n[i].childNodes[0].nodeValue]||'?');
         }
         else if(nn=='sup') {
             styleTextInner(s.append('tspan').attr('baseline-shift','super').attr('font-size','70%'),
