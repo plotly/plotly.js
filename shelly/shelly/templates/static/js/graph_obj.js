@@ -305,6 +305,8 @@ function plot(divid, data, layout, rdrw) {
     // prepare the data and find the autorange
     // TODO: only remake calcdata for new or changed traces
     gd.calcdata=[];
+    gd.hmpixcount=0; // for calculating avg luminosity of heatmaps
+    gd.hmlumcount=0;
 
     markTime('done setAxType');
 
@@ -1558,50 +1560,33 @@ function newPlot(divid, layout) {
         gl.autosize=true;
     }
 
-    heatmap_margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
-
-    // adjust margins for outside legends
-    // gl.margin is the requested margin, gd.margin is after adjustment
-    gd.margin = {
-        l:gl.margin.l-(gd.lw<0 ? gd.lw : 0),
-        r:gl.margin.r+(gd.lw>0 ? gd.lw : 0),
-        t:gl.margin.t+(gd.lh>0 ? gd.lh : 0),
-        b:gl.margin.b-(gd.lh<0 ? gd.lh : 0),
-        p:gl.margin.pad }
-    var gm = gd.margin;
-    gd.plotwidth=gl.width-gm.l-gm.r;
-    gd.plotheight=gl.height-gm.t-gm.b;
-
     // Make the graph containers
     gd.paper=gd3.append('svg')
-        .call(setSize, gl.width, gl.height);
     gd.paperbg=gd.paper.append('rect')
-        .call(setRect, 0, 0, gl.width, gl.height)
     gd.plotbg=gd.paper.append('rect')
-        .call(setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
         .attr('stroke-width',0);
     gd.axlines = {
         x:gd.paper.append('path').style('fill','none'),
         y:gd.paper.append('path').style('fill','none')
     }
-
-    // make the ticks, grids, and titles
     gd.axislayer=gd.paper.append('g').attr('class','axislayer');
-    doTicks(gd);
-    xa.r0=gl.xaxis.range[0];
-    ya.r0=gl.yaxis.range[0];
-
-    layoutStyles(gd);
-
     // Second svg (plot) is for the data
     gd.plot=gd.paper.append('svg')
-        .call(setRect, gm.l, gm.t, gd.plotwidth, gd.plotheight)
         .attr('preserveAspectRatio','none')
         .style('fill','none');
     gd.viewbox={x:0,y:0};
 
+    // position and style the containers, make main title
+    layoutStyles(gd);
+
+    // make the ticks, grids, and axis titles
+    doTicks(gd);
+    xa.r0=gl.xaxis.range[0];
+    ya.r0=gl.yaxis.range[0];
+
     //make the axis drag objects
-    var x1 = gm.l,
+    var gm = gd.margin,
+        x1 = gm.l,
         x2 = x1+gd.plotwidth,
         a = $(gd).find('text.ytick').get().map(function(e){return e.getBBox().x}),
         x0 = a.length ? Math.min.apply(a,a) : x1-10,
@@ -1634,9 +1619,34 @@ function newPlot(divid, layout) {
 
 // separate styling for plot layout elements, so we don't have to redraw to edit
 function layoutStyles(gd) {
-    var gl = gd.layout,xa = gl.xaxis, ya = gl.yaxis, gm = gd.margin;
-    gd.paperbg.call(fillColor, gl.paper_bgcolor);
-    gd.plotbg.call(fillColor, gl.plot_bgcolor);
+    var gl = gd.layout,xa = gl.xaxis, ya = gl.yaxis;
+
+    heatmap_margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
+
+    // adjust margins for outside legends
+    // gl.margin is the requested margin, gd.margin is after adjustment
+    gd.margin = {
+        l:gl.margin.l-(gd.lw<0 ? gd.lw : 0),
+        r:gl.margin.r+(gd.lw>0 ? gd.lw : 0),
+        t:gl.margin.t+(gd.lh>0 ? gd.lh : 0),
+        b:gl.margin.b-(gd.lh<0 ? gd.lh : 0),
+        p:gl.margin.pad }
+
+    var gm = gd.margin;
+    gd.plotwidth=gl.width-gm.l-gm.r;
+    gd.plotheight=gl.height-gm.t-gm.b;
+
+    gd.paper
+        .call(setSize, gl.width, gl.height);
+    gd.paperbg
+        .call(setRect, 0, 0, gl.width, gl.height)
+        .call(fillColor, gl.paper_bgcolor);
+    gd.plotbg
+        .call(setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
+        .call(fillColor, gl.plot_bgcolor);
+    gd.plot
+        .call(setRect, gm.l, gm.t, gd.plotwidth, gd.plotheight);
+
     var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
         ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
         xp = gm.p+ylw/2,
@@ -1652,13 +1662,13 @@ function layoutStyles(gd) {
             (ya.mirror ? ('m'+(gd.plotwidth+2*gm.p)+',0v-'+(gd.plotheight+2*yp+yp2)) : ''))
         .attr('stroke-width',ylw)
         .call(strokeColor,ya.linecolor);
-    makeTitles(gd,'');
+    makeTitles(gd,'gtitle');
 }
 
 // ----------------------------------------------------
 // Axis dragging functions
 // ----------------------------------------------------
-
+SHOWZOOMOUTTIP=true;
 function dragBox(gd,x,y,w,h,ns,ew) {
     // mouseDown stores ms of first mousedown event in the last DBLCLICKDELAY ms on the drag bars
     // and numClicks stores how many mousedowns have been seen within DBLCLICKDELAY
@@ -1667,8 +1677,10 @@ function dragBox(gd,x,y,w,h,ns,ew) {
     // resetViewBox unnecessarily (ie if no move bigger than MINDRAG pixels)
     var mouseDown=0,
         numClicks=1,
-        gx = gd.layout.xaxis,
-        gy = gd.layout.yaxis,
+        xa = gd.layout.xaxis,
+        ya = gd.layout.yaxis,
+        pw = gd.plotwidth,
+        ph = gd.plotheight,
         cursor = (ns+ew=='nsew') ? 'move' : (ns+ew).toLowerCase()+'-resize',
         dragger = gd.paper.append('rect').classed('drag',true)
             .classed(ns+ew+'drag',true)
@@ -1695,7 +1707,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
     }
 
     // scroll zoom, on all draggers except corners
-    var scrollViewBox = [0,0,gd.plotwidth,gd.plotheight],
+    var scrollViewBox = [0,0,pw,ph],
         redrawTimer = null;
     if(ns.length*ew.length!=1) {
         $(dragger).on('mousewheel DOMMouseScroll', function(e) {
@@ -1703,24 +1715,24 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             var zoom = Math.exp(-Math.min(Math.max(e.originalEvent.wheelDelta,-50),50)/200),
                 gbb = $(gd).find('.nsewdrag')[0].getBoundingClientRect();
             if(ew) {
-                gx.range = [Number(gx.range[0]),Number(gx.range[1])]
+                xa.range = [Number(xa.range[0]),Number(xa.range[1])]
                 var xfrac = (e.originalEvent.clientX-gbb.left)/gbb.width,
-                    x0 = gx.range[0]+(gx.range[1]-gx.range[0])*xfrac,
+                    x0 = xa.range[0]+(xa.range[1]-xa.range[0])*xfrac,
                     vbx0 = scrollViewBox[0]+scrollViewBox[2]*xfrac;
-                gx.range = [x0+(gx.range[0]-x0)*zoom,x0+(gx.range[1]-x0)*zoom];
+                xa.range = [x0+(xa.range[0]-x0)*zoom,x0+(xa.range[1]-x0)*zoom];
                 scrollViewBox[2] *= zoom;
                 scrollViewBox[0] = vbx0-scrollViewBox[2]*xfrac;
-                gx.autorange=false;
+                xa.autorange=false;
             }
             if(ns) {
-                gy.range = [Number(gy.range[0]),Number(gy.range[1])]
+                ya.range = [Number(ya.range[0]),Number(ya.range[1])]
                 var yfrac = (gbb.bottom-e.originalEvent.clientY)/gbb.height,
-                    y0 = gy.range[0]+(gy.range[1]-gy.range[0])*yfrac;
+                    y0 = ya.range[0]+(ya.range[1]-ya.range[0])*yfrac;
                     vby0 = scrollViewBox[1]+scrollViewBox[3]*(1-yfrac);
-                gy.range = [y0+(gy.range[0]-y0)*zoom,y0+(gy.range[1]-y0)*zoom];
+                ya.range = [y0+(ya.range[0]-y0)*zoom,y0+(ya.range[1]-y0)*zoom];
                 scrollViewBox[3] *= zoom;
                 scrollViewBox[1] = vby0-scrollViewBox[3]*(1-yfrac);
-                gy.autorange=false;
+                ya.autorange=false;
             }
             // viewbox redraw at first
             gd.plot.attr('viewBox',scrollViewBox.join(' '));
@@ -1736,52 +1748,63 @@ function dragBox(gd,x,y,w,h,ns,ew) {
 
     function zoomBox(e){
         var gbb = $(gd).find('.nsewdrag')[0].getBoundingClientRect(),
-            x0 = e.clientX,
-            y0 = e.clientY,
-            zb = $('<div id="zoombox" style="left: '+x0+'px; top: '+y0+'px;"></div>').appendTo('body');
+            x0 = e.clientX-gbb.left,
+            y0 = e.clientY-gbb.top,
+            box = {l:x0,r:x0,w:0,t:y0,b:y0,h:0},
+            lum = gd.hmpixcount ? (gd.hmlumcount/gd.hmpixcount) : tinycolor(gd.layout.plot_bgcolor).toHsl().l,
+            path0 = 'M0,0H'+pw+'V'+ph+'H0V0',
+            zb = gd.plot.append('path').attr('id','zoombox')
+                .style('fill',lum>0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0')
+                .attr('stroke-width',0)
+                .attr('d',path0+'Z'),
+            dimmed = false;
         window.onmousemove = function(e2) {
-            var x1 = Math.max(gbb.left,Math.min(gbb.right,e2.clientX)),
-                y1 = Math.max(gbb.top,Math.min(gbb.bottom,e2.clientY));
+            var x1 = Math.max(0,Math.min(pw,e2.clientX-gbb.left)),
+                y1 = Math.max(0,Math.min(ph,e2.clientY-gbb.top));
+            box = { l:Math.min(x0,x1), r:Math.max(x0,x1), w:Math.abs(x0-x1),
+                    t:Math.min(y0,y1), b:Math.max(y0,y1), h:Math.abs(y0-y1)};
             // Not sure about the addition of window.scrollX/Y... seems to work but doesn't seem robust.
-            zb.css({
-                left: (Math.min(x0,x1)+window.scrollX)+'px',
-                top: (Math.min(y0,y1)+window.scrollY)+'px',
-                width: Math.abs(x0-x1)+'px',
-                height: Math.abs(y0-y1)+'px'
-            })
-            .addClass(tinycolor(gd.layout.plot_bgcolor).toHsl().l>0.3 ? 'dark' : 'light');
+            zb.attr('d',path0+'M'+(box.l)+','+(box.t)+'v'+(box.h)+'h'+(box.w)+'v-'+(box.h)+'h-'+(box.w)+'Z');
+            if(!dimmed) {
+                zb.transition().duration(200)
+                    .style('fill', lum>0.2 ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.3)');
+                dimmed = true;
+            }
             return pauseEvent(e);
         }
         window.onmouseup = function(e2) {
             window.onmousemove = null;
             window.onmouseup = null;
-            var zbb = zb[0].getBoundingClientRect();
-            if(Math.min(zbb.height,zbb.width)<MINDRAG*2) {
+            if(Math.min(box.h,box.w)<MINDRAG*2) {
                 if((new Date()).getTime()-mouseDown<DBLCLICKDELAY && numClicks==2) { // double click
-                    gx.autorange=true;
-                    gy.autorange=true;
+                    xa.autorange=true;
+                    ya.autorange=true;
                     dragTail(gd);
                 }
                 return finishZB();
             }
             var zoomIn = function(){
-                gx.range=[gx.range[0]+(gx.range[1]-gx.range[0])*(zbb.left-gbb.left)/gbb.width,
-                          gx.range[0]+(gx.range[1]-gx.range[0])*(zbb.right-gbb.left)/gbb.width];
-                gy.range=[gy.range[0]+(gy.range[1]-gy.range[0])*(gbb.bottom-zbb.bottom)/gbb.height,
-                          gy.range[0]+(gy.range[1]-gy.range[0])*(gbb.bottom-zbb.top)/gbb.height];
+                xa.range=[xa.range[0]+(xa.range[1]-xa.range[0])*(box.l)/pw,
+                          xa.range[0]+(xa.range[1]-xa.range[0])*(box.r)/pw];
+                ya.range=[ya.range[0]+(ya.range[1]-ya.range[0])*(ph-box.b)/ph,
+                          ya.range[0]+(ya.range[1]-ya.range[0])*(ph-box.t)/ph];
                 finishZB();
-                gx.autorange=false;
-                gy.autorange=false;
+                xa.autorange=false;
+                ya.autorange=false;
                 dragTail(gd);
+                if(SHOWZOOMOUTTIP && (!gd.mainsite || !signedin('noprompt')) && gd.data) {
+                    notifier('Double-click to<br>zoom back out','long');
+                    SHOWZOOMOUTTIP=false;
+                }
             }
             var zoomOut = function(){
-                gx.range=[(gx.range[0]*(zbb.right-gbb.left)+gx.range[1]*(gbb.left-zbb.left))/zbb.width,
-                          (gx.range[0]*(zbb.right-gbb.right)+gx.range[1]*(gbb.right-zbb.left))/zbb.width];
-                gy.range=[(gy.range[0]*(gbb.bottom-zbb.top)+gy.range[1]*(zbb.bottom-gbb.bottom))/zbb.height,
-                          (gy.range[0]*(gbb.top-zbb.top)+gy.range[1]*(zbb.bottom-gbb.top))/zbb.height];
+                xa.range=[(xa.range[0]*(box.r)+xa.range[1]*(-box.l))/box.w,
+                          (xa.range[0]*(box.r-pw)+xa.range[1]*(pw-box.l))/box.w];
+                ya.range=[(ya.range[0]*(ph-box.t)+ya.range[1]*(box.b-ph))/box.h,
+                          (ya.range[0]*(-box.t)+ya.range[1]*(box.b))/box.h];
                 finishZB();
-                gx.autorange=false;
-                gy.autorange=false;
+                xa.autorange=false;
+                ya.autorange=false;
                 dragTail(gd);
             }
 
@@ -1794,8 +1817,8 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                     '</ul></div>').appendTo('body');
                 var mbb = $('#zoomboxmenu ul')[0].getBoundingClientRect();
                 $('#zoomboxmenu ul').css({
-                    left:Math.min(e2.clientX,gbb.right-mbb.width)+'px',
-                    top:Math.min(e2.clientY,gbb.bottom-mbb.height)+'px',
+                    left:(Math.min(e2.clientX,gbb.right-mbb.width)+window.scrollX)+'px',
+                    top:(Math.min(e2.clientY,gbb.bottom-mbb.height)+window.scrollY)+'px',
                     'z-index':20001
                 });
                 $('#zoomboxbackdrop,#zoombox').click(finishZB);
@@ -1816,12 +1839,12 @@ function dragBox(gd,x,y,w,h,ns,ew) {
 
     function dragRange(e){
         if(ew) {
-            gx.r0=[gx.range[0],gx.range[1]];
-            gx.autorange=false;
+            xa.r0=[xa.range[0],xa.range[1]];
+            xa.autorange=false;
         }
         if(ns) {
-            gy.r0=[gy.range[0],gy.range[1]];
-            gy.autorange=false;
+            ya.r0=[ya.range[0],ya.range[1]];
+            ya.autorange=false;
         }
         gd.dragged = false;
         window.onmousemove = function(e2) {
@@ -1844,9 +1867,9 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             else if((new Date()).getTime()-mouseDown<DBLCLICKDELAY) {
                 if(numClicks==2) { // double click
                     if(ew=='ew')
-                        gx.autorange=true;
+                        xa.autorange=true;
                     if(ns=='ns')
-                        gy.autorange=true;
+                        ya.autorange=true;
                     if(ns=='ns'||ew=='ew')
                         plot(gd,'','');
                 }
@@ -1865,12 +1888,12 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         if(ew=='ew'||ns=='ns') {
             if(ew) {
                 gd.viewbox.x=-dx;
-                gx.range=[gx.r0[0]-dx/gx.m,gx.r0[1]-dx/gx.m];
+                xa.range=[xa.r0[0]-dx/xa.m,xa.r0[1]-dx/xa.m];
                 doTicks(gd,'x');
             }
             if(ns) {
                 gd.viewbox.y=-dy;
-                gy.range=[gy.r0[0]-dy/gy.m,gy.r0[1]-dy/gy.m];
+                ya.range=[ya.r0[0]-dy/ya.m,ya.r0[1]-dy/ya.m];
                 doTicks(gd,'y');
             }
             gd.plot.attr('viewBox',(ew ? -dx : 0)+' '+(ns ? -dy : 0)+' '+pw+' '+ph);
@@ -1878,23 +1901,23 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         }
 
         if(ew=='w') {
-            gx.range[0]=gx.r0[1]+(gx.r0[0]-gx.r0[1])/dZoom(dx/pw);
-            dx=pw*(gx.r0[0]-gx.range[0])/(gx.r0[0]-gx.r0[1]);
+            xa.range[0]=xa.r0[1]+(xa.r0[0]-xa.r0[1])/dZoom(dx/pw);
+            dx=pw*(xa.r0[0]-xa.range[0])/(xa.r0[0]-xa.r0[1]);
         }
         else if(ew=='e') {
-            gx.range[1]=gx.r0[0]+(gx.r0[1]-gx.r0[0])/dZoom(-dx/pw);
-            dx=pw*(gx.r0[1]-gx.range[1])/(gx.r0[1]-gx.r0[0]);
+            xa.range[1]=xa.r0[0]+(xa.r0[1]-xa.r0[0])/dZoom(-dx/pw);
+            dx=pw*(xa.r0[1]-xa.range[1])/(xa.r0[1]-xa.r0[0]);
         }
         else if(!ew)
             dx=0;
 
         if(ns=='n') {
-            gy.range[1]=gy.r0[0]+(gy.r0[1]-gy.r0[0])/dZoom(dy/ph);
-            dy=ph*(gy.r0[1]-gy.range[1])/(gy.r0[1]-gy.r0[0]);
+            ya.range[1]=ya.r0[0]+(ya.r0[1]-ya.r0[0])/dZoom(dy/ph);
+            dy=ph*(ya.r0[1]-ya.range[1])/(ya.r0[1]-ya.r0[0]);
         }
         else if(ns=='s') {
-            gy.range[0]=gy.r0[1]+(gy.r0[0]-gy.r0[1])/dZoom(-dy/ph);
-            dy=ph*(gy.r0[0]-gy.range[0])/(gy.r0[0]-gy.r0[1]);
+            ya.range[0]=ya.r0[1]+(ya.r0[0]-ya.r0[1])/dZoom(-dy/ph);
+            dy=ph*(ya.r0[0]-ya.range[0])/(ya.r0[0]-ya.r0[1]);
         }
         else if(!ns) {
             dy=0;
@@ -2178,8 +2201,8 @@ function legend(gd) {
     //  else if(xr>4/3-xc) gll.x=xr;
     //  else gll.x=xc;
     // similar logic for top/middle/bottom
-    gd.legend.node().onmousedown = function(e) {
-        if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
+    if(gd.mainsite) { gd.legend.node().onmousedown = function(e) {
+        if(dragClear(gd)) { return true } // deal with other UI elements, and allow them to cancel dragging
 
         var eln=this,
             el3=d3.select(this),
@@ -2243,7 +2266,7 @@ function legend(gd) {
             return pauseEvent(e2);
         }
         return pauseEvent(e);
-    }
+    } }
 }
 
 // -----------------------------------------------------
@@ -2495,7 +2518,7 @@ function annotation(gd,index,opt,value) {
                 .attr('stroke-width',strokewidth+6)
                 .call(strokeColor,'rgba(0,0,0,0)')
                 .call(fillColor,'rgba(0,0,0,0)');
-            arrowdrag.node().onmousedown = function(e) {
+            if(gd.mainsite) { arrowdrag.node().onmousedown = function(e) {
                 if(dragClear(gd)) { return true } // deal with other UI elements, and allow them to cancel dragging
 
                 var eln=this,
@@ -2532,7 +2555,7 @@ function annotation(gd,index,opt,value) {
                     return pauseEvent(e2);
                 }
                 return pauseEvent(e);
-            }
+            }}
         }
     }
     if(options.showarrow) {drawArrow(0,0)}
@@ -2545,7 +2568,7 @@ function annotation(gd,index,opt,value) {
     //  if(xl<2/3-xc) gll.x=xl;
     //  else if(xr>4/3-xc) gll.x=xr;
     //  else gll.x=xc;
-    ann.node().onmousedown = function(e) {
+    if(gd.mainsite) { ann.node().onmousedown = function(e) {
         if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
 
         var eln=this,
@@ -2600,7 +2623,7 @@ function annotation(gd,index,opt,value) {
             return pauseEvent(e2);
         }
         return pauseEvent(e);
-    }
+    }}
 }
 
 // set cursors pointing toward the closest corner/side, to indicate alignment
@@ -3770,3 +3793,18 @@ function plotlylog(str){
         console.log(str);
     }
 }
+
+function notifier(text,tm){
+    var notifier_id='notifier'+($('.notifier').length+1).toString();
+    var alertdiv='<div class="alert notifier" style="display:none;" id='+notifier_id+'>'+
+        '<button class="close" data-dismiss="alert" style="opacity:1;text-shadow:none;color:white;">×</button>'+
+        '<br><p>'+text+'</p></div>';
+
+    var mc=$('.middle-center,#embedded_graph')[0];
+    $(mc).append(alertdiv);
+    if(tm=='long') {
+        $('#'+notifier_id).fadeIn(2000).delay(2000).fadeOut(2000,function(){ $('#'+notifier_id).remove(); }); }
+    else{
+        $('#'+notifier_id).fadeIn(2000).fadeOut(2000,function(){ $('#'+notifier_id).remove(); }); }
+}
+
