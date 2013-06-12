@@ -253,6 +253,7 @@ function plot(divid, data, layout, rdrw) {
             delete ax.islog;
             delete ax.isdate;
             // guess at axis type with the new property format
+
             // first check for histograms, as they can change the axis types
             // whatever else happens, horz bars switch the roles of x and y axes
             if((BARTYPES.indexOf(d0.type)!=-1) && (d0.bardir=='h')){
@@ -273,6 +274,7 @@ function plot(divid, data, layout, rdrw) {
                 }
             }
             // then check the data supplied for that axis
+
             if( ( axletter in d0) ? moreDates(d0[axletter]) : (isDateTime(d0[axletter+'0'])===true ) ) {
                 ax.type='date';
             }
@@ -505,6 +507,7 @@ function plot(divid, data, layout, rdrw) {
                     }
                 }
             }
+
         }
         else if(HEATMAPTYPES.indexOf(curvetype)!=-1 ){
             // calcdata ("cd") for heatmaps:
@@ -725,6 +728,7 @@ function plot(divid, data, layout, rdrw) {
         // 4. scatter
         var cdbar = [], cdscatter = [];
         for(var i in gd.calcdata){
+
             var cd = gd.calcdata[i], type=cd[0].t.type;//, c = t.curve, gdc = gd.data[c];
             if(HEATMAPTYPES.indexOf(type)!=-1) {
                 heatmap(cd,rdrw,gd);
@@ -979,6 +983,7 @@ function setStyles(gd) {
             mergeattr(gdc.text,'tx','');
             mergeattr(gdc.name,'name','trace '+c);
         }
+
         else if(HEATMAPTYPES.indexOf(type)!=-1){
             if(type==='histogram2d') {
                 mergeattr(gdc.autobinx,'autobinx',true);
@@ -1003,6 +1008,7 @@ function setStyles(gd) {
             mergeattr(gdc.zmax,'zmax',10);
             mergeattr(JSON.stringify(gdc.scl),'scl',defaultScale);
         }
+
         else if(BARTYPES.indexOf(type)!=-1){
             if(type!='bar') {
                 mergeattr(gdc.autobinx,'autobinx',true);
@@ -1031,6 +1037,7 @@ function applyStyle(gp) {
     gp.selectAll('g.trace')
         .call(traceStyle);
     gp.selectAll('g.points')
+
         .each(function(d){
             d3.select(this).selectAll('path').call(pointStyle,d[0].t);
             d3.select(this).selectAll('rect').call(pointStyle,d[0].t);
@@ -1261,6 +1268,7 @@ function restyle(gd,astr,val,traces) {
     }
 
     // set attribute in gd.data
+
     // also check whether we have heatmaps in the edited traces
     var aa=astr.split('.'),
         hasheatmap=false,
@@ -1276,14 +1284,15 @@ function restyle(gd,astr,val,traces) {
 
         // now dig into the heirarchy
         for(var j=0; j<aa.length-1; j++){
-            if(cont[aa[j]]===undefined){
+            if(cont[aa[j]]===undefined){ 
                 cont[aa[j]] = {};       // CP edit: build the heiracrchy if it doesn't exist
                                         // e.g. if setting error_y.clr="blue"
-                                        // and errorbar isn't defined, then initialize
+                                        // and errorbar isn't defined, then initialize 
                                         // errorbar and y
             }
             cont=cont[aa[j]];  // get to the 2nd-to-last level
         }
+
         cont[aa[j]]=val; // set the value
     }
 
@@ -2514,8 +2523,13 @@ function annotation(gd,index,opt,value) {
                     arrowgroup.attr('transform','translate('+dx+','+dy+')');
                     ann.call(setPosition, annx0+dx, anny0+dy);
                     if(options.ref=='paper') {
+//<<<<<<< HEAD
+                        xf=(ax+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0));
+                        yf=(ay+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0));
+/*=======
                         xf=(ax+dx-gm.l)/(gl.width-gm.l-gm.r);
                         yf=1-((ay+dy-gm.t)/(gl.height-gm.t-gm.b));
+//>>>>>>> 53850630f1349f5ffaa9780837267c7636273054*/
                     }
                     else {
                         xf = options.x+dx/gd.layout.xaxis.m;
@@ -2621,11 +2635,10 @@ function nineCursors(x,y){
 }
 
 // add arrowhead(s) to a path or line d3 element el3
-// style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none
+// style: 1-6, first 5 are pointers, 6 is circle, 7 is square
 // ends is 'start', 'end' (default), 'start+end'
 // mag is magnification vs. default (default 1)
 function arrowhead(el3,style,ends,mag) {
-    if(!$.isNumeric(mag)) { mag=1 }
     var el = el3.node();
         s = ['M-1,-2V2L1,0Z',
             'M-2,-2V2L2,0Z',
@@ -2633,8 +2646,7 @@ function arrowhead(el3,style,ends,mag) {
             'M-2.2,-2.2L0,0L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',
             'M-4.2,-2.1L0,0L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',
             'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',
-            'M2,2V-2H-2V2Z',
-            ''][style-1];
+            'M2,2V-2H-2V2Z'][style-1];
     if(!s) return;
     if(typeof ends != 'string' || !ends) ends = 'end';
 
@@ -2654,7 +2666,7 @@ function arrowhead(el3,style,ends,mag) {
 
     var drawhead = function(p,q) {
         var rot = Math.atan2(p.y-q.y,p.x-q.x)*180/Math.PI,
-            scale = (el3.attr('stroke-width') || 1)*(mag),
+            scale = (el3.attr('stroke-width') || 1)*(mag||1),
             stroke = el3.attr('stroke') || '#000',
             opacity = el3.style('stroke-opacity') || 1;
         if(style>5) { rot=0 } // don't rotate square or circle
@@ -2679,7 +2691,7 @@ function allArrowheads(container){
     // with no args, output an array of elements for the dropdown list
     if(!container) {
         out=[];
-        for(var i=1; i<=8; i++){
+        for(var i=1; i<=7; i++){
             out.push({
                 val:i,
                 name:'<svg width="40" height="20" data-arrowhead="'+i+'" style="position: relative; top: 2px;">'+
@@ -2934,6 +2946,7 @@ function autoGrowInput(eln) {
 function calcTicks(gd,a) {
     // calculate max number of (auto) ticks to display based on plot size
     // TODO: take account of actual label size here
+
     // TODO: rotated ticks for categories or dates
     if(a.autotick || !a.dtick){
         var nt = a.nticks ||
@@ -2978,6 +2991,7 @@ function calcTicks(gd,a) {
     a.tmax=vals[vals.length-1]; // save the last tick as well as first, so we can eg show the exponent only on the last one
     return vals.map(function(x){return tickText(gd, a, x)});
 }
+
 
 // autoTicks: calculate best guess at pleasant ticks for this axis
 // takes in the axis object a, and rough tick spacing rt
@@ -3095,6 +3109,7 @@ function autoTickRound(a) {
     else { a.tickround = null }
 }
 
+/*>>>>>>> 891800c0e60c48768f22339e71effe31b09856f6*/
 // return the smallest element from (sorted) array a that's bigger than val
 // UPDATE: now includes option to reverse, ie find the largest element smaller than val
 // used to find the best tick given the minimum (non-rounded) tick
@@ -3406,7 +3421,7 @@ function doTicks(gd,ax) {
 
     // zero line
     var zl = gd.axislayer.selectAll('line.'+zcls).data(a.range[0]*a.range[1]<=0 ? [{x:0}] : []);
-    if(a.zeroline && a.type=='linear') {
+    if(a.zeroline) {
         zl.enter().append('line').classed(zcls,1).classed('zl',1)
             .call(strokeColor, a.zerolinecolor || '#000')
             .attr('stroke-width', a.zerolinewidth || gridwidth)
