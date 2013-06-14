@@ -169,7 +169,7 @@ var HEATMAPTYPES = ['heatmap','histogram2d'];
 var TIMER=0
 
 function markTime(s){
-//     if(!VERBOSE) { return }
+    if(!VERBOSE) { return }
     var t2 = new Date().getTime();
     console.log(s,t2-TIMER,'(msec)');
     TIMER=t2;
@@ -225,9 +225,15 @@ function plot(divid, data, layout, rdrw) {
     var gl=gd.layout, gdd=gd.data, gp=gd.plot;
     var xa=gl.xaxis, ya=gl.yaxis;
     var x, xy, y, i, serieslen, dcnt, ncnt, v0, dv, gdc;
-    var xdr=[null,null];
-    var ydr=[null,null];
-    var hasbars={h:false,v:false}; // whether we have h and/or v bars (so we can cut margins if an axis starts or ends at 0)
+    // separate auto data ranges for tight-fitting and padded bounds
+    // at the end we will combine all of these, but keep them separate until then
+    // so we can choose on a trace-by-trace basis whether to pad, but choose padding
+    // based on the range of all traces
+    var xtight=[null,null],xpadded=[null,null];
+    var ytight=[null,null],ypadded=[null,null];
+    // if we have bars or fill-to-zero traces, make sure autorange goes to zero
+    var includezero={h:false,v:false};
+    var firstscatter = true; // because fill-to-next on the first scatter trace goes to zero
 
     // do we need to check the axis types?
     // to force axtypes to be called again, set gd.axtypesok to false before calling plot()
@@ -253,7 +259,6 @@ function plot(divid, data, layout, rdrw) {
             delete ax.islog;
             delete ax.isdate;
             // guess at axis type with the new property format
-
             // first check for histograms, as they can change the axis types
             // whatever else happens, horz bars switch the roles of x and y axes
             if((BARTYPES.indexOf(d0.type)!=-1) && (d0.bardir=='h')){
@@ -274,7 +279,6 @@ function plot(divid, data, layout, rdrw) {
                 }
             }
             // then check the data supplied for that axis
-
             if( ( axletter in d0) ? moreDates(d0[axletter]) : (isDateTime(d0[axletter+'0'])===true ) ) {
                 ax.type='date';
             }
@@ -285,9 +289,7 @@ function plot(divid, data, layout, rdrw) {
                 ax.type='category';
                 ax.categories=[]; // empty out the category list, to be filled in by convertToAxis
             }
-            else {
-                if(ax.type!='log') { ax.type='linear' } // in case the user has already chosen log
-            }
+            else if(ax.type!='log') { ax.type='linear' } // in case the user has already chosen log
         }
 
         setAxType(xa,'x');
@@ -296,9 +298,9 @@ function plot(divid, data, layout, rdrw) {
     }
 
     // calcdata to axis mapping (identity except for log axes)
-    var toLog = function(v){if(v<=0) { return null } return Math.log(v)/Math.LN10},
-        fromLog = function(v){return Math.pow(10,v)},
-        num = function(v){return $.isNumeric(v) ? v : null}
+    function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null }
+    function fromLog(v){ return Math.pow(10,v) }
+    function num(v){ return $.isNumeric(v) ? v : null }
     xa.toAxis = (xa.type=='log') ? toLog : num;
     ya.toAxis = (ya.type=='log') ? toLog : num;
     xa.toData = (xa.type=='log') ? fromLog : num;
@@ -311,6 +313,118 @@ function plot(divid, data, layout, rdrw) {
     gd.hmlumcount=0;
 
     markTime('done setAxType');
+
+    // this function takes an x or y value and converts it to a position on the axis object "ax"
+    // data - a string, either 'x' or 'y'
+    // ax - an x or y axis object
+    // counterdata - the other axis data to compare to, either gdc.x or gdc.y
+    function convertOne(gdc,data,ax) {
+        var counterdata = gdc[{x:'y',y:'x'}[data]];
+        if(data in gdc) { return convertToAxis(gdc[data],ax) }
+        else {
+            var v0 = ((data+'0') in gdc) ? convertToAxis(gdc[data+'0'], ax) : 0,
+                dv = (gdc['d'+data]) ? gdc['d'+data] : 1;
+            return counterdata.map(function(v,i){return v0+i*dv});
+        }
+    }
+
+    // include new data in the outer x or y limits of the curves processed so far
+    var expandBounds = function(ax,dr,data,serieslen,pad) {
+        if(!ax.autorange || !data) { return }
+        pad = pad || 0; // optional extra space to give these new data points
+        serieslen = serieslen || data.length;
+        dr[0] = aggNums(Math.min, $.isNumeric(dr[0]) ? dr[0] : null,
+            data.map(function(v){return ax.toAxis(v-pad)}), serieslen);
+        dr[1] = aggNums(Math.max, $.isNumeric(dr[1]) ? dr[1] : null,
+            data.map(function(v){return ax.toAxis(v+pad)}), serieslen);
+    }
+
+    // expand data range to include a tight zero (if the data all has one
+    // sign and the axis is linear) and a padded opposite bound
+    var expandWithZero = function(ax,data,serieslen,pad) {
+        if(!ax.autorange) { return }
+
+        if(ax==xa) { tight=xtight; padded=xpadded }
+        else { tight=ytight; padded=ypadded }
+
+        var dr = [null,null];
+        expandBounds(ax,dr,data,serieslen,pad);
+
+        if(dr[0]>=0 && ax.type=='linear') { tight[0] = Math.min(0,tight[0]) }
+        else { padded[0]=Math.min(dr[0],padded[0]) }
+
+        if(dr[1]<=0 && ax.type=='linear') { tight[1] = Math.max(0,tight[1]) }
+        else { padded[1]=Math.max(dr[1],padded[1]) }
+    }
+
+    // std deviation function using aggNums, so it handles non-numerics nicely
+    // even need to use aggNums instead of .length, so we toss out non-numerics there
+    var stdev = function(data) {
+        var len = aggNums(function(a,b){return a+1},0,data),
+            mean = aggNums(function(a,b){return a+b},0,data)/len;
+        return Math.sqrt(aggNums(function(a,b){return a+Math.pow(b-mean,2)},0,data)/len);
+    }
+
+    function autoBin(data,ax,nbins,is2d) {
+        var datamin = aggNums(Math.min,null,data),
+            datamax = aggNums(Math.max,null,data);
+        if(ax.type=='category') {
+            return {
+                start: datamin-0.5,
+                end: datamax+0.5,
+                size: 1
+            }
+        }
+        else {
+            var size0 = nbins ? ((datamax-datamin)/nbins) :
+                2*stdev(data)/Math.pow(data.length,is2d ? 0.25 : 0.4);
+            // piggyback off autotick code to make "nice" bin sizes
+            var dummyax = {type:ax.type,range:[datamin,datamax]};
+            autoTicks(dummyax,size0);
+            var binstart = tickIncrement(tickFirst(dummyax),dummyax.dtick,'reverse');
+            // check for too many data points right at the edges of bins (>50% within 1% of bin edges)
+            // or all data points integral
+            // and offset the bins accordingly
+            var edgecount = 0, intcount = 0;
+            for(var i=0; i<data.length; i++) {
+                if(data[i]%1==0) { intcount++ }
+                if((1+(data[i]-binstart)*100/dummyax.dtick)%100<2) { edgecount++ }
+            }
+            if(intcount==data.length && ax.type!='date') {
+                binstart -= 0.5;
+                if(dummyax.dtick<1) { dummyax.dtick=1 }
+            }
+            else if(edgecount>data.length/2) {
+                var binshift = (tickIncrement(binstart,dummyax.dtick)-binstart)/2;
+                binstart += (binstart+binshift<datamin) ? binshift : -binshift;
+            }
+            // calculate the endpoint
+            var binend = binstart;
+            while(binend<datamax) { binend = tickIncrement(binend,dummyax.dtick) }
+            return {
+                start: binstart,
+                end: binend,
+                size: dummyax.dtick
+            }
+        }
+    }
+
+    // find the bin for val
+    // for linear bins, we can just calculate. For listed bins, run a binary search
+    function findBin(val,bins) {
+        if($.isNumeric(bins.start)) {
+            return Math.floor((val-bins.start)/bins.size)
+        }
+        else {
+            var n1=0, n2=bins.length-1;
+            while(n1<n2){
+                n=Math.floor((n1+n2/2));
+                if(bins[n]<=val) { n1=n+1 }
+                else { n2=n }
+            }
+            return n1;
+        }
+    }
 
     for(curve in gdd) {
         var gdc=gdd[curve],
@@ -333,102 +447,6 @@ function plot(divid, data, layout, rdrw) {
             else gdc.name='trace '+curve;
         }
 
-        // this function takes an x or y value and converts it to a position on the axis object "ax"
-        // data - a string, either 'x' or 'y'
-        // ax - an x or y axis object
-        // counterdata - the other axis data to compare to, either gdc.x or gdc.y
-        var convertOne = function(data,ax,counterdata) {
-            if(data in gdc) { return convertToAxis(gdc[data],ax) }
-            else {
-                var v0 = ((data+'0') in gdc) ? convertToAxis(gdc[data+'0'], ax) : 0,
-                    dv = (('d'+data) in gdc) ? gdc['d'+data] : 1;
-                return counterdata.map(function(v,i){return v0+i*dv});
-            }
-        }
-
-        // this function returns the outer x or y limits of the curves processed so far
-        var expandBounds = function(ax,dr,data,serieslen,pad) {
-            if(ax.autorange) {
-                pad = pad || 0; // optional extra space to give these new data points
-                serieslen = serieslen || data.length;
-                dr[0] = aggNums(Math.min, $.isNumeric(dr[0]) ? dr[0] : null,
-                    data.map(function(v){return ax.toAxis(v-pad)}), serieslen);
-                dr[1] = aggNums(Math.max, $.isNumeric(dr[1]) ? dr[1] : null,
-                    data.map(function(v){return ax.toAxis(v+pad)}), serieslen);
-            }
-        }
-
-        // std deviation function using aggNums, so it handles non-numerics nicely
-        // even need to use aggNums instead of .length, so we toss out non-numerics there
-        var stdev = function(data) {
-            var len = aggNums(function(a,b){return a+1},0,data),
-                mean = aggNums(function(a,b){return a+b},0,data)/len;
-            return Math.sqrt(aggNums(function(a,b){return a+Math.pow(b-mean,2)},0,data)/len);
-        }
-
-        var autoBin = function(data,ax,nbins,is2d) {
-            var datamin = aggNums(Math.min,null,data),
-                datamax = aggNums(Math.max,null,data);
-            if(ax.type=='category') {
-                return {
-                    start: datamin-0.5,
-                    end: datamax+0.5,
-                    size: 1
-                }
-            }
-            else {
-                var size0 = nbins ? ((datamax-datamin)/nbins) :
-                    2*stdev(data)/Math.pow(data.length,is2d ? 0.25 : 0.4);
-//                 console.log(size0,datamin,datamax);
-                // piggyback off autotick code to make "nice" bin sizes
-                var dummyax = {type:ax.type,range:[datamin,datamax]};
-                autoTicks(dummyax,size0);
-                var binstart = tickIncrement(tickFirst(dummyax),dummyax.dtick,'reverse');
-                // check for too many data points right at the edges of bins (>50% within 1% of bin edges)
-                // or all data points integral
-                // and offset the bins accordingly
-                var edgecount = 0, intcount = 0;
-                for(var i=0; i<data.length; i++) {
-                    if(data[i]%1==0) { intcount++ }
-                    if((1+(data[i]-binstart)*100/dummyax.dtick)%100<2) { edgecount++ }
-                }
-                if(intcount==data.length && ax.type!='date') {
-                    binstart -= 0.5;
-                    if(dummyax.dtick<1) { dummyax.dtick=1 }
-                }
-                else if(edgecount>data.length/2) {
-                    var binshift = (tickIncrement(binstart,dummyax.dtick)-binstart)/2;
-                    binstart += (binstart+binshift<datamin) ? binshift : -binshift;
-                }
-                // calculate the endpoint
-                var binend = binstart;
-                while(binend<datamax) { binend = tickIncrement(binend,dummyax.dtick) }
-                return {
-                    start: binstart,
-                    end: binend,
-                    size: dummyax.dtick
-                }
-            }
-        }
-
-        // find the bin for val
-        // for linear bins, we can just calculate. For listed bins, run a binary search
-        var findBin = function(val,bins) {
-            if($.isNumeric(bins.start)) {
-                return Math.floor((val-bins.start)/bins.size)
-            }
-            else {
-                var n1=0,
-                    n2=bins.length-1;
-                while(n1<n2){
-                    n=Math.floor((n1+n2/2));
-                    if(bins[n]<=val) { n1=n+1 }
-                    else { n2=n }
-                }
-                n = n1;
-            }
-        }
-
         if(curvetype=='scatter') {
             // verify that data exists, and make scaled data if necessary
             if(!('y' in gdc) && !('x' in gdc)) { continue } // no data!
@@ -436,37 +454,69 @@ function plot(divid, data, layout, rdrw) {
             // ignore as much processing as possible (and including in autorange) if trace is not visible
             if(gdc.visible!=false) {
 
-                y = convertOne('y',ya,gdc.x);
-                x = convertOne('x',xa,gdc.y);
+                y = convertOne(gdc,'y',ya);
+                x = convertOne(gdc,'x',xa);
 
                 serieslen = Math.min(x.length,y.length);
 
-                expandBounds(xa,xdr,x,serieslen);
-                expandBounds(ya,ydr,y,serieslen);
+                console.log(gdc.fill,gdc.mode,serieslen,firstscatter);
+                // check whether x bounds should be tight or padded
+                // regardless of everything else, y errorbars mean x should be padded
+                if(gdc.error_y && gdc.error_y.visible) {
+                    expandBounds(xa,xpadded,x,serieslen);
+                }
+                // include zero (tight) and extremes (padded) if fill to zero
+                else if(gdc.fill=='tozerox' || (gdc.fill=='tonextx' && firstscatter)) {
+                    expandWithZero(xa,x,serieslen);
+                }
+                // tight x: any y fill, or no markers
+                else if(['tonexty','tozeroy'].indexOf(gdc.fill)!=-1 ||
+                  (gdc.mode && gdc.mode.indexOf('markers')==-1) || // explicit no markers
+                  (!gdc.mode && serieslen>=PTS_LINESONLY)) { // automatic no markers
+                    console.log('here')
+                    expandBounds(xa,xtight,x,serieslen);
+                }
+                // otherwise both ends padded
+                else {
+                    expandBounds(xa,xpadded,x,serieslen);
+                }
+
+                // now check for y - rather different logic
+                // include zero (tight) and extremes (padded) if fill to zero
+                if(gdc.fill=='tozeroy' || (gdc.fill=='tonexty' && firstscatter)) {
+                    expandWithZero(ya,y,serieslen);
+                }
+                // tight y: any x fill
+                else if(['tonextx','tozerox'].indexOf(gdc.fill)!=-1) {
+                    expandBounds(ya,ytight,y,serieslen);
+                }
+                // otherwise both ends padded - whether or not there are markers
+                else {
+                    expandBounds(ya,ypadded,y,serieslen);
+                }
 
                 // create the "calculated data" to plot
-                for(i=0;i<serieslen;i++)
+                for(i=0;i<serieslen;i++) {
                     cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ? {x:x[i],y:y[i]} : {x:false, y:false});
+                }
+                firstscatter = false;
             }
             // even if trace is not visible, need to figure out whether there are enough points to trigger auto-no-lines
             else if(gdc.mode || ((!gdc.x || gdc.x.length<PTS_LINESONLY) && (!gdc.y || gdc.y.length<PTS_LINESONLY)))
                 cd=[{x:false, y:false}];
             else
                 for(i=0; i<PTS_LINESONLY+1; i++) cd.push({x:false, y:false});
-            // add the trace-wide properties to the first point, per point properties to every point
-            // t is the holder for trace-wide properties, start it with the curve num from gd.data
-            // in case some curves don't plot
         }
         else if(BARTYPES.indexOf(curvetype)!=-1) {
             // ignore as much processing as possible (and including in autorange) if bar is not visible
             if(gdc.visible!=false) {
-                hasbars[gdc.bardir||'v']=true;
+                includezero[gdc.bardir||'v']=true;
                 // depending on bar direction, set position and size axes and data ranges
-                if(gdc.bardir=='h') { var pa = ya, sa = xa, pdr = ydr, sdr = xdr }
-                else { var pa = xa, sa = ya, pdr = xdr, sdr = ydr }
+                if(gdc.bardir=='h') { var pa = ya, sa = xa}
+                else { var pa = xa, sa = ya}
                 if(curvetype=='bar') {
-                    size = convertOne('y',sa,gdc.x);
-                    pos = convertOne('x',pa,gdc.y);
+                    size = convertOne(gdc,'y',sa);
+                    pos = convertOne(gdc,'x',pa);
                 }
                 else { // histogram
                     // prepare the raw data
@@ -475,7 +525,7 @@ function plot(divid, data, layout, rdrw) {
                     // so gets made up monotonically increasing based on the opposite axis data,
                     // but the user will see that...
                     // the alternative would be to disable x histogram if there's no x data, etc.
-                    pos0 = convertOne(curvetype.charAt(9),pa,gdc[{x:'y',y:'x'}[curvetype.charAt(9)]]);
+                    pos0 = convertOne(gdc,curvetype.charAt(9),pa);
                     // calculate the bins
                     if((gdc.autobinx!=false) || !('xbins' in gdc)) { gdc.xbins = autoBin(pos0,pa,gdc.nbinsx) }
                     var allbins = (typeof(gdc.xbins.size)=='string'),
@@ -483,7 +533,8 @@ function plot(divid, data, layout, rdrw) {
                     // make the empty bin array
                     pos = [];
                     size = [];
-                    var i=gdc.xbins.start,i2,n;
+                    var i=gdc.xbins.start, i2, n, inc = [], count=0,
+                        norm = gdc.histnorm||'';
                     while(i<gdc.xbins.end) {
                         i2 = tickIncrement(i,gdc.xbins.size);
                         pos.push((i+i2)/2);
@@ -491,12 +542,19 @@ function plot(divid, data, layout, rdrw) {
                         // nonuniform bins (like months) we need to search,
                         // rather than straight calculate the bin we're in
                         if(allbins) { bins.push(i) }
+                        // nonuniform bins also need nonuniform normalization factors
+                        inc.push(norm.indexOf('density')!=-1 ? 1/(i2-i) : 1);
                         i=i2;
                     }
                     // bin the data
                     for(i=0; i<pos0.length; i++) {
                         n = findBin(pos0[i],bins);
-                        if(n>=0 && n<size.length) { size[n]+=1 }
+                        if(n>=0 && n<size.length) { size[n]+=inc[n]; count++ }
+                    }
+                    // normalize the data, if needed
+                    if(norm.indexOf('percent')!=-1) { count/=100 }
+                    if(norm.indexOf('probability')!=-1 || norm.indexOf('percent')!=-1) {
+                        size.forEach(function(v,i){ size[i]/=count });
                     }
                 }
 
@@ -509,7 +567,6 @@ function plot(divid, data, layout, rdrw) {
                     }
                 }
             }
-
         }
         else if(HEATMAPTYPES.indexOf(curvetype)!=-1 ){
             // calcdata ("cd") for heatmaps:
@@ -519,9 +576,9 @@ function plot(divid, data, layout, rdrw) {
             // prepare the raw data
             // run convertOne even for heatmaps, in case of category mappings
             markTime('start convert data');
-            x = gdc.x ? convertOne('x',xa,gdc.x) : [];
+            x = gdc.x ? convertOne(gdc,'x',xa) : [];
             markTime('done convert x');
-            y = gdc.y ? convertOne('y',ya,gdc.y) : [];
+            y = gdc.y ? convertOne(gdc,'y',ya) : [];
             markTime('done convert y');
             if(gdc.type=='histogram2d') {
                 serieslen = Math.min(x.length,y.length);
@@ -536,32 +593,56 @@ function plot(divid, data, layout, rdrw) {
                 gdc.z = [];
                 var onecol = [],
                     xbins = (typeof(gdc.xbins.size)=='string') ? [] : gdc.xbins,
-                    ybins = (typeof(gdc.xbins.size)=='string') ? [] : gdc.ybins;
+                    ybins = (typeof(gdc.xbins.size)=='string') ? [] : gdc.ybins,
+                    norm = gdc.histnorm||'';
                 for(var i=gdc.xbins.start; i<gdc.xbins.end; i=tickIncrement(i,gdc.xbins.size)) {
                     onecol.push(0);
                     if($.isArray(xbins)) { xbins.push(i) }
                 }
+                if($.isArray(xbins)) { xbins.push(i) }
+
                 var nx = onecol.length;
                 gdc.x0 = gdc.xbins.start;
                 gdc.dx = (i-gdc.x0)/nx;
                 gdc.x0+=gdc.dx/2;
+                var xinc = onecol.map(function(v,i){
+                    if(norm.indexOf('density')==-1) { return 1 }
+                    else if($.isArray(xbins)) { return 1/(xbins[i+1]-xbins[i]) }
+                    else { return 1/gdc.dx }
+                });
+
                 for(var i=gdc.ybins.start; i<gdc.ybins.end; i=tickIncrement(i,gdc.ybins.size)) {
                     gdc.z.push(onecol.concat())
                     if($.isArray(ybins)) { ybins.push(i) }
                 }
+                if($.isArray(ybins)) { ybins.push(i) }
+
                 var ny = gdc.z.length;
                 gdc.y0 = gdc.ybins.start;
                 gdc.dy = (i-gdc.y0)/ny;
                 gdc.y0+=gdc.dy/2;
+                var yinc = gdc.z.map(function(v,i){
+                    if(norm.indexOf('density')==-1) { return 1 }
+                    else if($.isArray(ybins)) { return 1/(ybins[i+1]-ybins[i]) }
+                    else { return 1/gdc.dy }
+                });
+
                 markTime('done making bins');
                 // put data into bins
+                var count = 0;
                 for(i=0; i<serieslen; i++) {
                     var n = findBin(x[i],xbins),
                         m = findBin(y[i],ybins);
-                    // TODO: why is y upside down?
-                    if(n>=0 && n<nx && m>=0 && m<ny) { gdc.z[m][n]+=1 }
+                    if(n>=0 && n<nx && m>=0 && m<ny) { gdc.z[m][n]+=xinc[n]*yinc[m]; count++ }
+                }
+                if(norm.indexOf('percent')!=-1) { count/=100 }
+                if(norm.indexOf('probability')!=-1 || norm.indexOf('percent')!=-1) {
+                    gdc.z.forEach(function(col){ col.forEach(function(v,i){
+                        col[i]/=count
+                    })});
                 }
                 markTime('done binning');
+
                 // make the rest of the heatmap info
                 if(gdc.zauto!==false) {
                     gdc.zmin=zmin(gdc.z);
@@ -572,8 +653,8 @@ function plot(divid, data, layout, rdrw) {
             // heatmap() builds a png heatmap on the coordinate system, see heatmap.js
             // returns the L, R, T, B coordinates for autorange as { x:[L,R], y:[T,B] }
             var coords = heatmap_xy(gd,gdc);
-            expandBounds(xa,xdr,coords.x);
-            expandBounds(ya,ydr,coords.y);
+            expandBounds(xa,xtight,coords.x);
+            expandBounds(ya,ytight,coords.y);
             cdtextras = coords; // store x and y arrays for later
         }
         if(!('line' in gdc)) gdc.line={};
@@ -608,8 +689,8 @@ function plot(divid, data, layout, rdrw) {
         if(!barlist[dir].length) { return }
         var bl = barlist[dir];
 
-        if(dir=='v') { var sa = ya, sdr = ydr, pa = xa, pdr = xdr }
-        else { var sa = xa, sdr = xdr, pa = ya, pdr = ydr }
+        if(dir=='v') { var sa = ya, pa = xa, pdr = xtight }
+        else { var sa = xa, pa = ya, pdr = ytight }
 
         // bar position offset and width calculation
         function barposition(bl1) {
@@ -629,10 +710,10 @@ function plot(divid, data, layout, rdrw) {
                     pv2.push(pvals[i+1]);
                 }
             }
-            barDiff*=(1-gl.bargap);
-            // position axis autorange
-            expandBounds(pa,pdr,pv2,pv2.length,barDiff*(1-gl.bargroupgap/bl.length)/2);
+            // position axis autorange - always tight fitting
+            expandBounds(pa,pdr,pv2,pv2.length,barDiff/2);
             // bar widths and position offsets
+            barDiff*=(1-gl.bargap);
             if(gl.barmode=='group') { barDiff/=bl.length }
             for(var i=0; i<bl1.length; i++){
                 var t=gd.calcdata[bl1[i]][0].t;
@@ -647,9 +728,7 @@ function plot(divid, data, layout, rdrw) {
         }
         // group or stack, make sure all bar positions are available for all traces
         // by finding the closest two points in any of the traces
-        else {
-            barposition(bl);
-        }
+        else { barposition(bl) }
 
         // bar size range and stacking calculation
         if(gl.barmode=='stack'){
@@ -675,20 +754,18 @@ function plot(divid, data, layout, rdrw) {
                     }
                 }
             }
-            expandBounds(sa,sdr,[sMin,sMax]);
+            expandWithZero(sa,[sMin,sMax]);
         }
         else {
             for(var i=0; i<bl.length; i++){
-                expandBounds(sa,sdr,gd.calcdata[bl[i]].map(function(v){return v.s}));
+                expandWithZero(sa,gd.calcdata[bl[i]].map(function(v){return v.s}));
             }
-            // make sure we include zero so we see the whole bar
-            if(xa.type=='linear') { expandBounds(sa,sdr,[0]) }
         }
     });
     markTime('done with setstyles and bar chart ranging');
 
     // autorange for errorbars
-    errorbarsydr(gd,ydr);
+    expandBounds(ya,ypadded,errorbarsydr(gd));
     markTime('done errorbarsydr');
 
     // autorange
@@ -699,21 +776,27 @@ function plot(divid, data, layout, rdrw) {
 
     // if there are bars in a direction and one end of the axis is 0,
     // remove the 5% padding from that side
-    var doAutoRange = function(ax,dr,hasbars) {
-        if(ax.autorange && $.isNumeric(dr[0])) {
+    function doAutoRange(ax,tight,padded) {
+        // if any number is missing, set it so it's numeric but won't be limiting
+        if(!$.isNumeric(tight[0])) { tight[0] = padded[0] }
+        if(!$.isNumeric(tight[1])) { tight[1] = padded[1] }
+        if(!$.isNumeric(padded[0])) { padded[0] = (tight[0]+tight[1])/2 }
+        if(!$.isNumeric(padded[1])) { padded[1] = (tight[0]+tight[1])/2 }
+        if(ax.autorange && $.isNumeric(tight[0]) && $.isNumeric(tight[1])) {
             // if axis is currently reversed, preserve this.
             var axReverse = (ax.range && ax.range[1]<ax.range[0]);
-            if(dr[0]==dr[1]) { // don't let axis have zero size
-                dr = [ax.toData(ax.toAxis(dr[0])-1),ax.toData(ax.toAxis(dr[0])+1)]
-            }
-            ax.range=[
-                (hasbars && (dr[0]==0) && (ax.type=='linear')) ? 0 : (a0+1)*dr[0]-a0*dr[1],
-                (hasbars && (dr[1]==0) && (ax.type=='linear')) ? 0 : (a0+1)*dr[1]-a0*dr[0]];
+            // combine the padded and tight ranges
+            ax.range = [
+                Math.min(tight[0],(a0+1)*padded[0]-a0*Math.max(padded[1],tight[1])),
+                Math.max(tight[1],(a0+1)*padded[1]-a0*Math.min(padded[0],tight[0]))
+            ];
+            // don't let axis have zero size
+            if(ax.range[0]==ax.range[1]) { ax.range = [ax.range[0]-1,ax.range+1] }
             if(axReverse) { ax.range.reverse() }
         }
     }
-    doAutoRange(xa,xdr,hasbars.h);
-    doAutoRange(ya,ydr,hasbars.v);
+    doAutoRange(xa,xtight,xpadded);
+    doAutoRange(ya,ytight,ypadded);
 
     doTicks(gd);
 
@@ -730,7 +813,6 @@ function plot(divid, data, layout, rdrw) {
         // 4. scatter
         var cdbar = [], cdscatter = [];
         for(var i in gd.calcdata){
-
             var cd = gd.calcdata[i], type=cd[0].t.type;//, c = t.curve, gdc = gd.data[c];
             if(HEATMAPTYPES.indexOf(type)!=-1) {
                 heatmap(cd,rdrw,gd);
@@ -826,13 +908,14 @@ function plot(divid, data, layout, rdrw) {
             if(nexttonext) { tonext = nexttonext.attr('data-curve',t.cdcurve) }
             // now make a new nexttonext for next time
             nexttonext = tr.append('polyline').classed('fill',true).attr('data-curve',0);
+            var x0=y0=x1=y1=null;
             while(i<d.length) {
-                var pts='',x0=y0=x1=y1=null;
+                var pts='';
                 for(i++; i<d.length; i++) {
                     var x=xf(d[i],gd),y=yf(d[i],gd);
                     if(!$.isNumeric(x)||!$.isNumeric(y)) { break } // TODO: smart lines going off the edge?
                     pts+=x+','+y+' ';
-                    if(x0==null) { x0=x; y0=y }
+                    if(!$.isNumeric(x0)) { x0=x; y0=y }
                     x1=x; y1=y;
                 }
                 if(pts) {
@@ -842,11 +925,11 @@ function plot(divid, data, layout, rdrw) {
                     }
                 }
             }
-            if(pts2) { // TODO: need to alter the order in case of fill to next... but how?
+            if(pts2) {
                 if(tozero) {
                     if(t.fill.charAt(t.fill.length-1)=='y') { y0=y1=yf({y:0},gd,true) }
                     else { x0=x1=xf({x:0},gd,true) }
-                    tozero.attr('points',pts+x1+','+y1+' '+x0+','+y0);
+                    tozero.attr('points',pts2+x1+','+y1+' '+x0+','+y0);
                 }
                 else if(t.fill.substr(0,6)=='tonext') {
                     tonext.attr('points',pts+prevpts);
@@ -985,9 +1068,9 @@ function setStyles(gd) {
             mergeattr(gdc.text,'tx','');
             mergeattr(gdc.name,'name','trace '+c);
         }
-
         else if(HEATMAPTYPES.indexOf(type)!=-1){
             if(type==='histogram2d') {
+                mergeattr(gdc.histnorm,'histnorm','count');
                 mergeattr(gdc.autobinx,'autobinx',true);
                 mergeattr(gdc.nbinsx,'nbinsx',0);
                 mergeattr(gdc.xbins.start,'xbstart',0);
@@ -1010,9 +1093,9 @@ function setStyles(gd) {
             mergeattr(gdc.zmax,'zmax',10);
             mergeattr(JSON.stringify(gdc.scl),'scl',defaultScale);
         }
-
         else if(BARTYPES.indexOf(type)!=-1){
             if(type!='bar') {
+                mergeattr(gdc.histnorm,'histnorm','count');
                 mergeattr(gdc.autobinx,'autobinx',true);
                 mergeattr(gdc.nbinsx,'nbinsx',0);
                 mergeattr(gdc.xbins.start,'xbstart',0);
@@ -1039,7 +1122,6 @@ function applyStyle(gp) {
     gp.selectAll('g.trace')
         .call(traceStyle);
     gp.selectAll('g.points')
-
         .each(function(d){
             d3.select(this).selectAll('path').call(pointStyle,d[0].t);
             d3.select(this).selectAll('rect').call(pointStyle,d[0].t);
@@ -1270,7 +1352,6 @@ function restyle(gd,astr,val,traces) {
     }
 
     // set attribute in gd.data
-
     // also check whether we have heatmaps in the edited traces
     var aa=astr.split('.'),
         hasheatmap=false,
@@ -1286,15 +1367,14 @@ function restyle(gd,astr,val,traces) {
 
         // now dig into the heirarchy
         for(var j=0; j<aa.length-1; j++){
-            if(cont[aa[j]]===undefined){ 
+            if(cont[aa[j]]===undefined){
                 cont[aa[j]] = {};       // CP edit: build the heiracrchy if it doesn't exist
                                         // e.g. if setting error_y.clr="blue"
-                                        // and errorbar isn't defined, then initialize 
+                                        // and errorbar isn't defined, then initialize
                                         // errorbar and y
             }
             cont=cont[aa[j]];  // get to the 2nd-to-last level
         }
-
         cont[aa[j]]=val; // set the value
     }
 
@@ -1314,7 +1394,7 @@ function restyle(gd,astr,val,traces) {
     // also need to replot if a heatmap
     // also need to replot the error bars for several cases. TODO: if re-plotting error bars, don't re-plot scatter plots
     // TODO: lots of stuff here now... should we switch to looking for things that DON'T need plot?
-    var main_attr=['mode','visible','type','bardir','fill'],
+    var main_attr=['mode','visible','type','bardir','fill','histnorm'],
         hm_attr=['mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','zauto','scl'],
         eb_attr=['error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array'],
         hist_attr=[ 'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
@@ -1817,7 +1897,8 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                 dragTail(gd);
             }
 
-            // drag box context menu if any modifier key (other than shift) was pressed during either mousedown or mouseup
+            // drag box context menu if any modifier key (other than shift) was
+            // pressed during either mousedown or mouseup
             if(e.altKey||e.ctrlKey||e.metaKey||e2.altKey||e2.ctrlKey||e2.metaKey) {
                 $('<div class="modal-backdrop fade" id="zoomboxbackdrop"></div>'+
                     '<div class="open" id="zoomboxmenu"><ul class="dropdown-menu">'+
@@ -2546,13 +2627,8 @@ function annotation(gd,index,opt,value) {
                     arrowgroup.attr('transform','translate('+dx+','+dy+')');
                     ann.call(setPosition, annx0+dx, anny0+dy);
                     if(options.ref=='paper') {
-//<<<<<<< HEAD
-                        xf=(ax+dx-gm.l+(gd.lw<0 ? gd.lw : 0))/(gl.width-gm.l-gm.r-(gd.lw ? Math.abs(gd.lw) : 0));
-                        yf=(ay+dy-gm.t-(gd.lh>0 ? gd.lh : 0))/(gl.height-gm.t-gm.b-(gd.lh ? Math.abs(gd.lh) : 0));
-/*=======
                         xf=(ax+dx-gm.l)/(gl.width-gm.l-gm.r);
                         yf=1-((ay+dy-gm.t)/(gl.height-gm.t-gm.b));
-//>>>>>>> 53850630f1349f5ffaa9780837267c7636273054*/
                     }
                     else {
                         xf = options.x+dx/gd.layout.xaxis.m;
@@ -2658,10 +2734,11 @@ function nineCursors(x,y){
 }
 
 // add arrowhead(s) to a path or line d3 element el3
-// style: 1-6, first 5 are pointers, 6 is circle, 7 is square
+// style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none
 // ends is 'start', 'end' (default), 'start+end'
 // mag is magnification vs. default (default 1)
 function arrowhead(el3,style,ends,mag) {
+    if(!$.isNumeric(mag)) { mag=1 }
     var el = el3.node();
         s = ['M-1,-2V2L1,0Z',
             'M-2,-2V2L2,0Z',
@@ -2669,7 +2746,8 @@ function arrowhead(el3,style,ends,mag) {
             'M-2.2,-2.2L0,0L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',
             'M-4.2,-2.1L0,0L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',
             'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',
-            'M2,2V-2H-2V2Z'][style-1];
+            'M2,2V-2H-2V2Z',
+            ''][style-1];
     if(!s) return;
     if(typeof ends != 'string' || !ends) ends = 'end';
 
@@ -2689,7 +2767,7 @@ function arrowhead(el3,style,ends,mag) {
 
     var drawhead = function(p,q) {
         var rot = Math.atan2(p.y-q.y,p.x-q.x)*180/Math.PI,
-            scale = (el3.attr('stroke-width') || 1)*(mag||1),
+            scale = (el3.attr('stroke-width') || 1)*(mag),
             stroke = el3.attr('stroke') || '#000',
             opacity = el3.style('stroke-opacity') || 1;
         if(style>5) { rot=0 } // don't rotate square or circle
@@ -2714,7 +2792,7 @@ function allArrowheads(container){
     // with no args, output an array of elements for the dropdown list
     if(!container) {
         out=[];
-        for(var i=1; i<=7; i++){
+        for(var i=1; i<=8; i++){
             out.push({
                 val:i,
                 name:'<svg width="40" height="20" data-arrowhead="'+i+'" style="position: relative; top: 2px;">'+
@@ -2969,7 +3047,6 @@ function autoGrowInput(eln) {
 function calcTicks(gd,a) {
     // calculate max number of (auto) ticks to display based on plot size
     // TODO: take account of actual label size here
-
     // TODO: rotated ticks for categories or dates
     if(a.autotick || !a.dtick){
         var nt = a.nticks ||
@@ -3014,7 +3091,6 @@ function calcTicks(gd,a) {
     a.tmax=vals[vals.length-1]; // save the last tick as well as first, so we can eg show the exponent only on the last one
     return vals.map(function(x){return tickText(gd, a, x)});
 }
-
 
 // autoTicks: calculate best guess at pleasant ticks for this axis
 // takes in the axis object a, and rough tick spacing rt
@@ -3132,7 +3208,6 @@ function autoTickRound(a) {
     else { a.tickround = null }
 }
 
-/*>>>>>>> 891800c0e60c48768f22339e71effe31b09856f6*/
 // return the smallest element from (sorted) array a that's bigger than val
 // UPDATE: now includes option to reverse, ie find the largest element smaller than val
 // used to find the best tick given the minimum (non-rounded) tick
@@ -3444,7 +3519,7 @@ function doTicks(gd,ax) {
 
     // zero line
     var zl = gd.axislayer.selectAll('line.'+zcls).data(a.range[0]*a.range[1]<=0 ? [{x:0}] : []);
-    if(a.zeroline) {
+    if(a.zeroline && a.type=='linear') {
         zl.enter().append('line').classed(zcls,1).classed('zl',1)
             .call(strokeColor, a.zerolinecolor || '#000')
             .attr('stroke-width', a.zerolinewidth || gridwidth)
