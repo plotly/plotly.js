@@ -13,28 +13,24 @@ function heatmap_xy(gd,gdc){
         ya = gd.layout.yaxis;
     if($.isArray(y) && (y.length==m+1) && (gdc.type!='histogram2d') && (ya.type!='category')) {
         y = convertToAxis(y,ya);
-        console.log('yarr',y);
     }
     else {
         y=[];
         var y0 = (typeof(gdc.y0)=='number') ?
             gdc.y0 : convertToAxis(gdc.y0,ya);
         for(var i=0; i<=m; i++) { y.push(y0+gdc.dy*(i-0.5)) }
-        console.log('y',y);
     }
     var x = gdc.x,
         n = gdc.z[0].length, // num cols
         xa = gd.layout.xaxis;
     if($.isArray(x) && (x.length!=n+1) && (gdc.type!='histogram2d') && (xa.type!='category')) {
         x = convertToAxis(x,xa);
-        console.log('xarr',x);
     }
     else {
         x=[];
         var x0 = (typeof(gdc.x0)=='number') ?
             gdc.x0 : convertToAxis(gdc.x0,xa);
         for(var i=0; i<=n; i++) { x.push(x0+gdc.dx*(i-0.5)) }
-        console.log('x',x);
     }
     return {x:x,y:y};
 }
