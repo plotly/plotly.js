@@ -13,24 +13,28 @@ function heatmap_xy(gd,gdc){
         ya = gd.layout.yaxis;
     if($.isArray(y) && (y.length==m+1) && (gdc.type!='histogram2d') && (ya.type!='category')) {
         y = convertToAxis(y,ya);
+        console.log('yarr',y);
     }
     else {
         y=[];
         var y0 = (typeof(gdc.y0)=='number') ?
             gdc.y0 : convertToAxis(gdc.y0,ya);
         for(var i=0; i<=m; i++) { y.push(y0+gdc.dy*(i-0.5)) }
+        console.log('y',y);
     }
     var x = gdc.x,
         n = gdc.z[0].length, // num cols
         xa = gd.layout.xaxis;
     if($.isArray(x) && (x.length!=n+1) && (gdc.type!='histogram2d') && (xa.type!='category')) {
         x = convertToAxis(x,xa);
+        console.log('xarr',x);
     }
     else {
         x=[];
         var x0 = (typeof(gdc.x0)=='number') ?
             gdc.x0 : convertToAxis(gdc.x0,xa);
         for(var i=0; i<=n; i++) { x.push(x0+gdc.dx*(i-0.5)) }
+        console.log('x',x);
     }
     return {x:x,y:y};
 }
@@ -42,7 +46,6 @@ function heatmap_xy(gd,gdc){
 // dx = brick size in x (on plotly's x-axis)
 // same for y0, dy
 // z0 = minimum of colorscale
-
 // z1 = maximum of colorscale
 function default_hm(gdc,noZRange){
     if(!( 'z' in gdc )){ gdc.z=[[0,0],[0,0]] }
@@ -73,7 +76,6 @@ function heatmap(cd,rdrw,gd){
         xa = gd.layout.xaxis,
         ya = gd.layout.yaxis;
     // Set any missing keys to defaults
-
     // note: gdc.x (same for gdc.y) will override gdc.x0,dx if it exists and is the right size
     // should be an n+1 long array, containing all the pixel edges
     default_hm(gdc);
@@ -114,7 +116,7 @@ function heatmap(cd,rdrw,gd){
 
     var yrev = false, top=undefined, bottom=undefined;
     i=0; while(top===undefined && i<n) { top=yf({y:y[i]},gd); i++ }
-    i=n; while(bottom===undefined && i>0) { bottom=yf({y:y[i]},gd); i-- }
+    i=m; while(bottom===undefined && i>0) { bottom=yf({y:y[i]},gd); i-- }
     if(bottom<top) {
         var temp = top;
         top = bottom;

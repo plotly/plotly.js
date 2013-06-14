@@ -426,6 +426,24 @@ function plot(divid, data, layout, rdrw) {
         }
     }
 
+    // find distinct values in an array, lumping together ones that appear to
+    // just be off by a rounding error
+    // return the distinct values and the minimum difference between any two
+    function distinctVals(vals) {
+        vals.sort(function(a,b){return a-b});
+        var l = vals.length-1,
+            minDiff = (vals[l]-vals[0])||1,
+            errDiff = minDiff/(l||1)/10000,
+            v2=[vals[0]];
+        for(var i=0;i<l;i++) {
+            if(vals[i+1]>vals[i]+errDiff) { // make sure values aren't just off by a rounding error
+                minDiff=Math.min(minDiff,vals[i+1]-vals[i]);
+                p2.push(vals[i+1]);
+            }
+        }
+        return {vals:v2,minDiff:minDiff}
+    }
+
     for(curve in gdd) {
         var gdc=gdd[curve],
             curvetype = gdc.type || 'scatter', //default type is scatter
@@ -657,10 +675,25 @@ function plot(divid, data, layout, rdrw) {
             expandBounds(ya,ytight,coords.y);
             cdtextras = coords; // store x and y arrays for later
         }
+//         else if(curvetype=='box') {
+//             // box plots make no sense if you don't have both x and y
+//             if(!('y' in gdc) || !('x' in gdc) || gdc.visible==false) { continue }
+//
+//             y = convertOne(gdc,'y',ya);
+//             x = convertOne(gdc,'x',xa);
+//             // find x values
+//             var dv = distinctVals(x),
+//                 xvals = dv.vals,
+//                 dx = dv.minDiff/2,
+//                 cd = xvals.map(function(v){ return {x:v, y:[]} });
+//             // bin the points
+//             y.forEach(function(v){
+//             // calculate the stats
+//         }
         if(!('line' in gdc)) gdc.line={};
         if(!('marker' in gdc)) gdc.marker={};
         if(!('line' in gdc.marker)) gdc.marker.line={};
-        if(!cd[0]) { cd.push({}) } // make sure there is a first point
+        if(!cd[0]) { cd.push({x:false,y:false}) } // make sure there is a first point
         // add the trace-wide properties to the first point, per point properties to every point
         // t is the holder for trace-wide properties
         cd[0].t={
@@ -696,20 +729,23 @@ function plot(divid, data, layout, rdrw) {
         function barposition(bl1) {
             // find the min. difference between any points in any traces in bl1
             var pvals=[];
-            for(var i=0; i<bl1.length; i++){
-                gd.calcdata[bl1[i]].forEach(function(v){pvals.push(v.p)});
-            }
-            pvals.sort(function(a,b){return a-b});
-            var pl = pvals.length-1,
-                barDiff = (pvals[pl]-pvals[0])||1,
-                minDiff = barDiff/(pl||1)/100,
-                pv2=[pvals[0]];
-            for(var i=0;i<pl;i++) {
-                if(pvals[i+1]>pvals[i]+minDiff) { // make sure values aren't just off by a rounding error
-                    barDiff=Math.min(barDiff,pvals[i+1]-pvals[i]);
-                    pv2.push(pvals[i+1]);
-                }
-            }
+            bl1.forEach(function(i){
+                gd.calcdata[i].forEach(function(v){pvals.push(v.p)});
+            });
+            var dv = distinctVals(pvals),
+                pv2 = dv.vals,
+                barDiff = dv.minDiff;
+//             pvals.sort(function(a,b){return a-b});
+//             var pl = pvals.length-1,
+//                 barDiff = (pvals[pl]-pvals[0])||1,
+//                 minDiff = barDiff/(pl||1)/100,
+//                 pv2=[pvals[0]];
+//             for(var i=0;i<pl;i++) {
+//                 if(pvals[i+1]>pvals[i]+minDiff) { // make sure values aren't just off by a rounding error
+//                     barDiff=Math.min(barDiff,pvals[i+1]-pvals[i]);
+//                     pv2.push(pvals[i+1]);
+//                 }
+//             }
             // position axis autorange - always tight fitting
             expandBounds(pa,pdr,pv2,pv2.length,barDiff/2);
             // bar widths and position offsets
