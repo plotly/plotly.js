@@ -438,7 +438,7 @@ function plot(divid, data, layout, rdrw) {
         for(var i=0;i<l;i++) {
             if(vals[i+1]>vals[i]+errDiff) { // make sure values aren't just off by a rounding error
                 minDiff=Math.min(minDiff,vals[i+1]-vals[i]);
-                p2.push(vals[i+1]);
+                v2.push(vals[i+1]);
             }
         }
         return {vals:v2,minDiff:minDiff}
@@ -675,21 +675,37 @@ function plot(divid, data, layout, rdrw) {
             expandBounds(ya,ytight,coords.y);
             cdtextras = coords; // store x and y arrays for later
         }
-//         else if(curvetype=='box') {
-//             // box plots make no sense if you don't have both x and y
-//             if(!('y' in gdc) || !('x' in gdc) || gdc.visible==false) { continue }
+        else if(curvetype=='box') {
+            // box plots make no sense if you don't have both x and y
+            if(!('y' in gdc) || !('x' in gdc) || gdc.visible==false) { continue }
 //
-//             y = convertOne(gdc,'y',ya);
-//             x = convertOne(gdc,'x',xa);
-//             // find x values
-//             var dv = distinctVals(x),
-//                 xvals = dv.vals,
-//                 dx = dv.minDiff/2,
-//                 cd = xvals.map(function(v){ return {x:v, y:[]} });
-//             // bin the points
-//             y.forEach(function(v){
-//             // calculate the stats
-//         }
+            y = convertOne(gdc,'y',ya);
+            x = convertOne(gdc,'x',xa);
+            // find x values
+            var dv = distinctVals(x),
+                xvals = dv.vals,
+                dx = dv.minDiff/2,
+                cd = xvals.map(function(v){ return {x:v} }),
+                pts = xvals.map(function(){ return [] }),
+                l = xvals.length;
+            // bin the points
+            y.forEach(function(v,i){
+                if(!$.isNumeric(v)){ return }
+                var n = findBin(x[i],xvals);
+                if(n>=0 && n<l) { pts[n].push(v) }
+            });
+            // sort the bins and calculate the stats
+            pts.forEach(function(v,i){
+                v.sort(function(a,b){return a-b});
+                cd[i].y = v; // put points into calcdata
+                var l2 = (v.length-1)/2
+                cd[i].min = v[0];
+                cd[i].max = v[v.length-1];
+                cd[i].med = (v[Math.floor(l2)]+v[Math.ceil(l2)])/2;
+                cd[i].v25 = (v[Math.floor(l2/2)]+v[Math.ceil(l2/2)])/2;
+                cd[i].v75 = (v[Math.floor(3*l2/2)]+v[Math.ceil(3*l2/2)])/2;
+            });
+        }
         if(!('line' in gdc)) gdc.line={};
         if(!('marker' in gdc)) gdc.marker={};
         if(!('line' in gdc.marker)) gdc.marker.line={};
