@@ -42,7 +42,6 @@ function heatmap_xy(gd,gdc){
 // dx = brick size in x (on plotly's x-axis)
 // same for y0, dy
 // z0 = minimum of colorscale
-
 // z1 = maximum of colorscale
 function default_hm(gdc,noZRange){
     if(!( 'z' in gdc )){ gdc.z=[[0,0],[0,0]] }
@@ -73,7 +72,6 @@ function heatmap(cd,rdrw,gd){
         xa = gd.layout.xaxis,
         ya = gd.layout.yaxis;
     // Set any missing keys to defaults
-
     // note: gdc.x (same for gdc.y) will override gdc.x0,dx if it exists and is the right size
     // should be an n+1 long array, containing all the pixel edges
     default_hm(gdc);
@@ -114,7 +112,7 @@ function heatmap(cd,rdrw,gd){
 
     var yrev = false, top=undefined, bottom=undefined;
     i=0; while(top===undefined && i<n) { top=yf({y:y[i]},gd); i++ }
-    i=n; while(bottom===undefined && i>0) { bottom=yf({y:y[i]},gd); i-- }
+    i=m; while(bottom===undefined && i>0) { bottom=yf({y:y[i]},gd); i-- }
     if(bottom<top) {
         var temp = top;
         top = bottom;
@@ -150,7 +148,6 @@ function heatmap(cd,rdrw,gd){
 //         return;
 //     }
     // now redraw
-    $('#'+id).remove();
     if(wd<=0 || ht<=0) { return } // image is so far off-screen, we shouldn't even draw it
 
     var p = new PNGlib(wd,ht, 256);
@@ -177,6 +174,7 @@ function heatmap(cd,rdrw,gd){
     var yi=ypx(y[0]),yb=[yi,yi];
     var i,j,xi,x0,x1,c,pc,v;
     var xbi = xrev?0:1, ybi = yrev?0:1;
+    var pixcount = 0, lumcount = 0; // for collecting an average luminosity of the heatmap
     for(j=0; j<m; j++) {
         col = z[j];
         yb.reverse();
@@ -194,6 +192,9 @@ function heatmap(cd,rdrw,gd){
                 // (one value reserved for transparent (missing/non-numeric data)
                 c=s(Math.round((v-min)*255/(max-min)));
                 pc = p.color('0x'+c.substr(1,2),'0x'+c.substr(3,2),'0x'+c.substr(5,2));
+                var pix = (xb[1]-xb[0])*(yb[1]-yb[0]);
+                pixcount+=pix;
+                lumcount+=pix*tinycolor(c).toHsl().l;
             }
             else { pc = p.color(0,0,0,0) } // non-numeric shows as transparent TODO: make this an option
             for(xi=xb[0]; xi<xb[1]; xi++) { // TODO: Make brick spacing editable (ie x=1)
@@ -203,14 +204,18 @@ function heatmap(cd,rdrw,gd){
             }
         }
     }
+    gd.hmpixcount = (gd.hmpixcount||0)+pixcount;
+    gd.hmlumcount = (gd.hmlumcount||0)+lumcount;
 
     // http://stackoverflow.com/questions/6249664/does-svg-support-embedding-of-bitmap-images
     // https://groups.google.com/forum/?fromgroups=#!topic/d3-js/aQSWnEDFxIc
+    var imgstr = "data:image/png;base64,\n" + p.getBase64();
+    $('#'+id).remove(); // put this right before making the new image, to minimize flicker
     gd.plot.append('svg:image')
         .attr("id",id)
         .attr('class','pixelated') // we can hope...
         .attr("xmlns","http://www.w3.org/2000/svg")
-        .attr("xlink:href", "data:image/png;base64,\n" +p.getBase64())
+        .attr("xlink:href", imgstr)
         .attr("height",ht)
         .attr("width",wd)
         .attr("x",left)
