@@ -42,7 +42,6 @@ function heatmap_xy(gd,gdc){
 // dx = brick size in x (on plotly's x-axis)
 // same for y0, dy
 // z0 = minimum of colorscale
-
 // z1 = maximum of colorscale
 function default_hm(gdc,noZRange){
     if(!( 'z' in gdc )){ gdc.z=[[0,0],[0,0]] }
@@ -73,7 +72,6 @@ function heatmap(cd,rdrw,gd){
         xa = gd.layout.xaxis,
         ya = gd.layout.yaxis;
     // Set any missing keys to defaults
-
     // note: gdc.x (same for gdc.y) will override gdc.x0,dx if it exists and is the right size
     // should be an n+1 long array, containing all the pixel edges
     default_hm(gdc);
@@ -114,7 +112,7 @@ function heatmap(cd,rdrw,gd){
 
     var yrev = false, top=undefined, bottom=undefined;
     i=0; while(top===undefined && i<n) { top=yf({y:y[i]},gd); i++ }
-    i=n; while(bottom===undefined && i>0) { bottom=yf({y:y[i]},gd); i-- }
+    i=m; while(bottom===undefined && i>0) { bottom=yf({y:y[i]},gd); i-- }
     if(bottom<top) {
         var temp = top;
         top = bottom;
