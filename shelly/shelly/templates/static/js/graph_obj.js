@@ -1836,6 +1836,8 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         redrawTimer = null;
     if(ns.length*ew.length!=1) {
         $(dragger).on('mousewheel DOMMouseScroll', function(e) {
+            // jp edit 6.14.2013 - deactivate mousewheel scrolling on embedded graphs
+            if( !Boolean($('#plotlyMainMarker').length) ) return;
             clearTimeout(redrawTimer);
             var zoom = Math.exp(-Math.min(Math.max(e.originalEvent.wheelDelta,-50),50)/200),
                 gbb = $(gd).find('.nsewdrag')[0].getBoundingClientRect();
