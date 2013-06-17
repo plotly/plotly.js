@@ -133,6 +133,9 @@ function defaultLayout(){
         barmode:'stack',
         bargap:0.2,
         bargroupgap:0.0,
+        boxmode:'overlay',
+        boxgap:0.3,
+        boxgroupgap:0.3,
         font:{family:'Arial, sans-serif;',size:12,color:'#000'},
         titlefont:{family:'',size:0,color:''}
     }
@@ -160,6 +163,9 @@ var graphInfo = {
         framework:newPlot
     },
     histogram2d:{
+        framework:newPlot
+    },
+    box:{
         framework:newPlot
     }
 }
@@ -232,8 +238,8 @@ function plot(divid, data, layout, rdrw) {
     var xtight=[null,null],xpadded=[null,null];
     var ytight=[null,null],ypadded=[null,null];
     // if we have bars or fill-to-zero traces, make sure autorange goes to zero
-    var includezero={h:false,v:false};
     var firstscatter = true; // because fill-to-next on the first scatter trace goes to zero
+    var numboxes = 0;
 
     // do we need to check the axis types?
     // to force axtypes to be called again, set gd.axtypesok to false before calling plot()
@@ -249,6 +255,7 @@ function plot(divid, data, layout, rdrw) {
         function setAxType(ax,axletter){
             var d0 = gdd[0];
             if(!d0.type) { d0.type='scatter' }
+            console.log(d0);
             // backward compatibility
             if(!ax.type) {
                 if(ax.isdate) { ax.type='date' }
@@ -279,7 +286,13 @@ function plot(divid, data, layout, rdrw) {
                 }
             }
             // then check the data supplied for that axis
-            if( ( axletter in d0) ? moreDates(d0[axletter]) : (isDateTime(d0[axletter+'0'])===true ) ) {
+            if(d0.type=='box' && axletter=='x' && !('x' in d0) && !('x0' in d0)) {
+                console.log(axletter, 'boxcategory');
+                ax.type='category'; // take the axis values from trace name, text, or number
+                ax.categories=[];
+                console.log(ax);
+            }
+            else if( ( axletter in d0) ? moreDates(d0[axletter]) : (isDateTime(d0[axletter+'0'])===true ) ) {
                 ax.type='date';
             }
             else if( loggy(gdd,axletter) ) {
@@ -357,11 +370,18 @@ function plot(divid, data, layout, rdrw) {
         else { padded[1]=Math.max(dr[1],padded[1]) }
     }
 
-    // std deviation function using aggNums, so it handles non-numerics nicely
+    // mean & std dev functions using aggNums, so it handles non-numerics nicely
     // even need to use aggNums instead of .length, so we toss out non-numerics there
-    var stdev = function(data) {
-        var len = aggNums(function(a,b){return a+1},0,data),
-            mean = aggNums(function(a,b){return a+b},0,data)/len;
+    function datalen(data) { return aggNums(function(a,b){return a+1},0,data) }
+
+    function mean(data,len) {
+        if(!len) { len = datalen(data) }
+        return aggNums(function(a,b){return a+b},0,data)/len;
+    }
+
+    function stdev(data,len,mean) {
+        if(!len) { len = datalen(data) }
+        if(!$.isNumeric(mean)) { mean = aggNums(function(a,b){return a+b},0,data)/len }
         return Math.sqrt(aggNums(function(a,b){return a+Math.pow(b-mean,2)},0,data)/len);
     }
 
@@ -409,20 +429,25 @@ function plot(divid, data, layout, rdrw) {
         }
     }
 
-    // find the bin for val
+    // find the bin for val - note that it can return outside the bin range
+    // any pos. or neg. integer for linear bins, or -1 or bins.length-1 for explicit
     // for linear bins, we can just calculate. For listed bins, run a binary search
-    function findBin(val,bins) {
+    // linelow (truthy) says the bin boundary should be attributed to the lower bin
+    // rather than the default upper bin
+    function findBin(val,bins,linelow) {
         if($.isNumeric(bins.start)) {
-            return Math.floor((val-bins.start)/bins.size)
+            return linelow ?
+                Math.ceil((val-bins.start)/bins.size)-1 :
+                Math.floor((val-bins.start)/bins.size);
         }
         else {
-            var n1=0, n2=bins.length-1;
-            while(n1<n2){
-                n=Math.floor((n1+n2/2));
-                if(bins[n]<=val) { n1=n+1 }
+            var n1=0, n2=bins.length, c=0;
+            while(n1<n2 && c++<100){ // shouldn't need c, but just in case...
+                n=Math.floor((n1+n2)/2);
+                if(linelow ? bins[n]<val : bins[n]<=val) { n1=n+1 }
                 else { n2=n }
             }
-            return n1;
+            return n1-1;
         }
     }
 
@@ -442,6 +467,15 @@ function plot(divid, data, layout, rdrw) {
             }
         }
         return {vals:v2,minDiff:minDiff}
+    }
+
+    // interpolate an array given a (possibly non-integer) index n
+    // clip the ends to the extreme values in the array
+    function interp(arr,n) {
+        if(n<0) { return arr[0] }
+        if(n>arr.length-1) { return arr[arr.length-1] }
+        var frac = n%1;
+        return frac*arr[Math.ceil(n)]+(1-frac)*arr[Math.floor(n)];
     }
 
     for(curve in gdd) {
@@ -477,7 +511,6 @@ function plot(divid, data, layout, rdrw) {
 
                 serieslen = Math.min(x.length,y.length);
 
-                console.log(gdc.fill,gdc.mode,serieslen,firstscatter);
                 // check whether x bounds should be tight or padded
                 // regardless of everything else, y errorbars mean x should be padded
                 if(gdc.error_y && gdc.error_y.visible) {
@@ -491,7 +524,6 @@ function plot(divid, data, layout, rdrw) {
                 else if(['tonexty','tozeroy'].indexOf(gdc.fill)!=-1 ||
                   (gdc.mode && gdc.mode.indexOf('markers')==-1) || // explicit no markers
                   (!gdc.mode && serieslen>=PTS_LINESONLY)) { // automatic no markers
-                    console.log('here')
                     expandBounds(xa,xtight,x,serieslen);
                 }
                 // otherwise both ends padded
@@ -528,7 +560,6 @@ function plot(divid, data, layout, rdrw) {
         else if(BARTYPES.indexOf(curvetype)!=-1) {
             // ignore as much processing as possible (and including in autorange) if bar is not visible
             if(gdc.visible!=false) {
-                includezero[gdc.bardir||'v']=true;
                 // depending on bar direction, set position and size axes and data ranges
                 if(gdc.bardir=='h') { var pa = ya, sa = xa}
                 else { var pa = xa, sa = ya}
@@ -676,35 +707,66 @@ function plot(divid, data, layout, rdrw) {
             cdtextras = coords; // store x and y arrays for later
         }
         else if(curvetype=='box') {
-            // box plots make no sense if you don't have both x and y
-            if(!('y' in gdc) || !('x' in gdc) || gdc.visible==false) { continue }
-//
+            // box plots make no sense if you don't have y
+            if(!('y' in gdc) || gdc.visible==false) { continue }
+
+            // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
             y = convertOne(gdc,'y',ya);
-            x = convertOne(gdc,'x',xa);
+            if('x' in gdc) { x = convertOne(gdc,'x',xa) }
+            // if no x data, use x0, or name, or text - so if you want one box
+            // per trace, set x0 to the x value or category for this trace
+            // (or set x to a constant array matching y)
+            else {
+                var x0;
+                if('x0' in gdc) { x0 = gdc.x0 }
+                else if('name' in gdc && xa.type=='category') { x0 = gdc.name }
+                else if('text' in gdc && xa.type=='category') { x0 = gdc.text }
+                else { x0 = numboxes }
+                x0 = convertToAxis(x0,xa);
+//                 var x0 = convertToAxis(('x0' in gdc) ? gdc.x0 : (gdc.name0, xa);
+                x = y.map(function(){ return x0 });
+            }
             // find x values
             var dv = distinctVals(x),
                 xvals = dv.vals,
                 dx = dv.minDiff/2,
                 cd = xvals.map(function(v){ return {x:v} }),
                 pts = xvals.map(function(){ return [] }),
+                bins = xvals.map(function(v){ return v-dx })
                 l = xvals.length;
+            bins.push(xvals[l-1]+dx);
+            // y autorange based on all source points - x happens afterward when
+            // we know all the x values
+            expandBounds(ya,ypadded,y);
             // bin the points
             y.forEach(function(v,i){
                 if(!$.isNumeric(v)){ return }
-                var n = findBin(x[i],xvals);
+                var n = findBin(x[i],bins);
                 if(n>=0 && n<l) { pts[n].push(v) }
             });
             // sort the bins and calculate the stats
             pts.forEach(function(v,i){
                 v.sort(function(a,b){return a-b});
-                cd[i].y = v; // put points into calcdata
-                var l2 = (v.length-1)/2
-                cd[i].min = v[0];
-                cd[i].max = v[v.length-1];
-                cd[i].med = (v[Math.floor(l2)]+v[Math.ceil(l2)])/2;
-                cd[i].v25 = (v[Math.floor(l2/2)]+v[Math.ceil(l2/2)])/2;
-                cd[i].v75 = (v[Math.floor(3*l2/2)]+v[Math.ceil(3*l2/2)])/2;
+                var last = v.length-1,p = cd[i];
+                p.y = v; // put all points into calcdata
+                p.min = v[0];
+                p.max = v[last];
+                p.mean = mean(v,last+1);
+                p.sd = stdev(v,last+1,p.mean);
+                p.q1 = interp(v,(last/4)); // first quartile
+                p.med = interp(v,(last/2)); // median
+                p.q3 = interp(v,(0.75*last)); // third quartile
+                // lower and upper fences - last point inside
+                // 1.5 interquartile ranges from quartiles
+                p.lf = v[findBin(2.5*p.q1-1.5*p.q3,v,true)+1];
+                p.uf = v[findBin(2.5*p.q3-1.5*p.q1,v)];
+                // lower and upper outliers - 3 IQR out (don't clip to max/min,
+                // this is only for discriminating suggested & far outliers)
+                p.lo = 4*p.q1-3*p.q3;
+                p.uo = 4*p.q3-3*p.q1;
             });
+            cdtextras = {boxnum: numboxes, dx: dx}
+            numboxes++;
         }
         if(!('line' in gdc)) gdc.line={};
         if(!('marker' in gdc)) gdc.marker={};
@@ -726,14 +788,17 @@ function plot(divid, data, layout, rdrw) {
     // and has to be before stacking so we get bardir, type, visible
     setStyles(gd);
 
-    // bar chart stacking/grouping positioning and autoscaling calculations
-    // first find all visible bars in each direction
-    var barlist = {h:[],v:[]}
+    // find all visible bars in each direction, and all boxes, for size and range adjustments
+    var barlist = {h:[],v:[]}, boxlist=[];
     for(var i=0; i<gd.calcdata.length; i++){ // trace index
         var t=gd.calcdata[i][0].t;
-        if(BARTYPES.indexOf(t.type)!=-1 && t.visible!=false) { barlist[t.bardir||'v'].push(i) }
+        if(t.visible==false) { continue }
+        if(BARTYPES.indexOf(t.type)!=-1) { barlist[t.bardir||'v'].push(i) }
+        if(t.type=='box') { boxlist.push(i) }
     }
-    // then for each direction separately calculate the ranges and positions
+
+    // bar chart stacking/grouping positioning and autoscaling calculations
+    // for each direction separately calculate the ranges and positions
     ['v','h'].forEach(function(dir){
         if(!barlist[dir].length) { return }
         var bl = barlist[dir];
@@ -751,17 +816,6 @@ function plot(divid, data, layout, rdrw) {
             var dv = distinctVals(pvals),
                 pv2 = dv.vals,
                 barDiff = dv.minDiff;
-//             pvals.sort(function(a,b){return a-b});
-//             var pl = pvals.length-1,
-//                 barDiff = (pvals[pl]-pvals[0])||1,
-//                 minDiff = barDiff/(pl||1)/100,
-//                 pv2=[pvals[0]];
-//             for(var i=0;i<pl;i++) {
-//                 if(pvals[i+1]>pvals[i]+minDiff) { // make sure values aren't just off by a rounding error
-//                     barDiff=Math.min(barDiff,pvals[i+1]-pvals[i]);
-//                     pv2.push(pvals[i+1]);
-//                 }
-//             }
             // position axis autorange - always tight fitting
             expandBounds(pa,pdr,pv2,pv2.length,barDiff/2);
             // bar widths and position offsets
@@ -814,7 +868,20 @@ function plot(divid, data, layout, rdrw) {
             }
         }
     });
-    markTime('done with setstyles and bar chart ranging');
+
+    // box plots - update dx based on multiple traces, and then use for x autorange
+    var boxx = [];
+    boxlist.forEach(function(i){ gd.calcdata[i].forEach(function(v){ boxx.push(v.x) })});
+    if(boxx) {
+        var boxdv = distinctVals(boxx),
+            dx = boxdv.minDiff/2;
+        expandBounds(xa,xpadded,boxdv.vals,null,dx);
+        boxlist.forEach(function(i){ gd.calcdata[i][0].t.dx = dx });
+        // if there's no duplication of x points, disable 'group' mode by setting numboxes=1
+        if(boxx.length==boxdv.vals.length) { numboxes = 1 }
+    }
+
+    markTime('done with setstyles and bar/box adjustments');
 
     // autorange for errorbars
     expandBounds(ya,ypadded,errorbarsydr(gd));
@@ -863,7 +930,17 @@ function plot(divid, data, layout, rdrw) {
         // 2. bars/histos
         // 3. errorbars for everyone
         // 4. scatter
-        var cdbar = [], cdscatter = [];
+        // 5. box plots
+
+        function translatePoint(d){
+            var x = xf(d,gd), y = yf(d,gd);
+            if($.isNumeric(x) && $.isNumeric(y)) {
+                d3.select(this).attr('transform','translate('+x+','+y+')');
+            }
+            else { d3.select(this).remove() }
+        }
+
+        var cdbar = [], cdscatter = [], cdbox = [];
         for(var i in gd.calcdata){
             var cd = gd.calcdata[i], type=cd[0].t.type;//, c = t.curve, gdc = gd.data[c];
             if(HEATMAPTYPES.indexOf(type)!=-1) {
@@ -876,7 +953,8 @@ function plot(divid, data, layout, rdrw) {
                 $('#'+gd.id+'-cb'+i).remove();
 
                 if(BARTYPES.indexOf(type)!=-1) { cdbar.push(cd) }
-                else { cdscatter.push(cd) }
+                else if(type=='box') { cdbox.push(cd) }
+                else { cdscatter.push(cd) } // include boxes with scatter
             }
         }
 
@@ -999,15 +1077,91 @@ function plot(divid, data, layout, rdrw) {
                 d3.select(this).selectAll('path')
                     .data(function(d){return d})
                     .enter().append('path')
-                    .each(function(d){
-                        var x = xf(d,gd), y = yf(d,gd);
-                        if($.isNumeric(x) && $.isNumeric(y)) {
-                            d3.select(this).attr('transform','translate('+x+','+y+')');
-                        }
-                        else { d3.select(this).remove() }
-                    });
+                    .each(translatePoint);
             });
         markTime('done scatter');
+
+        // BUILD BOX PLOTS
+        var boxtraces = gp.selectAll('g.trace.boxes') // <-- select trace group
+            .data(cdbox) // <-- bind calcdata to traces
+          .enter().append('g') // <-- add a trace for each calcdata
+            .attr('class','trace boxes');
+        boxtraces.each(function(d){
+            var t = d[0].t,
+                group = (gl.boxmode=='group' && numboxes>1), // like grouped bars
+                // box half width
+                bdx = t.dx*(1-gl.boxgap)*(1-gl.boxgroupgap)/(group ? numboxes : 1),
+                // box center offset
+                bx = group ? 2*t.dx*(-0.5+(t.boxnum+0.5)/numboxes)*(1-gl.boxgap) : 0,
+                wdx = bdx*t.ww; // whisker width
+            // boxes and whiskers
+            d3.select(this).selectAll('path.box')
+                .data(function(d){return d})
+                .enter().append('path')
+                .attr('class','box')
+                .each(function(d){
+                    // draw the bars and whiskers
+                    var xc = xf({x:d.x+bx},gd,true)
+                        x0 = xf({x:d.x+bx-bdx},gd,true),
+                        x1 = xf({x:d.x+bx+bdx},gd,true),
+                        xw0 = xf({x:d.x+bx-wdx},gd,true),
+                        xw1 = xf({x:d.x+bx+wdx},gd,true),
+                        ym = yf({y:d.med},gd,true),
+                        yq1 = yf({y:d.q1},gd,true),
+                        yq3 = yf({y:d.q3},gd,true),
+                        ylf = yf({y:t.boxpts===false ? d.min : d.lf}, gd,true),
+                        yuf = yf({y:t.boxpts===false ? d.max : d.uf}, gd,true);
+                    d3.select(this).attr('d',
+                        'M'+x0+','+ym+'H'+x1+ // median line
+                        'M'+x0+','+yq1+'H'+x1+'V'+yq3+'H'+x0+'Z'+ // box
+                        'M'+xc+','+yq1+'V'+ylf+'M'+xc+','+yq3+'V'+yuf+ // whiskers
+                        ((t.ww==0) ? '' : // whisker caps
+                            'M'+xw0+','+ylf+'H'+xw1+'M'+xw0+','+yuf+'H'+xw1));
+                });
+            // draw points, if desired
+            if(t.boxpts!==false) {
+                d3.select(this).selectAll('g.points')
+                    // since box plot points get an extra level of nesting, each
+                    // box needs the trace styling info
+                    .data(function(d){ d.forEach(function(v){v.t=t}); return d })
+                    .enter().append('g')
+                    .attr('class','points')
+                  .selectAll('path')
+                    .data(function(d){
+                        var pts = (t.boxpts=='all') ? d.y :
+                            d.y.filter(function(v){ return (v<d.lf || v>d.uf) });
+                        return pts.map(function(v){
+                            // TODO: position control?
+                            var xo = (t.jitter ? t.jitter*(Math.random()-0.5)*2 : 0)+t.ptpos,
+                                p = {x:d.x+xo*bdx+bx,y:v,t:t};
+                            // tag suggested outliers
+                            if(t.boxpts!='all' && v<d.uo && v>d.lo) { p.so=true }
+                            return p;
+                        });
+                    })
+                    .enter().append('path')
+                    .each(translatePoint);
+            }
+            // draw mean (and stdev diamond) if desired
+            if(t.mean) {
+                d3.select(this).selectAll('path.mean')
+                    .data(function(d){return d})
+                    .enter().append('path')
+                    .attr('class','mean')
+                    .style('fill','none')
+                    .each(function(d){
+                        var xc = xf({x:d.x+bx},gd,true)
+                            x0 = xf({x:d.x+bx-bdx},gd,true),
+                            x1 = xf({x:d.x+bx+bdx},gd,true),
+                            ym = yf({y:d.mean},gd,true),
+                            ysl = yf({y:d.mean-d.sd},gd,true),
+                            ysh = yf({y:d.mean+d.sd},gd,true);
+                        d3.select(this).attr('d','M'+x0+','+ym+'H'+x1+
+                            ((t.mean!='sd') ? '' :
+                            'm0,0L'+xc+','+ysl+'L'+x0+','+ym+'L'+xc+','+ysh+'Z'));
+                    });
+            }
+        });
 
         //styling separate from drawing
         applyStyle(gp);
@@ -1093,6 +1247,8 @@ function setStyles(gd) {
         mergeattr(gdc.type,'type','scatter');
         mergeattr(gdc.visible,'visible',true);
         mergeattr(gdc.opacity,'op',1);
+        mergeattr(gdc.text,'tx','');
+        mergeattr(gdc.name,'name','trace '+c);
         var type = cd[0].t.type;
         if( (gdc.error_y && gdc.error_y.visible ) ){
             mergeattr(gdc.error_y.visible,'ye_vis',false);
@@ -1104,9 +1260,7 @@ function setStyles(gd) {
             mergeattr(gdc.error_y.width,'ye_w',4);
             mergeattr(gdc.error_y.opacity,'ye_op',1);
         }
-        if(type==='scatter'){
-            mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');
-            mergeattr(gdc.line.dash,'ld','solid');
+        if(['scatter','box'].indexOf(type)!=-1){
             mergeattr(gdc.line.color,'lc',gdc.marker.color || dc);
             mergeattr(gdc.line.width,'lw',2);
             mergeattr(gdc.marker.symbol,'mx','circle');
@@ -1117,8 +1271,20 @@ function setStyles(gd) {
             mergeattr(gdc.marker.line.width,'mlw',0);
             mergeattr(gdc.fill,'fill','none');
             mergeattr(gdc.fillcolor,'fc',addOpacity(cd[0].t.lc,0.5));
-            mergeattr(gdc.text,'tx','');
-            mergeattr(gdc.name,'name','trace '+c);
+            if(type==='scatter') {
+                mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');
+                mergeattr(gdc.line.dash,'ld','solid');
+            }
+            else if(type==='box') {
+                mergeattr(gdc.marker.outliercolor,'soc','rgba(0,0,0,0)');
+                mergeattr(gdc.marker.line.outliercolor,'solc',cd[0].t.mc);
+                mergeattr(gdc.marker.line.outlierwidth,'solw',1);
+                mergeattr(gdc.whiskerwidth,'ww',0.5);
+                mergeattr(gdc.boxpoints,'boxpts','outliers');
+                mergeattr(gdc.boxmean,'mean',false);
+                mergeattr(gdc.jitter,'jitter',0);
+                mergeattr(gdc.pointpos,'ptpos',0);
+            }
         }
         else if(HEATMAPTYPES.indexOf(type)!=-1){
             if(type==='histogram2d') {
@@ -1160,8 +1326,6 @@ function setStyles(gd) {
             mergeattr(gdc.marker.color,'mc',defaultColors[c % defaultColors.length]);
             mergeattr(gdc.marker.line.color,'mlc','#000' );
             mergeattr(gdc.marker.line.width,'mlw',0);
-            mergeattr(gdc.text,'tx','');
-            mergeattr(gdc.name,'name','trace '+c);
         }
     }
     plotlylog('+++++++++++++++OUT: setStyles(gd)+++++++++++++++');
@@ -1175,8 +1339,7 @@ function applyStyle(gp) {
         .call(traceStyle);
     gp.selectAll('g.points')
         .each(function(d){
-            d3.select(this).selectAll('path').call(pointStyle,d[0].t);
-            d3.select(this).selectAll('rect').call(pointStyle,d[0].t);
+            d3.select(this).selectAll('path,rect').call(pointStyle,d.t||d[0].t);
         });
 
     gp.selectAll('g.trace polyline.line')
@@ -1184,6 +1347,12 @@ function applyStyle(gp) {
 
     gp.selectAll('g.trace polyline.fill')
         .call(fillGroupStyle);
+
+    gp.selectAll('g.boxes')
+        .each(function(d){
+            d3.select(this).selectAll('path.box').call(boxPlotStyle,d[0].t);
+            d3.select(this).selectAll('path.mean').call(boxMeanStyle,d[0].t);
+        });
 
     gp.selectAll('g.errorbars')
         .call(errorbarStyle);
@@ -1258,11 +1427,23 @@ function fillGroupStyle(s) {
     });
 }
 
+function boxPlotStyle(s,t) {
+    s.attr('stroke-width',t.lw)
+    .call(strokeColor,t.lc)
+    .call(fillColor,t.fc);
+}
+
+function boxMeanStyle(s,t) {
+    s.attr('stroke-width',t.lw)
+    .attr('stroke-dasharray',(2*t.lw)+','+(t.lw))
+    .call(strokeColor,t.lc);
+}
+
 // apply the marker to each point
 // draws the marker with diameter roughly markersize, centered at 0,0
 function pointStyle(s,t) {
-    // only scatter plots get marker path and opacity - bars, histograms don't
-    if(t.type=='scatter') {
+    // only scatter & box plots get marker path and opacity - bars, histograms don't
+    if(['scatter','box'].indexOf(t.type)!=-1) {
         s.attr('d',function(d){
             var r=((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/2;
             if(!(r>=0)) r=3; // in case of "various" etc... set a visible default
@@ -1270,7 +1451,7 @@ function pointStyle(s,t) {
                 rc=String(r/3),
                 rd=String(r*Math.sqrt(2)),
                 r2=String(r/2);
-            r=String(r)
+            r=String(r);
             var x=(d.mx || t.mx || (d.t ? d.t.mx : ''));
             if(x=='square')
                 return 'M'+r+','+r+'H-'+r+'V-'+r+'H'+r+'Z';
@@ -1292,26 +1473,15 @@ function pointStyle(s,t) {
         .style('opacity',function(d){return (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1});
     }
     s.each(function(d){
-        var w = (d.mlw+1 || t.mlw+1 || (d.t ? d.t.mlw : 0)+1) - 1,
+        var a = (d.so) ? 'so' : 'm', // suggested outliers, for box plots
+            lw = a+'lw',
+            c = a+'c',
+            lc = a+'lc',
+            w = (d[lw]+1 || t[lw]+1 || (d.t ? d.t[lw] : 0)+1) - 1,
             p = d3.select(this);
         p.attr('stroke-width',w)
-            .call(fillColor,d.mc || t.mc || (d.t ? d.t.mc : ''));
-        if(w) { p.call(strokeColor,d.mlc || t.mlc || (d.t ? d.t.mlc : '')) }
-    });
-}
-
-// apply the marker to each bar
-// draws the marker with diameter roughly markersize, centered at 0,0
-function barStyle(s,t) {
-    s.attr('d','M6,6H-6V-6H6Z')
-//     s.style('opacity',function(d){return (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1})
-    .each(function(d){
-        var w = (d.mlw+1 || t.mlw+1 || (d.t ? d.t.mlw : 0)+1) - 1,
-            p = d3.select(this);
-        p.attr('stroke-width',w)
-            .call(fillColor,d.mc || t.mc || (d.t ? d.t.mc : ''));
-        if(w)
-            p.call(strokeColor,d.mlc || t.mlc || (d.t ? d.t.mlc : ''))
+            .call(fillColor, d[c] || t[c] || (d.t ? d.t[c] : ''));
+        if(w) { p.call(strokeColor, d[lc] || t[lc] || (d.t ? d.t[lc] : '')) }
     });
 }
 
@@ -1352,13 +1522,43 @@ function legendPoints(d){
 
 function legendBars(d){
     var t = d[0].t;
-    if(BARTYPES.indexOf(t.type)==-1) return;
+    if(BARTYPES.indexOf(t.type)==-1) { return }
     d3.select(this).append('g')
         .attr('class','legendpoints')
       .selectAll('path')
         .data(function(d){return d})
       .enter().append('path')
-        .call(barStyle,t)
+        .attr('d','M6,6H-6V-6H6Z')
+        .each(function(d){
+            var w = (d.mlw+1 || t.mlw+1 || (d.t ? d.t.mlw : 0)+1) - 1,
+                p = d3.select(this);
+            p.attr('stroke-width',w)
+                .call(fillColor,d.mc || t.mc || (d.t ? d.t.mc : ''));
+            if(w) {
+                p.call(strokeColor,d.mlc || t.mlc || (d.t ? d.t.mlc : ''))
+            }
+        })
+        .attr('transform','translate(20,0)');
+}
+
+function legendBoxes(d){
+    var t = d[0].t;
+    if(t.type!=='box') { return }
+    d3.select(this).append('g')
+        .attr('class','legendpoints')
+      .selectAll('path')
+        .data(function(d){return d})
+      .enter().append('path')
+        .attr('d','M6,6H-6V-6H6Z') // if we want the median bar, start M6,0H-6
+        .each(function(d){
+            var w = (d.lw+1 || t.lw+1 || (d.t ? d.t.lw : 0)+1) - 1,
+                p = d3.select(this);
+            p.attr('stroke-width',w)
+                .call(fillColor,d.fc || t.fc || (d.t ? d.t.fc : ''));
+            if(w) {
+                p.call(strokeColor,d.lc || t.lc || (d.t ? d.t.lc : ''))
+            }
+        })
         .attr('transform','translate(20,0)');
 }
 
@@ -1392,7 +1592,7 @@ function restyle(gd,astr,val,traces) {
     // mode and gaps for bar charts are graph-wide attributes, but make
     // more sense in the style box than the layout box. here we update gd.layout,
     // force a replot, then return
-    if(['barmode','bargap','bargroupgap'].indexOf(astr)!=-1){
+    if(['barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap'].indexOf(astr)!=-1){
         gl[astr] = val;
         plot(gd,'','');
         return;
@@ -1450,8 +1650,9 @@ function restyle(gd,astr,val,traces) {
         hm_attr=['mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','zauto','scl'],
         eb_attr=['error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array'],
         hist_attr=[ 'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
-                    'autobiny','nbinsy','ybins.start','ybins.end','ybins.size'];
-    if(main_attr.concat(eb_attr,hist_attr).indexOf(astr)!=-1) {
+                    'autobiny','nbinsy','ybins.start','ybins.end','ybins.size'],
+        box_attr=['boxpoints','jitter','pointpos','whiskerwidth','boxmean'];
+    if(main_attr.concat(eb_attr,hist_attr,box_attr).indexOf(astr)!=-1) {
         // major enough changes deserve an autoscale (and autobin) so people don't get confused
         if(['bardir','type'].indexOf(astr)!=-1) {
             gl.xaxis.autorange=true;
@@ -2220,6 +2421,7 @@ function legend(gd) {
     traces.append('g')
         .call(traceStyle)
         .each(legendBars)
+        .each(legendBoxes)
         .each(legendLines)
         .each(legendPoints);
 
@@ -3260,21 +3462,21 @@ function autoTickRound(a) {
     else { a.tickround = null }
 }
 
-// return the smallest element from (sorted) array a that's bigger than val
-// UPDATE: now includes option to reverse, ie find the largest element smaller than val
+// return the smallest element from (sorted) array a that's bigger than val,
+// or (reverse) the largest element smaller than val
 // used to find the best tick given the minimum (non-rounded) tick
 // particularly useful for date/time where things are not powers of 10
 // binary search is probably overkill here...
-function roundUp(val,a,reverse){
-    var low=0, high=a.length-1, mid;
-    if(reverse) var dlow=0, dhigh=1,sRound=Math.ceil;
-    else var dlow=1, dhigh=0,sRound=Math.floor;
-    while(low<high){
-        mid=sRound((low+high)/2)
-        if(a[mid]<=val) low=mid+dlow;
-        else high=mid-dhigh;
+function roundUp(v,a,reverse){
+    var l=0, h=a.length-1, m, c=0;
+    if(reverse) { var dl=0, dh=1, r=Math.ceil }
+    else { var dl=1, dh=0, r=Math.floor }
+    while(l<h && c++<100){ // shouldn't need c, but just in case...
+        m=r((l+h)/2)
+        if(a[m]<=v) { l=m+dl }
+        else { h=m-dh }
     }
-    return a[low];
+    return a[l];
 }
 
 // months and years don't have constant millisecond values
@@ -3802,7 +4004,7 @@ function loggy(d,ax) {
         }
         // curve has linear scaling: test endpoints for <=0 and add all points if unique
         else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
-            if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) return false;
+            if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) { return false }
             for(i in d[curve][ax2]) {
                 v=c[ax+'0']+c['d'+ax]*i;
                 if(vals.indexOf(v)<0) vals.push(v);
@@ -3814,26 +4016,26 @@ function loggy(d,ax) {
     return ((mx/mn>=100)&&(vals.sort()[Math.ceil(vals.length/4)]<mx/10));
 }
 
-// are the (x,y)-values in gd.data all text?
+// are the (x,y)-values in gd.data mostly text?
 function category(d,ax) {
-    var vals=[],v,c;
-    var ax2= (ax=='x') ? 'y' : 'x';
-    for(curve in d){
-        c=d[curve];
+    var catcount=0,numcount=0;
+    d.forEach(function(c){
         // curve has data: test each point for non-numeric text
         if(ax in c) {
+            var curvenums=0,curvecats=0;
             for(i in c[ax]) {
-                v=c[ax][i];
-                if($.isNumeric(v)){ return false; }
+                if($.isNumeric(c[ax][i])){ curvenums++ }
+                else { curvecats++ }
             }
+            if(curvecats>curvenums) { catcount++ }
+            else { numcount++ }
         }
-        // curve has linear scaling (ie, y0 and yd in gd.data instead of y)
-        // this is clearly not a categorical axis, so return false
-        else {
-            return false;
-        }
-    }
-    return true;
+        // curve has an 'x0' or 'y0' value - is this text?
+        // (x0 can be specified this way for box plots)
+        else if(ax+'0' in c && !$.isNumeric(c[ax+'0'])) { catcount++ }
+        else { numcount++ }
+    })
+    return catcount>numcount;
 }
 
 // convertToAxis: convert raw data to numbers
@@ -3850,14 +4052,10 @@ function convertToAxis(o,a){
         // from the second that aren't in the first etc.
         // TODO: sorting options - I guess we'll have to do this in plot()
         // after finishing calcdata
-        if($.isArray(o)) {
-            if(!a.categories) { a.categories=[] }
-            o.forEach(function(v){ if(a.categories.indexOf(v)==-1) { a.categories.push(v) } });
-        }
-        else if(!a.categories || !a.categories.length) {
-            console.log('Error! Tried to convert single category to axis with no existing categories');
-            return null;
-        }
+        if(!a.categories) { a.categories=[] }
+        ($.isArray(o) ? o : [o]).forEach(function(v){
+            if(a.categories.indexOf(v)==-1) { a.categories.push(v) }
+        });
         var fn = function(v){ var c = a.categories.indexOf(v); return c==-1 ? undefined : c }
     }
     else { var fn = function(v){return $.isNumeric(v) ? Number(v) : undefined } }
