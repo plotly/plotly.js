@@ -255,7 +255,6 @@ function plot(divid, data, layout, rdrw) {
         function setAxType(ax,axletter){
             var d0 = gdd[0];
             if(!d0.type) { d0.type='scatter' }
-            console.log(d0);
             // backward compatibility
             if(!ax.type) {
                 if(ax.isdate) { ax.type='date' }
@@ -290,7 +289,6 @@ function plot(divid, data, layout, rdrw) {
                 console.log(axletter, 'boxcategory');
                 ax.type='category'; // take the axis values from trace name, text, or number
                 ax.categories=[];
-                console.log(ax);
             }
             else if( ( axletter in d0) ? moreDates(d0[axletter]) : (isDateTime(d0[axletter+'0'])===true ) ) {
                 ax.type='date';
