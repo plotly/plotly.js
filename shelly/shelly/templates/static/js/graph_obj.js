@@ -4020,21 +4020,22 @@ function loggy(d,ax) {
 
 // are the (x,y)-values in gd.data mostly text?
 function category(d,ax) {
+    function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1 }
     var catcount=0,numcount=0;
     d.forEach(function(c){
         // curve has data: test each point for non-numeric text
         if(ax in c) {
             var curvenums=0,curvecats=0;
             for(i in c[ax]) {
-                if($.isNumeric(c[ax][i])){ curvenums++ }
-                else { curvecats++ }
+                if(isStr(c[ax][i])){ curvecats++ }
+                else { curvenums++ }
             }
             if(curvecats>curvenums) { catcount++ }
             else { numcount++ }
         }
         // curve has an 'x0' or 'y0' value - is this text?
         // (x0 can be specified this way for box plots)
-        else if(ax+'0' in c && !$.isNumeric(c[ax+'0'])) { catcount++ }
+        else if(ax+'0' in c && isStr(c[ax+'0'])) { catcount++ }
         else { numcount++ }
     })
     return catcount>numcount;
