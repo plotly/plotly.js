@@ -65,7 +65,7 @@ function default_hm(gdc,noZRange){
 // Example usage:
 // plot( gettab().id, [{'type':'heatmap','z':[[1,2],[3,4]], 'x0':2, 'y0':2, 'dx':0.5, 'dy':0.5}] )
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
-function heatmap(cd,rdrw,gd){
+function heatmap(cd,gd){
     var t = cd[0].t,
         i = t.curve,
         gdc = gd.data[i],
