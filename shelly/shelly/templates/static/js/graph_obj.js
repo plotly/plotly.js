@@ -185,9 +185,9 @@ function markTime(s){
 // Main plot-creation function. Note: will call newPlot
 // if necessary to create the framework
 // ----------------------------------------------------
-function plot(divid, data, layout, rdrw) {
+function plot(divid, data, layout) {
     markTime('in plot')
-    plotlylog('+++++++++++++++IN: plot(divid, data, layout, rdrw)+++++++++++++++');
+    plotlylog('+++++++++++++++IN: plot(divid, data, layout)+++++++++++++++');
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in by dom element, others by id (string)
@@ -195,15 +195,12 @@ function plot(divid, data, layout, rdrw) {
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
-	// rdrw - whether to force the heatmap to redraw, true if calling plot() from restyle
-    if(typeof rdrw==='undefined') rdrw=false;
-
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-object (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
-    if(typeof data=='object') {
-        if(graphwasempty) gd.data=data;
-        else gd.data.push.apply(gd.data,data);
+    if($.isArray(data)) {
+        if(graphwasempty) { gd.data=data }
+        else { gd.data.push.apply(gd.data,data) }
         gd.empty=false;
     }
 
@@ -264,6 +261,11 @@ function plot(divid, data, layout, rdrw) {
             // now remove the obsolete properties
             delete ax.islog;
             delete ax.isdate;
+
+            // delete category list, if there is one, so we start over
+            // to be filled in later by convertToAxis
+            delete ax.categories;
+
             // guess at axis type with the new property format
             // first check for histograms, as they can change the axis types
             // whatever else happens, horz bars switch the roles of x and y axes
@@ -285,37 +287,24 @@ function plot(divid, data, layout, rdrw) {
                 }
             }
             // then check the data supplied for that axis
+            // only consider existing type to decide log vs linear
             if(d0.type=='box' && axletter=='x' && !('x' in d0) && !('x0' in d0)) {
-                console.log(axletter, 'boxcategory');
-                ax.type='category'; // take the axis values from trace name, text, or number
-                ax.categories=[];
+                ax.type='category'; // take the categories from trace name, text, or number
             }
-            else if( ( axletter in d0) ? moreDates(d0[axletter]) : (isDateTime(d0[axletter+'0'])===true ) ) {
+            else if((axletter in d0) ? moreDates(d0[axletter]) : isDateTime(d0[axletter+'0'])) {
                 ax.type='date';
             }
-            else if( loggy(gdd,axletter) ) {
-                if(ax.type!='linear') { ax.type='log' } // in case the user has already chosen linear
-            }
-            else if( category(gdd,axletter) ) {
-                ax.type='category';
-                ax.categories=[]; // empty out the category list, to be filled in by convertToAxis
-            }
-            else if(ax.type!='log') { ax.type='linear' } // in case the user has already chosen log
+            else if(category(gdd,axletter)) { ax.type='category' }
+            else if(loggy(gdd,axletter) && ax.type!='linear') { ax.type='log' }
+            else if(ax.type!='log') { ax.type='linear' }
         }
 
         setAxType(xa,'x');
         setAxType(ya,'y');
         gd.axtypesok=true;
     }
-
-    // calcdata to axis mapping (identity except for log axes)
-    function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null }
-    function fromLog(v){ return Math.pow(10,v) }
-    function num(v){ return $.isNumeric(v) ? v : null }
-    xa.toAxis = (xa.type=='log') ? toLog : num;
-    ya.toAxis = (ya.type=='log') ? toLog : num;
-    xa.toData = (xa.type=='log') ? fromLog : num;
-    ya.toData = (ya.type=='log') ? fromLog : num;
+    setAxConvert(xa);
+    setAxConvert(ya);
 
     // prepare the data and find the autorange
     // TODO: only remake calcdata for new or changed traces
@@ -721,7 +710,6 @@ function plot(divid, data, layout, rdrw) {
                 else if('text' in gdc && xa.type=='category') { x0 = gdc.text }
                 else { x0 = numboxes }
                 x0 = convertToAxis(x0,xa);
-//                 var x0 = convertToAxis(('x0' in gdc) ? gdc.x0 : (gdc.name0, xa);
                 x = y.map(function(){ return x0 });
             }
             // find x values
@@ -940,9 +928,9 @@ function plot(divid, data, layout, rdrw) {
 
         var cdbar = [], cdscatter = [], cdbox = [];
         for(var i in gd.calcdata){
-            var cd = gd.calcdata[i], type=cd[0].t.type;//, c = t.curve, gdc = gd.data[c];
+            var cd = gd.calcdata[i], type=cd[0].t.type;
             if(HEATMAPTYPES.indexOf(type)!=-1) {
-                heatmap(cd,rdrw,gd);
+                heatmap(cd,gd);
                 markTime('done heatmap '+i);
             }
             else {
@@ -970,11 +958,6 @@ function plot(divid, data, layout, rdrw) {
             .each(function(d,cdi){
                 var bt = d3.select(this),
                     t = d[0].t; // <-- get trace-wide formatting object
-                // for gapless cases (either stacked bars or neighboring bars)
-                // use crispEdges to turn off antialiasing.
-                if(gl.barmode=='stack' || (gl.bargap==0 && gl.bargroupgap==0 && !t.mlw)){
-                    bt.attr('shape-rendering','crispEdges');
-                }
                 bt.selectAll('rect')
                     .data(function(d){return d})
                     .enter().append('rect')
@@ -1162,7 +1145,7 @@ function plot(divid, data, layout, rdrw) {
         });
 
         //styling separate from drawing
-        applyStyle(gp);
+        applyStyle(gd);
         markTime('done applyStyle');
     }
     else { console.log('error with axis scaling',xa.m,xa.b,ya.m,ya.b) }
@@ -1182,7 +1165,7 @@ function plot(divid, data, layout, rdrw) {
         else if($(gd).find('#graphtips').css('display')=='none'){
             $(gd).find('#graphtips').fadeIn(); }
     },1000);
-    plotlylog('+++++++++++++++OUT: plot(divid, data, layout, rdrw)+++++++++++++++');
+    plotlylog('+++++++++++++++OUT: plot(divid, data, layout)+++++++++++++++');
     markTime('done plot');
 }
 
@@ -1238,22 +1221,25 @@ function setStyles(gd) {
     }
 
     for(var i in gd.calcdata){
-        var cd = gd.calcdata[i], c = cd[0].t.curve, gdc = gd.data[c],
+        var cd = gd.calcdata[i],
+            t = cd[0].t,
+            c = t.curve,
+            gdc = gd.data[c],
             dc = defaultColors[c % defaultColors.length];
-        // all types have attributes type, visible, and opacity
+        // all types have attributes type, visible, opacity, name, text
         // mergeattr puts single values into cd[0].t, and all others into each individual point
         mergeattr(gdc.type,'type','scatter');
         mergeattr(gdc.visible,'visible',true);
         mergeattr(gdc.opacity,'op',1);
         mergeattr(gdc.text,'tx','');
         mergeattr(gdc.name,'name','trace '+c);
-        var type = cd[0].t.type;
+        var type = t.type;
         if( (gdc.error_y && gdc.error_y.visible ) ){
             mergeattr(gdc.error_y.visible,'ye_vis',false);
             mergeattr(gdc.error_y.type,'ye_type','percent');
             mergeattr(gdc.error_y.value,'ye_val',10);
             mergeattr(gdc.error_y.traceref,'ye_tref',0);
-            mergeattr(gdc.error_y.color,'ye_clr',cd[0].t.ye_clr|| dc);
+            mergeattr(gdc.error_y.color,'ye_clr',t.ye_clr|| dc);
             mergeattr(gdc.error_y.thickness,'ye_tkns',1);
             mergeattr(gdc.error_y.width,'ye_w',4);
             mergeattr(gdc.error_y.opacity,'ye_op',1);
@@ -1264,18 +1250,18 @@ function setStyles(gd) {
             mergeattr(gdc.marker.symbol,'mx','circle');
             mergeattr(gdc.marker.opacity,'mo',1);
             mergeattr(gdc.marker.size,'ms',6);
-            mergeattr(gdc.marker.color,'mc',cd[0].t.lc);
-            mergeattr(gdc.marker.line.color,'mlc',((cd[0].t.lc!=cd[0].t.mc) ? cd[0].t.lc : '#000'));
+            mergeattr(gdc.marker.color,'mc',t.lc);
+            mergeattr(gdc.marker.line.color,'mlc',((t.lc!=t.mc) ? t.lc : '#000'));
             mergeattr(gdc.marker.line.width,'mlw',0);
             mergeattr(gdc.fill,'fill','none');
-            mergeattr(gdc.fillcolor,'fc',addOpacity(cd[0].t.lc,0.5));
+            mergeattr(gdc.fillcolor,'fc',addOpacity(t.lc,0.5));
             if(type==='scatter') {
                 mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');
                 mergeattr(gdc.line.dash,'ld','solid');
             }
             else if(type==='box') {
                 mergeattr(gdc.marker.outliercolor,'soc','rgba(0,0,0,0)');
-                mergeattr(gdc.marker.line.outliercolor,'solc',cd[0].t.mc);
+                mergeattr(gdc.marker.line.outliercolor,'solc',t.mc);
                 mergeattr(gdc.marker.line.outlierwidth,'solw',1);
                 mergeattr(gdc.whiskerwidth,'ww',0.5);
                 mergeattr(gdc.boxpoints,'boxpts','outliers');
@@ -1321,8 +1307,8 @@ function setStyles(gd) {
             mergeattr(gdc.bardir,'bardir','v');
             mergeattr(gdc.opacity,'op',1);
             mergeattr(gdc.marker.opacity,'mo',1);
-            mergeattr(gdc.marker.color,'mc',defaultColors[c % defaultColors.length]);
-            mergeattr(gdc.marker.line.color,'mlc','#000' );
+            mergeattr(gdc.marker.color,'mc',dc);
+            mergeattr(gdc.marker.line.color,'mlc','#000');
             mergeattr(gdc.marker.line.width,'mlw',0);
         }
     }
@@ -1330,11 +1316,12 @@ function setStyles(gd) {
 
 }
 
-function applyStyle(gp) {
-    plotlylog('+++++++++++++++IN: applyStyle(gp)+++++++++++++++');
+function applyStyle(gd) {
+    var gp = gd.plot;
+    plotlylog('+++++++++++++++IN: applyStyle(gd)+++++++++++++++');
     plotlylog('gp = ', gp);
     gp.selectAll('g.trace')
-        .call(traceStyle);
+        .call(traceStyle,gd);
     gp.selectAll('g.points')
         .each(function(d){
             d3.select(this).selectAll('path,rect').call(pointStyle,d.t||d[0].t);
@@ -1355,7 +1342,7 @@ function applyStyle(gp) {
     gp.selectAll('g.errorbars')
         .call(errorbarStyle);
 
-    plotlylog('+++++++++++++++OUT: applyStyle(gp)+++++++++++++++');
+    plotlylog('+++++++++++++++OUT: applyStyle(gd)+++++++++++++++');
 
 }
 
@@ -1390,8 +1377,19 @@ function setPosition(s,x,y) { s.attr('x',x).attr('y',y) }
 function setSize(s,w,h) { s.attr('width',w).attr('height',h) }
 function setRect(s,x,y,w,h) { s.call(setPosition,x,y).call(setSize,w,h) }
 
-function traceStyle(s) {
-    s.style('opacity',function(d){return d[0].t.op});
+function traceStyle(s,gd) {
+    s.style('opacity',function(d){return d[0].t.op})
+    // for gapless (either stacked or neighboring grouped) bars use crispEdges
+    // to turn off antialiasing so an artificial gap isn't introduced.
+    // TODO: can we figure out if there's only one trace in the stack?
+    .each(function(d){
+        var t = d[0].t,
+            gl = gd.layout;
+        if(BARTYPES.indexOf(t.type)!=-1 &&
+          (gl.barmode=='stack' || (gl.bargap==0 && gl.bargroupgap==0 && !t.mlw))){
+            s.attr('shape-rendering','crispEdges');
+        }
+    });
 }
 
 function lineGroupStyle(s) {
@@ -1472,9 +1470,7 @@ function pointStyle(s,t) {
     }
     s.each(function(d){
         var a = (d.so) ? 'so' : 'm', // suggested outliers, for box plots
-            lw = a+'lw',
-            c = a+'c',
-            lc = a+'lc',
+            lw = a+'lw', c = a+'c', lc = a+'lc',
             w = (d[lw]+1 || t[lw]+1 || (d.t ? d.t[lw] : 0)+1) - 1,
             p = d3.select(this);
         p.attr('stroke-width',w)
@@ -1490,15 +1486,14 @@ function pointStyle(s,t) {
 
 function legendLines(d){
     var t = d[0].t;
-    if(['scatter',undefined].indexOf(d[0].t.type)==-1) return;
+    if(['scatter',undefined].indexOf(d[0].t.type)==-1) { return }
     if(t.fill && t.fill!='none' && $.isNumeric(t.cdcurve)) {
-        //console.log(t.cdcurve);
         d3.select(this).append('path')
             .attr('data-curve',t.cdcurve)
             .attr('d','M5,0h30v6h-30z')
             .call(fillGroupStyle);
     }
-    if(!t.mode || t.mode.indexOf('lines')==-1) return;
+    if(!t.mode || t.mode.indexOf('lines')==-1) { return }
     d3.select(this).append('polyline')
         .call(lineGroupStyle)
         .attr('points','5,0 35,0');
@@ -1507,8 +1502,8 @@ function legendLines(d){
 
 function legendPoints(d){
     var t = d[0].t;
-    if(['scatter',undefined].indexOf(t.type)==-1) return;
-    if(!t.mode || t.mode.indexOf('markers')==-1) return;
+    if(['scatter',undefined].indexOf(t.type)==-1) { return }
+    if(!t.mode || t.mode.indexOf('markers')==-1) { return }
     d3.select(this).append('g')
         .attr('class','legendpoints')
       .selectAll('path')
@@ -1547,7 +1542,7 @@ function legendBoxes(d){
       .selectAll('path')
         .data(function(d){return d})
       .enter().append('path')
-        .attr('d','M6,6H-6V-6H6Z') // if we want the median bar, start M6,0H-6
+        .attr('d','M6,6H-6V-6H6Z') // if we want the median bar, prepend M6,0H-6
         .each(function(d){
             var w = (d.lw+1 || t.lw+1 || (d.t ? d.t.lw : 0)+1) - 1,
                 p = d3.select(this);
@@ -1565,7 +1560,7 @@ function legendText(s,gd){
     // console.log(gd,lf);
     // note: uses d[1] for the original trace number, in case of hidden traces
     return s.append('text')
-        .attr('class',function(d){return 'legendtext text-'+d[1]})
+        .attr('class',function(d){ return 'legendtext text-'+d[1] })
         .call(setPosition, 40, 0)
         .attr('text-anchor','start')
         .attr('font-size',lf.size||gf.size||12)
@@ -1582,106 +1577,122 @@ function legendText(s,gd){
 // astr is the attr name, like 'marker.symbol'
 // val is the new value to use
 // traces is a trace number or an array of trace numbers to change (blank for all)
+// astr can also be an object {astr1:val1, astr2:val2...} in which case val is
+// ignored but must be present if you want trace control.
 function restyle(gd,astr,val,traces) {
     plotlylog('+++++++++++++++IN: restyle+++++++++++++++');
-    gd.changed = true;
-    var gl = gd.layout;
 
-    // mode and gaps for bar charts are graph-wide attributes, but make
-    // more sense in the style box than the layout box. here we update gd.layout,
-    // force a replot, then return
-    if(['barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap'].indexOf(astr)!=-1){
-        gl[astr] = val;
-        plot(gd,'','');
-        return;
-    }
+    gd.changed = true;
+    var gl = gd.layout,
+        aobj = {};
+    if(typeof astr == 'string') { aobj[astr] = val }
+    else if($.isPlainObject(astr)) { aobj = astr }
+    else { console.log('restyle fail',astr,val,traces); return }
 
     if($.isNumeric(traces)) { traces=[traces] }
     else if(!$.isArray(traces) || !traces.length) {
         traces=gd.data.map(function(v,i){return i});
     }
 
-    // set attribute in gd.data
-    // also check whether we have heatmaps in the edited traces
-    var aa=astr.split('.'),
-        hasheatmap=false,
-        hasbars=false;
-    for(i=0; i<traces.length; i++) {
-        var cont=gd.data[traces[i]];
-        if(HEATMAPTYPES.indexOf(cont.type)!=-1) { hasheatmap=true }
-        if(BARTYPES.indexOf(cont.type)!=-1) { hasbars=true }
-        // setting bin or z settings should turn off auto
-        if(['zmax','zmin'].indexOf(astr)!=-1) { cont.zauto=false }
-        else if(aa[0]=='xbins') { cont.autobinx=false }
-        else if(aa[0]=='ybins') { cont.autobiny=false }
+    // need to replot (not just restyle) if mode or visibility changes, because
+    // the right objects don't exist. Also heatmaps, error bars, histos, and
+    // boxes all make some changes that need a replot
+    // TODO: many of these don't need to redo calcdata, should split that out too
+    // (though first check how much of our time is spent there...)
+    // and in principle we generally shouldn't need to redo ALL traces... that's
+    // harder though.
+    var replot_attr=[
+        'mode','visible','type','bardir','fill','histnorm',
+        'mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','zauto','scl',
+        'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array',
+        'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
+        'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
+        'boxpoints','jitter','pointpos','whiskerwidth','boxmean'
+    ];
+    // these ones show up in restyle because they make more sense in the style
+    // box, but they're graph-wide attributes, so set in gd.layout
+    var layout_attr = ['barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap'];
+    // these ones may alter the axis type (at least if the first trace is involved)
+    var axtype_attr = ['type','x','y','x0','y0','bardir'];
+    // flags for which kind of update we need to do
+    var doplot = false,
+        dolayout = false,
+        doapplystyle = false;
 
-        // now dig into the heirarchy
-        for(var j=0; j<aa.length-1; j++){
-            if(cont[aa[j]]===undefined){
-                cont[aa[j]] = {};       // CP edit: build the heiracrchy if it doesn't exist
-                                        // e.g. if setting error_y.clr="blue"
-                                        // and errorbar isn't defined, then initialize
-                                        // errorbar and y
-            }
-            cont=cont[aa[j]];  // get to the 2nd-to-last level
+    // now make the changes to gd.data (and occasionally gd.layout)
+    // and figure out what kind of graphics update we need to do
+    for(var ai in aobj) {
+        var vi = aobj[ai];
+        if(layout_attr.indexOf(ai)!=-1){
+            gl[ai] = vi;
+            dolayout = true;
+            continue;
         }
-        cont[aa[j]]=val; // set the value
-    }
 
-    // check if we need to call axis type
-    if((traces.indexOf(0)!=-1) && (['type','x','y','x0','y0','bardir'].indexOf(astr)!=-1)) {
-        gd.axtypesok=false;
-    }
+        // set attribute in gd.data
+        var aa=ai.split('.');
+        for(i=0; i<traces.length; i++) {
+            var cont=gd.data[traces[i]];
+            // setting bin or z settings should turn off auto
+            if(['zmax','zmin'].indexOf(astr)!=-1) { cont.zauto=false }
+            else if(aa[0]=='xbins') { cont.autobinx=false }
+            else if(aa[0]=='ybins') { cont.autobiny=false }
 
-    // switching from auto to manual binning or z scaling doesn't actually do anything but
-    // change what you see in the styling box
-    if((['autobinx','autobiny','zauto'].indexOf(astr)!=-1) && val===false) {
-        setStyles(gd);
-        return;
-    }
+            // now dig into the heirarchy
+            for(var j=0; j<aa.length-1; j++){
+                if(cont[aa[j]]===undefined){ cont[aa[j]] = {} }
+                cont=cont[aa[j]];  // get to the 2nd-to-last level
+            }
+            cont[aa[j]]=val; // set the value
+        }
 
-    // need to replot if mode or visibility changes, because the right objects don't exist
-    // also need to replot if a heatmap
-    // also need to replot the error bars for several cases. TODO: if re-plotting error bars, don't re-plot scatter plots
-    // TODO: lots of stuff here now... should we switch to looking for things that DON'T need plot?
-    var main_attr=['mode','visible','type','bardir','fill','histnorm'],
-        hm_attr=['mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','zauto','scl'],
-        eb_attr=['error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array'],
-        hist_attr=[ 'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
-                    'autobiny','nbinsy','ybins.start','ybins.end','ybins.size'],
-        box_attr=['boxpoints','jitter','pointpos','whiskerwidth','boxmean'];
-    if(main_attr.concat(eb_attr,hist_attr,box_attr).indexOf(astr)!=-1) {
-        // major enough changes deserve an autoscale (and autobin) so people don't get confused
-        if(['bardir','type'].indexOf(astr)!=-1) {
-            gl.xaxis.autorange=true;
-            gl.xaxis.range=[0,1]; // undo any axis reversal
-            gl.yaxis.autorange=true;
-            gl.yaxis.range=[0,1];
-            if(astr=='type') {
-                for(i=0; i<traces.length; i++) {
-                    gd.data[traces[i]].autobinx=true;
-                    gd.data[traces[i]].autobiny=true;
+        // check if we need to call axis type
+        if((traces.indexOf(0)!=-1) && (axtype_attr.indexOf(ai)!=-1)) {
+            gd.axtypesok=false;
+            doplot = true;
+        }
+
+        // switching from auto to manual binning or z scaling doesn't actually
+        // do anything but change what you see in the styling box. everything
+        // else at least needs to apply styles
+        if((['autobinx','autobiny','zauto'].indexOf(ai)==-1) || val!==false) {
+            doapplystyle = true;
+        }
+
+        if(replot_attr.indexOf(astr)!=-1) {
+            // major enough changes deserve an autoscale (and autobin) so people don't get confused
+            if(['bardir','type'].indexOf(astr)!=-1) {
+                gl.xaxis.autorange=true;
+                gl.xaxis.range=[0,1]; // undo any axis reversal
+                gl.yaxis.autorange=true;
+                gl.yaxis.range=[0,1];
+                if(astr=='type') {
+                    for(i=0; i<traces.length; i++) {
+                        gd.data[traces[i]].autobinx=true;
+                        gd.data[traces[i]].autobiny=true;
+                    }
                 }
             }
+            // if we need to change margin for a heatmap, force a relayout first so we don't plot twice
+            if(heatmap_margin(gd)) { dolayout = true }
+            else { doplot = true }
         }
-        // if we need to change margin for a heatmap, force a relayout first so we don't plot twice
-        if(heatmap_margin(gd)){
-            gd.layout = undefined;
-            plot(gd,'',gl,true);
-        }
-        else { plot(gd,'','',(hasheatmap && (hist_attr.indexOf(astr)!=-1))) } // redraw heatmap if its histogram attributes change
     }
-    else if(hm_attr.indexOf(astr)!=-1) {
-        plot(gd,'','',true); // <-- last arg is to force redrawing the heatmap. TODO: if multiple heatmaps, only redraw one?
+
+    // now update the graphics
+    if(dolayout) {
+        gd.layout = undefined;
+        plot(gd,'',gl);
     }
-    else if(hasbars && ['marker.line.width','marker.color'].indexOf(astr)!=-1) {
-        plot(gd,'',''); // can change the antialiasing width correction on bar charts
+    else if(doplot) {
+        plot(gd)
     }
     else {
         setStyles(gd);
-        applyStyle(gd.plot);
-        if($(gd).find('.legend').length)
-            legend(gd);
+        if(doapplystyle) {
+            applyStyle(gd);
+            if(gl.showlegend) { legend(gd) }
+        }
     }
     plotlylog('+++++++++++++++OUT: restyle+++++++++++++++');
 }
@@ -1698,10 +1709,10 @@ function relayout(gd,astr,val) {
         doticks = false,
         dolayoutstyle = false,
         doplot = false;
-    if(typeof astr == 'string')
-        aobj[astr] = val;
-    else if($.isPlainObject(astr))
-        aobj = astr;
+    if(typeof astr == 'string') { aobj[astr] = val }
+    else if($.isPlainObject(astr)) { aobj = astr }
+    else { console.log('relayout fail',astr,val); return }
+
     // look for 'allaxes', split out into all axes
     var keys = Object.keys(aobj),
         axes = ['xaxis','yaxis'];
@@ -1889,6 +1900,8 @@ function newPlot(divid, layout) {
     gd.layout=updateObject(defaultLayout(),layout);
 
     var gl=gd.layout, gd3=d3.select(gd), xa=gl.xaxis, ya=gl.yaxis;
+    setAxConvert(xa);
+    setAxConvert(ya);
 
     // initial autosize
     if(gl.autosize=='initial') {
@@ -2214,7 +2227,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
                     if(ns=='ns')
                         ya.autorange=true;
                     if(ns=='ns'||ew=='ew')
-                        plot(gd,'','');
+                        plot(gd);
                 }
                 else if(numClicks==1) { // single click
                     if(['n','s','e','w'].indexOf(ns+ew)>=0)// click on ends of ranges
@@ -2289,7 +2302,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
 function dragTail(gd) {
     gd.changed = true;
     doTicks(gd); // TODO: plot does this again at the end... why do we need to do them here?
-    plot(gd,'','');
+    plot(gd);
 }
 
 // ----------------------------------------------------
@@ -2419,7 +2432,7 @@ function legend(gd) {
     traces.enter().append('g').attr('class','trace');
 
     traces.append('g')
-        .call(traceStyle)
+        .call(traceStyle,gd)
         .each(legendBars)
         .each(legendBoxes)
         .each(legendLines)
@@ -3255,8 +3268,9 @@ function autoGrowInput(eln) {
                 makeTitles(gd,el);
             }
             else if(mode=='drag') {
-                var v= (cont.type=='log') ? Math.log(Number($.trim(val)))/Math.LN10 :
-                    (cont.type=='date') ? DateTime2ms($.trim(val)) : Number($.trim(val));
+                var v = cont.toAxis(convertToAxis($.trim(val),cont));
+//                 var v= (cont.type=='log') ? Math.log(Number($.trim(val)))/Math.LN10 :
+//                     (cont.type=='date') ? DateTime2ms($.trim(val)) : Number($.trim(val));
                 if($.isNumeric(v)) {
                     cont.range[prop]=Number(v);
                     dragTail(gd);
@@ -4053,7 +4067,7 @@ function convertToAxis(o,a){
         // from the second that aren't in the first etc.
         // TODO: sorting options - I guess we'll have to do this in plot()
         // after finishing calcdata
-        if(!a.categories) { a.categories=[] }
+        if(!a.categories) { a.categories = [] }
         ($.isArray(o) ? o : [o]).forEach(function(v){
             if(a.categories.indexOf(v)==-1) { a.categories.push(v) }
         });
@@ -4064,6 +4078,15 @@ function convertToAxis(o,a){
     // do the conversion
     if($.isArray(o)) { return o.map(fn) }
     else { return fn(o) }
+}
+
+// conversion btwn calcdata (numbers) and axis (linearized - identity except for log axes)
+function setAxConvert(a) {
+    function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null }
+    function fromLog(v){ return Math.pow(10,v) }
+    function num(v){ return $.isNumeric(v) ? v : null }
+    a.toAxis = (a.type=='log') ? toLog : num;
+    a.toData = (a.type=='log') ? fromLog : num;
 }
 
 // do two bounding boxes from getBoundingClientRect,
@@ -4124,15 +4147,13 @@ function startspin(parent){
 }
 
 function range(i){
-    var x=[]; var j=0;
+    var x=[], j=0;
     while(x.push(j++)<i){};
     return x;
 }
 
 function plotlylog(str){
-    if(VERBOSE){
-        console.log(str);
-    }
+    if(VERBOSE){ console.log(str) }
 }
 
 function notifier(text,tm){
