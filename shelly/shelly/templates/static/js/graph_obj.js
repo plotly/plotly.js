@@ -2558,40 +2558,17 @@ function legend(gd) {
             if(dx||dy) { gd.dragged = true }
             el3.call(setPosition, x0+dx, y0+dy);
             var pbb = gd.paper.node().getBoundingClientRect();
+
             // drag to within a couple px of edge to take the legend outside the plot
-            if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) {
-                xf=100;
-            }
-            else if(e2.clientX<pbb.left+3*MINDRAG || (gd.lw<0 && dx<MINDRAG)) {
-                xf=-100;
-            }
-            else {
-                var xl=(x0+dx-gdm.l)/(gl.width-gdm.l-gdm.r),
-                    xr=xl+legendwidth/(gl.width-gdm.l-gdm.r),
-                    xc=(xl+xr)/2;
-                if(xl<(2/3)-xc) xf=xl;
-                else if(xr>4/3-xc) xf=xr;
-                else xf=xc;
-            }
-            if(e2.clientY>pbb.bottom-3*MINDRAG || (gd.lh<0 && dy>-MINDRAG)) {
-                yf=-100;
-            }
-            else if(e2.clientY<pbb.top+3*MINDRAG || (gd.lh>0 && dy<MINDRAG)) {
-                yf=100;
-            }
-            else {
-                var yt=(y0+dy-gdm.t)/(gl.height-gdm.t-gdm.b),
-                    yb=yt+legendheight/(gl.height-gdm.t-gdm.b),
-                    yc=(yt+yb)/2;
-                if(yt<(2/3)-yc) yf=1-yt;
-                else if(yb>4/3-yc) yf=1-yb;
-                else yf=1-yc;
-            }
-            // now set the mouse cursor so user can see how the legend will be aligned
-            var csr='';
-            if(Math.abs(xf)==100) csr='col-resize';
-            else if(Math.abs(yf)==100) csr='row-resize';
-            else csr = nineCursors(xf,yf);
+            if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100 }
+            else if(e2.clientX<pbb.left+3*MINDRAG || (gd.lw<0 && dx<MINDRAG)) { xf=-100 }
+            else { xf = dragAlign(x0+dx,legendwidth,gdm.l,gl.width-gdm.r) }
+
+            if(e2.clientY>pbb.bottom-3*MINDRAG || (gd.lh<0 && dy>-MINDRAG)) { yf=-100 }
+            else if(e2.clientY<pbb.top+3*MINDRAG || (gd.lh>0 && dy<MINDRAG)) { yf=100 }
+            else { yf = 1-dragAlign(y0+dy,legendheight,gdm.t,gl.height-gdm.b) }
+
+            var csr = dragCursors(xf,yf);
             $(eln).css('cursor',csr);
             return pauseEvent(e2);
         }
@@ -2644,21 +2621,13 @@ function annotation(gd,index,opt,value) {
     // edit the options
     var options = gl.annotations[index];
     var oldref = options.ref,
-        xa = gd.layout.xaxis,
-        ya = gd.layout.yaxis;
+        xa = gl.xaxis,
+        ya = gl.yaxis,
+        xr = xa.range[1]-xa.range[0],
+        yr = ya.range[1]-ya.range[0];
     if(typeof opt == 'string') { nestedProperty(options,opt).set(value) }
     else if(opt) { Object.keys(opt).forEach(function(k){ options[k] = opt[k] }) }
 
-    if(oldref && options.x && options.y) {
-        if(options.ref=='plot' && oldref=='paper') {
-            options.x = xa.range[0]+(xa.range[1]-xa.range[0])*options.x;
-            options.y = ya.range[0]+(ya.range[1]-ya.range[0])*options.y;
-        }
-        else if(options.ref=='paper' && oldref=='plot') {
-            options.x = (options.x-xa.range[0])/(xa.range[1]-xa.range[0]);
-            options.y = (options.y-ya.range[0])/(ya.range[1]-ya.range[0]);
-        }
-    }
     // set default options (default x, y, ax, ay are set later)
     if(!options.bordercolor) { options.bordercolor = '' }
     if(!$.isNumeric(options.borderwidth)) { options.borderwidth = 1 }
@@ -2672,26 +2641,6 @@ function annotation(gd,index,opt,value) {
     if(!$.isNumeric(options.arrowsize)) { options.arrowsize=1 }
     if(!options.text) { options.text=((options.showarrow && (options.text=='')) ? '' : 'new text') }
     if(!options.font) { options.font={family:'',size:0,color:''} }
-
-    // check for change between log and linear
-    if(options.ref=='plot') {
-        if(options.xatype=='log' && xa.type=='linear') {
-            options.x = Math.pow(10,options.x)
-        }
-        else if(options.xatype=='linear' && xa.type=='log') {
-            if(options.x>0) { options.x = Math.log(options.x)/Math.LN10 }
-            else { options.x = (xa.range[0]+xa.range[1])/2 } // log of negative - move it onscreen rather than failing
-        }
-        if(options.yatype=='log' && ya.type=='linear') {
-            options.y = Math.pow(10,options.y)
-        }
-        else if(options.yatype=='linear' && ya.type=='log') {
-            if(options.y>0) { options.y = Math.log(options.y)/Math.LN10 }
-            else { options.y = (ya.range[0]+ya.range[1])/2 } // log of negative - move it onscreen rather than failing
-        }
-    }
-    options.xatype=xa.type;
-    options.yatype=ya.type;
 
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
@@ -2726,16 +2675,57 @@ function annotation(gd,index,opt,value) {
     styleText(anntext.node(),options.text);
 
     if(gd.mainsite) {
-        anntext.on('click',function(){
-            if(!gd.dragged) {autoGrowInput(this)}
-        });
+        anntext.on('click',function(){ if(!gd.dragged) { autoGrowInput(this) } });
     }
 
     var atbb = anntext.node().getBoundingClientRect(),
         annwidth = atbb.width,
         annheight = atbb.height;
-    if(!options.ax) options.ax=-10;
-    if(!options.ay) options.ay=-annheight/2-20;
+
+    // check for change between log and linear
+    // off-scale transition to log: put the annotation near low end of the log
+    // axis, but not quite at it (in case that would put it off screen)
+    if(options.ref=='plot') {
+        function checklog(v,oldtype,newtype,dflt) {
+            if(oldtype=='log' && newtype!='log') { return Math.pow(10,v) }
+            else if(oldtype!='log' && newtype=='log') {
+                return (v>0) ? Math.log(v)/Math.LN10 : dflt;
+            }
+            else { return v }
+        }
+        options.x = checklog(options.x,options.xatype,xa.type,
+            (xa.range[0]+xa.range[1]-Math.abs(xr*0.8))/2);
+        options.y = checklog(options.y,options.yatype,ya.type,
+            (ya.range[0]+ya.range[1]-Math.abs(yr*0.8))/2);
+    }
+    options.xatype=xa.type;
+    options.yatype=ya.type;
+
+    // check for change between paper and plot ref - need to wait for
+    // annwidth/annheight to do this properly
+    if(oldref && options.x && options.y) {
+        var fshift = function(v){ return constrain(Math.floor(v*3-1),-.5,.5) }
+        if(options.ref=='plot' && oldref=='paper') {
+            if(options.showarrow) { var xshift = yshift = 0 }
+            else {
+                var xshift = fshift(options.x)*annwidth/xa.m,
+                    yshift = fshift(options.y)*annheight/ya.m;
+                console.log(xshift,yshift);
+            }
+            options.x = xa.range[0] + xr*options.x - xshift;
+            options.y = ya.range[0] + yr*options.y + yshift;
+        }
+        else if(options.ref=='paper' && oldref=='plot') {
+            options.x = (options.x-xa.range[0])/xr;
+            options.y = (options.y-ya.range[0])/yr;
+            if(!options.showarrow) {
+                options.x += fshift(options.x)*annwidth/(xr*xa.m);
+                options.y -= fshift(options.y)*annheight/(yr*ya.m);
+            }
+        }
+    }
+    if(!options.ax) { options.ax=-10 }
+    if(!options.ay) { options.ay=-annheight/2-20 }
     // now position the annotation and arrow, based on options[x,y,ref,showarrow,ax,ay]
 
     // position is either in plot coords (ref='plot') or
@@ -2752,26 +2742,27 @@ function annotation(gd,index,opt,value) {
     // offset (in pixels) between the arrowhead and the center of the annotation
 
     if(options.ref=='paper') {
-        if(!$.isNumeric(options.x)) options.x=0.2;
-        if(!$.isNumeric(options.y)) options.y=0.8;
+        if(!$.isNumeric(options.x)) { options.x=0.1 }
+        if(!$.isNumeric(options.y)) { options.y=0.7 }
         x += plotbb.width*options.x;
         y += plotbb.height*(1-options.y);
         if(!options.showarrow){
-            if(options.x>2/3) x -= annwidth/2;
-            else if(options.x<1/3) x += annwidth/2;
+            if(options.x>2/3) { x -= annwidth/2 }
+            else if(options.x<1/3) { x += annwidth/2 }
 
-            if(options.y<1/3) y -= annheight/2;
-            else if(options.y>2/3) y += annheight/2;
+            if(options.y<1/3) { y -= annheight/2 }
+            else if(options.y>2/3) { y += annheight/2 }
         }
     }
     else {
         // hide the annotation if it's pointing outside the visible plot
-        if((options.x-xa.range[0])*(options.x-xa.range[1])>0 || (options.y-ya.range[0])*(options.y-ya.range[1])>0) {
+        if((options.x-xa.range[0])*(options.x-xa.range[1])>0 ||
+            (options.y-ya.range[0])*(options.y-ya.range[1])>0) {
             ann.remove();
             return;
         }
-        if(!$.isNumeric(options.x)) options.x=(xa.range[0]*0.8+xa.range[1]*0.2);
-        if(!$.isNumeric(options.y)) options.y=(ya.range[0]*0.2+ya.range[1]*0.8);
+        if(!$.isNumeric(options.x)) { options.x=(xa.range[0]*0.9+xa.range[1]*0.1) }
+        if(!$.isNumeric(options.y)) { options.y=(ya.range[0]*0.7+ya.range[1]*0.3) }
         x += xa.b+options.x*xa.m;
         y += ya.b+options.y*ya.m;
     }
@@ -2831,9 +2822,10 @@ function annotation(gd,index,opt,value) {
             }
             edges.forEach(function(i){
                 var p = line_intersect(ax0,ay0,ax,ay,i[0],i[1],i[2],i[3]);
-                if(!p) { return }
-                ax0 = p.x;
-                ay0 = p.y;
+                if(p) {
+                    ax0 = p.x;
+                    ay0 = p.y;
+                }
             });
         });
         if(showline) {
@@ -2847,7 +2839,7 @@ function annotation(gd,index,opt,value) {
                 .attr('d','M'+ax0+','+ay0+'L'+ax+','+ay)
                 .attr('stroke-width',strokewidth)
                 .call(strokeColor,options.arrowcolor || options.bordercolor || '#000');
-            arrowhead(arrow,options.arrowhead,'end',options.arrowsize)
+            arrowhead(arrow,options.arrowhead,'end',options.arrowsize);
             var arrowdrag = arrowgroup.append('path')
                 .attr('class','annotation anndrag')
                 .attr('data-index',String(index))
@@ -2859,53 +2851,43 @@ function annotation(gd,index,opt,value) {
             if(gd.mainsite) { arrowdrag.node().onmousedown = function(e) {
                 if(dragClear(gd)) { return true } // deal with other UI elements, and allow them to cancel dragging
 
-                var eln=this,
-                    el3=d3.select(this),
-                    annx0=Number(ann.attr('x')),
-                    anny0=Number(ann.attr('y')),
-                    xf=undefined,
-                    yf=undefined;
+                var eln = this,
+                    el3 = d3.select(this),
+                    annx0 = Number(ann.attr('x')),
+                    anny0 = Number(ann.attr('y')),
+                    update = {},
+                    ab = 'annotations['+index+'].';
                 gd.dragged = false;
                 window.onmousemove = function(e2) {
                     var dx = e2.clientX-e.clientX,
                         dy = e2.clientY-e.clientY;
-                    if(Math.abs(dx)<MINDRAG) dx=0;
-                    if(Math.abs(dy)<MINDRAG) dy=0;
+                    if(Math.abs(dx)<MINDRAG) { dx=0 }
+                    if(Math.abs(dy)<MINDRAG) { dy=0 }
                     if(dx||dy) {gd.dragged = true}
                     arrowgroup.attr('transform','translate('+dx+','+dy+')');
                     ann.call(setPosition, annx0+dx, anny0+dy);
                     if(options.ref=='paper') {
-                        xf=(ax+dx-gm.l)/(gl.width-gm.l-gm.r);
-                        yf=1-((ay+dy-gm.t)/(gl.height-gm.t-gm.b));
+                        update[ab+'x'] = (ax+dx-gm.l)/(gl.width-gm.l-gm.r);
+                        update[ab+'y'] = 1-((ay+dy-gm.t)/(gl.height-gm.t-gm.b));
                     }
                     else {
-                        xf = options.x+dx/gd.layout.xaxis.m;
-                        yf = options.y+dy/gd.layout.yaxis.m;
+                        update[ab+'x'] = options.x+dx/gd.layout.xaxis.m;
+                        update[ab+'y'] = options.y+dy/gd.layout.yaxis.m;
                     }
                     return pauseEvent(e2);
                 }
                 window.onmouseup = function(e2) {
                     window.onmousemove = null; window.onmouseup = null;
-                    if(gd.dragged && xf!=undefined && yf!=undefined) {
-                        gd.changed = true;
-                        annotation(gd,index,{x:xf,y:yf});
-                    }
+                    if(gd.dragged) { relayout(gd,update) }
                     return pauseEvent(e2);
                 }
                 return pauseEvent(e);
             }}
         }
     }
-    if(options.showarrow) {drawArrow(0,0)}
+    if(options.showarrow) { drawArrow(0,0) }
 
     // user dragging the annotation
-    // aligns left/right/center on resize or new text if drag pos
-    // is in left 1/3, middle 1/3, right 1/3
-    // choose left/center/right align via:
-    //  xl=(left-ml)/plotwidth, xc=(center-ml/plotwidth), xr=(right-ml)/plotwidth
-    //  if(xl<2/3-xc) gll.x=xl;
-    //  else if(xr>4/3-xc) gll.x=xr;
-    //  else gll.x=xc;
     if(gd.mainsite) { ann.node().onmousedown = function(e) {
         if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
 
@@ -2913,41 +2895,30 @@ function annotation(gd,index,opt,value) {
             el3=d3.select(this),
             x0=Number(el3.attr('x')),
             y0=Number(el3.attr('y')),
-            xf=undefined,
-            yf=undefined;
+            update = {},
+            ab = 'annotations['+index+'].';
         gd.dragged = false;
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
                 dy = e2.clientY-e.clientY;
-            if(Math.abs(dx)<MINDRAG) dx=0;
-            if(Math.abs(dy)<MINDRAG) dy=0;
-            if(dx||dy) {gd.dragged = true}
+            if(Math.abs(dx)<MINDRAG) { dx=0 }
+            if(Math.abs(dy)<MINDRAG) { dy=0 }
+            if(dx||dy) { gd.dragged = true }
             el3.call(setPosition, x0+dx, y0+dy);
             var csr='pointer';
             if(options.showarrow) {
-                xf = options.ax+dx;
-                yf = options.ay+dy;
+                update[ab+'ax'] = options.ax+dx;
+                update[ab+'ay'] = options.ay+dy;
                 drawArrow(dx,dy);
             }
             else if(options.ref=='paper') {
-                var xl=(x0+dx-gm.l)/(gl.width-gm.l-gm.r),
-                    xr=xl+annwidth/(gl.width-gm.l-gm.r),
-                    xc=(xl+xr)/2;
-                if(xl<(2/3)-xc) xf=xl;
-                else if(xr>4/3-xc) xf=xr;
-                else xf=xc;
-                var yt=(y0+dy-gm.t)/(gl.height-gm.t-gm.b),
-                    yb=yt+annheight/(gl.height-gm.t-gm.b),
-                    yc=(yt+yb)/2;
-                if(yt<(2/3)-yc) yf=1-yt;
-                else if(yb>4/3-yc) yf=1-yb;
-                else yf=1-yc;
-                // now set the mouse cursor so user can see how the annotation will be aligned
-                csr = nineCursors(xf,yf);
+                update[ab+'x'] = dragAlign(x0+dx+borderfull,annwidth,gm.l,gl.width-gm.r);
+                update[ab+'y'] = 1-dragAlign(y0+dy+borderfull,annheight,gm.t,gl.height-gm.b);
+                csr = dragCursors(update[ab+'x'],update[ab+'y']);
             }
             else {
-                xf = options.x+dx/gd.layout.xaxis.m;
-                yf = options.y+dy/gd.layout.yaxis.m;
+                update[ab+'x'] = options.x+dx/gd.layout.xaxis.m;
+                update[ab+'y'] = options.y+dy/gd.layout.yaxis.m;
             }
             $(eln).css('cursor',csr);
             return pauseEvent(e2);
@@ -2955,30 +2926,33 @@ function annotation(gd,index,opt,value) {
         window.onmouseup = function(e2) {
             window.onmousemove = null; window.onmouseup = null;
             $(eln).css('cursor','');
-            if(gd.dragged && xf!=undefined && yf!=undefined) {
-                annotation(gd,index,options.showarrow ? {ax:xf,ay:yf} : {x:xf,y:yf});
-            }
+            if(gd.dragged) { relayout(gd,update) }
             return pauseEvent(e2);
         }
         return pauseEvent(e);
     }}
 }
 
+// for automatic alignment on dragging, <1/3 means left align, >2/3 means right,
+// and between is center. Pick the right fraction based on where you are, and
+// return the fraction corresponding to that position on the object
+function dragAlign(v,dv,v0,v1) {
+    var vmin = (v-v0)/(v1-v0), vmax = vmin+dv/(v1-v0), vc = (vmin+vmax)/2;
+    if(vmin<(2/3)-vc) { return vmin }
+    if(vmax>(4/3)-vc) { return vmax }
+    return vc;
+}
+
 // set cursors pointing toward the closest corner/side, to indicate alignment
-function nineCursors(x,y){
-    if(x<1/3) {
-        if(y<1/3) {return 'sw-resize'}
-        if(y<2/3) {return 'w-resize'}
-        return 'nw-resize';
-    }
-    if(x<2/3) {
-        if(y<1/3) {return 's-resize'}
-        if(y<2/3) {return 'move'}
-        return 'n-resize';
-    }
-    if(y<1/3) {return 'se-resize'}
-    if(y<2/3) {return 'e-resize'}
-    return 'ne-resize';
+// x and y are 0-1, fractions of the plot area
+// x or y = 100 means 'outside the plot area, auto-increase margin'
+function dragCursors(x,y){
+    if(Math.abs(x)==100) { return 'col-resize' }
+    if(Math.abs(y)==100) { return 'row-resize' }
+    return [['sw-resize','s-resize','se-resize'],
+            ['w-resize','move','e-resize'],
+            ['nw-resize','n-resize','ne-resize']
+        ][constrain(Math.floor(y*3),0,2)][constrain(Math.floor(x*3),0,2)];
 }
 
 // add arrowhead(s) to a path or line d3 element el3
@@ -3076,9 +3050,9 @@ function line_intersect(x1,y1,x2,y2,x3,y3,x4,y4) {
 // since our drag events cancel event bubbling, need to explicitly deal with other elements
 function dragClear(gd) {
     // explicitly disable dragging when a popover is present
-    if($('.popover').length) return true;
-    // because we cancel event bubbling, input won't receive its blur event.
-    if(gd.input) gd.input.trigger('blur');
+    if($('.popover').length) { return true }
+    // because we cancel event bubbling, explicitly trigger input blur event.
+    if(gd.input) { gd.input.trigger('blur') }
     return false;
 }
 
@@ -3161,8 +3135,8 @@ function autoGrowInput(eln) {
     var fapx=['font-size','letter-spacing','word-spacing'];
     for(i in fa) {
         var ra=ref.attr(fa[i]);
-        if(fapx.indexOf(fa[i])>=0 && Number(ra)>0) ra+='px';
-        if(ra) fontCss[fa[i]]=ra;
+        if(fapx.indexOf(fa[i])>=0 && Number(ra)>0) { ra+='px' }
+        if(ra) { fontCss[fa[i]]=ra }
     }
 
     o.comfortZone = (Number(String(fontCss['font-size']).split('px')[0]) || 20) + 3;
@@ -3173,8 +3147,7 @@ function autoGrowInput(eln) {
     gd.input=input;
 
     // first put the input box at 0,0, then calculate the correct offset vs orig. element
-    input.css(fontCss)
-        .css({position:'absolute', top:0, left:0, 'z-index':6000});
+    input.css(fontCss).css({position:'absolute', top:0, left:0, 'z-index':6000});
 
     if(mode=='drag') {
         // show enough digits to specify the position to about a pixel, but not more
@@ -3206,7 +3179,7 @@ function autoGrowInput(eln) {
         .html(escaped(val));
 
     var testWidth=function(){
-        return Math.min(Math.max(testSubject.width()+o.comfortZone,o.minWidth),o.maxWidth)
+        return constrain(testSubject.width()+o.comfortZone,o.minWidth,o.maxWidth)
     }
     input.width(testWidth());
 
@@ -3223,9 +3196,7 @@ function autoGrowInput(eln) {
     if(mode=='annotation') {
         gd.paper.selectAll('svg.annotation[data-index="'+an+'"]').remove();
     }
-    else if(mode!='drag') {
-        gd.paper.selectAll('[class="'+cls+'"]').remove();
-    }
+    else if(mode!='drag') { gd.paper.selectAll('[class="'+cls+'"]').remove() }
     input[0].select();
 
     var removeInput=function(){
@@ -3460,8 +3431,8 @@ function roundUp(v,a,reverse){
 // numeric ticks always have constant differences, other datetime ticks
 // can all be calculated as constant number of milliseconds
 function tickIncrement(x,dtick,axrev){
-    if($.isNumeric(dtick)) // includes all dates smaller than month, and pure 10^n in log
-        return x+(axrev?-dtick:dtick);
+    // includes all dates smaller than month, and pure 10^n in log
+    if($.isNumeric(dtick)) { return x+(axrev?-dtick:dtick) }
 
     var tType=dtick.charAt(0);
     var dtnum=Number(dtick.substr(1)),dtSigned=(axrev?-dtnum:dtnum);
@@ -3472,16 +3443,16 @@ function tickIncrement(x,dtick,axrev){
         return y.setMonth(y.getMonth()+dtSigned);
     }
     // Log scales: Linear, Digits
-    else if(tType=='L')
-        return Math.log(Math.pow(10,x)+dtSigned)/Math.LN10;
-    else if(tType=='D') {//log10 of 2,5,10, or all digits (logs just have to be close enough to round)
-        var tickset=(dtick=='D2')?
-            [-0.301,0,0.301,0.699,1]:[-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
+    else if(tType=='L') { return Math.log(Math.pow(10,x)+dtSigned)/Math.LN10 }
+    //log10 of 2,5,10, or all digits (logs just have to be close enough to round)
+    else if(tType=='D') {
+        var tickset=(dtick=='D2') ? [-0.301,0,0.301,0.699,1] :
+            [-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
         var x2=x+(axrev ? -0.01 : 0.01);
         var frac=roundUp(mod(x2,1), tickset, axrev);
         return Math.floor(x2)+Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
     }
-    else throw "unrecognized dtick "+String(dtick);
+    else { throw "unrecognized dtick "+String(dtick) }
 }
 
 // calculate the first tick on an axis
@@ -3490,10 +3461,7 @@ function tickFirst(a){
     if($.isNumeric(a.dtick)) {
         var tmin = sRound((a.range[0]-a.tick0)/a.dtick)*a.dtick+a.tick0;
         // make sure no ticks outside the category list
-        if(a.type=='category') {
-            if(tmin<0) { tmin=0 }
-            if(tmin>a.categories.length-1) { tmin=a.categories.length-1 }
-        }
+        if(a.type=='category') { tmin = constrain(tmin,0,a.categories.length-1) }
         return tmin
     }
 
@@ -3507,15 +3475,16 @@ function tickFirst(a){
         return t1;
     }
     // Log scales: Linear, Digits
-    else if(tType=='L')
+    else if(tType=='L') {
         return Math.log(sRound((Math.pow(10,a.range[0])-a.tick0)/dt)*dt+a.tick0)/Math.LN10;
+    }
     else if(tType=='D') {
         var tickset=(a.dtick=='D2')?
             [-0.301,0,0.301,0.699,1]:[-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
         var frac=roundUp(mod(a.range[0],1), tickset, axrev);
         return Math.floor(a.range[0])+Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
     }
-    else throw "unrecognized dtick "+String(a.dtick);
+    else { throw "unrecognized dtick "+String(a.dtick) }
 }
 
 // draw the text for one tick.
@@ -3535,23 +3504,22 @@ function tickText(gd, a, x){
             x!={first:a.tmin,last:a.tmax}[a.showexponent]) ? 'hide' : false;
     if(a.type=='date'){
         var d=new Date(x);
-        if(a.tickround=='y')
-            tt=$.datepicker.formatDate('yy', d);
-        else if(a.tickround=='m')
-            tt=$.datepicker.formatDate('M yy', d);
+        if(a.tickround=='y') { tt=$.datepicker.formatDate('yy', d) }
+        else if(a.tickround=='m') { tt=$.datepicker.formatDate('M yy', d) }
         else {
-            if(x==a.tmin) suffix='<br>'+$.datepicker.formatDate('yy', d);
-            if(a.tickround=='d')
-                tt=$.datepicker.formatDate('M d', d);
-            else if(a.tickround=='H')
+            if(x==a.tmin) { suffix='<br>'+$.datepicker.formatDate('yy', d) }
+            if(a.tickround=='d') { tt=$.datepicker.formatDate('M d', d) }
+            else if(a.tickround=='H') {
                 tt=$.datepicker.formatDate('M d ', d)+lpad(d.getHours(),2)+'h';
+            }
             else {
                 if(x==a.tmin) suffix='<br>'+$.datepicker.formatDate('M d, yy', d);
                 tt=lpad(d.getHours(),2)+':'+lpad(d.getMinutes(),2);
                 if(a.tickround!='M'){
                     tt+=':'+lpad(d.getSeconds(),2);
-                    if(a.tickround!='S')
+                    if(a.tickround!='S') {
                         tt+=numFormat(mod(x/1000,1),a,'none').substr(1);
+                    }
                 }
             }
         }
@@ -3565,8 +3533,9 @@ function tickText(gd, a, x){
             tt=Math.round(Math.pow(10,mod(x,1)));
             fontSize*=0.75;
         }
-        else if(a.dtick.charAt(0)=='L')
+        else if(a.dtick.charAt(0)=='L') {
             tt=numFormat(Math.pow(10,x),a,hideexp);
+        }
         else throw "unrecognized dtick "+String(a.dtick);
     }
     else if(a.type=='category'){
@@ -3574,8 +3543,7 @@ function tickText(gd, a, x){
         if(tt0===undefined) { tt0='' }
         tt=String(tt0);
     }
-    else
-        tt=numFormat(x,a,hideexp);
+    else { tt=numFormat(x,a,hideexp) }
     // if 9's are printed on log scale, move the 10's away a bit
     if((a.dtick=='D1') && (String(tt).charAt(0)=='1')){
         if(a===gd.layout.yaxis) px-=fontSize/4;
@@ -3703,8 +3671,7 @@ function doTicks(gd,ax) {
         ticks.attr('transform',transfn);
         ticks.exit().remove();
     }
-    else
-        ticks.remove();
+    else { ticks.remove() }
 
     // tick labels
     gd.axislayer.selectAll('text.'+tcls).remove(); // TODO: problems with reusing labels... shouldn't need this.
@@ -3723,8 +3690,7 @@ function doTicks(gd,ax) {
         });
         yl.exit().remove();
     }
-    else
-        yl.remove();
+    else { yl.remove() }
 
     // grid
     // TODO: must be a better way to find & remove zero lines? this will fail when we get to manual ticks
@@ -3743,8 +3709,7 @@ function doTicks(gd,ax) {
         grid.attr('transform',transfn);
         grid.exit().remove();
     }
-    else
-        grid.remove();
+    else { grid.remove() }
 
     // zero line
     var zl = gd.axislayer.selectAll('line.'+zcls).data(a.range[0]*a.range[1]<=0 ? [{x:0}] : []);
@@ -3759,8 +3724,7 @@ function doTicks(gd,ax) {
         zl.attr('transform',transfn);
         zl.exit().remove();
     }
-    else
-        zl.remove();
+    else { zl.remove() }
 
     // now move all ticks and zero lines to the top of axislayer (ie over other grid lines)
     // looks cumbersome in d3, so switch to jquery.
@@ -3790,7 +3754,7 @@ function doTicks(gd,ax) {
 SPECIALCHARS={'mu':'\u03bc','times':'\u00d7'}
 
 function styleText(sn,t) {
-    if(t===undefined) return;
+    if(t===undefined) { return }
     var s=d3.select(sn);
     // whitelist of tags we accept - make sure new tags get added here as well as styleTextInner
     var tags=['sub','sup','b','i','font'];
@@ -3812,7 +3776,7 @@ function styleText(sn,t) {
     }
     // quote unquoted attributes
     var attrRE=/(<[^<>]*=\s*)([^<>\s"']+)(\s|>)/g;
-    while(t1.match(attrRE)) t1=t1.replace(attrRE,'$1"$2"$3');
+    while(t1.match(attrRE)) { t1=t1.replace(attrRE,'$1"$2"$3') }
     // make special characters into their own <c> tags
     t1=t1.replace(charsRE,'<c>$1</c>');
     // parse the text into an xml tree
@@ -3831,8 +3795,8 @@ function styleText(sn,t) {
     else {
         for(var i=0; i<lines.length;i++) {
             var l=s.append('tspan').attr('class','nl');
-            if(i>0) l.attr('x',s.attr('x')).attr('dy',1.3*s.attr('font-size'));
-            styleTextInner(l,lines[i].childNodes);
+            if(i>0) { l.attr('x',s.attr('x')).attr('dy',1.3*s.attr('font-size')) }
+            sti(l,lines[i].childNodes);
         }
     }
     // if the user did something weird and produced an empty output, give it some size
@@ -3843,51 +3807,33 @@ function styleText(sn,t) {
         styleText(sn,'XXXXX');
         s.attr('opacity',0);
     }
+
+    function sti(s,n){
+        function addtext(v){ (s.text() ? s.append('tspan') : s).text(v) }
+
+        var sf = {
+            sup: function(s){ s.attr('baseline-shift','super').attr('font-size','70%') },
+            sub: function(s){ s.attr('baseline-shift','sub').attr('font-size','70%') },
+            b: function(s){ s.attr('font-weight','bold') },
+            i: function(s){ s.attr('font-style','italic') },
+            font: function(s,a){
+                for(var j=0; j<a.length; j++) {
+                    var at = a[j], atl=at.name.toLowerCase(), atv=at.nodeValue;
+                    if(atl=='color') { s.call(fillColor,atv) }
+                    else { s.attr('font-'+atl,atv) }
+                }
+            }
+        }
+
+        for(var i=0;i<n.length;i++){
+            var nn=n[i].nodeName.toLowerCase(),nc=n[i].childNodes;
+            if(nn=='#text') { addtext(n[i].nodeValue) }
+            else if(nn=='c') { addtext(SPECIALCHARS[nc[0].nodeValue]||'?') }
+            else if(sf[nn]) { sti(s.append('tspan').call(sf[nn],n[i].attributes),nc) }
+        }
+    }
 }
 
-function styleTextInner(s,n) {
-    function addtext(v) {
-        if(s.text()) { s.append('tspan').text(v) }
-        else { s.text(v) }
-    }
-    for(var i=0; i<n.length;i++) {
-        var nn=n[i].nodeName.toLowerCase();
-        if(nn=='#text') {
-            addtext(n[i].nodeValue);
-        }
-        else if(nn=='c') {
-            addtext(SPECIALCHARS[n[i].childNodes[0].nodeValue]||'?');
-        }
-        else if(nn=='sup') {
-            styleTextInner(s.append('tspan').attr('baseline-shift','super').attr('font-size','70%'),
-              n[i].childNodes);
-        }
-        else if(nn=='sub') {
-            styleTextInner(s.append('tspan').attr('baseline-shift','sub').attr('font-size','70%'),
-              n[i].childNodes);
-        }
-        else if(nn=='b') {
-            styleTextInner(s.append('tspan').attr('font-weight','bold'),
-              n[i].childNodes);
-        }
-        else if(nn=='i') {
-            styleTextInner(s.append('tspan').attr('font-style','italic'),
-              n[i].childNodes);
-        }
-        else if(nn=='font') {
-            var ts=s.append('tspan');
-            for(var j=0; j<n[i].attributes.length; j++) {
-                var at=n[i].attributes[j],atl=at.name.toLowerCase(),atv=at.nodeValue;
-                if(atl=='style') { ts.attr('font-style',atv) }
-                else if(atl=='weight') { ts.attr('font-weight',atv) }
-                else if(atl=='size') { ts.attr('font-size',atv) }
-                else if(atl=='family') { ts.attr('font-family',atv) }
-                else if(atl=='color') { ts.call(fillColor,atv) }
-            }
-            styleTextInner(ts, n[i].childNodes);
-        }
-    }
-}
 
 // ----------------------------------------------------
 // Graph file operations
@@ -3897,13 +3843,14 @@ function styleTextInner(s,n) {
 
 function graphToGrid(){
     startspin();
-    var gd=gettab();
-    var csrftoken=$.cookie('csrftoken');
-    if(gd.fid !== undefined && gd.fid !='')
+    var gd=gettab(),
+        csrftoken=$.cookie('csrftoken');
+    if(gd.fid !== undefined && gd.fid !='') {
         $.post("/pullf/", {'csrfmiddlewaretoken':csrftoken, 'fid': gd.fid, 'ft':'grid'}, fileResp);
+    }
     else {
         var data = [];
-        for(d in gd.data) data.push(stripSrc(gd.data[d]));
+        for(d in gd.data) { data.push(stripSrc(gd.data[d])) }
         plotlylog('~ DATA ~');
         plotlylog(data);
         $.post("/pullf/", {'csrfmiddlewaretoken':csrftoken, 'data': JSON.stringify({'data':data}), 'ft':'grid'}, fileResp);
@@ -3919,11 +3866,14 @@ uoStack=[];
 function updateObject(i,up) {
     if(!$.isPlainObject(up)) return i;
     var o = uoStack[uoStack.push({})-1]; // seems like JS doesn't fully implement recursion... if I say o={} here then each level destroys the previous.
-    for(key in i) o[key]=i[key];
+    for(key in i) { o[key]=i[key] }
     for(key in up) {
-        if($.isPlainObject(up[key]))
+        if($.isPlainObject(up[key])) {
             o[key]=updateObject($.isPlainObject(i[key]) ? i[key] : {}, up[key]);
-        else o[key]=($.isNumeric(i[key]) && $.isNumeric(up[key])) ? Number(up[key]) : up[key]; // if the initial object had a number and the update can be a number, coerce it
+        }
+        // if the initial object had a number and the update can be a number, coerce it
+        else if($.isNumeric(i[key]) && $.isNumeric(up[key])) { o[key] = Number(up[key]) }
+        else { o[key] = up[key] }
     }
     return uoStack.pop();
 }
@@ -3936,7 +3886,6 @@ function updateObject(i,up) {
 function aggNums(f,v,a,len) {
     if(!len) { len=a.length }
     if(!$.isNumeric(v)) { v=false }
-// 	var r=($.isNumeric(v)) ? v : false;
 	for(i=0; i<len; i++) {
 	    if(!$.isNumeric(v)) { v=a[i] }
 	    else if($.isNumeric(a[i])) { v=f(v,a[i]) }
@@ -3952,8 +3901,8 @@ function aggNums(f,v,a,len) {
 function moreDates(a) {
     var dcnt=0, ncnt=0;
     for(var i in a) {
-        if(isDateTime(a[i])) dcnt+=1;
-        if($.isNumeric(a[i])) ncnt+=1;
+        if(isDateTime(a[i])) { dcnt+=1 }
+        if($.isNumeric(a[i])) { ncnt+=1 }
     }
     return (dcnt>ncnt*2);
 }
@@ -3963,8 +3912,8 @@ function moreDates(a) {
 // then it should have a range max/min of at least 100
 // and at least 1/4 of distinct values < max/10
 function loggy(d,ax) {
-    var vals=[],v,c;
-    var ax2= (ax=='x') ? 'y' : 'x';
+    var vals = [],v,c;
+    var ax2 = (ax=='x') ? 'y' : 'x';
     for(curve in d){
         c=d[curve];
         // curve has data: test each numeric point for <=0 and add if unique
@@ -3972,8 +3921,8 @@ function loggy(d,ax) {
             for(i in c[ax]) {
                 v=c[ax][i];
                 if($.isNumeric(v)){
-                    if(v<=0) return false;
-                    else if(vals.indexOf(v)<0) vals.push(v);
+                    if(v<=0) { return false }
+                    else if(vals.indexOf(v)<0) { vals.push(v) }
                 }
             }
         }
@@ -3982,7 +3931,7 @@ function loggy(d,ax) {
             if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) { return false }
             for(i in d[curve][ax2]) {
                 v=c[ax+'0']+c['d'+ax]*i;
-                if(vals.indexOf(v)<0) vals.push(v);
+                if(vals.indexOf(v)<0) { vals.push(v) }
             }
         }
     }
@@ -4053,8 +4002,7 @@ function setAxConvert(a) {
 // do two bounding boxes from getBoundingClientRect,
 // ie {left,right,top,bottom,width,height}, overlap?
 function bBoxIntersect(a,b){
-    if(a.left>b.right || b.left>a.right || a.top>b.bottom || b.top>a.bottom) { return false }
-    return true;
+    return (a.left<=b.right && b.left<=a.right && a.top<=b.bottom && b.top<=a.bottom)
 }
 
 // create a copy of data, with all dereferenced src elements stripped
@@ -4065,8 +4013,8 @@ function stripSrc(d) {
     var o={};
     for(v in d) {
         if(!(v+'src' in d)) {
-            if($.isPlainObject(d[v])) o[v]=stripSrc(d[v]);
-            else o[v]=d[v];
+            if($.isPlainObject(d[v])) { o[v]=stripSrc(d[v]) }
+            else { o[v]=d[v] }
         }
     }
     return o;
@@ -4074,11 +4022,8 @@ function stripSrc(d) {
 
 // kill the main spinner
 function killspin(){
-    if(gettab()!==undefined){
-        if(gettab().spinner !== undefined){
-            gettab().spinner.stop();
-        }
-    }
+    var gd = gettab();
+    if(gd && gd.spinner){ gd.spinner.stop() }
     $('.spinner').remove();
 }
 
@@ -4113,21 +4058,15 @@ function range(i){
     return x;
 }
 
-function plotlylog(str){
-    if(VERBOSE){ console.log(str) }
-}
+function plotlylog(str){ if(VERBOSE){ console.log(str) } }
 
 function notifier(text,tm){
-    var notifier_id='notifier'+($('.notifier').length+1).toString();
-    var alertdiv='<div class="alert notifier" style="display:none;" id='+notifier_id+'>'+
+    var n = $('<div class="alert notifier" style="display:none;">'+
         '<button class="close" data-dismiss="alert" style="opacity:1;text-shadow:none;color:white;">×</button>'+
-        '<br><p>'+text+'</p></div>';
-
-    var mc=$('.middle-center,#embedded_graph')[0];
-    $(mc).append(alertdiv);
-    if(tm=='long') {
-        $('#'+notifier_id).fadeIn(2000).delay(2000).fadeOut(2000,function(){ $('#'+notifier_id).remove(); }); }
-    else{
-        $('#'+notifier_id).fadeIn(2000).fadeOut(2000,function(){ $('#'+notifier_id).remove(); }); }
+        '<br><p>'+text+'</p></div>');
+    n.appendTo('.middle-center,#embedded_graph')
+        .fadeIn(2000)
+        .delay(tm=='long' ? 2000 : 1)
+        .fadeOut(2000,function(){ n.remove() });
 }
 
