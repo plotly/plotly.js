@@ -483,7 +483,7 @@ function plot(divid, data, layout) {
                 var ns=gdc.ysrc.split('/')
                 gdc.name=ns[ns.length-1].replace(/\n/g,' ');
             }
-            else gdc.name='trace '+curve;
+            else { gdc.name='trace '+curve }
         }
 
         if(curvetype=='scatter') {
@@ -514,9 +514,7 @@ function plot(divid, data, layout) {
                     expandBounds(xa,xtight,x,serieslen);
                 }
                 // otherwise both ends padded
-                else {
-                    expandBounds(xa,xpadded,x,serieslen);
-                }
+                else { expandBounds(xa,xpadded,x,serieslen) }
 
                 // now check for y - rather different logic
                 // include zero (tight) and extremes (padded) if fill to zero
@@ -528,9 +526,7 @@ function plot(divid, data, layout) {
                     expandBounds(ya,ytight,y,serieslen);
                 }
                 // otherwise both ends padded - whether or not there are markers
-                else {
-                    expandBounds(ya,ypadded,y,serieslen);
-                }
+                else { expandBounds(ya,ypadded,y,serieslen) }
 
                 // create the "calculated data" to plot
                 for(i=0;i<serieslen;i++) {
@@ -539,10 +535,11 @@ function plot(divid, data, layout) {
                 firstscatter = false;
             }
             // even if trace is not visible, need to figure out whether there are enough points to trigger auto-no-lines
-            else if(gdc.mode || ((!gdc.x || gdc.x.length<PTS_LINESONLY) && (!gdc.y || gdc.y.length<PTS_LINESONLY)))
+            else if(gdc.mode || ((!gdc.x || gdc.x.length<PTS_LINESONLY) &&
+              (!gdc.y || gdc.y.length<PTS_LINESONLY))) {
                 cd=[{x:false, y:false}];
-            else
-                for(i=0; i<PTS_LINESONLY+1; i++) cd.push({x:false, y:false});
+            }
+            else { for(i=0; i<PTS_LINESONLY+1; i++) { cd.push({x:false, y:false}) } }
         }
         else if(BARTYPES.indexOf(curvetype)!=-1) {
             // ignore as much processing as possible (and including in autorange) if bar is not visible
@@ -1159,11 +1156,11 @@ function plot(divid, data, layout) {
 
     // finish up - spinner and tooltips
     try{ killspin(); }
-    catch(e){ plotlylog(e); }
+    catch(e){ console.log(e); }
     setTimeout(function(){
         if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false){
             try{ showAlert('graphtips'); }
-            catch(e){ plotlylog(e); }
+            catch(e){ console.log(e); }
         }
         else if($(gd).find('#graphtips').css('display')=='none'){
             $(gd).find('#graphtips').fadeIn(); }
@@ -1185,8 +1182,7 @@ function pf(v,ax,vb,clip){
     var va = ax.toAxis(v);
     if($.isNumeric(va)) { return d3.round(ax.b+ax.m*va+vb,2) }
     if(clip && $.isNumeric(v)) { // clip NaN (ie past negative infinity) to one axis length past the negative edge
-        var a = ax.range[0],
-            b = ax.range[1];
+        var a = ax.range[0], b = ax.range[1];
         return d3.round(ax.b+ax.m*0.5*(a+b-3*Math.abs(a-b))+vb,2);
     }
 }
@@ -1348,7 +1344,6 @@ function applyStyle(gd) {
     plotlylog('+++++++++++++++OUT: applyStyle(gd)+++++++++++++++');
 
 }
-
 
 // -----------------------------------------------------
 // styling functions for plot elements
@@ -1530,9 +1525,7 @@ function legendBars(d){
                 p = d3.select(this);
             p.attr('stroke-width',w)
                 .call(fillColor,d.mc || t.mc || (d.t ? d.t.mc : ''));
-            if(w) {
-                p.call(strokeColor,d.mlc || t.mlc || (d.t ? d.t.mlc : ''))
-            }
+            if(w) { p.call(strokeColor,d.mlc || t.mlc || (d.t ? d.t.mlc : '')) }
         })
         .attr('transform','translate(20,0)');
 }
@@ -1551,9 +1544,7 @@ function legendBoxes(d){
                 p = d3.select(this);
             p.attr('stroke-width',w)
                 .call(fillColor,d.fc || t.fc || (d.t ? d.t.fc : ''));
-            if(w) {
-                p.call(strokeColor,d.lc || t.lc || (d.t ? d.t.lc : ''))
-            }
+            if(w) { p.call(strokeColor,d.lc || t.lc || (d.t ? d.t.lc : '')) }
         })
         .attr('transform','translate(20,0)');
 }
@@ -1684,9 +1675,7 @@ function restyle(gd,astr,val,traces) {
         gd.layout = undefined;
         plot(gd,'',gl);
     }
-    else if(doplot) {
-        plot(gd)
-    }
+    else if(doplot) { plot(gd) }
     else {
         setStyles(gd);
         if(doapplystyle) {
@@ -1942,6 +1931,8 @@ function newPlot(divid, layout) {
 
     // make the ticks, grids, and axis titles
     doTicks(gd);
+    xa.r0 = xa.range.slice(); // store ranges for later use
+    ya.r0 = ya.range.slice();
 
     //make the axis drag objects
     var gm = gd.margin,
@@ -2354,7 +2345,7 @@ function makeTitles(gd,title) {
                 for(var i=0;i<labels.length;i++){
                     var lbb=labels[i].getBoundingClientRect();
                     if(bBoxIntersect(titlebb,lbb)) {
-                        ticky=Math.min(Math.max(ticky,lbb.bottom),gdbb.bottom-titlebb.height);
+                        ticky=constrain(ticky,lbb.bottom,gdbb.bottom-titlebb.height);
                     }
                 }
                 if(ticky>titlebb.top) {
@@ -2365,8 +2356,9 @@ function makeTitles(gd,title) {
                 var labels=gd.paper.selectAll('text.ytick')[0], tickx=screen.width;
                 for(var i=0;i<labels.length;i++){
                     var lbb=labels[i].getBoundingClientRect();
-                    if(bBoxIntersect(titlebb,lbb))
-                        tickx=Math.max(Math.min(tickx,lbb.left),gdbb.left+titlebb.width);
+                    if(bBoxIntersect(titlebb,lbb)) {
+                        tickx=constrain(tickx,gdbb.left+titlebb.width,lbb.left);
+                    }
                 }
                 if(tickx<titlebb.right) {
                     el.attr('transform','translate('+(tickx-titlebb.right)+') '+el.attr('transform'));
@@ -3011,25 +3003,21 @@ function arrowhead(el3,style,ends,mag) {
 // once (with no container) for the data to send to layoutBoxDrop,
 // and again (with a container) to add arrowheads to the list
 function allArrowheads(container){
-    // with no args, output an array of elements for the dropdown list
-    if(!container) {
-        out=[];
-        for(var i=1; i<=8; i++){
-            out.push({
-                val:i,
-                name:'<svg width="40" height="20" data-arrowhead="'+i+'" style="position: relative; top: 2px;">'+
-                    '<line stroke="rgb(0,0,0)" style="fill: none;" x1="5" y1="10" x2="25" y2="10" stroke-width="2">'+
-                    '</line></svg>'
-            });
-        }
-        return out;
-    }
     // if a dom element is passed in, add appropriate arrowheads to every arrowhead selector in the container
-    else {
+    if(container) {
         $(container).find('[data-arrowhead]').each(function(){
             arrowhead(d3.select(this).select('line'),Number($(this).attr('data-arrowhead')));
         });
+        return;
     }
+    // with no args, output an array of elements for the dropdown list
+    return [1,2,3,4,5,6,7,8].map(function(i){
+        return {
+            val:i,
+            name:'<svg width="40" height="20" data-arrowhead="'+i+'" style="position: relative; top: 2px;">'+
+                '<line stroke="rgb(0,0,0)" style="fill: none;" x1="5" y1="10" x2="25" y2="10" stroke-width="2">'+
+                '</line></svg>'
+        } });
 }
 
 function constrain(v,v0,v1) { return Math.max(v0,Math.min(v1,v)) }
