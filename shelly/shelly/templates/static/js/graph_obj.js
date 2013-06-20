@@ -935,8 +935,8 @@ function plot(divid, data, layout) {
             }
             else {
                 // in case this one was a heatmap previously, remove it and its colorbar
-                $('#'+gd.id+'-hm'+i).remove();
-                $('#'+gd.id+'-cb'+i).remove();
+                $(gd).find('.hm'+i).remove();
+                $(gd).find('.cb'+i).remove();
 
                 if(BARTYPES.indexOf(type)!=-1) { cdbar.push(cd) }
                 else if(type=='box') { cdbox.push(cd) }
@@ -3693,7 +3693,6 @@ function doTicks(gd,ax) {
             .attr('y1',g.y1)
             .attr('y2',g.y2)
             .each(function(d) {if(a.zeroline && a.type=='linear' && d.text=='0') d3.select(this).remove();});
-            //AXISTYPE.each(function(d) {if(a.zeroline && !a.islog && !a.isdate && d.text=='0') d3.select(this).remove();});
         grid.attr('transform',transfn);
         grid.exit().remove();
     }

@@ -81,8 +81,8 @@ function heatmap(cd,gd){
     // console.log(min,max);
     // if this is the first time drawing the heatmap and it has never been saved it won't have an id
     // TODO! If 2 heat maps are loaded from different files, they could have the same id
-    if( !('hm_id' in gdc) ){ gdc.hm_id=gd.id+'-hm'+i; } // heatmap id
-    if( !('cb_id' in gdc) ){ var cb_id=gd.id+'-cb'+i; } // colorbar id
+    gdc.hm_id='hm'+i; // heatmap id
+    var cb_id='cb'+i; // colorbar id
     var id=gdc.hm_id;
     //console.log('heatmap id: '+id);
 
@@ -126,27 +126,6 @@ function heatmap(cd,gd){
     var wd=Math.round(right-left);
     var ht=Math.round(bottom-top),htf=ht/(bottom-top);
 
-//     var dx_px=wd/n;
-//     var dy_px=ht/m;
-//
-//     // option to change the number of pixels per brick
-//     if(MAX_PX_PER_BRICK>0) {
-//         dx_px=Math.min(MAX_PX_PER_BRICK,dx_px);
-//         dy_px=Math.min(MAX_PX_PER_BRICK,dy_px);
-//     }
-//
-//     function closeEnough(oldpx,newpx) {
-//         if(oldpx<newpx/2) { return false } // if the existing image has less than half,
-//         if(oldpx>newpx*5) { return false } // or more than 5x the pixels of the new one, force redraw
-//         return true
-//     }
-//
-//     // the heatmap already exists and hasn't changed size too much, we just need to move it
-//     // (heatmap() was called because of a zoom or pan event)
-//     if($('#'+id).length && !rdrw && closeEnough(gdc.dx_px,dx_px) && closeEnough(gdc.dy_px,dy_px)){
-//         $('#'+id).hide().attr("x",left).attr("y",top).attr("width",wd).attr("height",ht).show();
-//         return;
-//     }
     // now redraw
     if(wd<=0 || ht<=0) { return } // image is so far off-screen, we shouldn't even draw it
 
@@ -210,10 +189,10 @@ function heatmap(cd,gd){
     // http://stackoverflow.com/questions/6249664/does-svg-support-embedding-of-bitmap-images
     // https://groups.google.com/forum/?fromgroups=#!topic/d3-js/aQSWnEDFxIc
     var imgstr = "data:image/png;base64,\n" + p.getBase64();
-    $('#'+id).remove(); // put this right before making the new image, to minimize flicker
+    $(gd).find('.'+id).remove(); // put this right before making the new image, to minimize flicker
     gd.plot.append('svg:image')
-        .attr("id",id)
-        .attr('class','pixelated') // we can hope...
+        .classed(id,true)
+        .classed('pixelated',true) // we can hope pixelated works...
         .attr("xmlns","http://www.w3.org/2000/svg")
         .attr("xlink:href", imgstr)
         .attr("height",ht)
@@ -256,11 +235,11 @@ function insert_colorbar(gd,gdc,cb_id) {
     for(var i=0; i<scl.length; i++){ r.push( scl[i][1] ); }
 
     //remove last colorbar, if any
-    $('#'+cb_id).remove();
+    $(gd).find('.'+cb_id).remove();
 
     var gl = gd.layout,
         g = gd.paper.append("g")
-            .attr("id",cb_id)
+            .classed(cb_id,true)
             // TODO: colorbar spacing from plot (fixed at 50 right now)
             // should be a variable in gd.data and editable from a popover
             .attr("transform","translate("+(gl.width-gl.margin.r+50)+","+(gl.margin.t)+")")
