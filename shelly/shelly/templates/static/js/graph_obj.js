@@ -940,7 +940,7 @@ function plot(divid, data, layout) {
 
                 if(BARTYPES.indexOf(type)!=-1) { cdbar.push(cd) }
                 else if(type=='box') { cdbox.push(cd) }
-                else { cdscatter.push(cd) } // include boxes with scatter
+                else { cdscatter.push(cd) }
             }
         }
 
