@@ -1585,7 +1585,7 @@ function restyle(gd,astr,val,traces) {
     if(typeof astr == 'string') { aobj[astr] = val }
     else if($.isPlainObject(astr)) { aobj = astr }
     else { console.log('restyle fail',astr,val,traces); return }
-    console.log('restyle',aobj,traces);
+//     console.log('restyle',aobj,traces);
 
     if($.isNumeric(traces)) { traces=[traces] }
     else if(!$.isArray(traces) || !traces.length) {
@@ -1717,7 +1717,7 @@ function restyle(gd,astr,val,traces) {
         }
     }
     // now all attribute mods are done, as are redo and undo so we can save them
-    console.log(redoit,undoit);
+//     console.log(redoit,undoit);
     plotUndoQueue(gd,undoit,redoit,traces);
 
     // now update the graphics
@@ -1752,7 +1752,7 @@ function relayout(gd,astr,val) {
     if(typeof astr == 'string') { aobj[astr] = val }
     else if($.isPlainObject(astr)) { aobj = astr }
     else { console.log('relayout fail',astr,val); return }
-    console.log('relayout',aobj);
+//     console.log('relayout',aobj);
 
     // look for 'allaxes', split out into all axes
     var keys = Object.keys(aobj),
@@ -1842,7 +1842,7 @@ function relayout(gd,astr,val) {
                 else if(aobj[ai]=='remove') { undoit[ai]=gl.annotations[aa[1]] }
                 else { console.log('???') }
             }
-            console.log(aa,aobj[ai]);
+//             console.log(aa,aobj[ai]);
             annotation(gd,aa[1],aa.slice(2).join('.'),aobj[ai]); // ai.replace(/^annotations\[-?[0-9]*\][.]/,'')
             delete aobj[ai];
         }
@@ -1867,7 +1867,7 @@ function relayout(gd,astr,val) {
         }
     }
     // now all attribute mods are done, as are redo and undo so we can save them
-    console.log(redoit,undoit);
+//     console.log(redoit,undoit);
     plotUndoQueue(gd,undoit,redoit,'relayout');
 
     // calculate autosizing - if size hasn't changed, will remove h&w so we don't need to redraw
@@ -2720,7 +2720,6 @@ function legend(gd) {
 // if opt is blank, val can be 'add' or a full options object to add a new
 //  annotation at that point in the array, or 'remove' to delete this annotation
 function annotation(gd,index,opt,value) {
-    console.log(index,opt,value);
     var gl = gd.layout,gm = gd.margin;
     if(!gl.annotations) { gl.annotations = [] }
     if(!$.isNumeric(index)) {
