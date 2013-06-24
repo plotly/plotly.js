@@ -1573,8 +1573,10 @@ function legendText(s,gd){
 // traces is a trace number or an array of trace numbers to change (blank for all)
 // astr can also be an object {astr1:val1, astr2:val2...} in which case val is
 // ignored but must be present if you want trace control.
+// val (or val1, val2...) can be an array, to apply different values to each trace
+// if the array is too short, it will wrap around (useful for style files that want
+// to specify cyclical default values)
 function restyle(gd,astr,val,traces) {
-    console.log('restyle',astr,val,traces);
     plotlylog('+++++++++++++++IN: restyle+++++++++++++++');
 
     gd.changed = true;
@@ -1583,6 +1585,7 @@ function restyle(gd,astr,val,traces) {
     if(typeof astr == 'string') { aobj[astr] = val }
     else if($.isPlainObject(astr)) { aobj = astr }
     else { console.log('restyle fail',astr,val,traces); return }
+    console.log('restyle',aobj,traces);
 
     if($.isNumeric(traces)) { traces=[traces] }
     else if(!$.isArray(traces) || !traces.length) {
@@ -1606,35 +1609,81 @@ function restyle(gd,astr,val,traces) {
     ];
     // these ones show up in restyle because they make more sense in the style
     // box, but they're graph-wide attributes, so set in gd.layout
-    var layout_attr = ['barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap'];
+    // also axis scales and range show up here because we may need to undo them
+    var layout_attr = [
+        'barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap',
+        'xaxis.autorange','yaxis.autorange','xaxis.range','yaxis.range'
+    ];
     // these ones may alter the axis type (at least if the first trace is involved)
     var axtype_attr = ['type','x','y','x0','y0','bardir'];
     // flags for which kind of update we need to do
     var doplot = false,
         dolayout = false,
         doapplystyle = false;
+    // copies of the change (and previous values of anything affected) for the
+    // undo / redo queue
+    var redoit = {},
+        undoit = {};
+
+    // make a new empty vals array for undoit
+    function a0(){return traces.map(function(){return undefined})}
+
+    // for attrs that interact (like scales & autoscales), save the
+    // old vals before making the change
+    // val=undefined will not set a value, just record what the value was.
+    // attr can be an array to set several at once (all to the same val)
+    function doextra(cont,attr,val,i) {
+        if($.isArray(attr)) {
+            attr.forEach(function(a){ doextra(cont,a,val,i) });
+            return;
+        }
+        if(attr in aobj) { return } // quit if explicitly setting this elsewhere
+        var p = nestedProperty(cont,attr);
+        if(!(attr in undoit)) { undoit[attr] = a0() }
+        if(undoit[attr][i]===undefined) { undoit[attr][i]=p.get() }
+        if(val!==undefined) { p.set(val) }
+    }
+    var zscl = ['zmin','zmax'],
+        xbins = ['xbins.start','xbins.end','xbins.size'],
+        ybins = ['xbins.start','xbins.end','xbins.size'];
 
     // now make the changes to gd.data (and occasionally gd.layout)
     // and figure out what kind of graphics update we need to do
     for(var ai in aobj) {
         var vi = aobj[ai];
+        redoit[ai] = vi;
+
         if(layout_attr.indexOf(ai)!=-1){
-            gl[ai] = vi;
-            dolayout = true;
+            var p = nestedProperty(gl,ai);
+            undoit[ai] = [p.get()];
+            // since we're allowing val to be an array, allow it here too,
+            // even though that's meaningless
+            p.set($.isArray(vi) ? vi[0] : vi);
+            // ironically, the layout attrs in restyle only require replot,
+            // not relayout
+            doplot = true;
             continue;
         }
 
         // set attribute in gd.data
+        undoit[ai] = a0();
         for(i=0; i<traces.length; i++) {
             var cont=gd.data[traces[i]],
                 p = nestedProperty(cont,ai);
-            // setting bin or z settings should turn off auto
-            if(['zmax','zmin'].indexOf(astr)!=-1) { cont.zauto=false }
-            else if(ai.substr(0,5)=='xbins') { cont.autobinx=false }
-            else if(ai.substr(0,5)=='ybins') { cont.autobiny=false }
 
-            // set the value - if val is an array, it's one el per trace
-            p.set($.isArray(val) ? val[i] : val);
+            // setting bin or z settings should turn off auto
+            // and setting auto should save bin or z settings
+            if(zscl.indexOf(ai)!=-1) { doextra(cont,'zauto',false,i) }
+            else if(ai=='zauto') { doextra(cont,zscl,undefined,i) }
+            else if(xbins.indexOf(ai)!=-1) { doextra(cont,'autobinx',false,i) }
+            else if(ai=='autobinx') { doextra(cont,xbins,undefined,i) }
+            else if(ybins.indexOf(ai)!=-1) { doextra(cont,'autobiny',false,i) }
+            else if(ai=='autobiny') { doextra(cont,ybins,undefined,i) }
+
+            // save the old value
+            undoit[ai][i] = p.get();
+            // set the new value - if val is an array, it's one el per trace
+            p.set($.isArray(val) ? val[i%val.length] : val);
         }
 
         // check if we need to call axis type
@@ -1651,16 +1700,14 @@ function restyle(gd,astr,val,traces) {
         }
 
         if(replot_attr.indexOf(ai)!=-1) {
-            // major enough changes deserve an autoscale (and autobin) so people don't get confused
+            // major enough changes deserve autoscale, autobin, and non-reversed
+            // axes so people don't get confused
             if(['bardir','type'].indexOf(ai)!=-1) {
-                gl.xaxis.autorange=true;
-                gl.xaxis.range=[0,1]; // undo any axis reversal
-                gl.yaxis.autorange=true;
-                gl.yaxis.range=[0,1];
+                doextra(gl,['xaxis.autorange','yaxis.autorange'],true,0);
+                doextra(gl,['xaxis.range','yaxis.range'],[0,1],0);
                 if(astr=='type') {
                     for(i=0; i<traces.length; i++) {
-                        gd.data[traces[i]].autobinx=true;
-                        gd.data[traces[i]].autobiny=true;
+                        doextra(gd.data[traces[i]],['autobinx','autobiny'],true,i);
                     }
                 }
             }
@@ -1669,8 +1716,12 @@ function restyle(gd,astr,val,traces) {
             else { doplot = true }
         }
     }
+    // now all attribute mods are done, as are redo and undo so we can save them
+    console.log(redoit,undoit);
+    plotUndoQueue(gd,undoit,redoit,traces);
 
     // now update the graphics
+    // a complete layout redraw takes care of plot and
     if(dolayout) {
         gd.layout = undefined;
         plot(gd,'',gl);
@@ -1689,7 +1740,6 @@ function restyle(gd,astr,val,traces) {
 // change layout in an existing plot
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
-    console.log('relayout',astr,val);
     plotlylog('+++++++++++++++ IN: RELAYOUT +++++++++++++++');
 
     gd.changed = true;
@@ -1702,6 +1752,7 @@ function relayout(gd,astr,val) {
     if(typeof astr == 'string') { aobj[astr] = val }
     else if($.isPlainObject(astr)) { aobj = astr }
     else { console.log('relayout fail',astr,val); return }
+    console.log('relayout',aobj);
 
     // look for 'allaxes', split out into all axes
     var keys = Object.keys(aobj),
@@ -1716,27 +1767,44 @@ function relayout(gd,astr,val) {
         }
     }
 
-    // alter gd.layout
-    for(var i in aobj) {
-        // check whether to disable autosize or autorange
-        if((i=='height' || i=='width') && !aobj.autosize) { gl.autosize=false }
-        var m = i.match(/^(.)axis\.range\[[0|1]\]$/);
-        if(m && m.length==2) { gl[m[1]+'axis'].autorange=false }
+    // copies of the change (and previous values of anything affected) for the
+    // undo / redo queue
+    var redoit = {},
+        undoit = {};
 
-        // handle axis reversal
-        var m = i.match(/^(.)axis\.reverse$/);
-        if(m && m.length==2) {
-            console.log('here');
-            var ax = gl[m[1]+'axis'],
-                r0 = ax.range[0],
-                r1 = ax.range[1];
-            ax.range[0]=r1;
-            ax.range[1]=r0;
-            doplot=true;
-            continue; // don't try to set 'reverse' flag (later in the loop)
+    // for attrs that interact (like scales & autoscales), save the
+    // old vals before making the change
+    // val=undefined will not set a value, just record what the value was.
+    // attr can be an array to set several at once (all to the same val)
+    function doextra(attr,val) {
+        if($.isArray(attr)) {
+            attr.forEach(function(a){ doextra(a,val) });
+            return;
         }
+        if(attr in aobj) { return } // quit if explicitly setting this elsewhere
+        var p = nestedProperty(gl,attr);
+        if(!(attr in undoit)) { undoit[attr]=p.get() }
+        if(val!==undefined) { p.set(val) }
+    }
 
-        var aa = propSplit(i);
+    var hw = ['height','width'];
+
+    // alter gd.layout
+    for(var ai in aobj) {
+        var p = nestedProperty(gl,ai),
+            aa = propSplit(ai);
+        redoit[ai] = aobj[ai];
+        // axis reverse is special - it is its own inverse op and has no flag.
+        undoit[ai] = (aa[1]=='reverse') ? aobj[ai] : p.get();
+
+        // check autosize or autorange vs size and range
+        if(hw.indexOf(ai)!=-1) { doextra('autosize', false) }
+        else if(ai=='autosize') { doextra(hw, undefined) }
+        var m = ai.match(/^(.)axis\.range\[[0|1]\]$/);
+        if(m && m.length==2) { doextra(aa[0]+'.autorange', false) }
+        m = ai.match(/^(.)axis\.autorange$/);
+        if(m && m.length==2) { doextra([aa[0]+'.range[0]',aa[0]+'.range[1]'], undefined) }
+
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie will islog actually change)
         if(aa[1]=='type' && !gl[aa[0]].autorange && (gl[aa[0]].type=='log' ? val!='log' : val=='log')) {
@@ -1744,29 +1812,45 @@ function relayout(gd,astr,val) {
                 r0 = ax.range[0],
                 r1 = ax.range[1];
             if(val=='log') {
-                if(r0<0 && r1<0) { ax.autorange=true; continue } // if both limits are negative, autorange
+                // if both limits are negative, autorange
+                if(r0<0 && r1<0) { doextra(aa[0]+'.autorange',true); continue }
                 // if one is negative, set it to one millionth the other. TODO: find the smallest positive val?
                 else if(r0<0) r0 = r1/1e6;
                 else if(r1<0) r1 = r0/1e6;
                 // now set the range values as appropriate
-                if(!(aa[0]+'.range[0]' in aobj)) ax.range[0] = Math.log(r0)/Math.LN10;
-                if(!(aa[0]+'.range[1]' in aobj)) ax.range[1] = Math.log(r1)/Math.LN10;
+                doextra(aa[0]+'.range[0]', Math.log(r0)/Math.LN10);
+                doextra(aa[0]+'.range[1]', Math.log(r1)/Math.LN10);
             }
             else {
-                if(!(aa[0]+'.range[0]' in aobj)) ax.range[0] = Math.pow(10, r0);
-                if(!(aa[0]+'.range[1]' in aobj)) ax.range[1] = Math.pow(10, r1);
+                doextra(aa[0]+'.range[0]', Math.pow(10, r0));
+                doextra(aa[0]+'.range[1]', Math.pow(10, r1));
             }
         }
+
+        // handle axis reversal explicitly, as there's no 'reverse' flag
+        if(aa[1]=='reverse') {
+            gl[aa[0]].range.reverse();
+            doplot=true;
+        }
         // send annotation mods one-by-one through annotation(), don't set via nestedProperty
-        if(aa[0]=='annotations') {
-            annotation(gd,aa[1],i.replace(/^annotations\[-?[0-9]*\][.]/,''),aobj[i]);
-            delete aobj[i];
+        else if(aa[0]=='annotations') {
+            // if aa is just an annotation number, and val is either 'add' or
+            // an entire annotation obj to add, the undo is 'remove'
+            // if val is 'remove' then undo is the whole annotation object
+            if(aa.length==2) {
+                if(aobj[ai]=='add' || $.isPlainObject(aobj[ai])) { undoit[ai]='remove' }
+                else if(aobj[ai]=='remove') { undoit[ai]=gl.annotations[aa[1]] }
+                else { console.log('???') }
+            }
+            console.log(aa,aobj[ai]);
+            annotation(gd,aa[1],aa.slice(2).join('.'),aobj[ai]); // ai.replace(/^annotations\[-?[0-9]*\][.]/,'')
+            delete aobj[ai];
         }
         // alter gd.layout
         else {
             // check whether we can short-circuit a full redraw
             if(aa[0].indexOf('legend')!=-1) { dolegend = true }
-            else if(i.indexOf('title')!=-1) { doticks = true } // TODO: can do global font too if we update all annotations
+            else if(ai.indexOf('title')!=-1) { doticks = true } // TODO: can do global font too if we update all annotations
             else if(aa[0].indexOf('bgcolor')!=-1) { dolayoutstyle = true }
             else if(aa.length>1 && (
                 aa[1].indexOf('tick')!=-1 ||
@@ -1777,13 +1861,16 @@ function relayout(gd,astr,val) {
                 aa[1].indexOf('line')!=-1 ||
                 aa[1].indexOf('mirror')!=-1 ||
                 (aa[1]=='margin' && aa[2]=='pad'))) { dolayoutstyle = true }
-            else if(i=='margin.pad') { doticks = dolayoutstyle = true }
+            else if(ai=='margin.pad') { doticks = dolayoutstyle = true }
             else { doplot = true }
-            nestedProperty(gl,i).set(aobj[i]);
+            p.set(aobj[ai]);
         }
     }
+    // now all attribute mods are done, as are redo and undo so we can save them
+    console.log(redoit,undoit);
+    plotUndoQueue(gd,undoit,redoit,'relayout');
 
-    // calculate autosizing
+    // calculate autosizing - if size hasn't changed, will remove h&w so we don't need to redraw
     if(aobj.autosize) { aobj=plotAutoSize(gd,aobj) }
 
     // redraw
@@ -1836,6 +1923,49 @@ function propSplit(s) {
     return aa;
 }
 
+// manage the undo/redo queue
+// directs the op to restyle unless traces=='relayout'
+// undoit and redoit are attr->val objects to pass to restyle or relayout
+// TODO: disable/enable undo and redo buttons appropriately
+function plotUndoQueue(gd,undoit,redoit,traces) {
+    // make sure we have the queue and our position in it
+    if(!$.isArray(gd.undoqueue) || !$.isNumeric(gd.undonum)) {
+        gd.undoqueue=[];
+        gd.undonum=0;
+    }
+    // if we're already playing an undo or redo, or if this is an auto operation
+    // (like pane resize... any others?) then we don't save this to the undo queue
+    if(gd.autoplay) {
+        gd.autoplay = false;
+        return;
+    }
+    gd.undoqueue.splice(gd.undonum,gd.undoqueue.length-gd.undonum,
+        {undo:undoit,redo:redoit,traces:traces});
+    gd.undonum++;
+}
+
+function plotUndo(gd) {
+    if(!$.isNumeric(gd.undonum) || gd.undonum<=0) { return }
+    gd.undonum--;
+    var i = gd.undoqueue[gd.undonum];
+    plotDo(gd, i.undo, i.traces);
+}
+
+function plotRedo(gd) {
+    if(!$.isNumeric(gd.undonum) || gd.undonum>=gd.undoqueue.length) { return }
+    var i = gd.undoqueue[gd.undonum];
+    gd.undonum++;
+    plotDo(gd, i.redo, i.traces);
+}
+
+function plotDo(gd,aobj,traces) {
+    gd.autoplay = true;
+    ao2 = {}
+    for(ai in aobj) { ao2[ai] = aobj[ai] } // copy aobj so we don't modify the one in the queue
+    if(traces=='relayout') { relayout(gd, ao2) }
+    else { restyle(gd, ao2, null, traces) }
+}
+
 function plotAutoSize(gd,aobj) {
     var plotBB = gd.paper.node().getBoundingClientRect();
     var gdBB = gd.getBoundingClientRect();
@@ -1855,9 +1985,10 @@ function plotAutoSize(gd,aobj) {
 
 // check whether to resize a tab (if it's a plot) to the container
 function plotResize(gd) {
-    if(gd===undefined) return;
+    if(gd===undefined) { return }
     if(gd.tabtype=='plot' && gd.layout && gd.layout.autosize) {
         setTimeout(function(){
+            gd.autoplay = true; // don't include this relayout in the undo queue
             relayout(gd, {autosize:true});
             if(LIT) {
                 hidebox();
@@ -2585,30 +2716,46 @@ function legend(gd) {
 //  or non-numeric to simply add a new one
 //  or -1 to modify all existing
 // opt can be the full options object, or one key (to be set to value)
-//  or undefined to simply redraw,
-//  or 'remove' to delete this annotation
+//  or undefined to simply redraw
+// if opt is blank, val can be 'add' or a full options object to add a new
+//  annotation at that point in the array, or 'remove' to delete this annotation
 function annotation(gd,index,opt,value) {
+    console.log(index,opt,value);
     var gl = gd.layout,gm = gd.margin;
-    if(!gl.annotations)
-        gl.annotations = [];
+    if(!gl.annotations) { gl.annotations = [] }
     if(!$.isNumeric(index)) {
         index = gl.annotations.length;
         gl.annotations.push({});
     }
     else if(index==-1) {
-        for(var i=0; i<gl.annotations.length; i++) {annotation(gd,i,opt,value)}
+        for(var i=0; i<gl.annotations.length; i++) { annotation(gd,i,opt,value) }
         return;
     }
-    // remove the existing annotation (and its record, if requested)
-    gd.paper.selectAll('.annotation[data-index="'+index+'"]').remove();
-    if(opt=='remove') {
-        gl.annotations.splice(index,1);
-        for(var i=index; i<gl.annotations.length; i++) {
-            gd.paper.selectAll('.annotation[data-index="'+(i+1)+'"]')
-                .attr('data-index',String(i));
+
+    if(!opt && value) {
+        if(value=='remove') {
+            gd.paper.selectAll('.annotation[data-index="'+index+'"]').remove();
+            gl.annotations.splice(index,1);
+            for(var i=index; i<gl.annotations.length; i++) {
+                gd.paper.selectAll('.annotation[data-index="'+(i+1)+'"]')
+                    .attr('data-index',String(i));
+                annotation(gd,i); // redraw all annotations past the removed, so they bind to the right events
+            }
+            return;
         }
-        return;
+        else if(value=='add' || $.isPlainObject(value)) {
+            gl.annotations.splice(index,0,{});
+            if($.isPlainObject(value)) { Object.keys(value).forEach(function(k){ gl.annotations[index][k] = value[k] }) }
+            for(var i=gl.annotations.length-1; i>index; i--) {
+                gd.paper.selectAll('.annotation[data-index="'+(i-1)+'"]')
+                    .attr('data-index',String(i));
+                annotation(gd,i);
+            }
+        }
     }
+
+    // remove the existing annotation if there is one
+    gd.paper.selectAll('.annotation[data-index="'+index+'"]').remove();
 
     // edit the options
     var options = gl.annotations[index];
@@ -2617,8 +2764,8 @@ function annotation(gd,index,opt,value) {
         ya = gl.yaxis,
         xr = xa.range[1]-xa.range[0],
         yr = ya.range[1]-ya.range[0];
-    if(typeof opt == 'string') { nestedProperty(options,opt).set(value) }
-    else if(opt) { Object.keys(opt).forEach(function(k){ options[k] = opt[k] }) }
+    if(typeof opt == 'string' && opt) { nestedProperty(options,opt).set(value) }
+    else if($.isPlainObject(opt)) { Object.keys(opt).forEach(function(k){ options[k] = opt[k] }) }
 
     // set default options (default x, y, ax, ay are set later)
     if(!options.bordercolor) { options.bordercolor = '' }
