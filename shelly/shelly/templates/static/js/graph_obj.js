@@ -1577,6 +1577,7 @@ function legendText(s,gd){
 // if the array is too short, it will wrap around (useful for style files that want
 // to specify cyclical default values)
 function restyle(gd,astr,val,traces) {
+    console.log('restyle',astr,val,traces);
     plotlylog('+++++++++++++++IN: restyle+++++++++++++++');
 
     gd.changed = true;
@@ -1647,6 +1648,7 @@ function restyle(gd,astr,val,traces) {
         xbins = ['xbins.start','xbins.end','xbins.size'],
         ybins = ['xbins.start','xbins.end','xbins.size'];
 
+    console.log(aobj);
     // now make the changes to gd.data (and occasionally gd.layout)
     // and figure out what kind of graphics update we need to do
     for(var ai in aobj) {
@@ -1683,7 +1685,7 @@ function restyle(gd,astr,val,traces) {
             // save the old value
             undoit[ai][i] = p.get();
             // set the new value - if val is an array, it's one el per trace
-            p.set($.isArray(val) ? val[i%val.length] : val);
+            p.set($.isArray(vi) ? vi[i%vi.length] : vi);
         }
 
         // check if we need to call axis type
@@ -1695,7 +1697,7 @@ function restyle(gd,astr,val,traces) {
         // switching from auto to manual binning or z scaling doesn't actually
         // do anything but change what you see in the styling box. everything
         // else at least needs to apply styles
-        if((['autobinx','autobiny','zauto'].indexOf(ai)==-1) || val!==false) {
+        if((['autobinx','autobiny','zauto'].indexOf(ai)==-1) || vi!==false) {
             doapplystyle = true;
         }
 
@@ -1752,7 +1754,6 @@ function relayout(gd,astr,val) {
     if(typeof astr == 'string') { aobj[astr] = val }
     else if($.isPlainObject(astr)) { aobj = astr }
     else { console.log('relayout fail',astr,val); return }
-//     console.log('relayout',aobj);
 
     // look for 'allaxes', split out into all axes
     var keys = Object.keys(aobj),
@@ -1792,7 +1793,8 @@ function relayout(gd,astr,val) {
     // alter gd.layout
     for(var ai in aobj) {
         var p = nestedProperty(gl,ai),
-            aa = propSplit(ai);
+            aa = propSplit(ai),
+            vi = aobj[ai];
         redoit[ai] = aobj[ai];
         // axis reverse is special - it is its own inverse op and has no flag.
         undoit[ai] = (aa[1]=='reverse') ? aobj[ai] : p.get();
@@ -1807,11 +1809,11 @@ function relayout(gd,astr,val) {
 
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie will islog actually change)
-        if(aa[1]=='type' && !gl[aa[0]].autorange && (gl[aa[0]].type=='log' ? val!='log' : val=='log')) {
+        if(aa[1]=='type' && !gl[aa[0]].autorange && (gl[aa[0]].type=='log' ? vi!='log' : vi=='log')) {
             var ax = gl[aa[0]],
                 r0 = ax.range[0],
                 r1 = ax.range[1];
-            if(val=='log') {
+            if(vi=='log') {
                 // if both limits are negative, autorange
                 if(r0<0 && r1<0) { doextra(aa[0]+'.autorange',true); continue }
                 // if one is negative, set it to one millionth the other. TODO: find the smallest positive val?
@@ -1850,7 +1852,7 @@ function relayout(gd,astr,val) {
         else {
             // check whether we can short-circuit a full redraw
             if(aa[0].indexOf('legend')!=-1) { dolegend = true }
-            else if(ai.indexOf('title')!=-1) { doticks = true } // TODO: can do global font too if we update all annotations
+            else if(ai.indexOf('title')!=-1) { doticks = true }
             else if(aa[0].indexOf('bgcolor')!=-1) { dolayoutstyle = true }
             else if(aa.length>1 && (
                 aa[1].indexOf('tick')!=-1 ||
@@ -1859,15 +1861,13 @@ function relayout(gd,astr,val) {
                 aa[1].indexOf('zeroline')!=-1)) { doticks = true }
             else if(aa.length>1 && (
                 aa[1].indexOf('line')!=-1 ||
-                aa[1].indexOf('mirror')!=-1 ||
-                (aa[1]=='margin' && aa[2]=='pad'))) { dolayoutstyle = true }
+                aa[1].indexOf('mirror')!=-1)) { dolayoutstyle = true }
             else if(ai=='margin.pad') { doticks = dolayoutstyle = true }
             else { doplot = true }
-            p.set(aobj[ai]);
+            p.set(vi);
         }
     }
     // now all attribute mods are done, as are redo and undo so we can save them
-//     console.log(redoit,undoit);
     plotUndoQueue(gd,undoit,redoit,'relayout');
 
     // calculate autosizing - if size hasn't changed, will remove h&w so we don't need to redraw
@@ -1887,8 +1887,8 @@ function relayout(gd,astr,val) {
             gd.paper.selectAll('.legend').remove();
             if(gl.showlegend) { legend(gd) }
         }
-        if(doticks) { doTicks(gd,'redraw'); makeTitles(gd,'gtitle') }
         if(dolayoutstyle) { layoutStyles(gd) }
+        if(doticks) { doTicks(gd,'redraw'); makeTitles(gd,'gtitle') }
     }
     plotlylog('+++++++++++++++ OUT: RELAYOUT +++++++++++++++');
 }
@@ -1908,7 +1908,10 @@ function nestedProperty(o,s) {
     }
     var prop = aa[j];
 
-    return {set:function(v){ cont[prop]=v },
+    return {set:function(v){
+                if(v===undefined || v===null) { delete cont[prop] }
+                else { cont[prop]=v }
+            },
             get:function(){ return cont[prop] },
             astr:s,
             obj:o};
