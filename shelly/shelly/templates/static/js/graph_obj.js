@@ -902,8 +902,7 @@ function plot(divid, data, layout) {
 
     gd.viewbox={x:0, y:0};
     gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
-    xa.range = xa.range.map(Number); // make sure ranges are really numbers,
-    ya.range = ya.range.map(Number); //  in some cases they can turn into str's
+    console.log(xa,ya);
     doTicks(gd); // draw ticks, titles, and calculate axis scaling (.b, .m)
     xa.r0 = xa.range.slice(); // store ranges for later use
     ya.r0 = ya.range.slice();
@@ -3416,6 +3415,7 @@ function calcTicks(gd,a) {
     }
     for(var x=a.tmin;(axrev)?(x>=endtick):(x<=endtick);x=tickIncrement(x,a.dtick,axrev)) {
         vals.push(x);
+        if(vals.length>1000) { break } // prevent infinite loops
     }
     a.tmax=vals[vals.length-1]; // save the last tick as well as first, so we can eg show the exponent only on the last one
     return vals.map(function(x){return tickText(gd, a, x)});
@@ -3499,6 +3499,7 @@ function autoTicks(a,rt){
         var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
         a.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
     }
+    if(a.dtick==0) { a.dtick=1 } // prevent infinite loops...
 }
 
 // after dtick is already known, find tickround = precision to display in tick labels
@@ -3751,8 +3752,9 @@ function doTicks(gd,ax) {
     }
     var gl=gd.layout,
         gm=gd.margin,
-        a={x:gl.xaxis, y:gl.yaxis}[ax],
-        vals=calcTicks(gd,a),
+        a={x:gl.xaxis, y:gl.yaxis}[ax];
+    a.range = a.range.map(Number); // in case a val turns into string somehow
+    var vals=calcTicks(gd,a),
         datafn = function(d){return d.text},
         tcls = ax+'tick',
         gcls = ax+'grid',
