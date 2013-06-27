@@ -337,6 +337,7 @@ function plot(divid, data, layout) {
             data.map(function(v){return ax.toAxis(v-pad)}), serieslen);
         dr[1] = aggNums(Math.max, $.isNumeric(dr[1]) ? dr[1] : null,
             data.map(function(v){return ax.toAxis(v+pad)}), serieslen);
+        console.log(dr);
     }
 
     // expand data range to include a tight zero (if the data all has one
@@ -355,6 +356,7 @@ function plot(divid, data, layout) {
 
         if(dr[1]<=0 && ax.type=='linear') { tight[1] = Math.max(0,tight[1]) }
         else { padded[1]=Math.max(dr[1],padded[1]) }
+        console.log(ax,tight,padded);
     }
 
     // mean & std dev functions using aggNums, so it handles non-numerics nicely
@@ -765,6 +767,7 @@ function plot(divid, data, layout) {
         gd.calcdata.push(cd);
         markTime('done with calcdata for '+curve);
     }
+    console.log(xtight,xpadded,ytight,ypadded);
 
     // put the styling info into the calculated traces
     // has to be done separate from applyStyles so we know the mode (ie which objects to draw)
@@ -893,12 +896,13 @@ function plot(divid, data, layout) {
                 Math.max(tight[1],(a0+1)*padded[1]-a0*Math.min(padded[0],tight[0]))
             ];
             // don't let axis have zero size
-            if(ax.range[0]==ax.range[1]) { ax.range = [ax.range[0]-1,ax.range+1] }
+            if(ax.range[0]==ax.range[1]) { ax.range = [ax.range[0]-1,ax.range[0]+1] }
             if(axReverse) { ax.range.reverse() }
         }
     }
     doAutoRange(xa,xtight,xpadded);
     doAutoRange(ya,ytight,ypadded);
+    console.log(xa,ya);
 
     gd.viewbox={x:0, y:0};
     gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
