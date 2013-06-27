@@ -337,7 +337,6 @@ function plot(divid, data, layout) {
             data.map(function(v){return ax.toAxis(v-pad)}), serieslen);
         dr[1] = aggNums(Math.max, $.isNumeric(dr[1]) ? dr[1] : null,
             data.map(function(v){return ax.toAxis(v+pad)}), serieslen);
-        console.log(dr);
     }
 
     // expand data range to include a tight zero (if the data all has one
@@ -356,7 +355,6 @@ function plot(divid, data, layout) {
 
         if(dr[1]<=0 && ax.type=='linear') { tight[1] = Math.max(0,tight[1]) }
         else { padded[1]=Math.max(dr[1],padded[1]) }
-        console.log(ax,tight,padded);
     }
 
     // mean & std dev functions using aggNums, so it handles non-numerics nicely
@@ -767,7 +765,6 @@ function plot(divid, data, layout) {
         gd.calcdata.push(cd);
         markTime('done with calcdata for '+curve);
     }
-    console.log(xtight,xpadded,ytight,ypadded);
 
     // put the styling info into the calculated traces
     // has to be done separate from applyStyles so we know the mode (ie which objects to draw)
@@ -902,7 +899,6 @@ function plot(divid, data, layout) {
     }
     doAutoRange(xa,xtight,xpadded);
     doAutoRange(ya,ytight,ypadded);
-    console.log(xa,ya);
 
     gd.viewbox={x:0, y:0};
     gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
@@ -1555,7 +1551,6 @@ function legendBoxes(d){
 
 function legendText(s,gd){
     var gf = gd.layout.font, lf = gd.layout.legend.font;
-    // console.log(gd,lf);
     // note: uses d[1] for the original trace number, in case of hidden traces
     return s.append('text')
         .attr('class',function(d){ return 'legendtext text-'+d[1] })
@@ -1720,7 +1715,6 @@ function restyle(gd,astr,val,traces) {
         }
     }
     // now all attribute mods are done, as are redo and undo so we can save them
-//     console.log(redoit,undoit);
     plotUndoQueue(gd,undoit,redoit,traces);
 
     // now update the graphics
@@ -1845,7 +1839,6 @@ function relayout(gd,astr,val) {
                 else if(aobj[ai]=='remove') { undoit[ai]=gl.annotations[aa[1]] }
                 else { console.log('???') }
             }
-//             console.log(aa,aobj[ai]);
             annotation(gd,aa[1],aa.slice(2).join('.'),aobj[ai]); // ai.replace(/^annotations\[-?[0-9]*\][.]/,'')
             delete aobj[ai];
         }
@@ -2395,7 +2388,6 @@ function dragBox(gd,x,y,w,h,ns,ew) {
 }
 
 function dragTail(gd) {
-    console.log('dragTail');
     var xa = gd.layout.xaxis,
         ya = gd.layout.yaxis,
         a = {}
@@ -2852,7 +2844,6 @@ function annotation(gd,index,opt,value) {
             else {
                 var xshift = fshift(options.x)*annwidth/xa.m,
                     yshift = fshift(options.y)*annheight/ya.m;
-                console.log(xshift,yshift);
             }
             options.x = xa.range[0] + xr*options.x - xshift;
             options.y = ya.range[0] + yr*options.y + yshift;
