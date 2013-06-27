@@ -1577,7 +1577,6 @@ function legendText(s,gd){
 // if the array is too short, it will wrap around (useful for style files that want
 // to specify cyclical default values)
 function restyle(gd,astr,val,traces) {
-    console.log('restyle',astr,val,traces);
     plotlylog('+++++++++++++++IN: restyle+++++++++++++++');
 
     gd.changed = true;
@@ -1586,7 +1585,6 @@ function restyle(gd,astr,val,traces) {
     if(typeof astr == 'string') { aobj[astr] = val }
     else if($.isPlainObject(astr)) { aobj = astr }
     else { console.log('restyle fail',astr,val,traces); return }
-//     console.log('restyle',aobj,traces);
 
     if($.isNumeric(traces)) { traces=[traces] }
     else if(!$.isArray(traces) || !traces.length) {
@@ -1648,7 +1646,6 @@ function restyle(gd,astr,val,traces) {
         xbins = ['xbins.start','xbins.end','xbins.size'],
         ybins = ['xbins.start','xbins.end','xbins.size'];
 
-    console.log(aobj);
     // now make the changes to gd.data (and occasionally gd.layout)
     // and figure out what kind of graphics update we need to do
     for(var ai in aobj) {
