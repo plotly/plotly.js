@@ -1600,7 +1600,7 @@ function restyle(gd,astr,val,traces) {
     var replot_attr=[
         'mode','visible','type','bardir','fill','histnorm',
         'mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','zauto','scl',
-        'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array',
+        'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array','error_y.width',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
         'boxpoints','jitter','pointpos','whiskerwidth','boxmean'
@@ -1982,6 +1982,7 @@ function plotAutoSize(gd,aobj) {
 
 // check whether to resize a tab (if it's a plot) to the container
 function plotResize(gd) {
+    killPopovers();
     if(gd===undefined) { return }
     if(gd.tabtype=='plot' && gd.layout && gd.layout.autosize) {
         setTimeout(function(){
