@@ -902,7 +902,6 @@ function plot(divid, data, layout) {
 
     gd.viewbox={x:0, y:0};
     gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
-    console.log(xa,ya);
     doTicks(gd); // draw ticks, titles, and calculate axis scaling (.b, .m)
     xa.r0 = xa.range.slice(); // store ranges for later use
     ya.r0 = ya.range.slice();
@@ -1375,16 +1374,22 @@ function setSize(s,w,h) { s.attr('width',w).attr('height',h) }
 function setRect(s,x,y,w,h) { s.call(setPosition,x,y).call(setSize,w,h) }
 
 function traceStyle(s,gd) {
+    var barcount = 0,
+        gl = gd.layout;
     s.style('opacity',function(d){return d[0].t.op})
+    // first see if we have multiple bars (so there's something to stack)
+    .each(function(d){ if(BARTYPES.indexOf(d[0].t.type)!=-1) { barcount++ } })
     // for gapless (either stacked or neighboring grouped) bars use crispEdges
     // to turn off antialiasing so an artificial gap isn't introduced.
     // TODO: can we figure out if there's only one trace in the stack?
     .each(function(d){
-        var t = d[0].t,
-            gl = gd.layout;
+        var t = d[0].t;
+//         console.log(t,BARTYPES.indexOf(t.type));
         if(BARTYPES.indexOf(t.type)!=-1 &&
-          (gl.barmode=='stack' || (gl.bargap==0 && gl.bargroupgap==0 && !t.mlw))){
-            s.attr('shape-rendering','crispEdges');
+          ((gl.barmode=='stack' && barcount>1) ||
+          (gl.bargap==0 && gl.bargroupgap==0 && !t.mlw))){
+//             console.log(t,s.node());
+            d3.select(this).attr('shape-rendering','crispEdges');
         }
     });
 }
