@@ -1377,18 +1377,14 @@ function traceStyle(s,gd) {
     var barcount = 0,
         gl = gd.layout;
     s.style('opacity',function(d){return d[0].t.op})
-    // first see if we have multiple bars (so there's something to stack)
+    // first see if there would be bars to stack)
     .each(function(d){ if(BARTYPES.indexOf(d[0].t.type)!=-1) { barcount++ } })
     // for gapless (either stacked or neighboring grouped) bars use crispEdges
     // to turn off antialiasing so an artificial gap isn't introduced.
-    // TODO: can we figure out if there's only one trace in the stack?
     .each(function(d){
-        var t = d[0].t;
-//         console.log(t,BARTYPES.indexOf(t.type));
-        if(BARTYPES.indexOf(t.type)!=-1 &&
+        if(BARTYPES.indexOf(d[0].t.type)!=-1 &&
           ((gl.barmode=='stack' && barcount>1) ||
-          (gl.bargap==0 && gl.bargroupgap==0 && !t.mlw))){
-//             console.log(t,s.node());
+          (gl.bargap==0 && gl.bargroupgap==0 && !d[0].t.mlw))){
             d3.select(this).attr('shape-rendering','crispEdges');
         }
     });
