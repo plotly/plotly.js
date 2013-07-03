@@ -1261,7 +1261,21 @@ function setStyles(gd) {
             mergeattr(gdc.fill,'fill','none');
             mergeattr(gdc.fillcolor,'fc',addOpacity(t.lc,0.5));
             if(type==='scatter') {
-                mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');
+                var defaultMode = 'lines';
+                if(cd.length<PTS_LINESONLY || (typeof gdc.mode != 'undefined')) {
+                    defaultMode = 'lines+markers';
+                }
+                else { // check whether there are orphan points, then show markers regardless of length
+                    for(var i=0; i<cd.length; i++) {
+                        if($.isNumeric(cd[i].x) && $.isNumeric(cd[i].y) &&
+                          (i==0 || !$.isNumeric(cd[i-1].x) || !$.isNumeric(cd[i-1].y)) &&
+                          (i==cd.length-1 || !$.isNumeric(cd[i+1].x) || !$.isNumeric(cd[i+1].y))) {
+                            defaultMode = 'lines+markers';
+                            break;
+                        }
+                    }
+                }
+                mergeattr(gdc.mode,'mode',defaultMode);
                 mergeattr(gdc.line.dash,'ld','solid');
             }
             else if(type==='box') {
