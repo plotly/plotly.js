@@ -75,16 +75,10 @@ function heatmap(cd,gd){
     // note: gdc.x (same for gdc.y) will override gdc.x0,dx if it exists and is the right size
     // should be an n+1 long array, containing all the pixel edges
     default_hm(gdc);
-    var z=gdc.z, min=gdc.zmin, max=gdc.zmax, scl=gdc.scl,
-        x0=gdc.x0, dx=gdc.dx, x=t.x,
-        y0=gdc.y0, dy=gdc.dy, y=t.y;
-    // console.log(min,max);
-    // if this is the first time drawing the heatmap and it has never been saved it won't have an id
-    // TODO! If 2 heat maps are loaded from different files, they could have the same id
+    var z=gdc.z, min=gdc.zmin, max=gdc.zmax, scl=gdc.scl, x=t.x, y=t.y;
     gdc.hm_id='hm'+i; // heatmap id
     var cb_id='cb'+i; // colorbar id
     var id=gdc.hm_id;
-    //console.log('heatmap id: '+id);
 
     // get z dims
     var m=z.length, n=z[0].length; // num rows, cols
@@ -151,7 +145,7 @@ function heatmap(cd,gd){
     // cruise through z-matrix row-by-row
     // build a brick at each z-matrix value
     var yi=ypx(y[0]),yb=[yi,yi];
-    var i,j,xi,x0,x1,c,pc,v;
+    var i,j,xi,c,pc,v;
     var xbi = xrev?0:1, ybi = yrev?0:1;
     var pixcount = 0, lumcount = 0; // for collecting an average luminosity of the heatmap
     for(j=0; j<m; j++) {

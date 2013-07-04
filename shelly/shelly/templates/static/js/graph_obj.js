@@ -960,10 +960,10 @@ function plot(divid, data, layout) {
                     .data(function(d){return d})
                     .enter().append('rect')
                     .each(function(di){
-                        // now display the bar - here's where we switch x and y for horz bars
-                        // also, because of stacking, we don't call convertToAxis (only
-                        // important for log axes) for size until here
-                        // modified convertToAxis function: non-positive log values go off-screen by plotwidth
+                        // now display the bar - here's where we switch x and y
+                        // for horz bars
+                        // Also: clipped xf/yf (3rd arg true): non-positive
+                        // log values go off-screen by plotwidth
                         // so you see them continue if you drag the plot
                         if(t.bardir=='h') {
                             var y0 = yf({y:t.poffset+di.p},gd),
@@ -983,8 +983,10 @@ function plot(divid, data, layout) {
                         }
                         d3.select(this)
                             .attr('transform','translate('+Math.min(x0,x1)+','+Math.min(y0,y1)+')')
-                            .attr('width',Math.abs(x1-x0)+0.001)  // TODO: why do I need this extra? Without it occasionally
-                            .attr('height',Math.abs(y1-y0)+0.001) // there's an empty pixel in the non-antialiased (gapless) case
+                            // TODO: why do I need this extra 0.001? Without it occasionally
+                            // there's an empty pixel in the non-antialiased (gapless) case
+                            .attr('width',Math.abs(x1-x0)+0.001)
+                            .attr('height',Math.abs(y1-y0)+0.001)
                     });
             });
         markTime('done bars');
@@ -1153,6 +1155,7 @@ function plot(divid, data, layout) {
     if(gl.annotations) { for(var i in gl.annotations) { annotation(gd,i) } }
 
     // finish up - spinner and tooltips
+    if(typeof positionBrand == 'function') { positionBrand() } // for embedded
     try{ killspin(); }
     catch(e){ console.log(e); }
     setTimeout(function(){
@@ -1167,7 +1170,7 @@ function plot(divid, data, layout) {
     markTime('done plot');
 }
 
-
+// TODO: make these properties of the axis, rather than separate functions
 // ------------------------------------------------------------ xf(), yf()
 // returns a pixel coordinate on the plot given an axis coordinate
 // the axis coordinates are numbers (ie dates, categories have been converted to numbers)
@@ -1183,6 +1186,11 @@ function pf(v,ax,vb,clip){
         var a = ax.range[0], b = ax.range[1];
         return d3.round(ax.b+ax.m*0.5*(a+b-3*Math.abs(a-b))+vb,2);
     }
+}
+
+// go backward from pixel coord to axis coordinate (as a number)
+function pfInv(px,ax,vb){
+    return ax.toData((px-vb-ax.b)/ax.m);
 }
 
 // ------------------------------------------------------------ gettab()
@@ -1253,7 +1261,21 @@ function setStyles(gd) {
             mergeattr(gdc.fill,'fill','none');
             mergeattr(gdc.fillcolor,'fc',addOpacity(t.lc,0.5));
             if(type==='scatter') {
-                mergeattr(gdc.mode,'mode',(cd.length>=PTS_LINESONLY) ? 'lines' : 'lines+markers');
+                var defaultMode = 'lines';
+                if(cd.length<PTS_LINESONLY || (typeof gdc.mode != 'undefined')) {
+                    defaultMode = 'lines+markers';
+                }
+                else { // check whether there are orphan points, then show markers regardless of length
+                    for(var i=0; i<cd.length; i++) {
+                        if($.isNumeric(cd[i].x) && $.isNumeric(cd[i].y) &&
+                          (i==0 || !$.isNumeric(cd[i-1].x) || !$.isNumeric(cd[i-1].y)) &&
+                          (i==cd.length-1 || !$.isNumeric(cd[i+1].x) || !$.isNumeric(cd[i+1].y))) {
+                            defaultMode = 'lines+markers';
+                            break;
+                        }
+                    }
+                }
+                mergeattr(gdc.mode,'mode',defaultMode);
                 mergeattr(gdc.line.dash,'ld','solid');
             }
             else if(type==='box') {
@@ -2074,8 +2096,98 @@ function newPlot(divid, layout) {
         a = $(gd).find('text.xtick').get().map(function(e){var bb=e.getBBox(); return bb.y+bb.height}),
         y0 = a.length ? Math.max.apply(a,a) : y1+10;
 
-    // main dragger goes over the grids and data... we can use just this hover for all data hover effects)
-    dragBox(gd, x1, y2, x2-x1, y1-y2,'ns','ew');
+    // main dragger goes over the grids and data... we can use just its
+    // hover events for all data hover effects
+    var maindrag = dragBox(gd, x1, y2, x2-x1, y1-y2,'ns','ew');
+//     var dbb=maindrag.getBoundingClientRect();
+//     function dbox(v0,v1){
+//         return (v0*v1<0) ? 0 : Math.min(Math.abs(v0),Math.abs(v1));
+//     }
+//     $(maindrag).mousemove(function(evt){
+//         if(!gl.hovermode || gl.hovermode=='none') { return }
+//         var xpx = evt.clientX-dbb.left,
+//             ypx = evt.clientY-dbb.top,
+//             xval = pfInv(xpx,xa,gd.viewbox.x),
+//             yval = pfInv(ypx,ya,gd.viewbox.y);
+//         // find the closest point in each trace (minimum dx and/or dy)
+//         // and the pixel position for the label (lpx, lpy)
+//         var closedata = gd.calcdata.map(function(cd){
+//             var dist = Infinity,
+//                 pn = null,
+//                 t = cd[0].t,
+//                 type = t.type,
+//                 mode = gl.hovermode;
+//             if(HEATMAPTYPES.indexOf(type)!=-1) {
+//                 mode = 'closest';
+//                 // TODO
+//             }
+//             else if(BARTYPES.indexOf(type)!=-1) {
+//                 if(t.bardir=='h') {
+//                     mode = 'y'; // bars: only compare same position, not size
+//                     var dx = function(di){
+//                         return dbox(xf({x:di.b},gd,true)-xpx,
+//                                     xf({x:di.s+di.b},gd,true)-xpx);
+//                     }
+//                     var dy = function(di){
+//                         return dbox(yf({y:t.poffset+di.p},gd)-ypx,
+//                                     yf({y:t.poffset+di.p+t.barwidth},gd)-ypx);
+//                     }
+//                     var lpx = function(di){ return xf({x:di.s+di.b},gd,true) }
+//                     var lpy = function(di){
+//                         return Math.max(yf({y:t.poffset+di.p},gd),
+//                                         yf({y:t.poffset+di.p+t.barwidth},gd))
+//                     }
+//                 }
+//                 else {
+//                     mode = 'x';
+//                     var dy = function(di){
+//                         return dbox(yf({y:di.b},gd,true)-ypx,
+//                                     yf({y:di.s+di.b},gd,true)-ypx);
+//                     }
+//                     var dx = function(di){
+//                         return dbox(xf({x:t.poffset+di.p},gd)-xpx,
+//                                     xf({x:t.poffset+di.p+t.barwidth},gd)-xpx);
+//                     }
+//                     var lpy = function(di){ return yf({y:di.s+di.b},gd,true) }
+//                     var lpx = function(di){
+//                         return Math.max(xf({x:t.poffset+di.p},gd),
+//                                         xf({x:t.poffset+di.p+t.barwidth},gd))
+//                     }
+//                 }
+//             }
+//             else if(type=='box') {
+//                 // TODO
+//             }
+//             else {
+//                 var dx = function(di){ return Math.abs(xf(di,gd)-xpx) },
+//                     dy = function(di){ return Math.abs(yf(di,gd)-ypx) },
+//                     lpx = function(di){ return xf(di,gd) },
+//                     lpy = function(di){ return yf(di,gd) }
+//             }
+//             // pick the right distance function based on hovermode
+//             var distfn = {x:dx, y:dy,
+//                 closest:function(di){return Math.sqrt(Math.pow(dx(di),2)+Math.pow(dy(di),2))}
+//                 }[mode]
+//             // TODO: this is the slowest part... if this bogs down, we may need
+//             // to create pre-sorted data (by x or y), not sure how to do this
+//             // for 'closest'
+//             cd.forEach(function(di,i){
+//                 var d = distfn(di);
+//                 if(d<dist) {
+//                     dist = d;
+//                     pn = i;
+//                 }
+//             });
+//             return {i:pn, dist:dist,
+//                     x:constrain(lpx(cd[pn]),0,gd.plotwidth),
+//                     y:constrain(lpy(cd[pn]),0,gd.plotheight)}
+//         });
+//         // TODO: annotate the points in closedata
+//     })
+//     .mouseout(function(evt){
+//         // TODO: remove any hover items we added
+//     });
+
     // x axis draggers
     dragBox(gd, x1*0.9+x2*0.1, y1,(x2-x1)*0.8, y0-y1,'','ew');
     dragBox(gd, x1, y1, (x2-x1)*0.1, y0-y1,'','w');
@@ -2386,6 +2498,8 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         if(ns) { a['yaxis.autorange']=true }
         relayout(gd,a);
     }
+
+    return dragger;
 }
 
 function dragTail(gd) {
