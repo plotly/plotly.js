@@ -140,7 +140,7 @@ function defaultLayout(){
         font:{family:'Arial, sans-serif;',size:12,color:'#000'},
         titlefont:{family:'',size:0,color:''},
         dragmode:'zoom',
-        hovermode:'closest'
+        hovermode:'x'
     }
 }
 // TODO: add label positioning
@@ -2024,12 +2024,12 @@ function newPlot(divid, layout) {
 
     // destroy any plot that already exists in this div
     // first check if we can save the toolbars
-    if($(gd).children('.graphbar').length==1 &&
+    if(gd.mainsite ? ($(gd).children('.graphbar').length==1 &&
             $(gd).children('.demobar').length==1 &&
             $(gd).children('svg').length==1 &&
-            $(gd).children().length>=3) { /* 4th child is graph tips alert div, then modebar... */
-        $(gd).children('svg').remove();
-    }
+            $(gd).children().length>=3) : /* 4th child is graph tips alert div, then modebar... */
+        ($(gd).children('svg').length==1)
+        ) { $(gd).children('svg').remove() }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
         gd.innerHTML='';
         if(gd.mainsite) { graphbar(gd) }
@@ -2149,22 +2149,24 @@ function newPlot(divid, layout) {
                 // for bars, only look at position, not size
                 if(t.bardir=='h') {
                     // don't let a wrong-mode bar override scatter as closest point
-                    var dd = (mode=='y') ? 0 : maxdist;
-                    mode = 'y';
+//                     var dd = (mode=='y') ? 0 : maxdist;
+//                     mode = 'y';
                     var y0 = function(di){ return ya.c2p(di.p-t.dbar/2,true) },
                         y1 = function(di){ return ya.c2p(di.p+t.dbar/2,true) },
-                        dy = function(di){ return inbox(y0(di)-ypx,y1(di)-ypx)+dd },
+                        dx = function(di){ return xa.c2p(di.s+di.b)-xpx }
+                        dy = function(di){ return inbox(y0(di)-ypx,y1(di)-ypx) },
                         lpx = function(di){ return [xa.c2p(di.s+di.b,true)] },
                         lpy = function(di){ return [y0(di),y1(di)] },
                         lx = function(di){ return di.s },
                         ly = function(di){ return di.p }
                 }
                 else {
-                    var dd = (mode=='x') ? 0 : maxdist;
-                    mode = 'x';
+//                     var dd = (mode=='x') ? 0 : maxdist;
+//                     mode = 'x';
                     var x0 = function(di){ return xa.c2p(di.p-t.dbar/2,true) },
                         x1 = function(di){ return xa.c2p(di.p+t.dbar/2,true) },
-                        dx = function(di){ return inbox(x0(di)-xpx,x1(di)-xpx)+dd },
+                        dx = function(di){ return inbox(x0(di)-xpx,x1(di)-xpx) },
+                        dy = function(di){ return ya.c2p(di.s+di.b)-ypx }
                         lpy = function(di){ return [ya.c2p(di.s+di.b,true)] },
                         lpx = function(di){ return [x0(di),x1(di)] },
                         lx = function(di){ return di.p },
@@ -2311,7 +2313,9 @@ function newPlot(divid, layout) {
 
         // remove the "close but not quite" points
         closedata = closedata.filter(function(d){
-            return gl.hovermode=='closest' || d[gl.hovermode+'l'].text==t0;
+            return ('zl' in d) ||
+                gl.hovermode=='closest' ||
+                d[gl.hovermode+'l'].text==t0;
         });
 
         // show all the individual labels
@@ -2479,10 +2483,13 @@ function newPlot(divid, layout) {
     dragBox(gd, x2, y1, x1-x0, y0-y1,'s','e');
 
     // dragmode and hovermode toolbars
-    $(gd).find('.modebar .btn').tooltip('destroy');
-    $('.tooltip').remove();
-    $(gd).find('.modebar').remove();
-    var modebar = $('<div class="modebar">'+
+    function modeactive(){
+        $(this).toggleClass('active',
+            gd.layout[$(this).attr('data-attr')]==($(this).attr('data-val')||true));
+    }
+    var modebar = $(gd).find('.modebar');
+    if(modebar.length==0) {
+        modebar = $('<div class="modebar">'+
         '<div class="btn-group pull-left">'+
             '<button class="btn btn-mini" data-attr="dragmode" data-val="zoom" rel="tooltip" data-original-title="Zoom">'+
                 '<i class="icon-zoom-in"></i></button>'+
@@ -2498,36 +2505,34 @@ function newPlot(divid, layout) {
                 '<i class="icon-tag"></i></button>'+
             '<button class="btn btn-mini" data-attr="hovermode" data-val="x" rel="tooltip" data-original-title="Compare">'+
                 '<i class="icon-tags"></i></button>'+
-        '</div></div>').appendTo(gd)
-        .css({position:'absolute',left:'0px',top:'0px'});
-    var pp = $(gd.paper.node()).position();
+        '</div></div>').appendTo(gd);
+        modebar.find('button')
+            .tooltip({placement:'bottom', delay:{show:700}})
+            .click(function(){
+                var astr = $(this).attr('data-attr'),
+                    val = $(this).attr('data-val')||true;
+                // total kludge - need to wait until the tooltip shows (which may be
+                // after the button has been destroyed) then destroy it.
+                relayout(gd,astr,val);
+                modebar.find('button').each(modeactive);
+                if(astr=='dragmode') {
+                    $(gd).find('.nsewdrag').css('cursor', {pan:'move',zoom:'crosshair'}[val]);
+                }
+            });
+    }
+    positionModeBar();
+    modebar.find('button').each(modeactive);
+}
+
+function positionModeBar(){
+    var gd = gettab(), gl = gd.layout, gm = gd.margin,
+        pp = $(gd.paper.node()).position(),
+        modebar = $(gd).find('.modebar');
+    modebar.css({position:'absolute',left:'0px',top:'0px'});
     modebar.css({
         position:'absolute',
         left:(gl.width+pp.left-gm.r-modebar.width())+'px',
         top:(gm.t-modebar.height()+pp.top-gl.margin.pad-2)+'px'
-    });
-
-    function modeactive(){
-        $(this).toggleClass('active',
-            gl[$(this).attr('data-attr')]==($(this).attr('data-val')||true));
-    }
-    modebar.find('button')
-    .tooltip({placement:'bottom', delay:{show:700}})
-    .each(modeactive)
-    .click(function(){
-        var astr = $(this).attr('data-attr'),
-            val = $(this).attr('data-val')||true;
-        // total kludge - need to wait until the tooltip shows (which may be
-        // after the button has been destroyed) then destroy it.
-        setTimeout(function(){ $('.tooltip').each(function(){
-            var top = $(this).css('top');
-            if(top=='0px') { $(this).remove() }
-        })},800);
-        relayout(gd,astr,val);
-        modebar.find('button').each(modeactive);
-        if(astr=='dragmode') {
-            $(gd).find('.nsewdrag').css('cursor', {pan:'move',zoom:'crosshair'}[val]);
-        }
     });
 }
 
