@@ -86,15 +86,15 @@ function heatmap(cd,gd){
     // or if we allow category sorting, then the categories may not be
     // sequential... may need to reorder and/or expand z
 
-    // Get edges of png in pixels (xf() maps axes coordinates to pixel coordinates)
+    // Get edges of png in pixels (xa.c2p() maps axes coordinates to pixel coordinates)
     // figure out if either axis is reversed (y is usually reversed, in pixel coords)
     // also clip the image to maximum 50% outside the visible plot area
     // bigger image lets you pan more naturally, but slows performance.
     // TODO: use low-resolution images outside the visible plot for panning
     var xrev = false, left=undefined, right=undefined;
     // these while loops find the first and last brick bounds that are defined (in case of log of a negative)
-    i=0; while(left===undefined && i<n) { left=xf({x:x[i]},gd); i++ }
-    i=n; while(right===undefined && i>0) { right=xf({x:x[i]},gd); i-- }
+    i=0; while(left===undefined && i<n) { left=xa.c2p(x[i]); i++ }
+    i=n; while(right===undefined && i>0) { right=xa.c2p(x[i]); i-- }
     if(right<left) {
         var temp = right;
         right = left;
@@ -105,8 +105,8 @@ function heatmap(cd,gd){
     right = Math.min(1.5*gd.plotwidth,right);
 
     var yrev = false, top=undefined, bottom=undefined;
-    i=0; while(top===undefined && i<n) { top=yf({y:y[i]},gd); i++ }
-    i=m; while(bottom===undefined && i>0) { bottom=yf({y:y[i]},gd); i-- }
+    i=0; while(top===undefined && i<n) { top=ya.c2p(y[i]); i++ }
+    i=m; while(bottom===undefined && i>0) { bottom=ya.c2p(y[i]); i-- }
     if(bottom<top) {
         var temp = top;
         top = bottom;
@@ -139,8 +139,8 @@ function heatmap(cd,gd){
         .range(r);
 
     // map brick boundaries to image pixels
-    function xpx(v){ return Math.max(0,Math.min(wd,Math.round(xf({x:v},gd)-left)))}
-    function ypx(v){ return Math.max(0,Math.min(ht,Math.round(yf({y:v},gd)-top)))}
+    function xpx(v){ return Math.max(0,Math.min(wd,Math.round(xa.c2p(v)-left)))}
+    function ypx(v){ return Math.max(0,Math.min(ht,Math.round(ya.c2p(v)-top)))}
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
     // build a brick at each z-matrix value
@@ -232,7 +232,7 @@ function insert_colorbar(gd,gdc,cb_id) {
     $(gd).find('.'+cb_id).remove();
 
     var gl = gd.layout,
-        g = gd.paper.append("g")
+        g = gd.infolayer.append("g")
             .classed(cb_id,true)
             // TODO: colorbar spacing from plot (fixed at 50 right now)
             // should be a variable in gd.data and editable from a popover

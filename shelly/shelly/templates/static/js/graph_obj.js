@@ -1,4 +1,5 @@
 /* Coordinate systems in the plots:
+***** THESE NOTES ARE HORRIBLY OUT OF DATE... *****
 (note: paper and viewbox have y0 at large y because pixels start at upper left,
 not lower left)
 
@@ -8,12 +9,12 @@ Data coordinates: xd,yd
 Paper coordinates: xp,yp (where axes are drawn, minus gl.margin:.l,.t)
     plot box: xp0-xp1, yp0-yp1 (0 - gd.plotwidth, gd.plotheight - 0)
     transform: xp = mx*xd+bx, yp = my*yd+by
-        mx = gl.xaxis.m = gd.plotwidth/(gl.xaxis.range:[1]-[0])
-        bx = gl.xaxis.b = -mx*gl.xaxis.range[0]
-        my = gl.yaxis.m = gd.plotheight/(gl.yaxis.range:[0]-[1])
-        by = gl.yaxis.b = -my*gl.yaxis.range[1]
+        mx = gl.xaxis._m = gd.plotwidth/(gl.xaxis.range:[1]-[0])
+        bx = gl.xaxis._b = -mx*gl.xaxis.range[0]
+        my = gl.yaxis._m = gd.plotheight/(gl.yaxis.range:[0]-[1])
+        by = gl.yaxis._b = -my*gl.yaxis.range[1]
 Viewbox coordinates: xv,yv (where data are drawn)
-    plot box: xv0-xv1, yv0-yv1 (gd.viewbox: .x - .x+.w, .y+.h - .y)
+    plot box: xv0-xv1, yv0-yv1
         initial viewbox: 0 - gd.plotwidth, gd.plotheight - 0
     transform: xv = xp+b2x, yv = yp+b2y
         panning: subtract dx,dy from viewbox:.x,.y
@@ -137,7 +138,9 @@ function defaultLayout(){
         boxgap:0.3,
         boxgroupgap:0.3,
         font:{family:'Arial, sans-serif;',size:12,color:'#000'},
-        titlefont:{family:'',size:0,color:''}
+        titlefont:{family:'',size:0,color:''},
+        dragmode:'zoom',
+        hovermode:'closest'
     }
 }
 // TODO: add label positioning
@@ -334,9 +337,9 @@ function plot(divid, data, layout) {
         pad = pad || 0; // optional extra space to give these new data points
         serieslen = serieslen || data.length;
         dr[0] = aggNums(Math.min, $.isNumeric(dr[0]) ? dr[0] : null,
-            data.map(function(v){return ax.toAxis(v-pad)}), serieslen);
+            data.map(function(v){return ax.c2l(v-pad)}), serieslen);
         dr[1] = aggNums(Math.max, $.isNumeric(dr[1]) ? dr[1] : null,
-            data.map(function(v){return ax.toAxis(v+pad)}), serieslen);
+            data.map(function(v){return ax.c2l(v+pad)}), serieslen);
     }
 
     // expand data range to include a tight zero (if the data all has one
@@ -413,28 +416,6 @@ function plot(divid, data, layout) {
                 end: binend,
                 size: dummyax.dtick
             }
-        }
-    }
-
-    // find the bin for val - note that it can return outside the bin range
-    // any pos. or neg. integer for linear bins, or -1 or bins.length-1 for explicit
-    // for linear bins, we can just calculate. For listed bins, run a binary search
-    // linelow (truthy) says the bin boundary should be attributed to the lower bin
-    // rather than the default upper bin
-    function findBin(val,bins,linelow) {
-        if($.isNumeric(bins.start)) {
-            return linelow ?
-                Math.ceil((val-bins.start)/bins.size)-1 :
-                Math.floor((val-bins.start)/bins.size);
-        }
-        else {
-            var n1=0, n2=bins.length, c=0;
-            while(n1<n2 && c++<100){ // shouldn't need c, but just in case...
-                n=Math.floor((n1+n2)/2);
-                if(linelow ? bins[n]<val : bins[n]<=val) { n1=n+1 }
-                else { n2=n }
-            }
-            return n1-1;
         }
     }
 
@@ -808,6 +789,7 @@ function plot(divid, data, layout) {
                 var t=gd.calcdata[bl1[i]][0].t;
                 t.barwidth = barDiff*(1-gl.bargroupgap);
                 t.poffset = (((gl.barmode=='group') ? (2*i+1-bl1.length)*barDiff : 0 ) - t.barwidth)/2;
+                t.dbar = dv.minDiff;
             }
         }
 
@@ -824,7 +806,7 @@ function plot(divid, data, layout) {
             // for stacked bars, we need to evaluate every step in every stack,
             // because negative bars mean the extremes could be anywhere
             // also stores the base (b) of each bar in calcdata so we don't have to redo this later
-            var sMax = sa.toData(sa.toAxis(0)),
+            var sMax = sa.l2c(sa.c2l(0)),
                 sMin = sMax,
                 sums={},
                 v=0,
@@ -837,7 +819,7 @@ function plot(divid, data, layout) {
                     ti[j].b=(sums[sv]||0);
                     v=ti[j].b+ti[j].s;
                     sums[sv]=v;
-                    if($.isNumeric(sa.toAxis(v))) {
+                    if($.isNumeric(sa.c2l(v))) {
                         sMax = Math.max(sMax,v)
                         sMin = Math.min(sMin,v);
                     }
@@ -900,15 +882,14 @@ function plot(divid, data, layout) {
     doAutoRange(xa,xtight,xpadded);
     doAutoRange(ya,ytight,ypadded);
 
-    gd.viewbox={x:0, y:0};
     gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
-    doTicks(gd); // draw ticks, titles, and calculate axis scaling (.b, .m)
-    xa.r0 = xa.range.slice(); // store ranges for later use
-    ya.r0 = ya.range.slice();
+    doTicks(gd); // draw ticks, titles, and calculate axis scaling (._b, ._m)
+    xa._r = xa.range.slice(); // store ranges for later use
+    ya._r = ya.range.slice();
 
     markTime('done autorange and ticks');
 
-    if($.isNumeric(xa.m) && $.isNumeric(xa.b) && $.isNumeric(ya.m) && $.isNumeric(ya.b)) {
+    if($.isNumeric(xa._m) && $.isNumeric(xa._b) && $.isNumeric(ya._m) && $.isNumeric(ya._b)) {
         // Now plot the data. Order is:
         // 1. heatmaps (and 2d histos)
         // 2. bars/histos
@@ -917,7 +898,7 @@ function plot(divid, data, layout) {
         // 5. box plots
 
         function translatePoint(d){
-            var x = xf(d,gd), y = yf(d,gd);
+            var x = xa.c2p(d.x), y = ya.c2p(d.y);
             if($.isNumeric(x) && $.isNumeric(y)) {
                 d3.select(this).attr('transform','translate('+x+','+y+')');
             }
@@ -966,17 +947,18 @@ function plot(divid, data, layout) {
                         // log values go off-screen by plotwidth
                         // so you see them continue if you drag the plot
                         if(t.bardir=='h') {
-                            var y0 = yf({y:t.poffset+di.p},gd),
-                                y1 = yf({y:t.poffset+di.p+t.barwidth},gd),
-                                x0 = xf({x:di.b},gd,true),
-                                x1 = xf({x:di.s+di.b},gd,true);
+                            var y0 = ya.c2p(t.poffset+di.p),
+                                y1 = ya.c2p(t.poffset+di.p+t.barwidth),
+                                x0 = xa.c2p(di.b,true),
+                                x1 = xa.c2p(di.s+di.b,true);
                         }
                         else {
-                            var x0 = xf({x:t.poffset+di.p},gd),
-                                x1 = xf({x:t.poffset+di.p+t.barwidth},gd),
-                                y1 = yf({y:di.s+di.b},gd,true),
-                                y0 = yf({y:di.b},gd,true);
+                            var x0 = xa.c2p(t.poffset+di.p),
+                                x1 = xa.c2p(t.poffset+di.p+t.barwidth),
+                                y1 = ya.c2p(di.s+di.b,true),
+                                y0 = ya.c2p(di.b,true);
                         }
+
                         if(!$.isNumeric(x0)||!$.isNumeric(x1)||!$.isNumeric(y0)||!$.isNumeric(y1)) {
                             d3.select(this).remove();
                             return;
@@ -1023,7 +1005,7 @@ function plot(divid, data, layout) {
             while(i<d.length) {
                 var pts='';
                 for(i++; i<d.length; i++) {
-                    var x=xf(d[i],gd),y=yf(d[i],gd);
+                    var x=xa.c2p(d[i].x),y=ya.c2p(d[i].y);
                     if(!$.isNumeric(x)||!$.isNumeric(y)) { break } // TODO: smart lines going off the edge?
                     pts+=x+','+y+' ';
                     if(!$.isNumeric(x0)) { x0=x; y0=y }
@@ -1038,8 +1020,8 @@ function plot(divid, data, layout) {
             }
             if(pts2) {
                 if(tozero) {
-                    if(t.fill.charAt(t.fill.length-1)=='y') { y0=y1=yf({y:0},gd,true) }
-                    else { x0=x1=xf({x:0},gd,true) }
+                    if(t.fill.charAt(t.fill.length-1)=='y') { y0=y1=ya.c2p(0,true) }
+                    else { x0=x1=xa.c2p(0,true) }
                     tozero.attr('points',pts2+x1+','+y1+' '+x0+','+y0);
                 }
                 else if(t.fill.substr(0,6)=='tonext') {
@@ -1075,6 +1057,10 @@ function plot(divid, data, layout) {
                 // box center offset
                 bx = group ? 2*t.dx*(-0.5+(t.boxnum+0.5)/numboxes)*(1-gl.boxgap) : 0,
                 wdx = bdx*t.ww; // whisker width
+            // save the box size and box position for use by hover
+//             t.dbox = numboxes*t.dx;
+            t.bx = bx;
+            t.bdx = bdx;
             // boxes and whiskers
             d3.select(this).selectAll('path.box')
                 .data(function(d){return d})
@@ -1082,16 +1068,16 @@ function plot(divid, data, layout) {
                 .attr('class','box')
                 .each(function(d){
                     // draw the bars and whiskers
-                    var xc = xf({x:d.x+bx},gd,true)
-                        x0 = xf({x:d.x+bx-bdx},gd,true),
-                        x1 = xf({x:d.x+bx+bdx},gd,true),
-                        xw0 = xf({x:d.x+bx-wdx},gd,true),
-                        xw1 = xf({x:d.x+bx+wdx},gd,true),
-                        ym = yf({y:d.med},gd,true),
-                        yq1 = yf({y:d.q1},gd,true),
-                        yq3 = yf({y:d.q3},gd,true),
-                        ylf = yf({y:t.boxpts===false ? d.min : d.lf}, gd,true),
-                        yuf = yf({y:t.boxpts===false ? d.max : d.uf}, gd,true);
+                    var xc = xa.c2p(d.x+bx,true)
+                        x0 = xa.c2p(d.x+bx-bdx,true),
+                        x1 = xa.c2p(d.x+bx+bdx,true),
+                        xw0 = xa.c2p(d.x+bx-wdx,true),
+                        xw1 = xa.c2p(d.x+bx+wdx,true),
+                        ym = ya.c2p(d.med,true),
+                        yq1 = ya.c2p(d.q1,true),
+                        yq3 = ya.c2p(d.q3,true),
+                        ylf = ya.c2p(t.boxpts===false ? d.min : d.lf, true),
+                        yuf = ya.c2p(t.boxpts===false ? d.max : d.uf, true);
                     d3.select(this).attr('d',
                         'M'+x0+','+ym+'H'+x1+ // median line
                         'M'+x0+','+yq1+'H'+x1+'V'+yq3+'H'+x0+'Z'+ // box
@@ -1131,12 +1117,12 @@ function plot(divid, data, layout) {
                     .attr('class','mean')
                     .style('fill','none')
                     .each(function(d){
-                        var xc = xf({x:d.x+bx},gd,true)
-                            x0 = xf({x:d.x+bx-bdx},gd,true),
-                            x1 = xf({x:d.x+bx+bdx},gd,true),
-                            ym = yf({y:d.mean},gd,true),
-                            ysl = yf({y:d.mean-d.sd},gd,true),
-                            ysh = yf({y:d.mean+d.sd},gd,true);
+                        var xc = xa.c2p(d.x+bx,true)
+                            x0 = xa.c2p(d.x+bx-bdx,true),
+                            x1 = xa.c2p(d.x+bx+bdx,true),
+                            ym = ya.c2p(d.mean,true),
+                            ysl = ya.c2p(d.mean-d.sd,true),
+                            ysh = ya.c2p(d.mean+d.sd,true);
                         d3.select(this).attr('d','M'+x0+','+ym+'H'+x1+
                             ((t.mean!='sd') ? '' :
                             'm0,0L'+xc+','+ysl+'L'+x0+','+ym+'L'+xc+','+ysh+'Z'));
@@ -1148,7 +1134,7 @@ function plot(divid, data, layout) {
         applyStyle(gd);
         markTime('done applyStyle');
     }
-    else { console.log('error with axis scaling',xa.m,xa.b,ya.m,ya.b) }
+    else { console.log('error with axis scaling',xa._m,xa._b,ya._m,ya._b) }
 
     // show the legend and annotations
     if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!=false)) { legend(gd) }
@@ -1159,7 +1145,7 @@ function plot(divid, data, layout) {
     try{ killspin(); }
     catch(e){ console.log(e); }
     setTimeout(function(){
-        if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false){
+        if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false && gd.mainsite){
             try{ showAlert('graphtips'); }
             catch(e){ console.log(e); }
         }
@@ -1170,27 +1156,28 @@ function plot(divid, data, layout) {
     markTime('done plot');
 }
 
-// TODO: make these properties of the axis, rather than separate functions
-// ------------------------------------------------------------ xf(), yf()
-// returns a pixel coordinate on the plot given an axis coordinate
-// the axis coordinates are numbers (ie dates, categories have been converted to numbers)
-// but nonlinear transformation (ie log) has not been done yet
-function xf(d,gd,clip){ return pf(d.x,gd.layout.xaxis,gd.viewbox.x,clip) }
-
-function yf(d,gd,clip){ return pf(d.y,gd.layout.yaxis,gd.viewbox.y,clip) }
-
-function pf(v,ax,vb,clip){
-    var va = ax.toAxis(v);
-    if($.isNumeric(va)) { return d3.round(ax.b+ax.m*va+vb,2) }
-    if(clip && $.isNumeric(v)) { // clip NaN (ie past negative infinity) to one axis length past the negative edge
-        var a = ax.range[0], b = ax.range[1];
-        return d3.round(ax.b+ax.m*0.5*(a+b-3*Math.abs(a-b))+vb,2);
+// find the bin for val - note that it can return outside the bin range
+// bins is either an object {start,size,end} or an array length #bins+1
+// any pos. or neg. integer for linear bins, or -1 or bins.length-1 for explicit
+// for linear bins, we can just calculate. For listed bins, run a binary search
+// linelow (truthy) says the bin boundary should be attributed to the lower bin
+// rather than the default upper bin
+function findBin(val,bins,linelow) {
+    if($.isNumeric(bins.start)) {
+        return linelow ?
+            Math.ceil((val-bins.start)/bins.size)-1 :
+            Math.floor((val-bins.start)/bins.size);
     }
-}
-
-// go backward from pixel coord to axis coordinate (as a number)
-function pfInv(px,ax,vb){
-    return ax.toData((px-vb-ax.b)/ax.m);
+    else {
+        var n1=0, n2=bins.length, c=0;
+        while(n1<n2 && c++<100){ // c is just to avoid infinite loops if there's an error
+            n=Math.floor((n1+n2)/2);
+            if(linelow ? bins[n]<val : bins[n]<=val) { n1=n+1 }
+            else { n2=n }
+        }
+        if(c>90) { console.log('Long binary search...') }
+        return n1-1;
+    }
 }
 
 // ------------------------------------------------------------ gettab()
@@ -1200,6 +1187,8 @@ function pfInv(px,ax,vb){
 // plots are special: if you bring new data in it will try to add it to the existing plot
 function gettab(tabtype,mode){
     //if(tabtype) plotlylog('gettab',tabtype,mode);
+    embed = $('#embedded_graph');
+    if(embed.length) { return embed[0] }
     var td = $('.ui-tabs-panel:visible')[0];
     if(tabtype){
         if(!td || td.tabtype!=tabtype) td=addTab(tabtype);
@@ -1879,7 +1868,9 @@ function relayout(gd,astr,val) {
                 aa[1].indexOf('line')!=-1 ||
                 aa[1].indexOf('mirror')!=-1)) { dolayoutstyle = true }
             else if(ai=='margin.pad') { doticks = dolayoutstyle = true }
-            else { doplot = true }
+            // hovermode and dragmode don't need any redrawing, since they just
+            // affect reaction to user input
+            else if(['hovermode','dragmode'].indexOf(ai)==-1) { doplot = true }
             p.set(vi);
         }
     }
@@ -2036,7 +2027,7 @@ function newPlot(divid, layout) {
     if($(gd).children('.graphbar').length==1 &&
             $(gd).children('.demobar').length==1 &&
             $(gd).children('svg').length==1 &&
-            $(gd).children().length>=3) { /* 4th child is graph tips alert div */
+            $(gd).children().length>=3) { /* 4th child is graph tips alert div, then modebar... */
         $(gd).children('svg').remove();
     }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
@@ -2062,28 +2053,29 @@ function newPlot(divid, layout) {
     }
 
     // Make the graph containers
-    gd.paper=gd3.append('svg')
-    gd.paperbg=gd.paper.append('rect')
-    gd.plotbg=gd.paper.append('rect')
+    gd.paper = gd3.append('svg')
+    gd.paperbg = gd.paper.append('rect')
+    gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.axlines = {
         x:gd.paper.append('path').style('fill','none'),
         y:gd.paper.append('path').style('fill','none')
     }
-    gd.axislayer=gd.paper.append('g').attr('class','axislayer');
+    gd.axislayer = gd.paper.append('g').attr('class','axislayer');
     // Second svg (plot) is for the data
-    gd.plot=gd.paper.append('svg')
+    gd.plot = gd.paper.append('svg')
         .attr('preserveAspectRatio','none')
         .style('fill','none');
-    gd.viewbox={x:0,y:0};
+    gd.infolayer = gd.paper.append('g').attr('class','infolayer');
+    gd.hoverlayer = gd.paper.append('g').attr('class','hoverlayer');
 
     // position and style the containers, make main title
     layoutStyles(gd);
 
     // make the ticks, grids, and axis titles
     doTicks(gd);
-    xa.r0 = xa.range.slice(); // store ranges for later use
-    ya.r0 = ya.range.slice();
+    xa._r = xa.range.slice(); // store ranges for later use
+    ya._r = ya.range.slice();
 
     //make the axis drag objects
     var gm = gd.margin,
@@ -2099,94 +2091,378 @@ function newPlot(divid, layout) {
     // main dragger goes over the grids and data... we can use just its
     // hover events for all data hover effects
     var maindrag = dragBox(gd, x1, y2, x2-x1, y1-y2,'ns','ew');
-//     var dbb=maindrag.getBoundingClientRect();
-//     function dbox(v0,v1){
-//         return (v0*v1<0) ? 0 : Math.min(Math.abs(v0),Math.abs(v1));
-//     }
-//     $(maindrag).mousemove(function(evt){
-//         if(!gl.hovermode || gl.hovermode=='none') { return }
-//         var xpx = evt.clientX-dbb.left,
-//             ypx = evt.clientY-dbb.top,
-//             xval = pfInv(xpx,xa,gd.viewbox.x),
-//             yval = pfInv(ypx,ya,gd.viewbox.y);
-//         // find the closest point in each trace (minimum dx and/or dy)
-//         // and the pixel position for the label (lpx, lpy)
-//         var closedata = gd.calcdata.map(function(cd){
-//             var dist = Infinity,
-//                 pn = null,
-//                 t = cd[0].t,
-//                 type = t.type,
-//                 mode = gl.hovermode;
-//             if(HEATMAPTYPES.indexOf(type)!=-1) {
-//                 mode = 'closest';
-//                 // TODO
-//             }
-//             else if(BARTYPES.indexOf(type)!=-1) {
-//                 if(t.bardir=='h') {
-//                     mode = 'y'; // bars: only compare same position, not size
-//                     var dx = function(di){
-//                         return dbox(xf({x:di.b},gd,true)-xpx,
-//                                     xf({x:di.s+di.b},gd,true)-xpx);
-//                     }
-//                     var dy = function(di){
-//                         return dbox(yf({y:t.poffset+di.p},gd)-ypx,
-//                                     yf({y:t.poffset+di.p+t.barwidth},gd)-ypx);
-//                     }
-//                     var lpx = function(di){ return xf({x:di.s+di.b},gd,true) }
-//                     var lpy = function(di){
-//                         return Math.max(yf({y:t.poffset+di.p},gd),
-//                                         yf({y:t.poffset+di.p+t.barwidth},gd))
-//                     }
-//                 }
-//                 else {
-//                     mode = 'x';
-//                     var dy = function(di){
-//                         return dbox(yf({y:di.b},gd,true)-ypx,
-//                                     yf({y:di.s+di.b},gd,true)-ypx);
-//                     }
-//                     var dx = function(di){
-//                         return dbox(xf({x:t.poffset+di.p},gd)-xpx,
-//                                     xf({x:t.poffset+di.p+t.barwidth},gd)-xpx);
-//                     }
-//                     var lpy = function(di){ return yf({y:di.s+di.b},gd,true) }
-//                     var lpx = function(di){
-//                         return Math.max(xf({x:t.poffset+di.p},gd),
-//                                         xf({x:t.poffset+di.p+t.barwidth},gd))
-//                     }
-//                 }
-//             }
-//             else if(type=='box') {
-//                 // TODO
-//             }
-//             else {
-//                 var dx = function(di){ return Math.abs(xf(di,gd)-xpx) },
-//                     dy = function(di){ return Math.abs(yf(di,gd)-ypx) },
-//                     lpx = function(di){ return xf(di,gd) },
-//                     lpy = function(di){ return yf(di,gd) }
-//             }
-//             // pick the right distance function based on hovermode
-//             var distfn = {x:dx, y:dy,
-//                 closest:function(di){return Math.sqrt(Math.pow(dx(di),2)+Math.pow(dy(di),2))}
-//                 }[mode]
-//             // TODO: this is the slowest part... if this bogs down, we may need
-//             // to create pre-sorted data (by x or y), not sure how to do this
-//             // for 'closest'
-//             cd.forEach(function(di,i){
-//                 var d = distfn(di);
-//                 if(d<dist) {
-//                     dist = d;
-//                     pn = i;
-//                 }
-//             });
-//             return {i:pn, dist:dist,
-//                     x:constrain(lpx(cd[pn]),0,gd.plotwidth),
-//                     y:constrain(lpy(cd[pn]),0,gd.plotheight)}
-//         });
-//         // TODO: annotate the points in closedata
-//     })
-//     .mouseout(function(evt){
-//         // TODO: remove any hover items we added
-//     });
+    var dbb=maindrag.getBoundingClientRect();
+    // for bar charts and others with finite-size objects: you must be inside
+    // it to see its hover info (so dist is zero inside, infinite outside)
+    // args are (signed) difference from the two opposite edges
+    function inbox(v0,v1){ return (v0*v1<0) ? 0 : Infinity }
+    function notips(){ gd.hoverlayer.selectAll('g').remove() }
+
+    $(maindrag).mousemove(function(evt){
+
+        if(['x','y','closest'].indexOf(gl.hovermode)==-1 ||
+            $(gd).find('#zoombox').length>0 ||
+            gd.dragging ||
+            !gd.calcdata) { return notips() }
+
+        var xpx = evt.clientX-dbb.left,
+            ypx = evt.clientY-dbb.top,
+            xval = xa.p2c(xpx),
+            yval = ya.p2c(ypx);
+        // find the closest point in each trace (minimum dx and/or dy)
+        // and the pixel position for the label (lpx, lpy)
+        var dist = Infinity,
+            mindist = Infinity,
+            maxdist = 20; // max pixels away to allow a point to highlight
+        var closedata = [];
+        gd.calcdata.forEach(function(cd,curvenum){
+            var pn = null,
+                t = cd[0].t,
+                type = t.type,
+                mode = gl.hovermode;
+            if(mode!='closest') { dist = Infinity }
+            if(HEATMAPTYPES.indexOf(type)!=-1) {
+                // For heatmaps, just label the one pixel you're actually over
+                // regardless of mode
+                if(dist<maxdist) { return } // never let a heatmap override another type as closest point
+                mode = 'closest';
+                if(xval<=t.x[0] || xval>=t.x[t.x.length-1] ||
+                    yval<=t.y[0] || yval>=t.y[t.y.length-1]) { return }
+                var nx = findBin(xval,t.x),
+                    ny = findBin(yval,t.y);
+                closedata.push({
+                    i:0,
+                    dist:maxdist+10, // never let a heatmap override another type as closest point
+                    offset:0,
+                    curvenum:curvenum,
+                    x0:xa.c2p(t.x[nx]),
+                    x1:xa.c2p(t.x[nx+1]),
+                    y0:ya.c2p(t.y[ny]),
+                    y1:ya.c2p(t.y[ny+1]),
+                    xl:(t.x[nx]+t.x[nx+1])/2,
+                    yl:(t.y[ny]+t.y[ny+1])/2,
+                    zl:gd.data[t.curve].z[ny][nx]
+                });
+                return;
+            }
+            else if(BARTYPES.indexOf(type)!=-1) {
+                // for bars, only look at position, not size
+                if(t.bardir=='h') {
+                    // don't let a wrong-mode bar override scatter as closest point
+                    var dd = (mode=='y') ? 0 : maxdist;
+                    mode = 'y';
+                    var y0 = function(di){ return ya.c2p(di.p-t.dbar/2,true) },
+                        y1 = function(di){ return ya.c2p(di.p+t.dbar/2,true) },
+                        dy = function(di){ return inbox(y0(di)-ypx,y1(di)-ypx)+dd },
+                        lpx = function(di){ return [xa.c2p(di.s+di.b,true)] },
+                        lpy = function(di){ return [y0(di),y1(di)] },
+                        lx = function(di){ return di.s },
+                        ly = function(di){ return di.p }
+                }
+                else {
+                    var dd = (mode=='x') ? 0 : maxdist;
+                    mode = 'x';
+                    var x0 = function(di){ return xa.c2p(di.p-t.dbar/2,true) },
+                        x1 = function(di){ return xa.c2p(di.p+t.dbar/2,true) },
+                        dx = function(di){ return inbox(x0(di)-xpx,x1(di)-xpx)+dd },
+                        lpy = function(di){ return [ya.c2p(di.s+di.b,true)] },
+                        lpx = function(di){ return [x0(di),x1(di)] },
+                        lx = function(di){ return di.p },
+                        ly = function(di){ return di.s }
+                }
+            }
+            else if(type=='box') {
+                var dd = (mode=='x') ? 0 : maxdist;
+                mode = 'x';
+                var x0 = function(di){ return xa.c2p(di.x+t.bx-t.bdx,true) },
+                    x1 = function(di){ return xa.c2p(di.x+t.bx+t.bdx,true) },
+                    dx = function(di){ return inbox(x0(di)-xpx,x1(di)-xpx)+dd },
+                    lpx = function(di){ return [x0(di),x1(di)] },
+                    lx = function(di){ return di.x }
+                // TODO
+            }
+            else {
+                var dx = function(di){ return Math.abs(xa.c2p(di.x)-xpx) },
+                    dy = function(di){ return Math.abs(ya.c2p(di.y)-ypx) },
+                    lpx = function(di){ return [xa.c2p(di.x)] },
+                    lpy = function(di){ return [ya.c2p(di.y)] },
+                    lx = function(di){ return di.x },
+                    ly = function(di){ return di.y }
+            }
+            // pick the right distance function based on hovermode
+            var distfn = {x:dx, y:dy,
+                closest:function(di){return Math.sqrt(Math.pow(dx(di),2)+Math.pow(dy(di),2))}
+                }[mode]
+            // following is the longest loop... if this bogs down, we may need
+            // to create pre-sorted data (by x or y), not sure how to do this
+            // for 'closest'
+            cd.forEach(function(di,i){
+                var d = distfn(di);
+                if(d<dist) {
+                    dist = d;
+                    pn = i;
+                }
+            });
+
+            if(!$.isNumeric(pn) || dist>maxdist) { return }
+
+            var di = cd[pn],
+                x = lpx(di);
+            if(type!='box') {
+                var y = lpy(di);
+                closedata.push({
+                    i:pn, dist:dist, offset:0, curvenum:curvenum,
+                    x0:x[0],
+                    x1:x[x.length-1],
+                    y0:y[0],
+                    y1:y[y.length-1],
+                    xl:lx(di),
+                    yl:ly(di)
+                });
+            }
+            else {
+                ['min','q1','med','q3','max','mean'].forEach(function(a){
+                    if(a=='mean' && !t.mean) { return }
+                    if(!(a in di)) { return }
+                    var y = ya.c2p(di[a],true),
+                        out = {
+                            i:pn, dist:dist, offset:0, curvenum:curvenum,
+                            x0:x[0],
+                            x1:x[x.length-1],
+                            y0:y,
+                            y1:y,
+                            xl:lx(di),
+                            yl:di[a]
+                        }
+                    if(a=='mean' && ('sd' in di) && t.mean=='sd') { out.ysd = di.sd }
+                    closedata.push(out);
+                });
+            }
+        });
+        closedata = closedata.filter(function(d){
+            if(d && ('dist' in d)) { mindist = Math.min(mindist,d.dist) }
+            return d && $.isNumeric(d.curvenum) &&
+                d.i>=0 && d.i<gd.calcdata[d.curvenum].length &&
+                $.isNumeric(d.x0) && $.isNumeric(d.y0) &&
+                $.isNumeric(xa.c2l(d.xl)) && $.isNumeric(ya.c2l(d.yl));
+        });
+        if(closedata.length==0) { return notips() }
+        if(gl.hovermode=='closest') { closedata = [closedata[closedata.length-1]] }
+
+        // add the labels as text (and use this to find the best match x and y vals)
+        // creates a tickText object that includes the value formatted as text, and font info
+        // also make sure the positions are all on the plot
+        var imin=0;
+        closedata.forEach(function(d,i){
+            d.x0 = constrain(d.x0,0,gd.plotwidth);
+            d.x1 = constrain(d.x1,0,gd.plotwidth);
+            d.y0 = constrain(d.y0,0,gd.plotheight);
+            d.y1 = constrain(d.y1,0,gd.plotheight);
+            d.xl = tickText(gd,xa,xa.c2l(d.xl),'hover');
+            d.yl = tickText(gd,ya,ya.c2l(d.yl),'hover');
+            if(d.dist==mindist && !imin) { imin = i }
+            if('xsd' in d) { d.xl.text += ' &plusmn; '+tickText(gd,xa,xa.c2l(d.xsd),'hover').text }
+            if('ysd' in d) { d.yl.text += ' &plusmn; '+tickText(gd,ya,ya.c2l(d.ysd),'hover').text }
+        });
+
+        // show the common label, if any, on the axis
+        gd.hoverlayer.selectAll('g.axistext').remove();
+        var c0 = closedata[imin],
+            tpad = 3,
+            arrowsize = 6,
+            ptop = gd.paper.node().getBoundingClientRect().top;
+        if(mindist<=maxdist && ['x','y'].indexOf(gl.hovermode)!=-1) {
+            var label = gd.hoverlayer.append('g')
+                .classed('axistext',true);
+            var lpath = label.append('path')
+                .style('fill','#444')
+                .attr('stroke-width',1)
+                .attr('stroke','#fff');
+            var ltext = label.append('text')
+                .attr('font-family',c0.xl.font)
+                .attr('font-size',c0.xl.fontSize)
+                .style('fill','#fff');
+            var t0 = c0[gl.hovermode+'l'].text;
+            styleText(ltext.node(),t0);
+            var tbb = ltext.node().getBoundingClientRect();
+            if(gl.hovermode=='x') {
+                ltext.attr('text-anchor','middle')
+                    .call(setPosition,0,ptop-tbb.top+arrowsize+tpad);
+                lpath.attr('d','M0,0L'+arrowsize+','+arrowsize+
+                    'H'+(tpad+tbb.width/2)+
+                    'v'+(tpad*2+tbb.height)+
+                    'H-'+(tpad+tbb.width/2)+
+                    'V'+arrowsize+'H-'+arrowsize+'Z');
+                label.attr('transform','translate('+(gd.margin.l+(c0.x0+c0.x1)/2)+','
+                    +(gl.height-gd.margin.b)+')');
+            }
+            else {
+                ltext.attr('text-anchor','end')
+                    .call(setPosition,-tpad-arrowsize,ptop-tbb.top-tbb.height/2);
+                lpath.attr('d','M0,0L-'+arrowsize+','+arrowsize+
+                    'V'+(tpad+tbb.height/2)+
+                    'h-'+(tpad*2+tbb.width)+
+                    'V-'+(tpad+tbb.height/2)+
+                    'H-'+arrowsize+'V-'+arrowsize+'Z');
+                label.attr('transform','translate('+gd.margin.l+','+
+                    (gd.margin.t+(c0.y0+c0.y1)/2)+')');
+            }
+        }
+
+        // remove the "close but not quite" points
+        closedata = closedata.filter(function(d){
+            return gl.hovermode=='closest' || d[gl.hovermode+'l'].text==t0;
+        });
+
+        // show all the individual labels
+        // first create the objects
+        var d = closedata[0],
+            fs = d.yl.fontSize||d.xl.fontSize||gl.font.size||12,
+            ff = d.yl.font||d.xl.font||gl.font.family||'Arial, sans-serif';
+        var ht = gd.hoverlayer.selectAll('g.hovertext')
+            .data(closedata);
+        ht.enter().append('g')
+            .classed('hovertext',true)
+            .each(function(d) {
+                var g = d3.select(this);
+                g.append('path')
+                    .attr('stroke-width',1);
+                var tx = g.append('text')
+                    .attr('font-family',ff)
+                    .attr('font-size',fs);
+            });
+        ht.exit().remove();
+
+        // then put the text in, position the pointer to the data, and figure out sizes
+        ht.each(function(d){
+            var g = d3.select(this).attr('transform',''),
+                t = gd.calcdata[d.curvenum][0].t,
+                fc = RgbOnly(t.lc || t.mc || '#444'),
+                tc = tinycolor(fc).toHsl().l>0.5 ? '#000' : '#FFF',
+                text;
+            if('zl' in d) {
+                text = 'x: '+d.xl.text+'<br>'+
+                        'y: '+d.yl.text+'<br>'+
+                        'z: '+d.zl;
+            }
+            else if(gl.hovermode=='x' && d.xl.text==t0) { text = d.yl.text }
+            else if(gl.hovermode=='y' && d.yl.text==t0) { text = d.xl.text }
+            else { text = '('+d.xl.text+', '+d.yl.text+')' }
+            var tx = g.select('text')
+                .style('fill',tc)
+                .text('')
+                .call(setPosition,0,0);
+            g.select('path')
+                .style('fill',fc)
+                .attr('stroke',tc),
+            styleText(tx.node(),text);
+            var tbb = tx.node().getBoundingClientRect(),
+                htx = gd.margin.l+(d.x0+d.x1)/2,
+                hty = gd.margin.t+(d.y0+d.y1)/2,
+                dx = Math.abs(d.x1-d.x0),
+                dy = Math.abs(d.y1-d.y0);
+            d.ty0 = ptop-tbb.top,
+            d.bx = tbb.width+2*tpad;
+            d.by = tbb.height+2*tpad;
+            d.anchor = 'start';
+            if(gl.hovermode=='y') {
+                d.pos = htx;
+                hty -= dy/2;
+                if(hty-tbb.width-arrowsize-tpad<0) {
+                    d.anchor = 'end';
+                    hty += dy;
+                    if(hty+tbb.width+arrowsize+tpad>gl.height) {
+                        d.anchor = 'middle';
+                        hty -=dy/2;
+                    }
+                }
+            }
+            else {
+                d.pos = hty;
+                htx += dx/2;
+                if(htx+tbb.width+arrowsize+tpad>gl.width) {
+                    d.anchor = 'end';
+                    htx -=dx;
+                    if(htx-tbb.width-arrowsize-tpad<0) {
+                        d.anchor = 'middle';
+                        htx +=dx/2;
+                    }
+                }
+            }
+            tx.attr('text-anchor',d.anchor);
+            g.attr('transform','translate('+htx+','+hty+')'+
+                (gl.hovermode=='y' ? 'rotate(-90)' : ''));
+        });
+
+        // now see if we need to move anything to avoid overlaps
+        var labelsmoved = true,
+            pmin = (gl.hovermode=='y') ? gd.margin.l : gd.margin.t,
+            pmax = (gl.hovermode=='y') ? (gl.width-gd.margin.r) : (gl.height-gd.margin.b),
+            // make groups of touching points
+            pts = closedata
+                .map(function(d,i){ return [{i:i, dp:0, pos:d.pos, size:d.by/2}] })
+                .sort(function(a,b){return a[0].pos-b[0].pos});
+        // loop through groups, combining them if they overlap, until nothing moves
+        while(labelsmoved) {
+            labelsmoved = false;
+            var i=0;
+            while(i<pts.length-1) {
+                var p0 = pts[i][pts[i].length-1],
+                    p1 = pts[i+1][0],
+                    overlap = p0.pos+p0.dp+p0.size-p1.pos-p1.dp+p1.size;
+                if(overlap>0.01) {
+                    // push the new point(s) added to this group out of the way
+                    pts[i+1].forEach(function(d){d.dp+=overlap});
+                    // add them to the group
+                    pts[i].push.apply(pts[i],pts[i+1]);
+                    pts.splice(i+1,1);
+                    // adjust for minimum average movement
+                    var avgdp = 0;
+                    pts[i].forEach(function(d){avgdp+=d.dp/pts[i].length});
+                    pts[i].forEach(function(d){d.dp-=avgdp});
+                    labelsmoved = true;
+                }
+                else { i++ }
+            }
+            // check if we're going off the plot and fix
+            pts.forEach(function(g){g.forEach(function(pt){
+                var minOverlap = pmin-pt.pos-pt.dp+pt.size,
+                    maxOverlap = pt.pos+pt.dp+pt.size-pmax;
+                if(minOverlap>0.01) {
+                    g.forEach(function(pt2){ pt2.dp+=minOverlap });
+                    labelsmoved = true;
+                }
+                if(maxOverlap>0.01) {
+                    g.forEach(function(pt2){ pt2.dp-=maxOverlap });
+                    labelsmoved = true;
+                }
+            })});
+        }
+        // now put these offsets back into closedata
+        pts.forEach(function(g){g.forEach(function(pt){
+            closedata[pt.i].offset = pt.dp;
+        })});
+
+        // finally set the text positioning relative to the data and draw the
+        // box around it
+        ht.each(function(d){
+            var g = d3.select(this),
+                hs = d.anchor=='end' ? '-' : '',
+                tx = g.select('text'),
+                txx = {start:1,end:-1,middle:0}[d.anchor]*(arrowsize+tpad);
+            g.select('path').attr('d',d.anchor=='middle' ?
+                ('M-'+(d.bx/2)+',-'+(d.by/2)+'h'+d.bx+'v'+d.by+'h-'+d.bx+'Z') :
+                ('M0,0L'+hs+arrowsize+','+(arrowsize+d.offset)+
+                    'v'+(d.by/2-arrowsize)+'h'+hs+d.bx+'v-'+d.by+
+                    'H'+hs+arrowsize+'V'+(d.offset-arrowsize)+'Z'));
+            tx.call(setPosition, txx, d.offset+d.ty0-d.by/2+tpad)
+                // multiliners don't like changing position after styleText
+                // so reset all the tspan's to the parent element's x
+                // y takes care of itself via dy
+                .selectAll('tspan.nl').attr('x',tx.attr('x'));
+        });
+    })
+    .mouseout(notips);
 
     // x axis draggers
     dragBox(gd, x1*0.9+x2*0.1, y1,(x2-x1)*0.8, y0-y1,'','ew');
@@ -2201,6 +2477,58 @@ function newPlot(divid, layout) {
     dragBox(gd, x2, y2+y1-y0, x1-x0, y0-y1,'n','e');
     dragBox(gd, x0, y1, x1-x0, y0-y1,'s','w');
     dragBox(gd, x2, y1, x1-x0, y0-y1,'s','e');
+
+    // dragmode and hovermode toolbars
+    $(gd).find('.modebar .btn').tooltip('destroy');
+    $('.tooltip').remove();
+    $(gd).find('.modebar').remove();
+    var modebar = $('<div class="modebar">'+
+        '<div class="btn-group pull-left">'+
+            '<button class="btn btn-mini" data-attr="dragmode" data-val="zoom" rel="tooltip" data-original-title="Zoom">'+
+                '<i class="icon-zoom-in"></i></button>'+
+            '<button class="btn btn-mini" data-attr="dragmode" data-val="pan" rel="tooltip" data-original-title="Pan">'+
+            '   <i class="icon-move"></i></button>'+
+        '</div>'+
+        '<div class="btn-group pull-left">'+
+            '<button class="btn btn-mini" data-attr="allaxes.autorange" data-val="" rel="tooltip" data-original-title="Autorange">'+
+                '<i class="icon-fullscreen"></i></button>'+
+        '</div>'+
+        '<div class="btn-group pull-left">'+
+            '<button class="btn btn-mini" data-attr="hovermode" data-val="closest" rel="tooltip" data-original-title="Closest Data">'+
+                '<i class="icon-tag"></i></button>'+
+            '<button class="btn btn-mini" data-attr="hovermode" data-val="x" rel="tooltip" data-original-title="Compare">'+
+                '<i class="icon-tags"></i></button>'+
+        '</div></div>').appendTo(gd)
+        .css({position:'absolute',left:'0px',top:'0px'});
+    var pp = $(gd.paper.node()).position();
+    modebar.css({
+        position:'absolute',
+        left:(gl.width+pp.left-gm.r-modebar.width())+'px',
+        top:(gm.t-modebar.height()+pp.top-gl.margin.pad-2)+'px'
+    });
+
+    function modeactive(){
+        $(this).toggleClass('active',
+            gl[$(this).attr('data-attr')]==($(this).attr('data-val')||true));
+    }
+    modebar.find('button')
+    .tooltip({placement:'bottom', delay:{show:700}})
+    .each(modeactive)
+    .click(function(){
+        var astr = $(this).attr('data-attr'),
+            val = $(this).attr('data-val')||true;
+        // total kludge - need to wait until the tooltip shows (which may be
+        // after the button has been destroyed) then destroy it.
+        setTimeout(function(){ $('.tooltip').each(function(){
+            var top = $(this).css('top');
+            if(top=='0px') { $(this).remove() }
+        })},800);
+        relayout(gd,astr,val);
+        modebar.find('button').each(modeactive);
+        if(astr=='dragmode') {
+            $(gd).find('.nsewdrag').css('cursor', {pan:'move',zoom:'crosshair'}[val]);
+        }
+    });
 }
 
 // separate styling for plot layout elements, so we don't have to redraw to edit
@@ -2263,11 +2591,14 @@ function dragBox(gd,x,y,w,h,ns,ew) {
     // redraw unnecessarily (ie if no move bigger than MINDRAG pixels)
     var mouseDown=0,
         numClicks=1,
-        xa = gd.layout.xaxis,
-        ya = gd.layout.yaxis,
+        gl = gd.layout,
+        xa = gl.xaxis,
+        ya = gl.yaxis,
         pw = gd.plotwidth,
         ph = gd.plotheight,
-        cursor = (ns+ew=='nsew') ? 'move' : (ns+ew).toLowerCase()+'-resize',
+        cursor = (ns+ew=='nsew') ?
+            ({pan:'move',zoom:'crosshair'}[gl.dragmode]) :
+            (ns+ew).toLowerCase()+'-resize',
         dragger = gd.paper.append('rect').classed('drag',true)
             .classed(ns+ew+'drag',true)
             .call(setRect, x,y,w,h)
@@ -2280,6 +2611,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
     dragger.onmousedown = function(e) {
         // deal with other UI elements, and allow them to cancel dragging
         if(dragClear(gd)) { return true }
+        gd.dragging = true;
 
         var d=(new Date()).getTime();
         if(d-mouseDown<DBLCLICKDELAY) { numClicks+=1 } // in a click train
@@ -2289,7 +2621,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         }
 
         // in the main plot area, any drag except shift makes a zoombox
-        if(ns+ew=='nsew' && !e.shiftKey) { zoomBox(e) }
+        if(ns+ew=='nsew' && ((gl.dragmode=='zoom') ? !e.shiftKey : e.shiftKey)) { zoomBox(e) }
         // otherwise, do pan (zoom on the ends/corners)
         else { dragRange(e) }
         return pauseEvent(e);
@@ -2364,6 +2696,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             return pauseEvent(e);
         }
         window.onmouseup = function(e2) {
+            gd.dragging = false;
             window.onmousemove = null;
             window.onmouseup = null;
             if(Math.min(box.h,box.w)<MINDRAG*2) {
@@ -2436,6 +2769,7 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         window.onmouseup = function(e2) {
             window.onmousemove = null;
             window.onmouseup = null;
+            gd.dragging = false;
             if(gd.dragged) { dragTail(gd) }// finish the drag
             else if((new Date()).getTime()-mouseDown<DBLCLICKDELAY) {
                 // double click - not on axis ends, but yes on corners
@@ -2455,13 +2789,11 @@ function dragBox(gd,x,y,w,h,ns,ew) {
             ph = gd.plotheight;
         if(ew=='ew'||ns=='ns') {
             if(ew) {
-                gd.viewbox.x=-dx;
-                xa.range=[xa.r0[0]-dx/xa.m,xa.r0[1]-dx/xa.m];
+                xa.range = [xa._r[0]-dx/xa._m,xa._r[1]-dx/xa._m];
                 doTicks(gd,'x');
             }
             if(ns) {
-                gd.viewbox.y=-dy;
-                ya.range=[ya.r0[0]-dy/ya.m,ya.r0[1]-dy/ya.m];
+                ya.range=[ya._r[0]-dy/ya._m,ya._r[1]-dy/ya._m];
                 doTicks(gd,'y');
             }
             gd.plot.attr('viewBox',(ew ? -dx : 0)+' '+(ns ? -dy : 0)+' '+pw+' '+ph);
@@ -2475,12 +2807,12 @@ function dragBox(gd,x,y,w,h,ns,ew) {
         }
 
         function dz(ax,e,d,p) {
-            ax.range[e]=ax.r0[1-e]+(ax.r0[e]-ax.r0[1-e])/dZoom(d/p);
-            return p*(ax.r0[e]-ax.range[e])/(ax.r0[e]-ax.r0[1-e]);
+            ax.range[e]=ax._r[1-e]+(ax._r[e]-ax._r[1-e])/dZoom(d/p);
+            return p*(ax._r[e]-ax.range[e])/(ax._r[e]-ax._r[1-e]);
         }
 
         if(ew=='w') { dx = dz(xa,0,dx,pw) }
-        else if(ew=='e') { dw = dz(xa,1,-dx,pw) }
+        else if(ew=='e') { dx = dz(xa,1,-dx,pw) }
         else if(!ew) { dx = 0 }
 
         if(ns=='n') { dy = dz(ya,1,dy,ph) }
@@ -2508,13 +2840,12 @@ function dragTail(gd) {
         a = {}
     // revert to the previous axis settings, then apply the new ones
     // through relayout - this lets relayout manage undo/redo
-    if(xa.r0[0]!=xa.range[0]) { a['xaxis.range[0]']=xa.range[0] }
-    if(xa.r0[1]!=xa.range[1]) { a['xaxis.range[1]']=xa.range[1] }
-    if(ya.r0[0]!=ya.range[0]) { a['yaxis.range[0]']=ya.range[0] }
-    if(ya.r0[1]!=ya.range[1]) { a['yaxis.range[1]']=ya.range[1] }
-    xa.range=xa.r0;
-    ya.range=ya.r0;
-    gd.viewbox={x:0,y:0};
+    if(xa._r[0]!=xa.range[0]) { a['xaxis.range[0]']=xa.range[0] }
+    if(xa._r[1]!=xa.range[1]) { a['xaxis.range[1]']=xa.range[1] }
+    if(ya._r[0]!=ya.range[0]) { a['yaxis.range[0]']=ya.range[0] }
+    if(ya._r[1]!=ya.range[1]) { a['yaxis.range[1]']=ya.range[1] }
+    xa.range=xa._r.slice();
+    ya.range=ya._r.slice();
     gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
     relayout(gd,a);
 }
@@ -2957,8 +3288,8 @@ function annotation(gd,index,opt,value) {
         if(options.ref=='plot' && oldref=='paper') {
             if(options.showarrow) { var xshift = yshift = 0 }
             else {
-                var xshift = fshift(options.x)*annwidth/xa.m,
-                    yshift = fshift(options.y)*annheight/ya.m;
+                var xshift = fshift(options.x)*annwidth/xa._m,
+                    yshift = fshift(options.y)*annheight/ya._m;
             }
             options.x = xa.range[0] + xr*options.x - xshift;
             options.y = ya.range[0] + yr*options.y + yshift;
@@ -2967,8 +3298,8 @@ function annotation(gd,index,opt,value) {
             options.x = (options.x-xa.range[0])/xr;
             options.y = (options.y-ya.range[0])/yr;
             if(!options.showarrow) {
-                options.x += fshift(options.x)*annwidth/(xr*xa.m);
-                options.y -= fshift(options.y)*annheight/(yr*ya.m);
+                options.x += fshift(options.x)*annwidth/(xr*xa._m);
+                options.y -= fshift(options.y)*annheight/(yr*ya._m);
             }
         }
     }
@@ -3011,8 +3342,8 @@ function annotation(gd,index,opt,value) {
         }
         if(!$.isNumeric(options.x)) { options.x=(xa.range[0]*0.9+xa.range[1]*0.1) }
         if(!$.isNumeric(options.y)) { options.y=(ya.range[0]*0.7+ya.range[1]*0.3) }
-        x += xa.b+options.x*xa.m;
-        y += ya.b+options.y*ya.m;
+        x += xa._b+options.x*xa._m;
+        y += ya._b+options.y*ya._m;
     }
 
     // if there's an arrow, it gets the position we just calculated, and the text gets offset by ax,ay
@@ -3119,8 +3450,8 @@ function annotation(gd,index,opt,value) {
                         update[ab+'y'] = 1-((ay+dy-gm.t)/(gl.height-gm.t-gm.b));
                     }
                     else {
-                        update[ab+'x'] = options.x+dx/gd.layout.xaxis.m;
-                        update[ab+'y'] = options.y+dy/gd.layout.yaxis.m;
+                        update[ab+'x'] = options.x+dx/gl.xaxis._m;
+                        update[ab+'y'] = options.y+dy/gl.yaxis._m;
                     }
                     return pauseEvent(e2);
                 }
@@ -3165,8 +3496,8 @@ function annotation(gd,index,opt,value) {
                 csr = dragCursors(update[ab+'x'],update[ab+'y']);
             }
             else {
-                update[ab+'x'] = options.x+dx/gd.layout.xaxis.m;
-                update[ab+'y'] = options.y+dy/gd.layout.yaxis.m;
+                update[ab+'x'] = options.x+dx/gl.xaxis._m;
+                update[ab+'y'] = options.y+dy/gl.yaxis._m;
             }
             $(eln).css('cursor',csr);
             return pauseEvent(e2);
@@ -3458,7 +3789,7 @@ function autoGrowInput(eln) {
         // leave the input or press return: accept the change
         if((e.type=='blur') || (e.type=='keydown' && e.which==13)) {
             if(mode=='drag') {
-                v = ax.toAxis(ax.type=='category' ? v : convertToAxis(v,ax));
+                v = ax.c2l(ax.type=='category' ? v : convertToAxis(v,ax));
                 if(!$.isNumeric(v)) { return }
             }
             if(mode=='legend') { restyle(gd,p.astr,v,tn) }
@@ -3509,31 +3840,32 @@ function calcTicks(gd,a) {
 
     // set scaling to pixels
     if(a===gd.layout.yaxis) {
-        a.m=gd.plotheight/(a.range[0]-a.range[1]);
-        a.b=-a.m*a.range[1];
+        a._m=gd.plotheight/(a.range[0]-a.range[1]);
+        a._b=-a._m*a.range[1];
     }
     else {
-        a.m=gd.plotwidth/(a.range[1]-a.range[0]);
-        a.b=-a.m*a.range[0];
+        a._m=gd.plotwidth/(a.range[1]-a.range[0]);
+        a._b=-a._m*a.range[0];
     }
 
     // find the first tick
-    a.tmin=tickFirst(a);
+    a._tmin=tickFirst(a);
 
     // check for reversed axis
     var axrev = (a.range[1]<a.range[0]);
 
     // return the full set of tick vals
     var vals = [],
-        endtick = a.range[1];
+        // add a tiny bit so we get ticks which may have rounded out
+        endtick = a.range[1] * 1.0001 - a.range[0]*0.0001;
     if(a.type=='category') {
         endtick = (axrev) ? Math.max(-0.5,endtick) : Math.min(a.categories.length-0.5,endtick);
     }
-    for(var x=a.tmin;(axrev)?(x>=endtick):(x<=endtick);x=tickIncrement(x,a.dtick,axrev)) {
+    for(var x=a._tmin;(axrev)?(x>=endtick):(x<=endtick);x=tickIncrement(x,a.dtick,axrev)) {
         vals.push(x);
         if(vals.length>1000) { break } // prevent infinite loops
     }
-    a.tmax=vals[vals.length-1]; // save the last tick as well as first, so we can eg show the exponent only on the last one
+    a._tmax=vals[vals.length-1]; // save the last tick as well as first, so we can eg show the exponent only on the last one
     return vals.map(function(x){return tickText(gd, a, x)});
 }
 
@@ -3598,7 +3930,7 @@ function autoTicks(a,rt){
         }
         else { // include intermediates between powers of 10, labeled with small digits
             // a.dtick="D2" (show 2 and 5) or "D1" (show all digits)
-            // use a.tickround to store the first tick
+            // use a._tickround to store the first tick
             // I don't think we're still using this... try to remove it
             var vmin=Math.pow(10,Math.min(a.range[1],a.range[0]));
             var minexp=Math.pow(10,Math.floor(Math.log(vmin)/Math.LN10));
@@ -3623,35 +3955,33 @@ function autoTicks(a,rt){
 //   for date ticks, the last date part to show (y,m,d,H,M,S) or an integer # digits past seconds
 function autoTickRound(a) {
     var dt = a.dtick;
-    a.tickexponent = 0;
+    a._tickexponent = 0;
     if(a.type=='category') {
-        a.tickround = null;
+        a._tickround = null;
     }
     else if($.isNumeric(dt) || dt.charAt(0)=='L') {
         if(a.type=='date') {
-            if(dt>=86400000) { a.tickround = 'd' }
-            else if(dt>=3600000) { a.tickround = 'H' }
-            else if(dt>=60000) { a.tickround = 'M' }
-            else if(dt>=1000) { a.tickround = 'S' }
-            else { a.tickround = 3-Math.round(Math.log(dt/2)/Math.LN10) }
+            if(dt>=86400000) { a._tickround = 'd' }
+            else if(dt>=3600000) { a._tickround = 'H' }
+            else if(dt>=60000) { a._tickround = 'M' }
+            else if(dt>=1000) { a._tickround = 'S' }
+            else { a._tickround = 3-Math.round(Math.log(dt/2)/Math.LN10) }
         }
         else {
             if(!$.isNumeric(dt)) { dt = Number(dt.substr(1)) }
             // 2 digits past largest digit of dtick
-            a.tickround = 2-Math.floor(Math.log(dt)/Math.LN10+0.01);
+            a._tickround = 2-Math.floor(Math.log(dt)/Math.LN10+0.01);
             if(a.type=='log') { var maxend = Math.pow(10,Math.max(a.range[0],a.range[1])) }
             else { var maxend = Math.max(Math.abs(a.range[0]), Math.abs(a.range[1])) }
             var rangeexp = Math.floor(Math.log(maxend)/Math.LN10+0.01);
             if(Math.abs(rangeexp)>3) {
-                a.tickexponent = (['SI','B'].indexOf(a.exponentformat)!=-1) ?
+                a._tickexponent = (['SI','B'].indexOf(a.exponentformat)!=-1) ?
                     3*Math.round((rangeexp-1)/3) : rangeexp
             }
         }
     }
-    else if(dt.charAt(0)=='M') {
-        a.tickround = (dt.length==2) ? 'm' : 'y';
-    }
-    else { a.tickround = null }
+    else if(dt.charAt(0)=='M') { a._tickround = (dt.length==2) ? 'm' : 'y' }
+    else { a._tickround = null }
 }
 
 // return the smallest element from (sorted) array a that's bigger than val,
@@ -3703,9 +4033,11 @@ function tickIncrement(x,dtick,axrev){
 
 // calculate the first tick on an axis
 function tickFirst(a){
-    var axrev=(a.range[1]<a.range[0]), sRound=(axrev ? Math.floor : Math.ceil);
+    var axrev=(a.range[1]<a.range[0]), sRound=(axrev ? Math.floor : Math.ceil),
+        // add a tiny extra bit to make sure we get ticks that may have been rounded out
+        r0 = a.range[0]*1.0001 - a.range[1]*0.0001;
     if($.isNumeric(a.dtick)) {
-        var tmin = sRound((a.range[0]-a.tick0)/a.dtick)*a.dtick+a.tick0;
+        var tmin = sRound((r0-a.tick0)/a.dtick)*a.dtick+a.tick0;
         // make sure no ticks outside the category list
         if(a.type=='category') { tmin = constrain(tmin,0,a.categories.length-1) }
         return tmin
@@ -3714,21 +4046,21 @@ function tickFirst(a){
     var tType=a.dtick.charAt(0), dt=Number(a.dtick.substr(1));
     // Dates: months (or years)
     if(tType=='M'){
-        var t0=new Date(a.tick0), r0=new Date(a.range[0]);
+        var t0=new Date(a.tick0), r0=new Date(r0);
         var mdif=(r0.getFullYear()-t0.getFullYear())*12+r0.getMonth()-t0.getMonth();
         var t1=t0.setMonth(t0.getMonth()+(Math.round(mdif/dt)+(axrev?1:-1))*dt);
-        while(axrev ? t1>a.range[0] : t1<a.range[0]) t1=tickIncrement(t1,a.dtick,axrev);
+        while(axrev ? t1>r0 : t1<r0) t1=tickIncrement(t1,a.dtick,axrev);
         return t1;
     }
     // Log scales: Linear, Digits
     else if(tType=='L') {
-        return Math.log(sRound((Math.pow(10,a.range[0])-a.tick0)/dt)*dt+a.tick0)/Math.LN10;
+        return Math.log(sRound((Math.pow(10,r0)-a.tick0)/dt)*dt+a.tick0)/Math.LN10;
     }
     else if(tType=='D') {
         var tickset=(a.dtick=='D2')?
             [-0.301,0,0.301,0.699,1]:[-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
-        var frac=roundUp(mod(a.range[0],1), tickset, axrev);
-        return Math.floor(a.range[0])+Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
+        var frac=roundUp(mod(r0,1), tickset, axrev);
+        return Math.floor(r0)+Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
     }
     else { throw "unrecognized dtick "+String(a.dtick) }
 }
@@ -3737,8 +4069,10 @@ function tickFirst(a){
 // px,py are the location on gd.paper
 // prefix is there so the x axis ticks can be dropped a line
 // a is the axis layout, x is the tick value
-function tickText(gd, a, x){
-    var gf = gd.layout.font, tf = a.tickfont,
+// hover is a (truthy) flag for whether to show numbers with a bit more precision
+// for hovertext - and return just the text
+function tickText(gd, a, x, hover){
+    var gf = gd.layout.font, tf = a.tickfont, tr = a._tickround, dt = a.dtick,
         font = tf.family || gf.family || 'Arial',
         fontSize = tf.size || gf.size || 12,
         fontColor = tf.color || gf.color || '#000',
@@ -3746,56 +4080,62 @@ function tickText(gd, a, x){
         py = 0,
         suffix = '', // completes the full date info, to be included with only the first tick
         tt,
-        hideexp = (a.showexponent!='all' && a.exponentformat!='none' &&
-            x!={first:a.tmin,last:a.tmax}[a.showexponent]) ? 'hide' : false;
+        hideexp = (!hover && a.showexponent!='all' && a.exponentformat!='none' &&
+            x!={first:a._tmin,last:a._tmax}[a.showexponent]) ? 'hide' : false;
     if(a.type=='date'){
+        if(hover) {
+            if($.isNumeric(tr)) { tr+=2 }
+            else { tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr] }
+        }
         var d=new Date(x);
-        if(a.tickround=='y') { tt=$.datepicker.formatDate('yy', d) }
-        else if(a.tickround=='m') { tt=$.datepicker.formatDate('M yy', d) }
+        if(tr=='y') { tt=$.datepicker.formatDate('yy', d) }
+        else if(tr=='m') { tt=$.datepicker.formatDate('M yy', d) }
         else {
-            if(x==a.tmin) { suffix='<br>'+$.datepicker.formatDate('yy', d) }
-            if(a.tickround=='d') { tt=$.datepicker.formatDate('M d', d) }
-            else if(a.tickround=='H') {
-                tt=$.datepicker.formatDate('M d ', d)+lpad(d.getHours(),2)+'h';
-            }
+            if(x==a._tmin) { suffix='<br>'+$.datepicker.formatDate('yy', d) }
+
+            if(tr=='d') { tt=$.datepicker.formatDate('M d', d) }
+            else if(tr=='H') { tt=$.datepicker.formatDate('M d ', d)+lpad(d.getHours(),2)+'h' }
             else {
-                if(x==a.tmin) suffix='<br>'+$.datepicker.formatDate('M d, yy', d);
+                if(x==a._tmin) { suffix='<br>'+$.datepicker.formatDate('M d, yy', d) }
+
                 tt=lpad(d.getHours(),2)+':'+lpad(d.getMinutes(),2);
-                if(a.tickround!='M'){
+                if(tr!='M'){
                     tt+=':'+lpad(d.getSeconds(),2);
-                    if(a.tickround!='S') {
-                        tt+=numFormat(mod(x/1000,1),a,'none').substr(1);
-                    }
+                    if(tr!='S') { tt+=numFormat(mod(x/1000,1),a,'none').substr(1) }
                 }
             }
         }
     }
     else if(a.type=='log'){
-        if($.isNumeric(a.dtick)||((a.dtick.charAt(0)=='D')&&(mod(x+.01,1)<.1))) {
+        if(hover && ($.isNumeric(dt) || dt.charAt(0)!='L')) { dt = 'L3' }
+        if($.isNumeric(dt)||((dt.charAt(0)=='D')&&(mod(x+.01,1)<.1))) {
             tt=(Math.round(x)==0)?'1':(Math.round(x)==1)?'10':'10'+String(Math.round(x)).sup()
             fontSize*=1.25;
         }
-        else if(a.dtick.charAt(0)=='D') {
+        else if(dt.charAt(0)=='D') {
             tt=Math.round(Math.pow(10,mod(x,1)));
             fontSize*=0.75;
         }
-        else if(a.dtick.charAt(0)=='L') {
-            tt=numFormat(Math.pow(10,x),a,hideexp);
+        else if(dt.charAt(0)=='L') {
+            tt=numFormat(Math.pow(10,x),a,hideexp, hover);
         }
-        else throw "unrecognized dtick "+String(a.dtick);
+        else throw "unrecognized dtick "+String(dt);
     }
     else if(a.type=='category'){
         var tt0 = a.categories[Math.round(x)];
         if(tt0===undefined) { tt0='' }
         tt=String(tt0);
     }
-    else { tt=numFormat(x,a,hideexp) }
+    else {
+        tt=numFormat(x,a,hideexp,hover);
+    }
     // if 9's are printed on log scale, move the 10's away a bit
     if((a.dtick=='D1') && (String(tt).charAt(0)=='1')){
         if(a===gd.layout.yaxis) px-=fontSize/4;
         else py+=fontSize/3;
     }
-    return {dx:px, dy:py, text:tt+suffix, fontSize:fontSize, font:font, fontColor:fontColor, x:x};
+    return {x:x, dx:px, dy:py, text:tt+suffix,
+        fontSize:fontSize, font:font, fontColor:fontColor};
 }
 
 // format a number (tick value) according to the axis settings
@@ -3803,12 +4143,24 @@ function tickText(gd, a, x){
 // add half the rounding increment, then stringify and truncate
 // also automatically switch to sci. notation
 SIPREFIXES = ['f','p','n','&mu;','m','','k','M','G','T'];
-function numFormat(v,a,fmtoverride) {
+function numFormat(v,a,fmtoverride,hover) {
     var n = (v<0), // negative?
-        r = a.tickround, // max number of digits past decimal point to show
-        e = Math.pow(10,-r)/2, // 'epsilon' - rounding increment
-        d = a.tickexponent, // if nonzero, use a common exponent 10^d
-        fmt = fmtoverride||a.exponentformat||'e';
+        r = a._tickround, // max number of digits past decimal point to show
+        fmt = fmtoverride||a.exponentformat||'e',
+        d = a._tickexponent;
+    // special case for hover: set exponent just for this value, and
+    // add a couple more digits of precision over tick labels
+    if(hover) {
+        // make a dummy axis obj to get the auto rounding and exponent
+        var ah = {exponentformat:a.exponentformat, dtick:Math.abs(v), range:[0,v||1]}
+        autoTickRound(ah);
+//         console.log(ah);
+        r = ah._tickround+2;
+        d = ah._tickexponent;
+    }
+    var e = Math.pow(10,-r)/2; // 'epsilon' - rounding increment
+
+//     if(!$.isNumeric(d)) { d = a._tickexponent } // if nonzero, use a common exponent 10^d
     // fmt codes:
     // 'e' (1.2e+6, default)
     // 'E' (1.2E+6)
@@ -3837,8 +4189,9 @@ function numFormat(v,a,fmtoverride) {
             for(var i=r; i<0; i++) { v+='0' }
         }
         else {
-            v = String(v)
-            v = v.substr(0,v.indexOf('.')+r+1).replace(/\.?0+$/,'');
+            v = String(v);
+            var dp = v.indexOf('.')+1;
+            if(dp) { v = v.substr(0,dp+r).replace(/\.?0+$/,'') };
         }
     }
 
@@ -3887,7 +4240,7 @@ function doTicks(gd,ax) {
                 y:function(d){return d.dy+y1+(a.ticks=='outside' ? a.ticklen : a.linewidth+1)+d.fontSize},
                 anchor: (!a.tickangle || a.tickangle==180) ? 'middle' :
                     (a.tickangle<0 ? 'end' : 'start')},
-            transfn = function(d){return 'translate('+(a.m*d.x+a.b)+',0)'};
+            transfn = function(d){return 'translate('+(a._m*d.x+a._b)+',0)'};
     }
     else if(ax=='y') {
         var x1 = gm.l-pad,
@@ -3901,7 +4254,7 @@ function doTicks(gd,ax) {
                 },
                 y:function(d){return d.dy+gm.t+d.fontSize/2},
                 anchor: (Math.abs(a.tickangle)==90) ? 'middle' : 'end'},
-            transfn = function(d){return 'translate(0,'+(a.m*d.x+a.b)+')'};
+            transfn = function(d){return 'translate(0,'+(a._m*d.x+a._b)+')'};
     }
     else {
         plotlylog('unrecognized doTicks axis',ax);
@@ -3997,7 +4350,7 @@ function doTicks(gd,ax) {
 // but if it fails, displays the unparsed text with a tooltip about the error
 // TODO: will barf on tags crossing newlines... need to close and reopen any such tags if we want to allow this.
 
-SPECIALCHARS={'mu':'\u03bc','times':'\u00d7'}
+SPECIALCHARS={'mu':'\u03bc','times':'\u00d7','plusmn':'\u00b1'}
 
 function styleText(sn,t) {
     if(t===undefined) { return }
@@ -4236,13 +4589,30 @@ function convertToAxis(o,a){
     else { return fn(o) }
 }
 
-// conversion btwn calcdata (numbers) and axis (linearized - identity except for log axes)
+// after convertToAxis turns all data to numbers, it's used in 3 ways:
+//  c: calcdata numbers, not linearized
+//  l: linearized - same as c except for log axes (and other mappings later?)
+//      this is used by ranges, and when we need to know if it's *possible* to
+//      show some data on this axis, without caring about the current range
+//  p: pixel value - mapped to the screen with current size and zoom
+// setAxConvert creates/updates these conversion functions
 function setAxConvert(a) {
     function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null }
     function fromLog(v){ return Math.pow(10,v) }
     function num(v){ return $.isNumeric(v) ? v : null }
-    a.toAxis = (a.type=='log') ? toLog : num;
-    a.toData = (a.type=='log') ? fromLog : num;
+    a.c2l = (a.type=='log') ? toLog : num;
+    a.l2c = (a.type=='log') ? fromLog : num;
+    a.c2p = function(v,clip) {
+        var va = a.c2l(v);
+        // include 2 fractional digits on pixel, for PDF zooming etc
+        if($.isNumeric(va)) { return d3.round(a._b+a._m*va,2) }
+        // clip NaN (ie past negative infinity) to one axis length past the negative edge
+        if(clip && $.isNumeric(v)) {
+            var r0 = a.range[0], r1 = a.range[1];
+            return d3.round(a._b+a._m*0.5*(r0+r1-3*Math.abs(r0-r1)),2);
+        }
+    }
+    a.p2c = function(px){ return a.l2c((px-a._b)/a._m) }
 }
 
 // do two bounding boxes from getBoundingClientRect,
@@ -4252,13 +4622,14 @@ function bBoxIntersect(a,b){
 }
 
 // create a copy of data, with all dereferenced src elements stripped
-// so if there's xsrc present, strip out x
+// ie if there's xsrc present, strip out x
 // needs to do this recursively because some src can be inside sub-objects
-// also strip "drawing" element, which is a reference to the Raphael objects
+// also strips out functions and other private (start with _) elements
+// so we can add temporary things to data and layout that don't get saved
 function stripSrc(d) {
     var o={};
     for(v in d) {
-        if(!(v+'src' in d)) {
+        if(!(v+'src' in d) && (typeof d[v] != 'function') && (v.charAt(0)!='_')) {
             if($.isPlainObject(d[v])) { o[v]=stripSrc(d[v]) }
             else { o[v]=d[v] }
         }
