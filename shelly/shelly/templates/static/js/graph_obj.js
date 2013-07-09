@@ -1187,6 +1187,8 @@ function findBin(val,bins,linelow) {
 // plots are special: if you bring new data in it will try to add it to the existing plot
 function gettab(tabtype,mode){
     //if(tabtype) plotlylog('gettab',tabtype,mode);
+    embed = $('#embedded_graph');
+    if(embed.length) { return embed[0] }
     var td = $('.ui-tabs-panel:visible')[0];
     if(tabtype){
         if(!td || td.tabtype!=tabtype) td=addTab(tabtype);
@@ -2478,6 +2480,7 @@ function newPlot(divid, layout) {
 
     // dragmode and hovermode toolbars
     $(gd).find('.modebar .btn').tooltip('destroy');
+    $('.tooltip').remove();
     $(gd).find('.modebar').remove();
     var modebar = $('<div class="modebar">'+
         '<div class="btn-group pull-left">'+
@@ -2518,7 +2521,6 @@ function newPlot(divid, layout) {
         // after the button has been destroyed) then destroy it.
         setTimeout(function(){ $('.tooltip').each(function(){
             var top = $(this).css('top');
-            console.log(top);
             if(top=='0px') { $(this).remove() }
         })},800);
         relayout(gd,astr,val);
