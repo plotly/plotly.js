@@ -1145,7 +1145,7 @@ function plot(divid, data, layout) {
     try{ killspin(); }
     catch(e){ console.log(e); }
     setTimeout(function(){
-        if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false){
+        if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false && gd.mainsite){
             try{ showAlert('graphtips'); }
             catch(e){ console.log(e); }
         }
@@ -2477,6 +2477,7 @@ function newPlot(divid, layout) {
     dragBox(gd, x2, y1, x1-x0, y0-y1,'s','e');
 
     // dragmode and hovermode toolbars
+    $(gd).find('.modebar .btn').tooltip('destroy');
     $(gd).find('.modebar').remove();
     var modebar = $('<div class="modebar">'+
         '<div class="btn-group pull-left">'+
@@ -2513,6 +2514,13 @@ function newPlot(divid, layout) {
     .click(function(){
         var astr = $(this).attr('data-attr'),
             val = $(this).attr('data-val')||true;
+        // total kludge - need to wait until the tooltip shows (which may be
+        // after the button has been destroyed) then destroy it.
+        setTimeout(function(){ $('.tooltip').each(function(){
+            var top = $(this).css('top');
+            console.log(top);
+            if(top=='0px') { $(this).remove() }
+        })},800);
         relayout(gd,astr,val);
         modebar.find('button').each(modeactive);
         if(astr=='dragmode') {
