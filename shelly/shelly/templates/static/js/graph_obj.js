@@ -2526,13 +2526,14 @@ function newPlot(divid, layout) {
 
 function positionModeBar(){
     var gd = gettab(), gl = gd.layout, gm = gd.margin,
-        pp = $(gd.paper.node()).position(),
+        pbb = gd.paper.node().getBoundingClientRect(),
         modebar = $(gd).find('.modebar');
     modebar.css({position:'absolute',left:'0px',top:'0px'});
+    var mbb = modebar[0].getBoundingClientRect();
     modebar.css({
         position:'absolute',
-        left:(gl.width+pp.left-gm.r-modebar.width())+'px',
-        top:(gm.t-modebar.height()+pp.top-gl.margin.pad-2)+'px'
+        left:(gl.width+pbb.left-mbb.left-gm.r-mbb.width)+'px',
+        top:(gm.t-mbb.height+pbb.top-mbb.top-gl.margin.pad-2)+'px'
     });
 }
 
