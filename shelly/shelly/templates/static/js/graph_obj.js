@@ -2492,28 +2492,46 @@ function newPlot(divid, layout) {
         modebar = $('<div class="modebar">'+
         '<div class="btn-group pull-left">'+
             '<button class="btn btn-mini" data-attr="dragmode" data-val="zoom" rel="tooltip" data-original-title="Zoom">'+
-                '<i class="icon-zoom-in"></i></button>'+
+                '<i class="ploticon-zoombox"></i></button>'+
             '<button class="btn btn-mini" data-attr="dragmode" data-val="pan" rel="tooltip" data-original-title="Pan">'+
-            '   <i class="icon-move"></i></button>'+
+            '   <i class="ploticon-pan"></i></button>'+
         '</div>'+
         '<div class="btn-group pull-left">'+
+            '<button class="btn btn-mini" data-attr="zoom" data-val="in" rel="tooltip" data-original-title="Autorange">'+
+                '<i class="ploticon-zoom_plus"></i></button>'+
+            '<button class="btn btn-mini" data-attr="zoom" data-val="out" rel="tooltip" data-original-title="Autorange">'+
+                '<i class="ploticon-zoom_minus"></i></button>'+
             '<button class="btn btn-mini" data-attr="allaxes.autorange" data-val="" rel="tooltip" data-original-title="Autorange">'+
-                '<i class="icon-fullscreen"></i></button>'+
+                '<i class="ploticon-autoscale"></i></button>'+
         '</div>'+
         '<div class="btn-group pull-left">'+
             '<button class="btn btn-mini" data-attr="hovermode" data-val="closest" rel="tooltip" data-original-title="Closest Data">'+
-                '<i class="icon-tag"></i></button>'+
+                '<i class="ploticon-tooltip"></i></button>'+
             '<button class="btn btn-mini" data-attr="hovermode" data-val="x" rel="tooltip" data-original-title="Compare">'+
-                '<i class="icon-tags"></i></button>'+
+                '<i class="ploticon-tooltip_compare"></i></button>'+
         '</div></div>').appendTo(gd);
         modebar.find('button')
             .tooltip({placement:'bottom', delay:{show:700}})
             .click(function(){
                 var astr = $(this).attr('data-attr'),
                     val = $(this).attr('data-val')||true;
-                // total kludge - need to wait until the tooltip shows (which may be
-                // after the button has been destroyed) then destroy it.
-                relayout(gd,astr,val);
+                if(astr=='zoom') {
+                    var xr = gd.layout.xaxis.range, yr = gd.layout.yaxis.range;
+                    var aobj = (val=='in') ? {
+                        'xaxis.range[0]':0.75*xr[0]+0.25*xr[1],
+                        'xaxis.range[1]':0.75*xr[1]+0.25*xr[0],
+                        'yaxis.range[0]':0.75*yr[0]+0.25*yr[1],
+                        'yaxis.range[1]':0.75*yr[1]+0.25*yr[0]
+                    } : {
+                        'xaxis.range[0]':1.5*xr[0]-0.5*xr[1],
+                        'xaxis.range[1]':1.5*xr[1]-0.5*xr[0],
+                        'yaxis.range[0]':1.5*yr[0]-0.5*yr[1],
+                        'yaxis.range[1]':1.5*yr[1]-0.5*yr[0]
+                    }
+                    relayout(gd,aobj);
+                }
+                else { relayout(gd,astr,val) }
+
                 modebar.find('button').each(modeactive);
                 if(astr=='dragmode') {
                     $(gd).find('.nsewdrag').css('cursor', {pan:'move',zoom:'crosshair'}[val]);
