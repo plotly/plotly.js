@@ -1974,6 +1974,9 @@ function plotDo(gd,aobj,traces) {
     for(ai in aobj) { ao2[ai] = aobj[ai] } // copy aobj so we don't modify the one in the queue
     if(traces=='relayout') { relayout(gd, ao2) }
     else { restyle(gd, ao2, null, traces) }
+    // do we need to update a popover?
+    var po = $('.popover');
+    if(po.length) { po[0].redraw(po[0].selectedObj) }
 }
 
 function plotAutoSize(gd,aobj) {
