@@ -2091,7 +2091,6 @@ function newPlot(divid, layout) {
     // main dragger goes over the grids and data... we can use just its
     // hover events for all data hover effects
     var maindrag = dragBox(gd, x1, y2, x2-x1, y1-y2,'ns','ew');
-    var dbb=maindrag.getBoundingClientRect();
     // for bar charts and others with finite-size objects: you must be inside
     // it to see its hover info (so dist is zero inside, infinite outside)
     // args are (signed) difference from the two opposite edges
@@ -2105,7 +2104,8 @@ function newPlot(divid, layout) {
             gd.dragging ||
             !gd.calcdata) { return notips() }
 
-        var xpx = evt.clientX-dbb.left,
+        var dbb=maindrag.getBoundingClientRect(),
+            xpx = evt.clientX-dbb.left,
             ypx = evt.clientY-dbb.top,
             xval = xa.p2c(xpx),
             yval = ya.p2c(ypx);
