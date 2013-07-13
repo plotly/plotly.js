@@ -852,6 +852,12 @@ function plot(divid, data, layout) {
     expandBounds(ya,ypadded,errorbarsydr(gd));
     markTime('done errorbarsydr');
 
+    // autorange for annotations
+    if(gl.annotations) { gl.annotations.forEach(function(ann){
+        if(ann.ref!='plot') { return }
+        // TODO
+    }) }
+
     // autorange
     var a0 = 0.05; // 5% extension of plot scale beyond last point
 
@@ -2546,21 +2552,20 @@ function newPlot(divid, layout) {
 }
 
 function positionModeBar(){
-    var gd = gettab(), gl = gd.layout, gm = gd.margin,
+    var gd = gettab(), gm = gd.margin,
         pbb = gd.paper.node().getBoundingClientRect(),
         modebar = $(gd).find('.modebar');
-    modebar.css({position:'absolute',left:'0px',top:'0px'});
+    modebar.css({position:'absolute',right:'0px',bottom:'0px'});
     var mbb = modebar[0].getBoundingClientRect();
     modebar.css({
-        position:'absolute',
-        left:(gl.width+pbb.left-mbb.left-gm.r-mbb.width)+'px',
-        top:(gm.t-mbb.height+pbb.top-mbb.top-gl.margin.pad-2)+'px'
+        right:(mbb.right-pbb.right+gm.r)+'px',
+        bottom:(mbb.bottom-pbb.top-gm.t+gm.p+2)+'px'
     });
 }
 
 // separate styling for plot layout elements, so we don't have to redraw to edit
 function layoutStyles(gd) {
-    var gl = gd.layout,xa = gl.xaxis, ya = gl.yaxis;
+    var gl = gd.layout, xa = gl.xaxis, ya = gl.yaxis;
 
     heatmap_margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
 
@@ -3288,6 +3293,9 @@ function annotation(gd,index,opt,value) {
     var atbb = anntext.node().getBoundingClientRect(),
         annwidth = atbb.width,
         annheight = atbb.height;
+    // save size in the annotation object for use by autoscale
+    options._w = annwidth;
+    options._h = annheight;
 
     // check for change between log and linear
     // off-scale transition to log: put the annotation near low end of the log
@@ -3300,13 +3308,13 @@ function annotation(gd,index,opt,value) {
             }
             else { return v }
         }
-        options.x = checklog(options.x,options.xatype,xa.type,
+        options.x = checklog(options.x,options._xatype,xa.type,
             (xa.range[0]+xa.range[1]-Math.abs(xr*0.8))/2);
-        options.y = checklog(options.y,options.yatype,ya.type,
+        options.y = checklog(options.y,options._yatype,ya.type,
             (ya.range[0]+ya.range[1]-Math.abs(yr*0.8))/2);
     }
-    options.xatype=xa.type;
-    options.yatype=ya.type;
+    options._xatype=xa.type;
+    options._yatype=ya.type;
 
     // check for change between paper and plot ref - need to wait for
     // annwidth/annheight to do this properly
