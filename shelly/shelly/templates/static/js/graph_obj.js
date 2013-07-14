@@ -1244,14 +1244,14 @@ function setStyles(gd, merge_dflt) {
         mergeattr(gdc,'name','name','trace '+c);
         var type = t.type;
         if( (gdc.error_y && gdc.error_y.visible ) ){
-            mergeattr(gdc.error_y.visible,'ye_vis',false);
-            mergeattr(gdc.error_y.type,'ye_type','percent');
-            mergeattr(gdc.error_y.value,'ye_val',10);
-            mergeattr(gdc.error_y.traceref,'ye_tref',0);
-            mergeattr(gdc.error_y.color,'ye_clr',t.ye_clr|| dc);
-            mergeattr(gdc.error_y.thickness,'ye_tkns',1);
-            mergeattr(gdc.error_y.width,'ye_w',4);
-            mergeattr(gdc.error_y.opacity,'ye_op',1);
+            mergeattr(gdc.error_y,'visible','ye_vis',false);
+            mergeattr(gdc.error_y,'type','ye_type','percent');
+            mergeattr(gdc.error_y,'value','ye_val',10);
+            mergeattr(gdc.error_y,'traceref','ye_tref',0);
+            mergeattr(gdc.error_y,'color','ye_clr',t.ye_clr|| dc);
+            mergeattr(gdc.error_y,'thickness','ye_tkns',1);
+            mergeattr(gdc.error_y,'width','ye_w',4);
+            mergeattr(gdc.error_y,'opacity','ye_op',1);
         }
         if(['scatter','box'].indexOf(type)!=-1){
             mergeattr(gdc.line,'color','lc',gdc.marker.color || dc);
@@ -1316,7 +1316,6 @@ function setStyles(gd, merge_dflt) {
             mergeattr(gdc,'zauto','zauto',true);
             mergeattr(gdc,'zmin','zmin',-10);
             mergeattr(gdc,'zmax','zmax',10);
-
             mergeattr(gdc, 'scl', 'scl', defaultScale,true);
             
 
