@@ -3314,7 +3314,6 @@ function annotation(gd,index,opt,value) {
     var atbb = anntext.node().getBoundingClientRect(),
         annwidth = atbb.width,
         annheight = atbb.height;
-
     // save size in the annotation object for use by autoscale
     options._w = annwidth;
     options._h = annheight;
