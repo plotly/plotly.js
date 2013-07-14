@@ -852,6 +852,13 @@ function plot(divid, data, layout) {
     expandBounds(ya,ypadded,errorbarsydr(gd));
     markTime('done errorbarsydr');
 
+    // autorange for annotations
+    if(gl.annotations) { gl.annotations.forEach(function(ann){
+        if(ann.ref!='plot') { return }
+        // TODO
+    }) }
+
+
     // autorange
     var a0 = 0.05; // 5% extension of plot scale beyond last point
 
@@ -1992,6 +1999,9 @@ function plotDo(gd,aobj,traces) {
     for(ai in aobj) { ao2[ai] = aobj[ai] } // copy aobj so we don't modify the one in the queue
     if(traces=='relayout') { relayout(gd, ao2) }
     else { restyle(gd, ao2, null, traces) }
+    // do we need to update a popover?
+    var po = $('.popover');
+    if(po.length) { po[0].redraw(po[0].selectedObj) }
 }
 
 function plotAutoSize(gd,aobj) {
@@ -2110,7 +2120,6 @@ function newPlot(divid, layout) {
     // main dragger goes over the grids and data... we can use just its
     // hover events for all data hover effects
     var maindrag = dragBox(gd, x1, y2, x2-x1, y1-y2,'ns','ew');
-    var dbb=maindrag.getBoundingClientRect();
     // for bar charts and others with finite-size objects: you must be inside
     // it to see its hover info (so dist is zero inside, infinite outside)
     // args are (signed) difference from the two opposite edges
@@ -2124,7 +2133,8 @@ function newPlot(divid, layout) {
             gd.dragging ||
             !gd.calcdata) { return notips() }
 
-        var xpx = evt.clientX-dbb.left,
+        var dbb=maindrag.getBoundingClientRect(),
+            xpx = evt.clientX-dbb.left,
             ypx = evt.clientY-dbb.top,
             xval = xa.p2c(xpx),
             yval = ya.p2c(ypx);
@@ -2511,28 +2521,47 @@ function newPlot(divid, layout) {
         modebar = $('<div class="modebar">'+
         '<div class="btn-group pull-left">'+
             '<button class="btn btn-mini" data-attr="dragmode" data-val="zoom" rel="tooltip" data-original-title="Zoom">'+
-                '<i class="icon-zoom-in"></i></button>'+
+                '<i class="ploticon-zoombox"></i></button>'+
             '<button class="btn btn-mini" data-attr="dragmode" data-val="pan" rel="tooltip" data-original-title="Pan">'+
-            '   <i class="icon-move"></i></button>'+
+            '   <i class="ploticon-pan"></i></button>'+
         '</div>'+
         '<div class="btn-group pull-left">'+
+            '<button class="btn btn-mini" data-attr="zoom" data-val="in" rel="tooltip" data-original-title="Autorange">'+
+                '<i class="ploticon-zoom_plus"></i></button>'+
+            '<button class="btn btn-mini" data-attr="zoom" data-val="out" rel="tooltip" data-original-title="Autorange">'+
+                '<i class="ploticon-zoom_minus"></i></button>'+
             '<button class="btn btn-mini" data-attr="allaxes.autorange" data-val="" rel="tooltip" data-original-title="Autorange">'+
-                '<i class="icon-fullscreen"></i></button>'+
+                '<i class="ploticon-autoscale"></i></button>'+
         '</div>'+
         '<div class="btn-group pull-left">'+
             '<button class="btn btn-mini" data-attr="hovermode" data-val="closest" rel="tooltip" data-original-title="Closest Data">'+
-                '<i class="icon-tag"></i></button>'+
+                '<i class="ploticon-tooltip"></i></button>'+
             '<button class="btn btn-mini" data-attr="hovermode" data-val="x" rel="tooltip" data-original-title="Compare">'+
-                '<i class="icon-tags"></i></button>'+
+                '<i class="ploticon-tooltip_compare"></i></button>'+
         '</div></div>').appendTo(gd);
         modebar.find('button')
             .tooltip({placement:'bottom', delay:{show:700}})
             .click(function(){
                 var astr = $(this).attr('data-attr'),
                     val = $(this).attr('data-val')||true;
-                // total kludge - need to wait until the tooltip shows (which may be
-                // after the button has been destroyed) then destroy it.
-                relayout(gd,astr,val);
+
+                if(astr=='zoom') {
+                    var xr = gd.layout.xaxis.range, yr = gd.layout.yaxis.range;
+                    var aobj = (val=='in') ? {
+                        'xaxis.range[0]':0.75*xr[0]+0.25*xr[1],
+                        'xaxis.range[1]':0.75*xr[1]+0.25*xr[0],
+                        'yaxis.range[0]':0.75*yr[0]+0.25*yr[1],
+                       'yaxis.range[1]':0.75*yr[1]+0.25*yr[0]
+                    } : {
+                        'xaxis.range[0]':1.5*xr[0]-0.5*xr[1],
+                        'xaxis.range[1]':1.5*xr[1]-0.5*xr[0],
+                        'yaxis.range[0]':1.5*yr[0]-0.5*yr[1],
+                        'yaxis.range[1]':1.5*yr[1]-0.5*yr[0]
+                    }
+                    relayout(gd,aobj);
+                }
+                else { relayout(gd,astr,val) }
+
                 modebar.find('button').each(modeactive);
                 if(astr=='dragmode') {
                     $(gd).find('.nsewdrag').css('cursor', {pan:'move',zoom:'crosshair'}[val]);
@@ -2544,21 +2573,20 @@ function newPlot(divid, layout) {
 }
 
 function positionModeBar(){
-    var gd = gettab(), gl = gd.layout, gm = gd.margin,
+    var gd = gettab(), gm = gd.margin,
         pbb = gd.paper.node().getBoundingClientRect(),
         modebar = $(gd).find('.modebar');
-    modebar.css({position:'absolute',left:'0px',top:'0px'});
+    modebar.css({position:'absolute',right:'0px',bottom:'0px'});
     var mbb = modebar[0].getBoundingClientRect();
     modebar.css({
-        position:'absolute',
-        left:(gl.width+pbb.left-mbb.left-gm.r-mbb.width)+'px',
-        top:(gm.t-mbb.height+pbb.top-mbb.top-gl.margin.pad-2)+'px'
+        right:(mbb.right-pbb.right+gm.r)+'px',
+        bottom:(mbb.bottom-pbb.top-gm.t+gm.p+2)+'px'
     });
 }
 
 // separate styling for plot layout elements, so we don't have to redraw to edit
 function layoutStyles(gd) {
-    var gl = gd.layout,xa = gl.xaxis, ya = gl.yaxis;
+    var gl = gd.layout, xa = gl.xaxis, ya = gl.yaxis;
 
     heatmap_margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
 
@@ -3287,6 +3315,10 @@ function annotation(gd,index,opt,value) {
         annwidth = atbb.width,
         annheight = atbb.height;
 
+    // save size in the annotation object for use by autoscale
+    options._w = annwidth;
+    options._h = annheight;
+
     // check for change between log and linear
     // off-scale transition to log: put the annotation near low end of the log
     // axis, but not quite at it (in case that would put it off screen)
@@ -3298,13 +3330,13 @@ function annotation(gd,index,opt,value) {
             }
             else { return v }
         }
-        options.x = checklog(options.x,options.xatype,xa.type,
+        options.x = checklog(options.x,options._xatype,xa.type,
             (xa.range[0]+xa.range[1]-Math.abs(xr*0.8))/2);
-        options.y = checklog(options.y,options.yatype,ya.type,
+        options.y = checklog(options.y,options._yatype,ya.type,
             (ya.range[0]+ya.range[1]-Math.abs(yr*0.8))/2);
     }
-    options.xatype=xa.type;
-    options.yatype=ya.type;
+    options._xatype=xa.type;
+    options._yatype=ya.type;
 
     // check for change between paper and plot ref - need to wait for
     // annwidth/annheight to do this properly
