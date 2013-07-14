@@ -852,12 +852,6 @@ function plot(divid, data, layout) {
     expandBounds(ya,ypadded,errorbarsydr(gd));
     markTime('done errorbarsydr');
 
-    // autorange for annotations
-    if(gl.annotations) { gl.annotations.forEach(function(ann){
-        if(ann.ref!='plot') { return }
-        // TODO
-    }) }
-
     // autorange
     var a0 = 0.05; // 5% extension of plot scale beyond last point
 
@@ -1205,20 +1199,35 @@ function gettab(tabtype,mode){
 }
 
 // set display params per trace to default or provided value
-function setStyles(gd) {
+function setStyles(gd, merge_dflt) {
     plotlylog('+++++++++++++++IN: setStyles(gd)+++++++++++++++');
 
-    // merge object a (which may be an array or a single value) into cd...
-    // search the array defaults in case a is missing (and for a default val
+    merge_dflt = merge_dflt || false; // CP Edit - see mergeattr comment
+
+    // merge object a[k] (which may be an array or a single value) into cd...
+    // search the array defaults in case a[k] is missing (and for a default val
     // if some points of o are missing from a)
-    function mergeattr(a,attr,dflt) {
-        if($.isArray(a)) {
-            var l = Math.max(cd.length,a.length);
-            for(var i=0; i<l; i++) { cd[i][attr]=a[i] }
+    // CP Edit: if merge_dflt, then apply the default value into a... used for saving themes
+    // CP Edit: pass key (k) as argument
+    // CP Edit: stringify option - used for heatmap colorscales
+    function mergeattr(a,k,attr,dflt,stringify) {
+        stringify = stringify || false;
+        var val = stringify ? JSON.stringify(a[k]) : a[k];
+
+        if($.isArray(val)) {
+            var l = Math.max(cd.length,val.length);
+            for(var i=0; i<l; i++) { cd[i][attr]=val[i] }
             cd[0].t[attr] = dflt; // use the default for the trace-wide value
         }
-        else { cd[0].t[attr] = (typeof a != 'undefined') ? a : dflt }
+        else { 
+            cd[0].t[attr] = (typeof val != 'undefined') ? val : dflt;
+            if(merge_dflt && typeof val == 'undefined'){
+                console.log('merging ', a[k], ' with ', dflt)
+                a[k] = stringify ? JSON.parse(dflt) : dflt; 
+            }
+        }
     }
+
 
     for(var i in gd.calcdata){
         var cd = gd.calcdata[i],
@@ -1228,11 +1237,11 @@ function setStyles(gd) {
             dc = defaultColors[c % defaultColors.length];
         // all types have attributes type, visible, opacity, name, text
         // mergeattr puts single values into cd[0].t, and all others into each individual point
-        mergeattr(gdc.type,'type','scatter');
-        mergeattr(gdc.visible,'visible',true);
-        mergeattr(gdc.opacity,'op',1);
-        mergeattr(gdc.text,'tx','');
-        mergeattr(gdc.name,'name','trace '+c);
+        mergeattr(gdc,'type','type','scatter');
+        mergeattr(gdc,'visible','visible',true);
+        mergeattr(gdc,'opacity','op',1);
+        mergeattr(gdc,'text','tx','');
+        mergeattr(gdc,'name','name','trace '+c);
         var type = t.type;
         if( (gdc.error_y && gdc.error_y.visible ) ){
             mergeattr(gdc.error_y.visible,'ye_vis',false);
@@ -1245,16 +1254,16 @@ function setStyles(gd) {
             mergeattr(gdc.error_y.opacity,'ye_op',1);
         }
         if(['scatter','box'].indexOf(type)!=-1){
-            mergeattr(gdc.line.color,'lc',gdc.marker.color || dc);
-            mergeattr(gdc.line.width,'lw',2);
-            mergeattr(gdc.marker.symbol,'mx','circle');
-            mergeattr(gdc.marker.opacity,'mo',1);
-            mergeattr(gdc.marker.size,'ms',6);
-            mergeattr(gdc.marker.color,'mc',t.lc);
-            mergeattr(gdc.marker.line.color,'mlc',((t.lc!=t.mc) ? t.lc : '#000'));
-            mergeattr(gdc.marker.line.width,'mlw',0);
-            mergeattr(gdc.fill,'fill','none');
-            mergeattr(gdc.fillcolor,'fc',addOpacity(t.lc,0.5));
+            mergeattr(gdc.line,'color','lc',gdc.marker.color || dc);
+            mergeattr(gdc.line,'width','lw',2);
+            mergeattr(gdc.marker,'symbol','mx','circle');
+            mergeattr(gdc.marker,'opacity','mo',1);
+            mergeattr(gdc.marker,'size','ms',6);
+            mergeattr(gdc.marker,'color','mc',t.lc);
+            mergeattr(gdc.marker.line,'color','mlc',((t.lc!=t.mc) ? t.lc : '#000'));
+            mergeattr(gdc.marker.line,'width','mlw',0);
+            mergeattr(gdc,'fill','fill','none');
+            mergeattr(gdc,'fillcolor','fc',addOpacity(t.lc,0.5));
             if(type==='scatter') {
                 var defaultMode = 'lines';
                 if(cd.length<PTS_LINESONLY || (typeof gdc.mode != 'undefined')) {
@@ -1270,60 +1279,64 @@ function setStyles(gd) {
                         }
                     }
                 }
-                mergeattr(gdc.mode,'mode',defaultMode);
-                mergeattr(gdc.line.dash,'ld','solid');
+                mergeattr(gdc,'mode','mode',defaultMode);
+                mergeattr(gdc.line,'dash','ld','solid');
             }
             else if(type==='box') {
-                mergeattr(gdc.marker.outliercolor,'soc','rgba(0,0,0,0)');
-                mergeattr(gdc.marker.line.outliercolor,'solc',t.mc);
-                mergeattr(gdc.marker.line.outlierwidth,'solw',1);
-                mergeattr(gdc.whiskerwidth,'ww',0.5);
-                mergeattr(gdc.boxpoints,'boxpts','outliers');
-                mergeattr(gdc.boxmean,'mean',false);
-                mergeattr(gdc.jitter,'jitter',0);
-                mergeattr(gdc.pointpos,'ptpos',0);
+                mergeattr(gdc.marker,'outliercolor','soc','rgba(0,0,0,0)');
+                mergeattr(gdc.marker.line,'outliercolor','solc',t.mc);
+                mergeattr(gdc.marker.line,'outlierwidth','solw',1);
+                mergeattr(gdc,'whiskerwidth','ww',0.5);
+                mergeattr(gdc,'boxpoints','boxpts','outliers');
+                mergeattr(gdc,'boxmean','mean',false);
+                mergeattr(gdc,'jitter','jitter',0);
+                mergeattr(gdc,'pointpos','ptpos',0);
             }
         }
         else if(HEATMAPTYPES.indexOf(type)!=-1){
             if(type==='histogram2d') {
-                mergeattr(gdc.histnorm,'histnorm','count');
-                mergeattr(gdc.autobinx,'autobinx',true);
-                mergeattr(gdc.nbinsx,'nbinsx',0);
-                mergeattr(gdc.xbins.start,'xbstart',0);
-                mergeattr(gdc.xbins.end,'xbend',1);
-                mergeattr(gdc.xbins.size,'xbsize',1);
-                mergeattr(gdc.autobiny,'autobiny',true);
-                mergeattr(gdc.nbinsy,'nbinsy',0);
-                mergeattr(gdc.ybins.start,'ybstart',0);
-                mergeattr(gdc.ybins.end,'ybend',1);
-                mergeattr(gdc.ybins.size,'ybsize',1);
+                mergeattr(gdc,'histnorm','histnorm','count');
+                mergeattr(gdc,'autobinx','autobinx',true);
+                mergeattr(gdc,'nbinsx','nbinsx',0);
+                mergeattr(gdc.xbins,'start','xbstart',0);
+                mergeattr(gdc.xbins,'end','xbend',1);
+                mergeattr(gdc.xbins,'size','xbsize',1);
+                mergeattr(gdc,'autobiny','autobiny',true);
+                mergeattr(gdc,'nbinsy','nbinsy',0);
+                mergeattr(gdc.ybins,'start','ybstart',0);
+                mergeattr(gdc.ybins,'end','ybend',1);
+                mergeattr(gdc.ybins,'size','ybsize',1);
             }
-            mergeattr(gdc.type,'type','heatmap');
-            mergeattr(gdc.visible,'visible',true);
-            mergeattr(gdc.x0,'x0',0);
-            mergeattr(gdc.dx,'dx',1);
-            mergeattr(gdc.y0,'y0',0);
-            mergeattr(gdc.dy,'dy',1);
-            mergeattr(gdc.zauto,'zauto',true);
-            mergeattr(gdc.zmin,'zmin',-10);
-            mergeattr(gdc.zmax,'zmax',10);
-            mergeattr(JSON.stringify(gdc.scl),'scl',defaultScale);
+            mergeattr(gdc,'type','type','heatmap');
+            mergeattr(gdc,'visible','visible',true);
+            mergeattr(gdc,'x0','x0',0);
+            mergeattr(gdc,'dx','dx',1);
+            mergeattr(gdc,'y0','y0',0);
+            mergeattr(gdc,'dy','dy',1);
+            mergeattr(gdc,'zauto','zauto',true);
+            mergeattr(gdc,'zmin','zmin',-10);
+            mergeattr(gdc,'zmax','zmax',10);
+
+            mergeattr(gdc, 'scl', 'scl', defaultScale,true);
+            
+
+
         }
         else if(BARTYPES.indexOf(type)!=-1){
             if(type!='bar') {
-                mergeattr(gdc.histnorm,'histnorm','count');
-                mergeattr(gdc.autobinx,'autobinx',true);
-                mergeattr(gdc.nbinsx,'nbinsx',0);
-                mergeattr(gdc.xbins.start,'xbstart',0);
-                mergeattr(gdc.xbins.end,'xbend',1);
-                mergeattr(gdc.xbins.size,'xbsize',1);
+                mergeattr(gdc,'histnorm','histnorm','count');
+                mergeattr(gdc,'autobinx','autobinx',true);
+                mergeattr(gdc,'nbinsx','nbinsx',0);
+                mergeattr(gdc.xbins,'start','xbstart',0);
+                mergeattr(gdc.xbins,'end','xbend',1);
+                mergeattr(gdc.xbins,'size','xbsize',1);
             }
-            mergeattr(gdc.bardir,'bardir','v');
-            mergeattr(gdc.opacity,'op',1);
-            mergeattr(gdc.marker.opacity,'mo',1);
-            mergeattr(gdc.marker.color,'mc',dc);
-            mergeattr(gdc.marker.line.color,'mlc','#000');
-            mergeattr(gdc.marker.line.width,'mlw',0);
+            mergeattr(gdc,'bardir','bardir','v');
+            mergeattr(gdc,'opacity','op',1);
+            mergeattr(gdc.marker,'opacity','mo',1);
+            mergeattr(gdc.marker,'color','mc',dc);
+            mergeattr(gdc.marker.line,'color','mlc','#000');
+            mergeattr(gdc.marker.line,'width','mlw',0);
         }
     }
     plotlylog('+++++++++++++++OUT: setStyles(gd)+++++++++++++++');
@@ -1980,9 +1993,6 @@ function plotDo(gd,aobj,traces) {
     for(ai in aobj) { ao2[ai] = aobj[ai] } // copy aobj so we don't modify the one in the queue
     if(traces=='relayout') { relayout(gd, ao2) }
     else { restyle(gd, ao2, null, traces) }
-    // do we need to update a popover?
-    var po = $('.popover');
-    if(po.length) { po[0].redraw(po[0].selectedObj) }
 }
 
 function plotAutoSize(gd,aobj) {
@@ -2101,6 +2111,7 @@ function newPlot(divid, layout) {
     // main dragger goes over the grids and data... we can use just its
     // hover events for all data hover effects
     var maindrag = dragBox(gd, x1, y2, x2-x1, y1-y2,'ns','ew');
+    var dbb=maindrag.getBoundingClientRect();
     // for bar charts and others with finite-size objects: you must be inside
     // it to see its hover info (so dist is zero inside, infinite outside)
     // args are (signed) difference from the two opposite edges
@@ -2114,8 +2125,7 @@ function newPlot(divid, layout) {
             gd.dragging ||
             !gd.calcdata) { return notips() }
 
-        var dbb=maindrag.getBoundingClientRect(),
-            xpx = evt.clientX-dbb.left,
+        var xpx = evt.clientX-dbb.left,
             ypx = evt.clientY-dbb.top,
             xval = xa.p2c(xpx),
             yval = ya.p2c(ypx);
@@ -2502,46 +2512,28 @@ function newPlot(divid, layout) {
         modebar = $('<div class="modebar">'+
         '<div class="btn-group pull-left">'+
             '<button class="btn btn-mini" data-attr="dragmode" data-val="zoom" rel="tooltip" data-original-title="Zoom">'+
-                '<i class="ploticon-zoombox"></i></button>'+
+                '<i class="icon-zoom-in"></i></button>'+
             '<button class="btn btn-mini" data-attr="dragmode" data-val="pan" rel="tooltip" data-original-title="Pan">'+
-            '   <i class="ploticon-pan"></i></button>'+
+            '   <i class="icon-move"></i></button>'+
         '</div>'+
         '<div class="btn-group pull-left">'+
-            '<button class="btn btn-mini" data-attr="zoom" data-val="in" rel="tooltip" data-original-title="Autorange">'+
-                '<i class="ploticon-zoom_plus"></i></button>'+
-            '<button class="btn btn-mini" data-attr="zoom" data-val="out" rel="tooltip" data-original-title="Autorange">'+
-                '<i class="ploticon-zoom_minus"></i></button>'+
             '<button class="btn btn-mini" data-attr="allaxes.autorange" data-val="" rel="tooltip" data-original-title="Autorange">'+
-                '<i class="ploticon-autoscale"></i></button>'+
+                '<i class="icon-fullscreen"></i></button>'+
         '</div>'+
         '<div class="btn-group pull-left">'+
             '<button class="btn btn-mini" data-attr="hovermode" data-val="closest" rel="tooltip" data-original-title="Closest Data">'+
-                '<i class="ploticon-tooltip"></i></button>'+
+                '<i class="icon-tag"></i></button>'+
             '<button class="btn btn-mini" data-attr="hovermode" data-val="x" rel="tooltip" data-original-title="Compare">'+
-                '<i class="ploticon-tooltip_compare"></i></button>'+
+                '<i class="icon-tags"></i></button>'+
         '</div></div>').appendTo(gd);
         modebar.find('button')
             .tooltip({placement:'bottom', delay:{show:700}})
             .click(function(){
                 var astr = $(this).attr('data-attr'),
                     val = $(this).attr('data-val')||true;
-                if(astr=='zoom') {
-                    var xr = gd.layout.xaxis.range, yr = gd.layout.yaxis.range;
-                    var aobj = (val=='in') ? {
-                        'xaxis.range[0]':0.75*xr[0]+0.25*xr[1],
-                        'xaxis.range[1]':0.75*xr[1]+0.25*xr[0],
-                        'yaxis.range[0]':0.75*yr[0]+0.25*yr[1],
-                        'yaxis.range[1]':0.75*yr[1]+0.25*yr[0]
-                    } : {
-                        'xaxis.range[0]':1.5*xr[0]-0.5*xr[1],
-                        'xaxis.range[1]':1.5*xr[1]-0.5*xr[0],
-                        'yaxis.range[0]':1.5*yr[0]-0.5*yr[1],
-                        'yaxis.range[1]':1.5*yr[1]-0.5*yr[0]
-                    }
-                    relayout(gd,aobj);
-                }
-                else { relayout(gd,astr,val) }
-
+                // total kludge - need to wait until the tooltip shows (which may be
+                // after the button has been destroyed) then destroy it.
+                relayout(gd,astr,val);
                 modebar.find('button').each(modeactive);
                 if(astr=='dragmode') {
                     $(gd).find('.nsewdrag').css('cursor', {pan:'move',zoom:'crosshair'}[val]);
@@ -2553,20 +2545,21 @@ function newPlot(divid, layout) {
 }
 
 function positionModeBar(){
-    var gd = gettab(), gm = gd.margin,
+    var gd = gettab(), gl = gd.layout, gm = gd.margin,
         pbb = gd.paper.node().getBoundingClientRect(),
         modebar = $(gd).find('.modebar');
-    modebar.css({position:'absolute',right:'0px',bottom:'0px'});
+    modebar.css({position:'absolute',left:'0px',top:'0px'});
     var mbb = modebar[0].getBoundingClientRect();
     modebar.css({
-        right:(mbb.right-pbb.right+gm.r)+'px',
-        bottom:(mbb.bottom-pbb.top-gm.t+gm.p+2)+'px'
+        position:'absolute',
+        left:(gl.width+pbb.left-mbb.left-gm.r-mbb.width)+'px',
+        top:(gm.t-mbb.height+pbb.top-mbb.top-gl.margin.pad-2)+'px'
     });
 }
 
 // separate styling for plot layout elements, so we don't have to redraw to edit
 function layoutStyles(gd) {
-    var gl = gd.layout, xa = gl.xaxis, ya = gl.yaxis;
+    var gl = gd.layout,xa = gl.xaxis, ya = gl.yaxis;
 
     heatmap_margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
 
@@ -3294,9 +3287,6 @@ function annotation(gd,index,opt,value) {
     var atbb = anntext.node().getBoundingClientRect(),
         annwidth = atbb.width,
         annheight = atbb.height;
-    // save size in the annotation object for use by autoscale
-    options._w = annwidth;
-    options._h = annheight;
 
     // check for change between log and linear
     // off-scale transition to log: put the annotation near low end of the log
@@ -3309,13 +3299,13 @@ function annotation(gd,index,opt,value) {
             }
             else { return v }
         }
-        options.x = checklog(options.x,options._xatype,xa.type,
+        options.x = checklog(options.x,options.xatype,xa.type,
             (xa.range[0]+xa.range[1]-Math.abs(xr*0.8))/2);
-        options.y = checklog(options.y,options._yatype,ya.type,
+        options.y = checklog(options.y,options.yatype,ya.type,
             (ya.range[0]+ya.range[1]-Math.abs(yr*0.8))/2);
     }
-    options._xatype=xa.type;
-    options._yatype=ya.type;
+    options.xatype=xa.type;
+    options.yatype=ya.type;
 
     // check for change between paper and plot ref - need to wait for
     // annwidth/annheight to do this properly
