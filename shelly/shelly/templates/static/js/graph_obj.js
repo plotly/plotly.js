@@ -781,6 +781,10 @@ function plot(divid, data, layout) {
         else { var sa = xa, pa = ya, pdr = ytight }
 
         // bar position offset and width calculation
+        // bl1 is a list of traces (in calcdata) to look at together
+        // to find the maximum size bars that won't overlap
+        // for stacked or grouped bars, this is all vertical or horizontal bars
+        // for overlaid bars, call this individually on each trace.
         function barposition(bl1) {
             // find the min. difference between any points in any traces in bl1
             var pvals=[];
@@ -802,13 +806,7 @@ function plot(divid, data, layout) {
                 t.dbar = dv.minDiff;
             }
         }
-
-        // for overlaid bars, manage each bar trace independently
-        if(gl.barmode=='overlay') {
-            for(var i=0; i<bl.length; i++) { barposition([bl[i]]) }
-        }
-        // group or stack, make sure all bar positions are available for all traces
-        // by finding the closest two points in any of the traces
+        if(gl.barmode=='overlay') { bl.forEach(function(bli){ barposition([bli]) }) }
         else { barposition(bl) }
 
         // bar size range and stacking calculation
@@ -838,6 +836,8 @@ function plot(divid, data, layout) {
             expandWithZero(sa,[sMin,sMax]);
         }
         else {
+            // for grouped or overlaid bars, just make sure zero is included,
+            // along with the tops of each bar
             for(var i=0; i<bl.length; i++){
                 expandWithZero(sa,gd.calcdata[bl[i]].map(function(v){return v.s}));
             }
@@ -873,7 +873,7 @@ function plot(divid, data, layout) {
     var a0 = 0.05; // 5% extension of plot scale beyond last point
 
     // if there's a heatmap in the graph div data, get rid of 5% padding regardless
-    gd.data.forEach(function(v){ if(HEATMAPTYPES.indexOf(v.type)!=-1){ a0=0 } });
+    if(gd.data) { gd.data.forEach(function(v){ if(HEATMAPTYPES.indexOf(v.type)!=-1){ a0=0 } }) }
 
     // if there are bars in a direction and one end of the axis is 0,
     // remove the 5% padding from that side
@@ -952,7 +952,7 @@ function plot(divid, data, layout) {
             .attr('class','trace bars');
         bartraces.append('g')
             .attr('class','points')
-            .each(function(d,cdi){
+            .each(function(d){
                 var bt = d3.select(this),
                     t = d[0].t; // <-- get trace-wide formatting object
                 bt.selectAll('rect')
@@ -1052,7 +1052,7 @@ function plot(divid, data, layout) {
         // BUILD SCATTER POINTS
         scattertraces.append('g')
             .attr('class','points')
-            .each(function(d,cdi){
+            .each(function(d){
                 var t=d[0].t; // <--- grab trace-wide formatting object in first object of calcdata
                 if(t.mode.indexOf('markers')==-1 || d[0].t.visible==false) { return }
                 d3.select(this).selectAll('path')
@@ -1239,10 +1239,10 @@ function setStyles(gd, merge_dflt) {
             for(var i=0; i<l; i++) { cd[i][attr]=val[i] }
             cd[0].t[attr] = dflt; // use the default for the trace-wide value
         }
-        else { 
+        else {
             cd[0].t[attr] = (typeof val != 'undefined') ? val : dflt;
             if(merge_dflt && typeof val == 'undefined'){
-                a[k] = stringify ? JSON.parse(dflt) : dflt; 
+                a[k] = stringify ? JSON.parse(dflt) : dflt;
             }
         }
     }
@@ -1336,7 +1336,7 @@ function setStyles(gd, merge_dflt) {
             mergeattr(gdc,'zmin','zmin',-10);
             mergeattr(gdc,'zmax','zmax',10);
             mergeattr(gdc, 'scl', 'scl', defaultScale,true);
-            
+
 
 
         }
@@ -2037,10 +2037,15 @@ function plotAutoSize(gd,aobj) {
 function plotResize(gd) {
     killPopovers();
     if(gd===undefined) { return }
-    if(gd.tabtype=='plot' && gd.layout && gd.layout.autosize) {
+    $(gd).find('.modebar').remove();
+    if(gd.tabtype=='plot') {
         setTimeout(function(){
-            gd.autoplay = true; // don't include this relayout in the undo queue
-            relayout(gd, {autosize:true});
+            if(gd.layout && gd.layout.autosize) {
+                gd.autoplay = true; // don't include this relayout in the undo queue
+                relayout(gd, {autosize:true});
+            }
+            else { newModeBar(gd) }
+
             if(LIT) {
                 hidebox();
                 litebox();
@@ -2523,6 +2528,10 @@ function newPlot(divid, layout) {
     dragBox(gd, x0, y1, x1-x0, y0-y1,'s','w');
     dragBox(gd, x2, y1, x1-x0, y0-y1,'s','e');
 
+    newModeBar(gd);
+}
+
+function newModeBar(gd){
     // dragmode and hovermode toolbars
     function modeactive(){
         $(this).toggleClass('active',
