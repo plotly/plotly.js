@@ -81,12 +81,12 @@ data should be an array of objects, one per trace. allowed keys:
 
 GRAPH_HEIGHT = 450;
 GRAPH_WIDTH = 700;
-TOOLBAR_LEFT = '40px';
-TOOLBAR_TOP = '-30px';
-PTS_LINESONLY = 20;
-DBLCLICKDELAY = 600; // ms between first mousedown and 2nd mouseup to constitute dblclick
+TOOLBAR_LEFT = '40px'; // TODO: do these do anything anymore?
+TOOLBAR_TOP = '-30px'; // "
+PTS_LINESONLY = 20; // traces with < this many points are by default shown with points and lines, > just get lines
+DBLCLICKDELAY = 600; // ms between first mousedown and 2nd mouseup to constitute dblclick... we don't seem to have access to the system setting
 MINDRAG = 5; // pixels to move mouse before you stop clamping to starting point
-VERBOSE = false;
+VERBOSE = false; // set to true to get a lot more logging and tracing
 
 // IMPORTANT - default colors should be in hex for grid.js
 // TODO - these colors suck, let's make some better palettes
@@ -103,6 +103,7 @@ defaultScale=[[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94,
     [0.375,"rgb(29, 145, 192)"],[0.5,"rgb(65, 182, 196)"],[0.625,"rgb(127, 205, 187)"],
     [0.75,"rgb(199, 233, 180)"],[0.875,"rgb(237, 248, 217)"],[1,"rgb(255, 255, 217)"]];
 
+// default layout defined as a function rather than a constant so it makes a new copy each time
 function defaultLayout(){
     return {title:'Click to enter Plot title',
         xaxis:{range:[-1,6],type:'-',mirror:true,linecolor:'#000',linewidth:1,
@@ -188,36 +189,44 @@ function markTime(s){
 // Main plot-creation function. Note: will call newPlot
 // if necessary to create the framework
 // ----------------------------------------------------
+// inputs:
+//      divid - the id or DOM element of the graph container div
+//      data - array of traces, containing the data and display
+//          information for each trace
+//      layout - object describing the overall display of the plot,
+//          all the stuff that doesn't pertain to any individual trace
 function plot(divid, data, layout) {
     markTime('in plot')
     plotlylog('+++++++++++++++IN: plot(divid, data, layout)+++++++++++++++');
-    // Get the container div: we will store all variables as properties of this div
-    // (for extension to multiple graphs per page)
+    // Get the container div: we will store all variables for this plot as
+    // properties of this div (for extension to multiple plots/tabs per page)
     // some callers send this in by dom element, others by id (string)
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
     // if there is already data on the graph, append the new data
-    // if you only want to redraw, pass non-object (null, '', whatever) for data
+    // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if($.isArray(data)) {
         if(graphwasempty) { gd.data=data }
         else { gd.data.push.apply(gd.data,data) }
-        gd.empty=false;
+        gd.empty=false; // for routines outside graph_obj that want a clean tab
+                        // (rather than appending to an existing one) gd.empty
+                        // is used to determine whether to make a new tab
     }
 
-    var gdd=gd.data;
-    var curve, x, xy, y, i, serieslen, dcnt, ncnt, v0, dv, gdc;
-
-    // figure out what framework (ie container, axes) to use,
+    // Make or remake the framework (ie container and axes) if we need to
+    // figure out what framework the data imply,
     //  and whether this is different from what was already there
+    // everything on xy axes (which right now is everything period) uses newPlot
+    //  but surface plots, pie charts, etc may use other frameworks.
     // note: if they container already exists and has data,
     //  the new layout gets ignored (as it should)
     //  but if there's no data there yet, it's just a placeholder...
     //  then it should destroy and remake the plot
-    if(gdd&&gdd.length>0){
-        var framework = graphInfo[gdd[0].type || 'scatter'].framework;
+    if(gd.data&&gd.data.length>0){
+        var framework = graphInfo[gd.data[0].type || 'scatter'].framework;
         if(!gd.framework || gd.framework!=framework || (typeof gd.layout==='undefined') || graphwasempty) {
             gd.framework = framework;
             framework(gd,layout);
@@ -228,13 +237,14 @@ function plot(divid, data, layout) {
     // enable or disable formatting buttons
     $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length==0);
 
-    var gl=gd.layout, gdd=gd.data, gp=gd.plot;
-    var xa=gl.xaxis, ya=gl.yaxis;
-    var x, xy, y, i, serieslen, dcnt, ncnt, v0, dv, gdc;
+    var gl=gd.layout,
+        xa=gl.xaxis,
+        ya=gl.yaxis;
+    var x, y, i, serieslen;
     // separate auto data ranges for tight-fitting and padded bounds
     // at the end we will combine all of these, but keep them separate until then
-    // so we can choose on a trace-by-trace basis whether to pad, but choose padding
-    // based on the range of all traces
+    // so we can choose on a trace-by-trace basis whether to pad, but choose
+    // the amount of padding based on the total range of all traces
     var xtight=[null,null],xpadded=[null,null];
     var ytight=[null,null],ypadded=[null,null];
     // if we have bars or fill-to-zero traces, make sure autorange goes to zero
@@ -244,7 +254,7 @@ function plot(divid, data, layout) {
     // do we need to check the axis types?
     // to force axtypes to be called again, set gd.axtypesok to false before calling plot()
     // this should be done if the first trace changes type, bardir, or data
-    if(gdd && gdd.length && gd.axtypesok!==true){
+    if(gd.data && gd.data.length && gd.axtypesok!==true){
         // figure out axis types (linear, log, date, category...)
         // use the first trace only.
         // If the axis has data, see whether more looks like dates or like numbers
@@ -253,7 +263,7 @@ function plot(divid, data, layout) {
         // -> If not date, figure out if a log axis makes sense, using all axis data
 
         function setAxType(ax,axletter){
-            var d0 = gdd[0];
+            var d0 = gd.data[0];
             if(!d0.type) { d0.type='scatter' }
             // backward compatibility
             if(!ax.type) {
@@ -297,8 +307,8 @@ function plot(divid, data, layout) {
             else if((axletter in d0) ? moreDates(d0[axletter]) : isDateTime(d0[axletter+'0'])) {
                 ax.type='date';
             }
-            else if(category(gdd,axletter)) { ax.type='category' }
-            else if(loggy(gdd,axletter) && ax.type!='linear') { ax.type='log' }
+            else if(category(gd.data,axletter)) { ax.type='category' }
+            else if(loggy(gd.data,axletter) && ax.type!='linear') { ax.type='log' }
             else if(ax.type!='log') { ax.type='linear' }
         }
 
@@ -446,8 +456,8 @@ function plot(divid, data, layout) {
         return frac*arr[Math.ceil(n)]+(1-frac)*arr[Math.floor(n)];
     }
 
-    for(curve in gdd) {
-        var gdc=gdd[curve],
+    for(var curve in gd.data) {
+        var gdc=gd.data[curve], // curve is the index, gdc is the data object for one trace
             curvetype = gdc.type || 'scatter', //default type is scatter
             typeinfo = graphInfo[curvetype],
             cd=[],
@@ -455,7 +465,7 @@ function plot(divid, data, layout) {
 
         if(typeinfo.framework!=gd.framework) {
             plotlylog('Oops, tried to put data of type '+(gdc.type || 'scatter')+
-                ' on an incompatible graph controlled by '+(gdd[0].type || 'scatter')+
+                ' on an incompatible graph controlled by '+(gd.data[0].type || 'scatter')+
                 ' data. Ignoring this dataset.');
             continue;
         }
@@ -861,8 +871,8 @@ function plot(divid, data, layout) {
     // autorange
     var a0 = 0.05; // 5% extension of plot scale beyond last point
 
-    // if there's a heatmap in the graph div data, get rid of 5% padding
-    $(gdd).each(function(i,v){ if(HEATMAPTYPES.indexOf(v.type)!=-1){ a0=0 } });
+    // if there's a heatmap in the graph div data, get rid of 5% padding regardless
+    gd.data.forEach(function(v){ if(HEATMAPTYPES.indexOf(v.type)!=-1){ a0=0 } });
 
     // if there are bars in a direction and one end of the axis is 0,
     // remove the 5% padding from that side
@@ -931,6 +941,7 @@ function plot(divid, data, layout) {
 
         // plot traces
         // (gp is gd.plot, the inner svg object containing the traces)
+        var gp = gd.plot;
         gp.selectAll('g.trace').remove(); // <-- remove old traces before we redraw
 
         // BUILD BAR CHARTS
@@ -1191,6 +1202,8 @@ function findBin(val,bins,linelow) {
 // if tabtype is given, make sure it's the right type, otherwise make a new tab
 // if it's not a plot, also make sure it's empty, otherwise make a new tab
 // plots are special: if you bring new data in it will try to add it to the existing plot
+
+// TODO: this really doesn't belong here (should be in main) but embeds need it. make them not need it
 function gettab(tabtype,mode){
     //if(tabtype) plotlylog('gettab',tabtype,mode);
     embed = $('#embedded_graph');
@@ -2090,12 +2103,12 @@ function newPlot(divid, layout) {
     var gm = gd.margin,
         x1 = gm.l,
         x2 = x1+gd.plotwidth,
-        a = $(gd).find('text.ytick').get().map(function(e){return e.getBBox().x}),
-        x0 = a.length ? Math.min.apply(a,a) : x1-10,
+        tickedge = $(gd).find('text.ytick').get().map(function(e){return e.getBBox().x}),
+        x0 = tickedge.length ? Math.min.apply(tickedge,tickedge) : x1-10,
         y2 = gm.t,
         y1 = y2+gd.plotheight,
-        a = $(gd).find('text.xtick').get().map(function(e){var bb=e.getBBox(); return bb.y+bb.height}),
-        y0 = a.length ? Math.max.apply(a,a) : y1+10;
+        tickedge = $(gd).find('text.xtick').get().map(function(e){var bb=e.getBBox(); return bb.y+bb.height}),
+        y0 = tickedge.length ? Math.max.apply(tickedge,tickedge) : y1+10;
 
     // main dragger goes over the grids and data... we can use just its
     // hover events for all data hover effects
@@ -3668,32 +3681,25 @@ function dragClear(gd) {
 
 // -----------------------------------------------------
 // Auto-grow text input, for editing graph items
+// from http://jsbin.com/ahaxe, heavily edited
 // -----------------------------------------------------
 
-// from http://jsbin.com/ahaxe, heavily edited
-// to grow centered, set o.align='center'
-// TODO: this comment is totally out of date, as is this code.
-// el is the raphael element containing the edited text (eg gd.xtitle)
-// cont is the location the value is stored (eg gd.layout.xaxis)
-// prop is the property name in that container (eg 'title')
-// o is the settings for the input box (can be left blank to use defaults below)
-// This is a bit ugly... but it's the only way I could find to pass in the element
-// (and layout var) totally by reference...
+// eln - the DOM element to edit
 function autoGrowInput(eln) {
     var gd = $(eln).parents('.ui-tabs-panel')[0],
         gl = gd.layout,
         el3 = d3.select(eln),
-        cls = el3.attr('class'),
+        cls = el3.attr('class'), // use the class to determine what this element is
         ref=$(eln),
-        p,
-        o = {maxWidth: 1000, minWidth: 20},
+        property, // the property to set (a nestedProperty object)
+        options = {maxWidth: 1000, minWidth: 20},
         fontCss={},
         mode =  (cls.slice(1,6)=='title') ? 'title' :
                 (cls.slice(0,4)=='drag') ? 'drag' :
                 (cls.slice(0,6)=='legend') ? 'legend' :
                 (cls.slice(0,10)=='annotation') ? 'annotation' : '';
 
-    // TODO: would like to leave this visible longer but then it loses its
+    // TODO: would like to leave tooltip visible longer but then it loses its
     // parent... how to avoid?
     $(eln).tooltip('destroy');
 
@@ -3704,40 +3710,40 @@ function autoGrowInput(eln) {
 
     // are we editing a title?
     if(mode=='title') {
-        p = nestedProperty(gl,{x:'xaxis.', y:'yaxis.', g:''}[cls.charAt(0)]+'title');
+        property = nestedProperty(gl,{x:'xaxis.', y:'yaxis.', g:''}[cls.charAt(0)]+'title');
         // if box is initially empty, it's cue text so we can't grab its properties:
         // so make a dummy element to get the right properties; it will be deleted
         // immediately after grabbing properties.
-        if($.trim(p.get())=='') {
+        if($.trim(property.get())=='') {
             el3.remove();
-            p.set('.'); // very narrow string, so we can ignore its width
+            property.set('.'); // very narrow string, so we can ignore its width
             makeTitles(gd,cls);
-            p.set('');
+            property.set('');
             el3=gd.paper.select('.'+cls);
             eln=el3.node();
         }
-        o.align = cls=='ytitle' ? 'left' : 'center';
+        options.align = cls=='ytitle' ? 'left' : 'center';
     }
     // how about an axis endpoint?
     else if(mode=='drag') {
         var axletter = (['n','s'].indexOf(cls.charAt(5))!=-1) ? 'y' : 'x',
             ax = gl[axletter+'axis'];
             end = (['s','w'].indexOf(cls.charAt(5))!=-1) ? 0 : 1;
-        p = nestedProperty(gl,axletter+'axis.range['+end+']');
-        o.align = (cls=='drag edrag') ? 'right' : 'left';
+        property = nestedProperty(gl,axletter+'axis.range['+end+']');
+        options.align = (cls=='drag edrag') ? 'right' : 'left';
         ref=$(gd).find('.xtitle'); // font properties reference
     }
     // legend text?
     else if(mode=='legend') {
         var tn = Number(cls.split('-')[1]);
-        p = nestedProperty(gd.data[tn],'name'); // TODO: isn't this sposed to be .text?
-        o.align = 'left';
+        property = nestedProperty(gd.data[tn],'name'); // TODO: isn't this sposed to be .text?
+        options.align = 'left';
     }
     // annotation
     else if(mode=='annotation') {
         var an = Number(ref.parent().attr('data-index'));
-        p = nestedProperty(gl,'annotations['+an+'].text');
-        o.align = 'center';
+        property = nestedProperty(gl,'annotations['+an+'].text');
+        options.align = 'center';
     }
 
     var fa=['font-size','font-family','font-weight','font-style','font-stretch',
@@ -3749,7 +3755,7 @@ function autoGrowInput(eln) {
         if(ra) { fontCss[fa[i]]=ra }
     }
 
-    o.comfortZone = (Number(String(fontCss['font-size']).split('px')[0]) || 20) + 3;
+    options.comfortZone = (Number(String(fontCss['font-size']).split('px')[0]) || 20) + 3;
 
     var eltrans=el3.attr('transform'),
         bbox=eln.getBoundingClientRect(),
@@ -3761,7 +3767,7 @@ function autoGrowInput(eln) {
 
     if(mode=='drag') {
         // show enough digits to specify the position to about a pixel, but not more
-        var v=p.get(), diff=Math.abs(v-ax.range[1-end]);
+        var v=property.get(), diff=Math.abs(v-ax.range[1-end]);
         if(ax.type=='date'){
             input.val(ms2DateTime(v,diff));
         }
@@ -3774,7 +3780,7 @@ function autoGrowInput(eln) {
             input.val(d3.format('.'+String(dig)+'g')(v));
         }
     }
-    else { input.val($.trim(p.get()).replace(/(\r\n?|\n\r?)/g,'<br>')) }
+    else { input.val($.trim(property.get()).replace(/(\r\n?|\n\r?)/g,'<br>')) }
 
     var val = input.val(),
         testSubject = $('<tester/>').css({
@@ -3789,17 +3795,17 @@ function autoGrowInput(eln) {
         .html(escaped(val));
 
     var testWidth=function(){
-        return constrain(testSubject.width()+o.comfortZone,o.minWidth,o.maxWidth)
+        return constrain(testSubject.width()+options.comfortZone,options.minWidth,options.maxWidth)
     }
     input.width(testWidth());
 
     var ibbox=input[0].getBoundingClientRect(),ileft=bbox.left-ibbox.left;
     input.css('top',(bbox.top-ibbox.top+(bbox.height-ibbox.height)/2)+'px');
-    if(o.align=='right') ileft+=bbox.width-ibbox.width;
-    else if(o.align=='center') ileft+=(bbox.width+o.comfortZone-ibbox.width)/2;
+    if(options.align=='right') ileft+=bbox.width-ibbox.width;
+    else if(options.align=='center') ileft+=(bbox.width+options.comfortZone-ibbox.width)/2;
     input.css('left',ileft+'px');
 
-    var leftshift={left:0, center:0.5, right:1}[o.align];
+    var leftshift={left:0, center:0.5, right:1}[options.align];
     var left0=input.position().left+input.width()*leftshift;
 
     // for titles, take away the existing one as soon as the input box is made
@@ -3827,8 +3833,8 @@ function autoGrowInput(eln) {
                 v = ax.c2l(ax.type=='category' ? v : convertToAxis(v,ax));
                 if(!$.isNumeric(v)) { return }
             }
-            if(mode=='legend') { restyle(gd,p.astr,v,tn) }
-            else { relayout(gd,p.astr,v) }
+            if(mode=='legend') { restyle(gd,property.astr,v,tn) }
+            else { relayout(gd,property.astr,v) }
             removeInput();
         }
         // press escape: revert the change
@@ -4601,21 +4607,24 @@ function category(d,ax) {
 // dates -> ms since the epoch,
 // categories -> integers
 // log: we no longer take log here, happens later
-function convertToAxis(o,a){
+// inputs:
+//      o - a value or array of values to convert
+//      ax - an axis object
+function convertToAxis(o,ax){
     // find the conversion function
-    if(a.type=='date') { var fn = DateTime2ms }
-    else if(a.type=='category') {
+    if(ax.type=='date') { var fn = DateTime2ms }
+    else if(ax.type=='category') {
         // create the category list
         // this will enter the categories in the order it encounters them,
         // ie all the categories from the first data set, then all the ones
         // from the second that aren't in the first etc.
         // TODO: sorting options - I guess we'll have to do this in plot()
         // after finishing calcdata
-        if(!a.categories) { a.categories = [] }
+        if(!ax.categories) { ax.categories = [] }
         ($.isArray(o) ? o : [o]).forEach(function(v){
-            if(a.categories.indexOf(v)==-1) { a.categories.push(v) }
+            if(ax.categories.indexOf(v)==-1) { ax.categories.push(v) }
         });
-        var fn = function(v){ var c = a.categories.indexOf(v); return c==-1 ? undefined : c }
+        var fn = function(v){ var c = ax.categories.indexOf(v); return c==-1 ? undefined : c }
     }
     else { var fn = function(v){return $.isNumeric(v) ? Number(v) : undefined } }
 
@@ -4631,23 +4640,23 @@ function convertToAxis(o,a){
 //      show some data on this axis, without caring about the current range
 //  p: pixel value - mapped to the screen with current size and zoom
 // setAxConvert creates/updates these conversion functions
-function setAxConvert(a) {
+function setAxConvert(ax) {
     function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null }
     function fromLog(v){ return Math.pow(10,v) }
     function num(v){ return $.isNumeric(v) ? v : null }
-    a.c2l = (a.type=='log') ? toLog : num;
-    a.l2c = (a.type=='log') ? fromLog : num;
-    a.c2p = function(v,clip) {
-        var va = a.c2l(v);
+    ax.c2l = (ax.type=='log') ? toLog : num;
+    ax.l2c = (ax.type=='log') ? fromLog : num;
+    ax.c2p = function(v,clip) {
+        var va = ax.c2l(v);
         // include 2 fractional digits on pixel, for PDF zooming etc
-        if($.isNumeric(va)) { return d3.round(a._b+a._m*va,2) }
+        if($.isNumeric(va)) { return d3.round(ax._b+ax._m*va,2) }
         // clip NaN (ie past negative infinity) to one axis length past the negative edge
         if(clip && $.isNumeric(v)) {
-            var r0 = a.range[0], r1 = a.range[1];
-            return d3.round(a._b+a._m*0.5*(r0+r1-3*Math.abs(r0-r1)),2);
+            var r0 = ax.range[0], r1 = ax.range[1];
+            return d3.round(ax._b+ax._m*0.5*(r0+r1-3*Math.abs(r0-r1)),2);
         }
     }
-    a.p2c = function(px){ return a.l2c((px-a._b)/a._m) }
+    ax.p2c = function(px){ return ax.l2c((px-ax._b)/ax._m) }
 }
 
 // do two bounding boxes from getBoundingClientRect,
