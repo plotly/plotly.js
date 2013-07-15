@@ -868,6 +868,7 @@ function plot(divid, data, layout) {
         // TODO
     }) }
 
+
     // autorange
     var a0 = 0.05; // 5% extension of plot scale beyond last point
 
@@ -1218,20 +1219,34 @@ function gettab(tabtype,mode){
 }
 
 // set display params per trace to default or provided value
-function setStyles(gd) {
+function setStyles(gd, merge_dflt) {
     plotlylog('+++++++++++++++IN: setStyles(gd)+++++++++++++++');
 
-    // merge object a (which may be an array or a single value) into cd...
-    // search the array defaults in case a is missing (and for a default val
+    merge_dflt = merge_dflt || false; // CP Edit - see mergeattr comment
+
+    // merge object a[k] (which may be an array or a single value) into cd...
+    // search the array defaults in case a[k] is missing (and for a default val
     // if some points of o are missing from a)
-    function mergeattr(a,attr,dflt) {
-        if($.isArray(a)) {
-            var l = Math.max(cd.length,a.length);
-            for(var i=0; i<l; i++) { cd[i][attr]=a[i] }
+    // CP Edit: if merge_dflt, then apply the default value into a... used for saving themes
+    // CP Edit: pass key (k) as argument
+    // CP Edit: stringify option - used for heatmap colorscales
+    function mergeattr(a,k,attr,dflt,stringify) {
+        stringify = stringify || false;
+        var val = stringify ? JSON.stringify(a[k]) : a[k];
+
+        if($.isArray(val)) {
+            var l = Math.max(cd.length,val.length);
+            for(var i=0; i<l; i++) { cd[i][attr]=val[i] }
             cd[0].t[attr] = dflt; // use the default for the trace-wide value
         }
-        else { cd[0].t[attr] = (typeof a != 'undefined') ? a : dflt }
+        else { 
+            cd[0].t[attr] = (typeof val != 'undefined') ? val : dflt;
+            if(merge_dflt && typeof val == 'undefined'){
+                a[k] = stringify ? JSON.parse(dflt) : dflt; 
+            }
+        }
     }
+
 
     for(var i in gd.calcdata){
         var cd = gd.calcdata[i],
@@ -1241,33 +1256,33 @@ function setStyles(gd) {
             dc = defaultColors[c % defaultColors.length];
         // all types have attributes type, visible, opacity, name, text
         // mergeattr puts single values into cd[0].t, and all others into each individual point
-        mergeattr(gdc.type,'type','scatter');
-        mergeattr(gdc.visible,'visible',true);
-        mergeattr(gdc.opacity,'op',1);
-        mergeattr(gdc.text,'tx','');
-        mergeattr(gdc.name,'name','trace '+c);
+        mergeattr(gdc,'type','type','scatter');
+        mergeattr(gdc,'visible','visible',true);
+        mergeattr(gdc,'opacity','op',1);
+        mergeattr(gdc,'text','tx','');
+        mergeattr(gdc,'name','name','trace '+c);
         var type = t.type;
         if( (gdc.error_y && gdc.error_y.visible ) ){
-            mergeattr(gdc.error_y.visible,'ye_vis',false);
-            mergeattr(gdc.error_y.type,'ye_type','percent');
-            mergeattr(gdc.error_y.value,'ye_val',10);
-            mergeattr(gdc.error_y.traceref,'ye_tref',0);
-            mergeattr(gdc.error_y.color,'ye_clr',t.ye_clr|| dc);
-            mergeattr(gdc.error_y.thickness,'ye_tkns',1);
-            mergeattr(gdc.error_y.width,'ye_w',4);
-            mergeattr(gdc.error_y.opacity,'ye_op',1);
+            mergeattr(gdc.error_y,'visible','ye_vis',false);
+            mergeattr(gdc.error_y,'type','ye_type','percent');
+            mergeattr(gdc.error_y,'value','ye_val',10);
+            mergeattr(gdc.error_y,'traceref','ye_tref',0);
+            mergeattr(gdc.error_y,'color','ye_clr',t.ye_clr|| dc);
+            mergeattr(gdc.error_y,'thickness','ye_tkns',1);
+            mergeattr(gdc.error_y,'width','ye_w',4);
+            mergeattr(gdc.error_y,'opacity','ye_op',1);
         }
         if(['scatter','box'].indexOf(type)!=-1){
-            mergeattr(gdc.line.color,'lc',gdc.marker.color || dc);
-            mergeattr(gdc.line.width,'lw',2);
-            mergeattr(gdc.marker.symbol,'mx','circle');
-            mergeattr(gdc.marker.opacity,'mo',1);
-            mergeattr(gdc.marker.size,'ms',6);
-            mergeattr(gdc.marker.color,'mc',t.lc);
-            mergeattr(gdc.marker.line.color,'mlc',((t.lc!=t.mc) ? t.lc : '#000'));
-            mergeattr(gdc.marker.line.width,'mlw',0);
-            mergeattr(gdc.fill,'fill','none');
-            mergeattr(gdc.fillcolor,'fc',addOpacity(t.lc,0.5));
+            mergeattr(gdc.line,'color','lc',gdc.marker.color || dc);
+            mergeattr(gdc.line,'width','lw',2);
+            mergeattr(gdc.marker,'symbol','mx','circle');
+            mergeattr(gdc.marker,'opacity','mo',1);
+            mergeattr(gdc.marker,'size','ms',6);
+            mergeattr(gdc.marker,'color','mc',t.lc);
+            mergeattr(gdc.marker.line,'color','mlc',((t.lc!=t.mc) ? t.lc : '#000'));
+            mergeattr(gdc.marker.line,'width','mlw',0);
+            mergeattr(gdc,'fill','fill','none');
+            mergeattr(gdc,'fillcolor','fc',addOpacity(t.lc,0.5));
             if(type==='scatter') {
                 var defaultMode = 'lines';
                 if(cd.length<PTS_LINESONLY || (typeof gdc.mode != 'undefined')) {
@@ -1283,60 +1298,63 @@ function setStyles(gd) {
                         }
                     }
                 }
-                mergeattr(gdc.mode,'mode',defaultMode);
-                mergeattr(gdc.line.dash,'ld','solid');
+                mergeattr(gdc,'mode','mode',defaultMode);
+                mergeattr(gdc.line,'dash','ld','solid');
             }
             else if(type==='box') {
-                mergeattr(gdc.marker.outliercolor,'soc','rgba(0,0,0,0)');
-                mergeattr(gdc.marker.line.outliercolor,'solc',t.mc);
-                mergeattr(gdc.marker.line.outlierwidth,'solw',1);
-                mergeattr(gdc.whiskerwidth,'ww',0.5);
-                mergeattr(gdc.boxpoints,'boxpts','outliers');
-                mergeattr(gdc.boxmean,'mean',false);
-                mergeattr(gdc.jitter,'jitter',0);
-                mergeattr(gdc.pointpos,'ptpos',0);
+                mergeattr(gdc.marker,'outliercolor','soc','rgba(0,0,0,0)');
+                mergeattr(gdc.marker.line,'outliercolor','solc',t.mc);
+                mergeattr(gdc.marker.line,'outlierwidth','solw',1);
+                mergeattr(gdc,'whiskerwidth','ww',0.5);
+                mergeattr(gdc,'boxpoints','boxpts','outliers');
+                mergeattr(gdc,'boxmean','mean',false);
+                mergeattr(gdc,'jitter','jitter',0);
+                mergeattr(gdc,'pointpos','ptpos',0);
             }
         }
         else if(HEATMAPTYPES.indexOf(type)!=-1){
             if(type==='histogram2d') {
-                mergeattr(gdc.histnorm,'histnorm','count');
-                mergeattr(gdc.autobinx,'autobinx',true);
-                mergeattr(gdc.nbinsx,'nbinsx',0);
-                mergeattr(gdc.xbins.start,'xbstart',0);
-                mergeattr(gdc.xbins.end,'xbend',1);
-                mergeattr(gdc.xbins.size,'xbsize',1);
-                mergeattr(gdc.autobiny,'autobiny',true);
-                mergeattr(gdc.nbinsy,'nbinsy',0);
-                mergeattr(gdc.ybins.start,'ybstart',0);
-                mergeattr(gdc.ybins.end,'ybend',1);
-                mergeattr(gdc.ybins.size,'ybsize',1);
+                mergeattr(gdc,'histnorm','histnorm','count');
+                mergeattr(gdc,'autobinx','autobinx',true);
+                mergeattr(gdc,'nbinsx','nbinsx',0);
+                mergeattr(gdc.xbins,'start','xbstart',0);
+                mergeattr(gdc.xbins,'end','xbend',1);
+                mergeattr(gdc.xbins,'size','xbsize',1);
+                mergeattr(gdc,'autobiny','autobiny',true);
+                mergeattr(gdc,'nbinsy','nbinsy',0);
+                mergeattr(gdc.ybins,'start','ybstart',0);
+                mergeattr(gdc.ybins,'end','ybend',1);
+                mergeattr(gdc.ybins,'size','ybsize',1);
             }
-            mergeattr(gdc.type,'type','heatmap');
-            mergeattr(gdc.visible,'visible',true);
-            mergeattr(gdc.x0,'x0',0);
-            mergeattr(gdc.dx,'dx',1);
-            mergeattr(gdc.y0,'y0',0);
-            mergeattr(gdc.dy,'dy',1);
-            mergeattr(gdc.zauto,'zauto',true);
-            mergeattr(gdc.zmin,'zmin',-10);
-            mergeattr(gdc.zmax,'zmax',10);
-            mergeattr(JSON.stringify(gdc.scl),'scl',defaultScale);
+            mergeattr(gdc,'type','type','heatmap');
+            mergeattr(gdc,'visible','visible',true);
+            mergeattr(gdc,'x0','x0',0);
+            mergeattr(gdc,'dx','dx',1);
+            mergeattr(gdc,'y0','y0',0);
+            mergeattr(gdc,'dy','dy',1);
+            mergeattr(gdc,'zauto','zauto',true);
+            mergeattr(gdc,'zmin','zmin',-10);
+            mergeattr(gdc,'zmax','zmax',10);
+            mergeattr(gdc, 'scl', 'scl', defaultScale,true);
+            
+
+
         }
         else if(BARTYPES.indexOf(type)!=-1){
             if(type!='bar') {
-                mergeattr(gdc.histnorm,'histnorm','count');
-                mergeattr(gdc.autobinx,'autobinx',true);
-                mergeattr(gdc.nbinsx,'nbinsx',0);
-                mergeattr(gdc.xbins.start,'xbstart',0);
-                mergeattr(gdc.xbins.end,'xbend',1);
-                mergeattr(gdc.xbins.size,'xbsize',1);
+                mergeattr(gdc,'histnorm','histnorm','count');
+                mergeattr(gdc,'autobinx','autobinx',true);
+                mergeattr(gdc,'nbinsx','nbinsx',0);
+                mergeattr(gdc.xbins,'start','xbstart',0);
+                mergeattr(gdc.xbins,'end','xbend',1);
+                mergeattr(gdc.xbins,'size','xbsize',1);
             }
-            mergeattr(gdc.bardir,'bardir','v');
-            mergeattr(gdc.opacity,'op',1);
-            mergeattr(gdc.marker.opacity,'mo',1);
-            mergeattr(gdc.marker.color,'mc',dc);
-            mergeattr(gdc.marker.line.color,'mlc','#000');
-            mergeattr(gdc.marker.line.width,'mlw',0);
+            mergeattr(gdc,'bardir','bardir','v');
+            mergeattr(gdc,'opacity','op',1);
+            mergeattr(gdc.marker,'opacity','mo',1);
+            mergeattr(gdc.marker,'color','mc',dc);
+            mergeattr(gdc.marker.line,'color','mlc','#000');
+            mergeattr(gdc.marker.line,'width','mlw',0);
         }
     }
     plotlylog('+++++++++++++++OUT: setStyles(gd)+++++++++++++++');
@@ -2039,6 +2057,7 @@ function newPlot(divid, layout) {
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
+
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
     if(!layout) layout={};
 	// test if this is on the main site or embedded
@@ -2054,7 +2073,7 @@ function newPlot(divid, layout) {
         ) { $(gd).children('svg').remove() }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
         gd.innerHTML='';
-        if(gd.mainsite) { graphbar(gd) }
+        if(gd.mainsite) graphbar(gd);
     }
 
     // Get the layout info - take the default and update it with layout arg
@@ -2537,13 +2556,14 @@ function newPlot(divid, layout) {
             .click(function(){
                 var astr = $(this).attr('data-attr'),
                     val = $(this).attr('data-val')||true;
+
                 if(astr=='zoom') {
                     var xr = gd.layout.xaxis.range, yr = gd.layout.yaxis.range;
                     var aobj = (val=='in') ? {
                         'xaxis.range[0]':0.75*xr[0]+0.25*xr[1],
                         'xaxis.range[1]':0.75*xr[1]+0.25*xr[0],
                         'yaxis.range[0]':0.75*yr[0]+0.25*yr[1],
-                        'yaxis.range[1]':0.75*yr[1]+0.25*yr[0]
+                       'yaxis.range[1]':0.75*yr[1]+0.25*yr[0]
                     } : {
                         'xaxis.range[0]':1.5*xr[0]-0.5*xr[1],
                         'xaxis.range[1]':1.5*xr[1]-0.5*xr[0],
@@ -4688,6 +4708,8 @@ function killspin(){
     $('.spinner').remove();
 }
 
+
+
 // start the main spinner
 function startspin(parent){
     if(parent===undefined){ var parent=gettab(); }
@@ -4712,6 +4734,33 @@ function startspin(parent){
     var spinner=new Spinner(opts).spin(parent);
     parent.spinner=spinner;
 }
+
+// start a small spinner
+function tinyspin(parent){
+    if(parent===undefined){ var parent=gettab(); }
+    // lil spinny
+    var opts = {
+      lines: 13, // The number of lines to draw
+      length: 5, // The length of each line
+      width: 2, // The line thickness
+      radius: 5, // The radius of the inner circle
+      corners: 0.6, // Corner roundness (0..1)
+      rotate: 0, // The rotation offset
+      direction: 1, // 1: clockwise, -1: counterclockwise
+      color: '#000', // #rgb or #rrggbb
+      speed: 1, // Rounds per second
+      trail: 60, // Afterglow percentage
+      shadow: false, // Whether to render a shadow
+      hwaccel: false, // Whether to use hardware acceleration
+      className: 'spinner', // The CSS class to assign to the spinner
+      zIndex: 2e9, // The z-index (defaults to 2000000000)
+      top: '55', // Top position relative to parent in px
+      left: '80' // Left position relative to parent in px
+    };
+    var spinner=new Spinner(opts).spin(parent);
+    parent.spinner=spinner;
+}
+
 
 function range(i){
     var x=[], j=0;
