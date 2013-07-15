@@ -1229,7 +1229,6 @@ function setStyles(gd, merge_dflt) {
         else { 
             cd[0].t[attr] = (typeof val != 'undefined') ? val : dflt;
             if(merge_dflt && typeof val == 'undefined'){
-                console.log('merging ', a[k], ' with ', dflt)
                 a[k] = stringify ? JSON.parse(dflt) : dflt; 
             }
         }
