@@ -1,3 +1,105 @@
+(function() {
+var heatmap = window.Heatmap = {};
+heatmap.calc = function(gd,gdc) {
+    // calcdata ("cd") for heatmaps:
+    // curve: index of heatmap in gd.data
+    // type: used to distinguish heatmaps from traces in "Data" popover
+    if(gdc.visible==false) { return }
+    // prepare the raw data
+    // run convertOne even for heatmaps, in case of category mappings
+    markTime('start convert data');
+    var xa = gd.layout.xaxis,
+        x = gdc.x ? Axes.convertOne(gdc,'x',xa) : [];
+    markTime('done convert x');
+    var ya = gd.layout.yaxis,
+        y = gdc.y ? Axes.convertOne(gdc,'y',ya) : [];
+    markTime('done convert y');
+    if(gdc.type=='histogram2d') {
+        var serieslen = Math.min(x.length,y.length);
+        if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen) }
+        if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen) }
+        markTime('done convert data');
+        // calculate the bins
+        if(gdc.autobinx || !('xbins' in gdc)) { gdc.xbins = Axes.autoBin(x,xa,gdc.nbinsx,'2d') }
+        if(gdc.autobiny || !('ybins' in gdc)) { gdc.ybins = Axes.autoBin(y,ya,gdc.nbinsy,'2d') }
+        markTime('done autoBin');
+        // make the empty bin array & scale the map
+        gdc.z = [];
+        var onecol = [],
+            xbins = (typeof(gdc.xbins.size)=='string') ? [] : gdc.xbins,
+            ybins = (typeof(gdc.xbins.size)=='string') ? [] : gdc.ybins,
+            norm = gdc.histnorm||'';
+        for(var i=gdc.xbins.start; i<gdc.xbins.end; i=Axes.tickIncrement(i,gdc.xbins.size)) {
+            onecol.push(0);
+            if($.isArray(xbins)) { xbins.push(i) }
+        }
+        if($.isArray(xbins)) { xbins.push(i) }
+
+        var nx = onecol.length;
+        gdc.x0 = gdc.xbins.start;
+        gdc.dx = (i-gdc.x0)/nx;
+        gdc.x0+=gdc.dx/2;
+        var xinc = onecol.map(function(v,i){
+            if(norm.indexOf('density')==-1) { return 1 }
+            else if($.isArray(xbins)) { return 1/(xbins[i+1]-xbins[i]) }
+            else { return 1/gdc.dx }
+        });
+
+        for(var i=gdc.ybins.start; i<gdc.ybins.end; i=Axes.tickIncrement(i,gdc.ybins.size)) {
+            gdc.z.push(onecol.concat())
+            if($.isArray(ybins)) { ybins.push(i) }
+        }
+        if($.isArray(ybins)) { ybins.push(i) }
+
+        var ny = gdc.z.length;
+        gdc.y0 = gdc.ybins.start;
+        gdc.dy = (i-gdc.y0)/ny;
+        gdc.y0+=gdc.dy/2;
+        var yinc = gdc.z.map(function(v,i){
+            if(norm.indexOf('density')==-1) { return 1 }
+            else if($.isArray(ybins)) { return 1/(ybins[i+1]-ybins[i]) }
+            else { return 1/gdc.dy }
+        });
+
+        markTime('done making bins');
+        // put data into bins
+        var count = 0;
+        for(i=0; i<serieslen; i++) {
+            var n = findBin(x[i],xbins),
+                m = findBin(y[i],ybins);
+            if(n>=0 && n<nx && m>=0 && m<ny) { gdc.z[m][n]+=xinc[n]*yinc[m]; count++ }
+        }
+        if(norm.indexOf('percent')!=-1) { count/=100 }
+        if(norm.indexOf('probability')!=-1 || norm.indexOf('percent')!=-1) {
+            gdc.z.forEach(function(col){ col.forEach(function(v,i){
+                col[i]/=count
+            })});
+        }
+        markTime('done binning');
+
+        // make the rest of the heatmap info
+        if(gdc.zauto!==false) {
+            gdc.zmin=zmin(gdc.z);
+            gdc.zmax=zmax(gdc.z);
+        }
+        if(!( 'scl' in gdc )){ gdc.scl=defaultScale; }
+    }
+    // heatmap() builds a png heatmap on the coordinate system, see heatmap.js
+    // returns the L, R, T, B coordinates for autorange as { x:[L,R], y:[T,B] }
+    var coords = heatmap_xy(gd,gdc);
+    Axes.expandBounds(xa,xa._tight,coords.x);
+    Axes.expandBounds(ya,ya._tight,coords.y);
+    // store x and y arrays for later... heatmap function pulls out the
+    // actual data directly from gd.data. TODO: switch to a reference in cd
+    return [{t:coords}];
+}
+
+heatmap.plot = function() {
+
+}
+}()); // end Heatmap object definition
+// TODO: get the rest of these functions in the object
+
 // option to limit number of pixels per color brick, for better speed
 // also, Firefox and IE seem to allow nearest-neighbor scaling, so could set to 1?
 // zero or other falsy val disables
