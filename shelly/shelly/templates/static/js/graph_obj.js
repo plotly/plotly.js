@@ -3217,6 +3217,7 @@ function annotation(gd,index,opt,value) {
     if(!options.arrowcolor) { options.arrowcolor = '' }
     if(!$.isNumeric(options.arrowhead)) { options.arrowhead=1 }
     if(!$.isNumeric(options.arrowsize)) { options.arrowsize=1 }
+    if(!options.tag) { options.tag='' }
     if(!options.text) { options.text=((options.showarrow && (options.text=='')) ? '' : 'new text') }
     if(!options.font) { options.font={family:'',size:0,color:''} }
 
@@ -3230,6 +3231,7 @@ function annotation(gd,index,opt,value) {
     // create the components
     var ann = gd.paper.append('svg')
         .attr('class','annotation')
+        .attr('data-cmmt',options.tag)
         .call(setPosition,0,0)
         .attr('data-index',String(index));
     var abb = ann.node().getBoundingClientRect();
@@ -3245,6 +3247,7 @@ function annotation(gd,index,opt,value) {
     if(!options.align) options.align='center';
     var anntext = ann.append('text')
         .attr('class','annotation')
+        .attr('data-cmmt',options.tag)
         .call(setPosition,0,0)
         .attr('text-anchor',{left:'start', center:'middle', right:'end'}[options.align])
         .attr('font-size',options.font.size||gl.font.size||12)
@@ -3409,9 +3412,11 @@ function annotation(gd,index,opt,value) {
             var strokewidth = options.arrowwidth||borderwidth*2;
             var arrowgroup = gd.paper.append('g')
                 .attr('class','annotation')
+                .attr('data-cmmt',options.tag)
                 .attr('data-index',String(index));
             var arrow = arrowgroup.append('path')
                 .attr('class','annotation')
+                .attr('data-cmmt',options.tag)
                 .attr('data-index',String(index))
                 .attr('d','M'+ax0+','+ay0+'L'+ax+','+ay)
                 .attr('stroke-width',strokewidth)
@@ -3419,6 +3424,7 @@ function annotation(gd,index,opt,value) {
             arrowhead(arrow,options.arrowhead,'end',options.arrowsize);
             var arrowdrag = arrowgroup.append('path')
                 .attr('class','annotation anndrag')
+                .attr('data-cmmt',options.tag)
                 .attr('data-index',String(index))
                 .attr('d','M3,3H-3V-3H3ZM0,0L'+(ax0-ax)+','+(ay0-ay))
                 .attr('transform','translate('+ax+','+ay+')')
@@ -3464,8 +3470,9 @@ function annotation(gd,index,opt,value) {
     }
     if(options.showarrow) { drawArrow(0,0) }
 
-    // user dragging the annotation
+    // user dragging the annotation (text, not arrow)
     if(gd.mainsite) { ann.node().onmousedown = function(e) {
+        
         if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
 
         var eln=this,
@@ -3572,6 +3579,7 @@ function arrowhead(el3,style,ends,mag) {
         if(style>5) { rot=0 } // don't rotate square or circle
         d3.select(el.parentElement).append('path')
             .attr('class',el3.attr('class'))
+            .attr('data-cmmt',el3.attr('data-cmmt'))
             .attr('data-index',el3.attr('data-index'))
             .style('fill',stroke)
             .style('fill-opacity',opacity)
