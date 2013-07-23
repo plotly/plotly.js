@@ -1255,6 +1255,7 @@ function plotAutoSize(gd,aobj) {
     else { // if there's no size change, update layout but don't need to redraw
         delete(aobj.autosize);
         gd.layout.autosize = true;
+        newModeBar(gd);
     }
     return aobj
 }
@@ -1263,9 +1264,10 @@ function plotAutoSize(gd,aobj) {
 function plotResize(gd) {
     killPopovers();
     if(gd===undefined) { return }
-    $(gd).find('.modebar').remove();
     if(gd.tabtype=='plot') {
-        setTimeout(function(){
+        $(gd).find('.modebar').remove();
+        if(gd.redrawTimer) { clearTimeout(gd.redrawTimer) }
+        gd.redrawTimer = setTimeout(function(){
             if(gd.layout && gd.layout.autosize) {
                 gd.autoplay = true; // don't include this relayout in the undo queue
                 relayout(gd, {autosize:true});
@@ -1276,7 +1278,7 @@ function plotResize(gd) {
                 hidebox();
                 litebox();
             }
-        }, 500);
+        }, 100);
     }
 }
 
@@ -2079,7 +2081,7 @@ function annotation(gd,index,opt,value) {
 
     // user dragging the annotation (text, not arrow)
     if(gd.mainsite) { ann.node().onmousedown = function(e) {
-        
+
         if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
 
         var eln=this,
