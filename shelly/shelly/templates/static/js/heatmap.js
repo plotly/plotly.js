@@ -1,5 +1,11 @@
 (function() {
 var heatmap = window.Heatmap = {};
+
+// option to limit number of pixels per color brick, for better speed
+// also, Firefox and IE seem to allow nearest-neighbor scaling, so could set to 1?
+// zero or other falsy val disables
+MAX_PX_PER_BRICK=0;
+
 heatmap.calc = function(gd,gdc) {
     // calcdata ("cd") for heatmaps:
     // curve: index of heatmap in gd.data
@@ -84,80 +90,12 @@ heatmap.calc = function(gd,gdc) {
         }
         if(!( 'scl' in gdc )){ gdc.scl=defaultScale; }
     }
-    // heatmap() builds a png heatmap on the coordinate system, see heatmap.js
-    // returns the L, R, T, B coordinates for autorange as { x:[L,R], y:[T,B] }
-    var coords = heatmap_xy(gd,gdc);
+    var coords = get_xy(gd,gdc);
     Axes.expandBounds(xa,xa._tight,coords.x);
     Axes.expandBounds(ya,ya._tight,coords.y);
     // store x and y arrays for later... heatmap function pulls out the
     // actual data directly from gd.data. TODO: switch to a reference in cd
     return [{t:coords}];
-}
-
-heatmap.plot = function() {
-
-}
-}()); // end Heatmap object definition
-// TODO: get the rest of these functions in the object
-
-// option to limit number of pixels per color brick, for better speed
-// also, Firefox and IE seem to allow nearest-neighbor scaling, so could set to 1?
-// zero or other falsy val disables
-MAX_PX_PER_BRICK=0;
-
-// returns the brick edge coordinates of a heatmap as { x:[x0,x1,...], y:[y0,y1...] }
-// we're returning all of them now so we can handle log heatmaps that go negative
-function heatmap_xy(gd,gdc){
-    // Set any missing keys to defaults
-    default_hm(gdc,true);
-    var y = gdc.y,
-        m = gdc.z.length, // num rows
-        ya = gd.layout.yaxis;
-    if($.isArray(y) && (y.length==m+1) && (gdc.type!='histogram2d') && (ya.type!='category')) {
-        y = convertToAxis(y,ya);
-    }
-    else {
-        y=[];
-        var y0 = (typeof(gdc.y0)=='number') ?
-            gdc.y0 : convertToAxis(gdc.y0,ya);
-        for(var i=0; i<=m; i++) { y.push(y0+gdc.dy*(i-0.5)) }
-    }
-    var x = gdc.x,
-        n = gdc.z[0].length, // num cols
-        xa = gd.layout.xaxis;
-    if($.isArray(x) && (x.length!=n+1) && (gdc.type!='histogram2d') && (xa.type!='category')) {
-        x = convertToAxis(x,xa);
-    }
-    else {
-        x=[];
-        var x0 = (typeof(gdc.x0)=='number') ?
-            gdc.x0 : convertToAxis(gdc.x0,xa);
-        for(var i=0; i<=n; i++) { x.push(x0+gdc.dx*(i-0.5)) }
-    }
-    return {x:x,y:y};
-}
-
-// if the heatmap data object is missing any keys, fill them in
-// keys expected in gdc:
-// z = 2D array of z values
-// x0 = middle of first color brick in x (on plotly's x-axis)
-// dx = brick size in x (on plotly's x-axis)
-// same for y0, dy
-// z0 = minimum of colorscale
-// z1 = maximum of colorscale
-function default_hm(gdc,noZRange){
-    if(!( 'z' in gdc )){ gdc.z=[[0,0],[0,0]] }
-    if(!( 'x0' in gdc )){ gdc.x0=0 }
-    if(!( 'y0' in gdc )){ gdc.y0=0 }
-    if(!( 'dx' in gdc )){ gdc.dx=1 }
-    if(!( 'dy' in gdc )){ gdc.dy=1 }
-    if(!( 'zauto' in gdc)){ gdc.zauto=true }
-    if(!noZRange) { // can take a long time... only do once
-        if(!( 'zmin' in gdc )||(!(gdc.zauto==false))){ gdc.zmin=zmin(gdc.z) }
-        if(!( 'zmax' in gdc )||(!(gdc.zauto==false))){ gdc.zmax=zmax(gdc.z) }
-        if(gdc.zmin==gdc.zmax) { gdc.zmin-=0.5; gdc.zmax+=0.5 }
-    }
-    if(!( 'scl' in gdc )){ gdc.scl=defaultScale }
 }
 
 // Creates a heatmap image from a z matrix and embeds adds it to svg plot
@@ -167,7 +105,7 @@ function default_hm(gdc,noZRange){
 // Example usage:
 // plot( gettab().id, [{'type':'heatmap','z':[[1,2],[3,4]], 'x0':2, 'y0':2, 'dx':0.5, 'dy':0.5}] )
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
-function heatmap(cd,gd){
+heatmap.plot = function(gd,cd) {
     var t = cd[0].t,
         i = t.curve,
         gdc = gd.data[i],
@@ -176,7 +114,7 @@ function heatmap(cd,gd){
     // Set any missing keys to defaults
     // note: gdc.x (same for gdc.y) will override gdc.x0,dx if it exists and is the right size
     // should be an n+1 long array, containing all the pixel edges
-    default_hm(gdc);
+    setDefaults(gdc);
     var z=gdc.z, min=gdc.zmin, max=gdc.zmax, scl=gdc.scl, x=t.x, y=t.y;
     gdc.hm_id='hm'+i; // heatmap id
     var cb_id='cb'+i; // colorbar id
@@ -300,9 +238,78 @@ function heatmap(cd,gd){
     $('svg > image').parent().attr("xmlns:xlink","http://www.w3.org/1999/xlink");
 
     // show a colorscale
-    if(gdc.showscale!=false){
-        insert_colorbar(gd,gdc,cb_id);
+    if(gdc.showscale!=false){ insert_colorbar(gd,gdc,cb_id) }
+}
+
+// in order to avoid unnecessary redraws, check for heatmaps with colorscales
+// and expand right margin to fit
+// TODO: let people control where this goes, ala legend
+heatmap.margin = function(gd){
+    var gl = gd.layout;
+    if(gd.data && gd.data.length && gl.margin.r<200) {
+        for(curve in gd.data) {
+            if((HEATMAPTYPES.indexOf(gd.data[curve].type)!=-1) && (gd.data[curve].showscale!=false)) {
+                gl.margin.r=200;
+                return true;
+            }
+        }
     }
+    return false;
+}
+
+// get_xy: returns the brick edge coordinates of a heatmap as { x:[x0,x1,...], y:[y0,y1...] }
+// we're returning all of them now so we can handle log heatmaps that go negative
+function get_xy(gd,gdc){
+    // Set any missing keys to defaults
+    setDefaults(gdc,true);
+    var y = gdc.y,
+        m = gdc.z.length, // num rows
+        ya = gd.layout.yaxis;
+    if($.isArray(y) && (y.length==m+1) && (gdc.type!='histogram2d') && (ya.type!='category')) {
+        y = convertToAxis(y,ya);
+    }
+    else {
+        y=[];
+        var y0 = (typeof(gdc.y0)=='number') ?
+            gdc.y0 : convertToAxis(gdc.y0,ya);
+        for(var i=0; i<=m; i++) { y.push(y0+gdc.dy*(i-0.5)) }
+    }
+    var x = gdc.x,
+        n = gdc.z[0].length, // num cols
+        xa = gd.layout.xaxis;
+    if($.isArray(x) && (x.length!=n+1) && (gdc.type!='histogram2d') && (xa.type!='category')) {
+        x = convertToAxis(x,xa);
+    }
+    else {
+        x=[];
+        var x0 = (typeof(gdc.x0)=='number') ?
+            gdc.x0 : convertToAxis(gdc.x0,xa);
+        for(var i=0; i<=n; i++) { x.push(x0+gdc.dx*(i-0.5)) }
+    }
+    return {x:x,y:y};
+}
+
+// if the heatmap data object is missing any keys, fill them in
+// keys expected in gdc:
+// z = 2D array of z values
+// x0 = middle of first color brick in x (on plotly's x-axis)
+// dx = brick size in x (on plotly's x-axis)
+// same for y0, dy
+// z0 = minimum of colorscale
+// z1 = maximum of colorscale
+function setDefaults(gdc,noZRange){
+    if(!( 'z' in gdc )){ gdc.z=[[0,0],[0,0]] }
+    if(!( 'x0' in gdc )){ gdc.x0=0 }
+    if(!( 'y0' in gdc )){ gdc.y0=0 }
+    if(!( 'dx' in gdc )){ gdc.dx=1 }
+    if(!( 'dy' in gdc )){ gdc.dy=1 }
+    if(!( 'zauto' in gdc)){ gdc.zauto=true }
+    if(!noZRange) { // can take a long time... only do once
+        if(!( 'zmin' in gdc )||(!(gdc.zauto==false))){ gdc.zmin=zmin(gdc.z) }
+        if(!( 'zmax' in gdc )||(!(gdc.zauto==false))){ gdc.zmax=zmax(gdc.z) }
+        if(gdc.zmin==gdc.zmax) { gdc.zmin-=0.5; gdc.zmax+=0.5 }
+    }
+    if(!( 'scl' in gdc )){ gdc.scl=defaultScale }
 }
 
 // Return MAX and MIN of an array of arrays
@@ -316,6 +323,7 @@ function zmin(z){
 }
 
 // insert a colorbar
+// TODO: control where this goes, styling
 function insert_colorbar(gd,gdc,cb_id) {
 
     if(gd.layout.margin.r<200){ // shouldn't get here anymore... take care of this in newPlot
@@ -325,10 +333,13 @@ function insert_colorbar(gd,gdc,cb_id) {
 
     var scl=gdc.scl;
     if (typeof(scl)=="string") scl=eval(scl); // <-- convert colorscale string to array
-    var d=[], min=gdc.zmin, max=gdc.zmax; // "colorbar domain" - interpolate numbers for colorscale
-    for(var i=0; i<scl.length; i++){ d.push( min+(scl[i][0]*(max-min)) ); }
-    var r=[]; // "colorbar range" - colors in gdc.colorscale
-    for(var i=0; i<scl.length; i++){ r.push( scl[i][1] ); }
+    var min=gdc.zmin, max=gdc.zmax, // "colorbar domain" - interpolate numbers for colorscale
+        d = scl.map(function(v){ return min+v[0]*(max-min) }),
+        // "colorbar range" - colors in gdc.colorscale
+        r = scl.map(function(v){ return v[1] });
+//     for(var i=0; i<scl.length; i++){ d.push( min+(scl[i][0]*(max-min)) ); }
+//     var r=[];
+//     for(var i=0; i<scl.length; i++){ r.push( scl[i][1] ); }
 
     //remove last colorbar, if any
     $(gd).find('.'+cb_id).remove();
@@ -350,17 +361,4 @@ function insert_colorbar(gd,gdc,cb_id) {
     g.call(cb);
 }
 
-// in order to avoid unnecessary redraws, check for heatmaps with colorscales
-// and expand right margin to fit
-function heatmap_margin(gd){
-    var gl = gd.layout;
-    if(gd.data && gd.data.length && gl.margin.r<200) {
-        for(curve in gd.data) {
-            if((HEATMAPTYPES.indexOf(gd.data[curve].type)!=-1) && (gd.data[curve].showscale!=false)) {
-                gl.margin.r=200;
-                return true;
-            }
-        }
-    }
-    return false;
-}
+}()); // end Heatmap object definition
