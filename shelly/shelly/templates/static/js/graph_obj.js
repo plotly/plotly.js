@@ -176,14 +176,6 @@ var graphInfo = {
 
 var BARTYPES = ['bar','histogramx','histogramy'];
 var HEATMAPTYPES = ['heatmap','histogram2d'];
-var TIMER=0
-
-function markTime(s){
-    if(!VERBOSE) { return }
-    var t2 = new Date().getTime();
-    console.log(s,t2-TIMER,'(msec)');
-    TIMER=t2;
-}
 
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
@@ -345,7 +337,7 @@ function plot(divid, data, layout) {
         for(var i in gd.calcdata){
             var cd = gd.calcdata[i], type=cd[0].t.type;
             if(HEATMAPTYPES.indexOf(type)!=-1) {
-                heatmap(cd,gd);
+                Heatmap.plot(gd,cd);
                 markTime('done heatmap '+i);
             }
             else {
@@ -390,11 +382,16 @@ function plot(divid, data, layout) {
     catch(e){ console.log(e); }
     setTimeout(function(){
         if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false && gd.mainsite){
-            try{ showAlert('graphtips'); }
-            catch(e){ console.log(e); }
+            try{ 
+                if( firsttimeuser() ) showAlert('graphtips'); 
+            }
+            catch(e){ 
+                console.log(e); 
+            }
         }
         else if($(gd).find('#graphtips').css('display')=='none'){
-            $(gd).find('#graphtips').fadeIn(); }
+            if( firsttimeuser() ) $(gd).find('#graphtips').fadeIn(); 
+        }
     },1000);
     plotlylog('+++++++++++++++OUT: plot(divid, data, layout)+++++++++++++++');
     markTime('done plot');
@@ -694,7 +691,7 @@ function fillGroupStyle(s) {
         var shape = d3.select(this),
             // have to break out of d3 standard here, because the fill box may be
             // grouped with the wrong trace (so it appears behind the appropriate lines)
-            gd = $(shape.node()).parents('div')[0];
+            gd = $(shape.node()).parents('.ui-tabs-panel, #embedded_graph')[0];
         try { shape.call(fillColor,gd.calcdata[shape.attr('data-curve')][0].t.fc) }
         catch(e) {
             try { shape.call(fillColor,d[0].t.fc) }
@@ -992,7 +989,7 @@ function restyle(gd,astr,val,traces) {
                 }
             }
             // if we need to change margin for a heatmap, force a relayout first so we don't plot twice
-            if(heatmap_margin(gd)) { dolayout = true }
+            if(Heatmap.margin(gd)) { dolayout = true }
             else { doplot = true }
         }
     }
@@ -1263,6 +1260,7 @@ function plotAutoSize(gd,aobj) {
     else { // if there's no size change, update layout but don't need to redraw
         delete(aobj.autosize);
         gd.layout.autosize = true;
+        newModeBar(gd);
     }
     return aobj
 }
@@ -1271,9 +1269,10 @@ function plotAutoSize(gd,aobj) {
 function plotResize(gd) {
     killPopovers();
     if(gd===undefined) { return }
-    $(gd).find('.modebar').remove();
     if(gd.tabtype=='plot') {
-        setTimeout(function(){
+        $(gd).find('.modebar').remove();
+        if(gd.redrawTimer) { clearTimeout(gd.redrawTimer) }
+        gd.redrawTimer = setTimeout(function(){
             if(gd.layout && gd.layout.autosize) {
                 gd.autoplay = true; // don't include this relayout in the undo queue
                 relayout(gd, {autosize:true});
@@ -1284,7 +1283,7 @@ function plotResize(gd) {
                 hidebox();
                 litebox();
             }
-        }, 500);
+        }, 100);
     }
 }
 
@@ -1320,8 +1319,6 @@ function newPlot(divid, layout) {
 
     var gl=gd.layout, gd3=d3.select(gd), xa=gl.xaxis, ya=gl.yaxis;
     Axes.setTypes(gd);
-//     Axes.setConvert(xa);
-//     Axes.setConvert(ya);
 
     // initial autosize
     if(gl.autosize=='initial') {
@@ -1369,385 +1366,12 @@ function newPlot(divid, layout) {
         tickedge = $(gd).find('text.xtick').get().map(function(e){var bb=e.getBBox(); return bb.y+bb.height}),
         y0 = tickedge.length ? Math.max.apply(tickedge,tickedge) : y1+10;
 
-    // main dragger goes over the grids and data... we can use just its
-    // hover events for all data hover effects
+    // main dragger goes over the grids and data, so we use its
+    // mousemove events for all data hover effects
     var maindrag = dragBox(gd, x1, y2, x2-x1, y1-y2,'ns','ew');
-    // for bar charts and others with finite-size objects: you must be inside
-    // it to see its hover info (so dist is zero inside, infinite outside)
-    // args are (signed) difference from the two opposite edges
-    function inbox(v0,v1){ return (v0*v1<0) ? 0 : Infinity }
-    function notips(){ gd.hoverlayer.selectAll('g').remove() }
-
-    $(maindrag).mousemove(function(evt){
-
-        if(['x','y','closest'].indexOf(gl.hovermode)==-1 ||
-            $(gd).find('#zoombox').length>0 ||
-            gd.dragging ||
-            !gd.calcdata) { return notips() }
-
-        var dbb=maindrag.getBoundingClientRect(),
-            xpx = evt.clientX-dbb.left,
-            ypx = evt.clientY-dbb.top,
-            xval = xa.p2c(xpx),
-            yval = ya.p2c(ypx);
-        // find the closest point in each trace (minimum dx and/or dy)
-        // and the pixel position for the label (lpx, lpy)
-        var dist = Infinity,
-            mindist = Infinity,
-            maxdist = 20; // max pixels away to allow a point to highlight
-        var closedata = [];
-        gd.calcdata.forEach(function(cd,curvenum){
-            var pn = null,
-                t = cd[0].t,
-                type = t.type,
-                mode = gl.hovermode;
-            if(mode!='closest') { dist = Infinity }
-            if(HEATMAPTYPES.indexOf(type)!=-1) {
-                // For heatmaps, just label the one pixel you're actually over
-                // regardless of mode
-                if(dist<maxdist) { return } // never let a heatmap override another type as closest point
-                mode = 'closest';
-                if(xval<=t.x[0] || xval>=t.x[t.x.length-1] ||
-                    yval<=t.y[0] || yval>=t.y[t.y.length-1]) { return }
-                var nx = findBin(xval,t.x),
-                    ny = findBin(yval,t.y);
-                closedata.push({
-                    i:0,
-                    dist:maxdist+10, // never let a heatmap override another type as closest point
-                    offset:0,
-                    curvenum:curvenum,
-                    x0:xa.c2p(t.x[nx]),
-                    x1:xa.c2p(t.x[nx+1]),
-                    y0:ya.c2p(t.y[ny]),
-                    y1:ya.c2p(t.y[ny+1]),
-                    xl:(t.x[nx]+t.x[nx+1])/2,
-                    yl:(t.y[ny]+t.y[ny+1])/2,
-                    zl:gd.data[t.curve].z[ny][nx]
-                });
-                return;
-            }
-            else if(BARTYPES.indexOf(type)!=-1) {
-                // for bars, only look at position, not size
-                if(t.bardir=='h') {
-                    // don't let a wrong-mode bar override scatter as closest point
-//                     var dd = (mode=='y') ? 0 : maxdist;
-//                     mode = 'y';
-                    var y0 = function(di){ return ya.c2p(di.p-t.dbar/2,true) },
-                        y1 = function(di){ return ya.c2p(di.p+t.dbar/2,true) },
-                        dx = function(di){ return xa.c2p(di.s+di.b)-xpx }
-                        dy = function(di){ return inbox(y0(di)-ypx,y1(di)-ypx) },
-                        lpx = function(di){ return [xa.c2p(di.s+di.b,true)] },
-                        lpy = function(di){ return [y0(di),y1(di)] },
-                        lx = function(di){ return di.s },
-                        ly = function(di){ return di.p }
-                }
-                else {
-//                     var dd = (mode=='x') ? 0 : maxdist;
-//                     mode = 'x';
-                    var x0 = function(di){ return xa.c2p(di.p-t.dbar/2,true) },
-                        x1 = function(di){ return xa.c2p(di.p+t.dbar/2,true) },
-                        dx = function(di){ return inbox(x0(di)-xpx,x1(di)-xpx) },
-                        dy = function(di){ return ya.c2p(di.s+di.b)-ypx }
-                        lpy = function(di){ return [ya.c2p(di.s+di.b,true)] },
-                        lpx = function(di){ return [x0(di),x1(di)] },
-                        lx = function(di){ return di.p },
-                        ly = function(di){ return di.s }
-                }
-            }
-            else if(type=='box') {
-                var dd = (mode=='x') ? 0 : maxdist;
-                mode = 'x';
-                var x0 = function(di){ return xa.c2p(di.x+t.bx-t.bdx,true) },
-                    x1 = function(di){ return xa.c2p(di.x+t.bx+t.bdx,true) },
-                    dx = function(di){ return inbox(x0(di)-xpx,x1(di)-xpx)+dd },
-                    lpx = function(di){ return [x0(di),x1(di)] },
-                    lx = function(di){ return di.x }
-                // TODO
-            }
-            else {
-                var dx = function(di){ return Math.abs(xa.c2p(di.x)-xpx) },
-                    dy = function(di){ return Math.abs(ya.c2p(di.y)-ypx) },
-                    lpx = function(di){ return [xa.c2p(di.x)] },
-                    lpy = function(di){ return [ya.c2p(di.y)] },
-                    lx = function(di){ return di.x },
-                    ly = function(di){ return di.y }
-            }
-            // pick the right distance function based on hovermode
-            var distfn = {x:dx, y:dy,
-                closest:function(di){return Math.sqrt(Math.pow(dx(di),2)+Math.pow(dy(di),2))}
-                }[mode]
-            // following is the longest loop... if this bogs down, we may need
-            // to create pre-sorted data (by x or y), not sure how to do this
-            // for 'closest'
-            cd.forEach(function(di,i){
-                var d = distfn(di);
-                if(d<dist) {
-                    dist = d;
-                    pn = i;
-                }
-            });
-
-            if(!$.isNumeric(pn) || dist>maxdist) { return }
-
-            var di = cd[pn],
-                x = lpx(di);
-            if(type!='box') {
-                var y = lpy(di);
-                closedata.push({
-                    i:pn, dist:dist, offset:0, curvenum:curvenum,
-                    x0:x[0],
-                    x1:x[x.length-1],
-                    y0:y[0],
-                    y1:y[y.length-1],
-                    xl:lx(di),
-                    yl:ly(di)
-                });
-            }
-            else {
-                ['min','q1','med','q3','max','mean'].forEach(function(a){
-                    if(a=='mean' && !t.mean) { return }
-                    if(!(a in di)) { return }
-                    var y = ya.c2p(di[a],true),
-                        out = {
-                            i:pn, dist:dist, offset:0, curvenum:curvenum,
-                            x0:x[0],
-                            x1:x[x.length-1],
-                            y0:y,
-                            y1:y,
-                            xl:lx(di),
-                            yl:di[a]
-                        }
-                    if(a=='mean' && ('sd' in di) && t.mean=='sd') { out.ysd = di.sd }
-                    closedata.push(out);
-                });
-            }
-        });
-        closedata = closedata.filter(function(d){
-            if(d && ('dist' in d)) { mindist = Math.min(mindist,d.dist) }
-            return d && $.isNumeric(d.curvenum) &&
-                d.i>=0 && d.i<gd.calcdata[d.curvenum].length &&
-                $.isNumeric(d.x0) && $.isNumeric(d.y0) &&
-                $.isNumeric(xa.c2l(d.xl)) && $.isNumeric(ya.c2l(d.yl));
-        });
-        if(closedata.length==0) { return notips() }
-        if(gl.hovermode=='closest') { closedata = [closedata[closedata.length-1]] }
-
-        // add the labels as text (and use this to find the best match x and y vals)
-        // creates a tickText object that includes the value formatted as text, and font info
-        // also make sure the positions are all on the plot
-        var imin=0;
-        closedata.forEach(function(d,i){
-            d.x0 = constrain(d.x0,0,gd.plotwidth);
-            d.x1 = constrain(d.x1,0,gd.plotwidth);
-            d.y0 = constrain(d.y0,0,gd.plotheight);
-            d.y1 = constrain(d.y1,0,gd.plotheight);
-            d.xl = Axes.tickText(gd,xa,xa.c2l(d.xl),'hover');
-            d.yl = Axes.tickText(gd,ya,ya.c2l(d.yl),'hover');
-            if(d.dist==mindist && !imin) { imin = i }
-            if('xsd' in d) { d.xl.text += ' &plusmn; '+Axes.tickText(gd,xa,xa.c2l(d.xsd),'hover').text }
-            if('ysd' in d) { d.yl.text += ' &plusmn; '+Axes.tickText(gd,ya,ya.c2l(d.ysd),'hover').text }
-        });
-
-        // show the common label, if any, on the axis
-        gd.hoverlayer.selectAll('g.axistext').remove();
-        var c0 = closedata[imin],
-            tpad = 3,
-            arrowsize = 6,
-            ptop = gd.paper.node().getBoundingClientRect().top;
-        if(mindist<=maxdist && ['x','y'].indexOf(gl.hovermode)!=-1) {
-            var label = gd.hoverlayer.append('g')
-                .classed('axistext',true);
-            var lpath = label.append('path')
-                .style('fill','#444')
-                .attr('stroke-width',1)
-                .attr('stroke','#fff');
-            var ltext = label.append('text')
-                .attr('font-family',c0.xl.font)
-                .attr('font-size',c0.xl.fontSize)
-                .style('fill','#fff');
-            var t0 = c0[gl.hovermode+'l'].text;
-            styleText(ltext.node(),t0);
-            var tbb = ltext.node().getBoundingClientRect();
-            if(gl.hovermode=='x') {
-                ltext.attr('text-anchor','middle')
-                    .call(setPosition,0,ptop-tbb.top+arrowsize+tpad);
-                lpath.attr('d','M0,0L'+arrowsize+','+arrowsize+
-                    'H'+(tpad+tbb.width/2)+
-                    'v'+(tpad*2+tbb.height)+
-                    'H-'+(tpad+tbb.width/2)+
-                    'V'+arrowsize+'H-'+arrowsize+'Z');
-                label.attr('transform','translate('+(gd.margin.l+(c0.x0+c0.x1)/2)+','
-                    +(gl.height-gd.margin.b)+')');
-            }
-            else {
-                ltext.attr('text-anchor','end')
-                    .call(setPosition,-tpad-arrowsize,ptop-tbb.top-tbb.height/2);
-                lpath.attr('d','M0,0L-'+arrowsize+','+arrowsize+
-                    'V'+(tpad+tbb.height/2)+
-                    'h-'+(tpad*2+tbb.width)+
-                    'V-'+(tpad+tbb.height/2)+
-                    'H-'+arrowsize+'V-'+arrowsize+'Z');
-                label.attr('transform','translate('+gd.margin.l+','+
-                    (gd.margin.t+(c0.y0+c0.y1)/2)+')');
-            }
-        }
-
-        // remove the "close but not quite" points
-        closedata = closedata.filter(function(d){
-            return ('zl' in d) ||
-                gl.hovermode=='closest' ||
-                d[gl.hovermode+'l'].text==t0;
-        });
-
-        // show all the individual labels
-        // first create the objects
-        var d = closedata[0],
-            fs = d.yl.fontSize||d.xl.fontSize||gl.font.size||12,
-            ff = d.yl.font||d.xl.font||gl.font.family||'Arial, sans-serif';
-        var ht = gd.hoverlayer.selectAll('g.hovertext')
-            .data(closedata);
-        ht.enter().append('g')
-            .classed('hovertext',true)
-            .each(function(d) {
-                var g = d3.select(this);
-                g.append('path')
-                    .attr('stroke-width',1);
-                var tx = g.append('text')
-                    .attr('font-family',ff)
-                    .attr('font-size',fs);
-            });
-        ht.exit().remove();
-
-        // then put the text in, position the pointer to the data, and figure out sizes
-        ht.each(function(d){
-            var g = d3.select(this).attr('transform',''),
-                t = gd.calcdata[d.curvenum][0].t,
-                fc = RgbOnly(t.lc || t.mc || '#444'),
-                tc = tinycolor(fc).toHsl().l>0.5 ? '#000' : '#FFF',
-                text;
-            if('zl' in d) {
-                text = 'x: '+d.xl.text+'<br>'+
-                        'y: '+d.yl.text+'<br>'+
-                        'z: '+d.zl;
-            }
-            else if(gl.hovermode=='x' && d.xl.text==t0) { text = d.yl.text }
-            else if(gl.hovermode=='y' && d.yl.text==t0) { text = d.xl.text }
-            else { text = '('+d.xl.text+', '+d.yl.text+')' }
-            var tx = g.select('text')
-                .style('fill',tc)
-                .text('')
-                .call(setPosition,0,0);
-            g.select('path')
-                .style('fill',fc)
-                .attr('stroke',tc),
-            styleText(tx.node(),text);
-            var tbb = tx.node().getBoundingClientRect(),
-                htx = gd.margin.l+(d.x0+d.x1)/2,
-                hty = gd.margin.t+(d.y0+d.y1)/2,
-                dx = Math.abs(d.x1-d.x0),
-                dy = Math.abs(d.y1-d.y0);
-            d.ty0 = ptop-tbb.top,
-            d.bx = tbb.width+2*tpad;
-            d.by = tbb.height+2*tpad;
-            d.anchor = 'start';
-            if(gl.hovermode=='y') {
-                d.pos = htx;
-                hty -= dy/2;
-                if(hty-tbb.width-arrowsize-tpad<0) {
-                    d.anchor = 'end';
-                    hty += dy;
-                    if(hty+tbb.width+arrowsize+tpad>gl.height) {
-                        d.anchor = 'middle';
-                        hty -=dy/2;
-                    }
-                }
-            }
-            else {
-                d.pos = hty;
-                htx += dx/2;
-                if(htx+tbb.width+arrowsize+tpad>gl.width) {
-                    d.anchor = 'end';
-                    htx -=dx;
-                    if(htx-tbb.width-arrowsize-tpad<0) {
-                        d.anchor = 'middle';
-                        htx +=dx/2;
-                    }
-                }
-            }
-            tx.attr('text-anchor',d.anchor);
-            g.attr('transform','translate('+htx+','+hty+')'+
-                (gl.hovermode=='y' ? 'rotate(-90)' : ''));
-        });
-
-        // now see if we need to move anything to avoid overlaps
-        var labelsmoved = true,
-            pmin = (gl.hovermode=='y') ? gd.margin.l : gd.margin.t,
-            pmax = (gl.hovermode=='y') ? (gl.width-gd.margin.r) : (gl.height-gd.margin.b),
-            // make groups of touching points
-            pts = closedata
-                .map(function(d,i){ return [{i:i, dp:0, pos:d.pos, size:d.by/2}] })
-                .sort(function(a,b){return a[0].pos-b[0].pos});
-        // loop through groups, combining them if they overlap, until nothing moves
-        while(labelsmoved) {
-            labelsmoved = false;
-            var i=0;
-            while(i<pts.length-1) {
-                var p0 = pts[i][pts[i].length-1],
-                    p1 = pts[i+1][0],
-                    overlap = p0.pos+p0.dp+p0.size-p1.pos-p1.dp+p1.size;
-                if(overlap>0.01) {
-                    // push the new point(s) added to this group out of the way
-                    pts[i+1].forEach(function(d){d.dp+=overlap});
-                    // add them to the group
-                    pts[i].push.apply(pts[i],pts[i+1]);
-                    pts.splice(i+1,1);
-                    // adjust for minimum average movement
-                    var avgdp = 0;
-                    pts[i].forEach(function(d){avgdp+=d.dp/pts[i].length});
-                    pts[i].forEach(function(d){d.dp-=avgdp});
-                    labelsmoved = true;
-                }
-                else { i++ }
-            }
-            // check if we're going off the plot and fix
-            pts.forEach(function(g){g.forEach(function(pt){
-                var minOverlap = pmin-pt.pos-pt.dp+pt.size,
-                    maxOverlap = pt.pos+pt.dp+pt.size-pmax;
-                if(minOverlap>0.01) {
-                    g.forEach(function(pt2){ pt2.dp+=minOverlap });
-                    labelsmoved = true;
-                }
-                if(maxOverlap>0.01) {
-                    g.forEach(function(pt2){ pt2.dp-=maxOverlap });
-                    labelsmoved = true;
-                }
-            })});
-        }
-        // now put these offsets back into closedata
-        pts.forEach(function(g){g.forEach(function(pt){
-            closedata[pt.i].offset = pt.dp;
-        })});
-
-        // finally set the text positioning relative to the data and draw the
-        // box around it
-        ht.each(function(d){
-            var g = d3.select(this),
-                hs = d.anchor=='end' ? '-' : '',
-                tx = g.select('text'),
-                txx = {start:1,end:-1,middle:0}[d.anchor]*(arrowsize+tpad);
-            g.select('path').attr('d',d.anchor=='middle' ?
-                ('M-'+(d.bx/2)+',-'+(d.by/2)+'h'+d.bx+'v'+d.by+'h-'+d.bx+'Z') :
-                ('M0,0L'+hs+arrowsize+','+(arrowsize+d.offset)+
-                    'v'+(d.by/2-arrowsize)+'h'+hs+d.bx+'v-'+d.by+
-                    'H'+hs+arrowsize+'V'+(d.offset-arrowsize)+'Z'));
-            tx.call(setPosition, txx, d.offset+d.ty0-d.by/2+tpad)
-                // multiliners don't like changing position after styleText
-                // so reset all the tspan's to the parent element's x
-                // y takes care of itself via dy
-                .selectAll('tspan.nl').attr('x',tx.attr('x'));
-        });
-    })
-    .mouseout(notips);
+    $(maindrag)
+        .mousemove(function(evt){ plotHover(evt,gd,maindrag) })
+        .mouseout(function(){ plotUnhover(gd) });
 
     // x axis draggers
     dragBox(gd, x1*0.9+x2*0.1, y1,(x2-x1)*0.8, y0-y1,'','ew');
@@ -1766,85 +1390,12 @@ function newPlot(divid, layout) {
     newModeBar(gd);
 }
 
-function newModeBar(gd){
-    // dragmode and hovermode toolbars
-    function modeactive(){
-        $(this).toggleClass('active',
-            gd.layout[$(this).attr('data-attr')]==($(this).attr('data-val')||true));
-    }
-    var modebar = $(gd).find('.modebar');
-    if(modebar.length==0) {
-        modebar = $('<div class="modebar">'+
-        '<div class="btn-group pull-left">'+
-            '<button class="btn btn-mini" data-attr="dragmode" data-val="zoom" rel="tooltip" data-original-title="Zoom">'+
-                '<i class="ploticon-zoombox"></i></button>'+
-            '<button class="btn btn-mini" data-attr="dragmode" data-val="pan" rel="tooltip" data-original-title="Pan">'+
-            '   <i class="ploticon-pan"></i></button>'+
-        '</div>'+
-        '<div class="btn-group pull-left">'+
-            '<button class="btn btn-mini" data-attr="zoom" data-val="in" rel="tooltip" data-original-title="Autorange">'+
-                '<i class="ploticon-zoom_plus"></i></button>'+
-            '<button class="btn btn-mini" data-attr="zoom" data-val="out" rel="tooltip" data-original-title="Autorange">'+
-                '<i class="ploticon-zoom_minus"></i></button>'+
-            '<button class="btn btn-mini" data-attr="allaxes.autorange" data-val="" rel="tooltip" data-original-title="Autorange">'+
-                '<i class="ploticon-autoscale"></i></button>'+
-        '</div>'+
-        '<div class="btn-group pull-left">'+
-            '<button class="btn btn-mini" data-attr="hovermode" data-val="closest" rel="tooltip" data-original-title="Closest Data">'+
-                '<i class="ploticon-tooltip"></i></button>'+
-            '<button class="btn btn-mini" data-attr="hovermode" data-val="x" rel="tooltip" data-original-title="Compare">'+
-                '<i class="ploticon-tooltip_compare"></i></button>'+
-        '</div></div>').appendTo(gd);
-        modebar.find('button')
-            .tooltip({placement:'bottom', delay:{show:700}})
-            .click(function(){
-                var astr = $(this).attr('data-attr'),
-                    val = $(this).attr('data-val')||true;
-
-                if(astr=='zoom') {
-                    var xr = gd.layout.xaxis.range, yr = gd.layout.yaxis.range;
-                    var aobj = (val=='in') ? {
-                        'xaxis.range[0]':0.75*xr[0]+0.25*xr[1],
-                        'xaxis.range[1]':0.75*xr[1]+0.25*xr[0],
-                        'yaxis.range[0]':0.75*yr[0]+0.25*yr[1],
-                       'yaxis.range[1]':0.75*yr[1]+0.25*yr[0]
-                    } : {
-                        'xaxis.range[0]':1.5*xr[0]-0.5*xr[1],
-                        'xaxis.range[1]':1.5*xr[1]-0.5*xr[0],
-                        'yaxis.range[0]':1.5*yr[0]-0.5*yr[1],
-                        'yaxis.range[1]':1.5*yr[1]-0.5*yr[0]
-                    }
-                    relayout(gd,aobj);
-                }
-                else { relayout(gd,astr,val) }
-
-                modebar.find('button').each(modeactive);
-                if(astr=='dragmode') {
-                    $(gd).find('.nsewdrag').css('cursor', {pan:'move',zoom:'crosshair'}[val]);
-                }
-            });
-    }
-    positionModeBar();
-    modebar.find('button').each(modeactive);
-}
-
-function positionModeBar(){
-    var gd = gettab(), gm = gd.margin,
-        pbb = gd.paper.node().getBoundingClientRect(),
-        modebar = $(gd).find('.modebar');
-    modebar.css({position:'absolute',right:'0px',bottom:'0px'});
-    var mbb = modebar[0].getBoundingClientRect();
-    modebar.css({
-        right:(mbb.right-pbb.right+gm.r)+'px',
-        bottom:(mbb.bottom-pbb.top-gm.t+gm.p+2)+'px'
-    });
-}
-
-// separate styling for plot layout elements, so we don't have to redraw to edit
+// layoutStyles: styling for plot layout elements
+// this is separate from newPlot, so we don't have to redraw to edit colors etc.
 function layoutStyles(gd) {
     var gl = gd.layout, xa = gl.xaxis, ya = gl.yaxis;
 
-    heatmap_margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
+    Heatmap.margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
 
     // adjust margins for outside legends
     // gl.margin is the requested margin, gd.margin is after adjustment
@@ -1889,306 +1440,52 @@ function layoutStyles(gd) {
 }
 
 // ----------------------------------------------------
-// Axis dragging functions
-// ----------------------------------------------------
-SHOWZOOMOUTTIP=true;
-function dragBox(gd,x,y,w,h,ns,ew) {
-    // mouseDown stores ms of first mousedown event in the last DBLCLICKDELAY ms on the drag bars
-    // and numClicks stores how many mousedowns have been seen within DBLCLICKDELAY
-    // so we can check for click or doubleclick events
-    // dragged stores whether a drag has occurred, so we don't have to
-    // redraw unnecessarily (ie if no move bigger than MINDRAG pixels)
-    var mouseDown=0,
-        numClicks=1,
-        gl = gd.layout,
-        xa = gl.xaxis,
-        ya = gl.yaxis,
-        pw = gd.plotwidth,
-        ph = gd.plotheight,
-        cursor = (ns+ew=='nsew') ?
-            ({pan:'move',zoom:'crosshair'}[gl.dragmode]) :
-            (ns+ew).toLowerCase()+'-resize',
-        dragger = gd.paper.append('rect').classed('drag',true)
-            .classed(ns+ew+'drag',true)
-            .call(setRect, x,y,w,h)
-            .style('cursor',cursor)
-            .style('fill','black')
-            .style('opacity',0)
-            .attr('stroke-width',0)
-          .node();
-
-    dragger.onmousedown = function(e) {
-        // deal with other UI elements, and allow them to cancel dragging
-        if(dragClear(gd)) { return true }
-        gd.dragging = true;
-
-        var d=(new Date()).getTime();
-        if(d-mouseDown<DBLCLICKDELAY) { numClicks+=1 } // in a click train
-        else { // new click train
-            numClicks=1;
-            mouseDown=d;
-        }
-
-        // in the main plot area, any drag except shift makes a zoombox
-        if(ns+ew=='nsew' && ((gl.dragmode=='zoom') ? !e.shiftKey : e.shiftKey)) { zoomBox(e) }
-        // otherwise, do pan (zoom on the ends/corners)
-        else { dragRange(e) }
-        return pauseEvent(e);
-    }
-
-    // scroll zoom, on all draggers except corners
-    var scrollViewBox = [0,0,pw,ph],
-        redrawTimer = null;
-    if(ns.length*ew.length!=1) {
-        $(dragger).on('mousewheel DOMMouseScroll', function(e) {
-            // deactivate mousewheel scrolling on embedded graphs
-            // TODO: any way to detect if the scroll started over the graph?
-            // or do we even want this then?
-            if(!gd.mainsite) { return }
-            clearTimeout(redrawTimer);
-            var zoom = Math.exp(-Math.min(Math.max(e.originalEvent.wheelDelta,-50),50)/200),
-                gbb = $(gd).find('.nsewdrag')[0].getBoundingClientRect();
-            if(ew) {
-                xa.range = [Number(xa.range[0]),Number(xa.range[1])]
-                var xfrac = (e.originalEvent.clientX-gbb.left)/gbb.width,
-                    x0 = xa.range[0]+(xa.range[1]-xa.range[0])*xfrac,
-                    vbx0 = scrollViewBox[0]+scrollViewBox[2]*xfrac;
-                xa.range = [x0+(xa.range[0]-x0)*zoom,x0+(xa.range[1]-x0)*zoom];
-                scrollViewBox[2] *= zoom;
-                scrollViewBox[0] = vbx0-scrollViewBox[2]*xfrac;
-            }
-            if(ns) {
-                ya.range = [Number(ya.range[0]),Number(ya.range[1])]
-                var yfrac = (gbb.bottom-e.originalEvent.clientY)/gbb.height,
-                    y0 = ya.range[0]+(ya.range[1]-ya.range[0])*yfrac;
-                    vby0 = scrollViewBox[1]+scrollViewBox[3]*(1-yfrac);
-                ya.range = [y0+(ya.range[0]-y0)*zoom,y0+(ya.range[1]-y0)*zoom];
-                scrollViewBox[3] *= zoom;
-                scrollViewBox[1] = vby0-scrollViewBox[3]*(1-yfrac);
-            }
-            // viewbox redraw at first
-            gd.plot.attr('viewBox',scrollViewBox.join(' '));
-            if(ew) { Axes.doTicks(gd,'x') }
-            if(ns) { Axes.doTicks(gd,'y') }
-            // then replot after a delay to make sure no more scrolling is coming
-            redrawTimer = setTimeout(function(){
-                scrollViewBox = [0,0,gd.plotwidth,gd.plotheight];
-                dragTail(gd);
-            },300);
-        });
-    }
-
-    function zoomBox(e){
-        var gbb = $(gd).find('.nsewdrag')[0].getBoundingClientRect(),
-            x0 = e.clientX-gbb.left,
-            y0 = e.clientY-gbb.top,
-            box = {l:x0,r:x0,w:0,t:y0,b:y0,h:0},
-            lum = gd.hmpixcount ? (gd.hmlumcount/gd.hmpixcount) : tinycolor(gd.layout.plot_bgcolor).toHsl().l,
-            path0 = 'M0,0H'+pw+'V'+ph+'H0V0',
-            zb = gd.plot.append('path').attr('id','zoombox')
-                .style('fill',lum>0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0')
-                .attr('stroke-width',0)
-                .attr('d',path0+'Z'),
-            dimmed = false;
-        window.onmousemove = function(e2) {
-            var x1 = Math.max(0,Math.min(pw,e2.clientX-gbb.left)),
-                y1 = Math.max(0,Math.min(ph,e2.clientY-gbb.top));
-            box = { l:Math.min(x0,x1), r:Math.max(x0,x1), w:Math.abs(x0-x1),
-                    t:Math.min(y0,y1), b:Math.max(y0,y1), h:Math.abs(y0-y1)};
-            // Not sure about the addition of window.scrollX/Y... seems to work but doesn't seem robust.
-            zb.attr('d',path0+'M'+(box.l)+','+(box.t)+'v'+(box.h)+'h'+(box.w)+'v-'+(box.h)+'h-'+(box.w)+'Z');
-            if(!dimmed) {
-                zb.transition().duration(200)
-                    .style('fill', lum>0.2 ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.3)');
-                dimmed = true;
-            }
-            return pauseEvent(e);
-        }
-        window.onmouseup = function(e2) {
-            gd.dragging = false;
-            window.onmousemove = null;
-            window.onmouseup = null;
-            if(Math.min(box.h,box.w)<MINDRAG*2) {
-                if(numClicks==2 && (new Date()).getTime()-mouseDown<DBLCLICKDELAY) { // double click
-                    dragAutoRange();
-                }
-                return finishZB();
-            }
-            var zoomIn = function(){
-                xa.range=[xa.range[0]+(xa.range[1]-xa.range[0])*(box.l)/pw,
-                          xa.range[0]+(xa.range[1]-xa.range[0])*(box.r)/pw];
-                ya.range=[ya.range[0]+(ya.range[1]-ya.range[0])*(ph-box.b)/ph,
-                          ya.range[0]+(ya.range[1]-ya.range[0])*(ph-box.t)/ph];
-                finishZB();
-                dragTail(gd);
-                if(SHOWZOOMOUTTIP && (!gd.mainsite || !signedin('noprompt')) && gd.data) {
-                    notifier('Double-click to<br>zoom back out','long');
-                    SHOWZOOMOUTTIP=false;
-                }
-            }
-            var zoomOut = function(){
-                xa.range=[(xa.range[0]*(box.r)+xa.range[1]*(-box.l))/box.w,
-                          (xa.range[0]*(box.r-pw)+xa.range[1]*(pw-box.l))/box.w];
-                ya.range=[(ya.range[0]*(ph-box.t)+ya.range[1]*(box.b-ph))/box.h,
-                          (ya.range[0]*(-box.t)+ya.range[1]*(box.b))/box.h];
-                finishZB();
-                dragTail(gd);
-            }
-
-            // drag box context menu if any modifier key (other than shift) was
-            // pressed during either mousedown or mouseup
-            if(e.altKey||e.ctrlKey||e.metaKey||e2.altKey||e2.ctrlKey||e2.metaKey) {
-                $('<div class="modal-backdrop fade" id="zoomboxbackdrop"></div>'+
-                    '<div class="open" id="zoomboxmenu"><ul class="dropdown-menu">'+
-                        '<li><a id="zoomboxin">Zoom In</a></li>'+
-                        '<li><a id="zoomboxout">Zoom Out</a></li>'+
-                    '</ul></div>').appendTo('body');
-                var mbb = $('#zoomboxmenu ul')[0].getBoundingClientRect();
-                $('#zoomboxmenu ul').css({
-                    left:(Math.min(e2.clientX,gbb.right-mbb.width)+window.scrollX)+'px',
-                    top:(Math.min(e2.clientY,gbb.bottom-mbb.height)+window.scrollY)+'px',
-                    'z-index':20001
-                });
-                $('#zoomboxbackdrop,#zoombox').click(finishZB);
-                $('#zoomboxin').click(zoomIn);
-                $('#zoomboxout').click(zoomOut);
-            }
-            // no modifiers: no context menu
-            else { zoomIn() }
-            return pauseEvent(e2);
-        }
-
-        function finishZB(){
-            $('#zoombox,#zoomboxbackdrop,#zoomboxmenu').remove();
-        }
-    }
-
-    function dragRange(e){
-        gd.dragged = false;
-        window.onmousemove = function(e2) {
-            var dcx = e2.clientX-e.clientX,
-                dcy = e2.clientY-e.clientY;
-            // clamp tiny drags to the origin
-            gd.dragged = (ew ? Math.abs(dcx) : 0) + (ns ? Math.abs(dcy) : 0) > MINDRAG;
-            // execute the drag
-            if(gd.dragged) { plotDrag(dcx,dcy,ns,ew) }
-            else { plotDrag(0,0,ns,ew) };
-            return pauseEvent(e2);
-        }
-        window.onmouseup = function(e2) {
-            window.onmousemove = null;
-            window.onmouseup = null;
-            gd.dragging = false;
-            if(gd.dragged) { dragTail(gd) }// finish the drag
-            else if((new Date()).getTime()-mouseDown<DBLCLICKDELAY) {
-                // double click - not on axis ends, but yes on corners
-                if(numClicks==2 && (ns+ew).length!=1) { dragAutoRange() }
-                else if(numClicks==1) { // single click
-                    if(['n','s','e','w'].indexOf(ns+ew)>=0) {// click on ends of ranges
-                        autoGrowInput(dragger);
-                    }
-                }
-            }
-            return pauseEvent(e2);
-        }
-    }
-
-    function plotDrag(dx,dy,ns,ew) {
-        var pw = gd.plotwidth,
-            ph = gd.plotheight;
-        if(ew=='ew'||ns=='ns') {
-            if(ew) {
-                xa.range = [xa._r[0]-dx/xa._m,xa._r[1]-dx/xa._m];
-                Axes.doTicks(gd,'x');
-            }
-            if(ns) {
-                ya.range=[ya._r[0]-dy/ya._m,ya._r[1]-dy/ya._m];
-                Axes.doTicks(gd,'y');
-            }
-            gd.plot.attr('viewBox',(ew ? -dx : 0)+' '+(ns ? -dy : 0)+' '+pw+' '+ph);
-            return;
-        }
-
-        // common transform for dragging one end of an axis
-        // d>0 is compressing scale, d<0 is expanding
-        function dZoom(d) {
-            return 1-((d>=0) ? Math.min(d,0.9) : 1/(1/Math.max(d,-0.3)+3.222))
-        }
-
-        function dz(ax,e,d,p) {
-            ax.range[e]=ax._r[1-e]+(ax._r[e]-ax._r[1-e])/dZoom(d/p);
-            return p*(ax._r[e]-ax.range[e])/(ax._r[e]-ax._r[1-e]);
-        }
-
-        if(ew=='w') { dx = dz(xa,0,dx,pw) }
-        else if(ew=='e') { dx = dz(xa,1,-dx,pw) }
-        else if(!ew) { dx = 0 }
-
-        if(ns=='n') { dy = dz(ya,1,dy,ph) }
-        else if(ns=='s') { dy = dz(ya,0,-dy,ph) }
-        else if(!ns) { dy = 0 }
-
-        gd.plot.attr('viewBox', ((ew=='w')?dx:0)+' '+((ns=='n')?dy:0)+' '+(pw-dx)+' '+(ph-dy));
-        if(ew) { Axes.doTicks(gd,'x') }
-        if(ns) { Axes.doTicks(gd,'y') }
-    }
-
-    function dragAutoRange() {
-        var a={}
-        if(ew) { a['xaxis.autorange']=true }
-        if(ns) { a['yaxis.autorange']=true }
-        relayout(gd,a);
-    }
-
-    return dragger;
-}
-
-function dragTail(gd) {
-    var xa = gd.layout.xaxis,
-        ya = gd.layout.yaxis,
-        a = {}
-    // revert to the previous axis settings, then apply the new ones
-    // through relayout - this lets relayout manage undo/redo
-    if(xa._r[0]!=xa.range[0]) { a['xaxis.range[0]']=xa.range[0] }
-    if(xa._r[1]!=xa.range[1]) { a['xaxis.range[1]']=xa.range[1] }
-    if(ya._r[0]!=ya.range[0]) { a['yaxis.range[0]']=ya.range[0] }
-    if(ya._r[1]!=ya.range[1]) { a['yaxis.range[1]']=ya.range[1] }
-    xa.range=xa._r.slice();
-    ya.range=ya._r.slice();
-    gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
-    relayout(gd,a);
-}
-
-// ----------------------------------------------------
 // Titles and text inputs
 // ----------------------------------------------------
 
+// makeTitles - (re)draw titles on the axes and plot
+// title can be 'xtitle', 'ytitle', 'gtitle',
+//  or '' to draw all
 function makeTitles(gd,title) {
     var gl=gd.layout,gm=gd.margin;
     var titles={
-        'xtitle':{x: (gl.width+gm.l-gm.r)/2,
+        'xtitle':{
+            x: (gl.width+gm.l-gm.r)/2,
             y: gl.height+(gd.lh<0 ? gd.lh : 0) - 14*0.75,
             w: gd.plotwidth/2, h: 14,
-            cont: gl.xaxis, name: 'X axis',
+            cont: gl.xaxis,
+            name: 'X axis',
             font: gl.xaxis.titlefont.family || gl.font.family || 'Arial',
             fontSize: gl.xaxis.titlefont.size || (gl.font.size*1.2) || 14,
             fontColor: gl.xaxis.titlefont.color || gl.font.color || '#000',
-            transform: '', attr: {}},
-        'ytitle':{x: 20-(gd.lw<0 ? gd.lw : 0),
+            transform: '',
+            attr: {}
+        },
+        'ytitle':{
+            x: 20-(gd.lw<0 ? gd.lw : 0),
             y: (gl.height+gm.t-gm.b)/2,
             w: 14, h: gd.plotheight/2,
-            cont: gl.yaxis, name: 'Y axis',
+            cont: gl.yaxis,
+            name: 'Y axis',
             font: gl.yaxis.titlefont.family || gl.font.family || 'Arial',
             fontSize: gl.yaxis.titlefont.size || (gl.font.size*1.2) || 14,
             fontColor: gl.yaxis.titlefont.color || gl.font.color || '#000',
-            transform: 'rotate(-90,x,y)', attr: {center: 0}},
-        'gtitle':{x: gl.width/2, y: gl.margin.t/2,
+            transform: 'rotate(-90,x,y)',
+            attr: {center: 0}
+        },
+        'gtitle':{
+            x: gl.width/2, y: gl.margin.t/2,
             w: gl.width/2, h: 16,
-            cont: gl, name: 'Plot',
+            cont: gl,
+            name: 'Plot',
             font: gl.titlefont.family || gl.font.family || 'Arial',
             fontSize: gl.titlefont.size || gl.font.size*1.4 || 16,
             fontColor: gl.titlefont.color || gl.font.color || '#000',
-            transform: '', attr: {}}};
+            transform: '',
+            attr: {}
+        }
+    }
+
     for(k in titles){
         if(title==k || title==''){
             var t=titles[k];
@@ -2200,17 +1497,19 @@ function makeTitles(gd,title) {
                 .attr('fill',t.fontColor)
                 .attr('text-anchor','middle')
                 .attr('transform',t.transform.replace('x',t.x).replace('y',t.y))
-            if(gd.mainsite)
-                el.on('click',function(){autoGrowInput(this)});
+            // don't allow editing on embedded graphs
+            if(gd.mainsite) { el.on('click',function(){autoGrowInput(this)}) }
 
             var txt=t.cont.title;
-            if(txt.match(/^Click to enter (Plot|X axis|Y axis) title$/))
-                if(gd.mainsite) el.style('fill','#999'); // cues in gray
-                else txt=''; // don't show cues in embedded plots
+            if(txt.match(/^Click to enter (Plot|X axis|Y axis) title$/)) {
+                if(gd.mainsite) { el.style('fill','#999') } // cues in gray
+                else { txt='' } // don't show cues in embedded plots
+            }
 
-            if(txt)
+            if(txt) {
                 el.each(function(){styleText(this,txt+ (!t.cont.unit ? '' : (' ('+t.cont.unit+')')))});
-            else if(gd.mainsite)
+            }
+            else if(gd.mainsite) {
                 el.text('Click to enter '+t.name+' title')
                     .style('opacity',1)
                     .on('mouseover',function(){d3.select(this).transition().duration(100).style('opacity',1);})
@@ -2218,7 +1517,8 @@ function makeTitles(gd,title) {
                   .transition()
                     .duration(2000)
                     .style('opacity',0);
-            else el.remove();
+            }
+            else { el.remove() }
 
             // move labels out of the way, if possible, when tick labels interfere
             var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paper.node().getBoundingClientRect();
@@ -2528,6 +1828,7 @@ function annotation(gd,index,opt,value) {
     if(!options.arrowcolor) { options.arrowcolor = '' }
     if(!$.isNumeric(options.arrowhead)) { options.arrowhead=1 }
     if(!$.isNumeric(options.arrowsize)) { options.arrowsize=1 }
+    if(!options.tag) { options.tag='' }
     if(!options.text) { options.text=((options.showarrow && (options.text=='')) ? '' : 'new text') }
     if(!options.font) { options.font={family:'',size:0,color:''} }
 
@@ -2541,6 +1842,7 @@ function annotation(gd,index,opt,value) {
     // create the components
     var ann = gd.paper.append('svg')
         .attr('class','annotation')
+        .attr('data-cmmt',options.tag)
         .call(setPosition,0,0)
         .attr('data-index',String(index));
     var abb = ann.node().getBoundingClientRect();
@@ -2556,6 +1858,7 @@ function annotation(gd,index,opt,value) {
     if(!options.align) options.align='center';
     var anntext = ann.append('text')
         .attr('class','annotation')
+        .attr('data-cmmt',options.tag)
         .call(setPosition,0,0)
         .attr('text-anchor',{left:'start', center:'middle', right:'end'}[options.align])
         .attr('font-size',options.font.size||gl.font.size||12)
@@ -2723,9 +2026,11 @@ function annotation(gd,index,opt,value) {
             var strokewidth = options.arrowwidth||borderwidth*2;
             var arrowgroup = gd.paper.append('g')
                 .attr('class','annotation')
+                .attr('data-cmmt',options.tag)
                 .attr('data-index',String(index));
             var arrow = arrowgroup.append('path')
                 .attr('class','annotation')
+                .attr('data-cmmt',options.tag)
                 .attr('data-index',String(index))
                 .attr('d','M'+ax0+','+ay0+'L'+ax+','+ay)
                 .attr('stroke-width',strokewidth)
@@ -2733,6 +2038,7 @@ function annotation(gd,index,opt,value) {
             arrowhead(arrow,options.arrowhead,'end',options.arrowsize);
             var arrowdrag = arrowgroup.append('path')
                 .attr('class','annotation anndrag')
+                .attr('data-cmmt',options.tag)
                 .attr('data-index',String(index))
                 .attr('d','M3,3H-3V-3H3ZM0,0L'+(ax0-ax)+','+(ay0-ay))
                 .attr('transform','translate('+ax+','+ay+')')
@@ -2778,8 +2084,9 @@ function annotation(gd,index,opt,value) {
     }
     if(options.showarrow) { drawArrow(0,0) }
 
-    // user dragging the annotation
+    // user dragging the annotation (text, not arrow)
     if(gd.mainsite) { ann.node().onmousedown = function(e) {
+
         if(dragClear(gd)) return true; // deal with other UI elements, and allow them to cancel dragging
 
         var eln=this,
@@ -2824,28 +2131,6 @@ function annotation(gd,index,opt,value) {
     }}
 }
 
-// for automatic alignment on dragging, <1/3 means left align, >2/3 means right,
-// and between is center. Pick the right fraction based on where you are, and
-// return the fraction corresponding to that position on the object
-function dragAlign(v,dv,v0,v1) {
-    var vmin = (v-v0)/(v1-v0), vmax = vmin+dv/(v1-v0), vc = (vmin+vmax)/2;
-    if(vmin<(2/3)-vc) { return vmin }
-    if(vmax>(4/3)-vc) { return vmax }
-    return vc;
-}
-
-// set cursors pointing toward the closest corner/side, to indicate alignment
-// x and y are 0-1, fractions of the plot area
-// x or y = 100 means 'outside the plot area, auto-increase margin'
-function dragCursors(x,y){
-    if(Math.abs(x)==100) { return 'col-resize' }
-    if(Math.abs(y)==100) { return 'row-resize' }
-    return [['sw-resize','s-resize','se-resize'],
-            ['w-resize','move','e-resize'],
-            ['nw-resize','n-resize','ne-resize']
-        ][constrain(Math.floor(y*3),0,2)][constrain(Math.floor(x*3),0,2)];
-}
-
 // add arrowhead(s) to a path or line d3 element el3
 // style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none
 // ends is 'start', 'end' (default), 'start+end'
@@ -2886,6 +2171,7 @@ function arrowhead(el3,style,ends,mag) {
         if(style>5) { rot=0 } // don't rotate square or circle
         d3.select(el.parentElement).append('path')
             .attr('class',el3.attr('class'))
+            .attr('data-cmmt',el3.attr('data-cmmt'))
             .attr('data-index',el3.attr('data-index'))
             .style('fill',stroke)
             .style('fill-opacity',opacity)
@@ -2919,8 +2205,6 @@ function allArrowheads(container){
         } });
 }
 
-function constrain(v,v0,v1) { return Math.max(v0,Math.min(v1,v)) }
-
 // look for intersection of two line segments (1->2 and 3->4) - returns array [x,y] if they do, null if not
 // return the intersection and the fraction of the way from 1->2 (t) and 3->4 (u)
 function line_intersect(x1,y1,x2,y2,x3,y3,x4,y4) {
@@ -2932,188 +2216,6 @@ function line_intersect(x1,y1,x2,y2,x3,y3,x4,y4) {
         u=(b*d-a*e)/det;
     if(u<0 || u>1 || t<0 || t>1) { return null } // segments do not intersect
     return {x:x1+a*t, y:y1+d*t};
-}
-
-// since our drag events cancel event bubbling, need to explicitly deal with other elements
-function dragClear(gd) {
-    // explicitly disable dragging when a popover is present
-    if($('.popover').length) { return true }
-    // because we cancel event bubbling, explicitly trigger input blur event.
-    if(gd.input) { gd.input.trigger('blur') }
-    return false;
-}
-
-// -----------------------------------------------------
-// Auto-grow text input, for editing graph items
-// from http://jsbin.com/ahaxe, heavily edited
-// -----------------------------------------------------
-
-// eln - the DOM element to edit
-function autoGrowInput(eln) {
-    var gd = $(eln).parents('.ui-tabs-panel')[0],
-        gl = gd.layout,
-        el3 = d3.select(eln),
-        cls = el3.attr('class'), // use the class to determine what this element is
-        ref=$(eln),
-        property, // the property to set (a nestedProperty object)
-        options = {maxWidth: 1000, minWidth: 20},
-        fontCss={},
-        mode =  (cls.slice(1,6)=='title') ? 'title' :
-                (cls.slice(0,4)=='drag') ? 'drag' :
-                (cls.slice(0,6)=='legend') ? 'legend' :
-                (cls.slice(0,10)=='annotation') ? 'annotation' : '';
-
-    // TODO: would like to leave tooltip visible longer but then it loses its
-    // parent... how to avoid?
-    $(eln).tooltip('destroy');
-
-    if(!mode || (!gd.mainsite && mode!='drag')) {
-        console.log('oops, autoGrowInput error',cls,eln);
-        return;
-    }
-
-    // are we editing a title?
-    if(mode=='title') {
-        property = nestedProperty(gl,{x:'xaxis.', y:'yaxis.', g:''}[cls.charAt(0)]+'title');
-        // if box is initially empty, it's cue text so we can't grab its properties:
-        // so make a dummy element to get the right properties; it will be deleted
-        // immediately after grabbing properties.
-        if($.trim(property.get())=='') {
-            el3.remove();
-            property.set('.'); // very narrow string, so we can ignore its width
-            makeTitles(gd,cls);
-            property.set('');
-            el3=gd.paper.select('.'+cls);
-            eln=el3.node();
-        }
-        options.align = cls=='ytitle' ? 'left' : 'center';
-    }
-    // how about an axis endpoint?
-    else if(mode=='drag') {
-        var axletter = (['n','s'].indexOf(cls.charAt(5))!=-1) ? 'y' : 'x',
-            ax = gl[axletter+'axis'];
-            end = (['s','w'].indexOf(cls.charAt(5))!=-1) ? 0 : 1;
-        property = nestedProperty(gl,axletter+'axis.range['+end+']');
-        options.align = (cls=='drag edrag') ? 'right' : 'left';
-        ref=$(gd).find('.xtitle'); // font properties reference
-    }
-    // legend text?
-    else if(mode=='legend') {
-        var tn = Number(cls.split('-')[1]);
-        property = nestedProperty(gd.data[tn],'name'); // TODO: isn't this sposed to be .text?
-        options.align = 'left';
-    }
-    // annotation
-    else if(mode=='annotation') {
-        var an = Number(ref.parent().attr('data-index'));
-        property = nestedProperty(gl,'annotations['+an+'].text');
-        options.align = 'center';
-    }
-
-    var fa=['font-size','font-family','font-weight','font-style','font-stretch',
-        'font-variant','letter-spacing','word-spacing'];
-    var fapx=['font-size','letter-spacing','word-spacing'];
-    for(i in fa) {
-        var ra=ref.attr(fa[i]);
-        if(fapx.indexOf(fa[i])>=0 && Number(ra)>0) { ra+='px' }
-        if(ra) { fontCss[fa[i]]=ra }
-    }
-
-    options.comfortZone = (Number(String(fontCss['font-size']).split('px')[0]) || 20) + 3;
-
-    var eltrans=el3.attr('transform'),
-        bbox=eln.getBoundingClientRect(),
-        input = $('<input/>').appendTo(gd); // TODO: replace with textarea so we can multiline it
-    gd.input=input;
-
-    // first put the input box at 0,0, then calculate the correct offset vs orig. element
-    input.css(fontCss).css({position:'absolute', top:0, left:0, 'z-index':6000});
-
-    if(mode=='drag') {
-        // show enough digits to specify the position to about a pixel, but not more
-        var v=property.get(), diff=Math.abs(v-ax.range[1-end]);
-        if(ax.type=='date'){
-            input.val(ms2DateTime(v,diff));
-        }
-        else if(ax.type=='log') {
-            var dig=Math.ceil(Math.max(0,-Math.log(diff)/Math.LN10))+3;
-            input.val(d3.format('.'+String(dig)+'g')(Math.pow(10,v)));
-        }
-        else { // linear numeric (or category... but just show numbers here)
-            var dig=Math.floor(Math.log(Math.abs(v))/Math.LN10)-Math.floor(Math.log(diff)/Math.LN10)+4;
-            input.val(d3.format('.'+String(dig)+'g')(v));
-        }
-    }
-    else { input.val($.trim(property.get()).replace(/(\r\n?|\n\r?)/g,'<br>')) }
-
-    var val = input.val(),
-        testSubject = $('<tester/>').css({
-            position: 'absolute',
-            top: -9999,
-            left: -9999,
-            width: 'auto',
-            whiteSpace: 'nowrap'
-        })
-        .css(fontCss)
-        .insertAfter(input)
-        .html(escaped(val));
-
-    var testWidth=function(){
-        return constrain(testSubject.width()+options.comfortZone,options.minWidth,options.maxWidth)
-    }
-    input.width(testWidth());
-
-    var ibbox=input[0].getBoundingClientRect(),ileft=bbox.left-ibbox.left;
-    input.css('top',(bbox.top-ibbox.top+(bbox.height-ibbox.height)/2)+'px');
-    if(options.align=='right') ileft+=bbox.width-ibbox.width;
-    else if(options.align=='center') ileft+=(bbox.width+options.comfortZone-ibbox.width)/2;
-    input.css('left',ileft+'px');
-
-    var leftshift={left:0, center:0.5, right:1}[options.align];
-    var left0=input.position().left+input.width()*leftshift;
-
-    // for titles, take away the existing one as soon as the input box is made
-    if(mode=='annotation') {
-        gd.paper.selectAll('svg.annotation[data-index="'+an+'"]').remove();
-    }
-    else if(mode!='drag') { gd.paper.selectAll('[class="'+cls+'"]').remove() }
-    input[0].select();
-
-    var removeInput=function(){
-        input.remove();
-        testSubject.remove();
-        gd.input=null;
-    }
-
-    input.bind('keyup keydown blur update',function(e) {
-        var valold=val;
-        val=input.val();
-        var v = $.trim(val);
-        if(!gd.input || !gl) { return } // occasionally we get two events firing...
-
-        // leave the input or press return: accept the change
-        if((e.type=='blur') || (e.type=='keydown' && e.which==13)) {
-            if(mode=='drag') {
-                v = ax.c2l(ax.type=='category' ? v : Axes.convertToNums(v,ax));
-                if(!$.isNumeric(v)) { return }
-            }
-            if(mode=='legend') { restyle(gd,property.astr,v,tn) }
-            else { relayout(gd,property.astr,v) }
-            removeInput();
-        }
-        // press escape: revert the change
-        else if(e.type=='keydown' && e.which==27) {
-            if(mode=='title') { makeTitles(gd,cls) }
-            else if(mode=='legend') { legend(gd) }
-            removeInput();
-        }
-        else if(val!=valold) {
-            // If content has changed, enter in testSubject and update input width & position
-            testSubject.html(escaped(val));
-            var newWidth = testWidth();
-            input.css({width: newWidth, left: left0-newWidth*leftshift});
-        }
-    });
 }
 
 // ----------------------------------------------------
@@ -3133,6 +2235,9 @@ function autoGrowInput(eln) {
 
 SPECIALCHARS={'mu':'\u03bc','times':'\u00d7','plusmn':'\u00b1'}
 
+// styleText - make styled svg text in the given node
+//      sn - the node to contain the text
+//      t - the (pseudo-HTML) styled text as a string
 function styleText(sn,t) {
     if(t===undefined) { return }
     var s=d3.select(sn);
@@ -3213,7 +2318,6 @@ function styleText(sn,t) {
         }
     }
 }
-
 
 // ----------------------------------------------------
 // Graph file operations
@@ -3301,8 +2405,6 @@ function killspin(){
     if(gd && gd.spinner){ gd.spinner.stop() }
     $('.spinner').remove();
 }
-
-
 
 // start the main spinner
 function startspin(parent){
