@@ -2404,6 +2404,7 @@ function killspin(){
     var gd = gettab();
     if(gd && gd.spinner){ gd.spinner.stop() }
     $('.spinner').remove();
+    $('#updatetab').hide();
 }
 
 // start the main spinner
