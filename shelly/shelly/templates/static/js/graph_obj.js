@@ -378,15 +378,20 @@ function plot(divid, data, layout) {
 
     // finish up - spinner and tooltips
     if(typeof positionBrand == 'function') { positionBrand() } // for embedded
-    try{ killspin(); }
-    catch(e){ console.log(e); }
+    killspin(gd);
+
     setTimeout(function(){
         if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false && gd.mainsite){
-            try{ showAlert('graphtips'); }
-            catch(e){ console.log(e); }
+            try{
+                if( firsttimeuser() ) showAlert('graphtips');
+            }
+            catch(e){
+                console.log(e);
+            }
         }
         else if($(gd).find('#graphtips').css('display')=='none'){
-            $(gd).find('#graphtips').fadeIn(); }
+            if( firsttimeuser() ) $(gd).find('#graphtips').fadeIn();
+        }
     },1000);
     plotlylog('+++++++++++++++OUT: plot(divid, data, layout)+++++++++++++++');
     markTime('done plot');
@@ -1212,8 +1217,17 @@ function plotUndoQueue(gd,undoit,redoit,traces) {
         gd.autoplay = false;
         return;
     }
-    gd.undoqueue.splice(gd.undonum,gd.undoqueue.length-gd.undonum,
-        {undo:undoit,redo:redoit,traces:traces});
+    // if we are adding a new item, splice it in so that if there are previously
+    // undone actions after our current position, they get chopped off the queue
+    // in addition to the actions themselves, save the user who did it, and the
+    // timestamp, adjusted to server time
+    gd.undoqueue.splice(gd.undonum,gd.undoqueue.length-gd.undonum, {
+        undo: undoit,
+        redo: redoit,
+        traces: traces,
+        user: user,
+        ts: ms2DateTime(new Date().getTime()-userobj.clientoffset).substr(0,19)
+    });
     gd.undonum++;
 }
 
@@ -2393,72 +2407,3 @@ function stripSrc(d) {
     }
     return o;
 }
-
-// kill the main spinner
-function killspin(){
-    var gd = gettab();
-    if(gd && gd.spinner){ gd.spinner.stop() }
-    $('.spinner').remove();
-}
-
-// start the main spinner
-function startspin(parent){
-    if(parent===undefined){ var parent=gettab(); }
-    // big spinny
-    var opts = {
-        lines: 17, // The number of lines to draw
-        length: 30, // The length of each line _30
-        width: 6, // The line thickness
-        radius: 37, // The radius of the inner circle
-        corners: 1, // Corner roundness (0..1)
-        rotate: 0, // The rotation offset
-        color: '#000', // #rgb or #rrggbb
-        speed: 1, // Rounds per second
-        trail: 60, // Afterglow percentage
-        shadow: false, // Whether to render a shadow
-        hwaccel: false, // Whether to use hardware acceleration
-        className: 'spinner', // The CSS class to assign to the spinner
-        zIndex: 2e9, // The z-index (defaults to 2000000000)
-        top: 'auto', // Top position relative to parent in px
-        left: 'auto' // Left position relative to parent in px
-    };
-    var spinner=new Spinner(opts).spin(parent);
-    parent.spinner=spinner;
-}
-
-// start a small spinner
-function tinyspin(parent){
-    if(parent===undefined){ var parent=gettab(); }
-    // lil spinny
-    var opts = {
-      lines: 13, // The number of lines to draw
-      length: 5, // The length of each line
-      width: 2, // The line thickness
-      radius: 5, // The radius of the inner circle
-      corners: 0.6, // Corner roundness (0..1)
-      rotate: 0, // The rotation offset
-      direction: 1, // 1: clockwise, -1: counterclockwise
-      color: '#000', // #rgb or #rrggbb
-      speed: 1, // Rounds per second
-      trail: 60, // Afterglow percentage
-      shadow: false, // Whether to render a shadow
-      hwaccel: false, // Whether to use hardware acceleration
-      className: 'spinner', // The CSS class to assign to the spinner
-      zIndex: 2e9, // The z-index (defaults to 2000000000)
-      top: '55', // Top position relative to parent in px
-      left: '80' // Left position relative to parent in px
-    };
-    var spinner=new Spinner(opts).spin(parent);
-    parent.spinner=spinner;
-}
-
-function notifier(text,tm){
-    var n = $('<div class="alert notifier" style="display:none;">'+
-        '<button class="close" data-dismiss="alert" style="opacity:1;text-shadow:none;color:white;">×</button>'+
-        '<br><p>'+text+'</p></div>');
-    n.appendTo('.middle-center,#embedded_graph')
-        .fadeIn(2000)
-        .delay(tm=='long' ? 2000 : 1)
-        .fadeOut(2000,function(){ n.remove() });
-}
-
