@@ -382,11 +382,16 @@ function plot(divid, data, layout) {
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false && gd.mainsite){
-            try{ showAlert('graphtips'); }
-            catch(e){ console.log(e); }
+            try{
+                if( firsttimeuser() ) showAlert('graphtips');
+            }
+            catch(e){
+                console.log(e);
+            }
         }
         else if($(gd).find('#graphtips').css('display')=='none'){
-            $(gd).find('#graphtips').fadeIn(); }
+            if( firsttimeuser() ) $(gd).find('#graphtips').fadeIn();
+        }
     },1000);
     plotlylog('+++++++++++++++OUT: plot(divid, data, layout)+++++++++++++++');
     markTime('done plot');
@@ -2402,4 +2407,3 @@ function stripSrc(d) {
     }
     return o;
 }
-
