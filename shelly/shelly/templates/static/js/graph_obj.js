@@ -378,7 +378,7 @@ function plot(divid, data, layout) {
 
     // finish up - spinner and tooltips
     if(typeof positionBrand == 'function') { positionBrand() } // for embedded
-    killspin(gd);
+    delMessage('Loading');
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false && gd.mainsite){
@@ -2335,7 +2335,7 @@ function styleText(sn,t) {
 // ------------------------------- graphToGrid
 
 function graphToGrid(){
-    startspin();
+    addMessage('Loading File');
     var gd=gettab(),
         csrftoken=$.cookie('csrftoken');
     if(gd.fid !== undefined && gd.fid !='') {
