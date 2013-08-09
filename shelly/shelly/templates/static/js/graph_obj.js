@@ -378,7 +378,7 @@ function plot(divid, data, layout) {
 
     // finish up - spinner and tooltips
     if(typeof positionBrand == 'function') { positionBrand() } // for embedded
-    killspin(gd);
+    delMessage('Loading');
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false && gd.mainsite){
@@ -2335,18 +2335,13 @@ function styleText(sn,t) {
 // ------------------------------- graphToGrid
 
 function graphToGrid(){
-    startspin();
-    var gd=gettab(),
-        csrftoken=$.cookie('csrftoken');
-    if(gd.fid !== undefined && gd.fid !='') {
-        $.post("/pullf/", {'csrfmiddlewaretoken':csrftoken, 'fid': gd.fid, 'ft':'grid'}, fileResp);
-    }
+    var gd=gettab();
+    if(gd.fid !== undefined && gd.fid !='') { pullf({fid: gd.fid, ft:'grid'}) }
     else {
-        var data = [];
-        for(d in gd.data) { data.push(stripSrc(gd.data[d])) }
+        var data = gd.data.map(function(gdd){return stripSrc(gdd)});
         plotlylog('~ DATA ~');
         plotlylog(data);
-        $.post("/pullf/", {'csrfmiddlewaretoken':csrftoken, 'data': JSON.stringify({'data':data}), 'ft':'grid'}, fileResp);
+        pullf({data: JSON.stringify({'data':data}), ft:'grid'});
     }
 }
 
