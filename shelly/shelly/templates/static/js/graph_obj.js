@@ -1206,6 +1206,7 @@ function propSplit(s) {
 // undoit and redoit are attr->val objects to pass to restyle or relayout
 // TODO: disable/enable undo and redo buttons appropriately
 function plotUndoQueue(gd,undoit,redoit,traces) {
+    if(!gd.mainsite) { user=''; userobj = {clientoffset:0} }
     // make sure we have the queue and our position in it
     if(!$.isArray(gd.undoqueue) || !$.isNumeric(gd.undonum)) {
         gd.undoqueue=[];
