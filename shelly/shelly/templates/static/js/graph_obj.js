@@ -1206,6 +1206,7 @@ function propSplit(s) {
 // undoit and redoit are attr->val objects to pass to restyle or relayout
 // TODO: disable/enable undo and redo buttons appropriately
 function plotUndoQueue(gd,undoit,redoit,traces) {
+    if(!gd.mainsite) { user=''; userobj = {clientoffset:0} }
     // make sure we have the queue and our position in it
     if(!$.isArray(gd.undoqueue) || !$.isNumeric(gd.undonum)) {
         gd.undoqueue=[];
@@ -1277,11 +1278,11 @@ function plotAutoSize(gd,aobj) {
 // check whether to resize a tab (if it's a plot) to the container
 function plotResize(gd) {
     killPopovers();
-    if(gd===undefined) { return }
-    if(gd.tabtype=='plot') {
+    if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         $(gd).find('.modebar').remove();
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer) }
         gd.redrawTimer = setTimeout(function(){
+            if($(gd).css('display')=='none') { return }
             if(gd.layout && gd.layout.autosize) {
                 gd.autoplay = true; // don't include this relayout in the undo queue
                 relayout(gd, {autosize:true});
