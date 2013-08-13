@@ -1278,11 +1278,11 @@ function plotAutoSize(gd,aobj) {
 // check whether to resize a tab (if it's a plot) to the container
 function plotResize(gd) {
     killPopovers();
-    if(gd===undefined) { return }
-    if(gd.tabtype=='plot') {
+    if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         $(gd).find('.modebar').remove();
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer) }
         gd.redrawTimer = setTimeout(function(){
+            if($(gd).css('display')=='none') { return }
             if(gd.layout && gd.layout.autosize) {
                 gd.autoplay = true; // don't include this relayout in the undo queue
                 relayout(gd, {autosize:true});
