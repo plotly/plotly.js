@@ -103,7 +103,7 @@ heatmap.calc = function(gd,gdc) {
 // gdc ("graph div curve") = data object for a single heatmap
 // cd "calcdata" - contains styling information
 // Example usage:
-// plot( gettab().id, [{'type':'heatmap','z':[[1,2],[3,4]], 'x0':2, 'y0':2, 'dx':0.5, 'dy':0.5}] )
+// plot(gd, [{'type':'heatmap','z':[[1,2],[3,4]], 'x0':2, 'y0':2, 'dx':0.5, 'dy':0.5}])
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 heatmap.plot = function(gd,cd) {
     var t = cd[0].t,
@@ -328,7 +328,7 @@ function insert_colorbar(gd,gdc,cb_id) {
 
     if(gd.layout.margin.r<200){ // shouldn't get here anymore... take care of this in newPlot
         console.log('warning: called relayout from insert_colorbar');
-        relayout(gettab(),'margin.r',200);
+        relayout(gd,'margin.r',200);
     }
 
     var scl=gdc.scl;

@@ -129,7 +129,7 @@ function defaultLayout(){
         width:GRAPH_WIDTH,
         height:GRAPH_HEIGHT,
         autosize:'initial', // after initial autosize reverts to true
-        margin:{l:70,r:40,t:60,b:60,pad:2},
+        margin:{l:80,r:60,t:80,b:80,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff',
         barmode:'stack',
@@ -1206,6 +1206,7 @@ function propSplit(s) {
 // undoit and redoit are attr->val objects to pass to restyle or relayout
 // TODO: disable/enable undo and redo buttons appropriately
 function plotUndoQueue(gd,undoit,redoit,traces) {
+    if(!gd.mainsite) { user=''; userobj = {clientoffset:0} }
     // make sure we have the queue and our position in it
     if(!$.isArray(gd.undoqueue) || !$.isNumeric(gd.undonum)) {
         gd.undoqueue=[];
@@ -1232,6 +1233,7 @@ function plotUndoQueue(gd,undoit,redoit,traces) {
 }
 
 function plotUndo(gd) {
+    if(!gd) { gd = gettab() }
     if(!$.isNumeric(gd.undonum) || gd.undonum<=0) { return }
     gd.undonum--;
     var i = gd.undoqueue[gd.undonum];
@@ -1239,6 +1241,7 @@ function plotUndo(gd) {
 }
 
 function plotRedo(gd) {
+    if(!gd) { gd = gettab() }
     if(!$.isNumeric(gd.undonum) || gd.undonum>=gd.undoqueue.length) { return }
     var i = gd.undoqueue[gd.undonum];
     gd.undonum++;
@@ -1277,11 +1280,11 @@ function plotAutoSize(gd,aobj) {
 // check whether to resize a tab (if it's a plot) to the container
 function plotResize(gd) {
     killPopovers();
-    if(gd===undefined) { return }
-    if(gd.tabtype=='plot') {
+    if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         $(gd).find('.modebar').remove();
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer) }
         gd.redrawTimer = setTimeout(function(){
+            if($(gd).css('display')=='none') { return }
             if(gd.layout && gd.layout.autosize) {
                 gd.autoplay = true; // don't include this relayout in the undo queue
                 relayout(gd, {autosize:true});
@@ -1342,6 +1345,7 @@ function newPlot(divid, layout) {
     // Make the graph containers
     gd.paper = gd3.append('svg')
     gd.paperbg = gd.paper.append('rect')
+        .style('fill','none')
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.axlines = {
@@ -1422,8 +1426,9 @@ function layoutStyles(gd) {
     gd.paper
         .call(setSize, gl.width, gl.height);
     gd.paperbg
-        .call(setRect, 0, 0, gl.width, gl.height)
-        .call(fillColor, gl.paper_bgcolor);
+        .call(setRect, 0, 0, gl.width, gl.height);
+    d3.select(gd)
+        .style('background', gl.paper_bgcolor);
     gd.plotbg
         .call(setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
         .call(fillColor, gl.plot_bgcolor);
@@ -1460,7 +1465,7 @@ function makeTitles(gd,title) {
     var titles={
         'xtitle':{
             x: (gl.width+gm.l-gm.r)/2,
-            y: gl.height+(gd.lh<0 ? gd.lh : 0) - 14*0.75,
+            y: gl.height+(gd.lh<0 ? gd.lh : 0) - 14*2.25,
             w: gd.plotwidth/2, h: 14,
             cont: gl.xaxis,
             name: 'X axis',
@@ -1471,7 +1476,7 @@ function makeTitles(gd,title) {
             attr: {}
         },
         'ytitle':{
-            x: 20-(gd.lw<0 ? gd.lw : 0),
+            x: 40-(gd.lw<0 ? gd.lw : 0),
             y: (gl.height+gm.t-gm.b)/2,
             w: 14, h: gd.plotheight/2,
             cont: gl.yaxis,
