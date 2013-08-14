@@ -129,7 +129,7 @@ function defaultLayout(){
         width:GRAPH_WIDTH,
         height:GRAPH_HEIGHT,
         autosize:'initial', // after initial autosize reverts to true
-        margin:{l:70,r:40,t:60,b:60,pad:2},
+        margin:{l:80,r:60,t:80,b:80,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff',
         barmode:'stack',
@@ -1465,7 +1465,7 @@ function makeTitles(gd,title) {
     var titles={
         'xtitle':{
             x: (gl.width+gm.l-gm.r)/2,
-            y: gl.height+(gd.lh<0 ? gd.lh : 0) - 14*0.75,
+            y: gl.height+(gd.lh<0 ? gd.lh : 0) - 14*2.25,
             w: gd.plotwidth/2, h: 14,
             cont: gl.xaxis,
             name: 'X axis',
@@ -1476,7 +1476,7 @@ function makeTitles(gd,title) {
             attr: {}
         },
         'ytitle':{
-            x: 20-(gd.lw<0 ? gd.lw : 0),
+            x: 40-(gd.lw<0 ? gd.lw : 0),
             y: (gl.height+gm.t-gm.b)/2,
             w: 14, h: gd.plotheight/2,
             cont: gl.yaxis,
