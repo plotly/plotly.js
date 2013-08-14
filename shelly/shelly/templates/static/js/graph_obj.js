@@ -1233,6 +1233,7 @@ function plotUndoQueue(gd,undoit,redoit,traces) {
 }
 
 function plotUndo(gd) {
+    if(!gd) { gd = gettab() }
     if(!$.isNumeric(gd.undonum) || gd.undonum<=0) { return }
     gd.undonum--;
     var i = gd.undoqueue[gd.undonum];
@@ -1240,6 +1241,7 @@ function plotUndo(gd) {
 }
 
 function plotRedo(gd) {
+    if(!gd) { gd = gettab() }
     if(!$.isNumeric(gd.undonum) || gd.undonum>=gd.undoqueue.length) { return }
     var i = gd.undoqueue[gd.undonum];
     gd.undonum++;
@@ -1343,6 +1345,7 @@ function newPlot(divid, layout) {
     // Make the graph containers
     gd.paper = gd3.append('svg')
     gd.paperbg = gd.paper.append('rect')
+        .style('fill','none')
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.axlines = {
@@ -1423,8 +1426,9 @@ function layoutStyles(gd) {
     gd.paper
         .call(setSize, gl.width, gl.height);
     gd.paperbg
-        .call(setRect, 0, 0, gl.width, gl.height)
-        .call(fillColor, gl.paper_bgcolor);
+        .call(setRect, 0, 0, gl.width, gl.height);
+    d3.select(gd)
+        .style('background', gl.paper_bgcolor);
     gd.plotbg
         .call(setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
         .call(fillColor, gl.plot_bgcolor);
