@@ -1427,8 +1427,17 @@ function layoutStyles(gd) {
         .call(setSize, gl.width, gl.height);
     gd.paperbg
         .call(setRect, 0, 0, gl.width, gl.height);
-    d3.select(gd)
-        .style('background', gl.paper_bgcolor);
+    // plot background: color the whole div if it's autosized in the main site,
+    // so we don't always have a weird white strip with the "My Data" tab
+    // otherwise color the paperbg rect, so you see the plot the size it's meant to be.
+    if(gl.autosize && gd.mainsite) {
+        d3.select(gd).style('background', gl.paper_bgcolor);
+        gd.paperbg.style('fill','none');
+    }
+    else {
+        d3.select(gd).style('background', '#fff');
+        gd.paperbg.call(fillColor, gl.paper_bgcolor);
+    }
     gd.plotbg
         .call(setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
         .call(fillColor, gl.plot_bgcolor);
