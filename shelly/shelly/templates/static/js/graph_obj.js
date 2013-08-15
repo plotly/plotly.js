@@ -129,7 +129,7 @@ function defaultLayout(){
         width:GRAPH_WIDTH,
         height:GRAPH_HEIGHT,
         autosize:'initial', // after initial autosize reverts to true
-        margin:{l:70,r:40,t:60,b:60,pad:2},
+        margin:{l:80,r:60,t:80,b:80,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff',
         barmode:'stack',
@@ -1233,6 +1233,7 @@ function plotUndoQueue(gd,undoit,redoit,traces) {
 }
 
 function plotUndo(gd) {
+    if(!gd) { gd = gettab() }
     if(!$.isNumeric(gd.undonum) || gd.undonum<=0) { return }
     gd.undonum--;
     var i = gd.undoqueue[gd.undonum];
@@ -1240,6 +1241,7 @@ function plotUndo(gd) {
 }
 
 function plotRedo(gd) {
+    if(!gd) { gd = gettab() }
     if(!$.isNumeric(gd.undonum) || gd.undonum>=gd.undoqueue.length) { return }
     var i = gd.undoqueue[gd.undonum];
     gd.undonum++;
@@ -1343,6 +1345,7 @@ function newPlot(divid, layout) {
     // Make the graph containers
     gd.paper = gd3.append('svg')
     gd.paperbg = gd.paper.append('rect')
+        .style('fill','none')
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.axlines = {
@@ -1423,8 +1426,18 @@ function layoutStyles(gd) {
     gd.paper
         .call(setSize, gl.width, gl.height);
     gd.paperbg
-        .call(setRect, 0, 0, gl.width, gl.height)
-        .call(fillColor, gl.paper_bgcolor);
+        .call(setRect, 0, 0, gl.width, gl.height);
+    // plot background: color the whole div if it's autosized in the main site,
+    // so we don't always have a weird white strip with the "My Data" tab
+    // otherwise color the paperbg rect, so you see the plot the size it's meant to be.
+    if(gl.autosize && gd.mainsite) {
+        d3.select(gd).style('background', gl.paper_bgcolor);
+        gd.paperbg.style('fill','none');
+    }
+    else {
+        d3.select(gd).style('background', '#fff');
+        gd.paperbg.call(fillColor, gl.paper_bgcolor);
+    }
     gd.plotbg
         .call(setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
         .call(fillColor, gl.plot_bgcolor);
@@ -1461,7 +1474,7 @@ function makeTitles(gd,title) {
     var titles={
         'xtitle':{
             x: (gl.width+gm.l-gm.r)/2,
-            y: gl.height+(gd.lh<0 ? gd.lh : 0) - 14*0.75,
+            y: gl.height+(gd.lh<0 ? gd.lh : 0) - 14*2.25,
             w: gd.plotwidth/2, h: 14,
             cont: gl.xaxis,
             name: 'X axis',
@@ -1472,7 +1485,7 @@ function makeTitles(gd,title) {
             attr: {}
         },
         'ytitle':{
-            x: 20-(gd.lw<0 ? gd.lw : 0),
+            x: 40-(gd.lw<0 ? gd.lw : 0),
             y: (gl.height+gm.t-gm.b)/2,
             w: 14, h: gd.plotheight/2,
             cont: gl.yaxis,
