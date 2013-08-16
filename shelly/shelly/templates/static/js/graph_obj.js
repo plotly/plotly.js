@@ -1260,9 +1260,9 @@ function plotDo(gd,aobj,traces) {
 }
 
 function plotAutoSize(gd,aobj) {
-    var plotBB = gd.paper.node().getBoundingClientRect();
+    var plotBB = gd.paperdiv.node().getBoundingClientRect();
     var gdBB = gd.getBoundingClientRect();
-    var ftBB = $('#filetab')[0].getBoundingClientRect();
+    var ftBB = $('#filetab').length ? $('#filetab')[0].getBoundingClientRect() : {width:0};
     var newheight = Math.round(gdBB.bottom-plotBB.top);
     var newwidth = Math.round((ftBB.width ? ftBB.left : gdBB.right) - plotBB.left);
     if(Math.abs(gd.layout.width-newwidth)>1 || Math.abs(gd.layout.height-newheight)>1) {
@@ -1306,7 +1306,8 @@ function newPlot(divid, layout) {
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
 
-    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid,
+        gd3=d3.select(gd);
     if(!layout) layout={};
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
@@ -1315,19 +1316,22 @@ function newPlot(divid, layout) {
     // first check if we can save the toolbars
     if(($(gd).children('.svgcontainer').length==1) && (!gd.mainsite ||
         ($(gd).children('.graphbar').length==1 && $(gd).children('.demobar').length==1))) {
-            $(gd).children('.svgcontainer').remove()
+            $(gd).children('.svgcontainer').children('svg').remove()
     }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
         // TODO - remove tooltips here
-        console.log('full plot redraw');
         gd.innerHTML='';
         if(gd.mainsite) { graphbar(gd) }
+        // Make the outer graph container
+        gd.paperdiv = gd3.append('div')
+            .classed('svgcontainer',true)
+            .style('position','relative');
     }
 
     // Get the layout info - take the default and update it with layout arg
     gd.layout=updateObject(defaultLayout(),layout);
 
-    var gl=gd.layout, gd3=d3.select(gd), xa=gl.xaxis, ya=gl.yaxis;
+    var gl=gd.layout, xa=gl.xaxis, ya=gl.yaxis;
     Axes.setTypes(gd);
 
     // initial autosize
@@ -1339,14 +1343,8 @@ function newPlot(divid, layout) {
         gd.paper.remove();
         gl.autosize=true;
     }
-
     // Make the graph containers
-    gd.paperdiv = gd3.append('div')
-        .classed('svgcontainer',true)
-        .style('position','relative');
     gd.paper = gd.paperdiv.append('svg');
-//     gd.paperbg = gd.paper.append('rect')
-//         .style('fill','none')
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.axlines = {
@@ -1422,11 +1420,8 @@ function layoutStyles(gd) {
     gd.plotwidth=gl.width-gm.l-gm.r;
     gd.plotheight=gl.height-gm.t-gm.b;
 
-    // sizing: we now have 3 elements all explicitly the same size...
-    // TODO: can probably do better than that, but it's OK for now.
     gd.paperdiv.style({width:gl.width+'px', height:gl.height+'px'});
     gd.paper.call(setSize, gl.width, gl.height);
-//     gd.paperbg.call(setRect, 0, 0, gl.width, gl.height);
 
     // plot background: color the whole div if it's autosized in the main site,
     // so we don't always have a weird white strip with the "My Data" tab
