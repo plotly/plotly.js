@@ -1313,13 +1313,13 @@ function newPlot(divid, layout) {
 
     // destroy any plot that already exists in this div
     // first check if we can save the toolbars
-    if(gd.mainsite ? ($(gd).children('.graphbar').length==1 &&
-            $(gd).children('.demobar').length==1 &&
-            $(gd).children('.svgcontainer').length==1 &&
-            $(gd).children().length>=3) : /* 4th child is graph tips alert div... */
-        ($(gd).children('.svgcontainer').length==1)
-        ) { $(gd).children('.svgcontainer').remove() }
+    if(($(gd).children('.svgcontainer').length==1) && (!gd.mainsite ||
+        ($(gd).children('.graphbar').length==1 && $(gd).children('.demobar').length==1))) {
+            $(gd).children('.svgcontainer').remove()
+    }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
+        // TODO - remove tooltips here
+        console.log('full plot redraw');
         gd.innerHTML='';
         if(gd.mainsite) { graphbar(gd) }
     }
