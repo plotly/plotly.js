@@ -1542,7 +1542,7 @@ function makeTitles(gd,title) {
             else { el.remove() }
 
             // move labels out of the way, if possible, when tick labels interfere
-            var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paper.node().getBoundingClientRect();
+            var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paperdiv.node().getBoundingClientRect();
             if(k=='xtitle'){
                 var labels=gd.paper.selectAll('text.xtick')[0], ticky=0;
                 for(var i=0;i<labels.length;i++){
@@ -1752,7 +1752,7 @@ function legend(gd) {
             if(Math.abs(dy)<MINDRAG) { dy=0 }
             if(dx||dy) { gd.dragged = true }
             el3.call(setPosition, x0+dx, y0+dy);
-            var pbb = gd.paper.node().getBoundingClientRect();
+            var pbb = gd.paperdiv.node().getBoundingClientRect();
 
             // drag to within a couple px of edge to take the legend outside the plot
             if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100 }
@@ -1855,7 +1855,7 @@ function annotation(gd,index,opt,value) {
 
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
-    var paperbb = gd.paper.node().getBoundingClientRect(),
+    var paperbb = gd.paperdiv.node().getBoundingClientRect(),
         plotbb = d3.select(gd).select('.nsewdrag').node().getBoundingClientRect(),
         x = plotbb.left-paperbb.left,
         y = plotbb.top-paperbb.top;
