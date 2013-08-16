@@ -177,17 +177,6 @@ var graphInfo = {
 var BARTYPES = ['bar','histogramx','histogramy'];
 var HEATMAPTYPES = ['heatmap','histogram2d'];
 
-// ----------------------------------------------------
-// Main plot-creation function. Note: will call newPlot
-// if necessary to create the framework
-// ----------------------------------------------------
-// inputs:
-//      divid - the id or DOM element of the graph container div
-//      data - array of traces, containing the data and display
-//          information for each trace
-//      layout - object describing the overall display of the plot,
-//          all the stuff that doesn't pertain to any individual trace
-
 function updateTraces(old_data, new_data) {
     var updated = {};
     var res = [];
@@ -207,6 +196,16 @@ function updateTraces(old_data, new_data) {
     return res;
 }
 
+// ----------------------------------------------------
+// Main plot-creation function. Note: will call newPlot
+// if necessary to create the framework
+// ----------------------------------------------------
+// inputs:
+//      divid - the id or DOM element of the graph container div
+//      data - array of traces, containing the data and display
+//          information for each trace
+//      layout - object describing the overall display of the plot,
+//          all the stuff that doesn't pertain to any individual trace
 function plot(divid, data, layout, unique_traces) {
     markTime('in plot')
     plotlylog('+++++++++++++++IN: plot(divid, data, layout)+++++++++++++++');
@@ -217,7 +216,7 @@ function plot(divid, data, layout, unique_traces) {
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
-    // if there is already data on the graph, append the new data 
+    // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if($.isArray(data)) {
@@ -2383,9 +2382,9 @@ function graphToGrid(){
     }
 }
 
-//----------------------------------------------------
-//Utility functions
-//----------------------------------------------------
+// ----------------------------------------------------
+// Utility functions
+// ----------------------------------------------------
 
 uoStack=[];
 // merge objects i and up recursively
