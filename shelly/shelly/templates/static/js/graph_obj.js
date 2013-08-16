@@ -222,7 +222,7 @@ function plot(divid, data, layout, unique_traces) {
     if($.isArray(data)) {
         if(graphwasempty) { gd.data=data }
         else if(unique_traces) {gd.data = updateTraces(gd.data, data)}
-        else { gd.data.push.apply(gd.data,data);
+        else { gd.data.push.apply(gd.data,data);}
         gd.empty=false; // for routines outside graph_obj that want a clean tab
                         // (rather than appending to an existing one) gd.empty
                         // is used to determine whether to make a new tab
