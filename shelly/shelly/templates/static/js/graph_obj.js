@@ -1269,10 +1269,10 @@ function plotAutoSize(gd,aobj) {
         gd.layout.height = newheight;
         gd.layout.width = newwidth;
     }
-    else { // if there's no size change, update layout but don't need to redraw
+    else { // if there's no size change, update layout but only restyle (different element may get margin color)
         delete(aobj.autosize);
         gd.layout.autosize = true;
-        newModeBar(gd);
+        layoutStyles(gd);
     }
     return aobj
 }
@@ -1281,7 +1281,6 @@ function plotAutoSize(gd,aobj) {
 function plotResize(gd) {
     killPopovers();
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
-        $(gd).find('.modebar').remove();
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer) }
         gd.redrawTimer = setTimeout(function(){
             if($(gd).css('display')=='none') { return }
@@ -1289,7 +1288,6 @@ function plotResize(gd) {
                 gd.autoplay = true; // don't include this relayout in the undo queue
                 relayout(gd, {autosize:true});
             }
-            else { newModeBar(gd) }
 
             if(LIT) {
                 hidebox();
@@ -1317,13 +1315,13 @@ function newPlot(divid, layout) {
     // first check if we can save the toolbars
     if(gd.mainsite ? ($(gd).children('.graphbar').length==1 &&
             $(gd).children('.demobar').length==1 &&
-            $(gd).children('svg').length==1 &&
-            $(gd).children().length>=3) : /* 4th child is graph tips alert div, then modebar... */
-        ($(gd).children('svg').length==1)
-        ) { $(gd).children('svg').remove() }
+            $(gd).children('.svgcontainer').length==1 &&
+            $(gd).children().length>=3) : /* 4th child is graph tips alert div... */
+        ($(gd).children('.svgcontainer').length==1)
+        ) { $(gd).children('.svgcontainer').remove() }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
         gd.innerHTML='';
-        if(gd.mainsite) graphbar(gd);
+        if(gd.mainsite) { graphbar(gd) }
     }
 
     // Get the layout info - take the default and update it with layout arg
@@ -1343,9 +1341,12 @@ function newPlot(divid, layout) {
     }
 
     // Make the graph containers
-    gd.paper = gd3.append('svg')
-    gd.paperbg = gd.paper.append('rect')
-        .style('fill','none')
+    gd.paperdiv = gd3.append('div')
+        .classed('svgcontainer',true)
+        .style('position','relative');
+    gd.paper = gd.paperdiv.append('svg');
+//     gd.paperbg = gd.paper.append('rect')
+//         .style('fill','none')
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.axlines = {
@@ -1399,8 +1400,6 @@ function newPlot(divid, layout) {
     dragBox(gd, x2, y2+y1-y0, x1-x0, y0-y1,'n','e');
     dragBox(gd, x0, y1, x1-x0, y0-y1,'s','w');
     dragBox(gd, x2, y1, x1-x0, y0-y1,'s','e');
-
-    newModeBar(gd);
 }
 
 // layoutStyles: styling for plot layout elements
@@ -1423,12 +1422,23 @@ function layoutStyles(gd) {
     gd.plotwidth=gl.width-gm.l-gm.r;
     gd.plotheight=gl.height-gm.t-gm.b;
 
-    gd.paper
-        .call(setSize, gl.width, gl.height);
-    gd.paperbg
-        .call(setRect, 0, 0, gl.width, gl.height);
-    d3.select(gd)
-        .style('background', gl.paper_bgcolor);
+    // sizing: we now have 3 elements all explicitly the same size...
+    // TODO: can probably do better than that, but it's OK for now.
+    gd.paperdiv.style({width:gl.width+'px', height:gl.height+'px'});
+    gd.paper.call(setSize, gl.width, gl.height);
+//     gd.paperbg.call(setRect, 0, 0, gl.width, gl.height);
+
+    // plot background: color the whole div if it's autosized in the main site,
+    // so we don't always have a weird white strip with the "My Data" tab
+    // otherwise color the paperdiv, so you see the plot the size it's meant to be.
+    if(gl.autosize && gd.mainsite) {
+        d3.select(gd).style('background', gl.paper_bgcolor);
+        gd.paperdiv.style('background','transparent');
+    }
+    else {
+        d3.select(gd).style('background', '#fff');
+        gd.paperdiv.style('background', gl.paper_bgcolor);
+    }
     gd.plotbg
         .call(setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
         .call(fillColor, gl.plot_bgcolor);
@@ -1451,6 +1461,8 @@ function layoutStyles(gd) {
         .attr('stroke-width',ylw)
         .call(strokeColor,ya.linecolor);
     makeTitles(gd,'gtitle');
+
+    newModeBar(gd);
 }
 
 // ----------------------------------------------------
