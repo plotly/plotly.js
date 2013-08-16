@@ -187,7 +187,27 @@ var HEATMAPTYPES = ['heatmap','histogram2d'];
 //          information for each trace
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
-function plot(divid, data, layout) {
+
+function updateTraces(old_data, new_data) {
+    var updated = {};
+    var res = [];
+    for (var i=0; i<old_data.length; i++){
+        old_trace = old_data[i];
+        updated[old_trace['name']] = old_trace;
+    }
+    for (var i=0; i<new_data.length; i++){
+        new_trace = new_data[i];
+        updated[new_trace['name']] = new_trace;
+    }
+    var tk = Object.keys(updated);
+    for (var i=0; i<tk.length; i++){
+        var name = tk[i];
+        res.push(updated[name]);
+    }
+    return res;
+}
+
+function plot(divid, data, layout, unique_traces) {
     markTime('in plot')
     plotlylog('+++++++++++++++IN: plot(divid, data, layout)+++++++++++++++');
     // Get the container div: we will store all variables for this plot as
@@ -197,12 +217,13 @@ function plot(divid, data, layout) {
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
-    // if there is already data on the graph, append the new data
+    // if there is already data on the graph, append the new data 
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if($.isArray(data)) {
         if(graphwasempty) { gd.data=data }
-        else { gd.data.push.apply(gd.data,data) }
+        else if(unique_traces) {gd.data = updateTraces(gd.data, data)}
+        else { gd.data.push.apply(gd.data,data);
         gd.empty=false; // for routines outside graph_obj that want a clean tab
                         // (rather than appending to an existing one) gd.empty
                         // is used to determine whether to make a new tab
@@ -2362,9 +2383,9 @@ function graphToGrid(){
     }
 }
 
-// ----------------------------------------------------
-// Utility functions
-// ----------------------------------------------------
+//----------------------------------------------------
+//Utility functions
+//----------------------------------------------------
 
 uoStack=[];
 // merge objects i and up recursively
