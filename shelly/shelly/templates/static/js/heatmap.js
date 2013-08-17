@@ -262,31 +262,37 @@ heatmap.margin = function(gd){
 function get_xy(gd,gdc){
     // Set any missing keys to defaults
     setDefaults(gdc,true);
-    var y = gdc.y,
-        m = gdc.z.length, // num rows
-        ya = gd.layout.yaxis;
-    if($.isArray(y) && (y.length==m+1) && (gdc.type!='histogram2d') && (ya.type!='category')) {
-        y = convertToAxis(y,ya);
+
+    function makeBoundArray(array_in,v0_in,dv_in,numbricks,ax) {
+        if($.isArray(array_in) && (gdc.type!='histogram2d') && (ax.type!='category')) {
+            array_in = Axes.convertToNums(array_in,ax);
+            var len = array_in.length;
+            if(len==numbricks) { // given vals are brick centers
+                if(numbricks==1) { return [array_in[0]-.5,array_in[0]+.5] }
+                else {
+                    var array_out = [1.5*array_in[0]-.5*array_in[1]];
+                    for(var i=1; i<len; i++) {
+                        array_out.push((array_in[i-1]+array_in[i])*.5)
+                    }
+                    array_out.push(1.5*array_in[len-1]-.5*array_in[len-2]);
+                }
+            }
+            else {  // hopefully length==numbricks+1, but do something regardless:
+                    // given vals are brick boundaries
+                return array_in.slice(0,numbricks+1);
+            }
+        }
+        else {
+            var array_out = [],
+                v0 = v0_in ? Axes.convertToNums(v0_in,ax) : 0,
+                dv = dv_in || 1;
+            for(var i=0; i<=numbricks; i++) { array_out.push(v0+dv*(i-0.5)) }
+        }
+        return array_out;
     }
-    else {
-        y=[];
-        var y0 = (typeof(gdc.y0)=='number') ?
-            gdc.y0 : convertToAxis(gdc.y0,ya);
-        for(var i=0; i<=m; i++) { y.push(y0+gdc.dy*(i-0.5)) }
-    }
-    var x = gdc.x,
-        n = gdc.z[0].length, // num cols
-        xa = gd.layout.xaxis;
-    if($.isArray(x) && (x.length!=n+1) && (gdc.type!='histogram2d') && (xa.type!='category')) {
-        x = convertToAxis(x,xa);
-    }
-    else {
-        x=[];
-        var x0 = (typeof(gdc.x0)=='number') ?
-            gdc.x0 : convertToAxis(gdc.x0,xa);
-        for(var i=0; i<=n; i++) { x.push(x0+gdc.dx*(i-0.5)) }
-    }
-    return {x:x,y:y};
+
+    return {x:makeBoundArray(gdc.x,gdc.x0,gdc.dx,gdc.z[0].length,gd.layout.xaxis),
+            y:makeBoundArray(gdc.y,gdc.y0,gdc.dy,gdc.z.length,gd.layout.yaxis)};
 }
 
 // if the heatmap data object is missing any keys, fill them in
