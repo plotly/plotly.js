@@ -40,7 +40,7 @@ function setType(gd,axletter){
     delete ax.isdate;
 
     // delete category list, if there is one, so we start over
-    // to be filled in later by convertToAxis
+    // to be filled in later by convertToNums
     ax.categories = [];
 
     // guess at axis type with the new property format
@@ -194,7 +194,7 @@ axes.convertToNums = function(o,ax){
 }
 
 // setConvert: define the conversion functions for an axis
-// after convertToAxis turns all data to numbers, it's used in 3 ways:
+// after convertToNums turns all data to numbers, it's used in 3 ways:
 //  c: calcdata numbers, not linearized
 //  l: linearized - same as c except for log axes (and other mappings later?)
 //      this is used by ranges, and when we need to know if it's *possible* to
