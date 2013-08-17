@@ -1320,6 +1320,7 @@ function newPlot(divid, layout) {
     }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
         // TODO - remove tooltips here
+        $(gd).find('[rel="tooltip"]').tooltip('destroy');
         gd.innerHTML='';
         if(gd.mainsite) { graphbar(gd) }
         // Make the outer graph container
