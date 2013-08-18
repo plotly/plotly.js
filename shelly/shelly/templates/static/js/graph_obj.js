@@ -1349,12 +1349,7 @@ function newPlot(divid, layout) {
 
     // initial autosize
     if(gl.autosize=='initial') {
-//         gd.paperdiv=gd3.append('svg')
-//             .attr('width',gl.width)
-//             .attr('height',gl.height);
-        console.log('initial autosize');
         plotAutoSize(gd,{});
-//         gd.paper.remove();
         gl.autosize=true;
     }
     // Make the graph containers
