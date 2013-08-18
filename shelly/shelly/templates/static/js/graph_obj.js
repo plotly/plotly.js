@@ -1269,7 +1269,9 @@ function plotAutoSize(gd,aobj) {
         gd.layout.height = newheight;
         gd.layout.width = newwidth;
     }
-    else { // if there's no size change, update layout but only restyle (different element may get margin color)
+    // if there's no size change, update layout but only restyle (different
+    // element may get margin color)
+    else if(gd.layout.autosize!='initial') { // can't call layoutStyles for initial autosize
         delete(aobj.autosize);
         gd.layout.autosize = true;
         layoutStyles(gd);
@@ -1337,11 +1339,7 @@ function newPlot(divid, layout) {
 
     // initial autosize
     if(gl.autosize=='initial') {
-        gd.paper=gd3.append('svg')
-            .attr('width',gl.width)
-            .attr('height',gl.height);
         plotAutoSize(gd,{});
-        gd.paper.remove();
         gl.autosize=true;
     }
     // Make the graph containers
