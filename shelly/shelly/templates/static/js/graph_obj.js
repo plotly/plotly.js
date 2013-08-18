@@ -1331,16 +1331,6 @@ function newPlot(divid, layout) {
             .style('position','relative');
     }
 
-    // destroy calculated vars that may cause problems
-    // TODO: better way to do this? should I be storing these all in some other
-    // object that I can wipe, rather than directly in gd?
-    // I ignored the ones that are reset each time through plot()
-//     gd.lw = undefined; // "legend width" for legends outside the plot area to increase margins
-//     gd.undoqueue = undefined; // action queue
-//     gd.undonum = undefined;
-//     gd.autoplay = undefined; // are we doing an action that doesn't go in undo queue?
-//     gd.axtypesok = undefined; // have we already deduced axis types, so we can skip?
-
     // Get the layout info - take the default and update it with layout arg
     gd.layout=updateObject(defaultLayout(),layout);
 
