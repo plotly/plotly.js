@@ -265,18 +265,15 @@ axes.expandBounds = function(ax,dr,data,serieslen,pad) {
     pad = pad || 0; // optional extra space to give these new data points
     serieslen = serieslen || data.length;
     dr[0] = aggNums(Math.min, $.isNumeric(dr[0]) ? dr[0] : null,
-        data.map(function(v){return ax.c2l(v-pad)}), serieslen);
+        data.map(function(v){return $.isNumeric(v) ? ax.c2l(v-pad) : null}), serieslen);
     dr[1] = aggNums(Math.max, $.isNumeric(dr[1]) ? dr[1] : null,
-        data.map(function(v){return ax.c2l(v+pad)}), serieslen);
+        data.map(function(v){return $.isNumeric(v) ? ax.c2l(v+pad) : null}), serieslen);
 }
 
 // expand data range to include a tight zero (if the data all has one
 // sign and the axis is linear) and a padded opposite bound
 axes.expandWithZero = function(ax,data,serieslen,pad) {
     if(!ax.autorange) { return }
-
-//     if(ax==xa) { tight=xtight; padded=xpadded }
-//     else { tight=ytight; padded=ypadded }
 
     var dr = [null,null];
     axes.expandBounds(ax,dr,data,serieslen,pad);
@@ -678,13 +675,11 @@ function numFormat(v,ax,fmtoverride,hover) {
         // make a dummy axis obj to get the auto rounding and exponent
         var ah = {exponentformat:ax.exponentformat, dtick:Math.abs(v), range:[0,v||1]}
         autoTickRound(ah);
-//         console.log(ah);
         r = ah._tickround+2;
         d = ah._tickexponent;
     }
     var e = Math.pow(10,-r)/2; // 'epsilon' - rounding increment
 
-//     if(!$.isNumeric(d)) { d = ax._tickexponent } // if nonzero, use a common exponent 10^d
     // fmt codes:
     // 'e' (1.2e+6, default)
     // 'E' (1.2E+6)

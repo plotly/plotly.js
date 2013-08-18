@@ -1269,7 +1269,9 @@ function plotAutoSize(gd,aobj) {
         gd.layout.height = newheight;
         gd.layout.width = newwidth;
     }
-    else { // if there's no size change, update layout but only restyle (different element may get margin color)
+    // if there's no size change, update layout but only restyle (different
+    // element may get margin color)
+    else if(gd.layout.autosize!='initial') { // can't call layoutStyles for initial autosize
         delete(aobj.autosize);
         gd.layout.autosize = true;
         layoutStyles(gd);
@@ -1329,6 +1331,16 @@ function newPlot(divid, layout) {
             .style('position','relative');
     }
 
+    // destroy calculated vars that may cause problems
+    // TODO: better way to do this? should I be storing these all in some other
+    // object that I can wipe, rather than directly in gd?
+    // I ignored the ones that are reset each time through plot()
+    gd.lw = undefined; // "legend width" for legends outside the plot area to increase margins
+    gd.undoqueue = undefined; // action queue
+    gd.undonum = undefined;
+    gd.autoplay = undefined; // are we doing an action that doesn't go in undo queue?
+    gd.axtypesok = undefined; // have we already deduced axis types, so we can skip?
+
     // Get the layout info - take the default and update it with layout arg
     gd.layout=updateObject(defaultLayout(),layout);
 
@@ -1337,11 +1349,12 @@ function newPlot(divid, layout) {
 
     // initial autosize
     if(gl.autosize=='initial') {
-        gd.paper=gd3.append('svg')
-            .attr('width',gl.width)
-            .attr('height',gl.height);
+//         gd.paperdiv=gd3.append('svg')
+//             .attr('width',gl.width)
+//             .attr('height',gl.height);
+        console.log('initial autosize');
         plotAutoSize(gd,{});
-        gd.paper.remove();
+//         gd.paper.remove();
         gl.autosize=true;
     }
     // Make the graph containers
