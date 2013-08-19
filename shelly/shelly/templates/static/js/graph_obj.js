@@ -1260,16 +1260,18 @@ function plotDo(gd,aobj,traces) {
 }
 
 function plotAutoSize(gd,aobj) {
-    var plotBB = gd.paper.node().getBoundingClientRect();
+    var plotBB = gd.paperdiv.node().getBoundingClientRect();
     var gdBB = gd.getBoundingClientRect();
-    var ftBB = $('#filetab')[0].getBoundingClientRect();
+    var ftBB = $('#filetab').length ? $('#filetab')[0].getBoundingClientRect() : {width:0};
     var newheight = Math.round(gdBB.bottom-plotBB.top);
     var newwidth = Math.round((ftBB.width ? ftBB.left : gdBB.right) - plotBB.left);
     if(Math.abs(gd.layout.width-newwidth)>1 || Math.abs(gd.layout.height-newheight)>1) {
         gd.layout.height = newheight;
         gd.layout.width = newwidth;
     }
-    else { // if there's no size change, update layout but only restyle (different element may get margin color)
+    // if there's no size change, update layout but only restyle (different
+    // element may get margin color)
+    else if(gd.layout.autosize!='initial') { // can't call layoutStyles for initial autosize
         delete(aobj.autosize);
         gd.layout.autosize = true;
         layoutStyles(gd);
@@ -1306,47 +1308,42 @@ function newPlot(divid, layout) {
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
 
-    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid,
+        gd3=d3.select(gd);
     if(!layout) layout={};
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
     // destroy any plot that already exists in this div
     // first check if we can save the toolbars
-    if(gd.mainsite ? ($(gd).children('.graphbar').length==1 &&
-            $(gd).children('.demobar').length==1 &&
-            $(gd).children('.svgcontainer').length==1 &&
-            $(gd).children().length>=3) : /* 4th child is graph tips alert div... */
-        ($(gd).children('.svgcontainer').length==1)
-        ) { $(gd).children('.svgcontainer').remove() }
+    if(($(gd).children('.svgcontainer').length==1) && (!gd.mainsite ||
+        ($(gd).children('.graphbar').length==1 && $(gd).children('.demobar').length==1))) {
+            $(gd).children('.svgcontainer').children('svg').remove()
+    }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
+        // TODO - remove tooltips here
+        $(gd).find('[rel="tooltip"]').tooltip('destroy');
         gd.innerHTML='';
         if(gd.mainsite) { graphbar(gd) }
+        // Make the outer graph container
+        gd.paperdiv = gd3.append('div')
+            .classed('svgcontainer',true)
+            .style('position','relative');
     }
 
     // Get the layout info - take the default and update it with layout arg
     gd.layout=updateObject(defaultLayout(),layout);
 
-    var gl=gd.layout, gd3=d3.select(gd), xa=gl.xaxis, ya=gl.yaxis;
+    var gl=gd.layout, xa=gl.xaxis, ya=gl.yaxis;
     Axes.setTypes(gd);
 
     // initial autosize
     if(gl.autosize=='initial') {
-        gd.paper=gd3.append('svg')
-            .attr('width',gl.width)
-            .attr('height',gl.height);
         plotAutoSize(gd,{});
-        gd.paper.remove();
         gl.autosize=true;
     }
-
     // Make the graph containers
-    gd.paperdiv = gd3.append('div')
-        .classed('svgcontainer',true)
-        .style('position','relative');
     gd.paper = gd.paperdiv.append('svg');
-//     gd.paperbg = gd.paper.append('rect')
-//         .style('fill','none')
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.axlines = {
@@ -1422,11 +1419,8 @@ function layoutStyles(gd) {
     gd.plotwidth=gl.width-gm.l-gm.r;
     gd.plotheight=gl.height-gm.t-gm.b;
 
-    // sizing: we now have 3 elements all explicitly the same size...
-    // TODO: can probably do better than that, but it's OK for now.
     gd.paperdiv.style({width:gl.width+'px', height:gl.height+'px'});
     gd.paper.call(setSize, gl.width, gl.height);
-//     gd.paperbg.call(setRect, 0, 0, gl.width, gl.height);
 
     // plot background: color the whole div if it's autosized in the main site,
     // so we don't always have a weird white strip with the "My Data" tab
@@ -1547,7 +1541,7 @@ function makeTitles(gd,title) {
             else { el.remove() }
 
             // move labels out of the way, if possible, when tick labels interfere
-            var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paper.node().getBoundingClientRect();
+            var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paperdiv.node().getBoundingClientRect();
             if(k=='xtitle'){
                 var labels=gd.paper.selectAll('text.xtick')[0], ticky=0;
                 for(var i=0;i<labels.length;i++){
@@ -1757,7 +1751,7 @@ function legend(gd) {
             if(Math.abs(dy)<MINDRAG) { dy=0 }
             if(dx||dy) { gd.dragged = true }
             el3.call(setPosition, x0+dx, y0+dy);
-            var pbb = gd.paper.node().getBoundingClientRect();
+            var pbb = gd.paperdiv.node().getBoundingClientRect();
 
             // drag to within a couple px of edge to take the legend outside the plot
             if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100 }
@@ -1860,7 +1854,7 @@ function annotation(gd,index,opt,value) {
 
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
-    var paperbb = gd.paper.node().getBoundingClientRect(),
+    var paperbb = gd.paperdiv.node().getBoundingClientRect(),
         plotbb = d3.select(gd).select('.nsewdrag').node().getBoundingClientRect(),
         x = plotbb.left-paperbb.left,
         y = plotbb.top-paperbb.top;
