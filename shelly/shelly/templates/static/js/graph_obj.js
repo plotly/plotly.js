@@ -224,9 +224,9 @@ function plot(divid, plotjs, layout) {
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if($.isArray(data)) {
-        if(graphwasempty) { gd.data=data; alert('1')}
-        else if(plotjs.unique) {gd.data=updateTraces(gd.data, data); alert('2')}
-        else { gd.data.push.apply(gd.data,data); alert('3')}
+        if(graphwasempty) { gd.data=data}
+        else if(plotjs.unique) {gd.data=updateTraces(gd.data, data)}
+        else { gd.data.push.apply(gd.data,data)}
         gd.empty=false; // for routines outside graph_obj that want a clean tab
                         // (rather than appending to an existing one) gd.empty
                         // is used to determine whether to make a new tab
