@@ -207,27 +207,26 @@ function updateTraces(old_data, new_data) {
 //          information for each trace
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
-function plot(divid, data, layout) {
+function plot(divid, plotjs, layout) {
     markTime('in plot');
-    alert_repl("plot","data");
+    if(!plotjs.data) { plotjs=JSON.parse(plotjs) }
+    data = plotjs.data
 
     plotlylog('+++++++++++++++IN: plot(divid, data, layout)+++++++++++++++');
     // Get the container div: we will store all variables for this plot as
     // properties of this div (for extension to multiple plots/tabs per page)
     // some callers send this in by dom element, others by id (string)
     var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
-    plotlylog(gd)
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
-    var unique_traces = Boolean(gd.unique);
     if($.isArray(data)) {
-        if(graphwasempty) { gd.data=data }
-        else if(unique_traces) {gd.data = updateTraces(gd.data, data)}
-        else { gd.data.push.apply(gd.data,data);}
+        if(graphwasempty) { gd.data=data; alert('1')}
+        else if(plotjs.unique) {gd.data=updateTraces(gd.data, data); alert('2')}
+        else { gd.data.push.apply(gd.data,data); alert('3')}
         gd.empty=false; // for routines outside graph_obj that want a clean tab
                         // (rather than appending to an existing one) gd.empty
                         // is used to determine whether to make a new tab
@@ -403,7 +402,7 @@ function plot(divid, data, layout) {
 
     // finish up - spinner and tooltips
     if(typeof positionBrand == 'function') { positionBrand() } // for embedded
-    delMessage('Loading');
+    delMessage('Loading File');
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false && gd.mainsite){
@@ -634,6 +633,7 @@ function applyStyle(gd) {
     gp.selectAll('g.errorbars')
         .call(errorbarStyle);
 
+    alert_repl("applyStyle",JSON.stringify(stripSrc(gd.data)));
     plotlylog('+++++++++++++++OUT: applyStyle(gd)+++++++++++++++');
 
 }
@@ -1036,6 +1036,7 @@ function restyle(gd,astr,val,traces) {
             if(gl.showlegend) { legend(gd) }
         }
     }
+
     plotlylog('+++++++++++++++OUT: restyle+++++++++++++++');
 }
 
@@ -2447,8 +2448,10 @@ function stripSrc(d) {
 }
 
 function alert_repl(func_name, data) {
-    func = (func_name ? func_name : 'None')
-    data = JSON.stringify(data);
-    send_invisible('hermes(' + func_name + ',' + data + ')');
+    if (window.ws) {
+        func = (func_name ? JSON.stringify(func_name) : 'None')
+        data = JSON.stringify(data);
+        send_invisible('hermes(' + func + ',' + data + ')');
+    }
 }
 
