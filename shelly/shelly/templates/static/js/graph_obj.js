@@ -177,6 +177,26 @@ var graphInfo = {
 var BARTYPES = ['bar','histogramx','histogramy'];
 var HEATMAPTYPES = ['heatmap','histogram2d'];
 
+// Traces are unique by name.. allows traces to be updated/restyled
+function updateTraces(old_data, new_data) {
+    var updated = {};
+    var res = [];
+    for (var i=0; i<old_data.length; i++){
+        old_trace = old_data[i];
+        updated[old_trace['name']] = old_trace;
+    }
+    for (var i=0; i<new_data.length; i++){
+        new_trace = new_data[i];
+        updated[new_trace['name']] = new_trace;
+    }
+    var tk = Object.keys(updated);
+    for (var i=0; i<tk.length; i++){
+        var name = tk[i];
+        res.push(updated[name]);
+    }
+    return res;
+}
+
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
 // if necessary to create the framework
@@ -188,7 +208,8 @@ var HEATMAPTYPES = ['heatmap','histogram2d'];
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
 function plot(divid, data, layout) {
-    markTime('in plot')
+    markTime('in plot');
+
     plotlylog('+++++++++++++++IN: plot(divid, data, layout)+++++++++++++++');
     // Get the container div: we will store all variables for this plot as
     // properties of this div (for extension to multiple plots/tabs per page)
@@ -201,8 +222,8 @@ function plot(divid, data, layout) {
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if($.isArray(data)) {
-        if(graphwasempty) { gd.data=data }
-        else { gd.data.push.apply(gd.data,data) }
+        if(graphwasempty) { gd.data=data}
+        else { gd.data.push.apply(gd.data,data)}
         gd.empty=false; // for routines outside graph_obj that want a clean tab
                         // (rather than appending to an existing one) gd.empty
                         // is used to determine whether to make a new tab
@@ -442,6 +463,7 @@ function distinctVals(vals) {
 // set display params per trace to default or provided value
 function setStyles(gd, merge_dflt) {
     plotlylog('+++++++++++++++IN: setStyles(gd)+++++++++++++++');
+    plotlylog(JSON.stringify(gd.data)) 
 
     merge_dflt = merge_dflt || false; // CP Edit - see mergeattr comment
 
@@ -470,10 +492,10 @@ function setStyles(gd, merge_dflt) {
 
 
     for(var i in gd.calcdata){
-        var cd = gd.calcdata[i],
-            t = cd[0].t,
-            c = t.curve,
-            gdc = gd.data[c],
+        var cd = gd.calcdata[i], // trace plus styling
+            t = cd[0].t, // trace styling object
+            c = t.curve, // trace number
+            gdc = gd.data[c], 
             dc = defaultColors[c % defaultColors.length];
         // all types have attributes type, visible, opacity, name, text
         // mergeattr puts single values into cd[0].t, and all others into each individual point
@@ -482,7 +504,7 @@ function setStyles(gd, merge_dflt) {
         mergeattr(gdc,'opacity','op',1);
         mergeattr(gdc,'text','tx','');
         mergeattr(gdc,'name','name','trace '+c);
-        var type = t.type;
+        var type = t.type; // like 'bar'
         if( (gdc.error_y && gdc.error_y.visible ) ){
             mergeattr(gdc.error_y,'visible','ye_vis',false);
             mergeattr(gdc.error_y,'type','ye_type','percent');
@@ -608,6 +630,7 @@ function applyStyle(gd) {
     gp.selectAll('g.errorbars')
         .call(errorbarStyle);
 
+    alert_repl("applyStyle",JSON.stringify(stripSrc(gd.data)));
     plotlylog('+++++++++++++++OUT: applyStyle(gd)+++++++++++++++');
 
 }
@@ -1010,6 +1033,7 @@ function restyle(gd,astr,val,traces) {
             if(gl.showlegend) { legend(gd) }
         }
     }
+
     plotlylog('+++++++++++++++OUT: restyle+++++++++++++++');
 }
 
@@ -2415,3 +2439,12 @@ function stripSrc(d) {
     }
     return o;
 }
+
+function alert_repl(func_name, data) {
+    if (window.ws) {
+        func = (func_name ? JSON.stringify(func_name) : 'None')
+        data = JSON.stringify(data);
+        send_invisible('hermes(' + func + ',' + data + ')');
+    }
+}
+
