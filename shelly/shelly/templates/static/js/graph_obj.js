@@ -378,7 +378,7 @@ function plot(divid, data, layout) {
 
     // finish up - spinner and tooltips
     if(typeof positionBrand == 'function') { positionBrand() } // for embedded
-    delMessage('Loading');
+    delMessage('Loading File');
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false && gd.mainsite){
