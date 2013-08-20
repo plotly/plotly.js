@@ -1457,6 +1457,8 @@ function layoutStyles(gd) {
     makeTitles(gd,'gtitle');
 
     newModeBar(gd);
+    
+    return gd;
 }
 
 // ----------------------------------------------------
