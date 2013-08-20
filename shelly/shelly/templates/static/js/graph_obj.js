@@ -207,10 +207,8 @@ function updateTraces(old_data, new_data) {
 //          information for each trace
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
-function plot(divid, plotjs, layout) {
+function plot(divid, data, layout) {
     markTime('in plot');
-    if(!plotjs.data) { plotjs=JSON.parse(plotjs) }
-    data = plotjs.data
 
     plotlylog('+++++++++++++++IN: plot(divid, data, layout)+++++++++++++++');
     // Get the container div: we will store all variables for this plot as
@@ -225,7 +223,6 @@ function plot(divid, plotjs, layout) {
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if($.isArray(data)) {
         if(graphwasempty) { gd.data=data}
-        else if(plotjs.unique) {gd.data=updateTraces(gd.data, data)}
         else { gd.data.push.apply(gd.data,data)}
         gd.empty=false; // for routines outside graph_obj that want a clean tab
                         // (rather than appending to an existing one) gd.empty
