@@ -89,17 +89,19 @@ MINDRAG = 5; // pixels to move mouse before you stop clamping to starting point
 VERBOSE = false; // set to true to get a lot more logging and tracing
 
 // IMPORTANT - default colors should be in hex for grid.js
-// TODO - these colors suck, let's make some better palettes
-defaultColors=['#0000ee', //blue
-               '#aa0000', //red
-               '#6fa8dc', //lite blue
-               '#ffd966', //goldenrod
-               '#ff00ff', //elektrik purple
-               '#9900ff', //moody purple
-               '#00cc00', // brite green
-               '#000000']; // black
 
-defaultScale=[[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94, 168)"],
+defaultColors = ['#1f77b4', // muted blue
+                '#ff7f0e', // safety orange
+                '#2ca02c', // cooked asparagus green
+                '#d62728', // brick red
+                '#9467bd', // muted purple
+                '#8c564b', // chestnut brown
+                '#e377c2', // raspberry yogurt pink 
+                '#7f7f7f', // middle gray
+                '#bcbd22', // curry yellow-green
+                '#17becf']; // blue-teal
+
+defaultScale = [[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94, 168)"],
     [0.375,"rgb(29, 145, 192)"],[0.5,"rgb(65, 182, 196)"],[0.625,"rgb(127, 205, 187)"],
     [0.75,"rgb(199, 233, 180)"],[0.875,"rgb(237, 248, 217)"],[1,"rgb(255, 255, 217)"]];
 
