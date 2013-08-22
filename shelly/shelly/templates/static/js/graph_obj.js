@@ -89,17 +89,19 @@ MINDRAG = 5; // pixels to move mouse before you stop clamping to starting point
 VERBOSE = false; // set to true to get a lot more logging and tracing
 
 // IMPORTANT - default colors should be in hex for grid.js
-// TODO - these colors suck, let's make some better palettes
-defaultColors=['#0000ee', //blue
-               '#aa0000', //red
-               '#6fa8dc', //lite blue
-               '#ffd966', //goldenrod
-               '#ff00ff', //elektrik purple
-               '#9900ff', //moody purple
-               '#00cc00', // brite green
-               '#000000']; // black
 
-defaultScale=[[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94, 168)"],
+defaultColors = ['#1f77b4', // muted blue
+                '#ff7f0e', // safety orange
+                '#2ca02c', // cooked asparagus green
+                '#d62728', // brick red
+                '#9467bd', // muted purple
+                '#8c564b', // chestnut brown
+                '#e377c2', // raspberry yogurt pink 
+                '#7f7f7f', // middle gray
+                '#bcbd22', // curry yellow-green
+                '#17becf']; // blue-teal
+
+defaultScale = [[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94, 168)"],
     [0.375,"rgb(29, 145, 192)"],[0.5,"rgb(65, 182, 196)"],[0.625,"rgb(127, 205, 187)"],
     [0.75,"rgb(199, 233, 180)"],[0.875,"rgb(237, 248, 217)"],[1,"rgb(255, 255, 217)"]];
 
@@ -177,6 +179,26 @@ var graphInfo = {
 var BARTYPES = ['bar','histogramx','histogramy'];
 var HEATMAPTYPES = ['heatmap','histogram2d'];
 
+// Traces are unique by name.. allows traces to be updated/restyled
+function updateTraces(old_data, new_data) {
+    var updated = {};
+    var res = [];
+    for (var i=0; i<old_data.length; i++){
+        old_trace = old_data[i];
+        updated[old_trace['name']] = old_trace;
+    }
+    for (var i=0; i<new_data.length; i++){
+        new_trace = new_data[i];
+        updated[new_trace['name']] = new_trace;
+    }
+    var tk = Object.keys(updated);
+    for (var i=0; i<tk.length; i++){
+        var name = tk[i];
+        res.push(updated[name]);
+    }
+    return res;
+}
+
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
 // if necessary to create the framework
@@ -188,7 +210,8 @@ var HEATMAPTYPES = ['heatmap','histogram2d'];
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
 function plot(divid, data, layout) {
-    markTime('in plot')
+    markTime('in plot');
+
     plotlylog('+++++++++++++++IN: plot(divid, data, layout)+++++++++++++++');
     // Get the container div: we will store all variables for this plot as
     // properties of this div (for extension to multiple plots/tabs per page)
@@ -201,8 +224,8 @@ function plot(divid, data, layout) {
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if($.isArray(data)) {
-        if(graphwasempty) { gd.data=data }
-        else { gd.data.push.apply(gd.data,data) }
+        if(graphwasempty) { gd.data=data}
+        else { gd.data.push.apply(gd.data,data)}
         gd.empty=false; // for routines outside graph_obj that want a clean tab
                         // (rather than appending to an existing one) gd.empty
                         // is used to determine whether to make a new tab
@@ -378,7 +401,7 @@ function plot(divid, data, layout) {
 
     // finish up - spinner and tooltips
     if(typeof positionBrand == 'function') { positionBrand() } // for embedded
-    delMessage('Loading');
+    delMessage('Loading File');
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false && gd.mainsite){
@@ -442,6 +465,7 @@ function distinctVals(vals) {
 // set display params per trace to default or provided value
 function setStyles(gd, merge_dflt) {
     plotlylog('+++++++++++++++IN: setStyles(gd)+++++++++++++++');
+    plotlylog(JSON.stringify(gd.data)) 
 
     merge_dflt = merge_dflt || false; // CP Edit - see mergeattr comment
 
@@ -470,10 +494,10 @@ function setStyles(gd, merge_dflt) {
 
 
     for(var i in gd.calcdata){
-        var cd = gd.calcdata[i],
-            t = cd[0].t,
-            c = t.curve,
-            gdc = gd.data[c],
+        var cd = gd.calcdata[i], // trace plus styling
+            t = cd[0].t, // trace styling object
+            c = t.curve, // trace number
+            gdc = gd.data[c], 
             dc = defaultColors[c % defaultColors.length];
         // all types have attributes type, visible, opacity, name, text
         // mergeattr puts single values into cd[0].t, and all others into each individual point
@@ -482,7 +506,7 @@ function setStyles(gd, merge_dflt) {
         mergeattr(gdc,'opacity','op',1);
         mergeattr(gdc,'text','tx','');
         mergeattr(gdc,'name','name','trace '+c);
-        var type = t.type;
+        var type = t.type; // like 'bar'
         if( (gdc.error_y && gdc.error_y.visible ) ){
             mergeattr(gdc.error_y,'visible','ye_vis',false);
             mergeattr(gdc.error_y,'type','ye_type','percent');
@@ -608,6 +632,7 @@ function applyStyle(gd) {
     gp.selectAll('g.errorbars')
         .call(errorbarStyle);
 
+    alert_repl("applyStyle",JSON.stringify(stripSrc(gd.data)));
     plotlylog('+++++++++++++++OUT: applyStyle(gd)+++++++++++++++');
 
 }
@@ -1010,6 +1035,7 @@ function restyle(gd,astr,val,traces) {
             if(gl.showlegend) { legend(gd) }
         }
     }
+
     plotlylog('+++++++++++++++OUT: restyle+++++++++++++++');
 }
 
@@ -1260,19 +1286,21 @@ function plotDo(gd,aobj,traces) {
 }
 
 function plotAutoSize(gd,aobj) {
-    var plotBB = gd.paper.node().getBoundingClientRect();
+    var plotBB = gd.paperdiv.node().getBoundingClientRect();
     var gdBB = gd.getBoundingClientRect();
-    var ftBB = $('#filetab')[0].getBoundingClientRect();
+    var ftBB = $('#filetab').length ? $('#filetab')[0].getBoundingClientRect() : {width:0};
     var newheight = Math.round(gdBB.bottom-plotBB.top);
     var newwidth = Math.round((ftBB.width ? ftBB.left : gdBB.right) - plotBB.left);
     if(Math.abs(gd.layout.width-newwidth)>1 || Math.abs(gd.layout.height-newheight)>1) {
         gd.layout.height = newheight;
         gd.layout.width = newwidth;
     }
-    else { // if there's no size change, update layout but don't need to redraw
+    // if there's no size change, update layout but only restyle (different
+    // element may get margin color)
+    else if(gd.layout.autosize!='initial') { // can't call layoutStyles for initial autosize
         delete(aobj.autosize);
         gd.layout.autosize = true;
-        newModeBar(gd);
+        layoutStyles(gd);
     }
     return aobj
 }
@@ -1281,7 +1309,6 @@ function plotAutoSize(gd,aobj) {
 function plotResize(gd) {
     killPopovers();
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
-        $(gd).find('.modebar').remove();
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer) }
         gd.redrawTimer = setTimeout(function(){
             if($(gd).css('display')=='none') { return }
@@ -1289,7 +1316,6 @@ function plotResize(gd) {
                 gd.autoplay = true; // don't include this relayout in the undo queue
                 relayout(gd, {autosize:true});
             }
-            else { newModeBar(gd) }
 
             if(LIT) {
                 hidebox();
@@ -1308,44 +1334,42 @@ function newPlot(divid, layout) {
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
 
-    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid,
+        gd3=d3.select(gd);
     if(!layout) layout={};
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
     // destroy any plot that already exists in this div
     // first check if we can save the toolbars
-    if(gd.mainsite ? ($(gd).children('.graphbar').length==1 &&
-            $(gd).children('.demobar').length==1 &&
-            $(gd).children('svg').length==1 &&
-            $(gd).children().length>=3) : /* 4th child is graph tips alert div, then modebar... */
-        ($(gd).children('svg').length==1)
-        ) { $(gd).children('svg').remove() }
+    if(($(gd).children('.svgcontainer').length==1) && (!gd.mainsite ||
+        ($(gd).children('.graphbar').length==1 && $(gd).children('.demobar').length==1))) {
+            $(gd).children('.svgcontainer').children('svg').remove()
+    }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
+        // TODO - remove tooltips here
+        $(gd).find('[rel="tooltip"]').tooltip('destroy');
         gd.innerHTML='';
-        if(gd.mainsite) graphbar(gd);
+        if(gd.mainsite) { graphbar(gd) }
+        // Make the outer graph container
+        gd.paperdiv = gd3.append('div')
+            .classed('svgcontainer',true)
+            .style('position','relative');
     }
 
     // Get the layout info - take the default and update it with layout arg
     gd.layout=updateObject(defaultLayout(),layout);
 
-    var gl=gd.layout, gd3=d3.select(gd), xa=gl.xaxis, ya=gl.yaxis;
+    var gl=gd.layout, xa=gl.xaxis, ya=gl.yaxis;
     Axes.setTypes(gd);
 
     // initial autosize
     if(gl.autosize=='initial') {
-        gd.paper=gd3.append('svg')
-            .attr('width',gl.width)
-            .attr('height',gl.height);
         plotAutoSize(gd,{});
-        gd.paper.remove();
         gl.autosize=true;
     }
-
     // Make the graph containers
-    gd.paper = gd3.append('svg')
-    gd.paperbg = gd.paper.append('rect')
-        .style('fill','none')
+    gd.paper = gd.paperdiv.append('svg');
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.axlines = {
@@ -1399,8 +1423,6 @@ function newPlot(divid, layout) {
     dragBox(gd, x2, y2+y1-y0, x1-x0, y0-y1,'n','e');
     dragBox(gd, x0, y1, x1-x0, y0-y1,'s','w');
     dragBox(gd, x2, y1, x1-x0, y0-y1,'s','e');
-
-    newModeBar(gd);
 }
 
 // layoutStyles: styling for plot layout elements
@@ -1423,20 +1445,19 @@ function layoutStyles(gd) {
     gd.plotwidth=gl.width-gm.l-gm.r;
     gd.plotheight=gl.height-gm.t-gm.b;
 
-    gd.paper
-        .call(setSize, gl.width, gl.height);
-    gd.paperbg
-        .call(setRect, 0, 0, gl.width, gl.height);
+    gd.paperdiv.style({width:gl.width+'px', height:gl.height+'px'});
+    gd.paper.call(setSize, gl.width, gl.height);
+
     // plot background: color the whole div if it's autosized in the main site,
     // so we don't always have a weird white strip with the "My Data" tab
-    // otherwise color the paperbg rect, so you see the plot the size it's meant to be.
+    // otherwise color the paperdiv, so you see the plot the size it's meant to be.
     if(gl.autosize && gd.mainsite) {
         d3.select(gd).style('background', gl.paper_bgcolor);
-        gd.paperbg.style('fill','none');
+        gd.paperdiv.style('background','transparent');
     }
     else {
         d3.select(gd).style('background', '#fff');
-        gd.paperbg.call(fillColor, gl.paper_bgcolor);
+        gd.paperdiv.style('background', gl.paper_bgcolor);
     }
     gd.plotbg
         .call(setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
@@ -1460,6 +1481,10 @@ function layoutStyles(gd) {
         .attr('stroke-width',ylw)
         .call(strokeColor,ya.linecolor);
     makeTitles(gd,'gtitle');
+
+    newModeBar(gd);
+    
+    return gd;
 }
 
 // ----------------------------------------------------
@@ -1544,7 +1569,7 @@ function makeTitles(gd,title) {
             else { el.remove() }
 
             // move labels out of the way, if possible, when tick labels interfere
-            var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paper.node().getBoundingClientRect();
+            var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paperdiv.node().getBoundingClientRect();
             if(k=='xtitle'){
                 var labels=gd.paper.selectAll('text.xtick')[0], ticky=0;
                 for(var i=0;i<labels.length;i++){
@@ -1754,7 +1779,7 @@ function legend(gd) {
             if(Math.abs(dy)<MINDRAG) { dy=0 }
             if(dx||dy) { gd.dragged = true }
             el3.call(setPosition, x0+dx, y0+dy);
-            var pbb = gd.paper.node().getBoundingClientRect();
+            var pbb = gd.paperdiv.node().getBoundingClientRect();
 
             // drag to within a couple px of edge to take the legend outside the plot
             if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100 }
@@ -1857,7 +1882,7 @@ function annotation(gd,index,opt,value) {
 
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
-    var paperbb = gd.paper.node().getBoundingClientRect(),
+    var paperbb = gd.paperdiv.node().getBoundingClientRect(),
         plotbb = d3.select(gd).select('.nsewdrag').node().getBoundingClientRect(),
         x = plotbb.left-paperbb.left,
         y = plotbb.top-paperbb.top;
@@ -2416,3 +2441,12 @@ function stripSrc(d) {
     }
     return o;
 }
+
+function alert_repl(func_name, data) {
+    if (window.ws) {
+        func = (func_name ? JSON.stringify(func_name) : 'None')
+        data = JSON.stringify(data);
+        send_invisible('hermes(' + func + ',' + data + ')');
+    }
+}
+
