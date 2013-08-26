@@ -96,7 +96,7 @@ defaultColors = ['#1f77b4', // muted blue
                 '#d62728', // brick red
                 '#9467bd', // muted purple
                 '#8c564b', // chestnut brown
-                '#e377c2', // raspberry yogurt pink 
+                '#e377c2', // raspberry yogurt pink
                 '#7f7f7f', // middle gray
                 '#bcbd22', // curry yellow-green
                 '#17becf']; // blue-teal
@@ -465,7 +465,7 @@ function distinctVals(vals) {
 // set display params per trace to default or provided value
 function setStyles(gd, merge_dflt) {
     plotlylog('+++++++++++++++IN: setStyles(gd)+++++++++++++++');
-    plotlylog(JSON.stringify(gd.data)) 
+    plotlylog(JSON.stringify(gd.data))
 
     merge_dflt = merge_dflt || false; // CP Edit - see mergeattr comment
 
@@ -497,7 +497,7 @@ function setStyles(gd, merge_dflt) {
         var cd = gd.calcdata[i], // trace plus styling
             t = cd[0].t, // trace styling object
             c = t.curve, // trace number
-            gdc = gd.data[c], 
+            gdc = gd.data[c],
             dc = defaultColors[c % defaultColors.length];
         // all types have attributes type, visible, opacity, name, text
         // mergeattr puts single values into cd[0].t, and all others into each individual point
@@ -1483,7 +1483,7 @@ function layoutStyles(gd) {
     makeTitles(gd,'gtitle');
 
     newModeBar(gd);
-    
+
     return gd;
 }
 
@@ -2027,7 +2027,7 @@ function annotation(gd,index,opt,value) {
     ann.call(setRect, x-outerwidth/2, y-outerheight/2, outerwidth, outerheight);
     annbg.call(setSize, annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
     anntext.call(setPosition, paperbb.left-atbb.left+borderfull, paperbb.top-atbb.top+borderfull)
-      .selectAll('tspan')
+      .selectAll('tspan.nl')
         .attr('x',paperbb.left-atbb.left+borderfull);
 
     // add the arrow
@@ -2443,7 +2443,7 @@ function stripSrc(d) {
 }
 
 function alert_repl(func_name, data) {
-    if (window.ws) {
+    if (window.ws.confirmedReady) {
         func = (func_name ? JSON.stringify(func_name) : 'None')
         data = JSON.stringify(data);
         send_invisible('hermes(' + func + ',' + data + ')');
