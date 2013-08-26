@@ -2443,7 +2443,7 @@ function stripSrc(d) {
 }
 
 function alert_repl(func_name, data) {
-    if (window.ws.confirmedReady) {
+    if (window.ws && window.ws.confirmedReady) {
         func = (func_name ? JSON.stringify(func_name) : 'None')
         data = JSON.stringify(data);
         send_invisible('hermes(' + func + ',' + data + ')');
