@@ -882,12 +882,13 @@ function legendText(s,gd){
 function restyle(gd,astr,val,traces) {
     plotlylog('+++++++++++++++IN: restyle+++++++++++++++');
 
-    gd.changed = true;
     var gl = gd.layout,
         aobj = {};
     if(typeof astr == 'string') { aobj[astr] = val }
     else if($.isPlainObject(astr)) { aobj = astr }
     else { console.log('restyle fail',astr,val,traces); return }
+
+    if(Object.keys(aobj).length) { gd.changed = true }
 
     if($.isNumeric(traces)) { traces=[traces] }
     else if(!$.isArray(traces) || !traces.length) {
@@ -1044,7 +1045,6 @@ function restyle(gd,astr,val,traces) {
 function relayout(gd,astr,val) {
     plotlylog('+++++++++++++++ IN: RELAYOUT +++++++++++++++');
 
-    gd.changed = true;
     var gl = gd.layout,
         aobj = {},
         dolegend = false,
@@ -1054,6 +1054,8 @@ function relayout(gd,astr,val) {
     if(typeof astr == 'string') { aobj[astr] = val }
     else if($.isPlainObject(astr)) { aobj = astr }
     else { console.log('relayout fail',astr,val); return }
+
+    if(Object.keys(aobj).length) { gd.changed = true }
 
     // look for 'allaxes', split out into all axes
     var keys = Object.keys(aobj),
@@ -1313,8 +1315,10 @@ function plotResize(gd) {
         gd.redrawTimer = setTimeout(function(){
             if($(gd).css('display')=='none') { return }
             if(gd.layout && gd.layout.autosize) {
+                var oldchanged = gd.changed;
                 gd.autoplay = true; // don't include this relayout in the undo queue
                 relayout(gd, {autosize:true});
+                gd.changed = oldchanged; // autosizing doesn't count as a change
             }
 
             if(LIT) {
@@ -1687,7 +1691,9 @@ function legend(gd) {
 
     // don't let legend be outside plot in both x and y... that would just make big blank
     // boxes. Put the legend centered in y if we somehow get there.
-    if(Math.abs(gll.x)==100 && Math.abs(gll.y)==100) gll.y=0.5;
+    if(Math.abs(gll.x)==100 && Math.abs(gll.y)==100) { gll.y=0.5 }
+
+    var oldchanged = gd.changed;
 
     if(gll.x==-100) {
         lx=pad;
@@ -1740,6 +1746,10 @@ function legend(gd) {
         if(gll.y<1/3) { ly -= legendheight }
         else if(gll.y<2/3) { ly -= legendheight/2 }
     }
+
+    // adjusting the margin thusly doesn't by itself constitute a change, so
+    // put gd.changed back the way it was
+    gd.changed = oldchanged;
 
     // push the legend back onto the page if it extends off, making sure if nothing else
     // that the top left of the legend is visible
