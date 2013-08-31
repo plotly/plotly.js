@@ -1675,7 +1675,7 @@ function legend(gd) {
 
     // now position the legend. for both x,y the positions are recorded as fractions
     // of the plot area (left, bottom = 0,0). Outside the plot area is allowed but
-    // position will be clipped to the plot area. Special values +/-100 auto-increase
+    // position will be clipped to the page. Special values +/-100 auto-increase
     // the margin to put the legend entirely outside the plot area on the high/low side.
     // Otherwise, values <1/3 align the low side at that fraction, 1/3-2/3 align the
     // center at that fraction, >2/3 align the right at that fraction
@@ -2437,14 +2437,15 @@ function bBoxIntersect(a,b){
 }
 
 // create a copy of data, with all dereferenced src elements stripped
-// ie if there's xsrc present, strip out x
+// ie if there's xsrc present (and xsrc is well-formed, ie has , strip out x
 // needs to do this recursively because some src can be inside sub-objects
 // also strips out functions and other private (start with _) elements
 // so we can add temporary things to data and layout that don't get saved
 function stripSrc(d) {
     var o={};
     for(v in d) {
-        if(!(v+'src' in d) && (typeof d[v] != 'function') && (v.charAt(0)!='_')) {
+        var src = d[v+'src'];
+        if(!((typeof src=='string') && src.indexOf(':')>0) && (typeof d[v] != 'function') && (v.charAt(0)!='_')) {
             if($.isPlainObject(d[v])) { o[v]=stripSrc(d[v]) }
             else { o[v]=d[v] }
         }
