@@ -2437,14 +2437,15 @@ function bBoxIntersect(a,b){
 }
 
 // create a copy of data, with all dereferenced src elements stripped
-// ie if there's xsrc present, strip out x
+// ie if there's xsrc present (and xsrc is well-formed, ie has , strip out x
 // needs to do this recursively because some src can be inside sub-objects
 // also strips out functions and other private (start with _) elements
 // so we can add temporary things to data and layout that don't get saved
 function stripSrc(d) {
     var o={};
     for(v in d) {
-        if(!(v+'src' in d) && (typeof d[v] != 'function') && (v.charAt(0)!='_')) {
+        var src = d[v+'src'];
+        if(!((typeof src=='string') && src.indexOf(':')>0) && (typeof d[v] != 'function') && (v.charAt(0)!='_')) {
             if($.isPlainObject(d[v])) { o[v]=stripSrc(d[v]) }
             else { o[v]=d[v] }
         }
