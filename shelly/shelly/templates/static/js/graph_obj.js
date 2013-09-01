@@ -2382,15 +2382,17 @@ function styleText(sn,t) {
 // ----------------------------------------------------
 
 // ------------------------------- graphToGrid
-
-function graphToGrid(){
+// "mode" is a string identifying a mode to open when loading the grid
+// (Fit, Formula editor, etc). "mode" will usually by undefined
+function graphToGrid( mode ){
+    console.log('MODE',mode);
     var gd=gettab();
-    if(gd.fid !== undefined && gd.fid !='') { pullf({fid: gd.fid, ft:'grid'}) }
+    if(gd.fid !== undefined && gd.fid !='') { pullf({fid: gd.fid, ft:'grid',  mode:mode}) }
     else {
         var data = gd.data.map(function(gdd){return stripSrc(gdd)});
         plotlylog('~ DATA ~');
         plotlylog(data);
-        pullf({data: JSON.stringify({'data':data}), ft:'grid'});
+        pullf({data: JSON.stringify({'data':data}), ft:'grid', mode:mode});
     }
 }
 
