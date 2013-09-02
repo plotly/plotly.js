@@ -2437,7 +2437,7 @@ function bBoxIntersect(a,b){
 }
 
 // create a copy of data, with all dereferenced src elements stripped
-// ie if there's xsrc present (and xsrc is well-formed, ie has , strip out x
+// ie if there's xsrc present (and xsrc is well-formed, ie has : and some chars), strip out x
 // needs to do this recursively because some src can be inside sub-objects
 // also strips out functions and other private (start with _) elements
 // so we can add temporary things to data and layout that don't get saved
