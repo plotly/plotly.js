@@ -2385,8 +2385,10 @@ function styleText(sn,t) {
 // "mode" is a string identifying a mode to open when loading the grid
 // (Fit, Formula editor, etc). "mode" will usually by undefined
 function graphToGrid( mode ){
-    console.log('MODE',mode);
     var gd=gettab();
+    if( gd.data === undefined ){
+        addTab('grid'); return;
+    }
     if(gd.fid !== undefined && gd.fid !='') { pullf({fid: gd.fid, ft:'grid',  mode:mode}) }
     else {
         var data = gd.data.map(function(gdd){return stripSrc(gdd)});
