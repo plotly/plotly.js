@@ -2387,7 +2387,7 @@ function styleText(sn,t) {
 function graphToGrid( mode ){
     var gd=gettab();
     if( gd.data === undefined ){
-        addTab('grid'); return;
+        Tabs.add('grid'); return;
     }
     if(gd.fid !== undefined && gd.fid !='') { pullf({fid: gd.fid, ft:'grid',  mode:mode}) }
     else {
