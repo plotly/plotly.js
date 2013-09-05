@@ -300,12 +300,10 @@ function plot(divid, data, layout) {
         else if(HEATMAPTYPES.indexOf(curvetype)!=-1 ){ cd = Heatmap.calc(gd,gdc) }
         else if(curvetype=='box') { cd = Boxes.calc(gd,gdc) }
 
-        if(!$.isArray(cd)) { continue }
-
         if(!('line' in gdc)) gdc.line={};
         if(!('marker' in gdc)) gdc.marker={};
         if(!('line' in gdc.marker)) gdc.marker.line={};
-        if(!cd[0]) { cd.push({x:false,y:false}) } // make sure there is a first point
+        if(!$.isArray(cd) || !cd[0]) { cd = [{x:false,y:false}] } // make sure there is a first point
         // add the trace-wide properties to the first point, per point properties to every point
         // t is the holder for trace-wide properties
         if(!cd[0].t) { cd[0].t = {} }
