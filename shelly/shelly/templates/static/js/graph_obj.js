@@ -2296,14 +2296,21 @@ SPECIALCHARS={'mu':'\u03bc','times':'\u00d7','plusmn':'\u00b1'}
 //      t - the (pseudo-HTML) styled text as a string
 function styleText(sn,t) {
     if(t===undefined) { return }
-    var s=d3.select(sn);
-    // whitelist of tags we accept - make sure new tags get added here as well as styleTextInner
-    var tags=['sub','sup','b','i','font'];
-    var tagRE=new RegExp('\x01(\\/?(br|'+tags.join('|')+')(\\s[^\x01\x02]*)?\\/?)\x02','gi');
-    var charsRE=new RegExp('&('+Object.keys(SPECIALCHARS).join('|')+');','g');
+    var s = d3.select(sn),
+        // whitelist of tags we accept - make sure new tags get added here
+        // as well as styleTextInner
+        tags = ['sub','sup','b','i','font'],
+        tagRE = new RegExp('\x01(\\/?(br|'+tags.join('|')+')(\\s[^\x01\x02]*)?\\/?)\x02','gi'),
+        entityRE = /\x01([A-Za-z]+|#[0-9]+);/g,
+        charsRE = new RegExp('&('+Object.keys(SPECIALCHARS).join('|')+');','g');
     // take the most permissive reading we can of the text:
-    // if we don't recognize a tag, treat it as literal text
-    var t1=t.replace(/</g,'\x01') // first turn all <, > to non-printing \x01, \x02
+    // if we don't recognize something as markup, treat it as literal text
+    // first &...; entities
+    var t1 = t.replace(/&/g,'\x01') // first turn all & into non-printing \x01
+        .replace(entityRE,'&$1;') // then turn HTML entities back to ampersand
+        .replace(/\x01/g,'&amp;') // and turn any remaining \x01 into &amp;
+        // then <...> tags
+        .replace(/</g,'\x01') // first turn all <, > to non-printing \x01, \x02
         .replace(/>/g,'\x02')
         .replace(tagRE,'<$1>') // next turn good tags back to <...>
         .replace(/(<br(\s[^<>]*)?\/?>|\n)/gi, '</l><l>') // translate <br> and \n
