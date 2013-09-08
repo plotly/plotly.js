@@ -264,6 +264,7 @@ function get_xy(gd,gdc){
     setDefaults(gdc,true);
 
     function makeBoundArray(array_in,v0_in,dv_in,numbricks,ax) {
+        console.log(array_in,v0_in,dv_in,numbricks,ax);
         if($.isArray(array_in) && (gdc.type!='histogram2d') && (ax.type!='category')) {
             array_in = Axes.convertToNums(array_in,ax);
             var len = array_in.length;
@@ -284,7 +285,10 @@ function get_xy(gd,gdc){
         }
         else {
             var array_out = [],
-                v0 = v0_in ? Axes.convertToNums(v0_in,ax) : 0,
+                v0 = (v0_in!==undefined) ?
+                    // histos have already had v0_in turned into a number...
+                    (gdc.type=='histogram2d' ? v0_in : Axes.convertToNums(v0_in,ax))
+                    : 0,
                 dv = dv_in || 1;
             for(var i=0; i<=numbricks; i++) { array_out.push(v0+dv*(i-0.5)) }
         }
@@ -294,6 +298,7 @@ function get_xy(gd,gdc){
     return {x:makeBoundArray(gdc.x,gdc.x0,gdc.dx,gdc.z[0].length,gd.layout.xaxis),
             y:makeBoundArray(gdc.y,gdc.y0,gdc.dy,gdc.z.length,gd.layout.yaxis)};
 }
+heatmap.gxy = get_xy;
 
 // if the heatmap data object is missing any keys, fill them in
 // keys expected in gdc:

@@ -96,7 +96,7 @@ defaultColors = ['#1f77b4', // muted blue
                 '#d62728', // brick red
                 '#9467bd', // muted purple
                 '#8c564b', // chestnut brown
-                '#e377c2', // raspberry yogurt pink 
+                '#e377c2', // raspberry yogurt pink
                 '#7f7f7f', // middle gray
                 '#bcbd22', // curry yellow-green
                 '#17becf']; // blue-teal
@@ -300,12 +300,10 @@ function plot(divid, data, layout) {
         else if(HEATMAPTYPES.indexOf(curvetype)!=-1 ){ cd = Heatmap.calc(gd,gdc) }
         else if(curvetype=='box') { cd = Boxes.calc(gd,gdc) }
 
-        if(!$.isArray(cd)) { continue }
-
         if(!('line' in gdc)) gdc.line={};
         if(!('marker' in gdc)) gdc.marker={};
         if(!('line' in gdc.marker)) gdc.marker.line={};
-        if(!cd[0]) { cd.push({x:false,y:false}) } // make sure there is a first point
+        if(!$.isArray(cd) || !cd[0]) { cd = [{x:false,y:false}] } // make sure there is a first point
         // add the trace-wide properties to the first point, per point properties to every point
         // t is the holder for trace-wide properties
         if(!cd[0].t) { cd[0].t = {} }
@@ -465,7 +463,7 @@ function distinctVals(vals) {
 // set display params per trace to default or provided value
 function setStyles(gd, merge_dflt) {
     plotlylog('+++++++++++++++IN: setStyles(gd)+++++++++++++++');
-    plotlylog(JSON.stringify(gd.data)) 
+    plotlylog(JSON.stringify(gd.data))
 
     merge_dflt = merge_dflt || false; // CP Edit - see mergeattr comment
 
@@ -497,7 +495,7 @@ function setStyles(gd, merge_dflt) {
         var cd = gd.calcdata[i], // trace plus styling
             t = cd[0].t, // trace styling object
             c = t.curve, // trace number
-            gdc = gd.data[c], 
+            gdc = gd.data[c],
             dc = defaultColors[c % defaultColors.length];
         // all types have attributes type, visible, opacity, name, text
         // mergeattr puts single values into cd[0].t, and all others into each individual point
@@ -882,12 +880,13 @@ function legendText(s,gd){
 function restyle(gd,astr,val,traces) {
     plotlylog('+++++++++++++++IN: restyle+++++++++++++++');
 
-    gd.changed = true;
     var gl = gd.layout,
         aobj = {};
     if(typeof astr == 'string') { aobj[astr] = val }
     else if($.isPlainObject(astr)) { aobj = astr }
     else { console.log('restyle fail',astr,val,traces); return }
+
+    if(Object.keys(aobj).length) { gd.changed = true }
 
     if($.isNumeric(traces)) { traces=[traces] }
     else if(!$.isArray(traces) || !traces.length) {
@@ -1044,7 +1043,6 @@ function restyle(gd,astr,val,traces) {
 function relayout(gd,astr,val) {
     plotlylog('+++++++++++++++ IN: RELAYOUT +++++++++++++++');
 
-    gd.changed = true;
     var gl = gd.layout,
         aobj = {},
         dolegend = false,
@@ -1054,6 +1052,8 @@ function relayout(gd,astr,val) {
     if(typeof astr == 'string') { aobj[astr] = val }
     else if($.isPlainObject(astr)) { aobj = astr }
     else { console.log('relayout fail',astr,val); return }
+
+    if(Object.keys(aobj).length) { gd.changed = true }
 
     // look for 'allaxes', split out into all axes
     var keys = Object.keys(aobj),
@@ -1313,8 +1313,10 @@ function plotResize(gd) {
         gd.redrawTimer = setTimeout(function(){
             if($(gd).css('display')=='none') { return }
             if(gd.layout && gd.layout.autosize) {
+                var oldchanged = gd.changed;
                 gd.autoplay = true; // don't include this relayout in the undo queue
                 relayout(gd, {autosize:true});
+                gd.changed = oldchanged; // autosizing doesn't count as a change
             }
 
             if(LIT) {
@@ -1483,7 +1485,7 @@ function layoutStyles(gd) {
     makeTitles(gd,'gtitle');
 
     newModeBar(gd);
-    
+
     return gd;
 }
 
@@ -1671,7 +1673,7 @@ function legend(gd) {
 
     // now position the legend. for both x,y the positions are recorded as fractions
     // of the plot area (left, bottom = 0,0). Outside the plot area is allowed but
-    // position will be clipped to the plot area. Special values +/-100 auto-increase
+    // position will be clipped to the page. Special values +/-100 auto-increase
     // the margin to put the legend entirely outside the plot area on the high/low side.
     // Otherwise, values <1/3 align the low side at that fraction, 1/3-2/3 align the
     // center at that fraction, >2/3 align the right at that fraction
@@ -1687,7 +1689,9 @@ function legend(gd) {
 
     // don't let legend be outside plot in both x and y... that would just make big blank
     // boxes. Put the legend centered in y if we somehow get there.
-    if(Math.abs(gll.x)==100 && Math.abs(gll.y)==100) gll.y=0.5;
+    if(Math.abs(gll.x)==100 && Math.abs(gll.y)==100) { gll.y=0.5 }
+
+    var oldchanged = gd.changed;
 
     if(gll.x==-100) {
         lx=pad;
@@ -1740,6 +1744,10 @@ function legend(gd) {
         if(gll.y<1/3) { ly -= legendheight }
         else if(gll.y<2/3) { ly -= legendheight/2 }
     }
+
+    // adjusting the margin thusly doesn't by itself constitute a change, so
+    // put gd.changed back the way it was
+    gd.changed = oldchanged;
 
     // push the legend back onto the page if it extends off, making sure if nothing else
     // that the top left of the legend is visible
@@ -2027,7 +2035,7 @@ function annotation(gd,index,opt,value) {
     ann.call(setRect, x-outerwidth/2, y-outerheight/2, outerwidth, outerheight);
     annbg.call(setSize, annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
     anntext.call(setPosition, paperbb.left-atbb.left+borderfull, paperbb.top-atbb.top+borderfull)
-      .selectAll('tspan')
+      .selectAll('tspan.nl')
         .attr('x',paperbb.left-atbb.left+borderfull);
 
     // add the arrow
@@ -2288,14 +2296,21 @@ SPECIALCHARS={'mu':'\u03bc','times':'\u00d7','plusmn':'\u00b1'}
 //      t - the (pseudo-HTML) styled text as a string
 function styleText(sn,t) {
     if(t===undefined) { return }
-    var s=d3.select(sn);
-    // whitelist of tags we accept - make sure new tags get added here as well as styleTextInner
-    var tags=['sub','sup','b','i','font'];
-    var tagRE=new RegExp('\x01(\\/?(br|'+tags.join('|')+')(\\s[^\x01\x02]*)?\\/?)\x02','gi');
-    var charsRE=new RegExp('&('+Object.keys(SPECIALCHARS).join('|')+');','g');
+    var s = d3.select(sn),
+        // whitelist of tags we accept - make sure new tags get added here
+        // as well as styleTextInner
+        tags = ['sub','sup','b','i','font'],
+        tagRE = new RegExp('\x01(\\/?(br|'+tags.join('|')+')(\\s[^\x01\x02]*)?\\/?)\x02','gi'),
+        entityRE = /\x01([A-Za-z]+|#[0-9]+);/g,
+        charsRE = new RegExp('&('+Object.keys(SPECIALCHARS).join('|')+');','g');
     // take the most permissive reading we can of the text:
-    // if we don't recognize a tag, treat it as literal text
-    var t1=t.replace(/</g,'\x01') // first turn all <, > to non-printing \x01, \x02
+    // if we don't recognize something as markup, treat it as literal text
+    // first &...; entities
+    var t1 = t.replace(/&/g,'\x01') // first turn all & into non-printing \x01
+        .replace(entityRE,'&$1;') // then turn HTML entities back to ampersand
+        .replace(/\x01/g,'&amp;') // and turn any remaining \x01 into &amp;
+        // then <...> tags
+        .replace(/</g,'\x01') // first turn all <, > to non-printing \x01, \x02
         .replace(/>/g,'\x02')
         .replace(tagRE,'<$1>') // next turn good tags back to <...>
         .replace(/(<br(\s[^<>]*)?\/?>|\n)/gi, '</l><l>') // translate <br> and \n
@@ -2372,15 +2387,19 @@ function styleText(sn,t) {
 // ----------------------------------------------------
 
 // ------------------------------- graphToGrid
-
-function graphToGrid(){
+// "mode" is a string identifying a mode to open when loading the grid
+// (Fit, Formula editor, etc). "mode" will usually by undefined
+function graphToGrid( mode ){
     var gd=gettab();
-    if(gd.fid !== undefined && gd.fid !='') { pullf({fid: gd.fid, ft:'grid'}) }
+    if( gd.data === undefined ){
+        Tabs.add('grid'); return;
+    }
+    if(gd.fid !== undefined && gd.fid !='') { pullf({fid: gd.fid, ft:'grid',  mode:mode}) }
     else {
         var data = gd.data.map(function(gdd){return stripSrc(gdd)});
         plotlylog('~ DATA ~');
         plotlylog(data);
-        pullf({data: JSON.stringify({'data':data}), ft:'grid'});
+        pullf({data: JSON.stringify({'data':data}), ft:'grid', mode:mode});
     }
 }
 
@@ -2427,14 +2446,15 @@ function bBoxIntersect(a,b){
 }
 
 // create a copy of data, with all dereferenced src elements stripped
-// ie if there's xsrc present, strip out x
+// ie if there's xsrc present (and xsrc is well-formed, ie has : and some chars), strip out x
 // needs to do this recursively because some src can be inside sub-objects
 // also strips out functions and other private (start with _) elements
 // so we can add temporary things to data and layout that don't get saved
 function stripSrc(d) {
     var o={};
     for(v in d) {
-        if(!(v+'src' in d) && (typeof d[v] != 'function') && (v.charAt(0)!='_')) {
+        var src = d[v+'src'];
+        if(!((typeof src=='string') && src.indexOf(':')>0) && (typeof d[v] != 'function') && (v.charAt(0)!='_')) {
             if($.isPlainObject(d[v])) { o[v]=stripSrc(d[v]) }
             else { o[v]=d[v] }
         }
@@ -2443,7 +2463,7 @@ function stripSrc(d) {
 }
 
 function alert_repl(func_name, data) {
-    if (window.ws) {
+    if (window.ws && window.ws.confirmedReady) {
         func = (func_name ? JSON.stringify(func_name) : 'None')
         data = JSON.stringify(data);
         send_invisible('hermes(' + func + ',' + data + ')');
