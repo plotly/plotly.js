@@ -131,7 +131,7 @@ function defaultLayout(){
         width:GRAPH_WIDTH,
         height:GRAPH_HEIGHT,
         autosize:'initial', // after initial autosize reverts to true
-        margin:{l:80,r:60,t:80,b:80,pad:2},
+        margin:{l:80,r:80,t:80,b:80,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff',
         barmode:'stack',
