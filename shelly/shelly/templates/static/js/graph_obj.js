@@ -131,7 +131,7 @@ function defaultLayout(){
         width:GRAPH_WIDTH,
         height:GRAPH_HEIGHT,
         autosize:'initial', // after initial autosize reverts to true
-        margin:{l:80,r:60,t:80,b:80,pad:2},
+        margin:{l:80,r:80,t:80,b:80,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff',
         barmode:'stack',
@@ -300,12 +300,10 @@ function plot(divid, data, layout) {
         else if(HEATMAPTYPES.indexOf(curvetype)!=-1 ){ cd = Heatmap.calc(gd,gdc) }
         else if(curvetype=='box') { cd = Boxes.calc(gd,gdc) }
 
-        if(!$.isArray(cd)) { continue }
-
         if(!('line' in gdc)) gdc.line={};
         if(!('marker' in gdc)) gdc.marker={};
         if(!('line' in gdc.marker)) gdc.marker.line={};
-        if(!cd[0]) { cd.push({x:false,y:false}) } // make sure there is a first point
+        if(!$.isArray(cd) || !cd[0]) { cd = [{x:false,y:false}] } // make sure there is a first point
         // add the trace-wide properties to the first point, per point properties to every point
         // t is the holder for trace-wide properties
         if(!cd[0].t) { cd[0].t = {} }
@@ -1290,9 +1288,10 @@ function plotDo(gd,aobj,traces) {
 function plotAutoSize(gd,aobj) {
     var plotBB = gd.paperdiv.node().getBoundingClientRect();
     var gdBB = gd.getBoundingClientRect();
-    var ftBB = $('#filetab').length ? $('#filetab')[0].getBoundingClientRect() : {width:0};
+    // var ftBB = $('#filetab').length ? $('#filetab')[0].getBoundingClientRect() : {width:0};
     var newheight = Math.round(gdBB.bottom-plotBB.top);
-    var newwidth = Math.round((ftBB.width ? ftBB.left : gdBB.right) - plotBB.left);
+    // var newwidth = Math.round((ftBB.width ? ftBB.left : gdBB.right) - plotBB.left);
+    var newwidth = Math.round(gdBB.right - plotBB.left);
     if(Math.abs(gd.layout.width-newwidth)>1 || Math.abs(gd.layout.height-newheight)>1) {
         gd.layout.height = newheight;
         gd.layout.width = newwidth;
@@ -2298,14 +2297,21 @@ SPECIALCHARS={'mu':'\u03bc','times':'\u00d7','plusmn':'\u00b1'}
 //      t - the (pseudo-HTML) styled text as a string
 function styleText(sn,t) {
     if(t===undefined) { return }
-    var s=d3.select(sn);
-    // whitelist of tags we accept - make sure new tags get added here as well as styleTextInner
-    var tags=['sub','sup','b','i','font'];
-    var tagRE=new RegExp('\x01(\\/?(br|'+tags.join('|')+')(\\s[^\x01\x02]*)?\\/?)\x02','gi');
-    var charsRE=new RegExp('&('+Object.keys(SPECIALCHARS).join('|')+');','g');
+    var s = d3.select(sn),
+        // whitelist of tags we accept - make sure new tags get added here
+        // as well as styleTextInner
+        tags = ['sub','sup','b','i','font'],
+        tagRE = new RegExp('\x01(\\/?(br|'+tags.join('|')+')(\\s[^\x01\x02]*)?\\/?)\x02','gi'),
+        entityRE = /\x01([A-Za-z]+|#[0-9]+);/g,
+        charsRE = new RegExp('&('+Object.keys(SPECIALCHARS).join('|')+');','g');
     // take the most permissive reading we can of the text:
-    // if we don't recognize a tag, treat it as literal text
-    var t1=t.replace(/</g,'\x01') // first turn all <, > to non-printing \x01, \x02
+    // if we don't recognize something as markup, treat it as literal text
+    // first &...; entities
+    var t1 = t.replace(/&/g,'\x01') // first turn all & into non-printing \x01
+        .replace(entityRE,'&$1;') // then turn HTML entities back to ampersand
+        .replace(/\x01/g,'&amp;') // and turn any remaining \x01 into &amp;
+        // then <...> tags
+        .replace(/</g,'\x01') // first turn all <, > to non-printing \x01, \x02
         .replace(/>/g,'\x02')
         .replace(tagRE,'<$1>') // next turn good tags back to <...>
         .replace(/(<br(\s[^<>]*)?\/?>|\n)/gi, '</l><l>') // translate <br> and \n
