@@ -285,11 +285,12 @@ function get_xy(gd,gdc){
         }
         else {
             var array_out = [],
-                v0 = (v0_in!==undefined) ?
-                    // histos have already had v0_in turned into a number...
-                    (gdc.type=='histogram2d' ? v0_in : Axes.convertToNums(v0_in,ax))
-                    : 0,
                 dv = dv_in || 1;
+            if(v0_in==undefined) { var v0 = 0 }
+            else if(gdc.type=='histogram2d' || ax.type=='category') {
+                var v0 = v0_in;
+            }
+            else { var v0 = Axes.convertToNums(v0_in,ax) }
             for(var i=0; i<=numbricks; i++) { array_out.push(v0+dv*(i-0.5)) }
         }
         return array_out;
