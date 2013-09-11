@@ -23,17 +23,17 @@ axes.setTypes = function(gd) {
     }
     axes.setConvert(gd.layout.xaxis);
     axes.setConvert(gd.layout.yaxis);
-}
+};
 
 function setType(gd,axletter){
     var ax = gd.layout[axletter+'axis'];
         d0 = gd.data[0];
-    if(!d0.type) { d0.type='scatter' }
+    if(!d0.type) { d0.type='scatter'; }
     // backward compatibility
     if(!ax.type) {
-        if(ax.isdate) { ax.type='date' }
-        else if(ax.islog) { ax.type='log' }
-        else if(ax.isdate===false && ax.islog===false) { ax.type='linear' }
+        if(ax.isdate) { ax.type='date'; }
+        else if(ax.islog) { ax.type='log'; }
+        else if(ax.isdate===false && ax.islog===false) { ax.type='linear'; }
     }
     // now remove the obsolete properties
     delete ax.islog;
@@ -53,7 +53,7 @@ function setType(gd,axletter){
     if(hist) {
         if(axletter=='y') {
             // always numeric data in the bar size direction
-            if(ax.type!='log') { ax.type='linear' }
+            if(ax.type!='log') { ax.type='linear'; }
             return;
         }
         else {
@@ -64,16 +64,16 @@ function setType(gd,axletter){
         }
     }
     // then check the data supplied for that axis
-    // only consider existing type to decide log vs linear
+    // only consider existing type if we need to decide log vs linear
     if(d0.type=='box' && axletter=='x' && !('x' in d0) && !('x0' in d0)) {
         ax.type='category'; // take the categories from trace name, text, or number
     }
     else if((axletter in d0) ? moreDates(d0[axletter]) : isDateTime(d0[axletter+'0'])) {
         ax.type='date';
     }
-    else if(category(gd.data,axletter)) { ax.type='category' }
-    else if(loggy(gd.data,axletter) && ax.type!='linear') { ax.type='log' }
-    else if(ax.type!='log') { ax.type='linear' }
+    else if(category(gd.data,axletter)) { ax.type='category'; }
+    else if(loggy(gd.data,axletter) && ax.type!='linear') { ax.type='log'; }
+    else if(ax.type!='log') { ax.type='linear'; }
 }
 
 // does the array a have mostly dates rather than numbers?
@@ -84,8 +84,8 @@ function setType(gd,axletter){
 function moreDates(a) {
     var dcnt=0, ncnt=0;
     for(var i in a) {
-        if(isDateTime(a[i])) { dcnt+=1 }
-        if($.isNumeric(a[i])) { ncnt+=1 }
+        if(isDateTime(a[i])) { dcnt+=1; }
+        if($.isNumeric(a[i])) { ncnt+=1; }
     }
     return (dcnt>ncnt*2);
 }
@@ -95,26 +95,26 @@ function moreDates(a) {
 // then it should have a range max/min of at least 100
 // and at least 1/4 of distinct values < max/10
 function loggy(d,ax) {
-    var vals = [],v,c;
+    var vals = [],v,c,i;
     var ax2 = (ax=='x') ? 'y' : 'x';
-    for(curve in d){
+    for(var curve in d){
         c=d[curve];
         // curve has data: test each numeric point for <=0 and add if unique
         if(ax in c) {
             for(i in c[ax]) {
                 v=c[ax][i];
                 if($.isNumeric(v)){
-                    if(v<=0) { return false }
-                    else if(vals.indexOf(v)<0) { vals.push(v) }
+                    if(v<=0) { return false; }
+                    else if(vals.indexOf(v)<0) { vals.push(v); }
                 }
             }
         }
         // curve has linear scaling: test endpoints for <=0 and add all points if unique
         else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
-            if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) { return false }
+            if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) { return false; }
             for(i in d[curve][ax2]) {
                 v=c[ax+'0']+c['d'+ax]*i;
-                if(vals.indexOf(v)<0) { vals.push(v) }
+                if(vals.indexOf(v)<0) { vals.push(v); }
             }
         }
     }
@@ -125,24 +125,25 @@ function loggy(d,ax) {
 
 // are the (x,y)-values in gd.data mostly text?
 function category(d,ax) {
-    function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1 }
+    function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1; }
     var catcount=0,numcount=0;
     d.forEach(function(c){
         // curve has data: test each point for non-numeric text
         if(ax in c) {
             var curvenums=0,curvecats=0;
-            for(i in c[ax]) {
-                if(isStr(c[ax][i])){ curvecats++ }
-                else { curvenums++ }
+            for(var i in c[ax]) {
+                var vi = c[ax][i];
+                if(vi && isStr(vi)){ curvecats++; }
+                else if($.isNumeric(vi)){ curvenums++; }
             }
-            if(curvecats>curvenums) { catcount++ }
-            else { numcount++ }
+            if(curvecats>curvenums){ catcount++; }
+            else { numcount++; }
         }
         // curve has an 'x0' or 'y0' value - is this text?
         // (x0 can be specified this way for box plots)
-        else if(ax+'0' in c && isStr(c[ax+'0'])) { catcount++ }
-        else { numcount++ }
-    })
+        else if(ax+'0' in c && isStr(c[ax+'0'])) { catcount++; }
+        else { numcount++; }
+    });
     return catcount>numcount;
 }
 
@@ -155,13 +156,13 @@ function category(d,ax) {
 // in case the expected data isn't there, make a list of integers based on the opposite data
 axes.convertOne = function(gdc,data,ax) {
     var counterdata = gdc[{x:'y',y:'x'}[data]]; // the opposing data to compare to
-    if(data in gdc) { return axes.convertToNums(gdc[data],ax) }
+    if(data in gdc) { return axes.convertToNums(gdc[data],ax); }
     else {
         var v0 = ((data+'0') in gdc) ? axes.convertToNums(gdc[data+'0'], ax) : 0,
             dv = (gdc['d'+data]) ? gdc['d'+data] : 1;
-        return counterdata.map(function(v,i){return v0+i*dv});
+        return counterdata.map(function(v,i){return v0+i*dv;});
     }
-}
+};
 
 // convertToNums: convert raw data to numbers
 // dates -> ms since the epoch,
@@ -172,7 +173,8 @@ axes.convertOne = function(gdc,data,ax) {
 //      ax - an axis object
 axes.convertToNums = function(o,ax){
     // find the conversion function
-    if(ax.type=='date') { var fn = DateTime2ms }
+    var fn;
+    if(ax.type=='date') { fn = DateTime2ms; }
     else if(ax.type=='category') {
         // create the category list
         // this will enter the categories in the order it encounters them,
@@ -180,18 +182,18 @@ axes.convertToNums = function(o,ax){
         // from the second that aren't in the first etc.
         // TODO: sorting options - I guess we'll have to do this in plot()
         // after finishing calcdata
-        if(!ax.categories) { ax.categories = [] }
+        if(!ax.categories) { ax.categories = []; }
         ($.isArray(o) ? o : [o]).forEach(function(v){
-            if(ax.categories.indexOf(v)==-1) { ax.categories.push(v) }
+            if(ax.categories.indexOf(v)==-1) { ax.categories.push(v); }
         });
-        var fn = function(v){ var c = ax.categories.indexOf(v); return c==-1 ? undefined : c }
+        fn = function(v){ var c = ax.categories.indexOf(v); return c==-1 ? undefined : c; };
     }
-    else { var fn = function(v){return $.isNumeric(v) ? Number(v) : undefined } }
+    else { fn = function(v){return $.isNumeric(v) ? Number(v) : undefined; }; }
 
     // do the conversion
-    if($.isArray(o)) { return o.map(fn) }
-    else { return fn(o) }
-}
+    if($.isArray(o)) { return o.map(fn); }
+    else { return fn(o); }
+};
 
 // setConvert: define the conversion functions for an axis
 // after convertToNums turns all data to numbers, it's used in 3 ways:
@@ -203,46 +205,52 @@ axes.convertToNums = function(o,ax){
 // setAxConvert creates/updates these conversion functions
 // also clears the autorange bounds ._tight and ._padded
 axes.setConvert = function(ax) {
-    function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null }
-    function fromLog(v){ return Math.pow(10,v) }
-    function num(v){ return $.isNumeric(v) ? v : null }
+    function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null; }
+    function fromLog(v){ return Math.pow(10,v); }
+    function num(v){ return $.isNumeric(v) ? v : null; }
     ax.c2l = (ax.type=='log') ? toLog : num;
     ax.l2c = (ax.type=='log') ? fromLog : num;
     ax.c2p = function(v,clip) {
         var va = ax.c2l(v);
         // include 2 fractional digits on pixel, for PDF zooming etc
-        if($.isNumeric(va)) { return d3.round(ax._b+ax._m*va,2) }
+        if($.isNumeric(va)) { return d3.round(ax._b+ax._m*va,2); }
         // clip NaN (ie past negative infinity) to one axis length past the negative edge
         if(clip && $.isNumeric(v)) {
             var r0 = ax.range[0], r1 = ax.range[1];
             return d3.round(ax._b+ax._m*0.5*(r0+r1-3*Math.abs(r0-r1)),2);
         }
-    }
-    ax.p2c = function(px){ return ax.l2c((px-ax._b)/ax._m) }
+    };
+    ax.p2c = function(px){ return ax.l2c((px-ax._b)/ax._m); };
 
     // separate auto data ranges for tight-fitting and padded bounds
     // at the end we will combine all of these, but keep them separate until then
     // so we can choose on a trace-by-trace basis whether to pad, but choose
     // the amount of padding based on the total range of all traces
-    ax._tight=[null,null]
+    ax._tight=[null,null];
     ax._padded=[null,null];
-}
+};
 
 // doAutoRange: combine the tight and padded limits to get a final axis autorange setting
 axes.doAutoRange = function(gd,ax) {
     var tight = ax._tight, padded = ax._padded;
     // if any number is missing, set it so it's numeric but won't be limiting
-    if(!$.isNumeric(tight[0])) { tight[0] = padded[0] }
-    if(!$.isNumeric(tight[1])) { tight[1] = padded[1] }
-    if(!$.isNumeric(padded[0])) { padded[0] = (tight[0]+tight[1])/2 }
-    if(!$.isNumeric(padded[1])) { padded[1] = (tight[0]+tight[1])/2 }
+    if(!$.isNumeric(tight[0])) { tight[0] = padded[0]; }
+    if(!$.isNumeric(tight[1])) { tight[1] = padded[1]; }
+    if(!$.isNumeric(padded[0])) { padded[0] = (tight[0]+tight[1])/2; }
+    if(!$.isNumeric(padded[1])) { padded[1] = (tight[0]+tight[1])/2; }
     if(ax.autorange && $.isNumeric(tight[0]) && $.isNumeric(tight[1])) {
         var axpad = 0.05; // 5% padding beyond last point for padded limits
         // if there's a heatmap, get rid of 5% padding regardless
         // TODO: does this really make sense?
         if(gd.data) { gd.data.forEach(function(v){
-            if(HEATMAPTYPES.indexOf(v.type)!=-1){ axpad=0 }
-        }) }
+            if(HEATMAPTYPES.indexOf(v.type)!=-1){ axpad=0; }
+        }); }
+
+        // check if we're forcing zero to be included
+        if(ax.autorange=='withzero' && ax.type=='linear') {
+            tight[0] = Math.min(0,tight[0]);
+            tight[1] = Math.max(0,tight[1]);
+        }
 
         // if axis is currently reversed, preserve this.
         var axReverse = (ax.range && ax.range[1]<ax.range[0]);
@@ -254,36 +262,36 @@ axes.doAutoRange = function(gd,ax) {
         ];
 
         // don't let axis have zero size
-        if(ax.range[0]==ax.range[1]) { ax.range = [ax.range[0]-1,ax.range[0]+1] }
-        if(axReverse) { ax.range.reverse() }
+        if(ax.range[0]==ax.range[1]) { ax.range = [ax.range[0]-1,ax.range[0]+1]; }
+        if(axReverse) { ax.range.reverse(); }
     }
-}
+};
 
 // include new data in the outer x or y limits of the curves processed so far
 axes.expandBounds = function(ax,dr,data,serieslen,pad) {
-    if(!ax.autorange || !data) { return }
+    if(!ax.autorange || !data) { return; }
     pad = pad || 0; // optional extra space to give these new data points
     serieslen = serieslen || data.length;
     dr[0] = aggNums(Math.min, $.isNumeric(dr[0]) ? dr[0] : null,
-        data.map(function(v){return $.isNumeric(v) ? ax.c2l(v-pad) : null}), serieslen);
+        data.map(function(v){return $.isNumeric(v) ? ax.c2l(v-pad) : null; }), serieslen);
     dr[1] = aggNums(Math.max, $.isNumeric(dr[1]) ? dr[1] : null,
-        data.map(function(v){return $.isNumeric(v) ? ax.c2l(v+pad) : null}), serieslen);
-}
+        data.map(function(v){return $.isNumeric(v) ? ax.c2l(v+pad) : null; }), serieslen);
+};
 
 // expand data range to include a tight zero (if the data all has one
 // sign and the axis is linear) and a padded opposite bound
 axes.expandWithZero = function(ax,data,serieslen,pad) {
-    if(!ax.autorange) { return }
+    if(!ax.autorange) { return; }
 
     var dr = [null,null];
     axes.expandBounds(ax,dr,data,serieslen,pad);
 
-    if(dr[0]>=0 && ax.type=='linear') { ax._tight[0] = Math.min(0,ax._tight[0]) }
-    else { ax._padded[0]=Math.min(dr[0],ax._padded[0]) }
+    if(dr[0]>=0 && ax.type=='linear') { ax._tight[0] = Math.min(0,ax._tight[0]); }
+    else { ax._padded[0]=Math.min(dr[0],ax._padded[0]); }
 
-    if(dr[1]<=0 && ax.type=='linear') { ax._tight[1] = Math.max(0,ax._tight[1]) }
-    else { ax._padded[1]=Math.max(dr[1],ax._padded[1]) }
-}
+    if(dr[1]<=0 && ax.type=='linear') { ax._tight[1] = Math.max(0,ax._tight[1]); }
+    else { ax._padded[1]=Math.max(dr[1],ax._padded[1]); }
+};
 
 axes.autoBin = function(data,ax,nbins,is2d) {
     var datamin = aggNums(Math.min,null,data),
@@ -293,7 +301,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
             start: datamin-0.5,
             end: datamax+0.5,
             size: 1
-        }
+        };
     }
     else {
         var size0 = nbins ? ((datamax-datamin)/nbins) :
@@ -307,12 +315,12 @@ axes.autoBin = function(data,ax,nbins,is2d) {
         // and offset the bins accordingly
         var edgecount = 0, intcount = 0;
         for(var i=0; i<data.length; i++) {
-            if(data[i]%1==0) { intcount++ }
-            if((1+(data[i]-binstart)*100/dummyax.dtick)%100<2) { edgecount++ }
+            if(data[i]%1===0) { intcount++; }
+            if((1+(data[i]-binstart)*100/dummyax.dtick)%100<2) { edgecount++; }
         }
         if(intcount==data.length && ax.type!='date') {
             binstart -= 0.5;
-            if(dummyax.dtick<1) { dummyax.dtick=1 }
+            if(dummyax.dtick<1) { dummyax.dtick=1; }
         }
         else if(edgecount>data.length/2) {
             var binshift = (axes.tickIncrement(binstart,dummyax.dtick)-binstart)/2;
@@ -320,14 +328,14 @@ axes.autoBin = function(data,ax,nbins,is2d) {
         }
         // calculate the endpoint
         var binend = binstart;
-        while(binend<datamax) { binend = axes.tickIncrement(binend,dummyax.dtick) }
+        while(binend<datamax) { binend = axes.tickIncrement(binend,dummyax.dtick); }
         return {
             start: binstart,
             end: binend,
             size: dummyax.dtick
-        }
+        };
     }
-}
+};
 
 
 // ----------------------------------------------------
@@ -350,8 +358,8 @@ function calcTicks(gd,ax) {
 
     // check for missing tick0
     if(!ax.tick0) {
-        if(ax.type=='date') { ax.tick0 = new Date(2000,0,1).getTime() }
-        else { ax.tick0 = 0 }
+        if(ax.type=='date') { ax.tick0 = new Date(2000,0,1).getTime(); }
+        else { ax.tick0 = 0; }
     }
 
     // now figure out rounding of tick values
@@ -382,10 +390,10 @@ function calcTicks(gd,ax) {
     }
     for(var x=ax._tmin;(axrev)?(x>=endtick):(x<=endtick);x=axes.tickIncrement(x,ax.dtick,axrev)) {
         vals.push(x);
-        if(vals.length>1000) { break } // prevent infinite loops
+        if(vals.length>1000) { break; } // prevent infinite loops
     }
     ax._tmax=vals[vals.length-1]; // save the last tick as well as first, so we can eg show the exponent only on the last one
-    return vals.map(function(x){return axes.tickText(gd, ax, x)});
+    return vals.map(function(x){return axes.tickText(gd, ax, x);});
 }
 
 // autoTicks: calculate best guess at pleasant ticks for this axis
@@ -403,12 +411,12 @@ function calcTicks(gd,ax) {
 //      log with linear ticks: L# where # is the linear tick spacing
 //      log showing powers plus some intermediates: D1 shows all digits, D2 shows 2 and 5
 axes.autoTicks = function(ax,rt){
+    var base,rtexp;
     if(ax.type=='date'){
-        var base;
         ax.tick0=new Date(2000,0,1).getTime();
         if(rt>15778800000){ // years if rt>6mo
             rt/=31557600000;
-            var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+            rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
             ax.dtick='M'+String(12*rtexp*roundUp(rt/rtexp,[2,5,10]));
         }
         else if(rt>1209600000){ // months if rt>2wk
@@ -433,7 +441,7 @@ axes.autoTicks = function(ax,rt){
             ax.dtick=base*roundUp(rt/base,[1,2,5,10,15,30]);
         }
         else { //milliseconds
-            var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+            rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
             ax.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
         }
     }
@@ -446,7 +454,7 @@ axes.autoTicks = function(ax,rt){
             var nt = 1.5*Math.abs((ax.range[1]-ax.range[0])/rt);
             // ticks on a linear scale, labeled fully
             rt=Math.abs(Math.pow(10,ax.range[1])-Math.pow(10,ax.range[0]))/nt;
-            var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+            rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
             ax.dtick='L' + String(rtexp*roundUp(rt/rtexp,[2,5,10]));
         }
         else { // include intermediates between powers of 10, labeled with small digits
@@ -465,44 +473,45 @@ axes.autoTicks = function(ax,rt){
     else{
         // auto ticks always start at 0
         ax.tick0=0;
-        var rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+        rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
         ax.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
     }
-    if(ax.dtick==0) { ax.dtick=1 } // prevent infinite loops...
-}
+    if(ax.dtick===0) { ax.dtick=1; } // prevent infinite loops...
+};
 
 // after dtick is already known, find tickround = precision to display in tick labels
 //   for regular numeric ticks, integer # digits after . to round to
 //   for date ticks, the last date part to show (y,m,d,H,M,S) or an integer # digits past seconds
 function autoTickRound(ax) {
-    var dt = ax.dtick;
+    var dt = ax.dtick,
+        maxend;
     ax._tickexponent = 0;
     if(ax.type=='category') {
         ax._tickround = null;
     }
     else if($.isNumeric(dt) || dt.charAt(0)=='L') {
         if(ax.type=='date') {
-            if(dt>=86400000) { ax._tickround = 'd' }
-            else if(dt>=3600000) { ax._tickround = 'H' }
-            else if(dt>=60000) { ax._tickround = 'M' }
-            else if(dt>=1000) { ax._tickround = 'S' }
-            else { ax._tickround = 3-Math.round(Math.log(dt/2)/Math.LN10) }
+            if(dt>=86400000) { ax._tickround = 'd'; }
+            else if(dt>=3600000) { ax._tickround = 'H'; }
+            else if(dt>=60000) { ax._tickround = 'M'; }
+            else if(dt>=1000) { ax._tickround = 'S'; }
+            else { ax._tickround = 3-Math.round(Math.log(dt/2)/Math.LN10); }
         }
         else {
-            if(!$.isNumeric(dt)) { dt = Number(dt.substr(1)) }
+            if(!$.isNumeric(dt)) { dt = Number(dt.substr(1)); }
             // 2 digits past largest digit of dtick
             ax._tickround = 2-Math.floor(Math.log(dt)/Math.LN10+0.01);
-            if(ax.type=='log') { var maxend = Math.pow(10,Math.max(ax.range[0],ax.range[1])) }
-            else { var maxend = Math.max(Math.abs(ax.range[0]), Math.abs(ax.range[1])) }
+            if(ax.type=='log') { maxend = Math.pow(10,Math.max(ax.range[0],ax.range[1])); }
+            else { maxend = Math.max(Math.abs(ax.range[0]), Math.abs(ax.range[1])); }
             var rangeexp = Math.floor(Math.log(maxend)/Math.LN10+0.01);
             if(Math.abs(rangeexp)>3) {
                 ax._tickexponent = (['SI','B'].indexOf(ax.exponentformat)!=-1) ?
-                    3*Math.round((rangeexp-1)/3) : rangeexp
+                    3*Math.round((rangeexp-1)/3) : rangeexp;
             }
         }
     }
-    else if(dt.charAt(0)=='M') { ax._tickround = (dt.length==2) ? 'm' : 'y' }
-    else { ax._tickround = null }
+    else if(dt.charAt(0)=='M') { ax._tickround = (dt.length==2) ? 'm' : 'y'; }
+    else { ax._tickround = null; }
 }
 
 // return the smallest element from (sorted) array a that's bigger than val,
@@ -511,13 +520,14 @@ function autoTickRound(ax) {
 // particularly useful for date/time where things are not powers of 10
 // binary search is probably overkill here...
 function roundUp(v,a,reverse){
-    var l=0, h=a.length-1, m, c=0;
-    if(reverse) { var dl=0, dh=1, r=Math.ceil }
-    else { var dl=1, dh=0, r=Math.floor }
-    while(l<h && c++<100){ // shouldn't need c, but just in case...
-        m=r((l+h)/2)
-        if(a[m]<=v) { l=m+dl }
-        else { h=m-dh }
+    var l=0, h=a.length-1, m, c=0,
+        dl = reverse ? 0 : 1,
+        dh = reverse ? 1 : 0,
+        r = reverse ? Math.ceil : Math.floor;
+    while(l<h && c++<100){ // shouldn't need c, just in case something weird happens and it runs away...
+        m=r((l+h)/2);
+        if(a[m]<=v) { l=m+dl; }
+        else { h=m-dh; }
     }
     return a[l];
 }
@@ -529,7 +539,7 @@ function roundUp(v,a,reverse){
 // can all be calculated as constant number of milliseconds
 axes.tickIncrement = function(x,dtick,axrev){
     // includes all dates smaller than month, and pure 10^n in log
-    if($.isNumeric(dtick)) { return x+(axrev?-dtick:dtick) }
+    if($.isNumeric(dtick)) { return x+(axrev?-dtick:dtick); }
 
     var tType=dtick.charAt(0);
     var dtnum=Number(dtick.substr(1)),dtSigned=(axrev?-dtnum:dtnum);
@@ -540,7 +550,7 @@ axes.tickIncrement = function(x,dtick,axrev){
         return y.setMonth(y.getMonth()+dtSigned);
     }
     // Log scales: Linear, Digits
-    else if(tType=='L') { return Math.log(Math.pow(10,x)+dtSigned)/Math.LN10 }
+    else if(tType=='L') { return Math.log(Math.pow(10,x)+dtSigned)/Math.LN10; }
     //log10 of 2,5,10, or all digits (logs just have to be close enough to round)
     else if(tType=='D') {
         var tickset=(dtick=='D2') ? [-0.301,0,0.301,0.699,1] :
@@ -549,27 +559,31 @@ axes.tickIncrement = function(x,dtick,axrev){
         var frac=roundUp(mod(x2,1), tickset, axrev);
         return Math.floor(x2)+Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
     }
-    else { throw "unrecognized dtick "+String(dtick) }
-}
+    else { throw "unrecognized dtick "+String(dtick); }
+};
 
 // calculate the first tick on an axis
 axes.tickFirst = function(ax){
-    var axrev=(ax.range[1]<ax.range[0]), sRound=(axrev ? Math.floor : Math.ceil),
+    var axrev=(ax.range[1]<ax.range[0]),
+        sRound=(axrev ? Math.floor : Math.ceil),
         // add a tiny extra bit to make sure we get ticks that may have been rounded out
         r0 = ax.range[0]*1.0001 - ax.range[1]*0.0001;
     if($.isNumeric(ax.dtick)) {
         var tmin = sRound((r0-ax.tick0)/ax.dtick)*ax.dtick+ax.tick0;
         // make sure no ticks outside the category list
-        if(ax.type=='category') { tmin = constrain(tmin,0,ax.categories.length-1) }
-        return tmin
+        if(ax.type=='category') { tmin = constrain(tmin,0,ax.categories.length-1); }
+        return tmin;
     }
 
-    var tType=ax.dtick.charAt(0), dt=Number(ax.dtick.substr(1));
+    var tType=ax.dtick.charAt(0),
+        dt=Number(ax.dtick.substr(1)),
+        t0,mdif,t1;
     // Dates: months (or years)
     if(tType=='M'){
-        var t0=new Date(ax.tick0), r0=new Date(r0);
-        var mdif=(r0.getFullYear()-t0.getFullYear())*12+r0.getMonth()-t0.getMonth();
-        var t1=t0.setMonth(t0.getMonth()+(Math.round(mdif/dt)+(axrev?1:-1))*dt);
+        t0=new Date(ax.tick0);
+        r0=new Date(r0);
+        mdif=(r0.getFullYear()-t0.getFullYear())*12+r0.getMonth()-t0.getMonth();
+        t1=t0.setMonth(t0.getMonth()+(Math.round(mdif/dt)+(axrev?1:-1))*dt);
         while(axrev ? t1>r0 : t1<r0) t1=axes.tickIncrement(t1,ax.dtick,axrev);
         return t1;
     }
@@ -583,8 +597,8 @@ axes.tickFirst = function(ax){
         var frac=roundUp(mod(r0,1), tickset, axrev);
         return Math.floor(r0)+Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
     }
-    else { throw "unrecognized dtick "+String(ax.dtick) }
-}
+    else { throw "unrecognized dtick "+String(ax.dtick); }
+};
 
 // draw the text for one tick.
 // px,py are the location on gd.paper
@@ -605,32 +619,32 @@ axes.tickText = function(gd, ax, x, hover){
             x!={first:ax._tmin,last:ax._tmax}[ax.showexponent]) ? 'hide' : false;
     if(ax.type=='date'){
         if(hover) {
-            if($.isNumeric(tr)) { tr+=2 }
-            else { tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr] }
+            if($.isNumeric(tr)) { tr+=2; }
+            else { tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr]; }
         }
         var d=new Date(x);
-        if(tr=='y') { tt=$.datepicker.formatDate('yy', d) }
-        else if(tr=='m') { tt=$.datepicker.formatDate('M yy', d) }
+        if(tr=='y') { tt=$.datepicker.formatDate('yy', d); }
+        else if(tr=='m') { tt=$.datepicker.formatDate('M yy', d); }
         else {
-            if(x==ax._tmin) { suffix='<br>'+$.datepicker.formatDate('yy', d) }
+            if(x==ax._tmin) { suffix='<br>'+$.datepicker.formatDate('yy', d); }
 
-            if(tr=='d') { tt=$.datepicker.formatDate('M d', d) }
-            else if(tr=='H') { tt=$.datepicker.formatDate('M d ', d)+lpad(d.getHours(),2)+'h' }
+            if(tr=='d') { tt=$.datepicker.formatDate('M d', d); }
+            else if(tr=='H') { tt=$.datepicker.formatDate('M d ', d)+lpad(d.getHours(),2)+'h'; }
             else {
-                if(x==ax._tmin) { suffix='<br>'+$.datepicker.formatDate('M d, yy', d) }
+                if(x==ax._tmin) { suffix='<br>'+$.datepicker.formatDate('M d, yy', d); }
 
                 tt=lpad(d.getHours(),2)+':'+lpad(d.getMinutes(),2);
                 if(tr!='M'){
                     tt+=':'+lpad(d.getSeconds(),2);
-                    if(tr!='S') { tt+=numFormat(mod(x/1000,1),ax,'none').substr(1) }
+                    if(tr!='S') { tt+=numFormat(mod(x/1000,1),ax,'none').substr(1); }
                 }
             }
         }
     }
     else if(ax.type=='log'){
-        if(hover && ($.isNumeric(dt) || dt.charAt(0)!='L')) { dt = 'L3' }
-        if($.isNumeric(dt)||((dt.charAt(0)=='D')&&(mod(x+.01,1)<.1))) {
-            tt=(Math.round(x)==0)?'1':(Math.round(x)==1)?'10':'10'+String(Math.round(x)).sup()
+        if(hover && ($.isNumeric(dt) || dt.charAt(0)!='L')) { dt = 'L3'; }
+        if($.isNumeric(dt)||((dt.charAt(0)=='D')&&(mod(x+0.01,1)<0.1))) {
+            tt=(Math.round(x)===0)?'1':(Math.round(x)==1)?'10':'10'+String(Math.round(x)).sup();
             fontSize*=1.25;
         }
         else if(dt.charAt(0)=='D') {
@@ -644,7 +658,7 @@ axes.tickText = function(gd, ax, x, hover){
     }
     else if(ax.type=='category'){
         var tt0 = ax.categories[Math.round(x)];
-        if(tt0===undefined) { tt0='' }
+        if(tt0===undefined) { tt0=''; }
         tt=String(tt0);
     }
     else {
@@ -657,7 +671,7 @@ axes.tickText = function(gd, ax, x, hover){
     }
     return {x:x, dx:px, dy:py, text:tt+suffix,
         fontSize:fontSize, font:font, fontColor:fontColor};
-}
+};
 
 // format a number (tick value) according to the axis settings
 // new, more reliable procedure than d3.round or similar:
@@ -673,7 +687,7 @@ function numFormat(v,ax,fmtoverride,hover) {
     // add a couple more digits of precision over tick labels
     if(hover) {
         // make a dummy axis obj to get the auto rounding and exponent
-        var ah = {exponentformat:ax.exponentformat, dtick:Math.abs(v), range:[0,v||1]}
+        var ah = {exponentformat:ax.exponentformat, dtick:Math.abs(v), range:[0,v||1]};
         autoTickRound(ah);
         r = ah._tickround+2;
         d = ah._tickexponent;
@@ -688,11 +702,11 @@ function numFormat(v,ax,fmtoverride,hover) {
     // 'none' (1200000)
     // 'power' (1.2x10^6)
     // 'hide' (1.2, use 3rd argument=='hide' to eg only show exponent on last tick)
-    if(fmt=='none') { d=0 }
+    if(fmt=='none') { d=0; }
 
     // take the sign out, put it back manually at the end - makes cases easier
     v=Math.abs(v);
-    if(v<e) { v = '0' } // 0 is just 0, but may get exponent if it's the last tick
+    if(v<e) { v = '0'; } // 0 is just 0, but may get exponent if it's the last tick
     else {
         v += e;
         // take out a common exponent, if any
@@ -701,16 +715,16 @@ function numFormat(v,ax,fmtoverride,hover) {
             r+=d;
         }
         // round the mantissa
-        if(r==0) { v=String(Math.floor(v)) }
+        if(r===0) { v=String(Math.floor(v)); }
         else if(r<0) {
             v = String(Math.round(v));
             v = v.substr(0,v.length+r);
-            for(var i=r; i<0; i++) { v+='0' }
+            for(var i=r; i<0; i++) { v+='0'; }
         }
         else {
             v = String(v);
             var dp = v.indexOf('.')+1;
-            if(dp) { v = v.substr(0,dp+r).replace(/\.?0+$/,'') };
+            if(dp) { v = v.substr(0,dp+r).replace(/\.?0+$/,''); }
         }
     }
 
@@ -719,11 +733,11 @@ function numFormat(v,ax,fmtoverride,hover) {
         if(fmt=='e' || ((fmt=='SI'||fmt=='B') && (d>12 || d<-15))) {
             v += 'e'+(d>0 ? '+' : '')+d;
         }
-        else if(fmt=='E') { v += 'E'+(d>0 ? '+' : '')+d }
-        else if(fmt=='power') { v += '&times;10'+String(d).sup() }
-        else if(fmt=='B' && d==9) { v += 'B' }
-        else if(fmt=='SI' || fmt=='B') { v += SIPREFIXES[d/3+5] }
-        else { console.log('unknown exponent format '+fmt) }
+        else if(fmt=='E') { v += 'E'+(d>0 ? '+' : '')+d; }
+        else if(fmt=='power') { v += '&times;10'+String(d).sup(); }
+        else if(fmt=='B' && d==9) { v += 'B'; }
+        else if(fmt=='SI' || fmt=='B') { v += SIPREFIXES[d/3+5]; }
+        else { console.log('unknown exponent format '+fmt); }
     }
     // put sign back in and return
     return (n?'-':'')+v;
@@ -732,7 +746,7 @@ function numFormat(v,ax,fmtoverride,hover) {
 // doTicks: draw ticks, grids, and tick labels for axis axletter:
 // 'x' or 'y', blank to do both, 'redraw' to force full redraw
 axes.doTicks = function(gd,axletter) {
-    if(axletter=='redraw') { gd.axislayer.selectAll('text,path,line').remove() }
+    if(axletter=='redraw') { gd.axislayer.selectAll('text,path,line').remove(); }
     if(['x','y'].indexOf(axletter)==-1) {
         axes.doTicks(gd,'x');
         axes.doTicks(gd,'y');
@@ -743,37 +757,42 @@ axes.doTicks = function(gd,axletter) {
         ax={x:gl.xaxis, y:gl.yaxis}[axletter];
     ax.range = ax.range.map(Number); // in case a val turns into string somehow
     var vals=calcTicks(gd,ax),
-        datafn = function(d){return d.text},
+        datafn = function(d){ return d.text; },
         tcls = axletter+'tick',
         gcls = axletter+'grid',
         zcls = axletter+'zl',
-        pad = gm.p+(ax.ticks=='outside' ? 1 : -1) * ($.isNumeric(ax.linewidth) ? ax.linewidth : 1)/2;
+        pad = gm.p+(ax.ticks=='outside' ? 1 : -1) * ($.isNumeric(ax.linewidth) ? ax.linewidth : 1)/2,
+        standoff = ax.ticks=='outside' ? ax.ticklen : ax.linewidth+1,
+        x1,y1,tx,ty,tickpath,g,tl,transfn;
     // positioning arguments for x vs y axes
     if(axletter=='x') {
-        var y1 = gl.height-gm.b+pad,
-            ty = (ax.ticks=='inside' ? -1 : 1)*ax.ticklen,
-            tickpath = 'M'+gm.l+','+y1+'v'+ty+
-                (ax.mirror=='ticks' ? ('m0,'+(-gd.plotheight-2*(ty+pad))+'v'+ty): ''),
-            g = {x1:gm.l, x2:gm.l, y1:gl.height-gm.b, y2:gm.t},
-            tl = {x:function(d){return d.dx+gm.l},
-                y:function(d){return d.dy+y1+(ax.ticks=='outside' ? ax.ticklen : ax.linewidth+1)+d.fontSize},
-                anchor: (!ax.tickangle || ax.tickangle==180) ? 'middle' :
-                    (ax.tickangle<0 ? 'end' : 'start')},
-            transfn = function(d){return 'translate('+(ax._m*d.x+ax._b)+',0)'};
+        y1 = gl.height-gm.b+pad;
+        ty = (ax.ticks=='inside' ? -1 : 1)*ax.ticklen;
+        tickpath = 'M'+gm.l+','+y1+'v'+ty+
+            (ax.mirror=='ticks' ? ('m0,'+(-gd.plotheight-2*(ty+pad))+'v'+ty): '');
+        g = {x1:gm.l, x2:gm.l, y1:gl.height-gm.b, y2:gm.t};
+        tl = {
+            x:function(d){ return d.dx+gm.l; },
+            y:function(d){ return d.dy+y1+standoff+d.fontSize; },
+            anchor: (!ax.tickangle || ax.tickangle==180) ? 'middle' :
+                (ax.tickangle<0 ? 'end' : 'start')
+        };
+        transfn = function(d){ return 'translate('+(ax._m*d.x+ax._b)+',0)'; };
     }
     else if(axletter=='y') {
-        var x1 = gm.l-pad,
-            tx = (ax.ticks=='inside' ? 1 : -1)*ax.ticklen,
-            tickpath = 'M'+x1+','+gm.t+'h'+tx+
-                (ax.mirror=='ticks' ? ('m'+(gd.plotwidth-2*(tx-pad))+',0h'+tx): ''),
-            g = {x1:gm.l, x2:gl.width-gm.r, y1:gm.t, y2:gm.t},
-            tl = {x:function(d){return d.dx+x1 -
-                    (ax.ticks=='outside' ? ax.ticklen : ax.linewidth+1) -
-                    (Math.abs(ax.tickangle)==90 ? d.fontSize/2 : 0)
-                },
-                y:function(d){return d.dy+gm.t+d.fontSize/2},
-                anchor: (Math.abs(ax.tickangle)==90) ? 'middle' : 'end'},
-            transfn = function(d){return 'translate(0,'+(ax._m*d.x+ax._b)+')'};
+        x1 = gm.l-pad;
+        tx = (ax.ticks=='inside' ? 1 : -1)*ax.ticklen;
+        tickpath = 'M'+x1+','+gm.t+'h'+tx+
+            (ax.mirror=='ticks' ? ('m'+(gd.plotwidth-2*(tx-pad))+',0h'+tx): '');
+        g = {x1:gm.l, x2:gl.width-gm.r, y1:gm.t, y2:gm.t};
+        tl = {
+            x:function(d){ return d.dx+x1 - standoff -
+                (Math.abs(ax.tickangle)==90 ? d.fontSize/2 : 0);
+            },
+            y:function(d){ return d.dy+gm.t+d.fontSize/2; },
+            anchor: (Math.abs(ax.tickangle)==90) ? 'middle' : 'end'
+        };
+        transfn = function(d){ return 'translate(0,'+(ax._m*d.x+ax._b)+')'; };
     }
     else {
         plotlylog('unrecognized doTicks axis',ax);
@@ -786,11 +805,11 @@ axes.doTicks = function(gd,axletter) {
         ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
             .call(strokeColor, ax.tickcolor || '#000')
             .attr('stroke-width', ax.tickwidth || 1)
-            .attr('d',tickpath)
+            .attr('d',tickpath);
         ticks.attr('transform',transfn);
         ticks.exit().remove();
     }
-    else { ticks.remove() }
+    else { ticks.remove(); }
 
     // tick labels
     gd.axislayer.selectAll('text.'+tcls).remove(); // TODO: problems with reusing labels... shouldn't need this.
@@ -798,24 +817,24 @@ axes.doTicks = function(gd,axletter) {
     if(ax.showticklabels) {
         yl.enter().append('text').classed(tcls,1)
             .call(setPosition, tl.x, tl.y)
-            .attr('font-family',function(d){return d.font})
-            .attr('font-size',function(d){return d.fontSize})
-            .attr('fill',function(d){return d.fontColor})
+            .attr('font-family',function(d){ return d.font; })
+            .attr('font-size',function(d){ return d.fontSize; })
+            .attr('fill',function(d){ return d.fontColor; })
             .attr('text-anchor',tl.anchor)
-            .each(function(d){styleText(this,d.text)});
+            .each(function(d){ styleText(this,d.text); });
         yl.attr('transform',function(d){
             return transfn(d) + (ax.tickangle ?
-                (' rotate('+ax.tickangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')') : '')
+                (' rotate('+ax.tickangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')') : '');
         });
         yl.exit().remove();
     }
-    else { yl.remove() }
+    else { yl.remove(); }
 
     // grid
-    // TODO: must be a better way to find & remove zero lines? this will fail when we get to manual ticks
+    // TODO: must be a better way to find & remove zero lines?
     var grid = gd.axislayer.selectAll('line.'+gcls).data(vals,datafn),
         gridwidth = ax.gridwidth || 1;
-    if(ax.showgrid!=false) {
+    if(ax.showgrid!==false) {
         grid.enter().append('line').classed(gcls,1)
             .call(strokeColor, ax.gridcolor || '#ddd')
             .attr('stroke-width', gridwidth)
@@ -827,7 +846,7 @@ axes.doTicks = function(gd,axletter) {
         grid.attr('transform',transfn);
         grid.exit().remove();
     }
-    else { grid.remove() }
+    else { grid.remove(); }
 
     // zero line
     var zl = gd.axislayer.selectAll('line.'+zcls).data(ax.range[0]*ax.range[1]<=0 ? [{x:0}] : []);
@@ -842,7 +861,7 @@ axes.doTicks = function(gd,axletter) {
         zl.attr('transform',transfn);
         zl.exit().remove();
     }
-    else { zl.remove() }
+    else { zl.remove(); }
 
     // now move all ticks and zero lines to the top of axislayer (ie over other grid lines)
     // looks cumbersome in d3, so switch to jquery.
@@ -852,7 +871,7 @@ axes.doTicks = function(gd,axletter) {
 
     // update the axis title (so it can move out of the way if needed)
     makeTitles(gd,axletter+'title');
-}
+};
 
 
 }()); // end Axes object definition
