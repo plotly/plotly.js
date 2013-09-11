@@ -395,6 +395,8 @@ function plot(divid, data, layout) {
 
     // show the legend and annotations
     if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!=false)) { legend(gd) }
+    else { gd.paper.selectAll('.legend').remove(); }
+    gd.paper.selectAll('.annotation').remove();
     if(gl.annotations) { for(var i in gl.annotations) { annotation(gd,i) } }
 
     // finish up - spinner and tooltips
