@@ -812,7 +812,7 @@ axes.doTicks = function(gd,axletter) {
     else { yl.remove() }
 
     // grid
-    // TODO: must be a better way to find & remove zero lines? this will fail when we get to manual ticks
+    // TODO: must be a better way to find & remove zero lines?
     var grid = gd.axislayer.selectAll('line.'+gcls).data(vals,datafn),
         gridwidth = ax.gridwidth || 1;
     if(ax.showgrid!=false) {
