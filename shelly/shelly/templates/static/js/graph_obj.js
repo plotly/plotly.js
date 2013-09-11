@@ -74,8 +74,8 @@ data should be an array of objects, one per trace. allowed keys:
 
     any array also has a corresponding src attribute, ie xsrc for x
     this is a string:
-    	<id>/<colname> for your own data,
-    	<user>/<id>/<colname> for shared data
+        <id>/<colname> for your own data,
+        <user>/<id>/<colname> for shared data
 
 */
 
@@ -144,7 +144,7 @@ function defaultLayout(){
         titlefont:{family:'',size:0,color:''},
         dragmode:'zoom',
         hovermode:'x'
-    }
+    };
 }
 // TODO: add label positioning
 
@@ -174,25 +174,26 @@ var graphInfo = {
     box:{
         framework:newPlot
     }
-}
+};
 
 var BARTYPES = ['bar','histogramx','histogramy'];
 var HEATMAPTYPES = ['heatmap','histogram2d'];
 
 // Traces are unique by name.. allows traces to be updated/restyled
 function updateTraces(old_data, new_data) {
-    var updated = {};
-    var res = [];
-    for (var i=0; i<old_data.length; i++){
+    var updated = {},
+        res = [],
+        i;
+    for (i=0; i<old_data.length; i++){
         old_trace = old_data[i];
         updated[old_trace['name']] = old_trace;
     }
-    for (var i=0; i<new_data.length; i++){
+    for (i=0; i<new_data.length; i++){
         new_trace = new_data[i];
         updated[new_trace['name']] = new_trace;
     }
     var tk = Object.keys(updated);
-    for (var i=0; i<tk.length; i++){
+    for (i=0; i<tk.length; i++){
         var name = tk[i];
         res.push(updated[name]);
     }
@@ -224,8 +225,8 @@ function plot(divid, data, layout) {
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if($.isArray(data)) {
-        if(graphwasempty) { gd.data=data}
-        else { gd.data.push.apply(gd.data,data)}
+        if(graphwasempty) { gd.data=data; }
+        else { gd.data.push.apply(gd.data,data); }
         gd.empty=false; // for routines outside graph_obj that want a clean tab
                         // (rather than appending to an existing one) gd.empty
                         // is used to determine whether to make a new tab
@@ -247,15 +248,15 @@ function plot(divid, data, layout) {
             framework(gd,layout);
         }
     }
-    else if((typeof gd.layout==='undefined')||graphwasempty) { newPlot(gd, layout) }
+    else if((typeof gd.layout==='undefined')||graphwasempty) { newPlot(gd, layout); }
 
     // enable or disable formatting buttons
-    $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length==0);
+    $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length===0);
 
     var gl=gd.layout,
         xa=gl.xaxis,
         ya=gl.yaxis;
-    var x, y, i, serieslen;
+    var x, y, i, serieslen, cd, type;
     // if we have bars or fill-to-zero traces, make sure autorange goes to zero
     gd.firstscatter = true; // because fill-to-next on the first scatter trace goes to zero
     gd.numboxes = 0;
@@ -276,8 +277,8 @@ function plot(divid, data, layout) {
         var gdc=gd.data[curve], // curve is the index, gdc is the data object for one trace
             curvetype = gdc.type || 'scatter', //default type is scatter
             typeinfo = graphInfo[curvetype],
-            cd=[],
             cdtextras={}; // info (if anything) to add to cd[0].t
+        cd=[];
 
         if(typeinfo.framework!=gd.framework) {
             plotlylog('Oops, tried to put data of type '+(gdc.type || 'scatter')+
@@ -289,24 +290,24 @@ function plot(divid, data, layout) {
         // if no name is given, make a default from the curve number
         if(!('name' in gdc)) {
             if('ysrc' in gdc) {
-                var ns=gdc.ysrc.split('/')
+                var ns=gdc.ysrc.split('/');
                 gdc.name=ns[ns.length-1].replace(/\n/g,' ');
             }
-            else { gdc.name='trace '+curve }
+            else { gdc.name='trace '+curve; }
         }
 
-        if(curvetype=='scatter') { cd = Scatter.calc(gd,gdc) }
-        else if(BARTYPES.indexOf(curvetype)!=-1) { cd = Bars.calc(gd,gdc) }
-        else if(HEATMAPTYPES.indexOf(curvetype)!=-1 ){ cd = Heatmap.calc(gd,gdc) }
-        else if(curvetype=='box') { cd = Boxes.calc(gd,gdc) }
+        if(curvetype=='scatter') { cd = Scatter.calc(gd,gdc); }
+        else if(BARTYPES.indexOf(curvetype)!=-1) { cd = Bars.calc(gd,gdc); }
+        else if(HEATMAPTYPES.indexOf(curvetype)!=-1 ){ cd = Heatmap.calc(gd,gdc); }
+        else if(curvetype=='box') { cd = Boxes.calc(gd,gdc); }
 
         if(!('line' in gdc)) gdc.line={};
         if(!('marker' in gdc)) gdc.marker={};
         if(!('line' in gdc.marker)) gdc.marker.line={};
-        if(!$.isArray(cd) || !cd[0]) { cd = [{x:false,y:false}] } // make sure there is a first point
+        if(!$.isArray(cd) || !cd[0]) { cd = [{x:false,y:false}]; } // make sure there is a first point
         // add the trace-wide properties to the first point, per point properties to every point
         // t is the holder for trace-wide properties
-        if(!cd[0].t) { cd[0].t = {} }
+        if(!cd[0].t) { cd[0].t = {}; }
         cd[0].t.curve = curve; // store the gd.data curve number that gave this trace
         cd[0].t.cdcurve = gd.calcdata.length; // store the calcdata curve number we're in
 
@@ -332,9 +333,9 @@ function plot(divid, data, layout) {
 
     // autorange for annotations
     if(gl.annotations) { gl.annotations.forEach(function(ann){
-        if(ann.ref!='plot') { return }
+        if(ann.ref!='plot') { return; }
         // TODO
-    }) }
+    }); }
 
     Axes.doAutoRange(gd,xa);
     Axes.doAutoRange(gd,ya);
@@ -355,8 +356,9 @@ function plot(divid, data, layout) {
         // 5. box plots
 
         var cdbar = [], cdscatter = [], cdbox = [];
-        for(var i in gd.calcdata){
-            var cd = gd.calcdata[i], type=cd[0].t.type;
+        for(i in gd.calcdata){
+            cd = gd.calcdata[i];
+            type=cd[0].t.type;
             if(HEATMAPTYPES.indexOf(type)!=-1) {
                 Heatmap.plot(gd,cd);
                 markTime('done heatmap '+i);
@@ -366,9 +368,9 @@ function plot(divid, data, layout) {
                 $(gd).find('.hm'+i).remove();
                 $(gd).find('.cb'+i).remove();
 
-                if(BARTYPES.indexOf(type)!=-1) { cdbar.push(cd) }
-                else if(type=='box') { cdbox.push(cd) }
-                else { cdscatter.push(cd) }
+                if(BARTYPES.indexOf(type)!=-1) { cdbar.push(cd); }
+                else if(type=='box') { cdbox.push(cd); }
+                else { cdscatter.push(cd); }
             }
         }
 
@@ -391,26 +393,24 @@ function plot(divid, data, layout) {
         applyStyle(gd);
         markTime('done applyStyle');
     }
-    else { console.log('error with axis scaling',xa._m,xa._b,ya._m,ya._b) }
+    else { console.log('error with axis scaling',xa._m,xa._b,ya._m,ya._b); }
 
     // show the legend and annotations
-    if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!=false)) { legend(gd) }
+    if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!==false)) { legend(gd); }
     else { gd.paper.selectAll('.legend').remove(); }
     gd.paper.selectAll('.annotation').remove();
-    if(gl.annotations) { for(var i in gl.annotations) { annotation(gd,i) } }
+    if(gl.annotations) { for(i in gl.annotations) { annotation(gd,i); } }
 
     // finish up - spinner and tooltips
-    if(typeof positionBrand == 'function') { positionBrand() } // for embedded
+    if(typeof positionBrand == 'function') { positionBrand(); } // for embedded
     delMessage('Loading File');
 
     setTimeout(function(){
-        if($(gd).find('#graphtips').length==0 && gd.data!==undefined && gd.showtips!=false && gd.mainsite){
+        if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
             try{
                 if( firsttimeuser() ) showAlert('graphtips');
             }
-            catch(e){
-                console.log(e);
-            }
+            catch(e){ console.log(e); }
         }
         else if($(gd).find('#graphtips').css('display')=='none'){
             if( firsttimeuser() ) $(gd).find('#graphtips').fadeIn();
@@ -436,10 +436,10 @@ function findBin(val,bins,linelow) {
         var n1=0, n2=bins.length, c=0;
         while(n1<n2 && c++<100){ // c is just to avoid infinite loops if there's an error
             n=Math.floor((n1+n2)/2);
-            if(linelow ? bins[n]<val : bins[n]<=val) { n1=n+1 }
-            else { n2=n }
+            if(linelow ? bins[n]<val : bins[n]<=val) { n1=n+1; }
+            else { n2=n; }
         }
-        if(c>90) { console.log('Long binary search...') }
+        if(c>90) { console.log('Long binary search...'); }
         return n1-1;
     }
 }
@@ -448,7 +448,7 @@ function findBin(val,bins,linelow) {
 // just be off by a rounding error
 // return the distinct values and the minimum difference between any two
 function distinctVals(vals) {
-    vals.sort(function(a,b){return a-b});
+    vals.sort(function(a,b){ return a-b; });
     var l = vals.length-1,
         minDiff = (vals[l]-vals[0])||1,
         errDiff = minDiff/(l||1)/10000,
@@ -459,13 +459,13 @@ function distinctVals(vals) {
             v2.push(vals[i+1]);
         }
     }
-    return {vals:v2,minDiff:minDiff}
+    return {vals:v2,minDiff:minDiff};
 }
 
 // set display params per trace to default or provided value
 function setStyles(gd, merge_dflt) {
     plotlylog('+++++++++++++++IN: setStyles(gd)+++++++++++++++');
-    plotlylog(JSON.stringify(gd.data))
+    plotlylog(JSON.stringify(gd.data));
 
     merge_dflt = merge_dflt || false; // CP Edit - see mergeattr comment
 
@@ -481,7 +481,7 @@ function setStyles(gd, merge_dflt) {
 
         if($.isArray(val)) {
             var l = Math.max(cd.length,val.length);
-            for(var i=0; i<l; i++) { cd[i][attr]=val[i] }
+            for(var i=0; i<l; i++) { cd[i][attr]=val[i]; }
             cd[0].t[attr] = dflt; // use the default for the trace-wide value
         }
         else {
@@ -534,10 +534,10 @@ function setStyles(gd, merge_dflt) {
                     defaultMode = 'lines+markers';
                 }
                 else { // check whether there are orphan points, then show markers regardless of length
-                    for(var i=0; i<cd.length; i++) {
-                        if($.isNumeric(cd[i].x) && $.isNumeric(cd[i].y) &&
-                          (i==0 || !$.isNumeric(cd[i-1].x) || !$.isNumeric(cd[i-1].y)) &&
-                          (i==cd.length-1 || !$.isNumeric(cd[i+1].x) || !$.isNumeric(cd[i+1].y))) {
+                    for(var j=0; j<cd.length; j++) {
+                        if($.isNumeric(cd[j].x) && $.isNumeric(cd[j].y) &&
+                          (j===0 || !$.isNumeric(cd[j-1].x) || !$.isNumeric(cd[j-1].y)) &&
+                          (j==cd.length-1 || !$.isNumeric(cd[j+1].x) || !$.isNumeric(cd[j+1].y))) {
                             defaultMode = 'lines+markers';
                             break;
                         }
@@ -581,9 +581,6 @@ function setStyles(gd, merge_dflt) {
             mergeattr(gdc,'zmin','zmin',-10);
             mergeattr(gdc,'zmax','zmax',10);
             mergeattr(gdc, 'scl', 'scl', defaultScale,true);
-
-
-
         }
         else if(BARTYPES.indexOf(type)!=-1){
             if(type!='bar') {
@@ -646,7 +643,7 @@ function RgbOnly(cstr) {
     return 'rgb('+Math.round(c.r)+', '+Math.round(c.g)+', '+Math.round(c.b)+')';
 }
 
-function opacityOnly(cstr) { return tinycolor(cstr).alpha }
+function opacityOnly(cstr) { return tinycolor(cstr).alpha; }
 
 function addOpacity(cstr,op) {
     var c = tinycolor(cstr).toRgb();
@@ -663,9 +660,9 @@ function fillColor(s,c) {
      .style('fill-opacity',opacityOnly(c));
 }
 
-function setPosition(s,x,y) { s.attr('x',x).attr('y',y) }
-function setSize(s,w,h) { s.attr('width',w).attr('height',h) }
-function setRect(s,x,y,w,h) { s.call(setPosition,x,y).call(setSize,w,h) }
+function setPosition(s,x,y) { s.attr('x',x).attr('y',y); }
+function setSize(s,w,h) { s.attr('width',w).attr('height',h); }
+function setRect(s,x,y,w,h) { s.call(setPosition,x,y).call(setSize,w,h); }
 
 function translatePoints(s,xa,ya){
     s.each(function(d){
@@ -673,30 +670,30 @@ function translatePoints(s,xa,ya){
         if($.isNumeric(x) && $.isNumeric(y)) {
             d3.select(this).attr('transform','translate('+x+','+y+')');
         }
-        else { d3.select(this).remove() }
+        else { d3.select(this).remove(); }
     });
 }
 
 function traceStyle(s,gd) {
     var barcount = 0,
         gl = gd.layout;
-    s.style('opacity',function(d){return d[0].t.op})
+    s.style('opacity',function(d){ return d[0].t.op; })
     // first see if there would be bars to stack)
-    .each(function(d){ if(BARTYPES.indexOf(d[0].t.type)!=-1) { barcount++ } })
+    .each(function(d){ if(BARTYPES.indexOf(d[0].t.type)!=-1) { barcount++; } })
     // for gapless (either stacked or neighboring grouped) bars use crispEdges
     // to turn off antialiasing so an artificial gap isn't introduced.
     .each(function(d){
         if(BARTYPES.indexOf(d[0].t.type)!=-1 &&
           ((gl.barmode=='stack' && barcount>1) ||
-          (gl.bargap==0 && gl.bargroupgap==0 && !d[0].t.mlw))){
+          (gl.bargap===0 && gl.bargroupgap===0 && !d[0].t.mlw))){
             d3.select(this).attr('shape-rendering','crispEdges');
         }
     });
 }
 
 function lineGroupStyle(s) {
-    s.attr('stroke-width',function(d){return d[0].t.lw})
-    .each(function(d){d3.select(this).call(strokeColor,d[0].t.lc)})
+    s.attr('stroke-width',function(d){ return d[0].t.lw; })
+    .each(function(d){ d3.select(this).call(strokeColor,d[0].t.lc); })
     .style('fill','none')
     .attr('stroke-dasharray',function(d){
         var da=d[0].t.ld,lw=Math.max(d[0].t.lw,3);
@@ -717,10 +714,10 @@ function fillGroupStyle(s) {
             // have to break out of d3 standard here, because the fill box may be
             // grouped with the wrong trace (so it appears behind the appropriate lines)
             gd = $(shape.node()).parents('.ui-tabs-panel, #embedded_graph')[0];
-        try { shape.call(fillColor,gd.calcdata[shape.attr('data-curve')][0].t.fc) }
+        try { shape.call(fillColor,gd.calcdata[shape.attr('data-curve')][0].t.fc); }
         catch(e) {
-            try { shape.call(fillColor,d[0].t.fc) }
-            catch(e) { shape.remove() }
+            try { shape.call(fillColor,d[0].t.fc); }
+            catch(e2) { shape.remove(); }
         }
     });
 }
@@ -744,31 +741,27 @@ function pointStyle(s,t) {
     if(['scatter','box'].indexOf(t.type)!=-1) {
         s.attr('d',function(d){
             var r=((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/2;
-            if(!(r>=0)) r=3; // in case of "various" etc... set a visible default
+            if(!$.isNumeric(r) || r<0) { r=3; } // in case of "various" etc... set a visible default
             var rt=String(r*2/Math.sqrt(3)),
                 rc=String(r/3),
                 rd=String(r*Math.sqrt(2)),
                 r2=String(r/2);
             r=String(r);
             var x=(d.mx || t.mx || (d.t ? d.t.mx : ''));
-            if(x=='square')
-                return 'M'+r+','+r+'H-'+r+'V-'+r+'H'+r+'Z';
-            if(x=='diamond')
-                return 'M'+rd+',0L0,'+rd+'L-'+rd+',0L0,-'+rd+'Z';
-            if(x=='triangle-up')
-                return 'M-'+rt+','+r2+'H'+rt+'L0,-'+r+'Z';
-            if(x=='triangle-down')
-                return 'M-'+rt+',-'+r2+'H'+rt+'L0,'+r+'Z';
-            if(x=='triangle-right')
-                return 'M-'+r2+',-'+rt+'V'+rt+'L'+r+',0Z';
-            if(x=='triangle-left')
-                return 'M'+r2+',-'+rt+'V'+rt+'L-'+r+',0Z';
-            if(x=='cross')
-                return 'M'+r+','+rc+'H'+rc+'V'+r+'H-'+rc+'V'+rc+'H-'+r+'V-'+rc+'H-'+rc+'V-'+r+'H'+rc+'V-'+rc+'H'+r+'Z'
+            if(x=='square') { return 'M'+r+','+r+'H-'+r+'V-'+r+'H'+r+'Z'; }
+            if(x=='diamond') { return 'M'+rd+',0L0,'+rd+'L-'+rd+',0L0,-'+rd+'Z'; }
+            if(x=='triangle-up') { return 'M-'+rt+','+r2+'H'+rt+'L0,-'+r+'Z'; }
+            if(x=='triangle-down') { return 'M-'+rt+',-'+r2+'H'+rt+'L0,'+r+'Z'; }
+            if(x=='triangle-right') { return 'M-'+r2+',-'+rt+'V'+rt+'L'+r+',0Z'; }
+            if(x=='triangle-left') { return 'M'+r2+',-'+rt+'V'+rt+'L-'+r+',0Z'; }
+            if(x=='cross') {
+                return 'M'+r+','+rc+'H'+rc+'V'+r+'H-'+rc+'V'+rc+'H-'+r+
+                    'V-'+rc+'H-'+rc+'V-'+r+'H'+rc+'V-'+rc+'H'+r+'Z';
+            }
             // circle is default
             return 'M'+r+',0A'+r+','+r+' 0 1,1 0,-'+r+'A'+r+','+r+' 0 0,1 '+r+',0Z';
         })
-        .style('opacity',function(d){return (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1});
+        .style('opacity',function(d){ return (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1; });
     }
     s.each(function(d){
         var a = (d.so) ? 'so' : 'm', // suggested outliers, for box plots
@@ -777,7 +770,7 @@ function pointStyle(s,t) {
             p = d3.select(this);
         p.attr('stroke-width',w)
             .call(fillColor, d[c] || t[c] || (d.t ? d.t[c] : ''));
-        if(w) { p.call(strokeColor, d[lc] || t[lc] || (d.t ? d.t[lc] : '')) }
+        if(w) { p.call(strokeColor, d[lc] || t[lc] || (d.t ? d.t[lc] : '')); }
     });
 }
 
@@ -788,14 +781,14 @@ function pointStyle(s,t) {
 
 function legendLines(d){
     var t = d[0].t;
-    if(['scatter',undefined].indexOf(d[0].t.type)==-1) { return }
+    if(['scatter',undefined].indexOf(d[0].t.type)==-1) { return; }
     if(t.fill && t.fill!='none' && $.isNumeric(t.cdcurve)) {
         d3.select(this).append('path')
             .attr('data-curve',t.cdcurve)
             .attr('d','M5,0h30v6h-30z')
             .call(fillGroupStyle);
     }
-    if(!t.mode || t.mode.indexOf('lines')==-1) { return }
+    if(!t.mode || t.mode.indexOf('lines')==-1) { return; }
     d3.select(this).append('polyline')
         .call(lineGroupStyle)
         .attr('points','5,0 35,0');
@@ -804,12 +797,12 @@ function legendLines(d){
 
 function legendPoints(d){
     var t = d[0].t;
-    if(['scatter',undefined].indexOf(t.type)==-1) { return }
-    if(!t.mode || t.mode.indexOf('markers')==-1) { return }
+    if(['scatter',undefined].indexOf(t.type)==-1) { return; }
+    if(!t.mode || t.mode.indexOf('markers')==-1) { return; }
     d3.select(this).append('g')
         .attr('class','legendpoints')
       .selectAll('path')
-        .data(function(d){return d})
+        .data(function(d){ return d; })
       .enter().append('path')
         .call(pointStyle,t)
         .attr('transform','translate(20,0)');
@@ -817,11 +810,11 @@ function legendPoints(d){
 
 function legendBars(d){
     var t = d[0].t;
-    if(BARTYPES.indexOf(t.type)==-1) { return }
+    if(BARTYPES.indexOf(t.type)==-1) { return; }
     d3.select(this).append('g')
         .attr('class','legendpoints')
       .selectAll('path')
-        .data(function(d){return d})
+        .data(function(d){ return d; })
       .enter().append('path')
         .attr('d','M6,6H-6V-6H6Z')
         .each(function(d){
@@ -829,18 +822,18 @@ function legendBars(d){
                 p = d3.select(this);
             p.attr('stroke-width',w)
                 .call(fillColor,d.mc || t.mc || (d.t ? d.t.mc : ''));
-            if(w) { p.call(strokeColor,d.mlc || t.mlc || (d.t ? d.t.mlc : '')) }
+            if(w) { p.call(strokeColor,d.mlc || t.mlc || (d.t ? d.t.mlc : '')); }
         })
         .attr('transform','translate(20,0)');
 }
 
 function legendBoxes(d){
     var t = d[0].t;
-    if(t.type!=='box') { return }
+    if(t.type!=='box') { return; }
     d3.select(this).append('g')
         .attr('class','legendpoints')
       .selectAll('path')
-        .data(function(d){return d})
+        .data(function(d){ return d; })
       .enter().append('path')
         .attr('d','M6,6H-6V-6H6Z') // if we want the median bar, prepend M6,0H-6
         .each(function(d){
@@ -848,7 +841,7 @@ function legendBoxes(d){
                 p = d3.select(this);
             p.attr('stroke-width',w)
                 .call(fillColor,d.fc || t.fc || (d.t ? d.t.fc : ''));
-            if(w) { p.call(strokeColor,d.lc || t.lc || (d.t ? d.t.lc : '')) }
+            if(w) { p.call(strokeColor,d.lc || t.lc || (d.t ? d.t.lc : '')); }
         })
         .attr('transform','translate(20,0)');
 }
@@ -857,13 +850,13 @@ function legendText(s,gd){
     var gf = gd.layout.font, lf = gd.layout.legend.font;
     // note: uses d[1] for the original trace number, in case of hidden traces
     return s.append('text')
-        .attr('class',function(d){ return 'legendtext text-'+d[1] })
+        .attr('class',function(d){ return 'legendtext text-'+d[1]; })
         .call(setPosition, 40, 0)
         .attr('text-anchor','start')
         .attr('font-size',lf.size||gf.size||12)
         .attr('font-family',lf.family||gf.family||'Arial')
         .style('fill',lf.color||gf.color||'#000')
-        .each(function(d){styleText(this,d[0].t.name,d[0].t.noretrieve)});
+        .each(function(d){ styleText(this,d[0].t.name,d[0].t.noretrieve); });
 }
 
 // -----------------------------------------------------
@@ -884,15 +877,15 @@ function restyle(gd,astr,val,traces) {
 
     var gl = gd.layout,
         aobj = {};
-    if(typeof astr == 'string') { aobj[astr] = val }
-    else if($.isPlainObject(astr)) { aobj = astr }
-    else { console.log('restyle fail',astr,val,traces); return }
+    if(typeof astr == 'string') { aobj[astr] = val; }
+    else if($.isPlainObject(astr)) { aobj = astr; }
+    else { console.log('restyle fail',astr,val,traces); return; }
 
-    if(Object.keys(aobj).length) { gd.changed = true }
+    if(Object.keys(aobj).length) { gd.changed = true; }
 
-    if($.isNumeric(traces)) { traces=[traces] }
+    if($.isNumeric(traces)) { traces=[traces]; }
     else if(!$.isArray(traces) || !traces.length) {
-        traces=gd.data.map(function(v,i){return i});
+        traces=gd.data.map(function(v,i){ return i; });
     }
 
     // need to replot (not just restyle) if mode or visibility changes, because
@@ -929,7 +922,7 @@ function restyle(gd,astr,val,traces) {
         undoit = {};
 
     // make a new empty vals array for undoit
-    function a0(){return traces.map(function(){return undefined})}
+    function a0(){ return traces.map(function(){ return undefined; }); }
 
     // for attrs that interact (like scales & autoscales), save the
     // old vals before making the change
@@ -937,14 +930,14 @@ function restyle(gd,astr,val,traces) {
     // attr can be an array to set several at once (all to the same val)
     function doextra(cont,attr,val,i) {
         if($.isArray(attr)) {
-            attr.forEach(function(a){ doextra(cont,a,val,i) });
+            attr.forEach(function(a){ doextra(cont,a,val,i); });
             return;
         }
-        if(attr in aobj) { return } // quit if explicitly setting this elsewhere
-        var p = nestedProperty(cont,attr);
-        if(!(attr in undoit)) { undoit[attr] = a0() }
-        if(undoit[attr][i]===undefined) { undoit[attr][i]=p.get() }
-        if(val!==undefined) { p.set(val) }
+        if(attr in aobj) { return; } // quit if explicitly setting this elsewhere
+        var extraparam = nestedProperty(cont,attr);
+        if(!(attr in undoit)) { undoit[attr] = a0(); }
+        if(undoit[attr][i]===undefined) { undoit[attr][i]=extraparam.get(); }
+        if(val!==undefined) { extraparam.set(val); }
     }
     var zscl = ['zmin','zmax'],
         xbins = ['xbins.start','xbins.end','xbins.size'],
@@ -953,15 +946,15 @@ function restyle(gd,astr,val,traces) {
     // now make the changes to gd.data (and occasionally gd.layout)
     // and figure out what kind of graphics update we need to do
     for(var ai in aobj) {
-        var vi = aobj[ai];
+        var vi = aobj[ai], cont, param;
         redoit[ai] = vi;
 
         if(layout_attr.indexOf(ai)!=-1){
-            var p = nestedProperty(gl,ai);
-            undoit[ai] = [p.get()];
+            param = nestedProperty(gl,ai);
+            undoit[ai] = [param.get()];
             // since we're allowing val to be an array, allow it here too,
             // even though that's meaningless
-            p.set($.isArray(vi) ? vi[0] : vi);
+            param.set($.isArray(vi) ? vi[0] : vi);
             // ironically, the layout attrs in restyle only require replot,
             // not relayout
             doplot = true;
@@ -971,22 +964,22 @@ function restyle(gd,astr,val,traces) {
         // set attribute in gd.data
         undoit[ai] = a0();
         for(i=0; i<traces.length; i++) {
-            var cont=gd.data[traces[i]],
-                p = nestedProperty(cont,ai);
+            cont = gd.data[traces[i]];
+            param = nestedProperty(cont,ai);
 
             // setting bin or z settings should turn off auto
             // and setting auto should save bin or z settings
-            if(zscl.indexOf(ai)!=-1) { doextra(cont,'zauto',false,i) }
-            else if(ai=='zauto') { doextra(cont,zscl,undefined,i) }
-            else if(xbins.indexOf(ai)!=-1) { doextra(cont,'autobinx',false,i) }
-            else if(ai=='autobinx') { doextra(cont,xbins,undefined,i) }
-            else if(ybins.indexOf(ai)!=-1) { doextra(cont,'autobiny',false,i) }
-            else if(ai=='autobiny') { doextra(cont,ybins,undefined,i) }
+            if(zscl.indexOf(ai)!=-1) { doextra(cont,'zauto',false,i); }
+            else if(ai=='zauto') { doextra(cont,zscl,undefined,i); }
+            else if(xbins.indexOf(ai)!=-1) { doextra(cont,'autobinx',false,i); }
+            else if(ai=='autobinx') { doextra(cont,xbins,undefined,i); }
+            else if(ybins.indexOf(ai)!=-1) { doextra(cont,'autobiny',false,i); }
+            else if(ai=='autobiny') { doextra(cont,ybins,undefined,i); }
 
             // save the old value
-            undoit[ai][i] = p.get();
+            undoit[ai][i] = param.get();
             // set the new value - if val is an array, it's one el per trace
-            p.set($.isArray(vi) ? vi[i%vi.length] : vi);
+            param.set($.isArray(vi) ? vi[i%vi.length] : vi);
         }
 
         // check if we need to call axis type
@@ -1015,8 +1008,8 @@ function restyle(gd,astr,val,traces) {
                 }
             }
             // if we need to change margin for a heatmap, force a relayout first so we don't plot twice
-            if(Heatmap.margin(gd)) { dolayout = true }
-            else { doplot = true }
+            if(Heatmap.margin(gd)) { dolayout = true; }
+            else { doplot = true; }
         }
     }
     // now all attribute mods are done, as are redo and undo so we can save them
@@ -1028,12 +1021,12 @@ function restyle(gd,astr,val,traces) {
         gd.layout = undefined;
         plot(gd,'',gl);
     }
-    else if(doplot) { plot(gd) }
+    else if(doplot) { plot(gd); }
     else {
         setStyles(gd);
         if(doapplystyle) {
             applyStyle(gd);
-            if(gl.showlegend) { legend(gd) }
+            if(gl.showlegend) { legend(gd); }
         }
     }
 
@@ -1051,20 +1044,20 @@ function relayout(gd,astr,val) {
         doticks = false,
         dolayoutstyle = false,
         doplot = false;
-    if(typeof astr == 'string') { aobj[astr] = val }
-    else if($.isPlainObject(astr)) { aobj = astr }
-    else { console.log('relayout fail',astr,val); return }
+    if(typeof astr == 'string') { aobj[astr] = val; }
+    else if($.isPlainObject(astr)) { aobj = astr; }
+    else { console.log('relayout fail',astr,val); return; }
 
-    if(Object.keys(aobj).length) { gd.changed = true }
+    if(Object.keys(aobj).length) { gd.changed = true; }
 
     // look for 'allaxes', split out into all axes
     var keys = Object.keys(aobj),
         axes = ['xaxis','yaxis'];
     for(var i=0; i<keys.length; i++) {
-        if(keys[i].indexOf('allaxes')==0) {
+        if(keys[i].indexOf('allaxes')===0) {
             for(var j=0; j<axes.length; j++) {
                 var newkey = keys[i].replace('allaxes',axes[j]);
-                if(!aobj[newkey]) { aobj[newkey] = aobj[keys[i]] }
+                if(!aobj[newkey]) { aobj[newkey] = aobj[keys[i]]; }
             }
             delete aobj[keys[i]];
         }
@@ -1081,13 +1074,13 @@ function relayout(gd,astr,val) {
     // attr can be an array to set several at once (all to the same val)
     function doextra(attr,val) {
         if($.isArray(attr)) {
-            attr.forEach(function(a){ doextra(a,val) });
+            attr.forEach(function(a){ doextra(a,val); });
             return;
         }
-        if(attr in aobj) { return } // quit if explicitly setting this elsewhere
+        if(attr in aobj) { return; } // quit if explicitly setting this elsewhere
         var p = nestedProperty(gl,attr);
-        if(!(attr in undoit)) { undoit[attr]=p.get() }
-        if(val!==undefined) { p.set(val) }
+        if(!(attr in undoit)) { undoit[attr]=p.get(); }
+        if(val!==undefined) { p.set(val); }
     }
 
     var hw = ['height','width'];
@@ -1102,12 +1095,12 @@ function relayout(gd,astr,val) {
         undoit[ai] = (aa[1]=='reverse') ? aobj[ai] : p.get();
 
         // check autosize or autorange vs size and range
-        if(hw.indexOf(ai)!=-1) { doextra('autosize', false) }
-        else if(ai=='autosize') { doextra(hw, undefined) }
+        if(hw.indexOf(ai)!=-1) { doextra('autosize', false); }
+        else if(ai=='autosize') { doextra(hw, undefined); }
         var m = ai.match(/^(.)axis\.range\[[0|1]\]$/);
-        if(m && m.length==2) { doextra(aa[0]+'.autorange', false) }
+        if(m && m.length==2) { doextra(aa[0]+'.autorange', false); }
         m = ai.match(/^(.)axis\.autorange$/);
-        if(m && m.length==2) { doextra([aa[0]+'.range[0]',aa[0]+'.range[1]'], undefined) }
+        if(m && m.length==2) { doextra([aa[0]+'.range[0]',aa[0]+'.range[1]'], undefined); }
 
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie will islog actually change)
@@ -1117,7 +1110,7 @@ function relayout(gd,astr,val) {
                 r1 = ax.range[1];
             if(vi=='log') {
                 // if both limits are negative, autorange
-                if(r0<0 && r1<0) { doextra(aa[0]+'.autorange',true); continue }
+                if(r0<0 && r1<0) { doextra(aa[0]+'.autorange',true); continue; }
                 // if one is negative, set it to one millionth the other. TODO: find the smallest positive val?
                 else if(r0<0) r0 = r1/1e6;
                 else if(r1<0) r1 = r0/1e6;
@@ -1142,9 +1135,9 @@ function relayout(gd,astr,val) {
             // an entire annotation obj to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
             if(aa.length==2) {
-                if(aobj[ai]=='add' || $.isPlainObject(aobj[ai])) { undoit[ai]='remove' }
-                else if(aobj[ai]=='remove') { undoit[ai]=gl.annotations[aa[1]] }
-                else { console.log('???') }
+                if(aobj[ai]=='add' || $.isPlainObject(aobj[ai])) { undoit[ai]='remove'; }
+                else if(aobj[ai]=='remove') { undoit[ai]=gl.annotations[aa[1]]; }
+                else { console.log('???'); }
             }
             annotation(gd,aa[1],aa.slice(2).join('.'),aobj[ai]); // ai.replace(/^annotations\[-?[0-9]*\][.]/,'')
             delete aobj[ai];
@@ -1152,21 +1145,21 @@ function relayout(gd,astr,val) {
         // alter gd.layout
         else {
             // check whether we can short-circuit a full redraw
-            if(aa[0].indexOf('legend')!=-1) { dolegend = true }
-            else if(ai.indexOf('title')!=-1) { doticks = true }
-            else if(aa[0].indexOf('bgcolor')!=-1) { dolayoutstyle = true }
+            if(aa[0].indexOf('legend')!=-1) { dolegend = true; }
+            else if(ai.indexOf('title')!=-1) { doticks = true; }
+            else if(aa[0].indexOf('bgcolor')!=-1) { dolayoutstyle = true; }
             else if(aa.length>1 && (
                 aa[1].indexOf('tick')!=-1 ||
                 aa[1].indexOf('exponent')!=-1 ||
                 aa[1].indexOf('grid')!=-1 ||
-                aa[1].indexOf('zeroline')!=-1)) { doticks = true }
+                aa[1].indexOf('zeroline')!=-1)) { doticks = true; }
             else if(aa.length>1 && (
                 aa[1].indexOf('line')!=-1 ||
-                aa[1].indexOf('mirror')!=-1)) { dolayoutstyle = true }
-            else if(ai=='margin.pad') { doticks = dolayoutstyle = true }
+                aa[1].indexOf('mirror')!=-1)) { dolayoutstyle = true; }
+            else if(ai=='margin.pad') { doticks = dolayoutstyle = true; }
             // hovermode and dragmode don't need any redrawing, since they just
             // affect reaction to user input
-            else if(['hovermode','dragmode'].indexOf(ai)==-1) { doplot = true }
+            else if(['hovermode','dragmode'].indexOf(ai)==-1) { doplot = true; }
             p.set(vi);
         }
     }
@@ -1174,7 +1167,7 @@ function relayout(gd,astr,val) {
     plotUndoQueue(gd,undoit,redoit,'relayout');
 
     // calculate autosizing - if size hasn't changed, will remove h&w so we don't need to redraw
-    if(aobj.autosize) { aobj=plotAutoSize(gd,aobj) }
+    if(aobj.autosize) { aobj=plotAutoSize(gd,aobj); }
 
     // redraw
     // first check if there's still anything to do
@@ -1188,10 +1181,10 @@ function relayout(gd,astr,val) {
         // if we didn't need to redraw the whole thing, just do the needed parts
         if(dolegend) {
             gd.paper.selectAll('.legend').remove();
-            if(gl.showlegend) { legend(gd) }
+            if(gl.showlegend) { legend(gd); }
         }
-        if(dolayoutstyle) { layoutStyles(gd) }
-        if(doticks) { Axes.doTicks(gd,'redraw'); makeTitles(gd,'gtitle') }
+        if(dolayoutstyle) { layoutStyles(gd); }
+        if(doticks) { Axes.doTicks(gd,'redraw'); makeTitles(gd,'gtitle'); }
     }
     plotlylog('+++++++++++++++ OUT: RELAYOUT +++++++++++++++');
 }
@@ -1207,15 +1200,15 @@ function nestedProperty(o,s) {
         if(!(aa[j] in cont)) {
             cont[aa[j]] = (typeof aa[j+1]==='string') ? {} : [];
         }
-        cont = cont[aa[j]]
+        cont = cont[aa[j]];
     }
     var prop = aa[j];
 
     return {set:function(v){
-                if(v===undefined || v===null) { delete cont[prop] }
-                else { cont[prop]=v }
+                if(v===undefined || v===null) { delete cont[prop]; }
+                else { cont[prop]=v; }
             },
-            get:function(){ return cont[prop] },
+            get:function(){ return cont[prop]; },
             astr:s,
             obj:o};
 }
@@ -1224,7 +1217,7 @@ function propSplit(s) {
     var aa = s.split('.');
     for(var j=0; j<aa.length; j++) {
         var indexed = String(aa[j]).match(/([^\[\]]*)\[([0-9]*)\]/);
-        if(indexed) { aa.splice(j,1,indexed[1],Number(indexed[2])) }
+        if(indexed) { aa.splice(j,1,indexed[1],Number(indexed[2])); }
     }
     return aa;
 }
@@ -1234,7 +1227,7 @@ function propSplit(s) {
 // undoit and redoit are attr->val objects to pass to restyle or relayout
 // TODO: disable/enable undo and redo buttons appropriately
 function plotUndoQueue(gd,undoit,redoit,traces) {
-    if(!gd.mainsite) { user=''; userobj = {clientoffset:0} }
+    if(!gd.mainsite) { user=''; userobj = {clientoffset:0}; }
     // make sure we have the queue and our position in it
     if(!$.isArray(gd.undoqueue) || !$.isNumeric(gd.undonum)) {
         gd.undoqueue=[];
@@ -1261,16 +1254,16 @@ function plotUndoQueue(gd,undoit,redoit,traces) {
 }
 
 function plotUndo(gd) {
-    if(!gd) { gd = gettab() }
-    if(!$.isNumeric(gd.undonum) || gd.undonum<=0) { return }
+    if(!gd) { gd = gettab(); }
+    if(!$.isNumeric(gd.undonum) || gd.undonum<=0) { return; }
     gd.undonum--;
     var i = gd.undoqueue[gd.undonum];
     plotDo(gd, i.undo, i.traces);
 }
 
 function plotRedo(gd) {
-    if(!gd) { gd = gettab() }
-    if(!$.isNumeric(gd.undonum) || gd.undonum>=gd.undoqueue.length) { return }
+    if(!gd) { gd = gettab(); }
+    if(!$.isNumeric(gd.undonum) || gd.undonum>=gd.undoqueue.length) { return; }
     var i = gd.undoqueue[gd.undonum];
     gd.undonum++;
     plotDo(gd, i.redo, i.traces);
@@ -1278,13 +1271,13 @@ function plotRedo(gd) {
 
 function plotDo(gd,aobj,traces) {
     gd.autoplay = true;
-    ao2 = {}
-    for(ai in aobj) { ao2[ai] = aobj[ai] } // copy aobj so we don't modify the one in the queue
-    if(traces=='relayout') { relayout(gd, ao2) }
-    else { restyle(gd, ao2, null, traces) }
+    ao2 = {};
+    for(var ai in aobj) { ao2[ai] = aobj[ai]; } // copy aobj so we don't modify the one in the queue
+    if(traces=='relayout') { relayout(gd, ao2); }
+    else { restyle(gd, ao2, null, traces); }
     // do we need to update a popover?
     var po = $('.popover');
-    if(po.length) { po[0].redraw(po[0].selectedObj) }
+    if(po.length) { po[0].redraw(po[0].selectedObj); }
 }
 
 function plotAutoSize(gd,aobj) {
@@ -1305,16 +1298,16 @@ function plotAutoSize(gd,aobj) {
         gd.layout.autosize = true;
         layoutStyles(gd);
     }
-    return aobj
+    return aobj;
 }
 
 // check whether to resize a tab (if it's a plot) to the container
 function plotResize(gd) {
     killPopovers();
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
-        if(gd.redrawTimer) { clearTimeout(gd.redrawTimer) }
+        if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
         gd.redrawTimer = setTimeout(function(){
-            if($(gd).css('display')=='none') { return }
+            if($(gd).css('display')=='none') { return; }
             if(gd.layout && gd.layout.autosize) {
                 var oldchanged = gd.changed;
                 gd.autoplay = true; // don't include this relayout in the undo queue
@@ -1349,13 +1342,13 @@ function newPlot(divid, layout) {
     // first check if we can save the toolbars
     if(($(gd).children('.svgcontainer').length==1) && (!gd.mainsite ||
         ($(gd).children('.graphbar').length==1 && $(gd).children('.demobar').length==1))) {
-            $(gd).children('.svgcontainer').children('svg').remove()
+            $(gd).children('.svgcontainer').children('svg').remove();
     }
     else { // not the right children (probably none, but in case something goes wrong redraw all)
         // TODO - remove tooltips here
         $(gd).find('[rel="tooltip"]').tooltip('destroy');
         gd.innerHTML='';
-        if(gd.mainsite) { graphbar(gd) }
+        if(gd.mainsite) { graphbar(gd); }
         // Make the outer graph container
         gd.paperdiv = gd3.append('div')
             .classed('svgcontainer',true)
@@ -1380,7 +1373,7 @@ function newPlot(divid, layout) {
     gd.axlines = {
         x:gd.paper.append('path').style('fill','none'),
         y:gd.paper.append('path').style('fill','none')
-    }
+    };
     gd.axislayer = gd.paper.append('g').attr('class','axislayer');
     // Second svg (plot) is for the data
     gd.plot = gd.paper.append('svg')
@@ -1401,19 +1394,19 @@ function newPlot(divid, layout) {
     var gm = gd.margin,
         x1 = gm.l,
         x2 = x1+gd.plotwidth,
-        tickedge = $(gd).find('text.ytick').get().map(function(e){return e.getBBox().x}),
-        x0 = tickedge.length ? Math.min.apply(tickedge,tickedge) : x1-10,
+        tickedgex = $(gd).find('text.ytick').get().map(function(e){ return e.getBBox().x; }),
+        x0 = tickedgex.length ? Math.min.apply(tickedgex,tickedgex) : x1-10,
         y2 = gm.t,
         y1 = y2+gd.plotheight,
-        tickedge = $(gd).find('text.xtick').get().map(function(e){var bb=e.getBBox(); return bb.y+bb.height}),
-        y0 = tickedge.length ? Math.max.apply(tickedge,tickedge) : y1+10;
+        tickedgey = $(gd).find('text.xtick').get().map(function(e){ var bb=e.getBBox(); return bb.y+bb.height; }),
+        y0 = tickedgey.length ? Math.max.apply(tickedgey,tickedgey) : y1+10;
 
     // main dragger goes over the grids and data, so we use its
     // mousemove events for all data hover effects
     var maindrag = dragBox(gd, x1, y2, x2-x1, y1-y2,'ns','ew');
     $(maindrag)
-        .mousemove(function(evt){ plotHover(evt,gd,maindrag) })
-        .mouseout(function(){ plotUnhover(gd) });
+        .mousemove(function(evt){ plotHover(evt,gd,maindrag); })
+        .mouseout(function(){ plotUnhover(gd); });
 
     // x axis draggers
     dragBox(gd, x1*0.9+x2*0.1, y1,(x2-x1)*0.8, y0-y1,'','ew');
@@ -1444,7 +1437,7 @@ function layoutStyles(gd) {
         r:gl.margin.r+(gd.lw>0 ? gd.lw : 0),
         t:gl.margin.t+(gd.lh>0 ? gd.lh : 0),
         b:gl.margin.b-(gd.lh<0 ? gd.lh : 0),
-        p:gl.margin.pad }
+        p:gl.margin.pad };
 
     var gm = gd.margin;
     gd.plotwidth=gl.width-gm.l-gm.r;
@@ -1537,10 +1530,10 @@ function makeTitles(gd,title) {
             transform: '',
             attr: {}
         }
-    }
+    };
 
-    for(k in titles){
-        if(title==k || title==''){
+    for(var k in titles){
+        if(title==k || title===''){
             var t=titles[k];
             gd.paper.select('.'+k).remove();
             var el=gd.paper.append('text').attr('class',k)
@@ -1549,18 +1542,18 @@ function makeTitles(gd,title) {
                 .attr('font-size',t.fontSize)
                 .attr('fill',t.fontColor)
                 .attr('text-anchor','middle')
-                .attr('transform',t.transform.replace('x',t.x).replace('y',t.y))
+                .attr('transform',t.transform.replace('x',t.x).replace('y',t.y));
             // don't allow editing on embedded graphs
-            if(gd.mainsite) { el.on('click',function(){autoGrowInput(this)}) }
+            if(gd.mainsite) { el.on('click',function(){ autoGrowInput(this); }); }
 
             var txt=t.cont.title;
             if(txt.match(/^Click to enter (Plot|X axis|Y axis) title$/)) {
-                if(gd.mainsite) { el.style('fill','#999') } // cues in gray
-                else { txt='' } // don't show cues in embedded plots
+                if(gd.mainsite) { el.style('fill','#999'); } // cues in gray
+                else { txt=''; } // don't show cues in embedded plots
             }
 
             if(txt) {
-                el.each(function(){styleText(this,txt+ (!t.cont.unit ? '' : (' ('+t.cont.unit+')')))});
+                el.each(function(){ styleText(this,txt+ (!t.cont.unit ? '' : (' ('+t.cont.unit+')'))); });
             }
             else if(gd.mainsite) {
                 el.text('Click to enter '+t.name+' title')
@@ -1571,14 +1564,17 @@ function makeTitles(gd,title) {
                     .duration(2000)
                     .style('opacity',0);
             }
-            else { el.remove() }
+            else { el.remove(); }
 
             // move labels out of the way, if possible, when tick labels interfere
-            var titlebb=el[0][0].getBoundingClientRect(), gdbb=gd.paperdiv.node().getBoundingClientRect();
+            var titlebb=el[0][0].getBoundingClientRect(),
+                gdbb=gd.paperdiv.node().getBoundingClientRect(),
+                labels,tickx,ticky,i,lbb;
             if(k=='xtitle'){
-                var labels=gd.paper.selectAll('text.xtick')[0], ticky=0;
-                for(var i=0;i<labels.length;i++){
-                    var lbb=labels[i].getBoundingClientRect();
+                labels=gd.paper.selectAll('text.xtick')[0];
+                ticky=0;
+                for(i=0; i<labels.length; i++){
+                    lbb=labels[i].getBoundingClientRect();
                     if(bBoxIntersect(titlebb,lbb)) {
                         ticky=constrain(ticky,lbb.bottom,gdbb.bottom-titlebb.height);
                     }
@@ -1588,9 +1584,10 @@ function makeTitles(gd,title) {
                 }
             }
             if(k=='ytitle'){
-                var labels=gd.paper.selectAll('text.ytick')[0], tickx=screen.width;
-                for(var i=0;i<labels.length;i++){
-                    var lbb=labels[i].getBoundingClientRect();
+                labels=gd.paper.selectAll('text.ytick')[0];
+                tickx=screen.width;
+                for(i=0; i<labels.length; i++){
+                    lbb=labels[i].getBoundingClientRect();
                     if(bBoxIntersect(titlebb,lbb)) {
                         tickx=constrain(tickx,gdbb.left+titlebb.width,lbb.left);
                     }
@@ -1610,14 +1607,14 @@ function makeTitles(gd,title) {
 function legend(gd) {
     var gl=gd.layout,gm=gl.margin;
     gl.showlegend = true;
-    if(!gl.legend) { gl.legend={} }
+    if(!gl.legend) { gl.legend={}; }
     var gll = gl.legend;
     gd.paper.selectAll('.legend').remove();
-    if(!gd.calcdata) { return }
+    if(!gd.calcdata) { return; }
 
     var ldata=[];
     for(var i=0;i<gd.calcdata.length;i++) {
-        if(gd.calcdata[i][0].t.visible!=false) {
+        if(gd.calcdata[i][0].t.visible!==false) {
             ldata.push([gd.calcdata[i][0],i]); // i is appended as d[1] so we know which element of gd.data it refers to
         }
     }
@@ -1649,7 +1646,7 @@ function legend(gd) {
     var tracetext=traces.call(legendText,gd).selectAll('text');
     if(gd.mainsite) {
         tracetext.on('click',function(){
-            if(!gd.dragged) { autoGrowInput(this) }
+            if(!gd.dragged) { autoGrowInput(this); }
         });
     }
 
@@ -1662,8 +1659,8 @@ function legend(gd) {
             return;
         }
         var tbb = t.node().getBoundingClientRect();
-        if(!l.node()) { l=g.select('path') }
-        if(!l.node()) { l=g.select('polyline') }
+        if(!l.node()) { l=g.select('path'); }
+        if(!l.node()) { l=g.select('polyline'); }
         var lbb = (!l.node()) ? tbb : l.node().getBoundingClientRect();
         t.attr('y',(lbb.top+lbb.bottom-tbb.top-tbb.bottom)/2);
         var gbb = this.getBoundingClientRect();
@@ -1683,8 +1680,8 @@ function legend(gd) {
     var pw = gl.width-gm.l-gm.r,
         ph = gl.height-gm.t-gm.b;
     // defaults... the check for >10 and !=100 is to remove old style positioning in px
-    if(!$.isNumeric(gll.x) || (gll.x>10 && gll.x!=100)) { gll.x=0.98 }
-    if(!$.isNumeric(gll.y) || (gll.y>10 && gll.y!=100)) { gll.y=0.98 }
+    if(!$.isNumeric(gll.x) || (gll.x>10 && gll.x!=100)) { gll.x=0.98; }
+    if(!$.isNumeric(gll.y) || (gll.y>10 && gll.y!=100)) { gll.y=0.98; }
 
     var lx = gm.l+pw*gll.x,
         ly = gm.t+ph*(1-gll.y),
@@ -1692,7 +1689,7 @@ function legend(gd) {
 
     // don't let legend be outside plot in both x and y... that would just make big blank
     // boxes. Put the legend centered in y if we somehow get there.
-    if(Math.abs(gll.x)==100 && Math.abs(gll.y)==100) { gll.y=0.5 }
+    if(Math.abs(gll.x)==100 && Math.abs(gll.y)==100) { gll.y=0.5; }
 
     var oldchanged = gd.changed;
 
@@ -1718,8 +1715,8 @@ function legend(gd) {
             relayout(gd,'margin.r',gm.r);
             return;
         }
-        if(gll.x>2/3) { lx -= legendwidth }
-        else if(gll.x>1/3) { lx -= legendwidth/2 }
+        if(gll.x>2/3) { lx -= legendwidth; }
+        else if(gll.x>1/3) { lx -= legendwidth/2; }
     }
 
     if(gll.y==-100) {
@@ -1744,8 +1741,8 @@ function legend(gd) {
             relayout(gd,'margin.t',gm.t);
             return;
         }
-        if(gll.y<1/3) { ly -= legendheight }
-        else if(gll.y<2/3) { ly -= legendheight/2 }
+        if(gll.y<1/3) { ly -= legendheight; }
+        else if(gll.y<2/3) { ly -= legendheight/2; }
     }
 
     // adjusting the margin thusly doesn't by itself constitute a change, so
@@ -1754,10 +1751,10 @@ function legend(gd) {
 
     // push the legend back onto the page if it extends off, making sure if nothing else
     // that the top left of the legend is visible
-    if(lx+legendwidth>gl.width) { lx=gl.width-legendwidth }
-    if(lx<0) { lx=0 }
-    if(ly+legendheight>gl.height) { ly=gl.height-legendheight }
-    if(ly<0) { ly=0 }
+    if(lx+legendwidth>gl.width) { lx=gl.width-legendwidth; }
+    if(lx<0) { lx=0; }
+    if(ly+legendheight>gl.height) { ly=gl.height-legendheight; }
+    if(ly<0) { ly=0; }
 
     gd.legend.call(setRect, lx, ly, legendwidth, legendheight);
     gd.legend.selectAll('.bg')
@@ -1773,48 +1770,48 @@ function legend(gd) {
     //  else gll.x=xc;
     // similar logic for top/middle/bottom
     if(gd.mainsite) { gd.legend.node().onmousedown = function(e) {
-        if(dragClear(gd)) { return true } // deal with other UI elements, and allow them to cancel dragging
+        if(dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
 
         var eln=this,
             el3=d3.select(this),
             x0=Number(el3.attr('x')),
             y0=Number(el3.attr('y')),
-            xf=undefined,
-            yf=undefined;
+            xf = null,
+            yf = null;
         gd.dragged = false;
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
                 dy = e2.clientY-e.clientY,
                 gdm=gd.margin;
-            if(Math.abs(dx)<MINDRAG) { dx=0 }
-            if(Math.abs(dy)<MINDRAG) { dy=0 }
-            if(dx||dy) { gd.dragged = true }
+            if(Math.abs(dx)<MINDRAG) { dx=0; }
+            if(Math.abs(dy)<MINDRAG) { dy=0; }
+            if(dx||dy) { gd.dragged = true; }
             el3.call(setPosition, x0+dx, y0+dy);
             var pbb = gd.paperdiv.node().getBoundingClientRect();
 
             // drag to within a couple px of edge to take the legend outside the plot
-            if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100 }
-            else if(e2.clientX<pbb.left+3*MINDRAG || (gd.lw<0 && dx<MINDRAG)) { xf=-100 }
-            else { xf = dragAlign(x0+dx,legendwidth,gdm.l,gl.width-gdm.r) }
+            if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100; }
+            else if(e2.clientX<pbb.left+3*MINDRAG || (gd.lw<0 && dx<MINDRAG)) { xf=-100; }
+            else { xf = dragAlign(x0+dx,legendwidth,gdm.l,gl.width-gdm.r); }
 
-            if(e2.clientY>pbb.bottom-3*MINDRAG || (gd.lh<0 && dy>-MINDRAG)) { yf=-100 }
-            else if(e2.clientY<pbb.top+3*MINDRAG || (gd.lh>0 && dy<MINDRAG)) { yf=100 }
-            else { yf = 1-dragAlign(y0+dy,legendheight,gdm.t,gl.height-gdm.b) }
+            if(e2.clientY>pbb.bottom-3*MINDRAG || (gd.lh<0 && dy>-MINDRAG)) { yf=-100; }
+            else if(e2.clientY<pbb.top+3*MINDRAG || (gd.lh>0 && dy<MINDRAG)) { yf=100; }
+            else { yf = 1-dragAlign(y0+dy,legendheight,gdm.t,gl.height-gdm.b); }
 
             var csr = dragCursors(xf,yf);
             $(eln).css('cursor',csr);
             return pauseEvent(e2);
-        }
+        };
         window.onmouseup = function(e2) {
             window.onmousemove = null; window.onmouseup = null;
             $(eln).css('cursor','');
-            if(gd.dragged && xf!=undefined && yf!=undefined) {
+            if(gd.dragged && xf!==null && yf!==null) {
                 relayout(gd,{'legend.x':xf,'legend.y':yf});
             }
             return pauseEvent(e2);
-        }
+        };
         return pauseEvent(e);
-    } }
+    }; }
 }
 
 // -----------------------------------------------------
@@ -1830,14 +1827,16 @@ function legend(gd) {
 // if opt is blank, val can be 'add' or a full options object to add a new
 //  annotation at that point in the array, or 'remove' to delete this annotation
 function annotation(gd,index,opt,value) {
-    var gl = gd.layout,gm = gd.margin;
-    if(!gl.annotations) { gl.annotations = [] }
+    var gl = gd.layout,
+        gm = gd.margin,
+        i;
+    if(!gl.annotations) { gl.annotations = []; }
     if(!$.isNumeric(index)) {
         index = gl.annotations.length;
         gl.annotations.push({});
     }
     else if(index==-1) {
-        for(var i=0; i<gl.annotations.length; i++) { annotation(gd,i,opt,value) }
+        for(i=0; i<gl.annotations.length; i++) { annotation(gd,i,opt,value); }
         return;
     }
 
@@ -1845,7 +1844,7 @@ function annotation(gd,index,opt,value) {
         if(value=='remove') {
             gd.paper.selectAll('.annotation[data-index="'+index+'"]').remove();
             gl.annotations.splice(index,1);
-            for(var i=index; i<gl.annotations.length; i++) {
+            for(i=index; i<gl.annotations.length; i++) {
                 gd.paper.selectAll('.annotation[data-index="'+(i+1)+'"]')
                     .attr('data-index',String(i));
                 annotation(gd,i); // redraw all annotations past the removed, so they bind to the right events
@@ -1854,8 +1853,8 @@ function annotation(gd,index,opt,value) {
         }
         else if(value=='add' || $.isPlainObject(value)) {
             gl.annotations.splice(index,0,{});
-            if($.isPlainObject(value)) { Object.keys(value).forEach(function(k){ gl.annotations[index][k] = value[k] }) }
-            for(var i=gl.annotations.length-1; i>index; i--) {
+            if($.isPlainObject(value)) { Object.keys(value).forEach(function(k){ gl.annotations[index][k] = value[k]; }); }
+            for(i=gl.annotations.length-1; i>index; i--) {
                 gd.paper.selectAll('.annotation[data-index="'+(i-1)+'"]')
                     .attr('data-index',String(i));
                 annotation(gd,i);
@@ -1873,23 +1872,23 @@ function annotation(gd,index,opt,value) {
         ya = gl.yaxis,
         xr = xa.range[1]-xa.range[0],
         yr = ya.range[1]-ya.range[0];
-    if(typeof opt == 'string' && opt) { nestedProperty(options,opt).set(value) }
-    else if($.isPlainObject(opt)) { Object.keys(opt).forEach(function(k){ options[k] = opt[k] }) }
+    if(typeof opt == 'string' && opt) { nestedProperty(options,opt).set(value); }
+    else if($.isPlainObject(opt)) { Object.keys(opt).forEach(function(k){ options[k] = opt[k]; }); }
 
     // set default options (default x, y, ax, ay are set later)
-    if(!options.bordercolor) { options.bordercolor = '' }
-    if(!$.isNumeric(options.borderwidth)) { options.borderwidth = 1 }
-    if(!options.bgcolor) { options.bgcolor = 'rgba(0,0,0,0)' }
-    if(!options.ref) { options.ref='plot' }
-    if(options.showarrow!=false) { options.showarrow=true }
-    if(!$.isNumeric(options.borderpad)) { options.borderpad=1 }
-    if(!options.arrowwidth) { options.arrowwidth = 0 }
-    if(!options.arrowcolor) { options.arrowcolor = '' }
-    if(!$.isNumeric(options.arrowhead)) { options.arrowhead=1 }
-    if(!$.isNumeric(options.arrowsize)) { options.arrowsize=1 }
-    if(!options.tag) { options.tag='' }
-    if(!options.text) { options.text=((options.showarrow && (options.text=='')) ? '' : 'new text') }
-    if(!options.font) { options.font={family:'',size:0,color:''} }
+    if(!options.bordercolor) { options.bordercolor = ''; }
+    if(!$.isNumeric(options.borderwidth)) { options.borderwidth = 1; }
+    if(!options.bgcolor) { options.bgcolor = 'rgba(0,0,0,0)'; }
+    if(!options.ref) { options.ref='plot'; }
+    if(options.showarrow!==false) { options.showarrow=true; }
+    if(!$.isNumeric(options.borderpad)) { options.borderpad=1; }
+    if(!options.arrowwidth) { options.arrowwidth = 0; }
+    if(!options.arrowcolor) { options.arrowcolor = ''; }
+    if(!$.isNumeric(options.arrowhead)) { options.arrowhead=1; }
+    if(!$.isNumeric(options.arrowsize)) { options.arrowsize=1; }
+    if(!options.tag) { options.tag=''; }
+    if(!options.text) { options.text=((options.showarrow && (options.text==='')) ? '' : 'new text'); }
+    if(!options.font) { options.font={family:'',size:0,color:''}; }
 
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
@@ -1926,7 +1925,7 @@ function annotation(gd,index,opt,value) {
     styleText(anntext.node(),options.text);
 
     if(gd.mainsite) {
-        anntext.on('click',function(){ if(!gd.dragged) { autoGrowInput(this) } });
+        anntext.on('click',function(){ if(!gd.dragged) { autoGrowInput(this); } });
     }
 
     var atbb = anntext.node().getBoundingClientRect(),
@@ -1939,14 +1938,14 @@ function annotation(gd,index,opt,value) {
     // check for change between log and linear
     // off-scale transition to log: put the annotation near low end of the log
     // axis, but not quite at it (in case that would put it off screen)
-    if(options.ref=='plot') {
-        function checklog(v,oldtype,newtype,dflt) {
-            if(oldtype=='log' && newtype!='log') { return Math.pow(10,v) }
-            else if(oldtype!='log' && newtype=='log') {
-                return (v>0) ? Math.log(v)/Math.LN10 : dflt;
-            }
-            else { return v }
+    function checklog(v,oldtype,newtype,dflt) {
+        if(oldtype=='log' && newtype!='log') { return Math.pow(10,v); }
+        else if(oldtype!='log' && newtype=='log') {
+            return (v>0) ? Math.log(v)/Math.LN10 : dflt;
         }
+        else { return v; }
+    }
+    if(options.ref=='plot') {
         options.x = checklog(options.x,options._xatype,xa.type,
             (xa.range[0]+xa.range[1]-Math.abs(xr*0.8))/2);
         options.y = checklog(options.y,options._yatype,ya.type,
@@ -1957,13 +1956,13 @@ function annotation(gd,index,opt,value) {
 
     // check for change between paper and plot ref - need to wait for
     // annwidth/annheight to do this properly
+    function fshift(v){ return constrain(Math.floor(v*3-1),-0.5,0.5); }
     if(oldref && options.x && options.y) {
-        var fshift = function(v){ return constrain(Math.floor(v*3-1),-.5,.5) }
         if(options.ref=='plot' && oldref=='paper') {
-            if(options.showarrow) { var xshift = yshift = 0 }
-            else {
-                var xshift = fshift(options.x)*annwidth/xa._m,
-                    yshift = fshift(options.y)*annheight/ya._m;
+            var xshift = 0, yshift = 0;
+            if(!options.showarrow) {
+                xshift = fshift(options.x)*annwidth/xa._m;
+                yshift = fshift(options.y)*annheight/ya._m;
             }
             options.x = xa.range[0] + xr*options.x - xshift;
             options.y = ya.range[0] + yr*options.y + yshift;
@@ -1977,8 +1976,8 @@ function annotation(gd,index,opt,value) {
             }
         }
     }
-    if(!options.ax) { options.ax=-10 }
-    if(!options.ay) { options.ay=-annheight/2-20 }
+    if(!options.ax) { options.ax=-10; }
+    if(!options.ay) { options.ay=-annheight/2-20; }
     // now position the annotation and arrow, based on options[x,y,ref,showarrow,ax,ay]
 
     // position is either in plot coords (ref='plot') or
@@ -1995,16 +1994,16 @@ function annotation(gd,index,opt,value) {
     // offset (in pixels) between the arrowhead and the center of the annotation
 
     if(options.ref=='paper') {
-        if(!$.isNumeric(options.x)) { options.x=0.1 }
-        if(!$.isNumeric(options.y)) { options.y=0.7 }
+        if(!$.isNumeric(options.x)) { options.x=0.1; }
+        if(!$.isNumeric(options.y)) { options.y=0.7; }
         x += plotbb.width*options.x;
         y += plotbb.height*(1-options.y);
         if(!options.showarrow){
-            if(options.x>2/3) { x -= annwidth/2 }
-            else if(options.x<1/3) { x += annwidth/2 }
+            if(options.x>2/3) { x -= annwidth/2; }
+            else if(options.x<1/3) { x += annwidth/2; }
 
-            if(options.y<1/3) { y -= annheight/2 }
-            else if(options.y>2/3) { y += annheight/2 }
+            if(options.y<1/3) { y -= annheight/2; }
+            else if(options.y>2/3) { y += annheight/2; }
         }
     }
     else {
@@ -2014,8 +2013,8 @@ function annotation(gd,index,opt,value) {
             ann.remove();
             return;
         }
-        if(!$.isNumeric(options.x)) { options.x=(xa.range[0]*0.9+xa.range[1]*0.1) }
-        if(!$.isNumeric(options.y)) { options.y=(ya.range[0]*0.7+ya.range[1]*0.3) }
+        if(!$.isNumeric(options.x)) { options.x=(xa.range[0]*0.9+xa.range[1]*0.1); }
+        if(!$.isNumeric(options.y)) { options.y=(ya.range[0]*0.7+ya.range[1]*0.3); }
         x += xa._b+options.x*xa._m;
         y += ya._b+options.y*ya._m;
     }
@@ -2105,7 +2104,7 @@ function annotation(gd,index,opt,value) {
                 .call(strokeColor,'rgba(0,0,0,0)')
                 .call(fillColor,'rgba(0,0,0,0)');
             if(gd.mainsite) { arrowdrag.node().onmousedown = function(e) {
-                if(dragClear(gd)) { return true } // deal with other UI elements, and allow them to cancel dragging
+                if(dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
 
                 var eln = this,
                     el3 = d3.select(this),
@@ -2117,9 +2116,9 @@ function annotation(gd,index,opt,value) {
                 window.onmousemove = function(e2) {
                     var dx = e2.clientX-e.clientX,
                         dy = e2.clientY-e.clientY;
-                    if(Math.abs(dx)<MINDRAG) { dx=0 }
-                    if(Math.abs(dy)<MINDRAG) { dy=0 }
-                    if(dx||dy) {gd.dragged = true}
+                    if(Math.abs(dx)<MINDRAG) { dx=0; }
+                    if(Math.abs(dy)<MINDRAG) { dy=0; }
+                    if(dx||dy) { gd.dragged = true; }
                     arrowgroup.attr('transform','translate('+dx+','+dy+')');
                     ann.call(setPosition, annx0+dx, anny0+dy);
                     if(options.ref=='paper') {
@@ -2131,17 +2130,17 @@ function annotation(gd,index,opt,value) {
                         update[ab+'y'] = options.y+dy/gl.yaxis._m;
                     }
                     return pauseEvent(e2);
-                }
+                };
                 window.onmouseup = function(e2) {
                     window.onmousemove = null; window.onmouseup = null;
-                    if(gd.dragged) { relayout(gd,update) }
+                    if(gd.dragged) { relayout(gd,update); }
                     return pauseEvent(e2);
-                }
+                };
                 return pauseEvent(e);
-            }}
+            };}
         }
-    }
-    if(options.showarrow) { drawArrow(0,0) }
+    };
+    if(options.showarrow) { drawArrow(0,0); }
 
     // user dragging the annotation (text, not arrow)
     if(gd.mainsite) { ann.node().onmousedown = function(e) {
@@ -2158,9 +2157,9 @@ function annotation(gd,index,opt,value) {
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
                 dy = e2.clientY-e.clientY;
-            if(Math.abs(dx)<MINDRAG) { dx=0 }
-            if(Math.abs(dy)<MINDRAG) { dy=0 }
-            if(dx||dy) { gd.dragged = true }
+            if(Math.abs(dx)<MINDRAG) { dx=0; }
+            if(Math.abs(dy)<MINDRAG) { dy=0; }
+            if(dx||dy) { gd.dragged = true; }
             el3.call(setPosition, x0+dx, y0+dy);
             var csr='pointer';
             if(options.showarrow) {
@@ -2179,15 +2178,15 @@ function annotation(gd,index,opt,value) {
             }
             $(eln).css('cursor',csr);
             return pauseEvent(e2);
-        }
+        };
         window.onmouseup = function(e2) {
             window.onmousemove = null; window.onmouseup = null;
             $(eln).css('cursor','');
-            if(gd.dragged) { relayout(gd,update) }
+            if(gd.dragged) { relayout(gd,update); }
             return pauseEvent(e2);
-        }
+        };
         return pauseEvent(e);
-    }}
+    };}
 }
 
 // add arrowhead(s) to a path or line d3 element el3
@@ -2195,7 +2194,7 @@ function annotation(gd,index,opt,value) {
 // ends is 'start', 'end' (default), 'start+end'
 // mag is magnification vs. default (default 1)
 function arrowhead(el3,style,ends,mag) {
-    if(!$.isNumeric(mag)) { mag=1 }
+    if(!$.isNumeric(mag)) { mag=1; }
     var el = el3.node();
         s = ['M-1,-2V2L1,0Z',
             'M-2,-2V2L2,0Z',
@@ -2205,21 +2204,22 @@ function arrowhead(el3,style,ends,mag) {
             'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',
             'M2,2V-2H-2V2Z',
             ''][style-1];
-    if(!s) return;
+    if(!s) { return; }
     if(typeof ends != 'string' || !ends) ends = 'end';
 
+    var start,end,dstart,dend,pathlen;
     if(el.nodeName=='line') {
-        var start = {x:el3.attr('x1'),y:el3.attr('y1')},
-            end = {x:el3.attr('x2'),y:el3.attr('y2')},
-            dstart = end,
-            dend = start;
+        start = {x:el3.attr('x1'),y:el3.attr('y1')};
+        end = {x:el3.attr('x2'),y:el3.attr('y2')};
+        dstart = end;
+        dend = start;
     }
     else if(el.nodeName=='path') {
-        var start = el.getPointAtLength(0),
-            dstart = el.getPointAtLength(0.1),
-            pathlen = el.getTotalLength(),
-            end = el.getPointAtLength(pathlen),
-            dend = el.getPointAtLength(pathlen-0.1);
+        start = el.getPointAtLength(0);
+        dstart = el.getPointAtLength(0.1);
+        pathlen = el.getTotalLength();
+        end = el.getPointAtLength(pathlen);
+        dend = el.getPointAtLength(pathlen-0.1);
     }
 
     var drawhead = function(p,q) {
@@ -2227,7 +2227,7 @@ function arrowhead(el3,style,ends,mag) {
             scale = (el3.attr('stroke-width') || 1)*(mag),
             stroke = el3.attr('stroke') || '#000',
             opacity = el3.style('stroke-opacity') || 1;
-        if(style>5) { rot=0 } // don't rotate square or circle
+        if(style>5) { rot=0; } // don't rotate square or circle
         d3.select(el.parentElement).append('path')
             .attr('class',el3.attr('class'))
             .attr('data-cmmt',el3.attr('data-cmmt'))
@@ -2237,10 +2237,10 @@ function arrowhead(el3,style,ends,mag) {
             .attr('stroke-width',0)
             .attr('d',s)
             .attr('transform','translate('+p.x+','+p.y+')rotate('+rot+')scale('+scale+')');
-    }
+    };
 
-    if(ends.indexOf('start')>=0) { drawhead(start,dstart) }
-    if(ends.indexOf('end')>=0) { drawhead(end,dend) }
+    if(ends.indexOf('start')>=0) { drawhead(start,dstart); }
+    if(ends.indexOf('end')>=0) { drawhead(end,dend); }
 }
 
 // allArrowheads: call twice to make an arrowheads dropdown.
@@ -2261,7 +2261,7 @@ function allArrowheads(container){
             name:'<svg width="40" height="20" data-arrowhead="'+i+'" style="position: relative; top: 2px;">'+
                 '<line stroke="rgb(0,0,0)" style="fill: none;" x1="5" y1="10" x2="25" y2="10" stroke-width="2">'+
                 '</line></svg>'
-        } });
+        }; });
 }
 
 // look for intersection of two line segments (1->2 and 3->4) - returns array [x,y] if they do, null if not
@@ -2270,10 +2270,10 @@ function line_intersect(x1,y1,x2,y2,x3,y3,x4,y4) {
     var a=x2-x1, b=x3-x1, c=x4-x3,
         d=y2-y1, e=y3-y1, f=y4-y3,
         det=a*f-c*d;
-    if(det==0) { return null } // parallel lines, so intersection is undefined - ignore the case where they are colinear
+    if(det===0) { return null; } // parallel lines, so intersection is undefined - ignore the case where they are colinear
     var t=(b*f-c*e)/det,
         u=(b*d-a*e)/det;
-    if(u<0 || u>1 || t<0 || t>1) { return null } // segments do not intersect
+    if(u<0 || u>1 || t<0 || t>1) { return null; } // segments do not intersect
     return {x:x1+a*t, y:y1+d*t};
 }
 
@@ -2292,20 +2292,21 @@ function line_intersect(x1,y1,x2,y2,x3,y3,x4,y4) {
 // but if it fails, displays the unparsed text with a tooltip about the error
 // TODO: will barf on tags crossing newlines... need to close and reopen any such tags if we want to allow this.
 
-SPECIALCHARS={'mu':'\u03bc','times':'\u00d7','plusmn':'\u00b1'}
+SPECIALCHARS={'mu':'\u03bc','times':'\u00d7','plusmn':'\u00b1'};
 
 // styleText - make styled svg text in the given node
 //      sn - the node to contain the text
 //      t - the (pseudo-HTML) styled text as a string
 function styleText(sn,t) {
-    if(t===undefined) { return }
+    if(t===undefined) { return; }
     var s = d3.select(sn),
         // whitelist of tags we accept - make sure new tags get added here
         // as well as styleTextInner
         tags = ['sub','sup','b','i','font'],
         tagRE = new RegExp('\x01(\\/?(br|'+tags.join('|')+')(\\s[^\x01\x02]*)?\\/?)\x02','gi'),
         entityRE = /\x01([A-Za-z]+|#[0-9]+);/g,
-        charsRE = new RegExp('&('+Object.keys(SPECIALCHARS).join('|')+');','g');
+        charsRE = new RegExp('&('+Object.keys(SPECIALCHARS).join('|')+');','g'),
+        i;
     // take the most permissive reading we can of the text:
     // if we don't recognize something as markup, treat it as literal text
     // first &...; entities
@@ -2323,11 +2324,11 @@ function styleText(sn,t) {
     for(i in tags) {
         var om=t1.match(new RegExp('<'+tags[i],'gi')), opens=om?om.length:0;
         var cm=t1.match(new RegExp('<\\/'+tags[i],'gi')), closes=cm?cm.length:0;
-        while(closes<opens) { closes++; t1+='</'+tags[i]+'>'}
+        while(closes<opens) { closes++; t1+='</'+tags[i]+'>'; }
     }
     // quote unquoted attributes
     var attrRE=/(<[^<>]*=\s*)([^<>\s"']+)(\s|>)/g;
-    while(t1.match(attrRE)) { t1=t1.replace(attrRE,'$1"$2"$3') }
+    while(t1.match(attrRE)) { t1=t1.replace(attrRE,'$1"$2"$3'); }
     // make special characters into their own <c> tags
     t1=t1.replace(charsRE,'<c>$1</c>');
     // parse the text into an xml tree
@@ -2344,43 +2345,43 @@ function styleText(sn,t) {
     }
     // create the styled output
     else {
-        for(var i=0; i<lines.length;i++) {
+        for(i=0; i<lines.length;i++) {
             var l=s.append('tspan').attr('class','nl');
-            if(i>0) { l.attr('x',s.attr('x')).attr('dy',1.3*s.attr('font-size')) }
+            if(i>0) { l.attr('x',s.attr('x')).attr('dy',1.3*s.attr('font-size')); }
             sti(l,lines[i].childNodes);
         }
     }
     // if the user did something weird and produced an empty output, give it some size
     // and make it transparent, so they can get it back again
     var bb=sn.getBoundingClientRect();
-    if(bb.width==0 || bb.height==0) {
+    if(bb.width===0 || bb.height===0) {
         s.selectAll('tspan').remove();
         styleText(sn,'XXXXX');
         s.attr('opacity',0);
     }
 
     function sti(s,n){
-        function addtext(v){ (s.text() ? s.append('tspan') : s).text(v) }
+        function addtext(v){ (s.text() ? s.append('tspan') : s).text(v); }
 
         var sf = {
-            sup: function(s){ s.attr('baseline-shift','super').attr('font-size','70%') },
-            sub: function(s){ s.attr('baseline-shift','sub').attr('font-size','70%') },
-            b: function(s){ s.attr('font-weight','bold') },
-            i: function(s){ s.attr('font-style','italic') },
+            sup: function(s){ s.attr('baseline-shift','super').attr('font-size','70%'); },
+            sub: function(s){ s.attr('baseline-shift','sub').attr('font-size','70%'); },
+            b: function(s){ s.attr('font-weight','bold'); },
+            i: function(s){ s.attr('font-style','italic'); },
             font: function(s,a){
                 for(var j=0; j<a.length; j++) {
                     var at = a[j], atl=at.name.toLowerCase(), atv=at.nodeValue;
-                    if(atl=='color') { s.call(fillColor,atv) }
-                    else { s.attr('font-'+atl,atv) }
+                    if(atl=='color') { s.call(fillColor,atv); }
+                    else { s.attr('font-'+atl,atv); }
                 }
             }
-        }
+        };
 
         for(var i=0;i<n.length;i++){
             var nn=n[i].nodeName.toLowerCase(),nc=n[i].childNodes;
-            if(nn=='#text') { addtext(n[i].nodeValue) }
-            else if(nn=='c') { addtext(SPECIALCHARS[nc[0].nodeValue]||'?') }
-            else if(sf[nn]) { sti(s.append('tspan').call(sf[nn],n[i].attributes),nc) }
+            if(nn=='#text') { addtext(n[i].nodeValue); }
+            else if(nn=='c') { addtext(SPECIALCHARS[nc[0].nodeValue]||'?'); }
+            else if(sf[nn]) { sti(s.append('tspan').call(sf[nn],n[i].attributes),nc); }
         }
     }
 }
@@ -2397,9 +2398,9 @@ function graphToGrid( mode ){
     if( gd.data === undefined ){
         Tabs.add('grid'); return;
     }
-    if(gd.fid !== undefined && gd.fid !='') { pullf({fid: gd.fid, ft:'grid',  mode:mode}) }
+    if(gd.fid !== undefined && gd.fid !=='') { pullf({fid: gd.fid, ft:'grid',  mode:mode}); }
     else {
-        var data = gd.data.map(function(gdd){return stripSrc(gdd)});
+        var data = gd.data.map(function(gdd){ return stripSrc(gdd); });
         plotlylog('~ DATA ~');
         plotlylog(data);
         pullf({data: JSON.stringify({'data':data}), ft:'grid', mode:mode});
@@ -2413,16 +2414,17 @@ function graphToGrid( mode ){
 uoStack=[];
 // merge objects i and up recursively
 function updateObject(i,up) {
-    if(!$.isPlainObject(up)) return i;
-    var o = uoStack[uoStack.push({})-1]; // seems like JS doesn't fully implement recursion... if I say o={} here then each level destroys the previous.
-    for(key in i) { o[key]=i[key] }
+    if(!$.isPlainObject(up)) { return i; }
+    var o = uoStack[uoStack.push({})-1], // seems like JS doesn't fully implement recursion... if I say o={} here then each level destroys the previous.
+        key;
+    for(key in i) { o[key]=i[key]; }
     for(key in up) {
         if($.isPlainObject(up[key])) {
             o[key]=updateObject($.isPlainObject(i[key]) ? i[key] : {}, up[key]);
         }
         // if the initial object had a number and the update can be a number, coerce it
-        else if($.isNumeric(i[key]) && $.isNumeric(up[key])) { o[key] = Number(up[key]) }
-        else { o[key] = up[key] }
+        else if($.isNumeric(i[key]) && $.isNumeric(up[key])) { o[key] = Number(up[key]); }
+        else { o[key] = up[key]; }
     }
     return uoStack.pop();
 }
@@ -2433,19 +2435,19 @@ function updateObject(i,up) {
 // if there's no continuing value v, use null for selector-type functions (max,min)
 //   or 0 for summation-type functions
 function aggNums(f,v,a,len) {
-    if(!len) { len=a.length }
-    if(!$.isNumeric(v)) { v=false }
+    if(!len) { len=a.length; }
+    if(!$.isNumeric(v)) { v=false; }
 	for(i=0; i<len; i++) {
-	    if(!$.isNumeric(v)) { v=a[i] }
-	    else if($.isNumeric(a[i])) { v=f(v,a[i]) }
-	}
+        if(!$.isNumeric(v)) { v=a[i]; }
+        else if($.isNumeric(a[i])) { v=f(v,a[i]); }
+    }
 	return v;
 }
 
 // do two bounding boxes from getBoundingClientRect,
 // ie {left,right,top,bottom,width,height}, overlap?
 function bBoxIntersect(a,b){
-    return (a.left<=b.right && b.left<=a.right && a.top<=b.bottom && b.top<=a.bottom)
+    return (a.left<=b.right && b.left<=a.right && a.top<=b.bottom && b.top<=a.bottom);
 }
 
 // create a copy of data, with all dereferenced src elements stripped
@@ -2454,12 +2456,12 @@ function bBoxIntersect(a,b){
 // also strips out functions and other private (start with _) elements
 // so we can add temporary things to data and layout that don't get saved
 function stripSrc(d) {
-    var o={};
+    var o={}, v;
     for(v in d) {
         var src = d[v+'src'];
         if(!((typeof src=='string') && src.indexOf(':')>0) && (typeof d[v] != 'function') && (v.charAt(0)!='_')) {
-            if($.isPlainObject(d[v])) { o[v]=stripSrc(d[v]) }
-            else { o[v]=d[v] }
+            if($.isPlainObject(d[v])) { o[v]=stripSrc(d[v]); }
+            else { o[v]=d[v]; }
         }
     }
     return o;
@@ -2467,7 +2469,7 @@ function stripSrc(d) {
 
 function alert_repl(func_name, data) {
     if (window.ws && window.ws.confirmedReady) {
-        func = (func_name ? JSON.stringify(func_name) : 'None')
+        func = (func_name ? JSON.stringify(func_name) : 'None');
         data = JSON.stringify(data);
         send_invisible('hermes(' + func + ',' + data + ')');
     }
