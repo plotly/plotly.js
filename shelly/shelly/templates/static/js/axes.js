@@ -64,7 +64,7 @@ function setType(gd,axletter){
         }
     }
     // then check the data supplied for that axis
-    // only consider existing type to decide log vs linear
+    // only consider existing type if we need to decide log vs linear
     if(d0.type=='box' && axletter=='x' && !('x' in d0) && !('x0' in d0)) {
         ax.type='category'; // take the categories from trace name, text, or number
     }
@@ -245,6 +245,12 @@ axes.doAutoRange = function(gd,ax) {
         if(gd.data) { gd.data.forEach(function(v){
             if(HEATMAPTYPES.indexOf(v.type)!=-1){ axpad=0; }
         }); }
+
+        // check if we're forcing zero to be included
+        if(ax.autorange=='withzero' && ax.type=='linear') {
+            tight[0] = Math.min(0,tight[0]);
+            tight[1] = Math.max(0,tight[1]);
+        }
 
         // if axis is currently reversed, preserve this.
         var axReverse = (ax.range && ax.range[1]<ax.range[0]);
