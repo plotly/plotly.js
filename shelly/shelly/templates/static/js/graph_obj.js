@@ -1391,7 +1391,8 @@ function newPlot(divid, layout) {
         // TODO - remove tooltips here
         $(gd).find('[rel="tooltip"]').tooltip('destroy');
         gd.innerHTML='';
-        if(gd.mainsite) { graphbar(gd); }
+        // if(gd.mainsite) { graphbar(gd) }
+        if(gd.mainsite) { makeGraphbar(gd) }
         // Make the outer graph container
         gd.paperdiv = gd3.append('div')
             .classed('svgcontainer',true)
