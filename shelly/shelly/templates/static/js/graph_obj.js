@@ -1380,8 +1380,8 @@ function newPlot(divid, layout) {
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.axlines = {
-        x:gd.paper.append('path').style('fill','none'),
-        y:gd.paper.append('path').style('fill','none')
+        x:gd.paper.append('path').style('fill','none').classed('crisp',true),
+        y:gd.paper.append('path').style('fill','none').classed('crisp',true)
     };
     gd.axislayer = gd.paper.append('g').attr('class','axislayer');
     // Second svg (plot) is for the data
