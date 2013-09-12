@@ -803,6 +803,7 @@ axes.doTicks = function(gd,axletter) {
     var ticks=gd.axislayer.selectAll('path.'+tcls).data(vals,datafn);
     if(ax.ticks) {
         ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
+            .classed('crisp',1)
             .call(strokeColor, ax.tickcolor || '#000')
             .attr('stroke-width', ax.tickwidth || 1)
             .attr('d',tickpath);
@@ -836,6 +837,7 @@ axes.doTicks = function(gd,axletter) {
         gridwidth = ax.gridwidth || 1;
     if(ax.showgrid!==false) {
         grid.enter().append('line').classed(gcls,1)
+            .classed('crisp',1)
             .call(strokeColor, ax.gridcolor || '#ddd')
             .attr('stroke-width', gridwidth)
             .attr('x1',g.x1)
@@ -850,8 +852,9 @@ axes.doTicks = function(gd,axletter) {
 
     // zero line
     var zl = gd.axislayer.selectAll('line.'+zcls).data(ax.range[0]*ax.range[1]<=0 ? [{x:0}] : []);
-    if(ax.zeroline && ax.type=='linear') {
+    if(ax.zeroline && (ax.type=='linear' || ax.type=='-')) {
         zl.enter().append('line').classed(zcls,1).classed('zl',1)
+            .classed('crisp',1)
             .call(strokeColor, ax.zerolinecolor || '#000')
             .attr('stroke-width', ax.zerolinewidth || gridwidth)
             .attr('x1',g.x1)
