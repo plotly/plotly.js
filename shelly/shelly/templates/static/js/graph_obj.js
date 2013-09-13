@@ -742,24 +742,33 @@ function pointStyle(s,t) {
         s.attr('d',function(d){
             var r=((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/2;
             if(!$.isNumeric(r) || r<0) { r=3; } // in case of "various" etc... set a visible default
-            var rt=String(r*2/Math.sqrt(3)),
-                rc=String(r/3),
-                rd=String(r*Math.sqrt(2)),
-                r2=String(r/2);
-            r=String(r);
+            var rt=String(d3.round(r*2/Math.sqrt(3),2)),
+                r2=String(d3.round(r/2,2)),
+                rs=String(d3.round(r,2));
             var x=(d.mx || t.mx || (d.t ? d.t.mx : ''));
-            if(x=='square') { return 'M'+r+','+r+'H-'+r+'V-'+r+'H'+r+'Z'; }
-            if(x=='diamond') { return 'M'+rd+',0L0,'+rd+'L-'+rd+',0L0,-'+rd+'Z'; }
-            if(x=='triangle-up') { return 'M-'+rt+','+r2+'H'+rt+'L0,-'+r+'Z'; }
-            if(x=='triangle-down') { return 'M-'+rt+',-'+r2+'H'+rt+'L0,'+r+'Z'; }
-            if(x=='triangle-right') { return 'M-'+r2+',-'+rt+'V'+rt+'L'+r+',0Z'; }
-            if(x=='triangle-left') { return 'M'+r2+',-'+rt+'V'+rt+'L-'+r+',0Z'; }
+            if(x=='square') { return 'M'+rs+','+rs+'H-'+rs+'V-'+rs+'H'+rs+'Z'; }
+            if(x=='diamond') {
+                var rd=String(d3.round(r*Math.sqrt(2),2));
+                return 'M'+rd+',0L0,'+rd+'L-'+rd+',0L0,-'+rd+'Z';
+            }
+            if(x=='triangle-up') { return 'M-'+rt+','+r2+'H'+rt+'L0,-'+rs+'Z'; }
+            if(x=='triangle-down') { return 'M-'+rt+',-'+r2+'H'+rt+'L0,'+rs+'Z'; }
+            if(x=='triangle-right') { return 'M-'+r2+',-'+rt+'V'+rt+'L'+rs+',0Z'; }
+            if(x=='triangle-left') { return 'M'+r2+',-'+rt+'V'+rt+'L-'+rs+',0Z'; }
             if(x=='cross') {
-                return 'M'+r+','+rc+'H'+rc+'V'+r+'H-'+rc+'V'+rc+'H-'+r+
-                    'V-'+rc+'H-'+rc+'V-'+r+'H'+rc+'V-'+rc+'H'+r+'Z';
+                var rc = String(d3.round(r*0.4,2)),
+                    rc2 = String(d3.round(r*1.2,2));
+                return 'M'+rc2+','+rc+'H'+rc+'V'+rc2+'H-'+rc+'V'+rc+'H-'+rc2+
+                    'V-'+rc+'H-'+rc+'V-'+rc2+'H'+rc+'V-'+rc+'H'+rc2+'Z';
+            }
+            if(x=='x') {
+                var rx = String(d3.round(r*0.8/Math.sqrt(2),2)),
+                    ne = 'l'+rx+','+rx, se = 'l'+rx+',-'+rx,
+                    sw = 'l-'+rx+',-'+rx, nw = 'l-'+rx+','+rx;
+                return 'M0,'+rx+ne+se+sw+se+sw+nw+sw+nw+ne+nw+ne+'Z';
             }
             // circle is default
-            return 'M'+r+',0A'+r+','+r+' 0 1,1 0,-'+r+'A'+r+','+r+' 0 0,1 '+r+',0Z';
+            return 'M'+rs+',0A'+rs+','+rs+' 0 1,1 0,-'+rs+'A'+rs+','+rs+' 0 0,1 '+rs+',0Z';
         })
         .style('opacity',function(d){ return (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1; });
     }
@@ -1371,8 +1380,8 @@ function newPlot(divid, layout) {
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.axlines = {
-        x:gd.paper.append('path').style('fill','none'),
-        y:gd.paper.append('path').style('fill','none')
+        x:gd.paper.append('path').style('fill','none').classed('crisp',true),
+        y:gd.paper.append('path').style('fill','none').classed('crisp',true)
     };
     gd.axislayer = gd.paper.append('g').attr('class','axislayer');
     // Second svg (plot) is for the data
