@@ -682,7 +682,12 @@ function numFormat(v,ax,fmtoverride,hover) {
     var n = (v<0), // negative?
         r = ax._tickround, // max number of digits past decimal point to show
         fmt = fmtoverride||ax.exponentformat||'e',
-        d = ax._tickexponent;
+        d = ax._tickexponent,
+        // separators - first char is decimal point,
+        // next char is thousands separator if there is one
+        separators = ax.separators||'.',
+        decimalpoint = separators.charAt(0),
+        thouSeparator = separators.charAt(1);
     // special case for hover: set exponent just for this value, and
     // add a couple more digits of precision over tick labels
     if(hover) {
