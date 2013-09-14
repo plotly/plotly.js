@@ -1388,6 +1388,7 @@ function newPlot(divid, layout) {
     gd.plot = gd.paper.append('svg')
         .attr('preserveAspectRatio','none')
         .style('fill','none');
+    gd.draglayer = gd.paper.append('g').attr('class','draglayer');
     gd.infolayer = gd.paper.append('g').attr('class','infolayer');
     gd.hoverlayer = gd.paper.append('g').attr('class','hoverlayer');
 
