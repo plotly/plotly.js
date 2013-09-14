@@ -397,8 +397,8 @@ function plot(divid, data, layout) {
 
     // show the legend and annotations
     if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!==false)) { legend(gd); }
-    else { gd.paper.selectAll('.legend').remove(); }
-    gd.paper.selectAll('.annotation').remove();
+    else { gd.infolayer.selectAll('.legend').remove(); }
+    gd.infolayer.selectAll('.annotation').remove();
     if(gl.annotations) { for(i in gl.annotations) { annotation(gd,i); } }
 
     // finish up - spinner and tooltips
@@ -1189,7 +1189,7 @@ function relayout(gd,astr,val) {
         }
         // if we didn't need to redraw the whole thing, just do the needed parts
         if(dolegend) {
-            gd.paper.selectAll('.legend').remove();
+            gd.infolayer.selectAll('.legend').remove();
             if(gl.showlegend) { legend(gd); }
         }
         if(dolayoutstyle) { layoutStyles(gd); }
@@ -1388,6 +1388,7 @@ function newPlot(divid, layout) {
     gd.plot = gd.paper.append('svg')
         .attr('preserveAspectRatio','none')
         .style('fill','none');
+    gd.draglayer = gd.paper.append('g').attr('class','draglayer');
     gd.infolayer = gd.paper.append('g').attr('class','infolayer');
     gd.hoverlayer = gd.paper.append('g').attr('class','hoverlayer');
 
@@ -1544,8 +1545,8 @@ function makeTitles(gd,title) {
     for(var k in titles){
         if(title==k || title===''){
             var t=titles[k];
-            gd.paper.select('.'+k).remove();
-            var el=gd.paper.append('text').attr('class',k)
+            gd.axislayer.select('.'+k).remove();
+            var el=gd.axislayer.append('text').attr('class',k)
                 .call(setPosition, t.x, t.y)
                 .attr('font-family',t.font)
                 .attr('font-size',t.fontSize)
@@ -1580,7 +1581,7 @@ function makeTitles(gd,title) {
                 gdbb=gd.paperdiv.node().getBoundingClientRect(),
                 labels,tickx,ticky,i,lbb;
             if(k=='xtitle'){
-                labels=gd.paper.selectAll('text.xtick')[0];
+                labels=gd.axislayer.selectAll('text.xtick')[0];
                 ticky=0;
                 for(i=0; i<labels.length; i++){
                     lbb=labels[i].getBoundingClientRect();
@@ -1593,7 +1594,7 @@ function makeTitles(gd,title) {
                 }
             }
             if(k=='ytitle'){
-                labels=gd.paper.selectAll('text.ytick')[0];
+                labels=gd.axislayer.selectAll('text.ytick')[0];
                 tickx=screen.width;
                 for(i=0; i<labels.length; i++){
                     lbb=labels[i].getBoundingClientRect();
@@ -1618,7 +1619,7 @@ function legend(gd) {
     gl.showlegend = true;
     if(!gl.legend) { gl.legend={}; }
     var gll = gl.legend;
-    gd.paper.selectAll('.legend').remove();
+    gd.infolayer.selectAll('.legend').remove();
     if(!gd.calcdata) { return; }
 
     var ldata=[];
@@ -1628,7 +1629,7 @@ function legend(gd) {
         }
     }
 
-    gd.legend=gd.paper.append('svg')
+    gd.legend=gd.infolayer.append('svg')
         .attr('class','legend');
 
     var bordercolor = gll.bordercolor || '#000',
@@ -1851,10 +1852,10 @@ function annotation(gd,index,opt,value) {
 
     if(!opt && value) {
         if(value=='remove') {
-            gd.paper.selectAll('.annotation[data-index="'+index+'"]').remove();
+            gd.infolayer.selectAll('.annotation[data-index="'+index+'"]').remove();
             gl.annotations.splice(index,1);
             for(i=index; i<gl.annotations.length; i++) {
-                gd.paper.selectAll('.annotation[data-index="'+(i+1)+'"]')
+                gd.infolayer.selectAll('.annotation[data-index="'+(i+1)+'"]')
                     .attr('data-index',String(i));
                 annotation(gd,i); // redraw all annotations past the removed, so they bind to the right events
             }
@@ -1864,7 +1865,7 @@ function annotation(gd,index,opt,value) {
             gl.annotations.splice(index,0,{});
             if($.isPlainObject(value)) { Object.keys(value).forEach(function(k){ gl.annotations[index][k] = value[k]; }); }
             for(i=gl.annotations.length-1; i>index; i--) {
-                gd.paper.selectAll('.annotation[data-index="'+(i-1)+'"]')
+                gd.infolayer.selectAll('.annotation[data-index="'+(i-1)+'"]')
                     .attr('data-index',String(i));
                 annotation(gd,i);
             }
@@ -1872,7 +1873,7 @@ function annotation(gd,index,opt,value) {
     }
 
     // remove the existing annotation if there is one
-    gd.paper.selectAll('.annotation[data-index="'+index+'"]').remove();
+    gd.infolayer.selectAll('.annotation[data-index="'+index+'"]').remove();
 
     // edit the options
     var options = gl.annotations[index];
@@ -1907,7 +1908,7 @@ function annotation(gd,index,opt,value) {
         y = plotbb.top-paperbb.top;
 
     // create the components
-    var ann = gd.paper.append('svg')
+    var ann = gd.infolayer.append('svg')
         .attr('class','annotation')
         .attr('data-cmmt',options.tag)
         .call(setPosition,0,0)
@@ -2091,7 +2092,7 @@ function annotation(gd,index,opt,value) {
         });
         if(showline) {
             var strokewidth = options.arrowwidth||borderwidth*2;
-            var arrowgroup = gd.paper.append('g')
+            var arrowgroup = gd.infolayer.append('g')
                 .attr('class','annotation')
                 .attr('data-cmmt',options.tag)
                 .attr('data-index',String(index));
