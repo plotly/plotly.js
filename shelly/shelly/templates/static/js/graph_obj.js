@@ -81,8 +81,6 @@ data should be an array of objects, one per trace. allowed keys:
 
 GRAPH_HEIGHT = 450;
 GRAPH_WIDTH = 700;
-TOOLBAR_LEFT = '40px'; // TODO: do these do anything anymore?
-TOOLBAR_TOP = '-30px'; // "
 PTS_LINESONLY = 20; // traces with < this many points are by default shown with points and lines, > just get lines
 DBLCLICKDELAY = 600; // ms between first mousedown and 2nd mouseup to constitute dblclick... we don't seem to have access to the system setting
 MINDRAG = 5; // pixels to move mouse before you stop clamping to starting point
@@ -154,25 +152,25 @@ function defaultLayout(){
 // setStyles etc will go here to make multiple graph types easier to manage
 var graphInfo = {
     scatter:{
-        framework:newPlot
+        framework:makePlotFramework
     },
     bar:{
-        framework:newPlot
+        framework:makePlotFramework
     },
     heatmap:{
-        framework:newPlot
+        framework:makePlotFramework
     },
     histogramx:{
-        framework:newPlot
+        framework:makePlotFramework
     },
     histogramy:{
-        framework:newPlot
+        framework:makePlotFramework
     },
     histogram2d:{
-        framework:newPlot
+        framework:makePlotFramework
     },
     box:{
-        framework:newPlot
+        framework:makePlotFramework
     }
 };
 
@@ -195,6 +193,23 @@ req('Boxes',['calc','plot','setPositions']);
 req('ErrorBars',['returnToStyleBox','pushRef2GDC','styleBoxDrop','styleBox','ydr','plot','style']);
 req('Axes',['setTypes','convertOne','convertToNums','setConvert','doAutoRange','doTicks',
     'expandBounds','expandWithZero','setConvert','setTypes','tickFirst','tickIncrement','tickText']);
+
+function newPlotTab(divid, layout) {
+    makeToolMenu(divid);
+    makePlotFramework(divid, layout);
+}
+
+function makeToolMenu(divid) {
+    // Get the container div: we will store all variables for this plot as
+    // properties of this div (for extension to multiple plots/tabs per page)
+    // some callers send this in by dom element, others by id (string)
+    var gd = (typeof divid == 'string') ? document.getElementById(divid) : divid;
+    // test if this is on the main site or embedded
+    gd.mainsite = Boolean($('#plotlyMainMarker').length);
+    if(gd.mainsite) {
+        makeGraphbar(gd);
+    }
+}
 
 // Traces are unique by name.. allows traces to be updated/restyled
 function updateTraces(old_data, new_data) {
@@ -278,21 +293,21 @@ function plot(divid, data, layout) {
     //  the new layout gets ignored (as it should)
     //  but if there's no data there yet, it's just a placeholder...
     //  then it should destroy and remake the plot
-    if(gd.data&&gd.data.length>0){
+    if (gd.data && gd.data.length > 0) {
         var framework = graphInfo[gd.data[0].type || 'scatter'].framework;
         if(!gd.framework || gd.framework!=framework || (typeof gd.layout==='undefined') || graphwasempty) {
             gd.framework = framework;
             framework(gd,layout);
         }
     }
-    else if((typeof gd.layout==='undefined')||graphwasempty) { newPlot(gd, layout); }
+    else if((typeof gd.layout==='undefined')||graphwasempty) { makePlotFramework(gd, layout); }
 
     // enable or disable formatting buttons
     $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length===0);
 
-    var gl=gd.layout,
-        xa=gl.xaxis,
-        ya=gl.yaxis;
+    var gl = gd.layout,
+        xa = gl.xaxis,
+        ya = gl.yaxis;
     var x, y, i, serieslen, cd, type;
     // if we have bars or fill-to-zero traces, make sure autorange goes to zero
     gd.firstscatter = true; // because fill-to-next on the first scatter trace goes to zero
@@ -311,11 +326,11 @@ function plot(divid, data, layout) {
     markTime('done Axes.setType');
 
     for(var curve in gd.data) {
-        var gdc=gd.data[curve], // curve is the index, gdc is the data object for one trace
+        var gdc = gd.data[curve], // curve is the index, gdc is the data object for one trace
             curvetype = gdc.type || 'scatter', //default type is scatter
             typeinfo = graphInfo[curvetype],
-            cdtextras={}; // info (if anything) to add to cd[0].t
-        cd=[];
+            cdtextras = {}; // info (if anything) to add to cd[0].t
+        cd = [];
 
         if(typeinfo.framework!=gd.framework) {
             plotlylog('Oops, tried to put data of type '+(gdc.type || 'scatter')+
@@ -333,15 +348,16 @@ function plot(divid, data, layout) {
             else { gdc.name='trace '+curve; }
         }
 
-        if(curvetype=='scatter') { cd = Scatter.calc(gd,gdc); }
-        else if(BARTYPES.indexOf(curvetype)!=-1) { cd = Bars.calc(gd,gdc); }
-        else if(HEATMAPTYPES.indexOf(curvetype)!=-1 ){ cd = Heatmap.calc(gd,gdc); }
-        else if(curvetype=='box') { cd = Boxes.calc(gd,gdc); }
+        if (curvetype == 'scatter') { cd = Scatter.calc(gd,gdc); }
+        else if (BARTYPES.indexOf(curvetype) != -1) { cd = Bars.calc(gd,gdc); }
+        else if (HEATMAPTYPES.indexOf(curvetype) != -1 ){ cd = Heatmap.calc(gd,gdc); }
+        else if (curvetype == 'box') { cd = Boxes.calc(gd,gdc); }
 
-        if(!('line' in gdc)) gdc.line={};
-        if(!('marker' in gdc)) gdc.marker={};
-        if(!('line' in gdc.marker)) gdc.marker.line={};
-        if(!$.isArray(cd) || !cd[0]) { cd = [{x:false,y:false}]; } // make sure there is a first point
+        if(!('line' in gdc)) gdc.line = {};
+        if(!('marker' in gdc)) gdc.marker = {};
+        if(!('line' in gdc.marker)) gdc.marker.line = {};
+        if(!$.isArray(cd) || !cd[0]) { cd = [{x: false, y: false}]; } // make sure there is a first point
+
         // add the trace-wide properties to the first point, per point properties to every point
         // t is the holder for trace-wide properties
         if(!cd[0].t) { cd[0].t = {}; }
@@ -1323,7 +1339,7 @@ function plotDo(gd,aobj,traces) {
     if(po.length) { po[0].redraw(po[0].selectedObj); }
 }
 
-function plotAutoSize(gd,aobj) {
+function plotAutoSize(gd, aobj) {
     var plotBB = gd.paperdiv.node().getBoundingClientRect();
     var gdBB = gd.getBoundingClientRect();
     // var ftBB = $('#filetab').length ? $('#filetab')[0].getBoundingClientRect() : {width:0};
@@ -1370,29 +1386,32 @@ function plotResize(gd) {
 // Create the plot container and axes
 // ----------------------------------------------------
 // TODO: check structure (?) to make faster selector queries when there's lots of data in the graph
-function newPlot(divid, layout) {
+function makePlotFramework(divid, layout) {
+
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
 
-    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid,
-        gd3=d3.select(gd);
-    if(!layout) layout={};
+    var gd = (typeof divid == 'string') ? document.getElementById(divid) : divid,
+        gd3 = d3.select(gd);
+    if(!layout) layout = {};
 	// test if this is on the main site or embedded
-	gd.mainsite=Boolean($('#plotlyMainMarker').length);
+	gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
-    // destroy any plot that already exists in this div
-    // first check if we can save the toolbars
-    if(($(gd).children('.svgcontainer').length==1) && (!gd.mainsite ||
-        ($(gd).children('.graphbar').length==1 && $(gd).children('.demobar').length==1))) {
+
+    $(gd).children('.svgcontainer').children('svg').remove();
+
+    // CD NOTE: I simplified this "if" condition because the rest seems unnecessary.
+    // Leaving the old version here for now for quick reference in case something goes wrong
+    // if (($(gd).children('.svgcontainer').length==1) && (!gd.mainsite ||
+    //     ($(gd).children('.tool-menu').length==1 && $(gd).children('.demobar').length==1))) {
+
+
+    if ($(gd).children('.svgcontainer').length==1) {
+            // Destroy any plot that already exists in this div
             $(gd).children('.svgcontainer').children('svg').remove();
     }
-    else { // not the right children (probably none, but in case something goes wrong redraw all)
-        // TODO - remove tooltips here
-        $(gd).find('[rel="tooltip"]').tooltip('destroy');
-        gd.innerHTML='';
-        // if(gd.mainsite) { graphbar(gd) }
-        if(gd.mainsite) { makeGraphbar(gd) }
+    else {
         // Make the outer graph container
         gd.paperdiv = gd3.append('div')
             .classed('svgcontainer',true)
@@ -1400,9 +1419,12 @@ function newPlot(divid, layout) {
     }
 
     // Get the layout info - take the default and update it with layout arg
-    gd.layout=updateObject(defaultLayout(),layout);
+    gd.layout=updateObject(defaultLayout(), layout);
 
-    var gl=gd.layout, xa=gl.xaxis, ya=gl.yaxis;
+    var gl = gd.layout,
+        xa = gl.xaxis,
+        ya=gl.yaxis;
+
     Axes.setTypes(gd);
 
     // initial autosize
