@@ -882,7 +882,7 @@ function legendText(s,gd){
 // if the array is too short, it will wrap around (useful for style files that want
 // to specify cyclical default values)
 function restyle(gd,astr,val,traces) {
-    plotlylog('+++++++++++++++IN: restyle+++++++++++++++');
+    console.log(gd,astr,val,traces);
 
     var gl = gd.layout,
         aobj = {};
@@ -1046,7 +1046,8 @@ function restyle(gd,astr,val,traces) {
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
     plotlylog('+++++++++++++++ IN: RELAYOUT +++++++++++++++');
-
+    plotlylog(gd); plotlylog(astr); plotlylog(val); 
+    
     var gl = gd.layout,
         aobj = {},
         dolegend = false,
