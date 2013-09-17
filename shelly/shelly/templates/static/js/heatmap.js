@@ -10,7 +10,7 @@ heatmap.calc = function(gd,gdc) {
     // calcdata ("cd") for heatmaps:
     // curve: index of heatmap in gd.data
     // type: used to distinguish heatmaps from traces in "Data" popover
-    if(gdc.visible==false) { return }
+    if(gdc.visible===false) { return; }
     // prepare the raw data
     // run convertOne even for heatmaps, in case of category mappings
     markTime('start convert data');
@@ -20,14 +20,15 @@ heatmap.calc = function(gd,gdc) {
     var ya = gd.layout.yaxis,
         y = gdc.y ? Axes.convertOne(gdc,'y',ya) : [];
     markTime('done convert y');
+    var i;
     if(gdc.type=='histogram2d') {
         var serieslen = Math.min(x.length,y.length);
-        if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen) }
-        if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen) }
+        if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen); }
+        if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen); }
         markTime('done convert data');
         // calculate the bins
-        if(gdc.autobinx || !('xbins' in gdc)) { gdc.xbins = Axes.autoBin(x,xa,gdc.nbinsx,'2d') }
-        if(gdc.autobiny || !('ybins' in gdc)) { gdc.ybins = Axes.autoBin(y,ya,gdc.nbinsy,'2d') }
+        if(gdc.autobinx || !('xbins' in gdc)) { gdc.xbins = Axes.autoBin(x,xa,gdc.nbinsx,'2d'); }
+        if(gdc.autobiny || !('ybins' in gdc)) { gdc.ybins = Axes.autoBin(y,ya,gdc.nbinsy,'2d'); }
         markTime('done autoBin');
         // make the empty bin array & scale the map
         gdc.z = [];
@@ -35,36 +36,36 @@ heatmap.calc = function(gd,gdc) {
             xbins = (typeof(gdc.xbins.size)=='string') ? [] : gdc.xbins,
             ybins = (typeof(gdc.xbins.size)=='string') ? [] : gdc.ybins,
             norm = gdc.histnorm||'';
-        for(var i=gdc.xbins.start; i<gdc.xbins.end; i=Axes.tickIncrement(i,gdc.xbins.size)) {
+        for(i=gdc.xbins.start; i<gdc.xbins.end; i=Axes.tickIncrement(i,gdc.xbins.size)) {
             onecol.push(0);
-            if($.isArray(xbins)) { xbins.push(i) }
+            if($.isArray(xbins)) { xbins.push(i); }
         }
-        if($.isArray(xbins)) { xbins.push(i) }
+        if($.isArray(xbins)) { xbins.push(i); }
 
         var nx = onecol.length;
         gdc.x0 = gdc.xbins.start;
         gdc.dx = (i-gdc.x0)/nx;
         gdc.x0+=gdc.dx/2;
         var xinc = onecol.map(function(v,i){
-            if(norm.indexOf('density')==-1) { return 1 }
-            else if($.isArray(xbins)) { return 1/(xbins[i+1]-xbins[i]) }
-            else { return 1/gdc.dx }
+            if(norm.indexOf('density')==-1) { return 1; }
+            else if($.isArray(xbins)) { return 1/(xbins[i+1]-xbins[i]); }
+            else { return 1/gdc.dx; }
         });
 
-        for(var i=gdc.ybins.start; i<gdc.ybins.end; i=Axes.tickIncrement(i,gdc.ybins.size)) {
-            gdc.z.push(onecol.concat())
-            if($.isArray(ybins)) { ybins.push(i) }
+        for(i=gdc.ybins.start; i<gdc.ybins.end; i=Axes.tickIncrement(i,gdc.ybins.size)) {
+            gdc.z.push(onecol.concat());
+            if($.isArray(ybins)) { ybins.push(i); }
         }
-        if($.isArray(ybins)) { ybins.push(i) }
+        if($.isArray(ybins)) { ybins.push(i); }
 
         var ny = gdc.z.length;
         gdc.y0 = gdc.ybins.start;
         gdc.dy = (i-gdc.y0)/ny;
         gdc.y0+=gdc.dy/2;
         var yinc = gdc.z.map(function(v,i){
-            if(norm.indexOf('density')==-1) { return 1 }
-            else if($.isArray(ybins)) { return 1/(ybins[i+1]-ybins[i]) }
-            else { return 1/gdc.dy }
+            if(norm.indexOf('density')==-1) { return 1; }
+            else if($.isArray(ybins)) { return 1/(ybins[i+1]-ybins[i]); }
+            else { return 1/gdc.dy; }
         });
 
         markTime('done making bins');
@@ -73,13 +74,13 @@ heatmap.calc = function(gd,gdc) {
         for(i=0; i<serieslen; i++) {
             var n = findBin(x[i],xbins),
                 m = findBin(y[i],ybins);
-            if(n>=0 && n<nx && m>=0 && m<ny) { gdc.z[m][n]+=xinc[n]*yinc[m]; count++ }
+            if(n>=0 && n<nx && m>=0 && m<ny) { gdc.z[m][n]+=xinc[n]*yinc[m]; count++; }
         }
-        if(norm.indexOf('percent')!=-1) { count/=100 }
+        if(norm.indexOf('percent')!=-1) { count/=100; }
         if(norm.indexOf('probability')!=-1 || norm.indexOf('percent')!=-1) {
             gdc.z.forEach(function(col){ col.forEach(function(v,i){
-                col[i]/=count
-            })});
+                col[i]/=count;
+            }); });
         }
         markTime('done binning');
 
@@ -96,7 +97,7 @@ heatmap.calc = function(gd,gdc) {
     // store x and y arrays for later... heatmap function pulls out the
     // actual data directly from gd.data. TODO: switch to a reference in cd
     return [{t:coords}];
-}
+};
 
 // Creates a heatmap image from a z matrix and embeds adds it to svg plot
 // Params are index of heatmap data object in gd.data, and the heatmap data object itself
@@ -131,12 +132,12 @@ heatmap.plot = function(gd,cd) {
     // also clip the image to maximum 50% outside the visible plot area
     // bigger image lets you pan more naturally, but slows performance.
     // TODO: use low-resolution images outside the visible plot for panning
-    var xrev = false, left=undefined, right=undefined;
+    var xrev = false, left, right, temp;
     // these while loops find the first and last brick bounds that are defined (in case of log of a negative)
-    i=0; while(left===undefined && i<n) { left=xa.c2p(x[i]); i++ }
-    i=n; while(right===undefined && i>0) { right=xa.c2p(x[i]); i-- }
+    i=0; while(left===undefined && i<n) { left=xa.c2p(x[i]); i++; }
+    i=n; while(right===undefined && i>0) { right=xa.c2p(x[i]); i--; }
     if(right<left) {
-        var temp = right;
+        temp = right;
         right = left;
         left = temp;
         xrev = true;
@@ -144,11 +145,11 @@ heatmap.plot = function(gd,cd) {
     left = Math.max(-0.5*gd.plotwidth,left);
     right = Math.min(1.5*gd.plotwidth,right);
 
-    var yrev = false, top=undefined, bottom=undefined;
-    i=0; while(top===undefined && i<n) { top=ya.c2p(y[i]); i++ }
-    i=m; while(bottom===undefined && i>0) { bottom=ya.c2p(y[i]); i-- }
+    var yrev = false, top, bottom;
+    i=0; while(top===undefined && i<n) { top=ya.c2p(y[i]); i++; }
+    i=m; while(bottom===undefined && i>0) { bottom=ya.c2p(y[i]); i--; }
     if(bottom<top) {
-        var temp = top;
+        temp = top;
         top = bottom;
         bottom = temp;
         yrev = true;
@@ -161,7 +162,7 @@ heatmap.plot = function(gd,cd) {
     var ht=Math.round(bottom-top),htf=ht/(bottom-top);
 
     // now redraw
-    if(wd<=0 || ht<=0) { return } // image is so far off-screen, we shouldn't even draw it
+    if(wd<=0 || ht<=0) { return; } // image is so far off-screen, we shouldn't even draw it
 
     var p = new PNGlib(wd,ht, 256);
 
@@ -170,8 +171,8 @@ heatmap.plot = function(gd,cd) {
     // http://nelsonslog.wordpress.com/2011/04/11/d3-scales-and-interpolation/
 
     if (typeof(scl)=="string") scl=eval(scl); // <-- convert colorscale string to array
-    var d = scl.map(function(si){return si[0]*255}),
-        r = scl.map(function(si){return si[1]});
+    var d = scl.map(function(si){ return si[0]*255; }),
+        r = scl.map(function(si){ return si[1]; });
 
     s = d3.scale.linear()
         .domain(d)
@@ -179,27 +180,28 @@ heatmap.plot = function(gd,cd) {
         .range(r);
 
     // map brick boundaries to image pixels
-    function xpx(v){ return Math.max(0,Math.min(wd,Math.round(xa.c2p(v)-left)))}
-    function ypx(v){ return Math.max(0,Math.min(ht,Math.round(ya.c2p(v)-top)))}
+    function xpx(v){ return Math.max(0,Math.min(wd,Math.round(xa.c2p(v)-left))); }
+    function ypx(v){ return Math.max(0,Math.min(ht,Math.round(ya.c2p(v)-top))); }
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
     // build a brick at each z-matrix value
     var yi=ypx(y[0]),yb=[yi,yi];
-    var i,j,xi,c,pc,v;
+    var j,xi,c,pc,v;
     var xbi = xrev?0:1, ybi = yrev?0:1;
     var pixcount = 0, lumcount = 0; // for collecting an average luminosity of the heatmap
     for(j=0; j<m; j++) {
         col = z[j];
         yb.reverse();
         yb[ybi] = ypx(y[j+1]);
-        if(yb[0]==yb[1]||yb[0]===undefined||yb[1]===undefined) { continue }
-        xi=xpx(x[0]),xb=[xi,xi];
+        if(yb[0]==yb[1] || yb[0]===undefined || yb[1]===undefined) { continue; }
+        xi=xpx(x[0]);
+        xb=[xi,xi];
         for(i=0; i<n; i++) {
             // build one color brick!
             v=col[i];
             xb.reverse();
             xb[xbi] = xpx(x[i+1]);
-            if(xb[0]==xb[1]||xb[0]===undefined||xb[1]===undefined) { continue }
+            if(xb[0]==xb[1] || xb[0]===undefined || xb[1]===undefined) { continue; }
             if($.isNumeric(v)) {
                 // get z-value, scale for 8-bit color by rounding z to an integer 0-254
                 // (one value reserved for transparent (missing/non-numeric data)
@@ -209,7 +211,7 @@ heatmap.plot = function(gd,cd) {
                 pixcount+=pix;
                 lumcount+=pix*tinycolor(c).toHsl().l;
             }
-            else { pc = p.color(0,0,0,0) } // non-numeric shows as transparent TODO: make this an option
+            else { pc = p.color(0,0,0,0); } // non-numeric shows as transparent TODO: make this an option
             for(xi=xb[0]; xi<xb[1]; xi++) { // TODO: Make brick spacing editable (ie x=1)
                 for(yi=yb[0]; yi<yb[1]; yi++) { // TODO: Make brick spacing editable
                     p.buffer[p.index(xi, yi)] = pc;
@@ -238,8 +240,8 @@ heatmap.plot = function(gd,cd) {
     $('svg > image').parent().attr("xmlns:xlink","http://www.w3.org/1999/xlink");
 
     // show a colorscale
-    if(gdc.showscale!=false){ insert_colorbar(gd,gdc,cb_id) }
-}
+    if(gdc.showscale!==false){ insert_colorbar(gd,gdc,cb_id); }
+};
 
 // in order to avoid unnecessary redraws, check for heatmaps with colorscales
 // and expand right margin to fit
@@ -247,15 +249,15 @@ heatmap.plot = function(gd,cd) {
 heatmap.margin = function(gd){
     var gl = gd.layout;
     if(gd.data && gd.data.length && gl.margin.r<200) {
-        for(curve in gd.data) {
-            if((HEATMAPTYPES.indexOf(gd.data[curve].type)!=-1) && (gd.data[curve].showscale!=false)) {
+        for(var curve in gd.data) {
+            if((HEATMAPTYPES.indexOf(gd.data[curve].type)!=-1) && (gd.data[curve].showscale!==false)) {
                 gl.margin.r=200;
                 return true;
             }
         }
     }
     return false;
-}
+};
 
 // get_xy: returns the brick edge coordinates of a heatmap as { x:[x0,x1,...], y:[y0,y1...] }
 // we're returning all of them now so we can handle log heatmaps that go negative
@@ -265,17 +267,18 @@ function get_xy(gd,gdc){
 
     function makeBoundArray(array_in,v0_in,dv_in,numbricks,ax) {
         console.log(array_in,v0_in,dv_in,numbricks,ax);
+        var array_out = [], v0, dv, i;
         if($.isArray(array_in) && (gdc.type!='histogram2d') && (ax.type!='category')) {
             array_in = Axes.convertToNums(array_in,ax);
             var len = array_in.length;
             if(len==numbricks) { // given vals are brick centers
-                if(numbricks==1) { return [array_in[0]-.5,array_in[0]+.5] }
+                if(numbricks==1) { return [array_in[0]-0.5,array_in[0]+0.5]; }
                 else {
-                    var array_out = [1.5*array_in[0]-.5*array_in[1]];
-                    for(var i=1; i<len; i++) {
-                        array_out.push((array_in[i-1]+array_in[i])*.5)
+                    array_out = [1.5*array_in[0]-0.5*array_in[1]];
+                    for(i=1; i<len; i++) {
+                        array_out.push((array_in[i-1]+array_in[i])*0.5);
                     }
-                    array_out.push(1.5*array_in[len-1]-.5*array_in[len-2]);
+                    array_out.push(1.5*array_in[len-1]-0.5*array_in[len-2]);
                 }
             }
             else {  // hopefully length==numbricks+1, but do something regardless:
@@ -284,14 +287,13 @@ function get_xy(gd,gdc){
             }
         }
         else {
-            var array_out = [],
-                dv = dv_in || 1;
-            if(v0_in==undefined) { var v0 = 0 }
+            dv = dv_in || 1;
+            if(v0_in===undefined) { v0 = 0; }
             else if(gdc.type=='histogram2d' || ax.type=='category') {
-                var v0 = v0_in;
+                v0 = v0_in;
             }
-            else { var v0 = Axes.convertToNums(v0_in,ax) }
-            for(var i=0; i<=numbricks; i++) { array_out.push(v0+dv*(i-0.5)) }
+            else { v0 = Axes.convertToNums(v0_in,ax); }
+            for(i=0; i<=numbricks; i++) { array_out.push(v0+dv*(i-0.5)); }
         }
         return array_out;
     }
@@ -299,7 +301,6 @@ function get_xy(gd,gdc){
     return {x:makeBoundArray(gdc.x,gdc.x0,gdc.dx,gdc.z[0].length,gd.layout.xaxis),
             y:makeBoundArray(gdc.y,gdc.y0,gdc.dy,gdc.z.length,gd.layout.yaxis)};
 }
-heatmap.gxy = get_xy;
 
 // if the heatmap data object is missing any keys, fill them in
 // keys expected in gdc:
@@ -310,28 +311,28 @@ heatmap.gxy = get_xy;
 // z0 = minimum of colorscale
 // z1 = maximum of colorscale
 function setDefaults(gdc,noZRange){
-    if(!( 'z' in gdc )){ gdc.z=[[0,0],[0,0]] }
-    if(!( 'x0' in gdc )){ gdc.x0=0 }
-    if(!( 'y0' in gdc )){ gdc.y0=0 }
-    if(!( 'dx' in gdc )){ gdc.dx=1 }
-    if(!( 'dy' in gdc )){ gdc.dy=1 }
-    if(!( 'zauto' in gdc)){ gdc.zauto=true }
+    if(!( 'z' in gdc )){ gdc.z=[[0,0],[0,0]]; }
+    if(!( 'x0' in gdc )){ gdc.x0=0; }
+    if(!( 'y0' in gdc )){ gdc.y0=0; }
+    if(!( 'dx' in gdc )){ gdc.dx=1; }
+    if(!( 'dy' in gdc )){ gdc.dy=1; }
+    if(!( 'zauto' in gdc)){ gdc.zauto=true; }
     if(!noZRange) { // can take a long time... only do once
-        if(!( 'zmin' in gdc )||(!(gdc.zauto==false))){ gdc.zmin=zmin(gdc.z) }
-        if(!( 'zmax' in gdc )||(!(gdc.zauto==false))){ gdc.zmax=zmax(gdc.z) }
-        if(gdc.zmin==gdc.zmax) { gdc.zmin-=0.5; gdc.zmax+=0.5 }
+        if(!('zmin' in gdc) || gdc.zauto!==false){ gdc.zmin=zmin(gdc.z); }
+        if(!('zmax' in gdc) || gdc.zauto!==false){ gdc.zmax=zmax(gdc.z); }
+        if(gdc.zmin==gdc.zmax) { gdc.zmin-=0.5; gdc.zmax+=0.5; }
     }
-    if(!( 'scl' in gdc )){ gdc.scl=defaultScale }
+    if(!( 'scl' in gdc )){ gdc.scl=defaultScale; }
 }
 
 // Return MAX and MIN of an array of arrays
 // moved to aggNums so we handle non-numerics correctly
 function zmax(z){
-    return aggNums(Math.max,null,z.map(function(row){return aggNums(Math.max,null,row)}));
+    return aggNums(Math.max,null,z.map(function(row){ return aggNums(Math.max,null,row); }));
 }
 
 function zmin(z){
-    return aggNums(Math.min,null,z.map(function(row){return aggNums(Math.min,null,row)}));
+    return aggNums(Math.min,null,z.map(function(row){ return aggNums(Math.min,null,row); }));
 }
 
 // insert a colorbar
@@ -346,9 +347,9 @@ function insert_colorbar(gd,gdc,cb_id) {
     var scl=gdc.scl;
     if (typeof(scl)=="string") scl=eval(scl); // <-- convert colorscale string to array
     var min=gdc.zmin, max=gdc.zmax, // "colorbar domain" - interpolate numbers for colorscale
-        d = scl.map(function(v){ return min+v[0]*(max-min) }),
+        d = scl.map(function(v){ return min+v[0]*(max-min); }),
         // "colorbar range" - colors in gdc.colorscale
-        r = scl.map(function(v){ return v[1] });
+        r = scl.map(function(v){ return v[1]; });
 //     for(var i=0; i<scl.length; i++){ d.push( min+(scl[i][0]*(max-min)) ); }
 //     var r=[];
 //     for(var i=0; i<scl.length; i++){ r.push( scl[i][1] ); }
