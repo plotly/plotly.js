@@ -179,6 +179,23 @@ var graphInfo = {
 var BARTYPES = ['bar','histogramx','histogramy'];
 var HEATMAPTYPES = ['heatmap','histogram2d'];
 
+// fill for missing graph type libraries, just shows an error in the console.
+// module is the name of the object, methods are the methods to fill.
+function req(module, methods) {
+    if(module in window) { return; }
+    var moduleFill = { missing:true },
+        noop = function(){ };
+    for(var i=0; i<methods.length; i++) { moduleFill[methods[i]] = noop; }
+    window[module] = moduleFill;
+}
+req('Scatter',['calc','plot']);
+req('Heatmap',['calc','plot','margin']);
+req('Bars',['calc','plot','setPositions']);
+req('Boxes',['calc','plot','setPositions']);
+req('ErrorBars',['returnToStyleBox','pushRef2GDC','styleBoxDrop','styleBox','ydr','plot','style']);
+req('Axes',['setTypes','convertOne','convertToNums','setConvert','doAutoRange','doTicks',
+    'expandBounds','expandWithZero','setConvert','setTypes','tickFirst','tickIncrement','tickText']);
+
 // Traces are unique by name.. allows traces to be updated/restyled
 function updateTraces(old_data, new_data) {
     var updated = {},
@@ -328,8 +345,8 @@ function plot(divid, data, layout) {
     markTime('done with setstyles and bar/box adjustments');
 
     // autorange for errorbars
-    Axes.expandBounds(ya,ya._padded,errorbarsydr(gd));
-    markTime('done errorbarsydr');
+    Axes.expandBounds(ya,ya._padded,ErrorBars.ydr(gd));
+    markTime('done ErrorBars.ydr');
 
     // autorange for annotations
     if(gl.annotations) { gl.annotations.forEach(function(ann){
@@ -381,7 +398,7 @@ function plot(divid, data, layout) {
 
         // DRAW ERROR BARS for bar and scatter plots
         // these come after (on top of) bars, and before (behind) scatter
-        errorbars(gd,cdbar.concat(cdscatter));
+        ErrorBars.plot(gd,cdbar.concat(cdscatter));
         markTime('done errorbars');
 
         Scatter.plot(gd,cdscatter);
@@ -625,9 +642,8 @@ function applyStyle(gd) {
             d3.select(this).selectAll('path.box').call(boxPlotStyle,d[0].t);
             d3.select(this).selectAll('path.mean').call(boxMeanStyle,d[0].t);
         });
-
     gp.selectAll('g.errorbars')
-        .call(errorbarStyle);
+        .call(ErrorBars.style);
 
     alert_repl("applyStyle",JSON.stringify(stripSrc(gd.data)));
     plotlylog('+++++++++++++++OUT: applyStyle(gd)+++++++++++++++');
@@ -1046,8 +1062,8 @@ function restyle(gd,astr,val,traces) {
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
     plotlylog('+++++++++++++++ IN: RELAYOUT +++++++++++++++');
-    plotlylog(gd); plotlylog(astr); plotlylog(val); 
-    
+    plotlylog(gd); plotlylog(astr); plotlylog(val);
+
     var gl = gd.layout,
         aobj = {},
         dolegend = false,
