@@ -898,7 +898,7 @@ function legendText(s,gd){
 // if the array is too short, it will wrap around (useful for style files that want
 // to specify cyclical default values)
 function restyle(gd,astr,val,traces) {
-    console.log(gd,astr,val,traces);
+    // console.log(gd,astr,val,traces);
 
     var gl = gd.layout,
         aobj = {};
@@ -1054,16 +1054,12 @@ function restyle(gd,astr,val,traces) {
             if(gl.showlegend) { legend(gd); }
         }
     }
-
-    plotlylog('+++++++++++++++OUT: restyle+++++++++++++++');
+    $(gd).trigger('restyle.plotly',[redoit,traces]);
 }
 
 // change layout in an existing plot
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
-    plotlylog('+++++++++++++++ IN: RELAYOUT +++++++++++++++');
-    plotlylog(gd); plotlylog(astr); plotlylog(val);
-
     var gl = gd.layout,
         aobj = {},
         dolegend = false,
@@ -1202,17 +1198,18 @@ function relayout(gd,astr,val) {
         if(doplot) {
             gd.layout = undefined; // force plot() to redo the layout
             plot(gd,'',gl); // pass in the modified layout
-            return;
         }
-        // if we didn't need to redraw the whole thing, just do the needed parts
-        if(dolegend) {
-            gd.infolayer.selectAll('.legend').remove();
-            if(gl.showlegend) { legend(gd); }
+        else {
+            // if we didn't need to redraw the whole thing, just do the needed parts
+            if(dolegend) {
+                gd.infolayer.selectAll('.legend').remove();
+                if(gl.showlegend) { legend(gd); }
+            }
+            if(dolayoutstyle) { layoutStyles(gd); }
+            if(doticks) { Axes.doTicks(gd,'redraw'); makeTitles(gd,'gtitle'); }
         }
-        if(dolayoutstyle) { layoutStyles(gd); }
-        if(doticks) { Axes.doTicks(gd,'redraw'); makeTitles(gd,'gtitle'); }
     }
-    plotlylog('+++++++++++++++ OUT: RELAYOUT +++++++++++++++');
+    $(gd).trigger('relayout.plotly',redoit);
 }
 
 // convert a string s (such as 'xaxis.range[0]')
@@ -1432,8 +1429,15 @@ function newPlot(divid, layout) {
     // mousemove events for all data hover effects
     var maindrag = dragBox(gd, x1, y2, x2-x1, y1-y2,'ns','ew');
     $(maindrag)
-        .mousemove(function(evt){ plotHover(evt,gd,maindrag); })
-        .mouseout(function(){ plotUnhover(gd); });
+        .mousemove(function(evt){ plotHover(evt,gd); })
+        .mouseout(function(evt){ plotUnhover(gd,evt); })
+        .click(function(evt){ plotClick(gd,evt); });
+    // in case you manage to mousemove over some hovertext, send it to plotHover too
+    // we do this so that we can put the hover text in front of everything, but still
+    // be able to click on annotations and legend
+    $(gd.hoverlayer.node())
+        .mousemove(function(evt){ evt.target = maindrag; plotHover(evt,gd); })
+        .click(function(evt){ evt.target = maindrag; plotClick(gd,evt); });
 
     // x axis draggers
     dragBox(gd, x1*0.9+x2*0.1, y1,(x2-x1)*0.8, y0-y1,'','ew');

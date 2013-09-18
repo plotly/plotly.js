@@ -266,7 +266,6 @@ function get_xy(gd,gdc){
     setDefaults(gdc,true);
 
     function makeBoundArray(array_in,v0_in,dv_in,numbricks,ax) {
-        console.log(array_in,v0_in,dv_in,numbricks,ax);
         var array_out = [], v0, dv, i;
         if($.isArray(array_in) && (gdc.type!='histogram2d') && (ax.type!='category')) {
             array_in = Axes.convertToNums(array_in,ax);
