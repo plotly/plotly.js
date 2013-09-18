@@ -217,6 +217,26 @@ function updateTraces(old_data, new_data) {
     return res;
 }
 
+// the 'view in plotly' link - note that now plot() calls this if it exists,
+// so it can regenerate whenever it replots
+// note that now this function is only adding the brand in iframes and 3rd-party
+// apps, standalone plots get the sidebar instead.
+function positionBrand(gd){
+    // if( window.self === window.top ) { return; } // not in an iframe
+    $(gd).find('.linktotool').remove();
+    if(gd.mainsite || gd.shareplot) {
+        var path=window.location.pathname.split('/');
+        $(gd.paperdiv.node()).append("<div class='linktotool'>"+
+        "<a href='/"+path[2]+"/"+path[1]+"' target='_blank'>"+
+        "<font class='muted'>view in </font><font class='info'>plotly</font></a>"+
+        "</div>");
+    }
+    else {
+        // TODO: how do we sent all the embedded data to plotly without triggering xss filters?
+        console.log('3rd party app!');
+    }
+}
+
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
 // if necessary to create the framework
@@ -419,7 +439,7 @@ function plot(divid, data, layout) {
     if(gl.annotations) { for(i in gl.annotations) { annotation(gd,i); } }
 
     // finish up - spinner and tooltips
-    if(typeof positionBrand == 'function') { positionBrand(); } // for embedded
+    if(!gd.mainsite && !gd.standalone) { positionBrand(gd); } // for embedded plots
     delMessage('Loading File');
 
     setTimeout(function(){
@@ -2423,7 +2443,7 @@ function styleText(sn,t) {
 
 // ------------------------------- graphToGrid
 // "mode" is a string identifying a mode to open when loading the grid
-// (Fit, Formula editor, etc). "mode" will usually by undefined
+// (Fit, Formula editor, etc). "mode" will usually be undefined
 function graphToGrid( mode ){
     var gd=gettab();
     if( gd.data === undefined ){
