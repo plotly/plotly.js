@@ -207,7 +207,7 @@ function makeToolMenu(divid) {
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
     if(gd.mainsite) {
-        makeGraphbar(gd);
+        makeGraphToolMenu(gd);
     }
 }
 
