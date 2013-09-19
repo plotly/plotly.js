@@ -1433,6 +1433,7 @@ function makePlotFramework(divid, layout) {
         gl.autosize=true;
     }
     // Make the graph containers
+    // the order here controls what's in front of what
     gd.paper = gd.paperdiv.append('svg');
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
@@ -1440,11 +1441,13 @@ function makePlotFramework(divid, layout) {
         x:gd.paper.append('path').style('fill','none').classed('crisp',true),
         y:gd.paper.append('path').style('fill','none').classed('crisp',true)
     };
-    gd.axislayer = gd.paper.append('g').attr('class','axislayer');
+    gd.gridlayer = gd.paper.append('g').attr('class','gridlayer');
+    gd.zerolinelayer = gd.paper.append('g').attr('class','zerolinelayer');
     // Second svg (plot) is for the data
     gd.plot = gd.paper.append('svg')
         .attr('preserveAspectRatio','none')
         .style('fill','none');
+    gd.axislayer = gd.paper.append('g').attr('class','axislayer');
     gd.draglayer = gd.paper.append('g').attr('class','draglayer');
     gd.infolayer = gd.paper.append('g').attr('class','infolayer');
     gd.hoverlayer = gd.paper.append('g').attr('class','hoverlayer');

@@ -838,7 +838,7 @@ axes.doTicks = function(gd,axletter) {
 
     // grid
     // TODO: must be a better way to find & remove zero lines?
-    var grid = gd.axislayer.selectAll('line.'+gcls).data(vals,datafn),
+    var grid = gd.gridlayer.selectAll('line.'+gcls).data(vals,datafn),
         gridwidth = ax.gridwidth || 1;
     if(ax.showgrid!==false) {
         grid.enter().append('line').classed(gcls,1)
@@ -856,7 +856,7 @@ axes.doTicks = function(gd,axletter) {
     else { grid.remove(); }
 
     // zero line
-    var zl = gd.axislayer.selectAll('line.'+zcls).data(ax.range[0]*ax.range[1]<=0 ? [{x:0}] : []);
+    var zl = gd.zerolinelayer.selectAll('line.'+zcls).data(ax.range[0]*ax.range[1]<=0 ? [{x:0}] : []);
     if(ax.zeroline && (ax.type=='linear' || ax.type=='-')) {
         zl.enter().append('line').classed(zcls,1).classed('zl',1)
             .classed('crisp',1)
@@ -870,12 +870,6 @@ axes.doTicks = function(gd,axletter) {
         zl.exit().remove();
     }
     else { zl.remove(); }
-
-    // now move all ticks and zero lines to the top of axislayer (ie over other grid lines)
-    // looks cumbersome in d3, so switch to jquery.
-    var al = $(gd.axislayer.node());
-    al.find('.zl').appendTo(al);
-    al.find('.ticks').appendTo(al);
 
     // update the axis title (so it can move out of the way if needed)
     makeTitles(gd,axletter+'title');
