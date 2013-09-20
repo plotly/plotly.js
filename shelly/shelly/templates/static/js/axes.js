@@ -763,13 +763,13 @@ axes.doTicks = function(gd,axletter) {
         ax={x:gl.xaxis, y:gl.yaxis}[axletter];
     ax.range = ax.range.map(Number); // in case a val turns into string somehow
     var vals=calcTicks(gd,ax),
-        datafn = function(d){ return d.text; },
+        datafn = function(d){ return d.text+d.x; },
         tcls = axletter+'tick',
         gcls = axletter+'grid',
         zcls = axletter+'zl',
         pad = gm.p+(ax.ticks=='outside' ? 1 : -1) * ($.isNumeric(ax.linewidth) ? ax.linewidth : 1)/2,
         standoff = ax.ticks=='outside' ? ax.ticklen : ax.linewidth+1,
-        x1,y1,tx,ty,tickpath,g,tl,transfn;
+        x1,y1,tx,ty,tickpath,g,tl,transfn,i;
     // positioning arguments for x vs y axes
     if(axletter=='x') {
         y1 = gl.height-gm.b+pad;
@@ -819,20 +819,20 @@ axes.doTicks = function(gd,axletter) {
     else { ticks.remove(); }
 
     // tick labels
-    gd.axislayer.selectAll('text.'+tcls).remove(); // TODO: problems with reusing labels... shouldn't need this.
+    // gd.axislayer.selectAll('text.'+tcls).remove(); // TODO: problems with reusing labels... shouldn't need this.
     var yl=gd.axislayer.selectAll('text.'+tcls).data(vals,datafn);
     if(ax.showticklabels) {
         yl.enter().append('text').classed(tcls,1)
             .call(setPosition, tl.x, tl.y)
+            .each(function(d){ styleText(this,d.text); });
+        yl.attr('transform',function(d){
+                return transfn(d) + (ax.tickangle ?
+                (' rotate('+ax.tickangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')') : '');
+            })
             .attr('font-family',function(d){ return d.font; })
             .attr('font-size',function(d){ return d.fontSize; })
             .attr('fill',function(d){ return d.fontColor; })
-            .attr('text-anchor',tl.anchor)
-            .each(function(d){ styleText(this,d.text); });
-        yl.attr('transform',function(d){
-            return transfn(d) + (ax.tickangle ?
-                (' rotate('+ax.tickangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')') : '');
-        });
+            .attr('text-anchor',tl.anchor);
         yl.exit().remove();
     }
     else { yl.remove(); }
@@ -844,14 +844,16 @@ axes.doTicks = function(gd,axletter) {
     if(ax.showgrid!==false) {
         grid.enter().append('line').classed(gcls,1)
             .classed('crisp',1)
-            .call(strokeColor, ax.gridcolor || '#ddd')
-            .attr('stroke-width', gridwidth)
             .attr('x1',g.x1)
             .attr('x2',g.x2)
             .attr('y1',g.y1)
             .attr('y2',g.y2)
-            .each(function(d) {if(ax.zeroline && ax.type=='linear' && d.text=='0') d3.select(this).remove();});
-        grid.attr('transform',transfn);
+            .each(function(d) {
+                if(ax.zeroline && ax.type=='linear' && Math.abs(d.x)<ax.dtick/100) { d3.select(this).remove(); }
+            });
+        grid.attr('transform',transfn)
+            .call(strokeColor, ax.gridcolor || '#ddd')
+            .attr('stroke-width', gridwidth);
         grid.exit().remove();
     }
     else { grid.remove(); }
@@ -861,13 +863,13 @@ axes.doTicks = function(gd,axletter) {
     if(ax.zeroline && (ax.type=='linear' || ax.type=='-')) {
         zl.enter().append('line').classed(zcls,1).classed('zl',1)
             .classed('crisp',1)
-            .call(strokeColor, ax.zerolinecolor || '#000')
-            .attr('stroke-width', ax.zerolinewidth || gridwidth)
             .attr('x1',g.x1)
             .attr('x2',g.x2)
             .attr('y1',g.y1)
             .attr('y2',g.y2);
-        zl.attr('transform',transfn);
+        zl.attr('transform',transfn)
+            .call(strokeColor, ax.zerolinecolor || '#000')
+            .attr('stroke-width', ax.zerolinewidth || gridwidth);
         zl.exit().remove();
     }
     else { zl.remove(); }
