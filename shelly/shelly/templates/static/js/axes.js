@@ -1,10 +1,11 @@
 // This file defines the Axes object. Publically available methods are
-// defined as axes.XXX = function(){} and called by Axes.XXX()
+// defined as axes.XXX = function(){} and called by Plotly.Axes.XXX()
 // functions include:
 //      - data conversions
 //      - calculating and drawing ticks
 (function() {
-var axes = window.Axes = {};
+if(!window.Plotly) { window.Plotly = {}; }
+var axes = Plotly.Axes = {};
 
 // setTypes: figure out axis types (linear, log, date, category...)
 // if gd.axtypesok is true, we can skip this.
@@ -309,7 +310,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
         // piggyback off autotick code to make "nice" bin sizes
         var dummyax = {type:ax.type,range:[datamin,datamax]};
         axes.autoTicks(dummyax,size0);
-        var binstart = Axes.tickIncrement(axes.tickFirst(dummyax),dummyax.dtick,'reverse');
+        var binstart = axes.tickIncrement(axes.tickFirst(dummyax),dummyax.dtick,'reverse');
         // check for too many data points right at the edges of bins (>50% within 1% of bin edges)
         // or all data points integral
         // and offset the bins accordingly
