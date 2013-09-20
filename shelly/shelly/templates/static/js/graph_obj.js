@@ -1,3 +1,4 @@
+if(!window.Plotly) { window.Plotly = {}; }
 /* Coordinate systems in the plots:
 ***** THESE NOTES ARE HORRIBLY OUT OF DATE... *****
 (note: paper and viewbox have y0 at large y because pixels start at upper left,
@@ -315,7 +316,7 @@ function plot(divid, data, layout) {
 
     // prepare the types and conversion functions for the axes
     // also clears the autorange bounds ._tight, ._padded
-    Axes.setTypes(gd);
+    Plotly.Axes.setTypes(gd);
 
     // prepare the data and find the autorange
     // TODO: only remake calcdata for new or changed traces
@@ -323,7 +324,7 @@ function plot(divid, data, layout) {
     gd.hmpixcount=0; // for calculating avg luminosity of heatmaps
     gd.hmlumcount=0;
 
-    markTime('done Axes.setType');
+    markTime('done Plotly.Axes.setType');
 
     for(var curve in gd.data) {
         var gdc = gd.data[curve], // curve is the index, gdc is the data object for one trace
@@ -348,10 +349,10 @@ function plot(divid, data, layout) {
             else { gdc.name='trace '+curve; }
         }
 
-        if (curvetype == 'scatter') { cd = Scatter.calc(gd,gdc); }
-        else if (BARTYPES.indexOf(curvetype) != -1) { cd = Bars.calc(gd,gdc); }
-        else if (HEATMAPTYPES.indexOf(curvetype) != -1 ){ cd = Heatmap.calc(gd,gdc); }
-        else if (curvetype == 'box') { cd = Boxes.calc(gd,gdc); }
+        if (curvetype == 'scatter') { cd = Plotly.Scatter.calc(gd,gdc); }
+        else if (BARTYPES.indexOf(curvetype) != -1) { cd = Plotly.Bars.calc(gd,gdc); }
+        else if (HEATMAPTYPES.indexOf(curvetype) != -1 ){ cd = Plotly.Heatmap.calc(gd,gdc); }
+        else if (curvetype == 'box') { cd = Plotly.Boxes.calc(gd,gdc); }
 
         if(!('line' in gdc)) gdc.line = {};
         if(!('marker' in gdc)) gdc.marker = {};
@@ -375,14 +376,14 @@ function plot(divid, data, layout) {
 
     // position and range calculations for traces that depend on each other
     // ie bars (stacked or grouped) and boxes push each other out of the way
-    Bars.setPositions(gd);
-    Boxes.setPositions(gd);
+    Plotly.Bars.setPositions(gd);
+    Plotly.Boxes.setPositions(gd);
 
     markTime('done with setstyles and bar/box adjustments');
 
     // autorange for errorbars
-    Axes.expandBounds(ya,ya._padded,ErrorBars.ydr(gd));
-    markTime('done ErrorBars.ydr');
+    Plotly.Axes.expandBounds(ya,ya._padded,Plotly.ErrorBars.ydr(gd));
+    markTime('done Plotly.ErrorBars.ydr');
 
     // autorange for annotations
     if(gl.annotations) { gl.annotations.forEach(function(ann){
@@ -390,11 +391,11 @@ function plot(divid, data, layout) {
         // TODO
     }); }
 
-    Axes.doAutoRange(gd,xa);
-    Axes.doAutoRange(gd,ya);
+    Plotly.Axes.doAutoRange(gd,xa);
+    Plotly.Axes.doAutoRange(gd,ya);
 
     gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
-    Axes.doTicks(gd); // draw ticks, titles, and calculate axis scaling (._b, ._m)
+    Plotly.Axes.doTicks(gd); // draw ticks, titles, and calculate axis scaling (._b, ._m)
     xa._r = xa.range.slice(); // store ranges for later use
     ya._r = ya.range.slice();
 
@@ -413,7 +414,7 @@ function plot(divid, data, layout) {
             cd = gd.calcdata[i];
             type=cd[0].t.type;
             if(HEATMAPTYPES.indexOf(type)!=-1) {
-                Heatmap.plot(gd,cd);
+                Plotly.Heatmap.plot(gd,cd);
                 markTime('done heatmap '+i);
             }
             else {
@@ -429,17 +430,17 @@ function plot(divid, data, layout) {
 
         // remove old traces, then redraw everything
         gd.plot.selectAll('g.trace').remove();
-        Bars.plot(gd,cdbar);
+        Plotly.Bars.plot(gd,cdbar);
         markTime('done bars');
 
         // DRAW ERROR BARS for bar and scatter plots
         // these come after (on top of) bars, and before (behind) scatter
-        ErrorBars.plot(gd,cdbar.concat(cdscatter));
+        Plotly.ErrorBars.plot(gd,cdbar.concat(cdscatter));
         markTime('done errorbars');
 
-        Scatter.plot(gd,cdscatter);
+        Plotly.Scatter.plot(gd,cdscatter);
         markTime('done scatter');
-        Boxes.plot(gd,cdbox);
+        Plotly.Boxes.plot(gd,cdbox);
         markTime('done boxes');
 
         //styling separate from drawing
@@ -679,7 +680,7 @@ function applyStyle(gd) {
             d3.select(this).selectAll('path.mean').call(boxMeanStyle,d[0].t);
         });
     gp.selectAll('g.errorbars')
-        .call(ErrorBars.style);
+        .call(Plotly.ErrorBars.style);
 
     alert_repl("applyStyle",JSON.stringify(stripSrc(gd.data)));
     plotlylog('+++++++++++++++OUT: applyStyle(gd)+++++++++++++++');
@@ -1069,7 +1070,7 @@ function restyle(gd,astr,val,traces) {
                 }
             }
             // if we need to change margin for a heatmap, force a relayout first so we don't plot twice
-            if(Heatmap.margin(gd)) { dolayout = true; }
+            if(Plotly.Heatmap.margin(gd)) { dolayout = true; }
             else { doplot = true; }
         }
     }
@@ -1096,6 +1097,7 @@ function restyle(gd,astr,val,traces) {
 // change layout in an existing plot
 // astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
 function relayout(gd,astr,val) {
+    // console.log(gd,astr,val);
     var gl = gd.layout,
         aobj = {},
         dolegend = false,
@@ -1242,7 +1244,7 @@ function relayout(gd,astr,val) {
                 if(gl.showlegend) { legend(gd); }
             }
             if(dolayoutstyle) { layoutStyles(gd); }
-            if(doticks) { Axes.doTicks(gd,'redraw'); makeTitles(gd,'gtitle'); }
+            if(doticks) { Plotly.Axes.doTicks(gd,'redraw'); makeTitles(gd,'gtitle'); }
         }
     }
     $(gd).trigger('relayout.plotly',redoit);
@@ -1425,7 +1427,7 @@ function makePlotFramework(divid, layout) {
         xa = gl.xaxis,
         ya=gl.yaxis;
 
-    Axes.setTypes(gd);
+    Plotly.Axes.setTypes(gd);
 
     // initial autosize
     if(gl.autosize=='initial') {
@@ -1456,7 +1458,7 @@ function makePlotFramework(divid, layout) {
     layoutStyles(gd);
 
     // make the ticks, grids, and axis titles
-    Axes.doTicks(gd);
+    Plotly.Axes.doTicks(gd);
     xa._r = xa.range.slice(); // store ranges for later use
     ya._r = ya.range.slice();
 
@@ -1505,7 +1507,7 @@ function makePlotFramework(divid, layout) {
 function layoutStyles(gd) {
     var gl = gd.layout, xa = gl.xaxis, ya = gl.yaxis;
 
-    Heatmap.margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
+    Plotly.Heatmap.margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
 
     // adjust margins for outside legends
     // gl.margin is the requested margin, gd.margin is after adjustment
