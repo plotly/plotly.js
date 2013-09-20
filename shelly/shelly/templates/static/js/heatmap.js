@@ -1,5 +1,6 @@
 (function() {
-var heatmap = window.Heatmap = {};
+if(!window.Plotly) { window.Plotly = {}; }
+var heatmap = window.Plotly.Heatmap = {};
 
 // option to limit number of pixels per color brick, for better speed
 // also, Firefox and IE seem to allow nearest-neighbor scaling, so could set to 1?
@@ -15,10 +16,10 @@ heatmap.calc = function(gd,gdc) {
     // run convertOne even for heatmaps, in case of category mappings
     markTime('start convert data');
     var xa = gd.layout.xaxis,
-        x = gdc.x ? Axes.convertOne(gdc,'x',xa) : [];
+        x = gdc.x ? Plotly.Axes.convertOne(gdc,'x',xa) : [];
     markTime('done convert x');
     var ya = gd.layout.yaxis,
-        y = gdc.y ? Axes.convertOne(gdc,'y',ya) : [];
+        y = gdc.y ? Plotly.Axes.convertOne(gdc,'y',ya) : [];
     markTime('done convert y');
     var i;
     if(gdc.type=='histogram2d') {
@@ -27,8 +28,8 @@ heatmap.calc = function(gd,gdc) {
         if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen); }
         markTime('done convert data');
         // calculate the bins
-        if(gdc.autobinx || !('xbins' in gdc)) { gdc.xbins = Axes.autoBin(x,xa,gdc.nbinsx,'2d'); }
-        if(gdc.autobiny || !('ybins' in gdc)) { gdc.ybins = Axes.autoBin(y,ya,gdc.nbinsy,'2d'); }
+        if(gdc.autobinx || !('xbins' in gdc)) { gdc.xbins = Plotly.Axes.autoBin(x,xa,gdc.nbinsx,'2d'); }
+        if(gdc.autobiny || !('ybins' in gdc)) { gdc.ybins = Plotly.Axes.autoBin(y,ya,gdc.nbinsy,'2d'); }
         markTime('done autoBin');
         // make the empty bin array & scale the map
         gdc.z = [];
@@ -36,7 +37,7 @@ heatmap.calc = function(gd,gdc) {
             xbins = (typeof(gdc.xbins.size)=='string') ? [] : gdc.xbins,
             ybins = (typeof(gdc.xbins.size)=='string') ? [] : gdc.ybins,
             norm = gdc.histnorm||'';
-        for(i=gdc.xbins.start; i<gdc.xbins.end; i=Axes.tickIncrement(i,gdc.xbins.size)) {
+        for(i=gdc.xbins.start; i<gdc.xbins.end; i=Plotly.Axes.tickIncrement(i,gdc.xbins.size)) {
             onecol.push(0);
             if($.isArray(xbins)) { xbins.push(i); }
         }
@@ -52,7 +53,7 @@ heatmap.calc = function(gd,gdc) {
             else { return 1/gdc.dx; }
         });
 
-        for(i=gdc.ybins.start; i<gdc.ybins.end; i=Axes.tickIncrement(i,gdc.ybins.size)) {
+        for(i=gdc.ybins.start; i<gdc.ybins.end; i=Plotly.Axes.tickIncrement(i,gdc.ybins.size)) {
             gdc.z.push(onecol.concat());
             if($.isArray(ybins)) { ybins.push(i); }
         }
@@ -92,8 +93,8 @@ heatmap.calc = function(gd,gdc) {
         if(!( 'scl' in gdc )){ gdc.scl=defaultScale; }
     }
     var coords = get_xy(gd,gdc);
-    Axes.expandBounds(xa,xa._tight,coords.x);
-    Axes.expandBounds(ya,ya._tight,coords.y);
+    Plotly.Axes.expandBounds(xa,xa._tight,coords.x);
+    Plotly.Axes.expandBounds(ya,ya._tight,coords.y);
     // store x and y arrays for later... heatmap function pulls out the
     // actual data directly from gd.data. TODO: switch to a reference in cd
     return [{t:coords}];
@@ -268,7 +269,7 @@ function get_xy(gd,gdc){
     function makeBoundArray(array_in,v0_in,dv_in,numbricks,ax) {
         var array_out = [], v0, dv, i;
         if($.isArray(array_in) && (gdc.type!='histogram2d') && (ax.type!='category')) {
-            array_in = Axes.convertToNums(array_in,ax);
+            array_in = Plotly.Axes.convertToNums(array_in,ax);
             var len = array_in.length;
             if(len==numbricks) { // given vals are brick centers
                 if(numbricks==1) { return [array_in[0]-0.5,array_in[0]+0.5]; }
@@ -291,7 +292,7 @@ function get_xy(gd,gdc){
             else if(gdc.type=='histogram2d' || ax.type=='category') {
                 v0 = v0_in;
             }
-            else { v0 = Axes.convertToNums(v0_in,ax); }
+            else { v0 = Plotly.Axes.convertToNums(v0_in,ax); }
             for(i=0; i<=numbricks; i++) { array_out.push(v0+dv*(i-0.5)); }
         }
         return array_out;
