@@ -926,12 +926,17 @@ function legendText(s,gd){
 // for data (restyle) and everything else (relayout)
 // -----------------------------------------------------
 
-// astr is the attr name, like 'marker.symbol'
-// val is the new value to use
-// traces is a trace number or an array of trace numbers to change (blank for all)
-// astr can also be an object {astr1:val1, astr2:val2...} in which case val is
-// ignored but must be present if you want trace control.
-// val (or val1, val2...) can be an array, to apply different values to each trace
+// restyle: change styling of an existing plot
+// can be called two ways:
+// restyle(gd,astr,val[,traces])
+//      gd - graph div (dom element)
+//      astr - attribute string (like 'marker.symbol')
+//      val - value to give this attribute
+//      traces - integer or array of integers for the traces to alter (all if omitted)
+// relayout(gd,aobj[,traces])
+//      aobj - {astr1:val1, astr2:val2...} allows setting multiple attributes simultaneously
+// val (or val1, val2... in the object form) can be an array, to apply different
+// values to each trace
 // if the array is too short, it will wrap around (useful for style files that want
 // to specify cyclical default values)
 function restyle(gd,astr,val,traces) {
@@ -940,7 +945,10 @@ function restyle(gd,astr,val,traces) {
     var gl = gd.layout,
         aobj = {};
     if(typeof astr == 'string') { aobj[astr] = val; }
-    else if($.isPlainObject(astr)) { aobj = astr; }
+    else if($.isPlainObject(astr)) {
+        aobj = astr;
+        if(traces===undefined) { traces = val; } // the 3-arg form
+    }
     else { console.log('restyle fail',astr,val,traces); return; }
 
     if(Object.keys(aobj).length) { gd.changed = true; }
@@ -1094,8 +1102,14 @@ function restyle(gd,astr,val,traces) {
     $(gd).trigger('restyle.plotly',[redoit,traces]);
 }
 
-// change layout in an existing plot
-// astr and val are like restyle, or 2nd arg can be an object {astr1:val1, astr2:val2...}
+// relayout: change layout in an existing plot
+// can be called two ways:
+// relayout(gd,astr,val)
+//      gd - graph div (dom element)
+//      astr - attribute string (like 'xaxis.range[0]')
+//      val - value to give this attribute
+// relayout(gd,aobj)
+//      aobj - {astr1:val1, astr2:val2...} allows setting multiple attributes simultaneously
 function relayout(gd,astr,val) {
     // console.log(gd,astr,val);
     var gl = gd.layout,
@@ -1335,7 +1349,7 @@ function plotDo(gd,aobj,traces) {
     ao2 = {};
     for(var ai in aobj) { ao2[ai] = aobj[ai]; } // copy aobj so we don't modify the one in the queue
     if(traces=='relayout') { relayout(gd, ao2); }
-    else { restyle(gd, ao2, null, traces); }
+    else { restyle(gd, ao2, traces); }
     // do we need to update a popover?
     var po = $('.popover');
     if(po.length) { po[0].redraw(po[0].selectedObj); }
