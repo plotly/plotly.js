@@ -240,16 +240,26 @@ function updateTraces(old_data, new_data) {
 function positionBrand(gd){
     // if( window.self === window.top ) { return; } // not in an iframe
     $(gd).find('.linktotool').remove();
-    if(gd.mainsite || gd.shareplot) {
+    var linktotool = $('<div class="linktotool">'+
+        '<a><font class="muted">view in </font><font class="info">plotly</font></a>'+
+        '</div>').appendTo(gd.paperdiv.node());
+    if(gd.shareplot) {
         var path=window.location.pathname.split('/');
-        $(gd.paperdiv.node()).append("<div class='linktotool'>"+
-        "<a href='/"+path[2]+"/"+path[1]+"' target='_blank'>"+
-        "<font class='muted'>view in </font><font class='info'>plotly</font></a>"+
-        "</div>");
+        linktotool.find('a')
+            .attr('href','/'+path[2]+'/'+path[1])
+            .attr('target','_blank');
     }
     else {
         // TODO: how do we sent all the embedded data to plotly without triggering xss filters?
         console.log('3rd party app!');
+        linktotool.find('a').click(function(){
+            var hiddenform = $('<div id="hiddenform" style="display:none;">'+
+                '<form action="https://plot.ly/external" method="post" target="_blank">'+
+                '<input type="text" name="data" /></form></div>').appendTo(gd);
+            hiddenform.find('input').val(graphJson(gd));
+            hiddenform.find('form').submit();
+            hiddenform.remove();
+        });
     }
 }
 
