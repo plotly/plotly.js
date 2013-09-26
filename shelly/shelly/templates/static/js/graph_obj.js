@@ -1,6 +1,35 @@
+// Main plotting library - Creates the Plotly object and Plotly.Plots
+// also fills any missing components with dummies to avoid errors
 (function() {
 if(!window.Plotly) { window.Plotly = {}; }
 var plots = Plotly.Plots = {};
+
+// fill for possibly missing graph type libraries.
+// most of these should
+// module is the name of the object, methods are the methods to fill.
+function noop(){}
+function req(module, methods) {
+    if(module in window) { return; }
+    var moduleFill = {};
+    for(var i=0; i<methods.length; i++) { moduleFill[methods[i]] = noop; }
+    window[module] = moduleFill;
+}
+req('Annotations',['add','allArrowheads','draw','drawAll']);
+req('Axes',['setTypes','convertOne','convertToNums','setConvert','doAutoRange','expandBounds',
+    'expandWithZero','autoBin','autoTicks','tickIncrement','tickFirst','tickText','doTicks']);
+req('Bars',['calc','plot','setPositions']);
+req('Boxes',['calc','plot','setPositions','style']);
+req('Drawing',['rgb','opacity','addOpacity','strokeColor','fillColor','setPosition','setSize',
+    'setRect','translatePoints','traceStyle','lineGroupStyle','fillGroupStyle','pointStyle','styleText']);
+req('ErrorBars',['returnToStyleBox','pushRef2GDC','styleBoxDrop','styleBox','ydr','plot','style']);
+req('Fx',['init','hover','unhover','click','modeBar','dragAlign','dragCursors','dragClear','autoGrowInput']);
+req('Heatmap',['calc','plot','margin','defaultScale']);
+req('Histogram',['calc']);
+req('Legend',['lines','points','bars','boxes','draw']);
+req('Lib',['dateTime2ms','isDateTime','ms2DateTime','findBin','distinctVals','nestedProperty',
+    'pauseEvent','lpad','aggNums','len','mean','stdev','VERBOSE','TIMER','log','markTime','constrain',
+    'notifier','identity']);
+req('Scatter',['calc','plot']);
 
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
@@ -175,23 +204,6 @@ var graphInfo = {
 plots.BARTYPES = ['bar','histogramx','histogramy'];
 plots.HEATMAPTYPES = ['heatmap','histogram2d'];
 
-// fill for missing graph type libraries, just shows an error in the console.
-// module is the name of the object, methods are the methods to fill.
-function req(module, methods) {
-    if(module in window) { return; }
-    var moduleFill = { missing:true },
-        noop = function(){ };
-    for(var i=0; i<methods.length; i++) { moduleFill[methods[i]] = noop; }
-    window[module] = moduleFill;
-}
-req('Scatter',['calc','plot']);
-req('Heatmap',['calc','plot','margin']);
-req('Bars',['calc','plot','setPositions']);
-req('Boxes',['calc','plot','setPositions','style']);
-req('ErrorBars',['returnToStyleBox','pushRef2GDC','styleBoxDrop','styleBox','ydr','plot','style']);
-req('Axes',['setTypes','convertOne','convertToNums','setConvert','doAutoRange','doTicks',
-    'expandBounds','expandWithZero','setConvert','setTypes','tickFirst','tickIncrement','tickText']);
-
 plots.newTab = function(divid, layout) {
     makeToolMenu(divid);
     makePlotFramework(divid, layout);
@@ -355,7 +367,10 @@ Plotly.plot = function(divid, data, layout) {
         }
 
         if (curvetype == 'scatter') { cd = Plotly.Scatter.calc(gd,gdc); }
-        else if (plots.BARTYPES.indexOf(curvetype) != -1) { cd = Plotly.Bars.calc(gd,gdc); }
+        else if (plots.BARTYPES.indexOf(curvetype) != -1) {
+            if(curvetype=='bar') { cd = Plotly.Bars.calc(gd,gdc); }
+            else { cd = Plotly.Histogram.calc(gd,gdc); }
+        }
         else if (plots.HEATMAPTYPES.indexOf(curvetype) != -1 ){ cd = Plotly.Heatmap.calc(gd,gdc); }
         else if (curvetype == 'box') { cd = Plotly.Boxes.calc(gd,gdc); }
 
@@ -800,7 +815,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         }
     }
     // now all attribute mods are done, as are redo and undo so we can save them
-    plotUndoQueue(gd,undoit,redoit,traces);
+    if(typeof plotUndoQueue == 'function') { plotUndoQueue(gd,undoit,redoit,traces); }
 
     // now update the graphics
     // a complete layout redraw takes care of plot and
@@ -955,7 +970,7 @@ Plotly.relayout = function(gd,astr,val) {
         }
     }
     // now all attribute mods are done, as are redo and undo so we can save them
-    plotUndoQueue(gd,undoit,redoit,'relayout');
+    if(typeof plotUndoQueue=='function') { plotUndoQueue(gd,undoit,redoit,'relayout'); }
 
     // calculate autosizing - if size hasn't changed, will remove h&w so we don't need to redraw
     if(aobj.autosize) { aobj=plotAutoSize(gd,aobj); }
