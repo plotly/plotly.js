@@ -1,11 +1,14 @@
 (function() {
-if(!window.Plotly) { window.Plotly = {}; }
 var heatmap = window.Plotly.Heatmap = {};
 
 // option to limit number of pixels per color brick, for better speed
 // also, Firefox and IE seem to allow nearest-neighbor scaling, so could set to 1?
 // zero or other falsy val disables
 MAX_PX_PER_BRICK=0;
+
+heatmap.defaultScale = [[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94, 168)"],
+    [0.375,"rgb(29, 145, 192)"],[0.5,"rgb(65, 182, 196)"],[0.625,"rgb(127, 205, 187)"],
+    [0.75,"rgb(199, 233, 180)"],[0.875,"rgb(237, 248, 217)"],[1,"rgb(255, 255, 217)"]];
 
 heatmap.calc = function(gd,gdc) {
     // calcdata ("cd") for heatmaps:
@@ -14,23 +17,23 @@ heatmap.calc = function(gd,gdc) {
     if(gdc.visible===false) { return; }
     // prepare the raw data
     // run convertOne even for heatmaps, in case of category mappings
-    markTime('start convert data');
+    Plotly.Lib.markTime('start convert data');
     var xa = gd.layout.xaxis,
         x = gdc.x ? Plotly.Axes.convertOne(gdc,'x',xa) : [];
-    markTime('done convert x');
+    Plotly.Lib.markTime('done convert x');
     var ya = gd.layout.yaxis,
         y = gdc.y ? Plotly.Axes.convertOne(gdc,'y',ya) : [];
-    markTime('done convert y');
+    Plotly.Lib.markTime('done convert y');
     var i;
     if(gdc.type=='histogram2d') {
         var serieslen = Math.min(x.length,y.length);
         if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen); }
         if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen); }
-        markTime('done convert data');
+        Plotly.Lib.markTime('done convert data');
         // calculate the bins
         if(gdc.autobinx || !('xbins' in gdc)) { gdc.xbins = Plotly.Axes.autoBin(x,xa,gdc.nbinsx,'2d'); }
         if(gdc.autobiny || !('ybins' in gdc)) { gdc.ybins = Plotly.Axes.autoBin(y,ya,gdc.nbinsy,'2d'); }
-        markTime('done autoBin');
+        Plotly.Lib.markTime('done autoBin');
         // make the empty bin array & scale the map
         gdc.z = [];
         var onecol = [],
@@ -69,12 +72,12 @@ heatmap.calc = function(gd,gdc) {
             else { return 1/gdc.dy; }
         });
 
-        markTime('done making bins');
+        Plotly.Lib.markTime('done making bins');
         // put data into bins
         var count = 0;
         for(i=0; i<serieslen; i++) {
-            var n = findBin(x[i],xbins),
-                m = findBin(y[i],ybins);
+            var n = Plotly.Lib.findBin(x[i],xbins),
+                m = Plotly.Lib.findBin(y[i],ybins);
             if(n>=0 && n<nx && m>=0 && m<ny) { gdc.z[m][n]+=xinc[n]*yinc[m]; count++; }
         }
         if(norm.indexOf('percent')!=-1) { count/=100; }
@@ -83,14 +86,14 @@ heatmap.calc = function(gd,gdc) {
                 col[i]/=count;
             }); });
         }
-        markTime('done binning');
+        Plotly.Lib.markTime('done binning');
 
         // make the rest of the heatmap info
         if(gdc.zauto!==false) {
             gdc.zmin=zmin(gdc.z);
             gdc.zmax=zmax(gdc.z);
         }
-        if(!( 'scl' in gdc )){ gdc.scl=defaultScale; }
+        if(!( 'scl' in gdc )){ gdc.scl=heatmap.defaultScale; }
     }
     var coords = get_xy(gd,gdc);
     Plotly.Axes.expandBounds(xa,xa._tight,coords.x);
@@ -108,6 +111,7 @@ heatmap.calc = function(gd,gdc) {
 // plot(gd, [{'type':'heatmap','z':[[1,2],[3,4]], 'x0':2, 'y0':2, 'dx':0.5, 'dy':0.5}])
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 heatmap.plot = function(gd,cd) {
+    Plotly.Lib.markTime('in Heatmap.plot');
     var t = cd[0].t,
         i = t.curve,
         gdc = gd.data[i],
@@ -183,6 +187,7 @@ heatmap.plot = function(gd,cd) {
     // map brick boundaries to image pixels
     function xpx(v){ return Math.max(0,Math.min(wd,Math.round(xa.c2p(v)-left))); }
     function ypx(v){ return Math.max(0,Math.min(ht,Math.round(ya.c2p(v)-top))); }
+    Plotly.Lib.markTime('done init png');
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
     // build a brick at each z-matrix value
@@ -220,6 +225,7 @@ heatmap.plot = function(gd,cd) {
             }
         }
     }
+    Plotly.Lib.markTime('done filling png');
     gd.hmpixcount = (gd.hmpixcount||0)+pixcount;
     gd.hmlumcount = (gd.hmlumcount||0)+lumcount;
 
@@ -239,9 +245,11 @@ heatmap.plot = function(gd,cd) {
         .attr('preserveAspectRatio','none');
 
     $('svg > image').parent().attr("xmlns:xlink","http://www.w3.org/1999/xlink");
+    Plotly.Lib.markTime('done showing png');
 
     // show a colorscale
     if(gdc.showscale!==false){ insert_colorbar(gd,gdc,cb_id); }
+    Plotly.Lib.markTime('done colorbar');
 };
 
 // in order to avoid unnecessary redraws, check for heatmaps with colorscales
@@ -251,7 +259,7 @@ heatmap.margin = function(gd){
     var gl = gd.layout;
     if(gd.data && gd.data.length && gl.margin.r<200) {
         for(var curve in gd.data) {
-            if((HEATMAPTYPES.indexOf(gd.data[curve].type)!=-1) && (gd.data[curve].showscale!==false)) {
+            if((Plotly.Plots.HEATMAPTYPES.indexOf(gd.data[curve].type)!=-1) && (gd.data[curve].showscale!==false)) {
                 gl.margin.r=200;
                 return true;
             }
@@ -322,17 +330,16 @@ function setDefaults(gdc,noZRange){
         if(!('zmax' in gdc) || gdc.zauto!==false){ gdc.zmax=zmax(gdc.z); }
         if(gdc.zmin==gdc.zmax) { gdc.zmin-=0.5; gdc.zmax+=0.5; }
     }
-    if(!( 'scl' in gdc )){ gdc.scl=defaultScale; }
+    if(!( 'scl' in gdc )){ gdc.scl=heatmap.defaultScale; }
 }
 
 // Return MAX and MIN of an array of arrays
-// moved to aggNums so we handle non-numerics correctly
 function zmax(z){
-    return aggNums(Math.max,null,z.map(function(row){ return aggNums(Math.max,null,row); }));
+    return Plotly.Lib.aggNums(Math.max,null,z.map(function(row){ return Plotly.Lib.aggNums(Math.max,null,row); }));
 }
 
 function zmin(z){
-    return aggNums(Math.min,null,z.map(function(row){ return aggNums(Math.min,null,row); }));
+    return Plotly.Lib.aggNums(Math.min,null,z.map(function(row){ return Plotly.Lib.aggNums(Math.min,null,row); }));
 }
 
 // insert a colorbar
@@ -341,7 +348,7 @@ function insert_colorbar(gd,gdc,cb_id) {
 
     if(gd.layout.margin.r<200){ // shouldn't get here anymore... take care of this in newPlot
         console.log('warning: called relayout from insert_colorbar');
-        relayout(gd,'margin.r',200);
+        Plotly.relayout(gd,'margin.r',200);
     }
 
     var scl=gdc.scl;
