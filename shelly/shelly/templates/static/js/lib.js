@@ -1,5 +1,6 @@
 // common library functions, mostly for plotting but used elsewhere too
 (function() {
+if(!window.Plotly) { window.Plotly = {}; }
 var lib = Plotly.Lib = {};
 
 // dateTime2ms - make string s of the form YYYY-mm-dd HH:MM:SS.sss
