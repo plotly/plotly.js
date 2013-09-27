@@ -4,7 +4,6 @@
 //      - data conversions
 //      - calculating and drawing ticks
 (function() {
-if(!window.Plotly) { window.Plotly = {}; }
 var axes = Plotly.Axes = {};
 
 // setTypes: figure out axis types (linear, log, date, category...)
@@ -47,7 +46,7 @@ function setType(gd,axletter){
     // guess at axis type with the new property format
     // first check for histograms, as they can change the axis types
     // whatever else happens, horz bars switch the roles of x and y axes
-    if((BARTYPES.indexOf(d0.type)!=-1) && (d0.bardir=='h')){
+    if((Plotly.Plots.BARTYPES.indexOf(d0.type)!=-1) && (d0.bardir=='h')){
         axletter={x:'y',y:'x'}[axletter];
     }
     var hist = (['histogramx','histogramy'].indexOf(d0.type)!=-1);
@@ -69,7 +68,7 @@ function setType(gd,axletter){
     if(d0.type=='box' && axletter=='x' && !('x' in d0) && !('x0' in d0)) {
         ax.type='category'; // take the categories from trace name, text, or number
     }
-    else if((axletter in d0) ? moreDates(d0[axletter]) : isDateTime(d0[axletter+'0'])) {
+    else if((axletter in d0) ? moreDates(d0[axletter]) : Plotly.Lib.isDateTime(d0[axletter+'0'])) {
         ax.type='date';
     }
     else if(category(gd.data,axletter)) { ax.type='category'; }
@@ -85,7 +84,7 @@ function setType(gd,axletter){
 function moreDates(a) {
     var dcnt=0, ncnt=0;
     for(var i in a) {
-        if(isDateTime(a[i])) { dcnt+=1; }
+        if(Plotly.Lib.isDateTime(a[i])) { dcnt+=1; }
         if($.isNumeric(a[i])) { ncnt+=1; }
     }
     return (dcnt>ncnt*2);
@@ -175,7 +174,7 @@ axes.convertOne = function(gdc,data,ax) {
 axes.convertToNums = function(o,ax){
     // find the conversion function
     var fn;
-    if(ax.type=='date') { fn = DateTime2ms; }
+    if(ax.type=='date') { fn = Plotly.Lib.dateTime2ms; }
     else if(ax.type=='category') {
         // create the category list
         // this will enter the categories in the order it encounters them,
@@ -244,7 +243,7 @@ axes.doAutoRange = function(gd,ax) {
         // if there's a heatmap, get rid of 5% padding regardless
         // TODO: does this really make sense?
         if(gd.data) { gd.data.forEach(function(v){
-            if(HEATMAPTYPES.indexOf(v.type)!=-1){ axpad=0; }
+            if(Plotly.Plots.HEATMAPTYPES.indexOf(v.type)!=-1){ axpad=0; }
         }); }
 
         // check if we're forcing zero to be included
@@ -273,9 +272,9 @@ axes.expandBounds = function(ax,dr,data,serieslen,pad) {
     if(!ax.autorange || !data) { return; }
     pad = pad || 0; // optional extra space to give these new data points
     serieslen = serieslen || data.length;
-    dr[0] = aggNums(Math.min, $.isNumeric(dr[0]) ? dr[0] : null,
+    dr[0] = Plotly.Lib.aggNums(Math.min, $.isNumeric(dr[0]) ? dr[0] : null,
         data.map(function(v){return $.isNumeric(v) ? ax.c2l(v-pad) : null; }), serieslen);
-    dr[1] = aggNums(Math.max, $.isNumeric(dr[1]) ? dr[1] : null,
+    dr[1] = Plotly.Lib.aggNums(Math.max, $.isNumeric(dr[1]) ? dr[1] : null,
         data.map(function(v){return $.isNumeric(v) ? ax.c2l(v+pad) : null; }), serieslen);
 };
 
@@ -295,8 +294,8 @@ axes.expandWithZero = function(ax,data,serieslen,pad) {
 };
 
 axes.autoBin = function(data,ax,nbins,is2d) {
-    var datamin = aggNums(Math.min,null,data),
-        datamax = aggNums(Math.max,null,data);
+    var datamin = Plotly.Lib.aggNums(Math.min,null,data),
+        datamax = Plotly.Lib.aggNums(Math.max,null,data);
     if(ax.type=='category') {
         return {
             start: datamin-0.5,
@@ -306,7 +305,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
     }
     else {
         var size0 = nbins ? ((datamax-datamin)/nbins) :
-            2*stdev(data)/Math.pow(data.length,is2d ? 0.25 : 0.4);
+            2*Plotly.Lib.stdev(data)/Math.pow(data.length,is2d ? 0.25 : 0.4);
         // piggyback off autotick code to make "nice" bin sizes
         var dummyax = {type:ax.type,range:[datamin,datamax]};
         axes.autoTicks(dummyax,size0);
@@ -572,7 +571,7 @@ axes.tickFirst = function(ax){
     if($.isNumeric(ax.dtick)) {
         var tmin = sRound((r0-ax.tick0)/ax.dtick)*ax.dtick+ax.tick0;
         // make sure no ticks outside the category list
-        if(ax.type=='category') { tmin = constrain(tmin,0,ax.categories.length-1); }
+        if(ax.type=='category') { tmin = Plotly.Lib.constrain(tmin,0,ax.categories.length-1); }
         return tmin;
     }
 
@@ -630,13 +629,13 @@ axes.tickText = function(gd, ax, x, hover){
             if(x==ax._tmin) { suffix='<br>'+$.datepicker.formatDate('yy', d); }
 
             if(tr=='d') { tt=$.datepicker.formatDate('M d', d); }
-            else if(tr=='H') { tt=$.datepicker.formatDate('M d ', d)+lpad(d.getHours(),2)+'h'; }
+            else if(tr=='H') { tt=$.datepicker.formatDate('M d ', d)+Plotly.Lib.lpad(d.getHours(),2)+'h'; }
             else {
                 if(x==ax._tmin) { suffix='<br>'+$.datepicker.formatDate('M d, yy', d); }
 
-                tt=lpad(d.getHours(),2)+':'+lpad(d.getMinutes(),2);
+                tt=Plotly.Lib.lpad(d.getHours(),2)+':'+Plotly.Lib.lpad(d.getMinutes(),2);
                 if(tr!='M'){
-                    tt+=':'+lpad(d.getSeconds(),2);
+                    tt+=':'+Plotly.Lib.lpad(d.getSeconds(),2);
                     if(tr!='S') { tt+=numFormat(mod(x/1000,1),ax,'none').substr(1); }
                 }
             }
@@ -801,7 +800,7 @@ axes.doTicks = function(gd,axletter) {
         transfn = function(d){ return 'translate(0,'+(ax._m*d.x+ax._b)+')'; };
     }
     else {
-        plotlylog('unrecognized doTicks axis',ax);
+        console.log('unrecognized doTicks axis',ax);
         return;
     }
 
@@ -810,7 +809,7 @@ axes.doTicks = function(gd,axletter) {
     if(ax.ticks) {
         ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
             .classed('crisp',1)
-            .call(strokeColor, ax.tickcolor || '#000')
+            .call(Plotly.Drawing.strokeColor, ax.tickcolor || '#000')
             .attr('stroke-width', ax.tickwidth || 1)
             .attr('d',tickpath);
         ticks.attr('transform',transfn);
@@ -823,15 +822,15 @@ axes.doTicks = function(gd,axletter) {
     var yl=gd.axislayer.selectAll('text.'+tcls).data(vals,datafn);
     if(ax.showticklabels) {
         yl.enter().append('text').classed(tcls,1)
-            .call(setPosition, tl.x, tl.y)
-            .each(function(d){ styleText(this,d.text); });
+            .call(Plotly.Drawing.setPosition, tl.x, tl.y)
+            .attr('font-family',function(d){ return d.font; })
+            .attr('font-size',function(d){ return d.fontSize; })
+            .style('fill',function(d){ return d.fontColor; })
+            .each(function(d){ Plotly.Drawing.styleText(this,d.text); });
         yl.attr('transform',function(d){
                 return transfn(d) + (ax.tickangle ?
                 (' rotate('+ax.tickangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')') : '');
             })
-            .attr('font-family',function(d){ return d.font; })
-            .attr('font-size',function(d){ return d.fontSize; })
-            .attr('fill',function(d){ return d.fontColor; })
             .attr('text-anchor',tl.anchor);
         yl.exit().remove();
     }
@@ -852,7 +851,7 @@ axes.doTicks = function(gd,axletter) {
                 if(ax.zeroline && ax.type=='linear' && Math.abs(d.x)<ax.dtick/100) { d3.select(this).remove(); }
             });
         grid.attr('transform',transfn)
-            .call(strokeColor, ax.gridcolor || '#ddd')
+            .call(Plotly.Drawing.strokeColor, ax.gridcolor || '#ddd')
             .attr('stroke-width', gridwidth);
         grid.exit().remove();
     }
@@ -868,15 +867,18 @@ axes.doTicks = function(gd,axletter) {
             .attr('y1',g.y1)
             .attr('y2',g.y2);
         zl.attr('transform',transfn)
-            .call(strokeColor, ax.zerolinecolor || '#000')
+            .call(Plotly.Drawing.strokeColor, ax.zerolinecolor || '#000')
             .attr('stroke-width', ax.zerolinewidth || gridwidth);
         zl.exit().remove();
     }
     else { zl.remove(); }
 
     // update the axis title (so it can move out of the way if needed)
-    makeTitles(gd,axletter+'title');
+    Plotly.Plots.titles(gd,axletter+'title');
 };
 
+// mod - version of modulus that always restricts to [0,divisor)
+// rather than built-in % which gives a negative value for negative v
+function mod(v,d){ return ((v%d) + d) % d; }
 
 }()); // end Axes object definition
