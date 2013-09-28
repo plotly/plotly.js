@@ -777,10 +777,12 @@ axes.doTicks = function(gd,axletter) {
             (ax.mirror=='ticks' ? ('m0,'+(-gd.plotheight-2*(ty+pad))+'v'+ty): '');
         g = {x1:gm.l, x2:gm.l, y1:gl.height-gm.b, y2:gm.t};
         tl = {
-            x:function(d){ return d.dx+gm.l; },
-            y:function(d){ return d.dy+y1+standoff+d.fontSize; },
-            anchor: (!ax.tickangle || ax.tickangle==180) ? 'middle' :
-                (ax.tickangle<0 ? 'end' : 'start')
+            x: function(d){ return d.dx+gm.l; },
+            y: function(d){ return d.dy+y1+standoff+d.fontSize; },
+            anchor: function(angle){
+                if(!$.isNumeric(angle) || angle==180) { return 'middle'; }
+                return angle<0 ? 'end' : 'start';
+            }
         };
         transfn = function(d){ return 'translate('+(ax._m*d.x+ax._b)+',0)'; };
     }
@@ -795,7 +797,7 @@ axes.doTicks = function(gd,axletter) {
                 (Math.abs(ax.tickangle)==90 ? d.fontSize/2 : 0);
             },
             y:function(d){ return d.dy+gm.t+d.fontSize/2; },
-            anchor: (Math.abs(ax.tickangle)==90) ? 'middle' : 'end'
+            anchor: function(angle){ return ($.isNumeric(angle) && Math.abs(angle)==90) ? 'middle' : 'end'; }
         };
         transfn = function(d){ return 'translate(0,'+(ax._m*d.x+ax._b)+')'; };
     }
@@ -821,6 +823,7 @@ axes.doTicks = function(gd,axletter) {
     // gd.axislayer.selectAll('text.'+tcls).remove(); // TODO: problems with reusing labels... shouldn't need this.
     var yl=gd.axislayer.selectAll('text.'+tcls).data(vals,datafn);
     if(ax.showticklabels) {
+        var maxFontSize = 0, autoangle = 0;
         yl.enter().append('text').classed(tcls,1)
             .call(Plotly.Drawing.setPosition, tl.x, tl.y)
             .attr('font-family',function(d){ return d.font; })
@@ -828,10 +831,33 @@ axes.doTicks = function(gd,axletter) {
             .style('fill',function(d){ return d.fontColor; })
             .each(function(d){ Plotly.Drawing.styleText(this,d.text); });
         yl.attr('transform',function(d){
-                return transfn(d) + (ax.tickangle ?
+                maxFontSize = Math.max(maxFontSize,d.fontSize);
+                return transfn(d) + ($.isNumeric(ax.tickangle) ?
                 (' rotate('+ax.tickangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')') : '');
             })
-            .attr('text-anchor',tl.anchor);
+            .attr('text-anchor',tl.anchor(ax.tickangle));
+        // check for auto-angling if labels overlap
+        if(axletter=='x' && !$.isNumeric(ax.tickangle)) {
+            var lbbArray = yl[0].map(function(s){ return s.getBoundingClientRect(); });
+            for(i=0; i<lbbArray.length-1; i++) {
+                if(Plotly.Lib.bBoxIntersect(lbbArray[i],lbbArray[i+1])) {
+                    autoangle = 30; // any overlap at all - set 30 degrees
+                    break;
+                }
+            }
+            if(autoangle) {
+                var tickspacing = Math.abs((vals[vals.length-1].x-vals[0].x)*ax._m)/(vals.length-1);
+                if(tickspacing<maxFontSize*2.5) {
+                    autoangle = 90;
+                }
+                yl.attr('transform',function(d){
+                    return transfn(d) + ' rotate('+autoangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')';
+                })
+                .attr('text-anchor',tl.anchor(autoangle));
+
+            }
+
+        }
         yl.exit().remove();
     }
     else { yl.remove(); }
