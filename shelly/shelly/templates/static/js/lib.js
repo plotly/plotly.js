@@ -265,6 +265,12 @@ lib.notifier = function(text,tm){
         .fadeOut(2000,function(){ n.remove(); });
 };
 
+// do two bounding boxes from getBoundingClientRect,
+// ie {left,right,top,bottom,width,height}, overlap?
+lib.bBoxIntersect = function(a,b){
+    return (a.left<=b.right && b.left<=a.right && a.top<=b.bottom && b.top<=a.bottom);
+};
+
 // minor performance booster for d3...
 lib.identity = function(d){ return d; };
 
