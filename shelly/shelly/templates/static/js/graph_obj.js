@@ -136,7 +136,7 @@ function defaultLayout(){
     return {title:'Click to enter Plot title',
         xaxis:{range:[-1,6],type:'-',mirror:true,linecolor:'#000',linewidth:1,
             tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
-            showticklabels:true,tickangle:0,exponentformat:'e',showexponent:'all',
+            showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
             showgrid:true,gridcolor:'#ddd',gridwidth:1,
             autorange:true,autotick:true,
             zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
@@ -145,7 +145,7 @@ function defaultLayout(){
             tickfont:{family:'',size:0,color:''}},
         yaxis:{range:[-1,4],type:'-',mirror:true,linecolor:'#000',linewidth:1,
             tick0:0,dtick:1,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
-            showticklabels:true,tickangle:0,exponentformat:'e',showexponent:'all',
+            showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
             showgrid:true,gridcolor:'#ddd',gridwidth:1,
             autorange:true,autotick:true,
             zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
@@ -1269,7 +1269,7 @@ plots.titles = function(gd,title) {
         tickedge=0;
         labels=gd.axislayer.selectAll('text.xtick').each(function(){
             lbb=this.getBoundingClientRect();
-            if(bBoxIntersect(titlebb,lbb)) {
+            if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
                 tickedge=Plotly.Lib.constrain(tickedge,lbb.bottom,paperbb.bottom-titlebb.height);
             }
         });
@@ -1281,7 +1281,7 @@ plots.titles = function(gd,title) {
         tickedge=screen.width;
         gd.axislayer.selectAll('text.ytick').each(function(){
             lbb=this.getBoundingClientRect();
-            if(bBoxIntersect(titlebb,lbb)) {
+            if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
                 tickedge=Plotly.Lib.constrain(tickedge,paperbb.left+titlebb.width,lbb.left);
             }
         });
@@ -1351,12 +1351,6 @@ function updateObject(i,up) {
         else { o[key] = up[key]; }
     }
     return uoStack.pop();
-}
-
-// do two bounding boxes from getBoundingClientRect,
-// ie {left,right,top,bottom,width,height}, overlap?
-function bBoxIntersect(a,b){
-    return (a.left<=b.right && b.left<=a.right && a.top<=b.bottom && b.top<=a.bottom);
 }
 
 function alert_repl(func_name, data) {

@@ -185,7 +185,7 @@ boxes.style = function(s) {
         d3.select(this).selectAll('path.mean')
             .attr('stroke-width',t.lw)
             .attr('stroke-dasharray',(2*t.lw)+','+(t.lw))
-            .call(drawing.strokeColor,t.lc);
+            .call(Plotly.Drawing.strokeColor,t.lc);
     });
 };
 
