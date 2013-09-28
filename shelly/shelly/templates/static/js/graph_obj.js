@@ -1313,8 +1313,8 @@ plots.graphJson = function(gd, dataonly, mode){
 function stripObj(d,mode) {
     var o={}, v;
     for(v in d) {
-        // remove private elements and functions
-        if(typeof d[v]=='function' || v.charAt(0)=='_') { continue; }
+        // remove private elements and functions - _ is for private, [ is a mistake ie [object Object]
+        if(typeof d[v]=='function' || ['_','['].indexOf(v.charAt(0))!=-1) { continue; }
         // look for src/data matches and remove the appropriate one
         if(mode=='keepdata') {
             // keepdata: remove all ...src tags
