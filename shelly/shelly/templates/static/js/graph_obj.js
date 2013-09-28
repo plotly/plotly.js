@@ -2578,3 +2578,10 @@ function alert_repl(func_name, data) {
     }
 }
 
+function graphJson(gd){
+    // jsonify the graph layout
+    return JSON.stringify({
+        layout:stripSrc(gd.layout),
+        data:gd.data.map(stripSrc)
+    });
+}
