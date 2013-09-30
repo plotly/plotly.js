@@ -352,7 +352,7 @@ function calcTicks(gd,ax) {
     // TODO: rotated ticks for categories or dates
     if(ax.autotick || !ax.dtick){
         var nt = ax.nticks ||
-                Math.max(3,Math.min(10,(ax===gd.layout.yaxis) ? gd.plotheight/40 : gd.plotwidth/80));
+                Math.max(5,Math.min(10,(ax===gd.layout.yaxis) ? gd.plotheight/40 : gd.plotwidth/80));
         axes.autoTicks(ax,Math.abs(ax.range[1]-ax.range[0])/nt);
     }
 

@@ -92,7 +92,9 @@ scatter.plot = function(gd,cdscatter) {
         // nexttonext was created last time, but tag it with this time's curve
         if(nexttonext) { tonext = nexttonext.attr('data-curve',t.cdcurve); }
         // now make a new nexttonext for next time
-        nexttonext = tr.append('polyline').classed('fill',true).attr('data-curve',0);
+        nexttonext = tr.append('polyline')
+            .classed('fill',true)
+            .attr('data-curve',0);
         var x0,y0,x1,y1;
         x0=y0=x1=y1=null;
         while(i<d.length) {
@@ -131,12 +133,15 @@ scatter.plot = function(gd,cdscatter) {
     scattertraces.append('g')
         .attr('class','points')
         .each(function(d){
-            var t=d[0].t; // <--- grab trace-wide formatting object in first object of calcdata
-            if(t.mode.indexOf('markers')==-1 || d[0].t.visible===false) { return; }
-            d3.select(this).selectAll('path')
-                .data(Plotly.Lib.identity)
-                .enter().append('path')
-                .call(Plotly.Drawing.translatePoints,xa,ya);
+            var t = d[0].t,
+                s = d3.select(this);
+            if(t.mode.indexOf('markers')==-1 || t.visible===false) { s.remove(); }
+            else {
+                s.selectAll('path')
+                    .data(Plotly.Lib.identity)
+                    .enter().append('path')
+                    .call(Plotly.Drawing.translatePoints,xa,ya);
+            }
         });
 };
 
