@@ -97,12 +97,13 @@ legend.draw = function(gd) {
     gd.infolayer.selectAll('.legend').remove();
     if(!gd.calcdata) { return; }
 
-    var ldata=[];
-    for(var i=0;i<gd.calcdata.length;i++) {
+    var ldata=[],i;
+    for(i=0;i<gd.calcdata.length;i++) {
         if(gd.calcdata[i][0].t.visible!==false) {
             ldata.push([gd.calcdata[i][0],i]); // i is appended as d[1] so we know which element of gd.data it refers to
         }
     }
+    if(gll.traceorder=='reversed') { ldata.reverse(); } // for stacked plots (bars, area) the legend items are often clearer reversed
 
     gd.legend=gd.infolayer.append('svg')
         .attr('class','legend');
