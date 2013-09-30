@@ -27,6 +27,7 @@ annotations.add = function(gd) {
 annotations.draw = function(gd,index,opt,value) {
     var gl = gd.layout,
         gm = gd.margin,
+        MINDRAG = Plotly.Fx.MINDRAG,
         i;
     if(!gl.annotations) { gl.annotations = []; }
     if(!$.isNumeric(index)) {
