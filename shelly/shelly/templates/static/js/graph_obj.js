@@ -1314,6 +1314,7 @@ plots.graphJson = function(gd, dataonly, mode){
 //      keepref (default): remove data for which there's a src present, ie if there's
 //          xsrc present (and xsrc is well-formed, ie has : and some chars before it), strip out x
 //      keepdata: remove all src tags, don't remove the data itself
+//      keepall: keep data and src
 // needs to recurse because some src can be inside sub-objects
 // also strips out functions and private (start with _) elements
 // so we can add temporary things to data and layout that don't get saved
@@ -1327,7 +1328,7 @@ function stripObj(d,mode) {
             // keepdata: remove all ...src tags
             if(v.substr(v.length-3)=='src') { continue; }
         }
-        else {
+        else if(mode!='keepall') {
             // keepref: remove sourced data but only if the source tag is well-formed
             var src = d[v+'src'];
             if(typeof src=='string' && src.indexOf(':')>0) { continue; }
