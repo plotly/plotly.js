@@ -1229,8 +1229,8 @@ plots.titles = function(gd,title) {
         h = 16;
     }
 
-    gd.axislayer.select('.'+title).remove();
-    var el=gd.axislayer.append('text').attr('class',title)
+    gd.infolayer.select('.'+title).remove();
+    var el=gd.infolayer.append('text').attr('class',title)
         .call(Plotly.Drawing.setPosition, x, y)
         .attr('font-family',font)
         .attr('font-size',fontSize)
