@@ -153,7 +153,9 @@ function defaultLayout(){
             titlefont:{family:'',size:0,color:''},
             tickfont:{family:'',size:0,color:''}},
         legend:{bgcolor:'#fff',bordercolor:'#000',borderwidth:1,
-            font:{family:'',size:0,color:''}},
+            font:{family:'',size:0,color:''},
+            traceorder:'normal'
+        },
         width:700,
         height:450,
         autosize:'initial', // after initial autosize reverts to true
@@ -260,7 +262,6 @@ function positionBrand(gd){
             .attr('target','_blank');
     }
     else {
-        console.log('3rd party app!');
         linktotool.find('a').click(function(){
             var hiddenform = $('<div id="hiddenform" style="display:none;">'+
                 '<form action="https://plot.ly/external" method="post" target="_blank">'+
@@ -277,17 +278,17 @@ function positionBrand(gd){
 // if necessary to create the framework
 // ----------------------------------------------------
 // inputs:
-//      divid - the id or DOM element of the graph container div
+//      gd - the id or DOM element of the graph container div
 //      data - array of traces, containing the data and display
 //          information for each trace
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
-Plotly.plot = function(divid, data, layout) {
+Plotly.plot = function(gd, data, layout) {
     Plotly.Lib.markTime('in plot');
     // Get the container div: we will store all variables for this plot as
     // properties of this div (for extension to multiple plots/tabs per page)
     // some callers send this in by dom element, others by id (string)
-    var gd=(typeof divid == 'string') ? document.getElementById(divid) : divid;
+    if(typeof gd == 'string') { gd = document.getElementById(gd); }
 	// test if this is on the main site or embedded
 	gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
@@ -493,6 +494,7 @@ Plotly.plot = function(divid, data, layout) {
 
 // set display params per trace to default or provided value
 plots.setStyles = function(gd, merge_dflt) {
+    if(typeof gd == 'string') { gd = document.getElementById(gd); }
     merge_dflt = merge_dflt || false; // CP Edit - see mergeattr comment
 
     // merge object a[k] (which may be an array or a single value) into cd...
@@ -673,6 +675,7 @@ function applyStyle(gd) {
 // to specify cyclical default values)
 Plotly.restyle = function(gd,astr,val,traces) {
     // console.log(gd,astr,val,traces);
+    if(typeof gd == 'string') { gd = document.getElementById(gd); }
 
     var gl = gd.layout,
         aobj = {};
@@ -844,6 +847,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
 //      aobj - {astr1:val1, astr2:val2...} allows setting multiple attributes simultaneously
 Plotly.relayout = function(gd,astr,val) {
     // console.log(gd,astr,val);
+    if(typeof gd == 'string') { gd = document.getElementById(gd); }
     var gl = gd.layout,
         aobj = {},
         dolegend = false,
@@ -1019,6 +1023,7 @@ function plotAutoSize(gd, aobj) {
 
 // check whether to resize a tab (if it's a plot) to the container
 plots.resize = function(gd) {
+    if(typeof gd == 'string') { gd = document.getElementById(gd); }
     killPopovers();
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
@@ -1185,6 +1190,7 @@ function layoutStyles(gd) {
 // title can be 'xtitle', 'ytitle', 'gtitle',
 //  or empty to draw all
 plots.titles = function(gd,title) {
+    if(typeof gd == 'string') { gd = document.getElementById(gd); }
     if(!title) {
         plots.titles(gd,'xtitle');
         plots.titles(gd,'ytitle');
@@ -1229,8 +1235,8 @@ plots.titles = function(gd,title) {
         h = 16;
     }
 
-    gd.axislayer.select('.'+title).remove();
-    var el=gd.axislayer.append('text').attr('class',title)
+    gd.infolayer.select('.'+title).remove();
+    var el=gd.infolayer.append('text').attr('class',title)
         .call(Plotly.Drawing.setPosition, x, y)
         .attr('font-family',font)
         .attr('font-size',fontSize)
@@ -1297,6 +1303,7 @@ plots.titles = function(gd,title) {
 
 // graphJson - jsonify the graph data and layout
 plots.graphJson = function(gd, dataonly, mode){
+    if(typeof gd == 'string') { gd = document.getElementById(gd); }
     var obj = { data:(gd.data||[]).map(function(v){ return stripObj(v,mode); }) };
     if(!dataonly) { obj.layout = stripObj(gd.layout,mode); }
     return JSON.stringify(obj);
@@ -1307,6 +1314,7 @@ plots.graphJson = function(gd, dataonly, mode){
 //      keepref (default): remove data for which there's a src present, ie if there's
 //          xsrc present (and xsrc is well-formed, ie has : and some chars before it), strip out x
 //      keepdata: remove all src tags, don't remove the data itself
+//      keepall: keep data and src
 // needs to recurse because some src can be inside sub-objects
 // also strips out functions and private (start with _) elements
 // so we can add temporary things to data and layout that don't get saved
@@ -1320,7 +1328,7 @@ function stripObj(d,mode) {
             // keepdata: remove all ...src tags
             if(v.substr(v.length-3)=='src') { continue; }
         }
-        else {
+        else if(mode!='keepall') {
             // keepref: remove sourced data but only if the source tag is well-formed
             var src = d[v+'src'];
             if(typeof src=='string' && src.indexOf(':')>0) { continue; }

@@ -79,7 +79,7 @@ drawing.fillGroupStyle = function(s) {
         var shape = d3.select(this),
             // have to break out of d3 standard here, because the fill box may be
             // grouped with the wrong trace (so it appears behind the appropriate lines)
-            gd = $(shape.node()).parents('.ui-tabs-panel, #embedded_graph')[0];
+            gd = $(shape.node()).parents('.svgcontainer').parent()[0];
         try { shape.call(drawing.fillColor,gd.calcdata[shape.attr('data-curve')][0].t.fc); }
         catch(e) {
             try { shape.call(drawing.fillColor,d[0].t.fc); }
