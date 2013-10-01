@@ -826,9 +826,13 @@ axes.doTicks = function(gd,axletter) {
         var maxFontSize = 0, autoangle = 0;
         yl.enter().append('text').classed(tcls,1)
             .call(Plotly.Drawing.setPosition, tl.x, tl.y)
-            .attr('font-family',function(d){ return d.font; })
-            .attr('font-size',function(d){ return d.fontSize; })
-            .style('fill',function(d){ return d.fontColor; })
+            .call(Plotly.Drawing.font,
+                function(d){ return d.font; },
+                function(d){ return d.fontSize; },
+                function(d){ return d.fontColor; })
+            // .attr('font-family',function(d){ return d.font; })
+            // .attr('font-size',function(d){ return d.fontSize; })
+            // .style('fill',function(d){ return d.fontColor; })
             .each(function(d){ Plotly.Drawing.styleText(this,d.text); });
         yl.attr('transform',function(d){
                 maxFontSize = Math.max(maxFontSize,d.fontSize);
