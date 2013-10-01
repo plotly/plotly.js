@@ -118,9 +118,10 @@ annotations.draw = function(gd,index,opt,value) {
         .attr('data-cmmt',options.tag)
         .call(Plotly.Drawing.setPosition,0,0)
         .attr('text-anchor',{left:'start', center:'middle', right:'end'}[options.align])
-        .attr('font-size',options.font.size||gl.font.size||12)
-        .attr('font-family',options.font.family||gl.font.family||'Arial')
-        .style('fill',options.font.color||gl.font.color||'#000');
+        .call(Plotly.Drawing.font,
+            options.font.family||gl.font.family||'Arial',
+            options.font.size||gl.font.size||12,
+            options.font.color||gl.font.color||'#000');
     Plotly.Drawing.styleText(anntext.node(),options.text);
 
     if(gd.mainsite) {

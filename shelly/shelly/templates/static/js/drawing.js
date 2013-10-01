@@ -26,6 +26,12 @@ drawing.fillColor = function(s,c) {
      .style('fill-opacity',drawing.opacity(c));
 };
 
+drawing.font = function(s,family,size,fill) {
+    if(family!==undefined) { s.attr('font-family',family); }
+    if(size!==undefined) { s.attr('font-size',size); }
+    if(fill!==undefined) { s.style('fill',fill); }
+};
+
 drawing.setPosition = function(s,x,y) { s.attr('x',x).attr('y',y); };
 drawing.setSize = function(s,w,h) { s.attr('width',w).attr('height',h); };
 drawing.setRect = function(s,x,y,w,h) { s.call(drawing.setPosition,x,y).call(drawing.setSize,w,h); };
@@ -79,7 +85,7 @@ drawing.fillGroupStyle = function(s) {
         var shape = d3.select(this),
             // have to break out of d3 standard here, because the fill box may be
             // grouped with the wrong trace (so it appears behind the appropriate lines)
-            gd = $(shape.node()).parents('.ui-tabs-panel, #embedded_graph')[0];
+            gd = $(shape.node()).parents('.svgcontainer').parent()[0];
         try { shape.call(drawing.fillColor,gd.calcdata[shape.attr('data-curve')][0].t.fc); }
         catch(e) {
             try { shape.call(drawing.fillColor,d[0].t.fc); }
