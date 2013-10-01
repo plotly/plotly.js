@@ -79,9 +79,10 @@ function legendText(s,gd){
         .attr('class',function(d){ return 'legendtext text-'+d[1]; })
         .call(Plotly.Drawing.setPosition, 40, 0)
         .attr('text-anchor','start')
-        .attr('font-size',lf.size||gf.size||12)
-        .attr('font-family',lf.family||gf.family||'Arial')
-        .style('fill',lf.color||gf.color||'#000')
+        .call(Plotly.Drawing.font,
+            lf.family||gf.family||'Arial',
+            lf.size||gf.size||12,
+            lf.color||gf.color||'#000')
         .each(function(d){ Plotly.Drawing.styleText(this,d[0].t.name,d[0].t.noretrieve); });
 }
 
