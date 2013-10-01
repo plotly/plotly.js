@@ -1238,9 +1238,7 @@ plots.titles = function(gd,title) {
     gd.infolayer.select('.'+title).remove();
     var el=gd.infolayer.append('text').attr('class',title)
         .call(Plotly.Drawing.setPosition, x, y)
-        .attr('font-family',font)
-        .attr('font-size',fontSize)
-        .attr('fill',fontColor)
+        .call(Plotly.Drawing.font,font,fontSize,fontColor)
         .attr('text-anchor','middle')
         .attr('transform',transform.replace('x',x).replace('y',y));
     // don't allow editing on embedded graphs
