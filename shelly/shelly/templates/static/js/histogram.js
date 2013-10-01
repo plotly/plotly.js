@@ -53,10 +53,20 @@ histogram.calc = function(gd,gdc) {
         size.forEach(function(v,i){ size[i]/=count; });
     }
 
-    // create the "calculated data" to plot
     var serieslen = Math.min(pos.length,size.length),
-        cd = [];
-    for(i=0;i<serieslen;i++) {
+        cd = [],
+        firstNonzero = 0,
+        lastNonzero = serieslen-1;
+    // look for empty bins at the ends to remove, so autoscale omits them
+    for(i=0; i<serieslen; i++) {
+        if(size[i]) { firstNonzero=i; break; }
+    }
+    for(i=serieslen-1; i>firstNonzero; i--) {
+        if(size[i]) { lastNonzero=i; break; }
+    }
+
+    // create the "calculated data" to plot
+    for(i=firstNonzero;i<=lastNonzero;i++) {
         if(($.isNumeric(pos[i]) && $.isNumeric(size[i]))) {
             cd.push({p:pos[i],s:size[i],b:0});
         }
