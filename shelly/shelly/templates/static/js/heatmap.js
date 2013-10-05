@@ -371,7 +371,7 @@ function insert_colorbar(gd,gdc,cb_id) {
             // should be a variable in gd.data and editable from a popover
             .attr("transform","translate("+(gl.width-gl.margin.r+50)+","+(gl.margin.t)+")")
             .classed("colorbar",true),
-        cb = colorBar().color(d3.scale.linear()
+        cb = colorBar(gl).color(d3.scale.linear()
             .domain(d)
             .range(r))
             .size(gl.height-gl.margin.t-gl.margin.b)
