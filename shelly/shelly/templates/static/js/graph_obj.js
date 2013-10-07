@@ -943,7 +943,13 @@ Plotly.relayout = function(gd,astr,val) {
             // if val is 'remove' then undo is the whole annotation object
             if(p.parts.length==2) {
                 if(aobj[ai]=='add' || $.isPlainObject(aobj[ai])) { undoit[ai]='remove'; }
-                else if(aobj[ai]=='remove') { undoit[ai]=gl.annotations[p.parts[1]]; }
+                else if(aobj[ai]=='remove') {
+                    if(p.parts[1]==-1) {
+                        undoit['annotations'] = gl.annotations;
+                        delete undoit[ai];
+                    }
+                    else { undoit[ai]=gl.annotations[p.parts[1]]; }
+                }
                 else { console.log('???'); }
             }
             Plotly.Annotations.draw(gd,p.parts[1],p.parts.slice(2).join('.'),aobj[ai]);
