@@ -275,7 +275,7 @@ heatmap.plot = function(gd,cd) {
         .attr("y",top)
         .attr('preserveAspectRatio','none');
 
-    gd.plot.attr("xmlns:xlink","http://www.w3.org/1999/xlink");
+    $(gd.plot.node()).attr("xmlns:xlink","http://www.w3.org/1999/xlink");
     Plotly.Lib.markTime('done showing png');
 
     // show a colorscale
