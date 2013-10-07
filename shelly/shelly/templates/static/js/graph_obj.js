@@ -532,7 +532,7 @@ plots.setStyles = function(gd, merge_dflt) {
         mergeattr(gdc,'type','type','scatter');
         mergeattr(gdc,'visible','visible',true);
         mergeattr(gdc,'opacity','op',1);
-        mergeattr(gdc,'text','tx','');
+        mergeattr(gdc,'text','tx',''); // TODO: make this actually work as hover or displayed text
         mergeattr(gdc,'name','name','trace '+c);
         var type = t.type; // like 'bar'
         if( (gdc.error_y && gdc.error_y.visible ) ){
@@ -599,8 +599,10 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr(gdc.ybins,'end','ybend',1);
                 mergeattr(gdc.ybins,'size','ybsize',1);
             }
-            mergeattr(gdc,'type','type','heatmap');
-            mergeattr(gdc,'visible','visible',true);
+            else {
+                mergeattr(gdc,'xtype','xtype',gdc.x ? 'array' : 'noarray');
+                mergeattr(gdc,'ytype','ytype',gdc.y ? 'array' : 'noarray');
+            }
             mergeattr(gdc,'x0','x0',0);
             mergeattr(gdc,'dx','dx',1);
             mergeattr(gdc,'y0','y0',0);
@@ -609,6 +611,7 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr(gdc,'zmin','zmin',-10);
             mergeattr(gdc,'zmax','zmax',10);
             mergeattr(gdc, 'scl', 'scl', Plotly.Heatmap.defaultScale,true);
+            mergeattr(gdc, 'zsmooth', 'zsmooth', false);
         }
         else if(plots.BARTYPES.indexOf(type)!=-1){
             if(type!='bar') {
@@ -620,7 +623,6 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr(gdc.xbins,'size','xbsize',1);
             }
             mergeattr(gdc,'bardir','bardir','v');
-            mergeattr(gdc,'opacity','op',1);
             mergeattr(gdc.marker,'opacity','mo',1);
             mergeattr(gdc.marker,'color','mc',dc);
             mergeattr(gdc.marker.line,'color','mlc','#000');
@@ -674,7 +676,7 @@ function applyStyle(gd) {
 // if the array is too short, it will wrap around (useful for style files that want
 // to specify cyclical default values)
 Plotly.restyle = function(gd,astr,val,traces) {
-    // console.log(gd,astr,val,traces);
+    console.log(gd,astr,val,traces);
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
 
     var gl = gd.layout,
@@ -702,7 +704,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // harder though.
     var replot_attr=[
         'mode','visible','type','bardir','fill','histnorm',
-        'mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','zauto','scl',
+        'xtype','x0','dx','ytype','y0','dy','zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array','error_y.width',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
@@ -780,6 +782,13 @@ Plotly.restyle = function(gd,astr,val,traces) {
             else if(ai=='autobinx') { doextra(cont,xbins,undefined,i); }
             else if(ybins.indexOf(ai)!=-1) { doextra(cont,'autobiny',false,i); }
             else if(ai=='autobiny') { doextra(cont,ybins,undefined,i); }
+            // heatmaps:setting x0 or dx, y0 or dy, should turn xtype/ytype to 'scaled' if 'array'
+            else if(['x0','dx'].indexOf(ai)!=-1 && cont.x && cont.xtype!='scaled') {
+                doextra(cont,'xtype','scaled',i);
+            }
+            else if(['y0','dy'].indexOf(ai)!=-1 && cont.x && cont.ytype!='scaled') {
+                doextra(cont,'ytype','scaled',i);
+            }
 
             // save the old value
             undoit[ai][i] = param.get();
@@ -946,7 +955,13 @@ Plotly.relayout = function(gd,astr,val) {
             // if val is 'remove' then undo is the whole annotation object
             if(p.parts.length==2) {
                 if(aobj[ai]=='add' || $.isPlainObject(aobj[ai])) { undoit[ai]='remove'; }
-                else if(aobj[ai]=='remove') { undoit[ai]=gl.annotations[p.parts[1]]; }
+                else if(aobj[ai]=='remove') {
+                    if(p.parts[1]==-1) {
+                        undoit['annotations'] = gl.annotations;
+                        delete undoit[ai];
+                    }
+                    else { undoit[ai]=gl.annotations[p.parts[1]]; }
+                }
                 else { console.log('???'); }
             }
             Plotly.Annotations.draw(gd,p.parts[1],p.parts.slice(2).join('.'),aobj[ai]);
@@ -1001,11 +1016,11 @@ Plotly.relayout = function(gd,astr,val) {
 };
 
 function plotAutoSize(gd, aobj) {
+    // don't autosize anywhere off the main plotly tool
+    if(!gd.mainsite) { delete aobj.autosize; return aobj; }
     var plotBB = gd.paperdiv.node().getBoundingClientRect();
     var gdBB = gd.getBoundingClientRect();
-    // var ftBB = $('#filetab').length ? $('#filetab')[0].getBoundingClientRect() : {width:0};
     var newheight = Math.round(gdBB.bottom-plotBB.top);
-    // var newwidth = Math.round((ftBB.width ? ftBB.left : gdBB.right) - plotBB.left);
     var newwidth = Math.round(gdBB.right - plotBB.left);
     if(Math.abs(gd.layout.width-newwidth)>1 || Math.abs(gd.layout.height-newheight)>1) {
         gd.layout.height = newheight;

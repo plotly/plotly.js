@@ -25,18 +25,32 @@ annotations.add = function(gd) {
 // if opt is blank, val can be 'add' or a full options object to add a new
 //  annotation at that point in the array, or 'remove' to delete this annotation
 annotations.draw = function(gd,index,opt,value) {
+    console.log(index,opt,value);
     var gl = gd.layout,
         gm = gd.margin,
         MINDRAG = Plotly.Fx.MINDRAG,
         i;
     if(!gl.annotations) { gl.annotations = []; }
-    if(!$.isNumeric(index)) {
-        index = gl.annotations.length;
-        gl.annotations.push({});
-    }
-    else if(index==-1) {
-        for(i=0; i<gl.annotations.length; i++) { annotation(gd,i,opt,value); }
-        return;
+
+    if(!$.isNumeric(index) || index==-1) {
+        if(!index && $.isArray(value)) { // a whole annotation array is passed in (as in, redo of delete all)
+            gl.annotations = value;
+            annotations.drawAll(gd);
+            return;
+        }
+        else if(value=='remove') { // delete all
+            gl.annotations = [];
+            annotations.drawAll(gd);
+            return;
+        }
+        else if(opt && value!='add') {
+            for(i=0; i<gl.annotations.length; i++) { annotations.draw(gd,i,opt,value); }
+            return;
+        }
+        else {
+            index = gl.annotations.length;
+            gl.annotations.push({});
+        }
     }
 
     if(!opt && value) {
@@ -46,7 +60,7 @@ annotations.draw = function(gd,index,opt,value) {
             for(i=index; i<gl.annotations.length; i++) {
                 gd.infolayer.selectAll('.annotation[data-index="'+(i+1)+'"]')
                     .attr('data-index',String(i));
-                annotation(gd,i); // redraw all annotations past the removed, so they bind to the right events
+                annotations.draw(gd,i); // redraw all annotations past the removed, so they bind to the right events
             }
             return;
         }
@@ -56,7 +70,7 @@ annotations.draw = function(gd,index,opt,value) {
             for(i=gl.annotations.length-1; i>index; i--) {
                 gd.infolayer.selectAll('.annotation[data-index="'+(i-1)+'"]')
                     .attr('data-index',String(i));
-                annotation(gd,i);
+                annotations.draw(gd,i);
             }
         }
     }
