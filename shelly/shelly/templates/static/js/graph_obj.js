@@ -532,7 +532,7 @@ plots.setStyles = function(gd, merge_dflt) {
         mergeattr(gdc,'type','type','scatter');
         mergeattr(gdc,'visible','visible',true);
         mergeattr(gdc,'opacity','op',1);
-        mergeattr(gdc,'text','tx','');
+        mergeattr(gdc,'text','tx',''); // TODO: make this actually work as hover or displayed text
         mergeattr(gdc,'name','name','trace '+c);
         var type = t.type; // like 'bar'
         if( (gdc.error_y && gdc.error_y.visible ) ){
@@ -599,8 +599,6 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr(gdc.ybins,'end','ybend',1);
                 mergeattr(gdc.ybins,'size','ybsize',1);
             }
-            mergeattr(gdc,'type','type','heatmap');
-            mergeattr(gdc,'visible','visible',true);
             mergeattr(gdc,'x0','x0',0);
             mergeattr(gdc,'dx','dx',1);
             mergeattr(gdc,'y0','y0',0);
@@ -620,7 +618,6 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr(gdc.xbins,'size','xbsize',1);
             }
             mergeattr(gdc,'bardir','bardir','v');
-            mergeattr(gdc,'opacity','op',1);
             mergeattr(gdc.marker,'opacity','mo',1);
             mergeattr(gdc.marker,'color','mc',dc);
             mergeattr(gdc.marker.line,'color','mlc','#000');
@@ -946,7 +943,13 @@ Plotly.relayout = function(gd,astr,val) {
             // if val is 'remove' then undo is the whole annotation object
             if(p.parts.length==2) {
                 if(aobj[ai]=='add' || $.isPlainObject(aobj[ai])) { undoit[ai]='remove'; }
-                else if(aobj[ai]=='remove') { undoit[ai]=gl.annotations[p.parts[1]]; }
+                else if(aobj[ai]=='remove') {
+                    if(p.parts[1]==-1) {
+                        undoit['annotations'] = gl.annotations;
+                        delete undoit[ai];
+                    }
+                    else { undoit[ai]=gl.annotations[p.parts[1]]; }
+                }
                 else { console.log('???'); }
             }
             Plotly.Annotations.draw(gd,p.parts[1],p.parts.slice(2).join('.'),aobj[ai]);
@@ -1001,11 +1004,11 @@ Plotly.relayout = function(gd,astr,val) {
 };
 
 function plotAutoSize(gd, aobj) {
+    // don't autosize anywhere off the main plotly tool
+    if(!gd.mainsite) { delete aobj.autosize; return aobj; }
     var plotBB = gd.paperdiv.node().getBoundingClientRect();
     var gdBB = gd.getBoundingClientRect();
-    // var ftBB = $('#filetab').length ? $('#filetab')[0].getBoundingClientRect() : {width:0};
     var newheight = Math.round(gdBB.bottom-plotBB.top);
-    // var newwidth = Math.round((ftBB.width ? ftBB.left : gdBB.right) - plotBB.left);
     var newwidth = Math.round(gdBB.right - plotBB.left);
     if(Math.abs(gd.layout.width-newwidth)>1 || Math.abs(gd.layout.height-newheight)>1) {
         gd.layout.height = newheight;
