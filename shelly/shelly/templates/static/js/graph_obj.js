@@ -611,6 +611,7 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr(gdc,'zmin','zmin',-10);
             mergeattr(gdc,'zmax','zmax',10);
             mergeattr(gdc, 'scl', 'scl', Plotly.Heatmap.defaultScale,true);
+            mergeattr(gdc, 'zsmooth', 'zsmooth', false);
         }
         else if(plots.BARTYPES.indexOf(type)!=-1){
             if(type!='bar') {
@@ -703,7 +704,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // harder though.
     var replot_attr=[
         'mode','visible','type','bardir','fill','histnorm',
-        'mincolor','maxcolor','scale','xtype','x0','dx','ytype','y0','dy','zmin','zmax','zauto','scl',
+        'xtype','x0','dx','ytype','y0','dy','zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array','error_y.width',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
