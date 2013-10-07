@@ -127,6 +127,25 @@ heatmap.calc = function(gd,gdc) {
             gdc.zmax=zmax(gdc.z);
         }
     }
+    else if(gdc.zsmooth && x.length && y.length) {
+        // check whether we really can smooth (ie all boxes are about the same size)
+        var avgdx = (x[x.length-1]-x[0])/(x.length-1), maxErrX = Math.abs(avgdx/100),
+            avgdy = (y[y.length-1]-y[0])/(y.length-1), maxErrY = Math.abs(avgdy/100);
+        for(i=0; i<x.length-1; i++) {
+            if(Math.abs(x[i+1]-x[i]-avgdx)>maxErrX) {
+                gdc.zsmooth = false;
+                console.log('cannot zsmooth: x scale is not linear');
+                break;
+            }
+        }
+        for(i=0; i<y.length-1; i++) {
+            if(Math.abs(y[i+1]-y[i]-avgdy)>maxErrY) {
+                gdc.zsmooth = false;
+                console.log('cannot zsmooth: y scale is not linear');
+                break;
+            }
+        }
+    }
     var coords = get_xy(gd,gdc);
     Plotly.Axes.expandBounds(xa,xa._tight,coords.x);
     Plotly.Axes.expandBounds(ya,ya._tight,coords.y);
@@ -179,8 +198,6 @@ heatmap.plot = function(gd,cd) {
         left = temp;
         xrev = true;
     }
-    left = Math.max(-0.5*gd.plotwidth,left);
-    right = Math.min(1.5*gd.plotwidth,right);
 
     var yrev = false, top, bottom;
     i=0; while(top===undefined && i<n) { top=ya.c2p(y[i]); i++; }
@@ -191,10 +208,16 @@ heatmap.plot = function(gd,cd) {
         bottom = temp;
         yrev = true;
     }
-    top = Math.max(-0.5*gd.plotheight,top);
-    bottom = Math.min(1.5*gd.plotheight,bottom);
 
-    // make an image with max plotwidth*plotheight pixels, to keep time reasonable when you zoom in
+    // make an image that goes at most half a screen off either side, to keep time reasonable when you zoom in
+    // if zsmooth is on, don't worry about this, because zooming doesn't increase number of pixels
+    if(!gdc.zsmooth) {
+        left = Math.max(-0.5*gd.plotwidth,left);
+        right = Math.min(1.5*gd.plotwidth,right);
+        top = Math.max(-0.5*gd.plotheight,top);
+        bottom = Math.min(1.5*gd.plotheight,bottom);
+    }
+
     var wd=Math.round(right-left);
     var ht=Math.round(bottom-top),htf=ht/(bottom-top);
 
