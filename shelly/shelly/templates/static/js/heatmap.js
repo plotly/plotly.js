@@ -199,9 +199,9 @@ heatmap.plot = function(gd,cd) {
     var ht=Math.round(bottom-top),htf=ht/(bottom-top);
 
     // now redraw
-    if(wd<=0 || ht<=0) { return; } // image is so far off-screen, we shouldn't even draw it
+    if(wd<=0 || ht<=0) { return; } // image is entirely off-screen, we shouldn't even draw it
 
-    var p = new PNGlib(wd,ht, 256);
+    var p = gdc.zsmooth ? new PNGlib(n,m,256) : new PNGlib(wd,ht, 256);
 
     // interpolate for color scale
     // https://github.com/mbostock/d3/wiki/Quantitative-Scales
@@ -216,8 +216,8 @@ heatmap.plot = function(gd,cd) {
         .range(r);
 
     // map brick boundaries to image pixels
-    function xpx(v){ return Math.max(0,Math.min(wd,Math.round(xa.c2p(v)-left))); }
-    function ypx(v){ return Math.max(0,Math.min(ht,Math.round(ya.c2p(v)-top))); }
+    var xpx = function(v){ return Math.max(0,Math.min(wd,Math.round(xa.c2p(v)-left))); };
+    var ypx = function(v){ return Math.max(0,Math.min(ht,Math.round(ya.c2p(v)-top))); };
     Plotly.Lib.markTime('done init png');
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
@@ -266,7 +266,7 @@ heatmap.plot = function(gd,cd) {
     $(gd).find('.'+id).remove(); // put this right before making the new image, to minimize flicker
     gd.plot.append('svg:image')
         .classed(id,true)
-        .classed('pixelated',true) // we can hope pixelated works...
+        // .classed('pixelated',true) // we can hope pixelated works...
         .attr("xmlns","http://www.w3.org/2000/svg")
         .attr("xlink:href", imgstr)
         .attr("height",ht)
@@ -275,7 +275,7 @@ heatmap.plot = function(gd,cd) {
         .attr("y",top)
         .attr('preserveAspectRatio','none');
 
-    $('svg > image').parent().attr("xmlns:xlink","http://www.w3.org/1999/xlink");
+    gd.plot.attr("xmlns:xlink","http://www.w3.org/1999/xlink");
     Plotly.Lib.markTime('done showing png');
 
     // show a colorscale
@@ -306,6 +306,7 @@ function get_xy(gd,gdc){
     setDefaults(gdc,true);
 
     function makeBoundArray(array_in,v0_in,dv_in,numbricks,ax) {
+        console.log(array_in,v0_in,dv_in,numbricks,ax);
         var array_out = [], v0, dv, i;
         if($.isArray(array_in) && (gdc.type!='histogram2d') && (ax.type!='category')) {
             array_in = Plotly.Axes.convertToNums(array_in,ax);
@@ -334,11 +335,12 @@ function get_xy(gd,gdc){
             else { v0 = Plotly.Axes.convertToNums(v0_in,ax); }
             for(i=0; i<=numbricks; i++) { array_out.push(v0+dv*(i-0.5)); }
         }
+        console.log(array_out);
         return array_out;
     }
 
-    return {x:makeBoundArray(gdc.x,gdc.x0,gdc.dx,gdc.z[0].length,gd.layout.xaxis),
-            y:makeBoundArray(gdc.y,gdc.y0,gdc.dy,gdc.z.length,gd.layout.yaxis)};
+    return {x:makeBoundArray(gdc.xtype=='scaled' ? '' : gdc.x, gdc.x0, gdc.dx, gdc.z[0].length, gd.layout.xaxis),
+            y:makeBoundArray(gdc.ytype=='scaled' ? '' : gdc.y, gdc.y0, gdc.dy, gdc.z.length, gd.layout.yaxis)};
 }
 
 // if the heatmap data object is missing any keys, fill them in

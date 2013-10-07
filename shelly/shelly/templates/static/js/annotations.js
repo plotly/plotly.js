@@ -38,12 +38,12 @@ annotations.draw = function(gd,index,opt,value) {
             annotations.drawAll(gd);
             return;
         }
-        if(value=='remove') { // delete all
+        else if(value=='remove') { // delete all
             gl.annotations = [];
             annotations.drawAll(gd);
             return;
         }
-        else if(opt) {
+        else if(opt && value!='add') {
             for(i=0; i<gl.annotations.length; i++) { annotations.draw(gd,i,opt,value); }
             return;
         }
