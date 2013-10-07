@@ -102,8 +102,9 @@ lib.ms2DateTime = function(ms,r) {
 };
 
 // findBin - find the bin for val - note that it can return outside the bin range
-// bins is either an object {start,size,end} or an array length #bins+1
 // any pos. or neg. integer for linear bins, or -1 or bins.length-1 for explicit.
+// bins is either an object {start,size,end} or an array length #bins+1
+// bins can be either increasing or decreasing but must be monotonic
 // for linear bins, we can just calculate. For listed bins, run a binary search
 // linelow (truthy) says the bin boundary should be attributed to the lower bin
 // rather than the default upper bin
@@ -114,10 +115,16 @@ lib.findBin = function(val,bins,linelow) {
             Math.floor((val-bins.start)/bins.size);
     }
     else {
-        var n1=0, n2=bins.length, c=0;
+        var n1=0, n2=bins.length, c=0, sign=(bins[1]>bins[0]?1:-1), test;
+        if(bins[1]>bins[0]) {
+            test = linelow ? function(a,b){return a<b;} : function(a,b){return a<=b;};
+        }
+        else{
+            test = linelow ? function(a,b){return a>=b;} : function(a,b){return a>b;};
+        }
         while(n1<n2 && c++<100){ // c is just to avoid infinite loops if there's an error
             n=Math.floor((n1+n2)/2);
-            if(linelow ? bins[n]<val : bins[n]<=val) { n1=n+1; }
+            if(test(bins[n],val)) { n1=n+1; }
             else { n2=n; }
         }
         if(c>90) { console.log('Long binary search...'); }
