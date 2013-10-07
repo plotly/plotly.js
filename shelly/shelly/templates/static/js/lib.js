@@ -151,7 +151,7 @@ lib.nestedProperty = function(o,s) {
         aa = s.split('.'), j;
     // check for parts of the nesting hierarchy that are numbers (ie array elements)
     for(j=0; j<aa.length; j++) {
-        var indexed = String(aa[j]).match(/([^\[\]]*)\[([0-9]*)\]/);
+        var indexed = String(aa[j]).match(/([^\[\]]*)\[([\-0-9]*)\]/);
         if(indexed) { aa.splice(j,1,indexed[1],Number(indexed[2])); }
     }
     // dive in to the 2nd to last level

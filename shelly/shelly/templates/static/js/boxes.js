@@ -16,8 +16,11 @@ boxes.calc = function(gd,gdc) {
     else {
         var x0;
         if('x0' in gdc) { x0 = gdc.x0; }
-        else if('name' in gdc && xa.type=='category') { x0 = gdc.name; }
-        else if('text' in gdc && xa.type=='category') { x0 = gdc.text; }
+        else if('name' in gdc && (
+                xa.type=='category' ||
+                ($.isNumeric(gdc.name) && ['linear','log'].indexOf(xa.type)!=-1) ||
+                (Plotly.Lib.isDateTime(gdc.name) && xa.type=='date')
+            )) { x0 = gdc.name; }
         else { x0 = gd.numboxes; }
         x0 = Plotly.Axes.convertToNums(x0,xa);
         x = y.map(function(){ return x0; });
