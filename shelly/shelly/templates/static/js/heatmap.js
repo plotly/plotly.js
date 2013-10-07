@@ -10,6 +10,39 @@ heatmap.defaultScale = [[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"r
     [0.375,"rgb(29, 145, 192)"],[0.5,"rgb(65, 182, 196)"],[0.625,"rgb(127, 205, 187)"],
     [0.75,"rgb(199, 233, 180)"],[0.875,"rgb(237, 248, 217)"],[1,"rgb(255, 255, 217)"]];
 
+heatmap.namedScales = {
+    'YIGnBu':[[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94, 168)"],
+        [0.375,"rgb(29, 145, 192)"],[0.5,"rgb(65, 182, 196)"],[0.625,"rgb(127, 205, 187)"],
+        [0.75,"rgb(199, 233, 180)"],[0.875,"rgb(237, 248, 217)"],[1,"rgb(255, 255, 217)"]],
+
+    'YIOrRd':[[0,"rgb(128, 0, 38)"],[0.125,"rgb(189, 0, 38)"],[0.25,"rgb(227, 26, 28)"],
+        [0.375,"rgb(252, 78, 42)"],[0.5,"rgb(253, 141, 60)"],[0.625,"rgb(254, 178, 76)"],
+        [0.75,"rgb(254, 217, 118)"],[0.875,"rgb(255, 237, 160)"],[1,"rgb(255, 255, 204)"]],
+
+    'RdBu':[[0,"rgb(33, 102, 172)"],[0.125,"rgb(67, 147, 195)"],[0.25,"rgb(146, 197, 222)"],
+        [0.375,"rgb(209, 229, 240)"],[0.5,"rgb(247, 247, 247)"],[0.625,"rgb(253, 219, 199)"],
+        [0.75,"rgb(244, 165, 130)"],[0.875,"rgb(214, 96, 77)"],[1,"rgb(178, 24, 43)"]],
+
+    'Greens':[[0,"rgb(0, 68, 27)"],[0.125,"rgb(0, 109, 44)"],[0.25,"rgb(35, 139, 69)"],
+        [0.375,"rgb(65, 171, 93)"],[0.5,"rgb(116, 196, 118)"],[0.625,"rgb(161, 217, 155)"],
+        [0.75,"rgb(199, 233, 192)"],[0.875,"rgb(229, 245, 224)"],[1,"rgb(247, 252, 245)"]],
+
+    'rainbow':[[0,"rgb(0, 0, 150)"],[0.125,"rgb(0, 25, 255)"],[0.25,"rgb(0, 152, 255)"],
+        [0.375,"rgb(44, 255, 202)"],[0.5,"rgb(151, 255, 96)"],[0.625,"rgb(255, 234, 0)"],
+        [0.75,"rgb(255, 111, 0)"],[0.875,"rgb(223, 0, 0)"],[1,"rgb(132, 0, 0)"]],
+
+    'portland':[[0,"rgb(12,51,131)"],[0.25,"rgb(10,136,186)"],[0.5,"rgb(242,211,56)"],
+                [0.75,"rgb(242,143,56)"],[1,"rgb(217,30,30)"]],
+
+    'picnic':[[0,"rgb(0,0,255)"],[0.1,"rgb(51,153,255)"],[0.2,"rgb(102,204,255)"],
+                [0.3,"rgb(153,204,255)"],[0.4,"rgb(204,204,255)"],[0.5,"rgb(255,255,255)"],
+                [0.6,"rgb(255,204,255)"],[0.7,"rgb(255,153,255)"],[0.8,"rgb(255,102,204)"],
+                [0.9,"rgb(255,102,102)"],[1,"rgb(255,0,0)"]],
+
+    'greys':[[0,"rgb(0,0,0)"],[1,"rgb(255,255,255)"]],
+
+    'bluered':[[0,"rgb(0,0,255)"],[1,"rgb(255,0,0)"]] };
+
 heatmap.calc = function(gd,gdc) {
     // calcdata ("cd") for heatmaps:
     // curve: index of heatmap in gd.data
@@ -93,7 +126,6 @@ heatmap.calc = function(gd,gdc) {
             gdc.zmin=zmin(gdc.z);
             gdc.zmax=zmax(gdc.z);
         }
-        if(!( 'scl' in gdc )){ gdc.scl=heatmap.defaultScale; }
     }
     var coords = get_xy(gd,gdc);
     Plotly.Axes.expandBounds(xa,xa._tight,coords.x);
@@ -121,7 +153,7 @@ heatmap.plot = function(gd,cd) {
     // note: gdc.x (same for gdc.y) will override gdc.x0,dx if it exists and is the right size
     // should be an n+1 long array, containing all the pixel edges
     setDefaults(gdc);
-    var z=gdc.z, min=gdc.zmin, max=gdc.zmax, scl=gdc.scl, x=t.x, y=t.y;
+    var z=gdc.z, min=gdc.zmin, max=gdc.zmax, scl=getScale(gdc), x=t.x, y=t.y;
     gdc.hm_id='hm'+i; // heatmap id
     var cb_id='cb'+i; // colorbar id
     var id=gdc.hm_id;
@@ -175,7 +207,6 @@ heatmap.plot = function(gd,cd) {
     // https://github.com/mbostock/d3/wiki/Quantitative-Scales
     // http://nelsonslog.wordpress.com/2011/04/11/d3-scales-and-interpolation/
 
-    if (typeof(scl)=="string") scl=eval(scl); // <-- convert colorscale string to array
     var d = scl.map(function(si){ return si[0]*255; }),
         r = scl.map(function(si){ return si[1]; });
 
@@ -330,7 +361,7 @@ function setDefaults(gdc,noZRange){
         if(!('zmax' in gdc) || gdc.zauto!==false){ gdc.zmax=zmax(gdc.z); }
         if(gdc.zmin==gdc.zmax) { gdc.zmin-=0.5; gdc.zmax+=0.5; }
     }
-    if(!( 'scl' in gdc )){ gdc.scl=heatmap.defaultScale; }
+    getScale(gdc);
 }
 
 // Return MAX and MIN of an array of arrays
@@ -351,15 +382,12 @@ function insert_colorbar(gd,gdc,cb_id) {
         Plotly.relayout(gd,'margin.r',200);
     }
 
-    var scl=gdc.scl;
-    if (typeof(scl)=="string") scl=eval(scl); // <-- convert colorscale string to array
-    var min=gdc.zmin, max=gdc.zmax, // "colorbar domain" - interpolate numbers for colorscale
+    var scl=getScale(gdc);
+    var min=gdc.zmin, max=gdc.zmax,
+        // "colorbar domain" - interpolate numbers for colorscale
         d = scl.map(function(v){ return min+v[0]*(max-min); }),
         // "colorbar range" - colors in gdc.colorscale
         r = scl.map(function(v){ return v[1]; });
-//     for(var i=0; i<scl.length; i++){ d.push( min+(scl[i][0]*(max-min)) ); }
-//     var r=[];
-//     for(var i=0; i<scl.length; i++){ r.push( scl[i][1] ); }
 
     //remove last colorbar, if any
     $(gd).find('.'+cb_id).remove();
@@ -379,6 +407,16 @@ function insert_colorbar(gd,gdc,cb_id) {
             .precision(2); // <-- gradient granularity TODO: should be a variable in colorbar popover
 
     g.call(cb);
+}
+
+function getScale(gdc) {
+    var scl = gdc.scl;
+    if(!scl) { gdc.scl = scl = heatmap.defaultScale; }
+    else if(typeof scl == 'string') {
+        try { scl = heatmap.namedScales[scl] || JSON.parse(scl); }
+        catch(e) { gdc.scl = scl = heatmap.defaultScale; }
+    }
+    return scl;
 }
 
 }()); // end Heatmap object definition
