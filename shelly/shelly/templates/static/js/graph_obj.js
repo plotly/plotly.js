@@ -599,6 +599,10 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr(gdc.ybins,'end','ybend',1);
                 mergeattr(gdc.ybins,'size','ybsize',1);
             }
+            else {
+                mergeattr(gdc,'xtype','xtype',gdc.x ? 'array' : 'noarray');
+                mergeattr(gdc,'ytype','ytype',gdc.y ? 'array' : 'noarray');
+            }
             mergeattr(gdc,'x0','x0',0);
             mergeattr(gdc,'dx','dx',1);
             mergeattr(gdc,'y0','y0',0);
@@ -671,7 +675,7 @@ function applyStyle(gd) {
 // if the array is too short, it will wrap around (useful for style files that want
 // to specify cyclical default values)
 Plotly.restyle = function(gd,astr,val,traces) {
-    // console.log(gd,astr,val,traces);
+    console.log(gd,astr,val,traces);
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
 
     var gl = gd.layout,
@@ -699,7 +703,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // harder though.
     var replot_attr=[
         'mode','visible','type','bardir','fill','histnorm',
-        'mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','zauto','scl',
+        'mincolor','maxcolor','scale','xtype','x0','dx','ytype','y0','dy','zmin','zmax','zauto','scl',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array','error_y.width',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
@@ -777,6 +781,13 @@ Plotly.restyle = function(gd,astr,val,traces) {
             else if(ai=='autobinx') { doextra(cont,xbins,undefined,i); }
             else if(ybins.indexOf(ai)!=-1) { doextra(cont,'autobiny',false,i); }
             else if(ai=='autobiny') { doextra(cont,ybins,undefined,i); }
+            // heatmaps:setting x0 or dx, y0 or dy, should turn xtype/ytype to 'scaled' if 'array'
+            else if(['x0','dx'].indexOf(ai)!=-1 && cont.x && cont.xtype!='scaled') {
+                doextra(cont,'xtype','scaled',i);
+            }
+            else if(['y0','dy'].indexOf(ai)!=-1 && cont.x && cont.ytype!='scaled') {
+                doextra(cont,'ytype','scaled',i);
+            }
 
             // save the old value
             undoit[ai][i] = param.get();
