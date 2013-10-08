@@ -127,6 +127,25 @@ heatmap.calc = function(gd,gdc) {
             gdc.zmax=zmax(gdc.z);
         }
     }
+    else if(gdc.zsmooth && x.length && y.length) {
+        // check whether we really can smooth (ie all boxes are about the same size)
+        var avgdx = (x[x.length-1]-x[0])/(x.length-1), maxErrX = Math.abs(avgdx/100),
+            avgdy = (y[y.length-1]-y[0])/(y.length-1), maxErrY = Math.abs(avgdy/100);
+        for(i=0; i<x.length-1; i++) {
+            if(Math.abs(x[i+1]-x[i]-avgdx)>maxErrX) {
+                gdc.zsmooth = false;
+                console.log('cannot zsmooth: x scale is not linear');
+                break;
+            }
+        }
+        for(i=0; i<y.length-1; i++) {
+            if(Math.abs(y[i+1]-y[i]-avgdy)>maxErrY) {
+                gdc.zsmooth = false;
+                console.log('cannot zsmooth: y scale is not linear');
+                break;
+            }
+        }
+    }
     var coords = get_xy(gd,gdc);
     Plotly.Axes.expandBounds(xa,xa._tight,coords.x);
     Plotly.Axes.expandBounds(ya,ya._tight,coords.y);
@@ -179,8 +198,6 @@ heatmap.plot = function(gd,cd) {
         left = temp;
         xrev = true;
     }
-    left = Math.max(-0.5*gd.plotwidth,left);
-    right = Math.min(1.5*gd.plotwidth,right);
 
     var yrev = false, top, bottom;
     i=0; while(top===undefined && i<n) { top=ya.c2p(y[i]); i++; }
@@ -191,17 +208,23 @@ heatmap.plot = function(gd,cd) {
         bottom = temp;
         yrev = true;
     }
-    top = Math.max(-0.5*gd.plotheight,top);
-    bottom = Math.min(1.5*gd.plotheight,bottom);
 
-    // make an image with max plotwidth*plotheight pixels, to keep time reasonable when you zoom in
+    // make an image that goes at most half a screen off either side, to keep time reasonable when you zoom in
+    // if zsmooth is on, don't worry about this, because zooming doesn't increase number of pixels
+    if(!gdc.zsmooth) {
+        left = Math.max(-0.5*gd.plotwidth,left);
+        right = Math.min(1.5*gd.plotwidth,right);
+        top = Math.max(-0.5*gd.plotheight,top);
+        bottom = Math.min(1.5*gd.plotheight,bottom);
+    }
+
     var wd=Math.round(right-left);
     var ht=Math.round(bottom-top),htf=ht/(bottom-top);
 
     // now redraw
-    if(wd<=0 || ht<=0) { return; } // image is so far off-screen, we shouldn't even draw it
+    if(wd<=0 || ht<=0) { return; } // image is entirely off-screen, we shouldn't even draw it
 
-    var p = new PNGlib(wd,ht, 256);
+    var p = gdc.zsmooth ? new PNGlib(n,m,256) : new PNGlib(wd,ht, 256);
 
     // interpolate for color scale
     // https://github.com/mbostock/d3/wiki/Quantitative-Scales
@@ -216,28 +239,34 @@ heatmap.plot = function(gd,cd) {
         .range(r);
 
     // map brick boundaries to image pixels
-    function xpx(v){ return Math.max(0,Math.min(wd,Math.round(xa.c2p(v)-left))); }
-    function ypx(v){ return Math.max(0,Math.min(ht,Math.round(ya.c2p(v)-top))); }
+    var xpx,ypx;
+    if(gdc.zsmooth) {
+        xpx = ypx = Plotly.Lib.identity;
+    }
+    else {
+        xpx = function(index){ return Math.max(0,Math.min(wd,Math.round(xa.c2p(x[index])-left))); };
+        ypx = function(index){ return Math.max(0,Math.min(ht,Math.round(ya.c2p(y[index])-top))); };
+    }
     Plotly.Lib.markTime('done init png');
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
     // build a brick at each z-matrix value
-    var yi=ypx(y[0]),yb=[yi,yi];
+    var yi=ypx(0),yb=[yi,yi];
     var j,xi,c,pc,v;
     var xbi = xrev?0:1, ybi = yrev?0:1;
     var pixcount = 0, lumcount = 0; // for collecting an average luminosity of the heatmap
     for(j=0; j<m; j++) {
         col = z[j];
         yb.reverse();
-        yb[ybi] = ypx(y[j+1]);
+        yb[ybi] = ypx(j+1);
         if(yb[0]==yb[1] || yb[0]===undefined || yb[1]===undefined) { continue; }
-        xi=xpx(x[0]);
+        xi=xpx(0);
         xb=[xi,xi];
         for(i=0; i<n; i++) {
             // build one color brick!
             v=col[i];
             xb.reverse();
-            xb[xbi] = xpx(x[i+1]);
+            xb[xbi] = xpx(i+1);
             if(xb[0]==xb[1] || xb[0]===undefined || xb[1]===undefined) { continue; }
             if($.isNumeric(v)) {
                 // get z-value, scale for 8-bit color by rounding z to an integer 0-254
@@ -266,7 +295,7 @@ heatmap.plot = function(gd,cd) {
     $(gd).find('.'+id).remove(); // put this right before making the new image, to minimize flicker
     gd.plot.append('svg:image')
         .classed(id,true)
-        .classed('pixelated',true) // we can hope pixelated works...
+        // .classed('pixelated',true) // we can hope pixelated works...
         .attr("xmlns","http://www.w3.org/2000/svg")
         .attr("xlink:href", imgstr)
         .attr("height",ht)
@@ -275,7 +304,8 @@ heatmap.plot = function(gd,cd) {
         .attr("y",top)
         .attr('preserveAspectRatio','none');
 
-    $('svg > image').parent().attr("xmlns:xlink","http://www.w3.org/1999/xlink");
+    // doesn't work with d3, for some reason... gives namespace Error.
+    $(gd.plot.node()).attr("xmlns:xlink","http://www.w3.org/1999/xlink");
     Plotly.Lib.markTime('done showing png');
 
     // show a colorscale
@@ -337,8 +367,8 @@ function get_xy(gd,gdc){
         return array_out;
     }
 
-    return {x:makeBoundArray(gdc.x,gdc.x0,gdc.dx,gdc.z[0].length,gd.layout.xaxis),
-            y:makeBoundArray(gdc.y,gdc.y0,gdc.dy,gdc.z.length,gd.layout.yaxis)};
+    return {x:makeBoundArray(gdc.xtype=='scaled' ? '' : gdc.x, gdc.x0, gdc.dx, gdc.z[0].length, gd.layout.xaxis),
+            y:makeBoundArray(gdc.ytype=='scaled' ? '' : gdc.y, gdc.y0, gdc.dy, gdc.z.length, gd.layout.yaxis)};
 }
 
 // if the heatmap data object is missing any keys, fill them in
@@ -392,6 +422,13 @@ function insert_colorbar(gd,gdc,cb_id) {
     //remove last colorbar, if any
     $(gd).find('.'+cb_id).remove();
 
+    // until we harmonize this with our own axis format, do a quick cut between eng and floating formats
+    var fmt = d3.format('3e');
+    if(Math.max(Math.abs(min),Math.abs(max))<1e4) {
+        if(Math.abs(max-min)>5) { fmt = d3.format('.0f'); }
+        else if(Math.abs(max-min)>0.01) { fmt = d3.format('.2g'); }
+    }
+
     var gl = gd.layout,
         g = gd.infolayer.append("g")
             .classed(cb_id,true)
@@ -399,11 +436,11 @@ function insert_colorbar(gd,gdc,cb_id) {
             // should be a variable in gd.data and editable from a popover
             .attr("transform","translate("+(gl.width-gl.margin.r+50)+","+(gl.margin.t)+")")
             .classed("colorbar",true),
-        cb = colorBar(gl).color(d3.scale.linear()
-            .domain(d)
-            .range(r))
+        cb = colorBar(gl)
+            .color(d3.scale.linear().domain(d).range(r))
             .size(gl.height-gl.margin.t-gl.margin.b)
             .lineWidth(30)
+            .tickFormat(fmt)
             .precision(2); // <-- gradient granularity TODO: should be a variable in colorbar popover
 
     g.call(cb);
