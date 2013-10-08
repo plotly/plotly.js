@@ -676,7 +676,7 @@ function applyStyle(gd) {
 // if the array is too short, it will wrap around (useful for style files that want
 // to specify cyclical default values)
 Plotly.restyle = function(gd,astr,val,traces) {
-    console.log(gd,astr,val,traces);
+    // console.log(gd,astr,val,traces);
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
 
     var gl = gd.layout,

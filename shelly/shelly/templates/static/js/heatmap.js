@@ -115,8 +115,8 @@ heatmap.calc = function(gd,gdc) {
         }
         if(norm.indexOf('percent')!=-1) { count/=100; }
         if(norm.indexOf('probability')!=-1 || norm.indexOf('percent')!=-1) {
-            gdc.z.forEach(function(col){ col.forEach(function(v,i){
-                col[i]/=count;
+            gdc.z.forEach(function(row){ row.forEach(function(v,i){
+                row[i]/=count;
             }); });
         }
         Plotly.Lib.markTime('done binning');
@@ -127,21 +127,21 @@ heatmap.calc = function(gd,gdc) {
             gdc.zmax=zmax(gdc.z);
         }
     }
-    else if(gdc.zsmooth && x.length && y.length) {
+    else if([true,'fast'].indexOf(gdc.zsmooth)!=-1 && x.length && y.length) {
         // check whether we really can smooth (ie all boxes are about the same size)
         var avgdx = (x[x.length-1]-x[0])/(x.length-1), maxErrX = Math.abs(avgdx/100),
             avgdy = (y[y.length-1]-y[0])/(y.length-1), maxErrY = Math.abs(avgdy/100);
         for(i=0; i<x.length-1; i++) {
             if(Math.abs(x[i+1]-x[i]-avgdx)>maxErrX) {
                 gdc.zsmooth = false;
-                console.log('cannot zsmooth: x scale is not linear');
+                console.log('cannot fast-zsmooth: x scale is not linear');
                 break;
             }
         }
         for(i=0; i<y.length-1; i++) {
             if(Math.abs(y[i+1]-y[i]-avgdy)>maxErrY) {
                 gdc.zsmooth = false;
-                console.log('cannot zsmooth: y scale is not linear');
+                console.log('cannot fast-zsmooth: y scale is not linear');
                 break;
             }
         }
@@ -176,6 +176,7 @@ heatmap.plot = function(gd,cd) {
     gdc.hm_id='hm'+i; // heatmap id
     var cb_id='cb'+i; // colorbar id
     var id=gdc.hm_id;
+    var fastsmooth=[true,'fast'].indexOf(gdc.zsmooth)!=-1; // fast smoothing - one pixel per brick
 
     // get z dims
     var m=z.length, n=z[0].length; // num rows, cols
@@ -210,12 +211,14 @@ heatmap.plot = function(gd,cd) {
     }
 
     // make an image that goes at most half a screen off either side, to keep time reasonable when you zoom in
-    // if zsmooth is on, don't worry about this, because zooming doesn't increase number of pixels
-    if(!gdc.zsmooth) {
-        left = Math.max(-0.5*gd.plotwidth,left);
-        right = Math.min(1.5*gd.plotwidth,right);
-        top = Math.max(-0.5*gd.plotheight,top);
-        bottom = Math.min(1.5*gd.plotheight,bottom);
+    // if zsmooth is true/fast, don't worry about this, because zooming doesn't increase number of pixels
+    // if zsmooth is best, don't include anything off screen because it takes too long
+    if(!fastsmooth) {
+        var extra = gdc.zsmooth=='best' ? 0 : 0.5;
+        left = Math.max(-extra*gd.plotwidth,left);
+        right = Math.min((1+extra)*gd.plotwidth,right);
+        top = Math.max(-extra*gd.plotheight,top);
+        bottom = Math.min((1+extra)*gd.plotheight,bottom);
     }
 
     var wd=Math.round(right-left);
@@ -224,7 +227,7 @@ heatmap.plot = function(gd,cd) {
     // now redraw
     if(wd<=0 || ht<=0) { return; } // image is entirely off-screen, we shouldn't even draw it
 
-    var p = gdc.zsmooth ? new PNGlib(n,m,256) : new PNGlib(wd,ht, 256);
+    var p = fastsmooth ? new PNGlib(n,m,256) : new PNGlib(wd,ht, 256);
 
     // interpolate for color scale
     // https://github.com/mbostock/d3/wiki/Quantitative-Scales
@@ -240,47 +243,121 @@ heatmap.plot = function(gd,cd) {
 
     // map brick boundaries to image pixels
     var xpx,ypx;
-    if(gdc.zsmooth) {
-        xpx = ypx = Plotly.Lib.identity;
+    if(fastsmooth) {
+        xpx = xrev ? function(index){ return n-1-index; } : Plotly.Lib.identity;
+        ypx = yrev ? function(index){ return m-1-index; } : Plotly.Lib.identity;
     }
     else {
-        xpx = function(index){ return Math.max(0,Math.min(wd,Math.round(xa.c2p(x[index])-left))); };
-        ypx = function(index){ return Math.max(0,Math.min(ht,Math.round(ya.c2p(y[index])-top))); };
+        xpx = function(index){ return Plotly.Lib.constrain(Math.round(xa.c2p(x[index])-left),0,wd); };
+        ypx = function(index){ return Plotly.Lib.constrain(Math.round(ya.c2p(y[index])-top),0,ht); };
     }
+
+    // get interpolated bin value. Returns {bin0:closest bin, frac:fractional dist to next, bin1:next bin}
+    function findInterp(pixel,pixArray) {
+        var maxbin = pixArray.length-2,
+            bin = Plotly.Lib.constrain(Plotly.Lib.findBin(pixel,pixArray),0,maxbin),
+            pix0 = pixArray[bin],
+            pix1 = pixArray[bin+1],
+            interp = Plotly.Lib.constrain(bin+(pixel-pix0)/(pix1-pix0)-0.5,0,maxbin),
+            bin0 = Math.round(interp),
+            frac = Math.abs(interp-bin0);
+            if(!interp || interp==maxbin || !frac) { return {bin0:bin0, bin1:bin0, frac:0}; }
+            return {bin0:bin0, frac:frac, bin1:Math.round(bin0+frac/(interp-bin0))};
+    }
+
+    // create a color in the png color table
+    // save p.color and luminosity each time we calculate anew, because these are the slowest parts
+    var colors = {};
+    colors[256] = p.color(0,0,0,0); // non-numeric shows as transparent TODO: make this an option
+    function setColor(v,pixsize) {
+        if($.isNumeric(v)) {
+            // get z-value, scale for 8-bit color by rounding z to an integer 0-254
+            // (one value reserved for transparent (missing/non-numeric data)
+            var vr = Plotly.Lib.constrain(Math.round((v-min)*254/(max-min)),0,254);
+            c=s(vr);
+            pixcount+=pixsize;
+            if(!colors[vr]) {
+                var c = s(vr);
+                colors[vr] = [
+                    tinycolor(c).toHsl().l,
+                    p.color('0x'+c.substr(1,2),'0x'+c.substr(3,2),'0x'+c.substr(5,2))
+                ];
+            }
+            lumcount+=pixsize*colors[vr][0];
+            return colors[vr][1];
+        }
+        else { return colors[256]; }
+    }
+
     Plotly.Lib.markTime('done init png');
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
     // build a brick at each z-matrix value
     var yi=ypx(0),yb=[yi,yi];
-    var j,xi,c,pc,v;
+    var j,xi,c,pc,v,row;
     var xbi = xrev?0:1, ybi = yrev?0:1;
     var pixcount = 0, lumcount = 0; // for collecting an average luminosity of the heatmap
-    for(j=0; j<m; j++) {
-        col = z[j];
-        yb.reverse();
-        yb[ybi] = ypx(j+1);
-        if(yb[0]==yb[1] || yb[0]===undefined || yb[1]===undefined) { continue; }
-        xi=xpx(0);
-        xb=[xi,xi];
-        for(i=0; i<n; i++) {
-            // build one color brick!
-            v=col[i];
-            xb.reverse();
-            xb[xbi] = xpx(i+1);
-            if(xb[0]==xb[1] || xb[0]===undefined || xb[1]===undefined) { continue; }
-            if($.isNumeric(v)) {
-                // get z-value, scale for 8-bit color by rounding z to an integer 0-254
-                // (one value reserved for transparent (missing/non-numeric data)
-                c=s(Math.round((v-min)*255/(max-min)));
-                pc = p.color('0x'+c.substr(1,2),'0x'+c.substr(3,2),'0x'+c.substr(5,2));
-                var pix = (xb[1]-xb[0])*(yb[1]-yb[0]);
-                pixcount+=pix;
-                lumcount+=pix*tinycolor(c).toHsl().l;
+    if(gdc.zsmooth=='best') {
+        //first make arrays of x and y pixel locations of brick boundaries
+        var xPixArray = x.map(function(v){ return Math.round(xa.c2p(v)-left); }),
+            yPixArray = y.map(function(v){ return Math.round(ya.c2p(v)-top); });
+        // then make arrays of interpolations (bin0=closest, bin1=next, frac=fractional dist.)
+        var xinterpArray = [], yinterpArray=[];
+        for(i=0; i<wd; i++) { xinterpArray.push(findInterp(i,xPixArray)); }
+        for(j=0; j<ht; j++) { yinterpArray.push(findInterp(j,yPixArray)); }
+        // now do the interpolations and fill the png
+        var xinterp, yinterp, r0, r1, z00, z10, z01, z11;
+        for(j=0; j<ht; j++) {
+            yinterp = yinterpArray[j];
+            r0 = z[yinterp.bin0];
+            r1 = z[yinterp.bin1];
+            if(!r0 || !r1) { console.log(j,yinterp,z); }
+            for(i=0; i<wd; i++) {
+                xinterp = xinterpArray[i];
+                z00 = r0[xinterp.bin0];
+                if(!$.isNumeric(z00)) { pc = setColor(null,1); }
+                else {
+                    z01 = r0[xinterp.bin1];
+                    z10 = r1[xinterp.bin0];
+                    z11 = r1[xinterp.bin1];
+                    if(!$.isNumeric(z01)) { z01 = z00; }
+                    if(!$.isNumeric(z10)) { z10 = z00; }
+                    if(!$.isNumeric(z11)) { z11 = z00; }
+                    pc = setColor( z00 + xinterp.frac*(z01-z00) +
+                        yinterp.frac*((z10-z00) + xinterp.frac*(z00+z11-z01-z10)) );
+                }
+                p.buffer[p.index(i,j)] = pc;
             }
-            else { pc = p.color(0,0,0,0); } // non-numeric shows as transparent TODO: make this an option
-            for(xi=xb[0]; xi<xb[1]; xi++) { // TODO: Make brick spacing editable (ie x=1)
-                for(yi=yb[0]; yi<yb[1]; yi++) { // TODO: Make brick spacing editable
-                    p.buffer[p.index(xi, yi)] = pc;
+        }
+    }
+    else if(fastsmooth) {
+        for(j=0; j<m; j++) {
+            row = z[j];
+            yb = ypx(j);
+            for(i=0; i<n; i++) {
+                p.buffer[p.index(xpx(i),yb)] = setColor(row[i],1);
+            }
+        }
+    }
+    else {
+        for(j=0; j<m; j++) {
+            row = z[j];
+            yb.reverse();
+            yb[ybi] = ypx(j+1);
+            if(yb[0]==yb[1] || yb[0]===undefined || yb[1]===undefined) { continue; }
+            xi=xpx(0);
+            xb=[xi,xi];
+            for(i=0; i<n; i++) {
+                // build one color brick!
+                xb.reverse();
+                xb[xbi] = xpx(i+1);
+                if(xb[0]==xb[1] || xb[0]===undefined || xb[1]===undefined) { continue; }
+                v=row[i];
+                pc = setColor(v, (xb[1]-xb[0])*(yb[1]-yb[0]));
+                for(xi=xb[0]; xi<xb[1]; xi++) {
+                    for(yi=yb[0]; yi<yb[1]; yi++) {
+                        p.buffer[p.index(xi, yi)] = pc;
+                    }
                 }
             }
         }
