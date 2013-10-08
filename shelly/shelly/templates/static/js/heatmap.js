@@ -514,7 +514,12 @@ function getScale(cd) {
     var scl = cd[0].t.scl;
     if(!scl) { return heatmap.defaultScale; }
     else if(typeof scl == 'string') {
-        try { return heatmap.namedScales[scl] || JSON.parse(scl); }
+        try { scl = heatmap.namedScales[scl] || JSON.parse(scl); }
+        catch(e) { return heatmap.defaultScale; }
+    }
+    // occasionally scl is double-JSON encoded...
+    if(typeof scl == 'string') {
+        try { scl = heatmap.namedScales[scl] || JSON.parse(scl); }
         catch(e) { return heatmap.defaultScale; }
     }
     return scl;
