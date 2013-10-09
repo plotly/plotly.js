@@ -241,7 +241,8 @@ lib.stdev = function(data,len,mean) {
 lib.VERBOSE = false; // set to true to get a lot more logging and tracing
 lib.TIMER = new Date().getTime(); // first markTime call will return time from page load
 
-lib.log = function(v){ if(lib.VERBOSE){ console.log(v); } };
+// console.log that only runs if VERBOSE is on
+lib.log = function(){ if(lib.VERBOSE){ console.log.apply(console,arguments); } };
 
 // markTime - for debugging, mark the number of milliseconds since the previous call to markTime
 // and log some arbitrary info too
