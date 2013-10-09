@@ -68,8 +68,9 @@ function setType(gd,axletter){
     if(d0.type=='box' && axletter=='x' && !('x' in d0) && !('x0' in d0)) {
         ax.type='category'; // take the categories from trace name, text, or number
     }
-    else if((axletter in d0) ? moreDates(d0[axletter]) : Plotly.Lib.isDateTime(d0[axletter+'0'])) {
-        ax.type='date';
+    else if((axletter in d0) ? moreDates(d0[axletter]) :
+        (Plotly.Lib.isDateTime(d0[axletter+'0']) && !$.isNumeric(d0[axletter+'0']))) {
+            ax.type='date';
     }
     else if(category(gd.data,axletter)) { ax.type='category'; }
     else if(loggy(gd.data,axletter) && ax.type!='linear') { ax.type='log'; }
