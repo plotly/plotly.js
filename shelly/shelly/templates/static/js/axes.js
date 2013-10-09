@@ -124,6 +124,7 @@ function loggy(d,ax) {
 }
 
 // are the (x,y)-values in gd.data mostly text?
+// JP edit 10.8.2013: strip $, %, and quote characters via axes.cleanDatum
 function category(d,ax) {
     function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1; }
     var catcount=0,numcount=0;
@@ -133,6 +134,9 @@ function category(d,ax) {
             var curvenums=0,curvecats=0;
             for(var i in c[ax]) {
                 var vi = c[ax][i];
+                console.log( 'unclean', vi );
+                vi = axes.cleanDatum( vi );
+                console.log( 'clean', vi );
                 if(vi && isStr(vi)){ curvecats++; }
                 else if($.isNumeric(vi)){ curvenums++; }
             }
@@ -188,12 +192,29 @@ axes.convertToNums = function(o,ax){
         });
         fn = function(v){ var c = ax.categories.indexOf(v); return c==-1 ? undefined : c; };
     }
-    else { fn = function(v){return $.isNumeric(v) ? Number(v) : undefined; }; }
+    else { 
+        fn = function(v){
+            v = axes.cleanDatum( v );
+            return $.isNumeric(v) ? Number(v) : undefined; 
+        }; 
+    }
 
     // do the conversion
     if($.isArray(o)) { return o.map(fn); }
     else { return fn(o); }
 };
+
+// cleanData: removes characters 
+// same replace criteria used in the grid.js:scrapeCol
+axes.cleanDatum = function( c ){
+    c = c.toString()
+        .replace('$','')
+        .replace(/,/g,'')
+        .replace('\'','')
+        .replace('"','')
+        .replace('%','');
+    return c;
+}
 
 // setConvert: define the conversion functions for an axis
 // after convertToNums turns all data to numbers, it's used in 3 ways:
