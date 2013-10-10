@@ -135,9 +135,9 @@ function category(d,ax) {
             var curvenums=0,curvecats=0;
             for(var i in c[ax]) {
                 var vi = c[ax][i];
-                console.log( 'unclean', vi );
+                Plotly.Lib.log( 'unclean', vi );
                 vi = axes.cleanDatum( vi );
-                console.log( 'clean', vi );
+                Plotly.Lib.log( 'clean', vi );
                 if(vi && isStr(vi)){ curvecats++; }
                 else if($.isNumeric(vi)){ curvenums++; }
             }
@@ -193,11 +193,11 @@ axes.convertToNums = function(o,ax){
         });
         fn = function(v){ var c = ax.categories.indexOf(v); return c==-1 ? undefined : c; };
     }
-    else { 
+    else {
         fn = function(v){
             v = axes.cleanDatum( v );
-            return $.isNumeric(v) ? Number(v) : undefined; 
-        }; 
+            return $.isNumeric(v) ? Number(v) : undefined;
+        };
     }
 
     // do the conversion
@@ -205,7 +205,7 @@ axes.convertToNums = function(o,ax){
     else { return fn(o); }
 };
 
-// cleanData: removes characters 
+// cleanData: removes characters
 // same replace criteria used in the grid.js:scrapeCol
 axes.cleanDatum = function( c ){
     c = c.toString()
