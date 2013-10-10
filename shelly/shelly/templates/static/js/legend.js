@@ -23,15 +23,27 @@ legend.lines = function(d){
 
 legend.points = function(d){
     var t = d[0].t;
-    if(['scatter',undefined].indexOf(t.type)==-1) { return; }
-    if(!t.mode || t.mode.indexOf('markers')==-1) { return; }
-    d3.select(this).append('g')
-        .attr('class','legendpoints')
-      .selectAll('path')
-        .data(function(d){ return d; })
-      .enter().append('path')
-        .call(Plotly.Drawing.pointStyle,t)
-        .attr('transform','translate(20,0)');
+    if(['scatter',undefined].indexOf(t.type)==-1 || !t.mode) { return; }
+    var showMarkers = t.mode.indexOf('markers')!=-1,
+        showText = t.mode.indexOf('text')!=-1;
+    if(!showMarkers && !showText) { return; }
+
+    var pts = d3.select(this).append('g')
+        .attr('class','legendpoints');
+    if(showMarkers) {
+        pts.selectAll('path')
+            .data(Plotly.Lib.identity)
+          .enter().append('path')
+            .call(Plotly.Drawing.pointStyle,t)
+            .attr('transform','translate(20,0)');
+    }
+    if(showText) {
+        pts.selectAll('text')
+            .data(function(d){var d1 = $.extend({},d); d1.tx = 'T'; return d1;})
+          .enter().append('text')
+            .call(Plotly.Drawing.textPointStyle,t)
+            .attr('transform','translate(20,0)');
+    }
 };
 
 legend.bars = function(d){
@@ -40,7 +52,7 @@ legend.bars = function(d){
     d3.select(this).append('g')
         .attr('class','legendpoints')
       .selectAll('path')
-        .data(function(d){ return d; })
+        .data(Plotly.Lib.identity)
       .enter().append('path')
         .attr('d','M6,6H-6V-6H6Z')
         .each(function(d){
@@ -59,7 +71,7 @@ legend.boxes = function(d){
     d3.select(this).append('g')
         .attr('class','legendpoints')
       .selectAll('path')
-        .data(function(d){ return d; })
+        .data(Plotly.Lib.identity)
       .enter().append('path')
         .attr('d','M6,6H-6V-6H6Z') // if we want the median bar, prepend M6,0H-6
         .each(function(d){

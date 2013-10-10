@@ -794,9 +794,13 @@ axes.doTicks = function(gd,axletter) {
         zcls = axletter+'zl',
         pad = gm.p+(ax.ticks=='outside' ? 1 : -1) * ($.isNumeric(ax.linewidth) ? ax.linewidth : 1)/2,
         standoff = ax.ticks=='outside' ? ax.ticklen : ax.linewidth+1,
-        x1,y1,tx,ty,tickpath,g,tl,transfn,i;
+        pixfn = function(d){ return ax._m*d.x+ax._b; },
+        gridwidth = ax.gridwidth || 1,
+        span,x1,y1,tx,ty,tickpath,g,tl,transfn,i;
+
     // positioning arguments for x vs y axes
     if(axletter=='x') {
+        span = gd.plotwidth;
         y1 = gl.height-gm.b+pad;
         ty = (ax.ticks=='inside' ? -1 : 1)*ax.ticklen;
         tickpath = 'M'+gm.l+','+y1+'v'+ty+
@@ -810,9 +814,10 @@ axes.doTicks = function(gd,axletter) {
                 return angle<0 ? 'end' : 'start';
             }
         };
-        transfn = function(d){ return 'translate('+(ax._m*d.x+ax._b)+',0)'; };
+        transfn = function(d){ return 'translate('+pixfn(d)+',0)'; };
     }
     else if(axletter=='y') {
+        span = gd.plotheight;
         x1 = gm.l-pad;
         tx = (ax.ticks=='inside' ? 1 : -1)*ax.ticklen;
         tickpath = 'M'+x1+','+gm.t+'h'+tx+
@@ -825,29 +830,35 @@ axes.doTicks = function(gd,axletter) {
             y:function(d){ return d.dy+gm.t+d.fontSize/2; },
             anchor: function(angle){ return ($.isNumeric(angle) && Math.abs(angle)==90) ? 'middle' : 'end'; }
         };
-        transfn = function(d){ return 'translate(0,'+(ax._m*d.x+ax._b)+')'; };
+        transfn = function(d){ return 'translate(0,'+pixfn(d)+')'; };
     }
     else {
         console.log('unrecognized doTicks axis',ax);
         return;
     }
 
-    // ticks
-    var ticks=gd.axislayer.selectAll('path.'+tcls).data(vals,datafn);
-    if(ax.ticks) {
-        ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
-            .classed('crisp',1)
-            .call(Plotly.Drawing.strokeColor, ax.tickcolor || '#000')
-            .attr('stroke-width', ax.tickwidth || 1)
-            .attr('d',tickpath);
-        ticks.attr('transform',transfn);
-        ticks.exit().remove();
+    // remove zero lines, grid lines, and inside ticks if they're within 1 pixel of the end
+    // The key case here is removing zero lines when the axis bound is zero.
+    function clipEnds(d) {
+        var p = pixfn(d);
+        return (p>1 && p<span-1);
     }
-    else { ticks.remove(); }
+    var valsClipped = vals.filter(clipEnds);
+
+    // ticks
+    var ticks=gd.axislayer.selectAll('path.'+tcls)
+        .data(ax.ticks ? (ax.ticks=='inside' ? valsClipped : vals) : [], datafn);
+    ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
+        .classed('crisp',1)
+        .call(Plotly.Drawing.strokeColor, ax.tickcolor || '#000')
+        .attr('stroke-width', ax.tickwidth || 1)
+        .attr('d',tickpath);
+    ticks.attr('transform',transfn);
+    ticks.exit().remove();
 
     // tick labels
     // gd.axislayer.selectAll('text.'+tcls).remove(); // TODO: problems with reusing labels... shouldn't need this.
-    var yl=gd.axislayer.selectAll('text.'+tcls).data(vals,datafn);
+    var yl=gd.axislayer.selectAll('text.'+tcls).data(vals, datafn);
     if(ax.showticklabels) {
         var maxFontSize = 0, autoangle = 0;
         yl.enter().append('text').classed(tcls,1)
@@ -856,9 +867,6 @@ axes.doTicks = function(gd,axletter) {
                 function(d){ return d.font; },
                 function(d){ return d.fontSize; },
                 function(d){ return d.fontColor; })
-            // .attr('font-family',function(d){ return d.font; })
-            // .attr('font-size',function(d){ return d.fontSize; })
-            // .style('fill',function(d){ return d.fontColor; })
             .each(function(d){ Plotly.Drawing.styleText(this,d.text); });
         yl.attr('transform',function(d){
                 maxFontSize = Math.max(maxFontSize,d.fontSize);
@@ -884,7 +892,6 @@ axes.doTicks = function(gd,axletter) {
                     return transfn(d) + ' rotate('+autoangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')';
                 })
                 .attr('text-anchor',tl.anchor(autoangle));
-
             }
 
         }
@@ -894,40 +901,43 @@ axes.doTicks = function(gd,axletter) {
 
     // grid
     // TODO: must be a better way to find & remove zero lines?
-    var grid = gd.gridlayer.selectAll('line.'+gcls).data(vals,datafn),
-        gridwidth = ax.gridwidth || 1;
-    if(ax.showgrid!==false) {
-        grid.enter().append('line').classed(gcls,1)
-            .classed('crisp',1)
-            .attr('x1',g.x1)
-            .attr('x2',g.x2)
-            .attr('y1',g.y1)
-            .attr('y2',g.y2)
-            .each(function(d) {
-                if(ax.zeroline && ax.type=='linear' && Math.abs(d.x)<ax.dtick/100) { d3.select(this).remove(); }
-            });
-        grid.attr('transform',transfn)
-            .call(Plotly.Drawing.strokeColor, ax.gridcolor || '#ddd')
-            .attr('stroke-width', gridwidth);
-        grid.exit().remove();
-    }
-    else { grid.remove(); }
+    var grid = gd.gridlayer.selectAll('line.'+gcls)
+        .data(ax.showgrid!==false ? valsClipped : [], datafn);
+    grid.enter().append('line').classed(gcls,1)
+        .classed('crisp',1)
+        .attr('x1',g.x1)
+        .attr('x2',g.x2)
+        .attr('y1',g.y1)
+        .attr('y2',g.y2)
+        .each(function(d) {
+            if(ax.zeroline && ax.type=='linear' && Math.abs(d.x)<ax.dtick/100) { d3.select(this).remove(); }
+        });
+    grid.attr('transform',transfn)
+        .call(Plotly.Drawing.strokeColor, ax.gridcolor || '#ddd')
+        .attr('stroke-width', gridwidth);
+    grid.exit().remove();
 
-    // zero line
-    var zl = gd.zerolinelayer.selectAll('line.'+zcls).data(ax.range[0]*ax.range[1]<=0 ? [{x:0}] : []);
-    if(ax.zeroline && (ax.type=='linear' || ax.type=='-')) {
-        zl.enter().append('line').classed(zcls,1).classed('zl',1)
-            .classed('crisp',1)
-            .attr('x1',g.x1)
-            .attr('x2',g.x2)
-            .attr('y1',g.y1)
-            .attr('y2',g.y2);
-        zl.attr('transform',transfn)
-            .call(Plotly.Drawing.strokeColor, ax.zerolinecolor || '#000')
-            .attr('stroke-width', ax.zerolinewidth || gridwidth);
-        zl.exit().remove();
-    }
-    else { zl.remove(); }
+    // zero line - clip it if it's at the edge, unless there are bars or fills to this axis
+    var hasBarsOrFill = (gd.data||[]).filter(function(gdc){
+        return gdc.visible!==false &&
+            ((Plotly.Plots.BARTYPES.indexOf(gdc.type)!=-1 && (gdc.bardir||'v')=={x:'h',y:'v'}[axletter]) ||
+            ((gdc.type||'scatter')=='scatter' && gdc.fill && gdc.fill.charAt(gdc.fill.length-1)==axletter));
+    }).length;
+    var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline && ['linear','-'].indexOf(ax.type)!=-1 &&
+        (hasBarsOrFill || clipEnds({x:0}));
+
+    var zl = gd.zerolinelayer.selectAll('line.'+zcls)
+        .data(showZl ? [{x:0}] : []);
+    zl.enter().append('line').classed(zcls,1).classed('zl',1)
+        .classed('crisp',1)
+        .attr('x1',g.x1)
+        .attr('x2',g.x2)
+        .attr('y1',g.y1)
+        .attr('y2',g.y2);
+    zl.attr('transform',transfn)
+        .call(Plotly.Drawing.strokeColor, ax.zerolinecolor || '#000')
+        .attr('stroke-width', ax.zerolinewidth || gridwidth);
+    zl.exit().remove();
 
     // update the axis title (so it can move out of the way if needed)
     Plotly.Plots.titles(gd,axletter+'title');

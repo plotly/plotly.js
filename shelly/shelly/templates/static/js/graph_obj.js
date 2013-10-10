@@ -378,6 +378,7 @@ Plotly.plot = function(gd, data, layout) {
         if(!('line' in gdc)) gdc.line = {};
         if(!('marker' in gdc)) gdc.marker = {};
         if(!('line' in gdc.marker)) gdc.marker.line = {};
+        if(!('text' in gdc.marker)) gdc.marker.text = {};
         if(!$.isArray(cd) || !cd[0]) { cd = [{x: false, y: false}]; } // make sure there is a first point
 
         // add the trace-wide properties to the first point, per point properties to every point
@@ -411,6 +412,7 @@ Plotly.plot = function(gd, data, layout) {
         if(ann.ref!='plot') { return; }
         // TODO
     }); }
+    // TODO: autosize extra for big pts, text too
 
     Plotly.Axes.doAutoRange(gd,xa);
     Plotly.Axes.doAutoRange(gd,ya);
@@ -573,6 +575,10 @@ plots.setStyles = function(gd, merge_dflt) {
                 }
                 mergeattr(gdc,'mode','mode',defaultMode);
                 mergeattr(gdc.line,'dash','ld','solid');
+                mergeattr(gdc.marker.text,'align','ta','middle center');
+                mergeattr(gdc.marker.text,'size','ts',gd.layout.font.size);
+                mergeattr(gdc.marker.text,'color','tc',gd.layout.font.color);
+                mergeattr(gdc.marker.text,'family','tf',gd.layout.font.family);
             }
             else if(type==='box') {
                 mergeattr(gdc.marker,'outliercolor','soc','rgba(0,0,0,0)');
@@ -640,6 +646,8 @@ function applyStyle(gd) {
         .each(function(d){
             d3.select(this).selectAll('path,rect')
                 .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
+            d3.select(this).selectAll('text')
+                .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
         });
 
     gp.selectAll('g.trace polyline.line')
@@ -1115,16 +1123,16 @@ function makePlotFramework(divid, layout) {
     gd.paper = gd.paperdiv.append('svg');
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
-    gd.axlines = {
-        x:gd.paper.append('path').style('fill','none').classed('crisp',true),
-        y:gd.paper.append('path').style('fill','none').classed('crisp',true)
-    };
     gd.gridlayer = gd.paper.append('g').attr('class','gridlayer');
     gd.zerolinelayer = gd.paper.append('g').attr('class','zerolinelayer');
     // Second svg (plot) is for the data
     gd.plot = gd.paper.append('svg')
         .attr('preserveAspectRatio','none')
         .style('fill','none');
+    gd.axlines = {
+        x:gd.paper.append('path').style('fill','none').classed('crisp',true),
+        y:gd.paper.append('path').style('fill','none').classed('crisp',true)
+    };
     gd.axislayer = gd.paper.append('g').attr('class','axislayer');
     gd.draglayer = gd.paper.append('g').attr('class','draglayer');
     gd.infolayer = gd.paper.append('g').attr('class','infolayer');
