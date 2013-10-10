@@ -29,7 +29,7 @@ drawing.fillColor = function(s,c) {
 drawing.font = function(s,family,size,fill) {
     if(family!==undefined) { s.attr('font-family',family); }
     if(size!==undefined) { s.attr('font-size',size); }
-    if(fill!==undefined) { s.style('fill',fill); }
+    if(fill!==undefined) { s.call(drawing.fillColor,fill); }
 };
 
 drawing.setPosition = function(s,x,y) { s.attr('x',x).attr('y',y); };
@@ -96,6 +96,9 @@ drawing.fillGroupStyle = function(s) {
 
 // apply the marker to each point
 // draws the marker with diameter roughly markersize, centered at 0,0
+// POINTCODE: let users specify numbers 0+ for symbols, instead of names
+SYMBOLCODE = ['circle','square','diamond','cross','x',
+    'triangle-up','triangle-down','triangle-left','triangle-right'];
 drawing.pointStyle = function(s,t) {
     // only scatter & box plots get marker path and opacity - bars, histograms don't
     if(['scatter','box'].indexOf(t.type)!=-1) {
@@ -106,6 +109,7 @@ drawing.pointStyle = function(s,t) {
                 r2=String(d3.round(r/2,2)),
                 rs=String(d3.round(r,2));
             var x=(d.mx || t.mx || (d.t ? d.t.mx : ''));
+            if($.isNumeric(x)) { x = SYMBOLCODE[x]; }
             if(x=='square') { return 'M'+rs+','+rs+'H-'+rs+'V-'+rs+'H'+rs+'Z'; }
             if(x=='diamond') {
                 var rd=String(d3.round(r*Math.sqrt(2),2));
@@ -140,6 +144,36 @@ drawing.pointStyle = function(s,t) {
         p.attr('stroke-width',w)
             .call(drawing.fillColor, d[c] || t[c] || (d.t ? d.t[c] : ''));
         if(w) { p.call(drawing.strokeColor, d[lc] || t[lc] || (d.t ? d.t[lc] : '')); }
+    });
+};
+
+// draw text at points
+TEXTOFFSETSIGN = {start:1,end:-1,middle:0,bottom:1,top:-1};
+drawing.textPointStyle = function(s,t) {
+    s.each(function(d){
+        if(!d.tx) { d3.select(this).remove(); return; }
+        var align = d.ta || t.ta || (d.t ? d.t.ta : ''),
+            valign = align.indexOf('top')!=-1 ? 'top' :
+                align.indexOf('bottom')!=-1 ? 'bottom' : 'middle',
+            halign = align.indexOf('left')!=-1 ? 'end' :
+                align.indexOf('right')!=-1 ? 'start' : 'middle',
+            fontSize = d.ts || t.ts || (d.t ? d.t.tf : ''),
+            // if markers are shown, offset a little more than the nominal marker size
+            // ie 2/1.6 * nominal, bcs some markers are a bit bigger
+            r=t.mode.indexOf('markers')==-1 ? 0 :
+                ((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/1.6;
+        d3.select(this)
+            .style('opacity', (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1)
+            .text(d.tx||'')
+            .call(drawing.font,
+                d.tf || t.tf || (d.t ? d.t.tf : ''),
+                fontSize,
+                d.tc || t.tc || (d.t ? d.t.tc : ''))
+            .attr('text-anchor',halign)
+            .attr('dx',TEXTOFFSETSIGN[halign]*r)
+            // TODO: this seems off
+            .attr('dy',TEXTOFFSETSIGN[valign]*(r+fontSize/2)+fontSize/4);
+
     });
 };
 

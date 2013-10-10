@@ -27,9 +27,9 @@ scatter.calc = function(gd,gdc) {
         else if(gdc.fill=='tozerox' || (gdc.fill=='tonextx' && gd.firstscatter)) {
             Plotly.Axes.expandWithZero(xa,x,serieslen);
         }
-        // tight x: any y fill, or no markers
+        // tight x: any y fill, or no markers or text
         else if(['tonexty','tozeroy'].indexOf(gdc.fill)!=-1 ||
-          (gdc.mode && gdc.mode.indexOf('markers')==-1) || // explicit no markers
+          (gdc.mode && gdc.mode.indexOf('markers')==-1 && gdc.mode.indexOf('text')==-1) || // explicit no markers/text
           (!gdc.mode && serieslen>=scatter.PTS_LINESONLY)) { // automatic no markers
             Plotly.Axes.expandBounds(xa,xa._tight,x,serieslen);
         }
@@ -134,13 +134,23 @@ scatter.plot = function(gd,cdscatter) {
         .attr('class','points')
         .each(function(d){
             var t = d[0].t,
-                s = d3.select(this);
-            if(t.mode.indexOf('markers')==-1 || t.visible===false) { s.remove(); }
+                s = d3.select(this),
+                showMarkers = t.mode.indexOf('markers')!=-1,
+                showText = t.mode.indexOf('text')!=-1;
+            if((!showMarkers && !showText) || t.visible===false) { s.remove(); }
             else {
-                s.selectAll('path')
-                    .data(Plotly.Lib.identity)
-                    .enter().append('path')
-                    .call(Plotly.Drawing.translatePoints,xa,ya);
+                if(showMarkers) {
+                    s.selectAll('path')
+                        .data(Plotly.Lib.identity)
+                        .enter().append('path')
+                        .call(Plotly.Drawing.translatePoints,xa,ya);
+                }
+                if(showText) {
+                    s.selectAll('text')
+                        .data(Plotly.Lib.identity)
+                        .enter().append('text')
+                        .call(Plotly.Drawing.translatePoints,xa,ya);
+                }
             }
         });
 };
