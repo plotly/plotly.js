@@ -38,11 +38,12 @@ drawing.setRect = function(s,x,y,w,h) { s.call(drawing.setPosition,x,y).call(dra
 
 drawing.translatePoints = function(s,xa,ya){
     s.each(function(d){
-        var x = xa.c2p(d.x), y = ya.c2p(d.y);
+        var x = xa.c2p(d.x), y = ya.c2p(d.y), p = d3.select(this);
         if($.isNumeric(x) && $.isNumeric(y)) {
-            d3.select(this).attr('transform','translate('+x+','+y+')');
+            if(this.nodeName=='text') { p.attr('x',x).attr('y',y); } // for multiline text this works better
+            else { p.attr('transform','translate('+x+','+y+')'); }
         }
-        else { d3.select(this).remove(); }
+        else { p.remove(); }
     });
 };
 
@@ -151,29 +152,30 @@ drawing.pointStyle = function(s,t) {
 TEXTOFFSETSIGN = {start:1,end:-1,middle:0,bottom:1,top:-1};
 drawing.textPointStyle = function(s,t) {
     s.each(function(d){
-        if(!d.tx) { d3.select(this).remove(); return; }
-        var align = d.ta || t.ta || (d.t ? d.t.ta : ''),
-            valign = align.indexOf('top')!=-1 ? 'top' :
-                align.indexOf('bottom')!=-1 ? 'bottom' : 'middle',
-            halign = align.indexOf('left')!=-1 ? 'end' :
-                align.indexOf('right')!=-1 ? 'start' : 'middle',
+        var p = d3.select(this);
+        if(!d.tx) { p.remove(); return; }
+        var pos = d.tp || t.tp || (d.t ? d.t.tp : ''),
+            v = pos.indexOf('top')!=-1 ? 'top' :
+                pos.indexOf('bottom')!=-1 ? 'bottom' : 'middle',
+            h = pos.indexOf('left')!=-1 ? 'end' :
+                pos.indexOf('right')!=-1 ? 'start' : 'middle',
             fontSize = d.ts || t.ts || (d.t ? d.t.tf : ''),
             // if markers are shown, offset a little more than the nominal marker size
             // ie 2/1.6 * nominal, bcs some markers are a bit bigger
             r=t.mode.indexOf('markers')==-1 ? 0 :
-                ((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/1.6;
-        d3.select(this)
-            .style('opacity', (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1)
-            .text(d.tx||'')
+                (((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/1.6+1);
+        p.style('opacity', (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1)
             .call(drawing.font,
                 d.tf || t.tf || (d.t ? d.t.tf : ''),
                 fontSize,
                 d.tc || t.tc || (d.t ? d.t.tc : ''))
-            .attr('text-anchor',halign)
-            .attr('dx',TEXTOFFSETSIGN[halign]*r)
-            // TODO: this seems off
-            .attr('dy',TEXTOFFSETSIGN[valign]*(r+fontSize/2)+fontSize/4);
-
+            .attr('text-anchor',h);
+        drawing.styleText(p.node(),d.tx);
+        var tspans = p.selectAll('tspan');
+            numLines = (tspans[0].length-1)*LINEEXPAND+1;
+        tspans.attr('dx',TEXTOFFSETSIGN[h]*r);
+        p.attr('dy',fontSize*0.75 + TEXTOFFSETSIGN[v]*r +
+            (TEXTOFFSETSIGN[v]-1)*numLines*fontSize/2);
     });
 };
 
@@ -192,12 +194,14 @@ drawing.textPointStyle = function(s,t) {
 // but if it fails, displays the unparsed text with a tooltip about the error
 // TODO: will barf on tags crossing newlines... need to close and reopen any such tags if we want to allow this.
 
-SPECIALCHARS={'mu':'\u03bc','times':'\u00d7','plusmn':'\u00b1'};
+SPECIALCHARS = {'mu':'\u03bc','times':'\u00d7','plusmn':'\u00b1'};
+LINEEXPAND = 1.3;
 
 // styleText - make styled svg text in the given node
 //      sn - the node to contain the text
 //      t - the (pseudo-HTML) styled text as a string
-drawing.styleText = function(sn,t) {
+//      clickable - boolean, if it's clickable, make sure it has some size no matter what
+drawing.styleText = function(sn,t,clickable) {
     if(t===undefined) { return; }
     var s = d3.select(sn),
         // whitelist of tags we accept - make sure new tags get added here
@@ -207,6 +211,10 @@ drawing.styleText = function(sn,t) {
         entityRE = /\x01([A-Za-z]+|#[0-9]+);/g,
         charsRE = new RegExp('&('+Object.keys(SPECIALCHARS).join('|')+');','g'),
         i;
+
+    // remove existing children
+    s.selectAll('tspan').remove();
+
     // take the most permissive reading we can of the text:
     // if we don't recognize something as markup, treat it as literal text
     // first &...; entities
@@ -231,6 +239,7 @@ drawing.styleText = function(sn,t) {
     while(t1.match(attrRE)) { t1=t1.replace(attrRE,'$1"$2"$3'); }
     // make special characters into their own <c> tags
     t1=t1.replace(charsRE,'<c>$1</c>');
+
     // parse the text into an xml tree
     lines=new DOMParser()
         .parseFromString('<t><l>'+t1+'</l></t>','text/xml')
@@ -247,17 +256,19 @@ drawing.styleText = function(sn,t) {
     else {
         for(i=0; i<lines.length;i++) {
             var l=s.append('tspan').attr('class','nl');
-            if(i>0) { l.attr('x',s.attr('x')).attr('dy',1.3*s.attr('font-size')); }
+            if(i>0) { l.attr('x',s.attr('x')).attr('dy',LINEEXPAND*s.attr('font-size')); }
             sti(l,lines[i].childNodes);
         }
     }
     // if the user did something weird and produced an empty output, give it some size
     // and make it transparent, so they can get it back again
-    var bb=sn.getBoundingClientRect();
-    if(bb.width===0 || bb.height===0) {
-        s.selectAll('tspan').remove();
-        drawing.styleText(sn,'XXXXX');
-        s.attr('opacity',0);
+    if(clickable) {
+        var bb=sn.getBoundingClientRect();
+        if(bb.width===0 || bb.height===0) {
+            s.selectAll('tspan').remove();
+            drawing.styleText(sn,'XXXXX');
+            s.attr('opacity',0);
+        }
     }
 
     function sti(s,n){

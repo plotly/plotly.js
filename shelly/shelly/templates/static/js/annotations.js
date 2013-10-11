@@ -136,7 +136,7 @@ annotations.draw = function(gd,index,opt,value) {
             options.font.family||gl.font.family||'Arial',
             options.font.size||gl.font.size||12,
             options.font.color||gl.font.color||'#000');
-    Plotly.Drawing.styleText(anntext.node(),options.text);
+    Plotly.Drawing.styleText(anntext.node(),options.text,'clickable');
 
     if(gd.mainsite) {
         anntext.on('click',function(){ if(!gd.dragged) { Plotly.Fx.autoGrowInput(this); } });
