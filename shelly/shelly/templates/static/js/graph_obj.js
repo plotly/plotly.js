@@ -378,6 +378,7 @@ Plotly.plot = function(gd, data, layout) {
         if(!('line' in gdc)) gdc.line = {};
         if(!('marker' in gdc)) gdc.marker = {};
         if(!('line' in gdc.marker)) gdc.marker.line = {};
+        if(!('textfont' in gdc)) gdc.textfont = {};
         if(!$.isArray(cd) || !cd[0]) { cd = [{x: false, y: false}]; } // make sure there is a first point
 
         // add the trace-wide properties to the first point, per point properties to every point
@@ -411,6 +412,7 @@ Plotly.plot = function(gd, data, layout) {
         if(ann.ref!='plot') { return; }
         // TODO
     }); }
+    // TODO: autosize extra for big pts, text too
 
     Plotly.Axes.doAutoRange(gd,xa);
     Plotly.Axes.doAutoRange(gd,ya);
@@ -573,6 +575,10 @@ plots.setStyles = function(gd, merge_dflt) {
                 }
                 mergeattr(gdc,'mode','mode',defaultMode);
                 mergeattr(gdc.line,'dash','ld','solid');
+                mergeattr(gdc,'textposition','tp','middle center');
+                mergeattr(gdc.textfont,'size','ts',gd.layout.font.size);
+                mergeattr(gdc.textfont,'color','tc',gd.layout.font.color);
+                mergeattr(gdc.textfont,'family','tf',gd.layout.font.family);
             }
             else if(type==='box') {
                 mergeattr(gdc.marker,'outliercolor','soc','rgba(0,0,0,0)');
@@ -602,16 +608,17 @@ plots.setStyles = function(gd, merge_dflt) {
             else {
                 mergeattr(gdc,'xtype','xtype',gdc.x ? 'array' : 'noarray');
                 mergeattr(gdc,'ytype','ytype',gdc.y ? 'array' : 'noarray');
+                mergeattr(gdc,'x0','x0',0);
+                mergeattr(gdc,'dx','dx',1);
+                mergeattr(gdc,'y0','y0',0);
+                mergeattr(gdc,'dy','dy',1);
             }
-            mergeattr(gdc,'x0','x0',0);
-            mergeattr(gdc,'dx','dx',1);
-            mergeattr(gdc,'y0','y0',0);
-            mergeattr(gdc,'dy','dy',1);
             mergeattr(gdc,'zauto','zauto',true);
             mergeattr(gdc,'zmin','zmin',-10);
             mergeattr(gdc,'zmax','zmax',10);
-            mergeattr(gdc, 'scl', 'scl', Plotly.Heatmap.defaultScale,true);
-            mergeattr(gdc, 'zsmooth', 'zsmooth', false);
+            mergeattr(gdc,'scl', 'scl', Plotly.Heatmap.defaultScale,true);
+            mergeattr(gdc,'showscale','showscale',true);
+            mergeattr(gdc,'zsmooth', 'zsmooth', false);
         }
         else if(plots.BARTYPES.indexOf(type)!=-1){
             if(type!='bar') {
@@ -639,6 +646,8 @@ function applyStyle(gd) {
         .each(function(d){
             d3.select(this).selectAll('path,rect')
                 .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
+            d3.select(this).selectAll('text')
+                .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
         });
 
     gp.selectAll('g.trace polyline.line')
@@ -676,7 +685,7 @@ function applyStyle(gd) {
 // if the array is too short, it will wrap around (useful for style files that want
 // to specify cyclical default values)
 Plotly.restyle = function(gd,astr,val,traces) {
-    console.log(gd,astr,val,traces);
+    // console.log(gd,astr,val,traces);
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
 
     var gl = gd.layout,
@@ -704,7 +713,8 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // harder though.
     var replot_attr=[
         'mode','visible','type','bardir','fill','histnorm',
-        'xtype','x0','dx','ytype','y0','dy','zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth',
+        'xtype','x0','dx','ytype','y0','dy',
+        'zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth','showscale',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array','error_y.width',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
@@ -1113,16 +1123,16 @@ function makePlotFramework(divid, layout) {
     gd.paper = gd.paperdiv.append('svg');
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
-    gd.axlines = {
-        x:gd.paper.append('path').style('fill','none').classed('crisp',true),
-        y:gd.paper.append('path').style('fill','none').classed('crisp',true)
-    };
     gd.gridlayer = gd.paper.append('g').attr('class','gridlayer');
     gd.zerolinelayer = gd.paper.append('g').attr('class','zerolinelayer');
     // Second svg (plot) is for the data
     gd.plot = gd.paper.append('svg')
         .attr('preserveAspectRatio','none')
         .style('fill','none');
+    gd.axlines = {
+        x:gd.paper.append('path').style('fill','none').classed('crisp',true),
+        y:gd.paper.append('path').style('fill','none').classed('crisp',true)
+    };
     gd.axislayer = gd.paper.append('g').attr('class','axislayer');
     gd.draglayer = gd.paper.append('g').attr('class','draglayer');
     gd.infolayer = gd.paper.append('g').attr('class','infolayer');
@@ -1266,7 +1276,7 @@ plots.titles = function(gd,title) {
     }
 
     if(txt) {
-        Plotly.Drawing.styleText(el.node(), txt + (!cont.unit ? '' : (' ('+cont.unit+')')));
+        Plotly.Drawing.styleText(el.node(), txt + (!cont.unit ? '' : (' ('+cont.unit+')')),'clickable');
     }
     else if(gd.mainsite) {
         el.text('Click to enter '+name+' title')
