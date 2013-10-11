@@ -208,12 +208,16 @@ axes.convertToNums = function(o,ax){
 // cleanData: removes characters
 // same replace criteria used in the grid.js:scrapeCol
 axes.cleanDatum = function( c ){
-    c = c.toString()
-        .replace('$','')
-        .replace(/,/g,'')
-        .replace('\'','')
-        .replace('"','')
-        .replace('%','');
+    try{
+        c = c.toString()
+            .replace('$','')
+            .replace(/,/g,'')
+            .replace('\'','')
+            .replace('"','')
+            .replace('%','');
+    }catch(e){
+        console.log(e);
+    }
     return c;
 }
 
