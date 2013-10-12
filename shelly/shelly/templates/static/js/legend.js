@@ -39,9 +39,9 @@ legend.points = function(d){
     }
     if(showText) {
         pts.selectAll('text')
-            .data(function(d){var d1 = $.extend({},d); d1.tx = 'T'; return d1;})
+            .data(function(d){ return [$.extend({},d[0],{tx:'Aa'})]; })
           .enter().append('text')
-            .call(Plotly.Drawing.textPointStyle,t)
+            .call(Plotly.Drawing.textPointStyle,$.extend({},t,{ts:10}))
             .attr('transform','translate(20,0)');
     }
 };
@@ -95,7 +95,7 @@ function legendText(s,gd){
             lf.family||gf.family||'Arial',
             lf.size||gf.size||12,
             lf.color||gf.color||'#000')
-        .each(function(d){ Plotly.Drawing.styleText(this,d[0].t.name,d[0].t.noretrieve); });
+        .each(function(d){ Plotly.Drawing.styleText(this,d[0].t.name,'clickable'); });
 }
 
 // -----------------------------------------------------
