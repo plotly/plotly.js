@@ -219,7 +219,7 @@ axes.cleanDatum = function( c ){
         console.log(e);
     }
     return c;
-}
+};
 
 // setConvert: define the conversion functions for an axis
 // after convertToNums turns all data to numbers, it's used in 3 ways:
@@ -229,7 +229,7 @@ axes.cleanDatum = function( c ){
 //      show some data on this axis, without caring about the current range
 //  p: pixel value - mapped to the screen with current size and zoom
 // setAxConvert creates/updates these conversion functions
-// also clears the autorange bounds ._tight and ._padded
+// also clears the autorange bounds ._min and ._max
 axes.setConvert = function(ax) {
     function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null; }
     function fromLog(v){ return Math.pow(10,v); }
@@ -252,71 +252,110 @@ axes.setConvert = function(ax) {
     // at the end we will combine all of these, but keep them separate until then
     // so we can choose on a trace-by-trace basis whether to pad, but choose
     // the amount of padding based on the total range of all traces
-    ax._tight=[null,null];
-    ax._padded=[null,null];
+    ax._min = [];
+    ax._max = [];
 };
 
-// doAutoRange: combine the tight and padded limits to get a final axis autorange setting
 axes.doAutoRange = function(gd,ax) {
-    var tight = ax._tight, padded = ax._padded;
-    // if any number is missing, set it so it's numeric but won't be limiting
-    if(!$.isNumeric(tight[0])) { tight[0] = padded[0]; }
-    if(!$.isNumeric(tight[1])) { tight[1] = padded[1]; }
-    if(!$.isNumeric(padded[0])) { padded[0] = (tight[0]+tight[1])/2; }
-    if(!$.isNumeric(padded[1])) { padded[1] = (tight[0]+tight[1])/2; }
-    if(ax.autorange && $.isNumeric(tight[0]) && $.isNumeric(tight[1])) {
-        var axpad = 0.05; // 5% padding beyond last point for padded limits
-        // if there's a heatmap, get rid of 5% padding regardless
-        // TODO: does this really make sense?
-        if(gd.data) { gd.data.forEach(function(v){
-            if(Plotly.Plots.HEATMAPTYPES.indexOf(v.type)!=-1){ axpad=0; }
-        }); }
-
-        // check if we're forcing zero to be included
-        if(ax.autorange=='withzero' && ax.type=='linear') {
-            tight[0] = Math.min(0,tight[0]);
-            tight[1] = Math.max(0,tight[1]);
+    if(ax.autorange && ax._min && ax._max && ax._min.length && ax._max.length) {
+        var i,j,minpt,maxpt,minbest,maxbest,dp,dv,mbest=0;
+        for(i=0; i<ax._min.length; i++) {
+            minpt = ax._min[i];
+            for(j=0; j<ax._max.length; j++) {
+                maxpt = ax._max[j];
+                dv = maxpt.val-minpt.val;
+                dp = ax._pixrange-minpt.pad-maxpt.pad;
+                if(dv>0 && dp>0) {
+                    if(dv/dp > mbest) {
+                        minbest = minpt;
+                        maxbest = maxpt;
+                        mbest = dv/dp;
+                    }
+                }
+            }
         }
+        if(mbest) {
+            var axReverse = (ax.range && ax.range[1]<ax.range[0]);
 
-        // if axis is currently reversed, preserve this.
-        var axReverse = (ax.range && ax.range[1]<ax.range[0]);
-
-        // combine the padded and tight ranges
-        ax.range = [
-            Math.min(tight[0],(axpad+1)*padded[0]-axpad*Math.max(padded[1],tight[1])),
-            Math.max(tight[1],(axpad+1)*padded[1]-axpad*Math.min(padded[0],tight[0]))
-        ];
-
-        // don't let axis have zero size
-        if(ax.range[0]==ax.range[1]) { ax.range = [ax.range[0]-1,ax.range[0]+1]; }
-        if(axReverse) { ax.range.reverse(); }
+            ax.range = [minbest.val - mbest*minbest.pad, maxbest.val + mbest*maxbest.pad];
+            // don't let axis have zero size
+            if(ax.range[0]==ax.range[1]) { ax.range = [ax.range[0]-1, ax.range[0]+1]; }
+            // maintain reversal
+            if(axReverse) { ax.range.reverse(); }
+        }
     }
 };
 
-// include new data in the outer x or y limits of the curves processed so far
-axes.expandBounds = function(ax,dr,data,serieslen,pad) {
+// axes.expand: if autoranging, include new data in the outer limits for this axis
+// data is an array of numbers (ie already run through convertToNums)
+// available options:
+//      vpad: (number or number array) pad values (data value +-vpad)
+//      ppad: (number or number array) pad pixels (pixel location +-ppad)
+//      ppadplus, ppadminus: separate padding for each side, overrides symmetric ppad
+//      padded: (boolean) add 5% padding to both ends (unless one end is overridden by tozero)
+//      tozero: (boolean) make sure to include zero if axis is linear, and make it a tight bound if possible
+axes.expand = function(ax,data,options) {
     if(!ax.autorange || !data) { return; }
-    pad = pad || 0; // optional extra space to give these new data points
-    serieslen = serieslen || data.length;
-    dr[0] = Plotly.Lib.aggNums(Math.min, $.isNumeric(dr[0]) ? dr[0] : null,
-        data.map(function(v){return $.isNumeric(v) ? ax.c2l(v-pad) : null; }), serieslen);
-    dr[1] = Plotly.Lib.aggNums(Math.max, $.isNumeric(dr[1]) ? dr[1] : null,
-        data.map(function(v){return $.isNumeric(v) ? ax.c2l(v+pad) : null; }), serieslen);
-};
+    if(!ax._min) { ax._min = []; }
+    if(!ax._max) { ax._max = []; }
+    if(!options) { options = {}; }
 
-// expand data range to include a tight zero (if the data all has one
-// sign and the axis is linear) and a padded opposite bound
-axes.expandWithZero = function(ax,data,serieslen,pad) {
-    if(!ax.autorange) { return; }
+    var len = data.length,
+        extrappad = options.padded ? ax._pixrange*0.05 : 0,
+        tozero = options.tozero && ax.type=='linear',
+        i,j,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis;
 
-    var dr = [null,null];
-    axes.expandBounds(ax,dr,data,serieslen,pad);
+    function getPad(item) {
+        if($.isArray(item)) { return function(i) { return Math.max(Number(item[i]||0),0); }; }
+        else { var v = Math.max(Number(item||0),0); return function(){ return v; }; }
+    }
+    var ppad = getPad(options.ppad),
+        ppadplus = getPad(options.ppadplus),
+        ppadminus = getPad(options.ppadminus),
+        vpad = getPad(options.vpad);
 
-    if(dr[0]>=0 && ax.type=='linear') { ax._tight[0] = Math.min(0,ax._tight[0]); }
-    else { ax._padded[0]=Math.min(dr[0],ax._padded[0]); }
+    function minfilter(v) {
+        if(!includeThis) { return true; }
+        if(v.val<=dmin && v.pad>=ppadiminus) { includeThis = false; }
+        else if(v.val>=dmin && v.pad<=ppadiminus) { return false; }
+        return true;
+    }
 
-    if(dr[1]<=0 && ax.type=='linear') { ax._tight[1] = Math.max(0,ax._tight[1]); }
-    else { ax._padded[1]=Math.max(dr[1],ax._padded[1]); }
+    function maxfilter(v) {
+        if(!includeThis) { return true; }
+        if(v.val>=dmax && v.pad>=ppadiplus) { includeThis = false; }
+        else if(v.val<=dmax && v.pad<=ppadiplus) { return false; }
+        return true;
+    }
+
+    for(i=0; i<len; i++) {
+        ppadi = ppad(i);
+        ppadiplus = (ppadplus(i)||ppadi) + extrappad;
+        ppadiminus = (ppadminus(i)||ppadi) + extrappad;
+        vpadi = vpad(i);
+        dmin = ax.c2l(data[i]-vpadi);
+        dmax = ax.c2l(data[i]+vpadi);
+        if(tozero) {
+            dmin = Math.min(0,dmin);
+            dmax = Math.max(0,dmax);
+        }
+
+        if($.isNumeric(dmin)) {
+            includeThis = true;
+            ax._min = ax._min.filter(minfilter);
+            if(includeThis) {
+                ax._min.push({val:dmin, pad:(tozero && dmin===0) ? 0 : ppadiminus});
+            }
+        }
+
+        if($.isNumeric(dmax)) {
+            includeThis = true;
+            ax._max = ax._max.filter(maxfilter);
+            if(includeThis) {
+                ax._max.push({val:dmax, pad:(tozero && dmax===0) ? 0 : ppadiplus});
+            }
+        }
+    }
 };
 
 axes.autoBin = function(data,ax,nbins,is2d) {
@@ -374,8 +413,6 @@ axes.autoBin = function(data,ax,nbins,is2d) {
 // or codes to this effect for log and date scales
 function calcTicks(gd,ax) {
     // calculate max number of (auto) ticks to display based on plot size
-    // TODO: take account of actual label size here
-    // TODO: rotated ticks for categories or dates
     if(ax.autotick || !ax.dtick){
         var nt = ax.nticks ||
                 Math.max(5,Math.min(10,(ax===gd.layout.yaxis) ? gd.plotheight/40 : gd.plotwidth/80));
@@ -390,16 +427,6 @@ function calcTicks(gd,ax) {
 
     // now figure out rounding of tick values
     autoTickRound(ax);
-
-    // set scaling to pixels
-    if(ax===gd.layout.yaxis) {
-        ax._m=gd.plotheight/(ax.range[0]-ax.range[1]);
-        ax._b=-ax._m*ax.range[1];
-    }
-    else {
-        ax._m=gd.plotwidth/(ax.range[1]-ax.range[0]);
-        ax._b=-ax._m*ax.range[0];
-    }
 
     // find the first tick
     ax._tmin=axes.tickFirst(ax);
@@ -774,19 +801,41 @@ function numFormat(v,ax,fmtoverride,hover) {
     return (n?'-':'')+v;
 }
 
-// doTicks: draw ticks, grids, and tick labels for axis axletter:
-// 'x' or 'y', blank to do both, 'redraw' to force full redraw
+// doTicks: draw ticks, grids, and tick labels
+// axletter: 'x' or 'y', blank to do both,
+//          'redraw' to force full redraw, and reset ax._r (stored range for use by zoom/pan)
 axes.doTicks = function(gd,axletter) {
-    if(axletter=='redraw') { gd.axislayer.selectAll('text,path,line').remove(); }
+    if(axletter=='redraw') {
+        gd.axislayer.selectAll('text,path').remove();
+        gd.gridlayer.selectAll('path').remove();
+        gd.zerolinelayer.selectAll('path').remove();
+    }
+
+    var gl = gd.layout;
     if(['x','y'].indexOf(axletter)==-1) {
         axes.doTicks(gd,'x');
         axes.doTicks(gd,'y');
+        if(axletter=='redraw') {
+            gl.xaxis._r = gl.xaxis.range.slice();
+            gl.yaxis._r = gl.yaxis.range.slice();
+        }
         return;
     }
-    var gl=gd.layout,
-        gm=gd.margin,
+
+    var gm=gd.margin,
         ax={x:gl.xaxis, y:gl.yaxis}[axletter];
     ax.range = ax.range.map(Number); // in case a val turns into string somehow
+
+    // set scaling to pixels
+    if(ax===gd.layout.yaxis) {
+        ax._m=gd.plotheight/(ax.range[0]-ax.range[1]);
+        ax._b=-ax._m*ax.range[1];
+    }
+    else {
+        ax._m=gd.plotwidth/(ax.range[1]-ax.range[0]);
+        ax._b=-ax._m*ax.range[0];
+    }
+
     var vals=calcTicks(gd,ax),
         datafn = function(d){ return d.text+d.x; },
         tcls = axletter+'tick',
@@ -805,7 +854,8 @@ axes.doTicks = function(gd,axletter) {
         ty = (ax.ticks=='inside' ? -1 : 1)*ax.ticklen;
         tickpath = 'M'+gm.l+','+y1+'v'+ty+
             (ax.mirror=='ticks' ? ('m0,'+(-gd.plotheight-2*(ty+pad))+'v'+ty): '');
-        g = {x1:gm.l, x2:gm.l, y1:gl.height-gm.b, y2:gm.t};
+        gridpath = 'M'+gm.l+','+gm.t+'v'+gd.plotheight;
+        // g = {x1:gm.l, x2:gm.l, y1:gl.height-gm.b, y2:gm.t};
         tl = {
             x: function(d){ return d.dx+gm.l; },
             y: function(d){ return d.dy+y1+standoff+d.fontSize; },
@@ -822,7 +872,8 @@ axes.doTicks = function(gd,axletter) {
         tx = (ax.ticks=='inside' ? 1 : -1)*ax.ticklen;
         tickpath = 'M'+x1+','+gm.t+'h'+tx+
             (ax.mirror=='ticks' ? ('m'+(gd.plotwidth-2*(tx-pad))+',0h'+tx): '');
-        g = {x1:gm.l, x2:gl.width-gm.r, y1:gm.t, y2:gm.t};
+        gridpath = 'M'+gm.l+','+gm.t+'h'+gd.plotwidth;
+        // g = {x1:gm.l, x2:gl.width-gm.r, y1:gm.t, y2:gm.t};
         tl = {
             x:function(d){ return d.dx+x1 - standoff -
                 (Math.abs(ax.tickangle)==90 ? d.fontSize/2 : 0);
@@ -900,15 +951,11 @@ axes.doTicks = function(gd,axletter) {
     else { yl.remove(); }
 
     // grid
-    // TODO: must be a better way to find & remove zero lines?
-    var grid = gd.gridlayer.selectAll('line.'+gcls)
+    var grid = gd.gridlayer.selectAll('path.'+gcls)
         .data(ax.showgrid!==false ? valsClipped : [], datafn);
-    grid.enter().append('line').classed(gcls,1)
+    grid.enter().append('path').classed(gcls,1)
         .classed('crisp',1)
-        .attr('x1',g.x1)
-        .attr('x2',g.x2)
-        .attr('y1',g.y1)
-        .attr('y2',g.y2)
+        .attr('d',gridpath)
         .each(function(d) {
             if(ax.zeroline && ax.type=='linear' && Math.abs(d.x)<ax.dtick/100) { d3.select(this).remove(); }
         });
@@ -926,14 +973,11 @@ axes.doTicks = function(gd,axletter) {
     var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline && ['linear','-'].indexOf(ax.type)!=-1 &&
         (hasBarsOrFill || clipEnds({x:0}));
 
-    var zl = gd.zerolinelayer.selectAll('line.'+zcls)
+    var zl = gd.zerolinelayer.selectAll('path.'+zcls)
         .data(showZl ? [{x:0}] : []);
-    zl.enter().append('line').classed(zcls,1).classed('zl',1)
+    zl.enter().append('path').classed(zcls,1).classed('zl',1)
         .classed('crisp',1)
-        .attr('x1',g.x1)
-        .attr('x2',g.x2)
-        .attr('y1',g.y1)
-        .attr('y2',g.y2);
+        .attr('d',gridpath);
     zl.attr('transform',transfn)
         .call(Plotly.Drawing.strokeColor, ax.zerolinecolor || '#000')
         .attr('stroke-width', ax.zerolinewidth || gridwidth);

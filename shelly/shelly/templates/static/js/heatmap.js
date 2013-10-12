@@ -172,8 +172,8 @@ heatmap.calc = function(gd,gdc) {
         xArray = makeBoundArray(gdc.type, x_in, x0, dx, z[0].length, gd.layout.xaxis),
         y_in = gdc.ytype=='scaled' ? '' : gdc.y,
         yArray = makeBoundArray(gdc.type, y_in, y0, dy, z.length, gd.layout.yaxis);
-    Plotly.Axes.expandBounds(xa,xa._tight,xArray);
-    Plotly.Axes.expandBounds(ya,ya._tight,yArray);
+    Plotly.Axes.expand(xa,xArray);
+    Plotly.Axes.expand(ya,yArray);
 
     // this is gd.calcdata for the heatmap (other attributes get added by setStyles)
     return [{x:xArray, y:yArray, z:z}];
