@@ -15,8 +15,8 @@ function req(module, methods) {
     window[module] = moduleFill;
 }
 req('Annotations',['add','allArrowheads','draw','drawAll']);
-req('Axes',['setTypes','convertOne','convertToNums','setConvert','doAutoRange','expandBounds',
-    'expandWithZero','autoBin','autoTicks','tickIncrement','tickFirst','tickText','doTicks']);
+req('Axes',['setTypes','convertOne','convertToNums','setConvert','doAutoRange','expand',
+    'autoBin','autoTicks','tickIncrement','tickFirst','tickText','doTicks']);
 req('Bars',['calc','plot','setPositions']);
 req('Boxes',['calc','plot','setPositions','style']);
 req('Drawing',['rgb','opacity','addOpacity','strokeColor','fillColor','setPosition','setSize',
@@ -333,7 +333,7 @@ Plotly.plot = function(gd, data, layout) {
     gd.numboxes = 0;
 
     // prepare the types and conversion functions for the axes
-    // also clears the autorange bounds ._tight, ._padded
+    // also clears the autorange bounds ._min, ._max
     Plotly.Axes.setTypes(gd);
 
     // prepare the data and find the autorange
@@ -404,7 +404,7 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Lib.markTime('done with setstyles and bar/box adjustments');
 
     // autorange for errorbars
-    Plotly.Axes.expandBounds(ya,ya._padded,Plotly.ErrorBars.ydr(gd));
+    Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd),{padded:true});
     Plotly.Lib.markTime('done Plotly.ErrorBars.ydr');
 
     // autorange for annotations
@@ -418,9 +418,7 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Axes.doAutoRange(gd,ya);
 
     gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
-    Plotly.Axes.doTicks(gd); // draw ticks, titles, and calculate axis scaling (._b, ._m)
-    xa._r = xa.range.slice(); // store ranges for later use
-    ya._r = ya.range.slice();
+    Plotly.Axes.doTicks(gd,'redraw'); // draw ticks, titles, and calculate axis scaling (._b, ._m)
 
     Plotly.Lib.markTime('done autorange and ticks');
 
@@ -510,7 +508,7 @@ plots.setStyles = function(gd, merge_dflt) {
         var val = stringify ? JSON.stringify(a[k]) : a[k];
 
         if($.isArray(val)) {
-            var l = Math.max(cd.length,val.length);
+            var l = Math.min(cd.length,val.length);
             for(var i=0; i<l; i++) { cd[i][attr]=val[i]; }
             cd[0].t[attr] = dflt; // use the default for the trace-wide value
         }
@@ -713,6 +711,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // harder though.
     var replot_attr=[
         'mode','visible','type','bardir','fill','histnorm',
+        'marker.size','text','textfont.size','textposition',
         'xtype','x0','dx','ytype','y0','dy',
         'zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth','showscale',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array','error_y.width',
@@ -1142,9 +1141,7 @@ function makePlotFramework(divid, layout) {
     layoutStyles(gd);
 
     // make the ticks, grids, and axis titles
-    Plotly.Axes.doTicks(gd);
-    xa._r = xa.range.slice(); // store ranges for later use
-    ya._r = ya.range.slice();
+    Plotly.Axes.doTicks(gd,'redraw');
 
     // make the axis drag objects and hover effects
     Plotly.Fx.init(gd);
@@ -1168,6 +1165,8 @@ function layoutStyles(gd) {
     var gm = gd.margin;
     gd.plotwidth=gl.width-gm.l-gm.r;
     gd.plotheight=gl.height-gm.t-gm.b;
+    xa._pixrange = gd.plotwidth;
+    ya._pixrange = gd.plotheight;
 
     gd.paperdiv.style({width:gl.width+'px', height:gl.height+'px'});
     gd.paper.call(Plotly.Drawing.setSize, gl.width, gl.height);
