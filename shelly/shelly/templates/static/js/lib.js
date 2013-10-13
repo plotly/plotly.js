@@ -115,8 +115,8 @@ lib.findBin = function(val,bins,linelow) {
             Math.floor((val-bins.start)/bins.size);
     }
     else {
-        var n1=0, n2=bins.length, c=0, sign=(bins[1]>bins[0]?1:-1), test;
-        if(bins[1]>bins[0]) {
+        var n1=0, n2=bins.length, c=0, sign=(bins[bins.length-1]>bins[0]?1:-1), test;
+        if(bins[bins.length-1]>bins[0]) {
             test = linelow ? function(a,b){return a<b;} : function(a,b){return a<=b;};
         }
         else{
