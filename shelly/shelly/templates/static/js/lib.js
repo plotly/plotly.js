@@ -302,6 +302,68 @@ lib.markTime = function(v){
 // constrain - restrict a number v to be between v0 and v1
 lib.constrain = function(v,v0,v1) { return Math.max(v0,Math.min(v1,v)); };
 
+// -------------------------------------------------------- SPINNERS
+// allows spinners for multiple reasons on the same parent via spincount
+// spinner is only removed when spincount goes to zero
+
+// kill a spinner
+lib.killspin = function(parent){
+    if(parent===undefined && typeof Tabs!=='undefined'){ parent=Tabs.get(); }
+    if(!parent || !parent.spinner) { // something wrong - kill all spinners
+        $('.spinner').remove();
+        return;
+    }
+    parent.spincount--;
+    if(parent.spincount>0) { return; }
+    parent.spinner.stop();
+    $(parent).find('.spinner').remove(); // in case something weird happened and we had several spinners
+};
+
+// start the main spinner
+lib.startspin = function(parent,spinsize,top,left){
+    if(parent===undefined){ parent=gettab(); }
+    if((typeof parent.spincount == 'number') && parent.spincount>0) {
+        parent.spincount++;
+    }
+    if(top===undefined){ top = 'auto'; }
+    if(left===undefined){ left = 'auto'; }
+    else {
+        parent.spincount=1;
+        // big spinny
+        var opts = {
+            lines: 17, // The number of lines to draw
+            length: 30, // The length of each line _30
+            width: 6, // The line thickness
+            radius: 37, // The radius of the inner circle
+            corners: 1, // Corner roundness (0..1)
+            rotate: 0, // The rotation offset
+            direction: 1, // 1: clockwise, -1: counterclockwise
+            color: '#000', // #rgb or #rrggbb
+            speed: 1, // Rounds per second
+            trail: 60, // Afterglow percentage
+            shadow: false, // Whether to render a shadow
+            hwaccel: false, // Whether to use hardware acceleration
+            className: 'spinner', // The CSS class to assign to the spinner
+            zIndex: 2e9, // The z-index (defaults to 2000000000)
+            top: top, // Top position relative to parent in px
+            left: left // Left position relative to parent in px
+        };
+        // modify for tiny spinny
+        if(spinsize=='tiny') {
+            opts.lines = 13;
+            opts.length = 5;
+            opts.width = 2;
+            opts.radius = 5;
+            opts.corners = 0.6;
+            opts.top = top; //'55';
+            opts.left = left; //'80';
+        }
+        var spinner=new Spinner(opts).spin(parent);
+        parent.spinner=spinner;
+    }
+};
+
+
 // similar to OS X's "growl" notifier
 lib.notifier = function(text,tm){
     var num_notifs = $('div.notifier').length, mt = (num_notifs*100)+20;
