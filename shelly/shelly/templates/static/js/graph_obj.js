@@ -249,7 +249,7 @@ function updateTraces(old_data, new_data) {
 // so it can regenerate whenever it replots
 // note that now this function is only adding the brand in iframes and 3rd-party
 // apps, standalone plots get the sidebar instead.
-function positionBrand(gd){
+plots.positionBrand = function(gd){
     // if( window.self === window.top ) { return; } // not in an iframe
     $(gd).find('.linktotool').remove();
     var linktotool = $('<div class="linktotool">'+
@@ -271,7 +271,7 @@ function positionBrand(gd){
             hiddenform.remove();
         });
     }
-}
+};
 
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
@@ -476,7 +476,7 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Annotations.drawAll(gd);
 
     // final cleanup
-    if(!gd.mainsite && !gd.standalone) { positionBrand(gd); } // 'view in plotly' link for embedded plots
+    if(!gd.mainsite && !gd.standalone) { plots.positionBrand(gd); } // 'view in plotly' link for embedded plots
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){

@@ -302,7 +302,7 @@ axes.expand = function(ax,data,options) {
 
     var len = data.length,
         extrappad = options.padded ? ax._pixrange*0.05 : 0,
-        tozero = options.tozero && ax.type=='linear',
+        tozero = options.tozero && (ax.type=='linear' || ax.type=='-'),
         i,j,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis;
 
     function getPad(item) {
@@ -957,7 +957,9 @@ axes.doTicks = function(gd,axletter) {
         .classed('crisp',1)
         .attr('d',gridpath)
         .each(function(d) {
-            if(ax.zeroline && ax.type=='linear' && Math.abs(d.x)<ax.dtick/100) { d3.select(this).remove(); }
+            if(ax.zeroline && (ax.type=='linear'||ax.type=='-') && Math.abs(d.x)<ax.dtick/100) {
+                d3.select(this).remove();
+            }
         });
     grid.attr('transform',transfn)
         .call(Plotly.Drawing.strokeColor, ax.gridcolor || '#ddd')
@@ -970,7 +972,7 @@ axes.doTicks = function(gd,axletter) {
             ((Plotly.Plots.BARTYPES.indexOf(gdc.type)!=-1 && (gdc.bardir||'v')=={x:'h',y:'v'}[axletter]) ||
             ((gdc.type||'scatter')=='scatter' && gdc.fill && gdc.fill.charAt(gdc.fill.length-1)==axletter));
     }).length;
-    var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline && ['linear','-'].indexOf(ax.type)!=-1 &&
+    var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline && (ax.type=='linear'||ax.type=='-') &&
         (hasBarsOrFill || clipEnds({x:0}));
 
     var zl = gd.zerolinelayer.selectAll('path.'+zcls)
