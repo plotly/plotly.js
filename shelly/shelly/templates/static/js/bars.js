@@ -25,6 +25,7 @@ bars.calc = function(gd,gdc) {
 
 // bar chart stacking/grouping positioning and autoscaling calculations
 // for each direction separately calculate the ranges and positions
+// note that this handles histograms too
 bars.setPositions = function(gd) {
     var gl = gd.layout,
         xa = gl.xaxis,
@@ -43,8 +44,8 @@ bars.setPositions = function(gd) {
         });
         if(!bl.length) { return; }
 
-        if(dir=='v') { sa = ya; pa = xa; pdr = xa._tight; }
-        else { sa = xa; pa = ya; pdr = ya._tight; }
+        if(dir=='v') { sa = ya; pa = xa; }
+        else { sa = xa; pa = ya; }
 
         // bar position offset and width calculation
         // bl1 is a list of traces (in calcdata) to look at together
@@ -61,7 +62,7 @@ bars.setPositions = function(gd) {
                 pv2 = dv.vals,
                 barDiff = dv.minDiff;
             // position axis autorange - always tight fitting
-            Plotly.Axes.expandBounds(pa,pdr,pv2,pv2.length,barDiff/2);
+            Plotly.Axes.expand(pa,pv2,{vpad:barDiff/2});
             // bar widths and position offsets
             barDiff*=(1-gl.bargap);
             if(gl.barmode=='group') { barDiff/=bl.length; }
@@ -99,14 +100,14 @@ bars.setPositions = function(gd) {
                     }
                 }
             }
-            Plotly.Axes.expandWithZero(sa,[sMin,sMax]);
+            Plotly.Axes.expand(sa,[sMin,sMax],{tozero:true,padded:true});
         }
         else {
             // for grouped or overlaid bars, just make sure zero is included,
             // along with the tops of each bar
             var fs = function(v){ return v.s; };
             for(i=0; i<bl.length; i++){
-                Plotly.Axes.expandWithZero(sa,gd.calcdata[bl[i]].map(fs));
+                Plotly.Axes.expand(sa,gd.calcdata[bl[i]].map(fs),{tozero:true,padded:true});
             }
         }
     });

@@ -102,21 +102,22 @@ annotations.draw = function(gd,index,opt,value) {
     if(!options.tag) { options.tag=''; }
     if(!options.text) { options.text=((options.showarrow && (options.text==='')) ? '' : 'new text'); }
     if(!options.font) { options.font={family:'',size:0,color:''}; }
+    if(!options.opacity) { options.opacity=1; }
 
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
-    var paperbb = gd.paperdiv.node().getBoundingClientRect(),
-        plotbb = d3.select(gd).select('.nsewdrag').node().getBoundingClientRect(),
-        x = plotbb.left-paperbb.left,
-        y = plotbb.top-paperbb.top;
+    var paperBB = gd.paperdiv.node().getBoundingClientRect(),
+        plotBB = d3.select(gd).select('.nsewdrag').node().getBoundingClientRect(),
+        x = plotBB.left-paperBB.left,
+        y = plotBB.top-paperBB.top;
 
     // create the components
     var ann = gd.infolayer.append('svg')
         .attr('class','annotation')
         .attr('data-cmmt',options.tag)
         .call(Plotly.Drawing.setPosition,0,0)
-        .attr('data-index',String(index));
-    var abb = ann.node().getBoundingClientRect();
+        .attr('data-index',String(index))
+        .style('opacity',options.opacity);
 
     var borderwidth = options.borderwidth;
     var annbg = ann.append('rect')
@@ -142,9 +143,9 @@ annotations.draw = function(gd,index,opt,value) {
         anntext.on('click',function(){ if(!gd.dragged) { Plotly.Fx.autoGrowInput(this); } });
     }
 
-    var atbb = anntext.node().getBoundingClientRect(),
-        annwidth = atbb.width,
-        annheight = atbb.height;
+    var anntextBB = anntext.node().getBoundingClientRect(),
+        annwidth = anntextBB.width,
+        annheight = anntextBB.height;
     // save size in the annotation object for use by autoscale
     options._w = annwidth;
     options._h = annheight;
@@ -210,8 +211,8 @@ annotations.draw = function(gd,index,opt,value) {
     if(options.ref=='paper') {
         if(!$.isNumeric(options.x)) { options.x=0.1; }
         if(!$.isNumeric(options.y)) { options.y=0.7; }
-        x += plotbb.width*options.x;
-        y += plotbb.height*(1-options.y);
+        x += plotBB.width*options.x;
+        y += plotBB.height*(1-options.y);
         if(!options.showarrow){
             if(options.x>2/3) { x -= annwidth/2; }
             else if(options.x<1/3) { x += annwidth/2; }
@@ -236,13 +237,13 @@ annotations.draw = function(gd,index,opt,value) {
     // if there's an arrow, it gets the position we just calculated, and the text gets offset by ax,ay
     // and make sure the text and arrowhead are on the paper
     if(options.showarrow){
-        var ax = Plotly.Lib.constrain(x,1,paperbb.width-1),
-            ay = Plotly.Lib.constrain(y,1,paperbb.height-1);
+        var ax = Plotly.Lib.constrain(x,1,paperBB.width-1),
+            ay = Plotly.Lib.constrain(y,1,paperBB.height-1);
         x += options.ax;
         y += options.ay;
     }
-    x = Plotly.Lib.constrain(x,1,paperbb.width-1);
-    y = Plotly.Lib.constrain(y,1,paperbb.height-1);
+    x = Plotly.Lib.constrain(x,1,paperBB.width-1);
+    y = Plotly.Lib.constrain(y,1,paperBB.height-1);
 
     var borderpad = Number(options.borderpad),
         borderfull = borderwidth+borderpad+1,
@@ -250,9 +251,9 @@ annotations.draw = function(gd,index,opt,value) {
         outerheight = annheight+2*borderfull;
     ann.call(Plotly.Drawing.setRect, x-outerwidth/2, y-outerheight/2, outerwidth, outerheight);
     annbg.call(Plotly.Drawing.setSize, annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
-    anntext.call(Plotly.Drawing.setPosition, paperbb.left-atbb.left+borderfull, paperbb.top-atbb.top+borderfull)
+    anntext.call(Plotly.Drawing.setPosition, paperBB.left-anntextBB.left+borderfull, paperBB.top-anntextBB.top+borderfull)
       .selectAll('tspan.nl')
-        .attr('x',paperbb.left-atbb.left+borderfull);
+        .attr('x',paperBB.left-anntextBB.left+borderfull);
 
     // add the arrow
     // uses options[arrowwidth,arrowcolor,arrowhead] for styling
@@ -276,10 +277,10 @@ annotations.draw = function(gd,index,opt,value) {
 //                 pad = 3;
 //         }
         boxes.forEach(function(bb){
-            var x1 = bb.left-paperbb.left-pad,
-                y1 = bb.top-paperbb.top-pad,
-                x2 = bb.right-paperbb.left+pad,
-                y2 = bb.bottom-paperbb.top+pad,
+            var x1 = bb.left-paperBB.left-pad,
+                y1 = bb.top-paperBB.top-pad,
+                x2 = bb.right-paperBB.left+pad,
+                y2 = bb.bottom-paperBB.top+pad,
                 edges = [[x1,y1,x1,y2],[x1,y2,x2,y2],[x2,y2,x2,y1],[x2,y1,x1,y1]];
             if(ax>x1 && ax<x2 && ay>y1 && ay<y2) { // remove the line if it ends inside the box
                 showline=false;
@@ -298,7 +299,8 @@ annotations.draw = function(gd,index,opt,value) {
             var arrowgroup = gd.infolayer.append('g')
                 .attr('class','annotation')
                 .attr('data-cmmt',options.tag)
-                .attr('data-index',String(index));
+                .attr('data-index',String(index))
+                .style('opacity',options.opacity);
             var arrow = arrowgroup.append('path')
                 .attr('class','annotation')
                 .attr('data-cmmt',options.tag)
@@ -346,6 +348,8 @@ annotations.draw = function(gd,index,opt,value) {
                 };
                 window.onmouseup = function(e2) {
                     window.onmousemove = null; window.onmouseup = null;
+                    if(gl.xaxis.autorange) { update['xaxis.autorange'] = true; }
+                    if(gl.yaxis.autorange) { update['yaxis.autorange'] = true; }
                     if(gd.dragged) { Plotly.relayout(gd,update); }
                     return Plotly.Lib.pauseEvent(e2);
                 };
@@ -395,6 +399,8 @@ annotations.draw = function(gd,index,opt,value) {
         window.onmouseup = function(e2) {
             window.onmousemove = null; window.onmouseup = null;
             $(eln).css('cursor','');
+            if(gl.xaxis.autorange) { update['xaxis.autorange'] = true; }
+            if(gl.yaxis.autorange) { update['yaxis.autorange'] = true; }
             if(gd.dragged) { Plotly.relayout(gd,update); }
             return Plotly.Lib.pauseEvent(e2);
         };
@@ -475,6 +481,48 @@ annotations.allArrowheads = function(container){
                 '<line stroke="rgb(0,0,0)" style="fill: none;" x1="5" y1="10" x2="25" y2="10" stroke-width="2">'+
                 '</line></svg>'
         }; });
+};
+
+annotations.calcAutorange = function(gd) {
+    var gl = gd.layout, xa = gl.xaxis, ya = gl.yaxis;
+    if((!xa.autorange && !ya.autorange) || !gl.annotations || !gd.data || !gd.data.length) { return; }
+
+    var saveAnnotations = gl.annotations, // store the real annotations
+        plotBB = gd.plotbg.node().getBoundingClientRect(),
+        plotcenterx = (plotBB.left+plotBB.right)/2,
+        plotcentery = (plotBB.top+plotBB.bottom)/2;
+
+    // temporarily replace plot-referenced annotations with transparent, centered ones
+    var tempAnnotations = [];
+    saveAnnotations.forEach(function(ann){
+        console.log(ann);
+        if(ann.ref=='plot') {
+            tempAnnotations.push($.extend({},ann,
+                {x:0.5, y:0.5, ref:'paper', x0:ann.x, y0:ann.y, opacity:1}));
+        }
+    });
+    gl.annotations = tempAnnotations;
+    annotations.drawAll(gd);
+    console.log(tempAnnotations);
+
+    // find the bounding boxes for each of these annotations relative to the center of the plot
+    gl.annotations.forEach(function(ann,i){
+        var arrowBB = gd.infolayer.selectAll('g.annotation[data-index="'+i+'"]')
+                .node().getBoundingClientRect(),
+            textBB = gd.infolayer.selectAll('svg.annotation[data-index="'+i+'"]')
+                .node().getBoundingClientRect(),
+            leftpad = Math.max(0,plotcenterx - Math.min(arrowBB.left,textBB.left)),
+            rightpad = Math.max(0,Math.max(arrowBB.right,textBB.right) - plotcenterx),
+            toppad = Math.max(0,plotcentery - Math.min(arrowBB.top,textBB.top)),
+            bottompad = Math.max(0,Math.max(arrowBB.bottom,textBB.bottom) - plotcentery);
+        console.log(ann.x0,ann.y0,plotcenterx,plotcentery,arrowBB,textBB,leftpad,rightpad,toppad,bottompad);
+        Plotly.Axes.expand(xa, [xa.l2c(ann.x0)], {ppadplus:rightpad, ppadminus:leftpad});
+        Plotly.Axes.expand(ya, [ya.l2c(ann.y0)], {ppadplus:bottompad, ppadminus:toppad});
+    });
+
+    // restore the real annotations (will be redrawn later in Plotly.plot)
+    gl.annotations = saveAnnotations;
+    // throw 'stop here!';
 };
 
 // look for intersection of two line segments (1->2 and 3->4) - returns array [x,y] if they do, null if not
