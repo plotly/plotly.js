@@ -15,8 +15,8 @@ function req(module, methods) {
     window[module] = moduleFill;
 }
 req('Annotations',['add','allArrowheads','draw','drawAll']);
-req('Axes',['setTypes','convertOne','convertToNums','setConvert','doAutoRange','expandBounds',
-    'expandWithZero','autoBin','autoTicks','tickIncrement','tickFirst','tickText','doTicks']);
+req('Axes',['setTypes','convertOne','convertToNums','setConvert','doAutoRange','expand',
+    'autoBin','autoTicks','tickIncrement','tickFirst','tickText','doTicks']);
 req('Bars',['calc','plot','setPositions']);
 req('Boxes',['calc','plot','setPositions','style']);
 req('Drawing',['rgb','opacity','addOpacity','strokeColor','fillColor','setPosition','setSize',
@@ -249,7 +249,7 @@ function updateTraces(old_data, new_data) {
 // so it can regenerate whenever it replots
 // note that now this function is only adding the brand in iframes and 3rd-party
 // apps, standalone plots get the sidebar instead.
-function positionBrand(gd){
+plots.positionBrand = function(gd){
     // if( window.self === window.top ) { return; } // not in an iframe
     $(gd).find('.linktotool').remove();
     var linktotool = $('<div class="linktotool">'+
@@ -271,7 +271,7 @@ function positionBrand(gd){
             hiddenform.remove();
         });
     }
-}
+};
 
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call newPlot
@@ -333,7 +333,7 @@ Plotly.plot = function(gd, data, layout) {
     gd.numboxes = 0;
 
     // prepare the types and conversion functions for the axes
-    // also clears the autorange bounds ._tight, ._padded
+    // also clears the autorange bounds ._min, ._max
     Plotly.Axes.setTypes(gd);
 
     // prepare the data and find the autorange
@@ -378,6 +378,7 @@ Plotly.plot = function(gd, data, layout) {
         if(!('line' in gdc)) gdc.line = {};
         if(!('marker' in gdc)) gdc.marker = {};
         if(!('line' in gdc.marker)) gdc.marker.line = {};
+        if(!('textfont' in gdc)) gdc.textfont = {};
         if(!$.isArray(cd) || !cd[0]) { cd = [{x: false, y: false}]; } // make sure there is a first point
 
         // add the trace-wide properties to the first point, per point properties to every point
@@ -403,22 +404,20 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Lib.markTime('done with setstyles and bar/box adjustments');
 
     // autorange for errorbars
-    Plotly.Axes.expandBounds(ya,ya._padded,Plotly.ErrorBars.ydr(gd));
+    if(ya.autorange) {
+        Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd),{padded:true});
+    }
     Plotly.Lib.markTime('done Plotly.ErrorBars.ydr');
 
     // autorange for annotations
-    if(gl.annotations) { gl.annotations.forEach(function(ann){
-        if(ann.ref!='plot') { return; }
-        // TODO
-    }); }
+    Plotly.Annotations.calcAutorange(gd);
+    // TODO: autosize extra for big pts, text too
 
     Plotly.Axes.doAutoRange(gd,xa);
     Plotly.Axes.doAutoRange(gd,ya);
 
     gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
-    Plotly.Axes.doTicks(gd); // draw ticks, titles, and calculate axis scaling (._b, ._m)
-    xa._r = xa.range.slice(); // store ranges for later use
-    ya._r = ya.range.slice();
+    Plotly.Axes.doTicks(gd,'redraw'); // draw ticks, titles, and calculate axis scaling (._b, ._m)
 
     Plotly.Lib.markTime('done autorange and ticks');
 
@@ -476,7 +475,7 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Annotations.drawAll(gd);
 
     // final cleanup
-    if(!gd.mainsite && !gd.standalone) { positionBrand(gd); } // 'view in plotly' link for embedded plots
+    if(!gd.mainsite && !gd.standalone) { plots.positionBrand(gd); } // 'view in plotly' link for embedded plots
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
@@ -508,7 +507,7 @@ plots.setStyles = function(gd, merge_dflt) {
         var val = stringify ? JSON.stringify(a[k]) : a[k];
 
         if($.isArray(val)) {
-            var l = Math.max(cd.length,val.length);
+            var l = Math.min(cd.length,val.length);
             for(var i=0; i<l; i++) { cd[i][attr]=val[i]; }
             cd[0].t[attr] = dflt; // use the default for the trace-wide value
         }
@@ -573,6 +572,10 @@ plots.setStyles = function(gd, merge_dflt) {
                 }
                 mergeattr(gdc,'mode','mode',defaultMode);
                 mergeattr(gdc.line,'dash','ld','solid');
+                mergeattr(gdc,'textposition','tp','middle center');
+                mergeattr(gdc.textfont,'size','ts',gd.layout.font.size);
+                mergeattr(gdc.textfont,'color','tc',gd.layout.font.color);
+                mergeattr(gdc.textfont,'family','tf',gd.layout.font.family);
             }
             else if(type==='box') {
                 mergeattr(gdc.marker,'outliercolor','soc','rgba(0,0,0,0)');
@@ -599,14 +602,20 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr(gdc.ybins,'end','ybend',1);
                 mergeattr(gdc.ybins,'size','ybsize',1);
             }
-            mergeattr(gdc,'x0','x0',0);
-            mergeattr(gdc,'dx','dx',1);
-            mergeattr(gdc,'y0','y0',0);
-            mergeattr(gdc,'dy','dy',1);
+            else {
+                mergeattr(gdc,'xtype','xtype',gdc.x ? 'array' : 'noarray');
+                mergeattr(gdc,'ytype','ytype',gdc.y ? 'array' : 'noarray');
+                mergeattr(gdc,'x0','x0',0);
+                mergeattr(gdc,'dx','dx',1);
+                mergeattr(gdc,'y0','y0',0);
+                mergeattr(gdc,'dy','dy',1);
+            }
             mergeattr(gdc,'zauto','zauto',true);
             mergeattr(gdc,'zmin','zmin',-10);
             mergeattr(gdc,'zmax','zmax',10);
-            mergeattr(gdc, 'scl', 'scl', Plotly.Heatmap.defaultScale,true);
+            mergeattr(gdc,'scl', 'scl', Plotly.Heatmap.defaultScale,true);
+            mergeattr(gdc,'showscale','showscale',true);
+            mergeattr(gdc,'zsmooth', 'zsmooth', false);
         }
         else if(plots.BARTYPES.indexOf(type)!=-1){
             if(type!='bar') {
@@ -634,6 +643,8 @@ function applyStyle(gd) {
         .each(function(d){
             d3.select(this).selectAll('path,rect')
                 .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
+            d3.select(this).selectAll('text')
+                .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
         });
 
     gp.selectAll('g.trace polyline.line')
@@ -699,7 +710,9 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // harder though.
     var replot_attr=[
         'mode','visible','type','bardir','fill','histnorm',
-        'mincolor','maxcolor','scale','x0','dx','y0','dy','zmin','zmax','zauto','scl',
+        'marker.size','text','textfont.size','textposition',
+        'xtype','x0','dx','ytype','y0','dy',
+        'zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth','showscale',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array','error_y.width',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
@@ -777,6 +790,13 @@ Plotly.restyle = function(gd,astr,val,traces) {
             else if(ai=='autobinx') { doextra(cont,xbins,undefined,i); }
             else if(ybins.indexOf(ai)!=-1) { doextra(cont,'autobiny',false,i); }
             else if(ai=='autobiny') { doextra(cont,ybins,undefined,i); }
+            // heatmaps:setting x0 or dx, y0 or dy, should turn xtype/ytype to 'scaled' if 'array'
+            else if(['x0','dx'].indexOf(ai)!=-1 && cont.x && cont.xtype!='scaled') {
+                doextra(cont,'xtype','scaled',i);
+            }
+            else if(['y0','dy'].indexOf(ai)!=-1 && cont.x && cont.ytype!='scaled') {
+                doextra(cont,'ytype','scaled',i);
+            }
 
             // save the old value
             undoit[ai][i] = param.get();
@@ -1098,19 +1118,21 @@ function makePlotFramework(divid, layout) {
     }
     // Make the graph containers
     // the order here controls what's in front of what
-    gd.paper = gd.paperdiv.append('svg');
+    gd.paper = gd.paperdiv.append('svg')
+        .attr('xmlns','http://www.w3.org/2000/svg')
+        .attr('xmlns:xmlns:xlink','http://www.w3.org/1999/xlink'); // odd d3 quirk - need namespace twice??
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
-    gd.axlines = {
-        x:gd.paper.append('path').style('fill','none').classed('crisp',true),
-        y:gd.paper.append('path').style('fill','none').classed('crisp',true)
-    };
     gd.gridlayer = gd.paper.append('g').attr('class','gridlayer');
     gd.zerolinelayer = gd.paper.append('g').attr('class','zerolinelayer');
     // Second svg (plot) is for the data
     gd.plot = gd.paper.append('svg')
         .attr('preserveAspectRatio','none')
         .style('fill','none');
+    gd.axlines = {
+        x:gd.paper.append('path').style('fill','none').classed('crisp',true),
+        y:gd.paper.append('path').style('fill','none').classed('crisp',true)
+    };
     gd.axislayer = gd.paper.append('g').attr('class','axislayer');
     gd.draglayer = gd.paper.append('g').attr('class','draglayer');
     gd.infolayer = gd.paper.append('g').attr('class','infolayer');
@@ -1120,9 +1142,7 @@ function makePlotFramework(divid, layout) {
     layoutStyles(gd);
 
     // make the ticks, grids, and axis titles
-    Plotly.Axes.doTicks(gd);
-    xa._r = xa.range.slice(); // store ranges for later use
-    ya._r = ya.range.slice();
+    Plotly.Axes.doTicks(gd,'redraw');
 
     // make the axis drag objects and hover effects
     Plotly.Fx.init(gd);
@@ -1146,6 +1166,8 @@ function layoutStyles(gd) {
     var gm = gd.margin;
     gd.plotwidth=gl.width-gm.l-gm.r;
     gd.plotheight=gl.height-gm.t-gm.b;
+    xa._pixrange = gd.plotwidth;
+    ya._pixrange = gd.plotheight;
 
     gd.paperdiv.style({width:gl.width+'px', height:gl.height+'px'});
     gd.paper.call(Plotly.Drawing.setSize, gl.width, gl.height);
@@ -1254,7 +1276,7 @@ plots.titles = function(gd,title) {
     }
 
     if(txt) {
-        Plotly.Drawing.styleText(el.node(), txt + (!cont.unit ? '' : (' ('+cont.unit+')')));
+        Plotly.Drawing.styleText(el.node(), txt + (!cont.unit ? '' : (' ('+cont.unit+')')),'clickable');
     }
     else if(gd.mainsite) {
         el.text('Click to enter '+name+' title')
