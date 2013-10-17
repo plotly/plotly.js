@@ -320,14 +320,12 @@ lib.killspin = function(parent){
 };
 
 // start the main spinner
-lib.startspin = function(parent,spinsize,top,left){
+lib.startspin = function(parent,spinsize,options){
     if(parent===undefined){ parent=gettab(); }
+    options = options || {};
     if((typeof parent.spincount == 'number') && parent.spincount>0) {
         parent.spincount++;
-    }
-    if(top===undefined){ top = 'auto'; }
-    if(left===undefined){ left = 'auto'; }
-    else {
+    } else {
         parent.spincount=1;
         // big spinny
         var opts = {
@@ -345,8 +343,8 @@ lib.startspin = function(parent,spinsize,top,left){
             hwaccel: false, // Whether to use hardware acceleration
             className: 'spinner', // The CSS class to assign to the spinner
             zIndex: 2e9, // The z-index (defaults to 2000000000)
-            top: top, // Top position relative to parent in px
-            left: left // Left position relative to parent in px
+            top: 'auto', // Top position relative to parent in px
+            left: 'auto' // Left position relative to parent in px
         };
         // modify for tiny spinny
         if(spinsize=='tiny') {
@@ -355,9 +353,9 @@ lib.startspin = function(parent,spinsize,top,left){
             opts.width = 2;
             opts.radius = 5;
             opts.corners = 0.6;
-            opts.top = top; //'55';
-            opts.left = left; //'80';
         }
+        // apply optional options
+        opts = $.extend({}, opts, options);
         var spinner=new Spinner(opts).spin(parent);
         parent.spinner=spinner;
     }
