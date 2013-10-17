@@ -277,6 +277,8 @@ legend.draw = function(gd) {
             xf = null,
             yf = null;
         gd.dragged = false;
+        Plotly.Fx.setCursor(el3);
+
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
                 dy = e2.clientY-e.clientY,
@@ -298,12 +300,12 @@ legend.draw = function(gd) {
             else { yf = 1-Plotly.Fx.dragAlign(y0+dy,legendheight,gdm.t,gl.height-gdm.b); }
 
             var csr = Plotly.Fx.dragCursors(xf,yf);
-            $(eln).css('cursor',csr);
+            Plotly.Fx.setCursor(el3,csr);
             return Plotly.Lib.pauseEvent(e2);
         };
         window.onmouseup = function(e2) {
             window.onmousemove = null; window.onmouseup = null;
-            $(eln).css('cursor','');
+            Plotly.Fx.setCursor(el3);
             if(gd.dragged && xf!==null && yf!==null) {
                 Plotly.relayout(gd,{'legend.x':xf,'legend.y':yf});
             }
