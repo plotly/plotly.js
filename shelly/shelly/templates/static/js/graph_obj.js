@@ -404,14 +404,13 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Lib.markTime('done with setstyles and bar/box adjustments');
 
     // autorange for errorbars
-    Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd),{padded:true});
+    if(ya.autorange) {
+        Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd),{padded:true});
+    }
     Plotly.Lib.markTime('done Plotly.ErrorBars.ydr');
 
     // autorange for annotations
-    if(gl.annotations) { gl.annotations.forEach(function(ann){
-        if(ann.ref!='plot') { return; }
-        // TODO
-    }); }
+    Plotly.Annotations.calcAutorange(gd);
     // TODO: autosize extra for big pts, text too
 
     Plotly.Axes.doAutoRange(gd,xa);
@@ -1119,7 +1118,9 @@ function makePlotFramework(divid, layout) {
     }
     // Make the graph containers
     // the order here controls what's in front of what
-    gd.paper = gd.paperdiv.append('svg');
+    gd.paper = gd.paperdiv.append('svg')
+        .attr('xmlns','http://www.w3.org/2000/svg')
+        .attr('xmlns:xmlns:xlink','http://www.w3.org/1999/xlink'); // odd d3 quirk - need namespace twice??
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.gridlayer = gd.paper.append('g').attr('class','gridlayer');

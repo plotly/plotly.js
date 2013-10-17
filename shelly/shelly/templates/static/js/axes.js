@@ -234,8 +234,10 @@ axes.setConvert = function(ax) {
     function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null; }
     function fromLog(v){ return Math.pow(10,v); }
     function num(v){ return $.isNumeric(v) ? v : null; }
+
     ax.c2l = (ax.type=='log') ? toLog : num;
     ax.l2c = (ax.type=='log') ? fromLog : num;
+
     ax.c2p = function(v,clip) {
         var va = ax.c2l(v);
         // include 2 fractional digits on pixel, for PDF zooming etc
@@ -247,6 +249,21 @@ axes.setConvert = function(ax) {
         }
     };
     ax.p2c = function(px){ return ax.l2c((px-ax._b)/ax._m); };
+
+    // set scaling to pixels
+    ax.setScale = function(gd){
+        if(!ax.range || ax.range.length!=2 || ax.range[0]==ax.range[1]) {
+            ax.range = [-1,1];
+        }
+        if(ax===gd.layout.yaxis) {
+            ax._m=gd.plotheight/(ax.range[0]-ax.range[1]);
+            ax._b=-ax._m*ax.range[1];
+        }
+        else {
+            ax._m=gd.plotwidth/(ax.range[1]-ax.range[0]);
+            ax._b=-ax._m*ax.range[0];
+        }
+    };
 
     // separate auto data ranges for tight-fitting and padded bounds
     // at the end we will combine all of these, but keep them separate until then
@@ -299,6 +316,7 @@ axes.expand = function(ax,data,options) {
     if(!ax._min) { ax._min = []; }
     if(!ax._max) { ax._max = []; }
     if(!options) { options = {}; }
+    if(!ax._m) { ax.setScale(gd); }
 
     var len = data.length,
         extrappad = options.padded ? ax._pixrange*0.05 : 0,
@@ -310,8 +328,8 @@ axes.expand = function(ax,data,options) {
         else { var v = Math.max(Number(item||0),0); return function(){ return v; }; }
     }
     var ppad = getPad(options.ppad),
-        ppadplus = getPad(options.ppadplus),
-        ppadminus = getPad(options.ppadminus),
+        ppadplus = getPad(ax._m>0 ? options.ppadplus : options.ppadminus),
+        ppadminus = getPad(ax._m>0 ? options.ppadminus : options.ppadplus),
         vpad = getPad(options.vpad);
 
     function minfilter(v) {
@@ -826,15 +844,7 @@ axes.doTicks = function(gd,axletter) {
         ax={x:gl.xaxis, y:gl.yaxis}[axletter];
     ax.range = ax.range.map(Number); // in case a val turns into string somehow
 
-    // set scaling to pixels
-    if(ax===gd.layout.yaxis) {
-        ax._m=gd.plotheight/(ax.range[0]-ax.range[1]);
-        ax._b=-ax._m*ax.range[1];
-    }
-    else {
-        ax._m=gd.plotwidth/(ax.range[1]-ax.range[0]);
-        ax._b=-ax._m*ax.range[0];
-    }
+    ax.setScale(gd); // set scaling to pixels
 
     var vals=calcTicks(gd,ax),
         datafn = function(d){ return d.text+d.x; },
@@ -860,7 +870,7 @@ axes.doTicks = function(gd,axletter) {
             x: function(d){ return d.dx+gm.l; },
             y: function(d){ return d.dy+y1+standoff+d.fontSize; },
             anchor: function(angle){
-                if(!$.isNumeric(angle) || angle==180) { return 'middle'; }
+                if(!$.isNumeric(angle) || angle===0 || angle==180) { return 'middle'; }
                 return angle<0 ? 'end' : 'start';
             }
         };
@@ -908,20 +918,18 @@ axes.doTicks = function(gd,axletter) {
     ticks.exit().remove();
 
     // tick labels
-    // gd.axislayer.selectAll('text.'+tcls).remove(); // TODO: problems with reusing labels... shouldn't need this.
     var yl=gd.axislayer.selectAll('text.'+tcls).data(vals, datafn);
     if(ax.showticklabels) {
         var maxFontSize = 0, autoangle = 0;
         yl.enter().append('text').classed(tcls,1)
             .call(Plotly.Drawing.setPosition, tl.x, tl.y)
-            .call(Plotly.Drawing.font,
-                function(d){ return d.font; },
-                function(d){ return d.fontSize; },
-                function(d){ return d.fontColor; })
-            .each(function(d){ Plotly.Drawing.styleText(this,d.text); });
+            .each(function(d){
+                Plotly.Drawing.font(d3.select(this),d.font,d.fontSize,d.fontColor);
+                Plotly.Drawing.styleText(this,d.text);
+            });
         yl.attr('transform',function(d){
                 maxFontSize = Math.max(maxFontSize,d.fontSize);
-                return transfn(d) + ($.isNumeric(ax.tickangle) ?
+                return transfn(d) + (($.isNumeric(ax.tickangle) && Number(ax.tickangle)!==0) ?
                 (' rotate('+ax.tickangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')') : '');
             })
             .attr('text-anchor',tl.anchor(ax.tickangle));
