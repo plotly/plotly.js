@@ -85,7 +85,8 @@ scatter.plot = function(gd,cdscatter) {
     var scattertraces = gd.plot.selectAll('g.trace.scatter') // <-- select trace group
         .data(cdscatter) // <-- bind calcdata to traces
       .enter().append('g') // <-- add a trace for each calcdata
-        .attr('class','trace scatter');
+        .attr('class','trace scatter')
+        .style('stroke-miterlimit',2);
 
 
     // BUILD SCATTER LINES AND FILL
