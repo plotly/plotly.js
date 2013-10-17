@@ -425,15 +425,13 @@ heatmap.plot = function(gd,cd) {
         .classed(id,true)
         // .classed('pixelated',true) // we can hope pixelated works...
         .attr("xmlns","http://www.w3.org/2000/svg")
-        .attr("xlink:href", imgstr)
+        .attr("xlink:xlink:href", imgstr) // odd d3 quirk, need namespace twice
         .attr("height",ht)
         .attr("width",wd)
         .attr("x",left)
         .attr("y",top)
         .attr('preserveAspectRatio','none');
 
-    // doesn't work with d3, for some reason... gives namespace Error.
-    $(gd.plot.node()).attr("xmlns:xlink","http://www.w3.org/1999/xlink");
     Plotly.Lib.markTime('done showing png');
 
     // show a colorscale
@@ -477,7 +475,8 @@ function insert_colorbar(gd,cd, cb_id, scl) {
         Plotly.relayout(gd,'margin.r',200);
     }
 
-    var min=cd[0].t.zmin, max=cd[0].t.zmax,
+    var min=cd[0].t.zmin,
+        max=cd[0].t.zmax,
         // "colorbar domain" - interpolate numbers for colorscale
         d = scl.map(function(v){ return min+v[0]*(max-min); }),
         // "colorbar range" - colors in scl
@@ -499,7 +498,9 @@ function insert_colorbar(gd,cd, cb_id, scl) {
             // TODO: colorbar spacing from plot (fixed at 50 right now)
             // should be a variable in gd.data and editable from a popover
             .attr("transform","translate("+(gl.width-gl.margin.r+50)+","+(gl.margin.t)+")")
-            .classed("colorbar",true),
+            .classed("colorbar",true)
+            .classed('crisp',true)
+            .call(Plotly.Drawing.font,gl.font.family||'Arial',gl.font.size||12,gl.font.color||'#000'),
         cb = colorBar(gl)
             .color(d3.scale.linear().domain(d).range(r))
             .size(gl.height-gl.margin.t-gl.margin.b)
@@ -508,6 +509,11 @@ function insert_colorbar(gd,cd, cb_id, scl) {
             .precision(2); // <-- gradient granularity TODO: should be a variable in colorbar popover
 
     g.call(cb);
+
+    // fix styling - TODO: make colorbar styling configurable
+    g.selectAll('.axis line, .axis .domain')
+        .style('fill','none')
+        .style('stroke','none');
 }
 
 function getScale(cd) {
