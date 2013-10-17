@@ -388,4 +388,62 @@ lib.bBoxIntersect = function(a,b){
 // minor performance booster for d3...
 lib.identity = function(d){ return d; };
 
+// check if signed-in
+lib.signedin = function(){
+    getuser();
+    return ((typeof user === 'undefined' || user === '') ? false : true);
+};
+
+// used to display and show html containers
+// example:
+// if HTML Content: <div data-fruit=["apples","oranges"]></div>
+// then:
+//      togglecontent('', 'fruit', 'oranges');  // displays that div
+//      togglecontent('', 'fruit', 'kiwi');     // hides that div
+lib.togglecontent = function(selector, data_key, data_value){
+    $(selector+' [data-'+data_key+']').each(function(){
+        $t = $(this);
+        d = $(this).data(data_key);
+        a = $.isArray(d) ? d : [d];
+        if($.inArray(data_value,a)>=0){ $t.show(); }
+        else{ $t.hide(); }
+    });
+};
+
+lib.num2ordinal = function(n) {
+    // From: http://stackoverflow.com/questions/12487422/take-a-value-1-31-and-convert-it-to-ordinal-date-w-javascript
+    // num2ordinal("test");   // test
+    // num2ordinal(1.5);      // 1.5
+    // num2ordinal(1);        // 1st
+    // num2ordinal(2);        // 2nd
+    // num2ordinal(3);        // 3rd
+    // num2ordinal(4);        // 4th
+    // num2ordinal(true);     // true
+    // num2ordinal(Infinity); // Infinity
+    // num2ordinal(NaN);      // NaN
+    // num2ordinal(void 0);   // undefined
+
+    if((parseFloat(n) == parseInt(n,10)) && !isNaN(n)){
+        if(parseInt(n,10)>=1 && parseInt(n,10)<=9){
+            return ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth'][parseInt(n,10)-1];
+        } else{
+            var s=["th","st","nd","rd"],
+            v=n%100;
+            return n+(s[(v-20)%10]||s[v]||s[0]);
+        }
+    }
+    return n;
+};
+
+lib.ppn = function(n){
+    // Pretty print the number
+    n = parseInt(n,10);
+    return (n>=0 && n<=9 ? ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'][n] : n);
+};
+
+lib.plotlyurl = function(page){
+    return window.location.origin+'/'+page;
+};
+
+
 }()); // end Lib object definition
