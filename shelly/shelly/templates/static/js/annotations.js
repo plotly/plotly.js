@@ -371,6 +371,8 @@ annotations.draw = function(gd,index,opt,value) {
             update = {},
             annbase = 'annotations['+index+']';
         gd.dragged = false;
+        Plotly.Fx.setCursor(el3);
+
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
                 dy = e2.clientY-e.clientY;
@@ -378,7 +380,7 @@ annotations.draw = function(gd,index,opt,value) {
             if(Math.abs(dy)<MINDRAG) { dy=0; }
             if(dx||dy) { gd.dragged = true; }
             el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
-            var csr='pointer';
+            var csr = 'pointer';
             if(options.showarrow) {
                 update[annbase+'.ax'] = options.ax+dx;
                 update[annbase+'.ay'] = options.ay+dy;
@@ -393,17 +395,19 @@ annotations.draw = function(gd,index,opt,value) {
                 update[annbase+'.x'] = options.x+dx/gl.xaxis._m;
                 update[annbase+'.y'] = options.y+dy/gl.yaxis._m;
             }
-            $(eln).css('cursor',csr);
+            Plotly.Fx.setCursor(el3,csr);
             return Plotly.Lib.pauseEvent(e2);
         };
+
         window.onmouseup = function(e2) {
             window.onmousemove = null; window.onmouseup = null;
-            $(eln).css('cursor','');
+            Plotly.Fx.setCursor(el3);
             if(gl.xaxis.autorange) { update['xaxis.autorange'] = true; }
             if(gl.yaxis.autorange) { update['yaxis.autorange'] = true; }
             if(gd.dragged) { Plotly.relayout(gd,update); }
             return Plotly.Lib.pauseEvent(e2);
         };
+
         return Plotly.Lib.pauseEvent(e);
     };}
 };

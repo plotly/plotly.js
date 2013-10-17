@@ -206,7 +206,7 @@ drawing.styleText = function(sn,t,clickable) {
     var s = d3.select(sn),
         // whitelist of tags we accept - make sure new tags get added here
         // as well as styleTextInner
-        tags = ['sub','sup','b','i','font'],
+        tags = ['sub','sup','b','i','font','a'],
         tagRE = new RegExp('\x01(\\/?(br|'+tags.join('|')+')(\\s[^\x01\x02]*)?\\/?)\x02','gi'),
         entityRE = /\x01([A-Za-z]+|#[0-9]+);/g,
         charsRE = new RegExp('&('+Object.keys(SPECIALCHARS).join('|')+');','g'),
@@ -285,6 +285,14 @@ drawing.styleText = function(sn,t,clickable) {
                     if(atl=='color') { s.call(drawing.fillColor,atv); }
                     else { s.attr('font-'+atl,atv); }
                 }
+            },
+            a: function(s,a){
+                for(var j=0; j<a.length; j++) {
+                    var at = a[j], atl = at.name.toLowerCase(), atv = at.nodeValue;
+                    if(atl=='href') { s.attr('xlink:xlink:href',atv); }
+                }
+                s.attr('target','_blank');
+                    // .call(drawing.fillColor,'#0088cc');
             }
         };
 
@@ -292,7 +300,7 @@ drawing.styleText = function(sn,t,clickable) {
             var nn=n[i].nodeName.toLowerCase(),nc=n[i].childNodes;
             if(nn=='#text') { addtext(n[i].nodeValue); }
             else if(nn=='c') { addtext(SPECIALCHARS[nc[0].nodeValue]||'?'); }
-            else if(sf[nn]) { sti(s.append('tspan').call(sf[nn],n[i].attributes),nc); }
+            else if(sf[nn]) { sti(s.append(nn=='a' ? 'a' : 'tspan').call(sf[nn],n[i].attributes),nc); }
         }
     }
 };

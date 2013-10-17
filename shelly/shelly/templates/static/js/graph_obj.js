@@ -1118,7 +1118,9 @@ function makePlotFramework(divid, layout) {
     }
     // Make the graph containers
     // the order here controls what's in front of what
-    gd.paper = gd.paperdiv.append('svg');
+    gd.paper = gd.paperdiv.append('svg')
+        .attr('xmlns','http://www.w3.org/2000/svg')
+        .attr('xmlns:xmlns:xlink','http://www.w3.org/1999/xlink'); // odd d3 quirk - need namespace twice??
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.gridlayer = gd.paper.append('g').attr('class','gridlayer');

@@ -870,7 +870,7 @@ axes.doTicks = function(gd,axletter) {
             x: function(d){ return d.dx+gm.l; },
             y: function(d){ return d.dy+y1+standoff+d.fontSize; },
             anchor: function(angle){
-                if(!$.isNumeric(angle) || angle==180) { return 'middle'; }
+                if(!$.isNumeric(angle) || angle===0 || angle==180) { return 'middle'; }
                 return angle<0 ? 'end' : 'start';
             }
         };
@@ -918,20 +918,18 @@ axes.doTicks = function(gd,axletter) {
     ticks.exit().remove();
 
     // tick labels
-    // gd.axislayer.selectAll('text.'+tcls).remove(); // TODO: problems with reusing labels... shouldn't need this.
     var yl=gd.axislayer.selectAll('text.'+tcls).data(vals, datafn);
     if(ax.showticklabels) {
         var maxFontSize = 0, autoangle = 0;
         yl.enter().append('text').classed(tcls,1)
             .call(Plotly.Drawing.setPosition, tl.x, tl.y)
-            .call(Plotly.Drawing.font,
-                function(d){ return d.font; },
-                function(d){ return d.fontSize; },
-                function(d){ return d.fontColor; })
-            .each(function(d){ Plotly.Drawing.styleText(this,d.text); });
+            .each(function(d){
+                Plotly.Drawing.font(d3.select(this),d.font,d.fontSize,d.fontColor);
+                Plotly.Drawing.styleText(this,d.text);
+            });
         yl.attr('transform',function(d){
                 maxFontSize = Math.max(maxFontSize,d.fontSize);
-                return transfn(d) + ($.isNumeric(ax.tickangle) ?
+                return transfn(d) + (($.isNumeric(ax.tickangle) && Number(ax.tickangle)!==0) ?
                 (' rotate('+ax.tickangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')') : '');
             })
             .attr('text-anchor',tl.anchor(ax.tickangle));
