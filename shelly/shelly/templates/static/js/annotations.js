@@ -25,7 +25,6 @@ annotations.add = function(gd) {
 // if opt is blank, val can be 'add' or a full options object to add a new
 //  annotation at that point in the array, or 'remove' to delete this annotation
 annotations.draw = function(gd,index,opt,value) {
-    console.log(index,opt,value);
     var gl = gd.layout,
         gm = gd.margin,
         MINDRAG = Plotly.Fx.MINDRAG,
@@ -494,7 +493,8 @@ annotations.calcAutorange = function(gd) {
     var saveAnnotations = gl.annotations, // store the real annotations
         plotBB = gd.plotbg.node().getBoundingClientRect(),
         plotcenterx = (plotBB.left+plotBB.right)/2,
-        plotcentery = (plotBB.top+plotBB.bottom)/2;
+        plotcentery = (plotBB.top+plotBB.bottom)/2,
+        blank = {left:plotcenterx, right:plotcenterx, top:plotcentery, bottom:plotcentery};
 
     // temporarily replace plot-referenced annotations with transparent, centered ones
     var tempAnnotations = [];
@@ -511,10 +511,10 @@ annotations.calcAutorange = function(gd) {
 
     // find the bounding boxes for each of these annotations relative to the center of the plot
     gl.annotations.forEach(function(ann,i){
-        var arrowBB = gd.infolayer.selectAll('g.annotation[data-index="'+i+'"]')
-                .node().getBoundingClientRect(),
-            textBB = gd.infolayer.selectAll('svg.annotation[data-index="'+i+'"]')
-                .node().getBoundingClientRect(),
+        var arrowNode = gd.infolayer.selectAll('g.annotation[data-index="'+i+'"]').node(),
+            arrowBB = arrowNode ? arrowNode.getBoundingClientRect() : blank,
+            textNode = gd.infolayer.selectAll('svg.annotation[data-index="'+i+'"]').node(),
+            textBB = textNode ? textNode.getBoundingClientRect() : blank,
             leftpad = Math.max(0,plotcenterx - Math.min(arrowBB.left,textBB.left)),
             rightpad = Math.max(0,Math.max(arrowBB.right,textBB.right) - plotcenterx),
             toppad = Math.max(0,plotcentery - Math.min(arrowBB.top,textBB.top)),
