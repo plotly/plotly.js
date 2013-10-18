@@ -347,8 +347,6 @@ annotations.draw = function(gd,index,opt,value) {
                 };
                 window.onmouseup = function(e2) {
                     window.onmousemove = null; window.onmouseup = null;
-                    if(gl.xaxis.autorange) { update['xaxis.autorange'] = true; }
-                    if(gl.yaxis.autorange) { update['yaxis.autorange'] = true; }
                     if(gd.dragged) { Plotly.relayout(gd,update); }
                     return Plotly.Lib.pauseEvent(e2);
                 };
@@ -401,8 +399,6 @@ annotations.draw = function(gd,index,opt,value) {
         window.onmouseup = function(e2) {
             window.onmousemove = null; window.onmouseup = null;
             Plotly.Fx.setCursor(el3);
-            if(gl.xaxis.autorange) { update['xaxis.autorange'] = true; }
-            if(gl.yaxis.autorange) { update['yaxis.autorange'] = true; }
             if(gd.dragged) { Plotly.relayout(gd,update); }
             return Plotly.Lib.pauseEvent(e2);
         };
@@ -499,7 +495,6 @@ annotations.calcAutorange = function(gd) {
     // temporarily replace plot-referenced annotations with transparent, centered ones
     var tempAnnotations = [];
     saveAnnotations.forEach(function(ann){
-        console.log(ann);
         if(ann.ref=='plot') {
             tempAnnotations.push($.extend({},ann,
                 {x:0.5, y:0.5, ref:'paper', x0:ann.x, y0:ann.y, opacity:1}));
@@ -507,7 +502,6 @@ annotations.calcAutorange = function(gd) {
     });
     gl.annotations = tempAnnotations;
     annotations.drawAll(gd);
-    console.log(tempAnnotations);
 
     // find the bounding boxes for each of these annotations relative to the center of the plot
     gl.annotations.forEach(function(ann,i){
@@ -519,14 +513,12 @@ annotations.calcAutorange = function(gd) {
             rightpad = Math.max(0,Math.max(arrowBB.right,textBB.right) - plotcenterx),
             toppad = Math.max(0,plotcentery - Math.min(arrowBB.top,textBB.top)),
             bottompad = Math.max(0,Math.max(arrowBB.bottom,textBB.bottom) - plotcentery);
-        console.log(ann.x0,ann.y0,plotcenterx,plotcentery,arrowBB,textBB,leftpad,rightpad,toppad,bottompad);
         Plotly.Axes.expand(xa, [xa.l2c(ann.x0)], {ppadplus:rightpad, ppadminus:leftpad});
         Plotly.Axes.expand(ya, [ya.l2c(ann.y0)], {ppadplus:bottompad, ppadminus:toppad});
     });
 
     // restore the real annotations (will be redrawn later in Plotly.plot)
     gl.annotations = saveAnnotations;
-    // throw 'stop here!';
 };
 
 // look for intersection of two line segments (1->2 and 3->4) - returns array [x,y] if they do, null if not
