@@ -970,10 +970,14 @@ Plotly.relayout = function(gd,astr,val) {
                     }
                     else { undoit[ai]=gl.annotations[p.parts[1]]; }
                 }
-                else { console.log('???'); }
+                else { console.log('???',aobj); }
             }
             Plotly.Annotations.draw(gd,p.parts[1],p.parts.slice(2).join('.'),aobj[ai]);
             delete aobj[ai];
+            if((gl.xaxis.autorange || gl.yaxis.autorange) &&
+                ai.indexOf('color')==-1 && ai.indexOf('opacity')==-1) {
+                    doplot = true;
+            }
         }
         // alter gd.layout
         else {
@@ -1005,20 +1009,18 @@ Plotly.relayout = function(gd,astr,val) {
     // redraw
     // first check if there's still anything to do
     var ak = Object.keys(aobj);
-    if(ak.length) {
-        if(doplot) {
-            gd.layout = undefined; // force plot() to redo the layout
-            Plotly.plot(gd,'',gl); // pass in the modified layout
+    if(doplot) {
+        gd.layout = undefined; // force plot() to redo the layout
+        Plotly.plot(gd,'',gl); // pass in the modified layout
+    }
+    else if(ak.length) {
+        // if we didn't need to redraw the whole thing, just do the needed parts
+        if(dolegend) {
+            gd.infolayer.selectAll('.legend').remove();
+            if(gl.showlegend) { Plotly.Legend.draw(gd); }
         }
-        else {
-            // if we didn't need to redraw the whole thing, just do the needed parts
-            if(dolegend) {
-                gd.infolayer.selectAll('.legend').remove();
-                if(gl.showlegend) { Plotly.Legend.draw(gd); }
-            }
-            if(dolayoutstyle) { layoutStyles(gd); }
-            if(doticks) { Plotly.Axes.doTicks(gd,'redraw'); plots.titles(gd,'gtitle'); }
-        }
+        if(dolayoutstyle) { layoutStyles(gd); }
+        if(doticks) { Plotly.Axes.doTicks(gd,'redraw'); plots.titles(gd,'gtitle'); }
     }
     $(gd).trigger('relayout.plotly',redoit);
 };
