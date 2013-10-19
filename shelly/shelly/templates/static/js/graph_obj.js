@@ -23,7 +23,7 @@ req('Drawing',['rgb','opacity','addOpacity','strokeColor','fillColor','setPositi
     'setRect','translatePoints','traceStyle','lineGroupStyle','fillGroupStyle','pointStyle','styleText']);
 req('ErrorBars',['returnToStyleBox','pushRef2GDC','styleBoxDrop','styleBox','ydr','plot','style']);
 req('Fx',['init','hover','unhover','click','modeBar','dragAlign','dragCursors','dragClear','autoGrowInput']);
-req('Heatmap',['calc','plot','margin','defaultScale']);
+req('Heatmap',['calc','plot','margin']);
 req('Histogram',['calc']);
 req('Legend',['lines','points','bars','boxes','draw']);
 req('Lib',['dateTime2ms','isDateTime','ms2DateTime','findBin','distinctVals','nestedProperty',
@@ -130,6 +130,90 @@ plots.defaultColors = ['#1f77b4', // muted blue
                 '#7f7f7f', // middle gray
                 '#bcbd22', // curry yellow-green
                 '#17becf']; // blue-teal
+
+Plotly.colorscales = {
+    'YIGnBu':[[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94, 168)"],
+        [0.375,"rgb(29, 145, 192)"],[0.5,"rgb(65, 182, 196)"],[0.625,"rgb(127, 205, 187)"],
+        [0.75,"rgb(199, 233, 180)"],[0.875,"rgb(237, 248, 217)"],[1,"rgb(255, 255, 217)"]],
+
+    'YIOrRd':[[0,"rgb(128, 0, 38)"],[0.125,"rgb(189, 0, 38)"],[0.25,"rgb(227, 26, 28)"],
+        [0.375,"rgb(252, 78, 42)"],[0.5,"rgb(253, 141, 60)"],[0.625,"rgb(254, 178, 76)"],
+        [0.75,"rgb(254, 217, 118)"],[0.875,"rgb(255, 237, 160)"],[1,"rgb(255, 255, 204)"]],
+
+    'RdBu':[[0,"rgb(33, 102, 172)"],[0.125,"rgb(67, 147, 195)"],[0.25,"rgb(146, 197, 222)"],
+        [0.375,"rgb(209, 229, 240)"],[0.5,"rgb(247, 247, 247)"],[0.625,"rgb(253, 219, 199)"],
+        [0.75,"rgb(244, 165, 130)"],[0.875,"rgb(214, 96, 77)"],[1,"rgb(178, 24, 43)"]],
+
+    'Greens':[[0,"rgb(0, 68, 27)"],[0.125,"rgb(0, 109, 44)"],[0.25,"rgb(35, 139, 69)"],
+        [0.375,"rgb(65, 171, 93)"],[0.5,"rgb(116, 196, 118)"],[0.625,"rgb(161, 217, 155)"],
+        [0.75,"rgb(199, 233, 192)"],[0.875,"rgb(229, 245, 224)"],[1,"rgb(247, 252, 245)"]],
+
+    'rainbow':[[0,"rgb(0, 0, 150)"],[0.125,"rgb(0, 25, 255)"],[0.25,"rgb(0, 152, 255)"],
+        [0.375,"rgb(44, 255, 202)"],[0.5,"rgb(151, 255, 96)"],[0.625,"rgb(255, 234, 0)"],
+        [0.75,"rgb(255, 111, 0)"],[0.875,"rgb(223, 0, 0)"],[1,"rgb(132, 0, 0)"]],
+
+    'portland':[[0,"rgb(12,51,131)"],[0.25,"rgb(10,136,186)"],[0.5,"rgb(242,211,56)"],
+                [0.75,"rgb(242,143,56)"],[1,"rgb(217,30,30)"]],
+
+    'picnic':[[0,"rgb(0,0,255)"],[0.1,"rgb(51,153,255)"],[0.2,"rgb(102,204,255)"],
+                [0.3,"rgb(153,204,255)"],[0.4,"rgb(204,204,255)"],[0.5,"rgb(255,255,255)"],
+                [0.6,"rgb(255,204,255)"],[0.7,"rgb(255,153,255)"],[0.8,"rgb(255,102,204)"],
+                [0.9,"rgb(255,102,102)"],[1,"rgb(255,0,0)"]],
+
+    'greys':[[0,"rgb(0,0,0)"],[1,"rgb(255,255,255)"]],
+
+    'bluered':[[0,"rgb(0,0,255)"],[1,"rgb(255,0,0)"]] };
+
+Plotly.defaultColorscale = Plotly.colorscales.YIGnBu;
+
+// add all of these colorscales to css dynamically, so we don't have to keep them in sync manually
+// dynamic stylesheet, see http://davidwalsh.name/add-rules-stylesheets
+// css syntax from http://www.colorzilla.com/gradient-editor/
+(function() {
+    var style = document.createElement("style");
+    // WebKit hack :(
+    style.appendChild(document.createTextNode(""));
+    document.head.appendChild(style);
+    var styleSheet = style.sheet;
+
+    function addStyleRule(selector,stylestring) {
+        if(styleSheet.insertRule) { styleSheet.insertRule(selector+'{'+stylestring+'}',0); }
+        else if(lib.styleSheet.addRule) { styleSheet.addRule(selector,stylestring,0); }
+        else { console.log('addStyleRule failed'); }
+    }
+
+    function pct(v){ return String(Math.round((1-v)*100))+'%';}
+
+    for(var scaleName in Plotly.colorscales) {
+        var scale = Plotly.colorscales[scaleName],
+            list1 = '', // color1 0%, color2 12%, ...
+            list2 = ''; // color-stop(0%,color1), color-stop(12%,color2) ...
+        for(var i=scale.length-1; i>=0; i--) {
+            list1 += ', '+scale[i][1]+' '+pct(scale[i][0]);
+            list2 += ', color-stop('+pct(scale[i][0])+','+scale[i][1]+')';
+        }
+        var rule =
+            // old browsers with no supported gradients - shouldn't matter to us
+            // as they won't have svg anyway?
+            'background: '+scale[scale.length-1][1]+';' +
+            // FF 3.6+
+            'background: -moz-linear-gradient(top'+list1+');' +
+            // Chrome,Safari4+
+            'background: -webkit-gradient(linear, left top, left bottom'+list2+');' +
+            // Chrome10+,Safari5.1+
+            'background: -webkit-linear-gradient(top'+list1+');' +
+            // Opera 11.10+
+            'background: -o-linear-gradient(top'+list1+');' +
+            // IE10+
+            'background: -ms-linear-gradient(top'+list1+');' +
+            // W3C
+            'background: linear-gradient(to bottom'+list1+');' +
+            // IE6-9 (only gets start and end colors)
+            "filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='"+
+                scale[scale.length-1][1]+"',endColorstr='"+scale[0][1]+"',GradientType=0);";
+        addStyleRule('.'+scaleName,rule);
+    }
+}());
 
 // default layout defined as a function rather than a constant so it makes a new copy each time
 function defaultLayout(){
@@ -613,7 +697,7 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr(gdc,'zauto','zauto',true);
             mergeattr(gdc,'zmin','zmin',-10);
             mergeattr(gdc,'zmax','zmax',10);
-            mergeattr(gdc,'scl', 'scl', Plotly.Heatmap.defaultScale,true);
+            mergeattr(gdc,'scl', 'scl', Plotly.defaultColorscale,true);
             mergeattr(gdc,'showscale','showscale',true);
             mergeattr(gdc,'zsmooth', 'zsmooth', false);
         }
@@ -990,6 +1074,7 @@ Plotly.relayout = function(gd,astr,val) {
                 p.parts[1].indexOf('exponent')!=-1 ||
                 p.parts[1].indexOf('grid')!=-1 ||
                 p.parts[1].indexOf('zeroline')!=-1)) { doticks = true; }
+            else if(ai.indexOf('axis.linewidth')!=-1) { doticks = dolayoutstyle = true; }
             else if(p.parts.length>1 && (
                 p.parts[1].indexOf('line')!=-1 ||
                 p.parts[1].indexOf('mirror')!=-1)) { dolayoutstyle = true; }
@@ -1193,17 +1278,17 @@ function layoutStyles(gd) {
 
     var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
         ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
-        xp = gm.p+ylw/2,
-        yp = gm.p-xlw/2, // shorten y axis lines so they don't overlap x axis lines
+        xp = gm.p+ylw,
+        yp = gm.p, // shorten y axis lines so they don't overlap x axis lines
         yp2 = xa.mirror ? 0 : xlw; // except at the top when there's no mirror x
     gd.axlines.x
-        .attr('d', 'M'+(gm.l-xp)+','+(gm.t+gd.plotheight+gm.p)+'h'+(gd.plotwidth+2*xp) +
-            (xa.mirror ? ('m0,-'+(gd.plotheight+2*gm.p)+'h-'+(gd.plotwidth+2*xp)) : ''))
+        .attr('d', 'M'+(gm.l-xp)+','+(gm.t+gd.plotheight+gm.p+xlw/2)+'h'+(gd.plotwidth+2*xp) +
+            (xa.mirror ? ('m0,-'+(gd.plotheight+2*gm.p+xlw)+'h-'+(gd.plotwidth+2*xp)) : ''))
         .attr('stroke-width',xlw)
         .call(Plotly.Drawing.strokeColor,xa.linecolor);
     gd.axlines.y
-        .attr('d', 'M'+(gm.l-gm.p)+','+(gm.t-yp-yp2)+'v'+(gd.plotheight+2*yp+yp2) +
-            (ya.mirror ? ('m'+(gd.plotwidth+2*gm.p)+',0v-'+(gd.plotheight+2*yp+yp2)) : ''))
+        .attr('d', 'M'+(gm.l-gm.p-ylw/2)+','+(gm.t-yp-yp2)+'v'+(gd.plotheight+2*yp+yp2) +
+            (ya.mirror ? ('m'+(gd.plotwidth+2*gm.p+ylw)+',0v-'+(gd.plotheight+2*yp+yp2)) : ''))
         .attr('stroke-width',ylw)
         .call(Plotly.Drawing.strokeColor,ya.linecolor);
     plots.titles(gd,'gtitle');

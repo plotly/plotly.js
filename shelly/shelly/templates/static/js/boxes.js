@@ -85,7 +85,7 @@ boxes.setPositions = function(gd) {
     if(boxx.length) {
         var boxdv = Plotly.Lib.distinctVals(boxx),
             dx = boxdv.minDiff/2;
-        Plotly.Axes.expand(xa,boxdv.vals,{padded:true,vpad:dx});
+        Plotly.Axes.expand(xa,boxdv.vals,{vpad:dx});
         boxlist.forEach(function(i){ gd.calcdata[i][0].t.dx = dx; });
         // if there's no duplication of x points, disable 'group' mode by setting numboxes=1
         if(boxx.length==boxdv.vals.length) { gd.numboxes = 1; }
