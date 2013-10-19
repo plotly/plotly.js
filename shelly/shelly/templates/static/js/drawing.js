@@ -97,14 +97,18 @@ drawing.fillGroupStyle = function(s) {
 
 // apply the marker to each point
 // draws the marker with diameter roughly markersize, centered at 0,0
-// POINTCODE: let users specify numbers 0+ for symbols, instead of names
+// POINTCODE: let users specify numbers 0..8 for symbols, instead of names
 SYMBOLCODE = ['circle','square','diamond','cross','x',
     'triangle-up','triangle-down','triangle-left','triangle-right'];
 drawing.pointStyle = function(s,t) {
     // only scatter & box plots get marker path and opacity - bars, histograms don't
     if(['scatter','box'].indexOf(t.type)!=-1) {
+        var sizeRef = t.msr || 1,
+            sizeFn = (t.msm=='area') ?
+                function(v){ return Math.sqrt(v/sizeRef); } :
+                function(v){ return v/sizeRef; };
         s.attr('d',function(d){
-            var r=((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/2;
+            var r=sizeFn(((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/2);
             if(!$.isNumeric(r) || r<0) { r=3; } // in case of "various" etc... set a visible default
             var rt=String(d3.round(r*2/Math.sqrt(3),2)),
                 r2=String(d3.round(r/2,2)),
@@ -137,16 +141,42 @@ drawing.pointStyle = function(s,t) {
         })
         .style('opacity',function(d){ return (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1; });
     }
+    // allow all marker and marker line colors to be scaled by given max and min to colorscales
+    var colorscales = {m:tryColorscale(t,'m'), ml:tryColorscale(t,'ml'),
+                so:tryColorscale(t,'so'), sol:tryColorscale(t,'sol')};
     s.each(function(d){
         var a = (d.so) ? 'so' : 'm', // suggested outliers, for box plots
             lw = a+'lw', c = a+'c', lc = a+'lc',
             w = (d[lw]+1 || t[lw]+1 || (d.t ? d.t[lw] : 0)+1) - 1,
             p = d3.select(this);
         p.attr('stroke-width',w)
-            .call(drawing.fillColor, d[c] || t[c] || (d.t ? d.t[c] : ''));
-        if(w) { p.call(drawing.strokeColor, d[lc] || t[lc] || (d.t ? d.t[lc] : '')); }
+            .call(drawing.fillColor, colorscales[a](d[c] || t[c] || (d.t ? d.t[c] : '')));
+        if(w) { p.call(drawing.strokeColor, colorscales[a+'l'](d[lc] || t[lc] || (d.t ? d.t[lc] : ''))); }
     });
 };
+
+// for a given color attribute (ie m -> mc = marker.color) look to see if we
+// have a colorscale for it (ie mscl, mcmin, mcmax) - if we do, translate all
+// numeric color values according to that scale
+function tryColorscale(t,attr) {
+    if((attr+'scl') in t && (attr+'cmin') in t && (attr+'cmax') in t) {
+        var scl = t[attr+'scl'],
+            min = t[attr+'cmin'],
+            max = t[attr+'cmax'];
+        if(typeof scl == 'string' && scl in Plotly.colorscales) {
+            scl = Plotly.colorscales[scl];
+        }
+        var d = scl.map(function(si){ return min + si[0]*(max-min); }),
+            r = scl.map(function(si){ return si[1]; });
+
+        s = d3.scale.linear()
+            .domain(d)
+            .interpolate(d3.interpolateRgb)
+            .range(r);
+        return function(v){ return $.isNumeric(v) ? s(v) : v; };
+    }
+    else { return Plotly.Lib.identity; }
+}
 
 // draw text at points
 TEXTOFFSETSIGN = {start:1,end:-1,middle:0,bottom:1,top:-1};
