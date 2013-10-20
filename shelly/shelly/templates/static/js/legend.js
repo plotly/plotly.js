@@ -39,9 +39,9 @@ legend.points = function(d){
     }
     if(showText) {
         pts.selectAll('text')
-            .data(function(d){var d1 = $.extend({},d); d1.tx = 'T'; return d1;})
+            .data(function(d){ return [$.extend({},d[0],{tx:'Aa'})]; })
           .enter().append('text')
-            .call(Plotly.Drawing.textPointStyle,t)
+            .call(Plotly.Drawing.textPointStyle,$.extend({},t,{ts:10}))
             .attr('transform','translate(20,0)');
     }
 };
@@ -95,7 +95,7 @@ function legendText(s,gd){
             lf.family||gf.family||'Arial',
             lf.size||gf.size||12,
             lf.color||gf.color||'#000')
-        .each(function(d){ Plotly.Drawing.styleText(this,d[0].t.name,d[0].t.noretrieve); });
+        .each(function(d){ Plotly.Drawing.styleText(this,d[0].t.name,'clickable'); });
 }
 
 // -----------------------------------------------------
@@ -277,6 +277,8 @@ legend.draw = function(gd) {
             xf = null,
             yf = null;
         gd.dragged = false;
+        Plotly.Fx.setCursor(el3);
+
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
                 dy = e2.clientY-e.clientY,
@@ -298,12 +300,12 @@ legend.draw = function(gd) {
             else { yf = 1-Plotly.Fx.dragAlign(y0+dy,legendheight,gdm.t,gl.height-gdm.b); }
 
             var csr = Plotly.Fx.dragCursors(xf,yf);
-            $(eln).css('cursor',csr);
+            Plotly.Fx.setCursor(el3,csr);
             return Plotly.Lib.pauseEvent(e2);
         };
         window.onmouseup = function(e2) {
             window.onmousemove = null; window.onmouseup = null;
-            $(eln).css('cursor','');
+            Plotly.Fx.setCursor(el3);
             if(gd.dragged && xf!==null && yf!==null) {
                 Plotly.relayout(gd,{'legend.x':xf,'legend.y':yf});
             }

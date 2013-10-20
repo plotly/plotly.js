@@ -34,9 +34,11 @@ boxes.calc = function(gd,gdc) {
         bins = xvals.map(function(v){ return v-dx; }),
         l = xvals.length;
     bins.push(xvals[l-1]+dx);
-    // y autorange based on all source points - x happens afterward when
-    // we know all the x values
-    Plotly.Axes.expandBounds(ya,ya._padded,y);
+
+    // y autorange based on all source points
+    // x happens afterward when we know all the x values
+    Plotly.Axes.expand(ya,y,{padded:true});
+
     // bin the points
     y.forEach(function(v,i){
         if(!$.isNumeric(v)){ return; }
@@ -83,7 +85,7 @@ boxes.setPositions = function(gd) {
     if(boxx.length) {
         var boxdv = Plotly.Lib.distinctVals(boxx),
             dx = boxdv.minDiff/2;
-        Plotly.Axes.expandBounds(xa,xa._padded,boxdv.vals,null,dx);
+        Plotly.Axes.expand(xa,boxdv.vals,{vpad:dx});
         boxlist.forEach(function(i){ gd.calcdata[i][0].t.dx = dx; });
         // if there's no duplication of x points, disable 'group' mode by setting numboxes=1
         if(boxx.length==boxdv.vals.length) { gd.numboxes = 1; }
@@ -106,6 +108,7 @@ boxes.plot = function(gd,cdbox) {
             // box center offset
             bx = group ? 2*t.dx*(-0.5+(t.boxnum+0.5)/gd.numboxes)*(1-gl.boxgap) : 0,
             wdx = bdx*t.ww; // whisker width
+        if(t.visible===false) { d3.select(this).remove(); return; }
         // save the box size and box position for use by hover
         t.bx = bx;
         t.bdx = bdx;

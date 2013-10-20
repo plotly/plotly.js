@@ -17,36 +17,47 @@ scatter.calc = function(gd,gdc) {
             x = Plotly.Axes.convertOne(gdc,'x',xa),
             y = Plotly.Axes.convertOne(gdc,'y',ya),
             serieslen = Math.min(x.length,y.length);
+        if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen); }
+        if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen); }
 
-        // check whether x bounds should be tight or padded
-        // regardless of everything else, y errorbars mean x should be padded
-        if(gdc.error_y && gdc.error_y.visible) {
-            Plotly.Axes.expandBounds(xa,xa._padded,x,serieslen);
+        // check whether bounds should be tight, padded, extended to zero...
+        // most cases both should be padded on both ends, so start with that.
+        var xOptions = {padded:true},
+            yOptions = {padded:true};
+        // include marker size
+        if(gdc.mode && gdc.mode.indexOf('markers')!=-1) {
+            var markerPad = gdc.marker ? gdc.marker.size : 0;
+            markerTrans = function(v) { return (v||6)/1.6; };
+            xOptions.ppad = yOptions.ppad = $.isArray(markerPad) ?
+                markerPad.map(markerTrans) : markerTrans(markerPad);
         }
+        // TODO: text size
+
         // include zero (tight) and extremes (padded) if fill to zero
-        else if(gdc.fill=='tozerox' || (gdc.fill=='tonextx' && gd.firstscatter)) {
-            Plotly.Axes.expandWithZero(xa,x,serieslen);
+        if(gdc.fill=='tozerox' || (gdc.fill=='tonextx' && gd.firstscatter)) {
+            xOptions.tozero = true;
         }
-        // tight x: any y fill, or no markers or text
-        else if(['tonexty','tozeroy'].indexOf(gdc.fill)!=-1 ||
-          (gdc.mode && gdc.mode.indexOf('markers')==-1 && gdc.mode.indexOf('text')==-1) || // explicit no markers/text
-          (!gdc.mode && serieslen>=scatter.PTS_LINESONLY)) { // automatic no markers
-            Plotly.Axes.expandBounds(xa,xa._tight,x,serieslen);
+        // if no error bars, markers or text, or fill to y=0 remove x padding
+        else if((!gdc.error_y || !gdc.error_y.visible) &&
+            (['tonexty','tozeroy'].indexOf(gdc.fill)!=-1 ||
+            (gdc.mode && gdc.mode.indexOf('markers')==-1 && gdc.mode.indexOf('text')==-1) || // explicit no markers/text
+            (!gdc.mode && serieslen>=scatter.PTS_LINESONLY))) { // automatic no markers
+                xOptions.padded = false;
+                xOptions.ppad = 0;
         }
-        // otherwise both ends padded
-        else { Plotly.Axes.expandBounds(xa,xa._padded,x,serieslen); }
 
-        // now check for y - rather different logic
+        // now check for y - rather different logic, though still mostly padded both ends
         // include zero (tight) and extremes (padded) if fill to zero
         if(gdc.fill=='tozeroy' || (gdc.fill=='tonexty' && gd.firstscatter)) {
-            Plotly.Axes.expandWithZero(ya,y,serieslen);
+            yOptions.tozero = true;
         }
         // tight y: any x fill
         else if(['tonextx','tozerox'].indexOf(gdc.fill)!=-1) {
-            Plotly.Axes.expandBounds(ya,ya._tight,y,serieslen);
+            yOptions.padded = false;
         }
-        // otherwise both ends padded - whether or not there are markers
-        else { Plotly.Axes.expandBounds(ya,ya._padded,y,serieslen); }
+
+        Plotly.Axes.expand(xa, x, xOptions);
+        Plotly.Axes.expand(ya, y, yOptions);
 
         // create the "calculated data" to plot
         for(i=0;i<serieslen;i++) {
@@ -74,7 +85,8 @@ scatter.plot = function(gd,cdscatter) {
     var scattertraces = gd.plot.selectAll('g.trace.scatter') // <-- select trace group
         .data(cdscatter) // <-- bind calcdata to traces
       .enter().append('g') // <-- add a trace for each calcdata
-        .attr('class','trace scatter');
+        .attr('class','trace scatter')
+        .style('stroke-miterlimit',2);
 
 
     // BUILD SCATTER LINES AND FILL
