@@ -851,7 +851,7 @@ axes.doTicks = function(gd,axletter) {
         tcls = axletter+'tick',
         gcls = axletter+'grid',
         zcls = axletter+'zl',
-        pad = gm.p+(ax.ticks=='outside' ? 1 : -1) * ($.isNumeric(ax.linewidth) ? ax.linewidth : 1)/2,
+        pad = gm.p+(ax.ticks=='outside' ? 1 : 0) * ($.isNumeric(ax.linewidth) ? ax.linewidth : 1),
         standoff = ax.ticks=='outside' ? ax.ticklen : ax.linewidth+1,
         pixfn = function(d){ return ax._m*d.x+ax._b; },
         gridwidth = ax.gridwidth || 1,
