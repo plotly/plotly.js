@@ -9,10 +9,10 @@ var plots = Plotly.Plots = {};
 // module is the name of the object, methods are the methods to fill.
 function noop(){}
 function req(module, methods) {
-    if(module in window) { return; }
+    if(module in window.Plotly) { return; }
     var moduleFill = {};
     for(var i=0; i<methods.length; i++) { moduleFill[methods[i]] = noop; }
-    window[module] = moduleFill;
+    window.Plotly[module] = moduleFill;
 }
 req('Annotations',['add','allArrowheads','draw','drawAll']);
 req('Axes',['setTypes','convertOne','convertToNums','setConvert','doAutoRange','expand',
