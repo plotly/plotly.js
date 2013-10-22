@@ -52,11 +52,11 @@ drawing.traceStyle = function(s,gd) {
         gl = gd.layout;
     s.style('opacity',function(d){ return d[0].t.op; })
     // first see if there would be bars to stack)
-    .each(function(d){ if(Plotly.Plots.BARTYPES.indexOf(d[0].t.type)!=-1) { barcount++; } })
+    .each(function(d){ if(Plotly.Plots.isBar(d[0].t.type)) { barcount++; } })
     // for gapless (either stacked or neighboring grouped) bars use crispEdges
     // to turn off antialiasing so an artificial gap isn't introduced.
     .each(function(d){
-        if(Plotly.Plots.BARTYPES.indexOf(d[0].t.type)!=-1 &&
+        if(Plotly.Plots.isBar(d[0].t.type) &&
           ((gl.barmode=='stack' && barcount>1) ||
           (gl.bargap===0 && gl.bargroupgap===0 && !d[0].t.mlw))){
             d3.select(this).attr('shape-rendering','crispEdges');
