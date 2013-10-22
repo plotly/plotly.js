@@ -23,6 +23,11 @@ heatmap.calc = function(gd,gdc) {
         y0, dy,
         z = gdc.z,
         i;
+
+    // cancel minimum tick spacings (only applies to bars and boxes)
+    xa._minDtick = 0;
+    ya._minDtick = 0;
+
     Plotly.Lib.markTime('done convert x&y');
 
     if(gdc.type=='histogram2d') {
@@ -411,7 +416,7 @@ heatmap.margin = function(gd){
     var gl = gd.layout;
     if(gd.data && gd.data.length && gl.margin.r<200) {
         for(var curve in gd.data) {
-            if((Plotly.Plots.HEATMAPTYPES.indexOf(gd.data[curve].type)!=-1) && (gd.data[curve].showscale!==false)) {
+            if(Plotly.Plots.isHeatmap(gd.data[curve].type) && (gd.data[curve].showscale!==false)) {
                 gl.margin.r=200;
                 return true;
             }

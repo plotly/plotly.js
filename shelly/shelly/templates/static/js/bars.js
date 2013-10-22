@@ -37,7 +37,7 @@ bars.setPositions = function(gd) {
             pa, sa, pdr;
         gd.calcdata.forEach(function(cd,i) {
             var t=cd[0].t;
-            if(t.visible!==false && Plotly.Plots.BARTYPES.indexOf(t.type)!=-1 &&
+            if(t.visible!==false && Plotly.Plots.isBar(t.type) &&
               (t.bardir||'v')==dir) {
                 bl.push(i);
             }
@@ -61,6 +61,9 @@ bars.setPositions = function(gd) {
             var dv = Plotly.Lib.distinctVals(pvals),
                 pv2 = dv.vals,
                 barDiff = dv.minDiff;
+            // check forced minimum dtick
+            Plotly.Axes.minDtick(pa,barDiff,pv2[0],gl.barmode=='group');
+
             // position axis autorange - always tight fitting
             Plotly.Axes.expand(pa,pv2,{vpad:barDiff/2});
             // bar widths and position offsets
