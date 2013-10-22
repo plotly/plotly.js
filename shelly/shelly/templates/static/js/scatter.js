@@ -17,6 +17,11 @@ scatter.calc = function(gd,gdc) {
             x = Plotly.Axes.convertOne(gdc,'x',xa),
             y = Plotly.Axes.convertOne(gdc,'y',ya),
             serieslen = Math.min(x.length,y.length);
+
+        // cancel minimum tick spacings (only applies to bars and boxes)
+        xa._minDtick = 0;
+        ya._minDtick = 0;
+
         if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen); }
         if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen); }
 
