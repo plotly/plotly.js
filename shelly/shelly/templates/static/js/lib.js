@@ -388,12 +388,6 @@ lib.bBoxIntersect = function(a,b){
 // minor performance booster for d3...
 lib.identity = function(d){ return d; };
 
-// check if signed-in
-lib.signedin = function(){
-    getuser();
-    return ((typeof user === 'undefined' || user === '') ? false : true);
-};
-
 // used to display and show html containers
 // example:
 // if HTML Content: <div data-fruit=["apples","oranges"]></div>
