@@ -25,6 +25,7 @@ annotations.add = function(gd) {
 // if opt is blank, val can be 'add' or a full options object to add a new
 //  annotation at that point in the array, or 'remove' to delete this annotation
 annotations.draw = function(gd,index,opt,value) {
+    // console.log(index,opt,value,gd.layout.annotations);
     var gl = gd.layout,
         gm = gd.margin,
         MINDRAG = Plotly.Fx.MINDRAG,
