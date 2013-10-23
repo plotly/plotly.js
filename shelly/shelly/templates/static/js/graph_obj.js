@@ -1394,7 +1394,7 @@ plots.titles = function(gd,title) {
     }
     else if(gd.mainsite) {
         el.text('Click to enter '+name+' title')
-            .style('opacity',1)
+            .style('opacity',0)
             .on('mouseover',function(){d3.select(this).transition().duration(100).style('opacity',1);})
             .on('mouseout',function(){d3.select(this).transition().duration(1000).style('opacity',0);})
           .transition()
