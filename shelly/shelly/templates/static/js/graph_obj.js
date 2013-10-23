@@ -287,8 +287,10 @@ var graphInfo = {
     }
 };
 
-plots.BARTYPES = ['bar','histogramx','histogramy'];
-plots.HEATMAPTYPES = ['heatmap','histogram2d'];
+var BARTYPES = ['bar','histogramx','histogramy'];
+plots.isBar = function(type) { return BARTYPES.indexOf(type)!=-1; };
+var HEATMAPTYPES = ['heatmap','histogram2d'];
+plots.isHeatmap = function(type) { return HEATMAPTYPES.indexOf(type)!=-1; };
 
 plots.newTab = function(divid, layout) {
     makeToolMenu(divid);
@@ -334,7 +336,6 @@ function updateTraces(old_data, new_data) {
 // note that now this function is only adding the brand in iframes and 3rd-party
 // apps, standalone plots get the sidebar instead.
 plots.positionBrand = function(gd){
-    // if( window.self === window.top ) { return; } // not in an iframe
     $(gd).find('.linktotool').remove();
     var linktotool = $('<div class="linktotool">'+
         '<a><font class="muted">view in </font><font class="info">plotly</font></a>'+
@@ -451,13 +452,13 @@ Plotly.plot = function(gd, data, layout) {
             else { gdc.name='trace '+curve; }
         }
 
-        if (curvetype == 'scatter') { cd = Plotly.Scatter.calc(gd,gdc); }
-        else if (plots.BARTYPES.indexOf(curvetype) != -1) {
+        if (curvetype=='scatter') { cd = Plotly.Scatter.calc(gd,gdc); }
+        else if (plots.isBar(curvetype)) {
             if(curvetype=='bar') { cd = Plotly.Bars.calc(gd,gdc); }
             else { cd = Plotly.Histogram.calc(gd,gdc); }
         }
-        else if (plots.HEATMAPTYPES.indexOf(curvetype) != -1 ){ cd = Plotly.Heatmap.calc(gd,gdc); }
-        else if (curvetype == 'box') { cd = Plotly.Boxes.calc(gd,gdc); }
+        else if (plots.isHeatmap(curvetype)){ cd = Plotly.Heatmap.calc(gd,gdc); }
+        else if (curvetype=='box') { cd = Plotly.Boxes.calc(gd,gdc); }
 
         if(!('line' in gdc)) gdc.line = {};
         if(!('marker' in gdc)) gdc.marker = {};
@@ -517,7 +518,7 @@ Plotly.plot = function(gd, data, layout) {
         for(i in gd.calcdata){
             cd = gd.calcdata[i];
             type=cd[0].t.type;
-            if(plots.HEATMAPTYPES.indexOf(type)!=-1) {
+            if(plots.isHeatmap(type)) {
                 Plotly.Heatmap.plot(gd,cd);
                 Plotly.Lib.markTime('done heatmap '+i);
             }
@@ -526,7 +527,7 @@ Plotly.plot = function(gd, data, layout) {
                 $(gd).find('.hm'+i).remove();
                 $(gd).find('.cb'+i).remove();
 
-                if(plots.BARTYPES.indexOf(type)!=-1) { cdbar.push(cd); }
+                if(plots.isBar(type)) { cdbar.push(cd); }
                 else if(type=='box') { cdbox.push(cd); }
                 else { cdscatter.push(cd); }
             }
@@ -672,7 +673,7 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr(gdc,'pointpos','ptpos',0);
             }
         }
-        else if(plots.HEATMAPTYPES.indexOf(type)!=-1){
+        else if(plots.isHeatmap(type)){
             if(type==='histogram2d') {
                 mergeattr(gdc,'histnorm','histnorm','count');
                 mergeattr(gdc,'autobinx','autobinx',true);
@@ -701,7 +702,7 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr(gdc,'showscale','showscale',true);
             mergeattr(gdc,'zsmooth', 'zsmooth', false);
         }
-        else if(plots.BARTYPES.indexOf(type)!=-1){
+        else if(plots.isBar(type)){
             if(type!='bar') {
                 mergeattr(gdc,'histnorm','histnorm','count');
                 mergeattr(gdc,'autobinx','autobinx',true);
@@ -1367,7 +1368,7 @@ plots.titles = function(gd,title) {
     }
     else if(gd.mainsite) {
         el.text('Click to enter '+name+' title')
-            .style('opacity',1)
+            .style('opacity',0)
             .on('mouseover',function(){d3.select(this).transition().duration(100).style('opacity',1);})
             .on('mouseout',function(){d3.select(this).transition().duration(1000).style('opacity',0);})
           .transition()

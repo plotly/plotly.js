@@ -48,7 +48,7 @@ legend.points = function(d){
 
 legend.bars = function(d){
     var t = d[0].t;
-    if(Plotly.Plots.BARTYPES.indexOf(t.type)==-1) { return; }
+    if(!Plotly.Plots.isBar(t.type)) { return; }
     d3.select(this).append('g')
         .attr('class','legendpoints')
       .selectAll('path')
