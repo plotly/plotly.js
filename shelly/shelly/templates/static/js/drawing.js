@@ -98,8 +98,8 @@ drawing.fillGroupStyle = function(s) {
 // apply the marker to each point
 // draws the marker with diameter roughly markersize, centered at 0,0
 // POINTCODE: let users specify numbers 0..8 for symbols, instead of names
-SYMBOLCODE = ['circle','square','diamond','cross','x',
-    'triangle-up','triangle-down','triangle-left','triangle-right'];
+var SYMBOLCODE = ['circle','square','diamond','cross','x',
+                  'triangle-up','triangle-down','triangle-left','triangle-right'];
 drawing.pointStyle = function(s,t) {
     // only scatter & box plots get marker path and opacity - bars, histograms don't
     if(['scatter','box'].indexOf(t.type)!=-1) {
@@ -159,6 +159,7 @@ drawing.pointStyle = function(s,t) {
 // have a colorscale for it (ie mscl, mcmin, mcmax) - if we do, translate all
 // numeric color values according to that scale
 function tryColorscale(t,attr) {
+    var s;
     if((attr+'scl') in t && (attr+'cmin') in t && (attr+'cmax') in t) {
         var scl = t[attr+'scl'],
             min = t[attr+'cmin'],
@@ -179,7 +180,7 @@ function tryColorscale(t,attr) {
 }
 
 // draw text at points
-TEXTOFFSETSIGN = {start:1,end:-1,middle:0,bottom:1,top:-1};
+var TEXTOFFSETSIGN = {start:1,end:-1,middle:0,bottom:1,top:-1};
 drawing.textPointStyle = function(s,t) {
     s.each(function(d){
         var p = d3.select(this);
@@ -201,7 +202,7 @@ drawing.textPointStyle = function(s,t) {
                 d.tc || t.tc || (d.t ? d.t.tc : ''))
             .attr('text-anchor',h);
         drawing.styleText(p.node(),d.tx);
-        var tspans = p.selectAll('tspan');
+        var tspans = p.selectAll('tspan'),
             numLines = (tspans[0].length-1)*LINEEXPAND+1;
         tspans.attr('dx',TEXTOFFSETSIGN[h]*r);
         p.attr('dy',fontSize*0.75 + TEXTOFFSETSIGN[v]*r +
@@ -224,8 +225,8 @@ drawing.textPointStyle = function(s,t) {
 // but if it fails, displays the unparsed text with a tooltip about the error
 // TODO: will barf on tags crossing newlines... need to close and reopen any such tags if we want to allow this.
 
-SPECIALCHARS = {'mu':'\u03bc','times':'\u00d7','plusmn':'\u00b1'};
-LINEEXPAND = 1.3;
+var SPECIALCHARS = {'mu':'\u03bc','times':'\u00d7','plusmn':'\u00b1'};
+var LINEEXPAND = 1.3;
 
 // styleText - make styled svg text in the given node
 //      sn - the node to contain the text
@@ -271,7 +272,7 @@ drawing.styleText = function(sn,t,clickable) {
     t1=t1.replace(charsRE,'<c>$1</c>');
 
     // parse the text into an xml tree
-    lines=new DOMParser()
+    var lines=new DOMParser()
         .parseFromString('<t><l>'+t1+'</l></t>','text/xml')
         .getElementsByTagName('t')[0]
         .childNodes;

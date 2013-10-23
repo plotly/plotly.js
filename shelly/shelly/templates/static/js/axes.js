@@ -26,7 +26,7 @@ axes.setTypes = function(gd) {
 };
 
 function setType(gd,axletter){
-    var ax = gd.layout[axletter+'axis'];
+    var ax = gd.layout[axletter+'axis'],
         d0 = gd.data[0];
     if(!d0.type) { d0.type='scatter'; }
     // backward compatibility
@@ -893,7 +893,7 @@ axes.doTicks = function(gd,axletter) {
         standoff = ax.ticks=='outside' ? ax.ticklen : ax.linewidth+1,
         pixfn = function(d){ return ax._m*d.x+ax._b; },
         gridwidth = ax.gridwidth || 1,
-        span,x1,y1,tx,ty,tickpath,g,tl,transfn,i;
+        span,x1,y1,tx,ty,tickpath,g,tl,transfn,i, gridpath;
 
     // positioning arguments for x vs y axes
     if(axletter=='x') {
