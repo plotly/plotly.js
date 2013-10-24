@@ -155,14 +155,56 @@ lib.distinctVals = function(vals) {
 // also return the string and object so we don't have to keep track of them
 lib.nestedProperty = function(o,s) {
     var cont = o,
-        aa = s.split('.'), j;
+        aa = s.split('.'), i, j=0;
     // check for parts of the nesting hierarchy that are numbers (ie array elements)
-    for(j=0; j<aa.length; j++) {
-        var indexed = String(aa[j]).match(/([^\[\]]*)\[([\-0-9]*)\]/);
-        if(indexed) { aa.splice(j,1,indexed[1],Number(indexed[2])); }
+    while(j<aa.length) {
+        // look for non-bracket chars, then any number of [##] blocks
+        var indexed = String(aa[j]).match(/^([^\[\]]+)((\[\-?[0-9]*\])+)$/);
+        if(indexed) {
+            var indices = indexed[2].substr(1,indexed[2].length-2).split('][');
+            aa.splice(j,1,indexed[1]);
+            for(i=0; i<indices.length; i++) {
+                j++;
+                aa.splice(j,0,Number(indices[i]));
+            }
+        }
+        j++;
     }
+
+    // Special array index -1 gets and sets properties of an entire
+    // array at once.
+    // eg: "annotations[-1].showarrow" sets showarrow for all annotations
+    // set() can take either a single value to apply to all or an array
+    // to apply different to each entry. Get can also return either
+    var suffix = s.substr(s.indexOf('[-1]')+4), npArray;
+    if(suffix.charAt(0)=='.') { suffix = suffix.substr(1); }
+    function subNP(entry) { return lib.nestedProperty(entry,suffix); }
+    function subSet(v) {
+        for(i=0; i<npArray.length; i++) {
+            npArray[i].set($.isArray(v) ? v[i%v.length] : v);
+        }
+    }
+    function subGet(v) {
+        var allsame = true, out = [];
+        for(i=0; i<npArray.length; i++) {
+            out[i] = npArray[i].get();
+            if(out[i]!=out[0]) { allsame = false; }
+        }
+        return allsame ? out[0] : out;
+    }
+
     // dive in to the 2nd to last level
     for(j=0; j<aa.length-1; j++) {
+        if(aa[j]==-1) {
+            npArray = cont.map(subNP);
+            return {
+                set: subSet,
+                get: subGet,
+                astr: s,
+                parts: aa,
+                obj: o
+            };
+        }
         // make the heirarchy if it doesn't exist
         if(!(aa[j] in cont)) {
             cont[aa[j]] = (typeof aa[j+1]==='string') ? {} : [];

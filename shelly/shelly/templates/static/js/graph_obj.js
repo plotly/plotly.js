@@ -218,24 +218,8 @@ Plotly.defaultColorscale = Plotly.colorscales.YIGnBu;
 // default layout defined as a function rather than a constant so it makes a new copy each time
 function defaultLayout(){
     return {title:'Click to enter Plot title',
-        xaxis:{range:[-1,6],type:'-',mirror:true,linecolor:'#000',linewidth:1,
-            tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
-            showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
-            showgrid:true,gridcolor:'#ddd',gridwidth:1,
-            autorange:true,autotick:true,
-            zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
-            title:'Click to enter X axis title',unit:'',
-            titlefont:{family:'',size:0,color:''},
-            tickfont:{family:'',size:0,color:''}},
-        yaxis:{range:[-1,4],type:'-',mirror:true,linecolor:'#000',linewidth:1,
-            tick0:0,dtick:1,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
-            showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
-            showgrid:true,gridcolor:'#ddd',gridwidth:1,
-            autorange:true,autotick:true,
-            zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
-            title:'Click to enter Y axis title',unit:'',
-            titlefont:{family:'',size:0,color:''},
-            tickfont:{family:'',size:0,color:''}},
+        xaxis:defaultAxis({range:[-1,6],title:'Click to enter X axis title'}),
+        yaxis:defaultAxis({range:[-1,4],title:'Click to enter Y axis title'}),
         legend:{bgcolor:'#fff',bordercolor:'#000',borderwidth:1,
             font:{family:'',size:0,color:''},
             traceorder:'normal'
@@ -257,6 +241,20 @@ function defaultLayout(){
         dragmode:'zoom',
         hovermode:'x'
     };
+}
+
+function defaultAxis(extras) {
+    return $.extend({
+        range:[-1,6],type:'-',mirror:true,linecolor:'#000',linewidth:1,
+        tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
+        showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
+        showgrid:true,gridcolor:'#ddd',gridwidth:1,
+        autorange:true,autotick:true,
+        zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
+        title:'Click to enter X axis title',unit:'',
+        titlefont:{family:'',size:0,color:''},
+        tickfont:{family:'',size:0,color:''}
+    },extras);
 }
 // TODO: add label positioning
 
@@ -576,77 +574,96 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Lib.markTime('done plot');
 };
 
-// set display params per trace to default or provided value
+// setStyles: translate styles from gd.data to gd.calcdata,
+// filling in defaults for missing values and breaking out arrays to individual points
 plots.setStyles = function(gd, merge_dflt) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     merge_dflt = merge_dflt || false; // CP Edit - see mergeattr comment
 
+    var i,j,l,p,prop,val,cd,t,c,gdc,defaultColor;
+
     // merge object a[k] (which may be an array or a single value) into cd...
     // search the array defaults in case a[k] is missing (and for a default val
     // if some points of o are missing from a)
-    // CP Edit: if merge_dflt, then apply the default value into a... used for saving themes
+    // CP Edit: if merge_dflt, then apply the default value into gd.data... used for saving themes
     // CP Edit: pass key (k) as argument
-    // CP Edit: stringify option - used for heatmap colorscales
-    function mergeattr(a,k,attr,dflt,stringify) {
-        stringify = stringify || false;
-        var val = stringify ? JSON.stringify(a[k]) : a[k];
+    // AJ Edit: nosplit option - used for colorscales because they're
+    //          arrays but shouldn't be treated as per-point objects
+    function mergeattr(k,attr,dflt,nosplit) {
+        prop = Plotly.Lib.nestedProperty(gdc,k);
+        val = prop.get();
 
-        if($.isArray(val)) {
-            var l = Math.min(cd.length,val.length);
-            for(var i=0; i<l; i++) { cd[i][attr]=val[i]; }
-            cd[0].t[attr] = dflt; // use the default for the trace-wide value
+        if($.isArray(val) && !nosplit) {
+            l = Math.min(cd.length,val.length);
+            for(p=0; p<l; p++) { cd[p][attr]=val[p]; }
+            // use the default for the trace-wide value, in case individual vals are missing
+            cd[0].t[attr] = dflt;
         }
         else {
             cd[0].t[attr] = (typeof val != 'undefined') ? val : dflt;
             if(merge_dflt && typeof val == 'undefined'){
-                a[k] = stringify ? JSON.parse(dflt) : dflt;
+                prop.set(dflt);
             }
         }
     }
 
 
-    for(var i in gd.calcdata){
-        var cd = gd.calcdata[i], // trace plus styling
-            t = cd[0].t, // trace styling object
-            c = t.curve, // trace number
-            gdc = gd.data[c],
-            dc = plots.defaultColors[c % plots.defaultColors.length];
+    for(i in gd.calcdata){
+        cd = gd.calcdata[i]; // trace plus styling
+        t = cd[0].t; // trace styling object
+        c = t.curve; // trace number
+        gdc = gd.data[c];
+        defaultColor = plots.defaultColors[c % plots.defaultColors.length];
         // all types have attributes type, visible, opacity, name, text
         // mergeattr puts single values into cd[0].t, and all others into each individual point
-        mergeattr(gdc,'type','type','scatter');
-        mergeattr(gdc,'visible','visible',true);
-        mergeattr(gdc,'opacity','op',1);
-        mergeattr(gdc,'text','tx',''); // TODO: make this actually work as hover or displayed text
-        mergeattr(gdc,'name','name','trace '+c);
+        mergeattr('type','type','scatter');
+        mergeattr('visible','visible',true);
+        mergeattr('opacity','op',1);
+        mergeattr('text','tx','');
+        mergeattr('name','name','trace '+c);
         var type = t.type; // like 'bar'
         if( (gdc.error_y && gdc.error_y.visible ) ){
-            mergeattr(gdc.error_y,'visible','ye_vis',false);
-            mergeattr(gdc.error_y,'type','ye_type','percent');
-            mergeattr(gdc.error_y,'value','ye_val',10);
-            mergeattr(gdc.error_y,'traceref','ye_tref',0);
-            mergeattr(gdc.error_y,'color','ye_clr',t.ye_clr|| dc);
-            mergeattr(gdc.error_y,'thickness','ye_tkns',1);
-            mergeattr(gdc.error_y,'width','ye_w',4);
-            mergeattr(gdc.error_y,'opacity','ye_op',1);
+            mergeattr('error_y.visible','ye_vis',false);
+            mergeattr('error_y.type','ye_type','percent');
+            mergeattr('error_y.value','ye_val',10);
+            mergeattr('error_y.traceref','ye_tref',0);
+            mergeattr('error_y.color','ye_clr',t.ye_clr|| defaultColor);
+            mergeattr('error_y.thickness','ye_tkns',1);
+            mergeattr('error_y.width','ye_w',4);
+            mergeattr('error_y.opacity','ye_op',1);
         }
         if(['scatter','box'].indexOf(type)!=-1){
-            mergeattr(gdc.line,'color','lc',gdc.marker.color || dc);
-            mergeattr(gdc.line,'width','lw',2);
-            mergeattr(gdc.marker,'symbol','mx','circle');
-            mergeattr(gdc.marker,'opacity','mo',1);
-            mergeattr(gdc.marker,'size','ms',6);
-            mergeattr(gdc.marker,'color','mc',t.lc);
-            mergeattr(gdc.marker.line,'color','mlc',((t.lc!=t.mc) ? t.lc : '#000'));
-            mergeattr(gdc.marker.line,'width','mlw',0);
-            mergeattr(gdc,'fill','fill','none');
-            mergeattr(gdc,'fillcolor','fc',Plotly.Drawing.addOpacity(t.lc,0.5));
+            mergeattr('line.color','lc',gdc.marker.color || defaultColor);
+            mergeattr('line.width','lw',2);
+            mergeattr('marker.symbol','mx','circle');
+            mergeattr('marker.opacity','mo',1);
+            mergeattr('marker.size','ms',6);
+            mergeattr('marker.color','mc',t.lc);
+            mergeattr('marker.line.color','mlc',((t.lc!=t.mc) ? t.lc : '#000'));
+            mergeattr('marker.line.width','mlw',0);
+            mergeattr('fill','fill','none');
+            mergeattr('fillcolor','fc',Plotly.Drawing.addOpacity(t.lc,0.5));
+            if($.isArray(gdc.marker.size)) {
+                mergeattr('marker.sizeref','msr',1);
+                mergeattr('marker.sizemode','msm','diameter');
+            }
+            // even if sizeref and sizemode are set, don't use them outside bubble charts
+            else { t.msr=1; t.msm = 'diameter'; }
+            mergeattr('marker.colorscale','mscl',Plotly.defaultColorscale,true);
+            mergeattr('marker.cauto','mcauto',true);
+            mergeattr('marker.cmax','mcmax',10);
+            mergeattr('marker.cmin','mcmin',-10);
+            mergeattr('marker.line.colorscale','mlscl',Plotly.defaultColorscale,true);
+            mergeattr('marker.line.cauto','mlcauto',true);
+            mergeattr('marker.line.cmax','mlcmax',10);
+            mergeattr('marker.line.cmin','mlcmin',-10);
             if(type==='scatter') {
                 var defaultMode = 'lines';
                 if(cd.length<Plotly.Scatter.PTS_LINESONLY || (typeof gdc.mode != 'undefined')) {
                     defaultMode = 'lines+markers';
                 }
                 else { // check whether there are orphan points, then show markers regardless of length
-                    for(var j=0; j<cd.length; j++) {
+                    for(j=0; j<cd.length; j++) {
                         if($.isNumeric(cd[j].x) && $.isNumeric(cd[j].y) &&
                           (j===0 || !$.isNumeric(cd[j-1].x) || !$.isNumeric(cd[j-1].y)) &&
                           (j==cd.length-1 || !$.isNumeric(cd[j+1].x) || !$.isNumeric(cd[j+1].y))) {
@@ -655,67 +672,75 @@ plots.setStyles = function(gd, merge_dflt) {
                         }
                     }
                 }
-                mergeattr(gdc,'mode','mode',defaultMode);
-                mergeattr(gdc.line,'dash','ld','solid');
-                mergeattr(gdc,'textposition','tp','middle center');
-                mergeattr(gdc.textfont,'size','ts',gd.layout.font.size);
-                mergeattr(gdc.textfont,'color','tc',gd.layout.font.color);
-                mergeattr(gdc.textfont,'family','tf',gd.layout.font.family);
+                mergeattr('mode','mode',defaultMode);
+                mergeattr('line.dash','ld','solid');
+                mergeattr('textposition','tp','middle center');
+                mergeattr('textfont.size','ts',gd.layout.font.size);
+                mergeattr('textfont.color','tc',gd.layout.font.color);
+                mergeattr('textfont.family','tf',gd.layout.font.family);
             }
             else if(type==='box') {
-                mergeattr(gdc.marker,'outliercolor','soc','rgba(0,0,0,0)');
-                mergeattr(gdc.marker.line,'outliercolor','solc',t.mc);
-                mergeattr(gdc.marker.line,'outlierwidth','solw',1);
-                mergeattr(gdc,'whiskerwidth','ww',0.5);
-                mergeattr(gdc,'boxpoints','boxpts','outliers');
-                mergeattr(gdc,'boxmean','mean',false);
-                mergeattr(gdc,'jitter','jitter',0);
-                mergeattr(gdc,'pointpos','ptpos',0);
+                mergeattr('whiskerwidth','ww',0.5);
+                mergeattr('boxpoints','boxpts','outliers');
+                mergeattr('boxmean','mean',false);
+                mergeattr('jitter','jitter',0);
+                mergeattr('pointpos','ptpos',0);
+                mergeattr('marker.outliercolor','soc','rgba(0,0,0,0)');
+                mergeattr('marker.line.outliercolor','solc',t.mc);
+                mergeattr('marker.line.outlierwidth','solw',1);
+                mergeattr('marker.outliercolorscale','soscl',t.mscl,true);
+                mergeattr('marker.outliercauto','socauto',t.mcauto);
+                mergeattr('marker.outliercmax','socmax',t.mcmax);
+                mergeattr('marker.outliercmin','socmin',t.mcmin);
+                mergeattr('marker.line.outliercolorscale','solscl',t.mlscl,true);
+                mergeattr('marker.line.outliercauto','solcauto',t.mlcauto);
+                mergeattr('marker.line.outliercmax','solcmax',t.mlcmax);
+                mergeattr('marker.line.outliercmin','solcmin',t.mlcmin);
             }
         }
         else if(plots.isHeatmap(type)){
             if(type==='histogram2d') {
-                mergeattr(gdc,'histnorm','histnorm','count');
-                mergeattr(gdc,'autobinx','autobinx',true);
-                mergeattr(gdc,'nbinsx','nbinsx',0);
-                mergeattr(gdc.xbins,'start','xbstart',0);
-                mergeattr(gdc.xbins,'end','xbend',1);
-                mergeattr(gdc.xbins,'size','xbsize',1);
-                mergeattr(gdc,'autobiny','autobiny',true);
-                mergeattr(gdc,'nbinsy','nbinsy',0);
-                mergeattr(gdc.ybins,'start','ybstart',0);
-                mergeattr(gdc.ybins,'end','ybend',1);
-                mergeattr(gdc.ybins,'size','ybsize',1);
+                mergeattr('histnorm','histnorm','count');
+                mergeattr('autobinx','autobinx',true);
+                mergeattr('nbinsx','nbinsx',0);
+                mergeattr('xbins.start','xbstart',0);
+                mergeattr('xbins.end','xbend',1);
+                mergeattr('xbins.size','xbsize',1);
+                mergeattr('autobiny','autobiny',true);
+                mergeattr('nbinsy','nbinsy',0);
+                mergeattr('ybins.start','ybstart',0);
+                mergeattr('ybins.end','ybend',1);
+                mergeattr('ybins.size','ybsize',1);
             }
             else {
-                mergeattr(gdc,'xtype','xtype',gdc.x ? 'array' : 'noarray');
-                mergeattr(gdc,'ytype','ytype',gdc.y ? 'array' : 'noarray');
-                mergeattr(gdc,'x0','x0',0);
-                mergeattr(gdc,'dx','dx',1);
-                mergeattr(gdc,'y0','y0',0);
-                mergeattr(gdc,'dy','dy',1);
+                mergeattr('xtype','xtype',gdc.x ? 'array' : 'noarray');
+                mergeattr('ytype','ytype',gdc.y ? 'array' : 'noarray');
+                mergeattr('x0','x0',0);
+                mergeattr('dx','dx',1);
+                mergeattr('y0','y0',0);
+                mergeattr('dy','dy',1);
             }
-            mergeattr(gdc,'zauto','zauto',true);
-            mergeattr(gdc,'zmin','zmin',-10);
-            mergeattr(gdc,'zmax','zmax',10);
-            mergeattr(gdc,'scl', 'scl', Plotly.defaultColorscale,true);
-            mergeattr(gdc,'showscale','showscale',true);
-            mergeattr(gdc,'zsmooth', 'zsmooth', false);
+            mergeattr('zauto','zauto',true);
+            mergeattr('zmin','zmin',-10);
+            mergeattr('zmax','zmax',10);
+            mergeattr('scl', 'scl', Plotly.defaultColorscale,true);
+            mergeattr('showscale','showscale',true);
+            mergeattr('zsmooth', 'zsmooth', false);
         }
         else if(plots.isBar(type)){
             if(type!='bar') {
-                mergeattr(gdc,'histnorm','histnorm','count');
-                mergeattr(gdc,'autobinx','autobinx',true);
-                mergeattr(gdc,'nbinsx','nbinsx',0);
-                mergeattr(gdc.xbins,'start','xbstart',0);
-                mergeattr(gdc.xbins,'end','xbend',1);
-                mergeattr(gdc.xbins,'size','xbsize',1);
+                mergeattr('histnorm','histnorm','count');
+                mergeattr('autobinx','autobinx',true);
+                mergeattr('nbinsx','nbinsx',0);
+                mergeattr('xbins.start','xbstart',0);
+                mergeattr('xbins.end','xbend',1);
+                mergeattr('xbins.size','xbsize',1);
             }
-            mergeattr(gdc,'bardir','bardir','v');
-            mergeattr(gdc.marker,'opacity','mo',1);
-            mergeattr(gdc.marker,'color','mc',dc);
-            mergeattr(gdc.marker.line,'color','mlc','#000');
-            mergeattr(gdc.marker.line,'width','mlw',0);
+            mergeattr('bardir','bardir','v');
+            mergeattr('marker.opacity','mo',1);
+            mergeattr('marker.color','mc',defaultColor);
+            mergeattr('marker.line.color','mlc','#000');
+            mergeattr('marker.line.width','mlw',0);
         }
     }
 };
@@ -1060,6 +1085,7 @@ Plotly.relayout = function(gd,astr,val) {
             Plotly.Annotations.draw(gd,p.parts[1],p.parts.slice(2).join('.'),aobj[ai]);
             delete aobj[ai];
             if((gl.xaxis.autorange || gl.yaxis.autorange) &&
+                p.parts[1]>=0 && gl.annotations[p.parts[1]].ref=='plot' &&
                 ai.indexOf('color')==-1 && ai.indexOf('opacity')==-1) {
                     doplot = true;
             }
@@ -1368,7 +1394,7 @@ plots.titles = function(gd,title) {
     }
     else if(gd.mainsite) {
         el.text('Click to enter '+name+' title')
-            .style('opacity',1)
+            .style('opacity',0)
             .on('mouseover',function(){d3.select(this).transition().duration(100).style('opacity',1);})
             .on('mouseout',function(){d3.select(this).transition().duration(1000).style('opacity',0);})
           .transition()
