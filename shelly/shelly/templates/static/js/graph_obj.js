@@ -236,7 +236,7 @@ function defaultLayout(){
         boxmode:'overlay',
         boxgap:0.3,
         boxgroupgap:0.3,
-        font:{family:'Arial, sans-serif;',size:12,color:'#000'},
+        font:{family:'Arial, sans-serif',size:12,color:'#000'},
         titlefont:{family:'',size:0,color:''},
         dragmode:'zoom',
         hovermode:'x'
@@ -1068,13 +1068,14 @@ Plotly.relayout = function(gd,astr,val) {
         // send annotation mods one-by-one through Annotations.draw(), don't set via nestedProperty
         // that's because add and remove are special
         else if(p.parts[0]=='annotations') {
+            var anum = p.parts[1];
             // if p.parts is just an annotation number, and val is either 'add' or
             // an entire annotation obj to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
             if(p.parts.length==2) {
                 if(aobj[ai]=='add' || $.isPlainObject(aobj[ai])) { undoit[ai]='remove'; }
                 else if(aobj[ai]=='remove') {
-                    if(p.parts[1]==-1) {
+                    if(anum==-1) {
                         undoit['annotations'] = gl.annotations;
                         delete undoit[ai];
                     }
@@ -1082,13 +1083,13 @@ Plotly.relayout = function(gd,astr,val) {
                 }
                 else { console.log('???',aobj); }
             }
-            Plotly.Annotations.draw(gd,p.parts[1],p.parts.slice(2).join('.'),aobj[ai]);
-            delete aobj[ai];
-            if((gl.xaxis.autorange || gl.yaxis.autorange) &&
-                p.parts[1]>=0 && gl.annotations[p.parts[1]].ref=='plot' &&
+            if((gl.xaxis.autorange || gl.yaxis.autorange) && anum>=0 &&
+                (anum>=gl.annotations.length || gl.annotations[p.parts[1]].ref=='plot') &&
                 ai.indexOf('color')==-1 && ai.indexOf('opacity')==-1) {
                     doplot = true;
             }
+            Plotly.Annotations.draw(gd,anum,p.parts.slice(2).join('.'),aobj[ai]);
+            delete aobj[ai];
         }
         // alter gd.layout
         else {
