@@ -304,7 +304,7 @@ lib.notifier = function(text,tm){
 
     if( $('div.notifier').text().indexOf(text) > 0 ) return;
 
-    var n = $('<div class="alert notifier" style="display:none;">'+
+    var n = $('<div class="notifier" style="display:none;">'+
         '<button class="close" data-dismiss="alert" style="opacity:1;text-shadow:none;color:white;">&times;</button>'+
         '<br><p>'+text+'</p></div>');
 
