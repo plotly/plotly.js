@@ -29,13 +29,12 @@ legend.points = function(d){
     if(!showMarkers && !showText) { return; }
 
     // constrain text, markers, etc so they'll fit on the legend
-    var dmod = function(d) { return [$.extend({},d[0], {
-                tx:'Aa',
-                ms:d[0].ms ? Math.min(d[0].ms,10) : null,
-                mlw:d[0].mlw ? Math.min(d[0].mlw,5) : null,
-                mo: 1
-            }
-        )]; },
+    var dmod = function(d) {
+            var d_edit = {tx:'Aa', mo:1};
+            if(d[0].ms>16) { d_edit.ms = 16; }
+            if(d[0].mlw>5) { d_edit.mlw = 5; }
+            return [$.extend({},d[0], d_edit)];
+        },
         tmod = $.extend({},t,{ts:10, ms:Math.min(t.ms,16), msr:1, msm:'diameter', lw:Math.min(t.lw,10)});
 
     var pts = d3.select(this).append('g')

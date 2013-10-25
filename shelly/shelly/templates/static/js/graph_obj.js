@@ -21,7 +21,7 @@ req('Bars',['calc','plot','setPositions']);
 req('Boxes',['calc','plot','setPositions','style']);
 req('Drawing',['rgb','opacity','addOpacity','strokeColor','fillColor','setPosition','setSize',
     'setRect','translatePoints','traceStyle','lineGroupStyle','fillGroupStyle','pointStyle','styleText']);
-req('ErrorBars',['returnToStyleBox','pushRef2GDC','styleBoxDrop','styleBox','ydr','plot','style']);
+req('ErrorBars',['pushRef2GDC','styleBoxDrop','ydr','plot','style']);
 req('Fx',['init','hover','unhover','click','modeBar','dragAlign','dragCursors','dragClear','autoGrowInput']);
 req('Heatmap',['calc','plot','margin']);
 req('Histogram',['calc']);
@@ -245,7 +245,7 @@ function defaultLayout(){
 
 function defaultAxis(extras) {
     return $.extend({
-        range:[-1,6],type:'-',mirror:true,linecolor:'#000',linewidth:1,
+        range:[-1,6],type:'-',showline:true,mirror:true,linecolor:'#000',linewidth:1,
         tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
         showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
         showgrid:true,gridcolor:'#ddd',gridwidth:1,
@@ -621,9 +621,9 @@ plots.setStyles = function(gd, merge_dflt) {
         mergeattr('opacity','op',1);
         mergeattr('text','tx','');
         mergeattr('name','name','trace '+c);
+        mergeattr('error_y.visible','ye_vis',false);
         var type = t.type; // like 'bar'
         if( (gdc.error_y && gdc.error_y.visible ) ){
-            mergeattr('error_y.visible','ye_vis',false);
             mergeattr('error_y.type','ye_type','percent');
             mergeattr('error_y.value','ye_val',10);
             mergeattr('error_y.traceref','ye_tref',0);
@@ -1312,12 +1312,12 @@ function layoutStyles(gd) {
         .attr('d', 'M'+(gm.l-xp)+','+(gm.t+gd.plotheight+gm.p+xlw/2)+'h'+(gd.plotwidth+2*xp) +
             (xa.mirror ? ('m0,-'+(gd.plotheight+2*gm.p+xlw)+'h-'+(gd.plotwidth+2*xp)) : ''))
         .attr('stroke-width',xlw)
-        .call(Plotly.Drawing.strokeColor,xa.linecolor);
+        .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
     gd.axlines.y
         .attr('d', 'M'+(gm.l-gm.p-ylw/2)+','+(gm.t-yp-yp2)+'v'+(gd.plotheight+2*yp+yp2) +
             (ya.mirror ? ('m'+(gd.plotwidth+2*gm.p+ylw)+',0v-'+(gd.plotheight+2*yp+yp2)) : ''))
         .attr('stroke-width',ylw)
-        .call(Plotly.Drawing.strokeColor,ya.linecolor);
+        .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
     plots.titles(gd,'gtitle');
 
     Plotly.Fx.modeBar(gd);
