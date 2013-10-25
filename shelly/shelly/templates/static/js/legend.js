@@ -29,8 +29,7 @@ legend.points = function(d){
     if(!showMarkers && !showText) { return; }
 
     // constrain text, markers, etc so they'll fit on the legend
-    var dmod = function(d) { console.log(d);
-            return [$.extend({},d[0], {
+    var dmod = function(d) { return [$.extend({},d[0], {
                 tx:'Aa',
                 ms:d[0].ms ? Math.min(d[0].ms,10) : null,
                 mlw:d[0].mlw ? Math.min(d[0].mlw,5) : null,
