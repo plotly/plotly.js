@@ -380,6 +380,7 @@ axes.expand = function(ax,data,options) {
     }
 
     for(i=0; i<len; i++) {
+        if(!$.isNumeric(data[i])) { continue; }
         ppadi = ppad(i);
         ppadiplus = (ppadplus(i)||ppadi) + extrappad;
         ppadiminus = (ppadminus(i)||ppadi) + extrappad;

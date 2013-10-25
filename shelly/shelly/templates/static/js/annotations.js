@@ -295,7 +295,7 @@ annotations.draw = function(gd,index,opt,value) {
             });
         });
         if(showline) {
-            var strokewidth = options.arrowwidth||borderwidth*2;
+            var strokewidth = options.arrowwidth || borderwidth*2 || 2;
             var arrowgroup = gd.infolayer.append('g')
                 .attr('class','annotation')
                 .attr('data-cmmt',options.tag)
@@ -307,7 +307,8 @@ annotations.draw = function(gd,index,opt,value) {
                 .attr('data-index',String(index))
                 .attr('d','M'+ax0+','+ay0+'L'+ax+','+ay)
                 .attr('stroke-width',strokewidth)
-                .call(Plotly.Drawing.strokeColor,options.arrowcolor || options.bordercolor || '#000');
+                .call(Plotly.Drawing.strokeColor,options.arrowcolor ||
+                    (Plotly.Drawing.opacity(options.bordercolor) ? options.bordercolor : '') || '#000');
             arrowhead(arrow,options.arrowhead,'end',options.arrowsize);
             var arrowdrag = arrowgroup.append('path')
                 .attr('class','annotation anndrag')

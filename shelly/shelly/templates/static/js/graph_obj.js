@@ -236,7 +236,7 @@ function defaultLayout(){
         boxmode:'overlay',
         boxgap:0.3,
         boxgroupgap:0.3,
-        font:{family:'Arial, sans-serif;',size:12,color:'#000'},
+        font:{family:'Arial, sans-serif',size:12,color:'#000'},
         titlefont:{family:'',size:0,color:''},
         dragmode:'zoom',
         hovermode:'x'
