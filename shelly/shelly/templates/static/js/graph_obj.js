@@ -349,8 +349,10 @@ plots.positionBrand = function(gd){
             var hiddenform = $('<div id="hiddenform" style="display:none;">'+
                 '<form action="https://plot.ly/external" method="post" target="_blank">'+
                 '<input type="text" name="data" /></form></div>').appendTo(gd);
-            // somehow we need to double escape characters for this purpose...
-            hiddenform.find('input').val(plots.graphJson(gd,false,'keepdata').replace(/\\/g,'\\\\'));
+            // somehow we need to double escape characters for this purpose.
+            // and need to escape single quote because we'll use it at the end
+            hiddenform.find('input').val(plots.graphJson(gd,false,'keepdata')
+                .replace(/\\/g,'\\\\').replace(/'/g,"\\'"));
             hiddenform.find('form').submit();
             hiddenform.remove();
         });
