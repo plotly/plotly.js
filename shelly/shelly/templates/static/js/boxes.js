@@ -85,6 +85,10 @@ boxes.setPositions = function(gd) {
     if(boxx.length) {
         var boxdv = Plotly.Lib.distinctVals(boxx),
             dx = boxdv.minDiff/2;
+
+        // check for forced minimum dtick
+        Plotly.Axes.minDtick(xa,boxdv.minDiff,boxdv.vals[0],true);
+
         Plotly.Axes.expand(xa,boxdv.vals,{vpad:dx});
         boxlist.forEach(function(i){ gd.calcdata[i][0].t.dx = dx; });
         // if there's no duplication of x points, disable 'group' mode by setting numboxes=1

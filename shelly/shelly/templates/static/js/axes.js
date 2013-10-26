@@ -26,7 +26,7 @@ axes.setTypes = function(gd) {
 };
 
 function setType(gd,axletter){
-    var ax = gd.layout[axletter+'axis'];
+    var ax = gd.layout[axletter+'axis'],
         d0 = gd.data[0];
     if(!d0.type) { d0.type='scatter'; }
     // backward compatibility
@@ -46,7 +46,7 @@ function setType(gd,axletter){
     // guess at axis type with the new property format
     // first check for histograms, as they can change the axis types
     // whatever else happens, horz bars switch the roles of x and y axes
-    if((Plotly.Plots.BARTYPES.indexOf(d0.type)!=-1) && (d0.bardir=='h')){
+    if((Plotly.Plots.isBar(d0.type)) && (d0.bardir=='h')){
         axletter={x:'y',y:'x'}[axletter];
     }
     var hist = (['histogramx','histogramy'].indexOf(d0.type)!=-1);
@@ -230,6 +230,7 @@ axes.cleanDatum = function( c ){
 //  p: pixel value - mapped to the screen with current size and zoom
 // setAxConvert creates/updates these conversion functions
 // also clears the autorange bounds ._min and ._max
+// and the autotick constraints ._minDtick, ._forceTick0
 axes.setConvert = function(ax) {
     function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null; }
     function fromLog(v){ return Math.pow(10,v); }
@@ -265,12 +266,44 @@ axes.setConvert = function(ax) {
         }
     };
 
-    // separate auto data ranges for tight-fitting and padded bounds
-    // at the end we will combine all of these, but keep them separate until then
-    // so we can choose on a trace-by-trace basis whether to pad, but choose
-    // the amount of padding based on the total range of all traces
+    // for autoranging: arrays of objects {val:axis value, pad: pixel padding}
+    // on the low and high sides
     ax._min = [];
     ax._max = [];
+    // and for bar charts and box plots: reset forced minimum tick spacing
+    ax._minDtick = null;
+    ax._forceTick0 = null;
+};
+
+// incorporate a new minimum difference and first tick into
+// forced
+axes.minDtick = function(ax,newDiff,newFirst,allow) {
+    // doesn't make sense to do forced min dTick on log or category axes,
+    // and the plot itself may decide to cancel (ie non-grouped bars)
+    if(['log','category'].indexOf(ax.type)!=-1 || !allow) {
+        ax._minDtick = 0;
+    }
+    // null means there's nothing there yet
+    else if(ax._minDtick===null) {
+        ax._minDtick = newDiff;
+        ax._forceTick0 = newFirst;
+    }
+    else if(ax._minDtick) {
+        // existing minDtick is an integer multiple of newDiff (within rounding err)
+        // and forceTick0 can be shifted to newFirst
+        if((ax._minDtick/newDiff+1e-6)%1 < 2e-6 &&
+            (((newFirst-ax._forceTick0)/newDiff%1)+1.000001)%1 < 2e-6) {
+                ax._minDtick = newDiff;
+                ax._forceTick0 = newFirst;
+        }
+        // if the converse is true (newDiff is a multiple of minDtick and
+        // newFirst can be shifted to forceTick0) then do nothing - same forcing stands.
+        // Otherwise, cancel forced minimum
+        else if((newDiff/ax._minDtick+1e-6)%1 > 2e-6 ||
+            (((newFirst-ax._forceTick0)/ax._minDtick%1)+1.000001)%1 > 2e-6) {
+                ax._minDtick = 0;
+        }
+    }
 };
 
 axes.doAutoRange = function(gd,ax) {
@@ -347,6 +380,7 @@ axes.expand = function(ax,data,options) {
     }
 
     for(i=0; i<len; i++) {
+        if(!$.isNumeric(data[i])) { continue; }
         ppadi = ppad(i);
         ppadiplus = (ppadplus(i)||ppadi) + extrappad;
         ppadiminus = (ppadminus(i)||ppadi) + extrappad;
@@ -435,6 +469,11 @@ function calcTicks(gd,ax) {
         var nt = ax.nticks ||
                 Math.max(5,Math.min(10,(ax===gd.layout.yaxis) ? gd.plotheight/40 : gd.plotwidth/80));
         axes.autoTicks(ax,Math.abs(ax.range[1]-ax.range[0])/nt);
+        // check for a forced minimum dtick
+        if(ax._minDtick>0 && ax.dtick<ax._minDtick*2) {
+            ax.dtick = ax._minDtick;
+            ax.tick0 = ax._forceTick0;
+        }
     }
 
     // check for missing tick0
@@ -855,7 +894,7 @@ axes.doTicks = function(gd,axletter) {
         standoff = ax.ticks=='outside' ? ax.ticklen : ax.linewidth+1,
         pixfn = function(d){ return ax._m*d.x+ax._b; },
         gridwidth = ax.gridwidth || 1,
-        span,x1,y1,tx,ty,tickpath,g,tl,transfn,i;
+        span,x1,y1,tx,ty,tickpath,g,tl,transfn,i, gridpath;
 
     // positioning arguments for x vs y axes
     if(axletter=='x') {
@@ -977,7 +1016,7 @@ axes.doTicks = function(gd,axletter) {
     // zero line - clip it if it's at the edge, unless there are bars or fills to this axis
     var hasBarsOrFill = (gd.data||[]).filter(function(gdc){
         return gdc.visible!==false &&
-            ((Plotly.Plots.BARTYPES.indexOf(gdc.type)!=-1 && (gdc.bardir||'v')=={x:'h',y:'v'}[axletter]) ||
+            ((Plotly.Plots.isBar(gdc.type) && (gdc.bardir||'v')=={x:'h',y:'v'}[axletter]) ||
             ((gdc.type||'scatter')=='scatter' && gdc.fill && gdc.fill.charAt(gdc.fill.length-1)==axletter));
     }).length;
     var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline && (ax.type=='linear'||ax.type=='-') &&
