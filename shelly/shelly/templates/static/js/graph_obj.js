@@ -349,7 +349,10 @@ plots.positionBrand = function(gd){
             var hiddenform = $('<div id="hiddenform" style="display:none;">'+
                 '<form action="https://plot.ly/external" method="post" target="_blank">'+
                 '<input type="text" name="data" /></form></div>').appendTo(gd);
-            hiddenform.find('input').val(plots.graphJson(gd,false,'keepdata'));
+            // somehow we need to double escape characters for this purpose.
+            // and need to escape single quote because we'll use it at the end
+            hiddenform.find('input').val(plots.graphJson(gd,false,'keepdata')
+                .replace(/\\/g,'\\\\').replace(/'/g,"\\'"));
             hiddenform.find('form').submit();
             hiddenform.remove();
         });
@@ -558,6 +561,7 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Annotations.drawAll(gd);
 
     // final cleanup
+    console.log(gd.mainsite, gd.standalone);
     if(!gd.mainsite && !gd.standalone) { plots.positionBrand(gd); } // 'view in plotly' link for embedded plots
 
     setTimeout(function(){
