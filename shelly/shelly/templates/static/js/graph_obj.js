@@ -218,8 +218,8 @@ Plotly.defaultColorscale = Plotly.colorscales.YIGnBu;
 // default layout defined as a function rather than a constant so it makes a new copy each time
 function defaultLayout(){
     return {title:'Click to enter Plot title',
-        xaxis:defaultAxis({range:[-1,6],title:'Click to enter X axis title'}),
-        yaxis:defaultAxis({range:[-1,4],title:'Click to enter Y axis title'}),
+        xaxis:Plotly.Axes.defaultAxis({range:[-1,6],title:'Click to enter X axis title'}),
+        yaxis:Plotly.Axes.defaultAxis({range:[-1,4],title:'Click to enter Y axis title'}),
         legend:{bgcolor:'#fff',bordercolor:'#000',borderwidth:1,
             font:{family:'',size:0,color:''},
             traceorder:'normal'
@@ -242,21 +242,6 @@ function defaultLayout(){
         hovermode:'x'
     };
 }
-
-function defaultAxis(extras) {
-    return $.extend({
-        range:[-1,6],type:'-',showline:true,mirror:true,linecolor:'#000',linewidth:1,
-        tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
-        showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
-        showgrid:true,gridcolor:'#ddd',gridwidth:1,
-        autorange:true,autotick:true,
-        zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
-        title:'Click to enter X axis title',unit:'',
-        titlefont:{family:'',size:0,color:''},
-        tickfont:{family:'',size:0,color:''}
-    },extras);
-}
-// TODO: add label positioning
 
 // how to display each type of graph
 // AJ 3/4/13: I'm envisioning a lot of stuff that's hardcoded into plot,
@@ -499,8 +484,8 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Annotations.calcAutorange(gd);
     // TODO: autosize extra for big pts, text too
 
-    Plotly.Axes.doAutoRange(gd,xa);
-    Plotly.Axes.doAutoRange(gd,ya);
+    Plotly.Axes.doAutoRange(xa);
+    Plotly.Axes.doAutoRange(ya);
 
     gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
     Plotly.Axes.doTicks(gd,'redraw'); // draw ticks, titles, and calculate axis scaling (._b, ._m)
@@ -1508,7 +1493,11 @@ plots.graphJson = function(gd, dataonly, mode){
 // also strips out functions and private (start with _) elements
 // so we can add temporary things to data and layout that don't get saved
 function stripObj(d,mode) {
+    if(typeof d == 'function') { return null; }
+    if(!$.isPlainObject(d)) { return d; }
+
     var o={}, v;
+    function s2(v2) { return stripObj(v2,mode); }
     for(v in d) {
         // remove private elements and functions - _ is for private, [ is a mistake ie [object Object]
         if(typeof d[v]=='function' || ['_','['].indexOf(v.charAt(0))!=-1) { continue; }
@@ -1523,8 +1512,8 @@ function stripObj(d,mode) {
             if(typeof src=='string' && src.indexOf(':')>0) { continue; }
         }
         // OK, we're including this... recurse into objects, copy arrays
-        if($.isPlainObject(d[v])) { o[v] = stripObj(d[v]); }
-        else if($.isArray(d[v])) { o[v] = d[v].slice(); }
+        if($.isPlainObject(d[v])) { o[v] = stripObj(d[v],mode); }
+        else if($.isArray(d[v])) { o[v] = d[v].map(s2); }
         else { o[v] = d[v]; }
     }
     return o;
