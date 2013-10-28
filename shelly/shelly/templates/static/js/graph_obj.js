@@ -985,6 +985,7 @@ Plotly.relayout = function(gd,astr,val) {
         doticks = false,
         dolayoutstyle = false,
         doplot = false;
+
     if(typeof astr == 'string') { aobj[astr] = val; }
     else if($.isPlainObject(astr)) { aobj = astr; }
     else { console.log('relayout fail',astr,val); return; }
@@ -1199,7 +1200,7 @@ plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     killPopovers();
 
-    setGraphContainerScroll(gd);
+    setGraphContainerHeight(gd);
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
@@ -1208,8 +1209,6 @@ plots.resize = function(gd) {
             if ($(gd).css('display')=='none') { return; }
 
             if (gd.layout && gd.layout.autosize) {
-
-                setGraphContainerHeight(gd);
 
                 var oldchanged = gd.changed;
                 gd.autoplay = true; // don't include this relayout in the undo queue
@@ -1223,6 +1222,8 @@ plots.resize = function(gd) {
             }
         }, 100);
     }
+
+    setGraphContainerScroll(gd);
 };
 
 // -------------------------------------------------------
