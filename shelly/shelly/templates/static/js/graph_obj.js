@@ -1158,26 +1158,35 @@ function setGraphContainerHeight(gd) {
     $gd.find('.graph-container').css('height', graphContainerHeight);
 }
 
+function setGraphContainerScroll(gd) {
+    var $graphContainer = $(gd).find('.graph-container');
+    isGraphWiderThanContainer = gd.layout.width > parseInt($graphContainer.css('width'),10);
+
+    if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
+        if (gd.layout && (gd.layout.autosize || !isGraphWiderThanContainer)) {
+
+            $graphContainer.removeClass('is-fixed-size');
+        }
+        else if (gd.layout && isGraphWiderThanContainer) {
+            $graphContainer.addClass('is-fixed-size');
+        }
+    }
+}
+
 function plotAutoSize(gd, aobj) {
-    console.log('************plotAutoSize');
     if(!gd.mainsite) { delete aobj.autosize; return aobj; }
     setGraphContainerHeight(gd);
     var gdBB = gd.graphContainer.node().getBoundingClientRect();
     var newheight = Math.round(gdBB.height*0.85);
     var newwidth = Math.round(gdBB.width*0.85);
-    console.log('************** gdBB', gdBB);
-    console.log('************** newheight', newheight);
-    console.log('************** newwidth', newwidth);
 
     if(Math.abs(gd.layout.width - newwidth) > 1 || Math.abs(gd.layout.height - newheight) > 1) {
-        console.log('********* if size change');
         gd.layout.height = newheight;
         gd.layout.width = newwidth;
     }
     // if there's no size change, update layout but only restyle (different
     // element may get margin color)
     else if(gd.layout.autosize != 'initial') { // can't call layoutStyles for initial autosize
-        console.log('********* else if not initial');
         delete(aobj.autosize);
         gd.layout.autosize = true;
         layoutStyles(gd);
@@ -1189,12 +1198,17 @@ function plotAutoSize(gd, aobj) {
 plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     killPopovers();
+
+    setGraphContainerScroll(gd);
+
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
         gd.redrawTimer = setTimeout(function(){
-            if($(gd).css('display')=='none') { return; }
-            if(gd.layout && gd.layout.autosize) {
-                console.log('************ set graph container')
+
+            if ($(gd).css('display')=='none') { return; }
+
+            if (gd.layout && gd.layout.autosize) {
+
                 setGraphContainerHeight(gd);
 
                 var oldchanged = gd.changed;
@@ -1356,6 +1370,8 @@ function layoutStyles(gd) {
     plots.titles(gd,'gtitle');
 
     Plotly.Fx.modeBar(gd);
+
+    setGraphContainerScroll(gd);
 
     return gd;
 }
