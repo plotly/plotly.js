@@ -1287,11 +1287,15 @@ function layoutStyles(gd) {
         d3.select(gd).style('background', '#fff');
         gd.paperdiv.style('background', gl.paper_bgcolor);
     }
+    var plotLeft = gm.l+xa.domain[0]*gd.plotwidth/100,
+        plotWidth = gd.plotwidth*(xa.domain[1]-xa.domain[0])/100,
+        plotTop = gm.t+gd.plotheight*(100-ya.domain[1])/100,
+        plotHeight = gd.plotheight*(ya.domain[1]-ya.domain[0])/100;
     gd.plotbg
-        .call(Plotly.Drawing.setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
+        .call(Plotly.Drawing.setRect, plotLeft-gm.p, plotTop-gm.p, plotWidth+2*gm.p, plotHeight+2*gm.p)
         .call(Plotly.Drawing.fillColor, gl.plot_bgcolor);
     gd.plot
-        .call(Plotly.Drawing.setRect, gm.l, gm.t, gd.plotwidth, gd.plotheight);
+        .call(Plotly.Drawing.setRect, plotLeft, plotTop, plotWidth, plotHeight);
 
     var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
         ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
@@ -1299,13 +1303,13 @@ function layoutStyles(gd) {
         yp = gm.p, // shorten y axis lines so they don't overlap x axis lines
         yp2 = xa.mirror ? 0 : xlw; // except at the top when there's no mirror x
     gd.axlines.x
-        .attr('d', 'M'+(gm.l-xp)+','+(gm.t+gd.plotheight+gm.p+xlw/2)+'h'+(gd.plotwidth+2*xp) +
-            (xa.mirror ? ('m0,-'+(gd.plotheight+2*gm.p+xlw)+'h-'+(gd.plotwidth+2*xp)) : ''))
+        .attr('d', 'M'+(plotLeft-xp)+','+(plotTop+plotHeight+gm.p+xlw/2)+'h'+(plotWidth+2*xp) +
+            (xa.mirror ? ('m0,-'+(plotHeight+2*gm.p+xlw)+'h-'+(plotWidth+2*xp)) : ''))
         .attr('stroke-width',xlw)
         .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
     gd.axlines.y
-        .attr('d', 'M'+(gm.l-gm.p-ylw/2)+','+(gm.t-yp-yp2)+'v'+(gd.plotheight+2*yp+yp2) +
-            (ya.mirror ? ('m'+(gd.plotwidth+2*gm.p+ylw)+',0v-'+(gd.plotheight+2*yp+yp2)) : ''))
+        .attr('d', 'M'+(plotLeft-gm.p-ylw/2)+','+(plotTop-yp-yp2)+'v'+(plotHeight+2*yp+yp2) +
+            (ya.mirror ? ('m'+(plotWidth+2*gm.p+ylw)+',0v-'+(plotHeight+2*yp+yp2)) : ''))
         .attr('stroke-width',ylw)
         .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
     plots.titles(gd,'gtitle');
@@ -1327,16 +1331,18 @@ plots.titles = function(gd,title) {
         return;
     }
     var gl=gd.layout,gm=gd.margin,
-        x,y,w,cont,name,font,fontSize,fontColor,transform='',attr={};
+        x,y,w,cont,name,font,fontSize,fontColor,transform='',attr={},xa,ya;
     if(title=='xtitle'){
+        xa = gl.xaxis;
+        ya = gl.yaxis;
         cont = gl.xaxis;
         name = 'X axis';
-        font = gl.xaxis.titlefont.family || gl.font.family || 'Arial';
-        fontSize = gl.xaxis.titlefont.size || (gl.font.size*1.2) || 14;
-        fontColor = gl.xaxis.titlefont.color || gl.font.color || '#000';
+        font = xa.titlefont.family || gl.font.family || 'Arial';
+        fontSize = xa.titlefont.size || (gl.font.size*1.2) || 14;
+        fontColor = xa.titlefont.color || gl.font.color || '#000';
         x = (gl.width+gm.l-gm.r)/2;
         y = gl.height+(gd.lh<0 ? gd.lh : 0) - 14*2.25;
-        w = gd.plotwidth/2;
+        w = gd.plotwidth*(xa.domain[0]-xa.domain[1])/200;
         h = 14;
     }
     else if(title=='ytitle'){
