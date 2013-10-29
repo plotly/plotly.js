@@ -6,28 +6,59 @@
 (function() {
 var axes = Plotly.Axes = {};
 
+axes.defaultAxis = function(extras) {
+    return $.extend({
+        range:[-1,6],type:'-',showline:true,mirror:true,linecolor:'#000',linewidth:1,
+        tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
+        showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
+        showgrid:true,gridcolor:'#ddd',gridwidth:1,
+        autorange:true,autotick:true,
+        zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
+        title:'Click to enter X axis title',unit:'',
+        titlefont:{family:'',size:0,color:''},
+        tickfont:{family:'',size:0,color:''}
+    },extras);
+};
+// TODO: add label positioning
+
 // setTypes: figure out axis types (linear, log, date, category...)
-// if gd.axtypesok is true, we can skip this.
-// to force axtypes to be called again, set gd.axtypesok to false before calling plot()
+// if td.axtypesok is true, we can skip this.
+// to force axtypes to be called again, set td.axtypesok to false before calling plot()
 // this should be done if the first trace changes type, bardir, or data
 // use the first trace only.
 // If the axis has data, see whether more looks like dates or like numbers
 // If it has x0 & dx (etc), go by x0 (if x0 is a date and dx is a number, perhaps guess days?)
 // If it has none of these, it will default to x0=0, dx=1, so choose number
 // -> If not date, figure out if a log axis makes sense, using all axis data
-axes.setTypes = function(gd) {
-    if(gd.data && gd.data.length && gd.axtypesok!==true){
-        setType(gd,'x');
-        setType(gd,'y');
-        gd.axtypesok=true;
+axes.setTypes = function(td) {
+    var xa = initAxis(td,'x'),
+        ya = initAxis(td,'y');
+    if(td.data && td.data.length && td.axtypesok!==true){
+        setType(xa,td,'x');
+        setType(ya,td,'y');
+        td.axtypesok=true;
     }
-    axes.setConvert(gd.layout.xaxis);
-    axes.setConvert(gd.layout.yaxis);
+    axes.setConvert(xa);
+    axes.setConvert(ya);
 };
 
-function setType(gd,axletter){
-    var ax = gd.layout[axletter+'axis'],
-        d0 = gd.data[0];
+// add a few pieces to prepare the axis object for use
+function initAxis(td,id) {
+    var ax = td.layout[id2name(id)];
+    ax._id = id;
+    ax._td = td;
+    return ax;
+}
+
+// convert between axis names (xaxis, xaxis2, etc, elements of td.layout)
+// and axis id's (x, x2, etc)
+function id2name(id) { return id.charAt(0)+'axis'+id.substr(1); }
+function name2id(name) { return name.charAt(0)+name.substr(5); }
+
+function setType(ax){
+    var axletter = ax._id.charAt(0),
+        data = ax._td.data,
+        d0 = data[0];
     if(!d0.type) { d0.type='scatter'; }
     // backward compatibility
     if(!ax.type) {
@@ -52,7 +83,7 @@ function setType(gd,axletter){
     var hist = (['histogramx','histogramy'].indexOf(d0.type)!=-1);
     if(hist) {
         if(axletter=='y') {
-            // always numeric data in the bar size direction
+            // always numeric data in the histogram size direction
             if(ax.type!='log') { ax.type='linear'; }
             return;
         }
@@ -72,8 +103,8 @@ function setType(gd,axletter){
         (Plotly.Lib.isDateTime(d0[axletter+'0']) && !$.isNumeric(d0[axletter+'0']))) {
             ax.type='date';
     }
-    else if(category(gd.data,axletter)) { ax.type='category'; }
-    else if(loggy(gd.data,axletter) && ax.type!='linear') { ax.type='log'; }
+    else if(category(data,axletter)) { ax.type='category'; }
+    else if(loggy(data,axletter) && ax.type!='linear') { ax.type='log'; }
     else if(ax.type!='log') { ax.type='linear'; }
 }
 
@@ -124,7 +155,7 @@ function loggy(d,ax) {
     return ((mx/mn>=100)&&(vals.sort()[Math.ceil(vals.length/4)]<mx/10));
 }
 
-// are the (x,y)-values in gd.data mostly text?
+// are the (x,y)-values in td.data mostly text?
 // JP edit 10.8.2013: strip $, %, and quote characters via axes.cleanDatum
 function category(d,ax) {
     function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1; }
@@ -154,17 +185,17 @@ function category(d,ax) {
 
 // convertOne: takes an x or y array and converts it to a position on the axis object "ax"
 // inputs:
-//      gdc - a data object from gd.data
+//      tdc - a data object from td.data
 //      data - a string, either 'x' or 'y', for which item to convert
 //      ax - the axis object to map this data onto (not necessarily the same as
 //          data, in case of bars or histograms)
 // in case the expected data isn't there, make a list of integers based on the opposite data
-axes.convertOne = function(gdc,data,ax) {
-    var counterdata = gdc[{x:'y',y:'x'}[data]]; // the opposing data to compare to
-    if(data in gdc) { return axes.convertToNums(gdc[data],ax); }
+axes.convertOne = function(tdc,data,ax) {
+    var counterdata = tdc[{x:'y',y:'x'}[data]]; // the opposing data to compare to
+    if(data in tdc) { return axes.convertToNums(tdc[data],ax); }
     else {
-        var v0 = ((data+'0') in gdc) ? axes.convertToNums(gdc[data+'0'], ax) : 0,
-            dv = (gdc['d'+data]) ? gdc['d'+data] : 1;
+        var v0 = ((data+'0') in tdc) ? axes.convertToNums(tdc[data+'0'], ax) : 0,
+            dv = (tdc['d'+data]) ? tdc['d'+data] : 1;
         return counterdata.map(function(v,i){return v0+i*dv;});
     }
 };
@@ -252,16 +283,16 @@ axes.setConvert = function(ax) {
     ax.p2c = function(px){ return ax.l2c((px-ax._b)/ax._m); };
 
     // set scaling to pixels
-    ax.setScale = function(gd){
+    ax.setScale = function(){
         if(!ax.range || ax.range.length!=2 || ax.range[0]==ax.range[1]) {
             ax.range = [-1,1];
         }
-        if(ax===gd.layout.yaxis) {
-            ax._m=gd.plotheight/(ax.range[0]-ax.range[1]);
+        if(ax._id.charAt(0)=='y') {
+            ax._m=ax._td.plotheight/(ax.range[0]-ax.range[1]);
             ax._b=-ax._m*ax.range[1];
         }
         else {
-            ax._m=gd.plotwidth/(ax.range[1]-ax.range[0]);
+            ax._m=ax._td.plotwidth/(ax.range[1]-ax.range[0]);
             ax._b=-ax._m*ax.range[0];
         }
     };
@@ -306,7 +337,7 @@ axes.minDtick = function(ax,newDiff,newFirst,allow) {
     }
 };
 
-axes.doAutoRange = function(gd,ax) {
+axes.doAutoRange = function(ax) {
     if(ax.autorange && ax._min && ax._max && ax._min.length && ax._max.length) {
         var i,j,minpt,maxpt,minbest,maxbest,dp,dv,mbest=0;
         for(i=0; i<ax._min.length; i++) {
@@ -349,7 +380,7 @@ axes.expand = function(ax,data,options) {
     if(!ax._min) { ax._min = []; }
     if(!ax._max) { ax._max = []; }
     if(!options) { options = {}; }
-    if(!ax._m) { ax.setScale(gd); }
+    if(!ax._m) { ax.setScale(); }
 
     var len = data.length,
         extrappad = options.padded ? ax._pixrange*0.05 : 0,
@@ -463,11 +494,11 @@ axes.autoBin = function(data,ax,nbins,is2d) {
 // if ticks are set to automatic, determine the right values (tick0,dtick)
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
-function calcTicks(gd,ax) {
+function calcTicks(ax) {
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.autotick || !ax.dtick){
         var nt = ax.nticks ||
-                Math.max(5,Math.min(10,(ax===gd.layout.yaxis) ? gd.plotheight/40 : gd.plotwidth/80));
+                Math.max(5,Math.min(10,(ax._id.charAt(0)=='y') ? ax._td.plotheight/40 : ax._td.plotwidth/80));
         axes.autoTicks(ax,Math.abs(ax.range[1]-ax.range[0])/nt);
         // check for a forced minimum dtick
         if(ax._minDtick>0 && ax.dtick<ax._minDtick*2) {
@@ -503,7 +534,7 @@ function calcTicks(gd,ax) {
         if(vals.length>1000) { break; } // prevent infinite loops
     }
     ax._tmax=vals[vals.length-1]; // save the last tick as well as first, so we can eg show the exponent only on the last one
-    return vals.map(function(x){return axes.tickText(gd, ax, x);});
+    return vals.map(function(x){return axes.tickText(ax, x);});
 }
 
 // autoTicks: calculate best guess at pleasant ticks for this axis
@@ -711,13 +742,13 @@ axes.tickFirst = function(ax){
 };
 
 // draw the text for one tick.
-// px,py are the location on gd.paper
+// px,py are the location on td.paper
 // prefix is there so the x axis ticks can be dropped a line
 // ax is the axis layout, x is the tick value
 // hover is a (truthy) flag for whether to show numbers with a bit more precision
 // for hovertext - and return just the text
-axes.tickText = function(gd, ax, x, hover){
-    var gf = gd.layout.font, tf = ax.tickfont, tr = ax._tickround, dt = ax.dtick,
+axes.tickText = function(ax, x, hover){
+    var gf = ax._td.layout.font, tf = ax.tickfont, tr = ax._tickround, dt = ax.dtick,
         font = tf.family || gf.family || 'Arial',
         fontSize = tf.size || gf.size || 12,
         fontColor = tf.color || gf.color || '#000',
@@ -776,7 +807,7 @@ axes.tickText = function(gd, ax, x, hover){
     }
     // if 9's are printed on log scale, move the 10's away a bit
     if((ax.dtick=='D1') && (String(tt).charAt(0)=='1')){
-        if(ax===gd.layout.yaxis) px-=fontSize/4;
+        if(ax._id.charAt(0)=='y') px-=fontSize/4;
         else py+=fontSize/3;
     }
     return {x:x, dx:px, dy:py, text:tt+suffix,
@@ -861,17 +892,17 @@ function numFormat(v,ax,fmtoverride,hover) {
 // doTicks: draw ticks, grids, and tick labels
 // axletter: 'x' or 'y', blank to do both,
 //          'redraw' to force full redraw, and reset ax._r (stored range for use by zoom/pan)
-axes.doTicks = function(gd,axletter) {
+axes.doTicks = function(td,axletter) {
     if(axletter=='redraw') {
-        gd.axislayer.selectAll('text,path').remove();
-        gd.gridlayer.selectAll('path').remove();
-        gd.zerolinelayer.selectAll('path').remove();
+        td.axislayer.selectAll('text,path').remove();
+        td.gridlayer.selectAll('path').remove();
+        td.zerolinelayer.selectAll('path').remove();
     }
 
-    var gl = gd.layout;
+    var gl = td.layout;
     if(['x','y'].indexOf(axletter)==-1) {
-        axes.doTicks(gd,'x');
-        axes.doTicks(gd,'y');
+        axes.doTicks(td,'x');
+        axes.doTicks(td,'y');
         if(axletter=='redraw') {
             gl.xaxis._r = gl.xaxis.range.slice();
             gl.yaxis._r = gl.yaxis.range.slice();
@@ -879,13 +910,13 @@ axes.doTicks = function(gd,axletter) {
         return;
     }
 
-    var gm=gd.margin,
+    var gm=td.margin,
         ax={x:gl.xaxis, y:gl.yaxis}[axletter];
     ax.range = ax.range.map(Number); // in case a val turns into string somehow
 
-    ax.setScale(gd); // set scaling to pixels
+    ax.setScale(td); // set scaling to pixels
 
-    var vals=calcTicks(gd,ax),
+    var vals=calcTicks(ax),
         datafn = function(d){ return d.text+d.x; },
         tcls = axletter+'tick',
         gcls = axletter+'grid',
@@ -898,12 +929,12 @@ axes.doTicks = function(gd,axletter) {
 
     // positioning arguments for x vs y axes
     if(axletter=='x') {
-        span = gd.plotwidth;
+        span = td.plotwidth;
         y1 = gl.height-gm.b+pad;
         ty = (ax.ticks=='inside' ? -1 : 1)*ax.ticklen;
         tickpath = 'M'+gm.l+','+y1+'v'+ty+
-            (ax.mirror=='ticks' ? ('m0,'+(-gd.plotheight-2*(ty+pad))+'v'+ty): '');
-        gridpath = 'M'+gm.l+','+gm.t+'v'+gd.plotheight;
+            (ax.mirror=='ticks' ? ('m0,'+(-td.plotheight-2*(ty+pad))+'v'+ty): '');
+        gridpath = 'M'+gm.l+','+gm.t+'v'+td.plotheight;
         // g = {x1:gm.l, x2:gm.l, y1:gl.height-gm.b, y2:gm.t};
         tl = {
             x: function(d){ return d.dx+gm.l; },
@@ -916,12 +947,12 @@ axes.doTicks = function(gd,axletter) {
         transfn = function(d){ return 'translate('+pixfn(d)+',0)'; };
     }
     else if(axletter=='y') {
-        span = gd.plotheight;
+        span = td.plotheight;
         x1 = gm.l-pad;
         tx = (ax.ticks=='inside' ? 1 : -1)*ax.ticklen;
         tickpath = 'M'+x1+','+gm.t+'h'+tx+
-            (ax.mirror=='ticks' ? ('m'+(gd.plotwidth-2*(tx-pad))+',0h'+tx): '');
-        gridpath = 'M'+gm.l+','+gm.t+'h'+gd.plotwidth;
+            (ax.mirror=='ticks' ? ('m'+(td.plotwidth-2*(tx-pad))+',0h'+tx): '');
+        gridpath = 'M'+gm.l+','+gm.t+'h'+td.plotwidth;
         // g = {x1:gm.l, x2:gl.width-gm.r, y1:gm.t, y2:gm.t};
         tl = {
             x:function(d){ return d.dx+x1 - standoff -
@@ -946,7 +977,7 @@ axes.doTicks = function(gd,axletter) {
     var valsClipped = vals.filter(clipEnds);
 
     // ticks
-    var ticks=gd.axislayer.selectAll('path.'+tcls)
+    var ticks=td.axislayer.selectAll('path.'+tcls)
         .data(ax.ticks ? (ax.ticks=='inside' ? valsClipped : vals) : [], datafn);
     ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
         .classed('crisp',1)
@@ -957,7 +988,7 @@ axes.doTicks = function(gd,axletter) {
     ticks.exit().remove();
 
     // tick labels
-    var yl=gd.axislayer.selectAll('text.'+tcls).data(vals, datafn);
+    var yl=td.axislayer.selectAll('text.'+tcls).data(vals, datafn);
     if(ax.showticklabels) {
         var maxFontSize = 0, autoangle = 0;
         yl.enter().append('text').classed(tcls,1)
@@ -998,7 +1029,7 @@ axes.doTicks = function(gd,axletter) {
     else { yl.remove(); }
 
     // grid
-    var grid = gd.gridlayer.selectAll('path.'+gcls)
+    var grid = td.gridlayer.selectAll('path.'+gcls)
         .data(ax.showgrid!==false ? valsClipped : [], datafn);
     grid.enter().append('path').classed(gcls,1)
         .classed('crisp',1)
@@ -1014,15 +1045,15 @@ axes.doTicks = function(gd,axletter) {
     grid.exit().remove();
 
     // zero line - clip it if it's at the edge, unless there are bars or fills to this axis
-    var hasBarsOrFill = (gd.data||[]).filter(function(gdc){
-        return gdc.visible!==false &&
-            ((Plotly.Plots.isBar(gdc.type) && (gdc.bardir||'v')=={x:'h',y:'v'}[axletter]) ||
-            ((gdc.type||'scatter')=='scatter' && gdc.fill && gdc.fill.charAt(gdc.fill.length-1)==axletter));
+    var hasBarsOrFill = (td.data||[]).filter(function(tdc){
+        return tdc.visible!==false &&
+            ((Plotly.Plots.isBar(tdc.type) && (tdc.bardir||'v')=={x:'h',y:'v'}[axletter]) ||
+            ((tdc.type||'scatter')=='scatter' && tdc.fill && tdc.fill.charAt(tdc.fill.length-1)==axletter));
     }).length;
     var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline && (ax.type=='linear'||ax.type=='-') &&
         (hasBarsOrFill || clipEnds({x:0}));
 
-    var zl = gd.zerolinelayer.selectAll('path.'+zcls)
+    var zl = td.zerolinelayer.selectAll('path.'+zcls)
         .data(showZl ? [{x:0}] : []);
     zl.enter().append('path').classed(zcls,1).classed('zl',1)
         .classed('crisp',1)
@@ -1033,7 +1064,7 @@ axes.doTicks = function(gd,axletter) {
     zl.exit().remove();
 
     // update the axis title (so it can move out of the way if needed)
-    Plotly.Plots.titles(gd,axletter+'title');
+    Plotly.Plots.titles(td,axletter+'title');
 };
 
 // mod - version of modulus that always restricts to [0,divisor)
