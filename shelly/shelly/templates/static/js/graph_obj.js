@@ -1145,8 +1145,8 @@ function setGraphContainerHeight(gd) {
 }
 
 function setGraphContainerScroll(gd) {
-    var $graphContainer = $(gd).find('.graph-container');
-    isGraphWiderThanContainer = gd.layout.width > parseInt($graphContainer.css('width'),10);
+    var $graphContainer = $(gd).find('.graph-container'),
+        isGraphWiderThanContainer = gd.layout.width > parseInt($graphContainer.css('width'),10);
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if (gd.layout && (gd.layout.autosize || !isGraphWiderThanContainer)) {
@@ -1317,18 +1317,6 @@ function layoutStyles(gd) {
 
     gd.paperdiv.style({width:gl.width+'px', height:gl.height+'px'});
     gd.paper.call(Plotly.Drawing.setSize, gl.width, gl.height);
-
-    // plot background: color the whole div if it's autosized in the main site,
-    // so we don't always have a weird white strip with the "My Data" tab
-    // otherwise color the paperdiv, so you see the plot the size it's meant to be.
-    // if(gl.autosize && gd.mainsite) {
-    //     d3.select(gd).style('background', gl.paper_bgcolor);
-    //     gd.paperdiv.style('background','transparent');
-    // }
-    // else {
-    //     d3.select(gd).style('background', '#fff');
-    //     gd.paperdiv.style('background', gl.paper_bgcolor);
-    // }
 
     gd.paperdiv.style('background', gl.paper_bgcolor);
 
