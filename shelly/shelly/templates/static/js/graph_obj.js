@@ -360,8 +360,8 @@ Plotly.plot = function(gd, data, layout) {
     // properties of this div (for extension to multiple plots/tabs per page)
     // some callers send this in by dom element, others by id (string)
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
-	// test if this is on the main site or embedded
-	gd.mainsite=Boolean($('#plotlyMainMarker').length);
+    // test if this is on the main site or embedded
+    gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-array (null, '', whatever) for data
@@ -970,6 +970,7 @@ Plotly.relayout = function(gd,astr,val) {
         doticks = false,
         dolayoutstyle = false,
         doplot = false;
+
     if(typeof astr == 'string') { aobj[astr] = val; }
     else if($.isPlainObject(astr)) { aobj = astr; }
     else { console.log('relayout fail',astr,val); return; }
@@ -1127,20 +1128,51 @@ Plotly.relayout = function(gd,astr,val) {
     $(gd).trigger('relayout.plotly',redoit);
 };
 
+function setGraphContainerHeight(gd) {
+    $gd = $(gd);
+    var graphContainerHeight = $gd.innerHeight() - $gd.find('.tool-menu').innerHeight(),
+        $themebar = $gd.find('.themebar'),
+        $demobar = $gd.find('.demobar');
+
+    if ($themebar.css('display') == 'block') {
+        graphContainerHeight -= $themebar.innerHeight();
+    }
+    if ($demobar.css('display') == 'block') {
+        graphContainerHeight -= $demobar.innerHeight();
+    }
+
+    $gd.find('.graph-container').css('height', graphContainerHeight);
+}
+
+function setGraphContainerScroll(gd) {
+    var $graphContainer = $(gd).find('.graph-container'),
+        isGraphWiderThanContainer = gd.layout.width > parseInt($graphContainer.css('width'),10);
+
+    if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
+        if (gd.layout && (gd.layout.autosize || !isGraphWiderThanContainer)) {
+
+            $graphContainer.removeClass('is-fixed-size');
+        }
+        else if (gd.layout && isGraphWiderThanContainer) {
+            $graphContainer.addClass('is-fixed-size');
+        }
+    }
+}
+
 function plotAutoSize(gd, aobj) {
-    // don't autosize anywhere off the main plotly tool
     if(!gd.mainsite) { delete aobj.autosize; return aobj; }
-    var plotBB = gd.paperdiv.node().getBoundingClientRect();
-    var gdBB = gd.getBoundingClientRect();
-    var newheight = Math.round(gdBB.bottom-plotBB.top);
-    var newwidth = Math.round(gdBB.right - plotBB.left);
-    if(Math.abs(gd.layout.width-newwidth)>1 || Math.abs(gd.layout.height-newheight)>1) {
+    setGraphContainerHeight(gd);
+    var gdBB = gd.graphContainer.node().getBoundingClientRect();
+    var newheight = Math.round(gdBB.height*0.85);
+    var newwidth = Math.round(gdBB.width*0.85);
+
+    if(Math.abs(gd.layout.width - newwidth) > 1 || Math.abs(gd.layout.height - newheight) > 1) {
         gd.layout.height = newheight;
         gd.layout.width = newwidth;
     }
     // if there's no size change, update layout but only restyle (different
     // element may get margin color)
-    else if(gd.layout.autosize!='initial') { // can't call layoutStyles for initial autosize
+    else if(gd.layout.autosize != 'initial') { // can't call layoutStyles for initial autosize
         delete(aobj.autosize);
         gd.layout.autosize = true;
         layoutStyles(gd);
@@ -1152,11 +1184,17 @@ function plotAutoSize(gd, aobj) {
 plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     killPopovers();
+
+    setGraphContainerHeight(gd);
+
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
         gd.redrawTimer = setTimeout(function(){
-            if($(gd).css('display')=='none') { return; }
-            if(gd.layout && gd.layout.autosize) {
+
+            if ($(gd).css('display')=='none') { return; }
+
+            if (gd.layout && gd.layout.autosize) {
+
                 var oldchanged = gd.changed;
                 gd.autoplay = true; // don't include this relayout in the undo queue
                 Plotly.relayout(gd, {autosize:true});
@@ -1169,6 +1207,8 @@ plots.resize = function(gd) {
             }
         }, 100);
     }
+
+    setGraphContainerScroll(gd);
 };
 
 // -------------------------------------------------------
@@ -1182,27 +1222,28 @@ function makePlotFramework(divid, layout) {
 
     var gd = (typeof divid == 'string') ? document.getElementById(divid) : divid,
         gd3 = d3.select(gd);
+
+    gd.graphContainer = gd3.select('.graph-container');
+
     if(!layout) layout = {};
-	// test if this is on the main site or embedded
-	gd.mainsite = Boolean($('#plotlyMainMarker').length);
-
-
-    $(gd).children('.svgcontainer').children('svg').remove();
+    // test if this is on the main site or embedded
+    gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
     // CD NOTE: I simplified this "if" condition because the rest seems unnecessary.
     // Leaving the old version here for now for quick reference in case something goes wrong
-    // if (($(gd).children('.svgcontainer').length==1) && (!gd.mainsite ||
+    // if (($(gd).children('.svg-container').length==1) && (!gd.mainsite ||
     //     ($(gd).children('.tool-menu').length==1 && $(gd).children('.demobar').length==1))) {
 
+    var $svgContainer = $(gd).children('.graph-container').children('.svg-container');
 
-    if ($(gd).children('.svgcontainer').length==1) {
-            // Destroy any plot that already exists in this div
-            $(gd).children('.svgcontainer').children('svg').remove();
+    if ($svgContainer.length==1) {
+        // Destroy any plot that already exists in this div
+        $svgContainer.children('svg').remove();
     }
     else {
-        // Make the outer graph container
-        gd.paperdiv = gd3.append('div')
-            .classed('svgcontainer',true)
+        // Make the svg container
+        gd.paperdiv = gd.graphContainer.append('div')
+            .classed('svg-container',true)
             .style('position','relative');
     }
 
@@ -1217,6 +1258,7 @@ function makePlotFramework(divid, layout) {
 
     // initial autosize
     if(gl.autosize=='initial') {
+        setGraphContainerHeight(gd);
         plotAutoSize(gd,{});
         gl.autosize=true;
     }
@@ -1276,17 +1318,8 @@ function layoutStyles(gd) {
     gd.paperdiv.style({width:gl.width+'px', height:gl.height+'px'});
     gd.paper.call(Plotly.Drawing.setSize, gl.width, gl.height);
 
-    // plot background: color the whole div if it's autosized in the main site,
-    // so we don't always have a weird white strip with the "My Data" tab
-    // otherwise color the paperdiv, so you see the plot the size it's meant to be.
-    if(gl.autosize && gd.mainsite) {
-        d3.select(gd).style('background', gl.paper_bgcolor);
-        gd.paperdiv.style('background','transparent');
-    }
-    else {
-        d3.select(gd).style('background', '#fff');
-        gd.paperdiv.style('background', gl.paper_bgcolor);
-    }
+    gd.paperdiv.style('background', gl.paper_bgcolor);
+
     gd.plotbg
         .call(Plotly.Drawing.setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
         .call(Plotly.Drawing.fillColor, gl.plot_bgcolor);
@@ -1311,6 +1344,8 @@ function layoutStyles(gd) {
     plots.titles(gd,'gtitle');
 
     Plotly.Fx.modeBar(gd);
+
+    setGraphContainerScroll(gd);
 
     return gd;
 }
