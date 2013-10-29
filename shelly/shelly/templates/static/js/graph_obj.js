@@ -1162,8 +1162,8 @@ function plotAutoSize(gd, aobj) {
     if(!gd.mainsite) { delete aobj.autosize; return aobj; }
     setGraphContainerHeight(gd);
     var gdBB = gd.graphContainer.node().getBoundingClientRect();
-    var newheight = Math.round(gdBB.height*0.85);
-    var newwidth = Math.round(gdBB.width*0.85);
+    var newheight = Math.round(gdBB.height*0.9);
+    var newwidth = Math.round(gdBB.width*0.9);
 
     if(Math.abs(gd.layout.width - newwidth) > 1 || Math.abs(gd.layout.height - newheight) > 1) {
         gd.layout.height = newheight;
@@ -1222,16 +1222,17 @@ function makePlotFramework(divid, layout) {
     var gd = (typeof divid == 'string') ? document.getElementById(divid) : divid,
         gd3 = d3.select(gd);
 
+    // graph container
+    $(gd).append('<div class="graph-container"></div>');
     gd.graphContainer = gd3.select('.graph-container');
 
     if(!layout) layout = {};
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
-    // CD NOTE: I simplified this "if" condition because the rest seems unnecessary.
-    // Leaving the old version here for now for quick reference in case something goes wrong
-    // if (($(gd).children('.svg-container').length==1) && (!gd.mainsite ||
-    //     ($(gd).children('.tool-menu').length==1 && $(gd).children('.demobar').length==1))) {
+    if (gd.mainsite) {
+        $(gd).children('.graph-container').addClass('is-mainsite');
+    }
 
     var $svgContainer = $(gd).children('.graph-container').children('.svg-container');
 
