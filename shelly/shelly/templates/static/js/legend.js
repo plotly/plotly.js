@@ -28,20 +28,29 @@ legend.points = function(d){
         showText = t.mode.indexOf('text')!=-1;
     if(!showMarkers && !showText) { return; }
 
+    // constrain text, markers, etc so they'll fit on the legend
+    var dmod = function(d) {
+            var d_edit = {tx:'Aa', mo:1};
+            if(d[0].ms>16) { d_edit.ms = 16; }
+            if(d[0].mlw>5) { d_edit.mlw = 5; }
+            return [$.extend({},d[0], d_edit)];
+        },
+        tmod = $.extend({},t,{ts:10, ms:Math.min(t.ms,16), msr:1, msm:'diameter', lw:Math.min(t.lw,10)});
+
     var pts = d3.select(this).append('g')
         .attr('class','legendpoints');
     if(showMarkers) {
         pts.selectAll('path')
-            .data(Plotly.Lib.identity)
+            .data(dmod)
           .enter().append('path')
-            .call(Plotly.Drawing.pointStyle,t)
+            .call(Plotly.Drawing.pointStyle,tmod)
             .attr('transform','translate(20,0)');
     }
     if(showText) {
         pts.selectAll('text')
-            .data(function(d){ return [$.extend({},d[0],{tx:'Aa'})]; })
+            .data(dmod)
           .enter().append('text')
-            .call(Plotly.Drawing.textPointStyle,$.extend({},t,{ts:10}))
+            .call(Plotly.Drawing.textPointStyle,tmod)
             .attr('transform','translate(20,0)');
     }
 };
@@ -86,9 +95,8 @@ legend.boxes = function(d){
 
 function legendText(s,gd){
     var gf = gd.layout.font, lf = gd.layout.legend.font;
-    // note: uses d[1] for the original trace number, in case of hidden traces
     return s.append('text')
-        .attr('class',function(d){ return 'legendtext text-'+d[1]; })
+        .attr('class',function(d){ return 'legendtext text-'+d[0].t.curve; })
         .call(Plotly.Drawing.setPosition, 40, 0)
         .attr('text-anchor','start')
         .call(Plotly.Drawing.font,
@@ -113,7 +121,7 @@ legend.draw = function(gd) {
     var ldata=[],i;
     for(i=0;i<gd.calcdata.length;i++) {
         if(gd.calcdata[i][0].t.visible!==false) {
-            ldata.push([gd.calcdata[i][0],i]); // i is appended as d[1] so we know which element of gd.data it refers to
+            ldata.push([gd.calcdata[i][0]]);
         }
     }
     if(gll.traceorder=='reversed') { ldata.reverse(); } // for stacked plots (bars, area) the legend items are often clearer reversed
