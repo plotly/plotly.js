@@ -482,63 +482,70 @@ Plotly.plot = function(gd, data, layout) {
 
     // autorange for annotations
     Plotly.Annotations.calcAutorange(gd);
-    // TODO: autosize extra for big pts, text too
+    // TODO: autosize extra for text markers
 
-    Plotly.Axes.doAutoRange(xa);
-    Plotly.Axes.doAutoRange(ya);
+    var axesOK = true;
+    Plotly.Axes.list(gd).forEach(function(ax) {
+        Plotly.Axes.doAutoRange(ax);
+        if(!$.isNumeric(ax._m) || !$.isNumeric(ax._b)) {
+            axesOK = false;
+            console.log('error with axis scaling',ax);
+        }
+    });
+    if(!axesOK) {
+        Plotly.lib.notifier('Something went wrong with axis scaling','long');
+        return;
+    }
 
-    gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
+    gd.plot.attr('viewBox','0 0 '+xa._length+' '+ya._length);
     Plotly.Axes.doTicks(gd,'redraw'); // draw ticks, titles, and calculate axis scaling (._b, ._m)
 
     Plotly.Lib.markTime('done autorange and ticks');
 
-    if($.isNumeric(xa._m) && $.isNumeric(xa._b) && $.isNumeric(ya._m) && $.isNumeric(ya._b)) {
-        // Now plot the data. Order is:
-        // 1. heatmaps (and 2d histos)
-        // 2. bars/histos
-        // 3. errorbars for everyone
-        // 4. scatter
-        // 5. box plots
+    // Now plot the data. Order is:
+    // 1. heatmaps (and 2d histos)
+    // 2. bars/histos
+    // 3. errorbars for everyone
+    // 4. scatter
+    // 5. box plots
 
-        var cdbar = [], cdscatter = [], cdbox = [];
-        for(i in gd.calcdata){
-            cd = gd.calcdata[i];
-            type=cd[0].t.type;
-            if(plots.isHeatmap(type)) {
-                Plotly.Heatmap.plot(gd,cd);
-                Plotly.Lib.markTime('done heatmap '+i);
-            }
-            else {
-                // in case this one was a heatmap previously, remove it and its colorbar
-                $(gd).find('.hm'+i).remove();
-                $(gd).find('.cb'+i).remove();
-
-                if(plots.isBar(type)) { cdbar.push(cd); }
-                else if(type=='box') { cdbox.push(cd); }
-                else { cdscatter.push(cd); }
-            }
+    var cdbar = [], cdscatter = [], cdbox = [];
+    for(i in gd.calcdata){
+        cd = gd.calcdata[i];
+        type=cd[0].t.type;
+        if(plots.isHeatmap(type)) {
+            Plotly.Heatmap.plot(gd,cd);
+            Plotly.Lib.markTime('done heatmap '+i);
         }
+        else {
+            // in case this one was a heatmap previously, remove it and its colorbar
+            $(gd).find('.hm'+i).remove();
+            $(gd).find('.cb'+i).remove();
 
-        // remove old traces, then redraw everything
-        gd.plot.selectAll('g.trace').remove();
-        Plotly.Bars.plot(gd,cdbar);
-        Plotly.Lib.markTime('done bars');
-
-        // DRAW ERROR BARS for bar and scatter plots
-        // these come after (on top of) bars, and before (behind) scatter
-        Plotly.ErrorBars.plot(gd,cdbar.concat(cdscatter));
-        Plotly.Lib.markTime('done errorbars');
-
-        Plotly.Scatter.plot(gd,cdscatter);
-        Plotly.Lib.markTime('done scatter');
-        Plotly.Boxes.plot(gd,cdbox);
-        Plotly.Lib.markTime('done boxes');
-
-        //styling separate from drawing
-        applyStyle(gd);
-        Plotly.Lib.markTime('done applyStyle');
+            if(plots.isBar(type)) { cdbar.push(cd); }
+            else if(type=='box') { cdbox.push(cd); }
+            else { cdscatter.push(cd); }
+        }
     }
-    else { console.log('error with axis scaling',xa._m,xa._b,ya._m,ya._b); }
+
+    // remove old traces, then redraw everything
+    gd.plot.selectAll('g.trace').remove();
+    Plotly.Bars.plot(gd,cdbar);
+    Plotly.Lib.markTime('done bars');
+
+    // DRAW ERROR BARS for bar and scatter plots
+    // these come after (on top of) bars, and before (behind) scatter
+    Plotly.ErrorBars.plot(gd,cdbar.concat(cdscatter));
+    Plotly.Lib.markTime('done errorbars');
+
+    Plotly.Scatter.plot(gd,cdscatter);
+    Plotly.Lib.markTime('done scatter');
+    Plotly.Boxes.plot(gd,cdbox);
+    Plotly.Lib.markTime('done boxes');
+
+    //styling separate from drawing
+    applyStyle(gd);
+    Plotly.Lib.markTime('done applyStyle');
 
     // show the legend and annotations
     if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!==false)) { Plotly.Legend.draw(gd); }
@@ -547,17 +554,18 @@ Plotly.plot = function(gd, data, layout) {
 
     // final cleanup
     console.log(gd.mainsite, gd.standalone);
-    if(!gd.mainsite && !gd.standalone) { plots.positionBrand(gd); } // 'view in plotly' link for embedded plots
+    // 'view in plotly' link for embedded plots
+    if(!gd.mainsite && !gd.standalone) { plots.positionBrand(gd); }
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
             try{
-                if( firsttimeuser() ) showAlert('graphtips');
+                if( firsttimeuser() ) { showAlert('graphtips'); }
             }
             catch(e){ console.log(e); }
         }
         else if($(gd).find('#graphtips').css('display')=='none'){
-            if( firsttimeuser() ) $(gd).find('#graphtips').fadeIn();
+            if( firsttimeuser() ) { $(gd).find('#graphtips').fadeIn(); }
         }
     },1000);
     Plotly.Lib.markTime('done plot');
@@ -822,7 +830,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // also axis scales and range show up here because we may need to undo them
     var layout_attr = [
         'barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap',
-        'xaxis.autorange','yaxis.autorange','xaxis.range','yaxis.range'
+        '?axis.autorange','?axis.range'
     ];
     // these ones may alter the axis type (at least if the first trace is involved)
     var axtype_attr = ['type','x','y','x0','y0','bardir'];
@@ -833,10 +841,19 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // copies of the change (and previous values of anything affected) for the
     // undo / redo queue
     var redoit = {},
-        undoit = {};
+        undoit = {},
+        axlist;
 
     // make a new empty vals array for undoit
     function a0(){ return traces.map(function(){ return undefined; }); }
+
+    // for autoranging multiple axes
+    function addToAxlist(axid) {
+        var axName = Plotly.Axes.id2name(axid);
+        if(axlist.indexOf(axName)==-1) { axlist.push(axName); }
+    }
+    function autorangeAttr(axName) { return axName+'.autorange'; }
+    function rangeAttr(axName) { return axName+'.range'; }
 
     // for attrs that interact (like scales & autoscales), save the
     // old vals before making the change
@@ -863,7 +880,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         var vi = aobj[ai], cont, param;
         redoit[ai] = vi;
 
-        if(layout_attr.indexOf(ai)!=-1){
+        if(layout_attr.indexOf(ai.replace(/[xy]axis[0-9]*/g,'?axis'))!=-1){
             param = Plotly.Lib.nestedProperty(gl,ai);
             undoit[ai] = [param.get()];
             // since we're allowing val to be an array, allow it here too,
@@ -920,13 +937,18 @@ Plotly.restyle = function(gd,astr,val,traces) {
             // major enough changes deserve autoscale, autobin, and non-reversed
             // axes so people don't get confused
             if(['bardir','type'].indexOf(ai)!=-1) {
-                doextra(gl,['xaxis.autorange','yaxis.autorange'],true,0);
-                doextra(gl,['xaxis.range','yaxis.range'],[0,1],0);
-                if(astr=='type') {
-                    for(i=0; i<traces.length; i++) {
+                axlist = [];
+                for(i=0; i<traces.length; i++) {
+                    var trace = gd.data[traces[i]];
+                    addToAxlist(trace.xaxis||'x');
+                    addToAxlist(trace.yaxis||'y');
+
+                    if(astr=='type') {
                         doextra(gd.data[traces[i]],['autobinx','autobiny'],true,i);
                     }
                 }
+                doextra(gl,axlist.map(autorangeAttr),true,0);
+                doextra(gl,axlist.map(rangeAttr),[0,1],0);
             }
             // if we need to change margin for a heatmap, force a relayout first so we don't plot twice
             if(Plotly.Heatmap.margin(gd)) { dolayout = true; }
@@ -978,7 +1000,7 @@ Plotly.relayout = function(gd,astr,val) {
 
     // look for 'allaxes', split out into all axes
     var keys = Object.keys(aobj),
-        axes = ['xaxis','yaxis'];
+        axes = Plotly.Axes.list(gd);
     for(var i=0; i<keys.length; i++) {
         if(keys[i].indexOf('allaxes')===0) {
             for(var j=0; j<axes.length; j++) {
@@ -1009,6 +1031,12 @@ Plotly.relayout = function(gd,astr,val) {
         if(val!==undefined) { p.set(val); }
     }
 
+    // for editing annotations - is it on autoscaled axes?
+    function annAutorange(anni,axletter) {
+        var axName = Plotly.Axes.id2name(anni[axletter+'axis']||axletter);
+        return gl[axName] && gl[axName].autorange;
+    }
+
     var hw = ['height','width'];
 
     // alter gd.layout
@@ -1022,9 +1050,9 @@ Plotly.relayout = function(gd,astr,val) {
         // check autosize or autorange vs size and range
         if(hw.indexOf(ai)!=-1) { doextra('autosize', false); }
         else if(ai=='autosize') { doextra(hw, undefined); }
-        var m = ai.match(/^(.)axis\.range\[[0|1]\]$/);
+        var m = ai.match(/^[xy]axis[0-9]*\.range\[[0|1]\]$/);
         if(m && m.length==2) { doextra(p.parts[0]+'.autorange', false); }
-        m = ai.match(/^(.)axis\.autorange$/);
+        m = ai.match(/^[xy]axis[0-9]*\.autorange$/);
         if(m && m.length==2) { doextra([p.parts[0]+'.range[0]',p.parts[0]+'.range[1]'], undefined); }
 
         // toggling log without autorange: need to also recalculate ranges
@@ -1057,7 +1085,7 @@ Plotly.relayout = function(gd,astr,val) {
         // send annotation mods one-by-one through Annotations.draw(), don't set via nestedProperty
         // that's because add and remove are special
         else if(p.parts[0]=='annotations') {
-            var anum = p.parts[1];
+            var anum = p.parts[1], anns = gl.annotations, anni = anns[anum]||{};
             // if p.parts is just an annotation number, and val is either 'add' or
             // an entire annotation obj to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
@@ -1065,15 +1093,15 @@ Plotly.relayout = function(gd,astr,val) {
                 if(aobj[ai]=='add' || $.isPlainObject(aobj[ai])) { undoit[ai]='remove'; }
                 else if(aobj[ai]=='remove') {
                     if(anum==-1) {
-                        undoit['annotations'] = gl.annotations;
+                        undoit['annotations'] = anns;
                         delete undoit[ai];
                     }
-                    else { undoit[ai]=gl.annotations[p.parts[1]]; }
+                    else { undoit[ai]=anni; }
                 }
                 else { console.log('???',aobj); }
             }
-            if((gl.xaxis.autorange || gl.yaxis.autorange) && anum>=0 &&
-                (anum>=gl.annotations.length || gl.annotations[p.parts[1]].ref=='plot') &&
+            if((annAutorange(anni,'x') || annAutorange(anni,'y')) &&
+                anum>=0 && (anum>=anns.length || anni.ref=='plot') &&
                 ai.indexOf('color')==-1 && ai.indexOf('opacity')==-1) {
                     doplot = true;
             }
@@ -1091,7 +1119,9 @@ Plotly.relayout = function(gd,astr,val) {
                 p.parts[1].indexOf('exponent')!=-1 ||
                 p.parts[1].indexOf('grid')!=-1 ||
                 p.parts[1].indexOf('zeroline')!=-1)) { doticks = true; }
-            else if(ai.indexOf('axis.linewidth')!=-1) { doticks = dolayoutstyle = true; }
+            else if(ai.indexOf('.linewidth')!=-1 && ai.indexOf('axis')!=-1) {
+                doticks = dolayoutstyle = true;
+            }
             else if(p.parts.length>1 && (
                 p.parts[1].indexOf('line')!=-1 ||
                 p.parts[1].indexOf('mirror')!=-1)) { dolayoutstyle = true; }
@@ -1103,7 +1133,9 @@ Plotly.relayout = function(gd,astr,val) {
         }
     }
     // now all attribute mods are done, as are redo and undo so we can save them
-    if(typeof plotUndoQueue=='function') { plotUndoQueue(gd,undoit,redoit,'relayout'); }
+    if(typeof plotUndoQueue=='function') {
+        plotUndoQueue(gd,undoit,redoit,'relayout');
+    }
 
     // calculate autosizing - if size hasn't changed, will remove h&w so we don't need to redraw
     if(aobj.autosize) { aobj=plotAutoSize(gd,aobj); }
@@ -1116,13 +1148,16 @@ Plotly.relayout = function(gd,astr,val) {
         Plotly.plot(gd,'',gl); // pass in the modified layout
     }
     else if(ak.length) {
-        // if we didn't need to redraw the whole thing, just do the needed parts
+        // if we didn't need to redraw entirely, just do the needed parts
         if(dolegend) {
             gd.infolayer.selectAll('.legend').remove();
             if(gl.showlegend) { Plotly.Legend.draw(gd); }
         }
         if(dolayoutstyle) { layoutStyles(gd); }
-        if(doticks) { Plotly.Axes.doTicks(gd,'redraw'); plots.titles(gd,'gtitle'); }
+        if(doticks) {
+            Plotly.Axes.doTicks(gd,'redraw');
+            plots.titles(gd,'gtitle');
+        }
     }
     $(gd).trigger('relayout.plotly',redoit);
 };
@@ -1211,7 +1246,7 @@ function makePlotFramework(divid, layout) {
 
     var gl = gd.layout,
         xa = gl.xaxis,
-        ya=gl.yaxis;
+        ya = gl.yaxis;
 
     Plotly.Axes.setTypes(gd);
 
@@ -1270,8 +1305,6 @@ function layoutStyles(gd) {
     var gm = gd.margin;
     gd.plotwidth=gl.width-gm.l-gm.r;
     gd.plotheight=gl.height-gm.t-gm.b;
-    xa._pixrange = gd.plotwidth;
-    ya._pixrange = gd.plotheight;
 
     gd.paperdiv.style({width:gl.width+'px', height:gl.height+'px'});
     gd.paper.call(Plotly.Drawing.setSize, gl.width, gl.height);
@@ -1325,49 +1358,45 @@ function layoutStyles(gd) {
 plots.titles = function(gd,title) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     if(!title) {
-        plots.titles(gd,'xtitle');
-        plots.titles(gd,'ytitle');
+        Plotly.Axes.list.forEach(function(axName) {
+            plots.titles(gd,Plotly.Axes.name2id(axName)+'title');
+        });
         plots.titles(gd,'gtitle');
         return;
     }
     var gl=gd.layout,gm=gd.margin,
-        x,y,w,cont,name,font,fontSize,fontColor,transform='',attr={},xa,ya;
-    if(title=='xtitle'){
-        xa = gl.xaxis;
-        ya = gl.yaxis;
-        cont = gl.xaxis;
-        name = 'X axis';
-        font = xa.titlefont.family || gl.font.family || 'Arial';
-        fontSize = xa.titlefont.size || (gl.font.size*1.2) || 14;
-        fontColor = xa.titlefont.color || gl.font.color || '#000';
-        x = (gl.width+gm.l-gm.r)/2;
-        y = gl.height+(gd.lh<0 ? gd.lh : 0) - 14*2.25;
-        w = gd.plotwidth*(xa.domain[0]-xa.domain[1])/200;
-        h = 14;
+        axletter = title.charAt(0),
+        cont = gl[Plotly.Axes.id2name(title.replace('title',''))] || gl,
+        x,y,w,h,transform='',attr={},xa,ya,
+        name = (cont._id||axletter).toUpperCase()+' axis',
+        font = cont.titlefont.family || gl.font.family || 'Arial',
+        fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
+        fontColor = cont.titlefont.color || gl.font.color || '#000';
+    if(axletter=='x'){
+        xa = cont;
+        ya = xa.counter;
+        x = (gl.width*(ax.domain[0]+ax.domain[1])/100 + gm.l-gm.r)/2;
+        y = gl.height+(gd.lh<0 ? gd.lh : 0) - fontSize*2.25; // TODO based on ya.domain or xa.position, and xa.side
+        w = xa._length/2;
+        h = fontSize;
     }
-    else if(title=='ytitle'){
-        cont = gl.yaxis;
-        name = 'Y axis';
-        font = gl.yaxis.titlefont.family || gl.font.family || 'Arial';
-        fontSize = gl.yaxis.titlefont.size || (gl.font.size*1.2) || 14;
-        fontColor = gl.yaxis.titlefont.color || gl.font.color || '#000';
-        x = 40-(gd.lw<0 ? gd.lw : 0);
-        y = (gl.height+gm.t-gm.b)/2;
-        w = 14;
-        h = gd.plotheight/2;
+    else if(axletter=='y'){
+        ya = cont;
+        xa = ya.counter;
+        x = 40-(gd.lw<0 ? gd.lw : 0); // TODO
+        y = (gl.height*(ax.domain[0]+ax.domain[1])/100 + gm.t-gm.b)/2;
+        w = fontSize;
+        h = ya._length/2;
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
     }
-    else if(title=='gtitle'){
-        cont = gl;
+    else{
         name = 'Plot';
-        font = gl.titlefont.family || gl.font.family || 'Arial';
         fontSize = gl.titlefont.size || gl.font.size*1.4 || 16;
-        fontColor = gl.titlefont.color || gl.font.color || '#000';
         x = gl.width/2;
         y = gl.margin.t/2;
         w = gl.width/2;
-        h = 16;
+        h = fontSize;
     }
 
     gd.infolayer.select('.'+title).remove();
@@ -1380,7 +1409,7 @@ plots.titles = function(gd,title) {
     if(gd.mainsite) { el.on('click',function(){ Plotly.Fx.autoGrowInput(this); }); }
 
     var txt=cont.title;
-    if(txt.match(/^Click to enter (Plot |X axis |Y axis )?title$/)) {
+    if(txt.match(/^Click to enter (Plot |[XY][0-9]* axis )?title$/)) {
         if(gd.mainsite) { el.style('fill','#999'); } // cues in gray
         else { txt=''; } // don't show cues in embedded plots
     }
@@ -1404,7 +1433,7 @@ plots.titles = function(gd,title) {
     var titlebb=el.node().getBoundingClientRect(),
         paperbb=gd.paperdiv.node().getBoundingClientRect(),
         lbb, tickedge;
-    if(title=='xtitle'){
+    if(axletter=='x'){
         tickedge=0;
         labels=gd.axislayer.selectAll('text.xtick').each(function(){
             lbb=this.getBoundingClientRect();
@@ -1416,7 +1445,7 @@ plots.titles = function(gd,title) {
             el.attr('transform','translate(0,'+(tickedge-titlebb.top)+') '+el.attr('transform'));
         }
     }
-    else if(title=='ytitle'){
+    else if(axletter=='y'){
         tickedge=screen.width;
         gd.axislayer.selectAll('text.ytick').each(function(){
             lbb=this.getBoundingClientRect();

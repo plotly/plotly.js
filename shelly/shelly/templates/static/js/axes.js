@@ -321,12 +321,14 @@ axes.setConvert = function(ax) {
         }
 
         if(ax._id.charAt(0)=='y') {
-            ax._m=ax._td.plotheight*(ax.domain[1]-ax.domain[0])/100/(ax.range[0]-ax.range[1]);
-            ax._b=-ax._m*ax.range[1];
+            ax._length = ax._td.plotheight*(ax.domain[1]-ax.domain[0])/100;
+            ax._m = ax._length/(ax.range[0]-ax.range[1]);
+            ax._b = -ax._m*ax.range[1];
         }
         else {
-            ax._m=ax._td.plotwidth*(ax.domain[1]-ax.domain[0])/100/(ax.range[1]-ax.range[0]);
-            ax._b=-ax._m*ax.range[0];
+            ax._length = ax._td.plotwidth*(ax.domain[1]-ax.domain[0])/100;
+            ax._m = ax._length/(ax.range[1]-ax.range[0]);
+            ax._b = -ax._m*ax.range[0];
         }
     };
 
@@ -371,6 +373,7 @@ axes.minDtick = function(ax,newDiff,newFirst,allow) {
 };
 
 axes.doAutoRange = function(ax) {
+    if(!ax._length) { ax.setScale(); }
     if(ax.autorange && ax._min && ax._max && ax._min.length && ax._max.length) {
         var i,j,minpt,maxpt,minbest,maxbest,dp,dv,mbest=0;
         for(i=0; i<ax._min.length; i++) {
@@ -378,13 +381,11 @@ axes.doAutoRange = function(ax) {
             for(j=0; j<ax._max.length; j++) {
                 maxpt = ax._max[j];
                 dv = maxpt.val-minpt.val;
-                dp = ax._pixrange-minpt.pad-maxpt.pad;
-                if(dv>0 && dp>0) {
-                    if(dv/dp > mbest) {
-                        minbest = minpt;
-                        maxbest = maxpt;
-                        mbest = dv/dp;
-                    }
+                dp = ax._length-minpt.pad-maxpt.pad;
+                if(dv>0 && dp>0 && dv/dp > mbest) {
+                    minbest = minpt;
+                    maxbest = maxpt;
+                    mbest = dv/dp;
                 }
             }
         }
@@ -416,7 +417,7 @@ axes.expand = function(ax,data,options) {
     if(!ax._m) { ax.setScale(); }
 
     var len = data.length,
-        extrappad = options.padded ? ax._pixrange*0.05 : 0,
+        extrappad = options.padded ? ax._length*0.05 : 0,
         tozero = options.tozero && (ax.type=='linear' || ax.type=='-'),
         i,j,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis;
 
