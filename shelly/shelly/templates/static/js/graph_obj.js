@@ -1233,7 +1233,7 @@ function makePlotFramework(divid, layout) {
         gd3 = d3.select(gd);
 
     // graph container
-    if ($gd.find('.graph-container').length == 0) {
+    if ($gd.find('.graph-container').length === 0) {
         $gd.append('<div class="graph-container"></div>');
     }
     gd.graphContainer = gd3.select('.graph-container');
