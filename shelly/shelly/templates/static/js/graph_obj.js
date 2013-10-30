@@ -1220,10 +1220,13 @@ function makePlotFramework(divid, layout) {
     // some callers send this in already by dom element
 
     var gd = (typeof divid == 'string') ? document.getElementById(divid) : divid,
+        $gd = $(gd),
         gd3 = d3.select(gd);
 
     // graph container
-    $(gd).append('<div class="graph-container"></div>');
+    if ($gd.find('.graph-container').length == 0) {
+        $gd.append('<div class="graph-container"></div>');
+    }
     gd.graphContainer = gd3.select('.graph-container');
 
     if(!layout) layout = {};
