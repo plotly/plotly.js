@@ -1128,6 +1128,7 @@ Plotly.relayout = function(gd,astr,val) {
 };
 
 function setGraphContainerHeight(gd) {
+    if(!gd.mainsite) { return; }
     $gd = $(gd);
     var graphContainerHeight = $gd.innerHeight() - $gd.find('.tool-menu').innerHeight(),
         $themebar = $gd.find('.themebar'),
@@ -1144,6 +1145,7 @@ function setGraphContainerHeight(gd) {
 }
 
 function setGraphContainerScroll(gd) {
+    if(!gd.mainsite) { return; }
     var $graphContainer = $(gd).find('.graph-container'),
         isGraphWiderThanContainer = gd.layout.width > parseInt($graphContainer.css('width'),10);
 
@@ -1159,11 +1161,18 @@ function setGraphContainerScroll(gd) {
 }
 
 function plotAutoSize(gd, aobj) {
-    if(!gd.mainsite) { delete aobj.autosize; return aobj; }
-    setGraphContainerHeight(gd);
-    var gdBB = gd.graphContainer.node().getBoundingClientRect();
-    var newheight = Math.round(gdBB.height*0.85);
-    var newwidth = Math.round(gdBB.width*0.85);
+    var newheight, newwidth;
+    if(gd.mainsite) {
+        setGraphContainerHeight(gd);
+        var gdBB = gd.graphContainer.node().getBoundingClientRect();
+        newheight = Math.round(gdBB.height*0.9);
+        newwidth = Math.round(gdBB.width*0.9);
+    }
+    else {
+        newheight = $(gd).height() || gd.layout.height || defaultLayout().height;
+        newwidth = $(gd).width() || gd.layout.width || defaultLayout().width;
+        // delete aobj.autosize;
+    }
 
     if(Math.abs(gd.layout.width - newwidth) > 1 || Math.abs(gd.layout.height - newheight) > 1) {
         gd.layout.height = newheight;
@@ -1220,18 +1229,22 @@ function makePlotFramework(divid, layout) {
     // some callers send this in already by dom element
 
     var gd = (typeof divid == 'string') ? document.getElementById(divid) : divid,
+        $gd = $(gd),
         gd3 = d3.select(gd);
 
+    // graph container
+    if ($gd.find('.graph-container').length == 0) {
+        $gd.append('<div class="graph-container"></div>');
+    }
     gd.graphContainer = gd3.select('.graph-container');
 
     if(!layout) layout = {};
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
-    // CD NOTE: I simplified this "if" condition because the rest seems unnecessary.
-    // Leaving the old version here for now for quick reference in case something goes wrong
-    // if (($(gd).children('.svg-container').length==1) && (!gd.mainsite ||
-    //     ($(gd).children('.tool-menu').length==1 && $(gd).children('.demobar').length==1))) {
+    if (gd.mainsite) {
+        $(gd).children('.graph-container').addClass('is-mainsite');
+    }
 
     var $svgContainer = $(gd).children('.graph-container').children('.svg-container');
 
