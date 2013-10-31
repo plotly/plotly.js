@@ -66,6 +66,25 @@ function initAxis(td,axname) {
     ax._id = axes.name2id(axname);
     ax._td = td;
 
+    // set scaling to pixels
+    ax.setScale = function(){
+        // make sure we have a range (linearized data values)
+        if(!ax.range || ax.range.length!=2 || ax.range[0]==ax.range[1]) {
+            ax.range = [-1,1];
+        }
+
+        if(ax._id.charAt(0)=='y') {
+            ax._length = ax._td.plotheight*(ax.domain[1]-ax.domain[0])/100;
+            ax._m = ax._length/(ax.range[0]-ax.range[1]);
+            ax._b = -ax._m*ax.range[1];
+        }
+        else {
+            ax._length = ax._td.plotwidth*(ax.domain[1]-ax.domain[0])/100;
+            ax._m = ax._length/(ax.range[1]-ax.range[0]);
+            ax._b = -ax._m*ax.range[0];
+        }
+    };
+
     if(!ax.counter) { ax.counter = axes.counterLetter(axname); }
 
     if(!ax.domain || ax.domain.length!=2 || ax.domain[0]<=ax.domain[1]) {
@@ -312,25 +331,6 @@ axes.setConvert = function(ax) {
         }
     };
     ax.p2c = function(px){ return ax.l2c((px-ax._b)/ax._m); };
-
-    // set scaling to pixels
-    ax.setScale = function(){
-        // make sure we have a range (linearized data values)
-        if(!ax.range || ax.range.length!=2 || ax.range[0]==ax.range[1]) {
-            ax.range = [-1,1];
-        }
-
-        if(ax._id.charAt(0)=='y') {
-            ax._length = ax._td.plotheight*(ax.domain[1]-ax.domain[0])/100;
-            ax._m = ax._length/(ax.range[0]-ax.range[1]);
-            ax._b = -ax._m*ax.range[1];
-        }
-        else {
-            ax._length = ax._td.plotwidth*(ax.domain[1]-ax.domain[0])/100;
-            ax._m = ax._length/(ax.range[1]-ax.range[0]);
-            ax._b = -ax._m*ax.range[0];
-        }
-    };
 
     // for autoranging: arrays of objects {val:axis value, pad: pixel padding}
     // on the low and high sides
@@ -775,6 +775,13 @@ axes.tickFirst = function(ax){
     else { throw "unrecognized dtick "+String(ax.dtick); }
 };
 
+var yearFormat = d3.time.format('%Y'),
+    monthFormat = d3.time.format('%b %Y'),
+    dayfmt0 = d3.time.format('%b %d'),
+    dayFormat = function(d){ return dayfmt0(d).replace(' 0',' '); }, // TODO: get rid of date.js so we can upgrade to d3v3 and use -d
+    hourFormat = d3.time.format(' %H'), // then we can combine the parts of hourFormat again
+    minuteFormat = d3.time.format('%H:%M'),
+    secondFormat = d3.time.format(':%S');
 // draw the text for one tick.
 // px,py are the location on td.paper
 // prefix is there so the x axis ticks can be dropped a line
@@ -798,19 +805,19 @@ axes.tickText = function(ax, x, hover){
             else { tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr]; }
         }
         var d=new Date(x);
-        if(tr=='y') { tt=$.datepicker.formatDate('yy', d); }
-        else if(tr=='m') { tt=$.datepicker.formatDate('M yy', d); }
+        if(tr=='y') { tt = yearFormat(d); }
+        else if(tr=='m') { tt = monthFormat(d); }
         else {
-            if(x==ax._tmin) { suffix='<br>'+$.datepicker.formatDate('yy', d); }
+            if(x==ax._tmin) { suffix = '<br>'+yearFormat(d); }
 
-            if(tr=='d') { tt=$.datepicker.formatDate('M d', d); }
-            else if(tr=='H') { tt=$.datepicker.formatDate('M d ', d)+Plotly.Lib.lpad(d.getHours(),2)+'h'; }
+            if(tr=='d') { tt = dayFormat(d); }
+            else if(tr=='H') { tt = dayFormat(d)+hourFormat(d); }
             else {
-                if(x==ax._tmin) { suffix='<br>'+$.datepicker.formatDate('M d, yy', d); }
+                if(x==ax._tmin) { suffix = '<br>'+dayFormat(d)+', '+yearFormat(d); }
 
-                tt=Plotly.Lib.lpad(d.getHours(),2)+':'+Plotly.Lib.lpad(d.getMinutes(),2);
+                tt = minuteFormat(d);
                 if(tr!='M'){
-                    tt+=':'+Plotly.Lib.lpad(d.getSeconds(),2);
+                    tt += secondFormat(d);
                     if(tr!='S') { tt+=numFormat(mod(x/1000,1),ax,'none').substr(1); }
                 }
             }

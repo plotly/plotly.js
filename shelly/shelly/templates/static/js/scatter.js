@@ -115,17 +115,19 @@ scatter.plot = function(gd,cdscatter) {
         var x0,y0,x1,y1;
         x0=y0=x1=y1=null;
         while(i<d.length) {
-            var pts='';
+            var pts='',
+                atLeastTwo = false;
             for(i++; i<d.length; i++) {
                 var x=xa.c2p(d[i].x),y=ya.c2p(d[i].y);
                 if(!$.isNumeric(x)||!$.isNumeric(y)) { break; } // TODO: smart lines going off the edge?
+                if(pts) { atLeastTwo = true; }
                 pts+=x+','+y+' ';
                 if(!$.isNumeric(x0)) { x0=x; y0=y; }
                 x1=x; y1=y;
             }
             if(pts) {
                 pts2+=pts;
-                if(t.mode.indexOf('lines')!=-1) {
+                if(t.mode.indexOf('lines')!=-1 && atLeastTwo) {
                     tr.append('polyline').classed('line',true).attr('points',pts);
                 }
             }
@@ -137,7 +139,10 @@ scatter.plot = function(gd,cdscatter) {
                 tozero.attr('points',pts2+x1+','+y1+' '+x0+','+y0);
             }
             else if(t.fill.substr(0,6)=='tonext') {
-                tonext.attr('points',pts2+prevpts);
+                var ptsnext = pts2+prevpts;
+                if(ptsnext.indexOf(',')!=ptsnext.lastIndexOf(',')) {
+                    tonext.attr('points',pts2+prevpts);
+                }
             }
             prevpts = pts2.split(' ').reverse().join(' ');
         }
