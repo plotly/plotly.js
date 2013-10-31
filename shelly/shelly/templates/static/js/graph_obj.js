@@ -384,8 +384,10 @@ Plotly.plot = function(gd, data, layout) {
     //  but if there's no data there yet, it's just a placeholder...
     //  then it should destroy and remake the plot
     if (gd.data && gd.data.length > 0) {
-        var framework = graphInfo[gd.data[0].type || 'scatter'].framework;
-        if(!gd.framework || gd.framework!=framework || (typeof gd.layout==='undefined') || graphwasempty) {
+        var framework = graphInfo[gd.data[0].type || 'scatter'].framework,
+            subplots = getSubplots(gd.data).join(''),
+            oldSubplots = ((gd.layout && gd.layout._plots) ? Object.keys(gd.layout._plots) : []).join('');
+        if(!gd.framework || gd.framework!=framework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
             gd.framework = framework;
             framework(gd,layout);
         }
@@ -1128,6 +1130,7 @@ Plotly.relayout = function(gd,astr,val) {
 };
 
 function setGraphContainerHeight(gd) {
+    if(!gd.mainsite) { return; }
     $gd = $(gd);
     var graphContainerHeight = $gd.innerHeight() - $gd.find('.tool-menu').innerHeight(),
         $themebar = $gd.find('.themebar'),
@@ -1144,6 +1147,7 @@ function setGraphContainerHeight(gd) {
 }
 
 function setGraphContainerScroll(gd) {
+    if(!gd.mainsite) { return; }
     var $graphContainer = $(gd).find('.graph-container'),
         isGraphWiderThanContainer = gd.layout.width > parseInt($graphContainer.css('width'),10);
 
@@ -1159,11 +1163,18 @@ function setGraphContainerScroll(gd) {
 }
 
 function plotAutoSize(gd, aobj) {
-    if(!gd.mainsite) { delete aobj.autosize; return aobj; }
-    setGraphContainerHeight(gd);
-    var gdBB = gd.graphContainer.node().getBoundingClientRect();
-    var newheight = Math.round(gdBB.height*0.9);
-    var newwidth = Math.round(gdBB.width*0.9);
+    var newheight, newwidth;
+    if(gd.mainsite) {
+        setGraphContainerHeight(gd);
+        var gdBB = gd.graphContainer.node().getBoundingClientRect();
+        newheight = Math.round(gdBB.height*0.9);
+        newwidth = Math.round(gdBB.width*0.9);
+    }
+    else {
+        newheight = $(gd).height() || gd.layout.height || defaultLayout().height;
+        newwidth = $(gd).width() || gd.layout.width || defaultLayout().width;
+        // delete aobj.autosize;
+    }
 
     if(Math.abs(gd.layout.width - newwidth) > 1 || Math.abs(gd.layout.height - newheight) > 1) {
         gd.layout.height = newheight;
@@ -1220,11 +1231,12 @@ function makePlotFramework(divid, layout) {
     // some callers send this in already by dom element
 
     var gd = (typeof divid == 'string') ? document.getElementById(divid) : divid,
+        $gd = $(gd),
         gd3 = d3.select(gd);
 
     // graph container
-    if ($(gd).children('.graph-container').length === 0) {
-        $(gd).append('<div class="graph-container"></div>');
+    if ($gd.find('.graph-container').length === 0) {
+        $gd.append('<div class="graph-container"></div>');
     }
     gd.graphContainer = gd3.select('.graph-container');
 
@@ -1252,9 +1264,21 @@ function makePlotFramework(divid, layout) {
     // Get the layout info - take the default and update it with layout arg
     gd.layout=updateObject(defaultLayout(), layout);
 
-    var gl = gd.layout,
-        xa = gl.xaxis,
-        ya=gl.yaxis;
+    var gl = gd.layout;
+
+    // Get subplots and see if we need to make any more axes
+    var subplots = getSubplots(gd.data);
+    subplots.forEach(function(sp) {
+        var axmatch = sp.match(/^(x[0-9]*)(y[0-9]*)$/);
+        [axmatch[1],axmatch[2]].forEach(function(axid) {
+            var axname = axid.charAt(0)+'axis'+axid.substr(1);//Plotly.Axes.id2name(axid);
+            if(!gl[axname]) {
+                gl[axname] = Plotly.Axes.defaultAxis({
+                    range:[-1,6],
+                    title:'Click to enter '+axmatch[1].toUpperCase()+' axis title'});
+            }
+        });
+    });
 
     Plotly.Axes.setTypes(gd);
 
@@ -1464,6 +1488,29 @@ plots.titles = function(gd,title) {
 // ----------------------------------------------------
 // Utility functions
 // ----------------------------------------------------
+
+// getSubplots - extract all combinations of axes we need to make plots for
+// as an array of items like 'xy', 'x2y', 'x2y2'...
+// sorted by x (x,x2,x3...) then y
+
+function getSubplots(data) {
+    var subplots = [];
+    (data||[]).forEach(function(d) {
+        var subplot = (d.xaxis||'x')+(d.yaxis||'y');
+        if(subplots.indexOf(subplot)==-1) { subplots.push(subplot); }
+    });
+    if(!subplots.length) { subplots = ['xy']; }
+    var spmatch = /^x([0-9]*)y([0-9]*)$/;
+    return subplots.filter(function(sp) { return sp.match(spmatch); })
+        .sort(function(a,b) {
+            var amatch = a.match(spmatch),
+                bmatch = b.match(spmatch);
+            if(!amatch) { return false; }
+            if(!bmatch) { return true; }
+            if(amatch[1]==bmatch[1]) { return Number(amatch[2]||0)>Number(bmatch[2]||0); }
+            return Number(amatch[1]||0)>Number(bmatch[1]||0);
+        });
+}
 
 // graphJson - jsonify the graph data and layout
 plots.graphJson = function(gd, dataonly, mode){
