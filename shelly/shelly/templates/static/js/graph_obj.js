@@ -1263,6 +1263,7 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
+    if(!layout) { layout = {}; }
 
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
@@ -1272,32 +1273,8 @@ function makePlotFramework(divid, layout) {
         $gd = $(gd),
         gd3 = d3.select(gd);
 
-    // graph container
-    if ($gd.find('.graph-container').length === 0) {
-        $gd.append('<div class="graph-container"></div>');
-    }
-    gd.graphContainer = gd3.select('.graph-container');
-
-    if(!layout) layout = {};
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
-
-    if (gd.mainsite) {
-        $(gd).children('.graph-container').addClass('is-mainsite');
-    }
-
-    var $svgContainer = $(gd).children('.graph-container').children('.svg-container');
-
-    if ($svgContainer.length==1) {
-        // Destroy any plot that already exists in this div
-        $svgContainer.children('svg').remove();
-    }
-    else {
-        // Make the svg container
-        gd.paperdiv = gd.graphContainer.append('div')
-            .classed('svg-container',true)
-            .style('position','relative');
-    }
 
     // Get the layout info - take the default and update it with layout arg
     gd.layout=updateObject(defaultLayout(), layout);
@@ -1306,8 +1283,10 @@ function makePlotFramework(divid, layout) {
 
     // Get subplots and see if we need to make any more axes
     var subplots = getSubplots(gd.data);
-    subplots.forEach(function(sp) {
-        var axmatch = sp.match(/^(x[0-9]*)(y[0-9]*)$/);
+    gl._plots = {};
+    subplots.forEach(function(subplot) {
+        var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
+        gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
         [axmatch[1],axmatch[2]].forEach(function(axid) {
             var axname = axid.charAt(0)+'axis'+axid.substr(1);//Plotly.Axes.id2name(axid);
             if(!gl[axname]) {
@@ -1320,6 +1299,34 @@ function makePlotFramework(divid, layout) {
 
     Plotly.Axes.setTypes(gd);
 
+    // graph container
+    gl._container = gd3.selectAll('.graph-container').data([0]);
+    gl._container.enter().append('div')
+        .classed('graph-container',true)
+        .classed('is-mainsite', gd.mainsite);
+    // if ($gd.find('.graph-container').length === 0) {
+    //     $gd.append('<div class="graph-container"></div>');
+    // }
+    // gd.graphContainer = gd3.select('.graph-container');
+
+
+    // if (gd.mainsite) {
+    //     $(gd).children('.graph-container').addClass('is-mainsite');
+    // }
+
+    var $svgContainer = $(gd).children('.graph-container').children('.svg-container');
+
+    if ($svgContainer.length==1) {
+        // Destroy any plot that already exists in this div
+        $svgContainer.children('svg').remove();
+    }
+    else {
+        // Make the svg container
+        gl._paperdiv = gd.graphContainer.append('div')
+            .classed('svg-container',true)
+            .style('position','relative');
+    }
+
     // initial autosize
     if(gl.autosize=='initial') {
         setGraphContainerHeight(gd);
@@ -1328,9 +1335,39 @@ function makePlotFramework(divid, layout) {
     }
     // Make the graph containers
     // the order here controls what's in front of what
-    gd.paper = gd.paperdiv.append('svg')
+    gl._paper = gl._paperdiv.append('svg')
         .attr('xmlns','http://www.w3.org/2000/svg')
         .attr('xmlns:xmlns:xlink','http://www.w3.org/1999/xlink'); // odd d3 quirk - need namespace twice??
+
+    // now make containers for each subplot and its components
+    gl._paper.selectAll('g.subplot').data(subplots)
+      .enter()
+        .append('g').classed('subplot',true).classed(Plotly.Lib.identity,true)
+        .each(function(subplot){
+            var plotinfo = gl._plots[subplot],
+                plotgroup = d3.select(this);
+            plotinfo.bg = plotgroup.append('rect')
+                .attr('stroke-width',0);
+            plotinfo.grid = plotgroup.append('g');
+            plotinfo.zeroline = plotgroup.append('g');
+            plotinfo.plot = plotgroup.append('svg')
+                .attr('preserveAspectRatio','none')
+                .style('fill','none');
+            plotinfo.xlines = plotgroup.append('path')
+                .style('fill','none').classed('crisp',true);
+            plotinfo.ylines = plotgroup.append('path')
+                .style('fill','none').classed('crisp',true);
+            plotinfo.axes = plotgroup.append('g');
+
+            // make separate drag layers for each subplot, but append them to paper rather than
+            // the plot groups, so they end up on top of the rest
+            plotinfo.draglayer = gl._paper.append('g');
+        })
+      .exit().remove(); // probably don't need exits, as we're remaking entirely? TODO: do it all enter/exit, without complete redraw?
+
+    gl._info = gl._paper.append('g');
+    gl._hover = gl._paper.append('g');
+
     gd.plotbg = gd.paper.append('rect')
         .attr('stroke-width',0);
     gd.gridlayer = gd.paper.append('g').attr('class','gridlayer');
