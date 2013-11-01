@@ -160,7 +160,7 @@ annotations.draw = function(gd,index,opt,value) {
         }
         else { return v; }
     }
-    if(options.ref=='plot') {
+    if(options.ref=='plot' && options._xatype && options._yatype) {
         options.x = checklog(options.x,options._xatype,xa.type,
             (xa.range[0]+xa.range[1]-Math.abs(xr*0.8))/2);
         options.y = checklog(options.y,options._yatype,ya.type,

@@ -1261,8 +1261,6 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
-    if(!layout) { layout = {}; }
-
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
@@ -1274,8 +1272,9 @@ function makePlotFramework(divid, layout) {
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
-    // Get the layout info - take the default and update it with layout arg
-    gd.layout=updateObject(defaultLayout(), layout);
+
+    // Get the layout info - take the default and update it with any existing layout, then layout arg
+    gd.layout=updateObject(gd.layout||defaultLayout(), layout||{});
 
     var gl = gd.layout;
 
