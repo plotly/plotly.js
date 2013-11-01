@@ -1262,7 +1262,7 @@ function makePlotFramework(divid, layout) {
     }
 
     // Get the layout info - take the default and update it with any existing layout, then layout arg
-    gd.layout=updateObject(defaultLayout(), gd.layout||{}, layout);
+    gd.layout=updateObject(defaultLayout(), layout);
 
     var gl = gd.layout;
 
