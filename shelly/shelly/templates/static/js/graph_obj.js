@@ -1230,7 +1230,6 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
-
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
@@ -1245,7 +1244,6 @@ function makePlotFramework(divid, layout) {
     }
     gd.graphContainer = gd3.select('.graph-container');
 
-    if(!layout) layout = {};
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
@@ -1266,8 +1264,8 @@ function makePlotFramework(divid, layout) {
             .style('position','relative');
     }
 
-    // Get the layout info - take the default and update it with layout arg
-    gd.layout=updateObject(defaultLayout(), layout);
+    // Get the layout info - take the default and update it with any existing layout, then layout arg
+    gd.layout=updateObject(gd.layout||defaultLayout(), layout||{});
 
     var gl = gd.layout;
 
@@ -1276,7 +1274,7 @@ function makePlotFramework(divid, layout) {
     subplots.forEach(function(sp) {
         var axmatch = sp.match(/^(x[0-9]*)(y[0-9]*)$/);
         [axmatch[1],axmatch[2]].forEach(function(axid) {
-            var axname = axid.charAt(0)+'axis'+axid.substr(1);//Plotly.Axes.id2name(axid);
+            var axname = axid.charAt(0)+'axis'+axid.substr(1);
             if(!gl[axname]) {
                 gl[axname] = Plotly.Axes.defaultAxis({
                     range:[-1,6],
