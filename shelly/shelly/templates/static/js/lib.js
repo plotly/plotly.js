@@ -88,7 +88,7 @@ lib.isDateTime = function(s){ return lib.dateTime2ms(s)!==false; };
 lib.ms2DateTime = function(ms,r) {
     if(!r) { r=0; }
     var d = new Date(ms),
-        s = $.datepicker.formatDate('yy-mm-dd',d);
+        s = d3.time.format('%Y-%m-%d')(d);
     if(r<7776000000) {
         s+=' '+lib.lpad(d.getHours(),2);  // <90 days: add hours
         if(r<432000000) {
@@ -97,8 +97,12 @@ lib.ms2DateTime = function(ms,r) {
                 s+=':'+lib.lpad(d.getSeconds(),2);    // <3 hours: add seconds
                 if(r<300000) {
                     s+='.'+lib.lpad(d.getMilliseconds(),3);  // <5 minutes: add ms
-    }}}}
-    return s.replace(/([:\s]00)*\.?[0]*$/,''); // strip trailing zeros
+                }
+            }
+        }
+        return s.replace(/([:\s]00)*\.?[0]*$/,''); // strip trailing zeros
+    }
+    return s;
 };
 
 // findBin - find the bin for val - note that it can return outside the bin range
