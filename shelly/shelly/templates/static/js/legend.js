@@ -296,7 +296,7 @@ legend.draw = function(gd) {
             if(Math.abs(dy)<MINDRAG) { dy=0; }
             if(dx||dy) { gd.dragged = true; }
             el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
-            var pbb = gd.paperdiv.node().getBoundingClientRect();
+            var pbb = gl._paperdiv.node().getBoundingClientRect();
 
             // drag to within a couple px of edge to take the legend outside the plot
             if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100; }

@@ -106,7 +106,7 @@ annotations.draw = function(gd,index,opt,value) {
 
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
-    var paperBB = gd.paperdiv.node().getBoundingClientRect(),
+    var paperBB = gl._paperdiv.node().getBoundingClientRect(),
         plotBB = d3.select(gd).select('.nsewdrag').node().getBoundingClientRect(),
         x = plotBB.left-paperBB.left,
         y = plotBB.top-paperBB.top;
@@ -485,21 +485,25 @@ annotations.allArrowheads = function(container){
 };
 
 annotations.calcAutorange = function(gd) {
-    var gl = gd.layout, xa = gl.xaxis, ya = gl.yaxis;
-    if((!xa.autorange && !ya.autorange) || !gl.annotations || !gd.data || !gd.data.length) { return; }
+    var gl = gd.layout, gm = gd.margin;
+
+    if(!gl.annotations || !gd.data || !gd.data.length) { return; }
+    if(!Plotly.Axes.list(gd).filter(function(ax) { return ax.autorange; }).length) { return; }
 
     var saveAnnotations = gl.annotations, // store the real annotations
-        plotBB = gd.plotbg.node().getBoundingClientRect(),
-        plotcenterx = (plotBB.left+plotBB.right)/2,
-        plotcentery = (plotBB.top+plotBB.bottom)/2,
+        paperBB = gl._paperdiv.node().getBoundingClientRect(),
+        plotcenterx = (paperBB.left+paperBB.right+gm.l-gm.r)/2,
+        plotcentery = (paperBB.top+paperBB.bottom+gm.l-gm.r)/2,
         blank = {left:plotcenterx, right:plotcenterx, top:plotcentery, bottom:plotcentery};
 
     // temporarily replace plot-referenced annotations with transparent, centered ones
     var tempAnnotations = [];
     saveAnnotations.forEach(function(ann){
-        if(ann.ref=='plot') {
+        var xa = gl[Plotly.Axes.id2name(ann.xaxis || 'x')], // TODO: make separate xref, yref, each can be an axis or 'fixed' (ie 'paper')
+            ya = gl[Plotly.Axes.id2name(ann.yaxis || 'y')];
+        if(ann.ref=='plot' && (xa.autorange || ya.autorange)) {
             tempAnnotations.push($.extend({},ann,
-                {x:0.5, y:0.5, ref:'paper', x0:ann.x, y0:ann.y, opacity:1}));
+                {x:0.5, y:0.5, ref:'paper', x0:ann.x, y0:ann.y, opacity:1, xa:xa, ya:ya}));
         }
     });
     gl.annotations = tempAnnotations;
@@ -515,8 +519,8 @@ annotations.calcAutorange = function(gd) {
             rightpad = Math.max(0,Math.max(arrowBB.right,textBB.right) - plotcenterx),
             toppad = Math.max(0,plotcentery - Math.min(arrowBB.top,textBB.top)),
             bottompad = Math.max(0,Math.max(arrowBB.bottom,textBB.bottom) - plotcentery);
-        Plotly.Axes.expand(xa, [xa.l2c(ann.x0)], {ppadplus:rightpad, ppadminus:leftpad});
-        Plotly.Axes.expand(ya, [ya.l2c(ann.y0)], {ppadplus:bottompad, ppadminus:toppad});
+        Plotly.Axes.expand(ann.xa, [ann.xa.l2c(ann.x0)], {ppadplus:rightpad, ppadminus:leftpad});
+        Plotly.Axes.expand(ann.ya, [ann.ya.l2c(ann.y0)], {ppadplus:bottompad, ppadminus:toppad});
     });
 
     // restore the real annotations (will be redrawn later in Plotly.plot)

@@ -50,20 +50,19 @@ axes.setTypes = function(td) {
     // now get all axes
     var axlist = axes.list(td);
     // initialize them all
-    axlist.forEach(function(axname){ initAxis(td,axname); });
+    axlist.forEach(function(ax){ initAxis(td,ax); });
     // check for type changes
     if(td.data && td.data.length && td.axtypesok!==true){
-        axlist.forEach(function(axname) { setType(td.layout[axname]); });
+        axlist.forEach(setType);
         td.axtypesok=true;
     }
     // prepare the conversion functions
-    axlist.forEach(function(axname) { axes.setConvert(td.layout[axname]); });
+    axlist.forEach(axes.setConvert);
 };
 
 // add a few pieces to prepare the axis object for use
-function initAxis(td,axname) {
-    var ax = td.layout[axname];
-    ax._id = axes.name2id(axname);
+function initAxis(td,ax) {
+    ax._id = axes.name2id(Object.keys(td.layout).filter(function(k){return td.layout[k]===ax;})[0]);
     ax._td = td;
 
     // set scaling to pixels
@@ -74,11 +73,13 @@ function initAxis(td,axname) {
         }
 
         if(ax._id.charAt(0)=='y') {
+            ax._offset = ax._td.margin.t+ax.domain[0]*ax._td.plotheight/100;
             ax._length = ax._td.plotheight*(ax.domain[1]-ax.domain[0])/100;
             ax._m = ax._length/(ax.range[0]-ax.range[1]);
             ax._b = -ax._m*ax.range[1];
         }
         else {
+            ax._offset = ax._td.margin.l+aa.domain[0]*ax._td.plotwidth/100;
             ax._length = ax._td.plotwidth*(ax.domain[1]-ax.domain[0])/100;
             ax._m = ax._length/(ax.range[1]-ax.range[0]);
             ax._b = -ax._m*ax.range[0];
@@ -931,7 +932,15 @@ function numFormat(v,ax,fmtoverride,hover) {
 }
 
 axes.list = function(td) {
-    return Object.keys(td.layout).filter(function(k){ return k.match(/^[xy]axis[0-9]*/g); });
+    return Object.keys(td.layout)
+        .filter(function(k){ return k.match(/^[xy]axis[0-9]*/g); })
+        .map(function(k){ return td.layout[k]; });
+};
+
+axes.getFromId = function(td,id,type) {
+    if(type=='x') { id = id.replace(/y[0-9]*/,''); }
+    else if(type=='y') { id = id.replace(/x[0-9]*/,''); }
+    return td.layout[axes.id2name(id)];
 };
 
 // doTicks: draw ticks, grids, and tick labels
@@ -939,19 +948,22 @@ axes.list = function(td) {
 //          'redraw' to force full redraw, and reset ax._r (stored range for use by zoom/pan)
 axes.doTicks = function(td,axid) {
     if(axid=='redraw') {
-        td.axislayer.selectAll('text,path').remove();
-        td.gridlayer.selectAll('path').remove();
-        td.zerolinelayer.selectAll('path').remove();
+        td.layout._paper.selectAll('g.subplot').each(function(subplot) {
+            var plotinfo = gl._plots[subplot];
+            plotinfo.axislayer.selectAll('text,path').remove();
+            plotinfo.gridlayer.selectAll('path').remove();
+            plotinfo.zerolinelayer.selectAll('path').remove();
+        });
     }
 
     var gl = td.layout,
-        gm=td.margin,
-        ax = gl[axes.id2name(axid)];
+        gm = td.margin,
+        ax = axes.getFromId(td,axid);
 
-    if(!ax) {
-        axes.list(td).forEach(function(axname) {
-            axes.doTicks(td,axes.name2id(axname));
-            if(axid=='redraw') { gl[axname]._r = gl[axname].range.slice(); }
+    if(!axid || axid=='redraw') {
+        axes.list(td).forEach(function(ax) {
+            axes.doTicks(td,ax._id);
+            if(axid=='redraw') { ax._r = ax.range.slice(); }
         });
         return;
     }

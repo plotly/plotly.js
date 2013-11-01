@@ -322,7 +322,7 @@ plots.positionBrand = function(gd){
     $(gd).find('.linktotool').remove();
     var linktotool = $('<div class="linktotool">'+
         '<a><font class="muted">view in </font><font class="info">plotly</font></a>'+
-        '</div>').appendTo(gd.paperdiv.node());
+        '</div>').appendTo(gl._paperdiv.node());
     if(gd.shareplot) {
         var path=window.location.pathname.split('/');
         linktotool.find('a')
@@ -485,8 +485,7 @@ Plotly.plot = function(gd, data, layout) {
     // TODO: autosize extra for text markers
 
     var axesOK = true;
-    Plotly.Axes.list(gd).forEach(function(axName) {
-        var ax = gl[axName];
+    Plotly.Axes.list(gd).forEach(function(ax) {
         Plotly.Axes.doAutoRange(ax);
         if(!$.isNumeric(ax._m) || !$.isNumeric(ax._b)) {
             axesOK = false;
@@ -1009,7 +1008,7 @@ Plotly.relayout = function(gd,astr,val) {
     for(var i=0; i<keys.length; i++) {
         if(keys[i].indexOf('allaxes')===0) {
             for(var j=0; j<axes.length; j++) {
-                var newkey = keys[i].replace('allaxes',axes[j]);
+                var newkey = keys[i].replace('allaxes',Plotly.Axes.id2name(axes[j]._id));
                 if(!aobj[newkey]) { aobj[newkey] = aobj[keys[i]]; }
             }
             delete aobj[keys[i]];
@@ -1191,7 +1190,6 @@ function setGraphContainerScroll(gd) {
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if (gd.layout && (gd.layout.autosize || !isGraphWiderThanContainer)) {
-
             $graphContainer.removeClass('is-fixed-size');
         }
         else if (gd.layout && isGraphWiderThanContainer) {
@@ -1204,7 +1202,7 @@ function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
     if(gd.mainsite) {
         setGraphContainerHeight(gd);
-        var gdBB = gd.graphContainer.node().getBoundingClientRect();
+        var gdBB = gd.layout._container.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
         newwidth = Math.round(gdBB.width*0.9);
     }
@@ -1288,7 +1286,7 @@ function makePlotFramework(divid, layout) {
         var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
         gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
         [axmatch[1],axmatch[2]].forEach(function(axid) {
-            var axname = axid.charAt(0)+'axis'+axid.substr(1);//Plotly.Axes.id2name(axid);
+            var axname = Plotly.Axes.id2name(axid);
             if(!gl[axname]) {
                 gl[axname] = Plotly.Axes.defaultAxis({
                     range:[-1,6],
@@ -1304,28 +1302,12 @@ function makePlotFramework(divid, layout) {
     gl._container.enter().append('div')
         .classed('graph-container',true)
         .classed('is-mainsite', gd.mainsite);
-    // if ($gd.find('.graph-container').length === 0) {
-    //     $gd.append('<div class="graph-container"></div>');
-    // }
-    // gd.graphContainer = gd3.select('.graph-container');
 
-
-    // if (gd.mainsite) {
-    //     $(gd).children('.graph-container').addClass('is-mainsite');
-    // }
-
-    var $svgContainer = $(gd).children('.graph-container').children('.svg-container');
-
-    if ($svgContainer.length==1) {
-        // Destroy any plot that already exists in this div
-        $svgContainer.children('svg').remove();
-    }
-    else {
-        // Make the svg container
-        gl._paperdiv = gd.graphContainer.append('div')
-            .classed('svg-container',true)
-            .style('position','relative');
-    }
+    // Make the svg container
+    gl._paperdiv = gl._container.selectAll('.svg-container').data([0]);
+    gl._paperdiv.enter().append('div')
+        .classed('svg-container',true)
+        .style('position','relative');
 
     // initial autosize
     if(gl.autosize=='initial') {
@@ -1335,7 +1317,8 @@ function makePlotFramework(divid, layout) {
     }
     // Make the graph containers
     // the order here controls what's in front of what
-    gl._paper = gl._paperdiv.append('svg')
+    gl._paper = gl._paperdiv.selectAll('svg').data([0]);
+    gl._paper.enter().append('svg')
         .attr('xmlns','http://www.w3.org/2000/svg')
         .attr('xmlns:xmlns:xlink','http://www.w3.org/1999/xlink'); // odd d3 quirk - need namespace twice??
 
@@ -1346,10 +1329,12 @@ function makePlotFramework(divid, layout) {
         .each(function(subplot){
             var plotinfo = gl._plots[subplot],
                 plotgroup = d3.select(this);
+            plotinfo.x = Plotly.Axes.getFromId(gd,subplot,'x');
+            plotinfo.y = Plotly.Axes.getFromId(gd,subplot,'y');
             plotinfo.bg = plotgroup.append('rect')
                 .attr('stroke-width',0);
-            plotinfo.grid = plotgroup.append('g');
-            plotinfo.zeroline = plotgroup.append('g');
+            plotinfo.gridlayer = plotgroup.append('g');
+            plotinfo.zerolinelayer = plotgroup.append('g');
             plotinfo.plot = plotgroup.append('svg')
                 .attr('preserveAspectRatio','none')
                 .style('fill','none');
@@ -1357,33 +1342,33 @@ function makePlotFramework(divid, layout) {
                 .style('fill','none').classed('crisp',true);
             plotinfo.ylines = plotgroup.append('path')
                 .style('fill','none').classed('crisp',true);
-            plotinfo.axes = plotgroup.append('g');
+            plotinfo.axislayer = plotgroup.append('g');
 
             // make separate drag layers for each subplot, but append them to paper rather than
             // the plot groups, so they end up on top of the rest
             plotinfo.draglayer = gl._paper.append('g');
         })
-      .exit().remove(); // probably don't need exits, as we're remaking entirely? TODO: do it all enter/exit, without complete redraw?
+      .exit().remove();
 
-    gl._info = gl._paper.append('g');
-    gl._hover = gl._paper.append('g');
+    gl._infolayer = gl._paper.append('g');
+    gl._hoverlayer = gl._paper.append('g');
 
-    gd.plotbg = gd.paper.append('rect')
-        .attr('stroke-width',0);
-    gd.gridlayer = gd.paper.append('g').attr('class','gridlayer');
-    gd.zerolinelayer = gd.paper.append('g').attr('class','zerolinelayer');
-    // Second svg (plot) is for the data
-    gd.plot = gd.paper.append('svg')
-        .attr('preserveAspectRatio','none')
-        .style('fill','none');
-    gd.axlines = {
-        x:gd.paper.append('path').style('fill','none').classed('crisp',true),
-        y:gd.paper.append('path').style('fill','none').classed('crisp',true)
-    };
-    gd.axislayer = gd.paper.append('g').attr('class','axislayer');
-    gd.draglayer = gd.paper.append('g').attr('class','draglayer');
-    gd.infolayer = gd.paper.append('g').attr('class','infolayer');
-    gd.hoverlayer = gd.paper.append('g').attr('class','hoverlayer');
+    // gd.plotbg = gd.paper.append('rect')
+    //     .attr('stroke-width',0);
+    // gd.gridlayer = gd.paper.append('g').attr('class','gridlayer');
+    // gd.zerolinelayer = gd.paper.append('g').attr('class','zerolinelayer');
+    // // Second svg (plot) is for the data
+    // gd.plot = gd.paper.append('svg')
+    //     .attr('preserveAspectRatio','none')
+    //     .style('fill','none');
+    // gd.axlines = {
+    //     x:gd.paper.append('path').style('fill','none').classed('crisp',true),
+    //     y:gd.paper.append('path').style('fill','none').classed('crisp',true)
+    // };
+    // gd.axislayer = gd.paper.append('g').attr('class','axislayer');
+    // gd.draglayer = gd.paper.append('g').attr('class','draglayer');
+    // gd.infolayer = gd.paper.append('g').attr('class','infolayer');
+    // gd.hoverlayer = gd.paper.append('g').attr('class','hoverlayer');
 
     // position and style the containers, make main title
     layoutStyles(gd);
@@ -1414,39 +1399,58 @@ function layoutStyles(gd) {
     gd.plotwidth = gl.width-gm.l-gm.r;
     gd.plotheight = gl.height-gm.t-gm.b;
 
-    gd.paperdiv.style({
+    gl._paperdiv.style({
         width: gl.width+'px',
         height: gl.height+'px',
         background: gl.paper_bgcolor
     });
-    gd.paper.call(Plotly.Drawing.setSize, gl.width, gl.height);
+    gl._paper.call(Plotly.Drawing.setSize, gl.width, gl.height);
 
-    var plotLeft = gm.l+xa.domain[0]*gd.plotwidth/100,
-        plotWidth = gd.plotwidth*(xa.domain[1]-xa.domain[0])/100,
-        plotTop = gm.t+gd.plotheight*(100-ya.domain[1])/100,
-        plotHeight = gd.plotheight*(ya.domain[1]-ya.domain[0])/100;
+    gl._paper.selectAll('g.subplot').each(function(subplot) {
+        var plotinfo = gl._plots[subplot],
+            plotgroup = d3.select(this),
+            xa = plotinfo.x,
+            ya = plotinfo.y;
+        xa.setScale(); // this may already be done... not sure
+        ya.setScale();
 
-    gd.plotbg
-        .call(Plotly.Drawing.setRect, plotLeft-gm.p, plotTop-gm.p, plotWidth+2*gm.p, plotHeight+2*gm.p)
-        .call(Plotly.Drawing.fillColor, gl.plot_bgcolor);
-    gd.plot
-        .call(Plotly.Drawing.setRect, plotLeft, plotTop, plotWidth, plotHeight);
+        plotinfo.bg
+            .call(Plotly.Drawing.setRect, xa._offset-gm.p, ya._offset-gm.p,
+                xa._length+2*gm.p, ya._length+2*gm.p)
+            .call(Plotly.Drawing.fillColor, gl.plot_bgcolor);
+        plotinfo.plot
+            .call(Plotly.Drawing.setRect, xa._offset, ya._offset, xa._length, ya._length);
 
-    var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
-        ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
-        xp = gm.p+ylw,
-        yp = gm.p, // shorten y axis lines so they don't overlap x axis lines
-        yp2 = xa.mirror ? 0 : xlw; // except at the top when there's no mirror x
-    gd.axlines.x
-        .attr('d', 'M'+(plotLeft-xp)+','+(plotTop+plotHeight+gm.p+xlw/2)+'h'+(plotWidth+2*xp) +
-            (xa.mirror ? ('m0,-'+(plotHeight+2*gm.p+xlw)+'h-'+(plotWidth+2*xp)) : ''))
-        .attr('stroke-width',xlw)
-        .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
-    gd.axlines.y
-        .attr('d', 'M'+(plotLeft-gm.p-ylw/2)+','+(plotTop-yp-yp2)+'v'+(plotHeight+2*yp+yp2) +
-            (ya.mirror ? ('m'+(plotWidth+2*gm.p+ylw)+',0v-'+(plotHeight+2*yp+yp2)) : ''))
-        .attr('stroke-width',ylw)
-        .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
+        var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
+            ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
+
+            xp = gm.p+ylw,
+            xpathPrefix = 'M'+(xa._offset-xp)+',',
+            xpathSuffix = 'h'+(xa._length+2*xp),
+
+            yp = gm.p, // shorten y axis lines so they don't overlap x axis lines
+            ypbottom = (xa.mirror||xa.side!='top') ? 0 : xlw, // except where there's no x line
+            yptop = (xa.mirror||xa.side=='top') ? 0 : xlw,
+            ypathSuffix = ','+(ya._offset-yp-yptop)+'v'+(ya._length+2*yp+yptop+ypbottom);
+
+        plotinfo.xlines
+            .attr('d',
+                ((xa.mirror||xa.side!='top') ?
+                    (xpathPrefix+(ya._offset+ya._length+gm.p+xlw/2)+xpathSuffix) : '') +
+                ((xa.mirror||xa.side=='top') ?
+                    (xpathPrefix+(ya._offset-gm.p-xlw/2)+xpathSuffix) : ''))
+            .attr('stroke-width',xlw)
+            .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
+        plotinfo.ylines
+            .attr('d',
+                ((ya.mirror||ya.side!='right') ?
+                    ('M'+(xa._offset-gm.p-ylw/2)+ypathSuffix) : '') +
+                ((ya.mirror||ya.side=='right') ?
+                    ('M'+(xa._offset+xa._length+gm.p+ylw/2)+ypathSuffix) : ''))
+            .attr('stroke-width',ylw)
+            .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
+
+    });
     plots.titles(gd,'gtitle');
 
     Plotly.Fx.modeBar(gd);
@@ -1462,8 +1466,8 @@ function layoutStyles(gd) {
 plots.titles = function(gd,title) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     if(!title) {
-        Plotly.Axes.list.forEach(function(axName) {
-            plots.titles(gd,Plotly.Axes.name2id(axName)+'title');
+        Plotly.Axes.list(gd).forEach(function(ax) {
+            plots.titles(gd,ax._id+'title');
         });
         plots.titles(gd,'gtitle');
         return;
@@ -1535,7 +1539,7 @@ plots.titles = function(gd,title) {
     // move axis labels out of the way, if possible, when tick labels interfere
     if(title=='gtitle') { return; }
     var titlebb=el.node().getBoundingClientRect(),
-        paperbb=gd.paperdiv.node().getBoundingClientRect(),
+        paperbb=gl._paperdiv.node().getBoundingClientRect(),
         lbb, tickedge;
     if(axletter=='x'){
         tickedge=0;
