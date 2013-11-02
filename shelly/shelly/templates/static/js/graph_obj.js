@@ -363,7 +363,13 @@ Plotly.plot = function(gd, data, layout) {
     // test if this is on the main site or embedded
     gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
-    if(data[0] && data[0].type.substr(0, 5) === 'Polar'){
+    /*
+     * When data is passed in, its usually just an array, otherwise for the full
+     * data object, its stripped from gd. I introduced some &&'ing here to stop
+     * the breakages. Maybe we want a different method, like loop over the gd.data
+     * object looking for 'Polar'?
+     */
+    if(data && data[0] && data[0].type && data[0].type.substr(0, 5) === 'Polar'){
         micropolar.adapter.plotly(gd, data, layout);
         return null;
     }
