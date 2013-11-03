@@ -7,7 +7,7 @@ scatter.calc = function(gd,gdc) {
     // verify that data exists, and make scaled data if necessary
     if(!('y' in gdc) && !('x' in gdc)) { return; } // no data!
 
-    var cd = [];
+    var i, cd = [];
 
     // ignore as much processing as possible (and including in autorange) if trace is not visible
     if(gdc.visible!==false) {
@@ -32,7 +32,7 @@ scatter.calc = function(gd,gdc) {
         // include marker size
         if(gdc.mode && gdc.mode.indexOf('markers')!=-1) {
             var markerPad = gdc.marker ? gdc.marker.size : 0;
-            markerTrans = function(v) { return (v||6)/1.6; };
+            var markerTrans = function(v) { return (v||6)/1.6; };
             xOptions.ppad = yOptions.ppad = $.isArray(markerPad) ?
                 markerPad.map(markerTrans) : markerTrans(markerPad);
         }
@@ -65,6 +65,7 @@ scatter.calc = function(gd,gdc) {
         Plotly.Axes.expand(ya, y, yOptions);
 
         // create the "calculated data" to plot
+
         for(i=0;i<serieslen;i++) {
             cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ? {x:x[i],y:y[i]} : {x:false, y:false});
         }
