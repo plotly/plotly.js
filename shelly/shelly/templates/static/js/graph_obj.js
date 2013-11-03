@@ -1135,21 +1135,23 @@ Plotly.relayout = function(gd,astr,val) {
     $(gd).trigger('relayout.plotly',redoit);
 };
 
-function setGraphContainerHeight(gd) {
+function setFileAndCommentsHeight(gd) {
     if(!gd.mainsite) { return; }
-    $gd = $(gd);
-    var graphContainerHeight = $gd.innerHeight() - $gd.find('.tool-menu').innerHeight(),
-        $themebar = $gd.find('.themebar'),
-        $demobar = $gd.find('.demobar');
+
+    var $gd = $(gd);
+
+    var fileAndCommentsHeight = $gd.innerHeight() - $gd.children('.tool-menu').innerHeight(),
+        $themebar = $gd.children('.themebar'),
+        $demobar = $gd.children('.demobar');
 
     if ($themebar.css('display') == 'block') {
-        graphContainerHeight -= $themebar.innerHeight();
+        fileAndCommentsHeight -= $themebar.innerHeight();
     }
     if ($demobar.css('display') == 'block') {
-        graphContainerHeight -= $demobar.innerHeight();
+        fileAndCommentsHeight -= $demobar.innerHeight();
     }
 
-    $gd.find('.graph-container').css('height', graphContainerHeight);
+    $gd.children('.file-and-comments').css('height', fileAndCommentsHeight);
 }
 
 function setGraphContainerScroll(gd) {
@@ -1171,7 +1173,7 @@ function setGraphContainerScroll(gd) {
 function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
     if(gd.mainsite) {
-        setGraphContainerHeight(gd);
+        setFileAndCommentsHeight(gd);
         var gdBB = gd.graphContainer.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
         newwidth = Math.round(gdBB.width*0.9);
@@ -1201,7 +1203,7 @@ plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     killPopovers();
 
-    setGraphContainerHeight(gd);
+    setFileAndCommentsHeight(gd);
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
@@ -1231,6 +1233,9 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
+
+    console.log('makePlotFramework');
+
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
@@ -1239,22 +1244,32 @@ function makePlotFramework(divid, layout) {
         $gd = $(gd),
         gd3 = d3.select(gd);
 
-    // graph container
-    if ($gd.find('.graph-container').length === 0) {
+    // Test if this is on the main site or embedded
+    gd.mainsite = $('#plotlyMainMarker').length > 0;
+
+    // Test if the graph container div exists
+    var hasGraphContainer = $gd.find('.graph-container').length > 0;
+
+    // If it's on the mainsite, append the graph-container to file-and-comments container.
+    // else, to gd.
+    if (gd.mainsite) {
+        var $fileAndComments = $gd.children('.file-and-comments');
+        if (!hasGraphContainer) {
+            $fileAndComments.prepend('<div class="graph-container"></div>');
+        }
+        $fileAndComments.children('.graph-container').addClass('is-mainsite');
+    }
+    else if (!hasGraphContainer) {
         $gd.append('<div class="graph-container"></div>');
     }
+
+    // Save the graph container as a property of gd
     gd.graphContainer = gd3.select('.graph-container');
 
-    // test if this is on the main site or embedded
-    gd.mainsite = Boolean($('#plotlyMainMarker').length);
+    // Make the svg container if it needs to be made
+    var $svgContainer = $gd.find('.graph-container').children('.svg-container');
 
-    if (gd.mainsite) {
-        $(gd).children('.graph-container').addClass('is-mainsite');
-    }
-
-    var $svgContainer = $(gd).children('.graph-container').children('.svg-container');
-
-    if ($svgContainer.length==1) {
+    if ($svgContainer.length == 1) {
         // Destroy any plot that already exists in this div
         $svgContainer.children('svg').remove();
     }
@@ -1288,7 +1303,7 @@ function makePlotFramework(divid, layout) {
 
     // initial autosize
     if(gl.autosize=='initial') {
-        setGraphContainerHeight(gd);
+        setFileAndCommentsHeight(gd);
         plotAutoSize(gd,{});
         gl.autosize=true;
     }
