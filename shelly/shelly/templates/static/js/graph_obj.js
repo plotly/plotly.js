@@ -363,11 +363,6 @@ Plotly.plot = function(gd, data, layout) {
     // test if this is on the main site or embedded
     gd.mainsite=Boolean($('#plotlyMainMarker').length);
 
-    if(data && data[0] && data[0].type && data[0].type.substr(0, 5) === 'Polar'){
-        micropolar.adapter.plotly(gd, data, layout);
-        return null;
-    }
-
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
@@ -377,6 +372,15 @@ Plotly.plot = function(gd, data, layout) {
         gd.empty=false; // for routines outside graph_obj that want a clean tab
                         // (rather than appending to an existing one) gd.empty
                         // is used to determine whether to make a new tab
+    }
+
+    if(gd.data && gd.data[0] && gd.data[0].type && gd.data[0].type.substr(0, 5) === 'Polar'){
+        console.log(gd, data, layout);
+        gd.data=data;
+        gd.layout=layout;
+        gd.paper = $(gd).find('.svg-container');
+        micropolar.adapter.plotly(gd.paper.get(0), gd.data, gd.layout);
+        return null;
     }
 
     // Make or remake the framework (ie container and axes) if we need to
