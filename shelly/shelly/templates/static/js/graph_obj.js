@@ -385,7 +385,7 @@ Plotly.plot = function(gd, data, layout) {
     //  then it should destroy and remake the plot
     if (gd.data && gd.data.length > 0) {
         var framework = graphInfo[gd.data[0].type || 'scatter'].framework,
-            subplots = getSubplots(gd.data).join(''),
+            subplots = plots.getSubplots(gd.data).join(''),
             oldSubplots = ((gd.layout && gd.layout._plots) ? Object.keys(gd.layout._plots) : []).join('');
         if(!gd.framework || gd.framework!=framework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
             gd.framework = framework;
@@ -1279,7 +1279,7 @@ function makePlotFramework(divid, layout) {
     var gl = gd.layout;
 
     // Get subplots and see if we need to make any more axes
-    var subplots = getSubplots(gd.data);
+    var subplots = plots.getSubplots(gd.data);
     gl._plots = {};
     subplots.forEach(function(subplot) {
         var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
@@ -1315,16 +1315,22 @@ function makePlotFramework(divid, layout) {
         gl.autosize=true;
     }
     // Make the graph containers
-    // the order here controls what's in front of what
-    gl._paper = gl._paperdiv.selectAll('svg').data([0]);
-    gl._paper.enter().append('svg')
+    // start fresh each time we get here, so we know the order comes out right
+    // rather than enter/exit which can muck up the order
+    gl._paperdiv.selectAll('svg').remove();
+    gl._paper = gl._paperdiv.append('svg')
         .attr('xmlns','http://www.w3.org/2000/svg')
         .attr('xmlns:xmlns:xlink','http://www.w3.org/1999/xlink'); // odd d3 quirk - need namespace twice??
 
-    // now make containers for each subplot and its components
+    // create all the layers in order, so we know they'll stay in order
+    // TODO: This will work fine for subplots and insets, but for overlaid plots (second y axis etc)
+    // it will mess up - background will completely cover the first one, and even if we force that
+    // to be transparent, the grid will be on top of the first one's data
+    // One solution: make ax.overlays point to another axis if we want this behavior
+    // another (less flexible): just look for subplots with identical x and y domains to coalesce
     gl._paper.selectAll('g.subplot').data(subplots)
-      .enter()
-        .append('g').classed('subplot',true).classed(Plotly.Lib.identity,true)
+      .enter().append('g')
+        .classed('subplot',true).classed(Plotly.Lib.identity,true)
         .each(function(subplot){
             var plotinfo = gl._plots[subplot],
                 plotgroup = d3.select(this);
@@ -1346,8 +1352,7 @@ function makePlotFramework(divid, layout) {
             // make separate drag layers for each subplot, but append them to paper rather than
             // the plot groups, so they end up on top of the rest
             plotinfo.draglayer = gl._paper.append('g');
-        })
-      .exit().remove();
+        });
 
     gl._infolayer = gl._paper.append('g');
     gl._hoverlayer = gl._paper.append('g');
@@ -1407,7 +1412,6 @@ function layoutStyles(gd) {
 
     gl._paper.selectAll('g.subplot').each(function(subplot) {
         var plotinfo = gl._plots[subplot],
-            plotgroup = d3.select(this),
             xa = plotinfo.x,
             ya = plotinfo.y;
         xa.setScale(); // this may already be done... not sure
@@ -1426,26 +1430,34 @@ function layoutStyles(gd) {
             xp = gm.p+ylw,
             xpathPrefix = 'M'+(xa._offset-xp)+',',
             xpathSuffix = 'h'+(xa._length+2*xp),
+            showbottom = ((xa.anchor||'y')==ya._id) ?
+                (xa.mirror||xa.side!='top') :
+                (xa.mirror=='all'||xa.mirror=='allticks'||(xa.mirrors && xa.mirrors[ya._id+'bottom'])),
+            showtop = ((xa.anchor||'y')==ya._id) ?
+                (xa.mirror||xa.side=='top') :
+                (xa.mirror=='all'||xa.mirror=='allticks'||(xa.mirrors && xa.mirrors[ya._id+'top'])),
 
             yp = gm.p, // shorten y axis lines so they don't overlap x axis lines
-            ypbottom = (xa.mirror||xa.side!='top') ? 0 : xlw, // except where there's no x line
-            yptop = (xa.mirror||xa.side=='top') ? 0 : xlw,
-            ypathSuffix = ','+(ya._offset-yp-yptop)+'v'+(ya._length+2*yp+yptop+ypbottom);
+            ypbottom = showbottom ? 0 : xlw, // except where there's no x line
+            yptop = showtop ? 0 : xlw,
+            ypathSuffix = ','+(ya._offset-yp-yptop)+'v'+(ya._length+2*yp+yptop+ypbottom),
+            showleft = ((ya.anchor||'x')==xa._id) ?
+                (ya.mirror||ya.side!='right') :
+                (ya.mirror=='all'||ya.mirror=='allticks'||(ya.mirrors && ya.mirrors[xa._id+'left'])),
+            showright = ((ya.anchor||'x')==xa._id) ?
+                (ya.mirror||ya.side=='right') :
+                (ya.mirror=='all'||ya.mirror=='allticks'||(ya.mirrors && ya.mirrors[xa._id+'right']));
 
         plotinfo.xlines
             .attr('d',
-                ((xa.mirror||xa.side!='top') ?
-                    (xpathPrefix+(ya._offset+ya._length+gm.p+xlw/2)+xpathSuffix) : '') +
-                ((xa.mirror||xa.side=='top') ?
-                    (xpathPrefix+(ya._offset-gm.p-xlw/2)+xpathSuffix) : ''))
+                (showbottom ? (xpathPrefix+(ya._offset+ya._length+gm.p+xlw/2)+xpathSuffix) : '') +
+                (showtop ? (xpathPrefix+(ya._offset-gm.p-xlw/2)+xpathSuffix) : ''))
             .attr('stroke-width',xlw)
             .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
         plotinfo.ylines
             .attr('d',
-                ((ya.mirror||ya.side!='right') ?
-                    ('M'+(xa._offset-gm.p-ylw/2)+ypathSuffix) : '') +
-                ((ya.mirror||ya.side=='right') ?
-                    ('M'+(xa._offset+xa._length+gm.p+ylw/2)+ypathSuffix) : ''))
+                (showleft ? ('M'+(xa._offset-gm.p-ylw/2)+ypathSuffix) : '') +
+                (showright ? ('M'+(xa._offset+xa._length+gm.p+ylw/2)+ypathSuffix) : ''))
             .attr('stroke-width',ylw)
             .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
 
@@ -1573,11 +1585,15 @@ plots.titles = function(gd,title) {
 // getSubplots - extract all combinations of axes we need to make plots for
 // as an array of items like 'xy', 'x2y', 'x2y2'...
 // sorted by x (x,x2,x3...) then y
+// optionally restrict to only subplots containing axis object ax
 
-function getSubplots(data) {
+plots.getSubplots = function(data,ax) {
     var subplots = [];
     (data||[]).forEach(function(d) {
-        var subplot = (d.xaxis||'x')+(d.yaxis||'y');
+        var xid = (d.xaxis||'x'),
+            yid = (d.yaxis||'y'),
+            subplot = xid+yid;
+        if(ax && ax._id!=xid && ax._id!=yid) { return; }
         if(subplots.indexOf(subplot)==-1) { subplots.push(subplot); }
     });
     if(!subplots.length) { subplots = ['xy']; }
@@ -1591,7 +1607,7 @@ function getSubplots(data) {
             if(amatch[1]==bmatch[1]) { return Number(amatch[2]||0)>Number(bmatch[2]||0); }
             return Number(amatch[1]||0)>Number(bmatch[1]||0);
         });
-}
+};
 
 // graphJson - jsonify the graph data and layout
 plots.graphJson = function(gd, dataonly, mode){

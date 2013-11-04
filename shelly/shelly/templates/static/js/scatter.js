@@ -12,8 +12,8 @@ scatter.calc = function(gd,gdc) {
     // ignore as much processing as possible (and including in autorange) if trace is not visible
     if(gdc.visible!==false) {
 
-        var xa = gd.layout.xaxis,
-            ya = gd.layout.yaxis,
+        var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
+            ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
             x = Plotly.Axes.convertOne(gdc,'x',xa),
             y = Plotly.Axes.convertOne(gdc,'y',ya),
             serieslen = Math.min(x.length,y.length);
