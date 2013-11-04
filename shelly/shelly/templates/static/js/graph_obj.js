@@ -374,8 +374,7 @@ Plotly.plot = function(gd, data, layout) {
                         // is used to determine whether to make a new tab
     }
 
-    if(gd.data && gd.data[0] && gd.data[0].type && gd.data[0].type.substr(0, 5) === 'Polar'){
-        console.log(gd, data, layout);
+    if(micropolar.adapter.isPolar(gd.data)){
         gd.data=data;
         gd.layout=layout;
         gd.paper = $(gd).find('.svg-container');
