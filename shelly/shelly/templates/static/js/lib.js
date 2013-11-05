@@ -379,6 +379,130 @@ lib.notifier = function(text,tm){
         .fadeOut(2000,function(){ n.remove(); });
 };
 
+//var conf_modal = conf_modal || (function(){
+lib.conf_modal = (function(){
+    function initialize(opts){
+        options = {         // default options
+            header: '',
+            body: '',
+            conf_btn_txt: 'Done',
+            canc_btn_txt: '',
+            conf_func: function(){},
+            canc_func: function(){},
+            selector: 'body',
+            hideonclick: true,
+            closex: false,
+            backdrop: true,
+            alt_btn_txt: '',
+            alt_func: function(){},
+        };
+
+        options = $.extend({}, options, opts);
+
+        // set z-indices manually so that this modal appears whatever it is bound to
+        var zi, backdropzi, modalzi;
+        if($(options.selector).css('z-index') === "auto"){
+            zi = backdropzi = modalzi ='';
+        } else{
+           zi = $(options.selector).css('z-index');
+           backdropzi = zi+1;
+           modalzi = zi+2;
+        }
+        // backdrop w/custom z-index -- appears over the $(selector) element
+        if(options.backdrop){
+            $('.modal-backdrop:visible').hide();
+            $(options.selector).first().append('<div id="confirmModalBackdrop" class="modal-backdrop confirmModal '+(backdropzi==='' ? '' : 'style="z-index:'+backdropzi)+'"></div>');
+        }
+        var confirmModal = '<div id="confirmModal" class="modal modal--default hide confirmModal" style="z-index:'+modalzi+'">'+
+                  '<div class="modal__header">'+
+                    (options.closex ? '<button type="button" id="closeConfirmModal" class="close cm-canc_func" aria-hidden="true">&times;</button>' : '')+
+                    '<h3 class="cm-header"></h3>'+
+                  '</div>'+
+                  '<div class="modal__body">'+
+                    '<p class="cm-body"></p>'+
+                  '</div>'+
+                  '<div class="modal__footer">'+
+                    '<a href="#" class="btn cm-alt_btn_txt cm-alt_func"></a>'+
+                    '<a href="#" class="btn cm-canc_btn_txt cm-canc_func"></a>'+
+                    '<a href="#" class="btn btn--color-primary cm-conf_btn_txt cm-conf_func"></a>'+
+                  '</div>'+
+                  ''+// '<div class="messages" style="text-align: left;"></div>'+
+                '</div>';
+
+        $(options.selector).append(confirmModal);
+        $('#confirmModal').modal({'backdrop': false}); // backdrop=false because we add our own backdrop (bd) with custom z-index
+
+        // Fill it in
+        applyOptions(options);
+        // Destroy on hide
+        $('#confirmModal').on('hide', function(){ destroy(); });
+    }
+
+    function destroy(){
+        $('#confirmModalBackdrop').remove();
+        $('#confirmModal').remove();
+        $('.confirmModalBackdrop').remove();
+        $('.confirmModal').remove();
+    }
+
+    function applyOptions(opts){
+        for(var key in opts){
+            if($.inArray(key, ['header', 'body'])>-1){
+                $('#confirmModal .cm-'+key).html(opts[key]);
+            } else if($.inArray(key, ['alt_btn_txt', 'canc_btn_txt', 'conf_btn_txt'])>-1) {
+                if(opts[key]===''){
+                    $('#confirmModal .cm-'+key).hide();
+                } else{
+                    $('#confirmModal .cm-'+key).show();
+                    $('#confirmModal .cm-'+key).html(opts[key]);
+                }
+            // TODO: doing these next 3 if-statements programatically in the loop messed up because javascript doesn't have "block scope"
+            // Would be nice to figure how to get around that
+            } else if(key=='conf_func'){
+                $('#confirmModal .cm-conf_func').removeClass('disabled').off('click').on('click', function(){ if(options.hideonclick){ destroy(); } opts.conf_func(); return false; });
+            }
+            else if(key=='canc_func'){
+                $('#confirmModal .cm-canc_func').removeClass('disabled').off('click').on('click', function(){ if(options.hideonclick){ destroy(); } opts.canc_func(); return false; });
+            }
+            else if(key=='alt_func'){
+                $('#confirmModal .cm-alt_func').removeClass('disabled').off('click').on('click', function(){ if(options.hideonclick){ destroy(); } opts.alt_func(); return false; });
+            }
+        }
+    }
+
+    function updateOptions(opts){
+        options = $.extend({}, options, opts);
+        applyOptions(opts);
+    }
+
+    function addMsg(msg){
+        $('#confirmModal .messages').html(msg);
+    }
+
+    function rmMsg(msg){
+        addMsg('');
+    }
+
+    function disableConf(){
+        $('#confirmModal .cm-conf_func').addClass('disabled').off('click');
+    }
+
+    function disableCanc(){
+        $('#confirmModal .cm-canc_func').addClass('disabled').off('click');
+    }
+
+    return {
+        init: initialize,
+        settings: updateOptions,
+        addMsg: addMsg,
+        rmMsg: rmMsg,
+        hide: destroy,
+        disableConf: disableConf,
+        disableCanc: disableCanc
+    };
+})();
+
+
 // do two bounding boxes from getBoundingClientRect,
 // ie {left,right,top,bottom,width,height}, overlap?
 lib.bBoxIntersect = function(a,b){
