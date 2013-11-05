@@ -127,20 +127,44 @@ annotations.draw = function(gd,index,opt,value) {
         .call(Plotly.Drawing.fillColor,options.bgcolor)
         .call(Plotly.Drawing.setPosition, borderwidth/2+1, borderwidth/2+1);
 
+    function titleLayout(){
+//        var alignOptions = {horizontalAlign: 'center', verticalAlign: 'center', horizontalMargin: 0, verticalMargin: 0};
+        var titleEl = this
+//            .text(options.text)
+//            .call(d3.plugly.convertToTspans)
+//            .call(d3.plugly.alignSVGWith(annbg, alignOptions))
+            .text('')
+            .call(Plotly.Drawing.setPosition,0,0)
+            .attr('text-anchor',{left:'start', center:'middle', right:'end'}[options.align])
+            .call(Plotly.Drawing.font,
+                options.font.family||gl.font.family||'Arial',
+                options.font.size||gl.font.size||12,
+                options.font.color||gl.font.color||'#000');
+        Plotly.Drawing.styleText(this.node(), options.text, 'clickable');
+    }
+
     if(!options.align) options.align='center';
     var anntext = ann.append('text')
         .attr('class','annotation')
         .attr('data-cmmt',options.tag)
-        .call(Plotly.Drawing.setPosition,0,0)
-        .attr('text-anchor',{left:'start', center:'middle', right:'end'}[options.align])
-        .call(Plotly.Drawing.font,
-            options.font.family||gl.font.family||'Arial',
-            options.font.size||gl.font.size||12,
-            options.font.color||gl.font.color||'#000');
-    Plotly.Drawing.styleText(anntext.node(),options.text,'clickable');
+        .call(titleLayout)
 
     if(gd.mainsite) {
-        anntext.on('click',function(){ if(!gd.dragged) { Plotly.Fx.autoGrowInput(this); } });
+//        anntext.on('click',function(){ if(!gd.dragged) { Plotly.Fx.autoGrowInput(this); } });
+        anntext
+            .text(options.text)
+            .call(d3.plugly.makeEditable)
+            .call(titleLayout)
+            .on('edit', function(context){
+                options.text = this.text();
+                this.call(titleLayout);
+                var property = Plotly.Lib.nestedProperty(gl,'annotations['+index+'].text');
+                var update = {};
+                update[property.astr] = options.text;
+                if(gl.xaxis.autorange) { update['xaxis.autorange'] = true; }
+                if(gl.yaxis.autorange) { update['yaxis.autorange'] = true; }
+                Plotly.relayout(gd,update);
+            });
     }
 
     var anntextBB = anntext.node().getBoundingClientRect(),
