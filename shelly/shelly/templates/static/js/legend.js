@@ -150,10 +150,24 @@ legend.draw = function(gd) {
         .each(legend.points);
 
     var tracetext=traces.call(legendText,gd).selectAll('text');
-    if(gd.mainsite) {
-        tracetext.on('click',function(){
-            if(!gd.dragged) { Plotly.Fx.autoGrowInput(this); }
-        });
+
+    function titleLayout(){
+        this.call(d3.plugly.convertToTspans);
+    }
+
+    if(gd.mainsite){
+        tracetext.each(function(d, i){
+            d3.select(this)
+                .call(d3.plugly.makeEditable)
+                .call(titleLayout)
+                .on('edit', function(text){
+                    this.call(titleLayout);
+                    var tn = Number(this.attr('class').split('-')[1]);
+                    var property = Plotly.Lib.nestedProperty(gd.data[tn],'name');
+                    Plotly.restyle(gd, property.astr, text, tn);
+                    console.log(gd,property.astr, gd.data[tn]);
+                });
+        })
     }
 
     // add the legend elements, keeping track of the legend size (in px) as we go
