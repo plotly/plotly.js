@@ -461,7 +461,7 @@ function insert_colorbar(gd,cd, cb_id, scl) {
     }
 
     var gl = gd.layout,
-        g = gd.infolayer.append("g")
+        g = gl._infolayer.append("g")
             .classed(cb_id,true)
             // TODO: colorbar spacing from plot (fixed at 50 right now)
             // should be a variable in gd.data and editable from a popover

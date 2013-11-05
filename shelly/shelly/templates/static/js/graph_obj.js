@@ -557,7 +557,7 @@ Plotly.plot = function(gd, data, layout) {
 
     // show the legend and annotations
     if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!==false)) { Plotly.Legend.draw(gd); }
-    else { gd.infolayer.selectAll('.legend').remove(); }
+    else { gl._infolayer.selectAll('.legend').remove(); }
     Plotly.Annotations.drawAll(gd);
 
     // final cleanup
@@ -1159,7 +1159,7 @@ Plotly.relayout = function(gd,astr,val) {
     else if(ak.length) {
         // if we didn't need to redraw entirely, just do the needed parts
         if(dolegend) {
-            gd.infolayer.selectAll('.legend').remove();
+            gl._infolayer.selectAll('.legend').remove();
             if(gl.showlegend) { Plotly.Legend.draw(gd); }
         }
         if(dolayoutstyle) { layoutStyles(gd); }
@@ -1335,10 +1335,10 @@ function makePlotFramework(divid, layout) {
     // another (less flexible): just look for subplots with identical x and y domains to coalesce
     gl._paper.selectAll('g.subplot').data(subplots)
       .enter().append('g')
-        .classed('subplot',true).classed(Plotly.Lib.identity,true)
+        .classed('subplot',true)
         .each(function(subplot){
             var plotinfo = gl._plots[subplot],
-                plotgroup = d3.select(this);
+                plotgroup = d3.select(this).classed(subplot,true);
             plotinfo.x = Plotly.Axes.getFromId(gd,subplot,'x');
             plotinfo.y = Plotly.Axes.getFromId(gd,subplot,'y');
             plotinfo.bg = plotgroup.append('rect')
@@ -1523,8 +1523,8 @@ plots.titles = function(gd,title) {
         h = fontSize;
     }
 
-    gd.infolayer.select('.'+title).remove();
-    var el=gd.infolayer.append('text').attr('class',title)
+    gl._infolayer.select('.'+title).remove();
+    var el=gl._infolayer.append('text').attr('class',title)
         .call(Plotly.Drawing.setPosition, x, y)
         .call(Plotly.Drawing.font,font,fontSize,fontColor)
         .attr('text-anchor','middle')

@@ -115,7 +115,7 @@ legend.draw = function(gd) {
     gl.showlegend = true;
     if(!gl.legend) { gl.legend={}; }
     var gll = gl.legend;
-    gd.infolayer.selectAll('.legend').remove();
+    gl._infolayer.selectAll('.legend').remove();
     if(!gd.calcdata) { return; }
 
     var ldata=[],i;
@@ -126,7 +126,7 @@ legend.draw = function(gd) {
     }
     if(gll.traceorder=='reversed') { ldata.reverse(); } // for stacked plots (bars, area) the legend items are often clearer reversed
 
-    gd.legend=gd.infolayer.append('svg')
+    gd.legend=gl._infolayer.append('svg')
         .attr('class','legend');
 
     var bordercolor = gll.bordercolor || '#000',

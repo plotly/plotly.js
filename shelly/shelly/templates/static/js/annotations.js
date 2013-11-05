@@ -3,7 +3,7 @@ var annotations = Plotly.Annotations = {};
 
 annotations.drawAll = function(gd) {
     var anns = gd.layout.annotations;
-    gd.infolayer.selectAll('.annotation').remove();
+    gd.layout._infolayer.selectAll('.annotation').remove();
     if(anns) { for(var i in anns) { annotations.draw(gd,i); } }
 };
 
@@ -55,10 +55,10 @@ annotations.draw = function(gd,index,opt,value) {
 
     if(!opt && value) {
         if(value=='remove') {
-            gd.infolayer.selectAll('.annotation[data-index="'+index+'"]').remove();
+            gl._infolayer.selectAll('.annotation[data-index="'+index+'"]').remove();
             gl.annotations.splice(index,1);
             for(i=index; i<gl.annotations.length; i++) {
-                gd.infolayer.selectAll('.annotation[data-index="'+(i+1)+'"]')
+                gl._infolayer.selectAll('.annotation[data-index="'+(i+1)+'"]')
                     .attr('data-index',String(i));
                 annotations.draw(gd,i); // redraw all annotations past the removed, so they bind to the right events
             }
@@ -68,7 +68,7 @@ annotations.draw = function(gd,index,opt,value) {
             gl.annotations.splice(index,0,{});
             if($.isPlainObject(value)) { Object.keys(value).forEach(function(k){ gl.annotations[index][k] = value[k]; }); }
             for(i=gl.annotations.length-1; i>index; i--) {
-                gd.infolayer.selectAll('.annotation[data-index="'+(i-1)+'"]')
+                gl._infolayer.selectAll('.annotation[data-index="'+(i-1)+'"]')
                     .attr('data-index',String(i));
                 annotations.draw(gd,i);
             }
@@ -76,15 +76,15 @@ annotations.draw = function(gd,index,opt,value) {
     }
 
     // remove the existing annotation if there is one
-    gd.infolayer.selectAll('.annotation[data-index="'+index+'"]').remove();
+    gl._infolayer.selectAll('.annotation[data-index="'+index+'"]').remove();
 
     // edit the options
-    var options = gl.annotations[index];
-    var oldref = options.ref,
-        xa = gl.xaxis,
-        ya = gl.yaxis,
-        xr = xa.range[1]-xa.range[0],
-        yr = ya.range[1]-ya.range[0];
+    var options = gl.annotations[index],
+        // oldref = options.ref,
+        oldref = {
+            x: options.xref || (options.ref=='paper' ? 'paper' : 'x'), // options.ref for backward compat only
+            y: options.yref || (options.ref=='paper' ? 'paper' : 'y')
+        };
     if(typeof opt == 'string' && opt) { Plotly.Lib.nestedProperty(options,opt).set(value); }
     else if($.isPlainObject(opt)) { Object.keys(opt).forEach(function(k){ options[k] = opt[k]; }); }
 
@@ -92,7 +92,9 @@ annotations.draw = function(gd,index,opt,value) {
     if(!options.bordercolor) { options.bordercolor = ''; }
     if(!$.isNumeric(options.borderwidth)) { options.borderwidth = 1; }
     if(!options.bgcolor) { options.bgcolor = 'rgba(0,0,0,0)'; }
-    if(!options.ref) { options.ref='plot'; }
+    // if(!options.ref) { options.ref='plot'; }
+    if(!options.xref) { options.xref='x'; }
+    if(!options.yref) { options.yref='y'; }
     if(options.showarrow!==false) { options.showarrow=true; }
     if(!$.isNumeric(options.borderpad)) { options.borderpad=1; }
     if(!options.arrowwidth) { options.arrowwidth = 0; }
@@ -107,12 +109,15 @@ annotations.draw = function(gd,index,opt,value) {
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
     var paperBB = gl._paperdiv.node().getBoundingClientRect(),
-        plotBB = d3.select(gd).select('.nsewdrag').node().getBoundingClientRect(),
-        x = plotBB.left-paperBB.left,
-        y = plotBB.top-paperBB.top;
+        //plotBB = d3.select(gd).select('.nsewdrag').node().getBoundingClientRect(),
+        annPosPx = {
+            x: 0,//gd.margin.l,//plotBB.left-paperBB.left,
+            y: 0//gd.margin.t//plotBB.top-paperBB.top
+        };
 
     // create the components
-    var ann = gd.infolayer.append('svg')
+    // TODO: make a single group to contain all, so opacity can work right with border/arrow together
+    var ann = gl._infolayer.append('svg')
         .attr('class','annotation')
         .attr('data-cmmt',options.tag)
         .call(Plotly.Drawing.setPosition,0,0)
@@ -160,37 +165,102 @@ annotations.draw = function(gd,index,opt,value) {
         }
         else { return v; }
     }
-    if(options.ref=='plot' && options._xatype && options._yatype) {
-        options.x = checklog(options.x,options._xatype,xa.type,
-            (xa.range[0]+xa.range[1]-Math.abs(xr*0.8))/2);
-        options.y = checklog(options.y,options._yatype,ya.type,
-            (ya.range[0]+ya.range[1]-Math.abs(yr*0.8))/2);
+    function fshift(v){ return Plotly.Lib.constrain(Math.floor(v*3-1),-0.5,0.5); }
+
+    var okToContinue = true;
+    ['x','y'].forEach(function(axletter) {
+        var ax = Plotly.Axes.getFromId(gd,options[axletter+'ref']||axletter),
+            axOld = Plotly.Axes.getFromId(gd,oldref[axletter]||axletter),
+            typeAttr = '_'+axletter+'type',
+            annSize = axletter=='x' ? annwidth : -annheight,
+            axRange = (ax||axOld) ? (ax||axOld).range[1]-(ax||axOld).range[0] : null,
+            defaultVal = ax ? ax.range[0] + (axletter=='x' ? 0.1 : 0.3)*axRange :
+                (axletter=='x' ? 0.1 : 0.7);
+
+        // if we're still referencing the same axis, see if it has changed linear <-> log
+        if(ax && ax==axOld && options[typeAttr]) {
+            options[axletter] = checklog(options[axletter],options[typeAttr],ax.typedefaultVal);
+        }
+        // if we're changing a reference axis on an existing annotation
+        else if($.isNumeric(options[axletter]) && ax!==axOld) {
+            // moving from one axis to another - just reset to default
+            // TODO: if the axes overlap, perhaps we could put it in the equivalent position on the new one?
+            if(ax && axOld) {
+                options[axletter] = defaultVal;
+            }
+            // moving from paper to plot reference
+            else if(ax) {
+                if(!ax.domain) { ax.domain = [0,100]; }
+                var axFraction = (options[axletter]*100-ax.domain[0])/(ax.domain[1]-ax.domain[0]);
+                options[axletter] = ax.range[0] + axRange*axFraction -
+                    (options.showarrow ? 0 : fshift(axFraction)*annSize/ax._m);
+            }
+            // moving from plot to paper reference
+            else if(axOld) {
+                if(!axOld.domain) { axOld.domain = [0,100]; }
+                options[axletter] = ( axOld.domain[0] + (axOld.domain[1]-axOld.domain[0])*
+                    (options[axletter]-axOld.range[0])/axRange )/100;
+                if(!options.showarrow) {
+                    options[axletter] += fshift(options[axletter])*annSize/(axRange*ax._m);
+                }
+            }
+        }
+
+        // calculate pixel position
+        if(!$.isNumeric(options[axletter])) { options[axletter] = defaultVal; }
+        if(options.ref=='paper') {
+            annPosPx[axletter] = (axletter=='x') ?
+                (gd.margin.l + gd.plotwidth*options[axletter]) :
+                (gd.margin.t + gd.plotheight*(1-options[axletter]));
+            if(!options.showarrow){
+                annPosPx[axletter] -= annSize*fshift(options[axletter]);
+            }
+        }
+        else {
+            // hide the annotation if it's pointing outside the visible plot
+            okToContinue = (options[axletter]-ax.range[0])*(options[axletter]-ax.range[1])<=0;
+            annPosPx[axletter] = ax.l2c(options[axletter]);
+        }
+
+        // save the current axis type for later log/linear changes
+        options[typeAttr] = ax.type;
+    });
+
+    if(!okToContinue) {
+        ann.remove();
+        return;
     }
-    options._xatype=xa.type;
-    options._yatype=ya.type;
+
+    // if(options.ref=='plot' && options._xatype && options._yatype) {
+    //     options.x = checklog(options.x,options._xatype,xa.type,
+    //         (xa.range[0]+xa.range[1]-Math.abs(xr*0.8))/2);
+    //     options.y = checklog(options.y,options._yatype,ya.type,
+    //         (ya.range[0]+ya.range[1]-Math.abs(yr*0.8))/2);
+    // }
+    // options._xatype=xa.type;
+    // options._yatype=ya.type;
 
     // check for change between paper and plot ref - need to wait for
     // annwidth/annheight to do this properly
-    function fshift(v){ return Plotly.Lib.constrain(Math.floor(v*3-1),-0.5,0.5); }
-    if(oldref && options.x && options.y) {
-        if(options.ref=='plot' && oldref=='paper') {
-            var xshift = 0, yshift = 0;
-            if(!options.showarrow) {
-                xshift = fshift(options.x)*annwidth/xa._m;
-                yshift = fshift(options.y)*annheight/ya._m;
-            }
-            options.x = xa.range[0] + xr*options.x - xshift;
-            options.y = ya.range[0] + yr*options.y + yshift;
-        }
-        else if(options.ref=='paper' && oldref=='plot') {
-            options.x = (options.x-xa.range[0])/xr;
-            options.y = (options.y-ya.range[0])/yr;
-            if(!options.showarrow) {
-                options.x += fshift(options.x)*annwidth/(xr*xa._m);
-                options.y -= fshift(options.y)*annheight/(yr*ya._m);
-            }
-        }
-    }
+    // if(oldref && options.x && options.y) {
+    //     if(options.ref=='plot' && oldref=='paper') {
+    //         var xshift = 0, yshift = 0;
+    //         if(!options.showarrow) {
+    //             xshift = fshift(options.x)*annwidth/xa._m;
+    //             yshift = fshift(options.y)*annheight/ya._m;
+    //         }
+    //         options.x = xa.range[0] + xr*options.x - xshift;
+    //         options.y = ya.range[0] + yr*options.y + yshift;
+    //     }
+    //     else if(options.ref=='paper' && oldref=='plot') {
+    //         options.x = (options.x-xa.range[0])/xr;
+    //         options.y = (options.y-ya.range[0])/yr;
+    //         if(!options.showarrow) {
+    //             options.x += fshift(options.x)*annwidth/(xr*xa._m);
+    //             options.y -= fshift(options.y)*annheight/(yr*ya._m);
+    //         }
+    //     }
+    // }
     if(!options.ax) { options.ax=-10; }
     if(!options.ay) { options.ay=-annheight/2-20; }
     // now position the annotation and arrow, based on options[x,y,ref,showarrow,ax,ay]
@@ -208,48 +278,48 @@ annotations.draw = function(gd,index,opt,value) {
     // if there is an arrow, alignment is to the arrowhead, and ax and ay give the
     // offset (in pixels) between the arrowhead and the center of the annotation
 
-    if(options.ref=='paper') {
-        if(!$.isNumeric(options.x)) { options.x=0.1; }
-        if(!$.isNumeric(options.y)) { options.y=0.7; }
-        x += plotBB.width*options.x;
-        y += plotBB.height*(1-options.y);
-        if(!options.showarrow){
-            if(options.x>2/3) { x -= annwidth/2; }
-            else if(options.x<1/3) { x += annwidth/2; }
+    // if(options.ref=='paper') {
+    //     if(!$.isNumeric(options.x)) { options.x=0.1; }
+    //     if(!$.isNumeric(options.y)) { options.y=0.7; }
+    //     x += plotBB.width*options.x;
+    //     y += plotBB.height*(1-options.y);
+    //     if(!options.showarrow){
+    //         if(options.x>2/3) { x -= annwidth/2; }
+    //         else if(options.x<1/3) { x += annwidth/2; }
 
-            if(options.y<1/3) { y -= annheight/2; }
-            else if(options.y>2/3) { y += annheight/2; }
-        }
-    }
-    else {
-        // hide the annotation if it's pointing outside the visible plot
-        if((options.x-xa.range[0])*(options.x-xa.range[1])>0 ||
-            (options.y-ya.range[0])*(options.y-ya.range[1])>0) {
-            ann.remove();
-            return;
-        }
-        if(!$.isNumeric(options.x)) { options.x=(xa.range[0]*0.9+xa.range[1]*0.1); }
-        if(!$.isNumeric(options.y)) { options.y=(ya.range[0]*0.7+ya.range[1]*0.3); }
-        x += xa._b+options.x*xa._m;
-        y += ya._b+options.y*ya._m;
-    }
+    //         if(options.y<1/3) { y -= annheight/2; }
+    //         else if(options.y>2/3) { y += annheight/2; }
+    //     }
+    // }
+    // else {
+    //     // hide the annotation if it's pointing outside the visible plot
+    //     if((options.x-xa.range[0])*(options.x-xa.range[1])>0 ||
+    //         (options.y-ya.range[0])*(options.y-ya.range[1])>0) {
+    //         ann.remove();
+    //         return;
+    //     }
+    //     if(!$.isNumeric(options.x)) { options.x=(xa.range[0]*0.9+xa.range[1]*0.1); }
+    //     if(!$.isNumeric(options.y)) { options.y=(ya.range[0]*0.7+ya.range[1]*0.3); }
+    //     x += xa._b+options.x*xa._m;
+    //     y += ya._b+options.y*ya._m;
+    // }
 
     // if there's an arrow, it gets the position we just calculated, and the text gets offset by ax,ay
     // and make sure the text and arrowhead are on the paper
     if(options.showarrow){
         var ax = Plotly.Lib.constrain(x,1,paperBB.width-1),
             ay = Plotly.Lib.constrain(y,1,paperBB.height-1);
-        x += options.ax;
-        y += options.ay;
+        annPosPx.x += options.ax;
+        annPosPx.y += options.ay;
     }
-    x = Plotly.Lib.constrain(x,1,paperBB.width-1);
-    y = Plotly.Lib.constrain(y,1,paperBB.height-1);
+    annPosPx.x = Plotly.Lib.constrain(x,1,paperBB.width-1);
+    annPosPx.y = Plotly.Lib.constrain(y,1,paperBB.height-1);
 
     var borderpad = Number(options.borderpad),
         borderfull = borderwidth+borderpad+1,
         outerwidth = annwidth+2*borderfull,
         outerheight = annheight+2*borderfull;
-    ann.call(Plotly.Drawing.setRect, x-outerwidth/2, y-outerheight/2, outerwidth, outerheight);
+    ann.call(Plotly.Drawing.setRect, annPosPx.x-outerwidth/2, annPosPx.y-outerheight/2, outerwidth, outerheight);
     annbg.call(Plotly.Drawing.setSize, annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
     anntext.call(Plotly.Drawing.setPosition, paperBB.left-anntextBB.left+borderfull, paperBB.top-anntextBB.top+borderfull)
       .selectAll('tspan.nl')
@@ -265,8 +335,8 @@ annotations.draw = function(gd,index,opt,value) {
         // TODO: commented out for now... tspan bounding box fails in chrome
         // looks like there may be a cross-browser solution, see
         // http://stackoverflow.com/questions/5364980/how-to-get-the-width-of-an-svg-tspan-element
-        var ax0 = x+dx,
-            ay0 = y+dy,
+        var ax0 = annPosPx.x+dx,
+            ay0 = annPosPx.y+dy,
             showline = true;
 //         if(borderwidth && tinycolor(bordercolor).alpha) {
             var boxes = [annbg.node().getBoundingClientRect()],
@@ -296,7 +366,7 @@ annotations.draw = function(gd,index,opt,value) {
         });
         if(showline) {
             var strokewidth = options.arrowwidth || borderwidth*2 || 2;
-            var arrowgroup = gd.infolayer.append('g')
+            var arrowgroup = gl._infolayer.append('g')
                 .attr('class','annotation')
                 .attr('data-cmmt',options.tag)
                 .attr('data-index',String(index))
@@ -499,9 +569,9 @@ annotations.calcAutorange = function(gd) {
     // temporarily replace plot-referenced annotations with transparent, centered ones
     var tempAnnotations = [];
     saveAnnotations.forEach(function(ann){
-        var xa = gl[Plotly.Axes.id2name(ann.xaxis || 'x')], // TODO: make separate xref, yref, each can be an axis or 'fixed' (ie 'paper')
-            ya = gl[Plotly.Axes.id2name(ann.yaxis || 'y')];
-        if(ann.ref=='plot' && (xa.autorange || ya.autorange)) {
+        var xa = gl[Plotly.Axes.id2name(ann.xref || 'x')],
+            ya = gl[Plotly.Axes.id2name(ann.yref || 'y')];
+        if(ann.ref=='plot' && ((xa && xa.autorange) || (ya && ya.autorange))) {
             tempAnnotations.push($.extend({},ann,
                 {x:0.5, y:0.5, ref:'paper', x0:ann.x, y0:ann.y, opacity:1, xa:xa, ya:ya}));
         }
@@ -511,16 +581,20 @@ annotations.calcAutorange = function(gd) {
 
     // find the bounding boxes for each of these annotations relative to the center of the plot
     gl.annotations.forEach(function(ann,i){
-        var arrowNode = gd.infolayer.selectAll('g.annotation[data-index="'+i+'"]').node(),
+        var arrowNode = gl._infolayer.selectAll('g.annotation[data-index="'+i+'"]').node(),
             arrowBB = arrowNode ? arrowNode.getBoundingClientRect() : blank,
-            textNode = gd.infolayer.selectAll('svg.annotation[data-index="'+i+'"]').node(),
+            textNode = gl._infolayer.selectAll('svg.annotation[data-index="'+i+'"]').node(),
             textBB = textNode ? textNode.getBoundingClientRect() : blank,
             leftpad = Math.max(0,plotcenterx - Math.min(arrowBB.left,textBB.left)),
             rightpad = Math.max(0,Math.max(arrowBB.right,textBB.right) - plotcenterx),
             toppad = Math.max(0,plotcentery - Math.min(arrowBB.top,textBB.top)),
             bottompad = Math.max(0,Math.max(arrowBB.bottom,textBB.bottom) - plotcentery);
-        Plotly.Axes.expand(ann.xa, [ann.xa.l2c(ann.x0)], {ppadplus:rightpad, ppadminus:leftpad});
-        Plotly.Axes.expand(ann.ya, [ann.ya.l2c(ann.y0)], {ppadplus:bottompad, ppadminus:toppad});
+        if(ann.xa) {
+            Plotly.Axes.expand(ann.xa, [ann.xa.l2c(ann.x0)], {ppadplus:rightpad, ppadminus:leftpad});
+        }
+        if(ann.ya) {
+            Plotly.Axes.expand(ann.ya, [ann.ya.l2c(ann.y0)], {ppadplus:bottompad, ppadminus:toppad});
+        }
     });
 
     // restore the real annotations (will be redrawn later in Plotly.plot)

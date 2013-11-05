@@ -84,97 +84,193 @@ scatter.calc = function(gd,gdc) {
 };
 
 scatter.plot = function(gd,cdscatter) {
-    var xa = gd.layout.xaxis,
-        ya = gd.layout.yaxis;
+    // var gl = gd.layout;
+        // xa = gd.layout.xaxis,
+        // ya = gd.layout.yaxis;
+    Plotly.Plots.getSubplots(cdscatter).forEach(function(subplot) {
+        var plotinfo = gd.layout._plots[subplot],
+            xa = plotinfo.x,
+            ya = plotinfo.y;
+        // make the container for scatter plots (so error bars can find them along with bars)
+        var scattertraces = plotinfo.plot.selectAll('g.trace.scatter') // <-- select trace group
+            .data(cdscatter.filter(function(cd) { // get only the traces on this subplot
+                return cd[0].t.xaxis==xa._id && cd[0].t.yaxis==ya._id;
+            }))
+          .enter().append('g') // <-- add a trace for each calcdata
+            .attr('class','trace scatter')
+            .style('stroke-miterlimit',2);
+
+        var prevpts='',tozero,tonext,nexttonext;
+        scattertraces.each(function(d){ // <-- now, iterate through arrays of {x,y} objects
+            var t=d[0].t; // <-- get trace-wide formatting object
+            if(t.visible===false) { return; }
+            var i=-1,tr=d3.select(this),pts2='';
+            // make the fill-to-zero polyline now, so it shows behind the line
+            // have to break out of d3-style here (data-curve attribute) because fill to next
+            // puts the fill associated with one trace grouped with the previous
+            tozero = (t.fill.substr(0,6)=='tozero' || (t.fill.substr(0,2)=='to' && !prevpts)) ?
+                tr.append('polyline').classed('fill',true).attr('data-curve',t.cdcurve) : null;
+            // make the fill-to-next polyline now for the NEXT trace, so it shows behind both lines
+            // nexttonext was created last time, but tag it with this time's curve
+            if(nexttonext) { tonext = nexttonext.attr('data-curve',t.cdcurve); }
+            // now make a new nexttonext for next time
+            nexttonext = tr.append('polyline')
+                .classed('fill',true)
+                .attr('data-curve',0);
+            var x0,y0,x1,y1;
+            x0=y0=x1=y1=null;
+            while(i<d.length) {
+                var pts='',
+                    atLeastTwo = false;
+                for(i++; i<d.length; i++) {
+                    var x=xa.c2p(d[i].x),y=ya.c2p(d[i].y);
+                    if(!$.isNumeric(x)||!$.isNumeric(y)) { break; } // TODO: smart lines going off the edge?
+                    if(pts) { atLeastTwo = true; }
+                    pts+=x+','+y+' ';
+                    if(!$.isNumeric(x0)) { x0=x; y0=y; }
+                    x1=x; y1=y;
+                }
+                if(pts) {
+                    pts2+=pts;
+                    if(t.mode.indexOf('lines')!=-1 && atLeastTwo) {
+                        tr.append('polyline').classed('line',true).attr('points',pts);
+                    }
+                }
+            }
+            if(pts2) {
+                if(tozero) {
+                    if(t.fill.charAt(t.fill.length-1)=='y') { y0=y1=ya.c2p(0,true); }
+                    else { x0=x1=xa.c2p(0,true); }
+                    tozero.attr('points',pts2+x1+','+y1+' '+x0+','+y0);
+                }
+                else if(t.fill.substr(0,6)=='tonext') {
+                    var ptsnext = pts2+prevpts;
+                    if(ptsnext.indexOf(',')!=ptsnext.lastIndexOf(',')) {
+                        tonext.attr('points',pts2+prevpts);
+                    }
+                }
+                prevpts = pts2.split(' ').reverse().join(' ');
+            }
+        });
+
+        // remove polylines that didn't get used
+        $(gd).find('polyline:not([points])').remove();
+
+        // BUILD SCATTER POINTS
+        scattertraces.append('g')
+            .attr('class','points')
+            .each(function(d){
+                var t = d[0].t,
+                    s = d3.select(this),
+                    showMarkers = t.mode.indexOf('markers')!=-1,
+                    showText = t.mode.indexOf('text')!=-1;
+                if((!showMarkers && !showText) || t.visible===false) { s.remove(); }
+                else {
+                    if(showMarkers) {
+                        s.selectAll('path')
+                            .data(Plotly.Lib.identity)
+                            .enter().append('path')
+                            .call(Plotly.Drawing.translatePoints,xa,ya);
+                    }
+                    if(showText) {
+                        s.selectAll('text')
+                            .data(Plotly.Lib.identity)
+                            .enter().append('text')
+                            .call(Plotly.Drawing.translatePoints,xa,ya);
+                    }
+                }
+            });
+
+    });
     // make the container for scatter plots (so error bars can find them along with bars)
-    var scattertraces = gd.plot.selectAll('g.trace.scatter') // <-- select trace group
-        .data(cdscatter) // <-- bind calcdata to traces
-      .enter().append('g') // <-- add a trace for each calcdata
-        .attr('class','trace scatter')
-        .style('stroke-miterlimit',2);
+    // var scattertraces = gd.plot.selectAll('g.trace.scatter') // <-- select trace group
+    //     .data(cdscatter) // <-- bind calcdata to traces
+    //   .enter().append('g') // <-- add a trace for each calcdata
+    //     .attr('class','trace scatter')
+    //     .style('stroke-miterlimit',2);
 
 
     // BUILD SCATTER LINES AND FILL
-    var prevpts='',tozero,tonext,nexttonext;
-    scattertraces.each(function(d){ // <-- now, iterate through arrays of {x,y} objects
-        var t=d[0].t; // <-- get trace-wide formatting object
-        if(t.visible===false) { return; }
-        var i=-1,tr=d3.select(this),pts2='';
-        // make the fill-to-zero polyline now, so it shows behind the line
-        // have to break out of d3-style here (data-curve attribute) because fill to next
-        // puts the fill associated with one trace grouped with the previous
-        tozero = (t.fill.substr(0,6)=='tozero' || (t.fill.substr(0,2)=='to' && !prevpts)) ?
-            tr.append('polyline').classed('fill',true).attr('data-curve',t.cdcurve) : null;
-        // make the fill-to-next polyline now for the NEXT trace, so it shows behind both lines
-        // nexttonext was created last time, but tag it with this time's curve
-        if(nexttonext) { tonext = nexttonext.attr('data-curve',t.cdcurve); }
-        // now make a new nexttonext for next time
-        nexttonext = tr.append('polyline')
-            .classed('fill',true)
-            .attr('data-curve',0);
-        var x0,y0,x1,y1;
-        x0=y0=x1=y1=null;
-        while(i<d.length) {
-            var pts='',
-                atLeastTwo = false;
-            for(i++; i<d.length; i++) {
-                var x=xa.c2p(d[i].x),y=ya.c2p(d[i].y);
-                if(!$.isNumeric(x)||!$.isNumeric(y)) { break; } // TODO: smart lines going off the edge?
-                if(pts) { atLeastTwo = true; }
-                pts+=x+','+y+' ';
-                if(!$.isNumeric(x0)) { x0=x; y0=y; }
-                x1=x; y1=y;
-            }
-            if(pts) {
-                pts2+=pts;
-                if(t.mode.indexOf('lines')!=-1 && atLeastTwo) {
-                    tr.append('polyline').classed('line',true).attr('points',pts);
-                }
-            }
-        }
-        if(pts2) {
-            if(tozero) {
-                if(t.fill.charAt(t.fill.length-1)=='y') { y0=y1=ya.c2p(0,true); }
-                else { x0=x1=xa.c2p(0,true); }
-                tozero.attr('points',pts2+x1+','+y1+' '+x0+','+y0);
-            }
-            else if(t.fill.substr(0,6)=='tonext') {
-                var ptsnext = pts2+prevpts;
-                if(ptsnext.indexOf(',')!=ptsnext.lastIndexOf(',')) {
-                    tonext.attr('points',pts2+prevpts);
-                }
-            }
-            prevpts = pts2.split(' ').reverse().join(' ');
-        }
-    });
+    // var prevpts='',tozero,tonext,nexttonext;
+    // scattertraces.each(function(d){ // <-- now, iterate through arrays of {x,y} objects
+    //     var t=d[0].t; // <-- get trace-wide formatting object
+    //     if(t.visible===false) { return; }
+    //     var i=-1,tr=d3.select(this),pts2='';
+    //     // make the fill-to-zero polyline now, so it shows behind the line
+    //     // have to break out of d3-style here (data-curve attribute) because fill to next
+    //     // puts the fill associated with one trace grouped with the previous
+    //     tozero = (t.fill.substr(0,6)=='tozero' || (t.fill.substr(0,2)=='to' && !prevpts)) ?
+    //         tr.append('polyline').classed('fill',true).attr('data-curve',t.cdcurve) : null;
+    //     // make the fill-to-next polyline now for the NEXT trace, so it shows behind both lines
+    //     // nexttonext was created last time, but tag it with this time's curve
+    //     if(nexttonext) { tonext = nexttonext.attr('data-curve',t.cdcurve); }
+    //     // now make a new nexttonext for next time
+    //     nexttonext = tr.append('polyline')
+    //         .classed('fill',true)
+    //         .attr('data-curve',0);
+    //     var x0,y0,x1,y1;
+    //     x0=y0=x1=y1=null;
+    //     while(i<d.length) {
+    //         var pts='',
+    //             atLeastTwo = false;
+    //         for(i++; i<d.length; i++) {
+    //             var x=xa.c2p(d[i].x),y=ya.c2p(d[i].y);
+    //             if(!$.isNumeric(x)||!$.isNumeric(y)) { break; } // TODO: smart lines going off the edge?
+    //             if(pts) { atLeastTwo = true; }
+    //             pts+=x+','+y+' ';
+    //             if(!$.isNumeric(x0)) { x0=x; y0=y; }
+    //             x1=x; y1=y;
+    //         }
+    //         if(pts) {
+    //             pts2+=pts;
+    //             if(t.mode.indexOf('lines')!=-1 && atLeastTwo) {
+    //                 tr.append('polyline').classed('line',true).attr('points',pts);
+    //             }
+    //         }
+    //     }
+    //     if(pts2) {
+    //         if(tozero) {
+    //             if(t.fill.charAt(t.fill.length-1)=='y') { y0=y1=ya.c2p(0,true); }
+    //             else { x0=x1=xa.c2p(0,true); }
+    //             tozero.attr('points',pts2+x1+','+y1+' '+x0+','+y0);
+    //         }
+    //         else if(t.fill.substr(0,6)=='tonext') {
+    //             var ptsnext = pts2+prevpts;
+    //             if(ptsnext.indexOf(',')!=ptsnext.lastIndexOf(',')) {
+    //                 tonext.attr('points',pts2+prevpts);
+    //             }
+    //         }
+    //         prevpts = pts2.split(' ').reverse().join(' ');
+    //     }
+    // });
 
-    // remove polylines that didn't get used
-    $(gd).find('polyline:not([points])').remove();
+    // // remove polylines that didn't get used
+    // $(gd).find('polyline:not([points])').remove();
 
-    // BUILD SCATTER POINTS
-    scattertraces.append('g')
-        .attr('class','points')
-        .each(function(d){
-            var t = d[0].t,
-                s = d3.select(this),
-                showMarkers = t.mode.indexOf('markers')!=-1,
-                showText = t.mode.indexOf('text')!=-1;
-            if((!showMarkers && !showText) || t.visible===false) { s.remove(); }
-            else {
-                if(showMarkers) {
-                    s.selectAll('path')
-                        .data(Plotly.Lib.identity)
-                        .enter().append('path')
-                        .call(Plotly.Drawing.translatePoints,xa,ya);
-                }
-                if(showText) {
-                    s.selectAll('text')
-                        .data(Plotly.Lib.identity)
-                        .enter().append('text')
-                        .call(Plotly.Drawing.translatePoints,xa,ya);
-                }
-            }
-        });
+    // // BUILD SCATTER POINTS
+    // scattertraces.append('g')
+    //     .attr('class','points')
+    //     .each(function(d){
+    //         var t = d[0].t,
+    //             s = d3.select(this),
+    //             showMarkers = t.mode.indexOf('markers')!=-1,
+    //             showText = t.mode.indexOf('text')!=-1;
+    //         if((!showMarkers && !showText) || t.visible===false) { s.remove(); }
+    //         else {
+    //             if(showMarkers) {
+    //                 s.selectAll('path')
+    //                     .data(Plotly.Lib.identity)
+    //                     .enter().append('path')
+    //                     .call(Plotly.Drawing.translatePoints,xa,ya);
+    //             }
+    //             if(showText) {
+    //                 s.selectAll('text')
+    //                     .data(Plotly.Lib.identity)
+    //                     .enter().append('text')
+    //                     .call(Plotly.Drawing.translatePoints,xa,ya);
+    //             }
+    //         }
+    //     });
 };
 
 }()); // end Scatter object definition

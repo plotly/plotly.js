@@ -79,14 +79,14 @@ function initAxis(td,ax) {
             ax._b = -ax._m*ax.range[1];
         }
         else {
-            ax._offset = ax._td.margin.l+aa.domain[0]*ax._td.plotwidth/100;
+            ax._offset = ax._td.margin.l+ax.domain[0]*ax._td.plotwidth/100;
             ax._length = ax._td.plotwidth*(ax.domain[1]-ax.domain[0])/100;
             ax._m = ax._length/(ax.range[1]-ax.range[0]);
             ax._b = -ax._m*ax.range[0];
         }
     };
 
-    if(!ax.counter) { ax.counter = axes.counterLetter(axname); }
+    if(!ax.counter) { ax.counter = axes.counterLetter(ax._id); }
 
     if(!ax.domain || ax.domain.length!=2 || ax.domain[0]<=ax.domain[1]) {
         ax.domain = [0,100];
@@ -656,6 +656,10 @@ axes.autoTicks = function(ax,rt){
         ax.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
     }
     if(ax.dtick===0) { ax.dtick=1; } // prevent infinite loops...
+    // TODO: this is from log axis histograms with autorange off
+    if(!$.isNumeric(ax.dtick) && typeof ax.dtick !='string') {
+        throw 'ax.dtick error: '+String(ax.dtick);
+    }
 };
 
 // after dtick is already known, find tickround = precision to display in tick labels
@@ -956,6 +960,10 @@ axes.getFromId = function(td,id,type) {
 //          blank to do all,
 //          'redraw' to force full redraw, and reset ax._r (stored range for use by zoom/pan)
 axes.doTicks = function(td,axid) {
+    var gl = td.layout,
+        gm = td.margin,
+        ax = axes.getFromId(td,axid);
+
     if(axid=='redraw') {
         td.layout._paper.selectAll('g.subplot').each(function(subplot) {
             var plotinfo = gl._plots[subplot];
@@ -964,10 +972,6 @@ axes.doTicks = function(td,axid) {
             plotinfo.zerolinelayer.selectAll('path').remove();
         });
     }
-
-    var gl = td.layout,
-        gm = td.margin,
-        ax = axes.getFromId(td,axid);
 
     if(!axid || axid=='redraw') {
         axes.list(td).forEach(function(ax) {
