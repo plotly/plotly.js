@@ -155,8 +155,8 @@ annotations.draw = function(gd,index,opt,value) {
             .text(options.text)
             .call(d3.plugly.makeEditable)
             .call(titleLayout)
-            .on('edit', function(context){
-                options.text = this.text();
+            .on('edit', function(_text){
+                options.text = _text;
                 this.call(titleLayout);
                 var property = Plotly.Lib.nestedProperty(gl,'annotations['+index+'].text');
                 var update = {};

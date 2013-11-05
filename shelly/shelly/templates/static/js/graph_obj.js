@@ -1462,11 +1462,11 @@ plots.titles = function(gd,title) {
 
     if(gd.mainsite){ // don't allow editing on embedded graphs
         el.text(txt)
-            .call(titleLayout)
             .call(d3.plugly.makeEditable)
-            .on('edit', function(context){
+            .call(titleLayout)
+            .on('edit', function(text){
                 this.call(titleLayout);
-                cont.title = txt = this.text();
+                cont.title = txt = text;
                 plots.titles(gd, title);
             });
         if(txt === 'Click to enter '+name+' title'){
