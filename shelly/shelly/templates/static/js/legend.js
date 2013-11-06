@@ -102,8 +102,7 @@ function legendText(s,gd){
         .call(Plotly.Drawing.font,
             lf.family||gf.family||'Arial',
             lf.size||gf.size||12,
-            lf.color||gf.color||'#000')
-        .each(function(d){ Plotly.Drawing.styleText(this,d[0].t.name,'clickable'); });
+            lf.color||gf.color||'#000');
 }
 
 // -----------------------------------------------------
@@ -151,21 +150,23 @@ legend.draw = function(gd) {
 
     var tracetext=traces.call(legendText,gd).selectAll('text');
 
-    function titleLayout(){
+    function legendLayout(){
         this.call(d3.plugly.convertToTspans);
     }
 
     if(gd.mainsite){
         tracetext.each(function(d, i){
             d3.select(this)
+                .text(function(d, i){ return d[0].t.name; })
                 .call(d3.plugly.makeEditable)
-                .call(titleLayout)
+                .call(legendLayout)
                 .on('edit', function(text){
-                    this.call(titleLayout);
+                    this.text(text)
+                        .call(legendLayout);
                     var tn = Number(this.attr('class').split('-')[1]);
                     var property = Plotly.Lib.nestedProperty(gd.data[tn],'name');
+                    property.name = text;
                     Plotly.restyle(gd, property.astr, text, tn);
-                    console.log(gd,property.astr, gd.data[tn]);
                 });
         })
     }

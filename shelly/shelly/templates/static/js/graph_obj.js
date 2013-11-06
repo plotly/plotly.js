@@ -1437,14 +1437,14 @@ plots.titles = function(gd,title) {
 
     var txt = cont.title;
     if(cont.unit) txt += ' ('+cont.unit+')';
+    if(!txt) txt = 'Click to enter '+name+' title';
     if(txt.match(/^Click to enter (Plot |X axis |Y axis )?title$/)) {
         if(gd.mainsite) fontColor = '#999'; // cues in gray
         else txt=''; // don't show cues in embedded plots
     }
-    if(!txt) txt = 'Click to enter '+name+' title';
 
     gd.infolayer.select('.'+title).remove();
-    var el = gd.infolayer.append('text').attr('class',title);
+    var el = gd.infolayer.append('text').attr('class', title).text(txt);
 
     function titleLayout(){
         var bg = d3.select(gd).select('svg>rect');
@@ -1461,21 +1461,28 @@ plots.titles = function(gd,title) {
     }
 
     if(gd.mainsite){ // don't allow editing on embedded graphs
-        el.text(txt)
-            .call(d3.plugly.makeEditable)
+        el.call(d3.plugly.makeEditable)
             .call(titleLayout)
             .on('edit', function(text){
                 this.call(titleLayout);
                 cont.title = txt = text;
                 plots.titles(gd, title);
+                if(text === ''){
+                    gd.infolayer.select('.'+title).style('opacity', 0)
+                        .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
+                        .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
+                }
             });
         if(txt === 'Click to enter '+name+' title'){
+            gd.infolayer.select('.'+title).style('opacity', 1)
+        }
+        else if(txt === ''){
             gd.infolayer.select('.'+title).style('opacity', 0)
                 .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
                 .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
         }
     }
-    else el.remove();
+    else if(!txt) el.remove();
 
     // move axis labels out of the way, if possible, when tick labels interfere
 //    if(title=='gtitle') { return; }

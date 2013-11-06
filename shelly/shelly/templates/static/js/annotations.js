@@ -128,11 +128,7 @@ annotations.draw = function(gd,index,opt,value) {
         .call(Plotly.Drawing.setPosition, borderwidth/2+1, borderwidth/2+1);
 
     function titleLayout(){
-//        var alignOptions = {horizontalAlign: 'center', verticalAlign: 'center', horizontalMargin: 0, verticalMargin: 0};
         var titleEl = this
-//            .text(options.text)
-//            .call(d3.plugly.convertToTspans)
-//            .call(d3.plugly.alignSVGWith(annbg, alignOptions))
             .text('')
             .call(Plotly.Drawing.setPosition,0,0)
             .attr('text-anchor',{left:'start', center:'middle', right:'end'}[options.align])
@@ -147,12 +143,11 @@ annotations.draw = function(gd,index,opt,value) {
     var anntext = ann.append('text')
         .attr('class','annotation')
         .attr('data-cmmt',options.tag)
-        .call(titleLayout)
+        .text(options.text);
 
     if(gd.mainsite) {
 //        anntext.on('click',function(){ if(!gd.dragged) { Plotly.Fx.autoGrowInput(this); } });
         anntext
-            .text(options.text)
             .call(d3.plugly.makeEditable)
             .call(titleLayout)
             .on('edit', function(_text){
