@@ -1451,7 +1451,7 @@ plots.titles = function(gd,title) {
         var titleEl = this
             .style({'font-family': font, 'font-size': fontSize, fill: fontColor})
             .call(d3.plugly.convertToTspans)
-            .call(d3.plugly.alignSVGWith(bg, options))
+            .call(d3.plugly.alignSVGWith(bg, options));
         if(options.rotate){
             titleEl.attr({
                 'text-anchor': 'middle', x: 0, y: 0,
