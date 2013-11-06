@@ -1138,25 +1138,6 @@ Plotly.relayout = function(gd,astr,val) {
     $(gd).trigger('relayout.plotly',redoit);
 };
 
-function setFileAndCommentsHeight(gd) {
-    if(!gd.mainsite) { return; }
-
-    var $gd = $(gd);
-
-    var fileAndCommentsHeight = $gd.innerHeight() - $gd.children('.tool-menu').innerHeight(),
-        $themebar = $gd.children('.themebar'),
-        $demobar = $gd.children('.demobar');
-
-    if ($themebar.css('display') == 'block') {
-        fileAndCommentsHeight -= $themebar.innerHeight();
-    }
-    if ($demobar.css('display') == 'block') {
-        fileAndCommentsHeight -= $demobar.innerHeight();
-    }
-
-    $gd.children('.file-and-comments').css('height', fileAndCommentsHeight);
-}
-
 function setGraphContainerScroll(gd) {
     if(!gd.mainsite) { return; }
     var $graphContainer = $(gd).find('.plot-container'),
