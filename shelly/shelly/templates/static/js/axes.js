@@ -321,7 +321,7 @@ axes.setConvert = function(ax) {
     ax.c2l = (ax.type=='log') ? toLog : num;
     ax.l2c = (ax.type=='log') ? fromLog : num;
 
-    ax.l2p = function(v) { return d3.round(ax._b+ax._m*va,2); };
+    ax.l2p = function(v) { return d3.round(ax._b+ax._m*v,2); };
     ax.p2l = function(px) { return (px-ax._b)/ax._m; };
 
     ax.c2p = function(v,clip) {
