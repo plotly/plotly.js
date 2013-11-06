@@ -1159,7 +1159,7 @@ function setFileAndCommentsHeight(gd) {
 
 function setGraphContainerScroll(gd) {
     if(!gd.mainsite) { return; }
-    var $graphContainer = $(gd).find('.graph-container'),
+    var $graphContainer = $(gd).find('.plot-container'),
         isGraphWiderThanContainer = gd.layout.width > parseInt($graphContainer.css('width'),10);
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
@@ -1251,26 +1251,26 @@ function makePlotFramework(divid, layout) {
     gd.mainsite = $('#plotlyMainMarker').length > 0;
 
     // Test if the graph container div exists
-    var hasGraphContainer = $gd.find('.graph-container').length > 0;
+    var hasGraphContainer = $gd.find('.plot-container').length > 0;
 
-    // If it's on the mainsite, append the graph-container to file-and-comments container.
+    // If it's on the mainsite, append the plot-container to file-and-comments container.
     // else, to gd.
     if (gd.mainsite) {
         var $fileAndComments = $gd.children('.file-and-comments');
         if (!hasGraphContainer) {
-            $fileAndComments.prepend('<div class="graph-container"></div>');
+            $fileAndComments.prepend('<div class="plot-container"></div>');
         }
-        $fileAndComments.children('.graph-container').addClass('is-mainsite');
+        $fileAndComments.children('.plot-container').addClass('is-mainsite');
     }
     else if (!hasGraphContainer) {
-        $gd.append('<div class="graph-container"></div>');
+        $gd.append('<div class="plot-container"></div>');
     }
 
     // Save the graph container as a property of gd
-    gd.graphContainer = gd3.select('.graph-container');
+    gd.graphContainer = gd3.select('.plot-container');
 
     // Make the svg container if it needs to be made
-    var $svgContainer = $gd.find('.graph-container').children('.svg-container');
+    var $svgContainer = $gd.find('.plot-container').children('.svg-container');
 
     if ($svgContainer.length == 1) {
         // Destroy any plot that already exists in this div
