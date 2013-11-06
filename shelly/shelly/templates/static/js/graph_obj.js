@@ -556,6 +556,7 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Annotations.drawAll(gd);
 
     // final cleanup
+    console.log(gd.mainsite, gd.standalone);
     if(!gd.mainsite && !gd.standalone) { plots.positionBrand(gd); } // 'view in plotly' link for embedded plots
 
     setTimeout(function(){
@@ -1137,26 +1138,28 @@ Plotly.relayout = function(gd,astr,val) {
     $(gd).trigger('relayout.plotly',redoit);
 };
 
-function setGraphContainerHeight(gd) {
+function setFileAndCommentsHeight(gd) {
     if(!gd.mainsite) { return; }
-    $gd = $(gd);
-    var graphContainerHeight = $gd.innerHeight() - $gd.find('.tool-menu').innerHeight(),
-        $themebar = $gd.find('.themebar'),
-        $demobar = $gd.find('.demobar');
+
+    var $gd = $(gd);
+
+    var fileAndCommentsHeight = $gd.innerHeight() - $gd.children('.tool-menu').innerHeight(),
+        $themebar = $gd.children('.themebar'),
+        $demobar = $gd.children('.demobar');
 
     if ($themebar.css('display') == 'block') {
-        graphContainerHeight -= $themebar.innerHeight();
+        fileAndCommentsHeight -= $themebar.innerHeight();
     }
     if ($demobar.css('display') == 'block') {
-        graphContainerHeight -= $demobar.innerHeight();
+        fileAndCommentsHeight -= $demobar.innerHeight();
     }
 
-    $gd.find('.graph-container').css('height', graphContainerHeight);
+    $gd.children('.file-and-comments').css('height', fileAndCommentsHeight);
 }
 
 function setGraphContainerScroll(gd) {
     if(!gd.mainsite) { return; }
-    var $graphContainer = $(gd).find('.graph-container'),
+    var $graphContainer = $(gd).find('.plot-container'),
         isGraphWiderThanContainer = gd.layout.width > parseInt($graphContainer.css('width'),10);
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
@@ -1173,7 +1176,7 @@ function setGraphContainerScroll(gd) {
 function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
     if(gd.mainsite) {
-        setGraphContainerHeight(gd);
+        setFileAndCommentsHeight(gd);
         var gdBB = gd.graphContainer.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
         newwidth = Math.round(gdBB.width*0.9);
@@ -1203,7 +1206,7 @@ plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     killPopovers();
 
-    setGraphContainerHeight(gd);
+    setFileAndCommentsHeight(gd);
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
@@ -1233,6 +1236,9 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
+
+    console.log('makePlotFramework');
+
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
@@ -1241,22 +1247,32 @@ function makePlotFramework(divid, layout) {
         $gd = $(gd),
         gd3 = d3.select(gd);
 
-    // graph container
-    if ($gd.find('.graph-container').length === 0) {
-        $gd.append('<div class="graph-container"></div>');
-    }
-    gd.graphContainer = gd3.select('.graph-container');
+    // Test if this is on the main site or embedded
+    gd.mainsite = $('#plotlyMainMarker').length > 0;
 
-    // test if this is on the main site or embedded
-    gd.mainsite = Boolean($('#plotlyMainMarker').length);
+    // Test if the graph container div exists
+    var hasGraphContainer = $gd.find('.plot-container').length > 0;
 
+    // If it's on the mainsite, append the plot-container to file-and-comments container.
+    // else, to gd.
     if (gd.mainsite) {
-        $(gd).children('.graph-container').addClass('is-mainsite');
+        var $fileAndComments = $gd.children('.file-and-comments');
+        if (!hasGraphContainer) {
+            $fileAndComments.prepend('<div class="plot-container"></div>');
+        }
+        $fileAndComments.children('.plot-container').addClass('is-mainsite');
+    }
+    else if (!hasGraphContainer) {
+        $gd.append('<div class="plot-container"></div>');
     }
 
-    var $svgContainer = $(gd).children('.graph-container').children('.svg-container');
+    // Save the graph container as a property of gd
+    gd.graphContainer = gd3.select('.plot-container');
 
-    if ($svgContainer.length==1) {
+    // Make the svg container if it needs to be made
+    var $svgContainer = $gd.find('.plot-container').children('.svg-container');
+
+    if ($svgContainer.length == 1) {
         // Destroy any plot that already exists in this div
         $svgContainer.children('svg').remove();
     }
@@ -1290,7 +1306,7 @@ function makePlotFramework(divid, layout) {
 
     // initial autosize
     if(gl.autosize=='initial') {
-        setGraphContainerHeight(gd);
+        setFileAndCommentsHeight(gd);
         plotAutoSize(gd,{});
         gl.autosize=true;
     }
