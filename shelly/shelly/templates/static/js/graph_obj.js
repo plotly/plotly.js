@@ -1435,12 +1435,13 @@ plots.titles = function(gd,title) {
         options = {horizontalAlign: 'center', verticalAlign: 'top', horizontalMargin: 0, verticalMargin: 15};
     }
 
+    var opacity = 1;
     var txt = cont.title;
     if(cont.unit) txt += ' ('+cont.unit+')';
-    if(!txt) txt = 'Click to enter '+name+' title';
-    if(txt.match(/^Click to enter (Plot |X axis |Y axis )?title$/)) {
-        if(gd.mainsite) fontColor = '#999'; // cues in gray
-        else txt=''; // don't show cues in embedded plots
+    if(txt === 'Click to enter '+name+' title') opacity = 0.2;
+    if(!txt){
+        opacity = 0;
+        txt = 'Click to enter '+name+' title';
     }
 
     gd.infolayer.select('.'+title).remove();
@@ -1449,7 +1450,7 @@ plots.titles = function(gd,title) {
     function titleLayout(){
         var bg = d3.select(gd).select('svg>rect');
         var titleEl = this
-            .style({'font-family': font, 'font-size': fontSize, fill: fontColor})
+            .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
             .call(d3.plugly.convertToTspans)
             .call(d3.plugly.alignSVGWith(bg, options));
         if(options.rotate){
@@ -1461,22 +1462,18 @@ plots.titles = function(gd,title) {
     }
 
     if(gd.mainsite){ // don't allow editing on embedded graphs
-        el.call(d3.plugly.makeEditable)
-            .call(titleLayout)
+        el.call(titleLayout)
+            .call(d3.plugly.makeEditable)
             .on('edit', function(text){
                 this.call(titleLayout);
                 cont.title = txt = text;
                 plots.titles(gd, title);
-                if(text === ''){
-                    gd.infolayer.select('.'+title).style('opacity', 0)
-                        .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
-                        .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
-                }
+            })
+            .on('input', function(d, i){
+                var bg = d3.select(gd).select('svg>rect');
+                this.text(d).call(d3.plugly.alignSVGWith(bg, options));
             });
-        if(txt === 'Click to enter '+name+' title'){
-            gd.infolayer.select('.'+title).style('opacity', 1)
-        }
-        else if(txt === ''){
+        if(cont.title === ''){
             gd.infolayer.select('.'+title).style('opacity', 0)
                 .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
                 .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});

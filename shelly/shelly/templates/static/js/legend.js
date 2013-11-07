@@ -163,6 +163,9 @@ legend.draw = function(gd) {
                 .on('edit', function(text){
                     this.text(text)
                         .call(legendLayout);
+                    if(this.text() === ''){
+                        text = ' \u0020\u0020 '
+                    }
                     var tn = Number(this.attr('class').split('-')[1]);
                     var property = Plotly.Lib.nestedProperty(gd.data[tn],'name');
                     property.name = text;
