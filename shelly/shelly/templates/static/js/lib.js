@@ -425,8 +425,8 @@ lib.conf_modal = (function(){
                     '<a href="#" class="btn cm-alt_btn_txt cm-alt_func"></a>'+
                     '<a href="#" class="btn cm-canc_btn_txt cm-canc_func"></a>'+
                     '<a href="#" class="btn btn--color-primary cm-conf_btn_txt cm-conf_func"></a>'+
+                    '<div class="messages" style="text-align: right;"></div>'+
                   '</div>'+
-                  ''+// '<div class="messages" style="text-align: left;"></div>'+
                 '</div>';
 
         $(options.selector).append(confirmModal);
