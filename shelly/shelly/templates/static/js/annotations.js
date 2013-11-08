@@ -93,8 +93,8 @@ annotations.draw = function(gd,index,opt,value) {
     if(!$.isNumeric(options.borderwidth)) { options.borderwidth = 1; }
     if(!options.bgcolor) { options.bgcolor = 'rgba(0,0,0,0)'; }
     // if(!options.ref) { options.ref='plot'; }
-    if(!options.xref) { options.xref='x'; }
-    if(!options.yref) { options.yref='y'; }
+    if(!options.xref) { options.xref=oldref.x; }
+    if(!options.yref) { options.yref=oldref.y; }
     if(options.showarrow!==false) { options.showarrow=true; }
     if(!$.isNumeric(options.borderpad)) { options.borderpad=1; }
     if(!options.arrowwidth) { options.arrowwidth = 0; }
@@ -155,16 +155,6 @@ annotations.draw = function(gd,index,opt,value) {
     options._w = annwidth;
     options._h = annheight;
 
-    // check for change between log and linear
-    // off-scale transition to log: put the annotation near low end of the log
-    // axis, but not quite at it (in case that would put it off screen)
-    function checklog(v,oldtype,newtype,dflt) {
-        if(oldtype=='log' && newtype!='log') { return Math.pow(10,v); }
-        else if(oldtype!='log' && newtype=='log') {
-            return (v>0) ? Math.log(v)/Math.LN10 : dflt;
-        }
-        else { return v; }
-    }
     function fshift(v){ return Plotly.Lib.constrain(Math.floor(v*3-1),-0.5,0.5); }
 
     var okToContinue = true;
@@ -179,7 +169,7 @@ annotations.draw = function(gd,index,opt,value) {
 
         // if we're still referencing the same axis, see if it has changed linear <-> log
         if(ax && ax==axOld && options[typeAttr]) {
-            options[axletter] = checklog(options[axletter],options[typeAttr],ax.typedefaultVal);
+            checklog(options,ax);
         }
         // if we're changing a reference axis on an existing annotation
         else if($.isNumeric(options[axletter]) && ax!==axOld) {
@@ -208,7 +198,7 @@ annotations.draw = function(gd,index,opt,value) {
 
         // calculate pixel position
         if(!$.isNumeric(options[axletter])) { options[axletter] = defaultVal; }
-        if(options.ref=='paper') {
+        if(!ax) {
             annPosPx[axletter] = (axletter=='x') ?
                 (gd.margin.l + gd.plotwidth*options[axletter]) :
                 (gd.margin.t + gd.plotheight*(1-options[axletter]));
@@ -218,12 +208,13 @@ annotations.draw = function(gd,index,opt,value) {
         }
         else {
             // hide the annotation if it's pointing outside the visible plot
-            okToContinue = (options[axletter]-ax.range[0])*(options[axletter]-ax.range[1])<=0;
-            annPosPx[axletter] = ax.l2c(options[axletter]);
+            if((options[axletter]-ax.range[0])*(options[axletter]-ax.range[1])>0) { okToContinue = false; }
+            annPosPx[axletter] = ax._offset+ax.l2p(options[axletter]);
+            // console.log(options[axletter],ax.range[0],ax.range[1],okToContinue);
         }
 
         // save the current axis type for later log/linear changes
-        options[typeAttr] = ax.type;
+        options[typeAttr] = ax && ax.type;
     });
 
     if(!okToContinue) {
@@ -231,36 +222,6 @@ annotations.draw = function(gd,index,opt,value) {
         return;
     }
 
-    // if(options.ref=='plot' && options._xatype && options._yatype) {
-    //     options.x = checklog(options.x,options._xatype,xa.type,
-    //         (xa.range[0]+xa.range[1]-Math.abs(xr*0.8))/2);
-    //     options.y = checklog(options.y,options._yatype,ya.type,
-    //         (ya.range[0]+ya.range[1]-Math.abs(yr*0.8))/2);
-    // }
-    // options._xatype=xa.type;
-    // options._yatype=ya.type;
-
-    // check for change between paper and plot ref - need to wait for
-    // annwidth/annheight to do this properly
-    // if(oldref && options.x && options.y) {
-    //     if(options.ref=='plot' && oldref=='paper') {
-    //         var xshift = 0, yshift = 0;
-    //         if(!options.showarrow) {
-    //             xshift = fshift(options.x)*annwidth/xa._m;
-    //             yshift = fshift(options.y)*annheight/ya._m;
-    //         }
-    //         options.x = xa.range[0] + xr*options.x - xshift;
-    //         options.y = ya.range[0] + yr*options.y + yshift;
-    //     }
-    //     else if(options.ref=='paper' && oldref=='plot') {
-    //         options.x = (options.x-xa.range[0])/xr;
-    //         options.y = (options.y-ya.range[0])/yr;
-    //         if(!options.showarrow) {
-    //             options.x += fshift(options.x)*annwidth/(xr*xa._m);
-    //             options.y -= fshift(options.y)*annheight/(yr*ya._m);
-    //         }
-    //     }
-    // }
     if(!options.ax) { options.ax=-10; }
     if(!options.ay) { options.ay=-annheight/2-20; }
     // now position the annotation and arrow, based on options[x,y,ref,showarrow,ax,ay]
@@ -278,50 +239,28 @@ annotations.draw = function(gd,index,opt,value) {
     // if there is an arrow, alignment is to the arrowhead, and ax and ay give the
     // offset (in pixels) between the arrowhead and the center of the annotation
 
-    // if(options.ref=='paper') {
-    //     if(!$.isNumeric(options.x)) { options.x=0.1; }
-    //     if(!$.isNumeric(options.y)) { options.y=0.7; }
-    //     x += plotBB.width*options.x;
-    //     y += plotBB.height*(1-options.y);
-    //     if(!options.showarrow){
-    //         if(options.x>2/3) { x -= annwidth/2; }
-    //         else if(options.x<1/3) { x += annwidth/2; }
-
-    //         if(options.y<1/3) { y -= annheight/2; }
-    //         else if(options.y>2/3) { y += annheight/2; }
-    //     }
-    // }
-    // else {
-    //     // hide the annotation if it's pointing outside the visible plot
-    //     if((options.x-xa.range[0])*(options.x-xa.range[1])>0 ||
-    //         (options.y-ya.range[0])*(options.y-ya.range[1])>0) {
-    //         ann.remove();
-    //         return;
-    //     }
-    //     if(!$.isNumeric(options.x)) { options.x=(xa.range[0]*0.9+xa.range[1]*0.1); }
-    //     if(!$.isNumeric(options.y)) { options.y=(ya.range[0]*0.7+ya.range[1]*0.3); }
-    //     x += xa._b+options.x*xa._m;
-    //     y += ya._b+options.y*ya._m;
-    // }
 
     // if there's an arrow, it gets the position we just calculated, and the text gets offset by ax,ay
     // and make sure the text and arrowhead are on the paper
     if(options.showarrow){
-        var ax = Plotly.Lib.constrain(x,1,paperBB.width-1),
-            ay = Plotly.Lib.constrain(y,1,paperBB.height-1);
+        var ax = Plotly.Lib.constrain(annPosPx.x,1,paperBB.width-1),
+            ay = Plotly.Lib.constrain(annPosPx.y,1,paperBB.height-1);
         annPosPx.x += options.ax;
         annPosPx.y += options.ay;
     }
-    annPosPx.x = Plotly.Lib.constrain(x,1,paperBB.width-1);
-    annPosPx.y = Plotly.Lib.constrain(y,1,paperBB.height-1);
+    annPosPx.x = Plotly.Lib.constrain(annPosPx.x,1,paperBB.width-1);
+    annPosPx.y = Plotly.Lib.constrain(annPosPx.y,1,paperBB.height-1);
 
     var borderpad = Number(options.borderpad),
         borderfull = borderwidth+borderpad+1,
         outerwidth = annwidth+2*borderfull,
         outerheight = annheight+2*borderfull;
-    ann.call(Plotly.Drawing.setRect, annPosPx.x-outerwidth/2, annPosPx.y-outerheight/2, outerwidth, outerheight);
-    annbg.call(Plotly.Drawing.setSize, annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
-    anntext.call(Plotly.Drawing.setPosition, paperBB.left-anntextBB.left+borderfull, paperBB.top-anntextBB.top+borderfull)
+    ann.call(Plotly.Drawing.setRect,
+        annPosPx.x-outerwidth/2, annPosPx.y-outerheight/2, outerwidth, outerheight);
+    annbg.call(Plotly.Drawing.setSize,
+        annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
+    anntext.call(Plotly.Drawing.setPosition,
+        paperBB.left-anntextBB.left+borderfull, paperBB.top-anntextBB.top+borderfull)
       .selectAll('tspan.nl')
         .attr('x',paperBB.left-anntextBB.left+borderfull);
 
@@ -479,6 +418,25 @@ annotations.draw = function(gd,index,opt,value) {
     };}
 };
 
+// check if we need to edit the annotation position for log/linear changes
+function checklog(options,ax) {
+    var axletter = ax._id.charAt(0),
+        typeAttr = '_'+axletter+'type',
+        oldtype = options[typeAttr],
+        newtype = ax.type;
+    if(oldtype) {
+        if(oldtype=='log' && newtype!='log') {
+            options[axletter] = Math.pow(10,options[axletter]);
+        }
+        else if(oldtype!='log' && newtype=='log') {
+            options[axletter] = (options[axletter]>0) ?
+                Math.log(options[axletter])/Math.LN10 :
+                (ax.range[0]+ax.range[1])/2;
+        }
+    }
+    options[typeAttr] = newtype;
+}
+
 // add arrowhead(s) to a path or line d3 element el3
 // style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none
 // ends is 'start', 'end' (default), 'start+end'
@@ -563,7 +521,7 @@ annotations.calcAutorange = function(gd) {
     var saveAnnotations = gl.annotations, // store the real annotations
         paperBB = gl._paperdiv.node().getBoundingClientRect(),
         plotcenterx = (paperBB.left+paperBB.right+gm.l-gm.r)/2,
-        plotcentery = (paperBB.top+paperBB.bottom+gm.l-gm.r)/2,
+        plotcentery = (paperBB.top+paperBB.bottom+gm.t-gm.b)/2,
         blank = {left:plotcenterx, right:plotcenterx, top:plotcentery, bottom:plotcentery};
 
     // temporarily replace plot-referenced annotations with transparent, centered ones
@@ -571,9 +529,11 @@ annotations.calcAutorange = function(gd) {
     saveAnnotations.forEach(function(ann){
         var xa = gl[Plotly.Axes.id2name(ann.xref || 'x')],
             ya = gl[Plotly.Axes.id2name(ann.yref || 'y')];
-        if(ann.ref=='plot' && ((xa && xa.autorange) || (ya && ya.autorange))) {
+        if((xa && xa.autorange) || (ya && ya.autorange)) {
+            if(xa) { checklog(ann,xa); }
+            if(ya) { checklog(ann,ya); }
             tempAnnotations.push($.extend({},ann,
-                {x:0.5, y:0.5, ref:'paper', x0:ann.x, y0:ann.y, opacity:1, xa:xa, ya:ya}));
+                {x:0.5, y:0.5, xref:'paper', yref:'paper', x0:ann.x, y0:ann.y, opacity:1, xa:xa, ya:ya}));
         }
     });
     gl.annotations = tempAnnotations;
@@ -584,16 +544,18 @@ annotations.calcAutorange = function(gd) {
         var arrowNode = gl._infolayer.selectAll('g.annotation[data-index="'+i+'"]').node(),
             arrowBB = arrowNode ? arrowNode.getBoundingClientRect() : blank,
             textNode = gl._infolayer.selectAll('svg.annotation[data-index="'+i+'"]').node(),
-            textBB = textNode ? textNode.getBoundingClientRect() : blank,
-            leftpad = Math.max(0,plotcenterx - Math.min(arrowBB.left,textBB.left)),
-            rightpad = Math.max(0,Math.max(arrowBB.right,textBB.right) - plotcenterx),
-            toppad = Math.max(0,plotcentery - Math.min(arrowBB.top,textBB.top)),
-            bottompad = Math.max(0,Math.max(arrowBB.bottom,textBB.bottom) - plotcentery);
+            textBB = textNode ? textNode.getBoundingClientRect() : blank;
         if(ann.xa) {
-            Plotly.Axes.expand(ann.xa, [ann.xa.l2c(ann.x0)], {ppadplus:rightpad, ppadminus:leftpad});
+            Plotly.Axes.expand(ann.xa, [ann.xa.l2c(ann.x0)],{
+                ppadplus:Math.max(0,Math.max(arrowBB.right,textBB.right) - plotcenterx),
+                ppadminus:Math.max(0,plotcenterx - Math.min(arrowBB.left,textBB.left))
+            });
         }
         if(ann.ya) {
-            Plotly.Axes.expand(ann.ya, [ann.ya.l2c(ann.y0)], {ppadplus:bottompad, ppadminus:toppad});
+            Plotly.Axes.expand(ann.ya, [ann.ya.l2c(ann.y0)], {
+                ppadplus:Math.max(0,Math.max(arrowBB.bottom,textBB.bottom) - plotcentery),
+                ppadminus:Math.max(0,plotcentery - Math.min(arrowBB.top,textBB.top))
+            });
         }
     });
 

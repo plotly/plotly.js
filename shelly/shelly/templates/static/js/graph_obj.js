@@ -477,15 +477,20 @@ Plotly.plot = function(gd, data, layout) {
 
     // position and range calculations for traces that depend on each other
     // ie bars (stacked or grouped) and boxes push each other out of the way
-    Plotly.Bars.setPositions(gd);
-    Plotly.Boxes.setPositions(gd);
+    Plotly.Plots.getSubplots(gd.data).forEach(function(subplot) {
+        var plotinfo = gd.layout._plots[subplot];
+        Plotly.Bars.setPositions(gd,plotinfo);
+        Plotly.Boxes.setPositions(gd,plotinfo);
+    });
 
     Plotly.Lib.markTime('done with setstyles and bar/box adjustments');
 
     // autorange for errorbars
-    if(ya.autorange) {
-        Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd),{padded:true});
-    }
+    Plotly.Axes.list(gd,'y')
+        .filter(function(ya){ return ya.autorange; })
+        .forEach(function(ya) {
+            Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd,ya),{padded:true});
+        });
     Plotly.Lib.markTime('done Plotly.ErrorBars.ydr');
 
     // autorange for annotations
@@ -505,10 +510,10 @@ Plotly.plot = function(gd, data, layout) {
         return;
     }
 
-    var xa = gl.xaxis,
-        ya = gl.yaxis;
+    // var xa = gl.xaxis,
+    //     ya = gl.yaxis;
 
-    gd.plot.attr('viewBox','0 0 '+xa._length+' '+ya._length);
+    // gd.plot.attr('viewBox','0 0 '+xa._length+' '+ya._length);
     Plotly.Axes.doTicks(gd,'redraw'); // draw ticks, titles, and calculate axis scaling (._b, ._m)
 
     Plotly.Lib.markTime('done autorange and ticks');
@@ -520,39 +525,46 @@ Plotly.plot = function(gd, data, layout) {
     // 4. scatter
     // 5. box plots
 
-    var cdbar = [], cdscatter = [], cdbox = [];
-    for(i in gd.calcdata){
-        cd = gd.calcdata[i];
-        type=cd[0].t.type;
-        if(plots.isHeatmap(type)) {
-            Plotly.Heatmap.plot(gd,cd);
-            Plotly.Lib.markTime('done heatmap '+i);
+    Plotly.Plots.getSubplots(gd.data).forEach(function(subplot) {
+        var plotinfo = gd.layout._plots[subplot],
+            cdbar = [], cdscatter = [], cdbox = [];
+        for(var i in gd.calcdata){
+            cd = gd.calcdata[i];
+            type=cd[0].t.type;
+            // filter to only traces on this subplot
+            if((cd[0].t.xaxis||'x')+(cd[0].t.yaxis||'y')!=subplot) {
+                continue;
+            }
+            if(plots.isHeatmap(type)) {
+                Plotly.Heatmap.plot(gd,plotinfo,cd);
+                Plotly.Lib.markTime('done heatmap '+i);
+            }
+            else {
+                // in case this one was a heatmap previously, remove it and its colorbar
+                $(gd).find('.hm'+i).remove();
+                $(gd).find('.cb'+i).remove();
+
+                if(plots.isBar(type)) { cdbar.push(cd); }
+                else if(type=='box') { cdbox.push(cd); }
+                else { cdscatter.push(cd); }
+            }
         }
-        else {
-            // in case this one was a heatmap previously, remove it and its colorbar
-            $(gd).find('.hm'+i).remove();
-            $(gd).find('.cb'+i).remove();
 
-            if(plots.isBar(type)) { cdbar.push(cd); }
-            else if(type=='box') { cdbox.push(cd); }
-            else { cdscatter.push(cd); }
-        }
-    }
+        // remove old traces, then redraw everything
+        gl._paper.selectAll('g.trace').remove();
+        Plotly.Bars.plot(gd,plotinfo,cdbar);
+        Plotly.Lib.markTime('done bars');
 
-    // remove old traces, then redraw everything
-    gd.plot.selectAll('g.trace').remove();
-    Plotly.Bars.plot(gd,cdbar);
-    Plotly.Lib.markTime('done bars');
+        // DRAW ERROR BARS for bar and scatter plots
+        // these come after (on top of) bars, and before (behind) scatter
+        Plotly.ErrorBars.plot(gd,plotinfo,cdbar.concat(cdscatter));
+        Plotly.Lib.markTime('done errorbars');
 
-    // DRAW ERROR BARS for bar and scatter plots
-    // these come after (on top of) bars, and before (behind) scatter
-    Plotly.ErrorBars.plot(gd,cdbar.concat(cdscatter));
-    Plotly.Lib.markTime('done errorbars');
-
-    Plotly.Scatter.plot(gd,cdscatter);
-    Plotly.Lib.markTime('done scatter');
-    Plotly.Boxes.plot(gd,cdbox);
-    Plotly.Lib.markTime('done boxes');
+        Plotly.Scatter.plot(gd,plotinfo,cdscatter);
+        Plotly.Lib.markTime('done scatter');
+        Plotly.Boxes.plot(gd,plotinfo,cdbox);
+        Plotly.Lib.markTime('done boxes');
+    });
 
     //styling separate from drawing
     applyStyle(gd);
@@ -630,6 +642,8 @@ plots.setStyles = function(gd, merge_dflt) {
         mergeattr('text','tx','');
         mergeattr('name','name','trace '+c);
         mergeattr('error_y.visible','ye_vis',false);
+        mergeattr('xaxis','xaxis','x');
+        mergeattr('yaxis','yaxis','y');
         var type = t.type; // like 'bar'
         if( (gdc.error_y && gdc.error_y.visible ) ){
             mergeattr('error_y.type','ye_type','percent');
@@ -754,7 +768,7 @@ plots.setStyles = function(gd, merge_dflt) {
 };
 
 function applyStyle(gd) {
-    var gp = gd.plot;
+    var gp = gd.layout._paper;
     gp.selectAll('g.trace')
         .call(Plotly.Drawing.traceStyle,gd);
     gp.selectAll('g.points')
@@ -1045,7 +1059,7 @@ Plotly.relayout = function(gd,astr,val) {
 
     // for editing annotations - is it on autoscaled axes?
     function annAutorange(anni,axletter) {
-        var axName = Plotly.Axes.id2name(anni[axletter+'axis']||axletter);
+        var axName = Plotly.Axes.id2name(anni[axletter+'ref']||axletter);
         return gl[axName] && gl[axName].autorange;
     }
 
@@ -1062,10 +1076,12 @@ Plotly.relayout = function(gd,astr,val) {
         // check autosize or autorange vs size and range
         if(hw.indexOf(ai)!=-1) { doextra('autosize', false); }
         else if(ai=='autosize') { doextra(hw, undefined); }
-        var m = ai.match(/^[xy]axis[0-9]*\.range\[[0|1]\]$/);
-        if(m && m.length==2) { doextra(p.parts[0]+'.autorange', false); }
-        m = ai.match(/^[xy]axis[0-9]*\.autorange$/);
-        if(m && m.length==2) { doextra([p.parts[0]+'.range[0]',p.parts[0]+'.range[1]'], undefined); }
+        else if(ai.match(/^[xy]axis[0-9]*\.range\[[0|1]\]$/)) {
+            doextra(p.parts[0]+'.autorange', false);
+        }
+        else if(ai.match(/^[xy]axis[0-9]*\.autorange$/)) {
+            doextra([p.parts[0]+'.range[0]',p.parts[0]+'.range[1]'], undefined);
+        }
 
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie will islog actually change)
@@ -1134,12 +1150,15 @@ Plotly.relayout = function(gd,astr,val) {
             else if(ai.indexOf('.linewidth')!=-1 && ai.indexOf('axis')!=-1) {
                 doticks = dolayoutstyle = true;
             }
-            else if(p.parts.length>1 && (
-                p.parts[1].indexOf('line')!=-1 ||
-                p.parts[1].indexOf('mirror')!=-1)) { dolayoutstyle = true; }
+            else if(p.parts.length>1 && p.parts[1].indexOf('line')!=-1) {
+                dolayoutstyle = true;
+            }
+            else if(p.parts.length>1 && p.parts[1]=='mirror') {
+                doticks = dolayoutstyle = true;
+            }
             else if(ai=='margin.pad') { doticks = dolayoutstyle = true; }
             // hovermode and dragmode don't need any redrawing, since they just
-            // affect reaction to user input
+            // affect reaction to user input. everything else, assume full replot.
             else if(['hovermode','dragmode'].indexOf(ai)==-1) { doplot = true; }
             p.set(vi);
         }
@@ -1336,51 +1355,79 @@ function makePlotFramework(divid, layout) {
     // to be transparent, the grid will be on top of the first one's data
     // One solution: make ax.overlays point to another axis if we want this behavior
     // another (less flexible): just look for subplots with identical x and y domains to coalesce
+    var overlays = [];
     gl._paper.selectAll('g.subplot').data(subplots)
       .enter().append('g')
         .classed('subplot',true)
         .each(function(subplot){
             var plotinfo = gl._plots[subplot],
                 plotgroup = d3.select(this).classed(subplot,true);
+            // references to the axis objects controlling this subplot
             plotinfo.x = Plotly.Axes.getFromId(gd,subplot,'x');
             plotinfo.y = Plotly.Axes.getFromId(gd,subplot,'y');
-            plotinfo.bg = plotgroup.append('rect')
-                .attr('stroke-width',0);
-            plotinfo.gridlayer = plotgroup.append('g');
-            plotinfo.zerolinelayer = plotgroup.append('g');
-            plotinfo.plot = plotgroup.append('svg')
-                .attr('preserveAspectRatio','none')
-                .style('fill','none');
-            plotinfo.xlines = plotgroup.append('path')
-                .style('fill','none').classed('crisp',true);
-            plotinfo.ylines = plotgroup.append('path')
-                .style('fill','none').classed('crisp',true);
-            plotinfo.axislayer = plotgroup.append('g');
 
-            // make separate drag layers for each subplot, but append them to paper rather than
-            // the plot groups, so they end up on top of the rest
+            // is this subplot overlaid on another?
+            // ax.overlaying is the id of another axis of the same dimension that this one overlays
+            // to be an overlaid subplot, the main plot must exist
+            var overlaid = false;
+            if(plotinfo.x.overlaying || plotinfo.y.overlaying) {
+                var xa2 = Plotly.Axes.getFromId(gd,plotinfo.x.overlaying) || plotinfo.x,
+                    ya2 = Plotly.Axes.getFromId(gd,plotinfo.y.overlaying) || plotinfo.y,
+                    mainplot = xa2._id+ya2._id;
+                if(subplots.indexOf(mainplot)!=-1) { overlaid = mainplot; }
+            }
+            if(overlaid) {
+                // mainplot is the subplot id of the one we're overlaying on
+                plotinfo.mainplot = overlaid;
+                overlays.push(plotinfo);
+            }
+            else {
+                // main subplot - make the components of the plot and containers for overlays
+                plotinfo.bg = plotgroup.append('rect')
+                    .attr('stroke-width',0);
+                plotinfo.gridlayer = plotgroup.append('g');
+                plotinfo.overgrid = plotgroup.append('g');
+                plotinfo.zerolinelayer = plotgroup.append('g');
+                plotinfo.overzero = plotgroup.append('g');
+                plotinfo.plot = plotgroup.append('svg')
+                    .attr('preserveAspectRatio','none')
+                    .style('fill','none');
+                plotinfo.overplot = plotgroup.append('g');
+                plotinfo.xlines = plotgroup.append('path')
+                    .style('fill','none').classed('crisp',true);
+                plotinfo.ylines = plotgroup.append('path')
+                    .style('fill','none').classed('crisp',true);
+                plotinfo.overlines = plotgroup.append('g');
+                plotinfo.axislayer = plotgroup.append('g');
+                plotinfo.overaxes = plotgroup.append('g');
+
+                // make separate drag layers for each subplot, but append them to paper rather than
+                // the plot groups, so they end up on top of the rest
+            }
             plotinfo.draglayer = gl._paper.append('g');
         });
 
+    // now make the components of overlaid subplots
+    // overlays don't have backgrounds, and append all their other components to the corresponding
+    // extra groups of their main plots. As shown here, the overlays will do just that, have
+    // each component overlaid on the corresponding component of the main plot
+    overlays.forEach(function(plotinfo) {
+        var mainplot = gl._plots[plotinfo.mainplot];
+        plotinfo.gridlayer = mainplot.overgrid.append('g');
+        plotinfo.zerolinelayer = mainplot.overzero.append('g');
+        plotinfo.plot = mainplot.overplot.append('svg')
+            .attr('preserveAspectRatio','none')
+            .style('fill','none');
+        plotinfo.xlines = mainplot.overlines.append('path')
+            .style('fill','none').classed('crisp',true);
+        plotinfo.ylines = mainplot.overlines.append('path')
+            .style('fill','none').classed('crisp',true);
+        plotinfo.axislayer = mainplot.overaxes.append('g');
+    });
+
+    // single info (legend, annotations) and hover layers for the whole plot
     gl._infolayer = gl._paper.append('g');
     gl._hoverlayer = gl._paper.append('g');
-
-    // gd.plotbg = gd.paper.append('rect')
-    //     .attr('stroke-width',0);
-    // gd.gridlayer = gd.paper.append('g').attr('class','gridlayer');
-    // gd.zerolinelayer = gd.paper.append('g').attr('class','zerolinelayer');
-    // // Second svg (plot) is for the data
-    // gd.plot = gd.paper.append('svg')
-    //     .attr('preserveAspectRatio','none')
-    //     .style('fill','none');
-    // gd.axlines = {
-    //     x:gd.paper.append('path').style('fill','none').classed('crisp',true),
-    //     y:gd.paper.append('path').style('fill','none').classed('crisp',true)
-    // };
-    // gd.axislayer = gd.paper.append('g').attr('class','axislayer');
-    // gd.draglayer = gd.paper.append('g').attr('class','draglayer');
-    // gd.infolayer = gd.paper.append('g').attr('class','infolayer');
-    // gd.hoverlayer = gd.paper.append('g').attr('class','hoverlayer');
 
     // position and style the containers, make main title
     layoutStyles(gd);
@@ -1394,7 +1441,7 @@ function makePlotFramework(divid, layout) {
 
 // layoutStyles: styling for plot layout elements
 function layoutStyles(gd) {
-    var gl = gd.layout, xa = gl.xaxis, ya = gl.yaxis;
+    var gl = gd.layout;
 
     Plotly.Heatmap.margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
 
@@ -1562,7 +1609,7 @@ plots.titles = function(gd,title) {
         lbb, tickedge;
     if(axletter=='x'){
         tickedge=0;
-        labels=gd.axislayer.selectAll('text.xtick').each(function(){
+        gl._paper.selectAll('text.xtick').each(function(){
             lbb=this.getBoundingClientRect();
             if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
                 tickedge=Plotly.Lib.constrain(tickedge,lbb.bottom,paperbb.bottom-titlebb.height);
@@ -1574,7 +1621,7 @@ plots.titles = function(gd,title) {
     }
     else if(axletter=='y'){
         tickedge=screen.width;
-        gd.axislayer.selectAll('text.ytick').each(function(){
+        gl._paper.selectAll('text.ytick').each(function(){
             lbb=this.getBoundingClientRect();
             if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
                 tickedge=Plotly.Lib.constrain(tickedge,paperbb.left+titlebb.width,lbb.left);
