@@ -1462,16 +1462,17 @@ plots.titles = function(gd,title) {
     }
 
     if(gd.mainsite){ // don't allow editing on embedded graphs
+        el.attr({'data-unformatted': txt});
         el.call(titleLayout)
             .call(d3.plugly.makeEditable)
             .on('edit', function(text){
+                this.attr({'data-unformatted': text})
                 this.call(titleLayout);
                 cont.title = txt = text;
-                plots.titles(gd, title);
             })
             .on('input', function(d, i){
                 var bg = d3.select(gd).select('svg>rect');
-                this.text(d).call(d3.plugly.alignSVGWith(bg, options));
+                this.text(d || ' ').call(d3.plugly.alignSVGWith(bg, options));
             });
         if(cont.title === ''){
             gd.infolayer.select('.'+title).style('opacity', 0)

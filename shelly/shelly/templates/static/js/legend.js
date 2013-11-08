@@ -157,10 +157,12 @@ legend.draw = function(gd) {
     if(gd.mainsite){
         tracetext.each(function(d, i){
             d3.select(this)
+                .attr({'data-unformatted': function(d, i){ return d[0].t.name;}})
                 .text(function(d, i){ return d[0].t.name; })
                 .call(d3.plugly.makeEditable)
                 .call(legendLayout)
                 .on('edit', function(text){
+                    this.attr({'data-unformatted': text})
                     this.text(text)
                         .call(legendLayout);
                     if(this.text() === ''){

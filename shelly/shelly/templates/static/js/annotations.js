@@ -148,10 +148,12 @@ annotations.draw = function(gd,index,opt,value) {
     if(gd.mainsite) {
 //        anntext.on('click',function(){ if(!gd.dragged) { Plotly.Fx.autoGrowInput(this); } });
         anntext
+            .attr({'data-unformatted': options.text})
             .call(d3.plugly.makeEditable)
             .call(titleLayout)
             .on('edit', function(_text){
                 options.text = _text;
+                this.attr({'data-unformatted': options.text})
                 this.call(titleLayout);
                 var property = Plotly.Lib.nestedProperty(gl,'annotations['+index+'].text');
                 var update = {};
