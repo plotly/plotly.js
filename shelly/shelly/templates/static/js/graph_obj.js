@@ -1218,8 +1218,6 @@ plots.resize = function(gd) {
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
 
-    console.log('makePlotFramework');
-
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
