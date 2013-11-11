@@ -1466,6 +1466,14 @@ plots.titles = function(gd,title) {
         el.call(titleLayout)
             .call(d3.plugly.makeEditable)
             .on('edit', function(text){
+                if(!text){
+                    txt = 'Click to enter '+name+' title'
+                    opacity = 0.2;
+                    gd.infolayer.select('.'+title).text(txt)
+                        .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
+                        .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
+                }
+                else opacity = 1;
                 this.attr({'data-unformatted': text})
                 this.call(titleLayout);
                 cont.title = txt = text;
@@ -1474,11 +1482,6 @@ plots.titles = function(gd,title) {
                 var bg = d3.select(gd).select('svg>rect');
                 this.text(d || ' ').call(d3.plugly.alignSVGWith(bg, options));
             });
-        if(cont.title === ''){
-            gd.infolayer.select('.'+title).style('opacity', 0)
-                .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
-                .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
-        }
     }
     else if(!txt) el.remove();
 
