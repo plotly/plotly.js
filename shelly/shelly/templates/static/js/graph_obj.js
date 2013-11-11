@@ -1234,8 +1234,8 @@ function makePlotFramework(divid, layout) {
 
     // If it's on the mainsite, append the plot-container to file-and-comments container.
     // else, to gd.
-    if (gd.mainsite) {
-        var $fileAndComments = $gd.children('.file-and-comments');
+    var $fileAndComments = $gd.children('.file-and-comments');
+    if (gd.mainsite && $fileAndComments.length) {
         if (!hasGraphContainer) {
             $fileAndComments.prepend('<div class="plot-container"></div>');
         }
