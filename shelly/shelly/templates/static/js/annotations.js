@@ -437,6 +437,23 @@ function checklog(options,ax) {
     options[typeAttr] = newtype;
 }
 
+// centerx is a center of scaling tuned for maximum scalability of the arrowhead
+// ie throughout mag=0.3..3 the head is joined smoothly to the line, but the endpoint
+// moves. TODO: step back the head and line so that the actual end of the line (except for
+// circle and square) is at exactly the point it's pointing to, for best scaling and rotating.
+// could even have the pointed-to point a little in front of the end of the line, as people
+// tend to want a bit of a gap there...
+ARROWPATHS = [
+    '', // no arrow
+    {path:'M-2,-3V3L1,0Z',centerx:0.4}, // wide with flat back
+    {path:'M-3,-2.5V2.5L2,0Z',centerx:0.7}, // narrower with flat back
+    {path:'M-4,-3L-1.2,-0.2V0.2L-4,3L2,0Z',centerx:0.45}, // barbed
+    {path:'M-2.2,-2.2L-0.2,-0.2V0.2L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',centerx:0}, // wide line-drawn
+    {path:'M-4.2,-2.1L-0.4,-0.2V0.2L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',centerx:0.2}, // narrower line-drawn
+    {path:'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',centerx:0}, // circle
+    {path:'M2,2V-2H-2V2Z',centerx:0} // square
+];
+
 // add arrowhead(s) to a path or line d3 element el3
 // style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none
 // ends is 'start', 'end' (default), 'start+end'
@@ -444,16 +461,9 @@ function checklog(options,ax) {
 function arrowhead(el3,style,ends,mag) {
     if(!$.isNumeric(mag)) { mag=1; }
     var el = el3.node();
-        s = ['M-1,-2V2L1,0Z',
-            'M-2,-2V2L2,0Z',
-            'M-2,-2L0,0L-2,2L2,0Z',
-            'M-2.2,-2.2L0,0L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',
-            'M-4.2,-2.1L0,0L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',
-            'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',
-            'M2,2V-2H-2V2Z',
-            ''][style-1];
-    if(!s) { return; }
-    if(typeof ends != 'string' || !ends) ends = 'end';
+        headStyle = ARROWPATHS[style||0];
+    if(!headStyle) { return; }
+    if(typeof ends != 'string' || !ends) { ends = 'end'; }
 
     var start,end,dstart,dend,pathlen;
     if(el.nodeName=='line') {
@@ -483,8 +493,9 @@ function arrowhead(el3,style,ends,mag) {
             .style('fill',stroke)
             .style('fill-opacity',opacity)
             .attr('stroke-width',0)
-            .attr('d',s)
-            .attr('transform','translate('+p.x+','+p.y+')rotate('+rot+')scale('+scale+')');
+            .attr('d',headStyle.path)
+            .attr('transform','translate('+p.x+','+p.y+')rotate('+rot+')'+
+                'translate('+(headStyle.centerx*scale*(1/mag-1))+',0)scale('+scale+')');
     };
 
     if(ends.indexOf('start')>=0) { drawhead(start,dstart); }
@@ -503,13 +514,16 @@ annotations.allArrowheads = function(container){
         return;
     }
     // with no args, output an array of elements for the dropdown list
-    return [1,2,3,4,5,6,7,8].map(function(i){
-        return {
+    var outArray = [];
+    for(var i=0; i<ARROWPATHS.length; i++) {
+        outArray.push({
             val:i,
             name:'<svg width="40" height="20" data-arrowhead="'+i+'" style="position: relative; top: 2px;">'+
                 '<line stroke="rgb(0,0,0)" style="fill: none;" x1="5" y1="10" x2="25" y2="10" stroke-width="2">'+
                 '</line></svg>'
-        }; });
+        });
+    }
+    return outArray;
 };
 
 annotations.calcAutorange = function(gd) {
