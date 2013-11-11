@@ -330,7 +330,7 @@ lib.identity = function(d){ return d; };
 
 
 // random string generator
-lib.randstr = function randstr(bits, base, existing) {
+lib.randstr = function randstr(existing, bits, base) {
     /*
      * Include number of bits, the base of the string you want
      * and an optional array of existing strings to avoid.
@@ -362,7 +362,7 @@ lib.randstr = function randstr(bits, base, existing) {
     var parsed = parseInt(res, base);
     if ( (existing && (existing.indexOf(res) > -1)) ||
          (parsed !== Infinity && parsed >= Math.pow(2, bits)) ) {
-        return randstr(bits, base, existing)
+        return randstr(existing, bits, base)
     }
     else return res;
 };
