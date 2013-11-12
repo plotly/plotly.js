@@ -156,16 +156,11 @@ legend.draw = function(gd) {
         this.selectAll('tspan.line').attr({x: textX});
     }
 
-    tracetext.each(function(d, i){
-        d3.select(this)
-            .attr({'data-unformatted': function(d, i){ return d[0].t.name;}})
-            .text(function(d, i){ return d[0].t.name; })
-            .call(legendLayout);
-    });
-
     if(gd.mainsite){
         tracetext.each(function(d, i){
             d3.select(this)
+                .attr({'data-unformatted': function(d, i){ return d[0].t.name; }})
+                .text(function(d, i){ return d[0].t.name; })
                 .call(d3.plugly.makeEditable)
                 .call(legendLayout)
                 .on('edit', function(text){
@@ -178,9 +173,17 @@ legend.draw = function(gd) {
                     var tn = Number(this.attr('class').split('-')[1]);
                     var property = Plotly.Lib.nestedProperty(gd.data[tn],'name');
                     property.name = text;
+                    d[0].t.name = text;
                     Plotly.restyle(gd, property.astr, text, tn);
                 });
         })
+    }
+    else{
+        tracetext.each(function(d, i){
+            d3.select(this)
+                .text(function(d, i){ return d[0].t.name; })
+                .call(legendLayout);
+        });
     }
 
     // add the legend elements, keeping track of the legend size (in px) as we go

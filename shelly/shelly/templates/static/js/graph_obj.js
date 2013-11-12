@@ -1474,18 +1474,17 @@ plots.titles = function(gd,title) {
     el.attr({'data-unformatted': txt})
         .call(titleLayout);
 
-
     if(gd.mainsite){ // don't allow editing on embedded graphs
         el.call(d3.plugly.makeEditable)
             .on('edit', function(text){
                 if(!text){
-                    txt = 'Click to enter '+name+' title'
+                    text = 'Click to enter '+name+' title'
                     opacity = 0;
-                    gd.infolayer.select('.'+title).text(txt)
+                    gd.infolayer.select('.'+title).text(text)
                         .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
                         .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
                 }
-                else opacity = 1;
+                else if(text != 'Click to enter '+name+' title') opacity = 1;
                 this.attr({'data-unformatted': text})
                 this.call(titleLayout);
                 cont.title = txt = text;
