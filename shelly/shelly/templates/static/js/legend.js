@@ -152,13 +152,20 @@ legend.draw = function(gd) {
 
     function legendLayout(){
         this.call(d3.plugly.convertToTspans);
+        var textX = this.attr('x');
+        this.selectAll('tspan.line').attr({x: textX});
     }
+
+    tracetext.each(function(d, i){
+        d3.select(this)
+            .attr({'data-unformatted': function(d, i){ return d[0].t.name;}})
+            .text(function(d, i){ return d[0].t.name; })
+            .call(legendLayout);
+    });
 
     if(gd.mainsite){
         tracetext.each(function(d, i){
             d3.select(this)
-                .attr({'data-unformatted': function(d, i){ return d[0].t.name;}})
-                .text(function(d, i){ return d[0].t.name; })
                 .call(d3.plugly.makeEditable)
                 .call(legendLayout)
                 .on('edit', function(text){

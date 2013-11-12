@@ -1394,6 +1394,9 @@ plots.titles = function(gd,title) {
         plots.titles(gd,'gtitle');
         return;
     }
+
+    function getAxisW(_axis){ return d3.max(_axis.axislayer.selectAll('text.ytick')[0].map(function(d, i){ return d.getBBox().width; })); };
+
     var gl=gd.layout,gm=gd.margin,
         x,y,w,cont,name,font,fontSize,fontColor,transform='',attr={};
     if(title=='xtitle'){
@@ -1406,7 +1409,7 @@ plots.titles = function(gd,title) {
         y = gl.height+(gd.lh<0 ? gd.lh : 0) - 14*2.25;
         w = gd.plotwidth/2;
         h = 14;
-        options = {horizontalAlign: 'center', verticalAlign: 'bottom', horizontalMargin: 0, verticalMargin: gl.margin.b / 3, orientation: 'under'};
+        options = {horizontalAlign: 'center', verticalAlign: 'bottom', horizontalMargin: -gm.r, verticalMargin: fontSize, orientation: 'under'};
     }
     else if(title=='ytitle'){
         cont = gl.yaxis;
@@ -1420,7 +1423,9 @@ plots.titles = function(gd,title) {
         h = gd.plotheight/2;
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
-        options = {horizontalAlign: 0, verticalAlign: 'center', horizontalMargin: 0, verticalMargin: 0, rotate: -90};
+
+        var axisW = getAxisW(gd);
+        options = {horizontalAlign: 0, verticalAlign: 'center', horizontalMargin: 0, verticalMargin: -getAxisW(gd) / 2, rotate: -90};
     }
     else if(title=='gtitle'){
         cont = gl;
@@ -1432,23 +1437,20 @@ plots.titles = function(gd,title) {
         y = gl.margin.t/2;
         w = gl.width/2;
         h = 16;
-        options = {horizontalAlign: 'center', verticalAlign: 'top', horizontalMargin: 0, verticalMargin: gl.margin.t / 3};
+        options = {horizontalAlign: 'center', verticalAlign: 'top', horizontalMargin: -gm.r, verticalMargin: gl.margin.t / 2};
     }
 
     var opacity = 1;
     var txt = cont.title;
     if(cont.unit) txt += ' ('+cont.unit+')';
     if(txt === 'Click to enter '+name+' title') opacity = 0.2;
-    if(!txt){
-        opacity = 0;
-        txt = 'Click to enter '+name+' title';
-    }
 
     gd.infolayer.select('.'+title).remove();
     var el = gd.infolayer.append('text').attr('class', title).text(txt);
 
     function titleLayout(){
         var bg = d3.select(gd).select('svg>g.axislayer');
+//        var bg = d3.select(gd).select('svg>g.draglayer');
         var titleEl = this
             .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
             .call(d3.plugly.convertToTspans)
@@ -1456,20 +1458,29 @@ plots.titles = function(gd,title) {
 
         if(options.rotate){
             titleEl.attr({
-                'text-anchor': 'middle', x: 0, y: 0,
+                'text-anchor': 'middle', x: 0,
                 transform: 'translate(' + [x, y] + ') rotate(' + options.rotate + ')'
             });
         }
     }
 
+    if(!txt){
+        txt = 'Click to enter '+name+' title'
+        opacity = 0;
+        el.text(txt)
+            .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
+            .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
+    }
+    el.attr({'data-unformatted': txt})
+        .call(titleLayout);
+
+
     if(gd.mainsite){ // don't allow editing on embedded graphs
-        el.attr({'data-unformatted': txt});
-        el.call(titleLayout)
-            .call(d3.plugly.makeEditable)
+        el.call(d3.plugly.makeEditable)
             .on('edit', function(text){
                 if(!text){
                     txt = 'Click to enter '+name+' title'
-                    opacity = 0.2;
+                    opacity = 0;
                     gd.infolayer.select('.'+title).text(txt)
                         .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
                         .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
@@ -1478,6 +1489,10 @@ plots.titles = function(gd,title) {
                 this.attr({'data-unformatted': text})
                 this.call(titleLayout);
                 cont.title = txt = text;
+            })
+            .on('cancel', function(text){
+                var txt = this.attr('data-unformatted');
+                this.text(txt).call(titleLayout);
             })
             .on('input', function(d, i){
                 var bg = d3.select(gd).select('svg>rect');
