@@ -1499,7 +1499,7 @@ plots.titles = function(gd,title) {
                 this.text(d || ' ').call(d3.plugly.alignSVGWith(bg, options));
             });
     }
-    else if(!txt) el.remove();
+    else if(!txt || txt === 'Click to enter '+name+' title') el.remove();
 
     // move axis labels out of the way, if possible, when tick labels interfere
 //    if(title=='gtitle') { return; }

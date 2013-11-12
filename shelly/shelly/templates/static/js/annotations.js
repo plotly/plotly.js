@@ -281,7 +281,7 @@ annotations.draw = function(gd,index,opt,value) {
         outerheight = annheight+2*borderfull;
     ann.call(Plotly.Drawing.setRect, x-outerwidth/2, y-outerheight/2, outerwidth, outerheight);
     annbg.call(Plotly.Drawing.setSize, annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
-    anntext.call(Plotly.Drawing.setPosition, paperBB.left-anntextBB.left+borderfull, paperBB.top-anntextBB.top+borderfull)
+    anntext.call(Plotly.Drawing.setPosition, paperBB.left-anntextBB.left+borderfull, paperBB.top-anntextBB.top+borderfull+anntextBB.height)
       .selectAll('tspan.nl')
         .attr('x',paperBB.left-anntextBB.left+borderfull);
 
