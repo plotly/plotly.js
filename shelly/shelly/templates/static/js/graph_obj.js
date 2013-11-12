@@ -1548,17 +1548,29 @@ plots.titles = function(gd,title) {
         fontColor = cont.titlefont.color || gl.font.color || '#000';
     if(axletter=='x'){
         xa = cont;
-        ya = xa.counter;
-        x = (gl.width*(xa.domain[0]+xa.domain[1])/100 + gm.l-gm.r)/2;
-        y = gl.height+(gd.lh<0 ? gd.lh : 0) - fontSize*2.25; // TODO based on ya.domain or xa.position, and xa.side
+        ya = (xa.anchor=='free') ?
+            {_offset:gm.l+(xa.position||0)*(gl.width-gm.l-gm.r), _length:0} :
+            Plotly.Axes.getFromId(gd, xa.anchor||'y');
+        x = xa._offset+xa._length/2;
+        y = (xa.side=='top') ?
+            ya._offset- 15-fontSize*0.5 :
+            ya._offset+ya._length + 15+fontSize;
+        // y = gl.height+(gd.lh<0 ? gd.lh : 0) - fontSize*2.25; // TODO based on ya.domain or xa.position, and xa.side
         w = xa._length/2;
         h = fontSize;
     }
     else if(axletter=='y'){
         ya = cont;
-        xa = ya.counter;
-        x = 40-(gd.lw<0 ? gd.lw : 0); // TODO
-        y = (gl.height*(ya.domain[0]+ya.domain[1])/100 + gm.t-gm.b)/2;
+        xa = (ya.anchor=='free') ?
+            {_offset:gm.t+(100-(ya.position||0))*(gl.height-gm.t-gm.b), _length:0} :
+            Plotly.Axes.getFromId(gd, ya.anchor||'x');
+        y = ya._offset+ya._length/2;
+        x = (ya.side=='right') ?
+            xa._offset+xa._length + 15+fontSize :
+            xa._offset - 15-fontSize*0.5;
+        // xa = ya.counter;
+        // x = 40-(gd.lw<0 ? gd.lw : 0); // TODO
+        // y = (gl.height*(ya.domain[0]+ya.domain[1])/100 + gm.t-gm.b)/2;
         w = fontSize;
         h = ya._length/2;
         transform = 'rotate(-90,x,y)';
@@ -1608,26 +1620,36 @@ plots.titles = function(gd,title) {
         paperbb=gl._paperdiv.node().getBoundingClientRect(),
         lbb, tickedge;
     if(axletter=='x'){
-        tickedge=0;
+        tickedge=xa.side=='top' ? paperbb.bottom : paperbb.top;
         gl._paper.selectAll('text.xtick').each(function(){
             lbb=this.getBoundingClientRect();
             if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
-                tickedge=Plotly.Lib.constrain(tickedge,lbb.bottom,paperbb.bottom-titlebb.height);
+                if(xa.side=='top') {
+                    tickedge = Plotly.Lib.constrain(tickedge,paperbb.top,lbb.top-titlebb.height);
+                }
+                else {
+                    tickedge = Plotly.Lib.constrain(tickedge,lbb.bottom,paperbb.bottom-titlebb.height);
+                }
             }
         });
-        if(tickedge>titlebb.top) {
+        if(xa.side=='top' ? tickedge<titlebb.top : tickedge>titlebb.top) {
             el.attr('transform','translate(0,'+(tickedge-titlebb.top)+') '+el.attr('transform'));
         }
     }
     else if(axletter=='y'){
-        tickedge=screen.width;
+        tickedge=ya.side=='right' ? paperbb.left : paperbb.right;
         gl._paper.selectAll('text.ytick').each(function(){
             lbb=this.getBoundingClientRect();
             if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
-                tickedge=Plotly.Lib.constrain(tickedge,paperbb.left+titlebb.width,lbb.left);
+                if(ya.side=='right') {
+                    tickedge = Plotly.Lib.constrain(tickedge,lbb.right+titlebb.width,paperbb.right);
+                }
+                else {
+                    tickedge=Plotly.Lib.constrain(tickedge,paperbb.left+titlebb.width,lbb.left);
+                }
             }
         });
-        if(tickedge<titlebb.right) {
+        if(ya.side=='right' ? tickedge>titlebb.right : tickedge<titlebb.right) {
             el.attr('transform','translate('+(tickedge-titlebb.right)+') '+el.attr('transform'));
         }
     }

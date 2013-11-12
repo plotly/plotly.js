@@ -1102,12 +1102,13 @@ axes.doTicks = function(td,axid) {
         if(ax.showticklabels && (mainSubplot || addFreeAxis)) {
             var labelx, labely, labelanchor;
             if(axletter=='x') {
-                var flipit = axside=='bottom' ? 1 : -1;
+                var flipit = axside=='bottom' ? 1 : -1,
+                    flipit2 = axside=='bottom' ? 1 : -0.5;
                 labelx = function(d){ return d.dx+ax._offset; };
                 var labely0 = addFreeAxis ? freePosition :
                     (axside=='bottom' ? counterhigh : counterlow);
                 labely0 += (labelStandoff+pad)*flipit;
-                labely = function(d){ return d.dy+labely0+d.fontSize*flipit; };
+                labely = function(d){ return d.dy+labely0+d.fontSize*flipit2; };
                 labelanchor = function(angle){
                     if(!$.isNumeric(angle) || angle===0 || angle==180) { return 'middle'; }
                     return angle*flipit<0 ? 'end' : 'start';
