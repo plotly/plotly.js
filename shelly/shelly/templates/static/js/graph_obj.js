@@ -1398,7 +1398,7 @@ plots.titles = function(gd,title) {
     function getAxisW(_axis){ return d3.max(_axis.axislayer.selectAll('text.ytick')[0].map(function(d, i){ return d.getBBox().width; })); };
 
     var gl=gd.layout,gm=gd.margin,
-        x,y,w,cont,name,font,fontSize,fontColor,transform='',attr={};
+        h,x,y,w,cont,name,font,fontSize,fontColor,transform='',attr={};
     if(title=='xtitle'){
         cont = gl.xaxis;
         name = 'X axis';
