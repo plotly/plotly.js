@@ -1395,7 +1395,11 @@ plots.titles = function(gd,title) {
         return;
     }
 
-    function getAxisW(_axis){ return d3.max(_axis.axislayer.selectAll('text.ytick')[0].map(function(d, i){ return d.getBBox().width; })); };
+    function getAxisSize(_axis, _which){
+        var textSizes = _axis.axislayer.selectAll('text.'+_which+'tick')[0]
+            .map(function(d, i){ return d.getBBox()[(_which === 'x')? 'height' : 'width']; });
+        return d3.max(textSizes) || 0;
+    };
 
     var gl=gd.layout,gm=gd.margin,
         h,x,y,w,cont,name,font,fontSize,fontColor,transform='',attr={};
@@ -1409,7 +1413,8 @@ plots.titles = function(gd,title) {
         y = gl.height+(gd.lh<0 ? gd.lh : 0) - 14*2.25;
         w = gd.plotwidth/2;
         h = 14;
-        options = {horizontalAlign: 'center', verticalAlign: 'bottom', horizontalMargin: -gm.r, verticalMargin: fontSize, orientation: 'under'};
+        var axisH = getAxisSize(gd, 'x') + cont.ticklen;
+        options = {horizontalAlign: 'center', verticalAlign: 'bottom', horizontalMargin: -gm.r, verticalMargin: fontSize + 4 + axisH, orientation: 'under'};
     }
     else if(title=='ytitle'){
         cont = gl.yaxis;
@@ -1424,8 +1429,8 @@ plots.titles = function(gd,title) {
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
 
-        var axisW = getAxisW(gd);
-        options = {horizontalAlign: 0, verticalAlign: 'center', horizontalMargin: 0, verticalMargin: -getAxisW(gd) / 2, rotate: -90};
+        var axisW = getAxisSize(gd, 'y');
+        options = {horizontalAlign: 0, verticalAlign: 'center', horizontalMargin: 0, verticalMargin: -axisW / 2, rotate: -90};
     }
     else if(title=='gtitle'){
         cont = gl;
@@ -1449,8 +1454,7 @@ plots.titles = function(gd,title) {
     var el = gd.infolayer.append('text').attr('class', title).text(txt);
 
     function titleLayout(){
-        var bg = d3.select(gd).select('svg>g.axislayer');
-//        var bg = d3.select(gd).select('svg>g.draglayer');
+        var bg = d3.select(gd).select('svg>rect');
         var titleEl = this
             .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
             .call(d3.plugly.convertToTspans)
