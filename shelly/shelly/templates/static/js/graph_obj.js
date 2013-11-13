@@ -556,7 +556,6 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Annotations.drawAll(gd);
 
     // final cleanup
-    console.log(gd.mainsite, gd.standalone);
     if(!gd.mainsite && !gd.standalone) { plots.positionBrand(gd); } // 'view in plotly' link for embedded plots
 
     setTimeout(function(){
