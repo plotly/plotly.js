@@ -27,7 +27,7 @@ annotations.add = function(gd) {
 annotations.draw = function(gd,index,opt,value) {
     // console.log(index,opt,value,gd.layout.annotations);
     var gl = gd.layout,
-        gm = gd.margin,
+        gs = gl._size,
         MINDRAG = Plotly.Fx.MINDRAG,
         i;
     if(!gl.annotations) { gl.annotations = []; }
@@ -109,11 +109,7 @@ annotations.draw = function(gd,index,opt,value) {
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
     var paperBB = gl._paperdiv.node().getBoundingClientRect(),
-        //plotBB = d3.select(gd).select('.nsewdrag').node().getBoundingClientRect(),
-        annPosPx = {
-            x: 0,//gd.margin.l,//plotBB.left-paperBB.left,
-            y: 0//gd.margin.t//plotBB.top-paperBB.top
-        };
+        annPosPx = {x:0, y:0};
 
     // create the components
     // TODO: make a single group to contain all, so opacity can work right with border/arrow together
@@ -180,16 +176,16 @@ annotations.draw = function(gd,index,opt,value) {
             }
             // moving from paper to plot reference
             else if(ax) {
-                if(!ax.domain) { ax.domain = [0,100]; }
-                var axFraction = (options[axletter]*100-ax.domain[0])/(ax.domain[1]-ax.domain[0]);
+                if(!ax.domain) { ax.domain = [0,1]; }
+                var axFraction = (options[axletter]-ax.domain[0])/(ax.domain[1]-ax.domain[0]);
                 options[axletter] = ax.range[0] + axRange*axFraction -
                     (options.showarrow ? 0 : fshift(axFraction)*annSize/ax._m);
             }
             // moving from plot to paper reference
             else if(axOld) {
-                if(!axOld.domain) { axOld.domain = [0,100]; }
+                if(!axOld.domain) { axOld.domain = [0,1]; }
                 options[axletter] = ( axOld.domain[0] + (axOld.domain[1]-axOld.domain[0])*
-                    (options[axletter]-axOld.range[0])/axRange )/100;
+                    (options[axletter]-axOld.range[0])/axRange );
                 if(!options.showarrow) {
                     options[axletter] += fshift(options[axletter])*annSize/(axRange*ax._m);
                 }
@@ -200,8 +196,8 @@ annotations.draw = function(gd,index,opt,value) {
         if(!$.isNumeric(options[axletter])) { options[axletter] = defaultVal; }
         if(!ax) {
             annPosPx[axletter] = (axletter=='x') ?
-                (gd.margin.l + gd.plotwidth*options[axletter]) :
-                (gd.margin.t + gd.plotheight*(1-options[axletter]));
+                (gs.l + (gs.w)*options[axletter]) :
+                (gs.t + (gs.h)*(1-options[axletter]));
             if(!options.showarrow){
                 annPosPx[axletter] -= annSize*fshift(options[axletter]);
             }
@@ -347,8 +343,8 @@ annotations.draw = function(gd,index,opt,value) {
                     arrowgroup.attr('transform','translate('+dx+','+dy+')');
                     ann.call(Plotly.Drawing.setPosition, annx0+dx, anny0+dy);
                     if(options.ref=='paper') {
-                        update[annbase+'.x'] = (ax+dx-gm.l)/(gl.width-gm.l-gm.r);
-                        update[annbase+'.y'] = 1-((ay+dy-gm.t)/(gl.height-gm.t-gm.b));
+                        update[annbase+'.x'] = (ax+dx-gs.l)/gs.w;
+                        update[annbase+'.y'] = 1-((ay+dy-gs.t)/gs.h);
                     }
                     else {
                         update[annbase+'.x'] = options.x+dx/gl.xaxis._m;
@@ -395,8 +391,8 @@ annotations.draw = function(gd,index,opt,value) {
                 drawArrow(dx,dy);
             }
             else if(options.ref=='paper') {
-                update[annbase+'.x'] = Plotly.Fx.dragAlign(x0+dx+borderfull,annwidth,gm.l,gl.width-gm.r);
-                update[annbase+'.y'] = 1-Plotly.Fx.dragAlign(y0+dy+borderfull,annheight,gm.t,gl.height-gm.b);
+                update[annbase+'.x'] = Plotly.Fx.dragAlign(x0+dx+borderfull,annwidth,gs.l,gs.l+gs.w);
+                update[annbase+'.y'] = 1-Plotly.Fx.dragAlign(y0+dy+borderfull,annheight,gs.t,gs.t+gs.h);
                 csr = Plotly.Fx.dragCursors(update[annbase+'.x'],update[annbase+'.y']);
             }
             else {
@@ -527,15 +523,15 @@ annotations.allArrowheads = function(container){
 };
 
 annotations.calcAutorange = function(gd) {
-    var gl = gd.layout, gm = gd.margin;
+    var gl = gd.layout, gs = gl._size;
 
     if(!gl.annotations || !gd.data || !gd.data.length) { return; }
     if(!Plotly.Axes.list(gd).filter(function(ax) { return ax.autorange; }).length) { return; }
 
     var saveAnnotations = gl.annotations, // store the real annotations
         paperBB = gl._paperdiv.node().getBoundingClientRect(),
-        plotcenterx = (paperBB.left+paperBB.right+gm.l-gm.r)/2,
-        plotcentery = (paperBB.top+paperBB.bottom+gm.t-gm.b)/2,
+        plotcenterx = (paperBB.left+paperBB.right+gs.l-gs.r)/2,
+        plotcentery = (paperBB.top+paperBB.bottom+gs.t-gs.b)/2,
         blank = {left:plotcenterx, right:plotcenterx, top:plotcentery, bottom:plotcentery};
 
     // temporarily replace plot-referenced annotations with transparent, centered ones

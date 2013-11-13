@@ -290,7 +290,7 @@ legend.draw = function(gd) {
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
                 dy = e2.clientY-e.clientY,
-                gdm = gd.margin,
+                gs = gl._size,
                 MINDRAG = Plotly.Fx.MINDRAG;
             if(Math.abs(dx)<MINDRAG) { dx=0; }
             if(Math.abs(dy)<MINDRAG) { dy=0; }
@@ -301,11 +301,11 @@ legend.draw = function(gd) {
             // drag to within a couple px of edge to take the legend outside the plot
             if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100; }
             else if(e2.clientX<pbb.left+3*MINDRAG || (gd.lw<0 && dx<MINDRAG)) { xf=-100; }
-            else { xf = Plotly.Fx.dragAlign(x0+dx,legendwidth,gdm.l,gl.width-gdm.r); }
+            else { xf = Plotly.Fx.dragAlign(x0+dx,legendwidth,gs.l,gs.l+gs.w); }
 
             if(e2.clientY>pbb.bottom-3*MINDRAG || (gd.lh<0 && dy>-MINDRAG)) { yf=-100; }
             else if(e2.clientY<pbb.top+3*MINDRAG || (gd.lh>0 && dy<MINDRAG)) { yf=100; }
-            else { yf = 1-Plotly.Fx.dragAlign(y0+dy,legendheight,gdm.t,gl.height-gdm.b); }
+            else { yf = 1-Plotly.Fx.dragAlign(y0+dy,legendheight,gs.t,gs.t+gs.h); }
 
             var csr = Plotly.Fx.dragCursors(xf,yf);
             Plotly.Fx.setCursor(el3,csr);

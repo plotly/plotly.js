@@ -67,29 +67,30 @@ function initAxis(td,ax) {
 
     // set scaling to pixels
     ax.setScale = function(){
+        var gs = ax._td.layout._size;
         // make sure we have a range (linearized data values)
         if(!ax.range || ax.range.length!=2 || ax.range[0]==ax.range[1]) {
             ax.range = [-1,1];
         }
 
         if(ax._id.charAt(0)=='y') {
-            ax._offset = ax._td.margin.t+ax.domain[0]*ax._td.plotheight/100;
-            ax._length = ax._td.plotheight*(ax.domain[1]-ax.domain[0])/100;
+            ax._offset = gs.t+ax.domain[0]*gs.h;
+            ax._length = gs.h*(ax.domain[1]-ax.domain[0]);
             ax._m = ax._length/(ax.range[0]-ax.range[1]);
             ax._b = -ax._m*ax.range[1];
         }
         else {
-            ax._offset = ax._td.margin.l+ax.domain[0]*ax._td.plotwidth/100;
-            ax._length = ax._td.plotwidth*(ax.domain[1]-ax.domain[0])/100;
+            ax._offset = gs.l+ax.domain[0]*gs.w;
+            ax._length = gs.w*(ax.domain[1]-ax.domain[0]);
             ax._m = ax._length/(ax.range[1]-ax.range[0]);
             ax._b = -ax._m*ax.range[0];
         }
     };
 
-    if(!ax.counter) { ax.counter = axes.counterLetter(ax._id); }
+    if(!ax.anchor) { ax.anchor = axes.counterLetter(ax._id); }
 
-    if(!ax.domain || ax.domain.length!=2 || ax.domain[0]<=ax.domain[1]) {
-        ax.domain = [0,100];
+    if(!ax.domain || ax.domain.length!=2 || ax.domain[0]>=ax.domain[1] || ax.domain[0]<0 || ax.domain[1]>1) {
+        ax.domain = [0,1];
     }
 
     return ax;
@@ -547,8 +548,9 @@ axes.autoBin = function(data,ax,nbins,is2d) {
 function calcTicks(ax) {
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.autotick || !ax.dtick){
-        var nt = ax.nticks ||
-                Math.max(5,Math.min(10,(ax._id.charAt(0)=='y') ? ax._td.plotheight/40 : ax._td.plotwidth/80));
+        var gs = ax._td.layout._size,
+            nt = ax.nticks ||
+                Math.max(5,Math.min(10,(ax._id.charAt(0)=='y') ? gs.h/40 : gs.w/80));
         axes.autoTicks(ax,Math.abs(ax.range[1]-ax.range[0])/nt);
         // check for a forced minimum dtick
         if(ax._minDtick>0 && ax.dtick<ax._minDtick*2) {
@@ -974,7 +976,7 @@ axes.getFromId = function(td,id,type) {
 //          'redraw' to force full redraw, and reset ax._r (stored range for use by zoom/pan)
 axes.doTicks = function(td,axid) {
     var gl = td.layout,
-        gm = td.margin,
+        gs = gl._size,
         ax = axes.getFromId(td,axid);
 
     if(axid=='redraw') {
@@ -1007,21 +1009,20 @@ axes.doTicks = function(td,axid) {
         tcls = axid+'tick',
         gcls = axid+'grid',
         zcls = axid+'zl',
-        pad = gm.p+(ax.ticks=='outside' ? ($.isNumeric(ax.linewidth) ? ax.linewidth : 1) : 0),
-        labelStandoff = ax.ticks=='outside' ? ax.ticklen : ax.linewidth+1,
+        pad = ($.isNumeric(ax.linewidth) ? ax.linewidth : 1)/2,
+        // pad = gs.p+(ax.ticks=='outside' ? ($.isNumeric(ax.linewidth) ? ax.linewidth : 1) : 0),
+        labelStandoff = (ax.ticks=='outside' ? ax.ticklen : 1) + ax.linewidth,
         gridwidth = ax.gridwidth || 1,
-        signedTickLen = (ax.ticks=='inside' ? 1 : -1)*ax.ticklen,
-        axanchor, sides, transfn,
+        ticksign = (ax.ticks=='inside' ? 1 : -1),
+        sides, transfn,
         x1,y1,tx,ty,tickpath,g,tl,i, gridpath;
 
     // positioning arguments for x vs y axes
     if(axletter=='x') {
-        axanchor = ax.anchor||'y';
         sides = ['bottom','top'];
         transfn = function(d){ return 'translate('+ax.l2p(d.x)+',0)'; };
     }
     else if(axletter=='y') {
-        axanchor = ax.anchor||'x';
         sides = ['left','right'];
         transfn = function(d){ return 'translate(0,'+ax.l2p(d.x)+')'; };
     }
@@ -1041,46 +1042,43 @@ axes.doTicks = function(td,axid) {
 
     Plotly.Plots.getSubplots(td.data,ax).forEach(function(subplot,subplotIndex){
         var plotinfo = gl._plots[subplot],
+            linepositions = ax._linepositions[subplot]||[], // [bottom or left, top or right, free, main]
             counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
-            mainSubplot = counteraxis._id==axanchor,
-            addFreeAxis = subplotIndex===0 && axanchor=='free',
-            freePosition;
+            mainSubplot = counteraxis._id==ax.anchor,
+            ticksides = [false,false,false],
+            tickflip, tickprefix, tickmid, tickpath='';
 
         // ticks
-        var ticksides = [false,false];
-        if(ax.mirror=='allticks') { ticksides = [true,true]; }
+        if(ax.mirror=='allticks') { ticksides = [true,true,false]; }
         else if(mainSubplot) {
-             if(ax.mirror=='ticks') { ticksides = [true,true]; }
+             if(ax.mirror=='ticks') { ticksides = [true,true,false]; }
              else { ticksides[sides.indexOf(axside)] = true; }
         }
         if(ax.mirrors) {
             for(i=0; i<2; i++) {
-                if(['ticks','labels'].indexOf(ax.mirrors[counteraxis._id+sides[i]])!=-1) { ticksides[i] = true; }
+                if(['ticks','labels'].indexOf(ax.mirrors[counteraxis._id+sides[i]])!=-1) {
+                    ticksides[i] = true;
+                }
             }
         }
-        var tickpath = '',
-            counterlow = counteraxis._offset-pad,
-            counterhigh = counteraxis._offset+counteraxis._length+pad;
-        if(addFreeAxis) {
-            if(axletter=='x') {
-                freePosition = gm.t+(1-ax.position/100)*gd.plotheight;
-                tickpath +='M'+ax._offset+','+freePosition+
-                    'v'+(signedTickLen*(axside==sides[0] ? 1 : -1));
-            }
-            else {
-                freePosition = gm.t+ax.position/100*gd.plotheight;
-                tickpath +='M'+freePosition+','+ax._offset+
-                    'h'+(signedTickLen*(axside==sides[0] ? -1 : 1));
-            }
-        }
+        // free axis ticks
+        if(linepositions[2]!==undefined) { ticksides[2] = true; }
         if(axletter=='x') {
-            if(ticksides[0]) { tickpath += 'M'+ax._offset+','+counterhigh+'v'+(-signedTickLen); }
-            if(ticksides[1]) { tickpath += 'M'+ax._offset+','+counterlow+'v'+signedTickLen; }
+            tickflip = [-1,1,axside==sides[1] ? 1 : -1]; // we already set a sign based on inside/outside, then we flip it based on l/r/t/b
+            tickprefix = 'M'+ax._offset+','; // dumb templating with string concat - would be better to use an actual template
+            tickmid = 'v';
         }
         else {
-            if(ticksides[0]) { tickpath += 'M'+counterlow+','+ax._offset+'h'+signedTickLen; }
-            if(ticksides[1]) { tickpath += 'M'+counterhigh+','+ax._offset+'h'+(-signedTickLen); }
+            tickflip = [1,-1,axside==sides[1] ? -1 : 1];
+            tickprefix = 'M';
+            tickmid = ','+ax._offset+'h';
         }
+        ticksides.forEach(function(showside,sidei) {
+            var pos = linepositions[sidei], flip = tickflip[sidei]*ticksign;
+            if(showside && $.isNumeric(pos)) {
+                tickpath += tickprefix + (pos+pad*flip) + tickmid + (flip*ax.ticklen);
+            }
+        });
 
         var ticks=plotinfo.axislayer.selectAll('path.'+tcls)
             .data(ax.ticks=='inside' ? valsClipped : vals, datafn);
@@ -1097,18 +1095,17 @@ axes.doTicks = function(td,axid) {
             ticks.remove();
         }
 
-        // tick labels - for now just the main labels. TODO: mirror labels
+        // tick labels - for now just the main labels. TODO: mirror labels, esp for subplots
         var tickLabels=plotinfo.axislayer.selectAll('text.'+tcls).data(vals, datafn);
-        if(ax.showticklabels && (mainSubplot || addFreeAxis)) {
-            var labelx, labely, labelanchor;
+        if(ax.showticklabels && $.isNumeric(linepositions[3])) {
+            var labelx, labely, labelanchor, labelpos0;
+                // labelpos0 = linepositions[ticksides[2] ? 2 : (axside==sides[0] ? 1 : 0)];
             if(axletter=='x') {
                 var flipit = axside=='bottom' ? 1 : -1,
                     flipit2 = axside=='bottom' ? 1 : -0.5;
                 labelx = function(d){ return d.dx+ax._offset; };
-                var labely0 = addFreeAxis ? freePosition :
-                    (axside=='bottom' ? counterhigh : counterlow);
-                labely0 += (labelStandoff+pad)*flipit;
-                labely = function(d){ return d.dy+labely0+d.fontSize*flipit2; };
+                labelpos0 = linepositions[3] + (labelStandoff+pad)*flipit;
+                labely = function(d){ return d.dy+labelpos0+d.fontSize*flipit2; };
                 labelanchor = function(angle){
                     if(!$.isNumeric(angle) || angle===0 || angle==180) { return 'middle'; }
                     return angle*flipit<0 ? 'end' : 'start';
@@ -1116,11 +1113,10 @@ axes.doTicks = function(td,axid) {
             }
             else {
                 labely = function(d){ return d.dy+ax._offset+d.fontSize/2; };
-                var labelx0 = addFreeAxis ? freePosition :
-                    (axside=='right' ? counterhigh : counterlow);
-                labelx0 += (labelStandoff+pad + (Math.abs(ax.tickangle)==90 ? d.fontSize/2 : 0))*
+                labelpos0 = linepositions[3] +
+                    (labelStandoff+pad + (Math.abs(ax.tickangle)==90 ? d.fontSize/2 : 0))*
                     (axside=='right' ? 1 : -1);
-                labelx = function(d){ return d.dx+labelx0; };
+                labelx = function(d){ return d.dx+labelpos0; };
                 labelanchor = function(angle){
                     if($.isNumeric(angle) && Math.abs(angle)==90) { return 'middle'; }
                     return axside=='right' ? 'start' : 'end';

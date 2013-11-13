@@ -47,15 +47,15 @@ Data coordinates: xd,yd
     visible range: xd0-xd1, yd0-yd1 (gl.xaxis.range[0-1], gl.yaxis.range[0-1]
 
 Paper coordinates: xp,yp (where axes are drawn, minus gl.margin:.l,.t)
-    plot box: xp0-xp1, yp0-yp1 (0 - gd.plotwidth, gd.plotheight - 0)
+    plot box: xp0-xp1, yp0-yp1 (0 - gl.xaxis._length, gl.yaxis._length - 0)
     transform: xp = mx*xd+bx, yp = my*yd+by
-        mx = gl.xaxis._m = gd.plotwidth/(gl.xaxis.range:[1]-[0])
+        mx = gl.xaxis._m = gl.xaxis._length/(gl.xaxis.range:[1]-[0])
         bx = gl.xaxis._b = -mx*gl.xaxis.range[0]
-        my = gl.yaxis._m = gd.plotheight/(gl.yaxis.range:[0]-[1])
+        my = gl.yaxis._m = gl.yaxis._length/(gl.yaxis.range:[0]-[1])
         by = gl.yaxis._b = -my*gl.yaxis.range[1]
 Viewbox coordinates: xv,yv (where data are drawn)
     plot box: xv0-xv1, yv0-yv1
-        initial viewbox: 0 - gd.plotwidth, gd.plotheight - 0
+        initial viewbox: 0 - gl.xaxis._length, gl.yaxis._length - 0
     transform: xv = xp+b2x, yv = yp+b2y
         panning: subtract dx,dy from viewbox:.x,.y
         zooming: viewbox will not scale x and y differently, at least in Chrome, so for
@@ -1446,17 +1446,20 @@ function layoutStyles(gd) {
     Plotly.Heatmap.margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
 
     // adjust margins for outside legends
-    // gl.margin is the requested margin, gd.margin is after adjustment
-    gd.margin = {
+    // gl.margin is the requested margin, gl._size has margins and plotsize after adjustment
+    gl._size = {
         l: gl.margin.l-(gd.lw<0 ? gd.lw : 0),
         r: gl.margin.r+(gd.lw>0 ? gd.lw : 0),
         t: gl.margin.t+(gd.lh>0 ? gd.lh : 0),
         b: gl.margin.b-(gd.lh<0 ? gd.lh : 0),
         p: gl.margin.pad };
 
-    var gm = gd.margin;
-    gd.plotwidth = gl.width-gm.l-gm.r;
-    gd.plotheight = gl.height-gm.t-gm.b;
+    var gs = gl._size;
+    gs.w = gl.width-gs.l-gs.r;
+    gs.h = gl.height-gs.t-gs.b;
+
+    // clear axis line positions, to be set in the subplot loop below
+    Plotly.Axes.list(gd).forEach(function(ax){ ax._linepositions = {}; });
 
     gl._paperdiv.style({
         width: gl.width+'px',
@@ -1465,6 +1468,7 @@ function layoutStyles(gd) {
     });
     gl._paper.call(Plotly.Drawing.setSize, gl.width, gl.height);
 
+    var freefinished = [];
     gl._paper.selectAll('g.subplot').each(function(subplot) {
         var plotinfo = gl._plots[subplot],
             xa = plotinfo.x,
@@ -1473,8 +1477,8 @@ function layoutStyles(gd) {
         ya.setScale();
 
         plotinfo.bg
-            .call(Plotly.Drawing.setRect, xa._offset-gm.p, ya._offset-gm.p,
-                xa._length+2*gm.p, ya._length+2*gm.p)
+            .call(Plotly.Drawing.setRect, xa._offset-gs.p, ya._offset-gs.p,
+                xa._length+2*gs.p, ya._length+2*gs.p)
             .call(Plotly.Drawing.fillColor, gl.plot_bgcolor);
         plotinfo.plot
             .call(Plotly.Drawing.setRect, xa._offset, ya._offset, xa._length, ya._length);
@@ -1482,40 +1486,86 @@ function layoutStyles(gd) {
         var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
             ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
 
-            xp = gm.p+ylw,
+            xp = gs.p+ylw,
             xpathPrefix = 'M'+(xa._offset-xp)+',',
             xpathSuffix = 'h'+(xa._length+2*xp),
-            showbottom = ((xa.anchor||'y')==ya._id) ?
-                (xa.mirror||xa.side!='top') :
-                (xa.mirror=='all'||xa.mirror=='allticks'||(xa.mirrors && xa.mirrors[ya._id+'bottom'])),
-            showtop = ((xa.anchor||'y')==ya._id) ?
-                (xa.mirror||xa.side=='top') :
-                (xa.mirror=='all'||xa.mirror=='allticks'||(xa.mirrors && xa.mirrors[ya._id+'top'])),
+            showfreex = xa.anchor=='free' && freefinished.indexOf(xa._id)==-1,
+            freeposx = gs.t+gs.h*(1-(xa.position||0))+((xlw/2)%1),
+            showbottom = (xa.anchor==ya._id && (xa.mirror||xa.side!='top')) ||
+                xa.mirror=='all' || xa.mirror=='allticks' ||
+                (xa.mirrors && xa.mirrors[ya._id+'bottom']),
+            bottompos = ya._offset+ya._length+gs.p+xlw/2,
+            showtop = (xa.anchor==ya._id && (xa.mirror||xa.side=='top')) ||
+                xa.mirror=='all' || xa.mirror=='allticks' ||
+                (xa.mirrors && xa.mirrors[ya._id+'top']),
+            toppos = ya._offset-gs.p-xlw/2,
 
-            yp = gm.p, // shorten y axis lines so they don't overlap x axis lines
-            ypbottom = showbottom ? 0 : xlw, // except where there's no x line
+            yp = gs.p, // shorten y axis lines so they don't overlap x axis lines
+            ypbottom = showbottom ? 0 : xlw, // except where there's no x line TODO: this gets more complicated with multiple x and y axes...
             yptop = showtop ? 0 : xlw,
             ypathSuffix = ','+(ya._offset-yp-yptop)+'v'+(ya._length+2*yp+yptop+ypbottom),
-            showleft = ((ya.anchor||'x')==xa._id) ?
-                (ya.mirror||ya.side!='right') :
-                (ya.mirror=='all'||ya.mirror=='allticks'||(ya.mirrors && ya.mirrors[xa._id+'left'])),
-            showright = ((ya.anchor||'x')==xa._id) ?
-                (ya.mirror||ya.side=='right') :
-                (ya.mirror=='all'||ya.mirror=='allticks'||(ya.mirrors && ya.mirrors[xa._id+'right']));
+            showfreey = ya.anchor=='free' && freefinished.indexOf(ya._id)==-1,
+            freeposy = gs.l+gs.w*(ya.position||0)+((ylw/2)%1),
+            showleft = (ya.anchor==xa._id && (ya.mirror||ya.side!='right')) ||
+                ya.mirror=='all' || ya.mirror=='allticks' ||
+                (ya.mirrors && ya.mirrors[xa._id+'left']),
+            leftpos = xa._offset-gs.p-ylw/2,
+            showright = (ya.anchor==xa._id && (ya.mirror||ya.side=='right')) ||
+                ya.mirror=='all' || ya.mirror=='allticks' ||
+                (ya.mirrors && ya.mirrors[xa._id+'right']),
+            rightpos = xa._offset+xa._length+gs.p+ylw/2;
 
-        plotinfo.xlines
-            .attr('d',
-                (showbottom ? (xpathPrefix+(ya._offset+ya._length+gm.p+xlw/2)+xpathSuffix) : '') +
-                (showtop ? (xpathPrefix+(ya._offset-gm.p-xlw/2)+xpathSuffix) : ''))
-            .attr('stroke-width',xlw)
-            .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
-        plotinfo.ylines
-            .attr('d',
-                (showleft ? ('M'+(xa._offset-gm.p-ylw/2)+ypathSuffix) : '') +
-                (showright ? ('M'+(xa._offset+xa._length+gm.p+ylw/2)+ypathSuffix) : ''))
-            .attr('stroke-width',ylw)
-            .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
+            // save axis line positions for ticks, draggers, etc to reference
+            // each subplot gets an entry [left or bottom, right or top, free, main]
+            // main is the position at which to draw labels and draggers, if any
+            xa._linepositions[subplot] = [
+                showbottom ? bottompos : undefined,
+                showtop ? toppos : undefined,
+                showfreex ? freeposx : undefined
+            ];
+            if(xa.anchor==ya._id) {
+                xa._linepositions[subplot][3] = xa.side=='top' ? toppos : bottompos;
+            }
+            else if(showfreex) {
+                xa._linepositions[subplot][3] = freeposx;
+            }
 
+            ya._linepositions[subplot] = [
+                showleft ? leftpos : undefined,
+                showright ? rightpos : undefined,
+                showfreey ? freeposy : undefined
+            ];
+            if(ya.anchor==xa._id) {
+                ya._linepositions[subplot][3] = ya.side=='right' ? rightpos : leftpos;
+            }
+            else if(showfreey) {
+                ya._linepositions[subplot][3] = freeposy;
+            }
+
+        if(showbottom || showtop || showfreex) {
+            plotinfo.xlines
+                .attr('d',
+                    (showbottom ? (xpathPrefix+bottompos+xpathSuffix) : '') +
+                    (showtop ? (xpathPrefix+toppos+xpathSuffix) : '') +
+                    (showfreex ? (xpathPrefix+freeposx+xpathSuffix) : ''))
+                .attr('stroke-width',xlw)
+                .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
+        }
+        else { plotinfo.xlines.remove(); }
+        if(showleft || showright || showfreey) {
+            plotinfo.ylines
+                .attr('d',
+                    (showleft ? ('M'+leftpos+ypathSuffix) : '') +
+                    (showright ? ('M'+rightpos+ypathSuffix) : '') +
+                    (showfreey ? ('M'+freeposy+ypathSuffix) : ''))
+                .attr('stroke-width',ylw)
+                .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
+        }
+        else { plotinfo.ylines.remove(); }
+
+        // mark free axes as displayed, so we don't draw them again
+        if(showfreex) { freefinished.push(xa._id); }
+        if(showfreey) { freefinished.push(ya._id); }
     });
     plots.titles(gd,'gtitle');
 
@@ -1538,7 +1588,7 @@ plots.titles = function(gd,title) {
         plots.titles(gd,'gtitle');
         return;
     }
-    var gl=gd.layout,gm=gd.margin,
+    var gl=gd.layout,gs=gl._size,
         axletter = title.charAt(0),
         cont = gl[Plotly.Axes.id2name(title.replace('title',''))] || gl,
         x,y,w,h,transform='',attr={},xa,ya,
@@ -1549,28 +1599,24 @@ plots.titles = function(gd,title) {
     if(axletter=='x'){
         xa = cont;
         ya = (xa.anchor=='free') ?
-            {_offset:gm.l+(xa.position||0)*(gl.width-gm.l-gm.r), _length:0} :
-            Plotly.Axes.getFromId(gd, xa.anchor||'y');
+            {_offset:gs.l+(1-(xa.position||0))*gs.h, _length:0} :
+            Plotly.Axes.getFromId(gd, xa.anchor);
         x = xa._offset+xa._length/2;
         y = (xa.side=='top') ?
             ya._offset- 15-fontSize*0.5 :
             ya._offset+ya._length + 15+fontSize;
-        // y = gl.height+(gd.lh<0 ? gd.lh : 0) - fontSize*2.25; // TODO based on ya.domain or xa.position, and xa.side
         w = xa._length/2;
         h = fontSize;
     }
     else if(axletter=='y'){
         ya = cont;
         xa = (ya.anchor=='free') ?
-            {_offset:gm.t+(100-(ya.position||0))*(gl.height-gm.t-gm.b), _length:0} :
-            Plotly.Axes.getFromId(gd, ya.anchor||'x');
+            {_offset:gs.t+(ya.position||0)*gs.w, _length:0} :
+            Plotly.Axes.getFromId(gd, ya.anchor);
         y = ya._offset+ya._length/2;
         x = (ya.side=='right') ?
             xa._offset+xa._length + 15+fontSize :
             xa._offset - 15-fontSize*0.5;
-        // xa = ya.counter;
-        // x = 40-(gd.lw<0 ? gd.lw : 0); // TODO
-        // y = (gl.height*(ya.domain[0]+ya.domain[1])/100 + gm.t-gm.b)/2;
         w = fontSize;
         h = ya._length/2;
         transform = 'rotate(-90,x,y)';
