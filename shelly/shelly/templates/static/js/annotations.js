@@ -103,6 +103,7 @@ annotations.draw = function(gd,index,opt,value) {
     if(!options.text) { options.text=((options.showarrow && (options.text==='')) ? '' : 'new text'); }
     if(!options.font) { options.font={family:'',size:0,color:''}; }
     if(!options.opacity) { options.opacity=1; }
+    if(!options.align) options.align='center';
 
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
@@ -127,21 +128,50 @@ annotations.draw = function(gd,index,opt,value) {
         .call(Plotly.Drawing.fillColor,options.bgcolor)
         .call(Plotly.Drawing.setPosition, borderwidth/2+1, borderwidth/2+1);
 
-    if(!options.align) options.align='center';
+    var font = options.font.family||gl.font.family||'Arial';
+    var fontSize = options.font.size||gl.font.size||12;
+    var fontColor = options.font.color||gl.font.color||'#000';
+    var opacity = 1;
+    var alignTo = {left:'right', center:'center', right:'left'}[options.align];
+
+    function titleLayout(){
+        var bg = d3.select(gd).select('svg>rect.bg');
+        var padding = options.borderpad + options.borderwidth;
+        var alignOptions = {
+            horizontalAlign: alignTo,
+            verticalAlign: 'top',
+            horizontalMargin: padding,
+            verticalMargin: padding,
+            orientation: 'inside'
+        };
+        this.style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
+            .call(d3.plugly.convertToTspans)
+            .call(d3.plugly.alignSVGWith(bg, alignOptions));
+    }
+
     var anntext = ann.append('text')
         .attr('class','annotation')
         .attr('data-cmmt',options.tag)
-        .call(Plotly.Drawing.setPosition,0,0)
-        .attr('text-anchor',{left:'start', center:'middle', right:'end'}[options.align])
-        .call(Plotly.Drawing.font,
-            options.font.family||gl.font.family||'Arial',
-            options.font.size||gl.font.size||12,
-            options.font.color||gl.font.color||'#000');
-    Plotly.Drawing.styleText(anntext.node(),options.text,'clickable');
+        .text(options.text);
+
+    anntext.attr({'data-unformatted': options.text});
 
     if(gd.mainsite) {
-        anntext.on('click',function(){ if(!gd.dragged) { Plotly.Fx.autoGrowInput(this); } });
+        anntext.call(d3.plugly.makeEditable)
+            .call(titleLayout)
+            .on('edit', function(_text){
+                options.text = _text;
+                this.attr({'data-unformatted': options.text})
+                this.call(titleLayout);
+                var property = Plotly.Lib.nestedProperty(gl,'annotations['+index+'].text');
+                var update = {};
+                update[property.astr] = options.text;
+                if(gl.xaxis.autorange) { update['xaxis.autorange'] = true; }
+                if(gl.yaxis.autorange) { update['yaxis.autorange'] = true; }
+                Plotly.relayout(gd,update);
+            });
     }
+    else  anntext.call(titleLayout);
 
     var anntextBB = anntext.node().getBoundingClientRect(),
         annwidth = anntextBB.width,
@@ -251,7 +281,7 @@ annotations.draw = function(gd,index,opt,value) {
         outerheight = annheight+2*borderfull;
     ann.call(Plotly.Drawing.setRect, x-outerwidth/2, y-outerheight/2, outerwidth, outerheight);
     annbg.call(Plotly.Drawing.setSize, annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
-    anntext.call(Plotly.Drawing.setPosition, paperBB.left-anntextBB.left+borderfull, paperBB.top-anntextBB.top+borderfull)
+    anntext.call(Plotly.Drawing.setPosition, paperBB.left-anntextBB.left+borderfull, paperBB.top-anntextBB.top+borderfull+anntextBB.height)
       .selectAll('tspan.nl')
         .attr('x',paperBB.left-anntextBB.left+borderfull);
 
