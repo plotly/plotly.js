@@ -1414,7 +1414,7 @@ plots.titles = function(gd,title) {
         w = gd.plotwidth/2;
         h = 14;
         var axisH = getAxisSize(gd, 'x') + cont.ticklen;
-        options = {horizontalAlign: 'center', verticalAlign: 'bottom', horizontalMargin: -gm.r, verticalMargin: fontSize + 4 + axisH, orientation: 'under'};
+        options = {horizontalAlign: 'center', verticalAlign: 'bottom', horizontalMargin: -gm.r + gm.l, verticalMargin: fontSize + 4 + axisH, orientation: 'under'};
     }
     else if(title=='ytitle'){
         cont = gl.yaxis;
@@ -1428,9 +1428,8 @@ plots.titles = function(gd,title) {
         h = gd.plotheight/2;
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
-
         var axisW = getAxisSize(gd, 'y');
-        options = {horizontalAlign: 0, verticalAlign: 'center', horizontalMargin: 0, verticalMargin: -axisW / 2, rotate: -90};
+        options = {horizontalAlign: 0, verticalAlign: 'center', horizontalMargin: 0, verticalMargin: gm.l / 2 - axisW - fontSize*2 , rotate: -90};
     }
     else if(title=='gtitle'){
         cont = gl;

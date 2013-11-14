@@ -283,7 +283,8 @@ annotations.draw = function(gd,index,opt,value) {
     anntext
         .attr({x: paperBB.left-anntextBB.left+borderfull, y: paperBB.top-anntextBB.top+borderfull*1.5})
       .selectAll('tspan')
-        .attr({x: paperBB.left-anntextBB.left+borderfull, y:  paperBB.top-anntextBB.top+borderfull*2});
+//        .attr({x: paperBB.left-anntextBB.left+borderfull, y:  paperBB.top-anntextBB.top+borderfull*2});
+        .attr({y:  paperBB.top-anntextBB.top+borderfull*2});
 
     // add the arrow
     // uses options[arrowwidth,arrowcolor,arrowhead] for styling
