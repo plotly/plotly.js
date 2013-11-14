@@ -50,7 +50,7 @@ axes.setTypes = function(td) {
     // now get all axes
     var axlist = axes.list(td);
     // initialize them all
-    axlist.forEach(function(ax){ initAxis(td,ax); });
+    axlist.forEach(function(ax){ axes.initAxis(td,ax); });
     // check for type changes
     if(td.data && td.data.length && td.axtypesok!==true){
         axlist.forEach(setType);
@@ -61,7 +61,7 @@ axes.setTypes = function(td) {
 };
 
 // add a few pieces to prepare the axis object for use
-function initAxis(td,ax) {
+axes.initAxis = function(td,ax) {
     ax._id = axes.name2id(Object.keys(td.layout).filter(function(k){return td.layout[k]===ax;})[0]);
     ax._td = td;
 
@@ -74,7 +74,7 @@ function initAxis(td,ax) {
         }
 
         if(ax._id.charAt(0)=='y') {
-            ax._offset = gs.t+ax.domain[0]*gs.h;
+            ax._offset = gs.t+(1-ax.domain[1])*gs.h;
             ax._length = gs.h*(ax.domain[1]-ax.domain[0]);
             ax._m = ax._length/(ax.range[0]-ax.range[1]);
             ax._b = -ax._m*ax.range[1];
@@ -94,7 +94,7 @@ function initAxis(td,ax) {
     }
 
     return ax;
-}
+};
 
 // convert between axis names (xaxis, xaxis2, etc, elements of td.layout)
 // and axis id's (x, x2, etc). Would probably have ditched 'xaxis' completely
@@ -1040,7 +1040,7 @@ axes.doTicks = function(td,axid) {
     }
     var valsClipped = vals.filter(clipEnds);
 
-    Plotly.Plots.getSubplots(td.data,ax).forEach(function(subplot,subplotIndex){
+    Plotly.Plots.getSubplots(td,ax).forEach(function(subplot,subplotIndex){
         var plotinfo = gl._plots[subplot],
             linepositions = ax._linepositions[subplot]||[], // [bottom or left, top or right, free, main]
             counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],

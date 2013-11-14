@@ -393,7 +393,7 @@ Plotly.plot = function(gd, data, layout) {
     //  then it should destroy and remake the plot
     if (gd.data && gd.data.length > 0) {
         var framework = graphInfo[gd.data[0].type || 'scatter'].framework,
-            subplots = plots.getSubplots(gd.data).join(''),
+            subplots = plots.getSubplots(gd).join(''),
             oldSubplots = ((gd.layout && gd.layout._plots) ? Object.keys(gd.layout._plots) : []).join('');
         if(!gd.framework || gd.framework!=framework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
             gd.framework = framework;
@@ -477,7 +477,7 @@ Plotly.plot = function(gd, data, layout) {
 
     // position and range calculations for traces that depend on each other
     // ie bars (stacked or grouped) and boxes push each other out of the way
-    Plotly.Plots.getSubplots(gd.data).forEach(function(subplot) {
+    Plotly.Plots.getSubplots(gd).forEach(function(subplot) {
         var plotinfo = gd.layout._plots[subplot];
         Plotly.Bars.setPositions(gd,plotinfo);
         Plotly.Boxes.setPositions(gd,plotinfo);
@@ -525,7 +525,7 @@ Plotly.plot = function(gd, data, layout) {
     // 4. scatter
     // 5. box plots
 
-    Plotly.Plots.getSubplots(gd.data).forEach(function(subplot) {
+    Plotly.Plots.getSubplots(gd).forEach(function(subplot) {
         var plotinfo = gd.layout._plots[subplot],
             cdbar = [], cdscatter = [], cdbox = [];
         for(var i in gd.calcdata){
@@ -1024,15 +1024,22 @@ Plotly.relayout = function(gd,astr,val) {
 
     if(Object.keys(aobj).length) { gd.changed = true; }
 
-    // look for 'allaxes', split out into all axes
     var keys = Object.keys(aobj),
         axes = Plotly.Axes.list(gd);
     for(var i=0; i<keys.length; i++) {
+        // look for 'allaxes', split out into all axes
         if(keys[i].indexOf('allaxes')===0) {
             for(var j=0; j<axes.length; j++) {
                 var newkey = keys[i].replace('allaxes',Plotly.Axes.id2name(axes[j]._id));
                 if(!aobj[newkey]) { aobj[newkey] = aobj[keys[i]]; }
             }
+            delete aobj[keys[i]];
+        }
+        // split annotation.ref into xref and yref
+        if(keys[i].match(/^annotations\[[0-9-]\].ref$/)) {
+            var xyref = aobj[keys[i]].split('y');
+            aobj[keys[i].replace('ref','xref')] = xyref[0];
+            aobj[keys[i].replace('ref','yref')] = xyref.length==2 ? ('y'+xyref[1]) : 'paper';
             delete aobj[keys[i]];
         }
     }
@@ -1306,7 +1313,7 @@ function makePlotFramework(divid, layout) {
     var gl = gd.layout;
 
     // Get subplots and see if we need to make any more axes
-    var subplots = plots.getSubplots(gd.data);
+    var subplots = plots.getSubplots(gd);
     gl._plots = {};
     subplots.forEach(function(subplot) {
         var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
@@ -1362,9 +1369,12 @@ function makePlotFramework(divid, layout) {
         .each(function(subplot){
             var plotinfo = gl._plots[subplot],
                 plotgroup = d3.select(this).classed(subplot,true);
+            plotinfo.id = subplot;
             // references to the axis objects controlling this subplot
             plotinfo.x = Plotly.Axes.getFromId(gd,subplot,'x');
             plotinfo.y = Plotly.Axes.getFromId(gd,subplot,'y');
+            // references to any subplots overlaid on this one
+            plotinfo.overlays = [];
 
             // is this subplot overlaid on another?
             // ax.overlaying is the id of another axis of the same dimension that this one overlays
@@ -1375,6 +1385,14 @@ function makePlotFramework(divid, layout) {
                     ya2 = Plotly.Axes.getFromId(gd,plotinfo.y.overlaying) || plotinfo.y,
                     mainplot = xa2._id+ya2._id;
                 if(subplots.indexOf(mainplot)!=-1) { overlaid = mainplot; }
+
+                // for now force overlays to overlay completely... so they can drag
+                // together correctly and share backgrounds. Later perhaps we make
+                // separate axis domain and tick/line domain or something, so they can
+                // still share the (possibly larger) dragger and background but don't
+                // have to both be drawn over that whole domain
+                xa2.domain = plotinfo.x.domain.slice();
+                ya2.domain = plotinfo.y.domain.slice();
             }
             if(overlaid) {
                 // mainplot is the subplot id of the one we're overlaying on
@@ -1413,6 +1431,7 @@ function makePlotFramework(divid, layout) {
     // each component overlaid on the corresponding component of the main plot
     overlays.forEach(function(plotinfo) {
         var mainplot = gl._plots[plotinfo.mainplot];
+        mainplot.overlays.push(plotinfo);
         plotinfo.gridlayer = mainplot.overgrid.append('g');
         plotinfo.zerolinelayer = mainplot.overzero.append('g');
         plotinfo.plot = mainplot.overplot.append('svg')
@@ -1476,10 +1495,12 @@ function layoutStyles(gd) {
         xa.setScale(); // this may already be done... not sure
         ya.setScale();
 
-        plotinfo.bg
-            .call(Plotly.Drawing.setRect, xa._offset-gs.p, ya._offset-gs.p,
-                xa._length+2*gs.p, ya._length+2*gs.p)
-            .call(Plotly.Drawing.fillColor, gl.plot_bgcolor);
+        if(plotinfo.bg) {
+            plotinfo.bg
+                .call(Plotly.Drawing.setRect, xa._offset-gs.p, ya._offset-gs.p,
+                    xa._length+2*gs.p, ya._length+2*gs.p)
+                .call(Plotly.Drawing.fillColor, gl.plot_bgcolor);
+        }
         plotinfo.plot
             .call(Plotly.Drawing.setRect, xa._offset, ya._offset, xa._length, ya._length);
 
@@ -1709,9 +1730,14 @@ plots.titles = function(gd,title) {
 // as an array of items like 'xy', 'x2y', 'x2y2'...
 // sorted by x (x,x2,x3...) then y
 // optionally restrict to only subplots containing axis object ax
+// looks both for combinations of x and y found in the data and at axes and their anchors
 
-plots.getSubplots = function(data,ax) {
-    var subplots = [];
+plots.getSubplots = function(gd,ax) {
+    var data = gd.data, subplots = [];
+
+    if(ax && !ax._id) { Plotly.Axes.initAxis(gd,ax); }
+
+    // look for subplots in the data
     (data||[]).forEach(function(d) {
         var xid = (d.xaxis||'x'),
             yid = (d.yaxis||'y'),
@@ -1719,7 +1745,34 @@ plots.getSubplots = function(data,ax) {
         if(ax && ax._id!=xid && ax._id!=yid) { return; }
         if(subplots.indexOf(subplot)==-1) { subplots.push(subplot); }
     });
-    if(!subplots.length) { subplots = ['xy']; }
+
+    // look for subplots in the axes/anchors, so that we at least draw all axes
+    Plotly.Axes.list(gd).forEach(function(ax2) {
+        if(!ax2._id) { Plotly.Axes.initAxis(gd,ax2); }
+        var ax2letter = ax2._id.charAt(0),
+            ax3id = ax2.anchor=='free' ? {x:'y',y:'x'}[ax2letter] : ax2.anchor,
+            ax3 = Plotly.Axes.getFromId(gd,ax3id);
+
+        // if a free axis is already represented in the data, ignore it
+        if(ax2.anchor=='free' &&
+            subplots.filter(function(sp) { return sp.indexOf(ax2._id)!=-1; }).length) {
+                return;
+        }
+
+        if(!ax3) {
+            console.log('warning: couldnt find anchor '+ax3id+' for axis '+ax2._id);
+            return;
+        }
+        if(ax && ax2!==ax && ax3!==ax) { return; }
+
+        var subplot = ax2letter=='x' ? (ax2._id+ax3._id) : (ax3._id+ax2._id);
+        if(subplots.indexOf(subplot)==-1) { subplots.push(subplot); }
+    });
+
+    if(!subplots.length) {
+        console.log('Warning! No subplots found - missing axes?');
+    }
+
     var spmatch = /^x([0-9]*)y([0-9]*)$/;
     return subplots.filter(function(sp) { return sp.match(spmatch); })
         .sort(function(a,b) {

@@ -342,14 +342,12 @@ annotations.draw = function(gd,index,opt,value) {
                     if(dx||dy) { gd.dragged = true; }
                     arrowgroup.attr('transform','translate('+dx+','+dy+')');
                     ann.call(Plotly.Drawing.setPosition, annx0+dx, anny0+dy);
-                    if(options.ref=='paper') {
-                        update[annbase+'.x'] = (ax+dx-gs.l)/gs.w;
-                        update[annbase+'.y'] = 1-((ay+dy-gs.t)/gs.h);
-                    }
-                    else {
-                        update[annbase+'.x'] = options.x+dx/gl.xaxis._m;
-                        update[annbase+'.y'] = options.y+dy/gl.yaxis._m;
-                    }
+                    update[annbase+'.x'] = options.xref=='paper' ?
+                        ((ax+dx-gs.l)/gs.w) :
+                        (options.x+dx/Plotly.Axes.getFromId(gd,options.xref||'x')._m);
+                    update[annbase+'.y'] = options.yref=='paper' ?
+                        (1-((ay+dy-gs.t)/gs.h)) :
+                        (options.y+dy/Plotly.Axes.getFromId(gd,options.yref||'y')._m);
                     return Plotly.Lib.pauseEvent(e2);
                 };
                 window.onmouseup = function(e2) {
@@ -390,14 +388,19 @@ annotations.draw = function(gd,index,opt,value) {
                 update[annbase+'.ay'] = options.ay+dy;
                 drawArrow(dx,dy);
             }
-            else if(options.ref=='paper') {
-                update[annbase+'.x'] = Plotly.Fx.dragAlign(x0+dx+borderfull,annwidth,gs.l,gs.l+gs.w);
-                update[annbase+'.y'] = 1-Plotly.Fx.dragAlign(y0+dy+borderfull,annheight,gs.t,gs.t+gs.h);
-                csr = Plotly.Fx.dragCursors(update[annbase+'.x'],update[annbase+'.y']);
-            }
             else {
-                update[annbase+'.x'] = options.x+dx/gl.xaxis._m;
-                update[annbase+'.y'] = options.y+dy/gl.yaxis._m;
+                update[annbase+'.x'] = options.xref=='paper' ?
+                    (Plotly.Fx.dragAlign(x0+dx+borderfull,annwidth,gs.l,gs.l+gs.w)) :
+                    (options.x+dx/Plotly.Axes.getFromId(gd,options.xref)._m);
+                update[annbase+'.y'] = options.yref=='paper' ?
+                    (1-Plotly.Fx.dragAlign(y0+dy+borderfull,annheight,gs.t,gs.t+gs.h)) :
+                    (options.y+dy/Plotly.Axes.getFromId(gd,options.yref)._m);
+                if(options.xref!='paper' || options.yref!='paper') {
+                    csr = Plotly.Fx.dragCursors(
+                        options.xref=='paper' ? 0.5 : update[annbase+'.x'],
+                        options.yref=='paper' ? 0.5 : update[annbase+'.y']
+                    );
+                }
             }
             Plotly.Fx.setCursor(el3,csr);
             return Plotly.Lib.pauseEvent(e2);
