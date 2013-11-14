@@ -126,7 +126,6 @@ annotations.draw = function(gd,index,opt,value) {
         .call(Plotly.Drawing.strokeColor,options.bordercolor || 'rgba(0,0,0,0)')
         .attr('stroke-width',borderwidth)
         .call(Plotly.Drawing.fillColor,options.bgcolor)
-        .call(Plotly.Drawing.setPosition, borderwidth/2+1, borderwidth/2+1);
 
     var font = options.font.family||gl.font.family||'Arial';
     var fontSize = options.font.size||gl.font.size||12;
@@ -281,9 +280,11 @@ annotations.draw = function(gd,index,opt,value) {
         outerheight = annheight+2*borderfull;
     ann.call(Plotly.Drawing.setRect, x-outerwidth/2, y-outerheight/2, outerwidth, outerheight);
     annbg.call(Plotly.Drawing.setSize, annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
-    anntext.call(Plotly.Drawing.setPosition, paperBB.left-anntextBB.left+borderfull, paperBB.top-anntextBB.top+borderfull+anntextBB.height)
-      .selectAll('tspan.nl')
-        .attr('x',paperBB.left-anntextBB.left+borderfull);
+    anntext
+        .attr({x: paperBB.left-anntextBB.left+borderfull, y: paperBB.top-anntextBB.top+borderfull*1.5})
+      .selectAll('tspan')
+//        .attr({x: paperBB.left-anntextBB.left+borderfull, y:  paperBB.top-anntextBB.top+borderfull*2});
+        .attr({y:  paperBB.top-anntextBB.top+borderfull*2});
 
     // add the arrow
     // uses options[arrowwidth,arrowcolor,arrowhead] for styling
