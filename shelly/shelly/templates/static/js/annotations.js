@@ -282,7 +282,7 @@ annotations.draw = function(gd,index,opt,value) {
     annbg.call(Plotly.Drawing.setSize, annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
     anntext
         .attr({x: paperBB.left-anntextBB.left+borderfull, y: paperBB.top-anntextBB.top+borderfull*1.5})
-      .selectAll('tspan')
+      .selectAll('tspan.line')
 //        .attr({x: paperBB.left-anntextBB.left+borderfull, y:  paperBB.top-anntextBB.top+borderfull*2});
         .attr({y:  paperBB.top-anntextBB.top+borderfull*2});
 
