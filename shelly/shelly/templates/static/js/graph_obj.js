@@ -1447,6 +1447,7 @@ plots.titles = function(gd,title) {
     var opacity = 1;
     var txt = cont.title;
     if(cont.unit) txt += ' ('+cont.unit+')';
+    if(txt === '') opacity = 0;
     if(txt === 'Click to enter '+name+' title') opacity = 0.2;
 
     gd.infolayer.select('.'+title).remove();
@@ -1467,30 +1468,29 @@ plots.titles = function(gd,title) {
         }
     }
 
-    if(!txt){
-        txt = 'Click to enter '+name+' title'
+    el.attr({'data-unformatted': txt})
+        .call(titleLayout);
+
+    function setPlaceholder(){
         opacity = 0;
-        el.text(txt)
+        txt = 'Click to enter '+name+' title';
+        gd.infolayer.select('.'+title)
+            .attr({'data-unformatted': txt})
+            .text('Click to enter '+name+' title')
             .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
             .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
     }
-    el.attr({'data-unformatted': txt})
-        .call(titleLayout);
+
+    if(!txt) setPlaceholder();
 
     if(gd.mainsite){ // don't allow editing on embedded graphs
         el.call(d3.plugly.makeEditable)
             .on('edit', function(text){
-                if(!text){
-                    text = 'Click to enter '+name+' title'
-                    opacity = 0;
-                    gd.infolayer.select('.'+title).text(text)
-                        .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
-                        .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
-                }
-                else if(text != 'Click to enter '+name+' title') opacity = 1;
-                this.attr({'data-unformatted': text})
-                this.call(titleLayout);
                 cont.title = txt = text;
+                this.attr({'data-unformatted': text})
+                if(!text) setPlaceholder();
+                else if(text != 'Click to enter '+name+' title') opacity = 1;
+                this.call(titleLayout);
             })
             .on('cancel', function(text){
                 var txt = this.attr('data-unformatted');
