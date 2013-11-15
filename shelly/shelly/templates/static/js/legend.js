@@ -102,8 +102,7 @@ function legendText(s,gd){
         .call(Plotly.Drawing.font,
             lf.family||gf.family||'Arial',
             lf.size||gf.size||12,
-            lf.color||gf.color||'#000')
-        .each(function(d){ Plotly.Drawing.styleText(this,d[0].t.name,'clickable'); });
+            lf.color||gf.color||'#000');
 }
 
 // -----------------------------------------------------
@@ -150,9 +149,40 @@ legend.draw = function(gd) {
         .each(legend.points);
 
     var tracetext=traces.call(legendText,gd).selectAll('text');
-    if(gd.mainsite) {
-        tracetext.on('click',function(){
-            if(!gd.dragged) { Plotly.Fx.autoGrowInput(this); }
+
+    function legendLayout(){
+        this.call(d3.plugly.convertToTspans);
+        var textX = this.attr('x');
+        this.selectAll('tspan.line').attr({x: textX});
+    }
+
+    if(gd.mainsite){
+        tracetext.each(function(d, i){
+            d3.select(this)
+                .attr({'data-unformatted': function(d, i){ return d[0].t.name; }})
+                .text(function(d, i){ return d[0].t.name; })
+                .call(d3.plugly.makeEditable)
+                .call(legendLayout)
+                .on('edit', function(text){
+                    this.attr({'data-unformatted': text})
+                    this.text(text)
+                        .call(legendLayout);
+                    if(this.text() === ''){
+                        text = ' \u0020\u0020 '
+                    }
+                    var tn = Number(this.attr('class').split('-')[1]);
+                    var property = Plotly.Lib.nestedProperty(gd.data[tn],'name');
+                    property.name = text;
+                    d[0].t.name = text;
+                    Plotly.restyle(gd, property.astr, text, tn);
+                });
+        })
+    }
+    else{
+        tracetext.each(function(d, i){
+            d3.select(this)
+                .text(function(d, i){ return d[0].t.name; })
+                .call(legendLayout);
         });
     }
 

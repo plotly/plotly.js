@@ -1598,6 +1598,7 @@ function layoutStyles(gd) {
 // title can be 'xtitle', 'ytitle', 'gtitle',
 //  or empty to draw all
 plots.titles = function(gd,title) {
+    var options;
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     if(!title) {
         Plotly.Axes.list(gd).forEach(function(ax) {
@@ -1606,14 +1607,43 @@ plots.titles = function(gd,title) {
         plots.titles(gd,'gtitle');
         return;
     }
+
+    function getAxisSize(_axis, _which){
+        var textSizes = d3.select(_axis).selectAll('text.'+_which+'tick')[0]
+            .map(function(d, i){ return d.getBBox()[(_which.charAt(0) === 'x')? 'height' : 'width']; });
+        return d3.max(textSizes) || 0;
+    }
+
+// <<<<<<< HEAD
+    // var gl=gd.layout,gs=gl._size,
+    //     axletter = title.charAt(0),
+    //     cont = gl[Plotly.Axes.id2name(title.replace('title',''))] || gl,
+    //     x,y,w,h,transform='',attr={},xa,ya,
+    //     name = (cont._id||axletter).toUpperCase()+' axis',
+    //     font = cont.titlefont.family || gl.font.family || 'Arial',
+    //     fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
+    //     fontColor = cont.titlefont.color || gl.font.color || '#000';
+    // if(axletter=='x'){
+    //     xa = cont;
+    //     ya = (xa.anchor=='free') ?
+    //         {_offset:gs.l+(1-(xa.position||0))*gs.h, _length:0} :
+    //         Plotly.Axes.getFromId(gd, xa.anchor);
+    //     x = xa._offset+xa._length/2;
+    //     y = (xa.side=='top') ?
+    //         ya._offset- 15-fontSize*0.5 :
+    //         ya._offset+ya._length + 15+fontSize;
+    //     w = xa._length/2;
+    //     h = fontSize;
+// =======
+
     var gl=gd.layout,gs=gl._size,
         axletter = title.charAt(0),
         cont = gl[Plotly.Axes.id2name(title.replace('title',''))] || gl,
-        x,y,w,h,transform='',attr={},xa,ya,
         name = (cont._id||axletter).toUpperCase()+' axis',
         font = cont.titlefont.family || gl.font.family || 'Arial',
         fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
-        fontColor = cont.titlefont.color || gl.font.color || '#000';
+        fontColor = cont.titlefont.color || gl.font.color || '#000',
+        x,y,w,h,transform='',attr={},xa,ya;
     if(axletter=='x'){
         xa = cont;
         ya = (xa.anchor=='free') ?
@@ -1625,6 +1655,9 @@ plots.titles = function(gd,title) {
             ya._offset+ya._length + 15+fontSize;
         w = xa._length/2;
         h = fontSize;
+        var axisH = getAxisSize(gd, xa._id) + cont.ticklen;
+        options = {horizontalAlign: 'center', verticalAlign: 'bottom', horizontalMargin: -gs.r + gs.l, verticalMargin: fontSize + 4 + axisH, orientation: 'under'};
+// >>>>>>> master
     }
     else if(axletter=='y'){
         ya = cont;
@@ -1639,6 +1672,8 @@ plots.titles = function(gd,title) {
         h = ya._length/2;
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
+        var axisW = getAxisSize(gd, ya._id);
+        options = {horizontalAlign: 0, verticalAlign: 'center', horizontalMargin: 0, verticalMargin: gs.l / 2 - axisW - fontSize*2 , rotate: -90};
     }
     else{
         name = 'Plot';
@@ -1646,77 +1681,159 @@ plots.titles = function(gd,title) {
         x = gl.width/2;
         y = gl.margin.t/2;
         w = gl.width/2;
+// <<<<<<< HEAD
+//         h = fontSize;
+//     }
+
+//     gl._infolayer.select('.'+title).remove();
+//     var el=gl._infolayer.append('text').attr('class',title)
+//         .call(Plotly.Drawing.setPosition, x, y)
+//         .call(Plotly.Drawing.font,font,fontSize,fontColor)
+//         .attr('text-anchor','middle')
+//         .attr('transform',transform.replace('x',x).replace('y',y));
+//     // don't allow editing on embedded graphs
+//     if(gd.mainsite) { el.on('click',function(){ Plotly.Fx.autoGrowInput(this); }); }
+
+//     var txt=cont.title;
+//     if(txt.match(/^Click to enter (Plot |[XY][0-9]* axis )?title$/)) {
+//         if(gd.mainsite) { el.style('fill','#999'); } // cues in gray
+//         else { txt=''; } // don't show cues in embedded plots
+// =======
         h = fontSize;
+        options = {horizontalAlign: 'center', verticalAlign: 'top', horizontalMargin: -gs.r, verticalMargin: gl.margin.t / 2};
     }
+
+    var opacity = 1;
+    var txt = cont.title;
+    if(cont.unit) txt += ' ('+cont.unit+')';
+    if(txt === '') opacity = 0;
+    if(txt === 'Click to enter '+name+' title') opacity = 0.2;
 
     gl._infolayer.select('.'+title).remove();
-    var el=gl._infolayer.append('text').attr('class',title)
-        .call(Plotly.Drawing.setPosition, x, y)
-        .call(Plotly.Drawing.font,font,fontSize,fontColor)
-        .attr('text-anchor','middle')
-        .attr('transform',transform.replace('x',x).replace('y',y));
-    // don't allow editing on embedded graphs
-    if(gd.mainsite) { el.on('click',function(){ Plotly.Fx.autoGrowInput(this); }); }
+    var el = gl._infolayer.append('text').attr('class', title).text(txt);
 
-    var txt=cont.title;
-    if(txt.match(/^Click to enter (Plot |[XY][0-9]* axis )?title$/)) {
-        if(gd.mainsite) { el.style('fill','#999'); } // cues in gray
-        else { txt=''; } // don't show cues in embedded plots
+    function titleLayout(){
+        // TODO: this only works for a single subplot... perhaps union all subplots?
+        var bg = d3.select(gd).select('svg>g>rect');
+        var titleEl = this
+            .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
+            .call(d3.plugly.convertToTspans)
+            .call(d3.plugly.alignSVGWith(bg, options));
+
+        if(options.rotate){
+            titleEl.attr({
+                'text-anchor': 'middle', x: 0,
+                transform: 'translate(' + [x, y] + ') rotate(' + options.rotate + ')'
+            });
+        }
+// >>>>>>> master
     }
 
-    if(txt) {
-        Plotly.Drawing.styleText(el.node(), txt + (!cont.unit ? '' : (' ('+cont.unit+')')),'clickable');
+    el.attr({'data-unformatted': txt})
+        .call(titleLayout);
+
+    function setPlaceholder(){
+        opacity = 0;
+        txt = 'Click to enter '+name+' title';
+        gl._infolayer.select('.'+title)
+            .attr({'data-unformatted': txt})
+            .text('Click to enter '+name+' title')
+            .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
+            .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
     }
-    else if(gd.mainsite) {
-        el.text('Click to enter '+name+' title')
-            .style('opacity',0)
-            .on('mouseover',function(){d3.select(this).transition().duration(100).style('opacity',1);})
-            .on('mouseout',function(){d3.select(this).transition().duration(1000).style('opacity',0);})
-          .transition()
-            .duration(2000)
-            .style('opacity',0);
+
+    if(!txt) setPlaceholder();
+
+    if(gd.mainsite){ // don't allow editing on embedded graphs
+        el.call(d3.plugly.makeEditable)
+            .on('edit', function(text){
+                cont.title = txt = text;
+                this.attr({'data-unformatted': text});
+                if(!text) setPlaceholder();
+                else if(text != 'Click to enter '+name+' title') opacity = 1;
+                this.call(titleLayout);
+            })
+            .on('cancel', function(text){
+                var txt = this.attr('data-unformatted');
+                this.text(txt).call(titleLayout);
+            })
+            .on('input', function(d, i){
+                var bg = d3.select(gd).select('svg>g>rect'); // TODO: see titleLayout above
+                this.text(d || ' ').call(d3.plugly.alignSVGWith(bg, options));
+            });
     }
-    else { el.remove(); }
+    else if(!txt || txt === 'Click to enter '+name+' title') el.remove();
 
     // move axis labels out of the way, if possible, when tick labels interfere
-    if(title=='gtitle') { return; }
-    var titlebb=el.node().getBoundingClientRect(),
-        paperbb=gl._paperdiv.node().getBoundingClientRect(),
-        lbb, tickedge;
-    if(axletter=='x'){
-        tickedge=xa.side=='top' ? paperbb.bottom : paperbb.top;
-        gl._paper.selectAll('text.'+xa._id+'tick').each(function(){
-            lbb=this.getBoundingClientRect();
-            if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
-                if(xa.side=='top') {
-                    tickedge = Plotly.Lib.constrain(tickedge,paperbb.top,lbb.top-titlebb.height);
-                }
-                else {
-                    tickedge = Plotly.Lib.constrain(tickedge,lbb.bottom,paperbb.bottom-titlebb.height);
-                }
-            }
-        });
-        if(xa.side=='top' ? tickedge<titlebb.top : tickedge>titlebb.top) {
-            el.attr('transform','translate(0,'+(tickedge-titlebb.top)+') '+el.attr('transform'));
-        }
-    }
-    else if(axletter=='y'){
-        tickedge=ya.side=='right' ? paperbb.left : paperbb.right;
-        gl._paper.selectAll('text.'+ya._id+'tick').each(function(){
-            lbb=this.getBoundingClientRect();
-            if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
-                if(ya.side=='right') {
-                    tickedge = Plotly.Lib.constrain(tickedge,lbb.right+titlebb.width,paperbb.right);
-                }
-                else {
-                    tickedge=Plotly.Lib.constrain(tickedge,paperbb.left+titlebb.width,lbb.left);
-                }
-            }
-        });
-        if(ya.side=='right' ? tickedge>titlebb.right : tickedge<titlebb.right) {
-            el.attr('transform','translate('+(tickedge-titlebb.right)+') '+el.attr('transform'));
-        }
-    }
+// <<<<<<< HEAD
+//     if(title=='gtitle') { return; }
+//     var titlebb=el.node().getBoundingClientRect(),
+//         paperbb=gl._paperdiv.node().getBoundingClientRect(),
+//         lbb, tickedge;
+//     if(axletter=='x'){
+//         tickedge=xa.side=='top' ? paperbb.bottom : paperbb.top;
+//         gl._paper.selectAll('text.'+xa._id+'tick').each(function(){
+//             lbb=this.getBoundingClientRect();
+//             if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
+//                 if(xa.side=='top') {
+//                     tickedge = Plotly.Lib.constrain(tickedge,paperbb.top,lbb.top-titlebb.height);
+//                 }
+//                 else {
+//                     tickedge = Plotly.Lib.constrain(tickedge,lbb.bottom,paperbb.bottom-titlebb.height);
+//                 }
+//             }
+//         });
+//         if(xa.side=='top' ? tickedge<titlebb.top : tickedge>titlebb.top) {
+//             el.attr('transform','translate(0,'+(tickedge-titlebb.top)+') '+el.attr('transform'));
+//         }
+//     }
+//     else if(axletter=='y'){
+//         tickedge=ya.side=='right' ? paperbb.left : paperbb.right;
+//         gl._paper.selectAll('text.'+ya._id+'tick').each(function(){
+//             lbb=this.getBoundingClientRect();
+//             if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
+//                 if(ya.side=='right') {
+//                     tickedge = Plotly.Lib.constrain(tickedge,lbb.right+titlebb.width,paperbb.right);
+//                 }
+//                 else {
+//                     tickedge=Plotly.Lib.constrain(tickedge,paperbb.left+titlebb.width,lbb.left);
+//                 }
+//             }
+//         });
+//         if(ya.side=='right' ? tickedge>titlebb.right : tickedge<titlebb.right) {
+//             el.attr('transform','translate('+(tickedge-titlebb.right)+') '+el.attr('transform'));
+//         }
+//     }
+// =======
+   // if(title=='gtitle') { return; }
+   // var titlebb=el.node().getBoundingClientRect(),
+   //     paperbb=gd.paperdiv.node().getBoundingClientRect(),
+   //     lbb, tickedge;
+   // if(title=='xtitle'){
+   //     tickedge=0;
+   //     labels=gd.axislayer.selectAll('text.xtick').each(function(){
+   //         lbb=this.getBoundingClientRect();
+   //         if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
+   //             tickedge=Plotly.Lib.constrain(tickedge,lbb.bottom,paperbb.bottom-titlebb.height);
+   //         }
+   //     });
+   //     if(tickedge>titlebb.top) {
+   //         el.attr('transform','translate(0,'+(tickedge-titlebb.top)+') '+el.attr('transform'));
+   //     }
+   // }
+   // else if(title=='ytitle'){
+   //     tickedge=screen.width;
+   //     gd.axislayer.selectAll('text.ytick').each(function(){
+   //         lbb=this.getBoundingClientRect();
+   //         if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
+   //             tickedge=Plotly.Lib.constrain(tickedge,paperbb.left+titlebb.width,lbb.left);
+   //         }
+   //     });
+   //     if(tickedge<titlebb.right) {
+   //         el.attr('transform','translate('+(tickedge-titlebb.right)+') '+el.attr('transform'));
+   //     }
+   // }
+// >>>>>>> master
 };
 
 // ----------------------------------------------------
