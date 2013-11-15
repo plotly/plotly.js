@@ -556,8 +556,8 @@ function calcTicks(ax) {
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.autotick || !ax.dtick){
         var gs = ax._td.layout._size,
-            nt = ax.nticks ||
-                Math.max(5,Math.min(10,(ax._id.charAt(0)=='y') ? gs.h/40 : gs.w/80));
+            nt = (ax.nticks ||
+                Plotly.Lib.constrain(ax._length/(ax._id.charAt(0)=='y' ? 40 : 80), 4, 9) + 1);
         axes.autoTicks(ax,Math.abs(ax.range[1]-ax.range[0])/nt);
         // check for a forced minimum dtick
         if(ax._minDtick>0 && ax.dtick<ax._minDtick*2) {

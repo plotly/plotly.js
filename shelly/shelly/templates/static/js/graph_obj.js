@@ -844,7 +844,6 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // harder though.
     var replot_attr=[
         'mode','visible','type','bardir','fill','histnorm',
-        'xaxis','yaxis',
         'marker.size','text','textfont.size','textposition',
         'xtype','x0','dx','ytype','y0','dy',
         'zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth','showscale',
@@ -861,7 +860,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         '?axis.autorange','?axis.range'
     ];
     // these ones may alter the axis type (at least if the first trace is involved)
-    var axtype_attr = ['type','x','y','x0','y0','bardir'];
+    var axtype_attr = ['type','x','y','x0','y0','bardir','xaxis','yaxis'];
     // flags for which kind of update we need to do
     var doplot = false,
         dolayout = false,
@@ -1608,20 +1607,16 @@ plots.titles = function(gd,title) {
         return;
     }
 
-    function getAxisSize(_axis, _which){
-        var textSizes = d3.select(_axis).selectAll('text.'+_which+'tick')[0]
-            .map(function(d, i){ return d.getBBox()[(_which.charAt(0) === 'x')? 'height' : 'width']; });
-        return d3.max(textSizes) || 0;
-    }
-
     var gl=gd.layout,gs=gl._size,
         axletter = title.charAt(0),
         cont = gl[Plotly.Axes.id2name(title.replace('title',''))] || gl,
+        prop = cont===gl ? 'title' : cont._name+'.title',
         name = (cont._id||axletter).toUpperCase()+' axis',
         font = cont.titlefont.family || gl.font.family || 'Arial',
         fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
         fontColor = cont.titlefont.color || gl.font.color || '#000',
-        x,y,w,h,transform='',attr={},xa,ya,groupId;
+        x,y,transform='',attr={},xa,ya,
+        avoid = {selection:d3.select(gd).selectAll('text.'+cont._id+'tick'), side:cont.side};
     if(axletter=='x'){
         xa = cont;
         ya = (xa.anchor=='free') ?
@@ -1629,19 +1624,10 @@ plots.titles = function(gd,title) {
             Plotly.Axes.getFromId(gd, xa.anchor);
         x = xa._offset+xa._length/2;
         y = (xa.side=='top') ?
-            ya._offset- 15-fontSize*0.5 :
-            ya._offset+ya._length + 15+fontSize;
-        w = xa._length/2;
-        h = fontSize,
-        groupId = xa._id+ya._id;
-        var axisH = getAxisSize(gd, xa._id) + cont.ticklen;
-        var hMargin;
-        if(groupId){
-            var bBox = d3.select(gd).select('g.subplot.'+groupId+'>rect').node().getBBox();
-            var svgBBox = d3.select(gd).select('svg').node().getBBox();
-            hMargin =  bBox.x - (svgBBox.width - (bBox.x + bBox.width)) + bBox.width/2;
-        }
+            ya._offset- 10-fontSize*0.5 :
+            ya._offset+ya._length + 10+fontSize;
         options = {x: x, y: y, 'text-anchor': 'middle'};
+        if(!avoid.side) { avoid.side = 'bottom'; }
     }
     else if(axletter=='y'){
         ya = cont;
@@ -1650,24 +1636,21 @@ plots.titles = function(gd,title) {
             Plotly.Axes.getFromId(gd, ya.anchor);
         y = ya._offset+ya._length/2;
         x = (ya.side=='right') ?
-            xa._offset+xa._length + 15+fontSize :
-            xa._offset - 15-fontSize*0.5;
-        w = fontSize;
-        h = ya._length/2;
+            xa._offset+xa._length + 10+fontSize :
+            xa._offset - 10-fontSize*0.5;
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
-        var axisW = getAxisSize(gd, ya._id);
         options = {x: x, y: y, 'text-anchor': 'middle'};
-        transform = {rotate: '-90', offset: -axisW + fontSize/2};
+        transform = {rotate: '-90', offset: 0};
+        if(!avoid.side) { avoid.side = 'left'; }
     }
     else{
         name = 'Plot';
         fontSize = gl.titlefont.size || gl.font.size*1.4 || 16;
         x = gl.width/2;
         y = gl.margin.t/2;
-        w = gl.width/2;
-        h = fontSize;
         options = {x: x, y: y, 'text-anchor': 'middle'};
+        avoid = {};
     }
 
     var opacity = 1;
@@ -1685,11 +1668,41 @@ plots.titles = function(gd,title) {
             .call(d3.plugly.convertToTspans)
             .attr(options);
         titleEl.selectAll('tspan.line')
-            .attr(options)
+            .attr(options);
         if(transform){
             titleEl.attr({
                 transform: 'rotate(' + [transform.rotate, options.x, options.y] + ') translate(0, '+transform.offset+')'
             });
+        }
+
+        if(avoid && avoid.selection && avoid.side){
+            // iterate over a set of elements (avoid.selection) to avoid collisions with
+            // move toward side (avoid.side = left, right, top, bottom) if needed
+            // can include pad (pixels, default 2)
+            var shift = 0,
+                backside = {left:'right',right:'left',top:'bottom',bottom:'top'}[avoid.side],
+                shiftTemplate = {
+                    left:'translate(-{shift},0) {original}',
+                    right:'translate({shift},0) {original}',
+                    top:'translate(0,-{shift}) {original}',
+                    bottom:'translate(0,{shift}) {original}'
+                }[avoid.side],
+                pad = $.isNumeric(avoid.pad) ? avoid.pad : 2,
+                titlebb = titleEl.node().getBoundingClientRect(),
+                paperbb = gl._paper.node().getBoundingClientRect(),
+                maxshift = Math.max(0,(paperbb[avoid.side]-titlebb[avoid.side])*(shiftTemplate.indexOf('-')!=-1 ? -1 : 1));
+            avoid.selection.each(function(){
+                var avoidbb = this.getBoundingClientRect();
+                if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
+                    shift = Math.min(maxshift,Math.max(shift,
+                        Math.abs(avoidbb[avoid.side]-titlebb[backside])+pad));
+                }
+            });
+            if(shift>0) {
+                titleEl.attr({transform:d3.plugly.compileTemplate(shiftTemplate,
+                    {shift:shift, original:titleEl.attr('transform')}
+                )});
+            }
         }
     }
 
@@ -1711,11 +1724,7 @@ plots.titles = function(gd,title) {
     if(gd.mainsite){ // don't allow editing on embedded graphs
         el.call(d3.plugly.makeEditable)
             .on('edit', function(text){
-                cont.title = txt = text;
-                this.attr({'data-unformatted': text});
-                if(!text) setPlaceholder();
-                else if(text != 'Click to enter '+name+' title') opacity = 1;
-                this.call(titleLayout);
+                Plotly.relayout(gd,prop,text);
             })
             .on('cancel', function(text){
                 var txt = this.attr('data-unformatted');
@@ -1728,77 +1737,6 @@ plots.titles = function(gd,title) {
             });
     }
     else if(!txt || txt === 'Click to enter '+name+' title') el.remove();
-
-    // move axis labels out of the way, if possible, when tick labels interfere
-// <<<<<<< HEAD
-//     if(title=='gtitle') { return; }
-//     var titlebb=el.node().getBoundingClientRect(),
-//         paperbb=gl._paperdiv.node().getBoundingClientRect(),
-//         lbb, tickedge;
-//     if(axletter=='x'){
-//         tickedge=xa.side=='top' ? paperbb.bottom : paperbb.top;
-//         gl._paper.selectAll('text.'+xa._id+'tick').each(function(){
-//             lbb=this.getBoundingClientRect();
-//             if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
-//                 if(xa.side=='top') {
-//                     tickedge = Plotly.Lib.constrain(tickedge,paperbb.top,lbb.top-titlebb.height);
-//                 }
-//                 else {
-//                     tickedge = Plotly.Lib.constrain(tickedge,lbb.bottom,paperbb.bottom-titlebb.height);
-//                 }
-//             }
-//         });
-//         if(xa.side=='top' ? tickedge<titlebb.top : tickedge>titlebb.top) {
-//             el.attr('transform','translate(0,'+(tickedge-titlebb.top)+') '+el.attr('transform'));
-//         }
-//     }
-//     else if(axletter=='y'){
-//         tickedge=ya.side=='right' ? paperbb.left : paperbb.right;
-//         gl._paper.selectAll('text.'+ya._id+'tick').each(function(){
-//             lbb=this.getBoundingClientRect();
-//             if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
-//                 if(ya.side=='right') {
-//                     tickedge = Plotly.Lib.constrain(tickedge,lbb.right+titlebb.width,paperbb.right);
-//                 }
-//                 else {
-//                     tickedge=Plotly.Lib.constrain(tickedge,paperbb.left+titlebb.width,lbb.left);
-//                 }
-//             }
-//         });
-//         if(ya.side=='right' ? tickedge>titlebb.right : tickedge<titlebb.right) {
-//             el.attr('transform','translate('+(tickedge-titlebb.right)+') '+el.attr('transform'));
-//         }
-//     }
-// =======
-   // if(title=='gtitle') { return; }
-   // var titlebb=el.node().getBoundingClientRect(),
-   //     paperbb=gd.paperdiv.node().getBoundingClientRect(),
-   //     lbb, tickedge;
-   // if(title=='xtitle'){
-   //     tickedge=0;
-   //     labels=gd.axislayer.selectAll('text.xtick').each(function(){
-   //         lbb=this.getBoundingClientRect();
-   //         if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
-   //             tickedge=Plotly.Lib.constrain(tickedge,lbb.bottom,paperbb.bottom-titlebb.height);
-   //         }
-   //     });
-   //     if(tickedge>titlebb.top) {
-   //         el.attr('transform','translate(0,'+(tickedge-titlebb.top)+') '+el.attr('transform'));
-   //     }
-   // }
-   // else if(title=='ytitle'){
-   //     tickedge=screen.width;
-   //     gd.axislayer.selectAll('text.ytick').each(function(){
-   //         lbb=this.getBoundingClientRect();
-   //         if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
-   //             tickedge=Plotly.Lib.constrain(tickedge,paperbb.left+titlebb.width,lbb.left);
-   //         }
-   //     });
-   //     if(tickedge<titlebb.right) {
-   //         el.attr('transform','translate('+(tickedge-titlebb.right)+') '+el.attr('transform'));
-   //     }
-   // }
-// >>>>>>> master
 };
 
 // ----------------------------------------------------

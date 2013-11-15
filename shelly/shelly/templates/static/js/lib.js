@@ -321,11 +321,14 @@ lib.notifier = function(text,tm){
 
 // do two bounding boxes from getBoundingClientRect,
 // ie {left,right,top,bottom,width,height}, overlap?
-lib.bBoxIntersect = function(a,b){
-    return (a.left<=b.right && b.left<=a.right && a.top<=b.bottom && b.top<=a.bottom);
+// takes optional padding pixels
+lib.bBoxIntersect = function(a,b,pad){
+    pad = pad||0;
+    return (a.left<=b.right+pad && b.left<=a.right+pad &&
+            a.top<=b.bottom+pad && b.top<=a.bottom+pad);
 };
 
-// minor performance booster for d3...
+// minor convenience/performance booster for d3...
 lib.identity = function(d){ return d; };
 
 
