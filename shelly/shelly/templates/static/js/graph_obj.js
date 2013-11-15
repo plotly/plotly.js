@@ -1319,12 +1319,14 @@ function makePlotFramework(divid, layout) {
     subplots.forEach(function(subplot) {
         var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
         gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
-        [axmatch[1],axmatch[2]].forEach(function(axid) {
+        [axmatch[1],axmatch[2]].forEach(function(axid,i) {
             var axname = Plotly.Axes.id2name(axid);
             if(!gl[axname]) {
                 gl[axname] = Plotly.Axes.defaultAxis({
                     range:[-1,6],
-                    title:'Click to enter '+axmatch[1].toUpperCase()+' axis title'});
+                    title:'Click to enter '+axid.toUpperCase()+' axis title',
+                    anchor:axmatch[2-i]
+                });
             }
         });
     });

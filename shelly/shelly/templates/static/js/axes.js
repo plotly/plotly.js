@@ -109,8 +109,8 @@ axes.counterLetter = function(id) { return {x:'y',y:'x'}[id.charAt(0)]; };
 
 function setType(ax){
     var axletter = ax._id.charAt(0),
-        data = ax._td.data,
-        d0 = data[0];
+        data = ax._td.data.filter(function(di){ return (di[axletter+'axis']||axletter)==ax._id; }),
+        d0 = data[0]||{x:[0], y:[0]};
     if(!d0.type) { d0.type='scatter'; }
     // backward compatibility
     if(!ax.type) {
