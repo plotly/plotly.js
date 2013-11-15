@@ -425,7 +425,7 @@ axes.expand = function(ax,data,options) {
     var len = data.length,
         extrappad = options.padded ? ax._length*0.05 : 0,
         tozero = options.tozero && (ax.type=='linear' || ax.type=='-'),
-        i,j,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis;
+        i,j,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
 
     function getPad(item) {
         if($.isArray(item)) { return function(i) { return Math.max(Number(item[i]||0),0); }; }
@@ -458,8 +458,14 @@ axes.expand = function(ax,data,options) {
         ppadiplus = (ppadplus(i)||ppadi) + extrappad;
         ppadiminus = (ppadminus(i)||ppadi) + extrappad;
         vpadi = vpad(i);
-        dmin = ax.c2l(data[i]-(vpadminus(i)||vpadi));
-        dmax = ax.c2l(data[i]+(vpadplus(i)||vpadi));
+        vmin = data[i]-(vpadminus(i)||vpadi);
+        vmax = data[i]+(vpadplus(i)||vpadi);
+        // special case for log axes: if vpad makes this object span more than an
+        // order of mag, clip it to one order. This is so we don't have non-positive
+        // errors or absurdly large lower range due to rounding errors
+        if(ax.type=='log' && vmin<vmax/10) { vmin = vmax/10; }
+        dmin = ax.c2l(vmin);
+        dmax = ax.c2l(vmax);
         if(tozero) {
             dmin = Math.min(0,dmin);
             dmax = Math.max(0,dmax);
@@ -505,8 +511,8 @@ axes.autoBin = function(data,ax,nbins,is2d) {
                 minSize = msexp*roundUp(distinctData.minDiff/msexp,[0.9,1.9,4.9],true); // TODO: there are some date cases where this will fail...
             size0 = Math.max(minSize,2*Plotly.Lib.stdev(data)/Math.pow(data.length,is2d ? 0.25 : 0.4));
         }
-            // piggyback off autotick code to make "nice" bin sizes
-        var dummyax = {type:ax.type,range:[datamin,datamax]};
+        // piggyback off autotick code to make "nice" bin sizes
+        var dummyax = {type:ax.type=='log' ? 'linear' : ax.type, range:[datamin,datamax]};
         axes.autoTicks(dummyax,size0);
         var binstart = axes.tickIncrement(axes.tickFirst(dummyax),dummyax.dtick,'reverse');
         // check for too many data points right at the edges of bins (>50% within 1% of bin edges)
@@ -655,24 +661,25 @@ axes.autoTicks = function(ax,rt){
             // ax.dtick="D2" (show 2 and 5) or "D1" (show all digits)
             // use ax._tickround to store the first tick
             // I don't think we're still using this... try to remove it
-            var vmin=Math.pow(10,Math.min(ax.range[1],ax.range[0]));
-            var minexp=Math.pow(10,Math.floor(Math.log(vmin)/Math.LN10));
+            var vmin = Math.pow(10,Math.min(ax.range[1],ax.range[0]));
+            var minexp = Math.pow(10,Math.floor(Math.log(vmin)/Math.LN10));
             ax.dtick = (rt>0.3) ? 'D2' : 'D1';
         }
     }
     else if(ax.type=='category') {
-        ax.tick0=0;
-        ax.dtick=1;
+        ax.tick0 = 0;
+        ax.dtick = 1;
     }
     else{
         // auto ticks always start at 0
-        ax.tick0=0;
-        rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-        ax.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
+        ax.tick0 = 0;
+        rtexp = Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+        ax.dtick = rtexp*roundUp(rt/rtexp,[2,5,10]);
     }
-    if(ax.dtick===0) { ax.dtick=1; } // prevent infinite loops...
+    if(ax.dtick===0) { ax.dtick = 1; } // prevent infinite loops...
     // TODO: this is from log axis histograms with autorange off
     if(!$.isNumeric(ax.dtick) && typeof ax.dtick !='string') {
+        ax.dtick = 1;
         throw 'ax.dtick error: '+String(ax.dtick);
     }
 };
