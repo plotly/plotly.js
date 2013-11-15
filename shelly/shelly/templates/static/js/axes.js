@@ -62,7 +62,8 @@ axes.setTypes = function(td) {
 
 // add a few pieces to prepare the axis object for use
 axes.initAxis = function(td,ax) {
-    ax._id = axes.name2id(Object.keys(td.layout).filter(function(k){return td.layout[k]===ax;})[0]);
+    ax._name = Object.keys(td.layout).filter(function(k){return td.layout[k]===ax;})[0];
+    ax._id = axes.name2id(ax._name);
     ax._td = td;
 
     // set scaling to pixels
@@ -99,8 +100,8 @@ axes.initAxis = function(td,ax) {
 // convert between axis names (xaxis, xaxis2, etc, elements of td.layout)
 // and axis id's (x, x2, etc). Would probably have ditched 'xaxis' completely
 // in favor of just 'x' if it weren't ingrained in the API etc.
-axes.id2name = function(id) { return id.charAt(0)+'axis'+id.substr(1); };
-axes.name2id = function(name) { return name.charAt(0)+name.substr(5); };
+axes.id2name = function(id) { return id && id.charAt(0)+'axis'+id.substr(1); };
+axes.name2id = function(name) { return name && name.charAt(0)+name.substr(5); };
 
 // get counteraxis letter for this axis (name or id)
 // this can also be used as the id for default counter axis
@@ -954,11 +955,13 @@ function numFormat(v,ax,fmtoverride,hover) {
 
 // get all axis objects, optionally restricted to only x or y by string axletter
 axes.list = function(td,axletter) {
+    if(!td.layout) { return []; }
     return Object.keys(td.layout)
         .filter(function(k){
             if(axletter && k.charAt(0)!=axletter) { return false; }
             return k.match(/^[xy]axis[0-9]*/g);
         })
+        .sort()
         .map(function(k){ return td.layout[k]; });
 };
 

@@ -88,8 +88,8 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
         ya = plotinfo.y;
     // make the container for scatter plots (so error bars can find them along with bars)
     var scattertraces = plotinfo.plot.selectAll('g.trace.scatter') // <-- select trace group
-        .data(cdscatter)
-      .enter().append('g') // <-- add a trace for each calcdata
+        .data(cdscatter);
+    scattertraces.enter().append('g') // <-- add a trace for each calcdata
         .attr('class','trace scatter')
         .style('stroke-miterlimit',2);
 

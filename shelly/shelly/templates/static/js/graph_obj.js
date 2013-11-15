@@ -551,7 +551,7 @@ Plotly.plot = function(gd, data, layout) {
         }
 
         // remove old traces, then redraw everything
-        gl._paper.selectAll('g.trace').remove();
+        plotinfo.plot.selectAll('g.trace').remove();
         Plotly.Bars.plot(gd,plotinfo,cdbar);
         Plotly.Lib.markTime('done bars');
 
@@ -768,27 +768,29 @@ plots.setStyles = function(gd, merge_dflt) {
 };
 
 function applyStyle(gd) {
-    var gp = gd.layout._paper;
-    gp.selectAll('g.trace')
-        .call(Plotly.Drawing.traceStyle,gd);
-    gp.selectAll('g.points')
-        .each(function(d){
-            d3.select(this).selectAll('path,rect')
-                .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
-            d3.select(this).selectAll('text')
-                .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
-        });
+    Plotly.Plots.getSubplots(gd).forEach(function(subplot) {
+        var gp = gd.layout._plots[subplot].plot;
+        gp.selectAll('g.trace')
+            .call(Plotly.Drawing.traceStyle,gd);
+        gp.selectAll('g.points')
+            .each(function(d){
+                d3.select(this).selectAll('path,rect')
+                    .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
+                d3.select(this).selectAll('text')
+                    .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
+            });
 
-    gp.selectAll('g.trace polyline.line')
-        .call(Plotly.Drawing.lineGroupStyle);
+        gp.selectAll('g.trace polyline.line')
+            .call(Plotly.Drawing.lineGroupStyle);
 
-    gp.selectAll('g.trace polyline.fill')
-        .call(Plotly.Drawing.fillGroupStyle);
+        gp.selectAll('g.trace polyline.fill')
+            .call(Plotly.Drawing.fillGroupStyle);
 
-    gp.selectAll('g.boxes')
-        .call(Plotly.Boxes.style);
-    gp.selectAll('g.errorbars')
-        .call(Plotly.ErrorBars.style);
+        gp.selectAll('g.boxes')
+            .call(Plotly.Boxes.style);
+        gp.selectAll('g.errorbars')
+            .call(Plotly.ErrorBars.style);
+    });
 
     if(gd.mainsite && window.ws && window.ws.confirmedReady) {
         alert_repl("applyStyle", plots.graphJson(gd,true));
@@ -842,6 +844,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // harder though.
     var replot_attr=[
         'mode','visible','type','bardir','fill','histnorm',
+        'xaxis','yaxis',
         'marker.size','text','textfont.size','textposition',
         'xtype','x0','dx','ytype','y0','dy',
         'zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth','showscale',
@@ -1009,7 +1012,6 @@ Plotly.restyle = function(gd,astr,val,traces) {
 // relayout(gd,aobj)
 //      aobj - {astr1:val1, astr2:val2...} allows setting multiple attributes simultaneously
 Plotly.relayout = function(gd,astr,val) {
-    // console.log(gd,astr,val);
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     var gl = gd.layout,
         aobj = {},
@@ -1030,7 +1032,7 @@ Plotly.relayout = function(gd,astr,val) {
         // look for 'allaxes', split out into all axes
         if(keys[i].indexOf('allaxes')===0) {
             for(var j=0; j<axes.length; j++) {
-                var newkey = keys[i].replace('allaxes',Plotly.Axes.id2name(axes[j]._id));
+                var newkey = keys[i].replace('allaxes',axes[j]._name);
                 if(!aobj[newkey]) { aobj[newkey] = aobj[keys[i]]; }
             }
             delete aobj[keys[i]];
@@ -1182,7 +1184,7 @@ Plotly.relayout = function(gd,astr,val) {
     // first check if there's still anything to do
     var ak = Object.keys(aobj);
     if(doplot) {
-        gd.layout = undefined; // force plot() to redo the layout
+        gd.layout = undefined; // force plot() to redo the
         Plotly.plot(gd,'',gl); // pass in the modified layout
     }
     else if(ak.length) {
@@ -1309,7 +1311,6 @@ function makePlotFramework(divid, layout) {
 
     // Get the layout info - take the default and update it with any existing layout, then layout arg
     gd.layout=updateObject(gd.layout||defaultLayout(), layout||{});
-
     var gl = gd.layout;
 
     // Get subplots and see if we need to make any more axes
@@ -1391,8 +1392,8 @@ function makePlotFramework(divid, layout) {
                 // separate axis domain and tick/line domain or something, so they can
                 // still share the (possibly larger) dragger and background but don't
                 // have to both be drawn over that whole domain
-                xa2.domain = plotinfo.x.domain.slice();
-                ya2.domain = plotinfo.y.domain.slice();
+                plotinfo.x.domain = xa2.domain.slice();
+                plotinfo.y.domain = ya2.domain.slice();
             }
             if(overlaid) {
                 // mainplot is the subplot id of the one we're overlaying on
@@ -1536,53 +1537,47 @@ function layoutStyles(gd) {
                 (ya.mirrors && ya.mirrors[xa._id+'right']),
             rightpos = xa._offset+xa._length+gs.p+ylw/2;
 
-            // save axis line positions for ticks, draggers, etc to reference
-            // each subplot gets an entry [left or bottom, right or top, free, main]
-            // main is the position at which to draw labels and draggers, if any
-            xa._linepositions[subplot] = [
-                showbottom ? bottompos : undefined,
-                showtop ? toppos : undefined,
-                showfreex ? freeposx : undefined
-            ];
-            if(xa.anchor==ya._id) {
-                xa._linepositions[subplot][3] = xa.side=='top' ? toppos : bottompos;
-            }
-            else if(showfreex) {
-                xa._linepositions[subplot][3] = freeposx;
-            }
-
-            ya._linepositions[subplot] = [
-                showleft ? leftpos : undefined,
-                showright ? rightpos : undefined,
-                showfreey ? freeposy : undefined
-            ];
-            if(ya.anchor==xa._id) {
-                ya._linepositions[subplot][3] = ya.side=='right' ? rightpos : leftpos;
-            }
-            else if(showfreey) {
-                ya._linepositions[subplot][3] = freeposy;
-            }
-
-        if(showbottom || showtop || showfreex) {
-            plotinfo.xlines
-                .attr('d',
-                    (showbottom ? (xpathPrefix+bottompos+xpathSuffix) : '') +
-                    (showtop ? (xpathPrefix+toppos+xpathSuffix) : '') +
-                    (showfreex ? (xpathPrefix+freeposx+xpathSuffix) : ''))
-                .attr('stroke-width',xlw)
-                .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
+        // save axis line positions for ticks, draggers, etc to reference
+        // each subplot gets an entry [left or bottom, right or top, free, main]
+        // main is the position at which to draw labels and draggers, if any
+        xa._linepositions[subplot] = [
+            showbottom ? bottompos : undefined,
+            showtop ? toppos : undefined,
+            showfreex ? freeposx : undefined
+        ];
+        if(xa.anchor==ya._id) {
+            xa._linepositions[subplot][3] = xa.side=='top' ? toppos : bottompos;
         }
-        else { plotinfo.xlines.remove(); }
-        if(showleft || showright || showfreey) {
-            plotinfo.ylines
-                .attr('d',
-                    (showleft ? ('M'+leftpos+ypathSuffix) : '') +
-                    (showright ? ('M'+rightpos+ypathSuffix) : '') +
-                    (showfreey ? ('M'+freeposy+ypathSuffix) : ''))
-                .attr('stroke-width',ylw)
-                .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
+        else if(showfreex) {
+            xa._linepositions[subplot][3] = freeposx;
         }
-        else { plotinfo.ylines.remove(); }
+
+        ya._linepositions[subplot] = [
+            showleft ? leftpos : undefined,
+            showright ? rightpos : undefined,
+            showfreey ? freeposy : undefined
+        ];
+        if(ya.anchor==xa._id) {
+            ya._linepositions[subplot][3] = ya.side=='right' ? rightpos : leftpos;
+        }
+        else if(showfreey) {
+            ya._linepositions[subplot][3] = freeposy;
+        }
+
+        plotinfo.xlines
+            .attr('d',(
+                (showbottom ? (xpathPrefix+bottompos+xpathSuffix) : '') +
+                (showtop ? (xpathPrefix+toppos+xpathSuffix) : '') +
+                (showfreex ? (xpathPrefix+freeposx+xpathSuffix) : '')) || 'M0,0') // so it doesn't barf with no lines shown
+            .attr('stroke-width',xlw)
+            .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
+        plotinfo.ylines
+            .attr('d',(
+                (showleft ? ('M'+leftpos+ypathSuffix) : '') +
+                (showright ? ('M'+rightpos+ypathSuffix) : '') +
+                (showfreey ? ('M'+freeposy+ypathSuffix) : '')) || 'M0,0')
+            .attr('stroke-width',ylw)
+            .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
 
         // mark free axes as displayed, so we don't draw them again
         if(showfreex) { freefinished.push(xa._id); }
@@ -1688,7 +1683,7 @@ plots.titles = function(gd,title) {
         lbb, tickedge;
     if(axletter=='x'){
         tickedge=xa.side=='top' ? paperbb.bottom : paperbb.top;
-        gl._paper.selectAll('text.xtick').each(function(){
+        gl._paper.selectAll('text.'+xa._id+'tick').each(function(){
             lbb=this.getBoundingClientRect();
             if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
                 if(xa.side=='top') {
@@ -1705,7 +1700,7 @@ plots.titles = function(gd,title) {
     }
     else if(axletter=='y'){
         tickedge=ya.side=='right' ? paperbb.left : paperbb.right;
-        gl._paper.selectAll('text.ytick').each(function(){
+        gl._paper.selectAll('text.'+ya._id+'tick').each(function(){
             lbb=this.getBoundingClientRect();
             if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
                 if(ya.side=='right') {
