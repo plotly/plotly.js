@@ -1614,28 +1614,6 @@ plots.titles = function(gd,title) {
         return d3.max(textSizes) || 0;
     }
 
-// <<<<<<< HEAD
-    // var gl=gd.layout,gs=gl._size,
-    //     axletter = title.charAt(0),
-    //     cont = gl[Plotly.Axes.id2name(title.replace('title',''))] || gl,
-    //     x,y,w,h,transform='',attr={},xa,ya,
-    //     name = (cont._id||axletter).toUpperCase()+' axis',
-    //     font = cont.titlefont.family || gl.font.family || 'Arial',
-    //     fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
-    //     fontColor = cont.titlefont.color || gl.font.color || '#000';
-    // if(axletter=='x'){
-    //     xa = cont;
-    //     ya = (xa.anchor=='free') ?
-    //         {_offset:gs.l+(1-(xa.position||0))*gs.h, _length:0} :
-    //         Plotly.Axes.getFromId(gd, xa.anchor);
-    //     x = xa._offset+xa._length/2;
-    //     y = (xa.side=='top') ?
-    //         ya._offset- 15-fontSize*0.5 :
-    //         ya._offset+ya._length + 15+fontSize;
-    //     w = xa._length/2;
-    //     h = fontSize;
-// =======
-
     var gl=gd.layout,gs=gl._size,
         axletter = title.charAt(0),
         cont = gl[Plotly.Axes.id2name(title.replace('title',''))] || gl,
@@ -1643,7 +1621,7 @@ plots.titles = function(gd,title) {
         font = cont.titlefont.family || gl.font.family || 'Arial',
         fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
         fontColor = cont.titlefont.color || gl.font.color || '#000',
-        x,y,w,h,transform='',attr={},xa,ya;
+        x,y,w,h,transform='',attr={},xa,ya,groupId;
     if(axletter=='x'){
         xa = cont;
         ya = (xa.anchor=='free') ?
@@ -1654,10 +1632,16 @@ plots.titles = function(gd,title) {
             ya._offset- 15-fontSize*0.5 :
             ya._offset+ya._length + 15+fontSize;
         w = xa._length/2;
-        h = fontSize;
+        h = fontSize,
+        groupId = xa._id+ya._id;
         var axisH = getAxisSize(gd, xa._id) + cont.ticklen;
-        options = {horizontalAlign: 'center', verticalAlign: 'bottom', horizontalMargin: -gs.r + gs.l, verticalMargin: fontSize + 4 + axisH, orientation: 'under'};
-// >>>>>>> master
+        var hMargin;
+        if(groupId){
+            var bBox = d3.select(gd).select('g.subplot.'+groupId+'>rect').node().getBBox();
+            var svgBBox = d3.select(gd).select('svg').node().getBBox();
+            hMargin =  bBox.x - (svgBBox.width - (bBox.x + bBox.width)) + bBox.width/2;
+        }
+        options = {x: x, y: y, 'text-anchor': 'middle'};
     }
     else if(axletter=='y'){
         ya = cont;
@@ -1673,7 +1657,8 @@ plots.titles = function(gd,title) {
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
         var axisW = getAxisSize(gd, ya._id);
-        options = {horizontalAlign: 0, verticalAlign: 'center', horizontalMargin: 0, verticalMargin: gs.l / 2 - axisW - fontSize*2 , rotate: -90};
+        options = {x: x, y: y, 'text-anchor': 'middle'};
+        transform = {rotate: '-90', offset: -axisW + fontSize/2};
     }
     else{
         name = 'Plot';
@@ -1681,26 +1666,8 @@ plots.titles = function(gd,title) {
         x = gl.width/2;
         y = gl.margin.t/2;
         w = gl.width/2;
-// <<<<<<< HEAD
-//         h = fontSize;
-//     }
-
-//     gl._infolayer.select('.'+title).remove();
-//     var el=gl._infolayer.append('text').attr('class',title)
-//         .call(Plotly.Drawing.setPosition, x, y)
-//         .call(Plotly.Drawing.font,font,fontSize,fontColor)
-//         .attr('text-anchor','middle')
-//         .attr('transform',transform.replace('x',x).replace('y',y));
-//     // don't allow editing on embedded graphs
-//     if(gd.mainsite) { el.on('click',function(){ Plotly.Fx.autoGrowInput(this); }); }
-
-//     var txt=cont.title;
-//     if(txt.match(/^Click to enter (Plot |[XY][0-9]* axis )?title$/)) {
-//         if(gd.mainsite) { el.style('fill','#999'); } // cues in gray
-//         else { txt=''; } // don't show cues in embedded plots
-// =======
         h = fontSize;
-        options = {horizontalAlign: 'center', verticalAlign: 'top', horizontalMargin: -gs.r, verticalMargin: gl.margin.t / 2};
+        options = {x: x, y: y, 'text-anchor': 'middle'};
     }
 
     var opacity = 1;
@@ -1713,20 +1680,17 @@ plots.titles = function(gd,title) {
     var el = gl._infolayer.append('text').attr('class', title).text(txt);
 
     function titleLayout(){
-        // TODO: this only works for a single subplot... perhaps union all subplots?
-        var bg = d3.select(gd).select('svg>g>rect');
         var titleEl = this
             .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
             .call(d3.plugly.convertToTspans)
-            .call(d3.plugly.alignSVGWith(bg, options));
-
-        if(options.rotate){
+            .attr(options);
+        titleEl.selectAll('tspan.line')
+            .attr(options)
+        if(transform){
             titleEl.attr({
-                'text-anchor': 'middle', x: 0,
-                transform: 'translate(' + [x, y] + ') rotate(' + options.rotate + ')'
+                transform: 'rotate(' + [transform.rotate, options.x, options.y] + ') translate(0, '+transform.offset+')'
             });
         }
-// >>>>>>> master
     }
 
     el.attr({'data-unformatted': txt})
@@ -1758,8 +1722,9 @@ plots.titles = function(gd,title) {
                 this.text(txt).call(titleLayout);
             })
             .on('input', function(d, i){
-                var bg = d3.select(gd).select('svg>g>rect'); // TODO: see titleLayout above
-                this.text(d || ' ').call(d3.plugly.alignSVGWith(bg, options));
+                this.text(d || ' ').attr(options)
+                    .selectAll('tspan.line')
+                    .attr(options);
             });
     }
     else if(!txt || txt === 'Click to enter '+name+' title') el.remove();
