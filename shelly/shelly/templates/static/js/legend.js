@@ -148,7 +148,7 @@ legend.draw = function(gd) {
         .each(legend.lines)
         .each(legend.points);
 
-    var tracetext=traces.call(legendText,gd).selectAll('text');
+    var tracetext=traces.call(legendText,gd).selectAll('text.legendtext');
 
     function legendLayout(){
         this.call(d3.plugly.convertToTspans);
@@ -164,11 +164,11 @@ legend.draw = function(gd) {
                 .call(d3.plugly.makeEditable)
                 .call(legendLayout)
                 .on('edit', function(text){
-                    this.attr({'data-unformatted': text})
+                    this.attr({'data-unformatted': text});
                     this.text(text)
                         .call(legendLayout);
                     if(this.text() === ''){
-                        text = ' \u0020\u0020 '
+                        text = ' \u0020\u0020 ';
                     }
                     var tn = Number(this.attr('class').split('-')[1]);
                     var property = Plotly.Lib.nestedProperty(gd.data[tn],'name');
@@ -176,7 +176,7 @@ legend.draw = function(gd) {
                     d[0].t.name = text;
                     Plotly.restyle(gd, property.astr, text, tn);
                 });
-        })
+        });
     }
     else{
         tracetext.each(function(d, i){
