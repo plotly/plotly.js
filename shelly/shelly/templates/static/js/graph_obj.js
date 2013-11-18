@@ -1099,10 +1099,10 @@ Plotly.relayout = function(gd,astr,val) {
                 r1 = ax.range[1];
             if(vi=='log') {
                 // if both limits are negative, autorange
-                if(r0<0 && r1<0) { doextra(p.parts[0]+'.autorange',true); continue; }
+                if(r0<=0 && r1<=0) { doextra(p.parts[0]+'.autorange',true); continue; }
                 // if one is negative, set it to one millionth the other. TODO: find the smallest positive val?
-                else if(r0<0) r0 = r1/1e6;
-                else if(r1<0) r1 = r0/1e6;
+                else if(r0<=0) r0 = r1/1e6;
+                else if(r1<=0) r1 = r0/1e6;
                 // now set the range values as appropriate
                 doextra(p.parts[0]+'.range[0]', Math.log(r0)/Math.LN10);
                 doextra(p.parts[0]+'.range[1]', Math.log(r1)/Math.LN10);
