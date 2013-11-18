@@ -1765,14 +1765,12 @@ plots.titles = function(gd,title) {
 plots.getSubplots = function(gd,ax) {
     var data = gd.data, subplots = [];
 
-    if(ax && !ax._id) { Plotly.Axes.initAxis(gd,ax); }
-
     // look for subplots in the data
     (data||[]).forEach(function(d) {
         var xid = (d.xaxis||'x'),
             yid = (d.yaxis||'y'),
             subplot = xid+yid;
-        if(ax && ax._id!=xid && ax._id!=yid) { return; }
+        // if(ax && ax._id!=xid && ax._id!=yid) { return; }
         if(subplots.indexOf(subplot)==-1) { subplots.push(subplot); }
     });
 
@@ -1793,7 +1791,7 @@ plots.getSubplots = function(gd,ax) {
             console.log('warning: couldnt find anchor '+ax3id+' for axis '+ax2._id);
             return;
         }
-        if(ax && ax2!==ax && ax3!==ax) { return; }
+        // if(ax && ax2!==ax && ax3!==ax) { return; }
 
         var subplot = ax2letter=='x' ? (ax2._id+ax3._id) : (ax3._id+ax2._id);
         if(subplots.indexOf(subplot)==-1) { subplots.push(subplot); }
@@ -1804,7 +1802,7 @@ plots.getSubplots = function(gd,ax) {
     }
 
     var spmatch = /^x([0-9]*)y([0-9]*)$/;
-    return subplots.filter(function(sp) { return sp.match(spmatch); })
+    var allSubplots = subplots.filter(function(sp) { return sp.match(spmatch); })
         .sort(function(a,b) {
             var amatch = a.match(spmatch),
                 bmatch = b.match(spmatch);
@@ -1813,6 +1811,12 @@ plots.getSubplots = function(gd,ax) {
             if(amatch[1]==bmatch[1]) { return Number(amatch[2]||0)>Number(bmatch[2]||0); }
             return Number(amatch[1]||0)>Number(bmatch[1]||0);
         });
+    if(ax) {
+        if(!ax._id) { Plotly.Axes.initAxis(gd,ax); }
+        var axmatch = new RegExp(ax._id.charAt(0)=='x' ? ('^'+ax._id+'y') : (ax._id+'$') );
+        return allSubplots.filter(function(sp) { return sp.match(axmatch); });
+    }
+    else { return allSubplots; }
 };
 
 // graphJson - jsonify the graph data and layout
