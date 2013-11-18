@@ -322,7 +322,7 @@ plots.positionBrand = function(gd){
     $(gd).find('.linktotool').remove();
     var linktotool = $('<div class="linktotool">'+
         '<a><font class="muted">view in </font><font class="info">plotly</font></a>'+
-        '</div>').appendTo(gl._paperdiv.node());
+        '</div>').appendTo(gd.layout._paperdiv.node());
     if(gd.shareplot) {
         var path=window.location.pathname.split('/');
         linktotool.find('a')
@@ -1307,9 +1307,29 @@ function makePlotFramework(divid, layout) {
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
+    function addDefaultAxis(container, axname) {
+        var axid = axname.replace('axis','');
+        if(!container[axname]) {
+            container[axname] = Plotly.Axes.defaultAxis({
+                range: [-1,6],
+                title: 'Click to enter '+axid.toUpperCase()+' axis title',
+                anchor: {x:'y',y:'x'}[axname.charAt(0)]
+            });
+        }
+    }
 
-    // Get the layout info - take the default and update it with any existing layout, then layout arg
-    gd.layout=updateObject(gd.layout||defaultLayout(), layout||{});
+    // Get the layout info - take the default or any existing layout, then update with layout arg
+    var oldLayout = gd.layout||defaultLayout(),
+        newLayout = layout || {};
+    // look for axes to include in oldLayout - so that default axis settings get included
+    var xalist = Object.keys(newLayout).filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
+        yalist = Object.keys(newLayout).filter(function(k){ return k.match(/^yaxis[0-9]*$/); });
+    if(!xalist.length) { xalist = ['xaxis']; }
+    if(!yalist.length) { yalist = ['yaxis']; }
+    xalist.concat(yalist).forEach(function(axname) {
+        addDefaultAxis(oldLayout,axname);
+    });
+    gd.layout=updateObject(oldLayout, newLayout);
     var gl = gd.layout;
 
     // Get subplots and see if we need to make any more axes
@@ -1318,15 +1338,8 @@ function makePlotFramework(divid, layout) {
     subplots.forEach(function(subplot) {
         var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
         gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
-        [axmatch[1],axmatch[2]].forEach(function(axid,i) {
-            var axname = Plotly.Axes.id2name(axid);
-            if(!gl[axname]) {
-                gl[axname] = Plotly.Axes.defaultAxis({
-                    range:[-1,6],
-                    title:'Click to enter '+axid.toUpperCase()+' axis title',
-                    anchor:axmatch[2-i]
-                });
-            }
+        [axmatch[1],axmatch[2]].forEach(function(axid) {
+            addDefaultAxis(gl,Plotly.Axes.id2name(axid));
         });
     });
 
