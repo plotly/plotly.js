@@ -1334,14 +1334,15 @@ function makePlotFramework(divid, layout) {
 
     // Get subplots and see if we need to make any more axes
     var subplots = plots.getSubplots(gd);
-    gl._plots = {};
     subplots.forEach(function(subplot) {
         var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
-        gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
+        // gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
         [axmatch[1],axmatch[2]].forEach(function(axid) {
             addDefaultAxis(gl,Plotly.Axes.id2name(axid));
         });
     });
+    // now get subplots again, in case the new axes require more subplots (yes, that's odd... but possible)
+    subplots = plots.getSubplots(gd);
 
     Plotly.Axes.setTypes(gd);
 
@@ -1372,17 +1373,13 @@ function makePlotFramework(divid, layout) {
         .attr('xmlns:xmlns:xlink','http://www.w3.org/1999/xlink'); // odd d3 quirk - need namespace twice??
 
     // create all the layers in order, so we know they'll stay in order
-    // TODO: This will work fine for subplots and insets, but for overlaid plots (second y axis etc)
-    // it will mess up - background will completely cover the first one, and even if we force that
-    // to be transparent, the grid will be on top of the first one's data
-    // One solution: make ax.overlays point to another axis if we want this behavior
-    // another (less flexible): just look for subplots with identical x and y domains to coalesce
     var overlays = [];
+    gl._plots = {};
     gl._paper.selectAll('g.subplot').data(subplots)
       .enter().append('g')
         .classed('subplot',true)
         .each(function(subplot){
-            var plotinfo = gl._plots[subplot],
+            var plotinfo = gl._plots[subplot] = {},
                 plotgroup = d3.select(this).classed(subplot,true);
             plotinfo.id = subplot;
             // references to the axis objects controlling this subplot
@@ -1394,13 +1391,23 @@ function makePlotFramework(divid, layout) {
             // is this subplot overlaid on another?
             // ax.overlaying is the id of another axis of the same dimension that this one overlays
             // to be an overlaid subplot, the main plot must exist
-            var overlaid = false;
-            if(plotinfo.x.overlaying || plotinfo.y.overlaying) {
-                var xa2 = Plotly.Axes.getFromId(gd,plotinfo.x.overlaying) || plotinfo.x,
-                    ya2 = Plotly.Axes.getFromId(gd,plotinfo.y.overlaying) || plotinfo.y,
-                    mainplot = xa2._id+ya2._id;
-                if(subplots.indexOf(mainplot)!=-1) { overlaid = mainplot; }
+            // make sure we're not trying to overlay on an axis that's already overlaying another
+            var xa2 = Plotly.Axes.getFromId(gd,plotinfo.x.overlaying) || plotinfo.x;
+            if(xa2!=plotinfo.x && xa2.overlaying) {
+                xa2 = plotinfo.x;
+                plotinfo.x.overlaying = false;
+            }
 
+            var ya2 = Plotly.Axes.getFromId(gd,plotinfo.y.overlaying) || plotinfo.y;
+            if(ya2!=plotinfo.y && ya2.overlaying) {
+                ya2 = plotinfo.y;
+                plotinfo.y.overlaying = false;
+            }
+
+            var mainplot = xa2._id+ya2._id;
+            if(mainplot!=subplot && subplots.indexOf(mainplot)!=-1) {
+                plotinfo.mainplot = mainplot;
+                overlays.push(plotinfo);
                 // for now force overlays to overlay completely... so they can drag
                 // together correctly and share backgrounds. Later perhaps we make
                 // separate axis domain and tick/line domain or something, so they can
@@ -1408,11 +1415,6 @@ function makePlotFramework(divid, layout) {
                 // have to both be drawn over that whole domain
                 plotinfo.x.domain = xa2.domain.slice();
                 plotinfo.y.domain = ya2.domain.slice();
-            }
-            if(overlaid) {
-                // mainplot is the subplot id of the one we're overlaying on
-                plotinfo.mainplot = overlaid;
-                overlays.push(plotinfo);
             }
             else {
                 // main subplot - make the components of the plot and containers for overlays
@@ -1770,7 +1772,6 @@ plots.getSubplots = function(gd,ax) {
         var xid = (d.xaxis||'x'),
             yid = (d.yaxis||'y'),
             subplot = xid+yid;
-        // if(ax && ax._id!=xid && ax._id!=yid) { return; }
         if(subplots.indexOf(subplot)==-1) { subplots.push(subplot); }
     });
 
@@ -1791,7 +1792,6 @@ plots.getSubplots = function(gd,ax) {
             console.log('warning: couldnt find anchor '+ax3id+' for axis '+ax2._id);
             return;
         }
-        // if(ax && ax2!==ax && ax3!==ax) { return; }
 
         var subplot = ax2letter=='x' ? (ax2._id+ax3._id) : (ax3._id+ax2._id);
         if(subplots.indexOf(subplot)==-1) { subplots.push(subplot); }
@@ -1804,12 +1804,9 @@ plots.getSubplots = function(gd,ax) {
     var spmatch = /^x([0-9]*)y([0-9]*)$/;
     var allSubplots = subplots.filter(function(sp) { return sp.match(spmatch); })
         .sort(function(a,b) {
-            var amatch = a.match(spmatch),
-                bmatch = b.match(spmatch);
-            if(!amatch) { return false; }
-            if(!bmatch) { return true; }
-            if(amatch[1]==bmatch[1]) { return Number(amatch[2]||0)>Number(bmatch[2]||0); }
-            return Number(amatch[1]||0)>Number(bmatch[1]||0);
+            var amatch = a.match(spmatch), bmatch = b.match(spmatch);
+            if(amatch[1]==bmatch[1]) { return Number(amatch[2]||1)-Number(bmatch[2]||1); }
+            return Number(amatch[1]||0)-Number(bmatch[1]||0);
         });
     if(ax) {
         if(!ax._id) { Plotly.Axes.initAxis(gd,ax); }

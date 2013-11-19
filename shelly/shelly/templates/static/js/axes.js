@@ -16,7 +16,9 @@ axes.defaultAxis = function(extras) {
         zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
         title: 'Click to enter axis title',unit:'',
         titlefont:{family:'',size:0,color:''},
-        tickfont:{family:'',size:0,color:''}
+        tickfont:{family:'',size:0,color:''},
+        overlaying:false, // anchor, side we leave out for now as the defaults are different for x and y
+        domain:[0,1], position:0
     },extras);
 };
 // TODO: add label positioning
