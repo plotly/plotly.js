@@ -78,34 +78,40 @@ annotations.draw = function(gd,index,opt,value) {
     // remove the existing annotation if there is one
     gl._infolayer.selectAll('.annotation[data-index="'+index+'"]').remove();
 
-    // edit the options
-    var options = gl.annotations[index],
-        // oldref = options.ref,
+    // combine default and existing options (default x, y, ax, ay are set later)
+    var oldopts = gl.annotations[index],
         oldref = {
-            x: options.xref || (options.ref=='paper' ? 'paper' : 'x'), // options.ref for backward compat only
-            y: options.yref || (options.ref=='paper' ? 'paper' : 'y')
-        };
-    if(typeof opt == 'string' && opt) { Plotly.Lib.nestedProperty(options,opt).set(value); }
-    else if($.isPlainObject(opt)) { Object.keys(opt).forEach(function(k){ options[k] = opt[k]; }); }
+            x: oldopts.xref || (oldopts.ref=='paper' ? 'paper' : 'x'), // .ref for backward compat only (that was from before multiaxes)
+            y: oldopts.yref || (oldopts.ref=='paper' ? 'paper' : 'y')
+        },
+        options = $.extend({
+            text: 'new text',
+            bordercolor: '',
+            borderwidth: 1,
+            borderpad: 1,
+            bgcolor: 'rgba(0,0,0,0)',
+            xref: oldref.x,
+            yref: oldref.y,
+            showarrow: true,
+            arrowwidth: 0,
+            arrowcolor: '',
+            arrowhead: 1,
+            arrowsize: 1,
+            tag: '',
+            font: {family:'',size:0,color:''},
+            opacity: 1,
+            align: 'center'
+        },oldopts);
+    gl.annotations[index] = options;
 
-    // set default options (default x, y, ax, ay are set later)
-    if(!options.bordercolor) { options.bordercolor = ''; }
-    if(!$.isNumeric(options.borderwidth)) { options.borderwidth = 1; }
-    if(!options.bgcolor) { options.bgcolor = 'rgba(0,0,0,0)'; }
-    // if(!options.ref) { options.ref='plot'; }
-    if(!options.xref) { options.xref=oldref.x; }
-    if(!options.yref) { options.yref=oldref.y; }
-    if(options.showarrow!==false) { options.showarrow=true; }
-    if(!$.isNumeric(options.borderpad)) { options.borderpad=1; }
-    if(!options.arrowwidth) { options.arrowwidth = 0; }
-    if(!options.arrowcolor) { options.arrowcolor = ''; }
-    if(!$.isNumeric(options.arrowhead)) { options.arrowhead=1; }
-    if(!$.isNumeric(options.arrowsize)) { options.arrowsize=1; }
-    if(!options.tag) { options.tag=''; }
-    if(!options.text) { options.text=((options.showarrow && (options.text==='')) ? '' : 'new text'); }
-    if(!options.font) { options.font={family:'',size:0,color:''}; }
-    if(!options.opacity) { options.opacity=1; }
-    if(!options.align) options.align='center';
+    if(typeof opt == 'string' && opt) {
+        Plotly.Lib.nestedProperty(options,opt).set(value);
+    }
+    else if($.isPlainObject(opt)) { Object.keys(opt).forEach(function(k){
+        Plotly.Lib.nestedProperty(options,k).set(opt[k]);
+    }); }
+
+    if(!options.text) { options.text=options.showarrow ? '&nbsp;' : 'new text'; }
 
     // get the paper and plot bounding boxes before adding pieces that go off screen
     // firefox will include things that extend outside the original... can we avoid that?
@@ -113,26 +119,31 @@ annotations.draw = function(gd,index,opt,value) {
         annPosPx = {x:0, y:0};
 
     // create the components
-    // TODO: make a single group to contain all, so opacity can work right with border/arrow together
-    var ann = gl._infolayer.append('svg')
+    // made a single group to contain all, so opacity can work right with border/arrow together
+    // this could handle a whole bunch of cleanup at this point, but works for now
+    var anngroup = gl._infolayer.append('g')
         .attr('class','annotation')
-        .attr('data-cmmt',options.tag)
-        .call(Plotly.Drawing.setPosition,0,0)
         .attr('data-index',String(index))
+        .attr('data-cmmt',options.tag)
         .style('opacity',options.opacity);
+
+    var ann = anngroup.append('svg')
+        // .attr('class','annotation')
+        .attr('data-cmmt',options.tag)
+        .call(Plotly.Drawing.setPosition,0,0);
 
     var borderwidth = options.borderwidth;
     var annbg = ann.append('rect')
         .attr('class','bg')
         .call(Plotly.Drawing.strokeColor,options.bordercolor || 'rgba(0,0,0,0)')
         .attr('stroke-width',borderwidth)
-        .call(Plotly.Drawing.fillColor,options.bgcolor)
+        .call(Plotly.Drawing.fillColor,options.bgcolor);
 
-    var font = options.font.family||gl.font.family||'Arial';
-    var fontSize = options.font.size||gl.font.size||12;
-    var fontColor = options.font.color||gl.font.color||'#000';
-    var opacity = 1;
-    var alignTo = {left:'right', center:'center', right:'left'}[options.align];
+    var font = options.font.family||gl.font.family||'Arial',
+        fontSize = options.font.size||gl.font.size||12,
+        fontColor = options.font.color||gl.font.color||'#000',
+        opacity = 1,
+        alignTo = {left:'right', center:'center', right:'left'}[options.align];
 
     function titleLayout(){
         var bg = d3.select(gd).select('svg>rect.bg');
@@ -152,22 +163,22 @@ annotations.draw = function(gd,index,opt,value) {
     var anntext = ann.append('text')
         .attr('class','annotation')
         .attr('data-cmmt',options.tag)
-        .text(options.text);
-
-    anntext.attr({'data-unformatted': options.text});
+        .text(options.text)
+        .attr({'data-unformatted': options.text});
 
     if(gd.mainsite) {
         anntext.call(d3.plugly.makeEditable)
             .call(titleLayout)
             .on('edit', function(_text){
                 options.text = _text;
-                this.attr({'data-unformatted': options.text})
+                this.attr({'data-unformatted': options.text});
                 this.call(titleLayout);
-                var property = Plotly.Lib.nestedProperty(gl,'annotations['+index+'].text');
-                var update = {};
-                update[property.astr] = options.text;
-                if(gl.xaxis.autorange) { update['xaxis.autorange'] = true; }
-                if(gl.yaxis.autorange) { update['yaxis.autorange'] = true; }
+                var update = {},
+                    xa = Plotly.Axes.getFromId(gd,options.xref),
+                    ya = Plotly.Axes.getFromId(gd,options.yref);
+                update['annotations['+index+'].text'] = options.text;
+                if(xa && xa.autorange) { update[xa._name+'.autorange'] = true; }
+                if(ya && ya.autorange) { update[ya._name+'.autorange'] = true; }
                 Plotly.relayout(gd,update);
             });
     }
@@ -247,6 +258,7 @@ annotations.draw = function(gd,index,opt,value) {
         return;
     }
 
+    // default values for arrow vector
     if(!options.ax) { options.ax=-10; }
     if(!options.ay) { options.ay=-annheight/2-20; }
     // now position the annotation and arrow, based on options[x,y,ref,showarrow,ax,ay]
@@ -277,23 +289,26 @@ annotations.draw = function(gd,index,opt,value) {
     annPosPx.y = Plotly.Lib.constrain(annPosPx.y,1,paperBB.height-1);
 
     var borderpad = Number(options.borderpad),
-        borderfull = borderwidth+borderpad+1,
-        outerwidth = annwidth+2*borderfull,
-        outerheight = annheight+2*borderfull;
+        bordershift = borderpad+borderwidth/2,
+        borderfull = borderwidth+borderpad,
+        outerwidth = Math.round(annwidth+2*borderfull),
+        outerheight = Math.round(annheight+2*borderfull),
+        texty = paperBB.top-anntextBB.top+borderfull*2; // *2 is an artifact of titleLayout above...
     ann.call(Plotly.Drawing.setRect,
-        annPosPx.x-outerwidth/2, annPosPx.y-outerheight/2, outerwidth, outerheight);
-    annbg.call(Plotly.Drawing.setSize,
-        annwidth+borderwidth+2*borderpad, annheight+borderwidth+2*borderpad);
+        Math.round(annPosPx.x-outerwidth/2), Math.round(annPosPx.y-outerheight/2),
+            outerwidth, outerheight);
+    annbg.call(Plotly.Drawing.setRect, borderwidth/2, borderwidth/2,
+        outerwidth-borderwidth, outerheight-borderwidth);
     anntext
-        .attr({x: paperBB.left-anntextBB.left+borderfull, y: paperBB.top-anntextBB.top+borderfull*1.5})
+        .attr({x: paperBB.left-anntextBB.left+borderfull, y: texty})
       .selectAll('tspan.line')
 //        .attr({x: paperBB.left-anntextBB.left+borderfull, y:  paperBB.top-anntextBB.top+borderfull*2});
-        .attr({y:  paperBB.top-anntextBB.top+borderfull*2});
+        .attr({y: texty});
 
     // add the arrow
     // uses options[arrowwidth,arrowcolor,arrowhead] for styling
     var drawArrow = function(dx,dy){
-        $(gd).find('g.annotation[data-index="'+index+'"]').remove();
+        $(gd).find('g.annotation[data-index="'+index+'"]>g').remove();
         // find where to start the arrow:
         // at the border of the textbox, if that border is visible,
         // or at the edge of the lines of text, if the border is hidden
@@ -331,16 +346,16 @@ annotations.draw = function(gd,index,opt,value) {
         });
         if(showline) {
             var strokewidth = options.arrowwidth || borderwidth*2 || 2;
-            var arrowgroup = gl._infolayer.append('g')
-                .attr('class','annotation')
-                .attr('data-cmmt',options.tag)
-                .attr('data-index',String(index))
-                .style('opacity',options.opacity);
+            var arrowgroup = anngroup.append('g')
+                // .attr('class','annotation')
+                .attr('data-cmmt',options.tag);
+                // .attr('data-index',String(index))
+                // .style('opacity',options.opacity);
             var arrow = arrowgroup.append('path')
-                .attr('class','annotation')
+                // .attr('class','annotation')
                 .attr('data-cmmt',options.tag)
-                .attr('data-index',String(index))
-                .attr('d','M'+ax0+','+ay0+'L'+ax+','+ay)
+                // .attr('data-index',String(index))
+                .attr('d','M'+(ax0-1)+','+(ay0-1)+'L'+ax+','+ay) // no idea why the -1 here is needed
                 .attr('stroke-width',strokewidth)
                 .call(Plotly.Drawing.strokeColor,options.arrowcolor ||
                     (Plotly.Drawing.opacity(options.bordercolor) ? options.bordercolor : '') || '#000');
@@ -354,6 +369,7 @@ annotations.draw = function(gd,index,opt,value) {
                 .attr('stroke-width',strokewidth+6)
                 .call(Plotly.Drawing.strokeColor,'rgba(0,0,0,0)')
                 .call(Plotly.Drawing.fillColor,'rgba(0,0,0,0)');
+
             if(gd.mainsite) { arrowdrag.node().onmousedown = function(e) {
                 if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
 
@@ -362,7 +378,12 @@ annotations.draw = function(gd,index,opt,value) {
                     annx0 = Number(ann.attr('x')),
                     anny0 = Number(ann.attr('y')),
                     update = {},
-                    annbase = 'annotations['+index+']';
+                    annbase = 'annotations['+index+']',
+                    xa = Plotly.Axes.getFromId(gd,options.xref),
+                    ya = Plotly.Axes.getFromId(gd,options.yref);
+                if(xa && xa.autorange) { update[xa._name+'.autorange'] = true; }
+                if(ya && ya.autorange) { update[ya._name+'.autorange'] = true; }
+
                 gd.dragged = false;
                 window.onmousemove = function(e2) {
                     var dx = e2.clientX-e.clientX,
@@ -401,7 +422,11 @@ annotations.draw = function(gd,index,opt,value) {
             x0=Number(el3.attr('x')),
             y0=Number(el3.attr('y')),
             update = {},
-            annbase = 'annotations['+index+']';
+            annbase = 'annotations['+index+']',
+            xa = Plotly.Axes.getFromId(gd,options.xref),
+            ya = Plotly.Axes.getFromId(gd,options.yref);
+        if(xa && xa.autorange) { update[xa._name+'.autorange'] = true; }
+        if(ya && ya.autorange) { update[ya._name+'.autorange'] = true; }
         gd.dragged = false;
         Plotly.Fx.setCursor(el3);
 
@@ -518,7 +543,7 @@ function arrowhead(el3,style,ends,mag) {
         d3.select(el.parentElement).append('path')
             .attr('class',el3.attr('class'))
             .attr('data-cmmt',el3.attr('data-cmmt'))
-            .attr('data-index',el3.attr('data-index'))
+            // .attr('data-index',el3.attr('data-index'))
             .style('fill',stroke)
             .style('fill-opacity',opacity)
             .attr('stroke-width',0)
@@ -584,9 +609,9 @@ annotations.calcAutorange = function(gd) {
 
     // find the bounding boxes for each of these annotations relative to the center of the plot
     gl.annotations.forEach(function(ann,i){
-        var arrowNode = gl._infolayer.selectAll('g.annotation[data-index="'+i+'"]').node(),
+        var arrowNode = gl._infolayer.selectAll('g.annotation[data-index="'+i+'"]>g').node(),
             arrowBB = arrowNode ? arrowNode.getBoundingClientRect() : blank,
-            textNode = gl._infolayer.selectAll('svg.annotation[data-index="'+i+'"]').node(),
+            textNode = gl._infolayer.selectAll('g.annotation[data-index="'+i+'"]>svg').node(),
             textBB = textNode ? textNode.getBoundingClientRect() : blank;
         if(ann.xa) {
             Plotly.Axes.expand(ann.xa, [ann.xa.l2c(ann.x0)],{

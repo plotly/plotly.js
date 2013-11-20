@@ -229,7 +229,7 @@ lib.nestedProperty = function(o,s) {
     };
 };
 
-// to prevent all event bubbling, in particular text selection during drag.
+// to prevent event bubbling, in particular text selection during drag.
 // see http://stackoverflow.com/questions/5429827/how-can-i-prevent-text-element-selection-with-cursor-drag
 // for maximum effect use:
 //      return pauseEvent(e);
@@ -237,7 +237,7 @@ lib.pauseEvent = function(e){
     if(e.stopPropagation) e.stopPropagation();
     if(e.preventDefault) e.preventDefault();
     e.cancelBubble=true;
-    e.returnValue=false;
+    // e.returnValue=false; // this started giving a jquery deprecation warning, so I assume it's now useless
     return false;
 };
 
