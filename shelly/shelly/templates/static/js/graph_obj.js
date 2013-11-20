@@ -355,6 +355,7 @@ plots.positionBrand = function(gd){
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
 Plotly.plot = function(gd, data, layout) {
+//    console.log('plotly.plot', gd, data, layout);
     Plotly.Lib.markTime('in plot');
     // Get the container div: we will store all variables for this plot as
     // properties of this div (for extension to multiple plots/tabs per page)
@@ -374,13 +375,38 @@ Plotly.plot = function(gd, data, layout) {
                         // is used to determine whether to make a new tab
     }
 
-    if(micropolar.adapter.isPolar(gd.data)){
-        gd.data=data;
+
+    // Polar plots
+    if(gd.data && gd.data[0] && gd.data[0].type) gd.mainPlotType = gd.data[0].type;
+    if(gd.mainPlotType && gd.mainPlotType.indexOf('Plot') != -1){
+        if(data){
+            gd.data=data;
+            gd.plotType = gd.data[0].type;
+        }
         gd.layout=layout;
-        gd.paper = $(gd).find('.svg-container');
-        micropolar.adapter.plotly(gd.paper.get(0), gd.data, gd.layout);
+
+        gd.graphContainer = d3.select(gd).select('.graph-container');
+        if(gd.graphContainer.empty()){
+            gd.graphContainer = d3.select(gd).append('div').classed('.graph-container', true);
+        }
+        gd.paperdiv = gd.graphContainer.select('.svg-container');
+        if(gd.paperdiv.empty()){
+            gd.paperdiv = gd.graphContainer.append('div')
+                .classed('svg-container',true)
+                .style('position','relative');
+        }
+
+        if(gd.layout.autosize == 'initial') {
+            setGraphContainerHeight(gd);
+            plotAutoSize(gd,{});
+            gd.layout.autosize = true;
+        }
+
+        if(!gd.framework || gd.framework.name != 'micropolarPlotlyAdapter') gd.framework = micropolar.adapter.plotly();
+        gd.framework({container: gd.paperdiv.node(), data: gd.data, layout: gd.layout});
+        gd.paper = gd.framework.svg();
         return null;
-    }
+    }else delete gd.mainPlotType;
 
     // Make or remake the framework (ie container and axes) if we need to
     // figure out what framework the data imply,
@@ -1447,6 +1473,7 @@ plots.titles = function(gd,title) {
     var opacity = 1;
     var txt = cont.title;
     if(cont.unit) txt += ' ('+cont.unit+')';
+    if(txt === '') opacity = 0;
     if(txt === 'Click to enter '+name+' title') opacity = 0.2;
 
     gd.infolayer.select('.'+title).remove();
@@ -1467,30 +1494,34 @@ plots.titles = function(gd,title) {
         }
     }
 
-    if(!txt){
-        txt = 'Click to enter '+name+' title'
+    el.attr({'data-unformatted': txt})
+        .call(titleLayout);
+
+    function setPlaceholder(){
         opacity = 0;
-        el.text(txt)
+        txt = 'Click to enter '+name+' title';
+        gd.infolayer.select('.'+title)
+            .attr({'data-unformatted': txt})
+            .text('Click to enter '+name+' title')
             .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
             .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
     }
-    el.attr({'data-unformatted': txt})
-        .call(titleLayout);
+
+    if(!txt) setPlaceholder();
 
     if(gd.mainsite){ // don't allow editing on embedded graphs
         el.call(d3.plugly.makeEditable)
             .on('edit', function(text){
-                if(!text){
-                    text = 'Click to enter '+name+' title'
-                    opacity = 0;
-                    gd.infolayer.select('.'+title).text(text)
-                        .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
-                        .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
-                }
-                else if(text != 'Click to enter '+name+' title') opacity = 1;
-                this.attr({'data-unformatted': text})
-                this.call(titleLayout);
                 cont.title = txt = text;
+                this.attr({'data-unformatted': text})
+                if(!text) setPlaceholder();
+                else if(text != 'Click to enter '+name+' title') opacity = 1;
+                this.call(titleLayout);
+
+                var property = Plotly.Lib.nestedProperty(gl,{X:'xaxis.title', Y:'yaxis.title', P:'title'}[name.charAt(0)]);
+                var update = {};
+                update[property.astr] = text;
+                Plotly.relayout(gd,update);
             })
             .on('cancel', function(text){
                 var txt = this.attr('data-unformatted');
