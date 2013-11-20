@@ -229,7 +229,7 @@ lib.nestedProperty = function(o,s) {
     };
 };
 
-// to prevent all event bubbling, in particular text selection during drag.
+// to prevent event bubbling, in particular text selection during drag.
 // see http://stackoverflow.com/questions/5429827/how-can-i-prevent-text-element-selection-with-cursor-drag
 // for maximum effect use:
 //      return pauseEvent(e);
@@ -237,7 +237,7 @@ lib.pauseEvent = function(e){
     if(e.stopPropagation) e.stopPropagation();
     if(e.preventDefault) e.preventDefault();
     e.cancelBubble=true;
-    e.returnValue=false;
+    // e.returnValue=false; // this started giving a jquery deprecation warning, so I assume it's now useless
     return false;
 };
 
@@ -321,11 +321,14 @@ lib.notifier = function(text,tm){
 
 // do two bounding boxes from getBoundingClientRect,
 // ie {left,right,top,bottom,width,height}, overlap?
-lib.bBoxIntersect = function(a,b){
-    return (a.left<=b.right && b.left<=a.right && a.top<=b.bottom && b.top<=a.bottom);
+// takes optional padding pixels
+lib.bBoxIntersect = function(a,b,pad){
+    pad = pad||0;
+    return (a.left<=b.right+pad && b.left<=a.right+pad &&
+            a.top<=b.bottom+pad && b.top<=a.bottom+pad);
 };
 
-// minor performance booster for d3...
+// minor convenience/performance booster for d3...
 lib.identity = function(d){ return d; };
 
 
