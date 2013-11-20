@@ -218,8 +218,8 @@ Plotly.defaultColorscale = Plotly.colorscales.YIGnBu;
 // default layout defined as a function rather than a constant so it makes a new copy each time
 function defaultLayout(){
     return {title:'Click to enter Plot title',
-        xaxis:Plotly.Axes.defaultAxis({range:[-1,6],title:'Click to enter X axis title'}),
-        yaxis:Plotly.Axes.defaultAxis({range:[-1,4],title:'Click to enter Y axis title'}),
+        xaxis:Plotly.Axes.defaultAxis({range:[-1,6]}),//,title:'Click to enter X axis title'}),
+        yaxis:Plotly.Axes.defaultAxis({range:[-1,4]}),//,title:'Click to enter Y axis title'}),
         legend:{bgcolor:'#fff',bordercolor:'#000',borderwidth:1,
             font:{family:'',size:0,color:''},
             traceorder:'normal'
@@ -845,7 +845,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     var replot_attr=[
         'mode','visible','type','bardir','fill','histnorm',
         'marker.size','text','textfont.size','textposition',
-        'xtype','x0','dx','ytype','y0','dy',
+        'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
         'zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth','showscale',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array','error_y.width',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
@@ -1312,7 +1312,7 @@ function makePlotFramework(divid, layout) {
         if(!container[axname]) {
             container[axname] = Plotly.Axes.defaultAxis({
                 range: [-1,6],
-                title: 'Click to enter '+axid.toUpperCase()+' axis title',
+                // title: 'Click to enter '+axid.toUpperCase()+' axis title',
                 anchor: {x:'y',y:'x'}[axname.charAt(0)]
             });
         }
@@ -1639,8 +1639,8 @@ plots.titles = function(gd,title) {
             Plotly.Axes.getFromId(gd, xa.anchor);
         x = xa._offset+xa._length/2;
         y = (xa.side=='top') ?
-            ya._offset- 10-fontSize*0.5 :
-            ya._offset+ya._length + 10+fontSize;
+            ya._offset- 10-fontSize*(xa.showticklabels ? 1 : 0.5) :
+            ya._offset+ya._length + 10+fontSize*(xa.showticklabels ? 1.5 : 1);
         options = {x: x, y: y, 'text-anchor': 'middle'};
         if(!avoid.side) { avoid.side = 'bottom'; }
     }
@@ -1651,8 +1651,8 @@ plots.titles = function(gd,title) {
             Plotly.Axes.getFromId(gd, ya.anchor);
         y = ya._offset+ya._length/2;
         x = (ya.side=='right') ?
-            xa._offset+xa._length + 10+fontSize :
-            xa._offset - 10-fontSize*0.5;
+            xa._offset+xa._length + 10+fontSize*(ya.showticklabels ? 1.5 : 1) :
+            xa._offset - 10-fontSize*(ya.showticklabels ? 1 : 0.5);
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
         options = {x: x, y: y, 'text-anchor': 'middle'};

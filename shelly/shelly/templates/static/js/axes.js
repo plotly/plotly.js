@@ -8,13 +8,13 @@ var axes = Plotly.Axes = {};
 
 axes.defaultAxis = function(extras) {
     return $.extend({
-        range:[-1,6],type:'-',showline:true,mirror:true,linecolor:'#000',linewidth:1,
+        range:[-1,6],type:'-',showline:true,mirror:'all',linecolor:'#000',linewidth:1,
         tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
         showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
         showgrid:true,gridcolor:'#ddd',gridwidth:1,
         autorange:true,autotick:true,
         zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
-        title: 'Click to enter axis title',unit:'',
+        // title: 'Click to enter axis title',unit:'',
         titlefont:{family:'',size:0,color:''},
         tickfont:{family:'',size:0,color:''},
         overlaying:false, // anchor, side we leave out for now as the defaults are different for x and y
@@ -42,7 +42,7 @@ axes.setTypes = function(td) {
             if(!td.layout[axname]) {
                 td.layout[axname] = axes.defaultAxis({
                     range: [-1,axletter=='x' ? 6 : 4],
-                    title: 'Click to enter '+axes.name2id(axname).toUpperCase()+' axis title',
+                    // title: 'Click to enter '+axes.name2id(axname).toUpperCase()+' axis title',
                     side: axletter=='x' ? 'bottom' : 'left'
                 });
             }
@@ -95,6 +95,8 @@ axes.initAxis = function(td,ax) {
     if(!ax.domain || ax.domain.length!=2 || ax.domain[0]>=ax.domain[1] || ax.domain[0]<0 || ax.domain[1]>1) {
         ax.domain = [0,1];
     }
+
+    if(ax.title===undefined) { ax.title = 'Click to enter '+ax._id.toUpperCase()+' axis title'; }
 
     return ax;
 };
