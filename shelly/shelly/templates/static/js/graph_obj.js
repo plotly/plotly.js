@@ -385,13 +385,13 @@ Plotly.plot = function(gd, data, layout) {
         }
         gd.layout=layout;
 
-        gd.graphContainer = d3.select(gd).select('.graph-container');
-        if(gd.graphContainer.empty()){
-            gd.graphContainer = d3.select(gd).append('div').classed('.graph-container', true);
+        gd.layout._container = d3.select(gd).select('.plot-container');
+        if(gd.layout._container.empty()){
+            gd.layout._container = d3.select(gd).append('div').classed('.plot-container', true);
         }
-        gd.paperdiv = gd.graphContainer.select('.svg-container');
+        gd.paperdiv = gd.layout._container.select('.svg-container');
         if(gd.paperdiv.empty()){
-            gd.paperdiv = gd.graphContainer.append('div')
+            gd.paperdiv = gd.layout._container.append('div')
                 .classed('svg-container',true)
                 .style('position','relative');
         }
@@ -1246,7 +1246,7 @@ function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
     if(gd.mainsite) {
         setFileAndCommentsHeight(gd);
-        var gdBB = gd.graphContainer.node().getBoundingClientRect();
+        var gdBB = gd.layout._container.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
         newwidth = Math.round(gdBB.width*0.9);
     }
