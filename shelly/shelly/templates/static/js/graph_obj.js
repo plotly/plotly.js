@@ -1356,10 +1356,12 @@ function makePlotFramework(divid, layout) {
 
     Plotly.Axes.setTypes(gd);
 
-    gl._fileandcomments = gd3.selectAll('.file-and-comments').data([0]);
+    var outerContainer = gl._fileandcomments = gd3.selectAll('.file-and-comments');
+    // for embeds and cloneGraphOffscreen
+    if(!outerContainer.node()) { outerContainer = gd3; }
 
     // Plot container
-    gl._container = gl._fileandcomments.selectAll('.plot-container').data([0]);
+    gl._container = outerContainer.selectAll('.plot-container').data([0]);
     gl._container.enter().append('div')
         .classed('plot-container',true)
         .classed('is-mainsite', gd.mainsite);
