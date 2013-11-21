@@ -102,8 +102,7 @@ function legendText(s,gd){
         .call(Plotly.Drawing.font,
             lf.family||gf.family||'Arial',
             lf.size||gf.size||12,
-            lf.color||gf.color||'#000')
-        .each(function(d){ Plotly.Drawing.styleText(this,d[0].t.name,'clickable'); });
+            lf.color||gf.color||'#000');
 }
 
 // -----------------------------------------------------
@@ -115,7 +114,7 @@ legend.draw = function(gd) {
     gl.showlegend = true;
     if(!gl.legend) { gl.legend={}; }
     var gll = gl.legend;
-    gd.infolayer.selectAll('.legend').remove();
+    gl._infolayer.selectAll('.legend').remove();
     if(!gd.calcdata) { return; }
 
     var ldata=[],i;
@@ -126,7 +125,7 @@ legend.draw = function(gd) {
     }
     if(gll.traceorder=='reversed') { ldata.reverse(); } // for stacked plots (bars, area) the legend items are often clearer reversed
 
-    gd.legend=gd.infolayer.append('svg')
+    gd.legend=gl._infolayer.append('svg')
         .attr('class','legend');
 
     var bordercolor = gll.bordercolor || '#000',
@@ -149,10 +148,41 @@ legend.draw = function(gd) {
         .each(legend.lines)
         .each(legend.points);
 
-    var tracetext=traces.call(legendText,gd).selectAll('text');
-    if(gd.mainsite) {
-        tracetext.on('click',function(){
-            if(!gd.dragged) { Plotly.Fx.autoGrowInput(this); }
+    var tracetext=traces.call(legendText,gd).selectAll('text.legendtext');
+
+    function legendLayout(){
+        this.call(d3.plugly.convertToTspans);
+        var textX = this.attr('x');
+        this.selectAll('tspan.line').attr({x: textX});
+    }
+
+    if(gd.mainsite){
+        tracetext.each(function(d, i){
+            d3.select(this)
+                .attr({'data-unformatted': function(d, i){ return d[0].t.name; }})
+                .text(function(d, i){ return d[0].t.name; })
+                .call(d3.plugly.makeEditable)
+                .call(legendLayout)
+                .on('edit', function(text){
+                    this.attr({'data-unformatted': text});
+                    this.text(text)
+                        .call(legendLayout);
+                    if(this.text() === ''){
+                        text = ' \u0020\u0020 ';
+                    }
+                    var tn = Number(this.attr('class').split('-')[1]);
+                    var property = Plotly.Lib.nestedProperty(gd.data[tn],'name');
+                    property.name = text;
+                    d[0].t.name = text;
+                    Plotly.restyle(gd, property.astr, text, tn);
+                });
+        });
+    }
+    else{
+        tracetext.each(function(d, i){
+            d3.select(this)
+                .text(function(d, i){ return d[0].t.name; })
+                .call(legendLayout);
         });
     }
 
@@ -290,22 +320,22 @@ legend.draw = function(gd) {
         window.onmousemove = function(e2) {
             var dx = e2.clientX-e.clientX,
                 dy = e2.clientY-e.clientY,
-                gdm = gd.margin,
+                gs = gl._size,
                 MINDRAG = Plotly.Fx.MINDRAG;
             if(Math.abs(dx)<MINDRAG) { dx=0; }
             if(Math.abs(dy)<MINDRAG) { dy=0; }
             if(dx||dy) { gd.dragged = true; }
             el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
-            var pbb = gd.paperdiv.node().getBoundingClientRect();
+            var pbb = gl._paperdiv.node().getBoundingClientRect();
 
             // drag to within a couple px of edge to take the legend outside the plot
             if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100; }
             else if(e2.clientX<pbb.left+3*MINDRAG || (gd.lw<0 && dx<MINDRAG)) { xf=-100; }
-            else { xf = Plotly.Fx.dragAlign(x0+dx,legendwidth,gdm.l,gl.width-gdm.r); }
+            else { xf = Plotly.Fx.dragAlign(x0+dx,legendwidth,gs.l,gs.l+gs.w); }
 
             if(e2.clientY>pbb.bottom-3*MINDRAG || (gd.lh<0 && dy>-MINDRAG)) { yf=-100; }
             else if(e2.clientY<pbb.top+3*MINDRAG || (gd.lh>0 && dy<MINDRAG)) { yf=100; }
-            else { yf = 1-Plotly.Fx.dragAlign(y0+dy,legendheight,gdm.t,gl.height-gdm.b); }
+            else { yf = 1-Plotly.Fx.dragAlign(y0+dy,legendheight,gs.t,gs.t+gs.h); }
 
             var csr = Plotly.Fx.dragCursors(xf,yf);
             Plotly.Fx.setCursor(el3,csr);

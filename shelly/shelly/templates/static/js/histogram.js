@@ -8,9 +8,8 @@ histogram.calc = function(gd,gdc) {
     if(gdc.visible===false) { return; }
 
     // depending on bar direction, set position and size axes and data ranges
-    var pos, size, pa, sa, i;
-    if(gdc.bardir=='h') { pa = gd.layout.yaxis; sa = gd.layout.xaxis; }
-    else { pa = gd.layout.xaxis; sa = gd.layout.yaxis; }
+    var pos, size, i,
+        pa = Plotly.Axes.getFromId(gd,(gdc.bardir=='h') ? gdc.yaxis||'y' : gdc.xaxis||'x');
 
     // prepare the raw data
     // pick out x data for histogramx, y for histogramy

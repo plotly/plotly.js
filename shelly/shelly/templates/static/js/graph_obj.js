@@ -47,15 +47,15 @@ Data coordinates: xd,yd
     visible range: xd0-xd1, yd0-yd1 (gl.xaxis.range[0-1], gl.yaxis.range[0-1]
 
 Paper coordinates: xp,yp (where axes are drawn, minus gl.margin:.l,.t)
-    plot box: xp0-xp1, yp0-yp1 (0 - gd.plotwidth, gd.plotheight - 0)
+    plot box: xp0-xp1, yp0-yp1 (0 - gl.xaxis._length, gl.yaxis._length - 0)
     transform: xp = mx*xd+bx, yp = my*yd+by
-        mx = gl.xaxis._m = gd.plotwidth/(gl.xaxis.range:[1]-[0])
+        mx = gl.xaxis._m = gl.xaxis._length/(gl.xaxis.range:[1]-[0])
         bx = gl.xaxis._b = -mx*gl.xaxis.range[0]
-        my = gl.yaxis._m = gd.plotheight/(gl.yaxis.range:[0]-[1])
+        my = gl.yaxis._m = gl.yaxis._length/(gl.yaxis.range:[0]-[1])
         by = gl.yaxis._b = -my*gl.yaxis.range[1]
 Viewbox coordinates: xv,yv (where data are drawn)
     plot box: xv0-xv1, yv0-yv1
-        initial viewbox: 0 - gd.plotwidth, gd.plotheight - 0
+        initial viewbox: 0 - gl.xaxis._length, gl.yaxis._length - 0
     transform: xv = xp+b2x, yv = yp+b2y
         panning: subtract dx,dy from viewbox:.x,.y
         zooming: viewbox will not scale x and y differently, at least in Chrome, so for
@@ -218,8 +218,8 @@ Plotly.defaultColorscale = Plotly.colorscales.YIGnBu;
 // default layout defined as a function rather than a constant so it makes a new copy each time
 function defaultLayout(){
     return {title:'Click to enter Plot title',
-        xaxis:Plotly.Axes.defaultAxis({range:[-1,6],title:'Click to enter X axis title'}),
-        yaxis:Plotly.Axes.defaultAxis({range:[-1,4],title:'Click to enter Y axis title'}),
+        xaxis:Plotly.Axes.defaultAxis({range:[-1,6]}),//,title:'Click to enter X axis title'}),
+        yaxis:Plotly.Axes.defaultAxis({range:[-1,4]}),//,title:'Click to enter Y axis title'}),
         legend:{bgcolor:'#fff',bordercolor:'#000',borderwidth:1,
             font:{family:'',size:0,color:''},
             traceorder:'normal'
@@ -322,7 +322,7 @@ plots.positionBrand = function(gd){
     $(gd).find('.linktotool').remove();
     var linktotool = $('<div class="linktotool">'+
         '<a><font class="muted">view in </font><font class="info">plotly</font></a>'+
-        '</div>').appendTo(gd.paperdiv.node());
+        '</div>').appendTo(gd.layout._paperdiv.node());
     if(gd.shareplot) {
         var path=window.location.pathname.split('/');
         linktotool.find('a')
@@ -355,6 +355,7 @@ plots.positionBrand = function(gd){
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
 Plotly.plot = function(gd, data, layout) {
+//    console.log('plotly.plot', gd, data, layout);
     Plotly.Lib.markTime('in plot');
     // Get the container div: we will store all variables for this plot as
     // properties of this div (for extension to multiple plots/tabs per page)
@@ -374,13 +375,38 @@ Plotly.plot = function(gd, data, layout) {
                         // is used to determine whether to make a new tab
     }
 
-    if(micropolar.adapter.isPolar(gd.data)){
-        gd.data=data;
+
+    // Polar plots
+    if(gd.data && gd.data[0] && gd.data[0].type) gd.mainPlotType = gd.data[0].type;
+    if(gd.mainPlotType && gd.mainPlotType.indexOf('Plot') != -1){
+        if(data){
+            gd.data=data;
+            gd.plotType = gd.data[0].type;
+        }
         gd.layout=layout;
-        gd.paper = $(gd).find('.svg-container');
-        micropolar.adapter.plotly(gd.paper.get(0), gd.data, gd.layout);
+
+        gd.graphContainer = d3.select(gd).select('.graph-container');
+        if(gd.graphContainer.empty()){
+            gd.graphContainer = d3.select(gd).append('div').classed('.graph-container', true);
+        }
+        gd.paperdiv = gd.graphContainer.select('.svg-container');
+        if(gd.paperdiv.empty()){
+            gd.paperdiv = gd.graphContainer.append('div')
+                .classed('svg-container',true)
+                .style('position','relative');
+        }
+
+        if(gd.layout.autosize == 'initial') {
+            setGraphContainerHeight(gd);
+            plotAutoSize(gd,{});
+            gd.layout.autosize = true;
+        }
+
+        if(!gd.framework || gd.framework.name != 'micropolarPlotlyAdapter') gd.framework = micropolar.adapter.plotly();
+        gd.framework({container: gd.paperdiv.node(), data: gd.data, layout: gd.layout});
+        gd.paper = gd.framework.svg();
         return null;
-    }
+    }else delete gd.mainPlotType;
 
     // Make or remake the framework (ie container and axes) if we need to
     // figure out what framework the data imply,
@@ -393,7 +419,7 @@ Plotly.plot = function(gd, data, layout) {
     //  then it should destroy and remake the plot
     if (gd.data && gd.data.length > 0) {
         var framework = graphInfo[gd.data[0].type || 'scatter'].framework,
-            subplots = getSubplots(gd.data).join(''),
+            subplots = plots.getSubplots(gd).join(''),
             oldSubplots = ((gd.layout && gd.layout._plots) ? Object.keys(gd.layout._plots) : []).join('');
         if(!gd.framework || gd.framework!=framework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
             gd.framework = framework;
@@ -406,9 +432,7 @@ Plotly.plot = function(gd, data, layout) {
     $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length===0);
 
     var gl = gd.layout,
-        xa = gl.xaxis,
-        ya = gl.yaxis;
-    var x, y, i, serieslen, cd, type;
+        x, y, i, serieslen, cd, type;
     // if we have bars or fill-to-zero traces, make sure autorange goes to zero
     gd.firstscatter = true; // because fill-to-next on the first scatter trace goes to zero
     gd.numboxes = 0;
@@ -479,43 +503,66 @@ Plotly.plot = function(gd, data, layout) {
 
     // position and range calculations for traces that depend on each other
     // ie bars (stacked or grouped) and boxes push each other out of the way
-    Plotly.Bars.setPositions(gd);
-    Plotly.Boxes.setPositions(gd);
+    Plotly.Plots.getSubplots(gd).forEach(function(subplot) {
+        var plotinfo = gd.layout._plots[subplot];
+        Plotly.Bars.setPositions(gd,plotinfo);
+        Plotly.Boxes.setPositions(gd,plotinfo);
+    });
 
     Plotly.Lib.markTime('done with setstyles and bar/box adjustments');
 
     // autorange for errorbars
-    if(ya.autorange) {
-        Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd),{padded:true});
-    }
+    Plotly.Axes.list(gd,'y')
+        .filter(function(ya){ return ya.autorange; })
+        .forEach(function(ya) {
+            Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd,ya),{padded:true});
+        });
     Plotly.Lib.markTime('done Plotly.ErrorBars.ydr');
 
     // autorange for annotations
     Plotly.Annotations.calcAutorange(gd);
-    // TODO: autosize extra for big pts, text too
+    // TODO: autosize extra for text markers
 
-    Plotly.Axes.doAutoRange(xa);
-    Plotly.Axes.doAutoRange(ya);
+    var axesOK = true;
+    Plotly.Axes.list(gd).forEach(function(ax) {
+        Plotly.Axes.doAutoRange(ax);
+        if(!$.isNumeric(ax._m) || !$.isNumeric(ax._b)) {
+            axesOK = false;
+            console.log('error with axis scaling',ax);
+        }
+    });
+    if(!axesOK) {
+        Plotly.lib.notifier('Something went wrong with axis scaling','long');
+        return;
+    }
 
-    gd.plot.attr('viewBox','0 0 '+gd.plotwidth+' '+gd.plotheight);
+    // var xa = gl.xaxis,
+    //     ya = gl.yaxis;
+
+    // gd.plot.attr('viewBox','0 0 '+xa._length+' '+ya._length);
     Plotly.Axes.doTicks(gd,'redraw'); // draw ticks, titles, and calculate axis scaling (._b, ._m)
 
     Plotly.Lib.markTime('done autorange and ticks');
 
-    if($.isNumeric(xa._m) && $.isNumeric(xa._b) && $.isNumeric(ya._m) && $.isNumeric(ya._b)) {
-        // Now plot the data. Order is:
-        // 1. heatmaps (and 2d histos)
-        // 2. bars/histos
-        // 3. errorbars for everyone
-        // 4. scatter
-        // 5. box plots
+    // Now plot the data. Order is:
+    // 1. heatmaps (and 2d histos)
+    // 2. bars/histos
+    // 3. errorbars for everyone
+    // 4. scatter
+    // 5. box plots
 
-        var cdbar = [], cdscatter = [], cdbox = [];
-        for(i in gd.calcdata){
+    Plotly.Plots.getSubplots(gd).forEach(function(subplot) {
+        var plotinfo = gd.layout._plots[subplot],
+            cdbar = [], cdscatter = [], cdbox = [];
+        for(var i in gd.calcdata){
             cd = gd.calcdata[i];
             type=cd[0].t.type;
+            // filter to only traces on this subplot
+            if((cd[0].t.xaxis||'x')+(cd[0].t.yaxis||'y')!=subplot) {
+                continue;
+            }
             if(plots.isHeatmap(type)) {
-                Plotly.Heatmap.plot(gd,cd);
+                Plotly.Heatmap.plot(gd,plotinfo,cd);
                 Plotly.Lib.markTime('done heatmap '+i);
             }
             else {
@@ -530,43 +577,44 @@ Plotly.plot = function(gd, data, layout) {
         }
 
         // remove old traces, then redraw everything
-        gd.plot.selectAll('g.trace').remove();
-        Plotly.Bars.plot(gd,cdbar);
+        plotinfo.plot.selectAll('g.trace').remove();
+        Plotly.Bars.plot(gd,plotinfo,cdbar);
         Plotly.Lib.markTime('done bars');
 
         // DRAW ERROR BARS for bar and scatter plots
         // these come after (on top of) bars, and before (behind) scatter
-        Plotly.ErrorBars.plot(gd,cdbar.concat(cdscatter));
+        Plotly.ErrorBars.plot(gd,plotinfo,cdbar.concat(cdscatter));
         Plotly.Lib.markTime('done errorbars');
 
-        Plotly.Scatter.plot(gd,cdscatter);
+        Plotly.Scatter.plot(gd,plotinfo,cdscatter);
         Plotly.Lib.markTime('done scatter');
-        Plotly.Boxes.plot(gd,cdbox);
+        Plotly.Boxes.plot(gd,plotinfo,cdbox);
         Plotly.Lib.markTime('done boxes');
+    });
 
-        //styling separate from drawing
-        applyStyle(gd);
-        Plotly.Lib.markTime('done applyStyle');
-    }
-    else { console.log('error with axis scaling',xa._m,xa._b,ya._m,ya._b); }
+    //styling separate from drawing
+    applyStyle(gd);
+    Plotly.Lib.markTime('done applyStyle');
 
     // show the legend and annotations
     if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!==false)) { Plotly.Legend.draw(gd); }
-    else { gd.infolayer.selectAll('.legend').remove(); }
+    else { gl._infolayer.selectAll('.legend').remove(); }
     Plotly.Annotations.drawAll(gd);
 
     // final cleanup
-    if(!gd.mainsite && !gd.standalone) { plots.positionBrand(gd); } // 'view in plotly' link for embedded plots
+
+    // 'view in plotly' link for embedded plots
+    if(!gd.mainsite && !gd.standalone) { plots.positionBrand(gd); }
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
             try{
-                if( firsttimeuser() ) showAlert('graphtips');
+                if( firsttimeuser() ) { showAlert('graphtips'); }
             }
             catch(e){ console.log(e); }
         }
         else if($(gd).find('#graphtips').css('display')=='none'){
-            if( firsttimeuser() ) $(gd).find('#graphtips').fadeIn();
+            if( firsttimeuser() ) { $(gd).find('#graphtips').fadeIn(); }
         }
     },1000);
     Plotly.Lib.markTime('done plot');
@@ -620,6 +668,8 @@ plots.setStyles = function(gd, merge_dflt) {
         mergeattr('text','tx','');
         mergeattr('name','name','trace '+c);
         mergeattr('error_y.visible','ye_vis',false);
+        mergeattr('xaxis','xaxis','x');
+        mergeattr('yaxis','yaxis','y');
         var type = t.type; // like 'bar'
         if( (gdc.error_y && gdc.error_y.visible ) ){
             mergeattr('error_y.type','ye_type','percent');
@@ -744,27 +794,29 @@ plots.setStyles = function(gd, merge_dflt) {
 };
 
 function applyStyle(gd) {
-    var gp = gd.plot;
-    gp.selectAll('g.trace')
-        .call(Plotly.Drawing.traceStyle,gd);
-    gp.selectAll('g.points')
-        .each(function(d){
-            d3.select(this).selectAll('path,rect')
-                .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
-            d3.select(this).selectAll('text')
-                .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
-        });
+    Plotly.Plots.getSubplots(gd).forEach(function(subplot) {
+        var gp = gd.layout._plots[subplot].plot;
+        gp.selectAll('g.trace')
+            .call(Plotly.Drawing.traceStyle,gd);
+        gp.selectAll('g.points')
+            .each(function(d){
+                d3.select(this).selectAll('path,rect')
+                    .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
+                d3.select(this).selectAll('text')
+                    .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
+            });
 
-    gp.selectAll('g.trace polyline.line')
-        .call(Plotly.Drawing.lineGroupStyle);
+        gp.selectAll('g.trace polyline.line')
+            .call(Plotly.Drawing.lineGroupStyle);
 
-    gp.selectAll('g.trace polyline.fill')
-        .call(Plotly.Drawing.fillGroupStyle);
+        gp.selectAll('g.trace polyline.fill')
+            .call(Plotly.Drawing.fillGroupStyle);
 
-    gp.selectAll('g.boxes')
-        .call(Plotly.Boxes.style);
-    gp.selectAll('g.errorbars')
-        .call(Plotly.ErrorBars.style);
+        gp.selectAll('g.boxes')
+            .call(Plotly.Boxes.style);
+        gp.selectAll('g.errorbars')
+            .call(Plotly.ErrorBars.style);
+    });
 
     if(gd.mainsite && window.ws && window.ws.confirmedReady) {
         alert_repl("applyStyle", plots.graphJson(gd,true));
@@ -819,7 +871,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     var replot_attr=[
         'mode','visible','type','bardir','fill','histnorm',
         'marker.size','text','textfont.size','textposition',
-        'xtype','x0','dx','ytype','y0','dy',
+        'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
         'zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth','showscale',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array','error_y.width',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
@@ -831,10 +883,10 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // also axis scales and range show up here because we may need to undo them
     var layout_attr = [
         'barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap',
-        'xaxis.autorange','yaxis.autorange','xaxis.range','yaxis.range'
+        '?axis.autorange','?axis.range'
     ];
     // these ones may alter the axis type (at least if the first trace is involved)
-    var axtype_attr = ['type','x','y','x0','y0','bardir'];
+    var axtype_attr = ['type','x','y','x0','y0','bardir','xaxis','yaxis'];
     // flags for which kind of update we need to do
     var doplot = false,
         dolayout = false,
@@ -842,10 +894,19 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // copies of the change (and previous values of anything affected) for the
     // undo / redo queue
     var redoit = {},
-        undoit = {};
+        undoit = {},
+        axlist;
 
     // make a new empty vals array for undoit
     function a0(){ return traces.map(function(){ return undefined; }); }
+
+    // for autoranging multiple axes
+    function addToAxlist(axid) {
+        var axName = Plotly.Axes.id2name(axid);
+        if(axlist.indexOf(axName)==-1) { axlist.push(axName); }
+    }
+    function autorangeAttr(axName) { return axName+'.autorange'; }
+    function rangeAttr(axName) { return axName+'.range'; }
 
     // for attrs that interact (like scales & autoscales), save the
     // old vals before making the change
@@ -872,7 +933,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         var vi = aobj[ai], cont, param;
         redoit[ai] = vi;
 
-        if(layout_attr.indexOf(ai)!=-1){
+        if(layout_attr.indexOf(ai.replace(/[xy]axis[0-9]*/g,'?axis'))!=-1){
             param = Plotly.Lib.nestedProperty(gl,ai);
             undoit[ai] = [param.get()];
             // since we're allowing val to be an array, allow it here too,
@@ -929,13 +990,18 @@ Plotly.restyle = function(gd,astr,val,traces) {
             // major enough changes deserve autoscale, autobin, and non-reversed
             // axes so people don't get confused
             if(['bardir','type'].indexOf(ai)!=-1) {
-                doextra(gl,['xaxis.autorange','yaxis.autorange'],true,0);
-                doextra(gl,['xaxis.range','yaxis.range'],[0,1],0);
-                if(astr=='type') {
-                    for(i=0; i<traces.length; i++) {
+                axlist = [];
+                for(i=0; i<traces.length; i++) {
+                    var trace = gd.data[traces[i]];
+                    addToAxlist(trace.xaxis||'x');
+                    addToAxlist(trace.yaxis||'y');
+
+                    if(astr=='type') {
                         doextra(gd.data[traces[i]],['autobinx','autobiny'],true,i);
                     }
                 }
+                doextra(gl,axlist.map(autorangeAttr),true,0);
+                doextra(gl,axlist.map(rangeAttr),[0,1],0);
             }
             // if we need to change margin for a heatmap, force a relayout first so we don't plot twice
             if(Plotly.Heatmap.margin(gd)) { dolayout = true; }
@@ -971,7 +1037,6 @@ Plotly.restyle = function(gd,astr,val,traces) {
 // relayout(gd,aobj)
 //      aobj - {astr1:val1, astr2:val2...} allows setting multiple attributes simultaneously
 Plotly.relayout = function(gd,astr,val) {
-    // console.log(gd,astr,val);
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     var gl = gd.layout,
         aobj = {},
@@ -986,15 +1051,22 @@ Plotly.relayout = function(gd,astr,val) {
 
     if(Object.keys(aobj).length) { gd.changed = true; }
 
-    // look for 'allaxes', split out into all axes
     var keys = Object.keys(aobj),
-        axes = ['xaxis','yaxis'];
+        axes = Plotly.Axes.list(gd);
     for(var i=0; i<keys.length; i++) {
+        // look for 'allaxes', split out into all axes
         if(keys[i].indexOf('allaxes')===0) {
             for(var j=0; j<axes.length; j++) {
-                var newkey = keys[i].replace('allaxes',axes[j]);
+                var newkey = keys[i].replace('allaxes',axes[j]._name);
                 if(!aobj[newkey]) { aobj[newkey] = aobj[keys[i]]; }
             }
+            delete aobj[keys[i]];
+        }
+        // split annotation.ref into xref and yref
+        if(keys[i].match(/^annotations\[[0-9-]\].ref$/)) {
+            var xyref = aobj[keys[i]].split('y');
+            aobj[keys[i].replace('ref','xref')] = xyref[0];
+            aobj[keys[i].replace('ref','yref')] = xyref.length==2 ? ('y'+xyref[1]) : 'paper';
             delete aobj[keys[i]];
         }
     }
@@ -1019,6 +1091,12 @@ Plotly.relayout = function(gd,astr,val) {
         if(val!==undefined) { p.set(val); }
     }
 
+    // for editing annotations - is it on autoscaled axes?
+    function annAutorange(anni,axletter) {
+        var axName = Plotly.Axes.id2name(anni[axletter+'ref']||axletter);
+        return gl[axName] && gl[axName].autorange;
+    }
+
     var hw = ['height','width'];
 
     // alter gd.layout
@@ -1032,10 +1110,12 @@ Plotly.relayout = function(gd,astr,val) {
         // check autosize or autorange vs size and range
         if(hw.indexOf(ai)!=-1) { doextra('autosize', false); }
         else if(ai=='autosize') { doextra(hw, undefined); }
-        var m = ai.match(/^(.)axis\.range\[[0|1]\]$/);
-        if(m && m.length==2) { doextra(p.parts[0]+'.autorange', false); }
-        m = ai.match(/^(.)axis\.autorange$/);
-        if(m && m.length==2) { doextra([p.parts[0]+'.range[0]',p.parts[0]+'.range[1]'], undefined); }
+        else if(ai.match(/^[xy]axis[0-9]*\.range\[[0|1]\]$/)) {
+            doextra(p.parts[0]+'.autorange', false);
+        }
+        else if(ai.match(/^[xy]axis[0-9]*\.autorange$/)) {
+            doextra([p.parts[0]+'.range[0]',p.parts[0]+'.range[1]'], undefined);
+        }
 
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie will islog actually change)
@@ -1045,10 +1125,10 @@ Plotly.relayout = function(gd,astr,val) {
                 r1 = ax.range[1];
             if(vi=='log') {
                 // if both limits are negative, autorange
-                if(r0<0 && r1<0) { doextra(p.parts[0]+'.autorange',true); continue; }
+                if(r0<=0 && r1<=0) { doextra(p.parts[0]+'.autorange',true); continue; }
                 // if one is negative, set it to one millionth the other. TODO: find the smallest positive val?
-                else if(r0<0) r0 = r1/1e6;
-                else if(r1<0) r1 = r0/1e6;
+                else if(r0<=0) r0 = r1/1e6;
+                else if(r1<=0) r1 = r0/1e6;
                 // now set the range values as appropriate
                 doextra(p.parts[0]+'.range[0]', Math.log(r0)/Math.LN10);
                 doextra(p.parts[0]+'.range[1]', Math.log(r1)/Math.LN10);
@@ -1067,7 +1147,7 @@ Plotly.relayout = function(gd,astr,val) {
         // send annotation mods one-by-one through Annotations.draw(), don't set via nestedProperty
         // that's because add and remove are special
         else if(p.parts[0]=='annotations') {
-            var anum = p.parts[1];
+            var anum = p.parts[1], anns = gl.annotations, anni = anns[anum]||{};
             // if p.parts is just an annotation number, and val is either 'add' or
             // an entire annotation obj to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
@@ -1075,15 +1155,15 @@ Plotly.relayout = function(gd,astr,val) {
                 if(aobj[ai]=='add' || $.isPlainObject(aobj[ai])) { undoit[ai]='remove'; }
                 else if(aobj[ai]=='remove') {
                     if(anum==-1) {
-                        undoit['annotations'] = gl.annotations;
+                        undoit['annotations'] = anns;
                         delete undoit[ai];
                     }
-                    else { undoit[ai]=gl.annotations[p.parts[1]]; }
+                    else { undoit[ai]=anni; }
                 }
                 else { console.log('???',aobj); }
             }
-            if((gl.xaxis.autorange || gl.yaxis.autorange) && anum>=0 &&
-                (anum>=gl.annotations.length || gl.annotations[p.parts[1]].ref=='plot') &&
+            if((annAutorange(anni,'x') || annAutorange(anni,'y')) &&
+                anum>=0 && (anum>=anns.length || anni.ref=='plot') &&
                 ai.indexOf('color')==-1 && ai.indexOf('opacity')==-1) {
                     doplot = true;
             }
@@ -1101,19 +1181,26 @@ Plotly.relayout = function(gd,astr,val) {
                 p.parts[1].indexOf('exponent')!=-1 ||
                 p.parts[1].indexOf('grid')!=-1 ||
                 p.parts[1].indexOf('zeroline')!=-1)) { doticks = true; }
-            else if(ai.indexOf('axis.linewidth')!=-1) { doticks = dolayoutstyle = true; }
-            else if(p.parts.length>1 && (
-                p.parts[1].indexOf('line')!=-1 ||
-                p.parts[1].indexOf('mirror')!=-1)) { dolayoutstyle = true; }
+            else if(ai.indexOf('.linewidth')!=-1 && ai.indexOf('axis')!=-1) {
+                doticks = dolayoutstyle = true;
+            }
+            else if(p.parts.length>1 && p.parts[1].indexOf('line')!=-1) {
+                dolayoutstyle = true;
+            }
+            else if(p.parts.length>1 && p.parts[1]=='mirror') {
+                doticks = dolayoutstyle = true;
+            }
             else if(ai=='margin.pad') { doticks = dolayoutstyle = true; }
             // hovermode and dragmode don't need any redrawing, since they just
-            // affect reaction to user input
+            // affect reaction to user input. everything else, assume full replot.
             else if(['hovermode','dragmode'].indexOf(ai)==-1) { doplot = true; }
             p.set(vi);
         }
     }
     // now all attribute mods are done, as are redo and undo so we can save them
-    if(typeof plotUndoQueue=='function') { plotUndoQueue(gd,undoit,redoit,'relayout'); }
+    if(typeof plotUndoQueue=='function') {
+        plotUndoQueue(gd,undoit,redoit,'relayout');
+    }
 
     // calculate autosizing - if size hasn't changed, will remove h&w so we don't need to redraw
     if(aobj.autosize) { aobj=plotAutoSize(gd,aobj); }
@@ -1122,17 +1209,20 @@ Plotly.relayout = function(gd,astr,val) {
     // first check if there's still anything to do
     var ak = Object.keys(aobj);
     if(doplot) {
-        gd.layout = undefined; // force plot() to redo the layout
+        gd.layout = undefined; // force plot() to redo the
         Plotly.plot(gd,'',gl); // pass in the modified layout
     }
     else if(ak.length) {
-        // if we didn't need to redraw the whole thing, just do the needed parts
+        // if we didn't need to redraw entirely, just do the needed parts
         if(dolegend) {
-            gd.infolayer.selectAll('.legend').remove();
+            gl._infolayer.selectAll('.legend').remove();
             if(gl.showlegend) { Plotly.Legend.draw(gd); }
         }
         if(dolayoutstyle) { layoutStyles(gd); }
-        if(doticks) { Plotly.Axes.doTicks(gd,'redraw'); plots.titles(gd,'gtitle'); }
+        if(doticks) {
+            Plotly.Axes.doTicks(gd,'redraw');
+            plots.titles(gd,'gtitle');
+        }
     }
     $(gd).trigger('relayout.plotly',redoit);
 };
@@ -1161,7 +1251,6 @@ function setGraphContainerScroll(gd) {
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if (gd.layout && (gd.layout.autosize || !isGraphWiderThanContainer)) {
-
             $graphContainer.removeClass('is-fixed-size');
         }
         else if (gd.layout && isGraphWiderThanContainer) {
@@ -1174,7 +1263,7 @@ function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
     if(gd.mainsite) {
         setGraphContainerHeight(gd);
-        var gdBB = gd.graphContainer.node().getBoundingClientRect();
+        var gdBB = gd.layout._container.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
         newwidth = Math.round(gdBB.width*0.9);
     }
@@ -1241,52 +1330,59 @@ function makePlotFramework(divid, layout) {
         $gd = $(gd),
         gd3 = d3.select(gd);
 
-    // graph container
-    if ($gd.find('.graph-container').length === 0) {
-        $gd.append('<div class="graph-container"></div>');
-    }
-    gd.graphContainer = gd3.select('.graph-container');
-
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
-    if (gd.mainsite) {
-        $(gd).children('.graph-container').addClass('is-mainsite');
+    function addDefaultAxis(container, axname) {
+        var axid = axname.replace('axis','');
+        if(!container[axname]) {
+            container[axname] = Plotly.Axes.defaultAxis({
+                range: [-1,6],
+                // title: 'Click to enter '+axid.toUpperCase()+' axis title',
+                anchor: {x:'y',y:'x'}[axname.charAt(0)]
+            });
+        }
     }
 
-    var $svgContainer = $(gd).children('.graph-container').children('.svg-container');
-
-    if ($svgContainer.length==1) {
-        // Destroy any plot that already exists in this div
-        $svgContainer.children('svg').remove();
-    }
-    else {
-        // Make the svg container
-        gd.paperdiv = gd.graphContainer.append('div')
-            .classed('svg-container',true)
-            .style('position','relative');
-    }
-
-    // Get the layout info - take the default and update it with any existing layout, then layout arg
-    gd.layout=updateObject(gd.layout||defaultLayout(), layout||{});
-
+    // Get the layout info - take the default or any existing layout, then update with layout arg
+    var oldLayout = gd.layout||defaultLayout(),
+        newLayout = layout || {};
+    // look for axes to include in oldLayout - so that default axis settings get included
+    var xalist = Object.keys(newLayout).filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
+        yalist = Object.keys(newLayout).filter(function(k){ return k.match(/^yaxis[0-9]*$/); });
+    if(!xalist.length) { xalist = ['xaxis']; }
+    if(!yalist.length) { yalist = ['yaxis']; }
+    xalist.concat(yalist).forEach(function(axname) {
+        addDefaultAxis(oldLayout,axname);
+    });
+    gd.layout=updateObject(oldLayout, newLayout);
     var gl = gd.layout;
 
     // Get subplots and see if we need to make any more axes
-    var subplots = getSubplots(gd.data);
-    subplots.forEach(function(sp) {
-        var axmatch = sp.match(/^(x[0-9]*)(y[0-9]*)$/);
+    var subplots = plots.getSubplots(gd);
+    subplots.forEach(function(subplot) {
+        var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
+        // gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
         [axmatch[1],axmatch[2]].forEach(function(axid) {
-            var axname = axid.charAt(0)+'axis'+axid.substr(1);
-            if(!gl[axname]) {
-                gl[axname] = Plotly.Axes.defaultAxis({
-                    range:[-1,6],
-                    title:'Click to enter '+axmatch[1].toUpperCase()+' axis title'});
-            }
+            addDefaultAxis(gl,Plotly.Axes.id2name(axid));
         });
     });
+    // now get subplots again, in case the new axes require more subplots (yes, that's odd... but possible)
+    subplots = plots.getSubplots(gd);
 
     Plotly.Axes.setTypes(gd);
+
+    // graph container
+    gl._container = gd3.selectAll('.graph-container').data([0]);
+    gl._container.enter().append('div')
+        .classed('graph-container',true)
+        .classed('is-mainsite', gd.mainsite);
+
+    // Make the svg container
+    gl._paperdiv = gl._container.selectAll('.svg-container').data([0]);
+    gl._paperdiv.enter().append('div')
+        .classed('svg-container',true)
+        .style('position','relative');
 
     // initial autosize
     if(gl.autosize=='initial') {
@@ -1295,26 +1391,105 @@ function makePlotFramework(divid, layout) {
         gl.autosize=true;
     }
     // Make the graph containers
-    // the order here controls what's in front of what
-    gd.paper = gd.paperdiv.append('svg')
+    // start fresh each time we get here, so we know the order comes out right
+    // rather than enter/exit which can muck up the order
+    gl._paperdiv.selectAll('svg').remove();
+    gl._paper = gl._paperdiv.append('svg')
         .attr('xmlns','http://www.w3.org/2000/svg')
         .attr('xmlns:xmlns:xlink','http://www.w3.org/1999/xlink'); // odd d3 quirk - need namespace twice??
-    gd.plotbg = gd.paper.append('rect')
-        .attr('stroke-width',0);
-    gd.gridlayer = gd.paper.append('g').attr('class','gridlayer');
-    gd.zerolinelayer = gd.paper.append('g').attr('class','zerolinelayer');
-    // Second svg (plot) is for the data
-    gd.plot = gd.paper.append('svg')
-        .attr('preserveAspectRatio','none')
-        .style('fill','none');
-    gd.axlines = {
-        x:gd.paper.append('path').style('fill','none').classed('crisp',true),
-        y:gd.paper.append('path').style('fill','none').classed('crisp',true)
-    };
-    gd.axislayer = gd.paper.append('g').attr('class','axislayer');
-    gd.draglayer = gd.paper.append('g').attr('class','draglayer');
-    gd.infolayer = gd.paper.append('g').attr('class','infolayer');
-    gd.hoverlayer = gd.paper.append('g').attr('class','hoverlayer');
+
+    // create all the layers in order, so we know they'll stay in order
+    var overlays = [];
+    gl._plots = {};
+    gl._paper.selectAll('g.subplot').data(subplots)
+      .enter().append('g')
+        .classed('subplot',true)
+        .each(function(subplot){
+            var plotinfo = gl._plots[subplot] = {},
+                plotgroup = d3.select(this).classed(subplot,true);
+            plotinfo.id = subplot;
+            // references to the axis objects controlling this subplot
+            plotinfo.x = Plotly.Axes.getFromId(gd,subplot,'x');
+            plotinfo.y = Plotly.Axes.getFromId(gd,subplot,'y');
+            // references to any subplots overlaid on this one
+            plotinfo.overlays = [];
+
+            // is this subplot overlaid on another?
+            // ax.overlaying is the id of another axis of the same dimension that this one overlays
+            // to be an overlaid subplot, the main plot must exist
+            // make sure we're not trying to overlay on an axis that's already overlaying another
+            var xa2 = Plotly.Axes.getFromId(gd,plotinfo.x.overlaying) || plotinfo.x;
+            if(xa2!=plotinfo.x && xa2.overlaying) {
+                xa2 = plotinfo.x;
+                plotinfo.x.overlaying = false;
+            }
+
+            var ya2 = Plotly.Axes.getFromId(gd,plotinfo.y.overlaying) || plotinfo.y;
+            if(ya2!=plotinfo.y && ya2.overlaying) {
+                ya2 = plotinfo.y;
+                plotinfo.y.overlaying = false;
+            }
+
+            var mainplot = xa2._id+ya2._id;
+            if(mainplot!=subplot && subplots.indexOf(mainplot)!=-1) {
+                plotinfo.mainplot = mainplot;
+                overlays.push(plotinfo);
+                // for now force overlays to overlay completely... so they can drag
+                // together correctly and share backgrounds. Later perhaps we make
+                // separate axis domain and tick/line domain or something, so they can
+                // still share the (possibly larger) dragger and background but don't
+                // have to both be drawn over that whole domain
+                plotinfo.x.domain = xa2.domain.slice();
+                plotinfo.y.domain = ya2.domain.slice();
+            }
+            else {
+                // main subplot - make the components of the plot and containers for overlays
+                plotinfo.bg = plotgroup.append('rect')
+                    .attr('stroke-width',0);
+                plotinfo.gridlayer = plotgroup.append('g');
+                plotinfo.overgrid = plotgroup.append('g');
+                plotinfo.zerolinelayer = plotgroup.append('g');
+                plotinfo.overzero = plotgroup.append('g');
+                plotinfo.plot = plotgroup.append('svg')
+                    .attr('preserveAspectRatio','none')
+                    .style('fill','none');
+                plotinfo.overplot = plotgroup.append('g');
+                plotinfo.xlines = plotgroup.append('path')
+                    .style('fill','none').classed('crisp',true);
+                plotinfo.ylines = plotgroup.append('path')
+                    .style('fill','none').classed('crisp',true);
+                plotinfo.overlines = plotgroup.append('g');
+                plotinfo.axislayer = plotgroup.append('g');
+                plotinfo.overaxes = plotgroup.append('g');
+
+                // make separate drag layers for each subplot, but append them to paper rather than
+                // the plot groups, so they end up on top of the rest
+            }
+            plotinfo.draglayer = gl._paper.append('g');
+        });
+
+    // now make the components of overlaid subplots
+    // overlays don't have backgrounds, and append all their other components to the corresponding
+    // extra groups of their main plots. As shown here, the overlays will do just that, have
+    // each component overlaid on the corresponding component of the main plot
+    overlays.forEach(function(plotinfo) {
+        var mainplot = gl._plots[plotinfo.mainplot];
+        mainplot.overlays.push(plotinfo);
+        plotinfo.gridlayer = mainplot.overgrid.append('g');
+        plotinfo.zerolinelayer = mainplot.overzero.append('g');
+        plotinfo.plot = mainplot.overplot.append('svg')
+            .attr('preserveAspectRatio','none')
+            .style('fill','none');
+        plotinfo.xlines = mainplot.overlines.append('path')
+            .style('fill','none').classed('crisp',true);
+        plotinfo.ylines = mainplot.overlines.append('path')
+            .style('fill','none').classed('crisp',true);
+        plotinfo.axislayer = mainplot.overaxes.append('g');
+    });
+
+    // single info (legend, annotations) and hover layers for the whole plot
+    gl._infolayer = gl._paper.append('g');
+    gl._hoverlayer = gl._paper.append('g');
 
     // position and style the containers, make main title
     layoutStyles(gd);
@@ -1328,51 +1503,128 @@ function makePlotFramework(divid, layout) {
 
 // layoutStyles: styling for plot layout elements
 function layoutStyles(gd) {
-    var gl = gd.layout, xa = gl.xaxis, ya = gl.yaxis;
+    var gl = gd.layout;
 
     Plotly.Heatmap.margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
 
     // adjust margins for outside legends
-    // gl.margin is the requested margin, gd.margin is after adjustment
-    gd.margin = {
-        l:gl.margin.l-(gd.lw<0 ? gd.lw : 0),
-        r:gl.margin.r+(gd.lw>0 ? gd.lw : 0),
-        t:gl.margin.t+(gd.lh>0 ? gd.lh : 0),
-        b:gl.margin.b-(gd.lh<0 ? gd.lh : 0),
-        p:gl.margin.pad };
+    // gl.margin is the requested margin, gl._size has margins and plotsize after adjustment
+    gl._size = {
+        l: gl.margin.l-(gd.lw<0 ? gd.lw : 0),
+        r: gl.margin.r+(gd.lw>0 ? gd.lw : 0),
+        t: gl.margin.t+(gd.lh>0 ? gd.lh : 0),
+        b: gl.margin.b-(gd.lh<0 ? gd.lh : 0),
+        p: gl.margin.pad };
 
-    var gm = gd.margin;
-    gd.plotwidth=gl.width-gm.l-gm.r;
-    gd.plotheight=gl.height-gm.t-gm.b;
-    xa._pixrange = gd.plotwidth;
-    ya._pixrange = gd.plotheight;
+    var gs = gl._size;
+    gs.w = gl.width-gs.l-gs.r;
+    gs.h = gl.height-gs.t-gs.b;
 
-    gd.paperdiv.style({width:gl.width+'px', height:gl.height+'px'});
-    gd.paper.call(Plotly.Drawing.setSize, gl.width, gl.height);
+    // clear axis line positions, to be set in the subplot loop below
+    Plotly.Axes.list(gd).forEach(function(ax){ ax._linepositions = {}; });
 
-    gd.paperdiv.style('background', gl.paper_bgcolor);
+    gl._paperdiv.style({
+        width: gl.width+'px',
+        height: gl.height+'px',
+        background: gl.paper_bgcolor
+    });
+    gl._paper.call(Plotly.Drawing.setSize, gl.width, gl.height);
 
-    gd.plotbg
-        .call(Plotly.Drawing.setRect, gm.l-gm.p, gm.t-gm.p, gd.plotwidth+2*gm.p, gd.plotheight+2*gm.p)
-        .call(Plotly.Drawing.fillColor, gl.plot_bgcolor);
-    gd.plot
-        .call(Plotly.Drawing.setRect, gm.l, gm.t, gd.plotwidth, gd.plotheight);
+    var freefinished = [];
+    gl._paper.selectAll('g.subplot').each(function(subplot) {
+        var plotinfo = gl._plots[subplot],
+            xa = plotinfo.x,
+            ya = plotinfo.y;
+        xa.setScale(); // this may already be done... not sure
+        ya.setScale();
 
-    var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
-        ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
-        xp = gm.p+ylw,
-        yp = gm.p, // shorten y axis lines so they don't overlap x axis lines
-        yp2 = xa.mirror ? 0 : xlw; // except at the top when there's no mirror x
-    gd.axlines.x
-        .attr('d', 'M'+(gm.l-xp)+','+(gm.t+gd.plotheight+gm.p+xlw/2)+'h'+(gd.plotwidth+2*xp) +
-            (xa.mirror ? ('m0,-'+(gd.plotheight+2*gm.p+xlw)+'h-'+(gd.plotwidth+2*xp)) : ''))
-        .attr('stroke-width',xlw)
-        .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
-    gd.axlines.y
-        .attr('d', 'M'+(gm.l-gm.p-ylw/2)+','+(gm.t-yp-yp2)+'v'+(gd.plotheight+2*yp+yp2) +
-            (ya.mirror ? ('m'+(gd.plotwidth+2*gm.p+ylw)+',0v-'+(gd.plotheight+2*yp+yp2)) : ''))
-        .attr('stroke-width',ylw)
-        .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
+        if(plotinfo.bg) {
+            plotinfo.bg
+                .call(Plotly.Drawing.setRect, xa._offset-gs.p, ya._offset-gs.p,
+                    xa._length+2*gs.p, ya._length+2*gs.p)
+                .call(Plotly.Drawing.fillColor, gl.plot_bgcolor);
+        }
+        plotinfo.plot
+            .call(Plotly.Drawing.setRect, xa._offset, ya._offset, xa._length, ya._length);
+
+        var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
+            ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
+
+            xp = gs.p+ylw,
+            xpathPrefix = 'M'+(xa._offset-xp)+',',
+            xpathSuffix = 'h'+(xa._length+2*xp),
+            showfreex = xa.anchor=='free' && freefinished.indexOf(xa._id)==-1,
+            freeposx = gs.t+gs.h*(1-(xa.position||0))+((xlw/2)%1),
+            showbottom = (xa.anchor==ya._id && (xa.mirror||xa.side!='top')) ||
+                xa.mirror=='all' || xa.mirror=='allticks' ||
+                (xa.mirrors && xa.mirrors[ya._id+'bottom']),
+            bottompos = ya._offset+ya._length+gs.p+xlw/2,
+            showtop = (xa.anchor==ya._id && (xa.mirror||xa.side=='top')) ||
+                xa.mirror=='all' || xa.mirror=='allticks' ||
+                (xa.mirrors && xa.mirrors[ya._id+'top']),
+            toppos = ya._offset-gs.p-xlw/2,
+
+            yp = gs.p, // shorten y axis lines so they don't overlap x axis lines
+            ypbottom = showbottom ? 0 : xlw, // except where there's no x line TODO: this gets more complicated with multiple x and y axes...
+            yptop = showtop ? 0 : xlw,
+            ypathSuffix = ','+(ya._offset-yp-yptop)+'v'+(ya._length+2*yp+yptop+ypbottom),
+            showfreey = ya.anchor=='free' && freefinished.indexOf(ya._id)==-1,
+            freeposy = gs.l+gs.w*(ya.position||0)+((ylw/2)%1),
+            showleft = (ya.anchor==xa._id && (ya.mirror||ya.side!='right')) ||
+                ya.mirror=='all' || ya.mirror=='allticks' ||
+                (ya.mirrors && ya.mirrors[xa._id+'left']),
+            leftpos = xa._offset-gs.p-ylw/2,
+            showright = (ya.anchor==xa._id && (ya.mirror||ya.side=='right')) ||
+                ya.mirror=='all' || ya.mirror=='allticks' ||
+                (ya.mirrors && ya.mirrors[xa._id+'right']),
+            rightpos = xa._offset+xa._length+gs.p+ylw/2;
+
+        // save axis line positions for ticks, draggers, etc to reference
+        // each subplot gets an entry [left or bottom, right or top, free, main]
+        // main is the position at which to draw labels and draggers, if any
+        xa._linepositions[subplot] = [
+            showbottom ? bottompos : undefined,
+            showtop ? toppos : undefined,
+            showfreex ? freeposx : undefined
+        ];
+        if(xa.anchor==ya._id) {
+            xa._linepositions[subplot][3] = xa.side=='top' ? toppos : bottompos;
+        }
+        else if(showfreex) {
+            xa._linepositions[subplot][3] = freeposx;
+        }
+
+        ya._linepositions[subplot] = [
+            showleft ? leftpos : undefined,
+            showright ? rightpos : undefined,
+            showfreey ? freeposy : undefined
+        ];
+        if(ya.anchor==xa._id) {
+            ya._linepositions[subplot][3] = ya.side=='right' ? rightpos : leftpos;
+        }
+        else if(showfreey) {
+            ya._linepositions[subplot][3] = freeposy;
+        }
+
+        plotinfo.xlines
+            .attr('d',(
+                (showbottom ? (xpathPrefix+bottompos+xpathSuffix) : '') +
+                (showtop ? (xpathPrefix+toppos+xpathSuffix) : '') +
+                (showfreex ? (xpathPrefix+freeposx+xpathSuffix) : '')) || 'M0,0') // so it doesn't barf with no lines shown
+            .attr('stroke-width',xlw)
+            .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
+        plotinfo.ylines
+            .attr('d',(
+                (showleft ? ('M'+leftpos+ypathSuffix) : '') +
+                (showright ? ('M'+rightpos+ypathSuffix) : '') +
+                (showfreey ? ('M'+freeposy+ypathSuffix) : '')) || 'M0,0')
+            .attr('stroke-width',ylw)
+            .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
+
+        // mark free axes as displayed, so we don't draw them again
+        if(showfreex) { freefinished.push(xa._id); }
+        if(showfreey) { freefinished.push(ya._id); }
+    });
     plots.titles(gd,'gtitle');
 
     Plotly.Fx.modeBar(gd);
@@ -1386,109 +1638,146 @@ function layoutStyles(gd) {
 // title can be 'xtitle', 'ytitle', 'gtitle',
 //  or empty to draw all
 plots.titles = function(gd,title) {
+    var options;
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     if(!title) {
-        plots.titles(gd,'xtitle');
-        plots.titles(gd,'ytitle');
+        Plotly.Axes.list(gd).forEach(function(ax) {
+            plots.titles(gd,ax._id+'title');
+        });
         plots.titles(gd,'gtitle');
         return;
     }
-    var gl=gd.layout,gm=gd.margin,
-        x,y,w,cont,name,font,fontSize,fontColor,transform='',attr={};
-    if(title=='xtitle'){
-        cont = gl.xaxis;
-        name = 'X axis';
-        font = gl.xaxis.titlefont.family || gl.font.family || 'Arial';
-        fontSize = gl.xaxis.titlefont.size || (gl.font.size*1.2) || 14;
-        fontColor = gl.xaxis.titlefont.color || gl.font.color || '#000';
-        x = (gl.width+gm.l-gm.r)/2;
-        y = gl.height+(gd.lh<0 ? gd.lh : 0) - 14*2.25;
-        w = gd.plotwidth/2;
-        h = 14;
+
+    var gl=gd.layout,gs=gl._size,
+        axletter = title.charAt(0),
+        cont = gl[Plotly.Axes.id2name(title.replace('title',''))] || gl,
+        prop = cont===gl ? 'title' : cont._name+'.title',
+        name = (cont._id||axletter).toUpperCase()+' axis',
+        font = cont.titlefont.family || gl.font.family || 'Arial',
+        fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
+        fontColor = cont.titlefont.color || gl.font.color || '#000',
+        x,y,transform='',attr={},xa,ya,
+        avoid = {selection:d3.select(gd).selectAll('text.'+cont._id+'tick'), side:cont.side};
+    if(axletter=='x'){
+        xa = cont;
+        ya = (xa.anchor=='free') ?
+            {_offset:gs.l+(1-(xa.position||0))*gs.h, _length:0} :
+            Plotly.Axes.getFromId(gd, xa.anchor);
+        x = xa._offset+xa._length/2;
+        y = (xa.side=='top') ?
+            ya._offset- 10-fontSize*(xa.showticklabels ? 1 : 0.5) :
+            ya._offset+ya._length + 10+fontSize*(xa.showticklabels ? 1.5 : 1);
+        options = {x: x, y: y, 'text-anchor': 'middle'};
+        if(!avoid.side) { avoid.side = 'bottom'; }
     }
-    else if(title=='ytitle'){
-        cont = gl.yaxis;
-        name = 'Y axis';
-        font = gl.yaxis.titlefont.family || gl.font.family || 'Arial';
-        fontSize = gl.yaxis.titlefont.size || (gl.font.size*1.2) || 14;
-        fontColor = gl.yaxis.titlefont.color || gl.font.color || '#000';
-        x = 40-(gd.lw<0 ? gd.lw : 0);
-        y = (gl.height+gm.t-gm.b)/2;
-        w = 14;
-        h = gd.plotheight/2;
+    else if(axletter=='y'){
+        ya = cont;
+        xa = (ya.anchor=='free') ?
+            {_offset:gs.t+(ya.position||0)*gs.w, _length:0} :
+            Plotly.Axes.getFromId(gd, ya.anchor);
+        y = ya._offset+ya._length/2;
+        x = (ya.side=='right') ?
+            xa._offset+xa._length + 10+fontSize*(ya.showticklabels ? 1.5 : 1) :
+            xa._offset - 10-fontSize*(ya.showticklabels ? 1 : 0.5);
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
+        options = {x: x, y: y, 'text-anchor': 'middle'};
+        transform = {rotate: '-90', offset: 0};
+        if(!avoid.side) { avoid.side = 'left'; }
     }
-    else if(title=='gtitle'){
-        cont = gl;
+    else{
         name = 'Plot';
-        font = gl.titlefont.family || gl.font.family || 'Arial';
         fontSize = gl.titlefont.size || gl.font.size*1.4 || 16;
-        fontColor = gl.titlefont.color || gl.font.color || '#000';
         x = gl.width/2;
         y = gl.margin.t/2;
-        w = gl.width/2;
-        h = 16;
+        options = {x: x, y: y, 'text-anchor': 'middle'};
+        avoid = {};
     }
 
-    gd.infolayer.select('.'+title).remove();
-    var el=gd.infolayer.append('text').attr('class',title)
-        .call(Plotly.Drawing.setPosition, x, y)
-        .call(Plotly.Drawing.font,font,fontSize,fontColor)
-        .attr('text-anchor','middle')
-        .attr('transform',transform.replace('x',x).replace('y',y));
-    // don't allow editing on embedded graphs
-    if(gd.mainsite) { el.on('click',function(){ Plotly.Fx.autoGrowInput(this); }); }
+    var opacity = 1;
+    var txt = cont.title;
+    if(cont.unit) txt += ' ('+cont.unit+')';
+    if(txt === '') opacity = 0;
+    if(txt === 'Click to enter '+name+' title') opacity = 0.2;
 
-    var txt=cont.title;
-    if(txt.match(/^Click to enter (Plot |X axis |Y axis )?title$/)) {
-        if(gd.mainsite) { el.style('fill','#999'); } // cues in gray
-        else { txt=''; } // don't show cues in embedded plots
-    }
+    gl._infolayer.select('.'+title).remove();
+    var el = gl._infolayer.append('text').attr('class', title).text(txt);
 
-    if(txt) {
-        Plotly.Drawing.styleText(el.node(), txt + (!cont.unit ? '' : (' ('+cont.unit+')')),'clickable');
-    }
-    else if(gd.mainsite) {
-        el.text('Click to enter '+name+' title')
-            .style('opacity',0)
-            .on('mouseover',function(){d3.select(this).transition().duration(100).style('opacity',1);})
-            .on('mouseout',function(){d3.select(this).transition().duration(1000).style('opacity',0);})
-          .transition()
-            .duration(2000)
-            .style('opacity',0);
-    }
-    else { el.remove(); }
+    function titleLayout(){
+        var titleEl = this
+            .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
+            .call(d3.plugly.convertToTspans)
+            .attr(options);
+        titleEl.selectAll('tspan.line')
+            .attr(options);
+        if(transform){
+            titleEl.attr({
+                transform: 'rotate(' + [transform.rotate, options.x, options.y] + ') translate(0, '+transform.offset+')'
+            });
+        }
 
-    // move axis labels out of the way, if possible, when tick labels interfere
-    if(title=='gtitle') { return; }
-    var titlebb=el.node().getBoundingClientRect(),
-        paperbb=gd.paperdiv.node().getBoundingClientRect(),
-        lbb, tickedge;
-    if(title=='xtitle'){
-        tickedge=0;
-        labels=gd.axislayer.selectAll('text.xtick').each(function(){
-            lbb=this.getBoundingClientRect();
-            if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
-                tickedge=Plotly.Lib.constrain(tickedge,lbb.bottom,paperbb.bottom-titlebb.height);
+        if(avoid && avoid.selection && avoid.side){
+            // iterate over a set of elements (avoid.selection) to avoid collisions with
+            // move toward side (avoid.side = left, right, top, bottom) if needed
+            // can include pad (pixels, default 2)
+            var shift = 0,
+                backside = {left:'right',right:'left',top:'bottom',bottom:'top'}[avoid.side],
+                shiftTemplate = {
+                    left:'translate(-{shift},0) {original}',
+                    right:'translate({shift},0) {original}',
+                    top:'translate(0,-{shift}) {original}',
+                    bottom:'translate(0,{shift}) {original}'
+                }[avoid.side],
+                pad = $.isNumeric(avoid.pad) ? avoid.pad : 2,
+                titlebb = titleEl.node().getBoundingClientRect(),
+                paperbb = gl._paper.node().getBoundingClientRect(),
+                maxshift = Math.max(0,(paperbb[avoid.side]-titlebb[avoid.side])*(shiftTemplate.indexOf('-')!=-1 ? -1 : 1));
+            avoid.selection.each(function(){
+                var avoidbb = this.getBoundingClientRect();
+                if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
+                    shift = Math.min(maxshift,Math.max(shift,
+                        Math.abs(avoidbb[avoid.side]-titlebb[backside])+pad));
+                }
+            });
+            if(shift>0) {
+                titleEl.attr({transform:d3.plugly.compileTemplate(shiftTemplate,
+                    {shift:shift, original:titleEl.attr('transform')}
+                )});
             }
-        });
-        if(tickedge>titlebb.top) {
-            el.attr('transform','translate(0,'+(tickedge-titlebb.top)+') '+el.attr('transform'));
         }
     }
-    else if(title=='ytitle'){
-        tickedge=screen.width;
-        gd.axislayer.selectAll('text.ytick').each(function(){
-            lbb=this.getBoundingClientRect();
-            if(Plotly.Lib.bBoxIntersect(titlebb,lbb)) {
-                tickedge=Plotly.Lib.constrain(tickedge,paperbb.left+titlebb.width,lbb.left);
-            }
-        });
-        if(tickedge<titlebb.right) {
-            el.attr('transform','translate('+(tickedge-titlebb.right)+') '+el.attr('transform'));
-        }
+
+    el.attr({'data-unformatted': txt})
+        .call(titleLayout);
+
+    function setPlaceholder(){
+        opacity = 0;
+        txt = 'Click to enter '+name+' title';
+        gl._infolayer.select('.'+title)
+            .attr({'data-unformatted': txt})
+            .text('Click to enter '+name+' title')
+            .on('mouseover.opacity',function(){d3.select(this).transition().duration(100).style('opacity',1);})
+            .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
     }
+
+    if(!txt) setPlaceholder();
+
+    if(gd.mainsite){ // don't allow editing on embedded graphs
+        el.call(d3.plugly.makeEditable)
+            .on('edit', function(text){
+                Plotly.relayout(gd,prop,text);
+            })
+            .on('cancel', function(text){
+                var txt = this.attr('data-unformatted');
+                this.text(txt).call(titleLayout);
+            })
+            .on('input', function(d, i){
+                this.text(d || ' ').attr(options)
+                    .selectAll('tspan.line')
+                    .attr(options);
+            });
+    }
+    else if(!txt || txt === 'Click to enter '+name+' title') el.remove();
 };
 
 // ----------------------------------------------------
@@ -1498,25 +1787,60 @@ plots.titles = function(gd,title) {
 // getSubplots - extract all combinations of axes we need to make plots for
 // as an array of items like 'xy', 'x2y', 'x2y2'...
 // sorted by x (x,x2,x3...) then y
+// optionally restrict to only subplots containing axis object ax
+// looks both for combinations of x and y found in the data and at axes and their anchors
 
-function getSubplots(data) {
-    var subplots = [];
+plots.getSubplots = function(gd,ax) {
+    var data = gd.data, subplots = [];
+
+    // look for subplots in the data
     (data||[]).forEach(function(d) {
-        var subplot = (d.xaxis||'x')+(d.yaxis||'y');
+        var xid = (d.xaxis||'x'),
+            yid = (d.yaxis||'y'),
+            subplot = xid+yid;
         if(subplots.indexOf(subplot)==-1) { subplots.push(subplot); }
     });
-    if(!subplots.length) { subplots = ['xy']; }
+
+    // look for subplots in the axes/anchors, so that we at least draw all axes
+    Plotly.Axes.list(gd).forEach(function(ax2) {
+        if(!ax2._id) { Plotly.Axes.initAxis(gd,ax2); }
+        var ax2letter = ax2._id.charAt(0),
+            ax3id = ax2.anchor=='free' ? {x:'y',y:'x'}[ax2letter] : ax2.anchor,
+            ax3 = Plotly.Axes.getFromId(gd,ax3id);
+
+        // if a free axis is already represented in the data, ignore it
+        if(ax2.anchor=='free' &&
+            subplots.filter(function(sp) { return sp.indexOf(ax2._id)!=-1; }).length) {
+                return;
+        }
+
+        if(!ax3) {
+            console.log('warning: couldnt find anchor '+ax3id+' for axis '+ax2._id);
+            return;
+        }
+
+        var subplot = ax2letter=='x' ? (ax2._id+ax3._id) : (ax3._id+ax2._id);
+        if(subplots.indexOf(subplot)==-1) { subplots.push(subplot); }
+    });
+
+    if(!subplots.length) {
+        console.log('Warning! No subplots found - missing axes?');
+    }
+
     var spmatch = /^x([0-9]*)y([0-9]*)$/;
-    return subplots.filter(function(sp) { return sp.match(spmatch); })
+    var allSubplots = subplots.filter(function(sp) { return sp.match(spmatch); })
         .sort(function(a,b) {
-            var amatch = a.match(spmatch),
-                bmatch = b.match(spmatch);
-            if(!amatch) { return false; }
-            if(!bmatch) { return true; }
-            if(amatch[1]==bmatch[1]) { return Number(amatch[2]||0)>Number(bmatch[2]||0); }
-            return Number(amatch[1]||0)>Number(bmatch[1]||0);
+            var amatch = a.match(spmatch), bmatch = b.match(spmatch);
+            if(amatch[1]==bmatch[1]) { return Number(amatch[2]||1)-Number(bmatch[2]||1); }
+            return Number(amatch[1]||0)-Number(bmatch[1]||0);
         });
-}
+    if(ax) {
+        if(!ax._id) { Plotly.Axes.initAxis(gd,ax); }
+        var axmatch = new RegExp(ax._id.charAt(0)=='x' ? ('^'+ax._id+'y') : (ax._id+'$') );
+        return allSubplots.filter(function(sp) { return sp.match(axmatch); });
+    }
+    else { return allSubplots; }
+};
 
 // graphJson - jsonify the graph data and layout
 plots.graphJson = function(gd, dataonly, mode){

@@ -229,7 +229,7 @@ lib.nestedProperty = function(o,s) {
     };
 };
 
-// to prevent all event bubbling, in particular text selection during drag.
+// to prevent event bubbling, in particular text selection during drag.
 // see http://stackoverflow.com/questions/5429827/how-can-i-prevent-text-element-selection-with-cursor-drag
 // for maximum effect use:
 //      return pauseEvent(e);
@@ -237,7 +237,7 @@ lib.pauseEvent = function(e){
     if(e.stopPropagation) e.stopPropagation();
     if(e.preventDefault) e.preventDefault();
     e.cancelBubble=true;
-    e.returnValue=false;
+    // e.returnValue=false; // this started giving a jquery deprecation warning, so I assume it's now useless
     return false;
 };
 
@@ -321,11 +321,53 @@ lib.notifier = function(text,tm){
 
 // do two bounding boxes from getBoundingClientRect,
 // ie {left,right,top,bottom,width,height}, overlap?
-lib.bBoxIntersect = function(a,b){
-    return (a.left<=b.right && b.left<=a.right && a.top<=b.bottom && b.top<=a.bottom);
+// takes optional padding pixels
+lib.bBoxIntersect = function(a,b,pad){
+    pad = pad||0;
+    return (a.left<=b.right+pad && b.left<=a.right+pad &&
+            a.top<=b.bottom+pad && b.top<=a.bottom+pad);
 };
 
-// minor performance booster for d3...
+// minor convenience/performance booster for d3...
 lib.identity = function(d){ return d; };
+
+
+// random string generator
+lib.randstr = function randstr(existing, bits, base) {
+    /*
+     * Include number of bits, the base of the string you want
+     * and an optional array of existing strings to avoid.
+     */
+    if (!base) base = 16;
+    if (bits === undefined) bits = 128;
+    if (bits <= 0) return '0';
+
+    var digits = Math.log(Math.pow(2, bits)) / Math.log(base);
+    for (var i = 2; digits === Infinity; i *= 2) {
+        digits = Math.log(Math.pow(2, bits / i)) / Math.log(base) * i;
+    }
+
+    var rem = digits - Math.floor(digits);
+
+    var res = '';
+
+    for (var i = 0; i < Math.floor(digits); i++) {
+        var x = Math.floor(Math.random() * base).toString(base);
+        res = x + res;
+    }
+
+    if (rem) {
+        var b = Math.pow(base, rem);
+        var x = Math.floor(Math.random() * b).toString(base);
+        res = x + res;
+    }
+
+    var parsed = parseInt(res, base);
+    if ( (existing && (existing.indexOf(res) > -1)) ||
+         (parsed !== Infinity && parsed >= Math.pow(2, bits)) ) {
+        return randstr(existing, bits, base)
+    }
+    else return res;
+};
 
 }()); // end Lib object definition
