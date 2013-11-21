@@ -6,8 +6,8 @@ boxes.calc = function(gd,gdc) {
     if(!('y' in gdc) || gdc.visible===false) { return; }
 
     // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
-    var xa = gd.layout.xaxis,
-        ya = gd.layout.yaxis,
+    var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
+        ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
         y = Plotly.Axes.convertOne(gdc,'y',ya), x;
     if('x' in gdc) { x = Plotly.Axes.convertOne(gdc,'x',xa); }
     // if no x data, use x0, or name, or text - so if you want one box
@@ -71,12 +71,22 @@ boxes.calc = function(gd,gdc) {
     return cd;
 };
 
-boxes.setPositions = function(gd) {
-    var xa = gd.layout.xaxis,
-        boxlist=[];
+boxes.setPositions = function(gd,plotinfo) {
+    var xa = plotinfo.x,
+        ya = plotinfo.y,
+        boxlist = [],
+        minPad = 0,
+        maxPad = 0;
     gd.calcdata.forEach(function(cd,i) {
         var t=cd[0].t;
-        if(t.visible!==false && t.type=='box') { boxlist.push(i); }
+        if(t.visible!==false && t.type=='box' &&
+          (t.xaxis||'x')==xa._id && (t.yaxis||'y')==ya._id) {
+            boxlist.push(i);
+            if(t.boxpts!==false) {
+                minPad = Math.max(minPad,(t.jitter-t.ptpos+gd.layout.boxgap-1)/gd.numboxes);
+                maxPad = Math.max(maxPad,(t.jitter+t.ptpos+gd.layout.boxgap-1)/gd.numboxes);
+            }
+        }
     });
 
     // box plots - update dx based on multiple traces, and then use for x autorange
@@ -86,24 +96,29 @@ boxes.setPositions = function(gd) {
         var boxdv = Plotly.Lib.distinctVals(boxx),
             dx = boxdv.minDiff/2;
 
+        // if there's no duplication of x points, disable 'group' mode by setting numboxes=1
+        if(boxx.length==boxdv.vals.length) { gd.numboxes = 1; }
+
         // check for forced minimum dtick
         Plotly.Axes.minDtick(xa,boxdv.minDiff,boxdv.vals[0],true);
 
-        Plotly.Axes.expand(xa,boxdv.vals,{vpad:dx});
+        // set the width of all boxes
         boxlist.forEach(function(i){ gd.calcdata[i][0].t.dx = dx; });
-        // if there's no duplication of x points, disable 'group' mode by setting numboxes=1
-        if(boxx.length==boxdv.vals.length) { gd.numboxes = 1; }
+
+        // autoscale the x axis - including space for points if they're off the side
+        Plotly.Axes.expand(xa, boxdv.vals, {vpadminus:dx+minPad, vpadplus:dx+maxPad});
     }
 };
 
-boxes.plot = function(gd,cdbox) {
+boxes.plot = function(gd,plotinfo,cdbox) {
     var gl = gd.layout,
-        xa = gl.xaxis,
-        ya = gl.yaxis;
-    var boxtraces = gd.plot.selectAll('g.trace.boxes') // <-- select trace group
+        xa = plotinfo.x,
+        ya = plotinfo.y;
+    var boxtraces = plotinfo.plot.selectAll('g.trace.boxes') // <-- select trace group
         .data(cdbox) // <-- bind calcdata to traces
       .enter().append('g') // <-- add a trace for each calcdata
         .attr('class','trace boxes');
+
     boxtraces.each(function(d){
         var t = d[0].t,
             group = (gl.boxmode=='group' && gd.numboxes>1), // like grouped bars
