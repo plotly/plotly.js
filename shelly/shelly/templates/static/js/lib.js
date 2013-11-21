@@ -309,14 +309,15 @@ lib.notifier = function(text,tm){
     if( $('div.notifier').text().indexOf(text) > 0 ) return;
 
     var n = $('<div class="notifier" style="display:none;">'+
-        '<button class="close" data-dismiss="alert" style="opacity:1;text-shadow:none;color:white;">&times;</button>'+
-        '<br><p>'+text+'</p></div>');
+        '<button class="notifier__close close" data-dismiss="alert">&times;</button>'+
+        '<p class="push-half">'+text+'</p></div>');
 
-    n.appendTo('.middle-center,#embedded_graph')
+    n.appendTo('#tabs-one-line,#embedded_graph')
         .css({ 'margin-top':mt })
         .fadeIn(2000)
         .delay(tm=='long' ? 2000 : 1000)
-        .fadeOut(2000,function(){ n.remove(); });
+        .fadeOut(2000);
+        // .fadeOut(2000,function(){ n.remove(); });
 };
 
 // do two bounding boxes from getBoundingClientRect,
