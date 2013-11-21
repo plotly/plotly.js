@@ -1517,7 +1517,6 @@ plots.titles = function(gd,title) {
                 if(!text) setPlaceholder();
                 else if(text != 'Click to enter '+name+' title') opacity = 1;
                 this.call(titleLayout);
-
                 var property = Plotly.Lib.nestedProperty(gl,{X:'xaxis.title', Y:'yaxis.title', P:'title'}[name.charAt(0)]);
                 var update = {};
                 update[property.astr] = text;
