@@ -105,6 +105,17 @@ lib.ms2DateTime = function(ms,r) {
     return s;
 };
 
+// Try to turn any date value into a native date object
+lib.parseDate = function(v) {
+    // is it already a date? just return it
+    if(v.getTime) { return v; }
+    // otherwise, if it's not a string, return nothing
+    // the case of numbers that just have years will get dealt with elsewhere.
+    if(typeof v != 'string') { return; }
+    // TODO: run through all standard date formats
+
+};
+
 // findBin - find the bin for val - note that it can return outside the bin range
 // any pos. or neg. integer for linear bins, or -1 or bins.length-1 for explicit.
 // bins is either an object {start,size,end} or an array length #bins+1

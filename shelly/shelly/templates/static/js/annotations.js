@@ -146,7 +146,7 @@ annotations.draw = function(gd,index,opt,value) {
         alignTo = {left:'right', center:'center', right:'left'}[options.align];
 
     function titleLayout(){
-        var bg = d3.select(gd).select('svg>rect.bg');
+        // var bg = d3.select(gd).select('svg>rect.bg');
         var padding = options.borderpad + options.borderwidth;
         var alignOptions = {
             horizontalAlign: alignTo,
@@ -157,7 +157,7 @@ annotations.draw = function(gd,index,opt,value) {
         };
         this.style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
             .call(d3.plugly.convertToTspans)
-            .call(d3.plugly.alignSVGWith(bg, alignOptions));
+            .call(d3.plugly.alignSVGWith(annbg, alignOptions));
     }
 
     var anntext = ann.append('text')
