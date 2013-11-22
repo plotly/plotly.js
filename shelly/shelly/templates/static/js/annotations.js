@@ -597,7 +597,7 @@ annotations.calcAutorange = function(gd) {
     saveAnnotations.forEach(function(ann){
         var xa = gl[Plotly.Axes.id2name(ann.xref || 'x')],
             ya = gl[Plotly.Axes.id2name(ann.yref || 'y')];
-        if((xa && xa.autorange) || (ya && ya.autorange)) {
+        if(ann.ref!='paper' && ((xa && xa.autorange) || (ya && ya.autorange))) {
             if(xa) { checklog(ann,xa); }
             if(ya) { checklog(ann,ya); }
             tempAnnotations.push($.extend({},ann,
