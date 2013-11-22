@@ -319,18 +319,18 @@ function updateTraces(old_data, new_data) {
 // note that now this function is only adding the brand in iframes and 3rd-party
 // apps, standalone plots get the sidebar instead.
 plots.positionBrand = function(gd){
-    $(gd).find('.linktotool').remove();
-    var linktotool = $('<div class="linktotool">'+
-        '<a><font class="muted">view in </font><font class="info">plotly</font></a>'+
+    $(gd).find('.link-to-tool').remove();
+    var $linkToTool = $('<div class="link-to-tool">'+
+        '<a class="link--impt">view in plotly</a>'+
         '</div>').appendTo(gd.layout._paperdiv.node());
     if(gd.shareplot) {
         var path=window.location.pathname.split('/');
-        linktotool.find('a')
+        $linkToTool.find('a')
             .attr('href','/'+path[2]+'/'+path[1])
             .attr('target','_blank');
     }
     else {
-        linktotool.find('a').click(function(){
+        $linkToTool.find('a').click(function(){
             var hiddenform = $('<div id="hiddenform" style="display:none;">'+
                 '<form action="https://plot.ly/external" method="post" target="_blank">'+
                 '<input type="text" name="data" /></form></div>').appendTo(gd);

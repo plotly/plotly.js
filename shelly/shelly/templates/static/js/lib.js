@@ -312,7 +312,7 @@ lib.notifier = function(text,tm){
         '<button class="notifier__close close" data-dismiss="alert">&times;</button>'+
         '<p class="push-half">'+text+'</p></div>');
 
-    n.appendTo('#tabs-one-line,#embedded_graph')
+    n.appendTo('#tabs-one-line,#embedded-graph')
         .css({ 'margin-top':mt })
         .fadeIn(2000)
         .delay(tm=='long' ? 2000 : 1000)
