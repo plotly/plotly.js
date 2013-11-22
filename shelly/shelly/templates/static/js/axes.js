@@ -811,9 +811,8 @@ axes.tickFirst = function(ax){
 
 var yearFormat = d3.time.format('%Y'),
     monthFormat = d3.time.format('%b %Y'),
-    dayfmt0 = d3.time.format('%b %d'),
-    dayFormat = function(d){ return dayfmt0(d).replace(' 0',' '); }, // TODO: get rid of date.js so we can upgrade to d3v3 and use -d
-    hourFormat = d3.time.format(' %H'), // then we can combine the parts of hourFormat again
+    dayFormat = d3.time.format('%b %-d'),
+    hourFormat = d3.time.format('%b %-d %Hh'),
     minuteFormat = d3.time.format('%H:%M'),
     secondFormat = d3.time.format(':%S');
 // draw the text for one tick.
@@ -845,14 +844,14 @@ axes.tickText = function(ax, x, hover){
             if(x==ax._tmin) { suffix = '<br>'+yearFormat(d); }
 
             if(tr=='d') { tt = dayFormat(d); }
-            else if(tr=='H') { tt = dayFormat(d)+hourFormat(d); }
+            else if(tr=='H') { tt = hourFormat(d); }
             else {
                 if(x==ax._tmin) { suffix = '<br>'+dayFormat(d)+', '+yearFormat(d); }
 
                 tt = minuteFormat(d);
                 if(tr!='M'){
                     tt += secondFormat(d);
-                    if(tr!='S') { tt+=numFormat(mod(x/1000,1),ax,'none').substr(1); }
+                    if(tr!='S') { tt += numFormat(mod(x/1000,1),ax,'none').substr(1); }
                 }
             }
         }
