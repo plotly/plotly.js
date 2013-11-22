@@ -83,8 +83,9 @@ boxes.setPositions = function(gd,plotinfo) {
           (t.xaxis||'x')==xa._id && (t.yaxis||'y')==ya._id) {
             boxlist.push(i);
             if(t.boxpts!==false) {
-                minPad = Math.max(minPad,(t.jitter-t.ptpos+gd.layout.boxgap-1)/gd.numboxes);
-                maxPad = Math.max(maxPad,(t.jitter+t.ptpos+gd.layout.boxgap-1)/gd.numboxes);
+                // console.log(t.jitter,t.ptpos,gd.layout.boxgap,gd.numboxes,t.jitter-t.ptpos+gd.layout.boxgap-1);
+                minPad = Math.max(minPad,t.jitter-t.ptpos-1);
+                maxPad = Math.max(maxPad,t.jitter+t.ptpos-1);
             }
         }
     });
@@ -106,7 +107,9 @@ boxes.setPositions = function(gd,plotinfo) {
         boxlist.forEach(function(i){ gd.calcdata[i][0].t.dx = dx; });
 
         // autoscale the x axis - including space for points if they're off the side
-        Plotly.Axes.expand(xa, boxdv.vals, {vpadminus:dx+minPad, vpadplus:dx+maxPad});
+        // TODO: this will overdo it if the outermost boxes don't have their points as far out as the other boxes
+        var padfactor = (1-gd.layout.boxgap)*(1-gd.layout.boxgroupgap)*dx/gd.numboxes;
+        Plotly.Axes.expand(xa, boxdv.vals, {vpadminus:dx+minPad*padfactor, vpadplus:dx+maxPad*padfactor});
     }
 };
 
