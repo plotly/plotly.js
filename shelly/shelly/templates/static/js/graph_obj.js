@@ -1275,7 +1275,7 @@ plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     killPopovers();
 
-    setFileAndCommentsHeight(gd);
+    if(gd.mainsite){ setFileAndCommentsHeight(gd); }
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
@@ -1374,7 +1374,7 @@ function makePlotFramework(divid, layout) {
 
     // Initial autosize
     if(gl.autosize=='initial') {
-        setFileAndCommentsHeight(gd);
+        if(gd.mainsite){ setFileAndCommentsHeight(gd) };
         plotAutoSize(gd,{});
         gl.autosize=true;
     }
