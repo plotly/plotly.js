@@ -145,7 +145,8 @@ annotations.draw = function(gd,index,opt,value) {
         opacity = 1,
         alignTo = {left:'right', center:'center', right:'left'}[options.align];
 
-    function titleLayout(){
+    function textLayout(){
+        // var bg = d3.select(gd).select('svg>rect.bg');
         var padding = options.borderpad + options.borderwidth;
         var alignOptions = {
             horizontalAlign: alignTo,
@@ -167,11 +168,11 @@ annotations.draw = function(gd,index,opt,value) {
 
     if(gd.mainsite) {
         anntext.call(d3.plugly.makeEditable)
-            .call(titleLayout)
+            .call(textLayout)
             .on('edit', function(_text){
                 options.text = _text;
                 this.attr({'data-unformatted': options.text});
-                this.call(titleLayout);
+                this.call(textLayout);
                 var update = {},
                     xa = Plotly.Axes.getFromId(gd,options.xref),
                     ya = Plotly.Axes.getFromId(gd,options.yref);
@@ -181,7 +182,7 @@ annotations.draw = function(gd,index,opt,value) {
                 Plotly.relayout(gd,update);
             });
     }
-    else  anntext.call(titleLayout);
+    else  anntext.call(textLayout);
 
     var anntextBB = anntext.node().getBoundingClientRect(),
         annwidth = anntextBB.width,
@@ -292,7 +293,7 @@ annotations.draw = function(gd,index,opt,value) {
         borderfull = borderwidth+borderpad,
         outerwidth = Math.round(annwidth+2*borderfull),
         outerheight = Math.round(annheight+2*borderfull),
-        texty = paperBB.top-anntextBB.top+borderfull*2; // *2 is an artifact of titleLayout above...
+        texty = paperBB.top-anntextBB.top+borderfull*2; // *2 is an artifact of textLayout above...
     ann.call(Plotly.Drawing.setRect,
         Math.round(annPosPx.x-outerwidth/2), Math.round(annPosPx.y-outerheight/2),
             outerwidth, outerheight);
@@ -301,7 +302,6 @@ annotations.draw = function(gd,index,opt,value) {
     anntext
         .attr({x: paperBB.left-anntextBB.left+borderfull, y: texty})
       .selectAll('tspan.line')
-//        .attr({x: paperBB.left-anntextBB.left+borderfull, y:  paperBB.top-anntextBB.top+borderfull*2});
         .attr({y: texty});
 
     // add the arrow
