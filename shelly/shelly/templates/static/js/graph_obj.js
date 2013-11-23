@@ -319,18 +319,18 @@ function updateTraces(old_data, new_data) {
 // note that now this function is only adding the brand in iframes and 3rd-party
 // apps, standalone plots get the sidebar instead.
 plots.positionBrand = function(gd){
-    $(gd).find('.linktotool').remove();
-    var linktotool = $('<div class="linktotool">'+
-        '<a><font class="muted">view in </font><font class="info">plotly</font></a>'+
+    $(gd).find('.link-to-tool').remove();
+    var $linkToTool = $('<div class="link-to-tool">'+
+        '<a class="link--impt">view in plotly</a>'+
         '</div>').appendTo(gd.layout._paperdiv.node());
     if(gd.shareplot) {
         var path=window.location.pathname.split('/');
-        linktotool.find('a')
+        $linkToTool.find('a')
             .attr('href','/'+path[2]+'/'+path[1])
             .attr('target','_blank');
     }
     else {
-        linktotool.find('a').click(function(){
+        $linkToTool.find('a').click(function(){
             var hiddenform = $('<div id="hiddenform" style="display:none;">'+
                 '<form action="https://plot.ly/external" method="post" target="_blank">'+
                 '<input type="text" name="data" /></form></div>').appendTo(gd);
@@ -385,13 +385,13 @@ Plotly.plot = function(gd, data, layout) {
         }
         gd.layout=layout;
 
-        gd.graphContainer = d3.select(gd).select('.graph-container');
-        if(gd.graphContainer.empty()){
-            gd.graphContainer = d3.select(gd).append('div').classed('.graph-container', true);
+        gd.layout._container = d3.select(gd).select('.plot-container');
+        if(gd.layout._container.empty()){
+            gd.layout._container = d3.select(gd).append('div').classed('.plot-container', true);
         }
-        gd.paperdiv = gd.graphContainer.select('.svg-container');
+        gd.paperdiv = gd.layout._container.select('.svg-container');
         if(gd.paperdiv.empty()){
-            gd.paperdiv = gd.graphContainer.append('div')
+            gd.paperdiv = gd.layout._container.append('div')
                 .classed('svg-container',true)
                 .style('position','relative');
         }
@@ -1227,26 +1227,9 @@ Plotly.relayout = function(gd,astr,val) {
     $(gd).trigger('relayout.plotly',redoit);
 };
 
-function setGraphContainerHeight(gd) {
-    if(!gd.mainsite) { return; }
-    $gd = $(gd);
-    var graphContainerHeight = $gd.innerHeight() - $gd.find('.tool-menu').innerHeight(),
-        $themebar = $gd.find('.themebar'),
-        $demobar = $gd.find('.demobar');
-
-    if ($themebar.css('display') == 'block') {
-        graphContainerHeight -= $themebar.innerHeight();
-    }
-    if ($demobar.css('display') == 'block') {
-        graphContainerHeight -= $demobar.innerHeight();
-    }
-
-    $gd.find('.graph-container').css('height', graphContainerHeight);
-}
-
 function setGraphContainerScroll(gd) {
     if(!gd.mainsite) { return; }
-    var $graphContainer = $(gd).find('.graph-container'),
+    var $graphContainer = $(gd).find('.plot-container'),
         isGraphWiderThanContainer = gd.layout.width > parseInt($graphContainer.css('width'),10);
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
@@ -1262,7 +1245,7 @@ function setGraphContainerScroll(gd) {
 function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
     if(gd.mainsite) {
-        setGraphContainerHeight(gd);
+        setFileAndCommentsHeight(gd);
         var gdBB = gd.layout._container.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
         newwidth = Math.round(gdBB.width*0.9);
@@ -1292,7 +1275,7 @@ plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     killPopovers();
 
-    setGraphContainerHeight(gd);
+    setFileAndCommentsHeight(gd);
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
@@ -1322,6 +1305,7 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
+
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
@@ -1331,7 +1315,7 @@ function makePlotFramework(divid, layout) {
         gd3 = d3.select(gd);
 
     // test if this is on the main site or embedded
-    gd.mainsite = Boolean($('#plotlyMainMarker').length);
+    gd.mainsite = $('#plotlyMainMarker').length > 0;
 
     function addDefaultAxis(container, axname) {
         var axid = axname.replace('axis','');
@@ -1372,10 +1356,14 @@ function makePlotFramework(divid, layout) {
 
     Plotly.Axes.setTypes(gd);
 
-    // graph container
-    gl._container = gd3.selectAll('.graph-container').data([0]);
+    var outerContainer = gl._fileandcomments = gd3.selectAll('.file-and-comments');
+    // for embeds and cloneGraphOffscreen
+    if(!outerContainer.node()) { outerContainer = gd3; }
+
+    // Plot container
+    gl._container = outerContainer.selectAll('.plot-container').data([0]);
     gl._container.enter().append('div')
-        .classed('graph-container',true)
+        .classed('plot-container',true)
         .classed('is-mainsite', gd.mainsite);
 
     // Make the svg container
@@ -1384,9 +1372,9 @@ function makePlotFramework(divid, layout) {
         .classed('svg-container',true)
         .style('position','relative');
 
-    // initial autosize
+    // Initial autosize
     if(gl.autosize=='initial') {
-        setGraphContainerHeight(gd);
+        setFileAndCommentsHeight(gd);
         plotAutoSize(gd,{});
         gl.autosize=true;
     }
