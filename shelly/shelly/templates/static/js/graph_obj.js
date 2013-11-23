@@ -1695,7 +1695,7 @@ plots.titles = function(gd,title) {
     }
 
     var opacity = 1;
-    var txt = cont.title;
+    var txt = cont.title.trim();
     if(cont.unit) txt += ' ('+cont.unit+')';
     if(txt === '') opacity = 0;
     if(txt === 'Click to enter '+name+' title') opacity = 0.2;
@@ -1706,6 +1706,7 @@ plots.titles = function(gd,title) {
     function titleLayout(){
         var titleEl = this
             .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
+            .attr(options)
             .call(d3.plugly.convertToTspans)
             .attr(options);
         titleEl.selectAll('tspan.line')
@@ -1765,6 +1766,12 @@ plots.titles = function(gd,title) {
     if(gd.mainsite){ // don't allow editing on embedded graphs
         el.call(d3.plugly.makeEditable)
             .on('edit', function(text){
+                this
+                    .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
+                    .call(d3.plugly.convertToTspans)
+                    .attr(options)
+                    .selectAll('tspan.line')
+                    .attr(options);
                 Plotly.relayout(gd,prop,text);
             })
             .on('cancel', function(text){
