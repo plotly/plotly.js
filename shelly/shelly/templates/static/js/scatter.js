@@ -10,92 +10,89 @@ scatter.calc = function(gd,gdc) {
     var i, cd = [];
 
     // ignore as much processing as possible (and including in autorange) if trace is not visible
-    if(gdc.visible!==false) {
-
-        var xa = gd.layout.xaxis,
-            ya = gd.layout.yaxis,
-            x = Plotly.Axes.convertOne(gdc,'x',xa),
-            y = Plotly.Axes.convertOne(gdc,'y',ya),
-            serieslen = Math.min(x.length,y.length);
-
-        // cancel minimum tick spacings (only applies to bars and boxes)
-        xa._minDtick = 0;
-        ya._minDtick = 0;
-
-        if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen); }
-        if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen); }
-
-        // check whether bounds should be tight, padded, extended to zero...
-        // most cases both should be padded on both ends, so start with that.
-        var xOptions = {padded:true},
-            yOptions = {padded:true};
-        // include marker size
-        if(gdc.mode && gdc.mode.indexOf('markers')!=-1) {
-            var markerPad = gdc.marker ? gdc.marker.size : 0;
-            var markerTrans = function(v) { return (v||6)/1.6; };
-            xOptions.ppad = yOptions.ppad = $.isArray(markerPad) ?
-                markerPad.map(markerTrans) : markerTrans(markerPad);
+    if(gdc.visible===false) {
+        // even if trace is not visible, need to figure out whether there are enough
+        // points to trigger auto-no-lines
+        if(gdc.mode || ((!gdc.x || gdc.x.length<scatter.PTS_LINESONLY) &&
+          (!gdc.y || gdc.y.length<scatter.PTS_LINESONLY))) {
+            return [{x:false, y:false}];
         }
-        // TODO: text size
-
-        // include zero (tight) and extremes (padded) if fill to zero
-        if(gdc.fill=='tozerox' || (gdc.fill=='tonextx' && gd.firstscatter)) {
-            xOptions.tozero = true;
+        else {
+            for(i=0; i<scatter.PTS_LINESONLY+1; i++) { cd.push({x:false, y:false}); }
+            return cd;
         }
-        // if no error bars, markers or text, or fill to y=0 remove x padding
-        else if((!gdc.error_y || !gdc.error_y.visible) &&
-            (['tonexty','tozeroy'].indexOf(gdc.fill)!=-1 ||
-            (gdc.mode && gdc.mode.indexOf('markers')==-1 && gdc.mode.indexOf('text')==-1) || // explicit no markers/text
-            (!gdc.mode && serieslen>=scatter.PTS_LINESONLY))) { // automatic no markers
-                xOptions.padded = false;
-                xOptions.ppad = 0;
-        }
-
-        // now check for y - rather different logic, though still mostly padded both ends
-        // include zero (tight) and extremes (padded) if fill to zero
-        if(gdc.fill=='tozeroy' || (gdc.fill=='tonexty' && gd.firstscatter)) {
-            yOptions.tozero = true;
-        }
-        // tight y: any x fill
-        else if(['tonextx','tozerox'].indexOf(gdc.fill)!=-1) {
-            yOptions.padded = false;
-        }
-
-        Plotly.Axes.expand(xa, x, xOptions);
-        Plotly.Axes.expand(ya, y, yOptions);
-
-        // create the "calculated data" to plot
-
-        for(i=0;i<serieslen;i++) {
-            cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ? {x:x[i],y:y[i]} : {x:false, y:false});
-        }
-        gd.firstscatter = false;
-        return cd;
-    }
-    // even if trace is not visible, need to figure out whether there are enough points to trigger auto-no-lines
-    else if(gdc.mode || ((!gdc.x || gdc.x.length<scatter.PTS_LINESONLY) &&
-      (!gdc.y || gdc.y.length<scatter.PTS_LINESONLY))) {
-        return [{x:false, y:false}];
-    }
-    else {
-        for(i=0; i<scatter.PTS_LINESONLY+1; i++) { cd.push({x:false, y:false}); }
-        return cd;
     }
 
+    var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
+        ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
+        x = Plotly.Axes.convertOne(gdc,'x',xa),
+        y = Plotly.Axes.convertOne(gdc,'y',ya),
+        serieslen = Math.min(x.length,y.length);
+
+    // cancel minimum tick spacings (only applies to bars and boxes)
+    xa._minDtick = 0;
+    ya._minDtick = 0;
+
+    if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen); }
+    if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen); }
+
+    // check whether bounds should be tight, padded, extended to zero...
+    // most cases both should be padded on both ends, so start with that.
+    var xOptions = {padded:true},
+        yOptions = {padded:true};
+    // include marker size
+    if(gdc.mode && gdc.mode.indexOf('markers')!=-1) {
+        var markerPad = gdc.marker ? gdc.marker.size : 0;
+        markerTrans = function(v) { return (v||6)/1.6; };
+        xOptions.ppad = yOptions.ppad = $.isArray(markerPad) ?
+            markerPad.map(markerTrans) : markerTrans(markerPad);
+    }
+    // TODO: text size
+
+    // include zero (tight) and extremes (padded) if fill to zero
+    if(gdc.fill=='tozerox' || (gdc.fill=='tonextx' && gd.firstscatter)) {
+        xOptions.tozero = true;
+    }
+    // if no error bars, markers or text, or fill to y=0 remove x padding
+    else if((!gdc.error_y || !gdc.error_y.visible) &&
+        (['tonexty','tozeroy'].indexOf(gdc.fill)!=-1 ||
+        (gdc.mode && gdc.mode.indexOf('markers')==-1 && gdc.mode.indexOf('text')==-1) || // explicit no markers/text
+        (!gdc.mode && serieslen>=scatter.PTS_LINESONLY))) { // automatic no markers
+            xOptions.padded = false;
+            xOptions.ppad = 0;
+    }
+
+    // now check for y - rather different logic, though still mostly padded both ends
+    // include zero (tight) and extremes (padded) if fill to zero
+    if(gdc.fill=='tozeroy' || (gdc.fill=='tonexty' && gd.firstscatter)) {
+        yOptions.tozero = true;
+    }
+    // tight y: any x fill
+    else if(['tonextx','tozerox'].indexOf(gdc.fill)!=-1) {
+        yOptions.padded = false;
+    }
+
+    Plotly.Axes.expand(xa, x, xOptions);
+    Plotly.Axes.expand(ya, y, yOptions);
+
+    // create the "calculated data" to plot
+    for(i=0;i<serieslen;i++) {
+        cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ? {x:x[i],y:y[i]} : {x:false, y:false});
+    }
+    gd.firstscatter = false;
+    return cd;
 };
 
-scatter.plot = function(gd,cdscatter) {
-    var xa = gd.layout.xaxis,
-        ya = gd.layout.yaxis;
+scatter.plot = function(gd,plotinfo,cdscatter) {
+    var xa = plotinfo.x,
+        ya = plotinfo.y;
     // make the container for scatter plots (so error bars can find them along with bars)
-    var scattertraces = gd.plot.selectAll('g.trace.scatter') // <-- select trace group
-        .data(cdscatter) // <-- bind calcdata to traces
-      .enter().append('g') // <-- add a trace for each calcdata
+    var scattertraces = plotinfo.plot.selectAll('g.trace.scatter') // <-- select trace group
+        .data(cdscatter);
+    scattertraces.enter().append('g') // <-- add a trace for each calcdata
         .attr('class','trace scatter')
         .style('stroke-miterlimit',2);
 
-
-    // BUILD SCATTER LINES AND FILL
     var prevpts='',tozero,tonext,nexttonext;
     scattertraces.each(function(d){ // <-- now, iterate through arrays of {x,y} objects
         var t=d[0].t; // <-- get trace-wide formatting object

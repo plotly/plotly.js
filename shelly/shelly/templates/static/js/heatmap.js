@@ -15,10 +15,10 @@ heatmap.calc = function(gd,gdc) {
     // prepare the raw data
     // run convertOne even for heatmaps, in case of category mappings
     Plotly.Lib.markTime('start convert x&y');
-    var xa = gd.layout.xaxis,
+    var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
+        ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
         x = gdc.x ? Plotly.Axes.convertOne(gdc,'x',xa) : [],
         x0, dx,
-        ya = gd.layout.yaxis,
         y = gdc.y ? Plotly.Axes.convertOne(gdc,'y',ya) : [],
         y0, dy,
         z = gdc.z,
@@ -180,17 +180,16 @@ function makeBoundArray(type,array_in,v0_in,dv_in,numbricks,ax) {
 }
 
 // Creates a heatmap image from a z matrix and embeds adds it to svg plot
-// Params are index of heatmap data object in gd.data, and the heatmap data object itself
-// cd "calcdata" - contains styling information
 // Example usage:
 // plot(gd, [{'type':'heatmap','z':[[1,2],[3,4]], 'x0':2, 'y0':2, 'dx':0.5, 'dy':0.5}])
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
-heatmap.plot = function(gd,cd) {
+heatmap.plot = function(gd,plotinfo,cd) {
     Plotly.Lib.markTime('in Heatmap.plot');
     var t = cd[0].t,
         i = t.curve,
-        xa = gd.layout.xaxis,
-        ya = gd.layout.yaxis;
+        xa = plotinfo.x,
+        ya = plotinfo.y,
+        gl = gd.layout;
 
     var z=cd[0].z, min=t.zmin, max=t.zmax, scl=getScale(cd), x=cd[0].x, y=cd[0].y;
     var id='hm'+i; // heatmap id
@@ -234,10 +233,10 @@ heatmap.plot = function(gd,cd) {
     // if zsmooth is best, don't include anything off screen because it takes too long
     if(!fastsmooth) {
         var extra = t.zsmooth=='best' ? 0 : 0.5;
-        left = Math.max(-extra*gd.plotwidth,left);
-        right = Math.min((1+extra)*gd.plotwidth,right);
-        top = Math.max(-extra*gd.plotheight,top);
-        bottom = Math.min((1+extra)*gd.plotheight,bottom);
+        left = Math.max(-extra*xa._length,left);
+        right = Math.min((1+extra)*xa._length,right);
+        top = Math.max(-extra*ya._length,top);
+        bottom = Math.min((1+extra)*ya._length,bottom);
     }
 
     var wd=Math.round(right-left);
@@ -388,8 +387,8 @@ heatmap.plot = function(gd,cd) {
     // http://stackoverflow.com/questions/6249664/does-svg-support-embedding-of-bitmap-images
     // https://groups.google.com/forum/?fromgroups=#!topic/d3-js/aQSWnEDFxIc
     var imgstr = "data:image/png;base64,\n" + p.getBase64();
-    $(gd).find('.'+id).remove(); // put this right before making the new image, to minimize flicker
-    gd.plot.append('svg:image')
+    gl._paper.selectAll('.'+id).remove(); // put this right before making the new image, to minimize flicker
+    plotinfo.plot.append('svg:image')
         .classed(id,true)
         // .classed('pixelated',true) // we can hope pixelated works...
         .attr("xmlns","http://www.w3.org/2000/svg")
@@ -403,7 +402,7 @@ heatmap.plot = function(gd,cd) {
     Plotly.Lib.markTime('done showing png');
 
     // show a colorscale
-    $(gd).find('.'+cb_id).remove();
+    gl._infolayer.selectAll('.'+cb_id).remove();
     if(t.showscale!==false){ insert_colorbar(gd,cd, cb_id, scl); }
     Plotly.Lib.markTime('done colorbar');
 };
@@ -461,7 +460,7 @@ function insert_colorbar(gd,cd, cb_id, scl) {
     }
 
     var gl = gd.layout,
-        g = gd.infolayer.append("g")
+        g = gl._infolayer.append("g")
             .classed(cb_id,true)
             // TODO: colorbar spacing from plot (fixed at 50 right now)
             // should be a variable in gd.data and editable from a popover
