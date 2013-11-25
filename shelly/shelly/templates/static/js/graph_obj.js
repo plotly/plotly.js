@@ -387,7 +387,7 @@ Plotly.plot = function(gd, data, layout) {
 
         gd.layout._container = d3.select(gd).select('.plot-container');
         if(gd.layout._container.empty()){
-            gd.layout._container = d3.select(gd).append('div').classed('.plot-container', true);
+            gd.layout._container = d3.select(gd).append('div').classed('.plot-container', true).classed('plotly',true);
         }
         gd.paperdiv = gd.layout._container.select('.svg-container');
         if(gd.paperdiv.empty()){
@@ -1364,6 +1364,7 @@ function makePlotFramework(divid, layout) {
     gl._container = outerContainer.selectAll('.plot-container').data([0]);
     gl._container.enter().append('div')
         .classed('plot-container',true)
+        .classed('plotly',true)
         .classed('is-mainsite', gd.mainsite);
 
     // Make the svg container
@@ -1476,8 +1477,8 @@ function makePlotFramework(divid, layout) {
     });
 
     // single info (legend, annotations) and hover layers for the whole plot
-    gl._infolayer = gl._paper.append('g');
-    gl._hoverlayer = gl._paper.append('g');
+    gl._infolayer = gl._paper.append('g').classed('infolayer',true);
+    gl._hoverlayer = gl._paper.append('g').classed('hoverlayer',true);
 
     // position and style the containers, make main title
     layoutStyles(gd);
