@@ -1698,8 +1698,8 @@ plots.titles = function(gd,title) {
             .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
             .attr(options)
             .call(d3.plugly.convertToTspans)
-            .attr(options)
-            .selectAll('tspan.line')
+            .attr(options);
+        titleEl.selectAll('tspan.line')
             .attr(options);
         if(transform){
             titleEl.attr({
