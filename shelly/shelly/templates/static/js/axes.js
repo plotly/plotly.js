@@ -8,15 +8,17 @@ var axes = Plotly.Axes = {};
 
 axes.defaultAxis = function(extras) {
     return $.extend({
-        range:[-1,6],type:'-',showline:true,mirror:true,linecolor:'#000',linewidth:1,
+        range:[-1,6],type:'-',showline:true,mirror:'all',linecolor:'#000',linewidth:1,
         tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
         showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
         showgrid:true,gridcolor:'#ddd',gridwidth:1,
         autorange:true,autotick:true,
         zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
-        title:'Click to enter X axis title',unit:'',
+        // title: 'Click to enter axis title',unit:'',
         titlefont:{family:'',size:0,color:''},
-        tickfont:{family:'',size:0,color:''}
+        tickfont:{family:'',size:0,color:''},
+        overlaying:false, // anchor, side we leave out for now as the defaults are different for x and y
+        domain:[0,1], position:0
     },extras);
 };
 // TODO: add label positioning
@@ -31,34 +33,88 @@ axes.defaultAxis = function(extras) {
 // If it has none of these, it will default to x0=0, dx=1, so choose number
 // -> If not date, figure out if a log axis makes sense, using all axis data
 axes.setTypes = function(td) {
-    var xa = initAxis(td,'x'),
-        ya = initAxis(td,'y');
+    // check if every axis we need exists - make any that don't as defaults
+    (td.data||[]).forEach(function(curve) {
+        if(curve.type && curve.type.indexOf('Polar')!=-1) { return; }
+        ['x','y'].forEach(function(axletter) {
+            var axid = curve[axletter+'axis']||axletter,
+                axname = axes.id2name(axid);
+            if(!td.layout[axname]) {
+                td.layout[axname] = axes.defaultAxis({
+                    range: [-1,axletter=='x' ? 6 : 4],
+                    // title: 'Click to enter '+axes.name2id(axname).toUpperCase()+' axis title',
+                    side: axletter=='x' ? 'bottom' : 'left'
+                });
+            }
+        });
+    });
+
+    // now get all axes
+    var axlist = axes.list(td);
+    // initialize them all
+    axlist.forEach(function(ax){ axes.initAxis(td,ax); });
+    // check for type changes
     if(td.data && td.data.length && td.axtypesok!==true){
-        setType(xa,td,'x');
-        setType(ya,td,'y');
+        axlist.forEach(setType);
         td.axtypesok=true;
     }
-    axes.setConvert(xa);
-    axes.setConvert(ya);
+    // prepare the conversion functions
+    axlist.forEach(axes.setConvert);
 };
 
 // add a few pieces to prepare the axis object for use
-function initAxis(td,id) {
-    var ax = td.layout[id2name(id)];
-    ax._id = id;
+axes.initAxis = function(td,ax) {
+    ax._name = Object.keys(td.layout).filter(function(k){return td.layout[k]===ax;})[0];
+    ax._id = axes.name2id(ax._name);
     ax._td = td;
+
+    // set scaling to pixels
+    ax.setScale = function(){
+        var gs = ax._td.layout._size;
+        // make sure we have a range (linearized data values)
+        if(!ax.range || ax.range.length!=2 || ax.range[0]==ax.range[1]) {
+            ax.range = [-1,1];
+        }
+
+        if(ax._id.charAt(0)=='y') {
+            ax._offset = gs.t+(1-ax.domain[1])*gs.h;
+            ax._length = gs.h*(ax.domain[1]-ax.domain[0]);
+            ax._m = ax._length/(ax.range[0]-ax.range[1]);
+            ax._b = -ax._m*ax.range[1];
+        }
+        else {
+            ax._offset = gs.l+ax.domain[0]*gs.w;
+            ax._length = gs.w*(ax.domain[1]-ax.domain[0]);
+            ax._m = ax._length/(ax.range[1]-ax.range[0]);
+            ax._b = -ax._m*ax.range[0];
+        }
+    };
+
+    if(!ax.anchor) { ax.anchor = axes.counterLetter(ax._id); }
+
+    if(!ax.domain || ax.domain.length!=2 || ax.domain[0]>=ax.domain[1] || ax.domain[0]<0 || ax.domain[1]>1) {
+        ax.domain = [0,1];
+    }
+
+    if(ax.title===undefined) { ax.title = 'Click to enter '+ax._id.toUpperCase()+' axis title'; }
+
     return ax;
-}
+};
 
 // convert between axis names (xaxis, xaxis2, etc, elements of td.layout)
-// and axis id's (x, x2, etc)
-function id2name(id) { return id.charAt(0)+'axis'+id.substr(1); }
-function name2id(name) { return name.charAt(0)+name.substr(5); }
+// and axis id's (x, x2, etc). Would probably have ditched 'xaxis' completely
+// in favor of just 'x' if it weren't ingrained in the API etc.
+axes.id2name = function(id) { return id && id.charAt(0)+'axis'+id.substr(1); };
+axes.name2id = function(name) { return name && name.charAt(0)+name.substr(5); };
+
+// get counteraxis letter for this axis (name or id)
+// this can also be used as the id for default counter axis
+axes.counterLetter = function(id) { return {x:'y',y:'x'}[id.charAt(0)]; };
 
 function setType(ax){
     var axletter = ax._id.charAt(0),
-        data = ax._td.data,
-        d0 = data[0];
+        data = ax._td.data.filter(function(di){ return (di[axletter+'axis']||axletter)==ax._id; }),
+        d0 = data[0]||{x:[0], y:[0]};
     if(!d0.type) { d0.type='scatter'; }
     // backward compatibility
     if(!ax.type) {
@@ -72,7 +128,8 @@ function setType(ax){
 
     // delete category list, if there is one, so we start over
     // to be filled in later by convertToNums
-    ax.categories = [];
+    ax.categories = []; // obsolete (new one is private)
+    ax._categories = [];
 
     // guess at axis type with the new property format
     // first check for histograms, as they can change the axis types
@@ -218,11 +275,11 @@ axes.convertToNums = function(o,ax){
         // from the second that aren't in the first etc.
         // TODO: sorting options - I guess we'll have to do this in plot()
         // after finishing calcdata
-        if(!ax.categories) { ax.categories = []; }
+        if(!ax._categories) { ax._categories = []; }
         ($.isArray(o) ? o : [o]).forEach(function(v){
-            if(ax.categories.indexOf(v)==-1) { ax.categories.push(v); }
+            if(ax._categories.indexOf(v)==-1) { ax._categories.push(v); }
         });
-        fn = function(v){ var c = ax.categories.indexOf(v); return c==-1 ? undefined : c; };
+        fn = function(v){ var c = ax._categories.indexOf(v); return c==-1 ? undefined : c; };
     }
     else {
         fn = function(v){
@@ -270,32 +327,20 @@ axes.setConvert = function(ax) {
     ax.c2l = (ax.type=='log') ? toLog : num;
     ax.l2c = (ax.type=='log') ? fromLog : num;
 
+    ax.l2p = function(v) { return d3.round(ax._b+ax._m*v,2); };
+    ax.p2l = function(px) { return (px-ax._b)/ax._m; };
+
     ax.c2p = function(v,clip) {
         var va = ax.c2l(v);
         // include 2 fractional digits on pixel, for PDF zooming etc
-        if($.isNumeric(va)) { return d3.round(ax._b+ax._m*va,2); }
+        if($.isNumeric(va)) { return ax.l2p(va); }
         // clip NaN (ie past negative infinity) to one axis length past the negative edge
         if(clip && $.isNumeric(v)) {
             var r0 = ax.range[0], r1 = ax.range[1];
-            return d3.round(ax._b+ax._m*0.5*(r0+r1-3*Math.abs(r0-r1)),2);
+            return ax.l2p(0.5*(r0+r1-3*Math.abs(r0-r1)));
         }
     };
-    ax.p2c = function(px){ return ax.l2c((px-ax._b)/ax._m); };
-
-    // set scaling to pixels
-    ax.setScale = function(){
-        if(!ax.range || ax.range.length!=2 || ax.range[0]==ax.range[1]) {
-            ax.range = [-1,1];
-        }
-        if(ax._id.charAt(0)=='y') {
-            ax._m=ax._td.plotheight/(ax.range[0]-ax.range[1]);
-            ax._b=-ax._m*ax.range[1];
-        }
-        else {
-            ax._m=ax._td.plotwidth/(ax.range[1]-ax.range[0]);
-            ax._b=-ax._m*ax.range[0];
-        }
-    };
+    ax.p2c = function(px){ return ax.l2c(ax.p2l(px)); };
 
     // for autoranging: arrays of objects {val:axis value, pad: pixel padding}
     // on the low and high sides
@@ -338,6 +383,7 @@ axes.minDtick = function(ax,newDiff,newFirst,allow) {
 };
 
 axes.doAutoRange = function(ax) {
+    if(!ax._length) { ax.setScale(); }
     if(ax.autorange && ax._min && ax._max && ax._min.length && ax._max.length) {
         var i,j,minpt,maxpt,minbest,maxbest,dp,dv,mbest=0;
         for(i=0; i<ax._min.length; i++) {
@@ -345,13 +391,11 @@ axes.doAutoRange = function(ax) {
             for(j=0; j<ax._max.length; j++) {
                 maxpt = ax._max[j];
                 dv = maxpt.val-minpt.val;
-                dp = ax._pixrange-minpt.pad-maxpt.pad;
-                if(dv>0 && dp>0) {
-                    if(dv/dp > mbest) {
-                        minbest = minpt;
-                        maxbest = maxpt;
-                        mbest = dv/dp;
-                    }
+                dp = ax._length-minpt.pad-maxpt.pad;
+                if(dv>0 && dp>0 && dv/dp > mbest) {
+                    minbest = minpt;
+                    maxbest = maxpt;
+                    mbest = dv/dp;
                 }
             }
         }
@@ -372,7 +416,7 @@ axes.doAutoRange = function(ax) {
 // available options:
 //      vpad: (number or number array) pad values (data value +-vpad)
 //      ppad: (number or number array) pad pixels (pixel location +-ppad)
-//      ppadplus, ppadminus: separate padding for each side, overrides symmetric ppad
+//      ppadplus, ppadminus, vpadplus, vpadminus: separate padding for each side, overrides symmetric
 //      padded: (boolean) add 5% padding to both ends (unless one end is overridden by tozero)
 //      tozero: (boolean) make sure to include zero if axis is linear, and make it a tight bound if possible
 axes.expand = function(ax,data,options) {
@@ -383,9 +427,9 @@ axes.expand = function(ax,data,options) {
     if(!ax._m) { ax.setScale(); }
 
     var len = data.length,
-        extrappad = options.padded ? ax._pixrange*0.05 : 0,
+        extrappad = options.padded ? ax._length*0.05 : 0,
         tozero = options.tozero && (ax.type=='linear' || ax.type=='-'),
-        i,j,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis;
+        i,j,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
 
     function getPad(item) {
         if($.isArray(item)) { return function(i) { return Math.max(Number(item[i]||0),0); }; }
@@ -394,7 +438,9 @@ axes.expand = function(ax,data,options) {
     var ppad = getPad(options.ppad),
         ppadplus = getPad(ax._m>0 ? options.ppadplus : options.ppadminus),
         ppadminus = getPad(ax._m>0 ? options.ppadminus : options.ppadplus),
-        vpad = getPad(options.vpad);
+        vpad = getPad(options.vpad),
+        vpadplus = getPad(options.vpadplus),
+        vpadminus = getPad(options.vpadminus);
 
     function minfilter(v) {
         if(!includeThis) { return true; }
@@ -416,8 +462,14 @@ axes.expand = function(ax,data,options) {
         ppadiplus = (ppadplus(i)||ppadi) + extrappad;
         ppadiminus = (ppadminus(i)||ppadi) + extrappad;
         vpadi = vpad(i);
-        dmin = ax.c2l(data[i]-vpadi);
-        dmax = ax.c2l(data[i]+vpadi);
+        vmin = data[i]-(vpadminus(i)||vpadi);
+        vmax = data[i]+(vpadplus(i)||vpadi);
+        // special case for log axes: if vpad makes this object span more than an
+        // order of mag, clip it to one order. This is so we don't have non-positive
+        // errors or absurdly large lower range due to rounding errors
+        if(ax.type=='log' && vmin<vmax/10) { vmin = vmax/10; }
+        dmin = ax.c2l(vmin);
+        dmax = ax.c2l(vmax);
         if(tozero) {
             dmin = Math.min(0,dmin);
             dmax = Math.max(0,dmax);
@@ -452,25 +504,35 @@ axes.autoBin = function(data,ax,nbins,is2d) {
         };
     }
     else {
-        var size0 = nbins ? ((datamax-datamin)/nbins) :
-            2*Plotly.Lib.stdev(data)/Math.pow(data.length,is2d ? 0.25 : 0.4);
+        var size0;
+        if(nbins) { size0 = ((datamax-datamin)/nbins); }
+        else {
+            // totally auto: scale off std deviation so the highest bin is somewhat taller
+            // than the total number of bins, but don't let the size get smaller than the
+            // 'nice' rounded down minimum difference between values
+            var distinctData = Plotly.Lib.distinctVals(data),
+                msexp = Math.pow(10,Math.floor(Math.log(distinctData.minDiff)/Math.LN10)),
+                minSize = msexp*roundUp(distinctData.minDiff/msexp,[0.9,1.9,4.9],true); // TODO: there are some date cases where this will fail...
+            size0 = Math.max(minSize,2*Plotly.Lib.stdev(data)/Math.pow(data.length,is2d ? 0.25 : 0.4));
+        }
         // piggyback off autotick code to make "nice" bin sizes
-        var dummyax = {type:ax.type,range:[datamin,datamax]};
+        var dummyax = {type:ax.type=='log' ? 'linear' : ax.type, range:[datamin,datamax]};
         axes.autoTicks(dummyax,size0);
         var binstart = axes.tickIncrement(axes.tickFirst(dummyax),dummyax.dtick,'reverse');
         // check for too many data points right at the edges of bins (>50% within 1% of bin edges)
         // or all data points integral
         // and offset the bins accordingly
-        var edgecount = 0, intcount = 0;
+        var edgecount = 0, intcount = 0, blankcount = 0;
         for(var i=0; i<data.length; i++) {
             if(data[i]%1===0) { intcount++; }
+            else if(!$.isNumeric(data[i])) { blankcount++; }
             if((1+(data[i]-binstart)*100/dummyax.dtick)%100<2) { edgecount++; }
         }
-        if(intcount==data.length && ax.type!='date') {
+        if(intcount+blankcount==data.length && ax.type!='date') {
             binstart -= 0.5;
             if(dummyax.dtick<1) { dummyax.dtick=1; }
         }
-        else if(edgecount>data.length/2) {
+        else if(edgecount>(data.length-blankcount)/2) {
             var binshift = (axes.tickIncrement(binstart,dummyax.dtick)-binstart)/2;
             binstart += (binstart+binshift<datamin) ? binshift : -binshift;
         }
@@ -497,8 +559,9 @@ axes.autoBin = function(data,ax,nbins,is2d) {
 function calcTicks(ax) {
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.autotick || !ax.dtick){
-        var nt = ax.nticks ||
-                Math.max(5,Math.min(10,(ax._id.charAt(0)=='y') ? ax._td.plotheight/40 : ax._td.plotwidth/80));
+        var gs = ax._td.layout._size,
+            nt = (ax.nticks ||
+                Plotly.Lib.constrain(ax._length/(ax._id.charAt(0)=='y' ? 40 : 80), 4, 9) + 1);
         axes.autoTicks(ax,Math.abs(ax.range[1]-ax.range[0])/nt);
         // check for a forced minimum dtick
         if(ax._minDtick>0 && ax.dtick<ax._minDtick*2) {
@@ -527,7 +590,7 @@ function calcTicks(ax) {
         // add a tiny bit so we get ticks which may have rounded out
         endtick = ax.range[1] * 1.0001 - ax.range[0]*0.0001;
     if(ax.type=='category') {
-        endtick = (axrev) ? Math.max(-0.5,endtick) : Math.min(ax.categories.length-0.5,endtick);
+        endtick = (axrev) ? Math.max(-0.5,endtick) : Math.min(ax._categories.length-0.5,endtick);
     }
     for(var x=ax._tmin;(axrev)?(x>=endtick):(x<=endtick);x=axes.tickIncrement(x,ax.dtick,axrev)) {
         vals.push(x);
@@ -602,22 +665,27 @@ axes.autoTicks = function(ax,rt){
             // ax.dtick="D2" (show 2 and 5) or "D1" (show all digits)
             // use ax._tickround to store the first tick
             // I don't think we're still using this... try to remove it
-            var vmin=Math.pow(10,Math.min(ax.range[1],ax.range[0]));
-            var minexp=Math.pow(10,Math.floor(Math.log(vmin)/Math.LN10));
+            var vmin = Math.pow(10,Math.min(ax.range[1],ax.range[0]));
+            var minexp = Math.pow(10,Math.floor(Math.log(vmin)/Math.LN10));
             ax.dtick = (rt>0.3) ? 'D2' : 'D1';
         }
     }
     else if(ax.type=='category') {
-        ax.tick0=0;
-        ax.dtick=1;
+        ax.tick0 = 0;
+        ax.dtick = 1;
     }
     else{
         // auto ticks always start at 0
-        ax.tick0=0;
-        rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-        ax.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
+        ax.tick0 = 0;
+        rtexp = Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
+        ax.dtick = rtexp*roundUp(rt/rtexp,[2,5,10]);
     }
-    if(ax.dtick===0) { ax.dtick=1; } // prevent infinite loops...
+    if(ax.dtick===0) { ax.dtick = 1; } // prevent infinite loops...
+    // TODO: this is from log axis histograms with autorange off
+    if(!$.isNumeric(ax.dtick) && typeof ax.dtick !='string') {
+        ax.dtick = 1;
+        throw 'ax.dtick error: '+String(ax.dtick);
+    }
 };
 
 // after dtick is already known, find tickround = precision to display in tick labels
@@ -712,7 +780,7 @@ axes.tickFirst = function(ax){
     if($.isNumeric(ax.dtick)) {
         var tmin = sRound((r0-ax.tick0)/ax.dtick)*ax.dtick+ax.tick0;
         // make sure no ticks outside the category list
-        if(ax.type=='category') { tmin = Plotly.Lib.constrain(tmin,0,ax.categories.length-1); }
+        if(ax.type=='category') { tmin = Plotly.Lib.constrain(tmin,0,ax._categories.length-1); }
         return tmin;
     }
 
@@ -743,9 +811,8 @@ axes.tickFirst = function(ax){
 
 var yearFormat = d3.time.format('%Y'),
     monthFormat = d3.time.format('%b %Y'),
-    dayfmt0 = d3.time.format('%b %d'),
-    dayFormat = function(d){ return dayfmt0(d).replace(' 0',' '); }, // TODO: get rid of date.js so we can upgrade to d3v3 and use -d
-    hourFormat = d3.time.format(' %H'), // then we can combine the parts of hourFormat again
+    dayFormat = d3.time.format('%b %-d'),
+    hourFormat = d3.time.format('%b %-d %Hh'),
     minuteFormat = d3.time.format('%H:%M'),
     secondFormat = d3.time.format(':%S');
 // draw the text for one tick.
@@ -777,14 +844,14 @@ axes.tickText = function(ax, x, hover){
             if(x==ax._tmin) { suffix = '<br>'+yearFormat(d); }
 
             if(tr=='d') { tt = dayFormat(d); }
-            else if(tr=='H') { tt = dayFormat(d)+hourFormat(d); }
+            else if(tr=='H') { tt = hourFormat(d); }
             else {
                 if(x==ax._tmin) { suffix = '<br>'+dayFormat(d)+', '+yearFormat(d); }
 
                 tt = minuteFormat(d);
                 if(tr!='M'){
                     tt += secondFormat(d);
-                    if(tr!='S') { tt+=numFormat(mod(x/1000,1),ax,'none').substr(1); }
+                    if(tr!='S') { tt += numFormat(mod(x/1000,1),ax,'none').substr(1); }
                 }
             }
         }
@@ -805,7 +872,7 @@ axes.tickText = function(ax, x, hover){
         else throw "unrecognized dtick "+String(dt);
     }
     else if(ax.type=='category'){
-        var tt0 = ax.categories[Math.round(x)];
+        var tt0 = ax._categories[Math.round(x)];
         if(tt0===undefined) { tt0=''; }
         tt=String(tt0);
     }
@@ -896,182 +963,261 @@ function numFormat(v,ax,fmtoverride,hover) {
     return (n?'-':'')+v;
 }
 
+// get all axis objects, optionally restricted to only x or y by string axletter
+axes.list = function(td,axletter) {
+    if(!td.layout) { return []; }
+    return Object.keys(td.layout)
+        .filter(function(k){
+            if(axletter && k.charAt(0)!=axletter) { return false; }
+            return k.match(/^[xy]axis[0-9]*/g);
+        })
+        .sort()
+        .map(function(k){ return td.layout[k]; });
+};
+
+// get an axis object from its id 'x','x2' etc
+// optionally, id can be a subplot (ie 'x2y3') and type gets x or y from it
+axes.getFromId = function(td,id,type) {
+    if(type=='x') { id = id.replace(/y[0-9]*/,''); }
+    else if(type=='y') { id = id.replace(/x[0-9]*/,''); }
+    return td.layout[axes.id2name(id)];
+};
+
 // doTicks: draw ticks, grids, and tick labels
-// axletter: 'x' or 'y', blank to do both,
+// axid: 'x', 'y', 'x2' etc,
+//          blank to do all,
 //          'redraw' to force full redraw, and reset ax._r (stored range for use by zoom/pan)
-axes.doTicks = function(td,axletter) {
-    if(axletter=='redraw') {
-        td.axislayer.selectAll('text,path').remove();
-        td.gridlayer.selectAll('path').remove();
-        td.zerolinelayer.selectAll('path').remove();
+axes.doTicks = function(td,axid) {
+    var gl = td.layout,
+        gs = gl._size,
+        ax = axes.getFromId(td,axid);
+
+    if(axid=='redraw') {
+        td.layout._paper.selectAll('g.subplot').each(function(subplot) {
+            var plotinfo = gl._plots[subplot];
+            plotinfo.plot.attr('viewBox','0 0 '+plotinfo.x._length+' '+plotinfo.y._length);
+            plotinfo.axislayer.selectAll('text,path').remove();
+            plotinfo.gridlayer.selectAll('path').remove();
+            plotinfo.zerolinelayer.selectAll('path').remove();
+        });
     }
 
-    var gl = td.layout;
-    if(['x','y'].indexOf(axletter)==-1) {
-        axes.doTicks(td,'x');
-        axes.doTicks(td,'y');
-        if(axletter=='redraw') {
-            gl.xaxis._r = gl.xaxis.range.slice();
-            gl.yaxis._r = gl.yaxis.range.slice();
-        }
+    if(!axid || axid=='redraw') {
+        axes.list(td).forEach(function(ax) {
+            axes.doTicks(td,ax._id);
+            if(axid=='redraw') { ax._r = ax.range.slice(); }
+        });
         return;
     }
 
-    var gm=td.margin,
-        ax={x:gl.xaxis, y:gl.yaxis}[axletter];
     ax.range = ax.range.map(Number); // in case a val turns into string somehow
 
-    ax.setScale(td); // set scaling to pixels
+    ax.setScale(); // set scaling to pixels
 
-    var vals=calcTicks(ax),
-        datafn = function(d){ return d.text+d.x; },
-        tcls = axletter+'tick',
-        gcls = axletter+'grid',
-        zcls = axletter+'zl',
-        pad = gm.p+(ax.ticks=='outside' ? 1 : 0) * ($.isNumeric(ax.linewidth) ? ax.linewidth : 1),
-        standoff = ax.ticks=='outside' ? ax.ticklen : ax.linewidth+1,
-        pixfn = function(d){ return ax._m*d.x+ax._b; },
+    // console.log(ax.l2p(0),ax.l2p(1));
+
+    var axletter = axid.charAt(0),
+        vals=calcTicks(ax),
+        datafn = function(d){ return d.text+d.x+ax.mirror; },
+        tcls = axid+'tick',
+        gcls = axid+'grid',
+        zcls = axid+'zl',
+        pad = ($.isNumeric(ax.linewidth) ? ax.linewidth : 1)/2,
+        // pad = gs.p+(ax.ticks=='outside' ? ($.isNumeric(ax.linewidth) ? ax.linewidth : 1) : 0),
+        labelStandoff = (ax.ticks=='outside' ? ax.ticklen : 1) + ax.linewidth,
         gridwidth = ax.gridwidth || 1,
-        span,x1,y1,tx,ty,tickpath,g,tl,transfn,i, gridpath;
+        ticksign = (ax.ticks=='inside' ? 1 : -1),
+        sides, transfn,
+        x1,y1,tx,ty,tickpath,g,tl,i, gridpath;
 
     // positioning arguments for x vs y axes
     if(axletter=='x') {
-        span = td.plotwidth;
-        y1 = gl.height-gm.b+pad;
-        ty = (ax.ticks=='inside' ? -1 : 1)*ax.ticklen;
-        tickpath = 'M'+gm.l+','+y1+'v'+ty+
-            (ax.mirror=='ticks' ? ('m0,'+(-td.plotheight-2*(ty+pad))+'v'+ty): '');
-        gridpath = 'M'+gm.l+','+gm.t+'v'+td.plotheight;
-        // g = {x1:gm.l, x2:gm.l, y1:gl.height-gm.b, y2:gm.t};
-        tl = {
-            x: function(d){ return d.dx+gm.l; },
-            y: function(d){ return d.dy+y1+standoff+d.fontSize; },
-            anchor: function(angle){
-                if(!$.isNumeric(angle) || angle===0 || angle==180) { return 'middle'; }
-                return angle<0 ? 'end' : 'start';
-            }
-        };
-        transfn = function(d){ return 'translate('+pixfn(d)+',0)'; };
+        sides = ['bottom','top'];
+        transfn = function(d){ return 'translate('+ax.l2p(d.x)+',0)'; };
     }
     else if(axletter=='y') {
-        span = td.plotheight;
-        x1 = gm.l-pad;
-        tx = (ax.ticks=='inside' ? 1 : -1)*ax.ticklen;
-        tickpath = 'M'+x1+','+gm.t+'h'+tx+
-            (ax.mirror=='ticks' ? ('m'+(td.plotwidth-2*(tx-pad))+',0h'+tx): '');
-        gridpath = 'M'+gm.l+','+gm.t+'h'+td.plotwidth;
-        // g = {x1:gm.l, x2:gl.width-gm.r, y1:gm.t, y2:gm.t};
-        tl = {
-            x:function(d){ return d.dx+x1 - standoff -
-                (Math.abs(ax.tickangle)==90 ? d.fontSize/2 : 0);
-            },
-            y:function(d){ return d.dy+gm.t+d.fontSize/2; },
-            anchor: function(angle){ return ($.isNumeric(angle) && Math.abs(angle)==90) ? 'middle' : 'end'; }
-        };
-        transfn = function(d){ return 'translate(0,'+pixfn(d)+')'; };
+        sides = ['left','right'];
+        transfn = function(d){ return 'translate(0,'+ax.l2p(d.x)+')'; };
     }
     else {
-        console.log('unrecognized doTicks axis',ax);
+        console.log('unrecognized doTicks axis',axid);
         return;
     }
+    var axside = ax.side||sides[0];
 
     // remove zero lines, grid lines, and inside ticks if they're within 1 pixel of the end
     // The key case here is removing zero lines when the axis bound is zero.
     function clipEnds(d) {
-        var p = pixfn(d);
-        return (p>1 && p<span-1);
+        var p = ax.l2p(d.x);
+        return (p>1 && p<ax._length-1);
     }
     var valsClipped = vals.filter(clipEnds);
 
-    // ticks
-    var ticks=td.axislayer.selectAll('path.'+tcls)
-        .data(ax.ticks ? (ax.ticks=='inside' ? valsClipped : vals) : [], datafn);
-    ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
-        .classed('crisp',1)
-        .call(Plotly.Drawing.strokeColor, ax.tickcolor || '#000')
-        .attr('stroke-width', ax.tickwidth || 1)
-        .attr('d',tickpath);
-    ticks.attr('transform',transfn);
-    ticks.exit().remove();
+    Plotly.Plots.getSubplots(td,ax).forEach(function(subplot,subplotIndex){
+        var plotinfo = gl._plots[subplot],
+            linepositions = ax._linepositions[subplot]||[], // [bottom or left, top or right, free, main]
+            counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
+            mainSubplot = counteraxis._id==ax.anchor,
+            ticksides = [false,false,false],
+            tickflip, tickprefix, tickmid, tickpath='';
 
-    // tick labels
-    var yl=td.axislayer.selectAll('text.'+tcls).data(vals, datafn);
-    if(ax.showticklabels) {
-        var maxFontSize = 0, autoangle = 0;
-        yl.enter().append('text').classed(tcls,1)
-            .call(Plotly.Drawing.setPosition, tl.x, tl.y)
-            .each(function(d){
-                Plotly.Drawing.font(d3.select(this),d.font,d.fontSize,d.fontColor);
-                Plotly.Drawing.styleText(this,d.text);
-            });
-        yl.attr('transform',function(d){
-                maxFontSize = Math.max(maxFontSize,d.fontSize);
-                return transfn(d) + (($.isNumeric(ax.tickangle) && Number(ax.tickangle)!==0) ?
-                (' rotate('+ax.tickangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')') : '');
-            })
-            .attr('text-anchor',tl.anchor(ax.tickangle));
-        // check for auto-angling if labels overlap
-        if(axletter=='x' && !$.isNumeric(ax.tickangle)) {
-            var lbbArray = yl[0].map(function(s){ return s.getBoundingClientRect(); });
-            for(i=0; i<lbbArray.length-1; i++) {
-                if(Plotly.Lib.bBoxIntersect(lbbArray[i],lbbArray[i+1])) {
-                    autoangle = 30; // any overlap at all - set 30 degrees
-                    break;
-                }
-            }
-            if(autoangle) {
-                var tickspacing = Math.abs((vals[vals.length-1].x-vals[0].x)*ax._m)/(vals.length-1);
-                if(tickspacing<maxFontSize*2.5) {
-                    autoangle = 90;
-                }
-                yl.attr('transform',function(d){
-                    return transfn(d) + ' rotate('+autoangle+','+tl.x(d)+','+(tl.y(d)-d.fontSize/2)+')';
-                })
-                .attr('text-anchor',tl.anchor(autoangle));
-            }
-
+        // ticks
+        if(ax.mirror=='allticks') { ticksides = [true,true,false]; }
+        else if(mainSubplot) {
+             if(ax.mirror=='ticks') { ticksides = [true,true,false]; }
+             else { ticksides[sides.indexOf(axside)] = true; }
         }
-        yl.exit().remove();
-    }
-    else { yl.remove(); }
-
-    // grid
-    var grid = td.gridlayer.selectAll('path.'+gcls)
-        .data(ax.showgrid!==false ? valsClipped : [], datafn);
-    grid.enter().append('path').classed(gcls,1)
-        .classed('crisp',1)
-        .attr('d',gridpath)
-        .each(function(d) {
-            if(ax.zeroline && (ax.type=='linear'||ax.type=='-') && Math.abs(d.x)<ax.dtick/100) {
-                d3.select(this).remove();
+        if(ax.mirrors) {
+            for(i=0; i<2; i++) {
+                if(['ticks','labels'].indexOf(ax.mirrors[counteraxis._id+sides[i]])!=-1) {
+                    ticksides[i] = true;
+                }
+            }
+        }
+        // free axis ticks
+        if(linepositions[2]!==undefined) { ticksides[2] = true; }
+        if(axletter=='x') {
+            tickflip = [-1,1,axside==sides[1] ? 1 : -1]; // we already set a sign based on inside/outside, then we flip it based on l/r/t/b
+            tickprefix = 'M'+ax._offset+','; // dumb templating with string concat - would be better to use an actual template
+            tickmid = 'v';
+        }
+        else {
+            tickflip = [1,-1,axside==sides[1] ? -1 : 1];
+            tickprefix = 'M';
+            tickmid = ','+ax._offset+'h';
+        }
+        ticksides.forEach(function(showside,sidei) {
+            var pos = linepositions[sidei], flip = tickflip[sidei]*ticksign;
+            if(showside && $.isNumeric(pos)) {
+                tickpath += tickprefix + (pos+pad*flip) + tickmid + (flip*ax.ticklen);
             }
         });
-    grid.attr('transform',transfn)
-        .call(Plotly.Drawing.strokeColor, ax.gridcolor || '#ddd')
-        .attr('stroke-width', gridwidth);
-    grid.exit().remove();
 
-    // zero line - clip it if it's at the edge, unless there are bars or fills to this axis
-    var hasBarsOrFill = (td.data||[]).filter(function(tdc){
-        return tdc.visible!==false &&
-            ((Plotly.Plots.isBar(tdc.type) && (tdc.bardir||'v')=={x:'h',y:'v'}[axletter]) ||
-            ((tdc.type||'scatter')=='scatter' && tdc.fill && tdc.fill.charAt(tdc.fill.length-1)==axletter));
-    }).length;
-    var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline && (ax.type=='linear'||ax.type=='-') &&
-        (hasBarsOrFill || clipEnds({x:0}));
+        var ticks=plotinfo.axislayer.selectAll('path.'+tcls)
+            .data(ax.ticks=='inside' ? valsClipped : vals, datafn);
+        if(tickpath && ax.ticks) {
+            ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
+                .classed('crisp',1)
+                .call(Plotly.Drawing.strokeColor, ax.tickcolor || '#000')
+                .attr('stroke-width', ax.tickwidth || 1)
+                .attr('d',tickpath);
+            ticks.attr('transform',transfn);
+            ticks.exit().remove();
+        }
+        else {
+            ticks.remove();
+        }
 
-    var zl = td.zerolinelayer.selectAll('path.'+zcls)
-        .data(showZl ? [{x:0}] : []);
-    zl.enter().append('path').classed(zcls,1).classed('zl',1)
-        .classed('crisp',1)
-        .attr('d',gridpath);
-    zl.attr('transform',transfn)
-        .call(Plotly.Drawing.strokeColor, ax.zerolinecolor || '#000')
-        .attr('stroke-width', ax.zerolinewidth || gridwidth);
-    zl.exit().remove();
+        // tick labels - for now just the main labels. TODO: mirror labels, esp for subplots
+        var tickLabels=plotinfo.axislayer.selectAll('text.'+tcls).data(vals, datafn);
+        if(ax.showticklabels && $.isNumeric(linepositions[3])) {
+            var labelx, labely, labelanchor, labelpos0;
+                // labelpos0 = linepositions[ticksides[2] ? 2 : (axside==sides[0] ? 1 : 0)];
+            if(axletter=='x') {
+                var flipit = axside=='bottom' ? 1 : -1,
+                    flipit2 = axside=='bottom' ? 1 : -0.5;
+                labelx = function(d){ return d.dx+ax._offset; };
+                labelpos0 = linepositions[3] + (labelStandoff+pad)*flipit;
+                labely = function(d){ return d.dy+labelpos0+d.fontSize*flipit2; };
+                labelanchor = function(angle){
+                    if(!$.isNumeric(angle) || angle===0 || angle==180) { return 'middle'; }
+                    return angle*flipit<0 ? 'end' : 'start';
+                };
+            }
+            else {
+                labely = function(d){ return d.dy+ax._offset+d.fontSize/2; };
+                labelpos0 = linepositions[3] +
+                    (labelStandoff+pad + (Math.abs(ax.tickangle)==90 ? d.fontSize/2 : 0))*
+                    (axside=='right' ? 1 : -1);
+                labelx = function(d){ return d.dx+labelpos0; };
+                labelanchor = function(angle){
+                    if($.isNumeric(angle) && Math.abs(angle)==90) { return 'middle'; }
+                    return axside=='right' ? 'start' : 'end';
+                };
+            }
+            var maxFontSize = 0, autoangle = 0;
+            tickLabels.enter().append('text').classed(tcls,1)
+                .each(function(d){
+                    d3.select(this)
+                        .call(Plotly.Drawing.setPosition, labelx(d), labely(d))
+                        .call(Plotly.Drawing.font,d.font,d.fontSize,d.fontColor);
+                    Plotly.Drawing.styleText(this,d.text);
+                });
+            tickLabels.attr('transform',function(d){
+                    maxFontSize = Math.max(maxFontSize,d.fontSize);
+                    return transfn(d) + (($.isNumeric(ax.tickangle) && Number(ax.tickangle)!==0) ?
+                    (' rotate('+ax.tickangle+','+labelx(d)+','+(labely(d)-d.fontSize/2)+')') : '');
+                })
+                .attr('text-anchor',labelanchor(ax.tickangle));
+            // check for auto-angling if labels overlap
+            if(axletter=='x' && !$.isNumeric(ax.tickangle)) {
+                var lbbArray = tickLabels[0].map(function(s){ return s.getBoundingClientRect(); });
+                for(i=0; i<lbbArray.length-1; i++) {
+                    if(Plotly.Lib.bBoxIntersect(lbbArray[i],lbbArray[i+1])) {
+                        autoangle = 30; // any overlap at all - set 30 degrees
+                        break;
+                    }
+                }
+                if(autoangle) {
+                    var tickspacing = Math.abs((vals[vals.length-1].x-vals[0].x)*ax._m)/(vals.length-1);
+                    if(tickspacing<maxFontSize*2.5) {
+                        autoangle = 90;
+                    }
+                    tickLabels.attr('transform',function(d){
+                        return transfn(d) + ' rotate('+autoangle+','+labelx(d)+','+(labely(d)-d.fontSize/2)+')';
+                    })
+                    .attr('text-anchor',labelanchor(autoangle));
+                }
+
+            }
+            tickLabels.exit().remove();
+        }
+        else { tickLabels.remove(); }
+
+        // check if these gridlines get hidden
+        if(plotinfo['hidegrid'+axletter]) { valsClipped = []; }
+        // grid
+        var gridpath = (axletter=='x') ?
+            ('M'+ax._offset+','+counteraxis._offset+'v'+counteraxis._length) :
+            ('M'+counteraxis._offset+','+ax._offset+'h'+counteraxis._length);
+        var grid = plotinfo.gridlayer.selectAll('path.'+gcls)
+            .data(ax.showgrid===false ? [] : valsClipped, datafn);
+        grid.enter().append('path').classed(gcls,1)
+            .classed('crisp',1)
+            .attr('d',gridpath)
+            .each(function(d) {
+                if(ax.zeroline && (ax.type=='linear'||ax.type=='-') && Math.abs(d.x)<ax.dtick/100) {
+                    d3.select(this).remove();
+                }
+            });
+        grid.attr('transform',transfn)
+            .call(Plotly.Drawing.strokeColor, ax.gridcolor || '#ddd')
+            .attr('stroke-width', gridwidth);
+        grid.exit().remove();
+
+        // zero line
+        var hasBarsOrFill = (td.data||[]).filter(function(tdc){
+            return tdc.visible!==false && ((tdc.xaxis||'x')+(tdc.yaxis||'y')==subplot) &&
+                ((Plotly.Plots.isBar(tdc.type) && (tdc.bardir||'v')=={x:'h',y:'v'}[axletter]) ||
+                ((tdc.type||'scatter')=='scatter' && tdc.fill && tdc.fill.charAt(tdc.fill.length-1)==axletter));
+        }).length;
+        var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline &&
+            (ax.type=='linear'||ax.type=='-') && !plotinfo['hidegrid'+axletter] &&
+            (hasBarsOrFill || clipEnds({x:0}));
+
+        var zl = plotinfo.zerolinelayer.selectAll('path.'+zcls)
+            .data(showZl ? [{x:0}] : []);
+        zl.enter().append('path').classed(zcls,1).classed('zl',1)
+            .classed('crisp',1)
+            .attr('d',gridpath);
+        zl.attr('transform',transfn)
+            .call(Plotly.Drawing.strokeColor, ax.zerolinecolor || '#000')
+            .attr('stroke-width', ax.zerolinewidth || gridwidth);
+        zl.exit().remove();
+    });
 
     // update the axis title (so it can move out of the way if needed)
-    Plotly.Plots.titles(td,axletter+'title');
+    Plotly.Plots.titles(td,axid+'title');
 };
 
 // mod - version of modulus that always restricts to [0,divisor)

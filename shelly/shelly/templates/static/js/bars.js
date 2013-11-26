@@ -6,9 +6,11 @@ bars.calc = function(gd,gdc) {
     if(gdc.visible===false) { return; }
 
     // depending on bar direction, set position and size axes and data ranges
-    var pos, size, pa, sa, i;
-    if(gdc.bardir=='h') { pa = gd.layout.yaxis; sa = gd.layout.xaxis; }
-    else { pa = gd.layout.xaxis; sa = gd.layout.yaxis; }
+    var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
+        ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
+        pos, size, pa, sa, i;
+    if(gdc.bardir=='h') { pa = ya; sa = xa; }
+    else { pa = xa; sa = ya; }
     size = Plotly.Axes.convertOne(gdc,'y',sa);
     pos = Plotly.Axes.convertOne(gdc,'x',pa);
 
@@ -26,10 +28,11 @@ bars.calc = function(gd,gdc) {
 // bar chart stacking/grouping positioning and autoscaling calculations
 // for each direction separately calculate the ranges and positions
 // note that this handles histograms too
-bars.setPositions = function(gd) {
+// now doing this one subplot at a time
+bars.setPositions = function(gd,plotinfo) {
     var gl = gd.layout,
-        xa = gl.xaxis,
-        ya = gl.yaxis,
+        xa = plotinfo.x,
+        ya = plotinfo.y,
         i, j;
 
     ['v','h'].forEach(function(dir){
@@ -38,7 +41,7 @@ bars.setPositions = function(gd) {
         gd.calcdata.forEach(function(cd,i) {
             var t=cd[0].t;
             if(t.visible!==false && Plotly.Plots.isBar(t.type) &&
-              (t.bardir||'v')==dir) {
+              (t.bardir||'v')==dir && (t.xaxis||'x')==xa._id && (t.yaxis||'y')==ya._id) {
                 bl.push(i);
             }
         });
@@ -116,13 +119,15 @@ bars.setPositions = function(gd) {
     });
 };
 
-bars.plot = function(gd,cdbar) {
-    var xa = gd.layout.xaxis,
-        ya = gd.layout.yaxis;
-    var bartraces = gd.plot.selectAll('g.trace.bars') // <-- select trace group
-        .data(cdbar) // <-- bind calcdata to traces
+bars.plot = function(gd,plotinfo,cdbar) {
+    var xa = plotinfo.x,
+        ya = plotinfo.y;
+    // make the container for scatter plots (so error bars can find them along with bars)
+    var bartraces = plotinfo.plot.selectAll('g.trace.bars') // <-- select trace group
+        .data(cdbar)
       .enter().append('g') // <-- add a trace for each calcdata
         .attr('class','trace bars');
+
     bartraces.append('g')
         .attr('class','points')
         .each(function(d){
@@ -133,7 +138,7 @@ bars.plot = function(gd,cdbar) {
                 .each(function(di){
                     // now display the bar - here's where we switch x and y
                     // for horz bars
-                    // Also: clipped xf/yf (3rd arg true): non-positive
+                    // Also: clipped xf/yf (2nd arg true): non-positive
                     // log values go off-screen by plotwidth
                     // so you see them continue if you drag the plot
                     var x0,x1,y0,y1;
