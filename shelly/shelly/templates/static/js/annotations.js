@@ -158,6 +158,7 @@ annotations.draw = function(gd,index,opt,value) {
         this.style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
             .call(d3.plugly.convertToTspans)
             .call(d3.plugly.alignSVGWith(annbg, alignOptions));
+        return this;
     }
 
     var anntext = ann.append('text')
