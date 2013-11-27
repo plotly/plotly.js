@@ -158,6 +158,7 @@ annotations.draw = function(gd,index,opt,value) {
         this.style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
             .call(d3.plugly.convertToTspans)
             .call(d3.plugly.alignSVGWith(annbg, alignOptions));
+        return this;
     }
 
     var anntext = ann.append('text')
@@ -259,8 +260,8 @@ annotations.draw = function(gd,index,opt,value) {
     }
 
     // default values for arrow vector
-    if(!options.ax) { options.ax=-10; }
-    if(!options.ay) { options.ay=-annheight/2-20; }
+    if(!$.isNumeric(options.ax)) { options.ax=-10; }
+    if(!$.isNumeric(options.ay)) { options.ay=-annheight/2-20; }
     // now position the annotation and arrow, based on options[x,y,ref,showarrow,ax,ay]
 
     // position is either in plot coords (ref='plot') or
