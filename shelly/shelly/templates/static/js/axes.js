@@ -12,7 +12,7 @@ axes.defaultAxis = function(extras) {
         tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
         showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
         showgrid:true,gridcolor:'#ddd',gridwidth:1,
-        autorange:true,autotick:true,
+        autorange:true,rangemode:'normal',autotick:true,
         zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
         // title: 'Click to enter axis title',unit:'',
         titlefont:{family:'',size:0,color:''},
@@ -121,6 +121,10 @@ function setType(ax){
         if(ax.isdate) { ax.type='date'; }
         else if(ax.islog) { ax.type='log'; }
         else if(ax.isdate===false && ax.islog===false) { ax.type='linear'; }
+    }
+    if(ax.autorange=='withzero') {
+        ax.autorange = true;
+        ax.automode = 'withzero';
     }
     // now remove the obsolete properties
     delete ax.islog;
@@ -401,6 +405,17 @@ axes.doAutoRange = function(ax) {
         }
         if(mbest) {
             var axReverse = (ax.range && ax.range[1]<ax.range[0]);
+            if(ax.type=='linear' || ax.type=='-') {
+                if(ax.rangemode=='tozero' && minbest.val>=0) {
+                    minbest = {val:0, pad:0};
+                }
+                else if(ax.rangemode=='nonnegative') {
+                    if(minbest.val - mbest*minbest.pad<0) { minbest = {val:0, pad:0}; }
+                    if(maxbest.val<0) { maxbest = {val:1, pad:0}; }
+                }
+                // in case it changed again...
+                mbest = (maxbest.val-minbest.val)/(ax._length-minbest.pad-maxbest.pad);
+            }
 
             ax.range = [minbest.val - mbest*minbest.pad, maxbest.val + mbest*maxbest.pad];
             // don't let axis have zero size
