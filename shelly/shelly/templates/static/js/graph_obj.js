@@ -1026,7 +1026,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
             if(gl.showlegend) { Plotly.Legend.draw(gd); }
         }
     }
-    $(gd).trigger('restyle.plotly',[redoit,traces]);
+    $(gd).trigger('plotly_restyle',[redoit,traces]);
 };
 
 // relayout: change layout in an existing plot
@@ -1111,7 +1111,7 @@ Plotly.relayout = function(gd,astr,val) {
         // check autosize or autorange vs size and range
         if(hw.indexOf(ai)!=-1) { doextra('autosize', false); }
         else if(ai=='autosize') { doextra(hw, undefined); }
-        else if(ai.match(/^[xy]axis[0-9]*\.range\[[0|1]\]$/)) {
+        else if(ai.match(/^[xy]axis[0-9]*\.range(\[[0|1]\])?$/)) {
             doextra(p.parts[0]+'.autorange', false);
         }
         else if(ai.match(/^[xy]axis[0-9]*\.autorange$/)) {
@@ -1225,7 +1225,7 @@ Plotly.relayout = function(gd,astr,val) {
             plots.titles(gd,'gtitle');
         }
     }
-    $(gd).trigger('relayout.plotly',redoit);
+    $(gd).trigger('plotly_relayout',redoit);
 };
 
 function setGraphContainerScroll(gd) {
@@ -1708,7 +1708,6 @@ plots.titles = function(gd,title) {
         }
 
         if(avoid && avoid.selection && avoid.side){
-            // iterate over a set of elements (avoid.selection) to avoid collisions with
             // move toward side (avoid.side = left, right, top, bottom) if needed
             // can include pad (pixels, default 2)
             var shift = 0,
@@ -1722,15 +1721,20 @@ plots.titles = function(gd,title) {
                 pad = $.isNumeric(avoid.pad) ? avoid.pad : 2,
                 titlebb = titleEl.node().getBoundingClientRect(),
                 paperbb = gl._paper.node().getBoundingClientRect(),
-                maxshift = Math.max(0,(paperbb[avoid.side]-titlebb[avoid.side])*(shiftTemplate.indexOf('-')!=-1 ? -1 : 1));
-            avoid.selection.each(function(){
-                var avoidbb = this.getBoundingClientRect();
-                if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
-                    shift = Math.min(maxshift,Math.max(shift,
-                        Math.abs(avoidbb[avoid.side]-titlebb[backside])+pad));
-                }
-            });
-            if(shift>0) {
+                maxshift = (paperbb[avoid.side]-titlebb[avoid.side]) * (shiftTemplate.indexOf('-')!=-1 ? -1 : 1);
+            // Prevent the title going off the paper
+            if(maxshift<0) { shift = maxshift; }
+            else {
+                // iterate over a set of elements (avoid.selection) to avoid collisions with
+                avoid.selection.each(function(){
+                    var avoidbb = this.getBoundingClientRect();
+                    if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
+                        shift = Math.min(maxshift,Math.max(shift,
+                            Math.abs(avoidbb[avoid.side]-titlebb[backside])+pad));
+                    }
+                });
+            }
+            if(shift>0 || maxshift<0) {
                 titleEl.attr({transform:d3.plugly.compileTemplate(shiftTemplate,
                     {shift:shift, original:titleEl.attr('transform')}
                 )});
