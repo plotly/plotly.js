@@ -398,7 +398,7 @@ Plotly.plot = function(gd, data, layout) {
         }
 
         if(gd.layout.autosize == 'initial') {
-            setGraphContainerHeight(gd);
+//            setGraphContainerHeight(gd);
             plotAutoSize(gd,{});
             gd.layout.autosize = true;
         }
