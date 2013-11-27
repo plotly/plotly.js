@@ -1026,7 +1026,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
             if(gl.showlegend) { Plotly.Legend.draw(gd); }
         }
     }
-    $(gd).trigger('restyle.plotly',[redoit,traces]);
+    $(gd).trigger('plotly_restyle',[redoit,traces]);
 };
 
 // relayout: change layout in an existing plot
@@ -1111,7 +1111,7 @@ Plotly.relayout = function(gd,astr,val) {
         // check autosize or autorange vs size and range
         if(hw.indexOf(ai)!=-1) { doextra('autosize', false); }
         else if(ai=='autosize') { doextra(hw, undefined); }
-        else if(ai.match(/^[xy]axis[0-9]*\.range\[[0|1]\]$/)) {
+        else if(ai.match(/^[xy]axis[0-9]*\.range(\[[0|1]\])?$/)) {
             doextra(p.parts[0]+'.autorange', false);
         }
         else if(ai.match(/^[xy]axis[0-9]*\.autorange$/)) {
@@ -1225,7 +1225,7 @@ Plotly.relayout = function(gd,astr,val) {
             plots.titles(gd,'gtitle');
         }
     }
-    $(gd).trigger('relayout.plotly',redoit);
+    $(gd).trigger('plotly_relayout',redoit);
 };
 
 function setGraphContainerScroll(gd) {
