@@ -227,7 +227,7 @@ function defaultLayout(){
         width:700,
         height:450,
         autosize:'initial', // after initial autosize reverts to true
-        margin:{l:80,r:80,t:80,b:80,pad:2},
+        margin:{l:80,r:80,t:100,b:80,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff',
         barmode:'stack',
@@ -1655,8 +1655,8 @@ plots.titles = function(gd,title) {
             Plotly.Axes.getFromId(gd, xa.anchor);
         x = xa._offset+xa._length/2;
         y = (xa.side=='top') ?
-            ya._offset- 10-fontSize*(xa.showticklabels ? 1 : 0.5) :
-            ya._offset+ya._length + 10+fontSize*(xa.showticklabels ? 1.5 : 1);
+            ya._offset- 10-fontSize*(xa.showticklabels ? 2.5 : 1.5) :
+            ya._offset+ya._length + 10+fontSize*(xa.showticklabels ? 3 : 2);
         options = {x: x, y: y, 'text-anchor': 'middle'};
         if(!avoid.side) { avoid.side = 'bottom'; }
     }
@@ -1667,8 +1667,8 @@ plots.titles = function(gd,title) {
             Plotly.Axes.getFromId(gd, ya.anchor);
         y = ya._offset+ya._length/2;
         x = (ya.side=='right') ?
-            xa._offset+xa._length + 10+fontSize*(ya.showticklabels ? 1.5 : 1) :
-            xa._offset - 10-fontSize*(ya.showticklabels ? 1 : 0.5);
+            xa._offset+xa._length + 10+fontSize*(ya.showticklabels ? 2.5 : 2) :
+            xa._offset - 10-fontSize*(ya.showticklabels ? 2 : 1.5);
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
         options = {x: x, y: y, 'text-anchor': 'middle'};
