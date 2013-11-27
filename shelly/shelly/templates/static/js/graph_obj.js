@@ -227,7 +227,7 @@ function defaultLayout(){
         width:700,
         height:450,
         autosize:'initial', // after initial autosize reverts to true
-        margin:{l:80,r:80,t:80,b:80,pad:2},
+        margin:{l:80,r:80,t:100,b:80,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff',
         barmode:'stack',
@@ -236,7 +236,7 @@ function defaultLayout(){
         boxmode:'overlay',
         boxgap:0.3,
         boxgroupgap:0.3,
-        font:{family:'Arial, sans-serif',size:12,color:'#000'},
+        font:{family:"'Open sans', verdana, arial, sans-serif",size:12,color:'#000'},
         titlefont:{family:'',size:0,color:''},
         dragmode:'zoom',
         hovermode:'x'
@@ -319,18 +319,18 @@ function updateTraces(old_data, new_data) {
 // note that now this function is only adding the brand in iframes and 3rd-party
 // apps, standalone plots get the sidebar instead.
 plots.positionBrand = function(gd){
-    $(gd).find('.linktotool').remove();
-    var linktotool = $('<div class="linktotool">'+
-        '<a><font class="muted">view in </font><font class="info">plotly</font></a>'+
+    $(gd).find('.link-to-tool').remove();
+    var $linkToTool = $('<div class="link-to-tool">'+
+        '<a href="#" class="link--impt">view in plotly</a>'+
         '</div>').appendTo(gd.layout._paperdiv.node());
     if(gd.shareplot) {
         var path=window.location.pathname.split('/');
-        linktotool.find('a')
+        $linkToTool.find('a')
             .attr('href','/'+path[2]+'/'+path[1])
             .attr('target','_blank');
     }
     else {
-        linktotool.find('a').click(function(){
+        $linkToTool.find('a').click(function(){
             var hiddenform = $('<div id="hiddenform" style="display:none;">'+
                 '<form action="https://plot.ly/external" method="post" target="_blank">'+
                 '<input type="text" name="data" /></form></div>').appendTo(gd);
@@ -340,6 +340,7 @@ plots.positionBrand = function(gd){
                 .replace(/\\/g,'\\\\').replace(/'/g,"\\'"));
             hiddenform.find('form').submit();
             hiddenform.remove();
+            return false;
         });
     }
 };
@@ -385,13 +386,13 @@ Plotly.plot = function(gd, data, layout) {
         }
         gd.layout=layout;
 
-        gd.graphContainer = d3.select(gd).select('.graph-container');
-        if(gd.graphContainer.empty()){
-            gd.graphContainer = d3.select(gd).append('div').classed('.graph-container', true);
+        gd.layout._container = d3.select(gd).select('.plot-container');
+        if(gd.layout._container.empty()){
+            gd.layout._container = d3.select(gd).append('div').classed('.plot-container', true).classed('plotly',true);
         }
-        gd.paperdiv = gd.graphContainer.select('.svg-container');
+        gd.paperdiv = gd.layout._container.select('.svg-container');
         if(gd.paperdiv.empty()){
-            gd.paperdiv = gd.graphContainer.append('div')
+            gd.paperdiv = gd.layout._container.append('div')
                 .classed('svg-container',true)
                 .style('position','relative');
         }
@@ -1025,7 +1026,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
             if(gl.showlegend) { Plotly.Legend.draw(gd); }
         }
     }
-    $(gd).trigger('restyle.plotly',[redoit,traces]);
+    $(gd).trigger('plotly_restyle',[redoit,traces]);
 };
 
 // relayout: change layout in an existing plot
@@ -1110,7 +1111,7 @@ Plotly.relayout = function(gd,astr,val) {
         // check autosize or autorange vs size and range
         if(hw.indexOf(ai)!=-1) { doextra('autosize', false); }
         else if(ai=='autosize') { doextra(hw, undefined); }
-        else if(ai.match(/^[xy]axis[0-9]*\.range\[[0|1]\]$/)) {
+        else if(ai.match(/^[xy]axis[0-9]*\.range(\[[0|1]\])?$/)) {
             doextra(p.parts[0]+'.autorange', false);
         }
         else if(ai.match(/^[xy]axis[0-9]*\.autorange$/)) {
@@ -1224,29 +1225,12 @@ Plotly.relayout = function(gd,astr,val) {
             plots.titles(gd,'gtitle');
         }
     }
-    $(gd).trigger('relayout.plotly',redoit);
+    $(gd).trigger('plotly_relayout',redoit);
 };
-
-function setGraphContainerHeight(gd) {
-    if(!gd.mainsite) { return; }
-    $gd = $(gd);
-    var graphContainerHeight = $gd.innerHeight() - $gd.find('.tool-menu').innerHeight(),
-        $themebar = $gd.find('.themebar'),
-        $demobar = $gd.find('.demobar');
-
-    if ($themebar.css('display') == 'block') {
-        graphContainerHeight -= $themebar.innerHeight();
-    }
-    if ($demobar.css('display') == 'block') {
-        graphContainerHeight -= $demobar.innerHeight();
-    }
-
-    $gd.find('.graph-container').css('height', graphContainerHeight);
-}
 
 function setGraphContainerScroll(gd) {
     if(!gd.mainsite) { return; }
-    var $graphContainer = $(gd).find('.graph-container'),
+    var $graphContainer = $(gd).find('.plot-container'),
         isGraphWiderThanContainer = gd.layout.width > parseInt($graphContainer.css('width'),10);
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
@@ -1262,7 +1246,7 @@ function setGraphContainerScroll(gd) {
 function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
     if(gd.mainsite) {
-        setGraphContainerHeight(gd);
+        setFileAndCommentsHeight(gd);
         var gdBB = gd.layout._container.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
         newwidth = Math.round(gdBB.width*0.9);
@@ -1292,7 +1276,7 @@ plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     killPopovers();
 
-    setGraphContainerHeight(gd);
+    if(gd.mainsite){ setFileAndCommentsHeight(gd); }
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
@@ -1322,6 +1306,7 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
+
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
@@ -1331,7 +1316,7 @@ function makePlotFramework(divid, layout) {
         gd3 = d3.select(gd);
 
     // test if this is on the main site or embedded
-    gd.mainsite = Boolean($('#plotlyMainMarker').length);
+    gd.mainsite = $('#plotlyMainMarker').length > 0;
 
     function addDefaultAxis(container, axname) {
         var axid = axname.replace('axis','');
@@ -1372,10 +1357,15 @@ function makePlotFramework(divid, layout) {
 
     Plotly.Axes.setTypes(gd);
 
-    // graph container
-    gl._container = gd3.selectAll('.graph-container').data([0]);
+    var outerContainer = gl._fileandcomments = gd3.selectAll('.file-and-comments');
+    // for embeds and cloneGraphOffscreen
+    if(!outerContainer.node()) { outerContainer = gd3; }
+
+    // Plot container
+    gl._container = outerContainer.selectAll('.plot-container').data([0]);
     gl._container.enter().append('div')
-        .classed('graph-container',true)
+        .classed('plot-container',true)
+        .classed('plotly',true)
         .classed('is-mainsite', gd.mainsite);
 
     // Make the svg container
@@ -1384,9 +1374,9 @@ function makePlotFramework(divid, layout) {
         .classed('svg-container',true)
         .style('position','relative');
 
-    // initial autosize
+    // Initial autosize
     if(gl.autosize=='initial') {
-        setGraphContainerHeight(gd);
+        if(gd.mainsite){ setFileAndCommentsHeight(gd) };
         plotAutoSize(gd,{});
         gl.autosize=true;
     }
@@ -1488,8 +1478,8 @@ function makePlotFramework(divid, layout) {
     });
 
     // single info (legend, annotations) and hover layers for the whole plot
-    gl._infolayer = gl._paper.append('g');
-    gl._hoverlayer = gl._paper.append('g');
+    gl._infolayer = gl._paper.append('g').classed('infolayer',true);
+    gl._hoverlayer = gl._paper.append('g').classed('hoverlayer',true);
 
     // position and style the containers, make main title
     layoutStyles(gd);
@@ -1665,8 +1655,8 @@ plots.titles = function(gd,title) {
             Plotly.Axes.getFromId(gd, xa.anchor);
         x = xa._offset+xa._length/2;
         y = (xa.side=='top') ?
-            ya._offset- 10-fontSize*(xa.showticklabels ? 1 : 0.5) :
-            ya._offset+ya._length + 10+fontSize*(xa.showticklabels ? 1.5 : 1);
+            ya._offset- 10-fontSize*(xa.showticklabels ? 2.5 : 1.5) :
+            ya._offset+ya._length + 10+fontSize*(xa.showticklabels ? 3 : 2);
         options = {x: x, y: y, 'text-anchor': 'middle'};
         if(!avoid.side) { avoid.side = 'bottom'; }
     }
@@ -1677,8 +1667,8 @@ plots.titles = function(gd,title) {
             Plotly.Axes.getFromId(gd, ya.anchor);
         y = ya._offset+ya._length/2;
         x = (ya.side=='right') ?
-            xa._offset+xa._length + 10+fontSize*(ya.showticklabels ? 1.5 : 1) :
-            xa._offset - 10-fontSize*(ya.showticklabels ? 1 : 0.5);
+            xa._offset+xa._length + 10+fontSize*(ya.showticklabels ? 2.5 : 2) :
+            xa._offset - 10-fontSize*(ya.showticklabels ? 2 : 1.5);
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
         options = {x: x, y: y, 'text-anchor': 'middle'};
@@ -1695,7 +1685,7 @@ plots.titles = function(gd,title) {
     }
 
     var opacity = 1;
-    var txt = cont.title;
+    var txt = cont.title.trim();
     if(cont.unit) txt += ' ('+cont.unit+')';
     if(txt === '') opacity = 0;
     if(txt === 'Click to enter '+name+' title') opacity = 0.2;
@@ -1706,6 +1696,7 @@ plots.titles = function(gd,title) {
     function titleLayout(){
         var titleEl = this
             .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
+            .attr(options)
             .call(d3.plugly.convertToTspans)
             .attr(options);
         titleEl.selectAll('tspan.line')
@@ -1717,7 +1708,6 @@ plots.titles = function(gd,title) {
         }
 
         if(avoid && avoid.selection && avoid.side){
-            // iterate over a set of elements (avoid.selection) to avoid collisions with
             // move toward side (avoid.side = left, right, top, bottom) if needed
             // can include pad (pixels, default 2)
             var shift = 0,
@@ -1731,15 +1721,20 @@ plots.titles = function(gd,title) {
                 pad = $.isNumeric(avoid.pad) ? avoid.pad : 2,
                 titlebb = titleEl.node().getBoundingClientRect(),
                 paperbb = gl._paper.node().getBoundingClientRect(),
-                maxshift = Math.max(0,(paperbb[avoid.side]-titlebb[avoid.side])*(shiftTemplate.indexOf('-')!=-1 ? -1 : 1));
-            avoid.selection.each(function(){
-                var avoidbb = this.getBoundingClientRect();
-                if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
-                    shift = Math.min(maxshift,Math.max(shift,
-                        Math.abs(avoidbb[avoid.side]-titlebb[backside])+pad));
-                }
-            });
-            if(shift>0) {
+                maxshift = (paperbb[avoid.side]-titlebb[avoid.side]) * (shiftTemplate.indexOf('-')!=-1 ? -1 : 1);
+            // Prevent the title going off the paper
+            if(maxshift<0) { shift = maxshift; }
+            else {
+                // iterate over a set of elements (avoid.selection) to avoid collisions with
+                avoid.selection.each(function(){
+                    var avoidbb = this.getBoundingClientRect();
+                    if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
+                        shift = Math.min(maxshift,Math.max(shift,
+                            Math.abs(avoidbb[avoid.side]-titlebb[backside])+pad));
+                    }
+                });
+            }
+            if(shift>0 || maxshift<0) {
                 titleEl.attr({transform:d3.plugly.compileTemplate(shiftTemplate,
                     {shift:shift, original:titleEl.attr('transform')}
                 )});
@@ -1765,6 +1760,12 @@ plots.titles = function(gd,title) {
     if(gd.mainsite){ // don't allow editing on embedded graphs
         el.call(d3.plugly.makeEditable)
             .on('edit', function(text){
+                this
+                    .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
+                    .call(d3.plugly.convertToTspans)
+                    .attr(options)
+                    .selectAll('tspan.line')
+                    .attr(options);
                 Plotly.relayout(gd,prop,text);
             })
             .on('cancel', function(text){
