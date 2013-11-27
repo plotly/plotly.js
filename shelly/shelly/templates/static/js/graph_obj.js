@@ -1712,12 +1712,6 @@ plots.titles = function(gd,title) {
             // can include pad (pixels, default 2)
             var shift = 0,
                 backside = {left:'right',right:'left',top:'bottom',bottom:'top'}[avoid.side],
-                shiftTemplate = {
-                    left:'translate(-{shift},0) {original}',
-                    right:'translate({shift},0) {original}',
-                    top:'translate(0,-{shift}) {original}',
-                    bottom:'translate(0,{shift}) {original}'
-                }[avoid.side],
                 pad = $.isNumeric(avoid.pad) ? avoid.pad : 2,
                 titlebb = titleEl.node().getBoundingClientRect(),
                 paperbb = gl._paper.node().getBoundingClientRect(),
@@ -1735,9 +1729,13 @@ plots.titles = function(gd,title) {
                 });
             }
             if(shift>0 || maxshift<0) {
-                titleEl.attr({transform:d3.plugly.compileTemplate(shiftTemplate,
-                    {shift:shift, original:titleEl.attr('transform')}
-                )});
+                shiftTemplate = {
+                    left: [-shift, 0],
+                    right: [shift, 0],
+                    top: [0, -shift],
+                    bottom: [0, shift]
+                }[avoid.side];
+                titleEl.attr({transform: 'translate(' + shiftTemplate + ') ' + titleEl.attr('transform')});
             }
         }
     }
