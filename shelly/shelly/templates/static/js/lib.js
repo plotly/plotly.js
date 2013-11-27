@@ -653,6 +653,8 @@ lib.togglecontent = function(selector, data_key, data_value){
     });
 };
 
+lib.plotlyurl = function(page){ return window.location.origin+'/'+page; };
+
 // random string generator
 lib.randstr = function randstr(existing, bits, base) {
     /*
@@ -686,7 +688,7 @@ lib.randstr = function randstr(existing, bits, base) {
     var parsed = parseInt(res, base);
     if ( (existing && (existing.indexOf(res) > -1)) ||
          (parsed !== Infinity && parsed >= Math.pow(2, bits)) ) {
-        return randstr(existing, bits, base)
+        return randstr(existing, bits, base);
     }
     else return res;
 };
