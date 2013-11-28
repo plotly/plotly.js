@@ -111,6 +111,7 @@ function legendText(s,gd){
 
 legend.draw = function(gd) {
     var gl=gd.layout,gm=gl.margin;
+    if(!gl._infolayer) return;
     gl.showlegend = true;
     if(!gl.legend) { gl.legend={}; }
     var gll = gl.legend;
