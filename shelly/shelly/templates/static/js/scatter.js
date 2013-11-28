@@ -104,12 +104,10 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
         tozero = (t.fill.substr(0,6)=='tozero' || (t.fill.substr(0,2)=='to' && !prevpts)) ?
             tr.append('polyline').classed('fill',true).attr('data-curve',t.cdcurve) : null;
         // make the fill-to-next polyline now for the NEXT trace, so it shows behind both lines
-        // nexttonext was created last time, but tag it with this time's curve
-        if(nexttonext) { tonext = nexttonext.attr('data-curve',t.cdcurve); }
+        // nexttonext was created last time, but give it this curve's data for fill color
+        if(nexttonext) { tonext = nexttonext.datum(d); }
         // now make a new nexttonext for next time
-        nexttonext = tr.append('polyline')
-            .classed('fill',true)
-            .attr('data-curve',0);
+        nexttonext = tr.append('polyline').classed('fill',true);
         var x0,y0,x1,y1;
         x0=y0=x1=y1=null;
         while(i<d.length) {
