@@ -501,7 +501,6 @@ lib.notifier = function(text,tm){
         // .fadeOut(2000,function(){ n.remove(); });
 };
 
-//var conf_modal = conf_modal || (function(){
 lib.conf_modal = (function(){
     function initialize(opts){
         options = {         // default options
@@ -544,9 +543,9 @@ lib.conf_modal = (function(){
                     '<p class="cm-body"></p>'+
                   '</div>'+
                   '<div class="modal__footer">'+
-                    '<a href="#" class="btn cm-alt_btn_txt cm-alt_func"></a>'+
-                    '<a href="#" class="btn cm-canc_btn_txt cm-canc_func"></a>'+
-                    '<a href="#" class="btn btn--color-primary cm-conf_btn_txt cm-conf_func"></a>'+
+                    '<button class="btn btn--small btn--cta2 cm-alt_btn_txt  cm-alt_func"></button>'+
+                    '<button class="btn btn--small btn--cta2 cm-canc_btn_txt cm-canc_func"></button>'+
+                    '<button class="btn btn--small btn--cta  cm-conf_btn_txt cm-conf_func"></button>'+
                     '<div class="messages" style="text-align: right;"></div>'+
                   '</div>'+
                 '</div>';
