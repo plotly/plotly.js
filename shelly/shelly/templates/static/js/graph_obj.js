@@ -403,7 +403,7 @@ Plotly.plot = function(gd, data, layout) {
             gd.layout.autosize = true;
         }
 
-        if(!gd.framework || gd.framework.name != 'micropolarPlotlyAdapter') gd.framework = micropolar.adapter.plotly();
+        if(!gd.framework || gd.framework.name != 'micropolarPlotlyManager') gd.framework = micropolar.manager.plotly();
         gd.framework({container: gd.paperdiv.node(), data: gd.data, layout: gd.layout});
         gd.paper = gd.framework.svg();
         return null;
