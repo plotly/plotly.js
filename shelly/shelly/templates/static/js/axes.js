@@ -389,7 +389,10 @@ axes.minDtick = function(ax,newDiff,newFirst,allow) {
 axes.doAutoRange = function(ax) {
     if(!ax._length) { ax.setScale(); }
     if(ax.autorange && ax._min && ax._max && ax._min.length && ax._max.length) {
-        var i,j,minpt,maxpt,minbest,maxbest,dp,dv,mbest=0;
+        var i,j,minpt,maxpt,minbest,maxbest,dp,dv,mbest=0,
+            minmin=Math.min.apply(null,ax._min.map(function(v){return v.val;})),
+            maxmax=Math.max.apply(null,ax._max.map(function(v){return v.val;})),
+            axReverse = (ax.range && ax.range[1]<ax.range[0]);
         for(i=0; i<ax._min.length; i++) {
             minpt = ax._min[i];
             for(j=0; j<ax._max.length; j++) {
@@ -403,8 +406,10 @@ axes.doAutoRange = function(ax) {
                 }
             }
         }
-        if(mbest) {
-            var axReverse = (ax.range && ax.range[1]<ax.range[0]);
+        if(minmin==maxmax) {
+            ax.range = axReverse ? [minmin+1,minmin-1] : [minmin-1,minmin+1];
+        }
+        else if(mbest) {
             if(ax.type=='linear' || ax.type=='-') {
                 if(ax.rangemode=='tozero' && minbest.val>=0) {
                     minbest = {val:0, pad:0};
