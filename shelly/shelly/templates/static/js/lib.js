@@ -544,8 +544,8 @@ lib.conf_modal = (function(){
                   '</div>'+
                   '<div class="modal__footer">'+
                     '<button class="btn btn--small btn--cta2 cm-alt_btn_txt  cm-alt_func"></button>'+
-                    '<button class="btn btn--small btn--cta2 cm-canc_btn_txt cm-canc_func"></button>'+
-                    '<button class="btn btn--small btn--cta  cm-conf_btn_txt cm-conf_func"></button>'+
+                    '<button class="btn btn--small btn--cta2 cm-canc_btn_txt cm-canc_func push-half--left"></button>'+
+                    '<button class="btn btn--small btn--cta  cm-conf_btn_txt cm-conf_func push-half--left"></button>'+
                     '<div class="messages" style="text-align: right;"></div>'+
                   '</div>'+
                 '</div>';
@@ -635,6 +635,35 @@ lib.bBoxIntersect = function(a,b,pad){
 
 // minor convenience/performance booster for d3...
 lib.identity = function(d){ return d; };
+
+lib.num2ordinal = function(n) {
+    // 1-9 -> first-ninth
+    // 10 -> 10th
+    // 11 -> 11th
+    // etc
+    // num2ordinal(true);     // true
+    // num2ordinal(Infinity); // Infinity
+    // num2ordinal(NaN);      // NaN
+    // num2ordinal(void 0);   // undefined
+    // From: http://stackoverflow.com/questions/12487422/take-a-value-1-31-and-convert-it-to-ordinal-date-w-javascript
+
+    if((parseFloat(n) == parseInt(n,10)) && !isNaN(n)){
+        if(parseInt(n,10)>=1 && parseInt(n,10)<=9){
+            return ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth'][parseInt(n,10)-1];
+        } else{
+            var s=["th","st","nd","rd"],
+            v=n%100;
+            return n+(s[(v-20)%10]||s[v]||s[0]);
+        }
+    }
+    return n;
+};
+
+lib.ppn = function(n){
+    // pretty print the number: 1-9 -> one-nine, >10 remain the same
+    n = parseInt(n,10);
+    return (n>=0 && n<=9 ? ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'][n] : n);
+};
 
 // used to display and show html containers
 // example:
