@@ -546,7 +546,7 @@ lib.conf_modal = (function(){
                     '<button class="btn btn--small btn--cta2 cm-alt_btn_txt  cm-alt_func"></button>'+
                     '<button class="btn btn--small btn--cta2 cm-canc_btn_txt cm-canc_func push-half--left"></button>'+
                     '<button class="btn btn--small btn--cta  cm-conf_btn_txt cm-conf_func push-half--left"></button>'+
-                    '<div class="messages" style="text-align: right;"></div>'+
+                    '<div class="messages success--inline" style="text-align: right;"></div>'+
                   '</div>'+
                 '</div>';
 
@@ -666,19 +666,14 @@ lib.ppn = function(n){
 };
 
 // used to display and show html containers
-// example:
-// if HTML Content: <div data-fruit=["apples","oranges"]></div>
+// HTML content must be formatted as: <div class="js-toggle--key js-toggle--key__value1">
+// if HTML Content: <div class="js-toggle--fruit js-toggle--fruit__oranges js-toggle--fruit__apples"></div>
 // then:
 //      togglecontent('', 'fruit', 'oranges');  // displays that div
 //      togglecontent('', 'fruit', 'kiwi');     // hides that div
-lib.togglecontent = function(selector, data_key, data_value){
-    $(selector+' [data-'+data_key+']').each(function(){
-        $t = $(this);
-        d = $(this).data(data_key);
-        a = $.isArray(d) ? d : [d];
-        if($.inArray(data_value,a)>=0){ $t.show(); }
-        else{ $t.hide(); }
-    });
+lib.togglecontent = function(parent_selector, data_key, data_value){
+    $(parent_selector+' .js-toggle--'+data_key).hide();
+    $(parent_selector+' .js-toggle--'+data_key+'__'+data_value).show();
 };
 
 lib.plotlyurl = function(page){ return window.location.origin+'/'+page; };
