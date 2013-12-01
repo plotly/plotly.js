@@ -86,6 +86,7 @@ lib.isDateTime = function(s){ return lib.dateTime2ms(s)!==false; };
 // Optional range r is the data range that applies, also in ms. If rng is big,
 // the later parts of time will be omitted
 lib.ms2DateTime = function(ms,r) {
+    if(typeof(d3)!=="undefined"){
     if(!r) { r=0; }
     var d = new Date(ms),
         s = d3.time.format('%Y-%m-%d')(d);
@@ -103,6 +104,7 @@ lib.ms2DateTime = function(ms,r) {
         return s.replace(/([:\s]00)*\.?[0]*$/,''); // strip trailing zeros
     }
     return s;
+    } else{console.log("d3 is not defined");}
 };
 
 // Plotly.Lib.parseDate: forgiving attempt to turn any date string into a javascript date object
@@ -146,7 +148,9 @@ var dateFormats = {
 };
 
 // use utc formatter since we're ignoring timezone info
+if(typeof(d3)!=="undefined"){
 var formatter = d3.time.format.utc;
+
 // ISO8601 and YYYYMMDDHHMMSS are the only one where date and time are not separated by a space,
 // so they get inserted specially here. Also a couple formats with no day (so time makes no sense)
 var dateTimeFormats = {
@@ -169,7 +173,7 @@ var dateTimeFormats = {
         });
     });
 }); });
-
+}
 // precompiled regexps for performance
 var matchword = /[a-z]*/g,
     shortenword = function(m) { return m.substr(0,3); },
