@@ -398,12 +398,12 @@ Plotly.plot = function(gd, data, layout) {
         }
 
         if(gd.layout.autosize == 'initial') {
-            setGraphContainerHeight(gd);
+//            setGraphContainerHeight(gd);
             plotAutoSize(gd,{});
             gd.layout.autosize = true;
         }
 
-        if(!gd.framework || gd.framework.name != 'micropolarPlotlyAdapter') gd.framework = micropolar.adapter.plotly();
+        if(!gd.framework || gd.framework.name != 'micropolarPlotlyManager') gd.framework = micropolar.manager.plotly();
         gd.framework({container: gd.paperdiv.node(), data: gd.data, layout: gd.layout});
         gd.paper = gd.framework.svg();
         return null;
@@ -1385,8 +1385,11 @@ function makePlotFramework(divid, layout) {
     // rather than enter/exit which can muck up the order
     gl._paperdiv.selectAll('svg').remove();
     gl._paper = gl._paperdiv.append('svg')
-        .attr('xmlns','http://www.w3.org/2000/svg')
-        .attr('xmlns:xmlns:xlink','http://www.w3.org/1999/xlink'); // odd d3 quirk - need namespace twice??
+        .attr({
+            'xmlns': 'http://www.w3.org/2000/svg',
+            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink', // odd d3 quirk - need namespace twice??
+            'xml:xml:space': 'preserve'
+        });
 
     // create all the layers in order, so we know they'll stay in order
     var overlays = [];
