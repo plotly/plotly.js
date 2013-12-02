@@ -1318,6 +1318,10 @@ function makePlotFramework(divid, layout) {
     // test if this is on the main site or embedded
     gd.mainsite = $('#plotlyMainMarker').length > 0;
 
+    // hook class for plots main container (in case of plotly.js this won't be #embedded_graph or .js-tab-contents)
+    // almost nobody actually needs this anymore, but just to be safe...
+    $gd.addClass('js-plotly-plot');
+
     function addDefaultAxis(container, axname) {
         var axid = axname.replace('axis','');
         if(!container[axname]) {
