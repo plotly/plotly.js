@@ -537,10 +537,6 @@ Plotly.plot = function(gd, data, layout) {
         return;
     }
 
-    // var xa = gl.xaxis,
-    //     ya = gl.yaxis;
-
-    // gd.plot.attr('viewBox','0 0 '+xa._length+' '+ya._length);
     Plotly.Axes.doTicks(gd,'redraw'); // draw ticks, titles, and calculate axis scaling (._b, ._m)
 
     Plotly.Lib.markTime('done autorange and ticks');
@@ -669,8 +665,8 @@ plots.setStyles = function(gd, merge_dflt) {
         mergeattr('text','tx','');
         mergeattr('name','name','trace '+c);
         mergeattr('error_y.visible','ye_vis',false);
-        mergeattr('xaxis','xaxis','x');
-        mergeattr('yaxis','yaxis','y');
+        t.xaxis = gdc.xaxis||'x'; // mergeattr is unnecessary and insufficient here, because '' shouldn't count as existing
+        t.yaxis = gdc.yaxis||'y';
         var type = t.type; // like 'bar'
         if( (gdc.error_y && gdc.error_y.visible ) ){
             mergeattr('error_y.type','ye_type','percent');
