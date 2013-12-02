@@ -1739,7 +1739,6 @@ plots.titles = function(gd,title) {
                     bottom: [0, shift]
                 }[avoid.side];
                 titleEl.attr({transform: 'translate(' + shiftTemplate + ') ' + (titleEl.attr('transform')||'')});
-                console.log(shiftTemplate,titleEl.attr("transform"));
             }
         }
     }
