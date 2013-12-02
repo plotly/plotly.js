@@ -371,8 +371,6 @@ legend.repositionLegend = function(gd, traces){
     gd.legend.call(Plotly.Drawing.setRect, lx, ly, legendwidth, legendheight);
     gd.legend.selectAll('.bg').call(Plotly.Drawing.setRect,
         borderwidth/2, borderwidth/2, legendwidth-borderwidth, legendheight-borderwidth);
-    // save size in layout for use in dragging
-    // gll._size = {l:lx,t:ly,w:legendwidth,h:legendheight};
 };
 
 }()); // end Legend object definition
