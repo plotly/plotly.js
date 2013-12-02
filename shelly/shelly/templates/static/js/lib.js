@@ -259,7 +259,8 @@ lib.findBin = function(val,bins,linelow) {
 // find distinct values in an array, lumping together ones that appear to
 // just be off by a rounding error
 // return the distinct values and the minimum difference between any two
-lib.distinctVals = function(vals) {
+lib.distinctVals = function(vals_in) {
+    var vals = vals_in.slice(); // otherwise we sort the original array...
     vals.sort(function(a,b){ return a-b; });
     var l = vals.length-1,
         minDiff = (vals[l]-vals[0])||1,

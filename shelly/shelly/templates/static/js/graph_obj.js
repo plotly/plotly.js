@@ -227,7 +227,7 @@ function defaultLayout(){
         width:700,
         height:450,
         autosize:'initial', // after initial autosize reverts to true
-        margin:{l:80,r:80,t:80,b:80,pad:2},
+        margin:{l:80,r:80,t:100,b:80,pad:2},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff',
         barmode:'stack',
@@ -236,7 +236,7 @@ function defaultLayout(){
         boxmode:'overlay',
         boxgap:0.3,
         boxgroupgap:0.3,
-        font:{family:'Arial, sans-serif',size:12,color:'#000'},
+        font:{family:"'Open sans', verdana, arial, sans-serif",size:12,color:'#000'},
         titlefont:{family:'',size:0,color:''},
         dragmode:'zoom',
         hovermode:'x'
@@ -321,7 +321,7 @@ function updateTraces(old_data, new_data) {
 plots.positionBrand = function(gd){
     $(gd).find('.link-to-tool').remove();
     var $linkToTool = $('<div class="link-to-tool">'+
-        '<a class="link--impt">view in plotly</a>'+
+        '<a href="#" class="link--impt">view in plotly</a>'+
         '</div>').appendTo(gd.layout._paperdiv.node());
     if(gd.shareplot) {
         var path=window.location.pathname.split('/');
@@ -340,6 +340,7 @@ plots.positionBrand = function(gd){
                 .replace(/\\/g,'\\\\').replace(/'/g,"\\'"));
             hiddenform.find('form').submit();
             hiddenform.remove();
+            return false;
         });
     }
 };
@@ -387,7 +388,7 @@ Plotly.plot = function(gd, data, layout) {
 
         gd.layout._container = d3.select(gd).select('.plot-container');
         if(gd.layout._container.empty()){
-            gd.layout._container = d3.select(gd).append('div').classed('.plot-container', true);
+            gd.layout._container = d3.select(gd).append('div').classed('.plot-container', true).classed('plotly',true);
         }
         gd.paperdiv = gd.layout._container.select('.svg-container');
         if(gd.paperdiv.empty()){
@@ -397,12 +398,12 @@ Plotly.plot = function(gd, data, layout) {
         }
 
         if(gd.layout.autosize == 'initial') {
-            setGraphContainerHeight(gd);
+//            setGraphContainerHeight(gd);
             plotAutoSize(gd,{});
             gd.layout.autosize = true;
         }
 
-        if(!gd.framework || gd.framework.name != 'micropolarPlotlyAdapter') gd.framework = micropolar.adapter.plotly();
+        if(!gd.framework || gd.framework.name != 'micropolarPlotlyManager') gd.framework = micropolar.manager.plotly();
         gd.framework({container: gd.paperdiv.node(), data: gd.data, layout: gd.layout});
         gd.paper = gd.framework.svg();
         return null;
@@ -1025,7 +1026,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
             if(gl.showlegend) { Plotly.Legend.draw(gd); }
         }
     }
-    $(gd).trigger('restyle.plotly',[redoit,traces]);
+    $(gd).trigger('plotly_restyle',[redoit,traces]);
 };
 
 // relayout: change layout in an existing plot
@@ -1110,7 +1111,7 @@ Plotly.relayout = function(gd,astr,val) {
         // check autosize or autorange vs size and range
         if(hw.indexOf(ai)!=-1) { doextra('autosize', false); }
         else if(ai=='autosize') { doextra(hw, undefined); }
-        else if(ai.match(/^[xy]axis[0-9]*\.range\[[0|1]\]$/)) {
+        else if(ai.match(/^[xy]axis[0-9]*\.range(\[[0|1]\])?$/)) {
             doextra(p.parts[0]+'.autorange', false);
         }
         else if(ai.match(/^[xy]axis[0-9]*\.autorange$/)) {
@@ -1224,7 +1225,7 @@ Plotly.relayout = function(gd,astr,val) {
             plots.titles(gd,'gtitle');
         }
     }
-    $(gd).trigger('relayout.plotly',redoit);
+    $(gd).trigger('plotly_relayout',redoit);
 };
 
 function setGraphContainerScroll(gd) {
@@ -1364,6 +1365,7 @@ function makePlotFramework(divid, layout) {
     gl._container = outerContainer.selectAll('.plot-container').data([0]);
     gl._container.enter().append('div')
         .classed('plot-container',true)
+        .classed('plotly',true)
         .classed('is-mainsite', gd.mainsite);
 
     // Make the svg container
@@ -1383,8 +1385,11 @@ function makePlotFramework(divid, layout) {
     // rather than enter/exit which can muck up the order
     gl._paperdiv.selectAll('svg').remove();
     gl._paper = gl._paperdiv.append('svg')
-        .attr('xmlns','http://www.w3.org/2000/svg')
-        .attr('xmlns:xmlns:xlink','http://www.w3.org/1999/xlink'); // odd d3 quirk - need namespace twice??
+        .attr({
+            'xmlns': 'http://www.w3.org/2000/svg',
+            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink', // odd d3 quirk - need namespace twice??
+            'xml:xml:space': 'preserve'
+        });
 
     // create all the layers in order, so we know they'll stay in order
     var overlays = [];
@@ -1476,8 +1481,8 @@ function makePlotFramework(divid, layout) {
     });
 
     // single info (legend, annotations) and hover layers for the whole plot
-    gl._infolayer = gl._paper.append('g');
-    gl._hoverlayer = gl._paper.append('g');
+    gl._infolayer = gl._paper.append('g').classed('infolayer',true);
+    gl._hoverlayer = gl._paper.append('g').classed('hoverlayer',true);
 
     // position and style the containers, make main title
     layoutStyles(gd);
@@ -1653,8 +1658,8 @@ plots.titles = function(gd,title) {
             Plotly.Axes.getFromId(gd, xa.anchor);
         x = xa._offset+xa._length/2;
         y = (xa.side=='top') ?
-            ya._offset- 10-fontSize*(xa.showticklabels ? 1 : 0.5) :
-            ya._offset+ya._length + 10+fontSize*(xa.showticklabels ? 1.5 : 1);
+            ya._offset- 10-fontSize*(xa.showticklabels ? 2.5 : 1.5) :
+            ya._offset+ya._length + 10+fontSize*(xa.showticklabels ? 3 : 2);
         options = {x: x, y: y, 'text-anchor': 'middle'};
         if(!avoid.side) { avoid.side = 'bottom'; }
     }
@@ -1665,8 +1670,8 @@ plots.titles = function(gd,title) {
             Plotly.Axes.getFromId(gd, ya.anchor);
         y = ya._offset+ya._length/2;
         x = (ya.side=='right') ?
-            xa._offset+xa._length + 10+fontSize*(ya.showticklabels ? 1.5 : 1) :
-            xa._offset - 10-fontSize*(ya.showticklabels ? 1 : 0.5);
+            xa._offset+xa._length + 10+fontSize*(ya.showticklabels ? 2.5 : 2) :
+            xa._offset - 10-fontSize*(ya.showticklabels ? 2 : 1.5);
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
         options = {x: x, y: y, 'text-anchor': 'middle'};
@@ -1706,32 +1711,34 @@ plots.titles = function(gd,title) {
         }
 
         if(avoid && avoid.selection && avoid.side){
-            // iterate over a set of elements (avoid.selection) to avoid collisions with
             // move toward side (avoid.side = left, right, top, bottom) if needed
             // can include pad (pixels, default 2)
             var shift = 0,
                 backside = {left:'right',right:'left',top:'bottom',bottom:'top'}[avoid.side],
-                shiftTemplate = {
-                    left:'translate(-{shift},0) {original}',
-                    right:'translate({shift},0) {original}',
-                    top:'translate(0,-{shift}) {original}',
-                    bottom:'translate(0,{shift}) {original}'
-                }[avoid.side],
                 pad = $.isNumeric(avoid.pad) ? avoid.pad : 2,
                 titlebb = titleEl.node().getBoundingClientRect(),
                 paperbb = gl._paper.node().getBoundingClientRect(),
-                maxshift = Math.max(0,(paperbb[avoid.side]-titlebb[avoid.side])*(shiftTemplate.indexOf('-')!=-1 ? -1 : 1));
-            avoid.selection.each(function(){
-                var avoidbb = this.getBoundingClientRect();
-                if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
-                    shift = Math.min(maxshift,Math.max(shift,
-                        Math.abs(avoidbb[avoid.side]-titlebb[backside])+pad));
-                }
-            });
-            if(shift>0) {
-                titleEl.attr({transform:d3.plugly.compileTemplate(shiftTemplate,
-                    {shift:shift, original:titleEl.attr('transform')}
-                )});
+                maxshift = (paperbb[avoid.side]-titlebb[avoid.side]) * ((avoid.side == 'left' || avoid.side == 'top') ? -1 : 1);
+            // Prevent the title going off the paper
+            if(maxshift<0) { shift = maxshift; }
+            else {
+                // iterate over a set of elements (avoid.selection) to avoid collisions with
+                avoid.selection.each(function(){
+                    var avoidbb = this.getBoundingClientRect();
+                    if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
+                        shift = Math.min(maxshift,Math.max(shift,
+                            Math.abs(avoidbb[avoid.side]-titlebb[backside])+pad));
+                    }
+                });
+            }
+            if(shift>0 || maxshift<0) {
+                var shiftTemplate = {
+                    left: [-shift, 0],
+                    right: [shift, 0],
+                    top: [0, -shift],
+                    bottom: [0, shift]
+                }[avoid.side];
+                titleEl.attr({transform: 'translate(' + shiftTemplate + ') ' + titleEl.attr('transform')});
             }
         }
     }

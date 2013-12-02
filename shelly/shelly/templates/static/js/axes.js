@@ -12,7 +12,7 @@ axes.defaultAxis = function(extras) {
         tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
         showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
         showgrid:true,gridcolor:'#ddd',gridwidth:1,
-        autorange:true,autotick:true,
+        autorange:true,rangemode:'normal',autotick:true,
         zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
         // title: 'Click to enter axis title',unit:'',
         titlefont:{family:'',size:0,color:''},
@@ -121,6 +121,10 @@ function setType(ax){
         if(ax.isdate) { ax.type='date'; }
         else if(ax.islog) { ax.type='log'; }
         else if(ax.isdate===false && ax.islog===false) { ax.type='linear'; }
+    }
+    if(ax.autorange=='withzero') {
+        ax.autorange = true;
+        ax.automode = 'withzero';
     }
     // now remove the obsolete properties
     delete ax.islog;
@@ -385,7 +389,10 @@ axes.minDtick = function(ax,newDiff,newFirst,allow) {
 axes.doAutoRange = function(ax) {
     if(!ax._length) { ax.setScale(); }
     if(ax.autorange && ax._min && ax._max && ax._min.length && ax._max.length) {
-        var i,j,minpt,maxpt,minbest,maxbest,dp,dv,mbest=0;
+        var i,j,minpt,maxpt,minbest,maxbest,dp,dv,mbest=0,
+            minmin=Math.min.apply(null,ax._min.map(function(v){return v.val;})),
+            maxmax=Math.max.apply(null,ax._max.map(function(v){return v.val;})),
+            axReverse = (ax.range && ax.range[1]<ax.range[0]);
         for(i=0; i<ax._min.length; i++) {
             minpt = ax._min[i];
             for(j=0; j<ax._max.length; j++) {
@@ -399,8 +406,21 @@ axes.doAutoRange = function(ax) {
                 }
             }
         }
-        if(mbest) {
-            var axReverse = (ax.range && ax.range[1]<ax.range[0]);
+        if(minmin==maxmax) {
+            ax.range = axReverse ? [minmin+1,minmin-1] : [minmin-1,minmin+1];
+        }
+        else if(mbest) {
+            if(ax.type=='linear' || ax.type=='-') {
+                if(ax.rangemode=='tozero' && minbest.val>=0) {
+                    minbest = {val:0, pad:0};
+                }
+                else if(ax.rangemode=='nonnegative') {
+                    if(minbest.val - mbest*minbest.pad<0) { minbest = {val:0, pad:0}; }
+                    if(maxbest.val<0) { maxbest = {val:1, pad:0}; }
+                }
+                // in case it changed again...
+                mbest = (maxbest.val-minbest.val)/(ax._length-minbest.pad-maxbest.pad);
+            }
 
             ax.range = [minbest.val - mbest*minbest.pad, maxbest.val + mbest*maxbest.pad];
             // don't let axis have zero size
