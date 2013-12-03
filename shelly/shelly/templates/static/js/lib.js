@@ -86,6 +86,7 @@ lib.isDateTime = function(s){ return lib.dateTime2ms(s)!==false; };
 // Optional range r is the data range that applies, also in ms. If rng is big,
 // the later parts of time will be omitted
 lib.ms2DateTime = function(ms,r) {
+    if(typeof(d3)!=="undefined"){
     if(!r) { r=0; }
     var d = new Date(ms),
         s = d3.time.format('%Y-%m-%d')(d);
@@ -103,6 +104,7 @@ lib.ms2DateTime = function(ms,r) {
         return s.replace(/([:\s]00)*\.?[0]*$/,''); // strip trailing zeros
     }
     return s;
+    } else{console.log("d3 is not defined");}
 };
 
 // Plotly.Lib.parseDate: forgiving attempt to turn any date string into a javascript date object
@@ -146,7 +148,9 @@ var dateFormats = {
 };
 
 // use utc formatter since we're ignoring timezone info
+if(typeof(d3)!=="undefined"){
 var formatter = d3.time.format.utc;
+
 // ISO8601 and YYYYMMDDHHMMSS are the only one where date and time are not separated by a space,
 // so they get inserted specially here. Also a couple formats with no day (so time makes no sense)
 var dateTimeFormats = {
@@ -169,7 +173,7 @@ var dateTimeFormats = {
         });
     });
 }); });
-
+}
 // precompiled regexps for performance
 var matchword = /[a-z]*/g,
     shortenword = function(m) { return m.substr(0,3); },
@@ -423,6 +427,66 @@ lib.markTime = function(v){
 // constrain - restrict a number v to be between v0 and v1
 lib.constrain = function(v,v0,v1) { return Math.max(v0,Math.min(v1,v)); };
 
+// -------------------------------------------------------- SPINNERS
+// allows spinners for multiple reasons on the same parent via spincount
+// spinner is only removed when spincount goes to zero
+
+// kill a spinner
+lib.killspin = function(parent){
+    if(parent===undefined && typeof Tabs!=='undefined'){ parent=Tabs.get(); }
+    if(!parent || !parent.spinner) { // something wrong - kill all spinners
+        $('.spinner').remove();
+        return;
+    }
+    parent.spincount--;
+    if(parent.spincount>0) { return; }
+    parent.spinner.stop();
+    $(parent).find('.spinner').remove(); // in case something weird happened and we had several spinners
+};
+
+// start the main spinner
+lib.startspin = function(parent,spinsize,options){
+    if(parent===undefined){ parent=gettab(); }
+    options = options || {};
+    if((typeof parent.spincount == 'number') && parent.spincount>0) {
+        parent.spincount++;
+    } else {
+        parent.spincount=1;
+        // big spinny
+        var opts = {
+            lines: 17, // The number of lines to draw
+            length: 30, // The length of each line _30
+            width: 6, // The line thickness
+            radius: 37, // The radius of the inner circle
+            corners: 1, // Corner roundness (0..1)
+            rotate: 0, // The rotation offset
+            direction: 1, // 1: clockwise, -1: counterclockwise
+            color: '#000', // #rgb or #rrggbb
+            speed: 1, // Rounds per second
+            trail: 60, // Afterglow percentage
+            shadow: false, // Whether to render a shadow
+            hwaccel: false, // Whether to use hardware acceleration
+            className: 'spinner', // The CSS class to assign to the spinner
+            zIndex: 2e9, // The z-index (defaults to 2000000000)
+            top: 'auto', // Top position relative to parent in px
+            left: 'auto' // Left position relative to parent in px
+        };
+        // modify for tiny spinny
+        if(spinsize=='tiny') {
+            opts.lines = 13;
+            opts.length = 5;
+            opts.width = 2;
+            opts.radius = 5;
+            opts.corners = 0.6;
+        }
+        // apply optional options
+        opts = $.extend({}, opts, options);
+        var spinner=new Spinner(opts).spin(parent);
+        parent.spinner=spinner;
+    }
+};
+
+
 // similar to OS X's "growl" notifier
 lib.notifier = function(text,tm){
     var num_notifs = $('div.notifier').length, mt = (num_notifs*100)+20;
@@ -441,6 +505,129 @@ lib.notifier = function(text,tm){
         // .fadeOut(2000,function(){ n.remove(); });
 };
 
+lib.conf_modal = (function(){
+    function initialize(opts){
+        options = {         // default options
+            header: '',
+            body: '',
+            conf_btn_txt: 'Done',
+            canc_btn_txt: '',
+            conf_func: function(){},
+            canc_func: function(){},
+            selector: 'body',
+            hideonclick: true,
+            closex: false,
+            backdrop: true,
+            alt_btn_txt: '',
+            alt_func: function(){},
+        };
+
+        options = $.extend({}, options, opts);
+
+        // set z-indices manually so that this modal appears whatever it is bound to
+        var zi, backdropzi, modalzi;
+        if($(options.selector).css('z-index') === "auto"){
+            zi = backdropzi = modalzi ='';
+        } else{
+           zi = $(options.selector).css('z-index');
+           backdropzi = zi+1;
+           modalzi = zi+2;
+        }
+        // backdrop w/custom z-index -- appears over the $(selector) element
+        if(options.backdrop){
+            $('.modal-backdrop:visible').hide();
+            $(options.selector).first().append('<div id="confirmModalBackdrop" class="modal-backdrop confirmModal '+(backdropzi==='' ? '' : 'style="z-index:'+backdropzi)+'"></div>');
+        }
+        var confirmModal = '<div id="confirmModal" class="modal modal--default hide confirmModal" style="z-index:'+modalzi+'">'+
+                  '<div class="modal__header">'+
+                    (options.closex ? '<button type="button" id="closeConfirmModal" class="close cm-canc_func" aria-hidden="true">&times;</button>' : '')+
+                    '<h3 class="cm-header"></h3>'+
+                  '</div>'+
+                  '<div class="modal__body">'+
+                    '<p class="cm-body"></p>'+
+                  '</div>'+
+                  '<div class="modal__footer">'+
+                    '<button class="btn btn--small btn--cta2 cm-alt_btn_txt  cm-alt_func"></button>'+
+                    '<button class="btn btn--small btn--cta2 cm-canc_btn_txt cm-canc_func push-half--left"></button>'+
+                    '<button class="btn btn--small btn--cta  cm-conf_btn_txt cm-conf_func push-half--left"></button>'+
+                    '<div class="messages success--inline" style="text-align: right;"></div>'+
+                  '</div>'+
+                '</div>';
+
+        $(options.selector).append(confirmModal);
+        $('#confirmModal').modal({'backdrop': false}); // backdrop=false because we add our own backdrop (bd) with custom z-index
+
+        // Fill it in
+        applyOptions(options);
+        // Destroy on hide
+        $('#confirmModal').on('hide', function(){ destroy(); });
+    }
+
+    function destroy(){
+        $('#confirmModalBackdrop').remove();
+        $('#confirmModal').remove();
+        $('.confirmModalBackdrop').remove();
+        $('.confirmModal').remove();
+    }
+
+    function applyOptions(opts){
+        for(var key in opts){
+            if($.inArray(key, ['header', 'body'])>-1){
+                $('#confirmModal .cm-'+key).html(opts[key]);
+            } else if($.inArray(key, ['alt_btn_txt', 'canc_btn_txt', 'conf_btn_txt'])>-1) {
+                if(opts[key]===''){
+                    $('#confirmModal .cm-'+key).hide();
+                } else{
+                    $('#confirmModal .cm-'+key).show();
+                    $('#confirmModal .cm-'+key).html(opts[key]);
+                }
+            // TODO: doing these next 3 if-statements programatically in the loop messed up because javascript doesn't have "block scope"
+            // Would be nice to figure how to get around that
+            } else if(key=='conf_func'){
+                $('#confirmModal .cm-conf_func').removeClass('disabled').off('click').on('click', function(){ if(options.hideonclick){ destroy(); } opts.conf_func(); return false; });
+            }
+            else if(key=='canc_func'){
+                $('#confirmModal .cm-canc_func').removeClass('disabled').off('click').on('click', function(){ if(options.hideonclick){ destroy(); } opts.canc_func(); return false; });
+            }
+            else if(key=='alt_func'){
+                $('#confirmModal .cm-alt_func').removeClass('disabled').off('click').on('click', function(){ if(options.hideonclick){ destroy(); } opts.alt_func(); return false; });
+            }
+        }
+    }
+
+    function updateOptions(opts){
+        options = $.extend({}, options, opts);
+        applyOptions(opts);
+    }
+
+    function addMsg(msg){
+        $('#confirmModal .messages').html(msg);
+    }
+
+    function rmMsg(msg){
+        addMsg('');
+    }
+
+    function disableConf(){
+        $('#confirmModal .cm-conf_func').addClass('disabled').off('click');
+    }
+
+    function disableCanc(){
+        $('#confirmModal .cm-canc_func').addClass('disabled').off('click');
+    }
+
+    return {
+        init: initialize,
+        settings: updateOptions,
+        addMsg: addMsg,
+        rmMsg: rmMsg,
+        hide: destroy,
+        disableConf: disableConf,
+        disableCanc: disableCanc
+    };
+})();
+
+
 // do two bounding boxes from getBoundingClientRect,
 // ie {left,right,top,bottom,width,height}, overlap?
 // takes optional padding pixels
@@ -453,6 +640,47 @@ lib.bBoxIntersect = function(a,b,pad){
 // minor convenience/performance booster for d3...
 lib.identity = function(d){ return d; };
 
+lib.num2ordinal = function(n) {
+    // 1-9 -> first-ninth
+    // 10 -> 10th
+    // 11 -> 11th
+    // etc
+    // num2ordinal(true);     // true
+    // num2ordinal(Infinity); // Infinity
+    // num2ordinal(NaN);      // NaN
+    // num2ordinal(void 0);   // undefined
+    // From: http://stackoverflow.com/questions/12487422/take-a-value-1-31-and-convert-it-to-ordinal-date-w-javascript
+
+    if((parseFloat(n) == parseInt(n,10)) && !isNaN(n)){
+        if(parseInt(n,10)>=1 && parseInt(n,10)<=9){
+            return ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth'][parseInt(n,10)-1];
+        } else{
+            var s=["th","st","nd","rd"],
+            v=n%100;
+            return n+(s[(v-20)%10]||s[v]||s[0]);
+        }
+    }
+    return n;
+};
+
+lib.ppn = function(n){
+    // pretty print the number: 1-9 -> one-nine, >10 remain the same
+    n = parseInt(n,10);
+    return (n>=0 && n<=9 ? ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'][n] : n);
+};
+
+// used to display and show html containers
+// HTML content must be formatted as: <div class="js-toggle--key js-toggle--key__value1">
+// if HTML Content: <div class="js-toggle--fruit js-toggle--fruit__oranges js-toggle--fruit__apples"></div>
+// then:
+//      togglecontent('', 'fruit', 'oranges');  // displays that div
+//      togglecontent('', 'fruit', 'kiwi');     // hides that div
+lib.togglecontent = function(parent_selector, data_key, data_value){
+    $(parent_selector+' .js-toggle--'+data_key).hide();
+    $(parent_selector+' .js-toggle--'+data_key+'__'+data_value).show();
+};
+
+lib.plotlyurl = function(page){ return window.location.origin+'/'+page; };
 
 // random string generator
 lib.randstr = function randstr(existing, bits, base) {
@@ -487,7 +715,7 @@ lib.randstr = function randstr(existing, bits, base) {
     var parsed = parseInt(res, base);
     if ( (existing && (existing.indexOf(res) > -1)) ||
          (parsed !== Infinity && parsed >= Math.pow(2, bits)) ) {
-        return randstr(existing, bits, base)
+        return randstr(existing, bits, base);
     }
     else return res;
 };
