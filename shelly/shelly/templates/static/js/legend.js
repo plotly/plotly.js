@@ -224,7 +224,8 @@ legend.draw = function(gd) {
                 var dx = e2.clientX-e.clientX,
                     dy = e2.clientY-e.clientY,
                     gs = gl._size,
-                    lbb = eln.getBoundingClientRect(),
+                    lw = el3.attr('width'),
+                    lh = el3.attr('height'),
                     MINDRAG = Plotly.Fx.MINDRAG;
                 if(Math.abs(dx)<MINDRAG) { dx=0; }
                 if(Math.abs(dy)<MINDRAG) { dy=0; }
@@ -235,11 +236,11 @@ legend.draw = function(gd) {
                 // drag to within a couple px of edge to take the legend outside the plot
                 if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100; }
                 else if(e2.clientX<pbb.left+3*MINDRAG || (gd.lw<0 && dx<MINDRAG)) { xf=-100; }
-                else { xf = Plotly.Fx.dragAlign(x0 + dx,lbb.width,gs.l,gs.l+gs.w); }
+                else { xf = Plotly.Fx.dragAlign(x0 + dx,lw,gs.l,gs.l+gs.w); }
 
                 if(e2.clientY>pbb.bottom-3*MINDRAG || (gd.lh<0 && dy>-MINDRAG)) { yf=-100; }
                 else if(e2.clientY<pbb.top+3*MINDRAG || (gd.lh>0 && dy<MINDRAG)) { yf=100; }
-                else { yf = 1-Plotly.Fx.dragAlign(y0+dy,lbb.height,gs.t,gs.t+gs.h); }
+                else { yf = 1-Plotly.Fx.dragAlign(y0+dy,lh,gs.t,gs.t+gs.h); }
                 var csr = Plotly.Fx.dragCursors(xf,yf);
                 Plotly.Fx.setCursor(el3,csr);
                 return Plotly.Lib.pauseEvent(e2);
@@ -368,11 +369,15 @@ legend.repositionLegend = function(gd, traces){
     if(ly+legendheight>gl.height) { ly=gl.height-legendheight; }
     if(ly<0) { ly=0; }
 
+    // make sure we're only getting full pixels
+    legendwidth = Math.ceil(legendwidth);
+    legendheight = Math.ceil(legendheight);
+    lx = Math.round(lx);
+    ly = Math.round(ly);
+
     gd.legend.call(Plotly.Drawing.setRect, lx, ly, legendwidth, legendheight);
     gd.legend.selectAll('.bg').call(Plotly.Drawing.setRect,
         borderwidth/2, borderwidth/2, legendwidth-borderwidth, legendheight-borderwidth);
-    // save size in layout for use in dragging
-    // gll._size = {l:lx,t:ly,w:legendwidth,h:legendheight};
 };
 
 }()); // end Legend object definition
