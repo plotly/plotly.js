@@ -145,7 +145,7 @@ legend.texts = function(context, gd, d, i, traces){
         text.mathjaxRender = true;
         text.call(textLayout);
     }
-}
+};
 
 // -----------------------------------------------------
 // legend drawing
@@ -207,53 +207,55 @@ legend.draw = function(gd) {
         //  else if(xr>4/3-xc) gll.x=xr;
         //  else gll.x=xc;
         // similar logic for top/middle/bottom
-        if(gd.mainsite) {
-            gd.legend.node().onmousedown = function(e) {
-                if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
+    if(gd.mainsite) {
+        gd.legend.node().onmousedown = function(e) {
+            if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
 
-                var eln=this,
-                    el3=d3.select(this),
-                    x0=Number(el3.attr('x')),
-                    y0=Number(el3.attr('y')),
-                    xf = null,
-                    yf = null;
-                gd.dragged = false;
-                Plotly.Fx.setCursor(el3);
+            var eln=this,
+                el3=d3.select(this),
+                x0=Number(el3.attr('x')),
+                y0=Number(el3.attr('y')),
+                xf = null,
+                yf = null;
+            gd.dragged = false;
+            Plotly.Fx.setCursor(el3);
 
-                window.onmousemove = function(e2) {
-                    var dx = e2.clientX-e.clientX,
-                        dy = e2.clientY-e.clientY,
-                        gs = gl._size,
-                        MINDRAG = Plotly.Fx.MINDRAG;
-                    if(Math.abs(dx)<MINDRAG) { dx=0; }
-                    if(Math.abs(dy)<MINDRAG) { dy=0; }
-                    if(dx||dy) { gd.dragged = true; }
-                    el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
-                    var pbb = gl._paperdiv.node().getBoundingClientRect();
+            window.onmousemove = function(e2) {
+                var dx = e2.clientX-e.clientX,
+                    dy = e2.clientY-e.clientY,
+                    gs = gl._size,
+                    lw = el3.attr('width'),
+                    lh = el3.attr('height'),
+                    MINDRAG = Plotly.Fx.MINDRAG;
+                if(Math.abs(dx)<MINDRAG) { dx=0; }
+                if(Math.abs(dy)<MINDRAG) { dy=0; }
+                if(dx||dy) { gd.dragged = true; }
+                el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
+                var pbb = gl._paperdiv.node().getBoundingClientRect();
 
-                    // drag to within a couple px of edge to take the legend outside the plot
-                    if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100; }
-                    else if(e2.clientX<pbb.left+3*MINDRAG || (gd.lw<0 && dx<MINDRAG)) { xf=-100; }
-                    else { xf = Plotly.Fx.dragAlign(x0 + dx,gd.lw || 0,gs.l,gs.l+gs.w); }
+                // drag to within a couple px of edge to take the legend outside the plot
+                if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100; }
+                else if(e2.clientX<pbb.left+3*MINDRAG || (gd.lw<0 && dx<MINDRAG)) { xf=-100; }
+                else { xf = Plotly.Fx.dragAlign(x0 + dx,lw,gs.l,gs.l+gs.w); }
 
-                    if(e2.clientY>pbb.bottom-3*MINDRAG || (gd.lh<0 && dy>-MINDRAG)) { yf=-100; }
-                    else if(e2.clientY<pbb.top+3*MINDRAG || (gd.lh>0 && dy<MINDRAG)) { yf=100; }
-                    else { yf = 1-Plotly.Fx.dragAlign(y0+dy,gd.lh || 0,gs.t,gs.t+gs.h); }
-                    var csr = Plotly.Fx.dragCursors(xf,yf);
-                    Plotly.Fx.setCursor(el3,csr);
-                    return Plotly.Lib.pauseEvent(e2);
-                };
-                window.onmouseup = function(e2) {
-                    window.onmousemove = null; window.onmouseup = null;
-                    Plotly.Fx.setCursor(el3);
-                    if(gd.dragged && xf!==null && yf!==null) {
-                        Plotly.relayout(gd,{'legend.x':xf,'legend.y':yf});
-                    }
-                    return Plotly.Lib.pauseEvent(e2);
-                };
-                return Plotly.Lib.pauseEvent(e);
+                if(e2.clientY>pbb.bottom-3*MINDRAG || (gd.lh<0 && dy>-MINDRAG)) { yf=-100; }
+                else if(e2.clientY<pbb.top+3*MINDRAG || (gd.lh>0 && dy<MINDRAG)) { yf=100; }
+                else { yf = 1-Plotly.Fx.dragAlign(y0+dy,lh,gs.t,gs.t+gs.h); }
+                var csr = Plotly.Fx.dragCursors(xf,yf);
+                Plotly.Fx.setCursor(el3,csr);
+                return Plotly.Lib.pauseEvent(e2);
             };
-        }
+            window.onmouseup = function(e2) {
+                window.onmousemove = null; window.onmouseup = null;
+                Plotly.Fx.setCursor(el3);
+                if(gd.dragged && xf!==null && yf!==null) {
+                    Plotly.relayout(gd,{'legend.x':xf,'legend.y':yf});
+                }
+                return Plotly.Lib.pauseEvent(e2);
+            };
+            return Plotly.Lib.pauseEvent(e);
+        };
+    }
 };
 
 legend.repositionLegend = function(gd, traces){
@@ -262,7 +264,7 @@ legend.repositionLegend = function(gd, traces){
     // add the legend elements, keeping track of the legend size (in px) as we go
     var legendwidth=0, legendheight=0;
     traces.each(function(d){
-        var g=d3.select(this), t=g.select('text'), l=g.select('.legendpoints');
+        var g=d3.select(this), t=g.select('.legendtext'), l=g.select('.legendpoints');
         if(d[0].t.showinlegend===false) {
             g.remove();
             return;
@@ -366,6 +368,12 @@ legend.repositionLegend = function(gd, traces){
     if(lx<0) { lx=0; }
     if(ly+legendheight>gl.height) { ly=gl.height-legendheight; }
     if(ly<0) { ly=0; }
+
+    // make sure we're only getting full pixels
+    legendwidth = Math.ceil(legendwidth);
+    legendheight = Math.ceil(legendheight);
+    lx = Math.round(lx);
+    ly = Math.round(ly);
 
     gd.legend.call(Plotly.Drawing.setRect, lx, ly, legendwidth, legendheight);
     gd.legend.selectAll('.bg').call(Plotly.Drawing.setRect,
