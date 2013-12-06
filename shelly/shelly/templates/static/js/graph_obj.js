@@ -346,7 +346,7 @@ plots.positionBrand = function(gd){
 };
 
 // ----------------------------------------------------
-// Main plot-creation function. Note: will call newPlot
+// Main plot-creation function. Note: will call makePlotFramework
 // if necessary to create the framework
 // ----------------------------------------------------
 // inputs:
@@ -662,6 +662,7 @@ plots.setStyles = function(gd, merge_dflt) {
         // mergeattr puts single values into cd[0].t, and all others into each individual point
         mergeattr('type','type','scatter');
         mergeattr('visible','visible',true);
+        mergeattr('showlegend','showlegend',true);
         mergeattr('opacity','op',1);
         mergeattr('text','tx','');
         mergeattr('name','name','trace '+c);
