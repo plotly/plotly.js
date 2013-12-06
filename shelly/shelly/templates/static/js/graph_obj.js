@@ -379,7 +379,8 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     if(gd.data && gd.data[0] && gd.data[0].type) gd.mainPlotType = gd.data[0].type;
-    if(gd.mainPlotType && gd.mainPlotType.indexOf('Plot') != -1){
+    if(gd.mainPlotType && gd.mainPlotType.indexOf('Polar') != -1){
+
         if(data){
             gd.data=data;
             gd.plotType = gd.data[0].type;
