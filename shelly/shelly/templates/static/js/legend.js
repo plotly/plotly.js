@@ -152,7 +152,7 @@ legend.texts = function(context, gd, d, i, traces){
 // -----------------------------------------------------
 
 legend.draw = function(gd) {
-    var gl=gd.layout,gm=gl.margin;
+    var gl=gd.layout, gm=gl.margin, i;
     if(!gl._infolayer) return;
     gl.showlegend = true;
     if(!gl.legend) { gl.legend={}; }
@@ -160,12 +160,9 @@ legend.draw = function(gd) {
     gl._infolayer.selectAll('.legend').remove();
     if(!gd.calcdata) { return; }
 
-    var ldata=[],i;
-    for(i=0;i<gd.calcdata.length;i++) {
-        if(gd.calcdata[i][0].t.visible!==false) {
-            ldata.push([gd.calcdata[i][0]]);
-        }
-    }
+    var ldata = gd.calcdata
+        .filter(function(cd) { return cd[0].t.visible!==false && cd[0].t.showlegend!==false; })
+        .map(function(cd) { return [cd[0]]; });
     if(gll.traceorder=='reversed') { ldata.reverse(); } // for stacked plots (bars, area) the legend items are often clearer reversed
 
     gd.legend = gl._infolayer.append('svg')
