@@ -881,12 +881,19 @@ axes.tickText = function(ax, x, hover){
     else if(ax.type=='log'){
         if(hover && ($.isNumeric(dt) || dt.charAt(0)!='L')) { dt = 'L3'; }
         if($.isNumeric(dt)||((dt.charAt(0)=='D')&&(mod(x+0.01,1)<0.1))) {
-            tt=(Math.round(x)===0)?'1':(Math.round(x)==1)?'10':'10'+String(Math.round(x)).sup();
-            fontSize*=1.25;
+            var p = Math.round(x);
+            if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
+                tt = (p===0) ? '1': (p==1) ? '10' : '10'+String(p).sup();
+                fontSize *= 1.25;
+            }
+            else {
+                tt = numFormat(Math.pow(10,x), ax,'','fakehover');
+                if(dt=='D1' && ax._id.charAt(0)=='y') { py-=fontSize/6; }
+            }
         }
         else if(dt.charAt(0)=='D') {
-            tt=Math.round(Math.pow(10,mod(x,1)));
-            fontSize*=0.75;
+            tt = Math.round(Math.pow(10,mod(x,1)));
+            fontSize *= 0.75;
         }
         else if(dt.charAt(0)=='L') {
             tt=numFormat(Math.pow(10,x),ax,hideexp, hover);
