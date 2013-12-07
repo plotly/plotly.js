@@ -850,8 +850,10 @@ axes.tickText = function(ax, x, hover){
         py = 0,
         suffix = '', // completes the full date info, to be included with only the first tick
         tt,
-        hideexp = (!hover && ax.showexponent!='all' && ax.exponentformat!='none' &&
-            x!={first:ax._tmin,last:ax._tmax}[ax.showexponent]) ? 'hide' : false;
+        hideexp = ax.exponentformat!='none' && (hover ?
+            ax.showexponent=='none' :
+            (ax.showexponent!='all' && x!={first:ax._tmin,last:ax._tmax}[ax.showexponent]) );
+    if(hideexp) { hideexp = 'hide'; }
     if(ax.type=='date'){
         if(hover) {
             if($.isNumeric(tr)) { tr+=2; }
@@ -861,12 +863,12 @@ axes.tickText = function(ax, x, hover){
         if(tr=='y') { tt = yearFormat(d); }
         else if(tr=='m') { tt = monthFormat(d); }
         else {
-            if(x==ax._tmin) { suffix = '<br>'+yearFormat(d); }
+            if(x==ax._tmin && !hover) { suffix = '<br>'+yearFormat(d); }
 
             if(tr=='d') { tt = dayFormat(d); }
             else if(tr=='H') { tt = hourFormat(d); }
             else {
-                if(x==ax._tmin) { suffix = '<br>'+dayFormat(d)+', '+yearFormat(d); }
+                if(x==ax._tmin && !hover) { suffix = '<br>'+dayFormat(d)+', '+yearFormat(d); }
 
                 tt = minuteFormat(d);
                 if(tr!='M'){
@@ -927,7 +929,11 @@ function numFormat(v,ax,fmtoverride,hover) {
     // add a couple more digits of precision over tick labels
     if(hover) {
         // make a dummy axis obj to get the auto rounding and exponent
-        var ah = {exponentformat:ax.exponentformat, dtick:Math.abs(v), range:[0,v||1]};
+        var ah = {
+            exponentformat:ax.exponentformat,
+            dtick: ax.showexponent=='none' ? ax.dtick : Math.abs(v)||1,
+            range: ax.showexponent=='none' ? ax.range : [0,v||1] // if not showing any exponents, don't change the exponent from what we calculate
+        };
         autoTickRound(ah);
         r = (Number(ah._tickround)||0)+2;
         d = ah._tickexponent;
