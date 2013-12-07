@@ -871,7 +871,7 @@ axes.tickText = function(ax, x, hover){
                 tt = minuteFormat(d);
                 if(tr!='M'){
                     tt += secondFormat(d);
-                    if(tr!='S') { tt += numFormat(mod(x/1000,1),ax,'none').substr(1); }
+                    if(tr!='S') { tt += numFormat(mod(x/1000,1),ax,'none',hover).substr(1); }
                 }
             }
         }
@@ -929,7 +929,7 @@ function numFormat(v,ax,fmtoverride,hover) {
         // make a dummy axis obj to get the auto rounding and exponent
         var ah = {exponentformat:ax.exponentformat, dtick:Math.abs(v), range:[0,v||1]};
         autoTickRound(ah);
-        r = ah._tickround+2;
+        r = (Number(ah._tickround)||0)+2;
         d = ah._tickexponent;
     }
     var e = Math.pow(10,-r)/2; // 'epsilon' - rounding increment
