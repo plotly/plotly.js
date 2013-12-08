@@ -346,7 +346,7 @@ plots.positionBrand = function(gd){
 };
 
 // ----------------------------------------------------
-// Main plot-creation function. Note: will call newPlot
+// Main plot-creation function. Note: will call makePlotFramework
 // if necessary to create the framework
 // ----------------------------------------------------
 // inputs:
@@ -379,7 +379,8 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     if(gd.data && gd.data[0] && gd.data[0].type) gd.mainPlotType = gd.data[0].type;
-    if(gd.mainPlotType && gd.mainPlotType.indexOf('Plot') != -1){
+    if(gd.mainPlotType && gd.mainPlotType.indexOf('Polar') != -1){
+
         if(data){
             gd.data=data;
             gd.plotType = gd.data[0].type;
@@ -661,6 +662,7 @@ plots.setStyles = function(gd, merge_dflt) {
         // mergeattr puts single values into cd[0].t, and all others into each individual point
         mergeattr('type','type','scatter');
         mergeattr('visible','visible',true);
+        mergeattr('showlegend','showlegend',true);
         mergeattr('opacity','op',1);
         mergeattr('text','tx','');
         mergeattr('name','name','trace '+c);
