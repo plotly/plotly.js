@@ -134,7 +134,10 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
         // simpler version where we don't need the extra assignments
         // but I made this a function so in principle we can do more than just lines in the
         // future, like smoothing splines.
-        function add0(pt) { pts += 'L' + pt; }
+        function add0(pt) {
+            if(!$.isNumeric(pt[0]) || !$.isNumeric(pt[1])) { return; }
+            pts += 'L' + pt;
+        }
 
         // finish one decimation step - now decide what to do with tryHigh, tryLow, and prevPt
         // (prevPt is the last one before the decimation ended)
@@ -148,8 +151,8 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
                 // ended on the low point (or high and low are same), so add high first
                 add0(tryHigh);
             }
-            else if(lastEnd=='high') { add0(tryLow+'L'+tryHigh); } // low, then high, then prev
-            else { add0(tryHigh+'L'+tryLow); } // high, low, prev
+            else if(lastEnd=='high') { add0(tryLow); add0(tryHigh); } // low, then high, then prev
+            else { add0(tryHigh); add0(tryLow); } // high, low, prev
             // lastly, add the endpoint of this decimation
             addPt(prevPt);
             // reset status vars
@@ -226,9 +229,11 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
             if(tozero) {
                 if(t.fill.charAt(t.fill.length-1)=='y') { pt0[1]=pt1[1]=ya.c2p(0,true); }
                 else { pt0[0]=pt1[0]=xa.c2p(0,true); }
+                // fill to zero: full trace path, plus extension of the endpoints to the appropriate axis
                 tozero.attr('d','M'+pts2+'L'+pt1+'L'+pt0+'Z');
             }
             else if(t.fill.substr(0,6)=='tonext' && pts2 && prevpts) {
+                // fill to next: full trace path, plus the previous path reversed
                 tonext.attr('d','M'+pts2.split('L').reverse().join('L')+'L'+prevpts+'Z');
             }
             prevpts = pts2;
