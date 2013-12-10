@@ -726,6 +726,7 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('textfont.size','ts',gd.layout.font.size);
                 mergeattr('textfont.color','tc',gd.layout.font.color);
                 mergeattr('textfont.family','tf',gd.layout.font.family);
+                mergeattr('connectgaps','connectgaps',false);
             }
             else if(type==='box') {
                 mergeattr('whiskerwidth','ww',0.5);
@@ -806,10 +807,10 @@ function applyStyle(gd) {
                     .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
             });
 
-        gp.selectAll('g.trace polyline.line')
+        gp.selectAll('g.trace path.js-line')
             .call(Plotly.Drawing.lineGroupStyle);
 
-        gp.selectAll('g.trace polyline.fill')
+        gp.selectAll('g.trace path.js-fill')
             .call(Plotly.Drawing.fillGroupStyle);
 
         gp.selectAll('g.boxes')
@@ -871,7 +872,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     var replot_attr=[
         'mode','visible','type','bardir','fill','histnorm',
         'marker.size','text','textfont.size','textposition',
-        'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
+        'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis','connectgaps','line.width',
         'zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth','showscale',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array','error_y.width',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',

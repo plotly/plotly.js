@@ -10,14 +10,16 @@ legend.lines = function(d){
     if(['scatter',undefined].indexOf(d[0].t.type)==-1) { return; }
     if(t.fill && t.fill!='none' && $.isNumeric(t.cdcurve)) {
         d3.select(this).append('path')
+            .classed('js-fill',true)
             .attr('data-curve',t.cdcurve)
             .attr('d','M5,0h30v6h-30z')
             .call(Plotly.Drawing.fillGroupStyle);
     }
     if(!t.mode || t.mode.indexOf('lines')==-1) { return; }
-    d3.select(this).append('polyline')
+    d3.select(this).append('path')
+        .classed('js-line',true)
         .call(Plotly.Drawing.lineGroupStyle)
-        .attr('points','5,0 35,0');
+        .attr('d','M5,0h30');
 
 };
 
@@ -268,7 +270,6 @@ legend.repositionLegend = function(gd, traces){
         }
         var tbb = t.node().getBoundingClientRect();
         if(!l.node()) { l=g.select('path'); }
-        if(!l.node()) { l=g.select('polyline'); }
         var lbb = (!l.node()) ? tbb : l.node().getBoundingClientRect();
         t.attr('y',(lbb.top+lbb.bottom-tbb.top-tbb.bottom)/2);
         var gbb = this.getBoundingClientRect();

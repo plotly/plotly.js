@@ -331,17 +331,24 @@ axes.setConvert = function(ax) {
     ax.c2l = (ax.type=='log') ? toLog : num;
     ax.l2c = (ax.type=='log') ? fromLog : num;
 
-    ax.l2p = function(v) { return d3.round(ax._b+ax._m*v,2); };
+    // clipMult: how many axis lengths past the edge do we render?
+    // for panning, 1-2 would suffice, but for zooming more is nice.
+    // also, clipping can affect the direction of lines off the edge...
+    var clipMult = 10;
+
+    ax.l2p = function(v) {
+        return d3.round(Plotly.Lib.constrain(ax._b+ax._m*v, -clipMult*ax._length, (1+clipMult)*ax._length),2);
+    };
     ax.p2l = function(px) { return (px-ax._b)/ax._m; };
 
     ax.c2p = function(v,clip) {
         var va = ax.c2l(v);
         // include 2 fractional digits on pixel, for PDF zooming etc
         if($.isNumeric(va)) { return ax.l2p(va); }
-        // clip NaN (ie past negative infinity) to one axis length past the negative edge
+        // clip NaN (ie past negative infinity) to clipMult axis length past the negative edge
         if(clip && $.isNumeric(v)) {
             var r0 = ax.range[0], r1 = ax.range[1];
-            return ax.l2p(0.5*(r0+r1-3*Math.abs(r0-r1)));
+            return ax.l2p(0.5*(r0+r1-3*clipMult*Math.abs(r0-r1)));
         }
     };
     ax.p2c = function(px){ return ax.l2c(ax.p2l(px)); };

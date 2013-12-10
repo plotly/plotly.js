@@ -93,59 +93,150 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
         .attr('class','trace scatter')
         .style('stroke-miterlimit',2);
 
+    // BUILD LINES AND FILLS
     var prevpts='',tozero,tonext,nexttonext;
     scattertraces.each(function(d){ // <-- now, iterate through arrays of {x,y} objects
         var t=d[0].t; // <-- get trace-wide formatting object
         if(t.visible===false) { return; }
-        var i=-1,tr=d3.select(this),pts2='';
-        // make the fill-to-zero polyline now, so it shows behind the line
+        var i=-1,tr=d3.select(this);
+        // make the fill-to-zero path now, so it shows behind the line
         // have to break out of d3-style here (data-curve attribute) because fill to next
         // puts the fill associated with one trace grouped with the previous
         tozero = (t.fill.substr(0,6)=='tozero' || (t.fill.substr(0,2)=='to' && !prevpts)) ?
-            tr.append('polyline').classed('fill',true).attr('data-curve',t.cdcurve) : null;
-        // make the fill-to-next polyline now for the NEXT trace, so it shows behind both lines
+            tr.append('path').classed('js-fill',true).attr('data-curve',t.cdcurve) : null;
+        // make the fill-to-next path now for the NEXT trace, so it shows behind both lines
         // nexttonext was created last time, but give it this curve's data for fill color
         if(nexttonext) { tonext = nexttonext.datum(d); }
         // now make a new nexttonext for next time
-        nexttonext = tr.append('polyline').classed('fill',true);
-        var x0,y0,x1,y1;
-        x0=y0=x1=y1=null;
+        nexttonext = tr.append('path').classed('js-fill',true);
+        var pt0=null, pt1=null;
+        // pts is the current path we're building... it has the form "x,yLx,y...Lx,y"
+        // and later we add the first letter, either "M" if this is the beginning of
+        // the path, or "L" if it's being concatenated on something else
+        // pts ends at a missing point, and gets restarted at the next point (unless t.connectgaps is truthy)
+        // pts2 is all paths for this curve, joined together straight across gaps
+        var pts = '', pts2 = '', atLeastTwo;
+
+        // for decimation: store pixel positions of things we're working with as [x,y]
+        var lastEntered, tryHigh, tryLow, prevPt, pti;
+        // lastEnd: high or low, which is most recent?
+        // decimationMode: -1 (not decimating), 0 (x), 1 (y)
+        // decimationTolerance: max pixels between points to allow decimation
+        var lastEnd, decimationMode, decimationTolerance;
+
+        // add a single [x,y] to the pts string
+        function addPt(pt) {
+            atLeastTwo = true;
+            add0(pt); // implicit array stringifying
+            pt1 = pt;
+        }
+
+        // simpler version where we don't need the extra assignments
+        // but I made this a function so in principle we can do more than just lines in the
+        // future, like smoothing splines.
+        function add0(pt) { pts += 'L' + pt; }
+
+        // finish one decimation step - now decide what to do with tryHigh, tryLow, and prevPt
+        // (prevPt is the last one before the decimation ended)
+        function finishDecimation(pt) {
+            if(pt) { prevPt = pt; }
+            if(prevPt==tryHigh) {
+                // ended this decimation on the high point, so add the low first (unless there was only one point)
+                if(tryHigh!=tryLow) { add0(tryLow); }
+            }
+            else if(prevPt==tryLow || tryLow==tryHigh) {
+                // ended on the low point (or high and low are same), so add high first
+                add0(tryHigh);
+            }
+            else if(lastEnd=='high') { add0(tryLow+'L'+tryHigh); } // low, then high, then prev
+            else { add0(tryHigh+'L'+tryLow); } // high, low, prev
+            // lastly, add the endpoint of this decimation
+            addPt(prevPt);
+            // reset status vars
+            lastEntered = prevPt;
+            tryHigh = tryLow = null;
+            decimationMode = -1;
+        }
+
         while(i<d.length) {
-            var pts='',
-                atLeastTwo = false;
+            pts='';
+            atLeastTwo = false;
+            lastEntered = null;
+            decimationMode = -1;
             for(i++; i<d.length; i++) {
-                var x=xa.c2p(d[i].x),y=ya.c2p(d[i].y);
-                if(!$.isNumeric(x)||!$.isNumeric(y)) { break; } // TODO: smart lines going off the edge?
-                if(pts) { atLeastTwo = true; }
-                pts+=x+','+y+' ';
-                if(!$.isNumeric(x0)) { x0=x; y0=y; }
-                x1=x; y1=y;
+                pti = [xa.c2p(d[i].x), ya.c2p(d[i].y)];
+                if(!$.isNumeric(pti[0])||!$.isNumeric(pti[1])) { // TODO: smart lines going off the edge?
+                    if(t.connectgaps) { continue; }
+                    else { break; }
+                }
+
+                // DECIMATION
+                // first point: always add it, and prep the other variables
+                if(!lastEntered) {
+                    lastEntered = pti;
+                    pts += lastEntered;
+                    if(!pt0) { pt0 = lastEntered; }
+                    continue;
+                }
+
+                // figure out the decimation tolerance - on-plot has one value, then it increases as you
+                // get farther off-plot. the value is in pixels, and is based on the line width, which
+                // means we need to replot if we change the line width
+                decimationTolerance = (0.75 + 10*Math.max(0,
+                    Math.max(-pti[0],pti[0]-xa._length)/xa._length,
+                    Math.max(-pti[1],pti[1]-ya._length)/ya._length)) * Math.max(t.lw||1, 1);
+                // if the last move was too much for decimation, see if we're starting a new decimation block
+                if(decimationMode<0) {
+                    // first look for very near x values (decimationMode=0), then near y values (decimationMode=1)
+                    if(Math.abs(pti[0]-lastEntered[0]) < decimationTolerance) { decimationMode = 0; }
+                    else if(Math.abs(pti[0]-lastEntered[1]) < decimationTolerance) { decimationMode = 1; }
+                    else { // no decimation here - add this point and move on
+                        lastEntered = pti;
+                        addPt(lastEntered);
+                        continue;
+                    }
+                }
+                else if(Math.abs(pti[decimationMode] - lastEntered[decimationMode]) >= decimationTolerance) {
+                    // we were decimating, now we're done
+                    finishDecimation(pti);
+                    continue;
+                }
+                // OK, we're collecting points for decimation, for realz now.
+                prevPt = pti;
+                if(!tryHigh || prevPt[1-decimationMode]>tryHigh[1-decimationMode]) {
+                    tryHigh = prevPt;
+                    lastEnd = 'high';
+                }
+                if(!tryLow || prevPt[1-decimationMode]<tryLow[1-decimationMode]) {
+                    tryLow = prevPt;
+                    lastEnd = 'low';
+                }
+            }
+            if(decimationMode>=0) { // end of the data is mid-decimation - close it out.
+                finishDecimation(pti);
             }
             if(pts) {
-                pts2+=pts;
+                pts2+=(pts2 ? 'L' : '') + pts;
                 if(t.mode.indexOf('lines')!=-1 && atLeastTwo) {
-                    tr.append('polyline').classed('line',true).attr('points',pts);
+                    tr.append('path').classed('js-line',true).attr('d','M'+pts);
                 }
             }
         }
         if(pts2) {
             if(tozero) {
-                if(t.fill.charAt(t.fill.length-1)=='y') { y0=y1=ya.c2p(0,true); }
-                else { x0=x1=xa.c2p(0,true); }
-                tozero.attr('points',pts2+x1+','+y1+' '+x0+','+y0);
+                if(t.fill.charAt(t.fill.length-1)=='y') { pt0[1]=pt1[1]=ya.c2p(0,true); }
+                else { pt0[0]=pt1[0]=xa.c2p(0,true); }
+                tozero.attr('d','M'+pts2+'L'+pt1+'L'+pt0+'Z');
             }
-            else if(t.fill.substr(0,6)=='tonext') {
-                var ptsnext = pts2+prevpts;
-                if(ptsnext.indexOf(',')!=ptsnext.lastIndexOf(',')) {
-                    tonext.attr('points',pts2+prevpts);
-                }
+            else if(t.fill.substr(0,6)=='tonext' && pts2 && prevpts) {
+                tonext.attr('d','M'+pts2.split('L').reverse().join('L')+'L'+prevpts+'Z');
             }
-            prevpts = pts2.split(' ').reverse().join(' ');
+            prevpts = pts2;
         }
     });
 
-    // remove polylines that didn't get used
-    $(gd).find('polyline:not([points])').remove();
+    // remove paths that didn't get used
+    scattertraces.selectAll('path:not([d])').remove();
 
     // BUILD SCATTER POINTS
     scattertraces.append('g')
