@@ -156,8 +156,8 @@ annotations.draw = function(gd,index,opt,value) {
             orientation: 'inside'
         };
         this.style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
-            .call(d3.plugly.convertToTspans)
-            .call(d3.plugly.alignSVGWith(annbg, alignOptions));
+            .call(d3.plugin.convertToTspans)
+            .call(d3.plugin.alignSVGWith(annbg, alignOptions));
         return this;
     }
 
@@ -168,7 +168,7 @@ annotations.draw = function(gd,index,opt,value) {
         .attr({'data-unformatted': options.text});
 
     if(gd.mainsite) {
-        anntext.call(d3.plugly.makeEditable)
+        anntext.call(d3.plugin.makeEditable)
             .call(textLayout)
             .on('edit', function(_text){
                 options.text = _text;
