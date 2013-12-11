@@ -155,21 +155,25 @@ bars.plot = function(gd,plotinfo,cdbar) {
                         y0 = ya.c2p(di.b,true);
                     }
 
-                    if(!$.isNumeric(x0)||!$.isNumeric(x1)||!$.isNumeric(y0)||!$.isNumeric(y1)) {
+                    if(!$.isNumeric(x0)||!$.isNumeric(x1)||!$.isNumeric(y0)||!$.isNumeric(y1)||x0==x1||y0==y1) {
                         d3.select(this).remove();
                         return;
                     }
-                    // TODO: why do I need this extra 0.001? Without it occasionally
-                    // there's an empty pixel in the non-antialiased (gapless) case
-                    // x1 = d3.round(x1 + (x1>x0 ? 0.001 : -0.001), 2);
-                    // y1 = d3.round(y1 + (y1>y0 ? 0.001 : -0.001), 2);
-                    var offset = d3.round((((di.lw||0))/2)%1,2);
-                    function rnd(v) { return d3.round(Math.round(v)-offset,2); }
+                    var lw = (di.mlw+1 || t.mlw+1 || (di.t ? di.t.mlw : 0)+1)-1,
+                        offset = d3.round((lw/2)%1,2);
+                    function roundWithLine(v) { return d3.round(Math.round(v)-offset,2); }
+                    function expandToVisible(v,vc) { return v>vc ? Math.ceil(v) : Math.floor(v); }
                     if(!gd.layout._forexport) {
-                        x0 = rnd(x0);
-                        x1 = rnd(x1);
-                        y0 = rnd(y0);
-                        y1 = rnd(y1);
+                        // if bars are not fully opaque or they have a line around them, round to integer
+                        // pixels, mainly for safari so we prevent overlaps from its expansive pixelation.
+                        // if the bars ARE fully opaque and have no line, expand to a full pixel to make
+                        // sure we can see them
+                        var op = Plotly.Drawing.opacity(di.mc || t.mc || (di.t ? di.t.mc : '')),
+                            fixpx = (op<1 || lw>0.01) ? roundWithLine : expandToVisible;
+                        x0 = fixpx(x0,x1);
+                        x1 = fixpx(x1,x0);
+                        y0 = fixpx(y0,y1);
+                        y1 = fixpx(y1,y0);
                     }
                     d3.select(this).attr('d','M'+x0+','+y0+'V'+y1+'H'+x1+'V'+y0+'Z');
                 });
