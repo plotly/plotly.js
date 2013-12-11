@@ -535,7 +535,7 @@ Plotly.plot = function(gd, data, layout) {
         }
     });
     if(!axesOK) {
-        Plotly.lib.notifier('Something went wrong with axis scaling','long');
+        Plotly.Lib.notifier('Something went wrong with axis scaling','long');
         return;
     }
 
