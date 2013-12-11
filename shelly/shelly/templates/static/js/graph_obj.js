@@ -1723,7 +1723,7 @@ plots.titles = function(gd,title) {
         var titleEl = this
             .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
             .attr(options)
-            .call(d3.plugly.convertToTspans)
+            .call(d3.plugin.convertToTspans)
             .attr(options);
         titleEl.selectAll('tspan.line')
             .attr(options);
@@ -1782,11 +1782,11 @@ plots.titles = function(gd,title) {
     if(!txt) setPlaceholder();
 
     if(gd.mainsite){ // don't allow editing on embedded graphs
-        el.call(d3.plugly.makeEditable)
+        el.call(d3.plugin.makeEditable)
             .on('edit', function(text){
                 this
                     .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
-                    .call(d3.plugly.convertToTspans)
+                    .call(d3.plugin.convertToTspans)
                     .attr(options)
                     .selectAll('tspan.line')
                     .attr(options);

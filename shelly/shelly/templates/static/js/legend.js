@@ -124,7 +124,7 @@ legend.texts = function(context, gd, d, i, traces){
 
     function textLayout(){
         var that = this;
-        d3.plugly.convertToTspans(this, function(d, i){
+        d3.plugin.convertToTspans(this, function(d, i){
             if(that.mathjaxRender){
                 delete that.mathjaxRender;
                 legend.repositionLegend(gd, traces);
@@ -134,7 +134,7 @@ legend.texts = function(context, gd, d, i, traces){
     }
 
     if(gd.mainsite){
-        text.call(d3.plugly.makeEditable)
+        text.call(d3.plugin.makeEditable)
             .call(textLayout)
             .on('edit', function(text){
                 this.attr({'data-unformatted': text});
