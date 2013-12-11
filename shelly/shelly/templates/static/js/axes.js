@@ -472,8 +472,8 @@ axes.expand = function(ax,data,options) {
         if($.isArray(item)) { return function(i) { return Math.max(Number(item[i]||0),0); }; }
         else { var v = Math.max(Number(item||0),0); return function(){ return v; }; }
     }
-    var ppadplus = getPad(((ax._m>0 ? options.ppadplus : options.ppadminus)||options.ppad||0)+extrappad),
-        ppadminus = getPad(((ax._m>0 ? options.ppadminus : options.ppadplus)||options.ppad||0)+extrappad),
+    var ppadplus = getPad(((ax._m>0 ? options.ppadplus : options.ppadminus)||options.ppad||0)),
+        ppadminus = getPad(((ax._m>0 ? options.ppadminus : options.ppadplus)||options.ppad||0)),
         vpadplus = getPad(options.vpadplus||options.vpad),
         vpadminus = getPad(options.vpadminus||options.vpad);
 
@@ -498,8 +498,8 @@ axes.expand = function(ax,data,options) {
     for(i=0; i<len; i++) {
         di = data[i];
         if(!$.isNumeric(di)) { continue; }
-        ppadiplus = ppadplus(i);
-        ppadiminus = ppadminus(i);
+        ppadiplus = ppadplus(i) + extrappad;
+        ppadiminus = ppadminus(i) + extrappad;
         vmin = di-vpadminus(i);
         vmax = di+vpadplus(i);
         // special case for log axes: if vpad makes this object span more than an
