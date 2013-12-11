@@ -466,7 +466,7 @@ axes.expand = function(ax,data,options) {
     var len = data.length,
         extrappad = options.padded ? ax._length*0.05 : 0,
         tozero = options.tozero && (ax.type=='linear' || ax.type=='-'),
-        i,j,di,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
+        i,j,v,di,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
 
     function getPad(item) {
         if($.isArray(item)) { return function(i) { return Math.max(Number(item[i]||0),0); }; }
@@ -476,24 +476,6 @@ axes.expand = function(ax,data,options) {
         ppadminus = getPad(((ax._m>0 ? options.ppadminus : options.ppadplus)||options.ppad||0)),
         vpadplus = getPad(options.vpadplus||options.vpad),
         vpadminus = getPad(options.vpadminus||options.vpad);
-
-    // minfilter and maxfilter: take items v from ax._min and _max and
-    // compare them to the presently active point:
-    // - if the item supercedes the new point, set includethis false
-    // - if the new point supercedes the item, return false to delete it from the array
-    function minfilter(v) {
-        if(!includeThis) { return true; }
-        if(v.val<=dmin && v.pad>=ppadiminus) { includeThis = false; }
-        else if(v.val>=dmin && v.pad<=ppadiminus) { return false; }
-        return true;
-    }
-
-    function maxfilter(v) {
-        if(!includeThis) { return true; }
-        if(v.val>=dmax && v.pad>=ppadiplus) { includeThis = false; }
-        else if(v.val<=dmax && v.pad<=ppadiplus) { return false; }
-        return true;
-    }
 
     for(i=0; i<len; i++) {
         di = data[i];
@@ -515,7 +497,14 @@ axes.expand = function(ax,data,options) {
 
         if($.isNumeric(dmin)) {
             includeThis = true;
-            ax._min = ax._min.filter(minfilter);
+            // take items v from ax._min and compare them to the presently active point:
+            // - if the item supercedes the new point, set includethis false
+            // - if the new point supercedes the item, delete it from the ax._min
+            for(j=0; j<ax._min.length && includeThis; j++) {
+                v = ax._min[j];
+                if(v.val<=dmin && v.pad>=ppadiminus) { includeThis = false; }
+                else if(v.val>=dmin && v.pad<=ppadiminus) { ax._min.splice(j,1); j--; }
+            }
             if(includeThis) {
                 ax._min.push({val:dmin, pad:(tozero && dmin===0) ? 0 : ppadiminus});
             }
@@ -523,7 +512,11 @@ axes.expand = function(ax,data,options) {
 
         if($.isNumeric(dmax)) {
             includeThis = true;
-            ax._max = ax._max.filter(maxfilter);
+            for(j=0; j<ax._max.length && includeThis; j++) {
+                v = ax._max[j];
+                if(v.val>=dmax && v.pad>=ppadiplus) { includeThis = false; }
+                else if(v.val<=dmax && v.pad<=ppadiplus) { ax._max.splice(j,1); j--; }
+            }
             if(includeThis) {
                 ax._max.push({val:dmax, pad:(tozero && dmax===0) ? 0 : ppadiplus});
             }
