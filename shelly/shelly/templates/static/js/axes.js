@@ -466,41 +466,24 @@ axes.expand = function(ax,data,options) {
     var len = data.length,
         extrappad = options.padded ? ax._length*0.05 : 0,
         tozero = options.tozero && (ax.type=='linear' || ax.type=='-'),
-        i,j,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
+        i,j,v,di,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
 
     function getPad(item) {
         if($.isArray(item)) { return function(i) { return Math.max(Number(item[i]||0),0); }; }
         else { var v = Math.max(Number(item||0),0); return function(){ return v; }; }
     }
-    var ppad = getPad(options.ppad),
-        ppadplus = getPad(ax._m>0 ? options.ppadplus : options.ppadminus),
-        ppadminus = getPad(ax._m>0 ? options.ppadminus : options.ppadplus),
-        vpad = getPad(options.vpad),
-        vpadplus = getPad(options.vpadplus),
-        vpadminus = getPad(options.vpadminus);
-
-    function minfilter(v) {
-        if(!includeThis) { return true; }
-        if(v.val<=dmin && v.pad>=ppadiminus) { includeThis = false; }
-        else if(v.val>=dmin && v.pad<=ppadiminus) { return false; }
-        return true;
-    }
-
-    function maxfilter(v) {
-        if(!includeThis) { return true; }
-        if(v.val>=dmax && v.pad>=ppadiplus) { includeThis = false; }
-        else if(v.val<=dmax && v.pad<=ppadiplus) { return false; }
-        return true;
-    }
+    var ppadplus = getPad(((ax._m>0 ? options.ppadplus : options.ppadminus)||options.ppad||0)),
+        ppadminus = getPad(((ax._m>0 ? options.ppadminus : options.ppadplus)||options.ppad||0)),
+        vpadplus = getPad(options.vpadplus||options.vpad),
+        vpadminus = getPad(options.vpadminus||options.vpad);
 
     for(i=0; i<len; i++) {
-        if(!$.isNumeric(data[i])) { continue; }
-        ppadi = ppad(i);
-        ppadiplus = (ppadplus(i)||ppadi) + extrappad;
-        ppadiminus = (ppadminus(i)||ppadi) + extrappad;
-        vpadi = vpad(i);
-        vmin = data[i]-(vpadminus(i)||vpadi);
-        vmax = data[i]+(vpadplus(i)||vpadi);
+        di = data[i];
+        if(!$.isNumeric(di)) { continue; }
+        ppadiplus = ppadplus(i) + extrappad;
+        ppadiminus = ppadminus(i) + extrappad;
+        vmin = di-vpadminus(i);
+        vmax = di+vpadplus(i);
         // special case for log axes: if vpad makes this object span more than an
         // order of mag, clip it to one order. This is so we don't have non-positive
         // errors or absurdly large lower range due to rounding errors
@@ -514,7 +497,14 @@ axes.expand = function(ax,data,options) {
 
         if($.isNumeric(dmin)) {
             includeThis = true;
-            ax._min = ax._min.filter(minfilter);
+            // take items v from ax._min and compare them to the presently active point:
+            // - if the item supercedes the new point, set includethis false
+            // - if the new point supercedes the item, delete it from the ax._min
+            for(j=0; j<ax._min.length && includeThis; j++) {
+                v = ax._min[j];
+                if(v.val<=dmin && v.pad>=ppadiminus) { includeThis = false; }
+                else if(v.val>=dmin && v.pad<=ppadiminus) { ax._min.splice(j,1); j--; }
+            }
             if(includeThis) {
                 ax._min.push({val:dmin, pad:(tozero && dmin===0) ? 0 : ppadiminus});
             }
@@ -522,7 +512,11 @@ axes.expand = function(ax,data,options) {
 
         if($.isNumeric(dmax)) {
             includeThis = true;
-            ax._max = ax._max.filter(maxfilter);
+            for(j=0; j<ax._max.length && includeThis; j++) {
+                v = ax._max[j];
+                if(v.val>=dmax && v.pad>=ppadiplus) { includeThis = false; }
+                else if(v.val<=dmax && v.pad<=ppadiplus) { ax._max.splice(j,1); j--; }
+            }
             if(includeThis) {
                 ax._max.push({val:dmax, pad:(tozero && dmax===0) ? 0 : ppadiplus});
             }
