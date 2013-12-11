@@ -175,10 +175,13 @@ function setType(ax){
 // dates as non-dates, to exclude cases with mostly 2 & 4 digit
 // numbers and a few dates
 function moreDates(a) {
-    var dcnt=0, ncnt=0;
-    for(var i in a) {
-        if(Plotly.Lib.isDateTime(a[i])) { dcnt+=1; }
-        if($.isNumeric(a[i])) { ncnt+=1; }
+    var dcnt=0, ncnt=0,
+        inc = Math.max(1,(a.length-1)/1000), // test at most 1000 points, evenly spaced
+        ir;
+    for(var i=0; i<a.length; i+=inc) {
+        ir = Math.round(i);
+        if(Plotly.Lib.isDateTime(a[ir])) { dcnt+=1; }
+        if($.isNumeric(a[ir])) { ncnt+=1; }
     }
     return (dcnt>ncnt*2);
 }
@@ -188,14 +191,19 @@ function moreDates(a) {
 // then it should have a range max/min of at least 100
 // and at least 1/4 of distinct values < max/10
 function loggy(d,ax) {
-    var vals = [],v,c,i;
-    var ax2 = (ax=='x') ? 'y' : 'x';
+    var vals = [],v,c,i,ir,
+        ax2 = (ax=='x') ? 'y' : 'x',
+        inc = 0;
+    d.forEach(function(c) { inc+=(c.length-1)/1000; });
+    inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
+
     for(var curve in d){
         c=d[curve];
         // curve has data: test each numeric point for <=0 and add if unique
         if(ax in c) {
-            for(i in c[ax]) {
-                v=c[ax][i];
+            for(i=0; i<c[ax].length-0.5; i+=inc) {
+                ir = Math.round(i);
+                v=c[ax][ir];
                 if($.isNumeric(v)){
                     if(v<=0) { return false; }
                     else if(vals.indexOf(v)<0) { vals.push(v); }
@@ -205,8 +213,8 @@ function loggy(d,ax) {
         // curve has linear scaling: test endpoints for <=0 and add all points if unique
         else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
             if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) { return false; }
-            for(i in d[curve][ax2]) {
-                v=c[ax+'0']+c['d'+ax]*i;
+            for(i=0; i<c[ax2].length-0.5; i+=inc) {
+                v=c[ax+'0']+c['d'+ax]*Math.round(i);
                 if(vals.indexOf(v)<0) { vals.push(v); }
             }
         }
@@ -220,16 +228,18 @@ function loggy(d,ax) {
 // JP edit 10.8.2013: strip $, %, and quote characters via axes.cleanDatum
 function category(d,ax) {
     function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1; }
-    var catcount=0,numcount=0;
+    var catcount=0,
+        numcount=0,
+        inc = 0;
+    d.forEach(function(c) { inc+=(c.length-1)/1000; });
+    inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
+
     d.forEach(function(c){
         // curve has data: test each point for non-numeric text
         if(ax in c) {
             var curvenums=0,curvecats=0;
-            for(var i in c[ax]) {
-                var vi = c[ax][i];
-                Plotly.Lib.log( 'unclean', vi );
-                vi = axes.cleanDatum( vi );
-                Plotly.Lib.log( 'clean', vi );
+            for(i=0; i<c[ax].length; i+=inc) {
+                var vi = axes.cleanDatum(c[ax][Math.round(i)]);
                 if(vi && isStr(vi)){ curvecats++; }
                 else if($.isNumeric(vi)){ curvenums++; }
             }
@@ -1049,6 +1059,10 @@ axes.doTicks = function(td,axid) {
         });
         return;
     }
+
+    // make sure we only have allowed options for exponents (others can make confusing errors)
+    if(['none','e','E','power','SI','B'].indexOf(ax.exponentformat)==-1) { ax.exponentformat = 'e'; }
+    if(['all','first','last','none'].indexOf(ax.showexponent)==-1) { ax.showexponent = 'all'; }
 
     ax.range = ax.range.map(Number); // in case a val turns into string somehow
 

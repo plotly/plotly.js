@@ -132,9 +132,9 @@ bars.plot = function(gd,plotinfo,cdbar) {
         .attr('class','points')
         .each(function(d){
             var t = d[0].t; // <-- get trace-wide formatting object
-            d3.select(this).selectAll('rect')
+            d3.select(this).selectAll('path')
                 .data(Plotly.Lib.identity)
-              .enter().append('rect')
+              .enter().append('path')
                 .each(function(di){
                     // now display the bar - here's where we switch x and y
                     // for horz bars
@@ -155,18 +155,67 @@ bars.plot = function(gd,plotinfo,cdbar) {
                         y0 = ya.c2p(di.b,true);
                     }
 
-                    if(!$.isNumeric(x0)||!$.isNumeric(x1)||!$.isNumeric(y0)||!$.isNumeric(y1)) {
+                    if(!$.isNumeric(x0)||!$.isNumeric(x1)||!$.isNumeric(y0)||!$.isNumeric(y1)||x0==x1||y0==y1) {
                         d3.select(this).remove();
                         return;
                     }
-                    d3.select(this)
-                        .attr('transform','translate('+Math.min(x0,x1)+','+Math.min(y0,y1)+')')
-                        // TODO: why do I need this extra 0.001? Without it occasionally
-                        // there's an empty pixel in the non-antialiased (gapless) case
-                        .attr('width',Math.abs(x1-x0)+0.001)
-                        .attr('height',Math.abs(y1-y0)+0.001);
+                    var lw = (di.mlw+1 || t.mlw+1 || (di.t ? di.t.mlw : 0)+1)-1,
+                        offset = d3.round((lw/2)%1,2);
+                    function roundWithLine(v) { return d3.round(Math.round(v)-offset,2); }
+                    function expandToVisible(v,vc) { return v>vc ? Math.ceil(v) : Math.floor(v); }
+                    if(!gd.layout._forexport) {
+                        // if bars are not fully opaque or they have a line around them, round to integer
+                        // pixels, mainly for safari so we prevent overlaps from its expansive pixelation.
+                        // if the bars ARE fully opaque and have no line, expand to a full pixel to make
+                        // sure we can see them
+                        var op = Plotly.Drawing.opacity(di.mc || t.mc || (di.t ? di.t.mc : '')),
+                            fixpx = (op<1 || lw>0.01) ? roundWithLine : expandToVisible;
+                        x0 = fixpx(x0,x1);
+                        x1 = fixpx(x1,x0);
+                        y0 = fixpx(y0,y1);
+                        y1 = fixpx(y1,y0);
+                    }
+                    d3.select(this).attr('d','M'+x0+','+y0+'V'+y1+'H'+x1+'V'+y0+'Z');
                 });
         });
+};
+
+bars.style = function(s,gd) {
+    var barcount = s.size(),
+        gl = gd.layout;
+
+    // first trace styling
+    // for bars only: combine trace and fill opacity (no, can't do that because of bar outlines)
+    s.style('opacity',function(d){ return d[0].t.op; }) // *Plotly.Drawing.opacity(d[0].t.fc)
+    // for gapless (either stacked or neighboring grouped) bars use crispEdges
+    // to turn off antialiasing so an artificial gap isn't introduced.
+    .each(function(d){
+        if((gl.barmode=='stack' && barcount>1) || (gl.bargap===0 && gl.bargroupgap===0 && !d[0].t.mlw)){
+            d3.select(this).attr('shape-rendering','crispEdges');
+        }
+    });
+
+    // then style the individual bars
+    s.selectAll('g.points').each(function(d){
+        var t = d.t||d[0].t;
+        d3.select(this).selectAll('path').each(function(d) {
+            // allow all marker and marker line colors to be scaled by given max and min to colorscales
+            // d3.select(this).each(function(d){
+                var w = (d.mlw+1 || t.mlw+1 || (d.t ? d.t.mlw : 0)+1) - 1,
+                    p = d3.select(this);
+                p.attr('stroke-width',w)
+                    .call(Plotly.Drawing.fillColor,
+                        Plotly.Drawing.tryColorscale(t,'m')(d.mc || t.mc || (d.t ? d.t.mc : '')));
+                if(w) {
+                    p.call(Plotly.Drawing.strokeColor,
+                        Plotly.Drawing.tryColorscale(t,'ml')(d.mlc || t.mlc || (d.t ? d.t.mlc : '')));
+                }
+            // });
+        });
+        // TODO: text markers on bars, either extra text or just bar values
+        // d3.select(this).selectAll('text')
+        //     .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
+    });
 };
 
 }()); // end Bars object definition

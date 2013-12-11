@@ -269,4 +269,23 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
         });
 };
 
+scatter.style = function(s) {
+    s.style('opacity',function(d){ return d[0].t.op; });
+
+    s.selectAll('g.points')
+        .each(function(d){
+            d3.select(this).selectAll('path')
+                .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
+            d3.select(this).selectAll('text')
+                .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
+        });
+
+    s.selectAll('g.trace path.js-line')
+        .call(Plotly.Drawing.lineGroupStyle);
+
+    s.selectAll('g.trace path.js-fill')
+        .call(Plotly.Drawing.fillGroupStyle);
+};
+
+
 }()); // end Scatter object definition
