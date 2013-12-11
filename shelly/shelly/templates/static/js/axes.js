@@ -466,19 +466,21 @@ axes.expand = function(ax,data,options) {
     var len = data.length,
         extrappad = options.padded ? ax._length*0.05 : 0,
         tozero = options.tozero && (ax.type=='linear' || ax.type=='-'),
-        i,j,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
+        i,j,di,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
 
     function getPad(item) {
         if($.isArray(item)) { return function(i) { return Math.max(Number(item[i]||0),0); }; }
         else { var v = Math.max(Number(item||0),0); return function(){ return v; }; }
     }
-    var ppad = getPad(options.ppad),
-        ppadplus = getPad(ax._m>0 ? options.ppadplus : options.ppadminus),
-        ppadminus = getPad(ax._m>0 ? options.ppadminus : options.ppadplus),
-        vpad = getPad(options.vpad),
-        vpadplus = getPad(options.vpadplus),
-        vpadminus = getPad(options.vpadminus);
+    var ppadplus = getPad(((ax._m>0 ? options.ppadplus : options.ppadminus)||options.ppad||0)+extrappad),
+        ppadminus = getPad(((ax._m>0 ? options.ppadminus : options.ppadplus)||options.ppad||0)+extrappad),
+        vpadplus = getPad(options.vpadplus||options.vpad),
+        vpadminus = getPad(options.vpadminus||options.vpad);
 
+    // minfilter and maxfilter: take items v from ax._min and _max and
+    // compare them to the presently active point:
+    // - if the item supercedes the new point, set includethis false
+    // - if the new point supercedes the item, return false to delete it from the array
     function minfilter(v) {
         if(!includeThis) { return true; }
         if(v.val<=dmin && v.pad>=ppadiminus) { includeThis = false; }
@@ -494,13 +496,12 @@ axes.expand = function(ax,data,options) {
     }
 
     for(i=0; i<len; i++) {
-        if(!$.isNumeric(data[i])) { continue; }
-        ppadi = ppad(i);
-        ppadiplus = (ppadplus(i)||ppadi) + extrappad;
-        ppadiminus = (ppadminus(i)||ppadi) + extrappad;
-        vpadi = vpad(i);
-        vmin = data[i]-(vpadminus(i)||vpadi);
-        vmax = data[i]+(vpadplus(i)||vpadi);
+        di = data[i];
+        if(!$.isNumeric(di)) { continue; }
+        ppadiplus = ppadplus(i);
+        ppadiminus = ppadminus(i);
+        vmin = di-vpadminus(i);
+        vmax = di+vpadplus(i);
         // special case for log axes: if vpad makes this object span more than an
         // order of mag, clip it to one order. This is so we don't have non-positive
         // errors or absurdly large lower range due to rounding errors
