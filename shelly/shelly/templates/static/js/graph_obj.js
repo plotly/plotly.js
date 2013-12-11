@@ -1208,11 +1208,14 @@ Plotly.relayout = function(gd,astr,val) {
             }
             else if(ai=='margin.pad') { doticks = dolayoutstyle = true; }
             else if(p.parts[0]=='margin' ||
-                ai.match(/^(bar|box|font|height|weight|autosize)/) ||
-                ['height','width','autosize'].indexOf(ai)!=-1) { docalc = true; }
+                p.parts[1]=='autorange' ||
+                ai.match(/^(bar|box|font)/)) { docalc = true; }
             // hovermode and dragmode don't need any redrawing, since they just
             // affect reaction to user input. everything else, assume full replot.
-            else if(['hovermode','dragmode'].indexOf(ai)==-1) { doplot = true; }
+            // height, width, autosize get dealt with below
+            else if(['hovermode','dragmode','height','width','autosize'].indexOf(ai)==-1) {
+                doplot = true;
+            }
             p.set(vi);
         }
     }
@@ -1223,6 +1226,7 @@ Plotly.relayout = function(gd,astr,val) {
 
     // calculate autosizing - if size hasn't changed, will remove h&w so we don't need to redraw
     if(aobj.autosize) { aobj=plotAutoSize(gd,aobj); }
+    if(aobj.height || aobj.width || aobj.autosize) { docalc = true; }
 
     // redraw
     // first check if there's still anything to do
