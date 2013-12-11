@@ -148,9 +148,10 @@ Plotly.colorscales = {
         [0.375,"rgb(65, 171, 93)"],[0.5,"rgb(116, 196, 118)"],[0.625,"rgb(161, 217, 155)"],
         [0.75,"rgb(199, 233, 192)"],[0.875,"rgb(229, 245, 224)"],[1,"rgb(247, 252, 245)"]],
 
-    'rainbow':[[0,"rgb(0, 0, 150)"],[0.125,"rgb(0, 25, 255)"],[0.25,"rgb(0, 152, 255)"],
-        [0.375,"rgb(44, 255, 202)"],[0.5,"rgb(151, 255, 96)"],[0.625,"rgb(255, 234, 0)"],
-        [0.75,"rgb(255, 111, 0)"],[0.875,"rgb(223, 0, 0)"],[1,"rgb(132, 0, 0)"]],
+    'rainbow':[[0,"rgb(128,0,38)"],[0.1,"rgb(0, 0, 150)"],[0.2,"rgb(0, 25, 255)"],
+        [0.3,"rgb(0, 152, 255)"],[0.4,"rgb(44, 255, 202)"],[0.5,"rgb(151, 255, 96)"],
+        [0.6,"rgb(255, 234, 0)"],[0.7,"rgb(255, 111, 0)"],[0.8,"rgb(223, 0, 0)"],
+        [0.9,"rgb(132, 0, 0)"],[1,"rgb(128,0,38)"]],
 
     'portland':[[0,"rgb(12,51,131)"],[0.25,"rgb(10,136,186)"],[0.5,"rgb(242,211,56)"],
                 [0.75,"rgb(242,143,56)"],[1,"rgb(217,30,30)"]],
@@ -182,15 +183,15 @@ Plotly.defaultColorscale = Plotly.colorscales.YIGnBu;
         else { console.log('addStyleRule failed'); }
     }
 
-    function pct(v){ return String(Math.round((1-v)*100))+'%';}
+    function pct(v){ return String(Math.round((1-v[0])*100))+'%';}
 
     for(var scaleName in Plotly.colorscales) {
         var scale = Plotly.colorscales[scaleName],
             list1 = '', // color1 0%, color2 12%, ...
             list2 = ''; // color-stop(0%,color1), color-stop(12%,color2) ...
         for(var i=scale.length-1; i>=0; i--) {
-            list1 += ', '+scale[i][1]+' '+pct(scale[i][0]);
-            list2 += ', color-stop('+pct(scale[i][0])+','+scale[i][1]+')';
+            list1 += ', '+scale[i][1]+' '+pct(scale[i]);
+            list2 += ', color-stop('+pct(scale[i])+','+scale[i][1]+')';
         }
         var rule =
             // old browsers with no supported gradients - shouldn't matter to us
@@ -797,26 +798,12 @@ plots.setStyles = function(gd, merge_dflt) {
 function applyStyle(gd) {
     Plotly.Plots.getSubplots(gd).forEach(function(subplot) {
         var gp = gd.layout._plots[subplot].plot;
-        gp.selectAll('g.trace')
-            .call(Plotly.Drawing.traceStyle,gd);
-        gp.selectAll('g.points')
-            .each(function(d){
-                d3.select(this).selectAll('path,rect')
-                    .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
-                d3.select(this).selectAll('text')
-                    .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
-            });
 
-        gp.selectAll('g.trace path.js-line')
-            .call(Plotly.Drawing.lineGroupStyle);
-
-        gp.selectAll('g.trace path.js-fill')
-            .call(Plotly.Drawing.fillGroupStyle);
-
-        gp.selectAll('g.boxes')
-            .call(Plotly.Boxes.style);
-        gp.selectAll('g.errorbars')
-            .call(Plotly.ErrorBars.style);
+        gp.selectAll('g.trace.bars').call(Plotly.Bars.style, gd);
+        gp.selectAll('g.trace.scatter').call(Plotly.Scatter.style);
+        gp.selectAll('g.trace.boxes').call(Plotly.Boxes.style);
+        gp.selectAll('g.errorbars').call(Plotly.ErrorBars.style);
+        gp.selectAll('image').call(Plotly.Heatmap.style);
     });
 
     if(gd.mainsite && window.ws && window.ws.confirmedReady) {

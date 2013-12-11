@@ -1050,6 +1050,10 @@ axes.doTicks = function(td,axid) {
         return;
     }
 
+    // make sure we only have allowed options for exponents (others can make confusing errors)
+    if(['none','e','E','power','SI','B'].indexOf(ax.exponentformat)==-1) { ax.exponentformat = 'e'; }
+    if(['all','first','last','none'].indexOf(ax.showexponent)==-1) { ax.showexponent = 'all'; }
+
     ax.range = ax.range.map(Number); // in case a val turns into string somehow
 
     ax.setScale(); // set scaling to pixels

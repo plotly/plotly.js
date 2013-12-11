@@ -95,6 +95,14 @@ legend.boxes = function(d){
         .attr('transform','translate(20,0)');
 };
 
+legend.style = function(s) {
+    s.style('opacity',function(d){ return d[0].t.op; })
+    .each(legend.bars)
+    .each(legend.boxes)
+    .each(legend.lines)
+    .each(legend.points);
+};
+
 legend.texts = function(context, gd, d, i, traces){
     var gf = gd.layout.font,
         lf = gd.layout.legend.font;
@@ -187,13 +195,9 @@ legend.draw = function(gd) {
         .data(ldata);
     traces.enter().append('g').attr('class','trace');
 
-    traces.append('g')
-        .call(Plotly.Drawing.traceStyle,gd)
-        .each(legend.bars)
-        .each(legend.boxes)
-        .each(legend.lines)
-        .each(legend.points)
-        .each(function(d, i){ legend.texts(this, gd, d, i, traces); });
+    traces.append('g').call(legend.style);
+
+    traces.each(function(d, i){ legend.texts(this, gd, d, i, traces); });
 
     legend.repositionLegend(gd, traces);
 
