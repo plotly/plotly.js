@@ -1936,11 +1936,12 @@ function updateObject(i,up) {
 }
 
 function alert_repl(func_name, data) {
-    if (window.ws && window.ws.confirmedReady) {
-        func = (func_name ? JSON.stringify(func_name) : 'None');
-        data = JSON.stringify(data);
-        send_invisible('hermes(' + func + ',' + data + ')');
-    }
+    // Taking this out for now, as it's bogging things down and nobody is using it...
+    // if (window.ws && window.ws.confirmedReady) {
+    //     func = (func_name ? JSON.stringify(func_name) : 'None');
+    //     data = JSON.stringify(data);
+    //     send_invisible('hermes(' + func + ',' + data + ')');
+    // }
 }
 
 }()); // end Plots object definition

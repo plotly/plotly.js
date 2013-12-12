@@ -167,6 +167,12 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
             decimationMode = -1;
         }
 
+        function getTolerance(x,y,w) {
+            return (0.75 + 10*Math.max(0,
+                Math.max(-x,x-xa._length)/xa._length,
+                Math.max(-y,y-ya._length)/ya._length)) * Math.max(w||1, 1);
+        }
+
         while(i<d.length) {
             pts='';
             atLeastTwo = false;
@@ -191,9 +197,7 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
                 // figure out the decimation tolerance - on-plot has one value, then it increases as you
                 // get farther off-plot. the value is in pixels, and is based on the line width, which
                 // means we need to replot if we change the line width
-                decimationTolerance = (0.75 + 10*Math.max(0,
-                    Math.max(-pti[0],pti[0]-xa._length)/xa._length,
-                    Math.max(-pti[1],pti[1]-ya._length)/ya._length)) * Math.max(t.lw||1, 1);
+                decimationTolerance = getTolerance(pti[0],pti[1],t.lw);
                 // if the last move was too much for decimation, see if we're starting a new decimation block
                 if(decimationMode<0) {
                     // first look for very near x values (decimationMode=0), then near y values (decimationMode=1)
@@ -250,7 +254,57 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
     scattertraces.selectAll('path:not([d])').remove();
 
     // BUILD SCATTER POINTS
-    scattertraces.append('g')
+    function decimatePoints(cd) {
+        // Take a single trace of calcdata and decimate it for point display
+        var i, d, d0, x, y, tol, xr, yr,
+            t = cd[0].t;
+        // don't try to do this for bubble, or multi-symbol charts... that's a can of worms.
+        if('ms' in cd[0] || 'mx' in cd[0]) { return cd; }
+
+        var sizeRef = t.msr || 1,
+            sizeFn = (t.msm=='area') ?
+                function(v){ return Math.sqrt(t/sizeRef); } :
+                function(v){ return v/sizeRef; };
+            msMin = sizeFn(((t.ms+1 || (d[0].t ? d[0].t.ms : 0)+1)-1)/2);
+        if(cd.length<10000) { msMin*=cd.length/10000; }
+        msMin = Math.max(msMin/3,1);
+
+        var covered = {},
+            newcd = [];
+        // add points backward, because these are on top (in case of
+        // slightly different positions, or different colors)
+        for(i=cd.length-1; i>=0; i--) {
+            d = cd[i];
+            x = xa.c2p(d.x);
+            y = ya.c2p(d.y);
+            tol = getTolerance(x,y,msMin);
+            xr = Math.round(tol*Math.round(x/tol));
+            yr = Math.round(tol*Math.round(y/tol));
+            if(!covered[yr]) { covered[yr] = {}; }
+            d0 = covered[yr][xr];
+            if(d0) { // already have a point here
+                if(d0.mo<1 || d0.fo<1) {
+                    d_c = d.mc || t.mc || (d.t ? d.t.mc : '');
+                    d_op = ((d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1) *
+                        Plotly.drawing.opacity(d_c);
+                    // TODO
+                }
+            }
+            else {
+                // save pixel positions so we don't have to calculate them again
+                d.xp = x;
+                d.yp = y;
+                // explicitly insert opacity so we can combine points reasonably
+                d.mo = (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1;
+                d.fo = Plotly.drawing.opacity(d.mc || t.mc || (d.t ? d.t.mc : ''));
+                covered[yr][xr] = d;
+                newcd.push(d);
+            }
+        }
+        return newcd.reverse();
+    }
+
+   scattertraces.append('g')
         .attr('class','points')
         .each(function(d){
             var t = d[0].t,
@@ -261,7 +315,7 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
             else {
                 if(showMarkers) {
                     s.selectAll('path')
-                        .data(Plotly.Lib.identity)
+                        .data(Plotly.Lib.identity)// TODO decimatePoints)
                         .enter().append('path')
                         .call(Plotly.Drawing.translatePoints,xa,ya);
                 }
