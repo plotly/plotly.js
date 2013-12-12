@@ -47,22 +47,22 @@ drawing.translatePoints = function(s,xa,ya){
     });
 };
 
-drawing.traceStyle = function(s,gd) {
-    var barcount = 0,
-        gl = gd.layout;
-    s.style('opacity',function(d){ return d[0].t.op; })
-    // first see if there would be bars to stack)
-    .each(function(d){ if(Plotly.Plots.isBar(d[0].t.type)) { barcount++; } })
-    // for gapless (either stacked or neighboring grouped) bars use crispEdges
-    // to turn off antialiasing so an artificial gap isn't introduced.
-    .each(function(d){
-        if(Plotly.Plots.isBar(d[0].t.type) &&
-          ((gl.barmode=='stack' && barcount>1) ||
-          (gl.bargap===0 && gl.bargroupgap===0 && !d[0].t.mlw))){
-            d3.select(this).attr('shape-rendering','crispEdges');
-        }
-    });
-};
+// drawing.traceStyle = function(s,gd) {
+//     var barcount = 0,
+//         gl = gd.layout;
+//     s.style('opacity',function(d){ return d[0].t.op; })
+//     // first see if there would be bars to stack)
+//     .each(function(d){ if(Plotly.Plots.isBar(d[0].t.type)) { barcount++; } })
+//     // for gapless (either stacked or neighboring grouped) bars use crispEdges
+//     // to turn off antialiasing so an artificial gap isn't introduced.
+//     .each(function(d){
+//         if(Plotly.Plots.isBar(d[0].t.type) &&
+//           ((gl.barmode=='stack' && barcount>1) ||
+//           (gl.bargap===0 && gl.bargroupgap===0 && !d[0].t.mlw))){
+//             d3.select(this).attr('shape-rendering','crispEdges');
+//         }
+//     });
+// };
 
 drawing.lineGroupStyle = function(s) {
     s.attr('stroke-width',function(d){ return d[0].t.lw; })
@@ -139,8 +139,8 @@ drawing.pointStyle = function(s,t) {
         .style('opacity',function(d){ return (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1; });
     }
     // allow all marker and marker line colors to be scaled by given max and min to colorscales
-    var colorscales = {m:tryColorscale(t,'m'), ml:tryColorscale(t,'ml'),
-                so:tryColorscale(t,'so'), sol:tryColorscale(t,'sol')};
+    var colorscales = {m: drawing.tryColorscale(t,'m'), ml: drawing.tryColorscale(t,'ml'),
+                so: drawing.tryColorscale(t,'so'), sol: drawing.tryColorscale(t,'sol')};
     s.each(function(d){
         var a = (d.so) ? 'so' : 'm', // suggested outliers, for box plots
             lw = a+'lw', c = a+'c', lc = a+'lc',
@@ -155,7 +155,7 @@ drawing.pointStyle = function(s,t) {
 // for a given color attribute (ie m -> mc = marker.color) look to see if we
 // have a colorscale for it (ie mscl, mcmin, mcmax) - if we do, translate all
 // numeric color values according to that scale
-function tryColorscale(t,attr) {
+drawing.tryColorscale = function(t,attr) {
     var s;
     if((attr+'scl') in t && (attr+'cmin') in t && (attr+'cmax') in t) {
         var scl = t[attr+'scl'],
@@ -174,7 +174,7 @@ function tryColorscale(t,attr) {
         return function(v){ return $.isNumeric(v) ? s(v) : v; };
     }
     else { return Plotly.Lib.identity; }
-}
+};
 
 // draw text at points
 var TEXTOFFSETSIGN = {start:1,end:-1,middle:0,bottom:1,top:-1};

@@ -24,10 +24,13 @@ scatter.calc = function(gd,gdc) {
     }
 
     var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
-        ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
-        x = Plotly.Axes.convertOne(gdc,'x',xa),
-        y = Plotly.Axes.convertOne(gdc,'y',ya),
-        serieslen = Math.min(x.length,y.length);
+        ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y');
+    Plotly.Lib.markTime('in Scatter.calc');
+    var x = Plotly.Axes.convertOne(gdc,'x',xa);
+    Plotly.Lib.markTime('finished convert x');
+    var y = Plotly.Axes.convertOne(gdc,'y',ya);
+    Plotly.Lib.markTime('finished convert y');
+    var serieslen = Math.min(x.length,y.length);
 
     // cancel minimum tick spacings (only applies to bars and boxes)
     xa._minDtick = 0;
@@ -72,8 +75,11 @@ scatter.calc = function(gd,gdc) {
         yOptions.padded = false;
     }
 
+    Plotly.Lib.markTime('ready for Axes.expand');
     Plotly.Axes.expand(xa, x, xOptions);
+    Plotly.Lib.markTime('done expand x');
     Plotly.Axes.expand(ya, y, yOptions);
+    Plotly.Lib.markTime('done expand y');
 
     // create the "calculated data" to plot
     for(i=0;i<serieslen;i++) {
@@ -268,5 +274,24 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
             }
         });
 };
+
+scatter.style = function(s) {
+    s.style('opacity',function(d){ return d[0].t.op; });
+
+    s.selectAll('g.points')
+        .each(function(d){
+            d3.select(this).selectAll('path')
+                .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
+            d3.select(this).selectAll('text')
+                .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
+        });
+
+    s.selectAll('g.trace path.js-line')
+        .call(Plotly.Drawing.lineGroupStyle);
+
+    s.selectAll('g.trace path.js-fill')
+        .call(Plotly.Drawing.fillGroupStyle);
+};
+
 
 }()); // end Scatter object definition

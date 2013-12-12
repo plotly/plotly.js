@@ -148,9 +148,10 @@ Plotly.colorscales = {
         [0.375,"rgb(65, 171, 93)"],[0.5,"rgb(116, 196, 118)"],[0.625,"rgb(161, 217, 155)"],
         [0.75,"rgb(199, 233, 192)"],[0.875,"rgb(229, 245, 224)"],[1,"rgb(247, 252, 245)"]],
 
-    'rainbow':[[0,"rgb(0, 0, 150)"],[0.125,"rgb(0, 25, 255)"],[0.25,"rgb(0, 152, 255)"],
-        [0.375,"rgb(44, 255, 202)"],[0.5,"rgb(151, 255, 96)"],[0.625,"rgb(255, 234, 0)"],
-        [0.75,"rgb(255, 111, 0)"],[0.875,"rgb(223, 0, 0)"],[1,"rgb(132, 0, 0)"]],
+    'rainbow':[[0,"rgb(128,0,38)"],[0.1,"rgb(0, 0, 150)"],[0.2,"rgb(0, 25, 255)"],
+        [0.3,"rgb(0, 152, 255)"],[0.4,"rgb(44, 255, 202)"],[0.5,"rgb(151, 255, 96)"],
+        [0.6,"rgb(255, 234, 0)"],[0.7,"rgb(255, 111, 0)"],[0.8,"rgb(223, 0, 0)"],
+        [0.9,"rgb(132, 0, 0)"],[1,"rgb(128,0,38)"]],
 
     'portland':[[0,"rgb(12,51,131)"],[0.25,"rgb(10,136,186)"],[0.5,"rgb(242,211,56)"],
                 [0.75,"rgb(242,143,56)"],[1,"rgb(217,30,30)"]],
@@ -182,15 +183,15 @@ Plotly.defaultColorscale = Plotly.colorscales.YIGnBu;
         else { console.log('addStyleRule failed'); }
     }
 
-    function pct(v){ return String(Math.round((1-v)*100))+'%';}
+    function pct(v){ return String(Math.round((1-v[0])*100))+'%';}
 
     for(var scaleName in Plotly.colorscales) {
         var scale = Plotly.colorscales[scaleName],
             list1 = '', // color1 0%, color2 12%, ...
             list2 = ''; // color-stop(0%,color1), color-stop(12%,color2) ...
         for(var i=scale.length-1; i>=0; i--) {
-            list1 += ', '+scale[i][1]+' '+pct(scale[i][0]);
-            list2 += ', color-stop('+pct(scale[i][0])+','+scale[i][1]+')';
+            list1 += ', '+scale[i][1]+' '+pct(scale[i]);
+            list2 += ', color-stop('+pct(scale[i])+','+scale[i][1]+')';
         }
         var rule =
             // old browsers with no supported gradients - shouldn't matter to us
@@ -356,7 +357,6 @@ plots.positionBrand = function(gd){
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
 Plotly.plot = function(gd, data, layout) {
-    console.timeEnd('DisplayPlot');
 //    console.log('plotly.plot', gd, data, layout);
     Plotly.Lib.markTime('in plot');
     // Get the container div: we will store all variables for this plot as
@@ -446,63 +446,70 @@ Plotly.plot = function(gd, data, layout) {
 
     // prepare the data and find the autorange
     // TODO: only remake calcdata for new or changed traces
-    gd.calcdata=[];
+    // gd.calcdata=[];
     gd.hmpixcount=0; // for calculating avg luminosity of heatmaps
     gd.hmlumcount=0;
 
     Plotly.Lib.markTime('done Plotly.Axes.setType');
 
-    for(var curve in gd.data) {
-        var gdc = gd.data[curve], // curve is the index, gdc is the data object for one trace
-            curvetype = gdc.type || 'scatter', //default type is scatter
-            typeinfo = graphInfo[curvetype],
-            cdtextras = {}; // info (if anything) to add to cd[0].t
-        cd = [];
+    // generate calcdata, if we need to
+    // to force redoing calcdata, just delete it and call plot
+    if(!gd.calcdata || gd.calcdata.length!=(gd.data||[]).length) {
+        gd.calcdata = [];
+        for(var curve in gd.data) {
+            var gdc = gd.data[curve], // curve is the index, gdc is the data object for one trace
+                curvetype = gdc.type || 'scatter', //default type is scatter
+                typeinfo = graphInfo[curvetype],
+                cdtextras = {}; // info (if anything) to add to cd[0].t
+            cd = [];
 
-        if(typeinfo.framework!=gd.framework) {
-            console.log('Oops, tried to put data of type '+(gdc.type || 'scatter')+
-                ' on an incompatible graph controlled by '+(gd.data[0].type || 'scatter')+
-                ' data. Ignoring this dataset.');
-            continue;
-        }
-
-        // if no name is given, make a default from the curve number
-        if(!('name' in gdc)) {
-            if('ysrc' in gdc) {
-                var ns=gdc.ysrc.split('/');
-                gdc.name=ns[ns.length-1].replace(/\n/g,' ');
+            if(typeinfo.framework!=gd.framework) {
+                console.log('Oops, tried to put data of type '+(gdc.type || 'scatter')+
+                    ' on an incompatible graph controlled by '+(gd.data[0].type || 'scatter')+
+                    ' data. Ignoring this dataset.');
+                gd.calcdata.push([{x:false, y:false}]);
+                continue;
             }
-            else { gdc.name='trace '+curve; }
+
+            // if no name is given, make a default from the curve number
+            if(!('name' in gdc)) {
+                if('ysrc' in gdc) {
+                    var ns=gdc.ysrc.split('/');
+                    gdc.name=ns[ns.length-1].replace(/\n/g,' ');
+                }
+                else { gdc.name='trace '+curve; }
+            }
+
+            if (curvetype=='scatter') { cd = Plotly.Scatter.calc(gd,gdc); }
+            else if (plots.isBar(curvetype)) {
+                if(curvetype=='bar') { cd = Plotly.Bars.calc(gd,gdc); }
+                else { cd = Plotly.Histogram.calc(gd,gdc); }
+            }
+            else if (plots.isHeatmap(curvetype)){ cd = Plotly.Heatmap.calc(gd,gdc); }
+            else if (curvetype=='box') { cd = Plotly.Boxes.calc(gd,gdc); }
+
+            if(!('line' in gdc)) gdc.line = {};
+            if(!('marker' in gdc)) gdc.marker = {};
+            if(!('line' in gdc.marker)) gdc.marker.line = {};
+            if(!('textfont' in gdc)) gdc.textfont = {};
+            if(!$.isArray(cd) || !cd[0]) { cd = [{x: false, y: false}]; } // make sure there is a first point
+
+            // add the trace-wide properties to the first point, per point properties to every point
+            // t is the holder for trace-wide properties
+            if(!cd[0].t) { cd[0].t = {}; }
+            cd[0].t.curve = curve; // store the gd.data curve number that gave this trace
+            cd[0].t.cdcurve = gd.calcdata.length; // store the calcdata curve number we're in - should be the same
+
+            gd.calcdata.push(cd);
+            Plotly.Lib.markTime('done with calcdata for '+curve);
         }
-
-        if (curvetype=='scatter') { cd = Plotly.Scatter.calc(gd,gdc); }
-        else if (plots.isBar(curvetype)) {
-            if(curvetype=='bar') { cd = Plotly.Bars.calc(gd,gdc); }
-            else { cd = Plotly.Histogram.calc(gd,gdc); }
-        }
-        else if (plots.isHeatmap(curvetype)){ cd = Plotly.Heatmap.calc(gd,gdc); }
-        else if (curvetype=='box') { cd = Plotly.Boxes.calc(gd,gdc); }
-
-        if(!('line' in gdc)) gdc.line = {};
-        if(!('marker' in gdc)) gdc.marker = {};
-        if(!('line' in gdc.marker)) gdc.marker.line = {};
-        if(!('textfont' in gdc)) gdc.textfont = {};
-        if(!$.isArray(cd) || !cd[0]) { cd = [{x: false, y: false}]; } // make sure there is a first point
-
-        // add the trace-wide properties to the first point, per point properties to every point
-        // t is the holder for trace-wide properties
-        if(!cd[0].t) { cd[0].t = {}; }
-        cd[0].t.curve = curve; // store the gd.data curve number that gave this trace
-        cd[0].t.cdcurve = gd.calcdata.length; // store the calcdata curve number we're in
-
-        gd.calcdata.push(cd);
-        Plotly.Lib.markTime('done with calcdata for '+curve);
     }
 
     // put the styling info into the calculated traces
     // has to be done separate from applyStyles so we know the mode (ie which objects to draw)
     // and has to be before stacking so we get bardir, type, visible
     plots.setStyles(gd);
+    Plotly.Lib.markTime('done with setstyles');
 
     // position and range calculations for traces that depend on each other
     // ie bars (stacked or grouped) and boxes push each other out of the way
@@ -512,7 +519,7 @@ Plotly.plot = function(gd, data, layout) {
         Plotly.Boxes.setPositions(gd,plotinfo);
     });
 
-    Plotly.Lib.markTime('done with setstyles and bar/box adjustments');
+    Plotly.Lib.markTime('done with bar/box adjustments');
 
     // autorange for errorbars
     Plotly.Axes.list(gd,'y')
@@ -535,7 +542,7 @@ Plotly.plot = function(gd, data, layout) {
         }
     });
     if(!axesOK) {
-        Plotly.lib.notifier('Something went wrong with axis scaling','long');
+        Plotly.Lib.notifier('Something went wrong with axis scaling','long');
         return;
     }
 
@@ -710,7 +717,9 @@ plots.setStyles = function(gd, merge_dflt) {
                 if(cd.length<Plotly.Scatter.PTS_LINESONLY || (typeof gdc.mode != 'undefined')) {
                     defaultMode = 'lines+markers';
                 }
-                else { // check whether there are orphan points, then show markers regardless of length
+                // check whether there are orphan points, then show markers by default
+                // regardless of length - but only if <10000 points
+                else if(cd.length<10000) {
                     for(j=0; j<cd.length; j++) {
                         if($.isNumeric(cd[j].x) && $.isNumeric(cd[j].y) &&
                           (j===0 || !$.isNumeric(cd[j-1].x) || !$.isNumeric(cd[j-1].y)) &&
@@ -797,26 +806,12 @@ plots.setStyles = function(gd, merge_dflt) {
 function applyStyle(gd) {
     Plotly.Plots.getSubplots(gd).forEach(function(subplot) {
         var gp = gd.layout._plots[subplot].plot;
-        gp.selectAll('g.trace')
-            .call(Plotly.Drawing.traceStyle,gd);
-        gp.selectAll('g.points')
-            .each(function(d){
-                d3.select(this).selectAll('path,rect')
-                    .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
-                d3.select(this).selectAll('text')
-                    .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
-            });
 
-        gp.selectAll('g.trace path.js-line')
-            .call(Plotly.Drawing.lineGroupStyle);
-
-        gp.selectAll('g.trace path.js-fill')
-            .call(Plotly.Drawing.fillGroupStyle);
-
-        gp.selectAll('g.boxes')
-            .call(Plotly.Boxes.style);
-        gp.selectAll('g.errorbars')
-            .call(Plotly.ErrorBars.style);
+        gp.selectAll('g.trace.bars').call(Plotly.Bars.style, gd);
+        gp.selectAll('g.trace.scatter').call(Plotly.Scatter.style);
+        gp.selectAll('g.trace.boxes').call(Plotly.Boxes.style);
+        gp.selectAll('g.errorbars').call(Plotly.ErrorBars.style);
+        gp.selectAll('image').call(Plotly.Heatmap.style);
     });
 
     if(gd.mainsite && window.ws && window.ws.confirmedReady) {
@@ -862,26 +857,34 @@ Plotly.restyle = function(gd,astr,val,traces) {
         traces=gd.data.map(function(v,i){ return i; });
     }
 
-    // need to replot (not just restyle) if mode or visibility changes, because
-    // the right objects don't exist. Also heatmaps, error bars, histos, and
-    // boxes all make some changes that need a replot
-    // TODO: many of these don't need to redo calcdata, should split that out too
-    // (though first check how much of our time is spent there...)
-    // and in principle we generally shouldn't need to redo ALL traces... that's
+    // TODO: I'm not entirely sure of the breakdown between recalc, autorange, and replot...
+
+    // recalc_attr attributes need a full regeneration of calcdata as well as a replot,
+    // because the right objects may not exist, or autorange may need recalculating
+    // in principle we generally shouldn't need to redo ALL traces... that's
     // harder though.
-    var replot_attr=[
-        'mode','visible','type','bardir','fill','histnorm',
-        'marker.size','text','textfont.size','textposition',
-        'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis','connectgaps','line.width',
-        'zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth','showscale',
-        'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array','error_y.width',
+    var recalc_attr = [
+        'mode','visible','type','bardir','fill','histnorm','text',
+        'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis','line.width','showscale',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
-        'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
+        'autobiny','nbinsy','ybins.start','ybins.end','ybins.size'
+    ];
+    // autorange_attr attributes need a full redo of calcdata only if an axis is autoranged,
+    // because .calc() is where the autorange gets determined
+    // TODO: could we break this out as well?
+    var autorange_attr = [
+        'marker.size','textfont.size','textposition','error_y.width',
+        'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array',
         'boxpoints','jitter','pointpos','whiskerwidth','boxmean'
+    ];
+    // replot_attr attributes need a replot (because different objects need to be made) but not a recalc
+    var replot_attr = [
+        'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth'
     ];
     // these ones show up in restyle because they make more sense in the style
     // box, but they're graph-wide attributes, so set in gd.layout
     // also axis scales and range show up here because we may need to undo them
+    // these all trigger a recalc
     var layout_attr = [
         'barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap',
         '?axis.autorange','?axis.range'
@@ -889,7 +892,9 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // these ones may alter the axis type (at least if the first trace is involved)
     var axtype_attr = ['type','x','y','x0','y0','bardir','xaxis','yaxis'];
     // flags for which kind of update we need to do
-    var doplot = false,
+    var docalc = false,
+        docalc_autorange = false,
+        doplot = false,
         dolayout = false,
         doapplystyle = false;
     // copies of the change (and previous values of anything affected) for the
@@ -942,7 +947,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
             param.set($.isArray(vi) ? vi[0] : vi);
             // ironically, the layout attrs in restyle only require replot,
             // not relayout
-            doplot = true;
+            docalc = true;
             continue;
         }
 
@@ -977,7 +982,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         // check if we need to call axis type
         if((traces.indexOf(0)!=-1) && (axtype_attr.indexOf(ai)!=-1)) {
             gd.axtypesok=false;
-            doplot = true;
+            docalc = true;
         }
 
         // switching from auto to manual binning or z scaling doesn't actually
@@ -987,7 +992,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
             doapplystyle = true;
         }
 
-        if(replot_attr.indexOf(ai)!=-1) {
+        if(recalc_attr.indexOf(ai)!=-1) {
             // major enough changes deserve autoscale, autobin, and non-reversed
             // axes so people don't get confused
             if(['bardir','type'].indexOf(ai)!=-1) {
@@ -1006,11 +1011,18 @@ Plotly.restyle = function(gd,astr,val,traces) {
             }
             // if we need to change margin for a heatmap, force a relayout first so we don't plot twice
             if(Plotly.Heatmap.margin(gd)) { dolayout = true; }
-            else { doplot = true; }
+            else { docalc = true; }
         }
+        else if(replot_attr.indexOf(ai)!=-1) { doplot = true; }
+        else if(autorange_attr.indexOf(ai)!=-1) { docalc_autorange = true; }
     }
     // now all attribute mods are done, as are redo and undo so we can save them
     if(typeof plotUndoQueue == 'function') { plotUndoQueue(gd,undoit,redoit,traces); }
+
+    // do we need to force a recalc?
+    var autorange_on = false;
+    Plotly.Axes.list(gd).forEach(function(ax){ if(ax.autorange) { autorange_on = true; } });
+    if(docalc || dolayout || (docalc_autorange && autorange_on)) { gd.calcdata = undefined; }
 
     // now update the graphics
     // a complete layout redraw takes care of plot and
@@ -1018,7 +1030,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         gd.layout = undefined;
         Plotly.plot(gd,'',gl);
     }
-    else if(doplot) { Plotly.plot(gd); }
+    else if(docalc || doplot || docalc_autorange) { Plotly.plot(gd); }
     else {
         plots.setStyles(gd);
         if(doapplystyle) {
@@ -1044,7 +1056,8 @@ Plotly.relayout = function(gd,astr,val) {
         dolegend = false,
         doticks = false,
         dolayoutstyle = false,
-        doplot = false;
+        doplot = false,
+        docalc = false;
 
     if(typeof astr == 'string') { aobj[astr] = val; }
     else if($.isPlainObject(astr)) { aobj = astr; }
@@ -1143,7 +1156,8 @@ Plotly.relayout = function(gd,astr,val) {
         // handle axis reversal explicitly, as there's no 'reverse' flag
         if(p.parts[1]=='reverse') {
             gl[p.parts[0]].range.reverse();
-            doplot=true;
+            if(gl[p.parts[0]].autorange) { docalc = true; }
+            else { doplot = true; }
         }
         // send annotation mods one-by-one through Annotations.draw(), don't set via nestedProperty
         // that's because add and remove are special
@@ -1166,7 +1180,7 @@ Plotly.relayout = function(gd,astr,val) {
             if((annAutorange(anni,'x') || annAutorange(anni,'y')) &&
                 anum>=0 && (anum>=anns.length || anni.ref=='plot') &&
                 ai.indexOf('color')==-1 && ai.indexOf('opacity')==-1) {
-                    doplot = true;
+                    docalc = true;
             }
             Plotly.Annotations.draw(gd,anum,p.parts.slice(2).join('.'),aobj[ai]);
             delete aobj[ai];
@@ -1192,9 +1206,15 @@ Plotly.relayout = function(gd,astr,val) {
                 doticks = dolayoutstyle = true;
             }
             else if(ai=='margin.pad') { doticks = dolayoutstyle = true; }
+            else if(p.parts[0]=='margin' ||
+                p.parts[1]=='autorange' ||
+                ai.match(/^(bar|box|font)/)) { docalc = true; }
             // hovermode and dragmode don't need any redrawing, since they just
             // affect reaction to user input. everything else, assume full replot.
-            else if(['hovermode','dragmode'].indexOf(ai)==-1) { doplot = true; }
+            // height, width, autosize get dealt with below
+            else if(['hovermode','dragmode','height','width','autosize'].indexOf(ai)==-1) {
+                doplot = true;
+            }
             p.set(vi);
         }
     }
@@ -1205,12 +1225,14 @@ Plotly.relayout = function(gd,astr,val) {
 
     // calculate autosizing - if size hasn't changed, will remove h&w so we don't need to redraw
     if(aobj.autosize) { aobj=plotAutoSize(gd,aobj); }
+    if(aobj.height || aobj.width || aobj.autosize) { docalc = true; }
 
     // redraw
     // first check if there's still anything to do
     var ak = Object.keys(aobj);
-    if(doplot) {
-        gd.layout = undefined; // force plot() to redo the
+    if(doplot||docalc) {
+        gd.layout = undefined; // force plot() to redo the layout
+        if(docalc) { gd.calcdata = undefined; } // force it to redo calcdata
         Plotly.plot(gd,'',gl); // pass in the modified layout
     }
     else if(ak.length) {
@@ -1306,6 +1328,7 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
+    console.timeEnd('DisplayPlot');
 
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
@@ -1704,7 +1727,7 @@ plots.titles = function(gd,title) {
         var titleEl = this
             .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
             .attr(options)
-            .call(d3.plugly.convertToTspans)
+            .call(d3.plugin.convertToTspans)
             .attr(options);
         titleEl.selectAll('tspan.line')
             .attr(options);
@@ -1763,11 +1786,11 @@ plots.titles = function(gd,title) {
     if(!txt) setPlaceholder();
 
     if(gd.mainsite){ // don't allow editing on embedded graphs
-        el.call(d3.plugly.makeEditable)
+        el.call(d3.plugin.makeEditable)
             .on('edit', function(text){
                 this
                     .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
-                    .call(d3.plugly.convertToTspans)
+                    .call(d3.plugin.convertToTspans)
                     .attr(options)
                     .selectAll('tspan.line')
                     .attr(options);

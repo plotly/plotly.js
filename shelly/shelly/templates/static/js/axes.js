@@ -175,10 +175,13 @@ function setType(ax){
 // dates as non-dates, to exclude cases with mostly 2 & 4 digit
 // numbers and a few dates
 function moreDates(a) {
-    var dcnt=0, ncnt=0;
-    for(var i in a) {
-        if(Plotly.Lib.isDateTime(a[i])) { dcnt+=1; }
-        if($.isNumeric(a[i])) { ncnt+=1; }
+    var dcnt=0, ncnt=0,
+        inc = Math.max(1,(a.length-1)/1000), // test at most 1000 points, evenly spaced
+        ir;
+    for(var i=0; i<a.length; i+=inc) {
+        ir = Math.round(i);
+        if(Plotly.Lib.isDateTime(a[ir])) { dcnt+=1; }
+        if($.isNumeric(a[ir])) { ncnt+=1; }
     }
     return (dcnt>ncnt*2);
 }
@@ -188,14 +191,19 @@ function moreDates(a) {
 // then it should have a range max/min of at least 100
 // and at least 1/4 of distinct values < max/10
 function loggy(d,ax) {
-    var vals = [],v,c,i;
-    var ax2 = (ax=='x') ? 'y' : 'x';
+    var vals = [],v,c,i,ir,
+        ax2 = (ax=='x') ? 'y' : 'x',
+        inc = 0;
+    d.forEach(function(c) { inc+=(c.length-1)/1000; });
+    inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
+
     for(var curve in d){
         c=d[curve];
         // curve has data: test each numeric point for <=0 and add if unique
         if(ax in c) {
-            for(i in c[ax]) {
-                v=c[ax][i];
+            for(i=0; i<c[ax].length-0.5; i+=inc) {
+                ir = Math.round(i);
+                v=c[ax][ir];
                 if($.isNumeric(v)){
                     if(v<=0) { return false; }
                     else if(vals.indexOf(v)<0) { vals.push(v); }
@@ -205,8 +213,8 @@ function loggy(d,ax) {
         // curve has linear scaling: test endpoints for <=0 and add all points if unique
         else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
             if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) { return false; }
-            for(i in d[curve][ax2]) {
-                v=c[ax+'0']+c['d'+ax]*i;
+            for(i=0; i<c[ax2].length-0.5; i+=inc) {
+                v=c[ax+'0']+c['d'+ax]*Math.round(i);
                 if(vals.indexOf(v)<0) { vals.push(v); }
             }
         }
@@ -220,16 +228,18 @@ function loggy(d,ax) {
 // JP edit 10.8.2013: strip $, %, and quote characters via axes.cleanDatum
 function category(d,ax) {
     function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1; }
-    var catcount=0,numcount=0;
+    var catcount=0,
+        numcount=0,
+        inc = 0;
+    d.forEach(function(c) { inc+=(c.length-1)/1000; });
+    inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
+
     d.forEach(function(c){
         // curve has data: test each point for non-numeric text
         if(ax in c) {
             var curvenums=0,curvecats=0;
-            for(var i in c[ax]) {
-                var vi = c[ax][i];
-                Plotly.Lib.log( 'unclean', vi );
-                vi = axes.cleanDatum( vi );
-                Plotly.Lib.log( 'clean', vi );
+            for(i=0; i<c[ax].length; i+=inc) {
+                var vi = axes.cleanDatum(c[ax][Math.round(i)]);
                 if(vi && isStr(vi)){ curvecats++; }
                 else if($.isNumeric(vi)){ curvenums++; }
             }
@@ -456,41 +466,24 @@ axes.expand = function(ax,data,options) {
     var len = data.length,
         extrappad = options.padded ? ax._length*0.05 : 0,
         tozero = options.tozero && (ax.type=='linear' || ax.type=='-'),
-        i,j,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
+        i,j,v,di,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
 
     function getPad(item) {
         if($.isArray(item)) { return function(i) { return Math.max(Number(item[i]||0),0); }; }
         else { var v = Math.max(Number(item||0),0); return function(){ return v; }; }
     }
-    var ppad = getPad(options.ppad),
-        ppadplus = getPad(ax._m>0 ? options.ppadplus : options.ppadminus),
-        ppadminus = getPad(ax._m>0 ? options.ppadminus : options.ppadplus),
-        vpad = getPad(options.vpad),
-        vpadplus = getPad(options.vpadplus),
-        vpadminus = getPad(options.vpadminus);
-
-    function minfilter(v) {
-        if(!includeThis) { return true; }
-        if(v.val<=dmin && v.pad>=ppadiminus) { includeThis = false; }
-        else if(v.val>=dmin && v.pad<=ppadiminus) { return false; }
-        return true;
-    }
-
-    function maxfilter(v) {
-        if(!includeThis) { return true; }
-        if(v.val>=dmax && v.pad>=ppadiplus) { includeThis = false; }
-        else if(v.val<=dmax && v.pad<=ppadiplus) { return false; }
-        return true;
-    }
+    var ppadplus = getPad(((ax._m>0 ? options.ppadplus : options.ppadminus)||options.ppad||0)),
+        ppadminus = getPad(((ax._m>0 ? options.ppadminus : options.ppadplus)||options.ppad||0)),
+        vpadplus = getPad(options.vpadplus||options.vpad),
+        vpadminus = getPad(options.vpadminus||options.vpad);
 
     for(i=0; i<len; i++) {
-        if(!$.isNumeric(data[i])) { continue; }
-        ppadi = ppad(i);
-        ppadiplus = (ppadplus(i)||ppadi) + extrappad;
-        ppadiminus = (ppadminus(i)||ppadi) + extrappad;
-        vpadi = vpad(i);
-        vmin = data[i]-(vpadminus(i)||vpadi);
-        vmax = data[i]+(vpadplus(i)||vpadi);
+        di = data[i];
+        if(!$.isNumeric(di)) { continue; }
+        ppadiplus = ppadplus(i) + extrappad;
+        ppadiminus = ppadminus(i) + extrappad;
+        vmin = di-vpadminus(i);
+        vmax = di+vpadplus(i);
         // special case for log axes: if vpad makes this object span more than an
         // order of mag, clip it to one order. This is so we don't have non-positive
         // errors or absurdly large lower range due to rounding errors
@@ -504,7 +497,14 @@ axes.expand = function(ax,data,options) {
 
         if($.isNumeric(dmin)) {
             includeThis = true;
-            ax._min = ax._min.filter(minfilter);
+            // take items v from ax._min and compare them to the presently active point:
+            // - if the item supercedes the new point, set includethis false
+            // - if the new point supercedes the item, delete it from the ax._min
+            for(j=0; j<ax._min.length && includeThis; j++) {
+                v = ax._min[j];
+                if(v.val<=dmin && v.pad>=ppadiminus) { includeThis = false; }
+                else if(v.val>=dmin && v.pad<=ppadiminus) { ax._min.splice(j,1); j--; }
+            }
             if(includeThis) {
                 ax._min.push({val:dmin, pad:(tozero && dmin===0) ? 0 : ppadiminus});
             }
@@ -512,7 +512,11 @@ axes.expand = function(ax,data,options) {
 
         if($.isNumeric(dmax)) {
             includeThis = true;
-            ax._max = ax._max.filter(maxfilter);
+            for(j=0; j<ax._max.length && includeThis; j++) {
+                v = ax._max[j];
+                if(v.val>=dmax && v.pad>=ppadiplus) { includeThis = false; }
+                else if(v.val<=dmax && v.pad<=ppadiplus) { ax._max.splice(j,1); j--; }
+            }
             if(includeThis) {
                 ax._max.push({val:dmax, pad:(tozero && dmax===0) ? 0 : ppadiplus});
             }
@@ -1049,6 +1053,10 @@ axes.doTicks = function(td,axid) {
         });
         return;
     }
+
+    // make sure we only have allowed options for exponents (others can make confusing errors)
+    if(['none','e','E','power','SI','B'].indexOf(ax.exponentformat)==-1) { ax.exponentformat = 'e'; }
+    if(['all','first','last','none'].indexOf(ax.showexponent)==-1) { ax.showexponent = 'all'; }
 
     ax.range = ax.range.map(Number); // in case a val turns into string somehow
 

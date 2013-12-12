@@ -390,6 +390,7 @@ heatmap.plot = function(gd,plotinfo,cd) {
     gl._paper.selectAll('.'+id).remove(); // put this right before making the new image, to minimize flicker
     plotinfo.plot.append('svg:image')
         .classed(id,true)
+        .datum(cd[0])
         // .classed('pixelated',true) // we can hope pixelated works...
         .attr("xmlns","http://www.w3.org/2000/svg")
         .attr("xlink:xlink:href", imgstr) // odd d3 quirk, need namespace twice
@@ -405,6 +406,10 @@ heatmap.plot = function(gd,plotinfo,cd) {
     gl._infolayer.selectAll('.'+cb_id).remove();
     if(t.showscale!==false){ insert_colorbar(gd,cd, cb_id, scl); }
     Plotly.Lib.markTime('done colorbar');
+};
+
+heatmap.style = function(s) {
+    s.attr('opacity',function(d){ console.log(d); return d.t.op; });
 };
 
 // in order to avoid unnecessary redraws, check for heatmaps with colorscales
