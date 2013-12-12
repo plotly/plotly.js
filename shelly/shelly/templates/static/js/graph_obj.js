@@ -357,7 +357,6 @@ plots.positionBrand = function(gd){
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
 Plotly.plot = function(gd, data, layout) {
-    console.timeEnd('DisplayPlot');
 //    console.log('plotly.plot', gd, data, layout);
     Plotly.Lib.markTime('in plot');
     // Get the container div: we will store all variables for this plot as
@@ -1329,6 +1328,7 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
+    console.timeEnd('DisplayPlot');
 
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
