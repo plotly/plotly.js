@@ -14,22 +14,29 @@ function req(module, methods) {
     for(var i=0; i<methods.length; i++) { moduleFill[methods[i]] = noop; }
     window.Plotly[module] = moduleFill;
 }
-req('Annotations',['add','allArrowheads','draw','drawAll']);
-req('Axes',['setTypes','convertOne','convertToNums','setConvert','doAutoRange','expand',
-    'autoBin','autoTicks','tickIncrement','tickFirst','tickText','doTicks']);
-req('Bars',['calc','plot','setPositions']);
-req('Boxes',['calc','plot','setPositions','style']);
-req('Drawing',['rgb','opacity','addOpacity','strokeColor','fillColor','setPosition','setSize',
-    'setRect','translatePoints','traceStyle','lineGroupStyle','fillGroupStyle','pointStyle','styleText']);
-req('ErrorBars',['pushRef2GDC','styleBoxDrop','ydr','plot','style']);
-req('Fx',['init','hover','unhover','click','modeBar','dragAlign','dragCursors','dragClear','autoGrowInput']);
-req('Heatmap',['calc','plot','margin']);
+req('Annotations',["drawAll", "add", "draw", "allArrowheads", "calcAutorange"]);
+req('Axes',["defaultAxis", "clearTypes", "setTypes", "initAxis", "id2name", "name2id",
+    "counterLetter", "convertOne", "convertToNums", "cleanDatum", "setConvert",
+    "minDtick", "doAutoRange", "expand", "autoBin", "autoTicks", "tickIncrement",
+    "tickFirst", "tickText", "list", "getFromId", "doTicks"]);
+req('Bars',["calc", "setPositions", "plot", "style"]);
+req('Boxes',["calc", "setPositions", "plot", "style"]);
+req('Drawing',["rgb", "opacity", "addOpacity", "strokeColor", "fillColor", "font",
+    "setPosition", "setSize", "setRect", "translatePoints", "lineGroupStyle",
+    "fillGroupStyle", "pointStyle", "tryColorscale", "textPointStyle", "styleText"]);
+req('ErrorBars',["pushRef2GDC", "styleBoxDrop", "ydr", "plot", "style"]);
+req('Fx',["DBLCLICKDELAY", "MINDRAG", "init", "MAXDIST", "hover", "unhover", "click",
+    "modeBar", "dragAlign", "dragCursors", "dragClear", "autoGrowInput", "setCursor"]);
+req('Heatmap',["calc", "plot", "style", "margin"]);
 req('Histogram',['calc']);
-req('Legend',['lines','points','bars','boxes','draw']);
-req('Lib',['dateTime2ms','isDateTime','ms2DateTime','findBin','distinctVals','nestedProperty',
-    'pauseEvent','lpad','aggNums','len','mean','stdev','VERBOSE','TIMER','log','markTime','constrain',
-    'notifier','identity']);
-req('Scatter',['calc','plot']);
+req('Legend',["lines", "points", "bars", "boxes", "style", "texts", "draw",
+    "repositionLegend"]);
+req('Lib',["dateTime2ms", "isDateTime", "ms2DateTime", "parseDate", "findBin",
+    "distinctVals", "nestedProperty", "pauseEvent", "lpad", "aggNums", "len", "mean",
+    "stdev", "VERBOSE", "TIMER", "log", "markTime", "constrain", "killspin", "startspin",
+    "notifier", "conf_modal", "bBoxIntersect", "identity", "num2ordinal", "ppn",
+    "togglecontent", "plotlyurl", "randstr"]);
+req('Scatter',["PTS_LINESONLY", "calc", "plot", "style"]);
 
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
