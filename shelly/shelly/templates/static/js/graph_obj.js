@@ -132,38 +132,52 @@ plots.defaultColors = ['#1f77b4', // muted blue
                 '#17becf']; // blue-teal
 
 Plotly.colorscales = {
+    'Greys':[[0,"rgb(0,0,0)"],[1,"rgb(255,255,255)"]],
+
     'YIGnBu':[[0,"rgb(8, 29, 88)"],[0.125,"rgb(37, 52, 148)"],[0.25,"rgb(34, 94, 168)"],
         [0.375,"rgb(29, 145, 192)"],[0.5,"rgb(65, 182, 196)"],[0.625,"rgb(127, 205, 187)"],
         [0.75,"rgb(199, 233, 180)"],[0.875,"rgb(237, 248, 217)"],[1,"rgb(255, 255, 217)"]],
-
-    'YIOrRd':[[0,"rgb(128, 0, 38)"],[0.125,"rgb(189, 0, 38)"],[0.25,"rgb(227, 26, 28)"],
-        [0.375,"rgb(252, 78, 42)"],[0.5,"rgb(253, 141, 60)"],[0.625,"rgb(254, 178, 76)"],
-        [0.75,"rgb(254, 217, 118)"],[0.875,"rgb(255, 237, 160)"],[1,"rgb(255, 255, 204)"]],
-
-    'RdBu':[[0,"rgb(33, 102, 172)"],[0.125,"rgb(67, 147, 195)"],[0.25,"rgb(146, 197, 222)"],
-        [0.375,"rgb(209, 229, 240)"],[0.5,"rgb(247, 247, 247)"],[0.625,"rgb(253, 219, 199)"],
-        [0.75,"rgb(244, 165, 130)"],[0.875,"rgb(214, 96, 77)"],[1,"rgb(178, 24, 43)"]],
 
     'Greens':[[0,"rgb(0, 68, 27)"],[0.125,"rgb(0, 109, 44)"],[0.25,"rgb(35, 139, 69)"],
         [0.375,"rgb(65, 171, 93)"],[0.5,"rgb(116, 196, 118)"],[0.625,"rgb(161, 217, 155)"],
         [0.75,"rgb(199, 233, 192)"],[0.875,"rgb(229, 245, 224)"],[1,"rgb(247, 252, 245)"]],
 
-    'rainbow':[[0,"rgb(128,0,38)"],[0.1,"rgb(0, 0, 150)"],[0.2,"rgb(0, 25, 255)"],
-        [0.3,"rgb(0, 152, 255)"],[0.4,"rgb(44, 255, 202)"],[0.5,"rgb(151, 255, 96)"],
-        [0.6,"rgb(255, 234, 0)"],[0.7,"rgb(255, 111, 0)"],[0.8,"rgb(223, 0, 0)"],
-        [0.9,"rgb(132, 0, 0)"],[1,"rgb(128,0,38)"]],
+    'YIOrRd':[[0,"rgb(128, 0, 38)"],[0.125,"rgb(189, 0, 38)"],[0.25,"rgb(227, 26, 28)"],
+        [0.375,"rgb(252, 78, 42)"],[0.5,"rgb(253, 141, 60)"],[0.625,"rgb(254, 178, 76)"],
+        [0.75,"rgb(254, 217, 118)"],[0.875,"rgb(255, 237, 160)"],[1,"rgb(255, 255, 204)"]],
 
-    'portland':[[0,"rgb(12,51,131)"],[0.25,"rgb(10,136,186)"],[0.5,"rgb(242,211,56)"],
-                [0.75,"rgb(242,143,56)"],[1,"rgb(217,30,30)"]],
+    'Bluered':[[0,"rgb(0,0,255)"],[1,"rgb(255,0,0)"]],
 
-    'picnic':[[0,"rgb(0,0,255)"],[0.1,"rgb(51,153,255)"],[0.2,"rgb(102,204,255)"],
-                [0.3,"rgb(153,204,255)"],[0.4,"rgb(204,204,255)"],[0.5,"rgb(255,255,255)"],
-                [0.6,"rgb(255,204,255)"],[0.7,"rgb(255,153,255)"],[0.8,"rgb(255,102,204)"],
-                [0.9,"rgb(255,102,102)"],[1,"rgb(255,0,0)"]],
+    'RdBu':[[0,"rgb(33, 102, 172)"],[0.125,"rgb(67, 147, 195)"],[0.25,"rgb(146, 197, 222)"],
+        [0.375,"rgb(209, 229, 240)"],[0.5,"rgb(247, 247, 247)"],[0.625,"rgb(253, 219, 199)"],
+        [0.75,"rgb(244, 165, 130)"],[0.875,"rgb(214, 96, 77)"],[1,"rgb(178, 24, 43)"]],
 
-    'greys':[[0,"rgb(0,0,0)"],[1,"rgb(255,255,255)"]],
+    'Picnic':[[0,"rgb(0,0,255)"],[0.1,"rgb(51,153,255)"],[0.2,"rgb(102,204,255)"],
+        [0.3,"rgb(153,204,255)"],[0.4,"rgb(204,204,255)"],[0.5,"rgb(255,255,255)"],
+        [0.6,"rgb(255,204,255)"],[0.7,"rgb(255,153,255)"],[0.8,"rgb(255,102,204)"],
+        [0.9,"rgb(255,102,102)"],[1,"rgb(255,0,0)"]],
 
-    'bluered':[[0,"rgb(0,0,255)"],[1,"rgb(255,0,0)"]] };
+    'Rainbow':[[0,"rgb(150,0,90)"],[0.125,"rgb(0, 0, 200)"],[0.25,"rgb(0, 25, 255)"],
+        [0.375,"rgb(0, 152, 255)"],[0.5,"rgb(44, 255, 150)"],[0.625,"rgb(151, 255, 0)"],
+        [0.75,"rgb(255, 234, 0)"],[0.875,"rgb(255, 111, 0)"],[1,"rgb(255, 0, 0)"]],
+
+    'Portland':[[0,"rgb(12,51,131)"],[0.25,"rgb(10,136,186)"],[0.5,"rgb(242,211,56)"],
+        [0.75,"rgb(242,143,56)"],[1,"rgb(217,30,30)"]],
+
+    'Jet':[[0,"rgb(0,0,131)"],[0.125,"rgb(0,60,170)"],[0.375,"rgb(5,255,255)"],
+        [0.625,"rgb(255,255,0)"],[0.875,"rgb(250,0,0)"],[1,"rgb(128,0,0)"]],
+
+    'Hot':[[0,"rgb(0,0,0)"],[0.3,"rgb(230,0,0)"],[0.6,"rgb(255,210,0)"],[1,"rgb(255,255,255)"]],
+
+    'Blackbody':[[0,"rgb(0,0,0)"],[0.2,"rgb(230,0,0)"],[0.4,"rgb(230,210,0)"],
+        [0.7,"rgb(255,255,255)"],[1,"rgb(160,200,255)"]],
+
+    'Earth':[[0,"rgb(0,0,130)"],[0.1,"rgb(0,180,180)"],[0.2,"rgb(40,210,40)"],
+        [0.4,"rgb(230,230,50)"],[0.6,"rgb(120,70,20)"],[1,"rgb(255,255,255)"]],
+
+    'Electric':[[0,"rgb(0,0,0)"],[0.15,"rgb(30,0,100)"],[0.4,"rgb(120,0,100)"],
+        [0.6,"rgb(160,90,0)"],[0.8,"rgb(230,200,0)"],[1,"rgb(255,250,220)"]]
+};
 
 Plotly.defaultColorscale = Plotly.colorscales.YIGnBu;
 
@@ -357,7 +371,6 @@ plots.positionBrand = function(gd){
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
 Plotly.plot = function(gd, data, layout) {
-    console.timeEnd('DisplayPlot');
 //    console.log('plotly.plot', gd, data, layout);
     Plotly.Lib.markTime('in plot');
     // Get the container div: we will store all variables for this plot as
@@ -455,7 +468,8 @@ Plotly.plot = function(gd, data, layout) {
 
     // generate calcdata, if we need to
     // to force redoing calcdata, just delete it and call plot
-    if(!gd.calcdata || gd.calcdata.length!=(gd.data||[]).length) {
+    var recalc = (!gd.calcdata || gd.calcdata.length!=(gd.data||[]).length);
+    if(recalc) {
         gd.calcdata = [];
         for(var curve in gd.data) {
             var gdc = gd.data[curve], // curve is the index, gdc is the data object for one trace
@@ -512,41 +526,42 @@ Plotly.plot = function(gd, data, layout) {
     plots.setStyles(gd);
     Plotly.Lib.markTime('done with setstyles');
 
-    // position and range calculations for traces that depend on each other
-    // ie bars (stacked or grouped) and boxes push each other out of the way
-    Plotly.Plots.getSubplots(gd).forEach(function(subplot) {
-        var plotinfo = gd.layout._plots[subplot];
-        Plotly.Bars.setPositions(gd,plotinfo);
-        Plotly.Boxes.setPositions(gd,plotinfo);
-    });
-
-    Plotly.Lib.markTime('done with bar/box adjustments');
-
-    // autorange for errorbars
-    Plotly.Axes.list(gd,'y')
-        .filter(function(ya){ return ya.autorange; })
-        .forEach(function(ya) {
-            Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd,ya),{padded:true});
+    if(recalc) {
+        // position and range calculations for traces that depend on each other
+        // ie bars (stacked or grouped) and boxes push each other out of the way
+        Plotly.Plots.getSubplots(gd).forEach(function(subplot) {
+            var plotinfo = gd.layout._plots[subplot];
+            Plotly.Bars.setPositions(gd,plotinfo);
+            Plotly.Boxes.setPositions(gd,plotinfo);
         });
-    Plotly.Lib.markTime('done Plotly.ErrorBars.ydr');
 
-    // autorange for annotations
-    Plotly.Annotations.calcAutorange(gd);
-    // TODO: autosize extra for text markers
+        Plotly.Lib.markTime('done with bar/box adjustments');
 
-    var axesOK = true;
-    Plotly.Axes.list(gd).forEach(function(ax) {
-        Plotly.Axes.doAutoRange(ax);
-        if(!$.isNumeric(ax._m) || !$.isNumeric(ax._b)) {
-            axesOK = false;
-            console.log('error with axis scaling',ax);
+        // autorange for errorbars
+        Plotly.Axes.list(gd,'y')
+            .filter(function(ya){ return ya.autorange; })
+            .forEach(function(ya) {
+                Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd,ya),{padded:true});
+            });
+        Plotly.Lib.markTime('done Plotly.ErrorBars.ydr');
+
+        // autorange for annotations
+        Plotly.Annotations.calcAutorange(gd);
+        // TODO: autosize extra for text markers
+
+        var axesOK = true;
+        Plotly.Axes.list(gd).forEach(function(ax) {
+            Plotly.Axes.doAutoRange(ax);
+            if(!$.isNumeric(ax._m) || !$.isNumeric(ax._b)) {
+                axesOK = false;
+                console.log('error with axis scaling',ax);
+            }
+        });
+        if(!axesOK) {
+            Plotly.Lib.notifier('Something went wrong with axis scaling','long');
+            return;
         }
-    });
-    if(!axesOK) {
-        Plotly.Lib.notifier('Something went wrong with axis scaling','long');
-        return;
     }
-
     Plotly.Axes.doTicks(gd,'redraw'); // draw ticks, titles, and calculate axis scaling (._b, ._m)
 
     Plotly.Lib.markTime('done autorange and ticks');
@@ -1329,6 +1344,7 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
+    console.timeEnd('DisplayPlot');
 
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
