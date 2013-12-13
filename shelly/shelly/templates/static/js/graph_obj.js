@@ -336,7 +336,7 @@ function updateTraces(old_data, new_data) {
 plots.positionBrand = function(gd){
     $(gd).find('.link-to-tool').remove();
     var $linkToTool = $('<div class="link-to-tool">'+
-        '<a href="#" class="link--impt">view in plotly</a>'+
+        '<a href="#" class="link--impt link--embedview">data and graph &raquo;</a>'+
         '</div>').appendTo(gd.layout._paperdiv.node());
     if(gd.shareplot) {
         var path=window.location.pathname.split('/');
