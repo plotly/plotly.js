@@ -409,7 +409,7 @@ heatmap.plot = function(gd,plotinfo,cd) {
 };
 
 heatmap.style = function(s) {
-    s.attr('opacity',function(d){ console.log(d); return d.t.op; });
+    s.attr('opacity',function(d){ return d.t.op; });
 };
 
 // in order to avoid unnecessary redraws, check for heatmaps with colorscales
