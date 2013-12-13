@@ -121,7 +121,8 @@ bars.setPositions = function(gd,plotinfo) {
 
 bars.plot = function(gd,plotinfo,cdbar) {
     var xa = plotinfo.x,
-        ya = plotinfo.y;
+        ya = plotinfo.y,
+        gl = gd.layout;
     // make the container for scatter plots (so error bars can find them along with bars)
     var bartraces = plotinfo.plot.selectAll('g.trace.bars') // <-- select trace group
         .data(cdbar)
@@ -161,9 +162,19 @@ bars.plot = function(gd,plotinfo,cdbar) {
                     }
                     var lw = (di.mlw+1 || t.mlw+1 || (di.t ? di.t.mlw : 0)+1)-1,
                         offset = d3.round((lw/2)%1,2);
-                    function roundWithLine(v) { return d3.round(Math.round(v)-offset,2); }
-                    function expandToVisible(v,vc) { return v>vc ? Math.ceil(v) : Math.floor(v); }
-                    if(!gd.layout._forexport) {
+                    function roundWithLine(v) {
+                        // if there are explicit gaps, don't round, it can make the gaps look crappy
+                        return (gl.bargap===0 && gl.bargroupgap===0) ?
+                            d3.round(Math.round(v)-offset,2) : v;
+                    }
+                    function expandToVisible(v,vc) {
+                        // if it's not in danger of disappearing entirely, round more precisely
+                        return Math.abs(v-vc)>=2 ? roundWithLine(v) :
+                        // but if it's very thin, expand it so it's necessarily visible,
+                        // even if it might overlap its neighbor
+                        (v>vc ? Math.ceil(v) : Math.floor(v));
+                    }
+                    if(!gl._forexport) {
                         // if bars are not fully opaque or they have a line around them, round to integer
                         // pixels, mainly for safari so we prevent overlaps from its expansive pixelation.
                         // if the bars ARE fully opaque and have no line, expand to a full pixel to make
