@@ -38,7 +38,8 @@ drawing.setRect = function(s,x,y,w,h) { s.call(drawing.setPosition,x,y).call(dra
 
 drawing.translatePoints = function(s,xa,ya){
     s.each(function(d){
-        var x = xa.c2p(d.x), y = ya.c2p(d.y), p = d3.select(this);
+        // put xp and yp into d if pixel scaling is already done
+        var x = d.xp || xa.c2p(d.x), y = d.yp || ya.c2p(d.y), p = d3.select(this);
         if($.isNumeric(x) && $.isNumeric(y)) {
             if(this.nodeName=='text') { p.attr('x',x).attr('y',y); } // for multiline text this works better
             else { p.attr('transform','translate('+x+','+y+')'); }
