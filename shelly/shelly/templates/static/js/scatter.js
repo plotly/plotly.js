@@ -99,6 +99,14 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
         .attr('class','trace scatter')
         .style('stroke-miterlimit',2);
 
+    // used by both line and point decimation to determine how close two points
+    // need to be to be grouped
+    function getTolerance(x,y,w) {
+        return (0.75 + 10*Math.max(0,
+            Math.max(-x,x-xa._length)/xa._length,
+            Math.max(-y,y-ya._length)/ya._length)) * Math.max(w||1, 1);
+    }
+
     // BUILD LINES AND FILLS
     var prevpts='',tozero,tonext,nexttonext;
     scattertraces.each(function(d){ // <-- now, iterate through arrays of {x,y} objects
@@ -191,9 +199,7 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
                 // figure out the decimation tolerance - on-plot has one value, then it increases as you
                 // get farther off-plot. the value is in pixels, and is based on the line width, which
                 // means we need to replot if we change the line width
-                decimationTolerance = (0.75 + 10*Math.max(0,
-                    Math.max(-pti[0],pti[0]-xa._length)/xa._length,
-                    Math.max(-pti[1],pti[1]-ya._length)/ya._length)) * Math.max(t.lw||1, 1);
+                decimationTolerance = getTolerance(pti[0],pti[1],t.lw);
                 // if the last move was too much for decimation, see if we're starting a new decimation block
                 if(decimationMode<0) {
                     // first look for very near x values (decimationMode=0), then near y values (decimationMode=1)
@@ -250,6 +256,101 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
     scattertraces.selectAll('path:not([d])').remove();
 
     // BUILD SCATTER POINTS
+    // decimate all the scatter traces in this subplot together
+    // commented out for now because it doesn't help much if at all, and may have unintended consequences
+    // var newcds = cdscatter.slice(),
+    //     covered = {},
+    //     cd, newcd, i, j, d, d0, x, y, tol, xr, yr, t, d_c, d_op, d0_c, d0_op, cf0, cf;
+    // // find the minimum point size
+    // var msMin = gd.layout._size.w,
+    //     totalPts = 0, sizeFn, ms, maList = [];
+    // function arearef(v,r) { return Math.sqrt(t/r); }
+    // function lenref(v,r) { return v/r; }
+    // for(i=0; i<cdscatter.length; i++) {
+    //     cd = cdscatter[i];
+    //     t = cd[0].t;
+    //     if(t.mode.indexOf('markers')==-1 || t.visible===false ||
+    //         'ms' in cd[0] || 'mx' in cd[0]) { continue; }
+
+    //     sizeFn = (t.msm=='area') ? arearef : lenref;
+    //     ms = sizeFn(t.ms/2, t.msr||1);
+    //     maList.push(ms*ms); // save the relative marker area for each trace
+    //     totalPts += cd.length;
+    //     msMin = Math.max(ms/3,1);
+    // }
+    // // now do the decimation
+    // if(totalPts>2000) { // too few points to matter
+    //     // if(totalPts<10000) { msMin*=totalPts/10000; } // intermediate - do less decimation
+    //     // start from the last scatter trace and work backward - because the last one is on top
+    //     for(i=newcds.length-1; i>=0; i--) {
+    //         cd = cdscatter[i];
+    //         t = cd[0].t;
+    //         // are there visible markers? also don't try to do this for bubble
+    //         // or multi-symbol charts... that's a can of worms.
+    //         if(t.mode.indexOf('markers')==-1 || t.visible===false ||
+    //             'ms' in cd[0] || 'mx' in cd[0]) { continue; }
+    //         newcd = [];
+    //         // like traces, start from the last point and work backward
+    //         for(j=cd.length-1; j>=0; j--) {
+    //             d = $.extend({},cd[j]);
+    //             x = xa.c2p(d.x);
+    //             y = ya.c2p(d.y);
+    //             tol = getTolerance(x,y,msMin);
+    //             xr = Math.round(tol*Math.round(x/tol));
+    //             yr = Math.round(tol*Math.round(y/tol));
+    //             if(!covered[yr]) { covered[yr] = {}; }
+    //             d0 = covered[yr][xr];
+    //             if(d0 && maList[i]<=maList[d0.i]) {
+    //                 // already have a point here (d0) that's no bigger than the new one
+    //                 // but if this point is transparent, we need to alter it
+    //                 if(d0.mo<1 || d0.fo<1) {
+    //                     // color of the new point
+    //                     d_c = tinycolor(d.mc || t.mc || (d.t ? d.t.mc : '')).toRgb();
+    //                     // total opacity of the new point, including marker, fill, and size scaling
+    //                     d_op = ((d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1) *
+    //                         d_c.a * maList[i]/maList[d0.i];
+    //                     // don't try to do anything if the new point is nearly transparent
+    //                     if(d_op<0.001) { continue; }
+    //                     // new total opacity for d0
+    //                     d0_op = 1-(1-d0.mo*d0.fo)*(1-d_op);
+    //                     d0_c = tinycolor(d0.mc).toRgb();
+    //                     // first apply new color to the marker fill, then to marker opacity if we need more
+    //                     d0_c.a = d0_op/d0.mo;
+    //                     if(d0_c.a>1) { d0_c.a=1; d0.mo = d0_op; }
+    //                     // fraction of color to come from each marker
+    //                     cf0 = 1/(1+d_op*(1/d0_op-1));
+    //                     cf = 1-cf0;
+    //                     // now make the new marker fill color
+    //                     d0_c.r = Math.round(cf0*d0_c.r+cf*d_c.r);
+    //                     d0_c.g = Math.round(cf0*d0_c.g+cf*d_c.g);
+    //                     d0_c.b = Math.round(cf0*d0_c.b+cf*d_c.b);
+    //                     d0.mc = 'rgba('+d0_c.r+','+d0_c.g+','+d0_c.b+','+d0_c.a+')';
+    //                 }
+    //             }
+    //             else {
+    //                 // this point gets included
+    //                 d0 = $.extend({},d,{
+    //                     // save pixel positions so we don't have to calculate them again
+    //                     xp: x,
+    //                     yp: y,
+    //                     // indclude color explicitly so we don't have to do it later
+    //                     mc: d.mc || t.mc || (d.t ? d.t.mc : ''),
+    //                     // explicitly insert opacity so we can combine points easily
+    //                     mo: ((d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1),
+    //                     fo: Plotly.Drawing.opacity(d_c),
+    //                     // curve number, so we can get its marker size
+    //                     i: i
+    //                 });
+    //                 covered[yr][xr] = d0;
+    //                 newcd.push(d0);
+    //             }
+    //         }
+    //         newcds[i] = newcd.reverse();
+    //         // put trace-wide properties in here explicitly, in case the first point is deleted
+    //         newcds[i][0].t = t;
+    //     }
+    // }
+
     scattertraces.append('g')
         .attr('class','points')
         .each(function(d){
@@ -264,10 +365,16 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
                         .data(Plotly.Lib.identity)
                         .enter().append('path')
                         .call(Plotly.Drawing.translatePoints,xa,ya);
+                    // decimated version commented out for now
+                    // var pts = s.selectAll('path')
+                    //     .data(function(d,i) { return newcds[i]; });
+                    // pts.enter().append('path')
+                    //     .call(Plotly.Drawing.translatePoints,xa,ya);
+                    // pts.exit().remove();
                 }
                 if(showText) {
                     s.selectAll('text')
-                        .data(Plotly.Lib.identity)
+                        .data(Plotly.Lib.identity) // not going to try to decimate text...
                         .enter().append('text')
                         .call(Plotly.Drawing.translatePoints,xa,ya);
                 }

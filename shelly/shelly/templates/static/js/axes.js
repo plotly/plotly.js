@@ -14,7 +14,6 @@ axes.defaultAxis = function(extras) {
         showgrid:true,gridcolor:'#ddd',gridwidth:1,
         autorange:true,rangemode:'normal',autotick:true,
         zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
-        // title: 'Click to enter axis title',unit:'',
         titlefont:{family:'',size:0,color:''},
         tickfont:{family:'',size:0,color:''},
         overlaying:false, // anchor, side we leave out for now as the defaults are different for x and y
@@ -22,6 +21,18 @@ axes.defaultAxis = function(extras) {
     },extras);
 };
 // TODO: add label positioning
+
+// empty out types for all axes containing these traces so we auto-set them again
+axes.clearTypes = function(gd, traces) {
+    if(!$.isArray(traces) || !traces.length) {
+        traces = (gd.data||[]).map(function(d,i) { return i; });
+    }
+    traces.forEach(function(tracenum) {
+        var d = gd.data[i];
+        axes.getFromId(gd,d.xaxis||'x').type = '-';
+        axes.getFromId(gd,d.yaxis||'y').type = '-';
+    });
+};
 
 // setTypes: figure out axis types (linear, log, date, category...)
 // if td.axtypesok is true, we can skip this.
@@ -54,9 +65,8 @@ axes.setTypes = function(td) {
     // initialize them all
     axlist.forEach(function(ax){ axes.initAxis(td,ax); });
     // check for type changes
-    if(td.data && td.data.length && td.axtypesok!==true){
+    if(td.data && td.data.length){
         axlist.forEach(setType);
-        td.axtypesok=true;
     }
     // prepare the conversion functions
     axlist.forEach(axes.setConvert);
@@ -132,8 +142,12 @@ function setType(ax){
 
     // delete category list, if there is one, so we start over
     // to be filled in later by convertToNums
-    ax.categories = []; // obsolete (new one is private)
+    delete ax.categories; // obsolete (new one is private)
     ax._categories = [];
+
+    // new logic: let people specify any type they want,
+    // only run the auto-setters if type is missing or '-'
+    if(ax.type && ax.type!='-') { return; }
 
     // guess at axis type with the new property format
     // first check for histograms, as they can change the axis types
@@ -145,7 +159,7 @@ function setType(ax){
     if(hist) {
         if(axletter=='y') {
             // always numeric data in the histogram size direction
-            if(ax.type!='log') { ax.type='linear'; }
+            ax.type='linear';
             return;
         }
         else {
@@ -165,8 +179,8 @@ function setType(ax){
             ax.type='date';
     }
     else if(category(data,axletter)) { ax.type='category'; }
-    else if(loggy(data,axletter) && ax.type!='linear') { ax.type='log'; }
-    else if(ax.type!='log') { ax.type='linear'; }
+    // else if(loggy(data,axletter)) { ax.type='log'; } // sadly this has never been popular...
+    else { ax.type='linear'; }
 }
 
 // does the array a have mostly dates rather than numbers?
@@ -281,7 +295,11 @@ axes.convertOne = function(tdc,data,ax) {
 axes.convertToNums = function(o,ax){
     // find the conversion function
     var fn;
-    if(ax.type=='date') { fn = Plotly.Lib.dateTime2ms; }
+    if(ax.type=='date') {
+        // if we've got actual numbers (not numeric strings) but we've explicitly
+        // chosen date axis type, treat them as unix timestamps
+        fn = function(v){ return (typeof v=='number') ? v : Plotly.Lib.dateTime2ms(v); };
+    }
     else if(ax.type=='category') {
         // create the category list
         // this will enter the categories in the order it encounters them,
