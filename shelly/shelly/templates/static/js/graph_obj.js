@@ -261,7 +261,8 @@ function defaultLayout(){
         font:{family:"'Open sans', verdana, arial, sans-serif",size:12,color:'#000'},
         titlefont:{family:'',size:0,color:''},
         dragmode:'zoom',
-        hovermode:'x'
+        hovermode:'x',
+        separators:'.,' // decimal then thousands
     };
 }
 
@@ -1761,7 +1762,7 @@ plots.titles = function(gd,title) {
             });
         }
 
-        if(avoid && avoid.selection && avoid.side){
+        if(avoid && avoid.selection && avoid.side && txt){
             // move toward side (avoid.side = left, right, top, bottom) if needed
             // can include pad (pixels, default 2)
             var shift = 0,

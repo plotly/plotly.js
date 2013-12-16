@@ -938,11 +938,19 @@ axes.tickText = function(ax, x, hover){
         tt=numFormat(x,ax,hideexp,hover);
     }
     // if 9's are printed on log scale, move the 10's away a bit
-    if((ax.dtick=='D1') && (String(tt).charAt(0)=='1')){
-        if(ax._id.charAt(0)=='y') px-=fontSize/4;
-        else py+=fontSize/3;
+    if((ax.dtick=='D1') && (['0','1'].indexOf(String(tt).charAt(0))!=-1)){
+        if(ax._id.charAt(0)=='y') { px-=fontSize/4; }
+        else {
+            py+=fontSize/2;
+            // if(x<0) {
+                px+=(ax.range[1]>ax.range[0] ? 1 : -1) * fontSize * (x<0 ? 0.5 : 0.25);
+            // }
+        }
     }
-    return {x:x, dx:px, dy:py, text:tt+suffix,
+    tt += suffix;
+    // replace standard minus character (which is technically a hyphen) with a true minus sign
+    if(ax.type!='category') { tt = tt.replace(/-/g,'\u2212'); }
+    return {x:x, dx:px, dy:py, text:tt,
         fontSize:fontSize, font:font, fontColor:fontColor};
 };
 
@@ -955,12 +963,7 @@ function numFormat(v,ax,fmtoverride,hover) {
     var n = (v<0), // negative?
         r = ax._tickround, // max number of digits past decimal point to show
         fmt = fmtoverride||ax.exponentformat||'e',
-        d = ax._tickexponent,
-        // separators - first char is decimal point,
-        // next char is thousands separator if there is one
-        separators = ax.separators||'.',
-        decimalpoint = separators.charAt(0),
-        thouSeparator = separators.charAt(1);
+        d = ax._tickexponent;
     // special case for hover: set exponent just for this value, and
     // add a couple more digits of precision over tick labels
     if(hover) {
@@ -1008,6 +1011,8 @@ function numFormat(v,ax,fmtoverride,hover) {
             var dp = v.indexOf('.')+1;
             if(dp) { v = v.substr(0,dp+r).replace(/\.?0+$/,''); }
         }
+        // insert appropriate decimal point and thousands separator
+        v = numSeparate(v,ax._td.layout.separators);
     }
 
     // add exponent
@@ -1023,6 +1028,24 @@ function numFormat(v,ax,fmtoverride,hover) {
     }
     // put sign back in and return
     return (n?'-':'')+v;
+}
+
+// add arbitrary decimal point and thousands separator
+var findThousands = /(\d+)(\d{3})/;
+function numSeparate(nStr, separators) {
+    // separators - first char is decimal point,
+    // next char is thousands separator if there is one
+    var dp = separators.charAt(0),
+        thou = separators.charAt(1),
+        x = nStr.split('.'),
+        x1 = x[0],
+        x2 = x.length > 1 ? dp + x[1] : '';
+    if(thou) {
+        while (findThousands.test(x1)) {
+            x1 = x1.replace(findThousands, '$1' + thou + '$2');
+        }
+    }
+    return x1 + x2;
 }
 
 // get all axis objects, optionally restricted to only x or y by string axletter
