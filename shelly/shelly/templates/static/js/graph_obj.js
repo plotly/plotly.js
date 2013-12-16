@@ -1761,7 +1761,7 @@ plots.titles = function(gd,title) {
             });
         }
 
-        if(avoid && avoid.selection && avoid.side){
+        if(avoid && avoid.selection && avoid.side && txt){
             // move toward side (avoid.side = left, right, top, bottom) if needed
             // can include pad (pixels, default 2)
             var shift = 0,
