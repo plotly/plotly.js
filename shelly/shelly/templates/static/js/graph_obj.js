@@ -261,7 +261,8 @@ function defaultLayout(){
         font:{family:"'Open sans', verdana, arial, sans-serif",size:12,color:'#000'},
         titlefont:{family:'',size:0,color:''},
         dragmode:'zoom',
-        hovermode:'x'
+        hovermode:'x',
+        separators:'.,' // decimal then thousands
     };
 }
 
