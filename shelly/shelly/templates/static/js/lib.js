@@ -3,7 +3,7 @@
 if(!window.Plotly) { window.Plotly = {}; }
 var lib = Plotly.Lib = {};
 
-// dateTime2ms - make string s of the form YYYY-mm-dd HH:MM:SS.sss
+// dateTime2ms - make a date object or string s of the form YYYY-mm-dd HH:MM:SS.sss
 // into milliseconds (relative to 1970-01-01, per javascript standard)
 // may truncate after any full field, and sss can be any length
 // even >3 digits, though javascript dates truncate to milliseconds
@@ -27,6 +27,10 @@ var lib = Plotly.Lib = {};
 // currently (2012) this range is:
 //   1942-2041
 lib.dateTime2ms = function(s) {
+    // first check if s is a date object
+    try { if(s.getTime) { return +s; } }
+    catch(e){ return false; }
+
     var y,m,d,h;
     // split date and time parts
     s=String(s).split(' ');

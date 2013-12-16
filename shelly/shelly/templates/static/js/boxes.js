@@ -204,17 +204,26 @@ boxes.plot = function(gd,plotinfo,cdbox) {
 };
 
 boxes.style = function(s) {
-    s.each(function(d){
-        var t = d[0].t;
-        d3.select(this).selectAll('path.box')
-            .attr('stroke-width',t.lw)
-            .call(Plotly.Drawing.strokeColor,t.lc)
-            .call(Plotly.Drawing.fillColor,t.fc);
-        d3.select(this).selectAll('path.mean')
-            .attr('stroke-width',t.lw)
-            .attr('stroke-dasharray',(2*t.lw)+','+(t.lw))
-            .call(Plotly.Drawing.strokeColor,t.lc);
-    });
+    s.style('opacity',function(d){ return d[0].t.op; })
+        .each(function(d){
+            var t = d[0].t;
+            d3.select(this).selectAll('path.box')
+                .attr('stroke-width',t.lw)
+                .call(Plotly.Drawing.strokeColor,t.lc)
+                .call(Plotly.Drawing.fillColor,t.fc);
+            d3.select(this).selectAll('path.mean')
+                .attr('stroke-width',t.lw)
+                .attr('stroke-dasharray',(2*t.lw)+','+(t.lw))
+                .call(Plotly.Drawing.strokeColor,t.lc);
+        })
+        .selectAll('g.points')
+            .each(function(d){
+                var t = d.t||d[0].t;
+                d3.select(this).selectAll('path')
+                    .call(Plotly.Drawing.pointStyle,t);
+                d3.select(this).selectAll('text')
+                    .call(Plotly.Drawing.textPointStyle,t);
+            });
 };
 
 // interpolate an array given a (possibly non-integer) index n
