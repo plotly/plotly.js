@@ -106,9 +106,13 @@ legend.style = function(s) {
 legend.texts = function(context, gd, d, i, traces){
     var gf = gd.layout.font,
         lf = gd.layout.legend.font;
-    var text = d3.select(context).append('text')
-        .attr({
-            'class': function(d){ return 'legendtext text-'+d[0].t.curve; },
+    var curve = d[0].t.curve;
+    var name = d[0].t.name;
+    var text = d3.select(context).selectAll('text')
+        .data([0]);
+    text.enter().append('text');
+    text.attr({
+            'class': function(){ return 'legendtext text-'+curve; },
             x: 40,
             y: 0
         })
@@ -119,14 +123,13 @@ legend.texts = function(context, gd, d, i, traces){
             fill: Plotly.Drawing.rgb(lf.color || gf.color || '#000'),
             'fill-opacity': Plotly.Drawing.opacity(lf.color || gf.color || '#000')
         })
-        .text(function(d, i){ return d[0].t.name; })
-        .attr({'data-unformatted': function(d, i){ return d[0].t.name; }});
+        .text(function(d, i){ return name; })
+        .attr({'data-unformatted': function(d, i){ return name; }});
 
     function textLayout(){
         var that = this;
-        d3.plugin.convertToTspans(this, function(d, i){
-            if(that.mathjaxRender){
-                delete that.mathjaxRender;
+        d3.plugin.convertToTspans(that, function(d, i){
+            if(gd.firstRender){
                 legend.repositionLegend(gd, traces);
             }
         });
@@ -140,7 +143,6 @@ legend.texts = function(context, gd, d, i, traces){
                 this.attr({'data-unformatted': text});
                 this.text(text)
                     .call(textLayout);
-                this.mathjaxRender = true;
                 if(this.text() === ''){
                     text = ' \u0020\u0020 ';
                 }
@@ -152,7 +154,6 @@ legend.texts = function(context, gd, d, i, traces){
             });
     }
     else{
-        text.mathjaxRender = true;
         text.call(textLayout);
     }
 };
@@ -162,12 +163,14 @@ legend.texts = function(context, gd, d, i, traces){
 // -----------------------------------------------------
 
 legend.draw = function(gd) {
+    if(typeof gd.firstRender === 'undefined') gd.firstRender = true;
+    else if(gd.firstRender) gd.firstRender = false;
+
     var gl=gd.layout, gm=gl.margin, i;
     if(!gl._infolayer) return;
     gl.showlegend = true;
     if(!gl.legend) { gl.legend={}; }
     var gll = gl.legend;
-    gl._infolayer.selectAll('.legend').remove();
     if(!gd.calcdata) { return; }
 
     var ldata = gd.calcdata
@@ -175,27 +178,31 @@ legend.draw = function(gd) {
         .map(function(cd) { return [cd[0]]; });
     if(gll.traceorder=='reversed') { ldata.reverse(); } // for stacked plots (bars, area) the legend items are often clearer reversed
 
-    gd.legend = gl._infolayer.append('svg')
+    gd.legend = gl._infolayer.selectAll('svg.legend')
+        .data([0]);
+    gd.legend.enter(0).append('svg')
         .attr('class','legend');
 
     var bordercolor = gll.bordercolor || '#000',
         borderwidth = gll.borderwidth || 1,
         bgcolor = gll.bgcolor || gl.paper_bgcolor || '#fff';
-    gd.legend.append('rect')
-        .attr({ 'class': 'bg'})
-        .style({
-            stroke: Plotly.Drawing.rgb(bordercolor),
-            'stroke-opacity': Plotly.Drawing.opacity(bordercolor),
-            fill: Plotly.Drawing.rgb(bgcolor),
-            'fill-opacity': Plotly.Drawing.opacity(bgcolor),
-            'stroke-width': borderwidth
-        });
+
+    var bgRect = gd.legend.selectAll('rect.bg')
+        .data([0]);
+    bgRect.enter(0).append('rect')
+        .attr('class','bg');
+    bgRect.style({
+        stroke: Plotly.Drawing.rgb(bordercolor),
+        'stroke-opacity': Plotly.Drawing.opacity(bordercolor),
+        fill: Plotly.Drawing.rgb(bgcolor),
+        'fill-opacity': Plotly.Drawing.opacity(bgcolor),
+        'stroke-width': borderwidth
+    });
 
     var traces = gd.legend.selectAll('g.traces')
         .data(ldata);
-    traces.enter().append('g').attr('class','trace');
-
-    traces.append('g').call(legend.style);
+    traces.enter().append('g').attr('class','traces');
+    traces.call(legend.style);
 
     traces.each(function(d, i){ legend.texts(this, gd, d, i, traces); });
 
@@ -272,6 +279,7 @@ legend.repositionLegend = function(gd, traces){
             g.remove();
             return;
         }
+        if(!t.node()) return;
         var tbb = t.node().getBoundingClientRect();
         if(!l.node()) { l=g.select('path'); }
         var lbb = (!l.node()) ? tbb : l.node().getBoundingClientRect();
