@@ -208,12 +208,11 @@ boxes.style = function(s) {
         .each(function(d){
             var t = d[0].t;
             d3.select(this).selectAll('path.box')
-                .attr('stroke-width',t.lw)
+                .style('stroke-width',t.lw+'px')
                 .call(Plotly.Drawing.strokeColor,t.lc)
                 .call(Plotly.Drawing.fillColor,t.fc);
             d3.select(this).selectAll('path.mean')
-                .attr('stroke-width',t.lw)
-                .attr('stroke-dasharray',(2*t.lw)+','+(t.lw))
+                .style({'stroke-width':t.lw, 'stroke-dasharray':(2*t.lw)+'px,'+(t.lw)+'px'})
                 .call(Plotly.Drawing.strokeColor,t.lc);
         })
         .selectAll('g.points')

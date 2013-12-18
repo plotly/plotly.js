@@ -211,17 +211,15 @@ bars.style = function(s,gd) {
         var t = d.t||d[0].t;
         d3.select(this).selectAll('path').each(function(d) {
             // allow all marker and marker line colors to be scaled by given max and min to colorscales
-            // d3.select(this).each(function(d){
-                var w = (d.mlw+1 || t.mlw+1 || (d.t ? d.t.mlw : 0)+1) - 1,
-                    p = d3.select(this);
-                p.attr('stroke-width',w)
-                    .call(Plotly.Drawing.fillColor,
-                        Plotly.Drawing.tryColorscale(t,'m')(d.mc || t.mc || (d.t ? d.t.mc : '')));
-                if(w) {
-                    p.call(Plotly.Drawing.strokeColor,
-                        Plotly.Drawing.tryColorscale(t,'ml')(d.mlc || t.mlc || (d.t ? d.t.mlc : '')));
-                }
-            // });
+            var w = (d.mlw+1 || t.mlw+1 || (d.t ? d.t.mlw : 0)+1) - 1,
+                p = d3.select(this);
+            p.style('stroke-width',w+'px')
+                .call(Plotly.Drawing.fillColor,
+                    Plotly.Drawing.tryColorscale(t,'m')(d.mc || t.mc || (d.t ? d.t.mc : '')));
+            if(w) {
+                p.call(Plotly.Drawing.strokeColor,
+                    Plotly.Drawing.tryColorscale(t,'ml')(d.mlc || t.mlc || (d.t ? d.t.mlc : '')));
+            }
         });
         // TODO: text markers on bars, either extra text or just bar values
         // d3.select(this).selectAll('text')
