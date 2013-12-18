@@ -14,7 +14,6 @@ axes.defaultAxis = function(extras) {
         showgrid:true,gridcolor:'#ddd',gridwidth:1,
         autorange:true,rangemode:'normal',autotick:true,
         zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
-        // title: 'Click to enter axis title',unit:'',
         titlefont:{family:'',size:0,color:''},
         tickfont:{family:'',size:0,color:''},
         overlaying:false, // anchor, side we leave out for now as the defaults are different for x and y
@@ -22,6 +21,18 @@ axes.defaultAxis = function(extras) {
     },extras);
 };
 // TODO: add label positioning
+
+// empty out types for all axes containing these traces so we auto-set them again
+axes.clearTypes = function(gd, traces) {
+    if(!$.isArray(traces) || !traces.length) {
+        traces = (gd.data||[]).map(function(d,i) { return i; });
+    }
+    traces.forEach(function(tracenum) {
+        var d = gd.data[i];
+        axes.getFromId(gd,d.xaxis||'x').type = '-';
+        axes.getFromId(gd,d.yaxis||'y').type = '-';
+    });
+};
 
 // setTypes: figure out axis types (linear, log, date, category...)
 // if td.axtypesok is true, we can skip this.
@@ -54,9 +65,8 @@ axes.setTypes = function(td) {
     // initialize them all
     axlist.forEach(function(ax){ axes.initAxis(td,ax); });
     // check for type changes
-    if(td.data && td.data.length && td.axtypesok!==true){
+    if(td.data && td.data.length){
         axlist.forEach(setType);
-        td.axtypesok=true;
     }
     // prepare the conversion functions
     axlist.forEach(axes.setConvert);
@@ -132,8 +142,12 @@ function setType(ax){
 
     // delete category list, if there is one, so we start over
     // to be filled in later by convertToNums
-    ax.categories = []; // obsolete (new one is private)
+    delete ax.categories; // obsolete (new one is private)
     ax._categories = [];
+
+    // new logic: let people specify any type they want,
+    // only run the auto-setters if type is missing or '-'
+    if(ax.type && ax.type!='-') { return; }
 
     // guess at axis type with the new property format
     // first check for histograms, as they can change the axis types
@@ -145,7 +159,7 @@ function setType(ax){
     if(hist) {
         if(axletter=='y') {
             // always numeric data in the histogram size direction
-            if(ax.type!='log') { ax.type='linear'; }
+            ax.type='linear';
             return;
         }
         else {
@@ -165,8 +179,8 @@ function setType(ax){
             ax.type='date';
     }
     else if(category(data,axletter)) { ax.type='category'; }
-    else if(loggy(data,axletter) && ax.type!='linear') { ax.type='log'; }
-    else if(ax.type!='log') { ax.type='linear'; }
+    // else if(loggy(data,axletter)) { ax.type='log'; } // sadly this has never been popular...
+    else { ax.type='linear'; }
 }
 
 // does the array a have mostly dates rather than numbers?
@@ -175,10 +189,13 @@ function setType(ax){
 // dates as non-dates, to exclude cases with mostly 2 & 4 digit
 // numbers and a few dates
 function moreDates(a) {
-    var dcnt=0, ncnt=0;
-    for(var i in a) {
-        if(Plotly.Lib.isDateTime(a[i])) { dcnt+=1; }
-        if($.isNumeric(a[i])) { ncnt+=1; }
+    var dcnt=0, ncnt=0,
+        inc = Math.max(1,(a.length-1)/1000), // test at most 1000 points, evenly spaced
+        ir;
+    for(var i=0; i<a.length; i+=inc) {
+        ir = Math.round(i);
+        if(Plotly.Lib.isDateTime(a[ir])) { dcnt+=1; }
+        if($.isNumeric(a[ir])) { ncnt+=1; }
     }
     return (dcnt>ncnt*2);
 }
@@ -188,14 +205,19 @@ function moreDates(a) {
 // then it should have a range max/min of at least 100
 // and at least 1/4 of distinct values < max/10
 function loggy(d,ax) {
-    var vals = [],v,c,i;
-    var ax2 = (ax=='x') ? 'y' : 'x';
+    var vals = [],v,c,i,ir,
+        ax2 = (ax=='x') ? 'y' : 'x',
+        inc = 0;
+    d.forEach(function(c) { inc+=(c.length-1)/1000; });
+    inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
+
     for(var curve in d){
         c=d[curve];
         // curve has data: test each numeric point for <=0 and add if unique
         if(ax in c) {
-            for(i in c[ax]) {
-                v=c[ax][i];
+            for(i=0; i<c[ax].length-0.5; i+=inc) {
+                ir = Math.round(i);
+                v=c[ax][ir];
                 if($.isNumeric(v)){
                     if(v<=0) { return false; }
                     else if(vals.indexOf(v)<0) { vals.push(v); }
@@ -205,8 +227,8 @@ function loggy(d,ax) {
         // curve has linear scaling: test endpoints for <=0 and add all points if unique
         else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
             if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) { return false; }
-            for(i in d[curve][ax2]) {
-                v=c[ax+'0']+c['d'+ax]*i;
+            for(i=0; i<c[ax2].length-0.5; i+=inc) {
+                v=c[ax+'0']+c['d'+ax]*Math.round(i);
                 if(vals.indexOf(v)<0) { vals.push(v); }
             }
         }
@@ -220,16 +242,18 @@ function loggy(d,ax) {
 // JP edit 10.8.2013: strip $, %, and quote characters via axes.cleanDatum
 function category(d,ax) {
     function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1; }
-    var catcount=0,numcount=0;
+    var catcount=0,
+        numcount=0,
+        inc = 0;
+    d.forEach(function(c) { inc+=(c.length-1)/1000; });
+    inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
+
     d.forEach(function(c){
         // curve has data: test each point for non-numeric text
         if(ax in c) {
             var curvenums=0,curvecats=0;
-            for(var i in c[ax]) {
-                var vi = c[ax][i];
-                Plotly.Lib.log( 'unclean', vi );
-                vi = axes.cleanDatum( vi );
-                Plotly.Lib.log( 'clean', vi );
+            for(i=0; i<c[ax].length; i+=inc) {
+                var vi = axes.cleanDatum(c[ax][Math.round(i)]);
                 if(vi && isStr(vi)){ curvecats++; }
                 else if($.isNumeric(vi)){ curvenums++; }
             }
@@ -271,7 +295,11 @@ axes.convertOne = function(tdc,data,ax) {
 axes.convertToNums = function(o,ax){
     // find the conversion function
     var fn;
-    if(ax.type=='date') { fn = Plotly.Lib.dateTime2ms; }
+    if(ax.type=='date') {
+        // if we've got actual numbers (not numeric strings) but we've explicitly
+        // chosen date axis type, treat them as unix timestamps
+        fn = function(v){ return (typeof v=='number') ? v : Plotly.Lib.dateTime2ms(v); };
+    }
     else if(ax.type=='category') {
         // create the category list
         // this will enter the categories in the order it encounters them,
@@ -331,17 +359,24 @@ axes.setConvert = function(ax) {
     ax.c2l = (ax.type=='log') ? toLog : num;
     ax.l2c = (ax.type=='log') ? fromLog : num;
 
-    ax.l2p = function(v) { return d3.round(ax._b+ax._m*v,2); };
+    // clipMult: how many axis lengths past the edge do we render?
+    // for panning, 1-2 would suffice, but for zooming more is nice.
+    // also, clipping can affect the direction of lines off the edge...
+    var clipMult = 10;
+
+    ax.l2p = function(v) {
+        return d3.round(Plotly.Lib.constrain(ax._b+ax._m*v, -clipMult*ax._length, (1+clipMult)*ax._length),2);
+    };
     ax.p2l = function(px) { return (px-ax._b)/ax._m; };
 
     ax.c2p = function(v,clip) {
         var va = ax.c2l(v);
         // include 2 fractional digits on pixel, for PDF zooming etc
         if($.isNumeric(va)) { return ax.l2p(va); }
-        // clip NaN (ie past negative infinity) to one axis length past the negative edge
+        // clip NaN (ie past negative infinity) to clipMult axis length past the negative edge
         if(clip && $.isNumeric(v)) {
             var r0 = ax.range[0], r1 = ax.range[1];
-            return ax.l2p(0.5*(r0+r1-3*Math.abs(r0-r1)));
+            return ax.l2p(0.5*(r0+r1-3*clipMult*Math.abs(r0-r1)));
         }
     };
     ax.p2c = function(px){ return ax.l2c(ax.p2l(px)); };
@@ -449,41 +484,24 @@ axes.expand = function(ax,data,options) {
     var len = data.length,
         extrappad = options.padded ? ax._length*0.05 : 0,
         tozero = options.tozero && (ax.type=='linear' || ax.type=='-'),
-        i,j,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
+        i,j,v,di,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
 
     function getPad(item) {
         if($.isArray(item)) { return function(i) { return Math.max(Number(item[i]||0),0); }; }
         else { var v = Math.max(Number(item||0),0); return function(){ return v; }; }
     }
-    var ppad = getPad(options.ppad),
-        ppadplus = getPad(ax._m>0 ? options.ppadplus : options.ppadminus),
-        ppadminus = getPad(ax._m>0 ? options.ppadminus : options.ppadplus),
-        vpad = getPad(options.vpad),
-        vpadplus = getPad(options.vpadplus),
-        vpadminus = getPad(options.vpadminus);
-
-    function minfilter(v) {
-        if(!includeThis) { return true; }
-        if(v.val<=dmin && v.pad>=ppadiminus) { includeThis = false; }
-        else if(v.val>=dmin && v.pad<=ppadiminus) { return false; }
-        return true;
-    }
-
-    function maxfilter(v) {
-        if(!includeThis) { return true; }
-        if(v.val>=dmax && v.pad>=ppadiplus) { includeThis = false; }
-        else if(v.val<=dmax && v.pad<=ppadiplus) { return false; }
-        return true;
-    }
+    var ppadplus = getPad(((ax._m>0 ? options.ppadplus : options.ppadminus)||options.ppad||0)),
+        ppadminus = getPad(((ax._m>0 ? options.ppadminus : options.ppadplus)||options.ppad||0)),
+        vpadplus = getPad(options.vpadplus||options.vpad),
+        vpadminus = getPad(options.vpadminus||options.vpad);
 
     for(i=0; i<len; i++) {
-        if(!$.isNumeric(data[i])) { continue; }
-        ppadi = ppad(i);
-        ppadiplus = (ppadplus(i)||ppadi) + extrappad;
-        ppadiminus = (ppadminus(i)||ppadi) + extrappad;
-        vpadi = vpad(i);
-        vmin = data[i]-(vpadminus(i)||vpadi);
-        vmax = data[i]+(vpadplus(i)||vpadi);
+        di = data[i];
+        if(!$.isNumeric(di)) { continue; }
+        ppadiplus = ppadplus(i) + extrappad;
+        ppadiminus = ppadminus(i) + extrappad;
+        vmin = di-vpadminus(i);
+        vmax = di+vpadplus(i);
         // special case for log axes: if vpad makes this object span more than an
         // order of mag, clip it to one order. This is so we don't have non-positive
         // errors or absurdly large lower range due to rounding errors
@@ -497,7 +515,14 @@ axes.expand = function(ax,data,options) {
 
         if($.isNumeric(dmin)) {
             includeThis = true;
-            ax._min = ax._min.filter(minfilter);
+            // take items v from ax._min and compare them to the presently active point:
+            // - if the item supercedes the new point, set includethis false
+            // - if the new point supercedes the item, delete it from the ax._min
+            for(j=0; j<ax._min.length && includeThis; j++) {
+                v = ax._min[j];
+                if(v.val<=dmin && v.pad>=ppadiminus) { includeThis = false; }
+                else if(v.val>=dmin && v.pad<=ppadiminus) { ax._min.splice(j,1); j--; }
+            }
             if(includeThis) {
                 ax._min.push({val:dmin, pad:(tozero && dmin===0) ? 0 : ppadiminus});
             }
@@ -505,7 +530,11 @@ axes.expand = function(ax,data,options) {
 
         if($.isNumeric(dmax)) {
             includeThis = true;
-            ax._max = ax._max.filter(maxfilter);
+            for(j=0; j<ax._max.length && includeThis; j++) {
+                v = ax._max[j];
+                if(v.val>=dmax && v.pad>=ppadiplus) { includeThis = false; }
+                else if(v.val<=dmax && v.pad<=ppadiplus) { ax._max.splice(j,1); j--; }
+            }
             if(includeThis) {
                 ax._max.push({val:dmax, pad:(tozero && dmax===0) ? 0 : ppadiplus});
             }
@@ -850,8 +879,10 @@ axes.tickText = function(ax, x, hover){
         py = 0,
         suffix = '', // completes the full date info, to be included with only the first tick
         tt,
-        hideexp = (!hover && ax.showexponent!='all' && ax.exponentformat!='none' &&
-            x!={first:ax._tmin,last:ax._tmax}[ax.showexponent]) ? 'hide' : false;
+        hideexp = ax.exponentformat!='none' && (hover ?
+            ax.showexponent=='none' :
+            (ax.showexponent!='all' && x!={first:ax._tmin,last:ax._tmax}[ax.showexponent]) );
+    if(hideexp) { hideexp = 'hide'; }
     if(ax.type=='date'){
         if(hover) {
             if($.isNumeric(tr)) { tr+=2; }
@@ -861,17 +892,17 @@ axes.tickText = function(ax, x, hover){
         if(tr=='y') { tt = yearFormat(d); }
         else if(tr=='m') { tt = monthFormat(d); }
         else {
-            if(x==ax._tmin) { suffix = '<br>'+yearFormat(d); }
+            if(x==ax._tmin && !hover) { suffix = '<br>'+yearFormat(d); }
 
             if(tr=='d') { tt = dayFormat(d); }
             else if(tr=='H') { tt = hourFormat(d); }
             else {
-                if(x==ax._tmin) { suffix = '<br>'+dayFormat(d)+', '+yearFormat(d); }
+                if(x==ax._tmin && !hover) { suffix = '<br>'+dayFormat(d)+', '+yearFormat(d); }
 
                 tt = minuteFormat(d);
                 if(tr!='M'){
                     tt += secondFormat(d);
-                    if(tr!='S') { tt += numFormat(mod(x/1000,1),ax,'none').substr(1); }
+                    if(tr!='S') { tt += numFormat(mod(x/1000,1),ax,'none',hover).substr(1); }
                 }
             }
         }
@@ -879,12 +910,19 @@ axes.tickText = function(ax, x, hover){
     else if(ax.type=='log'){
         if(hover && ($.isNumeric(dt) || dt.charAt(0)!='L')) { dt = 'L3'; }
         if($.isNumeric(dt)||((dt.charAt(0)=='D')&&(mod(x+0.01,1)<0.1))) {
-            tt=(Math.round(x)===0)?'1':(Math.round(x)==1)?'10':'10'+String(Math.round(x)).sup();
-            fontSize*=1.25;
+            var p = Math.round(x);
+            if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
+                tt = (p===0) ? '1': (p==1) ? '10' : '10'+String(p).sup();
+                fontSize *= 1.25;
+            }
+            else {
+                tt = numFormat(Math.pow(10,x), ax,'','fakehover');
+                if(dt=='D1' && ax._id.charAt(0)=='y') { py-=fontSize/6; }
+            }
         }
         else if(dt.charAt(0)=='D') {
-            tt=Math.round(Math.pow(10,mod(x,1)));
-            fontSize*=0.75;
+            tt = Math.round(Math.pow(10,mod(x,1)));
+            fontSize *= 0.75;
         }
         else if(dt.charAt(0)=='L') {
             tt=numFormat(Math.pow(10,x),ax,hideexp, hover);
@@ -900,11 +938,19 @@ axes.tickText = function(ax, x, hover){
         tt=numFormat(x,ax,hideexp,hover);
     }
     // if 9's are printed on log scale, move the 10's away a bit
-    if((ax.dtick=='D1') && (String(tt).charAt(0)=='1')){
-        if(ax._id.charAt(0)=='y') px-=fontSize/4;
-        else py+=fontSize/3;
+    if((ax.dtick=='D1') && (['0','1'].indexOf(String(tt).charAt(0))!=-1)){
+        if(ax._id.charAt(0)=='y') { px-=fontSize/4; }
+        else {
+            py+=fontSize/2;
+            // if(x<0) {
+                px+=(ax.range[1]>ax.range[0] ? 1 : -1) * fontSize * (x<0 ? 0.5 : 0.25);
+            // }
+        }
     }
-    return {x:x, dx:px, dy:py, text:tt+suffix,
+    tt += suffix;
+    // replace standard minus character (which is technically a hyphen) with a true minus sign
+    if(ax.type!='category') { tt = tt.replace(/-/g,'\u2212'); }
+    return {x:x, dx:px, dy:py, text:tt,
         fontSize:fontSize, font:font, fontColor:fontColor};
 };
 
@@ -917,19 +963,18 @@ function numFormat(v,ax,fmtoverride,hover) {
     var n = (v<0), // negative?
         r = ax._tickround, // max number of digits past decimal point to show
         fmt = fmtoverride||ax.exponentformat||'e',
-        d = ax._tickexponent,
-        // separators - first char is decimal point,
-        // next char is thousands separator if there is one
-        separators = ax.separators||'.',
-        decimalpoint = separators.charAt(0),
-        thouSeparator = separators.charAt(1);
+        d = ax._tickexponent;
     // special case for hover: set exponent just for this value, and
     // add a couple more digits of precision over tick labels
     if(hover) {
         // make a dummy axis obj to get the auto rounding and exponent
-        var ah = {exponentformat:ax.exponentformat, dtick:Math.abs(v), range:[0,v||1]};
+        var ah = {
+            exponentformat:ax.exponentformat,
+            dtick: ax.showexponent=='none' ? ax.dtick : Math.abs(v)||1,
+            range: ax.showexponent=='none' ? ax.range : [0,v||1] // if not showing any exponents, don't change the exponent from what we calculate
+        };
         autoTickRound(ah);
-        r = ah._tickround+2;
+        r = (Number(ah._tickround)||0)+2;
         d = ah._tickexponent;
     }
     var e = Math.pow(10,-r)/2; // 'epsilon' - rounding increment
@@ -966,6 +1011,8 @@ function numFormat(v,ax,fmtoverride,hover) {
             var dp = v.indexOf('.')+1;
             if(dp) { v = v.substr(0,dp+r).replace(/\.?0+$/,''); }
         }
+        // insert appropriate decimal point and thousands separator
+        v = numSeparate(v,ax._td.layout.separators);
     }
 
     // add exponent
@@ -981,6 +1028,24 @@ function numFormat(v,ax,fmtoverride,hover) {
     }
     // put sign back in and return
     return (n?'-':'')+v;
+}
+
+// add arbitrary decimal point and thousands separator
+var findThousands = /(\d+)(\d{3})/;
+function numSeparate(nStr, separators) {
+    // separators - first char is decimal point,
+    // next char is thousands separator if there is one
+    var dp = separators.charAt(0),
+        thou = separators.charAt(1),
+        x = nStr.split('.'),
+        x1 = x[0],
+        x2 = x.length > 1 ? dp + x[1] : '';
+    if(thou) {
+        while (findThousands.test(x1)) {
+            x1 = x1.replace(findThousands, '$1' + thou + '$2');
+        }
+    }
+    return x1 + x2;
 }
 
 // get all axis objects, optionally restricted to only x or y by string axletter
@@ -1029,6 +1094,10 @@ axes.doTicks = function(td,axid) {
         });
         return;
     }
+
+    // make sure we only have allowed options for exponents (others can make confusing errors)
+    if(['none','e','E','power','SI','B'].indexOf(ax.exponentformat)==-1) { ax.exponentformat = 'e'; }
+    if(['all','first','last','none'].indexOf(ax.showexponent)==-1) { ax.showexponent = 'all'; }
 
     ax.range = ax.range.map(Number); // in case a val turns into string somehow
 

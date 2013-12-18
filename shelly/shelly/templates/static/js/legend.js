@@ -10,14 +10,16 @@ legend.lines = function(d){
     if(['scatter',undefined].indexOf(d[0].t.type)==-1) { return; }
     if(t.fill && t.fill!='none' && $.isNumeric(t.cdcurve)) {
         d3.select(this).append('path')
+            .classed('js-fill',true)
             .attr('data-curve',t.cdcurve)
             .attr('d','M5,0h30v6h-30z')
             .call(Plotly.Drawing.fillGroupStyle);
     }
     if(!t.mode || t.mode.indexOf('lines')==-1) { return; }
-    d3.select(this).append('polyline')
+    d3.select(this).append('path')
+        .classed('js-line',true)
         .call(Plotly.Drawing.lineGroupStyle)
-        .attr('points','5,0 35,0');
+        .attr('d','M5,0h30');
 
 };
 
@@ -93,6 +95,14 @@ legend.boxes = function(d){
         .attr('transform','translate(20,0)');
 };
 
+legend.style = function(s) {
+    s.style('opacity',function(d){ return d[0].t.op; })
+    .each(legend.bars)
+    .each(legend.boxes)
+    .each(legend.lines)
+    .each(legend.points);
+};
+
 legend.texts = function(context, gd, d, i, traces){
     var gf = gd.layout.font,
         lf = gd.layout.legend.font;
@@ -114,7 +124,7 @@ legend.texts = function(context, gd, d, i, traces){
 
     function textLayout(){
         var that = this;
-        d3.plugly.convertToTspans(this, function(d, i){
+        d3.plugin.convertToTspans(this, function(d, i){
             if(that.mathjaxRender){
                 delete that.mathjaxRender;
                 legend.repositionLegend(gd, traces);
@@ -124,7 +134,7 @@ legend.texts = function(context, gd, d, i, traces){
     }
 
     if(gd.mainsite){
-        text.call(d3.plugly.makeEditable)
+        text.call(d3.plugin.makeEditable)
             .call(textLayout)
             .on('edit', function(text){
                 this.attr({'data-unformatted': text});
@@ -152,7 +162,7 @@ legend.texts = function(context, gd, d, i, traces){
 // -----------------------------------------------------
 
 legend.draw = function(gd) {
-    var gl=gd.layout,gm=gl.margin;
+    var gl=gd.layout, gm=gl.margin, i;
     if(!gl._infolayer) return;
     gl.showlegend = true;
     if(!gl.legend) { gl.legend={}; }
@@ -160,12 +170,9 @@ legend.draw = function(gd) {
     gl._infolayer.selectAll('.legend').remove();
     if(!gd.calcdata) { return; }
 
-    var ldata=[],i;
-    for(i=0;i<gd.calcdata.length;i++) {
-        if(gd.calcdata[i][0].t.visible!==false) {
-            ldata.push([gd.calcdata[i][0]]);
-        }
-    }
+    var ldata = gd.calcdata
+        .filter(function(cd) { return cd[0].t.visible!==false && cd[0].t.showlegend!==false; })
+        .map(function(cd) { return [cd[0]]; });
     if(gll.traceorder=='reversed') { ldata.reverse(); } // for stacked plots (bars, area) the legend items are often clearer reversed
 
     gd.legend = gl._infolayer.append('svg')
@@ -188,13 +195,9 @@ legend.draw = function(gd) {
         .data(ldata);
     traces.enter().append('g').attr('class','trace');
 
-    traces.append('g')
-        .call(Plotly.Drawing.traceStyle,gd)
-        .each(legend.bars)
-        .each(legend.boxes)
-        .each(legend.lines)
-        .each(legend.points)
-        .each(function(d, i){ legend.texts(this, gd, d, i, traces); });
+    traces.append('g').call(legend.style);
+
+    traces.each(function(d, i){ legend.texts(this, gd, d, i, traces); });
 
     legend.repositionLegend(gd, traces);
 
@@ -271,7 +274,6 @@ legend.repositionLegend = function(gd, traces){
         }
         var tbb = t.node().getBoundingClientRect();
         if(!l.node()) { l=g.select('path'); }
-        if(!l.node()) { l=g.select('polyline'); }
         var lbb = (!l.node()) ? tbb : l.node().getBoundingClientRect();
         t.attr('y',(lbb.top+lbb.bottom-tbb.top-tbb.bottom)/2);
         var gbb = this.getBoundingClientRect();

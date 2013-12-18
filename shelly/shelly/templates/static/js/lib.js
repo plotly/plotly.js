@@ -3,7 +3,7 @@
 if(!window.Plotly) { window.Plotly = {}; }
 var lib = Plotly.Lib = {};
 
-// dateTime2ms - make string s of the form YYYY-mm-dd HH:MM:SS.sss
+// dateTime2ms - make a date object or string s of the form YYYY-mm-dd HH:MM:SS.sss
 // into milliseconds (relative to 1970-01-01, per javascript standard)
 // may truncate after any full field, and sss can be any length
 // even >3 digits, though javascript dates truncate to milliseconds
@@ -27,6 +27,10 @@ var lib = Plotly.Lib = {};
 // currently (2012) this range is:
 //   1942-2041
 lib.dateTime2ms = function(s) {
+    // first check if s is a date object
+    try { if(s.getTime) { return +s; } }
+    catch(e){ return false; }
+
     var y,m,d,h;
     // split date and time parts
     s=String(s).split(' ');
@@ -691,9 +695,10 @@ lib.randstr = function randstr(existing, bits, base) {
     if (!base) base = 16;
     if (bits === undefined) bits = 128;
     if (bits <= 0) return '0';
+    var i,b,x;
 
     var digits = Math.log(Math.pow(2, bits)) / Math.log(base);
-    for (var i = 2; digits === Infinity; i *= 2) {
+    for (i = 2; digits === Infinity; i *= 2) {
         digits = Math.log(Math.pow(2, bits / i)) / Math.log(base) * i;
     }
 
@@ -701,14 +706,14 @@ lib.randstr = function randstr(existing, bits, base) {
 
     var res = '';
 
-    for (var i = 0; i < Math.floor(digits); i++) {
-        var x = Math.floor(Math.random() * base).toString(base);
+    for (i = 0; i < Math.floor(digits); i++) {
+        x = Math.floor(Math.random() * base).toString(base);
         res = x + res;
     }
 
     if (rem) {
-        var b = Math.pow(base, rem);
-        var x = Math.floor(Math.random() * b).toString(base);
+        b = Math.pow(base, rem);
+        x = Math.floor(Math.random() * b).toString(base);
         res = x + res;
     }
 
@@ -741,13 +746,37 @@ lib.OptionControl = function (opt, optname) {
         optobj[optname] = opt;
         self[optobj.name] = optobj;
         self.opts.push(optobj);
-    }
+    };
 
     self["_"+optname] = opt;
     return self;
-}
+};
 
 
+// lib.smooth: smooth array_in by convolving with
+// a hann window with given full width at half max
+// bounce the ends in, so the output has the same length as the input
+lib.smooth = function(array_in, FWHM) {
+    var w = [], array_out = [], i, j, k, v;
 
+    // first make the window array
+    for(i=1; i<2*FWHM; i++) { w.push((1-Math.cos(Math.PI*i/FWHM))/(2*FWHM)); }
+    var ws = 0;
+    w.forEach(function(v) { ws+=v; });
+
+    // now do the convolution
+    var wlen = w.length, alen = array_in.length;
+    for(i=0; i<alen; i++) {
+        v = 0;
+        for(j=0; j<wlen; j++) {
+            k = i+j-FWHM;
+            if(k<0) { k = 1-k; }
+            else if(k>=alen) { k = 2*alen-1-k; }
+            v += array_in[k]*w[j];
+        }
+        array_out.push(v);
+    }
+    return array_out;
+};
 
 }()); // end Lib object definition
