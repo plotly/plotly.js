@@ -206,39 +206,38 @@ axes.moreDates = function(a) {
 // it should all be >0 or non-numeric
 // then it should have a range max/min of at least 100
 // and at least 1/4 of distinct values < max/10
-function loggy(d,ax) {
-    var vals = [],v,c,i,ir,
-        ax2 = (ax=='x') ? 'y' : 'x',
-        inc = 0;
-    d.forEach(function(c) { inc+=(c.length-1)/1000; });
-    inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
-
-    for(var curve in d){
-        c=d[curve];
-        // curve has data: test each numeric point for <=0 and add if unique
-        if(ax in c) {
-            for(i=0; i<c[ax].length-0.5; i+=inc) {
-                ir = Math.round(i);
-                v=c[ax][ir];
-                if($.isNumeric(v)){
-                    if(v<=0) { return false; }
-                    else if(vals.indexOf(v)<0) { vals.push(v); }
-                }
-            }
-        }
-        // curve has linear scaling: test endpoints for <=0 and add all points if unique
-        else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
-            if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) { return false; }
-            for(i=0; i<c[ax2].length-0.5; i+=inc) {
-                v=c[ax+'0']+c['d'+ax]*Math.round(i);
-                if(vals.indexOf(v)<0) { vals.push(v); }
-            }
-        }
-    }
-    // now look for range and distribution
-    var mx=Math.max.apply(Math,vals), mn=Math.min.apply(Math,vals);
-    return ((mx/mn>=100)&&(vals.sort()[Math.ceil(vals.length/4)]<mx/10));
-}
+// function loggy(d,ax) {
+//     var vals = [],v,c,i,ir,
+//         ax2 = (ax=='x') ? 'y' : 'x',
+//         inc = 0;
+//     d.forEach(function(c) { inc+=(c.length-1)/1000; });
+//     inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
+//     for(var curve in d){
+//         c=d[curve];
+//         // curve has data: test each numeric point for <=0 and add if unique
+//         if(ax in c) {
+//             for(i=0; i<c[ax].length-0.5; i+=inc) {
+//                 ir = Math.round(i);
+//                 v=c[ax][ir];
+//                 if($.isNumeric(v)){
+//                     if(v<=0) { return false; }
+//                     else if(vals.indexOf(v)<0) { vals.push(v); }
+//                 }
+//             }
+//         }
+//         // curve has linear scaling: test endpoints for <=0 and add all points if unique
+//         else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
+//             if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) { return false; }
+//             for(i=0; i<c[ax2].length-0.5; i+=inc) {
+//                 v=c[ax+'0']+c['d'+ax]*Math.round(i);
+//                 if(vals.indexOf(v)<0) { vals.push(v); }
+//             }
+//         }
+//     }
+//     // now look for range and distribution
+//     var mx=Math.max.apply(Math,vals), mn=Math.min.apply(Math,vals);
+//     return ((mx/mn>=100)&&(vals.sort()[Math.ceil(vals.length/4)]<mx/10));
+// }
 
 // are the (x,y)-values in td.data mostly text?
 // JP edit 10.8.2013: strip $, %, and quote characters via axes.cleanDatum
@@ -253,23 +252,6 @@ axes.category = function(a) {
         else if(ai && isStr(ai)){ curvecats++; }
     }
     return curvecats>curvenums*2;
-};
-
-// convertOne: takes an x or y array and converts it to a position on the axis object "ax"
-// inputs:
-//      tdc - a data object from td.data
-//      data - a string, either 'x' or 'y', for which item to convert
-//      ax - the axis object to map this data onto (not necessarily the same as
-//          data, in case of bars or histograms)
-// in case the expected data isn't there, make a list of integers based on the opposite data
-axes.convertOne = function(tdc,data,ax) {
-    var counterdata = tdc[{x:'y',y:'x'}[data]]; // the opposing data to compare to
-    if(data in tdc) { return tdc[data].map(ax.d2c); }
-    else {
-        var v0 = ((data+'0') in tdc) ? ax.d2c(tdc[data+'0']) : 0,
-            dv = (tdc['d'+data]) ? Number(tdc['d'+data]) : 1;
-        return counterdata.map(function(v,i){return v0+i*dv;});
-    }
 };
 
 // cleanDatum: removes characters
@@ -354,6 +336,22 @@ axes.setConvert = function(ax) {
     else {
         console.log('unknown axis type '+ax.type);
     }
+
+    // makeCalcdata: takes an x or y array and converts it to a position on the axis object "ax"
+    // inputs:
+    //      tdc - a data object from td.data
+    //      axletter - a string, either 'x' or 'y', for which item to convert
+    //          (not necessarily the same as data, in case of bars or histograms)
+    // in case the expected data isn't there, make a list of integers based on the opposite data
+    ax.makeCalcdata = function(tdc,axletter) {
+        if(axletter in tdc) { return tdc[axletter].map(ax.d2c); }
+        else {
+            var v0 = ((axletter+'0') in tdc) ? ax.d2c(tdc[axletter+'0']) : 0,
+                dv = (tdc['d'+axletter]) ? Number(tdc['d'+axletter]) : 1,
+                counterdata = tdc[{x:'y',y:'x'}[axletter]]; // the opposing data, for size if we have x and dx etc
+            return counterdata.map(function(v,i){return v0+i*dv;});
+        }
+    };
 
     // for autoranging: arrays of objects {val:axis value, pad: pixel padding}
     // on the low and high sides

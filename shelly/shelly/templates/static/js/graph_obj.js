@@ -16,7 +16,7 @@ function req(module, methods) {
 }
 req('Annotations',["drawAll", "add", "draw", "allArrowheads", "calcAutorange"]);
 req('Axes',["defaultAxis", "clearTypes", "setTypes", "initAxis", "id2name", "name2id",
-    "counterLetter", "convertOne", "cleanDatum", "setConvert", "moreDates", "category",
+    "counterLetter", "cleanDatum", "setConvert", "moreDates", "category",
     "minDtick", "doAutoRange", "expand", "autoBin", "autoTicks", "tickIncrement",
     "tickFirst", "tickText", "list", "getFromId", "doTicks"]);
 req('Bars',["calc", "setPositions", "plot", "style"]);
