@@ -1188,7 +1188,7 @@ axes.doTicks = function(td,axid) {
             ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
                 .classed('crisp',1)
                 .call(Plotly.Drawing.strokeColor, ax.tickcolor || '#000')
-                .attr('stroke-width', ax.tickwidth || 1)
+                .style('stroke-width', (ax.tickwidth || 1)+'px')
                 .attr('d',tickpath);
             ticks.attr('transform',transfn);
             ticks.exit().remove();
@@ -1281,7 +1281,7 @@ axes.doTicks = function(td,axid) {
             });
         grid.attr('transform',transfn)
             .call(Plotly.Drawing.strokeColor, ax.gridcolor || '#ddd')
-            .attr('stroke-width', gridwidth);
+            .style('stroke-width', gridwidth+'px');
         grid.exit().remove();
 
         // zero line
@@ -1301,7 +1301,7 @@ axes.doTicks = function(td,axid) {
             .attr('d',gridpath);
         zl.attr('transform',transfn)
             .call(Plotly.Drawing.strokeColor, ax.zerolinecolor || '#000')
-            .attr('stroke-width', ax.zerolinewidth || gridwidth);
+            .style('stroke-width', (ax.zerolinewidth || gridwidth)+'px');
         zl.exit().remove();
     });
 

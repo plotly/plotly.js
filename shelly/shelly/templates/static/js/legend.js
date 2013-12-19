@@ -6,97 +6,115 @@ var legend = Plotly.Legend = {};
 // -----------------------------------------------------
 
 legend.lines = function(d){
-    var t = d[0].t;
-    if(['scatter',undefined].indexOf(d[0].t.type)==-1) { return; }
-    if(t.fill && t.fill!='none' && $.isNumeric(t.cdcurve)) {
-        d3.select(this).append('path')
-            .classed('js-fill',true)
-            .attr('data-curve',t.cdcurve)
-            .attr('d','M5,0h30v6h-30z')
-            .call(Plotly.Drawing.fillGroupStyle);
-    }
-    if(!t.mode || t.mode.indexOf('lines')==-1) { return; }
-    d3.select(this).append('path')
-        .classed('js-line',true)
-        .call(Plotly.Drawing.lineGroupStyle)
-        .attr('d','M5,0h30');
+    var t = d[0].t,
+        isScatter = ['scatter',undefined].indexOf(d[0].t.type)!=-1,
+        showFill = isScatter && (t.fill && t.fill!='none' && $.isNumeric(t.cdcurve)),
+        showLine = isScatter && (t.mode && t.mode.indexOf('lines')!=-1);
 
+    var fill = d3.select(this).select('.legendsymbols').selectAll('path.js-fill')
+        .data(showFill ? [d] : []);
+    fill.enter().append('path')
+        .classed('js-fill',true);
+    fill.exit().remove();
+    fill.attr({'data-curve':t.cdcurve, 'd':'M5,0h30v6h-30z'})
+        .call(Plotly.Drawing.fillGroupStyle);
+
+    var line = d3.select(this).select('.legendsymbols').selectAll('path.js-line')
+        .data(showLine ? [d] : []);
+    line.enter().append('path')
+        .classed('js-line',true)
+        .attr('d','M5,0h30');
+    line.exit().remove();
+    line.call(Plotly.Drawing.lineGroupStyle);
 };
 
 legend.points = function(d){
-    var t = d[0].t;
-    if(['scatter',undefined].indexOf(t.type)==-1 || !t.mode) { return; }
-    var showMarkers = t.mode.indexOf('markers')!=-1,
-        showText = t.mode.indexOf('text')!=-1;
-    if(!showMarkers && !showText) { return; }
+    var t = d[0].t,
+        isScatter = ['scatter',undefined].indexOf(t.type)!=-1 && t.mode,
+        showMarkers = isScatter && t.mode.indexOf('markers')!=-1,
+        showText = isScatter && t.mode.indexOf('text')!=-1;
 
     // constrain text, markers, etc so they'll fit on the legend
-    var dmod = function(d) {
-            var d_edit = {tx:'Aa', mo:1};
-            if(d[0].ms>16) { d_edit.ms = 16; }
-            if(d[0].mlw>5) { d_edit.mlw = 5; }
-            return [$.extend({},d[0], d_edit)];
-        },
+    var d_edit = {tx:'Aa', mo:1};
+    if(d[0].ms>16) { d_edit.ms = 16; }
+    if(d[0].mlw>5) { d_edit.mlw = 5; }
+    var dmod = [$.extend({},d[0], d_edit)],
         tmod = $.extend({},t,{ts:10, ms:Math.min(t.ms,16), msr:1, msm:'diameter', lw:Math.min(t.lw,10)});
 
-    var pts = d3.select(this).append('g')
-        .attr('class','legendpoints');
-    if(showMarkers) {
-        pts.selectAll('path')
-            .data(dmod)
-          .enter().append('path')
-            .call(Plotly.Drawing.pointStyle,tmod)
-            .attr('transform','translate(20,0)');
-    }
-    if(showText) {
-        pts.selectAll('text')
-            .data(dmod)
-          .enter().append('text')
-            .call(Plotly.Drawing.textPointStyle,tmod)
-            .attr('transform','translate(20,0)');
-    }
+    var ptgroup = d3.select(this).select('g.legendpoints');
+
+    var pts = ptgroup.selectAll('path.scatterpts')
+        .data(showMarkers ? dmod : []);
+    pts.enter().append('path').classed('scatterpts',true)
+        .attr('transform','translate(20,0)');
+    pts.exit().remove();
+    pts.call(Plotly.Drawing.pointStyle,tmod);
+
+    var txt = ptgroup.selectAll('text')
+        .data(showText ? dmod : []);
+    txt.enter().append('text')
+        .attr('transform','translate(20,0)');
+    txt.exit().remove();
+    txt.call(Plotly.Drawing.textPointStyle,tmod);
+
 };
 
 legend.bars = function(d){
     var t = d[0].t;
-    if(!Plotly.Plots.isBar(t.type)) { return; }
-    d3.select(this).append('g')
-        .attr('class','legendpoints')
-      .selectAll('path')
-        .data(Plotly.Lib.identity)
-      .enter().append('path')
+        // isBar = Plotly.Plots.isBar(t.type);
+    // if(!Plotly.Plots.isBar(t.type)) { return; }
+    // var bars = d3.select(this).selectAll('g.legendpoints')
+    //     .data([d]);
+    // bars.enter().append('g')
+    //     .attr('class','legendpoints');
+    var barpath = d3.select(this).select('g.legendpoints').selectAll('path.legendbar')
+        .data(Plotly.Plots.isBar(t.type) ? [d] : []);
+    barpath.enter().append('path').classed('legendbar',true)
         .attr('d','M6,6H-6V-6H6Z')
-        .each(function(d){
-            var w = (d.mlw+1 || t.mlw+1 || (d.t ? d.t.mlw : 0)+1) - 1,
-                p = d3.select(this);
-            p.attr('stroke-width',w)
-                .call(Plotly.Drawing.fillColor,d.mc || t.mc || (d.t ? d.t.mc : ''));
-            if(w) { p.call(Plotly.Drawing.strokeColor,d.mlc || t.mlc || (d.t ? d.t.mlc : '')); }
-        })
         .attr('transform','translate(20,0)');
+    barpath.exit().remove();
+    barpath.each(function(d){
+        var w = (d.mlw+1 || t.mlw+1 || (d.t ? d.t.mlw : 0)+1) - 1,
+            p = d3.select(this);
+        p.style('stroke-width',w+'px')
+            .call(Plotly.Drawing.fillColor,d.mc || t.mc || (d.t ? d.t.mc : ''));
+        if(w) { p.call(Plotly.Drawing.strokeColor,d.mlc || t.mlc || (d.t ? d.t.mlc : '')); }
+    });
 };
 
 legend.boxes = function(d){
     var t = d[0].t;
-    if(t.type!=='box') { return; }
-    d3.select(this).append('g')
-        .attr('class','legendpoints')
-      .selectAll('path')
-        .data(Plotly.Lib.identity)
-      .enter().append('path')
+    // if(t.type!=='box') { return; }
+    // var ptgroup = d3.select(this).selectAll('g.legendpoints');
+    //     .data([d]);
+    // ptgroup.enter().append('g')
+    //     .attr('class','legendpoints');
+    var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendbox')
+        .data(t.type=='box' ? [d] : []);
+    pts.enter().append('path').classed('legendbox',true)
         .attr('d','M6,6H-6V-6H6Z') // if we want the median bar, prepend M6,0H-6
-        .each(function(d){
-            var w = (d.lw+1 || t.lw+1 || (d.t ? d.t.lw : 0)+1) - 1,
-                p = d3.select(this);
-            p.attr('stroke-width',w)
-                .call(Plotly.Drawing.fillColor,d.fc || t.fc || (d.t ? d.t.fc : ''));
-            if(w) { p.call(Plotly.Drawing.strokeColor,d.lc || t.lc || (d.t ? d.t.lc : '')); }
-        })
         .attr('transform','translate(20,0)');
+    pts.exit().remove();
+    pts.each(function(d){
+        var w = (d.lw+1 || t.lw+1 || (d.t ? d.t.lw : 0)+1) - 1,
+            p = d3.select(this);
+        p.style('stroke-width',w+'px')
+            .call(Plotly.Drawing.fillColor,d.fc || t.fc || (d.t ? d.t.fc : ''));
+        if(w) { p.call(Plotly.Drawing.strokeColor,d.lc || t.lc || (d.t ? d.t.lc : '')); }
+    });
 };
 
 legend.style = function(s) {
-    s.style('opacity',function(d){ return d[0].t.op; })
+    s.each(function(d){
+        var symbol = d3.select(this).selectAll('g.legendsymbols')
+            .data([d]);
+        symbol.enter().append('g').classed('legendsymbols',true);
+        symbol.style('opacity', d[0].t.op);
+
+        symbol.selectAll('g.legendpoints')
+            .data([d])
+          .enter().append('g').classed('legendpoints',true);
+    })
     .each(legend.bars)
     .each(legend.boxes)
     .each(legend.lines)
@@ -114,14 +132,14 @@ legend.texts = function(context, gd, d, i, traces){
     text.attr({
             'class': function(){ return 'legendtext text-'+curve; },
             x: 40,
-            y: 0
+            y: 0,
         })
         .style({
             'text-anchor': 'start',
             'font-family': lf.family || gf.family || 'Arial',
-            'font-size': lf.size || gf.size || 12,
+            'font-size': (lf.size || gf.size || 12)+'px',
             fill: Plotly.Drawing.rgb(lf.color || gf.color || '#000'),
-            'fill-opacity': Plotly.Drawing.opacity(lf.color || gf.color || '#000')
+            opacity: Plotly.Drawing.opacity(lf.color || gf.color || '#000')
         })
         .text(function(d, i){ return name; })
         .attr({'data-unformatted': function(d, i){ return name; }});
@@ -195,28 +213,28 @@ legend.draw = function(gd) {
         stroke: Plotly.Drawing.rgb(bordercolor),
         'stroke-opacity': Plotly.Drawing.opacity(bordercolor),
         fill: Plotly.Drawing.rgb(bgcolor),
-        'fill-opacity': Plotly.Drawing.opacity(bgcolor),
-        'stroke-width': borderwidth
+        opacity: Plotly.Drawing.opacity(bgcolor),
+        'stroke-width': borderwidth+'px'
     });
 
     var traces = gd.legend.selectAll('g.traces')
         .data(ldata);
     traces.enter().append('g').attr('class','traces');
-    traces.call(legend.style);
-
-    traces.each(function(d, i){ legend.texts(this, gd, d, i, traces); });
+    traces.exit().remove();
+    traces.call(legend.style)
+        .each(function(d, i){ legend.texts(this, gd, d, i, traces); });
 
     legend.repositionLegend(gd, traces);
 
-        // user dragging the legend
-        // aligns left/right/center on resize or new text if drag pos
-        // is in left 1/3, middle 1/3, right 1/3
-        // choose left/center/right align via:
-        //  xl=(left-ml)/plotwidth, xc=(center-ml/plotwidth), xr=(right-ml)/plotwidth
-        //  if(xl<2/3-xc) gll.x=xl;
-        //  else if(xr>4/3-xc) gll.x=xr;
-        //  else gll.x=xc;
-        // similar logic for top/middle/bottom
+    // user dragging the legend
+    // aligns left/right/center on resize or new text if drag pos
+    // is in left 1/3, middle 1/3, right 1/3
+    // choose left/center/right align via:
+    //  xl=(left-ml)/plotwidth, xc=(center-ml/plotwidth), xr=(right-ml)/plotwidth
+    //  if(xl<2/3-xc) gll.x=xl;
+    //  else if(xr>4/3-xc) gll.x=xr;
+    //  else gll.x=xc;
+    // similar logic for top/middle/bottom
     if(gd.mainsite) {
         gd.legend.node().onmousedown = function(e) {
             if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
@@ -288,8 +306,12 @@ legend.repositionLegend = function(gd, traces){
         var mathjaxGroup = g.select('g[class*=math-group]');
         if(mathjaxGroup.node()) legendwidth = Math.max(legendwidth, mathjaxGroup.node().getBoundingClientRect().width);
         else legendwidth = Math.max(legendwidth,tbb.width);
-        g.attr('transform','translate('+borderwidth+','+(5+borderwidth+legendheight+gbb.height/2)+')');
-        legendheight += gbb.height+3;
+        // Firefox makes oversized bounding boxes for paths sometimes... at least it
+        // adds the same amount to the top and bottom so we can use it above!
+        // But here just use the text.
+        var tHeight = tbb.height || gll.font.size || gl.font.size || 12;
+        g.attr('transform','translate('+borderwidth+','+(5+borderwidth+legendheight+tHeight/2)+')');
+        legendheight += tHeight+3;
     });
     legendwidth += 45+borderwidth*2;
     legendheight += 10+borderwidth*2;
