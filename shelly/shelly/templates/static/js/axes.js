@@ -141,7 +141,7 @@ function setType(ax){
     delete ax.isdate;
 
     // delete category list, if there is one, so we start over
-    // to be filled in later by convertToNums
+    // to be filled in later by ax.d2c
     delete ax.categories; // obsolete (new one is private)
     ax._categories = [];
 
@@ -174,31 +174,33 @@ function setType(ax){
     if(d0.type=='box' && axletter=='x' && !('x' in d0) && !('x0' in d0)) {
         ax.type='category'; // take the categories from trace name, text, or number
     }
-    else if((axletter in d0) ? moreDates(d0[axletter]) :
-        (Plotly.Lib.isDateTime(d0[axletter+'0']) && !$.isNumeric(d0[axletter+'0']))) {
-            ax.type='date';
+    else {
+        ax.type = axes.autoType((axletter in d0) ? d0[axletter] : [d0[axletter+'0']]);
     }
-    else if(category(data,axletter)) { ax.type='category'; }
-    // else if(loggy(data,axletter)) { ax.type='log'; } // sadly this has never been popular...
-    else { ax.type='linear'; }
 }
+
+axes.autoType = function(array) {
+    if(axes.moreDates(array)) { return 'date'; }
+    if(axes.category(array)) { return 'category'; }
+    return 'linear';
+};
 
 // does the array a have mostly dates rather than numbers?
 // note: some values can be neither (such as blanks, text)
 // 2- or 4-digit integers can be both, so require twice as many
 // dates as non-dates, to exclude cases with mostly 2 & 4 digit
 // numbers and a few dates
-function moreDates(a) {
+axes.moreDates = function(a) {
     var dcnt=0, ncnt=0,
         inc = Math.max(1,(a.length-1)/1000), // test at most 1000 points, evenly spaced
-        ir;
+        ai;
     for(var i=0; i<a.length; i+=inc) {
-        ir = Math.round(i);
-        if(Plotly.Lib.isDateTime(a[ir])) { dcnt+=1; }
-        if($.isNumeric(a[ir])) { ncnt+=1; }
+        ai = a[Math.round(i)];
+        if(Plotly.Lib.isDateTime(ai)) { dcnt+=1; }
+        if($.isNumeric(ai)) { ncnt+=1; }
     }
     return (dcnt>ncnt*2);
-}
+};
 
 // does the array look like something that should be plotted on a log axis?
 // it should all be >0 or non-numeric
@@ -240,35 +242,18 @@ function loggy(d,ax) {
 
 // are the (x,y)-values in td.data mostly text?
 // JP edit 10.8.2013: strip $, %, and quote characters via axes.cleanDatum
-// require twice as many categories as numbers, to account for cases that can
-// be both, ie
-function category(d,ax) {
+// require twice as many categories as numbers
+axes.category = function(a) {
     function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1; }
-    var catcount=0,
-        numcount=0,
-        inc = 0;
-    d.forEach(function(c) { inc+=(c.length-1)/1000; });
-    inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
-
-    d.forEach(function(c){
-        // curve has data: test each point for non-numeric text
-        if(ax in c) {
-            var curvenums=0,curvecats=0;
-            for(i=0; i<c[ax].length; i+=inc) {
-                var vi = axes.cleanDatum(c[ax][Math.round(i)]);
-                if($.isNumeric(vi)){ curvenums++; }
-                else if(vi && isStr(vi)){ curvecats++; }
-            }
-            if(curvecats>curvenums*2){ catcount++; }
-            else { numcount++; }
-        }
-        // curve has an 'x0' or 'y0' value - is this text?
-        // (x0 can be specified this way for box plots)
-        else if(ax+'0' in c && isStr(c[ax+'0'])) { catcount++; }
-        else { numcount++; }
-    });
-    return catcount>numcount*2;
-}
+    var inc = Math.max(1,(a.length-1)/1000), ai; // test at most 1000 points
+    var curvenums=0,curvecats=0;
+    for(i=0; i<a.length; i+=inc) {
+        ai = axes.cleanDatum(a[Math.round(i)]);
+        if($.isNumeric(ai)){ curvenums++; }
+        else if(ai && isStr(ai)){ curvecats++; }
+    }
+    return curvecats>curvenums*2;
+};
 
 // convertOne: takes an x or y array and converts it to a position on the axis object "ax"
 // inputs:
@@ -279,60 +264,20 @@ function category(d,ax) {
 // in case the expected data isn't there, make a list of integers based on the opposite data
 axes.convertOne = function(tdc,data,ax) {
     var counterdata = tdc[{x:'y',y:'x'}[data]]; // the opposing data to compare to
-    if(data in tdc) { return axes.convertToNums(tdc[data],ax); }
+    if(data in tdc) { return tdc[data].map(ax.d2c); }
     else {
-        var v0 = ((data+'0') in tdc) ? axes.convertToNums(tdc[data+'0'], ax) : 0,
-            dv = (tdc['d'+data]) ? tdc['d'+data] : 1;
+        var v0 = ((data+'0') in tdc) ? ax.d2c(tdc[data+'0']) : 0,
+            dv = (tdc['d'+data]) ? Number(tdc['d'+data]) : 1;
         return counterdata.map(function(v,i){return v0+i*dv;});
     }
 };
 
-// convertToNums: convert raw data to numbers
-// dates -> ms since the epoch,
-// categories -> integers
-// log: we no longer take log here, happens later
-// inputs:
-//      o - a value or array of values to convert
-//      ax - an axis object
-axes.convertToNums = function(o,ax){
-    // find the conversion function
-    var fn;
-    if(ax.type=='date') {
-        // if we've got actual numbers (not numeric strings) but we've explicitly
-        // chosen date axis type, treat them as unix timestamps
-        fn = function(v){ return (typeof v=='number') ? v : Plotly.Lib.dateTime2ms(v); };
-    }
-    else if(ax.type=='category') {
-        // create the category list
-        // this will enter the categories in the order it encounters them,
-        // ie all the categories from the first data set, then all the ones
-        // from the second that aren't in the first etc.
-        // TODO: sorting options - I guess we'll have to do this in plot()
-        // after finishing calcdata
-        if(!ax._categories) { ax._categories = []; }
-        ($.isArray(o) ? o : [o]).forEach(function(v){
-            if(ax._categories.indexOf(v)==-1) { ax._categories.push(v); }
-        });
-        fn = function(v){ var c = ax._categories.indexOf(v); return c==-1 ? undefined : c; };
-    }
-    else {
-        fn = function(v){
-            v = axes.cleanDatum( v );
-            return $.isNumeric(v) ? Number(v) : undefined;
-        };
-    }
-
-    // do the conversion
-    if($.isArray(o)) { return o.map(fn); }
-    else { return fn(o); }
-};
-
-// cleanData: removes characters
+// cleanDatum: removes characters
 // same replace criteria used in the grid.js:scrapeCol
 // but also handling dates, numbers, and NaN, null, Infinity etc
 axes.cleanDatum = function(c){
     try{
-        if(typeof c=='object' && c.getTime) { return Plotly.Lib.ms2DateTime(c); }
+        if(typeof c=='object' && c!==null && c.getTime) { return Plotly.Lib.ms2DateTime(c); }
         if(typeof c!='string' && !$.isNumeric(c)) { return ''; }
         c = c.toString().replace(/['"%,$# ]/g,'');
     }catch(e){
@@ -342,8 +287,9 @@ axes.cleanDatum = function(c){
 };
 
 // setConvert: define the conversion functions for an axis
-// after convertToNums turns all data to numbers, it's used in 3 ways:
-//  c: calcdata numbers, not linearized
+// data is used in 4 ways:
+//  d: data, in whatever form it's provided
+//  c: calcdata: turned into numbers, but not linearized
 //  l: linearized - same as c except for log axes (and other mappings later?)
 //      this is used by ranges, and when we need to know if it's *possible* to
 //      show some data on this axis, without caring about the current range
@@ -381,12 +327,29 @@ axes.setConvert = function(ax) {
     };
     ax.p2c = function(px){ return ax.l2c(ax.p2l(px)); };
 
-    if(['linear','log','-'].indexOf(ax.type)!=-1) { ax.c2d = num; }
+    if(['linear','log','-'].indexOf(ax.type)!=-1) {
+        ax.c2d = num;
+        ax.d2c = function(v){
+            v = axes.cleanDatum(v);
+            return $.isNumeric(v) ? Number(v) : undefined;
+        };
+    }
     else if(ax.type=='date') {
         ax.c2d = function(v) { return $.isNumeric(v) ? Plotly.Lib.ms2DateTime(v) : null; };
+        ax.d2c = function(v){ return (typeof v=='number') ? v : Plotly.Lib.dateTime2ms(v); };
     }
     else if(ax.type=='category') {
         ax.c2d = function(v) { return ax._categories[Math.round(v)]; };
+        ax.d2c = function(v) {
+            // create the category list
+            // this will enter the categories in the order it encounters them,
+            // ie all the categories from the first data set, then all the ones
+            // from the second that aren't in the first etc.
+            // TODO: sorting options - do the sorting progressively here as we insert?
+            if(!ax._categories) { ax._categories = []; }
+            if(ax._categories.indexOf(v)==-1) { ax._categories.push(v); }
+            var c = ax._categories.indexOf(v); return c==-1 ? undefined : c;
+        };
     }
     else {
         console.log('unknown axis type '+ax.type);
@@ -478,7 +441,7 @@ axes.doAutoRange = function(ax) {
 };
 
 // axes.expand: if autoranging, include new data in the outer limits for this axis
-// data is an array of numbers (ie already run through convertToNums)
+// data is an array of numbers (ie already run through ax.d2c)
 // available options:
 //      vpad: (number or number array) pad values (data value +-vpad)
 //      ppad: (number or number array) pad pixels (pixel location +-ppad)

@@ -22,7 +22,7 @@ boxes.calc = function(gd,gdc) {
                 (Plotly.Lib.isDateTime(gdc.name) && xa.type=='date')
             )) { x0 = gdc.name; }
         else { x0 = gd.numboxes; }
-        x0 = Plotly.Axes.convertToNums(x0,xa);
+        x0 = xa.d2c(x0);
         x = y.map(function(){ return x0; });
     }
     // find x values
