@@ -150,7 +150,7 @@ heatmap.calc = function(gd,gdc) {
 function makeBoundArray(type,array_in,v0_in,dv_in,numbricks,ax) {
     var array_out = [], v0, dv, i;
     if($.isArray(array_in) && (type!='histogram2d') && (ax.type!='category')) {
-        array_in = Plotly.Axes.convertToNums(array_in,ax);
+        array_in = array_in.map(ax.d2c);
         var len = array_in.length;
         if(len==numbricks) { // given vals are brick centers
             if(numbricks==1) { return [array_in[0]-0.5,array_in[0]+0.5]; }
@@ -173,7 +173,7 @@ function makeBoundArray(type,array_in,v0_in,dv_in,numbricks,ax) {
         else if(type=='histogram2d' || ax.type=='category') {
             v0 = v0_in;
         }
-        else { v0 = Plotly.Axes.convertToNums(v0_in,ax); }
+        else { v0 = ax.d2c(v0_in); }
         for(i=0; i<=numbricks; i++) { array_out.push(v0+dv*(i-0.5)); }
     }
     return array_out;
