@@ -17,18 +17,16 @@ drawing.addOpacity = function(cstr,op) {
 };
 
 drawing.strokeColor = function(s,c) {
-    s.attr('stroke',drawing.rgb(c))
-     .style('stroke-opacity',drawing.opacity(c));
+    s.style({'stroke':drawing.rgb(c), 'stroke-opacity':drawing.opacity(c)});
 };
 
 drawing.fillColor = function(s,c) {
-    s.style('fill',drawing.rgb(c))
-     .style('fill-opacity',drawing.opacity(c));
+    s.style({'fill':drawing.rgb(c), 'fill-opacity':drawing.opacity(c)});
 };
 
 drawing.font = function(s,family,size,fill) {
-    if(family!==undefined) { s.attr('font-family',family); }
-    if(size!==undefined) { s.attr('font-size',size); }
+    if(family!==undefined) { s.style('font-family',family); }
+    if(size!==undefined) { s.style('font-size',size+'px'); }
     if(fill!==undefined) { s.call(drawing.fillColor,fill); }
 };
 
@@ -48,41 +46,30 @@ drawing.translatePoints = function(s,xa,ya){
     });
 };
 
-// drawing.traceStyle = function(s,gd) {
-//     var barcount = 0,
-//         gl = gd.layout;
-//     s.style('opacity',function(d){ return d[0].t.op; })
-//     // first see if there would be bars to stack)
-//     .each(function(d){ if(Plotly.Plots.isBar(d[0].t.type)) { barcount++; } })
-//     // for gapless (either stacked or neighboring grouped) bars use crispEdges
-//     // to turn off antialiasing so an artificial gap isn't introduced.
-//     .each(function(d){
-//         if(Plotly.Plots.isBar(d[0].t.type) &&
-//           ((gl.barmode=='stack' && barcount>1) ||
-//           (gl.bargap===0 && gl.bargroupgap===0 && !d[0].t.mlw))){
-//             d3.select(this).attr('shape-rendering','crispEdges');
-//         }
-//     });
-// };
+drawing.getPx = function(s,styleAttr) {
+    // helper to pull out a px value from a style that may contain px units
+    // s is a d3 selection (will pull from the first one)
+    return Number(s.style(styleAttr).replace(/px$/,''));
+};
 
 drawing.lineGroupStyle = function(s) {
-    s.attr('stroke-width',function(d){ return d[0].t.lw; })
+    s.style('stroke-width',function(d){ return (d[0].t.lw||0)+'px'; })
     .each(function(d){ d3.select(this).call(drawing.strokeColor,d[0].t.lc); })
     .style('fill','none')
-    .attr('stroke-dasharray',function(d){
+    .style('stroke-dasharray',function(d){
         var da=d[0].t.ld,lw=Math.max(d[0].t.lw,3);
         if(da=='solid') return '';
-        if(da=='dot') return lw+','+lw;
-        if(da=='dash') return (3*lw)+','+(3*lw);
-        if(da=='longdash') return (5*lw)+','+(5*lw);
-        if(da=='dashdot') return (3*lw)+','+lw+','+lw+','+lw;
-        if(da=='longdashdot') return (5*lw)+','+(2*lw)+','+lw+','+(2*lw);
+        if(da=='dot') return lw+'px,'+lw+'px';
+        if(da=='dash') return (3*lw)+'px,'+(3*lw)+'px';
+        if(da=='longdash') return (5*lw)+'px,'+(5*lw)+'px';
+        if(da=='dashdot') return (3*lw)+'px,'+lw+'px,'+lw+'px,'+lw+'px';
+        if(da=='longdashdot') return (5*lw)+'px,'+(2*lw)+'px,'+lw+'px,'+(2*lw)+'px';
         return da; // user writes the dasharray themselves
     });
 };
 
 drawing.fillGroupStyle = function(s) {
-    s.attr('stroke-width',0)
+    s.style('stroke-width',0)
     .each(function(d){
         var shape = d3.select(this);
         try { shape.call(drawing.fillColor,d[0].t.fc); }
@@ -147,7 +134,7 @@ drawing.pointStyle = function(s,t) {
             lw = a+'lw', c = a+'c', lc = a+'lc',
             w = (d[lw]+1 || t[lw]+1 || (d.t ? d.t[lw] : 0)+1) - 1,
             p = d3.select(this);
-        p.attr('stroke-width',w)
+        p.style('stroke-width',w+'px')
             .call(drawing.fillColor, colorscales[a](d[c] || t[c] || (d.t ? d.t[c] : '')));
         if(w) { p.call(drawing.strokeColor, colorscales[a+'l'](d[lc] || t[lc] || (d.t ? d.t[lc] : ''))); }
     });
@@ -285,7 +272,7 @@ drawing.styleText = function(sn,t,clickable) {
     else {
         for(i=0; i<lines.length;i++) {
             var l=s.append('tspan').attr('class','nl');
-            if(i>0) { l.attr('x',s.attr('x')).attr('dy',LINEEXPAND*s.attr('font-size')); }
+            if(i>0) { l.attr('x',s.attr('x')).attr('dy',LINEEXPAND*drawing.getPx(s,'font-size')); }
             sti(l,lines[i].childNodes);
         }
     }
@@ -296,7 +283,7 @@ drawing.styleText = function(sn,t,clickable) {
         if(bb.width===0 || bb.height===0) {
             s.selectAll('tspan').remove();
             drawing.styleText(sn,'XXXXX');
-            s.attr('opacity',0);
+            s.style('opacity',0);
         }
     }
 
@@ -304,15 +291,15 @@ drawing.styleText = function(sn,t,clickable) {
         function addtext(v){ (s.text() ? s.append('tspan') : s).text(v); }
 
         var sf = {
-            sup: function(s){ s.attr('baseline-shift','super').attr('font-size','70%'); },
-            sub: function(s){ s.attr('baseline-shift','sub').attr('font-size','70%'); },
-            b: function(s){ s.attr('font-weight','bold'); },
-            i: function(s){ s.attr('font-style','italic'); },
+            sup: function(s){ s.attr('baseline-shift','super').style('font-size','70%'); },
+            sub: function(s){ s.attr('baseline-shift','sub').style('font-size','70%'); },
+            b: function(s){ s.style('font-weight','bold'); },
+            i: function(s){ s.style('font-style','italic'); },
             font: function(s,a){
                 for(var j=0; j<a.length; j++) {
                     var at = a[j], atl=at.name.toLowerCase(), atv=at.nodeValue;
                     if(atl=='color') { s.call(drawing.fillColor,atv); }
-                    else { s.attr('font-'+atl,atv); }
+                    else { s.style('font-'+atl,atv+(atl=='size' ? 'px' : '')); }
                 }
             },
             a: function(s,a){
@@ -321,7 +308,6 @@ drawing.styleText = function(sn,t,clickable) {
                     if(atl=='href') { s.attr('xlink:xlink:href',atv); }
                 }
                 s.attr('target','_blank');
-                    // .call(drawing.fillColor,'#0088cc');
             }
         };
 

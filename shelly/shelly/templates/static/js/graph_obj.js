@@ -1428,7 +1428,7 @@ function makePlotFramework(divid, layout) {
 
     // Initial autosize
     if(gl.autosize=='initial') {
-        if(gd.mainsite){ setFileAndCommentsHeight(gd) };
+        if(gd.mainsite){ setFileAndCommentsHeight(gd); }
         plotAutoSize(gd,{});
         gl.autosize=true;
     }
@@ -1490,7 +1490,7 @@ function makePlotFramework(divid, layout) {
             else {
                 // main subplot - make the components of the plot and containers for overlays
                 plotinfo.bg = plotgroup.append('rect')
-                    .attr('stroke-width',0);
+                    .style('stroke-width',0);
                 plotinfo.gridlayer = plotgroup.append('g');
                 plotinfo.overgrid = plotgroup.append('g');
                 plotinfo.zerolinelayer = plotgroup.append('g');
@@ -1656,14 +1656,14 @@ function layoutStyles(gd) {
                 (showbottom ? (xpathPrefix+bottompos+xpathSuffix) : '') +
                 (showtop ? (xpathPrefix+toppos+xpathSuffix) : '') +
                 (showfreex ? (xpathPrefix+freeposx+xpathSuffix) : '')) || 'M0,0') // so it doesn't barf with no lines shown
-            .attr('stroke-width',xlw)
+            .style('stroke-width',xlw+'px')
             .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
         plotinfo.ylines
             .attr('d',(
                 (showleft ? ('M'+leftpos+ypathSuffix) : '') +
                 (showright ? ('M'+rightpos+ypathSuffix) : '') +
                 (showfreey ? ('M'+freeposy+ypathSuffix) : '')) || 'M0,0')
-            .attr('stroke-width',ylw)
+            .attr('stroke-width',ylw+'px')
             .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
 
         // mark free axes as displayed, so we don't draw them again
@@ -1750,7 +1750,11 @@ plots.titles = function(gd,title) {
 
     function titleLayout(){
         var titleEl = this
-            .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
+            .style({
+                'font-family': font,
+                'font-size': d3.round(fontSize,2)+'px',
+                fill: Plotly.Drawing.rgb(fontColor),
+                opacity: opacity*Plotly.Drawing.opacity(fontColor)})
             .attr(options)
             .call(d3.plugin.convertToTspans)
             .attr(options);
@@ -1808,17 +1812,21 @@ plots.titles = function(gd,title) {
             .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
     }
 
-    if(!txt) setPlaceholder();
+    if(gd.mainsite && !gl._forexport){ // don't allow editing (or placeholder) on embedded graphs or exports
+        if(!txt) setPlaceholder();
 
-    if(gd.mainsite){ // don't allow editing on embedded graphs
         el.call(d3.plugin.makeEditable)
             .on('edit', function(text){
                 this
-                    .style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
+                    .style({
+                        'font-family': font,
+                        'font-size': fontSize+'px',
+                        fill: Plotly.Drawing.opacity(fontColor),
+                        opacity: opacity*Plotly.Drawing.opacity(fontColor)})
                     .call(d3.plugin.convertToTspans)
                     .attr(options)
                     .selectAll('tspan.line')
-                    .attr(options);
+                        .attr(options);
                 Plotly.relayout(gd,prop,text);
             })
             .on('cancel', function(text){
@@ -1828,7 +1836,7 @@ plots.titles = function(gd,title) {
             .on('input', function(d, i){
                 this.text(d || ' ').attr(options)
                     .selectAll('tspan.line')
-                    .attr(options);
+                        .attr(options);
             });
     }
     else if(!txt || txt === 'Click to enter '+name+' title') el.remove();

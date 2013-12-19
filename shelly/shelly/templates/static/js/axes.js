@@ -146,8 +146,8 @@ function setType(ax){
     ax._categories = [];
 
     // new logic: let people specify any type they want,
-    // only run the auto-setters if type is missing or '-'
-    if(ax.type && ax.type!='-') { return; }
+    // only run the auto-setters if type is unknown, including the initial '-'
+    if(['linear','log','date','category'].indexOf(ax.type)!=-1) { return; }
 
     // guess at axis type with the new property format
     // first check for histograms, as they can change the axis types
@@ -240,6 +240,8 @@ function loggy(d,ax) {
 
 // are the (x,y)-values in td.data mostly text?
 // JP edit 10.8.2013: strip $, %, and quote characters via axes.cleanDatum
+// require twice as many categories as numbers, to account for cases that can
+// be both, ie
 function category(d,ax) {
     function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1; }
     var catcount=0,
@@ -254,10 +256,10 @@ function category(d,ax) {
             var curvenums=0,curvecats=0;
             for(i=0; i<c[ax].length; i+=inc) {
                 var vi = axes.cleanDatum(c[ax][Math.round(i)]);
-                if(vi && isStr(vi)){ curvecats++; }
-                else if($.isNumeric(vi)){ curvenums++; }
+                if($.isNumeric(vi)){ curvenums++; }
+                else if(vi && isStr(vi)){ curvecats++; }
             }
-            if(curvecats>curvenums){ catcount++; }
+            if(curvecats>curvenums*2){ catcount++; }
             else { numcount++; }
         }
         // curve has an 'x0' or 'y0' value - is this text?
@@ -265,7 +267,7 @@ function category(d,ax) {
         else if(ax+'0' in c && isStr(c[ax+'0'])) { catcount++; }
         else { numcount++; }
     });
-    return catcount>numcount;
+    return catcount>numcount*2;
 }
 
 // convertOne: takes an x or y array and converts it to a position on the axis object "ax"
@@ -327,16 +329,14 @@ axes.convertToNums = function(o,ax){
 
 // cleanData: removes characters
 // same replace criteria used in the grid.js:scrapeCol
-axes.cleanDatum = function( c ){
+// but also handling dates, numbers, and NaN, null, Infinity etc
+axes.cleanDatum = function(c){
     try{
-        c = c.toString()
-            .replace('$','')
-            .replace(/,/g,'')
-            .replace('\'','')
-            .replace('"','')
-            .replace('%','');
+        if(typeof c=='object' && c.getTime) { return Plotly.Lib.ms2DateTime(c); }
+        if(typeof c!='string' && !$.isNumeric(c)) { return ''; }
+        c = c.toString().replace(/['"%,$# ]/g,'');
     }catch(e){
-        console.log(e);
+        console.log(e,c);
     }
     return c;
 };
@@ -354,7 +354,7 @@ axes.cleanDatum = function( c ){
 axes.setConvert = function(ax) {
     function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null; }
     function fromLog(v){ return Math.pow(10,v); }
-    function num(v){ return $.isNumeric(v) ? v : null; }
+    function num(v){ return $.isNumeric(v) ? Number(v) : null; }
 
     ax.c2l = (ax.type=='log') ? toLog : num;
     ax.l2c = (ax.type=='log') ? fromLog : num;
@@ -380,6 +380,17 @@ axes.setConvert = function(ax) {
         }
     };
     ax.p2c = function(px){ return ax.l2c(ax.p2l(px)); };
+
+    if(['linear','log','-'].indexOf(ax.type)!=-1) { ax.c2d = num; }
+    else if(ax.type=='date') {
+        ax.c2d = function(v) { return $.isNumeric(v) ? Plotly.Lib.ms2DateTime(v) : null; };
+    }
+    else if(ax.type=='category') {
+        ax.c2d = function(v) { return ax._categories[Math.round(v)]; };
+    }
+    else {
+        console.log('unknown axis type '+ax.type);
+    }
 
     // for autoranging: arrays of objects {val:axis value, pad: pixel padding}
     // on the low and high sides
@@ -1035,12 +1046,15 @@ var findThousands = /(\d+)(\d{3})/;
 function numSeparate(nStr, separators) {
     // separators - first char is decimal point,
     // next char is thousands separator if there is one
+
     var dp = separators.charAt(0),
         thou = separators.charAt(1),
         x = nStr.split('.'),
         x1 = x[0],
         x2 = x.length > 1 ? dp + x[1] : '';
-    if(thou) {
+    // even if there is a thousands separator, don't use it on
+    // 4-digit integers (like years)
+    if(thou && (x.length > 1 || x1.length>4)) {
         while (findThousands.test(x1)) {
             x1 = x1.replace(findThousands, '$1' + thou + '$2');
         }
@@ -1188,7 +1202,7 @@ axes.doTicks = function(td,axid) {
             ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
                 .classed('crisp',1)
                 .call(Plotly.Drawing.strokeColor, ax.tickcolor || '#000')
-                .attr('stroke-width', ax.tickwidth || 1)
+                .style('stroke-width', (ax.tickwidth || 1)+'px')
                 .attr('d',tickpath);
             ticks.attr('transform',transfn);
             ticks.exit().remove();
@@ -1281,7 +1295,7 @@ axes.doTicks = function(td,axid) {
             });
         grid.attr('transform',transfn)
             .call(Plotly.Drawing.strokeColor, ax.gridcolor || '#ddd')
-            .attr('stroke-width', gridwidth);
+            .style('stroke-width', gridwidth+'px');
         grid.exit().remove();
 
         // zero line
@@ -1301,7 +1315,7 @@ axes.doTicks = function(td,axid) {
             .attr('d',gridpath);
         zl.attr('transform',transfn)
             .call(Plotly.Drawing.strokeColor, ax.zerolinecolor || '#000')
-            .attr('stroke-width', ax.zerolinewidth || gridwidth);
+            .style('stroke-width', (ax.zerolinewidth || gridwidth)+'px');
         zl.exit().remove();
     });
 
