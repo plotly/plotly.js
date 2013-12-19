@@ -174,14 +174,16 @@ function setType(ax){
     if(d0.type=='box' && axletter=='x' && !('x' in d0) && !('x0' in d0)) {
         ax.type='category'; // take the categories from trace name, text, or number
     }
-    else if((axletter in d0) ? axes.moreDates(d0[axletter]) :
-        (Plotly.Lib.isDateTime(d0[axletter+'0']) && !$.isNumeric(d0[axletter+'0']))) {
-            ax.type='date';
+    else {
+        ax.type = axes.autoType((axletter in d0) ? d0[axletter] : [d0[axletter+'0']]);
     }
-    else if(axes.category(data,axletter)) { ax.type='category'; }
-    // else if(loggy(data,axletter)) { ax.type='log'; } // sadly this has never been popular...
-    else { ax.type='linear'; }
 }
+
+axes.autoType = function(array) {
+    if(axes.moreDates(array)) { return 'date'; }
+    if(axes.category(array)) { return 'category'; }
+    return 'linear';
+};
 
 // does the array a have mostly dates rather than numbers?
 // note: some values can be neither (such as blanks, text)
@@ -191,11 +193,11 @@ function setType(ax){
 axes.moreDates = function(a) {
     var dcnt=0, ncnt=0,
         inc = Math.max(1,(a.length-1)/1000), // test at most 1000 points, evenly spaced
-        ir;
+        ai;
     for(var i=0; i<a.length; i+=inc) {
-        ir = Math.round(i);
-        if(Plotly.Lib.isDateTime(a[ir])) { dcnt+=1; }
-        if($.isNumeric(a[ir])) { ncnt+=1; }
+        ai = a[Math.round(i)];
+        if(Plotly.Lib.isDateTime(ai)) { dcnt+=1; }
+        if($.isNumeric(ai)) { ncnt+=1; }
     }
     return (dcnt>ncnt*2);
 };
@@ -240,34 +242,17 @@ function loggy(d,ax) {
 
 // are the (x,y)-values in td.data mostly text?
 // JP edit 10.8.2013: strip $, %, and quote characters via axes.cleanDatum
-// require twice as many categories as numbers, to account for cases that can
-// be both, ie
-axes.category = function(d,ax) {
+// require twice as many categories as numbers
+axes.category = function(a) {
     function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1; }
-    var catcount=0,
-        numcount=0,
-        inc = 0;
-    d.forEach(function(c) { inc+=(c.length-1)/1000; });
-    inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
-
-    d.forEach(function(c){
-        // curve has data: test each point for non-numeric text
-        if(ax in c) {
-            var curvenums=0,curvecats=0;
-            for(i=0; i<c[ax].length; i+=inc) {
-                var vi = axes.cleanDatum(c[ax][Math.round(i)]);
-                if($.isNumeric(vi)){ curvenums++; }
-                else if(vi && isStr(vi)){ curvecats++; }
-            }
-            if(curvecats>curvenums*2){ catcount++; }
-            else { numcount++; }
-        }
-        // curve has an 'x0' or 'y0' value - is this text?
-        // (x0 can be specified this way for box plots)
-        else if(ax+'0' in c && isStr(c[ax+'0'])) { catcount++; }
-        else { numcount++; }
-    });
-    return catcount>numcount*2;
+    var inc = Math.max(1,(a.length-1)/1000), ai; // test at most 1000 points
+    var curvenums=0,curvecats=0;
+    for(i=0; i<a.length; i+=inc) {
+        ai = axes.cleanDatum(a[Math.round(i)]);
+        if($.isNumeric(ai)){ curvenums++; }
+        else if(ai && isStr(ai)){ curvecats++; }
+    }
+    return curvecats>curvenums*2;
 };
 
 // convertOne: takes an x or y array and converts it to a position on the axis object "ax"
