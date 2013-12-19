@@ -332,7 +332,7 @@ axes.convertToNums = function(o,ax){
 // but also handling dates, numbers, and NaN, null, Infinity etc
 axes.cleanDatum = function(c){
     try{
-        if(typeof c=='object' && c.getTime) { return Plotly.Lib.ms2DateTime(c); }
+        if(typeof c=='object' && c!==null && c.getTime) { return Plotly.Lib.ms2DateTime(c); }
         if(typeof c!='string' && !$.isNumeric(c)) { return ''; }
         c = c.toString().replace(/['"%,$# ]/g,'');
     }catch(e){
