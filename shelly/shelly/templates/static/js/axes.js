@@ -1035,12 +1035,15 @@ var findThousands = /(\d+)(\d{3})/;
 function numSeparate(nStr, separators) {
     // separators - first char is decimal point,
     // next char is thousands separator if there is one
+
     var dp = separators.charAt(0),
         thou = separators.charAt(1),
         x = nStr.split('.'),
         x1 = x[0],
         x2 = x.length > 1 ? dp + x[1] : '';
-    if(thou) {
+    // even if there is a thousands separator, don't use it on
+    // 4-digit integers (like years)
+    if(thou && (x.length > 1 || x1.length>4)) {
         while (findThousands.test(x1)) {
             x1 = x1.replace(findThousands, '$1' + thou + '$2');
         }
