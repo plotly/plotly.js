@@ -174,11 +174,11 @@ function setType(ax){
     if(d0.type=='box' && axletter=='x' && !('x' in d0) && !('x0' in d0)) {
         ax.type='category'; // take the categories from trace name, text, or number
     }
-    else if((axletter in d0) ? moreDates(d0[axletter]) :
+    else if((axletter in d0) ? axes.moreDates(d0[axletter]) :
         (Plotly.Lib.isDateTime(d0[axletter+'0']) && !$.isNumeric(d0[axletter+'0']))) {
             ax.type='date';
     }
-    else if(category(data,axletter)) { ax.type='category'; }
+    else if(axes.category(data,axletter)) { ax.type='category'; }
     // else if(loggy(data,axletter)) { ax.type='log'; } // sadly this has never been popular...
     else { ax.type='linear'; }
 }
@@ -188,7 +188,7 @@ function setType(ax){
 // 2- or 4-digit integers can be both, so require twice as many
 // dates as non-dates, to exclude cases with mostly 2 & 4 digit
 // numbers and a few dates
-function moreDates(a) {
+axes.moreDates = function(a) {
     var dcnt=0, ncnt=0,
         inc = Math.max(1,(a.length-1)/1000), // test at most 1000 points, evenly spaced
         ir;
@@ -198,7 +198,7 @@ function moreDates(a) {
         if($.isNumeric(a[ir])) { ncnt+=1; }
     }
     return (dcnt>ncnt*2);
-}
+};
 
 // does the array look like something that should be plotted on a log axis?
 // it should all be >0 or non-numeric
@@ -242,7 +242,7 @@ function loggy(d,ax) {
 // JP edit 10.8.2013: strip $, %, and quote characters via axes.cleanDatum
 // require twice as many categories as numbers, to account for cases that can
 // be both, ie
-function category(d,ax) {
+axes.category = function(d,ax) {
     function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1; }
     var catcount=0,
         numcount=0,
@@ -268,7 +268,7 @@ function category(d,ax) {
         else { numcount++; }
     });
     return catcount>numcount*2;
-}
+};
 
 // convertOne: takes an x or y array and converts it to a position on the axis object "ax"
 // inputs:
