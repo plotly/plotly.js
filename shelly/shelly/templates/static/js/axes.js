@@ -412,6 +412,11 @@ axes.doAutoRange = function(ax) {
             minmin=Math.min.apply(null,ax._min.map(function(v){return v.val;})),
             maxmax=Math.max.apply(null,ax._max.map(function(v){return v.val;})),
             axReverse = (ax.range && ax.range[1]<ax.range[0]);
+        // one-time setting to easily reverse the axis when plotting from code
+        if(ax.autorange=='reversed') {
+            axReverse = true;
+            ax.autorange = true;
+        }
         for(i=0; i<ax._min.length; i++) {
             minpt = ax._min[i];
             for(j=0; j<ax._max.length; j++) {
