@@ -145,17 +145,6 @@ function setType(ax){
     delete ax.categories; // obsolete (new one is private)
     ax._categories = [];
 
-    // check if date strings or js date objects are provided for range
-    // and convert to ms
-    if(ax.type=='date' && ax.range && ax.range.length>1) {
-        try {
-            var ar1 = ax.range.map(Plotly.Lib.dateTime2ms);
-            if(!$.isNumeric(ax.range[0]) && $.isNumeric(ar1[0])) { ax.range[0] = ar1[0]; }
-            if(!$.isNumeric(ax.range[1]) && $.isNumeric(ar1[1])) { ax.range[1] = ar1[1]; }
-        }
-        catch(e) { console.log(e, ax.range); }
-    }
-
     // new logic: let people specify any type they want,
     // only run the auto-setters if type is unknown, including the initial '-'
     if(['linear','log','date','category'].indexOf(ax.type)!=-1) { return; }
@@ -289,7 +278,8 @@ axes.cleanDatum = function(c){
 //  p: pixel value - mapped to the screen with current size and zoom
 // setAxConvert creates/updates these conversion functions
 // also clears the autorange bounds ._min and ._max
-// and the autotick constraints ._minDtick, ._forceTick0
+// and the autotick constraints ._minDtick, ._forceTick0,
+// and looks for date ranges that aren't yet in numeric format
 axes.setConvert = function(ax) {
     function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null; }
     function fromLog(v){ return Math.pow(10,v); }
@@ -330,6 +320,17 @@ axes.setConvert = function(ax) {
     else if(ax.type=='date') {
         ax.c2d = function(v) { return $.isNumeric(v) ? Plotly.Lib.ms2DateTime(v) : null; };
         ax.d2c = function(v){ return (typeof v=='number') ? v : Plotly.Lib.dateTime2ms(v); };
+
+        // check if date strings or js date objects are provided for range
+        // and convert to ms
+        if(ax.range && ax.range.length>1) {
+            try {
+                var ar1 = ax.range.map(Plotly.Lib.dateTime2ms);
+                if(!$.isNumeric(ax.range[0]) && $.isNumeric(ar1[0])) { ax.range[0] = ar1[0]; }
+                if(!$.isNumeric(ax.range[1]) && $.isNumeric(ar1[1])) { ax.range[1] = ar1[1]; }
+            }
+            catch(e) { console.log(e, ax.range); }
+        }
     }
     else if(ax.type=='category') {
         ax.c2d = function(v) { return ax._categories[Math.round(v)]; };
