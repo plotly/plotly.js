@@ -17,7 +17,7 @@ histogram.calc = function(gd,gdc) {
     // so gets made up monotonically increasing based on the opposite axis data,
     // but the user will see that...
     // the alternative would be to disable x histogram if there's no x data, etc.
-    var pos0 = Plotly.Axes.convertOne(gdc,gdc.type.charAt(9),pa);
+    var pos0 = pa.makeCalcdata(gdc,gdc.type.charAt(9));
     // calculate the bins
     if((gdc.autobinx!==false) || !('xbins' in gdc)) {
         gdc.xbins = Plotly.Axes.autoBin(pos0,pa,gdc.nbinsx);

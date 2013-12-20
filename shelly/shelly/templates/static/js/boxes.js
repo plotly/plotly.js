@@ -8,8 +8,9 @@ boxes.calc = function(gd,gdc) {
     // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
     var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
-        y = Plotly.Axes.convertOne(gdc,'y',ya), x;
-    if('x' in gdc) { x = Plotly.Axes.convertOne(gdc,'x',xa); }
+        x,
+        y = ya.makeCalcdata(gdc,'y');
+    if('x' in gdc) { x = xa.makeCalcdata(gdc,'x'); }
     // if no x data, use x0, or name, or text - so if you want one box
     // per trace, set x0 to the x value or category for this trace
     // (or set x to a constant array matching y)

@@ -11,8 +11,8 @@ bars.calc = function(gd,gdc) {
         pos, size, pa, sa, i;
     if(gdc.bardir=='h') { pa = ya; sa = xa; }
     else { pa = xa; sa = ya; }
-    size = Plotly.Axes.convertOne(gdc,'y',sa);
-    pos = Plotly.Axes.convertOne(gdc,'x',pa);
+    size = sa.makeCalcdata(gdc,'y');
+    pos = pa.makeCalcdata(gdc,'x');
 
     // create the "calculated data" to plot
     var serieslen = Math.min(pos.length,size.length),

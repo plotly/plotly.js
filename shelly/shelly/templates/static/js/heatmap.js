@@ -13,13 +13,13 @@ heatmap.calc = function(gd,gdc) {
     if(gdc.visible===false) { return; }
 
     // prepare the raw data
-    // run convertOne even for heatmaps, in case of category mappings
+    // run makeCalcdata on x and y even for heatmaps, in case of category mappings
     Plotly.Lib.markTime('start convert x&y');
     var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
-        x = gdc.x ? Plotly.Axes.convertOne(gdc,'x',xa) : [],
+        x = gdc.x ? xa.makeCalcdata(gdc,'x') : [],
         x0, dx,
-        y = gdc.y ? Plotly.Axes.convertOne(gdc,'y',ya) : [],
+        y = gdc.y ? ya.makeCalcdata(gdc,'y') : [],
         y0, dy,
         z = gdc.z,
         i;
