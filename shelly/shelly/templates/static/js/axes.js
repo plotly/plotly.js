@@ -145,6 +145,17 @@ function setType(ax){
     delete ax.categories; // obsolete (new one is private)
     ax._categories = [];
 
+    // check if date strings or js date objects are provided for range
+    // and convert to ms
+    if(ax.type=='date' && ax.range && ax.range.length>1) {
+        try {
+            var ar1 = ax.range.map(Plotly.Lib.dateTime2ms);
+            if(!$.isNumeric(ax.range[0]) && $.isNumeric(ar1[0])) { ax.range[0] = ar1[0]; }
+            if(!$.isNumeric(ax.range[1]) && $.isNumeric(ar1[1])) { ax.range[1] = ar1[1]; }
+        }
+        catch(e) { console.log(e, ax.range); }
+    }
+
     // new logic: let people specify any type they want,
     // only run the auto-setters if type is unknown, including the initial '-'
     if(['linear','log','date','category'].indexOf(ax.type)!=-1) { return; }
