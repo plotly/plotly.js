@@ -28,7 +28,7 @@ axes.clearTypes = function(gd, traces) {
         traces = (gd.data||[]).map(function(d,i) { return i; });
     }
     traces.forEach(function(tracenum) {
-        var d = gd.data[i];
+        var d = gd.data[tracenum];
         axes.getFromId(gd,d.xaxis||'x').type = '-';
         axes.getFromId(gd,d.yaxis||'y').type = '-';
     });
