@@ -13,13 +13,13 @@ heatmap.calc = function(gd,gdc) {
     if(gdc.visible===false) { return; }
 
     // prepare the raw data
-    // run convertOne even for heatmaps, in case of category mappings
+    // run makeCalcdata on x and y even for heatmaps, in case of category mappings
     Plotly.Lib.markTime('start convert x&y');
     var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
-        x = gdc.x ? Plotly.Axes.convertOne(gdc,'x',xa) : [],
+        x = gdc.x ? xa.makeCalcdata(gdc,'x') : [],
         x0, dx,
-        y = gdc.y ? Plotly.Axes.convertOne(gdc,'y',ya) : [],
+        y = gdc.y ? ya.makeCalcdata(gdc,'y') : [],
         y0, dy,
         z = gdc.z,
         i;
@@ -150,7 +150,7 @@ heatmap.calc = function(gd,gdc) {
 function makeBoundArray(type,array_in,v0_in,dv_in,numbricks,ax) {
     var array_out = [], v0, dv, i;
     if($.isArray(array_in) && (type!='histogram2d') && (ax.type!='category')) {
-        array_in = Plotly.Axes.convertToNums(array_in,ax);
+        array_in = array_in.map(ax.d2c);
         var len = array_in.length;
         if(len==numbricks) { // given vals are brick centers
             if(numbricks==1) { return [array_in[0]-0.5,array_in[0]+0.5]; }
@@ -173,7 +173,7 @@ function makeBoundArray(type,array_in,v0_in,dv_in,numbricks,ax) {
         else if(type=='histogram2d' || ax.type=='category') {
             v0 = v0_in;
         }
-        else { v0 = Plotly.Axes.convertToNums(v0_in,ax); }
+        else { v0 = ax.d2c(v0_in); }
         for(i=0; i<=numbricks; i++) { array_out.push(v0+dv*(i-0.5)); }
     }
     return array_out;
@@ -191,9 +191,16 @@ heatmap.plot = function(gd,plotinfo,cd) {
         ya = plotinfo.y,
         gl = gd.layout;
 
-    var z=cd[0].z, min=t.zmin, max=t.zmax, scl=getScale(cd), x=cd[0].x, y=cd[0].y;
     var id='hm'+i; // heatmap id
     var cb_id='cb'+i; // colorbar id
+
+    if(t.visible===false) {
+        gl._paper.selectAll('.'+id).remove();
+        gl._paper.selectAll('.'+cb_id).remove();
+        return;
+    }
+
+    var z=cd[0].z, min=t.zmin, max=t.zmax, scl=getScale(cd), x=cd[0].x, y=cd[0].y;
     var fastsmooth=[true,'fast'].indexOf(t.zsmooth)!=-1; // fast smoothing - one pixel per brick
 
     // get z dims
@@ -390,14 +397,16 @@ heatmap.plot = function(gd,plotinfo,cd) {
     gl._paper.selectAll('.'+id).remove(); // put this right before making the new image, to minimize flicker
     plotinfo.plot.append('svg:image')
         .classed(id,true)
+        .datum(cd[0])
         // .classed('pixelated',true) // we can hope pixelated works...
-        .attr("xmlns","http://www.w3.org/2000/svg")
-        .attr("xlink:xlink:href", imgstr) // odd d3 quirk, need namespace twice
-        .attr("height",ht)
-        .attr("width",wd)
-        .attr("x",left)
-        .attr("y",top)
-        .attr('preserveAspectRatio','none');
+        .attr({
+            xmlns:"http://www.w3.org/2000/svg",
+            "xlink:xlink:href":imgstr, // odd d3 quirk, need namespace twice
+            height:ht,
+            width:wd,
+            x:left,
+            y:top,
+            preserveAspectRatio:'none'});
 
     Plotly.Lib.markTime('done showing png');
 
@@ -405,6 +414,10 @@ heatmap.plot = function(gd,plotinfo,cd) {
     gl._infolayer.selectAll('.'+cb_id).remove();
     if(t.showscale!==false){ insert_colorbar(gd,cd, cb_id, scl); }
     Plotly.Lib.markTime('done colorbar');
+};
+
+heatmap.style = function(s) {
+    s.style('opacity',function(d){ return d.t.op; });
 };
 
 // in order to avoid unnecessary redraws, check for heatmaps with colorscales
