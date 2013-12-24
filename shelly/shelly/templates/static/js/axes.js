@@ -28,7 +28,7 @@ axes.clearTypes = function(gd, traces) {
         traces = (gd.data||[]).map(function(d,i) { return i; });
     }
     traces.forEach(function(tracenum) {
-        var d = gd.data[i];
+        var d = gd.data[tracenum];
         axes.getFromId(gd,d.xaxis||'x').type = '-';
         axes.getFromId(gd,d.yaxis||'y').type = '-';
     });
@@ -278,7 +278,8 @@ axes.cleanDatum = function(c){
 //  p: pixel value - mapped to the screen with current size and zoom
 // setAxConvert creates/updates these conversion functions
 // also clears the autorange bounds ._min and ._max
-// and the autotick constraints ._minDtick, ._forceTick0
+// and the autotick constraints ._minDtick, ._forceTick0,
+// and looks for date ranges that aren't yet in numeric format
 axes.setConvert = function(ax) {
     function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null; }
     function fromLog(v){ return Math.pow(10,v); }
@@ -319,6 +320,17 @@ axes.setConvert = function(ax) {
     else if(ax.type=='date') {
         ax.c2d = function(v) { return $.isNumeric(v) ? Plotly.Lib.ms2DateTime(v) : null; };
         ax.d2c = function(v){ return (typeof v=='number') ? v : Plotly.Lib.dateTime2ms(v); };
+
+        // check if date strings or js date objects are provided for range
+        // and convert to ms
+        if(ax.range && ax.range.length>1) {
+            try {
+                var ar1 = ax.range.map(Plotly.Lib.dateTime2ms);
+                if(!$.isNumeric(ax.range[0]) && $.isNumeric(ar1[0])) { ax.range[0] = ar1[0]; }
+                if(!$.isNumeric(ax.range[1]) && $.isNumeric(ar1[1])) { ax.range[1] = ar1[1]; }
+            }
+            catch(e) { console.log(e, ax.range); }
+        }
     }
     else if(ax.type=='category') {
         ax.c2d = function(v) { return ax._categories[Math.round(v)]; };
@@ -400,6 +412,11 @@ axes.doAutoRange = function(ax) {
             minmin=Math.min.apply(null,ax._min.map(function(v){return v.val;})),
             maxmax=Math.max.apply(null,ax._max.map(function(v){return v.val;})),
             axReverse = (ax.range && ax.range[1]<ax.range[0]);
+        // one-time setting to easily reverse the axis when plotting from code
+        if(ax.autorange=='reversed') {
+            axReverse = true;
+            ax.autorange = true;
+        }
         for(i=0; i<ax._min.length; i++) {
             minpt = ax._min[i];
             for(j=0; j<ax._max.length; j++) {

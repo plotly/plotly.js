@@ -1391,6 +1391,10 @@ function makePlotFramework(divid, layout) {
     if(!yalist.length) { yalist = ['yaxis']; }
     xalist.concat(yalist).forEach(function(axname) {
         addDefaultAxis(oldLayout,axname);
+        // if an axis range was explicitly provided with newlayout, turn off autorange
+        if(newLayout[axname] && newLayout[axname].range && newLayout[axname].range.length==2) {
+            oldLayout[axname].autorange = false;
+        }
     });
     gd.layout=updateObject(oldLayout, newLayout);
     var gl = gd.layout;
