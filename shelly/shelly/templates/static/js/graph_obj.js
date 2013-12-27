@@ -401,36 +401,33 @@ Plotly.plot = function(gd, data, layout) {
 
 
     // Polar plots
-    if(gd.data && gd.data[0] && gd.data[0].type) gd.mainPlotType = gd.data[0].type;
-    if(gd.mainPlotType && gd.mainPlotType.indexOf('Polar') != -1){
-
-        if(data){
-            gd.data=data;
-            gd.plotType = gd.data[0].type;
-        }
+    var hasPolarType = false;
+    if (gd.data && gd.data[0] && gd.data[0].type) hasPolarType = gd.data[0].type.indexOf('Polar') != -1;
+    if(!hasPolarType) gd.framework = undefined;
+    if(hasPolarType || gd.framework && gd.framework.isPolar){
+        if(data) gd.data=data;
         gd.layout=layout;
 
-        gd.layout._container = d3.select(gd).select('.plot-container');
-        if(gd.layout._container.empty()){
-            gd.layout._container = d3.select(gd).append('div').classed('.plot-container', true).classed('plotly',true);
-        }
-        gd.paperdiv = gd.layout._container.select('.svg-container');
-        if(gd.paperdiv.empty()){
-            gd.paperdiv = gd.layout._container.append('div')
-                .classed('svg-container',true)
-                .style('position','relative');
-        }
+        var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
+        plotContainer.enter().append('div').classed('plot-container plotly', true);
+        var paperDiv = plotContainer.selectAll('.svg-container').data([0]);
+        paperDiv.enter().append('div')
+            .classed('svg-container',true)
+            .style('position','relative');
+
+        gd.layout._container = plotContainer;
+        gd.paperdiv = paperDiv
 
         if(gd.layout.autosize == 'initial') {
             plotAutoSize(gd,{});
             gd.layout.autosize = true;
         }
 
-        if(!gd.framework || gd.framework.name != 'micropolarPlotlyManager') gd.framework = micropolar.manager.plotly();
+        if(!gd.framework || !gd.framework.isPolar) gd.framework = micropolar.manager.plotly();
         gd.framework({container: gd.paperdiv.node(), data: gd.data, layout: gd.layout});
         gd.paper = gd.framework.svg();
         return null;
-    }else delete gd.mainPlotType;
+    }
 
     // Make or remake the framework (ie container and axes) if we need to
     // figure out what framework the data imply,
