@@ -8,8 +8,9 @@ boxes.calc = function(gd,gdc) {
     // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
     var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
-        y = Plotly.Axes.convertOne(gdc,'y',ya), x;
-    if('x' in gdc) { x = Plotly.Axes.convertOne(gdc,'x',xa); }
+        x,
+        y = ya.makeCalcdata(gdc,'y');
+    if('x' in gdc) { x = xa.makeCalcdata(gdc,'x'); }
     // if no x data, use x0, or name, or text - so if you want one box
     // per trace, set x0 to the x value or category for this trace
     // (or set x to a constant array matching y)
@@ -22,7 +23,7 @@ boxes.calc = function(gd,gdc) {
                 (Plotly.Lib.isDateTime(gdc.name) && xa.type=='date')
             )) { x0 = gdc.name; }
         else { x0 = gd.numboxes; }
-        x0 = Plotly.Axes.convertToNums(x0,xa);
+        x0 = xa.d2c(x0);
         x = y.map(function(){ return x0; });
     }
     // find x values
@@ -208,12 +209,11 @@ boxes.style = function(s) {
         .each(function(d){
             var t = d[0].t;
             d3.select(this).selectAll('path.box')
-                .attr('stroke-width',t.lw)
+                .style('stroke-width',t.lw+'px')
                 .call(Plotly.Drawing.strokeColor,t.lc)
                 .call(Plotly.Drawing.fillColor,t.fc);
             d3.select(this).selectAll('path.mean')
-                .attr('stroke-width',t.lw)
-                .attr('stroke-dasharray',(2*t.lw)+','+(t.lw))
+                .style({'stroke-width':t.lw, 'stroke-dasharray':(2*t.lw)+'px,'+(t.lw)+'px'})
                 .call(Plotly.Drawing.strokeColor,t.lc);
         })
         .selectAll('g.points')
