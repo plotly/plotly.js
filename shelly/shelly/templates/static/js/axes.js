@@ -123,9 +123,7 @@ axes.counterLetter = function(id) { return {x:'y',y:'x'}[id.charAt(0)]; };
 
 function setType(ax){
     var axletter = ax._id.charAt(0),
-        data = ax._td.data.filter(function(di){ return (di[axletter+'axis']||axletter)==ax._id; }),
-        d0 = data[0]||{x:[0], y:[0]};
-    if(!d0.type) { d0.type='scatter'; }
+        data = (ax._td.data||[]).filter(function(di){ return (di[axletter+'axis']||axletter)==ax._id; });
     // backward compatibility
     if(!ax.type) {
         if(ax.isdate) { ax.type='date'; }
@@ -139,6 +137,11 @@ function setType(ax){
     // now remove the obsolete properties
     delete ax.islog;
     delete ax.isdate;
+
+    if(!data.length) { return; }
+    var d0 = data[0];
+    if(!d0 || !d0.length) { return; }
+    if(!d0.type) { d0.type='scatter'; }
 
     // delete category list, if there is one, so we start over
     // to be filled in later by ax.d2c
@@ -182,8 +185,15 @@ function setType(ax){
 axes.autoType = function(array) {
     if(axes.moreDates(array)) { return 'date'; }
     if(axes.category(array)) { return 'category'; }
-    return 'linear';
+    if(linearOK(array)) { return 'linear'; }
+    else { return '-'; }
 };
+
+// is there at least one number in array? If not, we should leave
+// ax.type empty so it can be autoset later
+function linearOK(array) {
+    return array && array.some(function(v){ return $.isNumeric(v); });
+}
 
 // does the array a have mostly dates rather than numbers?
 // note: some values can be neither (such as blanks, text)

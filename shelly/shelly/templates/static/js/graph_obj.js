@@ -1294,8 +1294,25 @@ function plotAutoSize(gd, aobj) {
         var gdBB = gd.layout._container.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
         newwidth = Math.round(gdBB.width*0.9);
+
+        // restrict aspect ratio to between 2:1 and 1:2, but only change height to do this
+        newheight = Plotly.Lib.constrain(newheight, newwidth/2, newwidth*2);
+    }
+    else if(gd.shareplot) {
+        newheight = $(window).height()-$('#banner').height();
+        newwidth = $(window).width()-parseInt($('#embedded-graph').css('padding-left')||0,10);
+        if(gd.standalone) {
+            // full-page shareplot - restrict aspect ratio to between 2:1 and 1:2,
+            // but only change height to do this
+            newheight = Plotly.Lib.constrain(newheight, newwidth/2, newwidth*2);
+        }
+        // else embedded in an iframe - just take the full iframe size if we get
+        // to this point, with no aspect ratio restrictions
     }
     else {
+        // plotly.js - let the developers do what they want, either provide height and width
+        // for the container div, specify size in layout, or take the defaults, but don't
+        // enforce any ratio restrictions
         newheight = $(gd).height() || gd.layout.height || defaultLayout().height;
         newwidth = $(gd).width() || gd.layout.width || defaultLayout().width;
         // delete aobj.autosize;
@@ -1305,12 +1322,12 @@ function plotAutoSize(gd, aobj) {
         gd.layout.height = newheight;
         gd.layout.width = newwidth;
     }
-    // if there's no size change, update layout but only restyle (different
-    // element may get margin color)
+    // if there's no size change, update layout but delete the autosize attr so we don't redraw
+    // REMOVED: call restyle (different element may get margin color)
     else if(gd.layout.autosize != 'initial') { // can't call layoutStyles for initial autosize
         delete(aobj.autosize);
         gd.layout.autosize = true;
-        layoutStyles(gd);
+        // layoutStyles(gd);
     }
     return aobj;
 }
@@ -1318,11 +1335,13 @@ function plotAutoSize(gd, aobj) {
 // check whether to resize a tab (if it's a plot) to the container
 plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
-    killPopovers();
 
-    if(gd.mainsite){ setFileAndCommentsHeight(gd); }
+    if(gd.mainsite){
+        killPopovers();
+        setFileAndCommentsHeight(gd);
+    }
 
-    if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
+    if(gd && (gd.tabtype=='plot' || gd.shareplot) && $(gd).css('display')!='none') {
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
         gd.redrawTimer = setTimeout(function(){
 
@@ -1336,7 +1355,7 @@ plots.resize = function(gd) {
                 gd.changed = oldchanged; // autosizing doesn't count as a change
             }
 
-            if(LIT) {
+            if(window.LIT) {
                 hidebox();
                 litebox();
             }
@@ -1363,7 +1382,7 @@ function makePlotFramework(divid, layout) {
     // test if this is on the main site or embedded
     gd.mainsite = $('#plotlyMainMarker').length > 0;
 
-    // hook class for plots main container (in case of plotly.js this won't be #embedded_graph or .js-tab-contents)
+    // hook class for plots main container (in case of plotly.js this won't be #embedded-graph or .js-tab-contents)
     // almost nobody actually needs this anymore, but just to be safe...
     $gd.addClass('js-plotly-plot');
 
