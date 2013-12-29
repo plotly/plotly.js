@@ -310,7 +310,8 @@ function makeToolMenu(divid) {
     var gd = (typeof divid == 'string') ? document.getElementById(divid) : divid;
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
-    if(gd.mainsite) {
+    gd.userprofile = Boolean($('#plotlyUserProfile').length);
+    if(gd.mainsite && !gd.userprofile) {
         makeGraphToolMenu(gd);
     }
 }
@@ -387,6 +388,7 @@ Plotly.plot = function(gd, data, layout) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     // test if this is on the main site or embedded
     gd.mainsite=Boolean($('#plotlyMainMarker').length);
+    gd.userprofile = Boolean($('#plotlyUserProfile').length);    
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-array (null, '', whatever) for data
@@ -630,10 +632,10 @@ Plotly.plot = function(gd, data, layout) {
     // final cleanup
 
     // 'view in plotly' link for embedded plots
-    if(!gd.mainsite && !gd.standalone) { plots.positionBrand(gd); }
+    if(!gd.mainsite && !gd.standalone && gd.userprofile) { plots.positionBrand(gd); }
 
     setTimeout(function(){
-        if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
+        if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite && !gd.userprofile){
             try{
                 if( firsttimeuser() ) { showAlert('graphtips'); }
             }
@@ -1289,7 +1291,7 @@ function setGraphContainerScroll(gd) {
 
 function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
-    if(gd.mainsite) {
+    if(gd.mainsite && !gd.userprofile) {
         setFileAndCommentsHeight(gd);
         var gdBB = gd.layout._container.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
@@ -1336,7 +1338,7 @@ function plotAutoSize(gd, aobj) {
 plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
 
-    if(gd.mainsite){
+    if(gd.mainsite && !gd.userprofile){
         killPopovers();
         setFileAndCommentsHeight(gd);
     }
@@ -1448,7 +1450,7 @@ function makePlotFramework(divid, layout) {
 
     // Initial autosize
     if(gl.autosize=='initial') {
-        if(gd.mainsite){ setFileAndCommentsHeight(gd); }
+        if(gd.mainsite && !gd.userprofile){ setFileAndCommentsHeight(gd); }
         plotAutoSize(gd,{});
         gl.autosize=true;
     }
@@ -1832,7 +1834,7 @@ plots.titles = function(gd,title) {
             .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
     }
 
-    if(gd.mainsite && !gl._forexport){ // don't allow editing (or placeholder) on embedded graphs or exports
+    if(gd.mainsite && !gl._forexport && !gd.userprofile){ // don't allow editing (or placeholder) on embedded graphs or exports
         if(!txt) setPlaceholder();
 
         el.call(d3.plugin.makeEditable)
