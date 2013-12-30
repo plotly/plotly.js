@@ -140,7 +140,7 @@ function setType(ax){
 
     if(!data.length) { return; }
     var d0 = data[0];
-    if(!d0 || !d0.length) { return; }
+    if(!d0) { return; }
     if(!d0.type) { d0.type='scatter'; }
 
     // delete category list, if there is one, so we start over
