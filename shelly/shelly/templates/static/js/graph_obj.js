@@ -1371,7 +1371,7 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
-    console.timeEnd('DisplayPlot');
+//    console.timeEnd('DisplayPlot');
 
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
