@@ -1293,7 +1293,7 @@ function setGraphContainerScroll(gd) {
 function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
     if(gd.mainsite) {
-        setFileAndCommentsHeight(gd);
+        setFileAndCommentsSize(gd);
         var gdBB = gd.layout._container.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
         newwidth = Math.round(gdBB.width*0.9);
@@ -1323,7 +1323,7 @@ plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     killPopovers();
 
-    if(gd.mainsite){ setFileAndCommentsHeight(gd); }
+    if(gd.mainsite){ setFileAndCommentsSize(gd); }
 
     if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
@@ -1428,7 +1428,7 @@ function makePlotFramework(divid, layout) {
 
     // Initial autosize
     if(gl.autosize=='initial') {
-        if(gd.mainsite){ setFileAndCommentsHeight(gd) };
+        if(gd.mainsite){ setFileAndCommentsSize(gd) };
         plotAutoSize(gd,{});
         gl.autosize=true;
     }
