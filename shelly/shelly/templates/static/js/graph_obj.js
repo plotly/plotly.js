@@ -310,8 +310,7 @@ function makeToolMenu(divid) {
     var gd = (typeof divid == 'string') ? document.getElementById(divid) : divid;
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
-    gd.userprofile = Boolean($('#plotlyUserProfileMarker').length);
-    if(gd.mainsite && !gd.userprofile) {
+    if(gd.mainsite) {
         makeGraphToolMenu(gd);
     }
 }
@@ -387,8 +386,7 @@ Plotly.plot = function(gd, data, layout) {
     // some callers send this in by dom element, others by id (string)
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     // test if this is on the main site or embedded
-    gd.mainsite=Boolean($('#plotlyMainMarker').length);
-    gd.userprofile = Boolean($('#plotlyUserProfileMarker').length);    
+    gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-array (null, '', whatever) for data
@@ -418,7 +416,7 @@ Plotly.plot = function(gd, data, layout) {
             .style('position','relative');
 
         gd.layout._container = plotContainer;
-        gd.paperdiv = paperDiv
+        gd.paperdiv = paperDiv;
 
         if(gd.layout.autosize == 'initial') {
             plotAutoSize(gd,{});
@@ -632,10 +630,10 @@ Plotly.plot = function(gd, data, layout) {
     // final cleanup
 
     // 'view in plotly' link for embedded plots
-    if(!gd.mainsite && !gd.standalone && gd.userprofile) { plots.positionBrand(gd); }
+    if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
 
     setTimeout(function(){
-        if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite && !gd.userprofile){
+        if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
             try{
                 if( firsttimeuser() ) { showAlert('graphtips'); }
             }
@@ -1291,7 +1289,7 @@ function setGraphContainerScroll(gd) {
 
 function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
-    if(gd.mainsite && !gd.userprofile) {
+    if(gd.mainsite){
         setFileAndCommentsHeight(gd);
         var gdBB = gd.layout._container.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
@@ -1338,7 +1336,7 @@ function plotAutoSize(gd, aobj) {
 plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
 
-    if(gd.mainsite && !gd.userprofile){
+    if(gd.mainsite){
         killPopovers();
         setFileAndCommentsHeight(gd);
     }
@@ -1383,7 +1381,6 @@ function makePlotFramework(divid, layout) {
 
     // test if this is on the main site or embedded
     gd.mainsite = $('#plotlyMainMarker').length > 0;
-    gd.userprofile = $('#plotlyUserProfileMarker').length > 0;
 
     // hook class for plots main container (in case of plotly.js this won't be #embedded-graph or .js-tab-contents)
     // almost nobody actually needs this anymore, but just to be safe...
@@ -1451,7 +1448,7 @@ function makePlotFramework(divid, layout) {
 
     // Initial autosize
     if(gl.autosize=='initial') {
-        if(gd.mainsite && !gd.userprofile){ setFileAndCommentsHeight(gd); }
+        if(gd.mainsite){ setFileAndCommentsHeight(gd); }
         plotAutoSize(gd,{});
         gl.autosize=true;
     }
@@ -1835,7 +1832,7 @@ plots.titles = function(gd,title) {
             .on('mouseout.opacity',function(){d3.select(this).transition().duration(1000).style('opacity',0);});
     }
 
-    if(gd.mainsite && !gl._forexport && !gd.userprofile){ // don't allow editing (or placeholder) on embedded graphs or exports
+    if(gd.mainsite && !gl._forexport){ // don't allow editing (or placeholder) on embedded graphs or exports
         if(!txt) setPlaceholder();
 
         el.call(d3.plugin.makeEditable)
