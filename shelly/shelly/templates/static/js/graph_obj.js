@@ -423,7 +423,7 @@ Plotly.plot = function(gd, data, layout) {
             gd.layout.autosize = true;
         }
 
-        if(!gd.framework || !gd.framework.isPolar) gd.framework = micropolar.manager.plotly();
+        if(!gd.framework || !gd.framework.isPolar) gd.framework = micropolar.manager.framework();
         gd.framework({container: gd.paperdiv.node(), data: gd.data, layout: gd.layout});
         gd.paper = gd.framework.svg();
 
