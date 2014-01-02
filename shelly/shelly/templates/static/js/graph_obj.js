@@ -426,6 +426,7 @@ Plotly.plot = function(gd, data, layout) {
         if(!gd.framework || !gd.framework.isPolar) gd.framework = micropolar.manager.plotly();
         gd.framework({container: gd.paperdiv.node(), data: gd.data, layout: gd.layout});
         gd.paper = gd.framework.svg();
+
         return null;
     }
 
@@ -1071,6 +1072,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
 // relayout(gd,aobj)
 //      aobj - {astr1:val1, astr2:val2...} allows setting multiple attributes simultaneously
 Plotly.relayout = function(gd,astr,val) {
+    if(gd.framework && gd.framework.isPolar) return;
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     var gl = gd.layout,
         aobj = {},
