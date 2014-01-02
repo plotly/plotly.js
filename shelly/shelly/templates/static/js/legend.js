@@ -306,6 +306,7 @@ legend.repositionLegend = function(gd, traces){
         var mathjaxGroup = g.select('g[class*=math-group]');
         if(mathjaxGroup.node()) legendwidth = Math.max(legendwidth, mathjaxGroup.node().getBoundingClientRect().width);
         else legendwidth = Math.max(legendwidth,tbb.width);
+        console.log(tbb);
         // Firefox makes oversized bounding boxes for paths sometimes... at least it
         // adds the same amount to the top and bottom so we can use it above!
         // But here just use the text.
