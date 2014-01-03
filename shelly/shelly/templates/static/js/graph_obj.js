@@ -405,8 +405,8 @@ Plotly.plot = function(gd, data, layout) {
     if (gd.data && gd.data[0] && gd.data[0].type) hasPolarType = gd.data[0].type.indexOf('Polar') != -1;
     if(!hasPolarType) gd.framework = undefined;
     if(hasPolarType || gd.framework && gd.framework.isPolar){
-        if(data) gd.data=data;
-        gd.layout=layout;
+        if(data) gd.data = data;
+        gd.layout = layout;
 
         var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
         plotContainer.enter().append('div').classed('plot-container plotly', true);
@@ -414,9 +414,14 @@ Plotly.plot = function(gd, data, layout) {
         paperDiv.enter().append('div')
             .classed('svg-container',true)
             .style('position','relative');
+        paperDiv.style({
+            width: (gd.layout.width || 800) + 'px',
+            height: (gd.layout.height || 600) + 'px',
+            background: (gd.layout.paper_bgcolor || 'white')
+        });
 
         gd.layout._container = plotContainer;
-        gd.paperdiv = paperDiv;
+        gd.layout._paperdiv = paperDiv;
 
         if(gd.layout.autosize == 'initial') {
             plotAutoSize(gd,{});
@@ -424,11 +429,14 @@ Plotly.plot = function(gd, data, layout) {
         }
 
         if(!gd.framework || !gd.framework.isPolar) gd.framework = micropolar.manager.framework();
-        gd.framework({container: gd.paperdiv.node(), data: gd.data, layout: gd.layout});
-        gd.paper = gd.framework.svg();
+        gd.framework({container: paperDiv.node(), data: gd.data, layout: gd.layout});
+        gd.layout._paper = gd.framework.svg();
+
+        $('.js-annotation-box, .js-fit-plot-data').hide();
 
         return null;
     }
+    else {$('.js-annotation-box, .js-fit-plot-data').show();}
 
     // Make or remake the framework (ie container and axes) if we need to
     // figure out what framework the data imply,
