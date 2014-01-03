@@ -493,7 +493,10 @@ lib.startspin = function(parent,spinsize,options){
 
 // similar to OS X's "growl" notifier
 lib.notifier = function(text,tm){
-    var num_notifs = $('div.notifier').length, mt = (num_notifs*100)+20;
+    var notifier_container = $('.notifier-container');
+    if(!notifier_container.length) {
+        notifier_container = $('<div class="notifier-container"></div>').appendTo('#tabs-one-line,#embedded-graph');
+    }
 
     if( $('div.notifier').text().indexOf(text) > 0 ) return;
 
@@ -501,12 +504,10 @@ lib.notifier = function(text,tm){
         '<button class="notifier__close close" data-dismiss="alert">&times;</button>'+
         '<p class="push-half">'+text+'</p></div>');
 
-    n.appendTo('#tabs-one-line,#embedded-graph')
-        .css({ 'margin-top':mt })
+    n.appendTo(notifier_container)
         .fadeIn(2000)
         .delay(tm=='long' ? 2000 : 1000)
-        .fadeOut(2000);
-        // .fadeOut(2000,function(){ n.remove(); });
+        .fadeOut(2000,function(){ n.remove(); });
 };
 
 lib.conf_modal = (function(){
