@@ -421,7 +421,7 @@ Plotly.plot = function(gd, data, layout) {
         });
 
         gd.layout._container = plotContainer;
-        gd.paperdiv = paperDiv;
+        gd.layout._paperdiv = paperDiv;
 
         if(gd.layout.autosize == 'initial') {
             plotAutoSize(gd,{});
@@ -429,8 +429,8 @@ Plotly.plot = function(gd, data, layout) {
         }
 
         if(!gd.framework || !gd.framework.isPolar) gd.framework = micropolar.manager.framework();
-        gd.framework({container: gd.paperdiv.node(), data: gd.data, layout: gd.layout});
-        gd.paper = gd.framework.svg();
+        gd.framework({container: paperDiv.node(), data: gd.data, layout: gd.layout});
+        gd.layout._paper = gd.framework.svg();
 
         $('.js-annotation-box, .js-fit-plot-data').hide();
 
