@@ -386,7 +386,7 @@ Plotly.plot = function(gd, data, layout) {
     // some callers send this in by dom element, others by id (string)
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     // test if this is on the main site or embedded
-    gd.mainsite=Boolean($('#plotlyMainMarker').length);
+    gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-array (null, '', whatever) for data
@@ -401,36 +401,34 @@ Plotly.plot = function(gd, data, layout) {
 
 
     // Polar plots
-    if(gd.data && gd.data[0] && gd.data[0].type) gd.mainPlotType = gd.data[0].type;
-    if(gd.mainPlotType && gd.mainPlotType.indexOf('Polar') != -1){
-
-        if(data){
-            gd.data=data;
-            gd.plotType = gd.data[0].type;
-        }
+    var hasPolarType = false;
+    if (gd.data && gd.data[0] && gd.data[0].type) hasPolarType = gd.data[0].type.indexOf('Polar') != -1;
+    if(!hasPolarType) gd.framework = undefined;
+    if(hasPolarType || gd.framework && gd.framework.isPolar){
+        if(data) gd.data=data;
         gd.layout=layout;
 
-        gd.layout._container = d3.select(gd).select('.plot-container');
-        if(gd.layout._container.empty()){
-            gd.layout._container = d3.select(gd).append('div').classed('.plot-container', true).classed('plotly',true);
-        }
-        gd.paperdiv = gd.layout._container.select('.svg-container');
-        if(gd.paperdiv.empty()){
-            gd.paperdiv = gd.layout._container.append('div')
-                .classed('svg-container',true)
-                .style('position','relative');
-        }
+        var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
+        plotContainer.enter().append('div').classed('plot-container plotly', true);
+        var paperDiv = plotContainer.selectAll('.svg-container').data([0]);
+        paperDiv.enter().append('div')
+            .classed('svg-container',true)
+            .style('position','relative');
+
+        gd.layout._container = plotContainer;
+        gd.paperdiv = paperDiv;
 
         if(gd.layout.autosize == 'initial') {
             plotAutoSize(gd,{});
             gd.layout.autosize = true;
         }
 
-        if(!gd.framework || gd.framework.name != 'micropolarPlotlyManager') gd.framework = micropolar.manager.plotly();
+        if(!gd.framework || !gd.framework.isPolar) gd.framework = micropolar.manager.framework();
         gd.framework({container: gd.paperdiv.node(), data: gd.data, layout: gd.layout});
         gd.paper = gd.framework.svg();
+
         return null;
-    }else delete gd.mainPlotType;
+    }
 
     // Make or remake the framework (ie container and axes) if we need to
     // figure out what framework the data imply,
@@ -633,7 +631,7 @@ Plotly.plot = function(gd, data, layout) {
     // final cleanup
 
     // 'view in plotly' link for embedded plots
-    if(!gd.mainsite && !gd.standalone) { plots.positionBrand(gd); }
+    if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
@@ -1074,6 +1072,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
 // relayout(gd,aobj)
 //      aobj - {astr1:val1, astr2:val2...} allows setting multiple attributes simultaneously
 Plotly.relayout = function(gd,astr,val) {
+    if(gd.framework && gd.framework.isPolar) return;
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     var gl = gd.layout,
         aobj = {},
@@ -1292,13 +1291,30 @@ function setGraphContainerScroll(gd) {
 
 function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
-    if(gd.mainsite) {
+    if(gd.mainsite){
         setFileAndCommentsHeight(gd);
         var gdBB = gd.layout._container.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
         newwidth = Math.round(gdBB.width*0.9);
+
+        // restrict aspect ratio to between 2:1 and 1:2, but only change height to do this
+        newheight = Plotly.Lib.constrain(newheight, newwidth/2, newwidth*2);
+    }
+    else if(gd.shareplot) {
+        newheight = $(window).height()-$('#banner').height();
+        newwidth = $(window).width()-parseInt($('#embedded-graph').css('padding-left')||0,10);
+        if(gd.standalone) {
+            // full-page shareplot - restrict aspect ratio to between 2:1 and 1:2,
+            // but only change height to do this
+            newheight = Plotly.Lib.constrain(newheight, newwidth/2, newwidth*2);
+        }
+        // else embedded in an iframe - just take the full iframe size if we get
+        // to this point, with no aspect ratio restrictions
     }
     else {
+        // plotly.js - let the developers do what they want, either provide height and width
+        // for the container div, specify size in layout, or take the defaults, but don't
+        // enforce any ratio restrictions
         newheight = $(gd).height() || gd.layout.height || defaultLayout().height;
         newwidth = $(gd).width() || gd.layout.width || defaultLayout().width;
         // delete aobj.autosize;
@@ -1308,12 +1324,12 @@ function plotAutoSize(gd, aobj) {
         gd.layout.height = newheight;
         gd.layout.width = newwidth;
     }
-    // if there's no size change, update layout but only restyle (different
-    // element may get margin color)
+    // if there's no size change, update layout but delete the autosize attr so we don't redraw
+    // REMOVED: call restyle (different element may get margin color)
     else if(gd.layout.autosize != 'initial') { // can't call layoutStyles for initial autosize
         delete(aobj.autosize);
         gd.layout.autosize = true;
-        layoutStyles(gd);
+        // layoutStyles(gd);
     }
     return aobj;
 }
@@ -1321,11 +1337,13 @@ function plotAutoSize(gd, aobj) {
 // check whether to resize a tab (if it's a plot) to the container
 plots.resize = function(gd) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
-    killPopovers();
 
-    if(gd.mainsite){ setFileAndCommentsHeight(gd); }
+    if(gd.mainsite){
+        killPopovers();
+        setFileAndCommentsHeight(gd);
+    }
 
-    if(gd && gd.tabtype=='plot' && $(gd).css('display')!='none') {
+    if(gd && (gd.tabtype=='plot' || gd.shareplot) && $(gd).css('display')!='none') {
         if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
         gd.redrawTimer = setTimeout(function(){
 
@@ -1339,7 +1357,7 @@ plots.resize = function(gd) {
                 gd.changed = oldchanged; // autosizing doesn't count as a change
             }
 
-            if(LIT) {
+            if(window.LIT) {
                 hidebox();
                 litebox();
             }
@@ -1353,7 +1371,7 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
-    console.timeEnd('DisplayPlot');
+//    console.timeEnd('DisplayPlot');
 
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
@@ -1366,7 +1384,7 @@ function makePlotFramework(divid, layout) {
     // test if this is on the main site or embedded
     gd.mainsite = $('#plotlyMainMarker').length > 0;
 
-    // hook class for plots main container (in case of plotly.js this won't be #embedded_graph or .js-tab-contents)
+    // hook class for plots main container (in case of plotly.js this won't be #embedded-graph or .js-tab-contents)
     // almost nobody actually needs this anymore, but just to be safe...
     $gd.addClass('js-plotly-plot');
 
@@ -1391,6 +1409,10 @@ function makePlotFramework(divid, layout) {
     if(!yalist.length) { yalist = ['yaxis']; }
     xalist.concat(yalist).forEach(function(axname) {
         addDefaultAxis(oldLayout,axname);
+        // if an axis range was explicitly provided with newlayout, turn off autorange
+        if(newLayout[axname] && newLayout[axname].range && newLayout[axname].range.length==2) {
+            oldLayout[axname].autorange = false;
+        }
     });
     gd.layout=updateObject(oldLayout, newLayout);
     var gl = gd.layout;
