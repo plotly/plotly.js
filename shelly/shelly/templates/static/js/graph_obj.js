@@ -1958,6 +1958,7 @@ function stripObj(d,mode) {
     var o={}, v;
     function s2(v2) { return stripObj(v2,mode); }
     for(v in d) {
+        if (v === "fit" && $.isPlainObject(d[v])) { continue; }
         // remove private elements and functions - _ is for private, [ is a mistake ie [object Object]
         if(typeof d[v]=='function' || ['_','['].indexOf(v.charAt(0))!=-1) { continue; }
         // look for src/data matches and remove the appropriate one
