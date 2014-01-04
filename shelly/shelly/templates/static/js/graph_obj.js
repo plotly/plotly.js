@@ -405,8 +405,8 @@ Plotly.plot = function(gd, data, layout) {
     if (gd.data && gd.data[0] && gd.data[0].type) hasPolarType = gd.data[0].type.indexOf('Polar') != -1;
     if(!hasPolarType) gd.framework = undefined;
     if(hasPolarType || gd.framework && gd.framework.isPolar){
-        if(data) gd.data=data;
-        gd.layout=layout;
+        if(data) gd.data = data;
+        gd.layout = layout;
 
         var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
         plotContainer.enter().append('div').classed('plot-container plotly', true);
@@ -414,9 +414,14 @@ Plotly.plot = function(gd, data, layout) {
         paperDiv.enter().append('div')
             .classed('svg-container',true)
             .style('position','relative');
+        paperDiv.style({
+            width: (gd.layout.width || 800) + 'px',
+            height: (gd.layout.height || 600) + 'px',
+            background: (gd.layout.paper_bgcolor || 'white')
+        });
 
         gd.layout._container = plotContainer;
-        gd.paperdiv = paperDiv;
+        gd.layout._paperdiv = paperDiv;
 
         if(gd.layout.autosize == 'initial') {
             plotAutoSize(gd,{});
@@ -424,11 +429,14 @@ Plotly.plot = function(gd, data, layout) {
         }
 
         if(!gd.framework || !gd.framework.isPolar) gd.framework = micropolar.manager.framework();
-        gd.framework({container: gd.paperdiv.node(), data: gd.data, layout: gd.layout});
-        gd.paper = gd.framework.svg();
+        gd.framework({container: paperDiv.node(), data: gd.data, layout: gd.layout});
+        gd.layout._paper = gd.framework.svg();
+
+        $('.js-annotation-box, .js-fit-plot-data').hide();
 
         return null;
     }
+    else {$('.js-annotation-box, .js-fit-plot-data').show();}
 
     // Make or remake the framework (ie container and axes) if we need to
     // figure out what framework the data imply,
@@ -1292,13 +1300,13 @@ function setGraphContainerScroll(gd) {
 function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
     if(gd.mainsite){
-        setFileAndCommentsHeight(gd);
+        setFileAndCommentsSize(gd);
         var gdBB = gd.layout._container.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
         newwidth = Math.round(gdBB.width*0.9);
 
         // restrict aspect ratio to between 2:1 and 1:2, but only change height to do this
-        newheight = Plotly.Lib.constrain(newheight, newwidth/2, newwidth*2);
+        // newheight = Plotly.Lib.constrain(newheight, newwidth/2, newwidth*2);
     }
     else if(gd.shareplot) {
         newheight = $(window).height()-$('#banner').height();
@@ -1340,7 +1348,7 @@ plots.resize = function(gd) {
 
     if(gd.mainsite){
         killPopovers();
-        setFileAndCommentsHeight(gd);
+        setFileAndCommentsSize(gd);
     }
 
     if(gd && (gd.tabtype=='plot' || gd.shareplot) && $(gd).css('display')!='none') {
@@ -1450,7 +1458,7 @@ function makePlotFramework(divid, layout) {
 
     // Initial autosize
     if(gl.autosize=='initial') {
-        if(gd.mainsite){ setFileAndCommentsHeight(gd); }
+        if(gd.mainsite){ setFileAndCommentsSize(gd); }
         plotAutoSize(gd,{});
         gl.autosize=true;
     }
@@ -1950,6 +1958,7 @@ function stripObj(d,mode) {
     var o={}, v;
     function s2(v2) { return stripObj(v2,mode); }
     for(v in d) {
+        if (v === "fit" && $.isPlainObject(d[v])) { continue; }
         // remove private elements and functions - _ is for private, [ is a mistake ie [object Object]
         if(typeof d[v]=='function' || ['_','['].indexOf(v.charAt(0))!=-1) { continue; }
         // look for src/data matches and remove the appropriate one
