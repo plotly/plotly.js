@@ -28,7 +28,7 @@ axes.clearTypes = function(gd, traces) {
         traces = (gd.data||[]).map(function(d,i) { return i; });
     }
     traces.forEach(function(tracenum) {
-        var d = gd.data[i];
+        var d = gd.data[tracenum];
         axes.getFromId(gd,d.xaxis||'x').type = '-';
         axes.getFromId(gd,d.yaxis||'y').type = '-';
     });
@@ -123,9 +123,7 @@ axes.counterLetter = function(id) { return {x:'y',y:'x'}[id.charAt(0)]; };
 
 function setType(ax){
     var axletter = ax._id.charAt(0),
-        data = ax._td.data.filter(function(di){ return (di[axletter+'axis']||axletter)==ax._id; }),
-        d0 = data[0]||{x:[0], y:[0]};
-    if(!d0.type) { d0.type='scatter'; }
+        data = (ax._td.data||[]).filter(function(di){ return (di[axletter+'axis']||axletter)==ax._id; });
     // backward compatibility
     if(!ax.type) {
         if(ax.isdate) { ax.type='date'; }
@@ -140,14 +138,19 @@ function setType(ax){
     delete ax.islog;
     delete ax.isdate;
 
+    if(!data.length) { return; }
+    var d0 = data[0];
+    if(!d0) { return; }
+    if(!d0.type) { d0.type='scatter'; }
+
     // delete category list, if there is one, so we start over
-    // to be filled in later by convertToNums
+    // to be filled in later by ax.d2c
     delete ax.categories; // obsolete (new one is private)
     ax._categories = [];
 
     // new logic: let people specify any type they want,
-    // only run the auto-setters if type is missing or '-'
-    if(ax.type && ax.type!='-') { return; }
+    // only run the auto-setters if type is unknown, including the initial '-'
+    if(['linear','log','date','category'].indexOf(ax.type)!=-1) { return; }
 
     // guess at axis type with the new property format
     // first check for histograms, as they can change the axis types
@@ -174,13 +177,22 @@ function setType(ax){
     if(d0.type=='box' && axletter=='x' && !('x' in d0) && !('x0' in d0)) {
         ax.type='category'; // take the categories from trace name, text, or number
     }
-    else if((axletter in d0) ? moreDates(d0[axletter]) :
-        (Plotly.Lib.isDateTime(d0[axletter+'0']) && !$.isNumeric(d0[axletter+'0']))) {
-            ax.type='date';
+    else {
+        ax.type = axes.autoType((axletter in d0) ? d0[axletter] : [d0[axletter+'0']]);
     }
-    else if(category(data,axletter)) { ax.type='category'; }
-    // else if(loggy(data,axletter)) { ax.type='log'; } // sadly this has never been popular...
-    else { ax.type='linear'; }
+}
+
+axes.autoType = function(array) {
+    if(axes.moreDates(array)) { return 'date'; }
+    if(axes.category(array)) { return 'category'; }
+    if(linearOK(array)) { return 'linear'; }
+    else { return '-'; }
+};
+
+// is there at least one number in array? If not, we should leave
+// ax.type empty so it can be autoset later
+function linearOK(array) {
+    return array && array.some(function(v){ return $.isNumeric(v); });
 }
 
 // does the array a have mostly dates rather than numbers?
@@ -188,173 +200,100 @@ function setType(ax){
 // 2- or 4-digit integers can be both, so require twice as many
 // dates as non-dates, to exclude cases with mostly 2 & 4 digit
 // numbers and a few dates
-function moreDates(a) {
+axes.moreDates = function(a) {
     var dcnt=0, ncnt=0,
         inc = Math.max(1,(a.length-1)/1000), // test at most 1000 points, evenly spaced
-        ir;
+        ai;
     for(var i=0; i<a.length; i+=inc) {
-        ir = Math.round(i);
-        if(Plotly.Lib.isDateTime(a[ir])) { dcnt+=1; }
-        if($.isNumeric(a[ir])) { ncnt+=1; }
+        ai = a[Math.round(i)];
+        if(Plotly.Lib.isDateTime(ai)) { dcnt+=1; }
+        if($.isNumeric(ai)) { ncnt+=1; }
     }
     return (dcnt>ncnt*2);
-}
+};
 
 // does the array look like something that should be plotted on a log axis?
 // it should all be >0 or non-numeric
 // then it should have a range max/min of at least 100
 // and at least 1/4 of distinct values < max/10
-function loggy(d,ax) {
-    var vals = [],v,c,i,ir,
-        ax2 = (ax=='x') ? 'y' : 'x',
-        inc = 0;
-    d.forEach(function(c) { inc+=(c.length-1)/1000; });
-    inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
-
-    for(var curve in d){
-        c=d[curve];
-        // curve has data: test each numeric point for <=0 and add if unique
-        if(ax in c) {
-            for(i=0; i<c[ax].length-0.5; i+=inc) {
-                ir = Math.round(i);
-                v=c[ax][ir];
-                if($.isNumeric(v)){
-                    if(v<=0) { return false; }
-                    else if(vals.indexOf(v)<0) { vals.push(v); }
-                }
-            }
-        }
-        // curve has linear scaling: test endpoints for <=0 and add all points if unique
-        else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
-            if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) { return false; }
-            for(i=0; i<c[ax2].length-0.5; i+=inc) {
-                v=c[ax+'0']+c['d'+ax]*Math.round(i);
-                if(vals.indexOf(v)<0) { vals.push(v); }
-            }
-        }
-    }
-    // now look for range and distribution
-    var mx=Math.max.apply(Math,vals), mn=Math.min.apply(Math,vals);
-    return ((mx/mn>=100)&&(vals.sort()[Math.ceil(vals.length/4)]<mx/10));
-}
+// function loggy(d,ax) {
+//     var vals = [],v,c,i,ir,
+//         ax2 = (ax=='x') ? 'y' : 'x',
+//         inc = 0;
+//     d.forEach(function(c) { inc+=(c.length-1)/1000; });
+//     inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
+//     for(var curve in d){
+//         c=d[curve];
+//         // curve has data: test each numeric point for <=0 and add if unique
+//         if(ax in c) {
+//             for(i=0; i<c[ax].length-0.5; i+=inc) {
+//                 ir = Math.round(i);
+//                 v=c[ax][ir];
+//                 if($.isNumeric(v)){
+//                     if(v<=0) { return false; }
+//                     else if(vals.indexOf(v)<0) { vals.push(v); }
+//                 }
+//             }
+//         }
+//         // curve has linear scaling: test endpoints for <=0 and add all points if unique
+//         else if((ax+'0' in c)&&('d'+ax in c)&&(ax2 in c)) {
+//             if((c[ax+'0']<=0)||(c[ax+'0']+c['d'+ax]*(c[ax2].length-1)<=0)) { return false; }
+//             for(i=0; i<c[ax2].length-0.5; i+=inc) {
+//                 v=c[ax+'0']+c['d'+ax]*Math.round(i);
+//                 if(vals.indexOf(v)<0) { vals.push(v); }
+//             }
+//         }
+//     }
+//     // now look for range and distribution
+//     var mx=Math.max.apply(Math,vals), mn=Math.min.apply(Math,vals);
+//     return ((mx/mn>=100)&&(vals.sort()[Math.ceil(vals.length/4)]<mx/10));
+// }
 
 // are the (x,y)-values in td.data mostly text?
 // JP edit 10.8.2013: strip $, %, and quote characters via axes.cleanDatum
-function category(d,ax) {
+// require twice as many categories as numbers
+axes.category = function(a) {
     function isStr(v){ return !$.isNumeric(v) && ['','None'].indexOf('v')==-1; }
-    var catcount=0,
-        numcount=0,
-        inc = 0;
-    d.forEach(function(c) { inc+=(c.length-1)/1000; });
-    inc = Math.max(1,inc); // test at most 1000 points, taken evenly from all traces
-
-    d.forEach(function(c){
-        // curve has data: test each point for non-numeric text
-        if(ax in c) {
-            var curvenums=0,curvecats=0;
-            for(i=0; i<c[ax].length; i+=inc) {
-                var vi = axes.cleanDatum(c[ax][Math.round(i)]);
-                if(vi && isStr(vi)){ curvecats++; }
-                else if($.isNumeric(vi)){ curvenums++; }
-            }
-            if(curvecats>curvenums){ catcount++; }
-            else { numcount++; }
-        }
-        // curve has an 'x0' or 'y0' value - is this text?
-        // (x0 can be specified this way for box plots)
-        else if(ax+'0' in c && isStr(c[ax+'0'])) { catcount++; }
-        else { numcount++; }
-    });
-    return catcount>numcount;
-}
-
-// convertOne: takes an x or y array and converts it to a position on the axis object "ax"
-// inputs:
-//      tdc - a data object from td.data
-//      data - a string, either 'x' or 'y', for which item to convert
-//      ax - the axis object to map this data onto (not necessarily the same as
-//          data, in case of bars or histograms)
-// in case the expected data isn't there, make a list of integers based on the opposite data
-axes.convertOne = function(tdc,data,ax) {
-    var counterdata = tdc[{x:'y',y:'x'}[data]]; // the opposing data to compare to
-    if(data in tdc) { return axes.convertToNums(tdc[data],ax); }
-    else {
-        var v0 = ((data+'0') in tdc) ? axes.convertToNums(tdc[data+'0'], ax) : 0,
-            dv = (tdc['d'+data]) ? tdc['d'+data] : 1;
-        return counterdata.map(function(v,i){return v0+i*dv;});
+    var inc = Math.max(1,(a.length-1)/1000), ai; // test at most 1000 points
+    var curvenums=0,curvecats=0;
+    for(i=0; i<a.length; i+=inc) {
+        ai = axes.cleanDatum(a[Math.round(i)]);
+        if($.isNumeric(ai)){ curvenums++; }
+        else if(ai && isStr(ai)){ curvecats++; }
     }
+    return curvecats>curvenums*2;
 };
 
-// convertToNums: convert raw data to numbers
-// dates -> ms since the epoch,
-// categories -> integers
-// log: we no longer take log here, happens later
-// inputs:
-//      o - a value or array of values to convert
-//      ax - an axis object
-axes.convertToNums = function(o,ax){
-    // find the conversion function
-    var fn;
-    if(ax.type=='date') {
-        // if we've got actual numbers (not numeric strings) but we've explicitly
-        // chosen date axis type, treat them as unix timestamps
-        fn = function(v){ return (typeof v=='number') ? v : Plotly.Lib.dateTime2ms(v); };
-    }
-    else if(ax.type=='category') {
-        // create the category list
-        // this will enter the categories in the order it encounters them,
-        // ie all the categories from the first data set, then all the ones
-        // from the second that aren't in the first etc.
-        // TODO: sorting options - I guess we'll have to do this in plot()
-        // after finishing calcdata
-        if(!ax._categories) { ax._categories = []; }
-        ($.isArray(o) ? o : [o]).forEach(function(v){
-            if(ax._categories.indexOf(v)==-1) { ax._categories.push(v); }
-        });
-        fn = function(v){ var c = ax._categories.indexOf(v); return c==-1 ? undefined : c; };
-    }
-    else {
-        fn = function(v){
-            v = axes.cleanDatum( v );
-            return $.isNumeric(v) ? Number(v) : undefined;
-        };
-    }
-
-    // do the conversion
-    if($.isArray(o)) { return o.map(fn); }
-    else { return fn(o); }
-};
-
-// cleanData: removes characters
+// cleanDatum: removes characters
 // same replace criteria used in the grid.js:scrapeCol
-axes.cleanDatum = function( c ){
+// but also handling dates, numbers, and NaN, null, Infinity etc
+axes.cleanDatum = function(c){
     try{
-        c = c.toString()
-            .replace('$','')
-            .replace(/,/g,'')
-            .replace('\'','')
-            .replace('"','')
-            .replace('%','');
+        if(typeof c=='object' && c!==null && c.getTime) { return Plotly.Lib.ms2DateTime(c); }
+        if(typeof c!='string' && !$.isNumeric(c)) { return ''; }
+        c = c.toString().replace(/['"%,$# ]/g,'');
     }catch(e){
-        console.log(e);
+        console.log(e,c);
     }
     return c;
 };
 
 // setConvert: define the conversion functions for an axis
-// after convertToNums turns all data to numbers, it's used in 3 ways:
-//  c: calcdata numbers, not linearized
+// data is used in 4 ways:
+//  d: data, in whatever form it's provided
+//  c: calcdata: turned into numbers, but not linearized
 //  l: linearized - same as c except for log axes (and other mappings later?)
 //      this is used by ranges, and when we need to know if it's *possible* to
 //      show some data on this axis, without caring about the current range
 //  p: pixel value - mapped to the screen with current size and zoom
 // setAxConvert creates/updates these conversion functions
 // also clears the autorange bounds ._min and ._max
-// and the autotick constraints ._minDtick, ._forceTick0
+// and the autotick constraints ._minDtick, ._forceTick0,
+// and looks for date ranges that aren't yet in numeric format
 axes.setConvert = function(ax) {
     function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null; }
     function fromLog(v){ return Math.pow(10,v); }
-    function num(v){ return $.isNumeric(v) ? v : null; }
+    function num(v){ return $.isNumeric(v) ? Number(v) : null; }
 
     ax.c2l = (ax.type=='log') ? toLog : num;
     ax.l2c = (ax.type=='log') ? fromLog : num;
@@ -380,6 +319,61 @@ axes.setConvert = function(ax) {
         }
     };
     ax.p2c = function(px){ return ax.l2c(ax.p2l(px)); };
+
+    if(['linear','log','-'].indexOf(ax.type)!=-1) {
+        ax.c2d = num;
+        ax.d2c = function(v){
+            v = axes.cleanDatum(v);
+            return $.isNumeric(v) ? Number(v) : undefined;
+        };
+    }
+    else if(ax.type=='date') {
+        ax.c2d = function(v) { return $.isNumeric(v) ? Plotly.Lib.ms2DateTime(v) : null; };
+        ax.d2c = function(v){ return (typeof v=='number') ? v : Plotly.Lib.dateTime2ms(v); };
+
+        // check if date strings or js date objects are provided for range
+        // and convert to ms
+        if(ax.range && ax.range.length>1) {
+            try {
+                var ar1 = ax.range.map(Plotly.Lib.dateTime2ms);
+                if(!$.isNumeric(ax.range[0]) && $.isNumeric(ar1[0])) { ax.range[0] = ar1[0]; }
+                if(!$.isNumeric(ax.range[1]) && $.isNumeric(ar1[1])) { ax.range[1] = ar1[1]; }
+            }
+            catch(e) { console.log(e, ax.range); }
+        }
+    }
+    else if(ax.type=='category') {
+        ax.c2d = function(v) { return ax._categories[Math.round(v)]; };
+        ax.d2c = function(v) {
+            // create the category list
+            // this will enter the categories in the order it encounters them,
+            // ie all the categories from the first data set, then all the ones
+            // from the second that aren't in the first etc.
+            // TODO: sorting options - do the sorting progressively here as we insert?
+            if(!ax._categories) { ax._categories = []; }
+            if(ax._categories.indexOf(v)==-1) { ax._categories.push(v); }
+            var c = ax._categories.indexOf(v); return c==-1 ? undefined : c;
+        };
+    }
+    else {
+        console.log('unknown axis type '+ax.type);
+    }
+
+    // makeCalcdata: takes an x or y array and converts it to a position on the axis object "ax"
+    // inputs:
+    //      tdc - a data object from td.data
+    //      axletter - a string, either 'x' or 'y', for which item to convert
+    //          (not necessarily the same as data, in case of bars or histograms)
+    // in case the expected data isn't there, make a list of integers based on the opposite data
+    ax.makeCalcdata = function(tdc,axletter) {
+        if(axletter in tdc) { return tdc[axletter].map(ax.d2c); }
+        else {
+            var v0 = ((axletter+'0') in tdc) ? ax.d2c(tdc[axletter+'0']) : 0,
+                dv = (tdc['d'+axletter]) ? Number(tdc['d'+axletter]) : 1,
+                counterdata = tdc[{x:'y',y:'x'}[axletter]]; // the opposing data, for size if we have x and dx etc
+            return counterdata.map(function(v,i){return v0+i*dv;});
+        }
+    };
 
     // for autoranging: arrays of objects {val:axis value, pad: pixel padding}
     // on the low and high sides
@@ -428,6 +422,11 @@ axes.doAutoRange = function(ax) {
             minmin=Math.min.apply(null,ax._min.map(function(v){return v.val;})),
             maxmax=Math.max.apply(null,ax._max.map(function(v){return v.val;})),
             axReverse = (ax.range && ax.range[1]<ax.range[0]);
+        // one-time setting to easily reverse the axis when plotting from code
+        if(ax.autorange=='reversed') {
+            axReverse = true;
+            ax.autorange = true;
+        }
         for(i=0; i<ax._min.length; i++) {
             minpt = ax._min[i];
             for(j=0; j<ax._max.length; j++) {
@@ -467,7 +466,7 @@ axes.doAutoRange = function(ax) {
 };
 
 // axes.expand: if autoranging, include new data in the outer limits for this axis
-// data is an array of numbers (ie already run through convertToNums)
+// data is an array of numbers (ie already run through ax.d2c)
 // available options:
 //      vpad: (number or number array) pad values (data value +-vpad)
 //      ppad: (number or number array) pad pixels (pixel location +-ppad)
@@ -938,11 +937,19 @@ axes.tickText = function(ax, x, hover){
         tt=numFormat(x,ax,hideexp,hover);
     }
     // if 9's are printed on log scale, move the 10's away a bit
-    if((ax.dtick=='D1') && (String(tt).charAt(0)=='1')){
-        if(ax._id.charAt(0)=='y') px-=fontSize/4;
-        else py+=fontSize/3;
+    if((ax.dtick=='D1') && (['0','1'].indexOf(String(tt).charAt(0))!=-1)){
+        if(ax._id.charAt(0)=='y') { px-=fontSize/4; }
+        else {
+            py+=fontSize/2;
+            // if(x<0) {
+                px+=(ax.range[1]>ax.range[0] ? 1 : -1) * fontSize * (x<0 ? 0.5 : 0.25);
+            // }
+        }
     }
-    return {x:x, dx:px, dy:py, text:tt+suffix,
+    tt += suffix;
+    // replace standard minus character (which is technically a hyphen) with a true minus sign
+    if(ax.type!='category') { tt = tt.replace(/-/g,'\u2212'); }
+    return {x:x, dx:px, dy:py, text:tt,
         fontSize:fontSize, font:font, fontColor:fontColor};
 };
 
@@ -955,12 +962,7 @@ function numFormat(v,ax,fmtoverride,hover) {
     var n = (v<0), // negative?
         r = ax._tickround, // max number of digits past decimal point to show
         fmt = fmtoverride||ax.exponentformat||'e',
-        d = ax._tickexponent,
-        // separators - first char is decimal point,
-        // next char is thousands separator if there is one
-        separators = ax.separators||'.',
-        decimalpoint = separators.charAt(0),
-        thouSeparator = separators.charAt(1);
+        d = ax._tickexponent;
     // special case for hover: set exponent just for this value, and
     // add a couple more digits of precision over tick labels
     if(hover) {
@@ -1008,6 +1010,8 @@ function numFormat(v,ax,fmtoverride,hover) {
             var dp = v.indexOf('.')+1;
             if(dp) { v = v.substr(0,dp+r).replace(/\.?0+$/,''); }
         }
+        // insert appropriate decimal point and thousands separator
+        v = numSeparate(v,ax._td.layout.separators);
     }
 
     // add exponent
@@ -1023,6 +1027,27 @@ function numFormat(v,ax,fmtoverride,hover) {
     }
     // put sign back in and return
     return (n?'-':'')+v;
+}
+
+// add arbitrary decimal point and thousands separator
+var findThousands = /(\d+)(\d{3})/;
+function numSeparate(nStr, separators) {
+    // separators - first char is decimal point,
+    // next char is thousands separator if there is one
+
+    var dp = separators.charAt(0),
+        thou = separators.charAt(1),
+        x = nStr.split('.'),
+        x1 = x[0],
+        x2 = x.length > 1 ? dp + x[1] : '';
+    // even if there is a thousands separator, don't use it on
+    // 4-digit integers (like years)
+    if(thou && (x.length > 1 || x1.length>4)) {
+        while (findThousands.test(x1)) {
+            x1 = x1.replace(findThousands, '$1' + thou + '$2');
+        }
+    }
+    return x1 + x2;
 }
 
 // get all axis objects, optionally restricted to only x or y by string axletter
@@ -1165,7 +1190,7 @@ axes.doTicks = function(td,axid) {
             ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
                 .classed('crisp',1)
                 .call(Plotly.Drawing.strokeColor, ax.tickcolor || '#000')
-                .attr('stroke-width', ax.tickwidth || 1)
+                .style('stroke-width', (ax.tickwidth || 1)+'px')
                 .attr('d',tickpath);
             ticks.attr('transform',transfn);
             ticks.exit().remove();
@@ -1258,7 +1283,7 @@ axes.doTicks = function(td,axid) {
             });
         grid.attr('transform',transfn)
             .call(Plotly.Drawing.strokeColor, ax.gridcolor || '#ddd')
-            .attr('stroke-width', gridwidth);
+            .style('stroke-width', gridwidth+'px');
         grid.exit().remove();
 
         // zero line
@@ -1278,7 +1303,7 @@ axes.doTicks = function(td,axid) {
             .attr('d',gridpath);
         zl.attr('transform',transfn)
             .call(Plotly.Drawing.strokeColor, ax.zerolinecolor || '#000')
-            .attr('stroke-width', ax.zerolinewidth || gridwidth);
+            .style('stroke-width', (ax.zerolinewidth || gridwidth)+'px');
         zl.exit().remove();
     });
 

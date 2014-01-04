@@ -122,27 +122,23 @@ annotations.draw = function(gd,index,opt,value) {
     // made a single group to contain all, so opacity can work right with border/arrow together
     // this could handle a whole bunch of cleanup at this point, but works for now
     var anngroup = gl._infolayer.append('g')
-        .attr('class','annotation')
-        .attr('data-index',String(index))
-        .attr('data-cmmt',options.tag)
+        .attr({'class':'annotation', 'data-index':String(index), 'data-cmmt':options.tag})
         .style('opacity',options.opacity);
 
     var ann = anngroup.append('svg')
-        // .attr('class','annotation')
         .attr('data-cmmt',options.tag)
         .call(Plotly.Drawing.setPosition,0,0);
 
     var borderwidth = options.borderwidth;
     var annbg = ann.append('rect')
         .attr('class','bg')
+        .style('stroke-width',borderwidth+'px')
         .call(Plotly.Drawing.strokeColor,options.bordercolor || 'rgba(0,0,0,0)')
-        .attr('stroke-width',borderwidth)
         .call(Plotly.Drawing.fillColor,options.bgcolor);
 
     var font = options.font.family||gl.font.family||'Arial',
         fontSize = options.font.size||gl.font.size||12,
         fontColor = options.font.color||gl.font.color||'#000',
-        opacity = 1,
         alignTo = {left:'right', center:'center', right:'left'}[options.align];
 
     function textLayout(){
@@ -155,17 +151,19 @@ annotations.draw = function(gd,index,opt,value) {
             verticalMargin: padding,
             orientation: 'inside'
         };
-        this.style({'font-family': font, 'font-size': fontSize, fill: fontColor, opacity: opacity})
+        this.style({
+                'font-family': font,
+                'font-size': fontSize+'px',
+                fill: Plotly.Drawing.rgb(fontColor),
+                opacity: Plotly.Drawing.opacity(fontColor)})
             .call(d3.plugin.convertToTspans)
             .call(d3.plugin.alignSVGWith(annbg, alignOptions));
         return this;
     }
 
     var anntext = ann.append('text')
-        .attr('class','annotation')
-        .attr('data-cmmt',options.tag)
-        .text(options.text)
-        .attr({'data-unformatted': options.text});
+        .attr({'class':'annotation', 'data-cmmt':options.tag, 'data-unformatted': options.text})
+        .text(options.text);
 
     if(gd.mainsite) {
         anntext.call(d3.plugin.makeEditable)
@@ -345,28 +343,26 @@ annotations.draw = function(gd,index,opt,value) {
             });
         });
         if(showline) {
-            var strokewidth = options.arrowwidth || borderwidth*2 || 2;
+            var strokewidth = options.arrowwidth || borderwidth*2 || 2,
+                arrowColor = options.arrowcolor ||
+                    (Plotly.Drawing.opacity(options.bordercolor) ? options.bordercolor : '') || '#000';
             var arrowgroup = anngroup.append('g')
-                // .attr('class','annotation')
-                .attr('data-cmmt',options.tag);
-                // .attr('data-index',String(index))
-                // .style('opacity',options.opacity);
-            var arrow = arrowgroup.append('path')
-                // .attr('class','annotation')
                 .attr('data-cmmt',options.tag)
-                // .attr('data-index',String(index))
+                .style({opacity: Plotly.Drawing.opacity(arrowColor)});
+            var arrow = arrowgroup.append('path')
+                .attr('data-cmmt',options.tag)
                 .attr('d','M'+(ax0-1)+','+(ay0-1)+'L'+ax+','+ay) // no idea why the -1 here is needed
-                .attr('stroke-width',strokewidth)
-                .call(Plotly.Drawing.strokeColor,options.arrowcolor ||
-                    (Plotly.Drawing.opacity(options.bordercolor) ? options.bordercolor : '') || '#000');
+                .style('stroke-width',strokewidth+'px')
+                .call(Plotly.Drawing.strokeColor,Plotly.Drawing.rgb(arrowColor));
             arrowhead(arrow,options.arrowhead,'end',options.arrowsize);
             var arrowdrag = arrowgroup.append('path')
-                .attr('class','annotation anndrag')
-                .attr('data-cmmt',options.tag)
-                .attr('data-index',String(index))
-                .attr('d','M3,3H-3V-3H3ZM0,0L'+(ax0-ax)+','+(ay0-ay))
-                .attr('transform','translate('+ax+','+ay+')')
-                .attr('stroke-width',strokewidth+6)
+                .attr({
+                    'class':'annotation anndrag',
+                    'data-cmmt':options.tag,
+                    'data-index':String(index),
+                    'd':'M3,3H-3V-3H3ZM0,0L'+(ax0-ax)+','+(ay0-ay),
+                    'transform':'translate('+ax+','+ay+')'})
+                .style('stroke-width',(strokewidth+6)+'px')
                 .call(Plotly.Drawing.strokeColor,'rgba(0,0,0,0)')
                 .call(Plotly.Drawing.fillColor,'rgba(0,0,0,0)');
 
@@ -521,8 +517,8 @@ function arrowhead(el3,style,ends,mag) {
 
     var start,end,dstart,dend,pathlen;
     if(el.nodeName=='line') {
-        start = {x:el3.attr('x1'),y:el3.attr('y1')};
-        end = {x:el3.attr('x2'),y:el3.attr('y2')};
+        start = {x:el3.attr('x1'), y:el3.attr('y1')};
+        end = {x:el3.attr('x2'), y:el3.attr('y2')};
         dstart = end;
         dend = start;
     }
@@ -536,20 +532,18 @@ function arrowhead(el3,style,ends,mag) {
 
     var drawhead = function(p,q) {
         var rot = Math.atan2(p.y-q.y,p.x-q.x)*180/Math.PI,
-            scale = (el3.attr('stroke-width') || 1)*(mag),
-            stroke = el3.attr('stroke') || '#000',
+            scale = (Plotly.Drawing.getPx(el3,'stroke-width') || 1)*(mag),
+            stroke = el3.style('stroke') || '#000',
             opacity = el3.style('stroke-opacity') || 1;
         if(style>5) { rot=0; } // don't rotate square or circle
         d3.select(el.parentElement).append('path')
-            .attr('class',el3.attr('class'))
-            .attr('data-cmmt',el3.attr('data-cmmt'))
-            // .attr('data-index',el3.attr('data-index'))
-            .style('fill',stroke)
-            .style('fill-opacity',opacity)
-            .attr('stroke-width',0)
-            .attr('d',headStyle.path)
-            .attr('transform','translate('+p.x+','+p.y+')rotate('+rot+')'+
-                'translate('+(headStyle.centerx*scale*(1/mag-1))+',0)scale('+scale+')');
+            .attr({
+                'class':el3.attr('class'),
+                'data-cmmt':el3.attr('data-cmmt'),
+                'd':headStyle.path,
+                'transform':'translate('+p.x+','+p.y+')rotate('+rot+')'+
+                    'translate('+(headStyle.centerx*scale*(1/mag-1))+',0)scale('+scale+')'})
+            .style({fill:stroke, opacity:opacity, 'stroke-width':0});
     };
 
     if(ends.indexOf('start')>=0) { drawhead(start,dstart); }
@@ -563,7 +557,8 @@ annotations.allArrowheads = function(container){
     // if a dom element is passed in, add appropriate arrowheads to every arrowhead selector in the container
     if(container) {
         $(container).find('[data-arrowhead]').each(function(){
-            arrowhead(d3.select(this).select('line'),Number($(this).attr('data-arrowhead')));
+            var s = d3.select(this);
+            arrowhead(s.select('line'),Number(s.attr('data-arrowhead')));
         });
         return;
     }

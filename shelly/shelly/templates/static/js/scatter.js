@@ -7,7 +7,7 @@ scatter.calc = function(gd,gdc) {
     // verify that data exists, and make scaled data if necessary
     if(!('y' in gdc) && !('x' in gdc)) { return; } // no data!
 
-    var cd = [];
+    var i, cd = [];
 
     // ignore as much processing as possible (and including in autorange) if trace is not visible
     if(gdc.visible===false) {
@@ -26,9 +26,9 @@ scatter.calc = function(gd,gdc) {
     var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y');
     Plotly.Lib.markTime('in Scatter.calc');
-    var x = Plotly.Axes.convertOne(gdc,'x',xa);
+    var x = xa.makeCalcdata(gdc,'x');
     Plotly.Lib.markTime('finished convert x');
-    var y = Plotly.Axes.convertOne(gdc,'y',ya);
+    var y = ya.makeCalcdata(gdc,'y');
     Plotly.Lib.markTime('finished convert y');
     var serieslen = Math.min(x.length,y.length);
 
