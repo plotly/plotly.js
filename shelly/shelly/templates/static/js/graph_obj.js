@@ -1306,7 +1306,7 @@ function plotAutoSize(gd, aobj) {
         newwidth = Math.round(gdBB.width*0.9);
 
         // restrict aspect ratio to between 2:1 and 1:2, but only change height to do this
-        newheight = Plotly.Lib.constrain(newheight, newwidth/2, newwidth*2);
+        // newheight = Plotly.Lib.constrain(newheight, newwidth/2, newwidth*2);
     }
     else if(gd.shareplot) {
         newheight = $(window).height()-$('#banner').height();
