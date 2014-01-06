@@ -480,10 +480,13 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Lib.markTime('done Plotly.Axes.setType');
 
     // generate calcdata, if we need to
-    // to force redoing calcdata, just delete it and call plot
+    // to force redoing calcdata, just delete it before calling Plotly.plot
     var recalc = (!gd.calcdata || gd.calcdata.length!=(gd.data||[]).length);
     if(recalc) {
         gd.calcdata = [];
+        // delete category list, if there is one, so we start over
+        // to be filled in later by ax.d2c
+        Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
         for(var curve in gd.data) {
             var gdc = gd.data[curve], // curve is the index, gdc is the data object for one trace
                 curvetype = gdc.type || 'scatter', //default type is scatter
