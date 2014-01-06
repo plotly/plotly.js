@@ -156,8 +156,7 @@ annotations.draw = function(gd,index,opt,value) {
                 'font-size': fontSize+'px',
                 fill: Plotly.Drawing.rgb(fontColor),
                 opacity: Plotly.Drawing.opacity(fontColor)})
-            .call(d3.plugin.convertToTspans)
-            .call(d3.plugin.alignSVGWith(annbg, alignOptions));
+        d3.plugin.convertToTspans(this, drawGraphicalElements);
         return this;
     }
 
@@ -183,230 +182,238 @@ annotations.draw = function(gd,index,opt,value) {
     }
     else  anntext.call(textLayout);
 
-    var anntextBB = anntext.node().getBoundingClientRect(),
-        annwidth = anntextBB.width,
-        annheight = anntextBB.height;
-    // save size in the annotation object for use by autoscale
-    options._w = annwidth;
-    options._h = annheight;
+    function drawGraphicalElements(){
 
-    function fshift(v){ return Plotly.Lib.constrain(Math.floor(v*3-1),-0.5,0.5); }
 
-    var okToContinue = true;
-    ['x','y'].forEach(function(axletter) {
-        var ax = Plotly.Axes.getFromId(gd,options[axletter+'ref']||axletter),
-            axOld = Plotly.Axes.getFromId(gd,oldref[axletter]||axletter),
-            typeAttr = '_'+axletter+'type',
-            annSize = axletter=='x' ? annwidth : -annheight,
-            axRange = (ax||axOld) ? (ax||axOld).range[1]-(ax||axOld).range[0] : null,
-            defaultVal = ax ? ax.range[0] + (axletter=='x' ? 0.1 : 0.3)*axRange :
-                (axletter=='x' ? 0.1 : 0.7);
+        var mathjaxGroup = ann.select('.annotation-math-group');
+        var anntextBB = anntext.node().getBoundingClientRect(),
+            annwidth = anntextBB.width,
+            annheight= mathjaxGroup.empty() ? anntextBB.height : mathjaxGroup.node().getBoundingClientRect().height;
 
-        // if we're still referencing the same axis, see if it has changed linear <-> log
-        if(ax && ax==axOld && options[typeAttr]) {
-            checklog(options,ax);
-        }
-        // if we're changing a reference axis on an existing annotation
-        else if($.isNumeric(options[axletter]) && ax!==axOld) {
-            // moving from one axis to another - just reset to default
-            // TODO: if the axes overlap, perhaps we could put it in the equivalent position on the new one?
-            if(ax && axOld) {
-                options[axletter] = defaultVal;
+        // save size in the annotation object for use by autoscale
+        options._w = annwidth;
+        options._h = annheight;
+
+        function fshift(v){ return Plotly.Lib.constrain(Math.floor(v*3-1),-0.5,0.5); }
+
+        var okToContinue = true;
+        ['x','y'].forEach(function(axletter) {
+            var ax = Plotly.Axes.getFromId(gd,options[axletter+'ref']||axletter),
+                axOld = Plotly.Axes.getFromId(gd,oldref[axletter]||axletter),
+                typeAttr = '_'+axletter+'type',
+                annSize = axletter=='x' ? annwidth : -annheight,
+                axRange = (ax||axOld) ? (ax||axOld).range[1]-(ax||axOld).range[0] : null,
+                defaultVal = ax ? ax.range[0] + (axletter=='x' ? 0.1 : 0.3)*axRange :
+                    (axletter=='x' ? 0.1 : 0.7);
+
+            // if we're still referencing the same axis, see if it has changed linear <-> log
+            if(ax && ax==axOld && options[typeAttr]) {
+                checklog(options,ax);
             }
-            // moving from paper to plot reference
-            else if(ax) {
-                if(!ax.domain) { ax.domain = [0,1]; }
-                var axFraction = (options[axletter]-ax.domain[0])/(ax.domain[1]-ax.domain[0]);
-                options[axletter] = ax.range[0] + axRange*axFraction -
-                    (options.showarrow ? 0 : fshift(axFraction)*annSize/ax._m);
-            }
-            // moving from plot to paper reference
-            else if(axOld) {
-                if(!axOld.domain) { axOld.domain = [0,1]; }
-                options[axletter] = ( axOld.domain[0] + (axOld.domain[1]-axOld.domain[0])*
-                    (options[axletter]-axOld.range[0])/axRange );
-                if(!options.showarrow) {
-                    options[axletter] += fshift(options[axletter])*annSize/(axRange*ax._m);
+            // if we're changing a reference axis on an existing annotation
+            else if($.isNumeric(options[axletter]) && ax!==axOld) {
+                // moving from one axis to another - just reset to default
+                // TODO: if the axes overlap, perhaps we could put it in the equivalent position on the new one?
+                if(ax && axOld) {
+                    options[axletter] = defaultVal;
+                }
+                // moving from paper to plot reference
+                else if(ax) {
+                    if(!ax.domain) { ax.domain = [0,1]; }
+                    var axFraction = (options[axletter]-ax.domain[0])/(ax.domain[1]-ax.domain[0]);
+                    options[axletter] = ax.range[0] + axRange*axFraction -
+                        (options.showarrow ? 0 : fshift(axFraction)*annSize/ax._m);
+                }
+                // moving from plot to paper reference
+                else if(axOld) {
+                    if(!axOld.domain) { axOld.domain = [0,1]; }
+                    options[axletter] = ( axOld.domain[0] + (axOld.domain[1]-axOld.domain[0])*
+                        (options[axletter]-axOld.range[0])/axRange );
+                    if(!options.showarrow) {
+                        options[axletter] += fshift(options[axletter])*annSize/(axRange*ax._m);
+                    }
                 }
             }
-        }
 
-        // calculate pixel position
-        if(!$.isNumeric(options[axletter])) { options[axletter] = defaultVal; }
-        if(!ax) {
-            annPosPx[axletter] = (axletter=='x') ?
-                (gs.l + (gs.w)*options[axletter]) :
-                (gs.t + (gs.h)*(1-options[axletter]));
-            if(!options.showarrow){
-                annPosPx[axletter] -= annSize*fshift(options[axletter]);
-            }
-        }
-        else {
-            // hide the annotation if it's pointing outside the visible plot
-            if((options[axletter]-ax.range[0])*(options[axletter]-ax.range[1])>0) { okToContinue = false; }
-            annPosPx[axletter] = ax._offset+ax.l2p(options[axletter]);
-            // console.log(options[axletter],ax.range[0],ax.range[1],okToContinue);
-        }
-
-        // save the current axis type for later log/linear changes
-        options[typeAttr] = ax && ax.type;
-    });
-
-    if(!okToContinue) {
-        ann.remove();
-        return;
-    }
-
-    // default values for arrow vector
-    if(!$.isNumeric(options.ax)) { options.ax=-10; }
-    if(!$.isNumeric(options.ay)) { options.ay=-annheight/2-20; }
-    // now position the annotation and arrow, based on options[x,y,ref,showarrow,ax,ay]
-
-    // position is either in plot coords (ref='plot') or
-    // in fraction of the plot area (ref='paper') as with legends,
-    // except that positions outside the plot are just numbers outside [0,1]
-    // but we will constrain the annotation center to be on the page,
-    // in case it gets dragged too far.
-
-    // if there's no arrow, alignment is as with legend (values <1/3 align the low side
-    // at that fraction, 1/3-2/3 align the center at that fraction, >2/3 align the right
-    // at that fraction) independent of the alignment of the text
-
-    // if there is an arrow, alignment is to the arrowhead, and ax and ay give the
-    // offset (in pixels) between the arrowhead and the center of the annotation
-
-
-    // if there's an arrow, it gets the position we just calculated, and the text gets offset by ax,ay
-    // and make sure the text and arrowhead are on the paper
-    if(options.showarrow){
-        var ax = Plotly.Lib.constrain(annPosPx.x,1,paperBB.width-1),
-            ay = Plotly.Lib.constrain(annPosPx.y,1,paperBB.height-1);
-        annPosPx.x += options.ax;
-        annPosPx.y += options.ay;
-    }
-    annPosPx.x = Plotly.Lib.constrain(annPosPx.x,1,paperBB.width-1);
-    annPosPx.y = Plotly.Lib.constrain(annPosPx.y,1,paperBB.height-1);
-
-    var borderpad = Number(options.borderpad),
-        bordershift = borderpad+borderwidth/2,
-        borderfull = borderwidth+borderpad,
-        outerwidth = Math.round(annwidth+2*borderfull),
-        outerheight = Math.round(annheight+2*borderfull),
-        texty = paperBB.top-anntextBB.top+borderfull*2; // *2 is an artifact of textLayout above...
-    ann.call(Plotly.Drawing.setRect,
-        Math.round(annPosPx.x-outerwidth/2), Math.round(annPosPx.y-outerheight/2),
-            outerwidth, outerheight);
-    annbg.call(Plotly.Drawing.setRect, borderwidth/2, borderwidth/2,
-        outerwidth-borderwidth, outerheight-borderwidth);
-    anntext
-        .attr({x: paperBB.left-anntextBB.left+borderfull, y: texty})
-      .selectAll('tspan.line')
-        .attr({y: texty});
-
-    // add the arrow
-    // uses options[arrowwidth,arrowcolor,arrowhead] for styling
-    var drawArrow = function(dx,dy){
-        $(gd).find('g.annotation[data-index="'+index+'"]>g').remove();
-        // find where to start the arrow:
-        // at the border of the textbox, if that border is visible,
-        // or at the edge of the lines of text, if the border is hidden
-        // TODO: commented out for now... tspan bounding box fails in chrome
-        // looks like there may be a cross-browser solution, see
-        // http://stackoverflow.com/questions/5364980/how-to-get-the-width-of-an-svg-tspan-element
-        var ax0 = annPosPx.x+dx,
-            ay0 = annPosPx.y+dy,
-            showline = true;
-//         if(borderwidth && tinycolor(bordercolor).alpha) {
-            var boxes = [annbg.node().getBoundingClientRect()],
-                pad = 0;
-//         }
-//         else {
-//             var end_el = anntext.selectAll('tspan'),
-//                 pad = 3;
-//         }
-        boxes.forEach(function(bb){
-            var x1 = bb.left-paperBB.left-pad,
-                y1 = bb.top-paperBB.top-pad,
-                x2 = bb.right-paperBB.left+pad,
-                y2 = bb.bottom-paperBB.top+pad,
-                edges = [[x1,y1,x1,y2],[x1,y2,x2,y2],[x2,y2,x2,y1],[x2,y1,x1,y1]];
-            if(ax>x1 && ax<x2 && ay>y1 && ay<y2) { // remove the line if it ends inside the box
-                showline=false;
-                return;
-            }
-            edges.forEach(function(i){
-                var p = line_intersect(ax0,ay0,ax,ay,i[0],i[1],i[2],i[3]);
-                if(p) {
-                    ax0 = p.x;
-                    ay0 = p.y;
+            // calculate pixel position
+            if(!$.isNumeric(options[axletter])) { options[axletter] = defaultVal; }
+            if(!ax) {
+                annPosPx[axletter] = (axletter=='x') ?
+                    (gs.l + (gs.w)*options[axletter]) :
+                    (gs.t + (gs.h)*(1-options[axletter]));
+                if(!options.showarrow){
+                    annPosPx[axletter] -= annSize*fshift(options[axletter]);
                 }
-            });
+            }
+            else {
+                // hide the annotation if it's pointing outside the visible plot
+                if((options[axletter]-ax.range[0])*(options[axletter]-ax.range[1])>0) { okToContinue = false; }
+                annPosPx[axletter] = ax._offset+ax.l2p(options[axletter]);
+                // console.log(options[axletter],ax.range[0],ax.range[1],okToContinue);
+            }
+
+            // save the current axis type for later log/linear changes
+            options[typeAttr] = ax && ax.type;
         });
-        if(showline) {
-            var strokewidth = options.arrowwidth || borderwidth*2 || 2,
-                arrowColor = options.arrowcolor ||
-                    (Plotly.Drawing.opacity(options.bordercolor) ? options.bordercolor : '') || '#000';
-            var arrowgroup = anngroup.append('g')
-                .attr('data-cmmt',options.tag)
-                .style({opacity: Plotly.Drawing.opacity(arrowColor)});
-            var arrow = arrowgroup.append('path')
-                .attr('data-cmmt',options.tag)
-                .attr('d','M'+(ax0-1)+','+(ay0-1)+'L'+ax+','+ay) // no idea why the -1 here is needed
-                .style('stroke-width',strokewidth+'px')
-                .call(Plotly.Drawing.strokeColor,Plotly.Drawing.rgb(arrowColor));
-            arrowhead(arrow,options.arrowhead,'end',options.arrowsize);
-            var arrowdrag = arrowgroup.append('path')
-                .attr({
-                    'class':'annotation anndrag',
-                    'data-cmmt':options.tag,
-                    'data-index':String(index),
-                    'd':'M3,3H-3V-3H3ZM0,0L'+(ax0-ax)+','+(ay0-ay),
-                    'transform':'translate('+ax+','+ay+')'})
-                .style('stroke-width',(strokewidth+6)+'px')
-                .call(Plotly.Drawing.strokeColor,'rgba(0,0,0,0)')
-                .call(Plotly.Drawing.fillColor,'rgba(0,0,0,0)');
 
-            if(gd.mainsite) { arrowdrag.node().onmousedown = function(e) {
-                if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
-
-                var eln = this,
-                    el3 = d3.select(this),
-                    annx0 = Number(ann.attr('x')),
-                    anny0 = Number(ann.attr('y')),
-                    update = {},
-                    annbase = 'annotations['+index+']',
-                    xa = Plotly.Axes.getFromId(gd,options.xref),
-                    ya = Plotly.Axes.getFromId(gd,options.yref);
-                if(xa && xa.autorange) { update[xa._name+'.autorange'] = true; }
-                if(ya && ya.autorange) { update[ya._name+'.autorange'] = true; }
-
-                gd.dragged = false;
-                window.onmousemove = function(e2) {
-                    var dx = e2.clientX-e.clientX,
-                        dy = e2.clientY-e.clientY;
-                    if(Math.abs(dx)<MINDRAG) { dx=0; }
-                    if(Math.abs(dy)<MINDRAG) { dy=0; }
-                    if(dx||dy) { gd.dragged = true; }
-                    arrowgroup.attr('transform','translate('+dx+','+dy+')');
-                    ann.call(Plotly.Drawing.setPosition, annx0+dx, anny0+dy);
-                    update[annbase+'.x'] = options.xref=='paper' ?
-                        ((ax+dx-gs.l)/gs.w) :
-                        (options.x+dx/Plotly.Axes.getFromId(gd,options.xref||'x')._m);
-                    update[annbase+'.y'] = options.yref=='paper' ?
-                        (1-((ay+dy-gs.t)/gs.h)) :
-                        (options.y+dy/Plotly.Axes.getFromId(gd,options.yref||'y')._m);
-                    return Plotly.Lib.pauseEvent(e2);
-                };
-                window.onmouseup = function(e2) {
-                    window.onmousemove = null; window.onmouseup = null;
-                    if(gd.dragged) { Plotly.relayout(gd,update); }
-                    return Plotly.Lib.pauseEvent(e2);
-                };
-                return Plotly.Lib.pauseEvent(e);
-            };}
+        if(!okToContinue) {
+            ann.remove();
+            return;
         }
-    };
-    if(options.showarrow) { drawArrow(0,0); }
+
+        // default values for arrow vector
+        if(!$.isNumeric(options.ax)) { options.ax=-10; }
+        if(!$.isNumeric(options.ay)) { options.ay=-annheight/2-20; }
+        // now position the annotation and arrow, based on options[x,y,ref,showarrow,ax,ay]
+
+        // position is either in plot coords (ref='plot') or
+        // in fraction of the plot area (ref='paper') as with legends,
+        // except that positions outside the plot are just numbers outside [0,1]
+        // but we will constrain the annotation center to be on the page,
+        // in case it gets dragged too far.
+
+        // if there's no arrow, alignment is as with legend (values <1/3 align the low side
+        // at that fraction, 1/3-2/3 align the center at that fraction, >2/3 align the right
+        // at that fraction) independent of the alignment of the text
+
+        // if there is an arrow, alignment is to the arrowhead, and ax and ay give the
+        // offset (in pixels) between the arrowhead and the center of the annotation
+
+
+        // if there's an arrow, it gets the position we just calculated, and the text gets offset by ax,ay
+        // and make sure the text and arrowhead are on the paper
+        if(options.showarrow){
+            var ax = Plotly.Lib.constrain(annPosPx.x,1,paperBB.width-1),
+                ay = Plotly.Lib.constrain(annPosPx.y,1,paperBB.height-1);
+            annPosPx.x += options.ax;
+            annPosPx.y += options.ay;
+        }
+        annPosPx.x = Plotly.Lib.constrain(annPosPx.x,1,paperBB.width-1);
+        annPosPx.y = Plotly.Lib.constrain(annPosPx.y,1,paperBB.height-1);
+
+        var borderpad = Number(options.borderpad),
+            bordershift = borderpad+borderwidth/2,
+            borderfull = borderwidth+borderpad,
+            outerwidth = Math.round(annwidth+2*borderfull),
+            outerheight = Math.round(annheight+2*borderfull),
+            texty = paperBB.top-anntextBB.top+borderfull*2; // *2 is an artifact of textLayout above...
+        ann.call(Plotly.Drawing.setRect,
+            Math.round(annPosPx.x-outerwidth/2), Math.round(annPosPx.y-outerheight/2),
+                outerwidth, outerheight);
+        annbg.call(Plotly.Drawing.setRect, borderwidth/2, borderwidth/2,
+            outerwidth-borderwidth, outerheight-borderwidth);
+        anntext
+            .attr({x: paperBB.left-anntextBB.left+borderfull, y: texty})
+          .selectAll('tspan.line')
+            .attr({y: texty, x: paperBB.left-anntextBB.left+borderfull});
+
+        // add the arrow
+        // uses options[arrowwidth,arrowcolor,arrowhead] for styling
+        var drawArrow = function(dx,dy){
+            $(gd).find('g.annotation[data-index="'+index+'"]>g').remove();
+            // find where to start the arrow:
+            // at the border of the textbox, if that border is visible,
+            // or at the edge of the lines of text, if the border is hidden
+            // TODO: commented out for now... tspan bounding box fails in chrome
+            // looks like there may be a cross-browser solution, see
+            // http://stackoverflow.com/questions/5364980/how-to-get-the-width-of-an-svg-tspan-element
+            var ax0 = annPosPx.x+dx,
+                ay0 = annPosPx.y+dy,
+                showline = true;
+    //         if(borderwidth && tinycolor(bordercolor).alpha) {
+                var boxes = [annbg.node().getBoundingClientRect()],
+                    pad = 0;
+    //         }
+    //         else {
+    //             var end_el = anntext.selectAll('tspan'),
+    //                 pad = 3;
+    //         }
+            boxes.forEach(function(bb){
+                var x1 = bb.left-paperBB.left-pad,
+                    y1 = bb.top-paperBB.top-pad,
+                    x2 = bb.right-paperBB.left+pad,
+                    y2 = bb.bottom-paperBB.top+pad,
+                    edges = [[x1,y1,x1,y2],[x1,y2,x2,y2],[x2,y2,x2,y1],[x2,y1,x1,y1]];
+                if(ax>x1 && ax<x2 && ay>y1 && ay<y2) { // remove the line if it ends inside the box
+                    showline=false;
+                    return;
+                }
+                edges.forEach(function(i){
+                    var p = line_intersect(ax0,ay0,ax,ay,i[0],i[1],i[2],i[3]);
+                    if(p) {
+                        ax0 = p.x;
+                        ay0 = p.y;
+                    }
+                });
+            });
+            if(showline) {
+                var strokewidth = options.arrowwidth || borderwidth*2 || 2,
+                    arrowColor = options.arrowcolor ||
+                        (Plotly.Drawing.opacity(options.bordercolor) ? options.bordercolor : '') || '#000';
+                var arrowgroup = anngroup.append('g')
+                    .attr('data-cmmt',options.tag)
+                    .style({opacity: Plotly.Drawing.opacity(arrowColor)});
+                var arrow = arrowgroup.append('path')
+                    .attr('data-cmmt',options.tag)
+                    .attr('d','M'+(ax0-1)+','+(ay0-1)+'L'+ax+','+ay) // no idea why the -1 here is needed
+                    .style('stroke-width',strokewidth+'px')
+                    .call(Plotly.Drawing.strokeColor,Plotly.Drawing.rgb(arrowColor));
+                arrowhead(arrow,options.arrowhead,'end',options.arrowsize);
+                var arrowdrag = arrowgroup.append('path')
+                    .attr({
+                        'class':'annotation anndrag',
+                        'data-cmmt':options.tag,
+                        'data-index':String(index),
+                        'd':'M3,3H-3V-3H3ZM0,0L'+(ax0-ax)+','+(ay0-ay),
+                        'transform':'translate('+ax+','+ay+')'})
+                    .style('stroke-width',(strokewidth+6)+'px')
+                    .call(Plotly.Drawing.strokeColor,'rgba(0,0,0,0)')
+                    .call(Plotly.Drawing.fillColor,'rgba(0,0,0,0)');
+
+                if(gd.mainsite) { arrowdrag.node().onmousedown = function(e) {
+                    if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
+
+                    var eln = this,
+                        el3 = d3.select(this),
+                        annx0 = Number(ann.attr('x')),
+                        anny0 = Number(ann.attr('y')),
+                        update = {},
+                        annbase = 'annotations['+index+']',
+                        xa = Plotly.Axes.getFromId(gd,options.xref),
+                        ya = Plotly.Axes.getFromId(gd,options.yref);
+                    if(xa && xa.autorange) { update[xa._name+'.autorange'] = true; }
+                    if(ya && ya.autorange) { update[ya._name+'.autorange'] = true; }
+
+                    gd.dragged = false;
+                    window.onmousemove = function(e2) {
+                        var dx = e2.clientX-e.clientX,
+                            dy = e2.clientY-e.clientY;
+                        if(Math.abs(dx)<MINDRAG) { dx=0; }
+                        if(Math.abs(dy)<MINDRAG) { dy=0; }
+                        if(dx||dy) { gd.dragged = true; }
+                        arrowgroup.attr('transform','translate('+dx+','+dy+')');
+                        ann.call(Plotly.Drawing.setPosition, annx0+dx, anny0+dy);
+                        update[annbase+'.x'] = options.xref=='paper' ?
+                            ((ax+dx-gs.l)/gs.w) :
+                            (options.x+dx/Plotly.Axes.getFromId(gd,options.xref||'x')._m);
+                        update[annbase+'.y'] = options.yref=='paper' ?
+                            (1-((ay+dy-gs.t)/gs.h)) :
+                            (options.y+dy/Plotly.Axes.getFromId(gd,options.yref||'y')._m);
+                        return Plotly.Lib.pauseEvent(e2);
+                    };
+                    window.onmouseup = function(e2) {
+                        window.onmousemove = null; window.onmouseup = null;
+                        if(gd.dragged) { Plotly.relayout(gd,update); }
+                        return Plotly.Lib.pauseEvent(e2);
+                    };
+                    return Plotly.Lib.pauseEvent(e);
+                };}
+            }
+        };
+        if(options.showarrow) { drawArrow(0,0); }
+    }
+
+    drawGraphicalElements();
 
     // user dragging the annotation (text, not arrow)
     if(gd.mainsite) { ann.node().onmousedown = function(e) {
