@@ -696,9 +696,10 @@ lib.randstr = function randstr(existing, bits, base) {
     if (!base) base = 16;
     if (bits === undefined) bits = 128;
     if (bits <= 0) return '0';
+    var i,b,x;
 
     var digits = Math.log(Math.pow(2, bits)) / Math.log(base);
-    for (var i = 2; digits === Infinity; i *= 2) {
+    for (i = 2; digits === Infinity; i *= 2) {
         digits = Math.log(Math.pow(2, bits / i)) / Math.log(base) * i;
     }
 
@@ -706,14 +707,14 @@ lib.randstr = function randstr(existing, bits, base) {
 
     var res = '';
 
-    for (var i = 0; i < Math.floor(digits); i++) {
-        var x = Math.floor(Math.random() * base).toString(base);
+    for (i = 0; i < Math.floor(digits); i++) {
+        x = Math.floor(Math.random() * base).toString(base);
         res = x + res;
     }
 
     if (rem) {
-        var b = Math.pow(base, rem);
-        var x = Math.floor(Math.random() * b).toString(base);
+        b = Math.pow(base, rem);
+        x = Math.floor(Math.random() * b).toString(base);
         res = x + res;
     }
 
@@ -723,6 +724,60 @@ lib.randstr = function randstr(existing, bits, base) {
         return randstr(existing, bits, base);
     }
     else return res;
+};
+
+
+lib.OptionControl = function (opt, optname) {
+    /*
+     * An environment to contain all option setters and
+     * getters that collectively modify opts.
+     *
+     * You can call up opts from any function in new object
+     * as this.optname || this.opt
+     *
+     * See FitOpts for example of usage
+     */
+    if (!opt) opt = {};
+    if (!optname) optname = "opt";
+
+    var self = {};
+    self.opts = [];
+
+    self._newoption = function (optobj) {
+        optobj[optname] = opt;
+        self[optobj.name] = optobj;
+        self.opts.push(optobj);
+    };
+
+    self["_"+optname] = opt;
+    return self;
+};
+
+
+// lib.smooth: smooth array_in by convolving with
+// a hann window with given full width at half max
+// bounce the ends in, so the output has the same length as the input
+lib.smooth = function(array_in, FWHM) {
+    var w = [], array_out = [], i, j, k, v;
+
+    // first make the window array
+    for(i=1; i<2*FWHM; i++) { w.push((1-Math.cos(Math.PI*i/FWHM))/(2*FWHM)); }
+    var ws = 0;
+    w.forEach(function(v) { ws+=v; });
+
+    // now do the convolution
+    var wlen = w.length, alen = array_in.length;
+    for(i=0; i<alen; i++) {
+        v = 0;
+        for(j=0; j<wlen; j++) {
+            k = i+j-FWHM;
+            if(k<0) { k = 1-k; }
+            else if(k>=alen) { k = 2*alen-1-k; }
+            v += array_in[k]*w[j];
+        }
+        array_out.push(v);
+    }
+    return array_out;
 };
 
 }()); // end Lib object definition

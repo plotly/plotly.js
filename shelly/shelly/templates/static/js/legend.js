@@ -152,7 +152,7 @@ legend.texts = function(context, gd, d, i, traces){
 
     function textLayout(){
         var that = this;
-        d3.plugin.convertToTspans(that, function(d, i){
+        d3.plugin.convertToTspans(that, function(mathjaxSVG){
             if(gd.firstRender){
                 legend.repositionLegend(gd, traces);
             }
