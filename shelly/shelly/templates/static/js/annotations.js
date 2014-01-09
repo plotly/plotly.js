@@ -142,15 +142,6 @@ annotations.draw = function(gd,index,opt,value) {
         alignTo = {left:'right', center:'center', right:'left'}[options.align];
 
     function textLayout(){
-        // var bg = d3.select(gd).select('svg>rect.bg');
-        var padding = options.borderpad + options.borderwidth;
-        var alignOptions = {
-            horizontalAlign: alignTo,
-            verticalAlign: 'top',
-            horizontalMargin: padding,
-            verticalMargin: padding,
-            orientation: 'inside'
-        };
         this.style({
                 'font-family': font,
                 'font-size': fontSize+'px',
@@ -188,8 +179,8 @@ annotations.draw = function(gd,index,opt,value) {
         var anntextBB = anntext.node().getBoundingClientRect(),
             annwidth = anntextBB.width,
             annheight = anntextBB.height;
-
-        if(!mathjaxGroup.empty()){
+        var hasMathjax = !mathjaxGroup.empty();
+        if(hasMathjax){
             var mathjaxBBox = mathjaxGroup.node().getBoundingClientRect();
             annwidth = mathjaxBBox.width
             annheight = mathjaxBBox.height
@@ -309,10 +300,9 @@ annotations.draw = function(gd,index,opt,value) {
             borderfull = borderwidth+borderpad,
             texty = paperBB.top-anntextBB.top+borderfull;
 
-//        anntext.attr({x: paperBB.left-anntextBB.left+borderfull, y: texty})
-        anntext.attr({x: 0, y: 14})
-            .selectAll('tspan.line')
-            .attr({y: texty, x: paperBB.left-anntextBB.left+borderfull});
+        if(hasMathjax) anntext.attr({x: 0, y: 14})
+        else anntext.attr({x: paperBB.left-anntextBB.left+borderfull, y: texty})
+        anntext.selectAll('tspan.line').attr({y: texty, x: paperBB.left-anntextBB.left+borderfull});
 
         anntextBB = anntext.node().getBoundingClientRect(); // check the height again now that we've set the tspans
         annheight = mathjaxGroup.empty() ? anntextBB.height : mathjaxGroup.node().getBoundingClientRect().height;
