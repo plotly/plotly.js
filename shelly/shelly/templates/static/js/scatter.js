@@ -7,7 +7,7 @@ scatter.calc = function(gd,gdc) {
     // verify that data exists, and make scaled data if necessary
     if(!('y' in gdc) && !('x' in gdc)) { return; } // no data!
 
-    var cd = [];
+    var i, cd = [];
 
     // ignore as much processing as possible (and including in autorange) if trace is not visible
     if(gdc.visible===false) {

@@ -11,18 +11,16 @@ legend.lines = function(d){
         showFill = isScatter && (t.fill && t.fill!='none' && $.isNumeric(t.cdcurve)),
         showLine = isScatter && (t.mode && t.mode.indexOf('lines')!=-1);
 
-    var fill = d3.select(this).select('.legendsymbols').selectAll('path.js-fill')
+    var fill = d3.select(this).select('.legendfill').selectAll('path')
         .data(showFill ? [d] : []);
-    fill.enter().append('path')
-        .classed('js-fill',true);
+    fill.enter().append('path');
     fill.exit().remove();
     fill.attr({'data-curve':t.cdcurve, 'd':'M5,0h30v6h-30z'})
         .call(Plotly.Drawing.fillGroupStyle);
 
-    var line = d3.select(this).select('.legendsymbols').selectAll('path.js-line')
+    var line = d3.select(this).select('.legendlines').selectAll('path')
         .data(showLine ? [d] : []);
     line.enter().append('path')
-        .classed('js-line',true)
         .attr('d','M5,0h30');
     line.exit().remove();
     line.call(Plotly.Drawing.lineGroupStyle);
@@ -106,6 +104,14 @@ legend.boxes = function(d){
 
 legend.style = function(s) {
     s.each(function(d){
+        var fill = d3.select(this).selectAll('g.legendfill')
+            .data([d]);
+        fill.enter().append('g').classed('legendfill',true);
+
+        var line = d3.select(this).selectAll('g.legendlines')
+            .data([d]);
+        line.enter().append('g').classed('legendlines',true);
+
         var symbol = d3.select(this).selectAll('g.legendsymbols')
             .data([d]);
         symbol.enter().append('g').classed('legendsymbols',true);
@@ -146,7 +152,7 @@ legend.texts = function(context, gd, d, i, traces){
 
     function textLayout(){
         var that = this;
-        d3.plugin.convertToTspans(that, function(d, i){
+        d3.plugin.convertToTspans(that, function(mathjaxSVG){
             if(gd.firstRender){
                 legend.repositionLegend(gd, traces);
             }
