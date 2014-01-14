@@ -142,15 +142,6 @@ annotations.draw = function(gd,index,opt,value) {
         alignTo = {left:'right', center:'center', right:'left'}[options.align];
 
     function textLayout(){
-        // var bg = d3.select(gd).select('svg>rect.bg');
-        var padding = options.borderpad + options.borderwidth;
-        var alignOptions = {
-            horizontalAlign: alignTo,
-            verticalAlign: 'top',
-            horizontalMargin: padding,
-            verticalMargin: padding,
-            orientation: 'inside'
-        };
         this.style({
                 'font-family': font,
                 'font-size': fontSize+'px',
@@ -165,7 +156,7 @@ annotations.draw = function(gd,index,opt,value) {
         .text(options.text);
 
     if(gd.mainsite) {
-        anntext.call(d3.plugin.makeEditable)
+        anntext.call(d3.plugin.makeEditable, annbg)
             .call(textLayout)
             .on('edit', function(_text){
                 options.text = _text;
@@ -184,11 +175,24 @@ annotations.draw = function(gd,index,opt,value) {
 
     function drawGraphicalElements(){
 
-
         var mathjaxGroup = ann.select('.annotation-math-group');
         var anntextBB = anntext.node().getBoundingClientRect(),
             annwidth = anntextBB.width,
-            annheight= mathjaxGroup.empty() ? anntextBB.height : mathjaxGroup.node().getBoundingClientRect().height;
+            annheight = anntextBB.height;
+        var hasMathjax = !mathjaxGroup.empty();
+        if(hasMathjax){
+            var mathjaxBBox = mathjaxGroup.node().getBoundingClientRect();
+            annwidth = mathjaxBBox.width
+            annheight = mathjaxBBox.height
+        }
+
+        if(anntext.selectAll('tspan').size() > 0){
+            var widths = [];
+            anntext.selectAll('tspan').each(function(d, i){
+                widths.push(this.getComputedTextLength());
+            });
+            annwidth = d3.max(widths);
+        }
 
         // save size in the annotation object for use by autoscale
         options._w = annwidth;
@@ -294,18 +298,23 @@ annotations.draw = function(gd,index,opt,value) {
         var borderpad = Number(options.borderpad),
             bordershift = borderpad+borderwidth/2,
             borderfull = borderwidth+borderpad,
-            outerwidth = Math.round(annwidth+2*borderfull),
-            outerheight = Math.round(annheight+2*borderfull),
-            texty = paperBB.top-anntextBB.top+borderfull*2; // *2 is an artifact of textLayout above...
+            texty = paperBB.top-anntextBB.top+borderfull;
+
+        if(hasMathjax) anntext.attr({x: 0, y: 14})
+        else anntext.attr({x: paperBB.left-anntextBB.left+borderfull, y: texty})
+        anntext.selectAll('tspan.line').attr({y: texty, x: paperBB.left-anntextBB.left+borderfull});
+
+        anntextBB = anntext.node().getBoundingClientRect(); // check the height again now that we've set the tspans
+        annheight = mathjaxGroup.empty() ? anntextBB.height : mathjaxGroup.node().getBoundingClientRect().height;
+
+        var outerwidth = Math.round(annwidth+2*borderfull),
+            outerheight = Math.round(annheight+2*borderfull);
+
+        annbg.call(Plotly.Drawing.setRect, borderwidth/2, borderwidth/2,
+            outerwidth-borderwidth, outerheight-borderwidth);
         ann.call(Plotly.Drawing.setRect,
             Math.round(annPosPx.x-outerwidth/2), Math.round(annPosPx.y-outerheight/2),
                 outerwidth, outerheight);
-        annbg.call(Plotly.Drawing.setRect, borderwidth/2, borderwidth/2,
-            outerwidth-borderwidth, outerheight-borderwidth);
-        anntext
-            .attr({x: paperBB.left-anntextBB.left+borderfull, y: texty})
-          .selectAll('tspan.line')
-            .attr({y: texty, x: paperBB.left-anntextBB.left+borderfull});
 
         // add the arrow
         // uses options[arrowwidth,arrowcolor,arrowhead] for styling
@@ -411,68 +420,72 @@ annotations.draw = function(gd,index,opt,value) {
             }
         };
         if(options.showarrow) { drawArrow(0,0); }
+
+
+        // user dragging the annotation (text, not arrow)
+        if(gd.mainsite) {
+            ann.node().onmousedown = function(e) {
+
+                if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
+
+                var eln=this,
+                    el3=d3.select(this),
+                    x0=Number(el3.attr('x')),
+                    y0=Number(el3.attr('y')),
+                    update = {},
+                    annbase = 'annotations['+index+']',
+                    xa = Plotly.Axes.getFromId(gd,options.xref),
+                    ya = Plotly.Axes.getFromId(gd,options.yref);
+                if(xa && xa.autorange) { update[xa._name+'.autorange'] = true; }
+                if(ya && ya.autorange) { update[ya._name+'.autorange'] = true; }
+                gd.dragged = false;
+                Plotly.Fx.setCursor(el3);
+
+                window.onmousemove = function(e2) {
+                    var dx = e2.clientX-e.clientX,
+                        dy = e2.clientY-e.clientY;
+                    if(Math.abs(dx)<MINDRAG) { dx=0; }
+                    if(Math.abs(dy)<MINDRAG) { dy=0; }
+                    if(dx||dy) { gd.dragged = true; }
+                    el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
+                    var csr = 'pointer';
+                    if(options.showarrow) {
+                        update[annbase+'.ax'] = options.ax+dx;
+                        update[annbase+'.ay'] = options.ay+dy;
+                        drawArrow(dx,dy);
+                    }
+                    else {
+                        update[annbase+'.x'] = options.xref=='paper' ?
+                            (Plotly.Fx.dragAlign(x0+dx+borderfull,annwidth,gs.l,gs.l+gs.w)) :
+                            (options.x+dx/Plotly.Axes.getFromId(gd,options.xref)._m);
+                        update[annbase+'.y'] = options.yref=='paper' ?
+                            (1-Plotly.Fx.dragAlign(y0+dy+borderfull,annheight,gs.t,gs.t+gs.h)) :
+                            (options.y+dy/Plotly.Axes.getFromId(gd,options.yref)._m);
+                        if(options.xref!='paper' || options.yref!='paper') {
+                            csr = Plotly.Fx.dragCursors(
+                                options.xref=='paper' ? 0.5 : update[annbase+'.x'],
+                                options.yref=='paper' ? 0.5 : update[annbase+'.y']
+                            );
+                        }
+                    }
+                    Plotly.Fx.setCursor(el3,csr);
+                    return Plotly.Lib.pauseEvent(e2);
+                };
+
+                window.onmouseup = function(e2) {
+                    window.onmousemove = null; window.onmouseup = null;
+                    Plotly.Fx.setCursor(el3);
+                    if(gd.dragged) { Plotly.relayout(gd,update); }
+                    return Plotly.Lib.pauseEvent(e2);
+                };
+
+                return Plotly.Lib.pauseEvent(e);
+            };
+        }
+
     }
 
     drawGraphicalElements();
-
-    // user dragging the annotation (text, not arrow)
-    if(gd.mainsite) { ann.node().onmousedown = function(e) {
-
-        if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
-
-        var eln=this,
-            el3=d3.select(this),
-            x0=Number(el3.attr('x')),
-            y0=Number(el3.attr('y')),
-            update = {},
-            annbase = 'annotations['+index+']',
-            xa = Plotly.Axes.getFromId(gd,options.xref),
-            ya = Plotly.Axes.getFromId(gd,options.yref);
-        if(xa && xa.autorange) { update[xa._name+'.autorange'] = true; }
-        if(ya && ya.autorange) { update[ya._name+'.autorange'] = true; }
-        gd.dragged = false;
-        Plotly.Fx.setCursor(el3);
-
-        window.onmousemove = function(e2) {
-            var dx = e2.clientX-e.clientX,
-                dy = e2.clientY-e.clientY;
-            if(Math.abs(dx)<MINDRAG) { dx=0; }
-            if(Math.abs(dy)<MINDRAG) { dy=0; }
-            if(dx||dy) { gd.dragged = true; }
-            el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
-            var csr = 'pointer';
-            if(options.showarrow) {
-                update[annbase+'.ax'] = options.ax+dx;
-                update[annbase+'.ay'] = options.ay+dy;
-                drawArrow(dx,dy);
-            }
-            else {
-                update[annbase+'.x'] = options.xref=='paper' ?
-                    (Plotly.Fx.dragAlign(x0+dx+borderfull,annwidth,gs.l,gs.l+gs.w)) :
-                    (options.x+dx/Plotly.Axes.getFromId(gd,options.xref)._m);
-                update[annbase+'.y'] = options.yref=='paper' ?
-                    (1-Plotly.Fx.dragAlign(y0+dy+borderfull,annheight,gs.t,gs.t+gs.h)) :
-                    (options.y+dy/Plotly.Axes.getFromId(gd,options.yref)._m);
-                if(options.xref!='paper' || options.yref!='paper') {
-                    csr = Plotly.Fx.dragCursors(
-                        options.xref=='paper' ? 0.5 : update[annbase+'.x'],
-                        options.yref=='paper' ? 0.5 : update[annbase+'.y']
-                    );
-                }
-            }
-            Plotly.Fx.setCursor(el3,csr);
-            return Plotly.Lib.pauseEvent(e2);
-        };
-
-        window.onmouseup = function(e2) {
-            window.onmousemove = null; window.onmouseup = null;
-            Plotly.Fx.setCursor(el3);
-            if(gd.dragged) { Plotly.relayout(gd,update); }
-            return Plotly.Lib.pauseEvent(e2);
-        };
-
-        return Plotly.Lib.pauseEvent(e);
-    };}
 };
 
 // check if we need to edit the annotation position for log/linear changes
