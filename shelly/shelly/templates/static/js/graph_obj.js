@@ -414,6 +414,7 @@ Plotly.plot = function(gd, data, layout) {
         paperDiv.enter().append('div')
             .classed('svg-container',true)
             .style('position','relative');
+
         paperDiv.style({
             width: (gd.layout.width || 800) + 'px',
             height: (gd.layout.height || 600) + 'px',
@@ -423,7 +424,7 @@ Plotly.plot = function(gd, data, layout) {
         gd.layout._container = plotContainer;
         gd.layout._paperdiv = paperDiv;
 
-        if(gd.layout.autosize == 'initial') {
+        if(gd.layout.autosize == 'initial' && gd.mainsite) {
             plotAutoSize(gd,{});
             gd.layout.autosize = true;
         }
