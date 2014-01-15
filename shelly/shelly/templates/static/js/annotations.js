@@ -147,7 +147,7 @@ annotations.draw = function(gd,index,opt,value) {
                 'font-size': fontSize+'px',
                 fill: Plotly.Drawing.rgb(fontColor),
                 opacity: Plotly.Drawing.opacity(fontColor)})
-        d3.plugin.convertToTspans(this, drawGraphicalElements);
+        Plotly.util.convertToTspans(this, drawGraphicalElements);
         return this;
     }
 
@@ -156,7 +156,7 @@ annotations.draw = function(gd,index,opt,value) {
         .text(options.text);
 
     if(gd.mainsite) {
-        anntext.call(d3.plugin.makeEditable, annbg)
+        anntext.call(Plotly.util.makeEditable, annbg)
             .call(textLayout)
             .on('edit', function(_text){
                 options.text = _text;
