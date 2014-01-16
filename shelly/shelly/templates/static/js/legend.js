@@ -152,7 +152,7 @@ legend.texts = function(context, gd, d, i, traces){
 
     function textLayout(){
         var that = this;
-        d3.plugin.convertToTspans(that, function(mathjaxSVG){
+        Plotly.util.convertToTspans(that, function(mathjaxSVG){
             if(gd.firstRender){
                 legend.repositionLegend(gd, traces);
             }
@@ -161,7 +161,7 @@ legend.texts = function(context, gd, d, i, traces){
     }
 
     if(gd.mainsite){
-        text.call(d3.plugin.makeEditable)
+        text.call(Plotly.util.makeEditable)
             .call(textLayout)
             .on('edit', function(text){
                 this.attr({'data-unformatted': text});
