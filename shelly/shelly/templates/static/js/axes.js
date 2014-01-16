@@ -77,6 +77,7 @@ axes.initAxis = function(td,ax) {
     ax._name = Object.keys(td.layout).filter(function(k){return td.layout[k]===ax;})[0];
     ax._id = axes.name2id(ax._name);
     ax._td = td;
+    if(!ax._categories) { ax._categories = []; }
 
     // set scaling to pixels
     ax.setScale = function(){
@@ -137,16 +138,13 @@ function setType(ax){
     // now remove the obsolete properties
     delete ax.islog;
     delete ax.isdate;
+    delete ax.categories; // obsolete (new one is private)
 
     if(!data.length) { return; }
     var d0 = data[0];
     if(!d0) { return; }
-    if(!d0.type) { d0.type='scatter'; }
+    var dtype = d0.type||'scatter';
 
-    // delete category list, if there is one, so we start over
-    // to be filled in later by ax.d2c
-    delete ax.categories; // obsolete (new one is private)
-    ax._categories = [];
 
     // new logic: let people specify any type they want,
     // only run the auto-setters if type is unknown, including the initial '-'
@@ -155,10 +153,10 @@ function setType(ax){
     // guess at axis type with the new property format
     // first check for histograms, as they can change the axis types
     // whatever else happens, horz bars switch the roles of x and y axes
-    if((Plotly.Plots.isBar(d0.type)) && (d0.bardir=='h')){
+    if((Plotly.Plots.isBar(dtype)) && (d0.bardir=='h')){
         axletter={x:'y',y:'x'}[axletter];
     }
-    var hist = (['histogramx','histogramy'].indexOf(d0.type)!=-1);
+    var hist = (['histogramx','histogramy'].indexOf(dtype)!=-1);
     if(hist) {
         if(axletter=='y') {
             // always numeric data in the histogram size direction
@@ -169,7 +167,7 @@ function setType(ax){
             // bin values may come from the x or y source data depending on type
             // determine the type for the bar-to-bar direction from the bin source data
             // so reset axletter, then do the tests below
-            axletter = d0.type.charAt(9);
+            axletter = dtype.charAt(9);
         }
     }
     // then check the data supplied for that axis

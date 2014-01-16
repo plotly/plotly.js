@@ -414,6 +414,7 @@ Plotly.plot = function(gd, data, layout) {
         paperDiv.enter().append('div')
             .classed('svg-container',true)
             .style('position','relative');
+
         paperDiv.style({
             width: (gd.layout.width || 800) + 'px',
             height: (gd.layout.height || 600) + 'px',
@@ -423,7 +424,7 @@ Plotly.plot = function(gd, data, layout) {
         gd.layout._container = plotContainer;
         gd.layout._paperdiv = paperDiv;
 
-        if(gd.layout.autosize == 'initial') {
+        if(gd.layout.autosize == 'initial' && gd.mainsite) {
             plotAutoSize(gd,{});
             gd.layout.autosize = true;
         }
@@ -480,10 +481,13 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Lib.markTime('done Plotly.Axes.setType');
 
     // generate calcdata, if we need to
-    // to force redoing calcdata, just delete it and call plot
+    // to force redoing calcdata, just delete it before calling Plotly.plot
     var recalc = (!gd.calcdata || gd.calcdata.length!=(gd.data||[]).length);
     if(recalc) {
         gd.calcdata = [];
+        // delete category list, if there is one, so we start over
+        // to be filled in later by ax.d2c
+        Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
         for(var curve in gd.data) {
             var gdc = gd.data[curve], // curve is the index, gdc is the data object for one trace
                 curvetype = gdc.type || 'scatter', //default type is scatter
@@ -1300,13 +1304,13 @@ function setGraphContainerScroll(gd) {
 function plotAutoSize(gd, aobj) {
     var newheight, newwidth;
     if(gd.mainsite){
-        setFileAndCommentsHeight(gd);
+        setFileAndCommentsSize(gd);
         var gdBB = gd.layout._container.node().getBoundingClientRect();
         newheight = Math.round(gdBB.height*0.9);
         newwidth = Math.round(gdBB.width*0.9);
 
         // restrict aspect ratio to between 2:1 and 1:2, but only change height to do this
-        newheight = Plotly.Lib.constrain(newheight, newwidth/2, newwidth*2);
+        // newheight = Plotly.Lib.constrain(newheight, newwidth/2, newwidth*2);
     }
     else if(gd.shareplot) {
         newheight = $(window).height()-$('#banner').height();
@@ -1348,7 +1352,7 @@ plots.resize = function(gd) {
 
     if(gd.mainsite){
         killPopovers();
-        setFileAndCommentsHeight(gd);
+        setFileAndCommentsSize(gd);
     }
 
     if(gd && (gd.tabtype=='plot' || gd.shareplot) && $(gd).css('display')!='none') {
@@ -1458,7 +1462,7 @@ function makePlotFramework(divid, layout) {
 
     // Initial autosize
     if(gl.autosize=='initial') {
-        if(gd.mainsite){ setFileAndCommentsHeight(gd); }
+        if(gd.mainsite){ setFileAndCommentsSize(gd); }
         plotAutoSize(gd,{});
         gl.autosize=true;
     }
@@ -1786,7 +1790,7 @@ plots.titles = function(gd,title) {
                 fill: Plotly.Drawing.rgb(fontColor),
                 opacity: opacity*Plotly.Drawing.opacity(fontColor)})
             .attr(options)
-            .call(d3.plugin.convertToTspans)
+            .call(Plotly.util.convertToTspans)
             .attr(options);
         titleEl.selectAll('tspan.line')
             .attr(options);
@@ -1845,7 +1849,7 @@ plots.titles = function(gd,title) {
     if(gd.mainsite && !gl._forexport){ // don't allow editing (or placeholder) on embedded graphs or exports
         if(!txt) setPlaceholder();
 
-        el.call(d3.plugin.makeEditable)
+        el.call(Plotly.util.makeEditable)
             .on('edit', function(text){
                 this
                     .style({
@@ -1853,7 +1857,7 @@ plots.titles = function(gd,title) {
                         'font-size': fontSize+'px',
                         fill: Plotly.Drawing.opacity(fontColor),
                         opacity: opacity*Plotly.Drawing.opacity(fontColor)})
-                    .call(d3.plugin.convertToTspans)
+                    .call(Plotly.util.convertToTspans)
                     .attr(options)
                     .selectAll('tspan.line')
                         .attr(options);
@@ -1958,6 +1962,7 @@ function stripObj(d,mode) {
     var o={}, v;
     function s2(v2) { return stripObj(v2,mode); }
     for(v in d) {
+        if (v === "fit" && $.isPlainObject(d[v])) { continue; }
         // remove private elements and functions - _ is for private, [ is a mistake ie [object Object]
         if(typeof d[v]=='function' || ['_','['].indexOf(v.charAt(0))!=-1) { continue; }
         // look for src/data matches and remove the appropriate one
