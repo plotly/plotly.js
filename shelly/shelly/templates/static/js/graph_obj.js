@@ -1790,7 +1790,7 @@ plots.titles = function(gd,title) {
                 fill: Plotly.Drawing.rgb(fontColor),
                 opacity: opacity*Plotly.Drawing.opacity(fontColor)})
             .attr(options)
-            .call(d3.plugin.convertToTspans)
+            .call(Plotly.util.convertToTspans)
             .attr(options);
         titleEl.selectAll('tspan.line')
             .attr(options);
@@ -1849,7 +1849,7 @@ plots.titles = function(gd,title) {
     if(gd.mainsite && !gl._forexport){ // don't allow editing (or placeholder) on embedded graphs or exports
         if(!txt) setPlaceholder();
 
-        el.call(d3.plugin.makeEditable)
+        el.call(Plotly.util.makeEditable)
             .on('edit', function(text){
                 this
                     .style({
@@ -1857,7 +1857,7 @@ plots.titles = function(gd,title) {
                         'font-size': fontSize+'px',
                         fill: Plotly.Drawing.opacity(fontColor),
                         opacity: opacity*Plotly.Drawing.opacity(fontColor)})
-                    .call(d3.plugin.convertToTspans)
+                    .call(Plotly.util.convertToTspans)
                     .attr(options)
                     .selectAll('tspan.line')
                         .attr(options);
