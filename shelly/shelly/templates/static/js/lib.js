@@ -727,7 +727,7 @@ lib.randstr = function randstr(existing, bits, base) {
 };
 
 
-lib.OptionControl = function (opt, optname) {
+lib.OptionControl = function(opt, optname) {
     /*
      * An environment to contain all option setters and
      * getters that collectively modify opts.
@@ -737,19 +737,19 @@ lib.OptionControl = function (opt, optname) {
      *
      * See FitOpts for example of usage
      */
-    if (!opt) opt = {};
-    if (!optname) optname = "opt";
+    if (!opt) { opt = {}; }
+    if (!optname) { optname = 'opt'; }
 
     var self = {};
-    self.opts = [];
+    self.optionList = [];
 
-    self._newoption = function (optobj) {
-        optobj[optname] = opt;
-        self[optobj.name] = optobj;
-        self.opts.push(optobj);
+    self._newoption = function(optObj) {
+        optObj[optname] = opt;
+        self[optObj.name] = optObj;
+        self.optionList.push(optObj);
     };
 
-    self["_"+optname] = opt;
+    self['_'+optname] = opt;
     return self;
 };
 
