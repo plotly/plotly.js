@@ -1383,8 +1383,6 @@ plots.resize = function(gd) {
 // makePlotFramework: Create the plot container and axes
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
-//    console.timeEnd('DisplayPlot');
-
     // Get the container div: we will store all variables as properties of this div
     // (for extension to multiple graphs per page)
     // some callers send this in already by dom element
@@ -1985,7 +1983,7 @@ function stripObj(d,mode) {
     return o;
 }
 
-uoStack=[];
+var uoStack=[];
 // updateObject: merge objects i and up recursively into a new object (o)
 // one difference with $.extend is that we coerce updated values to numbers
 // if the original value was a number
