@@ -35,19 +35,89 @@ heatmap.calc = function(gd,gdc) {
         if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen); }
         if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen); }
         Plotly.Lib.markTime('done convert data');
+
         // calculate the bins
         if(gdc.autobinx || !('xbins' in gdc)) { gdc.xbins = Plotly.Axes.autoBin(x,xa,gdc.nbinsx,'2d'); }
         if(gdc.autobiny || !('ybins' in gdc)) { gdc.ybins = Plotly.Axes.autoBin(y,ya,gdc.nbinsy,'2d'); }
         Plotly.Lib.markTime('done autoBin');
+
         // make the empty bin array & scale the map
         z = [];
-        var onecol = [],
+        var onecol = [], zerocol = [],
             xbins = (typeof(gdc.xbins.size)=='string') ? [] : gdc.xbins,
             ybins = (typeof(gdc.xbins.size)=='string') ? [] : gdc.ybins,
-            norm = gdc.histnorm||'';
+            total = 0,n,m,cnt=[],
+            norm = gdc.histnorm||'',
+            func = gdc.histfunc||'',
+            densitynorm = (norm.indexOf('density')!=-1),
+            extremefunc = (func=='max' || func=='min'),
+            sizeinit = (extremefunc ? null : 0),
+            binfunc = function(m,n) { z[m][n]++; total++; },
+            normfunc = null,
+            doavg = false,
+            xinc, yinc;
+
+        // set a binning function other than count?
+        // for binning functions: check first for 'z', then 'mc' in case we had a colored scatter plot
+        // and want to transfer these colors to the 2D histo
+        // TODO: this is why we need a data picker in the popover...
+        var counterdata = ('z' in gdc) ? 'z' : (('mc' in gdc) ? 'mc' : '');
+        if(counterdata && ['sum','avg','min','max'].indexOf(func)!=-1) {
+            var counter0 = gdc[counterdata].map(Number);
+            if(func=='sum') {
+                binfunc = function(m,n,i) {
+                    var v = counter0[i];
+                    if($.isNumeric(v)) {
+                        z[m][n]+=v;
+                        total+=v;
+                    }
+                };
+            }
+            else if(func=='avg') {
+                doavg = true;
+                binfunc = function(m,n,i) {
+                    var v = counter0[i];
+                    if($.isNumeric(v)) {
+                        z[m][n]+=v;
+                        cnt[m][n]++;
+                    }
+                };
+            }
+            else if(func=='min') {
+                binfunc = function(m,n,i) {
+                    var v = counter0[i];
+                    if($.isNumeric(v)) {
+                        if(!$.isNumeric(z[m][n])) { total+=v; z[m][n] = v; }
+                        else if(z[m][n]>v) { total+=v-z[m][n]; z[m][n] = v; }
+                    }
+                };
+            }
+            else if(func=='max') {
+                binfunc = function(m,n,i) {
+                    var v = counter0[i];
+                    if($.isNumeric(v)) {
+                        if(!$.isNumeric(z[m][n])) { total+=v; z[m][n] = v; }
+                        else if(z[m][n]<v) { total+=v-z[m][n]; z[m][n] = v; }
+                    }
+                };
+            }
+        }
+
+        // set a normalization function?
+        if(norm.indexOf('probability')!=-1 || norm.indexOf('percent')!=-1) {
+            normfunc = densitynorm ?
+                function(m,n) { z[m][n]*=xinc[n]*yinc[m]/total; } :
+                function(m,n) { z[m][n]/=total; };
+        }
+        else if(densitynorm) {
+            normfunc = function(m,n) { z[m][n]*=xinc[n]*yinc[m]; };
+        }
+
+
         for(i=gdc.xbins.start; i<gdc.xbins.end; i=Plotly.Axes.tickIncrement(i,gdc.xbins.size)) {
-            onecol.push(0);
+            onecol.push(sizeinit);
             if($.isArray(xbins)) { xbins.push(i); }
+            if(doavg) { zerocol.push(0); }
         }
         if($.isArray(xbins)) { xbins.push(i); }
 
@@ -55,15 +125,11 @@ heatmap.calc = function(gd,gdc) {
         x0 = gdc.xbins.start;
         dx = (i-x0)/nx;
         x0+=dx/2;
-        var xinc = onecol.map(function(v,i){
-            if(norm.indexOf('density')==-1) { return 1; }
-            else if($.isArray(xbins)) { return 1/(xbins[i+1]-xbins[i]); }
-            else { return 1/dx; }
-        });
 
         for(i=gdc.ybins.start; i<gdc.ybins.end; i=Plotly.Axes.tickIncrement(i,gdc.ybins.size)) {
             z.push(onecol.concat());
             if($.isArray(ybins)) { ybins.push(i); }
+            if(doavg) { cnt.push(zerocol.concat()); }
         }
         if($.isArray(ybins)) { ybins.push(i); }
 
@@ -71,25 +137,40 @@ heatmap.calc = function(gd,gdc) {
         y0 = gdc.ybins.start;
         dy = (i-y0)/ny;
         y0+=dy/2;
-        var yinc = z.map(function(v,i){
-            if(norm.indexOf('density')==-1) { return 1; }
-            else if($.isArray(ybins)) { return 1/(ybins[i+1]-ybins[i]); }
-            else { return 1/dy; }
-        });
+
+        if(densitynorm) {
+            xinc = onecol.map(function(v,i){
+                if(norm.indexOf('density')==-1) { return 1; }
+                else if($.isArray(xbins)) { return 1/(xbins[i+1]-xbins[i]); }
+                else { return 1/dx; }
+            });
+            yinc = z.map(function(v,i){
+                if(norm.indexOf('density')==-1) { return 1; }
+                else if($.isArray(ybins)) { return 1/(ybins[i+1]-ybins[i]); }
+                else { return 1/dy; }
+            });
+        }
+
 
         Plotly.Lib.markTime('done making bins');
         // put data into bins
-        var count = 0;
         for(i=0; i<serieslen; i++) {
-            var n = Plotly.Lib.findBin(x[i],xbins),
-                m = Plotly.Lib.findBin(y[i],ybins);
-            if(n>=0 && n<nx && m>=0 && m<ny) { z[m][n]+=xinc[n]*yinc[m]; count++; }
+            n = Plotly.Lib.findBin(x[i],xbins);
+            m = Plotly.Lib.findBin(y[i],ybins);
+            if(n>=0 && n<nx && m>=0 && m<ny) { binfunc(m,n,i); }
         }
-        if(norm.indexOf('percent')!=-1) { count/=100; }
-        if(norm.indexOf('probability')!=-1 || norm.indexOf('percent')!=-1) {
-            z.forEach(function(row){ row.forEach(function(v,i){
-                row[i]/=count;
-            }); });
+        // normalize, if needed
+        if(doavg) {
+            for(n=0; n<nx; n++) { for(m=0; m<ny; m++) {
+                if(cnt[m][n]>0) { z[m][n]/=cnt[m][n]; total+=z[m][n]; }
+                else { z[m][n] = null; }
+            }}
+        }
+        if(norm.indexOf('percent')!=-1) { total/=100; }
+        if(normfunc) {
+            for(n=0; n<nx; n++) { for(m=0; m<ny; m++) {
+                if($.isNumeric(z[m][n])) { normfunc(m,n); }
+            }}
         }
         Plotly.Lib.markTime('done binning');
     }
