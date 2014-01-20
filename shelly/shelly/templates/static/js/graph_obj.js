@@ -844,7 +844,8 @@ plots.setStyles = function(gd, merge_dflt) {
         }
         else if(plots.isHeatmap(type)){
             if(type==='histogram2d') {
-                mergeattr('histnorm','histnorm','count');
+                mergeattr('histfunc','histfunc','count');
+                mergeattr('histnorm','histnorm','');
                 mergeattr('autobinx','autobinx',true);
                 mergeattr('nbinsx','nbinsx',0);
                 mergeattr('xbins.start','xbstart',0);
@@ -873,7 +874,8 @@ plots.setStyles = function(gd, merge_dflt) {
         }
         else if(plots.isBar(type)){
             if(type!='bar') {
-                mergeattr('histnorm','histnorm','count');
+                mergeattr('histfunc','histfunc','count');
+                mergeattr('histnorm','histnorm','');
                 mergeattr('autobinx','autobinx',true);
                 mergeattr('nbinsx','nbinsx',0);
                 mergeattr('xbins.start','xbstart',0);
@@ -950,8 +952,8 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // in principle we generally shouldn't need to redo ALL traces... that's
     // harder though.
     var recalc_attr = [
-        'mode','visible','type','bardir','fill','histnorm','text',
-        'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis','line.width','showscale',
+        'mode','visible','type','bardir','fill','histfunc','histnorm','text',
+        'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis','line.width','showscale','zauto',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size'
     ];
