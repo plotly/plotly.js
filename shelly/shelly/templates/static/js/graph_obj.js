@@ -402,10 +402,11 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     // Check if it has a polar type
-    var hasPolarType = (Plotly.Lib.nestedProperty(gd, 'data[0].type').get()||'').indexOf('Polar') != -1;
+    var type = Plotly.Lib.nestedProperty(gd, 'data[0].type').get();
+    var hasPolarType;
+    if(type) hasPolarType = Plotly.Lib.nestedProperty(gd, 'data[0].type').get().indexOf('Polar') != -1;
     if(!hasPolarType) gd.framework = undefined;
     if(hasPolarType || gd.framework && gd.framework.isPolar){
-        console.log(layout);
 
         // build or reuse the container skeleton
         var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
@@ -484,6 +485,7 @@ Plotly.plot = function(gd, data, layout) {
 
         // fulfill more gd requirements
         gd.layout._paper = polarPlotSVG;
+        if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
 
         $('.js-annotation-box, .js-fit-plot-data').hide();
 
