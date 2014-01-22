@@ -402,13 +402,10 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     // Check if it has a polar type
-    var hasPolarType = false;
-    if (gd.data && gd.data[0] && gd.data[0].type) hasPolarType = gd.data[0].type.indexOf('Polar') != -1;
+    var hasPolarType = Plotly.Lib.nestedProperty(gd, 'data[0].type').get().indexOf('Polar') != -1;
     if(!hasPolarType) gd.framework = undefined;
     if(hasPolarType || gd.framework && gd.framework.isPolar){
-        // fulfill gd requirements
-        if(data) gd.data = data;
-        gd.layout = layout;
+        console.log(layout);
 
         // build or reuse the container skeleton
         var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
@@ -420,12 +417,14 @@ Plotly.plot = function(gd, data, layout) {
 
         // resize canvas
         paperDiv.style({
-            width: (gd.layout.width || 800) + 'px',
-            height: (gd.layout.height || 600) + 'px',
-            background: (gd.layout.paper_bgcolor || 'white')
+            width: (layout.width || 800) + 'px',
+            height: (layout.height || 600) + 'px',
+            background: (layout.paper_bgcolor || 'white')
         });
 
-        // fulfill more gd requirements
+        // fulfill gd requirements
+        if(data) gd.data = data;
+        gd.layout = layout;
         gd.layout._container = plotContainer;
         gd.layout._paperdiv = paperDiv;
         if(gd.layout.autosize == 'initial' && gd.mainsite) {
@@ -437,6 +436,7 @@ Plotly.plot = function(gd, data, layout) {
         if(!gd.framework || !gd.framework.isPolar) gd.framework = micropolar.manager.framework();
         // plot
         gd.framework({container: paperDiv.node(), data: gd.data, layout: gd.layout});
+
         // get the resulting svg for extending it
         var polarPlotSVG = gd.framework.svg();
 
@@ -464,7 +464,6 @@ Plotly.plot = function(gd, data, layout) {
                     .style({opacity: opacity})
                     .on('mouseover.opacity',function(){ d3.select(this).transition().duration(100).style('opacity',1); })
                     .on('mouseout.opacity',function(){ d3.select(this).transition().duration(1000).style('opacity',0); });
-
             }
             title.call(Plotly.util.makeEditable)
                 .on('edit', function(text){
@@ -490,7 +489,9 @@ Plotly.plot = function(gd, data, layout) {
 
         return null;
     }
-    else {$('.js-annotation-box, .js-fit-plot-data').show();}
+    else {
+        $('.js-annotation-box, .js-fit-plot-data').show();
+    }
 
     // Make or remake the framework (ie container and axes) if we need to
     // figure out what framework the data imply,
