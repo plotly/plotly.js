@@ -402,7 +402,7 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     // Check if it has a polar type
-    var hasPolarType = Plotly.Lib.nestedProperty(gd, 'data[0].type').get().indexOf('Polar') != -1;
+    var hasPolarType = (Plotly.Lib.nestedProperty(gd, 'data[0].type').get()||'').indexOf('Polar') != -1;
     if(!hasPolarType) gd.framework = undefined;
     if(hasPolarType || gd.framework && gd.framework.isPolar){
         console.log(layout);
@@ -737,6 +737,8 @@ plots.setStyles = function(gd, merge_dflt) {
             for(p=0; p<l; p++) { cd[p][attr]=val[p]; }
             // use the default for the trace-wide value, in case individual vals are missing
             cd[0].t[attr] = dflt;
+            // record that we have an array here - styling system wants to know about it
+            cd[0].t[attr+'array'] = true;
         }
         else {
             cd[0].t[attr] = (typeof val != 'undefined') ? val : dflt;
@@ -753,6 +755,12 @@ plots.setStyles = function(gd, merge_dflt) {
         c = t.curve; // trace number
         gdc = gd.data[c];
         defaultColor = plots.defaultColors[c % plots.defaultColors.length];
+        // record in t which data arrays we have for this trace
+        // other arrays, like marker size, are recorded as such in mergeattr
+        // this is used to decide which options to display for styling
+        t.xarray = $.isArray(gdc.x);
+        t.yarray = $.isArray(gdc.y);
+        t.zarray = $.isArray(gdc.z);
         // all types have attributes type, visible, opacity, name, text
         // mergeattr puts single values into cd[0].t, and all others into each individual point
         mergeattr('type','type','scatter');
@@ -857,6 +865,7 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('ybins.start','ybstart',0);
                 mergeattr('ybins.end','ybend',1);
                 mergeattr('ybins.size','ybsize',1);
+                mergeattr('marker.color','mc',t.lc); // in case of aggregation by marker color, just need to know if this is an array
             }
             else {
                 mergeattr('xtype','xtype',gdc.x ? 'array' : 'noarray');

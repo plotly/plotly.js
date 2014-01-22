@@ -127,8 +127,8 @@ drawing.pointStyle = function(s,t) {
         .style('opacity',function(d){ return (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1; });
     }
     // allow all marker and marker line colors to be scaled by given max and min to colorscales
-    var colorscales = {m: drawing.tryColorscale(t,'m'), ml: drawing.tryColorscale(t,'ml'),
-                so: drawing.tryColorscale(t,'so'), sol: drawing.tryColorscale(t,'sol')};
+    var colorscales = {m: drawing.tryColorscale(s,t,'m'), ml: drawing.tryColorscale(s,t,'ml'),
+                so: drawing.tryColorscale(s,t,'so'), sol: drawing.tryColorscale(s,t,'sol')};
     s.each(function(d){
         var a = (d.so) ? 'so' : 'm', // suggested outliers, for box plots
             lw = a+'lw', c = a+'c', lc = a+'lc',
@@ -143,23 +143,40 @@ drawing.pointStyle = function(s,t) {
 // for a given color attribute (ie m -> mc = marker.color) look to see if we
 // have a colorscale for it (ie mscl, mcmin, mcmax) - if we do, translate all
 // numeric color values according to that scale
-drawing.tryColorscale = function(t,attr) {
-    var s;
+drawing.tryColorscale = function(s,t,attr) {
     if((attr+'scl') in t && (attr+'cmin') in t && (attr+'cmax') in t) {
         var scl = t[attr+'scl'],
             min = t[attr+'cmin'],
-            max = t[attr+'cmax'];
+            max = t[attr+'cmax'],
+            auto = t[attr+'cauto'];
         if(typeof scl == 'string' && scl in Plotly.colorscales) {
             scl = Plotly.colorscales[scl];
         }
-        var d = scl.map(function(si){ return min + si[0]*(max-min); }),
-            r = scl.map(function(si){ return si[1]; });
+        else if(!scl) {
+            scl = Plotly.defaultColorscale;
+        }
 
-        s = d3.scale.linear()
-            .domain(d)
-            .interpolate(d3.interpolateRgb)
-            .range(r);
-        return function(v){ return $.isNumeric(v) ? s(v) : v; };
+        // autoscale the colors - put the results back into t (which is in calcdata)
+        if(auto || !$.isNumeric(min) || !$.isNumeric(max)) {
+            min = max = null;
+            s.each(function(d){
+                var v = d[attr+'c'];
+                if($.isNumeric(v)) {
+                    if(min===null || min>v) { min = v; }
+                    if(max===null || max<v) { max = v; }
+                }
+            });
+            t[attr+'cmin'] = min;
+            t[attr+'cmax'] = max;
+        }
+
+        var d = scl.map(function(si){ return min + si[0]*(max-min); }),
+            r = scl.map(function(si){ return si[1]; }),
+            sclfunc = d3.scale.linear()
+                .domain(d)
+                .interpolate(d3.interpolateRgb)
+                .range(r);
+        return function(v){ return $.isNumeric(v) ? sclfunc(v) : v; };
     }
     else { return Plotly.Lib.identity; }
 };

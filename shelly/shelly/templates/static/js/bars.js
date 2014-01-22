@@ -215,10 +215,10 @@ bars.style = function(s,gd) {
                 p = d3.select(this);
             p.style('stroke-width',w+'px')
                 .call(Plotly.Drawing.fillColor,
-                    Plotly.Drawing.tryColorscale(t,'m')(d.mc || t.mc || (d.t ? d.t.mc : '')));
+                    Plotly.Drawing.tryColorscale(s,t,'m')(d.mc || t.mc || (d.t ? d.t.mc : '')));
             if(w) {
                 p.call(Plotly.Drawing.strokeColor,
-                    Plotly.Drawing.tryColorscale(t,'ml')(d.mlc || t.mlc || (d.t ? d.t.mlc : '')));
+                    Plotly.Drawing.tryColorscale(s,t,'ml')(d.mlc || t.mlc || (d.t ? d.t.mlc : '')));
             }
         });
         // TODO: text markers on bars, either extra text or just bar values
