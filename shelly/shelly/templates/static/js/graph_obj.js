@@ -379,6 +379,7 @@ plots.positionBrand = function(gd){
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
 Plotly.plot = function(gd, data, layout) {
+
 //    console.log('plotly.plot', gd, data, layout);
     Plotly.Lib.markTime('in plot');
     // Get the container div: we will store all variables for this plot as
@@ -403,10 +404,7 @@ Plotly.plot = function(gd, data, layout) {
     // Polar plots
     // Check if it has a polar type
     var type = Plotly.Lib.nestedProperty(gd, 'data[0].type').get();
-    var hasPolarType;
-    if(type) hasPolarType = Plotly.Lib.nestedProperty(gd, 'data[0].type').get().indexOf('Polar') != -1;
-    if(!hasPolarType) gd.framework = undefined;
-    if(hasPolarType || gd.framework && gd.framework.isPolar){
+    if(type && type.indexOf('Polar') != -1){
 
         // build or reuse the container skeleton
         var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
@@ -434,7 +432,7 @@ Plotly.plot = function(gd, data, layout) {
         }
 
         // instanciate framework
-        if(!gd.framework || !gd.framework.isPolar) gd.framework = micropolar.manager.framework();
+        gd.framework = micropolar.manager.framework();
         // plot
         gd.framework({container: paperDiv.node(), data: gd.data, layout: gd.layout});
 
@@ -479,20 +477,16 @@ Plotly.plot = function(gd, data, layout) {
                 });
         }
 
-
-
-        //.call(Plotly.util.convertToTspans)
-
         // fulfill more gd requirements
         gd.layout._paper = polarPlotSVG;
         if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
 
-        $('.js-annotation-box, .js-fit-plot-data').hide();
+        Plotly.Toolbar.setPolarPopoversMenu(gd);
 
         return null;
     }
-    else {
-        $('.js-annotation-box, .js-fit-plot-data').show();
+    else{
+        Plotly.Toolbar.resetCartesianPopoversMenu();
     }
 
     // Make or remake the framework (ie container and axes) if we need to
