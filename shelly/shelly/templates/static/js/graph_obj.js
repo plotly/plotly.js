@@ -37,6 +37,8 @@ req('Lib',["dateTime2ms", "isDateTime", "ms2DateTime", "parseDate", "findBin",
     "notifier", "conf_modal", "bBoxIntersect", "identity", "num2ordinal", "ppn",
     "togglecontent", "plotlyurl", "randstr"]);
 req('Scatter',["PTS_LINESONLY", "calc", "plot", "style"]);
+req('Toolbar',["polarPopover", "tracePopover", "canvasPopover", "axesPopover",
+    "textsPopover", "legendPopover", "setPolarPopoversMenu", "resetCartesianPopoversMenu"]);
 
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
@@ -379,6 +381,7 @@ plots.positionBrand = function(gd){
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
 Plotly.plot = function(gd, data, layout) {
+
 //    console.log('plotly.plot', gd, data, layout);
     Plotly.Lib.markTime('in plot');
     // Get the container div: we will store all variables for this plot as
@@ -402,13 +405,8 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     // Check if it has a polar type
-    var hasPolarType = false;
-    if (gd.data && gd.data[0] && gd.data[0].type) hasPolarType = gd.data[0].type.indexOf('Polar') != -1;
-    if(!hasPolarType) gd.framework = undefined;
-    if(hasPolarType || gd.framework && gd.framework.isPolar){
-        // fulfill gd requirements
-        if(data) gd.data = data;
-        gd.layout = layout;
+    var type = Plotly.Lib.nestedProperty(gd, 'data[0].type').get();
+    if(type && type.indexOf('Polar') != -1){
 
         // build or reuse the container skeleton
         var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
@@ -420,12 +418,14 @@ Plotly.plot = function(gd, data, layout) {
 
         // resize canvas
         paperDiv.style({
-            width: (gd.layout.width || 800) + 'px',
-            height: (gd.layout.height || 600) + 'px',
-            background: (gd.layout.paper_bgcolor || 'white')
+            width: (layout.width || 800) + 'px',
+            height: (layout.height || 600) + 'px',
+            background: (layout.paper_bgcolor || 'white')
         });
 
-        // fulfill more gd requirements
+        // fulfill gd requirements
+        if(data) gd.data = data;
+        gd.layout = layout;
         gd.layout._container = plotContainer;
         gd.layout._paperdiv = paperDiv;
         if(gd.layout.autosize == 'initial' && gd.mainsite) {
@@ -434,9 +434,10 @@ Plotly.plot = function(gd, data, layout) {
         }
 
         // instanciate framework
-        if(!gd.framework || !gd.framework.isPolar) gd.framework = micropolar.manager.framework();
+        gd.framework = micropolar.manager.framework();
         // plot
         gd.framework({container: paperDiv.node(), data: gd.data, layout: gd.layout});
+
         // get the resulting svg for extending it
         var polarPlotSVG = gd.framework.svg();
 
@@ -464,7 +465,6 @@ Plotly.plot = function(gd, data, layout) {
                     .style({opacity: opacity})
                     .on('mouseover.opacity',function(){ d3.select(this).transition().duration(100).style('opacity',1); })
                     .on('mouseout.opacity',function(){ d3.select(this).transition().duration(1000).style('opacity',0); });
-
             }
             title.call(Plotly.util.makeEditable)
                 .on('edit', function(text){
@@ -477,20 +477,19 @@ Plotly.plot = function(gd, data, layout) {
                     var txt = this.attr('data-unformatted');
                     this.text(txt).call(titleLayout);
                 });
+
+            Plotly.Toolbar.setPolarPopoversMenu(gd);
         }
-
-
-
-        //.call(Plotly.util.convertToTspans)
 
         // fulfill more gd requirements
         gd.layout._paper = polarPlotSVG;
-
-        $('.js-annotation-box, .js-fit-plot-data').hide();
+        if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
 
         return null;
     }
-    else {$('.js-annotation-box, .js-fit-plot-data').show();}
+    else{
+        if(gd.mainsite && !gd.layout._forexport) Plotly.Toolbar.resetCartesianPopoversMenu();
+    }
 
     // Make or remake the framework (ie container and axes) if we need to
     // figure out what framework the data imply,
@@ -736,6 +735,8 @@ plots.setStyles = function(gd, merge_dflt) {
             for(p=0; p<l; p++) { cd[p][attr]=val[p]; }
             // use the default for the trace-wide value, in case individual vals are missing
             cd[0].t[attr] = dflt;
+            // record that we have an array here - styling system wants to know about it
+            cd[0].t[attr+'array'] = true;
         }
         else {
             cd[0].t[attr] = (typeof val != 'undefined') ? val : dflt;
@@ -752,6 +753,12 @@ plots.setStyles = function(gd, merge_dflt) {
         c = t.curve; // trace number
         gdc = gd.data[c];
         defaultColor = plots.defaultColors[c % plots.defaultColors.length];
+        // record in t which data arrays we have for this trace
+        // other arrays, like marker size, are recorded as such in mergeattr
+        // this is used to decide which options to display for styling
+        t.xarray = $.isArray(gdc.x);
+        t.yarray = $.isArray(gdc.y);
+        t.zarray = $.isArray(gdc.z);
         // all types have attributes type, visible, opacity, name, text
         // mergeattr puts single values into cd[0].t, and all others into each individual point
         mergeattr('type','type','scatter');
@@ -856,6 +863,7 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('ybins.start','ybstart',0);
                 mergeattr('ybins.end','ybend',1);
                 mergeattr('ybins.size','ybsize',1);
+                mergeattr('marker.color','mc',t.lc); // in case of aggregation by marker color, just need to know if this is an array
             }
             else {
                 mergeattr('xtype','xtype',gdc.x ? 'array' : 'noarray');
