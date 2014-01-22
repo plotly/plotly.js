@@ -403,8 +403,7 @@ Plotly.plot = function(gd, data, layout) {
     // Polar plots
     // Check if it has a polar type
     var hasPolarType = Plotly.Lib.nestedProperty(gd, 'data[0].type').get().indexOf('Polar') != -1;
-
-//    if(!hasPolarType) gd.framework = undefined;
+    if(!hasPolarType) gd.framework = undefined;
     if(hasPolarType || gd.framework && gd.framework.isPolar){
         console.log(layout);
 
@@ -491,7 +490,6 @@ Plotly.plot = function(gd, data, layout) {
         return null;
     }
     else {
-        gd.framework = undefined
         $('.js-annotation-box, .js-fit-plot-data').show();
     }
 
