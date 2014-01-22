@@ -37,6 +37,8 @@ req('Lib',["dateTime2ms", "isDateTime", "ms2DateTime", "parseDate", "findBin",
     "notifier", "conf_modal", "bBoxIntersect", "identity", "num2ordinal", "ppn",
     "togglecontent", "plotlyurl", "randstr"]);
 req('Scatter',["PTS_LINESONLY", "calc", "plot", "style"]);
+req('Toolbar',["polarPopover", "tracePopover", "canvasPopover", "axesPopover",
+    "textsPopover", "legendPopover", "setPolarPopoversMenu", "resetCartesianPopoversMenu"]);
 
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
