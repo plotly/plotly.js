@@ -61,7 +61,7 @@ heatmap.calc = function(gd,gdc) {
         // for binning functions: check first for 'z', then 'mc' in case we had a colored scatter plot
         // and want to transfer these colors to the 2D histo
         // TODO: this is why we need a data picker in the popover...
-        var counterdata = ('z' in gdc) ? gdc.z : ($.isArray(gdc.marker.color) ? gdc.marker.color : '');
+        var counterdata = ('z' in gdc) ? gdc.z : (('marker' in gdc && $.isArray(gdc.marker.color)) ? gdc.marker.color : '');
         if(counterdata && ['sum','avg','min','max'].indexOf(func)!=-1) {
             var counter0 = counterdata.map(Number);
             if(func=='sum') {

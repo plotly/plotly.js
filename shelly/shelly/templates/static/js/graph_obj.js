@@ -37,6 +37,8 @@ req('Lib',["dateTime2ms", "isDateTime", "ms2DateTime", "parseDate", "findBin",
     "notifier", "conf_modal", "bBoxIntersect", "identity", "num2ordinal", "ppn",
     "togglecontent", "plotlyurl", "randstr"]);
 req('Scatter',["PTS_LINESONLY", "calc", "plot", "style"]);
+req('Toolbar',["polarPopover", "tracePopover", "canvasPopover", "axesPopover",
+    "textsPopover", "legendPopover", "setPolarPopoversMenu", "resetCartesianPopoversMenu"]);
 
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
@@ -475,18 +477,18 @@ Plotly.plot = function(gd, data, layout) {
                     var txt = this.attr('data-unformatted');
                     this.text(txt).call(titleLayout);
                 });
+
+            Plotly.Toolbar.setPolarPopoversMenu(gd);
         }
 
         // fulfill more gd requirements
         gd.layout._paper = polarPlotSVG;
         if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
 
-        Plotly.Toolbar.setPolarPopoversMenu(gd);
-
         return null;
     }
     else{
-        Plotly.Toolbar.resetCartesianPopoversMenu();
+        if(gd.mainsite && gd.layout && !gd.layout._forexport) Plotly.Toolbar.resetCartesianPopoversMenu();
     }
 
     // Make or remake the framework (ie container and axes) if we need to
@@ -1258,7 +1260,7 @@ Plotly.relayout = function(gd,astr,val) {
         // send annotation mods one-by-one through Annotations.draw(), don't set via nestedProperty
         // that's because add and remove are special
         else if(p.parts[0]=='annotations') {
-            var anum = p.parts[1], anns = gl.annotations, anni = anns[anum]||{};
+            var anum = p.parts[1], anns = gl.annotations, anni = (anns && anns[anum])||{};
             // if p.parts is just an annotation number, and val is either 'add' or
             // an entire annotation obj to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
@@ -1313,6 +1315,11 @@ Plotly.relayout = function(gd,astr,val) {
                 doplot = true;
             }
             p.set(vi);
+            // if we just inserted a whole axis (eg from themes), initialize it
+            if(ai.match(/[xy]axis[0-9]*/)) {
+                Plotly.Axes.initAxis(gd,gd.layout[ai]);
+                Plotly.Axes.setConvert(gd.layout[ai]);
+            }
         }
     }
     // now all attribute mods are done, as are redo and undo so we can save them
