@@ -546,6 +546,7 @@ Plotly.plot = function(gd, data, layout) {
                 typeinfo = graphInfo[curvetype],
                 cdtextras = {}; // info (if anything) to add to cd[0].t
             cd = [];
+            gdc.type = curvetype; // don't let type be blank... may want to go further and enforce known types?
 
             if(typeinfo.framework!=gd.framework) {
                 console.log('Oops, tried to put data of type '+(gdc.type || 'scatter')+
@@ -1316,7 +1317,7 @@ Plotly.relayout = function(gd,astr,val) {
             }
             p.set(vi);
             // if we just inserted a whole axis (eg from themes), initialize it
-            if(ai.match(/[xy]axis[0-9]*/)) {
+            if(ai.match(/^[xy]axis[0-9]*$/)) {
                 Plotly.Axes.initAxis(gd,gd.layout[ai]);
                 Plotly.Axes.setConvert(gd.layout[ai]);
             }
