@@ -477,18 +477,18 @@ Plotly.plot = function(gd, data, layout) {
                     var txt = this.attr('data-unformatted');
                     this.text(txt).call(titleLayout);
                 });
+
+            Plotly.Toolbar.setPolarPopoversMenu(gd);
         }
 
         // fulfill more gd requirements
         gd.layout._paper = polarPlotSVG;
         if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
 
-        Plotly.Toolbar.setPolarPopoversMenu(gd);
-
         return null;
     }
     else{
-        Plotly.Toolbar.resetCartesianPopoversMenu();
+        if(gd.mainsite && !gd.layout._forexport) Plotly.Toolbar.resetCartesianPopoversMenu();
     }
 
     // Make or remake the framework (ie container and axes) if we need to
