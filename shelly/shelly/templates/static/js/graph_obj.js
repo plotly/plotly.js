@@ -546,6 +546,7 @@ Plotly.plot = function(gd, data, layout) {
                 typeinfo = graphInfo[curvetype],
                 cdtextras = {}; // info (if anything) to add to cd[0].t
             cd = [];
+            gdc.type = curvetype; // don't let type be blank... may want to go further and enforce known types?
 
             if(typeinfo.framework!=gd.framework) {
                 console.log('Oops, tried to put data of type '+(gdc.type || 'scatter')+
@@ -1260,7 +1261,7 @@ Plotly.relayout = function(gd,astr,val) {
         // send annotation mods one-by-one through Annotations.draw(), don't set via nestedProperty
         // that's because add and remove are special
         else if(p.parts[0]=='annotations') {
-            var anum = p.parts[1], anns = gl.annotations, anni = anns[anum]||{};
+            var anum = p.parts[1], anns = gl.annotations, anni = (anns && anns[anum])||{};
             // if p.parts is just an annotation number, and val is either 'add' or
             // an entire annotation obj to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
@@ -1315,6 +1316,11 @@ Plotly.relayout = function(gd,astr,val) {
                 doplot = true;
             }
             p.set(vi);
+            // if we just inserted a whole axis (eg from themes), initialize it
+            if(ai.match(/^[xy]axis[0-9]*$/)) {
+                Plotly.Axes.initAxis(gd,gd.layout[ai]);
+                Plotly.Axes.setConvert(gd.layout[ai]);
+            }
         }
     }
     // now all attribute mods are done, as are redo and undo so we can save them

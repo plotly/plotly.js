@@ -88,12 +88,17 @@ var SYMBOLCODE = ['circle','square','diamond','cross','x',
 drawing.pointStyle = function(s,t) {
     // only scatter & box plots get marker path and opacity - bars, histograms don't
     if(['scatter','box'].indexOf(t.type)!=-1) {
-        var sizeRef = t.msr || 1,
+        var r,
+            // for bubble charts, allow scaling the provided value linearly
+            // and by area or diameter. Note this only applies to the array-value sizes
+            sizeRef = t.msr || 1,
             sizeFn = (t.msm=='area') ?
                 function(v){ return Math.sqrt(v/sizeRef); } :
                 function(v){ return v/sizeRef; };
         s.attr('d',function(d){
-            var r=sizeFn(((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/2);
+            if(d.ms+1) { r = sizeFn(d.ms/2); }
+            else { r = ((t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/2; }
+            d.mrc = r; // store the calculated size so hover can use it
             if(!$.isNumeric(r) || r<0) { r=3; } // in case of "various" etc... set a visible default
             var rt=String(d3.round(r*2/Math.sqrt(3),2)),
                 r2=String(d3.round(r/2,2)),
@@ -126,17 +131,24 @@ drawing.pointStyle = function(s,t) {
         })
         .style('opacity',function(d){ return (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1; });
     }
-    // allow all marker and marker line colors to be scaled by given max and min to colorscales
+    // allow array marker and marker line colors to be scaled by given max and min to colorscales
     var colorscales = {m: drawing.tryColorscale(s,t,'m'), ml: drawing.tryColorscale(s,t,'ml'),
                 so: drawing.tryColorscale(s,t,'so'), sol: drawing.tryColorscale(s,t,'sol')};
     s.each(function(d){
         var a = (d.so) ? 'so' : 'm', // suggested outliers, for box plots
             lw = a+'lw', c = a+'c', lc = a+'lc',
             w = (d[lw]+1 || t[lw]+1 || (d.t ? d.t[lw] : 0)+1) - 1,
-            p = d3.select(this);
+            p = d3.select(this),
+            cc,lcc;
+        if(d[c]) { d[c+'c'] = cc = colorscales[a](d[c]); }
+        else { cc = t[c] || (d.t ? d.t[c] : ''); }
         p.style('stroke-width',w+'px')
-            .call(drawing.fillColor, colorscales[a](d[c] || t[c] || (d.t ? d.t[c] : '')));
-        if(w) { p.call(drawing.strokeColor, colorscales[a+'l'](d[lc] || t[lc] || (d.t ? d.t[lc] : ''))); }
+            .call(drawing.fillColor, cc);
+        if(w) {
+            if(d[lc]) { d[lc+'c'] = lcc = colorscales[a+'l'](d[lc]); }
+            else { lcc = t[lc] || (d.t ? d.t[lc] : ''); }
+            p.call(drawing.strokeColor, lcc);
+        }
     });
 };
 
