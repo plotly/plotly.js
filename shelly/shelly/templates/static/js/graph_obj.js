@@ -488,7 +488,7 @@ Plotly.plot = function(gd, data, layout) {
         return null;
     }
     else{
-        if(gd.mainsite && gd.layout && !gd.layout._forexport) Plotly.Toolbar.resetCartesianPopoversMenu();
+        if(gd.mainsite) Plotly.Toolbar.resetCartesianPopoversMenu();
     }
 
     // Make or remake the framework (ie container and axes) if we need to
