@@ -37,6 +37,8 @@ req('Lib',["dateTime2ms", "isDateTime", "ms2DateTime", "parseDate", "findBin",
     "notifier", "conf_modal", "bBoxIntersect", "identity", "num2ordinal", "ppn",
     "togglecontent", "plotlyurl", "randstr"]);
 req('Scatter',["PTS_LINESONLY", "calc", "plot", "style"]);
+req('Toolbar',["polarPopover", "tracePopover", "canvasPopover", "axesPopover",
+    "textsPopover", "legendPopover", "setPolarPopoversMenu", "resetCartesianPopoversMenu"]);
 
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
@@ -379,6 +381,7 @@ plots.positionBrand = function(gd){
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
 Plotly.plot = function(gd, data, layout) {
+
 //    console.log('plotly.plot', gd, data, layout);
     Plotly.Lib.markTime('in plot');
     // Get the container div: we will store all variables for this plot as
@@ -402,11 +405,8 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     // Check if it has a polar type
-    var hasPolarType = Plotly.Lib.nestedProperty(gd, 'data[0].type').get().indexOf('Polar') != -1;
-
-//    if(!hasPolarType) gd.framework = undefined;
-    if(hasPolarType || gd.framework && gd.framework.isPolar){
-        console.log(layout);
+    var type = Plotly.Lib.nestedProperty(gd, 'data[0].type').get();
+    if(type && type.indexOf('Polar') != -1){
 
         // build or reuse the container skeleton
         var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
@@ -434,7 +434,7 @@ Plotly.plot = function(gd, data, layout) {
         }
 
         // instanciate framework
-        if(!gd.framework || !gd.framework.isPolar) gd.framework = micropolar.manager.framework();
+        gd.framework = micropolar.manager.framework();
         // plot
         gd.framework({container: paperDiv.node(), data: gd.data, layout: gd.layout});
 
@@ -477,22 +477,18 @@ Plotly.plot = function(gd, data, layout) {
                     var txt = this.attr('data-unformatted');
                     this.text(txt).call(titleLayout);
                 });
+
+            Plotly.Toolbar.setPolarPopoversMenu(gd);
         }
-
-
-
-        //.call(Plotly.util.convertToTspans)
 
         // fulfill more gd requirements
         gd.layout._paper = polarPlotSVG;
-
-        $('.js-annotation-box, .js-fit-plot-data').hide();
+        if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
 
         return null;
     }
-    else {
-        gd.framework = undefined
-        $('.js-annotation-box, .js-fit-plot-data').show();
+    else{
+        if(gd.mainsite) Plotly.Toolbar.resetCartesianPopoversMenu();
     }
 
     // Make or remake the framework (ie container and axes) if we need to
@@ -550,6 +546,7 @@ Plotly.plot = function(gd, data, layout) {
                 typeinfo = graphInfo[curvetype],
                 cdtextras = {}; // info (if anything) to add to cd[0].t
             cd = [];
+            gdc.type = curvetype; // don't let type be blank... may want to go further and enforce known types?
 
             if(typeinfo.framework!=gd.framework) {
                 console.log('Oops, tried to put data of type '+(gdc.type || 'scatter')+
@@ -739,6 +736,8 @@ plots.setStyles = function(gd, merge_dflt) {
             for(p=0; p<l; p++) { cd[p][attr]=val[p]; }
             // use the default for the trace-wide value, in case individual vals are missing
             cd[0].t[attr] = dflt;
+            // record that we have an array here - styling system wants to know about it
+            cd[0].t[attr+'array'] = true;
         }
         else {
             cd[0].t[attr] = (typeof val != 'undefined') ? val : dflt;
@@ -755,6 +754,12 @@ plots.setStyles = function(gd, merge_dflt) {
         c = t.curve; // trace number
         gdc = gd.data[c];
         defaultColor = plots.defaultColors[c % plots.defaultColors.length];
+        // record in t which data arrays we have for this trace
+        // other arrays, like marker size, are recorded as such in mergeattr
+        // this is used to decide which options to display for styling
+        t.xarray = $.isArray(gdc.x);
+        t.yarray = $.isArray(gdc.y);
+        t.zarray = $.isArray(gdc.z);
         // all types have attributes type, visible, opacity, name, text
         // mergeattr puts single values into cd[0].t, and all others into each individual point
         mergeattr('type','type','scatter');
@@ -859,6 +864,7 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('ybins.start','ybstart',0);
                 mergeattr('ybins.end','ybend',1);
                 mergeattr('ybins.size','ybsize',1);
+                mergeattr('marker.color','mc',t.lc); // in case of aggregation by marker color, just need to know if this is an array
             }
             else {
                 mergeattr('xtype','xtype',gdc.x ? 'array' : 'noarray');
@@ -1255,7 +1261,7 @@ Plotly.relayout = function(gd,astr,val) {
         // send annotation mods one-by-one through Annotations.draw(), don't set via nestedProperty
         // that's because add and remove are special
         else if(p.parts[0]=='annotations') {
-            var anum = p.parts[1], anns = gl.annotations, anni = anns[anum]||{};
+            var anum = p.parts[1], anns = gl.annotations, anni = (anns && anns[anum])||{};
             // if p.parts is just an annotation number, and val is either 'add' or
             // an entire annotation obj to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
@@ -1310,6 +1316,11 @@ Plotly.relayout = function(gd,astr,val) {
                 doplot = true;
             }
             p.set(vi);
+            // if we just inserted a whole axis (eg from themes), initialize it
+            if(ai.match(/^[xy]axis[0-9]*$/)) {
+                Plotly.Axes.initAxis(gd,gd.layout[ai]);
+                Plotly.Axes.setConvert(gd.layout[ai]);
+            }
         }
     }
     // now all attribute mods are done, as are redo and undo so we can save them
