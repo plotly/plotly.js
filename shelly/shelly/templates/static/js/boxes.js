@@ -49,7 +49,7 @@ boxes.calc = function(gd,gdc) {
     // sort the bins and calculate the stats
     pts.forEach(function(v,i){
         v.sort(function(a,b){ return a-b; });
-        var last = v.length-1,p = cd[i];
+        var last = v.length-1, p = cd[i];
         p.y = v; // put all points into calcdata
         p.min = v[0];
         p.max = v[last];
@@ -60,8 +60,8 @@ boxes.calc = function(gd,gdc) {
         p.q3 = interp(v,(0.75*last)); // third quartile
         // lower and upper fences - last point inside
         // 1.5 interquartile ranges from quartiles
-        p.lf = Math.min(p.q1,v[Plotly.Lib.findBin(2.5*p.q1-1.5*p.q3,v,true)+1]);
-        p.uf = Math.max(p.q3,v[Plotly.Lib.findBin(2.5*p.q3-1.5*p.q1,v)]);
+        p.lf = Math.min(p.q1,v[Math.min(Plotly.Lib.findBin(2.5*p.q1-1.5*p.q3,v,true)+1,last)]);
+        p.uf = Math.max(p.q3,v[Math.max(Plotly.Lib.findBin(2.5*p.q3-1.5*p.q1,v),0)]);
         // lower and upper outliers - 3 IQR out (don't clip to max/min,
         // this is only for discriminating suggested & far outliers)
         p.lo = 4*p.q1-3*p.q3;

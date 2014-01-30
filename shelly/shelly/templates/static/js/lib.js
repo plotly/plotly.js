@@ -121,7 +121,7 @@ lib.ms2DateTime = function(ms,r) {
 var timeFormats = {
     H:['%H:%M:%S~%L', '%H:%M:%S', '%H:%M'], // 24 hour
     I:['%I:%M:%S~%L%p', '%I:%M:%S%p', '%I:%M%p'], // with am/pm
-    D:['%H', '%I%p'] // no colon, ie only date or date with hour
+    D:['%H', '%I%p', '%Hh'] // no colon, ie only date or date with hour (could also support eg 12h34m?)
 };
 var dateFormats = {
     Y:[
