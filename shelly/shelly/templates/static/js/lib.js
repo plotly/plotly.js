@@ -761,18 +761,19 @@ lib.OptionControl = function(opt, optname) {
 lib.smooth = function(array_in, FWHM) {
     var w = [], array_out = [], i, j, k, v;
 
+    FWHM = Math.round(FWHM); // only makes sense for integers
+    if(FWHM<2) { return array_in; }
+
     // first make the window array
     for(i=1; i<2*FWHM; i++) { w.push((1-Math.cos(Math.PI*i/FWHM))/(2*FWHM)); }
-    var ws = 0;
-    w.forEach(function(v) { ws+=v; });
 
     // now do the convolution
     var wlen = w.length, alen = array_in.length;
     for(i=0; i<alen; i++) {
         v = 0;
         for(j=0; j<wlen; j++) {
-            k = i+j-FWHM;
-            if(k<0) { k = 1-k; }
+            k = i+j+1-FWHM;
+            if(k<0) { k = -1-k; }
             else if(k>=alen) { k = 2*alen-1-k; }
             v += array_in[k]*w[j];
         }
