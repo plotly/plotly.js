@@ -116,7 +116,8 @@ lib.ms2DateTime = function(ms,r) {
 // first collate all the date formats we want to support, precompiled to d3 format objects
 // see below for the string cleaning that happens before this
 // separate out 2-digit (y) and 4-digit-year (Y) formats, formats with month names (b),
-// and formats with am/pm (I) or no time (D) so we can cut down the number of tests we need
+// and formats with am/pm (I) or no time (D) (also includes hour only, as the test is
+// really for a colon) so we can cut down the number of tests we need
 // to run for any given string (right now all are between 15 and 32 tests)
 var timeFormats = {
     H:['%H:%M:%S~%L', '%H:%M:%S', '%H:%M'], // 24 hour
@@ -161,9 +162,9 @@ var dateTimeFormats = {
     Y:{
         H:['%Y~%m~%dT%H:%M:%S','%Y~%m~%dT%H:%M:%S~%L'].map(formatter),
         I:[],
-        D:['%Y%m%d%H%M%S','%Y~%m'].map(formatter)
+        D:['%Y%m%d%H%M%S','%Y~%m','%m~%Y'].map(formatter)
     },
-    Yb:{H:[],I:[],D:[]},
+    Yb:{H:[],I:[],D:['%Y~%b','%b~%Y'].map(formatter)},
     y:{H:[],I:[],D:[]},
     yb:{H:[],I:[],D:[]}
 };
