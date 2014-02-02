@@ -1516,7 +1516,7 @@ function makePlotFramework(divid, layout) {
 
     // Plot container
     gl._container = outerContainer.selectAll('.plot-container').data([0]);
-    gl._container.enter().append('div')
+    gl._container.enter().insert('div', ':first-child')
         .classed('plot-container',true)
         .classed('plotly',true)
         .classed('is-mainsite', gd.mainsite);
