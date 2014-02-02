@@ -346,12 +346,13 @@ function updateTraces(old_data, new_data) {
 plots.positionBrand = function(gd){
     $(gd).find('.link-to-tool').remove();
     var $linkToTool = $('<div class="link-to-tool">'+
+        '<span style="color:#444;font-size:11px;">plotly - </span>'+
         '<a href="#" class="link--impt link--embedview">data and graph &raquo;</a>'+
         '</div>').appendTo(gd.layout._paperdiv.node());
     if(gd.shareplot) {
         var path=window.location.pathname.split('/');
         $linkToTool.find('a')
-            .attr('href','/'+path[2]+'/'+path[1])
+            .attr('href','/'+path[1]+'/'+path[2])
             .attr('target','_blank');
     }
     else {
