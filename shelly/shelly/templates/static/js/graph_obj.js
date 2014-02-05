@@ -479,7 +479,7 @@ Plotly.plot = function(gd, data, layout) {
                     this.text(txt).call(titleLayout);
                 });
 
-            Plotly.Toolbar.setPolarPopoversMenu(gd);
+            Plotly.ToolPanel.bindPanelsMenuEvents(gd, 'polar');
         }
 
         // fulfill more gd requirements
@@ -489,7 +489,7 @@ Plotly.plot = function(gd, data, layout) {
         return null;
     }
     else{
-        if(gd.mainsite) Plotly.Toolbar.resetCartesianPopoversMenu(gd);
+        if(gd.mainsite) Plotly.ToolPanel.resetCartesianPopoversMenu(gd);
     }
 
     // Make or remake the framework (ie container and axes) if we need to
