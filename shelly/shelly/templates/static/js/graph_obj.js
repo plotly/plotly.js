@@ -1157,7 +1157,8 @@ Plotly.relayout = function(gd,astr,val) {
         doticks = false,
         dolayoutstyle = false,
         doplot = false,
-        docalc = false;
+        docalc = false,
+        domodebar = false;
 
     if(typeof astr == 'string') { aobj[astr] = val; }
     else if($.isPlainObject(astr)) { aobj = astr; }
@@ -1313,6 +1314,7 @@ Plotly.relayout = function(gd,astr,val) {
             // hovermode and dragmode don't need any redrawing, since they just
             // affect reaction to user input. everything else, assume full replot.
             // height, width, autosize get dealt with below
+            else if(ai=='hovermode') { domodebar = true; }
             else if(['hovermode','dragmode','height','width','autosize'].indexOf(ai)==-1) {
                 doplot = true;
             }
@@ -1352,6 +1354,7 @@ Plotly.relayout = function(gd,astr,val) {
             Plotly.Axes.doTicks(gd,'redraw');
             plots.titles(gd,'gtitle');
         }
+        if(domodebar) { Plotly.Fx.modeBar(gd); }
     }
     $(gd).trigger('plotly_relayout',redoit);
 };
