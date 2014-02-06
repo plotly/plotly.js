@@ -116,12 +116,13 @@ lib.ms2DateTime = function(ms,r) {
 // first collate all the date formats we want to support, precompiled to d3 format objects
 // see below for the string cleaning that happens before this
 // separate out 2-digit (y) and 4-digit-year (Y) formats, formats with month names (b),
-// and formats with am/pm (I) or no time (D) so we can cut down the number of tests we need
+// and formats with am/pm (I) or no time (D) (also includes hour only, as the test is
+// really for a colon) so we can cut down the number of tests we need
 // to run for any given string (right now all are between 15 and 32 tests)
 var timeFormats = {
     H:['%H:%M:%S~%L', '%H:%M:%S', '%H:%M'], // 24 hour
     I:['%I:%M:%S~%L%p', '%I:%M:%S%p', '%I:%M%p'], // with am/pm
-    D:['%H', '%I%p'] // no colon, ie only date or date with hour
+    D:['%H', '%I%p', '%Hh'] // no colon, ie only date or date with hour (could also support eg 12h34m?)
 };
 var dateFormats = {
     Y:[
@@ -161,9 +162,9 @@ var dateTimeFormats = {
     Y:{
         H:['%Y~%m~%dT%H:%M:%S','%Y~%m~%dT%H:%M:%S~%L'].map(formatter),
         I:[],
-        D:['%Y%m%d%H%M%S','%Y~%m'].map(formatter)
+        D:['%Y%m%d%H%M%S','%Y~%m','%m~%Y'].map(formatter)
     },
-    Yb:{H:[],I:[],D:[]},
+    Yb:{H:[],I:[],D:['%Y~%b','%b~%Y'].map(formatter)},
     y:{H:[],I:[],D:[]},
     yb:{H:[],I:[],D:[]}
 };
@@ -760,18 +761,19 @@ lib.OptionControl = function(opt, optname) {
 lib.smooth = function(array_in, FWHM) {
     var w = [], array_out = [], i, j, k, v;
 
+    FWHM = Math.round(FWHM); // only makes sense for integers
+    if(FWHM<2) { return array_in; }
+
     // first make the window array
     for(i=1; i<2*FWHM; i++) { w.push((1-Math.cos(Math.PI*i/FWHM))/(2*FWHM)); }
-    var ws = 0;
-    w.forEach(function(v) { ws+=v; });
 
     // now do the convolution
     var wlen = w.length, alen = array_in.length;
     for(i=0; i<alen; i++) {
         v = 0;
         for(j=0; j<wlen; j++) {
-            k = i+j-FWHM;
-            if(k<0) { k = 1-k; }
+            k = i+j+1-FWHM;
+            if(k<0) { k = -1-k; }
             else if(k>=alen) { k = 2*alen-1-k; }
             v += array_in[k]*w[j];
         }

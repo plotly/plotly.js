@@ -45,8 +45,15 @@ scatter.calc = function(gd,gdc) {
         yOptions = {padded:true};
     // include marker size
     if(gdc.mode && gdc.mode.indexOf('markers')!=-1) {
-        var markerPad = gdc.marker ? gdc.marker.size : 0;
-        markerTrans = function(v) { return (v||6)/1.6; };
+        var markerPad = gdc.marker ? gdc.marker.size : 0,
+            sizeref = 1.6*((gdc.marker && gdc.marker.sizeref)||1),
+            markerTrans;
+        if(gdc.marker && gdc.marker.sizemode=='area') {
+            markerTrans = function(v) { return Math.max(Math.sqrt((v||0)/sizeref),3); };
+        }
+        else {
+            markerTrans = function(v) { return Math.max((v||0)/sizeref,3); };
+        }
         xOptions.ppad = yOptions.ppad = $.isArray(markerPad) ?
             markerPad.map(markerTrans) : markerTrans(markerPad);
     }

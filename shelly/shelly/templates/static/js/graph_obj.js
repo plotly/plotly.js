@@ -346,12 +346,13 @@ function updateTraces(old_data, new_data) {
 plots.positionBrand = function(gd){
     $(gd).find('.link-to-tool').remove();
     var $linkToTool = $('<div class="link-to-tool">'+
+        '<span style="color:#444;font-size:11px;">plotly - </span>'+
         '<a href="#" class="link--impt link--embedview">data and graph &raquo;</a>'+
         '</div>').appendTo(gd.layout._paperdiv.node());
     if(gd.shareplot) {
         var path=window.location.pathname.split('/');
         $linkToTool.find('a')
-            .attr('href','/'+path[2]+'/'+path[1])
+            .attr('href','/'+path[1]+'/'+path[2])
             .attr('target','_blank');
     }
     else {
@@ -478,7 +479,7 @@ Plotly.plot = function(gd, data, layout) {
                     this.text(txt).call(titleLayout);
                 });
 
-            Plotly.Toolbar.setPolarPopoversMenu(gd);
+            Plotly.ToolPanel.bindPanelsMenuEvents(gd, 'polar');
         }
 
         // fulfill more gd requirements
@@ -488,7 +489,7 @@ Plotly.plot = function(gd, data, layout) {
         return null;
     }
     else{
-        if(gd.mainsite) Plotly.Toolbar.resetCartesianPopoversMenu();
+        if(gd.mainsite) Plotly.ToolPanel.resetCartesianPopoversMenu(gd);
     }
 
     // Make or remake the framework (ie container and axes) if we need to
@@ -1156,7 +1157,8 @@ Plotly.relayout = function(gd,astr,val) {
         doticks = false,
         dolayoutstyle = false,
         doplot = false,
-        docalc = false;
+        docalc = false,
+        domodebar = false;
 
     if(typeof astr == 'string') { aobj[astr] = val; }
     else if($.isPlainObject(astr)) { aobj = astr; }
@@ -1312,6 +1314,7 @@ Plotly.relayout = function(gd,astr,val) {
             // hovermode and dragmode don't need any redrawing, since they just
             // affect reaction to user input. everything else, assume full replot.
             // height, width, autosize get dealt with below
+            else if(ai=='hovermode') { domodebar = true; }
             else if(['hovermode','dragmode','height','width','autosize'].indexOf(ai)==-1) {
                 doplot = true;
             }
@@ -1351,6 +1354,7 @@ Plotly.relayout = function(gd,astr,val) {
             Plotly.Axes.doTicks(gd,'redraw');
             plots.titles(gd,'gtitle');
         }
+        if(domodebar) { Plotly.Fx.modeBar(gd); }
     }
     $(gd).trigger('plotly_relayout',redoit);
 };
@@ -1516,7 +1520,7 @@ function makePlotFramework(divid, layout) {
 
     // Plot container
     gl._container = outerContainer.selectAll('.plot-container').data([0]);
-    gl._container.enter().append('div')
+    gl._container.enter().insert('div', ':first-child')
         .classed('plot-container',true)
         .classed('plotly',true)
         .classed('is-mainsite', gd.mainsite);
@@ -2029,7 +2033,7 @@ function stripObj(d,mode) {
     var o={}, v;
     function s2(v2) { return stripObj(v2,mode); }
     for(v in d) {
-        if (v === "fit" && $.isPlainObject(d[v])) { continue; }
+        //if (v === "fit" && $.isPlainObject(d[v])) { continue; }
         // remove private elements and functions - _ is for private, [ is a mistake ie [object Object]
         if(typeof d[v]=='function' || ['_','['].indexOf(v.charAt(0))!=-1) { continue; }
         // look for src/data matches and remove the appropriate one
