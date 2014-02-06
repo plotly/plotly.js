@@ -34,10 +34,10 @@ legend.points = function(d){
 
     // constrain text, markers, etc so they'll fit on the legend
     var d_edit = {tx:'Aa', mo:1};
-    if(d[0].ms>16) { d_edit.ms = 16; }
+    if(d[0].ms) { d_edit.ms = 10; } // bubble charts:
     if(d[0].mlw>5) { d_edit.mlw = 5; }
     var dmod = [$.extend({},d[0], d_edit)],
-        tmod = $.extend({},t,{ts:10, ms:Math.min(t.ms,16), msr:1, msm:'diameter', lw:Math.min(t.lw,10)});
+        tmod = $.extend({},t,{ts:10, ms:Math.max(Math.min(t.ms,16),2), msr:1, msm:'diameter', lw:Math.min(t.lw,10)});
 
     var ptgroup = d3.select(this).select('g.legendpoints');
 
