@@ -411,7 +411,7 @@ Plotly.plot = function(gd, data, layout) {
 
         // build or reuse the container skeleton
         var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
-        plotContainer.enter().append('div').classed('plot-container plotly', true);
+        plotContainer.enter().insert('div', ':first-child').classed('plot-container plotly', true);
         var paperDiv = plotContainer.selectAll('.svg-container').data([0]);
         paperDiv.enter().append('div')
             .classed('svg-container',true)
