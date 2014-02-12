@@ -357,6 +357,7 @@ plots.positionBrand = function(gd){
     }
     else {
         $linkToTool.find('a').click(function(){
+            $(gd).trigger('plotly_beforeexport');
             var hiddenform = $('<div id="hiddenform" style="display:none;">'+
                 '<form action="https://plot.ly/external" method="post" target="_blank">'+
                 '<input type="text" name="data" /></form></div>').appendTo(gd);
@@ -366,6 +367,7 @@ plots.positionBrand = function(gd){
                 .replace(/\\/g,'\\\\').replace(/'/g,"\\'"));
             hiddenform.find('form').submit();
             hiddenform.remove();
+            $(gd).trigger('plotly_afterexport');
             return false;
         });
     }
@@ -711,6 +713,12 @@ Plotly.plot = function(gd, data, layout) {
         }
     },1000);
     Plotly.Lib.markTime('done plot');
+};
+
+// convenience function to force a full redraw, mostly for use by plotly.js
+Plotly.redraw = function(gd) {
+    gd.calcdata = undefined;
+    Plotly.plot(gd);
 };
 
 // setStyles: translate styles from gd.data to gd.calcdata,
