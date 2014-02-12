@@ -175,6 +175,9 @@ annotations.draw = function(gd,index,opt,value) {
 
     function drawGraphicalElements(){
 
+        // make sure lines are aligned the way they will be at the end, even if their position changes
+        anntext.selectAll('tspan.line').attr({y: 0, x: 0});
+
         var mathjaxGroup = ann.select('.annotation-math-group');
         var anntextBB = anntext.node().getBoundingClientRect(),
             annwidth = anntextBB.width,
@@ -182,16 +185,8 @@ annotations.draw = function(gd,index,opt,value) {
         var hasMathjax = !mathjaxGroup.empty();
         if(hasMathjax){
             var mathjaxBBox = mathjaxGroup.node().getBoundingClientRect();
-            annwidth = mathjaxBBox.width
-            annheight = mathjaxBBox.height
-        }
-
-        if(anntext.selectAll('tspan').size() > 0){
-            var widths = [];
-            anntext.selectAll('tspan').each(function(d, i){
-                widths.push(this.getComputedTextLength());
-            });
-            annwidth = d3.max(widths);
+            annwidth = mathjaxBBox.width;
+            annheight = mathjaxBBox.height;
         }
 
         // save size in the annotation object for use by autoscale
@@ -234,7 +229,7 @@ annotations.draw = function(gd,index,opt,value) {
                     options[axletter] = ( axOld.domain[0] + (axOld.domain[1]-axOld.domain[0])*
                         (options[axletter]-axOld.range[0])/axRange );
                     if(!options.showarrow) {
-                        options[axletter] += fshift(options[axletter])*annSize/(axRange*ax._m);
+                        options[axletter] += fshift(options[axletter])*annSize/(axRange*axOld._m);
                     }
                 }
             }
@@ -253,7 +248,6 @@ annotations.draw = function(gd,index,opt,value) {
                 // hide the annotation if it's pointing outside the visible plot
                 if((options[axletter]-ax.range[0])*(options[axletter]-ax.range[1])>0) { okToContinue = false; }
                 annPosPx[axletter] = ax._offset+ax.l2p(options[axletter]);
-                // console.log(options[axletter],ax.range[0],ax.range[1],okToContinue);
             }
 
             // save the current axis type for later log/linear changes
@@ -300,8 +294,8 @@ annotations.draw = function(gd,index,opt,value) {
             borderfull = borderwidth+borderpad,
             texty = paperBB.top-anntextBB.top+borderfull;
 
-        if(hasMathjax) anntext.attr({x: 0, y: 14})
-        else anntext.attr({x: paperBB.left-anntextBB.left+borderfull, y: texty})
+        if(hasMathjax) { anntext.attr({x: 0, y: 14}); }
+        else { anntext.attr({x: paperBB.left-anntextBB.left+borderfull, y: texty}); }
         anntext.selectAll('tspan.line').attr({y: texty, x: paperBB.left-anntextBB.left+borderfull});
 
         anntextBB = anntext.node().getBoundingClientRect(); // check the height again now that we've set the tspans
@@ -461,10 +455,10 @@ annotations.draw = function(gd,index,opt,value) {
                         update[annbase+'.y'] = options.yref=='paper' ?
                             (1-Plotly.Fx.dragAlign(y0+dy+borderfull,annheight,gs.t,gs.t+gs.h)) :
                             (options.y+dy/Plotly.Axes.getFromId(gd,options.yref)._m);
-                        if(options.xref!='paper' || options.yref!='paper') {
+                        if(options.xref=='paper' || options.yref=='paper') {
                             csr = Plotly.Fx.dragCursors(
-                                options.xref=='paper' ? 0.5 : update[annbase+'.x'],
-                                options.yref=='paper' ? 0.5 : update[annbase+'.y']
+                                options.xref!='paper' ? 0.5 : update[annbase+'.x'],
+                                options.yref!='paper' ? 0.5 : update[annbase+'.y']
                             );
                         }
                     }
