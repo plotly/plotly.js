@@ -357,6 +357,7 @@ plots.positionBrand = function(gd){
     }
     else {
         $linkToTool.find('a').click(function(){
+            $(gd).trigger('plotly_beforeexport');
             var hiddenform = $('<div id="hiddenform" style="display:none;">'+
                 '<form action="https://plot.ly/external" method="post" target="_blank">'+
                 '<input type="text" name="data" /></form></div>').appendTo(gd);
@@ -366,6 +367,7 @@ plots.positionBrand = function(gd){
                 .replace(/\\/g,'\\\\').replace(/'/g,"\\'"));
             hiddenform.find('form').submit();
             hiddenform.remove();
+            $(gd).trigger('plotly_afterexport');
             return false;
         });
     }
@@ -715,6 +717,12 @@ Plotly.plot = function(gd, data, layout) {
         }
     },1000);
     Plotly.Lib.markTime('done plot');
+};
+
+// convenience function to force a full redraw, mostly for use by plotly.js
+Plotly.redraw = function(gd) {
+    gd.calcdata = undefined;
+    Plotly.plot(gd);
 };
 
 // setStyles: translate styles from gd.data to gd.calcdata,
@@ -1238,23 +1246,29 @@ Plotly.relayout = function(gd,astr,val) {
 
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie will islog actually change)
-        if(p.parts[1]=='type' && !gl[p.parts[0]].autorange && (gl[p.parts[0]].type=='log' ? vi!='log' : vi=='log')) {
+        if(p.parts[1]=='type' && (gl[p.parts[0]].type=='log' ? vi!='log' : vi=='log')) {
             var ax = gl[p.parts[0]],
                 r0 = ax.range[0],
                 r1 = ax.range[1];
-            if(vi=='log') {
-                // if both limits are negative, autorange
-                if(r0<=0 && r1<=0) { doextra(p.parts[0]+'.autorange',true); continue; }
-                // if one is negative, set it to one millionth the other. TODO: find the smallest positive val?
-                else if(r0<=0) r0 = r1/1e6;
-                else if(r1<=0) r1 = r0/1e6;
-                // now set the range values as appropriate
-                doextra(p.parts[0]+'.range[0]', Math.log(r0)/Math.LN10);
-                doextra(p.parts[0]+'.range[1]', Math.log(r1)/Math.LN10);
+            if(!gl[p.parts[0]].autorange) {
+                if(vi=='log') {
+                    // if both limits are negative, autorange
+                    if(r0<=0 && r1<=0) { doextra(p.parts[0]+'.autorange',true); continue; }
+                    // if one is negative, set it to one millionth the other. TODO: find the smallest positive val?
+                    else if(r0<=0) r0 = r1/1e6;
+                    else if(r1<=0) r1 = r0/1e6;
+                    // now set the range values as appropriate
+                    doextra(p.parts[0]+'.range[0]', Math.log(r0)/Math.LN10);
+                    doextra(p.parts[0]+'.range[1]', Math.log(r1)/Math.LN10);
+                }
+                else {
+                    doextra(p.parts[0]+'.range[0]', Math.pow(10, r0));
+                    doextra(p.parts[0]+'.range[1]', Math.pow(10, r1));
+                }
             }
-            else {
-                doextra(p.parts[0]+'.range[0]', Math.pow(10, r0));
-                doextra(p.parts[0]+'.range[1]', Math.pow(10, r1));
+            else if(vi=='log') {
+                // just make sure the range is positive and in the right order, it'll get recalculated later
+                ax.range = r1>r0 ? [1,2] : [2,1];
             }
         }
 
