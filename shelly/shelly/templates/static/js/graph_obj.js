@@ -438,8 +438,12 @@ Plotly.plot = function(gd, data, layout) {
 
         // instanciate framework
         gd.framework = micropolar.manager.framework();
+        //get rid of gd.layout stashed nodes
+        var layout = µ.util.deepExtend({}, gd.layout);
+        delete layout._container;
+        delete layout._paperdiv;
         // plot
-        gd.framework({container: paperDiv.node(), data: gd.data, layout: gd.layout});
+        gd.framework({container: paperDiv.node(), data: gd.data, layout: layout});
 
         // get the resulting svg for extending it
         var polarPlotSVG = gd.framework.svg();
