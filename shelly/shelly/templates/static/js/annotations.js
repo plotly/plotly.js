@@ -146,7 +146,7 @@ annotations.draw = function(gd,index,opt,value) {
                 'font-family': font,
                 'font-size': fontSize+'px',
                 fill: Plotly.Drawing.rgb(fontColor),
-                opacity: Plotly.Drawing.opacity(fontColor)})
+                opacity: Plotly.Drawing.opacity(fontColor)});
         Plotly.util.convertToTspans(this, drawGraphicalElements);
         return this;
     }
@@ -204,6 +204,19 @@ annotations.draw = function(gd,index,opt,value) {
                 axRange = (ax||axOld) ? (ax||axOld).range[1]-(ax||axOld).range[0] : null,
                 defaultVal = ax ? ax.range[0] + (axletter=='x' ? 0.1 : 0.3)*axRange :
                     (axletter=='x' ? 0.1 : 0.7);
+
+            // check for date or category strings
+            if(ax && ['date','category'].indexOf(ax.type)!=-1 && typeof options[axletter]=='string') {
+                var newval;
+                if(ax.type=='date') {
+                    newval = Plotly.Lib.dateTime2ms(options[axletter]);
+                    if(newval!==false) { options[axletter] = newval; }
+                }
+                else if(ax.categories && ax.categories.length) {
+                    newval = ax.categories.indexOf(options[axletter]);
+                    if(newval!=-1) { options[axletter] = newval; }
+                }
+            }
 
             // if we're still referencing the same axis, see if it has changed linear <-> log
             if(ax && ax==axOld && options[typeAttr]) {
