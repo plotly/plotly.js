@@ -419,13 +419,6 @@ Plotly.plot = function(gd, data, layout) {
             .classed('svg-container',true)
             .style('position','relative');
 
-        // resize canvas
-        paperDiv.style({
-            width: (layout.width || 800) + 'px',
-            height: (layout.height || 600) + 'px',
-            background: (layout.paper_bgcolor || 'white')
-        });
-
         // fulfill gd requirements
         if(data) gd.data = data;
         gd.layout = layout;
@@ -435,6 +428,12 @@ Plotly.plot = function(gd, data, layout) {
             plotAutoSize(gd,{});
             gd.layout.autosize = true;
         }
+        // resize canvas
+        paperDiv.style({
+            width: (layout.width || 800) + 'px',
+            height: (layout.height || 600) + 'px',
+            background: (layout.paper_bgcolor || 'white')
+        });
 
         // instanciate framework
         gd.framework = micropolar.manager.framework();
@@ -442,6 +441,8 @@ Plotly.plot = function(gd, data, layout) {
         var layout = µ.util.deepExtend({}, gd.layout);
         delete layout._container;
         delete layout._paperdiv;
+        delete layout.autosize;
+
         // plot
         gd.framework({container: paperDiv.node(), data: gd.data, layout: layout});
 
