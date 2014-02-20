@@ -485,8 +485,6 @@ Plotly.plot = function(gd, data, layout) {
                     var txt = this.attr('data-unformatted');
                     this.text(txt).call(titleLayout);
                 });
-
-            Plotly.ToolPanel.bindPanelsMenuEvents(gd, 'polar');
         }
 
         // fulfill more gd requirements
@@ -494,9 +492,6 @@ Plotly.plot = function(gd, data, layout) {
         if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
 
         return null;
-    }
-    else{
-        if(gd.mainsite) Plotly.ToolPanel.resetCartesianPopoversMenu(gd);
     }
 
     // Make or remake the framework (ie container and axes) if we need to
