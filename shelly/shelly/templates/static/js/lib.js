@@ -782,4 +782,48 @@ lib.smooth = function(array_in, FWHM) {
     return array_out;
 };
 
+
+/*
+ * isEmpty
+ * @UTILITY
+ * check if object is empty and all arrays strings and objects within are empty
+ */
+lib.isEmpty = function (obj) {
+    /*
+     * Checks for empty arrays,
+     * objects and empty strings
+     * and objects and arrays that
+     * only contain empty arrays, objects
+     * and strings and so on.
+     */
+    var keys, bools;
+    if (obj === null) { return true; }
+    if (typeof(obj) === 'object' ) {
+        keys = Object.keys(obj);
+    }
+    else if (typeof(obj) === 'string') {
+        return obj.length === 0;
+    }
+    else if ((obj === 0) || obj) { return false; }
+    else { return true; } // its undefined or null so its empty
+
+    if (keys.length === 0) {
+        return true;
+    }
+    else {
+        bools = keys.map( function(key) {
+            return lib.isEmpty(obj[key]);
+        });
+    }
+    /*
+     * now go through array and see if any are not empty
+     * if so it returns true, but we negate it to return
+     * false ie some contents are not empty.
+     */
+    return !bools.some(function(c) { return !c; });
+
+}
+
+
+
 }()); // end Lib object definition
