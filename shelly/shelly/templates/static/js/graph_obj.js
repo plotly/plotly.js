@@ -408,8 +408,7 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     // Check if it has a polar type
-    var type = Plotly.Lib.nestedProperty(gd, 'data[0].type').get();
-    if(type && type.indexOf('Polar') != -1){
+    if(data[0].r){
 
         // build or reuse the container skeleton
         var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
