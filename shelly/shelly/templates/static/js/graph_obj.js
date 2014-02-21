@@ -408,7 +408,7 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     // Check if it has a polar type
-    if(data[0].r){
+    if(data && data[0] && data[0].r){
 
         // build or reuse the container skeleton
         var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
