@@ -485,6 +485,8 @@ Plotly.plot = function(gd, data, layout) {
                     var txt = this.attr('data-unformatted');
                     this.text(txt).call(titleLayout);
                 });
+
+            Plotly.ToolPanel.tweakMenu();
         }
 
         // fulfill more gd requirements
@@ -493,6 +495,7 @@ Plotly.plot = function(gd, data, layout) {
 
         return null;
     }
+    else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
 
     // Make or remake the framework (ie container and axes) if we need to
     // figure out what framework the data imply,
