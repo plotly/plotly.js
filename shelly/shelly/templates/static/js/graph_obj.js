@@ -408,6 +408,10 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     // Check if it has a polar type
+    if(data && data[0] && data[0].type.indexOf('Polar') != -1){
+        console.log('This polar chart uses a deprecated pre-release API');
+        return null;
+    }
     if(data && data[0] && data[0].r){
 
         // build or reuse the container skeleton
