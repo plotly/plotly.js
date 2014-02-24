@@ -441,6 +441,8 @@ Plotly.plot = function(gd, data, layout) {
         delete layout._container;
         delete layout._paperdiv;
         delete layout.autosize;
+        delete layout._paper;
+        delete layout._forexport;
 
         // plot
         gd.framework({container: paperDiv.node(), data: gd.data, layout: layout});
