@@ -357,6 +357,7 @@ plots.positionBrand = function(gd){
     }
     else {
         $linkToTool.find('a').click(function(){
+            $(gd).trigger('plotly_beforeexport');
             var hiddenform = $('<div id="hiddenform" style="display:none;">'+
                 '<form action="https://plot.ly/external" method="post" target="_blank">'+
                 '<input type="text" name="data" /></form></div>').appendTo(gd);
@@ -366,6 +367,7 @@ plots.positionBrand = function(gd){
                 .replace(/\\/g,'\\\\').replace(/'/g,"\\'"));
             hiddenform.find('form').submit();
             hiddenform.remove();
+            $(gd).trigger('plotly_afterexport');
             return false;
         });
     }
@@ -406,8 +408,11 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     // Check if it has a polar type
-    var type = Plotly.Lib.nestedProperty(gd, 'data[0].type').get();
-    if(type && type.indexOf('Polar') != -1){
+    if(data && data[0] && data[0].type && data[0].type.indexOf('Polar') != -1){
+        console.log('This polar chart uses a deprecated pre-release API');
+        return null;
+    }
+    if(data && data[0] && data[0].r){
 
         // build or reuse the container skeleton
         var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
@@ -416,13 +421,6 @@ Plotly.plot = function(gd, data, layout) {
         paperDiv.enter().append('div')
             .classed('svg-container',true)
             .style('position','relative');
-
-        // resize canvas
-        paperDiv.style({
-            width: (layout.width || 800) + 'px',
-            height: (layout.height || 600) + 'px',
-            background: (layout.paper_bgcolor || 'white')
-        });
 
         // fulfill gd requirements
         if(data) gd.data = data;
@@ -433,11 +431,25 @@ Plotly.plot = function(gd, data, layout) {
             plotAutoSize(gd,{});
             gd.layout.autosize = true;
         }
+        // resize canvas
+        paperDiv.style({
+            width: (layout.width || 800) + 'px',
+            height: (layout.height || 600) + 'px',
+            background: (layout.paper_bgcolor || 'white')
+        });
 
         // instanciate framework
         gd.framework = micropolar.manager.framework();
+        //get rid of gd.layout stashed nodes
+        var layout = µ.util.deepExtend({}, gd.layout);
+        delete layout._container;
+        delete layout._paperdiv;
+        delete layout.autosize;
+        delete layout._paper;
+        delete layout._forexport;
+
         // plot
-        gd.framework({container: paperDiv.node(), data: gd.data, layout: gd.layout});
+        gd.framework({container: paperDiv.node(), data: gd.data, layout: layout});
 
         // get the resulting svg for extending it
         var polarPlotSVG = gd.framework.svg();
@@ -467,19 +479,24 @@ Plotly.plot = function(gd, data, layout) {
                     .on('mouseover.opacity',function(){ d3.select(this).transition().duration(100).style('opacity',1); })
                     .on('mouseout.opacity',function(){ d3.select(this).transition().duration(1000).style('opacity',0); });
             }
-            title.call(Plotly.util.makeEditable)
-                .on('edit', function(text){
-                    gd.framework({layout: {title: text}});
-                    this.attr({'data-unformatted': text})
-                        .text(text)
-                        .call(titleLayout);
-                })
-                .on('cancel', function(text){
-                    var txt = this.attr('data-unformatted');
-                    this.text(txt).call(titleLayout);
-                });
 
-            Plotly.ToolPanel.bindPanelsMenuEvents(gd, 'polar');
+            function setContenteditable(){
+                this.call(Plotly.util.makeEditable)
+                    .on('edit', function(text){
+                        gd.framework({layout: {title: text}});
+                        this.attr({'data-unformatted': text})
+                            .text(text)
+                            .call(titleLayout);
+                        this.call(setContenteditable);
+                    })
+                    .on('cancel', function(text){
+                        var txt = this.attr('data-unformatted');
+                        this.text(txt).call(titleLayout);
+                    });
+            }
+            title.call(setContenteditable)
+
+            Plotly.ToolPanel.tweakMenu();
         }
 
         // fulfill more gd requirements
@@ -488,9 +505,7 @@ Plotly.plot = function(gd, data, layout) {
 
         return null;
     }
-    else{
-        if(gd.mainsite) Plotly.ToolPanel.resetCartesianPopoversMenu(gd);
-    }
+    else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
 
     // Make or remake the framework (ie container and axes) if we need to
     // figure out what framework the data imply,
@@ -711,6 +726,12 @@ Plotly.plot = function(gd, data, layout) {
         }
     },1000);
     Plotly.Lib.markTime('done plot');
+};
+
+// convenience function to force a full redraw, mostly for use by plotly.js
+Plotly.redraw = function(gd) {
+    gd.calcdata = undefined;
+    Plotly.plot(gd);
 };
 
 // setStyles: translate styles from gd.data to gd.calcdata,
@@ -1234,23 +1255,29 @@ Plotly.relayout = function(gd,astr,val) {
 
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie will islog actually change)
-        if(p.parts[1]=='type' && !gl[p.parts[0]].autorange && (gl[p.parts[0]].type=='log' ? vi!='log' : vi=='log')) {
+        if(p.parts[1]=='type' && (gl[p.parts[0]].type=='log' ? vi!='log' : vi=='log')) {
             var ax = gl[p.parts[0]],
                 r0 = ax.range[0],
                 r1 = ax.range[1];
-            if(vi=='log') {
-                // if both limits are negative, autorange
-                if(r0<=0 && r1<=0) { doextra(p.parts[0]+'.autorange',true); continue; }
-                // if one is negative, set it to one millionth the other. TODO: find the smallest positive val?
-                else if(r0<=0) r0 = r1/1e6;
-                else if(r1<=0) r1 = r0/1e6;
-                // now set the range values as appropriate
-                doextra(p.parts[0]+'.range[0]', Math.log(r0)/Math.LN10);
-                doextra(p.parts[0]+'.range[1]', Math.log(r1)/Math.LN10);
+            if(!gl[p.parts[0]].autorange) {
+                if(vi=='log') {
+                    // if both limits are negative, autorange
+                    if(r0<=0 && r1<=0) { doextra(p.parts[0]+'.autorange',true); continue; }
+                    // if one is negative, set it to one millionth the other. TODO: find the smallest positive val?
+                    else if(r0<=0) r0 = r1/1e6;
+                    else if(r1<=0) r1 = r0/1e6;
+                    // now set the range values as appropriate
+                    doextra(p.parts[0]+'.range[0]', Math.log(r0)/Math.LN10);
+                    doextra(p.parts[0]+'.range[1]', Math.log(r1)/Math.LN10);
+                }
+                else {
+                    doextra(p.parts[0]+'.range[0]', Math.pow(10, r0));
+                    doextra(p.parts[0]+'.range[1]', Math.pow(10, r1));
+                }
             }
-            else {
-                doextra(p.parts[0]+'.range[0]', Math.pow(10, r0));
-                doextra(p.parts[0]+'.range[1]', Math.pow(10, r1));
+            else if(vi=='log') {
+                // just make sure the range is positive and in the right order, it'll get recalculated later
+                ax.range = r1>r0 ? [1,2] : [2,1];
             }
         }
 
@@ -2014,6 +2041,12 @@ plots.graphJson = function(gd, dataonly, mode){
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     var obj = { data:(gd.data||[]).map(function(v){ return stripObj(v,mode); }) };
     if(!dataonly) { obj.layout = stripObj(gd.layout,mode); }
+
+    if(gd.framework && gd.framework.isPolar){
+        obj = gd.framework.getConfig();
+        delete obj.container;
+    }
+
     return JSON.stringify(obj);
 };
 
