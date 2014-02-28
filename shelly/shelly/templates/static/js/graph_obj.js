@@ -449,7 +449,10 @@ Plotly.plot = function(gd, data, layout) {
         delete layout._forexport;
 
         // plot
-        gd.framework({container: paperDiv.node(), data: gd.data, layout: layout});
+        gd.framework({data: gd.data, layout: layout}, paperDiv.node());
+
+        // set undo point
+        gd.framework.setUndoPoint();
 
         // get the resulting svg for extending it
         var polarPlotSVG = gd.framework.svg();
@@ -2042,10 +2045,7 @@ plots.graphJson = function(gd, dataonly, mode){
     var obj = { data:(gd.data||[]).map(function(v){ return stripObj(v,mode); }) };
     if(!dataonly) { obj.layout = stripObj(gd.layout,mode); }
 
-    if(gd.framework && gd.framework.isPolar){
-        obj = gd.framework.getConfig();
-        delete obj.container;
-    }
+    if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
     return JSON.stringify(obj);
 };
