@@ -408,6 +408,10 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     // Check if it has a polar type
+    if(data && data[0] && data[0].type && data[0].type.indexOf('Polar') != -1){
+        console.log('This polar chart uses a deprecated pre-release API');
+        return null;
+    }
     if(data && data[0] && data[0].r){
 
         // build or reuse the container skeleton
@@ -441,9 +445,14 @@ Plotly.plot = function(gd, data, layout) {
         delete layout._container;
         delete layout._paperdiv;
         delete layout.autosize;
+        delete layout._paper;
+        delete layout._forexport;
 
         // plot
-        gd.framework({container: paperDiv.node(), data: gd.data, layout: layout});
+        gd.framework({data: gd.data, layout: layout}, paperDiv.node());
+
+        // set undo point
+        gd.framework.setUndoPoint();
 
         // get the resulting svg for extending it
         var polarPlotSVG = gd.framework.svg();
@@ -473,17 +482,22 @@ Plotly.plot = function(gd, data, layout) {
                     .on('mouseover.opacity',function(){ d3.select(this).transition().duration(100).style('opacity',1); })
                     .on('mouseout.opacity',function(){ d3.select(this).transition().duration(1000).style('opacity',0); });
             }
-            title.call(Plotly.util.makeEditable)
-                .on('edit', function(text){
-                    gd.framework({layout: {title: text}});
-                    this.attr({'data-unformatted': text})
-                        .text(text)
-                        .call(titleLayout);
-                })
-                .on('cancel', function(text){
-                    var txt = this.attr('data-unformatted');
-                    this.text(txt).call(titleLayout);
-                });
+
+            function setContenteditable(){
+                this.call(Plotly.util.makeEditable)
+                    .on('edit', function(text){
+                        gd.framework({layout: {title: text}});
+                        this.attr({'data-unformatted': text})
+                            .text(text)
+                            .call(titleLayout);
+                        this.call(setContenteditable);
+                    })
+                    .on('cancel', function(text){
+                        var txt = this.attr('data-unformatted');
+                        this.text(txt).call(titleLayout);
+                    });
+            }
+            title.call(setContenteditable)
 
             Plotly.ToolPanel.tweakMenu();
         }
@@ -2030,6 +2044,9 @@ plots.graphJson = function(gd, dataonly, mode){
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     var obj = { data:(gd.data||[]).map(function(v){ return stripObj(v,mode); }) };
     if(!dataonly) { obj.layout = stripObj(gd.layout,mode); }
+
+    if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
+
     return JSON.stringify(obj);
 };
 
