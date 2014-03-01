@@ -339,24 +339,62 @@ function updateTraces(old_data, new_data) {
     return res;
 }
 
+plots.addLinks = function(gd) {
+    var linkContainer = gd.layout._paper.selectAll('text.js-plot-link-container').data([0]);
+    linkContainer.enter().append('text')
+        .classed('js-plot-link-container',true)
+        .attr({
+            'text-anchor':'end',
+            x:gd.layout._paper.attr('width')-5,
+            y:gd.layout._paper.attr('height')-7
+        })
+        .style({
+            'font-family':"'Open Sans',Arial,sans-serif",
+            'font-size':'12px',
+            'fill':'#444'
+        })
+        .each(function(){
+            var links = d3.select(this);
+            links.append('tspan').classed('js-link-to-tool',true);
+            links.append('tspan').classed('js-link-spacer',true);
+            links.append('tspan').classed('js-sourcelinks',true);
+        });
+    var toolspan = linkContainer.select('.js-link-to-tool'),
+        spacespan = linkContainer.select('.js-link-spacer'),
+        sourcespan = linkContainer.select('.js-sourcelinks');
+
+    // data source links
+    Plotly.Lib.showSources(gd,sourcespan);
+
+    // public url for downloaded files
+    if(gd.layout && gd.layout._url) { toolspan.text(url); }
+
+    // 'view in plotly' link for embedded plots
+    else if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd,toolspan); }
+
+    // separator if we have both sources and tool link
+    linkContainer.select('.js-link-spacer').text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
+};
+
 // the 'view in plotly' link - note that now plot() calls this if it exists,
 // so it can regenerate whenever it replots
 // note that now this function is only adding the brand in iframes and 3rd-party
 // apps, standalone plots get the sidebar instead.
-plots.positionBrand = function(gd){
-    $(gd).find('.link-to-tool').remove();
-    var $linkToTool = $('<div class="link-to-tool">'+
-        '<span style="color:#444;font-size:11px;">plotly - </span>'+
-        '<a href="#" class="link--impt link--embedview">data and graph &raquo;</a>'+
-        '</div>').appendTo(gd.layout._paperdiv.node());
+plots.positionBrand = function(gd,container){
+    container.text('');
+    container.append('tspan')
+        .style({'font-size':'11px'})
+        .text('plotly - ');
+    var link = container.append('a')
+        .attr({'xlink:xlink:href':'#','class':'link--impt link--embedview','font-weight':'bold'})
+        .text('data and graph '+String.fromCharCode(187));
+
     if(gd.shareplot) {
         var path=window.location.pathname.split('/');
-        $linkToTool.find('a')
-            .attr('href','/'+path[1]+'/'+path[2])
-            .attr('target','_blank');
+        link.attr({'xlink:xlink:show':'new','xlink:xlink:href':'/'+path[1]+'/'+path[2]});
     }
     else {
-        $linkToTool.find('a').click(function(){
+        link.on('click',function(){
             $(gd).trigger('plotly_beforeexport');
             var hiddenform = $('<div id="hiddenform" style="display:none;">'+
                 '<form action="https://plot.ly/external" method="post" target="_blank">'+
@@ -497,14 +535,14 @@ Plotly.plot = function(gd, data, layout) {
                         this.text(txt).call(titleLayout);
                     });
             }
-            title.call(setContenteditable)
+            title.call(setContenteditable);
 
             Plotly.ToolPanel.tweakMenu();
         }
 
         // fulfill more gd requirements
         gd.layout._paper = polarPlotSVG;
-        if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
+        plots.addLinks(gd);
 
         return null;
     }
@@ -714,8 +752,8 @@ Plotly.plot = function(gd, data, layout) {
 
     // final cleanup
 
-    // 'view in plotly' link for embedded plots
-    if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
+    // source links
+    plots.addLinks(gd);
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
@@ -1009,7 +1047,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // these all trigger a recalc
     var layout_attr = [
         'barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap',
-        '?axis.autorange','?axis.range'
+        '?axis.autorange','?axis.range','?axis.rangemode'
     ];
     // these ones may alter the axis type (at least if the first trace is involved)
     var axtype_attr = ['type','x','y','x0','y0','bardir','xaxis','yaxis'];
@@ -1339,6 +1377,7 @@ Plotly.relayout = function(gd,astr,val) {
             else if(ai=='margin.pad') { doticks = dolayoutstyle = true; }
             else if(p.parts[0]=='margin' ||
                 p.parts[1]=='autorange' ||
+                p.parts[1]=='rangemode' ||
                 p.parts[1]=='type' ||
                 ai.match(/^(bar|box|font)/)) { docalc = true; }
             // hovermode and dragmode don't need any redrawing, since they just
