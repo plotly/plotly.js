@@ -1047,7 +1047,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // these all trigger a recalc
     var layout_attr = [
         'barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap',
-        '?axis.autorange','?axis.range'
+        '?axis.autorange','?axis.range','?axis.rangemode'
     ];
     // these ones may alter the axis type (at least if the first trace is involved)
     var axtype_attr = ['type','x','y','x0','y0','bardir','xaxis','yaxis'];
@@ -1377,6 +1377,7 @@ Plotly.relayout = function(gd,astr,val) {
             else if(ai=='margin.pad') { doticks = dolayoutstyle = true; }
             else if(p.parts[0]=='margin' ||
                 p.parts[1]=='autorange' ||
+                p.parts[1]=='rangemode' ||
                 p.parts[1]=='type' ||
                 ai.match(/^(bar|box|font)/)) { docalc = true; }
             // hovermode and dragmode don't need any redrawing, since they just
