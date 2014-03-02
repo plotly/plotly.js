@@ -782,6 +782,118 @@ lib.smooth = function(array_in, FWHM) {
     return array_out;
 };
 
+lib.getSources = function(td,container) {
+    var fid = lib.fullFid(td.fid);
+    var extrarefs = (td.ref_fids||[]).join(',');
+    if(!fid && !extrarefs) { return; }
+    $.post('/getsources', {fid:fid, extrarefs:extrarefs}, function(res) {
+        td.sourcelist = JSON.parse(res);
+        lib.showSources(td,container);
+    });
+};
+
+// fullfid - include the username in fid whether it was there or not
+// also strip out backslash if one was there for selectability
+// and turn tree roots into -1
+lib.fullFid = function(fid) {
+    if (typeof fid =='number') { fid = String(fid); }
+    if (typeof fid !=='string' || fid==='') { return ''; }
+    if (fid.substr(fid.length-4)=='tree') { return '-1'; }
+    return ($.isNumeric(fid) && window.user ? (window.user+':'+fid) : fid).replace('\\:',':');
+};
+
+lib.showSources = function(td,container) {
+    // show the sources of data in the active tab
+    // Initially, for plots you have to set td.layout.showsources=true to enable this,
+    // then redraw the plot (like double click in it to autorange) to make it happen
+    // once we're happy with it we'll make it opt-out
+    var allsources = td.sourcelist;
+    if(!allsources) {
+        lib.getSources(td,container);
+        return;
+    }
+    $(td).find('.js-sourcelinks').text('');
+    var extsources = allsources.filter(function(v){return $.isNumeric(v.ref_fid); });
+    var firstsource = extsources[0] || allsources[0];
+    if(!firstsource) { return; }
+
+    // find number of unique internal and external sources
+    var extobj = {}, plotlyobj = {};
+    extsources.forEach(function(v){ extobj[v.url] = 1; });
+    allsources.forEach(function(v){ if(!$.isNumeric(v.ref_fid)){ plotlyobj[v.ref_fid] = 1; } });
+    var extcount = Object.keys(extobj).length,
+        plotlycount = Object.keys(plotlyobj).length;
+
+    if($(td).hasClass('js-plotly-plot')) {
+        if(td.layout.showsources) {
+            container.append('tspan').text('Source: ');
+            // Plotly.Drawing.font(container,f.family,f.size,f.color);
+            var mainlink = container.append('a').text(firstsource.ref_filename);
+            if($.isNumeric(firstsource.ref_fid)) {
+                mainlink.attr({'xlink:xlink:show':'new','xlink:xlink:href':firstsource.ref_url});
+            }
+            else if(td.mainsite) {
+                mainlink.attr({'xlink:xlink:href':'#'})
+                    .on('click',function(){ pullf({fid:firstsource.ref_fid}); });
+            }
+            else {
+                var fidparts = firstsource.ref_fid.split(':');
+                mainlink.attr({'xlink:xlink:show':'new','xlink:xlink:href':'/'+fidparts[1]+'/~'+fidparts[0]});
+            }
+
+            if(allsources.length>1 && td.mainsite) {
+                container.append('tspan').text(' - ');
+                var extraslink = container.append('a').text('Full List')
+                    .attr({'xlink:xlink:href':'#'})
+                    .on('click',function(){ fullSourcing(); return false; });
+            }
+        }
+    }
+    else {
+        // TODO for grids or scripts - show sourcing in the menu bar?
+    }
+
+    function makeSourceObj(container, ref_by_uid) {
+        if(cnt<0) { console.log('infinite loop?'); return container; }
+        cnt--;
+        allsources.forEach(function(src){
+            if(src.ref_by_uid==ref_by_uid) {
+                var linkval;
+                if($.isNumeric(src.ref_fid)) {
+                    linkval = '<a href="'+src.ref_url+'" target="_blank">'+src.ref_filename+'</a>'; // TODO: service name
+                }
+                else {
+                    var ref_user = src.ref_fid.split(':')[0],
+                        fn = (ref_user!=window.user ? ref_user+': ' : '') + src.ref_filename;
+                    linkval = '<a href="#" data-fid="'+src.ref_fid+'">'+fn+'</a>';
+                }
+                container[linkval] = makeSourceObj({},src.uid);
+            }
+        });
+        return container;
+    }
+
+    var cnt = allsources.length,
+        sourceObj = makeSourceObj({}, null);
+
+    function fullSourcing(){
+        var sourceModal = $('#sourceModal');
+        var sourceViewer = sourceModal.find('#source-viewer').empty();
+        sourceViewer.data('jsontree', '').jsontree(JSON.stringify(sourceObj),{terminators:false, collapsibleOuter:false}).show();
+        sourceModal.find('[data-fid]').click(function(){
+            sourceModal.modal('hide');
+            pullf({fid:$(this).attr('data-fid')});
+            return false;
+        });
+        sourceModal.modal('show');
+
+        sourceModal.find('.close').off('click').on('click', function(d, i){
+            sourceModal.modal('hide');
+            return false;
+        });
+    }
+
+};
 
 /*
  * isEmpty
@@ -823,7 +935,6 @@ lib.isEmpty = function (obj) {
     return !bools.some(function(c) { return !c; });
 
 }
-
 
 
 }()); // end Lib object definition
