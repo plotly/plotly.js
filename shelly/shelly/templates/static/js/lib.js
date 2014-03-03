@@ -827,7 +827,8 @@ lib.showSources = function(td) {
     var extcount = Object.keys(extobj).length,
         plotlycount = Object.keys(plotlyobj).length,
         fidparts = String(firstsource.ref_fid).split(':'),
-        isplot = $(td).hasClass('js-plotly-plot');
+        isplot = $(td).hasClass('js-plotly-plot'),
+        mainsite = Boolean($('#plotlyMainMarker').length);;
 
     if(window.SHOWSOURCES) {
         var mainlink, extraslink;
@@ -840,7 +841,7 @@ lib.showSources = function(td) {
                     'xlink:xlink:href':firstsource.ref_url
                 });
             }
-            else if(!td.mainsite){
+            else if(!mainsite){
                 mainlink.attr({
                     'xlink:xlink:show':'new',
                     'xlink:xlink:href':'/'+fidparts[1]+'/~'+fidparts[0]
@@ -849,15 +850,7 @@ lib.showSources = function(td) {
 
             if(allsources.length>1) {
                 container.append('tspan').text(' - ');
-                // if(td.mainsite) {
-                    extraslink = container.append('a').attr({'xlink:xlink:href':'#'});
-                // }
-                // else {
-                //     container.append('a').text('(details)').attr({
-                //         'xlink:xlink:show':'new',
-                //         'xlink:xlink:href':'/'+fidparts[1]+'/~'+fidparts[0]
-                //     });
-                // }
+                extraslink = container.append('a').attr({'xlink:xlink:href':'#'});
             }
         }
         else { // html version for grids (and scripts?)
@@ -913,11 +906,23 @@ lib.showSources = function(td) {
         var sourceModal = $('#sourceModal');
         var sourceViewer = sourceModal.find('#source-viewer').empty();
         sourceViewer.data('jsontree', '').jsontree(JSON.stringify(sourceObj),{terminators:false, collapsibleOuter:false}).show();
-        sourceModal.find('[data-fid]').click(function(){
-            sourceModal.modal('hide');
-            pullf({fid:$(this).attr('data-fid')});
-            return false;
-        });
+        if(mainsite) {
+            sourceModal.find('[data-fid]').click(function(){
+                sourceModal.modal('hide');
+                pullf({fid:$(this).attr('data-fid')});
+                return false;
+            });
+        }
+        else {
+            sourceModal.find('[data-fid]').each(function(){
+                fidparts = $(this).attr('data-fid').split(':');
+                $(this).attr({href:'/~'+fidparts[0]+'/'+fidparts[1]});
+            });
+            if(window.self!==window.top) {
+                // in an iframe: basically fill the frame
+                sourceModal.css({left:'10px', right:'10px',bottom:'10px',width:'auto',height:'auto',margin:0});
+            }
+        }
         sourceModal.modal('show');
 
         sourceModal.find('.close').off('click').on('click', function(d, i){
