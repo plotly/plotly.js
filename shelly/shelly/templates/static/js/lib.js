@@ -816,6 +816,7 @@ lib.showSources = function(td) {
         extsources = allsources.filter(function(v){return $.isNumeric(v.ref_fid); }),
         firstsource = extsources[0] || allsources[0];
     container.text('');
+    // no sources at all? quit
     if(!firstsource) { return; }
 
     // find number of unique internal and external sources
@@ -831,6 +832,12 @@ lib.showSources = function(td) {
         extraslink;
 
     if(isplot) { // svg version for plots
+        // in case someone REALLY doesn't want to show sources they can hide them...
+        // but you can always see them by going to the grid
+        if(td.layout.hidesources) { return; }
+        // only sources from the same user? also quit, if we're on a plot
+        var thisuser = firstsource.fid.split(':')[0];
+        if(allsources.every(function(v){ return String(v.ref_fid).split(':')[0]==thisuser; })) { return; }
         container.append('tspan').text('Source: ');
         mainlink = container.append('a').attr({'xlink:xlink:href':'#'});
         if($.isNumeric(firstsource.ref_fid)) {
