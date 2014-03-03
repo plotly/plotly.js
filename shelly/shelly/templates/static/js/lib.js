@@ -828,7 +828,7 @@ lib.showSources = function(td) {
         plotlycount = Object.keys(plotlyobj).length,
         fidparts = String(firstsource.ref_fid).split(':'),
         isplot = $(td).hasClass('js-plotly-plot'),
-        mainsite = Boolean($('#plotlyMainMarker').length);;
+        mainsite = Boolean($('#plotlyMainMarker').length);
 
     if(window.SHOWSOURCES) {
         var mainlink, extraslink;
