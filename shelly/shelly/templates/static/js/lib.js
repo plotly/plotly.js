@@ -853,7 +853,7 @@ lib.showSources = function(td) {
     }
     else { // html version for grids (and scripts?)
         if(!container.node()) {
-            container = d3.select(td).select('grid-container').append('div')
+            container = d3.select(td).select('.grid-container').append('div')
                 .attr('class', 'grid-sourcelinks js-sourcelinks');
         }
         container.append('span').text('Source: ');
