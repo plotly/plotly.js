@@ -782,13 +782,15 @@ lib.smooth = function(array_in, FWHM) {
     return array_out;
 };
 
-lib.getSources = function(td,container) {
+window.SHOWSOURCES = false; // just for initial testing - set true to activate
+
+lib.getSources = function(td) {
     var fid = lib.fullFid(td.fid);
     var extrarefs = (td.ref_fids||[]).join(',');
     if(!fid && !extrarefs) { return; }
     $.post('/getsources', {fid:fid, extrarefs:extrarefs}, function(res) {
         td.sourcelist = JSON.parse(res);
-        lib.showSources(td,container);
+        lib.showSources(td);
     });
 };
 
@@ -802,19 +804,20 @@ lib.fullFid = function(fid) {
     return ($.isNumeric(fid) && window.user ? (window.user+':'+fid) : fid).replace('\\:',':');
 };
 
-lib.showSources = function(td,container) {
+lib.showSources = function(td) {
     // show the sources of data in the active tab
     // Initially, for plots you have to set td.layout.showsources=true to enable this,
     // then redraw the plot (like double click in it to autorange) to make it happen
     // once we're happy with it we'll make it opt-out
     var allsources = td.sourcelist;
     if(!allsources) {
-        lib.getSources(td,container);
+        lib.getSources(td);
         return;
     }
-    $(td).find('.js-sourcelinks').text('');
-    var extsources = allsources.filter(function(v){return $.isNumeric(v.ref_fid); });
-    var firstsource = extsources[0] || allsources[0];
+    var container = d3.select(td).select('.js-sourcelinks'),
+        extsources = allsources.filter(function(v){return $.isNumeric(v.ref_fid); }),
+        firstsource = extsources[0] || allsources[0];
+    container.text('');
     if(!firstsource) { return; }
 
     // find number of unique internal and external sources
@@ -822,35 +825,65 @@ lib.showSources = function(td,container) {
     extsources.forEach(function(v){ extobj[v.url] = 1; });
     allsources.forEach(function(v){ if(!$.isNumeric(v.ref_fid)){ plotlyobj[v.ref_fid] = 1; } });
     var extcount = Object.keys(extobj).length,
-        plotlycount = Object.keys(plotlyobj).length;
+        plotlycount = Object.keys(plotlyobj).length,
+        fidparts = String(firstsource.ref_fid).split(':'),
+        isplot = $(td).hasClass('js-plotly-plot');
 
-    if($(td).hasClass('js-plotly-plot')) {
-        if(td.layout.showsources) {
+    if(window.SHOWSOURCES) {
+        var mainlink, extraslink;
+        if(isplot) { // svg version for plots
             container.append('tspan').text('Source: ');
-            // Plotly.Drawing.font(container,f.family,f.size,f.color);
-            var mainlink = container.append('a').text(firstsource.ref_filename);
+            mainlink = container.append('a').attr({'xlink:xlink:href':'#'});
             if($.isNumeric(firstsource.ref_fid)) {
-                mainlink.attr({'xlink:xlink:show':'new','xlink:xlink:href':firstsource.ref_url});
+                mainlink.attr({
+                    'xlink:xlink:show':'new',
+                    'xlink:xlink:href':firstsource.ref_url
+                });
             }
-            else if(td.mainsite) {
-                mainlink.attr({'xlink:xlink:href':'#'})
-                    .on('click',function(){ pullf({fid:firstsource.ref_fid}); });
-            }
-            else {
-                var fidparts = firstsource.ref_fid.split(':');
-                mainlink.attr({'xlink:xlink:show':'new','xlink:xlink:href':'/'+fidparts[1]+'/~'+fidparts[0]});
+            else if(!td.mainsite){
+                mainlink.attr({
+                    'xlink:xlink:show':'new',
+                    'xlink:xlink:href':'/'+fidparts[1]+'/~'+fidparts[0]
+                });
             }
 
-            if(allsources.length>1 && td.mainsite) {
+            if(allsources.length>1) {
                 container.append('tspan').text(' - ');
-                var extraslink = container.append('a').text('Full List')
-                    .attr({'xlink:xlink:href':'#'})
-                    .on('click',function(){ fullSourcing(); return false; });
+                // if(td.mainsite) {
+                    extraslink = container.append('a').attr({'xlink:xlink:href':'#'});
+                // }
+                // else {
+                //     container.append('a').text('(details)').attr({
+                //         'xlink:xlink:show':'new',
+                //         'xlink:xlink:href':'/'+fidparts[1]+'/~'+fidparts[0]
+                //     });
+                // }
             }
         }
-    }
-    else {
-        // TODO for grids or scripts - show sourcing in the menu bar?
+        else { // html version for grids (and scripts?)
+            container.append('span').text('Source: ');
+            mainlink = container.append('a').attr({'href':'#'});
+            if($.isNumeric(firstsource.ref_fid)) {
+                mainlink.attr({
+                    'target':'_blank',
+                    'href':firstsource.ref_url
+                });
+            }
+
+            if(allsources.length>1) {
+                container.append('span').text(' - ');
+                extraslink = container.append('a').attr({'href':'#'});
+            }
+        }
+
+        mainlink.text(firstsource.ref_filename);
+        if(!isplot || td.mainsite) {
+            mainlink.on('click',function(){ pullf({fid:firstsource.ref_fid}); return false; });
+        }
+        if(extraslink) {
+            extraslink.text('Full List')
+                .on('click',function(){ fullSourcing(); return false; });
+        }
     }
 
     function makeSourceObj(container, ref_by_uid) {

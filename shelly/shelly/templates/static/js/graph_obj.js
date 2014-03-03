@@ -339,6 +339,8 @@ function updateTraces(old_data, new_data) {
     return res;
 }
 
+// the 'view in plotly' and source links - note that now plot() calls this
+// so it can regenerate whenever it replots
 plots.addLinks = function(gd) {
     var linkContainer = gd.layout._paper.selectAll('text.js-plot-link-container').data([0]);
     linkContainer.enter().append('text')
@@ -364,23 +366,21 @@ plots.addLinks = function(gd) {
         sourcespan = linkContainer.select('.js-sourcelinks');
 
     // data source links
-    Plotly.Lib.showSources(gd,sourcespan);
+    Plotly.Lib.showSources(gd);
 
     // public url for downloaded files
     if(gd.layout && gd.layout._url) { toolspan.text(url); }
 
     // 'view in plotly' link for embedded plots
-    else if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd,toolspan); }
+    else if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { positionBrand(gd,toolspan); }
 
     // separator if we have both sources and tool link
     linkContainer.select('.js-link-spacer').text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
 };
 
-// the 'view in plotly' link - note that now plot() calls this if it exists,
-// so it can regenerate whenever it replots
 // note that now this function is only adding the brand in iframes and 3rd-party
 // apps, standalone plots get the sidebar instead.
-plots.positionBrand = function(gd,container){
+function positionBrand(gd,container){
     container.text('');
     container.append('tspan')
         .style({'font-size':'11px'})
@@ -409,7 +409,7 @@ plots.positionBrand = function(gd,container){
             return false;
         });
     }
-};
+}
 
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call makePlotFramework
