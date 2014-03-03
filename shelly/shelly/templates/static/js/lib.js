@@ -857,7 +857,10 @@ lib.showSources = function(td) {
                 .attr('class', 'grid-sourcelinks js-sourcelinks');
         }
         container.append('span').text('Source: ');
-        mainlink = container.append('a').attr({'href':'#'});
+        mainlink = container.append('a').attr({
+            'href':'#',
+            'class': 'link--impt'
+        });
         if($.isNumeric(firstsource.ref_fid)) {
             mainlink.attr({
                 'target':'_blank',
@@ -867,7 +870,10 @@ lib.showSources = function(td) {
 
         if(allsources.length>1) {
             container.append('span').text(' - ');
-            extraslink = container.append('a').attr({'href':'#'});
+            extraslink = container.append('a').attr({
+            'href':'#',
+            'class': 'link--impt'
+            });
         }
     }
 
