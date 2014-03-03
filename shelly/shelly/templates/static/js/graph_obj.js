@@ -347,8 +347,8 @@ plots.addLinks = function(gd) {
         .classed('js-plot-link-container',true)
         .attr({
             'text-anchor':'end',
-            x:gd.layout._paper.attr('width')-5,
-            y:gd.layout._paper.attr('height')-7
+            x:gd.layout._paper.attr('width')-7,
+            y:gd.layout._paper.attr('height')-9
         })
         .style({
             'font-family':"'Open Sans',Arial,sans-serif",
@@ -370,7 +370,6 @@ plots.addLinks = function(gd) {
 
     // public url for downloaded files
     if(gd.layout && gd.layout._url) { toolspan.text(url); }
-
     // 'view in plotly' link for embedded plots
     else if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { positionBrand(gd,toolspan); }
 
