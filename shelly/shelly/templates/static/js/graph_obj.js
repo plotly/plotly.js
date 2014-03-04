@@ -264,7 +264,8 @@ function defaultLayout(){
         titlefont:{family:'',size:0,color:''},
         dragmode:'zoom',
         hovermode:'x',
-        separators:'.,' // decimal then thousands
+        separators:'.,', // decimal then thousands
+        hidesources:false
     };
 }
 
