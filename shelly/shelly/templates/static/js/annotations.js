@@ -100,11 +100,16 @@ annotations.draw = function(gd,index,opt,value) {
             tag: '',
             font: {family:'',size:0,color:''},
             opacity: 1,
-            align: 'center', // TODO: this never worked right - how many plots will muck up if I make it work right? Do I have to switch to something like textalign?
+            align: 'center',
             xanchor: 'auto',
             yanchor: 'auto'
         },oldopts);
     gl.annotations[index] = options;
+
+    // most options we can allow bad entries to silently revert to defaults... but anchors
+    // may make weird behavior if you mix x and y like xanchor='top'
+    if(['left','right','center'].indexOf(options.xanchor)==-1) { options.xanchor = 'auto'; }
+    if(['top','bottom','middle'].indexOf(options.yanchor)==-1) { options.yanchor = 'auto'; }
 
     if(typeof opt == 'string' && opt) {
         Plotly.Lib.nestedProperty(options,opt).set(value);
