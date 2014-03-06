@@ -741,6 +741,8 @@ function autoTickRound(ax) {
     var dt = ax.dtick,
         maxend;
     ax._tickexponent = 0;
+    if(!$.isNumeric(dt) && typeof dt !='string') { dt = 1; }
+
     if(ax.type=='category') {
         ax._tickround = null;
     }
@@ -967,7 +969,7 @@ function numFormat(v,ax,fmtoverride,hover) {
         // make a dummy axis obj to get the auto rounding and exponent
         var ah = {
             exponentformat:ax.exponentformat,
-            dtick: ax.showexponent=='none' ? ax.dtick : Math.abs(v)||1,
+            dtick: ax.showexponent=='none' ? ax.dtick : ($.isNumeric(v) ? Math.abs(v)||1 : 1),
             range: ax.showexponent=='none' ? ax.range : [0,v||1] // if not showing any exponents, don't change the exponent from what we calculate
         };
         autoTickRound(ah);
