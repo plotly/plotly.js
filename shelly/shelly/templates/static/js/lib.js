@@ -952,40 +952,37 @@ lib.showSources = function(td) {
  * @UTILITY
  * check if object is empty and all arrays strings and objects within are empty
  */
-lib.isEmpty = function (obj) {
+lib.isEmpty = function isEmpty (obj) {
     /*
-     * Checks for empty arrays,
-     * objects and empty strings
+     * Recursively checks for empty arrays,
+     * objects and empty strings, nulls and undefined
      * and objects and arrays that
      * only contain empty arrays, objects
      * and strings and so on.
+     *
+     * false and NaN are NOT EMPTY... they contain information...
      */
-    var keys, bools;
-    if (obj === null) { return true; }
-    if (typeof(obj) === 'object' ) {
-        keys = Object.keys(obj);
+    function definiteEmpty (obj) {
+        return ( obj === null
+              || obj === undefined
+              || obj === "" );
     }
-    else if (typeof(obj) === 'string') {
-        return obj.length === 0;
-    }
-    else if ((obj === 0) || obj) { return false; }
-    else { return true; } // its undefined or null so its empty
 
-    if (keys.length === 0) {
-        return true;
+    function definiteValue (obj) {
+        return !definiteEmpty && typeof(obj) !== "object";
     }
-    else {
-        bools = keys.map( function(key) {
-            return lib.isEmpty(obj[key]);
-        });
-    }
-    /*
-     * now go through array and see if any are not empty
-     * if so it returns true, but we negate it to return
-     * false ie some contents are not empty.
-     */
-    return !bools.some(function(c) { return !c; });
 
+    // it's definite
+    if (definiteEmpty(obj)) return true;        // is definitely empty
+    if (typeof(obj) !== 'object') return false; // is definitely full
+
+    // it's indefinite.
+    // Scan for possible information. (non empty values and non empty objects)
+    if (Object.keys(obj).map( function (key) { return definiteValue(obj[key]) } )
+        .some( function (bool) { return bool } ) )  { return true; }
+    // Object contains only indefinite and falsey values - recurse
+    return !Object.keys(obj)
+            .some( function (key) {return !isEmpty(obj[key]); } );
 }
 
 
