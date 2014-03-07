@@ -949,4 +949,43 @@ lib.showSources = function(td) {
 
 };
 
+/*
+ * isEmpty
+ * @UTILITY
+ * check if object is empty and all arrays strings and objects within are empty
+ */
+lib.isEmpty = function isEmpty (obj) {
+    /*
+     * Recursively checks for empty arrays,
+     * objects and empty strings, nulls and undefined
+     * and objects and arrays that
+     * only contain empty arrays, objects
+     * and strings and so on.
+     *
+     * false and NaN are NOT EMPTY... they contain information...
+     */
+    function definiteEmpty (obj) {
+        return ( obj === null
+              || obj === undefined
+              || obj === "" );
+    }
+
+    function definiteValue (obj) {
+        return !definiteEmpty && typeof(obj) !== "object";
+    }
+
+    // it's definite
+    if (definiteEmpty(obj)) return true;        // is definitely empty
+    if (typeof(obj) !== 'object') return false; // is definitely full
+
+    // it's indefinite.
+    // Scan for possible information. (non empty values and non empty objects)
+    if (Object.keys(obj).map( function (key) { return definiteValue(obj[key]) } )
+        .some( function (bool) { return bool } ) )  { return true; }
+    // Object contains only indefinite and falsey values - recurse
+    return !Object.keys(obj)
+            .some( function (key) {return !isEmpty(obj[key]); } );
+}
+
+
 }()); // end Lib object definition
