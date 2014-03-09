@@ -100,9 +100,16 @@ annotations.draw = function(gd,index,opt,value) {
             tag: '',
             font: {family:'',size:0,color:''},
             opacity: 1,
-            align: 'center'
+            align: 'center',
+            xanchor: 'auto',
+            yanchor: 'auto'
         },oldopts);
     gl.annotations[index] = options;
+
+    // most options we can allow bad entries to silently revert to defaults... but anchors
+    // may make weird behavior if you mix x and y like xanchor='top'
+    if(['left','right','center'].indexOf(options.xanchor)==-1) { options.xanchor = 'auto'; }
+    if(['top','bottom','middle'].indexOf(options.yanchor)==-1) { options.yanchor = 'auto'; }
 
     if(typeof opt == 'string' && opt) {
         Plotly.Lib.nestedProperty(options,opt).set(value);
@@ -138,15 +145,19 @@ annotations.draw = function(gd,index,opt,value) {
 
     var font = options.font.family||gl.font.family||'Arial',
         fontSize = options.font.size||gl.font.size||12,
-        fontColor = options.font.color||gl.font.color||'#000',
-        alignTo = {left:'right', center:'center', right:'left'}[options.align];
+        fontColor = options.font.color||gl.font.color||'#000';
+        // alignTo = {left:'right', center:'center', right:'left'}[options.align];
 
     function textLayout(){
         this.style({
-                'font-family': font,
-                'font-size': fontSize+'px',
-                fill: Plotly.Drawing.rgb(fontColor),
-                opacity: Plotly.Drawing.opacity(fontColor)})
+            'font-family': font,
+            'font-size': fontSize+'px',
+            fill: Plotly.Drawing.rgb(fontColor),
+            opacity: Plotly.Drawing.opacity(fontColor)
+        })
+        .attr({
+            'text-anchor': {left:'start',right:'end'}[options.align]||'middle'
+        });
         Plotly.util.convertToTspans(this, drawGraphicalElements);
         return this;
     }
@@ -175,6 +186,9 @@ annotations.draw = function(gd,index,opt,value) {
 
     function drawGraphicalElements(){
 
+        // make sure lines are aligned the way they will be at the end, even if their position changes
+        anntext.selectAll('tspan.line').attr({y: 0, x: 0});
+
         var mathjaxGroup = ann.select('.annotation-math-group');
         var anntextBB = anntext.node().getBoundingClientRect(),
             annwidth = anntextBB.width,
@@ -182,23 +196,20 @@ annotations.draw = function(gd,index,opt,value) {
         var hasMathjax = !mathjaxGroup.empty();
         if(hasMathjax){
             var mathjaxBBox = mathjaxGroup.node().getBoundingClientRect();
-            annwidth = mathjaxBBox.width
-            annheight = mathjaxBBox.height
-        }
-
-        if(anntext.selectAll('tspan').size() > 0){
-            var widths = [];
-            anntext.selectAll('tspan').each(function(d, i){
-                widths.push(this.getComputedTextLength());
-            });
-            annwidth = d3.max(widths);
+            annwidth = mathjaxBBox.width;
+            annheight = mathjaxBBox.height;
         }
 
         // save size in the annotation object for use by autoscale
         options._w = annwidth;
         options._h = annheight;
 
-        function fshift(v){ return Plotly.Lib.constrain(Math.floor(v*3-1),-0.5,0.5); }
+        function fshift(v,anchor){
+            if(anchor=='center' || anchor=='middle') { return 0; }
+            else if(anchor=='left' || anchor=='bottom') { return -0.5; }
+            else if(anchor=='right' || anchor=='top') { return 0.5; }
+            else { return Plotly.Lib.constrain(Math.floor(v*3-1),-0.5,0.5); } // auto or missing
+        }
 
         var okToContinue = true;
         ['x','y'].forEach(function(axletter) {
@@ -208,7 +219,21 @@ annotations.draw = function(gd,index,opt,value) {
                 annSize = axletter=='x' ? annwidth : -annheight,
                 axRange = (ax||axOld) ? (ax||axOld).range[1]-(ax||axOld).range[0] : null,
                 defaultVal = ax ? ax.range[0] + (axletter=='x' ? 0.1 : 0.3)*axRange :
-                    (axletter=='x' ? 0.1 : 0.7);
+                    (axletter=='x' ? 0.1 : 0.7),
+                anchor = options[axletter+'anchor'];
+
+            // check for date or category strings
+            if(ax && ['date','category'].indexOf(ax.type)!=-1 && typeof options[axletter]=='string') {
+                var newval;
+                if(ax.type=='date') {
+                    newval = Plotly.Lib.dateTime2ms(options[axletter]);
+                    if(newval!==false) { options[axletter] = newval; }
+                }
+                else if(ax.categories && ax.categories.length) {
+                    newval = ax.categories.indexOf(options[axletter]);
+                    if(newval!=-1) { options[axletter] = newval; }
+                }
+            }
 
             // if we're still referencing the same axis, see if it has changed linear <-> log
             if(ax && ax==axOld && options[typeAttr]) {
@@ -226,7 +251,7 @@ annotations.draw = function(gd,index,opt,value) {
                     if(!ax.domain) { ax.domain = [0,1]; }
                     var axFraction = (options[axletter]-ax.domain[0])/(ax.domain[1]-ax.domain[0]);
                     options[axletter] = ax.range[0] + axRange*axFraction -
-                        (options.showarrow ? 0 : fshift(axFraction)*annSize/ax._m);
+                        (options.showarrow ? 0 : ((fshift(axFraction,anchor)-fshift(0,anchor))*annSize/ax._m));
                 }
                 // moving from plot to paper reference
                 else if(axOld) {
@@ -234,7 +259,7 @@ annotations.draw = function(gd,index,opt,value) {
                     options[axletter] = ( axOld.domain[0] + (axOld.domain[1]-axOld.domain[0])*
                         (options[axletter]-axOld.range[0])/axRange );
                     if(!options.showarrow) {
-                        options[axletter] += fshift(options[axletter])*annSize/(axRange*ax._m);
+                        options[axletter] += (fshift(options[axletter],anchor)-fshift(0,anchor))*annSize/axOld._length;
                     }
                 }
             }
@@ -245,15 +270,17 @@ annotations.draw = function(gd,index,opt,value) {
                 annPosPx[axletter] = (axletter=='x') ?
                     (gs.l + (gs.w)*options[axletter]) :
                     (gs.t + (gs.h)*(1-options[axletter]));
-                if(!options.showarrow){
-                    annPosPx[axletter] -= annSize*fshift(options[axletter]);
-                }
+                // if(!options.showarrow){
+                //     annPosPx[axletter] -= annSize*fshift(options[axletter],anchor);
+                // }
             }
             else {
                 // hide the annotation if it's pointing outside the visible plot
                 if((options[axletter]-ax.range[0])*(options[axletter]-ax.range[1])>0) { okToContinue = false; }
                 annPosPx[axletter] = ax._offset+ax.l2p(options[axletter]);
-                // console.log(options[axletter],ax.range[0],ax.range[1],okToContinue);
+            }
+            if(!options.showarrow) {
+                annPosPx[axletter] -= annSize*fshift(ax ? 0 : options[axletter],anchor);
             }
 
             // save the current axis type for later log/linear changes
@@ -300,8 +327,8 @@ annotations.draw = function(gd,index,opt,value) {
             borderfull = borderwidth+borderpad,
             texty = paperBB.top-anntextBB.top+borderfull;
 
-        if(hasMathjax) anntext.attr({x: 0, y: 14})
-        else anntext.attr({x: paperBB.left-anntextBB.left+borderfull, y: texty})
+        if(hasMathjax) { anntext.attr({x: 0, y: 14}); }
+        else { anntext.attr({x: paperBB.left-anntextBB.left+borderfull, y: texty}); }
         anntext.selectAll('tspan.line').attr({y: texty, x: paperBB.left-anntextBB.left+borderfull});
 
         anntextBB = anntext.node().getBoundingClientRect(); // check the height again now that we've set the tspans
@@ -456,15 +483,16 @@ annotations.draw = function(gd,index,opt,value) {
                     }
                     else {
                         update[annbase+'.x'] = options.xref=='paper' ?
-                            (Plotly.Fx.dragAlign(x0+dx+borderfull,annwidth,gs.l,gs.l+gs.w)) :
+                            (Plotly.Fx.dragAlign(x0+dx+borderfull,annwidth,gs.l,gs.l+gs.w,options.xanchor)) :
                             (options.x+dx/Plotly.Axes.getFromId(gd,options.xref)._m);
                         update[annbase+'.y'] = options.yref=='paper' ?
-                            (1-Plotly.Fx.dragAlign(y0+dy+borderfull,annheight,gs.t,gs.t+gs.h)) :
+                            (Plotly.Fx.dragAlign(y0+dy+borderfull+annheight,-annheight,gs.t+gs.h,gs.t,options.yanchor)) :
                             (options.y+dy/Plotly.Axes.getFromId(gd,options.yref)._m);
-                        if(options.xref!='paper' || options.yref!='paper') {
+                        if(options.xref=='paper' || options.yref=='paper') {
                             csr = Plotly.Fx.dragCursors(
-                                options.xref=='paper' ? 0.5 : update[annbase+'.x'],
-                                options.yref=='paper' ? 0.5 : update[annbase+'.y']
+                                options.xref!='paper' ? 0.5 : update[annbase+'.x'],
+                                options.yref!='paper' ? 0.5 : update[annbase+'.y'],
+                                options.xanchor, options.yanchor
                             );
                         }
                     }

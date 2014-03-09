@@ -157,9 +157,13 @@ Plotly.colorscales = {
 
     'Bluered':[[0,"rgb(0,0,255)"],[1,"rgb(255,0,0)"]],
 
-    'RdBu':[[0,"rgb(33, 102, 172)"],[0.125,"rgb(67, 147, 195)"],[0.25,"rgb(146, 197, 222)"],
-        [0.375,"rgb(209, 229, 240)"],[0.5,"rgb(247, 247, 247)"],[0.625,"rgb(253, 219, 199)"],
-        [0.75,"rgb(244, 165, 130)"],[0.875,"rgb(214, 96, 77)"],[1,"rgb(178, 24, 43)"]],
+    // 'RdBu':[[0,"rgb(33, 102, 172)"],[0.125,"rgb(67, 147, 195)"],[0.25,"rgb(146, 197, 222)"],
+    //     [0.375,"rgb(209, 229, 240)"],[0.5,"rgb(247, 247, 247)"],[0.625,"rgb(253, 219, 199)"],
+    //     [0.75,"rgb(244, 165, 130)"],[0.875,"rgb(214, 96, 77)"],[1,"rgb(178, 24, 43)"]],
+    // modified RdBu based on http://www.sandia.gov/~kmorel/documents/ColorMaps/ColorMapsExpanded.pdf
+    'RdBu':[[0,"rgb(5, 10, 172)"],[0.35,"rgb(106, 137, 247)"],
+        [0.5,"rgb(190,190,190)"],[0.6,"rgb(220, 170, 132)"],
+        [0.7,"rgb(230, 145, 90)"],[1,"rgb(178, 10, 28)"]],
 
     'Picnic':[[0,"rgb(0,0,255)"],[0.1,"rgb(51,153,255)"],[0.2,"rgb(102,204,255)"],
         [0.3,"rgb(153,204,255)"],[0.4,"rgb(204,204,255)"],[0.5,"rgb(255,255,255)"],
@@ -264,7 +268,8 @@ function defaultLayout(){
         titlefont:{family:'',size:0,color:''},
         dragmode:'zoom',
         hovermode:'x',
-        separators:'.,' // decimal then thousands
+        separators:'.,', // decimal then thousands
+        hidesources:false
     };
 }
 
@@ -339,24 +344,62 @@ function updateTraces(old_data, new_data) {
     return res;
 }
 
-// the 'view in plotly' link - note that now plot() calls this if it exists,
+// the 'view in plotly' and source links - note that now plot() calls this
 // so it can regenerate whenever it replots
+plots.addLinks = function(gd) {
+    var linkContainer = gd.layout._paper.selectAll('text.js-plot-link-container').data([0]);
+    linkContainer.enter().append('text')
+        .classed('js-plot-link-container',true)
+        .attr({
+            'text-anchor':'end',
+            x:gd.layout._paper.attr('width')-7,
+            y:gd.layout._paper.attr('height')-9
+        })
+        .style({
+            'font-family':"'Open Sans',Arial,sans-serif",
+            'font-size':'12px',
+            'fill':'#444'
+        })
+        .each(function(){
+            var links = d3.select(this);
+            links.append('tspan').classed('js-link-to-tool',true);
+            links.append('tspan').classed('js-link-spacer',true);
+            links.append('tspan').classed('js-sourcelinks',true);
+        });
+    var toolspan = linkContainer.select('.js-link-to-tool'),
+        spacespan = linkContainer.select('.js-link-spacer'),
+        sourcespan = linkContainer.select('.js-sourcelinks');
+
+    // data source links
+    Plotly.Lib.showSources(gd);
+
+    // public url for downloaded files
+    if(gd.layout && gd.layout._url) { toolspan.text(url); }
+    // 'view in plotly' link for embedded plots
+    else if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { positionBrand(gd,toolspan); }
+
+    // separator if we have both sources and tool link
+    linkContainer.select('.js-link-spacer').text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
+};
+
 // note that now this function is only adding the brand in iframes and 3rd-party
 // apps, standalone plots get the sidebar instead.
-plots.positionBrand = function(gd){
-    $(gd).find('.link-to-tool').remove();
-    var $linkToTool = $('<div class="link-to-tool">'+
-        '<span style="color:#444;font-size:11px;">plotly - </span>'+
-        '<a href="#" class="link--impt link--embedview">data and graph &raquo;</a>'+
-        '</div>').appendTo(gd.layout._paperdiv.node());
+function positionBrand(gd,container){
+    container.text('');
+    container.append('tspan')
+        .style({'font-size':'11px'})
+        .text('plotly - ');
+    var link = container.append('a')
+        .attr({'xlink:xlink:href':'#','class':'link--impt link--embedview','font-weight':'bold'})
+        .text('data and graph '+String.fromCharCode(187));
+
     if(gd.shareplot) {
         var path=window.location.pathname.split('/');
-        $linkToTool.find('a')
-            .attr('href','/'+path[1]+'/'+path[2])
-            .attr('target','_blank');
+        link.attr({'xlink:xlink:show':'new','xlink:xlink:href':'/'+path[1]+'/'+path[2]});
     }
     else {
-        $linkToTool.find('a').click(function(){
+        link.on('click',function(){
+            $(gd).trigger('plotly_beforeexport');
             var hiddenform = $('<div id="hiddenform" style="display:none;">'+
                 '<form action="https://plot.ly/external" method="post" target="_blank">'+
                 '<input type="text" name="data" /></form></div>').appendTo(gd);
@@ -366,10 +409,11 @@ plots.positionBrand = function(gd){
                 .replace(/\\/g,'\\\\').replace(/'/g,"\\'"));
             hiddenform.find('form').submit();
             hiddenform.remove();
+            $(gd).trigger('plotly_afterexport');
             return false;
         });
     }
-};
+}
 
 // ----------------------------------------------------
 // Main plot-creation function. Note: will call makePlotFramework
@@ -406,23 +450,19 @@ Plotly.plot = function(gd, data, layout) {
 
     // Polar plots
     // Check if it has a polar type
-    var type = Plotly.Lib.nestedProperty(gd, 'data[0].type').get();
-    if(type && type.indexOf('Polar') != -1){
+    if(data && data[0] && data[0].type && data[0].type.indexOf('Polar') != -1){
+        console.log('This polar chart uses a deprecated pre-release API');
+        return null;
+    }
+    if(data && data[0] && data[0].r){
 
         // build or reuse the container skeleton
         var plotContainer = d3.select(gd).selectAll('.plot-container').data([0]);
-        plotContainer.enter().append('div').classed('plot-container plotly', true);
+        plotContainer.enter().insert('div', ':first-child').classed('plot-container plotly', true);
         var paperDiv = plotContainer.selectAll('.svg-container').data([0]);
         paperDiv.enter().append('div')
             .classed('svg-container',true)
             .style('position','relative');
-
-        // resize canvas
-        paperDiv.style({
-            width: (layout.width || 800) + 'px',
-            height: (layout.height || 600) + 'px',
-            background: (layout.paper_bgcolor || 'white')
-        });
 
         // fulfill gd requirements
         if(data) gd.data = data;
@@ -433,11 +473,28 @@ Plotly.plot = function(gd, data, layout) {
             plotAutoSize(gd,{});
             gd.layout.autosize = true;
         }
+        // resize canvas
+        paperDiv.style({
+            width: (layout.width || 800) + 'px',
+            height: (layout.height || 600) + 'px',
+            background: (layout.paper_bgcolor || 'white')
+        });
 
         // instanciate framework
         gd.framework = micropolar.manager.framework();
+        //get rid of gd.layout stashed nodes
+        var layout = µ.util.deepExtend({}, gd.layout);
+        delete layout._container;
+        delete layout._paperdiv;
+        delete layout.autosize;
+        delete layout._paper;
+        delete layout._forexport;
+
         // plot
-        gd.framework({container: paperDiv.node(), data: gd.data, layout: gd.layout});
+        gd.framework({data: gd.data, layout: layout}, paperDiv.node());
+
+        // set undo point
+        gd.framework.setUndoPoint();
 
         // get the resulting svg for extending it
         var polarPlotSVG = gd.framework.svg();
@@ -467,30 +524,33 @@ Plotly.plot = function(gd, data, layout) {
                     .on('mouseover.opacity',function(){ d3.select(this).transition().duration(100).style('opacity',1); })
                     .on('mouseout.opacity',function(){ d3.select(this).transition().duration(1000).style('opacity',0); });
             }
-            title.call(Plotly.util.makeEditable)
-                .on('edit', function(text){
-                    gd.framework({layout: {title: text}});
-                    this.attr({'data-unformatted': text})
-                        .text(text)
-                        .call(titleLayout);
-                })
-                .on('cancel', function(text){
-                    var txt = this.attr('data-unformatted');
-                    this.text(txt).call(titleLayout);
-                });
 
-            Plotly.ToolPanel.bindPanelsMenuEvents(gd, 'polar');
+            function setContenteditable(){
+                this.call(Plotly.util.makeEditable)
+                    .on('edit', function(text){
+                        gd.framework({layout: {title: text}});
+                        this.attr({'data-unformatted': text})
+                            .text(text)
+                            .call(titleLayout);
+                        this.call(setContenteditable);
+                    })
+                    .on('cancel', function(text){
+                        var txt = this.attr('data-unformatted');
+                        this.text(txt).call(titleLayout);
+                    });
+            }
+            title.call(setContenteditable);
+
+            Plotly.ToolPanel.tweakMenu();
         }
 
         // fulfill more gd requirements
         gd.layout._paper = polarPlotSVG;
-        if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
+        plots.addLinks(gd);
 
         return null;
     }
-    else{
-        if(gd.mainsite) Plotly.ToolPanel.resetCartesianPopoversMenu(gd);
-    }
+    else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
 
     // Make or remake the framework (ie container and axes) if we need to
     // figure out what framework the data imply,
@@ -696,8 +756,8 @@ Plotly.plot = function(gd, data, layout) {
 
     // final cleanup
 
-    // 'view in plotly' link for embedded plots
-    if(!gd.mainsite && !gd.standalone && !$('#plotlyUserProfileMarker').length) { plots.positionBrand(gd); }
+    // source links
+    plots.addLinks(gd);
 
     setTimeout(function(){
         if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
@@ -711,6 +771,12 @@ Plotly.plot = function(gd, data, layout) {
         }
     },1000);
     Plotly.Lib.markTime('done plot');
+};
+
+// convenience function to force a full redraw, mostly for use by plotly.js
+Plotly.redraw = function(gd) {
+    gd.calcdata = undefined;
+    Plotly.plot(gd);
 };
 
 // setStyles: translate styles from gd.data to gd.calcdata,
@@ -985,7 +1051,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // these all trigger a recalc
     var layout_attr = [
         'barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap',
-        '?axis.autorange','?axis.range'
+        '?axis.autorange','?axis.range','?axis.rangemode'
     ];
     // these ones may alter the axis type (at least if the first trace is involved)
     var axtype_attr = ['type','x','y','x0','y0','bardir','xaxis','yaxis'];
@@ -1234,23 +1300,29 @@ Plotly.relayout = function(gd,astr,val) {
 
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie will islog actually change)
-        if(p.parts[1]=='type' && !gl[p.parts[0]].autorange && (gl[p.parts[0]].type=='log' ? vi!='log' : vi=='log')) {
+        if(p.parts[1]=='type' && (gl[p.parts[0]].type=='log' ? vi!='log' : vi=='log')) {
             var ax = gl[p.parts[0]],
                 r0 = ax.range[0],
                 r1 = ax.range[1];
-            if(vi=='log') {
-                // if both limits are negative, autorange
-                if(r0<=0 && r1<=0) { doextra(p.parts[0]+'.autorange',true); continue; }
-                // if one is negative, set it to one millionth the other. TODO: find the smallest positive val?
-                else if(r0<=0) r0 = r1/1e6;
-                else if(r1<=0) r1 = r0/1e6;
-                // now set the range values as appropriate
-                doextra(p.parts[0]+'.range[0]', Math.log(r0)/Math.LN10);
-                doextra(p.parts[0]+'.range[1]', Math.log(r1)/Math.LN10);
+            if(!gl[p.parts[0]].autorange) {
+                if(vi=='log') {
+                    // if both limits are negative, autorange
+                    if(r0<=0 && r1<=0) { doextra(p.parts[0]+'.autorange',true); continue; }
+                    // if one is negative, set it to one millionth the other. TODO: find the smallest positive val?
+                    else if(r0<=0) r0 = r1/1e6;
+                    else if(r1<=0) r1 = r0/1e6;
+                    // now set the range values as appropriate
+                    doextra(p.parts[0]+'.range[0]', Math.log(r0)/Math.LN10);
+                    doextra(p.parts[0]+'.range[1]', Math.log(r1)/Math.LN10);
+                }
+                else {
+                    doextra(p.parts[0]+'.range[0]', Math.pow(10, r0));
+                    doextra(p.parts[0]+'.range[1]', Math.pow(10, r1));
+                }
             }
-            else {
-                doextra(p.parts[0]+'.range[0]', Math.pow(10, r0));
-                doextra(p.parts[0]+'.range[1]', Math.pow(10, r1));
+            else if(vi=='log') {
+                // just make sure the range is positive and in the right order, it'll get recalculated later
+                ax.range = r1>r0 ? [1,2] : [2,1];
             }
         }
 
@@ -1309,6 +1381,7 @@ Plotly.relayout = function(gd,astr,val) {
             else if(ai=='margin.pad') { doticks = dolayoutstyle = true; }
             else if(p.parts[0]=='margin' ||
                 p.parts[1]=='autorange' ||
+                p.parts[1]=='rangemode' ||
                 p.parts[1]=='type' ||
                 ai.match(/^(bar|box|font)/)) { docalc = true; }
             // hovermode and dragmode don't need any redrawing, since they just
@@ -2014,6 +2087,9 @@ plots.graphJson = function(gd, dataonly, mode){
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     var obj = { data:(gd.data||[]).map(function(v){ return stripObj(v,mode); }) };
     if(!dataonly) { obj.layout = stripObj(gd.layout,mode); }
+
+    if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
+
     return JSON.stringify(obj);
 };
 
