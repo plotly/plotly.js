@@ -202,16 +202,18 @@ legend.draw = function(gd) {
         .map(function(cd) { return [cd[0]]; });
     if(gll.traceorder=='reversed') { ldata.reverse(); } // for stacked plots (bars, area) the legend items are often clearer reversed
 
-    gd.legend = gl._infolayer.selectAll('svg.legend')
+    var legendsvg = gl._infolayer.selectAll('svg.legend')
         .data([0]);
-    gd.legend.enter(0).append('svg')
+    legendsvg.enter(0).append('svg')
         .attr('class','legend');
 
     var bordercolor = gll.bordercolor || '#000',
         borderwidth = gll.borderwidth || 1,
         bgcolor = gll.bgcolor || gl.paper_bgcolor || '#fff';
+    if(['left','right','center'].indexOf(gll.xanchor)==-1) { gll.xanchor = 'auto'; }
+    if(['top','bottom','middle'].indexOf(gll.yanchor)==-1) { gll.yanchor = 'auto'; }
 
-    var bgRect = gd.legend.selectAll('rect.bg')
+    var bgRect = legendsvg.selectAll('rect.bg')
         .data([0]);
     bgRect.enter(0).append('rect')
         .attr('class','bg');
@@ -223,7 +225,7 @@ legend.draw = function(gd) {
         'stroke-width': borderwidth+'px'
     });
 
-    var traces = gd.legend.selectAll('g.traces')
+    var traces = legendsvg.selectAll('g.traces')
         .data(ldata);
     traces.enter().append('g').attr('class','traces');
     traces.exit().remove();
@@ -233,6 +235,7 @@ legend.draw = function(gd) {
     legend.repositionLegend(gd, traces);
 
     // user dragging the legend
+    // if x/yanchor is 'auto':
     // aligns left/right/center on resize or new text if drag pos
     // is in left 1/3, middle 1/3, right 1/3
     // choose left/center/right align via:
@@ -242,7 +245,7 @@ legend.draw = function(gd) {
     //  else gll.x=xc;
     // similar logic for top/middle/bottom
     if(gd.mainsite) {
-        gd.legend.node().onmousedown = function(e) {
+        legendsvg.node().onmousedown = function(e) {
             if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
 
             var eln=this,
@@ -258,8 +261,8 @@ legend.draw = function(gd) {
                 var dx = e2.clientX-e.clientX,
                     dy = e2.clientY-e.clientY,
                     gs = gl._size,
-                    lw = el3.attr('width'),
-                    lh = el3.attr('height'),
+                    lw = Number(el3.attr('width')),
+                    lh = Number(el3.attr('height')),
                     MINDRAG = Plotly.Fx.MINDRAG;
                 if(Math.abs(dx)<MINDRAG) { dx=0; }
                 if(Math.abs(dy)<MINDRAG) { dy=0; }
@@ -268,15 +271,17 @@ legend.draw = function(gd) {
                 var pbb = gl._paperdiv.node().getBoundingClientRect();
 
                 // drag to within a couple px of edge to take the legend outside the plot
-                if(e2.clientX>pbb.right-3*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100; }
-                else if(e2.clientX<pbb.left+3*MINDRAG || (gd.lw<0 && dx<MINDRAG)) { xf=-100; }
-                else { xf = Plotly.Fx.dragAlign(x0 + dx,lw,gs.l,gs.l+gs.w); }
+                // TODO: I want to get rid of this... with anchor settings it should be moot?
+                if(e2.clientX>pbb.right-2*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100; }
+                else if(e2.clientX<pbb.left+2*MINDRAG || (gd.lw<0 && dx<MINDRAG)) { xf=-100; }
+                else { xf = Plotly.Fx.dragAlign(x0+dx, lw, gs.l, gs.l+gs.w, gll.xanchor); }
 
-                if(e2.clientY>pbb.bottom-3*MINDRAG || (gd.lh<0 && dy>-MINDRAG)) { yf=-100; }
-                else if(e2.clientY<pbb.top+3*MINDRAG || (gd.lh>0 && dy<MINDRAG)) { yf=100; }
-                else { yf = 1-Plotly.Fx.dragAlign(y0+dy,lh,gs.t,gs.t+gs.h); }
-                var csr = Plotly.Fx.dragCursors(xf,yf);
-                Plotly.Fx.setCursor(el3,csr);
+                if(e2.clientY>pbb.bottom-2*MINDRAG || (gd.lh<0 && dy>-MINDRAG)) { yf=-100; }
+                else if(e2.clientY<pbb.top+2*MINDRAG || (gd.lh>0 && dy<MINDRAG)) { yf=100; }
+                else { yf = Plotly.Fx.dragAlign(y0+dy+lh, -lh, gs.t+gs.h, gs.t, gll.yanchor); }
+
+                var csr = Plotly.Fx.dragCursors(xf, yf, gll.xanchor, gll.yanchor);
+                Plotly.Fx.setCursor(el3, csr);
                 return Plotly.Lib.pauseEvent(e2);
             };
             window.onmouseup = function(e2) {
@@ -366,8 +371,8 @@ legend.repositionLegend = function(gd, traces){
             Plotly.relayout(gd,'margin.r',gm.r);
             return;
         }
-        if(gll.x>2/3) { lx -= legendwidth; }
-        else if(gll.x>1/3) { lx -= legendwidth/2; }
+        if(gll.xanchor=='right' || (gll.xanchor=='auto' && gll.x>2/3)) { lx -= legendwidth; }
+        else if(gll.xanchor=='center' || (gll.xanchor=='auto' && gll.x>1/3)) { lx -= legendwidth/2; }
     }
 
     if(gll.y==-100) {
@@ -392,8 +397,8 @@ legend.repositionLegend = function(gd, traces){
             Plotly.relayout(gd,'margin.t',gm.t);
             return;
         }
-        if(gll.y<1/3) { ly -= legendheight; }
-        else if(gll.y<2/3) { ly -= legendheight/2; }
+        if(gll.yanchor=='bottom' || (gll.yanchor=='auto' && gll.y<1/3)) { ly -= legendheight; }
+        else if(gll.yanchor=='middle' || (gll.yanchor=='auto' && gll.y<2/3)) { ly -= legendheight/2; }
     }
 
     // adjusting the margin thusly doesn't by itself constitute a change, so
@@ -413,8 +418,8 @@ legend.repositionLegend = function(gd, traces){
     lx = Math.round(lx);
     ly = Math.round(ly);
 
-    gd.legend.call(Plotly.Drawing.setRect, lx, ly, legendwidth, legendheight);
-    gd.legend.selectAll('.bg').call(Plotly.Drawing.setRect,
+    gl._infolayer.selectAll('svg.legend').call(Plotly.Drawing.setRect, lx, ly, legendwidth, legendheight);
+    gl._infolayer.selectAll('svg.legend .bg').call(Plotly.Drawing.setRect,
         borderwidth/2, borderwidth/2, legendwidth-borderwidth, legendheight-borderwidth);
 };
 
