@@ -549,7 +549,7 @@ function insert_colorbar(gd,cd, cb_id, scl) {
     // until we harmonize this with our own axis format, do a quick cut between eng and floating formats
     var fmt = d3.format('3e');
     if(Math.max(Math.abs(min),Math.abs(max))<1e4) {
-        if(Math.abs(max-min)>5) { fmt = d3.format('.0f'); }
+        if(Math.abs(max-min)>20/3) { fmt = d3.format('.0f'); }
         else if(Math.abs(max-min)>0.01) { fmt = d3.format('.2g'); }
     }
 
