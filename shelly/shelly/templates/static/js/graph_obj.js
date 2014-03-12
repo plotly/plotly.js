@@ -69,63 +69,6 @@ Viewbox coordinates: xv,yv (where data are drawn)
         panning: subtract dx,dy from viewbox:.x,.y
         zooming: viewbox will not scale x and y differently, at least in Chrome, so for
             zoom we will move the individual points.
-
-Plot takes two params, data and layout. For layout see newplot.
-data should be an array of objects, one per trace. allowed keys:
-
-    type: (string) scatter (default), bar, heatmap
-
-    x: (float array), or x0:(float) and dx:(float)
-        if neither x, x0, or dx exists, defaults is x0:0, dx:1
-
-    y: (float array), or y0:(float) and dy:(float)
-        if neither y, y0, or dy exists, defaults to y0:0, dy:1
-        you may provide x and/or y arrays, but not neither
-
-    All of these can also be date strings, in the format 'YYYY-mm-dd HH:MM:SS'
-    This format can handle anything from year 0 to year 9999, but the underlying JS
-    can extend this to year -271820 to 275760
-    based on converting to ms since start of 1970 for plotting
-    so we could at some point extend beyond 0-9999 limitation...
-
-    mode: (string) 'lines','markers','lines+markers'
-        default 'lines+markers' for <20 points, else 'lines'
-
-    line: {
-        dash: (string) default 'solid', also 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot',
-            all of the above dashes based on linewidth, can also pass in explicit dasharray
-        color: (cstring), or (cstring array)
-        width: (float px) default 2
-    }
-
-    marker: {
-        symbol: (string) default 'circle', or (string array)
-            can also be 'square', 'triangle-[up|down|left|right]', 'cross'
-        size: (float px) default 6, or (float array)
-        color: (cstring), or (cstring array)
-        line {
-            color: (cstring), or (cstring array)
-            width: (float px) default 0, or (float array)
-        }
-    }
-
-    text: (string array) hover text for each point
-
-    name: <string for legend>
-
-    cstring is a string with any valid HTML color
-    marker and linecolor will copy each other if only one is present
-    if neither is provided, choose one from a default set based on the trace number
-    if markerlinecolor is missing it will copy linecolor ONLY if it's different from marker color, otherwise black.
-
-    eventually I'd like to make all of the marker and line properties accept arrays
-    to modify properties point-by-point
-
-    any array also has a corresponding src attribute, ie xsrc for x
-    this is a string:
-        <id>/<colname> for your own data,
-        <user>/<id>/<colname> for shared data
-
 */
 
 // IMPORTANT - default colors should be in hex for grid.js
