@@ -246,10 +246,12 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
         }
         if(pts2) {
             if(tozero) {
-                if(t.fill.charAt(t.fill.length-1)=='y') { pt0[1]=pt1[1]=ya.c2p(0,true); }
-                else { pt0[0]=pt1[0]=xa.c2p(0,true); }
-                // fill to zero: full trace path, plus extension of the endpoints to the appropriate axis
-                tozero.attr('d','M'+pts2+'L'+pt1+'L'+pt0+'Z');
+                if(pt0 && pt1) {
+                    if(t.fill.charAt(t.fill.length-1)=='y') { pt0[1]=pt1[1]=ya.c2p(0,true); }
+                    else { pt0[0]=pt1[0]=xa.c2p(0,true); }
+                    // fill to zero: full trace path, plus extension of the endpoints to the appropriate axis
+                    tozero.attr('d','M'+pts2+'L'+pt1+'L'+pt0+'Z');
+                }
             }
             else if(t.fill.substr(0,6)=='tonext' && pts2 && prevpts) {
                 // fill to next: full trace path, plus the previous path reversed
