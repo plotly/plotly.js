@@ -575,7 +575,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
             if((1+(data[i]-binstart)*100/dummyax.dtick)%100<2) { edgecount++; }
         }
         if(intcount+blankcount==data.length && ax.type!='date') {
-            binstart -= 0.5;
+            binstart = datamin - 0.5;
             if(dummyax.dtick<1) { dummyax.dtick=1; }
         }
         else if(edgecount>(data.length-blankcount)/2) {
