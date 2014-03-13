@@ -137,6 +137,21 @@ Plotly.colorscales = {
 
 Plotly.defaultColorscale = Plotly.colorscales.YIGnBu;
 
+plots.getScale = function(scl) {
+    if(!scl) { return Plotly.defaultColorscale; }
+    else if(typeof scl == 'string') {
+        try { scl = Plotly.colorscales[scl] || JSON.parse(scl); }
+        catch(e) { return Plotly.defaultColorscale; }
+    }
+    // occasionally scl is double-JSON encoded...
+    if(typeof scl == 'string') {
+        try { scl = Plotly.colorscales[scl] || JSON.parse(scl); }
+        catch(e) { return Plotly.defaultColorscale; }
+    }
+    return scl;
+};
+
+
 // add all of these colorscales to css dynamically, so we don't have to keep them in sync manually
 // dynamic stylesheet, see http://davidwalsh.name/add-rules-stylesheets
 // css syntax from http://www.colorzilla.com/gradient-editor/
@@ -245,7 +260,7 @@ var graphInfo = {
 
 var BARTYPES = ['bar','histogramx','histogramy'];
 plots.isBar = function(type) { return BARTYPES.indexOf(type)!=-1; };
-var HEATMAPTYPES = ['heatmap','histogram2d'];
+var HEATMAPTYPES = ['heatmap','histogram2d','contour'];
 plots.isHeatmap = function(type) { return HEATMAPTYPES.indexOf(type)!=-1; };
 
 plots.newTab = function(divid, layout) {
@@ -658,7 +673,8 @@ Plotly.plot = function(gd, data, layout) {
                 continue;
             }
             if(plots.isHeatmap(type)) {
-                Plotly.Heatmap.plot(gd,plotinfo,cd);
+                if(type=='contour') { Plotly.Contour.plot(gd,plotinfo,cd); }
+                else { Plotly.Heatmap.plot(gd,plotinfo,cd); }
                 Plotly.Lib.markTime('done heatmap '+i);
             }
             else {

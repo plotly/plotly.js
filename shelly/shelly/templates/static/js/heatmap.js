@@ -212,8 +212,8 @@ heatmap.calc = function(gd,gdc) {
     }
 
     // auto-z
-    if(gdc.zauto!==false || !('zmin' in gdc)) { gdc.zmin = zmin(z); }
-    if(gdc.zauto!==false || !('zmax' in gdc)) { gdc.zmax = zmax(z); }
+    if(gdc.zauto!==false || !('zmin' in gdc)) { gdc.zmin = Plotly.Lib.aggNums(Math.min,null,z); }
+    if(gdc.zauto!==false || !('zmax' in gdc)) { gdc.zmax = Plotly.Lib.aggNums(Math.max,null,z); }
     if(gdc.zmin==gdc.zmax) { gdc.zmin-=0.5; gdc.zmax+=0.5; }
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
@@ -281,7 +281,7 @@ heatmap.plot = function(gd,plotinfo,cd) {
         return;
     }
 
-    var z=cd[0].z, min=t.zmin, max=t.zmax, scl=getScale(cd), x=cd[0].x, y=cd[0].y;
+    var z=cd[0].z, min=t.zmin, max=t.zmax, scl=Plotly.Plots.getScale(cd[0].t.scl), x=cd[0].x, y=cd[0].y;
     var fastsmooth=[true,'fast'].indexOf(t.zsmooth)!=-1; // fast smoothing - one pixel per brick
 
     // get z dims
@@ -493,7 +493,7 @@ heatmap.plot = function(gd,plotinfo,cd) {
 
     // show a colorscale
     gl._infolayer.selectAll('.'+cb_id).remove();
-    if(t.showscale!==false){ insert_colorbar(gd,cd, cb_id, scl); }
+    if(t.showscale!==false){ heatmap.insert_colorbar(gd,cd, cb_id, scl); }
     Plotly.Lib.markTime('done colorbar');
 };
 
@@ -518,18 +518,9 @@ heatmap.margin = function(gd){
     return false;
 };
 
-// Return MAX and MIN of an array of arrays
-function zmax(z){
-    return Plotly.Lib.aggNums(Math.max,null,z.map(function(row){ return Plotly.Lib.aggNums(Math.max,null,row); }));
-}
-
-function zmin(z){
-    return Plotly.Lib.aggNums(Math.min,null,z.map(function(row){ return Plotly.Lib.aggNums(Math.min,null,row); }));
-}
-
 // insert a colorbar
 // TODO: control where this goes, styling
-function insert_colorbar(gd,cd, cb_id, scl) {
+heatmap.insert_colorbar = function(gd,cd, cb_id, scl) {
 
     if(gd.layout.margin.r<200){ // shouldn't get here anymore... take care of this in newPlot
         console.log('warning: called relayout from insert_colorbar');
@@ -575,21 +566,6 @@ function insert_colorbar(gd,cd, cb_id, scl) {
     g.selectAll('.axis line, .axis .domain')
         .style('fill','none')
         .style('stroke','none');
-}
-
-function getScale(cd) {
-    var scl = cd[0].t.scl;
-    if(!scl) { return Plotly.defaultColorscale; }
-    else if(typeof scl == 'string') {
-        try { scl = Plotly.colorscales[scl] || JSON.parse(scl); }
-        catch(e) { return Plotly.defaultColorscale; }
-    }
-    // occasionally scl is double-JSON encoded...
-    if(typeof scl == 'string') {
-        try { scl = Plotly.colorscales[scl] || JSON.parse(scl); }
-        catch(e) { return Plotly.defaultColorscale; }
-    }
-    return scl;
-}
+};
 
 }()); // end Heatmap object definition

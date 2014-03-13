@@ -381,13 +381,17 @@ lib.lpad = function(val,digits){
 // aggregate numeric values, throwing out non-numerics.
 //   f: aggregation function (ie Math.min, etc)
 //   v: initial value (continuing from previous calls)
-//      if there's no continuing value , use null for selector-type
+//      if there's no continuing value, use null for selector-type
 //      functions (max,min), or 0 for summations
-//   a: array to aggregate
+//   a: array to aggregate (may be nested, we will recurse,
+//      but all elements must have the same dimension)
 //   len: maximum length of a to aggregate
 lib.aggNums = function(f,v,a,len) {
     if(!len) { len=a.length; }
     if(!$.isNumeric(v)) { v=false; }
+    if($.isArray(a[0])) {
+        a = a.map(function(row){ return lib.aggNums(f,v,row); });
+    }
     for(i=0; i<len; i++) {
         if(!$.isNumeric(v)) { v=a[i]; }
         else if($.isNumeric(a[i])) { v=f(v,a[i]); }
