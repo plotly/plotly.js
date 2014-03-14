@@ -3,10 +3,6 @@ var contour = window.Plotly.Contour = {};
 
 // contour maps use heatmap.calc but have their own plot function
 
-// Creates a contour map image from a z matrix and embeds adds it to svg plot
-// Example usage:
-// plot(gd, [{'type':'heatmap','z':[[1,2],[3,4]], 'x0':2, 'y0':2, 'dx':0.5, 'dy':0.5}])
-// From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 contour.plot = function(gd,plotinfo,cd) {
     Plotly.Lib.markTime('in Contour.plot');
     var t = cd[0].t,
@@ -15,8 +11,16 @@ contour.plot = function(gd,plotinfo,cd) {
         ya = plotinfo.y,
         gl = gd.layout;
 
-    var id='contour'+i; // heatmap id
+    var id='contour'+i; // contour group id
     var cb_id='cb'+i; // colorbar id
+
+    if(cd[0].xfill && cd[0].yfill) { // use a heatmap to fill
+        t.zsmooth = 'best';
+        Plotly.Heatmap.plot(gd,plotinfo,cd);
+    }
+    else {
+        gl._paper.selectAll('.hm'+i).remove(); // in case this used to be a heatmap (or have heatmap fill)
+    }
 
     if(t.visible===false) {
         gl._paper.selectAll('.'+id).remove();
@@ -24,7 +28,7 @@ contour.plot = function(gd,plotinfo,cd) {
         return;
     }
 
-    var z=cd[0].z, min=t.zmin, max=t.zmax, scl=Plotly.Plots.getScale(cd[0].t.scl), x=cd[0].x, y=cd[0].y;
+    var z=cd[0].z, min=t.zmin, max=t.zmax, scl=Plotly.Plots.getScale(t.scl), x=cd[0].x, y=cd[0].y;
     // get z dims
     var m=z.length, n=z[0].length; // num rows, cols
 
@@ -55,18 +59,21 @@ contour.plot = function(gd,plotinfo,cd) {
         return mi;
     }
     var contours = [], // the levels we're drawing
-        crossings = [], // all the cells with nontrivial marching index at each crossing
-        starts = [], // starting points on the edges of the lattice for each contour
-                     // we'll first follow all such paths, then we'll pick starting points
-                     // at random for the closed loops
-        paths = [];
-    for(var nc=0; nc<t.ncontours; nc++) {
-        contours.push(t.contour0+nc*t.dcontour);
-        crossings.push({});
-        starts.push([]);
-        paths.push([]);
+        // crossings = [], // all the cells with nontrivial marching index at each crossing
+        // starts = [], // starting points on the edges of the lattice for each contour
+        //              // we'll first follow all such paths, then we'll pick starting points
+        //              // at random for the closed loops
+        // ends = [],
+        pathinfo = [];
+    for(var ci=t.contourstart; ci<t.contourend+t.contoursize/10; ci+=t.contoursize||1) {
+        contours.push(ci);
+        pathinfo.push({level:ci, crossings:{}, starts:[], ends:[], paths:[]});
+        // crossings.push({});
+        // starts.push([]);
+        // ends.push([]);
+        // paths.push([]);
     }
-    var xi,yi,ystartindices,startIndices,label,corners,cmin,cmax,mi;
+    var xi,yi,ystartindices,startIndices,label,corners,cmin,cmax,mi,nc;
     var bottomStart = [1,9,13,104,713],
         topStart = [4,6,7,104,713],
         leftStart = [8,12,14,208,1114],
@@ -87,6 +94,11 @@ contour.plot = function(gd,plotinfo,cd) {
         // after one index has been used for a saddle, which to we substitute to be used up later?
         saddleRemainder = {1:4, 2:8, 4:1, 7:13, 8:2, 11:14, 13:7, 14:11};
 
+    function makeCrossings(pi) {
+        mi = getMarchingIndex(pi.level,corners);
+        pi.crossings[label] = mi;
+        if(startIndices.indexOf(mi)!=-1) { pi.starts.push(label); }
+    }
 
     for(yi = 0; yi<m-1; yi++) {
         if(yi===0) { ystartIndices = bottomStart; }
@@ -98,36 +110,36 @@ contour.plot = function(gd,plotinfo,cd) {
             else if(xi==n-2) { startIndices = ystartIndices.concat(rightStart); }
             else { startIndices = ystartIndices; }
 
-            label = yi+','+xi;
+            label = xi+','+yi;
             corners = [[z[yi][xi],z[yi][xi+1]],[z[yi+1][xi],z[yi+1][xi+1]]];
-            cmax = Plotly.Lib.findBin(Plotly.Lib.aggNums(Math.max,null,corners),contours);
-            cmin = Plotly.Lib.findBin(Plotly.Lib.aggNums(Math.min,null,corners),contours);
+            cmax = Plotly.Lib.findBin(Plotly.Lib.aggNums(Math.max,null,corners),contours,true);
+            cmin = Plotly.Lib.findBin(Plotly.Lib.aggNums(Math.min,null,corners),contours,true);
 
-            for(nc=cmin+1; nc<=cmax; nc++) {
-                mi = getMarchingIndex(contours[nc],corners);
-                crossings[nc][label] = mi;
-                if(startIndices.indexOf(mi)!=-1) { starts[nc].push(label); }
-            }
+            pathinfo.forEach(makeCrossings);
         }
     }
 
     // now calculate the paths
 
     function getHInterp(level,locx,locy) {
+        // console.log(locx+0.5,locy);
         var dx = (level-z[locy][locx])/(z[locy][locx+1]-z[locy][locx]);
         return [xa.c2p((1-dx)*x[locx] + dx*x[locx+1]), ya.c2p(y[locy])];
     }
 
     function getVInterp(level,locx,locy) {
+        // console.log(locx,locy+0.5);
         var dy = (level-z[locy][locx])/(z[locy+1][locx]-z[locy][locx]);
         return [xa.c2p(x[locx]), ya.c2p((1-dy)*y[locy] + dy*y[locy+1])];
     }
 
 
     function makePath(nc,st,edgeflag) {
+        // console.log(nc,st);
         // find the interpolated starting point
-        var loc = st.split(',').map(Number),
-            mi = crossings[nc][st],
+        var pi = pathinfo[nc],
+            loc = st.split(',').map(Number),
+            mi = pi.crossings[st],
             level = contours[nc];
 
         var interp_f, dx=0, dy=0;
@@ -141,19 +153,19 @@ contour.plot = function(gd,plotinfo,cd) {
                 dy = loc[1]===0 ? 1 : -1;
             }
         }
-        else if(bottomStart.indexOf(mi)!=-1) { interp_f = getHInterp; dy = 1; }
+        else if(bottomStart.indexOf(mi)!=-1) { interp_f = getHInterp; dy = -1; }
         else if(leftStart.indexOf(mi)!=-1) { interp_f = getVInterp; dx = -1; }
-        else if(topStart.indexOf(mi)!=-1) { interp_f = getHInterp; dy = -1; }
+        else if(topStart.indexOf(mi)!=-1) { interp_f = getHInterp; dy = 1; }
         else { interp_f = getVInterp; dx = 1; }
-        var pts = [interp_f(level,loc[0]+Math.max(-dx,0),loc[1]+Math.max(-dy,0))];
+        var pts = [interp_f(level,loc[0]+Math.max(dx,0),loc[1]+Math.max(dy,0))];
 
         // now follow the path
-        var miTaken, locstr;
+        var miTaken, locstr = loc.join(',');
         for(var cnt=0; cnt<10000; cnt++) { // just to avoid infinite loops
             miTaken = mi>20 ? chooseSaddle[mi][dx||dy] : mi;
-            locstr = loc.join(',');
-            if(miTaken==mi) { delete crossings[nc][locstr];}
-            else { crossings[nc][locstr] = saddleRemainder[miTaken]; }
+            if(miTaken==mi) { delete pi.crossings[locstr];}
+            else { pi.crossings[locstr] = saddleRemainder[miTaken]; }
+            if(!newDelta[miTaken]) { console.log('found bad marching index',mi,miTaken,loc,nc); break;}
             dx = newDelta[miTaken][0];
             dy = newDelta[miTaken][1];
             if(dx) {
@@ -164,24 +176,40 @@ contour.plot = function(gd,plotinfo,cd) {
                 pts.push(getHInterp(level,loc[0],loc[1]+Math.max(dy,0)));
                 loc[1]+=dy;
             }
+            locstr = loc.join(',');
             if(edgeflag) {
-                if(dx) { if(loc[0]<0||loc[0]>n-2) { break; } }
-                else if(loc[1]<0||loc[1]>m-2) { break; }
+                if((dx&&(loc[0]<0||loc[0]>n-2)) || (dy&&(loc[1]<0||loc[1]>m-2))) {
+                    pi.ends.push([loc[0]-dx,loc[1]-dy]);
+                    break;
+                }
             }
             else if(locstr==st) { break; }
+            mi = pi.crossings[locstr];
+            // console.log(locstr,mi);
         }
         if(cnt==10000) { console.log('Infinite loop in contour?'); }
 
+        if(pts[0]==pts[pts.length-1]) { pts[pts.length-1] = 'Z'; }
+        else if(!edgeflag) { console.log('unclosed interior contour?',nc,st,pts.join('L')); }
+
+        return pts.join('L'); // TODO: smoothing
     }
 
-    function edgePath(nc,st){ paths[nc].push(makePath(nc,st,'edge')); }
+    function edgePath(nc,st){ pathinfo[nc].paths.push(makePath(nc,st,'edge')); }
 
-    for(nc=0; nc<t.ncontours; nc++) {
-        starts[nc].forEach(edgePath);
-        while(Object.keys(crossings[nc]).length) {
-            paths[nc].push(makePath(nc,st));
+    // console.log(contours,µ.util.deepExtend([],crossings));
+
+    pathinfo.forEach(function(pi,nc){
+        pi.starts.forEach(function(st){ pi.paths.push(makePath(nc,st,'edge')); });
+        var cnt=0;
+        while(Object.keys(pi.crossings).length && cnt<10000) {
+            cnt++;
+            pi.paths.push(makePath(nc,Object.keys(pi.crossings)[0]));
         }
-    }
+        if(cnt==10000) { console.log('Infinite loop in contour?'); }
+    });
+
+    // console.log(starts,paths);
 
     var plotgroup = plotinfo.plot.selectAll('g.contour.'+id).data([0]);
     plotgroup.enter().append('g').classed('contour',true).classed(id,true);
@@ -191,15 +219,31 @@ contour.plot = function(gd,plotinfo,cd) {
     fillgroup.enter().append('g').classed('contourfill',true);
     fillgroup.exit().remove();
 
-    var linegroup = plotgroup.selectAll('g.contourlevel').data(paths);
+    var perimeter = [[x[0],y[0]],[x[x.length-1],y[0]],[x[x.length-1],y[y.length-1]],[x[0],y[y.length-1]]]
+        .map(function(p){return [xa.c2p(p[0]),ya.c2p(p[1])]; }),
+        perimeterPath = perimeter.join('L')+'Z';
+    var fillitems = fillgroup.selectAll('path')
+        .data(t.fillmode=='fill' ? [{paths:[perimeterPath]}].concat(pathinfo) : []);
+    fillitems.enter().append('path');
+    fillitems.exit().remove();
+    fillitems.each(function(d,nc){
+        // join all paths for this level together into a single path
+        // follow clockwise around the perimeter to close any open paths
+        // if the whole perimeter is above this level, start with a path
+        // enclosing the whole thing. With all that, the parity should mean
+        // that we always fill everything above the contour, nothing below
+        var fullpath = (d.starts.length || z[0][0]<contours[nc]) ? '' : ('M'+perimeterPath);
+        // TODO
+    });
+
+    var linegroup = plotgroup.selectAll('g.contourlevel').data(t.showlines ? pathinfo : []);
     linegroup.enter().append('g').classed('contourlevel',true);
     linegroup.exit().remove();
 
-    var contourline = linegroup.selectAll('path').data(function(d){return d;});
+    var contourline = linegroup.selectAll('path').data(function(d){return d.paths;});
     contourline.enter().append('path');
     contourline.exit().remove();
-
-    contourline.attr('d',function(d){return 'M'+d.join('L');})
+    contourline.each(function(d){d3.select(this).attr('d', 'M'+d);})
         .style('stroke-width',1)
         .style('stroke','black')
         .style('stroke-miterlimit',1)
@@ -273,7 +317,7 @@ contour.plot = function(gd,plotinfo,cd) {
     // // show a colorscale
     // gl._infolayer.selectAll('.'+cb_id).remove();
     // if(t.showscale!==false){ insert_colorbar(gd,cd, cb_id, scl); }
-    // Plotly.Lib.markTime('done colorbar');
+    Plotly.Lib.markTime('done Contour.plot');
 };
 
 contour.style = function(s) {

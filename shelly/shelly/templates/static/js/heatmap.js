@@ -21,7 +21,7 @@ heatmap.calc = function(gd,gdc) {
         x0, dx,
         y = gdc.y ? ya.makeCalcdata(gdc,'y') : [],
         y0, dy,
-        z = gdc.z,
+        z,
         i;
 
     // cancel minimum tick spacings (only applies to bars and boxes)
@@ -179,6 +179,7 @@ heatmap.calc = function(gd,gdc) {
         dx = gdc.dx||1;
         y0 = gdc.y0||0;
         dy = gdc.dy||1;
+        z = gdc.z.map(function(row){return row.map(Number); });
     }
 
     // check whether we really can smooth (ie all boxes are about the same size)
@@ -224,8 +225,24 @@ heatmap.calc = function(gd,gdc) {
     Plotly.Axes.expand(xa,xArray);
     Plotly.Axes.expand(ya,yArray);
 
+    var cd = {x:xArray, y:yArray, z:z};
+    if(gdc.type=='contour' && gdc.coloring=='heatmap') {
+        cd.xfill = makeBoundArray('heatmap', x_in, x0, dx, z[0].length, gd.layout.xaxis);
+        cd.yfill = makeBoundArray('heatmap', y_in, y0, dy, z.length, gd.layout.yaxis);
+    }
+
+    // for contours: check if we need to auto-choose contour levels
+    if(gdc.type=='contour' && (gdc.autocontour!==false || !gdc.contours ||
+            !$.isNumeric(gdc.contours.start) || !$.isNumeric(gdc.contours.end) || !$.isNumeric(gdc.contours.size))) {
+        var dummyAx = {type:'linear', range:[gdc.zmin,gdc.zmax]};
+        Plotly.Axes.autoTicks(dummyAx,(gdc.zmax-gdc.zmin)/10);
+        gdc.contours = {start: Plotly.Axes.tickFirst(dummyAx), size: dummyAx.dtick};
+        dummyAx.range.reverse();
+        gdc.contours.end = Plotly.Axes.tickFirst(dummyAx);
+    }
+
     // this is gd.calcdata for the heatmap (other attributes get added by setStyles)
-    return [{x:xArray, y:yArray, z:z}];
+    return [cd];
 };
 
 function makeBoundArray(type,array_in,v0_in,dv_in,numbricks,ax) {
@@ -234,6 +251,8 @@ function makeBoundArray(type,array_in,v0_in,dv_in,numbricks,ax) {
         array_in = array_in.map(ax.d2c);
         var len = array_in.length;
         if(len==numbricks) { // given vals are brick centers
+            // contour plots only want the centers
+            if(type=='contour') { return array_in.slice(0,numbricks); }
             if(numbricks==1) { return [array_in[0]-0.5,array_in[0]+0.5]; }
             else {
                 array_out = [1.5*array_in[0]-0.5*array_in[1]];
@@ -255,7 +274,12 @@ function makeBoundArray(type,array_in,v0_in,dv_in,numbricks,ax) {
             v0 = v0_in;
         }
         else { v0 = ax.d2c(v0_in); }
-        for(i=0; i<=numbricks; i++) { array_out.push(v0+dv*(i-0.5)); }
+        if(type=='contour') {
+            for(i=0; i<numbricks; i++) { array_out.push(v0+dv*i); }
+        }
+        else {
+            for(i=0; i<=numbricks; i++) { array_out.push(v0+dv*(i-0.5)); }
+        }
     }
     return array_out;
 }
@@ -275,13 +299,15 @@ heatmap.plot = function(gd,plotinfo,cd) {
     var id='hm'+i; // heatmap id
     var cb_id='cb'+i; // colorbar id
 
+    gl._paper.selectAll('.contour'+i).remove(); // in case this used to be a contour map
+
     if(t.visible===false) {
         gl._paper.selectAll('.'+id).remove();
         gl._paper.selectAll('.'+cb_id).remove();
         return;
     }
 
-    var z=cd[0].z, min=t.zmin, max=t.zmax, scl=Plotly.Plots.getScale(cd[0].t.scl), x=cd[0].x, y=cd[0].y;
+    var z=cd[0].z, min=t.zmin, max=t.zmax, scl=Plotly.Plots.getScale(t.scl), x=cd[0].x, y=cd[0].y;
     var fastsmooth=[true,'fast'].indexOf(t.zsmooth)!=-1; // fast smoothing - one pixel per brick
 
     // get z dims
@@ -297,8 +323,8 @@ heatmap.plot = function(gd,plotinfo,cd) {
     // TODO: use low-resolution images outside the visible plot for panning
     var xrev = false, left, right, temp;
     // these while loops find the first and last brick bounds that are defined (in case of log of a negative)
-    i=0; while(left===undefined && i<n) { left=xa.c2p(x[i]); i++; }
-    i=n; while(right===undefined && i>0) { right=xa.c2p(x[i]); i--; }
+    i=0; while(left===undefined && i<x.length-1) { left=xa.c2p(x[i]); i++; }
+    i=x.length-1; while(right===undefined && i>0) { right=xa.c2p(x[i]); i--; }
     if(right<left) {
         temp = right;
         right = left;
@@ -307,13 +333,18 @@ heatmap.plot = function(gd,plotinfo,cd) {
     }
 
     var yrev = false, top, bottom;
-    i=0; while(top===undefined && i<n) { top=ya.c2p(y[i]); i++; }
-    i=m; while(bottom===undefined && i>0) { bottom=ya.c2p(y[i]); i--; }
+    i=0; while(top===undefined && i<y.length-1) { top=ya.c2p(y[i]); i++; }
+    i=y.length-1; while(bottom===undefined && i>0) { bottom=ya.c2p(y[i]); i--; }
     if(bottom<top) {
         temp = top;
         top = bottom;
         bottom = temp;
         yrev = true;
+    }
+
+    if(t.type=='contour') { // for contours with heatmap fill, we generate the boundaries based on brick centers but then use the brick edges for drawing the bricks
+        x = cd[0].xfill;    // TODO: for 'best' smoothing, we really should use the given brick centers as well as brick bounds in calculating values, in case of nonuniform brick sizes
+        y = cd[0].yfill;
     }
 
     // make an image that goes at most half a screen off either side, to keep time reasonable when you zoom in

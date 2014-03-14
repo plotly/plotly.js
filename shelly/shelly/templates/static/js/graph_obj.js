@@ -234,29 +234,29 @@ function defaultLayout(){
 // how to display each type of graph
 // AJ 3/4/13: I'm envisioning a lot of stuff that's hardcoded into plot,
 // setStyles etc will go here to make multiple graph types easier to manage
-var graphInfo = {
-    scatter:{
-        framework:makePlotFramework
-    },
-    bar:{
-        framework:makePlotFramework
-    },
-    heatmap:{
-        framework:makePlotFramework
-    },
-    histogramx:{
-        framework:makePlotFramework
-    },
-    histogramy:{
-        framework:makePlotFramework
-    },
-    histogram2d:{
-        framework:makePlotFramework
-    },
-    box:{
-        framework:makePlotFramework
-    }
-};
+// var graphInfo = {
+//     scatter:{
+//         framework:makePlotFramework
+//     },
+//     bar:{
+//         framework:makePlotFramework
+//     },
+//     heatmap:{
+//         framework:makePlotFramework
+//     },
+//     histogramx:{
+//         framework:makePlotFramework
+//     },
+//     histogramy:{
+//         framework:makePlotFramework
+//     },
+//     histogram2d:{
+//         framework:makePlotFramework
+//     },
+//     box:{
+//         framework:makePlotFramework
+//     }
+// };
 
 var BARTYPES = ['bar','histogramx','histogramy'];
 plots.isBar = function(type) { return BARTYPES.indexOf(type)!=-1; };
@@ -520,7 +520,7 @@ Plotly.plot = function(gd, data, layout) {
     //  but if there's no data there yet, it's just a placeholder...
     //  then it should destroy and remake the plot
     if (gd.data && gd.data.length > 0) {
-        var framework = graphInfo[gd.data[0].type || 'scatter'].framework,
+        var framework = makePlotFramework,//graphInfo[gd.data[0].type || 'scatter'].framework,
             subplots = plots.getSubplots(gd).join(''),
             oldSubplots = ((gd.layout && gd.layout._plots) ? Object.keys(gd.layout._plots) : []).join('');
         if(!gd.framework || gd.framework!=framework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
@@ -562,14 +562,14 @@ Plotly.plot = function(gd, data, layout) {
         for(var curve in gd.data) {
             var gdc = gd.data[curve], // curve is the index, gdc is the data object for one trace
                 curvetype = gdc.type || 'scatter', //default type is scatter
-                typeinfo = graphInfo[curvetype],
+                isPolar = 'r' in gdc,
                 cdtextras = {}; // info (if anything) to add to cd[0].t
             cd = [];
             gdc.type = curvetype; // don't let type be blank... may want to go further and enforce known types?
 
-            if(typeinfo.framework!=gd.framework) {
-                console.log('Oops, tried to put data of type '+(gdc.type || 'scatter')+
-                    ' on an incompatible graph controlled by '+(gd.data[0].type || 'scatter')+
+            if(isPolar) {
+                console.log('Oops, tried to put a polar trace of type '+(gdc.type || 'scatter')+
+                    ' on an incompatible graph of cartesian '+(gd.data[0].type || 'scatter')+
                     ' data. Ignoring this dataset.');
                 gd.calcdata.push([{x:false, y:false}]);
                 continue;
@@ -906,6 +906,12 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('scl', 'scl', Plotly.defaultColorscale,true);
             mergeattr('showscale','showscale',true);
             mergeattr('zsmooth', 'zsmooth', false);
+            if(type==='contour') {
+                mergeattr('autocontour','autocontour',true);
+                mergeattr('contours.start','contourstart',0);
+                mergeattr('contours.end','contourend',1);
+                mergeattr('contours.size','contoursize',1);
+            }
         }
         else if(plots.isBar(type)){
             if(type!='bar') {
