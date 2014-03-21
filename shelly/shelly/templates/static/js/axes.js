@@ -990,7 +990,7 @@ function numFormat(v,ax,fmtoverride,hover) {
 
     // take the sign out, put it back manually at the end - makes cases easier
     v=Math.abs(v);
-    if(v<e) { v = '0'; } // 0 is just 0, but may get exponent if it's the last tick
+    if(v<e) { v = '0'; n = false; } // 0 is just 0, but may get exponent if it's the last tick
     else {
         v += e;
         // take out a common exponent, if any
