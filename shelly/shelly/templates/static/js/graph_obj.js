@@ -701,18 +701,18 @@ Plotly.plot = function(gd, data, layout) {
 
     // source links
     plots.addLinks(gd);
-
-    setTimeout(function(){
-        if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
-            try{
-                if( firsttimeuser() ) { showAlert('graphtips'); }
-            }
-            catch(e){ console.log(e); }
-        }
-        else if($(gd).find('#graphtips').css('display')=='none'){
-            if( firsttimeuser() ) { $(gd).find('#graphtips').fadeIn(); }
-        }
-    },1000);
+    // THIS TIMEOUT DESTROYS STREAMING. PLUS showAlert appeared to be undefined
+    // setTimeout(function(){
+    //     if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
+    //         try{
+    //             if( firsttimeuser() ) { showAlert('graphtips'); }
+    //         }
+    //         catch(e){ console.log(e); }
+    //     }
+    //     else if($(gd).find('#graphtips').css('display')=='none'){
+    //         if( firsttimeuser() ) { $(gd).find('#graphtips').fadeIn(); }
+    //     }
+    // },1000);
     Plotly.Lib.markTime('done plot');
 };
 
