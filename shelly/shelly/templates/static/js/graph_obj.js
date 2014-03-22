@@ -520,12 +520,11 @@ Plotly.plot = function(gd, data, layout) {
     //  but if there's no data there yet, it's just a placeholder...
     //  then it should destroy and remake the plot
     if (gd.data && gd.data.length > 0) {
-        var framework = makePlotFramework,//graphInfo[gd.data[0].type || 'scatter'].framework,
-            subplots = plots.getSubplots(gd).join(''),
+        var subplots = plots.getSubplots(gd).join(''),
             oldSubplots = ((gd.layout && gd.layout._plots) ? Object.keys(gd.layout._plots) : []).join('');
-        if(!gd.framework || gd.framework!=framework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
-            gd.framework = framework;
-            framework(gd,layout);
+        if(!gd.framework || gd.framework!=makePlotFramework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
+            gd.framework = makePlotFramework;
+            makePlotFramework(gd,layout);
         }
     }
     else if((typeof gd.layout==='undefined')||graphwasempty) { makePlotFramework(gd, layout); }
