@@ -226,7 +226,7 @@ heatmap.calc = function(gd,gdc) {
     Plotly.Axes.expand(ya,yArray);
 
     var cd = {x:xArray, y:yArray, z:z};
-    if(gdc.type=='contour' && gdc.coloring=='heatmap') {
+    if(gdc.type=='contour' && gdc.contourcoloring=='heatmap') {
         cd.xfill = makeBoundArray('heatmap', x_in, x0, dx, z[0].length, gd.layout.xaxis);
         cd.yfill = makeBoundArray('heatmap', y_in, y0, dy, z.length, gd.layout.yaxis);
     }
@@ -235,10 +235,13 @@ heatmap.calc = function(gd,gdc) {
     if(gdc.type=='contour' && (gdc.autocontour!==false || !gdc.contours ||
             !$.isNumeric(gdc.contours.start) || !$.isNumeric(gdc.contours.end) || !$.isNumeric(gdc.contours.size))) {
         var dummyAx = {type:'linear', range:[gdc.zmin,gdc.zmax]};
-        Plotly.Axes.autoTicks(dummyAx,(gdc.zmax-gdc.zmin)/10);
+        Plotly.Axes.autoTicks(dummyAx,(gdc.zmax-gdc.zmin)/15);
         gdc.contours = {start: Plotly.Axes.tickFirst(dummyAx), size: dummyAx.dtick};
         dummyAx.range.reverse();
         gdc.contours.end = Plotly.Axes.tickFirst(dummyAx);
+        if(gdc.contours.start==gdc.zmin) { gdc.contours.start+=gdc.contours.size; }
+        if(gdc.contours.end==gdc.zmax) { gdc.contours.end-=gdc.contours.size; }
+        gdc.contours.end+=gdc.contours.size/10; // so rounding errors don't cause us to miss the last contour
     }
 
     // this is gd.calcdata for the heatmap (other attributes get added by setStyles)
@@ -370,13 +373,10 @@ heatmap.plot = function(gd,plotinfo,cd) {
     // https://github.com/mbostock/d3/wiki/Quantitative-Scales
     // http://nelsonslog.wordpress.com/2011/04/11/d3-scales-and-interpolation/
 
-    var d = scl.map(function(si){ return si[0]*255; }),
-        r = scl.map(function(si){ return si[1]; });
-
-    s = d3.scale.linear()
-        .domain(d)
+    var s = d3.scale.linear()
+        .domain(scl.map(function(si){ return si[0]*255; }))
         .interpolate(d3.interpolateRgb)
-        .range(r);
+        .range(scl.map(function(si){ return si[1]; }));
 
     // map brick boundaries to image pixels
     var xpx,ypx;
@@ -584,7 +584,7 @@ heatmap.insert_colorbar = function(gd,cd, cb_id, scl) {
             .classed("colorbar",true)
             .classed('crisp',true)
             .call(Plotly.Drawing.font,gl.font.family||'Arial',gl.font.size||12,gl.font.color||'#000'),
-        cb = colorBar(gl)
+        cb = colorBar()
             .color(d3.scale.linear().domain(d).range(r))
             .size(gl.height-gl.margin.t-gl.margin.b)
             .lineWidth(30)
@@ -597,6 +597,107 @@ heatmap.insert_colorbar = function(gd,cd, cb_id, scl) {
     g.selectAll('.axis line, .axis .domain')
         .style('fill','none')
         .style('stroke','none');
+};
+
+heatmap.colorbar = function(td,id) {
+    var opts = {
+        // left, right, top, bottom: which side are the labels on (so left and right make vertical bars, etc.)
+        orient:'right',
+        // positioning is now all as a fraction of the plot size
+        // the size in the constant color direction
+        thickness:0.07,
+        // the total size in the color variation direction
+        length:1,
+        // x,y position of the bar center (not including labels)
+        center:[1.1,0.5],
+        // d3 scale, domain is z values, range is colors, for the fills - leave out for no fill
+        fillcolor:null,
+        // same for contour line colors - leave out for no contour lines
+        linecolor:null,
+        linewidth:null,
+        linedash:'',
+        // object of {start,size,end} levels to draw.
+        // fillcolors will be evaluated halfway between levels
+        levels:{start:0,size:1,end:10}
+    };
+
+    function component(){
+        var gl = td.layout,
+            zrange = d3.extent((opts.fillcolor||opts.linecolor).domain()),
+            linelevels = [],
+            linecolormap = typeof opts.linecolor=='function' ? opts.linecolor : function(v){ return opts.linecolor; };
+        for(var l=opts.levels.start; (l-opts.levels.end-opts.levels.size/100)*opts.levels.size<0; l+=opts.levels.size) {
+            if(l>zrange[0] && l<zrange[1]) { linelevels.push(l); }
+        }
+        var filllevels = linelevels.map(function(v){ return v-opts.levels.size/2; });
+        filllevels.push(filllevels[filllevels.length-1]+opts.levels.size);
+        if(opts.levels.size<0) { linelevels.reverse(); filllevels.reverse(); }
+
+        // now make a Plotly Axes object to scale with and draw ticks
+        // TODO: does not support orientation other than right
+        var xrange = [opts.center[0]-opts.thickness/2,opts.center[0]+opts.thickness/2];
+        var cbAxis = Plotly.Axes.defaultAxis({
+            type: 'linear',
+            range: zrange,
+            anchor: 'free',
+            position: xrange[1],
+            domain: [opts.center[1]-opts.length/2,opts.center[1]+opts.length/2],
+            _id: 'y'+id
+        });
+        Plotly.Axes.initAxis(td,cbAxis);
+        Plotly.Axes.setConvert(cbAxis);
+        cbAxis.setScale();
+        var xpx = xrange.map(function(v){ return v*gl._size.w; });
+
+        // now draw the elements
+        var container = gl._infolayer.selectAll('g.'+id).data([0]);
+        container.enter().append('g').classed(id,true).classed('crisp',true)
+            .each(function(){
+                d3.select(this).append('g').classed('cbfills',true);
+                d3.select(this).append('g').classed('cblines',true);
+            });
+        container.attr('transform','translate('+gl._size.l+','+gl._size.t+')');
+
+        var fills = container.select('.cbfills').selectAll('rect.cbfill').data(opts.fillcolor ? filllevels : []);
+        fills.enter().append('rect').classed('cbfill',true);
+        fills.exit().remove();
+        fills.each(function(d,i) {
+            var z = [(i===0) ? zrange[0] : linelevels[i-1],
+                    (i==filllevels.length-1) ? zrange[1] : linelevels[i]].map(cbAxis.c2p);
+            d3.select(this).attr({
+                x: d3.min(xpx),
+                width: d3.max(xpx)-d3.min(xpx),
+                y: d3.min(z),
+                height: d3.max(z)-d3.min(z)
+            })
+            .style({
+                fill:opts.fillcolor(d),
+                stroke:'none'
+            });
+        });
+
+        var lines = container.select('.cblines').selectAll('path.cbline').data(opts.linecolor ? linelevels : []);
+        lines.enter().append('path').classed('cbline',true);
+        lines.exit().remove();
+        lines.each(function(d,i) {
+            d3.select(this)
+                .attr('d','M'+xpx[0]+','+(Math.floor(cbAxis.c2p(d))+(opts.linewidth/2)%1)+'H'+xpx[1])
+                .call(Plotly.Drawing.lineGroupStyle, opts.linewidth, linecolormap(i), opts.linedash);
+        });
+        console.log(cbAxis);
+        Plotly.Axes.doTicks(td,cbAxis);
+    }
+
+    // setter/getters for every item defined in opts
+    Object.keys(opts).forEach(function (name) {
+        component[name] = function(v) {
+            if(!arguments.length) { return opts[name]; }
+            opts[name] = v;
+            return component;
+        };
+    });
+
+    return component;
 };
 
 }()); // end Heatmap object definition

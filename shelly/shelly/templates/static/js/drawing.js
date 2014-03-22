@@ -52,19 +52,24 @@ drawing.getPx = function(s,styleAttr) {
     return Number(s.style(styleAttr).replace(/px$/,''));
 };
 
-drawing.lineGroupStyle = function(s) {
-    s.style('stroke-width',function(d){ return (d[0].t.lw||0)+'px'; })
-    .each(function(d){ d3.select(this).call(drawing.strokeColor,d[0].t.lc); })
-    .style('fill','none')
-    .style('stroke-dasharray',function(d){
-        var da=d[0].t.ld,lw=Math.max(d[0].t.lw,3);
-        if(da=='solid') return '';
-        if(da=='dot') return lw+'px,'+lw+'px';
-        if(da=='dash') return (3*lw)+'px,'+(3*lw)+'px';
-        if(da=='longdash') return (5*lw)+'px,'+(5*lw)+'px';
-        if(da=='dashdot') return (3*lw)+'px,'+lw+'px,'+lw+'px,'+lw+'px';
-        if(da=='longdashdot') return (5*lw)+'px,'+(2*lw)+'px,'+lw+'px,'+(2*lw)+'px';
-        return da; // user writes the dasharray themselves
+drawing.lineGroupStyle = function(s,lw,lc,ld) {
+    s.style('fill','none')
+    .each(function(d){
+        var lw1 = lw||(d&&d[0]&&d[0].t&&d[0].t.lw)||0,
+            da = ld||(d&&d[0]&&d[0].t&&d[0].t.ld),
+            dlw = Math.max(lw1,3);
+        if(da=='solid') da = '';
+        else if(da=='dot') da = dlw+'px,'+dlw+'px';
+        else if(da=='dash') da = (3*dlw)+'px,'+(3*dlw)+'px';
+        else if(da=='longdash') da = (5*dlw)+'px,'+(5*dlw)+'px';
+        else if(da=='dashdot') da = (3*dlw)+'px,'+dlw+'px,'+dlw+'px,'+dlw+'px';
+        else if(da=='longdashdot') da = (5*dlw)+'px,'+(2*dlw)+'px,'+dlw+'px,'+(2*dlw)+'px';
+        // otherwise user wrote the dasharray themselves - leave it be
+
+        d3.select(this)
+            .call(drawing.strokeColor,lc||(d&&d[0]&&d[0].t&&d[0].t.lc))
+            .style('stroke-dasharray',da)
+            .style('stroke-width',lw1+'px');
     });
 };
 

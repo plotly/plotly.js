@@ -718,17 +718,17 @@ Plotly.plot = function(gd, data, layout) {
     // source links
     plots.addLinks(gd);
 
-    setTimeout(function(){
-        if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
-            try{
-                if( firsttimeuser() ) { showAlert('graphtips'); }
-            }
-            catch(e){ console.log(e); }
-        }
-        else if($(gd).find('#graphtips').css('display')=='none'){
-            if( firsttimeuser() ) { $(gd).find('#graphtips').fadeIn(); }
-        }
-    },1000);
+    // setTimeout(function(){
+    //     if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
+    //         try{
+    //             if( firsttimeuser() ) { showAlert('graphtips'); }
+    //         }
+    //         catch(e){ console.log(e); }
+    //     }
+    //     else if($(gd).find('#graphtips').css('display')=='none'){
+    //         if( firsttimeuser() ) { $(gd).find('#graphtips').fadeIn(); }
+    //     }
+    // },1000);
     Plotly.Lib.markTime('done plot');
 };
 
@@ -911,6 +911,11 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('contours.start','contourstart',0);
                 mergeattr('contours.end','contourend',1);
                 mergeattr('contours.size','contoursize',1);
+                mergeattr('showcontourlines','showlines',true);
+                mergeattr('contourcoloring','coloring','fill');
+                mergeattr('line.color','lc','black');
+                mergeattr('line.width','lw',1);
+                mergeattr('line.dash','ld','solid');
             }
         }
         else if(plots.isBar(type)){
@@ -941,6 +946,7 @@ function applyStyle(gd) {
         gp.selectAll('g.trace.boxes').call(Plotly.Boxes.style);
         gp.selectAll('g.errorbars').call(Plotly.ErrorBars.style);
         gp.selectAll('image').call(Plotly.Heatmap.style);
+        gp.selectAll('g.contour').call(Plotly.Contour.style);
     });
 
     if(gd.mainsite && window.ws && window.ws.confirmedReady) {

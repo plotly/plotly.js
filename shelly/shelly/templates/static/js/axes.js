@@ -74,9 +74,12 @@ axes.setTypes = function(td) {
 
 // add a few pieces to prepare the axis object for use
 axes.initAxis = function(td,ax) {
-    ax._name = Object.keys(td.layout).filter(function(k){return td.layout[k]===ax;})[0];
-    ax._id = axes.name2id(ax._name);
     ax._td = td;
+    var name = Object.keys(td.layout).filter(function(k){return td.layout[k]===ax;})[0];
+    if(name) { // in order to allow special-purpose axes like for colorbars
+        ax._name = name;
+        ax._id = axes.name2id(ax._name);
+    }
     if(!ax._categories) { ax._categories = []; }
 
     // set scaling to pixels
@@ -1074,10 +1077,16 @@ axes.getFromId = function(td,id,type) {
 // axid: 'x', 'y', 'x2' etc,
 //          blank to do all,
 //          'redraw' to force full redraw, and reset ax._r (stored range for use by zoom/pan)
+//          or can pass in an axis object directly
 axes.doTicks = function(td,axid) {
     var gl = td.layout,
         gs = gl._size,
-        ax = axes.getFromId(td,axid);
+        ax;
+    if(typeof axid == 'object') { // allow passing an axis object instead of id
+        ax = axid;
+        axid = ax._id;
+    }
+    else { ax = axes.getFromId(td,axid); }
 
     if(axid=='redraw') {
         td.layout._paper.selectAll('g.subplot').each(function(subplot) {
