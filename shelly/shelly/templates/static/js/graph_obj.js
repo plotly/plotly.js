@@ -231,33 +231,6 @@ function defaultLayout(){
     };
 }
 
-// how to display each type of graph
-// AJ 3/4/13: I'm envisioning a lot of stuff that's hardcoded into plot,
-// setStyles etc will go here to make multiple graph types easier to manage
-// var graphInfo = {
-//     scatter:{
-//         framework:makePlotFramework
-//     },
-//     bar:{
-//         framework:makePlotFramework
-//     },
-//     heatmap:{
-//         framework:makePlotFramework
-//     },
-//     histogramx:{
-//         framework:makePlotFramework
-//     },
-//     histogramy:{
-//         framework:makePlotFramework
-//     },
-//     histogram2d:{
-//         framework:makePlotFramework
-//     },
-//     box:{
-//         framework:makePlotFramework
-//     }
-// };
-
 var BARTYPES = ['bar','histogramx','histogramy'];
 plots.isBar = function(type) { return BARTYPES.indexOf(type)!=-1; };
 var HEATMAPTYPES = ['heatmap','histogram2d','contour'];
@@ -529,6 +502,7 @@ Plotly.plot = function(gd, data, layout) {
     }
     else if((typeof gd.layout==='undefined')||graphwasempty) { makePlotFramework(gd, layout); }
 
+
     // enable or disable formatting buttons
     $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length===0);
 
@@ -712,22 +686,8 @@ Plotly.plot = function(gd, data, layout) {
     else { gl._infolayer.selectAll('.legend').remove(); }
     Plotly.Annotations.drawAll(gd);
 
-    // final cleanup
-
     // source links
     plots.addLinks(gd);
-
-    // setTimeout(function(){
-    //     if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
-    //         try{
-    //             if( firsttimeuser() ) { showAlert('graphtips'); }
-    //         }
-    //         catch(e){ console.log(e); }
-    //     }
-    //     else if($(gd).find('#graphtips').css('display')=='none'){
-    //         if( firsttimeuser() ) { $(gd).find('#graphtips').fadeIn(); }
-    //     }
-    // },1000);
     Plotly.Lib.markTime('done plot');
 };
 
