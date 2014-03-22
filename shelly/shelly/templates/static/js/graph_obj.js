@@ -1704,33 +1704,33 @@ function layoutStyles(gd) {
             ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
 
             xp = gs.p+ylw,
-            xpathPrefix = 'M'+(xa._offset-xp)+',',
+            xpathPrefix = 'M'+(-xp)+',',
             xpathSuffix = 'h'+(xa._length+2*xp),
             showfreex = xa.anchor=='free' && freefinished.indexOf(xa._id)==-1,
             freeposx = gs.t+gs.h*(1-(xa.position||0))+((xlw/2)%1),
             showbottom = (xa.anchor==ya._id && (xa.mirror||xa.side!='top')) ||
                 xa.mirror=='all' || xa.mirror=='allticks' ||
                 (xa.mirrors && xa.mirrors[ya._id+'bottom']),
-            bottompos = ya._offset+ya._length+gs.p+xlw/2,
+            bottompos = ya._length+gs.p+xlw/2,
             showtop = (xa.anchor==ya._id && (xa.mirror||xa.side=='top')) ||
                 xa.mirror=='all' || xa.mirror=='allticks' ||
                 (xa.mirrors && xa.mirrors[ya._id+'top']),
-            toppos = ya._offset-gs.p-xlw/2,
+            toppos = -gs.p-xlw/2,
 
             yp = gs.p, // shorten y axis lines so they don't overlap x axis lines
             ypbottom = showbottom ? 0 : xlw, // except where there's no x line TODO: this gets more complicated with multiple x and y axes...
             yptop = showtop ? 0 : xlw,
-            ypathSuffix = ','+(ya._offset-yp-yptop)+'v'+(ya._length+2*yp+yptop+ypbottom),
+            ypathSuffix = ','+(-yp-yptop)+'v'+(ya._length+2*yp+yptop+ypbottom),
             showfreey = ya.anchor=='free' && freefinished.indexOf(ya._id)==-1,
             freeposy = gs.l+gs.w*(ya.position||0)+((ylw/2)%1),
             showleft = (ya.anchor==xa._id && (ya.mirror||ya.side!='right')) ||
                 ya.mirror=='all' || ya.mirror=='allticks' ||
                 (ya.mirrors && ya.mirrors[xa._id+'left']),
-            leftpos = xa._offset-gs.p-ylw/2,
+            leftpos = -gs.p-ylw/2,
             showright = (ya.anchor==xa._id && (ya.mirror||ya.side=='right')) ||
                 ya.mirror=='all' || ya.mirror=='allticks' ||
                 (ya.mirrors && ya.mirrors[xa._id+'right']),
-            rightpos = xa._offset+xa._length+gs.p+ylw/2;
+            rightpos = xa._length+gs.p+ylw/2;
 
         // save axis line positions for ticks, draggers, etc to reference
         // each subplot gets an entry [left or bottom, right or top, free, main]
@@ -1759,20 +1759,28 @@ function layoutStyles(gd) {
             ya._linepositions[subplot][3] = freeposy;
         }
 
-        plotinfo.xlines
+        // translate all the extra stuff to have the same origin as the plot area
+        var origin = 'translate('+xa._offset+','+ya._offset+')';
+
+        plotinfo.xlines.attr('transform',origin)
             .attr('d',(
                 (showbottom ? (xpathPrefix+bottompos+xpathSuffix) : '') +
                 (showtop ? (xpathPrefix+toppos+xpathSuffix) : '') +
                 (showfreex ? (xpathPrefix+freeposx+xpathSuffix) : '')) || 'M0,0') // so it doesn't barf with no lines shown
             .style('stroke-width',xlw+'px')
             .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
-        plotinfo.ylines
+        plotinfo.ylines.attr('transform',origin)
             .attr('d',(
                 (showleft ? ('M'+leftpos+ypathSuffix) : '') +
                 (showright ? ('M'+rightpos+ypathSuffix) : '') +
                 (showfreey ? ('M'+freeposy+ypathSuffix) : '')) || 'M0,0')
             .attr('stroke-width',ylw+'px')
             .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
+
+        plotinfo.axislayer.attr('transform',origin);
+        plotinfo.gridlayer.attr('transform',origin);
+        plotinfo.zerolinelayer.attr('transform',origin);
+        plotinfo.draglayer.attr('transform',origin);
 
         // mark free axes as displayed, so we don't draw them again
         if(showfreex) { freefinished.push(xa._id); }

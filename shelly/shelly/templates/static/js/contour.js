@@ -452,68 +452,9 @@ contour.plot = function(gd,plotinfo,cd) {
         .style('stroke-miterlimit',1);
 
     // instantiate the colorbar (will be drawn and styled in contour.style)
-    t.cb = Plotly.Heatmap.colorbar(td,cb_id);
+    t.cb = Plotly.Heatmap.colorbar(gd,cb_id);
+    t.cb_id = cb_id;
 
-    // TODO - display, add the fill, specialized color bar, etc.
-
-
-
-
-    // TODO: left over from heatmaps... some we may want
-
-    // interpolate for color scale
-    // https://github.com/mbostock/d3/wiki/Quantitative-Scales
-    // http://nelsonslog.wordpress.com/2011/04/11/d3-scales-and-interpolation/
-
-    // // create a color in the png color table
-    // // save p.color and luminosity each time we calculate anew, because these are the slowest parts
-    // var colors = {};
-    // colors[256] = p.color(0,0,0,0); // non-numeric shows as transparent TODO: make this an option
-    // function setColor(v,pixsize) {
-    //     if($.isNumeric(v)) {
-    //         // get z-value, scale for 8-bit color by rounding z to an integer 0-254
-    //         // (one value reserved for transparent (missing/non-numeric data)
-    //         var vr = Plotly.Lib.constrain(Math.round((v-min)*254/(max-min)),0,254);
-    //         c=s(vr);
-    //         pixcount+=pixsize;
-    //         if(!colors[vr]) {
-    //             var c = s(vr);
-    //             colors[vr] = [
-    //                 tinycolor(c).toHsl().l,
-    //                 p.color('0x'+c.substr(1,2),'0x'+c.substr(3,2),'0x'+c.substr(5,2))
-    //             ];
-    //         }
-    //         lumcount+=pixsize*colors[vr][0];
-    //         return colors[vr][1];
-    //     }
-    //     else { return colors[256]; }
-    // }
-
-    // gd.hmpixcount = (gd.hmpixcount||0)+pixcount;
-    // gd.hmlumcount = (gd.hmlumcount||0)+lumcount;
-
-    // // http://stackoverflow.com/questions/6249664/does-svg-support-embedding-of-bitmap-images
-    // // https://groups.google.com/forum/?fromgroups=#!topic/d3-js/aQSWnEDFxIc
-    // var imgstr = "data:image/png;base64,\n" + p.getBase64();
-    // gl._paper.selectAll('.'+id).remove(); // put this right before making the new image, to minimize flicker
-    // plotinfo.plot.append('svg:image')
-    //     .classed(id,true)
-    //     .datum(cd[0])
-    //     // .classed('pixelated',true) // we can hope pixelated works...
-    //     .attr({
-    //         xmlns:"http://www.w3.org/2000/svg",
-    //         "xlink:xlink:href":imgstr, // odd d3 quirk, need namespace twice
-    //         height:ht,
-    //         width:wd,
-    //         x:left,
-    //         y:top,
-    //         preserveAspectRatio:'none'});
-
-    // Plotly.Lib.markTime('done showing png');
-
-    // // show a colorscale
-    // gl._infolayer.selectAll('.'+cb_id).remove();
-    // if(t.showscale!==false){ insert_colorbar(gd,cd, cb_id, scl); }
     Plotly.Lib.markTime('done Contour.plot');
 };
 
@@ -543,11 +484,14 @@ contour.style = function(s) {
 
         // configure and call the colorbar
         t.cb
-            .fillcolor(t.coloring=='fill' ? colormap : '')
-            .linecolor(t.coloring=='line' ? colormap : t.lc)
-            .linewidth(t.lw)
+            .fillcolor(t.coloring=='fill' || t.coloring=='heatmap' ? colormap : '')
+            .linecolor(t.coloring=='lines' ? colormap : t.lc)
+            .linewidth(t.showlines ? t.lw : 0)
             .linedash(t.ld)
             .levels({start:t.contourstart, end:t.contourend, size:t.contoursize});
+        if(t.coloring=='heatmap') {
+            t.cb.filllevels({start:t.zmin, end:t.zmax, size:(t.zmax-t.zmin)/254});
+        }
         t.cb();
     });
 };
