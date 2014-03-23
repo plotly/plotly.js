@@ -216,33 +216,6 @@ function defaultLayout(){
     };
 }
 
-// how to display each type of graph
-// AJ 3/4/13: I'm envisioning a lot of stuff that's hardcoded into plot,
-// setStyles etc will go here to make multiple graph types easier to manage
-var graphInfo = {
-    scatter:{
-        framework:makePlotFramework
-    },
-    bar:{
-        framework:makePlotFramework
-    },
-    heatmap:{
-        framework:makePlotFramework
-    },
-    histogramx:{
-        framework:makePlotFramework
-    },
-    histogramy:{
-        framework:makePlotFramework
-    },
-    histogram2d:{
-        framework:makePlotFramework
-    },
-    box:{
-        framework:makePlotFramework
-    }
-};
-
 var BARTYPES = ['bar','histogramx','histogramy'];
 plots.isBar = function(type) { return BARTYPES.indexOf(type)!=-1; };
 var HEATMAPTYPES = ['heatmap','histogram2d'];
@@ -505,15 +478,15 @@ Plotly.plot = function(gd, data, layout) {
     //  but if there's no data there yet, it's just a placeholder...
     //  then it should destroy and remake the plot
     if (gd.data && gd.data.length > 0) {
-        var framework = graphInfo[gd.data[0].type || 'scatter'].framework,
-            subplots = plots.getSubplots(gd).join(''),
+        var subplots = plots.getSubplots(gd).join(''),
             oldSubplots = ((gd.layout && gd.layout._plots) ? Object.keys(gd.layout._plots) : []).join('');
-        if(!gd.framework || gd.framework!=framework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
-            gd.framework = framework;
-            framework(gd,layout);
+        if(!gd.framework || gd.framework!=makePlotFramework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
+            gd.framework = makePlotFramework;
+            makePlotFramework(gd,layout);
         }
     }
     else if((typeof gd.layout==='undefined')||graphwasempty) { makePlotFramework(gd, layout); }
+
 
     // enable or disable formatting buttons
     $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length===0);
@@ -547,18 +520,9 @@ Plotly.plot = function(gd, data, layout) {
         for(var curve in gd.data) {
             var gdc = gd.data[curve], // curve is the index, gdc is the data object for one trace
                 curvetype = gdc.type || 'scatter', //default type is scatter
-                typeinfo = graphInfo[curvetype],
                 cdtextras = {}; // info (if anything) to add to cd[0].t
             cd = [];
             gdc.type = curvetype; // don't let type be blank... may want to go further and enforce known types?
-
-            if(typeinfo.framework!=gd.framework) {
-                console.log('Oops, tried to put data of type '+(gdc.type || 'scatter')+
-                    ' on an incompatible graph controlled by '+(gd.data[0].type || 'scatter')+
-                    ' data. Ignoring this dataset.');
-                gd.calcdata.push([{x:false, y:false}]);
-                continue;
-            }
 
             // if no name is given, make a default from the curve number
             if(!('name' in gdc)) {
