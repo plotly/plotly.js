@@ -575,7 +575,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
             if((1+(data[i]-binstart)*100/dummyax.dtick)%100<2) { edgecount++; }
         }
         if(intcount+blankcount==data.length && ax.type!='date') {
-            binstart -= 0.5;
+            binstart = datamin - 0.5;
             if(dummyax.dtick<1) { dummyax.dtick=1; }
         }
         else if(edgecount>(data.length-blankcount)/2) {
@@ -990,7 +990,7 @@ function numFormat(v,ax,fmtoverride,hover) {
 
     // take the sign out, put it back manually at the end - makes cases easier
     v=Math.abs(v);
-    if(v<e) { v = '0'; } // 0 is just 0, but may get exponent if it's the last tick
+    if(v<e) { v = '0'; n = false; } // 0 is just 0, but may get exponent if it's the last tick
     else {
         v += e;
         // take out a common exponent, if any

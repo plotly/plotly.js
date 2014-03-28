@@ -69,63 +69,6 @@ Viewbox coordinates: xv,yv (where data are drawn)
         panning: subtract dx,dy from viewbox:.x,.y
         zooming: viewbox will not scale x and y differently, at least in Chrome, so for
             zoom we will move the individual points.
-
-Plot takes two params, data and layout. For layout see newplot.
-data should be an array of objects, one per trace. allowed keys:
-
-    type: (string) scatter (default), bar, heatmap
-
-    x: (float array), or x0:(float) and dx:(float)
-        if neither x, x0, or dx exists, defaults is x0:0, dx:1
-
-    y: (float array), or y0:(float) and dy:(float)
-        if neither y, y0, or dy exists, defaults to y0:0, dy:1
-        you may provide x and/or y arrays, but not neither
-
-    All of these can also be date strings, in the format 'YYYY-mm-dd HH:MM:SS'
-    This format can handle anything from year 0 to year 9999, but the underlying JS
-    can extend this to year -271820 to 275760
-    based on converting to ms since start of 1970 for plotting
-    so we could at some point extend beyond 0-9999 limitation...
-
-    mode: (string) 'lines','markers','lines+markers'
-        default 'lines+markers' for <20 points, else 'lines'
-
-    line: {
-        dash: (string) default 'solid', also 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot',
-            all of the above dashes based on linewidth, can also pass in explicit dasharray
-        color: (cstring), or (cstring array)
-        width: (float px) default 2
-    }
-
-    marker: {
-        symbol: (string) default 'circle', or (string array)
-            can also be 'square', 'triangle-[up|down|left|right]', 'cross'
-        size: (float px) default 6, or (float array)
-        color: (cstring), or (cstring array)
-        line {
-            color: (cstring), or (cstring array)
-            width: (float px) default 0, or (float array)
-        }
-    }
-
-    text: (string array) hover text for each point
-
-    name: <string for legend>
-
-    cstring is a string with any valid HTML color
-    marker and linecolor will copy each other if only one is present
-    if neither is provided, choose one from a default set based on the trace number
-    if markerlinecolor is missing it will copy linecolor ONLY if it's different from marker color, otherwise black.
-
-    eventually I'd like to make all of the marker and line properties accept arrays
-    to modify properties point-by-point
-
-    any array also has a corresponding src attribute, ie xsrc for x
-    this is a string:
-        <id>/<colname> for your own data,
-        <user>/<id>/<colname> for shared data
-
 */
 
 // IMPORTANT - default colors should be in hex for grid.js
@@ -269,36 +212,10 @@ function defaultLayout(){
         dragmode:'zoom',
         hovermode:'x',
         separators:'.,', // decimal then thousands
-        hidesources:false
+        hidesources:false,
+        smith:false,
     };
 }
-
-// how to display each type of graph
-// AJ 3/4/13: I'm envisioning a lot of stuff that's hardcoded into plot,
-// setStyles etc will go here to make multiple graph types easier to manage
-var graphInfo = {
-    scatter:{
-        framework:makePlotFramework
-    },
-    bar:{
-        framework:makePlotFramework
-    },
-    heatmap:{
-        framework:makePlotFramework
-    },
-    histogramx:{
-        framework:makePlotFramework
-    },
-    histogramy:{
-        framework:makePlotFramework
-    },
-    histogram2d:{
-        framework:makePlotFramework
-    },
-    box:{
-        framework:makePlotFramework
-    }
-};
 
 var BARTYPES = ['bar','histogramx','histogramy'];
 plots.isBar = function(type) { return BARTYPES.indexOf(type)!=-1; };
@@ -562,15 +479,15 @@ Plotly.plot = function(gd, data, layout) {
     //  but if there's no data there yet, it's just a placeholder...
     //  then it should destroy and remake the plot
     if (gd.data && gd.data.length > 0) {
-        var framework = graphInfo[gd.data[0].type || 'scatter'].framework,
-            subplots = plots.getSubplots(gd).join(''),
+        var subplots = plots.getSubplots(gd).join(''),
             oldSubplots = ((gd.layout && gd.layout._plots) ? Object.keys(gd.layout._plots) : []).join('');
-        if(!gd.framework || gd.framework!=framework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
-            gd.framework = framework;
-            framework(gd,layout);
+        if(!gd.framework || gd.framework!=makePlotFramework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
+            gd.framework = makePlotFramework;
+            makePlotFramework(gd,layout);
         }
     }
     else if((typeof gd.layout==='undefined')||graphwasempty) { makePlotFramework(gd, layout); }
+
 
     // enable or disable formatting buttons
     $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length===0);
@@ -604,18 +521,9 @@ Plotly.plot = function(gd, data, layout) {
         for(var curve in gd.data) {
             var gdc = gd.data[curve], // curve is the index, gdc is the data object for one trace
                 curvetype = gdc.type || 'scatter', //default type is scatter
-                typeinfo = graphInfo[curvetype],
                 cdtextras = {}; // info (if anything) to add to cd[0].t
             cd = [];
             gdc.type = curvetype; // don't let type be blank... may want to go further and enforce known types?
-
-            if(typeinfo.framework!=gd.framework) {
-                console.log('Oops, tried to put data of type '+(gdc.type || 'scatter')+
-                    ' on an incompatible graph controlled by '+(gd.data[0].type || 'scatter')+
-                    ' data. Ignoring this dataset.');
-                gd.calcdata.push([{x:false, y:false}]);
-                continue;
-            }
 
             // if no name is given, make a default from the curve number
             if(!('name' in gdc)) {
@@ -758,18 +666,18 @@ Plotly.plot = function(gd, data, layout) {
 
     // source links
     plots.addLinks(gd);
-
-    setTimeout(function(){
-        if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
-            try{
-                if( firsttimeuser() ) { showAlert('graphtips'); }
-            }
-            catch(e){ console.log(e); }
-        }
-        else if($(gd).find('#graphtips').css('display')=='none'){
-            if( firsttimeuser() ) { $(gd).find('#graphtips').fadeIn(); }
-        }
-    },1000);
+    // THIS TIMEOUT DESTROYS STREAMING. PLUS showAlert appeared to be undefined
+    // setTimeout(function(){
+    //     if($(gd).find('#graphtips').length===0 && gd.data!==undefined && gd.showtips!==false && gd.mainsite){
+    //         try{
+    //             if( firsttimeuser() ) { showAlert('graphtips'); }
+    //         }
+    //         catch(e){ console.log(e); }
+    //     }
+    //     else if($(gd).find('#graphtips').css('display')=='none'){
+    //         if( firsttimeuser() ) { $(gd).find('#graphtips').fadeIn(); }
+    //     }
+    // },1000);
     Plotly.Lib.markTime('done plot');
 };
 
