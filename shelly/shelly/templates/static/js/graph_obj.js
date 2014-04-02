@@ -227,7 +227,8 @@ function defaultLayout(){
         dragmode:'zoom',
         hovermode:'x',
         separators:'.,', // decimal then thousands
-        hidesources:false
+        hidesources:false,
+        smith:false,
     };
 }
 
