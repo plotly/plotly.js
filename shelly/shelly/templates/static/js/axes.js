@@ -18,7 +18,7 @@ axes.defaultAxis = function(extras) {
         tickfont:{family:'',size:0,color:''},
         overlaying:false, // anchor, side we leave out for now as the defaults are different for x and y
         domain:[0,1], position:0
-    },extras);
+    },extras||{});
 };
 // TODO: add label positioning
 
@@ -561,7 +561,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
             // 'nice' rounded down minimum difference between values
             var distinctData = Plotly.Lib.distinctVals(data),
                 msexp = Math.pow(10,Math.floor(Math.log(distinctData.minDiff)/Math.LN10)),
-                minSize = msexp*roundUp(distinctData.minDiff/msexp,[0.9,1.9,4.9],true); // TODO: there are some date cases where this will fail...
+                minSize = msexp*Plotly.Lib.roundUp(distinctData.minDiff/msexp,[0.9,1.9,4.9],true); // TODO: there are some date cases where this will fail...
             size0 = Math.max(minSize,2*Plotly.Lib.stdev(data)/Math.pow(data.length,is2d ? 0.25 : 0.4));
         }
         // piggyback off autotick code to make "nice" bin sizes
@@ -670,32 +670,32 @@ axes.autoTicks = function(ax,rt){
         if(rt>15778800000){ // years if rt>6mo
             rt/=31557600000;
             rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-            ax.dtick='M'+String(12*rtexp*roundUp(rt/rtexp,[2,5,10]));
+            ax.dtick='M'+String(12*rtexp*Plotly.Lib.roundUp(rt/rtexp,[2,5,10]));
         }
         else if(rt>1209600000){ // months if rt>2wk
             rt/=2629800000;
-            ax.dtick='M'+roundUp(rt,[1,2,3,6]);
+            ax.dtick='M'+Plotly.Lib.roundUp(rt,[1,2,3,6]);
         }
         else if(rt>43200000){ // days if rt>12h
             base=86400000;
             ax.tick0=new Date(2000,0,2).getTime(); // get week ticks on sunday
-            ax.dtick=base*roundUp(rt/base,[1,2,3,7,14]); // 2&3 day ticks are weird, but need something btwn 1&7
+            ax.dtick=base*Plotly.Lib.roundUp(rt/base,[1,2,3,7,14]); // 2&3 day ticks are weird, but need something btwn 1&7
         }
         else if(rt>1800000){ // hours if rt>30m
             base=3600000;
-            ax.dtick=base*roundUp(rt/base,[1,2,3,6,12]);
+            ax.dtick=base*Plotly.Lib.roundUp(rt/base,[1,2,3,6,12]);
         }
         else if(rt>30000){ // minutes if rt>30sec
             base=60000;
-            ax.dtick=base*roundUp(rt/base,[1,2,5,10,15,30]);
+            ax.dtick=base*Plotly.Lib.roundUp(rt/base,[1,2,5,10,15,30]);
         }
         else if(rt>500){ // seconds if rt>0.5sec
             base=1000;
-            ax.dtick=base*roundUp(rt/base,[1,2,5,10,15,30]);
+            ax.dtick=base*Plotly.Lib.roundUp(rt/base,[1,2,5,10,15,30]);
         }
         else { //milliseconds
             rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-            ax.dtick=rtexp*roundUp(rt/rtexp,[2,5,10]);
+            ax.dtick=rtexp*Plotly.Lib.roundUp(rt/rtexp,[2,5,10]);
         }
     }
     else if(ax.type=='log'){
@@ -708,7 +708,7 @@ axes.autoTicks = function(ax,rt){
             // ticks on a linear scale, labeled fully
             rt=Math.abs(Math.pow(10,ax.range[1])-Math.pow(10,ax.range[0]))/nt;
             rtexp=Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-            ax.dtick='L' + String(rtexp*roundUp(rt/rtexp,[2,5,10]));
+            ax.dtick='L' + String(rtexp*Plotly.Lib.roundUp(rt/rtexp,[2,5,10]));
         }
         else { // include intermediates between powers of 10, labeled with small digits
             // ax.dtick="D2" (show 2 and 5) or "D1" (show all digits)
@@ -727,7 +727,7 @@ axes.autoTicks = function(ax,rt){
         // auto ticks always start at 0
         ax.tick0 = 0;
         rtexp = Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-        ax.dtick = rtexp*roundUp(rt/rtexp,[2,5,10]);
+        ax.dtick = rtexp*Plotly.Lib.roundUp(rt/rtexp,[2,5,10]);
     }
     if(ax.dtick===0) { ax.dtick = 1; } // prevent infinite loops...
     // TODO: this is from log axis histograms with autorange off
@@ -774,23 +774,23 @@ function autoTickRound(ax) {
     else { ax._tickround = null; }
 }
 
-// return the smallest element from (sorted) array a that's bigger than val,
-// or (reverse) the largest element smaller than val
-// used to find the best tick given the minimum (non-rounded) tick
-// particularly useful for date/time where things are not powers of 10
-// binary search is probably overkill here...
-function roundUp(v,a,reverse){
-    var l=0, h=a.length-1, m, c=0,
-        dl = reverse ? 0 : 1,
-        dh = reverse ? 1 : 0,
-        r = reverse ? Math.ceil : Math.floor;
-    while(l<h && c++<100){ // shouldn't need c, just in case something weird happens and it runs away...
-        m=r((l+h)/2);
-        if(a[m]<=v) { l=m+dl; }
-        else { h=m-dh; }
-    }
-    return a[l];
-}
+// // return the smallest element from (sorted) array a that's bigger than val,
+// // or (reverse) the largest element smaller than val
+// // used to find the best tick given the minimum (non-rounded) tick
+// // particularly useful for date/time where things are not powers of 10
+// // binary search is probably overkill here...
+// function roundUp(v,a,reverse){
+//     var l=0, h=a.length-1, m, c=0,
+//         dl = reverse ? 0 : 1,
+//         dh = reverse ? 1 : 0,
+//         r = reverse ? Math.ceil : Math.floor;
+//     while(l<h && c++<100){ // shouldn't need c, just in case something weird happens and it runs away...
+//         m=r((l+h)/2);
+//         if(a[m]<=v) { l=m+dl; }
+//         else { h=m-dh; }
+//     }
+//     return a[l];
+// }
 
 // months and years don't have constant millisecond values
 // (but a year is always 12 months so we only need months)
@@ -816,7 +816,7 @@ axes.tickIncrement = function(x,dtick,axrev){
         var tickset=(dtick=='D2') ? [-0.301,0,0.301,0.699,1] :
             [-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
         var x2=x+(axrev ? -0.01 : 0.01);
-        var frac=roundUp(mod(x2,1), tickset, axrev);
+        var frac=Plotly.Lib.roundUp(mod(x2,1), tickset, axrev);
         return Math.floor(x2)+Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
     }
     else { throw "unrecognized dtick "+String(dtick); }
@@ -854,7 +854,7 @@ axes.tickFirst = function(ax){
     else if(tType=='D') {
         var tickset=(ax.dtick=='D2')?
             [-0.301,0,0.301,0.699,1]:[-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
-        var frac=roundUp(mod(r0,1), tickset, axrev);
+        var frac=Plotly.Lib.roundUp(mod(r0,1), tickset, axrev);
         return Math.floor(r0)+Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
     }
     else { throw "unrecognized dtick "+String(ax.dtick); }
@@ -1320,8 +1320,7 @@ axes.doTicks = function(td,axid) {
     }); }
 
     // update the axis title (so it can move out of the way if needed)
-    // TODO: make this work with independent too, so we can have colorscale titles!
-    if(!independent) { Plotly.Plots.titles(td,axid+'title'); }
+    Plotly.Plots.titles(td,axid+'title');
 };
 
 // mod - version of modulus that always restricts to [0,divisor)

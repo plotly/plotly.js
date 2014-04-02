@@ -30,7 +30,7 @@ heatmap.calc = function(gd,gdc) {
 
     Plotly.Lib.markTime('done convert x&y');
 
-    if(gdc.type=='histogram2d') {
+    if(Plotly.Plots.isHist2D(gdc.type)) {
         var serieslen = Math.min(x.length,y.length);
         if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen); }
         if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen); }
@@ -179,7 +179,7 @@ heatmap.calc = function(gd,gdc) {
         dx = gdc.dx||1;
         y0 = gdc.y0||0;
         dy = gdc.dy||1;
-        z = gdc.z.map(function(row){return row.map(Number); });
+        z = gdc.z.map(function(row){return row.map(function(v) { if(!v && v!==0) { return null; } return Number(v); }); });
     }
 
     // check whether we really can smooth (ie all boxes are about the same size)
@@ -188,7 +188,7 @@ heatmap.calc = function(gd,gdc) {
             gdc.zsmooth = false;
             Plotly.Lib.notifier('cannot fast-zsmooth: log axis found');
         }
-        else if(gdc.type!='histogram2d') {
+        else if(!Plotly.Plots.isHist2D(gdc.type)) {
             if(x.length) {
                 var avgdx = (x[x.length-1]-x[0])/(x.length-1), maxErrX = Math.abs(avgdx/100);
                 for(i=0; i<x.length-1; i++) {
@@ -212,36 +212,41 @@ heatmap.calc = function(gd,gdc) {
         }
     }
 
-    // auto-z
+    // auto-z for heatmap
     if(gdc.zauto!==false || !('zmin' in gdc)) { gdc.zmin = Plotly.Lib.aggNums(Math.min,null,z); }
     if(gdc.zauto!==false || !('zmax' in gdc)) { gdc.zmax = Plotly.Lib.aggNums(Math.max,null,z); }
     if(gdc.zmin==gdc.zmax) { gdc.zmin-=0.5; gdc.zmax+=0.5; }
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
-    var x_in = gdc.xtype=='scaled' ? '' : gdc.x,
-        xArray = makeBoundArray(gdc.type, x_in, x0, dx, z[0].length, gd.layout.xaxis),
+    var xlen = Plotly.Lib.aggNums(Math.max,null,z.map(function(row) { return row.length; })),
+        x_in = gdc.xtype=='scaled' ? '' : gdc.x,
+        xArray = makeBoundArray(gdc.type, x_in, x0, dx, xlen, gd.layout.xaxis),
         y_in = gdc.ytype=='scaled' ? '' : gdc.y,
         yArray = makeBoundArray(gdc.type, y_in, y0, dy, z.length, gd.layout.yaxis);
     Plotly.Axes.expand(xa,xArray);
     Plotly.Axes.expand(ya,yArray);
 
     var cd = {x:xArray, y:yArray, z:z};
-    if(gdc.type=='contour' && gdc.contourcoloring=='heatmap') {
-        cd.xfill = makeBoundArray('heatmap', x_in, x0, dx, z[0].length, gd.layout.xaxis);
-        cd.yfill = makeBoundArray('heatmap', y_in, y0, dy, z.length, gd.layout.yaxis);
-    }
+    if(Plotly.Plots.isContour(gdc.type)) {
+        if(gdc.contours && gdc.contours.coloring=='heatmap') {
+            cd.xfill = makeBoundArray('heatmap', x_in, x0, dx, xlen, gd.layout.xaxis);
+            cd.yfill = makeBoundArray('heatmap', y_in, y0, dy, z.length, gd.layout.yaxis);
+        }
 
-    // for contours: check if we need to auto-choose contour levels
-    if(gdc.type=='contour' && (gdc.autocontour!==false || !gdc.contours ||
-            !$.isNumeric(gdc.contours.start) || !$.isNumeric(gdc.contours.end) || !$.isNumeric(gdc.contours.size))) {
-        var dummyAx = {type:'linear', range:[gdc.zmin,gdc.zmax]};
-        Plotly.Axes.autoTicks(dummyAx,(gdc.zmax-gdc.zmin)/15);
-        gdc.contours = {start: Plotly.Axes.tickFirst(dummyAx), size: dummyAx.dtick};
-        dummyAx.range.reverse();
-        gdc.contours.end = Plotly.Axes.tickFirst(dummyAx);
-        if(gdc.contours.start==gdc.zmin) { gdc.contours.start+=gdc.contours.size; }
-        if(gdc.contours.end==gdc.zmax) { gdc.contours.end-=gdc.contours.size; }
-        gdc.contours.end+=gdc.contours.size/10; // so rounding errors don't cause us to miss the last contour
+        // for contours: check if we need to auto-choose contour levels
+        if(gdc.autocontour!==false || !gdc.contours ||
+                !$.isNumeric(gdc.contours.start) || !$.isNumeric(gdc.contours.end) || !gdc.contours.size) {
+            if(!gdc.contours) { gdc.contours = {}; }
+            var dummyAx = {type:'linear', range:[gdc.zmin,gdc.zmax]};
+            Plotly.Axes.autoTicks(dummyAx,(gdc.zmax-gdc.zmin)/(gdc.ncontours||15));
+            gdc.contours.start = Plotly.Axes.tickFirst(dummyAx);
+            gdc.contours.size = dummyAx.dtick;
+            dummyAx.range.reverse();
+            gdc.contours.end = Plotly.Axes.tickFirst(dummyAx);
+            if(gdc.contours.start==gdc.zmin) { gdc.contours.start+=gdc.contours.size; }
+            if(gdc.contours.end==gdc.zmax) { gdc.contours.end-=gdc.contours.size; }
+            gdc.contours.end+=gdc.contours.size/100; // so rounding errors don't cause us to miss the last contour
+        }
     }
 
     // this is gd.calcdata for the heatmap (other attributes get added by setStyles)
@@ -250,12 +255,12 @@ heatmap.calc = function(gd,gdc) {
 
 function makeBoundArray(type,array_in,v0_in,dv_in,numbricks,ax) {
     var array_out = [], v0, dv, i;
-    if($.isArray(array_in) && (type!='histogram2d') && (ax.type!='category')) {
+    if($.isArray(array_in) && (!Plotly.Plots.isHist2D(type)) && (ax.type!='category')) {
         array_in = array_in.map(ax.d2c);
         var len = array_in.length;
         if(len==numbricks) { // given vals are brick centers
             // contour plots only want the centers
-            if(type=='contour') { return array_in.slice(0,numbricks); }
+            if(Plotly.Plots.isContour(type)) { return array_in.slice(0,numbricks); }
             if(numbricks==1) { return [array_in[0]-0.5,array_in[0]+0.5]; }
             else {
                 array_out = [1.5*array_in[0]-0.5*array_in[1]];
@@ -273,11 +278,12 @@ function makeBoundArray(type,array_in,v0_in,dv_in,numbricks,ax) {
     else {
         dv = dv_in || 1;
         if(v0_in===undefined) { v0 = 0; }
-        else if(type=='histogram2d' || ax.type=='category') {
+        else if(Plotly.Plots.isHist2D(type) || ax.type=='category') {
             v0 = v0_in;
         }
         else { v0 = ax.d2c(v0_in); }
-        if(type=='contour') {
+
+        if(Plotly.Plots.isContour(type)) {
             for(i=0; i<numbricks; i++) { array_out.push(v0+dv*i); }
         }
         else {
@@ -314,7 +320,7 @@ heatmap.plot = function(gd,plotinfo,cd) {
     var fastsmooth=[true,'fast'].indexOf(t.zsmooth)!=-1; // fast smoothing - one pixel per brick
 
     // get z dims
-    var m=z.length, n=z[0].length; // num rows, cols
+    var m=z.length, n=Plotly.Lib.aggNums(Math.max,null,z.map(function(row) { return row.length; })); // num rows, cols
     // TODO: if there are multiple overlapping categorical heatmaps,
     // or if we allow category sorting, then the categories may not be
     // sequential... may need to reorder and/or expand z
@@ -345,7 +351,7 @@ heatmap.plot = function(gd,plotinfo,cd) {
         yrev = true;
     }
 
-    if(t.type=='contour') { // for contours with heatmap fill, we generate the boundaries based on brick centers but then use the brick edges for drawing the bricks
+    if(Plotly.Plots.isContour(t.type)) { // for contours with heatmap fill, we generate the boundaries based on brick centers but then use the brick edges for drawing the bricks
         x = cd[0].xfill;    // TODO: for 'best' smoothing, we really should use the given brick centers as well as brick bounds in calculating values, in case of nonuniform brick sizes
         y = cd[0].yfill;
     }
@@ -410,11 +416,10 @@ heatmap.plot = function(gd,plotinfo,cd) {
         if($.isNumeric(v)) {
             // get z-value, scale for 8-bit color by rounding z to an integer 0-254
             // (one value reserved for transparent (missing/non-numeric data)
-            var vr = Plotly.Lib.constrain(Math.round((v-min)*254/(max-min)),0,254);
-            c=s(vr);
+            var vr = Plotly.Lib.constrain(Math.round((v-min)*254/(max-min)),0,254),
+                c=s(vr);
             pixcount+=pixsize;
             if(!colors[vr]) {
-                var c = s(vr);
                 colors[vr] = [
                     tinycolor(c).toHsl().l,
                     p.color('0x'+c.substr(1,2),'0x'+c.substr(3,2),'0x'+c.substr(5,2))
@@ -521,181 +526,31 @@ heatmap.plot = function(gd,plotinfo,cd) {
             preserveAspectRatio:'none'});
 
     Plotly.Lib.markTime('done showing png');
+};
 
-    // show a colorscale
-    gl._infolayer.selectAll('.'+cb_id).remove();
-    if(t.showscale!==false){ heatmap.insert_colorbar(gd,cd, cb_id, scl); }
+heatmap.colorbar = function(gd,cd) {
+    var t = cd[0].t,
+        cb_id = 'cb'+t.curve,
+        scl=Plotly.Plots.getScale(t.scl);
+    gd.layout._infolayer.selectAll('.'+cb_id).remove();
+    if(t.showscale===false){
+        Plotly.Plots.autoMargin(gd,t.curve);
+    }
+    else {
+        Plotly.Colorbar(gd,cb_id)
+            .fillcolor(d3.scale.linear()
+                .domain(scl.map(function(v){ return t.zmin+v[0]*(t.zmax-t.zmin); }))
+                .range(scl.map(function(v){ return v[1]; })))
+            .filllevels({start:t.zmin, end:t.zmax, size:(t.zmax-t.zmin)/254})
+            .cdoptions(t)();
+    }
     Plotly.Lib.markTime('done colorbar');
 };
 
 heatmap.style = function(s) {
     s.style('opacity',function(d){ return d.t.op; });
-};
-
-// in order to avoid unnecessary redraws, check for heatmaps with colorscales
-// and expand right margin to fit
-// TODO: let people control where this goes, ala legend
-// TODO: also let it collapse again if the scale is removed
-heatmap.margin = function(gd){
-    var gl = gd.layout;
-    if(gd.data && gd.data.length && gl.margin.r<200) {
-        for(var curve in gd.data) {
-            if(Plotly.Plots.isHeatmap(gd.data[curve].type) && (gd.data[curve].showscale!==false)) {
-                gl.margin.r=200;
-                return true;
-            }
-        }
-    }
-    return false;
-};
-
-// insert a colorbar
-// TODO: control where this goes, styling
-heatmap.insert_colorbar = function(gd,cd, cb_id, scl) {
-
-    if(gd.layout.margin.r<200){ // shouldn't get here anymore... take care of this in newPlot
-        console.log('warning: called relayout from insert_colorbar');
-        Plotly.relayout(gd,'margin.r',200);
-    }
-
-    var t = cd[0].t,
-        // "colorbar domain" - interpolate numbers for colorscale
-        d = scl.map(function(v){ return t.zmin+v[0]*(t.zmax-t.zmin); }),
-        // "colorbar range" - colors in scl
-        r = scl.map(function(v){ return v[1]; });
-
-    heatmap.colorbar(gd,cb_id)
-        .fillcolor(d3.scale.linear().domain(d).range(r))
-        .filllevels({start:t.zmin, end:t.zmax, size:(t.zmax-t.zmin)/254})();
-};
-
-heatmap.colorbar = function(td,id) {
-    var opts = {
-        // left, right, top, bottom: which side are the labels on (so left and right make vertical bars, etc.)
-        orient:'right',
-        // positioning is now all as a fraction of the plot size
-        // the size in the constant color direction
-        thickness:0.05,
-        // the total size in the color variation direction
-        length:1,
-        // x,y position of the bar center (not including labels)
-        center:[1.05,0.5],
-        // d3 scale, domain is z values, range is colors, for the fills - leave out for no fill
-        fillcolor:null,
-        // same for contour line colors - leave out for no contour lines
-        linecolor:null,
-        linewidth:null,
-        linedash:'',
-        // object of {start,size,end} levels to draw.
-        // fillcolors will be evaluated halfway between levels
-        levels:{start:0,size:1,end:10},
-        filllevels:null
-    };
-
-    function component(){
-        if(!opts.fillcolor && !opts.linecolor) {
-            gl._infolayer.selectAll('g.'+id).remove();
-            return;
-        }
-        var gl = td.layout,
-            zrange = d3.extent((opts.fillcolor||opts.linecolor).domain()),
-            linelevels = [],
-            filllevels = [],
-            l,
-            linecolormap = typeof opts.linecolor=='function' ? opts.linecolor : function(v){ return opts.linecolor; };
-        for(l=opts.levels.start; (l-opts.levels.end-opts.levels.size/100)*opts.levels.size<0; l+=opts.levels.size) {
-            if(l>(1.001*zrange[0]-0.001*zrange[1]) && l<(1.001*zrange[1]-0.001*zrange[0])) { linelevels.push(l); }
-        }
-        if(opts.filllevels) {
-            for(l=opts.filllevels.start; (l-opts.filllevels.end-opts.filllevels.size/100)*opts.filllevels.size<0; l+=opts.filllevels.size) {
-                if(l>zrange[0] && l<zrange[1]) { filllevels.push(l); }
-            }
-        }
-        else {
-            filllevels = linelevels.map(function(v){ return v-opts.levels.size/2; });
-            filllevels.push(filllevels[filllevels.length-1]+opts.levels.size);
-        }
-        if(opts.levels.size<0) { linelevels.reverse(); filllevels.reverse(); }
-
-        // now make a Plotly Axes object to scale with and draw ticks
-        // TODO: does not support orientation other than right
-        var xrange = [opts.center[0]-opts.thickness/2,opts.center[0]+opts.thickness/2];
-        var cbAxis = Plotly.Axes.defaultAxis({
-            type: 'linear',
-            range: zrange,
-            anchor: 'free',
-            position: xrange[1],
-            domain: [opts.center[1]-opts.length/2,opts.center[1]+opts.length/2],
-            _id: 'y'+id,
-            ticks: false
-        });
-        if(opts.linecolor) {
-            $.extend(cbAxis,{
-                autotick: false,
-                tick0: opts.levels.start,
-                dtick: opts.levels.size // TODO: expand if too many contours (and perhaps change tick0 too)
-            });
-        }
-        Plotly.Axes.initAxis(td,cbAxis);
-        Plotly.Axes.setConvert(cbAxis);
-        cbAxis.setScale();
-        var xpx = xrange.map(function(v){ return v*gl._size.w; }),
-            x0 = d3.min(xpx),
-            w = d3.max(xpx)-d3.min(xpx);
-
-        // now draw the elements
-        var container = gl._infolayer.selectAll('g.'+id).data([0]);
-        container.enter().append('g').classed(id,true).classed('crisp',true)
-            .each(function(){
-                d3.select(this).append('g').classed('cbfills',true);
-                d3.select(this).append('g').classed('cblines',true);
-            });
-        container.attr('transform','translate('+gl._size.l+','+gl._size.t+')');
-
-        var fills = container.select('.cbfills').selectAll('rect.cbfill').data(opts.fillcolor ? filllevels : []);
-        fills.enter().append('rect').classed('cbfill',true);
-        fills.exit().remove();
-        fills.each(function(d,i) {
-            var z = [(i===0) ? zrange[0] : (filllevels[i]+filllevels[i-1])/2,
-                    (i==filllevels.length-1) ? zrange[1] : (filllevels[i]+filllevels[i+1])/2].map(cbAxis.c2p);
-            d3.select(this).attr({
-                x: x0,
-                width: w,
-                y: d3.min(z),
-                height: d3.max(z)-d3.min(z)
-            })
-            .style({
-                fill:opts.fillcolor(d),
-                stroke:'none'
-            });
-        });
-
-        var lines = container.select('.cblines').selectAll('path.cbline').data(opts.linecolor && opts.linewidth ? linelevels : []);
-        lines.enter().append('path').classed('cbline',true);
-        lines.exit().remove();
-        lines.each(function(d,i) {
-            d3.select(this)
-                .attr('d','M'+x0+','+(Math.floor(cbAxis.c2p(d))+(opts.linewidth/2)%1)+'h'+w)
-                .call(Plotly.Drawing.lineGroupStyle, opts.linewidth, linecolormap(d), opts.linedash);
-        });
-
-        cbAxis._axislayer = container;
-        cbAxis._pos = x0+w;
-        cbAxis.side = opts.orient;
-        console.log(cbAxis);
-        Plotly.Axes.doTicks(td,cbAxis);
-    }
-
-    // setter/getters for every item defined in opts
-    Object.keys(opts).forEach(function (name) {
-        component[name] = function(v) {
-            if(!arguments.length) { return opts[name]; }
-            opts[name] = v;
-            return component;
-        };
-    });
-
-    return component;
+    // style and call the colorbar - any calcdata attribute that starts cb_
+    // .each(function(d){ if(d.t.cb) { d.t.cb.cdoptions(d.t)(); } });
 };
 
 }()); // end Heatmap object definition

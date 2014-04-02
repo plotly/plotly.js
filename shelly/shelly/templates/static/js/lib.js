@@ -284,6 +284,24 @@ lib.distinctVals = function(vals_in) {
     return {vals:v2,minDiff:minDiff};
 };
 
+// return the smallest element from (sorted) array a that's bigger than val,
+// or (reverse) the largest element smaller than val
+// used to find the best tick given the minimum (non-rounded) tick
+// particularly useful for date/time where things are not powers of 10
+// binary search is probably overkill here...
+lib.roundUp = function(v,a,reverse){
+    var l=0, h=a.length-1, m, c=0,
+        dl = reverse ? 0 : 1,
+        dh = reverse ? 1 : 0,
+        r = reverse ? Math.ceil : Math.floor;
+    while(l<h && c++<100){ // shouldn't need c, just in case something weird happens and it runs away...
+        m=r((l+h)/2);
+        if(a[m]<=v) { l=m+dl; }
+        else { h=m-dh; }
+    }
+    return a[l];
+};
+
 // convert a string s (such as 'xaxis.range[0]')
 // representing a property of nested object o into set and get methods
 // also return the string and object so we don't have to keep track of them

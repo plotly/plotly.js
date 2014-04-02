@@ -213,7 +213,7 @@ function defaultLayout(){
         width:700,
         height:450,
         autosize:'initial', // after initial autosize reverts to true
-        margin:{l:80,r:80,t:100,b:80,pad:2},
+        margin:{l:80,r:80,t:100,b:80,pad:2,autoexpand:true},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff',
         barmode:'stack',
@@ -233,8 +233,12 @@ function defaultLayout(){
 
 var BARTYPES = ['bar','histogramx','histogramy'];
 plots.isBar = function(type) { return BARTYPES.indexOf(type)!=-1; };
-var HEATMAPTYPES = ['heatmap','histogram2d','contour'];
+var HEATMAPTYPES = ['heatmap','histogram2d','contour','histogram2dcontour'];
 plots.isHeatmap = function(type) { return HEATMAPTYPES.indexOf(type)!=-1; };
+var CONTOURTYPES = ['contour','histogram2dcontour'];
+plots.isContour = function(type) { return CONTOURTYPES.indexOf(type)!=-1; };
+var HIST2DTYPES = ['histogram2d','histogram2dcontour'];
+plots.isHist2D = function(type) { return HIST2DTYPES.indexOf(type)!=-1; };
 
 plots.newTab = function(divid, layout) {
     makeToolMenu(divid);
@@ -483,6 +487,8 @@ Plotly.plot = function(gd, data, layout) {
     }
     else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
 
+    gd._replotting = true; // so we don't try to re-call Plotly.plot from inside legend and colorbar, if margins changed
+
     // Make or remake the framework (ie container and axes) if we need to
     // figure out what framework the data imply,
     //  and whether this is different from what was already there
@@ -562,7 +568,10 @@ Plotly.plot = function(gd, data, layout) {
                 if(curvetype=='bar') { cd = Plotly.Bars.calc(gd,gdc); }
                 else { cd = Plotly.Histogram.calc(gd,gdc); }
             }
-            else if (plots.isHeatmap(curvetype)){ cd = Plotly.Heatmap.calc(gd,gdc); }
+            else if (plots.isHeatmap(curvetype)){
+                cd = Plotly.Heatmap.calc(gd,gdc);
+                if(!('colorbar' in gdc)) gdc.colorbar = {};
+            }
             else if (curvetype=='box') { cd = Plotly.Boxes.calc(gd,gdc); }
 
             if(!('line' in gdc)) gdc.line = {};
@@ -587,6 +596,24 @@ Plotly.plot = function(gd, data, layout) {
     // and has to be before stacking so we get bardir, type, visible
     plots.setStyles(gd);
     Plotly.Lib.markTime('done with setstyles');
+
+    // show the legend and colorbars first, as they can affect margins
+    function marginPushers() {
+        Plotly.Legend.draw(gd, gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!==false));
+        gd.calcdata.forEach(function(cd) {
+            var t = cd[0].t;
+            if(t.visible===false || !plots.isHeatmap(t.type) || t.showscale===false) { plots.autoMargin(gd,t.curve); }
+            else if(plots.isContour(t.type)) { Plotly.Contour.colorbar(gd,cd); }
+            else  { Plotly.Heatmap.colorbar(gd,cd); }
+        });
+        doAutoMargin(gd);
+    }
+
+    var oldmargins = JSON.stringify(gl._size);
+    marginPushers();
+    layoutStyles(gd);
+    // in case the margins changed, draw these items again
+    if(JSON.stringify(gl._size)!=oldmargins) { marginPushers(); }
 
     if(recalc) {
         // position and range calculations for traces that depend on each other
@@ -621,6 +648,7 @@ Plotly.plot = function(gd, data, layout) {
         });
         if(!axesOK) {
             Plotly.Lib.notifier('Something went wrong with axis scaling','long');
+            gd._replotting = false;
             return;
         }
     }
@@ -646,7 +674,7 @@ Plotly.plot = function(gd, data, layout) {
                 continue;
             }
             if(plots.isHeatmap(type)) {
-                if(type=='contour') { Plotly.Contour.plot(gd,plotinfo,cd); }
+                if(plots.isContour(type)) { Plotly.Contour.plot(gd,plotinfo,cd); }
                 else { Plotly.Heatmap.plot(gd,plotinfo,cd); }
                 Plotly.Lib.markTime('done heatmap '+i);
             }
@@ -681,14 +709,13 @@ Plotly.plot = function(gd, data, layout) {
     applyStyle(gd);
     Plotly.Lib.markTime('done applyStyle');
 
-    // show the legend and annotations
-    if(gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!==false)) { Plotly.Legend.draw(gd); }
-    else { gl._infolayer.selectAll('.legend').remove(); }
+    // show annotations
     Plotly.Annotations.drawAll(gd);
 
     // source links
     plots.addLinks(gd);
     Plotly.Lib.markTime('done plot');
+    gd._replotting = false;
 };
 
 // convenience function to force a full redraw, mostly for use by plotly.js
@@ -705,7 +732,7 @@ plots.setStyles = function(gd, merge_dflt) {
 
     var i,j,l,p,prop,val,cd,t,c,gdc,defaultColor;
 
-    // merge object a[k] (which may be an array or a single value) into cd...
+    // merge object a[k] (which may be an array or a single value) from gd.data into calcdata
     // search the array defaults in case a[k] is missing (and for a default val
     // if some points of o are missing from a)
     // CP Edit: if merge_dflt, then apply the default value into gd.data... used for saving themes
@@ -713,6 +740,13 @@ plots.setStyles = function(gd, merge_dflt) {
     // AJ Edit: nosplit option - used for colorscales because they're
     //          arrays but shouldn't be treated as per-point objects
     function mergeattr(k,attr,dflt,nosplit) {
+        // instead of 4 separate arguments, can pass one object containing them all
+        if(typeof k=='object') {
+            attr = k.cdAttr;
+            dflt = k.dflt;
+            nosplit = k.nosplit;
+            k = k.dataAttr;
+        }
         prop = Plotly.Lib.nestedProperty(gdc,k);
         val = prop.get();
 
@@ -732,6 +766,10 @@ plots.setStyles = function(gd, merge_dflt) {
         }
     }
 
+    // merge an array of attributes, coming from a defaults() call
+    function mergeattrs(a) {
+        a.forEach(function(o) { mergeattr(o); });
+    }
 
     for(i in gd.calcdata){
         cd = gd.calcdata[i]; // trace plus styling
@@ -836,7 +874,7 @@ plots.setStyles = function(gd, merge_dflt) {
             }
         }
         else if(plots.isHeatmap(type)){
-            if(type==='histogram2d') {
+            if(plots.isHist2D(type)) {
                 mergeattr('histfunc','histfunc','count');
                 mergeattr('histnorm','histnorm','');
                 mergeattr('autobinx','autobinx',true);
@@ -865,17 +903,9 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('scl', 'scl', Plotly.defaultColorscale,true);
             mergeattr('showscale','showscale',true);
             mergeattr('zsmooth', 'zsmooth', false);
-            if(type==='contour') {
-                mergeattr('autocontour','autocontour',true);
-                mergeattr('contours.start','contourstart',0);
-                mergeattr('contours.end','contourend',1);
-                mergeattr('contours.size','contoursize',1);
-                mergeattr('showcontourlines','showlines',true);
-                mergeattr('contourcoloring','coloring','fill');
-                mergeattr('line.color','lc','black');
-                mergeattr('line.width','lw',1);
-                mergeattr('line.dash','ld','solid');
-            }
+
+            if(plots.isContour(type)) { mergeattrs(Plotly.Contour.defaults()); }
+            mergeattrs(Plotly.Colorbar.defaults());
         }
         else if(plots.isBar(type)){
             if(type!='bar') {
@@ -961,7 +991,8 @@ Plotly.restyle = function(gd,astr,val,traces) {
         'mode','visible','type','bardir','fill','histfunc','histnorm','text',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis','line.width','showscale','zauto',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
-        'autobiny','nbinsy','ybins.start','ybins.end','ybins.size'
+        'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
+        'autocontour','ncontours','contours.coloring'
     ];
     // autorange_attr attributes need a full redo of calcdata only if an axis is autoranged,
     // because .calc() is where the autorange gets determined
@@ -973,7 +1004,8 @@ Plotly.restyle = function(gd,astr,val,traces) {
     ];
     // replot_attr attributes need a replot (because different objects need to be made) but not a recalc
     var replot_attr = [
-        'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth'
+        'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth',
+        'contours.start','contours.end','contours.size','contours.showlines','line.smoothing'
     ];
     // these ones show up in restyle because they make more sense in the style
     // box, but they're graph-wide attributes, so set in gd.layout
@@ -990,7 +1022,8 @@ Plotly.restyle = function(gd,astr,val,traces) {
         docalc_autorange = false,
         doplot = false,
         dolayout = false,
-        doapplystyle = false;
+        doapplystyle = false,
+        docolorbars = false;
     // copies of the change (and previous values of anything affected) for the
     // undo / redo queue
     var redoit = {},
@@ -1066,6 +1099,15 @@ Plotly.restyle = function(gd,astr,val,traces) {
             else if(['y0','dy'].indexOf(ai)!=-1 && cont.x && cont.ytype!='scaled') {
                 doextra(cont,'ytype','scaled',i);
             }
+            // changing colorbar size modes, make the resulting size not change
+            else if(ai=='colorbar.thicknessmode' && param.get()!=vi && ['fraction','pixels'].indexOf(vi)!=-1) {
+                var thicknorm = ['top','bottom'].indexOf(cont.colorbar.orient)!=-1 ? gl._size.h : gl._size.w;
+                doextra(cont,'colorbar.thickness',cont.colorbar.thickness * (vi=='fraction' ? 1/thicknorm : thicknorm),i);
+            }
+            else if(ai=='colorbar.lenmode' && param.get()!=vi && ['fraction','pixels'].indexOf(vi)!=-1) {
+                var lennorm = ['top','bottom'].indexOf(cont.colorbar.orient)!=-1 ? gl._size.w : gl._size.h;
+                doextra(cont,'colorbar.len',cont.colorbar.len * (vi=='fraction' ? 1/lennorm : lennorm),i);
+            }
 
             // save the old value
             undoit[ai][i] = param.get();
@@ -1086,6 +1128,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         if((['autobinx','autobiny','zauto'].indexOf(ai)==-1) || vi!==false) {
             doapplystyle = true;
         }
+        if(['colorbar','line'].indexOf(param.parts[0])!=-1) { docolorbars = true; }
 
         if(recalc_attr.indexOf(ai)!=-1) {
             // major enough changes deserve autoscale, autobin, and non-reversed
@@ -1104,9 +1147,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
                 doextra(gl,axlist.map(autorangeAttr),true,0);
                 doextra(gl,axlist.map(rangeAttr),[0,1],0);
             }
-            // if we need to change margin for a heatmap, force a relayout first so we don't plot twice
-            if(Plotly.Heatmap.margin(gd)) { dolayout = true; }
-            else { docalc = true; }
+            docalc = true;
         }
         else if(replot_attr.indexOf(ai)!=-1) { doplot = true; }
         else if(autorange_attr.indexOf(ai)!=-1) { docalc_autorange = true; }
@@ -1130,7 +1171,11 @@ Plotly.restyle = function(gd,astr,val,traces) {
         plots.setStyles(gd);
         if(doapplystyle) {
             applyStyle(gd);
+
             if(gl.showlegend) { Plotly.Legend.draw(gd); }
+        }
+        if(docolorbars) {
+            gd.calcdata.forEach(function(cd) { if(cd[0].t.cb) { cd[0].t.cb.cdoptions(cd[0].t)(); } });
         }
     }
     $(gd).trigger('plotly_restyle',[redoit,traces]);
@@ -1417,7 +1462,6 @@ function plotAutoSize(gd, aobj) {
     else if(gd.layout.autosize != 'initial') { // can't call layoutStyles for initial autosize
         delete(aobj.autosize);
         gd.layout.autosize = true;
-        // layoutStyles(gd);
     }
     return aobj;
 }
@@ -1654,24 +1698,117 @@ function makePlotFramework(divid, layout) {
     Plotly.Fx.init(gd);
 }
 
+// called by legend and colorbar routines to see if we need to expand the margins to show them
+// o is {x,l,r,y,t,b} where x and y are plot fractions, the rest are pixels in each direction
+// or leave o out to delete this entry (like if it's hidden)
+plots.autoMargin = function(gd,id,o) {
+    var gl = gd.layout;
+    if(!gl._pushmargin) { gl._pushmargin = {}; }
+    if(gl.margin.autoexpand!==false) {
+        if(!o) {
+            delete gl._pushmargin[id];
+        }
+        else {
+            var pad = o.pad||6;
+
+            // if the item is too big, just give it enough automargin to
+            // make sure you can still grab it and bring it back
+            if(o.l+o.r>gl.width*0.5) { o.l = o.r = 0; }
+            if(o.b+o.t>gl.height*0.5) { o.b = o.t = 0; }
+
+            gl._pushmargin[id] = {
+                l: {val:o.x, size: o.l+pad},
+                r: {val:o.x, size: o.r+pad},
+                b: {val:o.y, size: o.b+pad},
+                t: {val:o.y, size: o.t+pad}
+            };
+        }
+
+        if(!gd._replotting) { doAutoMargin(gd); }
+    }
+};
+
+function doAutoMargin(gd) {
+    var gl = gd.layout;
+    if(!gl._size) { gl._size = {}; }
+    if(!gl._pushmargin) { gl._pushmargin = {}; }
+    var gs = gl._size,
+        oldmargins = JSON.stringify(gs);
+
+    // adjust margins for outside legends and colorbars
+    // gl.margin is the requested margin, gl._size has margins and plotsize after adjustment
+    var ml = Math.max(gl.margin.l||0,0),
+        mr = Math.max(gl.margin.r||0,0),
+        mt = Math.max(gl.margin.t||0,0),
+        mb = Math.max(gl.margin.b||0,0),
+        pm = gl._pushmargin;
+    if(gl.margin.autoexpand!==false) {
+        // fill in the requested margins
+        pm.base = {
+            l:{val:0, size:ml},
+            r:{val:1, size:mr},
+            t:{val:1, size:mt},
+            b:{val:0, size:mb}
+        };
+        // now cycle through all the combinations of l and r (and t and b) to find the required margins
+        Object.keys(pm).forEach(function(k1) {
+            var pushleft = pm[k1].l||{},
+                pushbottom = pm[k1].b||{},
+                fl = pushleft.val,
+                pl = pushleft.size,
+                fb = pushbottom.val,
+                pb = pushbottom.size;
+            Object.keys(pm).forEach(function(k2) {
+                if($.isNumeric(pl) && pm[k2].r) {
+                    var fr = pm[k2].r.val,
+                        pr = pm[k2].r.size;
+                    if(fr>fl) {
+                        var newl = (pl*fr+(pr-gl.width)*fl)/(fr-fl),
+                            newr = (pr*(1-fl)+(pl-gl.width)*(1-fr))/(fr-fl);
+                        if(newl>=0 && newr>=0 && newl+newr>ml+mr) {
+                            ml = newl;
+                            mr = newr;
+                        }
+                    }
+                }
+                if($.isNumeric(pb) && pm[k2].t) {
+                    var ft = pm[k2].t.val,
+                        pt = pm[k2].t.size;
+                    if(ft>fb) {
+                        var newb = (pb*ft+(pt-gl.height)*fb)/(ft-fb),
+                            newt = (pt*(1-fb)+(pb-gl.height)*(1-ft))/(ft-fb);
+                        if(newb>=0 && newt>=0 && newb+newt>mb+mt) {
+                            mb = newb;
+                            mt = newt;
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    gs.l = ml;
+    gs.r = mr;
+    gs.t = mt;
+    gs.b = mb;
+    gs.p = gl.margin.pad;
+    gs.w = gl.width-ml-mr;
+    gs.h = gl.height-mt-mb;
+
+    // if things changed and we're not already redrawing, trigger a redraw
+    // TODO: do we need a recalc too, or just a redraw? I think redraw is enough
+    if(!gd._replotting && oldmargins!='{}' && oldmargins!=JSON.stringify(gl._size)) {
+        Plotly.plot(gd);
+    }
+}
+
 // layoutStyles: styling for plot layout elements
 function layoutStyles(gd) {
     var gl = gd.layout;
 
-    Plotly.Heatmap.margin(gd); // check for heatmaps w/ colorscales, adjust margin accordingly
-
-    // adjust margins for outside legends
-    // gl.margin is the requested margin, gl._size has margins and plotsize after adjustment
-    gl._size = {
-        l: gl.margin.l-(gd.lw<0 ? gd.lw : 0),
-        r: gl.margin.r+(gd.lw>0 ? gd.lw : 0),
-        t: gl.margin.t+(gd.lh>0 ? gd.lh : 0),
-        b: gl.margin.b-(gd.lh<0 ? gd.lh : 0),
-        p: gl.margin.pad };
+    doAutoMargin(gd);
 
     var gs = gl._size;
-    gs.w = gl.width-gs.l-gs.r;
-    gs.h = gl.height-gs.t-gs.b;
 
     // clear axis line positions, to be set in the subplot loop below
     Plotly.Axes.list(gd).forEach(function(ax){ ax._linepositions = {}; });
@@ -1707,7 +1844,7 @@ function layoutStyles(gd) {
             xpathPrefix = 'M'+(-xp)+',',
             xpathSuffix = 'h'+(xa._length+2*xp),
             showfreex = xa.anchor=='free' && freefinished.indexOf(xa._id)==-1,
-            freeposx = gs.t+gs.h*(1-(xa.position||0))+((xlw/2)%1),
+            freeposx = gs.h*(1-(xa.position||0))+((xlw/2)%1),
             showbottom = (xa.anchor==ya._id && (xa.mirror||xa.side!='top')) ||
                 xa.mirror=='all' || xa.mirror=='allticks' ||
                 (xa.mirrors && xa.mirrors[ya._id+'bottom']),
@@ -1722,7 +1859,7 @@ function layoutStyles(gd) {
             yptop = showtop ? 0 : xlw,
             ypathSuffix = ','+(-yp-yptop)+'v'+(ya._length+2*yp+yptop+ypbottom),
             showfreey = ya.anchor=='free' && freefinished.indexOf(ya._id)==-1,
-            freeposy = gs.l+gs.w*(ya.position||0)+((ylw/2)%1),
+            freeposy = gs.w*(ya.position||0)+((ylw/2)%1),
             showleft = (ya.anchor==xa._id && (ya.mirror||ya.side!='right')) ||
                 ya.mirror=='all' || ya.mirror=='allticks' ||
                 (ya.mirrors && ya.mirrors[xa._id+'left']),
@@ -1811,23 +1948,35 @@ plots.titles = function(gd,title) {
 
     var gl=gd.layout,gs=gl._size,
         axletter = title.charAt(0),
-        cont = gl[Plotly.Axes.id2name(title.replace('title',''))] || gl,
+        colorbar = title.substr(1,2)=='cb',
+        cbnum = colorbar ? Number(title.substr(3).replace('title','')) : 0,
+        cont = colorbar ? gd.calcdata[cbnum][0].t.cb.axis :
+            (gl[Plotly.Axes.id2name(title.replace('title',''))] || gl),
         prop = cont===gl ? 'title' : cont._name+'.title',
-        name = (cont._id||axletter).toUpperCase()+' axis',
+        name = colorbar ? 'colorscale' : ((cont._id||axletter).toUpperCase()+' axis'),
         font = cont.titlefont.family || gl.font.family || 'Arial',
         fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
         fontColor = cont.titlefont.color || gl.font.color || '#000',
         x,y,transform='',attr={},xa,ya,
-        avoid = {selection:d3.select(gd).selectAll('text.'+cont._id+'tick'), side:cont.side};
-    if(axletter=='x'){
+        avoid = {selection:d3.select(gd).selectAll('text.'+cont._id+'tick'), side:cont.side},
+        offsetBase = colorbar ? 0 : 1.5; // multiples of fontsize to offset label from axis
+    if(colorbar && cont.titleside) {
+        x = gs.l+cont.titlex*gs.w;
+        y = gs.t+(1-cont.titley)*gs.h + ((cont.titleside=='top') ? 3+fontSize*0.75 : - 3-fontSize*0.25);
+        options = {x: x, y: y, 'text-anchor':'start'};
+        avoid = {};
+        // avoid.selection = d3.select(gd).select('.cb'+cbnum).selectAll('.cbaxis,.cbfills,.cblines');
+        // avoid.side = cont.titleside;
+    }
+    else if(axletter=='x'){
         xa = cont;
         ya = (xa.anchor=='free') ?
             {_offset:gs.l+(1-(xa.position||0))*gs.h, _length:0} :
             Plotly.Axes.getFromId(gd, xa.anchor);
         x = xa._offset+xa._length/2;
         y = (xa.side=='top') ?
-            ya._offset- 10-fontSize*(xa.showticklabels ? 2.5 : 1.5) :
-            ya._offset+ya._length + 10+fontSize*(xa.showticklabels ? 3 : 2);
+            ya._offset- 10-fontSize*(offsetBase + (xa.showticklabels ? 1 : 0)) :
+            ya._offset+ya._length + 10+fontSize*(offsetBase + (xa.showticklabels ? 1.5 : 0.5));
         options = {x: x, y: y, 'text-anchor': 'middle'};
         if(!avoid.side) { avoid.side = 'bottom'; }
     }
@@ -1838,8 +1987,8 @@ plots.titles = function(gd,title) {
             Plotly.Axes.getFromId(gd, ya.anchor);
         y = ya._offset+ya._length/2;
         x = (ya.side=='right') ?
-            xa._offset+xa._length + 10+fontSize*(ya.showticklabels ? 2.5 : 2) :
-            xa._offset - 10-fontSize*(ya.showticklabels ? 2 : 1.5);
+            xa._offset+xa._length + 10+fontSize*(offsetBase + (ya.showticklabels ? 1 : 0.5)) :
+            xa._offset - 10-fontSize*(offsetBase + (ya.showticklabels ? 0.5 : 0));
         transform = 'rotate(-90,x,y)';
         attr = {center: 0};
         options = {x: x, y: y, 'text-anchor': 'middle'};
@@ -1850,19 +1999,20 @@ plots.titles = function(gd,title) {
         name = 'Plot';
         fontSize = gl.titlefont.size || gl.font.size*1.4 || 16;
         x = gl.width/2;
-        y = gl.margin.t/2;
+        y = gl._size.t/2;
         options = {x: x, y: y, 'text-anchor': 'middle'};
         avoid = {};
     }
 
-    var opacity = 1;
+    var opacity = 1, isplaceholder = false;
     var txt = cont.title.trim();
     if(cont.unit) txt += ' ('+cont.unit+')';
     if(txt === '') opacity = 0;
-    if(txt === 'Click to enter '+name+' title') opacity = 0.2;
+    if(txt === 'Click to enter '+name+' title') { opacity = 0.2; isplaceholder = true; }
 
-    gl._infolayer.select('.'+title).remove();
-    var el = gl._infolayer.append('text').attr('class', title).text(txt);
+    var group = colorbar ? d3.select(gd).selectAll('.'+cont._id.substr(1)+' .cbtitle') : gl._infolayer;
+    group.select('.'+title).remove();
+    var el = group.append('text').attr('class', title).text(txt);
 
     function titleLayout(){
         var titleEl = this
@@ -1890,7 +2040,8 @@ plots.titles = function(gd,title) {
                 pad = $.isNumeric(avoid.pad) ? avoid.pad : 2,
                 titlebb = titleEl.node().getBoundingClientRect(),
                 paperbb = gl._paper.node().getBoundingClientRect(),
-                maxshift = (paperbb[avoid.side]-titlebb[avoid.side]) * ((avoid.side == 'left' || avoid.side == 'top') ? -1 : 1);
+                maxshift = colorbar ? paperbb.width:
+                    (paperbb[avoid.side]-titlebb[avoid.side]) * ((avoid.side == 'left' || avoid.side == 'top') ? -1 : 1);
             // Prevent the title going off the paper
             if(maxshift<0) { shift = maxshift; }
             else {
@@ -1913,6 +2064,15 @@ plots.titles = function(gd,title) {
                 titleEl.attr({transform: 'translate(' + shiftTemplate + ') ' + (titleEl.attr('transform')||'')});
             }
         }
+        else if(colorbar && cont.titleside=='bottom') {
+            // if multiline title, need to move it up by n-1 lines
+            // gotta be a more robust way to do this? Depends on all the lines having the same height
+            // which I'm not sure will happen if there's mathjax... why can't I use em in translate like CV does in dy?
+            var nlines = titleEl.selectAll('tspan.line')[0].length;
+            if(nlines>1) {
+                titleEl.attr({transform: 'translate(0,'+((1-nlines)*1.3*fontSize)+') ' + (titleEl.attr('transform')||'')});
+            }
+        }
     }
 
     el.attr({'data-unformatted': txt})
@@ -1920,6 +2080,7 @@ plots.titles = function(gd,title) {
 
     function setPlaceholder(){
         opacity = 0;
+        isplaceholder = true;
         txt = 'Click to enter '+name+' title';
         gl._infolayer.select('.'+title)
             .attr({'data-unformatted': txt})
@@ -1943,7 +2104,8 @@ plots.titles = function(gd,title) {
                     .attr(options)
                     .selectAll('tspan.line')
                         .attr(options);
-                Plotly.relayout(gd,prop,text);
+                if(colorbar) { Plotly.restyle(gd,'colorbar.title',text,cbnum); }
+                else { Plotly.relayout(gd,prop,text); }
             })
             .on('cancel', function(text){
                 var txt = this.attr('data-unformatted');
@@ -1956,6 +2118,7 @@ plots.titles = function(gd,title) {
             });
     }
     else if(!txt || txt === 'Click to enter '+name+' title') el.remove();
+    el.classed('js-placeholder',isplaceholder);
 };
 
 // ----------------------------------------------------

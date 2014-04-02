@@ -354,4 +354,54 @@ drawing.styleText = function(sn,t,clickable) {
     }
 };
 
+// generalized Catmull-Rom splines, per http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+drawing.CatmullRomExp = 0.5; // Catmull-Rom exponent
+drawing.smoothopen = function(pts,smoothness) {
+    if(pts.length<3) { return 'M' + pts.join('L');}
+    var path = 'M'+pts[0],
+        tangents = [], i;
+    for(i=1; i<pts.length-1; i++) {
+        tangents.push(makeTangent(pts[i-1],pts[i],pts[i+1],smoothness));
+    }
+    path += 'Q'+tangents[0][0]+' '+pts[1];
+    for(i=2; i<pts.length-1; i++) {
+        path += 'C'+tangents[i-2][1]+' '+tangents[i-1][0]+' '+pts[i];
+    }
+    path += 'Q'+tangents[pts.length-3][1]+' '+pts[pts.length-1];
+    return path;
+};
+
+drawing.smoothclosed = function(pts,smoothness) {
+    if(pts.length<3) { return 'M' + pts.join('L') + 'Z'; }
+    var path = 'M'+pts[0],
+        tangents = [makeTangent(pts[pts.length-1],pts[0],pts[1],smoothness)], i;
+    for(i=1; i<pts.length-1; i++) {
+        tangents.push(makeTangent(pts[i-1],pts[i],pts[i+1],smoothness));
+    }
+    tangents.push(makeTangent(pts[pts.length-2],pts[pts.length-1],pts[0],smoothness));
+    for(i=1; i<pts.length; i++) {
+        path += 'C'+tangents[i-1][1]+' '+tangents[i][0]+' '+pts[i];
+    }
+    path += 'C'+tangents[pts.length-1][1]+' '+tangents[0][0]+' '+pts[0] + 'Z';
+    return path;
+};
+
+function makeTangent(prevpt,thispt,nextpt,smoothness) {
+    var alpha = drawing.CatmullRomExp,
+        d1x = prevpt[0]-thispt[0],
+        d1y = prevpt[1]-thispt[1],
+        d2x = nextpt[0]-thispt[0],
+        d2y = nextpt[1]-thispt[1],
+        d1a = Math.pow(d1x*d1x + d1y*d1y, alpha/2),
+        d2a = Math.pow(d2x*d2x + d2y*d2y, alpha/2),
+        numx = (d2a*d2a*d1x - d1a*d1a*d2x)*smoothness,
+        numy = (d2a*d2a*d1y - d1a*d1a*d2y)*smoothness,
+        denom1 = 3*d2a*(d1a+d2a),
+        denom2 = 3*d1a*(d1a+d2a);
+    return [
+        [d3.round(thispt[0]+numx/denom1,2), d3.round(thispt[1]+numy/denom1,2)],
+        [d3.round(thispt[0]-numx/denom2,2), d3.round(thispt[1]-numy/denom2,2)]
+    ];
+}
+
 }()); // end Drawing object definition

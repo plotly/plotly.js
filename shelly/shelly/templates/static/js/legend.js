@@ -13,14 +13,14 @@ legend.lines = function(d){
 
     var fill = d3.select(this).select('.legendfill').selectAll('path')
         .data(showFill ? [d] : []);
-    fill.enter().append('path');
+    fill.enter().append('path').classed('js-fill',true);
     fill.exit().remove();
     fill.attr({'data-curve':t.cdcurve, 'd':'M5,0h30v6h-30z'})
         .call(Plotly.Drawing.fillGroupStyle);
 
     var line = d3.select(this).select('.legendlines').selectAll('path')
         .data(showLine ? [d] : []);
-    line.enter().append('path')
+    line.enter().append('path').classed('js-line',true)
         .attr('d','M5,0h30');
     line.exit().remove();
     line.call(Plotly.Drawing.lineGroupStyle);
@@ -127,9 +127,9 @@ legend.style = function(s) {
     .each(legend.points);
 };
 
-legend.texts = function(context, gd, d, i, traces){
-    var gf = gd.layout.font,
-        lf = gd.layout.legend.font;
+legend.texts = function(context, td, d, i, traces){
+    var gf = td.layout.font,
+        lf = td.layout.legend.font;
     var curve = d[0].t.curve;
     var name = d[0].t.name;
     var text = d3.select(context).selectAll('text')
@@ -153,14 +153,14 @@ legend.texts = function(context, gd, d, i, traces){
     function textLayout(){
         var that = this;
         Plotly.util.convertToTspans(that, function(mathjaxSVG){
-            if(gd.firstRender){
-                legend.repositionLegend(gd, traces);
+            if(td.firstRender){
+                legend.repositionLegend(td, traces);
             }
         });
         this.selectAll('tspan.line').attr({x: this.attr('x')});
     }
 
-    if(gd.mainsite){
+    if(td.mainsite){
         text.call(Plotly.util.makeEditable)
             .call(textLayout)
             .on('edit', function(text){
@@ -171,10 +171,10 @@ legend.texts = function(context, gd, d, i, traces){
                     text = ' \u0020\u0020 ';
                 }
                 var tn = Number(this.attr('class').split('-')[1]);
-                var property = Plotly.Lib.nestedProperty(gd.data[tn],'name');
+                var property = Plotly.Lib.nestedProperty(td.data[tn],'name');
                 property.name = text;
                 d[0].t.name = text;
-                Plotly.restyle(gd, property.astr, text, tn);
+                Plotly.restyle(td, property.astr, text, tn);
             });
     }
     else{
@@ -186,21 +186,32 @@ legend.texts = function(context, gd, d, i, traces){
 // legend drawing
 // -----------------------------------------------------
 
-legend.draw = function(gd) {
-    if(typeof gd.firstRender === 'undefined') gd.firstRender = true;
-    else if(gd.firstRender) gd.firstRender = false;
+legend.draw = function(td,showlegend) {
+    var gl=td.layout, i;
 
-    var gl=gd.layout, gm=gl.margin, i;
     if(!gl._infolayer) return;
-    gl.showlegend = true;
     if(!gl.legend) { gl.legend={}; }
     var gll = gl.legend;
-    if(!gd.calcdata) { return; }
+    if(!td.calcdata) { return; }
 
-    var ldata = gd.calcdata
-        .filter(function(cd) { return cd[0].t.visible!==false && cd[0].t.showlegend!==false; })
+    var ldata = td.calcdata
+        .filter(function(cd) {
+            var t = cd[0].t;
+            return t.visible!==false && t.showlegend!==false && !Plotly.Plots.isHeatmap(t.type);
+        })
         .map(function(cd) { return [cd[0]]; });
     if(gll.traceorder=='reversed') { ldata.reverse(); } // for stacked plots (bars, area) the legend items are often clearer reversed
+
+    if(showlegend===false || !ldata.length) {
+        gl._infolayer.selectAll('.legend').remove();
+        Plotly.Plots.autoMargin(td,'legend');
+        return;
+    }
+
+    gl.showlegend = true;
+
+    if(typeof td.firstRender === 'undefined') td.firstRender = true;
+    else if(td.firstRender) td.firstRender = false;
 
     var legendsvg = gl._infolayer.selectAll('svg.legend')
         .data([0]);
@@ -230,9 +241,9 @@ legend.draw = function(gd) {
     traces.enter().append('g').attr('class','traces');
     traces.exit().remove();
     traces.call(legend.style)
-        .each(function(d, i){ legend.texts(this, gd, d, i, traces); });
+        .each(function(d, i){ legend.texts(this, td, d, i, traces); });
 
-    legend.repositionLegend(gd, traces);
+    legend.repositionLegend(td, traces);
 
     // user dragging the legend
     // if x/yanchor is 'auto':
@@ -244,9 +255,9 @@ legend.draw = function(gd) {
     //  else if(xr>4/3-xc) gll.x=xr;
     //  else gll.x=xc;
     // similar logic for top/middle/bottom
-    if(gd.mainsite) {
+    if(td.mainsite) {
         legendsvg.node().onmousedown = function(e) {
-            if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
+            if(Plotly.Fx.dragClear(td)) { return true; } // deal with other UI elements, and allow them to cancel dragging
 
             var eln=this,
                 el3=d3.select(this),
@@ -254,7 +265,7 @@ legend.draw = function(gd) {
                 y0=Number(el3.attr('y')),
                 xf = null,
                 yf = null;
-            gd.dragged = false;
+            td.dragged = false;
             Plotly.Fx.setCursor(el3);
 
             window.onmousemove = function(e2) {
@@ -266,19 +277,11 @@ legend.draw = function(gd) {
                     MINDRAG = Plotly.Fx.MINDRAG;
                 if(Math.abs(dx)<MINDRAG) { dx=0; }
                 if(Math.abs(dy)<MINDRAG) { dy=0; }
-                if(dx||dy) { gd.dragged = true; }
+                if(dx||dy) { td.dragged = true; }
                 el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
-                var pbb = gl._paperdiv.node().getBoundingClientRect();
 
-                // drag to within a couple px of edge to take the legend outside the plot
-                // TODO: I want to get rid of this... with anchor settings it should be moot?
-                if(e2.clientX>pbb.right-2*MINDRAG || (gd.lw>0 && dx>-MINDRAG)) { xf=100; }
-                else if(e2.clientX<pbb.left+2*MINDRAG || (gd.lw<0 && dx<MINDRAG)) { xf=-100; }
-                else { xf = Plotly.Fx.dragAlign(x0+dx, lw, gs.l, gs.l+gs.w, gll.xanchor); }
-
-                if(e2.clientY>pbb.bottom-2*MINDRAG || (gd.lh<0 && dy>-MINDRAG)) { yf=-100; }
-                else if(e2.clientY<pbb.top+2*MINDRAG || (gd.lh>0 && dy<MINDRAG)) { yf=100; }
-                else { yf = Plotly.Fx.dragAlign(y0+dy+lh, -lh, gs.t+gs.h, gs.t, gll.yanchor); }
+                xf = Plotly.Fx.dragAlign(x0+dx, lw, gs.l, gs.l+gs.w, gll.xanchor);
+                yf = Plotly.Fx.dragAlign(y0+dy+lh, -lh, gs.t+gs.h, gs.t, gll.yanchor);
 
                 var csr = Plotly.Fx.dragCursors(xf, yf, gll.xanchor, gll.yanchor);
                 Plotly.Fx.setCursor(el3, csr);
@@ -287,8 +290,8 @@ legend.draw = function(gd) {
             window.onmouseup = function(e2) {
                 window.onmousemove = null; window.onmouseup = null;
                 Plotly.Fx.setCursor(el3);
-                if(gd.dragged && xf!==null && yf!==null) {
-                    Plotly.relayout(gd,{'legend.x':xf,'legend.y':yf});
+                if(td.dragged && xf!==null && yf!==null) {
+                    Plotly.relayout(td,{'legend.x':xf,'legend.y':yf});
                 }
                 return Plotly.Lib.pauseEvent(e2);
             };
@@ -297,8 +300,8 @@ legend.draw = function(gd) {
     }
 };
 
-legend.repositionLegend = function(gd, traces){
-    var gl = gd.layout, gm = gl.margin, gll = gl.legend;
+legend.repositionLegend = function(td, traces){
+    var gl = td.layout, gs = gl._size, gll = gl.legend;
     var borderwidth = gll.borderwidth || 1;
     // add the legend elements, keeping track of the legend size (in px) as we go
     var legendwidth=0, legendheight=0;
@@ -333,84 +336,38 @@ legend.repositionLegend = function(gd, traces){
     // the margin to put the legend entirely outside the plot area on the high/low side.
     // Otherwise, values <1/3 align the low side at that fraction, 1/3-2/3 align the
     // center at that fraction, >2/3 align the right at that fraction
-    var pw = gl.width-gm.l-gm.r,
-        ph = gl.height-gm.t-gm.b;
-    // defaults... the check for >10 and !=100 is to remove old style positioning in px
-    if(!$.isNumeric(gll.x) || (gll.x>10 && gll.x!=100)) { gll.x=0.98; }
-    if(!$.isNumeric(gll.y) || (gll.y>10 && gll.y!=100)) { gll.y=0.98; }
 
-    var lx = gm.l+pw*gll.x,
-        ly = gm.t+ph*(1-gll.y),
-        pad = 3; // px of padding if legend is outside plot
+    // defaults... check for old style off-edge positioning (+/-100) and convert it to the new format
+    if(gll.x==100) { gll.x = 1.03; gll.xanchor = 'left'; }
+    else if(gll.x==-100) { gll.x = -0.03; gll.xanchor = 'right'; }
+    else if(!$.isNumeric(gll.x) || (Math.abs(gll.x)>2)) { gll.x=0.98; }
 
-    // don't let legend be outside plot in both x and y... that would just make big blank
-    // boxes. Put the legend centered in y if we somehow get there.
-    if(Math.abs(gll.x)==100 && Math.abs(gll.y)==100) { gll.y=0.5; }
+    if(gll.y==100) { gll.y = 1.03; gll.yanchor = 'bottom'; }
+    else if(gll.y==-100) { gll.y = -0.03; gll.yanchor = 'top'; }
+    if(!$.isNumeric(gll.y) || (Math.abs(gll.y)>2)) { gll.y=0.98; }
 
-    var oldchanged = gd.changed;
+    var lx = gs.l+gs.w*gll.x,
+        ly = gs.t+gs.h*(1-gll.y);
 
-    if(gll.x==-100) {
-        lx=pad;
-        if(gd.lw!=-legendwidth-2*pad) { // if we haven't already, redraw with extra margin
-            gd.lw=-legendwidth-2*pad; // make gd.lw to tell newplot how much extra margin to give
-            Plotly.relayout(gd,'margin.l',gm.l); // doesn't change setting, just forces redraw
-            return;
-        }
+    var xanchor = 'left';
+    if(gll.xanchor=='right' || (gll.xanchor=='auto' && gll.x>=2/3)) {
+        lx -= legendwidth;
+        xanchor = 'right';
     }
-    else if(gll.x==100) {
-        lx=gl.width-legendwidth-pad;
-        if(gd.lw!=legendwidth+2*pad) {
-            gd.lw=legendwidth+2*pad;
-            Plotly.relayout(gd,'margin.r',gm.r);
-            return;
-        }
-    }
-    else {
-        if(gd.lw) {
-            delete gd.lw;
-            Plotly.relayout(gd,'margin.r',gm.r);
-            return;
-        }
-        if(gll.xanchor=='right' || (gll.xanchor=='auto' && gll.x>2/3)) { lx -= legendwidth; }
-        else if(gll.xanchor=='center' || (gll.xanchor=='auto' && gll.x>1/3)) { lx -= legendwidth/2; }
+    else if(gll.xanchor=='center' || (gll.xanchor=='auto' && gll.x>1/3)) {
+        lx -= legendwidth/2;
+        xanchor = 'center';
     }
 
-    if(gll.y==-100) {
-        ly=gl.height-legendheight-pad;
-        if(gd.lh!=-legendheight-2*pad) {
-            gd.lh=-legendheight-2*pad;
-            Plotly.relayout(gd,'margin.b',gm.b);
-            return;
-        }
+    var yanchor = 'top';
+    if(gll.yanchor=='bottom' || (gll.yanchor=='auto' && gll.y<=1/3)) {
+        ly -= legendheight;
+        yanchor = 'bottom';
     }
-    else if(gll.y==100) {
-        ly=pad+16; // Graph title goes above legend regardless. TODO: get real title size
-        if(gd.lh!=legendheight+2*pad) {
-            gd.lh=legendheight+2*pad;
-            Plotly.relayout(gd,'margin.t',gm.t);
-            return;
-        }
+    else if(gll.yanchor=='middle' || (gll.yanchor=='auto' && gll.y<2/3)) {
+        ly -= legendheight/2;
+        yanchor = 'middle';
     }
-    else {
-        if(gd.lh) {
-            delete gd.lh;
-            Plotly.relayout(gd,'margin.t',gm.t);
-            return;
-        }
-        if(gll.yanchor=='bottom' || (gll.yanchor=='auto' && gll.y<1/3)) { ly -= legendheight; }
-        else if(gll.yanchor=='middle' || (gll.yanchor=='auto' && gll.y<2/3)) { ly -= legendheight/2; }
-    }
-
-    // adjusting the margin thusly doesn't by itself constitute a change, so
-    // put gd.changed back the way it was
-    gd.changed = oldchanged;
-
-    // push the legend back onto the page if it extends off, making sure if nothing else
-    // that the top left of the legend is visible
-    if(lx+legendwidth>gl.width) { lx=gl.width-legendwidth; }
-    if(lx<0) { lx=0; }
-    if(ly+legendheight>gl.height) { ly=gl.height-legendheight; }
-    if(ly<0) { ly=0; }
 
     // make sure we're only getting full pixels
     legendwidth = Math.ceil(legendwidth);
@@ -421,6 +378,16 @@ legend.repositionLegend = function(gd, traces){
     gl._infolayer.selectAll('svg.legend').call(Plotly.Drawing.setRect, lx, ly, legendwidth, legendheight);
     gl._infolayer.selectAll('svg.legend .bg').call(Plotly.Drawing.setRect,
         borderwidth/2, borderwidth/2, legendwidth-borderwidth, legendheight-borderwidth);
+
+    // lastly check if the margin auto-expand has changed
+    Plotly.Plots.autoMargin(td,'legend',{
+        x: gll.x,
+        y: gll.y,
+        l: legendwidth*({right:1, center:0.5}[xanchor]||0),
+        r: legendwidth*({left:1, center:0.5}[xanchor]||0),
+        b: legendheight*({top:1, middle:0.5}[yanchor]||0),
+        t: legendheight*({bottom:1, middle:0.5}[yanchor]||0)
+    });
 };
 
 }()); // end Legend object definition
