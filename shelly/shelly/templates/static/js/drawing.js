@@ -52,19 +52,24 @@ drawing.getPx = function(s,styleAttr) {
     return Number(s.style(styleAttr).replace(/px$/,''));
 };
 
-drawing.lineGroupStyle = function(s) {
-    s.style('stroke-width',function(d){ return (d[0].t.lw||0)+'px'; })
-    .each(function(d){ d3.select(this).call(drawing.strokeColor,d[0].t.lc); })
-    .style('fill','none')
-    .style('stroke-dasharray',function(d){
-        var da=d[0].t.ld,lw=Math.max(d[0].t.lw,3);
-        if(da=='solid') return '';
-        if(da=='dot') return lw+'px,'+lw+'px';
-        if(da=='dash') return (3*lw)+'px,'+(3*lw)+'px';
-        if(da=='longdash') return (5*lw)+'px,'+(5*lw)+'px';
-        if(da=='dashdot') return (3*lw)+'px,'+lw+'px,'+lw+'px,'+lw+'px';
-        if(da=='longdashdot') return (5*lw)+'px,'+(2*lw)+'px,'+lw+'px,'+(2*lw)+'px';
-        return da; // user writes the dasharray themselves
+drawing.lineGroupStyle = function(s,lw,lc,ld) {
+    s.style('fill','none')
+    .each(function(d){
+        var lw1 = lw||(d&&d[0]&&d[0].t&&d[0].t.lw)||0,
+            da = ld||(d&&d[0]&&d[0].t&&d[0].t.ld),
+            dlw = Math.max(lw1,3);
+        if(da=='solid') da = '';
+        else if(da=='dot') da = dlw+'px,'+dlw+'px';
+        else if(da=='dash') da = (3*dlw)+'px,'+(3*dlw)+'px';
+        else if(da=='longdash') da = (5*dlw)+'px,'+(5*dlw)+'px';
+        else if(da=='dashdot') da = (3*dlw)+'px,'+dlw+'px,'+dlw+'px,'+dlw+'px';
+        else if(da=='longdashdot') da = (5*dlw)+'px,'+(2*dlw)+'px,'+dlw+'px,'+(2*dlw)+'px';
+        // otherwise user wrote the dasharray themselves - leave it be
+
+        d3.select(this)
+            .call(drawing.strokeColor,lc||(d&&d[0]&&d[0].t&&d[0].t.lc))
+            .style('stroke-dasharray',da)
+            .style('stroke-width',lw1+'px');
     });
 };
 
@@ -348,5 +353,55 @@ drawing.styleText = function(sn,t,clickable) {
         }
     }
 };
+
+// generalized Catmull-Rom splines, per http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
+drawing.CatmullRomExp = 0.5; // Catmull-Rom exponent
+drawing.smoothopen = function(pts,smoothness) {
+    if(pts.length<3) { return 'M' + pts.join('L');}
+    var path = 'M'+pts[0],
+        tangents = [], i;
+    for(i=1; i<pts.length-1; i++) {
+        tangents.push(makeTangent(pts[i-1],pts[i],pts[i+1],smoothness));
+    }
+    path += 'Q'+tangents[0][0]+' '+pts[1];
+    for(i=2; i<pts.length-1; i++) {
+        path += 'C'+tangents[i-2][1]+' '+tangents[i-1][0]+' '+pts[i];
+    }
+    path += 'Q'+tangents[pts.length-3][1]+' '+pts[pts.length-1];
+    return path;
+};
+
+drawing.smoothclosed = function(pts,smoothness) {
+    if(pts.length<3) { return 'M' + pts.join('L') + 'Z'; }
+    var path = 'M'+pts[0],
+        tangents = [makeTangent(pts[pts.length-1],pts[0],pts[1],smoothness)], i;
+    for(i=1; i<pts.length-1; i++) {
+        tangents.push(makeTangent(pts[i-1],pts[i],pts[i+1],smoothness));
+    }
+    tangents.push(makeTangent(pts[pts.length-2],pts[pts.length-1],pts[0],smoothness));
+    for(i=1; i<pts.length; i++) {
+        path += 'C'+tangents[i-1][1]+' '+tangents[i][0]+' '+pts[i];
+    }
+    path += 'C'+tangents[pts.length-1][1]+' '+tangents[0][0]+' '+pts[0] + 'Z';
+    return path;
+};
+
+function makeTangent(prevpt,thispt,nextpt,smoothness) {
+    var alpha = drawing.CatmullRomExp,
+        d1x = prevpt[0]-thispt[0],
+        d1y = prevpt[1]-thispt[1],
+        d2x = nextpt[0]-thispt[0],
+        d2y = nextpt[1]-thispt[1],
+        d1a = Math.pow(d1x*d1x + d1y*d1y, alpha/2),
+        d2a = Math.pow(d2x*d2x + d2y*d2y, alpha/2),
+        numx = (d2a*d2a*d1x - d1a*d1a*d2x)*smoothness,
+        numy = (d2a*d2a*d1y - d1a*d1a*d2y)*smoothness,
+        denom1 = 3*d2a*(d1a+d2a),
+        denom2 = 3*d1a*(d1a+d2a);
+    return [
+        [d3.round(thispt[0]+numx/denom1,2), d3.round(thispt[1]+numy/denom1,2)],
+        [d3.round(thispt[0]-numx/denom2,2), d3.round(thispt[1]-numy/denom2,2)]
+    ];
+}
 
 }()); // end Drawing object definition
