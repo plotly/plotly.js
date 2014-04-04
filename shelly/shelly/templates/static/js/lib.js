@@ -810,6 +810,10 @@ lib.getSources = function(td) {
     if(!fid && !extrarefs) { return; }
     $.post('/getsources', {fid:fid, extrarefs:extrarefs}, function(res) {
         td.sourcelist = JSON.parse(res);
+        if(!$.isArray(td.sourcelist)) {
+            console.log('sourcelist error',td.sourcelist);
+            td.sourcelist = [];
+        }
         lib.showSources(td);
     });
 };
