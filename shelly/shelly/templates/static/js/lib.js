@@ -284,6 +284,24 @@ lib.distinctVals = function(vals_in) {
     return {vals:v2,minDiff:minDiff};
 };
 
+// return the smallest element from (sorted) array a that's bigger than val,
+// or (reverse) the largest element smaller than val
+// used to find the best tick given the minimum (non-rounded) tick
+// particularly useful for date/time where things are not powers of 10
+// binary search is probably overkill here...
+lib.roundUp = function(v,a,reverse){
+    var l=0, h=a.length-1, m, c=0,
+        dl = reverse ? 0 : 1,
+        dh = reverse ? 1 : 0,
+        r = reverse ? Math.ceil : Math.floor;
+    while(l<h && c++<100){ // shouldn't need c, just in case something weird happens and it runs away...
+        m=r((l+h)/2);
+        if(a[m]<=v) { l=m+dl; }
+        else { h=m-dh; }
+    }
+    return a[l];
+};
+
 // convert a string s (such as 'xaxis.range[0]')
 // representing a property of nested object o into set and get methods
 // also return the string and object so we don't have to keep track of them
@@ -381,13 +399,17 @@ lib.lpad = function(val,digits){
 // aggregate numeric values, throwing out non-numerics.
 //   f: aggregation function (ie Math.min, etc)
 //   v: initial value (continuing from previous calls)
-//      if there's no continuing value , use null for selector-type
+//      if there's no continuing value, use null for selector-type
 //      functions (max,min), or 0 for summations
-//   a: array to aggregate
+//   a: array to aggregate (may be nested, we will recurse,
+//      but all elements must have the same dimension)
 //   len: maximum length of a to aggregate
 lib.aggNums = function(f,v,a,len) {
     if(!len) { len=a.length; }
     if(!$.isNumeric(v)) { v=false; }
+    if($.isArray(a[0])) {
+        a = a.map(function(row){ return lib.aggNums(f,v,row); });
+    }
     for(i=0; i<len; i++) {
         if(!$.isNumeric(v)) { v=a[i]; }
         else if($.isNumeric(a[i])) { v=f(v,a[i]); }
@@ -788,6 +810,10 @@ lib.getSources = function(td) {
     if(!fid && !extrarefs) { return; }
     $.post('/getsources', {fid:fid, extrarefs:extrarefs}, function(res) {
         td.sourcelist = JSON.parse(res);
+        if(!$.isArray(td.sourcelist)) {
+            console.log('sourcelist error',td.sourcelist);
+            td.sourcelist = [];
+        }
         lib.showSources(td);
     });
 };
