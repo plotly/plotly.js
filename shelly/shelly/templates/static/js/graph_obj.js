@@ -399,6 +399,8 @@ Plotly.plot = function(gd, data, layout) {
         paperDiv.enter().append('div')
             .classed('svg-container',true)
             .style('position','relative');
+        // empty it everytime for now
+        paperDiv.html('');
 
         // fulfill gd requirements
         if(data) gd.data = data;
