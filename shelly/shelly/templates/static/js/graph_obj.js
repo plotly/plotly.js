@@ -1698,7 +1698,7 @@ function makePlotFramework(divid, layout) {
     Plotly.Axes.doTicks(gd,'redraw');
 
     // make the axis drag objects and hover effects
-    Plotly.Fx.init(gd);
+    if(!gl._forexport) { Plotly.Fx.init(gd); }
 }
 
 // called by legend and colorbar routines to see if we need to expand the margins to show them
