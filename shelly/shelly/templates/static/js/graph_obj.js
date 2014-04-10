@@ -2139,6 +2139,9 @@ plots.getSubplots = function(gd,ax) {
 
     // look for subplots in the data
     (data||[]).forEach(function(d) {
+        // allow users to include x1 and y1 but convert to x and y
+        if(d.xaxis=='x1') { d.xaxis = 'x'; }
+        if(d.yaxis=='y1') { d.yaxis = 'y'; }
         var xid = (d.xaxis||'x'),
             yid = (d.yaxis||'y'),
             subplot = xid+yid;
