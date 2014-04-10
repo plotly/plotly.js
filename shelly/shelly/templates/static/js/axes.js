@@ -1081,7 +1081,7 @@ axes.getFromId = function(td,id,type) {
     if(type=='x') { id = id.replace(/y[0-9]*/,''); }
     else if(type=='y') { id = id.replace(/x[0-9]*/,''); }
     var ax = td.layout[axes.id2name(id)];
-    if(!ax) {
+    if(!ax && ['x1','y1','x','y'].indexOf(id)!=-1) {
         var axletter = id.charAt(0),
             num = id.charAt(1);
         if(num==='' || num=='1') {
