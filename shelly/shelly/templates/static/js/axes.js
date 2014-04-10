@@ -48,8 +48,12 @@ axes.setTypes = function(td) {
     (td.data||[]).forEach(function(curve) {
         if(curve.type && curve.type.indexOf('Polar')!=-1) { return; }
         ['x','y'].forEach(function(axletter) {
+            // also here: convert references x1, y1 to x, y
+            if(curve[axletter+'axis']==axletter+'1') { curve[axletter+'axis'] = axletter; }
+
             var axid = curve[axletter+'axis']||axletter,
                 axname = axes.id2name(axid);
+
             if(!td.layout[axname]) {
                 td.layout[axname] = axes.defaultAxis({
                     range: [-1,axletter=='x' ? 6 : 4],
@@ -76,7 +80,13 @@ axes.setTypes = function(td) {
 axes.initAxis = function(td,ax) {
     ax._td = td;
     var name = Object.keys(td.layout).filter(function(k){return td.layout[k]===ax;})[0];
-    if(name) { // in order to allow special-purpose axes like for colorbars
+    if(name) { // in order to allow special-purpose axes like for colorbars, which are not part of layout
+        if(name=='xaxis1' || name=='yaxis1') { // allow people to pass in xaxis1 and yaxis1 but convert them to xaxis, yaxis
+            var newname = name.substr(0,5);
+            td.layout[newname] = td.layout[name];
+            delete td.layout[name];
+            name = newname;
+        }
         ax._name = name;
         ax._id = axes.name2id(ax._name);
     }
