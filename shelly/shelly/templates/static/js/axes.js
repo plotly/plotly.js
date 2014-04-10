@@ -1080,7 +1080,17 @@ axes.list = function(td,axletter) {
 axes.getFromId = function(td,id,type) {
     if(type=='x') { id = id.replace(/y[0-9]*/,''); }
     else if(type=='y') { id = id.replace(/x[0-9]*/,''); }
-    return td.layout[axes.id2name(id)];
+    var ax = td.layout[axes.id2name(id)];
+    if(!ax) {
+        var axletter = id.charAt(0),
+            num = id.charAt(1);
+        if(num==='' || num=='1') {
+            var ax1 = td.layout[axes.id2name(axletter+'1')];
+            if(ax1) { axes.initAxis(td,ax1); }
+            ax = td.layout[axes.id2name(axletter)];
+        }
+    }
+    return ax;
 };
 
 // doTicks: draw ticks, grids, and tick labels
