@@ -2153,6 +2153,8 @@ plots.getSubplots = function(gd,ax) {
         // one more place to convert x1,y1 to x,y
         if(ax2.anchor=='x1') { ax2.anchor = 'x'; }
         if(ax2.anchor=='y1') { ax2.anchor = 'y'; }
+        if(ax2.overlaying=='x1') { ax2.overlaying = 'x'; }
+        if(ax2.overlaying=='y1') { ax2.overlaying = 'y'; }
 
         if(!ax2._id) { Plotly.Axes.initAxis(gd,ax2); }
         var ax2letter = ax2._id.charAt(0),
