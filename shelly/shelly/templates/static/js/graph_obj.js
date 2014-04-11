@@ -2196,9 +2196,19 @@ plots.getSubplots = function(gd,ax) {
 };
 
 // graphJson - jsonify the graph data and layout
+// dataonly=true will omit layout and any arrays that aren't data
+//      (note that we have to do this on the server side too)
+// mode: see stripObj below
 plots.graphJson = function(gd, dataonly, mode){
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
-    var obj = { data:(gd.data||[]).map(function(v){ return stripObj(v,mode); }) };
+    var obj = {
+        data:(gd.data||[]).map(function(v){
+            var d = stripObj(v,mode);
+            // fit has some little arrays in it that don't contain data, just fit params and meta
+            if(dataonly) { delete d.fit; }
+            return d;
+        })
+    };
     if(!dataonly) { obj.layout = stripObj(gd.layout,mode); }
 
     if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
