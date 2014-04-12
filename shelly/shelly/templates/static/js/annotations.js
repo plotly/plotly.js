@@ -145,7 +145,7 @@ annotations.draw = function(gd,index,opt,value) {
 
     var font = options.font.family||gl.font.family||'Arial',
         fontSize = options.font.size||gl.font.size||12,
-        fontColor = options.font.color||gl.font.color||'#000';
+        fontColor = options.font.color||gl.font.color||'#444';
         // alignTo = {left:'right', center:'center', right:'left'}[options.align];
 
     function textLayout(){
@@ -385,7 +385,7 @@ annotations.draw = function(gd,index,opt,value) {
             if(showline) {
                 var strokewidth = options.arrowwidth || borderwidth*2 || 2,
                     arrowColor = options.arrowcolor ||
-                        (Plotly.Drawing.opacity(options.bordercolor) ? options.bordercolor : '') || '#000';
+                        (Plotly.Drawing.opacity(options.bordercolor) ? options.bordercolor : '') || '#444';
                 var arrowgroup = anngroup.append('g')
                     .attr('data-cmmt',options.tag)
                     .style({opacity: Plotly.Drawing.opacity(arrowColor)});
@@ -581,7 +581,7 @@ function arrowhead(el3,style,ends,mag) {
     var drawhead = function(p,q) {
         var rot = Math.atan2(p.y-q.y,p.x-q.x)*180/Math.PI,
             scale = (Plotly.Drawing.getPx(el3,'stroke-width') || 1)*(mag),
-            stroke = el3.style('stroke') || '#000',
+            stroke = el3.style('stroke') || '#444',
             opacity = el3.style('stroke-opacity') || 1;
         if(style>5) { rot=0; } // don't rotate square or circle
         d3.select(el.parentElement).append('path')
