@@ -233,22 +233,24 @@ function defaultLayout(){
 }
 
 // on initial data load into a plot, tweak the default layout based on the incoming data type
-function tweakLayout(gd) {
+// but if newlayout has any given key, don't override it
+function tweakLayout(gd,newlayout) {
+    newlayout = newlayout||{};
     gd.data.forEach(function(d) {
         var xa = Plotly.Axes.getFromId(gd,d.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd,d.yaxis||'y');
         if(plots.isHeatmap(d.type)) {
-            xa.ticks = 'outside';
-            ya.ticks = 'outside';
+            if(!newlayout[xa._name] || !('ticks' in newlayout[xa._name])) { xa.ticks = 'outside'; }
+            if(!newlayout[ya._name] || !('ticks' in newlayout[ya._name])) { ya.ticks = 'outside'; }
         }
         else if(plots.isBar(d.type) || d.type=='box') {
             var sa = (plots.isBar(d.type) && d.bardir=='h') ? ya : xa;
-            sa.showgrid = false;
-            sa.zeroline = false;
+            if(!newlayout[sa._name] || !('showgrid' in newlayout[sa._name])) { sa.showgrid = false; }
+            if(!newlayout[sa._name] || !('zeroline' in newlayout[sa._name])) { sa.zeroline = false; }
         }
         if((plots.isBar(d.type) && gd.layout.barmode=='stack') ||
             (d.type=='scatter' && ['tonextx','tonexty'].indexOf(d.fill)!=-1)) {
-                gd.layout.legend.traceorder = 'reversed';
+                if(!newlayout.legend || !('traceorder' in newlayout.legend)) { gd.layout.legend.traceorder = 'reversed'; }
         }
     });
 }
@@ -533,7 +535,7 @@ Plotly.plot = function(gd, data, layout) {
     else if((typeof gd.layout==='undefined')||graphwasempty) { makePlotFramework(gd, layout); }
 
     // now tweak the layout if we're adding the initial data to the plot
-    if(graphwasempty && gd.data && gd.data.length>0) { tweakLayout(gd); }
+    if(graphwasempty && gd.data && gd.data.length>0) { tweakLayout(gd,layout); }
 
     // enable or disable formatting buttons
     $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length===0);
