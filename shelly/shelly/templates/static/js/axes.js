@@ -8,12 +8,12 @@ var axes = Plotly.Axes = {};
 
 axes.defaultAxis = function(extras) {
     return $.extend({
-        range:[-1,6],type:'-',showline:true,mirror:'all',linecolor:'#000',linewidth:1,
-        tick0:0,dtick:2,ticks:'outside',ticklen:5,tickwidth:1,tickcolor:'#000',nticks:0,
-        showticklabels:true,tickangle:'auto',exponentformat:'e',showexponent:'all',
-        showgrid:true,gridcolor:'#ddd',gridwidth:1,
+        range:[-1,6],type:'-',showline:false,mirror:false,linecolor:'#444',linewidth:1,
+        tick0:0,dtick:1,ticks:'',ticklen:5,tickwidth:1,tickcolor:'#444',nticks:0,
+        showticklabels:true,tickangle:'auto',exponentformat:'B',showexponent:'all',
+        showgrid:true,gridcolor:'#eee',gridwidth:1,
         autorange:true,rangemode:'normal',autotick:true,
-        zeroline:true,zerolinecolor:'#000',zerolinewidth:1,
+        zeroline:true,zerolinecolor:'#444',zerolinewidth:1,
         titlefont:{family:'',size:0,color:''},
         tickfont:{family:'',size:0,color:''},
         overlaying:false, // anchor, side we leave out for now as the defaults are different for x and y
@@ -886,7 +886,7 @@ axes.tickText = function(ax, x, hover){
     var gf = ax._td.layout.font, tf = ax.tickfont, tr = ax._tickround, dt = ax.dtick,
         font = tf.family || gf.family || 'Arial',
         fontSize = tf.size || gf.size || 12,
-        fontColor = tf.color || gf.color || '#000',
+        fontColor = tf.color || gf.color || '#444',
         px = 0,
         py = 0,
         suffix = '', // completes the full date info, to be included with only the first tick
@@ -947,6 +947,10 @@ axes.tickText = function(ax, x, hover){
         tt=String(tt0);
     }
     else {
+        // don't add an exponent to zero if we're showing all exponents
+        // so the only reason you'd show an exponent on zero is if it's the
+        // ONLY tick to get an exponent (first or last)
+        if(ax.showexponent=='all' && Math.abs(x/dt)<1e-6) { hideexp = true; }
         tt=numFormat(x,ax,hideexp,hover);
     }
     // if 9's are printed on log scale, move the 10's away a bit
@@ -1187,7 +1191,7 @@ axes.doTicks = function(td,axid) {
         if(tickpath && ax.ticks) {
             ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
                 .classed('crisp',1)
-                .call(Plotly.Drawing.strokeColor, ax.tickcolor || '#000')
+                .call(Plotly.Drawing.strokeColor, ax.tickcolor || '#444')
                 .style('stroke-width', (ax.tickwidth || 1)+'px')
                 .attr('d',tickpath);
             ticks.attr('transform',transfn);
@@ -1287,7 +1291,7 @@ axes.doTicks = function(td,axid) {
         }).length;
         var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline &&
             (ax.type=='linear'||ax.type=='-') && gridvals.length &&
-            (hasBarsOrFill || clipEnds({x:0}));
+            (hasBarsOrFill || clipEnds({x:0}) || !ax.showline);
 
         var zl = zlcontainer.selectAll('path.'+zcls)
             .data(showZl ? [{x:0}] : []);
@@ -1295,7 +1299,7 @@ axes.doTicks = function(td,axid) {
             .classed('crisp',1)
             .attr('d',gridpath);
         zl.attr('transform',transfn)
-            .call(Plotly.Drawing.strokeColor, ax.zerolinecolor || '#000')
+            .call(Plotly.Drawing.strokeColor, ax.zerolinecolor || '#444')
             .style('stroke-width', (ax.zerolinewidth || gridwidth)+'px');
         zl.exit().remove();
     }

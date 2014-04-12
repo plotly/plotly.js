@@ -144,8 +144,8 @@ legend.texts = function(context, td, d, i, traces){
             'text-anchor': 'start',
             'font-family': lf.family || gf.family || 'Arial',
             'font-size': (lf.size || gf.size || 12)+'px',
-            fill: Plotly.Drawing.rgb(lf.color || gf.color || '#000'),
-            opacity: Plotly.Drawing.opacity(lf.color || gf.color || '#000')
+            fill: Plotly.Drawing.rgb(lf.color || gf.color || '#444'),
+            opacity: Plotly.Drawing.opacity(lf.color || gf.color || '#444')
         })
         .text(function(d, i){ return name; })
         .attr({'data-unformatted': function(d, i){ return name; }});
@@ -218,8 +218,8 @@ legend.draw = function(td,showlegend) {
     legendsvg.enter(0).append('svg')
         .attr('class','legend');
 
-    var bordercolor = gll.bordercolor || '#000',
-        borderwidth = gll.borderwidth || 1,
+    var bordercolor = gll.bordercolor || '#444',
+        borderwidth = $.isNumeric(gll.borderwidth) ? gll.borderwidth : 1,
         bgcolor = gll.bgcolor || gl.paper_bgcolor || '#fff';
     if(['left','right','center'].indexOf(gll.xanchor)==-1) { gll.xanchor = 'auto'; }
     if(['top','bottom','middle'].indexOf(gll.yanchor)==-1) { gll.yanchor = 'auto'; }
@@ -302,7 +302,7 @@ legend.draw = function(td,showlegend) {
 
 legend.repositionLegend = function(td, traces){
     var gl = td.layout, gs = gl._size, gll = gl.legend;
-    var borderwidth = gll.borderwidth || 1;
+    var borderwidth = $.isNumeric(gll.borderwidth) ? gll.borderwidth : 1;
     // add the legend elements, keeping track of the legend size (in px) as we go
     var legendwidth=0, legendheight=0;
     traces.each(function(d){
@@ -337,14 +337,12 @@ legend.repositionLegend = function(td, traces){
     // Otherwise, values <1/3 align the low side at that fraction, 1/3-2/3 align the
     // center at that fraction, >2/3 align the right at that fraction
 
-    // defaults... check for old style off-edge positioning (+/-100) and convert it to the new format
-    if(gll.x==100) { gll.x = 1.03; gll.xanchor = 'left'; }
-    else if(gll.x==-100) { gll.x = -0.03; gll.xanchor = 'right'; }
-    else if(!$.isNumeric(gll.x) || (Math.abs(gll.x)>2)) { gll.x=0.98; }
+    // defaults... also check for old style off-edge positioning (+/-100) and convert it to the new format
+    if(gll.x>3 || !$.isNumeric(gll.x)) { gll.x = 1.02; gll.xanchor = 'left'; }
+    else if(gll.x<-2) { gll.x = -0.02; gll.xanchor = 'right'; }
 
-    if(gll.y==100) { gll.y = 1.03; gll.yanchor = 'bottom'; }
-    else if(gll.y==-100) { gll.y = -0.03; gll.yanchor = 'top'; }
-    if(!$.isNumeric(gll.y) || (Math.abs(gll.y)>2)) { gll.y=0.98; }
+    if(gll.y>3 || !$.isNumeric(gll.y)) { gll.y = 1.02; gll.yanchor = 'bottom'; }
+    else if(gll.y<-2) { gll.y = -0.02; gll.yanchor = 'top'; }
 
     var lx = gs.l+gs.w*gll.x,
         ly = gs.t+gs.h*(1-gll.y);
