@@ -246,7 +246,7 @@ function tweakLayout(gd) {
             sa.showgrid = false;
             sa.zeroline = false;
         }
-        if((plots.isBar(d.type) && gl.barmode=='stack') ||
+        if((plots.isBar(d.type) && gd.layout.barmode=='stack') ||
             (d.type=='scatter' && ['tonextx','tonexty'].indexOf(d.fill)!=-1)) {
                 gd.layout.legend.traceorder = 'reversed';
         }
