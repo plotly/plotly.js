@@ -341,7 +341,8 @@ legend.repositionLegend = function(td, traces){
     if(gll.x>3 || !$.isNumeric(gll.x)) { gll.x = 1.02; gll.xanchor = 'left'; }
     else if(gll.x<-2) { gll.x = -0.02; gll.xanchor = 'right'; }
 
-    if(gll.y>3 || !$.isNumeric(gll.y)) { gll.y = 1.02; gll.yanchor = 'bottom'; }
+    if(!$.isNumeric(gll.y)) { gll.y = 1; gll.yanchor = 'top'; }
+    else if(gll.y>3) { gll.y = 1.02; gll.yanchor = 'bottom'; }
     else if(gll.y<-2) { gll.y = -0.02; gll.yanchor = 'top'; }
 
     var lx = gs.l+gs.w*gll.x,
