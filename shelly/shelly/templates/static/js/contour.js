@@ -560,8 +560,8 @@ contour.defaults = function() {
         {dataAttr:'contours.size', cdAttr:'contoursize', dflt:1},
         {dataAttr:'contours.coloring', cdAttr:'coloring', dflt:'fill'},
         {dataAttr:'contours.showlines', cdAttr:'showlines', dflt:true},
-        {dataAttr:'line.color', cdAttr:'lc', dflt:'black'},
-        {dataAttr:'line.width', cdAttr:'lw', dflt:1},
+        {dataAttr:'line.color', cdAttr:'lc', dflt:'#000'},
+        {dataAttr:'line.width', cdAttr:'lw', dflt:0.5},
         {dataAttr:'line.dash', cdAttr:'ld', dflt:'solid'},
         {dataAttr:'line.smoothing', cdAttr:'ls', dflt:1}
     ];
