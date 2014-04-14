@@ -707,9 +707,8 @@ Plotly.plot = function(gd, data, layout) {
                 Plotly.Lib.markTime('done heatmap '+i);
             }
             else {
-                // in case this one was a heatmap previously, remove it and its colorbar
-                $(gd).find('.hm'+i).remove();
-                $(gd).find('.cb'+i).remove();
+                // in case this one was a heatmap or contour map previously, remove it and its colorbar
+                gl._paper.selectAll('.hm'+i+',.contour'+i+',.cb'+i).remove();
 
                 if(plots.isBar(type)) { cdbar.push(cd); }
                 else if(type=='box') { cdbox.push(cd); }
