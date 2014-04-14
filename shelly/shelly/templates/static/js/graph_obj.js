@@ -135,7 +135,7 @@ Plotly.colorscales = {
         [0.6,"rgb(160,90,0)"],[0.8,"rgb(230,200,0)"],[1,"rgb(255,250,220)"]]
 };
 
-Plotly.defaultColorscale = Plotly.colorscales.YIGnBu;
+Plotly.defaultColorscale = Plotly.colorscales.RdBu;
 
 plots.getScale = function(scl) {
     if(!scl) { return Plotly.defaultColorscale; }
@@ -206,23 +206,23 @@ function defaultLayout(){
     return {title:'Click to enter Plot title',
         xaxis:Plotly.Axes.defaultAxis({range:[-1,6]}),
         yaxis:Plotly.Axes.defaultAxis({range:[-1,4]}),
-        legend:{bgcolor:'#fff',bordercolor:'#000',borderwidth:1,
+        legend:{bgcolor:'#fff',bordercolor:'#444',borderwidth:0,
             font:{family:'',size:0,color:''},
             traceorder:'normal'
         },
         width:700,
         height:450,
         autosize:'initial', // after initial autosize reverts to true
-        margin:{l:80,r:80,t:100,b:80,pad:2,autoexpand:true},
+        margin:{l:80,r:80,t:100,b:80,pad:0,autoexpand:true},
         paper_bgcolor:'#fff',
         plot_bgcolor:'#fff',
-        barmode:'stack',
+        barmode:'group',
         bargap:0.2,
         bargroupgap:0.0,
         boxmode:'overlay',
         boxgap:0.3,
         boxgroupgap:0.3,
-        font:{family:"'Open sans', verdana, arial, sans-serif",size:12,color:'#000'},
+        font:{family:"'Open sans', verdana, arial, sans-serif",size:12,color:'#444'},
         titlefont:{family:'',size:0,color:''},
         dragmode:'zoom',
         hovermode:'x',
@@ -230,6 +230,29 @@ function defaultLayout(){
         hidesources:false,
         smith:false,
     };
+}
+
+// on initial data load into a plot, tweak the default layout based on the incoming data type
+// but if newlayout has any given key, don't override it
+function tweakLayout(gd,newlayout) {
+    newlayout = newlayout||{};
+    gd.data.forEach(function(d) {
+        var xa = Plotly.Axes.getFromId(gd,d.xaxis||'x'),
+            ya = Plotly.Axes.getFromId(gd,d.yaxis||'y');
+        if(plots.isHeatmap(d.type)) {
+            if(!newlayout[xa._name] || !('ticks' in newlayout[xa._name])) { xa.ticks = 'outside'; }
+            if(!newlayout[ya._name] || !('ticks' in newlayout[ya._name])) { ya.ticks = 'outside'; }
+        }
+        else if(plots.isBar(d.type) || d.type=='box') {
+            var sa = (plots.isBar(d.type) && d.bardir=='h') ? ya : xa;
+            if(!newlayout[sa._name] || !('showgrid' in newlayout[sa._name])) { sa.showgrid = false; }
+            if(!newlayout[sa._name] || !('zeroline' in newlayout[sa._name])) { sa.zeroline = false; }
+        }
+        if((plots.isBar(d.type) && gd.layout.barmode=='stack') ||
+            (d.type=='scatter' && ['tonextx','tonexty'].indexOf(d.fill)!=-1)) {
+                if(!newlayout.legend || !('traceorder' in newlayout.legend)) { gd.layout.legend.traceorder = 'reversed'; }
+        }
+    });
 }
 
 var BARTYPES = ['bar','histogramx','histogramy'];
@@ -399,6 +422,8 @@ Plotly.plot = function(gd, data, layout) {
         paperDiv.enter().append('div')
             .classed('svg-container',true)
             .style('position','relative');
+        // empty it everytime for now
+        paperDiv.html('');
 
         // fulfill gd requirements
         if(data) gd.data = data;
@@ -509,6 +534,8 @@ Plotly.plot = function(gd, data, layout) {
     }
     else if((typeof gd.layout==='undefined')||graphwasempty) { makePlotFramework(gd, layout); }
 
+    // now tweak the layout if we're adding the initial data to the plot
+    if(graphwasempty && gd.data && gd.data.length>0) { tweakLayout(gd,layout); }
 
     // enable or disable formatting buttons
     $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length===0);
@@ -800,7 +827,7 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('error_y.type','ye_type','percent');
             mergeattr('error_y.value','ye_val',10);
             mergeattr('error_y.traceref','ye_tref',0);
-            mergeattr('error_y.color','ye_clr',t.ye_clr|| defaultColor);
+            mergeattr('error_y.color','ye_clr', plots.isBar(t.type) ? '#444' : defaultColor);
             mergeattr('error_y.thickness','ye_tkns',1);
             mergeattr('error_y.width','ye_w',4);
             mergeattr('error_y.opacity','ye_op',1);
@@ -809,11 +836,11 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('line.color','lc',gdc.marker.color || defaultColor);
             mergeattr('line.width','lw',2);
             mergeattr('marker.symbol','mx','circle');
-            mergeattr('marker.opacity','mo',1);
+            mergeattr('marker.opacity','mo', $.isArray(gdc.marker.size) ? 0.7 : 1);
             mergeattr('marker.size','ms',6);
             mergeattr('marker.color','mc',t.lc);
-            mergeattr('marker.line.color','mlc',((t.lc!=t.mc) ? t.lc : '#000'));
-            mergeattr('marker.line.width','mlw',0);
+            mergeattr('marker.line.color','mlc',((t.lc!=t.mc) ? t.lc : ($.isArray(gdc.marker.size) ? '#fff' :'#444')));
+            mergeattr('marker.line.width','mlw',$.isArray(gdc.marker.size) ? 1 : 0);
             mergeattr('fill','fill','none');
             mergeattr('fillcolor','fc',Plotly.Drawing.addOpacity(t.lc,0.5));
             if($.isArray(gdc.marker.size)) {
@@ -821,7 +848,10 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('marker.sizemode','msm','diameter');
             }
             // even if sizeref and sizemode are set, don't use them outside bubble charts
-            else { t.msr=1; t.msm = 'diameter'; }
+            else {
+                t.msr=1;
+                t.msm = 'diameter';
+            }
             mergeattr('marker.colorscale','mscl',Plotly.defaultColorscale,true);
             mergeattr('marker.cauto','mcauto',true);
             mergeattr('marker.cmax','mcmax',10);
@@ -859,8 +889,8 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('whiskerwidth','ww',0.5);
                 mergeattr('boxpoints','boxpts','outliers');
                 mergeattr('boxmean','mean',false);
-                mergeattr('jitter','jitter',0);
-                mergeattr('pointpos','ptpos',0);
+                mergeattr('jitter','jitter',t.boxpts=='all' ? 0.3 : 0);
+                mergeattr('pointpos','ptpos',t.boxpts=='all' ? -1.5 : 0);
                 mergeattr('marker.outliercolor','soc','rgba(0,0,0,0)');
                 mergeattr('marker.line.outliercolor','solc',t.mc);
                 mergeattr('marker.line.outlierwidth','solw',1);
@@ -921,7 +951,7 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('bardir','bardir','v');
             mergeattr('marker.opacity','mo',1);
             mergeattr('marker.color','mc',defaultColor);
-            mergeattr('marker.line.color','mlc','#000');
+            mergeattr('marker.line.color','mlc','#444');
             mergeattr('marker.line.width','mlw',0);
         }
     }
@@ -1696,7 +1726,7 @@ function makePlotFramework(divid, layout) {
     Plotly.Axes.doTicks(gd,'redraw');
 
     // make the axis drag objects and hover effects
-    Plotly.Fx.init(gd);
+    if(!gl._forexport) { Plotly.Fx.init(gd); }
 }
 
 // called by legend and colorbar routines to see if we need to expand the margins to show them
@@ -1710,7 +1740,7 @@ plots.autoMargin = function(gd,id,o) {
             delete gl._pushmargin[id];
         }
         else {
-            var pad = o.pad||6;
+            var pad = o.pad||12;
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
@@ -1957,7 +1987,7 @@ plots.titles = function(gd,title) {
         name = colorbar ? 'colorscale' : ((cont._id||axletter).toUpperCase()+' axis'),
         font = cont.titlefont.family || gl.font.family || 'Arial',
         fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
-        fontColor = cont.titlefont.color || gl.font.color || '#000',
+        fontColor = cont.titlefont.color || gl.font.color || '#444',
         x,y,transform='',attr={},xa,ya,
         avoid = {selection:d3.select(gd).selectAll('text.'+cont._id+'tick'), side:cont.side},
         offsetBase = colorbar ? 0 : 1.5; // multiples of fontsize to offset label from axis
@@ -2137,6 +2167,9 @@ plots.getSubplots = function(gd,ax) {
 
     // look for subplots in the data
     (data||[]).forEach(function(d) {
+        // allow users to include x1 and y1 but convert to x and y
+        if(d.xaxis=='x1') { d.xaxis = 'x'; }
+        if(d.yaxis=='y1') { d.yaxis = 'y'; }
         var xid = (d.xaxis||'x'),
             yid = (d.yaxis||'y'),
             subplot = xid+yid;
@@ -2145,6 +2178,12 @@ plots.getSubplots = function(gd,ax) {
 
     // look for subplots in the axes/anchors, so that we at least draw all axes
     Plotly.Axes.list(gd).forEach(function(ax2) {
+        // one more place to convert x1,y1 to x,y
+        if(ax2.anchor=='x1') { ax2.anchor = 'x'; }
+        if(ax2.anchor=='y1') { ax2.anchor = 'y'; }
+        if(ax2.overlaying=='x1') { ax2.overlaying = 'x'; }
+        if(ax2.overlaying=='y1') { ax2.overlaying = 'y'; }
+
         if(!ax2._id) { Plotly.Axes.initAxis(gd,ax2); }
         var ax2letter = ax2._id.charAt(0),
             ax3id = ax2.anchor=='free' ? {x:'y',y:'x'}[ax2letter] : ax2.anchor,
@@ -2185,9 +2224,19 @@ plots.getSubplots = function(gd,ax) {
 };
 
 // graphJson - jsonify the graph data and layout
+// dataonly=true will omit layout and any arrays that aren't data
+//      (note that we have to do this on the server side too)
+// mode: see stripObj below
 plots.graphJson = function(gd, dataonly, mode){
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
-    var obj = { data:(gd.data||[]).map(function(v){ return stripObj(v,mode); }) };
+    var obj = {
+        data:(gd.data||[]).map(function(v){
+            var d = stripObj(v,mode);
+            // fit has some little arrays in it that don't contain data, just fit params and meta
+            if(dataonly) { delete d.fit; }
+            return d;
+        })
+    };
     if(!dataonly) { obj.layout = stripObj(gd.layout,mode); }
 
     if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();

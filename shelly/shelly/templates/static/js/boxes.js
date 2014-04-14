@@ -67,6 +67,11 @@ boxes.calc = function(gd,gdc) {
         p.lo = 4*p.q1-3*p.q3;
         p.uo = 4*p.q3-3*p.q1;
     });
+
+    // remove empty bins
+    cd = cd.filter(function(p){ return p.y && p.y.length; });
+    if(!cd.length) { return [{t:{emptybox:true}}]; }
+
     cd[0].t = {boxnum: gd.numboxes, dx: dx};
     gd.numboxes++;
     return cd;
@@ -80,7 +85,7 @@ boxes.setPositions = function(gd,plotinfo) {
         maxPad = 0;
     gd.calcdata.forEach(function(cd,i) {
         var t=cd[0].t;
-        if(t.visible!==false && t.type=='box' &&
+        if(t.visible!==false && !t.emptybox && t.type=='box' &&
           (t.xaxis||'x')==xa._id && (t.yaxis||'y')==ya._id) {
             boxlist.push(i);
             if(t.boxpts!==false) {
@@ -131,7 +136,7 @@ boxes.plot = function(gd,plotinfo,cdbox) {
             // box center offset
             bx = group ? 2*t.dx*(-0.5+(t.boxnum+0.5)/gd.numboxes)*(1-gl.boxgap) : 0,
             wdx = bdx*t.ww; // whisker width
-        if(t.visible===false) { d3.select(this).remove(); return; }
+        if(t.visible===false || t.emptybox) { d3.select(this).remove(); return; }
         // save the box size and box position for use by hover
         t.bx = bx;
         t.bdx = bdx;
