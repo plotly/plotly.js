@@ -269,6 +269,16 @@ plots.newTab = function(divid, layout) {
     makePlotFramework(divid, layout);
 };
 
+// in some cases the browser doesn't seem to know how big the text is at first,
+// so it needs to draw it, then wait a little, then draw it again
+plots.redrawText = function(gd) {
+    setTimeout(function(){
+        Plotly.Annotations.drawAll(gd);
+        Plotly.Legend.draw(gd,gd.layout.showlegend);
+        gd.calcdata.forEach(function(d){if(d[0]&&d[0].t&&d[0].t.cb) { d[0].t.cb(); }});
+    },300);
+};
+
 function makeToolMenu(divid) {
     // Get the container div: we will store all variables for this plot as
     // properties of this div (for extension to multiple plots/tabs per page)
