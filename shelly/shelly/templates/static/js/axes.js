@@ -950,7 +950,7 @@ axes.tickText = function(ax, x, hover){
         // don't add an exponent to zero if we're showing all exponents
         // so the only reason you'd show an exponent on zero is if it's the
         // ONLY tick to get an exponent (first or last)
-        if(ax.showexponent=='all' && Math.abs(x/dt)<1e-6) { hideexp = true; }
+        if(ax.showexponent=='all' && Math.abs(x/dt)<1e-6) { hideexp = 'hide'; }
         tt=numFormat(x,ax,hideexp,hover);
     }
     // if 9's are printed on log scale, move the 10's away a bit
@@ -978,7 +978,7 @@ SIPREFIXES = ['f','p','n','&mu;','m','','k','M','G','T'];
 function numFormat(v,ax,fmtoverride,hover) {
     var n = (v<0), // negative?
         r = ax._tickround, // max number of digits past decimal point to show
-        fmt = fmtoverride||ax.exponentformat||'e',
+        fmt = fmtoverride||ax.exponentformat||'B',
         d = ax._tickexponent;
     // special case for hover: set exponent just for this value, and
     // add a couple more digits of precision over tick labels

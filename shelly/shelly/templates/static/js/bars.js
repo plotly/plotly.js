@@ -64,18 +64,37 @@ bars.setPositions = function(gd,plotinfo) {
             var dv = Plotly.Lib.distinctVals(pvals),
                 pv2 = dv.vals,
                 barDiff = dv.minDiff;
+
+            // check if all the traces have only independent positions
+            // if so, let them have full width even if mode is group
+            var overlap = false,
+                comparelist = [];
+            if(gl.barmode=='group') {
+                bl1.forEach(function(i) {
+                    if(overlap) { return; }
+                    gd.calcdata[i].forEach(function(v) {
+                        if(overlap) { return; }
+                        comparelist.forEach(function(cp) {
+                            if(Math.abs(v.p-cp)<barDiff) { overlap = true; }
+                        });
+                    });
+                    if(overlap) { return; }
+                    gd.calcdata[i].forEach(function(v) { comparelist.push(v.p); });
+                });
+            }
+
             // check forced minimum dtick
-            Plotly.Axes.minDtick(pa,barDiff,pv2[0],gl.barmode=='group');
+            Plotly.Axes.minDtick(pa,barDiff,pv2[0],overlap);
 
             // position axis autorange - always tight fitting
             Plotly.Axes.expand(pa,pv2,{vpad:barDiff/2});
             // bar widths and position offsets
             barDiff*=(1-gl.bargap);
-            if(gl.barmode=='group') { barDiff/=bl.length; }
+            if(overlap) { barDiff/=bl.length; }
             for(var i=0; i<bl1.length; i++){
                 var t=gd.calcdata[bl1[i]][0].t;
                 t.barwidth = barDiff*(1-gl.bargroupgap);
-                t.poffset = (((gl.barmode=='group') ? (2*i+1-bl1.length)*barDiff : 0 ) - t.barwidth)/2;
+                t.poffset = ((overlap ? (2*i+1-bl1.length)*barDiff : 0 ) - t.barwidth)/2;
                 t.dbar = dv.minDiff;
             }
         }

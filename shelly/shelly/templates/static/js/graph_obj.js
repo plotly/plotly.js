@@ -269,6 +269,16 @@ plots.newTab = function(divid, layout) {
     makePlotFramework(divid, layout);
 };
 
+// in some cases the browser doesn't seem to know how big the text is at first,
+// so it needs to draw it, then wait a little, then draw it again
+plots.redrawText = function(gd) {
+    setTimeout(function(){
+        Plotly.Annotations.drawAll(gd);
+        Plotly.Legend.draw(gd,gd.layout.showlegend);
+        gd.calcdata.forEach(function(d){if(d[0]&&d[0].t&&d[0].t.cb) { d[0].t.cb(); }});
+    },300);
+};
+
 function makeToolMenu(divid) {
     // Get the container div: we will store all variables for this plot as
     // properties of this div (for extension to multiple plots/tabs per page)
@@ -707,9 +717,8 @@ Plotly.plot = function(gd, data, layout) {
                 Plotly.Lib.markTime('done heatmap '+i);
             }
             else {
-                // in case this one was a heatmap previously, remove it and its colorbar
-                $(gd).find('.hm'+i).remove();
-                $(gd).find('.cb'+i).remove();
+                // in case this one was a heatmap or contour map previously, remove it and its colorbar
+                gl._paper.selectAll('.hm'+i+',.contour'+i+',.cb'+i).remove();
 
                 if(plots.isBar(type)) { cdbar.push(cd); }
                 else if(type=='box') { cdbox.push(cd); }
@@ -2275,7 +2284,7 @@ function stripObj(d,mode) {
         }
         // OK, we're including this... recurse into objects, copy arrays
         if($.isPlainObject(d[v])) { o[v] = stripObj(d[v],mode); }
-        else if($.isArray(d[v])) { o[v] = d[v].map(s2); }
+        else if($.isArray(d[v])) { if (d[v].length) {o[v] = d[v].map(s2);} }
         // convert native dates to date strings... mostly for external users exporting to plotly
         else if(d[v] && d[v].getTime) { o[v] = Plotly.Lib.ms2DateTime(d[v]); }
         else { o[v] = d[v]; }
