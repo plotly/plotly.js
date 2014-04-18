@@ -847,7 +847,7 @@ plots.setStyles = function(gd, merge_dflt) {
                 delete gdc.error_y.opacity;
             }
             mergeattr('error_y.color','ye_clr', plots.isBar(t.type) ? '#444' : defaultColor);
-            mergeattr('error_y.thickness','ye_tkns', 1);
+            mergeattr('error_y.thickness','ye_tkns', 2);
             mergeattr('error_y.width','ye_w', 4);
         }
         if(xevis){
@@ -857,7 +857,7 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('error_x.copy_ystyle','xe_ystyle',(gdc.error_x.color||gdc.error_x.thickness||gdc.error_x.width)?false:true);
             var xsLetter = t.xe_ystyle!==false ? 'y' : 'x';
             mergeattr('error_'+xsLetter+'.color','xe_clr', plots.isBar(t.type) ? '#444' : defaultColor);
-            mergeattr('error_'+xsLetter+'.thickness','xe_tkns', 1);
+            mergeattr('error_'+xsLetter+'.thickness','xe_tkns', 2);
             mergeattr('error_'+xsLetter+'.width','xe_w', 4);
         }
         if(['scatter','box'].indexOf(type)!=-1){
