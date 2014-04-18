@@ -2305,7 +2305,7 @@ function stripObj(d,mode) {
         }
         // OK, we're including this... recurse into objects, copy arrays
         if($.isPlainObject(d[v])) { o[v] = stripObj(d[v],mode); }
-        else if($.isArray(d[v])) { o[v] = d[v].map(s2); }
+        else if($.isArray(d[v])) { if (d[v].length) {o[v] = d[v].map(s2);} }
         // convert native dates to date strings... mostly for external users exporting to plotly
         else if(d[v] && d[v].getTime) { o[v] = Plotly.Lib.ms2DateTime(d[v]); }
         else { o[v] = d[v]; }
