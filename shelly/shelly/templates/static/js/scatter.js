@@ -97,8 +97,8 @@ scatter.calc = function(gd,gdc) {
 };
 
 scatter.selectMarkers = function(gd,plotinfo,cdscatter) {
-    var xr = plotinfo.x.range.map(plotinfo.x.l2c).sort(),
-        yr = plotinfo.y.range.map(plotinfo.y.l2c).sort();
+    var xr = d3.extent(plotinfo.x.range.map(plotinfo.x.l2c)),
+        yr = d3.extent(plotinfo.y.range.map(plotinfo.y.l2c));
 
     cdscatter.forEach(function(d) {
         // if marker.maxdisplayed is used, select a maximum of
@@ -118,7 +118,7 @@ scatter.selectMarkers = function(gd,plotinfo,cdscatter) {
         var i0 = Math.round(tnum*inc/3 + Math.floor(tnum/3)*inc/7.1);
         // for error bars: save in cd which markers to show so we don't have to repeat this
         d.forEach(function(v){ delete v.vis; });
-        cd.forEach(function(v,i) { if((i+i0)%inc===0) { v.vis = true; } });
+        cd.forEach(function(v,i) { if(Math.round((i+i0)%inc)===0) { v.vis = true; } });
     });
 
 
