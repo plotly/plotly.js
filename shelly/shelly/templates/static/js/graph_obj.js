@@ -664,13 +664,14 @@ Plotly.plot = function(gd, data, layout) {
 
         Plotly.Lib.markTime('done with bar/box adjustments');
 
-        // autorange for errorbars
-        Plotly.Axes.list(gd,'y')
-            .filter(function(ya){ return ya.autorange; })
-            .forEach(function(ya) {
-                Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd,ya),{padded:true});
-            });
-        Plotly.Lib.markTime('done Plotly.ErrorBars.ydr');
+        // calc and autorange for errorbars
+        Plotly.ErrorBars.calc(gd);
+        // Plotly.Axes.list(gd,'y')
+        //     .filter(function(ya){ return ya.autorange; })
+        //     .forEach(function(ya) {
+        //         Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd,ya),{padded:true});
+        //     });
+        Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
 
         // autorange for annotations
         Plotly.Annotations.calcAutorange(gd);
@@ -829,17 +830,35 @@ plots.setStyles = function(gd, merge_dflt) {
         mergeattr('text','tx','');
         mergeattr('name','name','trace '+c);
         mergeattr('error_y.visible','ye_vis',false);
+        mergeattr('error_x.visible','xe_vis',false);
         t.xaxis = gdc.xaxis||'x'; // mergeattr is unnecessary and insufficient here, because '' shouldn't count as existing
         t.yaxis = gdc.yaxis||'y';
-        var type = t.type; // like 'bar'
-        if( (gdc.error_y && gdc.error_y.visible ) ){
+        var type = t.type, // like 'bar'
+            xevis = gdc.error_x && gdc.error_x.visible,
+            yevis = gdc.error_y && gdc.error_y.visible;
+        if(yevis){
             mergeattr('error_y.type','ye_type','percent');
             mergeattr('error_y.value','ye_val',10);
             mergeattr('error_y.traceref','ye_tref',0);
+            if('opacity' in gdc.error_y) { // for backward compatibility - error_y.opacity has been removed
+                var ye_clr = gdc.error_y.color || (plots.isBar(t.type) ? '#444' : defaultColor);
+                gdc.error_y.color = Plotly.Drawing.addOpacity(Plotly.Drawing.rgb(ye_clr),
+                    Plotly.Drawing.opacity(ye_clr)*gdc.error_y.opacity);
+                delete gdc.error_y.opacity;
+            }
             mergeattr('error_y.color','ye_clr', plots.isBar(t.type) ? '#444' : defaultColor);
-            mergeattr('error_y.thickness','ye_tkns',1);
-            mergeattr('error_y.width','ye_w',4);
-            mergeattr('error_y.opacity','ye_op',1);
+            mergeattr('error_y.thickness','ye_tkns', 2);
+            mergeattr('error_y.width','ye_w', 4);
+        }
+        if(xevis){
+            mergeattr('error_x.type','xe_type','percent');
+            mergeattr('error_x.value','xe_val',10);
+            mergeattr('error_x.traceref','xe_tref',0);
+            mergeattr('error_x.copy_ystyle','xe_ystyle',(gdc.error_x.color||gdc.error_x.thickness||gdc.error_x.width)?false:true);
+            var xsLetter = t.xe_ystyle!==false ? 'y' : 'x';
+            mergeattr('error_'+xsLetter+'.color','xe_clr', plots.isBar(t.type) ? '#444' : defaultColor);
+            mergeattr('error_'+xsLetter+'.thickness','xe_tkns', 2);
+            mergeattr('error_'+xsLetter+'.width','xe_w', 4);
         }
         if(['scatter','box'].indexOf(type)!=-1){
             mergeattr('line.color','lc',gdc.marker.color || defaultColor);
@@ -1038,14 +1057,16 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // because .calc() is where the autorange gets determined
     // TODO: could we break this out as well?
     var autorange_attr = [
-        'marker.size','textfont.size','textposition','error_y.width',
+        'marker.size','textfont.size','textposition',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array',
+        'error_x.visible','error_x.value','error_x.type','error_x.traceref','error_x.array',
         'boxpoints','jitter','pointpos','whiskerwidth','boxmean'
     ];
     // replot_attr attributes need a replot (because different objects need to be made) but not a recalc
     var replot_attr = [
         'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth',
-        'contours.start','contours.end','contours.size','contours.showlines','line.smoothing'
+        'contours.start','contours.end','contours.size','contours.showlines','line.smoothing',
+        'error_y.width','error_x.width'
     ];
     // these ones show up in restyle because they make more sense in the style
     // box, but they're graph-wide attributes, so set in gd.layout
@@ -2284,7 +2305,7 @@ function stripObj(d,mode) {
         }
         // OK, we're including this... recurse into objects, copy arrays
         if($.isPlainObject(d[v])) { o[v] = stripObj(d[v],mode); }
-        else if($.isArray(d[v])) { o[v] = d[v].map(s2); }
+        else if($.isArray(d[v])) { if (d[v].length) {o[v] = d[v].map(s2);} }
         // convert native dates to date strings... mostly for external users exporting to plotly
         else if(d[v] && d[v].getTime) { o[v] = Plotly.Lib.ms2DateTime(d[v]); }
         else { o[v] = d[v]; }
