@@ -732,6 +732,10 @@ Plotly.plot = function(gd, data, layout) {
         Plotly.Bars.plot(gd,plotinfo,cdbar);
         Plotly.Lib.markTime('done bars');
 
+        // we need to select which markers to draw on a scatter plot
+        // before the error bars are drawn so they know too!
+        Plotly.Scatter.selectMarkers(gd,plotinfo,cdscatter);
+
         // DRAW ERROR BARS for bar and scatter plots
         // these come after (on top of) bars, and before (behind) scatter
         Plotly.ErrorBars.plot(gd,plotinfo,cdbar.concat(cdscatter));
@@ -860,6 +864,7 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('error_'+xsLetter+'.thickness','xe_tkns', 2);
             mergeattr('error_'+xsLetter+'.width','xe_w', 4);
         }
+
         if(['scatter','box'].indexOf(type)!=-1){
             mergeattr('line.color','lc',gdc.marker.color || defaultColor);
             mergeattr('line.width','lw',2);
@@ -871,23 +876,10 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('marker.line.width','mlw',$.isArray(gdc.marker.size) ? 1 : 0);
             mergeattr('fill','fill','none');
             mergeattr('fillcolor','fc',Plotly.Drawing.addOpacity(t.lc,0.5));
-            if($.isArray(gdc.marker.size)) {
-                mergeattr('marker.sizeref','msr',1);
-                mergeattr('marker.sizemode','msm','diameter');
-            }
             // even if sizeref and sizemode are set, don't use them outside bubble charts
-            else {
-                t.msr=1;
-                t.msm = 'diameter';
-            }
-            mergeattr('marker.colorscale','mscl',Plotly.defaultColorscale,true);
-            mergeattr('marker.cauto','mcauto',true);
-            mergeattr('marker.cmax','mcmax',10);
-            mergeattr('marker.cmin','mcmin',-10);
-            mergeattr('marker.line.colorscale','mlscl',Plotly.defaultColorscale,true);
-            mergeattr('marker.line.cauto','mlcauto',true);
-            mergeattr('marker.line.cmax','mlcmax',10);
-            mergeattr('marker.line.cmin','mlcmin',-10);
+            t.msr=1;
+            t.msm = 'diameter';
+
             if(type==='scatter') {
                 var defaultMode = 'lines';
                 if(cd.length<Plotly.Scatter.PTS_LINESONLY || (typeof gdc.mode != 'undefined')) {
@@ -906,6 +898,19 @@ plots.setStyles = function(gd, merge_dflt) {
                     }
                 }
                 mergeattr('mode','mode',defaultMode);
+                mergeattr('marker.maxdisplayed','mnum',0);
+                if($.isArray(gdc.marker.size)) {
+                    mergeattr('marker.sizeref','msr',1);
+                    mergeattr('marker.sizemode','msm','diameter');
+                }
+                mergeattr('marker.colorscale','mscl',Plotly.defaultColorscale,true);
+                mergeattr('marker.cauto','mcauto',true);
+                mergeattr('marker.cmax','mcmax',10);
+                mergeattr('marker.cmin','mcmin',-10);
+                mergeattr('marker.line.colorscale','mlscl',Plotly.defaultColorscale,true);
+                mergeattr('marker.line.cauto','mlcauto',true);
+                mergeattr('marker.line.cmax','mlcmax',10);
+                mergeattr('marker.line.cmin','mlcmin',-10);
                 mergeattr('line.dash','ld','solid');
                 mergeattr('textposition','tp','middle center');
                 mergeattr('textfont.size','ts',gd.layout.font.size);
@@ -1066,7 +1071,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     var replot_attr = [
         'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth',
         'contours.start','contours.end','contours.size','contours.showlines','line.smoothing',
-        'error_y.width','error_x.width'
+        'error_y.width','error_x.width','marker.maxdisplayed'
     ];
     // these ones show up in restyle because they make more sense in the style
     // box, but they're graph-wide attributes, so set in gd.layout
