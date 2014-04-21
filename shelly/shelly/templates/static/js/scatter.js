@@ -96,6 +96,34 @@ scatter.calc = function(gd,gdc) {
     return cd;
 };
 
+scatter.selectMarkers = function(gd,plotinfo,cdscatter) {
+    var xr = d3.extent(plotinfo.x.range.map(plotinfo.x.l2c)),
+        yr = d3.extent(plotinfo.y.range.map(plotinfo.y.l2c));
+
+    cdscatter.forEach(function(d) {
+        // if marker.maxdisplayed is used, select a maximum of
+        // mnum markers to show, from the set that are in the viewport
+        var mnum = d[0].t.mnum;
+        if(!(mnum>0) || d[0].t.mode.indexOf('markers')==-1) { return; } // TODO: remove some as we get away from the viewport
+
+        var cd = d.filter(function(v) { return v.x>=xr[0] && v.x<=xr[1] && v.y>=yr[0] && v.y<=yr[1]; }),
+            inc = Math.ceil(cd.length/mnum),
+            tnum = 0;
+        cdscatter.forEach(function(cdi) {
+            if(cdi[0].t.mnum>0 && cdi[0].t.curve<d[0].t.curve) { tnum++; }
+        });
+        // if multiple traces use maxdisplayed, stagger which markers we display
+        // this formula offsets successive traces by 1/3 of the increment, adding
+        // an extra small amount after each triplet so it's not quite periodic
+        var i0 = Math.round(tnum*inc/3 + Math.floor(tnum/3)*inc/7.1);
+        // for error bars: save in cd which markers to show so we don't have to repeat this
+        d.forEach(function(v){ delete v.vis; });
+        cd.forEach(function(v,i) { if(Math.round((i+i0)%inc)===0) { v.vis = true; } });
+    });
+
+
+};
+
 scatter.plot = function(gd,plotinfo,cdscatter) {
     var xa = plotinfo.x,
         ya = plotinfo.y;
@@ -360,6 +388,10 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
     //     }
     // }
 
+    function visFilter(d){
+        return d.filter(function(v){ return v.vis; });
+    }
+
     scattertraces.append('g')
         .attr('class','points')
         .each(function(d){
@@ -371,7 +403,7 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
             else {
                 if(showMarkers) {
                     s.selectAll('path')
-                        .data(Plotly.Lib.identity)
+                        .data(t.mnum>0 ? visFilter : Plotly.Lib.identity)
                         .enter().append('path')
                         .call(Plotly.Drawing.translatePoints,xa,ya);
                     // decimated version commented out for now
