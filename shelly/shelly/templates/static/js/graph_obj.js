@@ -405,6 +405,10 @@ Plotly.plot = function(gd, data, layout) {
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
+    // hook class for plots main container (in case of plotly.js this won't be #embedded-graph or .js-tab-contents)
+    // almost nobody actually needs this anymore, but just to be safe...
+    d3.select(gd).classed('js-plotly-plot',true);
+
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
@@ -1570,11 +1574,10 @@ plots.resize = function(gd) {
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
     // Get the container div: we will store all variables as properties of this div
-    // (for extension to multiple graphs per page)
+    // (f[or extension to multiple graphs per page)
     // some callers send this in already by dom element
 
     var gd = (typeof divid == 'string') ? document.getElementById(divid) : divid,
-        $gd = $(gd),
         gd3 = d3.select(gd);
 
     // test if this is on the main site or embedded
@@ -1582,7 +1585,7 @@ function makePlotFramework(divid, layout) {
 
     // hook class for plots main container (in case of plotly.js this won't be #embedded-graph or .js-tab-contents)
     // almost nobody actually needs this anymore, but just to be safe...
-    $gd.addClass('js-plotly-plot');
+    gd3.classed('js-plotly-plot',true);
 
     function addDefaultAxis(container, axname) {
         var axid = axname.replace('axis','');
