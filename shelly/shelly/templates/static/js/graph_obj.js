@@ -272,6 +272,7 @@ plots.newTab = function(divid, layout) {
 // in some cases the browser doesn't seem to know how big the text is at first,
 // so it needs to draw it, then wait a little, then draw it again
 plots.redrawText = function(gd) {
+    if(gd.data && gd.data[0] && gd.data[0].r){ return; } // doesn't work presently (and not needed) for polar
     setTimeout(function(){
         Plotly.Annotations.drawAll(gd);
         Plotly.Legend.draw(gd,gd.layout.showlegend);
@@ -404,6 +405,10 @@ Plotly.plot = function(gd, data, layout) {
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
+
+    // hook class for plots main container (in case of plotly.js this won't be #embedded-graph or .js-tab-contents)
+    // almost nobody actually needs this anymore, but just to be safe...
+    d3.select(gd).classed('js-plotly-plot',true);
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-array (null, '', whatever) for data
@@ -664,13 +669,14 @@ Plotly.plot = function(gd, data, layout) {
 
         Plotly.Lib.markTime('done with bar/box adjustments');
 
-        // autorange for errorbars
-        Plotly.Axes.list(gd,'y')
-            .filter(function(ya){ return ya.autorange; })
-            .forEach(function(ya) {
-                Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd,ya),{padded:true});
-            });
-        Plotly.Lib.markTime('done Plotly.ErrorBars.ydr');
+        // calc and autorange for errorbars
+        Plotly.ErrorBars.calc(gd);
+        // Plotly.Axes.list(gd,'y')
+        //     .filter(function(ya){ return ya.autorange; })
+        //     .forEach(function(ya) {
+        //         Plotly.Axes.expand(ya,Plotly.ErrorBars.ydr(gd,ya),{padded:true});
+        //     });
+        Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
 
         // autorange for annotations
         Plotly.Annotations.calcAutorange(gd);
@@ -730,6 +736,10 @@ Plotly.plot = function(gd, data, layout) {
         plotinfo.plot.selectAll('g.trace').remove();
         Plotly.Bars.plot(gd,plotinfo,cdbar);
         Plotly.Lib.markTime('done bars');
+
+        // we need to select which markers to draw on a scatter plot
+        // before the error bars are drawn so they know too!
+        Plotly.Scatter.selectMarkers(gd,plotinfo,cdscatter);
 
         // DRAW ERROR BARS for bar and scatter plots
         // these come after (on top of) bars, and before (behind) scatter
@@ -829,18 +839,37 @@ plots.setStyles = function(gd, merge_dflt) {
         mergeattr('text','tx','');
         mergeattr('name','name','trace '+c);
         mergeattr('error_y.visible','ye_vis',false);
+        mergeattr('error_x.visible','xe_vis',false);
         t.xaxis = gdc.xaxis||'x'; // mergeattr is unnecessary and insufficient here, because '' shouldn't count as existing
         t.yaxis = gdc.yaxis||'y';
-        var type = t.type; // like 'bar'
-        if( (gdc.error_y && gdc.error_y.visible ) ){
+        var type = t.type, // like 'bar'
+            xevis = gdc.error_x && gdc.error_x.visible,
+            yevis = gdc.error_y && gdc.error_y.visible;
+        if(yevis){
             mergeattr('error_y.type','ye_type','percent');
             mergeattr('error_y.value','ye_val',10);
             mergeattr('error_y.traceref','ye_tref',0);
+            if('opacity' in gdc.error_y) { // for backward compatibility - error_y.opacity has been removed
+                var ye_clr = gdc.error_y.color || (plots.isBar(t.type) ? '#444' : defaultColor);
+                gdc.error_y.color = Plotly.Drawing.addOpacity(Plotly.Drawing.rgb(ye_clr),
+                    Plotly.Drawing.opacity(ye_clr)*gdc.error_y.opacity);
+                delete gdc.error_y.opacity;
+            }
             mergeattr('error_y.color','ye_clr', plots.isBar(t.type) ? '#444' : defaultColor);
-            mergeattr('error_y.thickness','ye_tkns',1);
-            mergeattr('error_y.width','ye_w',4);
-            mergeattr('error_y.opacity','ye_op',1);
+            mergeattr('error_y.thickness','ye_tkns', 2);
+            mergeattr('error_y.width','ye_w', 4);
         }
+        if(xevis){
+            mergeattr('error_x.type','xe_type','percent');
+            mergeattr('error_x.value','xe_val',10);
+            mergeattr('error_x.traceref','xe_tref',0);
+            mergeattr('error_x.copy_ystyle','xe_ystyle',(gdc.error_x.color||gdc.error_x.thickness||gdc.error_x.width)?false:true);
+            var xsLetter = t.xe_ystyle!==false ? 'y' : 'x';
+            mergeattr('error_'+xsLetter+'.color','xe_clr', plots.isBar(t.type) ? '#444' : defaultColor);
+            mergeattr('error_'+xsLetter+'.thickness','xe_tkns', 2);
+            mergeattr('error_'+xsLetter+'.width','xe_w', 4);
+        }
+
         if(['scatter','box'].indexOf(type)!=-1){
             mergeattr('line.color','lc',gdc.marker.color || defaultColor);
             mergeattr('line.width','lw',2);
@@ -852,23 +881,10 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('marker.line.width','mlw',$.isArray(gdc.marker.size) ? 1 : 0);
             mergeattr('fill','fill','none');
             mergeattr('fillcolor','fc',Plotly.Drawing.addOpacity(t.lc,0.5));
-            if($.isArray(gdc.marker.size)) {
-                mergeattr('marker.sizeref','msr',1);
-                mergeattr('marker.sizemode','msm','diameter');
-            }
             // even if sizeref and sizemode are set, don't use them outside bubble charts
-            else {
-                t.msr=1;
-                t.msm = 'diameter';
-            }
-            mergeattr('marker.colorscale','mscl',Plotly.defaultColorscale,true);
-            mergeattr('marker.cauto','mcauto',true);
-            mergeattr('marker.cmax','mcmax',10);
-            mergeattr('marker.cmin','mcmin',-10);
-            mergeattr('marker.line.colorscale','mlscl',Plotly.defaultColorscale,true);
-            mergeattr('marker.line.cauto','mlcauto',true);
-            mergeattr('marker.line.cmax','mlcmax',10);
-            mergeattr('marker.line.cmin','mlcmin',-10);
+            t.msr=1;
+            t.msm = 'diameter';
+
             if(type==='scatter') {
                 var defaultMode = 'lines';
                 if(cd.length<Plotly.Scatter.PTS_LINESONLY || (typeof gdc.mode != 'undefined')) {
@@ -887,6 +903,19 @@ plots.setStyles = function(gd, merge_dflt) {
                     }
                 }
                 mergeattr('mode','mode',defaultMode);
+                mergeattr('marker.maxdisplayed','mnum',0);
+                if($.isArray(gdc.marker.size)) {
+                    mergeattr('marker.sizeref','msr',1);
+                    mergeattr('marker.sizemode','msm','diameter');
+                }
+                mergeattr('marker.colorscale','mscl',Plotly.defaultColorscale,true);
+                mergeattr('marker.cauto','mcauto',true);
+                mergeattr('marker.cmax','mcmax',10);
+                mergeattr('marker.cmin','mcmin',-10);
+                mergeattr('marker.line.colorscale','mlscl',Plotly.defaultColorscale,true);
+                mergeattr('marker.line.cauto','mlcauto',true);
+                mergeattr('marker.line.cmax','mlcmax',10);
+                mergeattr('marker.line.cmin','mlcmin',-10);
                 mergeattr('line.dash','ld','solid');
                 mergeattr('textposition','tp','middle center');
                 mergeattr('textfont.size','ts',gd.layout.font.size);
@@ -1038,14 +1067,16 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // because .calc() is where the autorange gets determined
     // TODO: could we break this out as well?
     var autorange_attr = [
-        'marker.size','textfont.size','textposition','error_y.width',
+        'marker.size','textfont.size','textposition',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array',
+        'error_x.visible','error_x.value','error_x.type','error_x.traceref','error_x.array',
         'boxpoints','jitter','pointpos','whiskerwidth','boxmean'
     ];
     // replot_attr attributes need a replot (because different objects need to be made) but not a recalc
     var replot_attr = [
         'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth',
-        'contours.start','contours.end','contours.size','contours.showlines','line.smoothing'
+        'contours.start','contours.end','contours.size','contours.showlines','line.smoothing',
+        'error_y.width','error_x.width','marker.maxdisplayed'
     ];
     // these ones show up in restyle because they make more sense in the style
     // box, but they're graph-wide attributes, so set in gd.layout
@@ -1544,11 +1575,10 @@ plots.resize = function(gd) {
 // -------------------------------------------------------
 function makePlotFramework(divid, layout) {
     // Get the container div: we will store all variables as properties of this div
-    // (for extension to multiple graphs per page)
+    // (f[or extension to multiple graphs per page)
     // some callers send this in already by dom element
 
     var gd = (typeof divid == 'string') ? document.getElementById(divid) : divid,
-        $gd = $(gd),
         gd3 = d3.select(gd);
 
     // test if this is on the main site or embedded
@@ -1556,7 +1586,7 @@ function makePlotFramework(divid, layout) {
 
     // hook class for plots main container (in case of plotly.js this won't be #embedded-graph or .js-tab-contents)
     // almost nobody actually needs this anymore, but just to be safe...
-    $gd.addClass('js-plotly-plot');
+    gd3.classed('js-plotly-plot',true);
 
     function addDefaultAxis(container, axname) {
         var axid = axname.replace('axis','');
