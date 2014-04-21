@@ -272,6 +272,7 @@ plots.newTab = function(divid, layout) {
 // in some cases the browser doesn't seem to know how big the text is at first,
 // so it needs to draw it, then wait a little, then draw it again
 plots.redrawText = function(gd) {
+    if(gd.data && gd.data[0] && gd.data[0].r){ return; } // doesn't work presently (and not needed) for polar
     setTimeout(function(){
         Plotly.Annotations.drawAll(gd);
         Plotly.Legend.draw(gd,gd.layout.showlegend);
