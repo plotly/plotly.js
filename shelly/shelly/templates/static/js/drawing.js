@@ -140,7 +140,7 @@ drawing.pointStyle = function(s,t) {
     var colorscales = {m: drawing.tryColorscale(s,t,'m'), ml: drawing.tryColorscale(s,t,'ml'),
                 so: drawing.tryColorscale(s,t,'so'), sol: drawing.tryColorscale(s,t,'sol')};
     s.each(function(d){
-        var a = (d.so) ? 'so' : 'm', // suggested outliers, for box plots
+        var a = (d.so) ? 'so' : 'm', // suspected outliers, for box plots
             lw = a+'lw', c = a+'c', lc = a+'lc',
             w = (d[lw]+1 || t[lw]+1 || (d.t ? d.t[lw] : 0)+1) - 1,
             p = d3.select(this),
