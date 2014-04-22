@@ -46,24 +46,38 @@ boxes.calc = function(gd,gdc) {
         var n = Plotly.Lib.findBin(x[i],bins);
         if(n>=0 && n<l) { pts[n].push(v); }
     });
+
+    // interpolate an array given a (possibly non-integer) index n
+    // clip the ends to the extreme values in the array
+    // special version for box plots: index you get is half a point too high
+    // see http://en.wikipedia.org/wiki/Percentile#Nearest_rank but note
+    // that this definition indexes from 1 rather than 0, so we subtract 1/2 instead of add
+    function interp(arr,n) {
+        n-=0.5;
+        if(n<0) { return arr[0]; }
+        if(n>arr.length-1) { return arr[arr.length-1]; }
+        var frac = n%1;
+        return frac*arr[Math.ceil(n)]+(1-frac)*arr[Math.floor(n)];
+    }
+
     // sort the bins and calculate the stats
     pts.forEach(function(v,i){
         v.sort(function(a,b){ return a-b; });
-        var last = v.length-1, p = cd[i];
+        var l = v.length, p = cd[i];
         p.y = v; // put all points into calcdata
         p.min = v[0];
-        p.max = v[last];
-        p.mean = Plotly.Lib.mean(v,last+1);
-        p.sd = Plotly.Lib.stdev(v,last+1,p.mean);
-        p.q1 = interp(v,(last/4)); // first quartile
-        p.med = interp(v,(last/2)); // median
-        p.q3 = interp(v,(0.75*last)); // third quartile
+        p.max = v[l-1];
+        p.mean = Plotly.Lib.mean(v,l);
+        p.sd = Plotly.Lib.stdev(v,l,p.mean);
+        p.q1 = interp(v,l/4); // first quartile
+        p.med = interp(v,l/2); // median
+        p.q3 = interp(v,0.75*l); // third quartile
         // lower and upper fences - last point inside
         // 1.5 interquartile ranges from quartiles
-        p.lf = Math.min(p.q1,v[Math.min(Plotly.Lib.findBin(2.5*p.q1-1.5*p.q3,v,true)+1,last)]);
+        p.lf = Math.min(p.q1,v[Math.min(Plotly.Lib.findBin(2.5*p.q1-1.5*p.q3,v,true)+1,l-1)]);
         p.uf = Math.max(p.q3,v[Math.max(Plotly.Lib.findBin(2.5*p.q3-1.5*p.q1,v),0)]);
         // lower and upper outliers - 3 IQR out (don't clip to max/min,
-        // this is only for discriminating suggested & far outliers)
+        // this is only for discriminating suspected & far outliers)
         p.lo = 4*p.q1-3*p.q3;
         p.uo = 4*p.q3-3*p.q1;
     });
@@ -179,8 +193,8 @@ boxes.plot = function(gd,plotinfo,cdbox) {
                     return pts.map(function(v){
                         var xo = (t.jitter ? t.jitter*(Math.random()-0.5)*2 : 0)+t.ptpos,
                             p = {x:d.x+xo*bdx+bx,y:v,t:t};
-                        // tag suggested outliers
-                        if(t.boxpts!='all' && v<d.uo && v>d.lo) { p.so=true; }
+                        // tag suspected outliers
+                        if(t.boxpts=='suspectedoutliers' && v<d.uo && v>d.lo) { p.so=true; }
                         return p;
                     });
                 })
@@ -230,14 +244,5 @@ boxes.style = function(s) {
                     .call(Plotly.Drawing.textPointStyle,t);
             });
 };
-
-// interpolate an array given a (possibly non-integer) index n
-// clip the ends to the extreme values in the array
-function interp(arr,n) {
-    if(n<0) { return arr[0]; }
-    if(n>arr.length-1) { return arr[arr.length-1]; }
-    var frac = n%1;
-    return frac*arr[Math.ceil(n)]+(1-frac)*arr[Math.floor(n)];
-}
 
 }()); // end Boxes object definition
