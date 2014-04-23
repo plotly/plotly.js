@@ -179,7 +179,16 @@ heatmap.calc = function(gd,gdc) {
         dx = gdc.dx||1;
         y0 = gdc.y0||0;
         dy = gdc.dy||1;
-        z = gdc.z.map(function(row){return row.map(function(v) { if(!v && v!==0) { return null; } return Number(v); }); });
+        if(gdc.transpose) {
+            var maxcols = Plotly.Lib.aggNums(Math.max,0,gdc.z.map(function(r){return r.length;}));
+            z = [];
+            for(var c=0; c<maxcols; c++) {
+                var newrow = [];
+                for(var r=0; r<gdc.z.length; r++) { newrow.push(cleanZ(gdc.z[r][c])); }
+                z.push(newrow);
+            }
+        }
+        else { z = gdc.z.map(function(row){return row.map(cleanZ); }); }
     }
 
     // check whether we really can smooth (ie all boxes are about the same size)
@@ -252,6 +261,10 @@ heatmap.calc = function(gd,gdc) {
     // this is gd.calcdata for the heatmap (other attributes get added by setStyles)
     return [cd];
 };
+
+function cleanZ(v) {
+    if(!v && v!==0) { return null; } return Number(v);
+}
 
 function makeBoundArray(type,array_in,v0_in,dv_in,numbricks,ax) {
     var array_out = [], v0, dv, i;

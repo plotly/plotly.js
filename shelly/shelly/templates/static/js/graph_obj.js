@@ -1132,6 +1132,9 @@ Plotly.restyle = function(gd,astr,val,traces) {
         xbins = ['xbins.start','xbins.end','xbins.size'],
         ybins = ['xbins.start','xbins.end','xbins.size'];
 
+    // swap x and y of the same attribute in container cont
+    // specify attr with a ? in place of x/y
+    // optionally, use a longer name for each x and y (for axes, like x2<->y3)
     function swap(cont,attr,xname,yname) {
         var xp = Plotly.Lib.nestedProperty(cont,attr.replace('?',xname||'x')),
             yp = Plotly.Lib.nestedProperty(cont,attr.replace('?',yname||'y')),
@@ -1140,6 +1143,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         yp.set(temp);
     }
 
+    // swap all the presentation attributes of the axes this trace is on
     function axswap() {
         var xid = gd.data[traces[0]].xaxis||'x',
             yid = gd.data[traces[0]].yaxis||'y',
@@ -1152,7 +1156,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         axkeylist.forEach(function(attr){ swap(gl,'?.'+attr,xname,yname); });
 
         // now swap x&y for any annotations anchored to these x & y
-        gl.annotations.forEach(function(ann) {
+        (gl.annotations||[]).forEach(function(ann) {
             if(ann.xref==xid && ann.yref==yid) { swap(ann,'?'); }
         });
     }
@@ -1214,6 +1218,14 @@ Plotly.restyle = function(gd,astr,val,traces) {
             }
             else if(['swapxy','swapxyaxes'].indexOf(ai)!=-1) {
                 swap(cont,'?');
+                swap(cont,'?0');
+                swap(cont,'d?');
+                swap(cont,'?bins');
+                swap(cont,'autobin?');
+                if($.isArray(cont.z) && $.isArray(cont.z[0])) {
+                    if(cont.transpose) { delete cont.transpose; }
+                    else { cont.transpose = true; }
+                }
                 swap(cont,'?src');
                 swap(cont,'error_?');
                 if(cont.error_x && cont.error_y) {
