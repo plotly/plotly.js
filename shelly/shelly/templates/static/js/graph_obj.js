@@ -969,7 +969,9 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('zauto','zauto',true);
             mergeattr('zmin','zmin',-10);
             mergeattr('zmax','zmax',10);
+            mergeattr('reversescl','reversescl',false);
             mergeattr('scl', 'scl', Plotly.defaultColorscale,true);
+            if(t.reversescl) { t.scl = t.scl.map(function(si){return [1-si[0],si[1]];}).reverse(); }
             mergeattr('showscale','showscale',true);
             mergeattr('zsmooth', 'zsmooth', false);
 
