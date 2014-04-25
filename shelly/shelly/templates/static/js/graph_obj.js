@@ -979,9 +979,15 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('zauto','zauto',true);
             mergeattr('zmin','zmin',-10);
             mergeattr('zmax','zmax',10);
-            mergeattr('reversescl','reversescl',false);
-            mergeattr('scl', 'scl', Plotly.defaultColorscale,true);
-            if(t.reversescl) { t.scl = t.scl.map(function(si){return [1-si[0],si[1]];}).reverse(); }
+
+            // backward compatibility scl->scale, reversescl->reversescale
+            if('scl' in gdc) { gdc.colorscale = gdc.scl; delete gdc.scl; }
+            if('reversescl' in gdc) { gdc.reversescale = gdc.reversescl; delete gdc.reversescl; }
+
+            mergeattr('colorscale', 'scl', Plotly.defaultColorscale,true);
+            // reverse colorscale: handle this here so we don't have to do it in each plot type and colorbar
+            mergeattr('reversescale','reversescale',false);
+            if(t.reversescale) { t.scl = Plotly.Plots.getScale(t.scl).map(function(si){return [1-si[0],si[1]];}).reverse(); }
             mergeattr('showscale','showscale',true);
             mergeattr('zsmooth', 'zsmooth', false);
 
@@ -1085,7 +1091,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     ];
     // replot_attr attributes need a replot (because different objects need to be made) but not a recalc
     var replot_attr = [
-        'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth',
+        'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','colorscale','reversescale','zsmooth',
         'contours.start','contours.end','contours.size','contours.showlines','line.smoothing',
         'error_y.width','error_x.width','marker.maxdisplayed'
     ];
