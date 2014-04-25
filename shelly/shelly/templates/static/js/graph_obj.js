@@ -969,7 +969,15 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('zauto','zauto',true);
             mergeattr('zmin','zmin',-10);
             mergeattr('zmax','zmax',10);
-            mergeattr('scl', 'scl', Plotly.defaultColorscale,true);
+
+            // backward compatibility scl->scale, reversescl->reversescale
+            if('scl' in gdc) { gdc.colorscale = gdc.scl; delete gdc.scl; }
+            if('reversescl' in gdc) { gdc.reversescale = gdc.reversescl; delete gdc.reversescl; }
+
+            mergeattr('colorscale', 'scl', Plotly.defaultColorscale,true);
+            // reverse colorscale: handle this here so we don't have to do it in each plot type and colorbar
+            mergeattr('reversescale','reversescale',false);
+            if(t.reversescale) { t.scl = Plotly.Plots.getScale(t.scl).map(function(si){return [1-si[0],si[1]];}).reverse(); }
             mergeattr('showscale','showscale',true);
             mergeattr('zsmooth', 'zsmooth', false);
 
@@ -1050,8 +1058,6 @@ Plotly.restyle = function(gd,astr,val,traces) {
         traces=gd.data.map(function(v,i){ return i; });
     }
 
-    // TODO: I'm not entirely sure of the breakdown between recalc, autorange, and replot...
-
     // recalc_attr attributes need a full regeneration of calcdata as well as a replot,
     // because the right objects may not exist, or autorange may need recalculating
     // in principle we generally shouldn't need to redo ALL traces... that's
@@ -1061,7 +1067,8 @@ Plotly.restyle = function(gd,astr,val,traces) {
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis','line.width','showscale','zauto',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
-        'autocontour','ncontours','contours.coloring'
+        'autocontour','ncontours','contours.coloring',
+        'swapxy','swapxyaxes'
     ];
     // autorange_attr attributes need a full redo of calcdata only if an axis is autoranged,
     // because .calc() is where the autorange gets determined
@@ -1074,7 +1081,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     ];
     // replot_attr attributes need a replot (because different objects need to be made) but not a recalc
     var replot_attr = [
-        'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','scl','zsmooth',
+        'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','colorscale','reversescale','zsmooth',
         'contours.start','contours.end','contours.size','contours.showlines','line.smoothing',
         'error_y.width','error_x.width','marker.maxdisplayed'
     ];
@@ -1088,6 +1095,8 @@ Plotly.restyle = function(gd,astr,val,traces) {
     ];
     // these ones may alter the axis type (at least if the first trace is involved)
     var axtype_attr = ['type','x','y','x0','y0','bardir','xaxis','yaxis'];
+    // these ones don't get a regular param.set(), they do other things
+    var indirect_attr = ['swapxy','swapxyaxes'];
     // flags for which kind of update we need to do
     var docalc = false,
         docalc_autorange = false,
@@ -1130,6 +1139,35 @@ Plotly.restyle = function(gd,astr,val,traces) {
     var zscl = ['zmin','zmax'],
         xbins = ['xbins.start','xbins.end','xbins.size'],
         ybins = ['xbins.start','xbins.end','xbins.size'];
+
+    // swap x and y of the same attribute in container cont
+    // specify attr with a ? in place of x/y
+    // optionally, use a longer name for each x and y (for axes, like x2<->y3)
+    function swap(cont,attr,xname,yname) {
+        var xp = Plotly.Lib.nestedProperty(cont,attr.replace('?',xname||'x')),
+            yp = Plotly.Lib.nestedProperty(cont,attr.replace('?',yname||'y')),
+            temp = xp.get();
+        xp.set(yp.get());
+        yp.set(temp);
+    }
+
+    // swap all the presentation attributes of the axes this trace is on
+    function axswap() {
+        var xid = gd.data[traces[0]].xaxis||'x',
+            yid = gd.data[traces[0]].yaxis||'y',
+            xname = Plotly.Axes.getFromId(gd,xid)._name,
+            yname = Plotly.Axes.getFromId(gd,yid)._name,
+            axkeylist = Object.keys(gl[xname]).filter(function(n) {
+                return n.charAt(0)!='_' && (typeof gl[xname][n]!='function') &&
+                    ['anchor','domain','overlaying','position','tickangle'].indexOf(n)==-1;
+            });
+        axkeylist.forEach(function(attr){ swap(gl,'?.'+attr,xname,yname); });
+
+        // now swap x&y for any annotations anchored to these x & y
+        (gl.annotations||[]).forEach(function(ann) {
+            if(ann.xref==xid && ann.yref==yid) { swap(ann,'?'); }
+        });
+    }
 
     // now make the changes to gd.data (and occasionally gd.layout)
     // and figure out what kind of graphics update we need to do
@@ -1183,12 +1221,39 @@ Plotly.restyle = function(gd,astr,val,traces) {
             // save the old value
             undoit[ai][i] = param.get();
             // set the new value - if val is an array, it's one el per trace
-            param.set($.isArray(vi) ? vi[i%vi.length] : vi);
+            if(indirect_attr.indexOf(ai)==-1) {
+                param.set($.isArray(vi) ? vi[i%vi.length] : vi);
+            }
+            else if(['swapxy','swapxyaxes'].indexOf(ai)!=-1) {
+                swap(cont,'?');
+                swap(cont,'?0');
+                swap(cont,'d?');
+                swap(cont,'?bins');
+                swap(cont,'autobin?');
+                if($.isArray(cont.z) && $.isArray(cont.z[0])) {
+                    if(cont.transpose) { delete cont.transpose; }
+                    else { cont.transpose = true; }
+                }
+                swap(cont,'?src');
+                swap(cont,'error_?');
+                if(cont.error_x && cont.error_y) {
+                    var copy_ystyle = ('copy_ystyle' in cont.error_y) ? cont.error_y.copy_ystyle :
+                            ((cont.error_y.color||cont.error_y.thickness||cont.error_y.width)?false:true);
+                    swap(cont,'error_?.copy_ystyle');
+                    if(copy_ystyle) {
+                        swap(cont,'error_?.color');
+                        swap(cont,'error_?.thickness');
+                        swap(cont,'error_?.width');
+                    }
+                }
+            }
         }
+
+        // swap the data attributes of the relevant x and y axes
+        if(ai=='swapxyaxes') { axswap(); }
 
         // check if we need to call axis type
         if((traces.indexOf(0)!=-1) && (axtype_attr.indexOf(ai)!=-1)) {
-            // gd.axtypesok=false;
             Plotly.Axes.clearTypes(gd,traces);
             docalc = true;
         }
