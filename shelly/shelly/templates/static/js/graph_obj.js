@@ -526,6 +526,16 @@ Plotly.plot = function(gd, data, layout) {
 
         return null;
     }
+
+    /*
+     * 3D PLOTTING
+     */
+    else if (data && data[0] && data[0].x && data[0].y && data[0].z ){
+
+
+        return null;
+    }
+
     else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
 
     gd._replotting = true; // so we don't try to re-call Plotly.plot from inside legend and colorbar, if margins changed
