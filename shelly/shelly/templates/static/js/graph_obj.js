@@ -549,7 +549,7 @@ Plotly.plot = function(gd, data, layout) {
         return null;
     }
 ////////////////////////////////  3D   /////////////////////////////////////////////////
-    else if (data && Array.isArray(data[0].z) && Array.isArray(data[0].z[0])) {
+    else if (layout._gl3d === 'surface') {
         /*
          * Surface Plot
          * webgl 3d
@@ -563,11 +563,11 @@ Plotly.plot = function(gd, data, layout) {
         opts.container.innerHTML = '' // obviously this won't work for subplots
         GlContext.newContext(opts, function (glx) {
             var zdata
-            if (data[0].z[0].length  === 0) {
+            if (data[0] && data.z && data.z.length) {
                 // for now default to test data on empty data array
-                zdata = glx.testData('dirac', 80, 120)
-            } else {
                 zdata = data[0].z
+            } else {
+                zdata = glx.testData('dirac', 80, 120)
             }
             var mean = zdata
                        .map( function (row) {
@@ -599,8 +599,7 @@ Plotly.plot = function(gd, data, layout) {
         return void 0
     }
 
-
-    else if (data && data[0].x && data[0].y && data[0].z) {
+    else if (layout._gl3d === 'scatter') {
         /*
          * 3D scatter
          * webgl 3d
