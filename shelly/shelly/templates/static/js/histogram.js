@@ -9,19 +9,19 @@ histogram.calc = function(gd,gdc) {
 
     // depending on bar direction, set position and size axes and data ranges
     var pos = [], size = [], i,
-        pa = Plotly.Axes.getFromId(gd,(gdc.bardir=='h') ? gdc.yaxis||'y' : gdc.xaxis||'x'),
-        maindata = gdc.type.charAt(9),
+        pa = Plotly.Axes.getFromId(gd, gdc.orientation=='h' ? gdc.yaxis||'y' : gdc.xaxis||'x'),
+        maindata = gdc.orientation=='h' ? 'y' : 'x',
         counterdata = {x:'y',y:'x'}[maindata];
 
     // prepare the raw data
-    // pick out x data for histogramx, y for histogramy
     var pos0 = pa.makeCalcdata(gdc,maindata);
     // calculate the bins
-    if((gdc.autobinx!==false) || !('xbins' in gdc)) {
-        gdc.xbins = Plotly.Axes.autoBin(pos0,pa,gdc.nbinsx);
+    if((gdc['autobin'+maindata]!==false) || !(maindata+'bins' in gdc)) {
+        gdc[maindata+'bins'] = Plotly.Axes.autoBin(pos0,pa,gdc['nbins'+maindata]);
     }
-    var allbins = (typeof(gdc.xbins.size)=='string'),
-        bins = allbins ? [] : gdc.xbins,
+    var binspec = gdc[maindata+'bins'],
+        allbins = (typeof(binspec.size)=='string'),
+        bins = allbins ? [] : binspec,
         // make the empty bin array
         i2, n, inc = [], cnt = [], total=0,
         norm = gdc.histnorm||'',
@@ -86,9 +86,9 @@ histogram.calc = function(gd,gdc) {
     }
 
     // create the bins (and any extra arrays needed)
-    i=gdc.xbins.start;
-    while(i<gdc.xbins.end) {
-        i2 = Plotly.Axes.tickIncrement(i,gdc.xbins.size);
+    i=binspec.start;
+    while(i<binspec.end) {
+        i2 = Plotly.Axes.tickIncrement(i,binspec.size);
         pos.push((i+i2)/2);
         size.push(sizeinit);
         // nonuniform bins (like months) we need to search,
