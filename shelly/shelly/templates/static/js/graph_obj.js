@@ -399,6 +399,7 @@ Plotly.plot = function(gd, data, layout) {
 
 //    console.log('plotly.plot', gd, data, layout);
     Plotly.Lib.markTime('in plot');
+
     // Get the container div: we will store all variables for this plot as
     // properties of this div (for extension to multiple plots/tabs per page)
     // some callers send this in by dom element, others by id (string)
@@ -526,15 +527,95 @@ Plotly.plot = function(gd, data, layout) {
 
         return null;
     }
+////////////////////////////////  3D   /////////////////////////////////////////////////
+    else if (data && Array.isArray(data[0].z) && Array.isArray(data[0].z[0])) {
+        /*
+         * Surface Plot
+         * webgl 3d
+         *
+         * Right now triggers on 2D 'z' data
+         * Need to add ndarray interpolation (a mikola module) so we can
+         * also trigger on 'x' 'y' and 'z' data for surfaces
+         *
+         */
+        var opts = {container: gd.querySelector('.svg-container')}
+        opts.container.innerHTML = '' // obviously this won't work for subplots
+        GlContext.newContext(opts, function (glx) {
+            var zdata
+            if (data[0].z[0].length  === 0) {
+                // for now default to test data on empty data array
+                zdata = glx.testData('dirac', 80, 120)
+            } else {
+                zdata = data[0].z
+            }
+            var mean = zdata
+                       .map( function (row) {
+                           return row.reduce( function (p, c) { return p+c } ) / row.length
+                       })
+                       .reduce( function (p, c) { return p+c } ) / zdata.length
 
-    /*
-     * 3D PLOTTING
-     */
-    else if (data && data[0] && data[0].x && data[0].y && data[0].z ){
 
+            glx.setCameraPosition(
+                null
+              , [Math.round(zdata[0].length/2), Math.round(zdata.length/2), mean]
+              , null
+            )
 
-        return null;
+            var surface = glx.defineSurface(zdata)
+            console.log(surface)
+            var axisopts = {
+                extents: surface.bounds
+              , tickSpacing: [8,8,8]
+            }
+            var axis = glx.defineAxis(axisopts)
+
+            glx.onRender = function () {
+                glx.drawSurface()
+                glx.drawAxis()
+            }
+
+        })
+        return void 0
     }
+
+
+    else if (data && data[0].x && data[0].y && data[0].z) {
+        /*
+         * 3D scatter
+         * webgl 3d
+         *
+         * Triggering on 'x' 'y' and 'z' data
+         *
+         */
+        var opts = {container: gd.querySelector('.svg-container')}
+        opts.container.innerHTML = ''
+        GlContext.newContext(opts, function (glx) {
+
+
+            var sdata = glx.testData('scatter', 200, 200)
+
+            var axislims = [[0, 0, 0], [1,1,1]]
+
+
+            glx.setCameraPosition(null
+                                 , [Math.round(axislims[1][0]/2), Math.round(axislims[1][0]/2), 0.25]
+                                 , null)
+
+            var scatter = glx.defineScatter(sdata)
+            var axis = glx.defineAxis({
+                extents: axislims // [[xmin, ymin, zmin], [xmax, ymax, zmax]]
+              , tickSpacing: [0.1,0.1,0.1]
+            })
+            console.log(scatter)
+            glx.onRender = function () {
+                glx.drawScatter()
+                glx.drawAxis()
+            }
+        })
+        return void 0
+    }
+////////////////////////////////  end of 3D   /////////////////////////////////////////////
+
 
     else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
 
