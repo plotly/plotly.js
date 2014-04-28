@@ -412,36 +412,36 @@ Plotly.plot = function(gd, data, layout) {
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if($.isArray(data)) {
+        // backward compatibility: make a few changes to the data right away
+        // before it gets used for anything
+        // replace bardir with orientation and swap x/y if needed
+        data.forEach(function(c) {
+            // use xbins to bin data in x, and ybins to bin data in y
+            if(c.type=='histogramy' && 'xbins' in c && !('ybins' in c)) {
+                c.ybins = c.xbins;
+                delete c.xbins;
+            }
+            // convert bardir to orientation, and put the data into the axes it's eventually going to be used with
+            if('bardir' in c) {
+                if(c.bardir=='h' && (Plotly.Plots.isBar(c.type)||c.type.substr(0,9)=='histogram')) {
+                    c.orientation = 'h';
+                    swapxydata(c);
+                }
+                delete c.bardir;
+            }
+            // now we have only one 1D histogram type, and whether it uses x or y data depends on c.orientation
+            if(c.type=='histogramx' || c.type=='histogramy') {
+                if(c.type=='histogramy') { swapxydata(c); }
+                c.type = 'histogram';
+            }
+        });
+
         if(graphwasempty) { gd.data=data; }
         else { gd.data.push.apply(gd.data,data); }
         gd.empty=false; // for routines outside graph_obj that want a clean tab
                         // (rather than appending to an existing one) gd.empty
                         // is used to determine whether to make a new tab
     }
-
-    // backward compatibility: make a few changes to the data right away
-    // before it gets used for anything
-    // replace bardir with orientation and swap x/y if needed
-    gd.data.forEach(function(gdc) {
-        // use xbins to bin data in x, and ybins to bin data in y
-        if(gdc.type=='histogramy' && 'xbins' in gdc && !('ybins' in gdc)) {
-            gdc.ybins = gdc.xbins;
-            delete gdc.xbins;
-        }
-        // convert bardir to orientation, and put the data into the axes it's eventually going to be used with
-        if('bardir' in gdc) {
-            if(gdc.bardir=='h' && (Plotly.Plots.isBar(gdc.type)||gdc.type.substr(0,9)=='histogram')) {
-                gdc.orientation = 'h';
-                swapxydata(gdc);
-            }
-            delete gdc.bardir;
-        }
-        // now we have only one 1D histogram type, and whether it uses x or y data depends on gdc.orientation
-        if(gdc.type=='histogramx' || gdc.type=='histogramy') {
-            if(gdc.type=='histogramy') { swapxydata(gdc); }
-            gdc.type = 'histogram';
-        }
-    });
 
     // Polar plots
     // Check if it has a polar type
