@@ -244,7 +244,7 @@ function tweakLayout(gd,newlayout) {
             if(!newlayout[ya._name] || !('ticks' in newlayout[ya._name])) { ya.ticks = 'outside'; }
         }
         else if(plots.isBar(d.type) || d.type=='box') {
-            var sa = (plots.isBar(d.type) && d.bardir=='h') ? ya : xa;
+            var sa = (plots.isBar(d.type) && d.orientation=='h') ? ya : xa;
             if(!newlayout[sa._name] || !('showgrid' in newlayout[sa._name])) { sa.showgrid = false; }
             if(!newlayout[sa._name] || !('zeroline' in newlayout[sa._name])) { sa.zeroline = false; }
         }
@@ -255,7 +255,7 @@ function tweakLayout(gd,newlayout) {
     });
 }
 
-var BARTYPES = ['bar','histogramx','histogramy'];
+var BARTYPES = ['bar','histogram'];
 plots.isBar = function(type) { return BARTYPES.indexOf(type)!=-1; };
 var HEATMAPTYPES = ['heatmap','histogram2d','contour','histogram2dcontour'];
 plots.isHeatmap = function(type) { return HEATMAPTYPES.indexOf(type)!=-1; };
@@ -396,8 +396,6 @@ function positionBrand(gd,container){
 //      layout - object describing the overall display of the plot,
 //          all the stuff that doesn't pertain to any individual trace
 Plotly.plot = function(gd, data, layout) {
-
-//    console.log('plotly.plot', gd, data, layout);
     Plotly.Lib.markTime('in plot');
 
     // Get the container div: we will store all variables for this plot as
@@ -415,13 +413,36 @@ Plotly.plot = function(gd, data, layout) {
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if($.isArray(data)) {
+        // backward compatibility: make a few changes to the data right away
+        // before it gets used for anything
+        // replace bardir with orientation and swap x/y if needed
+        data.forEach(function(c) {
+            // use xbins to bin data in x, and ybins to bin data in y
+            if(c.type=='histogramy' && 'xbins' in c && !('ybins' in c)) {
+                c.ybins = c.xbins;
+                delete c.xbins;
+            }
+            // convert bardir to orientation, and put the data into the axes it's eventually going to be used with
+            if('bardir' in c) {
+                if(c.bardir=='h' && (Plotly.Plots.isBar(c.type)||c.type.substr(0,9)=='histogram')) {
+                    c.orientation = 'h';
+                    swapxydata(c);
+                }
+                delete c.bardir;
+            }
+            // now we have only one 1D histogram type, and whether it uses x or y data depends on c.orientation
+            if(c.type=='histogramx' || c.type=='histogramy') {
+                if(c.type=='histogramy') { swapxydata(c); }
+                c.type = 'histogram';
+            }
+        });
+
         if(graphwasempty) { gd.data=data; }
         else { gd.data.push.apply(gd.data,data); }
         gd.empty=false; // for routines outside graph_obj that want a clean tab
                         // (rather than appending to an existing one) gd.empty
                         // is used to determine whether to make a new tab
     }
-
 
     // Polar plots
     // Check if it has a polar type
@@ -727,7 +748,7 @@ Plotly.plot = function(gd, data, layout) {
 
     // put the styling info into the calculated traces
     // has to be done separate from applyStyles so we know the mode (ie which objects to draw)
-    // and has to be before stacking so we get bardir, type, visible
+    // and has to be before stacking so we get orientation, type, visible
     plots.setStyles(gd);
     Plotly.Lib.markTime('done with setstyles');
 
@@ -1085,7 +1106,7 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('xbins.end','xbend',1);
                 mergeattr('xbins.size','xbsize',1);
             }
-            mergeattr('bardir','bardir','v');
+            mergeattr('orientation','orientation','v');
             mergeattr('marker.opacity','mo',1);
             mergeattr('marker.color','mc',defaultColor);
             mergeattr('marker.line.color','mlc','#444');
@@ -1154,12 +1175,12 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // in principle we generally shouldn't need to redo ALL traces... that's
     // harder though.
     var recalc_attr = [
-        'mode','visible','type','bardir','fill','histfunc','histnorm','text',
+        'mode','visible','type','orientation','fill','histfunc','histnorm','text',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis','line.width','showscale','zauto',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
         'autocontour','ncontours','contours.coloring',
-        'swapxy','swapxyaxes'
+        'swapxy','swapxyaxes','orientationaxes'
     ];
     // autorange_attr attributes need a full redo of calcdata only if an axis is autoranged,
     // because .calc() is where the autorange gets determined
@@ -1185,9 +1206,8 @@ Plotly.restyle = function(gd,astr,val,traces) {
         '?axis.autorange','?axis.range','?axis.rangemode'
     ];
     // these ones may alter the axis type (at least if the first trace is involved)
-    var axtype_attr = ['type','x','y','x0','y0','bardir','xaxis','yaxis'];
-    // these ones don't get a regular param.set(), they do other things
-    var indirect_attr = ['swapxy','swapxyaxes'];
+    var axtype_attr = ['type','x','y','x0','y0','orientation','xaxis','yaxis'];
+
     // flags for which kind of update we need to do
     var docalc = false,
         docalc_autorange = false,
@@ -1230,35 +1250,6 @@ Plotly.restyle = function(gd,astr,val,traces) {
     var zscl = ['zmin','zmax'],
         xbins = ['xbins.start','xbins.end','xbins.size'],
         ybins = ['xbins.start','xbins.end','xbins.size'];
-
-    // swap x and y of the same attribute in container cont
-    // specify attr with a ? in place of x/y
-    // optionally, use a longer name for each x and y (for axes, like x2<->y3)
-    function swap(cont,attr,xname,yname) {
-        var xp = Plotly.Lib.nestedProperty(cont,attr.replace('?',xname||'x')),
-            yp = Plotly.Lib.nestedProperty(cont,attr.replace('?',yname||'y')),
-            temp = xp.get();
-        xp.set(yp.get());
-        yp.set(temp);
-    }
-
-    // swap all the presentation attributes of the axes this trace is on
-    function axswap() {
-        var xid = gd.data[traces[0]].xaxis||'x',
-            yid = gd.data[traces[0]].yaxis||'y',
-            xname = Plotly.Axes.getFromId(gd,xid)._name,
-            yname = Plotly.Axes.getFromId(gd,yid)._name,
-            axkeylist = Object.keys(gl[xname]).filter(function(n) {
-                return n.charAt(0)!='_' && (typeof gl[xname][n]!='function') &&
-                    ['anchor','domain','overlaying','position','tickangle'].indexOf(n)==-1;
-            });
-        axkeylist.forEach(function(attr){ swap(gl,'?.'+attr,xname,yname); });
-
-        // now swap x&y for any annotations anchored to these x & y
-        (gl.annotations||[]).forEach(function(ann) {
-            if(ann.xref==xid && ann.yref==yid) { swap(ann,'?'); }
-        });
-    }
 
     // now make the changes to gd.data (and occasionally gd.layout)
     // and figure out what kind of graphics update we need to do
@@ -1312,36 +1303,26 @@ Plotly.restyle = function(gd,astr,val,traces) {
             // save the old value
             undoit[ai][i] = param.get();
             // set the new value - if val is an array, it's one el per trace
-            if(indirect_attr.indexOf(ai)==-1) {
-                param.set($.isArray(vi) ? vi[i%vi.length] : vi);
-            }
-            else if(['swapxy','swapxyaxes'].indexOf(ai)!=-1) {
-                swap(cont,'?');
-                swap(cont,'?0');
-                swap(cont,'d?');
-                swap(cont,'?bins');
-                swap(cont,'autobin?');
-                if($.isArray(cont.z) && $.isArray(cont.z[0])) {
-                    if(cont.transpose) { delete cont.transpose; }
-                    else { cont.transpose = true; }
+            // first check for attributes that get more complex alterations
+            if(['swapxy','swapxyaxes','orientation','orientationaxes'].indexOf(ai)!=-1) {
+                // setting an orientation: make sure it's changing before we swap everything else
+                if(ai=='orientation') {
+                    param.set($.isArray(vi) ? vi[i%vi.length] : vi);
+                    if(param.get()==undoit[ai][i]) { continue; }
                 }
-                swap(cont,'?src');
-                swap(cont,'error_?');
-                if(cont.error_x && cont.error_y) {
-                    var copy_ystyle = ('copy_ystyle' in cont.error_y) ? cont.error_y.copy_ystyle :
-                            ((cont.error_y.color||cont.error_y.thickness||cont.error_y.width)?false:true);
-                    swap(cont,'error_?.copy_ystyle');
-                    if(copy_ystyle) {
-                        swap(cont,'error_?.color');
-                        swap(cont,'error_?.thickness');
-                        swap(cont,'error_?.width');
-                    }
+                // orientationaxes has no value, it flips everything and the axes
+                else if(ai=='orientationaxes') {
+                    cont.orientation = {v:'h', h:'v'}[cont.orientation||'v'];
                 }
+                swapxydata(cont);
             }
+            // all the other ones, just modify that one attribute
+            else { param.set($.isArray(vi) ? vi[i%vi.length] : vi); }
+
         }
 
-        // swap the data attributes of the relevant x and y axes
-        if(ai=='swapxyaxes') { axswap(); }
+        // swap the data attributes of the relevant x and y axes?
+        if(['swapxyaxes','orientationaxes'].indexOf(ai)!=-1) { axswap(gd,gd.data[traces[0]]); }
 
         // check if we need to call axis type
         if((traces.indexOf(0)!=-1) && (axtype_attr.indexOf(ai)!=-1)) {
@@ -1360,7 +1341,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         if(recalc_attr.indexOf(ai)!=-1) {
             // major enough changes deserve autoscale, autobin, and non-reversed
             // axes so people don't get confused
-            if(['bardir','type'].indexOf(ai)!=-1) {
+            if(['orientation','type'].indexOf(ai)!=-1) {
                 axlist = [];
                 for(i=0; i<traces.length; i++) {
                     var trace = gd.data[traces[i]];
@@ -1407,6 +1388,68 @@ Plotly.restyle = function(gd,astr,val,traces) {
     }
     $(gd).trigger('plotly_restyle',[redoit,traces]);
 };
+
+// swap x and y of the same attribute in container cont
+// specify attr with a ? in place of x/y
+// optionally, use a longer name for each x and y (for axes, like x2<->y3)
+function swapAttrs(cont,attr,xname,yname) {
+    var xp = Plotly.Lib.nestedProperty(cont,attr.replace('?',xname||'x')),
+        yp = Plotly.Lib.nestedProperty(cont,attr.replace('?',yname||'y')),
+        temp = xp.get();
+    xp.set(yp.get());
+    yp.set(temp);
+}
+
+// swap all the data and data attributes associated with x and y
+// for the trace gdc
+function swapxydata(gdc) {
+    swapAttrs(gdc,'?');
+    swapAttrs(gdc,'?0');
+    swapAttrs(gdc,'d?');
+    swapAttrs(gdc,'?bins');
+    swapAttrs(gdc,'autobin?');
+    if($.isArray(gdc.z) && $.isArray(gdc.z[0])) {
+        if(gdc.transpose) { delete gdc.transpose; }
+        else { gdc.transpose = true; }
+    }
+    swapAttrs(gdc,'?src');
+    swapAttrs(gdc,'error_?');
+    if(gdc.error_x && gdc.error_y) {
+        var copy_ystyle = ('copy_ystyle' in gdc.error_y) ? gdc.error_y.copy_ystyle :
+                ((gdc.error_y.color||gdc.error_y.thickness||gdc.error_y.width)?false:true);
+        swapAttrs(gdc,'error_?.copy_ystyle');
+        if(copy_ystyle) {
+            swapAttrs(gdc,'error_?.color');
+            swapAttrs(gdc,'error_?.thickness');
+            swapAttrs(gdc,'error_?.width');
+        }
+    }
+}
+
+// swap all the presentation attributes of the axes showing trace gdc
+function axswap(gd,gdc) {
+    var gl = gd.layout,
+        xid = gdc.xaxis||'x',
+        yid = gdc.yaxis||'y',
+        xa = Plotly.Axes.getFromId(gd,xid),
+        xname = xa._name,
+        ya = Plotly.Axes.getFromId(gd,yid),
+        yname = ya._name,
+        axkeylist = Object.keys(gl[xname]).filter(function(n) {
+            return n.charAt(0)!='_' && (typeof gl[xname][n]!='function') &&
+                ['anchor','domain','overlaying','position','tickangle'].indexOf(n)==-1;
+        });
+    axkeylist.forEach(function(attr){ swapAttrs(gl,'?.'+attr,xname,yname); });
+
+    // now swap x&y for any annotations anchored to these x & y
+    (gl.annotations||[]).forEach(function(ann) {
+        if(ann.xref==xid && ann.yref==yid) { swapAttrs(ann,'?'); }
+    });
+
+    // check for swapped placeholder titles
+    if(xa.title=='Click to enter Y axis title') { xa.title = 'Click to enter X axis title'; }
+    if(ya.title=='Click to enter X axis title') { ya.title = 'Click to enter Y axis title'; }
+}
 
 // relayout: change layout in an existing plot
 // can be called two ways:
