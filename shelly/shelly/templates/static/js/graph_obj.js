@@ -1094,7 +1094,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis','line.width','showscale','zauto',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
-        'autocontour','ncontours','contours.coloring',
+        'autocontour','ncontours','contours.coloring','showscale',
         'swapxy','swapxyaxes','orientationaxes'
     ];
     // autorange_attr attributes need a full redo of calcdata only if an axis is autoranged,
