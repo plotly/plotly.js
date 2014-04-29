@@ -37,8 +37,14 @@ heatmap.calc = function(gd,gdc) {
         Plotly.Lib.markTime('done convert data');
 
         // calculate the bins
-        if(gdc.autobinx || !('xbins' in gdc)) { gdc.xbins = Plotly.Axes.autoBin(x,xa,gdc.nbinsx,'2d'); }
-        if(gdc.autobiny || !('ybins' in gdc)) { gdc.ybins = Plotly.Axes.autoBin(y,ya,gdc.nbinsy,'2d'); }
+        if(gdc.autobinx || !('xbins' in gdc)) {
+            gdc.xbins = Plotly.Axes.autoBin(x,xa,gdc.nbinsx,'2d');
+            if(gdc.type=='histogram2dcontour') { gdc.xbins.start-=gdc.xbins.size; gdc.xbins.end+=gdc.xbins.size; }
+        }
+        if(gdc.autobiny || !('ybins' in gdc)) {
+            gdc.ybins = Plotly.Axes.autoBin(y,ya,gdc.nbinsy,'2d');
+            if(gdc.type=='histogram2dcontour') { gdc.ybins.start-=gdc.ybins.size; gdc.ybins.end+=gdc.ybins.size; }
+        }
         Plotly.Lib.markTime('done autoBin');
 
         // make the empty bin array & scale the map
