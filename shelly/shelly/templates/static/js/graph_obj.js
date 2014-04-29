@@ -549,7 +549,7 @@ Plotly.plot = function(gd, data, layout) {
         return null;
     }
 ////////////////////////////////  3D   /////////////////////////////////////////////////
-    else if (layout._gl3d === 'surface') {
+    else if (layout && layout._gl3d === 'surface') {
         /*
          * Surface Plot
          * webgl 3d
@@ -599,7 +599,7 @@ Plotly.plot = function(gd, data, layout) {
         return void 0
     }
 
-    else if (layout._gl3d === 'scatter') {
+    else if (layout && layout._gl3d === 'scatter') {
         /*
          * 3D scatter
          * webgl 3d
