@@ -1013,5 +1013,19 @@ lib.isEmpty = function isEmpty (obj) {
             .some( function (key) {return !isEmpty(obj[key]); } );
 }
 
+/*
+ * purgeStreams
+ * @UTILITY
+ * remove stream properties from data objects
+ */
+lib.purgeStream = function purgeStream (dobj) {
+    var data = dobj.data
+    if (!(data && data.length)) return
+    data.forEach(
+        function (d) {
+            delete d['stream']
+        }
+    )
+}
 
 }()); // end Lib object definition
