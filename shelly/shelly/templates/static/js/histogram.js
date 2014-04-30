@@ -7,10 +7,12 @@ histogram.calc = function(gd,gdc) {
     // ignore as much processing as possible (and including in autorange) if bar is not visible
     if(gdc.visible===false) { return; }
 
-    // depending on bar direction, set position and size axes and data ranges
+    // depending on orientation, set position and size axes and data ranges
+    // note: this logic for choosing orientation is duplicated in graph_obj->setstyles
     var pos = [], size = [], i,
-        pa = Plotly.Axes.getFromId(gd, gdc.orientation=='h' ? gdc.yaxis||'y' : gdc.xaxis||'x'),
-        maindata = gdc.orientation=='h' ? 'y' : 'x',
+        orientation = gdc.orientation || ((gdc.y && !gdc.x) ? 'h' : 'v'),
+        pa = Plotly.Axes.getFromId(gd, orientation=='h' ? gdc.yaxis||'y' : gdc.xaxis||'x'),
+        maindata = orientation=='h' ? 'y' : 'x',
         counterdata = {x:'y',y:'x'}[maindata];
 
     // prepare the raw data
@@ -130,6 +132,7 @@ histogram.calc = function(gd,gdc) {
             cd.push({p:pos[i],s:size[i],b:0});
         }
     }
+    if(cd[0]) { cd[0].t = {orientation:orientation};}
     return cd;
 };
 

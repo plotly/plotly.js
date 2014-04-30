@@ -494,61 +494,61 @@ contour.colorbar = function(gd,cd) {
 
     gd.layout._infolayer.selectAll('.'+cb_id).remove();
     if(t.showscale===false){
-        Plotly.Plots.autoMargin(gd,t.curve);
+        Plotly.Plots.autoMargin(gd,cb_id);
+        return;
     }
-    else {
-        // instantiate the colorbar (will be drawn and styled in contour.style)
-        var cb = Plotly.Colorbar(gd,cb_id);
 
-        var cs = t.contoursize||1,
-            nc = Math.floor((t.contourend+cs/10-t.contourstart)/cs)+1,
-            scl = Plotly.Plots.getScale(t.scl),
-            extraLevel = t.coloring=='lines' ? 0 : 1,
-            colormap = d3.scale.linear().interpolate(d3.interpolateRgb),
-            colorDomain = scl.map(function(si){
-                    return (si[0]*(nc+extraLevel-1)-(extraLevel/2))*cs+t.contourstart;
-                }),
-            colorRange = scl.map(function(si){ return si[1]; });
+    // instantiate the colorbar (will be drawn and styled in contour.style)
+    var cb = Plotly.Colorbar(gd,cb_id);
 
-        // colorbar fill and lines
-        if(t.coloring=='heatmap') {
-            if(t.zauto && t.autocontour===false) {
-                t.zmin = t.contourstart-cs/2;
-                t.zmax = t.zmin+nc*cs;
-            }
-            cb.filllevels({start:t.zmin, end:t.zmax, size:(t.zmax-t.zmin)/254});
-            colorDomain = scl.map(function(si){ return si[0]*(t.zmax-t.zmin)+t.zmin; });
+    var cs = t.contoursize||1,
+        nc = Math.floor((t.contourend+cs/10-t.contourstart)/cs)+1,
+        scl = Plotly.Plots.getScale(t.scl),
+        extraLevel = t.coloring=='lines' ? 0 : 1,
+        colormap = d3.scale.linear().interpolate(d3.interpolateRgb),
+        colorDomain = scl.map(function(si){
+                return (si[0]*(nc+extraLevel-1)-(extraLevel/2))*cs+t.contourstart;
+            }),
+        colorRange = scl.map(function(si){ return si[1]; });
 
-            // do the contours extend beyond the colorscale? if so, extend the colorscale with constants
-            var zRange = d3.extent([t.zmin, t.zmax, t.contourstart, t.contourstart+cs*(nc-1)]),
-                zmin = zRange[t.zmin<t.zmax ? 0 : 1],
-                zmax = zRange[t.zmin<t.zmax ? 1 : 0];
-            if(zmin!=t.zmin) {
-                colorDomain.splice(0,0,zmin);
-                colorRange.splice(0,0,colorRange[0]);
-            }
-            if(zmax!=t.zmax) {
-                colorDomain.push(zmax);
-                colorRange.push(colorRange[colorRange.length-1]);
-            }
+    // colorbar fill and lines
+    if(t.coloring=='heatmap') {
+        if(t.zauto && t.autocontour===false) {
+            t.zmin = t.contourstart-cs/2;
+            t.zmax = t.zmin+nc*cs;
         }
+        cb.filllevels({start:t.zmin, end:t.zmax, size:(t.zmax-t.zmin)/254});
+        colorDomain = scl.map(function(si){ return si[0]*(t.zmax-t.zmin)+t.zmin; });
 
-        colormap.domain(colorDomain).range(colorRange);
-
-        cb.options({
-            fillcolor: t.coloring=='fill' || t.coloring=='heatmap' ? colormap : '',
-            line:{
-                color: t.coloring=='lines' ? colormap : t.lc,
-                width: t.showlines ? t.lw : 0,
-                dash: t.ld
-            },
-            levels: {start:t.contourstart, end:t.contourend, size:cs}
-        });
-
-        // all the other colorbar styling - any calcdata attribute that starts cb_
-        // apply these options, and draw the colorbar
-        cb.cdoptions(t)();
+        // do the contours extend beyond the colorscale? if so, extend the colorscale with constants
+        var zRange = d3.extent([t.zmin, t.zmax, t.contourstart, t.contourstart+cs*(nc-1)]),
+            zmin = zRange[t.zmin<t.zmax ? 0 : 1],
+            zmax = zRange[t.zmin<t.zmax ? 1 : 0];
+        if(zmin!=t.zmin) {
+            colorDomain.splice(0,0,zmin);
+            colorRange.splice(0,0,colorRange[0]);
+        }
+        if(zmax!=t.zmax) {
+            colorDomain.push(zmax);
+            colorRange.push(colorRange[colorRange.length-1]);
+        }
     }
+
+    colormap.domain(colorDomain).range(colorRange);
+
+    cb.options({
+        fillcolor: t.coloring=='fill' || t.coloring=='heatmap' ? colormap : '',
+        line:{
+            color: t.coloring=='lines' ? colormap : t.lc,
+            width: t.showlines ? t.lw : 0,
+            dash: t.ld
+        },
+        levels: {start:t.contourstart, end:t.contourend, size:cs}
+    });
+
+    // all the other colorbar styling - any calcdata attribute that starts cb_
+    // apply these options, and draw the colorbar
+    cb.cdoptions(t)();
 };
 
 contour.defaults = function() {
