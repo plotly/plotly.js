@@ -756,7 +756,7 @@ Plotly.plot = function(gd, data, layout) {
         Plotly.Legend.draw(gd, gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!==false));
         gd.calcdata.forEach(function(cd) {
             var t = cd[0].t;
-            if(t.visible===false || !plots.isHeatmap(t.type) || t.showscale===false) { plots.autoMargin(gd,t.curve); }
+            if(t.visible===false || !plots.isHeatmap(t.type)) { plots.autoMargin(gd,'cb'+t.curve); }
             else if(plots.isContour(t.type)) { Plotly.Contour.colorbar(gd,cd); }
             else  { Plotly.Heatmap.colorbar(gd,cd); }
         });
@@ -1184,7 +1184,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis','line.width','showscale','zauto',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
-        'autocontour','ncontours','contours.coloring','showscale',
+        'autocontour','ncontours','contours.coloring',
         'swapxy','swapxyaxes','orientationaxes'
     ];
     // autorange_attr attributes need a full redo of calcdata only if an axis is autoranged,
