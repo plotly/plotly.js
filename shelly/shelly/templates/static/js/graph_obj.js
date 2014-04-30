@@ -1414,6 +1414,7 @@ function swapxydata(gdc) {
     swapAttrs(gdc,'?0');
     swapAttrs(gdc,'d?');
     swapAttrs(gdc,'?bins');
+    swapAttrs(gdc,'nbins?');
     swapAttrs(gdc,'autobin?');
     if($.isArray(gdc.z) && $.isArray(gdc.z[0])) {
         if(gdc.transpose) { delete gdc.transpose; }
