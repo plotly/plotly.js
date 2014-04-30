@@ -263,6 +263,8 @@ var CONTOURTYPES = ['contour','histogram2dcontour'];
 plots.isContour = function(type) { return CONTOURTYPES.indexOf(type)!=-1; };
 var HIST2DTYPES = ['histogram2d','histogram2dcontour'];
 plots.isHist2D = function(type) { return HIST2DTYPES.indexOf(type)!=-1; };
+var GL3DTYPES = ['scatter3d', 'surface'];
+plots.isGL3D = function(type) { return GL3DTYPES.indexOf(type) !== -1; };
 
 plots.newTab = function(divid, layout) {
     makeToolMenu(divid);
@@ -297,7 +299,7 @@ function makeToolMenu(divid) {
 function updateTraces(old_data, new_data) {
     var updated = {},
         res = [],
-        i;
+        i, new_trace, old_trace;
     for (i=0; i<old_data.length; i++){
         old_trace = old_data[i];
         updated[old_trace['name']] = old_trace;
@@ -549,91 +551,55 @@ Plotly.plot = function(gd, data, layout) {
         return null;
     }
 ////////////////////////////////  3D   /////////////////////////////////////////////////
-    else if (layout && layout._gl3d === 'surface') {
+    else if (gd.data && gd.data[0] && plots.isGL3D(gd.data[0].type)) {
         /*
          * Surface Plot
          * webgl 3d
          *
-         * Right now triggers on 2D 'z' data
-         * Need to add ndarray interpolation (a mikola module) so we can
-         * also trigger on 'x' 'y' and 'z' data for surfaces
          *
          */
-        var opts = {container: gd.querySelector('.svg-container')}
-        opts.container.innerHTML = '' // obviously this won't work for subplots
-        GlContext.newContext(opts, function (glx) {
-            var zdata
-            if (data[0] && data.z && data.z.length) {
-                // for now default to test data on empty data array
-                zdata = data[0].z
-            } else {
-                zdata = glx.testData('dirac', 80, 120)
-            }
-            var mean = zdata
-                       .map( function (row) {
-                           return row.reduce( function (p, c) { return p+c } ) / row.length
-                       })
-                       .reduce( function (p, c) { return p+c } ) / zdata.length
+        var glContainerOptions = {
+            container: gd.querySelector('.svg-container')
+          , zIndex: '1000'
+        }
 
+        if (!('gl_Contexts' in gd.layout))
+            gd.layout._glContexts = []
 
-            glx.setCameraPosition(
-                null
-              , [Math.round(zdata[0].length/2), Math.round(zdata.length/2), mean]
-              , null
-            )
-
-            var surface = glx.defineSurface(zdata)
-            console.log(surface)
-            var axisopts = {
-                extents: surface.bounds
-              , tickSpacing: [8,8,8]
-            }
-            var axis = glx.defineAxis(axisopts)
-
-            glx.onRender = function () {
-                glx.drawSurface()
-                glx.drawAxis()
-            }
-
-        })
-        return void 0
-    }
-
-    else if (layout && layout._gl3d === 'scatter') {
         /*
-         * 3D scatter
-         * webgl 3d
-         *
-         * Triggering on 'x' 'y' and 'z' data
-         *
+         * For now lets just grab the first glx in the array
+         * and append to that, or create a new context.
+         * Creating a new context is asyncronous and requires a
+         * callback
          */
-        var opts = {container: gd.querySelector('.svg-container')}
-        opts.container.innerHTML = ''
-        GlContext.newContext(opts, function (glx) {
+        if (gd.layout._glContexts.length) {
+            var glx = gd.layout._glContexts[0]
+            // you can change the camera position before or after initializing data
+            // or accept defaults
+            glx.draw(gd.data[1], gd.data[1].type)
+        }
+
+        GlContext.newContext(glContainerOptions, function (glx) {
+            /*
+             * Add new glx context
+             */
+
+            gd.layout._glContexts.push(glx)
 
 
-            var sdata = glx.testData('scatter', 200, 200)
+            glx.draw(gd.data[0], gd.data[0].type)
 
-            var axislims = [[0, 0, 0], [1,1,1]]
-
-
-            glx.setCameraPosition(null
-                                 , [Math.round(axislims[1][0]/2), Math.round(axislims[1][0]/2), 0.25]
-                                 , null)
-
-            var scatter = glx.defineScatter(sdata)
-            var axis = glx.defineAxis({
-                extents: axislims // [[xmin, ymin, zmin], [xmax, ymax, zmax]]
-              , tickSpacing: [0.1,0.1,0.1]
-            })
-            console.log(scatter)
-            glx.onRender = function () {
-                glx.drawScatter()
-                glx.drawAxis()
+            if (!glx.axis) {
+                var axisopts = {
+                    extents: glx.bounds
+                  , tickSpacing: [8,8,8]
+                }
+                var axis = glx.drawAxis(axisopts)
             }
+
         })
-        return void 0
     }
+
 ////////////////////////////////  end of 3D   /////////////////////////////////////////////
 
 
@@ -1153,7 +1119,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // console.log(gd,astr,val,traces);
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
 
-    var gl = gd.layout,
+    var i, gl = gd.layout,
         aobj = {};
     if(typeof astr == 'string') { aobj[astr] = val; }
     else if($.isPlainObject(astr)) {
@@ -1802,32 +1768,45 @@ function makePlotFramework(divid, layout) {
         newLayout = layout || {};
     // look for axes to include in oldLayout - so that default axis settings get included
     var xalist = Object.keys(newLayout).filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
-        yalist = Object.keys(newLayout).filter(function(k){ return k.match(/^yaxis[0-9]*$/); });
-    if(!xalist.length) { xalist = ['xaxis']; }
-    if(!yalist.length) { yalist = ['yaxis']; }
-    xalist.concat(yalist).forEach(function(axname) {
-        addDefaultAxis(oldLayout,axname);
-        // if an axis range was explicitly provided with newlayout, turn off autorange
-        if(newLayout[axname] && newLayout[axname].range && newLayout[axname].range.length==2) {
-            oldLayout[axname].autorange = false;
-        }
-    });
-    gd.layout=updateObject(oldLayout, newLayout);
-    var gl = gd.layout;
+        yalist = Object.keys(newLayout).filter(function(k){ return k.match(/^yaxis[0-9]*$/); }),
+        type = (type = gd.data) && (type = type[0]) && (type = type.type), // temp hack for webgl
+        gl = gd.layout,
+        subplots;
 
-    // Get subplots and see if we need to make any more axes
-    var subplots = plots.getSubplots(gd);
-    subplots.forEach(function(subplot) {
-        var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
-        // gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
-        [axmatch[1],axmatch[2]].forEach(function(axid) {
-            addDefaultAxis(gl,Plotly.Axes.id2name(axid));
+    if (!plots.isGL3D(type)) {
+        // do a bunch of 2D axis stuff
+
+        if(!xalist.length) { xalist = ['xaxis']; }
+        if(!yalist.length) { yalist = ['yaxis']; }
+        xalist.concat(yalist).forEach(function(axname) {
+            addDefaultAxis(oldLayout,axname);
+            // if an axis range was explicitly provided with newlayout, turn off autorange
+            if(newLayout[axname] && newLayout[axname].range && newLayout[axname].range.length==2) {
+                oldLayout[axname].autorange = false;
+            }
         });
-    });
-    // now get subplots again, in case the new axes require more subplots (yes, that's odd... but possible)
-    subplots = plots.getSubplots(gd);
+        gd.layout = gl = updateObject(oldLayout, newLayout);
 
-    Plotly.Axes.setTypes(gd);
+
+        // Get subplots and see if we need to make any more axes
+        subplots = plots.getSubplots(gd);
+        subplots.forEach(function(subplot) {
+            var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
+            // gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
+            [axmatch[1],axmatch[2]].forEach(function(axid) {
+                addDefaultAxis(gl,Plotly.Axes.id2name(axid));
+            });
+        });
+        // now get subplots again, in case the new axes require more subplots (yes, that's odd... but possible)
+        subplots = plots.getSubplots(gd);
+
+        Plotly.Axes.setTypes(gd);
+
+    } else {
+        // This is WEBGL, remove usual axis
+        delete gd.layout['xaxis']
+        delete gd.layout['yaxis']
+    }
 
     var outerContainer = gl._fileandcomments = gd3.selectAll('.file-and-comments');
     // for embeds and cloneGraphOffscreen
