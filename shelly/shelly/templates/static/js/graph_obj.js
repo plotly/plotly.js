@@ -756,7 +756,7 @@ Plotly.plot = function(gd, data, layout) {
         Plotly.Legend.draw(gd, gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!==false));
         gd.calcdata.forEach(function(cd) {
             var t = cd[0].t;
-            if(t.visible===false || !plots.isHeatmap(t.type) || t.showscale===false) { plots.autoMargin(gd,t.curve); }
+            if(t.visible===false || !plots.isHeatmap(t.type)) { plots.autoMargin(gd,'cb'+t.curve); }
             else if(plots.isContour(t.type)) { Plotly.Contour.colorbar(gd,cd); }
             else  { Plotly.Heatmap.colorbar(gd,cd); }
         });
@@ -1102,7 +1102,7 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattrs(Plotly.Colorbar.defaults());
         }
         else if(plots.isBar(type)){
-            if(type!='bar') {
+            if(type=='histogram') {
                 mergeattr('histfunc','histfunc','count');
                 mergeattr('histnorm','histnorm','');
                 mergeattr('autobinx','autobinx',true);
@@ -1110,8 +1110,15 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('xbins.start','xbstart',0);
                 mergeattr('xbins.end','xbend',1);
                 mergeattr('xbins.size','xbsize',1);
+                // note that auto-orientation is opposite btwn hist and bar
+                // histograms are horizontal if there's a y and no x
+                // bars are horizontal if there's x and no y
+                // this logic is duplicated in Bars.calc and Histogram.calc
+                // mergeattr('orientation','orientation',(gdc.y && !gdc.x) ? 'h' : 'v');
             }
-            mergeattr('orientation','orientation','v');
+            // else {
+            //     mergeattr('orientation','orientation',(gdc.x && !gdc.y) ? 'h' : 'v');
+            // }
             mergeattr('marker.opacity','mo',1);
             mergeattr('marker.color','mc',defaultColor);
             mergeattr('marker.line.color','mlc','#444');
@@ -1184,7 +1191,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis','line.width','showscale','zauto',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
-        'autocontour','ncontours','contours.coloring','showscale',
+        'autocontour','ncontours','contours.coloring',
         'swapxy','swapxyaxes','orientationaxes'
     ];
     // autorange_attr attributes need a full redo of calcdata only if an axis is autoranged,
@@ -1414,6 +1421,7 @@ function swapxydata(gdc) {
     swapAttrs(gdc,'?0');
     swapAttrs(gdc,'d?');
     swapAttrs(gdc,'?bins');
+    swapAttrs(gdc,'nbins?');
     swapAttrs(gdc,'autobin?');
     if($.isArray(gdc.z) && $.isArray(gdc.z[0])) {
         if(gdc.transpose) { delete gdc.transpose; }

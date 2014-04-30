@@ -553,16 +553,16 @@ heatmap.colorbar = function(gd,cd) {
         scl=Plotly.Plots.getScale(t.scl);
     gd.layout._infolayer.selectAll('.'+cb_id).remove();
     if(t.showscale===false){
-        Plotly.Plots.autoMargin(gd,t.curve);
+        Plotly.Plots.autoMargin(gd,cb_id);
+        return;
     }
-    else {
-        Plotly.Colorbar(gd,cb_id)
-            .fillcolor(d3.scale.linear()
-                .domain(scl.map(function(v){ return t.zmin+v[0]*(t.zmax-t.zmin); }))
-                .range(scl.map(function(v){ return v[1]; })))
-            .filllevels({start:t.zmin, end:t.zmax, size:(t.zmax-t.zmin)/254})
-            .cdoptions(t)();
-    }
+
+    Plotly.Colorbar(gd,cb_id)
+        .fillcolor(d3.scale.linear()
+            .domain(scl.map(function(v){ return t.zmin+v[0]*(t.zmax-t.zmin); }))
+            .range(scl.map(function(v){ return v[1]; })))
+        .filllevels({start:t.zmin, end:t.zmax, size:(t.zmax-t.zmin)/254})
+        .cdoptions(t)();
     Plotly.Lib.markTime('done colorbar');
 };
 
