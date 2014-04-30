@@ -8,11 +8,15 @@ bars.calc = function(gd,gdc) {
     // depending on bar direction, set position and size axes and data ranges
     var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
-        pos, size, pa, sa, i;
-    if(gdc.bardir=='h') { pa = ya; sa = xa; }
-    else { pa = xa; sa = ya; }
-    size = sa.makeCalcdata(gdc,'y');
-    pos = pa.makeCalcdata(gdc,'x');
+        pos, size, i;
+    if(gdc.orientation=='h') {
+        size = xa.makeCalcdata(gdc,'x');
+        pos = ya.makeCalcdata(gdc,'y');
+    }
+    else {
+        size = ya.makeCalcdata(gdc,'y');
+        pos = xa.makeCalcdata(gdc,'x');
+    }
 
     // create the "calculated data" to plot
     var serieslen = Math.min(pos.length,size.length),
@@ -37,20 +41,19 @@ bars.setPositions = function(gd,plotinfo) {
 
     ['v','h'].forEach(function(dir){
         var bl = [],
-            pa, sa, pdr,
             pLetter = {v:'x',h:'y'}[dir],
-            sLetter = {v:'y',h:'x'}[dir];
+            sLetter = {v:'y',h:'x'}[dir],
+            pa = plotinfo[pLetter],
+            sa = plotinfo[sLetter];
+
         gd.calcdata.forEach(function(cd,i) {
             var t=cd[0].t;
             if(t.visible!==false && Plotly.Plots.isBar(t.type) &&
-              (t.bardir||'v')==dir && (t.xaxis||'x')==xa._id && (t.yaxis||'y')==ya._id) {
+              (t.orientation||'v')==dir && (t.xaxis||'x')==xa._id && (t.yaxis||'y')==ya._id) {
                 bl.push(i);
             }
         });
         if(!bl.length) { return; }
-
-        if(dir=='v') { sa = ya; pa = xa; }
-        else { sa = xa; pa = ya; }
 
         // bar position offset and width calculation
         // bl1 is a list of traces (in calcdata) to look at together
@@ -173,7 +176,7 @@ bars.plot = function(gd,plotinfo,cdbar) {
                     // log values go off-screen by plotwidth
                     // so you see them continue if you drag the plot
                     var x0,x1,y0,y1;
-                    if(t.bardir=='h') {
+                    if(t.orientation=='h') {
                         y0 = ya.c2p(t.poffset+di.p);
                         y1 = ya.c2p(t.poffset+di.p+t.barwidth);
                         x0 = xa.c2p(di.b,true);

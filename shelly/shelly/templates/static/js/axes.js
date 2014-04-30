@@ -37,7 +37,7 @@ axes.clearTypes = function(gd, traces) {
 // setTypes: figure out axis types (linear, log, date, category...)
 // if td.axtypesok is true, we can skip this.
 // to force axtypes to be called again, set td.axtypesok to false before calling plot()
-// this should be done if the first trace changes type, bardir, or data
+// this should be done if the first trace changes type or data
 // use the first trace only.
 // If the axis has data, see whether more looks like dates or like numbers
 // If it has x0 & dx (etc), go by x0 (if x0 is a date and dx is a number, perhaps guess days?)
@@ -164,24 +164,10 @@ function setType(ax){
     if(['linear','log','date','category'].indexOf(ax.type)!=-1) { return; }
 
     // guess at axis type with the new property format
-    // first check for histograms, as they can change the axis types
-    // whatever else happens, horz bars switch the roles of x and y axes
-    if((Plotly.Plots.isBar(dtype)) && (d0.bardir=='h')){
-        axletter={x:'y',y:'x'}[axletter];
-    }
-    var hist = (['histogramx','histogramy'].indexOf(dtype)!=-1);
-    if(hist) {
-        if(axletter=='y') {
-            // always numeric data in the histogram size direction
-            ax.type='linear';
-            return;
-        }
-        else {
-            // bin values may come from the x or y source data depending on type
-            // determine the type for the bar-to-bar direction from the bin source data
-            // so reset axletter, then do the tests below
-            axletter = dtype.charAt(9);
-        }
+    // first check for histograms, as the count direction should always default to a linear axis
+    if(dtype=='histogram' && axletter=={v:'y',h:'x'}[d0.orientation||'v']) {
+        ax.type='linear';
+        return;
     }
     // then check the data supplied for that axis
     // only consider existing type if we need to decide log vs linear
@@ -588,8 +574,15 @@ axes.autoBin = function(data,ax,nbins,is2d) {
             if((1+(data[i]-binstart)*100/dummyax.dtick)%100<2) { edgecount++; }
         }
         if(intcount+blankcount==data.length && ax.type!='date') {
-            binstart = datamin - 0.5;
-            if(dummyax.dtick<1) { dummyax.dtick=1; }
+            // all integers: make sure the bin size is at least 1
+            // and start a half integer down, so it's obvious which bin each value fits into
+            if(dummyax.dtick<1) {
+                dummyax.dtick=1;
+                binstart = datamin - 0.5;
+            }
+            else {
+                binstart -= 0.5;
+            }
         }
         else if(edgecount>(data.length-blankcount)/2) {
             var binshift = (axes.tickIncrement(binstart,dummyax.dtick)-binstart)/2;
@@ -742,8 +735,9 @@ axes.autoTicks = function(ax,rt){
     if(ax.dtick===0) { ax.dtick = 1; } // prevent infinite loops...
     // TODO: this is from log axis histograms with autorange off
     if(!$.isNumeric(ax.dtick) && typeof ax.dtick !='string') {
+        var olddtick = ax.dtick;
         ax.dtick = 1;
-        throw 'ax.dtick error: '+String(ax.dtick);
+        throw 'ax.dtick error: '+String(olddtick);
     }
 };
 
@@ -1286,7 +1280,7 @@ axes.doTicks = function(td,axid) {
         // zero line
         var hasBarsOrFill = (td.data||[]).filter(function(tdc){
             return tdc.visible!==false && ((tdc.xaxis||'x')+(tdc.yaxis||'y')==subplot) &&
-                ((Plotly.Plots.isBar(tdc.type) && (tdc.bardir||'v')=={x:'h',y:'v'}[axletter]) ||
+                ((Plotly.Plots.isBar(tdc.type) && (tdc.orientation||'v')=={x:'h',y:'v'}[axletter]) ||
                 ((tdc.type||'scatter')=='scatter' && tdc.fill && tdc.fill.charAt(tdc.fill.length-1)==axletter));
         }).length;
         var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline &&
