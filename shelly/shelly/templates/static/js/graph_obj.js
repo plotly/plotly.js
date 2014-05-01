@@ -418,15 +418,16 @@ Plotly.plot = function(gd, data, layout) {
         /*
          * Enforce unique IDs
          */
+        var suids = []    // seen uids --- so we can weed out incoming repeats
         var uids = data
                    .filter( function (d) { return 'uid' in d; } )
                    .map( function (d) { return d.uid; })
 
         if (!graphwasempty) {
             uids = uids.concat(
-                gd.data
-                .filter( function (d) { return 'uid' in d; } )
-                .map( function (d) { return d.uid; })
+                    gd.data
+                    .filter( function (d) { return 'uid' in d; } )
+                    .map( function (d) { return d.uid; })
             )
         }
 
@@ -434,15 +435,20 @@ Plotly.plot = function(gd, data, layout) {
         // before it gets used for anything
         // replace bardir with orientation and swap x/y if needed
         data.forEach(function(c) {
+            var uix
             // use xbins to bin data in x, and ybins to bin data in y
             if(c.type=='histogramy' && 'xbins' in c && !('ybins' in c)) {
                 c.ybins = c.xbins;
                 delete c.xbins;
             }
-
-            // Detect existing collisions and pass in array of existing uids to randstr
-            if (!('uid' in c) || uids.indexOf(c.uid) > -1) {
-                c.uid = Plotly.Lib.randstr()
+            // assign uids to each trace - detect collisions and existing repeats.
+            if ('uid' in c && suids.indexOf(c.uid) === -1) {
+                // keep track of already seen uids, so that if there are doubles we force
+                // the trace with a repeat uid to acquire a new one
+                suids.push(c.uid)
+            }
+            else {
+                c.uid = Plotly.Lib.randstr(uids)
                 uids.push(c.uid)
             }
 
