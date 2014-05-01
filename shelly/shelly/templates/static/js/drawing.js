@@ -404,4 +404,29 @@ function makeTangent(prevpt,thispt,nextpt,smoothness) {
     ];
 }
 
+// step paths - returns a generator function for paths with the given step shape
+drawing.steps = function(shape) {
+    var onestep;
+    if(shape=='hv') {
+        onestep = function(p0,p1) { return 'H'+d3.round(p1[0],2)+'V'+d3.round(p1[1],2); };
+    }
+    else if(shape=='vh') {
+        onestep = function(p0,p1) { return 'V'+d3.round(p1[1],2)+'H'+d3.round(p1[0],2); };
+    }
+    else if(shape=='hvh') {
+        onestep = function(p0,p1) { return 'H'+d3.round((p0[0]+p1[0])/2,2)+'V'+d3.round(p1[1],2)+'H'+d3.round(p1[0],2); };
+    }
+    else if(shape=='vhv') {
+        onestep = function(p0,p1) { return 'V'+d3.round((p0[1]+p1[1])/2,2)+'H'+d3.round(p1[0],2)+'V'+d3.round(p1[1],2); };
+    }
+    else {
+        onestep = function(p0,p1) { return 'L'+d3.round(p1[0],2)+','+d3.round(p1[1],2); };
+    }
+    return function(pts) {
+        var path = 'M'+d3.round(pts[0][0],2)+','+d3.round(pts[0][1],2);
+        for(var i=1; i<pts.length; i++) { path += onestep(pts[i-1],pts[i]); }
+        return path;
+    };
+};
+
 }()); // end Drawing object definition
