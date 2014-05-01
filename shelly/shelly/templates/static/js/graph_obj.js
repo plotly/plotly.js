@@ -415,6 +415,21 @@ Plotly.plot = function(gd, data, layout) {
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if($.isArray(data)) {
+        /*
+         * Enforce unique IDs
+         */
+        var uids = data
+                   .filter( function (d) { return 'uid' in d; } )
+                   .map( function (d) { return d.uid; })
+
+        if (!graphwasempty) {
+            uids = uids.concat(
+                gd.data
+                .filter( function (d) { return 'uid' in d; } )
+                .map( function (d) { return d.uid; })
+            )
+        }
+
         // backward compatibility: make a few changes to the data right away
         // before it gets used for anything
         // replace bardir with orientation and swap x/y if needed
@@ -425,10 +440,11 @@ Plotly.plot = function(gd, data, layout) {
                 delete c.xbins;
             }
 
-            // I just chucked this in here because I keep requiring UIDs so I might as
-            // well add them up front. Right now we are hoping we don't get a collision.
-            // in the future we can make sure by passing an array of current uids into plotly.randstr
-            if (!('uid' in c)) c.uid = Plotly.Lib.randstr()
+            // Detect existing collisions and pass in array of existing uids to randstr
+            if (!('uid' in c) || uids.indexOf(c.uid) > -1) {
+                c.uid = Plotly.Lib.randstr()
+                uids.push(c.uid)
+            }
 
             // convert bardir to orientation, and put the data into the axes it's eventually going to be used with
             if('bardir' in c) {
@@ -1050,8 +1066,6 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('textfont.color','tc',gd.layout.font.color);
                 mergeattr('textfont.family','tf',gd.layout.font.family);
                 mergeattr('connectgaps','connectgaps',false);
-                mergeattr('line.shape','lineshape','linear');
-                mergeattr('line.smoothing','ls',1);
             }
             else if(type==='box') {
                 mergeattr('whiskerwidth','ww',0.5);
@@ -1212,7 +1226,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // replot_attr attributes need a replot (because different objects need to be made) but not a recalc
     var replot_attr = [
         'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','colorscale','reversescale','zsmooth',
-        'contours.start','contours.end','contours.size','contours.showlines','line.smoothing','line.shape',
+        'contours.start','contours.end','contours.size','contours.showlines','line.smoothing',
         'error_y.width','error_x.width','marker.maxdisplayed'
     ];
     // these ones show up in restyle because they make more sense in the style
