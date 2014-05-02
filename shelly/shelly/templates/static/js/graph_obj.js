@@ -1245,7 +1245,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // replot_attr attributes need a replot (because different objects need to be made) but not a recalc
     var replot_attr = [
         'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','colorscale','reversescale','zsmooth',
-        'contours.start','contours.end','contours.size','contours.showlines','line.smoothing',
+        'contours.start','contours.end','contours.size','contours.showlines','line.smoothing','line.shape',
         'error_y.width','error_x.width','marker.maxdisplayed'
     ];
     // these ones show up in restyle because they make more sense in the style
