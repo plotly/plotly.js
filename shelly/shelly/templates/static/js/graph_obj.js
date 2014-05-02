@@ -263,6 +263,8 @@ var CONTOURTYPES = ['contour','histogram2dcontour'];
 plots.isContour = function(type) { return CONTOURTYPES.indexOf(type)!=-1; };
 var HIST2DTYPES = ['histogram2d','histogram2dcontour'];
 plots.isHist2D = function(type) { return HIST2DTYPES.indexOf(type)!=-1; };
+var GL3DTYPES = ['scatter3d', 'surface'];
+plots.isGL3D = function(type) { return GL3DTYPES.indexOf(type) !== -1; };
 
 plots.newTab = function(divid, layout) {
     makeToolMenu(divid);
@@ -297,7 +299,7 @@ function makeToolMenu(divid) {
 function updateTraces(old_data, new_data) {
     var updated = {},
         res = [],
-        i;
+        i, new_trace, old_trace;
     for (i=0; i<old_data.length; i++){
         old_trace = old_data[i];
         updated[old_trace['name']] = old_trace;
@@ -413,15 +415,43 @@ Plotly.plot = function(gd, data, layout) {
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
     if($.isArray(data)) {
+        /*
+         * Enforce unique IDs
+         */
+        var suids = []    // seen uids --- so we can weed out incoming repeats
+        var uids = data
+                   .filter( function (d) { return 'uid' in d; } )
+                   .map( function (d) { return d.uid; })
+
+        if (!graphwasempty) {
+            uids = uids.concat(
+                    gd.data
+                    .filter( function (d) { return 'uid' in d; } )
+                    .map( function (d) { return d.uid; })
+            )
+        }
+
         // backward compatibility: make a few changes to the data right away
         // before it gets used for anything
         // replace bardir with orientation and swap x/y if needed
         data.forEach(function(c) {
+            var uix
             // use xbins to bin data in x, and ybins to bin data in y
             if(c.type=='histogramy' && 'xbins' in c && !('ybins' in c)) {
                 c.ybins = c.xbins;
                 delete c.xbins;
             }
+            // assign uids to each trace - detect collisions and existing repeats.
+            if ('uid' in c && suids.indexOf(c.uid) === -1) {
+                // keep track of already seen uids, so that if there are doubles we force
+                // the trace with a repeat uid to acquire a new one
+                suids.push(c.uid)
+            }
+            else {
+                c.uid = Plotly.Lib.randstr(uids)
+                uids.push(c.uid)
+            }
+
             // convert bardir to orientation, and put the data into the axes it's eventually going to be used with
             if('bardir' in c) {
                 if(c.bardir=='h' && (Plotly.Plots.isBar(c.type)||c.type.substr(0,9)=='histogram')) {
@@ -549,91 +579,100 @@ Plotly.plot = function(gd, data, layout) {
         return null;
     }
 ////////////////////////////////  3D   /////////////////////////////////////////////////
-    else if (layout && layout._gl3d === 'surface') {
+    else if ( gd.data
+           && gd.data.length
+           && gd.data.some(
+               function (d) { return plots.isGL3D(d.type) } )) {
         /*
-         * Surface Plot
+         * surface and scatter3d
          * webgl 3d
          *
-         * Right now triggers on 2D 'z' data
-         * Need to add ndarray interpolation (a mikola module) so we can
-         * also trigger on 'x' 'y' and 'z' data for surfaces
-         *
          */
-        var opts = {container: gd.querySelector('.svg-container')}
-        opts.container.innerHTML = '' // obviously this won't work for subplots
-        GlContext.newContext(opts, function (glx) {
-            var zdata
-            if (data[0] && data.z && data.z.length) {
-                // for now default to test data on empty data array
-                zdata = data[0].z
-            } else {
-                zdata = glx.testData('dirac', 80, 120)
-            }
-            var mean = zdata
-                       .map( function (row) {
-                           return row.reduce( function (p, c) { return p+c } ) / row.length
-                       })
-                       .reduce( function (p, c) { return p+c } ) / zdata.length
+        var glContainerOptions = {
+            container: gd.querySelector('.svg-container')
+          , zIndex: '1000'
+        }
+
+        if (!('_glContexts' in gd.layout)) {
+            gd.layout._glContexts = []
+        }
+
+        if (!('_viewports' in gd.layout)) {
+            gd.layout._viewports = []
+        }
+
+        gd.data
+        .filter( function (d) { return plots.isGL3D(d.type) } )
+        .forEach( function (d) {
 
 
-            glx.setCameraPosition(
-                null
-              , [Math.round(zdata[0].length/2), Math.round(zdata.length/2), mean]
-              , null
-            )
-
-            var surface = glx.defineSurface(zdata)
-            console.log(surface)
-            var axisopts = {
-                extents: surface.bounds
-              , tickSpacing: [8,8,8]
-            }
-            var axis = glx.defineAxis(axisopts)
-
-            glx.onRender = function () {
-                glx.drawSurface()
-                glx.drawAxis()
+            if (!Array.isArray(d.z)) {
+                $.extend(d, GlContext.testData(d.type, 120, 120, [40,40,40]))
             }
 
+
+            /*
+             * In the case existing glContexts are active in this tab:
+             * If data has a destination viewport attempt to match that to the
+             * associated glContext - otherwise add a new viewport.
+             * (maybe we want to add it to the first viewport as default, I dunno)
+             * If a particular data trace also has a glID. It means the surface or mesh
+             * for this data trace has already been drawn and we can just do an update
+             * (updating not yet implemented).
+             *
+             * So for now if there are existing surfaces or meshes, destroy them all.
+             *
+             */
+            var glx
+            if ($.isNumeric(d.viewport) && (glx = gd.layout._glContexts[d.viewport])) {
+                // you can change the camera position before or after initializing data
+                // or accept defaults
+                glx.draw(d, d.type)
+                glx.axisOn()
+            }
+
+            else {
+                /*
+                 * Creating new GLContexts in an asyncronous process.
+                 */
+                GlContext.newContext(glContainerOptions, function (glx) {
+
+
+                    gd.layout._glContexts.push(glx)
+                    /*
+                     * Viewport arrangements need to be implemented, just splice
+                     * along the horizontal direction for now. ie,
+                     * x:[0,1] -> x:[0,0.5], x:[0.5,1] -> x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
+                     *
+                     * Add a link to d.viewport to the viewport it is created in.
+                     *
+                     */
+                    d.viewport = gd.layout._viewports.push({x:[0,1],y:[0,1]}) - 1
+                    gd.layout._viewports = gd.layout._viewports.map(
+                        function (viewport, idx, viewports) {
+                            viewport.x = [idx/viewports.length, (idx+1)/viewports.length]
+                            return viewport
+                        })
+
+                    /*
+                     * Reset all glContext positions (for now just set width % as viewport x ratio)
+                     */
+                    gd.layout._glContexts.map(
+                        function (glx, idx) { glx.setPosition(gd.layout._viewports[idx]) }
+                    )
+
+                    glx.draw(d, d.type)
+
+                    /*
+                     * Calling glx.axisOn when it is already on will update it to include
+                     * any changes to the boundaries of the drawn objects (autoscaling)
+                     */
+                    glx.axisOn()
+                })
+            }
         })
-        return void 0
     }
 
-    else if (layout && layout._gl3d === 'scatter') {
-        /*
-         * 3D scatter
-         * webgl 3d
-         *
-         * Triggering on 'x' 'y' and 'z' data
-         *
-         */
-        var opts = {container: gd.querySelector('.svg-container')}
-        opts.container.innerHTML = ''
-        GlContext.newContext(opts, function (glx) {
-
-
-            var sdata = glx.testData('scatter', 200, 200)
-
-            var axislims = [[0, 0, 0], [1,1,1]]
-
-
-            glx.setCameraPosition(null
-                                 , [Math.round(axislims[1][0]/2), Math.round(axislims[1][0]/2), 0.25]
-                                 , null)
-
-            var scatter = glx.defineScatter(sdata)
-            var axis = glx.defineAxis({
-                extents: axislims // [[xmin, ymin, zmin], [xmax, ymax, zmax]]
-              , tickSpacing: [0.1,0.1,0.1]
-            })
-            console.log(scatter)
-            glx.onRender = function () {
-                glx.drawScatter()
-                glx.drawAxis()
-            }
-        })
-        return void 0
-    }
 ////////////////////////////////  end of 3D   /////////////////////////////////////////////
 
 
@@ -756,7 +795,7 @@ Plotly.plot = function(gd, data, layout) {
         Plotly.Legend.draw(gd, gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!==false));
         gd.calcdata.forEach(function(cd) {
             var t = cd[0].t;
-            if(t.visible===false || !plots.isHeatmap(t.type) || t.showscale===false) { plots.autoMargin(gd,t.curve); }
+            if(t.visible===false || !plots.isHeatmap(t.type)) { plots.autoMargin(gd,'cb'+t.curve); }
             else if(plots.isContour(t.type)) { Plotly.Contour.colorbar(gd,cd); }
             else  { Plotly.Heatmap.colorbar(gd,cd); }
         });
@@ -949,17 +988,19 @@ plots.setStyles = function(gd, merge_dflt) {
         mergeattr('opacity','op',1);
         mergeattr('text','tx','');
         mergeattr('name','name','trace '+c);
-        mergeattr('error_y.visible','ye_vis',false);
-        mergeattr('error_x.visible','xe_vis',false);
+        mergeattr('error_y.visible','ye_vis',gdc.error_y && ('array' in gdc.error_y || 'value' in gdc.error_y));
+        mergeattr('error_x.visible','xe_vis',gdc.error_x && ('array' in gdc.error_x || 'value' in gdc.error_x));
         t.xaxis = gdc.xaxis||'x'; // mergeattr is unnecessary and insufficient here, because '' shouldn't count as existing
         t.yaxis = gdc.yaxis||'y';
-        var type = t.type, // like 'bar'
-            xevis = gdc.error_x && gdc.error_x.visible,
-            yevis = gdc.error_y && gdc.error_y.visible;
-        if(yevis){
-            mergeattr('error_y.type','ye_type','percent');
+        var type = t.type; // like 'bar'
+
+        if(t.ye_vis){
+            mergeattr('error_y.type','ye_type',('array' in gdc.error_y) ? 'data' : 'percent');
+            mergeattr('error_y.symmetric','ye_sym',!((t.ye_type=='data' ? 'arrayminus' : 'valueminus') in gdc.error_y));
             mergeattr('error_y.value','ye_val',10);
+            mergeattr('error_y.valueminus','ye_valminus',10);
             mergeattr('error_y.traceref','ye_tref',0);
+            mergeattr('error_y.tracerefminus','ye_trefminus',0);
             if('opacity' in gdc.error_y) { // for backward compatibility - error_y.opacity has been removed
                 var ye_clr = gdc.error_y.color || (plots.isBar(t.type) ? '#444' : defaultColor);
                 gdc.error_y.color = Plotly.Drawing.addOpacity(Plotly.Drawing.rgb(ye_clr),
@@ -970,10 +1011,13 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('error_y.thickness','ye_tkns', 2);
             mergeattr('error_y.width','ye_w', 4);
         }
-        if(xevis){
-            mergeattr('error_x.type','xe_type','percent');
+        if(t.xe_vis){
+            mergeattr('error_x.type','xe_type',('array' in gdc.error_x) ? 'data' : 'percent');
+            mergeattr('error_x.symmetric','xe_sym',!((t.xe_type=='data' ? 'arrayminus' : 'valueminus') in gdc.error_x));
             mergeattr('error_x.value','xe_val',10);
+            mergeattr('error_x.valueminus','xe_valminus',10);
             mergeattr('error_x.traceref','xe_tref',0);
+            mergeattr('error_x.tracerefminus','xe_trefminus',0);
             mergeattr('error_x.copy_ystyle','xe_ystyle',(gdc.error_x.color||gdc.error_x.thickness||gdc.error_x.width)?false:true);
             var xsLetter = t.xe_ystyle!==false ? 'y' : 'x';
             mergeattr('error_'+xsLetter+'.color','xe_clr', plots.isBar(t.type) ? '#444' : defaultColor);
@@ -1033,6 +1077,8 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('textfont.color','tc',gd.layout.font.color);
                 mergeattr('textfont.family','tf',gd.layout.font.family);
                 mergeattr('connectgaps','connectgaps',false);
+                mergeattr('line.shape','lineshape','linear');
+                mergeattr('line.smoothing','ls',1);
             }
             else if(type==='box') {
                 mergeattr('whiskerwidth','ww',0.5);
@@ -1096,7 +1142,7 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattrs(Plotly.Colorbar.defaults());
         }
         else if(plots.isBar(type)){
-            if(type!='bar') {
+            if(type=='histogram') {
                 mergeattr('histfunc','histfunc','count');
                 mergeattr('histnorm','histnorm','');
                 mergeattr('autobinx','autobinx',true);
@@ -1104,8 +1150,12 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('xbins.start','xbstart',0);
                 mergeattr('xbins.end','xbend',1);
                 mergeattr('xbins.size','xbsize',1);
+                mergeattr('autobiny','autobiny',true);
+                mergeattr('nbinsy','nbinsy',0);
+                mergeattr('ybins.start','ybstart',0);
+                mergeattr('ybins.end','ybend',1);
+                mergeattr('ybins.size','ybsize',1);
             }
-            mergeattr('orientation','orientation','v');
             mergeattr('marker.opacity','mo',1);
             mergeattr('marker.color','mc',defaultColor);
             mergeattr('marker.line.color','mlc','#444');
@@ -1153,7 +1203,7 @@ Plotly.restyle = function(gd,astr,val,traces) {
     // console.log(gd,astr,val,traces);
     if(typeof gd == 'string') { gd = document.getElementById(gd); }
 
-    var gl = gd.layout,
+    var i, gl = gd.layout,
         aobj = {};
     if(typeof astr == 'string') { aobj[astr] = val; }
     else if($.isPlainObject(astr)) {
@@ -1187,13 +1237,15 @@ Plotly.restyle = function(gd,astr,val,traces) {
     var autorange_attr = [
         'marker.size','textfont.size','textposition',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array',
+        'error_y.symmetric','error_y.arrayminus','error_y.valueminus','error_y.tracerefminus',
         'error_x.visible','error_x.value','error_x.type','error_x.traceref','error_x.array',
+        'error_x.symmetric','error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
         'boxpoints','jitter','pointpos','whiskerwidth','boxmean'
     ];
     // replot_attr attributes need a replot (because different objects need to be made) but not a recalc
     var replot_attr = [
         'connectgaps','zmin','zmax','zauto','mincolor','maxcolor','colorscale','reversescale','zsmooth',
-        'contours.start','contours.end','contours.size','contours.showlines','line.smoothing',
+        'contours.start','contours.end','contours.size','contours.showlines','line.smoothing','line.shape',
         'error_y.width','error_x.width','marker.maxdisplayed'
     ];
     // these ones show up in restyle because they make more sense in the style
@@ -1406,6 +1458,7 @@ function swapxydata(gdc) {
     swapAttrs(gdc,'?0');
     swapAttrs(gdc,'d?');
     swapAttrs(gdc,'?bins');
+    swapAttrs(gdc,'nbins?');
     swapAttrs(gdc,'autobin?');
     if($.isArray(gdc.z) && $.isArray(gdc.z[0])) {
         if(gdc.transpose) { delete gdc.transpose; }
@@ -1802,32 +1855,45 @@ function makePlotFramework(divid, layout) {
         newLayout = layout || {};
     // look for axes to include in oldLayout - so that default axis settings get included
     var xalist = Object.keys(newLayout).filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
-        yalist = Object.keys(newLayout).filter(function(k){ return k.match(/^yaxis[0-9]*$/); });
-    if(!xalist.length) { xalist = ['xaxis']; }
-    if(!yalist.length) { yalist = ['yaxis']; }
-    xalist.concat(yalist).forEach(function(axname) {
-        addDefaultAxis(oldLayout,axname);
-        // if an axis range was explicitly provided with newlayout, turn off autorange
-        if(newLayout[axname] && newLayout[axname].range && newLayout[axname].range.length==2) {
-            oldLayout[axname].autorange = false;
-        }
-    });
-    gd.layout=updateObject(oldLayout, newLayout);
-    var gl = gd.layout;
+        yalist = Object.keys(newLayout).filter(function(k){ return k.match(/^yaxis[0-9]*$/); }),
+        type = (type = gd.data) && (type = type[0]) && (type = type.type), // temp hack for webgl
+        gl = gd.layout,
+        subplots;
 
-    // Get subplots and see if we need to make any more axes
-    var subplots = plots.getSubplots(gd);
-    subplots.forEach(function(subplot) {
-        var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
-        // gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
-        [axmatch[1],axmatch[2]].forEach(function(axid) {
-            addDefaultAxis(gl,Plotly.Axes.id2name(axid));
+    if (!plots.isGL3D(type)) {
+        // do a bunch of 2D axis stuff
+
+        if(!xalist.length) { xalist = ['xaxis']; }
+        if(!yalist.length) { yalist = ['yaxis']; }
+        xalist.concat(yalist).forEach(function(axname) {
+            addDefaultAxis(oldLayout,axname);
+            // if an axis range was explicitly provided with newlayout, turn off autorange
+            if(newLayout[axname] && newLayout[axname].range && newLayout[axname].range.length==2) {
+                oldLayout[axname].autorange = false;
+            }
         });
-    });
-    // now get subplots again, in case the new axes require more subplots (yes, that's odd... but possible)
-    subplots = plots.getSubplots(gd);
+        gd.layout = gl = updateObject(oldLayout, newLayout);
 
-    Plotly.Axes.setTypes(gd);
+
+        // Get subplots and see if we need to make any more axes
+        subplots = plots.getSubplots(gd);
+        subplots.forEach(function(subplot) {
+            var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
+            // gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
+            [axmatch[1],axmatch[2]].forEach(function(axid) {
+                addDefaultAxis(gl,Plotly.Axes.id2name(axid));
+            });
+        });
+        // now get subplots again, in case the new axes require more subplots (yes, that's odd... but possible)
+        subplots = plots.getSubplots(gd);
+
+        Plotly.Axes.setTypes(gd);
+
+    } else {
+        // This is WEBGL, remove usual axis
+        delete gd.layout['xaxis']
+        delete gd.layout['yaxis']
+    }
 
     var outerContainer = gl._fileandcomments = gd3.selectAll('.file-and-comments');
     // for embeds and cloneGraphOffscreen

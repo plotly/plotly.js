@@ -717,7 +717,7 @@ lib.randstr = function randstr(existing, bits, base) {
      * and an optional array of existing strings to avoid.
      */
     if (!base) base = 16;
-    if (bits === undefined) bits = 128;
+    if (bits === undefined) bits = 24;
     if (bits <= 0) return '0';
     var i,b,x;
 
