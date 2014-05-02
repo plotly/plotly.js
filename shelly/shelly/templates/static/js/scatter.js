@@ -143,7 +143,7 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
     }
 
     // BUILD LINES AND FILLS
-    var prevpts='',tozero,tonext,nexttonext;
+    var prevpath='',tozero,tonext,nexttonext;
     scattertraces.each(function(d){ // <-- now, iterate through arrays of {x,y} objects
         var t=d[0].t; // <-- get trace-wide formatting object
         if(t.visible===false) { return; }
@@ -151,7 +151,7 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
         // make the fill-to-zero path now, so it shows behind the line
         // have to break out of d3-style here (data-curve attribute) because fill to next
         // puts the fill associated with one trace grouped with the previous
-        tozero = (t.fill.substr(0,6)=='tozero' || (t.fill.substr(0,2)=='to' && !prevpts)) ?
+        tozero = (t.fill.substr(0,6)=='tozero' || (t.fill.substr(0,2)=='to' && !prevpath)) ?
             tr.append('path').classed('js-fill',true).attr('data-curve',t.cdcurve) : null;
         // make the fill-to-next path now for the NEXT trace, so it shows behind both lines
         // nexttonext was created last time, but give it this curve's data for fill color
@@ -163,8 +163,9 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
         // and later we add the first letter, either "M" if this is the beginning of
         // the path, or "L" if it's being concatenated on something else
         // pts ends at a missing point, and gets restarted at the next point (unless t.connectgaps is truthy)
-        // pts2 is all paths for this curve, joined together straight across gaps
-        var pts = '', pts2 = '', atLeastTwo;
+        // fullpath is all paths for this curve, joined together straight across gaps,
+        // revpath is the same reversed for fill-to-next
+        var pts = [], thispath, fullpath = '', revpath = '', atLeastTwo;
 
         // for decimation: store pixel positions of things we're working with as [x,y]
         var lastEntered, tryHigh, tryLow, prevPt, pti;
@@ -173,7 +174,22 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
         // decimationTolerance: max pixels between points to allow decimation
         var lastEnd, decimationMode, decimationTolerance;
 
-        // add a single [x,y] to the pts string
+        // functions for converting a point array to a path
+        var pathfn, revpathbase;
+        if(['hv','vh','hvh','vhv'].indexOf(t.lineshape)!=-1) {
+            pathfn = Plotly.Drawing.steps(t.lineshape);
+            revpathbase = Plotly.Drawing.steps(t.lineshape.split('').reverse().join(''));
+        }
+        else if(t.lineshape=='spline') {
+            pathfn = revpathbase = function(pts) { return Plotly.Drawing.smoothopen(pts,t.ls); };
+        }
+        else {
+            pathfn = revpathbase = function(pts) { return 'M' + pts.join('L'); };
+        }
+
+        var revpathfn = function(pts) { return 'L'+revpathbase(pts.reverse()).substr(1); };
+
+        // add a single [x,y] to the pts array
         function addPt(pt) {
             atLeastTwo = true;
             add0(pt); // implicit array stringifying
@@ -185,7 +201,7 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
         // future, like smoothing splines.
         function add0(pt) {
             if(!$.isNumeric(pt[0]) || !$.isNumeric(pt[1])) { return; }
-            pts += 'L' + pt;
+            pts.push(pt);
         }
 
         // finish one decimation step - now decide what to do with tryHigh, tryLow, and prevPt
@@ -211,7 +227,7 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
         }
 
         while(i<d.length) {
-            pts='';
+            pts=[];
             atLeastTwo = false;
             lastEntered = null;
             decimationMode = -1;
@@ -226,7 +242,7 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
                 // first point: always add it, and prep the other variables
                 if(!lastEntered) {
                     lastEntered = pti;
-                    pts += lastEntered;
+                    pts.push(lastEntered);
                     if(!pt0) { pt0 = lastEntered; }
                     continue;
                 }
@@ -265,27 +281,29 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
             if(decimationMode>=0) { // end of the data is mid-decimation - close it out.
                 finishDecimation(pti);
             }
-            if(pts) {
-                pts2+=(pts2 ? 'L' : '') + pts;
+            if(pts.length) {
+                thispath = pathfn(pts);
+                fullpath += fullpath ? ('L'+thispath.substr(1)) : thispath;
+                revpath = revpathfn(pts) + revpath;
                 if(t.mode.indexOf('lines')!=-1 && atLeastTwo) {
-                    tr.append('path').classed('js-line',true).attr('d','M'+pts);
+                    tr.append('path').classed('js-line',true).attr('d',thispath);
                 }
             }
         }
-        if(pts2) {
+        if(fullpath) {
             if(tozero) {
                 if(pt0 && pt1) {
                     if(t.fill.charAt(t.fill.length-1)=='y') { pt0[1]=pt1[1]=ya.c2p(0,true); }
                     else { pt0[0]=pt1[0]=xa.c2p(0,true); }
                     // fill to zero: full trace path, plus extension of the endpoints to the appropriate axis
-                    tozero.attr('d','M'+pts2+'L'+pt1+'L'+pt0+'Z');
+                    tozero.attr('d',fullpath+'L'+pt1+'L'+pt0+'Z');
                 }
             }
-            else if(t.fill.substr(0,6)=='tonext' && pts2 && prevpts) {
+            else if(t.fill.substr(0,6)=='tonext' && fullpath && prevpath) {
                 // fill to next: full trace path, plus the previous path reversed
-                tonext.attr('d','M'+pts2.split('L').reverse().join('L')+'L'+prevpts+'Z');
+                tonext.attr('d',fullpath+prevpath+'Z');
             }
-            prevpts = pts2;
+            prevpath = revpath;
         }
     });
 
