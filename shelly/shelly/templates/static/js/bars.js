@@ -6,10 +6,12 @@ bars.calc = function(gd,gdc) {
     if(gdc.visible===false) { return; }
 
     // depending on bar direction, set position and size axes and data ranges
+    // note: this logic for choosing orientation is duplicated in graph_obj->setstyles
     var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
+        orientation = gdc.orientation || ((gdc.x && !gdc.y) ? 'h' : 'v'),
         pos, size, i;
-    if(gdc.orientation=='h') {
+    if(orientation=='h') {
         size = xa.makeCalcdata(gdc,'x');
         pos = ya.makeCalcdata(gdc,'y');
     }
@@ -26,6 +28,7 @@ bars.calc = function(gd,gdc) {
             cd.push({p:pos[i],s:size[i],b:0});
         }
     }
+    if(cd[0]) { cd[0].t = {orientation:orientation};}
     return cd;
 };
 

@@ -756,7 +756,7 @@ Plotly.plot = function(gd, data, layout) {
         Plotly.Legend.draw(gd, gl.showlegend || (gd.calcdata.length>1 && gl.showlegend!==false));
         gd.calcdata.forEach(function(cd) {
             var t = cd[0].t;
-            if(t.visible===false || !plots.isHeatmap(t.type) || t.showscale===false) { plots.autoMargin(gd,t.curve); }
+            if(t.visible===false || !plots.isHeatmap(t.type)) { plots.autoMargin(gd,'cb'+t.curve); }
             else if(plots.isContour(t.type)) { Plotly.Contour.colorbar(gd,cd); }
             else  { Plotly.Heatmap.colorbar(gd,cd); }
         });
@@ -949,17 +949,20 @@ plots.setStyles = function(gd, merge_dflt) {
         mergeattr('opacity','op',1);
         mergeattr('text','tx','');
         mergeattr('name','name','trace '+c);
-        mergeattr('error_y.visible','ye_vis',false);
-        mergeattr('error_x.visible','xe_vis',false);
+        mergeattr('error_y.visible','ye_vis',gdc.error_y && ('array' in gdc.error_y || 'value' in gdc.error_y));
+        mergeattr('error_x.visible','xe_vis',gdc.error_x && ('array' in gdc.error_x || 'value' in gdc.error_x));
         t.xaxis = gdc.xaxis||'x'; // mergeattr is unnecessary and insufficient here, because '' shouldn't count as existing
         t.yaxis = gdc.yaxis||'y';
-        var type = t.type, // like 'bar'
-            xevis = gdc.error_x && gdc.error_x.visible,
-            yevis = gdc.error_y && gdc.error_y.visible;
-        if(yevis){
-            mergeattr('error_y.type','ye_type','percent');
+        var type = t.type; // like 'bar'
+            // xevis = gdc.error_x && gdc.error_x.visible,
+            // yevis = gdc.error_y && gdc.error_y.visible;
+        if(t.ye_vis){
+            mergeattr('error_y.type','ye_type',('array' in gdc.error_y) ? 'data' : 'percent');
+            mergeattr('error_y.symmetric','ye_sym',!((t.ye_type=='data' ? 'arrayminus' : 'valueminus') in gdc.error_y));
             mergeattr('error_y.value','ye_val',10);
+            mergeattr('error_y.valueminus','ye_valminus',10);
             mergeattr('error_y.traceref','ye_tref',0);
+            mergeattr('error_y.tracerefminus','ye_trefminus',0);
             if('opacity' in gdc.error_y) { // for backward compatibility - error_y.opacity has been removed
                 var ye_clr = gdc.error_y.color || (plots.isBar(t.type) ? '#444' : defaultColor);
                 gdc.error_y.color = Plotly.Drawing.addOpacity(Plotly.Drawing.rgb(ye_clr),
@@ -970,10 +973,13 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattr('error_y.thickness','ye_tkns', 2);
             mergeattr('error_y.width','ye_w', 4);
         }
-        if(xevis){
-            mergeattr('error_x.type','xe_type','percent');
+        if(t.xe_vis){
+            mergeattr('error_x.type','xe_type',('array' in gdc.error_x) ? 'data' : 'percent');
+            mergeattr('error_x.symmetric','xe_sym',!((t.xe_type=='data' ? 'arrayminus' : 'valueminus') in gdc.error_x));
             mergeattr('error_x.value','xe_val',10);
+            mergeattr('error_x.valueminus','xe_valminus',10);
             mergeattr('error_x.traceref','xe_tref',0);
+            mergeattr('error_x.tracerefminus','xe_trefminus',0);
             mergeattr('error_x.copy_ystyle','xe_ystyle',(gdc.error_x.color||gdc.error_x.thickness||gdc.error_x.width)?false:true);
             var xsLetter = t.xe_ystyle!==false ? 'y' : 'x';
             mergeattr('error_'+xsLetter+'.color','xe_clr', plots.isBar(t.type) ? '#444' : defaultColor);
@@ -1096,7 +1102,7 @@ plots.setStyles = function(gd, merge_dflt) {
             mergeattrs(Plotly.Colorbar.defaults());
         }
         else if(plots.isBar(type)){
-            if(type!='bar') {
+            if(type=='histogram') {
                 mergeattr('histfunc','histfunc','count');
                 mergeattr('histnorm','histnorm','');
                 mergeattr('autobinx','autobinx',true);
@@ -1104,8 +1110,15 @@ plots.setStyles = function(gd, merge_dflt) {
                 mergeattr('xbins.start','xbstart',0);
                 mergeattr('xbins.end','xbend',1);
                 mergeattr('xbins.size','xbsize',1);
+                // note that auto-orientation is opposite btwn hist and bar
+                // histograms are horizontal if there's a y and no x
+                // bars are horizontal if there's x and no y
+                // this logic is duplicated in Bars.calc and Histogram.calc
+                // mergeattr('orientation','orientation',(gdc.y && !gdc.x) ? 'h' : 'v');
             }
-            mergeattr('orientation','orientation','v');
+            // else {
+            //     mergeattr('orientation','orientation',(gdc.x && !gdc.y) ? 'h' : 'v');
+            // }
             mergeattr('marker.opacity','mo',1);
             mergeattr('marker.color','mc',defaultColor);
             mergeattr('marker.line.color','mlc','#444');
@@ -1187,7 +1200,9 @@ Plotly.restyle = function(gd,astr,val,traces) {
     var autorange_attr = [
         'marker.size','textfont.size','textposition',
         'error_y.visible','error_y.value','error_y.type','error_y.traceref','error_y.array',
+        'error_y.symmetric','error_y.arrayminus','error_y.valueminus','error_y.tracerefminus',
         'error_x.visible','error_x.value','error_x.type','error_x.traceref','error_x.array',
+        'error_x.symmetric','error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
         'boxpoints','jitter','pointpos','whiskerwidth','boxmean'
     ];
     // replot_attr attributes need a replot (because different objects need to be made) but not a recalc
@@ -1406,6 +1421,7 @@ function swapxydata(gdc) {
     swapAttrs(gdc,'?0');
     swapAttrs(gdc,'d?');
     swapAttrs(gdc,'?bins');
+    swapAttrs(gdc,'nbins?');
     swapAttrs(gdc,'autobin?');
     if($.isArray(gdc.z) && $.isArray(gdc.z[0])) {
         if(gdc.transpose) { delete gdc.transpose; }
