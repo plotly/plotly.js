@@ -306,26 +306,37 @@ legend.repositionLegend = function(td, traces){
     // add the legend elements, keeping track of the legend size (in px) as we go
     var legendwidth=0, legendheight=0;
     traces.each(function(d){
-        var g=d3.select(this), t=g.select('.legendtext'), l=g.select('.legendpoints');
+        var g = d3.select(this),
+            text = g.select('.legendtext'),
+            tspans = g.selectAll('.legendtext>tspan'),
+            tHeight = (gll.font.size || gl.font.size || 12)*1.3,
+            tLines = tspans[0].length||1,
+            tWidth = text.node() && text.node().getBoundingClientRect().width,
+            mathjaxGroup = g.select('g[class*=math-group]'),
+            mathjaxBB, textY, tHeightFull;
+
         if(d[0].t.showinlegend===false) {
             g.remove();
             return;
         }
-        if(!t.node()) return;
-        var tbb = t.node().getBoundingClientRect();
-        if(!l.node()) { l=g.select('path'); }
-        var lbb = (!l.node()) ? tbb : l.node().getBoundingClientRect();
-        t.attr('y',(lbb.top+lbb.bottom-tbb.top-tbb.bottom)/2);
-        var gbb = this.getBoundingClientRect();
-        var mathjaxGroup = g.select('g[class*=math-group]');
-        if(mathjaxGroup.node()) legendwidth = Math.max(legendwidth, mathjaxGroup.node().getBoundingClientRect().width);
-        else legendwidth = Math.max(legendwidth,tbb.width);
-        // Firefox makes oversized bounding boxes for paths sometimes... at least it
-        // adds the same amount to the top and bottom so we can use it above!
-        // But here just use the text.
-        var tHeight = tbb.height || gll.font.size || gl.font.size || 12;
-        g.attr('transform','translate('+borderwidth+','+(5+borderwidth+legendheight+tHeight/2)+')');
-        legendheight += tHeight+3;
+
+        if(mathjaxGroup.node()) {
+            mathjaxBB = mathjaxGroup.node().getBoundingClientRect();
+            tHeight = mathjaxBB.height;
+            tWidth = mathjaxBB.width;
+        }
+        else {
+            // approximation to height offset to center the font...
+            // really want to minimize getBoundingClientRect for browser compat.
+            textY = tHeight * (1/3 + (1-tLines)/2);
+            text.attr('y',textY);
+            tspans.attr('y',textY);
+        }
+
+        tHeightFull = Math.max(tHeight*tLines, 16)+3;
+        g.attr('transform','translate('+borderwidth+',' + (5+borderwidth+legendheight+tHeightFull/2)+')');
+        legendheight += tHeightFull;
+        legendwidth = Math.max(legendwidth, tWidth||0);
     });
     legendwidth += 45+borderwidth*2;
     legendheight += 10+borderwidth*2;
