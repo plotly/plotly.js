@@ -579,15 +579,24 @@ Plotly.plot = function(gd, data, layout) {
         return null;
     }
 ////////////////////////////////  3D   /////////////////////////////////////////////////
-    else if ( gd.data
-           && gd.data.length
-           && gd.data.some(
-               function (d) { return plots.isGL3D(d.type) } )) {
+    else if ( gd.data &&
+              gd.data.length &&
+              gd.data.some(
+                  function (d) { return plots.isGL3D(d.type) } )) {
+
+
         /*
          * surface and scatter3d
          * webgl 3d
          *
          */
+
+        /*
+         * Set an ugly marker for now to short circuit a bunch of code.
+         * Once all the popovers are hooked in this can be removed.
+         */
+        gd.layout._isGL3D = true
+
         var glContainerOptions = {
             container: gd.querySelector('.svg-container')
           , zIndex: '1000'
