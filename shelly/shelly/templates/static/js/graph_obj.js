@@ -613,6 +613,15 @@ Plotly.plot = function(gd, data, layout) {
             gd.layout._viewports = []
         }
 
+        /*
+         * Reset all glContext positions (for now just set width % as viewport x ratio)
+         * In case this is a redraw from a resize
+         */
+        gd.layout._glContexts.map(
+            function (glxCon, idx) { glxCon.glx.setPosition(gd.layout._viewports[glxCon.viewport]) }
+        )
+
+
         gd.data
         .filter( function (d) { return plots.isGL3D(d.type) } )
         .forEach( function (d) {
@@ -634,11 +643,8 @@ Plotly.plot = function(gd, data, layout) {
              * for this data trace has already been drawn and we can just do an update
              * (updating not yet implemented).
              *
-             * So for now if there are existing surfaces or meshes, destroy them all.
-             *
              */
             var glxCon = gd.layout._glContexts[d.viewport]
-
 
 
             if (glxCon && glxCon.glx) {
