@@ -511,7 +511,7 @@ Plotly.plot = function(gd, data, layout) {
         // instanciate framework
         gd.framework = micropolar.manager.framework();
         //get rid of gd.layout stashed nodes
-        var layout = µ.util.deepExtend({}, gd.layout);
+        layout = µ.util.deepExtend({}, gd.layout);
         delete layout._container;
         delete layout._paperdiv;
         delete layout.autosize;
@@ -595,6 +595,9 @@ Plotly.plot = function(gd, data, layout) {
          * Set an ugly marker for now to short circuit a bunch of code.
          * Once all the popovers are hooked in this can be removed.
          */
+        if (gd.layout === undefined) {
+            gd.layout = layout
+        }
         gd.layout._isGL3D = true
 
         var glContainerOptions = {
@@ -619,12 +622,14 @@ Plotly.plot = function(gd, data, layout) {
                 $.extend(d, GlContext.testData(d.type, 120, 120, [40,40,40]))
             }
 
+            if (!$.isNumeric(d.viewport)) {
+                d.viewport = 0
+            }
 
             /*
              * In the case existing glContexts are active in this tab:
              * If data has a destination viewport attempt to match that to the
-             * associated glContext - otherwise add a new viewport.
-             * (maybe we want to add it to the first viewport as default, I dunno)
+             * associated glContext.
              * If a particular data trace also has a glID. It means the surface or mesh
              * for this data trace has already been drawn and we can just do an update
              * (updating not yet implemented).
@@ -632,57 +637,98 @@ Plotly.plot = function(gd, data, layout) {
              * So for now if there are existing surfaces or meshes, destroy them all.
              *
              */
-            var glx
-            if ($.isNumeric(d.viewport) && (glx = gd.layout._glContexts[d.viewport])) {
+            var glxCon = gd.layout._glContexts[d.viewport]
+
+
+
+            if (glxCon && glxCon.glx) {
                 // you can change the camera position before or after initializing data
                 // or accept defaults
-                glx.draw(d, d.type)
-                glx.axisOn()
+                glxCon.glx.draw(d, d.type)
+                glxCon.glx.axisOn()
             }
+
+
 
             else {
                 /*
-                 * Creating new GLContexts in an asyncronous process.
+                 * add data to a queue to it can be asyncronously loaded
+                 * once the glcontexts are ready
                  */
-                GlContext.newContext(glContainerOptions, function (glx) {
+                if (!glxCon) {
+                    glxCon = {
+                        glx: undefined,
+                        dataQueue: [],
+                        viewport: null,
+                        loading: false
+                    };
+                    gd.layout._glContexts[d.viewport] = glxCon
+                }
 
-
-                    gd.layout._glContexts.push(glx)
-                    /*
-                     * Viewport arrangements need to be implemented, just splice
-                     * along the horizontal direction for now. ie,
-                     * x:[0,1] -> x:[0,0.5], x:[0.5,1] -> x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
-                     *
-                     * Add a link to d.viewport to the viewport it is created in.
-                     *
-                     */
-                    d.viewport = gd.layout._viewports.push({x:[0,1],y:[0,1]}) - 1
-                    gd.layout._viewports = gd.layout._viewports.map(
-                        function (viewport, idx, viewports) {
-                            viewport.x = [idx/viewports.length, (idx+1)/viewports.length]
-                            return viewport
-                        })
-
-                    /*
-                     * Reset all glContext positions (for now just set width % as viewport x ratio)
-                     */
-                    gd.layout._glContexts.map(
-                        function (glx, idx) { glx.setPosition(gd.layout._viewports[idx]) }
-                    )
-
-                    glx.draw(d, d.type)
-
-                    /*
-                     * Calling glx.axisOn when it is already on will update it to include
-                     * any changes to the boundaries of the drawn objects (autoscaling)
-                     */
-                    glx.axisOn()
-                })
+                glxCon.viewport = d.viewport
+                glxCon.dataQueue.push(d)
             }
+        })
+
+        /*
+         * If there are viewports that need loading load them.
+         * Once they load they will iterate through any data
+         * that might be on their queue
+         */
+        gd.layout._glContexts
+        .filter( function (glxCon) {
+            if (glxCon) {
+                if (glxCon.dataQueue.length && !glxCon.loading) {
+                    glxCon.loading = true
+                    return true
+                }
+            }
+            return false
+        })
+        .forEach( function (glxCon) {
+            /*
+             * Creating new GLContexts in an asyncronous process.
+             */
+            GlContext.newContext(glContainerOptions, function (glx) {
+                glxCon.loading = false // loaded
+                glxCon.glx = glx
+                /*
+                 * Viewport arrangements need to be implemented, just splice
+                 * along the horizontal direction for now. ie,
+                 * x:[0,1] -> x:[0,0.5], x:[0.5,1] -> x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
+                 *
+                 * Add a link to d.viewport to the viewport it is created in.
+                 *
+                 */
+                glxCon.viewport = gd.layout._viewports.push({x:[0,1],y:[0,1]}) - 1
+                gd.layout._viewports = gd.layout._viewports.map(
+                    function (viewport, idx, viewports) {
+                        viewport.x = [idx/viewports.length, (idx+1)/viewports.length]
+                        return viewport
+                    })
+
+                /*
+                 * Reset all glContext positions (for now just set width % as viewport x ratio)
+                 */
+                gd.layout._glContexts.map(
+                    function (glxCon, idx) { glxCon.glx.setPosition(gd.layout._viewports[glxCon.viewport]) }
+                )
+
+                while (glxCon.dataQueue.length) {
+                    var d = glxCon.dataQueue.shift()
+                    glx.draw(d, d.type)
+                }
+                /*
+                 * Calling glx.axisOn when it is already on will update it to include
+                 * any changes to the boundaries of the drawn objects (autoscaling).
+                 */
+                glx.axisOn()
+
+            })
         })
     }
 
-////////////////////////////////  end of 3D   /////////////////////////////////////////////
+///////////////////////////////  end of 3D   /////////////////////////////////////////////
 
 
     else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
