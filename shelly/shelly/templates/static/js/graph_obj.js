@@ -586,6 +586,14 @@ Plotly.plot = function(gd, data, layout) {
 
 
         /*
+         * Once Webgl plays well with other things we can remove this.
+         * Unset examples, they misbehave with 3d plots
+         */
+        var $examplesContainer = $(gd).find('.examples-container')
+        if ($examplesContainer.css('display')) {
+            Examples.set()
+        }
+        /*
          * surface and scatter3d
          * webgl 3d
          *
@@ -771,6 +779,15 @@ Plotly.plot = function(gd, data, layout) {
     // if we have bars or fill-to-zero traces, make sure autorange goes to zero
     gd.firstscatter = true; // because fill-to-next on the first scatter trace goes to zero
     gd.numboxes = 0;
+
+
+    /*
+     * Plotly.plot shortCircuit for 3d
+     */
+    if ('layout' in gd && gd.layout._isGL3D) {
+        gd.calcdata = [];
+        return void 0;
+    }
 
     // prepare the types and conversion functions for the axes
     // also clears the autorange bounds ._min, ._max
