@@ -1987,14 +1987,18 @@ function makePlotFramework(divid, layout) {
     // short-circuiting this code in the case of 3d
     // resolves the problem where zoom scrolls the page as the page overflows
     // due to this svg container appended below a full size 3d iframe container.
-    if (!plots.isGL3D(type)) {
-        gl._paper = gl._paperdiv.append('svg')
-                    .attr({
-                        'xmlns': 'http://www.w3.org/2000/svg',
-                        'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink', // odd d3 quirk - need namespace twice??
-                        'xml:xml:space': 'preserve'
-                    });
+    // Also stops the errors coming out of d3 which arrise due to not drawing the
+    // main paper div.
+    if (plots.isGL3D(type)) {
+        return;
     }
+    gl._paper = gl._paperdiv.append('svg')
+                .attr({
+                    'xmlns': 'http://www.w3.org/2000/svg',
+                    'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink', // odd d3 quirk - need namespace twice??
+                    'xml:xml:space': 'preserve'
+                });
+
     // create all the layers in order, so we know they'll stay in order
     var overlays = [];
     gl._plots = {};
