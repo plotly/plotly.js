@@ -613,6 +613,15 @@ Plotly.plot = function(gd, data, layout) {
             gd.layout._viewports = []
         }
 
+        /*
+         * Reset all glContext positions (for now just set width % as viewport x ratio)
+         * In case this is a redraw from a resize
+         */
+        gd.layout._glContexts.map(
+            function (glxCon, idx) { glxCon.glx.setPosition(gd.layout._viewports[glxCon.viewport]) }
+        )
+
+
         gd.data
         .filter( function (d) { return plots.isGL3D(d.type) } )
         .forEach( function (d) {
@@ -634,11 +643,8 @@ Plotly.plot = function(gd, data, layout) {
              * for this data trace has already been drawn and we can just do an update
              * (updating not yet implemented).
              *
-             * So for now if there are existing surfaces or meshes, destroy them all.
-             *
              */
             var glxCon = gd.layout._glContexts[d.viewport]
-
 
 
             if (glxCon && glxCon.glx) {
@@ -1981,14 +1987,18 @@ function makePlotFramework(divid, layout) {
     // short-circuiting this code in the case of 3d
     // resolves the problem where zoom scrolls the page as the page overflows
     // due to this svg container appended below a full size 3d iframe container.
-    if (!plots.isGL3D(type)) {
-        gl._paper = gl._paperdiv.append('svg')
-                    .attr({
-                        'xmlns': 'http://www.w3.org/2000/svg',
-                        'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink', // odd d3 quirk - need namespace twice??
-                        'xml:xml:space': 'preserve'
-                    });
+    // Also stops the errors coming out of d3 which arrise due to not drawing the
+    // main paper div.
+    if (plots.isGL3D(type)) {
+        return;
     }
+    gl._paper = gl._paperdiv.append('svg')
+                .attr({
+                    'xmlns': 'http://www.w3.org/2000/svg',
+                    'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink', // odd d3 quirk - need namespace twice??
+                    'xml:xml:space': 'preserve'
+                });
+
     // create all the layers in order, so we know they'll stay in order
     var overlays = [];
     gl._plots = {};
