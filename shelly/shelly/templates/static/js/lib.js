@@ -1044,14 +1044,15 @@ lib.dropdownSelector = function dropdownSelector (spec) {
 
     var items = spec.items;
     spec.defaults = spec.defaults || 0;
+    var cls = spec.cls || '';
 
-    var $html = $('<div class="dropdown">'+
+    var $html = $('<div class="dropdown '+ cls +'">'+
                   // http://getbootstrap.com/2.3.2/javascript.html#dropdowns
-                    '<a class="link--default link--blocky dropdown-toggle" data-toggle="dropdown" data-target="#" href="/">'+
+                    '<a class="link--default link--blocky dropdown-toggle--fixed-width" data-toggle="dropdown" data-target="#" href="/">'+
                         '<span class="js-dropdown-text"></span>'+
                         '<span class="caret user-caret"></span>'+
                     '</a>'+
-                        '<ul class="dropdown-menu dropdown-menu--right-align" role="menu">'+
+                        '<ul class="dropdown-menu dropdown-toggle--fixed-width" role="menu">'+
                         '</ul>'+
                   '</div>')
 
