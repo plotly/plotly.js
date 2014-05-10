@@ -1028,6 +1028,57 @@ lib.purgeStream = function purgeStream (dobj) {
     )
 }
 
+/*
+ * Dropdown Selector
+ *
+ * A basic JQUERY + bootstrap implementation
+ * Pass in a specification object with:
+ * {
+ *   items: array of items
+ *   callback: an optional callback to be called on item selection
+ *   defaults: An array index of the item to initialize with, defaults to 0
+ * }
+ */
+lib.dropdownSelector = function dropdownSelector (spec) {
+    // return the select control for mixed types
+
+    var items = spec.items;
+    spec.defaults = spec.defaults || 0;
+
+    var $html = $('<div class="dropdown">'+
+                  // http://getbootstrap.com/2.3.2/javascript.html#dropdowns
+                    '<a class="link--default link--blocky dropdown-toggle" data-toggle="dropdown" data-target="#" href="/">'+
+                        '<span class="js-dropdown-text"></span>'+
+                        '<span class="caret user-caret"></span>'+
+                    '</a>'+
+                        '<ul class="dropdown-menu dropdown-menu--right-align" role="menu">'+
+                        '</ul>'+
+                  '</div>')
+
+    var $ul = $html.find('ul');
+    var $a_show = $html.find('.js-dropdown-text');
+
+    items.forEach( function (item, idx) {
+
+        var $li = $( '<li>'+
+                       '<a href="#">'+
+                         item +
+                       '</a>' +
+                     '</li>'
+                   );
+
+        $li.click( function ( ) {
+            $a_show.text(item);
+            if (spec.callback) spec.callback(item);
+        })
+
+        $ul.append($li);
+
+        if (idx === spec.defaults) $li.click();
+    })
+
+    return $html;
+}
 
 
 }()); // end Lib object definition
