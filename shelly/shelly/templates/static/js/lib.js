@@ -1047,9 +1047,8 @@ lib.dropdownSelector = function dropdownSelector (spec) {
     var cls = spec.cls || '';
     // http://getbootstrap.com/2.3.2/javascript.html#dropdowns
     var $html = $('<div class="dropdown '+ cls +'">'+
-                    '<a class="link--default link--blocky dropdown-toggle--fixed-width" data-toggle="dropdown" data-target="#" href="/">'+
-                        '<span class="js-dropdown-text"></span>'+
-                        '<span class="caret user-caret"></span>'+
+                    '<a class="link--default link--blocky dropdown-toggle--fixed-width js-dropdown-text" data-toggle="dropdown" data-target="#" href="/">'+
+                         '<span class="caret user-caret"></span>'+
                     '</a>'+
                         '<ul class="dropdown-menu dropdown-toggle--fixed-width" role="menu">'+
                         '</ul>'+
@@ -1068,8 +1067,8 @@ lib.dropdownSelector = function dropdownSelector (spec) {
                    );
 
         $li.click( function ( ) {
-            $a_show.text(item);
-            if (spec.callback) spec.callback(item);
+            $a_show.html( item + '<span class="caret user-caret"></span>');
+            if (spec.callback) spec.callback(item, idx);
         })
 
         $ul.append($li);
