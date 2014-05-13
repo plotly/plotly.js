@@ -582,7 +582,9 @@ Plotly.plot = function(gd, data, layout) {
     else if ( gd.data &&
               gd.data.length &&
               gd.data.some(
-                  function (d) { return plots.isGL3D(d.type) } )) {
+                  function (d) {
+                      return plots.isGL3D(d.type);
+                  } )) {
 
 
         /*
@@ -590,46 +592,19 @@ Plotly.plot = function(gd, data, layout) {
          * Unset examples, they misbehave with 3d plots
          */
         var $examplesContainer = $(gd).find('.examples-container');
-        if ($examplesContainer.css('display')) {
+        if ($examplesContainer.css('display') === 'block') {
             Examples.set();
         }
-        /*
-         * surface and scatter3d
-         * webgl 3d
-         *
-         */
 
-        /*
-         * Set an ugly marker for now to short circuit a bunch of code.
-         * Once all the popovers are hooked in this can be removed.
-         */
         if (gd.layout === undefined) {
             gd.layout = layout;
         }
-        gd.layout._isGL3D = true;
-
-        var glContainerOptions = {
-            container: gd.querySelector('.svg-container'),
-            zIndex: '1000'
-        };
-
-        if (!('_glContexts' in gd.layout)) {
-            gd.layout._glContexts = [];
-        }
-
-        if (!('_viewports' in gd.layout)) {
-            gd.layout._viewports = [];
-        }
+        gd.layout._isGL3D = true; // used to sandbox 3d plotting: remove once fully functional
 
         /*
          * Reset all glContext positions (for now just set width % as viewport x ratio)
          * In case this is a redraw from a resize
          */
-        gd.layout._glContexts.map(
-            function (glxCon, idx) { glxCon.glx.setPosition(gd.layout._viewports[glxCon.viewport]) }
-        )
-
-
         gd.data
         .filter( function (d) { return plots.isGL3D(d.type) } )
         .forEach( function (d) {
@@ -639,27 +614,34 @@ Plotly.plot = function(gd, data, layout) {
                 $.extend(d, GlContext.testData(d.type, 120, 120, [40,40,40]));
             }
 
-            if (!$.isNumeric(d.viewport)) {
-                d.viewport = 0;
-            }
+            /*
+             * Shell numbering proceeds as follows
+             * shell
+             * shell2
+             * shell3
+             *
+             * and d.shell will be undefined or some number or number string
+             */
+            var dest_shell = 'shell';
+            if (d.shell && $.isNumeric(d.shell) && d.shell > 1) dest_shell += d.shell;
 
             /*
-             * In the case existing glContexts are active in this tab:
-             * If data has a destination viewport attempt to match that to the
-             * associated glContext.
+             * In the case existing shells are active in this tab:
+             * If data has a destination shell attempt to match that to the
+             * associated shell.
              * If a particular data trace also has a glID. It means the surface or mesh
              * for this data trace has already been drawn and we can just do an update
              * (updating not yet implemented).
              *
              */
-            var glxCon = gd.layout._glContexts[d.viewport];
+            var shell = gd.layout[dest_shell];
 
 
-            if (glxCon && glxCon.glx) {
+            if (shell && shell._glx) {
                 // you can change the camera position before or after initializing data
                 // or accept defaults
-                glxCon.glx.draw(d, d.type);
-                glxCon.glx.axisOn();
+                shell._glx.draw(d, d.type);
+                shell._glx.axisOn();
             }
 
 
@@ -667,69 +649,73 @@ Plotly.plot = function(gd, data, layout) {
             else {
                 /*
                  * add data to a queue to it can be asyncronously loaded
-                 * once the glcontexts are ready
+                 * once the glcontexts are ready.
                  */
-                if (!glxCon) {
-                    glxCon = {
-                        glx: undefined,
-                        dataQueue: [],
-                        viewport: null,
-                        loading: false
+                if (!shell) {
+                    shell = {
+                        _glx: undefined,
+                        _dataQueue: [],              // for asyncronously loading data
+                        domain: {x:[0,1],y:[0,1]},  // default domain
+                        _loading: false
                     };
-                    gd.layout._glContexts[d.viewport] = glxCon;
+                    gd.layout[dest_shell] = shell;
                 }
 
-                glxCon.viewport = d.viewport;
-                glxCon.dataQueue.push(d);
+                shell._dataQueue.push(d);
             }
         })
 
         /*
-         * If there are viewports that need loading load them.
-         * Once they load they will iterate through any data
-         * that might be on their queue
+         * If there are shells that need loading load them.
+         * Recalibrate all domains now that there may be new shells.
+         * Once shells load they will iteratively load any data
+         * that might be on their queue.
+         *
+         * shell arrangements need to be implemented: For now just splice
+         * along the horizontal direction. ie.
+         * x:[0,1] -> x:[0,0.5], x:[0.5,1] -> x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
+         *
          */
-        gd.layout._glContexts
-        .filter( function (glxCon) {
-            if (glxCon) {
-                if (glxCon.dataQueue.length && !glxCon.loading) {
-                    glxCon.loading = true;
+        var shells = Object.keys(gd.layout).filter(function(k){ return k.match(/^shell[0-9]*$/); });
+
+        shells.map( function (shell_key, idx) {
+            var shell = gd.layout[shell_key];
+            // we are only modifying the x domain position with this simple approach
+            shell.domain.x = [idx/shells.length, (idx+1)/shells.length];
+            // if this shell has already been loaded it will have it's glx context parameter so lets
+            // reset the domain of the shell as it may have changed (this operates on the containing iframe)
+            if (shell._glx) shell._glx.setPosition(shell.domain);
+            return shell;
+        })
+        .filter( function (shell) {
+            /*
+             * We only want to continue to operate on shells that have data waiting to be displayed
+             * and are themselves not already undergoing loading.
+             */
+            if (shell) {
+                if (shell._dataQueue.length && !shell._loading) {
+                    shell._loading = true;
                     return true;
                 }
             }
             return false;
         })
-        .forEach( function (glxCon) {
+        .forEach( function (shell) {
             /*
-             * Creating new GLContexts in an asyncronous process.
+             * Creating new shells
              */
-            GlContext.newContext(glContainerOptions, function (glx) {
-                glxCon.loading = false; // loaded
-                glxCon.glx = glx;
-                /*
-                 * Viewport arrangements need to be implemented, just splice
-                 * along the horizontal direction for now. ie,
-                 * x:[0,1] -> x:[0,0.5], x:[0.5,1] -> x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
-                 *
-                 * Add a link to d.viewport to the viewport it is created in.
-                 *
-                 */
-                glxCon.viewport = gd.layout._viewports.push({x:[0,1],y:[0,1]}) - 1;
-                gd.layout._viewports = gd.layout._viewports.map(
-                    function (viewport, idx, viewports) {
-                        viewport.x = [idx/viewports.length, (idx+1)/viewports.length];
-                        return viewport;
-                    })
+            var shellOptions = {
+                container: gd.querySelector('.svg-container'),
+                zIndex: '1000'
+            };
 
-                /*
-                 * Reset all glContext positions (for now just set width % as viewport x ratio)
-                 */
-                gd.layout._glContexts.map(
-                    function (glxCon, idx) { glxCon.glx.setPosition(gd.layout._viewports[glxCon.viewport]); }
-                )
+            GlContext.newContext(shellOptions, function (glx) {
+                shell._loading = false; // loaded
 
-                while (glxCon.dataQueue.length) {
-                    var d = glxCon.dataQueue.shift();
+                glx.setPosition(shell.domain);
+
+                while (shell._dataQueue.length) {
+                    var d = shell._dataQueue.shift();
                     glx.draw(d, d.type);
                 }
                 /*
@@ -737,6 +723,8 @@ Plotly.plot = function(gd, data, layout) {
                  * any changes to the boundaries of the drawn objects (autoscaling).
                  */
                 glx.axisOn();
+
+                shell._glx = glx;
 
             })
         })
