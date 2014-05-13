@@ -589,9 +589,9 @@ Plotly.plot = function(gd, data, layout) {
          * Once Webgl plays well with other things we can remove this.
          * Unset examples, they misbehave with 3d plots
          */
-        var $examplesContainer = $(gd).find('.examples-container')
+        var $examplesContainer = $(gd).find('.examples-container');
         if ($examplesContainer.css('display')) {
-            Examples.set()
+            Examples.set();
         }
         /*
          * surface and scatter3d
@@ -604,21 +604,21 @@ Plotly.plot = function(gd, data, layout) {
          * Once all the popovers are hooked in this can be removed.
          */
         if (gd.layout === undefined) {
-            gd.layout = layout
+            gd.layout = layout;
         }
-        gd.layout._isGL3D = true
+        gd.layout._isGL3D = true;
 
         var glContainerOptions = {
-            container: gd.querySelector('.svg-container')
-          , zIndex: '1000'
-        }
+            container: gd.querySelector('.svg-container'),
+            zIndex: '1000'
+        };
 
         if (!('_glContexts' in gd.layout)) {
-            gd.layout._glContexts = []
+            gd.layout._glContexts = [];
         }
 
         if (!('_viewports' in gd.layout)) {
-            gd.layout._viewports = []
+            gd.layout._viewports = [];
         }
 
         /*
@@ -636,11 +636,11 @@ Plotly.plot = function(gd, data, layout) {
 
 
             if (!Array.isArray(d.z)) {
-                $.extend(d, GlContext.testData(d.type, 120, 120, [40,40,40]))
+                $.extend(d, GlContext.testData(d.type, 120, 120, [40,40,40]));
             }
 
             if (!$.isNumeric(d.viewport)) {
-                d.viewport = 0
+                d.viewport = 0;
             }
 
             /*
@@ -652,14 +652,14 @@ Plotly.plot = function(gd, data, layout) {
              * (updating not yet implemented).
              *
              */
-            var glxCon = gd.layout._glContexts[d.viewport]
+            var glxCon = gd.layout._glContexts[d.viewport];
 
 
             if (glxCon && glxCon.glx) {
                 // you can change the camera position before or after initializing data
                 // or accept defaults
-                glxCon.glx.draw(d, d.type)
-                glxCon.glx.axisOn()
+                glxCon.glx.draw(d, d.type);
+                glxCon.glx.axisOn();
             }
 
 
@@ -676,11 +676,11 @@ Plotly.plot = function(gd, data, layout) {
                         viewport: null,
                         loading: false
                     };
-                    gd.layout._glContexts[d.viewport] = glxCon
+                    gd.layout._glContexts[d.viewport] = glxCon;
                 }
 
-                glxCon.viewport = d.viewport
-                glxCon.dataQueue.push(d)
+                glxCon.viewport = d.viewport;
+                glxCon.dataQueue.push(d);
             }
         })
 
@@ -693,19 +693,19 @@ Plotly.plot = function(gd, data, layout) {
         .filter( function (glxCon) {
             if (glxCon) {
                 if (glxCon.dataQueue.length && !glxCon.loading) {
-                    glxCon.loading = true
-                    return true
+                    glxCon.loading = true;
+                    return true;
                 }
             }
-            return false
+            return false;
         })
         .forEach( function (glxCon) {
             /*
              * Creating new GLContexts in an asyncronous process.
              */
             GlContext.newContext(glContainerOptions, function (glx) {
-                glxCon.loading = false // loaded
-                glxCon.glx = glx
+                glxCon.loading = false; // loaded
+                glxCon.glx = glx;
                 /*
                  * Viewport arrangements need to be implemented, just splice
                  * along the horizontal direction for now. ie,
@@ -714,29 +714,29 @@ Plotly.plot = function(gd, data, layout) {
                  * Add a link to d.viewport to the viewport it is created in.
                  *
                  */
-                glxCon.viewport = gd.layout._viewports.push({x:[0,1],y:[0,1]}) - 1
+                glxCon.viewport = gd.layout._viewports.push({x:[0,1],y:[0,1]}) - 1;
                 gd.layout._viewports = gd.layout._viewports.map(
                     function (viewport, idx, viewports) {
-                        viewport.x = [idx/viewports.length, (idx+1)/viewports.length]
-                        return viewport
+                        viewport.x = [idx/viewports.length, (idx+1)/viewports.length];
+                        return viewport;
                     })
 
                 /*
                  * Reset all glContext positions (for now just set width % as viewport x ratio)
                  */
                 gd.layout._glContexts.map(
-                    function (glxCon, idx) { glxCon.glx.setPosition(gd.layout._viewports[glxCon.viewport]) }
+                    function (glxCon, idx) { glxCon.glx.setPosition(gd.layout._viewports[glxCon.viewport]); }
                 )
 
                 while (glxCon.dataQueue.length) {
-                    var d = glxCon.dataQueue.shift()
-                    glx.draw(d, d.type)
+                    var d = glxCon.dataQueue.shift();
+                    glx.draw(d, d.type);
                 }
                 /*
                  * Calling glx.axisOn when it is already on will update it to include
                  * any changes to the boundaries of the drawn objects (autoscaling).
                  */
-                glx.axisOn()
+                glx.axisOn();
 
             })
         })
