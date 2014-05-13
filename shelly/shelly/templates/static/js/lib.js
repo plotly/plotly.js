@@ -514,8 +514,17 @@ lib.startspin = function(parent,spinsize,options){
 };
 
 
-// similar to OS X's "growl" notifier
-lib.notifier = function(text,tm){
+/**
+*
+*
+*
+*/
+lib.notifier = function(text, displayLengthString) {
+
+    var nlongs;
+    if (typeof displayLengthString === 'string') nlongs = displayLengthString.match(/long/g);
+    var ts = 1000 + 1000 * (nlongs ? nlongs.length : 0);
+
     var notifier_container = $('.notifier-container');
     if(!notifier_container.length) {
         notifier_container = $('<div class="notifier-container"></div>').appendTo('#tabs-one-line,#embedded-graph');
@@ -529,7 +538,7 @@ lib.notifier = function(text,tm){
 
     n.appendTo(notifier_container)
         .fadeIn(2000)
-        .delay(tm=='long' ? 2000 : 1000)
+        .delay(ts)
         .fadeOut(2000,function(){ n.remove(); });
 };
 
