@@ -4,42 +4,6 @@
 if(!window.Plotly) { window.Plotly = {}; }
 var plots = Plotly.Plots = {};
 
-// fill for possibly missing graph type libraries.
-// most of these should
-// module is the name of the object, methods are the methods to fill.
-function noop(){}
-function req(module, methods) {
-    if(module in window.Plotly) { return; }
-    var moduleFill = {};
-    for(var i=0; i<methods.length; i++) { moduleFill[methods[i]] = noop; }
-    window.Plotly[module] = moduleFill;
-}
-req('Annotations',["drawAll", "add", "draw", "allArrowheads", "calcAutorange"]);
-req('Axes',["defaultAxis", "clearTypes", "setTypes", "initAxis", "id2name", "name2id",
-    "counterLetter", "cleanDatum", "setConvert", "moreDates", "category",
-    "minDtick", "doAutoRange", "expand", "autoBin", "autoTicks", "tickIncrement",
-    "tickFirst", "tickText", "list", "getFromId", "doTicks"]);
-req('Bars',["calc", "setPositions", "plot", "style"]);
-req('Boxes',["calc", "setPositions", "plot", "style"]);
-req('Drawing',["rgb", "opacity", "addOpacity", "strokeColor", "fillColor", "font",
-    "setPosition", "setSize", "setRect", "translatePoints", "lineGroupStyle",
-    "fillGroupStyle", "pointStyle", "tryColorscale", "textPointStyle", "styleText"]);
-req('ErrorBars',["pushRef2GDC", "styleBoxDrop", "ydr", "plot", "style"]);
-req('Fx',["DBLCLICKDELAY", "MINDRAG", "init", "MAXDIST", "hover", "unhover", "click",
-    "modeBar", "dragAlign", "dragCursors", "dragClear", "autoGrowInput", "setCursor"]);
-req('Heatmap',["calc", "plot", "style", "margin"]);
-req('Histogram',['calc']);
-req('Legend',["lines", "points", "bars", "boxes", "style", "texts", "draw",
-    "repositionLegend"]);
-req('Lib',["dateTime2ms", "isDateTime", "ms2DateTime", "parseDate", "findBin",
-    "distinctVals", "nestedProperty", "pauseEvent", "lpad", "aggNums", "len", "mean",
-    "stdev", "VERBOSE", "TIMER", "log", "markTime", "constrain", "killspin", "startspin",
-    "notifier", "conf_modal", "bBoxIntersect", "identity", "num2ordinal", "ppn",
-    "togglecontent", "plotlyurl", "randstr"]);
-req('Scatter',["PTS_LINESONLY", "calc", "plot", "style"]);
-req('Toolbar',["polarPopover", "tracePopover", "canvasPopover", "axesPopover",
-    "textsPopover", "legendPopover", "setPolarPopoversMenu", "resetCartesianPopoversMenu"]);
-
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
 // into Plotly. These are:
