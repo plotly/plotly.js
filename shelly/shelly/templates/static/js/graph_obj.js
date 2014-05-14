@@ -615,33 +615,33 @@ Plotly.plot = function(gd, data, layout) {
             }
 
             /*
-             * Shell numbering proceeds as follows
-             * shell
-             * shell2
-             * shell3
+             * Scene numbering proceeds as follows
+             * scene
+             * scene2
+             * scene3
              *
-             * and d.shell will be undefined or some number or number string
+             * and d.scene will be undefined or some number or number string
              */
-            var dest_shell = 'shell';
-            if (d.shell && $.isNumeric(d.shell) && d.shell > 1) dest_shell += d.shell;
+            var dest_scene = 'scene';
+            if (d.scene && $.isNumeric(d.scene) && d.scene > 1) dest_scene += d.scene;
 
             /*
-             * In the case existing shells are active in this tab:
-             * If data has a destination shell attempt to match that to the
-             * associated shell.
+             * In the case existing scenes are active in this tab:
+             * If data has a destination scene attempt to match that to the
+             * associated scene.
              * If a particular data trace also has a glID. It means the surface or mesh
              * for this data trace has already been drawn and we can just do an update
              * (updating not yet implemented).
              *
              */
-            var shell = gd.layout[dest_shell];
+            var scene = gd.layout[dest_scene];
 
 
-            if (shell && shell._glx) {
+            if (scene && scene._glx) {
                 // you can change the camera position before or after initializing data
                 // or accept defaults
-                shell._glx.draw(d, d.type);
-                shell._glx.axisOn();
+                scene._glx.draw(d, d.type);
+                scene._glx.axisOn();
             }
 
 
@@ -651,71 +651,71 @@ Plotly.plot = function(gd, data, layout) {
                  * add data to a queue to it can be asyncronously loaded
                  * once the glcontexts are ready.
                  */
-                if (!shell) {
-                    shell = {
+                if (!scene) {
+                    scene = {
                         _glx: undefined,
                         _dataQueue: [],              // for asyncronously loading data
                         domain: {x:[0,1],y:[0,1]},  // default domain
                         _loading: false
                     };
-                    gd.layout[dest_shell] = shell;
+                    gd.layout[dest_scene] = scene;
                 }
 
-                shell._dataQueue.push(d);
+                scene._dataQueue.push(d);
             }
         })
 
         /*
-         * If there are shells that need loading load them.
-         * Recalibrate all domains now that there may be new shells.
-         * Once shells load they will iteratively load any data
+         * If there are scenes that need loading load them.
+         * Recalibrate all domains now that there may be new scenes.
+         * Once scenes load they will iteratively load any data
          * that might be on their queue.
          *
-         * shell arrangements need to be implemented: For now just splice
+         * scene arrangements need to be implemented: For now just splice
          * along the horizontal direction. ie.
          * x:[0,1] -> x:[0,0.5], x:[0.5,1] -> x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
          *
          */
-        var shells = Object.keys(gd.layout).filter(function(k){ return k.match(/^shell[0-9]*$/); });
+        var scenes = Object.keys(gd.layout).filter(function(k){ return k.match(/^scene[0-9]*$/); });
 
-        shells.map( function (shell_key, idx) {
-            var shell = gd.layout[shell_key];
+        scenes.map( function (scene_key, idx) {
+            var scene = gd.layout[scene_key];
             // we are only modifying the x domain position with this simple approach
-            shell.domain.x = [idx/shells.length, (idx+1)/shells.length];
-            // if this shell has already been loaded it will have it's glx context parameter so lets
-            // reset the domain of the shell as it may have changed (this operates on the containing iframe)
-            if (shell._glx) shell._glx.setPosition(shell.domain);
-            return shell;
+            scene.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
+            // if this scene has already been loaded it will have it's glx context parameter so lets
+            // reset the domain of the scene as it may have changed (this operates on the containing iframe)
+            if (scene._glx) scene._glx.setPosition(scene.domain);
+            return scene;
         })
-        .filter( function (shell) {
+        .filter( function (scene) {
             /*
-             * We only want to continue to operate on shells that have data waiting to be displayed
+             * We only want to continue to operate on scenes that have data waiting to be displayed
              * and are themselves not already undergoing loading.
              */
-            if (shell) {
-                if (shell._dataQueue.length && !shell._loading) {
-                    shell._loading = true;
+            if (scene) {
+                if (scene._dataQueue.length && !scene._loading) {
+                    scene._loading = true;
                     return true;
                 }
             }
             return false;
         })
-        .forEach( function (shell) {
+        .forEach( function (scene) {
             /*
-             * Creating new shells
+             * Creating new scenes
              */
-            var shellOptions = {
+            var sceneOptions = {
                 container: gd.querySelector('.svg-container'),
                 zIndex: '1000'
             };
 
-            GlContext.newContext(shellOptions, function (glx) {
-                shell._loading = false; // loaded
+            GlContext.newContext(sceneOptions, function (glx) {
+                scene._loading = false; // loaded
 
-                glx.setPosition(shell.domain);
+                glx.setPosition(scene.domain);
 
-                while (shell._dataQueue.length) {
-                    var d = shell._dataQueue.shift();
+                while (scene._dataQueue.length) {
+                    var d = scene._dataQueue.shift();
                     glx.draw(d, d.type);
                 }
                 /*
@@ -724,7 +724,7 @@ Plotly.plot = function(gd, data, layout) {
                  */
                 glx.axisOn();
 
-                shell._glx = glx;
+                scene._glx = glx;
 
             })
         })
