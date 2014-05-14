@@ -515,15 +515,17 @@ lib.startspin = function(parent,spinsize,options){
 
 
 /**
-*
-*
-*
+ * notifier
+ * @param {String} text The person's user name
+ * @param {Number} [delay=1000] The delay time in milliseconds or 'long' which provides 2000 ms delay time.
+ * @return {undefined} this function does not return a value
 */
-lib.notifier = function(text, displayLengthString) {
+lib.notifier = function(text, displayLength) {
 
-    var nlongs;
-    if (typeof displayLengthString === 'string') nlongs = displayLengthString.match(/long/g);
-    var ts = 1000 + 1000 * (nlongs ? nlongs.length : 0);
+    var ts;
+    if ($.isNumeric(displayLength)) ts = displayLength;
+    else if (displayLength === 'long') ts = 2000;
+    else ts = 1000;
 
     var notifier_container = $('.notifier-container');
     if(!notifier_container.length) {
