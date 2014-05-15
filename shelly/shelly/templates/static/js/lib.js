@@ -1046,7 +1046,7 @@ lib.purgeStream = function purgeStream (dobj) {
  * Pass in a specification object with:
  * {
  *   items: array of items
- *   callback: an optional callback to be called on item selection
+ *   callback: an optional callback to be called on item selection --> cb(item, itemindex)
  *   defaults: An array index of the item to initialize with, defaults to 0
  * }
  */
