@@ -1148,7 +1148,8 @@ axes.doTicks = function(td,axid) {
             td.layout._paper.selectAll('g.subplot').each(function(subplot) {
                 var plotinfo = gl._plots[subplot];
                 plotinfo.plot.attr('viewBox','0 0 '+plotinfo.x._length+' '+plotinfo.y._length);
-                plotinfo.axislayer.selectAll('text,path').remove();
+                plotinfo.xaxislayer.selectAll('text,path').remove();
+                plotinfo.yaxislayer.selectAll('text,path').remove();
                 plotinfo.gridlayer.selectAll('path').remove();
                 plotinfo.zerolinelayer.selectAll('path').remove();
             });
@@ -1339,6 +1340,7 @@ axes.doTicks = function(td,axid) {
     }
     else { Plotly.Plots.getSubplots(td,ax).forEach(function(subplot,subplotIndex){
         var plotinfo = gl._plots[subplot],
+            container = plotinfo[axletter+'axislayer'],
             linepositions = ax._linepositions[subplot]||[], // [bottom or left, top or right, free, main]
             counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
             mainSubplot = counteraxis._id==ax.anchor,
@@ -1367,8 +1369,8 @@ axes.doTicks = function(td,axid) {
             }
         });
 
-        drawTicks(plotinfo.axislayer,tickpath);
-        drawLabels(plotinfo.axislayer,linepositions[3]);
+        drawTicks(container,tickpath);
+        drawLabels(container,linepositions[3]);
         drawGrid(plotinfo.gridlayer, plotinfo.zerolinelayer, plotinfo['hidegrid'+axletter]?[]:valsClipped, counteraxis, subplot);
     }); }
 

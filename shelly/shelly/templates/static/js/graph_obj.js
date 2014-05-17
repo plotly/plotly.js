@@ -4,42 +4,6 @@
 if(!window.Plotly) { window.Plotly = {}; }
 var plots = Plotly.Plots = {};
 
-// fill for possibly missing graph type libraries.
-// most of these should
-// module is the name of the object, methods are the methods to fill.
-function noop(){}
-function req(module, methods) {
-    if(module in window.Plotly) { return; }
-    var moduleFill = {};
-    for(var i=0; i<methods.length; i++) { moduleFill[methods[i]] = noop; }
-    window.Plotly[module] = moduleFill;
-}
-req('Annotations',["drawAll", "add", "draw", "allArrowheads", "calcAutorange"]);
-req('Axes',["defaultAxis", "clearTypes", "setTypes", "initAxis", "id2name", "name2id",
-    "counterLetter", "cleanDatum", "setConvert", "moreDates", "category",
-    "minDtick", "doAutoRange", "expand", "autoBin", "autoTicks", "tickIncrement",
-    "tickFirst", "tickText", "list", "getFromId", "doTicks"]);
-req('Bars',["calc", "setPositions", "plot", "style"]);
-req('Boxes',["calc", "setPositions", "plot", "style"]);
-req('Drawing',["rgb", "opacity", "addOpacity", "strokeColor", "fillColor", "font",
-    "setPosition", "setSize", "setRect", "translatePoints", "lineGroupStyle",
-    "fillGroupStyle", "pointStyle", "tryColorscale", "textPointStyle", "styleText"]);
-req('ErrorBars',["pushRef2GDC", "styleBoxDrop", "ydr", "plot", "style"]);
-req('Fx',["DBLCLICKDELAY", "MINDRAG", "init", "MAXDIST", "hover", "unhover", "click",
-    "modeBar", "dragAlign", "dragCursors", "dragClear", "autoGrowInput", "setCursor"]);
-req('Heatmap',["calc", "plot", "style", "margin"]);
-req('Histogram',['calc']);
-req('Legend',["lines", "points", "bars", "boxes", "style", "texts", "draw",
-    "repositionLegend"]);
-req('Lib',["dateTime2ms", "isDateTime", "ms2DateTime", "parseDate", "findBin",
-    "distinctVals", "nestedProperty", "pauseEvent", "lpad", "aggNums", "len", "mean",
-    "stdev", "VERBOSE", "TIMER", "log", "markTime", "constrain", "killspin", "startspin",
-    "notifier", "conf_modal", "bBoxIntersect", "identity", "num2ordinal", "ppn",
-    "togglecontent", "plotlyurl", "randstr"]);
-req('Scatter',["PTS_LINESONLY", "calc", "plot", "style"]);
-req('Toolbar',["polarPopover", "tracePopover", "canvasPopover", "axesPopover",
-    "textsPopover", "legendPopover", "setPolarPopoversMenu", "resetCartesianPopoversMenu"]);
-
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
 // into Plotly. These are:
@@ -2040,6 +2004,7 @@ function makePlotFramework(divid, layout) {
             if(mainplot!=subplot && subplots.indexOf(mainplot)!=-1) {
                 plotinfo.mainplot = mainplot;
                 overlays.push(plotinfo);
+
                 // for now force overlays to overlay completely... so they can drag
                 // together correctly and share backgrounds. Later perhaps we make
                 // separate axis domain and tick/line domain or something, so they can
@@ -2056,16 +2021,13 @@ function makePlotFramework(divid, layout) {
                 plotinfo.overgrid = plotgroup.append('g');
                 plotinfo.zerolinelayer = plotgroup.append('g');
                 plotinfo.overzero = plotgroup.append('g');
-                plotinfo.plot = plotgroup.append('svg')
-                    .attr('preserveAspectRatio','none')
-                    .style('fill','none');
+                plotinfo.plot = plotgroup.append('svg');
                 plotinfo.overplot = plotgroup.append('g');
-                plotinfo.xlines = plotgroup.append('path')
-                    .style('fill','none').classed('crisp',true);
-                plotinfo.ylines = plotgroup.append('path')
-                    .style('fill','none').classed('crisp',true);
+                plotinfo.xlines = plotgroup.append('path');
+                plotinfo.ylines = plotgroup.append('path');
                 plotinfo.overlines = plotgroup.append('g');
-                plotinfo.axislayer = plotgroup.append('g');
+                plotinfo.xaxislayer = plotgroup.append('g');
+                plotinfo.yaxislayer = plotgroup.append('g');
                 plotinfo.overaxes = plotgroup.append('g');
 
                 // make separate drag layers for each subplot, but append them to paper rather than
@@ -2076,21 +2038,30 @@ function makePlotFramework(divid, layout) {
 
     // now make the components of overlaid subplots
     // overlays don't have backgrounds, and append all their other components to the corresponding
-    // extra groups of their main plots. As shown here, the overlays will do just that, have
-    // each component overlaid on the corresponding component of the main plot
+    // extra groups of their main plots.
     overlays.forEach(function(plotinfo) {
         var mainplot = gl._plots[plotinfo.mainplot];
         mainplot.overlays.push(plotinfo);
+
         plotinfo.gridlayer = mainplot.overgrid.append('g');
         plotinfo.zerolinelayer = mainplot.overzero.append('g');
-        plotinfo.plot = mainplot.overplot.append('svg')
+        plotinfo.plot = mainplot.overplot.append('svg');
+        plotinfo.xlines = mainplot.overlines.append('path');
+        plotinfo.ylines = mainplot.overlines.append('path');
+        plotinfo.xaxislayer = mainplot.overaxes.append('g');
+        plotinfo.yaxislayer = mainplot.overaxes.append('g');
+    });
+
+    // common attributes for all subplots, overlays or not
+    subplots.forEach(function(subplot) {
+        var plotinfo = gl._plots[subplot];
+        plotinfo.plot
             .attr('preserveAspectRatio','none')
             .style('fill','none');
-        plotinfo.xlines = mainplot.overlines.append('path')
+        plotinfo.xlines
             .style('fill','none').classed('crisp',true);
-        plotinfo.ylines = mainplot.overlines.append('path')
+        plotinfo.ylines
             .style('fill','none').classed('crisp',true);
-        plotinfo.axislayer = mainplot.overaxes.append('g');
     });
 
     // single info (legend, annotations) and hover layers for the whole plot
@@ -2306,16 +2277,27 @@ function layoutStyles(gd) {
         }
 
         // translate all the extra stuff to have the same origin as the plot area
-        var origin = 'translate('+xa._offset+','+ya._offset+')';
+        var origin = 'translate('+xa._offset+','+ya._offset+')',
+            originx = origin,
+            originy = origin;
+        if(showfreex) {
+            originx = 'translate('+xa._offset+','+gs.t+')';
+        }
+        if(showfreey) {
+            originy = 'translate('+gs.l+','+ya._offset+')';
+        }
 
-        plotinfo.xlines.attr('transform',origin)
+
+        plotinfo.xlines
+            .attr('transform', originx)
             .attr('d',(
                 (showbottom ? (xpathPrefix+bottompos+xpathSuffix) : '') +
                 (showtop ? (xpathPrefix+toppos+xpathSuffix) : '') +
                 (showfreex ? (xpathPrefix+freeposx+xpathSuffix) : '')) || 'M0,0') // so it doesn't barf with no lines shown
             .style('stroke-width',xlw+'px')
             .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
-        plotinfo.ylines.attr('transform',origin)
+        plotinfo.ylines
+            .attr('transform', originy)
             .attr('d',(
                 (showleft ? ('M'+leftpos+ypathSuffix) : '') +
                 (showright ? ('M'+rightpos+ypathSuffix) : '') +
@@ -2323,7 +2305,8 @@ function layoutStyles(gd) {
             .attr('stroke-width',ylw+'px')
             .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
 
-        plotinfo.axislayer.attr('transform',origin);
+        plotinfo.xaxislayer.attr('transform',originx);
+        plotinfo.yaxislayer.attr('transform',originy);
         plotinfo.gridlayer.attr('transform',origin);
         plotinfo.zerolinelayer.attr('transform',origin);
         plotinfo.draglayer.attr('transform',origin);
