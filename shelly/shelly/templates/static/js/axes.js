@@ -1261,8 +1261,9 @@ axes.doTicks = function(td,axid) {
                 .each(function(d){
                     d3.select(this)
                         .call(Plotly.Drawing.setPosition, labelx(d), labely(d))
-                        .call(Plotly.Drawing.font,d.font,d.fontSize,d.fontColor);
-                    Plotly.Drawing.styleText(this,d.text);
+                        .call(Plotly.Drawing.font,d.font,d.fontSize,d.fontColor)
+                        .text(d.text)
+                        .call(Plotly.util.convertToTspans);
                 });
             tickLabels.attr('transform',function(d){
                     maxFontSize = Math.max(maxFontSize,d.fontSize);

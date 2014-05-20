@@ -420,10 +420,11 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
             if((!showMarkers && !showText) || t.visible===false) { s.remove(); }
             else {
                 if(showMarkers) {
-                    s.selectAll('path')
+                    s.selectAll('path.point')
                         .data(t.mnum>0 ? visFilter : Plotly.Lib.identity)
                         .enter().append('path')
-                        .call(Plotly.Drawing.translatePoints,xa,ya);
+                            .classed('point',true)
+                            .call(Plotly.Drawing.translatePoints,xa,ya);
                     // decimated version commented out for now
                     // var pts = s.selectAll('path')
                     //     .data(function(d,i) { return newcds[i]; });
@@ -432,10 +433,12 @@ scatter.plot = function(gd,plotinfo,cdscatter) {
                     // pts.exit().remove();
                 }
                 if(showText) {
-                    s.selectAll('text')
+                    s.selectAll('g')
                         .data(Plotly.Lib.identity) // not going to try to decimate text...
-                        .enter().append('text')
-                        .call(Plotly.Drawing.translatePoints,xa,ya);
+                        // each text needs to go in its own 'g' in case it gets converted to mathjax
+                        .enter().append('g')
+                            .append('text')
+                            .call(Plotly.Drawing.translatePoints,xa,ya);
                 }
             }
         });
@@ -446,7 +449,7 @@ scatter.style = function(s) {
 
     s.selectAll('g.points')
         .each(function(d){
-            d3.select(this).selectAll('path')
+            d3.select(this).selectAll('path.point')
                 .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
             d3.select(this).selectAll('text')
                 .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
