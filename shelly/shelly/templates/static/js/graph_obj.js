@@ -1695,9 +1695,8 @@ Plotly.relayout = function(gd,astr,val) {
                 else { console.log('???',aobj); }
             }
             if((annAutorange(anni,'x') || annAutorange(anni,'y')) &&
-                anum>=0 && (anum>=anns.length || anni.ref=='plot') &&
-                ai.indexOf('color')==-1 && ai.indexOf('opacity')==-1) {
-                    docalc = true;
+                    ai.indexOf('color')==-1 && ai.indexOf('opacity')==-1 && ai.indexOf('align')==-1) {
+                docalc = true;
             }
             Plotly.Annotations.draw(gd,anum,p.parts.slice(2).join('.'),aobj[ai]);
             delete aobj[ai];

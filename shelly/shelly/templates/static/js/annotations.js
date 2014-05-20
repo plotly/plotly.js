@@ -189,16 +189,11 @@ annotations.draw = function(gd,index,opt,value) {
         // make sure lines are aligned the way they will be at the end, even if their position changes
         anntext.selectAll('tspan.line').attr({y: 0, x: 0});
 
-        var mathjaxGroup = ann.select('.annotation-math-group');
-        var anntextBB = anntext.node().getBoundingClientRect(),
+        var mathjaxGroup = ann.select('.annotation-math-group'),
+            hasMathjax = !mathjaxGroup.empty(),
+            anntextBB = (hasMathjax ? mathjaxGroup : anntext).node().getBoundingClientRect(),
             annwidth = anntextBB.width,
             annheight = anntextBB.height;
-        var hasMathjax = !mathjaxGroup.empty();
-        if(hasMathjax){
-            var mathjaxBBox = mathjaxGroup.node().getBoundingClientRect();
-            annwidth = mathjaxBBox.width;
-            annheight = mathjaxBBox.height;
-        }
 
         // save size in the annotation object for use by autoscale
         options._w = annwidth;
@@ -327,12 +322,13 @@ annotations.draw = function(gd,index,opt,value) {
             borderfull = borderwidth+borderpad,
             texty = paperBB.top-anntextBB.top+borderfull;
 
-        if(hasMathjax) { anntext.attr({x: 0, y: 14}); }
-        else { anntext.attr({x: paperBB.left-anntextBB.left+borderfull, y: texty}); }
-        anntext.selectAll('tspan.line').attr({y: texty, x: paperBB.left-anntextBB.left+borderfull});
-
-        anntextBB = anntext.node().getBoundingClientRect(); // check the height again now that we've set the tspans
-        annheight = mathjaxGroup.empty() ? anntextBB.height : mathjaxGroup.node().getBoundingClientRect().height;
+        if(hasMathjax) {
+            mathjaxGroup.select('svg').attr({x:borderfull-1, y:borderfull});
+        }
+        else {
+            anntext.attr({x: paperBB.left-anntextBB.left+borderfull, y: texty});
+            anntext.selectAll('tspan.line').attr({y: texty, x: paperBB.left-anntextBB.left+borderfull});
+        }
 
         var outerwidth = Math.round(annwidth+2*borderfull),
             outerheight = Math.round(annheight+2*borderfull);
@@ -651,10 +647,11 @@ annotations.calcAutorange = function(gd) {
     annotations.drawAll(gd);
 
     // find the bounding boxes for each of these annotations relative to the center of the plot
+    // use the arrow and the text bg rectangle, as the whole anno may include hidden text in its bbox
     gl.annotations.forEach(function(ann,i){
         var arrowNode = gl._infolayer.selectAll('g.annotation[data-index="'+i+'"]>g').node(),
             arrowBB = arrowNode ? arrowNode.getBoundingClientRect() : blank,
-            textNode = gl._infolayer.selectAll('g.annotation[data-index="'+i+'"]>svg').node(),
+            textNode = gl._infolayer.selectAll('g.annotation[data-index="'+i+'"] rect.bg').node(),
             textBB = textNode ? textNode.getBoundingClientRect() : blank;
         if(ann.xa) {
             Plotly.Axes.expand(ann.xa, [ann.xa.l2c(ann.x0)],{
