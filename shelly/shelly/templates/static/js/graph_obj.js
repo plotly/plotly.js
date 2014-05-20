@@ -608,7 +608,7 @@ Plotly.plot = function(gd, data, layout) {
         gd.layout._isGL3D = true; // used to sandbox 3d plotting: remove once fully functional
 
         /*
-         * Reset all glContext positions (for now just set width % as viewport x ratio)
+         * Reset all SceneFrame positions (for now just set width % as viewport x ratio)
          * In case this is a redraw from a resize
          */
         gd.data
@@ -623,7 +623,7 @@ Plotly.plot = function(gd, data, layout) {
             };
 
             if (!Array.isArray(d.z)) {
-                $.extend(d, GlContext.testData(d.type, 120, 120, [40,40,40]));
+                $.extend(d, SceneFrame.testData(d.type, 120, 120, [40,40,40]));
             }
 
             /*
@@ -717,7 +717,7 @@ Plotly.plot = function(gd, data, layout) {
                 zIndex: '1000'
             };
 
-            GlContext.newContext(sceneOptions, function (glx) {
+            SceneFrame.createScene(sceneOptions, function (glx) {
                 scene._loading = false; // loaded
 
                 glx.setPosition(scene.domain);
