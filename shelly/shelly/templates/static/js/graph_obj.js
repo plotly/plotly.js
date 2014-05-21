@@ -731,7 +731,7 @@ Plotly.plot = function(gd, data, layout) {
                  * Calling glx.axisOn when it is already on will update it to include
                  * any changes to the boundaries of the drawn objects (autoscaling).
                  */
-                glx.axisOn({font: {font: 'Open sans', size: 32}});
+                glx.axisOn({font: 'Open sans'});
 
                 scene._glx = glx;
 
