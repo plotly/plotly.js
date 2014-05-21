@@ -1148,8 +1148,8 @@ axes.doTicks = function(td,axid) {
             td.layout._paper.selectAll('g.subplot').each(function(subplot) {
                 var plotinfo = gl._plots[subplot];
                 plotinfo.plot.attr('viewBox','0 0 '+plotinfo.x._length+' '+plotinfo.y._length);
-                plotinfo.xaxislayer.selectAll('text,path').remove();
-                plotinfo.yaxislayer.selectAll('text,path').remove();
+                plotinfo.xaxislayer.selectAll('.'+plotinfo.x._id+'tick').remove();
+                plotinfo.yaxislayer.selectAll('.'+plotinfo.y._id+'tick').remove();
                 plotinfo.gridlayer.selectAll('path').remove();
                 plotinfo.zerolinelayer.selectAll('path').remove();
             });
@@ -1232,48 +1232,103 @@ axes.doTicks = function(td,axid) {
 
     function drawLabels(container,position) {
         // tick labels - for now just the main labels. TODO: mirror labels, esp for subplots
-        var tickLabels=container.selectAll('text.'+tcls).data(vals, datafn);
-        if(ax.showticklabels && $.isNumeric(position)) {
-            var labelx, labely, labelanchor, labelpos0;
-            if(axletter=='x') {
-                var flipit = axside=='bottom' ? 1 : -1;
-                labelx = function(d){ return d.dx; };
-                labelpos0 = position + (labelStandoff+pad)*flipit;
-                labely = function(d){ return d.dy+labelpos0+d.fontSize*(axside=='bottom' ? 1 : -0.5); };
-                labelanchor = function(angle){
-                    if(!$.isNumeric(angle) || angle===0 || angle==180) { return 'middle'; }
-                    return angle*flipit<0 ? 'end' : 'start';
-                };
-            }
-            else {
-                labely = function(d){ return d.dy+d.fontSize/2; };
-                labelpos0 = position +
-                    (labelStandoff+pad + (Math.abs(ax.tickangle)==90 ? d.fontSize/2 : 0))*
-                    (axside=='right' ? 1 : -1);
-                labelx = function(d){ return d.dx+labelpos0; };
-                labelanchor = function(angle){
-                    if($.isNumeric(angle) && Math.abs(angle)==90) { return 'middle'; }
-                    return axside=='right' ? 'start' : 'end';
-                };
-            }
-            var maxFontSize = 0, autoangle = 0;
-            tickLabels.enter().append('text').classed(tcls,1)
-                .each(function(d){
-                    d3.select(this)
-                        .call(Plotly.Drawing.setPosition, labelx(d), labely(d))
-                        .call(Plotly.Drawing.font,d.font,d.fontSize,d.fontColor)
-                        .text(d.text)
-                        .call(Plotly.util.convertToTspans);
+        var tickLabels=container.selectAll('g.'+tcls).data(vals, datafn);
+        if(!ax.showticklabels || !$.isNumeric(position)) {
+            tickLabels.remove();
+            Plotly.Plots.titles(td,axid+'title');
+            return;
+        }
+
+        var labelx, labely, labelanchor, labelpos0;
+        if(axletter=='x') {
+            var flipit = axside=='bottom' ? 1 : -1;
+            labelx = function(d){ return d.dx; };
+            labelpos0 = position + (labelStandoff+pad)*flipit;
+            labely = function(d){ return d.dy+labelpos0+d.fontSize*(axside=='bottom' ? 1 : -0.5); };
+            labelanchor = function(angle){
+                if(!$.isNumeric(angle) || angle===0 || angle==180) { return 'middle'; }
+                return angle*flipit<0 ? 'end' : 'start';
+            };
+        }
+        else {
+            labely = function(d){ return d.dy+d.fontSize/2; };
+            labelpos0 = position +
+                (labelStandoff+pad + (Math.abs(ax.tickangle)==90 ? d.fontSize/2 : 0))*
+                (axside=='right' ? 1 : -1);
+            labelx = function(d){ return d.dx+labelpos0; };
+            labelanchor = function(angle){
+                if($.isNumeric(angle) && Math.abs(angle)==90) { return 'middle'; }
+                return axside=='right' ? 'start' : 'end';
+            };
+        }
+        var maxFontSize = 0,
+            autoangle = 0,
+            labelsReady = [];
+        tickLabels.enter().append('g').classed(tcls,1)
+            .append('text')
+                .attr('text-anchor', 'middle') // only so tex has predictable alignment that we can alter later
+                .each(function(d,i){
+                    var thisLabel = d3.select(this);
+                    labelsReady.push(
+                        new Promise(function(resolve, reject) {
+                            thisLabel
+                                .call(Plotly.Drawing.setPosition, labelx(d), labely(d))
+                                .call(Plotly.Drawing.font,d.font,d.fontSize,d.fontColor)
+                                .text(d.text)
+                                .call(Plotly.util.convertToTspans, function(){
+                                    resolve(d3.select(thisLabel.node().parentNode));
+                                });
+                        })
+                        .then(function(thisLabel){
+                            // give each label its prescribed position and angle as it comes in
+                            positionLabels(thisLabel, ax.tickangle);
+                        })
+                    );
                 });
-            tickLabels.attr('transform',function(d){
-                    maxFontSize = Math.max(maxFontSize,d.fontSize);
-                    return transfn(d) + (($.isNumeric(ax.tickangle) && Number(ax.tickangle)!==0) ?
-                    (' rotate('+ax.tickangle+','+labelx(d)+','+(labely(d)-d.fontSize/2)+')') : '');
-                })
-                .attr('text-anchor',labelanchor(ax.tickangle));
+        tickLabels.exit().remove();
+
+        tickLabels.each(function(d){ maxFontSize = Math.max(maxFontSize,d.fontSize); });
+
+        function positionLabels(s,angle) {
+            s.each(function(d) {
+                var anchor = labelanchor(angle);
+                var thisLabel = d3.select(this),
+                    mathjaxGroup = thisLabel.select('.text-math-group'),
+                    transform = transfn(d) + (($.isNumeric(angle) && +angle!==0) ?
+                        (' rotate('+angle+','+labelx(d)+','+(labely(d)-d.fontSize/2)+')') : '');
+                if(mathjaxGroup.empty()) {
+                    var txt = thisLabel.select('text').attr({
+                        transform: transform,
+                        'text-anchor': anchor
+                    });
+
+                    txt.selectAll('tspan.line').attr({x: txt.attr('x'), y: txt.attr('y')});
+                }
+                else {
+                    var mjShift = mathjaxGroup.node().getBoundingClientRect().width * {end:-0.5, start:0.5}[anchor];
+                    mathjaxGroup.attr('transform',
+                        transform + (mjShift ? 'translate(' + mjShift + ',0)' : ''));
+                }
+            });
+        }
+
+        // make sure all labels are correctly positioned at their base angle
+        // the positionLabels call above is only for newly drawn labels.
+        // do this without waiting, using the last calculated angle to minimize
+        // flicker, then do it again when we know all labels are there,
+        // putting back the prescribed angle to check for overlaps.
+        positionLabels(tickLabels,ax._lastangle || ax.tickangle);
+
+        Promise.all(labelsReady).then(function(){
+            positionLabels(tickLabels,ax.tickangle);
+
             // check for auto-angling if labels overlap
             if(axletter=='x' && !$.isNumeric(ax.tickangle)) {
-                var lbbArray = tickLabels[0].map(function(s){ return s.getBoundingClientRect(); });
+                var lbbArray = tickLabels[0].map(function(s){
+                    var thisLabel = d3.select(s).select('.text-math-group');
+                    if(thisLabel.empty()) { thisLabel = d3.select(s).select('text'); }
+                    return thisLabel.node().getBoundingClientRect();
+                });
                 for(i=0; i<lbbArray.length-1; i++) {
                     if(Plotly.Lib.bBoxIntersect(lbbArray[i],lbbArray[i+1])) {
                         autoangle = 30; // any overlap at all - set 30 degrees
@@ -1285,22 +1340,23 @@ axes.doTicks = function(td,axid) {
                     if(tickspacing<maxFontSize*2.5) {
                         autoangle = 90;
                     }
-                    tickLabels.attr('transform',function(d){
-                        return transfn(d) + ' rotate('+autoangle+','+labelx(d)+','+(labely(d)-d.fontSize/2)+')';
-                    })
-                    .attr('text-anchor',labelanchor(autoangle));
+                    positionLabels(tickLabels,autoangle);
                 }
-
+                ax._lastangle = autoangle;
             }
-            tickLabels.exit().remove();
-        }
-        else { tickLabels.remove(); }
+
+            // update the axis title (so it can move out of the way if needed)
+            Plotly.Plots.titles(td,axid+'title');
+        });
     }
 
-    function drawGrid(gridcontainer, zlcontainer, gridvals, counteraxis, subplot) {
-        var gridpath = 'M0,0'+((axletter=='x') ? 'v' : 'h') + counteraxis._length;
-        var grid = gridcontainer.selectAll('path.'+gcls)
-            .data(ax.showgrid===false ? [] : gridvals, datafn);
+    function drawGrid(plotinfo, counteraxis, subplot) {
+        var gridcontainer = plotinfo.gridlayer,
+            zlcontainer = plotinfo.zerolinelayer,
+            gridvals = plotinfo['hidegrid'+axletter]?[]:valsClipped,
+            gridpath = 'M0,0'+((axletter=='x') ? 'v' : 'h') + counteraxis._length,
+            grid = gridcontainer.selectAll('path.'+gcls)
+                .data(ax.showgrid===false ? [] : gridvals, datafn);
         grid.enter().append('path').classed(gcls,1)
             .classed('crisp',1)
             .attr('d',gridpath)
@@ -1372,11 +1428,8 @@ axes.doTicks = function(td,axid) {
 
         drawTicks(container,tickpath);
         drawLabels(container,linepositions[3]);
-        drawGrid(plotinfo.gridlayer, plotinfo.zerolinelayer, plotinfo['hidegrid'+axletter]?[]:valsClipped, counteraxis, subplot);
+        drawGrid(plotinfo, counteraxis, subplot);
     }); }
-
-    // update the axis title (so it can move out of the way if needed)
-    Plotly.Plots.titles(td,axid+'title');
 };
 
 // mod - version of modulus that always restricts to [0,divisor)

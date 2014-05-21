@@ -2365,7 +2365,7 @@ plots.titles = function(gd,title) {
         fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
         fontColor = cont.titlefont.color || gl.font.color || '#444',
         x,y,transform='',attr={},xa,ya,
-        avoid = {selection:d3.select(gd).selectAll('text.'+cont._id+'tick'), side:cont.side},
+        avoid = {selection:d3.select(gd).selectAll('g.'+cont._id+'tick'), side:cont.side},
         offsetBase = colorbar ? 0 : 1.5; // multiples of fontsize to offset label from axis
     if(colorbar && cont.titleside) {
         x = gs.l+cont.titlex*gs.w;
@@ -2454,7 +2454,9 @@ plots.titles = function(gd,title) {
             else {
                 // iterate over a set of elements (avoid.selection) to avoid collisions with
                 avoid.selection.each(function(){
-                    var avoidbb = this.getBoundingClientRect();
+                    var mathjaxGroup = d3.select(this).select('.text-math-group'),
+                        avoidEl = mathjaxGroup.empty() ? d3.select(this).select('text') : mathjaxGroup,
+                        avoidbb = avoidEl.node().getBoundingClientRect();
                     if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
                         shift = Math.min(maxshift,Math.max(shift,
                             Math.abs(avoidbb[avoid.side]-titlebb[backside])+pad));

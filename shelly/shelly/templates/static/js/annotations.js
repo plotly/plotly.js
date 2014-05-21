@@ -148,20 +148,6 @@ annotations.draw = function(gd,index,opt,value) {
         fontColor = options.font.color||gl.font.color||'#444';
         // alignTo = {left:'right', center:'center', right:'left'}[options.align];
 
-    function textLayout(){
-        this.style({
-            'font-family': font,
-            'font-size': fontSize+'px',
-            fill: Plotly.Drawing.rgb(fontColor),
-            opacity: Plotly.Drawing.opacity(fontColor)
-        })
-        .attr({
-            'text-anchor': {left:'start',right:'end'}[options.align]||'middle'
-        });
-        Plotly.util.convertToTspans(this, drawGraphicalElements);
-        return this;
-    }
-
     var anntext = ann.append('text')
         .attr({'class':'annotation', 'data-cmmt':options.tag, 'data-unformatted': options.text})
         .text(options.text);
@@ -182,7 +168,21 @@ annotations.draw = function(gd,index,opt,value) {
                 Plotly.relayout(gd,update);
             });
     }
-    else  anntext.call(textLayout);
+    else { anntext.call(textLayout); }
+
+    function textLayout(){
+        this.style({
+            'font-family': font,
+            'font-size': fontSize+'px',
+            fill: Plotly.Drawing.rgb(fontColor),
+            opacity: Plotly.Drawing.opacity(fontColor)
+        })
+        .attr({
+            'text-anchor': {left:'start',right:'end'}[options.align]||'middle'
+        });
+        Plotly.util.convertToTspans(this, drawGraphicalElements);
+        return this;
+    }
 
     function drawGraphicalElements(){
 
@@ -509,7 +509,7 @@ annotations.draw = function(gd,index,opt,value) {
 
     }
 
-    drawGraphicalElements();
+    // drawGraphicalElements();
 };
 
 // check if we need to edit the annotation position for log/linear changes
