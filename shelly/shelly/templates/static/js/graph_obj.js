@@ -650,7 +650,7 @@ Plotly.plot = function(gd, data, layout) {
             var scene = gd.layout[dest_scene] || {};
 
 
-            if ('_glx' in scene) {
+            if ('_glx' in scene && scene._glx) {
                 // you can change the camera position before or after initializing data
                 // or accept defaults
                 scene._glx.draw(d, d.type);
@@ -693,7 +693,7 @@ Plotly.plot = function(gd, data, layout) {
             scene.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
             // if this scene has already been loaded it will have it's glx context parameter so lets
             // reset the domain of the scene as it may have changed (this operates on the containing iframe)
-            if (scene._glx) scene._glx.setPosition(scene.domain);
+            if (scene._loaded) scene.setPosition(scene.domain);
             return scene;
         })
         .filter( function (scene) {
@@ -731,7 +731,7 @@ Plotly.plot = function(gd, data, layout) {
                  * Calling glx.axisOn when it is already on will update it to include
                  * any changes to the boundaries of the drawn objects (autoscaling).
                  */
-                glx.axisOn();
+                glx.axisOn({font: {font: 'Open sans', size: 32}});
 
                 scene._glx = glx;
 
