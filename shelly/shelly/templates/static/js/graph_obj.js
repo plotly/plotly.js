@@ -621,7 +621,8 @@ Plotly.plot = function(gd, data, layout) {
                 domain: {x:[0,1],y:[0,1]},  // default domain
                 _loading: false
             };
-
+          // This following code inserts test data if no data is present
+          // remove after completion
             if (!Array.isArray(d.z)) {
                 $.extend(d, SceneFrame.testData(d.type, 120, 120, [40,40,40]));
             }
