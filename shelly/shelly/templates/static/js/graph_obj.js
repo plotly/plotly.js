@@ -371,6 +371,9 @@ Plotly.plot = function(gd, data, layout) {
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
+    // layout object --- this also gets checked in makePlotFramework
+    if (!layout) layout = {};
+
     // hook class for plots main container (in case of plotly.js this won't be #embedded-graph or .js-tab-contents)
     // almost nobody actually needs this anymore, but just to be safe...
     d3.select(gd).classed('js-plotly-plot',true);
@@ -557,6 +560,16 @@ Plotly.plot = function(gd, data, layout) {
     //  but if there's no data there yet, it's just a placeholder...
     //  then it should destroy and remake the plot
     if (gd.data && gd.data.length > 0) {
+
+        // DETECT 3D
+        // needed to do this before makePlotFramework to set up the modebar
+        // needed to put the bulk of the 3d setup code after makePlotFramework
+        // as it requires framework to be set
+        if (gd.data.some(function (d) {
+            return plots.isGL3D(d.type);
+        })) layout._isGL3D = true;
+
+
         var subplots = plots.getSubplots(gd).join(''),
             oldSubplots = ((gd.layout && gd.layout._plots) ? Object.keys(gd.layout._plots) : []).join('');
         if(!gd.framework || gd.framework!=makePlotFramework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
@@ -580,19 +593,9 @@ Plotly.plot = function(gd, data, layout) {
 
 
 
-
-
-
 ////////////////////////////////  3D   /////////////////////////////////////////////////
-    if ( gd.data &&
-         gd.data.length &&
-         gd.data.some(function (d) {
-             return plots.isGL3D(d.type);
-         })
-       )
-    {
 
-
+    if (gl._isGL3D) {
         /*
          * Once Webgl plays well with other things we can remove this.
          * Unset examples, they misbehave with 3d plots
@@ -601,11 +604,6 @@ Plotly.plot = function(gd, data, layout) {
         if ($examplesContainer.css('display') === 'block') {
             Examples.set();
         }
-
-        if (gd.layout === undefined) {
-            gd.layout = layout;
-        }
-        gd.layout._isGL3D = true; // used to sandbox 3d plotting: remove once fully functional
 
         /*
          * Reset all SceneFrame positions (for now just set width % as viewport x ratio)
@@ -647,7 +645,7 @@ Plotly.plot = function(gd, data, layout) {
              * (updating not yet implemented).
              *
              */
-            var scene = gd.layout[dest_scene] || {};
+            var scene = gl[dest_scene] || {};
 
 
             if ('_glx' in scene && scene._glx) {
@@ -668,7 +666,7 @@ Plotly.plot = function(gd, data, layout) {
                     else scene[key] = sceneTemplate[key];
                 });
 
-                gd.layout[dest_scene] = scene;
+                gl[dest_scene] = scene;
 
                 scene._dataQueue.push(d);
             }
@@ -685,10 +683,10 @@ Plotly.plot = function(gd, data, layout) {
          * x:[0,1] -> x:[0,0.5], x:[0.5,1] -> x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
          *
          */
-        var scenes = Object.keys(gd.layout).filter(function(k){ return k.match(/^scene[0-9]*$/); });
+        var scenes = Object.keys(gl).filter(function(k){ return k.match(/^scene[0-9]*$/); });
 
         scenes.map( function (scene_key, idx) {
-            var scene = gd.layout[scene_key];
+            var scene = gl[scene_key];
             // we are only modifying the x domain position with this simple approach
             scene.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
             // if this scene has already been loaded it will have it's glx context parameter so lets
@@ -747,9 +745,9 @@ Plotly.plot = function(gd, data, layout) {
     /*
      * Plotly.plot shortCircuit for 3d
      */
-    if ('layout' in gd && gd.layout._isGL3D) {
+    if (gl._isGL3D) {
 
-        gd.layout._paperdiv.style({
+        gl._paperdiv.style({
             width: gl.width+'px',
             height: gl.height+'px',
             background: gl.paper_bgcolor
@@ -1970,14 +1968,17 @@ function makePlotFramework(divid, layout) {
     // rather than enter/exit which can muck up the order
     gl._paperdiv.selectAll('svg').remove();
 
-    // short-circuiting this code in the case of 3d
-    // resolves the problem where zoom scrolls the page as the page overflows
-    // due to this svg container appended below a full size 3d iframe container.
-    // Also stops the errors coming out of d3 which arrise due to not drawing the
-    // main paper div.
+    // short-circuiting this code here resolves the issue where the _paper svg
+    // element following this conditional pushes the page past screen height
+    // and leads to overflow and scrollbars in the tool.
     if (plots.isGL3D(type)) {
+        // init the mode bar
+        Plotly.Fx.modeBar(gd);
+        if(!gl._forexport) { Plotly.Fx.init(gd); }
+
         return;
     }
+
     gl._paper = gl._paperdiv.append('svg')
                 .attr({
                     'xmlns': 'http://www.w3.org/2000/svg',
