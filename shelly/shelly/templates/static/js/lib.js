@@ -514,8 +514,19 @@ lib.startspin = function(parent,spinsize,options){
 };
 
 
-// similar to OS X's "growl" notifier
-lib.notifier = function(text,tm){
+/**
+ * notifier
+ * @param {String} text The person's user name
+ * @param {Number} [delay=1000] The delay time in milliseconds or 'long' which provides 2000 ms delay time.
+ * @return {undefined} this function does not return a value
+*/
+lib.notifier = function(text, displayLength) {
+
+    var ts;
+    if ($.isNumeric(displayLength)) ts = displayLength;
+    else if (displayLength === 'long') ts = 2000;
+    else ts = 1000;
+
     var notifier_container = $('.notifier-container');
     if(!notifier_container.length) {
         notifier_container = $('<div class="notifier-container"></div>').appendTo('#tabs-one-line,#embedded-graph');
@@ -529,7 +540,7 @@ lib.notifier = function(text,tm){
 
     n.appendTo(notifier_container)
         .fadeIn(2000)
-        .delay(tm=='long' ? 2000 : 1000)
+        .delay(ts)
         .fadeOut(2000,function(){ n.remove(); });
 };
 
@@ -1035,7 +1046,7 @@ lib.purgeStream = function purgeStream (dobj) {
  * Pass in a specification object with:
  * {
  *   items: array of items
- *   callback: an optional callback to be called on item selection
+ *   callback: an optional callback to be called on item selection --> cb(item, itemindex)
  *   defaults: An array index of the item to initialize with, defaults to 0
  * }
  */

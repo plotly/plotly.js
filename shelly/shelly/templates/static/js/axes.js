@@ -94,10 +94,27 @@ axes.initAxis = function(td,ax) {
 
     // set scaling to pixels
     ax.setScale = function(){
-        var gs = ax._td.layout._size;
+        var gs = ax._td.layout._size,
+            i;
         // make sure we have a range (linearized data values)
+        // and that it stays away from the limits of javascript numbers
         if(!ax.range || ax.range.length!=2 || ax.range[0]==ax.range[1]) {
             ax.range = [-1,1];
+        }
+        for(i=0; i<2; i++) {
+            if(!$.isNumeric(ax.range[i])) {
+                ax.range[i] = $.isNumeric(ax.range[1-i]) ?
+                    (ax.range[1-i] * (i ? 10 : 0.1)) :
+                    (i ? 1 : -1);
+            }
+
+            if(ax.range[i]<-(Number.MAX_VALUE/2)) {
+                ax.range[i] = -(Number.MAX_VALUE/2);
+            }
+            else if(ax.range[i]>Number.MAX_VALUE/2) {
+                ax.range[i] = Number.MAX_VALUE/2;
+            }
+
         }
 
         if(ax._id.charAt(0)=='y') {
@@ -483,17 +500,22 @@ axes.expand = function(ax,data,options) {
         i,j,v,di,dmin,dmax,vpadi,ppadi,ppadiplus,ppadiminus,includeThis,vmin,vmax;
 
     function getPad(item) {
-        if($.isArray(item)) { return function(i) { return Math.max(Number(item[i]||0),0); }; }
-        else { var v = Math.max(Number(item||0),0); return function(){ return v; }; }
+        if($.isArray(item)) {
+            return function(i) { return Math.max(Number(item[i]||0),0); };
+        }
+        else {
+            var v = Math.max(Number(item||0),0);
+            return function(){ return v; };
+        }
     }
     var ppadplus = getPad(((ax._m>0 ? options.ppadplus : options.ppadminus)||options.ppad||0)),
         ppadminus = getPad(((ax._m>0 ? options.ppadminus : options.ppadplus)||options.ppad||0)),
         vpadplus = getPad(options.vpadplus||options.vpad),
         vpadminus = getPad(options.vpadminus||options.vpad);
 
-    for(i=0; i<len; i++) {
+    function addItem(i) {
         di = data[i];
-        if(!$.isNumeric(di)) { continue; }
+        if(!$.isNumeric(di)) { return; }
         ppadiplus = ppadplus(i) + extrappad;
         ppadiminus = ppadminus(i) + extrappad;
         vmin = di-vpadminus(i);
@@ -502,14 +524,21 @@ axes.expand = function(ax,data,options) {
         // order of mag, clip it to one order. This is so we don't have non-positive
         // errors or absurdly large lower range due to rounding errors
         if(ax.type=='log' && vmin<vmax/10) { vmin = vmax/10; }
+
         dmin = ax.c2l(vmin);
         dmax = ax.c2l(vmax);
+
         if(tozero) {
             dmin = Math.min(0,dmin);
             dmax = Math.max(0,dmax);
         }
 
-        if($.isNumeric(dmin)) {
+        // In order to stop overflow errors, don't consider points too close to
+        // the limits of js floating point
+        var FP_SAFE = Number.MAX_VALUE/2;
+        function goodNumber(v) { return $.isNumeric(v) && Math.abs(v)<FP_SAFE; }
+
+        if(goodNumber(dmin)) {
             includeThis = true;
             // take items v from ax._min and compare them to the presently active point:
             // - if the item supercedes the new point, set includethis false
@@ -524,7 +553,7 @@ axes.expand = function(ax,data,options) {
             }
         }
 
-        if($.isNumeric(dmax)) {
+        if(goodNumber(dmax)) {
             includeThis = true;
             for(j=0; j<ax._max.length && includeThis; j++) {
                 v = ax._max[j];
@@ -536,6 +565,12 @@ axes.expand = function(ax,data,options) {
             }
         }
     }
+
+    // For efficiency covering monotonic or near-monotonic data, check a few points
+    // at both ends first and then sweep through the middle
+    for(i=0; i<6; i++) { addItem(i); }
+    for(i=len-1; i>5; i--) { addItem(i); }
+
 };
 
 axes.autoBin = function(data,ax,nbins,is2d) {
@@ -1113,7 +1148,8 @@ axes.doTicks = function(td,axid) {
             td.layout._paper.selectAll('g.subplot').each(function(subplot) {
                 var plotinfo = gl._plots[subplot];
                 plotinfo.plot.attr('viewBox','0 0 '+plotinfo.x._length+' '+plotinfo.y._length);
-                plotinfo.axislayer.selectAll('text,path').remove();
+                plotinfo.xaxislayer.selectAll('text,path').remove();
+                plotinfo.yaxislayer.selectAll('text,path').remove();
                 plotinfo.gridlayer.selectAll('path').remove();
                 plotinfo.zerolinelayer.selectAll('path').remove();
             });
@@ -1304,6 +1340,7 @@ axes.doTicks = function(td,axid) {
     }
     else { Plotly.Plots.getSubplots(td,ax).forEach(function(subplot,subplotIndex){
         var plotinfo = gl._plots[subplot],
+            container = plotinfo[axletter+'axislayer'],
             linepositions = ax._linepositions[subplot]||[], // [bottom or left, top or right, free, main]
             counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
             mainSubplot = counteraxis._id==ax.anchor,
@@ -1332,8 +1369,8 @@ axes.doTicks = function(td,axid) {
             }
         });
 
-        drawTicks(plotinfo.axislayer,tickpath);
-        drawLabels(plotinfo.axislayer,linepositions[3]);
+        drawTicks(container,tickpath);
+        drawLabels(container,linepositions[3]);
         drawGrid(plotinfo.gridlayer, plotinfo.zerolinelayer, plotinfo['hidegrid'+axletter]?[]:valsClipped, counteraxis, subplot);
     }); }
 

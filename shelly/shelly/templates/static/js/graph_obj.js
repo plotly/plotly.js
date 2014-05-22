@@ -4,42 +4,6 @@
 if(!window.Plotly) { window.Plotly = {}; }
 var plots = Plotly.Plots = {};
 
-// fill for possibly missing graph type libraries.
-// most of these should
-// module is the name of the object, methods are the methods to fill.
-function noop(){}
-function req(module, methods) {
-    if(module in window.Plotly) { return; }
-    var moduleFill = {};
-    for(var i=0; i<methods.length; i++) { moduleFill[methods[i]] = noop; }
-    window.Plotly[module] = moduleFill;
-}
-req('Annotations',["drawAll", "add", "draw", "allArrowheads", "calcAutorange"]);
-req('Axes',["defaultAxis", "clearTypes", "setTypes", "initAxis", "id2name", "name2id",
-    "counterLetter", "cleanDatum", "setConvert", "moreDates", "category",
-    "minDtick", "doAutoRange", "expand", "autoBin", "autoTicks", "tickIncrement",
-    "tickFirst", "tickText", "list", "getFromId", "doTicks"]);
-req('Bars',["calc", "setPositions", "plot", "style"]);
-req('Boxes',["calc", "setPositions", "plot", "style"]);
-req('Drawing',["rgb", "opacity", "addOpacity", "strokeColor", "fillColor", "font",
-    "setPosition", "setSize", "setRect", "translatePoints", "lineGroupStyle",
-    "fillGroupStyle", "pointStyle", "tryColorscale", "textPointStyle", "styleText"]);
-req('ErrorBars',["pushRef2GDC", "styleBoxDrop", "ydr", "plot", "style"]);
-req('Fx',["DBLCLICKDELAY", "MINDRAG", "init", "MAXDIST", "hover", "unhover", "click",
-    "modeBar", "dragAlign", "dragCursors", "dragClear", "autoGrowInput", "setCursor"]);
-req('Heatmap',["calc", "plot", "style", "margin"]);
-req('Histogram',['calc']);
-req('Legend',["lines", "points", "bars", "boxes", "style", "texts", "draw",
-    "repositionLegend"]);
-req('Lib',["dateTime2ms", "isDateTime", "ms2DateTime", "parseDate", "findBin",
-    "distinctVals", "nestedProperty", "pauseEvent", "lpad", "aggNums", "len", "mean",
-    "stdev", "VERBOSE", "TIMER", "log", "markTime", "constrain", "killspin", "startspin",
-    "notifier", "conf_modal", "bBoxIntersect", "identity", "num2ordinal", "ppn",
-    "togglecontent", "plotlyurl", "randstr"]);
-req('Scatter',["PTS_LINESONLY", "calc", "plot", "style"]);
-req('Toolbar',["polarPopover", "tracePopover", "canvasPopover", "axesPopover",
-    "textsPopover", "legendPopover", "setPolarPopoversMenu", "resetCartesianPopoversMenu"]);
-
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
 // into Plotly. These are:
@@ -274,7 +238,7 @@ plots.newTab = function(divid, layout) {
 // in some cases the browser doesn't seem to know how big the text is at first,
 // so it needs to draw it, then wait a little, then draw it again
 plots.redrawText = function(gd) {
-    if(gd.data && gd.data[0] && gd.data[0].r){ return; } // doesn't work presently (and not needed) for polar
+    if(gd.layout._isGL3D || (gd.data && gd.data[0] && gd.data[0].r)) return; // doesn't work presently (and not needed) for polar
     setTimeout(function(){
         Plotly.Annotations.drawAll(gd);
         Plotly.Legend.draw(gd,gd.layout.showlegend);
@@ -578,172 +542,6 @@ Plotly.plot = function(gd, data, layout) {
 
         return null;
     }
-////////////////////////////////  3D   /////////////////////////////////////////////////
-    else if ( gd.data &&
-              gd.data.length &&
-              gd.data.some(
-                  function (d) { return plots.isGL3D(d.type) } )) {
-
-
-        /*
-         * Once Webgl plays well with other things we can remove this.
-         * Unset examples, they misbehave with 3d plots
-         */
-        var $examplesContainer = $(gd).find('.examples-container');
-        if ($examplesContainer.css('display')) {
-            Examples.set();
-        }
-        /*
-         * surface and scatter3d
-         * webgl 3d
-         *
-         */
-
-        /*
-         * Set an ugly marker for now to short circuit a bunch of code.
-         * Once all the popovers are hooked in this can be removed.
-         */
-        if (gd.layout === undefined) {
-            gd.layout = layout;
-        }
-        gd.layout._isGL3D = true;
-
-        var glContainerOptions = {
-            container: gd.querySelector('.svg-container'),
-            zIndex: '1000'
-        };
-
-        if (!('_glContexts' in gd.layout)) {
-            gd.layout._glContexts = [];
-        }
-
-        if (!('_viewports' in gd.layout)) {
-            gd.layout._viewports = [];
-        }
-
-        /*
-         * Reset all glContext positions (for now just set width % as viewport x ratio)
-         * In case this is a redraw from a resize
-         */
-        gd.layout._glContexts.map(
-            function (glxCon, idx) { glxCon.glx.setPosition(gd.layout._viewports[glxCon.viewport]) }
-        )
-
-
-        gd.data
-        .filter( function (d) { return plots.isGL3D(d.type) } )
-        .forEach( function (d) {
-
-
-            if (!Array.isArray(d.z)) {
-                $.extend(d, GlContext.testData(d.type, 120, 120, [40,40,40]));
-            }
-
-            if (!$.isNumeric(d.viewport)) {
-                d.viewport = 0;
-            }
-
-            /*
-             * In the case existing glContexts are active in this tab:
-             * If data has a destination viewport attempt to match that to the
-             * associated glContext.
-             * If a particular data trace also has a glID. It means the surface or mesh
-             * for this data trace has already been drawn and we can just do an update
-             * (updating not yet implemented).
-             *
-             */
-            var glxCon = gd.layout._glContexts[d.viewport];
-
-
-            if (glxCon && glxCon.glx) {
-                // you can change the camera position before or after initializing data
-                // or accept defaults
-                glxCon.glx.draw(d, d.type);
-                glxCon.glx.axisOn();
-            }
-
-
-
-            else {
-                /*
-                 * add data to a queue to it can be asyncronously loaded
-                 * once the glcontexts are ready
-                 */
-                if (!glxCon) {
-                    glxCon = {
-                        glx: undefined,
-                        dataQueue: [],
-                        viewport: null,
-                        loading: false
-                    };
-                    gd.layout._glContexts[d.viewport] = glxCon;
-                }
-
-                glxCon.viewport = d.viewport;
-                glxCon.dataQueue.push(d);
-            }
-        })
-
-        /*
-         * If there are viewports that need loading load them.
-         * Once they load they will iterate through any data
-         * that might be on their queue
-         */
-        gd.layout._glContexts
-        .filter( function (glxCon) {
-            if (glxCon) {
-                if (glxCon.dataQueue.length && !glxCon.loading) {
-                    glxCon.loading = true;
-                    return true;
-                }
-            }
-            return false;
-        })
-        .forEach( function (glxCon) {
-            /*
-             * Creating new GLContexts in an asyncronous process.
-             */
-            GlContext.newContext(glContainerOptions, function (glx) {
-                glxCon.loading = false; // loaded
-                glxCon.glx = glx;
-                /*
-                 * Viewport arrangements need to be implemented, just splice
-                 * along the horizontal direction for now. ie,
-                 * x:[0,1] -> x:[0,0.5], x:[0.5,1] -> x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
-                 *
-                 * Add a link to d.viewport to the viewport it is created in.
-                 *
-                 */
-                glxCon.viewport = gd.layout._viewports.push({x:[0,1],y:[0,1]}) - 1;
-                gd.layout._viewports = gd.layout._viewports.map(
-                    function (viewport, idx, viewports) {
-                        viewport.x = [idx/viewports.length, (idx+1)/viewports.length];
-                        return viewport;
-                    })
-
-                /*
-                 * Reset all glContext positions (for now just set width % as viewport x ratio)
-                 */
-                gd.layout._glContexts.map(
-                    function (glxCon, idx) { glxCon.glx.setPosition(gd.layout._viewports[glxCon.viewport]); }
-                )
-
-                while (glxCon.dataQueue.length) {
-                    var d = glxCon.dataQueue.shift();
-                    glx.draw(d, d.type);
-                }
-                /*
-                 * Calling glx.axisOn when it is already on will update it to include
-                 * any changes to the boundaries of the drawn objects (autoscaling).
-                 */
-                glx.axisOn();
-
-            })
-        })
-    }
-
-///////////////////////////////  end of 3D   /////////////////////////////////////////////
-
 
     else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
 
@@ -781,10 +579,182 @@ Plotly.plot = function(gd, data, layout) {
     gd.numboxes = 0;
 
 
+
+
+
+
+////////////////////////////////  3D   /////////////////////////////////////////////////
+    if ( gd.data &&
+         gd.data.length &&
+         gd.data.some(function (d) {
+             return plots.isGL3D(d.type);
+         })
+       )
+    {
+
+
+        /*
+         * Once Webgl plays well with other things we can remove this.
+         * Unset examples, they misbehave with 3d plots
+         */
+        var $examplesContainer = $(gd).find('.examples-container');
+        if ($examplesContainer.css('display') === 'block') {
+            Examples.set();
+        }
+
+        if (gd.layout === undefined) {
+            gd.layout = layout;
+        }
+        gd.layout._isGL3D = true; // used to sandbox 3d plotting: remove once fully functional
+
+        /*
+         * Reset all SceneFrame positions (for now just set width % as viewport x ratio)
+         * In case this is a redraw from a resize
+         */
+        gd.data
+        .filter( function (d) { return plots.isGL3D(d.type); } )
+        .forEach( function (d) {
+
+            var sceneTemplate = {
+                _glx: undefined,
+                _dataQueue: [],              // for asyncronously loading data
+                domain: {x:[0,1],y:[0,1]},  // default domain
+                _loading: false
+            };
+          // This following code inserts test data if no data is present
+          // remove after completion
+            if (!Array.isArray(d.z)) {
+                $.extend(d, SceneFrame.testData(d.type, 120, 120, [40,40,40]));
+            }
+
+            /*
+             * Scene numbering proceeds as follows
+             * scene
+             * scene2
+             * scene3
+             *
+             * and d.scene will be undefined or some number or number string
+             */
+            var dest_scene = 'scene';
+            if (d.scene && $.isNumeric(d.scene) && d.scene > 1) dest_scene += d.scene;
+
+            /*
+             * In the case existing scenes are active in this tab:
+             * If data has a destination scene attempt to match that to the
+             * associated scene.
+             * If a particular data trace also has a glID. It means the surface or mesh
+             * for this data trace has already been drawn and we can just do an update
+             * (updating not yet implemented).
+             *
+             */
+            var scene = gd.layout[dest_scene] || {};
+
+
+            if ('_glx' in scene) {
+                // you can change the camera position before or after initializing data
+                // or accept defaults
+                scene._glx.draw(d, d.type);
+                scene._glx.axisOn();
+            }
+
+
+
+            else {
+                /*
+                 * Inflate scene object and add defaults
+                 */
+                Object.keys(sceneTemplate).forEach( function (key) {
+                    if (key in scene) return;
+                    else scene[key] = sceneTemplate[key];
+                });
+
+                gd.layout[dest_scene] = scene;
+
+                scene._dataQueue.push(d);
+            }
+        });
+
+        /*
+         * If there are scenes that need loading load them.
+         * Recalibrate all domains now that there may be new scenes.
+         * Once scenes load they will iteratively load any data
+         * that might be on their queue.
+         *
+         * scene arrangements need to be implemented: For now just splice
+         * along the horizontal direction. ie.
+         * x:[0,1] -> x:[0,0.5], x:[0.5,1] -> x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
+         *
+         */
+        var scenes = Object.keys(gd.layout).filter(function(k){ return k.match(/^scene[0-9]*$/); });
+
+        scenes.map( function (scene_key, idx) {
+            var scene = gd.layout[scene_key];
+            // we are only modifying the x domain position with this simple approach
+            scene.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
+            // if this scene has already been loaded it will have it's glx context parameter so lets
+            // reset the domain of the scene as it may have changed (this operates on the containing iframe)
+            if (scene._glx) scene._glx.setPosition(scene.domain);
+            return scene;
+        })
+        .filter( function (scene) {
+            /*
+             * We only want to continue to operate on scenes that have data waiting to be displayed
+             * and are themselves not already undergoing loading.
+             */
+            if (scene) {
+                if (scene._dataQueue.length && !scene._loading) {
+                    scene._loading = true;
+                    return true;
+                }
+            }
+            return false;
+        })
+        .forEach( function (scene) {
+            /*
+             * Creating new scenes
+             */
+            var sceneOptions = {
+                container: gd.querySelector('.svg-container'),
+                zIndex: '1000'
+            };
+
+            SceneFrame.createScene(sceneOptions, function (glx) {
+                scene._loading = false; // loaded
+
+                glx.setPosition(scene.domain);
+
+                while (scene._dataQueue.length) {
+                    var d = scene._dataQueue.shift();
+                    glx.draw(d, d.type);
+                }
+                /*
+                 * Calling glx.axisOn when it is already on will update it to include
+                 * any changes to the boundaries of the drawn objects (autoscaling).
+                 */
+                glx.axisOn();
+
+                scene._glx = glx;
+
+            });
+        });
+    }
+
+///////////////////////////////  end of 3D   /////////////////////////////////////////////
+
+
+
+
     /*
      * Plotly.plot shortCircuit for 3d
      */
     if ('layout' in gd && gd.layout._isGL3D) {
+
+        gd.layout._paperdiv.style({
+            width: gl.width+'px',
+            height: gl.height+'px',
+            background: gl.paper_bgcolor
+        });
+
         gd.calcdata = [];
         return void 0;
     }
@@ -1938,20 +1908,19 @@ function makePlotFramework(divid, layout) {
         gl = gd.layout,
         subplots;
 
+    if(!xalist.length) { xalist = ['xaxis']; }
+    if(!yalist.length) { yalist = ['yaxis']; }
+    xalist.concat(yalist).forEach(function(axname) {
+        addDefaultAxis(oldLayout,axname);
+        // if an axis range was explicitly provided with newlayout, turn off autorange
+        if(newLayout[axname] && newLayout[axname].range && newLayout[axname].range.length==2) {
+            oldLayout[axname].autorange = false;
+        }
+    });
+    gd.layout = gl = updateObject(oldLayout, newLayout);
+
     if (!plots.isGL3D(type)) {
         // do a bunch of 2D axis stuff
-
-        if(!xalist.length) { xalist = ['xaxis']; }
-        if(!yalist.length) { yalist = ['yaxis']; }
-        xalist.concat(yalist).forEach(function(axname) {
-            addDefaultAxis(oldLayout,axname);
-            // if an axis range was explicitly provided with newlayout, turn off autorange
-            if(newLayout[axname] && newLayout[axname].range && newLayout[axname].range.length==2) {
-                oldLayout[axname].autorange = false;
-            }
-        });
-        gd.layout = gl = updateObject(oldLayout, newLayout);
-
 
         // Get subplots and see if we need to make any more axes
         subplots = plots.getSubplots(gd);
@@ -1969,8 +1938,8 @@ function makePlotFramework(divid, layout) {
 
     } else {
         // This is WEBGL, remove usual axis
-        delete gd.layout['xaxis']
-        delete gd.layout['yaxis']
+        delete gd.layout['xaxis'];
+        delete gd.layout['yaxis'];
     }
 
     var outerContainer = gl._fileandcomments = gd3.selectAll('.file-and-comments');
@@ -2052,6 +2021,7 @@ function makePlotFramework(divid, layout) {
             if(mainplot!=subplot && subplots.indexOf(mainplot)!=-1) {
                 plotinfo.mainplot = mainplot;
                 overlays.push(plotinfo);
+
                 // for now force overlays to overlay completely... so they can drag
                 // together correctly and share backgrounds. Later perhaps we make
                 // separate axis domain and tick/line domain or something, so they can
@@ -2068,16 +2038,13 @@ function makePlotFramework(divid, layout) {
                 plotinfo.overgrid = plotgroup.append('g');
                 plotinfo.zerolinelayer = plotgroup.append('g');
                 plotinfo.overzero = plotgroup.append('g');
-                plotinfo.plot = plotgroup.append('svg')
-                    .attr('preserveAspectRatio','none')
-                    .style('fill','none');
+                plotinfo.plot = plotgroup.append('svg');
                 plotinfo.overplot = plotgroup.append('g');
-                plotinfo.xlines = plotgroup.append('path')
-                    .style('fill','none').classed('crisp',true);
-                plotinfo.ylines = plotgroup.append('path')
-                    .style('fill','none').classed('crisp',true);
+                plotinfo.xlines = plotgroup.append('path');
+                plotinfo.ylines = plotgroup.append('path');
                 plotinfo.overlines = plotgroup.append('g');
-                plotinfo.axislayer = plotgroup.append('g');
+                plotinfo.xaxislayer = plotgroup.append('g');
+                plotinfo.yaxislayer = plotgroup.append('g');
                 plotinfo.overaxes = plotgroup.append('g');
 
                 // make separate drag layers for each subplot, but append them to paper rather than
@@ -2088,21 +2055,30 @@ function makePlotFramework(divid, layout) {
 
     // now make the components of overlaid subplots
     // overlays don't have backgrounds, and append all their other components to the corresponding
-    // extra groups of their main plots. As shown here, the overlays will do just that, have
-    // each component overlaid on the corresponding component of the main plot
+    // extra groups of their main plots.
     overlays.forEach(function(plotinfo) {
         var mainplot = gl._plots[plotinfo.mainplot];
         mainplot.overlays.push(plotinfo);
+
         plotinfo.gridlayer = mainplot.overgrid.append('g');
         plotinfo.zerolinelayer = mainplot.overzero.append('g');
-        plotinfo.plot = mainplot.overplot.append('svg')
+        plotinfo.plot = mainplot.overplot.append('svg');
+        plotinfo.xlines = mainplot.overlines.append('path');
+        plotinfo.ylines = mainplot.overlines.append('path');
+        plotinfo.xaxislayer = mainplot.overaxes.append('g');
+        plotinfo.yaxislayer = mainplot.overaxes.append('g');
+    });
+
+    // common attributes for all subplots, overlays or not
+    subplots.forEach(function(subplot) {
+        var plotinfo = gl._plots[subplot];
+        plotinfo.plot
             .attr('preserveAspectRatio','none')
             .style('fill','none');
-        plotinfo.xlines = mainplot.overlines.append('path')
+        plotinfo.xlines
             .style('fill','none').classed('crisp',true);
-        plotinfo.ylines = mainplot.overlines.append('path')
+        plotinfo.ylines
             .style('fill','none').classed('crisp',true);
-        plotinfo.axislayer = mainplot.overaxes.append('g');
     });
 
     // single info (legend, annotations) and hover layers for the whole plot
@@ -2318,16 +2294,27 @@ function layoutStyles(gd) {
         }
 
         // translate all the extra stuff to have the same origin as the plot area
-        var origin = 'translate('+xa._offset+','+ya._offset+')';
+        var origin = 'translate('+xa._offset+','+ya._offset+')',
+            originx = origin,
+            originy = origin;
+        if(showfreex) {
+            originx = 'translate('+xa._offset+','+gs.t+')';
+        }
+        if(showfreey) {
+            originy = 'translate('+gs.l+','+ya._offset+')';
+        }
 
-        plotinfo.xlines.attr('transform',origin)
+
+        plotinfo.xlines
+            .attr('transform', originx)
             .attr('d',(
                 (showbottom ? (xpathPrefix+bottompos+xpathSuffix) : '') +
                 (showtop ? (xpathPrefix+toppos+xpathSuffix) : '') +
                 (showfreex ? (xpathPrefix+freeposx+xpathSuffix) : '')) || 'M0,0') // so it doesn't barf with no lines shown
             .style('stroke-width',xlw+'px')
             .call(Plotly.Drawing.strokeColor,xa.showline ? xa.linecolor : 'rgba(0,0,0,0)');
-        plotinfo.ylines.attr('transform',origin)
+        plotinfo.ylines
+            .attr('transform', originy)
             .attr('d',(
                 (showleft ? ('M'+leftpos+ypathSuffix) : '') +
                 (showright ? ('M'+rightpos+ypathSuffix) : '') +
@@ -2335,7 +2322,8 @@ function layoutStyles(gd) {
             .attr('stroke-width',ylw+'px')
             .call(Plotly.Drawing.strokeColor,ya.showline ? ya.linecolor : 'rgba(0,0,0,0)');
 
-        plotinfo.axislayer.attr('transform',origin);
+        plotinfo.xaxislayer.attr('transform',originx);
+        plotinfo.yaxislayer.attr('transform',originy);
         plotinfo.gridlayer.attr('transform',origin);
         plotinfo.zerolinelayer.attr('transform',origin);
         plotinfo.draglayer.attr('transform',origin);
