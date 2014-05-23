@@ -587,10 +587,6 @@ Plotly.plot = function(gd, data, layout) {
 
     var gl = gd.layout,
         x, y, i, serieslen, cd, type;
-    // if we have bars or fill-to-zero traces, make sure autorange goes to zero
-    gd.firstscatter = true; // because fill-to-next on the first scatter trace goes to zero
-    gd.numboxes = 0;
-
 
 
 ////////////////////////////////  3D   /////////////////////////////////////////////////
@@ -762,10 +758,6 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Axes.setTypes(gd);
 
     // prepare the data and find the autorange
-    // TODO: only remake calcdata for new or changed traces
-    // gd.calcdata=[];
-    gd.hmpixcount=0; // for calculating avg luminosity of heatmaps
-    gd.hmlumcount=0;
 
     Plotly.Lib.markTime('done Plotly.Axes.setType');
 
@@ -774,6 +766,12 @@ Plotly.plot = function(gd, data, layout) {
     var recalc = (!gd.calcdata || gd.calcdata.length!=(gd.data||[]).length);
     if(recalc) {
         gd.calcdata = [];
+
+        // extra helper variables
+        gd.firstscatter = true; // because fill-to-next on the first scatter trace goes to zero
+        gd.numboxes = 0;
+        gd.hmpixcount = 0; // for calculating avg luminosity of heatmaps
+        gd.hmlumcount = 0;
         // delete category list, if there is one, so we start over
         // to be filled in later by ax.d2c
         Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
