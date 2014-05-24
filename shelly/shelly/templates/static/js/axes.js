@@ -1302,7 +1302,7 @@ axes.doTicks = function(td,axid) {
                         'text-anchor': anchor
                     });
 
-                    txt.selectAll('tspan.line').attr({x: txt.attr('x'), y: txt.attr('y')});
+                    if(!txt.empty()) { txt.selectAll('tspan.line').attr({x: txt.attr('x'), y: txt.attr('y')}); }
                 }
                 else {
                     var mjShift = mathjaxGroup.node().getBoundingClientRect().width * {end:-0.5, start:0.5}[anchor];
