@@ -1319,7 +1319,7 @@ axes.doTicks = function(td,axid) {
         // putting back the prescribed angle to check for overlaps.
         positionLabels(tickLabels,ax._lastangle || ax.tickangle);
 
-        Promise.all(labelsReady).then(function(){
+        (td._promises||[]).push(Promise.all(labelsReady).then(function(){
             positionLabels(tickLabels,ax.tickangle);
 
             // check for auto-angling if labels overlap
@@ -1347,7 +1347,8 @@ axes.doTicks = function(td,axid) {
 
             // update the axis title (so it can move out of the way if needed)
             Plotly.Plots.titles(td,axid+'title');
-        });
+            return axid+' done';
+        }));
     }
 
     function drawGrid(plotinfo, counteraxis, subplot) {

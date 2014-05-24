@@ -378,6 +378,11 @@ Plotly.plot = function(gd, data, layout) {
     // almost nobody actually needs this anymore, but just to be safe...
     d3.select(gd).classed('js-plotly-plot',true);
 
+    // collect promises for any async actions during plotting
+    // any part of the plotting code can push to gd._promises, then
+    // we'll return a promise that they're all complete
+    gd._promises = [];
+
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-array (null, '', whatever) for data
     var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
@@ -385,24 +390,24 @@ Plotly.plot = function(gd, data, layout) {
         /*
          * Enforce unique IDs
          */
-        var suids = []    // seen uids --- so we can weed out incoming repeats
+        var suids = []; // seen uids --- so we can weed out incoming repeats
         var uids = data
                    .filter( function (d) { return 'uid' in d; } )
-                   .map( function (d) { return d.uid; })
+                   .map( function (d) { return d.uid; });
 
         if (!graphwasempty) {
             uids = uids.concat(
                     gd.data
                     .filter( function (d) { return 'uid' in d; } )
                     .map( function (d) { return d.uid; })
-            )
+            );
         }
 
         // backward compatibility: make a few changes to the data right away
         // before it gets used for anything
         // replace bardir with orientation and swap x/y if needed
         data.forEach(function(c) {
-            var uix
+            var uix;
             // use xbins to bin data in x, and ybins to bin data in y
             if(c.type=='histogramy' && 'xbins' in c && !('ybins' in c)) {
                 c.ybins = c.xbins;
@@ -412,11 +417,11 @@ Plotly.plot = function(gd, data, layout) {
             if ('uid' in c && suids.indexOf(c.uid) === -1) {
                 // keep track of already seen uids, so that if there are doubles we force
                 // the trace with a repeat uid to acquire a new one
-                suids.push(c.uid)
+                suids.push(c.uid);
             }
             else {
-                c.uid = Plotly.Lib.randstr(uids)
-                uids.push(c.uid)
+                c.uid = Plotly.Lib.randstr(uids);
+                uids.push(c.uid);
             }
 
             // convert bardir to orientation, and put the data into the axes it's eventually going to be used with
@@ -957,6 +962,8 @@ Plotly.plot = function(gd, data, layout) {
     plots.addLinks(gd);
     Plotly.Lib.markTime('done plot');
     gd._replotting = false;
+
+    return Promise.all(gd._promises);
 };
 
 // convenience function to force a full redraw, mostly for use by plotly.js
