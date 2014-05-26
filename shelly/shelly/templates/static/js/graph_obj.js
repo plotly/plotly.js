@@ -480,7 +480,7 @@ Plotly.plot = function(gd, data, layout) {
             background: (layout.paper_bgcolor || 'white')
         });
 
-        // instanciate framework
+        // instantiate framework
         gd.framework = micropolar.manager.framework();
         //get rid of gd.layout stashed nodes
         layout = µ.util.deepExtend({}, gd.layout);
@@ -541,6 +541,8 @@ Plotly.plot = function(gd, data, layout) {
             }
             title.call(setContenteditable);
 
+            gd.layout._paperdiv = paperDiv;
+
             Plotly.ToolPanel.tweakMenu();
         }
 
@@ -548,7 +550,7 @@ Plotly.plot = function(gd, data, layout) {
         gd.layout._paper = polarPlotSVG;
         plots.addLinks(gd);
 
-        return null;
+        return Promise.all();
     }
 
     else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
