@@ -48,12 +48,13 @@ legend.points = function(d){
     pts.exit().remove();
     pts.call(Plotly.Drawing.pointStyle,tmod);
 
-    var txt = ptgroup.selectAll('text')
+    var txt = ptgroup.selectAll('g.pointtext')
         .data(showText ? dmod : []);
-    txt.enter().append('text')
-        .attr('transform','translate(20,0)');
+    txt.enter()
+        .append('g').classed('pointtext',true)
+            .append('text').attr('transform','translate(20,0)');
     txt.exit().remove();
-    txt.call(Plotly.Drawing.textPointStyle,tmod);
+    txt.selectAll('text').call(Plotly.Drawing.textPointStyle,tmod);
 
 };
 
@@ -132,7 +133,7 @@ legend.texts = function(context, td, d, i, traces){
         lf = td.layout.legend.font;
     var curve = d[0].t.curve;
     var name = d[0].t.name;
-    var text = d3.select(context).selectAll('text')
+    var text = d3.select(context).selectAll('text.legendtext')
         .data([0]);
     text.enter().append('text');
     text.attr({
@@ -324,11 +325,12 @@ legend.repositionLegend = function(td, traces){
             mathjaxBB = mathjaxGroup.node().getBoundingClientRect();
             tHeight = mathjaxBB.height;
             tWidth = mathjaxBB.width;
+            mathjaxGroup.attr('transform','translate(0,'+(tHeight/4)+')');
         }
         else {
             // approximation to height offset to center the font...
             // really want to minimize getBoundingClientRect for browser compat.
-            textY = tHeight * (1/3 + (1-tLines)/2);
+            textY = tHeight * (0.3 + (1-tLines)/2);
             text.attr('y',textY);
             tspans.attr('y',textY);
         }
