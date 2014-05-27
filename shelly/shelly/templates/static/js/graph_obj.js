@@ -238,7 +238,7 @@ plots.newTab = function(divid, layout) {
 // in some cases the browser doesn't seem to know how big the text is at first,
 // so it needs to draw it, then wait a little, then draw it again
 plots.redrawText = function(gd) {
-    if(gd.data && gd.data[0] && gd.data[0].r){ return; } // doesn't work presently (and not needed) for polar
+    if(gd.layout._isGL3D || (gd.data && gd.data[0] && gd.data[0].r)) return; // doesn't work presently (and not needed) for polar
     setTimeout(function(){
         Plotly.Annotations.drawAll(gd);
         Plotly.Legend.draw(gd,gd.layout.showlegend);
@@ -371,9 +371,17 @@ Plotly.plot = function(gd, data, layout) {
     // test if this is on the main site or embedded
     gd.mainsite = Boolean($('#plotlyMainMarker').length);
 
+    // layout object --- this also gets checked in makePlotFramework
+    if (!layout) layout = {};
+
     // hook class for plots main container (in case of plotly.js this won't be #embedded-graph or .js-tab-contents)
     // almost nobody actually needs this anymore, but just to be safe...
     d3.select(gd).classed('js-plotly-plot',true);
+
+    // collect promises for any async actions during plotting
+    // any part of the plotting code can push to gd._promises, then
+    // we'll return a promise that they're all complete
+    gd._promises = [];
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass non-array (null, '', whatever) for data
@@ -382,24 +390,24 @@ Plotly.plot = function(gd, data, layout) {
         /*
          * Enforce unique IDs
          */
-        var suids = []    // seen uids --- so we can weed out incoming repeats
+        var suids = []; // seen uids --- so we can weed out incoming repeats
         var uids = data
                    .filter( function (d) { return 'uid' in d; } )
-                   .map( function (d) { return d.uid; })
+                   .map( function (d) { return d.uid; });
 
         if (!graphwasempty) {
             uids = uids.concat(
                     gd.data
                     .filter( function (d) { return 'uid' in d; } )
                     .map( function (d) { return d.uid; })
-            )
+            );
         }
 
         // backward compatibility: make a few changes to the data right away
         // before it gets used for anything
         // replace bardir with orientation and swap x/y if needed
         data.forEach(function(c) {
-            var uix
+            var uix;
             // use xbins to bin data in x, and ybins to bin data in y
             if(c.type=='histogramy' && 'xbins' in c && !('ybins' in c)) {
                 c.ybins = c.xbins;
@@ -409,11 +417,11 @@ Plotly.plot = function(gd, data, layout) {
             if ('uid' in c && suids.indexOf(c.uid) === -1) {
                 // keep track of already seen uids, so that if there are doubles we force
                 // the trace with a repeat uid to acquire a new one
-                suids.push(c.uid)
+                suids.push(c.uid);
             }
             else {
-                c.uid = Plotly.Lib.randstr(uids)
-                uids.push(c.uid)
+                c.uid = Plotly.Lib.randstr(uids);
+                uids.push(c.uid);
             }
 
             // convert bardir to orientation, and put the data into the axes it's eventually going to be used with
@@ -472,7 +480,7 @@ Plotly.plot = function(gd, data, layout) {
             background: (layout.paper_bgcolor || 'white')
         });
 
-        // instanciate framework
+        // instantiate framework
         gd.framework = micropolar.manager.framework();
         //get rid of gd.layout stashed nodes
         layout = µ.util.deepExtend({}, gd.layout);
@@ -533,6 +541,8 @@ Plotly.plot = function(gd, data, layout) {
             }
             title.call(setContenteditable);
 
+            gd.layout._paperdiv = paperDiv;
+
             Plotly.ToolPanel.tweakMenu();
         }
 
@@ -540,17 +550,55 @@ Plotly.plot = function(gd, data, layout) {
         gd.layout._paper = polarPlotSVG;
         plots.addLinks(gd);
 
-        return null;
+        return Promise.all();
     }
+
+    else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
+
+    gd._replotting = true; // so we don't try to re-call Plotly.plot from inside legend and colorbar, if margins changed
+
+    // Make or remake the framework (ie container and axes) if we need to
+    // figure out what framework the data imply,
+    //  and whether this is different from what was already there
+    // everything on xy axes (which right now is everything period) uses newPlot
+    //  but surface plots, pie charts, etc may use other frameworks.
+    // note: if they container already exists and has data,
+    //  the new layout gets ignored (as it should)
+    //  but if there's no data there yet, it's just a placeholder...
+    //  then it should destroy and remake the plot
+    if (gd.data && gd.data.length > 0) {
+
+        // DETECT 3D
+        // needed to do this before makePlotFramework to set up the modebar
+        // needed to put the bulk of the 3d setup code after makePlotFramework
+        // as it requires framework to be set
+        if (gd.data.some(function (d) {
+            return plots.isGL3D(d.type);
+        })) layout._isGL3D = true;
+
+
+        var subplots = plots.getSubplots(gd).join(''),
+            oldSubplots = ((gd.layout && gd.layout._plots) ? Object.keys(gd.layout._plots) : []).join('');
+        if(!gd.framework || gd.framework!=makePlotFramework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
+            gd.framework = makePlotFramework;
+            makePlotFramework(gd,layout);
+        }
+    }
+    else if((typeof gd.layout==='undefined')||graphwasempty) { makePlotFramework(gd, layout); }
+
+    // now tweak the layout if we're adding the initial data to the plot
+    if(graphwasempty && gd.data && gd.data.length>0) { tweakLayout(gd,layout); }
+
+    // enable or disable formatting buttons
+    $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length===0);
+
+    var gl = gd.layout,
+        x, y, i, serieslen, cd, type;
+
+
 ////////////////////////////////  3D   /////////////////////////////////////////////////
-    else if ( gd.data &&
-              gd.data.length &&
-              gd.data.some(
-                  function (d) {
-                      return plots.isGL3D(d.type);
-                  } )) {
 
-
+    if (gl._isGL3D) {
         /*
          * Once Webgl plays well with other things we can remove this.
          * Unset examples, they misbehave with 3d plots
@@ -560,22 +608,24 @@ Plotly.plot = function(gd, data, layout) {
             Examples.set();
         }
 
-        if (gd.layout === undefined) {
-            gd.layout = layout;
-        }
-        gd.layout._isGL3D = true; // used to sandbox 3d plotting: remove once fully functional
-
         /*
-         * Reset all glContext positions (for now just set width % as viewport x ratio)
+         * Reset all SceneFrame positions (for now just set width % as viewport x ratio)
          * In case this is a redraw from a resize
          */
         gd.data
-        .filter( function (d) { return plots.isGL3D(d.type) } )
+        .filter( function (d) { return plots.isGL3D(d.type); } )
         .forEach( function (d) {
 
-
+            var sceneTemplate = {
+                _glx: undefined,
+                _dataQueue: [],              // for asyncronously loading data
+                domain: {x:[0,1],y:[0,1]},  // default domain
+                _loading: false
+            };
+          // This following code inserts test data if no data is present
+          // remove after completion
             if (!Array.isArray(d.z)) {
-                $.extend(d, GlContext.testData(d.type, 120, 120, [40,40,40]));
+                $.extend(d, SceneFrame.testData(d.type, 120, 120, [40,40,40]));
             }
 
             /*
@@ -598,10 +648,10 @@ Plotly.plot = function(gd, data, layout) {
              * (updating not yet implemented).
              *
              */
-            var scene = gd.layout[dest_scene];
+            var scene = gl[dest_scene] || {};
 
 
-            if (scene && scene._glx) {
+            if ('_glx' in scene && scene._glx) {
                 // you can change the camera position before or after initializing data
                 // or accept defaults
                 scene._glx.draw(d, d.type);
@@ -612,22 +662,18 @@ Plotly.plot = function(gd, data, layout) {
 
             else {
                 /*
-                 * add data to a queue to it can be asyncronously loaded
-                 * once the glcontexts are ready.
+                 * Inflate scene object and add defaults
                  */
-                if (!scene) {
-                    scene = {
-                        _glx: undefined,
-                        _dataQueue: [],              // for asyncronously loading data
-                        domain: {x:[0,1],y:[0,1]},  // default domain
-                        _loading: false
-                    };
-                    gd.layout[dest_scene] = scene;
-                }
+                Object.keys(sceneTemplate).forEach( function (key) {
+                    if (key in scene) return;
+                    else scene[key] = sceneTemplate[key];
+                });
+
+                gl[dest_scene] = scene;
 
                 scene._dataQueue.push(d);
             }
-        })
+        });
 
         /*
          * If there are scenes that need loading load them.
@@ -640,15 +686,15 @@ Plotly.plot = function(gd, data, layout) {
          * x:[0,1] -> x:[0,0.5], x:[0.5,1] -> x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
          *
          */
-        var scenes = Object.keys(gd.layout).filter(function(k){ return k.match(/^scene[0-9]*$/); });
+        var scenes = Object.keys(gl).filter(function(k){ return k.match(/^scene[0-9]*$/); });
 
         scenes.map( function (scene_key, idx) {
-            var scene = gd.layout[scene_key];
+            var scene = gl[scene_key];
             // we are only modifying the x domain position with this simple approach
             scene.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
             // if this scene has already been loaded it will have it's glx context parameter so lets
             // reset the domain of the scene as it may have changed (this operates on the containing iframe)
-            if (scene._glx) scene._glx.setPosition(scene.domain);
+            if (scene._loaded) scene.setPosition(scene.domain);
             return scene;
         })
         .filter( function (scene) {
@@ -673,7 +719,7 @@ Plotly.plot = function(gd, data, layout) {
                 zIndex: '1000'
             };
 
-            GlContext.newContext(sceneOptions, function (glx) {
+            SceneFrame.createScene(sceneOptions, function (glx) {
                 scene._loading = false; // loaded
 
                 glx.setPosition(scene.domain);
@@ -686,57 +732,30 @@ Plotly.plot = function(gd, data, layout) {
                  * Calling glx.axisOn when it is already on will update it to include
                  * any changes to the boundaries of the drawn objects (autoscaling).
                  */
-                glx.axisOn();
+                glx.axisOn({textScale: 0.4});
 
                 scene._glx = glx;
 
-            })
-        })
+            });
+        });
     }
 
 ///////////////////////////////  end of 3D   /////////////////////////////////////////////
 
 
-    else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
-
-    gd._replotting = true; // so we don't try to re-call Plotly.plot from inside legend and colorbar, if margins changed
-
-    // Make or remake the framework (ie container and axes) if we need to
-    // figure out what framework the data imply,
-    //  and whether this is different from what was already there
-    // everything on xy axes (which right now is everything period) uses newPlot
-    //  but surface plots, pie charts, etc may use other frameworks.
-    // note: if they container already exists and has data,
-    //  the new layout gets ignored (as it should)
-    //  but if there's no data there yet, it's just a placeholder...
-    //  then it should destroy and remake the plot
-    if (gd.data && gd.data.length > 0) {
-        var subplots = plots.getSubplots(gd).join(''),
-            oldSubplots = ((gd.layout && gd.layout._plots) ? Object.keys(gd.layout._plots) : []).join('');
-        if(!gd.framework || gd.framework!=makePlotFramework || !gd.layout || graphwasempty || (oldSubplots!=subplots)) {
-            gd.framework = makePlotFramework;
-            makePlotFramework(gd,layout);
-        }
-    }
-    else if((typeof gd.layout==='undefined')||graphwasempty) { makePlotFramework(gd, layout); }
-
-    // now tweak the layout if we're adding the initial data to the plot
-    if(graphwasempty && gd.data && gd.data.length>0) { tweakLayout(gd,layout); }
-
-    // enable or disable formatting buttons
-    $(gd).find('.data-only').attr('disabled', !gd.data || gd.data.length===0);
-
-    var gl = gd.layout,
-        x, y, i, serieslen, cd, type;
-    // if we have bars or fill-to-zero traces, make sure autorange goes to zero
-    gd.firstscatter = true; // because fill-to-next on the first scatter trace goes to zero
-    gd.numboxes = 0;
 
 
     /*
      * Plotly.plot shortCircuit for 3d
      */
-    if ('layout' in gd && gd.layout._isGL3D) {
+    if (gl._isGL3D) {
+
+        gl._paperdiv.style({
+            width: gl.width+'px',
+            height: gl.height+'px',
+            background: gl.paper_bgcolor
+        });
+
         gd.calcdata = [];
         return void 0;
     }
@@ -746,10 +765,6 @@ Plotly.plot = function(gd, data, layout) {
     Plotly.Axes.setTypes(gd);
 
     // prepare the data and find the autorange
-    // TODO: only remake calcdata for new or changed traces
-    // gd.calcdata=[];
-    gd.hmpixcount=0; // for calculating avg luminosity of heatmaps
-    gd.hmlumcount=0;
 
     Plotly.Lib.markTime('done Plotly.Axes.setType');
 
@@ -758,6 +773,12 @@ Plotly.plot = function(gd, data, layout) {
     var recalc = (!gd.calcdata || gd.calcdata.length!=(gd.data||[]).length);
     if(recalc) {
         gd.calcdata = [];
+
+        // extra helper variables
+        gd.firstscatter = true; // because fill-to-next on the first scatter trace goes to zero
+        gd.numboxes = 0;
+        gd.hmpixcount = 0; // for calculating avg luminosity of heatmaps
+        gd.hmlumcount = 0;
         // delete category list, if there is one, so we start over
         // to be filled in later by ax.d2c
         Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
@@ -943,6 +964,8 @@ Plotly.plot = function(gd, data, layout) {
     plots.addLinks(gd);
     Plotly.Lib.markTime('done plot');
     gd._replotting = false;
+
+    return Promise.all(gd._promises);
 };
 
 // convenience function to force a full redraw, mostly for use by plotly.js
@@ -1678,9 +1701,8 @@ Plotly.relayout = function(gd,astr,val) {
                 else { console.log('???',aobj); }
             }
             if((annAutorange(anni,'x') || annAutorange(anni,'y')) &&
-                anum>=0 && (anum>=anns.length || anni.ref=='plot') &&
-                ai.indexOf('color')==-1 && ai.indexOf('opacity')==-1) {
-                    docalc = true;
+                    ai.indexOf('color')==-1 && ai.indexOf('opacity')==-1 && ai.indexOf('align')==-1) {
+                docalc = true;
             }
             Plotly.Annotations.draw(gd,anum,p.parts.slice(2).join('.'),aobj[ai]);
             delete aobj[ai];
@@ -1890,20 +1912,19 @@ function makePlotFramework(divid, layout) {
         gl = gd.layout,
         subplots;
 
+    if(!xalist.length) { xalist = ['xaxis']; }
+    if(!yalist.length) { yalist = ['yaxis']; }
+    xalist.concat(yalist).forEach(function(axname) {
+        addDefaultAxis(oldLayout,axname);
+        // if an axis range was explicitly provided with newlayout, turn off autorange
+        if(newLayout[axname] && newLayout[axname].range && newLayout[axname].range.length==2) {
+            oldLayout[axname].autorange = false;
+        }
+    });
+    gd.layout = gl = updateObject(oldLayout, newLayout);
+
     if (!plots.isGL3D(type)) {
         // do a bunch of 2D axis stuff
-
-        if(!xalist.length) { xalist = ['xaxis']; }
-        if(!yalist.length) { yalist = ['yaxis']; }
-        xalist.concat(yalist).forEach(function(axname) {
-            addDefaultAxis(oldLayout,axname);
-            // if an axis range was explicitly provided with newlayout, turn off autorange
-            if(newLayout[axname] && newLayout[axname].range && newLayout[axname].range.length==2) {
-                oldLayout[axname].autorange = false;
-            }
-        });
-        gd.layout = gl = updateObject(oldLayout, newLayout);
-
 
         // Get subplots and see if we need to make any more axes
         subplots = plots.getSubplots(gd);
@@ -1921,8 +1942,8 @@ function makePlotFramework(divid, layout) {
 
     } else {
         // This is WEBGL, remove usual axis
-        delete gd.layout['xaxis']
-        delete gd.layout['yaxis']
+        delete gd.layout['xaxis'];
+        delete gd.layout['yaxis'];
     }
 
     var outerContainer = gl._fileandcomments = gd3.selectAll('.file-and-comments');
@@ -1953,14 +1974,17 @@ function makePlotFramework(divid, layout) {
     // rather than enter/exit which can muck up the order
     gl._paperdiv.selectAll('svg').remove();
 
-    // short-circuiting this code in the case of 3d
-    // resolves the problem where zoom scrolls the page as the page overflows
-    // due to this svg container appended below a full size 3d iframe container.
-    // Also stops the errors coming out of d3 which arrise due to not drawing the
-    // main paper div.
+    // short-circuiting this code here resolves the issue where the _paper svg
+    // element following this conditional pushes the page past screen height
+    // and leads to overflow and scrollbars in the tool.
     if (plots.isGL3D(type)) {
+        // init the mode bar
+        Plotly.Fx.modeBar(gd);
+        if(!gl._forexport) { Plotly.Fx.init(gd); }
+
         return;
     }
+
     gl._paper = gl._paperdiv.append('svg')
                 .attr({
                     'xmlns': 'http://www.w3.org/2000/svg',
@@ -2350,7 +2374,7 @@ plots.titles = function(gd,title) {
         fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
         fontColor = cont.titlefont.color || gl.font.color || '#444',
         x,y,transform='',attr={},xa,ya,
-        avoid = {selection:d3.select(gd).selectAll('text.'+cont._id+'tick'), side:cont.side},
+        avoid = {selection:d3.select(gd).selectAll('g.'+cont._id+'tick'), side:cont.side},
         offsetBase = colorbar ? 0 : 1.5; // multiples of fontsize to offset label from axis
     if(colorbar && cont.titleside) {
         x = gs.l+cont.titlex*gs.w;
@@ -2439,7 +2463,9 @@ plots.titles = function(gd,title) {
             else {
                 // iterate over a set of elements (avoid.selection) to avoid collisions with
                 avoid.selection.each(function(){
-                    var avoidbb = this.getBoundingClientRect();
+                    var mathjaxGroup = d3.select(this).select('.text-math-group'),
+                        avoidEl = mathjaxGroup.empty() ? d3.select(this).select('text') : mathjaxGroup,
+                        avoidbb = avoidEl.node().getBoundingClientRect();
                     if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
                         shift = Math.min(maxshift,Math.max(shift,
                             Math.abs(avoidbb[avoid.side]-titlebb[backside])+pad));
