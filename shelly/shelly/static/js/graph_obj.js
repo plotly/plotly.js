@@ -2611,64 +2611,80 @@ plots.getSubplots = function(gd,ax) {
 };
 
 // graphJson - jsonify the graph data and layout
-// dataonly=true will omit layout and any arrays that aren't data
+// needs to recurse because some src can be inside sub-objects
+// also strips out functions and private (start with _) elements
+// so we can add temporary things to data and layout that don't get saved
+//
+// dataonly = truthy will omit layout and any arrays that aren't data
 //      (note that we have to do this on the server side too)
-// mode: see stripObj below
-plots.graphJson = function(gd, dataonly, mode){
-    if(typeof gd == 'string') { gd = document.getElementById(gd); }
-    var obj = {
-        data:(gd.data||[]).map(function(v){
-            var d = stripObj(v,mode);
-            // fit has some little arrays in it that don't contain data, just fit params and meta
-            if(dataonly) { delete d.fit; }
-            return d;
-        })
-    };
-    if(!dataonly) { obj.layout = stripObj(gd.layout,mode); }
-
-    if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
-
-    return JSON.stringify(obj);
-};
-
-// stripObj - used by graphJson to create a copy of an object, stripped as requested by mode.
 // mode:
 //      keepref (default): remove data for which there's a src present, ie if there's
 //          xsrc present (and xsrc is well-formed, ie has : and some chars before it), strip out x
 //      keepdata: remove all src tags, don't remove the data itself
 //      keepall: keep data and src
-// needs to recurse because some src can be inside sub-objects
-// also strips out functions and private (start with _) elements
-// so we can add temporary things to data and layout that don't get saved
-function stripObj(d,mode) {
-    if(typeof d == 'function') { return null; }
-    if(!$.isPlainObject(d)) { return d; }
+plots.graphJson = function(gd, dataonly, mode){
+    if(typeof gd == 'string') { gd = document.getElementById(gd); }
 
-    var o={}, v;
-    function s2(v2) { return stripObj(v2,mode); }
-    for(v in d) {
-        //if (v === "fit" && $.isPlainObject(d[v])) { continue; }
-        // remove private elements and functions - _ is for private, [ is a mistake ie [object Object]
-        if(typeof d[v]=='function' || ['_','['].indexOf(v.charAt(0))!=-1) { continue; }
-        // look for src/data matches and remove the appropriate one
-        if(mode=='keepdata') {
-            // keepdata: remove all ...src tags
-            if(v.substr(v.length-3)=='src') { continue; }
+    function stripObj(d) {
+        if(typeof d == 'function') {
+            return null;
         }
-        else if(mode!='keepall') {
-            // keepref: remove sourced data but only if the source tag is well-formed
-            var src = d[v+'src'];
-            if(typeof src=='string' && src.indexOf(':')>0) { continue; }
+
+        if($.isPlainObject(d)) {
+            var o={}, v;
+            for(v in d) {
+                // remove private elements and functions - _ is for private, [ is a mistake ie [object Object]
+                if(typeof d[v]=='function' || ['_','['].indexOf(v.charAt(0))!=-1) {
+                    continue;
+                }
+
+                // look for src/data matches and remove the appropriate one
+                if(mode=='keepdata') {
+                    // keepdata: remove all ...src tags
+                    if(v.substr(v.length-3)=='src') {
+                        continue;
+                    }
+                }
+                else if(mode!='keepall') {
+                    // keepref: remove sourced data but only if the source tag is well-formed
+                    var src = d[v+'src'];
+                    if(typeof src=='string' && src.indexOf(':')>0) {
+                        continue;
+                    }
+                }
+
+                // OK, we're including this... recurse into it
+                o[v] = stripObj(d[v]);
+            }
+            return o;
         }
-        // OK, we're including this... recurse into objects, copy arrays
-        if($.isPlainObject(d[v])) { o[v] = stripObj(d[v],mode); }
-        else if($.isArray(d[v])) { if (d[v].length) {o[v] = d[v].map(s2);} }
+
+        if($.isArray(d)) {
+            return d.map(stripObj);
+        }
+
         // convert native dates to date strings... mostly for external users exporting to plotly
-        else if(d[v] && d[v].getTime) { o[v] = Plotly.Lib.ms2DateTime(d[v]); }
-        else { o[v] = d[v]; }
+        if(d && d.getTime) {
+            return Plotly.Lib.ms2DateTime(d);
+        }
+
+        return d;
     }
-    return o;
-}
+
+    var obj = {
+        data:(gd.data||[]).map(function(v){
+            var d = stripObj(v);
+            // fit has some little arrays in it that don't contain data, just fit params and meta
+            if(dataonly) { delete d.fit; }
+            return d;
+        })
+    };
+    if(!dataonly) { obj.layout = stripObj(gd.layout); }
+
+    if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
+
+    return JSON.stringify(obj);
+};
 
 var uoStack=[];
 // updateObject: merge objects i and up recursively into a new object (o)
