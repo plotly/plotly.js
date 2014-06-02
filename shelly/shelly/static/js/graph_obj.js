@@ -1,9 +1,22 @@
 // Main plotting library - Creates the Plotly object and Plotly.Plots
-// also fills any missing components with dummies to avoid errors
 (function() {
+    'use strict';
+    /* jshint camelcase: false */
+
+    // ---Plotly global modules
+    /* global Plotly:false, µ:false, micropolar:false,
+        SceneFrame:false, Tabs:false, Examples:false */
+
+    // ---global functions not yet namespaced
+    /* global setFileAndCommentsSize:false, killPopovers:false,
+        hidebox:false, litebox:false */
+
+    // ---external global dependencies
+    /* global Promise:false, d3:false */
+
     if(!window.Plotly) { window.Plotly = {}; }
-    var Plotly = window.Plotly,
-        plots = Plotly.Plots = {};
+
+    var plots = Plotly.Plots = {};
 
     // Most of the generic plotting functions get put into Plotly.Plots,
     // but some - the ones we want 3rd-party developers to use - go directly
@@ -49,7 +62,8 @@
 
         'Bluered':[[0,'rgb(0,0,255)'],[1,'rgb(255,0,0)']],
 
-        // modified RdBu based on http://www.sandia.gov/~kmorel/documents/ColorMaps/ColorMapsExpanded.pdf
+        // modified RdBu based on
+        // www.sandia.gov/~kmorel/documents/ColorMaps/ColorMapsExpanded.pdf
         'RdBu':[[0,'rgb(5, 10, 172)'],[0.35,'rgb(106, 137, 247)'],
             [0.5,'rgb(190,190,190)'],[0.6,'rgb(220, 170, 132)'],
             [0.7,'rgb(230, 145, 90)'],[1,'rgb(178, 10, 28)']],
@@ -113,18 +127,21 @@
     // dynamic stylesheet, see http://davidwalsh.name/add-rules-stylesheets
     // css syntax from http://www.colorzilla.com/gradient-editor/
     (function() {
+        //only on main site - though later we may expand to embeds
+        if(!$('#plotlyMainMarker').length) { return; }
+
         var style = document.createElement('style');
         // WebKit hack :(
         style.appendChild(document.createTextNode(''));
         document.head.appendChild(style);
         var styleSheet = style.sheet;
 
-        function addStyleRule(selector,stylestring) {
+        function addStyleRule(selector,styleString) {
             if(styleSheet.insertRule) {
-                styleSheet.insertRule(selector+'{'+stylestring+'}',0);
+                styleSheet.insertRule(selector+'{'+styleString+'}',0);
             }
-            else if(lib.styleSheet.addRule) {
-                styleSheet.addRule(selector,stylestring,0);
+            else if(styleSheet.addRule) {
+                styleSheet.addRule(selector,styleString,0);
             }
             else { console.log('addStyleRule failed'); }
         }
@@ -294,32 +311,10 @@
         var gd = (typeof divid === 'string') ?
             document.getElementById(divid) : divid;
         // test if this is on the main site or embedded
-        gd.mainsite = Boolean($('#plotlyMainMarker').length);
+        gd.mainsite = !!$('#plotlyMainMarker').length;
         if(gd.mainsite) {
-            makeGraphToolMenu(gd);
+            Plotly.ToolPanel.makeMenu(gd);
         }
-    }
-
-    // Traces are unique by name.. allows traces to be updated/restyled
-    // TODO: this isn't used?
-    function updateTraces(oldData, newData) {
-        var updated = {},
-            res = [],
-            i, newTrace, oldTrace;
-        for (i=0; i<oldData.length; i++){
-            oldTrace = oldData[i];
-            updated[oldTrace.name] = oldTrace;
-        }
-        for (i=0; i<newData.length; i++){
-            newTrace = newData[i];
-            updated[newTrace.name] = newTrace;
-        }
-        var tk = Object.keys(updated);
-        for (i=0; i<tk.length; i++){
-            var name = tk[i];
-            res.push(updated[name]);
-        }
-        return res;
     }
 
     // the 'view in plotly' and source links - note that now plot() calls this
@@ -346,6 +341,7 @@
                 links.append('tspan').classed('js-link-spacer',true);
                 links.append('tspan').classed('js-sourcelinks',true);
             });
+
         var toolspan = linkContainer.select('.js-link-to-tool'),
             spacespan = linkContainer.select('.js-link-spacer'),
             sourcespan = linkContainer.select('.js-sourcelinks');
@@ -354,7 +350,7 @@
         Plotly.Lib.showSources(gd);
 
         // public url for downloaded files
-        if(gd.layout && gd.layout._url) { toolspan.text(url); }
+        if(gd.layout && gd.layout._url) { toolspan.text(gd.layout._url); }
         // 'view in plotly' link for embedded plots
         else if(!gd.mainsite && !gd.standalone &&
                 !$('#plotlyUserProfileMarker').length) {
@@ -362,8 +358,7 @@
         }
 
         // separator if we have both sources and tool link
-        linkContainer.select('.js-link-spacer')
-            .text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
+        spacespan.text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
     };
 
     // note that now this function is only adding the brand in
@@ -465,7 +460,7 @@
             // backward compatibility: make a few changes to the data right away
             // before it gets used for anything
             // replace bardir with orientation and swap x/y if needed
-            data.forEach(function(c) {
+            data.forEach(function(c,ci) {
                 // assign uids to each trace and detect collisions.
                 if (!('uid' in c) || suids.indexOf(c.uid) !== -1) {
                     var newUid, i;
@@ -491,8 +486,9 @@
 
                 // error_y.opacity is obsolete - merge into color
                 if(c.error_y && 'opacity' in c.error_y) {
-                    var yeColor = c.error_y.color ||
-                        (plots.isBar(t.type) ? '#444' : defaultColor);
+                    var dc = plots.defaultColors,
+                        yeColor = c.error_y.color ||
+                        (plots.isBar(c.type) ? '#444' : dc[ci % dc.length]);
                     c.error_y.color = Plotly.Drawing.addOpacity(
                         Plotly.Drawing.rgb(yeColor),
                         Plotly.Drawing.opacity(yeColor) * c.error_y.opacity);
@@ -502,7 +498,7 @@
                 // convert bardir to orientation, and put the data into
                 // the axes it's eventually going to be used with
                 if('bardir' in c) {
-                    if(c.bardir==='h' && (Plotly.Plots.isBar(c.type) ||
+                    if(c.bardir==='h' && (plots.isBar(c.type) ||
                              c.type.substr(0,9)==='histogram')) {
                         c.orientation = 'h';
                         swapxydata(c);
@@ -637,7 +633,7 @@
                                 .call(titleLayout);
                             this.call(setContenteditable);
                         })
-                        .on('cancel', function(text){
+                        .on('cancel', function(){
                             var txt = this.attr('data-unformatted');
                             this.text(txt).call(titleLayout);
                         });
@@ -703,7 +699,7 @@
             !gd.data || gd.data.length===0);
 
         var gl = gd.layout,
-            x, y, i, serieslen, cd, type;
+            curvetype;
 
 
         ////////////////////////////////  3D   ///////////////////////////////
@@ -871,7 +867,7 @@
             });
 
             gd.calcdata = [];
-            return void 0;
+            return Promise.all([]);
         }
 
         // prepare the types and conversion functions for the axes
@@ -887,6 +883,7 @@
         var recalc = !gd.calcdata || gd.calcdata.length!==(gd.data||[]).length;
         if(recalc) {
             gd.calcdata = [];
+            gd._modules = {};
 
             // extra helper variables
             // firstscatter: fill-to-next on the first trace goes to zero
@@ -902,10 +899,10 @@
             for(var curve in gd.data) {
                 // curve is the index, gdc is the data object for one trace
                 var gdc = gd.data[curve],
-                    curvetype = gdc.type || 'scatter', //default type is scatter
                     isPolar = 'r' in gdc,
-                    cdtextras = {}; // info (if anything) to add to cd[0].t
-                cd = [];
+                    module = '',
+                    cd = [];
+                curvetype = gdc.type || 'scatter'; //default type is scatter
                 // don't let type be blank...
                 // may want to go further and enforce known types?
                 gdc.type = curvetype;
@@ -928,21 +925,19 @@
                     else { gdc.name='trace '+curve; }
                 }
 
-                if (curvetype==='scatter') { cd = Plotly.Scatter.calc(gd,gdc); }
-                else if (plots.isBar(curvetype)) {
-                    if(curvetype==='bar') { cd = Plotly.Bars.calc(gd,gdc); }
-                    else { cd = Plotly.Histogram.calc(gd,gdc); }
-                }
-                else if (plots.isHeatmap(curvetype)){
-                    cd = Plotly.Heatmap.calc(gd,gdc);
-                    if(!('colorbar' in gdc)) gdc.colorbar = {};
-                }
-                else if (curvetype==='box') { cd = Plotly.Boxes.calc(gd,gdc); }
+                if(curvetype==='scatter') { module = 'Scatter'; }
+                else if(plots.isBar(curvetype)) { module = 'Bars'; }
+                else if(plots.isContour(curvetype)) { module = 'Contour'; }
+                else if(plots.isHeatmap(curvetype)) { module = 'Heatmap'; }
+                else if(curvetype==='box') { module = 'Boxes'; }
 
-                if(!('line' in gdc)) gdc.line = {};
-                if(!('marker' in gdc)) gdc.marker = {};
-                if(!('line' in gdc.marker)) gdc.marker.line = {};
-                if(!('textfont' in gdc)) gdc.textfont = {};
+                if(module) { cd = Plotly[module].calc(gd,gdc); }
+                else { console.log('unrecognized trace type: ' +curvetype); }
+
+                if(!('line' in gdc)) { gdc.line = {}; }
+                if(!('marker' in gdc)) { gdc.marker = {}; }
+                if(!('line' in gdc.marker)) { gdc.marker.line = {}; }
+                if(!('textfont' in gdc)) { gdc.textfont = {}; }
                 // make sure there is a first point
                 if(!$.isArray(cd) || !cd[0]) { cd = [{x: false, y: false}]; }
 
@@ -954,6 +949,9 @@
                 cd[0].t.curve = curve;
                 // store the calcdata curve number we're in - should be the same
                 cd[0].t.cdcurve = gd.calcdata.length;
+                // store the module for this trace, for use later by plotting
+                cd[0].t.module = module;
+                gd._modules[module] = true;
 
                 gd.calcdata.push(cd);
                 Plotly.Lib.markTime('done with calcdata for '+curve);
@@ -976,11 +974,9 @@
                 if(t.visible===false || !plots.isHeatmap(t.type)) {
                     plots.autoMargin(gd,'cb'+t.curve);
                 }
-                else if(plots.isContour(t.type)) {
-                    Plotly.Contour.colorbar(gd,cd);
-                }
-                else  {
-                    Plotly.Heatmap.colorbar(gd,cd);
+                else {
+                    Plotly[plots.isContour(t.type) ? 'Contour' : 'Heatmap']
+                        .colorbar(gd,cd);
                 }
             });
             doAutoMargin(gd);
@@ -1032,62 +1028,47 @@
         Plotly.Axes.doTicks(gd,'redraw');
         Plotly.Lib.markTime('done autorange and ticks');
 
-        // Now plot the data. Order is:
-        // 1. heatmaps (and 2d histos and contour maps)
-        // 2. bars/histos
-        // 3. errorbars for everyone
-        // 4. scatter
-        // 5. box plots
+        // Now plot the data
+
+        // in case of traces that were heatmaps or contour maps
+        // previously, remove them and their colorbars explicitly
+        gd.calcdata.forEach(function(cd) {
+            if(plots.isHeatmap(cd[0].t.type)) { return; }
+            var i = cd[0].t.cdcurve;
+            gl._paper.selectAll('.hm'+i+',.contour'+i+',.cb'+i)
+                .remove();
+        });
 
         Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
             var plotinfo = gd.layout._plots[subplot],
-                cdbar = [], cdscatter = [], cdbox = [];
-            for(var i in gd.calcdata){
-                cd = gd.calcdata[i];
-                type=cd[0].t.type;
-                // filter to only traces on this subplot
-                if((cd[0].t.xaxis||'x')+(cd[0].t.yaxis||'y')!==subplot) {
-                    continue;
-                }
-                if(plots.isHeatmap(type)) {
-                    if(plots.isContour(type)) {
-                        Plotly.Contour.plot(gd,plotinfo,cd);
-                    }
-                    else {
-                        Plotly.Heatmap.plot(gd,plotinfo,cd);
-                    }
-                    Plotly.Lib.markTime('done heatmap '+i);
-                }
-                else {
-                    // in case this one was a heatmap or contour map
-                    // previously, remove it and its colorbar
-                    gl._paper.selectAll('.hm'+i+',.contour'+i+',.cb'+i)
-                        .remove();
-
-                    if(plots.isBar(type)) { cdbar.push(cd); }
-                    else if(type==='box') { cdbox.push(cd); }
-                    else { cdscatter.push(cd); }
-                }
-            }
+                cdSubplot = gd.calcdata.filter(function(cd) {
+                    var t = cd[0].t;
+                    return (t.xaxis||'x') + (t.yaxis||'y')===subplot;
+                }),
+                cdError = [];
 
             // remove old traces, then redraw everything
+            // TODO: use enter/exit appropriately in the plot functions
+            // so we don't need this - should be a big speedup in many cases
             plotinfo.plot.selectAll('g.trace').remove();
-            Plotly.Bars.plot(gd,plotinfo,cdbar);
-            Plotly.Lib.markTime('done bars');
 
-            // we need to select which markers to draw on a scatter plot
-            // before the error bars are drawn so they know too!
-            Plotly.Scatter.selectMarkers(gd,plotinfo,cdscatter);
+            Object.keys(gd._modules).forEach(function(module) {
+                // plot all traces of this type on this subplot at once
+                var cdmod = cdSubplot.filter(function(cd){
+                    return cd[0].t.module===module;
+                });
+                Plotly[module].plot(gd,plotinfo,cdmod);
+                Plotly.Lib.markTime('done '+module);
 
-            // DRAW ERROR BARS for bar and scatter plots
-            // these come after (on top of) bars, and before (behind) scatter
-            Plotly.ErrorBars.plot(gd,plotinfo,cdbar.concat(cdscatter));
-            Plotly.Lib.markTime('done errorbars');
+                // collect the traces that may have error bars
+                if(['Scatter','Bars'].indexOf(module)!==-1) {
+                    cdError = cdError.concat(cdmod);
+                }
+            });
+            // finally do all error bars at once
+            Plotly.ErrorBars.plot(gd,plotinfo,cdError);
+            Plotly.Lib.markTime('done ErrorBars');
 
-            Plotly.Scatter.plot(gd,plotinfo,cdscatter);
-            Plotly.Lib.markTime('done scatter');
-            Plotly.Boxes.plot(gd,plotinfo,cdbox);
-            Plotly.Lib.markTime('done boxes');
         });
 
         //styling separate from drawing
@@ -1200,8 +1181,8 @@
                 mergeattr('error_y.type','ye_type',
                     ('array' in gdc.error_y) ? 'data' : 'percent');
                 mergeattr('error_y.symmetric','ye_sym',
-                    !((t.ye_type==='data' ? 'arrayminus' : 'valueminus')
-                        in gdc.error_y));
+                    !((t.ye_type==='data' ? 'arrayminus' : 'valueminus') in
+                        gdc.error_y));
                 mergeattr('error_y.value','ye_val',10);
                 mergeattr('error_y.valueminus','ye_valminus',10);
                 mergeattr('error_y.traceref','ye_tref',0);
@@ -1215,8 +1196,8 @@
                 mergeattr('error_x.type','xe_type',
                     ('array' in gdc.error_x) ? 'data' : 'percent');
                 mergeattr('error_x.symmetric','xe_sym',
-                    !((t.xe_type=='data' ? 'arrayminus' : 'valueminus')
-                        in gdc.error_x));
+                    !((t.xe_type==='data' ? 'arrayminus' : 'valueminus') in
+                        gdc.error_x));
                 mergeattr('error_x.value','xe_val',10);
                 mergeattr('error_x.valueminus','xe_valminus',10);
                 mergeattr('error_x.traceref','xe_tref',0);
@@ -1694,8 +1675,8 @@
         }
         // now all attribute mods are done, as are redo and undo
         // so we can save them
-        if(typeof plotUndoQueue === 'function') {
-            plotUndoQueue(gd,undoit,redoit,traces);
+        if(Plotly.Queue) {
+            Plotly.Queue.add(gd,undoit,redoit,traces);
         }
 
         // do we need to force a recalc?
@@ -1757,12 +1738,12 @@
         swapAttrs(gdc,'?src');
         swapAttrs(gdc,'error_?');
         if(gdc.error_x && gdc.error_y) {
-            var copy_ystyle = ('copy_ystyle' in gdc.error_y) ?
+            var copyYstyle = ('copy_ystyle' in gdc.error_y) ?
                     gdc.error_y.copy_ystyle :
                     ((gdc.error_y.color || gdc.error_y.thickness ||
                         gdc.error_y.width) ? false : true);
             swapAttrs(gdc,'error_?.copy_ystyle');
-            if(copy_ystyle) {
+            if(copyYstyle) {
                 swapAttrs(gdc,'error_?.color');
                 swapAttrs(gdc,'error_?.thickness');
                 swapAttrs(gdc,'error_?.width');
@@ -2025,8 +2006,8 @@
         }
         // now all attribute mods are done, as are
         // redo and undo so we can save them
-        if(typeof plotUndoQueue === 'function') {
-            plotUndoQueue(gd,undoit,redoit,'relayout');
+        if(Plotly.Queue) {
+            Plotly.Queue.add(gd,undoit,redoit,'relayout');
         }
 
         // calculate autosizing - if size hasn't changed,
@@ -2179,7 +2160,6 @@
         gd3.classed('js-plotly-plot',true);
 
         function addDefaultAxis(container, axname) {
-            var axid = axname.replace('axis','');
             if(!container[axname]) {
                 container[axname] = Plotly.Axes.defaultAxis({
                     range: [-1,6],
@@ -2288,6 +2268,21 @@
                 'xml:xml:space': 'preserve'
             });
 
+        // Layers to keep plot types in the right order.
+        // from back to front:
+        // 1. heatmaps, 2D histos and contour maps
+        // 2. bars / 1D histos
+        // 3. errorbars for bars and scatter
+        // 4. scatter
+        // 5. box plots
+        function plotLayers(svg) {
+            svg.append('g').classed('maplayer', true);
+            svg.append('g').classed('barlayer', true);
+            svg.append('g').classed('errorlayer', true);
+            svg.append('g').classed('scatterlayer', true);
+            svg.append('g').classed('boxlayer', true);
+        }
+
         // create all the layers in order, so we know they'll stay in order
         var overlays = [];
         gl._plots = {};
@@ -2346,7 +2341,7 @@
                     plotinfo.overgrid = plotgroup.append('g');
                     plotinfo.zerolinelayer = plotgroup.append('g');
                     plotinfo.overzero = plotgroup.append('g');
-                    plotinfo.plot = plotgroup.append('svg');
+                    plotinfo.plot = plotgroup.append('svg').call(plotLayers);
                     plotinfo.overplot = plotgroup.append('g');
                     plotinfo.xlines = plotgroup.append('path');
                     plotinfo.ylines = plotgroup.append('path');
@@ -2372,7 +2367,7 @@
 
             plotinfo.gridlayer = mainplot.overgrid.append('g');
             plotinfo.zerolinelayer = mainplot.overzero.append('g');
-            plotinfo.plot = mainplot.overplot.append('svg');
+            plotinfo.plot = mainplot.overplot.append('svg').call(plotLayers);
             plotinfo.xlines = mainplot.overlines.append('path');
             plotinfo.ylines = mainplot.overlines.append('path');
             plotinfo.xaxislayer = mainplot.overaxes.append('g');
@@ -2386,9 +2381,11 @@
                 .attr('preserveAspectRatio','none')
                 .style('fill','none');
             plotinfo.xlines
-                .style('fill','none').classed('crisp',true);
+                .style('fill','none')
+                .classed('crisp',true);
             plotinfo.ylines
-                .style('fill','none').classed('crisp',true);
+                .style('fill','none')
+                .classed('crisp',true);
         });
 
         // single info (legend, annotations) and hover layers for the whole plot
@@ -2773,9 +2770,8 @@
         group.select('.'+title).remove();
         var el = group.append('text').attr('class', title).text(txt);
 
-        function titleLayout(){
-            var titleEl = this
-                .style({
+        function titleLayout(titleEl){
+            titleEl.style({
                     'font-family': font,
                     'font-size': d3.round(fontSize,2)+'px',
                     fill: Plotly.Drawing.rgb(fontColor),
@@ -2894,11 +2890,11 @@
                     }
                     else { Plotly.relayout(gd,prop,text); }
                 })
-                .on('cancel', function(text){
+                .on('cancel', function(){
                     this.text(this.attr('data-unformatted'))
                         .call(titleLayout);
                 })
-                .on('input', function(d, i){
+                .on('input', function(d){
                     this.text(d || ' ').attr(options)
                         .selectAll('tspan.line')
                             .attr(options);
@@ -2994,6 +2990,52 @@
         if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
         return JSON.stringify(obj);
+    };
+
+    plots.viewJson = function(){
+        var gd = Tabs.get();
+        var jsonString, data, layout;
+        if(gd.framework && gd.framework.isPolar){
+            var json= gd.framework.getLiveConfig();
+            jsonString = JSON.stringify(json);
+            data = json.data;
+            layout = json.layout;
+        }
+        else{
+            jsonString = Plotly.Plots.graphJson(gd);
+            data = JSON.parse(jsonString).data;
+            // Remove stream meta info
+            data.forEach(function(di){ delete di.stream; });
+            layout = JSON.parse(jsonString).layout;
+        }
+        var code = 'var data = ' + JSON.stringify(data) + ';\n';
+        code += 'var layout = ' + JSON.stringify(layout) + ';\n';
+        code += 'Plotly.plot(Tabs.get(), data, layout);';
+
+        var jsonModal = $('#jsonModal');
+        var jsonViewer = jsonModal.find('#json-viewer').empty();
+        jsonViewer.data('jsontree', '')
+            .jsontree(jsonString,{collapsibleOuter:false}).show();
+        jsonModal.modal('show');
+
+        var jsonText = jsonModal.find('#json-text')
+            .text('').append(code).hide();
+        var buttonTexts = ['Switch to Plain Text', 'Switch to JSON Viewer'];
+        var viewerToggle = $('.js-plain-text-toggle').text(buttonTexts[0]);
+
+        viewerToggle.off('click').on('click', function(){
+            var isPlaintText = $(this).text() === buttonTexts[0];
+            jsonViewer.toggle(!isPlaintText);
+            jsonText.toggle(isPlaintText);
+            jsonText.get(0).select();
+            $(this).text(buttonTexts[+isPlaintText]);
+            return false;
+        });
+
+        jsonModal.find('.close').off('click').on('click', function(){
+            jsonModal.modal('hide');
+            return false;
+        });
     };
 
     // updateObject: merge objects i and up recursively into a new object (o)

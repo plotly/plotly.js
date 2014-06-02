@@ -1399,7 +1399,7 @@ axes.doTicks = function(td,axid) {
         // putting back the prescribed angle to check for overlaps.
         positionLabels(tickLabels,ax._lastangle || ax.tickangle);
 
-        (td._promises||[]).push(Promise.all(labelsReady).then(function(){
+        var done = Promise.all(labelsReady).then(function(){
             positionLabels(tickLabels,ax.tickangle);
 
             // check for auto-angling if labels overlap
@@ -1428,7 +1428,9 @@ axes.doTicks = function(td,axid) {
             // update the axis title (so it can move out of the way if needed)
             Plotly.Plots.titles(td,axid+'title');
             return axid+' done';
-        }));
+        });
+        (td._promises||[]).push(done);
+        return done;
     }
 
     function drawGrid(plotinfo, counteraxis, subplot) {
@@ -1474,43 +1476,45 @@ axes.doTicks = function(td,axid) {
 
     if(independent) {
         drawTicks(ax._axislayer, tickprefix + (ax._pos+pad*ticksign[2]) + tickmid + (ticksign[2]*ax.ticklen));
-        drawLabels(ax._axislayer,ax._pos);
+        return drawLabels(ax._axislayer,ax._pos);
     }
-    else { axes.getSubplots(td,ax).forEach(function(subplot,subplotIndex){
-        var plotinfo = gl._plots[subplot],
-            container = plotinfo[axletter+'axislayer'],
-            linepositions = ax._linepositions[subplot]||[], // [bottom or left, top or right, free, main]
-            counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
-            mainSubplot = counteraxis._id==ax.anchor,
-            ticksides = [false,false,false],
-            tickpath='';
+    else {
+        return Promise.all(axes.getSubplots(td,ax).map(function(subplot,subplotIndex){
+            var plotinfo = gl._plots[subplot],
+                container = plotinfo[axletter+'axislayer'],
+                linepositions = ax._linepositions[subplot]||[], // [bottom or left, top or right, free, main]
+                counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
+                mainSubplot = counteraxis._id==ax.anchor,
+                ticksides = [false,false,false],
+                tickpath='';
 
-        // ticks
-        if(ax.mirror=='allticks') { ticksides = [true,true,false]; }
-        else if(mainSubplot) {
-             if(ax.mirror=='ticks') { ticksides = [true,true,false]; }
-             else { ticksides[sides.indexOf(axside)] = true; }
-        }
-        if(ax.mirrors) {
-            for(i=0; i<2; i++) {
-                if(['ticks','labels'].indexOf(ax.mirrors[counteraxis._id+sides[i]])!=-1) {
-                    ticksides[i] = true;
+            // ticks
+            if(ax.mirror=='allticks') { ticksides = [true,true,false]; }
+            else if(mainSubplot) {
+                 if(ax.mirror=='ticks') { ticksides = [true,true,false]; }
+                 else { ticksides[sides.indexOf(axside)] = true; }
+            }
+            if(ax.mirrors) {
+                for(i=0; i<2; i++) {
+                    if(['ticks','labels'].indexOf(ax.mirrors[counteraxis._id+sides[i]])!=-1) {
+                        ticksides[i] = true;
+                    }
                 }
             }
-        }
-        // free axis ticks
-        if(linepositions[2]!==undefined) { ticksides[2] = true; }
-        ticksides.forEach(function(showside,sidei) {
-            var pos = linepositions[sidei], tsign = ticksign[sidei];
-            if(showside && $.isNumeric(pos)) {
-                tickpath += tickprefix + (pos+pad*tsign) + tickmid + (tsign*ax.ticklen);
-            }
-        });
+            // free axis ticks
+            if(linepositions[2]!==undefined) { ticksides[2] = true; }
+            ticksides.forEach(function(showside,sidei) {
+                var pos = linepositions[sidei], tsign = ticksign[sidei];
+                if(showside && $.isNumeric(pos)) {
+                    tickpath += tickprefix + (pos+pad*tsign) + tickmid + (tsign*ax.ticklen);
+                }
+            });
 
-        drawTicks(container,tickpath);
-        drawLabels(container,linepositions[3]);
-        drawGrid(plotinfo, counteraxis, subplot);
-    }); }
+            drawTicks(container,tickpath);
+            drawGrid(plotinfo, counteraxis, subplot);
+            return drawLabels(container,linepositions[3]);
+        }));
+    }
 };
 
 // mod - version of modulus that always restricts to [0,divisor)
