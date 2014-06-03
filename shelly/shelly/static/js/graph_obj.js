@@ -883,7 +883,7 @@
         var recalc = !gd.calcdata || gd.calcdata.length!==(gd.data||[]).length;
         if(recalc) {
             gd.calcdata = [];
-            gd._modules = {};
+            gd._modules = [];
 
             // extra helper variables
             // firstscatter: fill-to-next on the first trace goes to zero
@@ -925,6 +925,7 @@
                     else { gdc.name='trace '+curve; }
                 }
 
+                // figure out which module plots this data
                 if(curvetype==='scatter') { module = 'Scatter'; }
                 else if(plots.isBar(curvetype)) { module = 'Bars'; }
                 else if(plots.isContour(curvetype)) { module = 'Contour'; }
@@ -938,6 +939,7 @@
                 if(!('marker' in gdc)) { gdc.marker = {}; }
                 if(!('line' in gdc.marker)) { gdc.marker.line = {}; }
                 if(!('textfont' in gdc)) { gdc.textfont = {}; }
+
                 // make sure there is a first point
                 if(!$.isArray(cd) || !cd[0]) { cd = [{x: false, y: false}]; }
 
@@ -951,7 +953,10 @@
                 cd[0].t.cdcurve = gd.calcdata.length;
                 // store the module for this trace, for use later by plotting
                 cd[0].t.module = module;
-                gd._modules[module] = true;
+                // save which modules we're using, for fast plotting / styling
+                if(gd._modules.indexOf(module)===-1) {
+                    gd._modules.push(module);
+                }
 
                 gd.calcdata.push(cd);
                 Plotly.Lib.markTime('done with calcdata for '+curve);
@@ -1052,7 +1057,7 @@
             // so we don't need this - should be a big speedup in many cases
             plotinfo.plot.selectAll('g.trace').remove();
 
-            Object.keys(gd._modules).forEach(function(module) {
+            gd._modules.forEach(function(module) {
                 // plot all traces of this type on this subplot at once
                 var cdmod = cdSubplot.filter(function(cd){
                     return cd[0].t.module===module;
@@ -1370,15 +1375,14 @@
     };
 
     function applyStyle(gd) {
-        Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
-            var gp = gd.layout._plots[subplot].plot;
+        var gl = gd.layout;
 
-            gp.selectAll('g.trace.bars').call(Plotly.Bars.style, gd);
-            gp.selectAll('g.trace.scatter').call(Plotly.Scatter.style);
-            gp.selectAll('g.trace.boxes').call(Plotly.Boxes.style);
-            gp.selectAll('g.errorbars').call(Plotly.ErrorBars.style);
-            gp.selectAll('image').call(Plotly.Heatmap.style);
-            gp.selectAll('g.contour').call(Plotly.Contour.style);
+        Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
+            var gp = gl._plots[subplot].plot;
+
+            gd._modules.concat('ErrorBars').forEach(function(module) {
+                Plotly[module].style(gp,gl);
+            });
         });
     }
 

@@ -223,7 +223,9 @@
         });
     };
 
-    boxes.style = function(s) {
+    boxes.style = function(gp) {
+        var s = gp.selectAll('g.trace.boxes');
+
         s.style('opacity',function(d){ return d[0].t.op; })
             .each(function(d){
                 var t = d[0].t;

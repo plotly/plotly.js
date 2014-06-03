@@ -494,32 +494,33 @@
         Plotly.Lib.markTime('done Contour.plot');
     }
 
-    contour.style = function(s) {
-        s.style('opacity',function(d){ return d.t.op; })
-        .each(function(d) {
-            var c = d3.select(this),
-                t = d.t,
-                cs = t.contoursize||1,
-                nc = Math.floor((t.contourend+cs/10-t.contourstart)/cs)+1,
-                scl = Plotly.Plots.getScale(t.scl),
-                extraLevel = t.coloring=='lines' ? 0 : 1,
-                colormap = d3.scale.linear()
-                    .domain(scl.map(function(si){
-                        return (si[0]*(nc+extraLevel-1)-(extraLevel/2))*cs+t.contourstart;
-                    }))
-                    .interpolate(d3.interpolateRgb)
-                    .range(scl.map(function(si){ return si[1]; }));
+    contour.style = function(gp) {
+        gp.selectAll('g.contour')
+            .style('opacity',function(d){ return d.t.op; })
+            .each(function(d) {
+                var c = d3.select(this),
+                    t = d.t,
+                    cs = t.contoursize||1,
+                    nc = Math.floor((t.contourend+cs/10-t.contourstart)/cs)+1,
+                    scl = Plotly.Plots.getScale(t.scl),
+                    extraLevel = t.coloring=='lines' ? 0 : 1,
+                    colormap = d3.scale.linear()
+                        .domain(scl.map(function(si){
+                            return (si[0]*(nc+extraLevel-1)-(extraLevel/2))*cs+t.contourstart;
+                        }))
+                        .interpolate(d3.interpolateRgb)
+                        .range(scl.map(function(si){ return si[1]; }));
 
-            c.selectAll('g.contourlevel').each(function(d,i) {
-                var lc = t.coloring=='lines' ? colormap(t.contourstart+i*cs): t.lc;
-                d3.select(this).selectAll('path')
-                    .call(Plotly.Drawing.lineGroupStyle,t.lw, lc, t.ld);
+                c.selectAll('g.contourlevel').each(function(d,i) {
+                    var lc = t.coloring=='lines' ? colormap(t.contourstart+i*cs): t.lc;
+                    d3.select(this).selectAll('path')
+                        .call(Plotly.Drawing.lineGroupStyle,t.lw, lc, t.ld);
+                });
+                c.selectAll('g.contourbg path')
+                    .style('fill',colormap(t.contourstart-cs/2));
+                c.selectAll('g.contourfill path')
+                    .style('fill',function(d,i){ return colormap(t.contourstart+(i+0.5)*cs); });
             });
-            c.selectAll('g.contourbg path')
-                .style('fill',colormap(t.contourstart-cs/2));
-            c.selectAll('g.contourfill path')
-                .style('fill',function(d,i){ return colormap(t.contourstart+(i+0.5)*cs); });
-        });
     };
 
     contour.colorbar = function(gd,cd) {

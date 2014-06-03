@@ -228,9 +228,9 @@
             });
     };
 
-    bars.style = function(s,gd) {
-        var barcount = s.size(),
-            gl = gd.layout;
+    bars.style = function(gp,gl) {
+        var s = gp.selectAll('g.trace.bars'),
+            barcount = s.size();
 
         // first trace styling
         // for bars only: combine trace and fill opacity (no, can't do that because of bar outlines)

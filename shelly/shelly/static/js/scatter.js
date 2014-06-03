@@ -449,7 +449,9 @@
             });
     };
 
-    scatter.style = function(s) {
+    scatter.style = function(gp) {
+        var s = gp.selectAll('g.trace.scatter');
+
         s.style('opacity',function(d){ return d[0].t.op; });
 
         s.selectAll('g.points')

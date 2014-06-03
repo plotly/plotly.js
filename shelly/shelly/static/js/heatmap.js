@@ -546,8 +546,8 @@
         Plotly.Lib.markTime('done colorbar');
     };
 
-    heatmap.style = function(s) {
-        s.style('opacity',function(d){ return d.t.op; });
+    heatmap.style = function(gp) {
+        gp.selectAll('image').style('opacity',function(d){ return d.t.op; });
         // style and call the colorbar - any calcdata attribute that starts cb_
         // .each(function(d){ if(d.t.cb) { d.t.cb.cdoptions(d.t)(); } });
     };
