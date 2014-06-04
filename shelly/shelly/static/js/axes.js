@@ -1126,6 +1126,86 @@ axes.getFromId = function(td,id,type) {
     return ax;
 };
 
+// getSubplots - extract all combinations of axes we need to make plots for
+// as an array of items like 'xy', 'x2y', 'x2y2'...
+// sorted by x (x,x2,x3...) then y
+// optionally restrict to only subplots containing axis object ax
+// looks both for combinations of x and y found in the data
+// and at axes and their anchors
+
+axes.getSubplots = function(gd,ax) {
+    var data = gd.data, subplots = [];
+
+    // look for subplots in the data
+    (data||[]).forEach(function(d) {
+        // allow users to include x1 and y1 but convert to x and y
+        if(d.xaxis==='x1') { d.xaxis = 'x'; }
+        if(d.yaxis==='y1') { d.yaxis = 'y'; }
+        var xid = (d.xaxis||'x'),
+            yid = (d.yaxis||'y'),
+            subplot = xid+yid;
+        if(subplots.indexOf(subplot)===-1) { subplots.push(subplot); }
+    });
+
+    // look for subplots in the axes/anchors,
+    // so that we at least draw all axes
+    Plotly.Axes.list(gd).forEach(function(ax2) {
+        // one more place to convert x1,y1 to x,y
+        if(ax2.anchor==='x1') { ax2.anchor = 'x'; }
+        if(ax2.anchor==='y1') { ax2.anchor = 'y'; }
+        if(ax2.overlaying==='x1') { ax2.overlaying = 'x'; }
+        if(ax2.overlaying==='y1') { ax2.overlaying = 'y'; }
+
+        if(!ax2._id) { Plotly.Axes.initAxis(gd,ax2); }
+        var ax2letter = ax2._id.charAt(0),
+            ax3id = ax2.anchor==='free' ?
+                {x:'y',y:'x'}[ax2letter] : ax2.anchor,
+            ax3 = Plotly.Axes.getFromId(gd,ax3id);
+
+        function hasAx2(sp){ return sp.indexOf(ax2._id)!==-1; }
+
+        // if a free axis is already represented in the data, ignore it
+        if(ax2.anchor==='free' && subplots.some(hasAx2)) {
+            return;
+        }
+
+        if(!ax3) {
+            console.log('warning: couldnt find anchor ' + ax3id +
+                ' for axis ' + ax2._id);
+            return;
+        }
+
+        var subplot = ax2letter==='x' ?
+            (ax2._id+ax3._id) : (ax3._id+ax2._id);
+        if(subplots.indexOf(subplot)===-1) {
+            subplots.push(subplot);
+        }
+    });
+
+    if(!subplots.length) {
+        console.log('Warning! No subplots found - missing axes?');
+    }
+
+    var spmatch = /^x([0-9]*)y([0-9]*)$/;
+    var allSubplots = subplots
+        .filter(function(sp) { return sp.match(spmatch); })
+        .sort(function(a,b) {
+            var amatch = a.match(spmatch), bmatch = b.match(spmatch);
+            if(amatch[1]===bmatch[1]) {
+                return +(amatch[2]||1) - (bmatch[2]||1);
+            }
+            return +(amatch[1]||0) - (bmatch[1]||0);
+        });
+    if(ax) {
+        if(!ax._id) { Plotly.Axes.initAxis(gd,ax); }
+        var axmatch = new RegExp(ax._id.charAt(0)==='x' ?
+            ('^'+ax._id+'y') : (ax._id+'$') );
+        return allSubplots
+            .filter(function(sp) { return sp.match(axmatch); });
+    }
+    else { return allSubplots; }
+};
+
 // doTicks: draw ticks, grids, and tick labels
 // axid: 'x', 'y', 'x2' etc,
 //          blank to do all,
@@ -1396,7 +1476,7 @@ axes.doTicks = function(td,axid) {
         drawTicks(ax._axislayer, tickprefix + (ax._pos+pad*ticksign[2]) + tickmid + (ticksign[2]*ax.ticklen));
         drawLabels(ax._axislayer,ax._pos);
     }
-    else { Plotly.Plots.getSubplots(td,ax).forEach(function(subplot,subplotIndex){
+    else { axes.getSubplots(td,ax).forEach(function(subplot,subplotIndex){
         var plotinfo = gl._plots[subplot],
             container = plotinfo[axletter+'axislayer'],
             linepositions = ax._linepositions[subplot]||[], // [bottom or left, top or right, free, main]
