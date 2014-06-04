@@ -1751,6 +1751,9 @@
 
                     if(gl.showlegend) { Plotly.Legend.draw(gd); }
                 }
+                return Promise.all(gd._promises);
+            }).then(function(){
+                gd._promises = [];
                 if(docolorbars) {
                     gd.calcdata.forEach(function(cd) {
                         if(cd[0].t.cb) { cd[0].t.cb.cdoptions(cd[0].t)(); }
@@ -1759,6 +1762,7 @@
                 return Promise.all(gd._promises);
             });
         }
+
         plotDone.then(function(){
             $(gd).trigger('plotly_restyle',[redoit,traces]);
         });
