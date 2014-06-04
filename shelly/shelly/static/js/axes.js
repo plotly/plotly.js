@@ -1236,11 +1236,11 @@ axes.doTicks = function(td,axid) {
         }
 
         if(!axid || axid=='redraw') {
-            axes.list(td).forEach(function(ax) {
-                axes.doTicks(td,ax._id);
+            return Promise.all(axes.list(td).map(function(ax) {
+                var axDone = axes.doTicks(td,ax._id);
                 if(axid=='redraw') { ax._r = ax.range.slice(); }
-            });
-            return;
+                return axDone;
+            }));
         }
     }
 

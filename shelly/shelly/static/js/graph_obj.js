@@ -434,7 +434,8 @@
 
         // collect promises for any async actions during plotting
         // any part of the plotting code can push to gd._promises, then
-        // we'll return a promise that they're all complete
+        // before we move to the next step, we check that they're all
+        // complete, and empty out the promise list again.
         gd._promises = [];
 
         // if there is already data on the graph, append the new data
@@ -649,7 +650,7 @@
             gd.layout._paper = polarPlotSVG;
             plots.addLinks(gd);
 
-            return Promise.all();
+            return Promise.resolve();
         }
 
         else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
@@ -867,7 +868,7 @@
             });
 
             gd.calcdata = [];
-            return Promise.all([]);
+            return Promise.resolve();
         }
 
         // prepare the types and conversion functions for the axes
@@ -970,8 +971,17 @@
         plots.setStyles(gd);
         Plotly.Lib.markTime('done with setstyles');
 
-        // show the legend and colorbars first, as they can affect margins
+        /*
+         * start async-friendly code - now we're actually drawing things
+         */
+
+        var oldmargins = JSON.stringify(gl._size);
+
+        // draw anything that can affect margins.
+        // currently this is legend and colorbars
         function marginPushers() {
+            gd._promises = [];
+
             Plotly.Legend.draw(gd, gl.showlegend ||
                 (gd.calcdata.length>1 && gl.showlegend!==false));
             gd.calcdata.forEach(function(cd) {
@@ -980,115 +990,145 @@
                     plots.autoMargin(gd,'cb'+t.curve);
                 }
                 else {
-                    Plotly[plots.isContour(t.type) ? 'Contour' : 'Heatmap']
-                        .colorbar(gd,cd);
+                    Plotly[t.module].colorbar(gd,cd);
                 }
             });
             doAutoMargin(gd);
+            return Promise.all(gd._promises);
         }
 
-        var oldmargins = JSON.stringify(gl._size);
-        marginPushers();
-        layoutStyles(gd);
-        // in case the margins changed, draw these items again
-        if(JSON.stringify(gl._size)!==oldmargins) { marginPushers(); }
-
-        if(recalc) {
-            // position and range calculations for traces that
-            // depend on each other ie bars (stacked or grouped)
-            // and boxes push each other out of the way
-            Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
-                var plotinfo = gd.layout._plots[subplot];
-                Plotly.Bars.setPositions(gd,plotinfo);
-                Plotly.Boxes.setPositions(gd,plotinfo);
-            });
-
-            Plotly.Lib.markTime('done with bar/box adjustments');
-
-            // calc and autorange for errorbars
-            Plotly.ErrorBars.calc(gd);
-            Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
-
-            // autorange for annotations
-            Plotly.Annotations.calcAutorange(gd);
-            // TODO: autosize extra for text markers
-
-            var axesOK = true;
-            Plotly.Axes.list(gd).forEach(function(ax) {
-                Plotly.Axes.doAutoRange(ax);
-                if(!$.isNumeric(ax._m) || !$.isNumeric(ax._b)) {
-                    axesOK = false;
-                    console.log('error with axis scaling',ax);
-                }
-            });
-            if(!axesOK) {
-                Plotly.Lib.notifier('Something went wrong with axis scaling',
-                    'long');
-                gd._replotting = false;
-                return;
+        // first check if anything changes the margins.
+        // shouldn't be anything in gd._promises yet,
+        // but just in case, wait for it...
+        var donePlotting = Promise.all(gd._promises)
+        .then(marginPushers)
+        .then(function(){
+            Plotly.Lib.markTime('done first margin push');
+            gd._promises = [];
+            return layoutStyles(gd);
+        }).then(function(){
+            Plotly.Lib.markTime('done layoutStyles');
+            // in case the margins changed, draw margin pushers again
+            if(JSON.stringify(gl._size)!==oldmargins) {
+                return marginPushers();
             }
-        }
-
-        // draw ticks, titles, and calculate axis scaling (._b, ._m)
-        Plotly.Axes.doTicks(gd,'redraw');
-        Plotly.Lib.markTime('done autorange and ticks');
-
-        // Now plot the data
-
-        // in case of traces that were heatmaps or contour maps
-        // previously, remove them and their colorbars explicitly
-        gd.calcdata.forEach(function(cd) {
-            if(plots.isHeatmap(cd[0].t.type)) { return; }
-            var i = cd[0].t.cdcurve;
-            gl._paper.selectAll('.hm'+i+',.contour'+i+',.cb'+i)
-                .remove();
-        });
-
-        Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
-            var plotinfo = gd.layout._plots[subplot],
-                cdSubplot = gd.calcdata.filter(function(cd) {
-                    var t = cd[0].t;
-                    return (t.xaxis||'x') + (t.yaxis||'y')===subplot;
-                }),
-                cdError = [];
-
-            // remove old traces, then redraw everything
-            // TODO: use enter/exit appropriately in the plot functions
-            // so we don't need this - should be a big speedup in many cases
-            plotinfo.plot.selectAll('g.trace').remove();
-
-            gd._modules.forEach(function(module) {
-                // plot all traces of this type on this subplot at once
-                var cdmod = cdSubplot.filter(function(cd){
-                    return cd[0].t.module===module;
+        }).then(function(){
+            Plotly.Lib.markTime('done second margin push');
+            if(recalc) {
+                // position and range calculations for traces that
+                // depend on each other ie bars (stacked or grouped)
+                // and boxes (grouped) push each other out of the way
+                Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
+                    var plotinfo = gd.layout._plots[subplot];
+                    gd._modules.forEach(function(module) {
+                        if(Plotly[module].setPositions) {
+                            Plotly[module].setPositions(gd,plotinfo);
+                        }
+                    });
                 });
-                Plotly[module].plot(gd,plotinfo,cdmod);
-                Plotly.Lib.markTime('done '+module);
 
-                // collect the traces that may have error bars
-                if(['Scatter','Bars'].indexOf(module)!==-1) {
-                    cdError = cdError.concat(cdmod);
-                }
+                Plotly.Lib.markTime('done with bar/box adjustments');
+
+                // calc and autorange for errorbars
+                Plotly.ErrorBars.calc(gd);
+                Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
+
+                // autorange for annotations
+                Plotly.Annotations.calcAutorange(gd);
+                // TODO: autosize extra for text markers
+
+                return Promise.all(gd._promises).then(function(){
+                    var axesOK = true;
+                    Plotly.Axes.list(gd).forEach(function(ax) {
+                        Plotly.Axes.doAutoRange(ax);
+                        if(!$.isNumeric(ax._m) || !$.isNumeric(ax._b)) {
+                            axesOK = false;
+                            console.log('error with axis scaling',ax);
+                        }
+                    });
+                    if(!axesOK) {
+                        Plotly.Lib.notifier(
+                            'Something went wrong with axis scaling',
+                            'long');
+                        gd._replotting = false;
+                        return Promise.reject(new Error('axis scaling'));
+                    }
+                });
+            }
+        }).then(function(){
+            gd._promises = [];
+            // draw ticks, titles, and calculate axis scaling (._b, ._m)
+            Plotly.Axes.doTicks(gd,'redraw');
+            Plotly.Lib.markTime('done axes');
+
+            // Now plot the data
+
+            // in case of traces that were heatmaps or contour maps
+            // previously, remove them and their colorbars explicitly
+            gd.calcdata.forEach(function(cd) {
+                if(plots.isHeatmap(cd[0].t.type)) { return; }
+                var i = cd[0].t.cdcurve;
+                gl._paper.selectAll('.hm'+i+',.contour'+i+',.cb'+i)
+                    .remove();
             });
-            // finally do all error bars at once
-            Plotly.ErrorBars.plot(gd,plotinfo,cdError);
-            Plotly.Lib.markTime('done ErrorBars');
 
+            Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
+                var plotinfo = gd.layout._plots[subplot],
+                    cdSubplot = gd.calcdata.filter(function(cd) {
+                        var t = cd[0].t;
+                        return (t.xaxis||'x') + (t.yaxis||'y')===subplot;
+                    }),
+                    cdError = [];
+
+                // remove old traces, then redraw everything
+                // TODO: use enter/exit appropriately in the plot functions
+                // so we don't need this - should sometimes be a big speedup
+                plotinfo.plot.selectAll('g.trace').remove();
+
+                gd._modules.forEach(function(module) {
+                    // plot all traces of this type on this subplot at once
+                    var cdmod = cdSubplot.filter(function(cd){
+                        return cd[0].t.module===module;
+                    });
+                    Plotly[module].plot(gd,plotinfo,cdmod);
+                    Plotly.Lib.markTime('done '+module);
+
+                    // collect the traces that may have error bars
+                    if(['Scatter','Bars'].indexOf(module)!==-1) {
+                        cdError = cdError.concat(cdmod);
+                    }
+                });
+                // finally do all error bars at once
+                Plotly.ErrorBars.plot(gd,plotinfo,cdError);
+                Plotly.Lib.markTime('done ErrorBars');
+            });
+
+            //styling separate from drawing
+            applyStyle(gd);
+            Plotly.Lib.markTime('done applyStyle');
+
+            // show annotations
+            Plotly.Annotations.drawAll(gd);
+
+            // source links
+            plots.addLinks(gd);
+
+            return Promise.all(gd._promises);
+        }).then(null, function(err){
+            // if we don't explicitly show errors at the end,
+            // the promise hides them
+            console.log(err, err.stack);
+        }).then(function(){
+            // now we're REALLY TRULY done plotting...
+            // so mark it as done and let other procedures call a replot
+            gd._replotting = false;
+            Plotly.Lib.markTime('done plot');
         });
 
-        //styling separate from drawing
-        applyStyle(gd);
-        Plotly.Lib.markTime('done applyStyle');
-
-        // show annotations
-        Plotly.Annotations.drawAll(gd);
-
-        // source links
-        plots.addLinks(gd);
-        Plotly.Lib.markTime('done plot');
-        gd._replotting = false;
-
-        return Promise.all(gd._promises);
+        // the result of this long promise chain is a promise that the
+        // entire plotting process is complete. Return this so the caller
+        // can do something when it's safe
+        return donePlotting;
     };
 
     // convenience function to force a full redraw, mostly for use by plotly.js
@@ -1104,7 +1144,6 @@
     // used for saving themes
     plots.setStyles = function(gd, mergeDefault) {
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
-        mergeDefault = mergeDefault || false; // CP Edit - see mergeattr comment
 
         var i,j,l,p,prop,val,cd,t,c,gdc,defaultColor;
 
@@ -1410,7 +1449,8 @@
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
 
         var i, gl = gd.layout,
-            aobj = {};
+            aobj = {},
+            plotDone = Promise.resolve();
         if(typeof astr === 'string') { aobj[astr] = val; }
         else if($.isPlainObject(astr)) {
             aobj = astr;
@@ -1696,23 +1736,32 @@
         // a complete layout redraw takes care of plot and
         if(dolayout) {
             gd.layout = undefined;
-            Plotly.plot(gd,'',gl);
+            plotDone = Plotly.plot(gd,'',gl);
         }
-        else if(docalc || doplot || docalcAutorange) { Plotly.plot(gd); }
+        else if(docalc || doplot || docalcAutorange) {
+            plotDone = Plotly.plot(gd);
+        }
         else {
+            gd._promises = [];
             plots.setStyles(gd);
-            if(doapplystyle) {
-                applyStyle(gd);
+            plotDone = Promise.all(gd._promises).then(function(){
+                gd._promises = [];
+                if(doapplystyle) {
+                    applyStyle(gd);
 
-                if(gl.showlegend) { Plotly.Legend.draw(gd); }
-            }
-            if(docolorbars) {
-                gd.calcdata.forEach(function(cd) {
-                    if(cd[0].t.cb) { cd[0].t.cb.cdoptions(cd[0].t)(); }
-                });
-            }
+                    if(gl.showlegend) { Plotly.Legend.draw(gd); }
+                }
+                if(docolorbars) {
+                    gd.calcdata.forEach(function(cd) {
+                        if(cd[0].t.cb) { cd[0].t.cb.cdoptions(cd[0].t)(); }
+                    });
+                }
+                return Promise.all(gd._promises);
+            });
         }
-        $(gd).trigger('plotly_restyle',[redoit,traces]);
+        plotDone.then(function(){
+            $(gd).trigger('plotly_restyle',[redoit,traces]);
+        });
     };
 
     // swap x and y of the same attribute in container cont
@@ -2025,26 +2074,40 @@
 
         // redraw
         // first check if there's still anything to do
-        var ak = Object.keys(aobj);
+        var ak = Object.keys(aobj),
+            plotDone = Promise.resolve();
         if(doplot||docalc) {
             gd.layout = undefined; // force plot() to redo the layout
             if(docalc) { gd.calcdata = undefined; } // force it to redo calcdata
-            Plotly.plot(gd,'',gl); // pass in the modified layout
+            plotDone = Plotly.plot(gd,'',gl); // pass in the modified layout
         }
         else if(ak.length) {
             // if we didn't need to redraw entirely, just do the needed parts
             if(dolegend) {
+                gd._promises = [];
                 gl._infolayer.selectAll('.legend').remove();
                 if(gl.showlegend) { Plotly.Legend.draw(gd); }
+                plotDone = Promise.all(gd._promises);
             }
-            if(dolayoutstyle) { layoutStyles(gd); }
+            if(dolayoutstyle) {
+                plotDone = plotDone.then(function(){
+                    gd._promises = [];
+                    return layoutStyles(gd);
+                });
+            }
             if(doticks) {
-                Plotly.Axes.doTicks(gd,'redraw');
-                plots.titles(gd,'gtitle');
+                plotDone = plotDone.then(function(){
+                    gd._promises = [];
+                    Plotly.Axes.doTicks(gd,'redraw');
+                    plots.titles(gd,'gtitle');
+                    return Promise.all(gd._promises);
+                });
             }
             if(domodebar) { Plotly.Fx.modeBar(gd); }
         }
-        $(gd).trigger('plotly_relayout',redoit);
+        plotDone.then(function(){
+            $(gd).trigger('plotly_relayout',redoit);
+        });
     };
 
     function setGraphContainerScroll(gd) {
@@ -2397,13 +2460,13 @@
         gl._hoverlayer = gl._paper.append('g').classed('hoverlayer',true);
 
         // position and style the containers, make main title
-        layoutStyles(gd);
-
-        // make the ticks, grids, and axis titles
-        Plotly.Axes.doTicks(gd,'redraw');
-
-        // make the axis drag objects and hover effects
-        if(!gl._forexport) { Plotly.Fx.init(gd); }
+        return layoutStyles(gd).then(function(){
+            // make the ticks, grids, and axis titles
+            return Plotly.Axes.doTicks(gd,'redraw');
+        }).then(function(){
+            // make the axis drag objects and hover effects
+            if(!gl._forexport) { Plotly.Fx.init(gd); }
+        });
     }
 
     // called by legend and colorbar routines to see if we need to
@@ -2514,17 +2577,19 @@
         // if things changed and we're not already redrawing, trigger a redraw
         if(!gd._replotting && oldmargins!=='{}' &&
                 oldmargins!==JSON.stringify(gl._size)) {
-            Plotly.plot(gd);
+            return Plotly.plot(gd);
         }
+        return Promise.resolve();
     }
 
     // layoutStyles: styling for plot layout elements
     function layoutStyles(gd) {
-        var gl = gd.layout;
+        return doAutoMargin(gd).then(function(){ return lsInner(gd); });
+    }
 
-        doAutoMargin(gd);
-
-        var gs = gl._size;
+    function lsInner(gd) {
+        var gl = gd.layout,
+            gs = gl._size;
 
         // clear axis line positions, to be set in the subplot loop below
         Plotly.Axes.list(gd).forEach(function(ax){ ax._linepositions = {}; });
@@ -2678,7 +2743,7 @@
 
         setGraphContainerScroll(gd);
 
-        return gd;
+        return Promise.all(gd._promises||[]);
     }
 
     // titles - (re)draw titles on the axes and plot
