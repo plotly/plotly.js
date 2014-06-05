@@ -1208,9 +1208,9 @@ axes.getSubplots = function(gd,ax) {
 
 // doTicks: draw ticks, grids, and tick labels
 // axid: 'x', 'y', 'x2' etc,
-//          blank to do all,
-//          'redraw' to force full redraw, and reset ax._r (stored range for use by zoom/pan)
-//          or can pass in an axis object directly
+//     blank to do all,
+//     'redraw' to force full redraw, and reset ax._r (stored range for use by zoom/pan)
+//     or can pass in an axis object directly
 axes.doTicks = function(td,axid) {
     var gl = td.layout,
         gs = gl._size,
@@ -1236,10 +1236,12 @@ axes.doTicks = function(td,axid) {
         }
 
         if(!axid || axid=='redraw') {
-            return Promise.all(axes.list(td).map(function(ax) {
-                var axDone = axes.doTicks(td,ax._id);
-                if(axid=='redraw') { ax._r = ax.range.slice(); }
-                return axDone;
+            return Plotly.Lib.syncOrAsync(axes.list(td).map(function(ax) {
+                return function doOneAxis(){
+                    var axDone = axes.doTicks(td,ax._id);
+                    if(axid=='redraw') { ax._r = ax.range.slice(); }
+                    return axDone;
+                }
             }));
         }
     }
@@ -1348,22 +1350,42 @@ axes.doTicks = function(td,axid) {
             .append('text')
                 .attr('text-anchor', 'middle') // only so tex has predictable alignment that we can alter later
                 .each(function(d,i){
-                    var thisLabel = d3.select(this);
-                    labelsReady.push(
-                        new Promise(function(resolve, reject) {
-                            thisLabel
-                                .call(Plotly.Drawing.setPosition, labelx(d), labely(d))
-                                .call(Plotly.Drawing.font,d.font,d.fontSize,d.fontColor)
-                                .text(d.text)
-                                .call(Plotly.util.convertToTspans, function(){
-                                    resolve(d3.select(thisLabel.node().parentNode));
-                                });
-                        })
-                        .then(function(thisLabel){
-                            // give each label its prescribed position and angle as it comes in
+                    var thisLabel = d3.select(this),
+                        newPromise = td._promises.length;
+                    thisLabel
+                        .call(Plotly.Drawing.setPosition, labelx(d), labely(d))
+                        .call(Plotly.Drawing.font,d.font,d.fontSize,d.fontColor)
+                        .text(d.text)
+                        .call(Plotly.util.convertToTspans);
+                    newPromise = td._promises[newPromise];
+                    if(newPromise) {
+                        // if we have an async label, we'll deal with that all here
+                        // so take it out of td._promises and instead position the
+                        // label and promise this in labelsReady
+                        labelsReady.push(td._promises.pop().then(function(){
                             positionLabels(thisLabel, ax.tickangle);
-                        })
-                    );
+                        }));
+                    }
+                    else {
+                        // sync label: just position it now.
+                        positionLabels(thisLabel, ax.tickangle);
+                    }
+                    // TODO: gotta make this not a promise if no mathjax
+                    // labelsReady.push(
+                    //     new Promise(function(resolve, reject) {
+                    //         thisLabel
+                    //             .call(Plotly.Drawing.setPosition, labelx(d), labely(d))
+                    //             .call(Plotly.Drawing.font,d.font,d.fontSize,d.fontColor)
+                    //             .text(d.text)
+                    //             .call(Plotly.util.convertToTspans, function(){
+                    //                 resolve(d3.select(thisLabel.node().parentNode));
+                    //             });
+                    //     })
+                    //     .then(function(thisLabel){
+                    //         // give each label its prescribed position and angle as it comes in
+                    //         positionLabels(thisLabel, ax.tickangle);
+                    //     })
+                    // );
                 });
         tickLabels.exit().remove();
 
@@ -1399,7 +1421,11 @@ axes.doTicks = function(td,axid) {
         // putting back the prescribed angle to check for overlaps.
         positionLabels(tickLabels,ax._lastangle || ax.tickangle);
 
-        var done = Promise.all(labelsReady).then(function(){
+        function allLabelsReady(){
+            return labelsReady.length && Promise.all(labelsReady);
+        }
+
+        function fixLabelOverlaps(){
             positionLabels(tickLabels,ax.tickangle);
 
             // check for auto-angling if labels overlap
@@ -1428,8 +1454,13 @@ axes.doTicks = function(td,axid) {
             // update the axis title (so it can move out of the way if needed)
             Plotly.Plots.titles(td,axid+'title');
             return axid+' done';
-        });
-        (td._promises||[]).push(done);
+        }
+
+        var done = Plotly.Lib.syncOrAsync([
+            allLabelsReady,
+            fixLabelOverlaps
+        ]);
+        if(done && done.then) { td._promises.push(done); }
         return done;
     }
 
@@ -1479,40 +1510,42 @@ axes.doTicks = function(td,axid) {
         return drawLabels(ax._axislayer,ax._pos);
     }
     else {
-        return Promise.all(axes.getSubplots(td,ax).map(function(subplot,subplotIndex){
-            var plotinfo = gl._plots[subplot],
-                container = plotinfo[axletter+'axislayer'],
-                linepositions = ax._linepositions[subplot]||[], // [bottom or left, top or right, free, main]
-                counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
-                mainSubplot = counteraxis._id==ax.anchor,
-                ticksides = [false,false,false],
-                tickpath='';
+        return Plotly.Lib.syncOrAsync(axes.getSubplots(td,ax).map(function(subplot,subplotIndex){
+            return function doOneSubplot() {
+                var plotinfo = gl._plots[subplot],
+                    container = plotinfo[axletter+'axislayer'],
+                    linepositions = ax._linepositions[subplot]||[], // [bottom or left, top or right, free, main]
+                    counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
+                    mainSubplot = counteraxis._id==ax.anchor,
+                    ticksides = [false,false,false],
+                    tickpath='';
 
-            // ticks
-            if(ax.mirror=='allticks') { ticksides = [true,true,false]; }
-            else if(mainSubplot) {
-                 if(ax.mirror=='ticks') { ticksides = [true,true,false]; }
-                 else { ticksides[sides.indexOf(axside)] = true; }
-            }
-            if(ax.mirrors) {
-                for(i=0; i<2; i++) {
-                    if(['ticks','labels'].indexOf(ax.mirrors[counteraxis._id+sides[i]])!=-1) {
-                        ticksides[i] = true;
+                // ticks
+                if(ax.mirror=='allticks') { ticksides = [true,true,false]; }
+                else if(mainSubplot) {
+                     if(ax.mirror=='ticks') { ticksides = [true,true,false]; }
+                     else { ticksides[sides.indexOf(axside)] = true; }
+                }
+                if(ax.mirrors) {
+                    for(i=0; i<2; i++) {
+                        if(['ticks','labels'].indexOf(ax.mirrors[counteraxis._id+sides[i]])!=-1) {
+                            ticksides[i] = true;
+                        }
                     }
                 }
-            }
-            // free axis ticks
-            if(linepositions[2]!==undefined) { ticksides[2] = true; }
-            ticksides.forEach(function(showside,sidei) {
-                var pos = linepositions[sidei], tsign = ticksign[sidei];
-                if(showside && $.isNumeric(pos)) {
-                    tickpath += tickprefix + (pos+pad*tsign) + tickmid + (tsign*ax.ticklen);
-                }
-            });
+                // free axis ticks
+                if(linepositions[2]!==undefined) { ticksides[2] = true; }
+                ticksides.forEach(function(showside,sidei) {
+                    var pos = linepositions[sidei], tsign = ticksign[sidei];
+                    if(showside && $.isNumeric(pos)) {
+                        tickpath += tickprefix + (pos+pad*tsign) + tickmid + (tsign*ax.ticklen);
+                    }
+                });
 
-            drawTicks(container,tickpath);
-            drawGrid(plotinfo, counteraxis, subplot);
-            return drawLabels(container,linepositions[3]);
+                drawTicks(container,tickpath);
+                drawGrid(plotinfo, counteraxis, subplot);
+                return drawLabels(container,linepositions[3]);
+            }
         }));
     }
 };
