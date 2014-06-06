@@ -240,7 +240,15 @@
         Plotly.Axes.expand(xa,xArray);
         Plotly.Axes.expand(ya,yArray);
 
-        return [{x:xArray, y:yArray, z:z}];
+        var cd0 = {x:xArray, y:yArray, z:z};
+
+        if(Plotly.Plots.isContour(gdc.type) && gdc.contours && gdc.contours.coloring=='heatmap') {
+            var hmtype = gdc.type==='contour' ? 'heatmap' : 'histogram2d';
+            cd0.xfill = makeBoundArray(hmtype, x_in, x0, dx, xlen, gd.layout.xaxis);
+            cd0.yfill = makeBoundArray(hmtype, y_in, y0, dy, z.length, gd.layout.yaxis);
+        }
+
+        return [cd0];
     };
 
     function cleanZ(v) {

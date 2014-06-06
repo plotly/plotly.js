@@ -7,12 +7,9 @@
         if(gdc.visible===false) { return; }
 
         // most is the same as heatmap calc, then adjust it
+        // though a few things inside heatmap calc still look for
+        // contour maps, because the makeBoundArray calls are too entangled
         var cd = Plotly.Heatmap.calc(gd,gdc);
-
-        if(gdc.contours && gdc.contours.coloring=='heatmap') {
-            cd[0].xfill = makeBoundArray('heatmap', x_in, x0, dx, xlen, gd.layout.xaxis);
-            cd[0].yfill = makeBoundArray('heatmap', y_in, y0, dy, z.length, gd.layout.yaxis);
-        }
 
         // check if we need to auto-choose contour levels
         if(gdc.autocontour!==false || !gdc.contours ||
@@ -67,7 +64,7 @@
                 t.zmin = t.contourstart-t.contoursize/2;
                 t.zmax = t.zmin+t.numcontours*t.contoursize;
             }
-            Plotly.Heatmap.plot(gd,plotinfo,cd);
+            Plotly.Heatmap.plot(gd,plotinfo,[cd]);
         }
         else {
             gl._paper.selectAll('.hm'+i).remove(); // in case this used to be a heatmap (or have heatmap fill)
