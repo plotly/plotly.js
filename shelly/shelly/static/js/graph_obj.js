@@ -458,9 +458,8 @@
                 );
             }
 
-            // backward compatibility: make a few changes to the data right away
+            // make a few changes to the data right away
             // before it gets used for anything
-            // replace bardir with orientation and swap x/y if needed
             data.forEach(function(c,ci) {
                 // assign uids to each trace and detect collisions.
                 if (!('uid' in c) || suids.indexOf(c.uid) !== -1) {
@@ -995,23 +994,11 @@
             return previousPromises(gd);
         }
 
-        // function doLayoutStyle(){
-        //     return layoutStyles(gd);
-        // }
-
         function marginPushersAgain(){
             // in case the margins changed, draw margin pushers again
             var seq = JSON.stringify(gl._size)===oldmargins ?
                 [] : [marginPushers];
             return Plotly.Lib.syncOrAsync(seq.concat(Plotly.Fx.init),gd);
-            // if(JSON.stringify(gl._size)!==oldmargins) {
-            //     return Plotly.Lib.syncOrAsync([
-            //         marginPushers,
-            //         // fix drag boxes for the new margins
-            //         function fxInit(){ return Plotly.Fx.init(gd); }
-            //     ],gd);
-            // }
-            // else { Plotly.Fx.init(gd); }
         }
 
         function positionAndAutorange(){
