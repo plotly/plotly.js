@@ -1004,9 +1004,9 @@
             if(JSON.stringify(gl._size)!==oldmargins) {
                 return Plotly.Lib.syncOrAsync([
                     marginPushers,
+                    // fix drag boxes for the new margins
                     function fxInit(){ return Plotly.Fx.init(gd); }
                 ]);
-                // return marginPushers();
             }
         }
 
