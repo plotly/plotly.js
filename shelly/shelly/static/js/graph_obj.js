@@ -992,23 +992,26 @@
                 }
             });
             doAutoMargin(gd);
-            return previousPromises(gd)();
+            return previousPromises(gd);
         }
 
-        function doLayoutStyle(){
-            return layoutStyles(gd);
-        }
+        // function doLayoutStyle(){
+        //     return layoutStyles(gd);
+        // }
 
         function marginPushersAgain(){
             // in case the margins changed, draw margin pushers again
-            if(JSON.stringify(gl._size)!==oldmargins) {
-                return Plotly.Lib.syncOrAsync([
-                    marginPushers,
-                    // fix drag boxes for the new margins
-                    function fxInit(){ return Plotly.Fx.init(gd); }
-                ]);
-            }
-            else { Plotly.Fx.init(gd); }
+            var seq = JSON.stringify(gl._size)===oldmargins ?
+                [] : [marginPushers];
+            return Plotly.Lib.syncOrAsync(seq.concat(Plotly.Fx.init),gd);
+            // if(JSON.stringify(gl._size)!==oldmargins) {
+            //     return Plotly.Lib.syncOrAsync([
+            //         marginPushers,
+            //         // fix drag boxes for the new margins
+            //         function fxInit(){ return Plotly.Fx.init(gd); }
+            //     ],gd);
+            // }
+            // else { Plotly.Fx.init(gd); }
         }
 
         function positionAndAutorange(){
@@ -1036,14 +1039,9 @@
                 // TODO: autosize extra for text markers
 
                 return Plotly.Lib.syncOrAsync([
-                    previousPromises(gd),
+                    previousPromises,
                     doAutoRange
-                ]);
-
-                // if(gd._promises.length) {
-                //     return Promise.all(gd._promises).then(doAutoRange);
-                // }
-                // else { doAutoRange(); }
+                ], gd);
             }
         }
 
@@ -1118,7 +1116,7 @@
             // source links
             plots.addLinks(gd);
 
-            return previousPromises(gd)();
+            return previousPromises(gd);
         }
 
         function cleanUp(){
@@ -1129,14 +1127,14 @@
         }
 
         var donePlotting = Plotly.Lib.syncOrAsync([
-            previousPromises(gd),
+            previousPromises,
             marginPushers,
-            doLayoutStyle,
+            layoutStyles,
             marginPushersAgain,
             positionAndAutorange,
             drawAxes,
             drawData
-        ], cleanUp);
+        ], gd, cleanUp);
 
         // even if everything we did was synchronous, return a promise
         // so that the caller doesn't care which route we took
@@ -1147,15 +1145,10 @@
     // for use in Plotly.Lib.syncOrAsync, check if there are any
     // pending promises in this plot and wait for them
     function previousPromises(gd){
-        return function prevPromises(){
-            if(gd._promises.length) {
-                return Promise.all(gd._promises)
-                    .then(function(v){
-                        console.log('finished ' + v.length + ' promises');
-                        gd._promises=[];
-                    });
-            }
-        };
+        if(gd._promises.length) {
+            return Promise.all(gd._promises)
+                .then(function(){ gd._promises=[]; });
+        }
     }
 
     // convenience function to force a full redraw, mostly for use by plotly.js
@@ -1768,17 +1761,16 @@
             }];
         }
         else if(docalc || doplot || docalcAutorange) {
-            seq = [function doPlot(){ return Plotly.plot(gd); }];
+            seq = [Plotly.plot];
         }
         else {
-            // TODO: syncOrAsync
             plots.setStyles(gd);
-            seq = [previousPromises(gd)];
+            seq = [previousPromises];
             if(doapplystyle) {
                 seq.push(function doApplyStyle(){
                     applyStyle(gd);
                     if(gl.showlegend) { Plotly.Legend.draw(gd); }
-                    return previousPromises(gd)();
+                    return previousPromises(gd);
                 });
             }
             if(docolorbars) {
@@ -1786,12 +1778,12 @@
                     gd.calcdata.forEach(function(cd) {
                         if(cd[0].t.cb) { cd[0].t.cb.cdoptions(cd[0].t)(); }
                     });
-                    return previousPromises(gd)();
+                    return previousPromises(gd);
                 });
             }
         }
 
-        var plotDone = Plotly.Lib.syncOrAsync(seq);
+        var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
 
         if(!plotDone || !plotDone.then) { plotDone = Promise.resolve(); }
         return plotDone.then(function(){
@@ -2110,7 +2102,7 @@
         // redraw
         // first check if there's still anything to do
         var ak = Object.keys(aobj),
-            seq = [previousPromises(gd)];
+            seq = [previousPromises];
         if(doplot||docalc) {
             seq.push(function layoutReplot(){
                 // force plot() to redo the layout
@@ -2124,26 +2116,26 @@
         else if(ak.length) {
             // if we didn't need to redraw entirely, just do the needed parts
             if(dolegend) {
-                seq.push(function(){
+                seq.push(function doLegend(){
                     Plotly.Legend.draw(gd, gl.showlegend);
-                    return previousPromises(gd)();
+                    return previousPromises(gd);
                 });
             }
             if(dolayoutstyle) {
-                seq.push(function(){ return layoutStyles(gd); });
+                seq.push(layoutStyles);
             }
             if(doticks) {
                 seq.push(function(){
                     Plotly.Axes.doTicks(gd,'redraw');
                     plots.titles(gd,'gtitle');
-                    return previousPromises(gd)();
+                    return previousPromises(gd);
                 });
             }
             // this is decoupled enough it doesn't need async regardless
             if(domodebar) { Plotly.Fx.modeBar(gd); }
         }
 
-        var plotDone = Plotly.Lib.syncOrAsync(seq);
+        var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
 
         if(!plotDone || !plotDone.then) { plotDone = Promise.resolve(); }
         return plotDone.then(function(){
@@ -2504,10 +2496,10 @@
 
         // position and style the containers, make main title
         var frameWorkDone = Plotly.Lib.syncOrAsync([
-            function goLayoutStyles(){ return layoutStyles(gd); },
+            layoutStyles,
             function goAxes(){ return Plotly.Axes.doTicks(gd,'redraw'); },
-            function fxInit(){ return Plotly.Fx.init(gd); }
-        ]);
+            Plotly.Fx.init
+        ], gd);
         if(frameWorkDone && frameWorkDone.then) {
             gd._promises.push(frameWorkDone);
         }
@@ -2628,10 +2620,7 @@
 
     // layoutStyles: styling for plot layout elements
     function layoutStyles(gd) {
-        return Plotly.Lib.syncOrAsync([
-            function goAutoMargin(){ return doAutoMargin(gd); },
-            function goLsInner(){ return lsInner(gd); }
-        ]);
+        return Plotly.Lib.syncOrAsync([doAutoMargin, lsInner], gd);
     }
 
     function lsInner(gd) {

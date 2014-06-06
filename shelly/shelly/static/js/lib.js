@@ -1102,23 +1102,28 @@ lib.promiseError = function(err) { console.log(err, err.stack); };
 
 // syncOrAsync: run a sequence of functions synchronously
 // as long as its returns are not promises (ie have no .then)
-lib.syncOrAsync = function(sequence, finalStep) {
+// includes one argument arg to send to all functions...
+// this is mainly just to prevent us having to make wrapper functions
+// when the only purpose of the wrapper is to reference gd / td
+// and a final step to be executed at the end
+// though if there's an error and everything is sync, this doesn't happen yet
+lib.syncOrAsync = function(sequence, arg, finalStep) {
     var ret, fni;
 
     while(sequence.length) {
         fni = sequence.splice(0,1)[0];
-        ret = fni();
+        ret = fni(arg);
         // lib.markTime('done calling '+fni.name)
         if(ret && ret.then) {
             return ret.then(function(){
                 lib.markTime('async done '+fni.name);
-                return lib.syncOrAsync(sequence, finalStep);
+                return lib.syncOrAsync(sequence, arg, finalStep);
             }).then(null,lib.promiseError);
         }
         lib.markTime('sync done '+fni.name);
     }
 
-    return finalStep && finalStep();
+    return finalStep && finalStep(arg);
 }
 
 }()); // end Lib object definition
