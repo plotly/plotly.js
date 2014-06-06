@@ -1008,6 +1008,7 @@
                     function fxInit(){ return Plotly.Fx.init(gd); }
                 ]);
             }
+            else { Plotly.Fx.init(gd); }
         }
 
         function positionAndAutorange(){
