@@ -345,9 +345,8 @@
 
         // now position the legend. for both x,y the positions are recorded as fractions
         // of the plot area (left, bottom = 0,0). Outside the plot area is allowed but
-        // position will be clipped to the page. Special values +/-100 auto-increase
-        // the margin to put the legend entirely outside the plot area on the high/low side.
-        // Otherwise, values <1/3 align the low side at that fraction, 1/3-2/3 align the
+        // position will be clipped to the page.
+        // values <1/3 align the low side at that fraction, 1/3-2/3 align the
         // center at that fraction, >2/3 align the right at that fraction
 
         // defaults... also check for old style off-edge positioning (+/-100) and convert it to the new format
