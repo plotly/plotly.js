@@ -2862,7 +2862,26 @@
         group.select('.'+title).remove();
         var el = group.append('text').attr('class', title).text(txt);
 
+        // if there's existing mathjax, get its transform so we can
+        // apply that right away and minimize jitter during rendering
+        var oldMathjax = group.select('.'+title+'-math-group'),
+            hadMathjax = !oldMathjax.empty(),
+            oldMathjaxTransform,
+            newPartialMathjaxTransform;
+        if(hadMathjax) {
+            oldMathjaxTransform = oldMathjax.attr('transform');
+        }
+
         function titleLayout(titleEl){
+            Plotly.Lib.syncOrAsync([drawTitle,scootTitle], titleEl);
+        }
+
+        function drawTitle(titleEl) {
+            if(transform){
+                titleEl.attr('transform',
+                    'rotate(' + [transform.rotate, options.x, options.y] +
+                    ') translate(0, '+transform.offset+')');
+            }
             titleEl.style({
                     'font-family': font,
                     'font-size': d3.round(fontSize,2)+'px',
@@ -2870,14 +2889,33 @@
                     opacity: opacity*Plotly.Drawing.opacity(fontColor)
                 })
                 .attr(options)
-                .call(Plotly.util.convertToTspans)
+                .call(Plotly.util.convertToTspans, function(newMathjax){
+                    if(!newMathjax) { return; }
+
+                    // give the new mathjax group the same transform that
+                    // a previous one had temporarily, on the assumption that
+                    // probably this is what the new one will get, so we'll
+                    // minimize jitter when this is rendered and then scooted.
+                    newPartialMathjaxTransform = newMathjax.attr('transform');
+                    if(hadMathjax) {
+                        newMathjax.attr('transform',oldMathjaxTransform);
+                    }
+                })
                 .attr(options);
             titleEl.selectAll('tspan.line')
                 .attr(options);
-            if(transform){
-                titleEl.attr('transform',
-                    'rotate(' + [transform.rotate, options.x, options.y] +
-                    ') translate(0, '+transform.offset+')');
+            return previousPromises(gd);
+        }
+
+        function scootTitle(titleElIn) {
+            var mathjaxTitle = d3.select(titleElIn.node().parentNode)
+                    .select('.'+titleElIn.attr('class')+'-math-group'),
+                hasMathjax = !mathjaxTitle.empty(),
+                titleEl = hasMathjax ? mathjaxTitle : titleElIn;
+            if(hasMathjax) {
+                // put back the transform we were given by convertToTspans
+                // so we can calculate shift properly
+                titleEl.attr('transform',newPartialMathjaxTransform);
             }
 
             if(avoid && avoid.selection && avoid.side && txt){
