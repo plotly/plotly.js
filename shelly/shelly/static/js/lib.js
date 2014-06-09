@@ -1095,7 +1095,7 @@ lib.dropdownSelector = function dropdownSelector (spec) {
 
 // promiseError: log errors properly inside promises
 // use:
-// <promise>.then(null,Plotly.Lib.promiseError) (for IE compatibility)
+// <promise>.then(undefined,Plotly.Lib.promiseError) (for IE compatibility)
 // or <promise>.catch(Plotly.Lib.promiseError)
 // TODO: I guess we need another step to send this error to Sentry?
 lib.promiseError = function(err) { console.log(err, err.stack); };
@@ -1118,7 +1118,7 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
             return ret.then(function(){
                 lib.markTime('async done '+fni.name);
                 return lib.syncOrAsync(sequence, arg, finalStep);
-            }).then(null,lib.promiseError);
+            }).then(undefined,lib.promiseError);
         }
         lib.markTime('sync done '+fni.name);
     }
