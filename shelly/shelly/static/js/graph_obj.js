@@ -724,7 +724,7 @@
             .forEach( function (d) {
 
                 var sceneTemplate = {
-                    _glx: undefined,
+                    _glx: null,
                     _dataQueue: [], // for asyncronously loading data
                     domain: {x:[0,1],y:[0,1]}, // default domain
                     _loading: false
@@ -755,7 +755,7 @@
                  * associated scene.
                  * If a particular data trace also has a glID. It means the
                  * surface or mesh for this data trace has already been drawn
-                 * and we can just do an update (updating not yet implemented).
+                 * and we can just do an update. (this is handled inside scene.js)
                  */
                 var scene = gl[destScene] || {};
 
@@ -801,6 +801,7 @@
                 // we are only modifying the x domain position with this
                 // simple approach
                 scene.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
+
                 // if this scene has already been loaded it will have it's glx
                 // context parameter so lets reset the domain of the scene as
                 // it may have changed (this operates on the containing iframe)
