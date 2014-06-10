@@ -770,8 +770,8 @@
                      * Inflate scene object and add defaults
                      */
                     Object.keys(sceneTemplate).forEach( function (key) {
-                        if (key in scene) { return; }
-                        else { scene[key] = sceneTemplate[key]; }
+                        if (key in scene) return;
+                        else scene[key] = sceneTemplate[key];
                     });
 
                     gl[destScene] = scene;
@@ -805,7 +805,7 @@
                 // if this scene has already been loaded it will have it's glx
                 // context parameter so lets reset the domain of the scene as
                 // it may have changed (this operates on the containing iframe)
-                if (scene._loaded) { scene.setPosition(scene.domain); }
+                if (scene._glx) scene._glx.setPosition(scene.domain);
                 return scene;
             })
             .filter( function (scene) {
