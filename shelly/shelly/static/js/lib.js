@@ -448,6 +448,7 @@ lib.markTime = function(v){
     if(!lib.VERBOSE) { return; }
     var t2 = new Date().getTime();
     console.log(v,t2-lib.TIMER,'(msec)');
+    if(lib.VERBOSE==='trace') { console.trace(); }
     lib.TIMER=t2;
 };
 
@@ -1090,5 +1091,39 @@ lib.dropdownSelector = function dropdownSelector (spec) {
     return $html;
 }
 
+// helpers for promises
+
+// promiseError: log errors properly inside promises
+// use:
+// <promise>.then(undefined,Plotly.Lib.promiseError) (for IE compatibility)
+// or <promise>.catch(Plotly.Lib.promiseError)
+// TODO: I guess we need another step to send this error to Sentry?
+lib.promiseError = function(err) { console.log(err, err.stack); };
+
+// syncOrAsync: run a sequence of functions synchronously
+// as long as its returns are not promises (ie have no .then)
+// includes one argument arg to send to all functions...
+// this is mainly just to prevent us having to make wrapper functions
+// when the only purpose of the wrapper is to reference gd / td
+// and a final step to be executed at the end
+// though if there's an error and everything is sync, this doesn't happen yet
+lib.syncOrAsync = function(sequence, arg, finalStep) {
+    var ret, fni;
+
+    while(sequence.length) {
+        fni = sequence.splice(0,1)[0];
+        ret = fni(arg);
+        // lib.markTime('done calling '+fni.name)
+        if(ret && ret.then) {
+            return ret.then(function(){
+                lib.markTime('async done '+fni.name);
+                return lib.syncOrAsync(sequence, arg, finalStep);
+            }).then(undefined,lib.promiseError);
+        }
+        lib.markTime('sync done '+fni.name);
+    }
+
+    return finalStep && finalStep(arg);
+}
 
 }()); // end Lib object definition
