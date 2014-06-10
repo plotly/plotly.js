@@ -189,7 +189,14 @@ function setType(ax){
     // then check the data supplied for that axis
     // only consider existing type if we need to decide log vs linear
     if(d0.type=='box' && axletter=='x' && !('x' in d0) && !('x0' in d0)) {
-        ax.type='category'; // take the categories from trace name, text, or number
+        // check all boxes on this x axis to see if they're dates, numbers, or categories
+        ax.type = axes.autoType(
+            data.filter(function(d){ return d.type==='box'})
+                .map(function(d){
+                    return ('name' in d && !('x' in d)) ? d.name : d.x[0];
+                })
+        );
+        // ax.type='category'; // take the categories from trace name, text, or number
     }
     else {
         ax.type = axes.autoType((axletter in d0) ? d0[axletter] : [d0[axletter+'0']]);
@@ -1370,22 +1377,6 @@ axes.doTicks = function(td,axid) {
                         // sync label: just position it now.
                         positionLabels(thisLabel, ax.tickangle);
                     }
-                    // TODO: gotta make this not a promise if no mathjax
-                    // labelsReady.push(
-                    //     new Promise(function(resolve, reject) {
-                    //         thisLabel
-                    //             .call(Plotly.Drawing.setPosition, labelx(d), labely(d))
-                    //             .call(Plotly.Drawing.font,d.font,d.fontSize,d.fontColor)
-                    //             .text(d.text)
-                    //             .call(Plotly.util.convertToTspans, function(){
-                    //                 resolve(d3.select(thisLabel.node().parentNode));
-                    //             });
-                    //     })
-                    //     .then(function(thisLabel){
-                    //         // give each label its prescribed position and angle as it comes in
-                    //         positionLabels(thisLabel, ax.tickangle);
-                    //     })
-                    // );
                 });
         tickLabels.exit().remove();
 
@@ -1428,8 +1419,10 @@ axes.doTicks = function(td,axid) {
         function fixLabelOverlaps(){
             positionLabels(tickLabels,ax.tickangle);
 
-            // check for auto-angling if labels overlap
-            if(axletter=='x' && !$.isNumeric(ax.tickangle)) {
+            // check for auto-angling if x labels overlap
+            // don't auto-angle at all for log axes with base and digit format
+            if(axletter=='x' && !$.isNumeric(ax.tickangle) &&
+                    (ax.type!=='log' || String(ax.dtick).charAt(0)!=='D')) {
                 var lbbArray = tickLabels[0].map(function(s){
                     var thisLabel = d3.select(s).select('.text-math-group');
                     if(thisLabel.empty()) { thisLabel = d3.select(s).select('text'); }
