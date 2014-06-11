@@ -714,6 +714,11 @@
                 Examples.set();
             }
 
+
+            // tie modebar into all iframes
+            var modebar =  $(gd).find('.svg-container .modebar')[0];
+            SceneFrame.reconfigureModeBar(gd.layout, modebar);
+
             /*
              * Reset all SceneFrame positions (for now just
              * set width % as viewport x ratio)
@@ -775,7 +780,7 @@
                     });
 
                     gl[destScene] = scene;
-
+                    scene.id = gd.id + '-' + destScene;
                     scene._dataQueue.push(d);
                 }
             });
@@ -826,7 +831,8 @@
                  */
                 var sceneOptions = {
                     container: gd.querySelector('.svg-container'),
-                    zIndex: '1000'
+                    zIndex: '1000',
+                    id: scene.id
                 };
 
                 SceneFrame.createScene(sceneOptions, function (glx) {
@@ -846,7 +852,6 @@
                     glx.axisOn({textScale: 0.4});
 
                     scene._glx = glx;
-
                 });
             });
         }
