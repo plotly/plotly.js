@@ -306,7 +306,7 @@
         var path = 'M'+pts[0],
             tangents = [], i;
         for(i=1; i<pts.length-1; i++) {
-            tangents.push(makeTangent(pts[i-1],pts[i],pts[i+1],smoothness));
+            tangents.push(makeTangent(pts[i-1], pts[i], pts[i+1], smoothness));
         }
         path += 'Q'+tangents[0][0]+' '+pts[1];
         for(i=2; i<pts.length-1; i++) {
@@ -320,9 +320,8 @@
         if(pts.length<3) { return 'M' + pts.join('L') + 'Z'; }
         var path = 'M'+pts[0],
             pLast = pts.length-1,
-            tangents = [
-                makeTangent(pts[pLast], pts[0], pts[1], smoothness)
-            ],
+            tangents = [makeTangent(pts[pLast],
+                            pts[0], pts[1], smoothness)],
             i;
         for(i=1; i<pLast; i++) {
             tangents.push(makeTangent(pts[i-1], pts[i], pts[i+1], smoothness));
@@ -351,11 +350,11 @@
             denom2 = 3*d1a*(d1a+d2a);
         return [
             [
-                d3.round(thispt[0]+numx/denom1,2),
-                d3.round(thispt[1]+numy/denom1,2)
+                d3.round(thispt[0]+(denom1 && numx/denom1),2),
+                d3.round(thispt[1]+(denom1 && numy/denom1),2)
             ],[
-                d3.round(thispt[0]-numx/denom2,2),
-                d3.round(thispt[1]-numy/denom2,2)
+                d3.round(thispt[0]-(denom2 && numx/denom2),2),
+                d3.round(thispt[1]-(denom2 && numy/denom2),2)
             ]
         ];
     }
