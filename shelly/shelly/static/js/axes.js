@@ -193,7 +193,9 @@ function setType(ax){
         ax.type = axes.autoType(
             data.filter(function(d){ return d.type==='box'})
                 .map(function(d){
-                    return ('name' in d && !('x' in d)) ? d.name : d.x[0];
+                    if('x' in d) { return d.x[0]; }
+                    if('name' in d) { return d.name; }
+                    return 'text';
                 })
         );
         // ax.type='category'; // take the categories from trace name, text, or number
