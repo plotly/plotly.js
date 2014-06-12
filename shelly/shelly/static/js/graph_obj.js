@@ -849,8 +849,34 @@
                      * to include any changes to the boundaries of the drawn
                      * objects (autoscaling).
                      */
-                    glx.axes({textScale: 0.4});
 
+                    // HEY ALEX! the commented code below shows how to hook into the
+                    // axes tick definition API. Build three arrays defining the different
+                    // tick spacing for each dimension and pass them in within an array where
+                    // [x, y, z]. The bounds of the axis can be set by passing in a bounds
+                    // option {bound: [[-10,-10,-10],[10,10,10]]} (lower and upper bound for each
+                    // component. If it is not passed in, I autoset it within the glx module by
+                    // inspecting the data currently drawn into the gl context. (I am doing this
+                    // everytime new data is added, so as far as axis auto-scale is concerned its a
+                    // free operation)
+                    // Right now I calculate scatter bounds manually, whereas the for
+                    // surfaces I leverage the internal modules tracking of maximum extents.
+
+                    // ----- mocking our axis tick objects
+                    // var xticks = [];
+                    // var yticks = [];
+                    // var zticks = [];
+
+                    // for (var i = 0; i < 120; i+=10) {
+
+                    //     xticks.push({x: i, text: 'x'+i});
+                    //     yticks.push({x: i, text: 'y'+i});
+                    //     if (i < 60) zticks.push({x: Math.round(i/2), text: 'z'+Math.round(i/2)});
+                    // }
+
+                    // ---- pass in ticks like this
+                    // glx.axes({textScale: 1.0, ticks: [xticks, yticks, zticks]});
+                    glx.axes({textScale: 1.0});
                     scene._glx = glx;
                 });
             });
