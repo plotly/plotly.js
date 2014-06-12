@@ -768,7 +768,7 @@
                     // you can change the camera position before or
                     // after initializing data or accept defaults
                     scene._glx.draw(d, d.type);
-                    scene._glx.axisOn();
+                    scene._glx.axes();
                 }
                 else {
                     /*
@@ -849,7 +849,7 @@
                      * to include any changes to the boundaries of the drawn
                      * objects (autoscaling).
                      */
-                    glx.axisOn({textScale: 0.4});
+                    glx.axes({textScale: 0.4});
 
                     scene._glx = glx;
                 });
