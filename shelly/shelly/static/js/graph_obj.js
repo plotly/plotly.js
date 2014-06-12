@@ -2166,16 +2166,29 @@
         }
         else if(gd.shareplot) {
             if(gd.standalone) {
-                // full-page shareplot - restrict aspect ratio to between
-                // 2:1 and 1:2, but only change height to do this
-                newwidth = $(window).width() -
-                    parseInt($('#embedded-graph').css('padding-left')||0,10);
+                // full-page shareplot - as with main site, use 90% of the
+                // available space, but restrict aspect ratio to between
+                // 2:1 and 1:2, by changing height if necessary
+                var gdPos = $(gd).position();
+                gdPos.left += parseInt($(gd).css('padding-left')||0,10);
+                gdPos.top += parseInt($(gd).css('padding-top')||0,10);
+
+                newwidth = Plotly.Lib.constrain(
+                    ($(window).width() - gdPos.left) * 0.9, 200, 10000);
                 newheight = Plotly.Lib.constrain(
-                    $(window).height() - $('#banner').height(),
+                    ($(window).height() - gdPos.top) * 0.9,
                     newwidth/2, newwidth*2);
             }
             // else embedded in an iframe - just take the full iframe size
             // if we get to this point, with no aspect ratio restrictions
+            else {
+                newwidth = $(window).width();
+                newheight = $(window).height();
+
+                // somehow we get a few extra px height sometimes...
+                // just hide it
+                $('body').css('overflow','hidden');
+            }
         }
         else {
             // plotly.js - let the developers do what they want, either
