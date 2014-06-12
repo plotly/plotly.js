@@ -845,9 +845,10 @@
                         glx.draw(d, d.type);
                     }
                     /*
-                     * Calling glx.axisOn when it is already on will update it
-                     * to include any changes to the boundaries of the drawn
-                     * objects (autoscaling).
+                     * Calling glx.axes() when it is already on will update it
+                     * to include any changes to the boundaries created by any new
+                     * gl-objects that have been added (autoscaling) [this feature
+                     * has been hittng bugs in Mikolas new code. I'll fix it up soon]
                      */
 
                     // HEY ALEX! the commented code below shows how to hook into the
