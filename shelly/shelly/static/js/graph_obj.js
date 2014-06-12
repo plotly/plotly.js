@@ -896,7 +896,7 @@
             // delete category list, if there is one, so we start over
             // to be filled in later by ax.d2c
             Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
-            for(var curve in gd.data) {
+            for(var curve = 0; curve<gd.data.length; curve++) {
                 // curve is the index, gdc is the data object for one trace
                 var gdc = gd.data[curve],
                     isPolar = 'r' in gdc,
