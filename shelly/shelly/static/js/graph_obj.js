@@ -289,7 +289,10 @@
     // in some cases the browser doesn't seem to know how big
     // the text is at first, so it needs to draw it,
     // then wait a little, then draw it again
-    plots.redrawText = function(gd) {
+    plots.redrawText = function(divid) {
+        var gd = (typeof divid === 'string') ?
+            document.getElementById(divid) : divid;
+
         // doesn't work presently (and not needed) for polar or 3d
         if(gd.layout._isGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
             return;
@@ -1139,7 +1142,9 @@
     }
 
     // convenience function to force a full redraw, mostly for use by plotly.js
-    Plotly.redraw = function(gd) {
+    Plotly.redraw = function(divid) {
+        var gd = (typeof divid === 'string') ?
+            document.getElementById(divid) : divid;
         gd.calcdata = undefined;
         Plotly.plot(gd);
     };
