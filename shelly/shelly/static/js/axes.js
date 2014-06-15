@@ -29,6 +29,10 @@ axes.clearTypes = function(gd, traces) {
     }
     traces.forEach(function(tracenum) {
         var d = gd.data[tracenum];
+
+        // ignore 3D and polar
+        if(('r' in d) || Plotly.Plots.isGL3D(d.type)) { return; }
+
         axes.getFromId(gd,d.xaxis||'x').type = '-';
         axes.getFromId(gd,d.yaxis||'y').type = '-';
     });
@@ -46,7 +50,9 @@ axes.clearTypes = function(gd, traces) {
 axes.setTypes = function(td) {
     // check if every axis we need exists - make any that don't as defaults
     (td.data||[]).forEach(function(curve) {
-        if(curve.type && curve.type.indexOf('Polar')!=-1) { return; }
+        // ignore 3D and polar
+        if(('r' in curve) || Plotly.Plots.isGL3D(curve.type)) { return; }
+
         ['x','y'].forEach(function(axletter) {
             // also here: convert references x1, y1 to x, y
             if(curve[axletter+'axis']==axletter+'1') { curve[axletter+'axis'] = axletter; }
@@ -154,7 +160,12 @@ axes.counterLetter = function(id) { return {x:'y',y:'x'}[id.charAt(0)]; };
 
 function setType(ax){
     var axletter = ax._id.charAt(0),
-        data = (ax._td.data||[]).filter(function(di){ return (di[axletter+'axis']||axletter)==ax._id; });
+        data = (ax._td.data||[]).filter(function(di){
+            // ignore 3D and polar
+            if(('r' in di) || Plotly.Plots.isGL3D(di.type)) { return false; }
+
+            return (di[axletter+'axis']||axletter)==ax._id;
+        });
     // backward compatibility
     if(!ax.type) {
         if(ax.isdate) { ax.type='date'; }
@@ -1147,6 +1158,9 @@ axes.getSubplots = function(gd,ax) {
 
     // look for subplots in the data
     (data||[]).forEach(function(d) {
+        // ignore 3D and polar
+        if(('r' in d) || Plotly.Plots.isGL3D(d.type)) { return; }
+
         // allow users to include x1 and y1 but convert to x and y
         if(d.xaxis==='x1') { d.xaxis = 'x'; }
         if(d.yaxis==='y1') { d.yaxis = 'y'; }
@@ -1481,6 +1495,9 @@ axes.doTicks = function(td,axid) {
 
         // zero line
         var hasBarsOrFill = (td.data||[]).filter(function(tdc){
+            // ignore 3D and polar
+            if(('r' in tdc) || Plotly.Plots.isGL3D(tdc.type)) { return; }
+
             return tdc.visible!==false && ((tdc.xaxis||'x')+(tdc.yaxis||'y')==subplot) &&
                 ((Plotly.Plots.isBar(tdc.type) && (tdc.orientation||'v')=={x:'h',y:'v'}[axletter]) ||
                 ((tdc.type||'scatter')=='scatter' && tdc.fill && tdc.fill.charAt(tdc.fill.length-1)==axletter));

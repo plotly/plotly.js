@@ -689,7 +689,7 @@
 
             // DETECT Cartesian
             if (gd.data.some(function (d) {
-                return plots.isCartesian(d.type);
+                return plots.isCartesian(d.type) && !('r' in d);
             })) {
                 layout._hasCartesian = true;
             }
@@ -718,9 +718,7 @@
         $(gd).find('.data-only').attr('disabled',
             !gd.data || gd.data.length===0);
 
-        var gl = gd.layout,
-            curvetype;
-
+        var gl = gd.layout;
 
         ////////////////////////////////  3D   ///////////////////////////////
 
@@ -827,10 +825,20 @@
                 // simple approach
                 scene.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
 
+                // convert domain to position in pixels
+                scene.position = {
+                    left: gl._size.l + scene.domain.x[0]*gl._size.w,
+                    top: gl._size.t + (1-scene.domain.y[1])*gl._size.h,
+                    width: gl._size.w *
+                        (scene.domain.x[1] - scene.domain.x[0]),
+                    height: gl._size.h *
+                        (scene.domain.y[1] - scene.domain.y[0])
+                };
+
                 // if this scene has already been loaded it will have it's glx
                 // context parameter so lets reset the domain of the scene as
                 // it may have changed (this operates on the containing iframe)
-                if (scene._glx) scene._glx.setPosition(scene.domain);
+                if (scene._glx) { scene._glx.setPosition(scene.position); }
                 return scene;
             })
             .filter( function (scene) {
@@ -858,7 +866,7 @@
                 SceneFrame.createScene(sceneOptions, function (glx) {
                     scene._loading = false; // loaded
 
-                    glx.setPosition(scene.domain);
+                    glx.setPosition(scene.position);
 
                     while (scene._dataQueue.length) {
                         var d = scene._dataQueue.shift();
@@ -909,9 +917,9 @@
 
 
         /*
-         * Plotly.plot shortCircuit for 3d
+         * Plotly.plot shortCircuit for 3d only
          */
-        if (gl._hasGL3D) {
+        if (!gl._hasCartesian) {
 
             gl._paperdiv.style({
                 width: gl.width+'px',
@@ -952,22 +960,11 @@
             for(var curve = 0; curve<gd.data.length; curve++) {
                 // curve is the index, gdc is the data object for one trace
                 var gdc = gd.data[curve],
-                    isPolar = 'r' in gdc,
                     module = '',
                     cd = [];
-                curvetype = gdc.type || 'scatter'; //default type is scatter
-                // don't let type be blank...
-                // may want to go further and enforce known types?
-                gdc.type = curvetype;
 
-                if(isPolar) {
-                    console.log('Oops, tried to put a polar trace of type ' +
-                        gdc.type + ' on an incompatible graph of cartesian ' +
-                        gd.data[0].type + ' data. Ignoring this dataset.'
-                    );
-                    gd.calcdata.push([{x:false, y:false}]);
-                    continue;
-                }
+                // fill in default curve type
+                if(!gdc.type) { gdc.type = 'scatter'; }
 
                 // if no name is given, make a default from the curve number
                 if(!('name' in gdc)) {
@@ -979,14 +976,28 @@
                 }
 
                 // figure out which module plots this data
-                if(curvetype==='scatter') { module = 'Scatter'; }
-                else if(plots.isBar(curvetype)) { module = 'Bars'; }
-                else if(plots.isContour(curvetype)) { module = 'Contour'; }
-                else if(plots.isHeatmap(curvetype)) { module = 'Heatmap'; }
-                else if(curvetype==='box') { module = 'Boxes'; }
+                if('r' in gdc) {
+                    console.log('Oops, tried to put a polar trace of type ' +
+                        gdc.type + ' on an incompatible graph of cartesian ' +
+                        gd.data[0].type + ' data. Ignoring this dataset.'
+                    );
+                }
+                else if(plots.isGL3D(gdc.type)) {
+                    // for the moment handle 3D the same way as polar,
+                    // just don't treat it as an error
+                }
+                else if(plots.isScatter(gdc.type)) { module = 'Scatter'; }
+                else if(plots.isBar(gdc.type)) { module = 'Bars'; }
+                else if(plots.isContour(gdc.type)) { module = 'Contour'; }
+                else if(plots.isHeatmap(gdc.type)) { module = 'Heatmap'; }
+                else if(gdc.type==='box') { module = 'Boxes'; }
+                else {
+                    console.log('Unrecognized plot type ' + gdc.type +
+                        '. Ignoring this dataset.'
+                    );
+                }
 
                 if(module) { cd = Plotly[module].calc(gd,gdc); }
-                else { console.log('unrecognized trace type: ' +curvetype); }
 
                 if(!('line' in gdc)) { gdc.line = {}; }
                 if(!('marker' in gdc)) { gdc.marker = {}; }
@@ -994,6 +1005,8 @@
                 if(!('textfont' in gdc)) { gdc.textfont = {}; }
 
                 // make sure there is a first point
+                // this ensures there is a calcdata item for every trace,
+                // even if cartesian logic doesn't handle it
                 if(!$.isArray(cd) || !cd[0]) { cd = [{x: false, y: false}]; }
 
                 // add the trace-wide properties to the first point,
@@ -1004,11 +1017,14 @@
                 cd[0].t.curve = curve;
                 // store the calcdata curve number we're in - should be the same
                 cd[0].t.cdcurve = gd.calcdata.length;
-                // store the module for this trace, for use later by plotting
-                cd[0].t.module = module;
-                // save which modules we're using, for fast plotting / styling
-                if(gd._modules.indexOf(module)===-1) {
-                    gd._modules.push(module);
+
+                if(module) {
+                    // store the module for this trace, for use later to plot
+                    cd[0].t.module = module;
+                    // save which modules we're using
+                    if(gd._modules.indexOf(module)===-1) {
+                        gd._modules.push(module);
+                    }
                 }
 
                 gd.calcdata.push(cd);
@@ -2353,7 +2369,9 @@
         });
         gd.layout = gl = updateObject(oldLayout, newLayout);
 
-        if (!plots.isGL3D(type)) {
+        var doCartesian = gl._hasCartesian || !gl._hasGL3D;
+
+        if (doCartesian) {
             // do a bunch of 2D axis stuff
 
             // Get subplots and see if we need to make any more axes
@@ -2372,7 +2390,7 @@
             Plotly.Axes.setTypes(gd);
 
         } else {
-            // This is WEBGL, remove usual axis
+            // This is WEBGL ONLY, remove usual axis
             delete gd.layout.xaxis;
             delete gd.layout.yaxis;
         }
@@ -2409,13 +2427,13 @@
         // short-circuiting this code here resolves the issue where the _paper
         // svg element following this conditional pushes the page past
         // screen height and leads to overflow and scrollbars in the tool.
-        if (plots.isGL3D(type)) {
-            // init the mode bar
-            Plotly.Fx.modeBar(gd);
-            if(!gl._forexport) { Plotly.Fx.init(gd); }
+        // if (!doCartesian) {
+        //     // init the mode bar
+        //     Plotly.Fx.modeBar(gd);
+        //     if(!gl._forexport) { Plotly.Fx.init(gd); }
 
-            return;
-        }
+        //     return;
+        // }
 
         gl._paper = gl._paperdiv.append('svg')
             .attr({
