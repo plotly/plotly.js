@@ -256,6 +256,10 @@
         });
     }
 
+    plots.isScatter = function(type) {
+        return !type || (type==='scatter');
+    };
+
     var BARTYPES = ['bar','histogram'];
     plots.isBar = function(type) {
         return BARTYPES.indexOf(type)!==-1;
@@ -276,6 +280,11 @@
         return HIST2DTYPES.indexOf(type) !== -1;
     };
 
+    plots.isCartesian = function(type) {
+        return plots.isScatter(type) || plots.isBar(type) ||
+            plots.isHeatmap(type);
+    };
+
     var GL3DTYPES = ['scatter3d', 'surface'];
     plots.isGL3D = function(type) {
         return GL3DTYPES.indexOf(type) !== -1;
@@ -289,9 +298,12 @@
     // in some cases the browser doesn't seem to know how big
     // the text is at first, so it needs to draw it,
     // then wait a little, then draw it again
-    plots.redrawText = function(gd) {
+    plots.redrawText = function(divid) {
+        var gd = (typeof divid === 'string') ?
+            document.getElementById(divid) : divid;
+
         // doesn't work presently (and not needed) for polar or 3d
-        if(gd.layout._isGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
+        if(gd.layout._hasGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
             return;
         }
 
@@ -672,8 +684,16 @@
             if (gd.data.some(function (d) {
                 return plots.isGL3D(d.type);
             })) {
-                layout._isGL3D = true;
+                layout._hasGL3D = true;
             }
+
+            // DETECT Cartesian
+            if (gd.data.some(function (d) {
+                return plots.isCartesian(d.type);
+            })) {
+                layout._hasCartesian = true;
+            }
+
 
 
             var subplots = Plotly.Axes.getSubplots(gd).join(''),
@@ -704,7 +724,7 @@
 
         ////////////////////////////////  3D   ///////////////////////////////
 
-        if (gl._isGL3D) {
+        if (gl._hasGL3D) {
             /*
              * Once Webgl plays well with other things we can remove this.
              * Unset examples, they misbehave with 3d plots
@@ -891,7 +911,7 @@
         /*
          * Plotly.plot shortCircuit for 3d
          */
-        if (gl._isGL3D) {
+        if (gl._hasGL3D) {
 
             gl._paperdiv.style({
                 width: gl.width+'px',
@@ -929,7 +949,7 @@
             // delete category list, if there is one, so we start over
             // to be filled in later by ax.d2c
             Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
-            for(var curve in gd.data) {
+            for(var curve = 0; curve<gd.data.length; curve++) {
                 // curve is the index, gdc is the data object for one trace
                 var gdc = gd.data[curve],
                     isPolar = 'r' in gdc,
@@ -1172,7 +1192,9 @@
     }
 
     // convenience function to force a full redraw, mostly for use by plotly.js
-    Plotly.redraw = function(gd) {
+    Plotly.redraw = function(divid) {
+        var gd = (typeof divid === 'string') ?
+            document.getElementById(divid) : divid;
         gd.calcdata = undefined;
         Plotly.plot(gd);
     };
