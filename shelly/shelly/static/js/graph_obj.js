@@ -289,7 +289,10 @@
     // in some cases the browser doesn't seem to know how big
     // the text is at first, so it needs to draw it,
     // then wait a little, then draw it again
-    plots.redrawText = function(gd) {
+    plots.redrawText = function(divid) {
+        var gd = (typeof divid === 'string') ?
+            document.getElementById(divid) : divid;
+
         // doesn't work presently (and not needed) for polar or 3d
         if(gd.layout._isGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
             return;
@@ -896,7 +899,7 @@
             // delete category list, if there is one, so we start over
             // to be filled in later by ax.d2c
             Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
-            for(var curve in gd.data) {
+            for(var curve = 0; curve<gd.data.length; curve++) {
                 // curve is the index, gdc is the data object for one trace
                 var gdc = gd.data[curve],
                     isPolar = 'r' in gdc,
@@ -1139,7 +1142,9 @@
     }
 
     // convenience function to force a full redraw, mostly for use by plotly.js
-    Plotly.redraw = function(gd) {
+    Plotly.redraw = function(divid) {
+        var gd = (typeof divid === 'string') ?
+            document.getElementById(divid) : divid;
         gd.calcdata = undefined;
         Plotly.plot(gd);
     };
@@ -2160,16 +2165,29 @@
         }
         else if(gd.shareplot) {
             if(gd.standalone) {
-                // full-page shareplot - restrict aspect ratio to between
-                // 2:1 and 1:2, but only change height to do this
-                newwidth = $(window).width() -
-                    parseInt($('#embedded-graph').css('padding-left')||0,10);
+                // full-page shareplot - as with main site, use 90% of the
+                // available space, but restrict aspect ratio to between
+                // 2:1 and 1:2, by changing height if necessary
+                var gdPos = $(gd).position();
+                gdPos.left += parseInt($(gd).css('padding-left')||0,10);
+                gdPos.top += parseInt($(gd).css('padding-top')||0,10);
+
+                newwidth = Plotly.Lib.constrain(
+                    ($(window).width() - gdPos.left) * 0.9, 200, 10000);
                 newheight = Plotly.Lib.constrain(
-                    $(window).height() - $('#banner').height(),
+                    ($(window).height() - gdPos.top) * 0.9,
                     newwidth/2, newwidth*2);
             }
             // else embedded in an iframe - just take the full iframe size
             // if we get to this point, with no aspect ratio restrictions
+            else {
+                newwidth = $(window).width();
+                newheight = $(window).height();
+
+                // somehow we get a few extra px height sometimes...
+                // just hide it
+                $('body').css('overflow','hidden');
+            }
         }
         else {
             // plotly.js - let the developers do what they want, either
