@@ -876,7 +876,7 @@
                      * Calling glx.axes() when it is already on will update it
                      * to include any changes to the boundaries created by any new
                      * gl-objects that have been added (autoscaling) [this feature
-                     * has been hittng bugs in Mikolas new code. I'll fix it up soon]
+                     * has been hitting bugs in Mikolas new code. I'll fix it up soon]
                      */
 
                     // HEY ALEX! the commented code below shows how to hook into the
@@ -884,7 +884,7 @@
                     // tick spacing for each dimension and pass them in within an array where
                     // [x, y, z]. The bounds of the axis can be set by passing in a bounds
                     // option {bound: [[-10,-10,-10],[10,10,10]]} (lower and upper bound for each
-                    // component. If it is not passed in, I autoset it within the glx module by
+                    // component). If it is not passed in, I autoset it within the glx module by
                     // inspecting the data currently drawn into the gl context. (I am doing this
                     // everytime new data is added, so as far as axis auto-scale is concerned its a
                     // free operation)
