@@ -861,7 +861,7 @@
                     id: scene.id
                 };
 
-                SceneFrame.createScene(sceneOptions, function (glx) {
+                SceneFrame.createScene(Plotly, sceneOptions, function (glx) {
                     scene._loading = false; // loaded
 
                     glx.setPosition(scene.position);
@@ -3260,6 +3260,7 @@
             _dataQueue: [], // for asyncronously loading data
             _loading: false,
             domain: {x:[0,1],y:[0,1]}, // default domain
+            orthographic: true,
             id: sceneId,
             xaxis: Plotly.Axes.defaultAxis(),
             yaxis: Plotly.Axes.defaultAxis(),
