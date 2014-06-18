@@ -216,7 +216,7 @@
             hovermode:'x',
             separators:'.,', // decimal then thousands
             hidesources:false,
-            smith:false,
+            smith:false
         };
     }
 
@@ -754,14 +754,9 @@
             .filter( function (d) { return plots.isGL3D(d.type); } )
             .forEach( function (d) {
 
-                var sceneTemplate = {
-                    _glx: null,
-                    _dataQueue: [], // for asyncronously loading data
-                    domain: {x:[0,1],y:[0,1]}, // default domain
-                    _loading: false
-                };
               // This following code inserts test data if no data is present
               // remove after completion
+                var sceneLayout, destScene;
                 if (!Array.isArray(d.z)) {
                     $.extend(d, SceneFrame.testData(d.type,
                         120, 120, [40,40,40]));
@@ -775,39 +770,34 @@
                  *
                  * and d.scene will be undefined or some number or number string
                  */
-                var destScene = 'scene';
+                destScene = 'scene';
                 if (d.scene && $.isNumeric(d.scene) && d.scene > 1) {
                     destScene += d.scene;
                 }
 
-                /*
-                 * In the case existing scenes are active in this tab:
-                 * If data has a destination scene attempt to match that to the
-                 * associated scene.
-                 * If a particular data trace also has a glID. It means the
-                 * surface or mesh for this data trace has already been drawn
-                 * and we can just do an update. (this is handled inside scene.js)
-                 */
-                var scene = gl[destScene] || {};
+                if (destScene in gl && '_glx' in gl[destScene] && gl[destScene]._glx) {
 
-                if ('_glx' in scene && scene._glx) {
+                    /*
+                     * In the case existing scenes are active in this tab:
+                     * If data has a destination scene attempt to match that to the
+                     * associated scene.
+                     * If a particular data trace also has a glID. It means the
+                     * surface or mesh for this data trace has already been drawn
+                     * and we can just do an update. (this is handled inside scene.js)
+                     */
+                    sceneLayout = gl[destScene];
                     // you can change the camera position before or
                     // after initializing data or accept defaults
-                    scene._glx.draw(d, d.type);
-                    scene._glx.axes();
+                    sceneLayout._glx.draw(gd, d, d.type);
+                    sceneLayout._glx.axes(gd);
                 }
                 else {
                     /*
-                     * Inflate scene object and add defaults
+                     * build a new scene layout object
                      */
-                    Object.keys(sceneTemplate).forEach( function (key) {
-                        if (key in scene) return;
-                        else scene[key] = sceneTemplate[key];
-                    });
+                    gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(destScene);
 
-                    gl[destScene] = scene;
-                    scene.id = gd.id + '-' + destScene;
-                    scene._dataQueue.push(d);
+                    sceneLayout._dataQueue.push(d);
                 }
             });
 
@@ -876,44 +866,14 @@
 
                     glx.setPosition(scene.position);
 
+                    // if data has accumulated on the queue while the iframe
+                    // and the webgl-context were loading remove that data
+                    // from the queue and draw.
                     while (scene._dataQueue.length) {
                         var d = scene._dataQueue.shift();
-                        glx.draw(d, d.type);
+                        glx.draw(gd, d, d.type);
                     }
-                    /*
-                     * Calling glx.axes() when it is already on will update it
-                     * to include any changes to the boundaries created by any new
-                     * gl-objects that have been added (autoscaling) [this feature
-                     * has been hitting bugs in Mikolas new code. I'll fix it up soon]
-                     */
-
-                    // HEY ALEX! the commented code below shows how to hook into the
-                    // axes tick definition API. Build three arrays defining the different
-                    // tick spacing for each dimension and pass them in within an array where
-                    // [x, y, z]. The bounds of the axis can be set by passing in a bounds
-                    // option {bound: [[-10,-10,-10],[10,10,10]]} (lower and upper bound for each
-                    // component). If it is not passed in, I autoset it within the glx module by
-                    // inspecting the data currently drawn into the gl context. (I am doing this
-                    // everytime new data is added, so as far as axis auto-scale is concerned its a
-                    // free operation)
-                    // Right now I calculate scatter bounds manually, whereas the for
-                    // surfaces I leverage the internal modules tracking of maximum extents.
-
-                    // ----- mocking our axis tick objects
-                    // var xticks = [];
-                    // var yticks = [];
-                    // var zticks = [];
-
-                    // for (var i = 0; i < 120; i+=10) {
-
-                    //     xticks.push({x: i, text: 'x'+i});
-                    //     yticks.push({x: i, text: 'y'+i});
-                    //     if (i < 60) zticks.push({x: Math.round(i/2), text: 'z'+Math.round(i/2)});
-                    // }
-
-                    // ---- pass in ticks like this
-                    // glx.axes({textScale: 1.0, ticks: [xticks, yticks, zticks]});
-                    glx.axes({textScale: 1.0});
+                    // make the .glx (webgl context) available through scene.
                     scene._glx = glx;
                 });
             });
@@ -2404,6 +2364,7 @@
 
         } else {
             // This is WEBGL ONLY, remove usual axis
+            subplots = [];
             delete gd.layout.xaxis;
             delete gd.layout.yaxis;
         }
@@ -3292,4 +3253,18 @@
         }
         return uoStack.pop();
     }
+
+    plots.defaultSceneLayout = function (sceneId) {
+        return {
+            _glx: null,
+            _dataQueue: [], // for asyncronously loading data
+            _loading: false,
+            domain: {x:[0,1],y:[0,1]}, // default domain
+            id: sceneId,
+            xaxis: Plotly.Axes.defaultAxis(),
+            yaxis: Plotly.Axes.defaultAxis(),
+            zaxis: Plotly.Axes.defaultAxis()
+        };
+    };
+
 }()); // end Plots object definition
