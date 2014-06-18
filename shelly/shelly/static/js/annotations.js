@@ -102,8 +102,6 @@ annotations.draw = function(gd,index,opt,value) {
             arrowhead: 1,
             arrowsize: 1,
 	    textangle: 0,
-//	    xrotc: 0,
-//	    yrotc: 0,
             tag: '',
             font: {family:'',size:0,color:''},
             opacity: 1,
@@ -134,8 +132,6 @@ annotations.draw = function(gd,index,opt,value) {
 
 
     var textangle = options.textangle || 0;
-//    var xrotc = options.xrotc || 0;
-//    var yrotc = options.yrotc || 0;
 
     // create the components
     // made a single group to contain all, so opacity can work right with border/arrow together
@@ -143,10 +139,7 @@ annotations.draw = function(gd,index,opt,value) {
     var anngroup = gl._infolayer.append('g')
         .attr({'class':'annotation', 'data-index':String(index), 'data-cmmt':options.tag})
         .style('opacity',options.opacity);
-/*
-    var cx = (gs.l + (gs.w)*options['x']) + options['ax'] + xrotc;
-    var cy = (gs.t + (gs.h)*(1-options['y'])) + options['ay'] + yrotc;
-*/
+
     // another group for text and background so that they can rotate together
     var anng = anngroup.append('g')
         .attr({'class':'annotation-text-g', 'data-index':String(index)});
@@ -161,7 +154,6 @@ annotations.draw = function(gd,index,opt,value) {
         .attr('class','bg')
         .style('stroke-width',borderwidth+'px')
         .call(Plotly.Drawing.strokeColor,options.bordercolor || 'rgba(0,0,0,0)')
-        //.style('stroke-opacity',.2)
         .call(Plotly.Drawing.fillColor,options.bgcolor);
 
     var font = options.font.family||gl.font.family||'Arial',
@@ -215,15 +207,7 @@ annotations.draw = function(gd,index,opt,value) {
             anntextBB = (hasMathjax ? mathjaxGroup : anntext).node().getBoundingClientRect(),
             annwidth = anntextBB.width,
             annheight = anntextBB.height;
-/*
-	anngroup.append('rect')
-            .style('stroke-width', '1px')
-            .style('stroke-opacity', '1')
-            .style('stroke', 'rgb(1,2,3)')
-            .style('fill-opacity', 0)
-	    .attr({'x':anntextBB.left, 'y' : anntextBB.top, 
-		   'width' : anntextBB.width, 'height' : anntextBB.height});
-*/
+
         // save size in the annotation object for use by autoscale
         options._w = annwidth;
         options._h = annheight;
@@ -379,7 +363,6 @@ annotations.draw = function(gd,index,opt,value) {
         // uses options[arrowwidth,arrowcolor,arrowhead] for styling
         var drawArrow = function(dx,dy){
             $(gd).find('.annotation-arrow-g[data-index="'+index+'"]').remove();
-//	    anng.attr('transform', function() { return ''; });
             // find where to start the arrow:
             // at the border of the textbox, if that border is visible,
             // or at the edge of the lines of text, if the border is hidden
@@ -413,8 +396,6 @@ annotations.draw = function(gd,index,opt,value) {
                     y2 = bb.bottom-paperBB.top+pad,
                     edges = [[x1,y1,x1,y2],[x1,y2,x2,y2],[x2,y2,x2,y1],[x2,y1,x1,y1]].map(applyTransform2);
 
-//                if(ax>x1 && ax<x2 && ay>y1 && ay<y2) { // remove the line if it ends inside the box
-		
 		// Remove the line if it ends inside the box.  Use ray
 		// casting for rotated boxes: see which edges intersect a
 		// line from the arrowhead to far away and reduce with xor
@@ -432,61 +413,10 @@ annotations.draw = function(gd,index,opt,value) {
                 edges.forEach(function(i){
                     var p = line_intersect(ax0,ay0,ax,ay,i[0],i[1],i[2],i[3]);
                     if(p) {
-			//anntext.text(p.x + ', ' + p.y);
                         ax0 = p.x;
                         ay0 = p.y;
                     }
                 });
-
-
-		var corners = [[x1,y1],[x1,y2],[x2,y1],[x2,y2]].map(applyTransform);
-
-		$(gd).find('.zzxzL[data-index="'+index+'"]').remove();
-		
-		gl._infolayer.append('polyline')
-		    .attr({'class':'zzxzL', 'data-index':String(index)})
-		    .attr('points', edges[0][0] + ' ' + edges[0][1] + ' ' +
-			  edges[0][2] + ' ' + edges[0][3] + ' ' +
-			  edges[1][2] + ' ' + edges[1][3] + ' ' +
-			  edges[2][2] + ' ' + edges[2][3] + ' ' +
-			  edges[3][2] + ' ' + edges[3][3] + ' ' 
-			 )
-		    .attr('stroke', 'red')
-		    .attr('stroke-width', 1)
-		    .attr('stroke-opacity', .21)
-		    .attr('fill', 'none');
-
-
-/*
-		$(gd).find('.zzxzL2[data-index="'+index+'"]').remove();
-		
-		gl._infolayer.append('polyline')
-		    .attr({'class':'zzxzL2', 'data-index':String(index)})
-		    .attr('points', ax + ' ' + ay + ' ' +
-			  (ax+1e6) + ' ' + (ay+1e6) + ' ' 
-			 )
-		    .attr('stroke', 'blue')
-		    .attr('stroke-width', 1)
-		    .attr('stroke-opacity', .21)
-		    .attr('fill', 'none');
-*/
-/*
-		gl._infolayer.append('polyline')
-		    .attr({'class':'zzxzL', 'data-index':String(index)})
-		    .attr('points', corners[0][0] + ' ' + corners[0][1] + ' ' +
-			  corners[1][0] + ' ' + corners[1][1] + ' ' +
-			  corners[3][0] + ' ' + corners[3][1] + ' ' +
-			  corners[2][0] + ' ' + corners[2][1] + ' ' +
-			  corners[0][0] + ' ' + corners[0][1] + ' ' 
-			 )
-		    .attr('stroke', 'red')
-		    .attr('stroke-width', 1)
-		    .attr('stroke-opacity', .21)
-		    .attr('fill', 'none');
-*/
-		// gl._infolayer.append('text').text(edges);
-		// gl._infolayer.append('text').text(edges2);
-
 
             });
             if(showline) {
@@ -517,8 +447,6 @@ annotations.draw = function(gd,index,opt,value) {
                 if(gd.mainsite) { arrowdrag.node().onmousedown = function(e) {
                     if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
 
-//		    anng.attr("transform", function(d) {return '';})
-
                     var eln = this,
                         el3 = d3.select(this),
                         annx0 = Number(ann.attr('x')),
@@ -528,19 +456,6 @@ annotations.draw = function(gd,index,opt,value) {
                         xa = Plotly.Axes.getFromId(gd,options.xref),
                         ya = Plotly.Axes.getFromId(gd,options.yref);
 
-/*
-
-
-		$(gd).find('.zzxC1[data-index="'+index+'"]').remove();
-
-		gl._infolayer.append('circle')
-		    .attr({'class':'zzxC1', 'data-index':String(index)})
-		    .attr('cx', annx0)
-		    .attr('cy', anny0)
-		    .attr('fill', 'red')
-		    .attr('r', 5)
-
-*/
                     if(xa && xa.autorange) { update[xa._name+'.autorange'] = true; }
                     if(ya && ya.autorange) { update[ya._name+'.autorange'] = true; }
 
@@ -554,43 +469,9 @@ annotations.draw = function(gd,index,opt,value) {
                         if(dx||dy) { gd.dragged = true; }
                         arrowgroup.attr('transform','translate('+dx+','+dy+')'); 
 			
-//			ann.call(Plotly.Drawing.setPosition, annx0+dx, anny0+dy);
 			var annxy0 = applyTransform(annx0, anny0);
 			ann.call(Plotly.Drawing.setPosition, annxy0[0]+dx, annxy0[1]+dy);
 
-/*
-		$(gd).find('.zzxC2[data-index="'+index+'"]').remove();
-
-		gl._infolayer.append('circle')
-		    .attr({'class':'zzxC2', 'data-index':String(index)})
-		    .attr('cx', annx0+dx)
-		    .attr('cy', anny0+dy)
-		    .attr('fill', 'green')
-		    .attr('r', 7)
-
-
-
-		$(gd).find('.zzxC3[data-index="'+index+'"]').remove();
-
-		gl._infolayer.append('circle')
-		    .attr({'class':'zzxC3', 'data-index':String(index)})
-		    .attr('cx', annxy0[0]+dx)
-		    .attr('cy', annxy0[1]+dy)
-		    .attr('fill', 'blue')
-		    .attr('r', 5)
-
-			var annxy1 = applyInvTransform(annx0, anny0);
-
-		$(gd).find('.zzxC4[data-index="'+index+'"]').remove();
-
-		gl._infolayer.append('circle')
-		    .attr({'class':'zzxC4', 'data-index':String(index)})
-		    .attr('cx', annxy1[0]+dx)
-		    .attr('cy', annxy1[1]+dy)
-		    .attr('fill', 'purple')
-		    .attr('r', 7)
-
-*/
                         update[annbase+'.x'] = options.xref=='paper' ?
                             ((ax+dx-gs.l)/gs.w) :
                             (options.x+dx/Plotly.Axes.getFromId(gd,options.xref||'x')._m);
@@ -600,17 +481,12 @@ annotations.draw = function(gd,index,opt,value) {
 
 		    anng.attr("transform", function(d)
 			      {return 'rotate(' + textangle + ', ' + (annxy0[0]+dx) + ', ' + (annxy0[1]+dy) + ')';})
-/*
-		    anng.attr("transform", function(d)
-			      {return 'rotate(' + textangle + ', ' + (annx0+dx) + ', ' + (anny0+dy) + ')';})
-*/
 
                         return Plotly.Lib.pauseEvent(e2);
                     };
                     window.onmouseup = function(e2) {
                         window.onmousemove = null; window.onmouseup = null;
                         if(gd.dragged) { Plotly.relayout(gd,update); }
-                        //Plotly.relayout(gd,update);
                         return Plotly.Lib.pauseEvent(e2);
                     };
                     return Plotly.Lib.pauseEvent(e);
@@ -627,7 +503,6 @@ annotations.draw = function(gd,index,opt,value) {
 
                 if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
 
-//		anng.attr("transform", function(d) {return '';});
                 var eln=this,
                     el3=d3.select(this),
                     x0=Number(el3.attr('x')),
@@ -640,105 +515,22 @@ annotations.draw = function(gd,index,opt,value) {
                 if(ya && ya.autorange) { update[ya._name+'.autorange'] = true; }
                 gd.dragged = false;
                 Plotly.Fx.setCursor(el3);
-
-		var xy1 = applyInvTransform(x0, y0);
-		var x1 = xy1[0];
-		var y1 = xy1[1];
-
-
-
-		dbgCircle(gd, gl, x0, y0, 'zzxzC11', index, 'red', 7);
-		dbgCircle(gd, gl, x1, y1, 'zzxzC12', index, 'blue', 7);
-/*
-		anng.attr("transform", function(d)
-			  {return 'rotate(' + textangle + ', ' + x0 + ', ' + y0 + ')';})
-*/
+		
                 window.onmousemove = function(e2) {
-//		    anng.attr("transform", function(d) {return '';});
                     var dx = e2.clientX-e.clientX,
                         dy = e2.clientY-e.clientY;
-/*
-		    var dxy = applyInvTransform(dx, dy);
-		    dx = dxy[0];
-		    dy = dxy[1];
-*/
-//		    anntext.text(dx + ',' + dy);
-
+		    
                     if(Math.abs(dx)<MINDRAG) { dx=0; }
                     if(Math.abs(dy)<MINDRAG) { dy=0; }
                     if(dx||dy) { gd.dragged = true; }
-//		    var dxy = applyInvTransform(x0+dx, y0+dy);
-//                    el3.call(Plotly.Drawing.setPosition, dxy[0], dxy[1]);
-//                    el3.call(Plotly.Drawing.setPosition, e2.clientX, e2.clientY);
-//		    var xy = applyInvTransform(x0, y0);
-//                    el3.call(Plotly.Drawing.setPosition, xy[0]+dx, xy[1]+dy);
 
-
-		var xy2 = applyTransform(x0, y0);
-		var x2 = xy2[0];
-		var y2 = xy2[1];
-
-		var xy3 = applyTransform(x2, y2);
-		var x3 = xy3[0];
-		var y3 = xy3[1];
-
-/*
-		dbgCircle(gd, gl, x2+dx, y2+dy, 'zzxzC15', index, 'cyan', 5);
-		dbgCircle(gd, gl, x2, y2, 'zzxzC16', index, 'magenta', 7);
-
-
-		dbgCircle(gd, gl, x3+dx, y3+dy, 'zzxzC17', index, 'pink', 5);
-		dbgCircle(gd, gl, x3, y3, 'zzxzC18', index, 'orange', 7);
-		    
-		dbgCircle(gd, gl, x0+dx, y0+dy, 'zzxzC13', index, 'green', 5);
-		dbgCircle(gd, gl, x1+dx, y1+dy, 'zzxzC14', index, 'purple', 5);
-*/
-
-/*
-		    $(gd).find('.zzxC1[data-index="'+index+'"]').remove();
-
-		    gl._infolayer.append('circle')
-			.attr({'class':'zzxC1', 'data-index':String(index)})
-			.attr('cx', x0)
-			.attr('cy', y0)
-			.attr('fill', 'red')
-			.attr('r', 5)
-		    
-		    $(gd).find('.zzxC2[data-index="'+index+'"]').remove();
-
-		    gl._infolayer.append('circle')
-			.attr({'class':'zzxC2', 'data-index':String(index)})
-			.attr('cx', x0+dx)
-			.attr('cy', y0+dy)
-			.attr('fill', 'green')
-			.attr('r', 5)
-		    
-*/
-
-//                    el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
-/*
-		    anng.attr("transform", function(d)
-			      {return 'rotate(' + textangle + ', ' + (x1+dx) + ', ' + (y1+dy) + ')';})
-*/
-                    el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
-//                    anng.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
-//                    el3.call(Plotly.Drawing.setPosition, annPosPx.x+dx, annPosPx.y+dy);
-//                    ann.call(Plotly.Drawing.setPosition, x1+dx, y1+dy);
+		    el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
                     var csr = 'pointer';
                     if(options.showarrow) {
                         update[annbase+'.ax'] = options.ax+dx;
                         update[annbase+'.ay'] = options.ay+dy;
 			anng.attr('transform', function() { return ''; });
-/*
-			var dxy = applyTransform(dx, dy);
-			dx = dxy[0];
-			dy = dxy[1];
-*/
                         drawArrow(dx,dy);
-			/*
-			anng.attr("transform", function(d)
-				  {return 'rotate(' + textangle + ', ' + (x0+dx) + ', ' + (y0+dy) + ')';})
-*/
                     }
                     else {
                         update[annbase+'.x'] = options.xref=='paper' ?
@@ -755,14 +547,15 @@ annotations.draw = function(gd,index,opt,value) {
                             );
                         }
                     }
-/*
-		    var xy2 = applyTransform(x0+dx, y0+dy);
-                    el3.call(Plotly.Drawing.setPosition, xy2[0], xy2[1]);
-*/
-                    el3.call(Plotly.Drawing.setPosition, x2+dx, y2+dy);
+		    		    
+		    var xy1 = applyTransform(x0, y0);
+		    var x1 = xy1[0];
+		    var y1 = xy1[1];
+
+                    el3.call(Plotly.Drawing.setPosition, x1+dx, y1+dy);
 
 		    anng.attr("transform", function(d)
-				  {return 'rotate(' + textangle + ', ' + (x2+dx) + ', ' + (y2+dy) + ')';})
+			      {return 'rotate(' + textangle + ', ' + (x1+dx) + ', ' + (y1+dy) + ')';})
 
                     Plotly.Fx.setCursor(el3,csr);
                     return Plotly.Lib.pauseEvent(e2);
@@ -781,84 +574,10 @@ annotations.draw = function(gd,index,opt,value) {
 
     }
 
-/*
-    var ix = 2222;
-    var bb = annbg.node().getBoundingClientRect();
-     if (index == ix)
-    {
-   
-    $(gd).find('.zzxzB[data-index="'+index+'"]').remove();
-
-    gl._infolayer.append('rect')
-        .attr({'class':'zzxzB', 'data-index':String(index)})
-	.attr('x', bb.left)
-	.attr('y', bb.top)
-	.attr('width', bb.width)
-	.attr('height', bb.height)
-        .style('stroke-width', '1px')
-        .style('stroke-opacity', '1')
-        .style('stroke', 'rgb(255,0,0)')
-        .style('fill-opacity', 0);
-    }
-    // document.write('<svg><rect x="' + bb.left +
-    // 		   '" y="' + bb.top +
-    // 		   '" height="' + bb.height + 
-    // 		   '" width="' + bb.width + 
-    // 		   '" style="stroke-width=1px; stroke=rgb(255,0,0)"></svg>');
-
-    if(!options.showarrow)
-    {
-	cx -= options.ax;
-        cy -= options.ay;
-    }
-
-    cx = annPosPx.x;
-    cy = annPosPx.y;
-*/
     anng.attr("transform", function(d)
 	      {return 'rotate(' + textangle + ', ' + annPosPx.x + ', ' + annPosPx.y + ')';})
         .call(Plotly.Drawing.setPosition, annPosPx.x, annPosPx.y);
 
-/*
-    $(gd).find('.zzxC[data-index="'+index+'"]').remove();
-
-    gl._infolayer.append('circle')
-        .attr({'class':'zzxC', 'data-index':String(index)})
-	.attr('cx', annPosPx.x)//cx)
-	.attr('cy', annPosPx.y)//cy)
-	.attr('r', 5)
-
-
-    if (index == ix)
-    {
-    bb = annbg.node().getBoundingClientRect();
-    $(gd).find('.zzxzA[data-index="'+index+'"]').remove();
-
-    gl._infolayer.append('rect')
-        .attr({'class':'zzxzA', 'data-index':String(index)})
-	.attr('x', bb.left)
-	.attr('y', bb.top)
-	.attr('width', bb.width)
-	.attr('height', bb.height)
-        .style('stroke-width', '1px')
-        .style('stroke-opacity', '1')
-        .style('stroke', 'rgb(0,255,0)')
-        .style('fill-opacity', 0);
-
-    bb = anntext.node().getBBox();
-    $(gd).find('.zzxzA2[data-index="'+index+'"]').remove();
-    gl._infolayer.append('rect')
-        .attr({'class':'zzxzA2', 'data-index':String(index)})
-	.attr('x', bb.x)
-	.attr('y', bb.y)
-	.attr('width', bb.width)
-	.attr('height', bb.height)
-        .style('stroke-width', '1px')
-        .style('stroke-opacity', '1')
-        .style('stroke', 'rgb(0,0,255)')
-        .style('fill-opacity', 0);
-    }
-*/
     // drawGraphicalElements();
 };
 
@@ -1074,7 +793,7 @@ _applyTransform2 = function(transform)
     }
 
 
-
+/*
     function dbgCircle(gd, gl, x, y, cls, index, color, r)
     {
 		$(gd).find('.' + cls + '[data-index="'+index+'"]').remove();
@@ -1086,6 +805,6 @@ _applyTransform2 = function(transform)
 		    .attr('fill', color)
          	    .attr('r', r);
     }
-
+*/
 
 }()); // end Annotations object definition
