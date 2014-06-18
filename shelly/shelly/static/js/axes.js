@@ -189,7 +189,16 @@ function setType(ax){
     // then check the data supplied for that axis
     // only consider existing type if we need to decide log vs linear
     if(d0.type=='box' && axletter=='x' && !('x' in d0) && !('x0' in d0)) {
-        ax.type='category'; // take the categories from trace name, text, or number
+        // check all boxes on this x axis to see if they're dates, numbers, or categories
+        ax.type = axes.autoType(
+            data.filter(function(d){ return d.type==='box'})
+                .map(function(d){
+                    if('x' in d) { return d.x[0]; }
+                    if('name' in d) { return d.name; }
+                    return 'text';
+                })
+        );
+        // ax.type='category'; // take the categories from trace name, text, or number
     }
     else {
         ax.type = axes.autoType((axletter in d0) ? d0[axletter] : [d0[axletter+'0']]);
@@ -1208,9 +1217,9 @@ axes.getSubplots = function(gd,ax) {
 
 // doTicks: draw ticks, grids, and tick labels
 // axid: 'x', 'y', 'x2' etc,
-//          blank to do all,
-//          'redraw' to force full redraw, and reset ax._r (stored range for use by zoom/pan)
-//          or can pass in an axis object directly
+//     blank to do all,
+//     'redraw' to force full redraw, and reset ax._r (stored range for use by zoom/pan)
+//     or can pass in an axis object directly
 axes.doTicks = function(td,axid) {
     var gl = td.layout,
         gs = gl._size,
@@ -1236,11 +1245,13 @@ axes.doTicks = function(td,axid) {
         }
 
         if(!axid || axid=='redraw') {
-            axes.list(td).forEach(function(ax) {
-                axes.doTicks(td,ax._id);
-                if(axid=='redraw') { ax._r = ax.range.slice(); }
-            });
-            return;
+            return Plotly.Lib.syncOrAsync(axes.list(td).map(function(ax) {
+                return function doOneAxis(){
+                    var axDone = axes.doTicks(td,ax._id);
+                    if(axid=='redraw') { ax._r = ax.range.slice(); }
+                    return axDone;
+                }
+            }));
         }
     }
 
@@ -1348,22 +1359,26 @@ axes.doTicks = function(td,axid) {
             .append('text')
                 .attr('text-anchor', 'middle') // only so tex has predictable alignment that we can alter later
                 .each(function(d,i){
-                    var thisLabel = d3.select(this);
-                    labelsReady.push(
-                        new Promise(function(resolve, reject) {
-                            thisLabel
-                                .call(Plotly.Drawing.setPosition, labelx(d), labely(d))
-                                .call(Plotly.Drawing.font,d.font,d.fontSize,d.fontColor)
-                                .text(d.text)
-                                .call(Plotly.util.convertToTspans, function(){
-                                    resolve(d3.select(thisLabel.node().parentNode));
-                                });
-                        })
-                        .then(function(thisLabel){
-                            // give each label its prescribed position and angle as it comes in
+                    var thisLabel = d3.select(this),
+                        newPromise = td._promises.length;
+                    thisLabel
+                        .call(Plotly.Drawing.setPosition, labelx(d), labely(d))
+                        .call(Plotly.Drawing.font,d.font,d.fontSize,d.fontColor)
+                        .text(d.text)
+                        .call(Plotly.util.convertToTspans);
+                    newPromise = td._promises[newPromise];
+                    if(newPromise) {
+                        // if we have an async label, we'll deal with that all here
+                        // so take it out of td._promises and instead position the
+                        // label and promise this in labelsReady
+                        labelsReady.push(td._promises.pop().then(function(){
                             positionLabels(thisLabel, ax.tickangle);
-                        })
-                    );
+                        }));
+                    }
+                    else {
+                        // sync label: just position it now.
+                        positionLabels(thisLabel, ax.tickangle);
+                    }
                 });
         tickLabels.exit().remove();
 
@@ -1399,11 +1414,17 @@ axes.doTicks = function(td,axid) {
         // putting back the prescribed angle to check for overlaps.
         positionLabels(tickLabels,ax._lastangle || ax.tickangle);
 
-        (td._promises||[]).push(Promise.all(labelsReady).then(function(){
+        function allLabelsReady(){
+            return labelsReady.length && Promise.all(labelsReady);
+        }
+
+        function fixLabelOverlaps(){
             positionLabels(tickLabels,ax.tickangle);
 
-            // check for auto-angling if labels overlap
-            if(axletter=='x' && !$.isNumeric(ax.tickangle)) {
+            // check for auto-angling if x labels overlap
+            // don't auto-angle at all for log axes with base and digit format
+            if(axletter=='x' && !$.isNumeric(ax.tickangle) &&
+                    (ax.type!=='log' || String(ax.dtick).charAt(0)!=='D')) {
                 var lbbArray = tickLabels[0].map(function(s){
                     var thisLabel = d3.select(s).select('.text-math-group');
                     if(thisLabel.empty()) { thisLabel = d3.select(s).select('text'); }
@@ -1428,7 +1449,14 @@ axes.doTicks = function(td,axid) {
             // update the axis title (so it can move out of the way if needed)
             Plotly.Plots.titles(td,axid+'title');
             return axid+' done';
-        }));
+        }
+
+        var done = Plotly.Lib.syncOrAsync([
+            allLabelsReady,
+            fixLabelOverlaps
+        ]);
+        if(done && done.then) { td._promises.push(done); }
+        return done;
     }
 
     function drawGrid(plotinfo, counteraxis, subplot) {
@@ -1474,43 +1502,47 @@ axes.doTicks = function(td,axid) {
 
     if(independent) {
         drawTicks(ax._axislayer, tickprefix + (ax._pos+pad*ticksign[2]) + tickmid + (ticksign[2]*ax.ticklen));
-        drawLabels(ax._axislayer,ax._pos);
+        return drawLabels(ax._axislayer,ax._pos);
     }
-    else { axes.getSubplots(td,ax).forEach(function(subplot,subplotIndex){
-        var plotinfo = gl._plots[subplot],
-            container = plotinfo[axletter+'axislayer'],
-            linepositions = ax._linepositions[subplot]||[], // [bottom or left, top or right, free, main]
-            counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
-            mainSubplot = counteraxis._id==ax.anchor,
-            ticksides = [false,false,false],
-            tickpath='';
+    else {
+        return Plotly.Lib.syncOrAsync(axes.getSubplots(td,ax).map(function(subplot,subplotIndex){
+            return function doOneSubplot() {
+                var plotinfo = gl._plots[subplot],
+                    container = plotinfo[axletter+'axislayer'],
+                    linepositions = ax._linepositions[subplot]||[], // [bottom or left, top or right, free, main]
+                    counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
+                    mainSubplot = counteraxis._id==ax.anchor,
+                    ticksides = [false,false,false],
+                    tickpath='';
 
-        // ticks
-        if(ax.mirror=='allticks') { ticksides = [true,true,false]; }
-        else if(mainSubplot) {
-             if(ax.mirror=='ticks') { ticksides = [true,true,false]; }
-             else { ticksides[sides.indexOf(axside)] = true; }
-        }
-        if(ax.mirrors) {
-            for(i=0; i<2; i++) {
-                if(['ticks','labels'].indexOf(ax.mirrors[counteraxis._id+sides[i]])!=-1) {
-                    ticksides[i] = true;
+                // ticks
+                if(ax.mirror=='allticks') { ticksides = [true,true,false]; }
+                else if(mainSubplot) {
+                     if(ax.mirror=='ticks') { ticksides = [true,true,false]; }
+                     else { ticksides[sides.indexOf(axside)] = true; }
                 }
-            }
-        }
-        // free axis ticks
-        if(linepositions[2]!==undefined) { ticksides[2] = true; }
-        ticksides.forEach(function(showside,sidei) {
-            var pos = linepositions[sidei], tsign = ticksign[sidei];
-            if(showside && $.isNumeric(pos)) {
-                tickpath += tickprefix + (pos+pad*tsign) + tickmid + (tsign*ax.ticklen);
-            }
-        });
+                if(ax.mirrors) {
+                    for(i=0; i<2; i++) {
+                        if(['ticks','labels'].indexOf(ax.mirrors[counteraxis._id+sides[i]])!=-1) {
+                            ticksides[i] = true;
+                        }
+                    }
+                }
+                // free axis ticks
+                if(linepositions[2]!==undefined) { ticksides[2] = true; }
+                ticksides.forEach(function(showside,sidei) {
+                    var pos = linepositions[sidei], tsign = ticksign[sidei];
+                    if(showside && $.isNumeric(pos)) {
+                        tickpath += tickprefix + (pos+pad*tsign) + tickmid + (tsign*ax.ticklen);
+                    }
+                });
 
-        drawTicks(container,tickpath);
-        drawLabels(container,linepositions[3]);
-        drawGrid(plotinfo, counteraxis, subplot);
-    }); }
+                drawTicks(container,tickpath);
+                drawGrid(plotinfo, counteraxis, subplot);
+                return drawLabels(container,linepositions[3]);
+            }
+        }));
+    }
 };
 
 // mod - version of modulus that always restricts to [0,divisor)
