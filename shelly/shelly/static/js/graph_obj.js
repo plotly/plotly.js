@@ -425,11 +425,19 @@
         // properties of this div
         // some callers send this in by dom element, others by id (string)
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
+
+        // if there's no data or layout, and this isn't yet a plotly plot
+        // container, log a warning to help plotly.js users debug
+        if(!data && !layout && !d3.select(gd).classed('js-plotly-plot')) {
+            console.log('Warning: calling Plotly.plot as if redrawing ' +
+                'but this container doesn\'t yet have a plot.', gd);
+        }
+
         // test if this is on the main site or embedded
-        gd.mainsite = Boolean($('#plotlyMainMarker').length);
+        gd.mainsite = !!$('#plotlyMainMarker').length;
 
         // layout object --- this also gets checked in makePlotFramework
-        if (!layout) layout = {};
+        if(!layout) { layout = {}; }
 
         // hook class for plots main container (in case of plotly.js
         // this won't be #embedded-graph or .js-tab-contents)
@@ -660,13 +668,14 @@
         // so we don't try to re-call Plotly.plot from inside
         // legend and colorbar, if margins changed
         gd._replotting = true;
+        var hasData = (gd.data && gd.data.length>0);
 
         // Make or remake the framework (ie container and axes) if we need to
         // note: if they container already exists and has data,
         //  the new layout gets ignored (as it should)
         //  but if there's no data there yet, it's just a placeholder...
         //  then it should destroy and remake the plot
-        if (gd.data && gd.data.length > 0) {
+        if (hasData) {
 
             // DETECT 3D
             // needed to do this before makePlotFramework to set up the modebar
@@ -693,13 +702,12 @@
         }
 
         // now tweak the layout if we're adding the initial data to the plot
-        if(graphwasempty && gd.data && gd.data.length>0) {
+        if(graphwasempty && hasData) {
             tweakLayout(gd,layout);
         }
 
         // enable or disable formatting buttons
-        $(gd).find('.data-only').attr('disabled',
-            !gd.data || gd.data.length===0);
+        $(gd).find('.data-only').attr('disabled', !hasData);
 
         var gl = gd.layout,
             curvetype;
@@ -887,6 +895,7 @@
         if(recalc) {
             gd.calcdata = [];
             gd._modules = [];
+            if(!gd.data) { gd.data = []; }
 
             // extra helper variables
             // firstscatter: fill-to-next on the first trace goes to zero
@@ -920,12 +929,12 @@
                 }
 
                 // if no name is given, make a default from the curve number
-                if(!('name' in gdc)) {
-                    if('ysrc' in gdc) {
-                        var ns=gdc.ysrc.split('/');
-                        gdc.name=ns[ns.length-1].replace(/\n/g,' ');
+                if(!gdc.name) {
+                    if(gdc.ysrc) {
+                        var ns = gdc.ysrc.split('/');
+                        gdc.name = ns[ns.length-1].replace(/\n/g,' ');
                     }
-                    else { gdc.name='trace '+curve; }
+                    else { gdc.name = 'trace '+curve; }
                 }
 
                 // figure out which module plots this data
@@ -1135,7 +1144,7 @@
     // for use in Plotly.Lib.syncOrAsync, check if there are any
     // pending promises in this plot and wait for them
     function previousPromises(gd){
-        if(gd._promises.length) {
+        if((gd._promises||[]).length) {
             return Promise.all(gd._promises)
                 .then(function(){ gd._promises=[]; });
         }
@@ -1145,6 +1154,10 @@
     Plotly.redraw = function(divid) {
         var gd = (typeof divid === 'string') ?
             document.getElementById(divid) : divid;
+        if(!d3.select(gd).classed('js-plotly-plot')) {
+            console.log('This element is not a Plotly Plot', divid, gd);
+            return;
+        }
         gd.calcdata = undefined;
         Plotly.plot(gd);
     };
