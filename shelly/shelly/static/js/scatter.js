@@ -60,21 +60,25 @@
         // TODO: text size
 
         // include zero (tight) and extremes (padded) if fill to zero
-        if(gdc.fill=='tozerox' || (gdc.fill=='tonextx' && gd.firstscatter)) {
+        // (unless the shape is closed, then it's just filling the shape regardless)
+        if((gdc.fill=='tozerox' || (gdc.fill=='tonextx' && gd.firstscatter)) &&
+                (x[0]!==x[serieslen-1] || y[0]!==y[serieslen-1])) {
             xOptions.tozero = true;
         }
         // if no error bars, markers or text, or fill to y=0 remove x padding
         else if((!gdc.error_y || !gdc.error_y.visible) &&
-            (['tonexty','tozeroy'].indexOf(gdc.fill)!=-1 ||
-            (gdc.mode && gdc.mode.indexOf('markers')==-1 && gdc.mode.indexOf('text')==-1) || // explicit no markers/text
-            (!gdc.mode && serieslen>=scatter.PTS_LINESONLY))) { // automatic no markers
-                xOptions.padded = false;
-                xOptions.ppad = 0;
+                (['tonexty','tozeroy'].indexOf(gdc.fill)!=-1 ||
+                (gdc.mode && gdc.mode.indexOf('markers')==-1 && gdc.mode.indexOf('text')==-1) || // explicit no markers/text
+                (!gdc.mode && serieslen>=scatter.PTS_LINESONLY))) { // automatic no markers
+            xOptions.padded = false;
+            xOptions.ppad = 0;
         }
 
         // now check for y - rather different logic, though still mostly padded both ends
         // include zero (tight) and extremes (padded) if fill to zero
-        if(gdc.fill=='tozeroy' || (gdc.fill=='tonexty' && gd.firstscatter)) {
+        // (unless the shape is closed, then it's just filling the shape regardless)
+        if((gdc.fill=='tozeroy' || (gdc.fill=='tonexty' && gd.firstscatter)) &&
+                (x[0]!==x[serieslen-1] || y[0]!==y[serieslen-1])) {
             yOptions.tozero = true;
         }
         // tight y: any x fill

@@ -289,7 +289,10 @@
     // in some cases the browser doesn't seem to know how big
     // the text is at first, so it needs to draw it,
     // then wait a little, then draw it again
-    plots.redrawText = function(gd) {
+    plots.redrawText = function(divid) {
+        var gd = (typeof divid === 'string') ?
+            document.getElementById(divid) : divid;
+
         // doesn't work presently (and not needed) for polar or 3d
         if(gd.layout._isGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
             return;
@@ -422,11 +425,19 @@
         // properties of this div
         // some callers send this in by dom element, others by id (string)
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
+
+        // if there's no data or layout, and this isn't yet a plotly plot
+        // container, log a warning to help plotly.js users debug
+        if(!data && !layout && !d3.select(gd).classed('js-plotly-plot')) {
+            console.log('Warning: calling Plotly.plot as if redrawing ' +
+                'but this container doesn\'t yet have a plot.', gd);
+        }
+
         // test if this is on the main site or embedded
-        gd.mainsite = Boolean($('#plotlyMainMarker').length);
+        gd.mainsite = !!$('#plotlyMainMarker').length;
 
         // layout object --- this also gets checked in makePlotFramework
-        if (!layout) layout = {};
+        if(!layout) { layout = {}; }
 
         // hook class for plots main container (in case of plotly.js
         // this won't be #embedded-graph or .js-tab-contents)
@@ -657,13 +668,14 @@
         // so we don't try to re-call Plotly.plot from inside
         // legend and colorbar, if margins changed
         gd._replotting = true;
+        var hasData = (gd.data && gd.data.length>0);
 
         // Make or remake the framework (ie container and axes) if we need to
         // note: if they container already exists and has data,
         //  the new layout gets ignored (as it should)
         //  but if there's no data there yet, it's just a placeholder...
         //  then it should destroy and remake the plot
-        if (gd.data && gd.data.length > 0) {
+        if (hasData) {
 
             // DETECT 3D
             // needed to do this before makePlotFramework to set up the modebar
@@ -690,13 +702,12 @@
         }
 
         // now tweak the layout if we're adding the initial data to the plot
-        if(graphwasempty && gd.data && gd.data.length>0) {
+        if(graphwasempty && hasData) {
             tweakLayout(gd,layout);
         }
 
         // enable or disable formatting buttons
-        $(gd).find('.data-only').attr('disabled',
-            !gd.data || gd.data.length===0);
+        $(gd).find('.data-only').attr('disabled', !hasData);
 
         var gl = gd.layout,
             curvetype;
@@ -884,6 +895,7 @@
         if(recalc) {
             gd.calcdata = [];
             gd._modules = [];
+            if(!gd.data) { gd.data = []; }
 
             // extra helper variables
             // firstscatter: fill-to-next on the first trace goes to zero
@@ -896,7 +908,7 @@
             // delete category list, if there is one, so we start over
             // to be filled in later by ax.d2c
             Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
-            for(var curve in gd.data) {
+            for(var curve = 0; curve<gd.data.length; curve++) {
                 // curve is the index, gdc is the data object for one trace
                 var gdc = gd.data[curve],
                     isPolar = 'r' in gdc,
@@ -917,12 +929,12 @@
                 }
 
                 // if no name is given, make a default from the curve number
-                if(!('name' in gdc)) {
-                    if('ysrc' in gdc) {
-                        var ns=gdc.ysrc.split('/');
-                        gdc.name=ns[ns.length-1].replace(/\n/g,' ');
+                if(!gdc.name) {
+                    if(gdc.ysrc) {
+                        var ns = gdc.ysrc.split('/');
+                        gdc.name = ns[ns.length-1].replace(/\n/g,' ');
                     }
-                    else { gdc.name='trace '+curve; }
+                    else { gdc.name = 'trace '+curve; }
                 }
 
                 // figure out which module plots this data
@@ -1132,14 +1144,20 @@
     // for use in Plotly.Lib.syncOrAsync, check if there are any
     // pending promises in this plot and wait for them
     function previousPromises(gd){
-        if(gd._promises.length) {
+        if((gd._promises||[]).length) {
             return Promise.all(gd._promises)
                 .then(function(){ gd._promises=[]; });
         }
     }
 
     // convenience function to force a full redraw, mostly for use by plotly.js
-    Plotly.redraw = function(gd) {
+    Plotly.redraw = function(divid) {
+        var gd = (typeof divid === 'string') ?
+            document.getElementById(divid) : divid;
+        if(!d3.select(gd).classed('js-plotly-plot')) {
+            console.log('This element is not a Plotly Plot', divid, gd);
+            return;
+        }
         gd.calcdata = undefined;
         Plotly.plot(gd);
     };
@@ -2160,16 +2178,29 @@
         }
         else if(gd.shareplot) {
             if(gd.standalone) {
-                // full-page shareplot - restrict aspect ratio to between
-                // 2:1 and 1:2, but only change height to do this
-                newwidth = $(window).width() -
-                    parseInt($('#embedded-graph').css('padding-left')||0,10);
+                // full-page shareplot - as with main site, use 90% of the
+                // available space, but restrict aspect ratio to between
+                // 2:1 and 1:2, by changing height if necessary
+                var gdPos = $(gd).position();
+                gdPos.left += parseInt($(gd).css('padding-left')||0,10);
+                gdPos.top += parseInt($(gd).css('padding-top')||0,10);
+
+                newwidth = Plotly.Lib.constrain(
+                    ($(window).width() - gdPos.left) * 0.9, 200, 10000);
                 newheight = Plotly.Lib.constrain(
-                    $(window).height() - $('#banner').height(),
+                    ($(window).height() - gdPos.top) * 0.9,
                     newwidth/2, newwidth*2);
             }
             // else embedded in an iframe - just take the full iframe size
             // if we get to this point, with no aspect ratio restrictions
+            else {
+                newwidth = $(window).width();
+                newheight = $(window).height();
+
+                // somehow we get a few extra px height sometimes...
+                // just hide it
+                $('body').css('overflow','hidden');
+            }
         }
         else {
             // plotly.js - let the developers do what they want, either
