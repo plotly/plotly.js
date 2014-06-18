@@ -1,5 +1,3 @@
-
-
 (function() {
 var annotations = Plotly.Annotations = {};
 
@@ -13,8 +11,6 @@ annotations.add = function(gd) {
     var anns = gd.layout.annotations || [];
     Plotly.relayout(gd, 'annotations['+anns.length+']', 'add');
 };
-
-
 
 // -----------------------------------------------------
 // make or edit an annotation on the graph
@@ -412,7 +408,6 @@ annotations.draw = function(gd,index,opt,value) {
                         ay0 = p.y;
                     }
                 });
-
             });
             if(showline) {
                 var strokewidth = options.arrowwidth || borderwidth*2 || 2,
@@ -513,7 +508,7 @@ annotations.draw = function(gd,index,opt,value) {
                 if(ya && ya.autorange) { update[ya._name+'.autorange'] = true; }
                 gd.dragged = false;
                 Plotly.Fx.setCursor(el3);
-		
+
                 window.onmousemove = function(e2) {
                     var dx = e2.clientX-e.clientX,
                         dy = e2.clientY-e.clientY;
