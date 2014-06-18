@@ -1126,4 +1126,49 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
     return finalStep && finalStep(arg);
 }
 
+
+// Functions to manipulate 2D transformation matrices
+    
+// translate by (x,y)
+lib.translationMatrix = function (x, y) 
+    { return [[1, 0, x], [0, 1, y], [0, 0, 1]]; }
+
+// rotate by alpha around (0,0)    
+lib.rotationMatrix = function (alpha) 
+    { 
+	a = alpha*Math.PI/180; 
+	return [[Math.cos(a), -Math.sin(a), 0], [Math.sin(a), Math.cos(a), 0], [0, 0, 1]]; 
+    }
+
+// rotate by alpha around (x,y)    
+lib.rotationXYMatrix = function(a, x, y)
+    {
+	return numeric.dot(
+	    numeric.dot(lib.translationMatrix(x, y),
+			lib.rotationMatrix(a)),
+	    lib.translationMatrix(-x, -y));
+    }
+
+// applies a 2D transformation matrix to either x and y params or an [x,y] array
+lib.apply2DTransform = function(transform)
+    {
+	return function()
+	{
+	    if (arguments.length == 3) arguments = arguments[0];//from map
+	    var xy = arguments.length == 1 ? arguments[0] : [arguments[0], arguments[1]];
+	    return numeric.dot(transform, [xy[0], xy[1], 1]).slice(0,2);
+	}
+    }
+
+// applies a 2D transformation matrix to an [x1,y1,x2,y2] array (to
+// transform a segment)    
+lib.apply2DTransform2 = function(transform)
+    {
+	at = lib.apply2DTransform(transform);
+	return function(xys)
+	{
+	    return at(xys.slice(0,2)).concat(at(xys.slice(2,4)));
+	}
+    }
+    
 }()); // end Lib object definition

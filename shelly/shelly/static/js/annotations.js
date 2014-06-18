@@ -352,13 +352,6 @@ annotations.draw = function(gd,index,opt,value) {
             Math.round(annPosPx.x-outerwidth/2), Math.round(annPosPx.y-outerheight/2),
                 outerwidth, outerheight);
 
-	// create transform matrix and related functions
-	var transform = rotationXYMatrix(textangle, annPosPx.x, annPosPx.y);
-	var applyInvTransform = _applyTransform(numeric.inv(transform));
-	var applyTransform = _applyTransform(transform);
-	var applyTransform2 = _applyTransform2(transform);
-
-
         // add the arrow
         // uses options[arrowwidth,arrowcolor,arrowhead] for styling
         var drawArrow = function(dx,dy){
@@ -374,11 +367,13 @@ annotations.draw = function(gd,index,opt,value) {
                 showline = true;
 
 	    // create transform matrix and related functions
-	    var transform = rotationXYMatrix(textangle, ax0, ay0);
-	    var applyInvTransform = _applyTransform(numeric.inv(transform));
-	    var applyTransform = _applyTransform(transform);
-	    var applyTransform2 = _applyTransform2(transform);
+	    var transform = Plotly.Lib.rotationXYMatrix(textangle, ax0, ay0);
+	    var applyTransform = Plotly.Lib.apply2DTransform(transform);
+	    var applyTransform2 = Plotly.Lib.apply2DTransform2(transform);
 
+	    // de-rotate bakground so that getBoundingClientRect returns a
+	    // thight bounding box
+	    anng.attr("transform", function(d) {return '';})
 
     //         if(borderwidth && tinycolor(bordercolor).alpha) {
                 var boxes = [annbg.node().getBoundingClientRect()],
@@ -461,7 +456,6 @@ annotations.draw = function(gd,index,opt,value) {
 
                     gd.dragged = false;
                     window.onmousemove = function(e2) {
-			anng.attr("transform", function(d) {return '';})
                         var dx = e2.clientX-e.clientX,
                             dy = e2.clientY-e.clientY;
                         if(Math.abs(dx)<MINDRAG) { dx=0; }
@@ -479,8 +473,9 @@ annotations.draw = function(gd,index,opt,value) {
                             (1-((ay+dy-gs.t)/gs.h)) :
                             (options.y+dy/Plotly.Axes.getFromId(gd,options.yref||'y')._m);
 
-		    anng.attr("transform", function(d)
-			      {return 'rotate(' + textangle + ', ' + (annxy0[0]+dx) + ', ' + (annxy0[1]+dy) + ')';})
+			anng.attr("transform", function(d)
+				  {return 'rotate(' + textangle + ', ' +
+				   (annxy0[0]+dx) + ', ' + (annxy0[1]+dy) + ')';})
 
                         return Plotly.Lib.pauseEvent(e2);
                     };
@@ -496,10 +491,13 @@ annotations.draw = function(gd,index,opt,value) {
         if(options.showarrow) { drawArrow(0,0); }
 
 
+	// create transform matrix and related functions
+	var transform = Plotly.Lib.rotationXYMatrix(textangle, annPosPx.x, annPosPx.y);
+	var applyTransform = Plotly.Lib.apply2DTransform(transform);
+
         // user dragging the annotation (text, not arrow)
         if(gd.mainsite) {
             ann.node().onmousedown = function(e) {
-
 
                 if(Plotly.Fx.dragClear(gd)) { return true; } // deal with other UI elements, and allow them to cancel dragging
 
@@ -529,7 +527,6 @@ annotations.draw = function(gd,index,opt,value) {
                     if(options.showarrow) {
                         update[annbase+'.ax'] = options.ax+dx;
                         update[annbase+'.ay'] = options.ay+dy;
-			anng.attr('transform', function() { return ''; });
                         drawArrow(dx,dy);
                     }
                     else {
@@ -555,7 +552,8 @@ annotations.draw = function(gd,index,opt,value) {
                     el3.call(Plotly.Drawing.setPosition, x1+dx, y1+dy);
 
 		    anng.attr("transform", function(d)
-			      {return 'rotate(' + textangle + ', ' + (x1+dx) + ', ' + (y1+dy) + ')';})
+			      {return 'rotate(' + textangle + ', ' +
+			       (x1+dx) + ', ' + (y1+dy) + ')';})
 
                     Plotly.Fx.setCursor(el3,csr);
                     return Plotly.Lib.pauseEvent(e2);
@@ -574,6 +572,7 @@ annotations.draw = function(gd,index,opt,value) {
 
     }
 
+    // rotate and position text and background
     anng.attr("transform", function(d)
 	      {return 'rotate(' + textangle + ', ' + annPosPx.x + ', ' + annPosPx.y + ')';})
         .call(Plotly.Drawing.setPosition, annPosPx.x, annPosPx.y);
@@ -752,59 +751,5 @@ function line_intersect(x1,y1,x2,y2,x3,y3,x4,y4) {
     if(u<0 || u>1 || t<0 || t>1) { return null; } // segments do not intersect
     return {x:x1+a*t, y:y1+d*t};
 }
-
-
-translationMatrix = function (x, y) 
-    { return [[1, 0, x], [0, 1, y], [0, 0, 1]]; }
-
-rotationMatrix = function (alpha) 
-    { 
-	a = alpha*Math.PI/180; 
-	return [[Math.cos(a), -Math.sin(a), 0], [Math.sin(a), Math.cos(a), 0], [0, 0, 1]]; 
-    }
-
-rotationXYMatrix = function(a, x, y)
-    {
-	return numeric.dot(
-	    numeric.dot(translationMatrix(x, y),
-			rotationMatrix(a)),
-	    translationMatrix(-x, -y));
-    }
-
-// applies a transformation matrix to either x and y params or an [x,y] array
-_applyTransform = function(transform)
-    {
-	return function()
-	{
-	    if (arguments.length == 3) arguments = arguments[0];//from map
-	    var xy = arguments.length == 1 ? arguments[0] : [arguments[0], arguments[1]];
-	    return numeric.dot(transform, [xy[0], xy[1], 1]).slice(0,2);
-	}
-    }
-
-// applies a transformation matrix to an [x1,y1,x2,y2] array
-_applyTransform2 = function(transform)
-    {
-	at = _applyTransform(transform);
-	return function(xys)
-	{
-	    return at(xys.slice(0,2)).concat(at(xys.slice(2,4)));
-	}
-    }
-
-
-/*
-    function dbgCircle(gd, gl, x, y, cls, index, color, r)
-    {
-		$(gd).find('.' + cls + '[data-index="'+index+'"]').remove();
-
-		gl._infolayer.append('circle')
-		    .attr({'class':cls, 'data-index':String(index)})
-		    .attr('cx', x)
-		    .attr('cy', y)
-		    .attr('fill', color)
-         	    .attr('r', r);
-    }
-*/
 
 }()); // end Annotations object definition
