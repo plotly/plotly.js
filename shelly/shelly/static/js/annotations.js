@@ -97,7 +97,7 @@ annotations.draw = function(gd,index,opt,value) {
             arrowcolor: '',
             arrowhead: 1,
             arrowsize: 1,
-	    textangle: 0,
+            textangle: 0,
             tag: '',
             font: {family:'',size:0,color:''},
             opacity: 1,
@@ -362,14 +362,14 @@ annotations.draw = function(gd,index,opt,value) {
                 ay0 = annPosPx.y+dy,
                 showline = true;
 
-	    // create transform matrix and related functions
-	    var transform = Plotly.Lib.rotationXYMatrix(textangle, ax0, ay0);
-	    var applyTransform = Plotly.Lib.apply2DTransform(transform);
-	    var applyTransform2 = Plotly.Lib.apply2DTransform2(transform);
+            // create transform matrix and related functions
+            var transform = Plotly.Lib.rotationXYMatrix(textangle, ax0, ay0);
+            var applyTransform = Plotly.Lib.apply2DTransform(transform);
+            var applyTransform2 = Plotly.Lib.apply2DTransform2(transform);
 
-	    // de-rotate bakground so that getBoundingClientRect returns a
-	    // thight bounding box
-	    anng.attr("transform", function(d) {return '';})
+            // de-rotate bakground so that getBoundingClientRect returns a
+            // thight bounding box
+            anng.attr("transform", function(d) {return '';})
 
     //         if(borderwidth && tinycolor(bordercolor).alpha) {
                 var boxes = [annbg.node().getBoundingClientRect()],
@@ -387,16 +387,15 @@ annotations.draw = function(gd,index,opt,value) {
                     y2 = bb.bottom-paperBB.top+pad,
                     edges = [[x1,y1,x1,y2],[x1,y2,x2,y2],[x2,y2,x2,y1],[x2,y1,x1,y1]].map(applyTransform2);
 
-		// Remove the line if it ends inside the box.  Use ray
-		// casting for rotated boxes: see which edges intersect a
-		// line from the arrowhead to far away and reduce with xor
-		// to get the parity of the number of intersections.
-                if(edges.reduce(function(a,x) 
-				{return a ^ 
-				 !!line_intersect(ax, ay, ax+1e6, ay+1e6, 
-						  x[0], x[1], x[2], x[3]);}, 
-				false))
-		{ 
+                // Remove the line if it ends inside the box.  Use ray
+                // casting for rotated boxes: see which edges intersect a
+                // line from the arrowhead to far away and reduce with xor
+                // to get the parity of the number of intersections.
+                if(edges.reduce(function(a,x)
+                                {return a ^
+                                 !!line_intersect(ax, ay, ax+1e6, ay+1e6,
+                                                  x[0], x[1], x[2], x[3]);},
+                                false)) {
                     showline=false;
                     return;
                 }
@@ -413,10 +412,10 @@ annotations.draw = function(gd,index,opt,value) {
                 var strokewidth = options.arrowwidth || borderwidth*2 || 2,
                     arrowColor = options.arrowcolor ||
                         (Plotly.Drawing.opacity(options.bordercolor) ? options.bordercolor : '') || '#444';
-		var arrowgroup = anngroup.append('g')
+                var arrowgroup = anngroup.append('g')
                     .attr('data-cmmt',options.tag)
                     .style({opacity: Plotly.Drawing.opacity(arrowColor)})
-		    .attr({'class':'annotation-arrow-g', 'data-index':String(index)});
+                    .attr({'class':'annotation-arrow-g', 'data-index':String(index)});
                 var arrow = arrowgroup.append('path')
                     .attr('data-cmmt',options.tag)
                     .attr('d','M'+(ax0-1)+','+(ay0-1)+'L'+ax+','+ay) // no idea why the -1 here is needed
@@ -456,10 +455,10 @@ annotations.draw = function(gd,index,opt,value) {
                         if(Math.abs(dx)<MINDRAG) { dx=0; }
                         if(Math.abs(dy)<MINDRAG) { dy=0; }
                         if(dx||dy) { gd.dragged = true; }
-                        arrowgroup.attr('transform','translate('+dx+','+dy+')'); 
-			
-			var annxy0 = applyTransform(annx0, anny0);
-			ann.call(Plotly.Drawing.setPosition, annxy0[0]+dx, annxy0[1]+dy);
+                        arrowgroup.attr('transform','translate('+dx+','+dy+')');
+
+                        var annxy0 = applyTransform(annx0, anny0);
+                        ann.call(Plotly.Drawing.setPosition, annxy0[0]+dx, annxy0[1]+dy);
 
                         update[annbase+'.x'] = options.xref=='paper' ?
                             ((ax+dx-gs.l)/gs.w) :
@@ -468,9 +467,9 @@ annotations.draw = function(gd,index,opt,value) {
                             (1-((ay+dy-gs.t)/gs.h)) :
                             (options.y+dy/Plotly.Axes.getFromId(gd,options.yref||'y')._m);
 
-			anng.attr("transform", function(d)
-				  {return 'rotate(' + textangle + ', ' +
-				   (annxy0[0]+dx) + ', ' + (annxy0[1]+dy) + ')';})
+                        anng.attr("transform", function(d)
+                                  {return 'rotate(' + textangle + ', ' +
+                                   (annxy0[0]+dx) + ', ' + (annxy0[1]+dy) + ')';})
 
                         return Plotly.Lib.pauseEvent(e2);
                     };
@@ -486,9 +485,9 @@ annotations.draw = function(gd,index,opt,value) {
         if(options.showarrow) { drawArrow(0,0); }
 
 
-	// create transform matrix and related functions
-	var transform = Plotly.Lib.rotationXYMatrix(textangle, annPosPx.x, annPosPx.y);
-	var applyTransform = Plotly.Lib.apply2DTransform(transform);
+        // create transform matrix and related functions
+        var transform = Plotly.Lib.rotationXYMatrix(textangle, annPosPx.x, annPosPx.y);
+        var applyTransform = Plotly.Lib.apply2DTransform(transform);
 
         // user dragging the annotation (text, not arrow)
         if(gd.mainsite) {
@@ -512,12 +511,12 @@ annotations.draw = function(gd,index,opt,value) {
                 window.onmousemove = function(e2) {
                     var dx = e2.clientX-e.clientX,
                         dy = e2.clientY-e.clientY;
-		    
+
                     if(Math.abs(dx)<MINDRAG) { dx=0; }
                     if(Math.abs(dy)<MINDRAG) { dy=0; }
                     if(dx||dy) { gd.dragged = true; }
 
-		    el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
+                    el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
                     var csr = 'pointer';
                     if(options.showarrow) {
                         update[annbase+'.ax'] = options.ax+dx;
@@ -539,16 +538,16 @@ annotations.draw = function(gd,index,opt,value) {
                             );
                         }
                     }
-		    		    
-		    var xy1 = applyTransform(x0, y0);
-		    var x1 = xy1[0];
-		    var y1 = xy1[1];
+
+                    var xy1 = applyTransform(x0, y0);
+                    var x1 = xy1[0];
+                    var y1 = xy1[1];
 
                     el3.call(Plotly.Drawing.setPosition, x1+dx, y1+dy);
 
-		    anng.attr("transform", function(d)
-			      {return 'rotate(' + textangle + ', ' +
-			       (x1+dx) + ', ' + (y1+dy) + ')';})
+                    anng.attr("transform", function(d)
+                              {return 'rotate(' + textangle + ', ' +
+                               (x1+dx) + ', ' + (y1+dy) + ')';})
 
                     Plotly.Fx.setCursor(el3,csr);
                     return Plotly.Lib.pauseEvent(e2);
@@ -569,7 +568,7 @@ annotations.draw = function(gd,index,opt,value) {
 
     // rotate and position text and background
     anng.attr("transform", function(d)
-	      {return 'rotate(' + textangle + ', ' + annPosPx.x + ', ' + annPosPx.y + ')';})
+              {return 'rotate(' + textangle + ', ' + annPosPx.x + ', ' + annPosPx.y + ')';})
         .call(Plotly.Drawing.setPosition, annPosPx.x, annPosPx.y);
 
     // drawGraphicalElements();
