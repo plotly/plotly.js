@@ -788,14 +788,13 @@
                     sceneLayout = gl[destScene];
                     // you can change the camera position before or
                     // after initializing data or accept defaults
-                    sceneLayout._glx.draw(gd, d, d.type);
-                    sceneLayout._glx.axes(gd);
+                    sceneLayout._glx.draw(sceneLayout, d, d.type);
                 }
                 else {
                     /*
                      * build a new scene layout object
                      */
-                    gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(destScene);
+                    gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(gd, destScene, {});
 
                     sceneLayout._dataQueue.push(d);
                 }
@@ -818,63 +817,63 @@
             });
 
             scenes.map( function (sceneKey, idx) {
-                var scene = gl[sceneKey];
+                var sceneLayout = gl[sceneKey];
                 // we are only modifying the x domain position with this
                 // simple approach
-                scene.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
+                sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
 
                 // convert domain to position in pixels
-                scene.position = {
-                    left: gl._size.l + scene.domain.x[0]*gl._size.w,
-                    top: gl._size.t + (1-scene.domain.y[1])*gl._size.h,
+                sceneLayout.position = {
+                    left: gl._size.l + sceneLayout.domain.x[0]*gl._size.w,
+                    top: gl._size.t + (1-sceneLayout.domain.y[1])*gl._size.h,
                     width: gl._size.w *
-                        (scene.domain.x[1] - scene.domain.x[0]),
+                        (sceneLayout.domain.x[1] - sceneLayout.domain.x[0]),
                     height: gl._size.h *
-                        (scene.domain.y[1] - scene.domain.y[0])
+                        (sceneLayout.domain.y[1] - sceneLayout.domain.y[0])
                 };
 
                 // if this scene has already been loaded it will have it's glx
                 // context parameter so lets reset the domain of the scene as
                 // it may have changed (this operates on the containing iframe)
-                if (scene._glx) { scene._glx.setPosition(scene.position); }
-                return scene;
+                if (sceneLayout._glx) { sceneLayout._glx.setPosition(sceneLayout.position); }
+                return sceneLayout;
             })
-            .filter( function (scene) {
+            .filter( function (sceneLayout) {
                 /*
                  * We only want to continue to operate on scenes that have
                  * data waiting to be displayed and are themselves not
                  * already undergoing loading.
                  */
-                if (scene && scene._dataQueue.length && !scene._loading) {
-                    scene._loading = true;
+                if (sceneLayout && sceneLayout._dataQueue.length && !sceneLayout._loading) {
+                    sceneLayout._loading = true;
                     return true;
                 }
                 return false;
             })
-            .forEach( function (scene) {
+            .forEach( function (sceneLayout) {
                 /*
                  * Creating new scenes
                  */
                 var sceneOptions = {
                     container: gd.querySelector('.svg-container'),
                     zIndex: '1000',
-                    id: scene.id
+                    id: sceneLayout.id
                 };
 
                 SceneFrame.createScene(Plotly, sceneOptions, function (glx) {
-                    scene._loading = false; // loaded
+                    sceneLayout._loading = false; // loaded
 
-                    glx.setPosition(scene.position);
+                    glx.setPosition(sceneLayout.position);
 
                     // if data has accumulated on the queue while the iframe
                     // and the webgl-context were loading remove that data
                     // from the queue and draw.
-                    while (scene._dataQueue.length) {
-                        var d = scene._dataQueue.shift();
-                        glx.draw(gd, d, d.type);
+                    while (sceneLayout._dataQueue.length) {
+                        var d = sceneLayout._dataQueue.shift();
+                        glx.draw(sceneLayout, d, d.type);
                     }
                     // make the .glx (webgl context) available through scene.
-                    scene._glx = glx;
+                    sceneLayout._glx = glx;
                 });
             });
         }
@@ -3254,18 +3253,19 @@
         return uoStack.pop();
     }
 
-    plots.defaultSceneLayout = function (sceneId) {
-        return {
+    plots.defaultSceneLayout = function (td, sceneId, extras) {
+        var id = sceneId.slice(5); // slices of the scene from scene3
+        if (!extras) extras = {};
+        return $.extend({
             _glx: null,
             _dataQueue: [], // for asyncronously loading data
             _loading: false,
             domain: {x:[0,1],y:[0,1]}, // default domain
             orthographic: true,
-            id: sceneId,
-            xaxis: Plotly.Axes.defaultAxis(),
-            yaxis: Plotly.Axes.defaultAxis(),
-            zaxis: Plotly.Axes.defaultAxis()
-        };
+            xaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'xaxis' + id }),
+            yaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'yaxis' + id }),
+            zaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'zaxis' + id })
+        }, extras);
     };
 
 }()); // end Plots object definition
