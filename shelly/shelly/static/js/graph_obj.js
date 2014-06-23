@@ -751,7 +751,9 @@
              * In case this is a redraw from a resize
              */
             gd.data
-            .filter( function (d) { return plots.isGL3D(d.type); } )
+            .filter( function (d) {
+                return plots.isGL3D(d.type);
+            } )
             .forEach( function (d) {
 
               // This following code inserts test data if no data is present
@@ -779,22 +781,24 @@
 
                     /*
                      * In the case existing scenes are active in this tab:
-                     * If data has a destination scene attempt to match that to the
-                     * associated scene.
+                     * If data has a destination scene attempt to match that to
+                     * the associated scene.
                      * If a particular data trace also has a glID. It means the
-                     * surface or mesh for this data trace has already been drawn
-                     * and we can just do an update. (this is handled inside scene.js)
+                     * surface or mesh for this data trace has already been
+                     * drawn and we can just do an update.
+                     * (this is handled inside scene.js)
                      */
                     sceneLayout = gl[destScene];
                     // you can change the camera position before or
                     // after initializing data or accept defaults
-                    sceneLayout._glx.draw(sceneLayout, d, d.type);
+                    sceneLayout._glx.draw(d, d.type);
                 }
                 else {
                     /*
                      * build a new scene layout object
                      */
-                    gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(gd, destScene, {});
+                    gl[destScene] = sceneLayout = Plotly.
+                        Plots.defaultSceneLayout(gd, destScene, {});
 
                     sceneLayout._dataQueue.push(d);
                 }
@@ -835,7 +839,7 @@
                 // if this scene has already been loaded it will have it's glx
                 // context parameter so lets reset the domain of the scene as
                 // it may have changed (this operates on the containing iframe)
-                if (sceneLayout._glx) { sceneLayout._glx.setPosition(sceneLayout.position); }
+                if (sceneLayout._glx) sceneLayout._glx.setPosition(sceneLayout.position);
                 return sceneLayout;
             })
             .filter( function (sceneLayout) {
@@ -860,7 +864,7 @@
                     id: sceneLayout.id
                 };
 
-                SceneFrame.createScene(Plotly, sceneOptions, function (glx) {
+                SceneFrame.createScene(Plotly, sceneLayout, sceneOptions, function (glx) {
                     sceneLayout._loading = false; // loaded
 
                     glx.setPosition(sceneLayout.position);
@@ -870,7 +874,7 @@
                     // from the queue and draw.
                     while (sceneLayout._dataQueue.length) {
                         var d = sceneLayout._dataQueue.shift();
-                        glx.draw(sceneLayout, d, d.type);
+                        glx.draw(d, d.type);
                     }
                     // make the .glx (webgl context) available through scene.
                     sceneLayout._glx = glx;
