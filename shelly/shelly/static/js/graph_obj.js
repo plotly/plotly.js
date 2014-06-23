@@ -2649,13 +2649,13 @@
             });
         }
 
-        gs.l = ml;
-        gs.r = mr;
-        gs.t = mt;
-        gs.b = mb;
-        gs.p = gl.margin.pad;
-        gs.w = gl.width-ml-mr;
-        gs.h = gl.height-mt-mb;
+        gs.l = Math.round(ml);
+        gs.r = Math.round(mr);
+        gs.t = Math.round(mt);
+        gs.b = Math.round(mb);
+        gs.p = Math.round(gl.margin.pad);
+        gs.w = Math.round(gl.width)-gs.l-gs.r;
+        gs.h = Math.round(gl.height)-gs.t-gs.b;
 
         // if things changed and we're not already redrawing, trigger a redraw
         if(!gd._replotting && oldmargins!=='{}' &&
@@ -2842,7 +2842,8 @@
             return;
         }
 
-        var gl=gd.layout,gs=gl._size,
+        var gl = gd.layout,
+            gs = gl._size,
             axletter = title.charAt(0),
             colorbar = title.substr(1,2)==='cb',
             cbnum = colorbar ? Number(title.substr(3).replace('title','')) : 0,

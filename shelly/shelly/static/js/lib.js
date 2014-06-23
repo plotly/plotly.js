@@ -1126,4 +1126,77 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
     return finalStep && finalStep(arg);
 }
 
+// our own dot function so that we don't need to include numeric
+lib.dot = function(x, y) {
+    if (!(x.length && y.length) || x.length != y.length)
+        return null;
+    if (x.length == 0)
+        return x;
+
+    // transpose taken from:
+    // http://stackoverflow.com/questions/4492678/to-swap-rows-with-columns-of-matrix-in-javascript-or-jquery
+    var transpose = function(a) {
+        return Object.keys(a[0]).map(
+            function (c) { return a.map(function (r) { return r[c]; }); });
+    }
+
+    // two-arg zip
+    var zip = function (x,y) {
+        var ret = [];
+        for (var i = 0; i < x.length; ++i)
+            ret = ret.concat([[x[i], y[i]]]);
+        return ret;
+    }
+
+    // dot itself
+    if (!x[0].length) {
+        if (!y[0].length) // vec-vec
+            return zip(x, y).reduce(function(a,x) {return a + x[0]*x[1];}, 0);
+        else // vec-mat
+            return transpose(y).map(function (y) {return lib.dot(x, y);});
+    }
+    else // mat-vec or mat-mat
+        return x.map(function (x) {return lib.dot(x, y);});
+}
+
+
+// Functions to manipulate 2D transformation matrices
+    
+// translate by (x,y)
+lib.translationMatrix = function (x, y) {
+    return [[1, 0, x], [0, 1, y], [0, 0, 1]];
+}
+
+// rotate by alpha around (0,0)    
+lib.rotationMatrix = function (alpha) {
+    var a = alpha*Math.PI/180;
+    return [[Math.cos(a), -Math.sin(a), 0], [Math.sin(a), Math.cos(a), 0], [0, 0, 1]];
+}
+
+// rotate by alpha around (x,y)    
+lib.rotationXYMatrix = function(a, x, y) {
+    return lib.dot(
+        lib.dot(lib.translationMatrix(x, y),
+                    lib.rotationMatrix(a)),
+        lib.translationMatrix(-x, -y));
+}
+
+// applies a 2D transformation matrix to either x and y params or an [x,y] array
+lib.apply2DTransform = function(transform) {
+    return function() {
+        if (arguments.length == 3) arguments = arguments[0];//from map
+        var xy = arguments.length == 1 ? arguments[0] : [arguments[0], arguments[1]];
+        return lib.dot(transform, [xy[0], xy[1], 1]).slice(0,2);
+    }
+}
+
+// applies a 2D transformation matrix to an [x1,y1,x2,y2] array (to
+// transform a segment)    
+lib.apply2DTransform2 = function(transform) {
+    var at = lib.apply2DTransform(transform);
+    return function(xys) {
+        return at(xys.slice(0,2)).concat(at(xys.slice(2,4)));
+    }
+}
+    
 }()); // end Lib object definition
