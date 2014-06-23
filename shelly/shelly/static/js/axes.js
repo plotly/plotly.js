@@ -914,6 +914,25 @@ var yearFormat = d3.time.format('%Y'),
     hourFormat = d3.time.format('%b %-d %Hh'),
     minuteFormat = d3.time.format('%H:%M'),
     secondFormat = d3.time.format(':%S');
+
+// add one item to d3's vocabulary:
+// %{n}f where n is the max number of digits
+// of fractional seconds
+var fracMatch = /%(\d?)f/;
+function modDateFormat(fmt,x) {
+    var fm = fmt.match(fracMatch),
+        d = new Date(x);
+    if(fm) {
+        var digits = Math.min(+fm[1]||6,6),
+            fracSecs = String((x/1000 % 1) + 2.0000005)
+                .substr(2,digits).replace(/0+$/,'')||'0';
+        return d3.time.format(fmt.replace(fracMatch,fracSecs))(d);
+    }
+    else {
+        return d3.time.format(fmt)(d);
+    }
+}
+
 // draw the text for one tick.
 // px,py are the location on td.paper
 // prefix is there so the x axis ticks can be dropped a line
@@ -934,25 +953,35 @@ axes.tickText = function(ax, x, hover){
             (ax.showexponent!='all' && x!={first:ax._tmin,last:ax._tmax}[ax.showexponent]) );
     if(hideexp) { hideexp = 'hide'; }
     if(ax.type=='date'){
-        if(hover) {
-            if($.isNumeric(tr)) { tr+=2; }
-            else { tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr]; }
-        }
         var d=new Date(x);
-        if(tr=='y') { tt = yearFormat(d); }
-        else if(tr=='m') { tt = monthFormat(d); }
+        if(hover && ax.hoverformat && (typeof ax.hoverformat === 'string')) {
+            tt = modDateFormat(ax.hoverformat,x);
+        }
+        else if(ax.tickformat && (typeof ax.tickformat === 'string')) {
+            tt = modDateFormat(ax.tickformat,x);
+            // TODO: potentially hunt for ways to automatically add more
+            // precision to the hover text?
+        }
         else {
-            if(x==ax._tmin && !hover) { suffix = '<br>'+yearFormat(d); }
-
-            if(tr=='d') { tt = dayFormat(d); }
-            else if(tr=='H') { tt = hourFormat(d); }
+            if(hover) {
+                if($.isNumeric(tr)) { tr+=2; }
+                else { tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr]; }
+            }
+            if(tr=='y') { tt = yearFormat(d); }
+            else if(tr=='m') { tt = monthFormat(d); }
             else {
-                if(x==ax._tmin && !hover) { suffix = '<br>'+dayFormat(d)+', '+yearFormat(d); }
+                if(x==ax._tmin && !hover) { suffix = '<br>'+yearFormat(d); }
 
-                tt = minuteFormat(d);
-                if(tr!='M'){
-                    tt += secondFormat(d);
-                    if(tr!='S') { tt += numFormat(mod(x/1000,1),ax,'none',hover).substr(1); }
+                if(tr=='d') { tt = dayFormat(d); }
+                else if(tr=='H') { tt = hourFormat(d); }
+                else {
+                    if(x==ax._tmin && !hover) { suffix = '<br>'+dayFormat(d)+', '+yearFormat(d); }
+
+                    tt = minuteFormat(d);
+                    if(tr!='M'){
+                        tt += secondFormat(d);
+                        if(tr!='S') { tt += numFormat(mod(x/1000,1),ax,'none',hover).substr(1); }
+                    }
                 }
             }
         }
