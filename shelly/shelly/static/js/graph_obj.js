@@ -861,10 +861,12 @@
                 var sceneOptions = {
                     container: gd.querySelector('.svg-container'),
                     zIndex: '1000',
-                    id: sceneLayout.id
+                    id: sceneLayout._id,
+                    plotly: Plotly,
+                    layout: gl
                 };
 
-                SceneFrame.createScene(Plotly, gl, sceneOptions, function (webgl) {
+                SceneFrame.createScene(sceneOptions, function (webgl) {
                     sceneLayout._loading = false; // loaded
 
                     webgl.setPosition(sceneLayout.position);
@@ -3288,6 +3290,7 @@
             _webgl: null,
             _dataQueue: [], // for asyncronously loading data
             _loading: false,
+            _id: sceneId,
             domain: {x:[0,1],y:[0,1]}, // default domain
             orthographic: true,
             xaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'xaxis' + id }),
