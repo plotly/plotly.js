@@ -761,7 +761,7 @@
                 var sceneLayout, destScene;
                 if (!Array.isArray(d.z)) {
                     $.extend(d, SceneFrame.testData(d.type,
-                        120, 120, [40,40,40]));
+                        120, 120, [40,40,60]));
                 }
 
                 /*
