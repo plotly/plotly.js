@@ -777,7 +777,7 @@
                     destScene += d.scene;
                 }
 
-                if (destScene in gl && '_glx' in gl[destScene] && gl[destScene]._glx) {
+                if (destScene in gl && '_webgl' in gl[destScene] && gl[destScene]._webgl) {
 
                     /*
                      * In the case existing scenes are active in this tab:
@@ -791,7 +791,7 @@
                     sceneLayout = gl[destScene];
                     // you can change the camera position before or
                     // after initializing data or accept defaults
-                    sceneLayout._glx.draw(d, d.type);
+                    sceneLayout._webgl.draw(d, d.type);
                 }
                 else {
                     /*
@@ -836,10 +836,10 @@
                         (sceneLayout.domain.y[1] - sceneLayout.domain.y[0])
                 };
 
-                // if this scene has already been loaded it will have it's glx
+                // if this scene has already been loaded it will have it's webgl
                 // context parameter so lets reset the domain of the scene as
                 // it may have changed (this operates on the containing iframe)
-                if (sceneLayout._glx) sceneLayout._glx.setPosition(sceneLayout.position);
+                if (sceneLayout._webgl) sceneLayout._webgl.setPosition(sceneLayout.position);
                 return sceneLayout;
             })
             .filter( function (sceneLayout) {
@@ -864,20 +864,20 @@
                     id: sceneLayout.id
                 };
 
-                SceneFrame.createScene(Plotly, sceneLayout, sceneOptions, function (glx) {
+                SceneFrame.createScene(Plotly, gl, sceneOptions, function (webgl) {
                     sceneLayout._loading = false; // loaded
 
-                    glx.setPosition(sceneLayout.position);
+                    webgl.setPosition(sceneLayout.position);
 
                     // if data has accumulated on the queue while the iframe
                     // and the webgl-context were loading remove that data
                     // from the queue and draw.
                     while (sceneLayout._dataQueue.length) {
                         var d = sceneLayout._dataQueue.shift();
-                        glx.draw(d, d.type);
+                        webgl.draw(d, d.type);
                     }
-                    // make the .glx (webgl context) available through scene.
-                    sceneLayout._glx = glx;
+                    // make the .webgl (webgl context) available through scene.
+                    sceneLayout._webgl = webgl;
                 });
             });
         }
@@ -3285,7 +3285,7 @@
         var id = sceneId.slice(5); // slices of the scene from scene3
         if (!extras) extras = {};
         return $.extend({
-            _glx: null,
+            _webgl: null,
             _dataQueue: [], // for asyncronously loading data
             _loading: false,
             domain: {x:[0,1],y:[0,1]}, // default domain
