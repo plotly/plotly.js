@@ -1563,7 +1563,8 @@
             'contours.start','contours.end','contours.size',
             'contours.showlines',
             'line.smoothing','line.shape',
-            'error_y.width','error_x.width','marker.maxdisplayed'
+            'error_y.width','error_x.width','error_x.copy_ystyle',
+            'marker.maxdisplayed'
         ];
         // these ones show up in restyle because they make more sense
         // in the style box, but they're graph-wide attributes, so set
@@ -1690,6 +1691,13 @@
                     var thicknorm =
                         ['top','bottom'].indexOf(cont.colorbar.orient)!==-1 ?
                             gl._size.h : gl._size.w;
+
+                    if(!cont.colorbar.thickness) {
+                        cont.colorbar.thickness =
+                            (cont.colorbar.thicknessmode==='fraction') ?
+                            30/thicknorm : 30;
+                    }
+
                     doextra(cont,'colorbar.thickness', cont.colorbar.thickness *
                         (vi==='fraction' ? 1/thicknorm : thicknorm),i);
                 }
@@ -1698,6 +1706,13 @@
                     var lennorm =
                         ['top','bottom'].indexOf(cont.colorbar.orient)!==-1 ?
                             gl._size.w : gl._size.h;
+
+                    if(!cont.colorbar.len) {
+                        cont.colorbar.len =
+                            (cont.colorbar.lenmode!=='pixels') ?
+                            1 : lennorm;
+                    }
+
                     doextra(cont,'colorbar.len',cont.colorbar.len *
                         (vi==='fraction' ? 1/lennorm : lennorm),i);
                 }
