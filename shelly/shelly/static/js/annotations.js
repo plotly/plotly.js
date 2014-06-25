@@ -128,7 +128,8 @@ annotations.draw = function(gd,index,opt,value) {
 
 
     var textangle = options.textangle || 0;
-
+    textangle = $.isNumeric(textangle) ? textangle : 0; //default is horizontal
+    
     // create the components
     // made a single group to contain all, so opacity can work right with border/arrow together
     // this could handle a whole bunch of cleanup at this point, but works for now
