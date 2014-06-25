@@ -1249,7 +1249,15 @@
             t = cd[0].t; // trace styling object
             c = t.curve; // trace number
             gdc = gd.data[c];
-            defaultColor = plots.defaultColors[c % plots.defaultColors.length];
+            // defaultColor cares about which trace this is in gd.data
+            // but we can get here from editing with a different data
+            // array, with other things added before the regular traces
+            // in that case, take t.selected, which references the correct
+            // trace in the real gd.data
+            defaultColor = plots.defaultColors[
+                ($.isNumeric(t.selected) ? t.selected : c) %
+                plots.defaultColors.length
+            ];
             // record in t which data arrays we have for this trace
             // other arrays, like marker size, are recorded as such in mergeattr
             // this is used to decide which options to display for styling
