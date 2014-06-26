@@ -791,7 +791,7 @@
                     sceneLayout = gl[destScene];
                     // you can change the camera position before or
                     // after initializing data or accept defaults
-                    sceneLayout._webgl.draw(d, d.type);
+                    sceneLayout._webgl.draw(gl, d, d.type);
                 }
                 else {
                     /*
@@ -876,7 +876,7 @@
                     // from the queue and draw.
                     while (sceneLayout._dataQueue.length) {
                         var d = sceneLayout._dataQueue.shift();
-                        webgl.draw(d, d.type);
+                        webgl.draw(gl, d, d.type);
                     }
                     // make the .webgl (webgl context) available through scene.
                     sceneLayout._webgl = webgl;
@@ -1595,6 +1595,9 @@
             undoit = {},
             axlist;
 
+        // for now, if we detect 3D stuff, just re-do the plot
+        if (gl._hasGL3D) doplot = true;
+
         // make a new empty vals array for undoit
         function a0(){ return traces.map(function(){ return undefined; }); }
 
@@ -1945,6 +1948,9 @@
             doplot = false,
             docalc = false,
             domodebar = false;
+
+        // for now, if we detect 3D stuff, just re-do the plot
+        if (gl._hasGL3D) doplot = true;
 
         if(typeof astr === 'string') { aobj[astr] = val; }
         else if($.isPlainObject(astr)) { aobj = astr; }
