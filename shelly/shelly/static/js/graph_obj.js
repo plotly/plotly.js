@@ -443,6 +443,11 @@
         // this won't be #embedded-graph or .js-tab-contents)
         d3.select(gd).classed('js-plotly-plot',true);
 
+        // off-screen getBoundingClientRect testing space,
+        // in #js-plotly-tester (and stored as gd._tester)
+        // so we can share cached text across tabs
+        makeTester(gd);
+
         // collect promises for any async actions during plotting
         // any part of the plotting code can push to gd._promises, then
         // before we move to the next step, we check that they're all
@@ -2279,6 +2284,8 @@
         // this won't be #embedded-graph or .js-tab-contents)
         gd3.classed('js-plotly-plot',true);
 
+        makeTester(gd);
+
         function addDefaultAxis(container, axname) {
             if(!container[axname]) {
                 container[axname] = Plotly.Axes.defaultAxis({
@@ -2522,6 +2529,48 @@
             gd._promises.push(frameWorkDone);
         }
         return frameWorkDone;
+    }
+
+    // off-screen svg render testing element, shared by the whole page
+    // uses the id 'js-plotly-tester' and stores it in gd._tester
+    // makes a hash of cached text items in tester.node()._cache
+    // so we can add references to rendered text (including all info
+    // needed to fully determine its bounding rect)
+    function makeTester(gd) {
+        var tester = d3.select('body')
+            .selectAll('#js-plotly-tester')
+            .data([0]);
+
+        tester.enter().append('svg')
+            .attr({
+                id: 'js-plotly-tester',
+                xmlns: 'http://www.w3.org/2000/svg',
+                // odd d3 quirk - need namespace twice??
+                'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
+                'xml:xml:space': 'preserve'
+            })
+            .style({
+                position: 'absolute',
+                left: '-1000px',
+                top: '-1000px',
+                width: '100px',
+                height: '100px'
+            });
+
+        // browsers differ on how they describe the bounding rect of
+        // the svg if its contents spill over... so make a 1x1px
+        // reference point we can measure off of.
+        var testref = tester.selectAll('.js-reference-point').data([0]);
+        testref.enter().append('path')
+            .attr('d','M0,0h1v1h-1z')
+            .style({'stroke-width':0, fill:'black'});
+
+        if(!tester.node()._cache) {
+            tester.node()._cache = {};
+        }
+
+        gd._tester = tester;
+        gd._testref = testref;
     }
 
     // called by legend and colorbar routines to see if we need to
