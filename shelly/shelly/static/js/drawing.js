@@ -391,4 +391,30 @@
         };
     };
 
+    // use our offscreen tester to get a clientRect for an element,
+    // in a reference frame where it isn't translated and its anchor
+    // point is at (0,0)
+    drawing.bBox = function(node) {
+        var tester = d3.select('#js-plotly-tester'),
+            testRef = tester.select('.js-reference-point');
+
+        // copy the node to test into the tester
+        var testNode = node.cloneNode(true);
+        tester.appendChild(testNode);
+        // standardize its position... do we really want to do this?
+        d3.select(testNode).attr({x:0, y:0, transform:''});
+
+        var testRect = testNode.getBoundingClientRect(),
+            refRect = testRef.getBoundingClientRect();
+
+        return {
+            height: testRect.height,
+            width: testRect.width,
+            left: testRect.left - refRect.left,
+            top: testRect.top - refRect.top,
+            right: testRect.right - refRect.left,
+            bottom: testRect.bottom - refRect.top
+        };
+    };
+
 }()); // end Drawing object definition
