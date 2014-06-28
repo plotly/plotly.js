@@ -1429,7 +1429,7 @@ axes.doTicks = function(td,axid) {
                     if(!txt.empty()) { txt.selectAll('tspan.line').attr({x: txt.attr('x'), y: txt.attr('y')}); }
                 }
                 else {
-                    var mjShift = mathjaxGroup.node().getBoundingClientRect().width * {end:-0.5, start:0.5}[anchor];
+                    var mjShift = Plotly.Drawing.bBox(mathjaxGroup.node()).width * {end:-0.5, start:0.5}[anchor];
                     mathjaxGroup.attr('transform',
                         transform + (mjShift ? 'translate(' + mjShift + ',0)' : ''));
                 }
@@ -1454,10 +1454,24 @@ axes.doTicks = function(td,axid) {
             // don't auto-angle at all for log axes with base and digit format
             if(axletter=='x' && !$.isNumeric(ax.tickangle) &&
                     (ax.type!=='log' || String(ax.dtick).charAt(0)!=='D')) {
-                var lbbArray = tickLabels[0].map(function(s){
-                    var thisLabel = d3.select(s).select('.text-math-group');
-                    if(thisLabel.empty()) { thisLabel = d3.select(s).select('text'); }
-                    return thisLabel.node().getBoundingClientRect();
+                var lbbArray = [];
+                tickLabels.each(function(d){
+                    var s = d3.select(this),
+                        thisLabel = s.select('.text-math-group'),
+                        x = ax.l2p(d.x);
+                    if(thisLabel.empty()) { thisLabel = s.select('text'); }
+                    var bb = Plotly.Drawing.bBox(thisLabel.node());
+
+                    lbbArray.push({
+                        // ignore about y, just deal with x overlaps
+                        top:0,
+                        bottom:10,
+                        height:10,
+                        left: x-bb.width/2,
+                        // impose a 2px gap
+                        right: x+bb.width/2 + 2,
+                        width: bb.width + 2
+                    });
                 });
                 for(i=0; i<lbbArray.length-1; i++) {
                     if(Plotly.Lib.bBoxIntersect(lbbArray[i],lbbArray[i+1])) {
