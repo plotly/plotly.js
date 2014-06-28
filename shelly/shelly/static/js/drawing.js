@@ -400,7 +400,9 @@
         // cache elements we've already measured so we don't have to
         // remeasure the same thing many times
         var saveNum = node.attributes['data-bb'];
-        if(saveNum) { return savedBBoxes[saveNum.value]; }
+        if(saveNum) {
+            return savedBBoxes[saveNum.value];
+        }
 
         var test3 = d3.select('#js-plotly-tester'),
             tester = test3.node();
@@ -435,7 +437,7 @@
         }
 
         // cache this bbox
-        $(node).attr('data-bb',savedBBoxes.length);
+        node.setAttribute('data-bb',savedBBoxes.length);
         savedBBoxes.push(bb);
 
         return bb;
