@@ -312,9 +312,9 @@
                 tspans = g.selectAll('.legendtext>tspan'),
                 tHeight = (gll.font.size || gl.font.size || 12)*1.3,
                 tLines = tspans[0].length||1,
-                tWidth = text.node() && text.node().getBoundingClientRect().width,
+                tWidth = text.node() && Plotly.Drawing.bBox(text.node()).width,
                 mathjaxGroup = g.select('g[class*=math-group]'),
-                mathjaxBB, textY, tHeightFull;
+                textY, tHeightFull;
 
             if(d[0].t.showinlegend===false) {
                 g.remove();
@@ -322,7 +322,7 @@
             }
 
             if(mathjaxGroup.node()) {
-                mathjaxBB = mathjaxGroup.node().getBoundingClientRect();
+                var mathjaxBB = Plotly.Drawing.bBox(mathjaxGroup.node());
                 tHeight = mathjaxBB.height;
                 tWidth = mathjaxBB.width;
                 mathjaxGroup.attr('transform','translate(0,'+(tHeight/4)+')');
