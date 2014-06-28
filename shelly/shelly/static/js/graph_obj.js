@@ -2562,7 +2562,8 @@
         // reference point we can measure off of.
         var testref = tester.selectAll('.js-reference-point').data([0]);
         testref.enter().append('path')
-            .attr('d','M0,0h1v1h-1z')
+            .classed('js-reference-point', true)
+            .attr('d','M0,0H1V1H0Z')
             .style({'stroke-width':0, fill:'black'});
 
         if(!tester.node()._cache) {

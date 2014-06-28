@@ -395,8 +395,8 @@
     // in a reference frame where it isn't translated and its anchor
     // point is at (0,0)
     drawing.bBox = function(node) {
-        var tester = d3.select('#js-plotly-tester'),
-            testRef = tester.select('.js-reference-point');
+        var test3 = d3.select('#js-plotly-tester'),
+            tester = test3.node();
 
         // copy the node to test into the tester
         var testNode = node.cloneNode(true);
@@ -405,7 +405,10 @@
         d3.select(testNode).attr({x:0, y:0, transform:''});
 
         var testRect = testNode.getBoundingClientRect(),
-            refRect = testRef.getBoundingClientRect();
+            refRect = test3.select('.js-reference-point')
+                .node().getBoundingClientRect();
+
+        tester.removeChild(testNode);
 
         return {
             height: testRect.height,
