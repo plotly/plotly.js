@@ -1008,7 +1008,7 @@
                 }
             });
             doAutoMargin(gd);
-            return previousPromises(gd);
+            return plots.previousPromises(gd);
         }
 
         function marginPushersAgain(){
@@ -1039,11 +1039,12 @@
                 Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
 
                 // autorange for annotations
-                Plotly.Annotations.calcAutorange(gd);
+                // Plotly.Annotations.calcAutorange(gd);
                 // TODO: autosize extra for text markers
 
                 return Plotly.Lib.syncOrAsync([
-                    previousPromises,
+                    // plots.previousPromises,
+                    Plotly.Annotations.calcAutorange,
                     doAutoRange
                 ], gd);
             }
@@ -1120,7 +1121,7 @@
             // source links
             plots.addLinks(gd);
 
-            return previousPromises(gd);
+            return plots.previousPromises(gd);
         }
 
         function cleanUp(){
@@ -1131,7 +1132,7 @@
         }
 
         var donePlotting = Plotly.Lib.syncOrAsync([
-            previousPromises,
+            plots.previousPromises,
             marginPushers,
             layoutStyles,
             marginPushersAgain,
@@ -1148,12 +1149,12 @@
 
     // for use in Plotly.Lib.syncOrAsync, check if there are any
     // pending promises in this plot and wait for them
-    function previousPromises(gd){
+    plots.previousPromises = function(gd){
         if((gd._promises||[]).length) {
             return Promise.all(gd._promises)
                 .then(function(){ gd._promises=[]; });
         }
-    }
+    };
 
     // convenience function to force a full redraw, mostly for use by plotly.js
     Plotly.redraw = function(divid) {
@@ -1775,12 +1776,12 @@
         }
         else {
             plots.setStyles(gd);
-            seq = [previousPromises];
+            seq = [plots.previousPromises];
             if(doapplystyle) {
                 seq.push(function doApplyStyle(){
                     applyStyle(gd);
                     if(gl.showlegend) { Plotly.Legend.draw(gd); }
-                    return previousPromises(gd);
+                    return plots.previousPromises(gd);
                 });
             }
             if(docolorbars) {
@@ -1788,7 +1789,7 @@
                     gd.calcdata.forEach(function(cd) {
                         if(cd[0].t.cb) { cd[0].t.cb.cdoptions(cd[0].t)(); }
                     });
-                    return previousPromises(gd);
+                    return plots.previousPromises(gd);
                 });
             }
         }
@@ -2112,7 +2113,7 @@
         // redraw
         // first check if there's still anything to do
         var ak = Object.keys(aobj),
-            seq = [previousPromises];
+            seq = [plots.previousPromises];
         if(doplot||docalc) {
             seq.push(function layoutReplot(){
                 // force plot() to redo the layout
@@ -2128,7 +2129,7 @@
             if(dolegend) {
                 seq.push(function doLegend(){
                     Plotly.Legend.draw(gd, gl.showlegend);
-                    return previousPromises(gd);
+                    return plots.previousPromises(gd);
                 });
             }
             if(dolayoutstyle) {
@@ -2138,7 +2139,7 @@
                 seq.push(function(){
                     Plotly.Axes.doTicks(gd,'redraw');
                     plots.titles(gd,'gtitle');
-                    return previousPromises(gd);
+                    return plots.previousPromises(gd);
                 });
             }
             // this is decoupled enough it doesn't need async regardless
@@ -2986,7 +2987,7 @@
                 .attr(options);
             titleEl.selectAll('tspan.line')
                 .attr(options);
-            return previousPromises(gd);
+            return plots.previousPromises(gd);
         }
 
         function scootTitle(titleElIn) {

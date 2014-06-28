@@ -13,6 +13,7 @@
         var anns = gd.layout.annotations;
         gd.layout._infolayer.selectAll('.annotation').remove();
         if(anns) { for(var i in anns) { annotations.draw(gd,i); } }
+        return Plotly.Plots.previousPromises(gd);
     };
 
     annotations.add = function(gd) {
@@ -339,9 +340,12 @@
                 }
                 else {
                     // hide the annotation if it's pointing
-                    // outside the visible plot
-                    if((options[axletter]-ax.range[0]) *
-                            (options[axletter]-ax.range[1])>0) {
+                    // outside the visible plot (as long as the axis
+                    // isn't autoranged - then we need to draw it
+                    // anyway to get its bounding box)
+                    if(((options[axletter]-ax.range[0]) *
+                                (options[axletter]-ax.range[1])>0) &&
+                            !ax.autorange) {
                         okToContinue = false;
                     }
                     annPosPx[axletter] = ax._offset+ax.l2p(options[axletter]);
@@ -821,13 +825,19 @@
         var gl = gd.layout;
 
         if(!gl.annotations || !gd.data || !gd.data.length) { return; }
-        var autoranged = Plotly.Axes.list(gd)
-            .filter(function(ax) { return ax.autorange; });
-        if(!autoranged.length) { return; }
+        if(!Plotly.Axes.list(gd)
+            .filter(function(ax) { return ax.autorange; })
+            .length) { return; }
 
-        annotations.drawAll(gd);
+        return Plotly.Lib.syncOrAsync([
+            annotations.drawAll,
+            annAutorange
+        ], gd);
+    };
 
-        var blank = {left:0, right:0, top:0, bottom:0, width:0, height:0};
+    function annAutorange(gd) {
+        var gl = gd.layout,
+            blank = {left:0, right:0, top:0, bottom:0, width:0, height:0};
 
         // find the bounding boxes for each of these annotations'
         // relative to their anchor points
