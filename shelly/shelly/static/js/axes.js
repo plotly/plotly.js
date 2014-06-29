@@ -1493,7 +1493,7 @@
     //     'redraw' to force full redraw, and reset ax._r
     //          (stored range for use by zoom/pan)
     //     or can pass in an axis object directly
-    axes.doTicks = function(td,axid) {
+    axes.doTicks = function(td, axid, skipTitle) {
         var gl = td.layout,
             ax,
             independent = false;
@@ -1788,7 +1788,9 @@
 
                 // update the axis title
                 // (so it can move out of the way if needed)
-                Plotly.Plots.titles(td,axid+'title');
+                // TODO: separate out scoot so we don't need to do
+                // a full redraw of the title (modtly relevant for MathJax)
+                if(!skipTitle) { Plotly.Plots.titles(td,axid+'title'); }
                 return axid+' done';
             }
 
@@ -1852,60 +1854,58 @@
             return drawLabels(ax._axislayer,ax._pos);
         }
         else {
-            return Plotly.Lib.syncOrAsync(axes.getSubplots(td,ax).map(
-                function(subplot){
-                    return function doOneSubplot() {
-                        var plotinfo = gl._plots[subplot],
-                            container = plotinfo[axletter+'axislayer'],
+            var alldone = axes.getSubplots(td,ax).map(function(subplot) {
+                var plotinfo = gl._plots[subplot],
+                    container = plotinfo[axletter+'axislayer'],
 
-                            // [bottom or left, top or right, free, main]
-                            linepositions = ax._linepositions[subplot]||[],
-                            counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
-                            mainSubplot = counteraxis._id===ax.anchor,
-                            ticksides = [false,false,false],
-                            tickpath='';
+                    // [bottom or left, top or right, free, main]
+                    linepositions = ax._linepositions[subplot]||[],
+                    counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
+                    mainSubplot = counteraxis._id===ax.anchor,
+                    ticksides = [false,false,false],
+                    tickpath='';
 
-                        // ticks
-                        if(ax.mirror==='allticks') {
-                            ticksides = [true,true,false];
-                        }
-                        else if(mainSubplot) {
-                            if(ax.mirror==='ticks') {
-                                ticksides = [true,true,false];
-                            }
-                            else {
-                                ticksides[sides.indexOf(axside)] = true;
-                            }
-                        }
-                        if(ax.mirrors) {
-                            for(i=0; i<2; i++) {
-                                var thisMirror =
-                                    ax.mirrors[counteraxis._id+sides[i]];
-                                if(thisMirror==='ticks' ||
-                                        thisMirror==='labels') {
-                                    ticksides[i] = true;
-                                }
-                            }
-                        }
-                        // free axis ticks
-                        if(linepositions[2]!==undefined) {
-                            ticksides[2] = true;
-                        }
-                        ticksides.forEach(function(showside,sidei) {
-                            var pos = linepositions[sidei],
-                                tsign = ticksign[sidei];
-                            if(showside && $.isNumeric(pos)) {
-                                tickpath += tickprefix + (pos+pad*tsign) +
-                                    tickmid + (tsign*ax.ticklen);
-                            }
-                        });
-
-                        drawTicks(container,tickpath);
-                        drawGrid(plotinfo, counteraxis, subplot);
-                        return drawLabels(container,linepositions[3]);
-                    };
+                // ticks
+                if(ax.mirror==='allticks') {
+                    ticksides = [true,true,false];
                 }
-            ));
+                else if(mainSubplot) {
+                    if(ax.mirror==='ticks') {
+                        ticksides = [true,true,false];
+                    }
+                    else {
+                        ticksides[sides.indexOf(axside)] = true;
+                    }
+                }
+                if(ax.mirrors) {
+                    for(i=0; i<2; i++) {
+                        var thisMirror =
+                            ax.mirrors[counteraxis._id+sides[i]];
+                        if(thisMirror==='ticks' ||
+                                thisMirror==='labels') {
+                            ticksides[i] = true;
+                        }
+                    }
+                }
+                // free axis ticks
+                if(linepositions[2]!==undefined) {
+                    ticksides[2] = true;
+                }
+                ticksides.forEach(function(showside,sidei) {
+                    var pos = linepositions[sidei],
+                        tsign = ticksign[sidei];
+                    if(showside && $.isNumeric(pos)) {
+                        tickpath += tickprefix + (pos+pad*tsign) +
+                            tickmid + (tsign*ax.ticklen);
+                    }
+                });
+
+                drawTicks(container,tickpath);
+                drawGrid(plotinfo, counteraxis, subplot);
+                return drawLabels(container,linepositions[3]);
+            }).filter(function(onedone) { return onedone && onedone.then; });
+
+            return alldone.length ? Promise.all(alldone) : 0;
         }
     };
 

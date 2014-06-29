@@ -2941,39 +2941,39 @@
         var opacity = 1,
             isplaceholder = false,
             txt = cont.title.trim();
-        if(cont.unit) { txt += ' ('+cont.unit+')'; }
         if(txt === '') { opacity = 0; }
         if(txt === 'Click to enter '+name+' title') {
             opacity = 0.2;
             isplaceholder = true;
         }
 
-        var group = colorbar ?
-            d3.select(gd).selectAll('.'+cont._id.substr(1)+' .cbtitle') :
-            gl._infolayer;
-        group.select('.'+title).remove();
-        var el = group.append('text').attr('class', title).text(txt);
-
-        // if there's existing mathjax, get its transform so we can
-        // apply that right away and minimize jitter during rendering
-        var oldMathjax = group.select('.'+title+'-math-group'),
-            hadMathjax = !oldMathjax.empty(),
-            oldMathjaxTransform,
-            newPartialMathjaxTransform;
-        if(hadMathjax) {
-            oldMathjaxTransform = oldMathjax.attr('transform');
+        var group;
+        if(colorbar) {
+            group = d3.select(gd)
+                .selectAll('.'+cont._id.substr(1)+' .cbtitle');
         }
+        else {
+            group = gl._infolayer.selectAll('.g-'+title)
+                .data([0]);
+            group.enter().append('g')
+                .classed('g-'+title, true);
+        }
+
+        var el = group.selectAll('text')
+            .data([0]);
+        el.enter().append('text')
+            .classed(title, true);
+        el.text(txt);
 
         function titleLayout(titleEl){
             Plotly.Lib.syncOrAsync([drawTitle,scootTitle], titleEl);
         }
 
         function drawTitle(titleEl) {
-            if(transform){
-                titleEl.attr('transform',
-                    'rotate(' + [transform.rotate, options.x, options.y] +
-                    ') translate(0, '+transform.offset+')');
-            }
+            titleEl.attr('transform', transform ?
+                'rotate(' + [transform.rotate, options.x, options.y] +
+                    ') translate(0, '+transform.offset+')' :
+                null);
             titleEl.style({
                     'font-family': font,
                     'font-size': d3.round(fontSize,2)+'px',
@@ -2981,18 +2981,7 @@
                     opacity: opacity*Plotly.Drawing.opacity(fontColor)
                 })
                 .attr(options)
-                .call(Plotly.util.convertToTspans, function(newMathjax){
-                    if(!newMathjax) { return; }
-
-                    // give the new mathjax group the same transform that
-                    // a previous one had temporarily, on the assumption that
-                    // probably this is what the new one will get, so we'll
-                    // minimize jitter when this is rendered and then scooted.
-                    newPartialMathjaxTransform = newMathjax.attr('transform');
-                    if(hadMathjax) {
-                        newMathjax.attr('transform',oldMathjaxTransform);
-                    }
-                })
+                .call(Plotly.util.convertToTspans)
                 .attr(options);
             titleEl.selectAll('tspan.line')
                 .attr(options);
@@ -3000,30 +2989,31 @@
         }
 
         function scootTitle(titleElIn) {
-            var mathjaxTitle = d3.select(titleElIn.node().parentNode)
-                    .select('.'+titleElIn.attr('class')+'-math-group'),
-                hasMathjax = !mathjaxTitle.empty(),
-                titleEl = hasMathjax ? mathjaxTitle : titleElIn;
-            if(hasMathjax) {
-                // put back the transform we were given by convertToTspans
-                // so we can calculate shift properly
-                titleEl.attr('transform',newPartialMathjaxTransform);
-            }
+            var titleGroup = d3.select(titleElIn.node().parentNode);
 
             if(avoid && avoid.selection && avoid.side && txt){
+                titleGroup.attr('transform',null);
+
                 // move toward avoid.side (= left, right, top, bottom) if needed
                 // can include pad (pixels, default 2)
                 var shift = 0,
                     backside = {
-                        left:'right',
-                        right:'left',
-                        top:'bottom',
-                        bottom:'top'
+                        left: 'right',
+                        right: 'left',
+                        top: 'bottom',
+                        bottom: 'top'
                     }[avoid.side],
+                    shiftSign = (['left','top'].indexOf(avoid.side)!==-1) ?
+                        -1 : 1,
                     pad = $.isNumeric(avoid.pad) ? avoid.pad : 2,
-                    titlebb = titleEl.node().getBoundingClientRect(),
-                    paperbb = gl._paper.node().getBoundingClientRect(),
-                    maxshift = colorbar ? paperbb.width:
+                    titlebb = Plotly.Drawing.bBox(titleGroup.node()),
+                    paperbb = {
+                        left: 0,
+                        top: 0,
+                        right: gl.width,
+                        bottom: gl.height
+                    },
+                    maxshift = colorbar ? gl.width:
                         (paperbb[avoid.side]-titlebb[avoid.side]) *
                         ((avoid.side==='left' || avoid.side==='top') ? -1 : 1);
                 // Prevent the title going off the paper
@@ -3032,13 +3022,16 @@
                     // iterate over a set of elements (avoid.selection)
                     // to avoid collisions with
                     avoid.selection.each(function(){
-                        var mathjaxGroup = d3.select(this)
-                                .select('.text-math-group'),
-                            avoidEl = mathjaxGroup.empty() ?
-                                d3.select(this).select('text') : mathjaxGroup,
-                            avoidbb = avoidEl.node().getBoundingClientRect();
+                        var avoidbb = $.extend({}, Plotly.Drawing.bBox(this));
+
+                        // offset the avoid elements for their transform
+                        avoidbb.left += gl._size.l;
+                        avoidbb.right += gl._size.l;
+                        avoidbb.top += gl._size.t;
+                        avoidbb.bottom += gl._size.t;
+
                         if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
-                            shift = Math.max(shift, Math.abs(
+                            shift = Math.max(shift, shiftSign * (
                                 avoidbb[avoid.side] - titlebb[backside]) + pad);
                         }
                     });
@@ -3051,21 +3044,8 @@
                         top: [0, -shift],
                         bottom: [0, shift]
                     }[avoid.side];
-                    titleEl.attr('transform',
-                        'translate(' + shiftTemplate + ') ' +
-                        (titleEl.attr('transform')||''));
-                }
-            }
-            else if(colorbar && cont.titleside==='bottom') {
-                // if multiline title, need to move it up by n-1 lines
-                // gotta be a more robust way to do this? Depends on
-                // all the lines having the same height
-                // which I'm not sure will happen if there's mathjax...
-                var nlines = titleEl.selectAll('tspan.line')[0].length;
-                if(nlines>1) {
-                    titleEl.attr('transform',
-                        'translate(0,'+((1-nlines)*1.3*fontSize)+') ' +
-                        (titleEl.attr('transform')||''));
+                    titleGroup.attr('transform',
+                        'translate(' + shiftTemplate + ')');
                 }
             }
         }
