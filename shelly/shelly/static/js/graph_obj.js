@@ -1654,20 +1654,29 @@
                 }
                 // changing colorbar size modes,
                 // make the resulting size not change
+                // note that colorbar fractional sizing is based on the
+                // original plot size, before anything (like a colorbar)
+                // increases the margins
                 else if(ai==='colorbar.thicknessmode' && param.get()!==vi &&
                         ['fraction','pixels'].indexOf(vi)!==-1) {
                     var thicknorm =
                         ['top','bottom'].indexOf(cont.colorbar.orient)!==-1 ?
-                            gl._size.h : gl._size.w;
-                    doextra(cont,'colorbar.thickness', cont.colorbar.thickness *
+                            (gl.height-gl.margin.t-gl.margin.b) :
+                            (gl.width-gl.margin.l-gl.margin.r);
+                    doextra(cont,'colorbar.thickness',
+                        (cont.colorbar.thickness ||
+                            Plotly.Colorbar.getDefault('thickness')) *
                         (vi==='fraction' ? 1/thicknorm : thicknorm),i);
                 }
                 else if(ai==='colorbar.lenmode' && param.get()!==vi &&
                         ['fraction','pixels'].indexOf(vi)!==-1) {
                     var lennorm =
                         ['top','bottom'].indexOf(cont.colorbar.orient)!==-1 ?
-                            gl._size.w : gl._size.h;
-                    doextra(cont,'colorbar.len',cont.colorbar.len *
+                            (gl.width-gl.margin.l-gl.margin.r) :
+                            (gl.height-gl.margin.t-gl.margin.b);
+                    doextra(cont,'colorbar.len',
+                        (cont.colorbar.len ||
+                            Plotly.Colorbar.getDefault('len')) *
                         (vi==='fraction' ? 1/lennorm : lennorm),i);
                 }
 
