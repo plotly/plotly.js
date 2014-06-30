@@ -2561,10 +2561,10 @@
             })
             .style({
                 position: 'absolute',
-                left: '-1000px',
-                top: '-1000px',
-                width: '100px',
-                height: '100px'
+                left: '-10000px',
+                top: '-10000px',
+                width: '9000px',
+                height: '9000px'
             });
 
         // browsers differ on how they describe the bounding rect of
@@ -2887,7 +2887,12 @@
             font = cont.titlefont.family || gl.font.family || 'Arial',
             fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
             fontColor = cont.titlefont.color || gl.font.color || '#444',
-            x,y,transform='',attr={},xa,ya,
+            x,
+            y,
+            transform='',
+            attr={},
+            xa,
+            ya,
             avoid = {
                 selection:d3.select(gd).selectAll('g.'+cont._id+'tick'),
                 side:cont.side
@@ -2900,6 +2905,10 @@
                     3+fontSize*0.75 : - 3-fontSize*0.25);
             options = {x: x, y: y, 'text-anchor':'start'};
             avoid = {};
+
+            // convertToTspans rotates any 'y...' by 90 degrees...
+            // TODO: need a better solution than this hack
+            title = 'h'+title;
         }
         else if(axletter==='x'){
             xa = cont;
@@ -2951,6 +2960,13 @@
         if(colorbar) {
             group = d3.select(gd)
                 .selectAll('.'+cont._id.substr(1)+' .cbtitle');
+            // this class-to-rotate thing with convertToTspans is
+            // getting hackier and hackier... delete groups with the
+            // wrong class
+            var otherClass = title.charAt(0)==='h' ?
+                title.substr(1) : ('h'+title);
+            group.selectAll('.'+otherClass+',.'+otherClass+'-math-group')
+                .remove();
         }
         else {
             group = gl._infolayer.selectAll('.g-'+title)
@@ -2961,9 +2977,14 @@
 
         var el = group.selectAll('text')
             .data([0]);
-        el.enter().append('text')
-            .classed(title, true);
-        el.text(txt);
+        el.enter().append('text');
+        el.text(txt)
+            // this is hacky, but convertToTspans uses the class
+            // to determine whether to rotate mathJax...
+            // so we need to clear out any old class and put the
+            // correct one (only relevant for colorbars, at least
+            // for now) - ie don't use .classed
+            .attr('class', title);
 
         function titleLayout(titleEl){
             Plotly.Lib.syncOrAsync([drawTitle,scootTitle], titleEl);
