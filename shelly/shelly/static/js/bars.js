@@ -212,16 +212,16 @@
                         // so you see them continue if you drag the plot
                         var x0,x1,y0,y1;
                         if(t.orientation==='h') {
-                            y0 = ya.c2p(t.poffset+di.p);
-                            y1 = ya.c2p(t.poffset+di.p+t.barwidth);
-                            x0 = xa.c2p(di.b,true);
-                            x1 = xa.c2p(di.s+di.b,true);
+                            y0 = ya.c2p(t.poffset+di.p, true);
+                            y1 = ya.c2p(t.poffset+di.p+t.barwidth, true);
+                            x0 = xa.c2p(di.b, true);
+                            x1 = xa.c2p(di.s+di.b, true);
                         }
                         else {
-                            x0 = xa.c2p(t.poffset+di.p);
-                            x1 = xa.c2p(t.poffset+di.p+t.barwidth);
-                            y1 = ya.c2p(di.s+di.b,true);
-                            y0 = ya.c2p(di.b,true);
+                            x0 = xa.c2p(t.poffset+di.p, true);
+                            x1 = xa.c2p(t.poffset+di.p+t.barwidth, true);
+                            y1 = ya.c2p(di.s+di.b, true);
+                            y0 = ya.c2p(di.b, true);
                         }
 
                         if(!$.isNumeric(x0) || !$.isNumeric(x1) ||
