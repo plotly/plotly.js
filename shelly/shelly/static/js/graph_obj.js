@@ -2913,7 +2913,7 @@
         else if(axletter==='x'){
             xa = cont;
             ya = (xa.anchor==='free') ?
-                {_offset:gs.l+(1-(xa.position||0))*gs.h, _length:0} :
+                {_offset:gs.t+(1-(xa.position||0))*gs.h, _length:0} :
                 Plotly.Axes.getFromId(gd, xa.anchor);
             x = xa._offset+xa._length/2;
             y = ya._offset + ((xa.side==='top') ?
@@ -2926,7 +2926,7 @@
         else if(axletter==='y'){
             ya = cont;
             xa = (ya.anchor==='free') ?
-                {_offset:gs.t+(ya.position||0)*gs.w, _length:0} :
+                {_offset:gs.l+(ya.position||0)*gs.w, _length:0} :
                 Plotly.Axes.getFromId(gd, ya.anchor);
             y = ya._offset+ya._length/2;
             x = xa._offset + ((ya.side==='right') ?
