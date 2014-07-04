@@ -1430,4 +1430,12 @@
         };
     };
 
+    // Helper to strip trailing slash, from http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
+    lib.stripTrailingSlash = function (str) {
+        if (str.substr(-1) == '/') {
+            return str.substr(0, str.length - 1);
+        }
+        return str;
+    };
+
 }()); // end Lib object definition
