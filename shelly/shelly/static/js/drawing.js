@@ -376,8 +376,8 @@
             return 'V'+d3.round((p0[1]+p1[1])/2,2)+'H'+
                 d3.round(p1[0],2)+'V'+d3.round(p1[1],2);
         }
-    },
-    STEPLINEAR = function(p0,p1) {
+    };
+    var STEPLINEAR = function(p0,p1) {
         return 'L'+d3.round(p1[0],2)+','+d3.round(p1[1],2);
     };
     drawing.steps = function(shape) {
@@ -389,6 +389,58 @@
             }
             return path;
         };
+    };
+
+    // use our offscreen tester to get a clientRect for an element,
+    // in a reference frame where it isn't translated and its anchor
+    // point is at (0,0)
+    var savedBBoxes = [],
+        maxSavedBBoxes = 10000;
+    drawing.bBox = function(node) {
+        // cache elements we've already measured so we don't have to
+        // remeasure the same thing many times
+        var saveNum = node.attributes['data-bb'];
+        if(saveNum) {
+            return savedBBoxes[saveNum.value];
+        }
+
+        var test3 = d3.select('#js-plotly-tester'),
+            tester = test3.node();
+
+        // copy the node to test into the tester
+        var testNode = node.cloneNode(true);
+        tester.appendChild(testNode);
+        // standardize its position... do we really want to do this?
+        d3.select(testNode).attr({x:0, y:0, transform:''});
+
+        var testRect = testNode.getBoundingClientRect(),
+            refRect = test3.select('.js-reference-point')
+                .node().getBoundingClientRect();
+
+        tester.removeChild(testNode);
+
+        var bb = {
+            height: testRect.height,
+            width: testRect.width,
+            left: testRect.left - refRect.left,
+            top: testRect.top - refRect.top,
+            right: testRect.right - refRect.left,
+            bottom: testRect.bottom - refRect.top
+        };
+
+        // make sure we don't have too many saved boxes,
+        // or a long session could overload on memory
+        // by saving boxes for long-gone elements
+        if(savedBBoxes.length>=maxSavedBBoxes) {
+            $('[data-bb]').attr('data-bb',null);
+            savedBBoxes = [];
+        }
+
+        // cache this bbox
+        node.setAttribute('data-bb',savedBBoxes.length);
+        savedBBoxes.push(bb);
+
+        return bb;
     };
 
 }()); // end Drawing object definition
