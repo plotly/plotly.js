@@ -646,9 +646,9 @@
             '<p class="push-half">'+text+'</p></div>');
 
         n.appendTo(notifierContainer)
-            .fadeIn(2000)
+            .fadeIn(700)
             .delay(ts)
-            .fadeOut(2000,function(){ n.remove(); });
+            .fadeOut(700,function(){ n.remove(); });
     };
 
     lib.conf_modal = (function(){
