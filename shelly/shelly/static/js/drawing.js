@@ -108,6 +108,10 @@
 
     // marker symbol definitions
     // users can specify markers either by number or name
+    // add 100 (or '-open') and you get an open marker
+    //  open markers have no fill and use line color as the stroke color
+    // add 200 (or '-dot') and you get a dot in the middle
+    // add both and you get both
     var SYMBOLDEFS = {
         circle: {
             n: 0,
@@ -328,14 +332,16 @@
             f: function(r) {
                 var rs = d3.round(r,2);
                 return 'M'+rs+','+rs+'H-'+rs+'L'+rs+',-'+rs+'H-'+rs+'Z';
-            }
+            },
+            noDot: true
         },
         bowtie: {
             n: 23,
             f: function(r) {
                 var rs = d3.round(r,2);
                 return 'M'+rs+','+rs+'V-'+rs+'L-'+rs+','+rs+'V-'+rs+'Z';
-            }
+            },
+            noDot: true
         },
         'circle-cross': {
             n: 24,
@@ -344,7 +350,9 @@
                 return 'M0,'+rs+'V-'+rs+'M'+rs+',0H-'+rs+
                     'M'+rs+',0A'+rs+','+rs+' 0 1,1 0,-'+rs+
                     'A'+rs+','+rs+' 0 0,1 '+rs+',0Z';
-            }
+            },
+            needLine: true,
+            noDot: true
         },
         'circle-x': {
             n: 25,
@@ -355,7 +363,9 @@
                     'M'+rc+',-'+rc+'L-'+rc+','+rc+
                     'M'+rs+',0A'+rs+','+rs+' 0 1,1 0,-'+rs+
                     'A'+rs+','+rs+' 0 0,1 '+rs+',0Z';
-            }
+            },
+            needLine: true,
+            noDot: true
         },
         'square-cross': {
             n: 26,
@@ -363,7 +373,9 @@
                 var rs = d3.round(r,2);
                 return 'M0,'+rs+'V-'+rs+'M'+rs+',0H-'+rs+
                     'M'+rs+','+rs+'H-'+rs+'V-'+rs+'H'+rs+'Z';
-            }
+            },
+            needLine: true,
+            noDot: true
         },
         'square-x': {
             n: 27,
@@ -372,14 +384,18 @@
                 return 'M'+rs+','+rs+'L-'+rs+',-'+rs+
                     'M'+rs+',-'+rs+'L-'+rs+','+rs+
                     'M'+rs+','+rs+'H-'+rs+'V-'+rs+'H'+rs+'Z';
-            }
+            },
+            needLine: true,
+            noDot: true
         },
         'cross-thin': {
             n: 28,
             f: function(r) {
                 var rc = d3.round(r*1.4,2);
                 return 'M0,'+rc+'V-'+rc+'M'+rc+',0H-'+rc;
-            }
+            },
+            needLine: true,
+            noDot: true
         },
         'x-thin': {
             n: 29,
@@ -387,7 +403,9 @@
                 var rx = d3.round(r,2);
                 return 'M'+rx+','+rx+'L-'+rx+',-'+rx+
                     'M'+rx+',-'+rx+'L-'+rx+','+rx;
-            }
+            },
+            needLine: true,
+            noDot: true
         },
         asterisk: {
             n: 30,
@@ -397,7 +415,9 @@
                 return 'M0,'+rc+'V-'+rc+'M'+rc+',0H-'+rc+
                     'M'+rs+','+rs+'L-'+rs+',-'+rs+
                     'M'+rs+',-'+rs+'L-'+rs+','+rs;
-            }
+            },
+            needLine: true,
+            noDot: true
         },
         hash: {
             n: 31,
@@ -408,44 +428,61 @@
                     'm-'+r2+',0V'+r2+
                     'M'+r2+','+r1+'H-'+r2+
                     'm0,-'+r2+'H'+r2;
-            }
+            },
+            needLine: true
         },
         'line-ew': {
             n: 32,
             f: function(r) {
                 var rc = d3.round(r*1.4,2);
                 return 'M'+rc+',0H-'+rc;
-            }
+            },
+            needLine: true,
+            noDot: true
         },
         'line-ns': {
             n: 33,
             f: function(r) {
                 var rc = d3.round(r*1.4,2);
                 return 'M0,'+rc+'V-'+rc;
-            }
+            },
+            needLine: true,
+            noDot: true
         },
         'line-ne': {
             n: 34,
             f: function(r) {
                 var rx = d3.round(r,2);
                 return 'M'+rx+',-'+rx+'L-'+rx+','+rx;
-            }
+            },
+            needLine: true,
+            noDot: true
         },
         'line-nw': {
             n: 35,
             f: function(r) {
                 var rx = d3.round(r,2);
                 return 'M'+rx+','+rx+'L-'+rx+',-'+rx;
-            }
+            },
+            needLine: true,
+            noDot: true
         },
     };
 
     drawing.symbolNames = [];
     drawing.symbolFuncs = [];
+    drawing.symbolNeedLines = {};
+    drawing.symbolNoDot = {};
     Object.keys(SYMBOLDEFS).forEach(function(k) {
         var symDef = SYMBOLDEFS[k];
         drawing.symbolNames[symDef.n] = k;
         drawing.symbolFuncs[symDef.n] = symDef.f;
+        if(symDef.needLine) {
+            drawing.symbolNeedLines[symDef.n] = true;
+        }
+        if(symDef.noDot) {
+            drawing.symbolNoDot[symDef.n] = true;
+        }
     });
     var MAXSYMBOL = drawing.symbolNames.length,
         // add a dot in the middle of the symbol
