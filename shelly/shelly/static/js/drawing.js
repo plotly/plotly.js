@@ -106,20 +106,369 @@
         });
     };
 
-    // apply the marker to each point
-    // draws the marker with diameter roughly markersize, centered at 0,0
-    // POINTCODE: let users specify numbers 0..8 for symbols, instead of names
-    var SYMBOLCODE = [
-        'circle',
-        'square',
-        'diamond',
-        'cross',
-        'x',
-        'triangle-up',
-        'triangle-down',
-        'triangle-left',
-        'triangle-right'
-    ];
+    // marker symbol definitions
+    // users can specify markers either by number or name
+    var SYMBOLDEFS = {
+        circle: {
+            n: 0,
+            f: function(r) {
+                var rs = d3.round(r,2);
+                return 'M'+rs+',0A'+rs+','+rs+' 0 1,1 0,-'+rs+
+                    'A'+rs+','+rs+' 0 0,1 '+rs+',0Z';
+            }
+        },
+        square: {
+            n: 1,
+            f: function(r) {
+                var rs = d3.round(r,2);
+                return 'M'+rs+','+rs+'H-'+rs+'V-'+rs+'H'+rs+'Z';
+            }
+        },
+        diamond: {
+            n: 2,
+            f: function(r) {
+                var rd = d3.round(r*1.3,2);
+                return 'M'+rd+',0L0,'+rd+'L-'+rd+',0L0,-'+rd+'Z';
+            }
+        },
+        cross: {
+            n: 3,
+            f: function(r) {
+                var rc = d3.round(r*0.4,2),
+                    rc2 = d3.round(r*1.2,2);
+                return 'M'+rc2+','+rc+'H'+rc+'V'+rc2+'H-'+rc+
+                    'V'+rc+'H-'+rc2+'V-'+rc+'H-'+rc+'V-'+rc2+
+                    'H'+rc+'V-'+rc+'H'+rc2+'Z';
+            }
+        },
+        x: {
+            n: 4,
+            f: function(r) {
+                var rx = d3.round(r*0.8/Math.sqrt(2),2),
+                    ne = 'l'+rx+','+rx,
+                    se = 'l'+rx+',-'+rx,
+                    sw = 'l-'+rx+',-'+rx,
+                    nw = 'l-'+rx+','+rx;
+                return 'M0,'+rx+ne+se+sw+se+sw+nw+sw+nw+ne+nw+ne+'Z';
+            }
+        },
+        'triangle-up': {
+            n: 5,
+            f: function(r) {
+                var rt = d3.round(r*2/Math.sqrt(3),2),
+                    r2 = d3.round(r/2,2),
+                    rs = d3.round(r,2);
+                return 'M-'+rt+','+r2+'H'+rt+'L0,-'+rs+'Z';
+            }
+        },
+        'triangle-down': {
+            n: 6,
+            f: function(r) {
+                var rt = d3.round(r*2/Math.sqrt(3),2),
+                    r2 = d3.round(r/2,2),
+                    rs = d3.round(r,2);
+                return 'M-'+rt+',-'+r2+'H'+rt+'L0,'+rs+'Z';
+            }
+        },
+        'triangle-left': {
+            n: 7,
+            f: function(r) {
+                var rt = d3.round(r*2/Math.sqrt(3),2),
+                    r2 = d3.round(r/2,2),
+                    rs = d3.round(r,2);
+                return 'M'+r2+',-'+rt+'V'+rt+'L-'+rs+',0Z';
+            }
+        },
+        'triangle-right': {
+            n: 8,
+            f: function(r) {
+                var rt = d3.round(r*2/Math.sqrt(3),2),
+                    r2 = d3.round(r/2,2),
+                    rs = d3.round(r,2);
+                return 'M-'+r2+',-'+rt+'V'+rt+'L'+rs+',0Z';
+            }
+        },
+        'triangle-ne': {
+            n: 9,
+            f: function(r) {
+                var r1 = d3.round(r*0.6,2),
+                    r2 = d3.round(r*1.2,2);
+                return 'M-'+r2+',-'+r1+'H'+r1+'V'+r2+'Z';
+            }
+        },
+        'triangle-se': {
+            n: 10,
+            f: function(r) {
+                var r1 = d3.round(r*0.6,2),
+                    r2 = d3.round(r*1.2,2);
+                return 'M'+r1+',-'+r2+'V'+r1+'H-'+r2+'Z';
+            }
+        },
+        'triangle-sw': {
+            n: 11,
+            f: function(r) {
+                var r1 = d3.round(r*0.6,2),
+                    r2 = d3.round(r*1.2,2);
+                return 'M'+r2+','+r1+'H-'+r1+'V-'+r2+'Z';
+            }
+        },
+        'triangle-nw': {
+            n: 12,
+            f: function(r) {
+                var r1 = d3.round(r*0.6,2),
+                    r2 = d3.round(r*1.2,2);
+                return 'M-'+r1+','+r2+'V-'+r1+'H'+r2+'Z';
+            }
+        },
+        pentagon: {
+            n: 13,
+            f: function(r) {
+                var x1 = d3.round(r*0.951,2),
+                    x2 = d3.round(r*0.588,2),
+                    y0 = d3.round(-r,2),
+                    y1 = d3.round(r*-0.309,2),
+                    y2 = d3.round(r*0.809,2);
+                return 'M'+x1+','+y1+'L'+x2+','+y2+'H-'+x2+
+                    'L-'+x1+','+y1+'L0,'+y0+'Z';
+            }
+        },
+        hexagon: {
+            n: 14,
+            f: function(r) {
+                var y0 = d3.round(r,2),
+                    y1 = d3.round(r/2,2),
+                    x = d3.round(r*Math.sqrt(3)/2,2);
+                return 'M'+x+',-'+y1+'V'+y1+'L0,'+y0+
+                    'L-'+x+','+y1+'V-'+y1+'L0,-'+y0+'Z';
+            }
+        },
+        star: {
+            n: 15,
+            f: function(r) {
+                var rs = r*1.4,
+                    x1 = d3.round(rs*0.225,2),
+                    x2 = d3.round(rs*0.951,2),
+                    x3 = d3.round(rs*0.363,2),
+                    x4 = d3.round(rs*0.588,2),
+                    y0 = d3.round(-rs,2),
+                    y1 = d3.round(rs*-0.309,2),
+                    y3 = d3.round(rs*0.118,2),
+                    y4 = d3.round(rs*0.809,2),
+                    y5 = d3.round(rs*0.382,2);
+                return 'M'+x1+','+y1+'H'+x2+'L'+x3+','+y3+
+                    'L'+x4+','+y4+'L0,'+y5+'L-'+x4+','+y4+
+                    'L-'+x3+','+y3+'L-'+x2+','+y1+'H-'+x1+
+                    'L0,'+y0+'Z';
+            }
+        },
+        'star-triangle': {
+            n: 16,
+            f: function(r) {
+                var x = d3.round(r*Math.sqrt(3)*0.8,2),
+                    y1 = d3.round(r*0.8,2),
+                    y2 = d3.round(r*1.6,2),
+                    rc = d3.round(r*4,2),
+                    aPart = 'A '+rc+','+rc+' 0 0 1 ';
+                return 'M-'+x+','+y1+aPart+x+','+y1+
+                    aPart+'0,-'+y2+aPart+'-'+x+','+y1+'Z';
+            }
+        },
+        'star-triangle-down': {
+            n: 17,
+            f: function(r) {
+                var x = d3.round(r*Math.sqrt(3)*0.8,2),
+                    y1 = d3.round(r*0.8,2),
+                    y2 = d3.round(r*1.6,2),
+                    rc = d3.round(r*4,2),
+                    aPart = 'A '+rc+','+rc+' 0 0 1 ';
+                return 'M'+x+',-'+y1+aPart+'-'+x+',-'+y1+
+                    aPart+'0,'+y2+aPart+x+',-'+y1+'Z';
+            }
+        },
+        'star-square': {
+            n: 18,
+            f: function(r) {
+                var rp = d3.round(r*1.1,2),
+                    rc = d3.round(r*2,2),
+                    aPart = 'A '+rc+','+rc+' 0 0 1 ';
+                return 'M-'+rp+',-'+rp+aPart+'-'+rp+','+rp+
+                    aPart+rp+','+rp+aPart+rp+',-'+rp+
+                    aPart+'-'+rp+',-'+rp+'Z';
+            }
+        },
+        'star-diamond': {
+            n: 19,
+            f: function(r) {
+                var rp = d3.round(r*1.4,2),
+                    rc = d3.round(r*1.9,2),
+                    aPart = 'A '+rc+','+rc+' 0 0 1 ';
+                return 'M-'+rp+',0'+aPart+'0,'+rp+
+                    aPart+rp+',0'+aPart+'0,-'+rp+
+                    aPart+'-'+rp+',0'+'Z';
+            }
+        },
+        'diamond-tall': {
+            n: 20,
+            f: function(r) {
+                var x = d3.round(r*0.7,2),
+                    y = d3.round(r*1.4,2);
+                return 'M0,'+y+'L'+x+',0L0,-'+y+'L-'+x+',0Z';
+            }
+        },
+        'diamond-wide': {
+            n: 21,
+            f: function(r) {
+                var x = d3.round(r*1.4,2),
+                    y = d3.round(r*0.7,2);
+                return 'M0,'+y+'L'+x+',0L0,-'+y+'L-'+x+',0Z';
+            }
+        },
+        hourglass: {
+            n: 22,
+            f: function(r) {
+                var rs = d3.round(r,2);
+                return 'M'+rs+','+rs+'H-'+rs+'L'+rs+',-'+rs+'H-'+rs+'Z';
+            }
+        },
+        bowtie: {
+            n: 23,
+            f: function(r) {
+                var rs = d3.round(r,2);
+                return 'M'+rs+','+rs+'V-'+rs+'L-'+rs+','+rs+'V-'+rs+'Z';
+            }
+        },
+        'circle-cross': {
+            n: 24,
+            f: function(r) {
+                var rs = d3.round(r,2);
+                return 'M0,'+rs+'V-'+rs+'M'+rs+',0H-'+rs+
+                    'M'+rs+',0A'+rs+','+rs+' 0 1,1 0,-'+rs+
+                    'A'+rs+','+rs+' 0 0,1 '+rs+',0Z';
+            }
+        },
+        'circle-x': {
+            n: 25,
+            f: function(r) {
+                var rs = d3.round(r,2),
+                    rc = d3.round(r/Math.sqrt(2),2);
+                return 'M'+rc+','+rc+'L-'+rc+',-'+rc+
+                    'M'+rc+',-'+rc+'L-'+rc+','+rc+
+                    'M'+rs+',0A'+rs+','+rs+' 0 1,1 0,-'+rs+
+                    'A'+rs+','+rs+' 0 0,1 '+rs+',0Z';
+            }
+        },
+        'square-cross': {
+            n: 26,
+            f: function(r) {
+                var rs = d3.round(r,2);
+                return 'M0,'+rs+'V-'+rs+'M'+rs+',0H-'+rs+
+                    'M'+rs+','+rs+'H-'+rs+'V-'+rs+'H'+rs+'Z';
+            }
+        },
+        'square-x': {
+            n: 27,
+            f: function(r) {
+                var rs = d3.round(r,2);
+                return 'M'+rs+','+rs+'L-'+rs+',-'+rs+
+                    'M'+rs+',-'+rs+'L-'+rs+','+rs+
+                    'M'+rs+','+rs+'H-'+rs+'V-'+rs+'H'+rs+'Z';
+            }
+        },
+        'cross-thin': {
+            n: 28,
+            f: function(r) {
+                var rc = d3.round(r*1.4,2);
+                return 'M0,'+rc+'V-'+rc+'M'+rc+',0H-'+rc;
+            }
+        },
+        'x-thin': {
+            n: 29,
+            f: function(r) {
+                var rx = d3.round(r,2);
+                return 'M'+rx+','+rx+'L-'+rx+',-'+rx+
+                    'M'+rx+',-'+rx+'L-'+rx+','+rx;
+            }
+        },
+        asterisk: {
+            n: 30,
+            f: function(r) {
+                var rc = d3.round(r*1.2,2);
+                var rs = d3.round(r*0.85,2);
+                return 'M0,'+rc+'V-'+rc+'M'+rc+',0H-'+rc+
+                    'M'+rs+','+rs+'L-'+rs+',-'+rs+
+                    'M'+rs+',-'+rs+'L-'+rs+','+rs;
+            }
+        },
+        hash: {
+            n: 31,
+            f: function(r) {
+                var r1 = d3.round(r/2,2),
+                    r2 = d3.round(r,2);
+                return 'M'+r1+','+r2+'V-'+r2+
+                    'm-'+r2+',0V'+r2+
+                    'M'+r2+','+r1+'H-'+r2+
+                    'm0,-'+r2+'H'+r2;
+            }
+        },
+        'line-ew': {
+            n: 32,
+            f: function(r) {
+                var rc = d3.round(r*1.4,2);
+                return 'M'+rc+',0H-'+rc;
+            }
+        },
+        'line-ns': {
+            n: 33,
+            f: function(r) {
+                var rc = d3.round(r*1.4,2);
+                return 'M0,'+rc+'V-'+rc;
+            }
+        },
+        'line-ne': {
+            n: 34,
+            f: function(r) {
+                var rx = d3.round(r,2);
+                return 'M'+rx+',-'+rx+'L-'+rx+','+rx;
+            }
+        },
+        'line-nw': {
+            n: 35,
+            f: function(r) {
+                var rx = d3.round(r,2);
+                return 'M'+rx+','+rx+'L-'+rx+',-'+rx;
+            }
+        },
+    };
+
+    drawing.symbolNames = [];
+    drawing.symbolFuncs = [];
+    Object.keys(SYMBOLDEFS).forEach(function(k) {
+        var symDef = SYMBOLDEFS[k];
+        drawing.symbolNames[symDef.n] = k;
+        drawing.symbolFuncs[symDef.n] = symDef.f;
+    });
+    var MAXSYMBOL = drawing.symbolNames.length,
+        // add a dot in the middle of the symbol
+        DOTPATH = 'M0,0.5L0.5,0L0,-0.5L-0.5,0Z';
+
+    drawing.symbolNumber = function(v) {
+        if(typeof v === 'string') {
+            var vbase = 0;
+            if(v.indexOf('-open') > 0) {
+                vbase = 100;
+                v = v.replace('-open','');
+            }
+            if(v.indexOf('-dot') > 0) {
+                vbase += 200;
+                v = v.replace('-dot','');
+            }
+            v = drawing.symbolNames.indexOf(v);
+            if(v>=0) { v += vbase; }
+        }
+        if((v%100 >= MAXSYMBOL) || v>=400) { return 0; }
+        return Math.floor(Math.max(v,0));
+    };
+
     drawing.pointStyle = function(s,t) {
         // only scatter & box plots get marker path and opacity
         // bars, histograms don't
@@ -141,46 +490,18 @@
 
                 // in case of "various" etc... set a visible default
                 if(!$.isNumeric(r) || r<0) { r=3; }
-                var rt=String(d3.round(r*2/Math.sqrt(3),2)),
-                    r2=String(d3.round(r/2,2)),
-                    rs=String(d3.round(r,2));
-                var x=(d.mx || t.mx || (d.t ? d.t.mx : ''));
-                if($.isNumeric(x)) { x = SYMBOLCODE[x]; }
-                if(x==='square') {
-                    return 'M'+rs+','+rs+'H-'+rs+'V-'+rs+'H'+rs+'Z';
-                }
-                if(x==='diamond') {
-                    var rd=String(d3.round(r*Math.sqrt(2),2));
-                    return 'M'+rd+',0L0,'+rd+'L-'+rd+',0L0,-'+rd+'Z';
-                }
-                if(x==='triangle-up') {
-                    return 'M-'+rt+','+r2+'H'+rt+'L0,-'+rs+'Z';
-                }
-                if(x==='triangle-down') {
-                    return 'M-'+rt+',-'+r2+'H'+rt+'L0,'+rs+'Z';
-                }
-                if(x==='triangle-right') {
-                    return 'M-'+r2+',-'+rt+'V'+rt+'L'+rs+',0Z';
-                }
-                if(x==='triangle-left') {
-                    return 'M'+r2+',-'+rt+'V'+rt+'L-'+rs+',0Z';
-                }
-                if(x==='cross') {
-                    var rc = String(d3.round(r*0.4,2)),
-                        rc2 = String(d3.round(r*1.2,2));
-                    return 'M'+rc2+','+rc+'H'+rc+'V'+rc2+'H-'+rc+
-                        'V'+rc+'H-'+rc2+'V-'+rc+'H-'+rc+'V-'+rc2+
-                        'H'+rc+'V-'+rc+'H'+rc2+'Z';
-                }
-                if(x==='x') {
-                    var rx = String(d3.round(r*0.8/Math.sqrt(2),2)),
-                        ne = 'l'+rx+','+rx, se = 'l'+rx+',-'+rx,
-                        sw = 'l-'+rx+',-'+rx, nw = 'l-'+rx+','+rx;
-                    return 'M0,'+rx+ne+se+sw+se+sw+nw+sw+nw+ne+nw+ne+'Z';
-                }
-                // circle is default
-                return 'M'+rs+',0A'+rs+','+rs+' 0 1,1 0,-'+rs+
-                    'A'+rs+','+rs+' 0 0,1 '+rs+',0Z';
+
+                // turn the symbol into a sanitized number
+                var x = drawing.symbolNumber(
+                            d.mx || t.mx || (d.t ? d.t.mx : '')),
+                    xBase = x%100;
+
+                // save if this marker is open
+                // because that impacts how to handle colors
+                d.om = x%200 >= 100;
+
+                return drawing.symbolFuncs[xBase](r) +
+                    (x >= 200 ? DOTPATH : '');
             })
             .style('opacity',function(d){
                 return (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1;
@@ -203,12 +524,24 @@
                 cc,lcc;
             if(d[c]) { d[c+'c'] = cc = colorscales[a](d[c]); }
             else { cc = t[c] || (d.t ? d.t[c] : ''); }
-            p.style('stroke-width',w+'px')
-                .call(drawing.fillColor, cc);
-            if(w) {
-                if(d[lc]) { d[lc+'c'] = lcc = colorscales[a+'l'](d[lc]); }
-                else { lcc = t[lc] || (d.t ? d.t[lc] : ''); }
-                p.call(drawing.strokeColor, lcc);
+            if(d.om) {
+                // open markers can't have zero linewidth, default to 1px,
+                // and use fill color as stroke color
+                if(!w) { w = 1; }
+                p.call(drawing.strokeColor, cc)
+                    .style({
+                        'stroke-width': w+'px',
+                        fill: 'none'
+                    });
+            }
+            else {
+                p.style('stroke-width',w+'px')
+                    .call(drawing.fillColor, cc);
+                if(w) {
+                    if(d[lc]) { d[lc+'c'] = lcc = colorscales[a+'l'](d[lc]); }
+                    else { lcc = t[lc] || (d.t ? d.t[lc] : ''); }
+                    p.call(drawing.strokeColor, lcc);
+                }
             }
         });
     };
