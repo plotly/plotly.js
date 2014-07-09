@@ -284,8 +284,20 @@
                     'L0,'+y0+'Z';
             }
         },
-        'star-triangle-up': {
+        hexagram: {
             n: 18,
+            f: function(r) {
+                var y = d3.round(r*0.66,2),
+                    x1 = d3.round(r*0.38,2),
+                    x2 = d3.round(r*0.76,2);
+                return 'M-'+x2+',0l-'+x1+',-'+y+'h'+x2+
+                    'l'+x1+',-'+y+'l'+x1+','+y+'h'+x2+
+                    'l-'+x1+','+y+'l'+x1+','+y+'h-'+x2+
+                    'l-'+x1+','+y+'l-'+x1+',-'+y+'h-'+x2+'Z';
+            }
+        },
+        'star-triangle-up': {
+            n: 19,
             f: function(r) {
                 var x = d3.round(r*Math.sqrt(3)*0.8,2),
                     y1 = d3.round(r*0.8,2),
@@ -297,7 +309,7 @@
             }
         },
         'star-triangle-down': {
-            n: 19,
+            n: 20,
             f: function(r) {
                 var x = d3.round(r*Math.sqrt(3)*0.8,2),
                     y1 = d3.round(r*0.8,2),
@@ -309,7 +321,7 @@
             }
         },
         'star-square': {
-            n: 20,
+            n: 21,
             f: function(r) {
                 var rp = d3.round(r*1.1,2),
                     rc = d3.round(r*2,2),
@@ -320,7 +332,7 @@
             }
         },
         'star-diamond': {
-            n: 21,
+            n: 22,
             f: function(r) {
                 var rp = d3.round(r*1.4,2),
                     rc = d3.round(r*1.9,2),
@@ -331,7 +343,7 @@
             }
         },
         'diamond-tall': {
-            n: 22,
+            n: 23,
             f: function(r) {
                 var x = d3.round(r*0.7,2),
                     y = d3.round(r*1.4,2);
@@ -339,7 +351,7 @@
             }
         },
         'diamond-wide': {
-            n: 23,
+            n: 24,
             f: function(r) {
                 var x = d3.round(r*1.4,2),
                     y = d3.round(r*0.7,2);
@@ -347,7 +359,7 @@
             }
         },
         hourglass: {
-            n: 24,
+            n: 25,
             f: function(r) {
                 var rs = d3.round(r,2);
                 return 'M'+rs+','+rs+'H-'+rs+'L'+rs+',-'+rs+'H-'+rs+'Z';
@@ -355,7 +367,7 @@
             noDot: true
         },
         bowtie: {
-            n: 25,
+            n: 26,
             f: function(r) {
                 var rs = d3.round(r,2);
                 return 'M'+rs+','+rs+'V-'+rs+'L-'+rs+','+rs+'V-'+rs+'Z';
@@ -363,7 +375,7 @@
             noDot: true
         },
         'circle-cross': {
-            n: 26,
+            n: 27,
             f: function(r) {
                 var rs = d3.round(r,2);
                 return 'M0,'+rs+'V-'+rs+'M'+rs+',0H-'+rs+
@@ -374,7 +386,7 @@
             noDot: true
         },
         'circle-x': {
-            n: 27,
+            n: 28,
             f: function(r) {
                 var rs = d3.round(r,2),
                     rc = d3.round(r/Math.sqrt(2),2);
@@ -387,7 +399,7 @@
             noDot: true
         },
         'square-cross': {
-            n: 28,
+            n: 29,
             f: function(r) {
                 var rs = d3.round(r,2);
                 return 'M0,'+rs+'V-'+rs+'M'+rs+',0H-'+rs+
@@ -397,7 +409,7 @@
             noDot: true
         },
         'square-x': {
-            n: 29,
+            n: 30,
             f: function(r) {
                 var rs = d3.round(r,2);
                 return 'M'+rs+','+rs+'L-'+rs+',-'+rs+
@@ -408,7 +420,7 @@
             noDot: true
         },
         'cross-thin': {
-            n: 30,
+            n: 31,
             f: function(r) {
                 var rc = d3.round(r*1.4,2);
                 return 'M0,'+rc+'V-'+rc+'M'+rc+',0H-'+rc;
@@ -417,7 +429,7 @@
             noDot: true
         },
         'x-thin': {
-            n: 31,
+            n: 32,
             f: function(r) {
                 var rx = d3.round(r,2);
                 return 'M'+rx+','+rx+'L-'+rx+',-'+rx+
@@ -427,7 +439,7 @@
             noDot: true
         },
         asterisk: {
-            n: 32,
+            n: 33,
             f: function(r) {
                 var rc = d3.round(r*1.2,2);
                 var rs = d3.round(r*0.85,2);
@@ -439,7 +451,7 @@
             noDot: true
         },
         hash: {
-            n: 33,
+            n: 34,
             f: function(r) {
                 var r1 = d3.round(r/2,2),
                     r2 = d3.round(r,2);
@@ -451,7 +463,7 @@
             needLine: true
         },
         'y-up': {
-            n: 34,
+            n: 35,
             f: function(r) {
                 var x = d3.round(r*1.2,2),
                     y0 = d3.round(r*1.6,2),
@@ -462,7 +474,7 @@
             noDot: true
         },
         'y-down': {
-            n: 35,
+            n: 36,
             f: function(r) {
                 var x = d3.round(r*1.2,2),
                     y0 = d3.round(r*1.6,2),
@@ -473,7 +485,7 @@
             noDot: true
         },
         'y-left': {
-            n: 36,
+            n: 37,
             f: function(r) {
                 var y = d3.round(r*1.2,2),
                     x0 = d3.round(r*1.6,2),
@@ -484,7 +496,7 @@
             noDot: true
         },
         'y-right': {
-            n: 37,
+            n: 38,
             f: function(r) {
                 var y = d3.round(r*1.2,2),
                     x0 = d3.round(r*1.6,2),
@@ -495,7 +507,7 @@
             noDot: true
         },
         'line-ew': {
-            n: 38,
+            n: 39,
             f: function(r) {
                 var rc = d3.round(r*1.4,2);
                 return 'M'+rc+',0H-'+rc;
@@ -504,7 +516,7 @@
             noDot: true
         },
         'line-ns': {
-            n: 39,
+            n: 40,
             f: function(r) {
                 var rc = d3.round(r*1.4,2);
                 return 'M0,'+rc+'V-'+rc;
@@ -513,7 +525,7 @@
             noDot: true
         },
         'line-ne': {
-            n: 40,
+            n: 41,
             f: function(r) {
                 var rx = d3.round(r,2);
                 return 'M'+rx+',-'+rx+'L-'+rx+','+rx;
@@ -522,7 +534,7 @@
             noDot: true
         },
         'line-nw': {
-            n: 41,
+            n: 42,
             f: function(r) {
                 var rx = d3.round(r,2);
                 return 'M'+rx+','+rx+'L-'+rx+',-'+rx;
