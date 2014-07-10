@@ -282,7 +282,7 @@
 
     plots.isCartesian = function(type) {
         return plots.isScatter(type) || plots.isBar(type) ||
-            plots.isHeatmap(type);
+            plots.isHeatmap(type) || type==='box';
     };
 
     var GL3DTYPES = ['scatter3d', 'surface'];
