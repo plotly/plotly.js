@@ -794,7 +794,7 @@
     // if ticks are set to automatic, determine the right values (tick0,dtick)
     // in any case, set tickround to # of digits to round tick labels to,
     // or codes to this effect for log and date scales
-    function calcTicks(ax) {
+    axes.calcTicks = function calcTicks (ax) {
         // calculate max number of (auto) ticks to display based on plot size
         if(ax.autotick || !ax.dtick){
             var nt = (ax.nticks || Plotly.Lib.constrain(ax._length /
@@ -1549,7 +1549,7 @@
         ax.setScale();
 
         var axletter = axid.charAt(0),
-            vals=calcTicks(ax),
+            vals = axes.calcTicks(ax),
             datafn = function(d){ return d.text+d.x+ax.mirror; },
             tcls = axid+'tick',
             gcls = axid+'grid',
