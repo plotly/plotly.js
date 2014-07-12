@@ -802,8 +802,7 @@
                     /*
                      * build a new scene layout object
                      */
-                    gl[destScene] = sceneLayout = Plotly.
-                        Plots.defaultSceneLayout(gd, destScene, {});
+                    gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(gd, destScene, {});
 
                     sceneLayout._dataQueue.push(d);
                 }
@@ -3346,9 +3345,9 @@
             _id: sceneId,
             domain: {x:[0,1],y:[0,1]}, // default domain
             orthographic: true,
-            xaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'xaxis' + id }),
-            yaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'yaxis' + id }),
-            zaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'zaxis' + id })
+            xaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'x', _name: 'xaxis-' + sceneId }),
+            yaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'y', _name: 'yaxis-' + sceneId }),
+            zaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'z', _name: 'zaxis-' + sceneId })
         }, extras);
     };
 
