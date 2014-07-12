@@ -1371,18 +1371,36 @@
     }
 
     // get all axis objects, optionally restricted to only
-    // x or y by string axletter
-    axes.list = function(td,axletter) {
-        if(!td.layout) { return []; }
-        return Object.keys(td.layout)
-            .filter(function(k){
-                if(axletter && k.charAt(0)!==axletter) {
-                    return false;
-                }
-                return k.match(/^[xy]axis[0-9]*/g);
-            })
-            .sort()
-            .map(function(k){ return td.layout[k]; });
+    // x or y or z by string axletter
+    axes.list = function(gd, axletter) {
+        if (!gd.layout) return [];
+
+        function filterAxis (obj) {
+            return Object.keys(obj)
+                .filter( function(k) {
+                    if(axletter && k.charAt(0) !== axletter) {
+                        return false;
+                    }
+                    return k.match(/^[xyz]axis[0-9]*/g);
+                }).sort().map(
+                    function (k) {
+                        return obj[k];
+                    });
+        }
+
+        var axis2d = filterAxis(gd.layout);
+        var axis3d = [];
+        var scenes = Object.keys(gd.layout).filter( function (k) {
+            return k.match(/^scene[0-9]*$/);
+        });
+
+        if (scenes) {
+            scenes.forEach( function (sceneId) {
+                axis3d = axis3d.concat(filterAxis(gd.layout[sceneId]));
+            });
+        }
+
+        return axis2d.concat(axis3d);
     };
 
     // get an axis object from its id 'x','x2' etc
