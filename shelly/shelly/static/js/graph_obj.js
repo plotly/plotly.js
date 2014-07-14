@@ -216,7 +216,7 @@
             hovermode:'x',
             separators:'.,', // decimal then thousands
             hidesources:false,
-            smith:false,
+            smith:false
         };
     }
 
@@ -256,6 +256,10 @@
         });
     }
 
+    plots.isScatter = function(type) {
+        return !type || (type==='scatter');
+    };
+
     var BARTYPES = ['bar','histogram'];
     plots.isBar = function(type) {
         return BARTYPES.indexOf(type)!==-1;
@@ -276,6 +280,11 @@
         return HIST2DTYPES.indexOf(type) !== -1;
     };
 
+    plots.isCartesian = function(type) {
+        return plots.isScatter(type) || plots.isBar(type) ||
+            plots.isHeatmap(type) || type==='box';
+    };
+
     var GL3DTYPES = ['scatter3d', 'surface'];
     plots.isGL3D = function(type) {
         return GL3DTYPES.indexOf(type) !== -1;
@@ -294,7 +303,7 @@
             document.getElementById(divid) : divid;
 
         // doesn't work presently (and not needed) for polar or 3d
-        if(gd.layout._isGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
+        if(gd.layout._hasGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
             return;
         }
 
@@ -689,8 +698,16 @@
             if (gd.data.some(function (d) {
                 return plots.isGL3D(d.type);
             })) {
-                layout._isGL3D = true;
+                layout._hasGL3D = true;
             }
+
+            // DETECT Cartesian
+            if (gd.data.some(function (d) {
+                return plots.isCartesian(d.type) && !('r' in d);
+            })) {
+                layout._hasCartesian = true;
+            }
+
 
 
             var subplots = Plotly.Axes.getSubplots(gd).join(''),
@@ -714,13 +731,11 @@
         // enable or disable formatting buttons
         $(gd).find('.data-only').attr('disabled', !hasData);
 
-        var gl = gd.layout,
-            curvetype;
-
+        var gl = gd.layout;
 
         ////////////////////////////////  3D   ///////////////////////////////
 
-        if (gl._isGL3D) {
+        if (gl._hasGL3D) {
             /*
              * Once Webgl plays well with other things we can remove this.
              * Unset examples, they misbehave with 3d plots
@@ -730,26 +745,28 @@
                 Examples.set();
             }
 
+
+            // tie modebar into all iframes
+            var modebar =  $(gd).find('.svg-container .modebar')[0];
+            SceneFrame.reconfigureModeBar(gd.layout, modebar);
+
             /*
              * Reset all SceneFrame positions (for now just
              * set width % as viewport x ratio)
              * In case this is a redraw from a resize
              */
             gd.data
-            .filter( function (d) { return plots.isGL3D(d.type); } )
+            .filter( function (d) {
+                return plots.isGL3D(d.type);
+            } )
             .forEach( function (d) {
 
-                var sceneTemplate = {
-                    _glx: undefined,
-                    _dataQueue: [], // for asyncronously loading data
-                    domain: {x:[0,1],y:[0,1]}, // default domain
-                    _loading: false
-                };
               // This following code inserts test data if no data is present
               // remove after completion
+                var sceneLayout, destScene;
                 if (!Array.isArray(d.z)) {
                     $.extend(d, SceneFrame.testData(d.type,
-                        120, 120, [40,40,40]));
+                        120, 120, [40,40,60]));
                 }
 
                 /*
@@ -760,39 +777,34 @@
                  *
                  * and d.scene will be undefined or some number or number string
                  */
-                var destScene = 'scene';
+                destScene = 'scene';
                 if (d.scene && $.isNumeric(d.scene) && d.scene > 1) {
                     destScene += d.scene;
                 }
 
-                /*
-                 * In the case existing scenes are active in this tab:
-                 * If data has a destination scene attempt to match that to the
-                 * associated scene.
-                 * If a particular data trace also has a glID. It means the
-                 * surface or mesh for this data trace has already been drawn
-                 * and we can just do an update (updating not yet implemented).
-                 */
-                var scene = gl[destScene] || {};
+                if (destScene in gl && '_webgl' in gl[destScene] && gl[destScene]._webgl) {
 
-                if ('_glx' in scene && scene._glx) {
+                    /*
+                     * In the case existing scenes are active in this tab:
+                     * If data has a destination scene attempt to match that to
+                     * the associated scene.
+                     * If a particular data trace also has a glID. It means the
+                     * surface or mesh for this data trace has already been
+                     * drawn and we can just do an update.
+                     * (this is handled inside scene.js)
+                     */
+                    sceneLayout = gl[destScene];
                     // you can change the camera position before or
                     // after initializing data or accept defaults
-                    scene._glx.draw(d, d.type);
-                    scene._glx.axisOn();
+                    sceneLayout._webgl.draw(gl, d, d.type);
                 }
                 else {
                     /*
-                     * Inflate scene object and add defaults
+                     * build a new scene layout object
                      */
-                    Object.keys(sceneTemplate).forEach( function (key) {
-                        if (key in scene) { return; }
-                        else { scene[key] = sceneTemplate[key]; }
-                    });
+                    gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(gd, destScene, {});
 
-                    gl[destScene] = scene;
-
-                    scene._dataQueue.push(d);
+                    sceneLayout._dataQueue.push(d);
                 }
             });
 
@@ -813,55 +825,65 @@
             });
 
             scenes.map( function (sceneKey, idx) {
-                var scene = gl[sceneKey];
+                var sceneLayout = gl[sceneKey];
                 // we are only modifying the x domain position with this
                 // simple approach
-                scene.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
-                // if this scene has already been loaded it will have it's glx
+                sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
+
+                // convert domain to position in pixels
+                sceneLayout.position = {
+                    left: gl._size.l + sceneLayout.domain.x[0]*gl._size.w,
+                    top: gl._size.t + (1-sceneLayout.domain.y[1])*gl._size.h,
+                    width: gl._size.w *
+                        (sceneLayout.domain.x[1] - sceneLayout.domain.x[0]),
+                    height: gl._size.h *
+                        (sceneLayout.domain.y[1] - sceneLayout.domain.y[0])
+                };
+
+                // if this scene has already been loaded it will have it's webgl
                 // context parameter so lets reset the domain of the scene as
                 // it may have changed (this operates on the containing iframe)
-                if (scene._loaded) { scene.setPosition(scene.domain); }
-                return scene;
+                if (sceneLayout._webgl) sceneLayout._webgl.setPosition(sceneLayout.position);
+                return sceneLayout;
             })
-            .filter( function (scene) {
+            .filter( function (sceneLayout) {
                 /*
                  * We only want to continue to operate on scenes that have
                  * data waiting to be displayed and are themselves not
                  * already undergoing loading.
                  */
-                if (scene && scene._dataQueue.length && !scene._loading) {
-                    scene._loading = true;
+                if (sceneLayout && sceneLayout._dataQueue.length && !sceneLayout._loading) {
+                    sceneLayout._loading = true;
                     return true;
                 }
                 return false;
             })
-            .forEach( function (scene) {
+            .forEach( function (sceneLayout) {
                 /*
                  * Creating new scenes
                  */
                 var sceneOptions = {
                     container: gd.querySelector('.svg-container'),
-                    zIndex: '1000'
+                    zIndex: '1000',
+                    id: sceneLayout._id,
+                    plotly: Plotly,
+                    layout: gl
                 };
 
-                SceneFrame.createScene(sceneOptions, function (glx) {
-                    scene._loading = false; // loaded
+                SceneFrame.createScene(sceneOptions, function (webgl) {
+                    sceneLayout._loading = false; // loaded
 
-                    glx.setPosition(scene.domain);
+                    webgl.setPosition(sceneLayout.position);
 
-                    while (scene._dataQueue.length) {
-                        var d = scene._dataQueue.shift();
-                        glx.draw(d, d.type);
+                    // if data has accumulated on the queue while the iframe
+                    // and the webgl-context were loading remove that data
+                    // from the queue and draw.
+                    while (sceneLayout._dataQueue.length) {
+                        var d = sceneLayout._dataQueue.shift();
+                        webgl.draw(gl, d, d.type);
                     }
-                    /*
-                     * Calling glx.axisOn when it is already on will update it
-                     * to include any changes to the boundaries of the drawn
-                     * objects (autoscaling).
-                     */
-                    glx.axisOn({textScale: 0.4});
-
-                    scene._glx = glx;
-
+                    // make the .webgl (webgl context) available through scene.
+                    sceneLayout._webgl = webgl;
                 });
             });
         }
@@ -872,9 +894,9 @@
 
 
         /*
-         * Plotly.plot shortCircuit for 3d
+         * Plotly.plot shortCircuit for 3d only
          */
-        if (gl._isGL3D) {
+        if (!gl._hasCartesian) {
 
             gl._paperdiv.style({
                 width: gl.width+'px',
@@ -916,22 +938,11 @@
             for(var curve = 0; curve<gd.data.length; curve++) {
                 // curve is the index, gdc is the data object for one trace
                 var gdc = gd.data[curve],
-                    isPolar = 'r' in gdc,
                     module = '',
                     cd = [];
-                curvetype = gdc.type || 'scatter'; //default type is scatter
-                // don't let type be blank...
-                // may want to go further and enforce known types?
-                gdc.type = curvetype;
 
-                if(isPolar) {
-                    console.log('Oops, tried to put a polar trace of type ' +
-                        gdc.type + ' on an incompatible graph of cartesian ' +
-                        gd.data[0].type + ' data. Ignoring this dataset.'
-                    );
-                    gd.calcdata.push([{x:false, y:false}]);
-                    continue;
-                }
+                // fill in default curve type
+                if(!gdc.type) { gdc.type = 'scatter'; }
 
                 // if no name is given, make a default from the curve number
                 if(!gdc.name) {
@@ -943,14 +954,28 @@
                 }
 
                 // figure out which module plots this data
-                if(curvetype==='scatter') { module = 'Scatter'; }
-                else if(plots.isBar(curvetype)) { module = 'Bars'; }
-                else if(plots.isContour(curvetype)) { module = 'Contour'; }
-                else if(plots.isHeatmap(curvetype)) { module = 'Heatmap'; }
-                else if(curvetype==='box') { module = 'Boxes'; }
+                if('r' in gdc) {
+                    console.log('Oops, tried to put a polar trace of type ' +
+                        gdc.type + ' on an incompatible graph of cartesian ' +
+                        gd.data[0].type + ' data. Ignoring this dataset.'
+                    );
+                }
+                else if(plots.isGL3D(gdc.type)) {
+                    // for the moment handle 3D the same way as polar,
+                    // just don't treat it as an error
+                }
+                else if(plots.isScatter(gdc.type)) { module = 'Scatter'; }
+                else if(plots.isBar(gdc.type)) { module = 'Bars'; }
+                else if(plots.isContour(gdc.type)) { module = 'Contour'; }
+                else if(plots.isHeatmap(gdc.type)) { module = 'Heatmap'; }
+                else if(gdc.type==='box') { module = 'Boxes'; }
+                else {
+                    console.log('Unrecognized plot type ' + gdc.type +
+                        '. Ignoring this dataset.'
+                    );
+                }
 
                 if(module) { cd = Plotly[module].calc(gd,gdc); }
-                else { console.log('unrecognized trace type: ' +curvetype); }
 
                 if(!('line' in gdc)) { gdc.line = {}; }
                 if(!('marker' in gdc)) { gdc.marker = {}; }
@@ -958,6 +983,8 @@
                 if(!('textfont' in gdc)) { gdc.textfont = {}; }
 
                 // make sure there is a first point
+                // this ensures there is a calcdata item for every trace,
+                // even if cartesian logic doesn't handle it
                 if(!$.isArray(cd) || !cd[0]) { cd = [{x: false, y: false}]; }
 
                 // add the trace-wide properties to the first point,
@@ -968,11 +995,14 @@
                 cd[0].t.curve = curve;
                 // store the calcdata curve number we're in - should be the same
                 cd[0].t.cdcurve = gd.calcdata.length;
-                // store the module for this trace, for use later by plotting
-                cd[0].t.module = module;
-                // save which modules we're using, for fast plotting / styling
-                if(gd._modules.indexOf(module)===-1) {
-                    gd._modules.push(module);
+
+                if(module) {
+                    // store the module for this trace, for use later to plot
+                    cd[0].t.module = module;
+                    // save which modules we're using
+                    if(gd._modules.indexOf(module)===-1) {
+                        gd._modules.push(module);
+                    }
                 }
 
                 gd.calcdata.push(cd);
@@ -1226,7 +1256,15 @@
             t = cd[0].t; // trace styling object
             c = t.curve; // trace number
             gdc = gd.data[c];
-            defaultColor = plots.defaultColors[c % plots.defaultColors.length];
+            // defaultColor cares about which trace this is in gd.data
+            // but we can get here from editing with a different data
+            // array, with other things added before the regular traces
+            // in that case, take t.selected, which references the correct
+            // trace in the real gd.data
+            defaultColor = plots.defaultColors[
+                ($.isNumeric(t.selected) ? t.selected : c) %
+                plots.defaultColors.length
+            ];
             // record in t which data arrays we have for this trace
             // other arrays, like marker size, are recorded as such in mergeattr
             // this is used to decide which options to display for styling
@@ -1532,7 +1570,8 @@
             'contours.start','contours.end','contours.size',
             'contours.showlines',
             'line.smoothing','line.shape',
-            'error_y.width','error_x.width','marker.maxdisplayed'
+            'error_y.width','error_x.width','error_x.copy_ystyle',
+            'marker.maxdisplayed'
         ];
         // these ones show up in restyle because they make more sense
         // in the style box, but they're graph-wide attributes, so set
@@ -1560,6 +1599,9 @@
         var redoit = {},
             undoit = {},
             axlist;
+
+        // for now, if we detect 3D stuff, just re-do the plot
+        if (gl._hasGL3D) doplot = true;
 
         // make a new empty vals array for undoit
         function a0(){ return traces.map(function(){ return undefined; }); }
@@ -1906,6 +1948,9 @@
             doplot = false,
             docalc = false,
             domodebar = false;
+
+        // for now, if we detect 3D stuff, just re-do the plot
+        if (gl._hasGL3D) doplot = true;
 
         if(typeof astr === 'string') { aobj[astr] = val; }
         else if($.isPlainObject(astr)) { aobj = astr; }
@@ -2333,7 +2378,9 @@
         });
         gd.layout = gl = updateObject(oldLayout, newLayout);
 
-        if (!plots.isGL3D(type)) {
+        var doCartesian = gl._hasCartesian || !gl._hasGL3D;
+
+        if (doCartesian) {
             // do a bunch of 2D axis stuff
 
             // Get subplots and see if we need to make any more axes
@@ -2352,7 +2399,8 @@
             Plotly.Axes.setTypes(gd);
 
         } else {
-            // This is WEBGL, remove usual axis
+            // This is WEBGL ONLY, remove usual axis
+            subplots = [];
             delete gd.layout.xaxis;
             delete gd.layout.yaxis;
         }
@@ -2389,13 +2437,13 @@
         // short-circuiting this code here resolves the issue where the _paper
         // svg element following this conditional pushes the page past
         // screen height and leads to overflow and scrollbars in the tool.
-        if (plots.isGL3D(type)) {
-            // init the mode bar
-            Plotly.Fx.modeBar(gd);
-            if(!gl._forexport) { Plotly.Fx.init(gd); }
+        // if (!doCartesian) {
+        //     // init the mode bar
+        //     Plotly.Fx.modeBar(gd);
+        //     if(!gl._forexport) { Plotly.Fx.init(gd); }
 
-            return;
-        }
+        //     return;
+        // }
 
         gl._paper = gl._paperdiv.append('svg')
             .attr({
@@ -3286,4 +3334,21 @@
         }
         return uoStack.pop();
     }
+
+    plots.defaultSceneLayout = function (td, sceneId, extras) {
+        var id = sceneId.slice(5); // slices of the scene from scene3
+        if (!extras) extras = {};
+        return $.extend({
+            _webgl: null,
+            _dataQueue: [], // for asyncronously loading data
+            _loading: false,
+            _id: sceneId,
+            domain: {x:[0,1],y:[0,1]}, // default domain
+            orthographic: true,
+            xaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'x', _name: 'xaxis-' + sceneId }),
+            yaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'y', _name: 'yaxis-' + sceneId }),
+            zaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'z', _name: 'zaxis-' + sceneId })
+        }, extras);
+    };
+
 }()); // end Plots object definition
