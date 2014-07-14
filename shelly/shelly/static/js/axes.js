@@ -794,7 +794,7 @@
     // if ticks are set to automatic, determine the right values (tick0,dtick)
     // in any case, set tickround to # of digits to round tick labels to,
     // or codes to this effect for log and date scales
-    axes.calcTicks = function calcTicks (ax) {
+    function calcTicks(ax) {
         // calculate max number of (auto) ticks to display based on plot size
         if(ax.autotick || !ax.dtick){
             var nt = (ax.nticks || Plotly.Lib.constrain(ax._length /
@@ -1371,36 +1371,18 @@
     }
 
     // get all axis objects, optionally restricted to only
-    // x or y or z by string axletter
-    axes.list = function(gd, axletter) {
-        if (!gd.layout) return [];
-
-        function filterAxis (obj) {
-            return Object.keys(obj)
-                .filter( function(k) {
-                    if(axletter && k.charAt(0) !== axletter) {
-                        return false;
-                    }
-                    return k.match(/^[xyz]axis[0-9]*/g);
-                }).sort().map(
-                    function (k) {
-                        return obj[k];
-                    });
-        }
-
-        var axis2d = filterAxis(gd.layout);
-        var axis3d = [];
-        var scenes = Object.keys(gd.layout).filter( function (k) {
-            return k.match(/^scene[0-9]*$/);
-        });
-
-        if (scenes) {
-            scenes.forEach( function (sceneId) {
-                axis3d = axis3d.concat(filterAxis(gd.layout[sceneId]));
-            });
-        }
-
-        return axis2d.concat(axis3d);
+    // x or y by string axletter
+    axes.list = function(td,axletter) {
+        if(!td.layout) { return []; }
+        return Object.keys(td.layout)
+            .filter(function(k){
+                if(axletter && k.charAt(0)!==axletter) {
+                    return false;
+                }
+                return k.match(/^[xy]axis[0-9]*/g);
+            })
+            .sort()
+            .map(function(k){ return td.layout[k]; });
     };
 
     // get an axis object from its id 'x','x2' etc
@@ -1567,7 +1549,7 @@
         ax.setScale();
 
         var axletter = axid.charAt(0),
-            vals = axes.calcTicks(ax),
+            vals=calcTicks(ax),
             datafn = function(d){ return d.text+d.x+ax.mirror; },
             tcls = axid+'tick',
             gcls = axid+'grid',

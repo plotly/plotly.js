@@ -689,12 +689,10 @@
                 min = t[attr+'cmin'],
                 max = t[attr+'cmax'],
                 auto = t[attr+'cauto'];
-
-            if(typeof scl === 'string') {
+            if(typeof scl === 'string' && scl in Plotly.colorscales) {
                 scl = Plotly.colorscales[scl];
             }
-
-            if(!scl) {
+            else if(!scl) {
                 scl = Plotly.defaultColorscale;
             }
 
