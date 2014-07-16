@@ -1543,6 +1543,7 @@
             if(!axid || axid==='redraw') {
                 return Plotly.Lib.syncOrAsync(axes.list(td).map(function(ax) {
                     return function(){
+                        if(!ax._id) { return; }
                         var axDone = axes.doTicks(td,ax._id);
                         if(axid==='redraw') { ax._r = ax.range.slice(); }
                         return axDone;
