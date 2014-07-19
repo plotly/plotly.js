@@ -14,6 +14,7 @@
     // ---external global dependencies
     /* global Promise:false, d3:false */
 
+
     if(!window.Plotly) { window.Plotly = {}; }
 
     var plots = Plotly.Plots = {};
@@ -732,6 +733,7 @@
         $(gd).find('.data-only').attr('disabled', !hasData);
 
         var gl = gd.layout;
+
 
         ////////////////////////////////  3D   ///////////////////////////////
 
@@ -2755,7 +2757,6 @@
 
         // clear axis line positions, to be set in the subplot loop below
         Plotly.Axes.list(gd).forEach(function(ax){ ax._linepositions = {}; });
-
         gl._paperdiv.style({
             width: gl.width+'px',
             height: gl.height+'px',
@@ -3345,9 +3346,9 @@
             _id: sceneId,
             domain: {x:[0,1],y:[0,1]}, // default domain
             orthographic: true,
-            xaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'x', _name: 'xaxis-' + sceneId }),
-            yaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'y', _name: 'yaxis-' + sceneId }),
-            zaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'z', _name: 'zaxis-' + sceneId })
+            xaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'x' + sceneId, _name: 'xaxis'}),
+            yaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'y' + sceneId, _name: 'yaxis'}),
+            zaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'z' + sceneId, _name: 'zaxis'})
         }, extras);
     };
 
