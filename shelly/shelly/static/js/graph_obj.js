@@ -962,15 +962,14 @@
                         gd.data[0].type + ' data. Ignoring this dataset.'
                     );
                 }
-                else if(plots.isGL3D(gdc.type)) {
-                    // for the moment handle 3D the same way as polar,
-                    // just don't treat it as an error
-                }
-                else if(plots.isScatter(gdc.type)) { module = 'Scatter'; }
-                else if(plots.isBar(gdc.type)) { module = 'Bars'; }
-                else if(plots.isContour(gdc.type)) { module = 'Contour'; }
-                else if(plots.isHeatmap(gdc.type)) { module = 'Heatmap'; }
-                else if(gdc.type==='box') { module = 'Boxes'; }
+                // styling change
+                // see https://github.com/plotly/Contributors-Guide/blob/master/styleguides/javascript.md#blocks
+                else if(plots.isScatter3d(gdc.type)) module = 'Scatter3d';
+                else if(plots.isScatter(gdc.type))  module = 'Scatter';
+                else if(plots.isBar(gdc.type))  module = 'Bars';
+                else if(plots.isContour(gdc.type)) module = 'Contour';
+                else if(plots.isHeatmap(gdc.type)) module = 'Heatmap';
+                else if(gdc.type==='box')  module = 'Boxes';
                 else {
                     console.log('Unrecognized plot type ' + gdc.type +
                         '. Ignoring this dataset.'
