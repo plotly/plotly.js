@@ -3,6 +3,8 @@
 // functions include:
 //      - data conversions
 //      - calculating and drawing ticks
+
+
 (function() {
     'use strict';
 
@@ -1374,7 +1376,6 @@
     // x or y or z by string axletter
     axes.list = function(gd, axletter) {
         if (!gd.layout) return [];
-
         function filterAxis (obj) {
             return Object.keys(obj)
                 .filter( function(k) {
@@ -1515,6 +1516,11 @@
         var gl = td.layout,
             ax,
             independent = false;
+
+        // there are multiple code paths into this function
+        // instead of patching them all up, lets bail if 3D here
+        if (gl._hasGL3D) return;
+
         // allow passing an independent axis object instead of id
         if(typeof axid === 'object') {
             ax = axid;
