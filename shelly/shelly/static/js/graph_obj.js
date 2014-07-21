@@ -893,10 +893,10 @@
         ///////////////////////////////  end of 3D   ///////////////////////
 
 
-
-
         /*
          * Plotly.plot shortCircuit for 3d only
+         * eventually remove this and integrate more
+         * thoroughly with module system.
          */
         if (!gl._hasCartesian) {
 
@@ -917,6 +917,8 @@
         // prepare the data and find the autorange
 
         Plotly.Lib.markTime('done Plotly.Axes.setType');
+
+
 
         // generate calcdata, if we need to
         // to force redoing calcdata, just delete it before calling Plotly.plot
@@ -964,7 +966,6 @@
                 }
                 // styling change
                 // see https://github.com/plotly/Contributors-Guide/blob/master/styleguides/javascript.md#blocks
-                else if(plots.isScatter3d(gdc.type)) module = 'Scatter3d';
                 else if(plots.isScatter(gdc.type))  module = 'Scatter';
                 else if(plots.isBar(gdc.type))  module = 'Bars';
                 else if(plots.isContour(gdc.type)) module = 'Contour';
