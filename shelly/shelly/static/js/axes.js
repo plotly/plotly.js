@@ -145,6 +145,8 @@
                 ax.range = [-1,1];
             }
             for(i=0; i<2; i++) {
+                // this is smart and completely illegible. --- there is no
+                // compiler optimization here... just less lines of code.
                 if(!$.isNumeric(ax.range[i])) {
                     ax.range[i] = $.isNumeric(ax.range[1-i]) ?
                         (ax.range[1-i] * (i ? 10 : 0.1)) :
@@ -846,7 +848,7 @@
         ax._tmax=vals[vals.length-1];
 
         return vals.map(function(x){return axes.tickText(ax, x);});
-    }
+    };
 
     // autoTicks: calculate best guess at pleasant ticks for this axis
     // inputs:
