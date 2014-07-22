@@ -996,7 +996,7 @@
         var fid = lib.fullFid(td.fid);
         var extrarefs = (td.ref_fids||[]).join(',');
         if(!fid && !extrarefs) { return; }
-        $.post('/getsources', {fid:fid, extrarefs:extrarefs}, function(res) {
+        $.get('/getsources', {fid:fid, extrarefs:extrarefs}, function(res) {
             td.sourcelist = JSON.parse(res);
             if(!$.isArray(td.sourcelist)) {
                 console.log('sourcelist error',td.sourcelist);
