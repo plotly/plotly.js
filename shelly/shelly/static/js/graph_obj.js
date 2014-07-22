@@ -2021,6 +2021,12 @@
             var p = Plotly.Lib.nestedProperty(gl,ai),
                 vi = aobj[ai];
             redoit[ai] = aobj[ai];
+
+            /*
+             * Note all the following axis stuff will not apply
+             * for 3d as we have nested ai of 'scene2.xaxis.type' etc..
+             */
+
             // axis reverse is special - it is its own inverse
             // op and has no flag.
             undoit[ai] = (p.parts[1]==='reverse') ? aobj[ai] : p.get();
