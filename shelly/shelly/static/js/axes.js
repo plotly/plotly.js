@@ -398,7 +398,7 @@
             };
 
             ax.d2c = function(v){
-                return (typeof v==='number') ? v : Plotly.Lib.dateTime2ms(v);
+                return ($.isNumeric(v)) ? Number(v) : Plotly.Lib.dateTime2ms(v);
             };
 
             // check if date strings or js date objects are provided for range
