@@ -1949,7 +1949,9 @@
             dolayoutstyle = false,
             doplot = false,
             docalc = false,
-            domodebar = false;
+            domodebar = false,
+            newkey, axes, keys, xyref, scene, axisAttr;
+
 
         // for now, if we detect 3D stuff, just re-do the plot
         if (gl._hasGL3D) doplot = true;
@@ -1960,20 +1962,24 @@
 
         if(Object.keys(aobj).length) { gd.changed = true; }
 
-        var keys = Object.keys(aobj),
-            axes = Plotly.Axes.list(gd);
+        keys = Object.keys(aobj);
+        axes = Plotly.Axes.list(gd);
+
         for(var i=0; i<keys.length; i++) {
             // look for 'allaxes', split out into all axes
             if(keys[i].indexOf('allaxes')===0) {
                 for(var j=0; j<axes.length; j++) {
-                    var newkey = keys[i].replace('allaxes',axes[j]._name);
+                    // in case of 3D the axis are nested within a scene which is held in _id
+                    scene = axes[j]._id.substr(1);
+                    axisAttr = (scene.indexOf('scene') !== -1) ? (scene + '.') : '';
+                    newkey = keys[i].replace('allaxes', axisAttr + axes[j]._name);
                     if(!aobj[newkey]) { aobj[newkey] = aobj[keys[i]]; }
                 }
                 delete aobj[keys[i]];
             }
             // split annotation.ref into xref and yref
             if(keys[i].match(/^annotations\[[0-9-]\].ref$/)) {
-                var xyref = aobj[keys[i]].split('y');
+                xyref = aobj[keys[i]].split('y');
                 aobj[keys[i].replace('ref','xref')] = xyref[0];
                 aobj[keys[i].replace('ref','yref')] = xyref.length===2 ?
                     ('y'+xyref[1]) : 'paper';
