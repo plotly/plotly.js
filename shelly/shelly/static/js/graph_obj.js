@@ -393,7 +393,7 @@
             var path=window.location.pathname.split('/');
             link.attr({
                 'xlink:xlink:show': 'new',
-                'xlink:xlink:href': '/'+path[1]+'/'+path[2]
+                'xlink:xlink:href': '/'+path[1]+'/'+path[2].split('.')[0]
             });
         }
         else {
