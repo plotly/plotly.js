@@ -3349,7 +3349,6 @@
     }
 
     plots.defaultSceneLayout = function (td, sceneId, extras) {
-        var id = sceneId.slice(5); // slices of the scene from scene3
         if (!extras) extras = {};
         return $.extend({
             _webgl: null,
