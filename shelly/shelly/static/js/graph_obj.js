@@ -216,7 +216,7 @@
             hovermode:'x',
             separators:'.,', // decimal then thousands
             hidesources:false,
-            smith:false,
+            smith:false
         };
     }
 
@@ -256,6 +256,10 @@
         });
     }
 
+    plots.isScatter = function(type) {
+        return !type || (type==='scatter');
+    };
+
     var BARTYPES = ['bar','histogram'];
     plots.isBar = function(type) {
         return BARTYPES.indexOf(type)!==-1;
@@ -276,6 +280,11 @@
         return HIST2DTYPES.indexOf(type) !== -1;
     };
 
+    plots.isCartesian = function(type) {
+        return plots.isScatter(type) || plots.isBar(type) ||
+            plots.isHeatmap(type) || type==='box';
+    };
+
     var GL3DTYPES = ['scatter3d', 'surface'];
     plots.isGL3D = function(type) {
         return GL3DTYPES.indexOf(type) !== -1;
@@ -294,7 +303,7 @@
             document.getElementById(divid) : divid;
 
         // doesn't work presently (and not needed) for polar or 3d
-        if(gd.layout._isGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
+        if(gd.layout._hasGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
             return;
         }
 
@@ -383,7 +392,7 @@
             var path=window.location.pathname.split('/');
             link.attr({
                 'xlink:xlink:show': 'new',
-                'xlink:xlink:href': '/'+path[1]+'/'+path[2]
+                'xlink:xlink:href': '/'+path[1]+'/'+path[2].split('.')[0]
             });
         }
         else {
@@ -442,6 +451,11 @@
         // hook class for plots main container (in case of plotly.js
         // this won't be #embedded-graph or .js-tab-contents)
         d3.select(gd).classed('js-plotly-plot',true);
+
+        // off-screen getBoundingClientRect testing space,
+        // in #js-plotly-tester (and stored as gd._tester)
+        // so we can share cached text across tabs
+        makeTester(gd);
 
         // collect promises for any async actions during plotting
         // any part of the plotting code can push to gd._promises, then
@@ -684,8 +698,16 @@
             if (gd.data.some(function (d) {
                 return plots.isGL3D(d.type);
             })) {
-                layout._isGL3D = true;
+                layout._hasGL3D = true;
             }
+
+            // DETECT Cartesian
+            if (gd.data.some(function (d) {
+                return plots.isCartesian(d.type) && !('r' in d);
+            })) {
+                layout._hasCartesian = true;
+            }
+
 
 
             var subplots = Plotly.Axes.getSubplots(gd).join(''),
@@ -709,13 +731,11 @@
         // enable or disable formatting buttons
         $(gd).find('.data-only').attr('disabled', !hasData);
 
-        var gl = gd.layout,
-            curvetype;
-
+        var gl = gd.layout;
 
         ////////////////////////////////  3D   ///////////////////////////////
 
-        if (gl._isGL3D) {
+        if (gl._hasGL3D) {
             /*
              * Once Webgl plays well with other things we can remove this.
              * Unset examples, they misbehave with 3d plots
@@ -725,26 +745,28 @@
                 Examples.set();
             }
 
+
+            // tie modebar into all iframes
+            var modebar =  $(gd).find('.svg-container .modebar')[0];
+            SceneFrame.reconfigureModeBar(gd.layout, modebar);
+
             /*
              * Reset all SceneFrame positions (for now just
              * set width % as viewport x ratio)
              * In case this is a redraw from a resize
              */
             gd.data
-            .filter( function (d) { return plots.isGL3D(d.type); } )
+            .filter( function (d) {
+                return plots.isGL3D(d.type);
+            } )
             .forEach( function (d) {
 
-                var sceneTemplate = {
-                    _glx: undefined,
-                    _dataQueue: [], // for asyncronously loading data
-                    domain: {x:[0,1],y:[0,1]}, // default domain
-                    _loading: false
-                };
               // This following code inserts test data if no data is present
               // remove after completion
+                var sceneLayout, destScene;
                 if (!Array.isArray(d.z)) {
                     $.extend(d, SceneFrame.testData(d.type,
-                        120, 120, [40,40,40]));
+                        120, 120, [40,40,60]));
                 }
 
                 /*
@@ -755,39 +777,34 @@
                  *
                  * and d.scene will be undefined or some number or number string
                  */
-                var destScene = 'scene';
+                destScene = 'scene';
                 if (d.scene && $.isNumeric(d.scene) && d.scene > 1) {
                     destScene += d.scene;
                 }
 
-                /*
-                 * In the case existing scenes are active in this tab:
-                 * If data has a destination scene attempt to match that to the
-                 * associated scene.
-                 * If a particular data trace also has a glID. It means the
-                 * surface or mesh for this data trace has already been drawn
-                 * and we can just do an update (updating not yet implemented).
-                 */
-                var scene = gl[destScene] || {};
+                if (destScene in gl && '_webgl' in gl[destScene] && gl[destScene]._webgl) {
 
-                if ('_glx' in scene && scene._glx) {
+                    /*
+                     * In the case existing scenes are active in this tab:
+                     * If data has a destination scene attempt to match that to
+                     * the associated scene.
+                     * If a particular data trace also has a glID. It means the
+                     * surface or mesh for this data trace has already been
+                     * drawn and we can just do an update.
+                     * (this is handled inside scene.js)
+                     */
+                    sceneLayout = gl[destScene];
                     // you can change the camera position before or
                     // after initializing data or accept defaults
-                    scene._glx.draw(d, d.type);
-                    scene._glx.axisOn();
+                    sceneLayout._webgl.draw(gl, d, d.type);
                 }
                 else {
                     /*
-                     * Inflate scene object and add defaults
+                     * build a new scene layout object
                      */
-                    Object.keys(sceneTemplate).forEach( function (key) {
-                        if (key in scene) { return; }
-                        else { scene[key] = sceneTemplate[key]; }
-                    });
+                    gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(gd, destScene, {});
 
-                    gl[destScene] = scene;
-
-                    scene._dataQueue.push(d);
+                    sceneLayout._dataQueue.push(d);
                 }
             });
 
@@ -808,55 +825,65 @@
             });
 
             scenes.map( function (sceneKey, idx) {
-                var scene = gl[sceneKey];
+                var sceneLayout = gl[sceneKey];
                 // we are only modifying the x domain position with this
                 // simple approach
-                scene.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
-                // if this scene has already been loaded it will have it's glx
+                sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
+
+                // convert domain to position in pixels
+                sceneLayout.position = {
+                    left: gl._size.l + sceneLayout.domain.x[0]*gl._size.w,
+                    top: gl._size.t + (1-sceneLayout.domain.y[1])*gl._size.h,
+                    width: gl._size.w *
+                        (sceneLayout.domain.x[1] - sceneLayout.domain.x[0]),
+                    height: gl._size.h *
+                        (sceneLayout.domain.y[1] - sceneLayout.domain.y[0])
+                };
+
+                // if this scene has already been loaded it will have it's webgl
                 // context parameter so lets reset the domain of the scene as
                 // it may have changed (this operates on the containing iframe)
-                if (scene._loaded) { scene.setPosition(scene.domain); }
-                return scene;
+                if (sceneLayout._webgl) sceneLayout._webgl.setPosition(sceneLayout.position);
+                return sceneLayout;
             })
-            .filter( function (scene) {
+            .filter( function (sceneLayout) {
                 /*
                  * We only want to continue to operate on scenes that have
                  * data waiting to be displayed and are themselves not
                  * already undergoing loading.
                  */
-                if (scene && scene._dataQueue.length && !scene._loading) {
-                    scene._loading = true;
+                if (sceneLayout && sceneLayout._dataQueue.length && !sceneLayout._loading) {
+                    sceneLayout._loading = true;
                     return true;
                 }
                 return false;
             })
-            .forEach( function (scene) {
+            .forEach( function (sceneLayout) {
                 /*
                  * Creating new scenes
                  */
                 var sceneOptions = {
                     container: gd.querySelector('.svg-container'),
-                    zIndex: '1000'
+                    zIndex: '1000',
+                    id: sceneLayout._id,
+                    plotly: Plotly,
+                    layout: gl
                 };
 
-                SceneFrame.createScene(sceneOptions, function (glx) {
-                    scene._loading = false; // loaded
+                SceneFrame.createScene(sceneOptions, function (webgl) {
+                    sceneLayout._loading = false; // loaded
 
-                    glx.setPosition(scene.domain);
+                    webgl.setPosition(sceneLayout.position);
 
-                    while (scene._dataQueue.length) {
-                        var d = scene._dataQueue.shift();
-                        glx.draw(d, d.type);
+                    // if data has accumulated on the queue while the iframe
+                    // and the webgl-context were loading remove that data
+                    // from the queue and draw.
+                    while (sceneLayout._dataQueue.length) {
+                        var d = sceneLayout._dataQueue.shift();
+                        webgl.draw(gl, d, d.type);
                     }
-                    /*
-                     * Calling glx.axisOn when it is already on will update it
-                     * to include any changes to the boundaries of the drawn
-                     * objects (autoscaling).
-                     */
-                    glx.axisOn({textScale: 0.4});
-
-                    scene._glx = glx;
-
+                    // make the .webgl (webgl context) available through scene.
+                    sceneLayout._webgl = webgl;
                 });
             });
         }
@@ -867,9 +894,9 @@
 
 
         /*
-         * Plotly.plot shortCircuit for 3d
+         * Plotly.plot shortCircuit for 3d only
          */
-        if (gl._isGL3D) {
+        if (!gl._hasCartesian) {
 
             gl._paperdiv.style({
                 width: gl.width+'px',
@@ -911,22 +938,11 @@
             for(var curve = 0; curve<gd.data.length; curve++) {
                 // curve is the index, gdc is the data object for one trace
                 var gdc = gd.data[curve],
-                    isPolar = 'r' in gdc,
                     module = '',
                     cd = [];
-                curvetype = gdc.type || 'scatter'; //default type is scatter
-                // don't let type be blank...
-                // may want to go further and enforce known types?
-                gdc.type = curvetype;
 
-                if(isPolar) {
-                    console.log('Oops, tried to put a polar trace of type ' +
-                        gdc.type + ' on an incompatible graph of cartesian ' +
-                        gd.data[0].type + ' data. Ignoring this dataset.'
-                    );
-                    gd.calcdata.push([{x:false, y:false}]);
-                    continue;
-                }
+                // fill in default curve type
+                if(!gdc.type) { gdc.type = 'scatter'; }
 
                 // if no name is given, make a default from the curve number
                 if(!gdc.name) {
@@ -938,14 +954,28 @@
                 }
 
                 // figure out which module plots this data
-                if(curvetype==='scatter') { module = 'Scatter'; }
-                else if(plots.isBar(curvetype)) { module = 'Bars'; }
-                else if(plots.isContour(curvetype)) { module = 'Contour'; }
-                else if(plots.isHeatmap(curvetype)) { module = 'Heatmap'; }
-                else if(curvetype==='box') { module = 'Boxes'; }
+                if('r' in gdc) {
+                    console.log('Oops, tried to put a polar trace of type ' +
+                        gdc.type + ' on an incompatible graph of cartesian ' +
+                        gd.data[0].type + ' data. Ignoring this dataset.'
+                    );
+                }
+                else if(plots.isGL3D(gdc.type)) {
+                    // for the moment handle 3D the same way as polar,
+                    // just don't treat it as an error
+                }
+                else if(plots.isScatter(gdc.type)) { module = 'Scatter'; }
+                else if(plots.isBar(gdc.type)) { module = 'Bars'; }
+                else if(plots.isContour(gdc.type)) { module = 'Contour'; }
+                else if(plots.isHeatmap(gdc.type)) { module = 'Heatmap'; }
+                else if(gdc.type==='box') { module = 'Boxes'; }
+                else {
+                    console.log('Unrecognized plot type ' + gdc.type +
+                        '. Ignoring this dataset.'
+                    );
+                }
 
                 if(module) { cd = Plotly[module].calc(gd,gdc); }
-                else { console.log('unrecognized trace type: ' +curvetype); }
 
                 if(!('line' in gdc)) { gdc.line = {}; }
                 if(!('marker' in gdc)) { gdc.marker = {}; }
@@ -953,6 +983,8 @@
                 if(!('textfont' in gdc)) { gdc.textfont = {}; }
 
                 // make sure there is a first point
+                // this ensures there is a calcdata item for every trace,
+                // even if cartesian logic doesn't handle it
                 if(!$.isArray(cd) || !cd[0]) { cd = [{x: false, y: false}]; }
 
                 // add the trace-wide properties to the first point,
@@ -963,11 +995,14 @@
                 cd[0].t.curve = curve;
                 // store the calcdata curve number we're in - should be the same
                 cd[0].t.cdcurve = gd.calcdata.length;
-                // store the module for this trace, for use later by plotting
-                cd[0].t.module = module;
-                // save which modules we're using, for fast plotting / styling
-                if(gd._modules.indexOf(module)===-1) {
-                    gd._modules.push(module);
+
+                if(module) {
+                    // store the module for this trace, for use later to plot
+                    cd[0].t.module = module;
+                    // save which modules we're using
+                    if(gd._modules.indexOf(module)===-1) {
+                        gd._modules.push(module);
+                    }
                 }
 
                 gd.calcdata.push(cd);
@@ -1003,7 +1038,7 @@
                 }
             });
             doAutoMargin(gd);
-            return previousPromises(gd);
+            return plots.previousPromises(gd);
         }
 
         function marginPushersAgain(){
@@ -1034,11 +1069,12 @@
                 Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
 
                 // autorange for annotations
-                Plotly.Annotations.calcAutorange(gd);
+                // Plotly.Annotations.calcAutorange(gd);
                 // TODO: autosize extra for text markers
 
                 return Plotly.Lib.syncOrAsync([
-                    previousPromises,
+                    // plots.previousPromises,
+                    Plotly.Annotations.calcAutorange,
                     doAutoRange
                 ], gd);
             }
@@ -1115,7 +1151,7 @@
             // source links
             plots.addLinks(gd);
 
-            return previousPromises(gd);
+            return plots.previousPromises(gd);
         }
 
         function cleanUp(){
@@ -1126,7 +1162,7 @@
         }
 
         var donePlotting = Plotly.Lib.syncOrAsync([
-            previousPromises,
+            plots.previousPromises,
             marginPushers,
             layoutStyles,
             marginPushersAgain,
@@ -1143,12 +1179,12 @@
 
     // for use in Plotly.Lib.syncOrAsync, check if there are any
     // pending promises in this plot and wait for them
-    function previousPromises(gd){
+    plots.previousPromises = function(gd){
         if((gd._promises||[]).length) {
             return Promise.all(gd._promises)
                 .then(function(){ gd._promises=[]; });
         }
-    }
+    };
 
     // convenience function to force a full redraw, mostly for use by plotly.js
     Plotly.redraw = function(divid) {
@@ -1220,7 +1256,15 @@
             t = cd[0].t; // trace styling object
             c = t.curve; // trace number
             gdc = gd.data[c];
-            defaultColor = plots.defaultColors[c % plots.defaultColors.length];
+            // defaultColor cares about which trace this is in gd.data
+            // but we can get here from editing with a different data
+            // array, with other things added before the regular traces
+            // in that case, take t.selected, which references the correct
+            // trace in the real gd.data
+            defaultColor = plots.defaultColors[
+                ($.isNumeric(t.selected) ? t.selected : c) %
+                plots.defaultColors.length
+            ];
             // record in t which data arrays we have for this trace
             // other arrays, like marker size, are recorded as such in mergeattr
             // this is used to decide which options to display for styling
@@ -1526,7 +1570,8 @@
             'contours.start','contours.end','contours.size',
             'contours.showlines',
             'line.smoothing','line.shape',
-            'error_y.width','error_x.width','marker.maxdisplayed'
+            'error_y.width','error_x.width','error_x.copy_ystyle',
+            'marker.maxdisplayed'
         ];
         // these ones show up in restyle because they make more sense
         // in the style box, but they're graph-wide attributes, so set
@@ -1554,6 +1599,9 @@
         var redoit = {},
             undoit = {},
             axlist;
+
+        // for now, if we detect 3D stuff, just re-do the plot
+        if (gl._hasGL3D) doplot = true;
 
         // make a new empty vals array for undoit
         function a0(){ return traces.map(function(){ return undefined; }); }
@@ -1648,20 +1696,29 @@
                 }
                 // changing colorbar size modes,
                 // make the resulting size not change
+                // note that colorbar fractional sizing is based on the
+                // original plot size, before anything (like a colorbar)
+                // increases the margins
                 else if(ai==='colorbar.thicknessmode' && param.get()!==vi &&
                         ['fraction','pixels'].indexOf(vi)!==-1) {
                     var thicknorm =
                         ['top','bottom'].indexOf(cont.colorbar.orient)!==-1 ?
-                            gl._size.h : gl._size.w;
-                    doextra(cont,'colorbar.thickness', cont.colorbar.thickness *
+                            (gl.height-gl.margin.t-gl.margin.b) :
+                            (gl.width-gl.margin.l-gl.margin.r);
+                    doextra(cont,'colorbar.thickness',
+                        (cont.colorbar.thickness ||
+                            Plotly.Colorbar.getDefault('thickness')) *
                         (vi==='fraction' ? 1/thicknorm : thicknorm),i);
                 }
                 else if(ai==='colorbar.lenmode' && param.get()!==vi &&
                         ['fraction','pixels'].indexOf(vi)!==-1) {
                     var lennorm =
                         ['top','bottom'].indexOf(cont.colorbar.orient)!==-1 ?
-                            gl._size.w : gl._size.h;
-                    doextra(cont,'colorbar.len',cont.colorbar.len *
+                            (gl.width-gl.margin.l-gl.margin.r) :
+                            (gl.height-gl.margin.t-gl.margin.b);
+                    doextra(cont,'colorbar.len',
+                        (cont.colorbar.len ||
+                            Plotly.Colorbar.getDefault('len')) *
                         (vi==='fraction' ? 1/lennorm : lennorm),i);
                 }
 
@@ -1770,12 +1827,12 @@
         }
         else {
             plots.setStyles(gd);
-            seq = [previousPromises];
+            seq = [plots.previousPromises];
             if(doapplystyle) {
                 seq.push(function doApplyStyle(){
                     applyStyle(gd);
                     if(gl.showlegend) { Plotly.Legend.draw(gd); }
-                    return previousPromises(gd);
+                    return plots.previousPromises(gd);
                 });
             }
             if(docolorbars) {
@@ -1783,7 +1840,7 @@
                     gd.calcdata.forEach(function(cd) {
                         if(cd[0].t.cb) { cd[0].t.cb.cdoptions(cd[0].t)(); }
                     });
-                    return previousPromises(gd);
+                    return plots.previousPromises(gd);
                 });
             }
         }
@@ -1891,6 +1948,9 @@
             doplot = false,
             docalc = false,
             domodebar = false;
+
+        // for now, if we detect 3D stuff, just re-do the plot
+        if (gl._hasGL3D) doplot = true;
 
         if(typeof astr === 'string') { aobj[astr] = val; }
         else if($.isPlainObject(astr)) { aobj = astr; }
@@ -2107,7 +2167,7 @@
         // redraw
         // first check if there's still anything to do
         var ak = Object.keys(aobj),
-            seq = [previousPromises];
+            seq = [plots.previousPromises];
         if(doplot||docalc) {
             seq.push(function layoutReplot(){
                 // force plot() to redo the layout
@@ -2123,7 +2183,7 @@
             if(dolegend) {
                 seq.push(function doLegend(){
                     Plotly.Legend.draw(gd, gl.showlegend);
-                    return previousPromises(gd);
+                    return plots.previousPromises(gd);
                 });
             }
             if(dolayoutstyle) {
@@ -2133,7 +2193,7 @@
                 seq.push(function(){
                     Plotly.Axes.doTicks(gd,'redraw');
                     plots.titles(gd,'gtitle');
-                    return previousPromises(gd);
+                    return plots.previousPromises(gd);
                 });
             }
             // this is decoupled enough it doesn't need async regardless
@@ -2279,6 +2339,8 @@
         // this won't be #embedded-graph or .js-tab-contents)
         gd3.classed('js-plotly-plot',true);
 
+        makeTester(gd);
+
         function addDefaultAxis(container, axname) {
             if(!container[axname]) {
                 container[axname] = Plotly.Axes.defaultAxis({
@@ -2316,7 +2378,9 @@
         });
         gd.layout = gl = updateObject(oldLayout, newLayout);
 
-        if (!plots.isGL3D(type)) {
+        var doCartesian = gl._hasCartesian || !gl._hasGL3D;
+
+        if (doCartesian) {
             // do a bunch of 2D axis stuff
 
             // Get subplots and see if we need to make any more axes
@@ -2335,7 +2399,8 @@
             Plotly.Axes.setTypes(gd);
 
         } else {
-            // This is WEBGL, remove usual axis
+            // This is WEBGL ONLY, remove usual axis
+            subplots = [];
             delete gd.layout.xaxis;
             delete gd.layout.yaxis;
         }
@@ -2372,13 +2437,13 @@
         // short-circuiting this code here resolves the issue where the _paper
         // svg element following this conditional pushes the page past
         // screen height and leads to overflow and scrollbars in the tool.
-        if (plots.isGL3D(type)) {
-            // init the mode bar
-            Plotly.Fx.modeBar(gd);
-            if(!gl._forexport) { Plotly.Fx.init(gd); }
+        // if (!doCartesian) {
+        //     // init the mode bar
+        //     Plotly.Fx.modeBar(gd);
+        //     if(!gl._forexport) { Plotly.Fx.init(gd); }
 
-            return;
-        }
+        //     return;
+        // }
 
         gl._paper = gl._paperdiv.append('svg')
             .attr({
@@ -2522,6 +2587,49 @@
             gd._promises.push(frameWorkDone);
         }
         return frameWorkDone;
+    }
+
+    // off-screen svg render testing element, shared by the whole page
+    // uses the id 'js-plotly-tester' and stores it in gd._tester
+    // makes a hash of cached text items in tester.node()._cache
+    // so we can add references to rendered text (including all info
+    // needed to fully determine its bounding rect)
+    function makeTester(gd) {
+        var tester = d3.select('body')
+            .selectAll('#js-plotly-tester')
+            .data([0]);
+
+        tester.enter().append('svg')
+            .attr({
+                id: 'js-plotly-tester',
+                xmlns: 'http://www.w3.org/2000/svg',
+                // odd d3 quirk - need namespace twice??
+                'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
+                'xml:xml:space': 'preserve'
+            })
+            .style({
+                position: 'absolute',
+                left: '-10000px',
+                top: '-10000px',
+                width: '9000px',
+                height: '9000px'
+            });
+
+        // browsers differ on how they describe the bounding rect of
+        // the svg if its contents spill over... so make a 1x1px
+        // reference point we can measure off of.
+        var testref = tester.selectAll('.js-reference-point').data([0]);
+        testref.enter().append('path')
+            .classed('js-reference-point', true)
+            .attr('d','M0,0H1V1H0Z')
+            .style({'stroke-width':0, fill:'black'});
+
+        if(!tester.node()._cache) {
+            tester.node()._cache = {};
+        }
+
+        gd._tester = tester;
+        gd._testref = testref;
     }
 
     // called by legend and colorbar routines to see if we need to
@@ -2827,7 +2935,12 @@
             font = cont.titlefont.family || gl.font.family || 'Arial',
             fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
             fontColor = cont.titlefont.color || gl.font.color || '#444',
-            x,y,transform='',attr={},xa,ya,
+            x,
+            y,
+            transform='',
+            attr={},
+            xa,
+            ya,
             avoid = {
                 selection:d3.select(gd).selectAll('g.'+cont._id+'tick'),
                 side:cont.side
@@ -2840,11 +2953,15 @@
                     3+fontSize*0.75 : - 3-fontSize*0.25);
             options = {x: x, y: y, 'text-anchor':'start'};
             avoid = {};
+
+            // convertToTspans rotates any 'y...' by 90 degrees...
+            // TODO: need a better solution than this hack
+            title = 'h'+title;
         }
         else if(axletter==='x'){
             xa = cont;
             ya = (xa.anchor==='free') ?
-                {_offset:gs.l+(1-(xa.position||0))*gs.h, _length:0} :
+                {_offset:gs.t+(1-(xa.position||0))*gs.h, _length:0} :
                 Plotly.Axes.getFromId(gd, xa.anchor);
             x = xa._offset+xa._length/2;
             y = ya._offset + ((xa.side==='top') ?
@@ -2857,7 +2974,7 @@
         else if(axletter==='y'){
             ya = cont;
             xa = (ya.anchor==='free') ?
-                {_offset:gs.t+(ya.position||0)*gs.w, _length:0} :
+                {_offset:gs.l+(ya.position||0)*gs.w, _length:0} :
                 Plotly.Axes.getFromId(gd, ya.anchor);
             y = ya._offset+ya._length/2;
             x = xa._offset + ((ya.side==='right') ?
@@ -2881,39 +2998,51 @@
         var opacity = 1,
             isplaceholder = false,
             txt = cont.title.trim();
-        if(cont.unit) { txt += ' ('+cont.unit+')'; }
         if(txt === '') { opacity = 0; }
         if(txt === 'Click to enter '+name+' title') {
             opacity = 0.2;
             isplaceholder = true;
         }
 
-        var group = colorbar ?
-            d3.select(gd).selectAll('.'+cont._id.substr(1)+' .cbtitle') :
-            gl._infolayer;
-        group.select('.'+title).remove();
-        var el = group.append('text').attr('class', title).text(txt);
-
-        // if there's existing mathjax, get its transform so we can
-        // apply that right away and minimize jitter during rendering
-        var oldMathjax = group.select('.'+title+'-math-group'),
-            hadMathjax = !oldMathjax.empty(),
-            oldMathjaxTransform,
-            newPartialMathjaxTransform;
-        if(hadMathjax) {
-            oldMathjaxTransform = oldMathjax.attr('transform');
+        var group;
+        if(colorbar) {
+            group = d3.select(gd)
+                .selectAll('.'+cont._id.substr(1)+' .cbtitle');
+            // this class-to-rotate thing with convertToTspans is
+            // getting hackier and hackier... delete groups with the
+            // wrong class
+            var otherClass = title.charAt(0)==='h' ?
+                title.substr(1) : ('h'+title);
+            group.selectAll('.'+otherClass+',.'+otherClass+'-math-group')
+                .remove();
         }
+        else {
+            group = gl._infolayer.selectAll('.g-'+title)
+                .data([0]);
+            group.enter().append('g')
+                .classed('g-'+title, true);
+        }
+
+        var el = group.selectAll('text')
+            .data([0]);
+        el.enter().append('text');
+        el.text(txt)
+            // this is hacky, but convertToTspans uses the class
+            // to determine whether to rotate mathJax...
+            // so we need to clear out any old class and put the
+            // correct one (only relevant for colorbars, at least
+            // for now) - ie don't use .classed
+            .attr('class', title);
 
         function titleLayout(titleEl){
             Plotly.Lib.syncOrAsync([drawTitle,scootTitle], titleEl);
         }
 
         function drawTitle(titleEl) {
-            if(transform){
-                titleEl.attr('transform',
-                    'rotate(' + [transform.rotate, options.x, options.y] +
-                    ') translate(0, '+transform.offset+')');
-            }
+            titleEl.attr('transform', transform ?
+                'rotate(' + [transform.rotate, options.x, options.y] +
+                    ') translate(0, '+transform.offset+')' :
+                null);
             titleEl.style({
                     'font-family': font,
                     'font-size': d3.round(fontSize,2)+'px',
@@ -2921,49 +3050,39 @@
                     opacity: opacity*Plotly.Drawing.opacity(fontColor)
                 })
                 .attr(options)
-                .call(Plotly.util.convertToTspans, function(newMathjax){
-                    if(!newMathjax) { return; }
-
-                    // give the new mathjax group the same transform that
-                    // a previous one had temporarily, on the assumption that
-                    // probably this is what the new one will get, so we'll
-                    // minimize jitter when this is rendered and then scooted.
-                    newPartialMathjaxTransform = newMathjax.attr('transform');
-                    if(hadMathjax) {
-                        newMathjax.attr('transform',oldMathjaxTransform);
-                    }
-                })
+                .call(Plotly.util.convertToTspans)
                 .attr(options);
             titleEl.selectAll('tspan.line')
                 .attr(options);
-            return previousPromises(gd);
+            return plots.previousPromises(gd);
         }
 
         function scootTitle(titleElIn) {
-            var mathjaxTitle = d3.select(titleElIn.node().parentNode)
-                    .select('.'+titleElIn.attr('class')+'-math-group'),
-                hasMathjax = !mathjaxTitle.empty(),
-                titleEl = hasMathjax ? mathjaxTitle : titleElIn;
-            if(hasMathjax) {
-                // put back the transform we were given by convertToTspans
-                // so we can calculate shift properly
-                titleEl.attr('transform',newPartialMathjaxTransform);
-            }
+            var titleGroup = d3.select(titleElIn.node().parentNode);
 
             if(avoid && avoid.selection && avoid.side && txt){
+                titleGroup.attr('transform',null);
+
                 // move toward avoid.side (= left, right, top, bottom) if needed
                 // can include pad (pixels, default 2)
                 var shift = 0,
                     backside = {
-                        left:'right',
-                        right:'left',
-                        top:'bottom',
-                        bottom:'top'
+                        left: 'right',
+                        right: 'left',
+                        top: 'bottom',
+                        bottom: 'top'
                     }[avoid.side],
+                    shiftSign = (['left','top'].indexOf(avoid.side)!==-1) ?
+                        -1 : 1,
                     pad = $.isNumeric(avoid.pad) ? avoid.pad : 2,
-                    titlebb = titleEl.node().getBoundingClientRect(),
-                    paperbb = gl._paper.node().getBoundingClientRect(),
-                    maxshift = colorbar ? paperbb.width:
+                    titlebb = Plotly.Drawing.bBox(titleGroup.node()),
+                    paperbb = {
+                        left: 0,
+                        top: 0,
+                        right: gl.width,
+                        bottom: gl.height
+                    },
+                    maxshift = colorbar ? gl.width:
                         (paperbb[avoid.side]-titlebb[avoid.side]) *
                         ((avoid.side==='left' || avoid.side==='top') ? -1 : 1);
                 // Prevent the title going off the paper
@@ -2972,13 +3091,16 @@
                     // iterate over a set of elements (avoid.selection)
                     // to avoid collisions with
                     avoid.selection.each(function(){
-                        var mathjaxGroup = d3.select(this)
-                                .select('.text-math-group'),
-                            avoidEl = mathjaxGroup.empty() ?
-                                d3.select(this).select('text') : mathjaxGroup,
-                            avoidbb = avoidEl.node().getBoundingClientRect();
+                        var avoidbb = $.extend({}, Plotly.Drawing.bBox(this));
+
+                        // offset the avoid elements for their transform
+                        avoidbb.left += gl._size.l;
+                        avoidbb.right += gl._size.l;
+                        avoidbb.top += gl._size.t;
+                        avoidbb.bottom += gl._size.t;
+
                         if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
-                            shift = Math.max(shift, Math.abs(
+                            shift = Math.max(shift, shiftSign * (
                                 avoidbb[avoid.side] - titlebb[backside]) + pad);
                         }
                     });
@@ -2991,21 +3113,8 @@
                         top: [0, -shift],
                         bottom: [0, shift]
                     }[avoid.side];
-                    titleEl.attr('transform',
-                        'translate(' + shiftTemplate + ') ' +
-                        (titleEl.attr('transform')||''));
-                }
-            }
-            else if(colorbar && cont.titleside==='bottom') {
-                // if multiline title, need to move it up by n-1 lines
-                // gotta be a more robust way to do this? Depends on
-                // all the lines having the same height
-                // which I'm not sure will happen if there's mathjax...
-                var nlines = titleEl.selectAll('tspan.line')[0].length;
-                if(nlines>1) {
-                    titleEl.attr('transform',
-                        'translate(0,'+((1-nlines)*1.3*fontSize)+') ' +
-                        (titleEl.attr('transform')||''));
+                    titleGroup.attr('transform',
+                        'translate(' + shiftTemplate + ')');
                 }
             }
         }
@@ -3225,4 +3334,21 @@
         }
         return uoStack.pop();
     }
+
+    plots.defaultSceneLayout = function (td, sceneId, extras) {
+        var id = sceneId.slice(5); // slices of the scene from scene3
+        if (!extras) extras = {};
+        return $.extend({
+            _webgl: null,
+            _dataQueue: [], // for asyncronously loading data
+            _loading: false,
+            _id: sceneId,
+            domain: {x:[0,1],y:[0,1]}, // default domain
+            orthographic: true,
+            xaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'x', _name: 'xaxis-' + sceneId }),
+            yaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'y', _name: 'yaxis-' + sceneId }),
+            zaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'z', _name: 'zaxis-' + sceneId })
+        }, extras);
+    };
+
 }()); // end Plots object definition
