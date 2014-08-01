@@ -2021,7 +2021,16 @@
         // alter gd.layout
         for(var ai in aobj) {
             var p = Plotly.Lib.nestedProperty(gl,ai),
-                vi = aobj[ai];
+                vi = aobj[ai],
+                plen = p.parts.length,
+                pend = plen - 2, // there is an index at the end of the nested prop chain
+                // last property in chain (leaf node)
+                pleaf = p.parts[pend],
+                // leaf plus immediate parent
+                pleafPlus = p.parts[pend - 1] + '.' + pleaf,
+                // trunk nodes (everything except the leaf)
+                ptrunk = p.parts.slice(0, pend).join('.');
+
             redoit[ai] = aobj[ai];
 
             /*
@@ -2032,16 +2041,16 @@
 
             // axis reverse is special - it is its own inverse
             // op and has no flag.
-            undoit[ai] = (p.parts[1]==='reverse') ? aobj[ai] : p.get();
+            undoit[ai] = (pleaf === 'reverse') ? aobj[ai] : p.get();
 
             // check autosize or autorange vs size and range
             if(hw.indexOf(ai)!==-1) { doextra('autosize', false); }
             else if(ai==='autosize') { doextra(hw, undefined); }
-            else if(ai.match(/^[xy]axis[0-9]*\.range(\[[0|1]\])?$/)) {
-                doextra(p.parts[0]+'.autorange', false);
+            else if(pleafPlus.match(/^[xy]axis[0-9]*\.range(\[[0|1]\])?$/)) {
+                doextra(ptrunk+'.autorange', false);
             }
-            else if(ai.match(/^[xy]axis[0-9]*\.autorange$/)) {
-                doextra([p.parts[0]+'.range[0]',p.parts[0]+'.range[1]'],
+            else if(pleafPlus.match(/^[xy]axis[0-9]*\.autorange$/)) {
+                doextra([ptrunk + '.range[0]',ptrunk + '.range[1]'],
                     undefined);
             }
 
