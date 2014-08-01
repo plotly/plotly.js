@@ -1998,14 +1998,16 @@
         // attr can be an array to set several at once (all to the same val)
         function doextra(attr,val) {
             if($.isArray(attr)) {
-                attr.forEach(function(a){ doextra(a,val); });
+                attr.forEach(function(a) {
+                    doextra(a,val);
+                });
                 return;
             }
             // quit if explicitly setting this elsewhere
             if(attr in aobj) { return; }
             var p = Plotly.Lib.nestedProperty(gl,attr);
-            if(!(attr in undoit)) { undoit[attr]=p.get(); }
-            if(val!==undefined) { p.set(val); }
+            if(!(attr in undoit)) undoit[attr]=p.get();
+            if(val!==undefined) p.set(val);
         }
 
         // for editing annotations - is it on autoscaled axes?
@@ -2025,6 +2027,7 @@
             /*
              * Note all the following axis stuff will not apply
              * for 3d as we have nested ai of 'scene2.xaxis.type' etc..
+             * which means auto-range does not turn off when a range is selected
              */
 
             // axis reverse is special - it is its own inverse
