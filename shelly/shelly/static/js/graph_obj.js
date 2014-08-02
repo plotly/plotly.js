@@ -2022,8 +2022,10 @@
         for(var ai in aobj) {
             var p = Plotly.Lib.nestedProperty(gl,ai),
                 vi = aobj[ai],
+                parent = p.parent,
                 plen = p.parts.length,
-                pend = plen - 2, // there is an index at the end of the nested prop chain
+                // p.parts may end with an index integer if the property is an array
+                pend = typeof p.parts[plen-1] === 'string' ? (plen-1) : (plen-2),
                 // last property in chain (leaf node)
                 pleaf = p.parts[pend],
                 // leaf plus immediate parent
@@ -2032,12 +2034,6 @@
                 ptrunk = p.parts.slice(0, pend).join('.');
 
             redoit[ai] = aobj[ai];
-
-            /*
-             * Note all the following axis stuff will not apply
-             * for 3d as we have nested ai of 'scene2.xaxis.type' etc..
-             * which means auto-range does not turn off when a range is selected
-             */
 
             // axis reverse is special - it is its own inverse
             // op and has no flag.
@@ -2056,16 +2052,16 @@
 
             // toggling log without autorange: need to also recalculate ranges
             // logical XOR (ie will islog actually change)
-            if(p.parts[1]==='type' && (gl[p.parts[0]].type==='log' ?
+            if(pleaf==='type' && (parent.type ==='log' ?
                     vi!=='log' : vi==='log')) {
-                var ax = gl[p.parts[0]],
+                var ax = parent,
                     r0 = ax.range[0],
                     r1 = ax.range[1];
-                if(!gl[p.parts[0]].autorange) {
+                if(!parent.autorange) {
                     if(vi==='log') {
                         // if both limits are negative, autorange
                         if(r0<=0 && r1<=0) {
-                            doextra(p.parts[0]+'.autorange',true);
+                            doextra(ptrunk+'.autorange',true);
                             continue;
                         }
                         // if one is negative, set it 6 orders below the other.
@@ -2073,12 +2069,12 @@
                         else if(r0<=0) { r0 = r1/1e6; }
                         else if(r1<=0) { r1 = r0/1e6; }
                         // now set the range values as appropriate
-                        doextra(p.parts[0]+'.range[0]', Math.log(r0)/Math.LN10);
-                        doextra(p.parts[0]+'.range[1]', Math.log(r1)/Math.LN10);
+                        doextra(ptrunk+'.range[0]', Math.log(r0)/Math.LN10);
+                        doextra(ptrunk+'.range[1]', Math.log(r1)/Math.LN10);
                     }
                     else {
-                        doextra(p.parts[0]+'.range[0]', Math.pow(10, r0));
-                        doextra(p.parts[0]+'.range[1]', Math.pow(10, r1));
+                        doextra(ptrunk+'.range[0]', Math.pow(10, r0));
+                        doextra(ptrunk+'.range[1]', Math.pow(10, r1));
                     }
                 }
                 else if(vi==='log') {
@@ -2089,15 +2085,15 @@
             }
 
             // handle axis reversal explicitly, as there's no 'reverse' flag
-            if(p.parts[1]==='reverse') {
-                gl[p.parts[0]].range.reverse();
-                if(gl[p.parts[0]].autorange) { docalc = true; }
-                else { doplot = true; }
+            if(pleaf ==='reverse') {
+                parent.range.reverse();
+                if(parent.autorange) docalc = true;
+                else doplot = true;
             }
             // send annotation mods one-by-one through Annotations.draw(),
             // don't set via nestedProperty
             // that's because add and remove are special
-            else if(p.parts[0]==='annotations') {
+            else if(p.parts[0] ==='annotations') {
                 var anum = p.parts[1],
                     anns = gl.annotations,
                     anni = (anns && anns[anum])||{};
