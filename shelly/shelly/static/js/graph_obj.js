@@ -784,7 +784,17 @@
                     destScene += d.scene;
                 }
 
-                if (destScene in gl && '_webgl' in gl[destScene] && gl[destScene]._webgl) {
+                if (destScene in gl && '_webgl' in gl[destScene]) {
+                    sceneLayout = gl[destScene];
+                }
+                else {
+                    /*
+                     * build a new scene layout object
+                     */
+                    gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(gd, destScene, {});
+                }
+
+                if (sceneLayout._webgl !== null) {
 
                     /*
                      * In the case existing scenes are active in this tab:
@@ -795,16 +805,11 @@
                      * drawn and we can just do an update.
                      * (this is handled inside scene.js)
                      */
-                    sceneLayout = gl[destScene];
                     // you can change the camera position before or
                     // after initializing data or accept defaults
                     sceneLayout._webgl.draw(gl, d, d.type);
                 }
                 else {
-                    /*
-                     * build a new scene layout object
-                     */
-                    gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(gd, destScene, {});
 
                     sceneLayout._dataQueue.push(d);
                 }
