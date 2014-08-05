@@ -1653,7 +1653,7 @@
             var vi = aobj[ai], cont, param;
             redoit[ai] = vi;
 
-            if(layoutAttrs.indexOf(ai.replace(/[xy]axis[0-9]*/g,'?axis'))!==-1){
+            if(layoutAttrs.indexOf(ai.replace(/[xyz]axis[0-9]*/g,'?axis'))!==-1){
                 param = Plotly.Lib.nestedProperty(gl,ai);
                 undoit[ai] = [param.get()];
                 // since we're allowing val to be an array, allow it here too,
@@ -2050,7 +2050,7 @@
             else if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
                 doextra(ptrunk+'.autorange', false);
             }
-            else if(pleafPlus.match(/^[xy]axis[0-9]*\.autorange$/)) {
+            else if(pleafPlus.match(/^[xyz]axis[0-9]*\.autorange$/)) {
                 doextra([ptrunk + '.range[0]',ptrunk + '.range[1]'],
                     undefined);
             }
@@ -2170,7 +2170,7 @@
                 p.set(vi);
                 // if we just inserted a new axis (eg from themes),
                 // initialize it
-                if(ai.match(/^[xy]axis[0-9]*$/)) {
+                if(ai.match(/^[xyz]axis[0-9]*$/)) {
                     Plotly.Axes.initAxis(gd,gd.layout[ai]);
                     Plotly.Axes.setConvert(gd.layout[ai]);
                 }
