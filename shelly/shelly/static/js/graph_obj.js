@@ -2047,7 +2047,7 @@
             // check autosize or autorange vs size and range
             if(hw.indexOf(ai)!==-1) { doextra('autosize', false); }
             else if(ai==='autosize') { doextra(hw, undefined); }
-            else if(pleafPlus.match(/^[xy]axis[0-9]*\.range(\[[0|1]\])?$/)) {
+            else if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
                 doextra(ptrunk+'.autorange', false);
             }
             else if(pleafPlus.match(/^[xy]axis[0-9]*\.autorange$/)) {
