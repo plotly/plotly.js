@@ -14,6 +14,7 @@
     // ---external global dependencies
     /* global Promise:false, d3:false */
 
+
     if(!window.Plotly) { window.Plotly = {}; }
 
     var plots = Plotly.Plots = {};
@@ -733,6 +734,7 @@
 
         var gl = gd.layout;
 
+
         ////////////////////////////////  3D   ///////////////////////////////
 
         if (gl._hasGL3D) {
@@ -782,7 +784,17 @@
                     destScene += d.scene;
                 }
 
-                if (destScene in gl && '_webgl' in gl[destScene] && gl[destScene]._webgl) {
+                if (destScene in gl && '_webgl' in gl[destScene]) {
+                    sceneLayout = gl[destScene];
+                }
+                else {
+                    /*
+                     * build a new scene layout object
+                     */
+                    gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(gd, destScene, {});
+                }
+
+                if (sceneLayout._webgl !== null) {
 
                     /*
                      * In the case existing scenes are active in this tab:
@@ -793,16 +805,11 @@
                      * drawn and we can just do an update.
                      * (this is handled inside scene.js)
                      */
-                    sceneLayout = gl[destScene];
                     // you can change the camera position before or
                     // after initializing data or accept defaults
                     sceneLayout._webgl.draw(gl, d, d.type);
                 }
                 else {
-                    /*
-                     * build a new scene layout object
-                     */
-                    gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(gd, destScene, {});
 
                     sceneLayout._dataQueue.push(d);
                 }
@@ -891,10 +898,10 @@
         ///////////////////////////////  end of 3D   ///////////////////////
 
 
-
-
         /*
          * Plotly.plot shortCircuit for 3d only
+         * eventually remove this and integrate more
+         * thoroughly with module system.
          */
         if (!gl._hasCartesian) {
 
@@ -915,6 +922,8 @@
         // prepare the data and find the autorange
 
         Plotly.Lib.markTime('done Plotly.Axes.setType');
+
+
 
         // generate calcdata, if we need to
         // to force redoing calcdata, just delete it before calling Plotly.plot
@@ -960,15 +969,13 @@
                         gd.data[0].type + ' data. Ignoring this dataset.'
                     );
                 }
-                else if(plots.isGL3D(gdc.type)) {
-                    // for the moment handle 3D the same way as polar,
-                    // just don't treat it as an error
-                }
-                else if(plots.isScatter(gdc.type)) { module = 'Scatter'; }
-                else if(plots.isBar(gdc.type)) { module = 'Bars'; }
-                else if(plots.isContour(gdc.type)) { module = 'Contour'; }
-                else if(plots.isHeatmap(gdc.type)) { module = 'Heatmap'; }
-                else if(gdc.type==='box') { module = 'Boxes'; }
+                // styling change
+                // see https://github.com/plotly/Contributors-Guide/blob/master/styleguides/javascript.md#blocks
+                else if(plots.isScatter(gdc.type))  module = 'Scatter';
+                else if(plots.isBar(gdc.type))  module = 'Bars';
+                else if(plots.isContour(gdc.type)) module = 'Contour';
+                else if(plots.isHeatmap(gdc.type)) module = 'Heatmap';
+                else if(gdc.type==='box')  module = 'Boxes';
                 else {
                     console.log('Unrecognized plot type ' + gdc.type +
                         '. Ignoring this dataset.'
@@ -1646,7 +1653,7 @@
             var vi = aobj[ai], cont, param;
             redoit[ai] = vi;
 
-            if(layoutAttrs.indexOf(ai.replace(/[xy]axis[0-9]*/g,'?axis'))!==-1){
+            if(layoutAttrs.indexOf(ai.replace(/[xyz]axis[0-9]*/g,'?axis'))!==-1){
                 param = Plotly.Lib.nestedProperty(gl,ai);
                 undoit[ai] = [param.get()];
                 // since we're allowing val to be an array, allow it here too,
@@ -1947,7 +1954,9 @@
             dolayoutstyle = false,
             doplot = false,
             docalc = false,
-            domodebar = false;
+            domodebar = false,
+            newkey, axes, keys, xyref, scene, axisAttr;
+
 
         // for now, if we detect 3D stuff, just re-do the plot
         if (gl._hasGL3D) doplot = true;
@@ -1958,20 +1967,24 @@
 
         if(Object.keys(aobj).length) { gd.changed = true; }
 
-        var keys = Object.keys(aobj),
-            axes = Plotly.Axes.list(gd);
+        keys = Object.keys(aobj);
+        axes = Plotly.Axes.list(gd);
+
         for(var i=0; i<keys.length; i++) {
             // look for 'allaxes', split out into all axes
             if(keys[i].indexOf('allaxes')===0) {
                 for(var j=0; j<axes.length; j++) {
-                    var newkey = keys[i].replace('allaxes',axes[j]._name);
+                    // in case of 3D the axis are nested within a scene which is held in _id
+                    scene = axes[j]._id.substr(1);
+                    axisAttr = (scene.indexOf('scene') !== -1) ? (scene + '.') : '';
+                    newkey = keys[i].replace('allaxes', axisAttr + axes[j]._name);
                     if(!aobj[newkey]) { aobj[newkey] = aobj[keys[i]]; }
                 }
                 delete aobj[keys[i]];
             }
             // split annotation.ref into xref and yref
             if(keys[i].match(/^annotations\[[0-9-]\].ref$/)) {
-                var xyref = aobj[keys[i]].split('y');
+                xyref = aobj[keys[i]].split('y');
                 aobj[keys[i].replace('ref','xref')] = xyref[0];
                 aobj[keys[i].replace('ref','yref')] = xyref.length===2 ?
                     ('y'+xyref[1]) : 'paper';
@@ -1990,14 +2003,16 @@
         // attr can be an array to set several at once (all to the same val)
         function doextra(attr,val) {
             if($.isArray(attr)) {
-                attr.forEach(function(a){ doextra(a,val); });
+                attr.forEach(function(a) {
+                    doextra(a,val);
+                });
                 return;
             }
             // quit if explicitly setting this elsewhere
             if(attr in aobj) { return; }
             var p = Plotly.Lib.nestedProperty(gl,attr);
-            if(!(attr in undoit)) { undoit[attr]=p.get(); }
-            if(val!==undefined) { p.set(val); }
+            if(!(attr in undoit)) undoit[attr]=p.get();
+            if(val!==undefined) p.set(val);
         }
 
         // for editing annotations - is it on autoscaled axes?
@@ -2011,35 +2026,47 @@
         // alter gd.layout
         for(var ai in aobj) {
             var p = Plotly.Lib.nestedProperty(gl,ai),
-                vi = aobj[ai];
+                vi = aobj[ai],
+                parent = p.parent,
+                plen = p.parts.length,
+                // p.parts may end with an index integer if the property is an array
+                pend = typeof p.parts[plen-1] === 'string' ? (plen-1) : (plen-2),
+                // last property in chain (leaf node)
+                pleaf = p.parts[pend],
+                // leaf plus immediate parent
+                pleafPlus = p.parts[pend - 1] + '.' + pleaf,
+                // trunk nodes (everything except the leaf)
+                ptrunk = p.parts.slice(0, pend).join('.');
+
             redoit[ai] = aobj[ai];
+
             // axis reverse is special - it is its own inverse
             // op and has no flag.
-            undoit[ai] = (p.parts[1]==='reverse') ? aobj[ai] : p.get();
+            undoit[ai] = (pleaf === 'reverse') ? aobj[ai] : p.get();
 
             // check autosize or autorange vs size and range
             if(hw.indexOf(ai)!==-1) { doextra('autosize', false); }
             else if(ai==='autosize') { doextra(hw, undefined); }
-            else if(ai.match(/^[xy]axis[0-9]*\.range(\[[0|1]\])?$/)) {
-                doextra(p.parts[0]+'.autorange', false);
+            else if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
+                doextra(ptrunk+'.autorange', false);
             }
-            else if(ai.match(/^[xy]axis[0-9]*\.autorange$/)) {
-                doextra([p.parts[0]+'.range[0]',p.parts[0]+'.range[1]'],
+            else if(pleafPlus.match(/^[xyz]axis[0-9]*\.autorange$/)) {
+                doextra([ptrunk + '.range[0]',ptrunk + '.range[1]'],
                     undefined);
             }
 
             // toggling log without autorange: need to also recalculate ranges
             // logical XOR (ie will islog actually change)
-            if(p.parts[1]==='type' && (gl[p.parts[0]].type==='log' ?
+            if(pleaf==='type' && (parent.type ==='log' ?
                     vi!=='log' : vi==='log')) {
-                var ax = gl[p.parts[0]],
+                var ax = parent,
                     r0 = ax.range[0],
                     r1 = ax.range[1];
-                if(!gl[p.parts[0]].autorange) {
+                if(!parent.autorange) {
                     if(vi==='log') {
                         // if both limits are negative, autorange
                         if(r0<=0 && r1<=0) {
-                            doextra(p.parts[0]+'.autorange',true);
+                            doextra(ptrunk+'.autorange',true);
                             continue;
                         }
                         // if one is negative, set it 6 orders below the other.
@@ -2047,12 +2074,12 @@
                         else if(r0<=0) { r0 = r1/1e6; }
                         else if(r1<=0) { r1 = r0/1e6; }
                         // now set the range values as appropriate
-                        doextra(p.parts[0]+'.range[0]', Math.log(r0)/Math.LN10);
-                        doextra(p.parts[0]+'.range[1]', Math.log(r1)/Math.LN10);
+                        doextra(ptrunk+'.range[0]', Math.log(r0)/Math.LN10);
+                        doextra(ptrunk+'.range[1]', Math.log(r1)/Math.LN10);
                     }
                     else {
-                        doextra(p.parts[0]+'.range[0]', Math.pow(10, r0));
-                        doextra(p.parts[0]+'.range[1]', Math.pow(10, r1));
+                        doextra(ptrunk+'.range[0]', Math.pow(10, r0));
+                        doextra(ptrunk+'.range[1]', Math.pow(10, r1));
                     }
                 }
                 else if(vi==='log') {
@@ -2063,15 +2090,15 @@
             }
 
             // handle axis reversal explicitly, as there's no 'reverse' flag
-            if(p.parts[1]==='reverse') {
-                gl[p.parts[0]].range.reverse();
-                if(gl[p.parts[0]].autorange) { docalc = true; }
-                else { doplot = true; }
+            if(pleaf ==='reverse') {
+                parent.range.reverse();
+                if(parent.autorange) docalc = true;
+                else doplot = true;
             }
             // send annotation mods one-by-one through Annotations.draw(),
             // don't set via nestedProperty
             // that's because add and remove are special
-            else if(p.parts[0]==='annotations') {
+            else if(p.parts[0] ==='annotations') {
                 var anum = p.parts[1],
                     anns = gl.annotations,
                     anni = (anns && anns[anum])||{};
@@ -2143,7 +2170,7 @@
                 p.set(vi);
                 // if we just inserted a new axis (eg from themes),
                 // initialize it
-                if(ai.match(/^[xy]axis[0-9]*$/)) {
+                if(ai.match(/^[xyz]axis[0-9]*$/)) {
                     Plotly.Axes.initAxis(gd,gd.layout[ai]);
                     Plotly.Axes.setConvert(gd.layout[ai]);
                 }
@@ -2755,7 +2782,6 @@
 
         // clear axis line positions, to be set in the subplot loop below
         Plotly.Axes.list(gd).forEach(function(ax){ ax._linepositions = {}; });
-
         gl._paperdiv.style({
             width: gl.width+'px',
             height: gl.height+'px',
@@ -3336,7 +3362,6 @@
     }
 
     plots.defaultSceneLayout = function (td, sceneId, extras) {
-        var id = sceneId.slice(5); // slices of the scene from scene3
         if (!extras) extras = {};
         return $.extend({
             _webgl: null,
@@ -3345,9 +3370,9 @@
             _id: sceneId,
             domain: {x:[0,1],y:[0,1]}, // default domain
             orthographic: true,
-            xaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'x', _name: 'xaxis-' + sceneId }),
-            yaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'y', _name: 'yaxis-' + sceneId }),
-            zaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'z', _name: 'zaxis-' + sceneId })
+            xaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'x' + sceneId, _name: 'xaxis'}),
+            yaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'y' + sceneId, _name: 'yaxis'}),
+            zaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'z' + sceneId, _name: 'zaxis'})
         }, extras);
     };
 
