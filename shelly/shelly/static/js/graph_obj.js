@@ -2972,8 +2972,28 @@
                 side:cont.side
             },
             // multiples of fontsize to offset label from axis
-            offsetBase = colorbar ? 0 : 1.5;
+            offsetBase = colorbar ? 0 : 1.5,
+            avoidTransform;
+
+        // find the transform applied to the parents of the avoid selection
+        // which doesn't get picked up by Plotly.Drawing.bBox
+        if(colorbar) {
+            avoid.offsetLeft = gs.l;
+            avoid.offsetTop = gs.t;
+        }
+        else if(avoid.selection.size()) {
+            avoidTransform = d3.select(avoid.selection.node().parentNode)
+                .attr('transform')
+                .match(/translate\(([-\.\d]+),([-\.\d]+)\)/);
+            if(avoidTransform) {
+                avoid.offsetLeft = +avoidTransform[1];
+                avoid.offsetTop = +avoidTransform[2];
+            }
+        }
+
         if(colorbar && cont.titleside) {
+            // argh, we only make it here if the title is on top or bottom,
+            // not right
             x = gs.l+cont.titlex*gs.w;
             y = gs.t+(1-cont.titley)*gs.h + ((cont.titleside==='top') ?
                     3+fontSize*0.75 : - 3-fontSize*0.25);
@@ -3114,16 +3134,17 @@
                 // Prevent the title going off the paper
                 if(maxshift<0) { shift = maxshift; }
                 else {
+                    // so we don't have to offset each avoided element,
+                    // give the title the opposite offset
+                    titlebb.left -= avoid.offsetLeft;
+                    titlebb.right -= avoid.offsetLeft;
+                    titlebb.top -= avoid.offsetTop;
+                    titlebb.bottom -= avoid.offsetTop;
+
                     // iterate over a set of elements (avoid.selection)
                     // to avoid collisions with
                     avoid.selection.each(function(){
-                        var avoidbb = $.extend({}, Plotly.Drawing.bBox(this));
-
-                        // offset the avoid elements for their transform
-                        avoidbb.left += gl._size.l;
-                        avoidbb.right += gl._size.l;
-                        avoidbb.top += gl._size.t;
-                        avoidbb.bottom += gl._size.t;
+                        var avoidbb = Plotly.Drawing.bBox(this);
 
                         if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
                             shift = Math.max(shift, shiftSign * (
