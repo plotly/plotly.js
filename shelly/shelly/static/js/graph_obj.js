@@ -3220,7 +3220,9 @@
     //          ie has : and some chars before it), strip out x
     //      keepdata: remove all src tags, don't remove the data itself
     //      keepall: keep data and src
-    plots.graphJson = function(gd, dataonly, mode){
+    // output:
+    //      'object' to not stringify
+    plots.graphJson = function(gd, dataonly, mode, output){
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
 
         function stripObj(d) {
@@ -3286,7 +3288,7 @@
 
         if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
-        return JSON.stringify(obj);
+        return (output==='object') ? obj : JSON.stringify(obj);
     };
 
     plots.viewJson = function(){
