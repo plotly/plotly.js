@@ -1168,7 +1168,7 @@
             return false;
         }
 
-        if(!isplot || td.mainsite) {
+        if(!isplot || td._context.workspace) {
             mainlink.on('click',pullSource);
         }
         if(extraslink) {

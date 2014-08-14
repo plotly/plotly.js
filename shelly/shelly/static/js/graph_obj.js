@@ -324,10 +324,50 @@
         var gd = (typeof divid === 'string') ?
             document.getElementById(divid) : divid;
         // test if this is on the main site or embedded
-        gd.mainsite = !!$('#plotlyMainMarker').length;
-        if(gd.mainsite) {
+        setPlotContext(gd);
+        if(gd._context.editable) {
             Plotly.ToolPanel.makeMenu(gd);
         }
+    }
+
+    // figure out the context of this plot
+    function setPlotContext(gd) {
+        // new version - 'what should I do' flags
+        var context = gd._context = {},
+            workspace = !!$('#plotlyMainMarker').length,
+            collage = $(gd).hasClass('collage-plot-inner'),
+            staticPlot = $(gd).hasClass('js-static-plot');
+
+        function baseLink(win) {
+            // eg https://plot.ly/~alex/414 (strip off anything after that)
+            var m = win.location.href.match(/[^\/]+\/\/[^\/]+\/[^\/]+\/[^\/]+/);
+            return m ? m[0] : win.location.href;
+        }
+
+        // are we making a static SVG (for export or other image generation)
+        context.staticPlot = staticPlot;
+
+        // are we in the main workspace view? This controls scrolling
+        // and sizing of containers
+        context.workspace = workspace && !staticPlot && !collage;
+
+        // is the plot editable (titles, toolbars, etc.)
+        context.editable = workspace && !staticPlot && !collage;
+
+        // does it respect layout.autosize=true
+        context.autosizable = workspace && !staticPlot && !collage;
+
+        // is scroll-to-zoom enabled?
+        // This can be overridden with gd.layout._enablescrollzoom
+        context.scrollZoom = workspace && !staticPlot && !collage;
+
+        // do we show helpful tips to new users?
+        context.showTips = !staticPlot && !workspace && !collage;
+
+        // do we put the link to open this plot in plotly?
+        context.showBrand = !workspace &&
+            !$('#plotlyUserProfileMarker').length &&
+            (window===window.top || baseLink(window)!==baseLink(window.parent));
     }
 
     // the 'view in plotly' and source links - note that now plot() calls this
@@ -363,19 +403,14 @@
         Plotly.Lib.showSources(gd);
 
         // public url for downloaded files
-        if(gd.layout && gd.layout._url) { toolspan.text(gd.layout._url); }
+        if(gd.layout._url) toolspan.text(gd.layout._url);
         // 'view in plotly' link for embedded plots
-        else if(!gd.mainsite && !gd.standalone &&
-                !$('#plotlyUserProfileMarker').length) {
-            positionBrand(gd,toolspan);
-        }
+        else if(gd._context.showBrand) positionBrand(gd,toolspan);
 
         // separator if we have both sources and tool link
         spacespan.text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
     };
 
-    // note that now this function is only adding the brand in
-    // iframes and 3rd-party apps, standalone plots get the sidebar instead.
     function positionBrand(gd,container){
         container.text('');
         container.append('tspan')
@@ -443,8 +478,7 @@
                 'but this container doesn\'t yet have a plot.', gd);
         }
 
-        // test if this is on the main site or embedded
-        gd.mainsite = !!$('#plotlyMainMarker').length;
+        setPlotContext(gd);
 
         // layout object --- this also gets checked in makePlotFramework
         if(!layout) { layout = {}; }
@@ -588,8 +622,8 @@
             gd.layout = layout;
             gd.layout._container = plotContainer;
             gd.layout._paperdiv = paperDiv;
-            if(gd.layout.autosize === 'initial' && gd.mainsite) {
-                plotAutoSize(gd,{});
+            if(gd.layout.autosize === 'initial' && gd._context.autosizable) {
+                plotAutoSize(gd, {});
                 gd.layout.autosize = true;
             }
             // resize canvas
@@ -607,7 +641,6 @@
             delete layout._paperdiv;
             delete layout.autosize;
             delete layout._paper;
-            delete layout._forexport;
 
             // plot
             gd.framework({data: gd.data, layout: layout}, paperDiv.node());
@@ -633,7 +666,7 @@
             var title = polarPlotSVG.select('.title-group text')
                 .call(titleLayout);
 
-            if(gd.mainsite && !gd.layout._forexport){
+            if(gd._context.editable){
                 title.attr({'data-unformatted': txt});
                 if(!txt || txt === placeholderText){
                     opacity = 0.2;
@@ -678,7 +711,7 @@
             return Promise.resolve();
         }
 
-        else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
+        else if(gd._context.editable) Plotly.ToolPanel.tweakMenu();
 
         // so we don't try to re-call Plotly.plot from inside
         // legend and colorbar, if margins changed
@@ -939,8 +972,8 @@
             // how many box plots do we have (in case they're grouped)
             gd.numboxes = 0;
             // for calculating avg luminosity of heatmaps
-            gd.hmpixcount = 0;
-            gd.hmlumcount = 0;
+            gd._hmpixcount = 0;
+            gd._hmlumcount = 0;
             // delete category list, if there is one, so we start over
             // to be filled in later by ax.d2c
             Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
@@ -2236,7 +2269,8 @@
     };
 
     function setGraphContainerScroll(gd) {
-        if(!gd || !gd.mainsite || !gd.layout || gd.tabtype!=='plot' ||
+        if(!gd || !gd._context || !gd._context.workspace ||
+                !gd.layout || gd.tabtype!=='plot' ||
                 $(gd).css('display')==='none') {
             return;
         }
@@ -2255,7 +2289,7 @@
 
     function plotAutoSize(gd, aobj) {
         var newheight, newwidth;
-        if(gd.mainsite){
+        if(gd._context.workspace){
             setFileAndCommentsSize(gd);
             var gdBB = gd.layout._container.node().getBoundingClientRect();
 
@@ -2264,30 +2298,14 @@
             newwidth = Math.round(gdBB.width*0.9);
         }
         else if(gd.shareplot) {
-            if(gd.standalone) {
-                // full-page shareplot - as with main site, use 90% of the
-                // available space, but restrict aspect ratio to between
-                // 2:1 and 1:2, by changing height if necessary
-                var gdPos = $(gd).position();
-                gdPos.left += parseInt($(gd).css('padding-left')||0,10);
-                gdPos.top += parseInt($(gd).css('padding-top')||0,10);
-
-                newwidth = Plotly.Lib.constrain(
-                    ($(window).width() - gdPos.left) * 0.9, 200, 10000);
-                newheight = Plotly.Lib.constrain(
-                    ($(window).height() - gdPos.top) * 0.9,
-                    newwidth/2, newwidth*2);
-            }
-            // else embedded in an iframe - just take the full iframe size
+            // embedded in an iframe - just take the full iframe size
             // if we get to this point, with no aspect ratio restrictions
-            else {
-                newwidth = $(window).width();
-                newheight = $(window).height();
+            newwidth = $(window).width();
+            newheight = $(window).height();
 
-                // somehow we get a few extra px height sometimes...
-                // just hide it
-                $('body').css('overflow','hidden');
-            }
+            // somehow we get a few extra px height sometimes...
+            // just hide it
+            $('body').css('overflow','hidden');
         }
         else {
             // plotly.js - let the developers do what they want, either
@@ -2317,19 +2335,18 @@
 
     // check whether to resize a tab (if it's a plot) to the container
     plots.resize = function(gd) {
-        if(typeof gd === 'string') { gd = document.getElementById(gd); }
+        if(typeof gd === 'string') gd = document.getElementById(gd);
 
-        if(gd.mainsite){
+        if(gd._context.workspace){
             killPopovers();
             setFileAndCommentsSize(gd);
         }
 
-        if(gd && (gd.tabtype==='plot' || gd.shareplot) &&
-                $(gd).css('display')!=='none') {
-            if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
+        if(gd && $(gd).css('display')!=='none') {
+            if(gd.redrawTimer) clearTimeout(gd.redrawTimer);
             gd.redrawTimer = setTimeout(function(){
 
-                if ($(gd).css('display')==='none') { return; }
+                if ($(gd).css('display')==='none') return;
 
                 if (gd.layout && gd.layout.autosize) {
                     // autosizing doesn't count as a change that needs saving
@@ -2357,8 +2374,7 @@
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
         var gd3 = d3.select(gd);
 
-        // test if this is on the main site or embedded
-        gd.mainsite = $('#plotlyMainMarker').length > 0;
+        setPlotContext(gd);
 
         gd._promises = [];
 
@@ -2435,14 +2451,14 @@
         var outerContainer = gl._fileandcomments =
                 gd3.selectAll('.file-and-comments');
         // for embeds and cloneGraphOffscreen
-        if(!outerContainer.node()) { outerContainer = gd3; }
+        if(!outerContainer.node()) outerContainer = gd3;
 
         // Plot container
         gl._container = outerContainer.selectAll('.plot-container').data([0]);
         gl._container.enter().insert('div', ':first-child')
             .classed('plot-container',true)
             .classed('plotly',true)
-            .classed('is-mainsite', gd.mainsite);
+            .classed('workspace-plot', gd._context.workspace);
 
         // Make the svg container
         gl._paperdiv = gl._container.selectAll('.svg-container').data([0]);
@@ -2452,7 +2468,7 @@
 
         // Initial autosize
         if(gl.autosize === 'initial') {
-            if(gd.mainsite){ setFileAndCommentsSize(gd); }
+            if(gd._context.workspace) setFileAndCommentsSize(gd);
             plotAutoSize(gd,{});
             gl.autosize=true;
         }
@@ -2460,17 +2476,6 @@
         // start fresh each time we get here, so we know the order comes out
         // right, rather than enter/exit which can muck up the order
         gl._paperdiv.selectAll('svg').remove();
-
-        // short-circuiting this code here resolves the issue where the _paper
-        // svg element following this conditional pushes the page past
-        // screen height and leads to overflow and scrollbars in the tool.
-        // if (!doCartesian) {
-        //     // init the mode bar
-        //     Plotly.Fx.modeBar(gd);
-        //     if(!gl._forexport) { Plotly.Fx.init(gd); }
-
-        //     return;
-        // }
 
         gl._paper = gl._paperdiv.append('svg')
             .attr({
@@ -3165,8 +3170,7 @@
                 });
         }
 
-        // don't allow editing (or placeholder) on embedded graphs or exports
-        if(gd.mainsite && !gl._forexport){
+        if(gd._context.editable){
             if(!txt) { setPlaceholder(); }
 
             el.call(Plotly.util.makeEditable)

@@ -248,7 +248,7 @@
                             // its neighbor
                             (v>vc ? Math.ceil(v) : Math.floor(v));
                         }
-                        if(!gl._forexport) {
+                        if(!gd._context.staticPlot) {
                             // if bars are not fully opaque or they have a line
                             // around them, round to integer pixels, mainly for
                             // safari so we prevent overlaps from its expansive

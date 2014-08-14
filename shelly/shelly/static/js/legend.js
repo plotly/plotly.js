@@ -184,7 +184,7 @@
             s.selectAll('tspan.line').attr({x: s.attr('x')});
         }
 
-        if(td.mainsite){
+        if(td._context.editable){
             text.call(Plotly.util.makeEditable)
                 .call(textLayout)
                 .on('edit', function(text){
@@ -280,15 +280,8 @@
         // if x/yanchor is 'auto':
         // aligns left/right/center on resize or new text if drag pos
         // is in left 1/3, middle 1/3, right 1/3
-        // choose left/center/right align via:
-        //  xl=(left-ml)/plotwidth,
-        //  xc=(center-ml/plotwidth),
-        //  xr=(right-ml)/plotwidth
-        //  if(xl<2/3-xc) gll.x=xl;
-        //  else if(xr>4/3-xc) gll.x=xr;
-        //  else gll.x=xc;
         // similar logic for top/middle/bottom
-        if(td.mainsite) {
+        if(td._context.editable) {
             legendsvg.node().onmousedown = function(e) {
                 // deal with other UI elements, and allow them
                 // to cancel dragging
