@@ -3,6 +3,8 @@
 // functions include:
 //      - data conversions
 //      - calculating and drawing ticks
+
+
 (function() {
     'use strict';
 
@@ -394,7 +396,7 @@
             };
 
             ax.d2c = function(v){
-                return (typeof v==='number') ? v : Plotly.Lib.dateTime2ms(v);
+                return ($.isNumeric(v)) ? Number(v) : Plotly.Lib.dateTime2ms(v);
             };
 
             // check if date strings or js date objects are provided for range
@@ -844,7 +846,7 @@
         ax._tmax=vals[vals.length-1];
 
         return vals.map(function(x){return axes.tickText(ax, x);});
-    }
+    };
 
     // autoTicks: calculate best guess at pleasant ticks for this axis
     // inputs:
@@ -1374,7 +1376,6 @@
     // x or y or z by string axletter
     axes.list = function(gd, axletter) {
         if (!gd.layout) return [];
-
         function filterAxis (obj) {
             return Object.keys(obj)
                 .filter( function(k) {
@@ -1515,6 +1516,11 @@
         var gl = td.layout,
             ax,
             independent = false;
+
+        // there are multiple code paths into this function
+        // instead of patching them all up, lets bail if 3D here
+        if (gl._hasGL3D) return;
+
         // allow passing an independent axis object instead of id
         if(typeof axid === 'object') {
             ax = axid;
