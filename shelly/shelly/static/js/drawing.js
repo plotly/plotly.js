@@ -863,6 +863,7 @@
     // use our offscreen tester to get a clientRect for an element,
     // in a reference frame where it isn't translated and its anchor
     // point is at (0,0)
+    // always returns a copy of the bbox, so the caller can modify it safely
     var savedBBoxes = [],
         maxSavedBBoxes = 10000;
     drawing.bBox = function(node) {
@@ -870,7 +871,7 @@
         // remeasure the same thing many times
         var saveNum = node.attributes['data-bb'];
         if(saveNum) {
-            return savedBBoxes[saveNum.value];
+            return $.extend({}, savedBBoxes[saveNum.value]);
         }
 
         var test3 = d3.select('#js-plotly-tester'),
@@ -909,7 +910,7 @@
         node.setAttribute('data-bb',savedBBoxes.length);
         savedBBoxes.push(bb);
 
-        return bb;
+        return $.extend({}, bb);
     };
 
 }()); // end Drawing object definition
