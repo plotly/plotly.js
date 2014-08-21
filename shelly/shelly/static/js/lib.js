@@ -373,15 +373,19 @@
     // representing a property of nested object o into set and get methods
     // also return the string and object so we don't have to keep track of them
     lib.nestedProperty = function(o,s) {
-        var cont = o,
-            aa = s.split('.'), i, j=0;
+        var prop, parent,
+            indexed, indices,
+            i, suffix, npArray,
+            j = 0,
+            cont = o,
+            aa = s.split('.');
         // check for parts of the nesting hierarchy that are numbers
         // (ie array elements)
         while(j<aa.length) {
             // look for non-bracket chars, then any number of [##] blocks
-            var indexed = String(aa[j]).match(/^([^\[\]]+)((\[\-?[0-9]*\])+)$/);
+            indexed = String(aa[j]).match(/^([^\[\]]+)((\[\-?[0-9]*\])+)$/);
             if(indexed) {
-                var indices = indexed[2]
+                indices = indexed[2]
                     .substr(1,indexed[2].length-2)
                     .split('][');
                 aa.splice(j,1,indexed[1]);
@@ -398,8 +402,8 @@
         // eg: "annotations[-1].showarrow" sets showarrow for all annotations
         // set() can take either a single value to apply to all or an array
         // to apply different to each entry. Get can also return either
-        var suffix = s.substr(s.indexOf('[-1]')+4),
-            npArray;
+        suffix = s.substr(s.indexOf('[-1]')+4);
+
         if(suffix.charAt(0)==='.') {
             suffix = suffix.substr(1);
         }
@@ -432,16 +436,23 @@
                     get: subGet,
                     astr: s,
                     parts: aa,
+                    parent: parent,
                     obj: o
                 };
             }
+
             // make the heirarchy if it doesn't exist
             if(!(aa[j] in cont)) {
                 cont[aa[j]] = (typeof aa[j+1]==='string') ? {} : [];
             }
+
+            if(typeof aa[j+1] === 'number') {
+                parent = cont;
+            } else parent = cont[aa[j]];
+
             cont = cont[aa[j]];
         }
-        var prop = aa[j];
+        prop = aa[j];
 
         return {
             set: function(v){
@@ -451,6 +462,7 @@
             get:function(){ return cont[prop]; },
             astr:s,
             parts:aa,
+            parent: parent,
             obj:o
         };
     };
