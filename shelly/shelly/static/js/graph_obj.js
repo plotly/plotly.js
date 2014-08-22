@@ -3384,16 +3384,19 @@
 
     plots.defaultSceneLayout = function (td, sceneId, extras) {
         if (!extras) extras = {};
+        var default3DAxis = Plotly.Axes.defaultAxis({
+            _td: td,
+            gridcolor: 'rgb(102, 102, 102)'
+        });
         return $.extend({
             _webgl: null,
             _dataQueue: [], // for asyncronously loading data
             _loading: false,
             _id: sceneId,
-            domain: {x:[0,1],y:[0,1]}, // default domain
-            orthographic: true,
-            xaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'x' + sceneId, _name: 'xaxis'}),
-            yaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'y' + sceneId, _name: 'yaxis'}),
-            zaxis: Plotly.Axes.defaultAxis({_td: td, _id: 'z' + sceneId, _name: 'zaxis'})
+            domain: {x:[0,1], y:[0,1]}, // default domain
+            xaxis: $.extend(default3DAxis, {_id:'x', name: 'xaxis'}),
+            yaxis: $.extend(default3DAxis, {_id:'y', name: 'yaxis'}),
+            zaxis: $.extend(default3DAxis, {_id:'z', name: 'zaxis'})
         }, extras);
     };
 
