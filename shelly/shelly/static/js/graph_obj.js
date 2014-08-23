@@ -794,26 +794,19 @@
                     gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(gd, destScene, {});
                 }
 
-                if (sceneLayout._webgl !== null) {
+                sceneLayout._dataQueue.push(d);
 
-                    /*
-                     * In the case existing scenes are active in this tab:
-                     * If data has a destination scene attempt to match that to
-                     * the associated scene.
-                     * If a particular data trace also has a glID. It means the
-                     * surface or mesh for this data trace has already been
-                     * drawn and we can just do an update.
-                     * (this is handled inside scene.js)
-                     */
-                    // you can change the camera position before or
-                    // after initializing data or accept defaults
-                    sceneLayout._webgl.draw(gl, d, d.type);
-                }
-                else {
-
-                    sceneLayout._dataQueue.push(d);
-                }
             });
+
+
+            gl._paperdiv.style({
+                width: gl.width+'px',
+                height: gl.height+'px',
+                background: gl.paper_bgcolor
+            });
+
+            gd.calcdata = [];
+            Plotly.Axes.setTypes(gd);
 
             /*
              * If there are scenes that need loading load them.
@@ -832,6 +825,7 @@
             });
 
             scenes.map( function (sceneKey, idx) {
+
                 var sceneLayout = gl[sceneKey];
                 // we are only modifying the x domain position with this
                 // simple approach
@@ -852,24 +846,32 @@
                 // it may have changed (this operates on the containing iframe)
                 if (sceneLayout._webgl) sceneLayout._webgl.setPosition(sceneLayout.position);
                 return sceneLayout;
-            })
-            .filter( function (sceneLayout) {
+
+            }).filter( function (sceneLayout) {
                 /*
                  * We only want to continue to operate on scenes that have
-                 * data waiting to be displayed and are themselves not
-                 * already undergoing loading.
+                 * data waiting to be displayed or require loading
                  */
-                if (sceneLayout && sceneLayout._dataQueue.length && !sceneLayout._loading) {
-                    sceneLayout._loading = true;
-                    return true;
+                sceneLayout._loading = sceneLayout._webgl === null;
+
+                if (sceneLayout._dataQueue.length || sceneLayout._loading)  return true;
+                else return false;
+
+            }).forEach( function (sceneLayout) {
+
+                var sceneOptions;
+
+                if (sceneLayout._webgl !== null) {
+                    while (sceneLayout._dataQueue.length) {
+                        var d = sceneLayout._dataQueue.shift();
+                        sceneLayout._webgl.draw(gl, d);
+                    }
+                    return;
                 }
-                return false;
-            })
-            .forEach( function (sceneLayout) {
                 /*
                  * Creating new scenes
                  */
-                var sceneOptions = {
+                sceneOptions = {
                     container: gd.querySelector('.svg-container'),
                     zIndex: '1000',
                     id: sceneLayout._id,
@@ -878,6 +880,9 @@
                 };
 
                 SceneFrame.createScene(sceneOptions, function (webgl) {
+                    // make the .webgl (webgl context) available through scene.
+                    sceneLayout._webgl = webgl;
+
                     sceneLayout._loading = false; // loaded
 
                     webgl.setPosition(sceneLayout.position);
@@ -887,10 +892,8 @@
                     // from the queue and draw.
                     while (sceneLayout._dataQueue.length) {
                         var d = sceneLayout._dataQueue.shift();
-                        webgl.draw(gl, d, d.type);
+                        webgl.draw(gl, d);
                     }
-                    // make the .webgl (webgl context) available through scene.
-                    sceneLayout._webgl = webgl;
                 });
             });
         }
@@ -905,18 +908,13 @@
          */
         if (!gl._hasCartesian) {
 
-            gl._paperdiv.style({
-                width: gl.width+'px',
-                height: gl.height+'px',
-                background: gl.paper_bgcolor
-            });
-
-            gd.calcdata = [];
             return Promise.resolve();
         }
 
         // prepare the types and conversion functions for the axes
         // also clears the autorange bounds ._min, ._max
+        Plotly.Axes.fillAxesWithDefaults(gd);
+        Plotly.Axes.initAxes(gd);
         Plotly.Axes.setTypes(gd);
 
         // prepare the data and find the autorange
@@ -2423,6 +2421,8 @@
             // more subplots (yes, that's odd... but possible)
             subplots = Plotly.Axes.getSubplots(gd);
 
+            Plotly.Axes.fillAxesWithDefaults(gd);
+            Plotly.Axes.initAxes(gd);
             Plotly.Axes.setTypes(gd);
 
         } else {
