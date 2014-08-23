@@ -3387,7 +3387,8 @@
         function default3DAxis (axisAttributes) {
             return $.extend(Plotly.Axes.defaultAxis({
                 _td: td,
-                gridcolor: 'rgb(102, 102, 102)'
+                gridcolor: 'rgb(102, 102, 102)',
+                ticklen: 0.05
             }), axisAttributes);
         }
 
