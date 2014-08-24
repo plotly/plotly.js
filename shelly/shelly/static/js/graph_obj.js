@@ -911,7 +911,6 @@
          * thoroughly with module system.
          */
         if (!gl._hasCartesian) {
-
             return Promise.resolve();
         }
 
@@ -1289,9 +1288,11 @@
             mergeattr('opacity','op',1);
             mergeattr('text','tx','');
             mergeattr('name','name','trace '+c);
-            mergeattr('error_y.visible','ye_vis',gdc.error_y &&
+            mergeattr('error_z.visible','ye_vis', 'error_z' in gdc &&
+                ('array' in gdc.error_y || 'value' in gdc.error_z));
+            mergeattr('error_y.visible','ye_vis', 'error_y' in gdc &&
                 ('array' in gdc.error_y || 'value' in gdc.error_y));
-            mergeattr('error_x.visible','xe_vis',gdc.error_x &&
+            mergeattr('error_x.visible','xe_vis', 'error_x' in gdc &&
                 ('array' in gdc.error_x || 'value' in gdc.error_x));
             // mergeattr is unnecessary and insufficient for (x|y)axis
             // because '' shouldn't count as existing
