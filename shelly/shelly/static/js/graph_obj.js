@@ -2931,6 +2931,16 @@
             if(showfreex) { freefinished.push(xa._id); }
             if(showfreey) { freefinished.push(ya._id); }
         });
+
+        //// Set Layouts on 3D Scenes
+        Object.keys(gl).filter(function(k){
+            return k.match(/^scene[0-9]*$/);
+        }).forEach( function (sceneName) {
+            var scene = gl[sceneName];
+            scene._container.style.background = scene.bgcolor;
+        });
+
+
         plots.titles(gd,'gtitle');
 
         Plotly.Fx.modeBar(gd);
