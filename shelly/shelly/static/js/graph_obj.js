@@ -291,6 +291,10 @@
         return GL3DTYPES.indexOf(type) !== -1;
     };
 
+    plots.isScatter3D = function(type) {
+        return type === 'scatter3d';
+    };
+
     plots.newTab = function(divid, layout) {
         makeToolMenu(divid);
         return makePlotFramework(divid, layout);
