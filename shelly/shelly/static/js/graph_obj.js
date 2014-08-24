@@ -886,6 +886,7 @@
                 SceneFrame.createScene(sceneOptions, function (webgl) {
                     // make the .webgl (webgl context) available through scene.
                     sceneLayout._webgl = webgl;
+                    sceneLayout._container = webgl.container;
 
                     sceneLayout._loading = false; // loaded
 
