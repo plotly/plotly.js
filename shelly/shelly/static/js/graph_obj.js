@@ -1330,7 +1330,7 @@
                 mergeattr('error_'+xsLetter+'.width','xe_w', 4);
             }
 
-            if(['scatter','box'].indexOf(type)!==-1){
+            if(['scatter','box','scatter3d'].indexOf(type)!==-1){
                 mergeattr('line.color','lc',gdc.marker.color || defaultColor);
                 mergeattr('line.width','lw',2);
                 mergeattr('marker.symbol','mx','circle');
@@ -1350,7 +1350,7 @@
                 t.msr=1;
                 t.msm = 'diameter';
 
-                if(type==='scatter') {
+                if(type==='scatter' || type==='scatter3d') {
                     var defaultMode = 'lines';
                     if(cd.length<Plotly.Scatter.PTS_LINESONLY ||
                             (typeof gdc.mode !== 'undefined')) {
