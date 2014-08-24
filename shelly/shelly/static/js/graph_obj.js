@@ -3412,9 +3412,11 @@
 
         return $.extend({
             _webgl: null,
+            _container: null,  // containing iframe
             _dataQueue: [], // for asyncronously loading data
             _loading: false,
             _id: sceneId,
+            bgcolor: '#fff', // iframe background color
             domain: {x:[0,1], y:[0,1]}, // default domain
             xaxis: default3DAxis({_id:'x' + sceneId, _name: 'xaxis'}),
             yaxis: default3DAxis({_id:'y' + sceneId, _name: 'yaxis'}),
