@@ -1289,8 +1289,8 @@
             mergeattr('opacity','op',1);
             mergeattr('text','tx','');
             mergeattr('name','name','trace '+c);
-            mergeattr('error_z.visible','ye_vis', 'error_z' in gdc &&
-                ('array' in gdc.error_y || 'value' in gdc.error_z));
+            mergeattr('error_z.visible','ze_vis', 'error_z' in gdc &&
+                ('array' in gdc.error_z || 'value' in gdc.error_z));
             mergeattr('error_y.visible','ye_vis', 'error_y' in gdc &&
                 ('array' in gdc.error_y || 'value' in gdc.error_y));
             mergeattr('error_x.visible','xe_vis', 'error_x' in gdc &&
@@ -1335,6 +1335,23 @@
                 mergeattr('error_'+xsLetter+'.thickness','xe_tkns', 2);
                 mergeattr('error_'+xsLetter+'.width','xe_w', 4);
             }
+            //// THIS PROBABLY IS NOT NEEDED!!!!
+            if(t.ze_vis){
+                mergeattr('error_z.type','ze_type',
+                    ('array' in gdc.error_z) ? 'data' : 'percent');
+                mergeattr('error_z.symmetric','ze_sym',
+                    !((t.ze_type==='data' ? 'arrayminus' : 'valueminus') in
+                        gdc.error_z));
+                mergeattr('error_z.value','ze_val',10);
+                mergeattr('error_z.valueminus','ze_valminus',10);
+                mergeattr('error_z.traceref','ze_tref',0);
+                mergeattr('error_z.tracerefminus','ze_trefminus',0);
+                mergeattr('error_z.color','ze_clr',
+                    plots.isBar(t.type) ? '#444' : defaultColor);
+                mergeattr('error_z.thickness','ze_tkns', 2);
+                mergeattr('error_z.width','ze_w', 4);
+            }
+
 
             if(['scatter','box','scatter3d'].indexOf(type)!==-1){
                 mergeattr('line.color','lc',gdc.marker.color || defaultColor);
