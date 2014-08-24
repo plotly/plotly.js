@@ -1963,7 +1963,7 @@
 
 
         // for now, if we detect 3D stuff, just re-do the plot
-        if (gl._hasGL3D) doplot = true;
+        // if (gl._hasGL3D) doplot = true;
 
         if(typeof astr === 'string') { aobj[astr] = val; }
         else if($.isPlainObject(astr)) { aobj = astr; }
