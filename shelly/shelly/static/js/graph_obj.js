@@ -2954,7 +2954,9 @@
             return k.match(/^scene[0-9]*$/);
         }).forEach( function (sceneName) {
             var scene = gl[sceneName];
-            scene._container.style.background = scene.bgcolor;
+            if (scene._container) {
+                scene._container.style.background = scene.bgcolor;
+            }
         });
 
 
