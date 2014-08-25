@@ -2954,7 +2954,9 @@
             return k.match(/^scene[0-9]*$/);
         }).forEach( function (sceneName) {
             var scene = gl[sceneName];
-            scene._container.style.background = scene.bgcolor;
+            if (scene._container) {
+                scene._container.style.background = scene.bgcolor;
+            }
         });
 
 
@@ -3421,6 +3423,8 @@
             return $.extend(Plotly.Axes.defaultAxis({
                 _td: td,
                 gridcolor: 'rgb(102, 102, 102)',
+                showbackground: false,
+                backgroundcolor: 'rgba(204, 204, 204, 0.5)',
                 ticklen: 0.05
             }), axisAttributes);
         }
