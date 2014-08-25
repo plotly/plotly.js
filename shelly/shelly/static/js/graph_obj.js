@@ -751,11 +751,6 @@
                 Examples.set();
             }
 
-
-            // tie modebar into all iframes
-            var modebar =  $(gd).find('.svg-container .modebar')[0];
-            SceneFrame.reconfigureModeBar(gd.layout, modebar);
-
             /*
              * Reset all SceneFrame positions (for now just
              * set width % as viewport x ratio)
@@ -811,6 +806,9 @@
 
             gd.calcdata = [];
             Plotly.Axes.setTypes(gd);
+            // tie modebar into all iframes
+            var modebar =  $(gd).find('.svg-container .modebar')[0];
+            SceneFrame.reconfigureModeBar(gd.layout, modebar);
 
             /*
              * If there are scenes that need loading load them.
@@ -899,6 +897,7 @@
                         var d = sceneLayout._dataQueue.shift();
                         webgl.draw(gl, d);
                     }
+
                 });
             });
         }
@@ -1215,7 +1214,7 @@
     plots.setStyles = function(gd, mergeDefault) {
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
 
-        var i,j,l,p,prop,val,cd,t,c,gdc,defaultColor;
+        var i,j,l,p,prop,val,cd,t,c,gdc,defaultColor,is3d;
 
         // merge object a[k] (which may be an array or a single value)
         // from gd.data into calcdata
@@ -1265,6 +1264,7 @@
             t = cd[0].t; // trace styling object
             c = t.curve; // trace number
             gdc = gd.data[c];
+            is3d = plots.isGL3D(gdc.type);
             // defaultColor cares about which trace this is in gd.data
             // but we can get here from editing with a different data
             // array, with other things added before the regular traces
@@ -1314,7 +1314,7 @@
                 mergeattr('error_y.color','ye_clr',
                     plots.isBar(t.type) ? '#444' : defaultColor);
                 mergeattr('error_y.thickness','ye_tkns', 2);
-                mergeattr('error_y.width','ye_w', 4);
+                mergeattr('error_y.width','ye_w', is3d ? 0 : 4);
             }
             if(t.xe_vis){
                 mergeattr('error_x.type','xe_type',
@@ -1333,9 +1333,9 @@
                 mergeattr('error_'+xsLetter+'.color','xe_clr',
                     plots.isBar(t.type) ? '#444' : defaultColor);
                 mergeattr('error_'+xsLetter+'.thickness','xe_tkns', 2);
-                mergeattr('error_'+xsLetter+'.width','xe_w', 4);
+                mergeattr('error_'+xsLetter+'.width','xe_w', is3d ? 0 : 4);
             }
-            //// THIS PROBABLY IS NOT NEEDED!!!!
+
             if(t.ze_vis){
                 mergeattr('error_z.type','ze_type',
                     ('array' in gdc.error_z) ? 'data' : 'percent');
@@ -1349,7 +1349,7 @@
                 mergeattr('error_z.color','ze_clr',
                     plots.isBar(t.type) ? '#444' : defaultColor);
                 mergeattr('error_z.thickness','ze_tkns', 2);
-                mergeattr('error_z.width','ze_w', 4);
+                mergeattr('error_z.width','ze_w', is3d ? 0 : 4);
             }
 
 
