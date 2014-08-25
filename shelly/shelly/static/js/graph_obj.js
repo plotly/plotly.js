@@ -751,11 +751,6 @@
                 Examples.set();
             }
 
-
-            // tie modebar into all iframes
-            var modebar =  $(gd).find('.svg-container .modebar')[0];
-            SceneFrame.reconfigureModeBar(gd.layout, modebar);
-
             /*
              * Reset all SceneFrame positions (for now just
              * set width % as viewport x ratio)
@@ -811,6 +806,9 @@
 
             gd.calcdata = [];
             Plotly.Axes.setTypes(gd);
+            // tie modebar into all iframes
+            var modebar =  $(gd).find('.svg-container .modebar')[0];
+            SceneFrame.reconfigureModeBar(gd.layout, modebar);
 
             /*
              * If there are scenes that need loading load them.
@@ -899,6 +897,7 @@
                         var d = sceneLayout._dataQueue.shift();
                         webgl.draw(gl, d);
                     }
+
                 });
             });
         }
