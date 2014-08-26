@@ -849,27 +849,26 @@
                 if (sceneLayout._webgl) sceneLayout._webgl.setPosition(sceneLayout.position);
                 return sceneLayout;
 
-            }).filter( function (sceneLayout) {
+            }).forEach( function (sceneLayout) {
                 /*
                  * We only want to continue to operate on scenes that have
                  * data waiting to be displayed or require loading
                  */
-                sceneLayout._loading = sceneLayout._webgl === null;
-
-                if (sceneLayout._dataQueue.length || sceneLayout._loading)  return true;
-                else return false;
-
-            }).forEach( function (sceneLayout) {
-
                 var sceneOptions;
-
+                if (sceneLayout._loading) return;
                 if (sceneLayout._webgl !== null) {
+                    //// woot, lets load all the data in the queue and bail outta here
                     while (sceneLayout._dataQueue.length) {
                         var d = sceneLayout._dataQueue.shift();
                         sceneLayout._webgl.draw(gl, d);
                     }
+
                     return;
                 }
+                // we are not loading but no _webgl has been created. Lets load one!
+                sceneLayout._loading = true;
+                // procede to create a new scene
+
                 /*
                  * Creating new scenes
                  */
@@ -883,10 +882,10 @@
 
                 SceneFrame.createScene(sceneOptions, function (webgl) {
                     // make the .webgl (webgl context) available through scene.
+                    sceneLayout._loading = false; // loaded
                     sceneLayout._webgl = webgl;
                     sceneLayout._container = webgl.container;
 
-                    sceneLayout._loading = false; // loaded
 
                     webgl.setPosition(sceneLayout.position);
 
