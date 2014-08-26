@@ -1472,7 +1472,7 @@
                 if (type !== 'surface') {
                     mergeattr('colorscale', 'scl', Plotly.defaultColorscale,true);
                 } else {
-                    mergeattr('colorscale', 'scl', 'jet', true);
+                    mergeattr('colorscale', 'scl', 'Jet', true);
                 }
                 // reverse colorscale: handle this here so we don't
                 // have to do it in each plot type and colorbar
