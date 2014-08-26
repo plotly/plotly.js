@@ -3425,6 +3425,9 @@
             return $.extend(Plotly.Axes.defaultAxis({
                 _td: td,
                 gridcolor: 'rgb(102, 102, 102)',
+                showspikes: true,
+                spikesides: true,
+                spikethickness: 2,
                 showbackground: false,
                 backgroundcolor: 'rgba(204, 204, 204, 0.5)',
                 ticklen: 0
