@@ -1440,7 +1440,7 @@
                     mergeattr('marker.line.outliercmin','solcmin',t.mlcmin);
                 }
             }
-            else if(plots.isHeatmap(type)){
+            else if(plots.isHeatmap(type) || type === 'surface'){
                 if(plots.isHist2D(type)) {
                     mergeattr('histfunc','histfunc','count');
                     mergeattr('histnorm','histnorm','');
@@ -1469,8 +1469,11 @@
                 mergeattr('zauto','zauto',true);
                 mergeattr('zmin','zmin',-10);
                 mergeattr('zmax','zmax',10);
-
-                mergeattr('colorscale', 'scl', Plotly.defaultColorscale,true);
+                if (type !== 'surface') {
+                    mergeattr('colorscale', 'scl', Plotly.defaultColorscale,true);
+                } else {
+                    mergeattr('colorscale', 'scl', 'Jet', true);
+                }
                 // reverse colorscale: handle this here so we don't
                 // have to do it in each plot type and colorbar
                 mergeattr('reversescale','reversescale',false);
@@ -3425,7 +3428,7 @@
                 gridcolor: 'rgb(102, 102, 102)',
                 showbackground: false,
                 backgroundcolor: 'rgba(204, 204, 204, 0.5)',
-                ticklen: 0.05
+                ticklen: 0
             }), axisAttributes);
         }
 
