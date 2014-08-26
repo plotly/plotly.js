@@ -1440,7 +1440,7 @@
                     mergeattr('marker.line.outliercmin','solcmin',t.mlcmin);
                 }
             }
-            else if(plots.isHeatmap(type)){
+            else if(plots.isHeatmap(type) || type === 'surface'){
                 if(plots.isHist2D(type)) {
                     mergeattr('histfunc','histfunc','count');
                     mergeattr('histnorm','histnorm','');
