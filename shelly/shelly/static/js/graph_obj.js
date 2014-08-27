@@ -1358,7 +1358,7 @@
                 mergeattr('marker.symbol','mx','circle');
                 mergeattr('marker.opacity','mo',
                     $.isArray(gdc.marker.size) ? 0.7 : 1);
-                mergeattr('marker.size','ms',6);
+                mergeattr('marker.size','ms',8);
                 mergeattr('marker.color','mc',t.lc);
                 mergeattr('marker.line.color','mlc',
                     ((t.lc!==t.mc) ? t.lc :
