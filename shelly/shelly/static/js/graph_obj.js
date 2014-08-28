@@ -740,7 +740,6 @@
 
 
         ////////////////////////////////  3D   ///////////////////////////////
-
         if (gl._hasGL3D) {
             /*
              * Once Webgl plays well with other things we can remove this.
@@ -791,6 +790,12 @@
                     gl[destScene] = sceneLayout = Plotly.Plots
                         .defaultSceneLayout(gd, destScene, sceneLayout);
                 }
+
+                // if this data is already waiting in the queue, we can abort.
+                // This is a race condition that results from things like resize
+                // events which call Plotly.plot again. --- there is probably a
+                // better way to account for these race conditions...
+                if (sceneLayout._dataQueue.indexOf(d) > -1) return;
 
                 sceneLayout._dataQueue.push(d);
 
@@ -885,6 +890,7 @@
                     sceneLayout._webgl = webgl;
                     sceneLayout._container = webgl.container;
 
+                    gd.layout[sceneLayout.id] = sceneLayout;
 
                     webgl.setPosition(sceneLayout.position);
 
@@ -895,6 +901,7 @@
                         var d = sceneLayout._dataQueue.shift();
                         webgl.draw(gl, d);
                     }
+
 
                 });
             });
