@@ -764,7 +764,6 @@
 
               // This following code inserts test data if no data is present
               // remove after completion
-                var sceneLayout, destScene;
                 if (!Array.isArray(d.z)) {
                     $.extend(d, SceneFrame.testData(d.type,
                         120, 120, [40,40,60]));
@@ -778,19 +777,18 @@
                  *
                  * and d.scene will be undefined or some number or number string
                  */
-                destScene = 'scene';
+                var destScene = 'scene';
                 if (d.scene && $.isNumeric(d.scene) && d.scene > 1) {
                     destScene += d.scene;
                 }
 
-                if (destScene in gl && '_webgl' in gl[destScene]) {
-                    sceneLayout = gl[destScene];
-                }
-                else {
+                var sceneLayout = gl[destScene] || {};
+                if (!('_webgl' in gl[destScene])) {
                     /*
-                     * build a new scene layout object
+                     * build a new scene layout object or initialize a serialized one
                      */
-                    gl[destScene] = sceneLayout = Plotly.Plots.defaultSceneLayout(gd, destScene, {});
+                    gl[destScene] = sceneLayout = Plotly.Plots
+                        .defaultSceneLayout(gd, destScene, sceneLayout);
                 }
 
                 sceneLayout._dataQueue.push(d);
@@ -3419,7 +3417,7 @@
         return uoStack.pop();
     }
 
-    plots.defaultSceneLayout = function (td, sceneId, extras) {
+    plots.defaultSceneLayout = function (td, sceneId, existingLayout) {
 
         function default3DAxis (axisAttributes) {
             return $.extend(Plotly.Axes.defaultAxis({
@@ -3434,9 +3432,9 @@
             }), axisAttributes);
         }
 
-        if (!extras) extras = {};
+        if (!existingLayout) existingLayout = {};
 
-        return $.extend({
+        return $.extend(true, {
             _webgl: null,
             _container: null,  // containing iframe
             _dataQueue: [], // for asyncronously loading data
@@ -3447,7 +3445,7 @@
             xaxis: default3DAxis({_id:'x' + sceneId, _name: 'xaxis'}),
             yaxis: default3DAxis({_id:'y' + sceneId, _name: 'yaxis'}),
             zaxis: default3DAxis({_id:'z' + sceneId, _name: 'zaxis'})
-        }, extras);
+        }, existingLayout);
     };
 
 }()); // end Plots object definition
