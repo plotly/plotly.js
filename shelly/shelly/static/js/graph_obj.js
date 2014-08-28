@@ -291,6 +291,28 @@
         return GL3DTYPES.indexOf(type) !== -1;
     };
 
+    var ALLTYPES = ['scatter', 'box'].concat(BARTYPES, HEATMAPTYPES, GL3DTYPES);
+
+    function getModule(trace) {
+        var type = trace.type;
+
+        if('r' in trace) {
+            console.log('Oops, tried to put a polar trace of type ' +
+                type + ' on an incompatible graph of cartesian ' +
+                'data. Ignoring this dataset.'
+            );
+            return;
+        }
+        if(plots.isScatter(type)) return 'Scatter';
+        if(plots.isBar(type)) return 'Bars';
+        if(plots.isContour(type)) return 'Contour';
+        if(plots.isHeatmap(type)) return 'Heatmap';
+        if(type==='box') return 'Boxes';
+        console.log('Unrecognized plot type ' + type +
+            '. Ignoring this dataset.'
+        );
+    }
+
     plots.newTab = function(divid, layout) {
         makeToolMenu(divid);
         return makePlotFramework(divid, layout);
@@ -558,6 +580,12 @@
             // is used to determine whether to make a new tab
             gd.empty=false;
         }
+
+        // fill in default values:
+        // gd.data, gd.layout are precisely what the user specified
+        // gd._fullData, gd._fullLayout are complete descriptions
+        //      of how to draw the plot
+        gd._fullData = gd.data.map(supplyDefaults);
 
         // Polar plots
         // Check if it has a polar type
@@ -923,8 +951,6 @@
 
         Plotly.Lib.markTime('done Plotly.Axes.setType');
 
-
-
         // generate calcdata, if we need to
         // to force redoing calcdata, just delete it before calling Plotly.plot
         var recalc = !gd.calcdata || gd.calcdata.length!==(gd.data||[]).length;
@@ -947,7 +973,7 @@
             for(var curve = 0; curve<gd.data.length; curve++) {
                 // curve is the index, gdc is the data object for one trace
                 var gdc = gd.data[curve],
-                    module = '',
+                    module = getModule(gdc),
                     cd = [];
 
                 // fill in default curve type
@@ -960,26 +986,6 @@
                         gdc.name = ns[ns.length-1].replace(/\n/g,' ');
                     }
                     else { gdc.name = 'trace '+curve; }
-                }
-
-                // figure out which module plots this data
-                if('r' in gdc) {
-                    console.log('Oops, tried to put a polar trace of type ' +
-                        gdc.type + ' on an incompatible graph of cartesian ' +
-                        gd.data[0].type + ' data. Ignoring this dataset.'
-                    );
-                }
-                // styling change
-                // see https://github.com/plotly/Contributors-Guide/blob/master/styleguides/javascript.md#blocks
-                else if(plots.isScatter(gdc.type))  module = 'Scatter';
-                else if(plots.isBar(gdc.type))  module = 'Bars';
-                else if(plots.isContour(gdc.type)) module = 'Contour';
-                else if(plots.isHeatmap(gdc.type)) module = 'Heatmap';
-                else if(gdc.type==='box')  module = 'Boxes';
-                else {
-                    console.log('Unrecognized plot type ' + gdc.type +
-                        '. Ignoring this dataset.'
-                    );
                 }
 
                 if(module) { cd = Plotly[module].calc(gd,gdc); }
@@ -1204,6 +1210,15 @@
         gd.calcdata = undefined;
         Plotly.plot(gd);
     };
+
+    function supplyDefaults(trace) {
+        // TODO: make a custom extend, that recurses into {} but not []
+        // so we don't end up copying data arrays unnecessarily?
+        var _fullTrace = $.extend(true, {}, trace);
+        if(ALLTYPES.indexOf(_fullTrace.type)===-1) _fullTrace.type = 'scatter';
+        var module = Plotly[getModule(_fullTrace)];
+        // if(module) module.supplyDefaults(_fullTrace);
+    }
 
     // setStyles: translate styles from gd.data to gd.calcdata,
     // filling in defaults for missing values and breaking out
