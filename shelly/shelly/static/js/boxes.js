@@ -1,4 +1,12 @@
 (function() {
+    'use strict';
+
+    // ---Plotly global modules
+    /* global Plotly:false */
+
+    // ---external global dependencies
+    /* global d3:false */
+
     var boxes = window.Plotly.Boxes = {};
 
     boxes.supplyDefaults = function(trace) {
@@ -14,19 +22,24 @@
             ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
             x,
             y = ya.makeCalcdata(gdc,'y');
-        if('x' in gdc) { x = xa.makeCalcdata(gdc,'x'); }
+
+        if('x' in gdc) x = xa.makeCalcdata(gdc,'x');
+
         // if no x data, use x0, or name, or text - so if you want one box
         // per trace, set x0 to the x value or category for this trace
         // (or set x to a constant array matching y)
         else {
             var x0;
-            if('x0' in gdc) { x0 = gdc.x0; }
+            if('x0' in gdc) x0 = gdc.x0;
             else if('name' in gdc && (
-                    xa.type=='category' ||
-                    ($.isNumeric(gdc.name) && ['linear','log'].indexOf(xa.type)!=-1) ||
-                    (Plotly.Lib.isDateTime(gdc.name) && xa.type=='date')
-                )) { x0 = gdc.name; }
-            else { x0 = gd.numboxes; }
+                        xa.type==='category' ||
+                        ($.isNumeric(gdc.name) &&
+                            ['linear','log'].indexOf(xa.type)!==-1) ||
+                        (Plotly.Lib.isDateTime(gdc.name) && xa.type==='date')
+                    )) {
+                x0 = gdc.name;
+            }
+            else x0 = gd.numboxes;
             x0 = xa.d2c(x0);
             x = y.map(function(){ return x0; });
         }
@@ -42,13 +55,13 @@
 
         // y autorange based on all source points
         // x happens afterward when we know all the x values
-        Plotly.Axes.expand(ya,y,{padded:true});
+        Plotly.Axes.expand(ya, y, {padded: true});
 
         // bin the points
         y.forEach(function(v,i){
-            if(!$.isNumeric(v)){ return; }
+            if(!$.isNumeric(v)) return;
             var n = Plotly.Lib.findBin(x[i],bins);
-            if(n>=0 && n<l) { pts[n].push(v); }
+            if(n>=0 && n<l) pts[n].push(v);
         });
 
         // interpolate an array given a (possibly non-integer) index n
@@ -58,10 +71,10 @@
         // that this definition indexes from 1 rather than 0, so we subtract 1/2 instead of add
         function interp(arr,n) {
             n-=0.5;
-            if(n<0) { return arr[0]; }
-            if(n>arr.length-1) { return arr[arr.length-1]; }
+            if(n<0) return arr[0];
+            if(n>arr.length-1) return arr[arr.length-1];
             var frac = n%1;
-            return frac*arr[Math.ceil(n)]+(1-frac)*arr[Math.floor(n)];
+            return frac*arr[Math.ceil(n)] + (1-frac)*arr[Math.floor(n)];
         }
 
         // sort the bins and calculate the stats
@@ -78,8 +91,10 @@
             p.q3 = interp(v,0.75*l); // third quartile
             // lower and upper fences - last point inside
             // 1.5 interquartile ranges from quartiles
-            p.lf = Math.min(p.q1,v[Math.min(Plotly.Lib.findBin(2.5*p.q1-1.5*p.q3,v,true)+1,l-1)]);
-            p.uf = Math.max(p.q3,v[Math.max(Plotly.Lib.findBin(2.5*p.q3-1.5*p.q1,v),0)]);
+            p.lf = Math.min(p.q1, v[
+                Math.min(Plotly.Lib.findBin(2.5*p.q1-1.5*p.q3,v,true)+1, l-1)]);
+            p.uf = Math.max(p.q3,v[
+                Math.max(Plotly.Lib.findBin(2.5*p.q3-1.5*p.q1,v), 0)]);
             // lower and upper outliers - 3 IQR out (don't clip to max/min,
             // this is only for discriminating suspected & far outliers)
             p.lo = 4*p.q1-3*p.q3;
@@ -88,7 +103,7 @@
 
         // remove empty bins
         cd = cd.filter(function(p){ return p.y && p.y.length; });
-        if(!cd.length) { return [{t:{emptybox:true}}]; }
+        if(!cd.length) return [{t: {emptybox: true}}];
 
         cd[0].t = {boxnum: gd.numboxes, dx: dx};
         gd.numboxes++;
@@ -103,11 +118,10 @@
             maxPad = 0;
         gd.calcdata.forEach(function(cd,i) {
             var t=cd[0].t;
-            if(t.visible!==false && !t.emptybox && t.type=='box' &&
-              (t.xaxis||'x')==xa._id && (t.yaxis||'y')==ya._id) {
+            if(t.visible!==false && !t.emptybox && t.type==='box' &&
+              (t.xaxis||'x')===xa._id && (t.yaxis||'y')===ya._id) {
                 boxlist.push(i);
                 if(t.boxpts!==false) {
-                    // console.log(t.jitter,t.ptpos,gd.layout.boxgap,gd.numboxes,t.jitter-t.ptpos+gd.layout.boxgap-1);
                     minPad = Math.max(minPad,t.jitter-t.ptpos-1);
                     maxPad = Math.max(maxPad,t.jitter+t.ptpos-1);
                 }
@@ -122,7 +136,7 @@
                 dx = boxdv.minDiff/2;
 
             // if there's no duplication of x points, disable 'group' mode by setting numboxes=1
-            if(boxx.length==boxdv.vals.length) { gd.numboxes = 1; }
+            if(boxx.length===boxdv.vals.length) gd.numboxes = 1;
 
             // check for forced minimum dtick
             Plotly.Axes.minDtick(xa,boxdv.minDiff,boxdv.vals[0],true);
@@ -131,9 +145,14 @@
             boxlist.forEach(function(i){ gd.calcdata[i][0].t.dx = dx; });
 
             // autoscale the x axis - including space for points if they're off the side
-            // TODO: this will overdo it if the outermost boxes don't have their points as far out as the other boxes
-            var padfactor = (1-gd.layout.boxgap)*(1-gd.layout.boxgroupgap)*dx/gd.numboxes;
-            Plotly.Axes.expand(xa, boxdv.vals, {vpadminus:dx+minPad*padfactor, vpadplus:dx+maxPad*padfactor});
+            // TODO: this will overdo it if the outermost boxes don't have
+            // their points as far out as the other boxes
+            var padfactor = (1-gd.layout.boxgap) * (1-gd.layout.boxgroupgap) *
+                    dx / gd.numboxes;
+            Plotly.Axes.expand(xa, boxdv.vals, {
+                vpadminus: dx+minPad*padfactor,
+                vpadplus: dx+maxPad*padfactor
+            });
         }
     };
 
@@ -141,23 +160,29 @@
         var gl = gd.layout,
             xa = plotinfo.x,
             ya = plotinfo.y;
-        var boxtraces = plotinfo.plot.select('.boxlayer').selectAll('g.trace.boxes') // <-- select trace group
-            .data(cdbox) // <-- bind calcdata to traces
-          .enter().append('g') // <-- add a trace for each calcdata
+        var boxtraces = plotinfo.plot.select('.boxlayer').selectAll('g.trace.boxes')
+            .data(cdbox)
+          .enter().append('g')
             .attr('class','trace boxes');
 
         boxtraces.each(function(d){
             var t = d[0].t,
-                group = (gl.boxmode=='group' && gd.numboxes>1), // like grouped bars
+                group = (gl.boxmode==='group' && gd.numboxes>1),
                 // box half width
                 bdx = t.dx*(1-gl.boxgap)*(1-gl.boxgroupgap)/(group ? gd.numboxes : 1),
                 // box center offset
                 bx = group ? 2*t.dx*(-0.5+(t.boxnum+0.5)/gd.numboxes)*(1-gl.boxgap) : 0,
-                wdx = bdx*t.ww; // whisker width
-            if(t.visible===false || t.emptybox) { d3.select(this).remove(); return; }
+                // whisker width
+                wdx = bdx*t.ww;
+            if(t.visible===false || t.emptybox) {
+                d3.select(this).remove();
+                return;
+            }
+
             // save the box size and box position for use by hover
             t.bx = bx;
             t.bdx = bdx;
+
             // boxes and whiskers
             d3.select(this).selectAll('path.box')
                 .data(Plotly.Lib.identity)
@@ -182,6 +207,7 @@
                         ((t.ww===0) ? '' : // whisker caps
                             'M'+xw0+','+ylf+'H'+xw1+'M'+xw0+','+yuf+'H'+xw1));
                 });
+
             // draw points, if desired
             if(t.boxpts!==false) {
                 d3.select(this).selectAll('g.points')
@@ -192,13 +218,15 @@
                     .attr('class','points')
                   .selectAll('path')
                     .data(function(d){
-                        var pts = (t.boxpts=='all') ? d.y :
+                        var pts = (t.boxpts==='all') ? d.y :
                             d.y.filter(function(v){ return (v<d.lf || v>d.uf); });
                         return pts.map(function(v){
                             var xo = (t.jitter ? t.jitter*(Math.random()-0.5)*2 : 0)+t.ptpos,
                                 p = {x:d.x+xo*bdx+bx,y:v,t:t};
                             // tag suspected outliers
-                            if(t.boxpts=='suspectedoutliers' && v<d.uo && v>d.lo) { p.so=true; }
+                            if(t.boxpts==='suspectedoutliers' && v<d.uo && v>d.lo) {
+                                p.so=true;
+                            }
                             return p;
                         });
                     })
@@ -220,7 +248,7 @@
                             ysl = ya.c2p(d.mean-d.sd,true),
                             ysh = ya.c2p(d.mean+d.sd,true);
                         d3.select(this).attr('d','M'+x0+','+ym+'H'+x1+
-                            ((t.mean!='sd') ? '' :
+                            ((t.mean!=='sd') ? '' :
                             'm0,0L'+xc+','+ysl+'L'+x0+','+ym+'L'+xc+','+ysh+'Z'));
                     });
             }
@@ -238,7 +266,10 @@
                     .call(Plotly.Drawing.strokeColor,t.lc)
                     .call(Plotly.Drawing.fillColor,t.fc);
                 d3.select(this).selectAll('path.mean')
-                    .style({'stroke-width':t.lw, 'stroke-dasharray':(2*t.lw)+'px,'+(t.lw)+'px'})
+                    .style({
+                        'stroke-width': t.lw,
+                        'stroke-dasharray': (2*t.lw)+'px,'+(t.lw)+'px'
+                    })
                     .call(Plotly.Drawing.strokeColor,t.lc);
             })
             .selectAll('g.points')
