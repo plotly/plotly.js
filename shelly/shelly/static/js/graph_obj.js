@@ -783,7 +783,8 @@
                 }
 
                 var sceneLayout = gl[destScene] || {};
-                if (!('_webgl' in gl[destScene])) {
+                gl[destScene] = sceneLayout;
+                if (!('_webgl' in sceneLayout)) {
                     /*
                      * build a new scene layout object or initialize a serialized one
                      */
