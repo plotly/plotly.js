@@ -1,6 +1,10 @@
 (function() {
     var boxes = window.Plotly.Boxes = {};
 
+    boxes.supplyDefaults = function(trace) {
+
+    };
+
     boxes.calc = function(gd,gdc) {
         // box plots make no sense if you don't have y
         if(!('y' in gdc) || gdc.visible===false) { return; }

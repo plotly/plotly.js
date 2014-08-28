@@ -1217,7 +1217,7 @@
         var _fullTrace = $.extend(true, {}, trace);
         if(ALLTYPES.indexOf(_fullTrace.type)===-1) _fullTrace.type = 'scatter';
         var module = Plotly[getModule(_fullTrace)];
-        // if(module) module.supplyDefaults(_fullTrace);
+        if(module) module.supplyDefaults(_fullTrace);
     }
 
     // setStyles: translate styles from gd.data to gd.calcdata,

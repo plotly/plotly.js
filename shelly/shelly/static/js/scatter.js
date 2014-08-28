@@ -3,6 +3,10 @@
 
     scatter.PTS_LINESONLY = 20; // traces with < this many points are by default shown with points and lines, > just get lines
 
+    scatter.supplyDefaults = function(trace) {
+
+    };
+
     scatter.calc = function(gd,gdc) {
         // verify that data exists, and make scaled data if necessary
         if(!('y' in gdc) && !('x' in gdc)) { return; } // no data!

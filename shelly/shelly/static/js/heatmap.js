@@ -6,6 +6,10 @@
     // zero or other falsy val disables
     MAX_PX_PER_BRICK=0;
 
+    heatmap.supplyDefaults = function(trace) {
+
+    };
+
     heatmap.calc = function(gd,gdc) {
         if(!('colorbar' in gdc)) { gdc.colorbar = {}; }
 

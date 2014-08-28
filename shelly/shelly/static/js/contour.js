@@ -1,6 +1,10 @@
 (function() {
     var contour = window.Plotly.Contour = {};
 
+    contour.supplyDefaults = function(trace) {
+
+    };
+
     contour.calc = function(gd,gdc) {
         if(!('colorbar' in gdc)) { gdc.colorbar = {}; }
 

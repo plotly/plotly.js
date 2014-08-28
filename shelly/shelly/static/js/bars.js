@@ -9,6 +9,10 @@
 
     var bars = window.Plotly.Bars = {};
 
+    bars.supplyDefaults = function(trace) {
+
+    };
+
     bars.calc = function(gd,gdc) {
         // ignore as much processing as possible (including
         // in autorange) if bar is not visible
