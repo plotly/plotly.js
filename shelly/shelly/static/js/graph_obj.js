@@ -881,6 +881,7 @@
                     zIndex: '1000',
                     id: sceneLayout._id,
                     plotly: Plotly,
+                    glopts: gl.glopts,
                     layout: gl
                 };
 
@@ -903,6 +904,8 @@
                         var d = sceneLayout._dataQueue.shift();
                         webgl.draw(gl, d);
                     }
+
+                    SceneFrame.emit('scene-ready', webgl);
                 });
             });
         }
