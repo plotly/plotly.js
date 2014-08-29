@@ -884,13 +884,15 @@
                     layout: gl
                 };
 
-                SceneFrame.createScene(sceneOptions, function (webgl) {
+                SceneFrame.createScene(sceneOptions);
+
+                SceneFrame.once('scene-loaded', function (webgl) {
+
+                    var sceneLayout = gd.layout[webgl.id];
                     // make the .webgl (webgl context) available through scene.
                     sceneLayout._loading = false; // loaded
                     sceneLayout._webgl = webgl;
                     sceneLayout._container = webgl.container;
-
-                    gd.layout[sceneLayout.id] = sceneLayout;
 
                     webgl.setPosition(sceneLayout.position);
 
@@ -901,8 +903,6 @@
                         var d = sceneLayout._dataQueue.shift();
                         webgl.draw(gl, d);
                     }
-
-
                 });
             });
         }
