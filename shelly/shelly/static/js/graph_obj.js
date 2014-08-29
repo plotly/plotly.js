@@ -1211,13 +1211,22 @@
         Plotly.plot(gd);
     };
 
-    function supplyDefaults(trace) {
+    function supplyDefaults(trace, i) {
         // TODO: make a custom extend, that recurses into {} but not []
         // so we don't end up copying data arrays unnecessarily?
-        var _fullTrace = $.extend(true, {}, trace);
-        if(ALLTYPES.indexOf(_fullTrace.type)===-1) _fullTrace.type = 'scatter';
-        var module = Plotly[getModule(_fullTrace)];
-        if(module) module.supplyDefaults(_fullTrace);
+        var fullTrace = $.extend(true, {}, trace);
+
+        // module-independent attributes
+        Plotly.Lib.coerceToList(fullTrace, 'type', ALLTYPES, 'scatter');
+        Plotly.Lib.coerceToList(fullTrace, 'visible', [true, false], true);
+        Plotly.Lib.coerceToRange(fullTrace, 'opacity', [0, 1], 1);
+        Plotly.Lib.coerceToString(fullTrace, 'name', 'trace '+i);
+
+        // module-specific attributes
+        var module = Plotly[getModule(fullTrace)];
+        if(module) module.supplyDefaults(fullTrace, i);
+
+        return fullTrace;
     }
 
     // setStyles: translate styles from gd.data to gd.calcdata,
@@ -1296,15 +1305,15 @@
             // all types have attributes type, visible, opacity, name, text
             // mergeattr puts single values into cd[0].t,
             // and all others into each individual point
-            mergeattr('type','type','scatter');
-            mergeattr('visible','visible',true);
+            mergeattr('type','type','scatter'); //global
+            mergeattr('visible','visible',true); //global
             mergeattr('showlegend','showlegend',true);
-            mergeattr('opacity','op',1);
-            mergeattr('text','tx','');
-            mergeattr('name','name','trace '+c);
-            mergeattr('error_y.visible','ye_vis',gdc.error_y &&
+            mergeattr('opacity','op',1); //global
+            mergeattr('text','tx',''); //scatter
+            mergeattr('name','name','trace '+c); //global
+            mergeattr('error_y.visible','yeVis',gdc.error_y &&
                 ('array' in gdc.error_y || 'value' in gdc.error_y));
-            mergeattr('error_x.visible','xe_vis',gdc.error_x &&
+            mergeattr('error_x.visible','xeVis',gdc.error_x &&
                 ('array' in gdc.error_x || 'value' in gdc.error_x));
             // mergeattr is unnecessary and insufficient for (x|y)axis
             // because '' shouldn't count as existing
@@ -1312,39 +1321,39 @@
             t.yaxis = gdc.yaxis||'y';
             var type = t.type; // like 'bar'
 
-            if(t.ye_vis){
-                mergeattr('error_y.type','ye_type',
+            if(t.yeVis){
+                mergeattr('error_y.type','yeType',
                     ('array' in gdc.error_y) ? 'data' : 'percent');
-                mergeattr('error_y.symmetric','ye_sym',
-                    !((t.ye_type==='data' ? 'arrayminus' : 'valueminus') in
+                mergeattr('error_y.symmetric','yeSym',
+                    !((t.yeType==='data' ? 'arrayminus' : 'valueminus') in
                         gdc.error_y));
-                mergeattr('error_y.value','ye_val',10);
-                mergeattr('error_y.valueminus','ye_valminus',10);
-                mergeattr('error_y.traceref','ye_tref',0);
-                mergeattr('error_y.tracerefminus','ye_trefminus',0);
-                mergeattr('error_y.color','ye_clr',
+                mergeattr('error_y.value','yeVal',10);
+                mergeattr('error_y.valueminus','yeValminus',10);
+                mergeattr('error_y.traceref','yeRef',0);
+                mergeattr('error_y.tracerefminus','yeRefminus',0);
+                mergeattr('error_y.color','yec',
                     plots.isBar(t.type) ? '#444' : defaultColor);
-                mergeattr('error_y.thickness','ye_tkns', 2);
-                mergeattr('error_y.width','ye_w', 4);
+                mergeattr('error_y.thickness','yeThick', 2);
+                mergeattr('error_y.width','yew', 4);
             }
-            if(t.xe_vis){
-                mergeattr('error_x.type','xe_type',
+            if(t.xeVis){
+                mergeattr('error_x.type','xeType',
                     ('array' in gdc.error_x) ? 'data' : 'percent');
-                mergeattr('error_x.symmetric','xe_sym',
-                    !((t.xe_type==='data' ? 'arrayminus' : 'valueminus') in
+                mergeattr('error_x.symmetric','xeSym',
+                    !((t.xeType==='data' ? 'arrayminus' : 'valueminus') in
                         gdc.error_x));
-                mergeattr('error_x.value','xe_val',10);
-                mergeattr('error_x.valueminus','xe_valminus',10);
-                mergeattr('error_x.traceref','xe_tref',0);
-                mergeattr('error_x.tracerefminus','xe_trefminus',0);
-                mergeattr('error_x.copy_ystyle','xe_ystyle',
+                mergeattr('error_x.value','xeVal',10);
+                mergeattr('error_x.valueminus','xeValminus',10);
+                mergeattr('error_x.traceref','xeRef',0);
+                mergeattr('error_x.tracerefminus','xeRefminus',0);
+                mergeattr('error_x.copy_ystyle','xeYStyle',
                     (gdc.error_x.color || gdc.error_x.thickness ||
                         gdc.error_x.width) ? false : true);
-                var xsLetter = t.xe_ystyle!==false ? 'y' : 'x';
-                mergeattr('error_'+xsLetter+'.color','xe_clr',
+                var xsLetter = t.xeYStyle!==false ? 'y' : 'x';
+                mergeattr('error_'+xsLetter+'.color','xec',
                     plots.isBar(t.type) ? '#444' : defaultColor);
-                mergeattr('error_'+xsLetter+'.thickness','xe_tkns', 2);
-                mergeattr('error_'+xsLetter+'.width','xe_w', 4);
+                mergeattr('error_'+xsLetter+'.thickness','xeThick', 2);
+                mergeattr('error_'+xsLetter+'.width','xew', 4);
             }
 
             if(['scatter','box'].indexOf(type)!==-1){
