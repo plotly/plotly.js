@@ -785,7 +785,8 @@
                 gl[destScene] = sceneLayout;
                 if (!('_webgl' in sceneLayout)) {
                     /*
-                     * build a new scene layout object or initialize a serialized one
+                     * build a new scene layout object or initialize a serialized one.
+                     * Applies defaults to incoming sceneLayouts.
                      */
                     gl[destScene] = sceneLayout = Plotly.Plots
                         .defaultSceneLayout(gd, destScene, sceneLayout);
@@ -3323,6 +3324,10 @@
                         }
                     }
 
+                    else if(v.substr(0, 5) === 'scene') {
+                        if (d[v]._webgl) d[v]._webgl.saveStateToLayout();
+                    }
+
                     // OK, we're including this... recurse into it
                     o[v] = stripObj(d[v]);
                 }
@@ -3454,6 +3459,7 @@
             _loading: false,
             _id: sceneId,
             bgcolor: '#fff', // iframe background color
+            cameraPosition: [],
             domain: {x:[0,1], y:[0,1]}, // default domain
             xaxis: default3DAxis({_id:'x' + sceneId, _name: 'xaxis'}),
             yaxis: default3DAxis({_id:'y' + sceneId, _name: 'yaxis'}),
