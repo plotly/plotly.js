@@ -881,6 +881,8 @@
                     zIndex: '1000',
                     id: sceneLayout._id,
                     plotly: Plotly,
+                    width: layout.width,
+                    height: layout.height,
                     glopts: gl.glopts,
                     layout: gl
                 };
