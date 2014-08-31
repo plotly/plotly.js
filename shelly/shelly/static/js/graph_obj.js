@@ -3447,6 +3447,7 @@
                 showbackground: false,
                 backgroundcolor: 'rgba(204, 204, 204, 0.5)',
                 showaxeslabels: true,
+                showline: true,
                 ticklen: 0
             }), axisAttributes);
         }
