@@ -3446,6 +3446,7 @@
                 spikethickness: 2,
                 showbackground: false,
                 backgroundcolor: 'rgba(204, 204, 204, 0.5)',
+                showaxeslabels: true,
                 ticklen: 0
             }), axisAttributes);
         }
