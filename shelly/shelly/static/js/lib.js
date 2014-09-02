@@ -1442,12 +1442,40 @@
         };
     };
 
-    // Helper to strip trailing slash, from http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
+    // Helper to strip trailing slash, from
+    // http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
     lib.stripTrailingSlash = function (str) {
-        if (str.substr(-1) == '/') {
+        if (str.substr(-1) === '/') {
             return str.substr(0, str.length - 1);
         }
         return str;
+    };
+
+    // Helpers for defaults and attribute validation
+    lib.coerceToList = function(container, attribute, list, dflt) {
+        if(list.indexOf(container[attribute])===-1) {
+            container[attribute] = dflt;
+        }
+    };
+
+    lib.coerceToRange = function(container, attribute, range, dflt) {
+        // if range has length 1, it only enforces a minimum.
+        // if it has length 2, it enforces a min and max
+        var v = container[attribute];
+        if(!$.isNumeric(v) || v<range[0] || (range[1] && v>range[1])) {
+            container[attribute] = dflt;
+        }
+        else container[attribute] = Number(v);
+    };
+
+    lib.coerceToString = function(container, attribute, dflt) {
+        var v = container[attribute];
+        if(!v) {
+            container[attribute] = dflt;
+        }
+        else if(typeof v !== 'string') {
+            container[attribute] = String(v);
+        }
     };
 
 }()); // end Lib object definition

@@ -15,6 +15,7 @@
     scatter.PTS_LINESONLY = 20;
 
     scatter.supplyDefaults = function(trace) {
+        if(!$.isArray(trace.text)) Plotly.Lib.coerceToString(trace, 'text', '');
 
     };
 
