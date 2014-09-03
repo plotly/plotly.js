@@ -68,19 +68,8 @@
         });
     };
 
-    // setTypes: figure out axis types (linear, log, date, category...)
-    // if td.axtypesok is true, we can skip this.
-    // to force axtypes to be called again, set td.axtypesok
-    // false before calling plot()
-    // this should be done if the first trace changes type or data
-    // use the first trace only.
-    // If the axis has data, see whether more looks like dates or like numbers
-    // If it has x0 & dx (etc), go by x0 (if x0 is a date and dx is a number,
-    // perhaps guess days?)
-    // If it has none of these, it will default to x0=0, dx=1, so choose number
-    // -> If not date, figure out if a log axis makes sense, using all axis data
-    axes.setTypes = function(td) {
-        // check if every axis we need exists - make any that don't as defaults
+    // check if every axis we need exists - make any that don't as defaults
+    axes.fillAxesWithDefaults = function (td) {
         (td.data||[]).forEach(function(curve) {
             if(curve.type && curve.type.indexOf('Polar')!==-1) { return; }
             ['x','y'].forEach(function(axletter) {
@@ -100,11 +89,29 @@
                 }
             });
         });
+    };
+
+
+    axes.initAxes = function (td) {
+        var axlist = axes.list(td);
+        axlist.forEach(function(ax){ axes.initAxis(td,ax); });
+    };
+
+    // setTypes: figure out axis types (linear, log, date, category...)
+    // if td.axtypesok is true, we can skip this.
+    // to force axtypes to be called again, set td.axtypesok
+    // false before calling plot()
+    // this should be done if the first trace changes type or data
+    // use the first trace only.
+    // If the axis has data, see whether more looks like dates or like numbers
+    // If it has x0 & dx (etc), go by x0 (if x0 is a date and dx is a number,
+    // perhaps guess days?)
+    // If it has none of these, it will default to x0=0, dx=1, so choose number
+    // -> If not date, figure out if a log axis makes sense, using all axis data
+    axes.setTypes = function(td) {
 
         // now get all axes
         var axlist = axes.list(td);
-        // initialize them all
-        axlist.forEach(function(ax){ axes.initAxis(td,ax); });
         // check for type changes
         if(td.data && td.data.length){
             axlist.forEach(setType);
@@ -208,9 +215,15 @@
 
     function setType(ax){
         var axletter = ax._id.charAt(0),
-            data = (ax._td.data||[]).filter(function(di){
-                return (di[axletter+'axis']||axletter)===ax._id;
-            });
+            data = ax._td.data,
+            id = ax._id;
+
+        // support 3d
+        if (id.indexOf('scene') !== -1) id = id.charAt(0);
+
+        data = data.filter( function(di) {
+            return (di[axletter+'axis']||axletter)===id;
+        });
 
         // backward compatibility
         // TODO: move this to layout import
