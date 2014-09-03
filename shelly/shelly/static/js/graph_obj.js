@@ -258,7 +258,7 @@
     }
 
     plots.isScatter = function(type) {
-        return !type || (type==='scatter');
+        return !type || type==='scatter';
     };
 
     var BARTYPES = ['bar','histogram'];
@@ -1270,12 +1270,14 @@
         // to reverse a colorscale
         function flipScale(si){ return [1-si[0],si[1]]; }
 
+        // detect 3d
+        is3d = ('layout' in gd) && gd.layout._hasGL3D;
+
         for(i in gd.calcdata){
             cd = gd.calcdata[i]; // trace plus styling
             t = cd[0].t; // trace styling object
             c = t.curve; // trace number
             gdc = gd.data[c];
-            is3d = plots.isGL3D(gdc.type);
             // defaultColor cares about which trace this is in gd.data
             // but we can get here from editing with a different data
             // array, with other things added before the regular traces
