@@ -1,5 +1,6 @@
 (function () {
 'use strict';
+ window.ModeBar = ModeBar;
 
 /**
  * UI controller for interactive plots
@@ -69,9 +70,9 @@ ModeBar.prototype.createGroup = function () {
  * @Param {function} config.click
  * @Return {HTMLelement}
  */
-ModeBar.createButton = function (config) {
-    var button = document.createaElement('button');
-    var icon = document.createaElement('i');
+ModeBar.prototype.createButton = function (config) {
+    var button = document.createElement('button');
+    var icon = document.createElement('i');
 
     button.setAttribute('rel', 'tooltip');
     button.className = 'btn btn--icon btn--plot ploticon';
@@ -79,10 +80,10 @@ ModeBar.createButton = function (config) {
     button.setAttribute('data-attr', config.attr);
     button.setAttribute('data-val', config.val);
     button.setAttribute('title', config.title);
+    button.addEventListener('click', config.click.bind(this));
 
     icon.className = config.icon;
-
-    button.eventListener('click', config.click);
+    button.appendChild(icon);
 
     return button;
 };
@@ -92,7 +93,7 @@ ModeBar.createButton = function (config) {
  * @Param {object} graphInfo plot object containing data and layout
  * @Return {HTMLelement}
  */
-ModeBar.updateActiveButton = function () {
+ModeBar.prototype.updateActiveButton = function () {
     var graphInfo = this.graphInfo;
     this.buttons.forEach( function (button) {
         var thisval = button.getAttribute('data-val') || true,
@@ -103,68 +104,13 @@ ModeBar.updateActiveButton = function () {
     });
 };
 
-/**
- *
- * @Property config specification hash of button parameters
- */
-ModeBar.prototype.config = {
-    zoomCartesian: {
-        title: 'Zoom',
-        attr: 'dragmode',
-        val: 'zoom',
-        icon: 'ploticon-zoom',
-        click: ModeBar.handleCartesian
-    },
-    panCartesian: {
-        title: 'Pan',
-        attr: 'dragmode',
-        val: 'pan',
-        icon: 'ploticon-pan',
-        click: ModeBar.handleCartesian
-    },
-    zoomInCartesian: {
-        title: 'Zoom in',
-        attr: 'zoom',
-        val: 'in',
-        icon: 'ploticon-zoom_plus',
-        click: ModeBar.handleCartesian
-    },
-    zoomOutCartesian: {
-        title: 'Zoom out',
-        attr: 'zoom',
-        val: 'out',
-        icon: 'ploticon-zoom_minus',
-        click: ModeBar.handleCartesian
-    },
-    autoScaleCartesian: {
-        title: 'Autoscale',
-        attr: 'allaxes.autorange',
-        val: '',
-        icon: 'ploticon-autoscale',
-        click: ModeBar.handleCartesian
-    },
-    hoverClosestCartesian: {
-        title: 'Show closest data on hover',
-        attr: 'hovermode',
-        val: 'closest',
-        icon: 'ploticon-tooltip_basic',
-        click: ModeBar.handleCartesian
-    },
-    hoverCompareCartesian: {
-        title: 'Compare data on hover',
-        attr: 'hovermode',
-        val: 'x',
-        icon: 'ploticon-tooltip_compare',
-        click: ModeBar.handleCartesian
-    }
-};
 
 /**
  * Click handler for cartesian type plots
  * @Param {object} ev event object
  * @Return {HTMLelement}
  */
-ModeBar.prototype.handleCartesian = function (ev) {
+function handleCartesian (ev) {
     var button = ev.currentTarget,
         astr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
@@ -198,6 +144,64 @@ ModeBar.prototype.handleCartesian = function (ev) {
             );
         }
     });
+};
+
+
+
+/**
+ *
+ * @Property config specification hash of button parameters
+ */
+ModeBar.prototype.config = {
+    zoomCartesian: {
+        title: 'Zoom',
+        attr: 'dragmode',
+        val: 'zoom',
+        icon: 'ploticon-zoombox',
+        click: handleCartesian
+    },
+    panCartesian: {
+        title: 'Pan',
+        attr: 'dragmode',
+        val: 'pan',
+        icon: 'ploticon-pan',
+        click: handleCartesian
+    },
+    zoomInCartesian: {
+        title: 'Zoom in',
+        attr: 'zoom',
+        val: 'in',
+        icon: 'ploticon-zoom_plus',
+        click: handleCartesian
+    },
+    zoomOutCartesian: {
+        title: 'Zoom out',
+        attr: 'zoom',
+        val: 'out',
+        icon: 'ploticon-zoom_minus',
+        click: handleCartesian
+    },
+    autoScaleCartesian: {
+        title: 'Autoscale',
+        attr: 'allaxes.autorange',
+        val: '',
+        icon: 'ploticon-autoscale',
+        click: handleCartesian
+    },
+    hoverClosestCartesian: {
+        title: 'Show closest data on hover',
+        attr: 'hovermode',
+        val: 'closest',
+        icon: 'ploticon-tooltip_basic',
+        click: handleCartesian
+    },
+    hoverCompareCartesian: {
+        title: 'Compare data on hover',
+        attr: 'hovermode',
+        val: 'x',
+        icon: 'ploticon-tooltip_compare',
+        click: handleCartesian
+    }
 };
 
 
