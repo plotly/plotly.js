@@ -13,19 +13,19 @@ function ModeBar (config) {
 
     if (!(this instanceof ModeBar)) return new ModeBar();
 
-    var _this = this,
-        groupedButtons = config.buttons;
+    var _this = this;
 
     this.Plotly = config.Plotly;
     this.graphInfo = config.graphInfo;
     this.element = document.createElement('div');
     this.element.className = 'modebar';
-    this.buttons = [];
+    this.buttons = config.buttons;
+    this.buttonElements = [];
 
-    groupedButtons.forEach( function (buttons) {
+    this.buttons.forEach( function (buttonGroup) {
         var group = _this.createGroup();
 
-        buttons.forEach( function (buttonName) {
+        buttonGroup.forEach( function (buttonName) {
             var buttonConfig = _this.config[buttonName];
 
             if (!buttonConfig) {
@@ -34,7 +34,7 @@ function ModeBar (config) {
 
             var button = _this.createButton(buttonConfig);
 
-            _this.buttons.push(button);
+            _this.buttonElements.push(button);
             group.appendChild(button);
         });
 
@@ -95,13 +95,34 @@ ModeBar.prototype.createButton = function (config) {
  */
 ModeBar.prototype.updateActiveButton = function () {
     var graphInfo = this.graphInfo;
-    this.buttons.forEach( function (button) {
+    this.buttonElements.forEach( function (button) {
         var thisval = button.getAttribute('data-val') || true,
             dataAttr = button.getAttribute('data-attr'),
             curval = graphInfo.layout[dataAttr];
 
         button.classList.toggle('active', curval===thisval);
     });
+};
+
+
+/**
+ * Check if modebar is configured as button configuration argument
+ * @Param {object} buttons 2d array of grouped button names
+ * @Return {boolean}
+ */
+ModeBar.prototype.hasButtons = function (buttons) {
+    var currentButtons = this.buttons;
+
+    if (buttons.length !== currentButtons.length) return false;
+
+    for (var i = 0; i < buttons.length; ++i) {
+        if (buttons[i].length !== currentButtons[i].length) return false;
+        for (var j = 0; j < buttons[i].length; j++) {
+            if (buttons[i][j] !== currentButtons[i][j]) return false;
+        }
+    }
+
+    return true;
 };
 
 
@@ -144,7 +165,7 @@ function handleCartesian (ev) {
             );
         }
     });
-};
+}
 
 /**
  * Click handler for 3d Hover mode
@@ -175,7 +196,7 @@ function handleHover3d (ev) {
         _this.updateActiveButton();
         scenes[0]._container.focus();
     });
-};
+}
 
 /**
  * Click handler for 3d camera modes
@@ -200,7 +221,7 @@ function handle3dCamera (ev) {
 
     scenes.forEach( function (scene) {
         if ('_webgl' in scene && 'camera' in scene._webgl) {
-            scene._webgl.camera.keyBindingMode = attr;
+            scene._webgl.camera.keyBindingMode = val;
         }
     });
 
@@ -280,10 +301,10 @@ ModeBar.prototype.config = {
         click: handle3dCamera
     },
     rotate3d: {
-        title: 'Zoom in',
-        attr: 'zoom',
-        val: 'in',
-        icon: 'ploticon-zoom_plus',
+        title: 'Rotate',
+        attr: 'dragmode',
+        val: 'rotate',
+        icon: 'icon-undo',
         click: handle3dCamera
     },
     closest3d: {
