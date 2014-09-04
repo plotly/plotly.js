@@ -813,7 +813,6 @@
             Plotly.Axes.setTypes(gd);
             // tie modebar into all iframes
             var modebar =  $(gd).find('.svg-container .modebar')[0];
-            SceneFrame.reconfigureModeBar(gd.layout, modebar);
 
             /*
              * If there are scenes that need loading load them.
