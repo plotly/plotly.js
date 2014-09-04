@@ -229,7 +229,7 @@ function handle3dCamera (ev) {
         _this.updateActiveButton();
         scenes[0]._container.focus();
     });
-};
+}
 
 
 /**
