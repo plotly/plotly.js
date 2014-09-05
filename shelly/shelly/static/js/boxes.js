@@ -9,8 +9,90 @@
 
     var boxes = window.Plotly.Boxes = {};
 
-    boxes.supplyDefaults = function(trace) {
+    boxes.attributes = {
+        whiskerwidth: {
+            type: 'number',
+            values: [0,1],
+            dflt: 0.5
+        },
+        boxpoints: {
+            type: 'enumerated',
+            values: ['all', 'outliers', 'suspectedoutliers', false],
+            dflt: 'outliers'
+        },
+        boxmean: {
+            type: 'enumerated',
+            values: [true, 'sd', false],
+            dflt: false
+        },
+        jitter: {
+            type: 'number',
+            values: [0,1]
+        },
+        pointpos: {
+            type: 'number',
+            values: [-2, 2]
+        },
+        'marker.outliercolor': {
+            type: 'color',
+            dflt: 'rgba(0,0,0,0)'
+        },
+        'marker.line.outliercolor': {
+            type: 'color'
+        },
+        'marker.line.outlierwidth': {
+            type: 'number',
+            values: [0],
+            dflt: 1
+        },
+        'marker.outliercolorscale': {
+            type: 'string'
+        },
+        'marker.outliercauto': {
+            type: 'boolean',
+        },
+        'marker.outliercmax': {
+            type: 'number'
+        },
+        'marker.outliercmin': {
+            type: 'number'
+        },
+        'marker.line.outliercolorscale': {
+            type: 'string'
+        },
+        'marker.line.outliercauto': {
+            type: 'boolean',
+        },
+        'marker.line.outliercmax': {
+            type: 'number'
+        },
+        'marker.line.outliercmin': {
+            type: 'number'
+        }
+    };
 
+    boxes.supplyDefaults = function(trace, defaultColor) {
+        function coerce(attr, dflt) {
+            Plotly.Lib.coerce(trace, boxes.attributes, attr, dflt);
+        }
+
+        coerce('whiskerwidth');
+        coerce('boxpoints');
+        coerce('boxmean');
+        coerce('jitter', trace.boxpoints==='all' ? 0.3 : 0);
+        coerce('pointpos', trace.poxpoints==='all' ? -1.5 : 0);
+
+        // TODO: clean way to bring in marker and line properties from scatter...
+
+        // Plotly.Scatter.markerDefaults(trace, defaultColor);
+        // Plotly.Scatter.lineDefaults(trace, defaultColor);
+        // // TODO: setting then deleting seems hacky... need a better organization of these...
+        // delete trace.marker.maxdisplayed;
+        // delete trace.line.shape;
+        // delete trace.line.smoothing;
+
+        Plotly.Scatter.colorScalableDefaults(trace, 'marker.outlier', coerce, trace.marker.color);
+        Plotly.Scatter.colorScalableDefaults(trace, 'marker.line.outlier', coerce);
     };
 
     boxes.calc = function(gd,gdc) {

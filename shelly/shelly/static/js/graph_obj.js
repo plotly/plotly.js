@@ -589,7 +589,9 @@
         // gd.data, gd.layout are precisely what the user specified
         // gd._fullData, gd._fullLayout are complete descriptions
         //      of how to draw the plot
-        gd._fullData = gd.data.map(supplyDefaults);
+        gd._fullData = gd.data.map(function(trace, i) {
+            return supplyDefaults(trace, i, gd.layout);
+        });
 
         // Polar plots
         // Check if it has a polar type
@@ -1223,20 +1225,45 @@
         Plotly.plot(gd);
     };
 
-    function supplyDefaults(trace, i) {
+    plots.attributes = {
+        type: {
+            type: 'enumerated',
+            values: ALLTYPES,
+            dflt: 'scatter'
+        },
+        visible: {
+            type: 'boolean',
+            dflt: true
+        },
+        opacity: {
+            type: 'number',
+            values: [0,1],
+            dflt: 1
+        },
+        name: {
+            type: 'string'
+        }
+    };
+
+    function supplyDefaults(trace, i, layout) {
         // TODO: make a custom extend, that recurses into {} but not []
         // so we don't end up copying data arrays unnecessarily?
-        var fullTrace = $.extend(true, {}, trace);
+        var fullTrace = $.extend(true, {}, trace),
+            defaultColor = plots.defaultColors[i % plots.defaultColors.length];
+
+        function coerce(attr, dflt) {
+            Plotly.Lib.coerce(fullTrace, plots.attributes, attr, dflt);
+        }
 
         // module-independent attributes
-        Plotly.Lib.coerceToList(fullTrace, 'type', ALLTYPES, 'scatter');
-        Plotly.Lib.coerceToList(fullTrace, 'visible', [true, false], true);
-        Plotly.Lib.coerceToRange(fullTrace, 'opacity', [0, 1], 1);
-        Plotly.Lib.coerceToString(fullTrace, 'name', 'trace '+i);
+        coerce('type');
+        coerce('visible');
+        coerce('opacity');
+        coerce('name', 'trace '+i);
 
         // module-specific attributes
         var module = Plotly[getModule(fullTrace)];
-        if(module) module.supplyDefaults(fullTrace, i);
+        if(module) module.supplyDefaults(fullTrace, defaultColor, layout);
 
         return fullTrace;
     }

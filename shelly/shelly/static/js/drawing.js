@@ -570,8 +570,11 @@
     drawing.symbolFuncs = [];
     drawing.symbolNeedLines = {};
     drawing.symbolNoDot = {};
+    drawing.symbolList = [];
     Object.keys(SYMBOLDEFS).forEach(function(k) {
         var symDef = SYMBOLDEFS[k];
+        drawing.symbolList = drawing.symbolList.concat(
+            [symDef.n, k, symDef.n+100, k+'-open']);
         drawing.symbolNames[symDef.n] = k;
         drawing.symbolFuncs[symDef.n] = symDef.f;
         if(symDef.needLine) {
@@ -579,6 +582,10 @@
         }
         if(symDef.noDot) {
             drawing.symbolNoDot[symDef.n] = true;
+        }
+        else {
+            drawing.symbolList = drawing.symbolList.concat(
+                [symDef.n+200, k+'-dot', symDef.n+300, k+'-open-dot']);
         }
     });
     var MAXSYMBOL = drawing.symbolNames.length,

@@ -11,7 +11,7 @@
     /* global pullf:false */
 
     // ---external global dependencies
-    /* global d3:false, Spinner:false */
+    /* global d3:false, Spinner:false, tinycolor:false */
 
     if(!window.Plotly) { window.Plotly = {}; }
     var lib = Plotly.Lib = {};
@@ -1452,30 +1452,62 @@
     };
 
     // Helpers for defaults and attribute validation
-    lib.coerceToList = function(container, attribute, list, dflt) {
-        if(list.indexOf(container[attribute])===-1) {
-            container[attribute] = dflt;
-        }
-    };
 
-    lib.coerceToRange = function(container, attribute, range, dflt) {
-        // if range has length 1, it only enforces a minimum.
-        // if it has length 2, it enforces a min and max
-        var v = container[attribute];
-        if(!$.isNumeric(v) || v<range[0] || (range[1] && v>range[1])) {
-            container[attribute] = dflt;
-        }
-        else container[attribute] = Number(v);
-    };
+    var BOOLS = [true, false],
+        NUMS = [-Infinity, Infinity];
+    lib.coerce = function(container, attributes, attribute, dflt) {
+        // ensures that container[attribute] has a valid value
+        // attributes[attribute] is an object with possible keys:
+        // - type: enumerated, boolean, number, integer, string, color
+        // - values:
+        //      enumerated: array of allowed vals
+        //      number or integer: [min,max] (omitted: allow any number)
+        //      other: ignored
+        // - dflt: if attribute is invalid or missing, use this default
+        //      if dflt is provided as an argument to lib.coerce it takes precedence
 
-    lib.coerceToString = function(container, attribute, dflt) {
-        var v = container[attribute];
-        if(!v) {
-            container[attribute] = dflt;
+        var opts = attributes[attribute],
+            prop = lib.nestedProperty(container, attribute),
+            v = prop.get();
+
+        if(opts.arrayOk && $.isArray(v)) return;
+
+        function toEnum(list) {
+            if(list.indexOf(v)===-1) prop.set(dflt);
         }
-        else if(typeof v !== 'string') {
-            container[attribute] = String(v);
+
+        function toRange(range) {
+            // if range has length 1, it only enforces a minimum.
+            // if it has length 2, it enforces a min and max
+            if(!$.isNumeric(v) || v<range[0] || (range[1] && v>range[1])) {
+                prop.set(dflt);
+            }
+            else if(typeof v !== 'number') prop.set(+v);
         }
+
+        function toInt(range) {
+            toRange(range);
+            if(v%1) prop.set(dflt);
+        }
+
+        function toStr() {
+            if(v===undefined) prop.set(dflt);
+            else if(typeof v !== 'string') prop.set(String(v));
+        }
+
+        function toColor() {
+            if(!tinycolor(v).ok) prop.set(dflt);
+        }
+
+        if(dflt===undefined) dflt = opts.dflt;
+
+        if(opts.type==='enumerated') toEnum(opts.values);
+        else if(opts.type==='boolean') toEnum(BOOLS);
+        else if(opts.type==='number') toRange(opts.values||NUMS);
+        else if(opts.type==='integer') toInt(opts.values||NUMS);
+        else if(opts.type==='string') toStr();
+        else if(opts.type==='color') toColor();
+        else console.log('unrecognized attribute type '+opts.type, attribute);
     };
 
 }()); // end Lib object definition

@@ -14,8 +14,263 @@
     // with points and lines, > just get lines
     scatter.PTS_LINESONLY = 20;
 
-    scatter.supplyDefaults = function(trace) {
-        if(!$.isArray(trace.text)) Plotly.Lib.coerceToString(trace, 'text', '');
+    scatter.attributes = {
+        text: {
+            type: 'string',
+            dflt: '',
+            arrayOk: true
+        },
+        mode: {
+            type: 'enumerated',
+            values: ['none', 'lines', 'markers', 'lines+markers',
+                'text', 'lines+text', 'markers+text', 'lines+markers+text']
+        },
+        'line.color': {
+            type: 'color'
+        },
+        'line.width': {
+            type: 'number',
+            values: [0],
+            dflt: 2
+        },
+        'line.shape': {
+            type: 'enumerated',
+            values: ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'],
+            dflt: 'linear'
+        },
+        'line.smoothing': {
+            type: 'number',
+            values: [0,1.3],
+            dflt: 1
+        },
+        connectgaps: {
+            type: 'boolean',
+            dflt: false
+        },
+        'line.dash': {
+            type: 'string',
+            // string type usually doesn't take values... this one should really be
+            // a special type or at least a special coercion function, from the GUI
+            // you only get these values but elsewhere the user can supply a list of
+            // dash lengths in px, and it will be honored
+            values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
+            dflt: 'solid'
+        },
+        'marker.symbol': {
+            type: 'enumerated',
+            values: Plotly.Drawing.symbolList,
+            dflt: 'circle',
+            arrayOk: true
+        },
+        'marker.opacity': {
+            type: 'number',
+            values: [0,1],
+            arrayOk: true
+        },
+        'marker.size': {
+            type: 'number',
+            values: [0],
+            dflt: 6,
+            arrayOk: true
+        },
+        'marker.color': {
+            type: 'color',
+            arrayOk: true
+        },
+        'marker.line.color': {
+            type: 'color',
+            arrayOk: true
+        },
+        'marker.line.width': {
+            type: 'number',
+            values: [0],
+            arrayOk: true
+        },
+        'marker.maxdisplayed': {
+            type: 'number',
+            values: [0]
+        },
+        'marker.sizeref': {
+            type: 'number',
+            dflt: 1
+        },
+        'marker.sizemode': {
+            type: 'enumerated',
+            values: ['diameter', 'area'],
+            dflt: 'diameter'
+        },
+        'marker.colorscale': {
+            type: 'string',
+            dflt: Plotly.defaultColorscale
+        },
+        'marker.cauto': {
+            type: 'boolean',
+            dflt: true
+        },
+        'marker.cmax': {
+            type: 'number',
+            dflt: 10
+        },
+        'marker.cmin': {
+            type: 'number',
+            dflt: -10
+        },
+        'marker.line.colorscale': {
+            type: 'string',
+            dflt: Plotly.defaultColorscale
+        },
+        'marker.line.cauto': {
+            type: 'boolean',
+            dflt: true
+        },
+        'marker.line.cmax': {
+            type: 'number',
+            dflt: 10
+        },
+        'marker.line.cmin': {
+            type: 'number',
+            dflt: -10
+        },
+        'textposition': {
+            type: 'enumerated',
+            values: ['top left', 'top center', 'top right',
+                'middle left', 'middle center', 'middle right',
+                'bottom left', 'bottom center', 'bottom right'],
+            dflt: 'middle center'
+        },
+        'textfont.family': {
+            type: 'string'
+        },
+        'textfont.size': {
+            type: 'number',
+            range: [0]
+        },
+        'textfont.color': {
+            type: 'color'
+        }
+    };
+
+    scatter.supplyDefaults = function(trace, defaultColor, layout) {
+        function coerce(attr, dflt) {
+            Plotly.Lib.coerce(trace, scatter.attributes, attr, dflt);
+        }
+
+        // TODO: default mode by orphan points...
+        var xlen = (trace.x||trace.y).length,
+            ylen = (trace.y||trace.x).length,
+            defaultMode = Math.min(xlen, ylen) < scatter.PTS_LINESONLY ? 'lines+markers' : 'lines';
+
+        coerce('text');
+        coerce('mode', defaultMode);
+
+        scatter.lineDefaults(trace, defaultColor, layout);
+        scatter.markerDefaults(trace, defaultColor, layout);
+        scatter.textDefaults(trace, defaultColor, layout);
+
+        Plotly.ErrorBars.supplyDefaults(trace, defaultColor, {axis: 'y'});
+        Plotly.ErrorBars.supplyDefaults(trace, defaultColor, {axis: 'x', inherit: 'y'});
+    };
+
+    scatter.lineDefaults = function(trace, defaultColor) {
+        function coerce(attr, dflt) {
+            Plotly.Lib.coerce(trace, scatter.attributes, attr, dflt);
+        }
+
+        if(trace.mode.indexOf('lines')!==-1) {
+            if(!('line' in trace)) trace.line = {};
+
+            coerce('line.color', trace.marker.color || defaultColor);
+            coerce('line.width');
+
+            coerce('line.shape');
+
+            if(trace.line.shape==='spline') coerce('line.smoothing');
+            else delete trace.line.smoothing;
+
+            coerce('connectgaps');
+            coerce('line.dash');
+        }
+        else {
+            trace.line = {};
+            delete trace.connectgaps;
+        }
+
+    };
+
+    scatter.markerDefaults = function(trace, defaultColor) {
+        function coerce(attr, dflt) {
+            Plotly.Lib.coerce(trace, scatter.attributes, attr, dflt);
+        }
+
+        if(trace.mode.indexOf('markers')!==-1) {
+            if(!('marker' in trace)) trace.marker = {};
+            if(!('line' in trace.marker)) trace.marker.line = {};
+
+            var isBubble = $.isArray(trace.marker.size);
+
+            coerce('marker.symbol');
+            coerce('marker.opacity', isBubble ? 0.7 : 1);
+            coerce('marker.size');
+            coerce('marker.maxdisplayed');
+
+            scatter.colorScalableDefaults(trace, 'marker.', coerce, trace.line.color);
+
+            var defaultMLC;
+            if(trace.line.color!==trace.marker.color) defaultMLC = trace.line.color || defaultColor;
+            else if(isBubble) defaultMLC = '#fff';
+            else defaultMLC = '#444';
+            scatter.colorScalableDefaults(trace, 'marker.line.', coerce, defaultMLC);
+
+            coerce('marker.line.width', isBubble ? 1 : 0);
+
+            if(isBubble) {
+                coerce('marker.sizeref');
+                coerce('marker.sizemode');
+            }
+            else {
+                delete trace.marker.sizeref;
+                delete trace.marker.sizemode;
+            }
+        }
+        else {
+            trace.marker = {line: {}};
+        }
+    };
+
+    scatter.colorScalableDefaults = function(trace, prefix, coerce, dflt) {
+        var colorAttr = prefix + 'color',
+            scaleAttr = prefix + 'colorscale',
+            autoAttr = prefix + 'cauto',
+            maxAttr = prefix + 'cmax',
+            minAttr = prefix + 'cmin';
+
+        coerce(colorAttr, dflt);
+
+        var colorArray = $.isArray(Plotly.Lib.nestedProperty(trace, colorAttr).get());
+
+        [scaleAttr, autoAttr, maxAttr, minAttr].forEach(function(attr){
+            if(colorArray) coerce(attr);
+            else Plotly.Lib.nestedProperty(trace, attr).set();
+        });
+    };
+
+    scatter.textDefaults = function(trace, defaultColor, layout) {
+        function coerce(attr, dflt) {
+            Plotly.Lib.coerce(trace, scatter.attributes, attr, dflt);
+        }
+
+        if(trace.mode.indexOf('text')!==-1) {
+            if(!('textfont' in trace)) trace.textfont = {};
+
+            coerce('textposition');
+            coerce('textfont.family', layout.font.family);
+            coerce('textfont.size', layout.font.size);
+            coerce('textfont.color', layout.font.color);
+        }
+        else {
+            trace.textfont = {};
+            delete trace.textposition;
+        }
 
     };
 
@@ -32,10 +287,10 @@
             // there are enough points to trigger auto-no-lines
             if(gdc.mode || ((!gdc.x || gdc.x.length<scatter.PTS_LINESONLY) &&
               (!gdc.y || gdc.y.length<scatter.PTS_LINESONLY))) {
-                return [{x:false, y:false}];
+                return [{x: false, y: false}];
             }
             else {
-                for(i=0; i<scatter.PTS_LINESONLY+1; i++) cd.push({x:false, y:false});
+                for(i=0; i<scatter.PTS_LINESONLY+1; i++) cd.push({x: false, y: false});
                 return cd;
             }
         }
