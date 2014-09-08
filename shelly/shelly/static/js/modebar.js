@@ -142,7 +142,7 @@ function handleCartesian (ev) {
 
     aobj[astr] = val;
 
-    if(astr==='zoom') {
+    if(astr === 'zoom') {
         var xr = layout.xaxis.range,
             yr = layout.yaxis.range,
             mag = (val==='in') ? 0.5 : 2,
