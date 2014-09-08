@@ -62,7 +62,7 @@ ModeBar.prototype.createGroup = function () {
 };
 
 /**
- * Empty div for containing a group of buttons
+ * Create a new button div and set constant and configurable attributes
  * @Param {object} config
  * @Param {string} config.attr
  * @Param {string} config.val
@@ -127,9 +127,8 @@ ModeBar.prototype.hasButtons = function (buttons) {
 
 
 /**
- * Click handler for cartesian type plots
+ * Apply D3 cartesian mode attributes to layout to update hover functionality
  * @Param {object} ev event object
- * @Return {HTMLelement}
  */
 function handleCartesian (ev) {
     var button = ev.currentTarget,
@@ -168,7 +167,7 @@ function handleCartesian (ev) {
 }
 
 /**
- * Click handler for 3d Hover mode
+ * Toggle the data hover mode
  * @Param {object} ev event object
  * @Return {HTMLelement}
  */
@@ -199,7 +198,7 @@ function handleHover3d (ev) {
 }
 
 /**
- * Click handler for 3d camera modes
+ * Reconfigure keyboard bindings for webgl3D camera control
  * @Param {object} ev event object
  * @Return {HTMLelement}
  */
