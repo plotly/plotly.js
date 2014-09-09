@@ -1458,7 +1458,7 @@
     lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
         // ensures that container[attribute] has a valid value
         // attributes[attribute] is an object with possible keys:
-        // - type: enumerated, boolean, number, integer, string, color
+        // - type: data_array, enumerated, boolean, number, integer, string, color
         // - values:
         //      enumerated: array of allowed vals
         //      number or integer: [min,max] (omitted: allow any number)
@@ -1472,6 +1472,16 @@
             propOut = lib.nestedProperty(containerOut, attribute),
             v = propIn.get();
 
+        // data_array: value MUST be an array, or we ignore it
+        if(opts.type==='data_array') {
+            if(Array.isArray(v)) propOut.set(v);
+            return;
+        }
+
+        // arrayOk: value MAY be an array, then we do no value checking
+        // at this point, because it can be more complicated than the
+        // individual form (eg. some array vals can be numbers, even if the
+        // single values must be color strings)
         if(opts.arrayOk && $.isArray(v)) {
             propOut.set(v);
             return v;
