@@ -1455,7 +1455,7 @@
 
     var BOOLS = [true, false],
         NUMS = [-Infinity, Infinity];
-    lib.coerce = function(container, attributes, attribute, dflt) {
+    lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
         // ensures that container[attribute] has a valid value
         // attributes[attribute] is an object with possible keys:
         // - type: enumerated, boolean, number, integer, string, color
@@ -1465,38 +1465,45 @@
         //      other: ignored
         // - dflt: if attribute is invalid or missing, use this default
         //      if dflt is provided as an argument to lib.coerce it takes precedence
+        // as a convenience, returns the value it finally set
 
         var opts = attributes[attribute],
-            prop = lib.nestedProperty(container, attribute),
-            v = prop.get();
+            propIn = lib.nestedProperty(containerIn, attribute),
+            propOut = lib.nestedProperty(containerOut, attribute),
+            v = propIn.get();
 
-        if(opts.arrayOk && $.isArray(v)) return;
+        if(opts.arrayOk && $.isArray(v)) {
+            propOut.set(v);
+            return v;
+        }
 
         function toEnum(list) {
-            if(list.indexOf(v)===-1) prop.set(dflt);
+            if(list.indexOf(v)===-1) propOut.set(dflt);
+            propOut.set(v);
         }
 
         function toRange(range) {
             // if range has length 1, it only enforces a minimum.
             // if it has length 2, it enforces a min and max
             if(!$.isNumeric(v) || v<range[0] || (range[1] && v>range[1])) {
-                prop.set(dflt);
+                propOut.set(dflt);
             }
-            else if(typeof v !== 'number') prop.set(+v);
+            else if(typeof v !== 'number') propOut.set(+v);
         }
 
         function toInt(range) {
-            toRange(range);
-            if(v%1) prop.set(dflt);
+            if(v%1) propOut.set(dflt);
+            else toRange(range);
         }
 
         function toStr() {
-            if(v===undefined) prop.set(dflt);
-            else if(typeof v !== 'string') prop.set(String(v));
+            if(v===undefined) propOut.set(dflt);
+            else propOut.set(String(v));
         }
 
         function toColor() {
-            if(!tinycolor(v).ok) prop.set(dflt);
+            if(tinycolor(v).ok) propOut.set(v);
+            else propOut.set(dflt);
         }
 
         if(dflt===undefined) dflt = opts.dflt;
@@ -1508,6 +1515,8 @@
         else if(opts.type==='string') toStr();
         else if(opts.type==='color') toColor();
         else console.log('unrecognized attribute type '+opts.type, attribute);
+
+        return propOut.get();
     };
 
 }()); // end Lib object definition
