@@ -1458,7 +1458,7 @@
     lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
         // ensures that container[attribute] has a valid value
         // attributes[attribute] is an object with possible keys:
-        // - type: data_array, enumerated, boolean, number, integer, string, color
+        // - type: data_array, enumerated, boolean, number, integer, string, color, any
         // - values:
         //      enumerated: array of allowed vals
         //      number or integer: [min,max] (omitted: allow any number)
@@ -1472,17 +1472,21 @@
             propOut = lib.nestedProperty(containerOut, attribute),
             v = propIn.get();
 
+        if(dflt===undefined) dflt = opts.dflt;
+
         // data_array: value MUST be an array, or we ignore it
+        // you can use dflt=[] to force said array to exist though
         if(opts.type==='data_array') {
             if(Array.isArray(v)) propOut.set(v);
-            return;
+            else if(dflt!==undefined) propOut.set(dflt);
+            return propOut.get();
         }
 
         // arrayOk: value MAY be an array, then we do no value checking
         // at this point, because it can be more complicated than the
         // individual form (eg. some array vals can be numbers, even if the
         // single values must be color strings)
-        if(opts.arrayOk && $.isArray(v)) {
+        if(opts.arrayOk && Array.isArray(v)) {
             propOut.set(v);
             return v;
         }
@@ -1516,9 +1520,13 @@
             else propOut.set(dflt);
         }
 
-        if(dflt===undefined) dflt = opts.dflt;
+        function toAny() {
+            if(v===undefined) propOut.set(dflt);
+            else propOut.set(v);
+        }
 
-        if(opts.type==='enumerated') toEnum(opts.values);
+        if(opts.type==='any') toAny();
+        else if(opts.type==='enumerated') toEnum(opts.values);
         else if(opts.type==='boolean') toEnum(BOOLS);
         else if(opts.type==='number') toRange(opts.values||NUMS);
         else if(opts.type==='integer') toInt(opts.values||NUMS);
