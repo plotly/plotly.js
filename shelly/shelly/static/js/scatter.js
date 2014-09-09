@@ -15,6 +15,28 @@
     scatter.PTS_LINESONLY = 20;
 
     scatter.attributes = {
+        x: {
+            type: 'data_array',
+        },
+        x0: {
+            type: 'data',
+            dflt: 0
+        },
+        dx: {
+            type: 'number',
+            dflt: 1
+        },
+        y: {
+            type: 'data_array'
+        },
+        y0: {
+            type: 'data',
+            dflt: 0
+        },
+        dy: {
+            type: 'number',
+            dflt: 1
+        },
         text: {
             type: 'string',
             dflt: '',
@@ -150,128 +172,140 @@
         }
     };
 
-    scatter.supplyDefaults = function(trace, defaultColor, layout) {
+    scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(trace, scatter.attributes, attr, dflt);
+            Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
+        }
+
+        traceOut.line = {};
+        traceOut.marker = {line: {}};
+        traceOut.textfont = {};
+
+        var len,
+            defaultMode;
+
+        if($.isArray(traceIn.x)) {
+            if($.isArray(traceIn.y)) {
+                len = Math.min(traceIn.x.length, traceIn.y.length);
+            }
+            else {
+                len = traceIn.x.length;
+                coerce('y0');
+                coerce('dy');
+            }
+
+            if(len===traceIn.x.length) traceOut.x = traceIn.x;
+            else traceOut.x = traceIn.x.slice(0, len);
+        }
+        else {
+            if(!$.isArray(traceIn.y)) {
+                traceOut.visible = false;
+                return;
+            }
+            len = traceIn.y.length;
+            coerce('x0');
+            coerce('dx');
+        }
+
+        if($.isArray(traceIn.y)) {
+            if(len===traceIn.y.length) traceOut.y = traceIn.y;
+            else traceOut.y = traceIn.y.slice(0, len);
         }
 
         // TODO: default mode by orphan points...
-        var xlen = (trace.x||trace.y).length,
-            ylen = (trace.y||trace.x).length,
-            defaultMode = Math.min(xlen, ylen) < scatter.PTS_LINESONLY ? 'lines+markers' : 'lines';
+        defaultMode = len < scatter.PTS_LINESONLY ? 'lines+markers' : 'lines';
 
         coerce('text');
         coerce('mode', defaultMode);
 
-        scatter.lineDefaults(trace, defaultColor, layout);
-        scatter.markerDefaults(trace, defaultColor, layout);
-        scatter.textDefaults(trace, defaultColor, layout);
+        if(traceOut.mode.indexOf('lines')!==-1) {
+            scatter.lineDefaults(traceIn, traceOut, defaultColor, layout);
+        }
 
-        Plotly.ErrorBars.supplyDefaults(trace, defaultColor, {axis: 'y'});
-        Plotly.ErrorBars.supplyDefaults(trace, defaultColor, {axis: 'x', inherit: 'y'});
+        if(traceOut.mode.indexOf('markers')!==-1) {
+            scatter.markerDefaults(traceIn, traceOut, defaultColor, layout);
+        }
+
+        scatter.textDefaults(traceIn, traceOut, defaultColor, layout);
+
+        coerce('fill');
+        coerce('fillcolor', Plotly.Drawing.addOpacity(traceOut.line.color, 0.5));
+
+        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
+        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
     };
 
-    scatter.lineDefaults = function(trace, defaultColor) {
+    scatter.lineDefaults = function(traceIn, traceOut, defaultColor) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(trace, scatter.attributes, attr, dflt);
+            Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
-        if(trace.mode.indexOf('lines')!==-1) {
-            if(!('line' in trace)) trace.line = {};
+        coerce('line.color', (traceIn.marker||{}).color || defaultColor);
+        coerce('line.width');
 
-            coerce('line.color', trace.marker.color || defaultColor);
-            coerce('line.width');
+        coerce('line.shape');
 
-            coerce('line.shape');
+        if(traceOut.line.shape==='spline') coerce('line.smoothing');
 
-            if(trace.line.shape==='spline') coerce('line.smoothing');
-            else delete trace.line.smoothing;
-
-            coerce('connectgaps');
-            coerce('line.dash');
-        }
-        else {
-            trace.line = {};
-            delete trace.connectgaps;
-        }
-
+        coerce('connectgaps');
+        coerce('line.dash');
     };
 
-    scatter.markerDefaults = function(trace, defaultColor) {
+    scatter.markerDefaults = function(traceIn, traceOut, defaultColor) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(trace, scatter.attributes, attr, dflt);
+            Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
-        if(trace.mode.indexOf('markers')!==-1) {
-            if(!('marker' in trace)) trace.marker = {};
-            if(!('line' in trace.marker)) trace.marker.line = {};
+        var isBubble = $.isArray((traceIn.marker||{}).size),
+            lineColor = (traceIn.line||{}).color,
+            defaultMLC;
 
-            var isBubble = $.isArray(trace.marker.size);
+        coerce('marker.symbol');
+        coerce('marker.opacity', isBubble ? 0.7 : 1);
+        coerce('marker.size');
+        coerce('marker.maxdisplayed');
 
-            coerce('marker.symbol');
-            coerce('marker.opacity', isBubble ? 0.7 : 1);
-            coerce('marker.size');
-            coerce('marker.maxdisplayed');
+        scatter.colorScalableDefaults('marker.', coerce, lineColor);
 
-            scatter.colorScalableDefaults(trace, 'marker.', coerce, trace.line.color);
-
-            var defaultMLC;
-            if(trace.line.color!==trace.marker.color) defaultMLC = trace.line.color || defaultColor;
-            else if(isBubble) defaultMLC = '#fff';
-            else defaultMLC = '#444';
-            scatter.colorScalableDefaults(trace, 'marker.line.', coerce, defaultMLC);
-
-            coerce('marker.line.width', isBubble ? 1 : 0);
-
-            if(isBubble) {
-                coerce('marker.sizeref');
-                coerce('marker.sizemode');
-            }
-            else {
-                delete trace.marker.sizeref;
-                delete trace.marker.sizemode;
-            }
+        if(lineColor!==(traceIn.marker||{}).color) {
+            defaultMLC =  lineColor || defaultColor;
         }
-        else {
-            trace.marker = {line: {}};
+        else if(isBubble) defaultMLC = '#fff';
+        else defaultMLC = '#444';
+        scatter.colorScalableDefaults('marker.line.', coerce, defaultMLC);
+
+        coerce('marker.line.width', isBubble ? 1 : 0);
+
+        if(isBubble) {
+            coerce('marker.sizeref');
+            coerce('marker.sizemode');
         }
     };
 
-    scatter.colorScalableDefaults = function(trace, prefix, coerce, dflt) {
+    scatter.colorScalableDefaults = function(prefix, coerce, dflt) {
         var colorAttr = prefix + 'color',
             scaleAttr = prefix + 'colorscale',
             autoAttr = prefix + 'cauto',
             maxAttr = prefix + 'cmax',
-            minAttr = prefix + 'cmin';
+            minAttr = prefix + 'cmin',
+            colorVal = coerce(colorAttr, dflt);
 
-        coerce(colorAttr, dflt);
-
-        var colorArray = $.isArray(Plotly.Lib.nestedProperty(trace, colorAttr).get());
-
-        [scaleAttr, autoAttr, maxAttr, minAttr].forEach(function(attr){
-            if(colorArray) coerce(attr);
-            else Plotly.Lib.nestedProperty(trace, attr).set();
-        });
+        if($.isArray(colorVal)) {
+            [scaleAttr, autoAttr, maxAttr, minAttr].forEach(coerce);
+        }
     };
 
-    scatter.textDefaults = function(trace, defaultColor, layout) {
+    scatter.textDefaults = function(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(trace, scatter.attributes, attr, dflt);
+            Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
-        if(trace.mode.indexOf('text')!==-1) {
-            if(!('textfont' in trace)) trace.textfont = {};
-
+        if(traceOut.mode.indexOf('text')!==-1) {
             coerce('textposition');
             coerce('textfont.family', layout.font.family);
             coerce('textfont.size', layout.font.size);
             coerce('textfont.color', layout.font.color);
         }
-        else {
-            trace.textfont = {};
-            delete trace.textposition;
-        }
-
     };
 
     scatter.calc = function(gd,gdc) {

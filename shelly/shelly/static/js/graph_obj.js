@@ -1237,7 +1237,7 @@
         },
         opacity: {
             type: 'number',
-            values: [0,1],
+            values: [0, 1],
             dflt: 1
         },
         name: {
@@ -1245,14 +1245,14 @@
         }
     };
 
-    function supplyDefaults(trace, i, layout) {
+    function supplyDefaults(traceIn, i, layout) {
         // TODO: make a custom extend, that recurses into {} but not []
         // so we don't end up copying data arrays unnecessarily?
-        var fullTrace = $.extend(true, {}, trace),
+        var traceOut = {},
             defaultColor = plots.defaultColors[i % plots.defaultColors.length];
 
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(fullTrace, plots.attributes, attr, dflt);
+            Plotly.Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
         }
 
         // module-independent attributes
@@ -1262,10 +1262,10 @@
         coerce('name', 'trace '+i);
 
         // module-specific attributes
-        var module = Plotly[getModule(fullTrace)];
-        if(module) module.supplyDefaults(fullTrace, defaultColor, layout);
+        var module = Plotly[getModule(traceOut)];
+        if(module) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
-        return fullTrace;
+        return traceOut;
     }
 
     // setStyles: translate styles from gd.data to gd.calcdata,

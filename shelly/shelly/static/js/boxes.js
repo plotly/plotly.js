@@ -71,16 +71,28 @@
         }
     };
 
-    boxes.supplyDefaults = function(trace, defaultColor) {
+    boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(trace, boxes.attributes, attr, dflt);
+            Plotly.Lib.coerce(traceIn, traceOut, boxes.attributes, attr, dflt);
         }
+
+        function coerceScatter(attr, dflt) {
+            Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
+        }
+
+        traceOut.line = {};
+        traceOut.marker = {line: {}};
+
+        // box lines use the same attributes as scatter lines, but they're
+        // different enough that we just pull in the attributes we need
+        coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
+        coerceScatter('line.width', 2);
 
         coerce('whiskerwidth');
         coerce('boxpoints');
         coerce('boxmean');
-        coerce('jitter', trace.boxpoints==='all' ? 0.3 : 0);
-        coerce('pointpos', trace.poxpoints==='all' ? -1.5 : 0);
+        coerce('jitter', traceOut.boxpoints==='all' ? 0.3 : 0);
+        coerce('pointpos', traceOut.poxpoints==='all' ? -1.5 : 0);
 
         // TODO: clean way to bring in marker and line properties from scatter...
 
@@ -91,8 +103,8 @@
         // delete trace.line.shape;
         // delete trace.line.smoothing;
 
-        Plotly.Scatter.colorScalableDefaults(trace, 'marker.outlier', coerce, trace.marker.color);
-        Plotly.Scatter.colorScalableDefaults(trace, 'marker.line.outlier', coerce);
+        Plotly.Scatter.colorScalableDefaults('marker.outlier', coerce, traceOut.marker.color);
+        Plotly.Scatter.colorScalableDefaults('marker.line.outlier', coerce);
     };
 
     boxes.calc = function(gd,gdc) {
