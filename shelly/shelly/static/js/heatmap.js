@@ -9,7 +9,11 @@
 
     var heatmap = window.Plotly.Heatmap = {};
 
-    heatmap.supplyDefaults = function(trace) {
+    heatmap.attributes = {
+
+    };
+
+    heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor) {
 
     };
 

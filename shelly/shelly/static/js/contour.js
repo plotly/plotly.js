@@ -9,7 +9,11 @@
 
     var contour = window.Plotly.Contour = {};
 
-    contour.supplyDefaults = function(trace) {
+    contour.attributes = {
+
+    };
+
+    contour.supplyDefaults = function(traceIn, traceOut, defaultColor) {
 
     };
 
