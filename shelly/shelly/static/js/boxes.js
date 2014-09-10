@@ -118,6 +118,9 @@
             return;
         }
 
+        // if you supply an x array, you will get one box per distinct x value
+        // if not, we make a single box and position / label it with x0
+        // (or name, if no x0 is found)
         var x = coerceScatter('x');
         if(!x) coerce('x0');
 
