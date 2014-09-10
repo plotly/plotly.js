@@ -12,7 +12,7 @@
         hidebox:false, litebox:false */
 
     // ---external global dependencies
-    /* global Promise:false, d3:false */
+    /* global Promise:false, d3:false, tinycolor:false */
 
 
     if(!window.Plotly) { window.Plotly = {}; }
@@ -108,17 +108,36 @@
 
     Plotly.defaultColorscale = Plotly.colorscales.RdBu;
 
-    plots.getScale = function(scl) {
-        if(!scl) { return Plotly.defaultColorscale; }
-        else if(typeof scl === 'string') {
-            try { scl = Plotly.colorscales[scl] || JSON.parse(scl); }
-            catch(e) { return Plotly.defaultColorscale; }
+    plots.getScale = function(scl, dflt) {
+        if(!dflt) dflt = Plotly.defaultColorscale;
+        if(!scl) return dflt;
+
+        function parseScale() {
+            try {
+                scl = Plotly.colorscales[scl] || JSON.parse(scl);
+            }
+            catch(e) {
+                scl = dflt;
+            }
         }
-        // occasionally scl is double-JSON encoded...
+
         if(typeof scl === 'string') {
-            try { scl = Plotly.colorscales[scl] || JSON.parse(scl); }
-            catch(e) { return Plotly.defaultColorscale; }
+            parseScale();
+            // occasionally scl is double-JSON encoded...
+            if(typeof scl === 'string') parseScale();
         }
+
+        if(!Array.isArray(scl)) return dflt;
+
+        var highestVal = 0;
+        var badScale = scl.some(function(si){
+            if(si.length!==2) return true;
+            if(si[0]<highestVal) return true;
+            highestVal = si[0];
+            return !tinycolor(si[1]).ok;
+        });
+
+        if(badScale) return dflt;
         return scl;
     };
 
