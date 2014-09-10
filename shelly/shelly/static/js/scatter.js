@@ -15,22 +15,18 @@
     scatter.PTS_LINESONLY = 20;
 
     scatter.attributes = {
-        x: {
-            type: 'data_array',
-        },
+        x: {type: 'data_array'},
         x0: {
-            type: 'data',
+            type: 'any',
             dflt: 0
         },
         dx: {
             type: 'number',
             dflt: 1
         },
-        y: {
-            type: 'data_array'
-        },
+        y: {type: 'data_array'},
         y0: {
-            type: 'data',
+            type: 'any',
             dflt: 0
         },
         dy: {
@@ -78,6 +74,12 @@
             values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
             dflt: 'solid'
         },
+        fill: {
+            type: 'enumerated',
+            values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx'],
+            dflt: 'none'
+        },
+        fillcolor: {type: 'color'},
         'marker.symbol': {
             type: 'enumerated',
             values: Plotly.Drawing.symbolList,
@@ -155,21 +157,52 @@
         },
         'textposition': {
             type: 'enumerated',
-            values: ['top left', 'top center', 'top right',
+            values: [
+                'top left', 'top center', 'top right',
                 'middle left', 'middle center', 'middle right',
-                'bottom left', 'bottom center', 'bottom right'],
+                'bottom left', 'bottom center', 'bottom right'
+            ],
             dflt: 'middle center'
         },
-        'textfont.family': {
-            type: 'string'
-        },
+        'textfont.family': {type: 'string'},
         'textfont.size': {
             type: 'number',
             range: [0]
         },
-        'textfont.color': {
-            type: 'color'
+        'textfont.color': {type: 'color'}
+    };
+
+    scatter.supplyXY = function(traceIn, traceOut) {
+        function coerce(attr, dflt) {
+            Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
+
+        var len,
+            x = coerce('x'),
+            y = coerce('y');
+
+        if(x) {
+            if(y) {
+                len = Math.min(x.length, y.length);
+                if(len>x.length) traceOut.x = x.slice(0, len);
+                if(len>y.length) traceOut.y = y.slice(0, len);
+            }
+            else {
+                len = x.length;
+                coerce('y0');
+                coerce('dy');
+            }
+        }
+        else {
+            if(!y) {
+                traceOut.visible = false;
+                return 0;
+            }
+            len = traceOut.y.length;
+            coerce('x0');
+            coerce('dx');
+        }
+        return len;
     };
 
     scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
@@ -177,43 +210,10 @@
             Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
-        traceOut.line = {};
-        traceOut.marker = {line: {}};
-        traceOut.textfont = {};
-
-        var len,
-            defaultMode;
-
-        if($.isArray(traceIn.x)) {
-            if($.isArray(traceIn.y)) {
-                len = Math.min(traceIn.x.length, traceIn.y.length);
-            }
-            else {
-                len = traceIn.x.length;
-                coerce('y0');
-                coerce('dy');
-            }
-
-            if(len===traceIn.x.length) traceOut.x = traceIn.x;
-            else traceOut.x = traceIn.x.slice(0, len);
-        }
-        else {
-            if(!$.isArray(traceIn.y)) {
-                traceOut.visible = false;
-                return;
-            }
-            len = traceIn.y.length;
-            coerce('x0');
-            coerce('dx');
-        }
-
-        if($.isArray(traceIn.y)) {
-            if(len===traceIn.y.length) traceOut.y = traceIn.y;
-            else traceOut.y = traceIn.y.slice(0, len);
-        }
-
-        // TODO: default mode by orphan points...
-        defaultMode = len < scatter.PTS_LINESONLY ? 'lines+markers' : 'lines';
+        var len = scatter.supplyXY(traceIn, traceOut),
+            // TODO: default mode by orphan points...
+            defaultMode = len < scatter.PTS_LINESONLY ? 'lines+markers' : 'lines';
+        if(!len) return;
 
         coerce('text');
         coerce('mode', defaultMode);
@@ -229,7 +229,9 @@
         scatter.textDefaults(traceIn, traceOut, defaultColor, layout);
 
         coerce('fill');
-        coerce('fillcolor', Plotly.Drawing.addOpacity(traceOut.line.color, 0.5));
+        if(traceOut.fill!=='none') {
+            coerce('fillcolor', Plotly.Drawing.addOpacity(traceOut.line.color, 0.5));
+        }
 
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
@@ -259,16 +261,20 @@
         var isBubble = $.isArray((traceIn.marker||{}).size),
             lineColor = (traceIn.line||{}).color,
             defaultMLC;
+        if(lineColor) defaultColor = lineColor;
 
         coerce('marker.symbol');
         coerce('marker.opacity', isBubble ? 0.7 : 1);
         coerce('marker.size');
         coerce('marker.maxdisplayed');
 
-        scatter.colorScalableDefaults('marker.', coerce, lineColor);
+        scatter.colorScalableDefaults('marker.', coerce, defaultColor);
 
-        if(lineColor!==(traceIn.marker||{}).color) {
-            defaultMLC =  lineColor || defaultColor;
+        // if there's a line with a different color than the marker, use
+        // that line color as the default marker line color
+        // mostly this is for transparent markers to behave nicely
+        if(lineColor && traceOut.marker.color!==lineColor) {
+            defaultMLC =  lineColor;
         }
         else if(isBubble) defaultMLC = '#fff';
         else defaultMLC = '#444';

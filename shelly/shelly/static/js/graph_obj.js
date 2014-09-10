@@ -1246,8 +1246,6 @@
     };
 
     function supplyDefaults(traceIn, i, layout) {
-        // TODO: make a custom extend, that recurses into {} but not []
-        // so we don't end up copying data arrays unnecessarily?
         var traceOut = {},
             defaultColor = plots.defaultColors[i % plots.defaultColors.length];
 

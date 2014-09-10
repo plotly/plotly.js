@@ -10,6 +10,7 @@
     var boxes = window.Plotly.Boxes = {};
 
     boxes.attributes = {
+        x0: {type: 'any'},
         whiskerwidth: {
             type: 'number',
             values: [0,1],
@@ -45,30 +46,61 @@
             values: [0],
             dflt: 1
         },
-        'marker.outliercolorscale': {
-            type: 'string'
+        // the following are in scatter too, but the box version
+        // doesn't support arrays.
+        // TODO: better way to inherit these instead of copying?
+        'marker.symbol': {
+            type: 'enumerated',
+            values: Plotly.Drawing.symbolList,
+            dflt: 'circle',
         },
-        'marker.outliercauto': {
-            type: 'boolean',
+        'marker.opacity': {
+            type: 'number',
+            values: [0,1],
         },
-        'marker.outliercmax': {
-            type: 'number'
+        'marker.size': {
+            type: 'number',
+            values: [0],
+            dflt: 6
         },
-        'marker.outliercmin': {
-            type: 'number'
+        'marker.color': {
+            type: 'color'
         },
-        'marker.line.outliercolorscale': {
-            type: 'string'
+        'marker.line.color': {
+            type: 'color',
+            dflt: '#444'
         },
-        'marker.line.outliercauto': {
-            type: 'boolean',
+        'marker.line.width': {
+            type: 'number',
+            values: [0],
+            dflt: 0
         },
-        'marker.line.outliercmax': {
-            type: 'number'
-        },
-        'marker.line.outliercmin': {
-            type: 'number'
-        }
+        // the following were in Plots.setStyles, but I don't think they
+        // work or should work...
+        // 'marker.outliercolorscale': {
+        //     type: 'string'
+        // },
+        // 'marker.outliercauto': {
+        //     type: 'boolean',
+        // },
+        // 'marker.outliercmax': {
+        //     type: 'number'
+        // },
+        // 'marker.outliercmin': {
+        //     type: 'number'
+        // },
+        // 'marker.line.outliercolorscale': {
+        //     type: 'string'
+        // },
+        // 'marker.line.outliercauto': {
+        //     type: 'boolean',
+        // },
+        // 'marker.line.outliercmax': {
+        //     type: 'number'
+        // },
+        // 'marker.line.outliercmin': {
+        //     type: 'number'
+        // }
     };
 
     boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
@@ -80,36 +112,44 @@
             Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
-        traceOut.line = {};
-        traceOut.marker = {line: {}};
+        var y = coerceScatter('y');
+        if(!y) {
+            traceOut.visible = false;
+            return;
+        }
 
-        // box lines use the same attributes as scatter lines, but they're
-        // different enough that we just pull in the attributes we need
+        var x = coerceScatter('x');
+        if(!x) coerce('x0');
+
+        // inherited from Scatter... should we mention this somehow in boxes.attributes?
         coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
         coerceScatter('line.width', 2);
+        coerceScatter('fillcolor', Plotly.Drawing.addOpacity(traceOut.line.color, 0.5));
 
         coerce('whiskerwidth');
-        coerce('boxpoints');
         coerce('boxmean');
-        coerce('jitter', traceOut.boxpoints==='all' ? 0.3 : 0);
-        coerce('pointpos', traceOut.poxpoints==='all' ? -1.5 : 0);
+        var boxpoints = coerce('boxpoints');
+        if(boxpoints) {
+            coerce('jitter', boxpoints==='all' ? 0.3 : 0);
+            coerce('pointpos', boxpoints==='all' ? -1.5 : 0);
 
-        // TODO: clean way to bring in marker and line properties from scatter...
-
-        // Plotly.Scatter.markerDefaults(trace, defaultColor);
-        // Plotly.Scatter.lineDefaults(trace, defaultColor);
-        // // TODO: setting then deleting seems hacky... need a better organization of these...
-        // delete trace.marker.maxdisplayed;
-        // delete trace.line.shape;
-        // delete trace.line.smoothing;
-
-        Plotly.Scatter.colorScalableDefaults('marker.outlier', coerce, traceOut.marker.color);
-        Plotly.Scatter.colorScalableDefaults('marker.line.outlier', coerce);
+            coerce('marker.symbol');
+            coerce('marker.opacity');
+            coerce('marker.size');
+            coerce('marker.color', traceOut.line.color);
+            coerce('marker.line.color');
+            coerce('marker.line.width');
+            if(boxpoints==='suspectedoutliers') {
+                coerce('marker.outliercolor');
+                coerce('marker.line.outliercolor', traceOut.marker.color);
+                coerce('marker.line.outlierwidth');
+            }
+        }
     };
 
     boxes.calc = function(gd,gdc) {
         // box plots make no sense if you don't have y
-        if(!('y' in gdc) || gdc.visible===false) { return; }
+        if(!('y' in gdc) || gdc.visible===false) return;
 
         // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
         var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
@@ -168,13 +208,14 @@
             if(n<0) return arr[0];
             if(n>arr.length-1) return arr[arr.length-1];
             var frac = n%1;
-            return frac*arr[Math.ceil(n)] + (1-frac)*arr[Math.floor(n)];
+            return frac * arr[Math.ceil(n)] + (1-frac) * arr[Math.floor(n)];
         }
 
         // sort the bins and calculate the stats
         pts.forEach(function(v,i){
-            v.sort(function(a,b){ return a-b; });
-            var l = v.length, p = cd[i];
+            v.sort(function(a, b){ return a - b; });
+            var l = v.length,
+                p = cd[i];
             p.y = v; // put all points into calcdata
             p.min = v[0];
             p.max = v[l-1];
