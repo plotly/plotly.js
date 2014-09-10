@@ -124,7 +124,7 @@
             dflt: 'diameter'
         },
         'marker.colorscale': {
-            type: 'string',
+            type: 'colorscale',
             dflt: Plotly.defaultColorscale
         },
         'marker.cauto': {
@@ -140,7 +140,7 @@
             dflt: -10
         },
         'marker.line.colorscale': {
-            type: 'string',
+            type: 'colorscale',
             dflt: Plotly.defaultColorscale
         },
         'marker.line.cauto': {
