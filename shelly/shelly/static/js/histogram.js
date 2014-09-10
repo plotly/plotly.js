@@ -8,6 +8,85 @@
     // histogram is a weird one... it has its own calc function, but uses Bars.plot to display
     // and Bars.setPositions for stacking and grouping
 
+    histogram.attributes = {
+        histfunc: {
+            type: 'enumerated',
+            values: ['count', 'sum', 'avg', 'min', 'max'],
+            dflt: 'count'
+        },
+        histnorm: {
+            type: 'enumerated',
+            values: ['', 'percent', 'probability', 'density', 'probability density'],
+            dflt: ''
+        },
+        autobinx: {
+            type: 'boolean',
+            dflt: true
+        },
+        nbinsx: {
+            type: 'integer',
+            values: [0],
+            dflt: 0
+        },
+        'xbins.start': {
+            type: 'number',
+            dflt: 0
+        },
+        'xbins.end': {
+            type: 'number',
+            dflt: 1
+        },
+        'xbins.size': {
+            type: 'number',
+            dflt: 1
+        },
+        autobiny: {
+            type: 'boolean',
+            dflt: true
+        },
+        nbinsy: {
+            type: 'integer',
+            values: [0],
+            dflt: 0
+        },
+        'ybins.start': {
+            type: 'number',
+            dflt: 0
+        },
+        'ybins.end': {
+            type: 'number',
+            dflt: 1
+        },
+        'ybins.size': {
+            type: 'number',
+            dflt: 1
+        },
+    };
+
+    histogram.supplyDefaults = function(traceIn, traceOut) {
+        function coerce(attr, dflt) {
+            Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, attr, dflt);
+        }
+
+        coerce('histfunc');
+        coerce('histnorm');
+
+        var binDirections = 'x';
+        if(traceOut.type==='histogram2d') binDirections = ['x','y'];
+        else if(traceOut.orientation==='h') binDirections = ['y'];
+
+        binDirections.forEach(function(binDirection){
+            var autobin = coerce('autobin' + binDirection);
+
+            if(autobin) coerce('nbins' + binDirection);
+            else {
+                coerce(binDirection + 'bins.start');
+                coerce(binDirection + 'bins.end');
+                coerce(binDirection + 'bins.size');
+            }
+        });
+    };
+
     histogram.calc = function(gd,gdc) {
         // ignore as much processing as possible (and including in autorange) if bar is not visible
         if(gdc.visible===false) return;
