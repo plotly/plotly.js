@@ -1458,7 +1458,7 @@
     lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
         // ensures that container[attribute] has a valid value
         // attributes[attribute] is an object with possible keys:
-        // - type: data_array, enumerated, boolean, number, integer, string, color, any
+        // - type: data_array, enumerated, boolean, number, integer, string, color, colorscale, any
         // - values:
         //      enumerated: array of allowed vals
         //      number or integer: [min,max] (omitted: allow any number)
@@ -1493,16 +1493,16 @@
 
         function toEnum(list) {
             if(list.indexOf(v)===-1) propOut.set(dflt);
-            propOut.set(v);
+            else propOut.set(v);
         }
 
         function toRange(range) {
             // if range has length 1, it only enforces a minimum.
             // if it has length 2, it enforces a min and max
-            if(!$.isNumeric(v) || v<range[0] || (range[1] && v>range[1])) {
+            if(!$.isNumeric(v) || v<range[0] || (range.length===2 && v>range[1])) {
                 propOut.set(dflt);
             }
-            else if(typeof v !== 'number') propOut.set(+v);
+            else propOut.set(+v);
         }
 
         function toInt(range) {
@@ -1520,6 +1520,10 @@
             else propOut.set(dflt);
         }
 
+        function toColorscale() {
+            propOut.set(Plotly.Plots.getScale(v, dflt));
+        }
+
         function toAny() {
             if(v===undefined) propOut.set(dflt);
             else propOut.set(v);
@@ -1532,6 +1536,7 @@
         else if(opts.type==='integer') toInt(opts.values||NUMS);
         else if(opts.type==='string') toStr();
         else if(opts.type==='color') toColor();
+        else if(opts.type==='colorscale') toColorscale();
         else console.log('unrecognized attribute type '+opts.type, attribute);
 
         return propOut.get();
