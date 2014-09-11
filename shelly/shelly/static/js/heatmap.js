@@ -10,11 +10,98 @@
     var heatmap = window.Plotly.Heatmap = {};
 
     heatmap.attributes = {
-
+        xtype: {
+            type: 'enumerated',
+            values: ['array', 'scaled']
+        },
+        ytype: {
+            type: 'enumerated',
+            values: ['array', 'scaled']
+        },
+        zauto: {
+            type: 'boolean',
+            dflt: true
+        },
+        zmin: {
+            type: 'number',
+            dflt: -10
+        },
+        zmax: {
+            type: 'number',
+            dflt: 10
+        },
+        colorscale: {
+            type: 'colorscale',
+        },
+        reversescale: {
+            type: 'boolean',
+            dflt: false
+        },
+        showscale: {
+            type: 'boolean',
+            dflt: true
+        },
+        zsmooth: {
+            type: 'enumerated',
+            values: ['fast', 'best', false],
+            dflt: false
+        }
     };
 
     heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor) {
+        function coerce(attr, dflt) {
+            Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
+        }
 
+        function coerceScatter(attr, dflt) {
+            Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
+        }
+
+        if(Plotly.Plots.isHist2D(traceOut.type)) {
+            Plotly.Histogram.supplyDefaults(traceIn, traceOut);
+
+            // if marker.color is an array, we can use it in aggregation
+            coerceScatter('marker.color', defaultColor);
+        }
+        else {
+            var x = coerceScatter('x');
+            coerce('xtype', x ? 'array' : 'scaled');
+            if(!x) {
+                coerceScatter('x0');
+                coerceScatter('dx');
+            }
+            var y = coerceScatter('y');
+            coerce('ytype', y ? 'array' : 'scaled');
+            if(!y) {
+                coerceScatter('y0');
+                coerceScatter('dy');
+            }
+        }
+
+        coerce('zauto');
+        if(!traceOut.zauto) {
+            coerce('zmin');
+            coerce('zmax');
+        }
+        coerce('colorscale');
+        coerce('reversescale');
+        coerce('showscale');
+        coerce('zsmooth');
+
+        // apply the colorscale reversal here, so we don't have to
+        // do it in separate modules later
+        function flipScale(si){ return [1 - si[0], si[1]]; }
+        if(traceOut.reversescale) {
+            traceOut.colorscale = traceOut.colorscale.map(flipScale).reverse();
+        }
+
+        if(traceOut.showscale) {
+            Plotly.Colorbar.supplyDefaults(traceIn, traceOut);
+        }
+
+        if(Plotly.Plots.isContour(traceOut.type)) {
+            Plotly.Contour.supplyDefaults(traceIn, traceOut);
+        }
     };
 
     heatmap.calc = function(gd,gdc) {
