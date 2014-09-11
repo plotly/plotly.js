@@ -1452,35 +1452,71 @@
     };
 
     // Helpers for defaults and attribute validation
+    var coerceIt = {
+        data_array: function(v, propOut, dflt) {
+            // data_array: value MUST be an array, or we ignore it
+            // you can use dflt=[] to force said array to exist though
+            if(Array.isArray(v)) propOut.set(v);
+            else if(dflt!==undefined) propOut.set(dflt);
+        },
+        enumerated: function(v, propOut, dflt, opts) {
+            if(opts.values.indexOf(v)===-1) propOut.set(dflt);
+            else propOut.set(v);
+        },
+        boolean: function(v, propOut, dflt) {
+            if(v===true || v===false) propOut.set(v);
+            else propOut.set(dflt);
+        },
+        number: function(v, propOut, dflt, opts) {
+            if(!$.isNumeric(v) ||
+                    (opts.min!==undefined && v<opts.min) ||
+                    (opts.max!==undefined && v>opts.max)) {
+                propOut.set(dflt);
+            }
+            else propOut.set(+v);
+        },
+        integer: function(v, propOut, dflt, opts) {
+            if(v%1 || !$.isNumeric(v) ||
+                    (opts.min!==undefined && v<opts.min) ||
+                    (opts.max!==undefined && v>opts.max)) {
+                propOut.set(dflt);
+            }
+            else propOut.set(+v);
+        },
+        string: function(v, propOut, dflt) {
+            if(v===undefined) propOut.set(dflt);
+            else propOut.set(String(v));
+        },
+        color: function(v, propOut, dflt) {
+            if(tinycolor(v).ok) propOut.set(v);
+            else propOut.set(dflt);
+        },
+        colorscale: function(v, propOut, dflt) {
+            propOut.set(Plotly.Plots.getScale(v, dflt));
+        },
+        any: function(v, propOut, dflt) {
+            if(v===undefined) propOut.set(dflt);
+            else propOut.set(v);
+        }
+    };
 
-    var BOOLS = [true, false],
-        NUMS = [-Infinity, Infinity];
     lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
         // ensures that container[attribute] has a valid value
         // attributes[attribute] is an object with possible keys:
         // - type: data_array, enumerated, boolean, number, integer, string, color, colorscale, any
-        // - values:
-        //      enumerated: array of allowed vals
-        //      number or integer: [min,max] (omitted: allow any number)
-        //      other: ignored
+        // - values: (enumerated only) array of allowed vals
+        // - min, max: (number, integer only) inclusive bounds on allowed vals
+        //      either or both may be omitted
         // - dflt: if attribute is invalid or missing, use this default
         //      if dflt is provided as an argument to lib.coerce it takes precedence
         // as a convenience, returns the value it finally set
 
-        var opts = attributes[attribute],
+        var opts = lib.nestedProperty(attributes, attribute).get(),
             propIn = lib.nestedProperty(containerIn, attribute),
             propOut = lib.nestedProperty(containerOut, attribute),
             v = propIn.get();
 
         if(dflt===undefined) dflt = opts.dflt;
-
-        // data_array: value MUST be an array, or we ignore it
-        // you can use dflt=[] to force said array to exist though
-        if(opts.type==='data_array') {
-            if(Array.isArray(v)) propOut.set(v);
-            else if(dflt!==undefined) propOut.set(dflt);
-            return propOut.get();
-        }
 
         // arrayOk: value MAY be an array, then we do no value checking
         // at this point, because it can be more complicated than the
@@ -1491,53 +1527,7 @@
             return v;
         }
 
-        function toEnum(list) {
-            if(list.indexOf(v)===-1) propOut.set(dflt);
-            else propOut.set(v);
-        }
-
-        function toRange(range) {
-            // if range has length 1, it only enforces a minimum.
-            // if it has length 2, it enforces a min and max
-            if(!$.isNumeric(v) || v<range[0] || (range.length===2 && v>range[1])) {
-                propOut.set(dflt);
-            }
-            else propOut.set(+v);
-        }
-
-        function toInt(range) {
-            if(v%1) propOut.set(dflt);
-            else toRange(range);
-        }
-
-        function toStr() {
-            if(v===undefined) propOut.set(dflt);
-            else propOut.set(String(v));
-        }
-
-        function toColor() {
-            if(tinycolor(v).ok) propOut.set(v);
-            else propOut.set(dflt);
-        }
-
-        function toColorscale() {
-            propOut.set(Plotly.Plots.getScale(v, dflt));
-        }
-
-        function toAny() {
-            if(v===undefined) propOut.set(dflt);
-            else propOut.set(v);
-        }
-
-        if(opts.type==='any') toAny();
-        else if(opts.type==='enumerated') toEnum(opts.values);
-        else if(opts.type==='boolean') toEnum(BOOLS);
-        else if(opts.type==='number') toRange(opts.values||NUMS);
-        else if(opts.type==='integer') toInt(opts.values||NUMS);
-        else if(opts.type==='string') toStr();
-        else if(opts.type==='color') toColor();
-        else if(opts.type==='colorscale') toColorscale();
-        else console.log('unrecognized attribute type '+opts.type, attribute);
+        coerceIt[opts.type](v, propOut, dflt, opts);
 
         return propOut.get();
     };

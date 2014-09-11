@@ -25,7 +25,7 @@
         },
         nbinsx: {
             type: 'integer',
-            values: [0],
+            min: 0,
             dflt: 0
         },
         'xbins.start': {
@@ -46,7 +46,7 @@
         },
         nbinsy: {
             type: 'integer',
-            values: [0],
+            min: 0,
             dflt: 0
         },
         'ybins.start': {

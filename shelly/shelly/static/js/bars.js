@@ -16,7 +16,8 @@
         },
         'marker.opacity': {
             type: 'number',
-            values: [0,1],
+            min: 0,
+            max: 1,
             arrayOk: true,
             dflt: 1
         },
@@ -27,7 +28,7 @@
         },
         'marker.line.width': {
             type: 'number',
-            values: [0],
+            min: 0,
             arrayOk: true,
             dflt: 0
         },

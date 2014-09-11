@@ -9,11 +9,14 @@
 
     var boxes = window.Plotly.Boxes = {};
 
+    var scatterMarker = Plotly.Scatter.attributes.marker;
+
     boxes.attributes = {
         x0: {type: 'any'},
         whiskerwidth: {
             type: 'number',
-            values: [0,1],
+            min: 0,
+            max: 1,
             dflt: 0.5
         },
         boxpoints: {
@@ -28,11 +31,13 @@
         },
         jitter: {
             type: 'number',
-            values: [0,1]
+            min: 0,
+            max: 1
         },
         pointpos: {
             type: 'number',
-            values: [-2, 2]
+            min: -2,
+            max: 2
         },
         'marker.outliercolor': {
             type: 'color',
@@ -43,38 +48,17 @@
         },
         'marker.line.outlierwidth': {
             type: 'number',
-            values: [0],
+            min: 0,
             dflt: 1
         },
         // the following are in scatter too, but the box version
         // doesn't support arrays.
-        // TODO: better way to inherit these instead of copying?
-        'marker.symbol': {
-            type: 'enumerated',
-            values: Plotly.Drawing.symbolList,
-            dflt: 'circle',
-        },
-        'marker.opacity': {
-            type: 'number',
-            values: [0,1],
-        },
-        'marker.size': {
-            type: 'number',
-            values: [0],
-            dflt: 6
-        },
-        'marker.color': {
-            type: 'color'
-        },
-        'marker.line.color': {
-            type: 'color',
-            dflt: '#444'
-        },
-        'marker.line.width': {
-            type: 'number',
-            values: [0],
-            dflt: 0
-        },
+        'marker.symbol': $.extend({arrayOk: false}, scatterMarker.symbol),
+        'marker.opacity': $.extend({arrayOk: false}, scatterMarker.opacity),
+        'marker.size': $.extend({arrayOk: false}, scatterMarker.size),
+        'marker.color': $.extend({arrayOk: false}, scatterMarker.color),
+        'marker.line.color': $.extend({arrayOk: false}, scatterMarker.line.color),
+        'marker.line.width': $.extend({arrayOk: false}, scatterMarker.line.width),
         // the following were in Plots.setStyles, but I don't think they
         // work or should work...
         // 'marker.outliercolorscale': {

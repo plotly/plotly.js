@@ -1256,7 +1256,8 @@
         },
         opacity: {
             type: 'number',
-            values: [0, 1],
+            min: 0,
+            max: 1,
             dflt: 1
         },
         name: {

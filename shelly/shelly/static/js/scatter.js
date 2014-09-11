@@ -43,36 +43,39 @@
             values: ['none', 'lines', 'markers', 'lines+markers',
                 'text', 'lines+text', 'markers+text', 'lines+markers+text']
         },
-        'line.color': {
-            type: 'color'
-        },
-        'line.width': {
-            type: 'number',
-            values: [0],
-            dflt: 2
-        },
-        'line.shape': {
-            type: 'enumerated',
-            values: ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'],
-            dflt: 'linear'
-        },
-        'line.smoothing': {
-            type: 'number',
-            values: [0,1.3],
-            dflt: 1
+        line: {
+            color: {
+                type: 'color'
+            },
+            width: {
+                type: 'number',
+                min: 0,
+                dflt: 2
+            },
+            shape: {
+                type: 'enumerated',
+                values: ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'],
+                dflt: 'linear'
+            },
+            smoothing: {
+                type: 'number',
+                min: 0,
+                max: 1.3,
+                dflt: 1
+            },
+            dash: {
+                type: 'string',
+                // string type usually doesn't take values... this one should really be
+                // a special type or at least a special coercion function, from the GUI
+                // you only get these values but elsewhere the user can supply a list of
+                // dash lengths in px, and it will be honored
+                values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
+                dflt: 'solid'
+            }
         },
         connectgaps: {
             type: 'boolean',
             dflt: false
-        },
-        'line.dash': {
-            type: 'string',
-            // string type usually doesn't take values... this one should really be
-            // a special type or at least a special coercion function, from the GUI
-            // you only get these values but elsewhere the user can supply a list of
-            // dash lengths in px, and it will be honored
-            values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
-            dflt: 'solid'
         },
         fill: {
             type: 'enumerated',
@@ -80,82 +83,87 @@
             dflt: 'none'
         },
         fillcolor: {type: 'color'},
-        'marker.symbol': {
-            type: 'enumerated',
-            values: Plotly.Drawing.symbolList,
-            dflt: 'circle',
-            arrayOk: true
+        marker: {
+            symbol: {
+                type: 'enumerated',
+                values: Plotly.Drawing.symbolList,
+                dflt: 'circle',
+                arrayOk: true
+            },
+            opacity: {
+                type: 'number',
+                min: 0,
+                max: 1,
+                arrayOk: true
+            },
+            size: {
+                type: 'number',
+                min: 0,
+                dflt: 6,
+                arrayOk: true
+            },
+            color: {
+                type: 'color',
+                arrayOk: true
+            },
+            maxdisplayed: {
+                type: 'number',
+                min: 0
+            },
+            sizeref: {
+                type: 'number',
+                dflt: 1
+            },
+            sizemode: {
+                type: 'enumerated',
+                values: ['diameter', 'area'],
+                dflt: 'diameter'
+            },
+            colorscale: {
+                type: 'colorscale',
+                dflt: Plotly.defaultColorscale
+            },
+            cauto: {
+                type: 'boolean',
+                dflt: true
+            },
+            cmax: {
+                type: 'number',
+                dflt: 10
+            },
+            cmin: {
+                type: 'number',
+                dflt: -10
+            },
+            line: {
+                color: {
+                    type: 'color',
+                    arrayOk: true
+                },
+                width: {
+                    type: 'number',
+                    min: 0,
+                    arrayOk: true
+                },
+                colorscale: {
+                    type: 'colorscale',
+                    dflt: Plotly.defaultColorscale
+                },
+                cauto: {
+                    type: 'boolean',
+                    dflt: true
+                },
+                cmax: {
+                    type: 'number',
+                    dflt: 10
+                },
+                cmin: {
+                    type: 'number',
+                    dflt: -10
+                }
+            }
         },
-        'marker.opacity': {
-            type: 'number',
-            values: [0,1],
-            arrayOk: true
-        },
-        'marker.size': {
-            type: 'number',
-            values: [0],
-            dflt: 6,
-            arrayOk: true
-        },
-        'marker.color': {
-            type: 'color',
-            arrayOk: true
-        },
-        'marker.line.color': {
-            type: 'color',
-            arrayOk: true
-        },
-        'marker.line.width': {
-            type: 'number',
-            values: [0],
-            arrayOk: true
-        },
-        'marker.maxdisplayed': {
-            type: 'number',
-            values: [0]
-        },
-        'marker.sizeref': {
-            type: 'number',
-            dflt: 1
-        },
-        'marker.sizemode': {
-            type: 'enumerated',
-            values: ['diameter', 'area'],
-            dflt: 'diameter'
-        },
-        'marker.colorscale': {
-            type: 'colorscale',
-            dflt: Plotly.defaultColorscale
-        },
-        'marker.cauto': {
-            type: 'boolean',
-            dflt: true
-        },
-        'marker.cmax': {
-            type: 'number',
-            dflt: 10
-        },
-        'marker.cmin': {
-            type: 'number',
-            dflt: -10
-        },
-        'marker.line.colorscale': {
-            type: 'colorscale',
-            dflt: Plotly.defaultColorscale
-        },
-        'marker.line.cauto': {
-            type: 'boolean',
-            dflt: true
-        },
-        'marker.line.cmax': {
-            type: 'number',
-            dflt: 10
-        },
-        'marker.line.cmin': {
-            type: 'number',
-            dflt: -10
-        },
-        'textposition': {
+        textposition: {
             type: 'enumerated',
             values: [
                 'top left', 'top center', 'top right',
@@ -164,12 +172,14 @@
             ],
             dflt: 'middle center'
         },
-        'textfont.family': {type: 'string'},
-        'textfont.size': {
-            type: 'number',
-            range: [0]
-        },
-        'textfont.color': {type: 'color'}
+        textfont: {
+            family: {type: 'string'},
+            size: {
+                type: 'number',
+                min: 0
+            },
+            color: {type: 'color'}
+        }
     };
 
     scatter.supplyXY = function(traceIn, traceOut) {
