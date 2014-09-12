@@ -813,7 +813,6 @@
             Plotly.Axes.setTypes(gd);
             // tie modebar into all iframes
             var modebar =  $(gd).find('.svg-container .modebar')[0];
-            SceneFrame.reconfigureModeBar(gd.layout, modebar);
 
             /*
              * If there are scenes that need loading load them.
@@ -2966,17 +2965,6 @@
             if(showfreex) { freefinished.push(xa._id); }
             if(showfreey) { freefinished.push(ya._id); }
         });
-
-        //// Set Layouts on 3D Scenes
-        Object.keys(gl).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        }).forEach( function (sceneName) {
-            var scene = gl[sceneName];
-            if (scene._container) {
-                scene._container.style.background = scene.bgcolor;
-            }
-        });
-
 
         plots.titles(gd,'gtitle');
 
