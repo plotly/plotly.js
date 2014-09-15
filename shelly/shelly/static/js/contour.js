@@ -17,6 +17,22 @@
 
     };
 
+    contour.defaults = function() {
+        return [
+            {dataAttr: 'autocontour', cdAttr: 'autocontour', dflt: true},
+            {dataAttr: 'ncontours', cdAttr: 'ncontours', dflt: 0},
+            {dataAttr: 'contours.start', cdAttr: 'contourstart', dflt: 0},
+            {dataAttr: 'contours.end', cdAttr: 'contourend', dflt: 1},
+            {dataAttr: 'contours.size', cdAttr: 'contoursize', dflt: 1},
+            {dataAttr: 'contours.coloring', cdAttr: 'coloring', dflt: 'fill'},
+            {dataAttr: 'contours.showlines', cdAttr: 'showlines', dflt: true},
+            {dataAttr: 'line.color', cdAttr: 'lc', dflt: '#000'},
+            {dataAttr: 'line.width', cdAttr: 'lw', dflt: 0.5},
+            {dataAttr: 'line.dash', cdAttr: 'ld', dflt: 'solid'},
+            {dataAttr: 'line.smoothing', cdAttr: 'ls', dflt: 1}
+        ];
+    };
+
     contour.calc = function(gd,gdc) {
         if(!('colorbar' in gdc)) gdc.colorbar = {};
 
@@ -734,22 +750,6 @@
         // all the other colorbar styling - any calcdata attribute that starts cb_
         // apply these options, and draw the colorbar
         cb.cdoptions(t)();
-    };
-
-    contour.defaults = function() {
-        return [
-            {dataAttr: 'autocontour', cdAttr: 'autocontour', dflt: true},
-            {dataAttr: 'ncontours', cdAttr: 'ncontours', dflt: 0},
-            {dataAttr: 'contours.start', cdAttr: 'contourstart', dflt: 0},
-            {dataAttr: 'contours.end', cdAttr: 'contourend', dflt: 1},
-            {dataAttr: 'contours.size', cdAttr: 'contoursize', dflt: 1},
-            {dataAttr: 'contours.coloring', cdAttr: 'coloring', dflt: 'fill'},
-            {dataAttr: 'contours.showlines', cdAttr: 'showlines', dflt: true},
-            {dataAttr: 'line.color', cdAttr: 'lc', dflt: '#000'},
-            {dataAttr: 'line.width', cdAttr: 'lw', dflt: 0.5},
-            {dataAttr: 'line.dash', cdAttr: 'ld', dflt: 'solid'},
-            {dataAttr: 'line.smoothing', cdAttr: 'ls', dflt: 1}
-        ];
     };
 
 }()); // end Contour object definition
