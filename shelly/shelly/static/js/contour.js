@@ -45,27 +45,27 @@
 
     contour.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, contour.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, contour.attributes, attr, dflt);
         }
 
         function coerceScatter(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
-        coerce('autocontour');
-        if(traceOut.autocontour) coerce('ncontours');
+        var autocontour = coerce('autocontour');
+        if(autocontour) coerce('ncontours');
         else {
             coerce('contours.start');
             coerce('contours.end');
             coerce('contours.size');
         }
 
-        coerce('contours.coloring');
+        var coloring = coerce('contours.coloring');
 
-        if(traceOut.contours.coloring==='fill') coerce('contours.showlines');
+        if(coloring==='fill') coerce('contours.showlines');
 
         if(traceOut.contours.showlines!==false) {
-            if(traceOut.contours.coloring!=='lines') coerceScatter('line.color', '#000');
+            if(coloring!=='lines') coerceScatter('line.color', '#000');
             coerceScatter('line.width', 0.5);
             coerceScatter('line.dash');
             coerceScatter('line.smoothing');

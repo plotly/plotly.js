@@ -91,11 +91,11 @@
 
     boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, boxes.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, boxes.attributes, attr, dflt);
         }
 
         function coerceScatter(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
         var y = coerceScatter('y');
@@ -128,6 +128,7 @@
             coerce('marker.color', traceOut.line.color);
             coerce('marker.line.color');
             coerce('marker.line.width');
+
             if(boxpoints==='suspectedoutliers') {
                 coerce('marker.outliercolor');
                 coerce('marker.line.outliercolor', traceOut.marker.color);

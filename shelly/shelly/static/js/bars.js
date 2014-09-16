@@ -18,25 +18,27 @@
 
     bars.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, bars.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, bars.attributes, attr, dflt);
         }
 
         function coerceScatter(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
         if(!Plotly.Scatter.supplyXY(traceIn, traceOut)) return;
 
-        coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
+        if(traceOut.type==='histogram') {
+            coerce('orientation', (traceOut.y && !traceOut.x) ? 'h' : 'v');
+            Plotly.Histogram.supplyDefaults(traceIn, traceOut);
+        }
+        else {
+            coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
+        }
 
         coerceScatter('marker.opacity', 1);
         Plotly.Scatter.colorScalableDefaults('marker.', coerceScatter, defaultColor);
         Plotly.Scatter.colorScalableDefaults('marker.line.', coerceScatter, '#444');
         coerceScatter('marker.line.width', 0);
-
-        if(traceOut.type==='histogram') {
-            Plotly.Histogram.supplyDefaults(traceIn, traceOut);
-        }
 
         // override defaultColor for error bars with #444
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'y'});

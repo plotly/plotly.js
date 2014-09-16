@@ -58,7 +58,7 @@
 
     histogram.supplyDefaults = function(traceIn, traceOut) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, attr, dflt);
         }
 
         coerce('histfunc');

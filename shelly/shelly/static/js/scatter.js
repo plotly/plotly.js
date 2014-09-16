@@ -177,7 +177,7 @@
 
     scatter.supplyXY = function(traceIn, traceOut) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
         var len,
@@ -197,10 +197,8 @@
             }
         }
         else {
-            if(!y) {
-                traceOut.visible = false;
-                return 0;
-            }
+            if(!y) return 0;
+
             len = traceOut.y.length;
             coerce('x0');
             coerce('dx');
@@ -210,26 +208,32 @@
 
     scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
         var len = scatter.supplyXY(traceIn, traceOut),
             // TODO: default mode by orphan points...
             defaultMode = len < scatter.PTS_LINESONLY ? 'lines+markers' : 'lines';
-        if(!len) return;
+        if(!len) {
+            traceOut.visible = false;
+            return;
+        }
 
         coerce('text');
-        coerce('mode', defaultMode);
+        var mode = coerce('mode', defaultMode);
 
-        if(traceOut.mode.indexOf('lines')!==-1) {
+        if(mode.indexOf('lines')!==-1) {
             scatter.lineDefaults(traceIn, traceOut, defaultColor, layout);
         }
 
-        if(traceOut.mode.indexOf('markers')!==-1) {
+        if(mode.indexOf('markers')!==-1) {
             scatter.markerDefaults(traceIn, traceOut, defaultColor, layout);
         }
 
-        scatter.textDefaults(traceIn, traceOut, defaultColor, layout);
+        if(mode.indexOf('text')!==-1) {
+            coerce('textposition');
+            coerce('textfont', layout.font);
+        }
 
         coerce('fill');
         if(traceOut.fill!=='none') {
@@ -242,15 +246,14 @@
 
     scatter.lineDefaults = function(traceIn, traceOut, defaultColor) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
         coerce('line.color', (traceIn.marker||{}).color || defaultColor);
         coerce('line.width');
 
-        coerce('line.shape');
-
-        if(traceOut.line.shape==='spline') coerce('line.smoothing');
+        var shape = coerce('line.shape');
+        if(shape==='spline') coerce('line.smoothing');
 
         coerce('connectgaps');
         coerce('line.dash');
@@ -258,7 +261,7 @@
 
     scatter.markerDefaults = function(traceIn, traceOut, defaultColor) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
         var isBubble = $.isArray((traceIn.marker||{}).size),
@@ -293,26 +296,15 @@
 
     scatter.colorScalableDefaults = function(prefix, coerce, dflt) {
         var colorAttr = prefix + 'color',
-            scaleAttr = prefix + 'colorscale',
-            autoAttr = prefix + 'cauto',
-            maxAttr = prefix + 'cmax',
-            minAttr = prefix + 'cmin',
-            colorVal = coerce(colorAttr, dflt);
+            colorVal = coerce(colorAttr, dflt),
+            attrs = [
+                prefix + 'colorscale',
+                prefix + 'cauto',
+                prefix + 'cmax',
+                prefix + 'cmin'
+            ];
 
-        if($.isArray(colorVal)) {
-            [scaleAttr, autoAttr, maxAttr, minAttr].forEach(coerce);
-        }
-    };
-
-    scatter.textDefaults = function(traceIn, traceOut, defaultColor, layout) {
-        function coerce(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-        }
-
-        if(traceOut.mode.indexOf('text')!==-1) {
-            coerce('textposition');
-            coerce('textfont', layout.font);
-        }
+        if($.isArray(colorVal)) attrs.forEach(coerce);
     };
 
     scatter.calc = function(gd,gdc) {

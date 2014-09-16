@@ -1269,19 +1269,20 @@
             defaultColor = plots.defaultColors[i % plots.defaultColors.length];
 
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
         }
 
         // module-independent attributes
         coerce('type');
-        coerce('visible');
-        coerce('opacity');
-        coerce('name', 'trace '+i);
+        var visible = coerce('visible');
+        if(visible) {
+            coerce('opacity');
+            coerce('name', 'trace '+i);
 
-        // module-specific attributes
-        var module = Plotly[getModule(traceOut)];
-        if(module) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-
+            // module-specific attributes
+            var module = Plotly[getModule(traceOut)];
+            if(module) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        }
         return traceOut;
     }
 

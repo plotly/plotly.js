@@ -50,11 +50,11 @@
 
     heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
         }
 
         function coerceScatter(attr, dflt) {
-            Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
         if(Plotly.Plots.isHist2D(traceOut.type)) {
@@ -70,6 +70,7 @@
                 coerceScatter('x0');
                 coerceScatter('dx');
             }
+
             var y = coerceScatter('y');
             coerce('ytype', y ? 'array' : 'scaled');
             if(!y) {
@@ -78,11 +79,12 @@
             }
         }
 
-        coerce('zauto');
-        if(!traceOut.zauto) {
+        var zauto = coerce('zauto');
+        if(!zauto) {
             coerce('zmin');
             coerce('zmax');
         }
+
         if(!Plotly.Plots.isContour(traceOut.type) || traceOut.contours.coloring!=='none') {
             coerce('colorscale');
             coerce('reversescale');
