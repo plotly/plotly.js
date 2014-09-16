@@ -187,8 +187,8 @@
         if(x) {
             if(y) {
                 len = Math.min(x.length, y.length);
-                if(len>x.length) traceOut.x = x.slice(0, len);
-                if(len>y.length) traceOut.y = y.slice(0, len);
+                if(len<x.length) traceOut.x = x.slice(0, len);
+                if(len<y.length) traceOut.y = y.slice(0, len);
             }
             else {
                 len = x.length;
