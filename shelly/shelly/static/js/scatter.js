@@ -237,7 +237,9 @@
 
         coerce('fill');
         if(traceOut.fill!=='none') {
-            coerce('fillcolor', Plotly.Drawing.addOpacity(traceOut.line.color, 0.5));
+            coerce('fillcolor', Plotly.Drawing.addOpacity(
+                (traceOut.line||{}).color || (traceOut.marker||{}).color ||
+                ((traceOut.marker||{}).line||{}).color || defaultColor, 0.5));
         }
 
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
