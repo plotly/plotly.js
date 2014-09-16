@@ -8,6 +8,21 @@
     // histogram is a weird one... it has its own calc function, but uses Bars.plot to display
     // and Bars.setPositions for stacking and grouping
 
+    var defaultBins = {
+        start: {
+            type: 'number',
+            dflt: 0
+        },
+        end: {
+            type: 'number',
+            dflt: 1
+        },
+        size: {
+            type: 'number',
+            dflt: 1
+        }
+    };
+
     histogram.attributes = {
         histfunc: {
             type: 'enumerated',
@@ -28,18 +43,7 @@
             min: 0,
             dflt: 0
         },
-        'xbins.start': {
-            type: 'number',
-            dflt: 0
-        },
-        'xbins.end': {
-            type: 'number',
-            dflt: 1
-        },
-        'xbins.size': {
-            type: 'number',
-            dflt: 1
-        },
+        xbins: defaultBins,
         autobiny: {
             type: 'boolean',
             dflt: true
@@ -49,18 +53,7 @@
             min: 0,
             dflt: 0
         },
-        'ybins.start': {
-            type: 'number',
-            dflt: 0
-        },
-        'ybins.end': {
-            type: 'number',
-            dflt: 1
-        },
-        'ybins.size': {
-            type: 'number',
-            dflt: 1
-        },
+        ybins: defaultBins
     };
 
     histogram.supplyDefaults = function(traceIn, traceOut) {

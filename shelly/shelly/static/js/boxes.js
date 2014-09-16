@@ -39,26 +39,28 @@
             min: -2,
             max: 2
         },
-        'marker.outliercolor': {
-            type: 'color',
-            dflt: 'rgba(0,0,0,0)'
+        marker: {
+            outliercolor: {
+                type: 'color',
+                dflt: 'rgba(0,0,0,0)'
+            },
+            symbol: $.extend({arrayOk: false}, scatterMarker.symbol),
+            opacity: $.extend({arrayOk: false}, scatterMarker.opacity),
+            size: $.extend({arrayOk: false}, scatterMarker.size),
+            color: $.extend({arrayOk: false}, scatterMarker.color),
+            line: {
+                color: $.extend({arrayOk: false}, scatterMarker.line.color),
+                width: $.extend({arrayOk: false}, scatterMarker.line.width),
+                outliercolor: {
+                    type: 'color'
+                },
+                outlierwidth: {
+                    type: 'number',
+                    min: 0,
+                    dflt: 1
+                }
+            }
         },
-        'marker.line.outliercolor': {
-            type: 'color'
-        },
-        'marker.line.outlierwidth': {
-            type: 'number',
-            min: 0,
-            dflt: 1
-        },
-        // the following are in scatter too, but the box version
-        // doesn't support arrays.
-        'marker.symbol': $.extend({arrayOk: false}, scatterMarker.symbol),
-        'marker.opacity': $.extend({arrayOk: false}, scatterMarker.opacity),
-        'marker.size': $.extend({arrayOk: false}, scatterMarker.size),
-        'marker.color': $.extend({arrayOk: false}, scatterMarker.color),
-        'marker.line.color': $.extend({arrayOk: false}, scatterMarker.line.color),
-        'marker.line.width': $.extend({arrayOk: false}, scatterMarker.line.width),
         // the following were in Plots.setStyles, but I don't think they
         // work or should work...
         // 'marker.outliercolorscale': {

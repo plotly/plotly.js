@@ -48,7 +48,7 @@
         }
     };
 
-    heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor) {
+    heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
             Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
         }
@@ -83,10 +83,15 @@
             coerce('zmin');
             coerce('zmax');
         }
-        coerce('colorscale');
-        coerce('reversescale');
-        coerce('showscale');
-        coerce('zsmooth');
+        if(!Plotly.Plots.isContour(traceOut.type) || traceOut.contours.coloring!=='none') {
+            coerce('colorscale');
+            coerce('reversescale');
+            coerce('showscale');
+        }
+
+        if(Plotly.Plots.isHeatmap(traceOut.type) || traceOut.contours.coloring==='heatmap') {
+            coerce('zsmooth');
+        }
 
         // apply the colorscale reversal here, so we don't have to
         // do it in separate modules later
@@ -96,11 +101,7 @@
         }
 
         if(traceOut.showscale) {
-            Plotly.Colorbar.supplyDefaults(traceIn, traceOut);
-        }
-
-        if(Plotly.Plots.isContour(traceOut.type)) {
-            Plotly.Contour.supplyDefaults(traceIn, traceOut);
+            Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
         }
     };
 

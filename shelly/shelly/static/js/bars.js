@@ -10,28 +10,10 @@
     var bars = window.Plotly.Bars = {};
 
     bars.attributes = {
-        'orientation': {
+        orientation: {
             type: 'enumerated',
             values: ['v', 'h']
-        },
-        'marker.opacity': {
-            type: 'number',
-            min: 0,
-            max: 1,
-            arrayOk: true,
-            dflt: 1
-        },
-        'marker.line.color': {
-            type: 'color',
-            arrayOk: true,
-            dflt: '#444'
-        },
-        'marker.line.width': {
-            type: 'number',
-            min: 0,
-            arrayOk: true,
-            dflt: 0
-        },
+        }
     };
 
     bars.supplyDefaults = function(traceIn, traceOut, defaultColor) {
@@ -46,10 +28,11 @@
         if(!Plotly.Scatter.supplyXY(traceIn, traceOut)) return;
 
         coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
-        coerceScatter('marker.color', defaultColor);
-        coerce('marker.opacity');
-        coerce('marker.line.color');
-        coerce('marker.line.width');
+
+        coerceScatter('marker.opacity', 1);
+        Plotly.Scatter.colorScalableDefaults('marker.', coerceScatter, defaultColor);
+        Plotly.Scatter.colorScalableDefaults('marker.line.', coerceScatter, '#444');
+        coerceScatter('marker.line.width', 0);
 
         if(traceOut.type==='histogram') {
             Plotly.Histogram.supplyDefaults(traceIn, traceOut);
