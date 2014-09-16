@@ -172,14 +172,7 @@
             ],
             dflt: 'middle center'
         },
-        textfont: {
-            family: {type: 'string'},
-            size: {
-                type: 'number',
-                min: 0
-            },
-            color: {type: 'color'}
-        }
+        textfont: {type: 'font'}
     };
 
     scatter.supplyXY = function(traceIn, traceOut) {
@@ -318,9 +311,7 @@
 
         if(traceOut.mode.indexOf('text')!==-1) {
             coerce('textposition');
-            coerce('textfont.family', layout.font.family);
-            coerce('textfont.size', layout.font.size);
-            coerce('textfont.color', layout.font.color);
+            coerce('textfont', layout.font);
         }
     };
 
