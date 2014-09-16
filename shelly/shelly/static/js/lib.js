@@ -1452,6 +1452,15 @@
     };
 
     // Helpers for defaults and attribute validation
+    var fontAttrs = {
+        family: {type: 'string'},
+        size: {
+            type: 'number',
+            min: 0
+        },
+        color: {type: 'color'}
+    };
+
     var coerceIt = {
         // yuicompressor doesn't like some of these keys if they're not quoted...
         // chrome doesn't care but I guess yui thinks some are reserved words?
@@ -1495,6 +1504,14 @@
         },
         'colorscale': function(v, propOut, dflt) {
             propOut.set(Plotly.Plots.getScale(v, dflt));
+        },
+        'font': function(v, propOut, dflt) {
+            if(!v) v = {};
+            var vOut = {};
+            lib.coerce(v, vOut, fontAttrs, 'family', dflt.family);
+            lib.coerce(v, vOut, fontAttrs, 'size', dflt.size);
+            lib.coerce(v, vOut, fontAttrs, 'color', dflt.color);
+            propOut.set(vOut);
         },
         'any': function(v, propOut, dflt) {
             if(v===undefined) propOut.set(dflt);
