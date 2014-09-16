@@ -1513,6 +1513,14 @@
             lib.coerce(v, vOut, fontAttrs, 'color', dflt.color);
             propOut.set(vOut);
         },
+        'angle': function(v, propOut, dflt) {
+            if(v==='auto') propOut.set('auto');
+            else if(!$.isNumeric(v)) propOut.set(dflt);
+            else {
+                if(Math.abs(v)>180) v -= Math.round(v/360)*360;
+                propOut.set(+v);
+            }
+        },
         'any': function(v, propOut, dflt) {
             if(v===undefined) propOut.set(dflt);
             else propOut.set(v);
