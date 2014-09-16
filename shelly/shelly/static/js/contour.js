@@ -43,7 +43,7 @@
         }
     };
 
-    contour.supplyDefaults = function(traceIn, traceOut, defaultColor) {
+    contour.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(traceIn, traceOut, contour.attributes, attr, dflt);
         }
@@ -71,7 +71,7 @@
             coerceScatter('line.smoothing');
         }
 
-        Plotly.Heatmap.supplyDefaults(traceIn, traceOut, defaultColor);
+        Plotly.Heatmap.supplyDefaults(traceIn, traceOut, defaultColor, layout);
     };
 
     contour.defaults = function() {

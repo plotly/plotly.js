@@ -64,7 +64,7 @@
         coerce('histfunc');
         coerce('histnorm');
 
-        var binDirections = 'x';
+        var binDirections = ['x'];
         if(traceOut.type==='histogram2d') binDirections = ['x','y'];
         else if(traceOut.orientation==='h') binDirections = ['y'];
 
