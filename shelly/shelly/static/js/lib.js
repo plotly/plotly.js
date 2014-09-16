@@ -1286,26 +1286,26 @@
                         'role="menu"></ul>'+
             '</div>');
 
-        var $ul = $html.find('ul');
-        var $aShow = $html.find('.js-dropdown-text');
+        var $ul = $html.find('ul'),
+            ul3 = d3.select($ul[0]),
+            $aShow = $html.find('.js-dropdown-text')
+                .html('<span class="js-selected-val"></span>' +
+                    '<span class="caret user-caret"></span>'),
+            spanSelected = d3.select($aShow[0]).select('.js-selected-val');
 
-        items.forEach( function (item, idx) {
-
-            var $li = $( '<li>'+
-                           '<a href="#">'+
-                             item +
-                           '</a>' +
-                         '</li>'
-                       );
-
-            $li.click( function ( ) {
-                $aShow.html( item + '<span class="caret user-caret"></span>');
-                if (spec.callback) spec.callback(item, idx);
+        var listItems = ul3.selectAll('li').data(items)
+            .enter()
+            .append('li')
+            .on('click', function(item, i) {
+                spanSelected.text(Plotly.util.plainText(item));
+                if(spec.callback) spec.callback(item, i);
             });
+        listItems.append('a')
+            .attr('href', '#')
+            .text(Plotly.util.plainText);
 
-            $ul.append($li);
-
-            if (idx === spec.defaults) $li.click();
+        listItems.each(function(d, i) {
+            if(i===spec.defaults) $(this).click();
         });
 
         return $html;
