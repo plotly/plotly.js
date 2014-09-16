@@ -10,11 +10,68 @@
     var contour = window.Plotly.Contour = {};
 
     contour.attributes = {
-
+        autocontour: {
+            type: 'boolean',
+            dflt: true
+        },
+        ncontours: {
+            type: 'integer',
+            dflt: 0
+        },
+        contours: {
+            start: {
+                type: 'number',
+                dflt: 0
+            },
+            end: {
+                type: 'number',
+                dflt: 1
+            },
+            size: {
+                type: 'number',
+                dflt: 1
+            },
+            coloring: {
+                type: 'enumerated',
+                values: ['fill', 'heatmap', 'lines', 'none'],
+                dflt: 'fill'
+            },
+            showlines: {
+                type: 'boolean',
+                dflt: true
+            }
+        }
     };
 
     contour.supplyDefaults = function(traceIn, traceOut, defaultColor) {
+        function coerce(attr, dflt) {
+            Plotly.Lib.coerce(traceIn, traceOut, contour.attributes, attr, dflt);
+        }
 
+        function coerceScatter(attr, dflt) {
+            Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
+        }
+
+        coerce('autocontour');
+        if(traceOut.autocontour) coerce('ncontours');
+        else {
+            coerce('contours.start');
+            coerce('contours.end');
+            coerce('contours.size');
+        }
+
+        coerce('contours.coloring');
+
+        if(traceOut.contours.coloring==='fill') coerce('contours.showlines');
+
+        if(traceOut.contours.showlines!==false) {
+            if(traceOut.contours.coloring!=='lines') coerceScatter('line.color', '#000');
+            coerceScatter('line.width', 0.5);
+            coerceScatter('line.dash');
+            coerceScatter('line.smoothing');
+        }
+
+        Plotly.Heatmap.supplyDefaults(traceIn, traceOut, defaultColor);
     };
 
     contour.defaults = function() {
