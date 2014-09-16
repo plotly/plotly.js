@@ -382,7 +382,7 @@
     // iframes and 3rd-party apps, standalone plots get the sidebar instead.
     function positionBrand(gd,container){
         container.text('');
-        container.append('tspan')
+        var brand = container.append('tspan')
             .style({'font-size':'11px'})
             .text('plotly - ');
         var link = container.append('a')
@@ -412,7 +412,8 @@
                 buckets: {
                     control: {},
                     play: {onChosen: function() {
-                        link.text("play with data" + String.fromCharCode(187));
+                        brand.text("");
+                        link.text("Play with this data! " + String.fromCharCode(187));
                     }}
                 }
             });
