@@ -399,6 +399,23 @@
                 'xlink:xlink:show': 'new',
                 'xlink:xlink:href': '/'+path[1]+'/'+path[2].split('.')[0]
             });
+
+            new Bucketeer.Experiment({
+                name: "play_with_data",
+                sample: 1.0,
+                onBucketed: function(expName, bucketName) {
+                    analytics.track("Flag experiment", {Experiment: expName, Bucket: bucketName});
+                    link.on('click', function() {
+                        analytics.track("Experiment success", {Experiment: expName});
+                    });
+                },
+                buckets: {
+                    control: {},
+                    play: {onChosen: function() {
+                        link.text("play with data" + String.fromCharCode(187));
+                    }}
+                }
+            });
         }
         else {
             link.on('click',function(){
