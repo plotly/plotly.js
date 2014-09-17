@@ -400,6 +400,7 @@
                 'xlink:xlink:href': '/'+path[1]+'/'+path[2].split('.')[0]
             });
 
+            /*
             new Bucketeer.Experiment({
                 name: "play_with_data",
                 sample: 1.0,
@@ -417,6 +418,7 @@
                     }}
                 }
             });
+            */
         }
         else {
             link.on('click',function(){
