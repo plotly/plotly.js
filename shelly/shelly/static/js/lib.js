@@ -1521,6 +1521,16 @@
                 propOut.set(+v);
             }
         },
+        'axisid': function(v, propOut, dflt) {
+            if(typeof v === 'string' && v.charAt(0)===dflt) {
+                var axnum = Number(v.substr(1));
+                if(axnum%1 === 0 && axnum>1) {
+                    propOut.set(v);
+                    return;
+                }
+            }
+            propOut.set(dflt);
+        },
         'any': function(v, propOut, dflt) {
             if(v===undefined) propOut.set(dflt);
             else propOut.set(v);
