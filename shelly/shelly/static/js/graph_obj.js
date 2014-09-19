@@ -627,8 +627,9 @@
         // gd._fullData, gd._fullLayout are complete descriptions
         //      of how to draw the plot
         gd._fullData = gd.data.map(function(trace, i) {
-            return supplyDefaults(trace, i, gd.layout);
+            return supplyDefaults(trace, i, gd.layout || {});
         });
+        gd._fullLayout = supplyLayoutDefaults(gd.layout || layout, gd._fullData);
 
         // Polar plots
         // Check if it has a polar type
@@ -1279,6 +1280,14 @@
         },
         name: {
             type: 'string'
+        },
+        xaxis: {
+            type: 'axisid',
+            dflt: 'x'
+        },
+        yaxis: {
+            type: 'axisid',
+            dflt: 'y'
         }
     };
 
@@ -1296,12 +1305,27 @@
         if(visible) {
             coerce('opacity');
             coerce('name', 'trace '+i);
+            if(plots.isCartesian(traceOut.type)) {
+                coerce('xaxis');
+                coerce('yaxis');
+            }
 
             // module-specific attributes
             var module = Plotly[getModule(traceOut)];
             if(module) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
         }
         return traceOut;
+    }
+
+    function supplyLayoutDefaults(layoutIn, fullData) {
+        if(!layoutIn) layoutIn = {};
+        if(!fullData) fullData = [];
+
+        var layoutOut = {};
+
+        Plotly.Axes.supplyDefaults(layoutIn, layoutOut, fullData);
+
+        // TODO
     }
 
     // setStyles: translate styles from gd.data to gd.calcdata,

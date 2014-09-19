@@ -91,6 +91,54 @@
         });
     };
 
+    axes.supplyDefaults = function(layoutIn, layoutOut, fullData) {
+        // get the full list of axes already defined
+        var xalist = Object.keys(layoutIn)
+                .filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
+            yalist = Object.keys(layoutIn)
+                .filter(function(k){ return k.match(/^yaxis[0-9]*$/); });
+
+        // add axes implied by traces
+        fullData.forEach(function(trace) {
+            if(trace.xaxis && xalist.indexOf(axes.id2name(trace.xaxis))===-1) {
+                xalist.push(trace.xaxis);
+            }
+            if(trace.yaxis && yalist.indexOf(axes.id2name(trace.yaxis))===-1) {
+                yalist.push(trace.yaxis);
+            }
+        });
+
+        // make sure there's at least one of each
+        if(!xalist.length) xalist = ['xaxis'];
+        if(!yalist.length) yalist = ['yaxis'];
+        xalist.concat(yalist).forEach(function(axname){
+            var containerIn = layoutIn[axname] || {},
+                containerOut = layoutOut[axname] = {};
+
+            function coerce(attr, dflt) {
+                return Plotly.Lib.coerce(containerIn, containerOut,
+                    axes.attributes, attr, dflt);
+            }
+
+            // TODO
+
+            // xalist.concat(yalist).forEach(function(axname) {
+            //     if(!container[axname]) {
+            //         container[axname] = Plotly.Axes.defaultAxis({
+            //             range: [-1,6],
+            //             anchor: {x:'y',y:'x'}[axname.charAt(0)]
+            //         });
+            //     }
+            //     // if an axis range was explicitly provided with newlayout,
+            //     // turn off autorange
+            //     var ax = newLayout[axname];
+            //     if(ax && ax.range && ax.range.length===2) {
+            //         oldLayout[axname].autorange = false;
+            //     }
+            // });
+
+        });
+    };
 
     axes.initAxes = function (td) {
         var axlist = axes.list(td);
