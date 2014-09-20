@@ -31,8 +31,7 @@
         font:{type: 'font'},
         traceorder: {
             type: 'enumerated',
-            values: ['normal', 'reversed'],
-            dflt: 'normal'
+            values: ['normal', 'reversed']
         },
         x: {
             type: 'number',
@@ -58,21 +57,37 @@
         var containerIn = layoutIn.legend || {},
             containerOut = layoutOut.legend = {};
 
-        var showLegend = Plotly.Lib.coerce(layoutIn, layoutOut,
-            Plotly.Plots.layoutAttributes, 'showlegend',
-            fullData.filter(function(trace) { return trace.visible; }).length>1);
+        var visibleTraces = 0,
+            defaultOrder = 'normal';
+        fullData.forEach(function(trace) {
+            if(trace.visible &&
+                    // eventually this will just exclude 2D and 3D surfaces,
+                    // but for now polar and 3d scatter are excluded too
+                    Plotly.Plots.isCartesian(trace.type) &&
+                    !Plotly.Plots.isHeatmap(trace.type)) {
+                visibleTraces++;
+            }
+
+            if((Plotly.plots.isBar(trace.type) && layoutOut.barmode==='stack') ||
+                    ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
+                defaultOrder = 'reversed';
+            }
+        });
 
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(containerIn, containerOut,
                 legend.attributes, attr, dflt);
         }
 
+        var showLegend = Plotly.Lib.coerce(layoutIn, layoutOut,
+            Plotly.Plots.layoutAttributes, 'showlegend', visibleTraces > 1);
+
         if(showLegend) {
             coerce('bgcolor');
             coerce('bordercolor');
             coerce('borderwidth');
             coerce('font', layoutOut.font);
-            coerce('traceorder');
+            coerce('traceorder', defaultOrder);
             coerce('x');
             coerce('xanchor');
             coerce('y');
