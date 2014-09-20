@@ -531,90 +531,10 @@
         // if you only want to redraw, pass a non-array for data
         var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
         if($.isArray(data)) {
-            /*
-             * Enforce unique IDs
-             */
-            var suids = []; // seen uids --- so we can weed out incoming repeats
-            var uids = data
-                       .filter( function (d) { return 'uid' in d; } )
-                       .map( function (d) { return d.uid; });
+            cleanData(data, gd.data);
 
-            if (!graphwasempty) {
-                uids = uids.concat(
-                        gd.data
-                        .filter( function (d) { return 'uid' in d; } )
-                        .map( function (d) { return d.uid; })
-                );
-            }
-
-            // make a few changes to the data right away
-            // before it gets used for anything
-            data.forEach(function(c,ci) {
-                // assign uids to each trace and detect collisions.
-                if (!('uid' in c) || suids.indexOf(c.uid) !== -1) {
-                    var newUid, i;
-                    for(i=0; i<100; i++) {
-                        newUid = Plotly.Lib.randstr(uids);
-                        if(suids.indexOf(newUid)===-1) { break; }
-                    }
-                    c.uid = Plotly.Lib.randstr(uids);
-                    uids.push(c.uid);
-                }
-                // keep track of already seen uids, so that if there are
-                // doubles we force the trace with a repeat uid to
-                // acquire a new one
-                suids.push(c.uid);
-
-                // BACKWARD COMPATIBILITY FIXES FOR TRACE STYLING
-
-                // use xbins to bin data in x, and ybins to bin data in y
-                if(c.type==='histogramy' && 'xbins' in c && !('ybins' in c)) {
-                    c.ybins = c.xbins;
-                    delete c.xbins;
-                }
-
-                // error_y.opacity is obsolete - merge into color
-                if(c.error_y && 'opacity' in c.error_y) {
-                    var dc = plots.defaultColors,
-                        yeColor = c.error_y.color ||
-                        (plots.isBar(c.type) ? '#444' : dc[ci % dc.length]);
-                    c.error_y.color = Plotly.Drawing.addOpacity(
-                        Plotly.Drawing.rgb(yeColor),
-                        Plotly.Drawing.opacity(yeColor) * c.error_y.opacity);
-                    delete c.error_y.opacity;
-                }
-
-                // convert bardir to orientation, and put the data into
-                // the axes it's eventually going to be used with
-                if('bardir' in c) {
-                    if(c.bardir==='h' && (plots.isBar(c.type) ||
-                             c.type.substr(0,9)==='histogram')) {
-                        c.orientation = 'h';
-                        swapxydata(c);
-                    }
-                    delete c.bardir;
-                }
-
-                // now we have only one 1D histogram type, and whether
-                // it uses x or y data depends on c.orientation
-                if(c.type==='histogramy') { swapxydata(c); }
-                if(c.type==='histogramx' || c.type==='histogramy') {
-                    c.type = 'histogram';
-                }
-
-                // scl->scale, reversescl->reversescale
-                if('scl' in c) {
-                    c.colorscale = c.scl;
-                    delete c.scl;
-                }
-                if('reversescl' in c) {
-                    c.reversescale = c.reversescl;
-                    delete c.reversescl;
-                }
-            });
-
-            if(graphwasempty) { gd.data=data; }
-            else { gd.data.push.apply(gd.data,data); }
+            if(graphwasempty) gd.data=data;
+            else gd.data.push.apply(gd.data,data);
 
             // for routines outside graph_obj that want a clean tab
             // (rather than appending to an existing one) gd.empty
@@ -797,9 +717,7 @@
         }
 
         // now tweak the layout if we're adding the initial data to the plot
-        if(graphwasempty && hasData) {
-            tweakLayout(gd,layout);
-        }
+        if(graphwasempty && hasData) tweakLayout(gd,layout);
 
         // enable or disable formatting buttons
         $(gd).find('.data-only').attr('disabled', !hasData);
@@ -1240,6 +1158,83 @@
         return (donePlotting && donePlotting.then) ?
             donePlotting : Promise.resolve() ;
     };
+
+    function cleanData(data, existingData) {
+        // make a few changes to the data right away
+        // before it gets used for anything
+
+        /*
+         * Enforce unique IDs
+         */
+        var suids = [], // seen uids --- so we can weed out incoming repeats
+            uids = data.concat($.isArray(existingData) ? existingData : [])
+                   .filter( function(trace) { return 'uid' in trace; } )
+                   .map( function(trace) { return trace.uid; });
+
+        data.forEach(function(trace, tracei) {
+            // assign uids to each trace and detect collisions.
+            if (!('uid' in trace) || suids.indexOf(trace.uid) !== -1) {
+                var newUid, i;
+                for(i=0; i<100; i++) {
+                    newUid = Plotly.Lib.randstr(uids);
+                    if(suids.indexOf(newUid)===-1) break;
+                }
+                trace.uid = Plotly.Lib.randstr(uids);
+                uids.push(trace.uid);
+            }
+            // keep track of already seen uids, so that if there are
+            // doubles we force the trace with a repeat uid to
+            // acquire a new one
+            suids.push(trace.uid);
+
+            // BACKWARD COMPATIBILITY FIXES FOR TRACE STYLING
+
+            // use xbins to bin data in x, and ybins to bin data in y
+            if(trace.type==='histogramy' && 'xbins' in trace && !('ybins' in trace)) {
+                trace.ybins = trace.xbins;
+                delete trace.xbins;
+            }
+
+            // error_y.opacity is obsolete - merge into color
+            if(trace.error_y && 'opacity' in trace.error_y) {
+                var dc = plots.defaultColors,
+                    yeColor = trace.error_y.color ||
+                    (plots.isBar(trace.type) ? '#444' : dc[tracei % dc.length]);
+                trace.error_y.color = Plotly.Drawing.addOpacity(
+                    Plotly.Drawing.rgb(yeColor),
+                    Plotly.Drawing.opacity(yeColor) * trace.error_y.opacity);
+                delete trace.error_y.opacity;
+            }
+
+            // convert bardir to orientation, and put the data into
+            // the axes it's eventually going to be used with
+            if('bardir' in trace) {
+                if(trace.bardir==='h' && (plots.isBar(trace.type) ||
+                         trace.type.substr(0,9)==='histogram')) {
+                    trace.orientation = 'h';
+                    swapxydata(trace);
+                }
+                delete trace.bardir;
+            }
+
+            // now we have only one 1D histogram type, and whether
+            // it uses x or y data depends on trace.orientation
+            if(trace.type==='histogramy') swapxydata(trace);
+            if(trace.type==='histogramx' || trace.type==='histogramy') {
+                trace.type = 'histogram';
+            }
+
+            // scl->scale, reversescl->reversescale
+            if('scl' in trace) {
+                trace.colorscale = trace.scl;
+                delete trace.scl;
+            }
+            if('reversescl' in trace) {
+                trace.reversescale = trace.reversescl;
+                delete trace.reversescl;
+            }
+        });
+    }
 
     // for use in Plotly.Lib.syncOrAsync, check if there are any
     // pending promises in this plot and wait for them
