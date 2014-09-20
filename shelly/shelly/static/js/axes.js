@@ -58,8 +58,7 @@
         },
         ticks: {
             type: 'enumerated',
-            values: ['outside', 'inside', ''],
-            dflt: ''
+            values: ['outside', 'inside', '']
         },
         mirror: {
             type: 'enumerated',
@@ -113,10 +112,7 @@
             min: 0,
             dflt: 1
         },
-        showgrid: {
-            type: 'boolean',
-            dflt: true
-        },
+        showgrid: {type: 'boolean'},
         gridcolor: {
             type: 'color',
             dflt: '#eee'
@@ -126,10 +122,7 @@
             min: 0,
             dflt: 1
         },
-        zeroline: {
-            type: 'boolean',
-            dflt: true
-        },
+        zeroline: {type: 'boolean'},
         zerolinecolor: {
             type: 'color',
             dflt: '#444'
@@ -163,18 +156,28 @@
 
     axes.supplyDefaults = function(layoutIn, layoutOut, fullData) {
         // get the full list of axes already defined
-        var xalist = Object.keys(layoutIn)
+        var xaList = Object.keys(layoutIn)
                 .filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
-            yalist = Object.keys(layoutIn)
-                .filter(function(k){ return k.match(/^yaxis[0-9]*$/); });
+            yaList = Object.keys(layoutIn)
+                .filter(function(k){ return k.match(/^yaxis[0-9]*$/); }),
+            outerTicks = {},
+            noGrids = {};
 
-        // add axes implied by traces
+        // add axes implied by traces, and check for default formatting tweaks
         fullData.forEach(function(trace) {
-            if(trace.xaxis && xalist.indexOf(axes.id2name(trace.xaxis))===-1) {
-                xalist.push(trace.xaxis);
+            var xaName = axes.id2name(trace.xaxis),
+                yaName = axes.id2name(trace.yaxis);
+            if(xaName && xaList.indexOf(xaName)===-1) xaList.push(xaName);
+            if(yaName && yaList.indexOf(yaName)===-1) yaList.push(yaName);
+
+            if(Plotly.Plots.isHeatmap(trace.type)) {
+                outerTicks[xaName] = true;
+                outerTicks[yaName] = true;
             }
-            if(trace.yaxis && yalist.indexOf(axes.id2name(trace.yaxis))===-1) {
-                yalist.push(trace.yaxis);
+
+            if(Plotly.Plots.isBar(trace.type) || trace.type==='box') {
+                var saName = trace.orientation==='h' ? yaName : xaName;
+                noGrids[saName] = true;
             }
         });
 
@@ -185,19 +188,19 @@
         }
 
         // make sure there's at least one of each and lists are sorted
-        if(!xalist.length) xalist = ['xaxis'];
-        else xalist.sort(axSort);
+        if(!xaList.length) xaList = ['xaxis'];
+        else xaList.sort(axSort);
 
-        if(!yalist.length) yalist = ['yaxis'];
-        else yalist.sort(axSort);
+        if(!yaList.length) yaList = ['yaxis'];
+        else yaList.sort(axSort);
 
-        xalist.concat(yalist).forEach(function(axname){
-            var containerIn = layoutIn[axname] || {},
-                containerOut = layoutOut[axname] = {},
-                axLetter = axname.charAt(0),
-                counterAxes = {x: yalist, y: xalist}[axLetter].map(axes.name2id),
-                overlayableAxes = {x: xalist, y: yalist}[axLetter].filter(function(axname2){
-                    return axname2!==axname && !(layoutIn[axname2]||{}).overlaying;
+        xaList.concat(yaList).forEach(function(axName){
+            var containerIn = layoutIn[axName] || {},
+                containerOut = layoutOut[axName] = {},
+                axLetter = axName.charAt(0),
+                counterAxes = {x: yaList, y: xaList}[axLetter].map(axes.name2id),
+                overlayableAxes = {x: xaList, y: yaList}[axLetter].filter(function(axName2){
+                    return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
                 }).map(axes.name2id);
 
             function coerce(attr, dflt) {
@@ -238,7 +241,7 @@
                 coerce('dtick');
             }
 
-            var showTicks = coerce('ticks');
+            var showTicks = coerce('ticks', outerTicks[axName] ? 'outside' : '');
             if(showTicks) {
                 // TODO: are there multiple axes connected to this one?
                 coerce('mirror');
@@ -262,13 +265,13 @@
                 coerce('linewidth');
             }
 
-            var showGrid = coerce('showgrid');
+            var showGrid = coerce('showgrid', !noGrids[axName]);
             if(showGrid) {
                 coerce('gridcolor');
                 coerce('gridwidth');
             }
 
-            var showZeroLine = coerce('zeroline');
+            var showZeroLine = coerce('zeroline', !noGrids[axName]);
             if(showZeroLine) {
                 coerce('zerolinecolor');
                 coerce('zerolinewidth');
@@ -380,10 +383,10 @@
                 }
 
                 var axid = curve[axletter+'axis']||axletter,
-                    axname = axes.id2name(axid);
+                    axName = axes.id2name(axid);
 
-                if(!td.layout[axname]) {
-                    td.layout[axname] = axes.defaultAxis({
+                if(!td.layout[axName]) {
+                    td.layout[axName] = axes.defaultAxis({
                         range: [-1,axletter==='x' ? 6 : 4],
                         side: axletter==='x' ? 'bottom' : 'left'
                     });
