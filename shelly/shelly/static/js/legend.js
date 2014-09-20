@@ -68,7 +68,7 @@
                 visibleTraces++;
             }
 
-            if((Plotly.plots.isBar(trace.type) && layoutOut.barmode==='stack') ||
+            if((Plotly.Plots.isBar(trace.type) && layoutOut.barmode==='stack') ||
                     ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
                 defaultOrder = 'reversed';
             }
