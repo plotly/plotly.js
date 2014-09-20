@@ -16,6 +16,307 @@
 
     var axes = Plotly.Axes = {};
 
+    axes.attributes = {
+        title: {type: 'string'},
+        titlefont: {type: 'font'},
+        type: {
+            type: 'enumerated',
+            // TODO: can we get rid of '-' with this framework?
+            values: ['-', 'linear', 'log', 'date', 'category'],
+            dflt: '-'
+        },
+        autorange: {
+            type: 'boolean',
+            dflt: true
+        },
+        rangemode: {
+            type: 'enumerated',
+            values: ['normal', 'withzero', 'nonnegative'],
+            dflt: 'normal'
+        },
+        range: [
+            {type: 'number'},
+            {type: 'number'}
+        ],
+        // ticks
+        autotick: {
+            type: 'boolean',
+            dflt: true
+        },
+        nticks: {
+            type: 'integer',
+            min: 0,
+            dflt: 0
+        },
+        tick0: {
+            type: 'number',
+            dflt: 0
+        },
+        dtick: {
+            type: 'number',
+            dflt: 1
+        },
+        ticks: {
+            type: 'enumerated',
+            values: ['outside', 'inside', ''],
+            dflt: ''
+        },
+        mirror: {
+            type: 'enumerated',
+            // all and allticks: only if there are multiple subplots using this axis
+            values: [true, 'ticks', false, 'all', 'allticks']
+        },
+        ticklen: {
+            type: 'number',
+            min: 0,
+            dflt: 5
+        },
+        tickwidth: {
+            type: 'number',
+            min: 0,
+            dflt: 1
+        },
+        tickcolor: {
+            type: 'color',
+            dflt: '#444'
+        },
+        showticklabels: {
+            type: 'boolean',
+            dflt: true
+        },
+        tickfont: {type: 'font'},
+        tickangle: {
+            type: 'angle',
+            dflt: 'auto'
+        },
+        showexponent: {
+            type: 'enumerated',
+            values: ['all', 'first', 'last', 'none'],
+            dflt: 'all'
+        },
+        exponentformat: {
+            type: 'enumerated',
+            values: ['none', 'e', 'E', 'power', 'SI', 'B'],
+            dflt: 'B'
+        },
+        // lines and grids
+        showline: {
+            type: 'boolean',
+            dflt: false
+        },
+        linecolor: {
+            type: 'color',
+            dflt: '#444'
+        },
+        linewidth: {
+            type: 'number',
+            min: 0,
+            dflt: 1
+        },
+        showgrid: {
+            type: 'boolean',
+            dflt: true
+        },
+        gridcolor: {
+            type: 'color',
+            dflt: '#eee'
+        },
+        gridwidth: {
+            type: 'number',
+            min: 0,
+            dflt: 1
+        },
+        zeroline: {
+            type: 'boolean',
+            dflt: true
+        },
+        zerolinecolor: {
+            type: 'color',
+            dflt: '#444'
+        },
+        zerolinewidth: {
+            type: 'number',
+            dflt: 1
+        },
+        // positioning attributes
+        // anchor: not used directly, just put here for reference
+        // values are any opposite-letter axis id
+        anchor: {type: 'enumerated'},
+        // side: not used directly, as values depend on direction
+        // values are top, bottom for x axes, and left, right for y
+        side: {type: 'enumerated'},
+        // overlaying: not used directly, just put here for reference
+        // values are false and any other same-letter axis id that's not
+        // itself overlaying anything
+        overlaying: {type: 'enumerated'},
+        domain: [
+            {type: 'number', min: 0, max: 1, dflt: 0},
+            {type: 'number', min: 0, max: 1, dflt: 1}
+        ],
+        position: {
+            type: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0
+        }
+    };
+
+    axes.supplyDefaults = function(layoutIn, layoutOut, fullData) {
+        // get the full list of axes already defined
+        var xalist = Object.keys(layoutIn)
+                .filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
+            yalist = Object.keys(layoutIn)
+                .filter(function(k){ return k.match(/^yaxis[0-9]*$/); });
+
+        // add axes implied by traces
+        fullData.forEach(function(trace) {
+            if(trace.xaxis && xalist.indexOf(axes.id2name(trace.xaxis))===-1) {
+                xalist.push(trace.xaxis);
+            }
+            if(trace.yaxis && yalist.indexOf(axes.id2name(trace.yaxis))===-1) {
+                yalist.push(trace.yaxis);
+            }
+        });
+
+        function axSort(a,b) {
+            var aNum = Number(a.substr(5)||1),
+                bNum = Number(b.substr(5)||1);
+            return aNum - bNum;
+        }
+
+        // make sure there's at least one of each and lists are sorted
+        if(!xalist.length) xalist = ['xaxis'];
+        else xalist.sort(axSort);
+
+        if(!yalist.length) yalist = ['yaxis'];
+        else yalist.sort(axSort);
+
+        xalist.concat(yalist).forEach(function(axname){
+            var containerIn = layoutIn[axname] || {},
+                containerOut = layoutOut[axname] = {},
+                axLetter = axname.charAt(0),
+                counterAxes = {x: yalist, y: xalist}[axLetter].map(axes.name2id),
+                overlayableAxes = {x: xalist, y: yalist}[axLetter].filter(function(axname2){
+                    return axname2!==axname && !(layoutIn[axname2]||{}).overlaying;
+                }).map(axes.name2id);
+
+            function coerce(attr, dflt) {
+                return Plotly.Lib.coerce(containerIn, containerOut,
+                    axes.attributes, attr, dflt);
+            }
+
+            coerce('title', 'Click to enter ' + axLetter.toUpperCase() + ' axis title');
+            // TODO: inherit from input tickfont?
+            coerce('titlefont', {
+                family: layoutOut.font.family,
+                size:layoutOut.font.size * 1.2,
+                color: layoutOut.font.color
+            });
+
+            var axType = coerce('type'),
+                validRange = (containerIn.range||[]).length===2 &&
+                    $.isNumeric(containerIn.range[0]) &&
+                    $.isNumeric(containerIn.range[1]),
+                autoRange = coerce('autorange', !validRange);
+            // TODO: where does autorange machinery go?
+            if(autoRange) coerce('rangemode');
+            else {
+                var range0 = coerce('range[0]', -1),
+                    range1 = coerce('range[1]', axLetter==='x' ? 6 : 4);
+                if(range0===range1) {
+                    containerOut.range = [range0 - 1, range0 + 1];
+                }
+            }
+
+            var autoTick = coerce('autotick');
+            if(autoTick) coerce('nticks');
+            else {
+                // TODO: type conversion here?
+                // TODO: separate autotick0 function to avoid duplication?
+                // TODO: way to hold the auto values as defaults when you turn off autotick?
+                coerce('tick0', axType==='date' ? new Date(2000,0,1).getTime() : 0);
+                coerce('dtick');
+            }
+
+            var showTicks = coerce('ticks');
+            if(showTicks) {
+                // TODO: are there multiple axes connected to this one?
+                coerce('mirror');
+                coerce('ticklen');
+                coerce('tickwidth');
+                coerce('tickcolor');
+            }
+
+            var showTickLabels = coerce('showticklabels');
+            if(showTickLabels) {
+                // TODO: coerce from input titlefont?
+                coerce('tickfont', layoutOut.font);
+                coerce('tickangle');
+                coerce('showexponent');
+                coerce('exponentformat');
+            }
+
+            var showLine = coerce('showline');
+            if(showLine) {
+                coerce('linecolor');
+                coerce('linewidth');
+            }
+
+            var showGrid = coerce('showgrid');
+            if(showGrid) {
+                coerce('gridcolor');
+                coerce('gridwidth');
+            }
+
+            var showZeroLine = coerce('zeroline');
+            if(showZeroLine) {
+                coerce('zerolinecolor');
+                coerce('zerolinewidth');
+            }
+
+            var anchor = Plotly.Lib.coerce(containerIn, containerOut,
+                {
+                    anchor: {
+                        type:'enumerated',
+                        values: ['free'].concat(counterAxes),
+                        dflt: counterAxes[0]
+                    }
+                },
+                'anchor');
+
+            if(anchor==='free') coerce('position');
+
+            Plotly.Lib.coerce(containerIn, containerOut,
+                {
+                    side: {
+                        type: 'enumerated',
+                        values: axLetter==='x' ? ['bottom', 'top'] : ['left', 'right'],
+                        dflt: axLetter==='x' ? 'bottom' : 'left'
+                    }
+                },
+                'side');
+
+            var overlaying = false;
+            if(overlayableAxes.length) {
+                overlaying = Plotly.Lib.coerce(containerIn, containerOut,
+                    {
+                        overlaying: {
+                            type: 'enumerated',
+                            values: [false].concat(overlayableAxes),
+                            dflt: false
+                        }
+                    },
+                    'overlaying');
+            }
+
+            if(!overlaying) {
+                var domainStart = coerce('domain[0]'),
+                    domainEnd = coerce('domain[1]');
+                if(domainStart > domainEnd - 0.01) containerOut.domain = [0,1];
+            }
+        });
+    };
+
     axes.defaultAxis = function(extras) {
         return $.extend({
             range: [-1,6],
@@ -88,55 +389,6 @@
                     });
                 }
             });
-        });
-    };
-
-    axes.supplyDefaults = function(layoutIn, layoutOut, fullData) {
-        // get the full list of axes already defined
-        var xalist = Object.keys(layoutIn)
-                .filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
-            yalist = Object.keys(layoutIn)
-                .filter(function(k){ return k.match(/^yaxis[0-9]*$/); });
-
-        // add axes implied by traces
-        fullData.forEach(function(trace) {
-            if(trace.xaxis && xalist.indexOf(axes.id2name(trace.xaxis))===-1) {
-                xalist.push(trace.xaxis);
-            }
-            if(trace.yaxis && yalist.indexOf(axes.id2name(trace.yaxis))===-1) {
-                yalist.push(trace.yaxis);
-            }
-        });
-
-        // make sure there's at least one of each
-        if(!xalist.length) xalist = ['xaxis'];
-        if(!yalist.length) yalist = ['yaxis'];
-        xalist.concat(yalist).forEach(function(axname){
-            var containerIn = layoutIn[axname] || {},
-                containerOut = layoutOut[axname] = {};
-
-            function coerce(attr, dflt) {
-                return Plotly.Lib.coerce(containerIn, containerOut,
-                    axes.attributes, attr, dflt);
-            }
-
-            // TODO
-
-            // xalist.concat(yalist).forEach(function(axname) {
-            //     if(!container[axname]) {
-            //         container[axname] = Plotly.Axes.defaultAxis({
-            //             range: [-1,6],
-            //             anchor: {x:'y',y:'x'}[axname.charAt(0)]
-            //         });
-            //     }
-            //     // if an axis range was explicitly provided with newlayout,
-            //     // turn off autorange
-            //     var ax = newLayout[axname];
-            //     if(ax && ax.range && ax.range.length===2) {
-            //         oldLayout[axname].autorange = false;
-            //     }
-            // });
-
         });
     };
 

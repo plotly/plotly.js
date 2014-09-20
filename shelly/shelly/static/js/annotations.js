@@ -9,6 +9,168 @@
 
     var annotations = Plotly.Annotations = {};
 
+    // centerx is a center of scaling tuned for maximum scalability of
+    // the arrowhead ie throughout mag=0.3..3 the head is joined smoothly
+    // to the line, but the endpoint moves.
+    // TODO: option to have the pointed-to
+    // point a little in front of the end of the line, as people tend
+    // to want a bit of a gap there...
+    var ARROWPATHS = [
+        // no arrow
+        '',
+        // wide with flat back
+        {path:'M-2,-3V3L1,0Z',centerx:0.4},
+        // narrower with flat back
+        {path:'M-3,-2.5V2.5L2,0Z',centerx:0.7},
+        // barbed
+        {path:'M-4,-3L-1.2,-0.2V0.2L-4,3L2,0Z',centerx:0.45},
+        // wide line-drawn
+        {
+            path:'M-2.2,-2.2L-0.2,-0.2V0.2L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',
+            centerx:0
+        },
+        // narrower line-drawn
+        {
+            path:'M-4.2,-2.1L-0.4,-0.2V0.2L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',
+            centerx:0.2
+        },
+        // circle
+        {path:'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',centerx:0},
+        // square
+        {path:'M2,2V-2H-2V2Z',centerx:0}
+    ];
+
+    annotations.attributes = {
+        text: {
+            type: 'string',
+            dflt: 'new text'
+        },
+        textangle: {
+            type: 'angle',
+            dflt: 0
+        },
+        font: {type: 'font'},
+        opacity: {
+            type: 'number',
+            min: 0,
+            max: 1,
+            dflt: 1
+        },
+        align: {
+            type: 'enumerated',
+            values: ['left', 'center', 'right'],
+            dflt: 'center'
+        },
+        bgcolor: {
+            type: 'color',
+            dflt: 'rgba(0,0,0,0)'
+        },
+        bordercolor: {
+            type: 'color',
+            dflt: 'rgba(0,0,0,0)'
+        },
+        borderpad: {
+            type: 'number',
+            min: 0,
+            dflt: 1
+        },
+        borderwidth: {
+            type: 'number',
+            min: 0,
+            dflt: 1
+        },
+        // arrow
+        showarrow: {
+            type: 'boolean',
+            dflt: true
+        },
+        arrowcolor: {
+            type: 'color',
+        },
+        arrowhead: {
+            type: 'integer',
+            min: 0,
+            max: ARROWPATHS.length,
+            dflt: 1
+        },
+        arrowsize: {
+            type: 'number',
+            min: 0,
+            dflt: 1
+        },
+        arrowwidth: {
+            type: 'number',
+            min: 0,
+            dflt: 0
+        },
+        ax: {
+            type: 'number',
+            dflt: -10
+        },
+        ay: {
+            type: 'number',
+            dflt: -30
+        },
+        // positioning
+        // xref: not used directly, can be 'paper' or any x axis id
+        xref: {type: 'enumerated'},
+        x: {type: 'number'},
+        xanchor: {
+            type: 'enumerated',
+            values: ['auto', 'left', 'center', 'right'],
+            dflt: 'auto'
+        },
+        // yref: not used directly, can be 'paper' or any y axis id
+        yref: {type: 'enumerated'},
+        y: {type: 'number'},
+        yanchor: {
+            type: 'enumerated',
+            values: ['auto', 'top', 'middle', 'bottom'],
+            dflt: 'auto'
+        },
+        // TODO: do we use tag anymore? I don't think so...
+        tag: {
+            type: 'string',
+            dflt: ''
+        }
+    };
+
+    annotations.supplyDefaults = function(layoutIn, layoutOut) {
+        var containerIn = layoutIn.annotations || [];
+        layoutOut.annotations = containerIn.map(function(annIn){
+            var annOut = {};
+
+            function coerce(attr, dflt) {
+                return Plotly.Lib.coerce(annIn, annOut, annotations.attributes, attr, dflt);
+            }
+
+            coerce('text');
+            coerce('textangle');
+            coerce('font', layoutOut.font);
+            coerce('opacity');
+            coerce('align');
+            coerce('bgcolor');
+            var borderColor = coerce('bordercolor');
+            coerce('borderpad');
+            coerce('borderwidth');
+            var showArrow = coerce('showarrow');
+            if(showArrow) {
+                coerce('arrowcolor',
+                    Plotly.Drawing.opacity(borderColor) ? annOut.bordercolor : '#444');
+                coerce('arrowhead');
+                coerce('arrowsize');
+                coerce('arrowwidth');
+                coerce('ax');
+                coerce('ay');
+            }
+
+            // TODO: positioning
+            // TODO: attributes for fit?
+
+            return annOut;
+        });
+    };
+
     annotations.drawAll = function(gd) {
         var anns = gd.layout.annotations;
         gd.layout._infolayer.selectAll('.annotation').remove();
@@ -707,39 +869,6 @@
         }
         options[typeAttr] = newtype;
     }
-
-    // centerx is a center of scaling tuned for maximum scalability of
-    // the arrowhead ie throughout mag=0.3..3 the head is joined smoothly
-    // to the line, but the endpoint moves.
-    // TODO: step back the head and line so that the actual end of the line
-    // (except for circle and square) is at exactly the point it's pointing
-    // to, for best scaling and rotating. could even have the pointed-to
-    // point a little in front of the end of the line, as people tend
-    // to want a bit of a gap there...
-    var ARROWPATHS = [
-        // no arrow
-        '',
-        // wide with flat back
-        {path:'M-2,-3V3L1,0Z',centerx:0.4},
-        // narrower with flat back
-        {path:'M-3,-2.5V2.5L2,0Z',centerx:0.7},
-        // barbed
-        {path:'M-4,-3L-1.2,-0.2V0.2L-4,3L2,0Z',centerx:0.45},
-        // wide line-drawn
-        {
-            path:'M-2.2,-2.2L-0.2,-0.2V0.2L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',
-            centerx:0
-        },
-        // narrower line-drawn
-        {
-            path:'M-4.2,-2.1L-0.4,-0.2V0.2L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',
-            centerx:0.2
-        },
-        // circle
-        {path:'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',centerx:0},
-        // square
-        {path:'M2,2V-2H-2V2Z',centerx:0}
-    ];
 
     // add arrowhead(s) to a path or line d3 element el3
     // style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none

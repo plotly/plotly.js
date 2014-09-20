@@ -14,6 +14,72 @@
     // same functions for styling traces in the style box
     // -----------------------------------------------------
 
+    legend.attributes = {
+        bgcolor: {
+            type: 'color',
+            dflt: '#fff'
+        },
+        bordercolor: {
+            type: 'color',
+            dflt: '#444'
+        },
+        borderwidth: {
+            type: 'number',
+            min: 0,
+            dflt: 0
+        },
+        font:{type: 'font'},
+        traceorder: {
+            type: 'enumerated',
+            values: ['normal', 'reversed'],
+            dflt: 'normal'
+        },
+        x: {
+            type: 'number',
+            dflt: 1.02
+        },
+        xanchor: {
+            type: 'enumerated',
+            values: ['auto', 'left', 'center', 'right'],
+            dflt: 'auto'
+        },
+        y: {
+            type: 'number',
+            dflt: 1
+        },
+        yanchor: {
+            type: 'enumerated',
+            values: ['auto', 'top', 'middle', 'bottom'],
+            dflt: 'auto'
+        }
+    };
+
+    legend.supplyDefaults = function(layoutIn, layoutOut, fullData){
+        var containerIn = layoutIn.legend || {},
+            containerOut = layoutOut.legend = {};
+
+        var showLegend = Plotly.Lib.coerce(layoutIn, layoutOut,
+            Plotly.Plots.layoutAttributes, 'showlegend',
+            fullData.filter(function(trace) { return trace.visible; }).length>1);
+
+        function coerce(attr, dflt) {
+            return Plotly.Lib.coerce(containerIn, containerOut,
+                legend.attributes, attr, dflt);
+        }
+
+        if(showLegend) {
+            coerce('bgcolor');
+            coerce('bordercolor');
+            coerce('borderwidth');
+            coerce('font', layoutOut.font);
+            coerce('traceorder');
+            coerce('x');
+            coerce('xanchor');
+            coerce('y');
+            coerce('yanchor');
+        }
+    };
+
     legend.lines = function(d){
         var t = d[0].t,
             isScatter = ['scatter',undefined].indexOf(d[0].t.type)!==-1,

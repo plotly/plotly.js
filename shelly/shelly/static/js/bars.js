@@ -16,6 +16,26 @@
         }
     };
 
+    bars.layoutAttributes = {
+        barmode: {
+            type: 'enumerated',
+            values: ['stack', 'group', 'overlay'],
+            dflt: 'group'
+        },
+        bargap: {
+            type: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0.2
+        },
+        bargroupgap: {
+            type: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0
+        }
+    };
+
     bars.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(traceIn, traceOut, bars.attributes, attr, dflt);
@@ -43,6 +63,17 @@
         // override defaultColor for error bars with #444
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'y'});
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'x', inherit: 'y'});
+    };
+
+    bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
+        function coerce(attr, dflt) {
+            return Plotly.Lib.coerce(layoutIn, layoutOut, bars.layoutAttributes, attr, dflt);
+        }
+
+        coerce('barmode');
+        // TODO: tweak bargap default for plot type (ie numeric hists get no gap)
+        coerce('bargap');
+        coerce('bargroupgap');
     };
 
     bars.calc = function(gd,gdc) {

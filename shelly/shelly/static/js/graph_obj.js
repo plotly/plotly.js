@@ -1314,8 +1314,102 @@
             var module = Plotly[getModule(traceOut)];
             if(module) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
         }
+
+        // NOTE: I didn't include fit info at all... for now I think it can stay
+        // just in gd.data, as this info isn't involved in creating plots at all,
+        // only in pulling back up the fit popover
+
         return traceOut;
     }
+
+    plots.layoutAttributes = {
+        font: {
+            type: 'font',
+            dflt: {
+                family: '"Open sans", verdana, arial, sans-serif',
+                size: 12,
+                color: '#444'
+            }
+        },
+        title: {
+            type: 'string',
+            dflt: 'Click to enter Plot title'
+        },
+        titlefont: {type: 'font'},
+        autosize: {
+            type: 'enumerated',
+            // TODO: better handling of 'initial'
+            values: [true, false],
+        },
+        width: {
+            type: 'number',
+            min: 10,
+            dflt: 700
+        },
+        height: {
+            type: 'number',
+            min: 10,
+            dflt: 450
+        },
+        margin: {
+            l: {
+                type: 'number',
+                min: 0,
+                dflt: 80
+            },
+            r: {
+                type: 'number',
+                min: 0,
+                dflt: 80
+            },
+            t: {
+                type: 'number',
+                min: 0,
+                dflt: 100
+            },
+            b: {
+                type: 'number',
+                min: 0,
+                dflt: 80
+            },
+            pad: {
+                type: 'number',
+                min: 0,
+                dflt: 0
+            },
+            autoexpand: {
+                type: 'boolean',
+                dflt: true
+            }
+        },
+        paper_bgcolor: {
+            type: 'color',
+            dflt: '#fff'
+        },
+        plot_bgcolor: {
+            type: 'color',
+            dflt: '#fff'
+        },
+        separators: {
+            type: 'string',
+            dflt: '.,'
+        },
+        hidesources: {
+            type: 'boolean',
+            dflt: false
+        },
+        smith: {
+            // will become a boolean if/when we implement this
+            type: 'enumerated',
+            values: [false],
+            dflt: false
+        },
+        showlegend: {
+            // handled in legend.supplyDefaults
+            // but included here because it's not in the legend object
+            type: 'boolean'
+        }
+    };
 
     function supplyLayoutDefaults(layoutIn, fullData) {
         if(!layoutIn) layoutIn = {};
@@ -1323,9 +1417,46 @@
 
         var layoutOut = {};
 
-        Plotly.Axes.supplyDefaults(layoutIn, layoutOut, fullData);
+        function coerce(attr, dflt) {
+            return Plotly.Lib.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
+        }
 
-        // TODO
+        var globalFont = coerce('font');
+        coerce('title');
+        coerce('titlefont', globalFont);
+
+        var autoSize = coerce('autosize', !(layoutIn.width && layoutIn.height));
+        if(!autoSize) {
+            coerce('width');
+            coerce('height');
+        }
+
+        // TODO: sanity check that margins leave room for the plot
+        // but this requires fulfilling autosize first
+        coerce('margin.l');
+        coerce('margin.r');
+        coerce('margin.t');
+        coerce('margin.b');
+        coerce('margin.pad');
+        coerce('margin.autoexpand');
+
+        coerce('paper_bgcolor');
+        coerce('plot_bgcolor');
+
+        coerce('separators');
+
+        coerce('hidesources');
+        coerce('smith');
+
+        Plotly.Axes.supplyDefaults(layoutIn, layoutOut, fullData);
+        Plotly.Legend.supplyDefaults(layoutIn, layoutOut, fullData);
+        Plotly.Annotations.supplyDefaults(layoutIn, layoutOut);
+        Plotly.Fx.supplyDefaults(layoutIn, layoutOut, fullData);
+
+        Plotly.Bars.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut);
+
+        return layoutOut;
     }
 
     // setStyles: translate styles from gd.data to gd.calcdata,

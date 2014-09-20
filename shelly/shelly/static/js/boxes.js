@@ -89,6 +89,26 @@
         // }
     };
 
+    boxes.layoutAttributes = {
+        boxmode: {
+            type: 'enumerated',
+            values: ['group', 'overlay'],
+            dflt: 'overlay'
+        },
+        boxgap: {
+            type: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0.3
+        },
+        boxgroupgap: {
+            type: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0.3
+        }
+    };
+
     boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(traceIn, traceOut, boxes.attributes, attr, dflt);
@@ -135,6 +155,16 @@
                 coerce('marker.line.outlierwidth');
             }
         }
+    };
+
+    boxes.supplyLayoutDefaults = function(layoutIn, layoutOut) {
+        function coerce(attr, dflt) {
+            return Plotly.Lib.coerce(layoutIn, layoutOut, boxes.layoutAttributes, attr, dflt);
+        }
+
+        coerce('boxmode');
+        coerce('boxgap');
+        coerce('boxgroupgap');
     };
 
     boxes.calc = function(gd,gdc) {
