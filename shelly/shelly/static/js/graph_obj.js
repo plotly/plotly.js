@@ -703,10 +703,12 @@
             if(!gd.framework || gd.framework!==makePlotFramework ||
                     !gd.layout || graphwasempty || (oldSubplots!==subplots)) {
                 gd.framework = makePlotFramework;
+                gd.layout = undefined; // shim until we're fully using _fullLayout
                 makePlotFramework(gd,layout);
             }
         }
         else if((typeof gd.layout==='undefined')||graphwasempty) {
+            gd.layout = undefined; // shim until we're fully using _fullLayout
             makePlotFramework(gd, layout);
         }
 
@@ -1285,10 +1287,10 @@
         // gd.data, gd.layout are precisely what the user specified
         // gd._fullData, gd._fullLayout are complete descriptions
         //      of how to draw the plot
-        gd._fullData = gd.data.map(function(trace, i) {
-            return supplyDataDefaults(trace, i, gd.layout);
+        gd._fullData = (gd.data||[]).map(function(trace, i) {
+            return supplyDataDefaults(trace, i, gd.layout||{});
         });
-        gd._fullLayout = supplyLayoutDefaults(gd.layout, gd._fullData);
+        gd._fullLayout = supplyLayoutDefaults(gd.layout||{}, gd._fullData);
     }
 
     function supplyDataDefaults(traceIn, i, layout) {
