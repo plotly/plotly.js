@@ -1690,7 +1690,7 @@
 
     // get all axis objects, optionally restricted to only
     // x or y or z by string axletter
-    axes.list = function(gd, axletter) {
+    axes.list = function(gd, axletter, only2d) {
         if (!gd.layout) return [];
         function filterAxis (obj) {
             return Object.keys(obj)
@@ -1706,6 +1706,8 @@
         }
 
         var axis2d = filterAxis(gd.layout);
+        if(only2d) return axis2d;
+
         var axis3d = [];
         var scenes = Object.keys(gd.layout).filter( function (k) {
             return k.match(/^scene[0-9]*$/);
@@ -1765,7 +1767,7 @@
 
         // look for subplots in the axes/anchors,
         // so that we at least draw all axes
-        Plotly.Axes.list(gd).forEach(function(ax2) {
+        Plotly.Axes.list(gd, '', true).forEach(function(ax2) {
             // one more place to convert x1,y1 to x,y
             if(ax2.anchor==='x1') { ax2.anchor = 'x'; }
             if(ax2.anchor==='y1') { ax2.anchor = 'y'; }

@@ -604,191 +604,15 @@
 
         var gl = gd.layout;
 
-
         ////////////////////////////////  3D   ///////////////////////////////
-        if (gl._hasGL3D) {
-            /*
-             * Once Webgl plays well with other things we can remove this.
-             * Unset examples, they misbehave with 3d plots
-             */
-            var $examplesContainer = $(gd).find('.examples-container');
-            if ($examplesContainer.css('display') === 'block') {
-                Examples.set();
-            }
-
-            /*
-             * Reset all SceneFrame positions (for now just
-             * set width % as viewport x ratio)
-             * In case this is a redraw from a resize
-             */
-            gd.data
-            .filter( function (d) {
-                return plots.isGL3D(d.type);
-            } )
-            .forEach( function (d) {
-
-              // This following code inserts test data if no data is present
-              // remove after completion
-                if (!Array.isArray(d.z)) {
-                    $.extend(d, SceneFrame.testData(d.type,
-                        120, 120, [40,40,60]));
-                }
-
-                /*
-                 * Scene numbering proceeds as follows
-                 * scene
-                 * scene2
-                 * scene3
-                 *
-                 * and d.scene will be undefined or some number or number string
-                 */
-                var destScene = 'scene';
-                if (d.scene && $.isNumeric(d.scene) && d.scene > 1) {
-                    destScene += d.scene;
-                }
-
-                var sceneLayout = gl[destScene] || {};
-                gl[destScene] = sceneLayout;
-                if (!('_webgl' in sceneLayout)) {
-                    /*
-                     * build a new scene layout object or initialize a serialized one.
-                     * Applies defaults to incoming sceneLayouts.
-                     */
-                    gl[destScene] = sceneLayout = Plotly.Plots
-                        .defaultSceneLayout(gd, destScene, sceneLayout);
-                }
-
-                // if this data is already waiting in the queue, we can abort.
-                // This is a race condition that results from things like resize
-                // events which call Plotly.plot again. --- there is probably a
-                // better way to account for these race conditions...
-                if (sceneLayout._dataQueue.indexOf(d) > -1) return;
-
-                sceneLayout._dataQueue.push(d);
-
-            });
-
-
-            gl._paperdiv.style({
-                width: gl.width+'px',
-                height: gl.height+'px',
-                background: gl.paper_bgcolor
-            });
-
-            gd.calcdata = [];
-            Plotly.Axes.setTypes(gd);
-            // tie modebar into all iframes
-            var modebar =  $(gd).find('.svg-container .modebar')[0];
-
-            /*
-             * If there are scenes that need loading load them.
-             * Recalibrate all domains now that there may be new scenes.
-             * Once scenes load they will iteratively load any data
-             * that might be on their queue.
-             *
-             * scene arrangements need to be implemented: For now just splice
-             * along the horizontal direction. ie.
-             * x:[0,1] -> x:[0,0.5], x:[0.5,1] ->
-             *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
-             *
-             */
-            var scenes = Object.keys(gl).filter(function(k){
-                return k.match(/^scene[0-9]*$/);
-            });
-
-            scenes.map( function (sceneKey, idx) {
-
-                var sceneLayout = gl[sceneKey];
-                // we are only modifying the x domain position with this
-                // simple approach
-                sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
-
-                // convert domain to position in pixels
-                sceneLayout.position = {
-                    left: gl._size.l + sceneLayout.domain.x[0]*gl._size.w,
-                    top: gl._size.t + (1-sceneLayout.domain.y[1])*gl._size.h,
-                    width: gl._size.w *
-                        (sceneLayout.domain.x[1] - sceneLayout.domain.x[0]),
-                    height: gl._size.h *
-                        (sceneLayout.domain.y[1] - sceneLayout.domain.y[0])
-                };
-
-                // if this scene has already been loaded it will have it's webgl
-                // context parameter so lets reset the domain of the scene as
-                // it may have changed (this operates on the containing iframe)
-                if (sceneLayout._webgl) sceneLayout._webgl.setPosition(sceneLayout.position);
-                return sceneLayout;
-
-            }).forEach( function (sceneLayout) {
-                /*
-                 * We only want to continue to operate on scenes that have
-                 * data waiting to be displayed or require loading
-                 */
-                var sceneOptions;
-                if (sceneLayout._loading) return;
-                if (sceneLayout._webgl !== null) {
-                    //// woot, lets load all the data in the queue and bail outta here
-                    while (sceneLayout._dataQueue.length) {
-                        var d = sceneLayout._dataQueue.shift();
-                        sceneLayout._webgl.draw(gl, d);
-                    }
-
-                    return;
-                }
-                // we are not loading but no _webgl has been created. Lets load one!
-                sceneLayout._loading = true;
-                // procede to create a new scene
-
-                /*
-                 * Creating new scenes
-                 */
-                sceneOptions = {
-                    container: gd.querySelector('.svg-container'),
-                    zIndex: '1000',
-                    id: sceneLayout._id,
-                    plotly: Plotly,
-                    width: layout.width,
-                    height: layout.height,
-                    glopts: gl.glopts,
-                    layout: gl
-                };
-
-                SceneFrame.createScene(sceneOptions);
-
-                SceneFrame.once('scene-loaded', function (webgl) {
-
-                    var sceneLayout = gd.layout[webgl.id];
-                    // make the .webgl (webgl context) available through scene.
-                    sceneLayout._loading = false; // loaded
-                    sceneLayout._webgl = webgl;
-                    sceneLayout._container = webgl.container;
-
-                    webgl.setPosition(sceneLayout.position);
-
-                    // if data has accumulated on the queue while the iframe
-                    // and the webgl-context were loading remove that data
-                    // from the queue and draw.
-                    while (sceneLayout._dataQueue.length) {
-                        var d = sceneLayout._dataQueue.shift();
-                        webgl.draw(gl, d);
-                    }
-
-                    SceneFrame.emit('scene-ready', webgl);
-                });
-            });
-        }
-
-        ///////////////////////////////  end of 3D   ///////////////////////
-
+        if (gl._hasGL3D) plot3D(gd);
 
         /*
          * Plotly.plot shortCircuit for 3d only
          * eventually remove this and integrate more
          * thoroughly with module system.
          */
-        if (!gl._hasCartesian) {
-            return Promise.resolve();
-        }
+        if (!gl._hasCartesian) return Promise.resolve();
 
         // prepare the types and conversion functions for the axes
         // also clears the autorange bounds ._min, ._max
@@ -1038,6 +862,179 @@
         return (donePlotting && donePlotting.then) ?
             donePlotting : Promise.resolve() ;
     };
+
+    function plot3D(gd) {
+        var gl = gd.layout;
+        /*
+         * Once Webgl plays well with other things we can remove this.
+         * Unset examples, they misbehave with 3d plots
+         */
+        var $examplesContainer = $(gd).find('.examples-container');
+        if ($examplesContainer.css('display') === 'block') {
+            Examples.set();
+        }
+
+        /*
+         * Reset all SceneFrame positions (for now just
+         * set width % as viewport x ratio)
+         * In case this is a redraw from a resize
+         */
+        gd.data
+        .filter( function (d) {
+            return plots.isGL3D(d.type);
+        } )
+        .forEach( function (d) {
+
+          // This following code inserts test data if no data is present
+          // remove after completion
+            if (!Array.isArray(d.z)) {
+                $.extend(d, SceneFrame.testData(d.type,
+                    120, 120, [40,40,60]));
+            }
+
+            /*
+             * Scene numbering proceeds as follows
+             * scene
+             * scene2
+             * scene3
+             *
+             * and d.scene will be undefined or some number or number string
+             */
+            var destScene = 'scene';
+            if (d.scene && $.isNumeric(d.scene) && d.scene > 1) {
+                destScene += d.scene;
+            }
+
+            var sceneLayout = gl[destScene] || {};
+            gl[destScene] = sceneLayout;
+            if (!('_webgl' in sceneLayout)) {
+                /*
+                 * build a new scene layout object or initialize a serialized one.
+                 * Applies defaults to incoming sceneLayouts.
+                 */
+                gl[destScene] = sceneLayout = Plotly.Plots
+                    .defaultSceneLayout(gd, destScene, sceneLayout);
+            }
+
+            // if this data is already waiting in the queue, we can abort.
+            // This is a race condition that results from things like resize
+            // events which call Plotly.plot again. --- there is probably a
+            // better way to account for these race conditions...
+            if (sceneLayout._dataQueue.indexOf(d) > -1) return;
+
+            sceneLayout._dataQueue.push(d);
+
+        });
+
+
+        gl._paperdiv.style({
+            width: gl.width+'px',
+            height: gl.height+'px',
+            background: gl.paper_bgcolor
+        });
+
+        gd.calcdata = [];
+        Plotly.Axes.setTypes(gd);
+        // tie modebar into all iframes
+        var modebar =  $(gd).find('.svg-container .modebar')[0];
+
+        /*
+         * If there are scenes that need loading load them.
+         * Recalibrate all domains now that there may be new scenes.
+         * Once scenes load they will iteratively load any data
+         * that might be on their queue.
+         *
+         * scene arrangements need to be implemented: For now just splice
+         * along the horizontal direction. ie.
+         * x:[0,1] -> x:[0,0.5], x:[0.5,1] ->
+         *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
+         *
+         */
+        var scenes = Object.keys(gl).filter(function(k){
+            return k.match(/^scene[0-9]*$/);
+        });
+
+        scenes.map( function (sceneKey, idx) {
+
+            var sceneLayout = gl[sceneKey];
+            // we are only modifying the x domain position with this
+            // simple approach
+            sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
+
+            // convert domain to position in pixels
+            sceneLayout.position = {
+                left: gl._size.l + sceneLayout.domain.x[0]*gl._size.w,
+                top: gl._size.t + (1-sceneLayout.domain.y[1])*gl._size.h,
+                width: gl._size.w *
+                    (sceneLayout.domain.x[1] - sceneLayout.domain.x[0]),
+                height: gl._size.h *
+                    (sceneLayout.domain.y[1] - sceneLayout.domain.y[0])
+            };
+
+            // if this scene has already been loaded it will have it's webgl
+            // context parameter so lets reset the domain of the scene as
+            // it may have changed (this operates on the containing iframe)
+            if (sceneLayout._webgl) sceneLayout._webgl.setPosition(sceneLayout.position);
+            return sceneLayout;
+
+        }).forEach( function (sceneLayout) {
+            /*
+             * We only want to continue to operate on scenes that have
+             * data waiting to be displayed or require loading
+             */
+            var sceneOptions;
+            if (sceneLayout._loading) return;
+            if (sceneLayout._webgl !== null) {
+                //// woot, lets load all the data in the queue and bail outta here
+                while (sceneLayout._dataQueue.length) {
+                    var d = sceneLayout._dataQueue.shift();
+                    sceneLayout._webgl.draw(gl, d);
+                }
+
+                return;
+            }
+            // we are not loading but no _webgl has been created. Lets load one!
+            sceneLayout._loading = true;
+            // procede to create a new scene
+
+            /*
+             * Creating new scenes
+             */
+            sceneOptions = {
+                container: gd.querySelector('.svg-container'),
+                zIndex: '1000',
+                id: sceneLayout._id,
+                plotly: Plotly,
+                width: gl.width,
+                height: gl.height,
+                glopts: gl.glopts,
+                layout: gl
+            };
+
+            SceneFrame.createScene(sceneOptions);
+
+            SceneFrame.once('scene-loaded', function (webgl) {
+
+                var sceneLayout = gd.layout[webgl.id];
+                // make the .webgl (webgl context) available through scene.
+                sceneLayout._loading = false; // loaded
+                sceneLayout._webgl = webgl;
+                sceneLayout._container = webgl.container;
+
+                webgl.setPosition(sceneLayout.position);
+
+                // if data has accumulated on the queue while the iframe
+                // and the webgl-context were loading remove that data
+                // from the queue and draw.
+                while (sceneLayout._dataQueue.length) {
+                    var d = sceneLayout._dataQueue.shift();
+                    webgl.draw(gl, d);
+                }
+
+                SceneFrame.emit('scene-ready', webgl);
+            });
+        });
+    }
 
     function plotPolar(gd, data, layout) {
         // build or reuse the container skeleton
