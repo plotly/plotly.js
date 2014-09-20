@@ -554,119 +554,9 @@
             console.log('This polar chart uses a deprecated pre-release API');
             return null;
         }
-        if(data && data[0] && data[0].r){
+        if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
 
-            // build or reuse the container skeleton
-            var plotContainer = d3.select(gd).selectAll('.plot-container')
-                .data([0]);
-            plotContainer.enter()
-                .insert('div', ':first-child')
-                .classed('plot-container plotly', true);
-            var paperDiv = plotContainer.selectAll('.svg-container')
-                .data([0]);
-            paperDiv.enter().append('div')
-                .classed('svg-container',true)
-                .style('position','relative');
-
-            // empty it everytime for now
-            paperDiv.html('');
-
-            // fulfill gd requirements
-            if(data) gd.data = data;
-            gd.layout = layout;
-            gd.layout._container = plotContainer;
-            gd.layout._paperdiv = paperDiv;
-            if(gd.layout.autosize === 'initial' && gd.mainsite) {
-                plotAutoSize(gd,{});
-                gd.layout.autosize = true;
-            }
-            // resize canvas
-            paperDiv.style({
-                width: (layout.width || 800) + 'px',
-                height: (layout.height || 600) + 'px',
-                background: (layout.paper_bgcolor || 'white')
-            });
-
-            // instantiate framework
-            gd.framework = micropolar.manager.framework();
-            //get rid of gd.layout stashed nodes
-            layout = µ.util.deepExtend({}, gd.layout);
-            delete layout._container;
-            delete layout._paperdiv;
-            delete layout.autosize;
-            delete layout._paper;
-            delete layout._forexport;
-
-            // plot
-            gd.framework({data: gd.data, layout: layout}, paperDiv.node());
-
-            // set undo point
-            gd.framework.setUndoPoint();
-
-            // get the resulting svg for extending it
-            var polarPlotSVG = gd.framework.svg();
-
-            // editable title
-            var opacity = 1;
-            var txt = gd.layout.title;
-            if(txt === '' || !txt) opacity = 0;
-            var placeholderText = 'Click to enter title';
-
-            var titleLayout = function(){
-                this.call(Plotly.util.convertToTspans);
-                //TODO: html/mathjax
-                //TODO: center title
-            };
-
-            var title = polarPlotSVG.select('.title-group text')
-                .call(titleLayout);
-
-            if(gd.mainsite && !gd.layout._forexport){
-                title.attr({'data-unformatted': txt});
-                if(!txt || txt === placeholderText){
-                    opacity = 0.2;
-                    title.attr({'data-unformatted': placeholderText})
-                        .text(placeholderText)
-                        .style({opacity: opacity})
-                        .on('mouseover.opacity',function(){
-                            d3.select(this).transition().duration(100)
-                                .style('opacity',1);
-                        })
-                        .on('mouseout.opacity',function(){
-                            d3.select(this).transition().duration(1000)
-                                .style('opacity',0);
-                        });
-                }
-
-                var setContenteditable = function(){
-                    this.call(Plotly.util.makeEditable)
-                        .on('edit', function(text){
-                            gd.framework({layout: {title: text}});
-                            this.attr({'data-unformatted': text})
-                                .text(text)
-                                .call(titleLayout);
-                            this.call(setContenteditable);
-                        })
-                        .on('cancel', function(){
-                            var txt = this.attr('data-unformatted');
-                            this.text(txt).call(titleLayout);
-                        });
-                };
-                title.call(setContenteditable);
-
-                gd.layout._paperdiv = paperDiv;
-
-                Plotly.ToolPanel.tweakMenu();
-            }
-
-            // fulfill more gd requirements
-            gd.layout._paper = polarPlotSVG;
-            plots.addLinks(gd);
-
-            return Promise.resolve();
-        }
-
-        else if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
+        if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
 
         // so we don't try to re-call Plotly.plot from inside
         // legend and colorbar, if margins changed
@@ -1154,6 +1044,117 @@
         return (donePlotting && donePlotting.then) ?
             donePlotting : Promise.resolve() ;
     };
+
+    function plotPolar(gd, data, layout) {
+        // build or reuse the container skeleton
+        var plotContainer = d3.select(gd).selectAll('.plot-container')
+            .data([0]);
+        plotContainer.enter()
+            .insert('div', ':first-child')
+            .classed('plot-container plotly', true);
+        var paperDiv = plotContainer.selectAll('.svg-container')
+            .data([0]);
+        paperDiv.enter().append('div')
+            .classed('svg-container',true)
+            .style('position','relative');
+
+        // empty it everytime for now
+        paperDiv.html('');
+
+        // fulfill gd requirements
+        if(data) gd.data = data;
+        gd.layout = layout;
+        gd.layout._container = plotContainer;
+        gd.layout._paperdiv = paperDiv;
+        if(gd.layout.autosize === 'initial' && gd.mainsite) {
+            plotAutoSize(gd,{});
+            gd.layout.autosize = true;
+        }
+        // resize canvas
+        paperDiv.style({
+            width: (layout.width || 800) + 'px',
+            height: (layout.height || 600) + 'px',
+            background: (layout.paper_bgcolor || 'white')
+        });
+
+        // instantiate framework
+        gd.framework = micropolar.manager.framework();
+        //get rid of gd.layout stashed nodes
+        layout = µ.util.deepExtend({}, gd.layout);
+        delete layout._container;
+        delete layout._paperdiv;
+        delete layout.autosize;
+        delete layout._paper;
+        delete layout._forexport;
+
+        // plot
+        gd.framework({data: gd.data, layout: layout}, paperDiv.node());
+
+        // set undo point
+        gd.framework.setUndoPoint();
+
+        // get the resulting svg for extending it
+        var polarPlotSVG = gd.framework.svg();
+
+        // editable title
+        var opacity = 1;
+        var txt = gd.layout.title;
+        if(txt === '' || !txt) opacity = 0;
+        var placeholderText = 'Click to enter title';
+
+        var titleLayout = function(){
+            this.call(Plotly.util.convertToTspans);
+            //TODO: html/mathjax
+            //TODO: center title
+        };
+
+        var title = polarPlotSVG.select('.title-group text')
+            .call(titleLayout);
+
+        if(gd.mainsite && !gd.layout._forexport){
+            title.attr({'data-unformatted': txt});
+            if(!txt || txt === placeholderText){
+                opacity = 0.2;
+                title.attr({'data-unformatted': placeholderText})
+                    .text(placeholderText)
+                    .style({opacity: opacity})
+                    .on('mouseover.opacity',function(){
+                        d3.select(this).transition().duration(100)
+                            .style('opacity',1);
+                    })
+                    .on('mouseout.opacity',function(){
+                        d3.select(this).transition().duration(1000)
+                            .style('opacity',0);
+                    });
+            }
+
+            var setContenteditable = function(){
+                this.call(Plotly.util.makeEditable)
+                    .on('edit', function(text){
+                        gd.framework({layout: {title: text}});
+                        this.attr({'data-unformatted': text})
+                            .text(text)
+                            .call(titleLayout);
+                        this.call(setContenteditable);
+                    })
+                    .on('cancel', function(){
+                        var txt = this.attr('data-unformatted');
+                        this.text(txt).call(titleLayout);
+                    });
+            };
+            title.call(setContenteditable);
+
+            gd.layout._paperdiv = paperDiv;
+
+            Plotly.ToolPanel.tweakMenu();
+        }
+
+        // fulfill more gd requirements
+        gd.layout._paper = polarPlotSVG;
+        plots.addLinks(gd);
+
+        return Promise.resolve();
+    }
 
     function cleanData(data, existingData) {
         // make a few changes to the data right away
