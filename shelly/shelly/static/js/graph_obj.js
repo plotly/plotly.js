@@ -510,7 +510,7 @@
         gd.mainsite = !!$('#plotlyMainMarker').length;
 
         // layout object --- this also gets checked in makePlotFramework
-        if(!layout) { layout = {}; }
+        if(!layout) layout = {};
 
         // hook class for plots main container (in case of plotly.js
         // this won't be #embedded-graph or .js-tab-contents)
@@ -542,14 +542,10 @@
             gd.empty=false;
         }
 
-        // fill in default values:
-        // gd.data, gd.layout are precisely what the user specified
-        // gd._fullData, gd._fullLayout are complete descriptions
-        //      of how to draw the plot
-        gd._fullData = gd.data.map(function(trace, i) {
-            return supplyDefaults(trace, i, gd.layout || {});
-        });
-        gd._fullLayout = supplyLayoutDefaults(gd.layout || layout, gd._fullData);
+        // only use the layout argument if we didn't have any data yet
+        if(graphwasempty) gd.layout = layout;
+
+        supplyDefaults(gd);
 
         // Polar plots
         // Check if it has a polar type
@@ -700,8 +696,6 @@
             })) {
                 layout._hasCartesian = true;
             }
-
-
 
             var subplots = Plotly.Axes.getSubplots(gd).join(''),
                 oldSubplots = ((gd.layout && gd.layout._plots) ?
@@ -1286,7 +1280,18 @@
         }
     };
 
-    function supplyDefaults(traceIn, i, layout) {
+    function supplyDefaults(gd) {
+        // fill in default values:
+        // gd.data, gd.layout are precisely what the user specified
+        // gd._fullData, gd._fullLayout are complete descriptions
+        //      of how to draw the plot
+        gd._fullData = gd.data.map(function(trace, i) {
+            return supplyDataDefaults(trace, i, gd.layout);
+        });
+        gd._fullLayout = supplyLayoutDefaults(gd.layout, gd._fullData);
+    }
+
+    function supplyDataDefaults(traceIn, i, layout) {
         var traceOut = {},
             defaultColor = plots.defaultColors[i % plots.defaultColors.length];
 
