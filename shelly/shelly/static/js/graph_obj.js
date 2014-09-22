@@ -568,18 +568,14 @@
             // needed to do this before makePlotFramework to set up the modebar
             // needed to put the bulk of the 3d setup after makePlotFramework
             // as it requires framework to be set
-            if (gd.data.some(function (d) {
+            layout._hasGL3D = gd.data.some(function (d) {
                 return plots.isGL3D(d.type);
-            })) {
-                layout._hasGL3D = true;
-            }
+            });
 
             // DETECT Cartesian
-            if (gd.data.some(function (d) {
+            layout._hasCartesian = gd.data.some(function (d) {
                 return plots.isCartesian(d.type) && !('r' in d);
-            })) {
-                layout._hasCartesian = true;
-            }
+            });
 
             var subplots = Plotly.Axes.getSubplots(gd).join(''),
                 oldSubplots = ((gd.layout && gd.layout._plots) ?
@@ -1411,6 +1407,14 @@
             // handled in legend.supplyDefaults
             // but included here because it's not in the legend object
             type: 'boolean'
+        },
+        _hasCartesian: {
+            type: 'boolean',
+            dflt: false
+        },
+        _hasGL3D: {
+            type: 'boolean',
+            dflt: false
         }
     };
 
@@ -1444,6 +1448,8 @@
         coerce('separators');
         coerce('hidesources');
         coerce('smith');
+        coerce('_hasCartesian');
+        coerce('_hasGL3D');
     }
 
     function supplyLayoutModuleDefaults(layoutIn, layoutOut, fullData) {
