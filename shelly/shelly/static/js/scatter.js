@@ -527,7 +527,7 @@
                     (t.fill.substr(0,2)==='to' && !prevpath)) {
                 tozero = tr.append('path')
                     .classed('js-fill',true)
-                    .attr('data-curve',t.cdcurve);
+                    .attr('data-curve',t.curve);
             }
             else tozero = null;
 

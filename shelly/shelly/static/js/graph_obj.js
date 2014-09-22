@@ -722,7 +722,7 @@
             // previously, remove them and their colorbars explicitly
             gd.calcdata.forEach(function(cd) {
                 if(plots.isHeatmap(cd[0].t.type)) { return; }
-                var i = cd[0].t.cdcurve;
+                var i = cd[0].t.curve;
                 gl._paper.selectAll('.hm'+i+',.contour'+i+',.cb'+i)
                     .remove();
             });
@@ -1400,43 +1400,29 @@
     function doCalcdata(gd) {
         gd.calcdata = [];
         gd._modules = [];
-        if(!gd.data) { gd.data = []; }
 
         // extra helper variables
         // firstscatter: fill-to-next on the first trace goes to zero
         gd.firstscatter = true;
+
         // how many box plots do we have (in case they're grouped)
         gd.numboxes = 0;
+
         // for calculating avg luminosity of heatmaps
         gd.hmpixcount = 0;
         gd.hmlumcount = 0;
+
         // delete category list, if there is one, so we start over
         // to be filled in later by ax.d2c
         Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
-        for(var curve = 0; curve<gd.data.length; curve++) {
-            // curve is the index, gdc is the data object for one trace
-            var gdc = gd.data[curve],
-                module = getModule(gdc),
+
+        gd.calcdata = gd._fullData.map(function(trace, i) {
+        // for(var curve = 0; curve<gd.data.length; curve++) {
+            // curve is the index, trace is the data object for one trace
+            var module = getModule(trace),
                 cd = [];
 
-            // fill in default curve type
-            if(!gdc.type) { gdc.type = 'scatter'; }
-
-            // if no name is given, make a default from the curve number
-            if(!gdc.name) {
-                if(gdc.ysrc) {
-                    var ns = gdc.ysrc.split('/');
-                    gdc.name = ns[ns.length-1].replace(/\n/g,' ');
-                }
-                else { gdc.name = 'trace '+curve; }
-            }
-
-            if(module) { cd = Plotly[module].calc(gd,gdc); }
-
-            if(!('line' in gdc)) { gdc.line = {}; }
-            if(!('marker' in gdc)) { gdc.marker = {}; }
-            if(!('line' in gdc.marker)) { gdc.marker.line = {}; }
-            if(!('textfont' in gdc)) { gdc.textfont = {}; }
+            if(module) cd = Plotly[module].calc(gd,trace);
 
             // make sure there is a first point
             // this ensures there is a calcdata item for every trace,
@@ -1446,24 +1432,22 @@
             // add the trace-wide properties to the first point,
             // per point properties to every point
             // t is the holder for trace-wide properties
-            if(!cd[0].t) { cd[0].t = {}; }
+            if(!cd[0].t) cd[0].t = {};
+
             // store the gd.data curve number that gave this trace
-            cd[0].t.curve = curve;
-            // store the calcdata curve number we're in - should be the same
-            cd[0].t.cdcurve = gd.calcdata.length;
+            cd[0].t.curve = i;
 
             if(module) {
                 // store the module for this trace, for use later to plot
                 cd[0].t.module = module;
+
                 // save which modules we're using
-                if(gd._modules.indexOf(module)===-1) {
-                    gd._modules.push(module);
-                }
+                if(gd._modules.indexOf(module)===-1) gd._modules.push(module);
             }
 
-            gd.calcdata.push(cd);
-            Plotly.Lib.markTime('done with calcdata for '+curve);
-        }
+            Plotly.Lib.markTime('done with calcdata for '+i);
+            return cd;
+        });
     }
 
     // setStyles: translate styles from gd.data to gd.calcdata,

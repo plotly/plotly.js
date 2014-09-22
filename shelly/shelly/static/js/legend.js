@@ -99,7 +99,7 @@
         var t = d[0].t,
             isScatter = ['scatter',undefined].indexOf(d[0].t.type)!==-1,
             showFill = isScatter &&
-                (t.fill && t.fill!=='none' && $.isNumeric(t.cdcurve)),
+                (t.fill && t.fill!=='none' && $.isNumeric(t.curve)),
             showLine = isScatter &&
                 (t.mode && t.mode.indexOf('lines')!==-1);
 
@@ -107,7 +107,7 @@
             .data(showFill ? [d] : []);
         fill.enter().append('path').classed('js-fill',true);
         fill.exit().remove();
-        fill.attr({'data-curve':t.cdcurve, 'd':'M5,0h30v6h-30z'})
+        fill.attr({'data-curve':t.curve, 'd':'M5,0h30v6h-30z'})
             .call(Plotly.Drawing.fillGroupStyle);
 
         var line = d3.select(this).select('.legendlines').selectAll('path')
