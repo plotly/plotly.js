@@ -1279,10 +1279,19 @@
         // gd.data, gd.layout are precisely what the user specified
         // gd._fullData, gd._fullLayout are complete descriptions
         //      of how to draw the plot
+        gd._fullLayout = {};
+
+        // first fill in what we can of layout without looking at data
+        // because fullData needs a few things from layout
+        supplyLayoutGlobalDefaults(gd.layout||{}, gd._fullLayout);
+
+        // then do the data
         gd._fullData = (gd.data||[]).map(function(trace, i) {
-            return supplyDataDefaults(trace, i, gd.layout||{});
+            return supplyDataDefaults(trace, i, gd._fullLayout);
         });
-        gd._fullLayout = supplyLayoutDefaults(gd.layout||{}, gd._fullData);
+
+        // finally, fill in the pieces of layout that may need to look at data
+        supplyLayoutModuleDefaults(gd.layout||{}, gd._fullLayout, gd._fullData);
     }
 
     function supplyDataDefaults(traceIn, i, layout) {
@@ -1405,12 +1414,7 @@
         }
     };
 
-    function supplyLayoutDefaults(layoutIn, fullData) {
-        if(!layoutIn) layoutIn = {};
-        if(!fullData) fullData = [];
-
-        var layoutOut = {};
-
+    function supplyLayoutGlobalDefaults(layoutIn, layoutOut) {
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
         }
@@ -1438,10 +1442,11 @@
         coerce('plot_bgcolor');
 
         coerce('separators');
-
         coerce('hidesources');
         coerce('smith');
+    }
 
+    function supplyLayoutModuleDefaults(layoutIn, layoutOut, fullData) {
         Plotly.Axes.supplyDefaults(layoutIn, layoutOut, fullData);
         Plotly.Legend.supplyDefaults(layoutIn, layoutOut, fullData);
         Plotly.Annotations.supplyDefaults(layoutIn, layoutOut);
@@ -1449,8 +1454,6 @@
 
         Plotly.Bars.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut);
-
-        return layoutOut;
     }
 
     // setStyles: translate styles from gd.data to gd.calcdata,
