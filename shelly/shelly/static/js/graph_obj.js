@@ -543,7 +543,7 @@
         }
 
         // only use the layout argument if we didn't have any data yet
-        if(graphwasempty) gd.layout = layout;
+        if(!gd.layout) gd.layout = layout;
 
         supplyDefaults(gd);
 
@@ -623,9 +623,7 @@
         // generate calcdata, if we need to
         // to force redoing calcdata, just delete it before calling Plotly.plot
         var recalc = !gd.calcdata || gd.calcdata.length!==(gd.data||[]).length;
-        if(recalc) {
-            doCalcdata(gd);
-        }
+        if(recalc) doCalcdata(gd);
 
         // put the styling info into the calculated traces
         // has to be done separate from applyStyles so we know the mode
@@ -1417,8 +1415,6 @@
         Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
 
         gd.calcdata = gd._fullData.map(function(trace, i) {
-        // for(var curve = 0; curve<gd.data.length; curve++) {
-            // curve is the index, trace is the data object for one trace
             var module = getModule(trace),
                 cd = [];
 
@@ -1510,7 +1506,7 @@
             cd = gd.calcdata[i]; // trace plus styling
             t = cd[0].t; // trace styling object
             c = t.curve; // trace number
-            gdc = gd.data[c];
+            gdc = gd._fullData[c];
             // defaultColor cares about which trace this is in gd.data
             // but we can get here from editing with a different data
             // array, with other things added before the regular traces
@@ -1808,7 +1804,7 @@
 
         if($.isNumeric(traces)) { traces=[traces]; }
         else if(!$.isArray(traces) || !traces.length) {
-            traces=gd.data.map(function(v,i){ return i; });
+            traces=gd._fullData.map(function(v,i){ return i; });
         }
 
         // recalcAttrs attributes need a full regeneration of calcdata
@@ -2104,6 +2100,7 @@
             seq = [Plotly.plot];
         }
         else {
+            supplyDefaults(gd);
             plots.setStyles(gd);
             seq = [plots.previousPromises];
             if(doapplystyle) {

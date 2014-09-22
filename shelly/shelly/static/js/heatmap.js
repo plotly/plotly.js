@@ -10,6 +10,7 @@
     var heatmap = window.Plotly.Heatmap = {};
 
     heatmap.attributes = {
+        z: {type: 'data_array'},
         xtype: {
             type: 'enumerated',
             values: ['array', 'scaled']
@@ -64,6 +65,7 @@
             coerceScatter('marker.color', defaultColor);
         }
         else {
+            coerce('z');
             var x = coerceScatter('x');
             coerce('xtype', x ? 'array' : 'scaled');
             if(!x) {
