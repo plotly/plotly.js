@@ -46,7 +46,16 @@
             type: 'enumerated',
             values: ['fast', 'best', false],
             dflt: false
-        }
+        },
+        // Inherited attributes - not used by supplyDefaults, so if there's
+        // a better way to do this feel free to change.
+        x: {from: 'Scatter'},
+        x0: {from: 'Scatter'},
+        dx: {from: 'Scatter'},
+        y: {from: 'Scatter'},
+        y0: {from: 'Scatter'},
+        dy: {from: 'Scatter'},
+        colorbar: {allFrom: 'Colorbar'}
     };
 
     heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
@@ -103,7 +112,7 @@
             }
         }
 
-        if(Plotly.Plots.isHeatmap(traceOut.type) || (traceOut.contours||{}).coloring==='heatmap') {
+        if(!Plotly.Plots.isContour(traceOut.type) || (traceOut.contours||{}).coloring==='heatmap') {
             coerce('zsmooth');
         }
 
@@ -374,18 +383,6 @@
             }
         }
 
-        // auto-z for heatmap
-        if(gdc.zauto!==false || !('zmin' in gdc)) {
-            gdc.zmin = Plotly.Lib.aggNums(Math.min,null,z);
-        }
-        if(gdc.zauto!==false || !('zmax' in gdc)) {
-            gdc.zmax = Plotly.Lib.aggNums(Math.max,null,z);
-        }
-        if(gdc.zmin===gdc.zmax) {
-            gdc.zmin-=0.5;
-            gdc.zmax+=0.5;
-        }
-
         // create arrays of brick boundaries, to be used by autorange and heatmap.plot
         var xlen = Plotly.Lib.aggNums(Math.max,null,
                 z.map(function(row) { return row.length; })),
@@ -396,7 +393,23 @@
         Plotly.Axes.expand(xa,xArray);
         Plotly.Axes.expand(ya,yArray);
 
-        var cd0 = {x:xArray, y:yArray, z:z};
+        var cd0 = {x:xArray, y:yArray, z:z, t:{}};
+
+        // auto-z for heatmap
+        if(gdc.zauto!==false || !('zmin' in gdc)) {
+            cd0.t.zmin = Plotly.Lib.aggNums(Math.min,null,z);
+        }
+        else cd0.t.zmin = gdc.zmin;
+
+        if(gdc.zauto!==false || !('zmax' in gdc)) {
+            cd0.t.zmax = Plotly.Lib.aggNums(Math.max,null,z);
+        }
+        else cd0.t.zmax = gdc.zmax;
+
+        if(cd0.t.zmin===cd0.t.zmax) {
+            cd0.t.zmin-=0.5;
+            cd0.t.zmax+=0.5;
+        }
 
         if(Plotly.Plots.isContour(gdc.type) && gdc.contours &&
                 gdc.contours.coloring==='heatmap') {
@@ -409,7 +422,7 @@
     };
 
     function cleanZ(v) {
-        if(!v && v!==0) { return null; }
+        if(!v && v!==0) return null;
         return Number(v);
     }
 

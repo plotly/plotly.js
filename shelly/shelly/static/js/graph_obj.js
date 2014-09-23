@@ -1710,8 +1710,8 @@
                     mergeattr('dy','dy',1);
                 }
                 mergeattr('zauto','zauto',true);
-                mergeattr('zmin','zmin',-10);
-                mergeattr('zmax','zmax',10);
+                // mergeattr('zmin','zmin',-10);
+                // mergeattr('zmax','zmax',10);
                 if (type !== 'surface') {
                     mergeattr('colorscale', 'scl', Plotly.defaultColorscale,true);
                 } else {

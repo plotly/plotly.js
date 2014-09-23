@@ -61,6 +61,15 @@
                 }
             }
         },
+        // Inherited attributes - not used by supplyDefaults, so if there's
+        // a better way to do this feel free to change.
+        y: {from: 'Scatter'},
+        x: {from: 'Scatter'},
+        line: {
+            color: {from: 'Scatter'},
+            width: {from: 'Scatter'}
+        },
+        fillcolor: {from: 'Scatter'},
         // the following were in Plots.setStyles, but I don't think they
         // work or should work...
         // 'marker.outliercolorscale': {

@@ -10,6 +10,7 @@
     var contour = window.Plotly.Contour = {};
 
     contour.attributes = {
+        allFrom: 'Heatmap',
         autocontour: {
             type: 'boolean',
             dflt: true
@@ -40,6 +41,12 @@
                 type: 'boolean',
                 dflt: true
             }
+        },
+        line: {
+            color: {from: 'Scatter'},
+            width: {from: 'Scatter'},
+            dash: {from: 'Scatter'},
+            smoothing: {from: 'Scatter'}
         }
     };
 
@@ -91,8 +98,6 @@
     };
 
     contour.calc = function(gd,gdc) {
-        if(!('colorbar' in gdc)) gdc.colorbar = {};
-
         if(gdc.visible===false) return;
 
         // most is the same as heatmap calc, then adjust it
@@ -108,16 +113,16 @@
             if(!gdc.contours) gdc.contours = {};
             var contours = gdc.contours;
 
-            var dummyAx = {type: 'linear', range: [gdc.zmin, gdc.zmax]};
+            var dummyAx = {type: 'linear', range: [cd[0].t.zmin, cd[0].t.zmax]};
             Plotly.Axes.autoTicks(dummyAx,
-                (gdc.zmax-gdc.zmin)/(gdc.ncontours||15));
+                (cd[0].t.zmax-cd[0].t.zmin)/(gdc.ncontours||15));
             contours.start = Plotly.Axes.tickFirst(dummyAx);
             contours.size = dummyAx.dtick;
             dummyAx.range.reverse();
             contours.end = Plotly.Axes.tickFirst(dummyAx);
 
-            if(contours.start===gdc.zmin) contours.start += contours.size;
-            if(contours.end===gdc.zmax) contours.end -= contours.size;
+            if(contours.start===cd[0].t.zmin) contours.start += contours.size;
+            if(contours.end===cd[0].t.zmax) contours.end -= contours.size;
 
             // so rounding errors don't cause us to miss the last contour
             contours.end += contours.size/100;

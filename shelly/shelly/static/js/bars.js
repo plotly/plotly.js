@@ -33,7 +33,33 @@
             min: 0,
             max: 1,
             dflt: 0
-        }
+        },
+        // Inherited attributes - not used by supplyDefaults, so if there's
+        // a better way to do this feel free to change.
+        x: {from: 'Scatter'},
+        x0: {from: 'Scatter'},
+        dx: {from: 'Scatter'},
+        y: {from: 'Scatter'},
+        y0: {from: 'Scatter'},
+        dy: {from: 'Scatter'},
+        marker: {
+            opacity: {from: 'Scatter'},
+            color: {from: 'Scatter'},
+            colorscale: {from: 'Scatter'},
+            cauto: {from: 'Scatter'},
+            cmax: {from: 'Scatter'},
+            cmin: {from: 'Scatter'},
+            line: {
+                color: {from: 'Scatter'},
+                colorscale: {from: 'Scatter'},
+                cauto: {from: 'Scatter'},
+                cmax: {from: 'Scatter'},
+                cmin: {from: 'Scatter'},
+                width: {from: 'Scatter'}
+            }
+        },
+        error_x: {allFrom: 'Errorbars'},
+        error_y: {allFrom: 'Errorbars'}
     };
 
     bars.supplyDefaults = function(traceIn, traceOut, defaultColor) {
@@ -65,7 +91,7 @@
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'x', inherit: 'y'});
     };
 
-    bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
+    bars.supplyLayoutDefaults = function(layoutIn, layoutOut) {
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(layoutIn, layoutOut, bars.layoutAttributes, attr, dflt);
         }
