@@ -258,7 +258,7 @@
     }
 
     plots.isScatter = function(type) {
-        return !type || (type==='scatter');
+        return !type || type==='scatter';
     };
 
     var BARTYPES = ['bar','histogram'];
@@ -382,7 +382,7 @@
     // iframes and 3rd-party apps, standalone plots get the sidebar instead.
     function positionBrand(gd,container){
         container.text('');
-        container.append('tspan')
+        var brand = container.append('tspan')
             .style({'font-size':'11px'})
             .text('plotly - ');
         var link = container.append('a')
@@ -398,6 +398,24 @@
             link.attr({
                 'xlink:xlink:show': 'new',
                 'xlink:xlink:href': '/'+path[1]+'/'+path[2].split('.')[0]
+            });
+
+            new Bucketeer.Experiment({
+                name: "play_with_data",
+                sample: 1.0,
+                onBucketed: function(expName, bucketName) {
+                    analytics.track("Flag experiment", {Experiment: expName, Bucket: bucketName});
+                    link.on('click', function() {
+                        analytics.track("Experiment success", {Experiment: expName});
+                    });
+                },
+                buckets: {
+                    control: {},
+                    play: {onChosen: function() {
+                        brand.text("");
+                        link.text("Play with this data! " + String.fromCharCode(187));
+                    }}
+                }
             });
         }
         else {
@@ -813,7 +831,6 @@
             Plotly.Axes.setTypes(gd);
             // tie modebar into all iframes
             var modebar =  $(gd).find('.svg-container .modebar')[0];
-            SceneFrame.reconfigureModeBar(gd.layout, modebar);
 
             /*
              * If there are scenes that need loading load them.
@@ -1270,12 +1287,14 @@
         // to reverse a colorscale
         function flipScale(si){ return [1-si[0],si[1]]; }
 
+        // detect 3d
+        is3d = ('layout' in gd) && gd.layout._hasGL3D;
+
         for(i in gd.calcdata){
             cd = gd.calcdata[i]; // trace plus styling
             t = cd[0].t; // trace styling object
             c = t.curve; // trace number
             gdc = gd.data[c];
-            is3d = plots.isGL3D(gdc.type);
             // defaultColor cares about which trace this is in gd.data
             // but we can get here from editing with a different data
             // array, with other things added before the regular traces
@@ -2964,17 +2983,6 @@
             if(showfreex) { freefinished.push(xa._id); }
             if(showfreey) { freefinished.push(ya._id); }
         });
-
-        //// Set Layouts on 3D Scenes
-        Object.keys(gl).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        }).forEach( function (sceneName) {
-            var scene = gl[sceneName];
-            if (scene._container) {
-                scene._container.style.background = scene.bgcolor;
-            }
-        });
-
 
         plots.titles(gd,'gtitle');
 
