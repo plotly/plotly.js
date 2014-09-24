@@ -218,6 +218,14 @@ function handle3dCamera (ev) {
 
     layoutUpdate[attr] = val;
 
+    if (attr == 'reset') {
+        layoutUpdate = {
+            'scene.cameraPosition[0]': {0:0, 1:0, 2:0, 3:0},
+            'scene.cameraPosition[1]': {0:0, 1:0, 2:0},
+            'scene.cameraPosition[2]': 1
+        };
+    }
+
     scenes.forEach( function (scene) {
         if ('_webgl' in scene && 'camera' in scene._webgl) {
             scene._webgl.camera.keyBindingMode = val;
@@ -284,6 +292,13 @@ ModeBar.prototype.config = {
         val: 'x',
         icon: 'ploticon-tooltip_compare',
         click: handleCartesian
+    },
+    resetCamera3d: {
+        title: 'Reset camera',
+        attr: 'reset',
+        val: '',
+        icon: 'ploticon-autoscale',
+        click: handle3dCamera
     },
     zoom3d: {
         title: 'Zoom',
