@@ -176,31 +176,31 @@
         coerce('boxgroupgap');
     };
 
-    boxes.calc = function(gd,gdc) {
+    boxes.calc = function(gd, trace) {
         // box plots make no sense if you don't have y
-        if(!('y' in gdc) || gdc.visible===false) return;
+        if(!('y' in trace) || trace.visible===false) return;
 
         // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
-        var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
-            ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
+        var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
+            ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
             x,
-            y = ya.makeCalcdata(gdc,'y');
+            y = ya.makeCalcdata(trace, 'y');
 
-        if('x' in gdc) x = xa.makeCalcdata(gdc,'x');
+        if('x' in trace) x = xa.makeCalcdata(trace, 'x');
 
         // if no x data, use x0, or name, or text - so if you want one box
         // per trace, set x0 to the x value or category for this trace
         // (or set x to a constant array matching y)
         else {
             var x0;
-            if('x0' in gdc) x0 = gdc.x0;
-            else if('name' in gdc && (
+            if('x0' in trace) x0 = trace.x0;
+            else if('name' in trace && (
                         xa.type==='category' ||
-                        ($.isNumeric(gdc.name) &&
+                        ($.isNumeric(trace.name) &&
                             ['linear','log'].indexOf(xa.type)!==-1) ||
-                        (Plotly.Lib.isDateTime(gdc.name) && xa.type==='date')
+                        (Plotly.Lib.isDateTime(trace.name) && xa.type==='date')
                     )) {
-                x0 = gdc.name;
+                x0 = trace.name;
             }
             else x0 = gd.numboxes;
             x0 = xa.d2c(x0);

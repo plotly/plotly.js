@@ -95,36 +95,36 @@
         });
     };
 
-    histogram.calc = function(gd,gdc) {
+    histogram.calc = function(gd, trace) {
         // ignore as much processing as possible (and including in autorange) if bar is not visible
-        if(gdc.visible===false) return;
+        if(trace.visible===false) return;
 
         // depending on orientation, set position and size axes and data ranges
         // note: this logic for choosing orientation is duplicated in graph_obj->setstyles
         var pos = [],
             size = [],
             i,
-            orientation = gdc.orientation || ((gdc.y && !gdc.x) ? 'h' : 'v'),
+            orientation = trace.orientation || ((trace.y && !trace.x) ? 'h' : 'v'),
             pa = Plotly.Axes.getFromId(gd,
-                orientation==='h' ? (gdc.yaxis || 'y') : (gdc.xaxis || 'x')),
+                orientation==='h' ? (trace.yaxis || 'y') : (trace.xaxis || 'x')),
             maindata = orientation==='h' ? 'y' : 'x',
             counterdata = {x: 'y', y: 'x'}[maindata],
             calcInfo = {orientation: orientation};
 
         // prepare the raw data
-        var pos0 = pa.makeCalcdata(gdc, maindata);
+        var pos0 = pa.makeCalcdata(trace, maindata);
         // calculate the bins
-        if((gdc['autobin' + maindata]!==false) || !(maindata + 'bins' in gdc)) {
-            gdc[maindata + 'bins'] = Plotly.Axes.autoBin(pos0, pa, gdc['nbins' + maindata]);
+        if((trace['autobin' + maindata]!==false) || !(maindata + 'bins' in trace)) {
+            trace[maindata + 'bins'] = Plotly.Axes.autoBin(pos0, pa, trace['nbins' + maindata]);
 
             // copy bin info back to the source data.
             // TODO: Not sure if this is the way we really want to do this,
             // it's just so that when you turn off autobin in the GUI, you start
             // with the autoBin values
-            gdc._input[maindata + 'bins'] = gdc[maindata + 'bins'];
+            trace._input[maindata + 'bins'] = trace[maindata + 'bins'];
         }
 
-        var binspec = gdc[maindata + 'bins'],
+        var binspec = trace[maindata + 'bins'],
             allbins = typeof binspec.size === 'string',
             bins = allbins ? [] : binspec,
             // make the empty bin array
@@ -133,8 +133,8 @@
             inc = [],
             cnt = [],
             total = 0,
-            norm = gdc.histnorm || '',
-            func = gdc.histfunc || '',
+            norm = trace.histnorm || '',
+            func = trace.histfunc || '',
             densitynorm = norm.indexOf('density')!==-1,
             extremefunc = func==='max' || func==='min',
             sizeinit = extremefunc ? null : 0,
@@ -146,8 +146,8 @@
             doavg = false;
 
         // set a binning function other than count?
-        if((counterdata in gdc) && ['sum', 'avg', 'min', 'max'].indexOf(func)!==-1) {
-            var counter0 = pa.makeCalcdata(gdc,counterdata);
+        if((counterdata in trace) && ['sum', 'avg', 'min', 'max'].indexOf(func)!==-1) {
+            var counter0 = pa.makeCalcdata(trace, counterdata);
             if(func==='sum') {
                 binfunc = function(n, i) {
                     var v = counter0[i];
@@ -172,11 +172,11 @@
                     var v = counter0[i];
                     if($.isNumeric(v)) {
                         if(!$.isNumeric(size[n])) {
-                            total+=v;
+                            total += v;
                             size[n] = v;
                         }
                         else if(size[n]>v) {
-                            total+=v-size[n];
+                            total += v-size[n];
                             size[n] = v;
                         }
                     }
@@ -187,11 +187,11 @@
                     var v = counter0[i];
                     if($.isNumeric(v)) {
                         if(!$.isNumeric(size[n])) {
-                            total+=v;
+                            total += v;
                             size[n] = v;
                         }
                         else if(size[n]<v) {
-                            total+=v-size[n];
+                            total += v-size[n];
                             size[n] = v;
                         }
                     }

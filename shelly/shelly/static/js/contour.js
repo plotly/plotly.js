@@ -97,25 +97,25 @@
         ];
     };
 
-    contour.calc = function(gd,gdc) {
-        if(gdc.visible===false) return;
+    contour.calc = function(gd, trace) {
+        if(trace.visible===false) return;
 
         // most is the same as heatmap calc, then adjust it
         // though a few things inside heatmap calc still look for
         // contour maps, because the makeBoundArray calls are too entangled
-        var cd = Plotly.Heatmap.calc(gd, gdc);
+        var cd = Plotly.Heatmap.calc(gd, trace);
 
         // check if we need to auto-choose contour levels
-        if(gdc.autocontour!==false || !gdc.contours ||
-                !$.isNumeric(gdc.contours.start) ||
-                !$.isNumeric(gdc.contours.end) ||
-                !gdc.contours.size) {
-            if(!gdc.contours) gdc.contours = {};
-            var contours = gdc.contours;
+        if(trace.autocontour!==false || !trace.contours ||
+                !$.isNumeric(trace.contours.start) ||
+                !$.isNumeric(trace.contours.end) ||
+                !trace.contours.size) {
+            if(!trace.contours) trace.contours = {};
+            var contours = trace.contours;
 
             var dummyAx = {type: 'linear', range: [cd[0].t.zmin, cd[0].t.zmax]};
             Plotly.Axes.autoTicks(dummyAx,
-                (cd[0].t.zmax-cd[0].t.zmin)/(gdc.ncontours||15));
+                (cd[0].t.zmax - cd[0].t.zmin) / (trace.ncontours||15));
             contours.start = Plotly.Axes.tickFirst(dummyAx);
             contours.size = dummyAx.dtick;
             dummyAx.range.reverse();
@@ -131,14 +131,14 @@
             // TODO: Not sure if this is the way we really want to do this,
             // it's just so that when you turn off autobin in the GUI, you start
             // with the autoBin values
-            gdc._input.contours = contours;
+            trace._input.contours = contours;
         }
 
         return cd;
     };
 
-    contour.plot = function(gd,plotinfo,cdcontours) {
-        cdcontours.forEach(function(cd) { plotOne(gd,plotinfo,cd); });
+    contour.plot = function(gd, plotinfo, cdcontours) {
+        cdcontours.forEach(function(cd) { plotOne(gd, plotinfo, cd); });
     };
 
     // some constants to help with marching squares algorithm

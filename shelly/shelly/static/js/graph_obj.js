@@ -15,7 +15,7 @@
     /* global Promise:false, d3:false, tinycolor:false */
 
 
-    if(!window.Plotly) { window.Plotly = {}; }
+    if(!window.Plotly) window.Plotly = {};
 
     var plots = Plotly.Plots = {};
 

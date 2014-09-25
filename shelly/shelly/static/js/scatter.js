@@ -309,19 +309,19 @@
         if($.isArray(colorVal)) attrs.forEach(coerce);
     };
 
-    scatter.calc = function(gd,gdc) {
+    scatter.calc = function(gd,trace) {
         // verify that data exists, and make scaled data if necessary
-        if(!('y' in gdc) && !('x' in gdc)) return; // no data!
+        if(!('y' in trace) && !('x' in trace)) return; // no data!
 
         var i, cd = [];
 
         // ignore as much processing as possible (including in autorange)
         // if trace is not visible
-        if(gdc.visible===false) {
+        if(trace.visible===false) {
             // even if trace is not visible, need to figure out whether
             // there are enough points to trigger auto-no-lines
-            if(gdc.mode || ((!gdc.x || gdc.x.length<scatter.PTS_LINESONLY) &&
-              (!gdc.y || gdc.y.length<scatter.PTS_LINESONLY))) {
+            if(trace.mode || ((!trace.x || trace.x.length<scatter.PTS_LINESONLY) &&
+              (!trace.y || trace.y.length<scatter.PTS_LINESONLY))) {
                 return [{x: false, y: false}];
             }
             else {
@@ -330,12 +330,12 @@
             }
         }
 
-        var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
-            ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y');
+        var xa = Plotly.Axes.getFromId(gd,trace.xaxis||'x'),
+            ya = Plotly.Axes.getFromId(gd,trace.yaxis||'y');
         Plotly.Lib.markTime('in Scatter.calc');
-        var x = xa.makeCalcdata(gdc,'x');
+        var x = xa.makeCalcdata(trace,'x');
         Plotly.Lib.markTime('finished convert x');
-        var y = ya.makeCalcdata(gdc,'y');
+        var y = ya.makeCalcdata(trace,'y');
         Plotly.Lib.markTime('finished convert y');
         var serieslen = Math.min(x.length,y.length);
 
@@ -351,11 +351,11 @@
         var xOptions = {padded:true},
             yOptions = {padded:true};
         // include marker size
-        if(gdc.mode && gdc.mode.indexOf('markers')!==-1) {
-            var markerPad = gdc.marker ? gdc.marker.size : 0,
-                sizeref = 1.6*((gdc.marker && gdc.marker.sizeref)||1),
+        if(trace.mode && trace.mode.indexOf('markers')!==-1) {
+            var markerPad = trace.marker ? trace.marker.size : 0,
+                sizeref = 1.6*((trace.marker && trace.marker.sizeref)||1),
                 markerTrans;
-            if(gdc.marker && gdc.marker.sizemode==='area') {
+            if(trace.marker && trace.marker.sizemode==='area') {
                 markerTrans = function(v) {
                     return Math.max(Math.sqrt((v||0)/sizeref),3);
                 };
@@ -372,19 +372,19 @@
 
         // include zero (tight) and extremes (padded) if fill to zero
         // (unless the shape is closed, then it's just filling the shape regardless)
-        if((gdc.fill==='tozerox' || (gdc.fill==='tonextx' && gd.firstscatter)) &&
+        if((trace.fill==='tozerox' || (trace.fill==='tonextx' && gd.firstscatter)) &&
                 (x[0]!==x[serieslen-1] || y[0]!==y[serieslen-1])) {
             xOptions.tozero = true;
         }
 
         // if no error bars, markers or text, or fill to y=0 remove x padding
-        else if((!gdc.error_y || !gdc.error_y.visible) &&
-                (['tonexty', 'tozeroy'].indexOf(gdc.fill)!==-1 ||
+        else if((!trace.error_y || !trace.error_y.visible) &&
+                (['tonexty', 'tozeroy'].indexOf(trace.fill)!==-1 ||
                 // explicit no markers/text
-                (gdc.mode && gdc.mode.indexOf('markers')===-1 &&
-                    gdc.mode.indexOf('text')===-1) ||
+                (trace.mode && trace.mode.indexOf('markers')===-1 &&
+                    trace.mode.indexOf('text')===-1) ||
                 // automatic no markers
-                (!gdc.mode && serieslen>=scatter.PTS_LINESONLY))) {
+                (!trace.mode && serieslen>=scatter.PTS_LINESONLY))) {
             xOptions.padded = false;
             xOptions.ppad = 0;
         }
@@ -392,13 +392,13 @@
         // now check for y - rather different logic, though still mostly padded both ends
         // include zero (tight) and extremes (padded) if fill to zero
         // (unless the shape is closed, then it's just filling the shape regardless)
-        if((gdc.fill==='tozeroy' || (gdc.fill==='tonexty' && gd.firstscatter)) &&
+        if((trace.fill==='tozeroy' || (trace.fill==='tonexty' && gd.firstscatter)) &&
                 (x[0]!==x[serieslen-1] || y[0]!==y[serieslen-1])) {
             yOptions.tozero = true;
         }
 
         // tight y: any x fill
-        else if(['tonextx', 'tozerox'].indexOf(gdc.fill)!==-1) {
+        else if(['tonextx', 'tozerox'].indexOf(trace.fill)!==-1) {
             yOptions.padded = false;
         }
 
@@ -448,7 +448,7 @@
             // so we don't have to repeat this
             d.forEach(function(v){ delete v.vis; });
             cd.forEach(function(v,i) {
-                if(Math.round((i+i0)%inc)===0) { v.vis = true; }
+                if(Math.round((i+i0)%inc)===0) v.vis = true;
             });
         });
     };

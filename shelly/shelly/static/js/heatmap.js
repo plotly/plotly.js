@@ -120,20 +120,20 @@
 
     function flipScale(si){ return [1 - si[0], si[1]]; }
 
-    heatmap.calc = function(gd,gdc) {
-        if(!('colorbar' in gdc)) { gdc.colorbar = {}; }
+    heatmap.calc = function(gd, trace) {
+        // if(!('colorbar' in trace)) { trace.colorbar = {}; }
 
-        if(gdc.visible===false) { return; }
+        if(trace.visible===false) { return; }
 
         // prepare the raw data
         // run makeCalcdata on x and y even for heatmaps, in case of category mappings
         Plotly.Lib.markTime('start convert x&y');
-        var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
-            ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
-            x = gdc.x ? xa.makeCalcdata(gdc,'x') : [],
+        var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
+            ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
+            x = trace.x ? xa.makeCalcdata(trace, 'x') : [],
             x0,
             dx,
-            y = gdc.y ? ya.makeCalcdata(gdc,'y') : [],
+            y = trace.y ? ya.makeCalcdata(trace, 'y') : [],
             y0,
             dy,
             z,
@@ -145,34 +145,34 @@
 
         Plotly.Lib.markTime('done convert x&y');
 
-        if(Plotly.Plots.isHist2D(gdc.type)) {
-            var serieslen = Math.min(x.length,y.length);
+        if(Plotly.Plots.isHist2D(trace.type)) {
+            var serieslen = Math.min(x.length, y.length);
             if(x.length>serieslen) x.splice(serieslen,x.length-serieslen);
             if(y.length>serieslen) y.splice(serieslen,y.length-serieslen);
 
             Plotly.Lib.markTime('done convert data');
 
             // calculate the bins
-            if(gdc.autobinx || !('xbins' in gdc)) {
-                gdc.xbins = Plotly.Axes.autoBin(x,xa,gdc.nbinsx,'2d');
-                if(gdc.type==='histogram2dcontour') {
-                    gdc.xbins.start -= gdc.xbins.size;
-                    gdc.xbins.end += gdc.xbins.size;
+            if(trace.autobinx || !('xbins' in trace)) {
+                trace.xbins = Plotly.Axes.autoBin(x, xa, trace.nbinsx, '2d');
+                if(trace.type==='histogram2dcontour') {
+                    trace.xbins.start -= trace.xbins.size;
+                    trace.xbins.end += trace.xbins.size;
                 }
 
                 // copy bin info back to the source data.
                 // TODO: Not sure if this is the way we really want to do this,
                 // it's just so that when you turn off autobin in the GUI, you start
                 // with the autoBin values
-                gdc._input.xbins = gdc.xbins;
+                trace._input.xbins = trace.xbins;
             }
-            if(gdc.autobiny || !('ybins' in gdc)) {
-                gdc.ybins = Plotly.Axes.autoBin(y,ya,gdc.nbinsy,'2d');
-                if(gdc.type==='histogram2dcontour') {
-                    gdc.ybins.start -= gdc.ybins.size;
-                    gdc.ybins.end += gdc.ybins.size;
+            if(trace.autobiny || !('ybins' in trace)) {
+                trace.ybins = Plotly.Axes.autoBin(y,ya,trace.nbinsy,'2d');
+                if(trace.type==='histogram2dcontour') {
+                    trace.ybins.start -= trace.ybins.size;
+                    trace.ybins.end += trace.ybins.size;
                 }
-                gdc._input.ybins = gdc.ybins;
+                trace._input.ybins = trace.ybins;
             }
             Plotly.Lib.markTime('done autoBin');
 
@@ -180,11 +180,11 @@
             z = [];
             var onecol = [],
                 zerocol = [],
-                xbins = (typeof(gdc.xbins.size)==='string') ? [] : gdc.xbins,
-                ybins = (typeof(gdc.xbins.size)==='string') ? [] : gdc.ybins,
+                xbins = (typeof(trace.xbins.size)==='string') ? [] : trace.xbins,
+                ybins = (typeof(trace.xbins.size)==='string') ? [] : trace.ybins,
                 total = 0,n,m,cnt=[],
-                norm = gdc.histnorm||'',
-                func = gdc.histfunc||'',
+                norm = trace.histnorm||'',
+                func = trace.histfunc||'',
                 densitynorm = (norm.indexOf('density')!==-1),
                 extremefunc = (func==='max' || func==='min'),
                 sizeinit = (extremefunc ? null : 0),
@@ -201,11 +201,11 @@
             // then 'mc' in case we had a colored scatter plot
             // and want to transfer these colors to the 2D histo
             // TODO: this is why we need a data picker in the popover...
-            var counterdata = ('z' in gdc) ?
-                gdc.z :
-                (('marker' in gdc && $.isArray(gdc.marker.color)) ?
-                    gdc.marker.color : '');
-            if(counterdata && ['sum','avg','min','max'].indexOf(func)!==-1) {
+            var counterdata = ('z' in trace) ?
+                trace.z :
+                (('marker' in trace && $.isArray(trace.marker.color)) ?
+                    trace.marker.color : '');
+            if(counterdata && ['sum', 'avg', 'min', 'max'].indexOf(func)!==-1) {
                 var counter0 = counterdata.map(Number);
                 if(func==='sum') {
                     binfunc = function(m,n,i) {
@@ -269,8 +269,8 @@
             }
 
 
-            for(i=gdc.xbins.start; i<gdc.xbins.end;
-                    i=Plotly.Axes.tickIncrement(i,gdc.xbins.size)) {
+            for(i=trace.xbins.start; i<trace.xbins.end;
+                    i=Plotly.Axes.tickIncrement(i,trace.xbins.size)) {
                 onecol.push(sizeinit);
                 if($.isArray(xbins)) xbins.push(i);
                 if(doavg) zerocol.push(0);
@@ -278,12 +278,12 @@
             if($.isArray(xbins)) xbins.push(i);
 
             var nx = onecol.length;
-            x0 = gdc.xbins.start;
+            x0 = trace.xbins.start;
             dx = (i-x0)/nx;
             x0+=dx/2;
 
-            for(i=gdc.ybins.start; i<gdc.ybins.end;
-                    i=Plotly.Axes.tickIncrement(i,gdc.ybins.size)) {
+            for(i=trace.ybins.start; i<trace.ybins.end;
+                    i=Plotly.Axes.tickIncrement(i,trace.ybins.size)) {
                 z.push(onecol.concat());
                 if($.isArray(ybins)) ybins.push(i);
                 if(doavg) cnt.push(zerocol.concat());
@@ -291,7 +291,7 @@
             if($.isArray(ybins)) ybins.push(i);
 
             var ny = z.length;
-            y0 = gdc.ybins.start;
+            y0 = trace.ybins.start;
             dy = (i-y0)/ny;
             y0+=dy/2;
 
@@ -339,38 +339,38 @@
             Plotly.Lib.markTime('done binning');
         }
         else {
-            x0 = gdc.x0||0;
-            dx = gdc.dx||1;
-            y0 = gdc.y0||0;
-            dy = gdc.dy||1;
-            if(gdc.transpose) {
+            x0 = trace.x0||0;
+            dx = trace.dx||1;
+            y0 = trace.y0||0;
+            dy = trace.dy||1;
+            if(trace.transpose) {
                 var maxcols = Plotly.Lib.aggNums(Math.max,0,
-                        gdc.z.map(function(r){return r.length;}));
+                        trace.z.map(function(r){return r.length;}));
                 z = [];
                 for(var c=0; c<maxcols; c++) {
                     var newrow = [];
-                    for(var r=0; r<gdc.z.length; r++) {
-                        newrow.push(cleanZ(gdc.z[r][c]));
+                    for(var r=0; r<trace.z.length; r++) {
+                        newrow.push(cleanZ(trace.z[r][c]));
                     }
                     z.push(newrow);
                 }
             }
-            else z = gdc.z.map(function(row){return row.map(cleanZ); });
+            else z = trace.z.map(function(row){return row.map(cleanZ); });
         }
 
         // check whether we really can smooth (ie all boxes are about the same size)
-        if([true,'fast'].indexOf(gdc.zsmooth)!==-1) {
+        if([true,'fast'].indexOf(trace.zsmooth)!==-1) {
             if(xa.type==='log' || ya.type==='log') {
-                gdc._input.zsmooth = gdc.zsmooth = false;
+                trace._input.zsmooth = trace.zsmooth = false;
                 Plotly.Lib.notifier('cannot fast-zsmooth: log axis found');
             }
-            else if(!Plotly.Plots.isHist2D(gdc.type)) {
+            else if(!Plotly.Plots.isHist2D(trace.type)) {
                 if(x.length) {
                     var avgdx = (x[x.length-1]-x[0]) / (x.length-1),
                         maxErrX = Math.abs(avgdx/100);
                     for(i=0; i<x.length-1; i++) {
                         if(Math.abs(x[i+1]-x[i]-avgdx)>maxErrX) {
-                            gdc._input.zsmooth = gdc.zsmooth = false;
+                            trace._input.zsmooth = trace.zsmooth = false;
                             Plotly.Lib.notifier('cannot fast-zsmooth: x scale is not linear');
                             break;
                         }
@@ -381,7 +381,7 @@
                     maxErrY = Math.abs(avgdy/100);
                     for(i=0; i<y.length-1; i++) {
                         if(Math.abs(y[i+1]-y[i]-avgdy)>maxErrY) {
-                            gdc._input.zsmooth = gdc.zsmooth = false;
+                            trace._input.zsmooth = trace.zsmooth = false;
                             Plotly.Lib.notifier('cannot fast-zsmooth: y scale is not linear');
                             break;
                         }
@@ -393,10 +393,10 @@
         // create arrays of brick boundaries, to be used by autorange and heatmap.plot
         var xlen = Plotly.Lib.aggNums(Math.max,null,
                 z.map(function(row) { return row.length; })),
-            xIn = gdc.xtype==='scaled' ? '' : gdc.x,
-            xArray = makeBoundArray(gdc.type, xIn, x0, dx, xlen, xa),
-            yIn = gdc.ytype==='scaled' ? '' : gdc.y,
-            yArray = makeBoundArray(gdc.type, yIn, y0, dy, z.length, ya);
+            xIn = trace.xtype==='scaled' ? '' : trace.x,
+            xArray = makeBoundArray(trace.type, xIn, x0, dx, xlen, xa),
+            yIn = trace.ytype==='scaled' ? '' : trace.y,
+            yArray = makeBoundArray(trace.type, yIn, y0, dy, z.length, ya);
         Plotly.Axes.expand(xa, xArray);
         Plotly.Axes.expand(ya, yArray);
 
@@ -404,24 +404,24 @@
             cd0 = {x: xArray, y: yArray, z: z, t: calcInfo};
 
         // auto-z for heatmap
-        if(gdc.zauto!==false || !('zmin' in gdc)) {
+        if(trace.zauto!==false || !('zmin' in trace)) {
             calcInfo.zmin = Plotly.Lib.aggNums(Math.min, null, z);
         }
-        else calcInfo.zmin = gdc.zmin;
+        else calcInfo.zmin = trace.zmin;
 
-        if(gdc.zauto!==false || !('zmax' in gdc)) {
+        if(trace.zauto!==false || !('zmax' in trace)) {
             calcInfo.zmax = Plotly.Lib.aggNums(Math.max, null, z);
         }
-        else calcInfo.zmax = gdc.zmax;
+        else calcInfo.zmax = trace.zmax;
 
         if(calcInfo.zmin===calcInfo.zmax) {
             calcInfo.zmin -= 0.5;
             calcInfo.zmax += 0.5;
         }
 
-        if(Plotly.Plots.isContour(gdc.type) && gdc.contours &&
-                gdc.contours.coloring==='heatmap') {
-            var hmtype = gdc.type==='contour' ? 'heatmap' : 'histogram2d';
+        if(Plotly.Plots.isContour(trace.type) && trace.contours &&
+                trace.contours.coloring==='heatmap') {
+            var hmtype = trace.type==='contour' ? 'heatmap' : 'histogram2d';
             cd0.xfill = makeBoundArray(hmtype, xIn, x0, dx, xlen, xa);
             cd0.yfill = makeBoundArray(hmtype, yIn, y0, dy, z.length, ya);
         }
@@ -630,15 +630,15 @@
                 frac = Math.abs(interp-bin0);
             if(!interp || interp===maxbin || !frac) {
                 return {
-                    bin0:bin0,
-                    bin1:bin0,
-                    frac:0
+                    bin0: bin0,
+                    bin1: bin0,
+                    frac: 0
                 };
             }
             return {
-                bin0:bin0,
-                frac:frac,
-                bin1:Math.round(bin0+frac/(interp-bin0))
+                bin0: bin0,
+                frac: frac,
+                bin1: Math.round(bin0+frac/(interp-bin0))
             };
         }
 

@@ -102,28 +102,28 @@
         coerce('bargroupgap');
     };
 
-    bars.calc = function(gd,gdc) {
+    bars.calc = function(gd,trace) {
         // ignore as much processing as possible (including
         // in autorange) if bar is not visible
-        if(gdc.visible===false) return;
+        if(trace.visible===false) return;
 
-        if(gdc.type==='histogram') return Plotly.Histogram.calc(gd,gdc);
+        if(trace.type==='histogram') return Plotly.Histogram.calc(gd,trace);
 
         // depending on bar direction, set position and size axes
         // and data ranges
         // note: this logic for choosing orientation is
         // duplicated in graph_obj->setstyles
-        var xa = Plotly.Axes.getFromId(gd, gdc.xaxis||'x'),
-            ya = Plotly.Axes.getFromId(gd, gdc.yaxis||'y'),
-            orientation = gdc.orientation || ((gdc.x && !gdc.y) ? 'h' : 'v'),
+        var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
+            ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
+            orientation = trace.orientation || ((trace.x && !trace.y) ? 'h' : 'v'),
             pos, size, i;
         if(orientation==='h') {
-            size = xa.makeCalcdata(gdc, 'x');
-            pos = ya.makeCalcdata(gdc, 'y');
+            size = xa.makeCalcdata(trace, 'x');
+            pos = ya.makeCalcdata(trace, 'y');
         }
         else {
-            size = ya.makeCalcdata(gdc, 'y');
-            pos = xa.makeCalcdata(gdc, 'x');
+            size = ya.makeCalcdata(trace, 'y');
+            pos = xa.makeCalcdata(trace, 'x');
         }
 
         // create the "calculated data" to plot
