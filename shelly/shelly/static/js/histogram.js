@@ -108,14 +108,22 @@
             pa = Plotly.Axes.getFromId(gd,
                 orientation==='h' ? (gdc.yaxis || 'y') : (gdc.xaxis || 'x')),
             maindata = orientation==='h' ? 'y' : 'x',
-            counterdata = {x: 'y', y: 'x'}[maindata];
+            counterdata = {x: 'y', y: 'x'}[maindata],
+            calcInfo = {orientation: orientation};
 
         // prepare the raw data
         var pos0 = pa.makeCalcdata(gdc, maindata);
         // calculate the bins
         if((gdc['autobin' + maindata]!==false) || !(maindata + 'bins' in gdc)) {
             gdc[maindata + 'bins'] = Plotly.Axes.autoBin(pos0, pa, gdc['nbins' + maindata]);
+
+            // copy bin info back to the source data.
+            // TODO: Not sure if this is the way we really want to do this,
+            // it's just so that when you turn off autobin in the GUI, you start
+            // with the autoBin values
+            gdc._input[maindata + 'bins'] = gdc[maindata + 'bins'];
         }
+
         var binspec = gdc[maindata + 'bins'],
             allbins = typeof binspec.size === 'string',
             bins = allbins ? [] : binspec,
@@ -202,7 +210,7 @@
         }
 
         // create the bins (and any extra arrays needed)
-        i=binspec.start;
+        i = binspec.start;
         while(i<binspec.end) {
             i2 = Plotly.Axes.tickIncrement(i, binspec.size);
             pos.push((i + i2) / 2);
@@ -257,7 +265,8 @@
                 cd.push({p: pos[i], s: size[i], b: 0});
             }
         }
-        if(cd[0]) cd[0].t = {orientation: orientation};
+
+        if(cd[0]) cd[0].t = calcInfo;
         return cd;
     };
 }()); // end Histogram object definition

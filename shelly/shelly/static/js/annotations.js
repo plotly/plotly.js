@@ -112,17 +112,15 @@
             dflt: -30
         },
         // positioning
-        // xref: not used directly, can be 'paper' or any x axis id
         xref: {type: 'enumerated'},
-        x: {type: 'number'},
+        x: {type: 'number'}, // but we will convert dates or categories to numbers
         xanchor: {
             type: 'enumerated',
             values: ['auto', 'left', 'center', 'right'],
             dflt: 'auto'
         },
-        // yref: not used directly, can be 'paper' or any y axis id
         yref: {type: 'enumerated'},
-        y: {type: 'number'},
+        y: {type: 'number'}, // but we will convert dates or categories to numbers
         yanchor: {
             type: 'enumerated',
             values: ['auto', 'top', 'middle', 'bottom'],
@@ -137,50 +135,95 @@
 
     annotations.supplyDefaults = function(layoutIn, layoutOut) {
         var containerIn = layoutIn.annotations || [];
-        layoutOut.annotations = containerIn.map(function(annIn){
-            var annOut = {};
-
-            function coerce(attr, dflt) {
-                return Plotly.Lib.coerce(annIn, annOut, annotations.attributes, attr, dflt);
-            }
-
-            coerce('text');
-            coerce('textangle');
-            coerce('font', layoutOut.font);
-            coerce('opacity');
-            coerce('align');
-            coerce('bgcolor');
-            var borderColor = coerce('bordercolor');
-            coerce('borderpad');
-            coerce('borderwidth');
-            var showArrow = coerce('showarrow');
-            if(showArrow) {
-                coerce('arrowcolor',
-                    Plotly.Drawing.opacity(borderColor) ? annOut.bordercolor : '#444');
-                coerce('arrowhead');
-                coerce('arrowsize');
-                coerce('arrowwidth');
-                coerce('ax');
-                coerce('ay');
-            }
-
-            // TODO: positioning
-            // TODO: attributes for fit?
-
-            return annOut;
+        layoutOut.annotations = containerIn.map(function(annIn) {
+            supplyAnnotationDefaults(annIn, layoutOut);
         });
     };
 
+    function supplyAnnotationDefaults(annIn, fullLayout) {
+        var annOut = {};
+
+        function coerce(attr, dflt) {
+            return Plotly.Lib.coerce(annIn, annOut, annotations.attributes, attr, dflt);
+        }
+
+        coerce('text');
+        coerce('textangle');
+        coerce('font', fullLayout.font);
+        coerce('opacity');
+        coerce('align');
+        coerce('bgcolor');
+        var borderColor = coerce('bordercolor');
+        coerce('borderpad');
+        coerce('borderwidth');
+        var showArrow = coerce('showarrow');
+        if(showArrow) {
+            coerce('arrowcolor',
+                Plotly.Drawing.opacity(borderColor) ? annOut.bordercolor : '#444');
+            coerce('arrowhead');
+            coerce('arrowsize');
+            coerce('arrowwidth');
+            coerce('ax');
+            coerce('ay');
+        }
+
+        // positioning
+        ['x','y'].forEach(function(axletter){
+            var tdMock = {_fullLayout: fullLayout},
+                axlist = Plotly.Axes.list(tdMock, axletter)
+                    .map(function(ax){ return ax._id; }),
+                refAttr = axletter + 'ref',
+                attrDef = {};
+            attrDef[refAttr] = {
+                type: 'enumerated',
+                values: axlist.concat(['paper']),
+                dflt: axlist[0]
+            };
+
+            // xref, yref
+            var axRef = Plotly.Lib.coerce(annIn, annOut, attrDef, refAttr, axletter);
+
+            // x, y
+            var defaultPosition = 0.5; //axletter==='x' ? 0.1 : 0.3;
+            if(axRef!=='paper') {
+                var ax = Plotly.Axes.getFromId(axRef);
+                defaultPosition = ax.range[0] + defaultPosition * (ax.range[1] - ax.range[0]);
+
+                // convert date or category strings to numbers
+                if(['date','category'].indexOf(ax.type)!==-1 &&
+                        typeof annIn[axletter]==='string') {
+                    var newval;
+                    if(ax.type==='date') {
+                        newval = Plotly.Lib.dateTime2ms(annIn[axletter]);
+                        if(newval!==false) annIn[axletter] = newval;
+                    }
+                    else if((ax._categories||[]).length) {
+                        newval = ax._categories.indexOf(annIn[axletter]);
+                        if(newval!==-1) annIn[axletter] = newval;
+                    }
+                }
+            }
+            coerce(axletter, defaultPosition);
+
+            // xanchor, yanchor
+            coerce(axletter + 'anchor');
+        });
+
+        return annOut;
+    }
+
     annotations.drawAll = function(gd) {
-        var anns = gd.layout.annotations;
-        gd.layout._infolayer.selectAll('.annotation').remove();
-        if(anns) { for(var i in anns) { annotations.draw(gd,i); } }
+        var fullLayout = gd._fullLayout;
+        fullLayout._infolayer.selectAll('.annotation').remove();
+        fullLayout.annotations.forEach(function(ann, i) {
+            annotations.draw(gd,i);
+        });
         return Plotly.Plots.previousPromises(gd);
     };
 
     annotations.add = function(gd) {
-        var anns = gd.layout.annotations || [];
-        Plotly.relayout(gd, 'annotations['+anns.length+']', 'add');
+        var nextAnn = gd._fullLayout.annotations.length;
+        Plotly.relayout(gd, 'annotations['+nextAnn+']', 'add');
     };
 
     // -----------------------------------------------------
@@ -196,46 +239,51 @@
     // if opt is blank, val can be 'add' or a full options object to add a new
     //  annotation at that point in the array, or 'remove' to delete this one
     annotations.draw = function(gd,index,opt,value) {
-        // console.log(index,opt,value,gd.layout.annotations);
-        var gl = gd.layout,
-            gs = gl._size,
+        var layout = gd.layout,
+            fullLayout = gd._fullLayout,
+            gs = fullLayout._size,
             MINDRAG = Plotly.Fx.MINDRAG,
             i;
-        if(!gl.annotations) { gl.annotations = []; }
 
         if(!$.isNumeric(index) || index===-1) {
+            // no index provided - we're operating on ALL annotations
             if(!index && $.isArray(value)) {
                 // a whole annotation array is passed in
                 // (as in, redo of delete all)
-                gl.annotations = value;
+                layout.annotations = value;
+                annotations.supplyDefaults(layout, fullLayout);
                 annotations.drawAll(gd);
                 return;
             }
             else if(value==='remove') {
                 // delete all
-                gl.annotations = [];
+                delete layout.annotations;
+                fullLayout.annotations = [];
                 annotations.drawAll(gd);
                 return;
             }
             else if(opt && value!=='add') {
-                for(i=0; i<gl.annotations.length; i++) {
+                // make the same change to all annotations
+                fullLayout.annotations.forEach(function(ann, i) {
                     annotations.draw(gd,i,opt,value);
-                }
+                });
                 return;
             }
             else {
-                index = gl.annotations.length;
-                gl.annotations.push({});
+                // add a new empty annotation
+                index = fullLayout.annotations.length;
+                fullLayout.annotations.push({});
             }
         }
 
         if(!opt && value) {
             if(value==='remove') {
-                gl._infolayer.selectAll('.annotation[data-index="'+index+'"]')
+                fullLayout._infolayer.selectAll('.annotation[data-index="'+index+'"]')
                     .remove();
-                gl.annotations.splice(index,1);
-                for(i=index; i<gl.annotations.length; i++) {
-                    gl._infolayer
+                fullLayout.annotations.splice(index,1);
+                layout.annotations.splice(index,1);
+                for(i=index; i<fullLayout.annotations.length; i++) {
+                    fullLayout._infolayer
                         .selectAll('.annotation[data-index="'+(i+1)+'"]')
                         .attr('data-index',String(i));
 
@@ -246,14 +294,12 @@
                 return;
             }
             else if(value==='add' || $.isPlainObject(value)) {
-                gl.annotations.splice(index,0,{});
-                if($.isPlainObject(value)) {
-                    Object.keys(value).forEach(function(k){
-                        gl.annotations[index][k] = value[k];
-                    });
-                }
-                for(i=gl.annotations.length-1; i>index; i--) {
-                    gl._infolayer
+                fullLayout.annotations.splice(index,0,{});
+                layout.annotations.splice(index,0,
+                    $.isPlainObject(value) ? $.extend({},value) : {});
+
+                for(i=fullLayout.annotations.length-1; i>index; i--) {
+                    fullLayout._infolayer
                         .selectAll('.annotation[data-index="'+(i-1)+'"]')
                         .attr('data-index',String(i));
                     annotations.draw(gd,i);
@@ -262,76 +308,88 @@
         }
 
         // remove the existing annotation if there is one
-        gl._infolayer.selectAll('.annotation[data-index="'+index+'"]').remove();
+        fullLayout._infolayer.selectAll('.annotation[data-index="'+index+'"]').remove();
+
+        // TODO: this part gets replaced by its own supplyDefaults machinery,
+        // esp. with opt and value arguments
 
         // combine default and existing options
         // (default x, y, ax, ay are set later)
-        var oldopts = gl.annotations[index],
-            oldref = {
-                // .ref for backward compat only (from before multiaxes)
-                // TODO: move this to layout import instead
-                x: oldopts.xref || (oldopts.ref==='paper' ? 'paper' : 'x'),
-                y: oldopts.yref || (oldopts.ref==='paper' ? 'paper' : 'y')
-            },
-            options = $.extend({
-                text: 'new text',
-                bordercolor: '',
-                borderwidth: 1,
-                borderpad: 1,
-                bgcolor: 'rgba(0,0,0,0)',
-                xref: oldref.x,
-                yref: oldref.y,
-                showarrow: true,
-                arrowwidth: 0,
-                arrowcolor: '',
-                arrowhead: 1,
-                arrowsize: 1,
-                textangle: 0,
-                tag: '',
-                font: {family:'',size:0,color:''},
-                opacity: 1,
-                align: 'center',
-                xanchor: 'auto',
-                yanchor: 'auto'
-            },oldopts);
-        gl.annotations[index] = options;
+        // var oldopts = fullLayout.annotations[index],
+        //     oldref = {
+        //         // .ref for backward compat only (from before multiaxes)
+        //         // TODO: move this to layout import instead
+        //         x: oldopts.xref || (oldopts.ref==='paper' ? 'paper' : 'x'),
+        //         y: oldopts.yref || (oldopts.ref==='paper' ? 'paper' : 'y')
+        //     },
+        //     options = $.extend({
+        //         text: 'new text',
+        //         bordercolor: '',
+        //         borderwidth: 1,
+        //         borderpad: 1,
+        //         bgcolor: 'rgba(0,0,0,0)',
+        //         xref: oldref.x,
+        //         yref: oldref.y,
+        //         showarrow: true,
+        //         arrowwidth: 0,
+        //         arrowcolor: '',
+        //         arrowhead: 1,
+        //         arrowsize: 1,
+        //         textangle: 0,
+        //         tag: '',
+        //         font: {family:'',size:0,color:''},
+        //         opacity: 1,
+        //         align: 'center',
+        //         xanchor: 'auto',
+        //         yanchor: 'auto'
+        //     },oldopts);
+        // fullLayout.annotations[index] = options;
 
-        // most options we can allow bad entries to silently revert to
-        // defaults... but anchors may make weird behavior if you mix
-        // x and y like xanchor='top'
-        if(['left','right','center'].indexOf(options.xanchor)===-1) {
-            options.xanchor = 'auto';
-        }
-        if(['top','bottom','middle'].indexOf(options.yanchor)===-1) {
-            options.yanchor = 'auto';
-        }
+        // remember a few things about what was already there,
+        var oldOptions = fullLayout.annotations[index],
+            optionsIn = layout.annotations[index],
+            oldref = {x: oldOptions.xref, y: oldOptions.yref},
+            oldAxisType = {x:oldOptions._xtype, y: oldOptions._ytype};
 
+        // alter the input annotation as requested
         if(typeof opt === 'string' && opt) {
-            Plotly.Lib.nestedProperty(options,opt).set(value);
+            var newOpt = {};
+            newOpt[opt] = value;
+            opt = newOpt;
         }
         else if($.isPlainObject(opt)) {
             Object.keys(opt).forEach(function(k){
-                Plotly.Lib.nestedProperty(options,k).set(opt[k]);
+                var prop = Plotly.Lib.nestedProperty(optionsIn,k);
+                ['x', 'y'].forEach(function(axletter){
+                    if(k===axletter + 'ref' && !(axletter in opt) &&
+                            (prop.get()||'').charAt(0)===axletter &&
+                            opt[k].charAt(0)==='x') {
+                        // we're moving this annotation from one axis to another.
+                        // reset its position to default
+                        delete optionsIn.x;
+                    }
+                });
+                prop.set(opt[k]);
             });
         }
+
+        var options = fullLayout.annotations[index] =
+                supplyAnnotationDefaults(layout.annotations[index], fullLayout);
 
         if(!options.text) {
             options.text = options.showarrow ? '&nbsp;' : 'new text';
         }
 
-        var xa = Plotly.Axes.getFromId(gd,options.xref),
-            ya = Plotly.Axes.getFromId(gd,options.yref),
+        var xa = Plotly.Axes.getFromId(gd, options.xref),
+            ya = Plotly.Axes.getFromId(gd, options.yref),
             annPosPx = {x:0, y:0},
-
-            //default is horizontal
-            textangle = options.textangle || 0;
-        textangle = $.isNumeric(textangle) ? textangle : 0;
+            textangle = $.isNumeric(options.textangle) ? options.textangle : 0;
 
         // create the components
         // made a single group to contain all, so opacity can work right
         // with border/arrow together this could handle a whole bunch of
         // cleanup at this point, but works for now
-        var anngroup = gl._infolayer.append('g')
+        var anngroup = fullLayout._infolayer.append('g')
             .classed('annotation',true)
             .attr({
                 'data-index':String(index),
@@ -357,9 +415,9 @@
                 options.bordercolor || 'rgba(0,0,0,0)')
             .call(Plotly.Drawing.fillColor,options.bgcolor);
 
-        var font = options.font.family||gl.font.family||'Arial',
-            fontSize = options.font.size||gl.font.size||12,
-            fontColor = options.font.color||gl.font.color||'#444';
+        var font = options.font.family||fullLayout.font.family||'Arial',
+            fontSize = options.font.size||fullLayout.font.size||12,
+            fontColor = options.font.color||fullLayout.font.color||'#444';
 
         var anntext = ann.append('text')
             .classed('annotation',true)
@@ -404,19 +462,17 @@
             options._h = annheight;
 
             function fshift(v,anchor){
-                if(anchor==='center' || anchor==='middle') {
-                    return 0;
-                }
-                else if(anchor==='left' || anchor==='bottom') {
-                    return -0.5;
-                }
-                else if(anchor==='right' || anchor==='top') {
-                    return 0.5;
-                }
-                // auto or missing
-                else {
+                if(anchor==='auto'){
                     return Plotly.Lib.constrain(Math.floor(v*3-1),-0.5,0.5);
                 }
+                return {
+                    center: 0,
+                    middle: 0,
+                    left: -0.5,
+                    bottom: -0.5,
+                    right: 0.5,
+                    top: 0.5
+                }[anchor];
             }
 
             var okToContinue = true;
@@ -425,76 +481,81 @@
                         options[axletter+'ref']||axletter),
                     axOld = Plotly.Axes.getFromId(gd,
                         oldref[axletter]||axletter),
-                    typeAttr = '_'+axletter+'type',
                     annSize = axletter==='x' ? annwidth : -annheight,
                     axRange = (ax||axOld) ?
                         (ax||axOld).range[1]-(ax||axOld).range[0] : null,
-                    defaultVal = ax ?
-                        ax.range[0] + (axletter==='x' ? 0.1 : 0.3)*axRange :
-                        (axletter==='x' ? 0.1 : 0.7),
+                    // defaultVal = ax ?
+                    //     ax.range[0] + (axletter==='x' ? 0.1 : 0.3)*axRange :
+                    //     (axletter==='x' ? 0.1 : 0.7),
                     anchor = options[axletter+'anchor'];
 
-                // check for date or category strings
-                if(ax && ['date','category'].indexOf(ax.type)!==-1 &&
-                        typeof options[axletter]==='string') {
-                    var newval;
-                    if(ax.type==='date') {
-                        newval = Plotly.Lib.dateTime2ms(options[axletter]);
-                        if(newval!==false) {
-                            options[axletter] = newval;
-                        }
-                    }
-                    else if(ax.categories && ax.categories.length) {
-                        newval = ax.categories.indexOf(options[axletter]);
-                        if(newval!==-1) {
-                            options[axletter] = newval;
-                        }
-                    }
-                }
+                // // convert date or category strings to numbers
+                // if(ax && ['date','category'].indexOf(ax.type)!==-1 &&
+                //         typeof options[axletter]==='string') {
+                //     var newval;
+                //     if(ax.type==='date') {
+                //         newval = Plotly.Lib.dateTime2ms(options[axletter]);
+                //         if(newval!==false) options[axletter] = newval;
+                //     }
+                //     else if((ax._categories||[]).length) {
+                //         newval = ax._categories.indexOf(options[axletter]);
+                //         if(newval!==-1) options[axletter] = newval;
+                //     }
+                // }
 
                 // if we're still referencing the same axis,
                 // see if it has changed linear <-> log
-                if(ax && ax===axOld && options[typeAttr]) {
-                    checklog(options,ax);
+                if(ax && ax===axOld && oldAxisType[axletter]) {
+                    if(oldAxisType[axletter]==='log' && ax.type!=='log') {
+                        options[axletter] = Math.pow(10,options[axletter]);
+                    }
+                    else if(oldAxisType[axletter]!=='log' && ax.type==='log') {
+                        options[axletter] = (options[axletter]>0) ?
+                            Math.log(options[axletter])/Math.LN10 :
+                            (ax.range[0]+ax.range[1])/2;
+                    }
                 }
+
                 // if we're changing a reference axis on an existing annotation
-                else if($.isNumeric(options[axletter]) && ax!==axOld) {
+                // else if($.isNumeric(options[axletter]) && ax!==axOld) {
                     // moving from one axis to another - just reset to default
                     // TODO: if the axes overlap, perhaps we could put it in
                     // the equivalent position on the new one?
-                    if(ax && axOld) {
-                        options[axletter] = defaultVal;
-                    }
-                    // moving from paper to plot reference
-                    else if(ax) {
-                        if(!ax.domain) { ax.domain = [0,1]; }
+                    // if(ax && axOld) {
+                    //     options[axletter] = defaultVal;
+                    // }
 
-                        var axFraction = (options[axletter]-ax.domain[0])/
-                            (ax.domain[1]-ax.domain[0]);
-                        options[axletter] = ax.range[0] + axRange*axFraction -
-                            (options.showarrow ? 0 :
-                            ((fshift(axFraction,anchor)-fshift(0,anchor))*
-                                annSize/ax._m));
-                    }
-                    // moving from plot to paper reference
-                    else if(axOld) {
-                        if(!axOld.domain) { axOld.domain = [0,1]; }
-                        options[axletter] = (axOld.domain[0] +
-                            (axOld.domain[1]-axOld.domain[0]) *
-                            (options[axletter]-axOld.range[0])/axRange );
-                        if(!options.showarrow) {
-                            options[axletter] +=
-                                (fshift(options[axletter],anchor) -
-                                    fshift(0,anchor)) * annSize/axOld._length;
-                        }
+                // moving from paper to plot reference
+                else if(ax && !axOld) {
+                    // if(!ax.domain) { ax.domain = [0,1]; }
+
+                    var axFraction = (options[axletter]-ax.domain[0])/
+                        (ax.domain[1]-ax.domain[0]);
+                    options[axletter] = ax.range[0] + axRange*axFraction -
+                        (options.showarrow ? 0 :
+                        ((fshift(axFraction,anchor)-fshift(0,anchor))*
+                            annSize/ax._m));
+                }
+
+                // moving from plot to paper reference
+                else if(axOld && !ax) {
+                    // if(!axOld.domain) { axOld.domain = [0,1]; }
+                    options[axletter] = (axOld.domain[0] +
+                        (axOld.domain[1]-axOld.domain[0]) *
+                        (options[axletter]-axOld.range[0])/axRange );
+                    if(!options.showarrow) {
+                        options[axletter] +=
+                            (fshift(options[axletter],anchor) -
+                                fshift(0,anchor)) * annSize/axOld._length;
                     }
                 }
+                // }
+
+                // if(!$.isNumeric(options[axletter])) {
+                //     options[axletter] = defaultVal;
+                // }
 
                 // calculate pixel position
-                if(!$.isNumeric(options[axletter])) {
-                    options[axletter] = defaultVal;
-                }
-
                 if(!ax) {
                     annPosPx[axletter] = (axletter==='x') ?
                         (gs.l + (gs.w)*options[axletter]) :
@@ -518,7 +579,10 @@
                 }
 
                 // save the current axis type for later log/linear changes
-                options[typeAttr] = ax && ax.type;
+                options['_'+axletter+'type'] = ax && ax.type;
+
+                // save the position back to the source options obj, in case it changed
+                optionsIn[axletter] = options[axletter];
             });
 
             if(!okToContinue) {
@@ -527,8 +591,8 @@
             }
 
             // default values for arrow vector
-            if(!$.isNumeric(options.ax)) { options.ax=-10; }
-            if(!$.isNumeric(options.ay)) { options.ay=-annheight/2-20; }
+            // if(!$.isNumeric(options.ax)) { options.ax=-10; }
+            // if(!$.isNumeric(options.ay)) { options.ay=-annheight/2-20; }
 
             // now position the annotation and arrow,
             // based on options[x,y,ref,showarrow,ax,ay]
@@ -557,13 +621,13 @@
             var ax, ay;
 
             if(options.showarrow){
-                ax = Plotly.Lib.constrain(annPosPx.x,1,gl.width-1);
-                ay = Plotly.Lib.constrain(annPosPx.y,1,gl.height-1);
+                ax = Plotly.Lib.constrain(annPosPx.x,1,fullLayout.width-1);
+                ay = Plotly.Lib.constrain(annPosPx.y,1,fullLayout.height-1);
                 annPosPx.x += options.ax;
                 annPosPx.y += options.ay;
             }
-            annPosPx.x = Plotly.Lib.constrain(annPosPx.x,1,gl.width-1);
-            annPosPx.y = Plotly.Lib.constrain(annPosPx.y,1,gl.height-1);
+            annPosPx.x = Plotly.Lib.constrain(annPosPx.x,1,fullLayout.width-1);
+            annPosPx.y = Plotly.Lib.constrain(annPosPx.y,1,fullLayout.height-1);
 
             var borderpad = Number(options.borderpad),
                 borderfull = borderwidth+borderpad,
@@ -851,25 +915,6 @@
             .call(Plotly.Drawing.setPosition, annPosPx.x, annPosPx.y);
     };
 
-    // check if we need to edit the annotation position for log/linear changes
-    function checklog(options,ax) {
-        var axletter = ax._id.charAt(0),
-            typeAttr = '_'+axletter+'type',
-            oldtype = options[typeAttr],
-            newtype = ax.type;
-        if(oldtype) {
-            if(oldtype==='log' && newtype!=='log') {
-                options[axletter] = Math.pow(10,options[axletter]);
-            }
-            else if(oldtype!=='log' && newtype==='log') {
-                options[axletter] = (options[axletter]>0) ?
-                    Math.log(options[axletter])/Math.LN10 :
-                    (ax.range[0]+ax.range[1])/2;
-            }
-        }
-        options[typeAttr] = newtype;
-    }
-
     // add arrowhead(s) to a path or line d3 element el3
     // style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none
     // ends is 'start', 'end' (default), 'start+end'
@@ -951,9 +996,9 @@
     };
 
     annotations.calcAutorange = function(gd) {
-        var gl = gd.layout;
+        var fullLayout = gd._fullLayout;
 
-        if(!gl.annotations || !gd.data || !gd.data.length) { return; }
+        if(!fullLayout.annotations || !gd.data || !gd.data.length) { return; }
         if(!Plotly.Axes.list(gd)
             .filter(function(ax) { return ax.autorange; })
             .length) { return; }
@@ -965,20 +1010,20 @@
     };
 
     function annAutorange(gd) {
-        var gl = gd.layout,
+        var fullLayout = gd._fullLayout,
             blank = {left:0, right:0, top:0, bottom:0, width:0, height:0};
 
         // find the bounding boxes for each of these annotations'
         // relative to their anchor points
         // use the arrow and the text bg rectangle,
         // as the whole anno may include hidden text in its bbox
-        gl.annotations.forEach(function(ann,i){
+        fullLayout.annotations.forEach(function(ann,i){
             var xa = Plotly.Axes.getFromId(gd, ann.xref),
                 ya = Plotly.Axes.getFromId(gd, ann.yref);
             if(!(xa||ya)) { return; }
 
             var annBB,
-                textNode = gl._infolayer
+                textNode = fullLayout._infolayer
                     .selectAll('g.annotation[data-index="'+i+'"] rect.bg')
                     .node(),
                 textBB = textNode ? Plotly.Drawing.bBox(textNode) : blank,

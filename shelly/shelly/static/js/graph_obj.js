@@ -203,78 +203,78 @@
 
     // default layout defined as a function rather than
     // a constant so it makes a new copy each time
-    function defaultLayout(){
-        return {title: 'Click to enter Plot title',
-            xaxis: Plotly.Axes.defaultAxis({range: [-1,6]}),
-            yaxis: Plotly.Axes.defaultAxis({range: [-1,4]}),
-            legend: {
-                bgcolor: '#fff',
-                bordercolor: '#444',
-                borderwidth: 0,
-                font:{family: '', size: 0, color: ''},
-                traceorder: 'normal'
-            },
-            width: 700,
-            height: 450,
-            autosize: 'initial', // after initial autosize reverts to true
-            margin: {l:80,r:80,t:100,b:80,pad:0,autoexpand:true},
-            paper_bgcolor: '#fff',
-            plot_bgcolor: '#fff',
-            barmode: 'group',
-            bargap: 0.2,
-            bargroupgap: 0.0,
-            boxmode: 'overlay',
-            boxgap: 0.3,
-            boxgroupgap: 0.3,
-            font: {
-                family:'"Open sans", verdana, arial, sans-serif',
-                size:12,
-                color:'#444'
-            },
-            titlefont:{family:'',size:0,color:''},
-            dragmode:'zoom',
-            hovermode:'x',
-            separators:'.,', // decimal then thousands
-            hidesources:false,
-            smith:false
-        };
-    }
+    // function defaultLayout(){
+    //     return {title: 'Click to enter Plot title',
+    //         xaxis: Plotly.Axes.defaultAxis({range: [-1,6]}),
+    //         yaxis: Plotly.Axes.defaultAxis({range: [-1,4]}),
+    //         legend: {
+    //             bgcolor: '#fff',
+    //             bordercolor: '#444',
+    //             borderwidth: 0,
+    //             font:{family: '', size: 0, color: ''},
+    //             traceorder: 'normal'
+    //         },
+    //         width: 700,
+    //         height: 450,
+    //         autosize: 'initial', // after initial autosize reverts to true
+    //         margin: {l:80,r:80,t:100,b:80,pad:0,autoexpand:true},
+    //         paper_bgcolor: '#fff',
+    //         plot_bgcolor: '#fff',
+    //         barmode: 'group',
+    //         bargap: 0.2,
+    //         bargroupgap: 0.0,
+    //         boxmode: 'overlay',
+    //         boxgap: 0.3,
+    //         boxgroupgap: 0.3,
+    //         font: {
+    //             family:'"Open sans", verdana, arial, sans-serif',
+    //             size:12,
+    //             color:'#444'
+    //         },
+    //         titlefont:{family:'',size:0,color:''},
+    //         dragmode:'zoom',
+    //         hovermode:'x',
+    //         separators:'.,', // decimal then thousands
+    //         hidesources:false,
+    //         smith:false
+    //     };
+    // }
 
     // on initial data load into a plot, tweak the default layout
     // based on the incoming data type
     // but if newlayout has any given key, don't override it
-    function tweakLayout(gd,newlayout) {
-        newlayout = newlayout||{};
-        gd.data.forEach(function(d) {
-            var xa = Plotly.Axes.getFromId(gd,d.xaxis||'x'),
-                ya = Plotly.Axes.getFromId(gd,d.yaxis||'y');
-            if(plots.isHeatmap(d.type)) {
-                if(!newlayout[xa._name] || !('ticks' in newlayout[xa._name])) {
-                    xa.ticks = 'outside';
-                }
-                if(!newlayout[ya._name] || !('ticks' in newlayout[ya._name])) {
-                    ya.ticks = 'outside';
-                }
-            }
-            else if(plots.isBar(d.type) || d.type==='box') {
-                var sa = (plots.isBar(d.type) && d.orientation==='h') ? ya : xa,
-                    saNew = newlayout[sa._name];
-                if(!saNew || !('showgrid' in saNew)) {
-                    sa.showgrid = false;
-                }
-                if(!saNew || !('zeroline' in saNew)) {
-                    sa.zeroline = false;
-                }
-            }
-            if((plots.isBar(d.type) && gd.layout.barmode==='stack') ||
-                    (d.type==='scatter' &&
-                     ['tonextx','tonexty'].indexOf(d.fill)!==-1)) {
-                if(!newlayout.legend || !('traceorder' in newlayout.legend)) {
-                    gd.layout.legend.traceorder = 'reversed';
-                }
-            }
-        });
-    }
+    // function tweakLayout(gd,newlayout) {
+    //     newlayout = newlayout||{};
+    //     gd.data.forEach(function(d) {
+    //         var xa = Plotly.Axes.getFromId(gd,d.xaxis||'x'),
+    //             ya = Plotly.Axes.getFromId(gd,d.yaxis||'y');
+    //         if(plots.isHeatmap(d.type)) {
+    //             if(!newlayout[xa._name] || !('ticks' in newlayout[xa._name])) {
+    //                 xa.ticks = 'outside';
+    //             }
+    //             if(!newlayout[ya._name] || !('ticks' in newlayout[ya._name])) {
+    //                 ya.ticks = 'outside';
+    //             }
+    //         }
+    //         else if(plots.isBar(d.type) || d.type==='box') {
+    //             var sa = (plots.isBar(d.type) && d.orientation==='h') ? ya : xa,
+    //                 saNew = newlayout[sa._name];
+    //             if(!saNew || !('showgrid' in saNew)) {
+    //                 sa.showgrid = false;
+    //             }
+    //             if(!saNew || !('zeroline' in saNew)) {
+    //                 sa.zeroline = false;
+    //             }
+    //         }
+    //         if((plots.isBar(d.type) && gd.layout.barmode==='stack') ||
+    //                 (d.type==='scatter' &&
+    //                  ['tonextx','tonexty'].indexOf(d.fill)!==-1)) {
+    //             if(!newlayout.legend || !('traceorder' in newlayout.legend)) {
+    //                 gd.layout.legend.traceorder = 'reversed';
+    //             }
+    //         }
+    //     });
+    // }
 
     plots.isScatter = function(type) {
         return !type || type==='scatter';
@@ -338,7 +338,8 @@
 
     plots.newTab = function(divid, layout) {
         makeToolMenu(divid);
-        return makePlotFramework(divid, layout);
+        return Plotly.plot(divid, [], layout);
+        // return makePlotFramework(divid, layout);
     };
 
     // in some cases the browser doesn't seem to know how big
@@ -349,13 +350,13 @@
             document.getElementById(divid) : divid;
 
         // doesn't work presently (and not needed) for polar or 3d
-        if(gd.layout._hasGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
+        if(gd._fullLayout._hasGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
             return;
         }
 
         setTimeout(function(){
             Plotly.Annotations.drawAll(gd);
-            Plotly.Legend.draw(gd,gd.layout.showlegend);
+            Plotly.Legend.draw(gd,gd._fullLayout.showlegend);
             gd.calcdata.forEach(function(d){
                 if(d[0]&&d[0].t&&d[0].t.cb) { d[0].t.cb(); }
             });
@@ -378,15 +379,16 @@
     // the 'view in plotly' and source links - note that now plot() calls this
     // so it can regenerate whenever it replots
     plots.addLinks = function(gd) {
-        var linkContainer = gd.layout._paper
+        var fullLayout = gd._fullLayout;
+        var linkContainer = fullLayout._paper
             .selectAll('text.js-plot-link-container')
                 .data([0]);
         linkContainer.enter().append('text')
             .classed('js-plot-link-container',true)
             .attr({
-                'text-anchor':'end',
-                x:gd.layout._paper.attr('width')-7,
-                y:gd.layout._paper.attr('height')-9
+                'text-anchor': 'end',
+                x: fullLayout._paper.attr('width')-7,
+                y: fullLayout._paper.attr('height')-9
             })
             .style({
                 'font-family':'"Open Sans",Arial,sans-serif',
@@ -408,7 +410,7 @@
         Plotly.Lib.showSources(gd);
 
         // public url for downloaded files
-        if(gd.layout && gd.layout._url) { toolspan.text(gd.layout._url); }
+        if(gd._fullLayout._url) { toolspan.text(gd._fullLayout._url); }
         // 'view in plotly' link for embedded plots
         else if(!gd.mainsite && !gd.standalone &&
                 !$('#plotlyUserProfileMarker').length) {
@@ -509,7 +511,6 @@
         // test if this is on the main site or embedded
         gd.mainsite = !!$('#plotlyMainMarker').length;
 
-        // layout object --- this also gets checked in makePlotFramework
         if(!layout) layout = {};
 
         // hook class for plots main container (in case of plotly.js
@@ -529,7 +530,7 @@
 
         // if there is already data on the graph, append the new data
         // if you only want to redraw, pass a non-array for data
-        var graphwasempty = ((typeof gd.data==='undefined') && $.isArray(data));
+        var graphwasempty = ((gd.data||[]).length===0 && $.isArray(data));
         if($.isArray(data)) {
             cleanData(data, gd.data);
 
@@ -542,8 +543,7 @@
             gd.empty=false;
         }
 
-        // only use the layout argument if we didn't have any data yet
-        if(!gd.layout) gd.layout = layout;
+        if(!gd.layout || graphwasempty) gd.layout = cleanLayout(layout);
 
         supplyDefaults(gd);
 
@@ -555,7 +555,7 @@
         // so we don't try to re-call Plotly.plot from inside
         // legend and colorbar, if margins changed
         gd._replotting = true;
-        var hasData = (gd.data && gd.data.length>0);
+        var hasData = gd._fullData.length>0;
 
         // Make or remake the framework (ie container and axes) if we need to
         // note: if they container already exists and has data,
@@ -563,56 +563,37 @@
         //  but if there's no data there yet, it's just a placeholder...
         //  then it should destroy and remake the plot
         if (hasData) {
-
-            // DETECT 3D
-            // needed to do this before makePlotFramework to set up the modebar
-            // needed to put the bulk of the 3d setup after makePlotFramework
-            // as it requires framework to be set
-            layout._hasGL3D = gd.data.some(function (d) {
-                return plots.isGL3D(d.type);
-            });
-
-            // DETECT Cartesian
-            layout._hasCartesian = gd.data.some(function (d) {
-                return plots.isCartesian(d.type) && !('r' in d);
-            });
-
             var subplots = Plotly.Axes.getSubplots(gd).join(''),
-                oldSubplots = ((gd.layout && gd.layout._plots) ?
-                    Object.keys(gd.layout._plots) : []).join('');
-            if(!gd.framework || gd.framework!==makePlotFramework ||
-                    !gd.layout || graphwasempty || (oldSubplots!==subplots)) {
+                oldSubplots = Object.keys(gd._fullLayout._plots || {}).join('');
+
+            if(gd.framework!==makePlotFramework || graphwasempty || (oldSubplots!==subplots)) {
                 gd.framework = makePlotFramework;
-                gd.layout = undefined; // shim until we're fully using _fullLayout
-                makePlotFramework(gd,layout);
+                makePlotFramework(gd);
             }
         }
-        else if((typeof gd.layout==='undefined')||graphwasempty) {
-            gd.layout = undefined; // shim until we're fully using _fullLayout
-            makePlotFramework(gd, layout);
-        }
+        else if(graphwasempty) makePlotFramework(gd);
 
         // now tweak the layout if we're adding the initial data to the plot
-        if(graphwasempty && hasData) tweakLayout(gd,layout);
+        // if(graphwasempty && hasData) tweakLayout(gd,layout);
 
         // enable or disable formatting buttons
         $(gd).find('.data-only').attr('disabled', !hasData);
 
-        var gl = gd.layout;
+        var fullLayout = gd._fullLayout;
 
         ////////////////////////////////  3D   ///////////////////////////////
-        if (gl._hasGL3D) plot3D(gd);
+        if (fullLayout._hasGL3D) plot3D(gd);
 
         /*
          * Plotly.plot shortCircuit for 3d only
          * eventually remove this and integrate more
          * thoroughly with module system.
          */
-        if (!gl._hasCartesian) return Promise.resolve();
+        if (!fullLayout._hasCartesian) return Promise.resolve();
 
         // prepare the types and conversion functions for the axes
         // also clears the autorange bounds ._min, ._max
-        Plotly.Axes.fillAxesWithDefaults(gd);
+        // Plotly.Axes.fillAxesWithDefaults(gd);
         Plotly.Axes.initAxes(gd);
         Plotly.Axes.setTypes(gd);
 
@@ -636,13 +617,13 @@
          * start async-friendly code - now we're actually drawing things
          */
 
-        var oldmargins = JSON.stringify(gl._size);
+        var oldmargins = JSON.stringify(fullLayout._size);
 
         // draw anything that can affect margins.
         // currently this is legend and colorbars
         function marginPushers() {
-            Plotly.Legend.draw(gd, gl.showlegend ||
-                (gd.calcdata.length>1 && gl.showlegend!==false));
+            Plotly.Legend.draw(gd, fullLayout.showlegend ||
+                (gd.calcdata.length>1 && fullLayout.showlegend!==false));
             gd.calcdata.forEach(function(cd) {
                 var t = cd[0].t;
                 if(t.visible===false || !plots.isHeatmap(t.type)) {
@@ -658,7 +639,7 @@
 
         function marginPushersAgain(){
             // in case the margins changed, draw margin pushers again
-            var seq = JSON.stringify(gl._size)===oldmargins ?
+            var seq = JSON.stringify(fullLayout._size)===oldmargins ?
                 [] : [marginPushers];
             return Plotly.Lib.syncOrAsync(seq.concat(Plotly.Fx.init),gd);
         }
@@ -669,7 +650,7 @@
                 // depend on each other ie bars (stacked or grouped)
                 // and boxes (grouped) push each other out of the way
                 Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
-                    var plotinfo = gd.layout._plots[subplot];
+                    var plotinfo = gd._fullLayout._plots[subplot];
                     gd._modules.forEach(function(module) {
                         if(Plotly[module].setPositions) {
                             Plotly[module].setPositions(gd,plotinfo);
@@ -721,12 +702,12 @@
             gd.calcdata.forEach(function(cd) {
                 if(plots.isHeatmap(cd[0].t.type)) { return; }
                 var i = cd[0].t.curve;
-                gl._paper.selectAll('.hm'+i+',.contour'+i+',.cb'+i)
+                fullLayout._paper.selectAll('.hm'+i+',.contour'+i+',.cb'+i)
                     .remove();
             });
 
             Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
-                var plotinfo = gd.layout._plots[subplot],
+                var plotinfo = gd._fullLayout._plots[subplot],
                     cdSubplot = gd.calcdata.filter(function(cd) {
                         var t = cd[0].t;
                         return (t.xaxis||'x') + (t.yaxis||'y')===subplot;
@@ -793,7 +774,7 @@
     };
 
     function plot3D(gd) {
-        var gl = gd.layout;
+        var fullLayout = gd._fullLayout;
         /*
          * Once Webgl plays well with other things we can remove this.
          * Unset examples, they misbehave with 3d plots
@@ -834,14 +815,14 @@
                 destScene += d.scene;
             }
 
-            var sceneLayout = gl[destScene] || {};
-            gl[destScene] = sceneLayout;
+            var sceneLayout = fullLayout[destScene] || {};
+            fullLayout[destScene] = sceneLayout;
             if (!('_webgl' in sceneLayout)) {
                 /*
                  * build a new scene layout object or initialize a serialized one.
                  * Applies defaults to incoming sceneLayouts.
                  */
-                gl[destScene] = sceneLayout = Plotly.Plots
+                fullLayout[destScene] = sceneLayout = Plotly.Plots
                     .defaultSceneLayout(gd, destScene, sceneLayout);
             }
 
@@ -856,15 +837,16 @@
         });
 
 
-        gl._paperdiv.style({
-            width: gl.width+'px',
-            height: gl.height+'px',
-            background: gl.paper_bgcolor
+        fullLayout._paperdiv.style({
+            width: fullLayout.width+'px',
+            height: fullLayout.height+'px',
+            background: fullLayout.paper_bgcolor
         });
 
         gd.calcdata = [];
         Plotly.Axes.setTypes(gd);
         // tie modebar into all iframes
+        // TODO: this doesn't get used?
         var modebar =  $(gd).find('.svg-container .modebar')[0];
 
         /*
@@ -879,24 +861,24 @@
          *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
          *
          */
-        var scenes = Object.keys(gl).filter(function(k){
+        var scenes = Object.keys(fullLayout).filter(function(k){
             return k.match(/^scene[0-9]*$/);
         });
 
         scenes.map( function (sceneKey, idx) {
 
-            var sceneLayout = gl[sceneKey];
+            var sceneLayout = fullLayout[sceneKey];
             // we are only modifying the x domain position with this
             // simple approach
             sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
 
             // convert domain to position in pixels
             sceneLayout.position = {
-                left: gl._size.l + sceneLayout.domain.x[0]*gl._size.w,
-                top: gl._size.t + (1-sceneLayout.domain.y[1])*gl._size.h,
-                width: gl._size.w *
+                left: fullLayout._size.l + sceneLayout.domain.x[0]*fullLayout._size.w,
+                top: fullLayout._size.t + (1-sceneLayout.domain.y[1])*fullLayout._size.h,
+                width: fullLayout._size.w *
                     (sceneLayout.domain.x[1] - sceneLayout.domain.x[0]),
-                height: gl._size.h *
+                height: fullLayout._size.h *
                     (sceneLayout.domain.y[1] - sceneLayout.domain.y[0])
             };
 
@@ -917,7 +899,7 @@
                 //// woot, lets load all the data in the queue and bail outta here
                 while (sceneLayout._dataQueue.length) {
                     var d = sceneLayout._dataQueue.shift();
-                    sceneLayout._webgl.draw(gl, d);
+                    sceneLayout._webgl.draw(fullLayout, d);
                 }
 
                 return;
@@ -934,17 +916,17 @@
                 zIndex: '1000',
                 id: sceneLayout._id,
                 plotly: Plotly,
-                width: gl.width,
-                height: gl.height,
-                glopts: gl.glopts,
-                layout: gl
+                width: fullLayout.width,
+                height: fullLayout.height,
+                glopts: fullLayout.glopts,
+                layout: fullLayout
             };
 
             SceneFrame.createScene(sceneOptions);
 
             SceneFrame.once('scene-loaded', function (webgl) {
 
-                var sceneLayout = gd.layout[webgl.id];
+                var sceneLayout = gd._fullLayout[webgl.id];
                 // make the .webgl (webgl context) available through scene.
                 sceneLayout._loading = false; // loaded
                 sceneLayout._webgl = webgl;
@@ -957,7 +939,7 @@
                 // from the queue and draw.
                 while (sceneLayout._dataQueue.length) {
                     var d = sceneLayout._dataQueue.shift();
-                    webgl.draw(gl, d);
+                    webgl.draw(fullLayout, d);
                 }
 
                 SceneFrame.emit('scene-ready', webgl);
@@ -983,12 +965,12 @@
 
         // fulfill gd requirements
         if(data) gd.data = data;
-        gd.layout = layout;
-        gd.layout._container = plotContainer;
-        gd.layout._paperdiv = paperDiv;
-        if(gd.layout.autosize === 'initial' && gd.mainsite) {
+        gd._fullLayout = layout;
+        gd._fullLayout._container = plotContainer;
+        gd._fullLayout._paperdiv = paperDiv;
+        if(gd._fullLayout.autosize === 'initial' && gd.mainsite) {
             plotAutoSize(gd,{});
-            gd.layout.autosize = true;
+            gd._fullLayout.autosize = gd.layout.autosize = true;
         }
         // resize canvas
         paperDiv.style({
@@ -1000,7 +982,7 @@
         // instantiate framework
         gd.framework = micropolar.manager.framework();
         //get rid of gd.layout stashed nodes
-        layout = µ.util.deepExtend({}, gd.layout);
+        layout = µ.util.deepExtend({}, gd._fullLayout);
         delete layout._container;
         delete layout._paperdiv;
         delete layout.autosize;
@@ -1018,7 +1000,7 @@
 
         // editable title
         var opacity = 1;
-        var txt = gd.layout.title;
+        var txt = gd._fullLayout.title;
         if(txt === '' || !txt) opacity = 0;
         var placeholderText = 'Click to enter title';
 
@@ -1031,7 +1013,7 @@
         var title = polarPlotSVG.select('.title-group text')
             .call(titleLayout);
 
-        if(gd.mainsite && !gd.layout._forexport){
+        if(gd.mainsite && !gd._fullLayout._forexport){
             title.attr({'data-unformatted': txt});
             if(!txt || txt === placeholderText){
                 opacity = 0.2;
@@ -1064,16 +1046,51 @@
             };
             title.call(setContenteditable);
 
-            gd.layout._paperdiv = paperDiv;
+            gd._fullLayout._paperdiv = paperDiv;
 
             Plotly.ToolPanel.tweakMenu();
         }
 
         // fulfill more gd requirements
-        gd.layout._paper = polarPlotSVG;
+        gd._fullLayout._paper = polarPlotSVG;
         plots.addLinks(gd);
 
         return Promise.resolve();
+    }
+
+    function cleanLayout(layout) {
+        // make a few changes to the layout right away
+        // before it gets used for anything
+
+        if(!layout) layout = {};
+
+        // cannot have (x|y)axis1, numbering goes axis, axis2, axis3...
+        if(layout.xaxis1) {
+            if(!layout.xaxis) layout.xaxis = layout.xaxis1;
+            delete layout.xaxis1;
+        }
+        if(layout.yaxis1) {
+            if(!layout.yaxis) layout.yaxis = layout.yaxis1;
+            delete layout.yaxis1;
+        }
+
+        // BACKWARD COMPATIBILITY FIXES
+
+        (layout.annotations||[]).forEach(function(ann) {
+            if(ann.ref) {
+                if(ann.ref==='paper') {
+                    ann.xref = 'paper';
+                    ann.yref = 'paper';
+                }
+                else if(ann.ref==='data') {
+                    ann.xref = 'x';
+                    ann.yref = 'y';
+                }
+                delete ann.ref;
+            }
+        });
+
+        return layout;
     }
 
     function cleanData(data, existingData) {
@@ -1104,7 +1121,7 @@
             // acquire a new one
             suids.push(trace.uid);
 
-            // BACKWARD COMPATIBILITY FIXES FOR TRACE STYLING
+            // BACKWARD COMPATIBILITY FIXES
 
             // use xbins to bin data in x, and ybins to bin data in y
             if(trace.type==='histogramy' && 'xbins' in trace && !('ybins' in trace)) {
@@ -1150,6 +1167,10 @@
                 trace.reversescale = trace.reversescl;
                 delete trace.reversescl;
             }
+
+            // axis ids x1 -> x, y1-> y
+            if(trace.xaxis==='x1') trace.xaxis = 'x';
+            if(trace.yaxis==='y1') trace.yaxis = 'y';
         });
     }
 
@@ -1219,6 +1240,15 @@
             return supplyDataDefaults(trace, i, gd._fullLayout);
         });
 
+        // DETECT 3D, Cartesian, and Polar
+        gd._fullData.forEach(function(d) {
+            if(plots.isGL3D(d.type)) gd._fullLayout._hasGL3D = true;
+            if(plots.isCartesian(d.type)) {
+                if('r' in d) gd._fullLayout._hasPolar = true;
+                else gd._fullLayout._hasCartesian = true;
+            }
+        });
+
         // finally, fill in the pieces of layout that may need to look at data
         supplyLayoutModuleDefaults(gd.layout||{}, gd._fullLayout, gd._fullData);
     }
@@ -1251,6 +1281,9 @@
         // just in gd.data, as this info isn't involved in creating plots at all,
         // only in pulling back up the fit popover
 
+        // reference back to the input object for convenience
+        traceOut._input = traceIn;
+
         return traceOut;
     }
 
@@ -1271,7 +1304,7 @@
         autosize: {
             type: 'enumerated',
             // TODO: better handling of 'initial'
-            values: [true, false],
+            values: [true, false, 'initial'],
         },
         width: {
             type: 'number',
@@ -1360,11 +1393,9 @@
         coerce('title');
         coerce('titlefont', globalFont);
 
-        var autoSize = coerce('autosize', !(layoutIn.width && layoutIn.height));
-        if(!autoSize) {
-            coerce('width');
-            coerce('height');
-        }
+        coerce('autosize', (layoutIn.width && layoutIn.height) ? false : 'initial');
+        coerce('width');
+        coerce('height');
 
         // TODO: sanity check that margins leave room for the plot
         // but this requires fulfilling autosize first
@@ -1500,7 +1531,7 @@
         function flipScale(si){ return [1-si[0],si[1]]; }
 
         // detect 3d
-        is3d = ('layout' in gd) && gd.layout._hasGL3D;
+        is3d = ('_fullLayout' in gd) && gd._fullLayout._hasGL3D;
 
         for(i in gd.calcdata){
             cd = gd.calcdata[i]; // trace plus styling
@@ -1656,9 +1687,9 @@
                     mergeattr('marker.line.cmin','mlcmin',-10);
                     mergeattr('line.dash','ld','solid');
                     mergeattr('textposition','tp','middle center');
-                    mergeattr('textfont.size','ts',gd.layout.font.size);
-                    mergeattr('textfont.color','tc',gd.layout.font.color);
-                    mergeattr('textfont.family','tf',gd.layout.font.family);
+                    mergeattr('textfont.size','ts',gd._fullLayout.font.size);
+                    mergeattr('textfont.color','tc',gd._fullLayout.font.color);
+                    mergeattr('textfont.family','tf',gd._fullLayout.font.family);
                     mergeattr('connectgaps','connectgaps',false);
                     mergeattr('line.shape','lineshape','linear');
                     mergeattr('line.smoothing','ls',1);
@@ -1757,13 +1788,13 @@
     };
 
     function applyStyle(gd) {
-        var gl = gd.layout;
+        var fullLayout = gd._fullLayout;
 
         Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
-            var gp = gl._plots[subplot].plot;
+            var gp = fullLayout._plots[subplot].plot;
 
             gd._modules.concat('ErrorBars').forEach(function(module) {
-                Plotly[module].style(gp,gl);
+                Plotly[module].style(gp, fullLayout);
             });
         });
     }
@@ -1791,7 +1822,7 @@
     Plotly.restyle = function(gd,astr,val,traces) {
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
 
-        var i, gl = gd.layout,
+        var i, fullLayout = gd._fullLayout,
             aobj = {};
         if(typeof astr === 'string') { aobj[astr] = val; }
         else if($.isPlainObject(astr)) {
@@ -1875,7 +1906,7 @@
             axlist;
 
         // for now, if we detect 3D stuff, just re-do the plot
-        if (gl._hasGL3D) doplot = true;
+        if (fullLayout._hasGL3D) doplot = true;
 
         // make a new empty vals array for undoit
         function a0(){ return traces.map(function(){ return undefined; }); }
@@ -1917,11 +1948,13 @@
         // now make the changes to gd.data (and occasionally gd.layout)
         // and figure out what kind of graphics update we need to do
         for(var ai in aobj) {
-            var vi = aobj[ai], cont, param;
+            var vi = aobj[ai],
+                cont,
+                param;
             redoit[ai] = vi;
 
-            if(layoutAttrs.indexOf(ai.replace(/[xyz]axis[0-9]*/g,'?axis'))!==-1){
-                param = Plotly.Lib.nestedProperty(gl,ai);
+            if(layoutAttrs.indexOf(ai.replace(/[xyz]axis[0-9]*/g, '?axis'))!==-1){
+                param = Plotly.Lib.nestedProperty(gd.layout, ai);
                 undoit[ai] = [param.get()];
                 // since we're allowing val to be an array, allow it here too,
                 // even though that's meaningless
@@ -1977,8 +2010,8 @@
                         ['fraction','pixels'].indexOf(vi)!==-1) {
                     var thicknorm =
                         ['top','bottom'].indexOf(cont.colorbar.orient)!==-1 ?
-                            (gl.height-gl.margin.t-gl.margin.b) :
-                            (gl.width-gl.margin.l-gl.margin.r);
+                            (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b) :
+                            (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r);
                     doextra(cont,'colorbar.thickness',
                         (cont.colorbar.thickness ||
                             Plotly.Colorbar.getDefault('thickness')) *
@@ -1988,8 +2021,8 @@
                         ['fraction','pixels'].indexOf(vi)!==-1) {
                     var lennorm =
                         ['top','bottom'].indexOf(cont.colorbar.orient)!==-1 ?
-                            (gl.width-gl.margin.l-gl.margin.r) :
-                            (gl.height-gl.margin.t-gl.margin.b);
+                            (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r) :
+                            (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b);
                     doextra(cont,'colorbar.len',
                         (cont.colorbar.len ||
                             Plotly.Colorbar.getDefault('len')) *
@@ -2060,8 +2093,9 @@
                                 ['autobinx','autobiny'],true,i);
                         }
                     }
-                    doextra(gl,axlist.map(autorangeAttr),true,0);
-                    doextra(gl,axlist.map(rangeAttr),[0,1],0);
+
+                    doextra(gd.layout, axlist.map(autorangeAttr), true, 0);
+                    doextra(gd.layout, axlist.map(rangeAttr), [0, 1], 0);
                 }
                 docalc = true;
             }
@@ -2092,8 +2126,9 @@
         var seq;
         if(dolayout) {
             seq = [function changeLayout(){
+                var copyLayout = gd.layout;
                 gd.layout = undefined;
-                return Plotly.plot(gd,'',gl);
+                return Plotly.plot(gd, '', copyLayout);
             }];
         }
         else if(docalc || doplot || docalcAutorange) {
@@ -2106,7 +2141,7 @@
             if(doapplystyle) {
                 seq.push(function doApplyStyle(){
                     applyStyle(gd);
-                    if(gl.showlegend) { Plotly.Legend.draw(gd); }
+                    if(fullLayout.showlegend) Plotly.Legend.draw(gd);
                     return plots.previousPromises(gd);
                 });
             }
@@ -2170,7 +2205,7 @@
 
     // swap all the presentation attributes of the axes showing trace gdc
     function axswap(gd,gdc) {
-        var gl = gd.layout,
+        var layout = gd.layout,
             xid = gdc.xaxis||'x',
             yid = gdc.yaxis||'y',
             xa = Plotly.Axes.getFromId(gd,xid),
@@ -2180,17 +2215,17 @@
             noSwapAttrs = [
                 'anchor','domain','overlaying','position','tickangle'
             ],
-            axkeylist = Object.keys(gl[xname]).filter(function(n) {
+            axkeylist = Object.keys(layout[xname]).filter(function(n) {
                 return n.charAt(0)!=='_' &&
-                    (typeof gl[xname][n]!=='function') &&
+                    (typeof layout[xname][n]!=='function') &&
                     noSwapAttrs.indexOf(n)===-1;
             });
         axkeylist.forEach(function(attr){
-            swapAttrs(gl,'?.'+attr,xname,yname);
+            swapAttrs(layout, '?.'+attr, xname, yname);
         });
 
         // now swap x&y for any annotations anchored to these x & y
-        (gl.annotations||[]).forEach(function(ann) {
+        (layout.annotations||[]).forEach(function(ann) {
             if(ann.xref===xid && ann.yref===yid) { swapAttrs(ann,'?'); }
         });
 
@@ -2214,8 +2249,10 @@
     //          allows setting multiple attributes simultaneously
     Plotly.relayout = function(gd,astr,val) {
         if(gd.framework && gd.framework.isPolar) return;
-        if(typeof gd === 'string') { gd = document.getElementById(gd); }
-        var gl = gd.layout,
+        if(typeof gd === 'string') gd = document.getElementById(gd);
+
+        var layout = gd.layout,
+            fullLayout = gd._fullLayout,
             aobj = {},
             dolegend = false,
             doticks = false,
@@ -2229,11 +2266,14 @@
         // for now, if we detect 3D stuff, just re-do the plot
         // if (gl._hasGL3D) doplot = true;
 
-        if(typeof astr === 'string') { aobj[astr] = val; }
-        else if($.isPlainObject(astr)) { aobj = astr; }
-        else { console.log('relayout fail',astr,val); return; }
+        if(typeof astr === 'string') aobj[astr] = val;
+        else if($.isPlainObject(astr)) aobj = astr;
+        else {
+            console.log('relayout fail',astr,val);
+            return;
+        }
 
-        if(Object.keys(aobj).length) { gd.changed = true; }
+        if(Object.keys(aobj).length) gd.changed = true;
 
         keys = Object.keys(aobj);
         axes = Plotly.Axes.list(gd);
@@ -2271,29 +2311,28 @@
         // attr can be an array to set several at once (all to the same val)
         function doextra(attr,val) {
             if($.isArray(attr)) {
-                attr.forEach(function(a) {
-                    doextra(a,val);
-                });
+                attr.forEach(function(a) { doextra(a,val); });
                 return;
             }
             // quit if explicitly setting this elsewhere
-            if(attr in aobj) { return; }
-            var p = Plotly.Lib.nestedProperty(gl,attr);
-            if(!(attr in undoit)) undoit[attr]=p.get();
+            if(attr in aobj) return;
+
+            var p = Plotly.Lib.nestedProperty(layout,attr);
+            if(!(attr in undoit)) undoit[attr] = p.get();
             if(val!==undefined) p.set(val);
         }
 
         // for editing annotations - is it on autoscaled axes?
         function annAutorange(anni,axletter) {
             var axName = Plotly.Axes.id2name(anni[axletter+'ref']||axletter);
-            return gl[axName] && gl[axName].autorange;
+            return fullLayout[axName] && fullLayout[axName].autorange;
         }
 
         var hw = ['height','width'];
 
         // alter gd.layout
         for(var ai in aobj) {
-            var p = Plotly.Lib.nestedProperty(gl,ai),
+            var p = Plotly.Lib.nestedProperty(layout,ai),
                 vi = aobj[ai],
                 parent = p.parent,
                 plen = p.parts.length,
@@ -2368,7 +2407,7 @@
             // that's because add and remove are special
             else if(p.parts[0] ==='annotations') {
                 var anum = p.parts[1],
-                    anns = gl.annotations,
+                    anns = layout.annotations,
                     anni = (anns && anns[anum])||{};
                 // if p.parts is just an annotation number, and val is either
                 // 'add' or an entire annotation to add, the undo is 'remove'
@@ -2440,10 +2479,10 @@
                 p.set(vi);
                 // if we just inserted a new axis (eg from themes),
                 // initialize it
-                if(ai.match(/^[xyz]axis[0-9]*$/)) {
-                    Plotly.Axes.initAxis(gd,gd.layout[ai]);
-                    Plotly.Axes.setConvert(gd.layout[ai]);
-                }
+                // if(ai.match(/^[xyz]axis[0-9]*$/)) {
+                //     Plotly.Axes.initAxis(gd,gd.layout[ai]);
+                //     Plotly.Axes.setConvert(gd.layout[ai]);
+                // }
             }
         }
         // now all attribute mods are done, as are
@@ -2454,12 +2493,9 @@
 
         // calculate autosizing - if size hasn't changed,
         // will remove h&w so we don't need to redraw
-        if(aobj.autosize) {
-            aobj=plotAutoSize(gd,aobj);
-        }
-        if(aobj.height || aobj.width || aobj.autosize) {
-            docalc = true;
-        }
+        if(aobj.autosize) aobj = plotAutoSize(gd,aobj);
+
+        if(aobj.height || aobj.width || aobj.autosize) docalc = true;
 
         // redraw
         // first check if there's still anything to do
@@ -2472,14 +2508,14 @@
                 // force it to redo calcdata?
                 if(docalc) { gd.calcdata = undefined; }
                 // replot with the modified layout
-                return Plotly.plot(gd,'',gl);
+                return Plotly.plot(gd,'',layout);
             });
         }
         else if(ak.length) {
             // if we didn't need to redraw entirely, just do the needed parts
             if(dolegend) {
                 seq.push(function doLegend(){
-                    Plotly.Legend.draw(gd, gl.showlegend);
+                    Plotly.Legend.draw(gd, fullLayout.showlegend);
                     return plots.previousPromises(gd);
                 });
             }
@@ -2506,16 +2542,16 @@
     };
 
     function setGraphContainerScroll(gd) {
-        if(!gd || !gd.mainsite || !gd.layout || gd.tabtype!=='plot' ||
+        if(!gd || !gd.mainsite || !gd._fullLayout || gd.tabtype!=='plot' ||
                 $(gd).css('display')==='none') {
             return;
         }
 
         var $graphContainer = $(gd).find('.plot-container'),
             isGraphWiderThanContainer =
-                gd.layout.width > parseInt($graphContainer.css('width'),10);
+                gd._fullLayout.width > parseInt($graphContainer.css('width'),10);
 
-        if (gd.layout.autosize || !isGraphWiderThanContainer) {
+        if (gd._fullLayout.autosize || !isGraphWiderThanContainer) {
             $graphContainer.removeClass('is-fixed-size');
         }
         else if (isGraphWiderThanContainer) {
@@ -2524,10 +2560,12 @@
     }
 
     function plotAutoSize(gd, aobj) {
-        var newheight, newwidth;
+        var fullLayout = gd._fullLayout,
+            newheight,
+            newwidth;
         if(gd.mainsite){
             setFileAndCommentsSize(gd);
-            var gdBB = gd.layout._container.node().getBoundingClientRect();
+            var gdBB = fullLayout._container.node().getBoundingClientRect();
 
             // autosized plot on main site: 5% border on all sides
             newheight = Math.round(gdBB.height*0.9);
@@ -2564,23 +2602,21 @@
             // provide height and width for the container div,
             // specify size in layout, or take the defaults,
             // but don't enforce any ratio restrictions
-            newheight = $(gd).height() || gd.layout.height ||
-                defaultLayout().height;
-            newwidth = $(gd).width() || gd.layout.width ||
-                defaultLayout().width;
+            newheight = $(gd).height() || fullLayout.height;
+            newwidth = $(gd).width() || fullLayout.width;
         }
 
-        if(Math.abs(gd.layout.width - newwidth) > 1 ||
-                Math.abs(gd.layout.height - newheight) > 1) {
-            gd.layout.height = newheight;
-            gd.layout.width = newwidth;
+        if(Math.abs(fullLayout.width - newwidth) > 1 ||
+                Math.abs(fullLayout.height - newheight) > 1) {
+            fullLayout.height = gd.layout.height = newheight;
+            fullLayout.width = gd.layout.width = newwidth;
         }
         // if there's no size change, update layout but
         // delete the autosize attr so we don't redraw
         // but can't call layoutStyles for initial autosize
-        else if(gd.layout.autosize !== 'initial') {
+        else if(fullLayout.autosize !== 'initial') {
             delete(aobj.autosize);
-            gd.layout.autosize = true;
+            fullLayout.autosize = gd.layout.autosize = true;
         }
         return aobj;
     }
@@ -2601,7 +2637,7 @@
 
                 if ($(gd).css('display')==='none') { return; }
 
-                if (gd.layout && gd.layout.autosize) {
+                if ((gd._fullLayout||{}).autosize) {
                     // autosizing doesn't count as a change that needs saving
                     var oldchanged = gd.changed;
                     // nor should it be included in the undo queue
@@ -2623,115 +2659,120 @@
     // -------------------------------------------------------
     // makePlotFramework: Create the plot container and axes
     // -------------------------------------------------------
-    function makePlotFramework(gd, layout) {
-        if(typeof gd === 'string') { gd = document.getElementById(gd); }
+    function makePlotFramework(gd) {
+        // if(typeof gd === 'string') { gd = document.getElementById(gd); }
         var gd3 = d3.select(gd);
 
         // test if this is on the main site or embedded
-        gd.mainsite = $('#plotlyMainMarker').length > 0;
+        // gd.mainsite = !!$('#plotlyMainMarker').length;
 
-        gd._promises = [];
 
         // hook class for plots main container (in case of plotly.js
         // this won't be #embedded-graph or .js-tab-contents)
-        gd3.classed('js-plotly-plot',true);
+        // gd3.classed('js-plotly-plot',true);
 
-        makeTester(gd);
+        // makeTester(gd);
+        // gd._promises = [];
 
-        function addDefaultAxis(container, axname) {
-            if(!container[axname]) {
-                container[axname] = Plotly.Axes.defaultAxis({
-                    range: [-1,6],
-                    anchor: {x:'y',y:'x'}[axname.charAt(0)]
-                });
-            }
-        }
+        // function addDefaultAxis(container, axname) {
+        //     if(!container[axname]) {
+        //         container[axname] = Plotly.Axes.defaultAxis({
+        //             range: [-1,6],
+        //             anchor: {x:'y',y:'x'}[axname.charAt(0)]
+        //         });
+        //     }
+        // }
 
-        // Get the layout info - take the default or any existing layout,
-        // then update with layout arg
-        var oldLayout = gd.layout || defaultLayout(),
-            newLayout = layout || {};
-        // look for axes to include in oldLayout
-        // so that default axis settings get included
-        var xalist = Object.keys(newLayout)
-                .filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
-            yalist = Object.keys(newLayout)
-                .filter(function(k){ return k.match(/^yaxis[0-9]*$/); }),
-            // temp hack for webgl
-            type = (type = gd.data) && (type = type[0]) && (type = type.type),
-            gl = gd.layout,
-            subplots;
+        // // Get the layout info - take the default or any existing layout,
+        // // then update with layout arg
+        // var oldLayout = gd.layout || defaultLayout(),
+        //     newLayout = layout || {};
+        // // look for axes to include in oldLayout
+        // // so that default axis settings get included
+        // var xalist = Object.keys(newLayout)
+        //         .filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
+        //     yalist = Object.keys(newLayout)
+        //         .filter(function(k){ return k.match(/^yaxis[0-9]*$/); }),
+        //     // temp hack for webgl
+        //     type = (type = gd.data) && (type = type[0]) && (type = type.type),
+        //     gl = gd.layout,
+        //     subplots;
 
-        if(!xalist.length) { xalist = ['xaxis']; }
-        if(!yalist.length) { yalist = ['yaxis']; }
-        xalist.concat(yalist).forEach(function(axname) {
-            addDefaultAxis(oldLayout,axname);
-            // if an axis range was explicitly provided with newlayout,
-            // turn off autorange
-            var ax = newLayout[axname];
-            if(ax && ax.range && ax.range.length===2) {
-                oldLayout[axname].autorange = false;
-            }
-        });
-        gd.layout = gl = updateObject(oldLayout, newLayout);
+        // if(!xalist.length) { xalist = ['xaxis']; }
+        // if(!yalist.length) { yalist = ['yaxis']; }
+        // xalist.concat(yalist).forEach(function(axname) {
+        //     addDefaultAxis(oldLayout,axname);
+        //     // if an axis range was explicitly provided with newlayout,
+        //     // turn off autorange
+        //     var ax = newLayout[axname];
+        //     if(ax && ax.range && ax.range.length===2) {
+        //         oldLayout[axname].autorange = false;
+        //     }
+        // });
+        // gd.layout = gl = updateObject(oldLayout, newLayout);
 
-        var doCartesian = gl._hasCartesian || !gl._hasGL3D;
+        // var doCartesian = gl._hasCartesian || !gl._hasGL3D;
 
-        if (doCartesian) {
-            // do a bunch of 2D axis stuff
+        // if (doCartesian) {
+        // do a bunch of 2D axis stuff
 
-            // Get subplots and see if we need to make any more axes
-            subplots = Plotly.Axes.getSubplots(gd);
-            subplots.forEach(function(subplot) {
-                var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
-                // gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
-                [axmatch[1],axmatch[2]].forEach(function(axid) {
-                    addDefaultAxis(gl,Plotly.Axes.id2name(axid));
-                });
-            });
-            // now get subplots again, in case the new axes require
-            // more subplots (yes, that's odd... but possible)
-            subplots = Plotly.Axes.getSubplots(gd);
+        // Get subplots and see if we need to make any more axes
+        // subplots = Plotly.Axes.getSubplots(gd);
+        // subplots.forEach(function(subplot) {
+        //     var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
+        //     // gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
+        //     [axmatch[1],axmatch[2]].forEach(function(axid) {
+        //         addDefaultAxis(gl,Plotly.Axes.id2name(axid));
+        //     });
+        // });
 
-            Plotly.Axes.fillAxesWithDefaults(gd);
-            Plotly.Axes.initAxes(gd);
-            Plotly.Axes.setTypes(gd);
+        // now get subplots again, in case the new axes require
+        // more subplots (yes, that's odd... but possible)
+        var subplots = Plotly.Axes.getSubplots(gd),
+            fullLayout = gd._fullLayout;
 
-        } else {
-            // This is WEBGL ONLY, remove usual axis
-            subplots = [];
-            delete gd.layout.xaxis;
-            delete gd.layout.yaxis;
-        }
+        // Plotly.Axes.fillAxesWithDefaults(gd);
+        // TODO: now that we're never calling this on its own, can we do it
+        // without initializing and drawing axes, just making containers?
+        Plotly.Axes.initAxes(gd);
+        Plotly.Axes.setTypes(gd);
 
-        var outerContainer = gl._fileandcomments =
+        // } else {
+        //     // This is WEBGL ONLY, remove usual axis
+        //     subplots = [];
+        //     delete gd.layout.xaxis;
+        //     delete gd.layout.yaxis;
+        // }
+
+        var outerContainer = fullLayout._fileandcomments =
                 gd3.selectAll('.file-and-comments');
         // for embeds and cloneGraphOffscreen
-        if(!outerContainer.node()) { outerContainer = gd3; }
+        if(!outerContainer.node()) outerContainer = gd3;
 
         // Plot container
-        gl._container = outerContainer.selectAll('.plot-container').data([0]);
-        gl._container.enter().insert('div', ':first-child')
+        fullLayout._container = outerContainer.selectAll('.plot-container').data([0]);
+        fullLayout._container.enter().insert('div', ':first-child')
             .classed('plot-container',true)
             .classed('plotly',true)
             .classed('is-mainsite', gd.mainsite);
 
         // Make the svg container
-        gl._paperdiv = gl._container.selectAll('.svg-container').data([0]);
-        gl._paperdiv.enter().append('div')
+        fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
+        fullLayout._paperdiv.enter().append('div')
             .classed('svg-container',true)
             .style('position','relative');
 
         // Initial autosize
-        if(gl.autosize === 'initial') {
-            if(gd.mainsite){ setFileAndCommentsSize(gd); }
+        if(fullLayout.autosize === 'initial') {
+            if(gd.mainsite) setFileAndCommentsSize(gd);
             plotAutoSize(gd,{});
-            gl.autosize=true;
+            fullLayout.autosize = true;
+            gd.layout.autosize = true;
         }
         // Make the graph containers
         // start fresh each time we get here, so we know the order comes out
         // right, rather than enter/exit which can muck up the order
-        gl._paperdiv.selectAll('svg').remove();
+        fullLayout._paperdiv.selectAll('svg').remove();
 
         // short-circuiting this code here resolves the issue where the _paper
         // svg element following this conditional pushes the page past
@@ -2744,7 +2785,7 @@
         //     return;
         // }
 
-        gl._paper = gl._paperdiv.append('svg')
+        fullLayout._paper = fullLayout._paperdiv.append('svg')
             .attr({
                 xmlns: 'http://www.w3.org/2000/svg',
                 // odd d3 quirk - need namespace twice??
@@ -2769,12 +2810,12 @@
 
         // create all the layers in order, so we know they'll stay in order
         var overlays = [];
-        gl._plots = {};
-        gl._paper.selectAll('g.subplot').data(subplots)
+        fullLayout._plots = {};
+        fullLayout._paper.selectAll('g.subplot').data(subplots)
           .enter().append('g')
             .classed('subplot',true)
             .each(function(subplot){
-                var plotinfo = gl._plots[subplot] = {},
+                var plotinfo = fullLayout._plots[subplot] = {},
                     plotgroup = d3.select(this).classed(subplot,true);
                 plotinfo.id = subplot;
                 // references to the axis objects controlling this subplot
@@ -2838,7 +2879,7 @@
                     // but append them to paper rather than the plot groups,
                     // so they end up on top of the rest
                 }
-                plotinfo.draglayer = gl._paper.append('g');
+                plotinfo.draglayer = fullLayout._paper.append('g');
             });
 
         // now make the components of overlaid subplots
@@ -2846,7 +2887,7 @@
         // their other components to the corresponding
         // extra groups of their main plots.
         overlays.forEach(function(plotinfo) {
-            var mainplot = gl._plots[plotinfo.mainplot];
+            var mainplot = fullLayout._plots[plotinfo.mainplot];
             mainplot.overlays.push(plotinfo);
 
             plotinfo.gridlayer = mainplot.overgrid.append('g');
@@ -2860,7 +2901,7 @@
 
         // common attributes for all subplots, overlays or not
         subplots.forEach(function(subplot) {
-            var plotinfo = gl._plots[subplot];
+            var plotinfo = fullLayout._plots[subplot];
             plotinfo.plot
                 .attr('preserveAspectRatio','none')
                 .style('fill','none');
@@ -2873,8 +2914,8 @@
         });
 
         // single info (legend, annotations) and hover layers for the whole plot
-        gl._infolayer = gl._paper.append('g').classed('infolayer',true);
-        gl._hoverlayer = gl._paper.append('g').classed('hoverlayer',true);
+        fullLayout._infolayer = fullLayout._paper.append('g').classed('infolayer',true);
+        fullLayout._hoverlayer = fullLayout._paper.append('g').classed('hoverlayer',true);
 
         // position and style the containers, make main title
         var frameWorkDone = Plotly.Lib.syncOrAsync([
@@ -2937,21 +2978,19 @@
     // the rest are pixels in each direction
     // or leave o out to delete this entry (like if it's hidden)
     plots.autoMargin = function(gd,id,o) {
-        var gl = gd.layout;
-        if(!gl._pushmargin) { gl._pushmargin = {}; }
-        if(gl.margin.autoexpand!==false) {
-            if(!o) {
-                delete gl._pushmargin[id];
-            }
+        var fullLayout = gd._fullLayout;
+        if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
+        if(fullLayout.margin.autoexpand!==false) {
+            if(!o) delete fullLayout._pushmargin[id];
             else {
                 var pad = o.pad||12;
 
                 // if the item is too big, just give it enough automargin to
                 // make sure you can still grab it and bring it back
-                if(o.l+o.r>gl.width*0.5) { o.l = o.r = 0; }
-                if(o.b+o.t>gl.height*0.5) { o.b = o.t = 0; }
+                if(o.l+o.r > fullLayout.width*0.5) o.l = o.r = 0;
+                if(o.b+o.t > fullLayout.height*0.5) o.b = o.t = 0;
 
-                gl._pushmargin[id] = {
+                fullLayout._pushmargin[id] = {
                     l: {val:o.x, size: o.l+pad},
                     r: {val:o.x, size: o.r+pad},
                     b: {val:o.y, size: o.b+pad},
@@ -2964,21 +3003,21 @@
     };
 
     function doAutoMargin(gd) {
-        var gl = gd.layout;
-        if(!gl._size) { gl._size = {}; }
-        if(!gl._pushmargin) { gl._pushmargin = {}; }
-        var gs = gl._size,
+        var fullLayout = gd._fullLayout;
+        if(!fullLayout._size) fullLayout._size = {};
+        if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
+        var gs = fullLayout._size,
             oldmargins = JSON.stringify(gs);
 
         // adjust margins for outside legends and colorbars
-        // gl.margin is the requested margin,
-        // gl._size has margins and plotsize after adjustment
-        var ml = Math.max(gl.margin.l||0,0),
-            mr = Math.max(gl.margin.r||0,0),
-            mt = Math.max(gl.margin.t||0,0),
-            mb = Math.max(gl.margin.b||0,0),
-            pm = gl._pushmargin;
-        if(gl.margin.autoexpand!==false) {
+        // fullLayout.margin is the requested margin,
+        // fullLayout._size has margins and plotsize after adjustment
+        var ml = Math.max(fullLayout.margin.l||0,0),
+            mr = Math.max(fullLayout.margin.r||0,0),
+            mt = Math.max(fullLayout.margin.t||0,0),
+            mb = Math.max(fullLayout.margin.b||0,0),
+            pm = fullLayout._pushmargin;
+        if(fullLayout.margin.autoexpand!==false) {
             // fill in the requested margins
             pm.base = {
                 l:{val:0, size:ml},
@@ -3001,9 +3040,9 @@
                             pr = pm[k2].r.size;
                         if(fr>fl) {
                             var newl = (pl*fr +
-                                    (pr-gl.width)*fl) / (fr-fl),
+                                    (pr-fullLayout.width)*fl) / (fr-fl),
                                 newr = (pr*(1-fl) +
-                                    (pl-gl.width)*(1-fr)) / (fr-fl);
+                                    (pl-fullLayout.width)*(1-fr)) / (fr-fl);
                             if(newl>=0 && newr>=0 && newl+newr>ml+mr) {
                                 ml = newl;
                                 mr = newr;
@@ -3015,9 +3054,9 @@
                             pt = pm[k2].t.size;
                         if(ft>fb) {
                             var newb = (pb*ft +
-                                    (pt-gl.height)*fb) / (ft-fb),
+                                    (pt-fullLayout.height)*fb) / (ft-fb),
                                 newt = (pt*(1-fb) +
-                                    (pb-gl.height)*(1-ft)) / (ft-fb);
+                                    (pb-fullLayout.height)*(1-ft)) / (ft-fb);
                             if(newb>=0 && newt>=0 && newb+newt>mb+mt) {
                                 mb = newb;
                                 mt = newt;
@@ -3032,13 +3071,13 @@
         gs.r = Math.round(mr);
         gs.t = Math.round(mt);
         gs.b = Math.round(mb);
-        gs.p = Math.round(gl.margin.pad);
-        gs.w = Math.round(gl.width)-gs.l-gs.r;
-        gs.h = Math.round(gl.height)-gs.t-gs.b;
+        gs.p = Math.round(fullLayout.margin.pad);
+        gs.w = Math.round(fullLayout.width)-gs.l-gs.r;
+        gs.h = Math.round(fullLayout.height)-gs.t-gs.b;
 
         // if things changed and we're not already redrawing, trigger a redraw
         if(!gd._replotting && oldmargins!=='{}' &&
-                oldmargins!==JSON.stringify(gl._size)) {
+                oldmargins!==JSON.stringify(fullLayout._size)) {
             return Plotly.plot(gd);
         }
     }
@@ -3049,21 +3088,21 @@
     }
 
     function lsInner(gd) {
-        var gl = gd.layout,
-            gs = gl._size;
+        var fullLayout = gd._fullLayout,
+            gs = fullLayout._size;
 
         // clear axis line positions, to be set in the subplot loop below
         Plotly.Axes.list(gd).forEach(function(ax){ ax._linepositions = {}; });
-        gl._paperdiv.style({
-            width: gl.width+'px',
-            height: gl.height+'px',
-            background: gl.paper_bgcolor
+        fullLayout._paperdiv.style({
+            width: fullLayout.width+'px',
+            height: fullLayout.height+'px',
+            background: fullLayout.paper_bgcolor
         });
-        gl._paper.call(Plotly.Drawing.setSize, gl.width, gl.height);
+        fullLayout._paper.call(Plotly.Drawing.setSize, fullLayout.width, fullLayout.height);
 
         var freefinished = [];
-        gl._paper.selectAll('g.subplot').each(function(subplot) {
-            var plotinfo = gl._plots[subplot],
+        fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
+            var plotinfo = fullLayout._plots[subplot],
                 xa = plotinfo.x,
                 ya = plotinfo.y;
             xa.setScale(); // this may already be done... not sure
@@ -3074,7 +3113,7 @@
                     .call(Plotly.Drawing.setRect,
                         xa._offset-gs.p, ya._offset-gs.p,
                         xa._length+2*gs.p, ya._length+2*gs.p)
-                    .call(Plotly.Drawing.fillColor, gl.plot_bgcolor);
+                    .call(Plotly.Drawing.fillColor, fullLayout.plot_bgcolor);
             }
             plotinfo.plot
                 .call(Plotly.Drawing.setRect,
@@ -3221,19 +3260,19 @@
             return;
         }
 
-        var gl = gd.layout,
-            gs = gl._size,
+        var fullLayout = gd._fullLayout,
+            gs = fullLayout._size,
             axletter = title.charAt(0),
             colorbar = title.substr(1,2)==='cb',
             cbnum = colorbar ? Number(title.substr(3).replace('title','')) : 0,
             cont = colorbar ? gd.calcdata[cbnum][0].t.cb.axis :
-                (gl[Plotly.Axes.id2name(title.replace('title',''))] || gl),
-            prop = cont===gl ? 'title' : cont._name+'.title',
+                (fullLayout[Plotly.Axes.id2name(title.replace('title',''))] || fullLayout),
+            prop = cont===fullLayout ? 'title' : cont._name+'.title',
             name = colorbar ? 'colorscale' :
                 ((cont._id||axletter).toUpperCase()+' axis'),
-            font = cont.titlefont.family || gl.font.family || 'Arial',
-            fontSize = cont.titlefont.size || (gl.font.size*1.2) || 14,
-            fontColor = cont.titlefont.color || gl.font.color || '#444',
+            font = cont.titlefont.family || fullLayout.font.family || 'Arial',
+            fontSize = cont.titlefont.size || (fullLayout.font.size*1.2) || 14,
+            fontColor = cont.titlefont.color || fullLayout.font.color || '#444',
             x,
             y,
             transform='',
@@ -3307,9 +3346,9 @@
         }
         else{
             name = 'Plot';
-            fontSize = gl.titlefont.size || gl.font.size*1.4 || 16;
-            x = gl.width/2;
-            y = gl._size.t/2;
+            fontSize = fullLayout.titlefont.size || fullLayout.font.size*1.4 || 16;
+            x = fullLayout.width/2;
+            y = fullLayout._size.t/2;
             options = {x: x, y: y, 'text-anchor': 'middle'};
             avoid = {};
         }
@@ -3336,7 +3375,7 @@
                 .remove();
         }
         else {
-            group = gl._infolayer.selectAll('.g-'+title)
+            group = fullLayout._infolayer.selectAll('.g-'+title)
                 .data([0]);
             group.enter().append('g')
                 .classed('g-'+title, true);
@@ -3398,10 +3437,10 @@
                     paperbb = {
                         left: 0,
                         top: 0,
-                        right: gl.width,
-                        bottom: gl.height
+                        right: fullLayout.width,
+                        bottom: fullLayout.height
                     },
-                    maxshift = colorbar ? gl.width:
+                    maxshift = colorbar ? fullLayout.width:
                         (paperbb[avoid.side]-titlebb[avoid.side]) *
                         ((avoid.side==='left' || avoid.side==='top') ? -1 : 1);
                 // Prevent the title going off the paper
@@ -3446,7 +3485,7 @@
             opacity = 0;
             isplaceholder = true;
             txt = 'Click to enter '+name+' title';
-            gl._infolayer.select('.'+title)
+            fullLayout._infolayer.select('.'+title)
                 .attr({'data-unformatted': txt})
                 .text('Click to enter '+name+' title')
                 .on('mouseover.opacity',function(){
@@ -3460,7 +3499,7 @@
         }
 
         // don't allow editing (or placeholder) on embedded graphs or exports
-        if(gd.mainsite && !gl._forexport){
+        if(gd.mainsite && !fullLayout._forexport){
             if(!txt) { setPlaceholder(); }
 
             el.call(Plotly.util.makeEditable)
@@ -3636,28 +3675,28 @@
     // updateObject: merge objects i and up recursively into a new object (o)
     // one difference with $.extend is that we coerce updated values to numbers
     // if the original value was a number
-    var uoStack=[];
-    function updateObject(i,up) {
-        if(!$.isPlainObject(up)) { return i; }
-        // seems like JS doesn't fully implement recursion...
-        // if I say o={} here then each level destroys the previous.
-        var o = uoStack[uoStack.push({})-1],
-            key;
-        for(key in i) { o[key]=i[key]; }
-        for(key in up) {
-            if($.isPlainObject(up[key])) {
-                o[key] = updateObject(
-                    $.isPlainObject(i[key]) ? i[key] : {}, up[key]);
-            }
-            // if the initial object had a number and
-            // the update can be a number, coerce it
-            else if($.isNumeric(i[key]) && $.isNumeric(up[key])) {
-                o[key] = +up[key];
-            }
-            else { o[key] = up[key]; }
-        }
-        return uoStack.pop();
-    }
+    // var uoStack=[];
+    // function updateObject(i,up) {
+    //     if(!$.isPlainObject(up)) { return i; }
+    //     // seems like JS doesn't fully implement recursion...
+    //     // if I say o={} here then each level destroys the previous.
+    //     var o = uoStack[uoStack.push({})-1],
+    //         key;
+    //     for(key in i) { o[key]=i[key]; }
+    //     for(key in up) {
+    //         if($.isPlainObject(up[key])) {
+    //             o[key] = updateObject(
+    //                 $.isPlainObject(i[key]) ? i[key] : {}, up[key]);
+    //         }
+    //         // if the initial object had a number and
+    //         // the update can be a number, coerce it
+    //         else if($.isNumeric(i[key]) && $.isNumeric(up[key])) {
+    //             o[key] = +up[key];
+    //         }
+    //         else { o[key] = up[key]; }
+    //     }
+    //     return uoStack.pop();
+    // }
 
     plots.defaultSceneLayout = function (td, sceneId, existingLayout) {
 

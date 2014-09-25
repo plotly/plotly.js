@@ -275,7 +275,8 @@
     };
 
     boxes.setPositions = function(gd,plotinfo) {
-        var xa = plotinfo.x,
+        var fullLayout = gd._fullLayout,
+            xa = plotinfo.x,
             ya = plotinfo.y,
             boxlist = [],
             minPad = 0,
@@ -311,7 +312,7 @@
             // autoscale the x axis - including space for points if they're off the side
             // TODO: this will overdo it if the outermost boxes don't have
             // their points as far out as the other boxes
-            var padfactor = (1-gd.layout.boxgap) * (1-gd.layout.boxgroupgap) *
+            var padfactor = (1-fullLayout.boxgap) * (1-fullLayout.boxgroupgap) *
                     dx / gd.numboxes;
             Plotly.Axes.expand(xa, boxdv.vals, {
                 vpadminus: dx+minPad*padfactor,
@@ -321,7 +322,7 @@
     };
 
     boxes.plot = function(gd,plotinfo,cdbox) {
-        var gl = gd.layout,
+        var fullLayout = gd._fullLayout,
             xa = plotinfo.x,
             ya = plotinfo.y;
         var boxtraces = plotinfo.plot.select('.boxlayer').selectAll('g.trace.boxes')
@@ -331,11 +332,11 @@
 
         boxtraces.each(function(d){
             var t = d[0].t,
-                group = (gl.boxmode==='group' && gd.numboxes>1),
+                group = (fullLayout.boxmode==='group' && gd.numboxes>1),
                 // box half width
-                bdx = t.dx*(1-gl.boxgap)*(1-gl.boxgroupgap)/(group ? gd.numboxes : 1),
+                bdx = t.dx*(1-fullLayout.boxgap)*(1-fullLayout.boxgroupgap)/(group ? gd.numboxes : 1),
                 // box center offset
-                bx = group ? 2*t.dx*(-0.5+(t.boxnum+0.5)/gd.numboxes)*(1-gl.boxgap) : 0,
+                bx = group ? 2*t.dx*(-0.5+(t.boxnum+0.5)/gd.numboxes)*(1-fullLayout.boxgap) : 0,
                 // whisker width
                 wdx = bdx*t.ww;
             if(t.visible===false || t.emptybox) {

@@ -163,21 +163,23 @@
             outerTicks = {},
             noGrids = {};
 
-        // add axes implied by traces, and check for default formatting tweaks
         fullData.forEach(function(trace) {
             var xaName = axes.id2name(trace.xaxis),
                 yaName = axes.id2name(trace.yaxis);
+
+            // add axes implied by traces
             if(xaName && xaList.indexOf(xaName)===-1) xaList.push(xaName);
             if(yaName && yaList.indexOf(yaName)===-1) yaList.push(yaName);
 
+            // check for default formatting tweaks
             if(Plotly.Plots.isHeatmap(trace.type)) {
                 outerTicks[xaName] = true;
                 outerTicks[yaName] = true;
             }
 
             if(Plotly.Plots.isBar(trace.type) || trace.type==='box') {
-                var saName = trace.orientation==='h' ? yaName : xaName;
-                noGrids[saName] = true;
+                var positionAxis = trace.orientation==='h' ? yaName : xaName;
+                noGrids[positionAxis] = true;
             }
         });
 
@@ -187,12 +189,14 @@
             return aNum - bNum;
         }
 
-        // make sure there's at least one of each and lists are sorted
-        if(!xaList.length) xaList = ['xaxis'];
-        else xaList.sort(axSort);
+        if(layoutOut._hasCartesian || !fullData.length) {
+            // make sure there's at least one of each and lists are sorted
+            if(!xaList.length) xaList = ['xaxis'];
+            else xaList.sort(axSort);
 
-        if(!yaList.length) yaList = ['yaxis'];
-        else yaList.sort(axSort);
+            if(!yaList.length) yaList = ['yaxis'];
+            else yaList.sort(axSort);
+        }
 
         xaList.concat(yaList).forEach(function(axName){
             var containerIn = layoutIn[axName] || {},
@@ -223,12 +227,10 @@
                 autoRange = coerce('autorange', !validRange);
             // TODO: where does autorange machinery go?
             if(autoRange) coerce('rangemode');
-            else {
-                var range0 = coerce('range[0]', -1),
-                    range1 = coerce('range[1]', axLetter==='x' ? 6 : 4);
-                if(range0===range1) {
-                    containerOut.range = [range0 - 1, range0 + 1];
-                }
+            var range0 = coerce('range[0]', -1),
+                range1 = coerce('range[1]', axLetter==='x' ? 6 : 4);
+            if(range0===range1) {
+                containerOut.range = [range0 - 1, range0 + 1];
             }
 
             var autoTick = coerce('autotick');
@@ -373,27 +375,27 @@
     };
 
     // check if every axis we need exists - make any that don't as defaults
-    axes.fillAxesWithDefaults = function (td) {
-        (td.data||[]).forEach(function(curve) {
-            if(curve.type && curve.type.indexOf('Polar')!==-1) { return; }
-            ['x','y'].forEach(function(axletter) {
-                // also here: convert references x1, y1 to x, y
-                if(curve[axletter+'axis']===axletter+'1') {
-                    curve[axletter+'axis'] = axletter;
-                }
+    // axes.fillAxesWithDefaults = function (td) {
+    //     (td.data||[]).forEach(function(curve) {
+    //         if(curve.type && curve.type.indexOf('Polar')!==-1) { return; }
+    //         ['x','y'].forEach(function(axletter) {
+    //             // also here: convert references x1, y1 to x, y
+    //             if(curve[axletter+'axis']===axletter+'1') {
+    //                 curve[axletter+'axis'] = axletter;
+    //             }
 
-                var axid = curve[axletter+'axis']||axletter,
-                    axName = axes.id2name(axid);
+    //             var axid = curve[axletter+'axis']||axletter,
+    //                 axName = axes.id2name(axid);
 
-                if(!td.layout[axName]) {
-                    td.layout[axName] = axes.defaultAxis({
-                        range: [-1,axletter==='x' ? 6 : 4],
-                        side: axletter==='x' ? 'bottom' : 'left'
-                    });
-                }
-            });
-        });
-    };
+    //             if(!td.layout[axName]) {
+    //                 td.layout[axName] = axes.defaultAxis({
+    //                     range: [-1,axletter==='x' ? 6 : 4],
+    //                     side: axletter==='x' ? 'bottom' : 'left'
+    //                 });
+    //             }
+    //         });
+    //     });
+    // };
 
     axes.initAxes = function (td) {
         var axlist = axes.list(td);
@@ -426,20 +428,21 @@
     // add a few pieces to prepare the axis object for use
     axes.initAxis = function(td,ax) {
         ax._td = td;
-        var name = Object.keys(td.layout)
-            .filter(function(k){return td.layout[k]===ax;})[0];
+        var fullLayout = td._fullLayout,
+            name = Object.keys(fullLayout)
+            .filter(function(k){return fullLayout[k]===ax;})[0];
         // check if this axis is in the layout, in order to allow
         // special-purpose axes like for colorbars that don't
         // get this next part
         if(name) {
             // allow people to pass in xaxis1 and yaxis1
             // but convert them to xaxis, yaxis
-            if(name==='xaxis1' || name==='yaxis1') {
-                var newname = name.substr(0,5);
-                td.layout[newname] = td.layout[name];
-                delete td.layout[name];
-                name = newname;
-            }
+            // if(name==='xaxis1' || name==='yaxis1') {
+            //     var newname = name.substr(0,5);
+            //     td.layout[newname] = td.layout[name];
+            //     delete td.layout[name];
+            //     name = newname;
+            // }
             ax._name = name;
             ax._id = axes.name2id(ax._name);
         }
@@ -447,7 +450,7 @@
 
         // set scaling to pixels
         ax.setScale = function(){
-            var gs = ax._td.layout._size,
+            var gs = fullLayout._size,
                 i;
             // make sure we have a range (linearized data values)
             // and that it stays away from the limits of javascript numbers
@@ -503,7 +506,10 @@
     // and axis id's (x, x2, etc). Would probably have ditched 'xaxis'
     // completely in favor of just 'x' if it weren't ingrained in the API etc.
     axes.id2name = function(id) {
-        return id && id.charAt(0)+'axis'+id.substr(1);
+        if(typeof id !== 'string') return;
+        var axNum = id.substr(1);
+        if(axNum==='1') axNum = '';
+        return id.charAt(0) + 'axis' + axNum;
     };
 
     axes.name2id = function(name) {
@@ -827,7 +833,8 @@
     axes.doAutoRange = function(ax) {
         function pickVal(v){ return v.val; }
 
-        if(!ax._length) { ax.setScale(); }
+        if(!ax._length) ax.setScale();
+
         if(ax.autorange && ax._min && ax._max &&
                 ax._min.length && ax._max.length) {
             var i,j,minpt,maxpt,minbest,maxbest,dp,dv,
@@ -892,6 +899,14 @@
                     ax.range.reverse();
                 }
             }
+
+            // doAutoRange will get called on fullLayout,
+            // but we want to report its results back to layout
+            var axIn = ax._td.layout[ax._name];
+            if(axIn!==ax) {
+                axIn.range = ax.range.slice();
+                axIn.autorange = ax.autorange;
+            }
         }
     };
 
@@ -909,11 +924,11 @@
     //          and make it a tight bound if possible
     var FP_SAFE = Number.MAX_VALUE/2;
     axes.expand = function(ax,data,options) {
-        if(!ax.autorange || !data) { return; }
-        if(!ax._min) { ax._min = []; }
-        if(!ax._max) { ax._max = []; }
-        if(!options) { options = {}; }
-        if(!ax._m) { ax.setScale(); }
+        if(!ax.autorange || !data) return;
+        if(!ax._min) ax._min = [];
+        if(!ax._max) ax._max = [];
+        if(!options) options = {};
+        if(!ax._m) ax.setScale();
 
         var len = data.length,
             extrappad = options.padded ? ax._length*0.05 : 0,
@@ -1439,7 +1454,7 @@
     // hover is a (truthy) flag for whether to show numbers with a bit
     // more precision for hovertext - and return just the text
     axes.tickText = function(ax, x, hover){
-        var gf = ax._td.layout.font,
+        var gf = ax._td._fullLayout.font,
             tf = ax.tickfont,
             tr = ax._tickround,
             dt = ax.dtick,
@@ -1641,7 +1656,7 @@
                 if(dp) { v = v.substr(0,dp+r).replace(/\.?0+$/,''); }
             }
             // insert appropriate decimal point and thousands separator
-            v = numSeparate(v,ax._td.layout.separators);
+            v = numSeparate(v,ax._td._fullLayout.separators);
         }
 
         // add exponent
@@ -1690,8 +1705,9 @@
 
     // get all axis objects, optionally restricted to only
     // x or y or z by string axletter
-    axes.list = function(gd, axletter, only2d) {
-        if (!gd.layout) return [];
+    axes.list = function(td, axletter, only2d) {
+        var fullLayout = td._fullLayout;
+        if (!fullLayout) return [];
         function filterAxis (obj) {
             return Object.keys(obj)
                 .filter( function(k) {
@@ -1705,17 +1721,17 @@
                     });
         }
 
-        var axis2d = filterAxis(gd.layout);
+        var axis2d = filterAxis(fullLayout);
         if(only2d) return axis2d;
 
         var axis3d = [];
-        var scenes = Object.keys(gd.layout).filter( function (k) {
+        var scenes = Object.keys(fullLayout).filter( function (k) {
             return k.match(/^scene[0-9]*$/);
         });
 
         if (scenes) {
             scenes.forEach( function (sceneId) {
-                axis3d = axis3d.concat(filterAxis(gd.layout[sceneId]));
+                axis3d = axis3d.concat(filterAxis(fullLayout[sceneId]));
             });
         }
 
@@ -1725,23 +1741,21 @@
     // get an axis object from its id 'x','x2' etc
     // optionally, id can be a subplot (ie 'x2y3') and type gets x or y from it
     axes.getFromId = function(td,id,type) {
-        if(type==='x') {
-            id = id.replace(/y[0-9]*/,'');
-        }
-        else if(type==='y') {
-            id = id.replace(/x[0-9]*/,'');
-        }
-        var ax = td.layout[axes.id2name(id)];
-        if(!ax && ['x1','y1','x','y'].indexOf(id)!==-1) {
-            var axletter = id.charAt(0),
-                num = id.charAt(1);
-            if(num==='' || num==='1') {
-                var ax1 = td.layout[axes.id2name(axletter+'1')];
-                if(ax1) { axes.initAxis(td,ax1); }
-                ax = td.layout[axes.id2name(axletter)];
-            }
-        }
-        return ax;
+        var fullLayout = td._fullLayout;
+
+        if(type==='x') id = id.replace(/y[0-9]*/,'');
+        else if(type==='y') id = id.replace(/x[0-9]*/,'');
+
+        return fullLayout[axes.id2name(id)];
+        // if(!ax && ['x1','y1','x','y'].indexOf(id)!==-1) {
+        //     var axletter = id.charAt(0),
+        //         num = id.charAt(1);
+        //     if(num==='' || num==='1') {
+        //         var ax1 = fullLayout[axes.id2name(axletter+'1')];
+        //         if(ax1) { axes.initAxis(td,ax1); }
+        //         ax = fullLayout[axes.id2name(axletter)];
+        //     }
+        // }
     };
 
     // getSubplots - extract all combinations of axes we need to make plots for
@@ -1800,9 +1814,9 @@
             }
         });
 
-        if(!subplots.length) {
-            console.log('Warning! No subplots found - missing axes?');
-        }
+        // if(!subplots.length) {
+        //     console.log('Warning! No subplots found - missing axes?');
+        // }
 
         var spmatch = /^x([0-9]*)y([0-9]*)$/;
         var allSubplots = subplots
@@ -1831,13 +1845,13 @@
     //          (stored range for use by zoom/pan)
     //     or can pass in an axis object directly
     axes.doTicks = function(td, axid, skipTitle) {
-        var gl = td.layout,
+        var fullLayout = td._fullLayout,
             ax,
             independent = false;
 
         // there are multiple code paths into this function
         // instead of patching them all up, lets bail if 3D here
-        if (gl._hasGL3D) return;
+        if (fullLayout._hasGL3D) return;
 
         // allow passing an independent axis object instead of id
         if(typeof axid === 'object') {
@@ -1849,8 +1863,8 @@
             ax = axes.getFromId(td,axid);
 
             if(axid==='redraw') {
-                td.layout._paper.selectAll('g.subplot').each(function(subplot) {
-                    var plotinfo = gl._plots[subplot];
+                fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
+                    var plotinfo = fullLayout._plots[subplot];
                     plotinfo.plot.attr('viewBox',
                         '0 0 '+plotinfo.x._length+' '+plotinfo.y._length);
                     plotinfo.xaxislayer
@@ -1897,9 +1911,9 @@
             tcls = axid+'tick',
             gcls = axid+'grid',
             zcls = axid+'zl',
-            pad = ($.isNumeric(ax.linewidth) ? ax.linewidth : 1)/2,
+            pad = (ax.linewidth||1) / 2,
             labelStandoff =
-                (ax.ticks==='outside' ? ax.ticklen : 1) + ax.linewidth,
+                (ax.ticks==='outside' ? ax.ticklen : 1) + (ax.linewidth||0),
             gridwidth = ax.gridwidth || 1,
             sides, transfn, tickprefix, tickmid,
             i;
@@ -2198,7 +2212,7 @@
         }
         else {
             var alldone = axes.getSubplots(td,ax).map(function(subplot) {
-                var plotinfo = gl._plots[subplot],
+                var plotinfo = fullLayout._plots[subplot],
                     container = plotinfo[axletter+'axislayer'],
 
                     // [bottom or left, top or right, free, main]

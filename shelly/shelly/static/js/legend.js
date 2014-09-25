@@ -234,8 +234,9 @@
     };
 
     legend.texts = function(context, td, d, i, traces){
-        var gf = td.layout.font,
-            lf = td.layout.legend.font;
+        var fullLayout = td._fullLayout,
+            gf = fullLayout.font,
+            lf = fullLayout.legend.font;
         var curve = d[0].t.curve;
         var name = d[0].t.name;
         var text = d3.select(context).selectAll('text.legendtext')
@@ -293,11 +294,11 @@
     // -----------------------------------------------------
 
     legend.draw = function(td,showlegend) {
-        var gl=td.layout;
+        var fullLayout = td._fullLayout;
 
-        if(!gl._infolayer || !td.calcdata) { return; }
-        if(!gl.legend) { gl.legend={}; }
-        var gll = gl.legend;
+        if(!fullLayout._infolayer || !td.calcdata) return;
+        if(!fullLayout.legend) fullLayout.legend={};
+        var gll = fullLayout.legend;
 
         var ldata = td.calcdata
             .filter(function(cd) {
@@ -311,24 +312,24 @@
         if(gll.traceorder==='reversed') { ldata.reverse(); }
 
         if(showlegend===false || !ldata.length) {
-            gl._infolayer.selectAll('.legend').remove();
+            fullLayout._infolayer.selectAll('.legend').remove();
             Plotly.Plots.autoMargin(td,'legend');
             return;
         }
 
-        gl.showlegend = true;
+        fullLayout.showlegend = true;
 
         if(typeof td.firstRender === 'undefined') td.firstRender = true;
         else if(td.firstRender) td.firstRender = false;
 
-        var legendsvg = gl._infolayer.selectAll('svg.legend')
+        var legendsvg = fullLayout._infolayer.selectAll('svg.legend')
             .data([0]);
         legendsvg.enter(0).append('svg')
             .attr('class','legend');
 
         var bordercolor = gll.bordercolor || '#444',
             borderwidth = $.isNumeric(gll.borderwidth) ? gll.borderwidth : 1,
-            bgcolor = gll.bgcolor || gl.paper_bgcolor || '#fff';
+            bgcolor = gll.bgcolor || fullLayout.paper_bgcolor || '#fff';
         if(['left','right','center'].indexOf(gll.xanchor)===-1) {
             gll.xanchor = 'auto';
         }
@@ -373,7 +374,7 @@
             legendsvg.node().onmousedown = function(e) {
                 // deal with other UI elements, and allow them
                 // to cancel dragging
-                if(Plotly.Fx.dragClear(td)) { return true; }
+                if(Plotly.Fx.dragClear(td)) return true;
 
                 var el3=d3.select(this),
                     x0=Number(el3.attr('x')),
@@ -386,13 +387,15 @@
                 window.onmousemove = function(e2) {
                     var dx = e2.clientX-e.clientX,
                         dy = e2.clientY-e.clientY,
-                        gs = gl._size,
+                        gs = fullLayout._size,
                         lw = Number(el3.attr('width')),
                         lh = Number(el3.attr('height')),
                         MINDRAG = Plotly.Fx.MINDRAG;
-                    if(Math.abs(dx)<MINDRAG) { dx=0; }
-                    if(Math.abs(dy)<MINDRAG) { dy=0; }
-                    if(dx||dy) { td.dragged = true; }
+
+                    if(Math.abs(dx)<MINDRAG) dx=0;
+                    if(Math.abs(dy)<MINDRAG) dy=0;
+                    if(dx||dy) td.dragged = true;
+
                     el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
 
                     xf = Plotly.Fx.dragAlign(x0+dx, lw, gs.l, gs.l+gs.w,
@@ -420,9 +423,9 @@
     };
 
     legend.repositionLegend = function(td, traces){
-        var gl = td.layout,
-            gs = gl._size,
-            gll = gl.legend,
+        var fullLayout = td._fullLayout,
+            gs = fullLayout._size,
+            gll = fullLayout.legend,
             borderwidth = $.isNumeric(gll.borderwidth) ? gll.borderwidth : 1,
 
             // add the legend elements, keeping track of the
@@ -434,7 +437,7 @@
             var g = d3.select(this),
                 text = g.select('.legendtext'),
                 tspans = g.selectAll('.legendtext>tspan'),
-                tHeight = (gll.font.size || gl.font.size || 12)*1.3,
+                tHeight = (gll.font.size || fullLayout.font.size || 12)*1.3,
                 tLines = tspans[0].length||1,
                 tWidth = text.node() && Plotly.Drawing.bBox(text.node()).width,
                 mathjaxGroup = g.select('g[class*=math-group]'),
@@ -528,9 +531,9 @@
         lx = Math.round(lx);
         ly = Math.round(ly);
 
-        gl._infolayer.selectAll('svg.legend')
+        fullLayout._infolayer.selectAll('svg.legend')
             .call(Plotly.Drawing.setRect, lx, ly, legendwidth, legendheight);
-        gl._infolayer.selectAll('svg.legend .bg')
+        fullLayout._infolayer.selectAll('svg.legend .bg')
             .call(Plotly.Drawing.setRect, borderwidth/2, borderwidth/2,
                 legendwidth-borderwidth, legendheight-borderwidth);
 

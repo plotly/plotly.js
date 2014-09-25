@@ -105,36 +105,36 @@
     bars.calc = function(gd,gdc) {
         // ignore as much processing as possible (including
         // in autorange) if bar is not visible
-        if(gdc.visible===false) { return; }
+        if(gdc.visible===false) return;
 
-        if(gdc.type==='histogram') { return Plotly.Histogram.calc(gd,gdc); }
+        if(gdc.type==='histogram') return Plotly.Histogram.calc(gd,gdc);
 
         // depending on bar direction, set position and size axes
         // and data ranges
         // note: this logic for choosing orientation is
         // duplicated in graph_obj->setstyles
-        var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
-            ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
+        var xa = Plotly.Axes.getFromId(gd, gdc.xaxis||'x'),
+            ya = Plotly.Axes.getFromId(gd, gdc.yaxis||'y'),
             orientation = gdc.orientation || ((gdc.x && !gdc.y) ? 'h' : 'v'),
             pos, size, i;
         if(orientation==='h') {
-            size = xa.makeCalcdata(gdc,'x');
-            pos = ya.makeCalcdata(gdc,'y');
+            size = xa.makeCalcdata(gdc, 'x');
+            pos = ya.makeCalcdata(gdc, 'y');
         }
         else {
-            size = ya.makeCalcdata(gdc,'y');
-            pos = xa.makeCalcdata(gdc,'x');
+            size = ya.makeCalcdata(gdc, 'y');
+            pos = xa.makeCalcdata(gdc, 'x');
         }
 
         // create the "calculated data" to plot
-        var serieslen = Math.min(pos.length,size.length),
+        var serieslen = Math.min(pos.length, size.length),
             cd = [];
         for(i=0;i<serieslen;i++) {
             if(($.isNumeric(pos[i]) && $.isNumeric(size[i]))) {
-                cd.push({p:pos[i],s:size[i],b:0});
+                cd.push({p: pos[i], s: size[i], b: 0});
             }
         }
-        if(cd[0]) { cd[0].t = {orientation:orientation};}
+        if(cd[0]) cd[0].t = {orientation: orientation};
         return cd;
     };
 
@@ -143,7 +143,7 @@
     // note that this handles histograms too
     // now doing this one subplot at a time
     bars.setPositions = function(gd,plotinfo) {
-        var gl = gd.layout,
+        var fullLayout = gd._fullLayout,
             xa = plotinfo.x,
             ya = plotinfo.y,
             i, j;
@@ -186,7 +186,7 @@
                 // if so, let them have full width even if mode is group
                 var overlap = false,
                     comparelist = [];
-                if(gl.barmode==='group') {
+                if(fullLayout.barmode==='group') {
                     bl1.forEach(function(i) {
                         if(overlap) { return; }
                         gd.calcdata[i].forEach(function(v) {
@@ -209,7 +209,7 @@
                 Plotly.Axes.expand(pa,pv2,{vpad:barDiff/2});
 
                 // bar widths and position offsets
-                barDiff*=(1-gl.bargap);
+                barDiff*=(1-fullLayout.bargap);
                 if(overlap) { barDiff/=bl.length; }
 
                 var barCenter;
@@ -217,7 +217,7 @@
 
                 for(var i=0; i<bl1.length; i++){
                     var t=gd.calcdata[bl1[i]][0].t;
-                    t.barwidth = barDiff*(1-gl.bargroupgap);
+                    t.barwidth = barDiff*(1-fullLayout.bargroupgap);
                     t.poffset = ((overlap ? (2*i+1-bl1.length)*barDiff : 0 ) -
                         t.barwidth)/2;
                     t.dbar = dv.minDiff;
@@ -227,13 +227,13 @@
                     gd.calcdata[bl1[i]].forEach(setBarCenter);
                 }
             }
-            if(gl.barmode==='overlay') {
+            if(fullLayout.barmode==='overlay') {
                 bl.forEach(function(bli){ barposition([bli]); });
             }
             else { barposition(bl); }
 
             // bar size range and stacking calculation
-            if(gl.barmode==='stack'){
+            if(fullLayout.barmode==='stack'){
                 // for stacked bars, we need to evaluate every step in every
                 // stack, because negative bars mean the extremes could be
                 // anywhere
@@ -283,7 +283,7 @@
     bars.plot = function(gd,plotinfo,cdbar) {
         var xa = plotinfo.x,
             ya = plotinfo.y,
-            gl = gd.layout;
+            fullLayout = gd._fullLayout;
 
         var bartraces = plotinfo.plot.select('.barlayer')
             .selectAll('g.trace.bars')
@@ -329,7 +329,7 @@
                         function roundWithLine(v) {
                             // if there are explicit gaps, don't round,
                             // it can make the gaps look crappy
-                            return (gl.bargap===0 && gl.bargroupgap===0) ?
+                            return (fullLayout.bargap===0 && fullLayout.bargroupgap===0) ?
                                 d3.round(Math.round(v)-offset,2) : v;
                         }
                         function expandToVisible(v,vc) {
@@ -341,7 +341,7 @@
                             // its neighbor
                             (v>vc ? Math.ceil(v) : Math.floor(v));
                         }
-                        if(!gl._forexport) {
+                        if(!fullLayout._forexport) {
                             // if bars are not fully opaque or they have a line
                             // around them, round to integer pixels, mainly for
                             // safari so we prevent overlaps from its expansive
@@ -363,7 +363,7 @@
             });
     };
 
-    bars.style = function(gp,gl) {
+    bars.style = function(gp, fullLayout) {
         var s = gp.selectAll('g.trace.bars'),
             barcount = s.size();
 
@@ -374,8 +374,8 @@
         // crispEdges to turn off antialiasing so an artificial gap
         // isn't introduced.
         .each(function(d){
-            if((gl.barmode==='stack' && barcount>1) ||
-                    (gl.bargap===0 && gl.bargroupgap===0 && !d[0].t.mlw)){
+            if((fullLayout.barmode==='stack' && barcount>1) ||
+                    (fullLayout.bargap===0 && fullLayout.bargroupgap===0 && !d[0].t.mlw)){
                 d3.select(this).attr('shape-rendering','crispEdges');
             }
         });

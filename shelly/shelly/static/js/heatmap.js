@@ -159,6 +159,12 @@
                     gdc.xbins.start -= gdc.xbins.size;
                     gdc.xbins.end += gdc.xbins.size;
                 }
+
+                // copy bin info back to the source data.
+                // TODO: Not sure if this is the way we really want to do this,
+                // it's just so that when you turn off autobin in the GUI, you start
+                // with the autoBin values
+                gdc._input.xbins = gdc.xbins;
             }
             if(gdc.autobiny || !('ybins' in gdc)) {
                 gdc.ybins = Plotly.Axes.autoBin(y,ya,gdc.nbinsy,'2d');
@@ -166,6 +172,7 @@
                     gdc.ybins.start -= gdc.ybins.size;
                     gdc.ybins.end += gdc.ybins.size;
                 }
+                gdc._input.ybins = gdc.ybins;
             }
             Plotly.Lib.markTime('done autoBin');
 
@@ -354,7 +361,7 @@
         // check whether we really can smooth (ie all boxes are about the same size)
         if([true,'fast'].indexOf(gdc.zsmooth)!==-1) {
             if(xa.type==='log' || ya.type==='log') {
-                gdc.zsmooth = false;
+                gdc._input.zsmooth = gdc.zsmooth = false;
                 Plotly.Lib.notifier('cannot fast-zsmooth: log axis found');
             }
             else if(!Plotly.Plots.isHist2D(gdc.type)) {
@@ -363,7 +370,7 @@
                         maxErrX = Math.abs(avgdx/100);
                     for(i=0; i<x.length-1; i++) {
                         if(Math.abs(x[i+1]-x[i]-avgdx)>maxErrX) {
-                            gdc.zsmooth = false;
+                            gdc._input.zsmooth = gdc.zsmooth = false;
                             Plotly.Lib.notifier('cannot fast-zsmooth: x scale is not linear');
                             break;
                         }
@@ -374,7 +381,7 @@
                     maxErrY = Math.abs(avgdy/100);
                     for(i=0; i<y.length-1; i++) {
                         if(Math.abs(y[i+1]-y[i]-avgdy)>maxErrY) {
-                            gdc.zsmooth = false;
+                            gdc._input.zsmooth = gdc.zsmooth = false;
                             Plotly.Lib.notifier('cannot fast-zsmooth: y scale is not linear');
                             break;
                         }
@@ -387,35 +394,36 @@
         var xlen = Plotly.Lib.aggNums(Math.max,null,
                 z.map(function(row) { return row.length; })),
             xIn = gdc.xtype==='scaled' ? '' : gdc.x,
-            xArray = makeBoundArray(gdc.type, xIn, x0, dx, xlen, gd.layout.xaxis),
+            xArray = makeBoundArray(gdc.type, xIn, x0, dx, xlen, xa),
             yIn = gdc.ytype==='scaled' ? '' : gdc.y,
-            yArray = makeBoundArray(gdc.type, yIn, y0, dy, z.length, gd.layout.yaxis);
-        Plotly.Axes.expand(xa,xArray);
-        Plotly.Axes.expand(ya,yArray);
+            yArray = makeBoundArray(gdc.type, yIn, y0, dy, z.length, ya);
+        Plotly.Axes.expand(xa, xArray);
+        Plotly.Axes.expand(ya, yArray);
 
-        var cd0 = {x:xArray, y:yArray, z:z, t:{}};
+        var calcInfo = {},
+            cd0 = {x: xArray, y: yArray, z: z, t: calcInfo};
 
         // auto-z for heatmap
         if(gdc.zauto!==false || !('zmin' in gdc)) {
-            cd0.t.zmin = Plotly.Lib.aggNums(Math.min,null,z);
+            calcInfo.zmin = Plotly.Lib.aggNums(Math.min, null, z);
         }
-        else cd0.t.zmin = gdc.zmin;
+        else calcInfo.zmin = gdc.zmin;
 
         if(gdc.zauto!==false || !('zmax' in gdc)) {
-            cd0.t.zmax = Plotly.Lib.aggNums(Math.max,null,z);
+            calcInfo.zmax = Plotly.Lib.aggNums(Math.max, null, z);
         }
-        else cd0.t.zmax = gdc.zmax;
+        else calcInfo.zmax = gdc.zmax;
 
-        if(cd0.t.zmin===cd0.t.zmax) {
-            cd0.t.zmin-=0.5;
-            cd0.t.zmax+=0.5;
+        if(calcInfo.zmin===calcInfo.zmax) {
+            calcInfo.zmin -= 0.5;
+            calcInfo.zmax += 0.5;
         }
 
         if(Plotly.Plots.isContour(gdc.type) && gdc.contours &&
                 gdc.contours.coloring==='heatmap') {
             var hmtype = gdc.type==='contour' ? 'heatmap' : 'histogram2d';
-            cd0.xfill = makeBoundArray(hmtype, xIn, x0, dx, xlen, gd.layout.xaxis);
-            cd0.yfill = makeBoundArray(hmtype, yIn, y0, dy, z.length, gd.layout.yaxis);
+            cd0.xfill = makeBoundArray(hmtype, xIn, x0, dx, xlen, xa);
+            cd0.yfill = makeBoundArray(hmtype, yIn, y0, dy, z.length, ya);
         }
 
         return [cd0];
@@ -478,16 +486,16 @@
             i = t.curve,
             xa = plotinfo.x,
             ya = plotinfo.y,
-            gl = gd.layout;
+            fullLayout = gd._fullLayout;
 
         var id='hm'+i;
         var cbId='cb'+i;
 
-        gl._paper.selectAll('.contour'+i).remove(); // in case this used to be a contour map
+        fullLayout._paper.selectAll('.contour'+i).remove(); // in case this used to be a contour map
 
         if(t.visible===false) {
-            gl._paper.selectAll('.'+id).remove();
-            gl._paper.selectAll('.'+cbId).remove();
+            fullLayout._paper.selectAll('.'+id).remove();
+            fullLayout._paper.selectAll('.'+cbId).remove();
             return;
         }
 
@@ -762,7 +770,7 @@
         // https://groups.google.com/forum/?fromgroups=#!topic/d3-js/aQSWnEDFxIc
         var imgstr = 'data:image/png;base64,\n' + p.getBase64();
         // put this right before making the new image, to minimize flicker
-        gl._paper.selectAll('.'+id).remove();
+        fullLayout._paper.selectAll('.'+id).remove();
         plotinfo.plot.select('.maplayer').append('svg:image')
             .classed(id,true)
             .datum(cd[0])
@@ -784,7 +792,7 @@
         var t = cd[0].t,
             cbId = 'cb'+t.curve,
             scl=Plotly.Plots.getScale(t.scl);
-        gd.layout._infolayer.selectAll('.'+cbId).remove();
+        gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
         if(t.showscale===false){
             Plotly.Plots.autoMargin(gd,cbId);
             return;

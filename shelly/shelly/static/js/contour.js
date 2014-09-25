@@ -103,7 +103,7 @@
         // most is the same as heatmap calc, then adjust it
         // though a few things inside heatmap calc still look for
         // contour maps, because the makeBoundArray calls are too entangled
-        var cd = Plotly.Heatmap.calc(gd,gdc);
+        var cd = Plotly.Heatmap.calc(gd, gdc);
 
         // check if we need to auto-choose contour levels
         if(gdc.autocontour!==false || !gdc.contours ||
@@ -126,6 +126,12 @@
 
             // so rounding errors don't cause us to miss the last contour
             contours.end += contours.size/100;
+
+            // copy auto-contour info back to the source data.
+            // TODO: Not sure if this is the way we really want to do this,
+            // it's just so that when you turn off autobin in the GUI, you start
+            // with the autoBin values
+            gdc._input.contours = contours;
         }
 
         return cd;
@@ -168,7 +174,7 @@
             i = t.curve,
             xa = plotinfo.x,
             ya = plotinfo.y,
-            gl = gd.layout,
+            fullLayout = gd._fullLayout,
             id='contour'+i,
             cbId='cb'+i,
             contours = [],
@@ -202,13 +208,13 @@
             Plotly.Heatmap.plot(gd,plotinfo,[cd]);
         }
         // in case this used to be a heatmap (or have heatmap fill)
-        else gl._paper.selectAll('.hm'+i).remove();
+        else fullLayout._paper.selectAll('.hm'+i).remove();
 
         if(t.coloring!=='fill') t.showlines = true;
 
         if(t.visible===false) {
-            gl._paper.selectAll('.'+id).remove();
-            gl._paper.selectAll('.'+cbId).remove();
+            fullLayout._paper.selectAll('.'+id).remove();
+            fullLayout._paper.selectAll('.'+cbId).remove();
             return;
         }
 
@@ -741,7 +747,7 @@
         var t = cd[0].t,
             cbId = 'cb'+t.curve;
 
-        gd.layout._infolayer.selectAll('.'+cbId).remove();
+        gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
         if(t.showscale===false){
             Plotly.Plots.autoMargin(gd,cbId);
             return;
