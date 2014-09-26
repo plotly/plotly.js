@@ -221,9 +221,9 @@ function handle3dCamera (ev) {
             val = 'rotate';
         layoutUpdate = {
             'dragmode': 'rotate',
-            'scene.cameraPosition[0]': initCam[0],
-            'scene.cameraPosition[1]': initCam[1],
-            'scene.cameraPosition[2]': initCam[2]
+            'scene.cameraPosition[0]': JSON.parse(JSON.stringify(initCam[0])),
+            'scene.cameraPosition[1]': JSON.parse(JSON.stringify(initCam[1])),
+            'scene.cameraPosition[2]': JSON.parse(JSON.stringify(initCam[2]))
         };
     }else{
         layoutUpdate[attr] = val;
