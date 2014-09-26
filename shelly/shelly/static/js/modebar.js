@@ -216,14 +216,17 @@ function handle3dCamera (ev) {
             return layout[sceneKey];
         });
 
-    layoutUpdate[attr] = val;
-
-    if (attr == 'reset') {
+    if (attr === 'reset') {
+            var initCam = layout.scene._webgl.cameraPositionInit;
+            val = 'rotate';
         layoutUpdate = {
-            'scene.cameraPosition[0]': {0:0, 1:0, 2:0, 3:0},
-            'scene.cameraPosition[1]': {0:0, 1:0, 2:0},
-            'scene.cameraPosition[2]': 1
+            'dragmode': 'rotate',
+            'scene.cameraPosition[0]': initCam[0],
+            'scene.cameraPosition[1]': initCam[1],
+            'scene.cameraPosition[2]': initCam[2]
         };
+    }else{
+        layoutUpdate[attr] = val;
     }
 
     scenes.forEach( function (scene) {
