@@ -915,6 +915,28 @@
                     sceneLayout._webgl = webgl;
                     sceneLayout._container = webgl.container;
 
+                    /*
+                     * Make copy of initial camera position, this value
+                     * is used by the reset-camera button in the modebar.
+                     */
+                    if (sceneLayout.cameraPosition.length) {
+                        /*
+                         * if cameraPosition is not empty at this point,
+                         * it must have been saved in the workshop
+                         * or set via an API.
+                         */
+                        sceneLayout._cameraPositionInitial = $.extend(
+                            true, [], sceneLayout.cameraPosition
+                        );
+                    } else {
+                        // if cameraPosition is empty, set initial to default.
+                        sceneLayout._cameraPositionInitial = [
+                            $.extend(true, {}, webgl.camera.rotation),
+                            $.extend(true, {}, webgl.camera.center),
+                            webgl.camera.distance
+                        ];
+                    }
+
                     webgl.setPosition(sceneLayout.position);
 
                     // if data has accumulated on the queue while the iframe

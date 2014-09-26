@@ -217,15 +217,14 @@ function handle3dCamera (ev) {
         });
 
     if (attr === 'reset') {
-            var initCam = layout.scene._webgl.cameraPositionInit;
-            val = 'rotate';
+        // Reset camera position to initial value, go in rotate mode
+        val = 'rotate';
+        var cameraPositionInitial = layout.scene._cameraPositionInitial;
         layoutUpdate = {
             'dragmode': 'rotate',
-            'scene.cameraPosition[0]': JSON.parse(JSON.stringify(initCam[0])),
-            'scene.cameraPosition[1]': JSON.parse(JSON.stringify(initCam[1])),
-            'scene.cameraPosition[2]': JSON.parse(JSON.stringify(initCam[2]))
+            'scene.cameraPosition': $.extend(true, [], cameraPositionInitial)
         };
-    }else{
+    } else {
         layoutUpdate[attr] = val;
     }
 
