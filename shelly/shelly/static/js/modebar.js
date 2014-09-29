@@ -222,7 +222,7 @@ function handle3dCamera (ev) {
         var cameraPositionInitial = layout.scene._cameraPositionInitial;
         layoutUpdate = {
             'dragmode': 'rotate',
-            'scene.cameraPosition': $.extend(true, [], cameraPositionInitial)
+            'scene.cameraposition': $.extend(true, [], cameraPositionInitial)
         };
     } else {
         layoutUpdate[attr] = val;
