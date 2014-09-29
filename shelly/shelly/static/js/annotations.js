@@ -136,7 +136,7 @@
     annotations.supplyDefaults = function(layoutIn, layoutOut) {
         var containerIn = layoutIn.annotations || [];
         layoutOut.annotations = containerIn.map(function(annIn) {
-            supplyAnnotationDefaults(annIn, layoutOut);
+            return supplyAnnotationDefaults(annIn, layoutOut);
         });
     };
 
@@ -186,7 +186,7 @@
             // x, y
             var defaultPosition = 0.5; //axletter==='x' ? 0.1 : 0.3;
             if(axRef!=='paper') {
-                var ax = Plotly.Axes.getFromId(axRef);
+                var ax = Plotly.Axes.getFromId(tdMock, axRef);
                 defaultPosition = ax.range[0] + defaultPosition * (ax.range[1] - ax.range[0]);
 
                 // convert date or category strings to numbers
@@ -357,7 +357,7 @@
             newOpt[opt] = value;
             opt = newOpt;
         }
-        else if($.isPlainObject(opt)) {
+        if($.isPlainObject(opt)) {
             Object.keys(opt).forEach(function(k){
                 var prop = Plotly.Lib.nestedProperty(optionsIn,k);
                 ['x', 'y'].forEach(function(axletter){
@@ -760,9 +760,9 @@
                         window.onmousemove = function(e2) {
                             var dx = e2.clientX-e.clientX,
                                 dy = e2.clientY-e.clientY;
-                            if(Math.abs(dx)<MINDRAG) { dx=0; }
-                            if(Math.abs(dy)<MINDRAG) { dy=0; }
-                            if(dx||dy) { gd.dragged = true; }
+                            if(Math.abs(dx)<MINDRAG) dx=0;
+                            if(Math.abs(dy)<MINDRAG) dy=0;
+                            if(dx||dy) gd.dragged = true;
                             arrowgroup.attr({
                                 transform: 'translate('+dx+','+dy+')'
                             });
@@ -790,7 +790,7 @@
                         window.onmouseup = function(e2) {
                             window.onmousemove = null;
                             window.onmouseup = null;
-                            if(gd.dragged) { Plotly.relayout(gd,update); }
+                            if(gd.dragged) Plotly.relayout(gd,update);
                             return Plotly.Lib.pauseEvent(e2);
                         };
                         return Plotly.Lib.pauseEvent(e);

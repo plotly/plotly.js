@@ -545,7 +545,7 @@
 
         if(!gd.layout || graphwasempty) gd.layout = cleanLayout(layout);
 
-        supplyDefaults(gd);
+        plots.supplyDefaults(gd);
 
         // Polar plots
         if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
@@ -615,7 +615,7 @@
         // has to be done separate from applyStyles so we know the mode
         // (ie which objects to draw)
         // and has to be before stacking so we get orientation, type, visible
-        plots.setStyles(gd);
+        // plots.setStyles(gd);
         Plotly.Lib.markTime('done setstyles');
 
         /*
@@ -1256,7 +1256,7 @@
         }
     };
 
-    function supplyDefaults(gd) {
+    plots.supplyDefaults = function(gd) {
         // fill in default values:
         // gd.data, gd.layout are precisely what the user specified
         // gd._fullData, gd._fullLayout are complete descriptions
@@ -1266,11 +1266,11 @@
 
         // first fill in what we can of layout without looking at data
         // because fullData needs a few things from layout
-        supplyLayoutGlobalDefaults(gd.layout||{}, gd._fullLayout);
+        plots.supplyLayoutGlobalDefaults(gd.layout||{}, gd._fullLayout);
 
         // then do the data
         gd._fullData = (gd.data||[]).map(function(trace, i) {
-            return supplyDataDefaults(trace, i, gd._fullLayout);
+            return plots.supplyDataDefaults(trace, i, gd._fullLayout);
         });
 
         // DETECT 3D, Cartesian, and Polar
@@ -1283,7 +1283,7 @@
         });
 
         // finally, fill in the pieces of layout that may need to look at data
-        supplyLayoutModuleDefaults(gd.layout||{}, gd._fullLayout, gd._fullData);
+        plots.supplyLayoutModuleDefaults(gd.layout||{}, gd._fullLayout, gd._fullData);
 
         // patch back in any underscore or function components
         // of fullLayout from the old one
@@ -1295,7 +1295,7 @@
                 (gd.calcdata[i][0]||{}).trace = trace;
             });
         }
-    }
+    };
 
     function onlyPrivate(obj) {
         Object.keys(obj).forEach(function(k) {
@@ -1316,7 +1316,7 @@
         return obj;
     }
 
-    function supplyDataDefaults(traceIn, i, layout) {
+    plots.supplyDataDefaults = function(traceIn, i, layout) {
         var traceOut = {},
             defaultColor = plots.defaultColors[i % plots.defaultColors.length];
 
@@ -1353,7 +1353,7 @@
         traceOut._input = traceIn;
 
         return traceOut;
-    }
+    };
 
     plots.layoutAttributes = {
         font: {
@@ -1452,7 +1452,7 @@
         }
     };
 
-    function supplyLayoutGlobalDefaults(layoutIn, layoutOut) {
+    plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
         }
@@ -1482,9 +1482,9 @@
         coerce('smith');
         coerce('_hasCartesian');
         coerce('_hasGL3D');
-    }
+    };
 
-    function supplyLayoutModuleDefaults(layoutIn, layoutOut, fullData) {
+    plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
         Plotly.Axes.supplyDefaults(layoutIn, layoutOut, fullData);
         Plotly.Legend.supplyDefaults(layoutIn, layoutOut, fullData);
         Plotly.Annotations.supplyDefaults(layoutIn, layoutOut);
@@ -1492,7 +1492,7 @@
 
         Plotly.Bars.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut);
-    }
+    };
 
     function doCalcdata(gd) {
         gd.calcdata = [];
@@ -1543,311 +1543,311 @@
     // arrays to individual points
     // if mergeDefault, then apply the default value into gd.data...
     // used for saving themes
-    plots.setStyles = function(gd, mergeDefault) {
-        if(typeof gd === 'string') { gd = document.getElementById(gd); }
+    // plots.setStyles = function(gd, mergeDefault) {
+    //     if(typeof gd === 'string') { gd = document.getElementById(gd); }
 
-        var i,j,l,p,prop,val,cd,t,trace,c,gdc,defaultColor,is3d;
+    //     var i,j,l,p,prop,val,cd,t,trace,c,gdc,defaultColor,is3d;
 
-        // merge object a[k] (which may be an array or a single value)
-        // from gd.data into calcdata
-        // search the array defaults in case a[k] is missing
-        // (and for a default val if some points of o are missing from a)
-        // nosplit option - used for colorscales because they're
-        // arrays but shouldn't be treated as per-point objects
-        function mergeattr(k,attr,dflt,nosplit) {
-            // instead of 4 separate arguments, can pass one object
-            if(typeof k==='object') {
-                attr = k.cdAttr;
-                dflt = k.dflt;
-                nosplit = k.nosplit;
-                k = k.dataAttr;
-            }
-            prop = Plotly.Lib.nestedProperty(gdc,k);
-            val = prop.get();
+    //     // merge object a[k] (which may be an array or a single value)
+    //     // from gd.data into calcdata
+    //     // search the array defaults in case a[k] is missing
+    //     // (and for a default val if some points of o are missing from a)
+    //     // nosplit option - used for colorscales because they're
+    //     // arrays but shouldn't be treated as per-point objects
+    //     function mergeattr(k,attr,dflt,nosplit) {
+    //         // instead of 4 separate arguments, can pass one object
+    //         if(typeof k==='object') {
+    //             attr = k.cdAttr;
+    //             dflt = k.dflt;
+    //             nosplit = k.nosplit;
+    //             k = k.dataAttr;
+    //         }
+    //         prop = Plotly.Lib.nestedProperty(gdc,k);
+    //         val = prop.get();
 
-            if($.isArray(val) && !nosplit) {
-                l = Math.min(cd.length,val.length);
-                for(p=0; p<l; p++) { cd[p][attr]=val[p]; }
-                // use the default for the trace-wide value,
-                // in case individual vals are missing
-                cd[0].t[attr] = dflt;
-                // record that we have an array here
-                // styling system wants to know about it
-                cd[0].t[attr+'array'] = true;
-            }
-            else {
-                cd[0].t[attr] = (typeof val !== 'undefined') ? val : dflt;
-                if(mergeDefault && typeof val === 'undefined'){
-                    prop.set(dflt);
-                }
-            }
-        }
+    //         if($.isArray(val) && !nosplit) {
+    //             l = Math.min(cd.length,val.length);
+    //             for(p=0; p<l; p++) { cd[p][attr]=val[p]; }
+    //             // use the default for the trace-wide value,
+    //             // in case individual vals are missing
+    //             cd[0].t[attr] = dflt;
+    //             // record that we have an array here
+    //             // styling system wants to know about it
+    //             cd[0].t[attr+'array'] = true;
+    //         }
+    //         else {
+    //             cd[0].t[attr] = (typeof val !== 'undefined') ? val : dflt;
+    //             if(mergeDefault && typeof val === 'undefined'){
+    //                 prop.set(dflt);
+    //             }
+    //         }
+    //     }
 
-        // merge an array of attributes, coming from a defaults() call
-        function mergeattrs(a) {
-            a.forEach(function(o) { mergeattr(o); });
-        }
+    //     // merge an array of attributes, coming from a defaults() call
+    //     function mergeattrs(a) {
+    //         a.forEach(function(o) { mergeattr(o); });
+    //     }
 
-        // to reverse a colorscale
-        function flipScale(si){ return [1-si[0],si[1]]; }
+    //     // to reverse a colorscale
+    //     function flipScale(si){ return [1-si[0],si[1]]; }
 
-        // detect 3d
-        is3d = ('_fullLayout' in gd) && gd._fullLayout._hasGL3D;
+    //     // detect 3d
+    //     is3d = ('_fullLayout' in gd) && gd._fullLayout._hasGL3D;
 
-        for(i in gd.calcdata){
-            cd = gd.calcdata[i]; // trace plus styling
-            t = cd[0].t; // trace styling object
-            trace = cd[0].trace;
-            c = trace.index; // trace number - should always be the same as i...
-            gdc = gd._fullData[c];
-            // defaultColor cares about which trace this is in gd.data
-            // but we can get here from editing with a different data
-            // array, with other things added before the regular traces
-            // in that case, take t.selected, which references the correct
-            // trace in the real gd.data
-            defaultColor = plots.defaultColors[
-                ($.isNumeric(t.selected) ? t.selected : c) %
-                plots.defaultColors.length
-            ];
-            // record in t which data arrays we have for this trace
-            // other arrays, like marker size, are recorded as such in mergeattr
-            // this is used to decide which options to display for styling
-            t.xarray = $.isArray(gdc.x);
-            t.yarray = $.isArray(gdc.y);
-            t.zarray = $.isArray(gdc.z);
-            // all types have attributes type, visible, opacity, name, text
-            // mergeattr puts single values into cd[0].t,
-            // and all others into each individual point
-            mergeattr('type','type','scatter'); //global
-            mergeattr('visible','visible',true); //global
-            mergeattr('showlegend','showlegend',true);
-            mergeattr('opacity','op',1); //global
-            mergeattr('text','tx',''); //scatter
-            mergeattr('name','name','trace '+c); //global
-            mergeattr('error_z.visible','zeVis', 'error_z' in gdc &&
-                ('array' in gdc.error_z || 'value' in gdc.error_z));
-            mergeattr('error_y.visible','yeVis',gdc.error_y &&
-                ('array' in gdc.error_y || 'value' in gdc.error_y));
-            mergeattr('error_x.visible','xeVis',gdc.error_x &&
-                ('array' in gdc.error_x || 'value' in gdc.error_x));
-            // mergeattr is unnecessary and insufficient for (x|y)axis
-            // because '' shouldn't count as existing
-            t.xaxis = gdc.xaxis||'x';
-            t.yaxis = gdc.yaxis||'y';
-            var type = t.type; // like 'bar'
+    //     for(i in gd.calcdata){
+    //         cd = gd.calcdata[i]; // trace plus styling
+    //         t = cd[0].t; // trace styling object
+    //         trace = cd[0].trace;
+    //         c = trace.index; // trace number - should always be the same as i...
+    //         gdc = gd._fullData[c];
+    //         // defaultColor cares about which trace this is in gd.data
+    //         // but we can get here from editing with a different data
+    //         // array, with other things added before the regular traces
+    //         // in that case, take t.selected, which references the correct
+    //         // trace in the real gd.data
+    //         defaultColor = plots.defaultColors[
+    //             ($.isNumeric(t.selected) ? t.selected : c) %
+    //             plots.defaultColors.length
+    //         ];
+    //         // record in t which data arrays we have for this trace
+    //         // other arrays, like marker size, are recorded as such in mergeattr
+    //         // this is used to decide which options to display for styling
+    //         t.xarray = $.isArray(gdc.x);
+    //         t.yarray = $.isArray(gdc.y);
+    //         t.zarray = $.isArray(gdc.z);
+    //         // all types have attributes type, visible, opacity, name, text
+    //         // mergeattr puts single values into cd[0].t,
+    //         // and all others into each individual point
+    //         mergeattr('type','type','scatter'); //global
+    //         mergeattr('visible','visible',true); //global
+    //         mergeattr('showlegend','showlegend',true);
+    //         mergeattr('opacity','op',1); //global
+    //         mergeattr('text','tx',''); //scatter
+    //         mergeattr('name','name','trace '+c); //global
+    //         mergeattr('error_z.visible','zeVis', 'error_z' in gdc &&
+    //             ('array' in gdc.error_z || 'value' in gdc.error_z));
+    //         mergeattr('error_y.visible','yeVis',gdc.error_y &&
+    //             ('array' in gdc.error_y || 'value' in gdc.error_y));
+    //         mergeattr('error_x.visible','xeVis',gdc.error_x &&
+    //             ('array' in gdc.error_x || 'value' in gdc.error_x));
+    //         // mergeattr is unnecessary and insufficient for (x|y)axis
+    //         // because '' shouldn't count as existing
+    //         t.xaxis = gdc.xaxis||'x';
+    //         t.yaxis = gdc.yaxis||'y';
+    //         var type = t.type; // like 'bar'
 
-            if(t.yeVis){
-                mergeattr('error_y.type','yeType',
-                    ('array' in gdc.error_y) ? 'data' : 'percent');
-                mergeattr('error_y.symmetric','yeSym',
-                    !((t.yeType==='data' ? 'arrayminus' : 'valueminus') in
-                        gdc.error_y));
-                mergeattr('error_y.value','yeVal',10);
-                mergeattr('error_y.valueminus','yeValminus',10);
-                mergeattr('error_y.traceref','yeRef',0);
-                mergeattr('error_y.tracerefminus','yeRefminus',0);
-                mergeattr('error_y.color','yec',
-                    plots.isBar(t.type) ? '#444' : defaultColor);
-                mergeattr('error_y.thickness','yeThick', 2);
-                mergeattr('error_y.width','yew', is3d ? 0 : 4);
-            }
+    //         if(t.yeVis){
+    //             mergeattr('error_y.type','yeType',
+    //                 ('array' in gdc.error_y) ? 'data' : 'percent');
+    //             mergeattr('error_y.symmetric','yeSym',
+    //                 !((t.yeType==='data' ? 'arrayminus' : 'valueminus') in
+    //                     gdc.error_y));
+    //             mergeattr('error_y.value','yeVal',10);
+    //             mergeattr('error_y.valueminus','yeValminus',10);
+    //             mergeattr('error_y.traceref','yeRef',0);
+    //             mergeattr('error_y.tracerefminus','yeRefminus',0);
+    //             mergeattr('error_y.color','yec',
+    //                 plots.isBar(t.type) ? '#444' : defaultColor);
+    //             mergeattr('error_y.thickness','yeThick', 2);
+    //             mergeattr('error_y.width','yew', is3d ? 0 : 4);
+    //         }
 
-            if(t.xeVis){
-                mergeattr('error_x.type','xeType',
-                    ('array' in gdc.error_x) ? 'data' : 'percent');
-                mergeattr('error_x.symmetric','xeSym',
-                    !((t.xeType==='data' ? 'arrayminus' : 'valueminus') in
-                        gdc.error_x));
-                mergeattr('error_x.value','xeVal',10);
-                mergeattr('error_x.valueminus','xeValminus',10);
-                mergeattr('error_x.traceref','xeRef',0);
-                mergeattr('error_x.tracerefminus','xeRefminus',0);
-                mergeattr('error_x.copy_ystyle','xeYStyle',
-                    (gdc.error_x.color || gdc.error_x.thickness ||
-                        gdc.error_x.width) ? false : true);
-                var xsLetter = t.xeYStyle!==false ? 'y' : 'x';
-                mergeattr('error_'+xsLetter+'.color','xec',
-                    plots.isBar(t.type) ? '#444' : defaultColor);
-                mergeattr('error_'+xsLetter+'.thickness','xeThick', 2);
-                mergeattr('error_'+xsLetter+'.width','xew', is3d ? 0 : 4);
-            }
+    //         if(t.xeVis){
+    //             mergeattr('error_x.type','xeType',
+    //                 ('array' in gdc.error_x) ? 'data' : 'percent');
+    //             mergeattr('error_x.symmetric','xeSym',
+    //                 !((t.xeType==='data' ? 'arrayminus' : 'valueminus') in
+    //                     gdc.error_x));
+    //             mergeattr('error_x.value','xeVal',10);
+    //             mergeattr('error_x.valueminus','xeValminus',10);
+    //             mergeattr('error_x.traceref','xeRef',0);
+    //             mergeattr('error_x.tracerefminus','xeRefminus',0);
+    //             mergeattr('error_x.copy_ystyle','xeYStyle',
+    //                 (gdc.error_x.color || gdc.error_x.thickness ||
+    //                     gdc.error_x.width) ? false : true);
+    //             var xsLetter = t.xeYStyle!==false ? 'y' : 'x';
+    //             mergeattr('error_'+xsLetter+'.color','xec',
+    //                 plots.isBar(t.type) ? '#444' : defaultColor);
+    //             mergeattr('error_'+xsLetter+'.thickness','xeThick', 2);
+    //             mergeattr('error_'+xsLetter+'.width','xew', is3d ? 0 : 4);
+    //         }
 
-            if(t.zeVis){
-                mergeattr('error_z.type','zeType',
-                    ('array' in gdc.error_z) ? 'data' : 'percent');
-                mergeattr('error_z.symmetric','zeSym',
-                    !((t.zeType==='data' ? 'arrayminus' : 'valueminus') in
-                        gdc.error_z));
-                mergeattr('error_z.value','zeVal',10);
-                mergeattr('error_z.valueminus','zeValminus',10);
-                mergeattr('error_z.traceref','zeRef',0);
-                mergeattr('error_z.tracerefminus','zeRefminus',0);
-                mergeattr('error_z.color','zec',
-                    plots.isBar(t.type) ? '#444' : defaultColor);
-                mergeattr('error_z.thickness','zeThick', 2);
-                mergeattr('error_z.width','zew', is3d ? 0 : 4);
-            }
+    //         if(t.zeVis){
+    //             mergeattr('error_z.type','zeType',
+    //                 ('array' in gdc.error_z) ? 'data' : 'percent');
+    //             mergeattr('error_z.symmetric','zeSym',
+    //                 !((t.zeType==='data' ? 'arrayminus' : 'valueminus') in
+    //                     gdc.error_z));
+    //             mergeattr('error_z.value','zeVal',10);
+    //             mergeattr('error_z.valueminus','zeValminus',10);
+    //             mergeattr('error_z.traceref','zeRef',0);
+    //             mergeattr('error_z.tracerefminus','zeRefminus',0);
+    //             mergeattr('error_z.color','zec',
+    //                 plots.isBar(t.type) ? '#444' : defaultColor);
+    //             mergeattr('error_z.thickness','zeThick', 2);
+    //             mergeattr('error_z.width','zew', is3d ? 0 : 4);
+    //         }
 
 
-            if(['scatter','box','scatter3d'].indexOf(type)!==-1){
-                mergeattr('line.color','lc',gdc.marker.color || defaultColor);
-                mergeattr('line.width','lw',2);
-                mergeattr('marker.symbol','mx','circle');
-                mergeattr('marker.opacity','mo',
-                    $.isArray(gdc.marker.size) ? 0.7 : 1);
-                mergeattr('marker.size','ms',6);
-                mergeattr('marker.color','mc',t.lc);
-                mergeattr('marker.line.color','mlc',
-                    ((t.lc!==t.mc) ? t.lc :
-                        ($.isArray(gdc.marker.size) ? '#fff' :'#444')));
-                mergeattr('marker.line.width','mlw',
-                    $.isArray(gdc.marker.size) ? 1 : 0);
-                mergeattr('fill','fill','none');
-                mergeattr('fillcolor','fc',Plotly.Drawing.addOpacity(t.lc,0.5));
-                // even if sizeref and sizemode are set,
-                // don't use them outside bubble charts
-                t.msr=1;
-                t.msm = 'diameter';
+    //         if(['scatter','box','scatter3d'].indexOf(type)!==-1){
+    //             mergeattr('line.color','lc',gdc.marker.color || defaultColor);
+    //             mergeattr('line.width','lw',2);
+    //             mergeattr('marker.symbol','mx','circle');
+    //             mergeattr('marker.opacity','mo',
+    //                 $.isArray(gdc.marker.size) ? 0.7 : 1);
+    //             mergeattr('marker.size','ms',6);
+    //             mergeattr('marker.color','mc',t.lc);
+    //             mergeattr('marker.line.color','mlc',
+    //                 ((t.lc!==t.mc) ? t.lc :
+    //                     ($.isArray(gdc.marker.size) ? '#fff' :'#444')));
+    //             mergeattr('marker.line.width','mlw',
+    //                 $.isArray(gdc.marker.size) ? 1 : 0);
+    //             mergeattr('fill','fill','none');
+    //             mergeattr('fillcolor','fc',Plotly.Drawing.addOpacity(t.lc,0.5));
+    //             // even if sizeref and sizemode are set,
+    //             // don't use them outside bubble charts
+    //             t.msr=1;
+    //             t.msm = 'diameter';
 
-                if(type==='scatter' || type==='scatter3d') {
-                    var defaultMode = 'lines';
-                    if(cd.length<Plotly.Scatter.PTS_LINESONLY ||
-                            (typeof gdc.mode !== 'undefined')) {
-                        defaultMode = 'lines+markers';
-                    }
-                    // check whether there are orphan points,
-                    // then show markers by default
-                    // regardless of length - but only if <10000 points
-                    else if(cd.length<10000) {
-                        var cdl = cd.length-1;
-                        for(j=0; j<=cdl; j++) {
-                            if($.isNumeric(cd[j].x) && $.isNumeric(cd[j].y) &&
-                                    (j===0 || !$.isNumeric(cd[j-1].x) ||
-                                      !$.isNumeric(cd[j-1].y)) &&
-                                    (j===cdl || !$.isNumeric(cd[j+1].x) ||
-                                      !$.isNumeric(cd[j+1].y))) {
-                                defaultMode = 'lines+markers';
-                                break;
-                            }
-                        }
-                    }
-                    mergeattr('mode','mode',defaultMode);
-                    mergeattr('marker.maxdisplayed','mnum',0);
-                    if($.isArray(gdc.marker.size)) {
-                        mergeattr('marker.sizeref','msr',1);
-                        mergeattr('marker.sizemode','msm','diameter');
-                    }
-                    mergeattr('marker.colorscale','mscl',
-                        Plotly.defaultColorscale,true);
-                    mergeattr('marker.cauto','mcauto',true);
-                    mergeattr('marker.cmax','mcmax',10);
-                    mergeattr('marker.cmin','mcmin',-10);
-                    mergeattr('marker.line.colorscale','mlscl',
-                        Plotly.defaultColorscale,true);
-                    mergeattr('marker.line.cauto','mlcauto',true);
-                    mergeattr('marker.line.cmax','mlcmax',10);
-                    mergeattr('marker.line.cmin','mlcmin',-10);
-                    mergeattr('line.dash','ld','solid');
-                    mergeattr('textposition','tp','middle center');
-                    mergeattr('textfont.size','ts',gd._fullLayout.font.size);
-                    mergeattr('textfont.color','tc',gd._fullLayout.font.color);
-                    mergeattr('textfont.family','tf',gd._fullLayout.font.family);
-                    mergeattr('connectgaps','connectgaps',false);
-                    mergeattr('line.shape','lineshape','linear');
-                    mergeattr('line.smoothing','ls',1);
-                }
-                else if(type==='box') {
-                    mergeattr('whiskerwidth','ww',0.5);
-                    mergeattr('boxpoints','boxpts','outliers');
-                    mergeattr('boxmean','mean',false);
-                    mergeattr('jitter','jitter',t.boxpts==='all' ? 0.3 : 0);
-                    mergeattr('pointpos','ptpos',t.boxpts==='all' ? -1.5 : 0);
-                    mergeattr('marker.outliercolor','soc','rgba(0,0,0,0)');
-                    mergeattr('marker.line.outliercolor','solc',t.mc);
-                    mergeattr('marker.line.outlierwidth','solw',1);
-                    mergeattr('marker.outliercolorscale','soscl',t.mscl,true);
-                    mergeattr('marker.outliercauto','socauto',t.mcauto);
-                    mergeattr('marker.outliercmax','socmax',t.mcmax);
-                    mergeattr('marker.outliercmin','socmin',t.mcmin);
-                    mergeattr('marker.line.outliercolorscale','solscl',
-                        t.mlscl,true);
-                    mergeattr('marker.line.outliercauto','solcauto',t.mlcauto);
-                    mergeattr('marker.line.outliercmax','solcmax',t.mlcmax);
-                    mergeattr('marker.line.outliercmin','solcmin',t.mlcmin);
-                }
-            }
-            else if(plots.isHeatmap(type) || type === 'surface'){
-                if(plots.isHist2D(type)) {
-                    mergeattr('histfunc','histfunc','count');
-                    mergeattr('histnorm','histnorm','');
-                    mergeattr('autobinx','autobinx',true);
-                    mergeattr('nbinsx','nbinsx',0);
-                    mergeattr('xbins.start','xbstart',0);
-                    mergeattr('xbins.end','xbend',1);
-                    mergeattr('xbins.size','xbsize',1);
-                    mergeattr('autobiny','autobiny',true);
-                    mergeattr('nbinsy','nbinsy',0);
-                    mergeattr('ybins.start','ybstart',0);
-                    mergeattr('ybins.end','ybend',1);
-                    mergeattr('ybins.size','ybsize',1);
-                    // in case of aggregation by marker color,
-                    // just need to know if this is an array
-                    mergeattr('marker.color','mc',t.lc);
-                }
-                else {
-                    mergeattr('xtype','xtype',gdc.x ? 'array' : 'noarray');
-                    mergeattr('ytype','ytype',gdc.y ? 'array' : 'noarray');
-                    mergeattr('x0','x0',0);
-                    mergeattr('dx','dx',1);
-                    mergeattr('y0','y0',0);
-                    mergeattr('dy','dy',1);
-                }
-                mergeattr('zauto','zauto',true);
-                // mergeattr('zmin','zmin',-10);
-                // mergeattr('zmax','zmax',10);
-                if (type !== 'surface') {
-                    mergeattr('colorscale', 'scl', Plotly.defaultColorscale,true);
-                } else {
-                    mergeattr('colorscale', 'scl', 'Jet', true);
-                }
-                // reverse colorscale: handle this here so we don't
-                // have to do it in each plot type and colorbar
-                mergeattr('reversescale','reversescale',false);
-                if(t.reversescale) {
-                    t.scl = Plotly.Plots.getScale(t.scl)
-                        .map(flipScale)
-                        .reverse();
-                }
-                mergeattr('showscale','showscale',true);
-                mergeattr('zsmooth', 'zsmooth', false);
+    //             if(type==='scatter' || type==='scatter3d') {
+    //                 var defaultMode = 'lines';
+    //                 if(cd.length<Plotly.Scatter.PTS_LINESONLY ||
+    //                         (typeof gdc.mode !== 'undefined')) {
+    //                     defaultMode = 'lines+markers';
+    //                 }
+    //                 // check whether there are orphan points,
+    //                 // then show markers by default
+    //                 // regardless of length - but only if <10000 points
+    //                 else if(cd.length<10000) {
+    //                     var cdl = cd.length-1;
+    //                     for(j=0; j<=cdl; j++) {
+    //                         if($.isNumeric(cd[j].x) && $.isNumeric(cd[j].y) &&
+    //                                 (j===0 || !$.isNumeric(cd[j-1].x) ||
+    //                                   !$.isNumeric(cd[j-1].y)) &&
+    //                                 (j===cdl || !$.isNumeric(cd[j+1].x) ||
+    //                                   !$.isNumeric(cd[j+1].y))) {
+    //                             defaultMode = 'lines+markers';
+    //                             break;
+    //                         }
+    //                     }
+    //                 }
+    //                 mergeattr('mode','mode',defaultMode);
+    //                 mergeattr('marker.maxdisplayed','mnum',0);
+    //                 if($.isArray(gdc.marker.size)) {
+    //                     mergeattr('marker.sizeref','msr',1);
+    //                     mergeattr('marker.sizemode','msm','diameter');
+    //                 }
+    //                 mergeattr('marker.colorscale','mscl',
+    //                     Plotly.defaultColorscale,true);
+    //                 mergeattr('marker.cauto','mcauto',true);
+    //                 mergeattr('marker.cmax','mcmax',10);
+    //                 mergeattr('marker.cmin','mcmin',-10);
+    //                 mergeattr('marker.line.colorscale','mlscl',
+    //                     Plotly.defaultColorscale,true);
+    //                 mergeattr('marker.line.cauto','mlcauto',true);
+    //                 mergeattr('marker.line.cmax','mlcmax',10);
+    //                 mergeattr('marker.line.cmin','mlcmin',-10);
+    //                 mergeattr('line.dash','ld','solid');
+    //                 mergeattr('textposition','tp','middle center');
+    //                 mergeattr('textfont.size','ts',gd._fullLayout.font.size);
+    //                 mergeattr('textfont.color','tc',gd._fullLayout.font.color);
+    //                 mergeattr('textfont.family','tf',gd._fullLayout.font.family);
+    //                 mergeattr('connectgaps','connectgaps',false);
+    //                 mergeattr('line.shape','lineshape','linear');
+    //                 mergeattr('line.smoothing','ls',1);
+    //             }
+    //             else if(type==='box') {
+    //                 mergeattr('whiskerwidth','ww',0.5);
+    //                 mergeattr('boxpoints','boxpts','outliers');
+    //                 mergeattr('boxmean','mean',false);
+    //                 mergeattr('jitter','jitter',t.boxpts==='all' ? 0.3 : 0);
+    //                 mergeattr('pointpos','ptpos',t.boxpts==='all' ? -1.5 : 0);
+    //                 mergeattr('marker.outliercolor','soc','rgba(0,0,0,0)');
+    //                 mergeattr('marker.line.outliercolor','solc',t.mc);
+    //                 mergeattr('marker.line.outlierwidth','solw',1);
+    //                 mergeattr('marker.outliercolorscale','soscl',t.mscl,true);
+    //                 mergeattr('marker.outliercauto','socauto',t.mcauto);
+    //                 mergeattr('marker.outliercmax','socmax',t.mcmax);
+    //                 mergeattr('marker.outliercmin','socmin',t.mcmin);
+    //                 mergeattr('marker.line.outliercolorscale','solscl',
+    //                     t.mlscl,true);
+    //                 mergeattr('marker.line.outliercauto','solcauto',t.mlcauto);
+    //                 mergeattr('marker.line.outliercmax','solcmax',t.mlcmax);
+    //                 mergeattr('marker.line.outliercmin','solcmin',t.mlcmin);
+    //             }
+    //         }
+    //         else if(plots.isHeatmap(type) || type === 'surface'){
+    //             if(plots.isHist2D(type)) {
+    //                 mergeattr('histfunc','histfunc','count');
+    //                 mergeattr('histnorm','histnorm','');
+    //                 mergeattr('autobinx','autobinx',true);
+    //                 mergeattr('nbinsx','nbinsx',0);
+    //                 mergeattr('xbins.start','xbstart',0);
+    //                 mergeattr('xbins.end','xbend',1);
+    //                 mergeattr('xbins.size','xbsize',1);
+    //                 mergeattr('autobiny','autobiny',true);
+    //                 mergeattr('nbinsy','nbinsy',0);
+    //                 mergeattr('ybins.start','ybstart',0);
+    //                 mergeattr('ybins.end','ybend',1);
+    //                 mergeattr('ybins.size','ybsize',1);
+    //                 // in case of aggregation by marker color,
+    //                 // just need to know if this is an array
+    //                 mergeattr('marker.color','mc',t.lc);
+    //             }
+    //             else {
+    //                 mergeattr('xtype','xtype',gdc.x ? 'array' : 'noarray');
+    //                 mergeattr('ytype','ytype',gdc.y ? 'array' : 'noarray');
+    //                 mergeattr('x0','x0',0);
+    //                 mergeattr('dx','dx',1);
+    //                 mergeattr('y0','y0',0);
+    //                 mergeattr('dy','dy',1);
+    //             }
+    //             mergeattr('zauto','zauto',true);
+    //             // mergeattr('zmin','zmin',-10);
+    //             // mergeattr('zmax','zmax',10);
+    //             if (type !== 'surface') {
+    //                 mergeattr('colorscale', 'scl', Plotly.defaultColorscale,true);
+    //             } else {
+    //                 mergeattr('colorscale', 'scl', 'Jet', true);
+    //             }
+    //             // reverse colorscale: handle this here so we don't
+    //             // have to do it in each plot type and colorbar
+    //             mergeattr('reversescale','reversescale',false);
+    //             if(t.reversescale) {
+    //                 t.scl = Plotly.Plots.getScale(t.scl)
+    //                     .map(flipScale)
+    //                     .reverse();
+    //             }
+    //             mergeattr('showscale','showscale',true);
+    //             mergeattr('zsmooth', 'zsmooth', false);
 
-                if(plots.isContour(type)) {
-                    mergeattrs(Plotly.Contour.defaults());
-                }
-                mergeattrs(Plotly.Colorbar.defaults());
-            }
-            else if(plots.isBar(type)){
-                if(type==='histogram') {
-                    mergeattr('histfunc','histfunc','count');
-                    mergeattr('histnorm','histnorm','');
-                    mergeattr('autobinx','autobinx',true);
-                    mergeattr('nbinsx','nbinsx',0);
-                    mergeattr('xbins.start','xbstart',0);
-                    mergeattr('xbins.end','xbend',1);
-                    mergeattr('xbins.size','xbsize',1);
-                    mergeattr('autobiny','autobiny',true);
-                    mergeattr('nbinsy','nbinsy',0);
-                    mergeattr('ybins.start','ybstart',0);
-                    mergeattr('ybins.end','ybend',1);
-                    mergeattr('ybins.size','ybsize',1);
-                }
-                mergeattr('marker.opacity','mo',1);
-                mergeattr('marker.color','mc',defaultColor);
-                mergeattr('marker.line.color','mlc','#444');
-                mergeattr('marker.line.width','mlw',0);
-            }
-        }
-    };
+    //             if(plots.isContour(type)) {
+    //                 mergeattrs(Plotly.Contour.defaults());
+    //             }
+    //             mergeattrs(Plotly.Colorbar.defaults());
+    //         }
+    //         else if(plots.isBar(type)){
+    //             if(type==='histogram') {
+    //                 mergeattr('histfunc','histfunc','count');
+    //                 mergeattr('histnorm','histnorm','');
+    //                 mergeattr('autobinx','autobinx',true);
+    //                 mergeattr('nbinsx','nbinsx',0);
+    //                 mergeattr('xbins.start','xbstart',0);
+    //                 mergeattr('xbins.end','xbend',1);
+    //                 mergeattr('xbins.size','xbsize',1);
+    //                 mergeattr('autobiny','autobiny',true);
+    //                 mergeattr('nbinsy','nbinsy',0);
+    //                 mergeattr('ybins.start','ybstart',0);
+    //                 mergeattr('ybins.end','ybend',1);
+    //                 mergeattr('ybins.size','ybsize',1);
+    //             }
+    //             mergeattr('marker.opacity','mo',1);
+    //             mergeattr('marker.color','mc',defaultColor);
+    //             mergeattr('marker.line.color','mlc','#444');
+    //             mergeattr('marker.line.width','mlw',0);
+    //         }
+    //     }
+    // };
 
     function applyStyle(gd) {
         var fullLayout = gd._fullLayout;
@@ -2191,8 +2191,8 @@
             seq = [Plotly.plot];
         }
         else {
-            supplyDefaults(gd);
-            plots.setStyles(gd);
+            plots.supplyDefaults(gd);
+            // plots.setStyles(gd);
             seq = [plots.previousPromises];
             if(doapplystyle) {
                 seq.push(function doApplyStyle(){
@@ -2204,7 +2204,20 @@
             if(docolorbars) {
                 seq.push(function doColorBars(){
                     gd.calcdata.forEach(function(cd) {
-                        if((cd[0].t||{}).cb) cd[0].t.cb.options(cd[0].trace.colorbar)();
+                        if((cd[0].t||{}).cb) {
+                            var trace = cd[0].trace,
+                                cb = cd[0].t.cb;
+                            if(plots.isContour(trace.type)) {
+                                cb.line({
+                                    width: trace.contours.showlines!==false ?
+                                        trace.line.width : 0,
+                                    dash: trace.line.dash,
+                                    color: trace.contours.coloring==='line' ?
+                                        cb._opts.line.color : trace.line.color
+                                });
+                            }
+                            cb.options(trace.colorbar)();
+                        }
                     });
                     return plots.previousPromises(gd);
                 });
@@ -2487,6 +2500,8 @@
                         ai.indexOf('align')===-1) {
                     docalc = true;
                 }
+                // TODO: combine all edits to a given annotation into one call
+                // as it is we get separate calls for x and y (or ax and ay) on move
                 Plotly.Annotations.draw(gd,anum,
                     p.parts.slice(2).join('.'),aobj[ai]);
                 delete aobj[ai];
@@ -2569,7 +2584,7 @@
         }
         else if(ak.length) {
             // if we didn't need to redraw entirely, just do the needed parts
-            supplyDefaults(gd);
+            plots.supplyDefaults(gd);
             if(dolegend) {
                 seq.push(function doLegend(){
                     Plotly.Legend.draw(gd, fullLayout.showlegend);

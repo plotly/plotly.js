@@ -98,9 +98,10 @@
 
     legend.lines = function(d){
         var trace = d[0].trace,
-            isScatter = Plotly.Plots.isScatter(trace.type),
+            isScatter = (Plotly.Plots.isScatter(trace.type) ||
+                         Plotly.Plots.isScatter3D(trace.type)) && trace.visible,
             showFill = isScatter && trace.fill!=='none', // && $.isNumeric(t.curve), TODO: what was this about?
-            showLine = isScatter && trace.mode.indexOf('lines')!==-1;
+            showLine = isScatter && Plotly.Scatter.hasLines(trace);
 
         var fill = d3.select(this).select('.legendfill').selectAll('path')
             .data(showFill ? [d] : []);
@@ -119,10 +120,11 @@
 
     legend.points = function(d){
         var trace = d[0].trace,
-            isScatter = Plotly.Plots.isScatter(trace.type) || Plotly.Plots.isScatter3D(trace.type),
-            showMarkers = isScatter && trace.mode.indexOf('markers')!==-1,
-            showText = isScatter && trace.mode.indexOf('text')!==-1,
-            showLines = isScatter && trace.mode.indexOf('lines')!==-1;
+            isScatter = (Plotly.Plots.isScatter(trace.type) ||
+                         Plotly.Plots.isScatter3D(trace.type)) && trace.visible,
+            showMarkers = isScatter && Plotly.Scatter.hasMarkers(trace),
+            showText = isScatter && Plotly.Scatter.hasText(trace),
+            showLines = isScatter && Plotly.Scatter.hasLines(trace);
 
         var dMod, tMod;
         if(isScatter) {
@@ -138,6 +140,7 @@
                     size: Math.max(Math.min(trace.marker.size, 16), 2),
                     sizeref: 1,
                     sizemode: 'diameter',
+                    line: {width: Math.min(trace.marker.line.width, 3)}
                 };
             }
             if(showLines) {

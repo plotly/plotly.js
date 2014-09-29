@@ -227,17 +227,17 @@
         }
 
         coerce('text');
-        var mode = coerce('mode', defaultMode);
+        coerce('mode', defaultMode);
 
-        if(mode.indexOf('lines')!==-1) {
+        if(scatter.hasLines(traceOut)) {
             scatter.lineDefaults(traceIn, traceOut, defaultColor, layout);
         }
 
-        if(mode.indexOf('markers')!==-1) {
+        if(scatter.hasMarkers(traceOut)) {
             scatter.markerDefaults(traceIn, traceOut, defaultColor, layout);
         }
 
-        if(mode.indexOf('text')!==-1) {
+        if(scatter.hasText(traceOut)) {
             coerce('textposition');
             coerce('textfont', layout.font);
         }
@@ -247,6 +247,7 @@
             coerce('fillcolor', Plotly.Drawing.addOpacity(
                 (traceOut.line||{}).color || (traceOut.marker||{}).color ||
                 ((traceOut.marker||{}).line||{}).color || defaultColor, 0.5));
+            if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut);
         }
 
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
@@ -261,12 +262,20 @@
         coerce('line.color', (traceIn.marker||{}).color || defaultColor);
         coerce('line.width');
 
-        var shape = coerce('line.shape');
-        if(shape==='spline') coerce('line.smoothing');
+        lineShapeDefaults(traceIn, traceOut);
 
         coerce('connectgaps');
         coerce('line.dash');
     };
+
+    function lineShapeDefaults(traceIn, traceOut) {
+        function coerce(attr, dflt) {
+            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
+        }
+
+        var shape = coerce('line.shape');
+        if(shape==='spline') coerce('line.smoothing');
+    }
 
     scatter.markerDefaults = function(traceIn, traceOut, defaultColor) {
         function coerce(attr, dflt) {
@@ -316,6 +325,18 @@
         if($.isArray(colorVal)) attrs.forEach(coerce);
     };
 
+    scatter.hasLines = function(trace) {
+        return trace.visible && trace.mode && trace.mode.indexOf('lines')!==-1;
+    };
+
+    scatter.hasMarkers = function(trace) {
+        return trace.visible && trace.mode && trace.mode.indexOf('markers')!==-1;
+    };
+
+    scatter.hasText = function(trace) {
+        return trace.visible && trace.mode && trace.mode.indexOf('text')!==-1;
+    };
+
     scatter.calc = function(gd,trace) {
         // verify that data exists, and make scaled data if necessary
         if(!('y' in trace) && !('x' in trace)) return; // no data!
@@ -358,7 +379,7 @@
         var xOptions = {padded:true},
             yOptions = {padded:true};
         // include marker size
-        if(trace.mode.indexOf('markers')!==-1) {
+        if(scatter.hasMarkers(trace)) {
             var sizeref = 1.6*(trace.marker.sizeref||1),
                 markerTrans;
             if(trace.marker.sizemode==='area') {
@@ -387,7 +408,7 @@
         // if no error bars, markers or text, or fill to y=0 remove x padding
         else if(!trace.error_y.visible &&
                 (['tonexty', 'tozeroy'].indexOf(trace.fill)!==-1 ||
-                 (trace.mode.indexOf('markers')===-1 && trace.mode.indexOf('text')===-1))) {
+                 (!scatter.hasMarkers(trace) && !scatter.hasText(trace)))) {
             xOptions.padded = false;
             xOptions.ppad = 0;
         }
@@ -426,7 +447,7 @@
 
         cdscatter.forEach(function(d,i) {
             var trace = d[0].trace;
-            if(trace.mode.indexOf('markers')===-1) return;
+            if(!scatter.hasMarkers(trace)) return;
             // if marker.maxdisplayed is used, select a maximum of
             // mnum markers to show, from the set that are in the viewport
             var mnum = trace.marker.maxdisplayed;
@@ -441,7 +462,7 @@
                 tnum = 0;
             cdscatter.forEach(function(cdj, j) {
                 var tracei = cdj[0].trace;
-                if(tracei.mode.indexOf('markers')===-1 &&
+                if(scatter.hasMarkers(tracei) &&
                         tracei.marker.maxdisplayed>0 && j<i) {
                     tnum++;
                 }
@@ -474,7 +495,7 @@
             Plotly.Lib.mergeArray(trace.textfont.family, cd, 'tf');
         }
 
-        if(trace.mode.indexOf('markers')!==-1) {
+        if(scatter.hasMarkers(trace)) {
             var marker = trace.marker;
             Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
             Plotly.Lib.mergeArray(marker.size, cd, 'ms');
@@ -516,6 +537,8 @@
             if(trace.visible===false) return;
 
             arraysToCalcdata(d);
+
+            if(!scatter.hasLines(trace) && trace.fill==='none') return;
 
             var i = -1,
                 tr = d3.select(this),
@@ -709,7 +732,7 @@
                     thispath = pathfn(pts);
                     fullpath += fullpath ? ('L'+thispath.substr(1)) : thispath;
                     revpath = revpathfn(pts) + revpath;
-                    if(trace.mode.indexOf('lines')!==-1 && atLeastTwo) {
+                    if(scatter.hasLines(trace) && atLeastTwo) {
                         tr.append('path').classed('js-line',true).attr('d',thispath);
                     }
                 }
@@ -747,8 +770,8 @@
             .each(function(d){
                 var trace = d[0].trace,
                     s = d3.select(this),
-                    showMarkers = trace.mode.indexOf('markers')!==-1,
-                    showText = trace.mode.indexOf('text')!==-1;
+                    showMarkers = scatter.hasMarkers(trace),
+                    showText = scatter.hasText(trace);
 
                 if((!showMarkers && !showText) || trace.visible===false) s.remove();
                 else {

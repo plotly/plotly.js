@@ -748,6 +748,7 @@
                         return colormap(contours.start+(i+0.5)*cs);
                     });
             });
+        Plotly.Heatmap.style(gp);
     };
 
     contour.colorbar = function(gd, cd) {
@@ -814,7 +815,7 @@
                 colormap : '')
             .line({
                 color: contours.coloring==='lines' ? colormap : line.color,
-                width: contours.showlines===false ? 0 : line.width,
+                width: contours.showlines!==false ? line.width : 0,
                 dash: line.dash
             })
             .levels({

@@ -348,7 +348,7 @@
                             // if there are explicit gaps, don't round,
                             // it can make the gaps look crappy
                             return (fullLayout.bargap===0 && fullLayout.bargroupgap===0) ?
-                                d3.round(Math.round(v)-offset,2) : v;
+                                d3.round(Math.round(v)-offset, 2) : v;
                         }
                         function expandToVisible(v,vc) {
                             // if it's not in danger of disappearing entirely,
@@ -367,7 +367,7 @@
                             // no line, expand to a full pixel to make sure we
                             // can see them
                             var op = Plotly.Drawing.opacity(
-                                    di.mc || t.mc || (di.t ? di.t.mc : '')),
+                                    di.mc || trace.marker.color),
                                 fixpx = (op<1 || lw>0.01) ?
                                     roundWithLine : expandToVisible;
                             x0 = fixpx(x0,x1);
@@ -386,34 +386,50 @@
             barcount = s.size();
 
         // first trace styling
-        s.style('opacity',function(d){ return d[0].t.op; })
+        s.style('opacity',function(d){ return d[0].trace.opacity; })
 
         // for gapless (either stacked or neighboring grouped) bars use
         // crispEdges to turn off antialiasing so an artificial gap
         // isn't introduced.
         .each(function(d){
             if((fullLayout.barmode==='stack' && barcount>1) ||
-                    (fullLayout.bargap===0 && fullLayout.bargroupgap===0 && !d[0].t.mlw)){
+                    (fullLayout.bargap===0 &&
+                     fullLayout.bargroupgap===0 &&
+                     !d[0].trace.marker.line.width)){
                 d3.select(this).attr('shape-rendering','crispEdges');
             }
         });
 
         // then style the individual bars
         s.selectAll('g.points').each(function(d){
-            var t = d.t||d[0].t;
+            var trace = d[0].trace,
+                marker = trace.marker,
+                markerLine = marker.line,
+                markerIn = trace._input.marker,
+                markerScale = Plotly.Drawing.tryColorscale(marker, markerIn, ''),
+                lineScale = Plotly.Drawing.tryColorscale(marker, markerIn, 'line.');
+
             d3.select(this).selectAll('path').each(function(d) {
                 // allow all marker and marker line colors to be scaled
                 // by given max and min to colorscales
-                var w = (d.mlw+1 || t.mlw+1 || (d.t ? d.t.mlw : 0)+1) - 1,
+                var fillColor,
+                    lineColor,
+                    lineWidth = (d.mlw+1 || markerLine.width+1) - 1,
                     p = d3.select(this);
-                p.style('stroke-width',w+'px')
-                    .call(Plotly.Drawing.fillColor,
-                        Plotly.Drawing.tryColorscale(s,t,'m')(
-                            d.mc || t.mc || (d.t ? d.t.mc : '')));
-                if(w) {
-                    p.call(Plotly.Drawing.strokeColor,
-                        Plotly.Drawing.tryColorscale(s,t,'ml')(
-                            d.mlc || t.mlc || (d.t ? d.t.mlc : '')));
+
+                if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
+                else if(Array.isArray(marker.color)) fillColor = '#444';
+                else fillColor = marker.color;
+
+                p.style('stroke-width', lineWidth + 'px')
+                    .call(Plotly.Drawing.fillColor, fillColor);
+                if(lineWidth) {
+                    if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
+                    // weird case: array wasn't long enough to apply to every point
+                    else if(Array.isArray(markerLine.color)) lineColor = '#444';
+                    else lineColor = markerLine.color;
+
+                    p.call(Plotly.Drawing.strokeColor, lineColor);
                 }
             });
             // TODO: text markers on bars, either extra text or just bar values
