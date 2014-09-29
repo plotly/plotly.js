@@ -111,7 +111,8 @@
             },
             maxdisplayed: {
                 type: 'number',
-                min: 0
+                min: 0,
+                dflt: 0
             },
             sizeref: {
                 type: 'number',
@@ -533,7 +534,8 @@
         var prevpath='',
             tozero,tonext,nexttonext;
         scattertraces.each(function(d){
-            var trace = d[0].trace;
+            var trace = d[0].trace,
+                line = trace.line;
             if(trace.visible===false) return;
 
             arraysToCalcdata(d);
@@ -591,15 +593,15 @@
             // now make a new nexttonext for next time
             nexttonext = tr.append('path').classed('js-fill',true);
 
-            if(['hv','vh','hvh','vhv'].indexOf(trace.line.shape)!==-1) {
-                pathfn = Plotly.Drawing.steps(trace.line.shape);
+            if(['hv','vh','hvh','vhv'].indexOf(line.shape)!==-1) {
+                pathfn = Plotly.Drawing.steps(line.shape);
                 revpathbase = Plotly.Drawing.steps(
-                    trace.lineshape.split('').reverse().join('')
+                    line.shape.split('').reverse().join('')
                 );
             }
-            else if(trace.line.shape==='spline') {
+            else if(line.shape==='spline') {
                 pathfn = revpathbase = function(pts) {
-                    return Plotly.Drawing.smoothopen(pts,trace.line.smoothing);
+                    return Plotly.Drawing.smoothopen(pts, line.smoothing);
                 };
             }
             else {
@@ -687,7 +689,7 @@
                     // then it increases as you get farther off-plot.
                     // the value is in pixels, and is based on the line width, which
                     // means we need to replot if we change the line width
-                    decimationTolerance = getTolerance(pti[0],pti[1],trace.line.width);
+                    decimationTolerance = getTolerance(pti[0],pti[1], line.width);
 
                     // if the last move was too much for decimation, see if we're
                     // starting a new decimation block
@@ -733,7 +735,7 @@
                     fullpath += fullpath ? ('L'+thispath.substr(1)) : thispath;
                     revpath = revpathfn(pts) + revpath;
                     if(scatter.hasLines(trace) && atLeastTwo) {
-                        tr.append('path').classed('js-line',true).attr('d',thispath);
+                        tr.append('path').classed('js-line',true).attr('d', thispath);
                     }
                 }
             }

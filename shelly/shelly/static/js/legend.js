@@ -120,6 +120,7 @@
 
     legend.points = function(d){
         var trace = d[0].trace,
+            marker = trace.marker||{},
             isScatter = (Plotly.Plots.isScatter(trace.type) ||
                          Plotly.Plots.isScatter3D(trace.type)) && trace.visible,
             showMarkers = isScatter && Plotly.Scatter.hasMarkers(trace),
@@ -129,7 +130,10 @@
         var dMod, tMod;
         if(isScatter) {
             // constrain text, markers, etc so they'll fit on the legend
-            var dEdit = {tx:'Aa', mo:1};
+            var dEdit = {
+                tx: 'Aa',
+                mo: Math.max(0.2, (d[0].mo+1 || marker.opacity+1 || 2) - 1)
+            };
             if(d[0].ms) dEdit.ms = 10; // bubble charts:
             if(d[0].mlw>5) dEdit.mlw = 5;
             dMod = [$.extend({},d[0], dEdit)];
@@ -137,10 +141,10 @@
             var tEdit = {textfont: {size: 10}};
             if(showMarkers) {
                 tEdit.marker = {
-                    size: Math.max(Math.min(trace.marker.size, 16), 2),
+                    size: Math.max(Math.min(marker.size, 16), 2),
                     sizeref: 1,
                     sizemode: 'diameter',
-                    line: {width: Math.min(trace.marker.line.width, 3)}
+                    line: {width: Math.min(marker.line.width, 3)}
                 };
             }
             if(showLines) {
