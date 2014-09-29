@@ -25,11 +25,11 @@
         },
         zmin: {
             type: 'number',
-            dflt: -10
+            dflt: null
         },
         zmax: {
             type: 'number',
-            dflt: 10
+            dflt: null
         },
         colorscale: {
             type: 'colorscale',
@@ -90,11 +90,9 @@
             }
         }
 
-        var zauto = coerce('zauto');
-        if(!zauto) {
-            coerce('zmin');
-            coerce('zmax');
-        }
+        coerce('zauto');
+        coerce('zmin');
+        coerce('zmax');
 
         if(!Plotly.Plots.isContour(traceOut.type) || (traceOut.contours||{}).coloring!=='none') {
             coerce('colorscale');
@@ -400,24 +398,24 @@
         Plotly.Axes.expand(xa, xArray);
         Plotly.Axes.expand(ya, yArray);
 
-        var calcInfo = {},
-            cd0 = {x: xArray, y: yArray, z: z, t: calcInfo};
+        var cd0 = {x: xArray, y: yArray, z: z};
 
         // auto-z for heatmap
         if(trace.zauto!==false || !('zmin' in trace)) {
-            calcInfo.zmin = Plotly.Lib.aggNums(Math.min, null, z);
+            trace.zmin = Plotly.Lib.aggNums(Math.min, null, z);
         }
-        else calcInfo.zmin = trace.zmin;
 
         if(trace.zauto!==false || !('zmax' in trace)) {
-            calcInfo.zmax = Plotly.Lib.aggNums(Math.max, null, z);
+            trace.zmax = Plotly.Lib.aggNums(Math.max, null, z);
         }
-        else calcInfo.zmax = trace.zmax;
 
-        if(calcInfo.zmin===calcInfo.zmax) {
-            calcInfo.zmin -= 0.5;
-            calcInfo.zmax += 0.5;
+        if(trace.zmin===trace.zmax) {
+            trace.zmin -= 0.5;
+            trace.zmax += 0.5;
         }
+
+        trace._input.zmin = trace.zmin;
+        trace._input.zmax = trace.zmax;
 
         if(Plotly.Plots.isContour(trace.type) && trace.contours &&
                 trace.contours.coloring==='heatmap') {
@@ -434,7 +432,7 @@
         return Number(v);
     }
 
-    function makeBoundArray(type,arrayIn,v0In,dvIn,numbricks,ax) {
+    function makeBoundArray(type, arrayIn, v0In, dvIn, numbricks, ax) {
         var arrayOut = [], v0, dv, i;
         if($.isArray(arrayIn) && (!Plotly.Plots.isHist2D(type)) && (ax.type!=='category')) {
             arrayIn = arrayIn.map(ax.d2c);
@@ -448,65 +446,64 @@
                 else {
                     arrayOut = [1.5*arrayIn[0]-0.5*arrayIn[1]];
                     for(i=1; i<len; i++) {
-                        arrayOut.push((arrayIn[i-1]+arrayIn[i])*0.5);
+                        arrayOut.push((arrayIn[i-1] + arrayIn[i])*0.5);
                     }
-                    arrayOut.push(1.5*arrayIn[len-1]-0.5*arrayIn[len-2]);
+                    arrayOut.push(1.5*arrayIn[len-1] - 0.5*arrayIn[len-2]);
                 }
             }
             // hopefully length==numbricks+1, but do something regardless:
             // given vals are brick boundaries
-            else return arrayIn.slice(0,numbricks+1);
+            else return arrayIn.slice(0, numbricks+1);
         }
         else {
             dv = dvIn || 1;
-            if(v0In===undefined) { v0 = 0; }
+            if(v0In===undefined) v0 = 0;
             else if(Plotly.Plots.isHist2D(type) || ax.type==='category') {
                 v0 = v0In;
             }
-            else { v0 = ax.d2c(v0In); }
+            else v0 = ax.d2c(v0In);
 
             if(Plotly.Plots.isContour(type)) {
-                for(i=0; i<numbricks; i++) { arrayOut.push(v0+dv*i); }
+                for(i=0; i<numbricks; i++) arrayOut.push(v0+dv*i);
             }
             else {
-                for(i=0; i<=numbricks; i++) { arrayOut.push(v0+dv*(i-0.5)); }
+                for(i=0; i<=numbricks; i++) arrayOut.push(v0+dv*(i-0.5));
             }
         }
         return arrayOut;
     }
 
     // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
-    heatmap.plot = function(gd,plotinfo,cdheatmaps) {
-        cdheatmaps.forEach(function(cd) { plotOne(gd,plotinfo,cd); });
+    heatmap.plot = function(gd, plotinfo, cdheatmaps) {
+        cdheatmaps.forEach(function(cd) { plotOne(gd, plotinfo, cd); });
     };
 
     function plotOne(gd,plotinfo,cd) {
         Plotly.Lib.markTime('in Heatmap.plot');
-        var t = cd[0].t,
-            i = t.curve,
+        var trace = cd[0].trace,
+            uid = trace.uid,
             xa = plotinfo.x,
             ya = plotinfo.y,
-            fullLayout = gd._fullLayout;
+            fullLayout = gd._fullLayout,
+            id='hm'+uid,
+            cbId='cb'+uid;
 
-        var id='hm'+i;
-        var cbId='cb'+i;
+        fullLayout._paper.selectAll('.contour'+uid).remove(); // in case this used to be a contour map
 
-        fullLayout._paper.selectAll('.contour'+i).remove(); // in case this used to be a contour map
-
-        if(t.visible===false) {
+        if(!trace.visible) {
             fullLayout._paper.selectAll('.'+id).remove();
             fullLayout._paper.selectAll('.'+cbId).remove();
             return;
         }
 
         var z = cd[0].z,
-            min = t.zmin,
-            max = t.zmax,
-            scl = Plotly.Plots.getScale(t.scl),
+            min = trace.zmin,
+            max = trace.zmax,
+            scl = Plotly.Plots.getScale(trace.colorscale),
             x = cd[0].x,
             y = cd[0].y,
             // fast smoothing - one pixel per brick
-            fastsmooth = [true,'fast'].indexOf(t.zsmooth)!==-1,
+            fastsmooth = [true,'fast'].indexOf(trace.zsmooth)!==-1,
 
             // get z dims (n gets max row length, in case of uneven rows)
             m = z.length,
@@ -518,7 +515,8 @@
             temp,
             yrev = false,
             top,
-            bottom;
+            bottom,
+            i;
 
         // TODO: if there are multiple overlapping categorical heatmaps,
         // or if we allow category sorting, then the categories may not be
@@ -569,7 +567,7 @@
 
         // for contours with heatmap fill, we generate the boundaries based on
         // brick centers but then use the brick edges for drawing the bricks
-        if(Plotly.Plots.isContour(t.type)) {
+        if(Plotly.Plots.isContour(trace.type)) {
             // TODO: for 'best' smoothing, we really should use the given brick
             // centers as well as brick bounds in calculating values, in case of
             // nonuniform brick sizes
@@ -582,7 +580,7 @@
         // about this, because zooming doesn't increase number of pixels
         // if zsmooth is best, don't include anything off screen because it takes too long
         if(!fastsmooth) {
-            var extra = t.zsmooth==='best' ? 0 : 0.5;
+            var extra = trace.zsmooth==='best' ? 0 : 0.5;
             left = Math.max(-extra*xa._length,left);
             right = Math.min((1+extra)*xa._length,right);
             top = Math.max(-extra*ya._length,top);
@@ -653,18 +651,18 @@
                 // get z-value, scale for 8-bit color by rounding z to an integer 0-254
                 // (one value reserved for transparent (missing/non-numeric data)
                 var vr = Plotly.Lib.constrain(Math.round((v-min)*254/(max-min)),0,254),
-                    c=s(vr);
-                pixcount+=pixsize;
+                    c = s(vr);
+                pixcount += pixsize;
                 if(!colors[vr]) {
                     colors[vr] = [
                         tinycolor(c).toHsl().l,
                         p.color('0x'+c.substr(1,2),'0x'+c.substr(3,2),'0x'+c.substr(5,2))
                     ];
                 }
-                lumcount+=pixsize*colors[vr][0];
+                lumcount += pixsize*colors[vr][0];
                 return colors[vr][1];
             }
-            else { return colors[256]; }
+            else return colors[256];
         }
 
         Plotly.Lib.markTime('done init png');
@@ -684,7 +682,7 @@
             pc,
             v,
             row;
-        if(t.zsmooth==='best') {
+        if(trace.zsmooth==='best') {
             //first make arrays of x and y pixel locations of brick boundaries
             var xPixArray = x.map(function(v){ return Math.round(xa.c2p(v)-left); }),
                 yPixArray = y.map(function(v){ return Math.round(ya.c2p(v)-top); }),
@@ -744,7 +742,7 @@
                     continue;
                 }
                 xi=xpx(0);
-                xb=[xi,xi];
+                xb=[xi, xi];
                 for(i=0; i<n; i++) {
                     // build one color brick!
                     xb.reverse();
@@ -772,7 +770,7 @@
         // put this right before making the new image, to minimize flicker
         fullLayout._paper.selectAll('.'+id).remove();
         plotinfo.plot.select('.maplayer').append('svg:image')
-            .classed(id,true)
+            .classed(id, true)
             .datum(cd[0])
             // .classed('pixelated',true) // we can hope pixelated works...
             .attr({
@@ -789,26 +787,27 @@
     }
 
     heatmap.colorbar = function(gd,cd) {
-        var t = cd[0].t,
-            cbId = 'cb'+t.curve,
-            scl=Plotly.Plots.getScale(t.scl);
+        var trace = cd[0].trace,
+            cbId = 'cb'+trace.uid,
+            scl = Plotly.Plots.getScale(trace.colorscale);
+
         gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
-        if(t.showscale===false){
-            Plotly.Plots.autoMargin(gd,cbId);
+        if(!trace.showscale){
+            Plotly.Plots.autoMargin(gd, cbId);
             return;
         }
 
-        Plotly.Colorbar(gd,cbId)
-            .fillcolor(d3.scale.linear()
-                .domain(scl.map(function(v){ return t.zmin+v[0]*(t.zmax-t.zmin); }))
+        var cb = cd[0].t.cb = Plotly.Colorbar(gd,cbId);
+        cb.fillcolor(d3.scale.linear()
+                .domain(scl.map(function(v){ return trace.zmin + v[0]*(trace.zmax-trace.zmin); }))
                 .range(scl.map(function(v){ return v[1]; })))
-            .filllevels({start:t.zmin, end:t.zmax, size:(t.zmax-t.zmin)/254})
-            .cdoptions(t)();
+            .filllevels({start: trace.zmin, end: trace.zmax, size: (trace.zmax-trace.zmin)/254})
+            .options(trace.colorbar)();
         Plotly.Lib.markTime('done colorbar');
     };
 
     heatmap.style = function(gp) {
-        gp.selectAll('image').style('opacity',function(d){ return d.t.op; });
+        gp.selectAll('image').style('opacity',function(d){ return d.trace.opacity; });
     };
 
 }()); // end Heatmap object definition

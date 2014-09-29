@@ -104,12 +104,12 @@
         var pos = [],
             size = [],
             i,
-            orientation = trace.orientation || ((trace.y && !trace.x) ? 'h' : 'v'),
+            // orientation = trace.orientation || ((trace.y && !trace.x) ? 'h' : 'v'),
             pa = Plotly.Axes.getFromId(gd,
-                orientation==='h' ? (trace.yaxis || 'y') : (trace.xaxis || 'x')),
-            maindata = orientation==='h' ? 'y' : 'x',
-            counterdata = {x: 'y', y: 'x'}[maindata],
-            calcInfo = {orientation: orientation};
+                trace.orientation==='h' ? (trace.yaxis || 'y') : (trace.xaxis || 'x')),
+            maindata = trace.orientation==='h' ? 'y' : 'x',
+            counterdata = {x: 'y', y: 'x'}[maindata];
+            // calcInfo = {orientation: orientation};
 
         // prepare the raw data
         var pos0 = pa.makeCalcdata(trace, maindata);
@@ -266,7 +266,6 @@
             }
         }
 
-        if(cd[0]) cd[0].t = calcInfo;
         return cd;
     };
 }()); // end Histogram object definition

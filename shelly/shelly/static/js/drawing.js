@@ -20,33 +20,33 @@
 
     drawing.opacity = function(cstr) { return tinycolor(cstr).alpha; };
 
-    drawing.addOpacity = function(cstr,op) {
+    drawing.addOpacity = function(cstr, op) {
         var c = tinycolor(cstr).toRgb();
         return 'rgba(' + Math.round(c.r) + ', ' +
             Math.round(c.g) + ', ' + Math.round(c.b) + ', ' + op + ')';
     };
 
-    drawing.strokeColor = function(s,c) {
+    drawing.strokeColor = function(s, c) {
         s.style({'stroke':drawing.rgb(c), 'stroke-opacity':drawing.opacity(c)});
     };
 
-    drawing.fillColor = function(s,c) {
+    drawing.fillColor = function(s, c) {
         s.style({'fill':drawing.rgb(c), 'fill-opacity':drawing.opacity(c)});
     };
 
-    drawing.font = function(s,family,size,fill) {
-        if(family!==undefined) { s.style('font-family',family); }
-        if(size!==undefined) { s.style('font-size',size+'px'); }
-        if(fill!==undefined) { s.call(drawing.fillColor,fill); }
+    drawing.font = function(s, family, size, fill) {
+        if(family) s.style('font-family', family);
+        if(size) s.style('font-size', size+'px');
+        if(fill) s.call(drawing.fillColor, fill);
     };
 
-    drawing.setPosition = function(s,x,y) { s.attr('x',x).attr('y',y); };
-    drawing.setSize = function(s,w,h) { s.attr('width',w).attr('height',h); };
-    drawing.setRect = function(s,x,y,w,h) {
-        s.call(drawing.setPosition,x,y).call(drawing.setSize,w,h);
+    drawing.setPosition = function(s, x, y) { s.attr('x',x).attr('y',y); };
+    drawing.setSize = function(s, w, h) { s.attr('width',w).attr('height',h); };
+    drawing.setRect = function(s, x, y, w, h) {
+        s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
     };
 
-    drawing.translatePoints = function(s,xa,ya){
+    drawing.translatePoints = function(s, xa, ya){
         s.each(function(d){
             // put xp and yp into d if pixel scaling is already done
             var x = d.xp || xa.c2p(d.x),
@@ -54,24 +54,25 @@
                 p = d3.select(this);
             if($.isNumeric(x) && $.isNumeric(y)) {
                 // for multiline text this works better
-                if(this.nodeName==='text') { p.attr('x',x).attr('y',y); }
-                else { p.attr('transform','translate('+x+','+y+')'); }
+                if(this.nodeName==='text') p.attr('x',x).attr('y',y);
+                else p.attr('transform', 'translate('+x+','+y+')');
             }
-            else { p.remove(); }
+            else p.remove();
         });
     };
 
-    drawing.getPx = function(s,styleAttr) {
+    drawing.getPx = function(s, styleAttr) {
         // helper to pull out a px value from a style that may contain px units
         // s is a d3 selection (will pull from the first one)
         return Number(s.style(styleAttr).replace(/px$/,''));
     };
 
-    drawing.lineGroupStyle = function(s,lw,lc,ld) {
+    drawing.lineGroupStyle = function(s, lw, lc, ld) {
         s.style('fill','none')
         .each(function(d){
-            var lw1 = lw||(d&&d[0]&&d[0].t&&d[0].t.lw)||0,
-                da = ld||(d&&d[0]&&d[0].t&&d[0].t.ld),
+            var line = (((d||[])[0]||{}).trace||{}).line||{},
+                lw1 = lw||line.width||0,
+                da = ld||line.dash||'',
                 dlw = Math.max(lw1,3);
             if(da==='solid') { da = ''; }
             else if(da==='dot') { da = dlw+'px,'+dlw+'px'; }
@@ -86,9 +87,8 @@
             // otherwise user wrote the dasharray themselves - leave it be
 
             d3.select(this)
-                .call(drawing.strokeColor,lc||(d&&d[0]&&d[0].t&&d[0].t.lc))
-                .style('stroke-dasharray',da)
-                .style('stroke-width',lw1+'px');
+                .call(drawing.strokeColor,lc||line.color)
+                .style({'stroke-dasharray': da, 'stroke-width': lw1+'px'});
         });
     };
 
@@ -97,7 +97,7 @@
         .each(function(d){
             var shape = d3.select(this);
             try {
-                shape.call(drawing.fillColor,d[0].t.fc);
+                shape.call(drawing.fillColor,d[0].trace.fillcolor);
             }
             catch(e) {
                 console.log(e,s);
@@ -610,31 +610,34 @@
         return Math.floor(Math.max(v,0));
     };
 
-    drawing.pointStyle = function(s,t) {
+    drawing.pointStyle = function(s, trace) {
+        if(!s.size()) return;
+
+        var marker = trace.marker,
+            markerLine = marker.line;
+
         // only scatter & box plots get marker path and opacity
         // bars, histograms don't
-        if(['scatter','box'].indexOf(t.type)!==-1) {
+        if(['scatter','box'].indexOf(trace.type)!==-1) {
             var r,
                 // for bubble charts, allow scaling the provided value linearly
                 // and by area or diameter.
                 // Note this only applies to the array-value sizes
-                sizeRef = t.msr || 1,
-                sizeFn = (t.msm==='area') ?
+                sizeRef = marker.sizeref || 1,
+                sizeFn = (marker.sizemode==='area') ?
                     function(v){ return Math.sqrt(v/sizeRef); } :
                     function(v){ return v/sizeRef; };
             s.attr('d',function(d){
-                if(d.ms+1) { r = sizeFn(d.ms/2); }
-                else { r = ((t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/2; }
+                r = (d.ms+1) ? sizeFn(d.ms/2) : marker.size/2;
 
                 // store the calculated size so hover can use it
                 d.mrc = r;
 
                 // in case of "various" etc... set a visible default
-                if(!$.isNumeric(r) || r<0) { r=3; }
+                if(!$.isNumeric(r) || r<0) r=3;
 
                 // turn the symbol into a sanitized number
-                var x = drawing.symbolNumber(
-                            d.mx || t.mx || (d.t ? d.t.mx : '')),
+                var x = drawing.symbolNumber(d.mx || marker.symbol),
                     xBase = x%100;
 
                 // save if this marker is open
@@ -645,115 +648,162 @@
                     (x >= 200 ? DOTPATH : '');
             })
             .style('opacity',function(d){
-                return (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1;
+                return (d.mo+1 || marker.opacity+1) - 1;
             });
         }
         // allow array marker and marker line colors to be
         // scaled by given max and min to colorscales
-        var colorscales = {
-            m: drawing.tryColorscale(s,t,'m'),
-            ml: drawing.tryColorscale(s,t,'ml'),
-            so: drawing.tryColorscale(s,t,'so'),
-            sol: drawing.tryColorscale(s,t,'sol')
-        };
+        var markerIn = trace._input.marker,
+        // var colorscales = {
+            markerScale = drawing.tryColorscale(marker, markerIn, ''),
+            lineScale = drawing.tryColorscale(marker, markerIn, 'line.');
+        //     so: drawing.tryColorscale(marker, markerIn, 'outlier'),
+        //     sol: drawing.tryColorscale(marker, markerIn, 'line.outlier')
+        // };
         s.each(function(d){
             // 'so' is suspected outliers, for box plots
-            var a = (d.so) ? 'so' : 'm',
-                lw = a+'lw', c = a+'c', lc = a+'lc',
-                w = (d[lw]+1 || t[lw]+1 || (d.t ? d.t[lw] : 0)+1) - 1,
-                p = d3.select(this),
-                cc,lcc;
-            if(d[c]) { d[c+'c'] = cc = colorscales[a](d[c]); }
-            else { cc = t[c] || (d.t ? d.t[c] : ''); }
+            var fillColor,
+                lineColor,
+                lineWidth;
+            if(d.so) {
+                lineWidth = markerLine.outlierwidth;
+                lineColor = markerLine.outliercolor;
+                fillColor = marker.outliercolor;
+            }
+            else {
+                lineWidth = (d.lw+1 || markerLine.width+1 ||
+                    // TODO: do we really need this?
+                    (d.trace ? d.trace.marker.line.width : 0) + 1) -1;
+
+                if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
+                // weird case: array wasn't long enough to apply to every point
+                else if(Array.isArray(markerLine.color)) lineColor = '#444';
+                else lineColor = markerLine.color;
+
+                if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
+                else if(Array.isArray(marker.color)) fillColor = '#444';
+                else fillColor = marker.color;
+            }
+
+            var p = d3.select(this);
             if(d.om) {
                 // open markers can't have zero linewidth, default to 1px,
                 // and use fill color as stroke color
-                if(!w) { w = 1; }
-                p.call(drawing.strokeColor, cc)
+                p.call(drawing.strokeColor, fillColor)
                     .style({
-                        'stroke-width': w+'px',
+                        'stroke-width': (lineWidth||1) + 'px',
                         fill: 'none'
                     });
             }
             else {
-                p.style('stroke-width',w+'px')
-                    .call(drawing.fillColor, cc);
-                if(w) {
-                    if(d[lc]) { d[lc+'c'] = lcc = colorscales[a+'l'](d[lc]); }
-                    else { lcc = t[lc] || (d.t ? d.t[lc] : ''); }
-                    p.call(drawing.strokeColor, lcc);
+                p.style('stroke-width', lineWidth + 'px')
+                    .call(drawing.fillColor, fillColor);
+                if(lineWidth) {
+                    p.call(drawing.strokeColor, lineColor);
                 }
             }
+
+            // var a = (d.so) ? 'so' : 'm',
+            //     lw = a+'lw',
+            //     c = a+'c',
+            //     lc = a+'lc',
+            //     w = (d[lw]+1 || t[lw]+1 || (d.t ? d.t[lw] : 0)+1) - 1,
+            //     p = d3.select(this),
+            //     cc,lcc;
+            // if(d[c]) { d[c+'c'] = cc = colorscales[a](d[c]); }
+            // else { cc = t[c] || (d.t ? d.t[c] : ''); }
+            // if(d.om) {
+            //     // open markers can't have zero linewidth, default to 1px,
+            //     // and use fill color as stroke color
+            //     if(!w) { w = 1; }
+            //     p.call(drawing.strokeColor, cc)
+            //         .style({
+            //             'stroke-width': w+'px',
+            //             fill: 'none'
+            //         });
+            // }
+            // else {
+            //     p.style('stroke-width',w+'px')
+            //         .call(drawing.fillColor, cc);
+            //     if(w) {
+            //         if(d[lc]) { d[lc+'c'] = lcc = colorscales[a+'l'](d[lc]); }
+            //         else { lcc = t[lc] || (d.t ? d.t[lc] : ''); }
+            //         p.call(drawing.strokeColor, lcc);
+            //     }
+            // }
         });
     };
 
     // for a given color attribute (ie m -> mc = marker.color) look to see if we
     // have a colorscale for it (ie mscl, mcmin, mcmax) - if we do, translate
     // all numeric color values according to that scale
-    drawing.tryColorscale = function(s,t,attr) {
-        if((attr+'scl') in t && (attr+'cmin') in t && (attr+'cmax') in t) {
-            var scl = t[attr+'scl'],
-                min = t[attr+'cmin'],
-                max = t[attr+'cmax'],
-                auto = t[attr+'cauto'];
+    drawing.tryColorscale = function(cont, contIn, prefix) {
+        var colorArray = Plotly.Lib.nestedProperty(cont, prefix+'color').get(),
+            scl = Plotly.Lib.nestedProperty(cont, prefix+'colorscale').get(),
+            auto = Plotly.Lib.nestedProperty(cont, prefix+'cauto').get(),
+            minProp = Plotly.Lib.nestedProperty(cont, prefix+'cmin'),
+            maxProp = Plotly.Lib.nestedProperty(cont, prefix+'cmax'),
+            min = minProp.get(),
+            max = maxProp.get();
 
-            if(typeof scl === 'string') {
-                scl = Plotly.colorscales[scl];
-            }
+        if(scl && Array.isArray(colorArray)) {
+            if(typeof scl === 'string') scl = Plotly.colorscales[scl];
+            if(!scl) scl = Plotly.defaultColorscale;
 
-            if(!scl) {
-                scl = Plotly.defaultColorscale;
-            }
-
-            // autoscale the colors - put the results back into t
-            // (which is in calcdata)
             if(auto || !$.isNumeric(min) || !$.isNumeric(max)) {
-                min = max = null;
-                s.each(function(d){
-                    var v = d[attr+'c'];
-                    if($.isNumeric(v)) {
-                        if(min===null || min>v) { min = v; }
-                        if(max===null || max<v) { max = v; }
+                min = Infinity;
+                max = -Infinity;
+                colorArray.forEach(function(color) {
+                    if($.isNumeric(color)) {
+                        if(min>color) min = color;
+                        if(max<color) max = color;
                     }
                 });
-                t[attr+'cmin'] = min;
-                t[attr+'cmax'] = max;
+                if(min>max) {
+                    min = 0;
+                    max = 1;
+                }
+                minProp.set(min);
+                maxProp.set(max);
+                Plotly.Lib.nestedProperty(contIn, prefix+'cmin').set(min);
+                Plotly.Lib.nestedProperty(contIn, prefix+'cmax').set(max);
             }
 
-            var d = scl.map(function(si){ return min + si[0]*(max-min); }),
-                r = scl.map(function(si){ return si[1]; }),
-                sclfunc = d3.scale.linear()
-                    .domain(d)
-                    .interpolate(d3.interpolateRgb)
-                    .range(r);
+            var sclfunc = d3.scale.linear()
+                .domain(scl.map(function(si){ return min + si[0]*(max-min); }))
+                .interpolate(d3.interpolateRgb)
+                .range(scl.map(function(si){ return si[1]; }));
             return function(v){ return $.isNumeric(v) ? sclfunc(v) : v; };
         }
-        else { return Plotly.Lib.identity; }
+        else return Plotly.Lib.identity;
     };
 
     // draw text at points
-    var TEXTOFFSETSIGN = {start:1,end:-1,middle:0,bottom:1,top:-1},
+    var TEXTOFFSETSIGN = {start:1, end:-1, middle:0, bottom:1, top:-1},
         LINEEXPAND = 1.3;
-    drawing.textPointStyle = function(s,t) {
+    drawing.textPointStyle = function(s, trace) {
         s.each(function(d){
             var p = d3.select(this);
-            if(!d.tx) { p.remove(); return; }
-            var pos = d.tp || t.tp || (d.t ? d.t.tp : ''),
+            if(!d.tx) {
+                p.remove();
+                return;
+            }
+
+            var pos = d.tp || trace.textposition,
                 v = pos.indexOf('top')!==-1 ? 'top' :
                     pos.indexOf('bottom')!==-1 ? 'bottom' : 'middle',
                 h = pos.indexOf('left')!==-1 ? 'end' :
                     pos.indexOf('right')!==-1 ? 'start' : 'middle',
-                fontSize = d.ts || t.ts || (d.t ? d.t.tf : ''),
+                fontSize = d.ts || trace.textfont.size,
                 // if markers are shown, offset a little more than
                 // the nominal marker size
                 // ie 2/1.6 * nominal, bcs some markers are a bit bigger
-                r=t.mode.indexOf('markers')===-1 ? 0 :
-                    (((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/1.6+1);
-            p.style('opacity', (d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1)
-                .call(drawing.font,
-                    d.tf || t.tf || (d.t ? d.t.tf : ''),
+                r = d.mrc ? (d.mrc/0.8 + 1) : 0; //trace.mode.indexOf('markers')===-1 ? 0 :
+                    // (((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/1.6+1);
+            p.call(drawing.font,
+                    d.tf || trace.textfont.family,
                     fontSize,
-                    d.tc || t.tc || (d.t ? d.t.tc : ''))
+                    d.tc || trace.textfont.color)
                 .attr('text-anchor',h)
                 .text(d.tx)
                 .call(Plotly.util.convertToTspans);

@@ -282,13 +282,14 @@
             minPad = 0,
             maxPad = 0;
         gd.calcdata.forEach(function(cd,i) {
-            var t=cd[0].t;
-            if(t.visible!==false && !t.emptybox && t.type==='box' &&
-              (t.xaxis||'x')===xa._id && (t.yaxis||'y')===ya._id) {
+            var t = cd[0].t,
+                trace = cd[0].trace;
+            if(trace.visible!==false && !t.emptybox && trace.type==='box' &&
+              trace.xaxis===xa._id && trace.yaxis===ya._id) {
                 boxlist.push(i);
-                if(t.boxpts!==false) {
-                    minPad = Math.max(minPad,t.jitter-t.ptpos-1);
-                    maxPad = Math.max(maxPad,t.jitter+t.ptpos-1);
+                if(trace.boxpoints!==false) {
+                    minPad = Math.max(minPad, trace.jitter-trace.pointpos-1);
+                    maxPad = Math.max(maxPad, trace.jitter+trace.pointpos-1);
                 }
             }
         });
@@ -332,14 +333,15 @@
 
         boxtraces.each(function(d){
             var t = d[0].t,
+                trace = d[0].trace,
                 group = (fullLayout.boxmode==='group' && gd.numboxes>1),
                 // box half width
                 bdx = t.dx*(1-fullLayout.boxgap)*(1-fullLayout.boxgroupgap)/(group ? gd.numboxes : 1),
                 // box center offset
                 bx = group ? 2*t.dx*(-0.5+(t.boxnum+0.5)/gd.numboxes)*(1-fullLayout.boxgap) : 0,
                 // whisker width
-                wdx = bdx*t.ww;
-            if(t.visible===false || t.emptybox) {
+                wdx = bdx*trace.whiskerwidth;
+            if(trace.visible===false || t.emptybox) {
                 d3.select(this).remove();
                 return;
             }
@@ -355,41 +357,48 @@
                 .attr('class','box')
                 .each(function(d){
                     // draw the bars and whiskers
-                    var xc = xa.c2p(d.x+bx,true),
-                        x0 = xa.c2p(d.x+bx-bdx,true),
-                        x1 = xa.c2p(d.x+bx+bdx,true),
-                        xw0 = xa.c2p(d.x+bx-wdx,true),
-                        xw1 = xa.c2p(d.x+bx+wdx,true),
-                        ym = ya.c2p(d.med,true),
-                        yq1 = ya.c2p(d.q1,true),
-                        yq3 = ya.c2p(d.q3,true),
-                        ylf = ya.c2p(t.boxpts===false ? d.min : d.lf, true),
-                        yuf = ya.c2p(t.boxpts===false ? d.max : d.uf, true);
+                    var xc = xa.c2p(d.x+bx, true),
+                        x0 = xa.c2p(d.x+bx-bdx, true),
+                        x1 = xa.c2p(d.x+bx+bdx, true),
+                        xw0 = xa.c2p(d.x+bx-wdx, true),
+                        xw1 = xa.c2p(d.x+bx+wdx, true),
+                        ym = ya.c2p(d.med, true),
+                        yq1 = ya.c2p(d.q1, true),
+                        yq3 = ya.c2p(d.q3, true),
+                        ylf = ya.c2p(trace.boxpoints===false ? d.min : d.lf, true),
+                        yuf = ya.c2p(trace.boxpoints===false ? d.max : d.uf, true);
                     d3.select(this).attr('d',
                         'M'+x0+','+ym+'H'+x1+ // median line
                         'M'+x0+','+yq1+'H'+x1+'V'+yq3+'H'+x0+'Z'+ // box
                         'M'+xc+','+yq1+'V'+ylf+'M'+xc+','+yq3+'V'+yuf+ // whiskers
-                        ((t.ww===0) ? '' : // whisker caps
+                        ((trace.whiskerwidth===0) ? '' : // whisker caps
                             'M'+xw0+','+ylf+'H'+xw1+'M'+xw0+','+yuf+'H'+xw1));
                 });
 
             // draw points, if desired
-            if(t.boxpts!==false) {
+            if(trace.boxpoints!==false) {
                 d3.select(this).selectAll('g.points')
                     // since box plot points get an extra level of nesting, each
                     // box needs the trace styling info
-                    .data(function(d){ d.forEach(function(v){v.t=t;}); return d; })
+                    .data(function(d){
+                        d.forEach(function(v){
+                            v.t = t;
+                            v.trace = trace;
+                        });
+                        return d;
+                    })
                     .enter().append('g')
                     .attr('class','points')
                   .selectAll('path')
                     .data(function(d){
-                        var pts = (t.boxpts==='all') ? d.y :
+                        var pts = (trace.boxpoints==='all') ? d.y :
                             d.y.filter(function(v){ return (v<d.lf || v>d.uf); });
                         return pts.map(function(v){
-                            var xo = (t.jitter ? t.jitter*(Math.random()-0.5)*2 : 0)+t.ptpos,
-                                p = {x:d.x+xo*bdx+bx,y:v,t:t};
+                            var xo = (trace.jitter ? trace.jitter*(Math.random()-0.5)*2 : 0) +
+                                    trace.pointpos,
+                                p = {x: d.x+xo*bdx+bx, y: v}; //, t: t, trace: trace}; TODO: not needed?
                             // tag suspected outliers
-                            if(t.boxpts==='suspectedoutliers' && v<d.uo && v>d.lo) {
+                            if(trace.boxpoints==='suspectedoutliers' && v<d.uo && v>d.lo) {
                                 p.so=true;
                             }
                             return p;
@@ -399,21 +408,21 @@
                     .call(Plotly.Drawing.translatePoints,xa,ya);
             }
             // draw mean (and stdev diamond) if desired
-            if(t.mean) {
+            if(trace.boxmean) {
                 d3.select(this).selectAll('path.mean')
                     .data(Plotly.Lib.identity)
                     .enter().append('path')
                     .attr('class','mean')
                     .style('fill','none')
                     .each(function(d){
-                        var xc = xa.c2p(d.x+bx,true),
-                            x0 = xa.c2p(d.x+bx-bdx,true),
-                            x1 = xa.c2p(d.x+bx+bdx,true),
-                            ym = ya.c2p(d.mean,true),
-                            ysl = ya.c2p(d.mean-d.sd,true),
-                            ysh = ya.c2p(d.mean+d.sd,true);
+                        var xc = xa.c2p(d.x+bx, true),
+                            x0 = xa.c2p(d.x+bx-bdx, true),
+                            x1 = xa.c2p(d.x+bx+bdx, true),
+                            ym = ya.c2p(d.mean, true),
+                            ysl = ya.c2p(d.mean-d.sd, true),
+                            ysh = ya.c2p(d.mean+d.sd, true);
                         d3.select(this).attr('d','M'+x0+','+ym+'H'+x1+
-                            ((t.mean!=='sd') ? '' :
+                            ((trace.boxmean!=='sd') ? '' :
                             'm0,0L'+xc+','+ysl+'L'+x0+','+ym+'L'+xc+','+ysh+'Z'));
                     });
             }
@@ -423,27 +432,29 @@
     boxes.style = function(gp) {
         var s = gp.selectAll('g.trace.boxes');
 
-        s.style('opacity',function(d){ return d[0].t.op; })
+        s.style('opacity', function(d){ return d[0].trace.opacity; })
             .each(function(d){
-                var t = d[0].t;
+                var trace = d[0].trace,
+                    lineWidth = trace.line.width;
                 d3.select(this).selectAll('path.box')
-                    .style('stroke-width',t.lw+'px')
-                    .call(Plotly.Drawing.strokeColor,t.lc)
-                    .call(Plotly.Drawing.fillColor,t.fc);
+                    .style('stroke-width',lineWidth+'px')
+                    .call(Plotly.Drawing.strokeColor, trace.line.color)
+                    .call(Plotly.Drawing.fillColor, trace.fillcolor);
                 d3.select(this).selectAll('path.mean')
                     .style({
-                        'stroke-width': t.lw,
-                        'stroke-dasharray': (2*t.lw)+'px,'+(t.lw)+'px'
+                        'stroke-width': lineWidth,
+                        'stroke-dasharray': (2*lineWidth)+'px,'+lineWidth+'px'
                     })
-                    .call(Plotly.Drawing.strokeColor,t.lc);
+                    .call(Plotly.Drawing.strokeColor, trace.line.color);
             })
             .selectAll('g.points')
                 .each(function(d){
-                    var t = d.t||d[0].t;
+                    var trace = d.trace||d[0].trace; // TODO: which is it???
+
                     d3.select(this).selectAll('path')
-                        .call(Plotly.Drawing.pointStyle,t);
-                    d3.select(this).selectAll('text')
-                        .call(Plotly.Drawing.textPointStyle,t);
+                        .call(Plotly.Drawing.pointStyle, trace);
+                    // d3.select(this).selectAll('text') // TODO: not used... are we ever going to do this?
+                    //     .call(Plotly.Drawing.textPointStyle, trace);
                 });
     };
 

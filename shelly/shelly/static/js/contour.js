@@ -22,15 +22,15 @@
         contours: {
             start: {
                 type: 'number',
-                dflt: 0
+                dflt: null
             },
             end: {
                 type: 'number',
-                dflt: 1
+                dflt: null
             },
             size: {
                 type: 'number',
-                dflt: 1
+                dflt: null
             },
             coloring: {
                 type: 'enumerated',
@@ -61,11 +61,9 @@
 
         var autocontour = coerce('autocontour');
         if(autocontour) coerce('ncontours');
-        else {
-            coerce('contours.start');
-            coerce('contours.end');
-            coerce('contours.size');
-        }
+        coerce('contours.start');
+        coerce('contours.end');
+        coerce('contours.size');
 
         var coloring = coerce('contours.coloring');
 
@@ -113,16 +111,16 @@
             if(!trace.contours) trace.contours = {};
             var contours = trace.contours;
 
-            var dummyAx = {type: 'linear', range: [cd[0].t.zmin, cd[0].t.zmax]};
+            var dummyAx = {type: 'linear', range: [trace.zmin, trace.zmax]};
             Plotly.Axes.autoTicks(dummyAx,
-                (cd[0].t.zmax - cd[0].t.zmin) / (trace.ncontours||15));
+                (trace.zmax - trace.zmin) / (trace.ncontours||15));
             contours.start = Plotly.Axes.tickFirst(dummyAx);
             contours.size = dummyAx.dtick;
             dummyAx.range.reverse();
             contours.end = Plotly.Axes.tickFirst(dummyAx);
 
-            if(contours.start===cd[0].t.zmin) contours.start += contours.size;
-            if(contours.end===cd[0].t.zmax) contours.end -= contours.size;
+            if(contours.start===trace.zmin) contours.start += contours.size;
+            if(contours.end===trace.zmax) contours.end -= contours.size;
 
             // so rounding errors don't cause us to miss the last contour
             contours.end += contours.size/100;
@@ -170,19 +168,25 @@
 
     function plotOne(gd,plotinfo,cd) {
         Plotly.Lib.markTime('in Contour.plot');
-        var t = cd[0].t,
-            i = t.curve,
+        var trace = cd[0].trace,
+            contours = trace.contours,
+            smoothing = (trace.line||{}).smoothing,
+            uid = trace.uid,
             xa = plotinfo.x,
             ya = plotinfo.y,
             fullLayout = gd._fullLayout,
-            id='contour'+i,
-            cbId='cb'+i,
-            contours = [],
+            id='contour'+uid,
+            contourLevels = [],
             pathinfo = [],
-            cs = t.contoursize||1;
+            cs = contours.size||1;
 
-        for(var ci=t.contourstart; ci<t.contourend+cs/10; ci+=cs) {
-            contours.push(ci);
+        if(trace.visible===false) {
+            fullLayout._paper.selectAll('.'+id+',.cb'+uid+',.hm'+uid).remove();
+            return;
+        }
+
+        for(var ci=contours.start; ci<contours.end+cs/10; ci+=cs) {
+            contourLevels.push(ci);
             pathinfo.push({
                 level:ci,
                 // all the cells with nontrivial marching index
@@ -196,37 +200,30 @@
                 paths:[]
             });
         }
-        t.numcontours = pathinfo.length;
 
         // use a heatmap to fill - draw it behind the lines
-        if(t.coloring==='heatmap') {
-            t.zsmooth = 'best';
-            if(t.zauto && t.autocontour===false) {
-                t.zmin = t.contourstart-t.contoursize/2;
-                t.zmax = t.zmin+t.numcontours*t.contoursize;
+        if(contours.coloring==='heatmap') {
+            trace.zsmooth = 'best';
+            if(trace.zauto && trace.autocontour===false) {
+                trace._input.zmin = trace.zmin =
+                    contours.start - contours.size/2;
+                trace._input.zmax = trace.zmax =
+                    trace.zmin + contourLevels.length * contours.size;
             }
             Plotly.Heatmap.plot(gd,plotinfo,[cd]);
         }
         // in case this used to be a heatmap (or have heatmap fill)
-        else fullLayout._paper.selectAll('.hm'+i).remove();
-
-        if(t.coloring!=='fill') t.showlines = true;
-
-        if(t.visible===false) {
-            fullLayout._paper.selectAll('.'+id).remove();
-            fullLayout._paper.selectAll('.'+cbId).remove();
-            return;
-        }
+        else fullLayout._paper.selectAll('.hm'+uid).remove();
 
         var z = cd[0].z,
             x = cd[0].x,
             y = cd[0].y,
             // get z dimensions (n allows uneven rows)
             m = z.length,
-            n = Plotly.Lib.aggNums(Math.max,null,
-                z.map(function(row) { return row.length; }));
+            n = Plotly.Lib.aggNums(Math.max, null,
+                    z.map(function(row) { return row.length; }));
 
-        // find all the contours at once
+        // find all the contourLevels at once
         // since we want to be exhaustive we'll check for contour crossings
         // at every intersection using a modified marching squares algorithm,
         // so we disambiguate the saddle points from the start
@@ -251,7 +248,7 @@
             }
             return (mi===15) ? 0 : mi;
         }
-        var xi,yi,ystartIndices,startIndices,label,corners,cmin,cmax,mi,nc;
+        var xi,yi,ystartIndices,startIndices,label,corners,cmin,cmax,mi;
 
         function makeCrossings(pi) {
             mi = getMarchingIndex(pi.level,corners);
@@ -270,7 +267,7 @@
         // (although exactly how to do this is a little unclear in 2D)
         function zclean(xi,yi) {
             var v = z[yi][xi];
-            return $.isNumeric(v) ? v : t.zmin;
+            return $.isNumeric(v) ? v : trace.zmin;
         }
 
         for(yi = 0; yi<m-1; yi++) {
@@ -287,9 +284,9 @@
                 corners = [[zclean(xi,yi),zclean(xi+1,yi)],
                            [zclean(xi,yi+1),zclean(xi+1,yi+1)]];
                 cmax = Plotly.Lib.findBin(
-                    Plotly.Lib.aggNums(Math.max,null,corners),contours,true);
+                    Plotly.Lib.aggNums(Math.max,null,corners),contourLevels,true);
                 cmin = Plotly.Lib.findBin(
-                    Plotly.Lib.aggNums(Math.min,null,corners),contours,true);
+                    Plotly.Lib.aggNums(Math.min,null,corners),contourLevels,true);
 
                 pathinfo.forEach(makeCrossings);
             }
@@ -413,18 +410,26 @@
             // check for points that are too close together (<1/5 the average dist,
             // less if less smoothed) and just take the center (or avg of center 2)
             // this cuts down on funny behavior when a point is very close to a contour level
-            var totaldist=0,
-                thisdist,
+            var totaldist = 0,
+                distThresholdFactor = 0.2*smoothing,
                 alldists=[],
-                distThresholdFactor=0.2*t.ls;
+                cropstart=0,
+                distgroup,
+                cnt2,
+                cnt3,
+                newpt,
+                ptcnt,
+                ptavg,
+                thisdist;
+
             for(cnt=1; cnt<pts.length; cnt++) {
-                thisdist = ptdist(pts[cnt],pts[cnt-1]);
+                thisdist = ptdist(pts[cnt], pts[cnt-1]);
                 totaldist += thisdist;
                 alldists.push(thisdist);
             }
 
-            var distThreshold = totaldist/alldists.length*distThresholdFactor,
-                distgroup,cnt2,cnt3,cropstart=0,newpt,ptcnt,ptavg;
+            var distThreshold = totaldist/alldists.length*distThresholdFactor;
+
             function getpt(i) { return pts[i%pts.length]; }
 
             for(cnt=pts.length-2; cnt>=cropstart; cnt--) {
@@ -451,9 +456,7 @@
                     ptavg = Math.floor((cnt+cnt2+cnt3+2)/2);
 
                     // either endpoint included: keep the endpoint
-                    if(!closedpath && cnt===pts.length-2) {
-                        newpt = pts[pts.length-1];
-                    }
+                    if(!closedpath && cnt===pts.length-2) newpt = pts[pts.length-1];
                     else if(!closedpath && cnt2===-1) newpt = pts[0];
 
                     // odd # of points - just take the central one
@@ -461,11 +464,11 @@
 
                     // even # of pts - average central two
                     else  {
-                        newpt = [(getpt(ptavg)[0]+getpt(ptavg+1)[0])/2,
-                                 (getpt(ptavg)[1]+getpt(ptavg+1)[1])/2];
+                        newpt = [(getpt(ptavg)[0] + getpt(ptavg+1)[0]) / 2,
+                                 (getpt(ptavg)[1] + getpt(ptavg+1)[1]) / 2];
                     }
 
-                    pts.splice(cnt2+1,cnt-cnt2+1,newpt);
+                    pts.splice(cnt2+1, cnt-cnt2+1, newpt);
                     cnt = cnt2+1;
                     if(cnt3) cropstart = cnt3;
                     if(closedpath) {
@@ -492,25 +495,25 @@
                 // edge path - does it start where an existing edge path ends, or vice versa?
                 var merged = false;
                 pi.edgepaths.forEach(function(edgepath,edgei) {
-                    if(!merged && equalpts(edgepath[0],pts[pts.length-1])) {
+                    if(!merged && equalpts(edgepath[0], pts[pts.length-1])) {
                         pts.pop();
                         merged = true;
 
                         // now does it ALSO meet the end of another (or the same) path?
                         var doublemerged = false;
-                        pi.edgepaths.forEach(function(edgepath2,edgei2) {
+                        pi.edgepaths.forEach(function(edgepath2, edgei2) {
                             if(!doublemerged && equalpts(
-                                    edgepath2[edgepath2.length-1],pts[0])) {
+                                    edgepath2[edgepath2.length-1], pts[0])) {
                                 doublemerged = true;
-                                pts.splice(0,1);
-                                pi.edgepaths.splice(edgei,1);
+                                pts.splice(0, 1);
+                                pi.edgepaths.splice(edgei, 1);
                                 if(edgei2===edgei) {
                                     // the path is now closed
                                     pi.paths.push(pts.concat(edgepath2));
                                 }
                                 else {
                                     pi.edgepaths[edgei2] =
-                                        pi.edgepaths[edgei2].concat(pts,edgepath2);
+                                        pi.edgepaths[edgei2].concat(pts, edgepath2);
                                 }
                             }
                         });
@@ -521,7 +524,7 @@
                 });
                 pi.edgepaths.forEach(function(edgepath,edgei) {
                     if(!merged && equalpts(edgepath[edgepath.length-1],pts[0])) {
-                        pts.splice(0,1);
+                        pts.splice(0, 1);
                         pi.edgepaths[edgei] = edgepath.concat(pts);
                         merged = true;
                     }
@@ -539,7 +542,7 @@
 
             while(Object.keys(pi.crossings).length && cnt<10000) {
                 cnt++;
-                makePath(nc,Object.keys(pi.crossings)[0]);
+                makePath(nc, Object.keys(pi.crossings)[0]);
             }
             if(cnt===10000) console.log('Infinite loop in contour?');
         });
@@ -558,10 +561,10 @@
             bottomedge = ya.c2p(y[0]),
             topedge = ya.c2p(y[y.length-1]),
             perimeter = [
-                [leftedge,topedge],
-                [rightedge,topedge],
-                [rightedge,bottomedge],
-                [leftedge,bottomedge]
+                [leftedge, topedge],
+                [rightedge, topedge],
+                [rightedge, bottomedge],
+                [leftedge, bottomedge]
             ];
 
         function istop(pt) { return Math.abs(pt[1]-topedge)<0.01; }
@@ -573,7 +576,7 @@
         bggroup.enter().append('g').classed('contourbg',true);
 
         var bgfill = bggroup.selectAll('path')
-            .data(t.coloring==='fill' ? [0] : []);
+            .data(contours.coloring==='fill' ? [0] : []);
         bgfill.enter().append('path');
         bgfill.exit().remove();
         bgfill
@@ -586,7 +589,7 @@
             .classed('contourfill',true);
 
         var fillitems = fillgroup.selectAll('path')
-            .data(t.coloring==='fill' ? pathinfo : []);
+            .data(contours.coloring==='fill' ? pathinfo : []);
         fillitems.enter().append('path');
         fillitems.exit().remove();
         fillitems.each(function(d){
@@ -607,8 +610,8 @@
                 addpath;
 
             while(startsleft.length) {
-                addpath = Plotly.Drawing.smoothopen(d.edgepaths[i],t.ls);
-                fullpath += newloop ? addpath : addpath.replace(/^M/,'L');
+                addpath = Plotly.Drawing.smoothopen(d.edgepaths[i], smoothing);
+                fullpath += newloop ? addpath : addpath.replace(/^M/, 'L');
                 startsleft.splice(startsleft.indexOf(i),1);
                 endpt = d.edgepaths[i][d.edgepaths[i].length-1];
                 cnt=0;
@@ -620,10 +623,10 @@
                         break;
                     }
 
-                    if(istop(endpt) && !isright(endpt)) newendpt = [rightedge,topedge];
-                    else if(isleft(endpt)) newendpt = [leftedge,topedge];
-                    else if(isbottom(endpt)) newendpt = [leftedge,bottomedge];
-                    else if(isright(endpt)) newendpt = [rightedge,bottomedge];
+                    if(istop(endpt) && !isright(endpt)) newendpt = [rightedge, topedge];
+                    else if(isleft(endpt)) newendpt = [leftedge, topedge];
+                    else if(isbottom(endpt)) newendpt = [leftedge, bottomedge];
+                    else if(isright(endpt)) newendpt = [rightedge, bottomedge];
 
                     for(nexti=0; nexti<d.edgepaths.length; nexti++) {
                         var ptNew = d.edgepaths[nexti][0];
@@ -672,15 +675,15 @@
 
             // finally add the interior paths
             d.paths.forEach(function(path) {
-                fullpath += Plotly.Drawing.smoothclosed(path,t.ls);
+                fullpath += Plotly.Drawing.smoothclosed(path, smoothing);
             });
 
             if(!fullpath) d3.select(this).remove();
-            else d3.select(this).attr('d',fullpath).style('stroke','none');
+            else d3.select(this).attr('d',fullpath).style('stroke', 'none');
         });
 
         var linegroup = plotgroup.selectAll('g.contourlevel')
-            .data(t.showlines ? pathinfo : []);
+            .data(contours.showlines===false ? [] : pathinfo);
         linegroup.enter().append('g')
             .classed('contourlevel',true);
         linegroup.exit().remove();
@@ -692,7 +695,7 @@
         opencontourlines.exit().remove();
         opencontourlines
             .attr('d', function(d){
-                return Plotly.Drawing.smoothopen(d,t.ls);
+                return Plotly.Drawing.smoothopen(d, smoothing);
             })
             .style('stroke-miterlimit',1);
 
@@ -703,7 +706,7 @@
         closedcontourlines.exit().remove();
         closedcontourlines
             .attr('d', function(d){
-                return Plotly.Drawing.smoothclosed(d,t.ls);
+                return Plotly.Drawing.smoothclosed(d, smoothing);
             })
             .style('stroke-miterlimit',1);
 
@@ -712,87 +715,94 @@
 
     contour.style = function(gp) {
         gp.selectAll('g.contour')
-            .style('opacity',function(d){ return d.t.op; })
+            .style('opacity',function(d){ return d.trace.opacity; })
             .each(function(d) {
                 var c = d3.select(this),
-                    t = d.t,
-                    cs = t.contoursize||1,
-                    nc = Math.floor((t.contourend+cs/10-t.contourstart)/cs)+1,
-                    scl = Plotly.Plots.getScale(t.scl),
-                    extraLevel = t.coloring==='lines' ? 0 : 1,
+                    trace = d.trace,
+                    contours = trace.contours,
+                    line = trace.line,
+                    colorLines = contours.coloring==='lines',
+                    cs = contours.size||1,
+                    nc = Math.floor((contours.end+cs/10-contours.start)/cs)+1,
+                    scl = Plotly.Plots.getScale(trace.colorscale),
+                    extraLevel = colorLines ? 0 : 1,
                     colormap = d3.scale.linear()
                         .domain(scl.map(function(si){
                             return (si[0]*(nc+extraLevel-1)-(extraLevel/2)) * cs +
-                                t.contourstart;
+                                contours.start;
                         }))
                         .interpolate(d3.interpolateRgb)
                         .range(scl.map(function(si){ return si[1]; }));
 
                 c.selectAll('g.contourlevel').each(function(d,i) {
-                    var lc = t.coloring==='lines' ?
-                            colormap(t.contourstart+i*cs): t.lc;
                     d3.select(this).selectAll('path')
-                        .call(Plotly.Drawing.lineGroupStyle,t.lw, lc, t.ld);
+                        .call(Plotly.Drawing.lineGroupStyle,
+                            line.width,
+                            colorLines ? colormap(contours.start+i*cs) : line.color,
+                            line.dash);
                 });
                 c.selectAll('g.contourbg path')
-                    .style('fill', colormap(t.contourstart-cs/2));
+                    .style('fill', colormap(contours.start-cs/2));
                 c.selectAll('g.contourfill path')
                     .style('fill',function(d,i){
-                        return colormap(t.contourstart+(i+0.5)*cs);
+                        return colormap(contours.start+(i+0.5)*cs);
                     });
             });
     };
 
-    contour.colorbar = function(gd,cd) {
-        var t = cd[0].t,
-            cbId = 'cb'+t.curve;
+    contour.colorbar = function(gd, cd) {
+        var trace = cd[0].trace,
+            cbId = 'cb'+trace.uid;
 
         gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
-        if(t.showscale===false){
+        if(trace.showscale===false){
             Plotly.Plots.autoMargin(gd,cbId);
             return;
         }
 
         // instantiate the colorbar (will be drawn and styled in contour.style)
         var cb = Plotly.Colorbar(gd,cbId);
+        cd[0].t.cb = cb;
 
-        var cs = t.contoursize||1,
-            nc = Math.floor((t.contourend+cs/10-t.contourstart)/cs)+1,
-            scl = Plotly.Plots.getScale(t.scl),
-            extraLevel = t.coloring==='lines' ? 0 : 1,
+        var contours = trace.contours,
+            line = trace.line,
+            cs = contours.size||1,
+            nc = Math.floor((contours.end+cs/10-contours.start)/cs)+1,
+            scl = Plotly.Plots.getScale(trace.colorscale),
+            extraLevel = contours.coloring==='lines' ? 0 : 1,
             colormap = d3.scale.linear().interpolate(d3.interpolateRgb),
             colorDomain = scl.map(function(si){
                     return (si[0]*(nc+extraLevel-1)-(extraLevel/2)) * cs +
-                        t.contourstart;
+                        contours.start;
                 }),
             colorRange = scl.map(function(si){ return si[1]; });
 
         // colorbar fill and lines
-        if(t.coloring==='heatmap') {
-            if(t.zauto && t.autocontour===false) {
-                t.zmin = t.contourstart-cs/2;
-                t.zmax = t.zmin+nc*cs;
+        if(contours.coloring==='heatmap') {
+            if(trace.zauto && trace.autocontour===false) {
+                trace.zmin = contours.start-cs/2;
+                trace.zmax = trace.zmin+nc*cs;
             }
             cb.filllevels({
-                start: t.zmin,
-                end: t.zmax,
-                size: (t.zmax-t.zmin)/254
+                start: trace.zmin,
+                end: trace.zmax,
+                size: (trace.zmax-trace.zmin)/254
             });
             colorDomain = scl.map(function(si){
-                return si[0]*(t.zmax-t.zmin)+t.zmin;
+                return si[0]*(trace.zmax-trace.zmin) + trace.zmin;
             });
 
             // do the contours extend beyond the colorscale?
             // if so, extend the colorscale with constants
-            var zRange = d3.extent([t.zmin, t.zmax, t.contourstart,
-                    t.contourstart+cs*(nc-1)]),
-                zmin = zRange[t.zmin<t.zmax ? 0 : 1],
-                zmax = zRange[t.zmin<t.zmax ? 1 : 0];
-            if(zmin!==t.zmin) {
+            var zRange = d3.extent([trace.zmin, trace.zmax, contours.start,
+                    contours.start+cs*(nc-1)]),
+                zmin = zRange[trace.zmin<trace.zmax ? 0 : 1],
+                zmax = zRange[trace.zmin<trace.zmax ? 1 : 0];
+            if(zmin!==trace.zmin) {
                 colorDomain.splice(0,0,zmin);
                 colorRange.splice(0,0,colorRange[0]);
             }
-            if(zmax!==t.zmax) {
+            if(zmax!==trace.zmax) {
                 colorDomain.push(zmax);
                 colorRange.push(colorRange[colorRange.length-1]);
             }
@@ -800,24 +810,19 @@
 
         colormap.domain(colorDomain).range(colorRange);
 
-        cb.options({
-            fillcolor: t.coloring==='fill' || t.coloring==='heatmap' ?
-                colormap : '',
-            line:{
-                color: t.coloring==='lines' ? colormap : t.lc,
-                width: t.showlines ? t.lw : 0,
-                dash: t.ld
-            },
-            levels: {
-                start: t.contourstart,
-                end: t.contourend,
+        cb.fillcolor(contours.coloring==='fill' || contours.coloring==='heatmap' ?
+                colormap : '')
+            .line({
+                color: contours.coloring==='lines' ? colormap : line.color,
+                width: contours.showlines===false ? 0 : line.width,
+                dash: line.dash
+            })
+            .levels({
+                start: contours.start,
+                end: contours.end,
                 size: cs
-            }
-        });
-
-        // all the other colorbar styling - any calcdata attribute that starts cb_
-        // apply these options, and draw the colorbar
-        cb.cdoptions(t)();
+            })
+            .options(trace.colorbar)();
     };
 
 }()); // end Contour object definition

@@ -326,11 +326,11 @@
             );
             return;
         }
-        if(plots.isScatter(type)) return 'Scatter';
-        if(plots.isBar(type)) return 'Bars';
-        if(plots.isContour(type)) return 'Contour';
-        if(plots.isHeatmap(type)) return 'Heatmap';
-        if(type==='box') return 'Boxes';
+        if(plots.isScatter(type)) return Plotly.Scatter;
+        if(plots.isBar(type)) return Plotly.Bars;
+        if(plots.isContour(type)) return Plotly.Contour;
+        if(plots.isHeatmap(type)) return Plotly.Heatmap;
+        if(type==='box') return Plotly.Boxes;
         console.log('Unrecognized plot type ' + type +
             '. Ignoring this dataset.'
         );
@@ -356,9 +356,9 @@
 
         setTimeout(function(){
             Plotly.Annotations.drawAll(gd);
-            Plotly.Legend.draw(gd,gd._fullLayout.showlegend);
-            gd.calcdata.forEach(function(d){
-                if(d[0]&&d[0].t&&d[0].t.cb) { d[0].t.cb(); }
+            Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
+            (gd.calcdata||[]).forEach(function(d){
+                if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
             });
         },300);
     };
@@ -606,6 +606,11 @@
         var recalc = !gd.calcdata || gd.calcdata.length!==(gd.data||[]).length;
         if(recalc) doCalcdata(gd);
 
+        // in case it has changed, attach fullData traces to calcdata
+        gd.calcdata.forEach(function(cd, i) {
+            cd[0].trace = gd._fullData[i];
+        });
+
         // put the styling info into the calculated traces
         // has to be done separate from applyStyles so we know the mode
         // (ie which objects to draw)
@@ -625,13 +630,11 @@
             Plotly.Legend.draw(gd, fullLayout.showlegend ||
                 (gd.calcdata.length>1 && fullLayout.showlegend!==false));
             gd.calcdata.forEach(function(cd) {
-                var t = cd[0].t;
-                if(t.visible===false || !plots.isHeatmap(t.type)) {
-                    plots.autoMargin(gd,'cb'+t.curve);
+                var trace = cd[0].trace;
+                if(!trace.visible || !plots.isHeatmap(trace.type)) {
+                    plots.autoMargin(gd,'cb'+trace.uid);
                 }
-                else {
-                    Plotly[t.module].colorbar(gd,cd);
-                }
+                else trace.module.colorbar(gd,cd);
             });
             doAutoMargin(gd);
             return plots.previousPromises(gd);
@@ -652,8 +655,8 @@
                 Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
                     var plotinfo = gd._fullLayout._plots[subplot];
                     gd._modules.forEach(function(module) {
-                        if(Plotly[module].setPositions) {
-                            Plotly[module].setPositions(gd,plotinfo);
+                        if(module.setPositions) {
+                            module.setPositions(gd,plotinfo);
                         }
                     });
                 });
@@ -691,7 +694,7 @@
 
         function drawAxes(){
             // draw ticks, titles, and calculate axis scaling (._b, ._m)
-            return Plotly.Axes.doTicks(gd,'redraw');
+            return Plotly.Axes.doTicks(gd, 'redraw');
         }
 
         function drawData(){
@@ -700,17 +703,19 @@
             // in case of traces that were heatmaps or contour maps
             // previously, remove them and their colorbars explicitly
             gd.calcdata.forEach(function(cd) {
-                if(plots.isHeatmap(cd[0].t.type)) { return; }
-                var i = cd[0].t.curve;
-                fullLayout._paper.selectAll('.hm'+i+',.contour'+i+',.cb'+i)
-                    .remove();
+                var trace = cd[0].trace;
+                if(!trace.visible || !plots.isHeatmap(trace.type)) {
+                    var uid = trace.uid;
+                    fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid)
+                        .remove();
+                }
             });
 
             Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
                 var plotinfo = gd._fullLayout._plots[subplot],
                     cdSubplot = gd.calcdata.filter(function(cd) {
-                        var t = cd[0].t;
-                        return (t.xaxis||'x') + (t.yaxis||'y')===subplot;
+                        var trace = cd[0].trace;
+                        return trace.xaxis + trace.yaxis === subplot;
                     }),
                     cdError = [];
 
@@ -722,15 +727,13 @@
                 gd._modules.forEach(function(module) {
                     // plot all traces of this type on this subplot at once
                     var cdmod = cdSubplot.filter(function(cd){
-                        return cd[0].t.module===module;
+                        return cd[0].trace.module===module;
                     });
-                    Plotly[module].plot(gd,plotinfo,cdmod);
-                    Plotly.Lib.markTime('done '+module);
+                    module.plot(gd,plotinfo,cdmod);
+                    Plotly.Lib.markTime('done ' + (cdmod[0] && cdmod[0][0].trace.type));
 
                     // collect the traces that may have error bars
-                    if(['Scatter','Bars'].indexOf(module)!==-1) {
-                        cdError = cdError.concat(cdmod);
-                    }
+                    if(module.errorBarsOK) cdError = cdError.concat(cdmod);
                 });
                 // finally do all error bars at once
                 Plotly.ErrorBars.plot(gd,plotinfo,cdError);
@@ -1089,6 +1092,27 @@
                 delete ann.ref;
             }
         });
+        var legend = layout.legend;
+        if(legend) {
+            // check for old-style legend positioning (x or y is +/- 100)
+            if(legend.x > 3) {
+                legend.x = 1.02;
+                legend.xanchor = 'left';
+            }
+            else if(legend.x < -2) {
+                legend.x = -0.02;
+                legend.xanchor = 'right';
+            }
+
+            if(legend.y > 3) {
+                legend.y = 1.02;
+                legend.yanchor = 'bottom';
+            }
+            else if(legend.y < -2) {
+                legend.y = -0.02;
+                legend.yanchor = 'top';
+            }
+        }
 
         return layout;
     }
@@ -1205,6 +1229,10 @@
             type: 'boolean',
             dflt: true
         },
+        showlegend: {
+            type: 'boolean',
+            dflt: true
+        },
         opacity: {
             type: 'number',
             min: 0,
@@ -1221,6 +1249,10 @@
         yaxis: {
             type: 'axisid',
             dflt: 'y'
+        },
+        uid: {
+            type: 'string',
+            dflt: ''
         }
     };
 
@@ -1229,6 +1261,7 @@
         // gd.data, gd.layout are precisely what the user specified
         // gd._fullData, gd._fullLayout are complete descriptions
         //      of how to draw the plot
+        var oldFullLayout = gd._fullLayout || {};
         gd._fullLayout = {};
 
         // first fill in what we can of layout without looking at data
@@ -1251,6 +1284,36 @@
 
         // finally, fill in the pieces of layout that may need to look at data
         supplyLayoutModuleDefaults(gd.layout||{}, gd._fullLayout, gd._fullData);
+
+        // patch back in any underscore or function components
+        // of fullLayout from the old one
+        gd._fullLayout = $.extend(true, onlyPrivate(oldFullLayout), gd._fullLayout);
+
+        // update object references in calcdata
+        if((gd.calcdata||[]).length===gd._fullData.length) {
+            gd._fullData.forEach(function(trace, i) {
+                (gd.calcdata[i][0]||{}).trace = trace;
+            });
+        }
+    }
+
+    function onlyPrivate(obj) {
+        Object.keys(obj).forEach(function(k) {
+            if((k.charAt(0)==='_' && k.substr(0,4)!=='_has') ||
+                    typeof obj[k]==='function') {
+                return;
+            }
+            if($.isPlainObject(obj[k])) {
+                onlyPrivate(obj[k]);
+                if(Object.keys(obj).length===0) delete obj[k];
+            }
+            else if(Array.isArray(obj[k]) && obj[k].length &&
+                    $.isPlainObject(obj[k][0])) {
+                obj[k].forEach(onlyPrivate);
+            }
+            else delete obj[k];
+        });
+        return obj;
     }
 
     function supplyDataDefaults(traceIn, i, layout) {
@@ -1262,18 +1325,23 @@
         }
 
         // module-independent attributes
-        coerce('type');
+        traceOut.index = i;
+        var type = coerce('type');
+        coerce('uid');
         var visible = coerce('visible');
         if(visible) {
             coerce('opacity');
             coerce('name', 'trace '+i);
-            if(plots.isCartesian(traceOut.type)) {
+            if(plots.isCartesian(type)) {
                 coerce('xaxis');
                 coerce('yaxis');
+                if(!plots.isHeatmap(type)) coerce('showlegend');
             }
 
             // module-specific attributes
-            var module = Plotly[getModule(traceOut)];
+            var module = getModule(traceOut);
+            traceOut.module = module;
+
             if(module) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
         }
 
@@ -1449,28 +1517,21 @@
             var module = getModule(trace),
                 cd = [];
 
-            if(module) cd = Plotly[module].calc(gd,trace);
+            if(module) {
+                cd = module.calc(gd,trace);
+                if(gd._modules.indexOf(module)===-1) gd._modules.push(module);
+            }
 
             // make sure there is a first point
             // this ensures there is a calcdata item for every trace,
             // even if cartesian logic doesn't handle it
-            if(!$.isArray(cd) || !cd[0]) { cd = [{x: false, y: false}]; }
+            if(!$.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
 
             // add the trace-wide properties to the first point,
             // per point properties to every point
             // t is the holder for trace-wide properties
             if(!cd[0].t) cd[0].t = {};
-
-            // store the gd.data curve number that gave this trace
-            cd[0].t.curve = i;
-
-            if(module) {
-                // store the module for this trace, for use later to plot
-                cd[0].t.module = module;
-
-                // save which modules we're using
-                if(gd._modules.indexOf(module)===-1) gd._modules.push(module);
-            }
+            cd[0].trace = trace;
 
             Plotly.Lib.markTime('done with calcdata for '+i);
             return cd;
@@ -1485,7 +1546,7 @@
     plots.setStyles = function(gd, mergeDefault) {
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
 
-        var i,j,l,p,prop,val,cd,t,c,gdc,defaultColor,is3d;
+        var i,j,l,p,prop,val,cd,t,trace,c,gdc,defaultColor,is3d;
 
         // merge object a[k] (which may be an array or a single value)
         // from gd.data into calcdata
@@ -1536,7 +1597,8 @@
         for(i in gd.calcdata){
             cd = gd.calcdata[i]; // trace plus styling
             t = cd[0].t; // trace styling object
-            c = t.curve; // trace number
+            trace = cd[0].trace;
+            c = trace.index; // trace number - should always be the same as i...
             gdc = gd._fullData[c];
             // defaultColor cares about which trace this is in gd.data
             // but we can get here from editing with a different data
@@ -1793,8 +1855,8 @@
         Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
             var gp = fullLayout._plots[subplot].plot;
 
-            gd._modules.concat('ErrorBars').forEach(function(module) {
-                Plotly[module].style(gp, fullLayout);
+            gd._modules.concat(Plotly.ErrorBars).forEach(function(module) {
+                module.style(gp, fullLayout);
             });
         });
     }
@@ -2099,18 +2161,12 @@
                 }
                 docalc = true;
             }
-            else if(replotAttrs.indexOf(ai)!==-1) {
-                doplot = true;
-            }
-            else if(autorangeAttrs.indexOf(ai)!==-1) {
-                docalcAutorange = true;
-            }
+            else if(replotAttrs.indexOf(ai)!==-1) doplot = true;
+            else if(autorangeAttrs.indexOf(ai)!==-1) docalcAutorange = true;
         }
         // now all attribute mods are done, as are redo and undo
         // so we can save them
-        if(Plotly.Queue) {
-            Plotly.Queue.add(gd,undoit,redoit,traces);
-        }
+        if(Plotly.Queue) Plotly.Queue.add(gd,undoit,redoit,traces);
 
         // do we need to force a recalc?
         var autorangeOn = false;
@@ -2148,7 +2204,7 @@
             if(docolorbars) {
                 seq.push(function doColorBars(){
                     gd.calcdata.forEach(function(cd) {
-                        if(cd[0].t.cb) { cd[0].t.cb.cdoptions(cd[0].t)(); }
+                        if((cd[0].t||{}).cb) cd[0].t.cb.options(cd[0].trace.colorbar)();
                     });
                     return plots.previousPromises(gd);
                 });
@@ -2157,7 +2213,7 @@
 
         var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
 
-        if(!plotDone || !plotDone.then) { plotDone = Promise.resolve(); }
+        if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
             $(gd).trigger('plotly_restyle',[redoit,traces]);
         });
@@ -2513,6 +2569,7 @@
         }
         else if(ak.length) {
             // if we didn't need to redraw entirely, just do the needed parts
+            supplyDefaults(gd);
             if(dolegend) {
                 seq.push(function doLegend(){
                     Plotly.Legend.draw(gd, fullLayout.showlegend);
@@ -3264,10 +3321,20 @@
             gs = fullLayout._size,
             axletter = title.charAt(0),
             colorbar = title.substr(1,2)==='cb',
-            cbnum = colorbar ? Number(title.substr(3).replace('title','')) : 0,
-            cont = colorbar ? gd.calcdata[cbnum][0].t.cb.axis :
-                (fullLayout[Plotly.Axes.id2name(title.replace('title',''))] || fullLayout),
-            prop = cont===fullLayout ? 'title' : cont._name+'.title',
+            cbnum, cont;
+
+        if(colorbar) {
+            var uid = title.substr(3).replace('title','');
+            gd._fullData.forEach(function(trace, i) {
+                if(trace.uid===uid) {
+                    cbnum = i;
+                    cont = gd.calcdata[i][0].t.cb.axis;
+                }
+            });
+        }
+        else cont = fullLayout[Plotly.Axes.id2name(title.replace('title',''))] || fullLayout;
+
+        var prop = cont===fullLayout ? 'title' : cont._name+'.title',
             name = colorbar ? 'colorscale' :
                 ((cont._id||axletter).toUpperCase()+' axis'),
             font = cont.titlefont.family || fullLayout.font.family || 'Arial',
@@ -3504,17 +3571,17 @@
 
             el.call(Plotly.util.makeEditable)
                 .on('edit', function(text){
-                    this
-                        .style({
-                            'font-family': font,
-                            'font-size': fontSize+'px',
-                            fill: Plotly.Drawing.opacity(fontColor),
-                            opacity: opacity*Plotly.Drawing.opacity(fontColor)
-                        })
-                        .call(Plotly.util.convertToTspans)
-                        .attr(options)
-                        .selectAll('tspan.line')
-                            .attr(options);
+                    // this
+                    //     .style({
+                    //         'font-family': font,
+                    //         'font-size': fontSize+'px',
+                    //         fill: Plotly.Drawing.opacity(fontColor),
+                    //         opacity: opacity*Plotly.Drawing.opacity(fontColor)
+                    //     })
+                    //     .call(Plotly.util.convertToTspans)
+                    //     .attr(options)
+                    //     .selectAll('tspan.line')
+                    //         .attr(options);
                     if(colorbar) {
                         Plotly.restyle(gd,'colorbar.title',text,cbnum);
                     }

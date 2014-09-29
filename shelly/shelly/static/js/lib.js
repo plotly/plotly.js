@@ -1569,4 +1569,12 @@
         return propOut.get();
     };
 
+    lib.mergeArray = function(traceAttr, cd, cdAttr) {
+        if($.isArray(traceAttr)) {
+            var imax = Math.max(traceAttr.length, cd.length);
+            for(var i=0; i<imax; i++) cd[i][cdAttr] = traceAttr[i];
+        }
+    };
+
+
 }()); // end Lib object definition

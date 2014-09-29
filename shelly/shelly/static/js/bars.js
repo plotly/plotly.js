@@ -9,6 +9,9 @@
 
     var bars = window.Plotly.Bars = {};
 
+    // mark this module as allowing error bars
+    bars.errorBarsOK = true;
+
     bars.attributes = {
         orientation: {
             type: 'enumerated',
@@ -102,7 +105,7 @@
         coerce('bargroupgap');
     };
 
-    bars.calc = function(gd,trace) {
+    bars.calc = function(gd, trace) {
         // ignore as much processing as possible (including
         // in autorange) if bar is not visible
         if(trace.visible===false) return;
@@ -129,12 +132,12 @@
         // create the "calculated data" to plot
         var serieslen = Math.min(pos.length, size.length),
             cd = [];
-        for(i=0;i<serieslen;i++) {
+        for(i=0; i<serieslen; i++) {
             if(($.isNumeric(pos[i]) && $.isNumeric(size[i]))) {
                 cd.push({p: pos[i], s: size[i], b: 0});
             }
         }
-        if(cd[0]) cd[0].t = {orientation: orientation};
+
         return cd;
     };
 
@@ -142,7 +145,7 @@
     // for each direction separately calculate the ranges and positions
     // note that this handles histograms too
     // now doing this one subplot at a time
-    bars.setPositions = function(gd,plotinfo) {
+    bars.setPositions = function(gd, plotinfo) {
         var fullLayout = gd._fullLayout,
             xa = plotinfo.x,
             ya = plotinfo.y,
@@ -155,16 +158,15 @@
                 pa = plotinfo[pLetter],
                 sa = plotinfo[sLetter];
 
-            gd.calcdata.forEach(function(cd,i) {
-                var t=cd[0].t;
-                if(t.visible!==false && Plotly.Plots.isBar(t.type) &&
-                        (t.orientation||'v')===dir &&
-                        (t.xaxis||'x')===xa._id &&
-                        (t.yaxis||'y')===ya._id) {
+            gd._fullData.forEach(function(trace,i) {
+                if(trace.visible && Plotly.Plots.isBar(trace.type) &&
+                        trace.orientation===dir &&
+                        trace.xaxis===xa._id &&
+                        trace.yaxis===ya._id) {
                     bl.push(i);
                 }
             });
-            if(!bl.length) { return; }
+            if(!bl.length) return;
 
             // bar position offset and width calculation
             // bl1 is a list of traces (in calcdata) to look at together
@@ -188,14 +190,14 @@
                     comparelist = [];
                 if(fullLayout.barmode==='group') {
                     bl1.forEach(function(i) {
-                        if(overlap) { return; }
+                        if(overlap) return;
                         gd.calcdata[i].forEach(function(v) {
-                            if(overlap) { return; }
+                            if(overlap) return;
                             comparelist.forEach(function(cp) {
-                                if(Math.abs(v.p-cp)<barDiff) { overlap = true; }
+                                if(Math.abs(v.p-cp) < barDiff) overlap = true;
                             });
                         });
-                        if(overlap) { return; }
+                        if(overlap) return;
                         gd.calcdata[i].forEach(function(v) {
                             comparelist.push(v.p);
                         });
@@ -203,20 +205,20 @@
                 }
 
                 // check forced minimum dtick
-                Plotly.Axes.minDtick(pa,barDiff,pv2[0],overlap);
+                Plotly.Axes.minDtick(pa, barDiff, pv2[0], overlap);
 
                 // position axis autorange - always tight fitting
-                Plotly.Axes.expand(pa,pv2,{vpad:barDiff/2});
+                Plotly.Axes.expand(pa, pv2, {vpad: barDiff/2});
 
                 // bar widths and position offsets
-                barDiff*=(1-fullLayout.bargap);
-                if(overlap) { barDiff/=bl.length; }
+                barDiff *= 1-fullLayout.bargap;
+                if(overlap) barDiff/=bl.length;
 
                 var barCenter;
                 function setBarCenter(v) { v[pLetter] = v.p + barCenter; }
 
                 for(var i=0; i<bl1.length; i++){
-                    var t=gd.calcdata[bl1[i]][0].t;
+                    var t = gd.calcdata[bl1[i]][0].t;
                     t.barwidth = barDiff*(1-fullLayout.bargroupgap);
                     t.poffset = ((overlap ? (2*i+1-bl1.length)*barDiff : 0 ) -
                         t.barwidth)/2;
@@ -230,7 +232,7 @@
             if(fullLayout.barmode==='overlay') {
                 bl.forEach(function(bli){ barposition([bli]); });
             }
-            else { barposition(bl); }
+            else barposition(bl);
 
             // bar size range and stacking calculation
             if(fullLayout.barmode==='stack'){
@@ -264,7 +266,7 @@
                         }
                     }
                 }
-                Plotly.Axes.expand(sa,[sMin,sMax],{tozero:true,padded:true});
+                Plotly.Axes.expand(sa, [sMin, sMax], {tozero: true, padded: true});
             }
             else {
                 // for grouped or overlaid bars, just make sure zero is
@@ -273,14 +275,26 @@
                 var fs = function(v){ v[sLetter] = v.s; return v.s; };
 
                 for(i=0; i<bl.length; i++){
-                    Plotly.Axes.expand(sa,gd.calcdata[bl[i]].map(fs),
-                        {tozero:true,padded:true});
+                    Plotly.Axes.expand(sa, gd.calcdata[bl[i]].map(fs),
+                        {tozero: true, padded: true});
                 }
             }
         });
     };
 
-    bars.plot = function(gd,plotinfo,cdbar) {
+    // arrayOk attributes, merge them into calcdata array
+    function arraysToCalcdata(cd) {
+        var trace = cd[0].trace,
+            marker = trace.marker;
+
+        Plotly.Lib.mergeArray(trace.text, cd, 'tx');
+        Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
+        Plotly.Lib.mergeArray(marker.color, cd, 'mc');
+        Plotly.Lib.mergeArray(marker.line.color, cd, 'mlc');
+        Plotly.Lib.mergeArray(marker.line.width, cd, 'mlw');
+    }
+
+    bars.plot = function(gd, plotinfo, cdbar) {
         var xa = plotinfo.x,
             ya = plotinfo.y,
             fullLayout = gd._fullLayout;
@@ -294,7 +308,11 @@
         bartraces.append('g')
             .attr('class','points')
             .each(function(d){
-                var t = d[0].t;
+                var t = d[0].t,
+                    trace = d[0].trace;
+
+                arraysToCalcdata(d);
+
                 d3.select(this).selectAll('path')
                     .data(Plotly.Lib.identity)
                   .enter().append('path')
@@ -304,7 +322,7 @@
                         // log values go off-screen by plotwidth
                         // so you see them continue if you drag the plot
                         var x0,x1,y0,y1;
-                        if(t.orientation==='h') {
+                        if(trace.orientation==='h') {
                             y0 = ya.c2p(t.poffset+di.p, true);
                             y1 = ya.c2p(t.poffset+di.p+t.barwidth, true);
                             x0 = xa.c2p(di.b, true);
@@ -323,8 +341,8 @@
                             d3.select(this).remove();
                             return;
                         }
-                        var lw = (di.mlw+1 || t.mlw+1 ||
-                                (di.t ? di.t.mlw : 0)+1)-1,
+                        var lw = (di.mlw+1 || trace.marker.line.width+1 ||
+                                (di.trace ? di.trace.marker.line.width : 0)+1)-1,
                             offset = d3.round((lw/2)%1,2);
                         function roundWithLine(v) {
                             // if there are explicit gaps, don't round,

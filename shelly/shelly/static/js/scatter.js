@@ -10,6 +10,9 @@
 
     var scatter = window.Plotly.Scatter = {};
 
+    // mark this module as allowing error bars
+    scatter.errorBarsOK = true;
+
     // traces with < this many points are by default shown
     // with points and lines, > just get lines
     scatter.PTS_LINESONLY = 20;
@@ -170,8 +173,12 @@
                 'middle left', 'middle center', 'middle right',
                 'bottom left', 'bottom center', 'bottom right'
             ],
-            dflt: 'middle center'
+            dflt: 'middle center',
+            arrayOk: true
         },
+        // TODO: all three of the sub-attributes here should be arrayOk
+        // that'll be easier once we work in Etienne's idea about how fonts should work.
+        // also maybe we should add colorscale?
         textfont: {type: 'font'}
     };
 
@@ -343,19 +350,18 @@
         xa._minDtick = 0;
         ya._minDtick = 0;
 
-        if(x.length>serieslen) x.splice(serieslen,x.length-serieslen);
-        if(y.length>serieslen) y.splice(serieslen,y.length-serieslen);
+        if(x.length>serieslen) x.splice(serieslen, x.length-serieslen);
+        if(y.length>serieslen) y.splice(serieslen, y.length-serieslen);
 
         // check whether bounds should be tight, padded, extended to zero...
         // most cases both should be padded on both ends, so start with that.
         var xOptions = {padded:true},
             yOptions = {padded:true};
         // include marker size
-        if(trace.mode && trace.mode.indexOf('markers')!==-1) {
-            var markerPad = trace.marker ? trace.marker.size : 0,
-                sizeref = 1.6*((trace.marker && trace.marker.sizeref)||1),
+        if(trace.mode.indexOf('markers')!==-1) {
+            var sizeref = 1.6*(trace.marker.sizeref||1),
                 markerTrans;
-            if(trace.marker && trace.marker.sizemode==='area') {
+            if(trace.marker.sizemode==='area') {
                 markerTrans = function(v) {
                     return Math.max(Math.sqrt((v||0)/sizeref),3);
                 };
@@ -365,8 +371,9 @@
                     return Math.max((v||0)/sizeref,3);
                 };
             }
-            xOptions.ppad = yOptions.ppad = $.isArray(markerPad) ?
-                markerPad.map(markerTrans) : markerTrans(markerPad);
+            xOptions.ppad = yOptions.ppad = $.isArray(trace.marker.size) ?
+                trace.marker.size.map(markerTrans) :
+                markerTrans(trace.marker.size);
         }
         // TODO: text size
 
@@ -378,13 +385,9 @@
         }
 
         // if no error bars, markers or text, or fill to y=0 remove x padding
-        else if((!trace.error_y || !trace.error_y.visible) &&
+        else if(!trace.error_y.visible &&
                 (['tonexty', 'tozeroy'].indexOf(trace.fill)!==-1 ||
-                // explicit no markers/text
-                (trace.mode && trace.mode.indexOf('markers')===-1 &&
-                    trace.mode.indexOf('text')===-1) ||
-                // automatic no markers
-                (!trace.mode && serieslen>=scatter.PTS_LINESONLY))) {
+                 (trace.mode.indexOf('markers')===-1 && trace.mode.indexOf('text')===-1))) {
             xOptions.padded = false;
             xOptions.ppad = 0;
         }
@@ -417,25 +420,31 @@
         return cd;
     };
 
-    scatter.selectMarkers = function(gd,plotinfo,cdscatter) {
+    scatter.selectMarkers = function(gd, plotinfo, cdscatter) {
         var xr = d3.extent(plotinfo.x.range.map(plotinfo.x.l2c)),
             yr = d3.extent(plotinfo.y.range.map(plotinfo.y.l2c));
 
-        cdscatter.forEach(function(d) {
+        cdscatter.forEach(function(d,i) {
+            var trace = d[0].trace;
+            if(trace.mode.indexOf('markers')===-1) return;
             // if marker.maxdisplayed is used, select a maximum of
             // mnum markers to show, from the set that are in the viewport
-            var mnum = d[0].t.mnum;
+            var mnum = trace.marker.maxdisplayed;
 
             // TODO: remove some as we get away from the viewport?
-            if(!(mnum>0) || d[0].t.mode.indexOf('markers')===-1) return;
+            if(mnum===0) return;
 
             var cd = d.filter(function(v) {
                     return v.x>=xr[0] && v.x<=xr[1] && v.y>=yr[0] && v.y<=yr[1];
                 }),
                 inc = Math.ceil(cd.length/mnum),
                 tnum = 0;
-            cdscatter.forEach(function(cdi) {
-                if(cdi[0].t.mnum>0 && cdi[0].t.curve<d[0].t.curve) { tnum++; }
+            cdscatter.forEach(function(cdj, j) {
+                var tracei = cdj[0].trace;
+                if(tracei.mode.indexOf('markers')===-1 &&
+                        tracei.marker.maxdisplayed>0 && j<i) {
+                    tnum++;
+                }
             });
 
             // if multiple traces use maxdisplayed, stagger which markers we
@@ -453,13 +462,31 @@
         });
     };
 
-    scatter.plot = function(gd,plotinfo,cdscatter) {
-        // previously this had to be separate so we could call it
-        // before drawing error bars, and call the rest of scatter.plot
-        // after error bars. Now that we have separate layers for these,
-        // we can merge it in here.
-        // TODO: integrate it back into scatter.plot
-        scatter.selectMarkers(gd,plotinfo,cdscatter);
+    // arrayOk attributes, merge them into calcdata array
+    function arraysToCalcdata(cd) {
+        var trace = cd[0].trace;
+
+        Plotly.Lib.mergeArray(trace.text, cd, 'tx');
+        Plotly.Lib.mergeArray(trace.textposition, cd, 'tp');
+        if(trace.textfont) {
+            Plotly.Lib.mergeArray(trace.textfont.size, 'ts');
+            Plotly.Lib.mergeArray(trace.textfont.color, cd, 'tc');
+            Plotly.Lib.mergeArray(trace.textfont.family, cd, 'tf');
+        }
+
+        if(trace.mode.indexOf('markers')!==-1) {
+            var marker = trace.marker;
+            Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
+            Plotly.Lib.mergeArray(marker.size, cd, 'ms');
+            Plotly.Lib.mergeArray(marker.symbol, cd, 'mx');
+            Plotly.Lib.mergeArray(marker.color, cd, 'mc');
+            Plotly.Lib.mergeArray(marker.line.color, cd, 'mlc');
+            Plotly.Lib.mergeArray(marker.line.width, cd, 'mlw');
+        }
+    }
+
+    scatter.plot = function(gd, plotinfo, cdscatter) {
+        scatter.selectMarkers(gd, plotinfo, cdscatter);
 
         var xa = plotinfo.x,
             ya = plotinfo.y;
@@ -477,16 +504,19 @@
         // two points need to be to be grouped
         function getTolerance(x,y,w) {
             return (0.75 + 10*Math.max(0,
-                Math.max(-x,x-xa._length)/xa._length,
-                Math.max(-y,y-ya._length)/ya._length)) * Math.max(w||1, 1);
+                Math.max(-x, x-xa._length)/xa._length,
+                Math.max(-y, y-ya._length)/ya._length)) * Math.max(w||1, 1);
         }
 
         // BUILD LINES AND FILLS
         var prevpath='',
             tozero,tonext,nexttonext;
         scattertraces.each(function(d){
-            var t = d[0].t;
-            if(t.visible===false) return;
+            var trace = d[0].trace;
+            if(trace.visible===false) return;
+
+            arraysToCalcdata(d);
+
             var i = -1,
                 tr = d3.select(this),
                 pt0 = null,
@@ -520,14 +550,12 @@
                 pathfn, revpathbase, revpathfn;
 
             // make the fill-to-zero path now, so it shows behind the line
-            // have to break out of d3-style here (data-curve attribute)
-            // because fill to next puts the fill associated with one trace
+            // fill to next puts the fill associated with one trace
             // grouped with the previous
-            if(t.fill.substr(0,6)==='tozero' ||
-                    (t.fill.substr(0,2)==='to' && !prevpath)) {
+            if(trace.fill.substr(0,6)==='tozero' ||
+                    (trace.fill.substr(0,2)==='to' && !prevpath)) {
                 tozero = tr.append('path')
-                    .classed('js-fill',true)
-                    .attr('data-curve',t.curve);
+                    .classed('js-fill',true);
             }
             else tozero = null;
 
@@ -540,15 +568,15 @@
             // now make a new nexttonext for next time
             nexttonext = tr.append('path').classed('js-fill',true);
 
-            if(['hv','vh','hvh','vhv'].indexOf(t.lineshape)!==-1) {
-                pathfn = Plotly.Drawing.steps(t.lineshape);
+            if(['hv','vh','hvh','vhv'].indexOf(trace.line.shape)!==-1) {
+                pathfn = Plotly.Drawing.steps(trace.line.shape);
                 revpathbase = Plotly.Drawing.steps(
-                    t.lineshape.split('').reverse().join('')
+                    trace.lineshape.split('').reverse().join('')
                 );
             }
-            else if(t.lineshape==='spline') {
+            else if(trace.line.shape==='spline') {
                 pathfn = revpathbase = function(pts) {
-                    return Plotly.Drawing.smoothopen(pts,t.ls);
+                    return Plotly.Drawing.smoothopen(pts,trace.line.smoothing);
                 };
             }
             else {
@@ -619,7 +647,7 @@
                     pti = [xa.c2p(d[i].x), ya.c2p(d[i].y)];
                     // TODO: smart lines going off the edge?
                     if(!$.isNumeric(pti[0])||!$.isNumeric(pti[1])) {
-                        if(t.connectgaps) continue;
+                        if(trace.connectgaps) continue;
                         else break;
                     }
 
@@ -636,7 +664,7 @@
                     // then it increases as you get farther off-plot.
                     // the value is in pixels, and is based on the line width, which
                     // means we need to replot if we change the line width
-                    decimationTolerance = getTolerance(pti[0],pti[1],t.lw);
+                    decimationTolerance = getTolerance(pti[0],pti[1],trace.line.width);
 
                     // if the last move was too much for decimation, see if we're
                     // starting a new decimation block
@@ -681,7 +709,7 @@
                     thispath = pathfn(pts);
                     fullpath += fullpath ? ('L'+thispath.substr(1)) : thispath;
                     revpath = revpathfn(pts) + revpath;
-                    if(t.mode.indexOf('lines')!==-1 && atLeastTwo) {
+                    if(trace.mode.indexOf('lines')!==-1 && atLeastTwo) {
                         tr.append('path').classed('js-line',true).attr('d',thispath);
                     }
                 }
@@ -689,7 +717,7 @@
             if(fullpath) {
                 if(tozero) {
                     if(pt0 && pt1) {
-                        if(t.fill.charAt(t.fill.length-1)==='y') {
+                        if(trace.fill.charAt(trace.fill.length-1)==='y') {
                             pt0[1]=pt1[1]=ya.c2p(0,true);
                         }
                         else pt0[0]=pt1[0]=xa.c2p(0,true);
@@ -699,7 +727,7 @@
                         tozero.attr('d',fullpath+'L'+pt1+'L'+pt0+'Z');
                     }
                 }
-                else if(t.fill.substr(0,6)==='tonext' && fullpath && prevpath) {
+                else if(trace.fill.substr(0,6)==='tonext' && fullpath && prevpath) {
                     // fill to next: full trace path, plus the previous path reversed
                     tonext.attr('d',fullpath+prevpath+'Z');
                 }
@@ -717,19 +745,19 @@
         scattertraces.append('g')
             .attr('class','points')
             .each(function(d){
-                var t = d[0].t,
+                var trace = d[0].trace,
                     s = d3.select(this),
-                    showMarkers = t.mode.indexOf('markers')!==-1,
-                    showText = t.mode.indexOf('text')!==-1;
+                    showMarkers = trace.mode.indexOf('markers')!==-1,
+                    showText = trace.mode.indexOf('text')!==-1;
 
-                if((!showMarkers && !showText) || t.visible===false) s.remove();
+                if((!showMarkers && !showText) || trace.visible===false) s.remove();
                 else {
                     if(showMarkers) {
                         s.selectAll('path.point')
-                            .data(t.mnum>0 ? visFilter : Plotly.Lib.identity)
+                            .data(trace.marker.maxdisplayed ? visFilter : Plotly.Lib.identity)
                             .enter().append('path')
-                                .classed('point',true)
-                                .call(Plotly.Drawing.translatePoints,xa,ya);
+                                .classed('point', true)
+                                .call(Plotly.Drawing.translatePoints, xa, ya);
                     }
                     if(showText) {
                         s.selectAll('g')
@@ -738,7 +766,7 @@
                             // it gets converted to mathjax
                             .enter().append('g')
                                 .append('text')
-                                .call(Plotly.Drawing.translatePoints,xa,ya);
+                                .call(Plotly.Drawing.translatePoints, xa, ya);
                     }
                 }
             });
@@ -747,14 +775,14 @@
     scatter.style = function(gp) {
         var s = gp.selectAll('g.trace.scatter');
 
-        s.style('opacity',function(d){ return d[0].t.op; });
+        s.style('opacity',function(d){ return d[0].trace.opacity; });
 
         s.selectAll('g.points')
             .each(function(d){
                 d3.select(this).selectAll('path.point')
-                    .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
+                    .call(Plotly.Drawing.pointStyle,d.trace||d[0].trace);
                 d3.select(this).selectAll('text')
-                    .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
+                    .call(Plotly.Drawing.textPointStyle,d.trace||d[0].trace);
             });
 
         s.selectAll('g.trace path.js-line')
