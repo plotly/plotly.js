@@ -299,7 +299,7 @@ ModeBar.prototype.config = {
         title: 'Reset camera',
         attr: 'reset',
         val: '',
-        icon: 'ploticon-autoscale',
+        icon: 'icon-home',
         click: handle3dCamera
     },
     zoom3d: {
