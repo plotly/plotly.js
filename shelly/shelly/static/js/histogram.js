@@ -118,9 +118,6 @@
             trace[maindata + 'bins'] = Plotly.Axes.autoBin(pos0, pa, trace['nbins' + maindata]);
 
             // copy bin info back to the source data.
-            // TODO: Not sure if this is the way we really want to do this,
-            // it's just so that when you turn off autobin in the GUI, you start
-            // with the autoBin values
             trace._input[maindata + 'bins'] = trace[maindata + 'bins'];
         }
 

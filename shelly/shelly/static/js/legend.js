@@ -266,11 +266,6 @@
             })
             .style('text-anchor', 'start')
             .call(Plotly.Drawing.font, fullLayout.legend.font)
-            //     'font-family': lf.family,
-            //     'font-size': lf.size+'px',
-            //     fill: Plotly.Drawing.rgb(lf.color || gf.color || '#444'),
-            //     opacity: Plotly.Drawing.opacity(lf.color || gf.color || '#444')
-            // })
             .text(name)
             .attr({'data-unformatted': name});
 
@@ -289,10 +284,6 @@
                     this.text(text)
                         .call(textLayout);
                     if(!this.text()) text = ' \u0020\u0020 ';
-                    // var property =
-                    //         Plotly.Lib.nestedProperty(td.data[traceIndex],'name');
-                    // property.name = text;
-                    // trace.name = text;
                     Plotly.restyle(td, 'name', text, traceIndex);
                 });
         }
@@ -341,13 +332,6 @@
         legendsvg.enter(0).append('svg')
             .attr('class','legend');
 
-        // if(['left','right','center'].indexOf(opts.xanchor)===-1) {
-        //     opts.xanchor = 'auto';
-        // }
-        // if(['top','bottom','middle'].indexOf(opts.yanchor)===-1) {
-        //     opts.yanchor = 'auto';
-        // }
-
         var bgRect = legendsvg.selectAll('rect.bg')
             .data([0]);
         bgRect.enter(0).append('rect')
@@ -366,18 +350,6 @@
 
         legend.repositionLegend(td, traces);
 
-        // user dragging the legend
-        // if x/yanchor is 'auto':
-        // aligns left/right/center on resize or new text if drag pos
-        // is in left 1/3, middle 1/3, right 1/3
-        // choose left/center/right align via:
-        //  xl=(left-ml)/plotwidth,
-        //  xc=(center-ml/plotwidth),
-        //  xr=(right-ml)/plotwidth
-        //  if(xl<2/3-xc) opts.x=xl;
-        //  else if(xr>4/3-xc) opts.x=xr;
-        //  else opts.x=xc;
-        // similar logic for top/middle/bottom
         if(td.mainsite) {
             legendsvg.node().onmousedown = function(e) {
                 // deal with other UI elements, and allow them
@@ -486,31 +458,6 @@
         // area is allowed but position will be clipped to the page.
         // values <1/3 align the low side at that fraction, 1/3-2/3 align the
         // center at that fraction, >2/3 align the right at that fraction
-
-        // defaults... also check for old style off-edge positioning
-        // (+/-100) and convert it to the new format
-        // TODO: do this in layout import instead
-        // if(opts.x>3 || !$.isNumeric(opts.x)) {
-        //     opts.x = 1.02;
-        //     opts.xanchor = 'left';
-        // }
-        // else if(opts.x<-2) {
-        //     opts.x = -0.02;
-        //     opts.xanchor = 'right';
-        // }
-
-        // if(!$.isNumeric(opts.y)) {
-        //     opts.y = 1;
-        //     opts.yanchor = 'top';
-        // }
-        // else if(opts.y>3) {
-        //     opts.y = 1.02;
-        //     opts.yanchor = 'bottom';
-        // }
-        // else if(opts.y<-2) {
-        //     opts.y = -0.02;
-        //     opts.yanchor = 'top';
-        // }
 
         var lx = gs.l+gs.w*opts.x,
             ly = gs.t+gs.h*(1-opts.y);

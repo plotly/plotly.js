@@ -200,81 +200,6 @@
         }
     }());
 
-    // default layout defined as a function rather than
-    // a constant so it makes a new copy each time
-    // function defaultLayout(){
-    //     return {title: 'Click to enter Plot title',
-    //         xaxis: Plotly.Axes.defaultAxis({range: [-1,6]}),
-    //         yaxis: Plotly.Axes.defaultAxis({range: [-1,4]}),
-    //         legend: {
-    //             bgcolor: '#fff',
-    //             bordercolor: '#444',
-    //             borderwidth: 0,
-    //             font:{family: '', size: 0, color: ''},
-    //             traceorder: 'normal'
-    //         },
-    //         width: 700,
-    //         height: 450,
-    //         autosize: 'initial', // after initial autosize reverts to true
-    //         margin: {l:80,r:80,t:100,b:80,pad:0,autoexpand:true},
-    //         paper_bgcolor: '#fff',
-    //         plot_bgcolor: '#fff',
-    //         barmode: 'group',
-    //         bargap: 0.2,
-    //         bargroupgap: 0.0,
-    //         boxmode: 'overlay',
-    //         boxgap: 0.3,
-    //         boxgroupgap: 0.3,
-    //         font: {
-    //             family:'"Open sans", verdana, arial, sans-serif',
-    //             size:12,
-    //             color:'#444'
-    //         },
-    //         titlefont:{family:'',size:0,color:''},
-    //         dragmode:'zoom',
-    //         hovermode:'x',
-    //         separators:'.,', // decimal then thousands
-    //         hidesources:false,
-    //         smith:false
-    //     };
-    // }
-
-    // on initial data load into a plot, tweak the default layout
-    // based on the incoming data type
-    // but if newlayout has any given key, don't override it
-    // function tweakLayout(gd,newlayout) {
-    //     newlayout = newlayout||{};
-    //     gd.data.forEach(function(d) {
-    //         var xa = Plotly.Axes.getFromId(gd,d.xaxis||'x'),
-    //             ya = Plotly.Axes.getFromId(gd,d.yaxis||'y');
-    //         if(plots.isHeatmap(d.type)) {
-    //             if(!newlayout[xa._name] || !('ticks' in newlayout[xa._name])) {
-    //                 xa.ticks = 'outside';
-    //             }
-    //             if(!newlayout[ya._name] || !('ticks' in newlayout[ya._name])) {
-    //                 ya.ticks = 'outside';
-    //             }
-    //         }
-    //         else if(plots.isBar(d.type) || d.type==='box') {
-    //             var sa = (plots.isBar(d.type) && d.orientation==='h') ? ya : xa,
-    //                 saNew = newlayout[sa._name];
-    //             if(!saNew || !('showgrid' in saNew)) {
-    //                 sa.showgrid = false;
-    //             }
-    //             if(!saNew || !('zeroline' in saNew)) {
-    //                 sa.zeroline = false;
-    //             }
-    //         }
-    //         if((plots.isBar(d.type) && gd.layout.barmode==='stack') ||
-    //                 (d.type==='scatter' &&
-    //                  ['tonextx','tonexty'].indexOf(d.fill)!==-1)) {
-    //             if(!newlayout.legend || !('traceorder' in newlayout.legend)) {
-    //                 gd.layout.legend.traceorder = 'reversed';
-    //             }
-    //         }
-    //     });
-    // }
-
     plots.isScatter = function(type) {
         return !type || type==='scatter';
     };
@@ -572,9 +497,6 @@
         }
         else if(graphwasempty) makePlotFramework(gd);
 
-        // now tweak the layout if we're adding the initial data to the plot
-        // if(graphwasempty && hasData) tweakLayout(gd,layout);
-
         // enable or disable formatting buttons
         $(gd).find('.data-only').attr('disabled', !hasData);
 
@@ -592,7 +514,6 @@
 
         // prepare the types and conversion functions for the axes
         // also clears the autorange bounds ._min, ._max
-        // Plotly.Axes.fillAxesWithDefaults(gd);
         Plotly.Axes.initAxes(gd);
         Plotly.Axes.setTypes(gd);
 
@@ -666,10 +587,7 @@
                 Plotly.ErrorBars.calc(gd);
                 Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
 
-                // autorange for annotations
-                // Plotly.Annotations.calcAutorange(gd);
                 // TODO: autosize extra for text markers
-
                 return Plotly.Lib.syncOrAsync([
                     // plots.previousPromises,
                     Plotly.Annotations.calcAutorange,
@@ -1537,317 +1455,6 @@
         });
     }
 
-    // setStyles: translate styles from gd.data to gd.calcdata,
-    // filling in defaults for missing values and breaking out
-    // arrays to individual points
-    // if mergeDefault, then apply the default value into gd.data...
-    // used for saving themes
-    // plots.setStyles = function(gd, mergeDefault) {
-    //     if(typeof gd === 'string') { gd = document.getElementById(gd); }
-
-    //     var i,j,l,p,prop,val,cd,t,trace,c,gdc,defaultColor,is3d;
-
-    //     // merge object a[k] (which may be an array or a single value)
-    //     // from gd.data into calcdata
-    //     // search the array defaults in case a[k] is missing
-    //     // (and for a default val if some points of o are missing from a)
-    //     // nosplit option - used for colorscales because they're
-    //     // arrays but shouldn't be treated as per-point objects
-    //     function mergeattr(k,attr,dflt,nosplit) {
-    //         // instead of 4 separate arguments, can pass one object
-    //         if(typeof k==='object') {
-    //             attr = k.cdAttr;
-    //             dflt = k.dflt;
-    //             nosplit = k.nosplit;
-    //             k = k.dataAttr;
-    //         }
-    //         prop = Plotly.Lib.nestedProperty(gdc,k);
-    //         val = prop.get();
-
-    //         if($.isArray(val) && !nosplit) {
-    //             l = Math.min(cd.length,val.length);
-    //             for(p=0; p<l; p++) { cd[p][attr]=val[p]; }
-    //             // use the default for the trace-wide value,
-    //             // in case individual vals are missing
-    //             cd[0].t[attr] = dflt;
-    //             // record that we have an array here
-    //             // styling system wants to know about it
-    //             cd[0].t[attr+'array'] = true;
-    //         }
-    //         else {
-    //             cd[0].t[attr] = (typeof val !== 'undefined') ? val : dflt;
-    //             if(mergeDefault && typeof val === 'undefined'){
-    //                 prop.set(dflt);
-    //             }
-    //         }
-    //     }
-
-    //     // merge an array of attributes, coming from a defaults() call
-    //     function mergeattrs(a) {
-    //         a.forEach(function(o) { mergeattr(o); });
-    //     }
-
-    //     // to reverse a colorscale
-    //     function flipScale(si){ return [1-si[0],si[1]]; }
-
-    //     // detect 3d
-    //     is3d = ('_fullLayout' in gd) && gd._fullLayout._hasGL3D;
-
-    //     for(i in gd.calcdata){
-    //         cd = gd.calcdata[i]; // trace plus styling
-    //         t = cd[0].t; // trace styling object
-    //         trace = cd[0].trace;
-    //         c = trace.index; // trace number - should always be the same as i...
-    //         gdc = gd._fullData[c];
-    //         // defaultColor cares about which trace this is in gd.data
-    //         // but we can get here from editing with a different data
-    //         // array, with other things added before the regular traces
-    //         // in that case, take t.selected, which references the correct
-    //         // trace in the real gd.data
-    //         defaultColor = plots.defaultColors[
-    //             ($.isNumeric(t.selected) ? t.selected : c) %
-    //             plots.defaultColors.length
-    //         ];
-    //         // record in t which data arrays we have for this trace
-    //         // other arrays, like marker size, are recorded as such in mergeattr
-    //         // this is used to decide which options to display for styling
-    //         t.xarray = $.isArray(gdc.x);
-    //         t.yarray = $.isArray(gdc.y);
-    //         t.zarray = $.isArray(gdc.z);
-    //         // all types have attributes type, visible, opacity, name, text
-    //         // mergeattr puts single values into cd[0].t,
-    //         // and all others into each individual point
-    //         mergeattr('type','type','scatter'); //global
-    //         mergeattr('visible','visible',true); //global
-    //         mergeattr('showlegend','showlegend',true);
-    //         mergeattr('opacity','op',1); //global
-    //         mergeattr('text','tx',''); //scatter
-    //         mergeattr('name','name','trace '+c); //global
-    //         mergeattr('error_z.visible','zeVis', 'error_z' in gdc &&
-    //             ('array' in gdc.error_z || 'value' in gdc.error_z));
-    //         mergeattr('error_y.visible','yeVis',gdc.error_y &&
-    //             ('array' in gdc.error_y || 'value' in gdc.error_y));
-    //         mergeattr('error_x.visible','xeVis',gdc.error_x &&
-    //             ('array' in gdc.error_x || 'value' in gdc.error_x));
-    //         // mergeattr is unnecessary and insufficient for (x|y)axis
-    //         // because '' shouldn't count as existing
-    //         t.xaxis = gdc.xaxis||'x';
-    //         t.yaxis = gdc.yaxis||'y';
-    //         var type = t.type; // like 'bar'
-
-    //         if(t.yeVis){
-    //             mergeattr('error_y.type','yeType',
-    //                 ('array' in gdc.error_y) ? 'data' : 'percent');
-    //             mergeattr('error_y.symmetric','yeSym',
-    //                 !((t.yeType==='data' ? 'arrayminus' : 'valueminus') in
-    //                     gdc.error_y));
-    //             mergeattr('error_y.value','yeVal',10);
-    //             mergeattr('error_y.valueminus','yeValminus',10);
-    //             mergeattr('error_y.traceref','yeRef',0);
-    //             mergeattr('error_y.tracerefminus','yeRefminus',0);
-    //             mergeattr('error_y.color','yec',
-    //                 plots.isBar(t.type) ? '#444' : defaultColor);
-    //             mergeattr('error_y.thickness','yeThick', 2);
-    //             mergeattr('error_y.width','yew', is3d ? 0 : 4);
-    //         }
-
-    //         if(t.xeVis){
-    //             mergeattr('error_x.type','xeType',
-    //                 ('array' in gdc.error_x) ? 'data' : 'percent');
-    //             mergeattr('error_x.symmetric','xeSym',
-    //                 !((t.xeType==='data' ? 'arrayminus' : 'valueminus') in
-    //                     gdc.error_x));
-    //             mergeattr('error_x.value','xeVal',10);
-    //             mergeattr('error_x.valueminus','xeValminus',10);
-    //             mergeattr('error_x.traceref','xeRef',0);
-    //             mergeattr('error_x.tracerefminus','xeRefminus',0);
-    //             mergeattr('error_x.copy_ystyle','xeYStyle',
-    //                 (gdc.error_x.color || gdc.error_x.thickness ||
-    //                     gdc.error_x.width) ? false : true);
-    //             var xsLetter = t.xeYStyle!==false ? 'y' : 'x';
-    //             mergeattr('error_'+xsLetter+'.color','xec',
-    //                 plots.isBar(t.type) ? '#444' : defaultColor);
-    //             mergeattr('error_'+xsLetter+'.thickness','xeThick', 2);
-    //             mergeattr('error_'+xsLetter+'.width','xew', is3d ? 0 : 4);
-    //         }
-
-    //         if(t.zeVis){
-    //             mergeattr('error_z.type','zeType',
-    //                 ('array' in gdc.error_z) ? 'data' : 'percent');
-    //             mergeattr('error_z.symmetric','zeSym',
-    //                 !((t.zeType==='data' ? 'arrayminus' : 'valueminus') in
-    //                     gdc.error_z));
-    //             mergeattr('error_z.value','zeVal',10);
-    //             mergeattr('error_z.valueminus','zeValminus',10);
-    //             mergeattr('error_z.traceref','zeRef',0);
-    //             mergeattr('error_z.tracerefminus','zeRefminus',0);
-    //             mergeattr('error_z.color','zec',
-    //                 plots.isBar(t.type) ? '#444' : defaultColor);
-    //             mergeattr('error_z.thickness','zeThick', 2);
-    //             mergeattr('error_z.width','zew', is3d ? 0 : 4);
-    //         }
-
-
-    //         if(['scatter','box','scatter3d'].indexOf(type)!==-1){
-    //             mergeattr('line.color','lc',gdc.marker.color || defaultColor);
-    //             mergeattr('line.width','lw',2);
-    //             mergeattr('marker.symbol','mx','circle');
-    //             mergeattr('marker.opacity','mo',
-    //                 $.isArray(gdc.marker.size) ? 0.7 : 1);
-    //             mergeattr('marker.size','ms',6);
-    //             mergeattr('marker.color','mc',t.lc);
-    //             mergeattr('marker.line.color','mlc',
-    //                 ((t.lc!==t.mc) ? t.lc :
-    //                     ($.isArray(gdc.marker.size) ? '#fff' :'#444')));
-    //             mergeattr('marker.line.width','mlw',
-    //                 $.isArray(gdc.marker.size) ? 1 : 0);
-    //             mergeattr('fill','fill','none');
-    //             mergeattr('fillcolor','fc',Plotly.Drawing.addOpacity(t.lc,0.5));
-    //             // even if sizeref and sizemode are set,
-    //             // don't use them outside bubble charts
-    //             t.msr=1;
-    //             t.msm = 'diameter';
-
-    //             if(type==='scatter' || type==='scatter3d') {
-    //                 var defaultMode = 'lines';
-    //                 if(cd.length<Plotly.Scatter.PTS_LINESONLY ||
-    //                         (typeof gdc.mode !== 'undefined')) {
-    //                     defaultMode = 'lines+markers';
-    //                 }
-    //                 // check whether there are orphan points,
-    //                 // then show markers by default
-    //                 // regardless of length - but only if <10000 points
-    //                 else if(cd.length<10000) {
-    //                     var cdl = cd.length-1;
-    //                     for(j=0; j<=cdl; j++) {
-    //                         if($.isNumeric(cd[j].x) && $.isNumeric(cd[j].y) &&
-    //                                 (j===0 || !$.isNumeric(cd[j-1].x) ||
-    //                                   !$.isNumeric(cd[j-1].y)) &&
-    //                                 (j===cdl || !$.isNumeric(cd[j+1].x) ||
-    //                                   !$.isNumeric(cd[j+1].y))) {
-    //                             defaultMode = 'lines+markers';
-    //                             break;
-    //                         }
-    //                     }
-    //                 }
-    //                 mergeattr('mode','mode',defaultMode);
-    //                 mergeattr('marker.maxdisplayed','mnum',0);
-    //                 if($.isArray(gdc.marker.size)) {
-    //                     mergeattr('marker.sizeref','msr',1);
-    //                     mergeattr('marker.sizemode','msm','diameter');
-    //                 }
-    //                 mergeattr('marker.colorscale','mscl',
-    //                     Plotly.defaultColorscale,true);
-    //                 mergeattr('marker.cauto','mcauto',true);
-    //                 mergeattr('marker.cmax','mcmax',10);
-    //                 mergeattr('marker.cmin','mcmin',-10);
-    //                 mergeattr('marker.line.colorscale','mlscl',
-    //                     Plotly.defaultColorscale,true);
-    //                 mergeattr('marker.line.cauto','mlcauto',true);
-    //                 mergeattr('marker.line.cmax','mlcmax',10);
-    //                 mergeattr('marker.line.cmin','mlcmin',-10);
-    //                 mergeattr('line.dash','ld','solid');
-    //                 mergeattr('textposition','tp','middle center');
-    //                 mergeattr('textfont.size','ts',gd._fullLayout.font.size);
-    //                 mergeattr('textfont.color','tc',gd._fullLayout.font.color);
-    //                 mergeattr('textfont.family','tf',gd._fullLayout.font.family);
-    //                 mergeattr('connectgaps','connectgaps',false);
-    //                 mergeattr('line.shape','lineshape','linear');
-    //                 mergeattr('line.smoothing','ls',1);
-    //             }
-    //             else if(type==='box') {
-    //                 mergeattr('whiskerwidth','ww',0.5);
-    //                 mergeattr('boxpoints','boxpts','outliers');
-    //                 mergeattr('boxmean','mean',false);
-    //                 mergeattr('jitter','jitter',t.boxpts==='all' ? 0.3 : 0);
-    //                 mergeattr('pointpos','ptpos',t.boxpts==='all' ? -1.5 : 0);
-    //                 mergeattr('marker.outliercolor','soc','rgba(0,0,0,0)');
-    //                 mergeattr('marker.line.outliercolor','solc',t.mc);
-    //                 mergeattr('marker.line.outlierwidth','solw',1);
-    //                 mergeattr('marker.outliercolorscale','soscl',t.mscl,true);
-    //                 mergeattr('marker.outliercauto','socauto',t.mcauto);
-    //                 mergeattr('marker.outliercmax','socmax',t.mcmax);
-    //                 mergeattr('marker.outliercmin','socmin',t.mcmin);
-    //                 mergeattr('marker.line.outliercolorscale','solscl',
-    //                     t.mlscl,true);
-    //                 mergeattr('marker.line.outliercauto','solcauto',t.mlcauto);
-    //                 mergeattr('marker.line.outliercmax','solcmax',t.mlcmax);
-    //                 mergeattr('marker.line.outliercmin','solcmin',t.mlcmin);
-    //             }
-    //         }
-    //         else if(plots.isHeatmap(type) || type === 'surface'){
-    //             if(plots.isHist2D(type)) {
-    //                 mergeattr('histfunc','histfunc','count');
-    //                 mergeattr('histnorm','histnorm','');
-    //                 mergeattr('autobinx','autobinx',true);
-    //                 mergeattr('nbinsx','nbinsx',0);
-    //                 mergeattr('xbins.start','xbstart',0);
-    //                 mergeattr('xbins.end','xbend',1);
-    //                 mergeattr('xbins.size','xbsize',1);
-    //                 mergeattr('autobiny','autobiny',true);
-    //                 mergeattr('nbinsy','nbinsy',0);
-    //                 mergeattr('ybins.start','ybstart',0);
-    //                 mergeattr('ybins.end','ybend',1);
-    //                 mergeattr('ybins.size','ybsize',1);
-    //                 // in case of aggregation by marker color,
-    //                 // just need to know if this is an array
-    //                 mergeattr('marker.color','mc',t.lc);
-    //             }
-    //             else {
-    //                 mergeattr('xtype','xtype',gdc.x ? 'array' : 'noarray');
-    //                 mergeattr('ytype','ytype',gdc.y ? 'array' : 'noarray');
-    //                 mergeattr('x0','x0',0);
-    //                 mergeattr('dx','dx',1);
-    //                 mergeattr('y0','y0',0);
-    //                 mergeattr('dy','dy',1);
-    //             }
-    //             mergeattr('zauto','zauto',true);
-    //             // mergeattr('zmin','zmin',-10);
-    //             // mergeattr('zmax','zmax',10);
-    //             if (type !== 'surface') {
-    //                 mergeattr('colorscale', 'scl', Plotly.defaultColorscale,true);
-    //             } else {
-    //                 mergeattr('colorscale', 'scl', 'Jet', true);
-    //             }
-    //             // reverse colorscale: handle this here so we don't
-    //             // have to do it in each plot type and colorbar
-    //             mergeattr('reversescale','reversescale',false);
-    //             if(t.reversescale) {
-    //                 t.scl = Plotly.Plots.getScale(t.scl)
-    //                     .map(flipScale)
-    //                     .reverse();
-    //             }
-    //             mergeattr('showscale','showscale',true);
-    //             mergeattr('zsmooth', 'zsmooth', false);
-
-    //             if(plots.isContour(type)) {
-    //                 mergeattrs(Plotly.Contour.defaults());
-    //             }
-    //             mergeattrs(Plotly.Colorbar.defaults());
-    //         }
-    //         else if(plots.isBar(type)){
-    //             if(type==='histogram') {
-    //                 mergeattr('histfunc','histfunc','count');
-    //                 mergeattr('histnorm','histnorm','');
-    //                 mergeattr('autobinx','autobinx',true);
-    //                 mergeattr('nbinsx','nbinsx',0);
-    //                 mergeattr('xbins.start','xbstart',0);
-    //                 mergeattr('xbins.end','xbend',1);
-    //                 mergeattr('xbins.size','xbsize',1);
-    //                 mergeattr('autobiny','autobiny',true);
-    //                 mergeattr('nbinsy','nbinsy',0);
-    //                 mergeattr('ybins.start','ybstart',0);
-    //                 mergeattr('ybins.end','ybend',1);
-    //                 mergeattr('ybins.size','ybsize',1);
-    //             }
-    //             mergeattr('marker.opacity','mo',1);
-    //             mergeattr('marker.color','mc',defaultColor);
-    //             mergeattr('marker.line.color','mlc','#444');
-    //             mergeattr('marker.line.width','mlw',0);
-    //         }
-    //     }
-    // };
-
     function applyStyle(gd) {
         var fullLayout = gd._fullLayout;
 
@@ -2191,7 +1798,6 @@
         }
         else {
             plots.supplyDefaults(gd);
-            // plots.setStyles(gd);
             seq = [plots.previousPromises];
             if(doapplystyle) {
                 seq.push(function doApplyStyle(){
@@ -2547,12 +2153,6 @@
                     doplot = true;
                 }
                 p.set(vi);
-                // if we just inserted a new axis (eg from themes),
-                // initialize it
-                // if(ai.match(/^[xyz]axis[0-9]*$/)) {
-                //     Plotly.Axes.initAxis(gd,gd.layout[ai]);
-                //     Plotly.Axes.setConvert(gd.layout[ai]);
-                // }
             }
         }
         // now all attribute mods are done, as are
@@ -2726,89 +2326,14 @@
     // makePlotFramework: Create the plot container and axes
     // -------------------------------------------------------
     function makePlotFramework(gd) {
-        // if(typeof gd === 'string') { gd = document.getElementById(gd); }
-        var gd3 = d3.select(gd);
-
-        // test if this is on the main site or embedded
-        // gd.mainsite = !!$('#plotlyMainMarker').length;
-
-
-        // hook class for plots main container (in case of plotly.js
-        // this won't be #embedded-graph or .js-tab-contents)
-        // gd3.classed('js-plotly-plot',true);
-
-        // makeTester(gd);
-        // gd._promises = [];
-
-        // function addDefaultAxis(container, axname) {
-        //     if(!container[axname]) {
-        //         container[axname] = Plotly.Axes.defaultAxis({
-        //             range: [-1,6],
-        //             anchor: {x:'y',y:'x'}[axname.charAt(0)]
-        //         });
-        //     }
-        // }
-
-        // // Get the layout info - take the default or any existing layout,
-        // // then update with layout arg
-        // var oldLayout = gd.layout || defaultLayout(),
-        //     newLayout = layout || {};
-        // // look for axes to include in oldLayout
-        // // so that default axis settings get included
-        // var xalist = Object.keys(newLayout)
-        //         .filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
-        //     yalist = Object.keys(newLayout)
-        //         .filter(function(k){ return k.match(/^yaxis[0-9]*$/); }),
-        //     // temp hack for webgl
-        //     type = (type = gd.data) && (type = type[0]) && (type = type.type),
-        //     gl = gd.layout,
-        //     subplots;
-
-        // if(!xalist.length) { xalist = ['xaxis']; }
-        // if(!yalist.length) { yalist = ['yaxis']; }
-        // xalist.concat(yalist).forEach(function(axname) {
-        //     addDefaultAxis(oldLayout,axname);
-        //     // if an axis range was explicitly provided with newlayout,
-        //     // turn off autorange
-        //     var ax = newLayout[axname];
-        //     if(ax && ax.range && ax.range.length===2) {
-        //         oldLayout[axname].autorange = false;
-        //     }
-        // });
-        // gd.layout = gl = updateObject(oldLayout, newLayout);
-
-        // var doCartesian = gl._hasCartesian || !gl._hasGL3D;
-
-        // if (doCartesian) {
-        // do a bunch of 2D axis stuff
-
-        // Get subplots and see if we need to make any more axes
-        // subplots = Plotly.Axes.getSubplots(gd);
-        // subplots.forEach(function(subplot) {
-        //     var axmatch = subplot.match(/^(x[0-9]*)(y[0-9]*)$/);
-        //     // gl._plots[subplot] = {x: axmatch[1], y: axmatch[2]};
-        //     [axmatch[1],axmatch[2]].forEach(function(axid) {
-        //         addDefaultAxis(gl,Plotly.Axes.id2name(axid));
-        //     });
-        // });
-
-        // now get subplots again, in case the new axes require
-        // more subplots (yes, that's odd... but possible)
-        var subplots = Plotly.Axes.getSubplots(gd),
+        var gd3 = d3.select(gd),
+            subplots = Plotly.Axes.getSubplots(gd),
             fullLayout = gd._fullLayout;
 
-        // Plotly.Axes.fillAxesWithDefaults(gd);
         // TODO: now that we're never calling this on its own, can we do it
         // without initializing and drawing axes, just making containers?
         Plotly.Axes.initAxes(gd);
         Plotly.Axes.setTypes(gd);
-
-        // } else {
-        //     // This is WEBGL ONLY, remove usual axis
-        //     subplots = [];
-        //     delete gd.layout.xaxis;
-        //     delete gd.layout.yaxis;
-        // }
 
         var outerContainer = fullLayout._fileandcomments =
                 gd3.selectAll('.file-and-comments');
@@ -2839,17 +2364,6 @@
         // start fresh each time we get here, so we know the order comes out
         // right, rather than enter/exit which can muck up the order
         fullLayout._paperdiv.selectAll('svg').remove();
-
-        // short-circuiting this code here resolves the issue where the _paper
-        // svg element following this conditional pushes the page past
-        // screen height and leads to overflow and scrollbars in the tool.
-        // if (!doCartesian) {
-        //     // init the mode bar
-        //     Plotly.Fx.modeBar(gd);
-        //     if(!gl._forexport) { Plotly.Fx.init(gd); }
-
-        //     return;
-        // }
 
         fullLayout._paper = fullLayout._paperdiv.append('svg')
             .attr({
@@ -3580,21 +3094,8 @@
 
             el.call(Plotly.util.makeEditable)
                 .on('edit', function(text){
-                    // this
-                    //     .style({
-                    //         'font-family': font,
-                    //         'font-size': fontSize+'px',
-                    //         fill: Plotly.Drawing.opacity(fontColor),
-                    //         opacity: opacity*Plotly.Drawing.opacity(fontColor)
-                    //     })
-                    //     .call(Plotly.util.convertToTspans)
-                    //     .attr(options)
-                    //     .selectAll('tspan.line')
-                    //         .attr(options);
-                    if(colorbar) {
-                        Plotly.restyle(gd,'colorbar.title',text,cbnum);
-                    }
-                    else { Plotly.relayout(gd,prop,text); }
+                    if(colorbar) Plotly.restyle(gd,'colorbar.title',text,cbnum);
+                    else Plotly.relayout(gd,prop,text);
                 })
                 .on('cancel', function(){
                     this.text(this.attr('data-unformatted'))
@@ -3747,32 +3248,6 @@
             return false;
         });
     };
-
-    // updateObject: merge objects i and up recursively into a new object (o)
-    // one difference with $.extend is that we coerce updated values to numbers
-    // if the original value was a number
-    // var uoStack=[];
-    // function updateObject(i,up) {
-    //     if(!$.isPlainObject(up)) { return i; }
-    //     // seems like JS doesn't fully implement recursion...
-    //     // if I say o={} here then each level destroys the previous.
-    //     var o = uoStack[uoStack.push({})-1],
-    //         key;
-    //     for(key in i) { o[key]=i[key]; }
-    //     for(key in up) {
-    //         if($.isPlainObject(up[key])) {
-    //             o[key] = updateObject(
-    //                 $.isPlainObject(i[key]) ? i[key] : {}, up[key]);
-    //         }
-    //         // if the initial object had a number and
-    //         // the update can be a number, coerce it
-    //         else if($.isNumeric(i[key]) && $.isNumeric(up[key])) {
-    //             o[key] = +up[key];
-    //         }
-    //         else { o[key] = up[key]; }
-    //     }
-    //     return uoStack.pop();
-    // }
 
     plots.defaultSceneLayout = function (td, sceneId, existingLayout) {
 

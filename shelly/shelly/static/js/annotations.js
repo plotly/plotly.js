@@ -184,7 +184,7 @@
             var axRef = Plotly.Lib.coerce(annIn, annOut, attrDef, refAttr, axletter);
 
             // x, y
-            var defaultPosition = 0.5; //axletter==='x' ? 0.1 : 0.3;
+            var defaultPosition = 0.5;
             if(axRef!=='paper') {
                 var ax = Plotly.Axes.getFromId(tdMock, axRef);
                 defaultPosition = ax.range[0] + defaultPosition * (ax.range[1] - ax.range[0]);
@@ -309,41 +309,6 @@
 
         // remove the existing annotation if there is one
         fullLayout._infolayer.selectAll('.annotation[data-index="'+index+'"]').remove();
-
-        // TODO: this part gets replaced by its own supplyDefaults machinery,
-        // esp. with opt and value arguments
-
-        // combine default and existing options
-        // (default x, y, ax, ay are set later)
-        // var oldopts = fullLayout.annotations[index],
-        //     oldref = {
-        //         // .ref for backward compat only (from before multiaxes)
-        //         // TODO: move this to layout import instead
-        //         x: oldopts.xref || (oldopts.ref==='paper' ? 'paper' : 'x'),
-        //         y: oldopts.yref || (oldopts.ref==='paper' ? 'paper' : 'y')
-        //     },
-        //     options = $.extend({
-        //         text: 'new text',
-        //         bordercolor: '',
-        //         borderwidth: 1,
-        //         borderpad: 1,
-        //         bgcolor: 'rgba(0,0,0,0)',
-        //         xref: oldref.x,
-        //         yref: oldref.y,
-        //         showarrow: true,
-        //         arrowwidth: 0,
-        //         arrowcolor: '',
-        //         arrowhead: 1,
-        //         arrowsize: 1,
-        //         textangle: 0,
-        //         tag: '',
-        //         font: {family:'',size:0,color:''},
-        //         opacity: 1,
-        //         align: 'center',
-        //         xanchor: 'auto',
-        //         yanchor: 'auto'
-        //     },oldopts);
-        // fullLayout.annotations[index] = options;
 
         // remember a few things about what was already there,
         var oldOptions = fullLayout.annotations[index],
@@ -484,24 +449,7 @@
                     annSize = axletter==='x' ? annwidth : -annheight,
                     axRange = (ax||axOld) ?
                         (ax||axOld).range[1]-(ax||axOld).range[0] : null,
-                    // defaultVal = ax ?
-                    //     ax.range[0] + (axletter==='x' ? 0.1 : 0.3)*axRange :
-                    //     (axletter==='x' ? 0.1 : 0.7),
                     anchor = options[axletter+'anchor'];
-
-                // // convert date or category strings to numbers
-                // if(ax && ['date','category'].indexOf(ax.type)!==-1 &&
-                //         typeof options[axletter]==='string') {
-                //     var newval;
-                //     if(ax.type==='date') {
-                //         newval = Plotly.Lib.dateTime2ms(options[axletter]);
-                //         if(newval!==false) options[axletter] = newval;
-                //     }
-                //     else if((ax._categories||[]).length) {
-                //         newval = ax._categories.indexOf(options[axletter]);
-                //         if(newval!==-1) options[axletter] = newval;
-                //     }
-                // }
 
                 // if we're still referencing the same axis,
                 // see if it has changed linear <-> log
@@ -516,19 +464,8 @@
                     }
                 }
 
-                // if we're changing a reference axis on an existing annotation
-                // else if($.isNumeric(options[axletter]) && ax!==axOld) {
-                    // moving from one axis to another - just reset to default
-                    // TODO: if the axes overlap, perhaps we could put it in
-                    // the equivalent position on the new one?
-                    // if(ax && axOld) {
-                    //     options[axletter] = defaultVal;
-                    // }
-
                 // moving from paper to plot reference
                 else if(ax && !axOld) {
-                    // if(!ax.domain) { ax.domain = [0,1]; }
-
                     var axFraction = (options[axletter]-ax.domain[0])/
                         (ax.domain[1]-ax.domain[0]);
                     options[axletter] = ax.range[0] + axRange*axFraction -
@@ -539,7 +476,6 @@
 
                 // moving from plot to paper reference
                 else if(axOld && !ax) {
-                    // if(!axOld.domain) { axOld.domain = [0,1]; }
                     options[axletter] = (axOld.domain[0] +
                         (axOld.domain[1]-axOld.domain[0]) *
                         (options[axletter]-axOld.range[0])/axRange );
@@ -549,11 +485,6 @@
                                 fshift(0,anchor)) * annSize/axOld._length;
                     }
                 }
-                // }
-
-                // if(!$.isNumeric(options[axletter])) {
-                //     options[axletter] = defaultVal;
-                // }
 
                 // calculate pixel position
                 if(!ax) {
@@ -589,34 +520,6 @@
                 ann.remove();
                 return;
             }
-
-            // default values for arrow vector
-            // if(!$.isNumeric(options.ax)) { options.ax=-10; }
-            // if(!$.isNumeric(options.ay)) { options.ay=-annheight/2-20; }
-
-            // now position the annotation and arrow,
-            // based on options[x,y,ref,showarrow,ax,ay]
-
-            // position is either in plot coords (ref='plot') or
-            // in fraction of the plot area (ref='paper') as with legends,
-            // except that positions outside the plot are just numbers outside
-            // [0,1] but we will constrain the annotation center to be on the
-            // page, in case it gets dragged too far.
-
-            // if there's no arrow, alignment is as with legend:
-            //   values <1/3 align the low side at that fraction,
-            //   1/3-2/3 align the center at that fraction,
-            //   >2/3 align the right at that fraction
-            // independent of the alignment of the text
-
-            // if there is an arrow, alignment is to the arrowhead,
-            // and ax and ay give the offset (in pixels) between
-            // the arrowhead and the center of the annotation
-
-
-            // if there's an arrow, it gets the position we just calculated,
-            // and the text gets offset by ax,ay
-            // and make sure the text and arrowhead are on the paper
 
             var ax, ay;
 
@@ -1064,7 +967,7 @@
                 });
             }
         });
-    };
+    }
 
     // look for intersection of two line segments
     //   (1->2 and 3->4) - returns array [x,y] if they do, null if not

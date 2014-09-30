@@ -654,12 +654,9 @@
         // allow array marker and marker line colors to be
         // scaled by given max and min to colorscales
         var markerIn = trace._input.marker,
-        // var colorscales = {
             markerScale = drawing.tryColorscale(marker, markerIn, ''),
             lineScale = drawing.tryColorscale(marker, markerIn, 'line.');
-        //     so: drawing.tryColorscale(marker, markerIn, 'outlier'),
-        //     sol: drawing.tryColorscale(marker, markerIn, 'line.outlier')
-        // };
+
         s.each(function(d){
             // 'so' is suspected outliers, for box plots
             var fillColor,
@@ -702,35 +699,6 @@
                     p.call(drawing.strokeColor, lineColor);
                 }
             }
-
-            // var a = (d.so) ? 'so' : 'm',
-            //     lw = a+'lw',
-            //     c = a+'c',
-            //     lc = a+'lc',
-            //     w = (d[lw]+1 || t[lw]+1 || (d.t ? d.t[lw] : 0)+1) - 1,
-            //     p = d3.select(this),
-            //     cc,lcc;
-            // if(d[c]) { d[c+'c'] = cc = colorscales[a](d[c]); }
-            // else { cc = t[c] || (d.t ? d.t[c] : ''); }
-            // if(d.om) {
-            //     // open markers can't have zero linewidth, default to 1px,
-            //     // and use fill color as stroke color
-            //     if(!w) { w = 1; }
-            //     p.call(drawing.strokeColor, cc)
-            //         .style({
-            //             'stroke-width': w+'px',
-            //             fill: 'none'
-            //         });
-            // }
-            // else {
-            //     p.style('stroke-width',w+'px')
-            //         .call(drawing.fillColor, cc);
-            //     if(w) {
-            //         if(d[lc]) { d[lc+'c'] = lcc = colorscales[a+'l'](d[lc]); }
-            //         else { lcc = t[lc] || (d.t ? d.t[lc] : ''); }
-            //         p.call(drawing.strokeColor, lcc);
-            //     }
-            // }
         });
     };
 
@@ -798,8 +766,8 @@
                 // if markers are shown, offset a little more than
                 // the nominal marker size
                 // ie 2/1.6 * nominal, bcs some markers are a bit bigger
-                r = d.mrc ? (d.mrc/0.8 + 1) : 0; //trace.mode.indexOf('markers')===-1 ? 0 :
-                    // (((d.ms+1 || t.ms+1 || (d.t ? d.t.ms : 0)+1)-1)/1.6+1);
+                r = d.mrc ? (d.mrc/0.8 + 1) : 0;
+
             p.call(drawing.font,
                     d.tf || trace.textfont.family,
                     fontSize,

@@ -119,8 +119,6 @@
     function flipScale(si){ return [1 - si[0], si[1]]; }
 
     heatmap.calc = function(gd, trace) {
-        // if(!('colorbar' in trace)) { trace.colorbar = {}; }
-
         if(trace.visible===false) { return; }
 
         // prepare the raw data
@@ -772,7 +770,6 @@
         plotinfo.plot.select('.maplayer').append('svg:image')
             .classed(id, true)
             .datum(cd[0])
-            // .classed('pixelated',true) // we can hope pixelated works...
             .attr({
                 xmlns:'http://www.w3.org/2000/svg',
                 'xlink:xlink:href':imgstr, // odd d3 quirk, need namespace twice

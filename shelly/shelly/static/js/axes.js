@@ -374,29 +374,6 @@
         });
     };
 
-    // check if every axis we need exists - make any that don't as defaults
-    // axes.fillAxesWithDefaults = function (td) {
-    //     (td.data||[]).forEach(function(curve) {
-    //         if(curve.type && curve.type.indexOf('Polar')!==-1) { return; }
-    //         ['x','y'].forEach(function(axletter) {
-    //             // also here: convert references x1, y1 to x, y
-    //             if(curve[axletter+'axis']===axletter+'1') {
-    //                 curve[axletter+'axis'] = axletter;
-    //             }
-
-    //             var axid = curve[axletter+'axis']||axletter,
-    //                 axName = axes.id2name(axid);
-
-    //             if(!td.layout[axName]) {
-    //                 td.layout[axName] = axes.defaultAxis({
-    //                     range: [-1,axletter==='x' ? 6 : 4],
-    //                     side: axletter==='x' ? 'bottom' : 'left'
-    //                 });
-    //             }
-    //         });
-    //     });
-    // };
-
     axes.initAxes = function (td) {
         var axlist = axes.list(td);
         axlist.forEach(function(ax){ axes.initAxis(td,ax); });
@@ -435,18 +412,10 @@
         // special-purpose axes like for colorbars that don't
         // get this next part
         if(name) {
-            // allow people to pass in xaxis1 and yaxis1
-            // but convert them to xaxis, yaxis
-            // if(name==='xaxis1' || name==='yaxis1') {
-            //     var newname = name.substr(0,5);
-            //     td.layout[newname] = td.layout[name];
-            //     delete td.layout[name];
-            //     name = newname;
-            // }
             ax._name = name;
             ax._id = axes.name2id(ax._name);
         }
-        if(!ax._categories) { ax._categories = []; }
+        if(!ax._categories) ax._categories = [];
 
         // set scaling to pixels
         ax.setScale = function(){
@@ -487,7 +456,7 @@
             }
         };
 
-        if(!ax.anchor) { ax.anchor = axes.counterLetter(ax._id); }
+        if(!ax.anchor) ax.anchor = axes.counterLetter(ax._id);
 
         if(!ax.domain || ax.domain.length!==2 ||
                 ax.domain[0]>=ax.domain[1] ||
@@ -1747,15 +1716,6 @@
         else if(type==='y') id = id.replace(/x[0-9]*/,'');
 
         return fullLayout[axes.id2name(id)];
-        // if(!ax && ['x1','y1','x','y'].indexOf(id)!==-1) {
-        //     var axletter = id.charAt(0),
-        //         num = id.charAt(1);
-        //     if(num==='' || num==='1') {
-        //         var ax1 = fullLayout[axes.id2name(axletter+'1')];
-        //         if(ax1) { axes.initAxis(td,ax1); }
-        //         ax = fullLayout[axes.id2name(axletter)];
-        //     }
-        // }
     };
 
     // getSubplots - extract all combinations of axes we need to make plots for
@@ -1813,10 +1773,6 @@
                 subplots.push(subplot);
             }
         });
-
-        // if(!subplots.length) {
-        //     console.log('Warning! No subplots found - missing axes?');
-        // }
 
         var spmatch = /^x([0-9]*)y([0-9]*)$/;
         var allSubplots = subplots

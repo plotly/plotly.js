@@ -70,32 +70,6 @@
             width: {from: 'Scatter'}
         },
         fillcolor: {from: 'Scatter'},
-        // the following were in Plots.setStyles, but I don't think they
-        // work or should work...
-        // 'marker.outliercolorscale': {
-        //     type: 'string'
-        // },
-        // 'marker.outliercauto': {
-        //     type: 'boolean',
-        // },
-        // 'marker.outliercmax': {
-        //     type: 'number'
-        // },
-        // 'marker.outliercmin': {
-        //     type: 'number'
-        // },
-        // 'marker.line.outliercolorscale': {
-        //     type: 'string'
-        // },
-        // 'marker.line.outliercauto': {
-        //     type: 'boolean',
-        // },
-        // 'marker.line.outliercmax': {
-        //     type: 'number'
-        // },
-        // 'marker.line.outliercmin': {
-        //     type: 'number'
-        // }
     };
 
     boxes.layoutAttributes = {
@@ -399,7 +373,7 @@
                         return pts.map(function(v){
                             var xo = (trace.jitter ? trace.jitter*(Math.random()-0.5)*2 : 0) +
                                     trace.pointpos,
-                                p = {x: d.x+xo*bdx+bx, y: v}; //, t: t, trace: trace}; TODO: not needed?
+                                p = {x: d.x+xo*bdx+bx, y: v};
                             // tag suspected outliers
                             if(trace.boxpoints==='suspectedoutliers' && v<d.uo && v>d.lo) {
                                 p.so=true;
@@ -456,8 +430,6 @@
 
                     d3.select(this).selectAll('path')
                         .call(Plotly.Drawing.pointStyle, trace);
-                    // d3.select(this).selectAll('text') // TODO: not used... are we ever going to do this?
-                    //     .call(Plotly.Drawing.textPointStyle, trace);
                 });
     };
 
