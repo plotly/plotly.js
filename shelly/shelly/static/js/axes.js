@@ -200,126 +200,147 @@
 
         xaList.concat(yaList).forEach(function(axName){
             var containerIn = layoutIn[axName] || {},
-                containerOut = layoutOut[axName] = {},
-                axLetter = axName.charAt(0),
-                counterAxes = {x: yaList, y: xaList}[axLetter].map(axes.name2id),
-                overlayableAxes = {x: xaList, y: yaList}[axLetter].filter(function(axName2){
-                    return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
-                }).map(axes.name2id);
+                axLetter = axName.charAt(0);
 
-            function coerce(attr, dflt) {
-                return Plotly.Lib.coerce(containerIn, containerOut,
-                    axes.attributes, attr, dflt);
-            }
-
-            coerce('title', 'Click to enter ' + axLetter.toUpperCase() + ' axis title');
-            // TODO: inherit from input tickfont?
-            coerce('titlefont', {
-                family: layoutOut.font.family,
-                size:layoutOut.font.size * 1.2,
-                color: layoutOut.font.color
+            layoutOut[axName] = axes.supplyAxisDefaults(containerIn, {
+                letter: axLetter,
+                font: layoutOut.font,
+                outerTicks: outerTicks[axName],
+                showGrid: !noGrids[axName],
+                counterAxes: {x: yaList, y: xaList}[axLetter].map(axes.name2id),
+                overlayableAxes: {x: xaList, y: yaList}[axLetter].filter(function(axName2){
+                        return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
+                    }).map(axes.name2id)
             });
-
-            var axType = coerce('type'),
-                validRange = (containerIn.range||[]).length===2 &&
-                    $.isNumeric(containerIn.range[0]) &&
-                    $.isNumeric(containerIn.range[1]),
-                autoRange = coerce('autorange', !validRange);
-            // TODO: where does autorange machinery go?
-            if(autoRange) coerce('rangemode');
-            var range0 = coerce('range[0]', -1),
-                range1 = coerce('range[1]', axLetter==='x' ? 6 : 4);
-            if(range0===range1) {
-                containerOut.range = [range0 - 1, range0 + 1];
-            }
-
-            var autoTick = coerce('autotick');
-            if(autoTick) coerce('nticks');
-            else {
-                // TODO: type conversion here?
-                // TODO: separate autotick0 function to avoid duplication?
-                // TODO: way to hold the auto values as defaults when you turn off autotick?
-                coerce('tick0', axType==='date' ? new Date(2000,0,1).getTime() : 0);
-                coerce('dtick');
-            }
-
-            var showTicks = coerce('ticks', outerTicks[axName] ? 'outside' : '');
-            if(showTicks) {
-                // TODO: are there multiple axes connected to this one?
-                coerce('mirror');
-                coerce('ticklen');
-                coerce('tickwidth');
-                coerce('tickcolor');
-            }
-
-            var showTickLabels = coerce('showticklabels');
-            if(showTickLabels) {
-                // TODO: coerce from input titlefont?
-                coerce('tickfont', layoutOut.font);
-                coerce('tickangle');
-                coerce('showexponent');
-                coerce('exponentformat');
-            }
-
-            var showLine = coerce('showline');
-            if(showLine) {
-                coerce('linecolor');
-                coerce('linewidth');
-            }
-
-            var showGrid = coerce('showgrid', !noGrids[axName]);
-            if(showGrid) {
-                coerce('gridcolor');
-                coerce('gridwidth');
-            }
-
-            var showZeroLine = coerce('zeroline', !noGrids[axName]);
-            if(showZeroLine) {
-                coerce('zerolinecolor');
-                coerce('zerolinewidth');
-            }
-
-            var anchor = Plotly.Lib.coerce(containerIn, containerOut,
-                {
-                    anchor: {
-                        type:'enumerated',
-                        values: ['free'].concat(counterAxes),
-                        dflt: counterAxes[0]
-                    }
-                },
-                'anchor');
-
-            if(anchor==='free') coerce('position');
-
-            Plotly.Lib.coerce(containerIn, containerOut,
-                {
-                    side: {
-                        type: 'enumerated',
-                        values: axLetter==='x' ? ['bottom', 'top'] : ['left', 'right'],
-                        dflt: axLetter==='x' ? 'bottom' : 'left'
-                    }
-                },
-                'side');
-
-            var overlaying = false;
-            if(overlayableAxes.length) {
-                overlaying = Plotly.Lib.coerce(containerIn, containerOut,
-                    {
-                        overlaying: {
-                            type: 'enumerated',
-                            values: [false].concat(overlayableAxes),
-                            dflt: false
-                        }
-                    },
-                    'overlaying');
-            }
-
-            if(!overlaying) {
-                var domainStart = coerce('domain[0]'),
-                    domainEnd = coerce('domain[1]');
-                if(domainStart > domainEnd - 0.01) containerOut.domain = [0,1];
-            }
         });
+    };
+
+    axes.supplyAxisDefaults = function(containerIn, options) {
+        var containerOut = {};
+        function coerce(attr, dflt) {
+            return Plotly.Lib.coerce(containerIn, containerOut,
+                axes.attributes, attr, dflt);
+        }
+
+        var letter = options.letter,
+            title = 'Click to enter ' +
+                (options.title || (letter.toUpperCase() + ' axis')) +
+                ' title',
+            font = options.font,
+            outerTicks = options.outerTicks,
+            showGrid = options.showGrid,
+            counterAxes = options.counterAxes||[],
+            overlayableAxes = options.overlayableAxes||[];
+
+        coerce('title', title);
+        // TODO: inherit from input tickfont?
+        coerce('titlefont', {
+            family: font.family,
+            size: font.size * 1.2,
+            color: font.color
+        });
+
+        var axType = coerce('type'),
+            validRange = (containerIn.range||[]).length===2 &&
+                $.isNumeric(containerIn.range[0]) &&
+                $.isNumeric(containerIn.range[1]),
+            autoRange = coerce('autorange', !validRange);
+        // TODO: where does autorange machinery go?
+        if(autoRange) coerce('rangemode');
+        var range0 = coerce('range[0]', -1),
+            range1 = coerce('range[1]', letter==='x' ? 6 : 4);
+        if(range0===range1) {
+            containerOut.range = [range0 - 1, range0 + 1];
+        }
+
+        var autoTick = coerce('autotick');
+        if(autoTick) coerce('nticks');
+        else {
+            // TODO: type conversion here?
+            // TODO: separate autotick0 function to avoid duplication?
+            // TODO: way to hold the auto values as defaults when you turn off autotick?
+            coerce('tick0', axType==='date' ? new Date(2000,0,1).getTime() : 0);
+            coerce('dtick');
+        }
+
+        var showTicks = coerce('ticks', outerTicks ? 'outside' : '');
+        if(showTicks) {
+            // TODO: are there multiple axes connected to this one?
+            coerce('mirror');
+            coerce('ticklen');
+            coerce('tickwidth');
+            coerce('tickcolor');
+        }
+
+        var showTickLabels = coerce('showticklabels');
+        if(showTickLabels) {
+            // TODO: coerce from input titlefont and/or vice versa?
+            coerce('tickfont', font);
+            coerce('tickangle');
+            coerce('showexponent');
+            coerce('exponentformat');
+        }
+
+        var showLine = coerce('showline');
+        if(showLine) {
+            coerce('linecolor');
+            coerce('linewidth');
+        }
+
+        var showGridLines = coerce('showgrid', showGrid);
+        if(showGridLines) {
+            coerce('gridcolor');
+            coerce('gridwidth');
+        }
+
+        var showZeroLine = coerce('zeroline', showGrid);
+        if(showZeroLine) {
+            coerce('zerolinecolor');
+            coerce('zerolinewidth');
+        }
+
+        var anchor = Plotly.Lib.coerce(containerIn, containerOut,
+            {
+                anchor: {
+                    type:'enumerated',
+                    values: ['free'].concat(counterAxes),
+                    dflt: counterAxes[0] || 'free'
+                }
+            },
+            'anchor');
+
+        if(anchor==='free') coerce('position');
+
+        Plotly.Lib.coerce(containerIn, containerOut,
+            {
+                side: {
+                    type: 'enumerated',
+                    values: letter==='x' ? ['bottom', 'top'] : ['left', 'right'],
+                    dflt: letter==='x' ? 'bottom' : 'left'
+                }
+            },
+            'side');
+
+        var overlaying = false;
+        if(overlayableAxes.length) {
+            overlaying = Plotly.Lib.coerce(containerIn, containerOut,
+                {
+                    overlaying: {
+                        type: 'enumerated',
+                        values: [false].concat(overlayableAxes),
+                        dflt: false
+                    }
+                },
+                'overlaying');
+        }
+
+        if(!overlaying) {
+            var domainStart = coerce('domain[0]'),
+                domainEnd = coerce('domain[1]');
+            if(domainStart > domainEnd - 0.01) containerOut.domain = [0,1];
+        }
+
+        return containerOut;
     };
 
     axes.defaultAxis = function(extras) {
