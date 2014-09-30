@@ -45,7 +45,7 @@
                 dflt: 'rgba(0,0,0,0)'
             },
             symbol: $.extend({arrayOk: false}, scatterMarker.symbol),
-            opacity: $.extend({arrayOk: false}, scatterMarker.opacity),
+            opacity: $.extend({arrayOk: false, dflt: 1}, scatterMarker.opacity),
             size: $.extend({arrayOk: false}, scatterMarker.size),
             color: $.extend({arrayOk: false}, scatterMarker.color),
             line: {
@@ -362,9 +362,12 @@
                         x1 = xa.c2p(d.x+bx+bdx, true),
                         xw0 = xa.c2p(d.x+bx-wdx, true),
                         xw1 = xa.c2p(d.x+bx+wdx, true),
-                        ym = ya.c2p(d.med, true),
                         yq1 = ya.c2p(d.q1, true),
                         yq3 = ya.c2p(d.q3, true),
+                        // make sure median isn't identical to either of the
+                        // quartiles, so we can see it
+                        ym = Plotly.Lib.constrain(ya.c2p(d.med, true),
+                            Math.min(yq1, yq3)+1, Math.max(yq1, yq3)-1),
                         ylf = ya.c2p(trace.boxpoints===false ? d.min : d.lf, true),
                         yuf = ya.c2p(trace.boxpoints===false ? d.max : d.uf, true);
                     d3.select(this).attr('d',
@@ -376,7 +379,7 @@
                 });
 
             // draw points, if desired
-            if(trace.boxpoints!==false) {
+            if(trace.boxpoints) {
                 d3.select(this).selectAll('g.points')
                     // since box plot points get an extra level of nesting, each
                     // box needs the trace styling info

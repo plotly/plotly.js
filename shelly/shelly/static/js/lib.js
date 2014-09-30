@@ -560,6 +560,7 @@
 
     // constrain - restrict a number v to be between v0 and v1
     lib.constrain = function(v,v0,v1) {
+        if(v0>v1) return Math.max(v1,Math.min(v0,v));
         return Math.max(v0,Math.min(v1,v));
     };
 

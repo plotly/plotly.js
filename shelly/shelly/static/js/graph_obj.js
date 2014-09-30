@@ -8,8 +8,7 @@
         SceneFrame:false, Tabs:false, Examples:false */
 
     // ---global functions not yet namespaced
-    /* global setFileAndCommentsSize:false, killPopovers:false,
-        hidebox:false, litebox:false */
+    /* global setFileAndCommentsSize:false, killPopovers:false */
 
     // ---external global dependencies
     /* global Promise:false, d3:false, tinycolor:false */
@@ -2695,7 +2694,7 @@
 
     // check whether to resize a tab (if it's a plot) to the container
     plots.resize = function(gd) {
-        if(typeof gd === 'string') { gd = document.getElementById(gd); }
+        if(typeof gd === 'string') gd = document.getElementById(gd);
 
         if(gd.mainsite){
             killPopovers();
@@ -2704,23 +2703,18 @@
 
         if(gd && (gd.tabtype==='plot' || gd.shareplot) &&
                 $(gd).css('display')!=='none') {
-            if(gd.redrawTimer) { clearTimeout(gd.redrawTimer); }
+            if(gd.redrawTimer) clearTimeout(gd.redrawTimer);
             gd.redrawTimer = setTimeout(function(){
 
-                if ($(gd).css('display')==='none') { return; }
+                if ($(gd).css('display')==='none') return;
 
                 if ((gd._fullLayout||{}).autosize) {
                     // autosizing doesn't count as a change that needs saving
                     var oldchanged = gd.changed;
                     // nor should it be included in the undo queue
                     gd.autoplay = true;
-                    Plotly.relayout(gd, {autosize:true});
+                    Plotly.relayout(gd, {autosize: true});
                     gd.changed = oldchanged;
-                }
-
-                if(window.LIT) {
-                    hidebox();
-                    litebox();
                 }
             }, 100);
         }

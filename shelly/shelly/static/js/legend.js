@@ -174,6 +174,8 @@
 
     legend.bars = function(d){
         var trace = d[0].trace,
+            marker = trace.marker||{},
+            markerLine = marker.line||{},
             barpath = d3.select(this).select('g.legendpoints')
                 .selectAll('path.legendbar')
                 .data(Plotly.Plots.isBar(trace.type) ? [d] : []);
@@ -182,14 +184,14 @@
             .attr('transform','translate(20,0)');
         barpath.exit().remove();
         barpath.each(function(d){
-            var w = (d.mlw+1 || trace.marker.line.width+1) - 1,
+            var w = (d.mlw+1 || markerLine.width+1) - 1,
                 p = d3.select(this);
             p.style('stroke-width',w+'px')
                 .call(Plotly.Drawing.fillColor,
-                    d.mc || trace.marker.color);
+                    d.mc || marker.color);
             if(w) {
                 p.call(Plotly.Drawing.strokeColor,
-                    d.mlc || trace.marker.line.color);
+                    d.mlc || markerLine.color);
             }
         });
     };
@@ -198,7 +200,7 @@
         var trace = d[0].trace,
             pts = d3.select(this).select('g.legendpoints')
                 .selectAll('path.legendbox')
-                .data(trace.type==='box' ? [d] : []);
+                .data(trace.type==='box' && trace.visible ? [d] : []);
         pts.enter().append('path').classed('legendbox', true)
             // if we want the median bar, prepend M6,0H-6
             .attr('d', 'M6,6H-6V-6H6Z')
@@ -307,8 +309,9 @@
 
         if(!fullLayout._infolayer || !td.calcdata) return;
 
-        layout.showlegend = showlegend;
+        if(showlegend!==undefined) layout.showlegend = showlegend;
         legend.supplyDefaults(layout, fullLayout, td._fullData);
+        showlegend = fullLayout.showlegend;
 
         var opts = fullLayout.legend;
 

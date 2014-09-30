@@ -385,7 +385,7 @@
         var s = gp.selectAll('g.trace.bars'),
             barcount = s.size();
 
-        // first trace styling
+        // trace styling
         s.style('opacity',function(d){ return d[0].trace.opacity; })
 
         // for gapless (either stacked or neighboring grouped) bars use
