@@ -199,10 +199,9 @@
         }
 
         xaList.concat(yaList).forEach(function(axName){
-            var containerIn = layoutIn[axName] || {},
-                axLetter = axName.charAt(0);
+            var axLetter = axName.charAt(0);
 
-            layoutOut[axName] = axes.supplyAxisDefaults(containerIn, {
+            layoutOut[axName] = axes.supplyAxisDefaults(layoutIn[axName] || {}, {
                 letter: axLetter,
                 font: layoutOut.font,
                 outerTicks: outerTicks[axName],
@@ -226,7 +225,7 @@
             title = 'Click to enter ' +
                 (options.title || (letter.toUpperCase() + ' axis')) +
                 ' title',
-            font = options.font,
+            font = options.font||{},
             outerTicks = options.outerTicks,
             showGrid = options.showGrid,
             counterAxes = options.counterAxes||[],

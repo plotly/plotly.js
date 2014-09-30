@@ -1488,20 +1488,23 @@
     // if the array is too short, it will wrap around (useful for
     //  style files that want to specify cyclical default values)
     Plotly.restyle = function(gd,astr,val,traces) {
-        if(typeof gd === 'string') { gd = document.getElementById(gd); }
+        if(typeof gd === 'string') gd = document.getElementById(gd);
 
         var i, fullLayout = gd._fullLayout,
             aobj = {};
-        if(typeof astr === 'string') { aobj[astr] = val; }
+        if(typeof astr === 'string') aobj[astr] = val;
         else if($.isPlainObject(astr)) {
             aobj = astr;
-            if(traces===undefined) { traces = val; } // the 3-arg form
+            if(traces===undefined) traces = val; // the 3-arg form
         }
-        else { console.log('restyle fail',astr,val,traces); return; }
+        else {
+            console.log('restyle fail',astr,val,traces);
+            return;
+        }
 
-        if(Object.keys(aobj).length) { gd.changed = true; }
+        if(Object.keys(aobj).length) gd.changed = true;
 
-        if($.isNumeric(traces)) { traces=[traces]; }
+        if($.isNumeric(traces)) traces=[traces];
         else if(!$.isArray(traces) || !traces.length) {
             traces=gd._fullData.map(function(v,i){ return i; });
         }
@@ -1618,6 +1621,7 @@
         for(var ai in aobj) {
             var vi = aobj[ai],
                 cont,
+                contFull,
                 param;
             redoit[ai] = vi;
 
@@ -1637,6 +1641,7 @@
             undoit[ai] = a0();
             for(i=0; i<traces.length; i++) {
                 cont = gd.data[traces[i]];
+                contFull = gd._fullData[traces[i]];
                 param = Plotly.Lib.nestedProperty(cont,ai);
 
                 // setting bin or z settings should turn off auto
@@ -1662,11 +1667,11 @@
                 // heatmaps: setting x0 or dx, y0 or dy,
                 // should turn xtype/ytype to 'scaled' if 'array'
                 else if(['x0','dx'].indexOf(ai)!==-1 &&
-                        cont.x && cont.xtype!=='scaled') {
+                        contFull.x && contFull.xtype!=='scaled') {
                     doextra(cont,'xtype','scaled',i);
                 }
                 else if(['y0','dy'].indexOf(ai)!==-1 &&
-                        cont.y && cont.ytype!=='scaled') {
+                        contFull.y && contFull.ytype!=='scaled') {
                     doextra(cont,'ytype','scaled',i);
                 }
                 // changing colorbar size modes,
@@ -1677,24 +1682,20 @@
                 else if(ai==='colorbar.thicknessmode' && param.get()!==vi &&
                         ['fraction','pixels'].indexOf(vi)!==-1) {
                     var thicknorm =
-                        ['top','bottom'].indexOf(cont.colorbar.orient)!==-1 ?
+                        ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
                             (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b) :
                             (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r);
-                    doextra(cont,'colorbar.thickness',
-                        (cont.colorbar.thickness ||
-                            Plotly.Colorbar.getDefault('thickness')) *
-                        (vi==='fraction' ? 1/thicknorm : thicknorm),i);
+                    doextra(cont,'colorbar.thickness', contFull.colorbar.thickness *
+                        (vi==='fraction' ? 1/thicknorm : thicknorm), i);
                 }
                 else if(ai==='colorbar.lenmode' && param.get()!==vi &&
                         ['fraction','pixels'].indexOf(vi)!==-1) {
                     var lennorm =
-                        ['top','bottom'].indexOf(cont.colorbar.orient)!==-1 ?
+                        ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
                             (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r) :
                             (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b);
-                    doextra(cont,'colorbar.len',
-                        (cont.colorbar.len ||
-                            Plotly.Colorbar.getDefault('len')) *
-                        (vi==='fraction' ? 1/lennorm : lennorm),i);
+                    doextra(cont,'colorbar.len', contFull.colorbar.len *
+                        (vi==='fraction' ? 1/lennorm : lennorm), i);
                 }
 
                 // save the old value
@@ -1709,18 +1710,18 @@
                     // before we swap everything else
                     if(ai==='orientation') {
                         param.set($.isArray(vi) ? vi[i%vi.length] : vi);
-                        if(param.get()===undoit[ai][i]) { continue; }
+                        if(param.get()===undoit[ai][i]) continue;
                     }
                     // orientationaxes has no value,
                     // it flips everything and the axes
                     else if(ai==='orientationaxes') {
                         cont.orientation =
-                            {v:'h', h:'v'}[cont.orientation||'v'];
+                            {v:'h', h:'v'}[contFull.orientation];
                     }
                     swapxydata(cont);
                 }
                 // all the other ones, just modify that one attribute
-                else { param.set($.isArray(vi) ? vi[i%vi.length] : vi); }
+                else param.set($.isArray(vi) ? vi[i%vi.length] : vi);
 
             }
 
@@ -2831,7 +2832,7 @@
     //  or empty to draw all
     plots.titles = function(gd,title) {
         var options;
-        if(typeof gd === 'string') { gd = document.getElementById(gd); }
+        if(typeof gd === 'string') gd = document.getElementById(gd);
         if(!title) {
             Plotly.Axes.list(gd).forEach(function(ax) {
                 plots.titles(gd,ax._id+'title');
@@ -2848,10 +2849,11 @@
 
         if(colorbar) {
             var uid = title.substr(3).replace('title','');
-            gd._fullData.forEach(function(trace, i) {
+            gd._fullData.some(function(trace, i) {
                 if(trace.uid===uid) {
                     cbnum = i;
                     cont = gd.calcdata[i][0].t.cb.axis;
+                    return true;
                 }
             });
         }
@@ -2860,13 +2862,13 @@
         var prop = cont===fullLayout ? 'title' : cont._name+'.title',
             name = colorbar ? 'colorscale' :
                 ((cont._id||axletter).toUpperCase()+' axis'),
-            font = cont.titlefont.family || fullLayout.font.family || 'Arial',
-            fontSize = cont.titlefont.size || (fullLayout.font.size*1.2) || 14,
-            fontColor = cont.titlefont.color || fullLayout.font.color || '#444',
+            font = cont.titlefont.family,
+            fontSize = cont.titlefont.size,
+            fontColor = cont.titlefont.color,
             x,
             y,
             transform='',
-            attr={},
+            attr = {},
             xa,
             ya,
             avoid = {
@@ -2935,8 +2937,9 @@
             if(!avoid.side) { avoid.side = 'left'; }
         }
         else{
+            // plot title
             name = 'Plot';
-            fontSize = fullLayout.titlefont.size || fullLayout.font.size*1.4 || 16;
+            fontSize = fullLayout.titlefont.size;
             x = fullLayout.width/2;
             y = fullLayout._size.t/2;
             options = {x: x, y: y, 'text-anchor': 'middle'};
@@ -3034,7 +3037,7 @@
                         (paperbb[avoid.side]-titlebb[avoid.side]) *
                         ((avoid.side==='left' || avoid.side==='top') ? -1 : 1);
                 // Prevent the title going off the paper
-                if(maxshift<0) { shift = maxshift; }
+                if(maxshift<0) shift = maxshift;
                 else {
                     // so we don't have to offset each avoided element,
                     // give the title the opposite offset
