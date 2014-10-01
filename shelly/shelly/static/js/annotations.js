@@ -43,7 +43,7 @@
     annotations.attributes = {
         text: {
             type: 'string',
-            dflt: 'new text'
+            blankOk: false
         },
         textangle: {
             type: 'angle',
@@ -95,13 +95,12 @@
         },
         arrowsize: {
             type: 'number',
-            min: 0,
+            min: 0.3,
             dflt: 1
         },
         arrowwidth: {
             type: 'number',
-            min: 0,
-            dflt: 0
+            min: 0.1
         },
         ax: {
             type: 'number',
@@ -125,11 +124,6 @@
             type: 'enumerated',
             values: ['auto', 'top', 'middle', 'bottom'],
             dflt: 'auto'
-        },
-        // TODO: do we use tag anymore? I don't think so...
-        tag: {
-            type: 'string',
-            dflt: ''
         }
     };
 
@@ -147,25 +141,25 @@
             return Plotly.Lib.coerce(annIn, annOut, annotations.attributes, attr, dflt);
         }
 
-        coerce('text');
-        coerce('textangle');
-        coerce('font', fullLayout.font);
         coerce('opacity');
         coerce('align');
         coerce('bgcolor');
         var borderColor = coerce('bordercolor');
         coerce('borderpad');
-        coerce('borderwidth');
+        var borderWidth = coerce('borderwidth');
         var showArrow = coerce('showarrow');
         if(showArrow) {
             coerce('arrowcolor',
                 Plotly.Drawing.opacity(borderColor) ? annOut.bordercolor : '#444');
             coerce('arrowhead');
             coerce('arrowsize');
-            coerce('arrowwidth');
+            coerce('arrowwidth', borderWidth*2);
             coerce('ax');
             coerce('ay');
         }
+        coerce('text', showArrow ? '&nbsp;' : 'new text');
+        coerce('textangle');
+        coerce('font', fullLayout.font);
 
         // positioning
         ['x','y'].forEach(function(axletter){
@@ -206,7 +200,7 @@
             coerce(axletter, defaultPosition);
 
             // xanchor, yanchor
-            coerce(axletter + 'anchor');
+            if(!showArrow) coerce(axletter + 'anchor');
         });
 
         return annOut;
@@ -341,35 +335,27 @@
         var options = fullLayout.annotations[index] =
                 supplyAnnotationDefaults(layout.annotations[index], fullLayout);
 
-        if(!options.text) {
-            options.text = options.showarrow ? '&nbsp;' : 'new text';
-        }
-
         var xa = Plotly.Axes.getFromId(gd, options.xref),
             ya = Plotly.Axes.getFromId(gd, options.yref),
             annPosPx = {x:0, y:0},
-            textangle = $.isNumeric(options.textangle) ? options.textangle : 0;
+            textangle = +options.textangle || 0;
 
         // create the components
         // made a single group to contain all, so opacity can work right
         // with border/arrow together this could handle a whole bunch of
         // cleanup at this point, but works for now
         var anngroup = fullLayout._infolayer.append('g')
-            .classed('annotation',true)
-            .attr({
-                'data-index':String(index),
-                'data-cmmt':options.tag
-            })
-            .style('opacity',options.opacity);
+            .classed('annotation', true)
+            .attr('data-index', String(index))
+            .style('opacity', options.opacity);
 
         // another group for text+background so that they can rotate together
         var anng = anngroup.append('g')
             .classed('annotation-text-g',true)
-            .attr({'data-index':String(index)});
+            .attr('data-index', String(index));
 
         var ann = anng.append('svg')
-            .attr('data-cmmt',options.tag)
-            .call(Plotly.Drawing.setPosition,0,0);
+            .call(Plotly.Drawing.setPosition, 0, 0);
 
         var borderwidth = options.borderwidth;
 
@@ -380,29 +366,19 @@
                 options.bordercolor || 'rgba(0,0,0,0)')
             .call(Plotly.Drawing.fillColor,options.bgcolor);
 
-        var font = options.font.family||fullLayout.font.family||'Arial',
-            fontSize = options.font.size||fullLayout.font.size||12,
-            fontColor = options.font.color||fullLayout.font.color||'#444';
+        var font = options.font;
 
         var anntext = ann.append('text')
-            .classed('annotation',true)
-            .attr({
-                'data-cmmt':options.tag,
-                'data-unformatted': options.text
-            })
+            .classed('annotation', true)
+            .attr('data-unformatted', options.text)
             .text(options.text);
 
         function textLayout(s){
-            s.style({
-                'font-family': font,
-                'font-size': fontSize+'px',
-                fill: Plotly.Drawing.rgb(fontColor),
-                opacity: Plotly.Drawing.opacity(fontColor)
-            })
+            s.call(Plotly.Drawing.font, font.family, font.size, font.color)
             .attr({
                 'text-anchor': {
-                    left:'start',
-                    right:'end'
+                    left: 'start',
+                    right: 'end'
                 }[options.align]||'middle'
             });
             Plotly.util.convertToTspans(s, drawGraphicalElements);
@@ -440,7 +416,7 @@
                 }[anchor];
             }
 
-            var okToContinue = true;
+            var annotationIsOffscreen = false;
             ['x','y'].forEach(function(axletter) {
                 var ax = Plotly.Axes.getFromId(gd,
                         options[axletter+'ref']||axletter),
@@ -500,7 +476,7 @@
                     if(((options[axletter]-ax.range[0]) *
                                 (options[axletter]-ax.range[1])>0) &&
                             !ax.autorange) {
-                        okToContinue = false;
+                        annotationIsOffscreen = true;
                     }
                     annPosPx[axletter] = ax._offset+ax.l2p(options[axletter]);
                 }
@@ -516,7 +492,7 @@
                 optionsIn[axletter] = options[axletter];
             });
 
-            if(!okToContinue) {
+            if(annotationIsOffscreen) {
                 ann.remove();
                 return;
             }
@@ -545,8 +521,8 @@
                 anntext.selectAll('tspan.line').attr({y: texty, x: textx});
             }
 
-            var outerwidth = Math.round(annwidth+2*borderfull),
-                outerheight = Math.round(annheight+2*borderfull);
+            var outerwidth = Math.round(annwidth + 2*borderfull),
+                outerheight = Math.round(annheight + 2*borderfull);
 
             annbg.call(Plotly.Drawing.setRect, borderwidth/2, borderwidth/2,
                 outerwidth-borderwidth, outerheight-borderwidth);
@@ -608,44 +584,39 @@
                     }
                 });
 
-                var strokewidth = options.arrowwidth || borderwidth*2 || 2,
-                    arrowColor = options.arrowcolor ||
-                        (Plotly.Drawing.opacity(options.bordercolor) ?
-                            options.bordercolor : '') || '#444';
+                var strokewidth = options.arrowwidth,
+                    arrowColor = options.arrowcolor;
 
                 var arrowgroup = anngroup.append('g')
-                    .attr('data-cmmt',options.tag)
                     .style({opacity: Plotly.Drawing.opacity(arrowColor)})
                     .classed('annotation-arrow-g', true)
-                    .attr({'data-index':String(index)});
+                    .attr('data-index', String(index));
 
                 var arrow = arrowgroup.append('path')
-                    .attr('data-cmmt',options.tag)
-                    .attr('d','M'+ax0+','+ay0+'L'+ax+','+ay)
-                    .style('stroke-width',strokewidth+'px')
+                    .attr('d', 'M'+ax0+','+ay0+'L'+ax+','+ay)
+                    .style('stroke-width', strokewidth+'px')
                     .call(Plotly.Drawing.strokeColor,
                         Plotly.Drawing.rgb(arrowColor));
 
-                arrowhead(arrow,options.arrowhead,'end',options.arrowsize);
+                arrowhead(arrow, options.arrowhead, 'end', options.arrowsize);
 
                 var arrowdrag = arrowgroup.append('path')
-                    .classed('annotation',true)
-                    .classed('anndrag',true)
+                    .classed('annotation', true)
+                    .classed('anndrag', true)
                     .attr({
-                        'data-cmmt':options.tag,
-                        'data-index':String(index),
-                        d:'M3,3H-3V-3H3ZM0,0L'+(ax0-ax)+','+(ay0-ay),
+                        'data-index': String(index),
+                        d: 'M3,3H-3V-3H3ZM0,0L'+(ax0-ax)+','+(ay0-ay),
                         transform:'translate('+ax+','+ay+')'
                     })
-                    .style('stroke-width',(strokewidth+6)+'px')
-                    .call(Plotly.Drawing.strokeColor,'rgba(0,0,0,0)')
-                    .call(Plotly.Drawing.fillColor,'rgba(0,0,0,0)');
+                    .style('stroke-width', (strokewidth+6)+'px')
+                    .call(Plotly.Drawing.strokeColor, 'rgba(0,0,0,0)')
+                    .call(Plotly.Drawing.fillColor, 'rgba(0,0,0,0)');
 
                 if(gd.mainsite) {
                     arrowdrag.node().onmousedown = function(e) {
                         // deal with other UI elements, and allow them
                         // to cancel dragging
-                        if(Plotly.Fx.dragClear(gd)) { return true; }
+                        if(Plotly.Fx.dragClear(gd)) return true;
 
                         var annx0 = Number(ann.attr('x')),
                             anny0 = Number(ann.attr('y')),
@@ -666,9 +637,7 @@
                             if(Math.abs(dx)<MINDRAG) dx=0;
                             if(Math.abs(dy)<MINDRAG) dy=0;
                             if(dx||dy) gd.dragged = true;
-                            arrowgroup.attr({
-                                transform: 'translate('+dx+','+dy+')'
-                            });
+                            arrowgroup.attr('transform', 'translate('+dx+','+dy+')');
 
                             var annxy0 = applyTransform(annx0, anny0),
                                 xcenter = annxy0[0]+dx,
@@ -701,7 +670,7 @@
                 }
             };
 
-            if(options.showarrow) { drawArrow(0,0); }
+            if(options.showarrow) drawArrow(0,0);
 
 
             // create transform matrix and related functions
@@ -714,7 +683,7 @@
                 ann.node().onmousedown = function(e) {
                     // deal with other UI elements, and allow them
                     // to cancel dragging
-                    if(Plotly.Fx.dragClear(gd)) { return true; }
+                    if(Plotly.Fx.dragClear(gd)) return true;
 
                     var el3=d3.select(this),
                         x0=Number(el3.attr('x')),
@@ -734,9 +703,9 @@
                         var dx = e2.clientX-e.clientX,
                             dy = e2.clientY-e.clientY;
 
-                        if(Math.abs(dx)<MINDRAG) { dx=0; }
-                        if(Math.abs(dy)<MINDRAG) { dy=0; }
-                        if(dx||dy) { gd.dragged = true; }
+                        if(Math.abs(dx)<MINDRAG) dx=0;
+                        if(Math.abs(dy)<MINDRAG) dy=0;
+                        if(dx||dy) gd.dragged = true;
 
                         el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
                         var csr = 'pointer';
@@ -826,9 +795,9 @@
         if(!$.isNumeric(mag)) { mag=1; }
         var el = el3.node(),
             headStyle = ARROWPATHS[style||0];
-        if(!headStyle) { return; }
+        if(!headStyle) return;
 
-        if(typeof ends !== 'string' || !ends) { ends = 'end'; }
+        if(typeof ends !== 'string' || !ends) ends = 'end';
 
         var start,end,dstart,dend,pathlen;
         if(el.nodeName==='line') {
@@ -853,20 +822,23 @@
             if(style>5) { rot=0; } // don't rotate square or circle
             d3.select(el.parentElement).append('path')
                 .attr({
-                    'class':el3.attr('class'),
-                    'data-cmmt':el3.attr('data-cmmt'),
-                    'd':headStyle.path,
-                    'transform':
+                    class: el3.attr('class'),
+                    d: headStyle.path,
+                    transform:
                         'translate('+p.x+','+p.y+')'+
                         'rotate('+rot+')'+
                         'translate('+(headStyle.centerx*scale*(1/mag-1))+',0)'+
                         'scale('+scale+')'
                 })
-                .style({fill:stroke, opacity:opacity, 'stroke-width':0});
+                .style({
+                    fill: stroke,
+                    opacity: opacity,
+                    'stroke-width': 0
+                });
         };
 
-        if(ends.indexOf('start')>=0) { drawhead(start,dstart); }
-        if(ends.indexOf('end')>=0) { drawhead(end,dend); }
+        if(ends.indexOf('start')>=0) drawhead(start, dstart);
+        if(ends.indexOf('end')>=0) drawhead(end, dend);
     }
 
     // allArrowheads: call twice to make an arrowheads dropdown.
@@ -899,12 +871,22 @@
     };
 
     annotations.calcAutorange = function(gd) {
-        var fullLayout = gd._fullLayout;
+        var fullLayout = gd._fullLayout,
+            annotationList = fullLayout.annotations;
 
-        if(!fullLayout.annotations || !gd.data || !gd.data.length) { return; }
-        if(!Plotly.Axes.list(gd)
-            .filter(function(ax) { return ax.autorange; })
-            .length) { return; }
+        if(!annotationList.length || !gd._fullData.length) return;
+
+        var annotationAxes = {};
+        annotationList.forEach(function(ann){
+            annotationAxes[ann.xref] = true;
+            annotationAxes[ann.yref] = true;
+        });
+
+        var autorangedAnnos = Plotly.Axes.list(gd)
+            .filter(function(ax) {
+                return ax.autorange && annotationAxes[ax._id];
+            });
+        if(!autorangedAnnos.length) return;
 
         return Plotly.Lib.syncOrAsync([
             annotations.drawAll,
@@ -923,18 +905,18 @@
         fullLayout.annotations.forEach(function(ann,i){
             var xa = Plotly.Axes.getFromId(gd, ann.xref),
                 ya = Plotly.Axes.getFromId(gd, ann.yref);
-            if(!(xa||ya)) { return; }
+            if(!(xa||ya)) return;
 
             var annBB,
                 textNode = fullLayout._infolayer
                     .selectAll('g.annotation[data-index="'+i+'"] rect.bg')
                     .node(),
                 textBB = textNode ? Plotly.Drawing.bBox(textNode) : blank,
-                textExtra = ann.borderwidth||0,
+                textExtra = ann.borderwidth,
                 textWidth = textBB.width + textExtra,
                 textHeight = textBB.height + textExtra;
             if(ann.showarrow) {
-                var headSize = 3 * (ann.arrowsize||1) * (ann.arrowwidth||1);
+                var headSize = 3 * ann.arrowsize * ann.arrowwidth;
                 annBB = {
                     left: Math.min(ann.ax - textWidth/2, -headSize),
                     right: Math.max(ann.ax + textWidth/2, headSize),
@@ -977,13 +959,12 @@
             det=a*f-c*d;
         // parallel lines? intersection is undefined
         // ignore the case where they are colinear
-        if(det===0) { return null; }
+        if(det===0) return null;
         var t=(b*f-c*e)/det,
             u=(b*d-a*e)/det;
-        if(u<0 || u>1 || t<0 || t>1) {
-            // segments do not intersect
-            return null;
-        }
+        // segments do not intersect?
+        if(u<0 || u>1 || t<0 || t>1) return null;
+
         return {x:x1+a*t, y:y1+d*t};
     }
 
