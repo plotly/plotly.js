@@ -2954,7 +2954,7 @@
             isplaceholder = false,
             txt = cont.title.trim();
         if(txt === '') { opacity = 0; }
-        if(txt === 'Click to enter '+name+' title') {
+        if(txt.match(/Click to enter .+ title/)) {
             opacity = 0.2;
             isplaceholder = true;
         }
@@ -3078,13 +3078,15 @@
         el.attr({'data-unformatted': txt})
             .call(titleLayout);
 
+        var placeholderText = 'Click to enter '+name.replace(/\d+/,'')+' title';
+
         function setPlaceholder(){
             opacity = 0;
             isplaceholder = true;
-            txt = 'Click to enter '+name+' title';
+            txt = placeholderText;
             fullLayout._infolayer.select('.'+title)
                 .attr({'data-unformatted': txt})
-                .text('Click to enter '+name+' title')
+                .text(txt)
                 .on('mouseover.opacity',function(){
                     d3.select(this).transition()
                         .duration(100).style('opacity',1);
@@ -3097,7 +3099,7 @@
 
         // don't allow editing (or placeholder) on embedded graphs or exports
         if(gd.mainsite && !fullLayout._forexport){
-            if(!txt) { setPlaceholder(); }
+            if(!txt) setPlaceholder();
 
             el.call(Plotly.util.makeEditable)
                 .on('edit', function(text){
@@ -3114,7 +3116,7 @@
                             .attr(options);
                 });
         }
-        else if(!txt || txt === 'Click to enter '+name+' title') {
+        else if(!txt || txt.match(/Click to enter .+ title/)) {
             el.remove();
         }
         el.classed('js-placeholder',isplaceholder);
