@@ -1376,7 +1376,11 @@
 
         var globalFont = coerce('font');
         coerce('title');
-        coerce('titlefont', globalFont);
+        coerce('titlefont', {
+            family: globalFont.family,
+            size: Math.round(globalFont.size * 1.4),
+            color: globalFont.color
+        });
 
         coerce('autosize', (layoutIn.width && layoutIn.height) ? false : 'initial');
         coerce('width');

@@ -1457,7 +1457,7 @@
         family: {type: 'string'},
         size: {
             type: 'number',
-            min: 0
+            min: 1
         },
         color: {type: 'color'}
     };
@@ -1509,9 +1509,15 @@
         'font': function(v, propOut, dflt) {
             if(!v) v = {};
             var vOut = {};
+
             lib.coerce(v, vOut, fontAttrs, 'family', dflt.family);
+            // TODO: do we need better than 'string' for font, or just
+            // a "noBlank" option?
+            if(!vOut.family) vOut.family = dflt.family;
+
             lib.coerce(v, vOut, fontAttrs, 'size', dflt.size);
             lib.coerce(v, vOut, fontAttrs, 'color', dflt.color);
+
             propOut.set(vOut);
         },
         'angle': function(v, propOut, dflt) {

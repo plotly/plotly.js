@@ -235,7 +235,7 @@
         // TODO: inherit from input tickfont?
         coerce('titlefont', {
             family: font.family,
-            size: font.size * 1.2,
+            size: Math.round(font.size * 1.2),
             color: font.color
         });
 
