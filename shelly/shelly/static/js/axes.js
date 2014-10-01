@@ -265,7 +265,6 @@
         var showTicks = coerce('ticks', outerTicks ? 'outside' : '');
         if(showTicks) {
             // TODO: are there multiple axes connected to this one?
-            coerce('mirror');
             coerce('ticklen');
             coerce('tickwidth');
             coerce('tickcolor');
@@ -285,6 +284,9 @@
             coerce('linecolor');
             coerce('linewidth');
         }
+
+        if(showLine || showTicks) coerce('mirror');
+
 
         var showGridLines = coerce('showgrid', showGrid);
         if(showGridLines) {
