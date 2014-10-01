@@ -258,6 +258,8 @@
         if(plots.isBar(type)) return Plotly.Bars;
         if(plots.isContour(type)) return Plotly.Contour;
         if(plots.isHeatmap(type)) return Plotly.Heatmap;
+        if(plots.isScatter3d(type)) return Plotly.Scatter3d;
+        if(plots.isSurface(type)) return Plotly.Surface;
         if(type==='box') return Plotly.Boxes;
         console.log('Unrecognized plot type ' + type +
             '. Ignoring this dataset.'
@@ -1417,6 +1419,8 @@
 
         Plotly.Bars.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut);
+        Plotly.Gl3d.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        Plotly.Gl3dAxes.supplyDefaults(layoutIn, layoutOut, fullData);
     };
 
     function doCalcdata(gd) {
