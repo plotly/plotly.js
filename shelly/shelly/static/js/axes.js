@@ -200,17 +200,24 @@
 
         xaList.concat(yaList).forEach(function(axName){
             var axLetter = axName.charAt(0);
-
-            layoutOut[axName] = axes.supplyAxisDefaults(layoutIn[axName] || {}, {
+            var defaultOptions = {
+                    letter: axLetter,
+                    font: layoutOut.font,
+                    outerTicks: outerTicks[axName],
+                    showGrid: !noGrids[axName]
+            };
+            var positioningOptions = {
                 letter: axLetter,
-                font: layoutOut.font,
-                outerTicks: outerTicks[axName],
-                showGrid: !noGrids[axName],
                 counterAxes: {x: yaList, y: xaList}[axLetter].map(axes.name2id),
                 overlayableAxes: {x: xaList, y: yaList}[axLetter].filter(function(axName2){
-                        return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
-                    }).map(axes.name2id)
-            });
+                    return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
+                }).map(axes.name2id)
+            };
+
+            layoutOut[axName] = axes.supplyAxisDefaults(layoutIn[axName] || {}, defaultOptions);
+            axes.supplyAxisPositioningDefaults(layoutIn[axName],
+                                               layoutOut[axName],
+                                               positioningOptions);
         });
     };
 
@@ -227,9 +234,7 @@
                 ' title',
             font = options.font||{},
             outerTicks = options.outerTicks,
-            showGrid = options.showGrid,
-            counterAxes = options.counterAxes||[],
-            overlayableAxes = options.overlayableAxes||[];
+            showGrid = options.showGrid;
 
         coerce('title', title);
         // TODO: inherit from input tickfont?
@@ -297,6 +302,19 @@
             coerce('zerolinecolor');
             coerce('zerolinewidth');
         }
+    };
+
+    axes.supplyAxisPositioningDefaults = function(containerIn, containerOut, options) {
+        if (!containerOut) containerOut = {};
+
+        function coerce(attr, dflt) {
+            return Plotly.Lib.coerce(containerIn, containerOut,
+                axes.attributes, attr, dflt);
+        }
+
+        var counterAxes = options.counterAxes||[],
+            overlayableAxes = options.overlayableAxes||[],
+            letter = options.letter;
 
         var anchor = Plotly.Lib.coerce(containerIn, containerOut,
             {
@@ -322,15 +340,13 @@
 
         var overlaying = false;
         if(overlayableAxes.length) {
-            overlaying = Plotly.Lib.coerce(containerIn, containerOut,
-                {
-                    overlaying: {
-                        type: 'enumerated',
-                        values: [false].concat(overlayableAxes),
-                        dflt: false
-                    }
-                },
-                'overlaying');
+            overlaying = Plotly.Lib.coerce(containerIn, containerOut, {
+                overlaying: {
+                    type: 'enumerated',
+                    values: [false].concat(overlayableAxes),
+                    dflt: false
+                }
+            }, 'overlaying');
         }
 
         if(!overlaying) {
