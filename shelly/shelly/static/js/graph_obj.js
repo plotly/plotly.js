@@ -234,11 +234,15 @@
         return GL3DTYPES.indexOf(type) !== -1;
     };
 
-    plots.isScatter3D = function(type) {
+    plots.isScatter3d = function(type) {
         return type === 'scatter3d';
     };
 
-    var ALLTYPES = ['scatter', 'box'].concat(BARTYPES, HEATMAPTYPES, GL3DTYPES);
+    plots.isSurface = function(type) {
+        return type === 'surface';
+    };
+
+    var ALLTYPES = ['scatter', 'box', 'scatter3d', 'surface'].concat(BARTYPES, HEATMAPTYPES);
 
     function getModule(trace) {
         var type = trace.type;
