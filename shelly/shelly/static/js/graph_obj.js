@@ -258,8 +258,8 @@
         if(plots.isBar(type)) return Plotly.Bars;
         if(plots.isContour(type)) return Plotly.Contour;
         if(plots.isHeatmap(type)) return Plotly.Heatmap;
-        if(plots.isScatter3d(type)) return Plotly.Scatter3d;
-        if(plots.isSurface(type)) return Plotly.Surface;
+        // if(plots.isScatter3d(type)) return Plotly.Scatter3d;
+        // if(plots.isSurface(type)) return Plotly.Surface;
         if(type==='box') return Plotly.Boxes;
         console.log('Unrecognized plot type ' + type +
             '. Ignoring this dataset.'
@@ -1419,8 +1419,9 @@
 
         Plotly.Bars.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut);
-        Plotly.Gl3d.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        Plotly.Gl3dAxes.supplyDefaults(layoutIn, layoutOut, fullData);
+
+        // Plotly.Gl3dLayout.supplyLayoutDefaults(layoutIn, layoutOut);
+        // Plotly.Gl3dAxes.supplyDefaults(layoutIn, layoutOut, fullData);
     };
 
     function doCalcdata(gd) {
@@ -3266,38 +3267,5 @@
         });
     };
 
-    plots.defaultSceneLayout = function (td, sceneId, existingLayout) {
-
-        function default3DAxis (axisAttributes) {
-            return $.extend(Plotly.Axes.defaultAxis({
-                _td: td,
-                gridcolor: 'rgb(102, 102, 102)',
-                showspikes: true,
-                spikesides: true,
-                spikethickness: 2,
-                showbackground: false,
-                backgroundcolor: 'rgba(204, 204, 204, 0.5)',
-                showaxeslabels: true,
-                showline: true,
-                ticklen: 0
-            }), axisAttributes);
-        }
-
-        if (!existingLayout) existingLayout = {};
-
-        return $.extend(true, {
-            _webgl: null,
-            _container: null,  // containing iframe
-            _dataQueue: [], // for asyncronously loading data
-            _loading: false,
-            _id: sceneId,
-            bgcolor: '#fff', // iframe background color
-            cameraPosition: [],
-            domain: {x:[0,1], y:[0,1]}, // default domain
-            xaxis: default3DAxis({_id:'x' + sceneId, _name: 'xaxis'}),
-            yaxis: default3DAxis({_id:'y' + sceneId, _name: 'yaxis'}),
-            zaxis: default3DAxis({_id:'z' + sceneId, _name: 'zaxis'})
-        }, existingLayout);
-    };
 
 }()); // end Plots object definition
