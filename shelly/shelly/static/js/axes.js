@@ -894,6 +894,7 @@
             // doAutoRange will get called on fullLayout,
             // but we want to report its results back to layout
             var axIn = ax._td.layout[ax._name];
+            if(!axIn) ax._td.layout[ax._name] = axIn = {};
             if(axIn!==ax) {
                 axIn.range = ax.range.slice();
                 axIn.autorange = ax.autorange;
