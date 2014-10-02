@@ -1495,8 +1495,11 @@
             }
             else propOut.set(+v);
         },
-        'string': function(v, propOut, dflt) {
-            if(v===undefined) propOut.set(dflt);
+        'string': function(v, propOut, dflt, opts) {
+            var s = String(v);
+            if(v===undefined || (opts.noBlank===false && !s)) {
+                propOut.set(dflt);
+            }
             else propOut.set(String(v));
         },
         'color': function(v, propOut, dflt) {
