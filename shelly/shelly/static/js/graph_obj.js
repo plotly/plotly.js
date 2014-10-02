@@ -1208,9 +1208,10 @@
         // finally, fill in the pieces of layout that may need to look at data
         plots.supplyLayoutModuleDefaults(gd.layout||{}, gd._fullLayout, gd._fullData);
 
-        // patch back in any underscore or function components
-        // of fullLayout from the old one
-        gd._fullLayout = $.extend(true, onlyPrivate(oldFullLayout), gd._fullLayout);
+        // IN THE CASE OF 3D the underscore modules are Mikola's webgl contexts.
+        // There will be all sorts of pain if we deep copy active webgl scopes.
+        // Since we discard oldFullLayout, lets just copy the references over.
+        relinkPrivateKeys(gd._fullLayout, oldFullLayout);
 
         // update object references in calcdata
         if((gd.calcdata||[]).length===gd._fullData.length) {
@@ -1220,23 +1221,45 @@
         }
     };
 
-    function onlyPrivate(obj) {
-        Object.keys(obj).forEach(function(k) {
+    function relinkPrivateKeys(toLayout, fromLayout) {
+        var keys = Object.keys(fromLayout),
+            arrayObj,
+            prevVal;
+
+        for (var i = 0; i < keys.length; ++i) {
+            var k = keys[i];
             if((k.charAt(0)==='_' && k.substr(0,4)!=='_has') ||
-                    typeof obj[k]==='function') {
-                return;
+               typeof fromLayout[k]==='function') {
+                toLayout[k] = fromLayout[k];
             }
-            if($.isPlainObject(obj[k])) {
-                onlyPrivate(obj[k]);
-                if(Object.keys(obj).length===0) delete obj[k];
+            else if(Array.isArray(fromLayout[k]) && fromLayout[k].length &&
+                    $.isPlainObject(fromLayout[k][0])) {
+                if (!(k in toLayout)) toLayout[k] = [];
+                else if (!Array.isArray(toLayout[k])) {
+                    prevVal = toLayout[k];
+                    toLayout[k] = [];
+                }
+                for (var j = 0; j < fromLayout[k].length; ++j) {
+                    toLayout[k][toLayout[k].length] = arrayObj = {};
+                    relinkPrivateKeys(arrayObj, fromLayout[k][j]);
+                    if (!Object.keys(arrayObj).length) {
+                        toLayout[k].pop();
+                    }
+                }
+                if (!toLayout[k].length) {
+                    if (prevVal) {
+                        toLayout[k] = prevVal;
+                        prevVal = null;
+                    }
+                    else delete toLayout[k];
+                }
             }
-            else if(Array.isArray(obj[k]) && obj[k].length &&
-                    $.isPlainObject(obj[k][0])) {
-                obj[k].forEach(onlyPrivate);
+            else if ($.isPlainObject(fromLayout[k])) {
+                if (!(k in toLayout)) toLayout[k] = {};
+                relinkPrivateKeys(toLayout[k], fromLayout[k]);
+                if (!Object.keys(toLayout[k]).length) delete toLayout[k];
             }
-            else delete obj[k];
-        });
-        return obj;
+        }
     }
 
     plots.supplyDataDefaults = function(traceIn, i, layout) {
