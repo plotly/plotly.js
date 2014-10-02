@@ -200,6 +200,7 @@
 
         xaList.concat(yaList).forEach(function(axName){
             var axLetter = axName.charAt(0);
+            var axLayoutIn = layoutIn[axName] || {};
             var defaultOptions = {
                     letter: axLetter,
                     font: layoutOut.font,
@@ -214,8 +215,8 @@
                 }).map(axes.name2id)
             };
 
-            layoutOut[axName] = axes.supplyAxisDefaults(layoutIn[axName] || {}, defaultOptions);
-            axes.supplyAxisPositioningDefaults(layoutIn[axName],
+            layoutOut[axName] = axes.supplyAxisDefaults(axLayoutIn, defaultOptions);
+            axes.supplyAxisPositioningDefaults(axLayoutIn,
                                                layoutOut[axName],
                                                positioningOptions);
         });
@@ -302,6 +303,8 @@
             coerce('zerolinecolor');
             coerce('zerolinewidth');
         }
+
+        return containerOut;
     };
 
     axes.supplyAxisPositioningDefaults = function(containerIn, containerOut, options) {
