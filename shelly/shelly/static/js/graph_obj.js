@@ -1415,6 +1415,44 @@
         Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut);
     };
 
+    plots.purge = function(gd) {
+        // remove all plotly attributes from a div so it can be replotted fresh
+        // TODO: these really need to be encapsulated into a much smaller set...
+
+        // note: we DO NOT remove context flags (mainsite, standalone, shareplot...)
+        // because they don't change when we insert a new plot, and may have been
+        // set outside of our scope.
+
+        // data and layout
+        delete gd.data;
+        delete gd.layout;
+        delete gd._fullData;
+        delete gd._fullLayout;
+        delete gd.calcdata;
+        delete gd.framework;
+        delete gd.empty;
+
+        delete gd.fid;
+
+        delete gd.undoqueue; // action queue
+        delete gd.undonum;
+        delete gd.autoplay; // are we doing an action that doesn't go in undo queue?
+        delete gd.changed;
+
+        // these get recreated on Plotly.plot anyway, but just to be safe
+        // (and to have a record of them...)
+        delete gd._modules;
+        delete gd._tester;
+        delete gd._testref;
+        delete gd._promises;
+        delete gd._redrawTimer;
+        delete gd._replotting;
+        delete gd.firstscatter;
+        delete gd.hmlumcount;
+        delete gd.hmpixcount;
+        delete gd.numboxes;
+    };
+
     function doCalcdata(gd) {
         gd.calcdata = [];
         gd._modules = [];
@@ -2308,8 +2346,8 @@
 
         if(gd && (gd.tabtype==='plot' || gd.shareplot) &&
                 $(gd).css('display')!=='none') {
-            if(gd.redrawTimer) clearTimeout(gd.redrawTimer);
-            gd.redrawTimer = setTimeout(function(){
+            if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
+            gd._redrawTimer = setTimeout(function(){
 
                 if ($(gd).css('display')==='none') return;
 
