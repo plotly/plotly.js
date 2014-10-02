@@ -98,7 +98,7 @@ ModeBar.prototype.updateActiveButton = function () {
     this.buttonElements.forEach( function (button) {
         var thisval = button.getAttribute('data-val') || true,
             dataAttr = button.getAttribute('data-attr'),
-            curval = graphInfo.layout[dataAttr];
+            curval = graphInfo._fullLayout[dataAttr];
 
         button.classList.toggle('active', curval===thisval);
     });
@@ -136,7 +136,7 @@ function handleCartesian (ev) {
         val = button.getAttribute('data-val') || true,
         aobj = {},
         graphInfo = this.graphInfo,
-        layout = this.graphInfo.layout,
+        layout = this.graphInfo._fullLayout,
         Plotly = this.Plotly,
         _this = this;
 
@@ -178,7 +178,7 @@ function handleHover3d (ev) {
         val = button.getAttribute('data-val') || true,
         layoutUpdate = {},
         graphInfo = this.graphInfo,
-        layout = graphInfo.layout,
+        layout = graphInfo._fullLayout,
         scenes = Object.keys(layout).filter(function(k){
             return k.match(/^scene[0-9]*$/);
         }).map( function (sceneKey) {
@@ -209,7 +209,7 @@ function handle3dCamera (ev) {
         val = button.getAttribute('data-val') || true,
         layoutUpdate = {},
         graphInfo = this.graphInfo,
-        layout = graphInfo.layout,
+        layout = graphInfo._fullLayout,
         scenes = Object.keys(layout).filter(function(k){
             return k.match(/^scene[0-9]*$/);
         }).map( function (sceneKey) {
