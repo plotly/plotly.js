@@ -822,7 +822,7 @@
             if(style>5) { rot=0; } // don't rotate square or circle
             d3.select(el.parentElement).append('path')
                 .attr({
-                    class: el3.attr('class'),
+                    'class': el3.attr('class'),
                     d: headStyle.path,
                     transform:
                         'translate('+p.x+','+p.y+')'+
