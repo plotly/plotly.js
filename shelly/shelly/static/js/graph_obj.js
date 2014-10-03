@@ -254,11 +254,11 @@
             );
             return;
         }
-        if(plots.isScatter(type)) return Plotly.Scatter;
-        if(plots.isBar(type)) return Plotly.Bars;
-        if(plots.isContour(type)) return Plotly.Contour;
-        if(plots.isHeatmap(type)) return Plotly.Heatmap;
-        // if(plots.isScatter3d(type)) return Plotly.Scatter3d;
+        if (plots.isScatter(type)) return Plotly.Scatter;
+        if (plots.isBar(type)) return Plotly.Bars;
+        if (plots.isContour(type)) return Plotly.Contour;
+        if (plots.isHeatmap(type)) return Plotly.Heatmap;
+        if (plots.isScatter3d(type)) return Plotly.Scatter3d;
         // if(plots.isSurface(type)) return Plotly.Surface;
         if(type==='box') return Plotly.Boxes;
         console.log('Unrecognized plot type ' + type +
