@@ -119,7 +119,7 @@
     function flipScale(si){ return [1 - si[0], si[1]]; }
 
     heatmap.calc = function(gd, trace) {
-        if(trace.visible===false) { return; }
+        if(trace.visible===false) return;
 
         // prepare the raw data
         // run makeCalcdata on x and y even for heatmaps, in case of category mappings
@@ -143,8 +143,8 @@
 
         if(Plotly.Plots.isHist2D(trace.type)) {
             var serieslen = Math.min(x.length, y.length);
-            if(x.length>serieslen) x.splice(serieslen,x.length-serieslen);
-            if(y.length>serieslen) y.splice(serieslen,y.length-serieslen);
+            if(x.length>serieslen) x.splice(serieslen, x.length-serieslen);
+            if(y.length>serieslen) y.splice(serieslen, y.length-serieslen);
 
             Plotly.Lib.markTime('done convert data');
 

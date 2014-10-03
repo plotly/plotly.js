@@ -84,6 +84,10 @@
         else if(traceOut.orientation==='h') binDirections = ['y'];
 
         binDirections.forEach(function(binDirection){
+            // data being binned - note that even though it's a little weird,
+            // it's possible to have bins without data, if there's inferred data
+            Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, binDirection);
+
             var autobin = coerce('autobin' + binDirection);
 
             if(autobin) coerce('nbins' + binDirection);
@@ -104,12 +108,10 @@
         var pos = [],
             size = [],
             i,
-            // orientation = trace.orientation || ((trace.y && !trace.x) ? 'h' : 'v'),
             pa = Plotly.Axes.getFromId(gd,
                 trace.orientation==='h' ? (trace.yaxis || 'y') : (trace.xaxis || 'x')),
             maindata = trace.orientation==='h' ? 'y' : 'x',
             counterdata = {x: 'y', y: 'x'}[maindata];
-            // calcInfo = {orientation: orientation};
 
         // prepare the raw data
         var pos0 = pa.makeCalcdata(trace, maindata);
