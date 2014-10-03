@@ -1173,56 +1173,55 @@
         }
     };
 
-function relinkPrivateKeys(toLayout, fromLayout) {
+    function relinkPrivateKeys(toLayout, fromLayout) {
 
-    var keys = Object.keys(fromLayout);
-    var arrayObj;
-    var prevVal;
-    var ix;
-    for (var i = 0; i < keys.length; ++i) {
-        var k = keys[i];
-        if((k.charAt(0)==='_' && k.substr(0,4)!=='_has') ||
-           typeof fromLayout[k]==='function') {
-            toLayout[k] = fromLayout[k];
-        }
-        else if (Array.isArray(fromLayout[k]) && fromLayout[k].length &&
-                $.isPlainObject(fromLayout[k][0])) {
-            if (!(k in toLayout)) toLayout[k] = [];
-            else if (!Array.isArray(toLayout[k])) {
-                prevVal = toLayout[k];
-                toLayout[k] = [];
+        var keys = Object.keys(fromLayout);
+        var arrayObj;
+        var prevVal;
+        var ix;
+        for (var i = 0; i < keys.length; ++i) {
+            var k = keys[i];
+            if((k.charAt(0)==='_' && k.substr(0,4)!=='_has') ||
+               typeof fromLayout[k]==='function') {
+                toLayout[k] = fromLayout[k];
             }
-            for (var j = ix = 0; j < fromLayout[k].length; ++j) {
-                arrayObj = toLayout[k][ix];
-                toLayout[k][ix] = {};
-                relinkPrivateKeys(toLayout[k][ix], fromLayout[k][j]);
-                if (!Object.keys(toLayout[k][ix]).length) {
-                    if (arrayObj) {
-                        toLayout[k][ix] = arrayObj;
-                        ++ix;
-                    }
-                    else {
-                        toLayout[k].splice(ix, 1);
-                    }
+            else if (Array.isArray(fromLayout[k]) && fromLayout[k].length &&
+                     $.isPlainObject(fromLayout[k][0])) {
+                if (!(k in toLayout)) toLayout[k] = [];
+                else if (!Array.isArray(toLayout[k])) {
+                    prevVal = toLayout[k];
+                    toLayout[k] = [];
                 }
-                else ++ix;
-            }
-            if (!toLayout[k].length) {
-                if (prevVal) {
-                    toLayout[k] = prevVal;
-                    prevVal = undefined;
+                for (var j = ix = 0; j < fromLayout[k].length; ++j) {
+                    arrayObj = toLayout[k][ix];
+                    toLayout[k][ix] = {};
+                    relinkPrivateKeys(toLayout[k][ix], fromLayout[k][j]);
+                    if (!Object.keys(toLayout[k][ix]).length) {
+                        if (arrayObj) {
+                            toLayout[k][ix] = arrayObj;
+                            ++ix;
+                        }
+                        else {
+                            toLayout[k].splice(ix, 1);
+                        }
+                    }
+                    else ++ix;
                 }
-                else delete toLayout[k];
+                if (!toLayout[k].length) {
+                    if (prevVal) {
+                        toLayout[k] = prevVal;
+                        prevVal = undefined;
+                    }
+                    else delete toLayout[k];
+                }
             }
-        }
-        else if ($.isPlainObject(fromLayout[k])) {
-            if (!(k in toLayout)) toLayout[k] = {};
-            relinkPrivateKeys(toLayout[k], fromLayout[k]);
-            if (!Object.keys(toLayout[k]).length) delete toLayout[k];
+            else if ($.isPlainObject(fromLayout[k])) {
+                if (!(k in toLayout)) toLayout[k] = {};
+                relinkPrivateKeys(toLayout[k], fromLayout[k]);
+                if (!Object.keys(toLayout[k]).length) delete toLayout[k];
+            }
         }
     }
-}
-
 
     plots.supplyDataDefaults = function(traceIn, i, layout) {
         var traceOut = {},
