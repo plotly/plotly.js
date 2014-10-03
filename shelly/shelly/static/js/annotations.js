@@ -164,8 +164,7 @@
         // positioning
         ['x','y'].forEach(function(axletter){
             var tdMock = {_fullLayout: fullLayout},
-                axlist = Plotly.Axes.list(tdMock, axletter)
-                    .map(function(ax){ return ax._id; }),
+                axlist = Plotly.Axes.listIds(tdMock, axletter),
                 refAttr = axletter + 'ref',
                 attrDef = {};
             attrDef[refAttr] = {
