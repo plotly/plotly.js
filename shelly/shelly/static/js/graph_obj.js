@@ -710,59 +710,6 @@
             Examples.set();
         }
 
-        /*
-         * Reset all SceneFrame positions (for now just
-         * set width % as viewport x ratio)
-         * In case this is a redraw from a resize
-         */
-        gd.data
-        .filter( function (d) {
-            return plots.isGL3D(d.type);
-        } )
-        .forEach( function (d) {
-
-          // This following code inserts test data if no data is present
-          // remove after completion
-            if (!Array.isArray(d.z)) {
-                $.extend(d, SceneFrame.testData(d.type,
-                    120, 120, [40,40,60]));
-            }
-
-            /*
-             * Scene numbering proceeds as follows
-             * scene
-             * scene2
-             * scene3
-             *
-             * and d.scene will be undefined or some number or number string
-             */
-            var destScene = 'scene';
-            if (d.scene && $.isNumeric(d.scene) && d.scene > 1) {
-                destScene += d.scene;
-            }
-
-            var sceneLayout = fullLayout[destScene] || {};
-            fullLayout[destScene] = sceneLayout;
-            if (!('_webgl' in sceneLayout)) {
-                /*
-                 * build a new scene layout object or initialize a serialized one.
-                 * Applies defaults to incoming sceneLayouts.
-                 */
-                fullLayout[destScene] = sceneLayout = Plotly.Plots
-                    .defaultSceneLayout(gd, destScene, sceneLayout);
-            }
-
-            // if this data is already waiting in the queue, we can abort.
-            // This is a race condition that results from things like resize
-            // events which call Plotly.plot again. --- there is probably a
-            // better way to account for these race conditions...
-            if (sceneLayout._dataQueue.indexOf(d) > -1) return;
-
-            sceneLayout._dataQueue.push(d);
-
-        });
-
-
         fullLayout._paperdiv.style({
             width: fullLayout.width+'px',
             height: fullLayout.height+'px',
