@@ -1279,7 +1279,7 @@
         autosize: {
             type: 'enumerated',
             // TODO: better handling of 'initial'
-            values: [true, false, 'initial'],
+            values: [true, false, 'initial']
         },
         width: {
             type: 'number',
@@ -1404,8 +1404,7 @@
         Plotly.Bars.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut);
 
-        // Plotly.Gl3dLayout.supplyLayoutDefaults(layoutIn, layoutOut);
-        // Plotly.Gl3dAxes.supplyDefaults(layoutIn, layoutOut, fullData);
+        Plotly.Gl3dLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
     };
 
     plots.purge = function(gd) {
