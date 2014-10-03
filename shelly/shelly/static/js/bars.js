@@ -147,16 +147,16 @@
     // now doing this one subplot at a time
     bars.setPositions = function(gd, plotinfo) {
         var fullLayout = gd._fullLayout,
-            xa = plotinfo.x,
-            ya = plotinfo.y,
+            xa = plotinfo.x(),
+            ya = plotinfo.y(),
             i, j;
 
         ['v','h'].forEach(function(dir){
             var bl = [],
                 pLetter = {v:'x',h:'y'}[dir],
                 sLetter = {v:'y',h:'x'}[dir],
-                pa = plotinfo[pLetter],
-                sa = plotinfo[sLetter];
+                pa = plotinfo[pLetter](),
+                sa = plotinfo[sLetter]();
 
             gd._fullData.forEach(function(trace,i) {
                 if(trace.visible && Plotly.Plots.isBar(trace.type) &&
@@ -295,8 +295,8 @@
     }
 
     bars.plot = function(gd, plotinfo, cdbar) {
-        var xa = plotinfo.x,
-            ya = plotinfo.y,
+        var xa = plotinfo.x(),
+            ya = plotinfo.y(),
             fullLayout = gd._fullLayout;
 
         var bartraces = plotinfo.plot.select('.barlayer')

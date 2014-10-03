@@ -476,15 +476,15 @@
         cdheatmaps.forEach(function(cd) { plotOne(gd, plotinfo, cd); });
     };
 
-    function plotOne(gd,plotinfo,cd) {
+    function plotOne(gd, plotinfo, cd) {
         Plotly.Lib.markTime('in Heatmap.plot');
         var trace = cd[0].trace,
             uid = trace.uid,
-            xa = plotinfo.x,
-            ya = plotinfo.y,
+            xa = plotinfo.x(),
+            ya = plotinfo.y(),
             fullLayout = gd._fullLayout,
-            id='hm'+uid,
-            cbId='cb'+uid;
+            id = 'hm' + uid,
+            cbId = 'cb' + uid;
 
         fullLayout._paper.selectAll('.contour'+uid).remove(); // in case this used to be a contour map
 

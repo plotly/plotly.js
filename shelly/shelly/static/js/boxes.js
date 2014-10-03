@@ -250,8 +250,8 @@
 
     boxes.setPositions = function(gd,plotinfo) {
         var fullLayout = gd._fullLayout,
-            xa = plotinfo.x,
-            ya = plotinfo.y,
+            xa = plotinfo.x(),
+            ya = plotinfo.y(),
             boxlist = [],
             minPad = 0,
             maxPad = 0;
@@ -298,8 +298,8 @@
 
     boxes.plot = function(gd,plotinfo,cdbox) {
         var fullLayout = gd._fullLayout,
-            xa = plotinfo.x,
-            ya = plotinfo.y;
+            xa = plotinfo.x(),
+            ya = plotinfo.y();
         var boxtraces = plotinfo.plot.select('.boxlayer').selectAll('g.trace.boxes')
             .data(cdbox)
           .enter().append('g')

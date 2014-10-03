@@ -443,8 +443,10 @@
     };
 
     scatter.selectMarkers = function(gd, plotinfo, cdscatter) {
-        var xr = d3.extent(plotinfo.x.range.map(plotinfo.x.l2c)),
-            yr = d3.extent(plotinfo.y.range.map(plotinfo.y.l2c));
+        var xa = plotinfo.x(),
+            ya = plotinfo.y(),
+            xr = d3.extent(xa.range.map(xa.l2c)),
+            yr = d3.extent(ya.range.map(ya.l2c));
 
         cdscatter.forEach(function(d,i) {
             var trace = d[0].trace;
@@ -510,8 +512,8 @@
     scatter.plot = function(gd, plotinfo, cdscatter) {
         scatter.selectMarkers(gd, plotinfo, cdscatter);
 
-        var xa = plotinfo.x,
-            ya = plotinfo.y;
+        var xa = plotinfo.x(),
+            ya = plotinfo.y();
 
         // make the container for scatter plots
         // (so error bars can find them along with bars)

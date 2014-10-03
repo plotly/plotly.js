@@ -406,12 +406,12 @@
     // so we auto-set them again
     axes.clearTypes = function(gd, traces) {
         if(!$.isArray(traces) || !traces.length) {
-            traces = (gd.data||[]).map(function(d,i) { return i; });
+            traces = (gd._fullData).map(function(d,i) { return i; });
         }
         traces.forEach(function(tracenum) {
-            var d = gd.data[tracenum];
-            axes.getFromId(gd,d.xaxis||'x').type = '-';
-            axes.getFromId(gd,d.yaxis||'y').type = '-';
+            var trace = gd._fullData[tracenum];
+            axes.getFromId(gd, trace.xaxis).type = '-';
+            axes.getFromId(gd, trace.yaxis).type = '-';
         });
     };
 
@@ -1812,9 +1812,6 @@
 
         // look for subplots in the data
         (data||[]).forEach(function(d) {
-            // allow users to include x1 and y1 but convert to x and y
-            // if(d.xaxis==='x1') { d.xaxis = 'x'; }
-            // if(d.yaxis==='y1') { d.yaxis = 'y'; }
             var xid = (d.xaxis||'x'),
                 yid = (d.yaxis||'y'),
                 subplot = xid+yid;
@@ -1892,13 +1889,15 @@
 
             if(axid==='redraw') {
                 fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
-                    var plotinfo = fullLayout._plots[subplot];
+                    var plotinfo = fullLayout._plots[subplot],
+                        xa = plotinfo.x(),
+                        ya = plotinfo.y();
                     plotinfo.plot.attr('viewBox',
-                        '0 0 '+plotinfo.x._length+' '+plotinfo.y._length);
+                        '0 0 '+xa._length+' '+ya._length);
                     plotinfo.xaxislayer
-                        .selectAll('.'+plotinfo.x._id+'tick').remove();
+                        .selectAll('.'+xa._id+'tick').remove();
                     plotinfo.yaxislayer
-                        .selectAll('.'+plotinfo.y._id+'tick').remove();
+                        .selectAll('.'+ya._id+'tick').remove();
                     plotinfo.gridlayer
                         .selectAll('path').remove();
                     plotinfo.zerolinelayer
@@ -1909,9 +1908,9 @@
             if(!axid || axid==='redraw') {
                 return Plotly.Lib.syncOrAsync(axes.list(td).map(function(ax) {
                     return function(){
-                        if(!ax._id) { return; }
+                        if(!ax._id) return;
                         var axDone = axes.doTicks(td,ax._id);
-                        if(axid==='redraw') { ax._r = ax.range.slice(); }
+                        if(axid==='redraw') ax._r = ax.range.slice();
                         return axDone;
                     };
                 }));
@@ -1934,6 +1933,7 @@
         ax.setScale();
 
         var axletter = axid.charAt(0),
+            counterLetter = axes.counterLetter(axid),
             vals = axes.calcTicks(ax),
             datafn = function(d){ return d.text+d.x+ax.mirror; },
             tcls = axid+'tick',
@@ -2245,7 +2245,7 @@
 
                     // [bottom or left, top or right, free, main]
                     linepositions = ax._linepositions[subplot]||[],
-                    counteraxis = plotinfo[{x:'y', y:'x'}[axletter]],
+                    counteraxis = plotinfo[counterLetter](),
                     mainSubplot = counteraxis._id===ax.anchor,
                     ticksides = [false,false,false],
                     tickpath='';
