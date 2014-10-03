@@ -738,11 +738,12 @@
             return k.match(/^scene[0-9]*$/);
         });
 
-        scenes.map( function (sceneKey, idx) {
+        scenes.forEach( function (sceneKey, idx) {
 
             var sceneLayout = fullLayout[sceneKey];
             // we are only modifying the x domain position with this
             // simple approach
+
             sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
 
             // convert domain to position in pixels
@@ -759,36 +760,40 @@
             // context parameter so lets reset the domain of the scene as
             // it may have changed (this operates on the containing iframe)
             if (sceneLayout._webgl) sceneLayout._webgl.setPosition(sceneLayout.position);
-            return sceneLayout;
 
-        }).forEach( function (sceneLayout) {
             /*
              * We only want to continue to operate on scenes that have
              * data waiting to be displayed or require loading
              */
             var sceneOptions;
-            if (sceneLayout._loading) return;
-            if (sceneLayout._webgl !== null) {
+            var sceneData = gd._fullData.filter( function (trace) {
+                return trace.scene === sceneKey;
+            });
+
+            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
+
+            if (sceneLayout._webgl) {
                 //// woot, lets load all the data in the queue and bail outta here
-                while (sceneLayout._dataQueue.length) {
-                    var d = sceneLayout._dataQueue.shift();
+                while (sceneData.length) {
+                    var d = sceneData.shift();
                     sceneLayout._webgl.draw(fullLayout, d);
                 }
 
                 return;
             }
-            // we are not loading but no _webgl has been created. Lets load one!
-            sceneLayout._loading = true;
-            // procede to create a new scene
+
+            sceneLayout._dataQueue.concat(sceneData);
+
+            if (sceneLayout._loading) return;
 
             /*
-             * Creating new scenes
+             * Create new scenee
              */
             sceneOptions = {
                 container: gd.querySelector('.svg-container'),
                 zIndex: '1000',
-                id: sceneLayout._id,
-                plotly: Plotly,
+                id: sceneKey,
+                Plotly: Plotly,
                 width: fullLayout.width,
                 height: fullLayout.height,
                 glopts: fullLayout.glopts,
