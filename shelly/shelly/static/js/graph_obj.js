@@ -2362,12 +2362,19 @@
     // -------------------------------------------------------
     function makePlotFramework(gd) {
         var gd3 = d3.select(gd),
-            subplots = Plotly.Axes.getSubplots(gd),
+            subplots,
             fullLayout = gd._fullLayout;
 
         // TODO: now that we're never calling this on its own, can we do it
         // without initializing and drawing axes, just making containers?
-        Plotly.Axes.initAxes(gd);
+        if (fullLayout._hasCartesian && !fullLayout._hasGL3D) {
+            Plotly.Axes.initAxes(gd);
+            subplots = Plotly.Axes.getSubplots(gd);
+        } else {
+            // webgl only
+            subplots = [];
+            Plotly.Gl3dAxes.initAxes(gd);
+        }
         Plotly.Axes.setTypes(gd);
 
         var outerContainer = fullLayout._fileandcomments =
