@@ -515,15 +515,38 @@
     // convert between axis names (xaxis, xaxis2, etc, elements of td.layout)
     // and axis id's (x, x2, etc). Would probably have ditched 'xaxis'
     // completely in favor of just 'x' if it weren't ingrained in the API etc.
+    var AX_ID_PATTERN = /^[xyz][0-9]*$/,
+        AX_NAME_PATTERN = /^[xyz]axis[0-9]*$/;
     axes.id2name = function(id) {
-        if(typeof id !== 'string') return;
+        if(typeof id !== 'string' || !id.match(AX_ID_PATTERN)) return;
         var axNum = id.substr(1);
         if(axNum==='1') axNum = '';
         return id.charAt(0) + 'axis' + axNum;
     };
 
     axes.name2id = function(name) {
-        return name && name.charAt(0)+name.substr(5);
+        if(!name.match(AX_NAME_PATTERN)) return;
+        var axNum = name.substr(5);
+        if(axNum==='1') axNum = '';
+        return name.charAt(0)+axNum;
+    };
+
+    axes.cleanId = function(id, axLetter) {
+        if(!id.match(AX_ID_PATTERN)) return;
+        if(axLetter && id.charAt(0)!==axLetter) return;
+
+        var axNum = id.substr(1).replace(/^0+/,'');
+        if(axNum==='1') axNum = '';
+        return id.charAt(0) + axNum;
+    };
+
+    axes.cleanName = function(name, axLetter) {
+        if(!name.match(AX_ID_PATTERN)) return;
+        if(axLetter && name.charAt(0)!==axLetter) return;
+
+        var axNum = name.substr(5).replace(/^0+/,'');
+        if(axNum==='1') axNum = '';
+        return name.charAt(0) + 'axis' + axNum;
     };
 
     // get counteraxis letter for this axis (name or id)
@@ -1714,9 +1737,10 @@
         return x1 + x2;
     }
 
-    // get all axis objects, optionally restricted to only
-    // x or y or z by string axletter
-    axes.list = function(td, axletter, only2d) {
+    // get all axis object names
+    // optionally restricted to only x or y or z by string axletter
+    // and optionally 2D axes only, not those inside 3D scenes
+    function listNames(td, axletter, only2d) {
         var fullLayout = td._fullLayout;
         if (!fullLayout) return [];
         function filterAxis (obj) {
@@ -1726,10 +1750,7 @@
                         return false;
                     }
                     return k.match(/^[xyz]axis[0-9]*/g);
-                }).sort().map(
-                    function (k) {
-                        return obj[k];
-                    });
+                }).sort();
         }
 
         var axis2d = filterAxis(fullLayout);
@@ -1742,11 +1763,30 @@
 
         if (scenes) {
             scenes.forEach( function (sceneId) {
-                axis3d = axis3d.concat(filterAxis(fullLayout[sceneId]));
+                axis3d = axis3d.concat(
+                    filterAxis(fullLayout[sceneId])
+                        .map(function(axName) {
+                            return sceneId + '.' + axName;
+                        })
+                    );
             });
         }
 
         return axis2d.concat(axis3d);
+    }
+
+    // get all axis objects, as restricted in listNames
+    axes.list = function(td, axletter, only2d) {
+        return listNames(td, axletter, only2d)
+            .map(function(axName) {
+                return Plotly.Lib.nestedProperty(td._fullLayout, axName).get();
+            });
+    };
+
+    // get all axis ids, optionally restricted by letter
+    // this only makes sense for 2d axes
+    axes.listIds = function(td, axletter) {
+        return listNames(td, axletter, true).map(axes.name2id);
     };
 
     // get an axis object from its id 'x','x2' etc
@@ -1773,24 +1813,18 @@
         // look for subplots in the data
         (data||[]).forEach(function(d) {
             // allow users to include x1 and y1 but convert to x and y
-            if(d.xaxis==='x1') { d.xaxis = 'x'; }
-            if(d.yaxis==='y1') { d.yaxis = 'y'; }
+            // if(d.xaxis==='x1') { d.xaxis = 'x'; }
+            // if(d.yaxis==='y1') { d.yaxis = 'y'; }
             var xid = (d.xaxis||'x'),
                 yid = (d.yaxis||'y'),
                 subplot = xid+yid;
-            if(subplots.indexOf(subplot)===-1) { subplots.push(subplot); }
+            if(subplots.indexOf(subplot)===-1) subplots.push(subplot);
         });
 
         // look for subplots in the axes/anchors,
         // so that we at least draw all axes
-        Plotly.Axes.list(gd, '', true).forEach(function(ax2) {
-            // one more place to convert x1,y1 to x,y
-            if(ax2.anchor==='x1') { ax2.anchor = 'x'; }
-            if(ax2.anchor==='y1') { ax2.anchor = 'y'; }
-            if(ax2.overlaying==='x1') { ax2.overlaying = 'x'; }
-            if(ax2.overlaying==='y1') { ax2.overlaying = 'y'; }
-
-            if(!ax2._id) { Plotly.Axes.initAxis(gd,ax2); }
+        axes.list(gd, '', true).forEach(function(ax2) {
+            if(!ax2._id) axes.initAxis(gd,ax2);
             var ax2letter = ax2._id.charAt(0),
                 ax3id = ax2.anchor==='free' ?
                     {x:'y',y:'x'}[ax2letter] : ax2.anchor,
@@ -1799,9 +1833,7 @@
             function hasAx2(sp){ return sp.indexOf(ax2._id)!==-1; }
 
             // if a free axis is already represented in the data, ignore it
-            if(ax2.anchor==='free' && subplots.some(hasAx2)) {
-                return;
-            }
+            if(ax2.anchor==='free' && subplots.some(hasAx2)) return;
 
             if(!ax3) {
                 console.log('warning: couldnt find anchor ' + ax3id +
@@ -1811,9 +1843,7 @@
 
             var subplot = ax2letter==='x' ?
                 (ax2._id+ax3._id) : (ax3._id+ax2._id);
-            if(subplots.indexOf(subplot)===-1) {
-                subplots.push(subplot);
-            }
+            if(subplots.indexOf(subplot)===-1) subplots.push(subplot);
         });
 
         var spmatch = /^x([0-9]*)y([0-9]*)$/;

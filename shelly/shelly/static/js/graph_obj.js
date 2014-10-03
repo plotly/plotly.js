@@ -953,6 +953,10 @@
             if(!layout.yaxis) layout.yaxis = layout.yaxis1;
             delete layout.yaxis1;
         }
+        Plotly.Axes.list({_fullLayout:layout}).forEach(function(ax) {
+            if(ax.anchor) ax.anchor = Plotly.Axes.cleanId(ax.anchor);
+            if(ax.overlaying) ax.overlaying = Plotly.Axes.cleanId(ax.overlaying);
+        });
 
         // BACKWARD COMPATIBILITY FIXES
 
@@ -968,7 +972,14 @@
                 }
                 delete ann.ref;
             }
+            if(ann.xref && ann.xref!=='paper') {
+                ann.xref = Plotly.Axes.cleanId(ann.xref, 'x');
+            }
+            if(ann.yref && ann.yref!=='paper') {
+                ann.yref = Plotly.Axes.cleanId(ann.yref, 'y');
+            }
         });
+
         var legend = layout.legend;
         if(legend) {
             // check for old-style legend positioning (x or y is +/- 100)
@@ -1070,8 +1081,8 @@
             }
 
             // axis ids x1 -> x, y1-> y
-            if(trace.xaxis==='x1') trace.xaxis = 'x';
-            if(trace.yaxis==='y1') trace.yaxis = 'y';
+            if(trace.xaxis) trace.xaxis = Plotly.Axes.cleanId(trace.xaxis, 'x');
+            if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
         });
     }
 
@@ -1814,7 +1825,7 @@
         // do we need to force a recalc?
         var autorangeOn = false;
         Plotly.Axes.list(gd).forEach(function(ax){
-            if(ax.autorange) { autorangeOn = true; }
+            if(ax.autorange) autorangeOn = true;
         });
         if(docalc || dolayout || (docalcAutorange && autorangeOn)) {
             gd.calcdata = undefined;
@@ -2877,8 +2888,8 @@
         var options;
         if(typeof gd === 'string') gd = document.getElementById(gd);
         if(!title) {
-            Plotly.Axes.list(gd).forEach(function(ax) {
-                plots.titles(gd,ax._id+'title');
+            Plotly.Axes.listIds(gd).forEach(function(axId) {
+                plots.titles(gd, axId+'title');
             });
             plots.titles(gd,'gtitle');
             return;
