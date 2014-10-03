@@ -234,7 +234,7 @@
         return GL3DTYPES.indexOf(type) !== -1;
     };
 
-    plots.isScatter3d = function(type) {
+    plots.isScatter3D = function(type) {
         return type === 'scatter3d';
     };
 
@@ -258,7 +258,7 @@
         if (plots.isBar(type)) return Plotly.Bars;
         if (plots.isContour(type)) return Plotly.Contour;
         if (plots.isHeatmap(type)) return Plotly.Heatmap;
-        if (plots.isScatter3d(type)) return Plotly.Scatter3d;
+        if (plots.isScatter3D(type)) return Plotly.Scatter3D;
         // if(plots.isSurface(type)) return Plotly.Surface;
         if(type==='box') return Plotly.Boxes;
         console.log('Unrecognized plot type ' + type +
@@ -760,17 +760,19 @@
             // context parameter so lets reset the domain of the scene as
             // it may have changed (this operates on the containing iframe)
             if (sceneLayout._webgl) sceneLayout._webgl.setPosition(sceneLayout.position);
-
+            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
             /*
              * We only want to continue to operate on scenes that have
              * data waiting to be displayed or require loading
              */
             var sceneOptions;
-            var sceneData = gd._fullData.filter( function (trace) {
-                return trace.scene === sceneKey;
+            var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
+                return trace.uid;
             });
-
-            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
+            var sceneData = gd._fullData.filter( function (trace) {
+                return trace.scene === sceneKey &&
+                    queueUIDS.indexOf(trace.uid) === -1;
+            });
 
             if (sceneLayout._webgl) {
                 //// woot, lets load all the data in the queue and bail outta here
@@ -782,10 +784,10 @@
                 return;
             }
 
-            sceneLayout._dataQueue.concat(sceneData);
+            sceneLayout._dataQueue = sceneLayout._dataQueue.concat(sceneData);
 
             if (sceneLayout._loading) return;
-
+            sceneLayout._loading = true;
             /*
              * Create new scenee
              */
