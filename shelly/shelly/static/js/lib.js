@@ -1541,6 +1541,16 @@
             }
             propOut.set(dflt);
         },
+        'sceneid': function(v, propOut, dflt) {
+            if(typeof v === 'string' && v.substr(0,5)===dflt) {
+                var scenenum = Number(v.substr(5));
+                if(scenenum%1 === 0 && scenenum>1) {
+                    propOut.set(v);
+                    return;
+                }
+            }
+            propOut.set(dflt);
+        },
         'any': function(v, propOut, dflt) {
             if(v===undefined) propOut.set(dflt);
             else propOut.set(v);
