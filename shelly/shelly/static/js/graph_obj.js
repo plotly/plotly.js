@@ -234,11 +234,15 @@
         return GL3DTYPES.indexOf(type) !== -1;
     };
 
-    plots.isScatter3D = function(type) {
+    plots.isScatter3d = function(type) {
         return type === 'scatter3d';
     };
 
-    var ALLTYPES = ['scatter', 'box'].concat(BARTYPES, HEATMAPTYPES, GL3DTYPES);
+    plots.isSurface = function(type) {
+        return type === 'surface';
+    };
+
+    var ALLTYPES = ['scatter', 'box', 'scatter3d', 'surface'].concat(BARTYPES, HEATMAPTYPES);
 
     function getModule(trace) {
         var type = trace.type;
@@ -250,10 +254,12 @@
             );
             return;
         }
-        if(plots.isScatter(type)) return Plotly.Scatter;
-        if(plots.isBar(type)) return Plotly.Bars;
-        if(plots.isContour(type)) return Plotly.Contour;
-        if(plots.isHeatmap(type)) return Plotly.Heatmap;
+        if (plots.isScatter(type)) return Plotly.Scatter;
+        if (plots.isBar(type)) return Plotly.Bars;
+        if (plots.isContour(type)) return Plotly.Contour;
+        if (plots.isHeatmap(type)) return Plotly.Heatmap;
+        if (plots.isScatter3d(type)) return Plotly.Scatter3d;
+        // if(plots.isSurface(type)) return Plotly.Surface;
         if(type==='box') return Plotly.Boxes;
         console.log('Unrecognized plot type ' + type +
             '. Ignoring this dataset.'
@@ -704,59 +710,6 @@
             Examples.set();
         }
 
-        /*
-         * Reset all SceneFrame positions (for now just
-         * set width % as viewport x ratio)
-         * In case this is a redraw from a resize
-         */
-        gd.data
-        .filter( function (d) {
-            return plots.isGL3D(d.type);
-        } )
-        .forEach( function (d) {
-
-          // This following code inserts test data if no data is present
-          // remove after completion
-            if (!Array.isArray(d.z)) {
-                $.extend(d, SceneFrame.testData(d.type,
-                    120, 120, [40,40,60]));
-            }
-
-            /*
-             * Scene numbering proceeds as follows
-             * scene
-             * scene2
-             * scene3
-             *
-             * and d.scene will be undefined or some number or number string
-             */
-            var destScene = 'scene';
-            if (d.scene && $.isNumeric(d.scene) && d.scene > 1) {
-                destScene += d.scene;
-            }
-
-            var sceneLayout = fullLayout[destScene] || {};
-            fullLayout[destScene] = sceneLayout;
-            if (!('_webgl' in sceneLayout)) {
-                /*
-                 * build a new scene layout object or initialize a serialized one.
-                 * Applies defaults to incoming sceneLayouts.
-                 */
-                fullLayout[destScene] = sceneLayout = Plotly.Plots
-                    .defaultSceneLayout(gd, destScene, sceneLayout);
-            }
-
-            // if this data is already waiting in the queue, we can abort.
-            // This is a race condition that results from things like resize
-            // events which call Plotly.plot again. --- there is probably a
-            // better way to account for these race conditions...
-            if (sceneLayout._dataQueue.indexOf(d) > -1) return;
-
-            sceneLayout._dataQueue.push(d);
-
-        });
-
-
         fullLayout._paperdiv.style({
             width: fullLayout.width+'px',
             height: fullLayout.height+'px',
@@ -785,11 +738,12 @@
             return k.match(/^scene[0-9]*$/);
         });
 
-        scenes.map( function (sceneKey, idx) {
+        scenes.forEach( function (sceneKey, idx) {
 
             var sceneLayout = fullLayout[sceneKey];
             // we are only modifying the x domain position with this
             // simple approach
+
             sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
 
             // convert domain to position in pixels
@@ -806,36 +760,40 @@
             // context parameter so lets reset the domain of the scene as
             // it may have changed (this operates on the containing iframe)
             if (sceneLayout._webgl) sceneLayout._webgl.setPosition(sceneLayout.position);
-            return sceneLayout;
 
-        }).forEach( function (sceneLayout) {
             /*
              * We only want to continue to operate on scenes that have
              * data waiting to be displayed or require loading
              */
             var sceneOptions;
-            if (sceneLayout._loading) return;
-            if (sceneLayout._webgl !== null) {
+            var sceneData = gd._fullData.filter( function (trace) {
+                return trace.scene === sceneKey;
+            });
+
+            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
+
+            if (sceneLayout._webgl) {
                 //// woot, lets load all the data in the queue and bail outta here
-                while (sceneLayout._dataQueue.length) {
-                    var d = sceneLayout._dataQueue.shift();
+                while (sceneData.length) {
+                    var d = sceneData.shift();
                     sceneLayout._webgl.draw(fullLayout, d);
                 }
 
                 return;
             }
-            // we are not loading but no _webgl has been created. Lets load one!
-            sceneLayout._loading = true;
-            // procede to create a new scene
+
+            sceneLayout._dataQueue.concat(sceneData);
+
+            if (sceneLayout._loading) return;
 
             /*
-             * Creating new scenes
+             * Create new scenee
              */
             sceneOptions = {
                 container: gd.querySelector('.svg-container'),
                 zIndex: '1000',
-                id: sceneLayout._id,
-                plotly: Plotly,
+                id: sceneKey,
+                Plotly: Plotly,
                 width: fullLayout.width,
                 height: fullLayout.height,
                 glopts: fullLayout.glopts,
@@ -1202,9 +1160,10 @@
         // finally, fill in the pieces of layout that may need to look at data
         plots.supplyLayoutModuleDefaults(gd.layout||{}, gd._fullLayout, gd._fullData);
 
-        // patch back in any underscore or function components
-        // of fullLayout from the old one
-        gd._fullLayout = $.extend(true, onlyPrivate(oldFullLayout), gd._fullLayout);
+        // IN THE CASE OF 3D the underscore modules are Mikola's webgl contexts.
+        // There will be all sorts of pain if we deep copy active webgl scopes.
+        // Since we discard oldFullLayout, lets just copy the references over.
+        relinkPrivateKeys(gd._fullLayout, oldFullLayout);
 
         // update object references in calcdata
         if((gd.calcdata||[]).length===gd._fullData.length) {
@@ -1214,23 +1173,54 @@
         }
     };
 
-    function onlyPrivate(obj) {
-        Object.keys(obj).forEach(function(k) {
+    function relinkPrivateKeys(toLayout, fromLayout) {
+
+        var keys = Object.keys(fromLayout);
+        var arrayObj;
+        var prevVal;
+        var ix;
+        for (var i = 0; i < keys.length; ++i) {
+            var k = keys[i];
             if((k.charAt(0)==='_' && k.substr(0,4)!=='_has') ||
-                    typeof obj[k]==='function') {
-                return;
+               typeof fromLayout[k]==='function') {
+                toLayout[k] = fromLayout[k];
             }
-            if($.isPlainObject(obj[k])) {
-                onlyPrivate(obj[k]);
-                if(Object.keys(obj).length===0) delete obj[k];
+            else if (Array.isArray(fromLayout[k]) && fromLayout[k].length &&
+                     $.isPlainObject(fromLayout[k][0])) {
+                if (!(k in toLayout)) toLayout[k] = [];
+                else if (!Array.isArray(toLayout[k])) {
+                    prevVal = toLayout[k];
+                    toLayout[k] = [];
+                }
+                for (var j = ix = 0; j < fromLayout[k].length; ++j) {
+                    arrayObj = toLayout[k][ix];
+                    toLayout[k][ix] = {};
+                    relinkPrivateKeys(toLayout[k][ix], fromLayout[k][j]);
+                    if (!Object.keys(toLayout[k][ix]).length) {
+                        if (arrayObj) {
+                            toLayout[k][ix] = arrayObj;
+                            ++ix;
+                        }
+                        else {
+                            toLayout[k].splice(ix, 1);
+                        }
+                    }
+                    else ++ix;
+                }
+                if (!toLayout[k].length) {
+                    if (prevVal) {
+                        toLayout[k] = prevVal;
+                        prevVal = undefined;
+                    }
+                    else delete toLayout[k];
+                }
             }
-            else if(Array.isArray(obj[k]) && obj[k].length &&
-                    $.isPlainObject(obj[k][0])) {
-                obj[k].forEach(onlyPrivate);
+            else if ($.isPlainObject(fromLayout[k])) {
+                if (!(k in toLayout)) toLayout[k] = {};
+                relinkPrivateKeys(toLayout[k], fromLayout[k]);
+                if (!Object.keys(toLayout[k]).length) delete toLayout[k];
             }
-            else delete obj[k];
-        });
-        return obj;
+        }
     }
 
     plots.supplyDataDefaults = function(traceIn, i, layout) {
@@ -1289,7 +1279,7 @@
         autosize: {
             type: 'enumerated',
             // TODO: better handling of 'initial'
-            values: [true, false, 'initial'],
+            values: [true, false, 'initial']
         },
         width: {
             type: 'number',
@@ -1413,6 +1403,8 @@
 
         Plotly.Bars.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut);
+
+        Plotly.Gl3dLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
     };
 
     plots.purge = function(gd) {
@@ -2370,12 +2362,19 @@
     // -------------------------------------------------------
     function makePlotFramework(gd) {
         var gd3 = d3.select(gd),
-            subplots = Plotly.Axes.getSubplots(gd),
+            subplots,
             fullLayout = gd._fullLayout;
 
         // TODO: now that we're never calling this on its own, can we do it
         // without initializing and drawing axes, just making containers?
-        Plotly.Axes.initAxes(gd);
+        if (fullLayout._hasCartesian && !fullLayout._hasGL3D) {
+            Plotly.Axes.initAxes(gd);
+            subplots = Plotly.Axes.getSubplots(gd);
+        } else {
+            // webgl only
+            subplots = [];
+            Plotly.Gl3dAxes.initAxes(gd);
+        }
         Plotly.Axes.setTypes(gd);
 
         var outerContainer = fullLayout._fileandcomments =
@@ -3296,38 +3295,5 @@
         });
     };
 
-    plots.defaultSceneLayout = function (td, sceneId, existingLayout) {
-
-        function default3DAxis (axisAttributes) {
-            return $.extend(Plotly.Axes.defaultAxis({
-                _td: td,
-                gridcolor: 'rgb(102, 102, 102)',
-                showspikes: true,
-                spikesides: true,
-                spikethickness: 2,
-                showbackground: false,
-                backgroundcolor: 'rgba(204, 204, 204, 0.5)',
-                showaxeslabels: true,
-                showline: true,
-                ticklen: 0
-            }), axisAttributes);
-        }
-
-        if (!existingLayout) existingLayout = {};
-
-        return $.extend(true, {
-            _webgl: null,
-            _container: null,  // containing iframe
-            _dataQueue: [], // for asyncronously loading data
-            _loading: false,
-            _id: sceneId,
-            bgcolor: '#fff', // iframe background color
-            cameraPosition: [],
-            domain: {x:[0,1], y:[0,1]}, // default domain
-            xaxis: default3DAxis({_id:'x' + sceneId, _name: 'xaxis'}),
-            yaxis: default3DAxis({_id:'y' + sceneId, _name: 'yaxis'}),
-            zaxis: default3DAxis({_id:'z' + sceneId, _name: 'zaxis'})
-        }, existingLayout);
-    };
 
 }()); // end Plots object definition
