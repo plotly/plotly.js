@@ -234,7 +234,7 @@
         return GL3DTYPES.indexOf(type) !== -1;
     };
 
-    plots.isScatter3d = function(type) {
+    plots.isScatter3D = function(type) {
         return type === 'scatter3d';
     };
 
@@ -258,7 +258,7 @@
         if (plots.isBar(type)) return Plotly.Bars;
         if (plots.isContour(type)) return Plotly.Contour;
         if (plots.isHeatmap(type)) return Plotly.Heatmap;
-        if (plots.isScatter3d(type)) return Plotly.Scatter3d;
+        if (plots.isScatter3D(type)) return Plotly.Scatter3D;
         // if(plots.isSurface(type)) return Plotly.Surface;
         if(type==='box') return Plotly.Boxes;
         console.log('Unrecognized plot type ' + type +
