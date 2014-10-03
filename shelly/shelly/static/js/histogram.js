@@ -80,7 +80,7 @@
         coerce('histnorm');
 
         var binDirections = ['x'];
-        if(traceOut.type==='histogram2d') binDirections = ['x','y'];
+        if(Plotly.Plots.isHist2D(traceOut.type)) binDirections = ['x','y'];
         else if(traceOut.orientation==='h') binDirections = ['y'];
 
         binDirections.forEach(function(binDirection){
