@@ -76,7 +76,8 @@
             return Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, attr, dflt);
         }
 
-        coerce('histfunc');
+        var counterData = traceOut.orientation==='h' ? 'x' : 'y';
+        if(traceOut[counterData]) coerce('histfunc');
         coerce('histnorm');
 
         var binDirections = ['x'];

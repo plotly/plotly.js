@@ -46,7 +46,6 @@
         y0: {from: 'Scatter'},
         dy: {from: 'Scatter'},
         marker: {
-            opacity: {from: 'Scatter'},
             color: {from: 'Scatter'},
             colorscale: {from: 'Scatter'},
             cauto: {from: 'Scatter'},
@@ -84,7 +83,6 @@
             coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
         }
 
-        coerceScatter('marker.opacity', 1);
         Plotly.Scatter.colorScalableDefaults('marker.', coerceScatter, defaultColor);
         Plotly.Scatter.colorScalableDefaults('marker.line.', coerceScatter, '#444');
         coerceScatter('marker.line.width', 0);

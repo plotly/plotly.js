@@ -1255,7 +1255,9 @@
             if(plots.isCartesian(type)) {
                 coerce('xaxis');
                 coerce('yaxis');
-                if(!plots.isHeatmap(type)) coerce('showlegend');
+                if(!plots.isHeatmap(type) && !plots.isGL3D(type)) {
+                    coerce('showlegend');
+                }
             }
 
             // module-specific attributes

@@ -75,16 +75,16 @@
         }
         else {
             coerce('z');
-            var x = coerceScatter('x');
-            coerce('xtype', x ? 'array' : 'scaled');
-            if(!x) {
+            var x = coerceScatter('x'),
+                xtype = x ? coerce('xtype', 'array') : 'scaled';
+            if(xtype==='scaled') {
                 coerceScatter('x0');
                 coerceScatter('dx');
             }
 
-            var y = coerceScatter('y');
-            coerce('ytype', y ? 'array' : 'scaled');
-            if(!y) {
+            var y = coerceScatter('y'),
+                ytype = y ? coerce('ytype', 'array') : 'scaled';
+            if(ytype==='scaled') {
                 coerceScatter('y0');
                 coerceScatter('dy');
             }
