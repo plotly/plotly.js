@@ -73,13 +73,19 @@
             return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
-        if(!Plotly.Scatter.supplyXY(traceIn, traceOut)) return;
-
         if(traceOut.type==='histogram') {
-            coerce('orientation', (traceOut.y && !traceOut.x) ? 'h' : 'v');
+            // x, y, and orientation are coerced in Histogram.supplyDefaults
+            // (along with histogram-specific attributes)
             Plotly.Histogram.supplyDefaults(traceIn, traceOut);
+            if(!traceOut.visible) return;
         }
         else {
+            var len = Plotly.Scatter.supplyXY(traceIn, traceOut);
+            if(!len) {
+                traceOut.visible = false;
+                return;
+            }
+
             coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
         }
 
@@ -283,13 +289,14 @@
     // arrayOk attributes, merge them into calcdata array
     function arraysToCalcdata(cd) {
         var trace = cd[0].trace,
-            marker = trace.marker;
+            marker = trace.marker,
+            markerLine = marker.line;
 
         Plotly.Lib.mergeArray(trace.text, cd, 'tx');
         Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
         Plotly.Lib.mergeArray(marker.color, cd, 'mc');
-        Plotly.Lib.mergeArray(marker.line.color, cd, 'mlc');
-        Plotly.Lib.mergeArray(marker.line.width, cd, 'mlw');
+        Plotly.Lib.mergeArray(markerLine.color, cd, 'mlc');
+        Plotly.Lib.mergeArray(markerLine.width, cd, 'mlw');
     }
 
     bars.plot = function(gd, plotinfo, cdbar) {

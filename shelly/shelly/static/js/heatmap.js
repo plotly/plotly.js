@@ -68,13 +68,19 @@
         }
 
         if(Plotly.Plots.isHist2D(traceOut.type)) {
+            // x, y, z, marker.color, and x0, dx, y0, dy are coerced
+            // in Histogram.supplyDefaults
+            // (along with histogram-specific attributes)
             Plotly.Histogram.supplyDefaults(traceIn, traceOut);
-
-            // if marker.color is an array, we can use it in aggregation
-            coerceScatter('marker.color', defaultColor);
+            if(!traceOut.visible) return;
         }
         else {
-            coerce('z');
+            var z = coerce('z');
+            if(!z) {
+                traceOut.visible = false;
+                return;
+            }
+
             var x = coerceScatter('x'),
                 xtype = x ? coerce('xtype', 'array') : 'scaled';
             if(xtype==='scaled') {
