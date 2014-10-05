@@ -151,9 +151,6 @@
     };
 
     boxes.calc = function(gd, trace) {
-        // box plots make no sense if you don't have y
-        if(!('y' in trace) || trace.visible===false) return;
-
         // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
         var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
@@ -250,8 +247,8 @@
 
     boxes.setPositions = function(gd,plotinfo) {
         var fullLayout = gd._fullLayout,
-            xa = plotinfo.x,
-            ya = plotinfo.y,
+            xa = plotinfo.x(),
+            ya = plotinfo.y(),
             boxlist = [],
             minPad = 0,
             maxPad = 0;
@@ -298,8 +295,8 @@
 
     boxes.plot = function(gd,plotinfo,cdbox) {
         var fullLayout = gd._fullLayout,
-            xa = plotinfo.x,
-            ya = plotinfo.y;
+            xa = plotinfo.x(),
+            ya = plotinfo.y();
         var boxtraces = plotinfo.plot.select('.boxlayer').selectAll('g.trace.boxes')
             .data(cdbox)
           .enter().append('g')

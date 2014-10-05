@@ -332,9 +332,8 @@
         }
 
         var options = fullLayout.annotations[index] =
-                supplyAnnotationDefaults(layout.annotations[index], fullLayout);
-
-        var xa = Plotly.Axes.getFromId(gd, options.xref),
+                supplyAnnotationDefaults(optionsIn, fullLayout),
+            xa = Plotly.Axes.getFromId(gd, options.xref),
             ya = Plotly.Axes.getFromId(gd, options.yref),
             annPosPx = {x:0, y:0},
             textangle = +options.textangle || 0;

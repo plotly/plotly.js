@@ -68,23 +68,29 @@
         }
 
         if(Plotly.Plots.isHist2D(traceOut.type)) {
+            // x, y, z, marker.color, and x0, dx, y0, dy are coerced
+            // in Histogram.supplyDefaults
+            // (along with histogram-specific attributes)
             Plotly.Histogram.supplyDefaults(traceIn, traceOut);
-
-            // if marker.color is an array, we can use it in aggregation
-            coerceScatter('marker.color', defaultColor);
+            if(!traceOut.visible) return;
         }
         else {
-            coerce('z');
-            var x = coerceScatter('x');
-            coerce('xtype', x ? 'array' : 'scaled');
-            if(!x) {
+            var z = coerce('z');
+            if(!z) {
+                traceOut.visible = false;
+                return;
+            }
+
+            var x = coerceScatter('x'),
+                xtype = x ? coerce('xtype', 'array') : 'scaled';
+            if(xtype==='scaled') {
                 coerceScatter('x0');
                 coerceScatter('dx');
             }
 
-            var y = coerceScatter('y');
-            coerce('ytype', y ? 'array' : 'scaled');
-            if(!y) {
+            var y = coerceScatter('y'),
+                ytype = y ? coerce('ytype', 'array') : 'scaled';
+            if(ytype==='scaled') {
                 coerceScatter('y0');
                 coerceScatter('dy');
             }
@@ -119,8 +125,6 @@
     function flipScale(si){ return [1 - si[0], si[1]]; }
 
     heatmap.calc = function(gd, trace) {
-        if(trace.visible===false) { return; }
-
         // prepare the raw data
         // run makeCalcdata on x and y even for heatmaps, in case of category mappings
         Plotly.Lib.markTime('start convert x&y');
@@ -143,8 +147,8 @@
 
         if(Plotly.Plots.isHist2D(trace.type)) {
             var serieslen = Math.min(x.length, y.length);
-            if(x.length>serieslen) x.splice(serieslen,x.length-serieslen);
-            if(y.length>serieslen) y.splice(serieslen,y.length-serieslen);
+            if(x.length>serieslen) x.splice(serieslen, x.length-serieslen);
+            if(y.length>serieslen) y.splice(serieslen, y.length-serieslen);
 
             Plotly.Lib.markTime('done convert data');
 
@@ -476,15 +480,15 @@
         cdheatmaps.forEach(function(cd) { plotOne(gd, plotinfo, cd); });
     };
 
-    function plotOne(gd,plotinfo,cd) {
+    function plotOne(gd, plotinfo, cd) {
         Plotly.Lib.markTime('in Heatmap.plot');
         var trace = cd[0].trace,
             uid = trace.uid,
-            xa = plotinfo.x,
-            ya = plotinfo.y,
+            xa = plotinfo.x(),
+            ya = plotinfo.y(),
             fullLayout = gd._fullLayout,
-            id='hm'+uid,
-            cbId='cb'+uid;
+            id = 'hm' + uid,
+            cbId = 'cb' + uid;
 
         fullLayout._paper.selectAll('.contour'+uid).remove(); // in case this used to be a contour map
 

@@ -650,7 +650,8 @@
                 gd._modules.forEach(function(module) {
                     // plot all traces of this type on this subplot at once
                     var cdmod = cdSubplot.filter(function(cd){
-                        return cd[0].trace.module===module;
+                        var trace = cd[0].trace;
+                        return trace.module===module && trace.visible;
                     });
                     module.plot(gd,plotinfo,cdmod);
                     Plotly.Lib.markTime('done ' + (cdmod[0] && cdmod[0][0].trace.type));
@@ -1191,7 +1192,7 @@
         var keys = Object.keys(fromLayout);
         var arrayObj;
         var prevVal;
-        var ix;
+        var j, ix;
         for (var i = 0; i < keys.length; ++i) {
             var k = keys[i];
             if((k.charAt(0)==='_' && k.substr(0,4)!=='_has') ||
@@ -1205,7 +1206,7 @@
                     prevVal = toLayout[k];
                     toLayout[k] = [];
                 }
-                for (var j = ix = 0; j < fromLayout[k].length; ++j) {
+                for (j = ix = 0; j < fromLayout[k].length; ++j) {
                     arrayObj = toLayout[k][ix];
                     toLayout[k][ix] = {};
                     relinkPrivateKeys(toLayout[k][ix], fromLayout[k][j]);
@@ -1255,7 +1256,9 @@
             if(plots.isCartesian(type)) {
                 coerce('xaxis');
                 coerce('yaxis');
-                if(!plots.isHeatmap(type)) coerce('showlegend');
+                if(!plots.isHeatmap(type) && !plots.isGL3D(type)) {
+                    coerce('showlegend');
+                }
             }
 
             // module-specific attributes
@@ -1481,7 +1484,7 @@
             var module = getModule(trace),
                 cd = [];
 
-            if(module) {
+            if(module && trace.visible) {
                 cd = module.calc(gd,trace);
                 if(gd._modules.indexOf(module)===-1) gd._modules.push(module);
             }
@@ -1659,9 +1662,9 @@
                 extraparam.set(val);
             }
         }
-        var zscl = ['zmin','zmax'],
-            xbins = ['xbins.start','xbins.end','xbins.size'],
-            ybins = ['xbins.start','xbins.end','xbins.size'];
+        var zscl = ['zmin', 'zmax'],
+            xbins = ['xbins.start', 'xbins.end', 'xbins.size'],
+            ybins = ['ybins.start', 'ybins.end', 'ybins.size'];
 
         // now make the changes to gd.data (and occasionally gd.layout)
         // and figure out what kind of graphics update we need to do
@@ -2458,8 +2461,14 @@
                     plotgroup = d3.select(this).classed(subplot,true);
                 plotinfo.id = subplot;
                 // references to the axis objects controlling this subplot
-                plotinfo.x = Plotly.Axes.getFromId(gd,subplot,'x');
-                plotinfo.y = Plotly.Axes.getFromId(gd,subplot,'y');
+                plotinfo.x = function() {
+                    return Plotly.Axes.getFromId(gd,subplot,'x');
+                };
+                plotinfo.y = function() {
+                    return Plotly.Axes.getFromId(gd,subplot,'y');
+                };
+                var xa = plotinfo.x(),
+                    ya = plotinfo.y();
                 // references to any subplots overlaid on this one
                 plotinfo.overlays = [];
 
@@ -2468,18 +2477,16 @@
                 // dimension that this one overlays to be an overlaid subplot,
                 // the main plot must exist make sure we're not trying to
                 // overlay on an axis that's already overlaying another
-                var xa2 = Plotly.Axes.getFromId(gd,plotinfo.x.overlaying) ||
-                        plotinfo.x;
-                if(xa2 !== plotinfo.x && xa2.overlaying) {
-                    xa2 = plotinfo.x;
-                    plotinfo.x.overlaying = false;
+                var xa2 = Plotly.Axes.getFromId(gd, xa.overlaying) || xa;
+                if(xa2 !== xa && xa2.overlaying) {
+                    xa2 = xa;
+                    xa.overlaying = false;
                 }
 
-                var ya2 = Plotly.Axes.getFromId(gd,plotinfo.y.overlaying) ||
-                        plotinfo.y;
-                if(ya2 !== plotinfo.y && ya2.overlaying) {
-                    ya2 = plotinfo.y;
-                    plotinfo.y.overlaying = false;
+                var ya2 = Plotly.Axes.getFromId(gd, ya.overlaying) || ya;
+                if(ya2 !== ya && ya2.overlaying) {
+                    ya2 = ya;
+                    ya.overlaying = false;
                 }
 
                 var mainplot = xa2._id+ya2._id;
@@ -2493,8 +2500,8 @@
                     // tick/line domain or something, so they can still share
                     // the (possibly larger) dragger and background but don't
                     // have to both be drawn over that whole domain
-                    plotinfo.x.domain = xa2.domain.slice();
-                    plotinfo.y.domain = ya2.domain.slice();
+                    xa.domain = xa2.domain.slice();
+                    ya.domain = ya2.domain.slice();
                 }
                 else {
                     // main subplot - make the components of
@@ -2742,8 +2749,8 @@
         var freefinished = [];
         fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
             var plotinfo = fullLayout._plots[subplot],
-                xa = plotinfo.x,
-                ya = plotinfo.y;
+                xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
+                ya = Plotly.Axes.getFromId(gd, subplot, 'y');
             xa.setScale(); // this may already be done... not sure
             ya.setScale();
 

@@ -26,18 +26,16 @@
     histogram.attributes = {
         // Not so excited about either of these inheritance patterns... but I
         // think it's clear what they mean: histogram2d inherits everything from
-        // Heatmap.attributes plus marker color from Scatter, and histogram
+        // Heatmap.attributes plus marker color from Scatter (not anymore), and histogram
         // inherits everything from Bars
         allFrom: {
             histogram: 'Bars',
             histogram2d: 'Heatmap',
             histogram2dcontour: 'Contour'
         },
+        z: {type: 'data_array'},
         marker: {
-            color: {
-                from: 'Scatter',
-                type: ['histogram2d', 'histogram2dcontour']
-            }
+            color: {type: 'data_array'}
         },
         histfunc: {
             type: 'enumerated',
@@ -76,14 +74,51 @@
             return Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, attr, dflt);
         }
 
-        coerce('histfunc');
+        function coerceModule(module, attr, dflt) {
+            return Plotly.Lib.coerce(traceIn, traceOut, Plotly[module].attributes, attr, dflt);
+        }
+
+        var binDirections = ['x'],
+            hasAggregationData,
+            x = coerceModule('Scatter', 'x'),
+            y = coerceModule('Scatter', 'y');
+        if(Plotly.Plots.isHist2D(traceOut.type)) {
+            // we could try to accept x0 and dx, etc...
+            // but that's a pretty weird use case.
+            // for now require both x and y explicitly specified.
+            if(!(x && y)) {
+                traceOut.visible = false;
+                return;
+            }
+
+            // if marker.color is an array, we can use it in aggregation instead of z
+            hasAggregationData = coerce('z') || coerce('marker.color');
+
+            binDirections = ['x','y'];
+        }
+        else {
+            coerceModule('Bars', 'orientation', (y && !x) ? 'h' : 'v');
+
+            if(!traceOut[traceOut.orientation==='v' ? 'x' : 'y']) {
+                traceOut.visible = false;
+                return;
+            }
+
+            if(traceOut.orientation==='h') binDirections = ['y'];
+
+            hasAggregationData = traceOut[traceOut.orientation==='h' ? 'y' : 'x'];
+        }
+
+        if(hasAggregationData) coerce('histfunc');
         coerce('histnorm');
 
-        var binDirections = ['x'];
-        if(traceOut.type==='histogram2d') binDirections = ['x','y'];
-        else if(traceOut.orientation==='h') binDirections = ['y'];
-
         binDirections.forEach(function(binDirection){
+            // data being binned - note that even though it's a little weird,
+            // it's possible to have bins without data, if there's inferred data
+            if(!Plotly.Plots.isHist2D(traceOut.type)) {
+
+            }
+
             var autobin = coerce('autobin' + binDirection);
 
             if(autobin) coerce('nbins' + binDirection);
@@ -104,12 +139,10 @@
         var pos = [],
             size = [],
             i,
-            // orientation = trace.orientation || ((trace.y && !trace.x) ? 'h' : 'v'),
             pa = Plotly.Axes.getFromId(gd,
                 trace.orientation==='h' ? (trace.yaxis || 'y') : (trace.xaxis || 'x')),
             maindata = trace.orientation==='h' ? 'y' : 'x',
             counterdata = {x: 'y', y: 'x'}[maindata];
-            // calcInfo = {orientation: orientation};
 
         // prepare the raw data
         var pos0 = pa.makeCalcdata(trace, maindata);

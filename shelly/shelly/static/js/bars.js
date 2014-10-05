@@ -46,7 +46,6 @@
         y0: {from: 'Scatter'},
         dy: {from: 'Scatter'},
         marker: {
-            opacity: {from: 'Scatter'},
             color: {from: 'Scatter'},
             colorscale: {from: 'Scatter'},
             cauto: {from: 'Scatter'},
@@ -74,17 +73,22 @@
             return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
-        if(!Plotly.Scatter.supplyXY(traceIn, traceOut)) return;
-
         if(traceOut.type==='histogram') {
-            coerce('orientation', (traceOut.y && !traceOut.x) ? 'h' : 'v');
+            // x, y, and orientation are coerced in Histogram.supplyDefaults
+            // (along with histogram-specific attributes)
             Plotly.Histogram.supplyDefaults(traceIn, traceOut);
+            if(!traceOut.visible) return;
         }
         else {
+            var len = Plotly.Scatter.supplyXY(traceIn, traceOut);
+            if(!len) {
+                traceOut.visible = false;
+                return;
+            }
+
             coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
         }
 
-        coerceScatter('marker.opacity', 1);
         Plotly.Scatter.colorScalableDefaults('marker.', coerceScatter, defaultColor);
         Plotly.Scatter.colorScalableDefaults('marker.line.', coerceScatter, '#444');
         coerceScatter('marker.line.width', 0);
@@ -106,10 +110,6 @@
     };
 
     bars.calc = function(gd, trace) {
-        // ignore as much processing as possible (including
-        // in autorange) if bar is not visible
-        if(trace.visible===false) return;
-
         if(trace.type==='histogram') return Plotly.Histogram.calc(gd,trace);
 
         // depending on bar direction, set position and size axes
@@ -147,16 +147,16 @@
     // now doing this one subplot at a time
     bars.setPositions = function(gd, plotinfo) {
         var fullLayout = gd._fullLayout,
-            xa = plotinfo.x,
-            ya = plotinfo.y,
+            xa = plotinfo.x(),
+            ya = plotinfo.y(),
             i, j;
 
         ['v','h'].forEach(function(dir){
             var bl = [],
                 pLetter = {v:'x',h:'y'}[dir],
                 sLetter = {v:'y',h:'x'}[dir],
-                pa = plotinfo[pLetter],
-                sa = plotinfo[sLetter];
+                pa = plotinfo[pLetter](),
+                sa = plotinfo[sLetter]();
 
             gd._fullData.forEach(function(trace,i) {
                 if(trace.visible && Plotly.Plots.isBar(trace.type) &&
@@ -285,18 +285,19 @@
     // arrayOk attributes, merge them into calcdata array
     function arraysToCalcdata(cd) {
         var trace = cd[0].trace,
-            marker = trace.marker;
+            marker = trace.marker,
+            markerLine = marker.line;
 
         Plotly.Lib.mergeArray(trace.text, cd, 'tx');
         Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
         Plotly.Lib.mergeArray(marker.color, cd, 'mc');
-        Plotly.Lib.mergeArray(marker.line.color, cd, 'mlc');
-        Plotly.Lib.mergeArray(marker.line.width, cd, 'mlw');
+        Plotly.Lib.mergeArray(markerLine.color, cd, 'mlc');
+        Plotly.Lib.mergeArray(markerLine.width, cd, 'mlw');
     }
 
     bars.plot = function(gd, plotinfo, cdbar) {
-        var xa = plotinfo.x,
-            ya = plotinfo.y,
+        var xa = plotinfo.x(),
+            ya = plotinfo.y(),
             fullLayout = gd._fullLayout;
 
         var bartraces = plotinfo.plot.select('.barlayer')

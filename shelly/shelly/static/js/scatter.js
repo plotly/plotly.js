@@ -195,6 +195,11 @@
         if(x) {
             if(y) {
                 len = Math.min(x.length, y.length);
+                // TODO: not sure we should do this here... but I think
+                // the way it works in calc is wrong, because it'll delete data
+                // which could be a problem eg in streaming / editing if x and y
+                // come in at different times
+                // so we need to revisit calc before taking this out
                 if(len<x.length) traceOut.x = x.slice(0, len);
                 if(len<y.length) traceOut.y = y.slice(0, len);
             }
@@ -339,26 +344,6 @@
     };
 
     scatter.calc = function(gd,trace) {
-        // verify that data exists, and make scaled data if necessary
-        if(!('y' in trace) && !('x' in trace)) return; // no data!
-
-        var i, cd = [];
-
-        // ignore as much processing as possible (including in autorange)
-        // if trace is not visible
-        if(trace.visible===false) {
-            // even if trace is not visible, need to figure out whether
-            // there are enough points to trigger auto-no-lines
-            if(trace.mode || ((!trace.x || trace.x.length<scatter.PTS_LINESONLY) &&
-              (!trace.y || trace.y.length<scatter.PTS_LINESONLY))) {
-                return [{x: false, y: false}];
-            }
-            else {
-                for(i=0; i<scatter.PTS_LINESONLY+1; i++) cd.push({x: false, y: false});
-                return cd;
-            }
-        }
-
         var xa = Plotly.Axes.getFromId(gd,trace.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd,trace.yaxis||'y');
         Plotly.Lib.markTime('in Scatter.calc');
@@ -434,7 +419,8 @@
         Plotly.Lib.markTime('done expand y');
 
         // create the "calculated data" to plot
-        for(i=0;i<serieslen;i++) {
+        var cd = [];
+        for(var i=0; i<serieslen; i++) {
             cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ?
                 {x:x[i],y:y[i]} : {x:false, y:false});
         }
@@ -443,8 +429,10 @@
     };
 
     scatter.selectMarkers = function(gd, plotinfo, cdscatter) {
-        var xr = d3.extent(plotinfo.x.range.map(plotinfo.x.l2c)),
-            yr = d3.extent(plotinfo.y.range.map(plotinfo.y.l2c));
+        var xa = plotinfo.x(),
+            ya = plotinfo.y(),
+            xr = d3.extent(xa.range.map(xa.l2c)),
+            yr = d3.extent(ya.range.map(ya.l2c));
 
         cdscatter.forEach(function(d,i) {
             var trace = d[0].trace;
@@ -486,32 +474,33 @@
 
     // arrayOk attributes, merge them into calcdata array
     function arraysToCalcdata(cd) {
-        var trace = cd[0].trace;
+        var trace = cd[0].trace,
+            marker = trace.marker;
 
         Plotly.Lib.mergeArray(trace.text, cd, 'tx');
         Plotly.Lib.mergeArray(trace.textposition, cd, 'tp');
         if(trace.textfont) {
-            Plotly.Lib.mergeArray(trace.textfont.size, 'ts');
+            Plotly.Lib.mergeArray(trace.textfont.size, cd, 'ts');
             Plotly.Lib.mergeArray(trace.textfont.color, cd, 'tc');
             Plotly.Lib.mergeArray(trace.textfont.family, cd, 'tf');
         }
 
-        if(scatter.hasMarkers(trace)) {
-            var marker = trace.marker;
+        if(marker) {
+            var markerLine = marker.line;
             Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
             Plotly.Lib.mergeArray(marker.size, cd, 'ms');
             Plotly.Lib.mergeArray(marker.symbol, cd, 'mx');
             Plotly.Lib.mergeArray(marker.color, cd, 'mc');
-            Plotly.Lib.mergeArray(marker.line.color, cd, 'mlc');
-            Plotly.Lib.mergeArray(marker.line.width, cd, 'mlw');
+            Plotly.Lib.mergeArray(markerLine.color, cd, 'mlc');
+            Plotly.Lib.mergeArray(markerLine.width, cd, 'mlw');
         }
     }
 
     scatter.plot = function(gd, plotinfo, cdscatter) {
         scatter.selectMarkers(gd, plotinfo, cdscatter);
 
-        var xa = plotinfo.x,
-            ya = plotinfo.y;
+        var xa = plotinfo.x(),
+            ya = plotinfo.y();
 
         // make the container for scatter plots
         // (so error bars can find them along with bars)

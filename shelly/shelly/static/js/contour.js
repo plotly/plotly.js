@@ -96,8 +96,6 @@
     };
 
     contour.calc = function(gd, trace) {
-        if(trace.visible===false) return;
-
         // most is the same as heatmap calc, then adjust it
         // though a few things inside heatmap calc still look for
         // contour maps, because the makeBoundArray calls are too entangled
@@ -172,8 +170,8 @@
             contours = trace.contours,
             smoothing = (trace.line||{}).smoothing,
             uid = trace.uid,
-            xa = plotinfo.x,
-            ya = plotinfo.y,
+            xa = plotinfo.x(),
+            ya = plotinfo.y(),
             fullLayout = gd._fullLayout,
             id='contour'+uid,
             contourLevels = [],
@@ -210,7 +208,7 @@
                 trace._input.zmax = trace.zmax =
                     trace.zmin + contourLevels.length * contours.size;
             }
-            Plotly.Heatmap.plot(gd,plotinfo,[cd]);
+            Plotly.Heatmap.plot(gd, plotinfo, [cd]);
         }
         // in case this used to be a heatmap (or have heatmap fill)
         else fullLayout._paper.selectAll('.hm'+uid).remove();
