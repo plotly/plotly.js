@@ -110,10 +110,6 @@
     };
 
     bars.calc = function(gd, trace) {
-        // ignore as much processing as possible (including
-        // in autorange) if bar is not visible
-        if(trace.visible===false) return;
-
         if(trace.type==='histogram') return Plotly.Histogram.calc(gd,trace);
 
         // depending on bar direction, set position and size axes

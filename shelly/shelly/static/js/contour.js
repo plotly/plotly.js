@@ -96,8 +96,6 @@
     };
 
     contour.calc = function(gd, trace) {
-        if(trace.visible===false) return;
-
         // most is the same as heatmap calc, then adjust it
         // though a few things inside heatmap calc still look for
         // contour maps, because the makeBoundArray calls are too entangled

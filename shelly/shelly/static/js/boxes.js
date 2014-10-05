@@ -151,9 +151,6 @@
     };
 
     boxes.calc = function(gd, trace) {
-        // box plots make no sense if you don't have y
-        if(!('y' in trace) || trace.visible===false) return;
-
         // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
         var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),

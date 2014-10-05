@@ -344,15 +344,6 @@
     };
 
     scatter.calc = function(gd,trace) {
-        // verify that data exists, and make scaled data if necessary
-        if(!('y' in trace) && !('x' in trace)) return; // no data!
-
-        var i, cd = [];
-
-        // ignore as much processing as possible (including in autorange)
-        // if trace is not visible
-        if(trace.visible===false) return;
-
         var xa = Plotly.Axes.getFromId(gd,trace.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd,trace.yaxis||'y');
         Plotly.Lib.markTime('in Scatter.calc');
@@ -428,7 +419,8 @@
         Plotly.Lib.markTime('done expand y');
 
         // create the "calculated data" to plot
-        for(i=0;i<serieslen;i++) {
+        var cd = [];
+        for(var i=0; i<serieslen; i++) {
             cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ?
                 {x:x[i],y:y[i]} : {x:false, y:false});
         }

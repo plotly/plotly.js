@@ -1484,7 +1484,7 @@
             var module = getModule(trace),
                 cd = [];
 
-            if(module) {
+            if(module && trace.visible) {
                 cd = module.calc(gd,trace);
                 if(gd._modules.indexOf(module)===-1) gd._modules.push(module);
             }

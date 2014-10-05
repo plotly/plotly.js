@@ -125,8 +125,6 @@
     function flipScale(si){ return [1 - si[0], si[1]]; }
 
     heatmap.calc = function(gd, trace) {
-        if(trace.visible===false) return;
-
         // prepare the raw data
         // run makeCalcdata on x and y even for heatmaps, in case of category mappings
         Plotly.Lib.markTime('start convert x&y');
