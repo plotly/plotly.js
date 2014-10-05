@@ -2088,10 +2088,14 @@
             // logical XOR (ie will islog actually change)
             if(pleaf==='type' && (parent.type ==='log' ?
                     vi!=='log' : vi==='log')) {
-                var ax = parent,
-                    r0 = ax.range[0],
-                    r1 = ax.range[1];
+                var ax = parent;
+                if (!parent.range) {
+                    doextra(ptrunk+'.autorange', true);
+                    continue;
+                }
                 if(!parent.autorange) {
+                  var r0 = ax.range[0],
+                      r1 = ax.range[1];
                     if(vi==='log') {
                         // if both limits are negative, autorange
                         if(r0<=0 && r1<=0) {
@@ -2111,10 +2115,10 @@
                         doextra(ptrunk+'.range[1]', Math.pow(10, r1));
                     }
                 }
-                else if(vi==='log') {
+                else if(vi==='log' && ax.range) {
                     // just make sure the range is positive and in the right
                     // order, it'll get recalculated later
-                    ax.range = r1>r0 ? [1,2] : [2,1];
+                    ax.range = ax.range[1]>ax.range[0] ? [1,2] : [2,1];
                 }
             }
 
