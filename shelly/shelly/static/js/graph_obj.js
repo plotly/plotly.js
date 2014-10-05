@@ -1661,9 +1661,9 @@
                 extraparam.set(val);
             }
         }
-        var zscl = ['zmin','zmax'],
-            xbins = ['xbins.start','xbins.end','xbins.size'],
-            ybins = ['xbins.start','xbins.end','xbins.size'];
+        var zscl = ['zmin', 'zmax'],
+            xbins = ['xbins.start', 'xbins.end', 'xbins.size'],
+            ybins = ['ybins.start', 'ybins.end', 'ybins.size'];
 
         // now make the changes to gd.data (and occasionally gd.layout)
         // and figure out what kind of graphics update we need to do
