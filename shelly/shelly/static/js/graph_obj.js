@@ -650,7 +650,8 @@
                 gd._modules.forEach(function(module) {
                     // plot all traces of this type on this subplot at once
                     var cdmod = cdSubplot.filter(function(cd){
-                        return cd[0].trace.module===module;
+                        var trace = cd[0].trace;
+                        return trace.module===module && trace.visible;
                     });
                     module.plot(gd,plotinfo,cdmod);
                     Plotly.Lib.markTime('done ' + (cdmod[0] && cdmod[0][0].trace.type));
