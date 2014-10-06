@@ -199,21 +199,21 @@
         }
 
         xaList.concat(yaList).forEach(function(axName){
-            var axLetter = axName.charAt(0);
-            var axLayoutIn = layoutIn[axName] || {};
-            var defaultOptions = {
+            var axLetter = axName.charAt(0),
+                axLayoutIn = layoutIn[axName] || {},
+                defaultOptions = {
                     letter: axLetter,
                     font: layoutOut.font,
                     outerTicks: outerTicks[axName],
                     showGrid: !noGrids[axName]
-            };
-            var positioningOptions = {
-                letter: axLetter,
-                counterAxes: {x: yaList, y: xaList}[axLetter].map(axes.name2id),
-                overlayableAxes: {x: xaList, y: yaList}[axLetter].filter(function(axName2){
-                    return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
-                }).map(axes.name2id)
-            };
+                },
+                positioningOptions = {
+                    letter: axLetter,
+                    counterAxes: {x: yaList, y: xaList}[axLetter].map(axes.name2id),
+                    overlayableAxes: {x: xaList, y: yaList}[axLetter].filter(function(axName2){
+                        return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
+                    }).map(axes.name2id)
+                };
 
             layoutOut[axName] = axes.supplyAxisDefaults(axLayoutIn, defaultOptions);
             axes.supplyAxisPositioningDefaults(axLayoutIn,
@@ -1509,30 +1509,29 @@
         if(hideexp) { hideexp = 'hide'; }
 
         if(ax.type==='date'){
-            var d=new Date(x);
-            if(hover && ax.hoverformat &&
-                    (typeof ax.hoverformat === 'string')) {
+            var d = new Date(x);
+            if(hover && ax.hoverformat) {
                 tt = modDateFormat(ax.hoverformat,x);
             }
-            else if(ax.tickformat && (typeof ax.tickformat === 'string')) {
+            else if(ax.tickformat) {
                 tt = modDateFormat(ax.tickformat,x);
                 // TODO: potentially hunt for ways to automatically add more
                 // precision to the hover text?
             }
             else {
                 if(hover) {
-                    if($.isNumeric(tr)) { tr+=2; }
-                    else { tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr]; }
+                    if($.isNumeric(tr)) tr+=2;
+                    else tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr];
                 }
-                if(tr==='y') { tt = yearFormat(d); }
-                else if(tr==='m') { tt = monthFormat(d); }
+                if(tr==='y') tt = yearFormat(d);
+                else if(tr==='m') tt = monthFormat(d);
                 else {
                     if(x===ax._tmin && !hover) {
                         suffix = '<br>'+yearFormat(d);
                     }
 
-                    if(tr==='d') { tt = dayFormat(d); }
-                    else if(tr==='H') { tt = hourFormat(d); }
+                    if(tr==='d') tt = dayFormat(d);
+                    else if(tr==='H') tt = hourFormat(d);
                     else {
                         if(x===ax._tmin && !hover) {
                             suffix = '<br>'+dayFormat(d)+', '+yearFormat(d);

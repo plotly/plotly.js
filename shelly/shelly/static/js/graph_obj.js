@@ -2119,8 +2119,8 @@
                     continue;
                 }
                 if(!parent.autorange) {
-                  var r0 = ax.range[0],
-                      r1 = ax.range[1];
+                    var r0 = ax.range[0],
+                        r1 = ax.range[1];
                     if(vi==='log') {
                         // if both limits are negative, autorange
                         if(r0<=0 && r1<=0) {
