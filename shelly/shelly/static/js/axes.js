@@ -98,6 +98,14 @@
             values: ['none', 'e', 'E', 'power', 'SI', 'B'],
             dflt: 'B'
         },
+        tickformat: {
+            type: 'string',
+            dflt: ''
+        },
+        hoverformat: {
+            type: 'string',
+            dflt: ''
+        },
         // lines and grids
         showline: {
             type: 'boolean',
@@ -283,6 +291,11 @@
             coerce('tickangle');
             coerce('showexponent');
             coerce('exponentformat');
+
+            if(axType==='date') {
+                coerce('tickformat');
+                coerce('hoverformat');
+            }
         }
 
         var showLine = coerce('showline');
