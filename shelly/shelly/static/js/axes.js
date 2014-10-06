@@ -530,40 +530,34 @@
     };
 
     function setType(ax){
-        var axletter = ax._id.charAt(0),
-            data = ax._td.data,
-            id = ax._id;
+        // new logic: let people specify any type they want,
+        // only autotype if type is '-'
+        if(ax.type!=='-') return;
+
+        var id = ax._id,
+            axLetter = id.charAt(0),
+            data = ax._td._fullData;
 
         // support 3d
-        if (id.indexOf('scene') !== -1) id = id.charAt(0);
+        if (id.indexOf('scene') !== -1) id = axLetter;
 
         data = data.filter( function(di) {
-            return (di[axletter+'axis']||axletter)===id;
+            return (di[axLetter+'axis']||axLetter)===id;
         });
 
-        if(!data.length) { return; }
+        if(!data.length) return;
         var d0 = data[0];
-        if(!d0) { return; }
-        var dtype = d0.type||'scatter';
 
 
-        // new logic: let people specify any type they want,
-        // only autotype if type is unknown, including the initial '-'
-        if(['linear','log','date','category'].indexOf(ax.type)!==-1) {
-            return;
-        }
-
-        // guess at axis type with the new property format
         // first check for histograms, as the count direction
         // should always default to a linear axis
-        if(dtype==='histogram' &&
-                axletter==={v:'y',h:'x'}[d0.orientation||'v']) {
+        if(d0.type==='histogram' &&
+                axLetter==={v:'y',h:'x'}[d0.orientation||'v']) {
             ax.type='linear';
             return;
         }
         // then check the data supplied for that axis
-        // only consider existing type if we need to decide log vs linear
-        if(d0.type==='box' && axletter==='x' && !('x' in d0) && !('x0' in d0)) {
+        if(d0.type==='box' && axLetter==='x' && !('x' in d0) && !('x0' in d0)) {
             // check all boxes on this x axis to see
             // if they're dates, numbers, or categories
             ax.type = axes.autoType(
@@ -576,16 +570,15 @@
             );
         }
         else {
-            ax.type = axes.autoType((axletter in d0) ?
-                d0[axletter] : [d0[axletter+'0']]);
+            ax.type = axes.autoType(d0[axLetter] || [d0[axLetter+'0']]);
         }
     }
 
     axes.autoType = function(array) {
-        if(axes.moreDates(array)) { return 'date'; }
-        if(axes.category(array)) { return 'category'; }
-        if(linearOK(array)) { return 'linear'; }
-        else { return '-'; }
+        if(axes.moreDates(array)) return 'date';
+        if(axes.category(array)) return 'category';
+        if(linearOK(array)) return 'linear';
+        else return '-';
     };
 
     // is there at least one number in array? If not, we should leave
