@@ -964,6 +964,7 @@
     function cleanLayout(layout) {
         // make a few changes to the layout right away
         // before it gets used for anything
+        // backward compatibility and cleanup of nonstandard options
 
         if(!layout) layout = {};
 
@@ -979,9 +980,21 @@
         Plotly.Axes.list({_fullLayout:layout}).forEach(function(ax) {
             if(ax.anchor) ax.anchor = Plotly.Axes.cleanId(ax.anchor);
             if(ax.overlaying) ax.overlaying = Plotly.Axes.cleanId(ax.overlaying);
-        });
 
-        // BACKWARD COMPATIBILITY FIXES
+            // old method of axis type - isdate and islog (before category existed)
+            if(!ax.type) {
+                if(ax.isdate) ax.type='date';
+                else if(ax.islog) ax.type='log';
+                else if(ax.isdate===false && ax.islog===false) ax.type='linear';
+            }
+            if(ax.autorange==='withzero') {
+                ax.autorange = true;
+                ax.rangemode = 'withzero';
+            }
+            delete ax.islog;
+            delete ax.isdate;
+            delete ax.categories; // replaced by _categories
+        });
 
         (layout.annotations||[]).forEach(function(ann) {
             if(ann.ref) {

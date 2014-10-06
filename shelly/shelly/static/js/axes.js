@@ -541,22 +541,6 @@
             return (di[axletter+'axis']||axletter)===id;
         });
 
-        // backward compatibility
-        // TODO: move this to layout import
-        if(!ax.type) {
-            if(ax.isdate) { ax.type='date'; }
-            else if(ax.islog) { ax.type='log'; }
-            else if(ax.isdate===false && ax.islog===false) { ax.type='linear'; }
-        }
-        if(ax.autorange==='withzero') {
-            ax.autorange = true;
-            ax.automode = 'withzero';
-        }
-        // now remove the obsolete properties
-        delete ax.islog;
-        delete ax.isdate;
-        delete ax.categories; // obsolete (new one is private)
-
         if(!data.length) { return; }
         var d0 = data[0];
         if(!d0) { return; }
