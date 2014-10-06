@@ -376,45 +376,6 @@
         return containerOut;
     };
 
-    axes.defaultAxis = function(extras) {
-        return $.extend({
-            range: [-1,6],
-            type: '-',
-            showline: false,
-            mirror: false,
-            linecolor: '#444',
-            linewidth: 1,
-            tick0: 0,
-            dtick: 1,
-            ticks: '',
-            ticklen: 5,
-            tickwidth: 1,
-            tickcolor: '#444',
-            nticks: 0,
-            showticklabels: true,
-            tickangle: 'auto',
-            exponentformat: 'B',
-            showexponent: 'all',
-            showgrid: true,
-            gridcolor: '#eee',
-            gridwidth: 1,
-            autorange: true,
-            rangemode: 'normal',
-            autotick: true,
-            zeroline: true,
-            zerolinecolor: '#444',
-            zerolinewidth: 1,
-            titlefont: {family:'', size:0, color:''},
-            tickfont: {family:'', size:0, color:''},
-            // anchor, side we leave out for now as the defaults
-            // are different for x and y
-            overlaying: false,
-            domain: [0,1],
-            position: 0
-        },extras||{});
-    };
-    // TODO: add label positioning
-
     // empty out types for all axes containing these traces
     // so we auto-set them again
     axes.clearTypes = function(gd, traces) {
