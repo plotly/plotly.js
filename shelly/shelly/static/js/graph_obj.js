@@ -518,14 +518,7 @@
          */
         if (!fullLayout._hasCartesian) return Promise.resolve();
 
-        // prepare the types and conversion functions for the axes
-        // also clears the autorange bounds ._min, ._max
-        Plotly.Axes.initAxes(gd);
-        Plotly.Axes.setTypes(gd);
-
         // prepare the data and find the autorange
-
-        Plotly.Lib.markTime('done Plotly.Axes.setType');
 
         // generate calcdata, if we need to
         // to force redoing calcdata, just delete it before calling Plotly.plot
@@ -718,10 +711,6 @@
         });
 
         gd.calcdata = [];
-        Plotly.Axes.setTypes(gd);
-        // tie modebar into all iframes
-        // TODO: this doesn't get used?
-        var modebar =  $(gd).find('.svg-container .modebar')[0];
 
         /*
          * If there are scenes that need loading load them.
@@ -1186,33 +1175,44 @@
         // gd._fullData, gd._fullLayout are complete descriptions
         //      of how to draw the plot
         var oldFullLayout = gd._fullLayout || {};
-        gd._fullLayout = {};
+        var newFullLayout = gd._fullLayout = {};
 
         // first fill in what we can of layout without looking at data
         // because fullData needs a few things from layout
-        plots.supplyLayoutGlobalDefaults(gd.layout||{}, gd._fullLayout);
+        plots.supplyLayoutGlobalDefaults(gd.layout||{}, newFullLayout);
 
         // then do the data
         gd._fullData = (gd.data||[]).map(function(trace, i) {
-            return plots.supplyDataDefaults(trace, i, gd._fullLayout);
+            return plots.supplyDataDefaults(trace, i, newFullLayout);
         });
 
         // DETECT 3D, Cartesian, and Polar
         gd._fullData.forEach(function(d) {
-            if(plots.isGL3D(d.type)) gd._fullLayout._hasGL3D = true;
+            if(plots.isGL3D(d.type)) newFullLayout._hasGL3D = true;
             if(plots.isCartesian(d.type)) {
-                if('r' in d) gd._fullLayout._hasPolar = true;
-                else gd._fullLayout._hasCartesian = true;
+                if('r' in d) newFullLayout._hasPolar = true;
+                else newFullLayout._hasCartesian = true;
             }
         });
 
         // finally, fill in the pieces of layout that may need to look at data
-        plots.supplyLayoutModuleDefaults(gd.layout||{}, gd._fullLayout, gd._fullData);
+        plots.supplyLayoutModuleDefaults(gd.layout||{}, newFullLayout, gd._fullData);
 
         // IN THE CASE OF 3D the underscore modules are Mikola's webgl contexts.
         // There will be all sorts of pain if we deep copy active webgl scopes.
         // Since we discard oldFullLayout, lets just copy the references over.
-        relinkPrivateKeys(gd._fullLayout, oldFullLayout);
+        relinkPrivateKeys(newFullLayout, oldFullLayout);
+
+        doAutoMargin(gd);
+
+        var axList = Plotly.Axes.list(gd);
+        axList.forEach(function(ax) {
+            // can't quite figure out how to get rid of this... each axis needs
+            // a reference back to the DOM object for just a few purposes
+            ax._td = gd;
+
+            ax.setScale();
+        });
 
         // update object references in calcdata
         if((gd.calcdata||[]).length===gd._fullData.length) {
@@ -1230,8 +1230,11 @@
         var j, ix;
         for (var i = 0; i < keys.length; ++i) {
             var k = keys[i];
-            if((k.charAt(0)==='_' && k.substr(0,4)!=='_has') ||
-               typeof fromLayout[k]==='function') {
+            if(k.charAt(0)==='_' || typeof fromLayout[k]==='function') {
+                // if it already exists at this point, it's something
+                // that we recreate each time around, so ignore it
+                if(k in toLayout) continue;
+
                 toLayout[k] = fromLayout[k];
             }
             else if (Array.isArray(fromLayout[k]) && fromLayout[k].length &&
@@ -1607,6 +1610,12 @@
             'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
             'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
             'autocontour','ncontours','contours.coloring',
+            'error_y.visible','error_y.value','error_y.type',
+            'error_y.traceref','error_y.array','error_y.symmetric',
+            'error_y.arrayminus','error_y.valueminus','error_y.tracerefminus',
+            'error_x.visible','error_x.value','error_x.type',
+            'error_x.traceref','error_x.array','error_x.symmetric',
+            'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
             'swapxy','swapxyaxes','orientationaxes'
         ];
         // autorangeAttrs attributes need a full redo of calcdata
@@ -1615,12 +1624,6 @@
         // TODO: could we break this out as well?
         var autorangeAttrs = [
             'marker.size','textfont.size','textposition',
-            'error_y.visible','error_y.value','error_y.type',
-            'error_y.traceref','error_y.array','error_y.symmetric',
-            'error_y.arrayminus','error_y.valueminus','error_y.tracerefminus',
-            'error_x.visible','error_x.value','error_x.type',
-            'error_x.traceref','error_x.array','error_x.symmetric',
-            'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
             'boxpoints','jitter','pointpos','whiskerwidth','boxmean'
         ];
         // replotAttrs attributes need a replot (because different
@@ -2423,14 +2426,12 @@
         // TODO: now that we're never calling this on its own, can we do it
         // without initializing and drawing axes, just making containers?
         if (fullLayout._hasCartesian && !fullLayout._hasGL3D) {
-            Plotly.Axes.initAxes(gd);
             subplots = Plotly.Axes.getSubplots(gd);
         } else {
             // webgl only
             subplots = [];
             Plotly.Gl3dAxes.initAxes(gd);
         }
-        Plotly.Axes.setTypes(gd);
 
         var outerContainer = fullLayout._fileandcomments =
                 gd3.selectAll('.file-and-comments');
@@ -2679,7 +2680,7 @@
                 };
             }
 
-            if(!gd._replotting) { doAutoMargin(gd); }
+            if(!gd._replotting) doAutoMargin(gd);
         }
     };
 
