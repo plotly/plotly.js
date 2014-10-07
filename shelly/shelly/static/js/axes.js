@@ -21,7 +21,9 @@
         titlefont: {type: 'font'},
         type: {
             type: 'enumerated',
-            // TODO: can we get rid of '-' with this framework?
+            // '-' means we haven't yet run autotype or couldn't find any data
+            // it gets turned into linear in td._fullLayout but not copied back
+            // to td.data like the others are.
             values: ['-', 'linear', 'log', 'date', 'category'],
             dflt: '-'
         },
@@ -97,6 +99,14 @@
             type: 'enumerated',
             values: ['none', 'e', 'E', 'power', 'SI', 'B'],
             dflt: 'B'
+        },
+        tickformat: {
+            type: 'string',
+            dflt: ''
+        },
+        hoverformat: {
+            type: 'string',
+            dflt: ''
         },
         // lines and grids
         showline: {
@@ -199,26 +209,34 @@
         }
 
         xaList.concat(yaList).forEach(function(axName){
-            var axLetter = axName.charAt(0);
-            var axLayoutIn = layoutIn[axName] || {};
-            var defaultOptions = {
+            var axLetter = axName.charAt(0),
+                axLayoutIn = layoutIn[axName] || {},
+                defaultOptions = {
                     letter: axLetter,
                     font: layoutOut.font,
                     outerTicks: outerTicks[axName],
-                    showGrid: !noGrids[axName]
-            };
-            var positioningOptions = {
-                letter: axLetter,
-                counterAxes: {x: yaList, y: xaList}[axLetter].map(axes.name2id),
-                overlayableAxes: {x: xaList, y: yaList}[axLetter].filter(function(axName2){
-                    return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
-                }).map(axes.name2id)
-            };
+                    showGrid: !noGrids[axName],
+                    name: axName,
+                    data: fullData
+                },
+                positioningOptions = {
+                    letter: axLetter,
+                    counterAxes: {x: yaList, y: xaList}[axLetter].map(axes.name2id),
+                    overlayableAxes: {x: xaList, y: yaList}[axLetter].filter(function(axName2){
+                        return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
+                    }).map(axes.name2id)
+                };
 
             layoutOut[axName] = axes.supplyAxisDefaults(axLayoutIn, defaultOptions);
             axes.supplyAxisPositioningDefaults(axLayoutIn,
                                                layoutOut[axName],
                                                positioningOptions);
+
+            // so we don't have to repeat autotype unnecessarily,
+            // copy an autotype back to layoutIn
+            if(!layoutIn[axName] && axLayoutIn.type!=='-') {
+                layoutIn[axName] = {type: axLayoutIn.type};
+            }
         });
     };
 
@@ -230,14 +248,39 @@
         }
 
         var letter = options.letter,
-            title = 'Click to enter ' +
+            defaultTitle = 'Click to enter ' +
                 (options.title || (letter.toUpperCase() + ' axis')) +
                 ' title',
             font = options.font||{},
             outerTicks = options.outerTicks,
             showGrid = options.showGrid;
 
-        coerce('title', title);
+        // set up some private properties
+        if(options.name) {
+            containerOut._name = options.name;
+            containerOut._id = axes.name2id(options.name);
+        }
+        containerOut._categories = [];
+
+        // now figure out type and do some more initialization
+        var axType = coerce('type');
+        if(axType==='-') {
+            setAutoType(containerOut, options.data);
+
+            if(containerOut.type==='-') {
+                containerOut.type = 'linear';
+            }
+            else {
+                // copy autoType back to input axis
+                // note that if this object didn't exist
+                // in the input layout, we have to put it in
+                // this happens in the main supplyDefaults function
+                axType = containerIn.type = containerOut.type;
+            }
+        }
+        axes.setConvert(containerOut);
+
+        coerce('title', defaultTitle);
         // TODO: inherit from input tickfont?
         coerce('titlefont', {
             family: font.family,
@@ -245,8 +288,7 @@
             color: font.color
         });
 
-        var axType = coerce('type'),
-            validRange = (containerIn.range||[]).length===2 &&
+        var validRange = (containerIn.range||[]).length===2 &&
                 $.isNumeric(containerIn.range[0]) &&
                 $.isNumeric(containerIn.range[1]),
             autoRange = coerce('autorange', !validRange);
@@ -283,6 +325,11 @@
             coerce('tickangle');
             coerce('showexponent');
             coerce('exponentformat');
+
+            if(axType==='date') {
+                coerce('tickformat');
+                coerce('hoverformat');
+            }
         }
 
         var showLine = coerce('showline');
@@ -363,45 +410,6 @@
         return containerOut;
     };
 
-    axes.defaultAxis = function(extras) {
-        return $.extend({
-            range: [-1,6],
-            type: '-',
-            showline: false,
-            mirror: false,
-            linecolor: '#444',
-            linewidth: 1,
-            tick0: 0,
-            dtick: 1,
-            ticks: '',
-            ticklen: 5,
-            tickwidth: 1,
-            tickcolor: '#444',
-            nticks: 0,
-            showticklabels: true,
-            tickangle: 'auto',
-            exponentformat: 'B',
-            showexponent: 'all',
-            showgrid: true,
-            gridcolor: '#eee',
-            gridwidth: 1,
-            autorange: true,
-            rangemode: 'normal',
-            autotick: true,
-            zeroline: true,
-            zerolinecolor: '#444',
-            zerolinewidth: 1,
-            titlefont: {family:'', size:0, color:''},
-            tickfont: {family:'', size:0, color:''},
-            // anchor, side we leave out for now as the defaults
-            // are different for x and y
-            overlaying: false,
-            domain: [0,1],
-            position: 0
-        },extras||{});
-    };
-    // TODO: add label positioning
-
     // empty out types for all axes containing these traces
     // so we auto-set them again
     axes.clearTypes = function(gd, traces) {
@@ -413,103 +421,6 @@
             axes.getFromId(gd, trace.xaxis).type = '-';
             axes.getFromId(gd, trace.yaxis).type = '-';
         });
-    };
-
-    axes.initAxes = function (td) {
-        var axlist = axes.list(td);
-        axlist.forEach(function(ax){ axes.initAxis(td,ax); });
-    };
-
-    // setTypes: figure out axis types (linear, log, date, category...)
-    // if td.axtypesok is true, we can skip this.
-    // to force axtypes to be called again, set td.axtypesok
-    // false before calling plot()
-    // this should be done if the first trace changes type or data
-    // use the first trace only.
-    // If the axis has data, see whether more looks like dates or like numbers
-    // If it has x0 & dx (etc), go by x0 (if x0 is a date and dx is a number,
-    // perhaps guess days?)
-    // If it has none of these, it will default to x0=0, dx=1, so choose number
-    // -> If not date, figure out if a log axis makes sense, using all axis data
-    axes.setTypes = function(td) {
-
-        // now get all axes
-        var axlist = axes.list(td);
-        // check for type changes
-        if(td.data && td.data.length){
-            axlist.forEach(setType);
-        }
-        // prepare the conversion functions
-        axlist.forEach(axes.setConvert);
-    };
-
-    // add a few pieces to prepare the axis object for use
-    axes.initAxis = function(td,ax) {
-        ax._td = td;
-        var fullLayout = td._fullLayout,
-            name = Object.keys(fullLayout)
-            .filter(function(k){return fullLayout[k]===ax;})[0];
-        // check if this axis is in the layout, in order to allow
-        // special-purpose axes like for colorbars that don't
-        // get this next part
-        if(name) {
-            ax._name = name;
-            ax._id = axes.name2id(ax._name);
-        }
-        if(!ax._categories) ax._categories = [];
-
-        // set scaling to pixels
-        ax.setScale = function(){
-            var gs = fullLayout._size,
-                i;
-            // make sure we have a range (linearized data values)
-            // and that it stays away from the limits of javascript numbers
-            if(!ax.range || ax.range.length!==2 || ax.range[0]===ax.range[1]) {
-                ax.range = [-1,1];
-            }
-            for(i=0; i<2; i++) {
-                if(!$.isNumeric(ax.range[i])) {
-                    ax.range[i] = $.isNumeric(ax.range[1-i]) ?
-                        (ax.range[1-i] * (i ? 10 : 0.1)) :
-                        (i ? 1 : -1);
-                }
-
-                if(ax.range[i]<-(Number.MAX_VALUE/2)) {
-                    ax.range[i] = -(Number.MAX_VALUE/2);
-                }
-                else if(ax.range[i]>Number.MAX_VALUE/2) {
-                    ax.range[i] = Number.MAX_VALUE/2;
-                }
-
-            }
-
-            if(ax._id.charAt(0)==='y') {
-                ax._offset = gs.t+(1-ax.domain[1])*gs.h;
-                ax._length = gs.h*(ax.domain[1]-ax.domain[0]);
-                ax._m = ax._length/(ax.range[0]-ax.range[1]);
-                ax._b = -ax._m*ax.range[1];
-            }
-            else {
-                ax._offset = gs.l+ax.domain[0]*gs.w;
-                ax._length = gs.w*(ax.domain[1]-ax.domain[0]);
-                ax._m = ax._length/(ax.range[1]-ax.range[0]);
-                ax._b = -ax._m*ax.range[0];
-            }
-        };
-
-        if(!ax.anchor) ax.anchor = axes.counterLetter(ax._id);
-
-        if(!ax.domain || ax.domain.length!==2 ||
-                ax.domain[0]>=ax.domain[1] ||
-                ax.domain[0]<0 || ax.domain[1]>1) {
-            ax.domain = [0,1];
-        }
-
-        if(ax.title===undefined) {
-            ax.title = 'Click to enter '+ax._id.toUpperCase()+' axis title';
-        }
-
-        return ax;
     };
 
     // convert between axis names (xaxis, xaxis2, etc, elements of td.layout)
@@ -555,57 +466,34 @@
         return {x:'y',y:'x'}[id.charAt(0)];
     };
 
-    function setType(ax){
-        var axletter = ax._id.charAt(0),
-            data = ax._td.data,
-            id = ax._id;
+    function setAutoType(ax, data){
+        // new logic: let people specify any type they want,
+        // only autotype if type is '-'
+        if(ax.type!=='-') return;
+
+        var id = ax._id,
+            axLetter = id.charAt(0);
 
         // support 3d
-        if (id.indexOf('scene') !== -1) id = id.charAt(0);
+        if (id.indexOf('scene') !== -1) id = axLetter;
 
         data = data.filter( function(di) {
-            return (di[axletter+'axis']||axletter)===id;
+            return (di[axLetter+'axis']||axLetter)===id;
         });
 
-        // backward compatibility
-        // TODO: move this to layout import
-        if(!ax.type) {
-            if(ax.isdate) { ax.type='date'; }
-            else if(ax.islog) { ax.type='log'; }
-            else if(ax.isdate===false && ax.islog===false) { ax.type='linear'; }
-        }
-        if(ax.autorange==='withzero') {
-            ax.autorange = true;
-            ax.automode = 'withzero';
-        }
-        // now remove the obsolete properties
-        delete ax.islog;
-        delete ax.isdate;
-        delete ax.categories; // obsolete (new one is private)
-
-        if(!data.length) { return; }
+        if(!data.length) return;
         var d0 = data[0];
-        if(!d0) { return; }
-        var dtype = d0.type||'scatter';
 
 
-        // new logic: let people specify any type they want,
-        // only autotype if type is unknown, including the initial '-'
-        if(['linear','log','date','category'].indexOf(ax.type)!==-1) {
-            return;
-        }
-
-        // guess at axis type with the new property format
         // first check for histograms, as the count direction
         // should always default to a linear axis
-        if(dtype==='histogram' &&
-                axletter==={v:'y',h:'x'}[d0.orientation||'v']) {
+        if(d0.type==='histogram' &&
+                axLetter==={v:'y',h:'x'}[d0.orientation||'v']) {
             ax.type='linear';
             return;
         }
         // then check the data supplied for that axis
-        // only consider existing type if we need to decide log vs linear
-        if(d0.type==='box' && axletter==='x' && !('x' in d0) && !('x0' in d0)) {
+        if(d0.type==='box' && axLetter==='x' && !('x' in d0) && !('x0' in d0)) {
             // check all boxes on this x axis to see
             // if they're dates, numbers, or categories
             ax.type = axes.autoType(
@@ -618,16 +506,15 @@
             );
         }
         else {
-            ax.type = axes.autoType((axletter in d0) ?
-                d0[axletter] : [d0[axletter+'0']]);
+            ax.type = axes.autoType(d0[axLetter] || [d0[axLetter+'0']]);
         }
     }
 
     axes.autoType = function(array) {
-        if(axes.moreDates(array)) { return 'date'; }
-        if(axes.category(array)) { return 'category'; }
-        if(linearOK(array)) { return 'linear'; }
-        else { return '-'; }
+        if(axes.moreDates(array)) return 'date';
+        if(axes.category(array)) return 'category';
+        if(linearOK(array)) return 'linear';
+        else return '-';
     };
 
     // is there at least one number in array? If not, we should leave
@@ -713,6 +600,45 @@
         ax.c2l = (ax.type==='log') ? toLog : num;
         ax.l2c = (ax.type==='log') ? fromLog : num;
 
+        // set scaling to pixels
+        ax.setScale = function(){
+            var gs = ax._td._fullLayout._size,
+                i;
+            // make sure we have a range (linearized data values)
+            // and that it stays away from the limits of javascript numbers
+            if(!ax.range || ax.range.length!==2 || ax.range[0]===ax.range[1]) {
+                ax.range = [-1,1];
+            }
+            for(i=0; i<2; i++) {
+                if(!$.isNumeric(ax.range[i])) {
+                    ax.range[i] = $.isNumeric(ax.range[1-i]) ?
+                        (ax.range[1-i] * (i ? 10 : 0.1)) :
+                        (i ? 1 : -1);
+                }
+
+                if(ax.range[i]<-(Number.MAX_VALUE/2)) {
+                    ax.range[i] = -(Number.MAX_VALUE/2);
+                }
+                else if(ax.range[i]>Number.MAX_VALUE/2) {
+                    ax.range[i] = Number.MAX_VALUE/2;
+                }
+
+            }
+
+            if(ax._id.charAt(0)==='y') {
+                ax._offset = gs.t+(1-ax.domain[1])*gs.h;
+                ax._length = gs.h*(ax.domain[1]-ax.domain[0]);
+                ax._m = ax._length/(ax.range[0]-ax.range[1]);
+                ax._b = -ax._m*ax.range[1];
+            }
+            else {
+                ax._offset = gs.l+ax.domain[0]*gs.w;
+                ax._length = gs.w*(ax.domain[1]-ax.domain[0]);
+                ax._m = ax._length/(ax.range[1]-ax.range[0]);
+                ax._b = -ax._m*ax.range[0];
+            }
+        };
+
         // clipMult: how many axis lengths past the edge do we render?
         // for panning, 1-2 would suffice, but for zooming more is nice.
         // also, clipping can affect the direction of lines off the edge...
@@ -782,15 +708,12 @@
                 // that aren't in the first etc.
                 // TODO: sorting options - do the sorting
                 // progressively here as we insert?
-                if(!ax._categories) { ax._categories = []; }
-                if(ax._categories.indexOf(v)===-1) { ax._categories.push(v); }
+                if(!ax._categories) ax._categories = [];
+                if(ax._categories.indexOf(v)===-1) ax._categories.push(v);
 
                 var c = ax._categories.indexOf(v);
                 return c===-1 ? undefined : c;
             };
-        }
-        else {
-            console.log('unknown axis type '+ax.type);
         }
 
         // makeCalcdata: takes an x or y array and converts it
@@ -814,7 +737,7 @@
                     // the opposing data, for size if we have x and dx etc
                     counterdata = tdc[{x:'y',y:'x'}[axletter]];
 
-                return counterdata.map(function(v,i){return v0+i*dv;});
+                return counterdata.map(function(v,i){ return v0+i*dv; });
             }
         };
 
@@ -1509,30 +1432,29 @@
         if(hideexp) { hideexp = 'hide'; }
 
         if(ax.type==='date'){
-            var d=new Date(x);
-            if(hover && ax.hoverformat &&
-                    (typeof ax.hoverformat === 'string')) {
+            var d = new Date(x);
+            if(hover && ax.hoverformat) {
                 tt = modDateFormat(ax.hoverformat,x);
             }
-            else if(ax.tickformat && (typeof ax.tickformat === 'string')) {
+            else if(ax.tickformat) {
                 tt = modDateFormat(ax.tickformat,x);
                 // TODO: potentially hunt for ways to automatically add more
                 // precision to the hover text?
             }
             else {
                 if(hover) {
-                    if($.isNumeric(tr)) { tr+=2; }
-                    else { tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr]; }
+                    if($.isNumeric(tr)) tr+=2;
+                    else tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr];
                 }
-                if(tr==='y') { tt = yearFormat(d); }
-                else if(tr==='m') { tt = monthFormat(d); }
+                if(tr==='y') tt = yearFormat(d);
+                else if(tr==='m') tt = monthFormat(d);
                 else {
                     if(x===ax._tmin && !hover) {
                         suffix = '<br>'+yearFormat(d);
                     }
 
-                    if(tr==='d') { tt = dayFormat(d); }
-                    else if(tr==='H') { tt = hourFormat(d); }
+                    if(tr==='d') tt = dayFormat(d);
+                    else if(tr==='H') tt = hourFormat(d);
                     else {
                         if(x===ax._tmin && !hover) {
                             suffix = '<br>'+dayFormat(d)+', '+yearFormat(d);
@@ -1821,7 +1743,6 @@
         // look for subplots in the axes/anchors,
         // so that we at least draw all axes
         axes.list(gd, '', true).forEach(function(ax2) {
-            if(!ax2._id) axes.initAxis(gd,ax2);
             var ax2letter = ax2._id.charAt(0),
                 ax3id = ax2.anchor==='free' ?
                     {x:'y',y:'x'}[ax2letter] : ax2.anchor,
@@ -1854,7 +1775,6 @@
                 return +(amatch[1]||0) - (bmatch[1]||0);
             });
         if(ax) {
-            if(!ax._id) { Plotly.Axes.initAxis(gd,ax); }
             var axmatch = new RegExp(ax._id.charAt(0)==='x' ?
                 ('^'+ax._id+'y') : (ax._id+'$') );
             return allSubplots

@@ -216,7 +216,17 @@ function handle3dCamera (ev) {
             return layout[sceneKey];
         });
 
-    layoutUpdate[attr] = val;
+    if (attr === 'reset') {
+        // Reset camera position to initial value, go in rotate mode
+        val = 'rotate';
+        var cameraPositionInitial = layout.scene._cameraPositionInitial;
+        layoutUpdate = {
+            'dragmode': 'rotate',
+            'scene.cameraposition': $.extend(true, [], cameraPositionInitial)
+        };
+    } else {
+        layoutUpdate[attr] = val;
+    }
 
     scenes.forEach( function (scene) {
         if ('_webgl' in scene && 'camera' in scene._webgl) {
@@ -284,6 +294,13 @@ ModeBar.prototype.config = {
         val: 'x',
         icon: 'ploticon-tooltip_compare',
         click: handleCartesian
+    },
+    resetCamera3d: {
+        title: 'Reset camera',
+        attr: 'reset',
+        val: '',
+        icon: 'icon-home',
+        click: handle3dCamera
     },
     zoom3d: {
         title: 'Zoom',
