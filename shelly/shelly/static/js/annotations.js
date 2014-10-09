@@ -289,7 +289,7 @@
             else if(value==='add' || $.isPlainObject(value)) {
                 fullLayout.annotations.splice(index,0,{});
                 layout.annotations.splice(index,0,
-                    $.isPlainObject(value) ? $.extend({},value) : {});
+                    $.isPlainObject(value) ? $.extend({},value) : {text: 'New text'});
 
                 for(i=fullLayout.annotations.length-1; i>index; i--) {
                     fullLayout._infolayer
