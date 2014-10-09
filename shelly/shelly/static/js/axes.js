@@ -373,7 +373,8 @@
                 anchor: {
                     type:'enumerated',
                     values: ['free'].concat(counterAxes),
-                    dflt: counterAxes[0] || 'free'
+                    dflt: $.isNumeric(containerIn.position) ? 'free' :
+                        (counterAxes[0] || 'free')
                 }
             },
             'anchor');
@@ -402,6 +403,10 @@
         }
 
         if(!overlaying) {
+            // TODO: right now I'm copying this domain over to overlaying axes
+            // in ax.setscale()... but this means we still need (imperfect) logic
+            // in the axes popover to hide domain for the overlaying axis.
+            // perhaps I should make a private version _domain that all axes get???
             var domainStart = coerce('domain[0]'),
                 domainEnd = coerce('domain[1]');
             if(domainStart > domainEnd - 0.01) containerOut.domain = [0,1];
@@ -604,6 +609,14 @@
         ax.setScale = function(){
             var gs = ax._td._fullLayout._size,
                 i;
+
+            // make sure we have a domain (pull it in from the axis
+            // this one is overlaying if necessary)
+            if(ax.overlaying) {
+                var ax2 = axes.getFromId(ax._td, ax.overlaying);
+                ax.domain = ax2.domain;
+            }
+
             // make sure we have a range (linearized data values)
             // and that it stays away from the limits of javascript numbers
             if(!ax.range || ax.range.length!==2 || ax.range[0]===ax.range[1]) {
