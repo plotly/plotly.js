@@ -35,6 +35,12 @@
     };
 
     drawing.font = function(s, family, size, fill) {
+        // also allow the form font(s, {family, size, fill})
+        if(family && family.family) {
+            fill = family.family;
+            size = family.size;
+            family = family.family;
+        }
         if(family) s.style('font-family', family);
         if(size) s.style('font-size', size+'px');
         if(fill) s.call(drawing.fillColor, fill);

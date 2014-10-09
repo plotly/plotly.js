@@ -372,7 +372,7 @@
             .text(options.text);
 
         function textLayout(s){
-            s.call(Plotly.Drawing.font, font.family, font.size, font.color)
+            s.call(Plotly.Drawing.font, font)
             .attr({
                 'text-anchor': {
                     left: 'start',
