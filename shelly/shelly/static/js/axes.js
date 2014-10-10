@@ -28,7 +28,8 @@
             dflt: '-'
         },
         autorange: {
-            type: 'boolean',
+            type: 'enumerated',
+            values: [true, false, 'reversed'],
             dflt: true
         },
         rangemode: {
