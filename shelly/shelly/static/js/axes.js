@@ -33,7 +33,7 @@
         },
         rangemode: {
             type: 'enumerated',
-            values: ['normal', 'withzero', 'nonnegative'],
+            values: ['normal', 'tozero', 'nonnegative'],
             dflt: 'normal'
         },
         range: [

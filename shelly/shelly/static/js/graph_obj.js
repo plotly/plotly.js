@@ -976,9 +976,9 @@
                 else if(ax.islog) ax.type='log';
                 else if(ax.isdate===false && ax.islog===false) ax.type='linear';
             }
-            if(ax.autorange==='withzero') {
+            if(ax.autorange==='withzero' || ax.autorange==='tozero') {
                 ax.autorange = true;
-                ax.rangemode = 'withzero';
+                ax.rangemode = 'tozero';
             }
             delete ax.islog;
             delete ax.isdate;
