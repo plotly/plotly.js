@@ -2015,7 +2015,6 @@
         if(typeof gd === 'string') gd = document.getElementById(gd);
 
         var layout = gd.layout,
-            fullLayout = gd._fullLayout,
             aobj = {},
             dolegend = false,
             doticks = false,
@@ -2088,7 +2087,7 @@
         // for editing annotations - is it on autoscaled axes?
         function annAutorange(anni,axletter) {
             var axName = Plotly.Axes.id2name(anni[axletter+'ref']||axletter);
-            return fullLayout[axName] && fullLayout[axName].autorange;
+            return (gd._fullLayout[axName]||{}).autorange;
         }
 
         var hw = ['height','width'];
@@ -2279,7 +2278,7 @@
             plots.supplyDefaults(gd);
             if(dolegend) {
                 seq.push(function doLegend(){
-                    Plotly.Legend.draw(gd, fullLayout.showlegend);
+                    Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
                     return plots.previousPromises(gd);
                 });
             }
