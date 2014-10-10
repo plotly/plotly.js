@@ -643,7 +643,7 @@
                 if(!$.isNumeric(r) || r<0) r=3;
 
                 // turn the symbol into a sanitized number
-                var x = drawing.symbolNumber(d.mx || marker.symbol),
+                var x = drawing.symbolNumber(d.mx || marker.symbol) || 0,
                     xBase = x%100;
 
                 // save if this marker is open
@@ -674,7 +674,7 @@
                 fillColor = marker.outliercolor;
             }
             else {
-                lineWidth = (d.lw+1 || markerLine.width+1 ||
+                lineWidth = (d.mlw+1 || markerLine.width+1 ||
                     // TODO: do we really need this?
                     (d.trace ? d.trace.marker.line.width : 0) + 1) -1;
 
