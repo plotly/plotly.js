@@ -293,7 +293,7 @@
                 $.isNumeric(containerIn.range[0]) &&
                 $.isNumeric(containerIn.range[1]),
             autoRange = coerce('autorange', !validRange);
-        // TODO: where does autorange machinery go?
+
         if(autoRange) coerce('rangemode');
         var range0 = coerce('range[0]', -1),
             range1 = coerce('range[1]', letter==='x' ? 6 : 4);
@@ -302,12 +302,13 @@
         }
 
         var autoTick = coerce('autotick');
-        if(autoTick) coerce('nticks');
+        if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
+        if(autoTick) {
+            if(axType!=='category') coerce('nticks');
+        }
         else {
-            // TODO: type conversion here?
-            // TODO: separate autotick0 function to avoid duplication?
-            // TODO: way to hold the auto values as defaults when you turn off autotick?
-            coerce('tick0', axType==='date' ? new Date(2000,0,1).getTime() : 0);
+            // TODO date doesn't work yet, right? axType==='date' ? new Date(2000,0,1).getTime() : 0);
+            coerce('tick0', 0);
             coerce('dtick');
         }
 
@@ -324,12 +325,14 @@
             // TODO: coerce from input titlefont and/or vice versa?
             coerce('tickfont', font);
             coerce('tickangle');
-            coerce('showexponent');
-            coerce('exponentformat');
 
             if(axType==='date') {
                 coerce('tickformat');
                 coerce('hoverformat');
+            }
+            else {
+                coerce('showexponent');
+                coerce('exponentformat');
             }
         }
 
