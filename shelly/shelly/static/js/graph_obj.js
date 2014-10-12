@@ -1108,6 +1108,27 @@
             // axis ids x1 -> x, y1-> y
             if(trace.xaxis) trace.xaxis = Plotly.Axes.cleanId(trace.xaxis, 'x');
             if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
+
+            // textposition - support partial attributes (ie just 'top')
+            // and incorrect use of middle / center etc.
+            function cleanTextPosition(textposition) {
+                var posY = 'middle',
+                    posX = 'center';
+                if(textposition.indexOf('top')!==-1) posY = 'top';
+                else if(textposition.indexOf('bottom')!==-1) posY = 'bottom';
+
+                if(textposition.indexOf('left')!==-1) posX = 'left';
+                else if(textposition.indexOf('right')!==-1) posX = 'right';
+
+                return posY + ' ' + posX;
+            }
+
+            if(Array.isArray(trace.textposition)) {
+                trace.textposition = trace.textposition.map(cleanTextPosition);
+            }
+            else if(trace.textposition) {
+                trace.textposition = cleanTextPosition(trace.textposition);
+            }
         });
     }
 
