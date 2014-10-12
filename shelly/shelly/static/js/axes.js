@@ -1428,13 +1428,10 @@
     // hover is a (truthy) flag for whether to show numbers with a bit
     // more precision for hovertext - and return just the text
     axes.tickText = function(ax, x, hover){
-        var gf = ax._td._fullLayout.font,
-            tf = ax.tickfont,
+        var tf = ax.tickfont || ax._td._fullLayout.font,
             tr = ax._tickround,
             dt = ax.dtick,
-            font = tf.family || gf.family || 'Arial',
-            fontSize = tf.size || gf.size || 12,
-            fontColor = tf.color || gf.color || '#444',
+            fontSize = tf.size,
             px = 0,
             py = 0,
             // completes the full date info, to be included
@@ -1446,7 +1443,7 @@
                 (ax.showexponent!=='all' &&
                     x!=={first:ax._tmin,last:ax._tmax}[ax.showexponent]) );
 
-        if(hideexp) { hideexp = 'hide'; }
+        if(hideexp) hideexp = 'hide';
 
         if(ax.type==='date'){
             var d = new Date(x);
@@ -1513,11 +1510,11 @@
             else if(dt.charAt(0)==='L') {
                 tt=numFormat(Math.pow(10,x),ax,hideexp, hover);
             }
-            else { throw 'unrecognized dtick '+String(dt); }
+            else throw 'unrecognized dtick '+String(dt);
         }
         else if(ax.type==='category'){
             var tt0 = ax._categories[Math.round(x)];
-            if(tt0===undefined) { tt0=''; }
+            if(tt0===undefined) tt0='';
             tt=String(tt0);
         }
         else {
@@ -1543,17 +1540,16 @@
         tt += suffix;
         // replace standard minus character (which is technically a hyphen)
         // with a true minus sign
-        if(ax.type!=='category') {
-            tt = tt.replace(/-/g,'\u2212');
-        }
+        if(ax.type!=='category') tt = tt.replace(/-/g,'\u2212');
+
         return {
             x:x,
             dx:px,
             dy:py,
             text:tt,
-            fontSize:fontSize,
-            font:font,
-            fontColor:fontColor
+            fontSize: fontSize,
+            font: tf.family,
+            fontColor: tf.color
         };
     };
 
