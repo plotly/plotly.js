@@ -1596,5 +1596,31 @@
         }
     };
 
+    // modified version of $.extend to strip out private objs and functions,
+    // and cut arrays down to first <arraylen> or 1 elements
+    // because $.extend is hella slow
+    // obj2 is assumed to already be clean of these things (including no arrays)
+    lib.minExtend = function(obj1, obj2) {
+        var objOut = {};
+        if(typeof obj2 !== 'object') obj2 = {};
+        var arrayLen = 2;
+        Object.keys(obj1).forEach(function(k) {
+            var v = obj1[k];
+            if(k.charAt(0)==='_' || typeof v === 'function') return;
+            else if(Array.isArray(v)) objOut[k] = v.slice(0,arrayLen);
+            else if(typeof v === 'object') objOut[k] = lib.minExtend(obj1[k], obj2[k]);
+            else objOut[k] = v;
+        });
+
+        Object.keys(obj2).forEach(function(k) {
+            var v = obj2[k];
+            if(typeof v !== 'object' || !(k in objOut) || typeof objOut[k] !== 'object') {
+                objOut[k] = v;
+            }
+        });
+
+        return objOut;
+    };
+
 
 }()); // end Lib object definition
