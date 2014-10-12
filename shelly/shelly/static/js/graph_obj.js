@@ -382,7 +382,7 @@
     // iframes and 3rd-party apps, standalone plots get the sidebar instead.
     function positionBrand(gd,container){
         container.text('');
-        container.append('tspan')
+        var brand = container.append('tspan')
             .style({'font-size':'11px'})
             .text('plotly - ');
         var link = container.append('a')
@@ -398,6 +398,24 @@
             link.attr({
                 'xlink:xlink:show': 'new',
                 'xlink:xlink:href': '/'+path[1]+'/'+path[2].split('.')[0]
+            });
+
+            new Bucketeer.Experiment({
+                name: "play_with_data",
+                sample: 1.0,
+                onBucketed: function(expName, bucketName) {
+                    analytics.track("Flag experiment", {Experiment: expName, Bucket: bucketName});
+                    link.on('click', function() {
+                        analytics.track("Experiment success", {Experiment: expName});
+                    });
+                },
+                buckets: {
+                    control: {},
+                    play: {onChosen: function() {
+                        brand.text("");
+                        link.text("Play with this data! " + String.fromCharCode(187));
+                    }}
+                }
             });
         }
         else {
@@ -896,6 +914,28 @@
                     sceneLayout._loading = false; // loaded
                     sceneLayout._webgl = webgl;
                     sceneLayout._container = webgl.container;
+
+                    /*
+                     * Make copy of initial camera position, this value
+                     * is used by the reset-camera button in the modebar.
+                     */
+                    if (sceneLayout.cameraposition.length) {
+                        /*
+                         * if cameraposition is not empty at this point,
+                         * it must have been saved in the workshop
+                         * or set via an API.
+                         */
+                        sceneLayout._cameraPositionInitial = $.extend(
+                            true, [], sceneLayout.cameraposition
+                        );
+                    } else {
+                        // if cameraposition is empty, set initial to default.
+                        sceneLayout._cameraPositionInitial = [
+                            $.extend(true, {}, webgl.camera.rotation),
+                            $.extend(true, {}, webgl.camera.center),
+                            webgl.camera.distance
+                        ];
+                    }
 
                     webgl.setPosition(sceneLayout.position);
 
@@ -3453,7 +3493,7 @@
             _loading: false,
             _id: sceneId,
             bgcolor: '#fff', // iframe background color
-            cameraPosition: [],
+            cameraposition: [],
             domain: {x:[0,1], y:[0,1]}, // default domain
             xaxis: default3DAxis({_id:'x' + sceneId, _name: 'xaxis'}),
             yaxis: default3DAxis({_id:'y' + sceneId, _name: 'yaxis'}),
