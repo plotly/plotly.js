@@ -659,8 +659,9 @@
         }
         // allow array marker and marker line colors to be
         // scaled by given max and min to colorscales
-        var markerScale = drawing.tryColorscale(marker, marker, ''),
-            lineScale = drawing.tryColorscale(marker, marker, 'line.');
+        var markerIn = (trace._input||{}).marker||{},
+            markerScale = drawing.tryColorscale(marker, markerIn, ''),
+            lineScale = drawing.tryColorscale(marker, markerIn, 'line.');
 
         s.each(function(d){
             // 'so' is suspected outliers, for box plots

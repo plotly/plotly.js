@@ -406,7 +406,7 @@
             var trace = d[0].trace,
                 marker = trace.marker,
                 markerLine = marker.line,
-                markerIn = trace._input.marker,
+                markerIn = (trace._input||{}).marker||{},
                 markerScale = Plotly.Drawing.tryColorscale(marker, markerIn, ''),
                 lineScale = Plotly.Drawing.tryColorscale(marker, markerIn, 'line.');
 
