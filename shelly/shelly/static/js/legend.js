@@ -39,7 +39,7 @@
         xanchor: {
             type: 'enumerated',
             values: ['auto', 'left', 'center', 'right'],
-            dflt: 'auto'
+            dflt: 'left'
         },
         y: {
             type: 'number',
