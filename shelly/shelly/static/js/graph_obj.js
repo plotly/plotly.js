@@ -806,7 +806,7 @@
                  * Make copy of initial camera position, this value
                  * is used by the reset-camera button in the modebar.
                  */
-                if (sceneLayout.cameraposition.length) {
+                if ('cameraposition' in sceneLayout && sceneLayout.cameraposition.length) {
                     /*
                      * if cameraposition is not empty at this point,
                      * it must have been saved in the workshop
