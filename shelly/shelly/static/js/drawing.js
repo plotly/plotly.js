@@ -35,6 +35,12 @@
     };
 
     drawing.font = function(s, family, size, fill) {
+        // also allow the form font(s, {family, size, fill})
+        if(family && family.family) {
+            fill = family.family;
+            size = family.size;
+            family = family.family;
+        }
         if(family) s.style('font-family', family);
         if(size) s.style('font-size', size+'px');
         if(fill) s.call(drawing.fillColor, fill);
@@ -637,7 +643,7 @@
                 if(!$.isNumeric(r) || r<0) r=3;
 
                 // turn the symbol into a sanitized number
-                var x = drawing.symbolNumber(d.mx || marker.symbol),
+                var x = drawing.symbolNumber(d.mx || marker.symbol) || 0,
                     xBase = x%100;
 
                 // save if this marker is open
@@ -653,7 +659,7 @@
         }
         // allow array marker and marker line colors to be
         // scaled by given max and min to colorscales
-        var markerIn = trace._input.marker,
+        var markerIn = (trace._input||{}).marker||{},
             markerScale = drawing.tryColorscale(marker, markerIn, ''),
             lineScale = drawing.tryColorscale(marker, markerIn, 'line.');
 
@@ -668,7 +674,7 @@
                 fillColor = marker.outliercolor;
             }
             else {
-                lineWidth = (d.lw+1 || markerLine.width+1 ||
+                lineWidth = (d.mlw+1 || markerLine.width+1 ||
                     // TODO: do we really need this?
                     (d.trace ? d.trace.marker.line.width : 0) + 1) -1;
 

@@ -28,12 +28,13 @@
             dflt: '-'
         },
         autorange: {
-            type: 'boolean',
+            type: 'enumerated',
+            values: [true, false, 'reversed'],
             dflt: true
         },
         rangemode: {
             type: 'enumerated',
-            values: ['normal', 'withzero', 'nonnegative'],
+            values: ['normal', 'tozero', 'nonnegative'],
             dflt: 'normal'
         },
         range: [
@@ -292,7 +293,7 @@
                 $.isNumeric(containerIn.range[0]) &&
                 $.isNumeric(containerIn.range[1]),
             autoRange = coerce('autorange', !validRange);
-        // TODO: where does autorange machinery go?
+
         if(autoRange) coerce('rangemode');
         var range0 = coerce('range[0]', -1),
             range1 = coerce('range[1]', letter==='x' ? 6 : 4);
@@ -301,12 +302,13 @@
         }
 
         var autoTick = coerce('autotick');
-        if(autoTick) coerce('nticks');
+        if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
+        if(autoTick) {
+            if(axType!=='category') coerce('nticks');
+        }
         else {
-            // TODO: type conversion here?
-            // TODO: separate autotick0 function to avoid duplication?
-            // TODO: way to hold the auto values as defaults when you turn off autotick?
-            coerce('tick0', axType==='date' ? new Date(2000,0,1).getTime() : 0);
+            // TODO date doesn't work yet, right? axType==='date' ? new Date(2000,0,1).getTime() : 0);
+            coerce('tick0', 0);
             coerce('dtick');
         }
 
@@ -323,12 +325,14 @@
             // TODO: coerce from input titlefont and/or vice versa?
             coerce('tickfont', font);
             coerce('tickangle');
-            coerce('showexponent');
-            coerce('exponentformat');
 
             if(axType==='date') {
                 coerce('tickformat');
                 coerce('hoverformat');
+            }
+            else {
+                coerce('showexponent');
+                coerce('exponentformat');
             }
         }
 
@@ -373,7 +377,8 @@
                 anchor: {
                     type:'enumerated',
                     values: ['free'].concat(counterAxes),
-                    dflt: counterAxes[0] || 'free'
+                    dflt: $.isNumeric(containerIn.position) ? 'free' :
+                        (counterAxes[0] || 'free')
                 }
             },
             'anchor');
@@ -402,6 +407,10 @@
         }
 
         if(!overlaying) {
+            // TODO: right now I'm copying this domain over to overlaying axes
+            // in ax.setscale()... but this means we still need (imperfect) logic
+            // in the axes popover to hide domain for the overlaying axis.
+            // perhaps I should make a private version _domain that all axes get???
             var domainStart = coerce('domain[0]'),
                 domainEnd = coerce('domain[1]');
             if(domainStart > domainEnd - 0.01) containerOut.domain = [0,1];
@@ -604,6 +613,14 @@
         ax.setScale = function(){
             var gs = ax._td._fullLayout._size,
                 i;
+
+            // make sure we have a domain (pull it in from the axis
+            // this one is overlaying if necessary)
+            if(ax.overlaying) {
+                var ax2 = axes.getFromId(ax._td, ax.overlaying);
+                ax.domain = ax2.domain;
+            }
+
             // make sure we have a range (linearized data values)
             // and that it stays away from the limits of javascript numbers
             if(!ax.range || ax.range.length!==2 || ax.range[0]===ax.range[1]) {
@@ -1389,7 +1406,7 @@
     // add one item to d3's vocabulary:
     // %{n}f where n is the max number of digits
     // of fractional seconds
-    var fracMatch = /%(\d?)f/;
+    var fracMatch = /%(\d?)f/g;
     function modDateFormat(fmt,x) {
         var fm = fmt.match(fracMatch),
             d = new Date(x);
@@ -1411,13 +1428,10 @@
     // hover is a (truthy) flag for whether to show numbers with a bit
     // more precision for hovertext - and return just the text
     axes.tickText = function(ax, x, hover){
-        var gf = ax._td._fullLayout.font,
-            tf = ax.tickfont,
+        var tf = ax.tickfont || ax._td._fullLayout.font,
             tr = ax._tickround,
             dt = ax.dtick,
-            font = tf.family || gf.family || 'Arial',
-            fontSize = tf.size || gf.size || 12,
-            fontColor = tf.color || gf.color || '#444',
+            fontSize = tf.size,
             px = 0,
             py = 0,
             // completes the full date info, to be included
@@ -1429,7 +1443,7 @@
                 (ax.showexponent!=='all' &&
                     x!=={first:ax._tmin,last:ax._tmax}[ax.showexponent]) );
 
-        if(hideexp) { hideexp = 'hide'; }
+        if(hideexp) hideexp = 'hide';
 
         if(ax.type==='date'){
             var d = new Date(x);
@@ -1496,11 +1510,11 @@
             else if(dt.charAt(0)==='L') {
                 tt=numFormat(Math.pow(10,x),ax,hideexp, hover);
             }
-            else { throw 'unrecognized dtick '+String(dt); }
+            else throw 'unrecognized dtick '+String(dt);
         }
         else if(ax.type==='category'){
             var tt0 = ax._categories[Math.round(x)];
-            if(tt0===undefined) { tt0=''; }
+            if(tt0===undefined) tt0='';
             tt=String(tt0);
         }
         else {
@@ -1526,17 +1540,16 @@
         tt += suffix;
         // replace standard minus character (which is technically a hyphen)
         // with a true minus sign
-        if(ax.type!=='category') {
-            tt = tt.replace(/-/g,'\u2212');
-        }
+        if(ax.type!=='category') tt = tt.replace(/-/g,'\u2212');
+
         return {
             x:x,
             dx:px,
             dy:py,
             text:tt,
-            fontSize:fontSize,
-            font:font,
-            fontColor:fontColor
+            fontSize: fontSize,
+            font: tf.family,
+            fontColor: tf.color
         };
     };
 

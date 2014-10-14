@@ -39,7 +39,7 @@
         xanchor: {
             type: 'enumerated',
             values: ['auto', 'left', 'center', 'right'],
-            dflt: 'auto'
+            dflt: 'left'
         },
         y: {
             type: 'number',
@@ -119,7 +119,8 @@
     };
 
     legend.points = function(d){
-        var trace = d[0].trace,
+        var d0 = d[0],
+            trace = d0.trace,
             marker = trace.marker||{},
             isScatter = (Plotly.Plots.isScatter(trace.type) ||
                          Plotly.Plots.isScatter3D(trace.type)) && trace.visible,
@@ -132,11 +133,11 @@
             // constrain text, markers, etc so they'll fit on the legend
             var dEdit = {
                 tx: 'Aa',
-                mo: Math.max(0.2, (d[0].mo+1 || marker.opacity+1 || 2) - 1)
+                mo: Math.max(0.2, (d0.mo+1 || marker.opacity+1 || 2) - 1)
             };
-            if(d[0].ms) dEdit.ms = 10; // bubble charts:
-            if(d[0].mlw>5) dEdit.mlw = 5;
-            dMod = [$.extend({},d[0], dEdit)];
+            if(d0.ms) dEdit.ms = 10; // bubble charts:
+            if(d0.mlw>5) dEdit.mlw = 5;
+            dMod = [Plotly.Lib.minExtend(d0, dEdit)];
 
             var tEdit = {textfont: {size: 10}};
             if(showMarkers) {
@@ -150,7 +151,7 @@
             if(showLines) {
                 tEdit.line = {width: Math.min(trace.line.width, 10)};
             }
-            tMod = $.extend(true, {}, trace, tEdit);
+            tMod = Plotly.Lib.minExtend(trace, tEdit);
         }
 
         var ptgroup = d3.select(this).select('g.legendpoints');

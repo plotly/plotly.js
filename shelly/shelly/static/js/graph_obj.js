@@ -976,9 +976,9 @@
                 else if(ax.islog) ax.type='log';
                 else if(ax.isdate===false && ax.islog===false) ax.type='linear';
             }
-            if(ax.autorange==='withzero') {
+            if(ax.autorange==='withzero' || ax.autorange==='tozero') {
                 ax.autorange = true;
-                ax.rangemode = 'withzero';
+                ax.rangemode = 'tozero';
             }
             delete ax.islog;
             delete ax.isdate;
@@ -1108,6 +1108,27 @@
             // axis ids x1 -> x, y1-> y
             if(trace.xaxis) trace.xaxis = Plotly.Axes.cleanId(trace.xaxis, 'x');
             if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
+
+            // textposition - support partial attributes (ie just 'top')
+            // and incorrect use of middle / center etc.
+            function cleanTextPosition(textposition) {
+                var posY = 'middle',
+                    posX = 'center';
+                if(textposition.indexOf('top')!==-1) posY = 'top';
+                else if(textposition.indexOf('bottom')!==-1) posY = 'bottom';
+
+                if(textposition.indexOf('left')!==-1) posX = 'left';
+                else if(textposition.indexOf('right')!==-1) posX = 'right';
+
+                return posY + ' ' + posX;
+            }
+
+            if(Array.isArray(trace.textposition)) {
+                trace.textposition = trace.textposition.map(cleanTextPosition);
+            }
+            else if(trace.textposition) {
+                trace.textposition = cleanTextPosition(trace.textposition);
+            }
         });
     }
 
@@ -2015,7 +2036,6 @@
         if(typeof gd === 'string') gd = document.getElementById(gd);
 
         var layout = gd.layout,
-            fullLayout = gd._fullLayout,
             aobj = {},
             dolegend = false,
             doticks = false,
@@ -2054,7 +2074,7 @@
                 delete aobj[keys[i]];
             }
             // split annotation.ref into xref and yref
-            if(keys[i].match(/^annotations\[[0-9-]\].ref$/)) {
+            if(keys[i].match(/^annotations\[[0-9-]+\].ref$/)) {
                 xyref = aobj[keys[i]].split('y');
                 aobj[keys[i].replace('ref','xref')] = xyref[0];
                 aobj[keys[i].replace('ref','yref')] = xyref.length===2 ?
@@ -2088,7 +2108,7 @@
         // for editing annotations - is it on autoscaled axes?
         function annAutorange(anni,axletter) {
             var axName = Plotly.Axes.id2name(anni[axletter+'ref']||axletter);
-            return fullLayout[axName] && fullLayout[axName].autorange;
+            return (gd._fullLayout[axName]||{}).autorange;
         }
 
         var hw = ['height','width'];
@@ -2279,7 +2299,7 @@
             plots.supplyDefaults(gd);
             if(dolegend) {
                 seq.push(function doLegend(){
-                    Plotly.Legend.draw(gd, fullLayout.showlegend);
+                    Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
                     return plots.previousPromises(gd);
                 });
             }
