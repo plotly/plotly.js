@@ -227,7 +227,7 @@
                     }).map(axes.name2id)
                 };
 
-            layoutOut[axName] = axes.supplyAxisDefaults(axLayoutIn, defaultOptions);
+            layoutOut[axName] = axes.supplyAxisDefaults(axLayoutIn, null, defaultOptions);
             axes.supplyAxisPositioningDefaults(axLayoutIn,
                                                layoutOut[axName],
                                                positioningOptions);
@@ -240,8 +240,8 @@
         });
     };
 
-    axes.supplyAxisDefaults = function(containerIn, options) {
-        var containerOut = {};
+    axes.supplyAxisDefaults = function(containerIn, containerOut, options) {
+        containerOut = containerOut || {};
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(containerIn, containerOut,
                 axes.attributes, attr, dflt);
