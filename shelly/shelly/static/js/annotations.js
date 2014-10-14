@@ -162,19 +162,11 @@
         coerce('font', fullLayout.font);
 
         // positioning
-        ['x','y'].forEach(function(axletter){
-            var tdMock = {_fullLayout: fullLayout},
-                axlist = Plotly.Axes.listIds(tdMock, axletter),
-                refAttr = axletter + 'ref',
-                attrDef = {};
-            attrDef[refAttr] = {
-                type: 'enumerated',
-                values: axlist.concat(['paper']),
-                dflt: axlist[0]
-            };
+        ['x','y'].forEach(function(axLetter){
+            var tdMock = {_fullLayout: fullLayout};
 
             // xref, yref
-            var axRef = Plotly.Lib.coerce(annIn, annOut, attrDef, refAttr, axletter);
+            var axRef = coerceAxRef(annIn, annOut, tdMock, axLetter);
 
             // x, y
             var defaultPosition = 0.5;
@@ -184,25 +176,39 @@
 
                 // convert date or category strings to numbers
                 if(['date','category'].indexOf(ax.type)!==-1 &&
-                        typeof annIn[axletter]==='string') {
+                        typeof annIn[axLetter]==='string') {
                     var newval;
                     if(ax.type==='date') {
-                        newval = Plotly.Lib.dateTime2ms(annIn[axletter]);
-                        if(newval!==false) annIn[axletter] = newval;
+                        newval = Plotly.Lib.dateTime2ms(annIn[axLetter]);
+                        if(newval!==false) annIn[axLetter] = newval;
                     }
                     else if((ax._categories||[]).length) {
-                        newval = ax._categories.indexOf(annIn[axletter]);
-                        if(newval!==-1) annIn[axletter] = newval;
+                        newval = ax._categories.indexOf(annIn[axLetter]);
+                        if(newval!==-1) annIn[axLetter] = newval;
                     }
                 }
             }
-            coerce(axletter, defaultPosition);
+            coerce(axLetter, defaultPosition);
 
             // xanchor, yanchor
-            if(!showArrow) coerce(axletter + 'anchor');
+            if(!showArrow) coerce(axLetter + 'anchor');
         });
 
         return annOut;
+    }
+
+    function coerceAxRef(annIn, annOut, tdMock, axLetter) {
+        var axlist = Plotly.Axes.listIds(tdMock, axLetter),
+            refAttr = axLetter + 'ref',
+            attrDef = {};
+        attrDef[refAttr] = {
+            type: 'enumerated',
+            values: axlist.concat(['paper']),
+            dflt: axlist[0]
+        };
+
+        // xref, yref
+        return Plotly.Lib.coerce(annIn, annOut, attrDef, refAttr, axLetter);
     }
 
     annotations.drawAll = function(gd) {
@@ -231,7 +237,7 @@
     //  or undefined to simply redraw
     // if opt is blank, val can be 'add' or a full options object to add a new
     //  annotation at that point in the array, or 'remove' to delete this one
-    annotations.draw = function(gd,index,opt,value) {
+    annotations.draw = function(gd, index, opt, value) {
         var layout = gd.layout,
             fullLayout = gd._fullLayout,
             gs = fullLayout._size,
@@ -258,7 +264,7 @@
             else if(opt && value!=='add') {
                 // make the same change to all annotations
                 fullLayout.annotations.forEach(function(ann, i) {
-                    annotations.draw(gd,i,opt,value);
+                    annotations.draw(gd, i, opt, value);
                 });
                 return;
             }
@@ -304,36 +310,71 @@
         fullLayout._infolayer.selectAll('.annotation[data-index="'+index+'"]').remove();
 
         // remember a few things about what was already there,
-        var oldOptions = fullLayout.annotations[index],
-            optionsIn = layout.annotations[index],
-            oldref = {x: oldOptions.xref, y: oldOptions.yref},
-            oldAxisType = {x:oldOptions._xtype, y: oldOptions._ytype};
+        var optionsIn = layout.annotations[index],
+            oldPrivate = fullLayout.annotations[index],
+            oldRef = {xref: optionsIn.xref, yref: optionsIn.yref};
 
         // alter the input annotation as requested
-        if(typeof opt === 'string' && opt) {
-            var newOpt = {};
-            newOpt[opt] = value;
-            opt = newOpt;
-        }
-        if($.isPlainObject(opt)) {
-            Object.keys(opt).forEach(function(k){
-                var prop = Plotly.Lib.nestedProperty(optionsIn,k);
-                ['x', 'y'].forEach(function(axletter){
-                    if(k===axletter + 'ref' && !(axletter in opt) &&
-                            (prop.get()||'').charAt(0)===axletter &&
-                            opt[k].charAt(0)==='x') {
-                        // we're moving this annotation from one axis to another.
-                        // reset its position to default
-                        delete optionsIn.x;
-                    }
-                });
-                prop.set(opt[k]);
-            });
-        }
+        var optionsEdit = {};
+        if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
+        else if($.isPlainObject(opt)) optionsEdit = opt;
 
-        var options = fullLayout.annotations[index] =
-                supplyAnnotationDefaults(optionsIn, fullLayout),
-            xa = Plotly.Axes.getFromId(gd, options.xref),
+        Object.keys(optionsEdit).forEach(function(k){
+            Plotly.Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
+        });
+
+        ['x', 'y'].forEach(function(axLetter){
+            // if we don't have an explicit position already,
+            // don't set one just because we're changing references
+            // or axis type.
+            // the defaults will be consistent most of the time anyway,
+            // except in log/linear changes
+            if(optionsEdit[axLetter]!==undefined ||
+                    optionsIn[axLetter]===undefined) {
+                return;
+            }
+
+            var axOld = Plotly.Axes.getFromId(gd,
+                    coerceAxRef(oldRef, {}, gd, axLetter)),
+                axNew = Plotly.Axes.getFromId(gd,
+                    coerceAxRef(optionsIn, {}, gd, axLetter)),
+                position = optionsIn[axLetter],
+                axTypeOld = oldPrivate['_' + axLetter + 'type'];
+
+            if(optionsEdit[axLetter + 'ref']!==undefined) {
+                if(axOld) { // data -> paper
+                    position = (position - axOld.range[0]) /
+                        (axOld.range[1] - axOld.range[0]);
+                }
+                if(axNew) { // paper -> data
+                    // note: data -> different data sees both transformations
+                    // this and the immediately above. If the axes are overlaying
+                    // this should keep the annotation in the same place. And if
+                    // they are separate, this should at least put the annotation
+                    // in a visible place on the new axis
+                    position = axNew.range[0] + position *
+                        (axNew.range[1] - axNew.range[0]);
+                }
+            }
+
+            if(axNew && axNew===axOld && axTypeOld) {
+                if(axTypeOld==='log' && axNew.type!=='log') {
+                    position = Math.pow(10,position);
+                }
+                else if(axTypeOld!=='log' && axNew.type==='log') {
+                    position = (position>0) ?
+                        Math.log(position)/Math.LN10 :
+                        undefined;
+                }
+            }
+
+            optionsIn[axLetter] = position;
+        });
+
+        var options = supplyAnnotationDefaults(optionsIn, fullLayout);
+        fullLayout.annotations[index] = options;
+
+        var xa = Plotly.Axes.getFromId(gd, options.xref),
             ya = Plotly.Axes.getFromId(gd, options.yref),
             annPosPx = {x:0, y:0},
             textangle = +options.textangle || 0;
@@ -418,66 +459,27 @@
             ['x','y'].forEach(function(axletter) {
                 var ax = Plotly.Axes.getFromId(gd,
                         options[axletter+'ref']||axletter),
-                    axOld = Plotly.Axes.getFromId(gd,
-                        oldref[axletter]||axletter),
                     annSize = axletter==='x' ? annwidth : -annheight,
-                    axRange = (ax||axOld) ?
-                        (ax||axOld).range[1]-(ax||axOld).range[0] : null,
                     anchor = options[axletter+'anchor'];
 
-                // if we're still referencing the same axis,
-                // see if it has changed linear <-> log
-                if(ax && ax===axOld && oldAxisType[axletter]) {
-                    if(oldAxisType[axletter]==='log' && ax.type!=='log') {
-                        options[axletter] = Math.pow(10,options[axletter]);
-                    }
-                    else if(oldAxisType[axletter]!=='log' && ax.type==='log') {
-                        options[axletter] = (options[axletter]>0) ?
-                            Math.log(options[axletter])/Math.LN10 :
-                            (ax.range[0]+ax.range[1])/2;
-                    }
-                }
-
-                // moving from paper to plot reference
-                else if(ax && !axOld) {
-                    var axFraction = (options[axletter]-ax.domain[0])/
-                        (ax.domain[1]-ax.domain[0]);
-                    options[axletter] = ax.range[0] + axRange*axFraction -
-                        (options.showarrow ? 0 :
-                        ((fshift(axFraction,anchor)-fshift(0,anchor))*
-                            annSize/ax._m));
-                }
-
-                // moving from plot to paper reference
-                else if(axOld && !ax) {
-                    options[axletter] = (axOld.domain[0] +
-                        (axOld.domain[1]-axOld.domain[0]) *
-                        (options[axletter]-axOld.range[0])/axRange );
-                    if(!options.showarrow) {
-                        options[axletter] +=
-                            (fshift(options[axletter],anchor) -
-                                fshift(0,anchor)) * annSize/axOld._length;
-                    }
-                }
-
                 // calculate pixel position
-                if(!ax) {
-                    annPosPx[axletter] = (axletter==='x') ?
-                        (gs.l + (gs.w)*options[axletter]) :
-                        (gs.t + (gs.h)*(1-options[axletter]));
-                }
-                else {
+                if(ax) {
                     // hide the annotation if it's pointing
                     // outside the visible plot (as long as the axis
                     // isn't autoranged - then we need to draw it
                     // anyway to get its bounding box)
-                    if(((options[axletter]-ax.range[0]) *
-                                (options[axletter]-ax.range[1])>0) &&
-                            !ax.autorange) {
+                    if(!ax.autorange && ((options[axletter]-ax.range[0]) *
+                                         (options[axletter]-ax.range[1]) > 0)) {
                         annotationIsOffscreen = true;
                     }
                     annPosPx[axletter] = ax._offset+ax.l2p(options[axletter]);
                 }
+                else {
+                    annPosPx[axletter] = (axletter==='x') ?
+                        (gs.l + (gs.w)*options[axletter]) :
+                        (gs.t + (gs.h)*(1-options[axletter]));
+                }
+
                 if(!options.showarrow) {
                     annPosPx[axletter] -= annSize *
                         fshift(ax ? 0 : options[axletter],anchor);
@@ -485,9 +487,6 @@
 
                 // save the current axis type for later log/linear changes
                 options['_'+axletter+'type'] = ax && ax.type;
-
-                // save the position back to the source options obj, in case it changed
-                optionsIn[axletter] = options[axletter];
             });
 
             if(annotationIsOffscreen) {
