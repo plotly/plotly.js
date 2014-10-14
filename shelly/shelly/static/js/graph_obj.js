@@ -2900,9 +2900,13 @@
                 originy = origin;
             if(showfreex) {
                 originx = 'translate('+xa._offset+','+gs.t+')';
+                toppos += ya._offset - gs.t;
+                bottompos += ya._offset - gs.t;
             }
             if(showfreey) {
                 originy = 'translate('+gs.l+','+ya._offset+')';
+                leftpos += xa._offset - gs.l;
+                rightpos += xa._offset - gs.l;
             }
 
 

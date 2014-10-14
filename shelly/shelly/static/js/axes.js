@@ -66,7 +66,8 @@
         mirror: {
             type: 'enumerated',
             // all and allticks: only if there are multiple subplots using this axis
-            values: [true, 'ticks', false, 'all', 'allticks']
+            values: [true, 'ticks', false, 'all', 'allticks'],
+            dflt: false
         },
         ticklen: {
             type: 'number',
