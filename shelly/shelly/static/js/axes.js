@@ -1406,7 +1406,7 @@
     // add one item to d3's vocabulary:
     // %{n}f where n is the max number of digits
     // of fractional seconds
-    var fracMatch = /%(\d?)f/;
+    var fracMatch = /%(\d?)f/g;
     function modDateFormat(fmt,x) {
         var fm = fmt.match(fracMatch),
             d = new Date(x);
