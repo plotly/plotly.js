@@ -472,32 +472,54 @@ proto.Surface = function Surface (data) {
         xaxis = this.sceneLayout.xaxis,
         yaxis = this.sceneLayout.yaxis,
         zaxis = this.sceneLayout.zaxis,
-        ticks = (Array.isArray(x) && Array.isArray(y) && x.length && y.length) ? [x,y] : undefined,
-        rows = zdata.length,
-        cols = zdata[0].length,
-        field = ndarray(new Float32Array(rows*cols), [rows, cols]),
+        ticks = [[],[]],
+        Nx = zdata[0].length,
+        Ny = zdata.length,
+        field = ndarray(new Float32Array(Nx*Ny), [Nx, Ny]),
         gl = this.shell.gl;
 
-
-    if (!ticks) {
-        ticks = [[],[]];
-        for (i = 0; i < rows; i++) {
-            if (xaxis.type === 'log') ticks[0][i] = xaxis.c2l(i+1);
-            else ticks[0][i] = i+1;
-        }
-        for (j = 0; j < cols; j++) {
-            if (yaxis.type === 'log') ticks[1][j] = yaxis.c2l(j+1);
-            else ticks[1][j] = j+1;
-        }
-    }
-
+    /*
+     * Fill and transpose zdata.
+     * Consistent with 'heatmap' and 'contour', plotly 'surface'
+     * 'z' are such that sub-arrays correspond to y-coords
+     * and that the sub-array entries correspond to a x-coords,
+     * which is the transpose of 'gl-surface-plot'.
+     */
     fill(field, function(row, col) {
-        return Number(zdata[row][col]);
+        return Number(zdata[col][row]);
     });
 
+    // Map zdata if log axis
     if (zaxis.type === 'log') {
         ops.divseq(ops.logeq(field), Math.LN10);
     }
+
+    if (Array.isArray(x) && x.length) {
+       // if x is set, use it to defined the ticks
+        for (i=0; i<Nx; i++) {
+            ticks[0][i] = xaxis.d2c(x[i]);
+        }
+    } else {
+       // if not, make linear space
+        for (i=0; i<Nx; i++) {
+            if (xaxis.type === 'log') ticks[0][i] = xaxis.c2l(i);
+            else ticks[0][i] = i;
+        }
+    }
+
+    if (Array.isArray(y) && y.length) {
+       // if y is set, use it to defined the ticks
+        for (j=0; j<Ny; j++) {
+            ticks[1][j] = yaxis.d2c(y[j]);
+        }
+    } else {
+       // if not, make linear space
+        for (j=0; j<Ny; j++) {
+            if (yaxis.type === 'log') ticks[1][j] = yaxis.c2l(j);
+            else ticks[1][j] = j;
+        }
+    }
+
 
     var params = {
         field: field,
