@@ -1736,6 +1736,20 @@
         return fullLayout[axes.id2name(id)];
     };
 
+    // get an axis object of specified type from the containing trace
+    axes.getFromTrace = function (td, fullTrace, type) {
+        var fullLayout = td._fullLayout;
+        var ax = null;
+        if (Plotly.Plots.isGL3D(fullTrace.type)) {
+            var scene = fullTrace.scene || 'scene';
+            ax = fullLayout[scene][type + 'axis'];
+        } else {
+            ax = Plotly.Axes.getFromId(td, fullTrace[type + 'axis'] || type);
+        }
+
+        return ax;
+    };
+
     // getSubplots - extract all combinations of axes we need to make plots for
     // as an array of items like 'xy', 'x2y', 'x2y2'...
     // sorted by x (x,x2,x3...) then y
