@@ -35,6 +35,7 @@ proto.attributes = {
     marker: {
         symbol: {from: 'Scatter'},
         size: {from: 'Scatter'},
+        opacity: {from: 'Scatter'},
         line: {
             color: {from: 'Scatter'},
             width: {from: 'Scatter'}
@@ -96,6 +97,7 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     if (Scatter.hasMarkers(traceOut)) {
         coerceScatter('marker.color', defaultColor);
         coerceScatter('marker.symbol');
+        coerceScatter('marker.size');
         coerceScatter('marker.opacity', 1);
         coerceScatter('marker.line.width', 0);
         // TODO parity with scatter.js
