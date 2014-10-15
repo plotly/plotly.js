@@ -11,6 +11,10 @@
 
     heatmap.attributes = {
         z: {type: 'data_array'},
+        transpose: {
+            type: 'boolean',
+            dflt: false
+        },
         xtype: {
             type: 'enumerated',
             values: ['array', 'scaled']
@@ -80,6 +84,8 @@
                 traceOut.visible = false;
                 return;
             }
+
+            coerce('transpose');
 
             var x = coerceScatter('x'),
                 xtype = x ? coerce('xtype', 'array') : 'scaled';
