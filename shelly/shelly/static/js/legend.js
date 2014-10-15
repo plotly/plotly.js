@@ -145,7 +145,7 @@
                     size: Math.max(Math.min(marker.size, 16), 2),
                     sizeref: 1,
                     sizemode: 'diameter',
-                    line: {width: Math.min(marker.line.width, 3)}
+                    line: {width: Math.min(marker.line.width, marker.size)}
                 };
             }
             if(showLines) {
