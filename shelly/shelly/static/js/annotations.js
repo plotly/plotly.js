@@ -150,7 +150,7 @@
         var showArrow = coerce('showarrow');
         if(showArrow) {
             coerce('arrowcolor',
-                Plotly.Drawing.opacity(borderColor) ? annOut.bordercolor : '#444');
+                Plotly.Color.opacity(borderColor) ? annOut.bordercolor : '#444');
             coerce('arrowhead');
             coerce('arrowsize');
             coerce('arrowwidth', borderWidth*2);
@@ -401,9 +401,8 @@
         var annbg = ann.append('rect')
             .attr('class','bg')
             .style('stroke-width',borderwidth+'px')
-            .call(Plotly.Drawing.strokeColor,
-                options.bordercolor || 'rgba(0,0,0,0)')
-            .call(Plotly.Drawing.fillColor,options.bgcolor);
+            .call(Plotly.Color.stroke, options.bordercolor)
+            .call(Plotly.Color.fill, options.bgcolor);
 
         var font = options.font;
 
@@ -585,15 +584,15 @@
                     arrowColor = options.arrowcolor;
 
                 var arrowgroup = anngroup.append('g')
-                    .style({opacity: Plotly.Drawing.opacity(arrowColor)})
+                    .style({opacity: Plotly.Color.opacity(arrowColor)})
                     .classed('annotation-arrow-g', true)
                     .attr('data-index', String(index));
 
                 var arrow = arrowgroup.append('path')
                     .attr('d', 'M'+ax0+','+ay0+'L'+ax+','+ay)
                     .style('stroke-width', strokewidth+'px')
-                    .call(Plotly.Drawing.strokeColor,
-                        Plotly.Drawing.rgb(arrowColor));
+                    .call(Plotly.Color.stroke,
+                        Plotly.Color.rgb(arrowColor));
 
                 arrowhead(arrow, options.arrowhead, 'end', options.arrowsize);
 
@@ -606,8 +605,8 @@
                         transform:'translate('+ax+','+ay+')'
                     })
                     .style('stroke-width', (strokewidth+6)+'px')
-                    .call(Plotly.Drawing.strokeColor, 'rgba(0,0,0,0)')
-                    .call(Plotly.Drawing.fillColor, 'rgba(0,0,0,0)');
+                    .call(Plotly.Color.stroke, 'rgba(0,0,0,0)')
+                    .call(Plotly.Color.fill, 'rgba(0,0,0,0)');
 
                 if(gd.mainsite) {
                     arrowdrag.node().onmousedown = function(e) {

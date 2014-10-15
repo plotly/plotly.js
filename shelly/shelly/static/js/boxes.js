@@ -116,7 +116,7 @@
         // inherited from Scatter... should we mention this somehow in boxes.attributes?
         coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
         coerceScatter('line.width', 2);
-        coerceScatter('fillcolor', Plotly.Drawing.addOpacity(traceOut.line.color, 0.5));
+        coerceScatter('fillcolor', Plotly.Color.addOpacity(traceOut.line.color, 0.5));
 
         coerce('whiskerwidth');
         coerce('boxmean');
@@ -412,14 +412,14 @@
                     lineWidth = trace.line.width;
                 d3.select(this).selectAll('path.box')
                     .style('stroke-width',lineWidth+'px')
-                    .call(Plotly.Drawing.strokeColor, trace.line.color)
-                    .call(Plotly.Drawing.fillColor, trace.fillcolor);
+                    .call(Plotly.Color.stroke, trace.line.color)
+                    .call(Plotly.Color.fill, trace.fillcolor);
                 d3.select(this).selectAll('path.mean')
                     .style({
                         'stroke-width': lineWidth,
                         'stroke-dasharray': (2*lineWidth)+'px,'+lineWidth+'px'
                     })
-                    .call(Plotly.Drawing.strokeColor, trace.line.color);
+                    .call(Plotly.Color.stroke, trace.line.color);
             })
             .selectAll('g.points')
                 .each(function(d){

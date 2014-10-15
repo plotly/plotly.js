@@ -5,34 +5,12 @@
     /* global Plotly:false */
 
     // ---external global dependencies
-    /* global d3:false, tinycolor:false */
+    /* global d3:false */
 
     var drawing = Plotly.Drawing = {};
     // -----------------------------------------------------
     // styling functions for plot elements
     // -----------------------------------------------------
-
-    drawing.rgb = function(cstr) {
-        var c = tinycolor(cstr).toRgb();
-        return 'rgb(' + Math.round(c.r) + ', ' +
-            Math.round(c.g) + ', ' + Math.round(c.b) + ')';
-    };
-
-    drawing.opacity = function(cstr) { return tinycolor(cstr).alpha; };
-
-    drawing.addOpacity = function(cstr, op) {
-        var c = tinycolor(cstr).toRgb();
-        return 'rgba(' + Math.round(c.r) + ', ' +
-            Math.round(c.g) + ', ' + Math.round(c.b) + ', ' + op + ')';
-    };
-
-    drawing.strokeColor = function(s, c) {
-        s.style({'stroke':drawing.rgb(c), 'stroke-opacity':drawing.opacity(c)});
-    };
-
-    drawing.fillColor = function(s, c) {
-        s.style({'fill':drawing.rgb(c), 'fill-opacity':drawing.opacity(c)});
-    };
 
     drawing.font = function(s, family, size, fill) {
         // also allow the form font(s, {family, size, fill})
@@ -43,7 +21,7 @@
         }
         if(family) s.style('font-family', family);
         if(size) s.style('font-size', size+'px');
-        if(fill) s.call(drawing.fillColor, fill);
+        if(fill) s.call(Plotly.Color.fill, fill);
     };
 
     drawing.setPosition = function(s, x, y) { s.attr('x',x).attr('y',y); };
@@ -93,7 +71,7 @@
             // otherwise user wrote the dasharray themselves - leave it be
 
             d3.select(this)
-                .call(drawing.strokeColor,lc||line.color)
+                .call(Plotly.Color.stroke,lc||line.color)
                 .style({'stroke-dasharray': da, 'stroke-width': lw1+'px'});
         });
     };
@@ -103,7 +81,7 @@
         .each(function(d){
             var shape = d3.select(this);
             try {
-                shape.call(drawing.fillColor,d[0].trace.fillcolor);
+                shape.call(Plotly.Color.fill, d[0].trace.fillcolor);
             }
             catch(e) {
                 console.log(e,s);
@@ -692,7 +670,7 @@
             if(d.om) {
                 // open markers can't have zero linewidth, default to 1px,
                 // and use fill color as stroke color
-                p.call(drawing.strokeColor, fillColor)
+                p.call(Plotly.Color.stroke, fillColor)
                     .style({
                         'stroke-width': (lineWidth||1) + 'px',
                         fill: 'none'
@@ -700,9 +678,9 @@
             }
             else {
                 p.style('stroke-width', lineWidth + 'px')
-                    .call(drawing.fillColor, fillColor);
+                    .call(Plotly.Color.fill, fillColor);
                 if(lineWidth) {
-                    p.call(drawing.strokeColor, lineColor);
+                    p.call(Plotly.Color.stroke, lineColor);
                 }
             }
         });
@@ -721,8 +699,8 @@
             max = maxProp.get();
 
         if(scl && Array.isArray(colorArray)) {
-            if(typeof scl === 'string') scl = Plotly.colorscales[scl];
-            if(!scl) scl = Plotly.defaultColorscale;
+            if(typeof scl === 'string') scl = Plotly.Color.scales[scl];
+            if(!scl) scl = Plotly.Color.defaultScale;
 
             if(auto || !$.isNumeric(min) || !$.isNumeric(max)) {
                 min = Infinity;

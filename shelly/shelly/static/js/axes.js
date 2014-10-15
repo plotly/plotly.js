@@ -1926,7 +1926,7 @@
             if(tickpath && ax.ticks) {
                 ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
                     .classed('crisp',1)
-                    .call(Plotly.Drawing.strokeColor, ax.tickcolor || '#444')
+                    .call(Plotly.Color.stroke, ax.tickcolor || '#444')
                     .style('stroke-width', (ax.tickwidth || 1)+'px')
                     .attr('d',tickpath);
                 ticks.attr('transform',transfn);
@@ -2139,7 +2139,7 @@
                     }
                 });
             grid.attr('transform',transfn)
-                .call(Plotly.Drawing.strokeColor, ax.gridcolor || '#ddd')
+                .call(Plotly.Color.stroke, ax.gridcolor || '#ddd')
                 .style('stroke-width', gridwidth+'px');
             grid.exit().remove();
 
@@ -2162,7 +2162,7 @@
                 .classed('crisp',1)
                 .attr('d',gridpath);
             zl.attr('transform',transfn)
-                .call(Plotly.Drawing.strokeColor, ax.zerolinecolor || '#444')
+                .call(Plotly.Color.stroke, ax.zerolinecolor || '#444')
                 .style('stroke-width', (ax.zerolinewidth || gridwidth)+'px');
             zl.exit().remove();
         }

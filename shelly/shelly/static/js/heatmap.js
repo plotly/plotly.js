@@ -501,7 +501,7 @@
         var z = cd[0].z,
             min = trace.zmin,
             max = trace.zmax,
-            scl = Plotly.Plots.getScale(trace.colorscale),
+            scl = Plotly.Color.getScale(trace.colorscale),
             x = cd[0].x,
             y = cd[0].y,
             // fast smoothing - one pixel per brick
@@ -790,7 +790,7 @@
     heatmap.colorbar = function(gd,cd) {
         var trace = cd[0].trace,
             cbId = 'cb'+trace.uid,
-            scl = Plotly.Plots.getScale(trace.colorscale);
+            scl = Plotly.Color.getScale(trace.colorscale);
 
         gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
         if(!trace.showscale){

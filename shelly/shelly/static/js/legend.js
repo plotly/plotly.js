@@ -188,11 +188,9 @@
             var w = (d.mlw+1 || markerLine.width+1) - 1,
                 p = d3.select(this);
             p.style('stroke-width',w+'px')
-                .call(Plotly.Drawing.fillColor,
-                    d.mc || marker.color);
+                .call(Plotly.Color.fill, d.mc || marker.color);
             if(w) {
-                p.call(Plotly.Drawing.strokeColor,
-                    d.mlc || markerLine.color);
+                p.call(Plotly.Color.stroke, d.mlc || markerLine.color);
             }
         });
     };
@@ -211,11 +209,9 @@
             var w = (d.lw+1 || trace.line.width+1) - 1,
                 p = d3.select(this);
             p.style('stroke-width', w+'px')
-                .call(Plotly.Drawing.fillColor,
-                    d.fc || trace.fillcolor);
+                .call(Plotly.Color.fill, d.fc || trace.fillcolor);
             if(w) {
-                p.call(Plotly.Drawing.strokeColor,
-                    d.lc || trace.line.color);
+                p.call(Plotly.Color.stroke, d.lc || trace.line.color);
             }
         });
     };
@@ -338,8 +334,8 @@
         bgRect.enter(0).append('rect')
             .attr('class','bg');
         bgRect
-            .call(Plotly.Drawing.strokeColor, opts.bordercolor)
-            .call(Plotly.Drawing.fillColor, opts.bgcolor)
+            .call(Plotly.Color.stroke, opts.bordercolor)
+            .call(Plotly.Color.fill, opts.bgcolor)
             .style('stroke-width', opts.borderwidth+'px');
 
         var traces = legendsvg.selectAll('g.traces')

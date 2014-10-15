@@ -125,7 +125,7 @@
             },
             colorscale: {
                 type: 'colorscale',
-                dflt: Plotly.defaultColorscale
+                dflt: Plotly.Color.defaultScale
             },
             cauto: {
                 type: 'boolean',
@@ -151,7 +151,7 @@
                 },
                 colorscale: {
                     type: 'colorscale',
-                    dflt: Plotly.defaultColorscale
+                    dflt: Plotly.Color.defaultScale
                 },
                 cauto: {
                     type: 'boolean',
@@ -250,7 +250,7 @@
 
         coerce('fill');
         if(traceOut.fill!=='none') {
-            coerce('fillcolor', Plotly.Drawing.addOpacity(
+            coerce('fillcolor', Plotly.Color.addOpacity(
                 (traceOut.line||{}).color || (traceOut.marker||{}).color ||
                 ((traceOut.marker||{}).line||{}).color || defaultColor, 0.5));
             if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut);

@@ -367,7 +367,7 @@
                             // pixelation. if the bars ARE fully opaque and have
                             // no line, expand to a full pixel to make sure we
                             // can see them
-                            var op = Plotly.Drawing.opacity(
+                            var op = Plotly.Color.opacity(
                                     di.mc || trace.marker.color),
                                 fixpx = (op<1 || lw>0.01) ?
                                     roundWithLine : expandToVisible;
@@ -423,14 +423,14 @@
                 else fillColor = marker.color;
 
                 p.style('stroke-width', lineWidth + 'px')
-                    .call(Plotly.Drawing.fillColor, fillColor);
+                    .call(Plotly.Color.fill, fillColor);
                 if(lineWidth) {
                     if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
                     // weird case: array wasn't long enough to apply to every point
                     else if(Array.isArray(markerLine.color)) lineColor = '#444';
                     else lineColor = markerLine.color;
 
-                    p.call(Plotly.Drawing.strokeColor, lineColor);
+                    p.call(Plotly.Color.stroke, lineColor);
                 }
             });
             // TODO: text markers on bars, either extra text or just bar values
