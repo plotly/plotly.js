@@ -622,18 +622,21 @@ proto.Scatter = function Scatter (data) {
     };
 
     if ('line' in data) {
-        params.lineColor  = str2RgbaArray(data.line.color);
-        params.lineWidth  = data.line.width;
-        params.lineDashes = data.line.dash;
+        params.lineColor     = str2RgbaArray(data.line.color);
+        params.lineColor[3] *= data.opacity;
+        params.lineWidth     = data.line.width;
+        params.lineDashes    = data.line.dash;
     }
 
     if ('marker' in data) {
-        params.scatterColor     = str2RgbaArray(data.marker.color);
-        params.scatterSize      = 2*data.marker.size;  // rough parity with Plotly 2D markers
-        params.scatterMarker    = this.markerSymbols[data.marker.symbol];
-        params.scatterLineWidth = data.marker.line.width;
-        params.scatterLineColor = str2RgbaArray(data.marker.line.color);
-        params.scatterAngle     = 0;
+        params.scatterColor         = str2RgbaArray(data.marker.color);
+        params.scatterColor[3]     *= data.marker.opacity * data.opacity;
+        params.scatterSize          = 2*data.marker.size;  // rough parity with Plotly 2D markers
+        params.scatterMarker        = this.markerSymbols[data.marker.symbol];
+        params.scatterLineWidth     = data.marker.line.width;
+        params.scatterLineColor     = str2RgbaArray(data.marker.line.color);
+        params.scatterLineColor[3] *= data.marker.opacity * data.opacity;
+        params.scatterAngle         = 0;
     }
 
     if ('error_z' in data) {
