@@ -188,17 +188,13 @@ proto.update = function(options) {
     dashScale:  dashPattern[1]
   };
 
-  if(this.linePlot) {
-    this.lineTransparent = isTransparent(options.lineColor);
-    if(this.mode.indexOf('lines') >= 0) {
-      this.linePlot.update(lineOptions);
-    } else {
+  if (this.mode.indexOf('lines') !== -1) {
+      this.lineTransparent = isTransparent(options.lineColor);
+      if (this.linePlot) this.linePlot.update(lineOptions);
+      else this.linePlot = createLinePlot(gl, lineOptions);
+  } else if (this.linePlot) {
       this.linePlot.dispose();
       this.linePlot = null;
-    }
-  } else if(this.mode.indexOf('lines') >= 0) {
-    this.lineTransparent = isTransparent(options.lineColor);
-    this.linePlot = createLinePlot(gl, lineOptions);
   }
 
   scatterOptions = {
@@ -212,22 +208,15 @@ proto.update = function(options) {
     lineColor:    options.scatterLineColor
   };
 
-  if(this.scatterPlot) {
+  if(this.mode.indexOf('markers') !== -1) {
     this.scatterTransparent = isTransparent(options.scatterColor) ||
           isTransparent(options.scatterLineColor);
-
-    if(this.mode.indexOf('markers') >= 0) {
-      this.scatterPlot.update(scatterOptions);
-    } else {
-      this.scatterPlot.dispose();
-      this.scatterPlot = null;
-    }
-  } else if(this.mode.indexOf('markers') >= 0) {
-    this.scatterTransparent = isTransparent(options.scatterColor) ||
-          isTransparent(options.scatterLineColor);
-    this.scatterPlot = createScatterPlot(gl, scatterOptions);
+    if (this.scatterPlot) this.scatterPlot.update(scatterOptions);
+    else this.scatterPlot = createScatterPlot(gl, scatterOptions);
+  } else if(this.scatterPlot) {
+    this.scatterPlot.dispose();
+    this.scatterPlot = null;
   }
-
 
   textOptions = {
     position:     options.position,
