@@ -869,6 +869,49 @@
         };
     };
 
+    // off-screen svg render testing element, shared by the whole page
+    // uses the id 'js-plotly-tester' and stores it in gd._tester
+    // makes a hash of cached text items in tester.node()._cache
+    // so we can add references to rendered text (including all info
+    // needed to fully determine its bounding rect)
+    drawing.makeTester = function(gd) {
+        var tester = d3.select('body')
+            .selectAll('#js-plotly-tester')
+            .data([0]);
+
+        tester.enter().append('svg')
+            .attr({
+                id: 'js-plotly-tester',
+                xmlns: 'http://www.w3.org/2000/svg',
+                // odd d3 quirk - need namespace twice??
+                'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
+                'xml:xml:space': 'preserve'
+            })
+            .style({
+                position: 'absolute',
+                left: '-10000px',
+                top: '-10000px',
+                width: '9000px',
+                height: '9000px'
+            });
+
+        // browsers differ on how they describe the bounding rect of
+        // the svg if its contents spill over... so make a 1x1px
+        // reference point we can measure off of.
+        var testref = tester.selectAll('.js-reference-point').data([0]);
+        testref.enter().append('path')
+            .classed('js-reference-point', true)
+            .attr('d','M0,0H1V1H0Z')
+            .style({'stroke-width':0, fill:'black'});
+
+        if(!tester.node()._cache) {
+            tester.node()._cache = {};
+        }
+
+        gd._tester = tester;
+        gd._testref = testref;
+    };
+
     // use our offscreen tester to get a clientRect for an element,
     // in a reference frame where it isn't translated and its anchor
     // point is at (0,0)
