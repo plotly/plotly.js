@@ -1783,42 +1783,41 @@
     }
 
     // swap all the data and data attributes associated with x and y
-    // for the trace gdc
-    function swapxydata(gdc) {
-        swapAttrs(gdc,'?');
-        swapAttrs(gdc,'?0');
-        swapAttrs(gdc,'d?');
-        swapAttrs(gdc,'?bins');
-        swapAttrs(gdc,'nbins?');
-        swapAttrs(gdc,'autobin?');
-        if($.isArray(gdc.z) && $.isArray(gdc.z[0])) {
-            if(gdc.transpose) { delete gdc.transpose; }
-            else { gdc.transpose = true; }
+    function swapxydata(trace) {
+        swapAttrs(trace, '?');
+        swapAttrs(trace, '?0');
+        swapAttrs(trace, 'd?');
+        swapAttrs(trace, '?bins');
+        swapAttrs(trace, 'nbins?');
+        swapAttrs(trace, 'autobin?');
+        if($.isArray(trace.z) && $.isArray(trace.z[0])) {
+            if(trace.transpose) delete trace.transpose;
+            else trace.transpose = true;
         }
-        swapAttrs(gdc,'?src');
-        swapAttrs(gdc,'error_?');
-        if(gdc.error_x && gdc.error_y) {
-            var copyYstyle = ('copy_ystyle' in gdc.error_y) ?
-                    gdc.error_y.copy_ystyle :
-                    ((gdc.error_y.color || gdc.error_y.thickness ||
-                        gdc.error_y.width) ? false : true);
-            swapAttrs(gdc,'error_?.copy_ystyle');
+        swapAttrs(trace, '?src');
+        swapAttrs(trace, 'error_?');
+        if(trace.error_x && trace.error_y) {
+            var copyYstyle = ('copy_ystyle' in trace.error_y) ?
+                    trace.error_y.copy_ystyle :
+                    ((trace.error_y.color || trace.error_y.thickness ||
+                        trace.error_y.width) ? false : true);
+            swapAttrs(trace, 'error_?.copy_ystyle');
             if(copyYstyle) {
-                swapAttrs(gdc,'error_?.color');
-                swapAttrs(gdc,'error_?.thickness');
-                swapAttrs(gdc,'error_?.width');
+                swapAttrs(trace, 'error_?.color');
+                swapAttrs(trace, 'error_?.thickness');
+                swapAttrs(trace, 'error_?.width');
             }
         }
     }
 
-    // swap all the presentation attributes of the axes showing trace gdc
-    function axswap(gd,gdc) {
+    // swap all the presentation attributes of the axes showing this trace
+    function axswap(gd, trace) {
         var layout = gd.layout,
-            xid = gdc.xaxis||'x',
-            yid = gdc.yaxis||'y',
-            xa = Plotly.Axes.getFromId(gd,xid),
+            xid = trace.xaxis||'x',
+            yid = trace.yaxis||'y',
+            xa = Plotly.Axes.getFromId(gd, xid),
             xname = xa._name,
-            ya = Plotly.Axes.getFromId(gd,yid),
+            ya = Plotly.Axes.getFromId(gd, yid),
             yname = ya._name,
             noSwapAttrs = [
                 'anchor','domain','overlaying','position','tickangle'
@@ -1834,7 +1833,7 @@
 
         // now swap x&y for any annotations anchored to these x & y
         (layout.annotations||[]).forEach(function(ann) {
-            if(ann.xref===xid && ann.yref===yid) { swapAttrs(ann,'?'); }
+            if(ann.xref===xid && ann.yref===yid) swapAttrs(ann,'?');
         });
 
         // check for swapped placeholder titles
