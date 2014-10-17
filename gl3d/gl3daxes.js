@@ -86,7 +86,7 @@ proto.supplyDefaults = function(layoutIn, layoutOut, options) {
         containerIn = layoutIn[axName] || {};
 
         containerOut = {
-            _id: axName + options.scene,
+            _id: axName[0] + options.scene,
             _name: axName
         };
 
