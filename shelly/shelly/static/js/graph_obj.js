@@ -1139,7 +1139,9 @@
         coerce('uid');
         var visible = coerce('visible');
         if(visible) {
-            coerce('opacity');
+            if (layout._hasCartesian) {
+                coerce('opacity');
+            }
             coerce('name', 'trace '+i);
             if(plots.isCartesian(type)) {
                 coerce('xaxis');
