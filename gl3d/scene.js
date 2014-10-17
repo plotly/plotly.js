@@ -676,8 +676,8 @@ proto.Scatter = function Scatter (data) {
         params.textFont       = data.textfont.family;
         params.textAngle      = 0;
     }
-    params.delaunayAxis       = data.delaunayaxis;
-    params.delaunayColor      = str2RgbaArray(data.delaunaycolor);
+    params.delaunayAxis       = data.surfaceaxis;
+    params.delaunayColor      = str2RgbaArray(data.surfacecolor);
 
 
 
