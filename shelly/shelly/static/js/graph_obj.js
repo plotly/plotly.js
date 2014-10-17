@@ -1067,6 +1067,11 @@
         }
     };
 
+    // relink private _keys and keys with a function value from one layout
+    // (usually cached) to the new fullLayout.
+    // relink means copying if object is pass-by-value and adding a reference
+    // if object is pass-by-ref. This prevents deepCopying massive structures like
+    // a webgl context.
     function relinkPrivateKeys(toLayout, fromLayout) {
 
         var keys = Object.keys(fromLayout);
