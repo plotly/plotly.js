@@ -645,26 +645,29 @@ proto.Scatter = function Scatter (data) {
 
     if ('line' in data) {
         params.lineColor     = str2RgbaArray(data.line.color);
-        params.lineColor[3] *= data.opacity;
         params.lineWidth     = data.line.width;
         params.lineDashes    = data.line.dash;
     }
 
     if ('marker' in data) {
         params.scatterColor         = str2RgbaArray(data.marker.color);
-        params.scatterColor[3]     *= data.marker.opacity * data.opacity;
+        params.scatterColor[3]     *= data.marker.opacity;
         params.scatterSize          = 2*data.marker.size;  // rough parity with Plotly 2D markers
         params.scatterMarker        = this.markerSymbols[data.marker.symbol];
         params.scatterLineWidth     = data.marker.line.width;
         params.scatterLineColor     = str2RgbaArray(data.marker.line.color);
-        params.scatterLineColor[3] *= data.marker.opacity * data.opacity;
+        params.scatterLineColor[3] *= data.marker.opacity;
         params.scatterAngle         = 0;
     }
 
     if ('error_z' in data) {
         params.errorBounds    = calculateError(data),
-        params.errorColor     = errorProperties.map( function (e) {return str2RgbaArray(e.color); });
-        params.errorLineWidth = errorProperties.map( function (e) {return e.thickness; });
+        params.errorColor     = errorProperties.map( function (e) {
+            return str2RgbaArray(e.color);
+        });
+        params.errorLineWidth = errorProperties.map( function (e) {
+            return e.thickness;
+        });
         params.errorCapSize   = calculateErrorCapSize(errorProperties);
     }
 
@@ -676,8 +679,8 @@ proto.Scatter = function Scatter (data) {
         params.textFont       = data.textfont.family;
         params.textAngle      = 0;
     }
-    params.delaunayAxis       = data.delaunayaxis;
-    params.delaunayColor      = str2RgbaArray(data.delaunaycolor);
+    params.delaunayAxis       = data.surfaceaxis;
+    params.delaunayColor      = str2RgbaArray(data.surfacecolor);
 
 
 
@@ -943,7 +946,6 @@ proto.setModelScale = function () {
 proto.configureAxes = function configureAxes () {
     /*jshint camelcase: false */
 
-    var mr;
     var axes;
     var sceneLayout = this.layout[this.id];
     var opts = this.axesOpts;

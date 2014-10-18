@@ -18,12 +18,12 @@ proto.attributes = {
         type: 'sceneid',
         dflt: 'scene'
     },
-    delaunayaxis: {
+    surfaceaxis: {
         type: 'enumerated',
         values: [-1,0,1,2],
         dflt: -1
     },
-    delaunaycolor: {
+    surfacecolor: {
         type: 'color'
     },
     mode: {from: 'Scatter'},
@@ -111,8 +111,8 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     }
 
     coerce('scene');
-    coerce('delaunayaxis');
-    coerce('delaunaycolor');
+    coerce('surfaceaxis');
+    coerce('surfacecolor');
 
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y', inherit: 'z'});
