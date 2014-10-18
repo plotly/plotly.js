@@ -473,7 +473,7 @@
     };
 
     // arrayOk attributes, merge them into calcdata array
-    function arraysToCalcdata(cd) {
+    scatter.arraysToCalcdata = function(cd) {
         var trace = cd[0].trace,
             marker = trace.marker;
 
@@ -494,7 +494,7 @@
             Plotly.Lib.mergeArray(markerLine.color, cd, 'mlc');
             Plotly.Lib.mergeArray(markerLine.width, cd, 'mlw');
         }
-    }
+    };
 
     scatter.plot = function(gd, plotinfo, cdscatter) {
         scatter.selectMarkers(gd, plotinfo, cdscatter);
@@ -527,7 +527,7 @@
                 line = trace.line;
             if(trace.visible===false) return;
 
-            arraysToCalcdata(d);
+            scatter.arraysToCalcdata(d);
 
             if(!scatter.hasLines(trace) && trace.fill==='none') return;
 

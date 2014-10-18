@@ -1761,9 +1761,12 @@
         var data = gd.data, subplots = [];
 
         // look for subplots in the data
-        (data||[]).forEach(function(d) {
-            var xid = (d.xaxis||'x'),
-                yid = (d.yaxis||'y'),
+        (data||[]).forEach(function(trace) {
+            if(trace.visible===false || Plotly.Plots.isGL3D(trace.type)) {
+                return;
+            }
+            var xid = (trace.xaxis||'x'),
+                yid = (trace.yaxis||'y'),
                 subplot = xid+yid;
             if(subplots.indexOf(subplot)===-1) subplots.push(subplot);
         });

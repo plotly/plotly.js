@@ -62,6 +62,10 @@
         return type === 'scatter3d';
     };
 
+    plots.isScatterAny = function(type) {
+        return plots.isScatter(type) || plots.isScatter3D(type);
+    };
+
     plots.isSurface = function(type) {
         return type === 'surface';
     };
@@ -335,13 +339,6 @@
         ////////////////////////////////  3D   ///////////////////////////////
         if (fullLayout._hasGL3D) plot3D(gd);
 
-        /*
-         * Plotly.plot shortCircuit for 3d only
-         * eventually remove this and integrate more
-         * thoroughly with module system.
-         */
-        if (!fullLayout._hasCartesian) return Promise.resolve();
-
         // prepare the data and find the autorange
 
         // generate calcdata, if we need to
@@ -353,13 +350,6 @@
         gd.calcdata.forEach(function(cd, i) {
             cd[0].trace = gd._fullData[i];
         });
-
-        // put the styling info into the calculated traces
-        // has to be done separate from applyStyles so we know the mode
-        // (ie which objects to draw)
-        // and has to be before stacking so we get orientation, type, visible
-        // plots.setStyles(gd);
-        Plotly.Lib.markTime('done setstyles');
 
         /*
          * start async-friendly code - now we're actually drawing things
@@ -420,7 +410,7 @@
         }
 
         function doAutoRange(){
-            Plotly.Axes.list(gd).forEach(function(ax) {
+            Plotly.Axes.list(gd, '', true).forEach(function(ax) {
                 Plotly.Axes.doAutoRange(ax);
                 if(!$.isNumeric(ax._m) || !$.isNumeric(ax._b)) {
                     Plotly.Lib.notifier(
@@ -465,6 +455,7 @@
                 plotinfo.plot.selectAll('g.trace').remove();
 
                 gd._modules.forEach(function(module) {
+                    if(!module.plot) return;
                     // plot all traces of this type on this subplot at once
                     var cdmod = cdSubplot.filter(function(cd){
                         var trace = cd[0].trace;
@@ -533,8 +524,6 @@
             height: fullLayout.height+'px',
             background: fullLayout.paper_bgcolor
         });
-
-        gd.calcdata = [];
 
         /*
          * If there are scenes that need loading load them.
@@ -1139,16 +1128,17 @@
         coerce('uid');
         var visible = coerce('visible');
         if(visible) {
-            if (layout._hasCartesian) {
-                coerce('opacity');
-            }
             coerce('name', 'trace '+i);
+
+            if(!plots.isScatter3D(type)) coerce('opacity');
+
             if(plots.isCartesian(type)) {
                 coerce('xaxis');
                 coerce('yaxis');
-                if(!plots.isHeatmap(type) && !plots.isGL3D(type)) {
-                    coerce('showlegend');
-                }
+            }
+
+            if(!plots.isHeatmap(type) && !plots.isSurface(type)) {
+                coerce('showlegend');
             }
 
             // module-specific attributes
@@ -1375,7 +1365,7 @@
                 cd = [];
 
             if(module && trace.visible) {
-                cd = module.calc(gd,trace);
+                if(module.calc) cd = module.calc(gd,trace);
                 if(gd._modules.indexOf(module)===-1) gd._modules.push(module);
             }
 
@@ -1390,6 +1380,13 @@
             if(!cd[0].t) cd[0].t = {};
             cd[0].trace = trace;
 
+            // TODO: this is a kludge to put the array attributes into
+            // calcdata the way Scatter.plot does, so that legends and
+            // popovers know what to do with them.
+            if(plots.isScatter3D(trace.type)) {
+                Plotly.Scatter.arraysToCalcdata(cd);
+            }
+
             Plotly.Lib.markTime('done with calcdata for '+i);
             return cd;
         });
@@ -1402,7 +1399,7 @@
             var gp = fullLayout._plots[subplot].plot;
 
             gd._modules.concat(Plotly.ErrorBars).forEach(function(module) {
-                module.style(gp, fullLayout);
+                if(module.style) module.style(gp, fullLayout);
             });
         });
     }
