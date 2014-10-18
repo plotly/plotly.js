@@ -602,7 +602,7 @@
 
         // only scatter & box plots get marker path and opacity
         // bars, histograms don't
-        if(['scatter','box'].indexOf(trace.type)!==-1) {
+        if(Plotly.Plots.isScatterAny(trace.type) || trace.type==='box') {
             var r,
                 // for bubble charts, allow scaling the provided value linearly
                 // and by area or diameter.

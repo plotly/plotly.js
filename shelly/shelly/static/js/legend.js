@@ -98,9 +98,8 @@
 
     legend.lines = function(d){
         var trace = d[0].trace,
-            isScatter = (Plotly.Plots.isScatter(trace.type) ||
-                         Plotly.Plots.isScatter3D(trace.type)) && trace.visible,
-            showFill = isScatter && trace.fill!=='none', // && $.isNumeric(t.curve), TODO: what was this about?
+            isScatter = Plotly.Plots.isScatterAny(trace.type) && trace.visible,
+            showFill = isScatter && trace.fill && trace.fill!=='none',
             showLine = isScatter && Plotly.Scatter.hasLines(trace);
 
         var fill = d3.select(this).select('.legendfill').selectAll('path')
@@ -122,8 +121,7 @@
         var d0 = d[0],
             trace = d0.trace,
             marker = trace.marker||{},
-            isScatter = (Plotly.Plots.isScatter(trace.type) ||
-                         Plotly.Plots.isScatter3D(trace.type)) && trace.visible,
+            isScatter = Plotly.Plots.isScatterAny(trace.type) && trace.visible,
             showMarkers = isScatter && Plotly.Scatter.hasMarkers(trace),
             showText = isScatter && Plotly.Scatter.hasText(trace),
             showLines = isScatter && Plotly.Scatter.hasLines(trace);
@@ -309,7 +307,7 @@
                 return trace.visible &&
                     trace.showlegend &&
                     !Plotly.Plots.isHeatmap(trace.type) &&
-                    !Plotly.Plots.isGL3D(trace.type);
+                    !Plotly.Plots.isSurface(trace.type);
             })
             .map(function(cd) { return [cd[0]]; });
 
