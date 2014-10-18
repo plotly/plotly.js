@@ -36,7 +36,7 @@
             dflt: null
         },
         colorscale: {
-            type: 'colorscale',
+            type: 'colorscale'
         },
         reversescale: {
             type: 'boolean',
