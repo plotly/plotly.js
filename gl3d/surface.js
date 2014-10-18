@@ -16,5 +16,6 @@ proto.attributes = {
     scene: {
         type: 'sceneid',
         dflt: 'scene'
-    }
+    },
+    color: {}
 };
