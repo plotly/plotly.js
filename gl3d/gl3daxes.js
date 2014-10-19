@@ -11,63 +11,66 @@ function Gl3dAxes (config) {
 var proto = Gl3dAxes.prototype;
 
 proto.attributes = {
-        showspikes: {
-            type: 'boolean',
-            dflt: true
-        },
-        spikesides: {
-            type: 'boolean',
-            dflt: true
-        },
-        spikethickness: {
-            type: 'number',
-            min: 0,
-            dflt: 2
-        },
-        spikecolor: {
-            type: 'color',
-            dflt: 'rgb(0,0,0)'
-        },
-        showbackground: {
-            type: 'boolean',
-            dflt: false
-        },
-        backgroundcolor: {
-            type: 'color',
-            dflt: 'rgba(204, 204, 204, 0.5)'
-        },
-        showaxeslabels: {
-            type: 'boolean',
-            dlft: true
-        },
-        gridcolor: {from: 'Axes'},
-        title: {from: 'Axes'},
-        titlefont: {from: 'Axes'},
-        type: {from: 'Axes'},
-        autorange: {from: 'Axes'},
-        rangemode: {from: 'Axes'},
-        range: {from: 'Axes'},
-        // ticks
-        autotick: {from: 'Axes'},
-        nticks: {from: 'Axes'},
-        tick0: {from: 'Axes'},
-        dtick: {from: 'Axes'},
-        ticks: {from: 'Axes'},
-        mirror: {from: 'Axes'},
-        ticklen: {from: 'Axes'},
-        tickwidth: {from: 'Axes'},
-        tickcolor: {from: 'Axes'},
-        showticklabels: {from: 'Axes'},
-        tickfont: {from: 'Axes'},
-        tickangle: {from: 'Axes'},
-        // lines and grids
-        showline: {from: 'Axes'},
-        linecolor: {from: 'Axes'},
-        linewidth: {from: 'Axes'},
-        showgrid: {from: 'Axes'},
-        gridcolor: {from: 'Axes'},
-        gridwidth: {from: 'Axes'}
-    };
+    showspikes: {
+        type: 'boolean',
+        dflt: true
+    },
+    spikesides: {
+        type: 'boolean',
+        dflt: true
+    },
+    spikethickness: {
+        type: 'number',
+        min: 0,
+        dflt: 2
+    },
+    spikecolor: {
+        type: 'color',
+        dflt: 'rgb(0,0,0)'
+    },
+    showbackground: {
+        type: 'boolean',
+        dflt: false
+    },
+    backgroundcolor: {
+        type: 'color',
+        dflt: 'rgba(204, 204, 204, 0.5)'
+    },
+    showaxeslabels: {
+        type: 'boolean',
+        dflt: true
+    },
+    title: {from: 'Axes'},
+    titlefont: {from: 'Axes'},
+    type: {from: 'Axes'},
+    autorange: {from: 'Axes'},
+    rangemode: {from: 'Axes'},
+    range: {from: 'Axes'},
+    // ticks
+    autotick: {from: 'Axes'},
+    nticks: {from: 'Axes'},
+    tick0: {from: 'Axes'},
+    dtick: {from: 'Axes'},
+    ticks: {from: 'Axes'},
+    mirror: {from: 'Axes'},
+    ticklen: {from: 'Axes'},
+    tickwidth: {from: 'Axes'},
+    tickcolor: {from: 'Axes'},
+    showticklabels: {from: 'Axes'},
+    tickfont: {from: 'Axes'},
+    tickangle: {from: 'Axes'},
+    // lines and grids
+    showline: {from: 'Axes'},
+    linecolor: {from: 'Axes'},
+    linewidth: {from: 'Axes'},
+    showgrid: {from: 'Axes'},
+    gridcolor: {from: 'Axes'},
+    gridwidth: {from: 'Axes'},
+    zeroline: {from: 'Axes'},
+    zerolinecolor: {from: 'Axes'},
+    zerolinewidth: {from: 'Axes'}
+
+};
 
 proto.supplyDefaults = function(layoutIn, layoutOut, options) {
     var _this = this;
@@ -79,6 +82,11 @@ proto.supplyDefaults = function(layoutIn, layoutOut, options) {
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(containerIn, containerOut,
                                  _this.attributes, attr, dflt);
+    }
+
+    function coerceAxis(attr, dflt) {
+        return Plotly.Lib.coerce(containerIn, containerOut,
+                                 Plotly.Axes.attributes, attr, dflt);
     }
 
     for (var j = 0; j < this.axesNames.length; j++) {
@@ -94,8 +102,11 @@ proto.supplyDefaults = function(layoutIn, layoutOut, options) {
             containerIn,
             containerOut, {
                 letter: axName[0],
-                data: options.data
+                data: options.data,
+                showGrid: true
             });
+
+        coerceAxis('gridcolor', 'rgb(204, 204, 204)');
 
         containerOut.setScale = function () {};
 
@@ -107,6 +118,7 @@ proto.supplyDefaults = function(layoutIn, layoutOut, options) {
         if (coerce('showbackground')) {
             coerce('backgroundcolor');
         }
+
         coerce('showaxeslabels');
     }
 
