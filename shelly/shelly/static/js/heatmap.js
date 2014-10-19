@@ -796,7 +796,12 @@
     heatmap.colorbar = function(gd,cd) {
         var trace = cd[0].trace,
             cbId = 'cb'+trace.uid,
-            scl = Plotly.Color.getScale(trace.colorscale);
+            scl = Plotly.Color.getScale(trace.colorscale),
+            zmin = trace.zmin,
+            zmax = trace.zmax;
+
+        if (!$.isNumeric(zmin)) zmin = Plotly.Lib.aggNums(Math.min, null, trace.z);
+        if (!$.isNumeric(zmax)) zmax = Plotly.Lib.aggNums(Math.max, null, trace.z);
 
         gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
         if(!trace.showscale){
@@ -806,9 +811,9 @@
 
         var cb = cd[0].t.cb = Plotly.Colorbar(gd,cbId);
         cb.fillcolor(d3.scale.linear()
-                .domain(scl.map(function(v){ return trace.zmin + v[0]*(trace.zmax-trace.zmin); }))
+                .domain(scl.map(function(v){ return zmin + v[0]*(zmax-zmin); }))
                 .range(scl.map(function(v){ return v[1]; })))
-            .filllevels({start: trace.zmin, end: trace.zmax, size: (trace.zmax-trace.zmin)/254})
+            .filllevels({start: zmin, end: zmax, size: (zmax-zmin)/254})
             .options(trace.colorbar)();
         Plotly.Lib.markTime('done colorbar');
     };
