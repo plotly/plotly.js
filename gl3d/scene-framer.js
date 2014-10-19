@@ -3,7 +3,8 @@ var Scene = require('./scene.js'),
     EventEmitter = require('events').EventEmitter,
     Gl3dLayout = require('./gl3dlayout'),
     Gl3dAxes = require('./gl3daxes'),
-    Scatter3D = require('./scatter3d');
+    Scatter3D = require('./scatter3d'),
+    Surface = require('./surface');
 
 function SceneFrame () {
     'use strict';
@@ -20,7 +21,7 @@ function SceneFrame () {
         'x': '❌'
     };
 
-    this.modules = [Gl3dAxes, Gl3dLayout, Scatter3D];
+    this.modules = [Gl3dAxes, Gl3dLayout, Scatter3D, Surface];
 
 }
 
