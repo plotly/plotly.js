@@ -563,7 +563,7 @@
             // if this scene has already been loaded it will have it's webgl
             // context parameter so lets reset the domain of the scene as
             // it may have changed (this operates on the containing iframe)
-            if (sceneLayout._webgl) sceneLayout._webgl.setPosition(sceneLayout.position);
+            if (sceneLayout._scene) sceneLayout._scene.setPosition(sceneLayout.position);
             if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
             /*
              * We only want to continue to operate on scenes that have
@@ -578,11 +578,11 @@
                     queueUIDS.indexOf(trace.uid) === -1;
             });
 
-            if (sceneLayout._webgl) {
+            if (sceneLayout._scene) {
                 //// woot, lets load all the data in the queue and bail outta here
                 while (sceneData.length) {
                     var d = sceneData.shift();
-                    sceneLayout._webgl.draw(fullLayout, d);
+                    d.module.plot(sceneLayout._scene, sceneLayout, d);
                 }
 
                 return;
@@ -602,19 +602,18 @@
                 Plotly: Plotly,
                 width: fullLayout.width,
                 height: fullLayout.height,
-                glopts: fullLayout.glopts,
-                layout: fullLayout
+                glopts: fullLayout.glopts
             };
 
             SceneFrame.createScene(sceneOptions);
 
-            SceneFrame.once('scene-loaded', function (webgl) {
+            SceneFrame.once('scene-loaded', function (scene) {
 
-                var sceneLayout = gd._fullLayout[webgl.id];
-                // make the .webgl (webgl context) available through scene.
+                var sceneLayout = gd._fullLayout[scene.id];
+                // make the .scene (scene context) available through scene.
                 sceneLayout._loading = false; // loaded
-                sceneLayout._webgl = webgl;
-                sceneLayout._container = webgl.container;
+                sceneLayout._scene = scene;
+                sceneLayout._container = scene.container;
 
                 /*
                  * Make copy of initial camera position, this value
@@ -632,23 +631,23 @@
                 } else {
                     // if cameraposition is empty, set initial to default.
                     sceneLayout._cameraPositionInitial = [
-                        $.extend(true, {}, webgl.camera.rotation),
-                        $.extend(true, {}, webgl.camera.center),
-                        webgl.camera.distance
+                        $.extend(true, {}, scene.camera.rotation),
+                        $.extend(true, {}, scene.camera.center),
+                        scene.camera.distance
                     ];
                 }
 
-                webgl.setPosition(sceneLayout.position);
+                scene.setPosition(sceneLayout.position);
 
                 // if data has accumulated on the queue while the iframe
                 // and the webgl-context were loading remove that data
                 // from the queue and draw.
                 while (sceneLayout._dataQueue.length) {
                     var d = sceneLayout._dataQueue.shift();
-                    webgl.draw(fullLayout, d);
+                    d.module.plot(sceneLayout._scene, sceneLayout, d);
                 }
 
-                SceneFrame.emit('scene-ready', webgl);
+                SceneFrame.emit('scene-ready', scene);
             });
         });
     }
@@ -3080,7 +3079,7 @@
                     }
 
                     else if(v.substr(0, 5) === 'scene') {
-                        if (d[v]._webgl) d[v]._webgl.saveStateToLayout();
+                        if (d[v]._scene) d[v]._scene.saveStateToLayout();
                     }
 
                     // OK, we're including this... recurse into it
