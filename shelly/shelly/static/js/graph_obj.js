@@ -87,8 +87,9 @@
         if (plots.isContour(type)) return Plotly.Contour;
         if (plots.isHeatmap(type)) return Plotly.Heatmap;
         if (plots.isScatter3D(type)) return Plotly.Scatter3D;
-        // if(plots.isSurface(type)) return Plotly.Surface;
+        if(plots.isSurface(type)) return Plotly.Surface;
         if(type==='box') return Plotly.Boxes;
+
         console.log('Unrecognized plot type ' + type +
             '. Ignoring this dataset.'
         );
