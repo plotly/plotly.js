@@ -50,6 +50,18 @@ function ticksChanged (ticksA, ticksB) {
     return false;
 }
 
+function parseColorScale (colorscale) {
+    return colorscale.map( function (elem) {
+        var index = elem[0];
+        var color = tinycolor(elem[1]);
+        var rgb = color.toRgb();
+        return {
+            index: index,
+            rgb: [rgb.r, rgb.g, rgb.b]
+        };
+    });
+
+}
 
 // PASS IN GLOBAL LAYOUT, LET THIS THING CARVE OUT SCENELAYOUT
 function Scene (options, shell) {
@@ -465,7 +477,7 @@ proto.Surface = function Surface (data) {
 
     var surface,
         idx, i , j,
-        colormap = data.colorscale || 'jet',
+        colormap = parseColorScale(data.colorscale),
         zdata = data.z,
         x = data.x,
         y = data.y,
