@@ -10,17 +10,6 @@ function SceneFrame () {
     'use strict';
     this.ID = 0;
 
-    this.markerSymbols = {
-        'circle': '●',
-        'circle-open': '○',
-        'square': '■',
-        'square-open': '□',
-        'diamond': '◆',
-        'diamond-open': '◇',
-        'cross': '+',
-        'x': '❌'
-    };
-
     this.modules = [Gl3dAxes, Gl3dLayout, Scatter3D, Surface];
 
 }
