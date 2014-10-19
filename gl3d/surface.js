@@ -37,13 +37,13 @@ proto.attributes = {
         type: 'sceneid',
         dflt: 'scene'
     },
-    colorscale: {
-        type: 'colorscale'
-    }
+    colorscale: {from: 'Heatmap'},
+    showscale: {from: 'Heatmap'},
+    reversescale: {from: 'Heatmap'}
 };
 
 
-proto.supplyDefaults = function (traceIn, traceOut) {
+proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     var _this = this;
     var Plotly = this.config.Plotly;
 
@@ -51,6 +51,9 @@ proto.supplyDefaults = function (traceIn, traceOut) {
         return Plotly.Lib.coerce(traceIn, traceOut, _this.attributes, attr, dflt);
     }
 
+    function coerceHeatmap(attr, dflt) {
+        return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Heatmap.attributes, attr, dflt);
+    }
 
     var z = coerce('z');
     if(!z) {
@@ -59,11 +62,26 @@ proto.supplyDefaults = function (traceIn, traceOut) {
     }
     coerce('x');
     coerce('y');
-
-    coerce('colorscale');
     coerce('scene');
+
+    coerceHeatmap('colorscale');
+
+    var reverseScale = coerceHeatmap('reversescale'),
+        showScale = coerceHeatmap('showscale');
+
+    // apply the colorscale reversal here, so we don't have to
+    // do it in separate modules later
+    if(reverseScale) {
+        traceOut.colorscale = traceOut.colorscale.map(flipScale).reverse();
+    }
+
+    if(showScale) {
+        Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+    }
+
 };
 
+function flipScale(si){ return [1 - si[0], si[1]]; }
 
 proto.plot = function (scene, sceneLayout, data) {
 
@@ -152,6 +170,8 @@ proto.plot = function (scene, sceneLayout, data) {
         surface             =  createSurface(gl, field, params);
         surface.groupId     = (scene.objectCount-1) >>> 8;
         surface.plotlyType  = data.type;
+
+        scene.glDataMap[data.uid] = surface;
     }
 
     // uids determine which data is tied to which gl-object
@@ -159,4 +179,8 @@ proto.plot = function (scene, sceneLayout, data) {
     surface.visible = data.visible;
     scene.update(sceneLayout, surface);
 
+};
+
+proto.colorbar = function(gd, cd) {
+    Plotly.Heatmap.colorbar(gd, cd);
 };
