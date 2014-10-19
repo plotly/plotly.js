@@ -365,7 +365,7 @@
                 (gd.calcdata.length>1 && fullLayout.showlegend!==false));
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(!trace.visible || !plots.isHeatmap(trace.type)) {
+                if(!trace.visible || !trace.module.colorbar) {
                     plots.autoMargin(gd,'cb'+trace.uid);
                 }
                 else trace.module.colorbar(gd,cd);
@@ -435,7 +435,7 @@
             // previously, remove them and their colorbars explicitly
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(!trace.visible || !plots.isHeatmap(trace.type)) {
+                if(!trace.visible || !trace.module.colorbar) {
                     var uid = trace.uid;
                     fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid)
                         .remove();
