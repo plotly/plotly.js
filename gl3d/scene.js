@@ -1,15 +1,9 @@
 'use strict';
 
-var createSurface = require('gl-surface-plot'),
-    camera = require('./scene-camera'),
-    ndarray = require('ndarray'),
-    ops = require('ndarray-ops'),
-    fill = require('ndarray-fill'),
+var camera = require('./scene-camera'),
     glm = require('gl-matrix'),
     createAxes = require('gl-axes'),
     getAxesPixelRange = require('gl-axes/properties'),
-    createScatterLine = require('./line-with-markers'),
-    calculateError = require('./calc-errors'),
     arrtools = require('arraytools'),
     createSelect = require('gl-select'),
     createSpikes = require('gl-spikes'),
@@ -21,16 +15,9 @@ var createSurface = require('gl-surface-plot'),
     mat4 = glm.mat4,
     proto;
 
-var OBJECTS_PER_SCATTER3D = 4;
-
-
 function str2RgbaArray(color) {
     color = tinycolor(color);
     return arrtools.str2RgbaArray(color.toRgbString());
-}
-
-function badSurfaceData (data) {
-    return !data || !data.z || !data.z.length || !data.z[0].length;
 }
 
 function ticksChanged (ticksA, ticksB) {
@@ -50,18 +37,6 @@ function ticksChanged (ticksA, ticksB) {
     return false;
 }
 
-function parseColorScale (colorscale) {
-    return colorscale.map( function (elem) {
-        var index = elem[0];
-        var color = tinycolor(elem[1]);
-        var rgb = color.toRgb();
-        return {
-            index: index,
-            rgb: [rgb.r, rgb.g, rgb.b]
-        };
-    });
-
-}
 
 // PASS IN GLOBAL LAYOUT, LET THIS THING CARVE OUT SCENELAYOUT
 function Scene (options, shell) {
@@ -75,14 +50,10 @@ function Scene (options, shell) {
     this.axis                    = null;
     this.id                      = options.id;
     this.Plotly                  = options.Plotly;
-    this.layout                  = options.layout;
-    this.sceneLayout             = options.layout[this.id];
 
-    this.markerSymbols           = null;
     this.selectBuffer            = null;
     this.pickRadius              = 30; //Number of pixels to search for closest point
     this.objectCount             = 0;
-
 
     this.glDataMap               = {};
     this.baseRange               = [ [ Infinity,  Infinity,  Infinity],  // min (init opposite)
@@ -142,9 +113,7 @@ function Scene (options, shell) {
     this.axesOpts._defaultLabelPad        = arrayCopy1D(this.axesOpts.labelPad);
     this.axesOpts._defaultLineTickLength  = arrayCopy1D(this.axesOpts.lineTickLength);
 
-
     ///////////////////////////////////////////
-
 
     this.axisSpikes      = null;
     this.spikeEnable     = true;
@@ -172,7 +141,6 @@ function Scene (options, shell) {
         0,    0,    1
     ];
 
-
     // preconfigure view
     this.camera.lookAt(
         this.defaultView.slice(0,3),
@@ -182,7 +150,6 @@ function Scene (options, shell) {
 
     //Currently selected data point
     this.selection = null;
-
 
     /*
      * gl-render is triggered in the animation loop, we hook in
@@ -195,6 +162,7 @@ function Scene (options, shell) {
 module.exports = Scene;
 
 proto = Scene.prototype;
+
 
 
 proto.handlePick = function(cameraParameters) {
@@ -423,28 +391,17 @@ proto.onRender = function () {
 };
 
 
-/**
- *
- *
- */
-proto.draw = function (layout, data) {
-
-    var glObject;
+proto.update = function (sceneLayout, glObject) {
 
     // sets the modules layout with incoming layout.
     // also set global layout properties.
-    // Relinking this on every draw is necessary as
+    // Relinking this on every update is necessary as
     // the existing layout *may* be overwritten by a new
-    // incoming layout.
-    this.setAndSyncLayout(layout);
-
-    // add or update gl-data.
-    this.setData(data);
-
-    glObject = this.glDataMap[data.uid];
+    // incoming layout in Plotly.plot()
+    this.setAndSyncLayout(sceneLayout);
 
     // add to queue if visible, remove if not visible.
-    this.updateRenderQueue(data, glObject);
+    this.updateRenderQueue(glObject);
 
     // set manual range by clipping globjects, or calculate new auto-range
     this.setAxesRange();
@@ -467,271 +424,10 @@ proto.draw = function (layout, data) {
 };
 
 
+proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
+    var cameraPosition;
+    this.sceneLayout = sceneLayout;
 
-proto.Surface = function Surface (data) {
-    /*
-     * Create a new surfac
-     */
-
-
-    if (badSurfaceData(data)) return null;
-
-    var surface,
-        idx, i , j,
-        colormap = parseColorScale(data.colorscale),
-        zdata = data.z,
-        x = data.x,
-        y = data.y,
-        xaxis = this.sceneLayout.xaxis,
-        yaxis = this.sceneLayout.yaxis,
-        zaxis = this.sceneLayout.zaxis,
-        ticks = [[],[]],
-        Nx = zdata[0].length,
-        Ny = zdata.length,
-        field = ndarray(new Float32Array(Nx*Ny), [Nx, Ny]),
-        gl = this.shell.gl;
-
-    /*
-     * Fill and transpose zdata.
-     * Consistent with 'heatmap' and 'contour', plotly 'surface'
-     * 'z' are such that sub-arrays correspond to y-coords
-     * and that the sub-array entries correspond to a x-coords,
-     * which is the transpose of 'gl-surface-plot'.
-     */
-    fill(field, function(row, col) {
-        return Number(zdata[col][row]);
-    });
-
-    // Map zdata if log axis
-    if (zaxis.type === 'log') {
-        ops.divseq(ops.logeq(field), Math.LN10);
-    }
-
-    if (Array.isArray(x) && x.length) {
-       // if x is set, use it to defined the ticks
-        for (i=0; i<Nx; i++) {
-            ticks[0][i] = xaxis.d2c(x[i]);
-        }
-    } else {
-       // if not, make linear space
-        for (i=0; i<Nx; i++) {
-            if (xaxis.type === 'log') ticks[0][i] = xaxis.c2l(i);
-            else ticks[0][i] = i;
-        }
-    }
-
-    if (Array.isArray(y) && y.length) {
-       // if y is set, use it to defined the ticks
-        for (j=0; j<Ny; j++) {
-            ticks[1][j] = yaxis.d2c(y[j]);
-        }
-    } else {
-       // if not, make linear space
-        for (j=0; j<Ny; j++) {
-            if (yaxis.type === 'log') ticks[1][j] = yaxis.c2l(j);
-            else ticks[1][j] = j;
-        }
-    }
-
-
-    var params = {
-        field: field,
-        ticks: ticks,
-        colormap: colormap
-    };
-
-
-    /*
-     * Make this more efficient by storing glObjects in
-     * a hash with uids as key. Perhaps also store them
-     * in an array.
-     */
-    idx = this.renderQueue.map(function (g) {
-        return g.uid;
-    }).indexOf(data.uid);
-
-    if (idx > -1) {
-        /*
-         * We already have drawn this surface,
-         * lets just update it with the latest params
-         */
-        surface = this.renderQueue[idx];
-        surface.update(params);
-    } else {
-        /*
-         * Push it onto the render queue
-         */
-        params.pickId       = (this.objectCount++) % 256;
-        surface             =  createSurface(gl, field, params);
-        surface.groupId     = (this.objectCount-1) >>> 8;
-        surface.plotlyType  = data.type;
-    }
-
-    return surface;
-};
-
-
-
-function calculateErrorCapSize(errors) {
-    /*jshint camelcase: false */
-    var result = [0.0,0.0,0.0], i, e;
-    for(i=0; i<3; ++i) {
-        e = errors[i];
-        if (e && e.copy_zstyle !== false) {
-            e = errors[2];
-        }
-        if(!e) {
-            continue;
-        }
-        if(e && 'width' in e) {
-            result[i] = e.width / 100.0;  //Ballpark rescaling, attempt to make consistent with plot.ly
-        }
-    }
-    return result;
-}
-
-
-function calculateTextOffset(textposition) {
-    //Read out text properties
-    var textOffset = [0,0];
-    if (textposition.indexOf('bottom') >= 0) {
-        textOffset[1] += 1;
-    }
-    if (textposition.indexOf('top') >= 0) {
-        textOffset[1] -= 1;
-    }
-    if (textposition.indexOf('left') >= 0) {
-        textOffset[0] -= 1;
-    }
-    if (textposition.indexOf('right') >= 0) {
-        textOffset[0] += 1;
-    }
-    return textOffset;
-}
-
-
-proto.Scatter = function Scatter (data) {
-    /*jshint camelcase: false */
-    /*
-     * data object {x,y,z and  marker: {size:size, color:color}}
-     */
-
-    // if (!('marker' in data)) data.marker = {};
-
-    var params, scatter, idx, i,
-        points = [],
-        xaxis = this.sceneLayout.xaxis,
-        yaxis = this.sceneLayout.yaxis,
-        zaxis = this.sceneLayout.zaxis,
-        errorProperties = [ data.error_x, data.error_y, data.error_z ],
-        xc, x = data.x,
-        yc, y = data.y,
-        zc, z = data.z,
-        len = x.length;
-
-
-    //Convert points
-    idx = 0;
-    for (i = 0; i < len; i++) {
-        // sanitize numbers
-        xc = xaxis.d2c(x[i]);
-        yc = yaxis.d2c(y[i]);
-        zc = zaxis.d2c(z[i]);
-
-        // apply any axis transforms
-        if (xaxis.type === 'log') xc = xaxis.c2l(xc);
-        if (yaxis.type === 'log') yc = yaxis.c2l(yc);
-        if (zaxis.type === 'log') zc = zaxis.c2l(zc);
-
-        points[idx] = [xc, yc, zc];
-        ++idx;
-    }
-    if (!points.length) {
-        return void 0;
-    }
-
-    //Build object parameters
-    params = {
-        position: points,
-        mode:     data.mode
-    };
-
-    if ('line' in data) {
-        params.lineColor     = str2RgbaArray(data.line.color);
-        params.lineWidth     = data.line.width;
-        params.lineDashes    = data.line.dash;
-    }
-
-    if ('marker' in data) {
-        params.scatterColor         = str2RgbaArray(data.marker.color);
-        params.scatterColor[3]     *= data.marker.opacity;
-        params.scatterSize          = 2*data.marker.size;  // rough parity with Plotly 2D markers
-        params.scatterMarker        = this.markerSymbols[data.marker.symbol];
-        params.scatterLineWidth     = data.marker.line.width;
-        params.scatterLineColor     = str2RgbaArray(data.marker.line.color);
-        params.scatterLineColor[3] *= data.marker.opacity;
-        params.scatterAngle         = 0;
-    }
-
-    if ('error_z' in data) {
-        params.errorBounds    = calculateError(data),
-        params.errorColor     = errorProperties.map( function (e) {
-            return str2RgbaArray(e.color);
-        });
-        params.errorLineWidth = errorProperties.map( function (e) {
-            return e.thickness;
-        });
-        params.errorCapSize   = calculateErrorCapSize(errorProperties);
-    }
-
-    if ('textposition' in data) {
-        params.text           = data.text;
-        params.textOffset     = calculateTextOffset(data.position);
-        params.textColor      = str2RgbaArray(data.textfont.color);
-        params.textSize       = data.textfont.size;
-        params.textFont       = data.textfont.family;
-        params.textAngle      = 0;
-    }
-    params.delaunayAxis       = data.surfaceaxis;
-    params.delaunayColor      = str2RgbaArray(data.surfacecolor);
-
-
-
-    idx = this.renderQueue.map(function (g) {
-        return g.uid;
-    }).indexOf(data.uid);
-
-    if (idx > -1) {
-        /*
-         * We already have drawn this surface,
-         * lets just update it with the latest params
-         */
-        scatter = this.renderQueue[idx];
-        scatter.update(params);
-    } else {
-        /*
-         * Push it onto the render queue
-         */
-        params.pickId0   = (this.objectCount++)%256;
-        params.pickId1   = (this.objectCount++)%256;
-        params.pickId2   = (this.objectCount++)%256;
-        params.pickId3   = (this.objectCount++)%256;
-        scatter          = createScatterLine(this.shell.gl, params);
-        scatter.groupId  = (this.objectCount-1)>>8;
-        scatter.plotlyType  = data.type;
-    }
-
-
-    return scatter;
-};
-
-
-proto.setAndSyncLayout = function setAndSyncLayout (layout) {
-    var cameraPosition,
-        sceneLayout;
-
-    this.layout = layout;
-    this.sceneLayout = sceneLayout = this.layout[this.id];
     cameraPosition = sceneLayout.cameraposition;
 
     if (sceneLayout.bgcolor) {
@@ -747,15 +443,12 @@ proto.setAndSyncLayout = function setAndSyncLayout (layout) {
     }
 
     // set Layout state from webgl
-    this.saveStateToLayout();
+    this.saveStateToLayout(sceneLayout);
 };
 
 
-
-
 proto.saveStateToLayout = function () {
-
-    var sceneLayout = this.layout[this.id];
+    var sceneLayout = this.sceneLayout;
     sceneLayout.cameraposition = [
         this.camera.rotation,
         this.camera.center,
@@ -763,38 +456,10 @@ proto.saveStateToLayout = function () {
     ];
 };
 
-proto.setData = function registerData (data) {
 
-    var glObject,
-        type = data.type,
-        uid = data.uid;
+proto.updateRenderQueue = function (glObject) {
 
-
-    switch (type) {
-
-    case 'surface':
-        glObject = this.Surface(data);
-        break;
-
-    case 'scatter3d':
-        glObject = this.Scatter(data);
-        break;
-    }
-
-    if (glObject === null) return void 0;
-
-    // uids determine which data is tied to which gl-object
-    glObject.uid = data.uid;
-
-    if (!(uid in this.glDataMap)) {
-        this.glDataMap[uid] = glObject;
-    }
-};
-
-proto.updateRenderQueue = function (data, glObject) {
-
-    var visible = (data.visible === false) ? false : true;
-
+    var visible = (glObject.visible === false) ? false : true;
     var idx = this.renderQueue.indexOf(glObject);
 
     if (visible && idx === -1) {
@@ -867,6 +532,7 @@ proto.setAxesRange = function () {
     // range when computing.
     var i, j, bounds, glObj;
     var axes, axesIn, range;
+    var sceneLayout = this.sceneLayout;
 
     if (this.renderQueue.length) {
 
@@ -881,7 +547,7 @@ proto.setAxesRange = function () {
 
     for (j = 0; j < 3; ++j) {
 
-        axes = this.sceneLayout[this.axesNames[j]];
+        axes = sceneLayout[this.axesNames[j]];
 
         for (i = 0; i < this.renderQueue.length; ++i) {
 
@@ -959,9 +625,9 @@ proto.setModelScale = function () {
 proto.configureAxes = function configureAxes () {
     /*jshint camelcase: false */
 
-    var axes;
-    var sceneLayout = this.layout[this.id];
-    var opts = this.axesOpts;
+    var axes,
+        opts = this.axesOpts,
+        sceneLayout = this.sceneLayout;
 
     for (var i = 0; i < 3; ++i) {
 
@@ -1050,10 +716,6 @@ proto.configureAxes = function configureAxes () {
     else this.axis = createAxes(this.shell.gl, this.axesOpts);
 };
 
-
-proto.isScatter = function (glObj) {
-    return 'pointCount' in glObj;
-};
 
 proto.toPNG = function () {
     var shell = this.shell;
