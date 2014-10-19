@@ -187,8 +187,8 @@ function handleHover3d (ev) {
 
     layoutUpdate[attr] = val;
 
-    scenes.forEach( function (scene) {
-        scene._webgl.spikeEnable = !scene._webgl.spikeEnable;
+    scenes.forEach( function (sceneLayout) {
+        sceneLayout._scene.spikeEnable = !sceneLayout._scene.spikeEnable;
     });
 
     this.Plotly.relayout(graphInfo, layoutUpdate).then( function() {
@@ -228,9 +228,9 @@ function handle3dCamera (ev) {
         layoutUpdate[attr] = val;
     }
 
-    scenes.forEach( function (scene) {
-        if ('_webgl' in scene && 'camera' in scene._webgl) {
-            scene._webgl.camera.keyBindingMode = val;
+    scenes.forEach( function (sceneLayout) {
+        if ('_scene' in sceneLayout && 'camera' in sceneLayout._scene) {
+            sceneLayout._scene.camera.keyBindingMode = val;
         }
     });
 
