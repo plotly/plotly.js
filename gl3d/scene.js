@@ -262,9 +262,10 @@ proto.handlePick = function(cameraParameters) {
 
             case 'surface':
                 pickData.dataCoordinate = [
-                    glObject._ticks[0].get(pickData.index[0]),
-                    glObject._ticks[1].get(pickData.index[1]),
-                    glObject._field.get(pickData.index[0], pickData.index[1]) ];
+                    glObject._field[0].get(pickData.index[0], pickData.index[1]),
+                    glObject._field[1].get(pickData.index[0], pickData.index[1]),
+                    glObject._field[2].get(pickData.index[0], pickData.index[1])
+                ];
             break;
         }
 
