@@ -48,9 +48,8 @@ proto.createScene = function (opts) {
         // Once the shell has initialized create and pass a new scene to the user.
         // set the container of the shell to be the new iframe
         shell.on('gl-init', function () {
+            opts.container = newIframe;
             var scene = new Scene(opts, shell);
-            scene.container = newIframe;
-            scene.markerSymbols = _this.markerSymbols;
 
             _this.emit('scene-loaded', scene);
         });

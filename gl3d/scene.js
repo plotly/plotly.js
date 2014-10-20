@@ -45,7 +45,7 @@ function Scene (options, shell) {
 
     this.shell                   =  shell;
     this.camera                  = camera(shell);
-    this.container               = null;
+    this.container               = options.container || null;
     this.renderQueue             = [];
     this.axis                    = null;
     this.id                      = options.id;
@@ -150,6 +150,9 @@ function Scene (options, shell) {
 
     //Currently selected data point
     this.selection = null;
+
+    // Bootstrap the initial scene if sceneLayout is provided
+    if (options.sceneLayout) this.update(options.sceneLayout, null);
 
     /*
      * gl-render is triggered in the animation loop, we hook in
@@ -459,6 +462,7 @@ proto.saveStateToLayout = function () {
 
 proto.updateRenderQueue = function (glObject) {
 
+    if (!glObject) return;
     var visible = (glObject.visible === false) ? false : true;
     var idx = this.renderQueue.indexOf(glObject);
 
@@ -773,4 +777,4 @@ proto.destroy = function destroy () {
     this.disposeAll();
     this.container.parentNode.removeChild(this.container);
 
-}
+};
