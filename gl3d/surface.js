@@ -174,6 +174,12 @@ proto.plot = function (scene, sceneLayout, data) {
         scene.glDataMap[data.uid] = surface;
     }
 
+    surface.ambientLight       = 0.8;
+    surface.diffuseLight       = 0.8;
+    surface.specularLight      = 0.0;
+    surface.roughness          = 0.5;
+    surface.fresnel            = 0.2;
+
     // uids determine which data is tied to which gl-object
     surface.uid = data.uid;
     surface.visible = data.visible;
