@@ -284,7 +284,6 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
 
     if (data.showprojection) {
         params.project = [true, true, true]; //arrayCopy1D(data.showprojection);
-        params.axisBounds = scene.axis.bounds;
         params.projectOpacity = data.projectopacity;
         params.projectScale = data.projectscale;
     }
