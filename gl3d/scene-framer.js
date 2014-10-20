@@ -33,7 +33,6 @@ proto.createScene = function (opts) {
     newIframe.frameBorder = '0';
     newIframe.src = 'glcontext.html';
 
-
     newIframe.id = opts.id || ('scene-'+ this.ID);
     this.ID++;
 
