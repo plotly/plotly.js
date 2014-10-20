@@ -1225,6 +1225,8 @@
             dflt: '#fff'
         },
         plot_bgcolor: {
+            // defined here, but set in Axes.supplyDefaults
+            // because it needs to know if there are (2D) axes or not
             type: 'color',
             dflt: '#fff'
         },
@@ -1284,7 +1286,6 @@
         coerce('margin.autoexpand');
 
         coerce('paper_bgcolor');
-        coerce('plot_bgcolor');
 
         coerce('separators');
         coerce('hidesources');
