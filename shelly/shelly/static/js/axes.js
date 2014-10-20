@@ -240,6 +240,13 @@
                 layoutIn[axName] = {type: axLayoutIn.type};
             }
         });
+
+        // plot_bgcolor only makes sense if there's a (2D) plot!
+        // TODO: bgcolor for each subplot, to inherit from the main one
+        if(xaList.length && yaList.length) {
+            Plotly.Lib.coerce(layoutIn, layoutOut,
+                Plotly.Plots.layoutAttributes, 'plot_bgcolor');
+        }
     };
 
     axes.supplyAxisDefaults = function(containerIn, containerOut, options) {
@@ -427,9 +434,9 @@
             traces = (gd._fullData).map(function(d,i) { return i; });
         }
         traces.forEach(function(tracenum) {
-            var trace = gd._fullData[tracenum];
-            axes.getFromId(gd, trace.xaxis).type = '-';
-            axes.getFromId(gd, trace.yaxis).type = '-';
+            var trace = gd.data[tracenum];
+            delete (axes.getFromId(gd, trace.xaxis)||{}).type;
+            delete (axes.getFromId(gd, trace.yaxis)||{}).type;
         });
     };
 
