@@ -1603,7 +1603,7 @@
     lib.minExtend = function(obj1, obj2) {
         var objOut = {};
         if(typeof obj2 !== 'object') obj2 = {};
-        var arrayLen = 2;
+        var arrayLen = 3;
         Object.keys(obj1).forEach(function(k) {
             var v = obj1[k];
             if(k.charAt(0)==='_' || typeof v === 'function') return;

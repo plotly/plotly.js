@@ -3,6 +3,7 @@
 var createScatterLine = require('./line-with-markers'),
     tinycolor = require('tinycolor2'),
     arrtools = require('arraytools'),
+    arrayCopy1D = arrtools.copy1D,
     calculateError = require('./calc-errors');
 
 function Scatter3D (config) {
@@ -32,6 +33,23 @@ proto.attributes = {
     },
     surfacecolor: {
         type: 'color'
+    },
+    showprojection: [
+        {type: 'boolean', dflt: false},
+        {type: 'boolean', dflt: false},
+        {type: 'boolean', dflt: false}
+    ],
+    projectopacity: {
+        type: 'number',
+        min: 0,
+        max: 1,
+        dflt: 1
+    },
+    projectscale: {
+        type: 'number',
+        min: 0,
+        max: 10,
+        dflt: 2/3
     },
     mode: {from: 'Scatter'},
     line: {
@@ -120,12 +138,23 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     coerce('scene');
     coerce('surfaceaxis');
     coerce('surfacecolor');
+    coerce('showprojection[0]');
+    coerce('showprojection[1]');
+    coerce('showprojection[2]');
+    if (traceOut.showprojection.some(isTrue)) {
+        coerce('projectopacity');
+        coerce('projectscale');
+    }
 
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y', inherit: 'z'});
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
 
 };
+
+function isTrue (bool) {
+    return bool;
+}
 
 function calculateErrorCapSize(errors) {
     /*jshint camelcase: false */
@@ -252,6 +281,14 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
         params.textFont       = data.textfont.family;
         params.textAngle      = 0;
     }
+
+    if (data.showprojection) {
+        params.project = [true, true, true]; //arrayCopy1D(data.showprojection);
+        params.axisBounds = scene.axis.bounds;
+        params.projectOpacity = data.projectopacity;
+        params.projectScale = data.projectscale;
+    }
+
     params.delaunayAxis       = data.surfaceaxis;
     params.delaunayColor      = str2RgbaArray(data.surfacecolor);
 
@@ -277,7 +314,6 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
 
         scene.glDataMap[data.uid] = scatter;
     }
-
     // uids determine which data is tied to which gl-object
     scatter.uid = data.uid;
     scatter.visible = data.visible;

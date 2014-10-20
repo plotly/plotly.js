@@ -602,6 +602,7 @@
                 zIndex: '1000',
                 id: sceneKey,
                 Plotly: Plotly,
+                sceneLayout: sceneLayout,
                 width: fullLayout.width,
                 height: fullLayout.height,
                 glopts: fullLayout.glopts
