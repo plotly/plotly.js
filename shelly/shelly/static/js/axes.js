@@ -1825,10 +1825,6 @@
             ax,
             independent = false;
 
-        // there are multiple code paths into this function
-        // instead of patching them all up, lets bail if 3D here
-        if (fullLayout._hasGL3D) return;
-
         // allow passing an independent axis object instead of id
         if(typeof axid === 'object') {
             ax = axid;
@@ -1857,7 +1853,7 @@
             }
 
             if(!axid || axid==='redraw') {
-                return Plotly.Lib.syncOrAsync(axes.list(td).map(function(ax) {
+                return Plotly.Lib.syncOrAsync(axes.list(td, '', true).map(function(ax) {
                     return function(){
                         if(!ax._id) return;
                         var axDone = axes.doTicks(td,ax._id);
