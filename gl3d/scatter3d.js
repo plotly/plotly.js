@@ -114,13 +114,13 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     coerceScatter('text');
 
     if (Scatter.hasLines(traceOut)) {
-        coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
+        var linecolor = coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
         coerceScatter('line.width');
         coerceScatter('line.dash');
     }
 
     if (Scatter.hasMarkers(traceOut)) {
-        coerceScatter('marker.color', defaultColor);
+        var markercolor = coerceScatter('marker.color', defaultColor);
         coerceScatter('marker.symbol');
         coerceScatter('marker.size');
         coerceScatter('marker.opacity', 1);
@@ -136,8 +136,7 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     }
 
     coerce('scene');
-    coerce('surfaceaxis');
-    coerce('surfacecolor');
+    if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', linecolor || markercolor);
     coerce('showprojection[0]');
     coerce('showprojection[1]');
     coerce('showprojection[2]');
