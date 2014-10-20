@@ -338,7 +338,7 @@
         var fullLayout = gd._fullLayout;
 
         ////////////////////////////////  3D   ///////////////////////////////
-        if (fullLayout._hasGL3D) plot3D(gd);
+        // if (fullLayout._hasGL3D) plot3D(gd);
 
         // prepare the data and find the autorange
 
@@ -430,6 +430,8 @@
 
         function drawData(){
             // Now plot the data
+
+            if (fullLayout._hasGL3D) plot3D(gd);
 
             // in case of traces that were heatmaps or contour maps
             // previously, remove them and their colorbars explicitly
