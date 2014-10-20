@@ -767,3 +767,10 @@ proto.disposeAll = function disposeAll () {
         this.axisSpikes = null;
     }
 };
+
+proto.destroy = function destroy () {
+
+    this.disposeAll();
+    this.container.parentNode.removeChild(this.container);
+
+}
