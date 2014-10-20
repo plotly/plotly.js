@@ -453,8 +453,8 @@ proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
 proto.saveStateToLayout = function () {
     var sceneLayout = this.sceneLayout;
     sceneLayout.cameraposition = [
-        this.camera.rotation,
-        this.camera.center,
+        arrayCopy1D(this.camera.rotation),
+        arrayCopy1D(this.camera.center),
         this.camera.distance
     ];
 };
