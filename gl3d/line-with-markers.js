@@ -205,7 +205,9 @@ proto.update = function(options) {
         orthographic: true,
         pickId:       this.pickId1,
         lineWidth:    options.scatterLineWidth,
-        lineColor:    options.scatterLineColor
+        lineColor:    options.scatterLineColor,
+        project:      options.project,
+        axisBounds:   options.axisBounds
     };
 
     if(this.mode.indexOf('markers') !== -1) {

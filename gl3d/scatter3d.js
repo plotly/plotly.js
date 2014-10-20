@@ -283,7 +283,8 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
     }
 
     if (data.showprojection) {
-        params.project = arrayCopy1D(data.showprojection);
+        params.project = [true, true, true]; //arrayCopy1D(data.showprojection);
+        params.axisBounds = scene.axis.bounds;
         params.projectOpacity = data.projectopacity;
         params.projectScale = data.projectscale;
     }
@@ -313,7 +314,6 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
 
         scene.glDataMap[data.uid] = scatter;
     }
-
     // uids determine which data is tied to which gl-object
     scatter.uid = data.uid;
     scatter.visible = data.visible;
