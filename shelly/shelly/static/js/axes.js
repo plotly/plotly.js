@@ -290,7 +290,6 @@
         axes.setConvert(containerOut);
 
         coerce('title', defaultTitle);
-        // TODO: inherit from input tickfont?
         coerce('titlefont', {
             family: font.family,
             size: Math.round(font.size * 1.2),
@@ -322,7 +321,6 @@
 
         var showTicks = coerce('ticks', outerTicks ? 'outside' : '');
         if(showTicks) {
-            // TODO: are there multiple axes connected to this one?
             coerce('ticklen');
             coerce('tickwidth');
             coerce('tickcolor');
@@ -330,7 +328,6 @@
 
         var showTickLabels = coerce('showticklabels');
         if(showTickLabels) {
-            // TODO: coerce from input titlefont and/or vice versa?
             coerce('tickfont', font);
             coerce('tickangle');
 

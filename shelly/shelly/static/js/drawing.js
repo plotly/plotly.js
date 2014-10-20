@@ -653,7 +653,7 @@
             }
             else {
                 lineWidth = (d.mlw+1 || markerLine.width+1 ||
-                    // TODO: do we really need this?
+                    // TODO: we need the latter for legends... can we get rid of it?
                     (d.trace ? d.trace.marker.line.width : 0) + 1) -1;
 
                 if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);

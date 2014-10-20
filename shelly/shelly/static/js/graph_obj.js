@@ -403,7 +403,6 @@
 
                 // TODO: autosize extra for text markers
                 return Plotly.Lib.syncOrAsync([
-                    // plots.previousPromises,
                     Plotly.Annotations.calcAutorange,
                     doAutoRange
                 ], gd);
@@ -1384,7 +1383,7 @@
             if(!cd[0].t) cd[0].t = {};
             cd[0].trace = trace;
 
-            // TODO: this is a kludge to put the array attributes into
+            // this is a kludge to put the array attributes into
             // calcdata the way Scatter.plot does, so that legends and
             // popovers know what to do with them.
             if(plots.isScatter3D(trace.type)) {

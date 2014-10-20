@@ -167,9 +167,6 @@
                 }
 
                 // copy bin info back to the source data.
-                // TODO: Not sure if this is the way we really want to do this,
-                // it's just so that when you turn off autobin in the GUI, you start
-                // with the autoBin values
                 trace._input.xbins = trace.xbins;
             }
             if(trace.autobiny || !('ybins' in trace)) {

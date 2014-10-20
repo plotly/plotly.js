@@ -423,7 +423,7 @@
             })
             .selectAll('g.points')
                 .each(function(d){
-                    var trace = d.trace||d[0].trace; // TODO: which is it???
+                    var trace = d.trace;
 
                     d3.select(this).selectAll('path')
                         .call(Plotly.Drawing.pointStyle, trace);
