@@ -299,7 +299,6 @@ proto.onRender = function () {
     this.selection = pickResult = this.handlePick(cameraParameters);
 
     if (this.axis) {
-
         glRange = getAxesPixelRange(this.axis,
                                     cameraParameters,
                                     width,
@@ -386,6 +385,7 @@ proto.onRender = function () {
 
     for (i = 0; i < this.renderQueue.length; ++i) {
         glObject = this.renderQueue[i];
+        glObject.axisBounds = this.axis.bounds;
         if(glObject.supportsTransparency) {
             glObject.draw(cameraParameters, true);
         }
