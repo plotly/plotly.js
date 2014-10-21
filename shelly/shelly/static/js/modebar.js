@@ -41,7 +41,9 @@ function ModeBar (config) {
         _this.element.appendChild(group);
     });
 
-    this.element.appendChild(this.getLogo());
+    if (config.displaylogo) {
+        this.element.appendChild(this.getLogo());
+    }
 
     config.container.appendChild(this.element);
 
@@ -140,6 +142,7 @@ ModeBar.prototype.getLogo = function(){
 
     a.href = 'https://plot.ly/';
     a.target = '_blank';
+    a.title = 'Plotly';
     a.appendChild(img);
 
     group.appendChild(a);
