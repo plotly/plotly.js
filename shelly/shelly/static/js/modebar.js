@@ -41,6 +41,7 @@ function ModeBar (config) {
         _this.element.appendChild(group);
     });
 
+    this.element.appendChild(this.getLogo());
 
     config.container.appendChild(this.element);
 
@@ -125,6 +126,21 @@ ModeBar.prototype.hasButtons = function (buttons) {
     return true;
 };
 
+/**
+ * @return {HTMLDivElement} The logo image wrapped in a group
+ */
+ModeBar.prototype.getLogo = function(){
+    var group = this.createGroup(),
+        img = document.createElement('img');
+
+    img.style.width = '25px';
+    img.style.height = '20px';
+    img.src = '/static/img/logo_small.png';
+
+    group.appendChild(img);
+    group.classList.add('btn-group--logo');
+    return group;
+}
 
 /**
  * Apply D3 cartesian mode attributes to layout to update hover functionality
