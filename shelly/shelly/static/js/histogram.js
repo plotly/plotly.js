@@ -18,7 +18,7 @@
             dflt: 1
         },
         size: {
-            type: 'number',
+            type: 'any', // for date axes
             dflt: 1
         }
     };
@@ -240,8 +240,9 @@
         }
 
         // create the bins (and any extra arrays needed)
+        // assume more than 5000 bins is an error, so we don't crash the browser
         i = binspec.start;
-        while(i<binspec.end) {
+        while(i<binspec.end && pos.length<5000) {
             i2 = Plotly.Axes.tickIncrement(i, binspec.size);
             pos.push((i + i2) / 2);
             size.push(sizeinit);
