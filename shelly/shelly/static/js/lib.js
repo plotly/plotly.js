@@ -11,7 +11,7 @@
     /* global pullf:false */
 
     // ---external global dependencies
-    /* global d3:false, Spinner:false, tinycolor:false */
+    /* global d3:false, Spinner:false */
 
     if(!window.Plotly) { window.Plotly = {}; }
     var lib = Plotly.Lib = {};
@@ -560,7 +560,6 @@
 
     // constrain - restrict a number v to be between v0 and v1
     lib.constrain = function(v,v0,v1) {
-        if(v0>v1) return Math.max(v1,Math.min(v0,v));
         return Math.max(v0,Math.min(v1,v));
     };
 
@@ -1443,185 +1442,12 @@
         };
     };
 
-    // Helper to strip trailing slash, from
-    // http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
+    // Helper to strip trailing slash, from http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
     lib.stripTrailingSlash = function (str) {
-        if (str.substr(-1) === '/') {
+        if (str.substr(-1) == '/') {
             return str.substr(0, str.length - 1);
         }
         return str;
     };
-
-    // Helpers for defaults and attribute validation
-    var fontAttrs = {
-        family: {type: 'string'},
-        size: {
-            type: 'number',
-            min: 1
-        },
-        color: {type: 'color'}
-    };
-
-    var coerceIt = {
-        // yuicompressor doesn't like some of these keys if they're not quoted...
-        // chrome doesn't care but I guess yui thinks some are reserved words?
-        'data_array': function(v, propOut, dflt) {
-            // data_array: value MUST be an array, or we ignore it
-            // you can use dflt=[] to force said array to exist though
-            if(Array.isArray(v)) propOut.set(v);
-            else if(dflt!==undefined) propOut.set(dflt);
-        },
-        'enumerated': function(v, propOut, dflt, opts) {
-            if(opts.values.indexOf(v)===-1) propOut.set(dflt);
-            else propOut.set(v);
-        },
-        'boolean': function(v, propOut, dflt) {
-            if(v===true || v===false) propOut.set(v);
-            else propOut.set(dflt);
-        },
-        'number': function(v, propOut, dflt, opts) {
-            if(!$.isNumeric(v) ||
-                    (opts.min!==undefined && v<opts.min) ||
-                    (opts.max!==undefined && v>opts.max)) {
-                propOut.set(dflt);
-            }
-            else propOut.set(+v);
-        },
-        'integer': function(v, propOut, dflt, opts) {
-            if(v%1 || !$.isNumeric(v) ||
-                    (opts.min!==undefined && v<opts.min) ||
-                    (opts.max!==undefined && v>opts.max)) {
-                propOut.set(dflt);
-            }
-            else propOut.set(+v);
-        },
-        'string': function(v, propOut, dflt, opts) {
-            var s = String(v);
-            if(v===undefined || (opts.noBlank===false && !s)) {
-                propOut.set(dflt);
-            }
-            else propOut.set(String(v));
-        },
-        'color': function(v, propOut, dflt) {
-            if(tinycolor(v).ok) propOut.set(v);
-            else propOut.set(dflt);
-        },
-        'colorscale': function(v, propOut, dflt) {
-            propOut.set(Plotly.Color.getScale(v, dflt));
-        },
-        'font': function(v, propOut, dflt) {
-            if(!v) v = {};
-            var vOut = {};
-
-            lib.coerce(v, vOut, fontAttrs, 'family', dflt.family);
-            // TODO: do we need better than 'string' for font, or just
-            // a "noBlank" option?
-            if(!vOut.family) vOut.family = dflt.family;
-
-            lib.coerce(v, vOut, fontAttrs, 'size', dflt.size);
-            lib.coerce(v, vOut, fontAttrs, 'color', dflt.color);
-
-            propOut.set(vOut);
-        },
-        'angle': function(v, propOut, dflt) {
-            if(v==='auto') propOut.set('auto');
-            else if(!$.isNumeric(v)) propOut.set(dflt);
-            else {
-                if(Math.abs(v)>180) v -= Math.round(v/360)*360;
-                propOut.set(+v);
-            }
-        },
-        'axisid': function(v, propOut, dflt) {
-            if(typeof v === 'string' && v.charAt(0)===dflt) {
-                var axnum = Number(v.substr(1));
-                if(axnum%1 === 0 && axnum>1) {
-                    propOut.set(v);
-                    return;
-                }
-            }
-            propOut.set(dflt);
-        },
-        'sceneid': function(v, propOut, dflt) {
-            if(typeof v === 'string' && v.substr(0,5)===dflt) {
-                var scenenum = Number(v.substr(5));
-                if(scenenum%1 === 0 && scenenum>1) {
-                    propOut.set(v);
-                    return;
-                }
-            }
-            propOut.set(dflt);
-        },
-        'any': function(v, propOut, dflt) {
-            if(v===undefined) propOut.set(dflt);
-            else propOut.set(v);
-        }
-    };
-
-    lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
-        // ensures that container[attribute] has a valid value
-        // attributes[attribute] is an object with possible keys:
-        // - type: data_array, enumerated, boolean, number, integer, string, color, colorscale, any
-        // - values: (enumerated only) array of allowed vals
-        // - min, max: (number, integer only) inclusive bounds on allowed vals
-        //      either or both may be omitted
-        // - dflt: if attribute is invalid or missing, use this default
-        //      if dflt is provided as an argument to lib.coerce it takes precedence
-        // as a convenience, returns the value it finally set
-
-        var opts = lib.nestedProperty(attributes, attribute).get(),
-            propIn = lib.nestedProperty(containerIn, attribute),
-            propOut = lib.nestedProperty(containerOut, attribute),
-            v = propIn.get();
-
-        if(dflt===undefined) dflt = opts.dflt;
-
-        // arrayOk: value MAY be an array, then we do no value checking
-        // at this point, because it can be more complicated than the
-        // individual form (eg. some array vals can be numbers, even if the
-        // single values must be color strings)
-        if(opts.arrayOk && Array.isArray(v)) {
-            propOut.set(v);
-            return v;
-        }
-
-        coerceIt[opts.type](v, propOut, dflt, opts);
-
-        return propOut.get();
-    };
-
-    lib.mergeArray = function(traceAttr, cd, cdAttr) {
-        if($.isArray(traceAttr)) {
-            var imax = Math.max(traceAttr.length, cd.length);
-            for(var i=0; i<imax; i++) cd[i][cdAttr] = traceAttr[i];
-        }
-    };
-
-    // modified version of $.extend to strip out private objs and functions,
-    // and cut arrays down to first <arraylen> or 1 elements
-    // because $.extend is hella slow
-    // obj2 is assumed to already be clean of these things (including no arrays)
-    lib.minExtend = function(obj1, obj2) {
-        var objOut = {};
-        if(typeof obj2 !== 'object') obj2 = {};
-        var arrayLen = 3;
-        Object.keys(obj1).forEach(function(k) {
-            var v = obj1[k];
-            if(k.charAt(0)==='_' || typeof v === 'function') return;
-            else if(k==='module') objOut[k] = v;
-            else if(Array.isArray(v)) objOut[k] = v.slice(0,arrayLen);
-            else if(typeof v === 'object') objOut[k] = lib.minExtend(obj1[k], obj2[k]);
-            else objOut[k] = v;
-        });
-
-        Object.keys(obj2).forEach(function(k) {
-            var v = obj2[k];
-            if(typeof v !== 'object' || !(k in objOut) || typeof objOut[k] !== 'object') {
-                objOut[k] = v;
-            }
-        });
-
-        return objOut;
-    };
-
 
 }()); // end Lib object definition

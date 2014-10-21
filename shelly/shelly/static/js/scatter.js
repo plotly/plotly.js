@@ -1,355 +1,34 @@
 (function() {
-    'use strict';
-    /* jshint camelcase: false */
-
-    // ---Plotly global modules
-    /* global Plotly:false */
-
-    // ---external global dependencies
-    /* global d3:false */
-
     var scatter = window.Plotly.Scatter = {};
 
-    // mark this module as allowing error bars
-    scatter.errorBarsOK = true;
+    scatter.PTS_LINESONLY = 20; // traces with < this many points are by default shown with points and lines, > just get lines
 
-    // traces with < this many points are by default shown
-    // with points and lines, > just get lines
-    scatter.PTS_LINESONLY = 20;
+    scatter.calc = function(gd,gdc) {
+        // verify that data exists, and make scaled data if necessary
+        if(!('y' in gdc) && !('x' in gdc)) { return; } // no data!
 
-    scatter.attributes = {
-        x: {type: 'data_array'},
-        x0: {
-            type: 'any',
-            dflt: 0
-        },
-        dx: {
-            type: 'number',
-            dflt: 1
-        },
-        y: {type: 'data_array'},
-        y0: {
-            type: 'any',
-            dflt: 0
-        },
-        dy: {
-            type: 'number',
-            dflt: 1
-        },
-        text: {
-            type: 'string',
-            dflt: '',
-            arrayOk: true
-        },
-        mode: {
-            type: 'enumerated',
-            values: ['none', 'lines', 'markers', 'lines+markers',
-                'text', 'lines+text', 'markers+text', 'lines+markers+text']
-        },
-        line: {
-            color: {
-                type: 'color'
-            },
-            width: {
-                type: 'number',
-                min: 0,
-                dflt: 2
-            },
-            shape: {
-                type: 'enumerated',
-                values: ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'],
-                dflt: 'linear'
-            },
-            smoothing: {
-                type: 'number',
-                min: 0,
-                max: 1.3,
-                dflt: 1
-            },
-            dash: {
-                type: 'string',
-                // string type usually doesn't take values... this one should really be
-                // a special type or at least a special coercion function, from the GUI
-                // you only get these values but elsewhere the user can supply a list of
-                // dash lengths in px, and it will be honored
-                values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
-                dflt: 'solid'
-            }
-        },
-        connectgaps: {
-            type: 'boolean',
-            dflt: false
-        },
-        fill: {
-            type: 'enumerated',
-            values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx'],
-            dflt: 'none'
-        },
-        fillcolor: {type: 'color'},
-        marker: {
-            symbol: {
-                type: 'enumerated',
-                values: Plotly.Drawing.symbolList,
-                dflt: 'circle',
-                arrayOk: true
-            },
-            opacity: {
-                type: 'number',
-                min: 0,
-                max: 1,
-                arrayOk: true
-            },
-            size: {
-                type: 'number',
-                min: 0,
-                dflt: 6,
-                arrayOk: true
-            },
-            color: {
-                type: 'color',
-                arrayOk: true
-            },
-            maxdisplayed: {
-                type: 'number',
-                min: 0,
-                dflt: 0
-            },
-            sizeref: {
-                type: 'number',
-                dflt: 1
-            },
-            sizemode: {
-                type: 'enumerated',
-                values: ['diameter', 'area'],
-                dflt: 'diameter'
-            },
-            colorscale: {
-                type: 'colorscale',
-                dflt: Plotly.Color.defaultScale
-            },
-            cauto: {
-                type: 'boolean',
-                dflt: true
-            },
-            cmax: {
-                type: 'number',
-                dflt: 10
-            },
-            cmin: {
-                type: 'number',
-                dflt: -10
-            },
-            line: {
-                color: {
-                    type: 'color',
-                    arrayOk: true
-                },
-                width: {
-                    type: 'number',
-                    min: 0,
-                    arrayOk: true
-                },
-                colorscale: {
-                    type: 'colorscale',
-                    dflt: Plotly.Color.defaultScale
-                },
-                cauto: {
-                    type: 'boolean',
-                    dflt: true
-                },
-                cmax: {
-                    type: 'number',
-                    dflt: 10
-                },
-                cmin: {
-                    type: 'number',
-                    dflt: -10
-                }
-            }
-        },
-        textposition: {
-            type: 'enumerated',
-            values: [
-                'top left', 'top center', 'top right',
-                'middle left', 'middle center', 'middle right',
-                'bottom left', 'bottom center', 'bottom right'
-            ],
-            dflt: 'middle center',
-            arrayOk: true
-        },
-        // TODO: all three of the sub-attributes here should be arrayOk
-        // that'll be easier once we work in Etienne's idea about how fonts should work.
-        // also maybe we should add colorscale?
-        textfont: {type: 'font'}
-    };
+        var i, cd = [];
 
-    scatter.supplyXY = function(traceIn, traceOut) {
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-        }
-
-        var len,
-            x = coerce('x'),
-            y = coerce('y');
-
-        if(x) {
-            if(y) {
-                len = Math.min(x.length, y.length);
-                // TODO: not sure we should do this here... but I think
-                // the way it works in calc is wrong, because it'll delete data
-                // which could be a problem eg in streaming / editing if x and y
-                // come in at different times
-                // so we need to revisit calc before taking this out
-                if(len<x.length) traceOut.x = x.slice(0, len);
-                if(len<y.length) traceOut.y = y.slice(0, len);
+        // ignore as much processing as possible (and including in autorange) if trace is not visible
+        if(gdc.visible===false) {
+            // even if trace is not visible, need to figure out whether there are enough
+            // points to trigger auto-no-lines
+            if(gdc.mode || ((!gdc.x || gdc.x.length<scatter.PTS_LINESONLY) &&
+              (!gdc.y || gdc.y.length<scatter.PTS_LINESONLY))) {
+                return [{x:false, y:false}];
             }
             else {
-                len = x.length;
-                coerce('y0');
-                coerce('dy');
+                for(i=0; i<scatter.PTS_LINESONLY+1; i++) { cd.push({x:false, y:false}); }
+                return cd;
             }
         }
-        else {
-            if(!y) return 0;
 
-            len = traceOut.y.length;
-            coerce('x0');
-            coerce('dx');
-        }
-        return len;
-    };
-
-    scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-        }
-
-        var len = scatter.supplyXY(traceIn, traceOut),
-            // TODO: default mode by orphan points...
-            defaultMode = len < scatter.PTS_LINESONLY ? 'lines+markers' : 'lines';
-        if(!len) {
-            traceOut.visible = false;
-            return;
-        }
-
-        coerce('text');
-        coerce('mode', defaultMode);
-
-        if(scatter.hasLines(traceOut)) {
-            scatter.lineDefaults(traceIn, traceOut, defaultColor, layout);
-        }
-
-        if(scatter.hasMarkers(traceOut)) {
-            scatter.markerDefaults(traceIn, traceOut, defaultColor, layout);
-        }
-
-        if(scatter.hasText(traceOut)) {
-            coerce('textposition');
-            coerce('textfont', layout.font);
-        }
-
-        coerce('fill');
-        if(traceOut.fill!=='none') {
-            coerce('fillcolor', Plotly.Color.addOpacity(
-                (traceOut.line||{}).color || (traceOut.marker||{}).color ||
-                ((traceOut.marker||{}).line||{}).color || defaultColor, 0.5));
-            if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut);
-        }
-
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
-    };
-
-    scatter.lineDefaults = function(traceIn, traceOut, defaultColor) {
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-        }
-
-        coerce('line.color', (traceIn.marker||{}).color || defaultColor);
-        coerce('line.width');
-
-        lineShapeDefaults(traceIn, traceOut);
-
-        coerce('connectgaps');
-        coerce('line.dash');
-    };
-
-    function lineShapeDefaults(traceIn, traceOut) {
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-        }
-
-        var shape = coerce('line.shape');
-        if(shape==='spline') coerce('line.smoothing');
-    }
-
-    scatter.markerDefaults = function(traceIn, traceOut, defaultColor) {
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-        }
-
-        var isBubble = $.isArray((traceIn.marker||{}).size),
-            lineColor = (traceIn.line||{}).color,
-            defaultMLC;
-        if(lineColor) defaultColor = lineColor;
-
-        coerce('marker.symbol');
-        coerce('marker.opacity', isBubble ? 0.7 : 1);
-        coerce('marker.size');
-        coerce('marker.maxdisplayed');
-
-        scatter.colorScalableDefaults('marker.', coerce, defaultColor);
-
-        // if there's a line with a different color than the marker, use
-        // that line color as the default marker line color
-        // mostly this is for transparent markers to behave nicely
-        if(lineColor && traceOut.marker.color!==lineColor) {
-            defaultMLC =  lineColor;
-        }
-        else if(isBubble) defaultMLC = '#fff';
-        else defaultMLC = '#444';
-        scatter.colorScalableDefaults('marker.line.', coerce, defaultMLC);
-
-        coerce('marker.line.width', isBubble ? 1 : 0);
-
-        if(isBubble) {
-            coerce('marker.sizeref');
-            coerce('marker.sizemode');
-        }
-    };
-
-    scatter.colorScalableDefaults = function(prefix, coerce, dflt) {
-        var colorAttr = prefix + 'color',
-            colorVal = coerce(colorAttr, dflt),
-            attrs = [
-                prefix + 'colorscale',
-                prefix + 'cauto',
-                prefix + 'cmax',
-                prefix + 'cmin'
-            ];
-
-        if($.isArray(colorVal)) attrs.forEach(coerce);
-    };
-
-    scatter.hasLines = function(trace) {
-        return trace.visible && trace.mode && trace.mode.indexOf('lines')!==-1;
-    };
-
-    scatter.hasMarkers = function(trace) {
-        return trace.visible && trace.mode && trace.mode.indexOf('markers')!==-1;
-    };
-
-    scatter.hasText = function(trace) {
-        return trace.visible && trace.mode && trace.mode.indexOf('text')!==-1;
-    };
-
-    scatter.calc = function(gd,trace) {
-        var xa = Plotly.Axes.getFromId(gd,trace.xaxis||'x'),
-            ya = Plotly.Axes.getFromId(gd,trace.yaxis||'y');
+        var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
+            ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y');
         Plotly.Lib.markTime('in Scatter.calc');
-        var x = xa.makeCalcdata(trace,'x');
+        var x = xa.makeCalcdata(gdc,'x');
         Plotly.Lib.markTime('finished convert x');
-        var y = ya.makeCalcdata(trace,'y');
+        var y = ya.makeCalcdata(gdc,'y');
         Plotly.Lib.markTime('finished convert y');
         var serieslen = Math.min(x.length,y.length);
 
@@ -357,44 +36,40 @@
         xa._minDtick = 0;
         ya._minDtick = 0;
 
-        if(x.length>serieslen) x.splice(serieslen, x.length-serieslen);
-        if(y.length>serieslen) y.splice(serieslen, y.length-serieslen);
+        if(x.length>serieslen) { x.splice(serieslen,x.length-serieslen); }
+        if(y.length>serieslen) { y.splice(serieslen,y.length-serieslen); }
 
         // check whether bounds should be tight, padded, extended to zero...
         // most cases both should be padded on both ends, so start with that.
         var xOptions = {padded:true},
             yOptions = {padded:true};
         // include marker size
-        if(scatter.hasMarkers(trace)) {
-            var sizeref = 1.6*(trace.marker.sizeref||1),
+        if(gdc.mode && gdc.mode.indexOf('markers')!=-1) {
+            var markerPad = gdc.marker ? gdc.marker.size : 0,
+                sizeref = 1.6*((gdc.marker && gdc.marker.sizeref)||1),
                 markerTrans;
-            if(trace.marker.sizemode==='area') {
-                markerTrans = function(v) {
-                    return Math.max(Math.sqrt((v||0)/sizeref),3);
-                };
+            if(gdc.marker && gdc.marker.sizemode=='area') {
+                markerTrans = function(v) { return Math.max(Math.sqrt((v||0)/sizeref),3); };
             }
             else {
-                markerTrans = function(v) {
-                    return Math.max((v||0)/sizeref,3);
-                };
+                markerTrans = function(v) { return Math.max((v||0)/sizeref,3); };
             }
-            xOptions.ppad = yOptions.ppad = $.isArray(trace.marker.size) ?
-                trace.marker.size.map(markerTrans) :
-                markerTrans(trace.marker.size);
+            xOptions.ppad = yOptions.ppad = $.isArray(markerPad) ?
+                markerPad.map(markerTrans) : markerTrans(markerPad);
         }
         // TODO: text size
 
         // include zero (tight) and extremes (padded) if fill to zero
         // (unless the shape is closed, then it's just filling the shape regardless)
-        if((trace.fill==='tozerox' || (trace.fill==='tonextx' && gd.firstscatter)) &&
+        if((gdc.fill=='tozerox' || (gdc.fill=='tonextx' && gd.firstscatter)) &&
                 (x[0]!==x[serieslen-1] || y[0]!==y[serieslen-1])) {
             xOptions.tozero = true;
         }
-
         // if no error bars, markers or text, or fill to y=0 remove x padding
-        else if(!trace.error_y.visible &&
-                (['tonexty', 'tozeroy'].indexOf(trace.fill)!==-1 ||
-                 (!scatter.hasMarkers(trace) && !scatter.hasText(trace)))) {
+        else if((!gdc.error_y || !gdc.error_y.visible) &&
+                (['tonexty','tozeroy'].indexOf(gdc.fill)!=-1 ||
+                (gdc.mode && gdc.mode.indexOf('markers')==-1 && gdc.mode.indexOf('text')==-1) || // explicit no markers/text
+                (!gdc.mode && serieslen>=scatter.PTS_LINESONLY))) { // automatic no markers
             xOptions.padded = false;
             xOptions.ppad = 0;
         }
@@ -402,13 +77,12 @@
         // now check for y - rather different logic, though still mostly padded both ends
         // include zero (tight) and extremes (padded) if fill to zero
         // (unless the shape is closed, then it's just filling the shape regardless)
-        if((trace.fill==='tozeroy' || (trace.fill==='tonexty' && gd.firstscatter)) &&
+        if((gdc.fill=='tozeroy' || (gdc.fill=='tonexty' && gd.firstscatter)) &&
                 (x[0]!==x[serieslen-1] || y[0]!==y[serieslen-1])) {
             yOptions.tozero = true;
         }
-
         // tight y: any x fill
-        else if(['tonextx', 'tozerox'].indexOf(trace.fill)!==-1) {
+        else if(['tonextx','tozerox'].indexOf(gdc.fill)!=-1) {
             yOptions.padded = false;
         }
 
@@ -419,189 +93,110 @@
         Plotly.Lib.markTime('done expand y');
 
         // create the "calculated data" to plot
-        var cd = [];
-        for(var i=0; i<serieslen; i++) {
-            cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ?
-                {x:x[i],y:y[i]} : {x:false, y:false});
+        for(i=0;i<serieslen;i++) {
+            cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ? {x:x[i],y:y[i]} : {x:false, y:false});
         }
         gd.firstscatter = false;
         return cd;
     };
 
-    scatter.selectMarkers = function(gd, plotinfo, cdscatter) {
-        var xa = plotinfo.x(),
-            ya = plotinfo.y(),
-            xr = d3.extent(xa.range.map(xa.l2c)),
-            yr = d3.extent(ya.range.map(ya.l2c));
+    scatter.selectMarkers = function(gd,plotinfo,cdscatter) {
+        var xr = d3.extent(plotinfo.x.range.map(plotinfo.x.l2c)),
+            yr = d3.extent(plotinfo.y.range.map(plotinfo.y.l2c));
 
-        cdscatter.forEach(function(d,i) {
-            var trace = d[0].trace;
-            if(!scatter.hasMarkers(trace)) return;
+        cdscatter.forEach(function(d) {
             // if marker.maxdisplayed is used, select a maximum of
             // mnum markers to show, from the set that are in the viewport
-            var mnum = trace.marker.maxdisplayed;
+            var mnum = d[0].t.mnum;
+            if(!(mnum>0) || d[0].t.mode.indexOf('markers')==-1) { return; } // TODO: remove some as we get away from the viewport
 
-            // TODO: remove some as we get away from the viewport?
-            if(mnum===0) return;
-
-            var cd = d.filter(function(v) {
-                    return v.x>=xr[0] && v.x<=xr[1] && v.y>=yr[0] && v.y<=yr[1];
-                }),
+            var cd = d.filter(function(v) { return v.x>=xr[0] && v.x<=xr[1] && v.y>=yr[0] && v.y<=yr[1]; }),
                 inc = Math.ceil(cd.length/mnum),
                 tnum = 0;
-            cdscatter.forEach(function(cdj, j) {
-                var tracei = cdj[0].trace;
-                if(scatter.hasMarkers(tracei) &&
-                        tracei.marker.maxdisplayed>0 && j<i) {
-                    tnum++;
-                }
+            cdscatter.forEach(function(cdi) {
+                if(cdi[0].t.mnum>0 && cdi[0].t.curve<d[0].t.curve) { tnum++; }
             });
-
-            // if multiple traces use maxdisplayed, stagger which markers we
-            // display this formula offsets successive traces by 1/3 of the
-            // increment, adding an extra small amount after each triplet so
-            // it's not quite periodic
+            // if multiple traces use maxdisplayed, stagger which markers we display
+            // this formula offsets successive traces by 1/3 of the increment, adding
+            // an extra small amount after each triplet so it's not quite periodic
             var i0 = Math.round(tnum*inc/3 + Math.floor(tnum/3)*inc/7.1);
-
-            // for error bars: save in cd which markers to show
-            // so we don't have to repeat this
+            // for error bars: save in cd which markers to show so we don't have to repeat this
             d.forEach(function(v){ delete v.vis; });
-            cd.forEach(function(v,i) {
-                if(Math.round((i+i0)%inc)===0) v.vis = true;
-            });
+            cd.forEach(function(v,i) { if(Math.round((i+i0)%inc)===0) { v.vis = true; } });
         });
     };
 
-    // arrayOk attributes, merge them into calcdata array
-    scatter.arraysToCalcdata = function(cd) {
-        var trace = cd[0].trace,
-            marker = trace.marker;
+    scatter.plot = function(gd,plotinfo,cdscatter) {
+        // previously this had to be separate so we could call it
+        // before drawing error bars, and call the rest of scatter.plot
+        // after error bars. Now that we have separate layers for these,
+        // we can merge it in here.
+        // TODO: integrate it back into scatter.plot
+        scatter.selectMarkers(gd,plotinfo,cdscatter);
 
-        Plotly.Lib.mergeArray(trace.text, cd, 'tx');
-        Plotly.Lib.mergeArray(trace.textposition, cd, 'tp');
-        if(trace.textfont) {
-            Plotly.Lib.mergeArray(trace.textfont.size, cd, 'ts');
-            Plotly.Lib.mergeArray(trace.textfont.color, cd, 'tc');
-            Plotly.Lib.mergeArray(trace.textfont.family, cd, 'tf');
-        }
-
-        if(marker) {
-            var markerLine = marker.line;
-            Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
-            Plotly.Lib.mergeArray(marker.size, cd, 'ms');
-            Plotly.Lib.mergeArray(marker.symbol, cd, 'mx');
-            Plotly.Lib.mergeArray(marker.color, cd, 'mc');
-            Plotly.Lib.mergeArray(markerLine.color, cd, 'mlc');
-            Plotly.Lib.mergeArray(markerLine.width, cd, 'mlw');
-        }
-    };
-
-    scatter.plot = function(gd, plotinfo, cdscatter) {
-        scatter.selectMarkers(gd, plotinfo, cdscatter);
-
-        var xa = plotinfo.x(),
-            ya = plotinfo.y();
-
-        // make the container for scatter plots
-        // (so error bars can find them along with bars)
-        var scattertraces = plotinfo.plot.select('.scatterlayer')
-            .selectAll('g.trace.scatter')
+        var xa = plotinfo.x,
+            ya = plotinfo.y;
+        // make the container for scatter plots (so error bars can find them along with bars)
+        var scattertraces = plotinfo.plot.select('.scatterlayer').selectAll('g.trace.scatter') // <-- select trace group
             .data(cdscatter);
-        scattertraces.enter().append('g')
+        scattertraces.enter().append('g') // <-- add a trace for each calcdata
             .attr('class','trace scatter')
             .style('stroke-miterlimit',2);
 
-        // used by both line and point decimation to determine how close
-        // two points need to be to be grouped
+        // used by both line and point decimation to determine how close two points
+        // need to be to be grouped
         function getTolerance(x,y,w) {
             return (0.75 + 10*Math.max(0,
-                Math.max(-x, x-xa._length)/xa._length,
-                Math.max(-y, y-ya._length)/ya._length)) * Math.max(w||1, 1);
+                Math.max(-x,x-xa._length)/xa._length,
+                Math.max(-y,y-ya._length)/ya._length)) * Math.max(w||1, 1);
         }
 
         // BUILD LINES AND FILLS
-        var prevpath='',
-            tozero,tonext,nexttonext;
-        scattertraces.each(function(d){
-            var trace = d[0].trace,
-                line = trace.line;
-            if(trace.visible===false) return;
-
-            scatter.arraysToCalcdata(d);
-
-            if(!scatter.hasLines(trace) && trace.fill==='none') return;
-
-            var i = -1,
-                tr = d3.select(this),
-                pt0 = null,
-                pt1 = null,
-                // pts is the current path we're building.
-                // it has the form "x,yLx,y...Lx,y"
-                // and later we add the first letter:
-                //  either "M" if this is the beginning of the path,
-                //  or "L" if it's being concatenated on something else
-                // pts ends at a missing point, and gets restarted at the next
-                // point (unless t.connectgaps is truthy, then it just keeps going)
-                pts = [],
-                thispath,
-                // fullpath is all paths for this curve, joined together straight
-                // across gaps, for filling
-                fullpath = '',
-                // revpath is fullpath reversed, for fill-to-next
-                revpath = '',
-                atLeastTwo,
-
-                // for decimation: store pixel positions of things
-                // we're working with as [x,y]
-                lastEntered, tryHigh, tryLow, prevPt, pti,
-                // lastEnd: high or low, which is most recent?
-                // decimationMode: -1 (not decimating), 0 (x), 1 (y)
-                // decimationTolerance: max pixels between points
-                // to allow decimation
-                lastEnd, decimationMode, decimationTolerance,
-
-                // functions for converting a point array to a path
-                pathfn, revpathbase, revpathfn;
-
+        var prevpath='',tozero,tonext,nexttonext;
+        scattertraces.each(function(d){ // <-- now, iterate through arrays of {x,y} objects
+            var t=d[0].t; // <-- get trace-wide formatting object
+            if(t.visible===false) { return; }
+            var i=-1,tr=d3.select(this);
             // make the fill-to-zero path now, so it shows behind the line
-            // fill to next puts the fill associated with one trace
-            // grouped with the previous
-            if(trace.fill.substr(0,6)==='tozero' ||
-                    (trace.fill.substr(0,2)==='to' && !prevpath)) {
-                tozero = tr.append('path')
-                    .classed('js-fill',true);
-            }
-            else tozero = null;
-
-            // make the fill-to-next path now for the NEXT trace, so it shows
-            // behind both lines.
-            // nexttonext was created last time, but give it
-            // this curve's data for fill color
-            if(nexttonext) tonext = nexttonext.datum(d);
-
+            // have to break out of d3-style here (data-curve attribute) because fill to next
+            // puts the fill associated with one trace grouped with the previous
+            tozero = (t.fill.substr(0,6)=='tozero' || (t.fill.substr(0,2)=='to' && !prevpath)) ?
+                tr.append('path').classed('js-fill',true).attr('data-curve',t.cdcurve) : null;
+            // make the fill-to-next path now for the NEXT trace, so it shows behind both lines
+            // nexttonext was created last time, but give it this curve's data for fill color
+            if(nexttonext) { tonext = nexttonext.datum(d); }
             // now make a new nexttonext for next time
             nexttonext = tr.append('path').classed('js-fill',true);
+            var pt0=null, pt1=null;
+            // pts is the current path we're building... it has the form "x,yLx,y...Lx,y"
+            // and later we add the first letter, either "M" if this is the beginning of
+            // the path, or "L" if it's being concatenated on something else
+            // pts ends at a missing point, and gets restarted at the next point (unless t.connectgaps is truthy)
+            // fullpath is all paths for this curve, joined together straight across gaps,
+            // revpath is the same reversed for fill-to-next
+            var pts = [], thispath, fullpath = '', revpath = '', atLeastTwo;
 
-            if(['hv','vh','hvh','vhv'].indexOf(line.shape)!==-1) {
-                pathfn = Plotly.Drawing.steps(line.shape);
-                revpathbase = Plotly.Drawing.steps(
-                    line.shape.split('').reverse().join('')
-                );
+            // for decimation: store pixel positions of things we're working with as [x,y]
+            var lastEntered, tryHigh, tryLow, prevPt, pti;
+            // lastEnd: high or low, which is most recent?
+            // decimationMode: -1 (not decimating), 0 (x), 1 (y)
+            // decimationTolerance: max pixels between points to allow decimation
+            var lastEnd, decimationMode, decimationTolerance;
+
+            // functions for converting a point array to a path
+            var pathfn, revpathbase;
+            if(['hv','vh','hvh','vhv'].indexOf(t.lineshape)!=-1) {
+                pathfn = Plotly.Drawing.steps(t.lineshape);
+                revpathbase = Plotly.Drawing.steps(t.lineshape.split('').reverse().join(''));
             }
-            else if(line.shape==='spline') {
-                pathfn = revpathbase = function(pts) {
-                    return Plotly.Drawing.smoothopen(pts, line.smoothing);
-                };
+            else if(t.lineshape=='spline') {
+                pathfn = revpathbase = function(pts) { return Plotly.Drawing.smoothopen(pts,t.ls); };
             }
             else {
-                pathfn = revpathbase = function(pts) {
-                    return 'M' + pts.join('L');
-                };
+                pathfn = revpathbase = function(pts) { return 'M' + pts.join('L'); };
             }
 
-            revpathfn = function(pts) {
-                return 'L'+revpathbase(pts.reverse()).substr(1);
-            };
+            var revpathfn = function(pts) { return 'L'+revpathbase(pts.reverse()).substr(1); };
 
             // add a single [x,y] to the pts array
             function addPt(pt) {
@@ -614,38 +209,26 @@
             // but I made this a function so in principle we can do more than just lines in the
             // future, like smoothing splines.
             function add0(pt) {
-                if(!$.isNumeric(pt[0]) || !$.isNumeric(pt[1])) return;
+                if(!$.isNumeric(pt[0]) || !$.isNumeric(pt[1])) { return; }
                 pts.push(pt);
             }
 
-            // finish one decimation step - now decide what to do with
-            // tryHigh, tryLow, and prevPt
+            // finish one decimation step - now decide what to do with tryHigh, tryLow, and prevPt
             // (prevPt is the last one before the decimation ended)
             function finishDecimation(pt) {
-                if(pt) prevPt = pt;
-
-                // ended this decimation on the high point, so add the low first
-                // (unless there was only one point)
-                if(prevPt===tryHigh) {
-                    if(tryHigh!==tryLow) add0(tryLow);
+                if(pt) { prevPt = pt; }
+                if(prevPt==tryHigh) {
+                    // ended this decimation on the high point, so add the low first (unless there was only one point)
+                    if(tryHigh!=tryLow) { add0(tryLow); }
                 }
-                // ended on the low point (or high and low are same),
-                // so add high first
-                else if(prevPt===tryLow || tryLow===tryHigh) add0(tryHigh);
-                // low, then high, then prev
-                else if(lastEnd==='high') {
-                    add0(tryLow);
+                else if(prevPt==tryLow || tryLow==tryHigh) {
+                    // ended on the low point (or high and low are same), so add high first
                     add0(tryHigh);
                 }
-                // high, low, prev
-                else {
-                    add0(tryHigh);
-                    add0(tryLow);
-                }
-
+                else if(lastEnd=='high') { add0(tryLow); add0(tryHigh); } // low, then high, then prev
+                else { add0(tryHigh); add0(tryLow); } // high, low, prev
                 // lastly, add the endpoint of this decimation
                 addPt(prevPt);
-
                 // reset status vars
                 lastEntered = prevPt;
                 tryHigh = tryLow = null;
@@ -659,10 +242,9 @@
                 decimationMode = -1;
                 for(i++; i<d.length; i++) {
                     pti = [xa.c2p(d[i].x), ya.c2p(d[i].y)];
-                    // TODO: smart lines going off the edge?
-                    if(!$.isNumeric(pti[0])||!$.isNumeric(pti[1])) {
-                        if(trace.connectgaps) continue;
-                        else break;
+                    if(!$.isNumeric(pti[0])||!$.isNumeric(pti[1])) { // TODO: smart lines going off the edge?
+                        if(t.connectgaps) { continue; }
+                        else { break; }
                     }
 
                     // DECIMATION
@@ -670,41 +252,30 @@
                     if(!lastEntered) {
                         lastEntered = pti;
                         pts.push(lastEntered);
-                        if(!pt0) pt0 = lastEntered;
+                        if(!pt0) { pt0 = lastEntered; }
                         continue;
                     }
 
-                    // figure out the decimation tolerance - on-plot has one value,
-                    // then it increases as you get farther off-plot.
-                    // the value is in pixels, and is based on the line width, which
+                    // figure out the decimation tolerance - on-plot has one value, then it increases as you
+                    // get farther off-plot. the value is in pixels, and is based on the line width, which
                     // means we need to replot if we change the line width
-                    decimationTolerance = getTolerance(pti[0],pti[1], line.width);
-
-                    // if the last move was too much for decimation, see if we're
-                    // starting a new decimation block
+                    decimationTolerance = getTolerance(pti[0],pti[1],t.lw);
+                    // if the last move was too much for decimation, see if we're starting a new decimation block
                     if(decimationMode<0) {
-                        // first look for very near x values (decimationMode=0),
-                        // then near y values (decimationMode=1)
-                        if(Math.abs(pti[0]-lastEntered[0]) < decimationTolerance) {
-                            decimationMode = 0;
-                        }
-                        else if(Math.abs(pti[0]-lastEntered[1]) < decimationTolerance) {
-                            decimationMode = 1;
-                        }
-                        // no decimation here - add this point and move on
-                        else {
+                        // first look for very near x values (decimationMode=0), then near y values (decimationMode=1)
+                        if(Math.abs(pti[0]-lastEntered[0]) < decimationTolerance) { decimationMode = 0; }
+                        else if(Math.abs(pti[0]-lastEntered[1]) < decimationTolerance) { decimationMode = 1; }
+                        else { // no decimation here - add this point and move on
                             lastEntered = pti;
                             addPt(lastEntered);
                             continue;
                         }
                     }
-                    else if(Math.abs(pti[decimationMode] - lastEntered[decimationMode]) >=
-                            decimationTolerance) {
+                    else if(Math.abs(pti[decimationMode] - lastEntered[decimationMode]) >= decimationTolerance) {
                         // we were decimating, now we're done
                         finishDecimation(pti);
                         continue;
                     }
-
                     // OK, we're collecting points for decimation, for realz now.
                     prevPt = pti;
                     if(!tryHigh || prevPt[1-decimationMode]>tryHigh[1-decimationMode]) {
@@ -716,32 +287,28 @@
                         lastEnd = 'low';
                     }
                 }
-                // end of the data is mid-decimation - close it out.
-                if(decimationMode>=0) finishDecimation(pti);
-
+                if(decimationMode>=0) { // end of the data is mid-decimation - close it out.
+                    finishDecimation(pti);
+                }
                 if(pts.length) {
                     thispath = pathfn(pts);
                     fullpath += fullpath ? ('L'+thispath.substr(1)) : thispath;
                     revpath = revpathfn(pts) + revpath;
-                    if(scatter.hasLines(trace) && atLeastTwo) {
-                        tr.append('path').classed('js-line',true).attr('d', thispath);
+                    if(t.mode.indexOf('lines')!=-1 && atLeastTwo) {
+                        tr.append('path').classed('js-line',true).attr('d',thispath);
                     }
                 }
             }
             if(fullpath) {
                 if(tozero) {
                     if(pt0 && pt1) {
-                        if(trace.fill.charAt(trace.fill.length-1)==='y') {
-                            pt0[1]=pt1[1]=ya.c2p(0,true);
-                        }
-                        else pt0[0]=pt1[0]=xa.c2p(0,true);
-
-                        // fill to zero: full trace path, plus extension of
-                        // the endpoints to the appropriate axis
+                        if(t.fill.charAt(t.fill.length-1)=='y') { pt0[1]=pt1[1]=ya.c2p(0,true); }
+                        else { pt0[0]=pt1[0]=xa.c2p(0,true); }
+                        // fill to zero: full trace path, plus extension of the endpoints to the appropriate axis
                         tozero.attr('d',fullpath+'L'+pt1+'L'+pt0+'Z');
                     }
                 }
-                else if(trace.fill.substr(0,6)==='tonext' && fullpath && prevpath) {
+                else if(t.fill.substr(0,6)=='tonext' && fullpath && prevpath) {
                     // fill to next: full trace path, plus the previous path reversed
                     tonext.attr('d',fullpath+prevpath+'Z');
                 }
@@ -752,6 +319,102 @@
         // remove paths that didn't get used
         scattertraces.selectAll('path:not([d])').remove();
 
+        // BUILD SCATTER POINTS
+        // decimate all the scatter traces in this subplot together
+        // commented out for now because it doesn't help much if at all, and may have unintended consequences
+        // var newcds = cdscatter.slice(),
+        //     covered = {},
+        //     cd, newcd, i, j, d, d0, x, y, tol, xr, yr, t, d_c, d_op, d0_c, d0_op, cf0, cf;
+        // // find the minimum point size
+        // var msMin = gd.layout._size.w,
+        //     totalPts = 0, sizeFn, ms, maList = [];
+        // function arearef(v,r) { return Math.sqrt(t/r); }
+        // function lenref(v,r) { return v/r; }
+        // for(i=0; i<cdscatter.length; i++) {
+        //     cd = cdscatter[i];
+        //     t = cd[0].t;
+        //     if(t.mode.indexOf('markers')==-1 || t.visible===false ||
+        //         'ms' in cd[0] || 'mx' in cd[0]) { continue; }
+
+        //     sizeFn = (t.msm=='area') ? arearef : lenref;
+        //     ms = sizeFn(t.ms/2, t.msr||1);
+        //     maList.push(ms*ms); // save the relative marker area for each trace
+        //     totalPts += cd.length;
+        //     msMin = Math.max(ms/3,1);
+        // }
+        // // now do the decimation
+        // if(totalPts>2000) { // too few points to matter
+        //     // if(totalPts<10000) { msMin*=totalPts/10000; } // intermediate - do less decimation
+        //     // start from the last scatter trace and work backward - because the last one is on top
+        //     for(i=newcds.length-1; i>=0; i--) {
+        //         cd = cdscatter[i];
+        //         t = cd[0].t;
+        //         // are there visible markers? also don't try to do this for bubble
+        //         // or multi-symbol charts... that's a can of worms.
+        //         if(t.mode.indexOf('markers')==-1 || t.visible===false ||
+        //             'ms' in cd[0] || 'mx' in cd[0]) { continue; }
+        //         newcd = [];
+        //         // like traces, start from the last point and work backward
+        //         for(j=cd.length-1; j>=0; j--) {
+        //             d = $.extend({},cd[j]);
+        //             x = xa.c2p(d.x);
+        //             y = ya.c2p(d.y);
+        //             tol = getTolerance(x,y,msMin);
+        //             xr = Math.round(tol*Math.round(x/tol));
+        //             yr = Math.round(tol*Math.round(y/tol));
+        //             if(!covered[yr]) { covered[yr] = {}; }
+        //             d0 = covered[yr][xr];
+        //             if(d0 && maList[i]<=maList[d0.i]) {
+        //                 // already have a point here (d0) that's no bigger than the new one
+        //                 // but if this point is transparent, we need to alter it
+        //                 if(d0.mo<1 || d0.fo<1) {
+        //                     // color of the new point
+        //                     d_c = tinycolor(d.mc || t.mc || (d.t ? d.t.mc : '')).toRgb();
+        //                     // total opacity of the new point, including marker, fill, and size scaling
+        //                     d_op = ((d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1) *
+        //                         d_c.a * maList[i]/maList[d0.i];
+        //                     // don't try to do anything if the new point is nearly transparent
+        //                     if(d_op<0.001) { continue; }
+        //                     // new total opacity for d0
+        //                     d0_op = 1-(1-d0.mo*d0.fo)*(1-d_op);
+        //                     d0_c = tinycolor(d0.mc).toRgb();
+        //                     // first apply new color to the marker fill, then to marker opacity if we need more
+        //                     d0_c.a = d0_op/d0.mo;
+        //                     if(d0_c.a>1) { d0_c.a=1; d0.mo = d0_op; }
+        //                     // fraction of color to come from each marker
+        //                     cf0 = 1/(1+d_op*(1/d0_op-1));
+        //                     cf = 1-cf0;
+        //                     // now make the new marker fill color
+        //                     d0_c.r = Math.round(cf0*d0_c.r+cf*d_c.r);
+        //                     d0_c.g = Math.round(cf0*d0_c.g+cf*d_c.g);
+        //                     d0_c.b = Math.round(cf0*d0_c.b+cf*d_c.b);
+        //                     d0.mc = 'rgba('+d0_c.r+','+d0_c.g+','+d0_c.b+','+d0_c.a+')';
+        //                 }
+        //             }
+        //             else {
+        //                 // this point gets included
+        //                 d0 = $.extend({},d,{
+        //                     // save pixel positions so we don't have to calculate them again
+        //                     xp: x,
+        //                     yp: y,
+        //                     // indclude color explicitly so we don't have to do it later
+        //                     mc: d.mc || t.mc || (d.t ? d.t.mc : ''),
+        //                     // explicitly insert opacity so we can combine points easily
+        //                     mo: ((d.mo+1 || t.mo+1 || (d.t ? d.t.mo : 0) +1) - 1),
+        //                     fo: Plotly.Drawing.opacity(d_c),
+        //                     // curve number, so we can get its marker size
+        //                     i: i
+        //                 });
+        //                 covered[yr][xr] = d0;
+        //                 newcd.push(d0);
+        //             }
+        //         }
+        //         newcds[i] = newcd.reverse();
+        //         // put trace-wide properties in here explicitly, in case the first point is deleted
+        //         newcds[i][0].t = t;
+        //     }
+        // }
+
         function visFilter(d){
             return d.filter(function(v){ return v.vis; });
         }
@@ -759,28 +422,32 @@
         scattertraces.append('g')
             .attr('class','points')
             .each(function(d){
-                var trace = d[0].trace,
+                var t = d[0].t,
                     s = d3.select(this),
-                    showMarkers = scatter.hasMarkers(trace),
-                    showText = scatter.hasText(trace);
-
-                if((!showMarkers && !showText) || trace.visible===false) s.remove();
+                    showMarkers = t.mode.indexOf('markers')!=-1,
+                    showText = t.mode.indexOf('text')!=-1;
+                if((!showMarkers && !showText) || t.visible===false) { s.remove(); }
                 else {
                     if(showMarkers) {
                         s.selectAll('path.point')
-                            .data(trace.marker.maxdisplayed ? visFilter : Plotly.Lib.identity)
+                            .data(t.mnum>0 ? visFilter : Plotly.Lib.identity)
                             .enter().append('path')
-                                .classed('point', true)
-                                .call(Plotly.Drawing.translatePoints, xa, ya);
+                                .classed('point',true)
+                                .call(Plotly.Drawing.translatePoints,xa,ya);
+                        // decimated version commented out for now
+                        // var pts = s.selectAll('path')
+                        //     .data(function(d,i) { return newcds[i]; });
+                        // pts.enter().append('path')
+                        //     .call(Plotly.Drawing.translatePoints,xa,ya);
+                        // pts.exit().remove();
                     }
                     if(showText) {
                         s.selectAll('g')
-                            .data(Plotly.Lib.identity)
-                            // each text needs to go in its own 'g' in case
-                            // it gets converted to mathjax
+                            .data(Plotly.Lib.identity) // not going to try to decimate text...
+                            // each text needs to go in its own 'g' in case it gets converted to mathjax
                             .enter().append('g')
                                 .append('text')
-                                .call(Plotly.Drawing.translatePoints, xa, ya);
+                                .call(Plotly.Drawing.translatePoints,xa,ya);
                     }
                 }
             });
@@ -789,14 +456,14 @@
     scatter.style = function(gp) {
         var s = gp.selectAll('g.trace.scatter');
 
-        s.style('opacity',function(d){ return d[0].trace.opacity; });
+        s.style('opacity',function(d){ return d[0].t.op; });
 
         s.selectAll('g.points')
             .each(function(d){
                 d3.select(this).selectAll('path.point')
-                    .call(Plotly.Drawing.pointStyle,d.trace||d[0].trace);
+                    .call(Plotly.Drawing.pointStyle,d.t||d[0].t);
                 d3.select(this).selectAll('text')
-                    .call(Plotly.Drawing.textPointStyle,d.trace||d[0].trace);
+                    .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
             });
 
         s.selectAll('g.trace path.js-line')
