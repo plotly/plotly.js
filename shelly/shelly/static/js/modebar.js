@@ -131,13 +131,18 @@ ModeBar.prototype.hasButtons = function (buttons) {
  */
 ModeBar.prototype.getLogo = function(){
     var group = this.createGroup(),
+        a = document.createElement('a')
         img = document.createElement('img');
 
     img.style.width = '25px';
     img.style.height = '20px';
     img.src = '/static/img/logo_small.png';
 
-    group.appendChild(img);
+    a.href = 'https://plot.ly/';
+    a.target = '_blank';
+    a.appendChild(img);
+
+    group.appendChild(a);
     group.classList.add('btn-group--logo');
     return group;
 }
