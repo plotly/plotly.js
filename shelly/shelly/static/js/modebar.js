@@ -98,7 +98,7 @@ ModeBar.prototype.updateActiveButton = function () {
     this.buttonElements.forEach( function (button) {
         var thisval = button.getAttribute('data-val') || true,
             dataAttr = button.getAttribute('data-attr'),
-            curval = graphInfo._fullLayout[dataAttr];
+            curval = graphInfo.layout[dataAttr];
 
         button.classList.toggle('active', curval===thisval);
     });
@@ -136,7 +136,7 @@ function handleCartesian (ev) {
         val = button.getAttribute('data-val') || true,
         aobj = {},
         graphInfo = this.graphInfo,
-        layout = this.graphInfo._fullLayout,
+        layout = this.graphInfo.layout,
         Plotly = this.Plotly,
         _this = this;
 
@@ -178,7 +178,7 @@ function handleHover3d (ev) {
         val = button.getAttribute('data-val') || true,
         layoutUpdate = {},
         graphInfo = this.graphInfo,
-        layout = graphInfo._fullLayout,
+        layout = graphInfo.layout,
         scenes = Object.keys(layout).filter(function(k){
             return k.match(/^scene[0-9]*$/);
         }).map( function (sceneKey) {
@@ -187,8 +187,8 @@ function handleHover3d (ev) {
 
     layoutUpdate[attr] = val;
 
-    scenes.forEach( function (sceneLayout) {
-        sceneLayout._scene.spikeEnable = !sceneLayout._scene.spikeEnable;
+    scenes.forEach( function (scene) {
+        scene._webgl.spikeEnable = !scene._webgl.spikeEnable;
     });
 
     this.Plotly.relayout(graphInfo, layoutUpdate).then( function() {
@@ -209,7 +209,7 @@ function handle3dCamera (ev) {
         val = button.getAttribute('data-val') || true,
         layoutUpdate = {},
         graphInfo = this.graphInfo,
-        layout = graphInfo._fullLayout,
+        layout = graphInfo.layout,
         scenes = Object.keys(layout).filter(function(k){
             return k.match(/^scene[0-9]*$/);
         }).map( function (sceneKey) {
@@ -228,9 +228,9 @@ function handle3dCamera (ev) {
         layoutUpdate[attr] = val;
     }
 
-    scenes.forEach( function (sceneLayout) {
-        if ('_scene' in sceneLayout && 'camera' in sceneLayout._scene) {
-            sceneLayout._scene.camera.keyBindingMode = val;
+    scenes.forEach( function (scene) {
+        if ('_webgl' in scene && 'camera' in scene._webgl) {
+            scene._webgl.camera.keyBindingMode = val;
         }
     });
 
