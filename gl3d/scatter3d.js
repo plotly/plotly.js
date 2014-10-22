@@ -282,7 +282,7 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
     }
 
     if (data.showprojection) {
-        params.project = [true, true, true]; //arrayCopy1D(data.showprojection);
+        params.project = arrayCopy1D(data.showprojection);
         params.projectOpacity = data.projectopacity;
         params.projectScale = data.projectscale;
     }
