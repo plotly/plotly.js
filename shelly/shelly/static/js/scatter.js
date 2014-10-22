@@ -246,6 +246,7 @@
         if(scatter.hasText(traceOut)) {
             coerce('textposition');
             coerce('textfont', layout.font);
+            if(!scatter.hasMarkers(traceOut)) coerce('marker.maxdisplayed');
         }
 
         coerce('fill');
@@ -501,7 +502,7 @@
             Plotly.Lib.mergeArray(trace.textfont.family, cd, 'tf');
         }
 
-        if(marker) {
+        if(marker && marker.line) {
             var markerLine = marker.line;
             Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
             Plotly.Lib.mergeArray(marker.size, cd, 'ms');
