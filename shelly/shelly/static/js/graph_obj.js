@@ -618,7 +618,7 @@
                 sceneLayout: sceneLayout,
                 width: fullLayout.width,
                 height: fullLayout.height,
-                glopts: fullLayout.glopts
+                glOptions: {preserveDrawingBuffer: gd.forexport}
             };
 
             SceneFrame.createScene(sceneOptions);
