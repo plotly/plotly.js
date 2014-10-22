@@ -33,7 +33,8 @@ function LineWithMarkers(gl, linePlot, scatterPlot, errorBars, textMarkers, dela
     this.fillTransparent    = false;
     this.meshTransparent    = false;
     this.dataPoints         = [];
-    this.axisBounds         = [];
+    this.axesBounds         = [[-Infinity,-Infinity,-Infinity],
+                               [Infinity,Infinity,Infinity]];
 }
 
 proto = LineWithMarkers.prototype;
@@ -47,7 +48,7 @@ proto.draw = function(cameraParams, transparent) {
     }
     if(this.scatterPlot && this.scatterTransparent === transparent) {
         this.scatterPlot.clipBounds = this.clipBounds;
-        this.scatterPlot.axisBounds = this.axisBounds;
+        this.scatterPlot.axesBounds = this.axesBounds;
         this.scatterPlot.draw(cameraParams);
     }
     if(this.textMarkers && this.textTransparent === transparent) {
@@ -71,6 +72,7 @@ proto.drawPick = function(cameraParams) {
     }
     if(this.scatterPlot) {
         this.scatterPlot.clipBounds = this.clipBounds;
+        this.scatterPlot.axesBounds = this.axesBounds;
         this.scatterPlot.drawPick(cameraParams);
     }
     if(this.textMarkers) {
@@ -208,7 +210,9 @@ proto.update = function(options) {
         pickId:       this.pickId1,
         lineWidth:    options.scatterLineWidth,
         lineColor:    options.scatterLineColor,
-        project:      options.project
+        project:      options.project,
+        projectScale: options.projectScale,
+        projectOpacity: options.projectOpacity
     };
 
     if(this.mode.indexOf('markers') !== -1) {
