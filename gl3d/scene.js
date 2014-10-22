@@ -1,5 +1,10 @@
 'use strict';
 
+
+//For debugging
+var imshow = require('ndarray-imshow');
+var ndarray = require('ndarray');
+
 var camera = require('./scene-camera'),
     glm = require('gl-matrix'),
     createAxes = require('gl-axes'),
@@ -740,6 +745,14 @@ proto.toPNG = function () {
             }
         }
     }
+
+    //DEBUG:  Draw image to console
+    var pixelImage = ndarray(pixels, [shell.height, shell.width, 4], [4*shell.width, 4, 1], 0)
+    imshow(pixelImage)
+    imshow(pixelImage.pick(-1,-1,0))
+    imshow(pixelImage.pick(-1,-1,1))
+    imshow(pixelImage.pick(-1,-1,2))
+    imshow(pixelImage.pick(-1,-1,3))
 
     var canvas = document.createElement('canvas');
     canvas.width = shell.width;
