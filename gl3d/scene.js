@@ -385,7 +385,9 @@ proto.onRender = function () {
 
     for (i = 0; i < this.renderQueue.length; ++i) {
         glObject = this.renderQueue[i];
-        glObject.axisBounds = this.axis.bounds;
+        glObject.axesBounds = [
+          this.axis.bounds[0].slice(),
+          this.axis.bounds[1].slice() ]
         if(glObject.supportsTransparency) {
             glObject.draw(cameraParameters, true);
         }
