@@ -250,9 +250,22 @@
 
         coerce('fill');
         if(traceOut.fill!=='none') {
+            var inheritColorFromMarker = false;
+            if(traceOut.marker) {
+                // don't try to inherit a color array
+                var markerColor = traceOut.marker.color,
+                    markerLineColor = (traceOut.marker.line||{}).color;
+                if(markerColor && !Array.isArray(markerColor)) {
+                    inheritColorFromMarker = markerColor;
+                }
+                else if(markerLineColor && !Array.isArray(markerLineColor)) {
+                    inheritColorFromMarker = markerLineColor;
+                }
+            }
             coerce('fillcolor', Plotly.Color.addOpacity(
-                (traceOut.line||{}).color || (traceOut.marker||{}).color ||
-                ((traceOut.marker||{}).line||{}).color || defaultColor, 0.5));
+                (traceOut.line||{}).color ||
+                inheritColorFromMarker ||
+                defaultColor, 0.5));
             if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut);
         }
 
@@ -265,7 +278,10 @@
             return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
-        coerce('line.color', (traceIn.marker||{}).color || defaultColor);
+        var markerColor = (traceIn.marker||{}).color;
+        // don't try to inherit a color array
+        coerce('line.color', (Array.isArray(markerColor) ? false : markerColor) ||
+                             defaultColor);
         coerce('line.width');
 
         lineShapeDefaults(traceIn, traceOut);
@@ -304,7 +320,7 @@
         // that line color as the default marker line color
         // mostly this is for transparent markers to behave nicely
         if(lineColor && traceOut.marker.color!==lineColor) {
-            defaultMLC =  lineColor;
+            defaultMLC = lineColor;
         }
         else if(isBubble) defaultMLC = '#fff';
         else defaultMLC = '#444';
