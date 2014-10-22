@@ -26,6 +26,7 @@ proto.createScene = function (opts) {
     var container = opts.container || document.body;
     var newIframe = document.createElement('iframe');
     var glOptions = opts.glopts || {};
+    // glOptions.preserveDrawingBuffer = true;
     var _this = this;
     newIframe.width = opts.width || '100%';
     newIframe.height = opts.height || '100%';
