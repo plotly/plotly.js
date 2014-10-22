@@ -1034,7 +1034,7 @@
                         Math.log(distinctData.minDiff) / Math.LN10)),
                     // TODO: there are some date cases where this will fail...
                     minSize = msexp*Plotly.Lib.roundUp(
-                        distinctData.minDiff/msexp, [0.9, 1.9, 4.9], true);
+                        distinctData.minDiff/msexp, [0.9, 1.9, 4.9, 9.9], true);
                 size0 = Math.max(minSize, 2*Plotly.Lib.stdev(data) /
                     Math.pow(data.length, is2d ? 0.25 : 0.4));
             }
