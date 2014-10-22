@@ -1328,7 +1328,7 @@
         Plotly.Fx.supplyDefaults(layoutIn, layoutOut, fullData);
 
         Plotly.Bars.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut);
+        Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
         Plotly.Gl3dLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
     };

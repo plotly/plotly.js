@@ -140,10 +140,16 @@
         }
     };
 
-    boxes.supplyLayoutDefaults = function(layoutIn, layoutOut) {
+    boxes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(layoutIn, layoutOut, boxes.layoutAttributes, attr, dflt);
         }
+
+        var hasBoxes = fullData.some(function(trace) {
+            return trace.type==='box';
+        });
+
+        if(!hasBoxes) return;
 
         coerce('boxmode');
         coerce('boxgap');
