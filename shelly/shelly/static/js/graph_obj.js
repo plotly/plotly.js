@@ -17,6 +17,13 @@
 
     var plots = Plotly.Plots = {};
 
+    // this will be transfered over to gd and overridden by
+    // config args to Plotly.plot
+    plots.defaultConfig = {
+        forexport: false,
+        displaylogo: true
+    };
+
     // Most of the generic plotting functions get put into Plotly.Plots,
     // but some - the ones we want 3rd-party developers to use - go directly
     // into Plotly. These are:
@@ -252,13 +259,20 @@
     //          information for each trace
     //      layout - object describing the overall display of the plot,
     //          all the stuff that doesn't pertain to any individual trace
-    Plotly.plot = function(gd, data, layout) {
+    Plotly.plot = function(gd, data, layout, config) {
         Plotly.Lib.markTime('in plot');
 
         // Get the container div: we store all variables for this plot as
         // properties of this div
         // some callers send this in by dom element, others by id (string)
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
+
+        // transfer configuration options to gd until we move over to
+        // a more OO like model
+        Object.keys(plots.defaultConfig).forEach( function (key) {
+            if (config && key in config) gd[key] = config[key];
+            else gd[key] = plots.defaultConfig[key];
+        });
 
         // if there's no data or layout, and this isn't yet a plotly plot
         // container, log a warning to help plotly.js users debug
@@ -604,7 +618,7 @@
                 sceneLayout: sceneLayout,
                 width: fullLayout.width,
                 height: fullLayout.height,
-                glopts: fullLayout.glopts
+                glOptions: {preserveDrawingBuffer: gd.forexport}
             };
 
             SceneFrame.createScene(sceneOptions);
@@ -654,7 +668,7 @@
         });
     }
 
-    function plotPolar(gd, data, layout) {
+    function plotPolar(gd, data, layout, config) {
         // build or reuse the container skeleton
         var plotContainer = d3.select(gd).selectAll('.plot-container')
             .data([0]);
@@ -694,7 +708,6 @@
         delete layout._paperdiv;
         delete layout.autosize;
         delete layout._paper;
-        delete layout._forexport;
 
         // plot
         gd.framework({data: gd.data, layout: layout}, paperDiv.node());
@@ -720,7 +733,7 @@
         var title = polarPlotSVG.select('.title-group text')
             .call(titleLayout);
 
-        if(gd.mainsite && !gd._fullLayout._forexport){
+        if(gd.mainsite && !gd.forexport){
             title.attr({'data-unformatted': txt});
             if(!txt || txt === placeholderText){
                 opacity = 0.2;
@@ -818,7 +831,23 @@
             if(ann.yref && ann.yref!=='paper') {
                 ann.yref = Plotly.Axes.cleanId(ann.yref, 'y');
             }
+
         });
+
+        var scenes = Object.keys(layout).filter(function(k){
+            return k.match(/^scene[0-9]*$/);
+        });
+
+        scenes.forEach( function (sceneName) {
+            var sceneLayout = layout[sceneName];
+            // fix for saved float32-arrays
+            var camp = sceneLayout.cameraposition;
+            if (Array.isArray(camp) && $.isPlainObject(camp[0])) {
+                camp[0] = [camp[0][0], camp[0][1], camp[0][2], camp[0][3]];
+                camp[1] = [camp[1][0], camp[1][1], camp[1][2]];
+            }
+        });
+
 
         var legend = layout.legend;
         if(legend) {
@@ -1301,7 +1330,7 @@
         Plotly.Fx.supplyDefaults(layoutIn, layoutOut, fullData);
 
         Plotly.Bars.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut);
+        Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
         Plotly.Gl3dLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
     };
@@ -3006,7 +3035,7 @@
         }
 
         // don't allow editing (or placeholder) on embedded graphs or exports
-        if(gd.mainsite && !fullLayout._forexport){
+        if(gd.mainsite && !gd.forexport){
             if(!txt) setPlaceholder();
 
             el.call(Plotly.util.makeEditable)

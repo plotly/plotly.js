@@ -933,7 +933,7 @@
 
         function addItem(i) {
             di = data[i];
-            if(!$.isNumeric(di)) { return; }
+            if(!$.isNumeric(di)) return;
             ppadiplus = ppadplus(i) + extrappad;
             ppadiminus = ppadminus(i) + extrappad;
             vmin = di-vpadminus(i);
@@ -1006,14 +1006,14 @@
         // For efficiency covering monotonic or near-monotonic data,
         // check a few points at both ends first and then sweep
         // through the middle
-        for(i=0; i<6; i++) { addItem(i); }
-        for(i=len-1; i>5; i--) { addItem(i); }
+        for(i=0; i<6; i++) addItem(i);
+        for(i=len-1; i>5; i--) addItem(i);
 
     };
 
     axes.autoBin = function(data,ax,nbins,is2d) {
-        var datamin = Plotly.Lib.aggNums(Math.min,null,data),
-            datamax = Plotly.Lib.aggNums(Math.max,null,data);
+        var datamin = Plotly.Lib.aggNums(Math.min, null, data),
+            datamax = Plotly.Lib.aggNums(Math.max, null, data);
         if(ax.type==='category') {
             return {
                 start: datamin-0.5,
@@ -1023,30 +1023,30 @@
         }
         else {
             var size0;
-            if(nbins) { size0 = ((datamax-datamin)/nbins); }
+            if(nbins) size0 = ((datamax-datamin)/nbins);
             else {
                 // totally auto: scale off std deviation so the highest bin is
                 // somewhat taller than the total number of bins, but don't let
                 // the size get smaller than the 'nice' rounded down minimum
                 // difference between values
                 var distinctData = Plotly.Lib.distinctVals(data),
-                    msexp = Math.pow(10,Math.floor(
-                        Math.log(distinctData.minDiff)/Math.LN10)),
+                    msexp = Math.pow(10, Math.floor(
+                        Math.log(distinctData.minDiff) / Math.LN10)),
                     // TODO: there are some date cases where this will fail...
                     minSize = msexp*Plotly.Lib.roundUp(
-                        distinctData.minDiff/msexp,[0.9,1.9,4.9],true);
-                size0 = Math.max(minSize,2*Plotly.Lib.stdev(data) /
-                    Math.pow(data.length,is2d ? 0.25 : 0.4));
+                        distinctData.minDiff/msexp, [0.9, 1.9, 4.9, 9.9], true);
+                size0 = Math.max(minSize, 2*Plotly.Lib.stdev(data) /
+                    Math.pow(data.length, is2d ? 0.25 : 0.4));
             }
 
             // piggyback off autotick code to make "nice" bin sizes
             var dummyax = {
                 type: ax.type==='log' ? 'linear' : ax.type,
-                range:[datamin,datamax]
+                range:[datamin, datamax]
             };
-            axes.autoTicks(dummyax,size0);
+            axes.autoTicks(dummyax, size0);
             var binstart = axes.tickIncrement(
-                axes.tickFirst(dummyax),dummyax.dtick,'reverse');
+                axes.tickFirst(dummyax), dummyax.dtick, 'reverse');
 
             // check for too many data points right at the edges of bins
             // (>50% within 1% of bin edges) or all data points integral
@@ -1055,38 +1055,31 @@
                 intcount = 0,
                 blankcount = 0;
             for(var i=0; i<data.length; i++) {
-                if(data[i]%1===0) {
-                    intcount++;
-                }
-                else if(!$.isNumeric(data[i])) {
-                    blankcount++;
-                }
-                if((1+(data[i]-binstart)*100/dummyax.dtick)%100<2) {
-                    edgecount++;
-                }
+                if(data[i]%1===0) intcount++;
+                else if(!$.isNumeric(data[i])) blankcount++;
+
+                if((1 + (data[i]-binstart)*100/dummyax.dtick)%100<2) edgecount++;
             }
             if(intcount+blankcount===data.length && ax.type!=='date') {
                 // all integers: make sure the bin size is at least 1
                 // and start a half integer down, so it's obvious
                 // which bin each value fits into
                 if(dummyax.dtick<1) {
-                    dummyax.dtick=1;
+                    dummyax.dtick = 1;
                     binstart = datamin - 0.5;
                 }
-                else {
-                    binstart -= 0.5;
-                }
+                else binstart -= 0.5;
             }
             else if(edgecount>(data.length-blankcount)/2) {
                 var binshift =
-                    (axes.tickIncrement(binstart,dummyax.dtick)-binstart)/2;
+                    (axes.tickIncrement(binstart, dummyax.dtick) - binstart) / 2;
                 binstart += (binstart+binshift<datamin) ? binshift : -binshift;
             }
 
             // calculate the endpoint
             var binend = binstart;
             while(binend<datamax) {
-                binend = axes.tickIncrement(binend,dummyax.dtick);
+                binend = axes.tickIncrement(binend, dummyax.dtick);
             }
 
             return {

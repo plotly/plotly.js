@@ -246,13 +246,27 @@
         if(scatter.hasText(traceOut)) {
             coerce('textposition');
             coerce('textfont', layout.font);
+            if(!scatter.hasMarkers(traceOut)) coerce('marker.maxdisplayed');
         }
 
         coerce('fill');
         if(traceOut.fill!=='none') {
+            var inheritColorFromMarker = false;
+            if(traceOut.marker) {
+                // don't try to inherit a color array
+                var markerColor = traceOut.marker.color,
+                    markerLineColor = (traceOut.marker.line||{}).color;
+                if(markerColor && !Array.isArray(markerColor)) {
+                    inheritColorFromMarker = markerColor;
+                }
+                else if(markerLineColor && !Array.isArray(markerLineColor)) {
+                    inheritColorFromMarker = markerLineColor;
+                }
+            }
             coerce('fillcolor', Plotly.Color.addOpacity(
-                (traceOut.line||{}).color || (traceOut.marker||{}).color ||
-                ((traceOut.marker||{}).line||{}).color || defaultColor, 0.5));
+                (traceOut.line||{}).color ||
+                inheritColorFromMarker ||
+                defaultColor, 0.5));
             if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut);
         }
 
@@ -265,7 +279,10 @@
             return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
-        coerce('line.color', (traceIn.marker||{}).color || defaultColor);
+        var markerColor = (traceIn.marker||{}).color;
+        // don't try to inherit a color array
+        coerce('line.color', (Array.isArray(markerColor) ? false : markerColor) ||
+                             defaultColor);
         coerce('line.width');
 
         lineShapeDefaults(traceIn, traceOut);
@@ -304,7 +321,7 @@
         // that line color as the default marker line color
         // mostly this is for transparent markers to behave nicely
         if(lineColor && traceOut.marker.color!==lineColor) {
-            defaultMLC =  lineColor;
+            defaultMLC = lineColor;
         }
         else if(isBubble) defaultMLC = '#fff';
         else defaultMLC = '#444';
@@ -485,7 +502,7 @@
             Plotly.Lib.mergeArray(trace.textfont.family, cd, 'tf');
         }
 
-        if(marker) {
+        if(marker && marker.line) {
             var markerLine = marker.line;
             Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
             Plotly.Lib.mergeArray(marker.size, cd, 'ms');
@@ -775,7 +792,7 @@
                     }
                     if(showText) {
                         s.selectAll('g')
-                            .data(Plotly.Lib.identity)
+                            .data(trace.marker.maxdisplayed ? visFilter : Plotly.Lib.identity)
                             // each text needs to go in its own 'g' in case
                             // it gets converted to mathjax
                             .enter().append('g')

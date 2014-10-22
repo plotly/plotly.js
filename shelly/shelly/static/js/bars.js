@@ -28,8 +28,7 @@
         bargap: {
             type: 'number',
             min: 0,
-            max: 1,
-            dflt: 0.2
+            max: 1
         },
         bargroupgap: {
             type: 'number',
@@ -98,14 +97,27 @@
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'x', inherit: 'y'});
     };
 
-    bars.supplyLayoutDefaults = function(layoutIn, layoutOut) {
+    bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(layoutIn, layoutOut, bars.layoutAttributes, attr, dflt);
         }
 
+        var hasBars = false,
+            shouldBeGapless = false;
+        fullData.forEach(function(trace) {
+            if(Plotly.Plots.isBar(trace.type)) hasBars = true;
+
+            if(trace.type==='histogram') {
+                var pa = Plotly.Axes.getFromId({_fullLayout:layoutOut},
+                            trace[trace.orientation==='v' ? 'xaxis' : 'yaxis']);
+                if(pa.type!=='category') shouldBeGapless = true;
+            }
+        });
+
+        if(!hasBars) return;
+
         coerce('barmode');
-        // TODO: tweak bargap default for plot type (ie numeric hists get no gap)
-        coerce('bargap');
+        coerce('bargap', shouldBeGapless ? 0 : 0.2);
         coerce('bargroupgap');
     };
 
@@ -360,7 +372,7 @@
                             // its neighbor
                             (v>vc ? Math.ceil(v) : Math.floor(v));
                         }
-                        if(!fullLayout._forexport) {
+                        if(!gd.forexport) {
                             // if bars are not fully opaque or they have a line
                             // around them, round to integer pixels, mainly for
                             // safari so we prevent overlaps from its expansive
