@@ -262,12 +262,12 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
     }
 
     if ('error_z' in data) {
-        params.errorBounds    = calculateError(data),
+        params.errorBounds    = calculateError(data);
         params.errorColor     = errorProperties.map( function (e) {
             return str2RgbaArray(e.color);
         });
         params.errorLineWidth = errorProperties.map( function (e) {
-            return e.thickness;
+            return e.thickness || 0.0;
         });
         params.errorCapSize   = calculateErrorCapSize(errorProperties);
     }
