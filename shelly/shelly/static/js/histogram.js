@@ -106,7 +106,7 @@
 
             if(traceOut.orientation==='h') binDirections = ['y'];
 
-            hasAggregationData = traceOut[traceOut.orientation==='h' ? 'y' : 'x'];
+            hasAggregationData = traceOut[traceOut.orientation==='h' ? 'x' : 'y'];
         }
 
         if(hasAggregationData) coerce('histfunc');
