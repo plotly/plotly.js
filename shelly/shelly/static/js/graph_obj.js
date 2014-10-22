@@ -832,20 +832,22 @@
                 ann.yref = Plotly.Axes.cleanId(ann.yref, 'y');
             }
 
-            var scenes = Object.keys(layout).filter(function(k){
-                return k.match(/^scene[0-9]*$/);
-            });
-
-            scenes.forEach( function (sceneName) {
-                var sceneLayout = layout[sceneName];
-                // fix for saved float32-arrays
-                var camp = sceneLayout.cameraposition;
-                if (Array.isArray(camp)) {
-                    camp[0] = [camp[0][0], camp[0][1], camp[0][2], camp[0][3]];
-                    camp[1] = [camp[1][0], camp[1][1], camp[1][2]];
-                }
-            });
         });
+
+        var scenes = Object.keys(layout).filter(function(k){
+            return k.match(/^scene[0-9]*$/);
+        });
+
+        scenes.forEach( function (sceneName) {
+            var sceneLayout = layout[sceneName];
+            // fix for saved float32-arrays
+            var camp = sceneLayout.cameraposition;
+            if (Array.isArray(camp) && $.isPlainObject(camp[0])) {
+                camp[0] = [camp[0][0], camp[0][1], camp[0][2], camp[0][3]];
+                camp[1] = [camp[1][0], camp[1][1], camp[1][2]];
+            }
+        });
+
 
         var legend = layout.legend;
         if(legend) {
