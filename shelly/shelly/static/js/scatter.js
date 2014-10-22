@@ -775,7 +775,7 @@
                     }
                     if(showText) {
                         s.selectAll('g')
-                            .data(Plotly.Lib.identity)
+                            .data(trace.marker.maxdisplayed ? visFilter : Plotly.Lib.identity)
                             // each text needs to go in its own 'g' in case
                             // it gets converted to mathjax
                             .enter().append('g')
