@@ -9,7 +9,7 @@
     "gl-line-plot": "^2.3.1",
     "gl-matrix": "^2.2.1",
     "gl-now": "^1.4.0",
-    "gl-scatter-plot": "^5.5.1",
+    "gl-scatter-plot": "^5.5.2",
     "gl-select": "^2.0.0",
     "gl-simplicial-complex": "^1.2.2",
     "gl-spikes": "^2.0.0",
@@ -23,7 +23,6 @@
   },
   "devDependencies": {
     "browserify": "^6.1.0",
-    "ndarray-imshow": "^1.0.0",
     "uglify-js": "~2.4.13"
   },
   "scripts": {
