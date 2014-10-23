@@ -180,7 +180,7 @@
         // 'view in plotly' link for embedded plots
         else if(!gd.mainsite && !gd.standalone &&
                 !$('#plotlyUserProfileMarker').length) {
-            positionBrand(gd,toolspan);
+            positionPlayWithData(gd,toolspan);
         }
 
         // separator if we have both sources and tool link
@@ -189,42 +189,21 @@
 
     // note that now this function is only adding the brand in
     // iframes and 3rd-party apps, standalone plots get the sidebar instead.
-    function positionBrand(gd,container){
+    function positionPlayWithData(gd,container){
         container.text('');
-        var brand = container.append('tspan')
-            .style({'font-size':'11px'})
-            .text('plotly - ');
         var link = container.append('a')
             .attr({
                 'xlink:xlink:href': '#',
                 'class': 'link--impt link--embedview',
                 'font-weight':'bold'
             })
-            .text('data and graph '+String.fromCharCode(187));
+            .text('Play with this data ! '+String.fromCharCode(187));
 
         if(gd.shareplot) {
             var path=window.location.pathname.split('/');
             link.attr({
                 'xlink:xlink:show': 'new',
                 'xlink:xlink:href': '/'+path[1]+'/'+path[2].split('.')[0]
-            });
-
-            new Bucketeer.Experiment({
-                name: "play_with_data",
-                sample: 1.0,
-                onBucketed: function(expName, bucketName) {
-                    analytics.track("Flag experiment", {Experiment: expName, Bucket: bucketName});
-                    link.on('click', function() {
-                        analytics.track("Experiment success", {Experiment: expName});
-                    });
-                },
-                buckets: {
-                    control: {},
-                    play: {onChosen: function() {
-                        brand.text("");
-                        link.text("Play with this data! " + String.fromCharCode(187));
-                    }}
-                }
             });
         }
         else {
