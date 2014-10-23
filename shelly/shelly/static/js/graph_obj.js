@@ -197,7 +197,7 @@
                 'class': 'link--impt link--embedview',
                 'font-weight':'bold'
             })
-            .text('Play with this data ! '+String.fromCharCode(187));
+            .text('Play with this data! '+String.fromCharCode(187));
 
         if(gd.shareplot) {
             var path=window.location.pathname.split('/');
