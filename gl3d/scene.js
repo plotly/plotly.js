@@ -640,7 +640,6 @@ proto.configureAxes = function configureAxes () {
         axes = sceneLayout[this.axesNames[i]];
 
         /////// Axes labels //
-        opts.labelEnable[i] = axes.showaxeslabels;
         opts.labels[i] = axes.title;
         if ('titlefont' in axes) {
             if (axes.titlefont.color)  opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
