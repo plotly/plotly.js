@@ -107,6 +107,7 @@ proto.supplyDefaults = function(layoutIn, layoutOut, options) {
             });
 
         coerceAxis('gridcolor', 'rgb(204, 204, 204)');
+        coerceAxis('title', axName[0]);
 
         containerOut.setScale = function () {};
 
