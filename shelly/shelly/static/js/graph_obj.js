@@ -423,7 +423,9 @@
         function drawData(){
             // Now plot the data
 
-            if (fullLayout._hasGL3D) plot3D(gd);
+            // clean up old scenes that no longer have associated data
+            // will this be a performance hit?
+            plot3D(gd);
 
             // in case of traces that were heatmaps or contour maps
             // previously, remove them and their colorbars explicitly
@@ -538,7 +540,27 @@
 
         scenes.forEach( function (sceneKey, idx) {
 
-            var sceneLayout = fullLayout[sceneKey];
+            var sceneLayout = fullLayout[sceneKey],
+                sceneOptions;
+
+            // maybe this initialization should happen somewhere else
+            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
+
+            var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
+                    return trace.uid;
+            });
+            var sceneData = gd._fullData.filter( function (trace) {
+                return trace.scene === sceneKey &&
+                    queueUIDS.indexOf(trace.uid) === -1;
+            });
+
+            // if there is no data associated with this scene, destroy it.
+            if (!sceneData.length) {
+                sceneLayout._scene.destroy();
+                delete fullLayout[sceneKey];
+                return;
+            }
+
             // we are only modifying the x domain position with this
             // simple approach
 
@@ -558,27 +580,19 @@
             // context parameter so lets reset the domain of the scene as
             // it may have changed (this operates on the containing iframe)
             if (sceneLayout._scene) sceneLayout._scene.setPosition(sceneLayout.position);
-            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
+
             /*
              * We only want to continue to operate on scenes that have
              * data waiting to be displayed or require loading
              */
-            var sceneOptions;
-            var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
-                return trace.uid;
-            });
-            var sceneData = gd._fullData.filter( function (trace) {
-                return trace.scene === sceneKey &&
-                    queueUIDS.indexOf(trace.uid) === -1;
-            });
 
             if (sceneLayout._scene) {
+                //// if there is no data for this scene destroy it
                 //// woot, lets load all the data in the queue and bail outta here
                 while (sceneData.length) {
                     var d = sceneData.shift();
                     d.module.plot(sceneLayout._scene, sceneLayout, d);
                 }
-
                 return;
             }
 
