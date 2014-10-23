@@ -1583,7 +1583,8 @@
         }
         var zscl = ['zmin', 'zmax'],
             xbins = ['xbins.start', 'xbins.end', 'xbins.size'],
-            ybins = ['ybins.start', 'ybins.end', 'ybins.size'];
+            ybins = ['ybins.start', 'ybins.end', 'ybins.size'],
+            contourAttrs = ['contours.start', 'contours.end', 'contours.size'];
 
         // now make the changes to gd.data (and occasionally gd.layout)
         // and figure out what kind of graphics update we need to do
@@ -1632,6 +1633,12 @@
                 }
                 else if(ai==='autobiny') {
                     doextra(cont,ybins,undefined,i);
+                }
+                else if(contourAttrs.indexOf(ai)!==-1) {
+                    doextra(cont, 'autocontour', false, i);
+                }
+                else if(ai==='autocontour') {
+                    doextra(cont, contourAttrs, undefined, i);
                 }
                 // heatmaps: setting x0 or dx, y0 or dy,
                 // should turn xtype/ytype to 'scaled' if 'array'
