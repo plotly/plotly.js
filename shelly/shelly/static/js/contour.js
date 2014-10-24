@@ -602,6 +602,7 @@
                 newendpt,
                 cnt,
                 nexti,
+                possiblei,
                 addpath;
 
             while(startsleft.length) {
@@ -609,7 +610,7 @@
                 fullpath += newloop ? addpath : addpath.replace(/^M/, 'L');
                 startsleft.splice(startsleft.indexOf(i),1);
                 endpt = d.edgepaths[i][d.edgepaths[i].length-1];
-                cnt=0;
+                nexti = -1;
 
                 //now loop through sides, moving our endpoint until we find a new start
                 for(cnt=0; cnt<4; cnt++) { // just to prevent infinite loops
@@ -623,21 +624,21 @@
                     else if(isbottom(endpt)) newendpt = [leftedge, bottomedge];
                     else if(isright(endpt)) newendpt = [rightedge, bottomedge];
 
-                    for(nexti=0; nexti<d.edgepaths.length; nexti++) {
-                        var ptNew = d.edgepaths[nexti][0];
+                    for(possiblei=0; possiblei<d.edgepaths.length; possiblei++) {
+                        var ptNew = d.edgepaths[possiblei][0];
                         // is ptNew on the (horz. or vert.) segment from endpt to newendpt?
                         if(Math.abs(endpt[0]-newendpt[0])<0.01) {
                             if(Math.abs(endpt[0]-ptNew[0])<0.01 &&
                                     (ptNew[1]-endpt[1])*(newendpt[1]-ptNew[1])>=0) {
                                 newendpt = ptNew;
-                                break;
+                                nexti = possiblei;
                             }
                         }
                         else if(Math.abs(endpt[1]-newendpt[1])<0.01) {
                             if(Math.abs(endpt[1]-ptNew[1])<0.01 &&
                                     (ptNew[0]-endpt[0])*(newendpt[0]-ptNew[0])>=0) {
                                 newendpt = ptNew;
-                                break;
+                                nexti = possiblei;
                             }
                         }
                         else {
@@ -648,7 +649,7 @@
 
                     endpt = newendpt;
 
-                    if(nexti<d.edgepaths.length) break;
+                    if(nexti>=0) break;
                     fullpath += 'L'+newendpt;
                 }
 
