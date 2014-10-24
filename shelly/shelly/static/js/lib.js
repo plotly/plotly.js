@@ -456,9 +456,13 @@
 
         return {
             set: function(v){
-                    if(v===undefined || v===null) { delete cont[prop]; }
-                    else { cont[prop]=v; }
-                },
+                if(v===undefined || v===null) { delete cont[prop]; }
+                // references to same structure across traces causes undefined behaviour
+                else if (Array.isArray(v)) {
+                    cont[prop] = $.extend([], v);
+                }
+                else cont[prop] = v;
+            },
             get:function(){ return cont[prop]; },
             astr:s,
             parts:aa,
