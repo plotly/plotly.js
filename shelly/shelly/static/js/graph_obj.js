@@ -425,7 +425,7 @@
 
             // clean up old scenes that no longer have associated data
             // will this be a performance hit?
-            plot3D(gd);
+            if (gd._fullLayout._hasGL3D) plot3D(gd);
 
             // in case of traces that were heatmaps or contour maps
             // previously, remove them and their colorbars explicitly
@@ -1081,7 +1081,7 @@
         });
 
         oldScenes.forEach(function(oldScene) {
-            if(!newFullLayout[oldScene]) {
+            if(!newFullLayout[oldScene] && !!oldFullLayout[oldScene]._scene) {
                 oldFullLayout[oldScene]._scene.destroy();
             }
         });
@@ -1324,15 +1324,20 @@
     };
 
     plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
-        Plotly.Axes.supplyDefaults(layoutIn, layoutOut, fullData);
-        Plotly.Legend.supplyDefaults(layoutIn, layoutOut, fullData);
-        Plotly.Annotations.supplyDefaults(layoutIn, layoutOut);
-        Plotly.Fx.supplyDefaults(layoutIn, layoutOut, fullData);
 
-        Plotly.Bars.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        var moduleDefaults = ['Axes', 'Legend', 'Annotations', 'Fx'];
+        var moduleLayoutDefaults = ['Bars', 'Boxes', 'Gl3dLayout'];
 
-        Plotly.Gl3dLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        // don't add a check for 'function in module' as it is better to error out and
+        // secure the module API then not apply the default function.
+        moduleDefaults.forEach( function (module) {
+            if (!!Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
+            else console.warn('defaults from ' + module + ' not applied');
+        });
+        moduleLayoutDefaults.forEach( function (module) {
+            if (!!Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            else console.warn('defaults from ' + module + ' not applied');
+        });
     };
 
     plots.purge = function(gd) {
