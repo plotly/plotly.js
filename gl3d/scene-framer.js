@@ -10,8 +10,12 @@ function SceneFrame () {
     'use strict';
     this.ID = 0;
 
-    this.modules = [Gl3dAxes, Gl3dLayout, Scatter3D, Surface];
-
+    this.modules = [
+        {module: Gl3dAxes,   namespace: 'Gl3dAxes'},
+        {module: Gl3dLayout, namespace: 'Gl3dLayout'},
+        {module: Scatter3D,  namespace: 'Scatter3D'},
+        {module: Surface,    namespace: 'Surface'}
+    ];
 }
 
 util.inherits(SceneFrame, EventEmitter);
