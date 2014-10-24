@@ -693,7 +693,7 @@ proto.configureAxes = function configureAxes () {
                 opts.lineTickMirror[i] = false;
                 opts.lineMirror[i] = false;
             }
-        }
+        } else opts.lineMirror[i] = false;
 
         ////// grid background
         if ('showbackground' in axes && axes.showbackground !== false) {
