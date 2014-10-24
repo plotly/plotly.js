@@ -31,7 +31,7 @@ proto.createScene = function (opts) {
     newIframe.height = opts.height || '100%';
     newIframe.style.zIndex = '' + (opts.zIndex || '1000');
     newIframe.frameBorder = '0';
-    newIframe.src = 'glcontext.html';
+    newIframe.src = ENV.BASE_URL + '/glcontext.html';
 
     newIframe.id = opts.id || ('scene-'+ this.ID);
     this.ID++;
