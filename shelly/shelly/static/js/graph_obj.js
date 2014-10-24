@@ -423,9 +423,7 @@
         function drawData(){
             // Now plot the data
 
-            // clean up old scenes that no longer have associated data
-            // will this be a performance hit?
-            plot3D(gd);
+            if (gd._fullLayout._hasGL3D) plot3D(gd);
 
             // in case of traces that were heatmaps or contour maps
             // previously, remove them and their colorbars explicitly
