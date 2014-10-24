@@ -423,7 +423,9 @@
         function drawData(){
             // Now plot the data
 
-            plot3D(gd);
+            // clean up old scenes that no longer have associated data
+            // will this be a performance hit?
+            if (gd._fullLayout._hasGL3D) plot3D(gd);
 
             // in case of traces that were heatmaps or contour maps
             // previously, remove them and their colorbars explicitly
@@ -504,7 +506,6 @@
     };
 
     function plot3D(gd) {
-
         var fullLayout = gd._fullLayout;
         /*
          * Once Webgl plays well with other things we can remove this.
@@ -546,19 +547,12 @@
             if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
 
             var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
-                    return trace.uid;
+                return trace.uid;
             });
             var sceneData = gd._fullData.filter( function (trace) {
                 return trace.scene === sceneKey &&
                     queueUIDS.indexOf(trace.uid) === -1;
             });
-
-            // if there is no data associated with this scene, destroy it.
-            if (!sceneData.length && sceneLayout._scene) {
-                sceneLayout._scene.destroy();
-                delete fullLayout[sceneKey];
-                return;
-            }
 
             // we are only modifying the x domain position with this
             // simple approach
@@ -1055,6 +1049,8 @@
         // finally, fill in the pieces of layout that may need to look at data
         plots.supplyLayoutModuleDefaults(gd.layout||{}, newFullLayout, gd._fullData);
 
+        cleanScenes(newFullLayout, oldFullLayout);
+
         // IN THE CASE OF 3D the underscore modules are Mikola's webgl contexts.
         // There will be all sorts of pain if we deep copy active webgl scopes.
         // Since we discard oldFullLayout, lets just copy the references over.
@@ -1078,6 +1074,18 @@
             });
         }
     };
+
+    function cleanScenes(newFullLayout, oldFullLayout) {
+        var oldScenes = Object.keys(oldFullLayout).filter(function(k){
+            return k.match(/^scene[0-9]*$/);
+        });
+
+        oldScenes.forEach(function(oldScene) {
+            if(!newFullLayout[oldScene] && !!oldFullLayout[oldScene]._scene) {
+                oldFullLayout[oldScene]._scene.destroy();
+            }
+        });
+    }
 
     // relink private _keys and keys with a function value from one layout
     // (usually cached) to the new fullLayout.
@@ -1129,8 +1137,8 @@
                     else delete toLayout[k];
                 }
             }
-            else if ($.isPlainObject(fromLayout[k])) {
-                if (!(k in toLayout)) toLayout[k] = {};
+            else if ($.isPlainObject(fromLayout[k]) && (k in toLayout)) {
+                // recurse into objects, but only if they still exist
                 relinkPrivateKeys(toLayout[k], fromLayout[k]);
                 if (!Object.keys(toLayout[k]).length) delete toLayout[k];
             }
