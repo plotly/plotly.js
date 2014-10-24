@@ -1315,15 +1315,16 @@
     };
 
     plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
-        Plotly.Axes.supplyDefaults(layoutIn, layoutOut, fullData);
-        Plotly.Legend.supplyDefaults(layoutIn, layoutOut, fullData);
-        Plotly.Annotations.supplyDefaults(layoutIn, layoutOut);
-        Plotly.Fx.supplyDefaults(layoutIn, layoutOut, fullData);
 
-        Plotly.Bars.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        var moduleDefaults = ['Axes', 'Legend', 'Annotations', 'Fx'];
+        var moduleLayoutDefaults = ['Bars', 'Boxes', 'Gl3dLayout'];
 
-        Plotly.Gl3dLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        moduleDefaults.forEach( function (module) {
+            if (!!Plotly[module]) module.supplyDefaults(layoutIn, layoutOut, fullData);
+        });
+        moduleLayoutDefaults.forEach( function (module) {
+            if (!!Plotly[module]) module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        });
     };
 
     plots.purge = function(gd) {
