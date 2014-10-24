@@ -423,7 +423,7 @@
         function drawData(){
             // Now plot the data
 
-            if (gd._fullLayout._hasGL3D) plot3D(gd);
+            plot3D(gd);
 
             // in case of traces that were heatmaps or contour maps
             // previously, remove them and their colorbars explicitly
@@ -504,6 +504,7 @@
     };
 
     function plot3D(gd) {
+
         var fullLayout = gd._fullLayout;
         /*
          * Once Webgl plays well with other things we can remove this.
