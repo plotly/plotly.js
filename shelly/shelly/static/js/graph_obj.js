@@ -649,6 +649,9 @@
                     d.module.plot(sceneLayout._scene, sceneLayout, d);
                 }
 
+                // focus the iframe removing need to double click for interactivity
+                scene.container.focus();
+
                 SceneFrame.emit('scene-ready', scene);
             });
         });
