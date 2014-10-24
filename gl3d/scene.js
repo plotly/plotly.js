@@ -681,7 +681,6 @@ proto.configureAxes = function configureAxes () {
             if (axes.tickfont.size)   opts.tickSize[i]   = axes.tickfont.size;
         }
 
-
         if ('mirror' in axes) {
             if (['ticks','all','allticks'].indexOf(axes.mirror) !== -1) {
                 opts.lineTickMirror[i] = true;
