@@ -554,7 +554,7 @@
             });
 
             // if there is no data associated with this scene, destroy it.
-            if (!sceneData.length) {
+            if (!sceneData.length && sceneLayout._scene) {
                 sceneLayout._scene.destroy();
                 delete fullLayout[sceneKey];
                 return;
@@ -1320,11 +1320,15 @@
         var moduleDefaults = ['Axes', 'Legend', 'Annotations', 'Fx'];
         var moduleLayoutDefaults = ['Bars', 'Boxes', 'Gl3dLayout'];
 
+        // don't add a check for 'function in module' as it is better to error out and
+        // secure the module API then not apply the default function.
         moduleDefaults.forEach( function (module) {
-            if (!!Plotly[module]) module.supplyDefaults(layoutIn, layoutOut, fullData);
+            if (!!Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
+            else console.warn('defaults from ' + module + ' not applied');
         });
         moduleLayoutDefaults.forEach( function (module) {
-            if (!!Plotly[module]) module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            if (!!Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            else console.warn('defaults from ' + module + ' not applied');
         });
     };
 
