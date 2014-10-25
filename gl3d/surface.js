@@ -166,9 +166,12 @@ proto.plot = function (scene, sceneLayout, data) {
         /*
          * Push it onto the render queue
          */
-        params.pickId       = (scene.objectCount++) % 256;
+
+        var pickIds = scene.allocIds(1)
+
+        params.pickId       = pickIds.ids[0];
         surface             =  createSurface(gl, field, params);
-        surface.groupId     = (scene.objectCount-1) >>> 8;
+        surface.groupId     = pickIds.group;
         surface.plotlyType  = data.type;
 
         scene.glDataMap[data.uid] = surface;

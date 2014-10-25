@@ -44,7 +44,7 @@ proto.createScene = function (opts) {
 
     newIframe.onload = function () {
         var shell = newIframe.contentWindow.glnow({
-            clearColor: [0,0,0,0],
+            clearFlags: 0,
             glOptions: glOptions,
             tickRate: 3
         });
