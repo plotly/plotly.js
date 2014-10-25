@@ -41,7 +41,7 @@ function ModeBar (config) {
         _this.element.appendChild(group);
     });
 
-    if (config.displaylogo) {
+    if (this.graphInfo.displaylogo) {
         this.element.appendChild(this.getLogo());
     }
 
