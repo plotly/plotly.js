@@ -243,14 +243,25 @@
             }
             return (mi===15) ? 0 : mi;
         }
-        var xi,yi,ystartIndices,startIndices,label,corners,cmin,cmax,mi;
+        var xi,yi,ystartIndices,startIndices,label,corners,cmin,cmax,mi,loc,startIndexIndex;
+        var twoWide = m===2 || n===2;
 
         function makeCrossings(pi) {
             mi = getMarchingIndex(pi.level,corners);
             if(mi) {
                 pi.crossings[label] = mi;
-                if(startIndices.indexOf(mi)!==-1) {
-                    pi.starts.push(label.split(',').map(Number));
+                startIndexIndex = startIndices.indexOf(mi);
+                if(startIndexIndex!==-1) {
+                    loc = label.split(',').map(Number);
+                    pi.starts.push(loc);
+                    if(twoWide && startIndices.indexOf(mi,startIndexIndex+1)!==-1) {
+                        // the same square has starts from opposite sides
+                        // it's not possible to have starts on opposite edges
+                        // of a corner, only a start and an end...
+                        // but if the array is only two points wide (either way)
+                        // you can have starts on opposite sides.
+                        pi.starts.push(loc);
+                    }
                 }
             }
         }
@@ -266,14 +277,16 @@
         }
 
         for(yi = 0; yi<m-1; yi++) {
-            if(yi===0) ystartIndices = BOTTOMSTART;
-            else if(yi===m-2) ystartIndices = TOPSTART;
-            else ystartIndices = [];
+            ystartIndices = [];
+            if(yi===0) ystartIndices = ystartIndices.concat(BOTTOMSTART);
+            if(yi===m-2) ystartIndices = ystartIndices.concat(TOPSTART);
+            // else ystartIndices = [];
 
             for(xi = 0; xi<n-1; xi++) {
-                if(xi===0) startIndices = ystartIndices.concat(LEFTSTART);
-                else if(xi===n-2) startIndices = ystartIndices.concat(RIGHTSTART);
-                else startIndices = ystartIndices;
+                startIndices = [].concat(ystartIndices);
+                if(xi===0) startIndices = startIndices.concat(LEFTSTART);
+                if(xi===n-2) startIndices = startIndices.concat(RIGHTSTART);
+                // else startIndices = ystartIndices;
 
                 label = xi+','+yi;
                 corners = [[zclean(xi,yi),zclean(xi+1,yi)],
