@@ -79,22 +79,6 @@
         Plotly.Heatmap.supplyDefaults(traceIn, traceOut, defaultColor, layout);
     };
 
-    contour.defaults = function() {
-        return [
-            {dataAttr: 'autocontour', cdAttr: 'autocontour', dflt: true},
-            {dataAttr: 'ncontours', cdAttr: 'ncontours', dflt: 0},
-            {dataAttr: 'contours.start', cdAttr: 'contourstart', dflt: 0},
-            {dataAttr: 'contours.end', cdAttr: 'contourend', dflt: 1},
-            {dataAttr: 'contours.size', cdAttr: 'contoursize', dflt: 1},
-            {dataAttr: 'contours.coloring', cdAttr: 'coloring', dflt: 'fill'},
-            {dataAttr: 'contours.showlines', cdAttr: 'showlines', dflt: true},
-            {dataAttr: 'line.color', cdAttr: 'lc', dflt: '#000'},
-            {dataAttr: 'line.width', cdAttr: 'lw', dflt: 0.5},
-            {dataAttr: 'line.dash', cdAttr: 'ld', dflt: 'solid'},
-            {dataAttr: 'line.smoothing', cdAttr: 'ls', dflt: 1}
-        ];
-    };
-
     contour.calc = function(gd, trace) {
         // most is the same as heatmap calc, then adjust it
         // though a few things inside heatmap calc still look for
@@ -280,13 +264,11 @@
             ystartIndices = [];
             if(yi===0) ystartIndices = ystartIndices.concat(BOTTOMSTART);
             if(yi===m-2) ystartIndices = ystartIndices.concat(TOPSTART);
-            // else ystartIndices = [];
 
             for(xi = 0; xi<n-1; xi++) {
                 startIndices = [].concat(ystartIndices);
                 if(xi===0) startIndices = startIndices.concat(LEFTSTART);
                 if(xi===n-2) startIndices = startIndices.concat(RIGHTSTART);
-                // else startIndices = ystartIndices;
 
                 label = xi+','+yi;
                 corners = [[zclean(xi,yi),zclean(xi+1,yi)],
