@@ -458,9 +458,7 @@
             set: function(v){
                 if(v===undefined || v===null) { delete cont[prop]; }
                 // references to same structure across traces causes undefined behaviour
-                else if (Array.isArray(v)) {
-                    cont[prop] = $.extend([], v);
-                }
+                else if (Array.isArray(v)) cont[prop] = v.map( lib.identity );
                 else cont[prop] = v;
             },
             get:function(){ return cont[prop]; },
