@@ -83,9 +83,15 @@ proto.plot = function (scene, sceneLayout, data) {
     /*
      * Create a new surfac
      */
+    var surface = scene.glDataMap[data.uid];
+    // handle visible trace cases
+    if (!data.visible) {
+        if (surface) surface.visible = data.visible;
+        return scene.update(sceneLayout, surface);
+    }
 
-    var surface,
-        i , j,
+
+    var i , j,
         colormap = parseColorScale(data.colorscale),
         zdata = data.z,
         x = data.x,

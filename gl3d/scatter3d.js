@@ -195,13 +195,14 @@ function str2RgbaArray(color) {
 
 proto.plot = function Scatter (scene, sceneLayout, data) {
     /*jshint camelcase: false */
-    /*
-     * data object {x,y,z and  marker: {size:size, color:color}}
-     */
+    var scatter = scene.glDataMap[data.uid];
+    // handle visible trace cases
+    if (!data.visible) {
+        if (scatter) scatter.visible = data.visible;
+        return scene.update(sceneLayout, scatter);
+    }
 
-    // if (!('marker' in data)) data.marker = {};
-
-    var params, scatter, idx, i,
+    var params, idx, i,
         points = [],
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
@@ -211,7 +212,6 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
         yc, y = data.y,
         zc, z = data.z,
         len = x.length;
-
 
     //Convert points
     idx = 0;
@@ -285,8 +285,6 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
     params.delaunayAxis       = data.surfaceaxis;
     params.delaunayColor      = str2RgbaArray(data.surfacecolor);
 
-    scatter = scene.glDataMap[data.uid];
-
     if (scatter) {
         /*
          * We already have drawn this surface,
@@ -307,7 +305,6 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
 
         scene.glDataMap[data.uid] = scatter;
     }
-    // uids determine which data is tied to which gl-object
     scatter.uid = data.uid;
     scatter.visible = data.visible;
     scene.update(sceneLayout, scatter);
