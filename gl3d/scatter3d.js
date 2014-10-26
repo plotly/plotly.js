@@ -22,10 +22,6 @@ proto.attributes = {
     y: {type: 'data_array'},
     z: {type: 'data_array'},
     text: {from: 'Scatter'},
-    scene: {
-        type: 'sceneid',
-        dflt: 'scene'
-    },
     surfaceaxis: {
         type: 'enumerated',
         values: [-1,0,1,2],
@@ -135,7 +131,6 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         coerceScatter('textfont', layout.font);
     }
 
-    coerce('scene');
     if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', linecolor || markercolor);
     coerce('showprojection[0]');
     coerce('showprojection[1]');
