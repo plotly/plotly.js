@@ -423,7 +423,9 @@
         function drawData(){
             // Now plot the data
 
-            if (fullLayout._hasGL3D) plot3D(gd);
+            // clean up old scenes that no longer have associated data
+            // will this be a performance hit?
+            if (gd._fullLayout._hasGL3D) plot3D(gd);
 
             // in case of traces that were heatmaps or contour maps
             // previously, remove them and their colorbars explicitly
@@ -538,7 +540,20 @@
 
         scenes.forEach( function (sceneKey, idx) {
 
-            var sceneLayout = fullLayout[sceneKey];
+            var sceneLayout = fullLayout[sceneKey],
+                sceneOptions;
+
+            // maybe this initialization should happen somewhere else
+            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
+
+            var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
+                return trace.uid;
+            });
+            var sceneData = gd._fullData.filter( function (trace) {
+                return trace.scene === sceneKey &&
+                    queueUIDS.indexOf(trace.uid) === -1;
+            });
+
             // we are only modifying the x domain position with this
             // simple approach
 
@@ -558,27 +573,19 @@
             // context parameter so lets reset the domain of the scene as
             // it may have changed (this operates on the containing iframe)
             if (sceneLayout._scene) sceneLayout._scene.setPosition(sceneLayout.position);
-            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
+
             /*
              * We only want to continue to operate on scenes that have
              * data waiting to be displayed or require loading
              */
-            var sceneOptions;
-            var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
-                return trace.uid;
-            });
-            var sceneData = gd._fullData.filter( function (trace) {
-                return trace.scene === sceneKey &&
-                    queueUIDS.indexOf(trace.uid) === -1;
-            });
 
             if (sceneLayout._scene) {
+                //// if there is no data for this scene destroy it
                 //// woot, lets load all the data in the queue and bail outta here
                 while (sceneData.length) {
                     var d = sceneData.shift();
                     d.module.plot(sceneLayout._scene, sceneLayout, d);
                 }
-
                 return;
             }
 
@@ -641,6 +648,9 @@
                     var d = sceneLayout._dataQueue.shift();
                     d.module.plot(sceneLayout._scene, sceneLayout, d);
                 }
+
+                // focus the iframe removing need to double click for interactivity
+                scene.container.focus();
 
                 SceneFrame.emit('scene-ready', scene);
             });
@@ -986,6 +996,10 @@
             type: 'boolean',
             dflt: true
         },
+        scene: {
+            type: 'sceneid',
+            dflt: 'scene'
+        },
         showlegend: {
             type: 'boolean',
             dflt: true
@@ -1042,6 +1056,8 @@
         // finally, fill in the pieces of layout that may need to look at data
         plots.supplyLayoutModuleDefaults(gd.layout||{}, newFullLayout, gd._fullData);
 
+        cleanScenes(newFullLayout, oldFullLayout);
+
         // IN THE CASE OF 3D the underscore modules are Mikola's webgl contexts.
         // There will be all sorts of pain if we deep copy active webgl scopes.
         // Since we discard oldFullLayout, lets just copy the references over.
@@ -1065,6 +1081,18 @@
             });
         }
     };
+
+    function cleanScenes(newFullLayout, oldFullLayout) {
+        var oldScenes = Object.keys(oldFullLayout).filter(function(k){
+            return k.match(/^scene[0-9]*$/);
+        });
+
+        oldScenes.forEach(function(oldScene) {
+            if(!newFullLayout[oldScene] && !!oldFullLayout[oldScene]._scene) {
+                oldFullLayout[oldScene]._scene.destroy();
+            }
+        });
+    }
 
     // relink private _keys and keys with a function value from one layout
     // (usually cached) to the new fullLayout.
@@ -1116,8 +1144,8 @@
                     else delete toLayout[k];
                 }
             }
-            else if ($.isPlainObject(fromLayout[k])) {
-                if (!(k in toLayout)) toLayout[k] = {};
+            else if ($.isPlainObject(fromLayout[k]) && (k in toLayout)) {
+                // recurse into objects, but only if they still exist
                 relinkPrivateKeys(toLayout[k], fromLayout[k]);
                 if (!Object.keys(toLayout[k]).length) delete toLayout[k];
             }
@@ -1137,6 +1165,21 @@
         var type = coerce('type');
         coerce('uid');
         var visible = coerce('visible');
+
+        // this is necessary otherwise we lose references to scene objects when
+        // the traces of a scene are invisible. Also we handle visible/unvisible
+        // differently for 3D cases.
+        if (plots.isGL3D(type)) var scene = coerce('scene');
+
+        // module-specific attributes --- note: we need to send a trace into
+        // the 3D modules to have it removed from the webgl context.
+        if (visible || scene) {
+            var module = getModule(traceOut);
+            traceOut.module = module;
+        }
+
+        if (module && visible) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
         if(visible) {
             coerce('name', 'trace '+i);
 
@@ -1150,12 +1193,6 @@
             if(!plots.isHeatmap(type) && !plots.isSurface(type)) {
                 coerce('showlegend');
             }
-
-            // module-specific attributes
-            var module = getModule(traceOut);
-            traceOut.module = module;
-
-            if(module) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
         }
 
         // NOTE: I didn't include fit info at all... for now I think it can stay
@@ -1303,15 +1340,20 @@
     };
 
     plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
-        Plotly.Axes.supplyDefaults(layoutIn, layoutOut, fullData);
-        Plotly.Legend.supplyDefaults(layoutIn, layoutOut, fullData);
-        Plotly.Annotations.supplyDefaults(layoutIn, layoutOut);
-        Plotly.Fx.supplyDefaults(layoutIn, layoutOut, fullData);
 
-        Plotly.Bars.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        Plotly.Boxes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        var moduleDefaults = ['Axes', 'Legend', 'Annotations', 'Fx'];
+        var moduleLayoutDefaults = ['Bars', 'Boxes', 'Gl3dLayout'];
 
-        Plotly.Gl3dLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        // don't add a check for 'function in module' as it is better to error out and
+        // secure the module API then not apply the default function.
+        moduleDefaults.forEach( function (module) {
+            if (!!Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
+            else console.warn('defaults from ' + module + ' not applied');
+        });
+        moduleLayoutDefaults.forEach( function (module) {
+            if (!!Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            else console.warn('defaults from ' + module + ' not applied');
+        });
     };
 
     plots.purge = function(gd) {

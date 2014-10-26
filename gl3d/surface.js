@@ -33,10 +33,6 @@ proto.attributes = {
     x: {type: 'data_array'},
     y: {type: 'data_array'},
     z: {type: 'data_array'},
-    scene: {
-        type: 'sceneid',
-        dflt: 'scene'
-    },
     colorscale: {from: 'Heatmap'},
     showscale: {from: 'Heatmap'},
     reversescale: {from: 'Heatmap'}
@@ -62,7 +58,6 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     }
     coerce('x');
     coerce('y');
-    coerce('scene');
 
     coerceHeatmap('colorscale');
 
@@ -88,9 +83,15 @@ proto.plot = function (scene, sceneLayout, data) {
     /*
      * Create a new surfac
      */
+    var surface = scene.glDataMap[data.uid];
+    // handle visible trace cases
+    if (!data.visible) {
+        if (surface) surface.visible = data.visible;
+        return scene.update(sceneLayout, surface);
+    }
 
-    var surface,
-        i , j,
+
+    var i , j,
         colormap = parseColorScale(data.colorscale),
         zdata = data.z,
         x = data.x,

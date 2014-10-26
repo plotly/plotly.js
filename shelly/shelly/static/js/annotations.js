@@ -144,16 +144,17 @@
         coerce('opacity');
         coerce('align');
         coerce('bgcolor');
-        var borderColor = coerce('bordercolor');
+        var borderColor = coerce('bordercolor'),
+            borderOpacity = Plotly.Color.opacity(borderColor);
         coerce('borderpad');
         var borderWidth = coerce('borderwidth');
         var showArrow = coerce('showarrow');
         if(showArrow) {
             coerce('arrowcolor',
-                Plotly.Color.opacity(borderColor) ? annOut.bordercolor : '#444');
+                borderOpacity ? annOut.bordercolor : '#444');
             coerce('arrowhead');
             coerce('arrowsize');
-            coerce('arrowwidth', borderWidth*2);
+            coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
             coerce('ax');
             coerce('ay');
         }

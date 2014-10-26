@@ -101,12 +101,14 @@ proto.supplyDefaults = function(layoutIn, layoutOut, options) {
         layoutOut[axName] = containerOut = Axes.supplyAxisDefaults(
             containerIn,
             containerOut, {
+                font: options.font,
                 letter: axName[0],
                 data: options.data,
                 showGrid: true
             });
 
         coerceAxis('gridcolor', 'rgb(204, 204, 204)');
+        coerceAxis('title', axName[0]);
 
         containerOut.setScale = function () {};
 
