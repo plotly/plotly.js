@@ -150,24 +150,24 @@ function isTrue (bool) {
     return bool;
 }
 
-function calculateErrorCapSize(errors) {
+function calculateErrorParams(errors) {
     /*jshint camelcase: false */
-    var result = [0.0,0.0,0.0], i, e;
+    var capSize = [0.0, 0.0, 0.0], i, e;
+    var color = [[0,0,0],[0,0,0],[0,0,0]];
+    var lineWidth = [0.0, 0.0, 0.0];
     for(i=0; i<3; ++i) {
         e = errors[i];
         if (e && e.copy_zstyle !== false) {
             e = errors[2];
         }
-        if(!e) {
-            continue;
-        }
-        if(e && 'width' in e) {
-            result[i] = e.width / 100.0;  //Ballpark rescaling, attempt to make consistent with plot.ly
-        }
-    }
-    return result;
-}
+        if(!e) continue;
+        capSize[i] = e.width / 100.0;  //Ballpark rescaling, attempt to make consistent with plot.ly
+        color[i] = str2RgbaArray(e.color);
+        lineWidth = e.thickness;
 
+    }
+    return {capSize: capSize, color: color, lineWidth: lineWidth};
+}
 
 function calculateTextOffset(textposition) {
     //Read out text properties
@@ -207,7 +207,7 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
-        errorProperties = [ data.error_x, data.error_y, data.error_z ],
+        errorParams = calculateErrorParams([ data.error_x, data.error_y, data.error_z ]),
         xc, x = data.x,
         yc, y = data.y,
         zc, z = data.z,
@@ -256,17 +256,6 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
         params.scatterAngle         = 0;
     }
 
-    if ('error_z' in data) {
-        params.errorBounds    = calculateError(data);
-        params.errorColor     = errorProperties.map( function (e) {
-            return str2RgbaArray(e.color);
-        });
-        params.errorLineWidth = errorProperties.map( function (e) {
-            return e.thickness || 0.0;
-        });
-        params.errorCapSize   = calculateErrorCapSize(errorProperties);
-    }
-
     if ('textposition' in data) {
         params.text           = data.text;
         params.textOffset     = calculateTextOffset(data.position);
@@ -281,6 +270,10 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
         params.projectOpacity = data.projectopacity;
         params.projectScale = data.projectscale;
     }
+    params.errorBounds    = calculateError(data);
+    params.errorColor     = errorParams.color;
+    params.errorLineWidth = errorParams.lineWidth;
+    params.errorCapSize   = errorParams.capSize;
 
     params.delaunayAxis       = data.surfaceaxis;
     params.delaunayColor      = str2RgbaArray(data.surfacecolor);
