@@ -30,22 +30,61 @@ proto.attributes = {
     surfacecolor: {
         type: 'color'
     },
-    showprojection: [
-        {type: 'boolean', dflt: false},
-        {type: 'boolean', dflt: false},
-        {type: 'boolean', dflt: false}
-    ],
-    projectopacity: {
-        type: 'number',
-        min: 0,
-        max: 1,
-        dflt: 1
-    },
-    projectscale: {
-        type: 'number',
-        min: 0,
-        max: 10,
-        dflt: 2/3
+    projection: {
+        x: {
+            show: {
+                type: 'boolean',
+                dflt: false
+            },
+            opacity: {
+                type: 'number',
+                min: 0,
+                max: 1,
+                dflt: 1
+            },
+            scale: {
+                type: 'number',
+                min: 0,
+                max: 10,
+                dflt: 2/3
+            }
+        },
+        y: {
+            show: {
+                type: 'boolean',
+                dflt: false
+            },
+            opacity: {
+                type: 'number',
+                min: 0,
+                max: 1,
+                dflt: 1
+            },
+            scale: {
+                type: 'number',
+                min: 0,
+                max: 10,
+                dflt: 2/3
+            }
+        },
+        z: {
+            show: {
+                type: 'boolean',
+                dflt: false
+            },
+            opacity: {
+                type: 'number',
+                min: 0,
+                max: 1,
+                dflt: 1
+            },
+            scale: {
+                type: 'number',
+                min: 0,
+                max: 10,
+                dflt: 2/3
+            }
+        }
     },
     mode: {from: 'Scatter'},
     line: {
@@ -123,7 +162,6 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         coerceScatter('marker.line.width', 0);
         // TODO parity with scatter.js
         coerceScatter('marker.line.color', 'rgb(0,0,0)');
-
     }
 
     if (Scatter.hasText(traceOut)) {
@@ -132,12 +170,19 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     }
 
     if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', linecolor || markercolor);
-    coerce('showprojection[0]');
-    coerce('showprojection[1]');
-    coerce('showprojection[2]');
-    if (traceOut.showprojection.some(isTrue)) {
-        coerce('projectopacity');
-        coerce('projectscale');
+
+
+    var dims = ['x','y','z'];
+    for (var i = 0; i < 3; ++i) {
+        var projection = 'projection.' + dims[i];
+        if (coerce(projection+'.show')) {
+            // adaptor until Mikola makes axes independent projection configs
+            coerce('projection.x.opacity');
+            coerce('projection.x.scale');
+            //
+            coerce(projection+'.opacity');
+            coerce(projection+'.scale');
+        }
     }
 
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
@@ -265,11 +310,18 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
         params.textAngle      = 0;
     }
 
-    if (data.showprojection) {
-        params.project = arrayCopy1D(data.showprojection);
-        params.projectOpacity = data.projectopacity;
-        params.projectScale = data.projectscale;
+    var dims = ['x', 'y', 'z'];
+    params.project = [];
+    for (i = 0; i < 3; ++i) {
+        var projection = data.projection[dims[i]];
+        if ((params.project[i] = projection.show)) {
+            // Mikolas API doesn't current support axes dependent
+            // configuration. Its coming though.
+            params.projectOpacity = data.projection.x.opacity;
+            params.projectScale = data.projection.x.scale;
+        }
     }
+
     params.errorBounds    = calculateError(data);
     params.errorColor     = errorParams.color;
     params.errorLineWidth = errorParams.lineWidth;
