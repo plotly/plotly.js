@@ -681,7 +681,6 @@ proto.configureAxes = function configureAxes () {
             if (axes.tickfont.size)   opts.tickSize[i]   = axes.tickfont.size;
         }
 
-
         if ('mirror' in axes) {
             if (['ticks','all','allticks'].indexOf(axes.mirror) !== -1) {
                 opts.lineTickMirror[i] = true;
@@ -693,7 +692,7 @@ proto.configureAxes = function configureAxes () {
                 opts.lineTickMirror[i] = false;
                 opts.lineMirror[i] = false;
             }
-        }
+        } else opts.lineMirror[i] = false;
 
         ////// grid background
         if ('showbackground' in axes && axes.showbackground !== false) {
