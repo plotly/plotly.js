@@ -101,6 +101,7 @@ proto.supplyDefaults = function(layoutIn, layoutOut, options) {
         layoutOut[axName] = containerOut = Axes.supplyAxisDefaults(
             containerIn,
             containerOut, {
+                font: options.font,
                 letter: axName[0],
                 data: options.data,
                 showGrid: true
