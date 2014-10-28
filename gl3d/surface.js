@@ -40,26 +40,31 @@ proto.attributes = {
         ambient: {
             type: 'number',
             min: 0.01,
+            max: 0.99,
             dflt: 0.8
         },
         diffuse: {
             type: 'number',
             min: 0.01,
+            max: 0.99,
             dflt: 0.8
         },
         specular: {
             type: 'number',
             min: 0.01,
+            max: 0.99,
             dflt: 0.05
         },
         roughness: {
             type: 'number',
             min: 0.01,
+            max: 0.99,
             dflt: 0.5
         },
         fresnel: {
             type: 'number',
             min: 0.01,
+            max: 0.99,
             dflt: 0.2
         }
     }
