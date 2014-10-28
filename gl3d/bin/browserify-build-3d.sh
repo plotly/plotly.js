@@ -1,8 +1,6 @@
 #!/bin/bash
-ROOT=../$(dirname "$SCRIPT")
-echo $ROOT
-ASSETDIR=$ROOT"/shelly/shelly/static/js/plugins"
-SOURCEDIR=$(pwd)
+ASSETDIR="../shelly/shelly/static/js/plugins"
+SOURCEDIR=.
 JSGLOBAL="SceneFrame"
 
 if [[ $1 == 'prod' ]]; then
