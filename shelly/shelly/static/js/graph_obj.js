@@ -1162,19 +1162,22 @@
 
         // module-independent attributes
         traceOut.index = i;
-        var type = coerce('type');
+        var type = coerce('type'),
+            visible = coerce('visible'),
+            scene,
+            module;
+
         coerce('uid');
-        var visible = coerce('visible');
 
         // this is necessary otherwise we lose references to scene objects when
         // the traces of a scene are invisible. Also we handle visible/unvisible
         // differently for 3D cases.
-        if (plots.isGL3D(type)) var scene = coerce('scene');
+        if (plots.isGL3D(type)) scene = coerce('scene');
 
         // module-specific attributes --- note: we need to send a trace into
         // the 3D modules to have it removed from the webgl context.
         if (visible || scene) {
-            var module = getModule(traceOut);
+            module = getModule(traceOut);
             traceOut.module = module;
         }
 
@@ -1347,12 +1350,12 @@
         // don't add a check for 'function in module' as it is better to error out and
         // secure the module API then not apply the default function.
         moduleDefaults.forEach( function (module) {
-            if (!!Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
-            else console.warn('defaults from ' + module + ' not applied');
+            if (Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
+            // else console.warn('defaults from ' + module + ' not applied');
         });
         moduleLayoutDefaults.forEach( function (module) {
-            if (!!Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            else console.warn('defaults from ' + module + ' not applied');
+            if (Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            // else console.warn('defaults from ' + module + ' not applied');
         });
     };
 
@@ -2327,18 +2330,10 @@
     // -------------------------------------------------------
     function makePlotFramework(gd) {
         var gd3 = d3.select(gd),
-            subplots,
+            subplots = Plotly.Axes.getSubplots(gd),
             fullLayout = gd._fullLayout;
 
-        // TODO: now that we're never calling this on its own, can we do it
-        // without initializing and drawing axes, just making containers?
-        if (fullLayout._hasCartesian && !fullLayout._hasGL3D) {
-            subplots = Plotly.Axes.getSubplots(gd);
-        } else {
-            // webgl only
-            subplots = [];
-            Plotly.Gl3dAxes.initAxes(gd);
-        }
+        if(fullLayout._hasGL3D) Plotly.Gl3dAxes.initAxes(gd);
 
         var outerContainer = fullLayout._fileandcomments =
                 gd3.selectAll('.file-and-comments');
