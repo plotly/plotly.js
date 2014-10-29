@@ -55,14 +55,11 @@
 
         var y,m,d,h;
         // split date and time parts
-        // allow for both "yyyy-mm-dd HH:MM:SS.ssssss"
-        // and "yyyy-mm-ddTHH:MM:SS.ssssssZ"
-        // because the latter is created by JSON.stringify on javascript Date objects
-        var datetime = String(s).match(/^([-0-9]*)([ T]([0-9:\.]*)Z?)?$/);
-        if(!datetime) return false;
+        var datetime = String(s).split(' ');
+        if(datetime.length>2) return false;
 
-        var p = datetime[1].split('-'); // date part
-        if(p.length>3 || (p.length!==3 && datetime[3])) return false;
+        var p = datetime[0].split('-'); // date part
+        if(p.length>3 || (p.length!==3 && datetime[1])) return false;
 
         // year
         if(p[0].length===4) y = Number(p[0]);
@@ -86,9 +83,9 @@
 
         // now save the date part
         d = new Date(y,m,d).getTime();
-        if(!datetime[3]) return d; // year-month-day
+        if(!datetime[1]) return d; // year-month-day
 
-        p = datetime[3].split(':');
+        p = datetime[1].split(':');
         if(p.length>3) return false;
 
         // hour
