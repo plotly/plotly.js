@@ -51,10 +51,11 @@
 
         var y,m,d,h;
         // split date and time parts
-        s=String(s).split(' ');
-        if(s.length>2) { return false; }
-        var p = s[0].split('-'); // date part
-        if(p.length>3 || (p.length!==3 && s.length>1)) { return false; }
+        var datetime = String(s).match(/^([-0-9]*)([ T]([0-9:\.]*)Z?)?$/);
+        if(!datetime) return false;
+
+        var p = datetime[1].split('-'); // date part
+        if(p.length>3 || (p.length!==3 && datetime[3])) return false;
         // year
         if(p[0].length===4) { y = Number(p[0]); }
         else if(p[0].length===2) {
@@ -77,9 +78,9 @@
 
         // now save the date part
         d = new Date(y,m,d).getTime();
-        if(s.length===1) { return d; } // year-month-day
+        if(!datetime[3]) return d; // year-month-day
 
-        p = s[1].split(':');
+        p = datetime[3].split(':');
         if(p.length>3) { return false; }
 
         // hour
