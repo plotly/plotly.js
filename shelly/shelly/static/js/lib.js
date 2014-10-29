@@ -46,58 +46,66 @@
 
     lib.dateTime2ms = function(s) {
         // first check if s is a date object
-        try { if(s.getTime) { return +s; } }
-        catch(e){ return false; }
+        try {
+            if(s.getTime) return +s;
+        }
+        catch(e){
+            return false;
+        }
 
         var y,m,d,h;
         // split date and time parts
+        // allow for both "yyyy-mm-dd HH:MM:SS.ssssss"
+        // and "yyyy-mm-ddTHH:MM:SS.ssssssZ"
+        // because the latter is created by JSON.stringify on javascript Date objects
         var datetime = String(s).match(/^([-0-9]*)([ T]([0-9:\.]*)Z?)?$/);
         if(!datetime) return false;
 
         var p = datetime[1].split('-'); // date part
         if(p.length>3 || (p.length!==3 && datetime[3])) return false;
+
         // year
-        if(p[0].length===4) { y = Number(p[0]); }
+        if(p[0].length===4) y = Number(p[0]);
         else if(p[0].length===2) {
             var yNow=new Date().getFullYear();
             y=((Number(p[0])-yNow+70)%100+200)%100+yNow-70;
         }
-        else { return false; }
-        if(!$.isNumeric(y) || (y<0)) { return false; }
-        if(p.length===1) { return new Date(y,0,1).getTime(); } // year only
+        else return false;
+        if(!$.isNumeric(y)) return false;
+        if(p.length===1) return new Date(y,0,1).getTime(); // year only
 
         // month
         m = Number(p[1])-1; // new Date() uses zero-based months
-        if(p[1].length>2 || !(m>=0 && m<=11)) { return false; }
-        if(p.length===2) { return new Date(y,m,1).getTime(); } // year-month
+        if(p[1].length>2 || !(m>=0 && m<=11)) return false;
+        if(p.length===2) return new Date(y,m,1).getTime(); // year-month
 
         // day
         d = Number(p[2]);
 
-        if(p[2].length>2 || !(d>=1 && d<=31)) { return false; }
+        if(p[2].length>2 || !(d>=1 && d<=31)) return false;
 
         // now save the date part
         d = new Date(y,m,d).getTime();
         if(!datetime[3]) return d; // year-month-day
 
         p = datetime[3].split(':');
-        if(p.length>3) { return false; }
+        if(p.length>3) return false;
 
         // hour
         h = Number(p[0]);
-        if(p[0].length>2 || !(h>=0 && h<=23)) { return false; }
+        if(p[0].length>2 || !(h>=0 && h<=23)) return false;
         d += 3600000*h;
-        if(p.length===1) { return d; }
+        if(p.length===1) return d;
 
         // minute
         m = Number(p[1]);
-        if(p[1].length>2 || !(m>=0 && m<=59)) { return false; }
+        if(p[1].length>2 || !(m>=0 && m<=59)) return false;
         d += 60000*m;
-        if(p.length===2) { return d; }
+        if(p.length===2) return d;
 
         // second
         s = Number(p[2]);
-        if(!(s>=0 && s<60)) { return false; }
+        if(!(s>=0 && s<60)) return false;
         return d+s*1000;
     };
 
@@ -115,7 +123,7 @@
             return;
         }
 
-        if(!r) { r=0; }
+        if(!r) r=0;
         var d = new Date(ms),
             s = d3.time.format('%Y-%m-%d')(d);
         if(r<7776000000) {
