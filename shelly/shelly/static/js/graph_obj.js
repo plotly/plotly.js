@@ -188,7 +188,7 @@
     };
 
     // note that now this function is only adding the brand in
-    // iframes and 3rd-party apps, standalone plots get the sidebar instead.
+    // iframes and 3rd-party apps
     function positionPlayWithData(gd,container){
         container.text('');
         var link = container.append('a')
@@ -197,7 +197,8 @@
                 'class': 'link--impt link--embedview',
                 'font-weight':'bold'
             })
-            .text('Play with this data! '+String.fromCharCode(187));
+            .text((Plotly.LINKTEXT || 'Play with this data!') +
+                  ' ' + String.fromCharCode(187));
 
         if(gd.shareplot) {
             var path=window.location.pathname.split('/');
@@ -209,19 +210,18 @@
         else {
             link.on('click',function(){
                 $(gd).trigger('plotly_beforeexport');
+
                 var hiddenform = $(
                     '<div id="hiddenform" style="display:none;">' +
                     '<form action="https://plot.ly/external" ' +
                         'method="post" target="_blank">'+
                     '<input type="text" name="data" /></form></div>'
                 ).appendTo(gd);
-                // somehow we need to double escape characters for this purpose.
-                // and escape single quote because we'll use it at the end
-                hiddenform.find('input').val(
-                    plots.graphJson(gd,false,'keepdata')
-                        .replace(/\\/g,'\\\\').replace(/'/g,'\\\''));
+
+                hiddenform.find('input').val(plots.graphJson(gd,false,'keepdata'));
                 hiddenform.find('form').submit();
                 hiddenform.remove();
+
                 $(gd).trigger('plotly_afterexport');
                 return false;
             });
