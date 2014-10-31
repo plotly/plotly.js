@@ -779,6 +779,16 @@ proto.getCameraPosition = function getCameraPosition () {
    ];
 };
 
+// set camera position with a set of plotly coords
+proto.setCameraPosition = function setCameraPosition (cameraPosition) {
+    if (Array.isArray(cameraPosition) && cameraPosition.length === 3) {
+        this.camera.rotation = arrayCopy1D(cameraPosition[0]);
+        this.camera.center = arrayCopy1D(cameraPosition[1]);
+        this.camera.distance = cameraPosition[2];
+    }
+    return;
+};
+
 proto.disposeAll = function disposeAll () {
     this.renderQueue.forEach( function (glo) {
         glo.dispose();
