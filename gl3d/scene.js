@@ -135,18 +135,14 @@ function Scene (options, shell) {
         0, 0, 0, 1
     ]);
 
+    // set default camera position
     this.defaultView = [
         1.25, 1.25, 1.25,
         0,    0,    0,
         0,    0,    1
     ];
+    this.setCameraToDefault();
 
-    // preconfigure view
-    this.camera.lookAt(
-        this.defaultView.slice(0,3),
-        this.defaultView.slice(3,6),
-        this.defaultView.slice(6,9)
-    );
 
     //Currently selected data point
     this.selection = null;
@@ -757,6 +753,16 @@ proto.toPNG = function () {
 
     var dataURL = canvas.toDataURL('image/png');
     return dataURL;
+};
+
+// for reset camera button in modebar
+proto.setCameraToDefault = function setCameraToDefault () {
+    this.camera.lookAt(
+        this.defaultView.slice(0,3),
+        this.defaultView.slice(3,6),
+        this.defaultView.slice(6,9)
+    );
+    return;
 };
 
 proto.disposeAll = function disposeAll () {
