@@ -789,6 +789,15 @@ proto.setCameraPosition = function setCameraPosition (cameraPosition) {
     return;
 };
 
+// save camera position to user layout (i.e. gd.layout)
+proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) {
+    var lib = this.Plotly.Lib;
+    var prop = lib.nestedProperty(layout, this.id + '.cameraposition');
+    var cameraposition = this.getCameraPosition();
+    prop.set(cameraposition);
+    return;
+};
+
 proto.disposeAll = function disposeAll () {
     this.renderQueue.forEach( function (glo) {
         glo.dispose();
