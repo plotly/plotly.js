@@ -3138,10 +3138,6 @@
                         }
                     }
 
-                    else if(v.substr(0, 5) === 'scene') {
-                        if (d[v]._scene) d[v]._scene.saveStateToLayout();
-                    }
-
                     // OK, we're including this... recurse into it
                     o[v] = stripObj(d[v]);
                 }
