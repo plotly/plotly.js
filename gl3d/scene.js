@@ -143,6 +143,11 @@ function Scene (options, shell) {
     ];
     this.setCameraToDefault();
 
+    /**
+     * get the default camera position in plotly coords,
+     * for reset camera modebar button
+     */
+    this.cameraPositionDefault = this.getCameraPosition();
 
     //Currently selected data point
     this.selection = null;
@@ -763,6 +768,15 @@ proto.setCameraToDefault = function setCameraToDefault () {
         this.defaultView.slice(6,9)
     );
     return;
+};
+
+// get camera position in plotly coords from 'orbit-camera' coords
+proto.getCameraPosition = function getCameraPosition () {
+    return [
+        arrayCopy1D(this.camera.rotation),
+        arrayCopy1D(this.camera.center),
+        this.camera.distance
+   ];
 };
 
 proto.disposeAll = function disposeAll () {
