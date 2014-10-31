@@ -324,33 +324,40 @@ ModeBar.prototype.config = {
         icon: 'ploticon-tooltip_compare',
         click: handleCartesian
     },
-    resetCamera3d: {
-        title: 'Reset camera',
-        attr: 'reset',
-        val: '',
-        icon: 'icon-home',
-        click: handle3dCamera
-    },
     zoom3d: {
         title: 'Zoom',
         attr: 'dragmode',
         val: 'zoom',
         icon: 'ploticon-zoombox',
-        click: handle3dCamera
+        click: handleDrag3d
     },
     pan3d: {
         title: 'Pan',
         attr: 'dragmode',
         val: 'pan',
         icon: 'ploticon-pan',
-        click: handle3dCamera
+        click: handleDrag3d
     },
     rotate3d: {
         title: 'Rotate',
         attr: 'dragmode',
         val: 'rotate',
         icon: 'icon-undo',
-        click: handle3dCamera
+        click: handleDrag3d
+    },
+    resetCameraDefault3d: {
+        title: 'Reset camera to default',
+        attr: 'resetDefault',
+        val: false,
+        icon: 'icon-home',
+        click: handleCamera3d
+    },
+    resetCameraLastSave3d: {
+        title: 'Reset camera to last save',
+        attr: 'resetLastSave',
+        val: false,
+        icon: 'icon-camera-retro',
+        click: handleCamera3d
     },
     closest3d: {
         title: 'Toggle show closest data on hover',
