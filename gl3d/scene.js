@@ -436,35 +436,12 @@ proto.update = function (sceneLayout, glObject) {
 
 
 proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
-    var cameraPosition;
     this.sceneLayout = sceneLayout;
 
-    cameraPosition = sceneLayout.cameraposition;
-
+    // exception: set container color with layout bg color
     if (sceneLayout.bgcolor) {
         this.container.style.background = sceneLayout.bgcolor;
     }
-
-    // set webgl state from layout
-
-    if (Array.isArray(cameraPosition) && cameraPosition.length === 3) {
-        this.camera.rotation = cameraPosition[0];
-        this.camera.center = cameraPosition[1];
-        this.camera.distance = cameraPosition[2];
-    }
-
-    // set Layout state from webgl
-    this.saveStateToLayout(sceneLayout);
-};
-
-
-proto.saveStateToLayout = function () {
-    var sceneLayout = this.sceneLayout;
-    sceneLayout.cameraposition = [
-        arrayCopy1D(this.camera.rotation),
-        arrayCopy1D(this.camera.center),
-        this.camera.distance
-    ];
 };
 
 
