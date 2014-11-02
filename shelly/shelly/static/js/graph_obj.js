@@ -188,7 +188,7 @@
     };
 
     // note that now this function is only adding the brand in
-    // iframes and 3rd-party apps, standalone plots get the sidebar instead.
+    // iframes and 3rd-party apps
     function positionPlayWithData(gd,container){
         container.text('');
         var link = container.append('a')
@@ -197,7 +197,8 @@
                 'class': 'link--impt link--embedview',
                 'font-weight':'bold'
             })
-            .text('Play with this data! '+String.fromCharCode(187));
+            .text((Plotly.LINKTEXT || 'Play with this data!') +
+                  ' ' + String.fromCharCode(187));
 
         if(gd.shareplot) {
             var path=window.location.pathname.split('/');
@@ -209,19 +210,18 @@
         else {
             link.on('click',function(){
                 $(gd).trigger('plotly_beforeexport');
+
                 var hiddenform = $(
                     '<div id="hiddenform" style="display:none;">' +
                     '<form action="https://plot.ly/external" ' +
                         'method="post" target="_blank">'+
                     '<input type="text" name="data" /></form></div>'
                 ).appendTo(gd);
-                // somehow we need to double escape characters for this purpose.
-                // and escape single quote because we'll use it at the end
-                hiddenform.find('input').val(
-                    plots.graphJson(gd,false,'keepdata')
-                        .replace(/\\/g,'\\\\').replace(/'/g,'\\\''));
+
+                hiddenform.find('input').val(plots.graphJson(gd,false,'keepdata'));
                 hiddenform.find('form').submit();
                 hiddenform.remove();
+
                 $(gd).trigger('plotly_afterexport');
                 return false;
             });
@@ -1162,19 +1162,22 @@
 
         // module-independent attributes
         traceOut.index = i;
-        var type = coerce('type');
+        var type = coerce('type'),
+            visible = coerce('visible'),
+            scene,
+            module;
+
         coerce('uid');
-        var visible = coerce('visible');
 
         // this is necessary otherwise we lose references to scene objects when
         // the traces of a scene are invisible. Also we handle visible/unvisible
         // differently for 3D cases.
-        if (plots.isGL3D(type)) var scene = coerce('scene');
+        if (plots.isGL3D(type)) scene = coerce('scene');
 
         // module-specific attributes --- note: we need to send a trace into
         // the 3D modules to have it removed from the webgl context.
         if (visible || scene) {
-            var module = getModule(traceOut);
+            module = getModule(traceOut);
             traceOut.module = module;
         }
 
@@ -1347,12 +1350,10 @@
         // don't add a check for 'function in module' as it is better to error out and
         // secure the module API then not apply the default function.
         moduleDefaults.forEach( function (module) {
-            if (!!Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
-            else console.warn('defaults from ' + module + ' not applied');
+            if (Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
         });
         moduleLayoutDefaults.forEach( function (module) {
-            if (!!Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            else console.warn('defaults from ' + module + ' not applied');
+            if (Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         });
     };
 
@@ -2327,18 +2328,10 @@
     // -------------------------------------------------------
     function makePlotFramework(gd) {
         var gd3 = d3.select(gd),
-            subplots,
+            subplots = Plotly.Axes.getSubplots(gd),
             fullLayout = gd._fullLayout;
 
-        // TODO: now that we're never calling this on its own, can we do it
-        // without initializing and drawing axes, just making containers?
-        if (fullLayout._hasCartesian && !fullLayout._hasGL3D) {
-            subplots = Plotly.Axes.getSubplots(gd);
-        } else {
-            // webgl only
-            subplots = [];
-            Plotly.Gl3dAxes.initAxes(gd);
-        }
+        if(fullLayout._hasGL3D) Plotly.Gl3dAxes.initAxes(gd);
 
         var outerContainer = fullLayout._fileandcomments =
                 gd3.selectAll('.file-and-comments');
