@@ -17,13 +17,6 @@
 
     var plots = Plotly.Plots = {};
 
-    // this will be transfered over to gd and overridden by
-    // config args to Plotly.plot
-    plots.defaultConfig = {
-        forexport: false,
-        displaylogo: true
-    };
-
     // Most of the generic plotting functions get put into Plotly.Plots,
     // but some - the ones we want 3rd-party developers to use - go directly
     // into Plotly. These are:
@@ -102,10 +95,18 @@
         );
     }
 
+    // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
     plots.newTab = function(divid, layout) {
-        makeToolMenu(divid);
-        return Plotly.plot(divid, [], layout);
-        // return makePlotFramework(divid, layout);
+        Plotly.ToolPanel.makeMenu(document.getElementById(divid));
+        var config = {
+            workspace: true,
+            editable: true,
+            autosizable: true,
+            scrollZoom: true,
+            showTips: false,
+            showLink: false
+        };
+        return Plotly.plot(divid, [], layout, config);
     };
 
     // in some cases the browser doesn't seem to know how big
@@ -129,57 +130,81 @@
         },300);
     };
 
-    function makeToolMenu(divid) {
-        // Get the container div: we store all variables for this plot as
-        // properties of this div
-        // some callers send this in by dom element, others by id (string)
-        var gd = (typeof divid === 'string') ?
-            document.getElementById(divid) : divid;
-        // test if this is on the main site or embedded
-        setPlotContext(gd);
-        if(gd._context.editable) {
-            Plotly.ToolPanel.makeMenu(gd);
-        }
-    }
+    // this will be transfered over to gd and overridden by
+    // config args to Plotly.plot
+    // the defaults are the appropriate settings for plotly.js,
+    // so we get the right experience without any config argument
+    plots.defaultConfig = {
+        staticPlot: false, // no interactivity, for export or image generation
+        workspace: false, // we're in the workspace, so need toolbar etc TODO describe functionality instead?
+        editable: false, // we can edit titles, move annotations, etc
+        autosizable: false, // plot will respect layout.autosize=true and infer its container size
+        scrollZoom: false, // mousewheel or two-finger scroll zooms the plot
+        showTips: true, // new users see some hints about interactivity
+        showLink: true, // link to open this plot in plotly
+        forexport: false, // TODO obsoleted by staticPlot?
+        displaylogo: true // add the plotly logo on the end of the modebar
+    };
 
-    // figure out the context of this plot
-    function setPlotContext(gd) {
+    function setPlotContext(gd, config) {
+        if(!gd._context) gd._context = $.extend({}, plots.defaultConfig);
+        var context = gd._context;
+
+        if(config) {
+            Object.keys(config).forEach(function(key) {
+                if(key in context) context[key] = config[key];
+            });
+        }
+
+        Object.keys(plots.defaultConfig).forEach( function (key) {
+            if (config && key in config) gd[key] = config[key];
+            else gd[key] = plots.defaultConfig[key];
+        });
+
+        //staticPlot forces a bunch of others:
+        if(context.staticPlot) {
+            context.workspace = false;
+            context.editable = false;
+            context.autosizable = false;
+            context.scrollZoom = false;
+            context.showTips = false;
+        }
         // new version - 'what should I do' flags
-        var context = gd._context = {},
-            workspace = !!$('#plotlyMainMarker').length,
-            collage = $(gd).hasClass('collage__plot-inner'),
-            staticPlot = $(gd).hasClass('js-static-plot') || collage;
+        // var context = gd._context = {},
+        //     workspace = !!$('#plotlyMainMarker').length,
+        //     collage = $(gd).hasClass('collage__plot-inner'),
+        //     staticPlot = $(gd).hasClass('js-static-plot') || collage;
 
-        function baseLink(win) {
-            // eg https://plot.ly/~alex/414 (strip off anything after that)
-            var m = win.location.href.match(/[^\/]+\/\/[^\/]+\/[^\/]+\/[^\/]+/);
-            return m ? m[0] : win.location.href;
-        }
+        // function baseLink(win) {
+        //     // eg https://plot.ly/~alex/414 (strip off anything after that)
+        //     var m = win.location.href.match(/[^\/]+\/\/[^\/]+\/[^\/]+\/[^\/]+/);
+        //     return m ? m[0] : win.location.href;
+        // }
 
-        // are we making a static SVG (for export or other image generation)
-        context.staticPlot = staticPlot;
+        // // are we making a static SVG (for export or other image generation)
+        // context.staticPlot = staticPlot;
 
-        // are we in the main workspace view? This controls scrolling
-        // and sizing of containers
-        context.workspace = workspace && !staticPlot;
+        // // are we in the main workspace view? This controls scrolling
+        // // and sizing of containers
+        // context.workspace = workspace && !staticPlot;
 
-        // is the plot editable (titles, toolbars, etc.)
-        context.editable = workspace && !staticPlot;
+        // // is the plot editable (titles, toolbars, etc.)
+        // context.editable = workspace && !staticPlot;
 
-        // does it respect layout.autosize=true
-        context.autosizable = workspace && !staticPlot;
+        // // does it respect layout.autosize=true
+        // context.autosizable = workspace && !staticPlot;
 
-        // is scroll-to-zoom enabled?
-        // This can be overridden with gd.layout._enablescrollzoom
-        context.scrollZoom = workspace && !staticPlot;
+        // // is scroll-to-zoom enabled?
+        // // This can be overridden with gd.layout._enablescrollzoom
+        // context.scrollZoom = workspace && !staticPlot;
 
-        // do we show helpful tips to new users?
-        context.showTips = !staticPlot && !workspace;
+        // // do we show helpful tips to new users?
+        // context.showTips = !staticPlot && !workspace;
 
-        // do we put the link to open this plot in plotly?
-        context.showBrand = !workspace &&
-            !$('#plotlyUserProfileMarker').length &&
-            (window===window.top || baseLink(window)!==baseLink(window.parent));
+        // // do we put the link to open this plot in plotly?
+        // context.showBrand = !workspace &&
+        //     !$('#plotlyUserProfileMarker').length &&
+        //     (window===window.top || baseLink(window)!==baseLink(window.parent));
     }
 
     // the 'view in plotly' and source links - note that now plot() calls this
@@ -281,13 +306,6 @@
         // some callers send this in by dom element, others by id (string)
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
 
-        // transfer configuration options to gd until we move over to
-        // a more OO like model
-        Object.keys(plots.defaultConfig).forEach( function (key) {
-            if (config && key in config) gd[key] = config[key];
-            else gd[key] = plots.defaultConfig[key];
-        });
-
         // if there's no data or layout, and this isn't yet a plotly plot
         // container, log a warning to help plotly.js users debug
         if(!data && !layout && !d3.select(gd).classed('js-plotly-plot')) {
@@ -295,7 +313,9 @@
                 'but this container doesn\'t yet have a plot.', gd);
         }
 
-        setPlotContext(gd);
+        // transfer configuration options to gd until we move over to
+        // a more OO like model
+        setPlotContext(gd, config);
 
         if(!layout) layout = {};
 
