@@ -1351,11 +1351,9 @@
         // secure the module API then not apply the default function.
         moduleDefaults.forEach( function (module) {
             if (Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
-            // else console.warn('defaults from ' + module + ' not applied');
         });
         moduleLayoutDefaults.forEach( function (module) {
             if (Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            // else console.warn('defaults from ' + module + ' not applied');
         });
     };
 
