@@ -14,8 +14,6 @@ proto.layoutAttributes = {
     }
 };
 
-
-
 proto.sceneLayoutAttributes = {
     bgcolor: {
         type: 'color',
