@@ -54,8 +54,6 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
     }
 
     // until they play better together
-    delete layoutIn.xaxis;
-    delete layoutIn.yaxis;
     delete layoutOut.xaxis;
     delete layoutOut.yaxis;
 
