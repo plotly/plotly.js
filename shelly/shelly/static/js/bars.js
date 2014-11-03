@@ -91,6 +91,7 @@
         Plotly.Scatter.colorScalableDefaults('marker.', coerceScatter, defaultColor);
         Plotly.Scatter.colorScalableDefaults('marker.line.', coerceScatter, '#444');
         coerceScatter('marker.line.width', 0);
+        coerceScatter('text');
 
         // override defaultColor for error bars with #444
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'y'});
