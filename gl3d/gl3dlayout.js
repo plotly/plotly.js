@@ -59,6 +59,7 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
     delete layoutOut.xaxis;
     delete layoutOut.yaxis;
 
+
     scenes.forEach( function (scene) {
         /*
          * Scene numbering proceeds as follows
