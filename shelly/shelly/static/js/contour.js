@@ -79,37 +79,20 @@
         Plotly.Heatmap.supplyDefaults(traceIn, traceOut, defaultColor, layout);
     };
 
-    contour.defaults = function() {
-        return [
-            {dataAttr: 'autocontour', cdAttr: 'autocontour', dflt: true},
-            {dataAttr: 'ncontours', cdAttr: 'ncontours', dflt: 0},
-            {dataAttr: 'contours.start', cdAttr: 'contourstart', dflt: 0},
-            {dataAttr: 'contours.end', cdAttr: 'contourend', dflt: 1},
-            {dataAttr: 'contours.size', cdAttr: 'contoursize', dflt: 1},
-            {dataAttr: 'contours.coloring', cdAttr: 'coloring', dflt: 'fill'},
-            {dataAttr: 'contours.showlines', cdAttr: 'showlines', dflt: true},
-            {dataAttr: 'line.color', cdAttr: 'lc', dflt: '#000'},
-            {dataAttr: 'line.width', cdAttr: 'lw', dflt: 0.5},
-            {dataAttr: 'line.dash', cdAttr: 'ld', dflt: 'solid'},
-            {dataAttr: 'line.smoothing', cdAttr: 'ls', dflt: 1}
-        ];
-    };
-
     contour.calc = function(gd, trace) {
         // most is the same as heatmap calc, then adjust it
         // though a few things inside heatmap calc still look for
         // contour maps, because the makeBoundArray calls are too entangled
-        var cd = Plotly.Heatmap.calc(gd, trace);
+        var cd = Plotly.Heatmap.calc(gd, trace),
+            contours = trace.contours;
 
         // check if we need to auto-choose contour levels
-        if(trace.autocontour!==false || !trace.contours ||
-                !$.isNumeric(trace.contours.start) ||
-                !$.isNumeric(trace.contours.end) ||
-                !trace.contours.size) {
-            if(!trace.contours) trace.contours = {};
-            var contours = trace.contours;
-
-            var dummyAx = {type: 'linear', range: [trace.zmin, trace.zmax]};
+        if(trace.autocontour!==false || !contours.size ||
+                contours.start===undefined || contours.end===undefined) {
+            var dummyAx = {
+                type: 'linear',
+                range: [trace.zmin, trace.zmax]
+            };
             Plotly.Axes.autoTicks(dummyAx,
                 (trace.zmax - trace.zmin) / (trace.ncontours||15));
             contours.start = Plotly.Axes.tickFirst(dummyAx);
@@ -144,10 +127,10 @@
         // which way [dx,dy] do we leave a given index?
         // saddles are already disambiguated
         NEWDELTA = [
-            null,[-1,0],[0,-1],[-1,0],
-            [1,0],null,[0,-1],[-1,0],
-            [0,1],[0,1],null,[0,1],
-            [1,0],[1,0],[0,-1]
+            null, [-1, 0], [0, -1], [-1, 0],
+            [1, 0], null, [0, -1], [-1, 0],
+            [0, 1], [0, 1], null, [0, 1],
+            [1, 0], [1, 0], [0, -1]
         ],
         // for each saddle, the first index here is used
         // for dx||dy<0, the second for dx||dy>0
@@ -159,9 +142,9 @@
         },
         // after one index has been used for a saddle, which to we
         // substitute to be used up later?
-        SADDLEREMAINDER = {1:4, 2:8, 4:1, 7:13, 8:2, 11:14, 13:7, 14:11};
+        SADDLEREMAINDER = {1: 4, 2: 8, 4: 1, 7: 13, 8: 2, 11: 14, 13: 7, 14: 11};
 
-    function plotOne(gd,plotinfo,cd) {
+    function plotOne(gd, plotinfo, cd) {
         Plotly.Lib.markTime('in Contour.plot');
         var trace = cd[0].trace,
             contours = trace.contours,
@@ -170,7 +153,7 @@
             xa = plotinfo.x(),
             ya = plotinfo.y(),
             fullLayout = gd._fullLayout,
-            id='contour'+uid,
+            id = 'contour' + uid,
             contourLevels = [],
             pathinfo = [],
             cs = contours.size||1;
@@ -216,7 +199,14 @@
             // get z dimensions (n allows uneven rows)
             m = z.length,
             n = Plotly.Lib.aggNums(Math.max, null,
-                    z.map(function(row) { return row.length; }));
+                    z.map(function(row) { return row.length; })),
+            twoWide = m===2 || n===2,
+            xi,
+            yi,
+            ystartIndices,
+            startIndices,
+            label,
+            corners;
 
         // find all the contourLevels at once
         // since we want to be exhaustive we'll check for contour crossings
@@ -243,14 +233,23 @@
             }
             return (mi===15) ? 0 : mi;
         }
-        var xi,yi,ystartIndices,startIndices,label,corners,cmin,cmax,mi;
 
         function makeCrossings(pi) {
-            mi = getMarchingIndex(pi.level,corners);
-            if(mi) {
-                pi.crossings[label] = mi;
-                if(startIndices.indexOf(mi)!==-1) {
-                    pi.starts.push(label.split(',').map(Number));
+            var mi = getMarchingIndex(pi.level,corners);
+            if(!mi) return;
+
+            pi.crossings[label] = mi;
+            var startIndexIndex = startIndices.indexOf(mi);
+            if(startIndexIndex!==-1) {
+                var loc = label.split(',').map(Number);
+                pi.starts.push(loc);
+                if(twoWide && startIndices.indexOf(mi,startIndexIndex+1)!==-1) {
+                    // the same square has starts from opposite sides
+                    // it's not possible to have starts on opposite edges
+                    // of a corner, only a start and an end...
+                    // but if the array is only two points wide (either way)
+                    // you can have starts on opposite sides.
+                    pi.starts.push(loc);
                 }
             }
         }
@@ -260,61 +259,59 @@
         // TODO: for the moment we just set them to the min value, but it
         // would be cool to use interpolated / extrapolated values
         // (although exactly how to do this is a little unclear in 2D)
-        function zclean(xi,yi) {
+        function zClean(xi,yi) {
             var v = z[yi][xi];
             return $.isNumeric(v) ? v : trace.zmin;
         }
 
+        // here's the actual loop that calculates all the crossings
         for(yi = 0; yi<m-1; yi++) {
-            if(yi===0) ystartIndices = BOTTOMSTART;
-            else if(yi===m-2) ystartIndices = TOPSTART;
-            else ystartIndices = [];
+            ystartIndices = [];
+            if(yi===0) ystartIndices = ystartIndices.concat(BOTTOMSTART);
+            if(yi===m-2) ystartIndices = ystartIndices.concat(TOPSTART);
 
             for(xi = 0; xi<n-1; xi++) {
-                if(xi===0) startIndices = ystartIndices.concat(LEFTSTART);
-                else if(xi===n-2) startIndices = ystartIndices.concat(RIGHTSTART);
-                else startIndices = ystartIndices;
+                startIndices = [].concat(ystartIndices);
+                if(xi===0) startIndices = startIndices.concat(LEFTSTART);
+                if(xi===n-2) startIndices = startIndices.concat(RIGHTSTART);
 
                 label = xi+','+yi;
-                corners = [[zclean(xi,yi),zclean(xi+1,yi)],
-                           [zclean(xi,yi+1),zclean(xi+1,yi+1)]];
-                cmax = Plotly.Lib.findBin(
-                    Plotly.Lib.aggNums(Math.max,null,corners),contourLevels,true);
-                cmin = Plotly.Lib.findBin(
-                    Plotly.Lib.aggNums(Math.min,null,corners),contourLevels,true);
-
+                corners = [[zClean(xi, yi), zClean(xi+1, yi)],
+                           [zClean(xi, yi+1), zClean(xi+1, yi+1)]];
                 pathinfo.forEach(makeCrossings);
             }
         }
 
         // now calculate the paths
 
-        function getHInterp(level,locx,locy) {
-            var dx = (level-zclean(locx,locy)) /
-                    (zclean(locx+1,locy)-zclean(locx,locy));
+        function getHInterp(level, locx, locy) {
+            var dx = (level - zClean(locx, locy)) /
+                    (zClean(locx+1, locy) - zClean(locx, locy));
             return [xa.c2p((1-dx)*x[locx] + dx*x[locx+1]), ya.c2p(y[locy])];
         }
 
-        function getVInterp(level,locx,locy) {
-            var dy = (level-zclean(locx,locy))/(zclean(locx,locy+1)-zclean(locx,locy));
+        function getVInterp(level, locx, locy) {
+            var dy = (level - zClean(locx, locy)) /
+                    (zClean(locx, locy+1) - zClean(locx, locy));
             return [xa.c2p(x[locx]), ya.c2p((1-dy)*y[locy] + dy*y[locy+1])];
         }
 
-        function equalpts(pt1,pt2) {
-            return Math.abs(pt1[0]-pt2[0])<0.01 && Math.abs(pt1[1]-pt2[1])<0.01;
+        function equalPts(pt1, pt2) {
+            return Math.abs(pt1[0] - pt2[0]) < 0.01 &&
+                   Math.abs(pt1[1] - pt2[1]) < 0.01;
         }
 
-        function ptdist(p1,p2) {
-            var dx = p1[0]-p2[0],
-                dy = p1[1]-p2[1];
-            return Math.sqrt(dx*dx+dy*dy);
+        function ptDist(p1, p2) {
+            var dx = p1[0] - p2[0],
+                dy = p1[1] - p2[1];
+            return Math.sqrt(dx*dx + dy*dy);
         }
 
 
-        function makePath(nc,st,edgeflag) {
+        function makePath(nc, start, edgeflag) {
             var pi = pathinfo[nc],
-                loc = st.split(',').map(Number),
-                mi = pi.crossings[st],
+                loc = start.split(',').map(Number),
+                mi = pi.crossings[start],
                 level = pi.level,
                 loclist = [];
 
@@ -355,7 +352,9 @@
             }
 
             // start by going backward a half step and finding the crossing point
-            var pts = [interpFunc(level,loc[0]+Math.max(-dx,0),loc[1]+Math.max(-dy,0))],
+            var pts = [interpFunc(level,
+                                  loc[0] + Math.max(-dx, 0),
+                                  loc[1] + Math.max(-dy, 0))],
                 startDelta = dx+','+dy,
                 miTaken,
                 locstr = loc.join(',');
@@ -373,7 +372,7 @@
                 }
 
                 if(!NEWDELTA[miTaken]) {
-                    console.log('found bad marching index',mi,miTaken,loc,nc);
+                    console.log('found bad marching index', mi, miTaken, loc, nc);
                     break;
                 }
                 dx = NEWDELTA[miTaken][0];
@@ -381,34 +380,37 @@
 
                 // find the crossing a half step forward, and then take the full step
                 if(dx) {
-                    pts.push(getVInterp(level,loc[0] + Math.max(dx,0), loc[1]));
-                    loc[0]+=dx;
+                    pts.push(getVInterp(level, loc[0] + Math.max(dx, 0), loc[1]));
+                    loc[0] += dx;
                 }
                 else {
-                    pts.push(getHInterp(level,loc[0], loc[1] + Math.max(dy,0)));
-                    loc[1]+=dy;
+                    pts.push(getHInterp(level, loc[0], loc[1] + Math.max(dy, 0)));
+                    loc[1] += dy;
                 }
                 // don't include the same point multiple times
-                if(equalpts(pts[pts.length-1],pts[pts.length-2])) {
+                if(equalPts(pts[pts.length-1], pts[pts.length-2])) {
                     pts.pop();
                 }
                 locstr = loc.join(',');
-                if((locstr===st && dx+','+dy===startDelta) || (edgeflag &&
-                        ((dx&&(loc[0]<0||loc[0]>n-2)) || (dy&&(loc[1]<0||loc[1]>m-2))))) {
+
+                // have we completed a loop, or reached an edge?
+                if( (locstr===start && dx+','+dy===startDelta) ||
+                    (edgeflag && (
+                        (dx && (loc[0]<0 || loc[0]>n-2)) ||
+                        (dy && (loc[1]<0 || loc[1]>m-2))))) {
                     break;
                 }
                 mi = pi.crossings[locstr];
             }
-            if(cnt===10000) console.log('Infinite loop in contour?');
-            var closedpath = equalpts(pts[0],pts[pts.length-1]);
 
-            // check for points that are too close together (<1/5 the average dist,
-            // less if less smoothed) and just take the center (or avg of center 2)
-            // this cuts down on funny behavior when a point is very close to a contour level
-            var totaldist = 0,
+            if(cnt===10000) {
+                console.log('Infinite loop in contour?');
+            }
+            var closedpath = equalPts(pts[0], pts[pts.length-1]),
+                totaldist = 0,
                 distThresholdFactor = 0.2*smoothing,
-                alldists=[],
-                cropstart=0,
+                alldists = [],
+                cropstart = 0,
                 distgroup,
                 cnt2,
                 cnt3,
@@ -417,8 +419,11 @@
                 ptavg,
                 thisdist;
 
+            // check for points that are too close together (<1/5 the average dist,
+            // less if less smoothed) and just take the center (or avg of center 2)
+            // this cuts down on funny behavior when a point is very close to a contour level
             for(cnt=1; cnt<pts.length; cnt++) {
-                thisdist = ptdist(pts[cnt], pts[cnt-1]);
+                thisdist = ptDist(pts[cnt], pts[cnt-1]);
                 totaldist += thisdist;
                 alldists.push(thisdist);
             }
@@ -472,7 +477,7 @@
                     }
                 }
             }
-            pts.splice(0,cropstart);
+            pts.splice(0, cropstart);
 
             // don't return single-point paths (ie all points were the same
             // so they got deleted?)
@@ -484,20 +489,20 @@
             else {
                 if(!edgeflag) {
                     console.log('unclosed interior contour?',
-                        nc,st,loclist,pts.join('L'));
+                        nc,start,loclist,pts.join('L'));
                 }
 
                 // edge path - does it start where an existing edge path ends, or vice versa?
                 var merged = false;
-                pi.edgepaths.forEach(function(edgepath,edgei) {
-                    if(!merged && equalpts(edgepath[0], pts[pts.length-1])) {
+                pi.edgepaths.forEach(function(edgepath, edgei) {
+                    if(!merged && equalPts(edgepath[0], pts[pts.length-1])) {
                         pts.pop();
                         merged = true;
 
                         // now does it ALSO meet the end of another (or the same) path?
                         var doublemerged = false;
                         pi.edgepaths.forEach(function(edgepath2, edgei2) {
-                            if(!doublemerged && equalpts(
+                            if(!doublemerged && equalPts(
                                     edgepath2[edgepath2.length-1], pts[0])) {
                                 doublemerged = true;
                                 pts.splice(0, 1);
@@ -517,8 +522,8 @@
                         }
                     }
                 });
-                pi.edgepaths.forEach(function(edgepath,edgei) {
-                    if(!merged && equalpts(edgepath[edgepath.length-1],pts[0])) {
+                pi.edgepaths.forEach(function(edgepath, edgei) {
+                    if(!merged && equalPts(edgepath[edgepath.length-1], pts[0])) {
                         pts.splice(0, 1);
                         pi.edgepaths[edgei] = edgepath.concat(pts);
                         merged = true;
@@ -529,10 +534,10 @@
             }
         }
 
-        pathinfo.forEach(function(pi,nc){
+        pathinfo.forEach(function(pi, nc){
             var cnt=0;
-            pi.starts.forEach(function(st){
-                makePath(nc,String(st),'edge');
+            pi.starts.forEach(function(start){
+                makePath(nc, String(start), 'edge');
             });
 
             while(Object.keys(pi.crossings).length && cnt<10000) {
@@ -562,10 +567,10 @@
                 [leftedge, bottomedge]
             ];
 
-        function istop(pt) { return Math.abs(pt[1]-topedge)<0.01; }
-        function isbottom(pt) { return Math.abs(pt[1]-bottomedge)<0.01; }
-        function isleft(pt) { return Math.abs(pt[0]-leftedge)<0.01; }
-        function isright(pt) { return Math.abs(pt[0]-rightedge)<0.01; }
+        function istop(pt) { return Math.abs(pt[1]-topedge) < 0.01; }
+        function isbottom(pt) { return Math.abs(pt[1]-bottomedge) < 0.01; }
+        function isleft(pt) { return Math.abs(pt[0]-leftedge) < 0.01; }
+        function isright(pt) { return Math.abs(pt[0]-rightedge) < 0.01; }
 
         var bggroup = plotgroup.selectAll('g.contourbg').data([0]);
         bggroup.enter().append('g').classed('contourbg',true);
@@ -593,23 +598,24 @@
             // if the whole perimeter is above this level, start with a path
             // enclosing the whole thing. With all that, the parity should mean
             // that we always fill everything above the contour, nothing below
-            var fullpath = (d.edgepaths.length || zclean(0,0)<d.level) ?
+            var fullpath = (d.edgepaths.length || zClean(0,0)<d.level) ?
                     '' : ('M'+perimeter.join('L')+'Z'),
-                i=0,
+                i = 0,
                 startsleft = d.edgepaths.map(function(v,i){ return i; }),
                 newloop = true,
                 endpt,
                 newendpt,
                 cnt,
                 nexti,
+                possiblei,
                 addpath;
 
             while(startsleft.length) {
                 addpath = Plotly.Drawing.smoothopen(d.edgepaths[i], smoothing);
                 fullpath += newloop ? addpath : addpath.replace(/^M/, 'L');
-                startsleft.splice(startsleft.indexOf(i),1);
+                startsleft.splice(startsleft.indexOf(i), 1);
                 endpt = d.edgepaths[i][d.edgepaths[i].length-1];
-                cnt=0;
+                nexti = -1;
 
                 //now loop through sides, moving our endpoint until we find a new start
                 for(cnt=0; cnt<4; cnt++) { // just to prevent infinite loops
@@ -623,21 +629,21 @@
                     else if(isbottom(endpt)) newendpt = [leftedge, bottomedge];
                     else if(isright(endpt)) newendpt = [rightedge, bottomedge];
 
-                    for(nexti=0; nexti<d.edgepaths.length; nexti++) {
-                        var ptNew = d.edgepaths[nexti][0];
+                    for(possiblei=0; possiblei<d.edgepaths.length; possiblei++) {
+                        var ptNew = d.edgepaths[possiblei][0];
                         // is ptNew on the (horz. or vert.) segment from endpt to newendpt?
-                        if(Math.abs(endpt[0]-newendpt[0])<0.01) {
-                            if(Math.abs(endpt[0]-ptNew[0])<0.01 &&
-                                    (ptNew[1]-endpt[1])*(newendpt[1]-ptNew[1])>=0) {
+                        if(Math.abs(endpt[0]-newendpt[0]) < 0.01) {
+                            if(Math.abs(endpt[0]-ptNew[0]) < 0.01 &&
+                                    (ptNew[1]-endpt[1]) * (newendpt[1]-ptNew[1]) >= 0) {
                                 newendpt = ptNew;
-                                break;
+                                nexti = possiblei;
                             }
                         }
-                        else if(Math.abs(endpt[1]-newendpt[1])<0.01) {
-                            if(Math.abs(endpt[1]-ptNew[1])<0.01 &&
-                                    (ptNew[0]-endpt[0])*(newendpt[0]-ptNew[0])>=0) {
+                        else if(Math.abs(endpt[1]-newendpt[1]) < 0.01) {
+                            if(Math.abs(endpt[1]-ptNew[1]) < 0.01 &&
+                                    (ptNew[0]-endpt[0]) * (newendpt[0]-ptNew[0]) >= 0) {
                                 newendpt = ptNew;
-                                break;
+                                nexti = possiblei;
                             }
                         }
                         else {
@@ -648,7 +654,7 @@
 
                     endpt = newendpt;
 
-                    if(nexti<d.edgepaths.length) break;
+                    if(nexti>=0) break;
                     fullpath += 'L'+newendpt;
                 }
 
@@ -718,7 +724,7 @@
                     line = trace.line,
                     colorLines = contours.coloring==='lines',
                     cs = contours.size||1,
-                    nc = Math.floor((contours.end+cs/10-contours.start)/cs)+1,
+                    nc = Math.floor((contours.end + cs/10 - contours.start)/cs) + 1,
                     scl = Plotly.Color.getScale(trace.colorscale),
                     extraLevel = colorLines ? 0 : 1,
                     colormap = d3.scale.linear()
@@ -729,7 +735,7 @@
                         .interpolate(d3.interpolateRgb)
                         .range(scl.map(function(si){ return si[1]; }));
 
-                c.selectAll('g.contourlevel').each(function(d,i) {
+                c.selectAll('g.contourlevel').each(function(d, i) {
                     d3.select(this).selectAll('path')
                         .call(Plotly.Drawing.lineGroupStyle,
                             line.width,
@@ -737,10 +743,10 @@
                             line.dash);
                 });
                 c.selectAll('g.contourbg path')
-                    .style('fill', colormap(contours.start-cs/2));
+                    .style('fill', colormap(contours.start - cs/2));
                 c.selectAll('g.contourfill path')
-                    .style('fill',function(d,i){
-                        return colormap(contours.start+(i+0.5)*cs);
+                    .style('fill',function(d, i){
+                        return colormap(contours.start + (i+0.5)*cs);
                     });
             });
         Plotly.Heatmap.style(gp);
@@ -752,18 +758,18 @@
 
         gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
         if(trace.showscale===false){
-            Plotly.Plots.autoMargin(gd,cbId);
+            Plotly.Plots.autoMargin(gd, cbId);
             return;
         }
 
         // instantiate the colorbar (will be drawn and styled in contour.style)
-        var cb = Plotly.Colorbar(gd,cbId);
+        var cb = Plotly.Colorbar(gd, cbId);
         cd[0].t.cb = cb;
 
         var contours = trace.contours,
             line = trace.line,
             cs = contours.size||1,
-            nc = Math.floor((contours.end+cs/10-contours.start)/cs)+1,
+            nc = Math.floor((contours.end + cs/10 - contours.start)/cs)+1,
             scl = Plotly.Color.getScale(trace.colorscale),
             extraLevel = contours.coloring==='lines' ? 0 : 1,
             colormap = d3.scale.linear().interpolate(d3.interpolateRgb),
@@ -791,12 +797,12 @@
             // do the contours extend beyond the colorscale?
             // if so, extend the colorscale with constants
             var zRange = d3.extent([trace.zmin, trace.zmax, contours.start,
-                    contours.start+cs*(nc-1)]),
+                    contours.start + cs*(nc-1)]),
                 zmin = zRange[trace.zmin<trace.zmax ? 0 : 1],
                 zmax = zRange[trace.zmin<trace.zmax ? 1 : 0];
             if(zmin!==trace.zmin) {
-                colorDomain.splice(0,0,zmin);
-                colorRange.splice(0,0,colorRange[0]);
+                colorDomain.splice(0, 0, zmin);
+                colorRange.splice(0, 0, colorRange[0]);
             }
             if(zmax!==trace.zmax) {
                 colorDomain.push(zmax);

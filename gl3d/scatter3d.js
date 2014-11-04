@@ -22,10 +22,6 @@ proto.attributes = {
     y: {type: 'data_array'},
     z: {type: 'data_array'},
     text: {from: 'Scatter'},
-    scene: {
-        type: 'sceneid',
-        dflt: 'scene'
-    },
     surfaceaxis: {
         type: 'enumerated',
         values: [-1,0,1,2],
@@ -34,22 +30,61 @@ proto.attributes = {
     surfacecolor: {
         type: 'color'
     },
-    showprojection: [
-        {type: 'boolean', dflt: false},
-        {type: 'boolean', dflt: false},
-        {type: 'boolean', dflt: false}
-    ],
-    projectopacity: {
-        type: 'number',
-        min: 0,
-        max: 1,
-        dflt: 1
-    },
-    projectscale: {
-        type: 'number',
-        min: 0,
-        max: 10,
-        dflt: 2/3
+    projection: {
+        x: {
+            show: {
+                type: 'boolean',
+                dflt: false
+            },
+            opacity: {
+                type: 'number',
+                min: 0,
+                max: 1,
+                dflt: 1
+            },
+            scale: {
+                type: 'number',
+                min: 0,
+                max: 10,
+                dflt: 2/3
+            }
+        },
+        y: {
+            show: {
+                type: 'boolean',
+                dflt: false
+            },
+            opacity: {
+                type: 'number',
+                min: 0,
+                max: 1,
+                dflt: 1
+            },
+            scale: {
+                type: 'number',
+                min: 0,
+                max: 10,
+                dflt: 2/3
+            }
+        },
+        z: {
+            show: {
+                type: 'boolean',
+                dflt: false
+            },
+            opacity: {
+                type: 'number',
+                min: 0,
+                max: 1,
+                dflt: 1
+            },
+            scale: {
+                type: 'number',
+                min: 0,
+                max: 10,
+                dflt: 2/3
+            }
+        }
     },
     mode: {from: 'Scatter'},
     line: {
@@ -122,12 +157,11 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     if (Scatter.hasMarkers(traceOut)) {
         var markercolor = coerceScatter('marker.color', defaultColor);
         coerceScatter('marker.symbol');
-        coerceScatter('marker.size');
+        coerceScatter('marker.size', 8);
         coerceScatter('marker.opacity', 1);
         coerceScatter('marker.line.width', 0);
         // TODO parity with scatter.js
         coerceScatter('marker.line.color', 'rgb(0,0,0)');
-
     }
 
     if (Scatter.hasText(traceOut)) {
@@ -135,14 +169,20 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         coerceScatter('textfont', layout.font);
     }
 
-    coerce('scene');
     if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', linecolor || markercolor);
-    coerce('showprojection[0]');
-    coerce('showprojection[1]');
-    coerce('showprojection[2]');
-    if (traceOut.showprojection.some(isTrue)) {
-        coerce('projectopacity');
-        coerce('projectscale');
+
+
+    var dims = ['x','y','z'];
+    for (var i = 0; i < 3; ++i) {
+        var projection = 'projection.' + dims[i];
+        if (coerce(projection+'.show')) {
+            // adaptor until Mikola makes axes independent projection configs
+            coerce('projection.x.opacity');
+            coerce('projection.x.scale');
+            //
+            coerce(projection+'.opacity');
+            coerce(projection+'.scale');
+        }
     }
 
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
@@ -155,24 +195,24 @@ function isTrue (bool) {
     return bool;
 }
 
-function calculateErrorCapSize(errors) {
+function calculateErrorParams(errors) {
     /*jshint camelcase: false */
-    var result = [0.0,0.0,0.0], i, e;
+    var capSize = [0.0, 0.0, 0.0], i, e;
+    var color = [[0,0,0],[0,0,0],[0,0,0]];
+    var lineWidth = [0.0, 0.0, 0.0];
     for(i=0; i<3; ++i) {
         e = errors[i];
         if (e && e.copy_zstyle !== false) {
             e = errors[2];
         }
-        if(!e) {
-            continue;
-        }
-        if(e && 'width' in e) {
-            result[i] = e.width / 100.0;  //Ballpark rescaling, attempt to make consistent with plot.ly
-        }
-    }
-    return result;
-}
+        if(!e) continue;
+        capSize[i] = e.width / 100.0;  //Ballpark rescaling, attempt to make consistent with plot.ly
+        color[i] = str2RgbaArray(e.color);
+        lineWidth = e.thickness;
 
+    }
+    return {capSize: capSize, color: color, lineWidth: lineWidth};
+}
 
 function calculateTextOffset(textposition) {
     //Read out text properties
@@ -200,23 +240,23 @@ function str2RgbaArray(color) {
 
 proto.plot = function Scatter (scene, sceneLayout, data) {
     /*jshint camelcase: false */
-    /*
-     * data object {x,y,z and  marker: {size:size, color:color}}
-     */
+    var scatter = scene.glDataMap[data.uid];
+    // handle visible trace cases
+    if (!data.visible) {
+        if (scatter) scatter.visible = data.visible;
+        return scene.update(sceneLayout, scatter);
+    }
 
-    // if (!('marker' in data)) data.marker = {};
-
-    var params, scatter, idx, i,
+    var params, idx, i,
         points = [],
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
-        errorProperties = [ data.error_x, data.error_y, data.error_z ],
+        errorParams = calculateErrorParams([ data.error_x, data.error_y, data.error_z ]),
         xc, x = data.x,
         yc, y = data.y,
         zc, z = data.z,
         len = x.length;
-
 
     //Convert points
     idx = 0;
@@ -261,17 +301,6 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
         params.scatterAngle         = 0;
     }
 
-    if ('error_z' in data) {
-        params.errorBounds    = calculateError(data);
-        params.errorColor     = errorProperties.map( function (e) {
-            return str2RgbaArray(e.color);
-        });
-        params.errorLineWidth = errorProperties.map( function (e) {
-            return e.thickness || 0.0;
-        });
-        params.errorCapSize   = calculateErrorCapSize(errorProperties);
-    }
-
     if ('textposition' in data) {
         params.text           = data.text;
         params.textOffset     = calculateTextOffset(data.position);
@@ -281,16 +310,25 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
         params.textAngle      = 0;
     }
 
-    if (data.showprojection) {
-        params.project = arrayCopy1D(data.showprojection);
-        params.projectOpacity = data.projectopacity;
-        params.projectScale = data.projectscale;
+    var dims = ['x', 'y', 'z'];
+    params.project = [];
+    for (i = 0; i < 3; ++i) {
+        var projection = data.projection[dims[i]];
+        if ((params.project[i] = projection.show)) {
+            // Mikolas API doesn't current support axes dependent
+            // configuration. Its coming though.
+            params.projectOpacity = data.projection.x.opacity;
+            params.projectScale = data.projection.x.scale;
+        }
     }
+
+    params.errorBounds    = calculateError(data);
+    params.errorColor     = errorParams.color;
+    params.errorLineWidth = errorParams.lineWidth;
+    params.errorCapSize   = errorParams.capSize;
 
     params.delaunayAxis       = data.surfaceaxis;
     params.delaunayColor      = str2RgbaArray(data.surfacecolor);
-
-    scatter = scene.glDataMap[data.uid];
 
     if (scatter) {
         /*
@@ -312,7 +350,6 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
 
         scene.glDataMap[data.uid] = scatter;
     }
-    // uids determine which data is tied to which gl-object
     scatter.uid = data.uid;
     scatter.visible = data.visible;
     scene.update(sceneLayout, scatter);
