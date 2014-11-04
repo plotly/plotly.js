@@ -108,7 +108,7 @@
         fullData.forEach(function(trace) {
             if(Plotly.Plots.isBar(trace.type)) hasBars = true;
 
-            if(trace.type==='histogram') {
+            if(trace.visible && trace.type==='histogram') {
                 var pa = Plotly.Axes.getFromId({_fullLayout:layoutOut},
                             trace[trace.orientation==='v' ? 'xaxis' : 'yaxis']);
                 if(pa.type!=='category') shouldBeGapless = true;
