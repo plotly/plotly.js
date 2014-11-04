@@ -3,13 +3,11 @@
 var createScatterLine = require('./line-with-markers'),
     tinycolor = require('tinycolor2'),
     arrtools = require('arraytools'),
-    arrayCopy1D = arrtools.copy1D,
     calculateError = require('./calc-errors');
 
 function Scatter3D (config) {
 
     this.config = config;
-
 
 }
 
