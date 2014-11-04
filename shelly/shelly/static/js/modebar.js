@@ -133,17 +133,12 @@ ModeBar.prototype.hasButtons = function (buttons) {
  */
 ModeBar.prototype.getLogo = function(){
     var group = this.createGroup(),
-        a = document.createElement('a')
-        img = document.createElement('img');
-
-    img.style.width = '25px';
-    img.style.height = '20px';
-    img.src = '/static/img/logo_small.png';
+        a = document.createElement('a');
 
     a.href = 'https://plot.ly/';
     a.target = '_blank';
     a.title = 'Plotly';
-    a.appendChild(img);
+    a.className = "ploticon-plotlylogo";
 
     group.appendChild(a);
     group.classList.add('btn-group--logo');
