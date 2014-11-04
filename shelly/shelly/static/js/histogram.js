@@ -97,7 +97,7 @@
             binDirections = ['x','y'];
         }
         else {
-            coerceModule('Bars', 'orientation', (y && !x) ? 'h' : 'v');
+            coerceModule('Bars', 'orientation', histogram.isHoriz(traceOut) ? 'h' : 'v');
 
             if(!traceOut[traceOut.orientation==='v' ? 'x' : 'y']) {
                 traceOut.visible = false;
@@ -128,6 +128,12 @@
                 coerce(binDirection + 'bins.size');
             }
         });
+    };
+
+    histogram.isHoriz = function(trace) {
+        var x = trace.x || false,
+            y = trace.y || false;
+        return (y && !x);
     };
 
     histogram.calc = function(gd, trace) {
