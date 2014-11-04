@@ -132,6 +132,7 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     var _this = this;
     var Plotly = this.config.Plotly;
     var Scatter = Plotly.Scatter;
+    var linecolor, markercolor;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, _this.attributes, attr, dflt);
@@ -143,17 +144,17 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
 
     this.supplyXYZ(traceIn, traceOut);
 
-    coerceScatter('mode', 'lines+markers');
-    coerceScatter('text');
+    if (coerceScatter('text')) coerceScatter('mode', 'lines+markers+text');
+    else coerceScatter('mode', 'lines+markers');
 
     if (Scatter.hasLines(traceOut)) {
-        var linecolor = coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
+        linecolor = coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
         coerceScatter('line.width');
         coerceScatter('line.dash');
     }
 
     if (Scatter.hasMarkers(traceOut)) {
-        var markercolor = coerceScatter('marker.color', defaultColor);
+        markercolor = coerceScatter('marker.color', defaultColor);
         coerceScatter('marker.symbol');
         coerceScatter('marker.size', 8);
         coerceScatter('marker.opacity', 1);
@@ -163,12 +164,11 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     }
 
     if (Scatter.hasText(traceOut)) {
-        coerceScatter('textposition');
+        coerceScatter('textposition', 'top center');
         coerceScatter('textfont', layout.font);
     }
 
     if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', linecolor || markercolor);
-
 
     var dims = ['x','y','z'];
     for (var i = 0; i < 3; ++i) {
@@ -301,7 +301,7 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
 
     if ('textposition' in data) {
         params.text           = data.text;
-        params.textOffset     = calculateTextOffset(data.position);
+        params.textOffset     = calculateTextOffset(data.textposition);
         params.textColor      = str2RgbaArray(data.textfont.color);
         params.textSize       = data.textfont.size;
         params.textFont       = data.textfont.family;
