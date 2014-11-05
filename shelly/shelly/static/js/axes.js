@@ -240,13 +240,6 @@
                 layoutIn[axName] = {type: axLayoutIn.type};
             }
 
-            // fill in _categories (to make hover text work properly)
-            var axLayoutOut = layoutOut[axName];
-            if (axLayoutOut.type === 'category') {
-                fullData.forEach(function(trace) {
-                    trace[axLetter].map(axLayoutOut.d2c);
-                });
-            }
         });
 
         // plot_bgcolor only makes sense if there's a (2D) plot!
