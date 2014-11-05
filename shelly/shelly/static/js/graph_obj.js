@@ -2276,15 +2276,21 @@
 
     function plotAutoSize(gd, aobj) {
         var fullLayout = gd._fullLayout,
+            reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
+            reservedHeight,
+            reservedWidth,
             newheight,
             newwidth;
+
         if(gd.mainsite){
             setFileAndCommentsSize(gd);
             var gdBB = fullLayout._container.node().getBoundingClientRect();
 
             // autosized plot on main site: 5% border on all sides
-            newheight = Math.round(gdBB.height*0.9);
-            newwidth = Math.round(gdBB.width*0.9);
+            reservedWidth = reservedMargins.left + reservedMargins.right;
+            reservedHeight = reservedMargins.bottom + reservedMargins.top;
+            newwidth = Math.round((gdBB.width - reservedWidth)*0.9);
+            newheight = Math.round((gdBB.height - reservedHeight)*0.9);
         }
         else if(gd.shareplot) {
             if(gd.standalone) {
