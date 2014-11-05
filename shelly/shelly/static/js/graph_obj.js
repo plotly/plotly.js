@@ -1874,6 +1874,9 @@
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
             $(gd).trigger('plotly_restyle',[redoit,traces]);
+            if (gd._context.workspace && Themes) {
+                Themes.reTile(gd);
+            }
         });
     };
 
@@ -2251,6 +2254,9 @@
         if(!plotDone || !plotDone.then) { plotDone = Promise.resolve(); }
         return plotDone.then(function(){
             $(gd).trigger('plotly_relayout',redoit);
+            if (gd._context.workspace && Themes) {
+                Themes.reTile(gd);
+            }
         });
     };
 
