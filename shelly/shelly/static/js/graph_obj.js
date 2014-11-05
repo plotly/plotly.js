@@ -2251,6 +2251,29 @@
         }
     }
 
+    /**
+     * Reduce all reserved margin objects to a single required margin reservation.
+     *
+     * @param {Object} margins
+     * @returns {{left: number, right: number, bottom: number, top: number}}
+     */
+    function calculateReservedMargins(margins) {
+        var resultingMargin = {left: 0, right: 0, bottom: 0, top: 0},
+            marginName;
+
+        if (margins) {
+            for (marginName in margins) {
+                if (margins.hasOwnProperty(marginName)) {
+                    resultingMargin.left += margins[marginName].left || 0;
+                    resultingMargin.right += margins[marginName].right || 0;
+                    resultingMargin.bottom += margins[marginName].bottom || 0;
+                    resultingMargin.top += margins[marginName].top || 0;
+                }
+            }
+        }
+        return resultingMargin;
+    }
+
     function plotAutoSize(gd, aobj) {
         var fullLayout = gd._fullLayout,
             newheight,
