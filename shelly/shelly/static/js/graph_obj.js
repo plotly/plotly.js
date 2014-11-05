@@ -215,6 +215,32 @@
         spacespan.text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
     };
 
+    /**
+     * Add or modify a margin requst object by name. Margins in pixels.
+     *
+     * This allows us to have multiple modules request space in the plot without
+     * conflicts. For example:
+     *
+     * adjustReservedMargins(gd, 'themeBar', {left: 200})
+     *
+     * ... will idempotent-ly set the left margin to 200 for themeBar.
+     *
+     * @param gd
+     * @param {String} marginName
+     * @param {Object} margins
+     * @returns {Object}
+     */
+    plots.adjustReservedMargins = function (gd, marginName, margins) {
+        var margin;
+        gd._boundingBoxMargins = gd._boundingBoxMargins || {};
+        gd._boundingBoxMargins[marginName] = {};
+        ['left', 'right', 'top', 'bottom'].forEach(function(key) {
+            margin = margins[key] || 0;
+            gd._boundingBoxMargins[marginName][key] = margin;
+        });
+        return gd._boundingBoxMargins;
+    };
+
     // note that now this function is only adding the brand in
     // iframes and 3rd-party apps
     function positionPlayWithData(gd,container){
@@ -2247,8 +2273,34 @@
         }
     }
 
+    /**
+     * Reduce all reserved margin objects to a single required margin reservation.
+     *
+     * @param {Object} margins
+     * @returns {{left: number, right: number, bottom: number, top: number}}
+     */
+    function calculateReservedMargins(margins) {
+        var resultingMargin = {left: 0, right: 0, bottom: 0, top: 0},
+            marginName;
+
+        if (margins) {
+            for (marginName in margins) {
+                if (margins.hasOwnProperty(marginName)) {
+                    resultingMargin.left += margins[marginName].left || 0;
+                    resultingMargin.right += margins[marginName].right || 0;
+                    resultingMargin.bottom += margins[marginName].bottom || 0;
+                    resultingMargin.top += margins[marginName].top || 0;
+                }
+            }
+        }
+        return resultingMargin;
+    }
+
     function plotAutoSize(gd, aobj) {
         var fullLayout = gd._fullLayout,
+            reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
+            reservedHeight,
+            reservedWidth,
             newheight,
             newwidth;
         if(gd._context.workspace){
@@ -2256,8 +2308,10 @@
             var gdBB = fullLayout._container.node().getBoundingClientRect();
 
             // autosized plot on main site: 5% border on all sides
-            newheight = Math.round(gdBB.height*0.9);
-            newwidth = Math.round(gdBB.width*0.9);
+            reservedWidth = reservedMargins.left + reservedMargins.right;
+            reservedHeight = reservedMargins.bottom + reservedMargins.top;
+            newwidth = Math.round((gdBB.width - reservedWidth)*0.9);
+            newheight = Math.round((gdBB.height - reservedHeight)*0.9);
         }
         else if(gd._context.fillFrame) {
             // embedded in an iframe - just take the full iframe size
