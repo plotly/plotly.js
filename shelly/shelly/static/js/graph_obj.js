@@ -171,42 +171,6 @@
             context.showTips = false;
             context.showLink = false;
         }
-        // new version - 'what should I do' flags
-        // var context = gd._context = {},
-        //     workspace = !!$('#plotlyMainMarker').length,
-        //     collage = $(gd).hasClass('collage__plot-inner'),
-        //     staticPlot = $(gd).hasClass('js-static-plot') || collage;
-
-        // function baseLink(win) {
-        //     // eg https://plot.ly/~alex/414 (strip off anything after that)
-        //     var m = win.location.href.match(/[^\/]+\/\/[^\/]+\/[^\/]+\/[^\/]+/);
-        //     return m ? m[0] : win.location.href;
-        // }
-
-        // // are we making a static SVG (for export or other image generation)
-        // context.staticPlot = staticPlot;
-
-        // // are we in the main workspace view? This controls scrolling
-        // // and sizing of containers
-        // context.workspace = workspace && !staticPlot;
-
-        // // is the plot editable (titles, toolbars, etc.)
-        // context.editable = workspace && !staticPlot;
-
-        // // does it respect layout.autosize=true
-        // context.autosizable = workspace && !staticPlot;
-
-        // // is scroll-to-zoom enabled?
-        // // This can be overridden with gd.layout._enablescrollzoom
-        // context.scrollZoom = workspace && !staticPlot;
-
-        // // do we show helpful tips to new users?
-        // context.showTips = !staticPlot && !workspace;
-
-        // // do we put the link to open this plot in plotly?
-        // context.showBrand = !workspace &&
-        //     !$('#plotlyUserProfileMarker').length &&
-        //     (window===window.top || baseLink(window)!==baseLink(window.parent));
     }
 
     // the 'view in plotly' and source links - note that now plot() calls this
