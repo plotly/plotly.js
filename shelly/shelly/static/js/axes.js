@@ -270,7 +270,6 @@
             containerOut._name = options.name;
             containerOut._id = axes.name2id(options.name);
         }
-        containerOut._categories = [];
 
         // now figure out type and do some more initialization
         var axType = coerce('type');
