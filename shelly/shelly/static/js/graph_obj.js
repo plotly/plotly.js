@@ -17,13 +17,6 @@
 
     var plots = Plotly.Plots = {};
 
-    // this will be transfered over to gd and overridden by
-    // config args to Plotly.plot
-    plots.defaultConfig = {
-        forexport: false,
-        displaylogo: true
-    };
-
     // Most of the generic plotting functions get put into Plotly.Plots,
     // but some - the ones we want 3rd-party developers to use - go directly
     // into Plotly. These are:
@@ -102,10 +95,18 @@
         );
     }
 
+    // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
     plots.newTab = function(divid, layout) {
-        makeToolMenu(divid);
-        return Plotly.plot(divid, [], layout);
-        // return makePlotFramework(divid, layout);
+        Plotly.ToolPanel.makeMenu(document.getElementById(divid));
+        var config = {
+            workspace: true,
+            editable: true,
+            autosizable: true,
+            scrollZoom: true,
+            showTips: false,
+            showLink: false
+        };
+        return Plotly.plot(divid, [], layout, config);
     };
 
     // in some cases the browser doesn't seem to know how big
@@ -129,16 +130,46 @@
         },300);
     };
 
-    function makeToolMenu(divid) {
-        // Get the container div: we store all variables for this plot as
-        // properties of this div
-        // some callers send this in by dom element, others by id (string)
-        var gd = (typeof divid === 'string') ?
-            document.getElementById(divid) : divid;
-        // test if this is on the main site or embedded
-        gd.mainsite = !!$('#plotlyMainMarker').length;
-        if(gd.mainsite) {
-            Plotly.ToolPanel.makeMenu(gd);
+    // this will be transfered over to gd and overridden by
+    // config args to Plotly.plot
+    // the defaults are the appropriate settings for plotly.js,
+    // so we get the right experience without any config argument
+    plots.defaultConfig = {
+        staticPlot: false, // no interactivity, for export or image generation
+        workspace: false, // we're in the workspace, so need toolbar etc TODO describe functionality instead?
+        editable: false, // we can edit titles, move annotations, etc
+        autosizable: false, // plot will respect layout.autosize=true and infer its container size
+        fillFrame: false, // if we DO autosize, do we fill the container or the screen?
+        scrollZoom: false, // mousewheel or two-finger scroll zooms the plot
+        showTips: true, // new users see some hints about interactivity
+        showLink: true, // link to open this plot in plotly
+        sendData: true, // if we show a link, does it contain data or just link to a plotly file?
+        displaylogo: true // add the plotly logo on the end of the modebar
+    };
+
+    function setPlotContext(gd, config) {
+        if(!gd._context) gd._context = $.extend({}, plots.defaultConfig);
+        var context = gd._context;
+
+        if(config) {
+            Object.keys(config).forEach(function(key) {
+                if(key in context) context[key] = config[key];
+            });
+        }
+
+        Object.keys(plots.defaultConfig).forEach( function (key) {
+            if (config && key in config) gd[key] = config[key];
+            else gd[key] = plots.defaultConfig[key];
+        });
+
+        //staticPlot forces a bunch of others:
+        if(context.staticPlot) {
+            context.workspace = false;
+            context.editable = false;
+            context.autosizable = false;
+            context.scrollZoom = false;
+            context.showTips = false;
+            context.showLink = false;
         }
     }
 
@@ -151,11 +182,6 @@
                 .data([0]);
         linkContainer.enter().append('text')
             .classed('js-plot-link-container',true)
-            .attr({
-                'text-anchor': 'end',
-                x: fullLayout._paper.attr('width')-7,
-                y: fullLayout._paper.attr('height')-9
-            })
             .style({
                 'font-family':'"Open Sans",Arial,sans-serif',
                 'font-size':'12px',
@@ -168,6 +194,13 @@
                 links.append('tspan').classed('js-sourcelinks',true);
             });
 
+        linkContainer.attr({
+            'text-anchor': 'end',
+            x: fullLayout._paper.attr('width')-7,
+            y: fullLayout._paper.attr('height')-9
+        });
+
+
         var toolspan = linkContainer.select('.js-link-to-tool'),
             spacespan = linkContainer.select('.js-link-spacer'),
             sourcespan = linkContainer.select('.js-sourcelinks');
@@ -175,13 +208,8 @@
         // data source links
         Plotly.Lib.showSources(gd);
 
-        // public url for downloaded files
-        if(gd._fullLayout._url) { toolspan.text(gd._fullLayout._url); }
         // 'view in plotly' link for embedded plots
-        else if(!gd.mainsite && !gd.standalone &&
-                !$('#plotlyUserProfileMarker').length) {
-            positionPlayWithData(gd,toolspan);
-        }
+        if(gd._context.showLink) positionPlayWithData(gd,toolspan);
 
         // separator if we have both sources and tool link
         spacespan.text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
@@ -200,14 +228,7 @@
             .text((Plotly.LINKTEXT || 'Play with this data!') +
                   ' ' + String.fromCharCode(187));
 
-        if(gd.shareplot) {
-            var path=window.location.pathname.split('/');
-            link.attr({
-                'xlink:xlink:show': 'new',
-                'xlink:xlink:href': '/'+path[1]+'/'+path[2].split('.')[0]
-            });
-        }
-        else {
+        if(gd._context.sendData) {
             link.on('click',function(){
                 $(gd).trigger('plotly_beforeexport');
 
@@ -224,6 +245,13 @@
 
                 $(gd).trigger('plotly_afterexport');
                 return false;
+            });
+        }
+        else {
+            var path=window.location.pathname.split('/');
+            link.attr({
+                'xlink:xlink:show': 'new',
+                'xlink:xlink:href': '/'+path[1]+'/'+path[2].split('.')[0]
             });
         }
     }
@@ -246,13 +274,6 @@
         // some callers send this in by dom element, others by id (string)
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
 
-        // transfer configuration options to gd until we move over to
-        // a more OO like model
-        Object.keys(plots.defaultConfig).forEach( function (key) {
-            if (config && key in config) gd[key] = config[key];
-            else gd[key] = plots.defaultConfig[key];
-        });
-
         // if there's no data or layout, and this isn't yet a plotly plot
         // container, log a warning to help plotly.js users debug
         if(!data && !layout && !d3.select(gd).classed('js-plotly-plot')) {
@@ -260,8 +281,9 @@
                 'but this container doesn\'t yet have a plot.', gd);
         }
 
-        // test if this is on the main site or embedded
-        gd.mainsite = !!$('#plotlyMainMarker').length;
+        // transfer configuration options to gd until we move over to
+        // a more OO like model
+        setPlotContext(gd, config);
 
         if(!layout) layout = {};
 
@@ -302,7 +324,7 @@
         // Polar plots
         if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
 
-        if(gd.mainsite) Plotly.ToolPanel.tweakMenu();
+        if(gd._context.editable) Plotly.ToolPanel.tweakMenu();
 
         // so we don't try to re-call Plotly.plot from inside
         // legend and colorbar, if margins changed
@@ -604,7 +626,7 @@
                 sceneLayout: sceneLayout,
                 width: fullLayout.width,
                 height: fullLayout.height,
-                glOptions: {preserveDrawingBuffer: gd.forexport}
+                glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
             };
 
             SceneFrame.createScene(sceneOptions);
@@ -672,7 +694,7 @@
         gd._fullLayout = layout;
         gd._fullLayout._container = plotContainer;
         gd._fullLayout._paperdiv = paperDiv;
-        if(gd._fullLayout.autosize === 'initial' && gd.mainsite) {
+        if(gd._fullLayout.autosize === 'initial' && gd._context.autosizable) {
             plotAutoSize(gd,{});
             gd._fullLayout.autosize = gd.layout.autosize = true;
         }
@@ -716,7 +738,7 @@
         var title = polarPlotSVG.select('.title-group text')
             .call(titleLayout);
 
-        if(gd.mainsite && !gd.forexport){
+        if(gd._context.editable){
             title.attr({'data-unformatted': txt});
             if(!txt || txt === placeholderText){
                 opacity = 0.2;
@@ -1355,9 +1377,8 @@
         // remove all plotly attributes from a div so it can be replotted fresh
         // TODO: these really need to be encapsulated into a much smaller set...
 
-        // note: we DO NOT remove context flags (mainsite, standalone, shareplot...)
-        // because they don't change when we insert a new plot, and may have been
-        // set outside of our scope.
+        // note: we DO NOT remove _context because it doesn't change when we insert
+        // a new plot, and may have been set outside of our scope.
 
         // data and layout
         delete gd.data;
@@ -1401,8 +1422,8 @@
         gd.numboxes = 0;
 
         // for calculating avg luminosity of heatmaps
-        gd.hmpixcount = 0;
-        gd.hmlumcount = 0;
+        gd._hmpixcount = 0;
+        gd._hmlumcount = 0;
 
         // delete category list, if there is one, so we start over
         // to be filled in later by ax.d2c
@@ -2208,7 +2229,8 @@
     };
 
     function setGraphContainerScroll(gd) {
-        if(!gd || !gd.mainsite || !gd._fullLayout || gd.tabtype!=='plot' ||
+        if(!gd || !gd._context || !gd._context.workspace ||
+                !gd._fullLayout || gd.tabtype!=='plot' ||
                 $(gd).css('display')==='none') {
             return;
         }
@@ -2229,7 +2251,7 @@
         var fullLayout = gd._fullLayout,
             newheight,
             newwidth;
-        if(gd.mainsite){
+        if(gd._context.workspace){
             setFileAndCommentsSize(gd);
             var gdBB = fullLayout._container.node().getBoundingClientRect();
 
@@ -2237,31 +2259,15 @@
             newheight = Math.round(gdBB.height*0.9);
             newwidth = Math.round(gdBB.width*0.9);
         }
-        else if(gd.shareplot) {
-            if(gd.standalone) {
-                // full-page shareplot - as with main site, use 90% of the
-                // available space, but restrict aspect ratio to between
-                // 2:1 and 1:2, by changing height if necessary
-                var gdPos = $(gd).position();
-                gdPos.left += parseInt($(gd).css('padding-left')||0,10);
-                gdPos.top += parseInt($(gd).css('padding-top')||0,10);
-
-                newwidth = Plotly.Lib.constrain(
-                    ($(window).width() - gdPos.left) * 0.9, 200, 10000);
-                newheight = Plotly.Lib.constrain(
-                    ($(window).height() - gdPos.top) * 0.9,
-                    newwidth/2, newwidth*2);
-            }
-            // else embedded in an iframe - just take the full iframe size
+        else if(gd._context.fillFrame) {
+            // embedded in an iframe - just take the full iframe size
             // if we get to this point, with no aspect ratio restrictions
-            else {
-                newwidth = $(window).width();
-                newheight = $(window).height();
+            newwidth = $(window).width();
+            newheight = $(window).height();
 
-                // somehow we get a few extra px height sometimes...
-                // just hide it
-                $('body').css('overflow','hidden');
-            }
+            // somehow we get a few extra px height sometimes...
+            // just hide it
+            $('body').css('overflow','hidden');
         }
         else {
             // plotly.js - let the developers do what they want, either
@@ -2291,18 +2297,14 @@
     plots.resize = function(gd) {
         if(typeof gd === 'string') gd = document.getElementById(gd);
 
-        if(gd.mainsite){
+        if(gd._context.workspace){
             killPopovers();
             setFileAndCommentsSize(gd);
         }
 
-        if(gd && (gd.tabtype==='plot' || gd.shareplot) &&
-                $(gd).css('display')!=='none') {
+        if(gd && $(gd).css('display')!=='none') {
             if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
             gd._redrawTimer = setTimeout(function(){
-
-                if ($(gd).css('display')==='none') return;
-
                 if ((gd._fullLayout||{}).autosize) {
                     // autosizing doesn't count as a change that needs saving
                     var oldchanged = gd.changed;
@@ -2337,7 +2339,7 @@
         fullLayout._container.enter().insert('div', ':first-child')
             .classed('plot-container',true)
             .classed('plotly',true)
-            .classed('is-mainsite', gd.mainsite);
+            .classed('workspace-plot', gd._context.workspace);
 
         // Make the svg container
         fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
@@ -2347,7 +2349,7 @@
 
         // Initial autosize
         if(fullLayout.autosize === 'initial') {
-            if(gd.mainsite) setFileAndCommentsSize(gd);
+            if(gd._context.workspace) setFileAndCommentsSize(gd);
             plotAutoSize(gd,{});
             fullLayout.autosize = true;
             gd.layout.autosize = true;
@@ -3049,8 +3051,7 @@
                 });
         }
 
-        // don't allow editing (or placeholder) on embedded graphs or exports
-        if(gd.mainsite && !gd.forexport){
+        if(gd._context.editable){
             if(!txt) setPlaceholder();
 
             el.call(Plotly.util.makeEditable)
@@ -3091,7 +3092,9 @@
     //          ie has : and some chars before it), strip out x
     //      keepdata: remove all src tags, don't remove the data itself
     //      keepall: keep data and src
-    plots.graphJson = function(gd, dataonly, mode){
+    // output:
+    //      'object' to not stringify
+    plots.graphJson = function(gd, dataonly, mode, output){
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
 
         function stripObj(d) {
@@ -3157,7 +3160,7 @@
 
         if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
-        return JSON.stringify(obj);
+        return (output==='object') ? obj : JSON.stringify(obj);
     };
 
     plots.viewJson = function(){
