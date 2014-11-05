@@ -139,10 +139,11 @@
         workspace: false, // we're in the workspace, so need toolbar etc TODO describe functionality instead?
         editable: false, // we can edit titles, move annotations, etc
         autosizable: false, // plot will respect layout.autosize=true and infer its container size
+        fillFrame: false, // if we DO autosize, do we fill the container or the screen?
         scrollZoom: false, // mousewheel or two-finger scroll zooms the plot
         showTips: true, // new users see some hints about interactivity
         showLink: true, // link to open this plot in plotly
-        forexport: false, // TODO obsoleted by staticPlot?
+        sendData: true, // if we show a link, does it contain data or just link to a plotly file?
         displaylogo: true // add the plotly logo on the end of the modebar
     };
 
@@ -168,6 +169,7 @@
             context.autosizable = false;
             context.scrollZoom = false;
             context.showTips = false;
+            context.showLink = false;
         }
         // new version - 'what should I do' flags
         // var context = gd._context = {},
@@ -216,11 +218,6 @@
                 .data([0]);
         linkContainer.enter().append('text')
             .classed('js-plot-link-container',true)
-            .attr({
-                'text-anchor': 'end',
-                x: fullLayout._paper.attr('width')-7,
-                y: fullLayout._paper.attr('height')-9
-            })
             .style({
                 'font-family':'"Open Sans",Arial,sans-serif',
                 'font-size':'12px',
@@ -233,6 +230,13 @@
                 links.append('tspan').classed('js-sourcelinks',true);
             });
 
+        linkContainer.attr({
+            'text-anchor': 'end',
+            x: fullLayout._paper.attr('width')-7,
+            y: fullLayout._paper.attr('height')-9
+        });
+
+
         var toolspan = linkContainer.select('.js-link-to-tool'),
             spacespan = linkContainer.select('.js-link-spacer'),
             sourcespan = linkContainer.select('.js-sourcelinks');
@@ -241,7 +245,7 @@
         Plotly.Lib.showSources(gd);
 
         // 'view in plotly' link for embedded plots
-        if(gd._context.showBrand) positionPlayWithData(gd,toolspan);
+        if(gd._context.showLink) positionPlayWithData(gd,toolspan);
 
         // separator if we have both sources and tool link
         spacespan.text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
@@ -260,14 +264,7 @@
             .text((Plotly.LINKTEXT || 'Play with this data!') +
                   ' ' + String.fromCharCode(187));
 
-        if(gd.shareplot) {
-            var path=window.location.pathname.split('/');
-            link.attr({
-                'xlink:xlink:show': 'new',
-                'xlink:xlink:href': '/'+path[1]+'/'+path[2].split('.')[0]
-            });
-        }
-        else {
+        if(gd._context.sendData) {
             link.on('click',function(){
                 $(gd).trigger('plotly_beforeexport');
 
@@ -284,6 +281,13 @@
 
                 $(gd).trigger('plotly_afterexport');
                 return false;
+            });
+        }
+        else {
+            var path=window.location.pathname.split('/');
+            link.attr({
+                'xlink:xlink:show': 'new',
+                'xlink:xlink:href': '/'+path[1]+'/'+path[2].split('.')[0]
             });
         }
     }
@@ -658,7 +662,7 @@
                 sceneLayout: sceneLayout,
                 width: fullLayout.width,
                 height: fullLayout.height,
-                glOptions: {preserveDrawingBuffer: gd.forexport}
+                glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
             };
 
             SceneFrame.createScene(sceneOptions);
@@ -1409,9 +1413,8 @@
         // remove all plotly attributes from a div so it can be replotted fresh
         // TODO: these really need to be encapsulated into a much smaller set...
 
-        // note: we DO NOT remove context flags (mainsite, standalone, shareplot...)
-        // because they don't change when we insert a new plot, and may have been
-        // set outside of our scope.
+        // note: we DO NOT remove _context because it doesn't change when we insert
+        // a new plot, and may have been set outside of our scope.
 
         // data and layout
         delete gd.data;
@@ -2292,7 +2295,7 @@
             newheight = Math.round(gdBB.height*0.9);
             newwidth = Math.round(gdBB.width*0.9);
         }
-        else if(gd.shareplot) {
+        else if(gd._context.fillFrame) {
             // embedded in an iframe - just take the full iframe size
             // if we get to this point, with no aspect ratio restrictions
             newwidth = $(window).width();
