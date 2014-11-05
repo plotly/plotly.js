@@ -1719,7 +1719,8 @@
                 // original plot size, before anything (like a colorbar)
                 // increases the margins
                 else if(ai==='colorbar.thicknessmode' && param.get()!==vi &&
-                        ['fraction','pixels'].indexOf(vi)!==-1) {
+                            ['fraction','pixels'].indexOf(vi)!==-1 &&
+                            contFull.colorbar) {
                     var thicknorm =
                         ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
                             (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b) :
@@ -1728,7 +1729,8 @@
                         (vi==='fraction' ? 1/thicknorm : thicknorm), i);
                 }
                 else if(ai==='colorbar.lenmode' && param.get()!==vi &&
-                        ['fraction','pixels'].indexOf(vi)!==-1) {
+                            ['fraction','pixels'].indexOf(vi)!==-1 &&
+                            contFull.colorbar) {
                     var lennorm =
                         ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
                             (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r) :
