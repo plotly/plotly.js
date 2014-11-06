@@ -620,8 +620,9 @@
             // if this scene has already been loaded it will have it's webgl
             // context parameter so lets reset the domain of the scene as
             // it may have changed (this operates on the containing iframe)
-            if (sceneLayout._scene) sceneLayout._scene.setPosition(sceneLayout.position);
-
+            if (sceneLayout._scene){
+                SceneFrame.setFramePosition(sceneLayout._scene.container, sceneLayout.position);
+            }
             /*
              * We only want to continue to operate on scenes that have
              * data waiting to be displayed or require loading
@@ -652,10 +653,30 @@
                 sceneLayout: sceneLayout,
                 width: fullLayout.width,
                 height: fullLayout.height,
+                baseurl: ENV.BASE_URL,
                 glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
             };
 
             SceneFrame.createScene(sceneOptions);
+
+            SceneFrame.once('scene-error', function (scene) {
+                sceneLayout._scene = scene;
+                SceneFrame.setFramePosition(scene.container, 
+                    sceneLayout.position);
+                if ('_modebar' in gd._fullLayout){
+                    gd._fullLayout._modebar.cleanup();
+                    gd._fullLayout._modebar = null; 
+                }
+
+                gd._fullLayout._noGL3DSupport = true; 
+
+                var pb = gd.querySelector('#plotlybars');
+                
+                if (pb) { 
+                    pb.innerHTML = ''; 
+                    pb.parentNode.removeChild(pb);
+                }
+            }); 
 
             SceneFrame.once('scene-loaded', function (scene) {
 
@@ -681,7 +702,8 @@
                     scene._cameraPositionLastSave = scene.getCameraPosition();
                 }
 
-                scene.setPosition(sceneLayout.position);
+                SceneFrame.setFramePosition(sceneLayout._container, 
+                    sceneLayout.position);
 
                 // if data has accumulated on the queue while the iframe
                 // and the webgl-context were loading remove that data
