@@ -271,7 +271,7 @@
             s.selectAll('tspan.line').attr({x: s.attr('x')});
         }
 
-        if(td.mainsite){
+        if(td._context.editable){
             text.call(Plotly.util.makeEditable)
                 .call(textLayout)
                 .on('edit', function(text){
@@ -345,7 +345,7 @@
 
         legend.repositionLegend(td, traces);
 
-        if(td.mainsite) {
+        if(td._context.editable) {
             legendsvg.node().onmousedown = function(e) {
                 // deal with other UI elements, and allow them
                 // to cancel dragging

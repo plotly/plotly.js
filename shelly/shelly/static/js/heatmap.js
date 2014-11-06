@@ -766,8 +766,8 @@
             }
         }
         Plotly.Lib.markTime('done filling png');
-        gd.hmpixcount = (gd.hmpixcount||0)+pixcount;
-        gd.hmlumcount = (gd.hmlumcount||0)+lumcount;
+        gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
+        gd._hmlumcount = (gd._hmlumcount||0) + lumcount;
 
         // http://stackoverflow.com/questions/6249664/does-svg-support-embedding-of-bitmap-images
         // https://groups.google.com/forum/?fromgroups=#!topic/d3-js/aQSWnEDFxIc
