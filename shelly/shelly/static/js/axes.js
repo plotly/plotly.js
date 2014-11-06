@@ -719,7 +719,7 @@
         }
         else if(ax.type==='category') {
             ax.c2d = function(v) {
-                return ax._categories[Math.round(v)];
+                return (ax._categories || [])[Math.round(v)];
             };
 
             ax.d2c = function(v) {
@@ -1512,7 +1512,7 @@
             else throw 'unrecognized dtick '+String(dt);
         }
         else if(ax.type==='category'){
-            var tt0 = ax._categories[Math.round(x)];
+            var tt0 = (ax._categories || [])[Math.round(x)];
             if(tt0===undefined) tt0='';
             tt=String(tt0);
         }
