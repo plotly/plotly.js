@@ -140,8 +140,6 @@ function handleCartesian (ev) {
         Plotly = this.Plotly,
         _this = this;
 
-    aobj[astr] = val;
-
     if(astr === 'zoom') {
         var xr = layout.xaxis.range,
             yr = layout.yaxis.range,
@@ -154,6 +152,13 @@ function handleCartesian (ev) {
             'yaxis.range[1]': r0*yr[1] + r1*yr[0]
         };
     }
+
+    // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
+    if (astr === 'hovermode' && val === 'compare') {
+        val = layout._isHoriz ? 'y' : 'x';
+    }
+
+    aobj[astr] = val;
 
     Plotly.relayout(graphInfo, aobj).then( function() {
         _this.updateActiveButton();
@@ -320,7 +325,7 @@ ModeBar.prototype.config = {
     hoverCompare2d: {
         title: 'Compare data on hover',
         attr: 'hovermode',
-        val: 'x',
+        val: 'compare',
         icon: 'ploticon-tooltip_compare',
         click: handleCartesian
     },
