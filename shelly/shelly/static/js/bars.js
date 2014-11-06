@@ -85,7 +85,7 @@
                 return;
             }
 
-            coerce('orientation', bars.isHoriz(traceOut) ? 'h' : 'v');
+            coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
         }
 
         Plotly.Scatter.colorScalableDefaults('marker.', coerceScatter, defaultColor);
@@ -96,13 +96,6 @@
         // override defaultColor for error bars with #444
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'y'});
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'x', inherit: 'y'});
-    };
-
-    bars.isHoriz = function(trace) {
-        var x = trace.x || false,
-            y = trace.y || false;
-        if (trace.type === 'histogram') return Plotly.Histogram.isHoriz(trace);
-        return (x && !y);
     };
 
     bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
