@@ -1039,6 +1039,7 @@
     };
 
     lib.showSources = function(td) {
+        if(td._context && td._context.staticPlot) return;
         // show the sources of data in the active tab
         var allsources = td.sourcelist;
         if(!allsources) {
@@ -1064,7 +1065,7 @@
 
         var fidparts = String(firstsource.ref_fid).split(':'),
             isplot = $(td).hasClass('js-plotly-plot'),
-            mainsite = Boolean($('#plotlyMainMarker').length),
+            workspace = !isplot || td._context.workspace,
             mainlink,
             extraslink;
 
@@ -1089,7 +1090,7 @@
                     'xlink:xlink:href':firstsource.ref_url
                 });
             }
-            else if(!mainsite){
+            else if(!workspace){
                 mainlink.attr({
                     'xlink:xlink:show':'new',
                     'xlink:xlink:href':'/'+fidparts[1]+'/~'+fidparts[0]
@@ -1142,7 +1143,7 @@
                 .jsontree(JSON.stringify(sourceObj),
                     {terminators:false, collapsibleOuter:false})
                 .show();
-            if(mainsite) {
+            if(workspace) {
                 sourceModal.find('[data-fid]').click(function(){
                     sourceModal.modal('hide');
                     pullf({fid:$(this).attr('data-fid')});
@@ -1177,7 +1178,7 @@
             return false;
         }
 
-        if(!isplot || td.mainsite) {
+        if(!isplot || workspace) {
             mainlink.on('click',pullSource);
         }
         if(extraslink) {
@@ -1617,7 +1618,7 @@
             if(k.charAt(0)==='_' || typeof v === 'function') return;
             else if(k==='module') objOut[k] = v;
             else if(Array.isArray(v)) objOut[k] = v.slice(0,arrayLen);
-            else if(typeof v === 'object') objOut[k] = lib.minExtend(obj1[k], obj2[k]);
+            else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
             else objOut[k] = v;
         });
 
