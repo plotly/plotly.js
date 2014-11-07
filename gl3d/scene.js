@@ -47,6 +47,7 @@ function Scene (options, shell) {
     this.camera                  = camera(shell);
     this.container               = options.container || null;
     this.renderQueue             = [];
+    this.glDataMap               = {};
     this.axis                    = null;
     this.id                      = options.id;
     this.Plotly                  = options.Plotly;
@@ -55,7 +56,6 @@ function Scene (options, shell) {
     this.pickRadius              = 30; //Number of pixels to search for closest point
     this.objectCount             = 0;
 
-    this.glDataMap               = {};
     this.baseRange               = [ [ Infinity,  Infinity,  Infinity],  // min (init opposite)
                                      [-Infinity, -Infinity, -Infinity] ];  // max (init opposite)
 
@@ -63,7 +63,7 @@ function Scene (options, shell) {
                                      [ 6, 6, 6] ];  // max (init opposite)
 
     ////////////// AXES OPTIONS DEFAULTS ////////////////
-    this.axesOpts = {};
+    this.axesOpts                = {};
 
     this.axesOpts.bounds         = [ [-10, -10, -10],
                                      [ 10,  10,  10] ];
@@ -153,7 +153,7 @@ function Scene (options, shell) {
     this.selection = null;
 
     // Bootstrap the initial scene if sceneLayout is provided
-    if (options.sceneLayout) this.update(options.sceneLayout, null);
+    if (options.sceneLayout) this.plot(options.sceneLayout, null);
 
     /*
      * gl-render is triggered in the animation loop, we hook in
@@ -402,7 +402,7 @@ proto.onRender = function () {
 };
 
 
-proto.update = function (sceneLayout, glObject) {
+proto.plot = function (sceneLayout, data) {
 
     // sets the modules layout with incoming layout.
     // also set global layout properties.
@@ -410,6 +410,34 @@ proto.update = function (sceneLayout, glObject) {
     // the existing layout *may* be overwritten by a new
     // incoming layout in Plotly.plot()
     this.setAndSyncLayout(sceneLayout);
+
+    if (!data) return;
+
+    if(!this.selectBuffer) {
+        this.selectBuffer = createSelect(this.shell.gl, [this.shell.height,this.shell.width]);
+    }
+
+    if(!this.axisSpikes) {
+        this.axisSpikes = createSpikes(this.shell.gl);
+    }
+
+    for (var i = 0; i < 3; ++i) {
+
+        var axes = sceneLayout[this.axesNames[i]];
+
+        //////// configure Plotly axes functions
+        this.Plotly.Axes.setConvert(axes);
+        axes.setScale = function () {};
+    }
+
+    var glObject = this.glDataMap[data.uid] || null;
+
+    if (!data.visible && glObject) glObject.visible = data.visible;
+    else {
+        glObject = data.module.update(this, sceneLayout, data, glObject);
+        this.glDataMap[data.uid] = glObject;
+    }
+
 
     // add to queue if visible, remove if not visible.
     this.updateRenderQueue(glObject);
@@ -420,18 +448,9 @@ proto.update = function (sceneLayout, glObject) {
     // uses internal range to set this.model to autoscale data
     this.setModelScale();
 
-    // configues axes: grabs necessary stuff out of the layouts and applies it.
+    // configues axes:
     this.configureAxes();
 
-    if(!this.selectBuffer) {
-        this.selectBuffer = createSelect(this.shell.gl, [this.shell.height,this.shell.width]);
-    }
-
-    if(!this.axisSpikes) {
-        this.axisSpikes = createSpikes(this.shell.gl);
-    }
-
-    return;
 };
 
 
@@ -520,7 +539,7 @@ proto.setAxesRange = function () {
     // starting default, else use the maximal minimal infinite
     // range when computing.
     var i, j, bounds, glObj;
-    var axes, axesIn, range;
+    var axes, range;
     var sceneLayout = this.sceneLayout;
 
     if (this.renderQueue.length) {
@@ -615,7 +634,7 @@ proto.configureAxes = function configureAxes () {
     /*jshint camelcase: false */
 
     var axes,
-        opts = this.axesOpts,
+        opts        = this.axesOpts,
         sceneLayout = this.sceneLayout;
 
     for (var i = 0; i < 3; ++i) {
@@ -776,10 +795,14 @@ proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) 
 };
 
 proto.disposeAll = function disposeAll () {
+
     this.renderQueue.forEach( function (glo) {
         glo.dispose();
     });
+
     this.renderQueue = [];
+    this.glDataMap = {};
+
     if (this.axis) {
         this.axis.dispose();
         this.axis = null;
