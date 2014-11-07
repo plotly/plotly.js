@@ -1,3 +1,5 @@
+'use strict';
+
 (function () {
 
 /**
@@ -269,6 +271,11 @@ function handleCamera3d (ev) {
      */
 }
 
+ModeBar.prototype.cleanup = function(){
+    this.element.innerHTML = ''; 
+    var modebarParent = this.element.parentNode; 
+    modebarParent.removeChild(this.element);
+};
 
 /**
  *
