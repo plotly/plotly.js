@@ -215,6 +215,32 @@
         spacespan.text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
     };
 
+    /**
+     * Add or modify a margin requst object by name. Margins in pixels.
+     *
+     * This allows us to have multiple modules request space in the plot without
+     * conflicts. For example:
+     *
+     * adjustReservedMargins(gd, 'themeBar', {left: 200})
+     *
+     * ... will idempotent-ly set the left margin to 200 for themeBar.
+     *
+     * @param gd
+     * @param {String} marginName
+     * @param {Object} margins
+     * @returns {Object}
+     */
+    plots.adjustReservedMargins = function (gd, marginName, margins) {
+        var margin;
+        gd._boundingBoxMargins = gd._boundingBoxMargins || {};
+        gd._boundingBoxMargins[marginName] = {};
+        ['left', 'right', 'top', 'bottom'].forEach(function(key) {
+            margin = margins[key] || 0;
+            gd._boundingBoxMargins[marginName][key] = margin;
+        });
+        return gd._boundingBoxMargins;
+    };
+
     // note that now this function is only adding the brand in
     // iframes and 3rd-party apps
     function positionPlayWithData(gd,container){
@@ -594,8 +620,9 @@
             // if this scene has already been loaded it will have it's webgl
             // context parameter so lets reset the domain of the scene as
             // it may have changed (this operates on the containing iframe)
-            if (sceneLayout._scene) sceneLayout._scene.setPosition(sceneLayout.position);
-
+            if (sceneLayout._scene){
+                SceneFrame.setFramePosition(sceneLayout._scene.container, sceneLayout.position);
+            }
             /*
              * We only want to continue to operate on scenes that have
              * data waiting to be displayed or require loading
@@ -626,10 +653,30 @@
                 sceneLayout: sceneLayout,
                 width: fullLayout.width,
                 height: fullLayout.height,
+                baseurl: ENV.BASE_URL,
                 glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
             };
 
             SceneFrame.createScene(sceneOptions);
+
+            SceneFrame.once('scene-error', function (scene) {
+                sceneLayout._scene = scene;
+                SceneFrame.setFramePosition(scene.container, 
+                    sceneLayout.position);
+                if ('_modebar' in gd._fullLayout){
+                    gd._fullLayout._modebar.cleanup();
+                    gd._fullLayout._modebar = null; 
+                }
+
+                gd._fullLayout._noGL3DSupport = true; 
+
+                var pb = gd.querySelector('#plotlybars');
+                
+                if (pb) { 
+                    pb.innerHTML = ''; 
+                    pb.parentNode.removeChild(pb);
+                }
+            }); 
 
             SceneFrame.once('scene-loaded', function (scene) {
 
@@ -655,7 +702,8 @@
                     scene._cameraPositionLastSave = scene.getCameraPosition();
                 }
 
-                scene.setPosition(sceneLayout.position);
+                SceneFrame.setFramePosition(sceneLayout._container, 
+                    sceneLayout.position);
 
                 // if data has accumulated on the queue while the iframe
                 // and the webgl-context were loading remove that data
@@ -1693,7 +1741,8 @@
                 // original plot size, before anything (like a colorbar)
                 // increases the margins
                 else if(ai==='colorbar.thicknessmode' && param.get()!==vi &&
-                        ['fraction','pixels'].indexOf(vi)!==-1) {
+                            ['fraction','pixels'].indexOf(vi)!==-1 &&
+                            contFull.colorbar) {
                     var thicknorm =
                         ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
                             (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b) :
@@ -1702,7 +1751,8 @@
                         (vi==='fraction' ? 1/thicknorm : thicknorm), i);
                 }
                 else if(ai==='colorbar.lenmode' && param.get()!==vi &&
-                        ['fraction','pixels'].indexOf(vi)!==-1) {
+                            ['fraction','pixels'].indexOf(vi)!==-1 &&
+                            contFull.colorbar) {
                     var lennorm =
                         ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
                             (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r) :
@@ -1848,6 +1898,9 @@
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
             $(gd).trigger('plotly_restyle',[redoit,traces]);
+            if (gd._context.workspace && Themes) {
+                Themes.reTile(gd);
+            }
         });
     };
 
@@ -2225,6 +2278,9 @@
         if(!plotDone || !plotDone.then) { plotDone = Promise.resolve(); }
         return plotDone.then(function(){
             $(gd).trigger('plotly_relayout',redoit);
+            if (gd._context.workspace && Themes) {
+                Themes.reTile(gd);
+            }
         });
     };
 
@@ -2247,8 +2303,34 @@
         }
     }
 
+    /**
+     * Reduce all reserved margin objects to a single required margin reservation.
+     *
+     * @param {Object} margins
+     * @returns {{left: number, right: number, bottom: number, top: number}}
+     */
+    function calculateReservedMargins(margins) {
+        var resultingMargin = {left: 0, right: 0, bottom: 0, top: 0},
+            marginName;
+
+        if (margins) {
+            for (marginName in margins) {
+                if (margins.hasOwnProperty(marginName)) {
+                    resultingMargin.left += margins[marginName].left || 0;
+                    resultingMargin.right += margins[marginName].right || 0;
+                    resultingMargin.bottom += margins[marginName].bottom || 0;
+                    resultingMargin.top += margins[marginName].top || 0;
+                }
+            }
+        }
+        return resultingMargin;
+    }
+
     function plotAutoSize(gd, aobj) {
         var fullLayout = gd._fullLayout,
+            reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
+            reservedHeight,
+            reservedWidth,
             newheight,
             newwidth;
         if(gd._context.workspace){
@@ -2256,8 +2338,10 @@
             var gdBB = fullLayout._container.node().getBoundingClientRect();
 
             // autosized plot on main site: 5% border on all sides
-            newheight = Math.round(gdBB.height*0.9);
-            newwidth = Math.round(gdBB.width*0.9);
+            reservedWidth = reservedMargins.left + reservedMargins.right;
+            reservedHeight = reservedMargins.bottom + reservedMargins.top;
+            newwidth = Math.round((gdBB.width - reservedWidth)*0.9);
+            newheight = Math.round((gdBB.height - reservedHeight)*0.9);
         }
         else if(gd._context.fillFrame) {
             // embedded in an iframe - just take the full iframe size
