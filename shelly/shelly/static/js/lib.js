@@ -11,7 +11,7 @@
     /* global pullf:false */
 
     // ---external global dependencies
-    /* global d3:false, Spinner:false */
+    /* global d3:false, Spinner:false, tinycolor:false */
 
     if(!window.Plotly) { window.Plotly = {}; }
     var lib = Plotly.Lib = {};
@@ -46,57 +46,63 @@
 
     lib.dateTime2ms = function(s) {
         // first check if s is a date object
-        try { if(s.getTime) { return +s; } }
-        catch(e){ return false; }
+        try {
+            if(s.getTime) return +s;
+        }
+        catch(e){
+            return false;
+        }
 
         var y,m,d,h;
         // split date and time parts
-        s=String(s).split(' ');
-        if(s.length>2) { return false; }
-        var p = s[0].split('-'); // date part
-        if(p.length>3 || (p.length!==3 && s.length>1)) { return false; }
+        var datetime = String(s).split(' ');
+        if(datetime.length>2) return false;
+
+        var p = datetime[0].split('-'); // date part
+        if(p.length>3 || (p.length!==3 && datetime[1])) return false;
+
         // year
-        if(p[0].length===4) { y = Number(p[0]); }
+        if(p[0].length===4) y = Number(p[0]);
         else if(p[0].length===2) {
             var yNow=new Date().getFullYear();
             y=((Number(p[0])-yNow+70)%100+200)%100+yNow-70;
         }
-        else { return false; }
-        if(!$.isNumeric(y) || (y<0)) { return false; }
-        if(p.length===1) { return new Date(y,0,1).getTime(); } // year only
+        else return false;
+        if(!$.isNumeric(y)) return false;
+        if(p.length===1) return new Date(y,0,1).getTime(); // year only
 
         // month
         m = Number(p[1])-1; // new Date() uses zero-based months
-        if(p[1].length>2 || !(m>=0 && m<=11)) { return false; }
-        if(p.length===2) { return new Date(y,m,1).getTime(); } // year-month
+        if(p[1].length>2 || !(m>=0 && m<=11)) return false;
+        if(p.length===2) return new Date(y,m,1).getTime(); // year-month
 
         // day
         d = Number(p[2]);
 
-        if(p[2].length>2 || !(d>=1 && d<=31)) { return false; }
+        if(p[2].length>2 || !(d>=1 && d<=31)) return false;
 
         // now save the date part
         d = new Date(y,m,d).getTime();
-        if(s.length===1) { return d; } // year-month-day
+        if(!datetime[1]) return d; // year-month-day
 
-        p = s[1].split(':');
-        if(p.length>3) { return false; }
+        p = datetime[1].split(':');
+        if(p.length>3) return false;
 
         // hour
         h = Number(p[0]);
-        if(p[0].length>2 || !(h>=0 && h<=23)) { return false; }
+        if(p[0].length>2 || !(h>=0 && h<=23)) return false;
         d += 3600000*h;
-        if(p.length===1) { return d; }
+        if(p.length===1) return d;
 
         // minute
         m = Number(p[1]);
-        if(p[1].length>2 || !(m>=0 && m<=59)) { return false; }
+        if(p[1].length>2 || !(m>=0 && m<=59)) return false;
         d += 60000*m;
-        if(p.length===2) { return d; }
+        if(p.length===2) return d;
 
         // second
         s = Number(p[2]);
-        if(!(s>=0 && s<60)) { return false; }
+        if(!(s>=0 && s<60)) return false;
         return d+s*1000;
     };
 
@@ -114,7 +120,7 @@
             return;
         }
 
-        if(!r) { r=0; }
+        if(!r) r=0;
         var d = new Date(ms),
             s = d3.time.format('%Y-%m-%d')(d);
         if(r<7776000000) {
@@ -456,9 +462,11 @@
 
         return {
             set: function(v){
-                    if(v===undefined || v===null) { delete cont[prop]; }
-                    else { cont[prop]=v; }
-                },
+                if(v===undefined || v===null) { delete cont[prop]; }
+                // references to same structure across traces causes undefined behaviour
+                else if (Array.isArray(v)) cont[prop] = v.map( lib.identity );
+                else cont[prop] = v;
+            },
             get:function(){ return cont[prop]; },
             astr:s,
             parts:aa,
@@ -560,6 +568,7 @@
 
     // constrain - restrict a number v to be between v0 and v1
     lib.constrain = function(v,v0,v1) {
+        if(v0>v1) return Math.max(v1,Math.min(v0,v));
         return Math.max(v0,Math.min(v1,v));
     };
 
@@ -1030,6 +1039,7 @@
     };
 
     lib.showSources = function(td) {
+        if(td._context && td._context.staticPlot) return;
         // show the sources of data in the active tab
         var allsources = td.sourcelist;
         if(!allsources) {
@@ -1055,7 +1065,7 @@
 
         var fidparts = String(firstsource.ref_fid).split(':'),
             isplot = $(td).hasClass('js-plotly-plot'),
-            mainsite = Boolean($('#plotlyMainMarker').length),
+            workspace = !isplot || td._context.workspace,
             mainlink,
             extraslink;
 
@@ -1080,7 +1090,7 @@
                     'xlink:xlink:href':firstsource.ref_url
                 });
             }
-            else if(!mainsite){
+            else if(!workspace){
                 mainlink.attr({
                     'xlink:xlink:show':'new',
                     'xlink:xlink:href':'/'+fidparts[1]+'/~'+fidparts[0]
@@ -1133,7 +1143,7 @@
                 .jsontree(JSON.stringify(sourceObj),
                     {terminators:false, collapsibleOuter:false})
                 .show();
-            if(mainsite) {
+            if(workspace) {
                 sourceModal.find('[data-fid]').click(function(){
                     sourceModal.modal('hide');
                     pullf({fid:$(this).attr('data-fid')});
@@ -1168,7 +1178,7 @@
             return false;
         }
 
-        if(!isplot || td.mainsite) {
+        if(!isplot || workspace) {
             mainlink.on('click',pullSource);
         }
         if(extraslink) {
@@ -1442,12 +1452,185 @@
         };
     };
 
-    // Helper to strip trailing slash, from http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
+    // Helper to strip trailing slash, from
+    // http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
     lib.stripTrailingSlash = function (str) {
-        if (str.substr(-1) == '/') {
+        if (str.substr(-1) === '/') {
             return str.substr(0, str.length - 1);
         }
         return str;
     };
+
+    // Helpers for defaults and attribute validation
+    var fontAttrs = {
+        family: {type: 'string'},
+        size: {
+            type: 'number',
+            min: 1
+        },
+        color: {type: 'color'}
+    };
+
+    var coerceIt = {
+        // yuicompressor doesn't like some of these keys if they're not quoted...
+        // chrome doesn't care but I guess yui thinks some are reserved words?
+        'data_array': function(v, propOut, dflt) {
+            // data_array: value MUST be an array, or we ignore it
+            // you can use dflt=[] to force said array to exist though
+            if(Array.isArray(v)) propOut.set(v);
+            else if(dflt!==undefined) propOut.set(dflt);
+        },
+        'enumerated': function(v, propOut, dflt, opts) {
+            if(opts.values.indexOf(v)===-1) propOut.set(dflt);
+            else propOut.set(v);
+        },
+        'boolean': function(v, propOut, dflt) {
+            if(v===true || v===false) propOut.set(v);
+            else propOut.set(dflt);
+        },
+        'number': function(v, propOut, dflt, opts) {
+            if(!$.isNumeric(v) ||
+                    (opts.min!==undefined && v<opts.min) ||
+                    (opts.max!==undefined && v>opts.max)) {
+                propOut.set(dflt);
+            }
+            else propOut.set(+v);
+        },
+        'integer': function(v, propOut, dflt, opts) {
+            if(v%1 || !$.isNumeric(v) ||
+                    (opts.min!==undefined && v<opts.min) ||
+                    (opts.max!==undefined && v>opts.max)) {
+                propOut.set(dflt);
+            }
+            else propOut.set(+v);
+        },
+        'string': function(v, propOut, dflt, opts) {
+            var s = String(v);
+            if(v===undefined || (opts.noBlank===false && !s)) {
+                propOut.set(dflt);
+            }
+            else propOut.set(String(v));
+        },
+        'color': function(v, propOut, dflt) {
+            if(tinycolor(v).ok) propOut.set(v);
+            else propOut.set(dflt);
+        },
+        'colorscale': function(v, propOut, dflt) {
+            propOut.set(Plotly.Color.getScale(v, dflt));
+        },
+        'font': function(v, propOut, dflt) {
+            if(!v) v = {};
+            var vOut = {};
+
+            lib.coerce(v, vOut, fontAttrs, 'family', dflt.family);
+            // TODO: do we need better than 'string' for font, or just
+            // a "noBlank" option?
+            if(!vOut.family) vOut.family = dflt.family;
+
+            lib.coerce(v, vOut, fontAttrs, 'size', dflt.size);
+            lib.coerce(v, vOut, fontAttrs, 'color', dflt.color);
+
+            propOut.set(vOut);
+        },
+        'angle': function(v, propOut, dflt) {
+            if(v==='auto') propOut.set('auto');
+            else if(!$.isNumeric(v)) propOut.set(dflt);
+            else {
+                if(Math.abs(v)>180) v -= Math.round(v/360)*360;
+                propOut.set(+v);
+            }
+        },
+        'axisid': function(v, propOut, dflt) {
+            if(typeof v === 'string' && v.charAt(0)===dflt) {
+                var axnum = Number(v.substr(1));
+                if(axnum%1 === 0 && axnum>1) {
+                    propOut.set(v);
+                    return;
+                }
+            }
+            propOut.set(dflt);
+        },
+        'sceneid': function(v, propOut, dflt) {
+            if(typeof v === 'string' && v.substr(0,5)===dflt) {
+                var scenenum = Number(v.substr(5));
+                if(scenenum%1 === 0 && scenenum>1) {
+                    propOut.set(v);
+                    return;
+                }
+            }
+            propOut.set(dflt);
+        },
+        'any': function(v, propOut, dflt) {
+            if(v===undefined) propOut.set(dflt);
+            else propOut.set(v);
+        }
+    };
+
+    lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
+        // ensures that container[attribute] has a valid value
+        // attributes[attribute] is an object with possible keys:
+        // - type: data_array, enumerated, boolean, number, integer, string, color, colorscale, any
+        // - values: (enumerated only) array of allowed vals
+        // - min, max: (number, integer only) inclusive bounds on allowed vals
+        //      either or both may be omitted
+        // - dflt: if attribute is invalid or missing, use this default
+        //      if dflt is provided as an argument to lib.coerce it takes precedence
+        // as a convenience, returns the value it finally set
+
+        var opts = lib.nestedProperty(attributes, attribute).get(),
+            propIn = lib.nestedProperty(containerIn, attribute),
+            propOut = lib.nestedProperty(containerOut, attribute),
+            v = propIn.get();
+
+        if(dflt===undefined) dflt = opts.dflt;
+
+        // arrayOk: value MAY be an array, then we do no value checking
+        // at this point, because it can be more complicated than the
+        // individual form (eg. some array vals can be numbers, even if the
+        // single values must be color strings)
+        if(opts.arrayOk && Array.isArray(v)) {
+            propOut.set(v);
+            return v;
+        }
+
+        coerceIt[opts.type](v, propOut, dflt, opts);
+
+        return propOut.get();
+    };
+
+    lib.mergeArray = function(traceAttr, cd, cdAttr) {
+        if($.isArray(traceAttr)) {
+            var imax = Math.min(traceAttr.length, cd.length);
+            for(var i=0; i<imax; i++) cd[i][cdAttr] = traceAttr[i];
+        }
+    };
+
+    // modified version of $.extend to strip out private objs and functions,
+    // and cut arrays down to first <arraylen> or 1 elements
+    // because $.extend is hella slow
+    // obj2 is assumed to already be clean of these things (including no arrays)
+    lib.minExtend = function(obj1, obj2) {
+        var objOut = {};
+        if(typeof obj2 !== 'object') obj2 = {};
+        var arrayLen = 3;
+        Object.keys(obj1).forEach(function(k) {
+            var v = obj1[k];
+            if(k.charAt(0)==='_' || typeof v === 'function') return;
+            else if(k==='module') objOut[k] = v;
+            else if(Array.isArray(v)) objOut[k] = v.slice(0,arrayLen);
+            else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
+            else objOut[k] = v;
+        });
+
+        Object.keys(obj2).forEach(function(k) {
+            var v = obj2[k];
+            if(typeof v !== 'object' || !(k in objOut) || typeof objOut[k] !== 'object') {
+                objOut[k] = v;
+            }
+        });
+
+        return objOut;
+    };
+
 
 }()); // end Lib object definition

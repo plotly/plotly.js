@@ -1,3 +1,5 @@
+'use strict';
+
 (function () {
 
 /**
@@ -98,7 +100,7 @@ ModeBar.prototype.updateActiveButton = function () {
     this.buttonElements.forEach( function (button) {
         var thisval = button.getAttribute('data-val') || true,
             dataAttr = button.getAttribute('data-attr'),
-            curval = graphInfo.layout[dataAttr];
+            curval = graphInfo._fullLayout[dataAttr];
 
         button.classList.toggle('active', curval===thisval);
     });
@@ -136,7 +138,7 @@ function handleCartesian (ev) {
         val = button.getAttribute('data-val') || true,
         aobj = {},
         graphInfo = this.graphInfo,
-        layout = this.graphInfo.layout,
+        layout = this.graphInfo._fullLayout,
         Plotly = this.Plotly,
         _this = this;
 
@@ -178,7 +180,7 @@ function handleHover3d (ev) {
         val = button.getAttribute('data-val') || true,
         layoutUpdate = {},
         graphInfo = this.graphInfo,
-        layout = graphInfo.layout,
+        layout = graphInfo._fullLayout,
         scenes = Object.keys(layout).filter(function(k){
             return k.match(/^scene[0-9]*$/);
         }).map( function (sceneKey) {
@@ -187,8 +189,8 @@ function handleHover3d (ev) {
 
     layoutUpdate[attr] = val;
 
-    scenes.forEach( function (scene) {
-        scene._webgl.spikeEnable = !scene._webgl.spikeEnable;
+    scenes.forEach( function (sceneLayout) {
+        sceneLayout._scene.spikeEnable = !sceneLayout._scene.spikeEnable;
     });
 
     this.Plotly.relayout(graphInfo, layoutUpdate).then( function() {
@@ -198,39 +200,31 @@ function handleHover3d (ev) {
 }
 
 /**
- * Reconfigure keyboard bindings for webgl3D camera control
+ * Reconfigure keyboard bindings for webgl3D camera control on drag
  * @Param {object} ev event object
  * @Return {HTMLelement}
  */
-function handle3dCamera (ev) {
+function handleDrag3d (ev) {
     var _this = this,
         button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
         layoutUpdate = {},
         graphInfo = this.graphInfo,
-        layout = graphInfo.layout,
+        layout = graphInfo._fullLayout,
         scenes = Object.keys(layout).filter(function(k){
             return k.match(/^scene[0-9]*$/);
         }).map( function (sceneKey) {
             return layout[sceneKey];
         });
 
-    if (attr === 'reset') {
-        // Reset camera position to initial value, go in rotate mode
-        val = 'rotate';
-        var cameraPositionInitial = layout.scene._cameraPositionInitial;
-        layoutUpdate = {
-            'dragmode': 'rotate',
-            'scene.cameraposition': $.extend(true, [], cameraPositionInitial)
-        };
-    } else {
-        layoutUpdate[attr] = val;
-    }
+    // set dragmode to given value
+    layoutUpdate[attr] = val;
 
-    scenes.forEach( function (scene) {
-        if ('_webgl' in scene && 'camera' in scene._webgl) {
-            scene._webgl.camera.keyBindingMode = val;
+    // update the webgl3D key binding
+    scenes.forEach( function (sceneLayout) {
+        if ('_scene' in sceneLayout && 'camera' in sceneLayout._scene) {
+            sceneLayout._scene.camera.keyBindingMode = val;
         }
     });
 
@@ -240,6 +234,48 @@ function handle3dCamera (ev) {
     });
 }
 
+
+/**
+ * Reset the position of the webgl3D camera
+ * @Param {object} ev event object
+ * @Return {HTMLelement}
+ */
+function handleCamera3d (ev) {
+    var _this = this,
+        button = ev.currentTarget,
+        attr = button.getAttribute('data-attr'),
+        val = button.getAttribute('data-val') || true,
+        layoutUpdate = {},
+        graphInfo = this.graphInfo,
+        layout = graphInfo._fullLayout,
+        scenes = Object.keys(layout).filter(function(k){
+            return k.match(/^scene[0-9]*$/);
+        }).map( function (sceneKey) {
+            return layout[sceneKey];
+        }),
+        _scene = layout.scene._scene;
+
+    if (attr === 'resetDefault') {
+        // Reset camera position to default
+        _scene.setCameraToDefault();
+    } else if (attr === 'resetLastSave') {
+        // Reset camera back to the position at the last save
+        var cameraPositionLastSave = _scene._cameraPositionLastSave;
+        _scene.setCameraPosition(cameraPositionLastSave);
+    }
+
+    /**
+     * TODO multiple scenes!
+     * Ideally, in a multiple scene plot, the modebar buttons should
+     * reset the camera position of the scene last moved.
+     */
+}
+
+ModeBar.prototype.cleanup = function(){
+    this.element.innerHTML = ''; 
+    var modebarParent = this.element.parentNode; 
+    modebarParent.removeChild(this.element);
+};
 
 /**
  *
@@ -295,33 +331,40 @@ ModeBar.prototype.config = {
         icon: 'ploticon-tooltip_compare',
         click: handleCartesian
     },
-    resetCamera3d: {
-        title: 'Reset camera',
-        attr: 'reset',
-        val: '',
-        icon: 'icon-home',
-        click: handle3dCamera
-    },
     zoom3d: {
         title: 'Zoom',
         attr: 'dragmode',
         val: 'zoom',
         icon: 'ploticon-zoombox',
-        click: handle3dCamera
+        click: handleDrag3d
     },
     pan3d: {
         title: 'Pan',
         attr: 'dragmode',
         val: 'pan',
         icon: 'ploticon-pan',
-        click: handle3dCamera
+        click: handleDrag3d
     },
     rotate3d: {
         title: 'Rotate',
         attr: 'dragmode',
         val: 'rotate',
         icon: 'icon-undo',
-        click: handle3dCamera
+        click: handleDrag3d
+    },
+    resetCameraDefault3d: {
+        title: 'Reset camera to default',
+        attr: 'resetDefault',
+        val: false,
+        icon: 'icon-home',
+        click: handleCamera3d
+    },
+    resetCameraLastSave3d: {
+        title: 'Reset camera to last save',
+        attr: 'resetLastSave',
+        val: false,
+        icon: 'icon-camera-retro',
+        click: handleCamera3d
     },
     closest3d: {
         title: 'Toggle show closest data on hover',
