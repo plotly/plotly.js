@@ -1072,13 +1072,16 @@
             var datacount = data.length - blankcount;
 
             if(intcount===datacount && ax.type!=='date') {
-                // all integers: make sure the bin size is at least 1
-                // and start a half integer down, so it's obvious
-                // which bin each value fits into
+                // all integers: if bin size is <1, it's because
+                // that was specifically requested (large nbins)
+                // so respect that... but center the bins containing
+                // integers on those integers
                 if(dummyax.dtick<1) {
-                    dummyax.dtick = 1;
-                    binstart = datamin - 0.5;
+                    binstart = datamin - 0.5 * dummyax.dtick;
                 }
+                // otherwise start half an integer down regardless of
+                // the bin size, just enough to clear up endpoint
+                // ambiguity about which integers are in which bins.
                 else binstart -= 0.5;
             }
             else if(midcount < datacount * 0.1) {
