@@ -154,8 +154,9 @@ function handleCartesian (ev) {
     }
 
     // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
-    if (astr === 'hovermode' && val === 'compare') {
+    if (astr==='hovermode' && (val==='x' || val==='y')) {
         val = layout._isHoriz ? 'y' : 'x';
+        button.setAttribute('data-val', val);
     }
 
     aobj[astr] = val;
