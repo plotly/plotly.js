@@ -26,7 +26,7 @@ function ModeBar (config) {
         var group = _this.createGroup();
 
         buttonGroup.forEach( function (buttonName) {
-            var buttonConfig = _this.config[buttonName];
+            var buttonConfig = _this.config()[buttonName];
 
             if (!buttonConfig) {
                 throw new Error(buttonName + ' not specfied in modebar configuration');
