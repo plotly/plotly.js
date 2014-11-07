@@ -24,8 +24,6 @@ function parseColorScale (colorscale) {
     });
 }
 
-
-
 var proto = Surface.prototype;
 
 proto.attributes = {

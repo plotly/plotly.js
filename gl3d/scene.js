@@ -467,6 +467,7 @@ proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
 proto.updateRenderQueue = function (glObject) {
 
     if (!glObject) return;
+
     var visible = (glObject.visible === false) ? false : true;
     var idx = this.renderQueue.indexOf(glObject);
 
