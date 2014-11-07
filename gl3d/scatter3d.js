@@ -325,7 +325,6 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
     }
 
     scatter.uid = data.uid;
-    scatter.visible = data.visible;
 
     return scatter;
 };

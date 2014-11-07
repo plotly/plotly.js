@@ -48,9 +48,9 @@ function Scene (options, shell) {
     this.renderQueue             = [];
     this.glDataMap               = {};
 
-    if (!this.shell) { 
-         return; 
-    } 
+    if (!this.shell) {
+         return;
+    }
 
     this.camera                  = camera(shell);
     this.axis                    = null;
@@ -416,8 +416,6 @@ proto.plot = function (sceneLayout, data) {
     // incoming layout in Plotly.plot()
     this.setAndSyncLayout(sceneLayout);
 
-    if (!data) return;
-
     if(!this.selectBuffer) {
         this.selectBuffer = createSelect(this.shell.gl, [this.shell.height,this.shell.width]);
     }
@@ -435,17 +433,21 @@ proto.plot = function (sceneLayout, data) {
         axes.setScale = function () {};
     }
 
-    var glObject = this.glDataMap[data.uid] || null;
+    if (data) {
 
-    if (!data.visible && glObject) glObject.visible = data.visible;
-    else {
-        glObject = data.module.update(this, sceneLayout, data, glObject);
-        this.glDataMap[data.uid] = glObject;
+        var glObject = this.glDataMap[data.uid] || null;
+
+        if (data.visible) {
+            glObject = data.module.update(this, sceneLayout, data, glObject);
+        }
+
+        if (!data.visible && glObject) glObject.visible = data.visible;
+
+        if (glObject) this.glDataMap[data.uid] = glObject;
+
+        // add to queue if visible, remove if not visible.
+        this.updateRenderQueue(glObject);
     }
-
-
-    // add to queue if visible, remove if not visible.
-    this.updateRenderQueue(glObject);
 
     // set manual range by clipping globjects, or calculate new auto-range
     this.setAxesRange();
