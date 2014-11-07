@@ -159,6 +159,7 @@
             bins = allbins ? [] : binspec,
             // make the empty bin array
             i2,
+            binend,
             n,
             inc = [],
             cnt = [],
@@ -242,7 +243,10 @@
         // create the bins (and any extra arrays needed)
         // assume more than 5000 bins is an error, so we don't crash the browser
         i = binspec.start;
-        while(i<binspec.end && pos.length<5000) {
+        // decrease end a little in case of rounding errors
+        binend = binspec.end +
+            (binspec.start - Plotly.Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
+        while(i<binend && pos.length<5000) {
             i2 = Plotly.Axes.tickIncrement(i, binspec.size);
             pos.push((i + i2) / 2);
             size.push(sizeinit);

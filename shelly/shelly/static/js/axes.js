@@ -1046,7 +1046,7 @@
         };
         axes.autoTicks(dummyax, size0);
         var binstart = axes.tickIncrement(
-            axes.tickFirst(dummyax), dummyax.dtick, 'reverse'),
+                axes.tickFirst(dummyax), dummyax.dtick, 'reverse'),
             binend;
 
         function nearEdge(v) {
