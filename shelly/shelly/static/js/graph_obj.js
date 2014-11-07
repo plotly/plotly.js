@@ -1771,7 +1771,7 @@
                 axswap(gd,gd.data[traces[0]]);
             }
 
-            // swap orientation mode
+            // swap hovermode if set to "compare x/y data"
             if (ai === 'orientationaxes') {
                 var hovermode = Plotly.Lib.nestedProperty(gd.layout, 'hovermode');
                 if (hovermode.get() === 'x') {
