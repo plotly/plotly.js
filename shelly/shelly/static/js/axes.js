@@ -718,8 +718,9 @@
             }
         }
         else if(ax.type==='category') {
+
             ax.c2d = function(v) {
-                return (ax._categories || [])[Math.round(v)];
+                return ax._categories[Math.round(v)];
             };
 
             ax.d2c = function(v) {
@@ -1133,7 +1134,7 @@
             endtick = ax.range[1] * 1.0001 - ax.range[0]*0.0001;
         if(ax.type==='category') {
             endtick = (axrev) ? Math.max(-0.5,endtick) :
-                Math.min((ax._categories || []).length-0.5,endtick);
+                Math.min(ax._categories.length-0.5,endtick);
         }
         for(var x = ax._tmin;
                 (axrev)?(x>=endtick):(x<=endtick);
@@ -1354,8 +1355,7 @@
 
             // make sure no ticks outside the category list
             if(ax.type==='category') {
-                tmin = Plotly.Lib.constrain(tmin, 0,
-                                            (ax._categories || []).length-1);
+                tmin = Plotly.Lib.constrain(tmin, 0, ax._categories.length-1);
             }
             return tmin;
         }
@@ -1512,7 +1512,7 @@
             else throw 'unrecognized dtick '+String(dt);
         }
         else if(ax.type==='category'){
-            var tt0 = (ax._categories || [])[Math.round(x)];
+            var tt0 = ax._categories[Math.round(x)];
             if(tt0===undefined) tt0='';
             tt=String(tt0);
         }
