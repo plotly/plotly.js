@@ -626,13 +626,13 @@
              * We only want to continue to operate on scenes that have
              * data waiting to be displayed or require loading
              */
-
-            if (sceneLayout._scene) {
+            var scene = sceneLayout._scene;
+            if (scene) {
                 //// if there is no data for this scene destroy it
                 //// woot, lets load all the data in the queue and bail outta here
                 while (sceneData.length) {
                     var d = sceneData.shift();
-                    d.module.plot(sceneLayout._scene, sceneLayout, d);
+                    scene.plot(sceneLayout, d);
                 }
                 return;
             }
@@ -688,7 +688,7 @@
                 // from the queue and draw.
                 while (sceneLayout._dataQueue.length) {
                     var d = sceneLayout._dataQueue.shift();
-                    d.module.plot(sceneLayout._scene, sceneLayout, d);
+                    scene.plot(sceneLayout, d);
                 }
 
                 // focus the iframe removing need to double click for interactivity
