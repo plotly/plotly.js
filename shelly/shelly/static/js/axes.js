@@ -619,6 +619,9 @@
             var gs = ax._td._fullLayout._size,
                 i;
 
+            // TODO cleaner way to handle this case
+            if (!ax._categories) ax._categories = [];
+
             // make sure we have a domain (pull it in from the axis
             // this one is overlaying if necessary)
             if(ax.overlaying) {
@@ -731,7 +734,6 @@
                 // that aren't in the first etc.
                 // TODO: sorting options - do the sorting
                 // progressively here as we insert?
-                if(!ax._categories) ax._categories = [];
                 if(ax._categories.indexOf(v)===-1) ax._categories.push(v);
 
                 var c = ax._categories.indexOf(v);
