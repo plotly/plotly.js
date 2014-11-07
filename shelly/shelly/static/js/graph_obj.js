@@ -608,7 +608,7 @@
             sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
 
             // convert domain to position in pixels
-            sceneLayout.position = {
+            sceneLayout._position = {
                 left: fullLayout._size.l + sceneLayout.domain.x[0]*fullLayout._size.w,
                 top: fullLayout._size.t + (1-sceneLayout.domain.y[1])*fullLayout._size.h,
                 width: fullLayout._size.w *
@@ -621,7 +621,7 @@
             // context parameter so lets reset the domain of the scene as
             // it may have changed (this operates on the containing iframe)
             if (sceneLayout._scene){
-                SceneFrame.setFramePosition(sceneLayout._scene.container, sceneLayout.position);
+                SceneFrame.setFramePosition(sceneLayout._scene.container, sceneLayout._position);
             }
             /*
              * We only want to continue to operate on scenes that have
@@ -662,7 +662,7 @@
             SceneFrame.once('scene-error', function (scene) {
                 sceneLayout._scene = scene;
                 SceneFrame.setFramePosition(scene.container, 
-                    sceneLayout.position);
+                    sceneLayout._position);
                 if ('_modebar' in gd._fullLayout){
                     gd._fullLayout._modebar.cleanup();
                     gd._fullLayout._modebar = null; 
@@ -703,7 +703,7 @@
                 }
 
                 SceneFrame.setFramePosition(sceneLayout._container, 
-                    sceneLayout.position);
+                    sceneLayout._position);
 
                 // if data has accumulated on the queue while the iframe
                 // and the webgl-context were loading remove that data
