@@ -271,9 +271,13 @@
                 normfunc = function(m,n) { z[m][n]*=xinc[n]*yinc[m]; };
             }
 
+            // decrease end a little in case of rounding errors
+            var binspec = trace.xbins,
+                binend = binspec.end +
+                    (binspec.start - Plotly.Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
 
-            for(i=trace.xbins.start; i<trace.xbins.end;
-                    i=Plotly.Axes.tickIncrement(i,trace.xbins.size)) {
+            for(i=binspec.start; i<binend;
+                    i=Plotly.Axes.tickIncrement(i,binspec.size)) {
                 onecol.push(sizeinit);
                 if($.isArray(xbins)) xbins.push(i);
                 if(doavg) zerocol.push(0);
@@ -285,8 +289,12 @@
             dx = (i-x0)/nx;
             x0+=dx/2;
 
-            for(i=trace.ybins.start; i<trace.ybins.end;
-                    i=Plotly.Axes.tickIncrement(i,trace.ybins.size)) {
+            binspec = trace.ybins;
+            binend = binspec.end +
+                (binspec.start - Plotly.Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
+
+            for(i=binspec.start; i<binend;
+                    i=Plotly.Axes.tickIncrement(i,binspec.size)) {
                 z.push(onecol.concat());
                 if($.isArray(ybins)) ybins.push(i);
                 if(doavg) cnt.push(zerocol.concat());
