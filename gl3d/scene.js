@@ -44,10 +44,15 @@ function Scene (options, shell) {
     if (!(this instanceof Scene)) return new Scene(shell);
 
     this.shell                   =  shell;
-    this.camera                  = camera(shell);
     this.container               = options.container || null;
     this.renderQueue             = [];
     this.glDataMap               = {};
+
+    if (!this.shell) { 
+         return; 
+    } 
+
+    this.camera                  = camera(shell);
     this.axis                    = null;
     this.id                      = options.id;
     this.Plotly                  = options.Plotly;
@@ -484,15 +489,6 @@ proto.updateRenderQueue = function (glObject) {
     } // other cases we don't need to do anything
 
     return;
-};
-
-
-proto.setPosition = function (viewport) {
-    this.container.style.position = 'absolute';
-    this.container.style.left = viewport.left + 'px';
-    this.container.style.top = viewport.top + 'px';
-    this.container.style.width = viewport.width + 'px';
-    this.container.style.height = viewport.height + 'px';
 };
 
 proto.getCenter = function () {
