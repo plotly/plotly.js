@@ -136,10 +136,10 @@
         Plotly.Lib.markTime('start convert x&y');
         var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
-            x,// = trace.x ? xa.makeCalcdata(trace, 'x') : [],
+            x,
             x0,
             dx,
-            y,// = trace.y ? ya.makeCalcdata(trace, 'y') : [],
+            y,
             y0,
             dy,
             z,
@@ -203,7 +203,7 @@
                         }
                     }
                 }
-                if(y.length) {
+                if(y.length && [true,'fast'].indexOf(trace.zsmooth)!==-1) {
                     var avgdy = (y[y.length-1]-y[0])/(y.length-1),
                     maxErrY = Math.abs(avgdy/100);
                     for(i=0; i<y.length-1; i++) {
