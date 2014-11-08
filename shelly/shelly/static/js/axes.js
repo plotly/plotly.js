@@ -239,6 +239,7 @@
             if(!layoutIn[axName] && axLayoutIn.type!=='-') {
                 layoutIn[axName] = {type: axLayoutIn.type};
             }
+
         });
 
         // plot_bgcolor only makes sense if there's a (2D) plot!
@@ -269,7 +270,6 @@
             containerOut._name = options.name;
             containerOut._id = axes.name2id(options.name);
         }
-        containerOut._categories = [];
 
         // now figure out type and do some more initialization
         var axType = coerce('type');
@@ -619,6 +619,9 @@
             var gs = ax._td._fullLayout._size,
                 i;
 
+            // TODO cleaner way to handle this case
+            if (!ax._categories) ax._categories = [];
+
             // make sure we have a domain (pull it in from the axis
             // this one is overlaying if necessary)
             if(ax.overlaying) {
@@ -718,6 +721,7 @@
             }
         }
         else if(ax.type==='category') {
+
             ax.c2d = function(v) {
                 return ax._categories[Math.round(v)];
             };
@@ -730,7 +734,6 @@
                 // that aren't in the first etc.
                 // TODO: sorting options - do the sorting
                 // progressively here as we insert?
-                if(!ax._categories) ax._categories = [];
                 if(ax._categories.indexOf(v)===-1) ax._categories.push(v);
 
                 var c = ax._categories.indexOf(v);
@@ -1354,7 +1357,7 @@
 
             // make sure no ticks outside the category list
             if(ax.type==='category') {
-                tmin = Plotly.Lib.constrain(tmin,0,ax._categories.length-1);
+                tmin = Plotly.Lib.constrain(tmin, 0, ax._categories.length-1);
             }
             return tmin;
         }

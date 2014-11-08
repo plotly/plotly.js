@@ -1,3 +1,4 @@
+
 'use strict';
 
 var camera = require('./scene-camera'),
@@ -48,10 +49,17 @@ function Scene (options, shell) {
     this.selectionRedraw         = true;
 
     this.shell                   =  shell;
-    this.camera                  = camera(shell, this);
-    this._lastCamera             = null;
+
     this.container               = options.container || null;
     this.renderQueue             = [];
+
+    if (!this.shell) { 
+         return; 
+    } 
+
+    this.camera                  = camera(shell, this);
+    this._lastCamera             = null;
+
     this.axis                    = null;
     this.id                      = options.id;
     this.Plotly                  = options.Plotly;
@@ -140,18 +148,19 @@ function Scene (options, shell) {
         0, 0, 0, 1
     ]);
 
+    // set default camera position
     this.defaultView = [
         1.25, 1.25, 1.25,
         0,    0,    0,
         0,    0,    1
     ];
+    this.setCameraToDefault();
 
-    // preconfigure view
-    this.camera.lookAt(
-        this.defaultView.slice(0,3),
-        this.defaultView.slice(3,6),
-        this.defaultView.slice(6,9)
-    );
+    /**
+     * get the default camera position in plotly coords,
+     * for reset camera modebar button
+     */
+    this.cameraPositionDefault = this.getCameraPosition();
 
     //Currently selected data point
     this.selection = null;
@@ -461,6 +470,14 @@ proto.onRender = function () {
      */
     for (i = 0; i < this.renderQueue.length; ++i) {
         glObject = this.renderQueue[i];
+        glObject.axesBounds = [
+          this.axis.bounds[0].slice(),
+          this.axis.bounds[1].slice()
+        ];
+        if (pickResult) {
+
+
+        }
         glObject.draw(cameraParameters, false);
     }
 
@@ -488,9 +505,6 @@ proto.onRender = function () {
 
     for (i = 0; i < this.renderQueue.length; ++i) {
         glObject = this.renderQueue[i];
-        glObject.axesBounds = [
-          this.axis.bounds[0].slice(),
-          this.axis.bounds[1].slice() ]
         if(glObject.supportsTransparency) {
             glObject.draw(cameraParameters, true);
         }
@@ -540,35 +554,12 @@ proto.update = function (sceneLayout, glObject) {
 
 
 proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
-    var cameraPosition;
     this.sceneLayout = sceneLayout;
 
-    cameraPosition = sceneLayout.cameraposition;
-
+    // exception: set container color with layout bg color
     if (sceneLayout.bgcolor) {
         this.container.style.background = sceneLayout.bgcolor;
     }
-
-    // set webgl state from layout
-
-    if (Array.isArray(cameraPosition) && cameraPosition.length === 3) {
-        this.camera.rotation = cameraPosition[0];
-        this.camera.center = cameraPosition[1];
-        this.camera.distance = cameraPosition[2];
-    }
-
-    // set Layout state from webgl
-    this.saveStateToLayout(sceneLayout);
-};
-
-
-proto.saveStateToLayout = function () {
-    var sceneLayout = this.sceneLayout;
-    sceneLayout.cameraposition = [
-        arrayCopy1D(this.camera.rotation),
-        arrayCopy1D(this.camera.center),
-        this.camera.distance
-    ];
 };
 
 
@@ -591,15 +582,6 @@ proto.updateRenderQueue = function (glObject) {
     } // other cases we don't need to do anything
 
     return;
-};
-
-
-proto.setPosition = function (viewport) {
-    this.container.style.position = 'absolute';
-    this.container.style.left = viewport.left + 'px';
-    this.container.style.top = viewport.top + 'px';
-    this.container.style.width = viewport.width + 'px';
-    this.container.style.height = viewport.height + 'px';
 };
 
 proto.getCenter = function () {
@@ -791,7 +773,6 @@ proto.configureAxes = function configureAxes () {
             if (axes.tickfont.size)   opts.tickSize[i]   = axes.tickfont.size;
         }
 
-
         if ('mirror' in axes) {
             if (['ticks','all','allticks'].indexOf(axes.mirror) !== -1) {
                 opts.lineTickMirror[i] = true;
@@ -803,7 +784,7 @@ proto.configureAxes = function configureAxes () {
                 opts.lineTickMirror[i] = false;
                 opts.lineMirror[i] = false;
             }
-        }
+        } else opts.lineMirror[i] = false;
 
         ////// grid background
         if ('showbackground' in axes && axes.showbackground !== false) {
@@ -863,6 +844,44 @@ proto.toPNG = function () {
 
     var dataURL = canvas.toDataURL('image/png');
     return dataURL;
+};
+
+// for reset camera button in modebar
+proto.setCameraToDefault = function setCameraToDefault () {
+    this.camera.lookAt(
+        this.defaultView.slice(0,3),
+        this.defaultView.slice(3,6),
+        this.defaultView.slice(6,9)
+    );
+    return;
+};
+
+// get camera position in plotly coords from 'orbit-camera' coords
+proto.getCameraPosition = function getCameraPosition () {
+    return [
+        arrayCopy1D(this.camera.rotation),
+        arrayCopy1D(this.camera.center),
+        this.camera.distance
+   ];
+};
+
+// set camera position with a set of plotly coords
+proto.setCameraPosition = function setCameraPosition (cameraPosition) {
+    if (Array.isArray(cameraPosition) && cameraPosition.length === 3) {
+        this.camera.rotation = arrayCopy1D(cameraPosition[0]);
+        this.camera.center = arrayCopy1D(cameraPosition[1]);
+        this.camera.distance = cameraPosition[2];
+    }
+    return;
+};
+
+// save camera position to user layout (i.e. gd.layout)
+proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) {
+    var lib = this.Plotly.Lib;
+    var prop = lib.nestedProperty(layout, this.id + '.cameraposition');
+    var cameraposition = this.getCameraPosition();
+    prop.set(cameraposition);
+    return;
 };
 
 proto.disposeAll = function disposeAll () {

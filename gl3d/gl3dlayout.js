@@ -82,6 +82,7 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
         coerceScene('domain.y[1]');
 
         Plotly.Gl3dAxes.supplyDefaults(sceneLayoutIn, sceneLayoutOut, {
+            font: layoutOut.font,
             scene: scene,
             data: fullData
         });

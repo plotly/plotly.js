@@ -33,13 +33,41 @@ proto.attributes = {
     x: {type: 'data_array'},
     y: {type: 'data_array'},
     z: {type: 'data_array'},
-    scene: {
-        type: 'sceneid',
-        dflt: 'scene'
-    },
     colorscale: {from: 'Heatmap'},
     showscale: {from: 'Heatmap'},
-    reversescale: {from: 'Heatmap'}
+    reversescale: {from: 'Heatmap'},
+    lighting: {
+        ambient: {
+            type: 'number',
+            min: 0.01,
+            max: 0.99,
+            dflt: 0.8
+        },
+        diffuse: {
+            type: 'number',
+            min: 0.01,
+            max: 0.99,
+            dflt: 0.8
+        },
+        specular: {
+            type: 'number',
+            min: 0.01,
+            max: 0.99,
+            dflt: 0.05
+        },
+        roughness: {
+            type: 'number',
+            min: 0.01,
+            max: 0.99,
+            dflt: 0.5
+        },
+        fresnel: {
+            type: 'number',
+            min: 0.01,
+            max: 0.99,
+            dflt: 0.2
+        }
+    }
 };
 
 
@@ -62,7 +90,11 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     }
     coerce('x');
     coerce('y');
-    coerce('scene');
+    coerce('lighting.ambient');
+    coerce('lighting.diffuse');
+    coerce('lighting.specular');
+    coerce('lighting.roughness');
+    coerce('lighting.fresnel');
 
     coerceHeatmap('colorscale');
 
@@ -88,9 +120,15 @@ proto.plot = function (scene, sceneLayout, data) {
     /*
      * Create a new surfac
      */
+    var surface = scene.glDataMap[data.uid];
+    // handle visible trace cases
+    if (!data.visible) {
+        if (surface) surface.visible = data.visible;
+        return scene.update(sceneLayout, surface);
+    }
 
-    var surface,
-        i , j,
+
+    var i , j,
         colormap = parseColorScale(data.colorscale),
         zdata = data.z,
         x = data.x,
@@ -177,12 +215,13 @@ proto.plot = function (scene, sceneLayout, data) {
         scene.glDataMap[data.uid] = surface;
     }
 
-    surface.ambientLight       = 0.8;
-    surface.diffuseLight       = 0.8;
-    surface.specularLight      = 0.0;
-    surface.roughness          = 0.5;
-    surface.fresnel            = 0.2;
-
+    if ('lighting' in data) {
+        surface.ambientLight   = data.lighting.ambient;
+        surface.diffuseLight   = data.lighting.diffuse;
+        surface.specularLight  = data.lighting.specular;
+        surface.roughness      = data.lighting.roughness;
+        surface.fresnel        = data.lighting.fresnel;
+    }
     // uids determine which data is tied to which gl-object
     surface.uid = data.uid;
     surface.visible = data.visible;
