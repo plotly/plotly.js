@@ -13,7 +13,7 @@
     "gl-select": "^2.0.0",
     "gl-simplicial-complex": "^1.2.2",
     "gl-spikes": "^2.0.0",
-    "gl-surface-plot": "^5.1.0",
+    "gl-surface-plot": "^5.2.0",
     "ndarray": "^1.0.10",
     "ndarray-fill": "^1.0.1",
     "ndarray-pack": "^1.0.1",
