@@ -44,11 +44,11 @@ function Scene (options, shell) {
 
     if (!(this instanceof Scene)) return new Scene(shell);
 
-    this.dirty                   = true;
-    this.moving                  = false;
-    this.selectionRedraw         = true;
+    this.dirty          = true  //Set if drawing buffer needs redraw
+    this.selectDirty    = true  //Set if selection buffer needs redraw
+    this.moving         = false //Set if camera moving (don't draw select axes)
 
-    this.shell                   =  shell;
+    this.shell                   = shell;
 
     this.container               = options.container || null;
     this.renderQueue             = [];
@@ -179,7 +179,7 @@ function Scene (options, shell) {
     var self = this
     shell.on('resize', function() {
         self.dirty = true
-        self.selectionRedraw = true
+        self.selectDirty = true
     })
 }
 
@@ -226,7 +226,6 @@ proto.onTick = function() {
     if(!pickResult) {
         if(this.selection) {
             this.dirty = true;
-            this.selectionRedraw = false;
         }
     } else if(this.selection) {
         //Compare selections
@@ -234,11 +233,9 @@ proto.onTick = function() {
         var next = pickResult.mouseCoordinate;
         if(prev[0] !== next[0] || prev[1] !== next[1]) {
             this.dirty = true;
-            this.selectionRedraw = false;
         }
     } else {
         this.dirty = true;
-        this.selectionRedraw = false;
     }
     this.selection = pickResult;
 }
@@ -321,20 +318,24 @@ proto.handlePick = function(x, y) {
 
 proto.renderPick = function(cameraParameters) {
     if(this.selectBuffers.length <= 0) {
-        return null
+        return null;
     }
+    if(!this.selectDirty) {
+        return;
+    }
+    this.selectDirty = false;
     var curObject = 0;
     for(var pass=0; pass<this.selectBuffers.length; ++pass) {
-        var select = this.selectBuffers[pass]
-        select.shape = [this.shell.width, this.shell.height]
-        select.begin()
+        var select = this.selectBuffers[pass];
+        select.shape = [this.shell.width, this.shell.height];
+        select.begin();
         for(var i=0; i<this.renderQueue.length; ++i) {
-            var glObject = this.renderQueue[i]
+            var glObject = this.renderQueue[i];
             if(glObject.groupId === pass) {
-                glObject.drawPick(cameraParameters)
+                glObject.drawPick(cameraParameters);
             }
         }
-        select.end()
+        select.end();
     }
 };
 
@@ -366,13 +367,11 @@ proto.onRender = function () {
     this._lastCamera = cameraParameters;
 
     // render for point picking
-    if(!this.moving && this.selectionRedraw) {
+    if(!this.moving) {
         this.renderPick(cameraParameters);
     } else {
         this.pickResult = null;
     }
-
-    this.selectionRedraw = true;
 
     var i, glObject, ticks = [],
         gl = this.shell.gl,
@@ -388,8 +387,8 @@ proto.onRender = function () {
         this.shell.clearColor[0], 
         this.shell.clearColor[1], 
         this.shell.clearColor[2], 
-        this.shell.clearColor[3])
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+        this.shell.clearColor[3]);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 
     var centerPoint = [0,0,0];
@@ -405,7 +404,6 @@ proto.onRender = function () {
 
     // turns on depth rendering order.
     gl.enable(gl.DEPTH_TEST);
-    gl.clear(gl.DEPTH_BUFFER_BIT);
 
     //Draw picking axes
     pickResult = this.selection;
@@ -474,10 +472,6 @@ proto.onRender = function () {
           this.axis.bounds[0].slice(),
           this.axis.bounds[1].slice()
         ];
-        if (pickResult) {
-
-
-        }
         glObject.draw(cameraParameters, false);
     }
 
@@ -492,15 +486,17 @@ proto.onRender = function () {
      * Draw axes spikes for picking
      */
     if(pickResult && this.axisSpikes && this.spikeEnable) {
-        this.axisSpikes.update({
-            position:       pickResult.dataCoordinate,
-            bounds:         this.axis.bounds,
-            colors:         this.spikeProperties.colors,
-            drawSides:      this.spikeProperties.sides,
-            enabled:        this.spikeProperties.enable,
-            lineWidth:      this.spikeProperties.width
-        });
-        this.axisSpikes.draw(cameraParameters);
+        if(!this.moving) {
+            this.axisSpikes.update({
+                position:       pickResult.dataCoordinate,
+                bounds:         this.axis.bounds,
+                colors:         this.spikeProperties.colors,
+                drawSides:      this.spikeProperties.sides,
+                enabled:        this.spikeProperties.enable,
+                lineWidth:      this.spikeProperties.width
+            });
+            this.axisSpikes.draw(cameraParameters);
+        }
     }
 
     for (i = 0; i < this.renderQueue.length; ++i) {
@@ -516,6 +512,7 @@ proto.onRender = function () {
 proto.update = function (sceneLayout, glObject) {
 
     this.dirty = true
+    this.selectDirty = true
 
     // sets the modules layout with incoming layout.
     // also set global layout properties.
@@ -853,6 +850,8 @@ proto.setCameraToDefault = function setCameraToDefault () {
         this.defaultView.slice(3,6),
         this.defaultView.slice(6,9)
     );
+    this.dirty = true;
+    this.selectDirty = true;
     return;
 };
 
@@ -872,6 +871,8 @@ proto.setCameraPosition = function setCameraPosition (cameraPosition) {
         this.camera.center = arrayCopy1D(cameraPosition[1]);
         this.camera.distance = cameraPosition[2];
     }
+    this.dirty = true;
+    this.selectDirty = true;
     return;
 };
 
@@ -881,6 +882,8 @@ proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) 
     var prop = lib.nestedProperty(layout, this.id + '.cameraposition');
     var cameraposition = this.getCameraPosition();
     prop.set(cameraposition);
+    this.dirty = true;
+    this.selectDirty = true;
     return;
 };
 

@@ -48,10 +48,11 @@ function attachCamera(shell, scene) {
 
     //Update moving flag
     var moving = ctrl || alt || shift || left || right || middle
-    if(!moving && shell.moving) {
-      shell.dirty = true
+    if(!moving && scene.moving) {
+      scene.dirty = true
+      scene.selectDirty = true
     }
-    shell.moving = moving
+    scene.moving = moving
   });
 
   return camera;
