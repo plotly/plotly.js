@@ -191,7 +191,7 @@ proto.update = function update (scene, sceneLayout, data, surface) {
          * Push it onto the render queue
          */
 
-        var pickIds = scene.allocIds(1)
+        var pickIds = scene.allocIds(1);
 
         params.pickId       = pickIds.ids[0];
         surface             =  createSurface(gl, field, params);

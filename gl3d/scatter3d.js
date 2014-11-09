@@ -315,7 +315,7 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
 
     if (scatter) scatter.update(params);
     else {
-        var pickIds = scene.allocIds(4)
+        var pickIds = scene.allocIds(4);
 
         params.pickId0   = pickIds.ids[0];
         params.pickId1   = pickIds.ids[1];

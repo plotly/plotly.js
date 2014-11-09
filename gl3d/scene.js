@@ -49,15 +49,15 @@ function Scene (options, shell) {
     this.glDataMap               = {};
 
     if (!this.shell) {
-         return;
+         return void 0;
     }
 
-    this.dirty          = true  //Set if drawing buffer needs redraw
-    this.selectDirty    = true  //Set if selection buffer needs redraw
-    this.moving         = false //Set if camera moving (don't draw select axes)
+    this.dirty                   = true;  //Set if drawing buffer needs redraw
+    this.selectDirty             = true;  //Set if selection buffer needs redraw
+    this.moving                  = false; //Set if camera moving (don't draw select axes)
 
 
-    this.camera                  = camera(shell);
+    this.camera                  = camera(shell, this);
     this.axis                    = null;
     this.id                      = options.id;
     this.Plotly                  = options.Plotly;
@@ -171,13 +171,15 @@ function Scene (options, shell) {
      */
     shell.on('gl-render', this.onRender.bind(this));
 
-    shell.on('tick', this.onTick.bind(this))
+    shell.on('tick', this.onTick.bind(this));
 
-    var self = this
+    var self = this;
     shell.on('resize', function() {
-        self.dirty = true
-        self.selectDirty = true
-    })
+        self.dirty = true;
+        self.selectDirty = true;
+    });
+
+    return void 0;
 }
 
 
@@ -187,10 +189,10 @@ proto = Scene.prototype;
 
 proto.groupCount = function() {
     if(this.objectCount === 0) {
-        return 0
+        return 0;
     }
-    return (((this.objectCount-1)/255)|0)+1
-}
+    return (((this.objectCount-1)/255)|0) + 1;
+};
 
 //Allocates count pickIds.
 // The result is an object with two fields:
@@ -200,19 +202,19 @@ proto.allocIds = function(count) {
     var prevGroup = ((this.objectCount-1)/255)|0;
     var nextGroup = ((this.objectCount+count-1)/255)|0;
     if(nextGroup !== prevGroup) {
-        this.objectCount = nextGroup * 255
+        this.objectCount = nextGroup * 255;
     }
-    var result = this.objectCount
-    this.objectCount += count
-    var array = new Array(count)
+    var result = this.objectCount;
+    this.objectCount += count;
+    var array = new Array(count);
     for(var i=0; i<count; ++i) {
-        array[i] = (result + i) % 255
+        array[i] = (result + i) % 255;
     }
     return {
-        group: nextGroup, 
+        group: nextGroup,
         ids: array
-    }
-}
+    };
+};
 
 //Every tick query the select buffer and check for changes
 proto.onTick = function() {
@@ -242,7 +244,7 @@ proto.handlePick = function(x, y) {
         return null;
     }
     if(!this._lastCamera) {
-        return null        
+        return null
     }
 
     var cameraParameters = this._lastCamera
@@ -381,9 +383,9 @@ proto.onRender = function () {
 
     //Clear buffer
     gl.clearColor(
-        this.shell.clearColor[0], 
-        this.shell.clearColor[1], 
-        this.shell.clearColor[2], 
+        this.shell.clearColor[0],
+        this.shell.clearColor[1],
+        this.shell.clearColor[2],
         this.shell.clearColor[3]);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -523,7 +525,7 @@ proto.plot = function (sceneLayout, data) {
     while(this.selectBuffers.length < bufferCount) {
         this.selectBuffers.push(
             createSelect(
-                this.shell.gl, 
+                this.shell.gl,
                 [this.shell.height,this.shell.width]))
     }
 
