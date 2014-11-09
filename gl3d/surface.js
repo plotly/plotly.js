@@ -170,11 +170,9 @@ proto.update = function update (scene, sceneLayout, data, surface) {
 
     // coords x
     if (Array.isArray(x[0])) {
-        for (i = 0; i < xlen; ++i) {
-            for (j = 0; j < ylen; ++j) {
-                xc.set(j, i, xaxis.d2l(x[i][j]));
-            }
-        }
+        fill(xc, function(row, col) {
+            return zaxis.d2l(x[col][row]);
+        });
 
         hasCoords = true;
 
@@ -187,11 +185,9 @@ proto.update = function update (scene, sceneLayout, data, surface) {
 
     // coords y
     if (Array.isArray(y[0])) {
-        for (i = 0; i < xlen; ++i) {
-            for (j = 0; j < ylen; ++j) {
-                yc.set(j, i, yaxis.d2l(y[i][j]));
-            }
-        }
+        fill(yc, function(row, col) {
+            return zaxis.d2l(y[col][row]);
+        });
 
         hasCoords = true;
 
