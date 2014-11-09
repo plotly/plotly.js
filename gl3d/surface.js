@@ -136,7 +136,7 @@ proto.flipScale = function (si) {
 
 proto.update = function update (scene, sceneLayout, data, surface) {
 
-    var i,
+    var i, j, 
         colormap = parseColorScale(data.colorscale),
         z = data.z,
         x = data.x,
