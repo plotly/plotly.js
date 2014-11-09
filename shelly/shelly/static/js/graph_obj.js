@@ -1793,6 +1793,16 @@
                 axswap(gd,gd.data[traces[0]]);
             }
 
+            // swap hovermode if set to "compare x/y data"
+            if (ai === 'orientationaxes') {
+                var hovermode = Plotly.Lib.nestedProperty(gd.layout, 'hovermode');
+                if (hovermode.get() === 'x') {
+                    hovermode.set('y');
+                } else if (hovermode.get() === 'y') {
+                    hovermode.set('x');
+                }
+            }
+
             // check if we need to call axis type
             if((traces.indexOf(0)!==-1) && (axtypeAttrs.indexOf(ai)!==-1)) {
                 Plotly.Axes.clearTypes(gd,traces);

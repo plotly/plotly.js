@@ -315,12 +315,14 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
 
     if (scatter) scatter.update(params);
     else {
-        params.pickId0   = (scene.objectCount++)%256;
-        params.pickId1   = (scene.objectCount++)%256;
-        params.pickId2   = (scene.objectCount++)%256;
-        params.pickId3   = (scene.objectCount++)%256;
+        var pickIds = scene.allocIds(4)
+
+        params.pickId0   = pickIds.ids[0];
+        params.pickId1   = pickIds.ids[1];
+        params.pickId2   = pickIds.ids[2];
+        params.pickId3   = pickIds.ids[3];
         scatter          = createScatterLine(scene.shell.gl, params);
-        scatter.groupId  = (scene.objectCount-1)>>8;
+        scatter.groupId  = pickIds.group;
         scatter.plotlyType  = data.type;
     }
 

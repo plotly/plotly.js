@@ -11,6 +11,7 @@
     "gl-now": "^1.4.0",
     "gl-scatter-plot": "^5.5.3",
     "gl-select": "^2.0.0",
+    "gl-select-static": "^1.0.1",
     "gl-simplicial-complex": "^1.2.2",
     "gl-spikes": "^2.0.0",
     "gl-surface-plot": "^5.2.0",

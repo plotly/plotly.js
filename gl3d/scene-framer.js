@@ -60,16 +60,17 @@ proto.createScene = function (opts) {
              canvas.getContext('experimental-webgl', glOptions);
 
         if(gl){
+
             var shell = newIframe.contentWindow.glnow({
-                clearColor: [0,0,0,0],
+                clearFlags: 0,
                 glOptions: glOptions,
                 tickRate: 3
-             });
+            });
             // Once the shell has initialized create and pass a new scene to the user.
             // set the container of the shell to be the new iframe
             shell.once('gl-init', function () {
-                 opts.container = newIframe;
-                 var scene = new Scene(opts, shell);
+                opts.container = newIframe;
+                var scene = new Scene(opts, shell);
                 _this.emit('scene-loaded', scene);
             });
 
