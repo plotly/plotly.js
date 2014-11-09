@@ -17,7 +17,6 @@
     "gl-surface-plot": "^5.2.0",
     "ndarray": "^1.0.10",
     "ndarray-fill": "^1.0.1",
-    "ndarray-ops": "^1.2.1",
     "ndarray-pack": "^1.0.1",
     "orbit-camera": "^1.0.0",
     "tinycolor2": "^1.0.0"

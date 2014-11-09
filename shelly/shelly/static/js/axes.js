@@ -607,9 +607,10 @@
     // and the autotick constraints ._minDtick, ._forceTick0,
     // and looks for date ranges that aren't yet in numeric format
     axes.setConvert = function(ax) {
-        function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : null; }
+        var BADNUM = undefined;
+        function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : BADNUM; }
         function fromLog(v){ return Math.pow(10,v); }
-        function num(v){ return $.isNumeric(v) ? Number(v) : null; }
+        function num(v){ return $.isNumeric(v) ? Number(v) : BADNUM; }
 
         ax.c2l = (ax.type==='log') ? toLog : num;
         ax.l2c = (ax.type==='log') ? fromLog : num;
@@ -679,13 +680,14 @@
         ax.c2p = function(v,clip) {
             var va = ax.c2l(v);
             // include 2 fractional digits on pixel, for PDF zooming etc
-            if($.isNumeric(va)) { return ax.l2p(va); }
+            if($.isNumeric(va)) return ax.l2p(va);
             // clip NaN (ie past negative infinity) to clipMult axis
             // length past the negative edge
             if(clip && $.isNumeric(v)) {
                 var r0 = ax.range[0], r1 = ax.range[1];
                 return ax.l2p(0.5*(r0+r1-3*clipMult*Math.abs(r0-r1)));
             }
+            return BADNUM;
         };
         ax.p2c = function(px){ return ax.l2c(ax.p2l(px)); };
 
@@ -693,17 +695,23 @@
             ax.c2d = num;
             ax.d2c = function(v){
                 v = axes.cleanDatum(v);
-                return $.isNumeric(v) ? Number(v) : undefined;
+                return $.isNumeric(v) ? Number(v) : BADNUM;
+            };
+            ax.d2l = function (v) {
+                if (ax.type === 'log') return ax.c2l(ax.d2c(v));
+                else return ax.d2c(v);
             };
         }
         else if(ax.type==='date') {
             ax.c2d = function(v) {
-                return $.isNumeric(v) ? Plotly.Lib.ms2DateTime(v) : null;
+                return $.isNumeric(v) ? Plotly.Lib.ms2DateTime(v) : BADNUM;
             };
 
             ax.d2c = function(v){
                 return ($.isNumeric(v)) ? Number(v) : Plotly.Lib.dateTime2ms(v);
             };
+
+            ax.d2l = ax.d2c;
 
             // check if date strings or js date objects are provided for range
             // and convert to ms
@@ -737,8 +745,10 @@
                 if(ax._categories.indexOf(v)===-1) ax._categories.push(v);
 
                 var c = ax._categories.indexOf(v);
-                return c===-1 ? undefined : c;
+                return c===-1 ? BADNUM : c;
             };
+
+            ax.d2l = ax.d2c;
         }
 
         // makeCalcdata: takes an x or y array and converts it

@@ -1,4 +1,3 @@
-
 'use strict';
 
 var camera = require('./scene-camera'),
@@ -44,22 +43,21 @@ function Scene (options, shell) {
 
     if (!(this instanceof Scene)) return new Scene(shell);
 
-    this.dirty          = true  //Set if drawing buffer needs redraw
-    this.selectDirty    = true  //Set if selection buffer needs redraw
-    this.moving         = false //Set if camera moving (don't draw select axes)
-
-    this.shell                   = shell;
-
+    this.shell                   =  shell;
     this.container               = options.container || null;
     this.renderQueue             = [];
+    this.glDataMap               = {};
 
-    if (!this.shell) { 
-         return; 
-    } 
+    if (!this.shell) {
+         return void 0;
+    }
+
+    this.dirty                   = true;  //Set if drawing buffer needs redraw
+    this.selectDirty             = true;  //Set if selection buffer needs redraw
+    this.moving                  = false; //Set if camera moving (don't draw select axes)
+
 
     this.camera                  = camera(shell, this);
-    this._lastCamera             = null;
-
     this.axis                    = null;
     this.id                      = options.id;
     this.Plotly                  = options.Plotly;
@@ -68,7 +66,6 @@ function Scene (options, shell) {
     this.pickRadius              = 10; //Number of pixels to search for closest point
     this.objectCount             = 0;
 
-    this.glDataMap               = {};
     this.baseRange               = [ [ Infinity,  Infinity,  Infinity],  // min (init opposite)
                                      [-Infinity, -Infinity, -Infinity] ];  // max (init opposite)
 
@@ -76,7 +73,7 @@ function Scene (options, shell) {
                                      [ 6, 6, 6] ];  // max (init opposite)
 
     ////////////// AXES OPTIONS DEFAULTS ////////////////
-    this.axesOpts = {};
+    this.axesOpts                = {};
 
     this.axesOpts.bounds         = [ [-10, -10, -10],
                                      [ 10,  10,  10] ];
@@ -166,7 +163,7 @@ function Scene (options, shell) {
     this.selection = null;
 
     // Bootstrap the initial scene if sceneLayout is provided
-    if (options.sceneLayout) this.update(options.sceneLayout, null);
+    if (options.sceneLayout) this.plot(options.sceneLayout, null);
 
     /*
      * gl-render is triggered in the animation loop, we hook in
@@ -174,13 +171,15 @@ function Scene (options, shell) {
      */
     shell.on('gl-render', this.onRender.bind(this));
 
-    shell.on('tick', this.onTick.bind(this))
+    shell.on('tick', this.onTick.bind(this));
 
-    var self = this
+    var self = this;
     shell.on('resize', function() {
-        self.dirty = true
-        self.selectDirty = true
-    })
+        self.dirty = true;
+        self.selectDirty = true;
+    });
+
+    return void 0;
 }
 
 
@@ -190,10 +189,10 @@ proto = Scene.prototype;
 
 proto.groupCount = function() {
     if(this.objectCount === 0) {
-        return 0
+        return 0;
     }
-    return (((this.objectCount-1)/255)|0)+1
-}
+    return (((this.objectCount-1)/255)|0) + 1;
+};
 
 //Allocates count pickIds.
 // The result is an object with two fields:
@@ -203,19 +202,19 @@ proto.allocIds = function(count) {
     var prevGroup = ((this.objectCount-1)/255)|0;
     var nextGroup = ((this.objectCount+count-1)/255)|0;
     if(nextGroup !== prevGroup) {
-        this.objectCount = nextGroup * 255
+        this.objectCount = nextGroup * 255;
     }
-    var result = this.objectCount
-    this.objectCount += count
-    var array = new Array(count)
+    var result = this.objectCount;
+    this.objectCount += count;
+    var array = new Array(count);
     for(var i=0; i<count; ++i) {
-        array[i] = (result + i) % 255
+        array[i] = (result + i) % 255;
     }
     return {
-        group: nextGroup, 
+        group: nextGroup,
         ids: array
-    }
-}
+    };
+};
 
 //Every tick query the select buffer and check for changes
 proto.onTick = function() {
@@ -245,7 +244,7 @@ proto.handlePick = function(x, y) {
         return null;
     }
     if(!this._lastCamera) {
-        return null        
+        return null
     }
 
     var cameraParameters = this._lastCamera
@@ -384,9 +383,9 @@ proto.onRender = function () {
 
     //Clear buffer
     gl.clearColor(
-        this.shell.clearColor[0], 
-        this.shell.clearColor[1], 
-        this.shell.clearColor[2], 
+        this.shell.clearColor[0],
+        this.shell.clearColor[1],
+        this.shell.clearColor[2],
         this.shell.clearColor[3]);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -509,7 +508,7 @@ proto.onRender = function () {
 };
 
 
-proto.update = function (sceneLayout, glObject) {
+proto.plot = function (sceneLayout, data) {
 
     this.dirty = true
     this.selectDirty = true
@@ -521,24 +520,12 @@ proto.update = function (sceneLayout, glObject) {
     // incoming layout in Plotly.plot()
     this.setAndSyncLayout(sceneLayout);
 
-    // add to queue if visible, remove if not visible.
-    this.updateRenderQueue(glObject);
-
-    // set manual range by clipping globjects, or calculate new auto-range
-    this.setAxesRange();
-
-    // uses internal range to set this.model to autoscale data
-    this.setModelScale();
-
-    // configues axes: grabs necessary stuff out of the layouts and applies it.
-    this.configureAxes();
-
-    // allocate any extra select buffers
+  // allocate any extra select buffers
     var bufferCount = this.groupCount()
     while(this.selectBuffers.length < bufferCount) {
         this.selectBuffers.push(
             createSelect(
-                this.shell.gl, 
+                this.shell.gl,
                 [this.shell.height,this.shell.width]))
     }
 
@@ -546,7 +533,40 @@ proto.update = function (sceneLayout, glObject) {
         this.axisSpikes = createSpikes(this.shell.gl);
     }
 
-    return;
+    for (var i = 0; i < 3; ++i) {
+
+        var axes = sceneLayout[this.axesNames[i]];
+
+        //////// configure Plotly axes functions
+        this.Plotly.Axes.setConvert(axes);
+        axes.setScale = function () {};
+    }
+
+    if (data) {
+
+        var glObject = this.glDataMap[data.uid] || null;
+
+        if (data.visible) {
+            glObject = data.module.update(this, sceneLayout, data, glObject);
+        }
+
+        if (!data.visible && glObject) glObject.visible = data.visible;
+
+        if (glObject) this.glDataMap[data.uid] = glObject;
+
+        // add to queue if visible, remove if not visible.
+        this.updateRenderQueue(glObject);
+    }
+
+    // set manual range by clipping globjects, or calculate new auto-range
+    this.setAxesRange();
+
+    // uses internal range to set this.model to autoscale data
+    this.setModelScale();
+
+    // configues axes:
+    this.configureAxes();
+
 };
 
 
@@ -566,6 +586,7 @@ proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
 proto.updateRenderQueue = function (glObject) {
 
     if (!glObject) return;
+
     var visible = (glObject.visible === false) ? false : true;
     var idx = this.renderQueue.indexOf(glObject);
 
@@ -629,7 +650,7 @@ proto.setAxesRange = function () {
     // starting default, else use the maximal minimal infinite
     // range when computing.
     var i, j, bounds, glObj;
-    var axes, axesIn, range;
+    var axes, range;
     var sceneLayout = this.sceneLayout;
 
     if (this.renderQueue.length) {
@@ -730,7 +751,7 @@ proto.configureAxes = function configureAxes () {
     /*jshint camelcase: false */
 
     var axes,
-        opts = this.axesOpts,
+        opts        = this.axesOpts,
         sceneLayout = this.sceneLayout;
 
     for (var i = 0; i < 3; ++i) {
@@ -900,10 +921,14 @@ proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) 
 };
 
 proto.disposeAll = function disposeAll () {
+
     this.renderQueue.forEach( function (glo) {
         glo.dispose();
     });
+
     this.renderQueue = [];
+    this.glDataMap = {};
+
     if (this.axis) {
         this.axis.dispose();
         this.axis = null;
