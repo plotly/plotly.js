@@ -557,6 +557,9 @@ proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
     if (sceneLayout.bgcolor) {
         this.container.style.background = sceneLayout.bgcolor;
     }
+
+    this.dirty = true;
+    this.selectDirty = true;
 };
 
 
@@ -684,6 +687,9 @@ proto.setAxesRange = function () {
     }
 
     this.range = range;
+
+    this.dirty = true;
+    this.selectDirty = true;
 };
 
 /**
@@ -708,6 +714,9 @@ proto.setModelScale = function () {
         0,       0, 1.0/r2,    0,
         d0,     d1,     d2,    1
     ]);
+
+    this.dirty = true
+    this.selectDirty = true
 
 };
 
@@ -808,6 +817,9 @@ proto.configureAxes = function configureAxes () {
 
     if (this.axis) this.axis.update(this.axesOpts);
     else this.axis = createAxes(this.shell.gl, this.axesOpts);
+
+    this.dirty = true;
+    this.selectDirty = true;
 };
 
 
