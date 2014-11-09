@@ -254,9 +254,9 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
     //Convert points
     for (i = 0; i < len; i++) {
         // sanitize numbers and apply transforms based on axes.type
-        xc = xaxis.transform(x[i]);
-        yc = yaxis.transform(y[i]);
-        zc = zaxis.transform(z[i]);
+        xc = xaxis.d2l(x[i]);
+        yc = yaxis.d2l(y[i]);
+        zc = zaxis.d2l(z[i]);
 
         points[i] = [xc, yc, zc];
     }

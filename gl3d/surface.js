@@ -163,15 +163,15 @@ proto.update = function update (scene, sceneLayout, data, surface) {
      * which is the transpose of 'gl-surface-plot'.
      */
     fill(field, function(row, col) {
-        return zaxis.transform(z[col][row]);
+        return zaxis.d2l(z[col][row]);
     });
 
     // ticks API.
     for (i=0; i<xlen; i++) {
-        ticks[0][i] = xaxis.transform(x[i]);
+        ticks[0][i] = xaxis.d2l(x[i]);
     }
     for (i=0; i<ylen; i++) {
-        ticks[1][i] = yaxis.transform(y[i]);
+        ticks[1][i] = yaxis.d2l(y[i]);
     }
 
     var params = {
