@@ -94,7 +94,7 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     coerce('x');
     coerce('y');
 
-    if (!traceOut.x) {
+    if (!Array.isArray(traceOut.x)) {
         // build a linearly scaled x
         traceOut.x = [];
         for (i = 0; i < xlen; ++i) {
@@ -102,17 +102,12 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         }
     }
 
-    if(xlen < traceOut.x.length) traceOut.x = traceOut.x.slice(0, xlen);
-
-    if (!traceOut.y) {
+    if (!Array.isArray(traceOut.y)) {
         traceOut.y = [];
         for (i = 0; i < ylen; ++i) {
             traceOut.y[i] = i;
         }
     }
-
-    if(ylen < traceOut.y.length) traceOut.y = traceOut.y.slice(0, ylen);
-
 
     coerce('lighting.ambient');
     coerce('lighting.diffuse');
@@ -155,7 +150,14 @@ proto.update = function update (scene, sceneLayout, data, surface) {
         ticks = [[],[]],
         xlen = z[0].length,
         ylen = z.length,
-        field = ndarray(new Float32Array(xlen*ylen), [xlen, ylen]),
+        field = ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
+        coords = [
+            ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
+            ndarray(new Float32Array(xlen * ylen), [xlen, ylen])
+        ],
+        xc = coords[0],
+        yc = coords[1],
+        hasCoords = false,
         gl = scene.shell.gl;
 
     /*
@@ -169,19 +171,46 @@ proto.update = function update (scene, sceneLayout, data, surface) {
         return zaxis.d2l(z[col][row]);
     });
 
-    // ticks API.
-    for (i=0; i<xlen; i++) {
-        ticks[0][i] = xaxis.d2l(x[i]);
+    // coords x
+    if (Array.isArray(x[0])) {
+        fill(xc, function(row, col) {
+            return zaxis.d2l(x[col][row]);
+        });
+
+        hasCoords = true;
+
+    } else {
+        // ticks x
+        for (i = 0; i < xlen; i++) {
+            ticks[0][i] = xaxis.d2l(x[i]);
+        }
     }
-    for (i=0; i<ylen; i++) {
-        ticks[1][i] = yaxis.d2l(y[i]);
+
+    // coords y
+    if (Array.isArray(y[0])) {
+        fill(yc, function(row, col) {
+            return zaxis.d2l(y[col][row]);
+        });
+
+        hasCoords = true;
+
+    } else {
+        // ticks y
+        for (i = 0; i < ylen; i++) {
+            ticks[1][i] = yaxis.d2l(y[i]);
+        }
     }
 
     var params = {
         field: field,
-        ticks: ticks,
         colormap: colormap
     };
+
+    if (hasCoords) {
+        params.coords = coords;
+    } else {
+        params.ticks = ticks;
+    }
 
     if (surface) {
         /*

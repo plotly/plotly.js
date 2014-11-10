@@ -1034,73 +1034,96 @@
                 size: 1
             };
         }
+
+        var size0;
+        if(nbins) size0 = ((datamax-datamin)/nbins);
         else {
-            var size0;
-            if(nbins) size0 = ((datamax-datamin)/nbins);
-            else {
-                // totally auto: scale off std deviation so the highest bin is
-                // somewhat taller than the total number of bins, but don't let
-                // the size get smaller than the 'nice' rounded down minimum
-                // difference between values
-                var distinctData = Plotly.Lib.distinctVals(data),
-                    msexp = Math.pow(10, Math.floor(
-                        Math.log(distinctData.minDiff) / Math.LN10)),
-                    // TODO: there are some date cases where this will fail...
-                    minSize = msexp*Plotly.Lib.roundUp(
-                        distinctData.minDiff/msexp, [0.9, 1.9, 4.9, 9.9], true);
-                size0 = Math.max(minSize, 2*Plotly.Lib.stdev(data) /
-                    Math.pow(data.length, is2d ? 0.25 : 0.4));
-            }
+            // totally auto: scale off std deviation so the highest bin is
+            // somewhat taller than the total number of bins, but don't let
+            // the size get smaller than the 'nice' rounded down minimum
+            // difference between values
+            var distinctData = Plotly.Lib.distinctVals(data),
+                msexp = Math.pow(10, Math.floor(
+                    Math.log(distinctData.minDiff) / Math.LN10)),
+                // TODO: there are some date cases where this will fail...
+                minSize = msexp*Plotly.Lib.roundUp(
+                    distinctData.minDiff/msexp, [0.9, 1.9, 4.9, 9.9], true);
+            size0 = Math.max(minSize, 2*Plotly.Lib.stdev(data) /
+                Math.pow(data.length, is2d ? 0.25 : 0.4));
+        }
 
-            // piggyback off autotick code to make "nice" bin sizes
-            var dummyax = {
-                type: ax.type==='log' ? 'linear' : ax.type,
-                range:[datamin, datamax]
-            };
-            axes.autoTicks(dummyax, size0);
-            var binstart = axes.tickIncrement(
-                axes.tickFirst(dummyax), dummyax.dtick, 'reverse');
+        // piggyback off autotick code to make "nice" bin sizes
+        var dummyax = {
+            type: ax.type==='log' ? 'linear' : ax.type,
+            range:[datamin, datamax]
+        };
+        axes.autoTicks(dummyax, size0);
+        var binstart = axes.tickIncrement(
+                axes.tickFirst(dummyax), dummyax.dtick, 'reverse'),
+            binend;
 
-            // check for too many data points right at the edges of bins
-            // (>50% within 1% of bin edges) or all data points integral
-            // and offset the bins accordingly
+        function nearEdge(v) {
+            // is a value within 1% of a bin edge?
+            return (1 + (v-binstart)*100/dummyax.dtick)%100 < 2;
+        }
+
+        // check for too many data points right at the edges of bins
+        // (>50% within 1% of bin edges) or all data points integral
+        // and offset the bins accordingly
+        if(typeof dummyax.dtick === 'number') {
             var edgecount = 0,
+                midcount = 0,
                 intcount = 0,
                 blankcount = 0;
             for(var i=0; i<data.length; i++) {
                 if(data[i]%1===0) intcount++;
                 else if(!$.isNumeric(data[i])) blankcount++;
 
-                if((1 + (data[i]-binstart)*100/dummyax.dtick)%100<2) edgecount++;
+                if(nearEdge(data[i])) edgecount++;
+                if(nearEdge(data[i] + dummyax.dtick/2)) midcount++;
             }
-            if(intcount+blankcount===data.length && ax.type!=='date') {
-                // all integers: make sure the bin size is at least 1
-                // and start a half integer down, so it's obvious
-                // which bin each value fits into
+            var datacount = data.length - blankcount;
+
+            if(intcount===datacount && ax.type!=='date') {
+                // all integers: if bin size is <1, it's because
+                // that was specifically requested (large nbins)
+                // so respect that... but center the bins containing
+                // integers on those integers
                 if(dummyax.dtick<1) {
-                    dummyax.dtick = 1;
-                    binstart = datamin - 0.5;
+                    binstart = datamin - 0.5 * dummyax.dtick;
                 }
+                // otherwise start half an integer down regardless of
+                // the bin size, just enough to clear up endpoint
+                // ambiguity about which integers are in which bins.
                 else binstart -= 0.5;
             }
-            else if(edgecount>(data.length-blankcount)/2) {
-                var binshift =
-                    (axes.tickIncrement(binstart, dummyax.dtick) - binstart) / 2;
-                binstart += (binstart+binshift<datamin) ? binshift : -binshift;
+            else if(midcount < datacount * 0.1) {
+                if(edgecount > datacount * 0.3 ||
+                        nearEdge(datamin) || nearEdge(datamax)) {
+                    // lots of points at the edge, not many in the middle
+                    // shift half a bin
+                    var binshift = dummyax.dtick / 2;
+                    binstart += (binstart+binshift<datamin) ? binshift : -binshift;
+                }
             }
 
-            // calculate the endpoint
-            var binend = binstart;
-            while(binend<datamax) {
+            var bincount = 1 + Math.floor((datamax - binstart) / dummyax.dtick);
+            binend = binstart + bincount * dummyax.dtick;
+        }
+        else {
+            // calculate the endpoint for nonlinear ticks - you have to
+            // just increment until you're done
+            binend = binstart;
+            while(binend<=datamax) {
                 binend = axes.tickIncrement(binend, dummyax.dtick);
             }
-
-            return {
-                start: binstart,
-                end: binend,
-                size: dummyax.dtick
-            };
         }
+
+        return {
+            start: binstart,
+            end: binend,
+            size: dummyax.dtick
+        };
     };
 
 
