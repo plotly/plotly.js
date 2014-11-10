@@ -416,7 +416,7 @@
         var nx = onecol.length;
         x0 = trace.xbins.start;
         dx = (i-x0)/nx;
-        x0+=dx/2;
+        x0 += dx/2;
 
         binspec = trace.ybins;
         binend = binspec.end +
@@ -433,7 +433,7 @@
         var ny = z.length;
         y0 = trace.ybins.start;
         dy = (i-y0)/ny;
-        y0+=dy/2;
+        y0 += dy/2;
 
         if(densitynorm) {
             xinc = onecol.map(function(v,i){
