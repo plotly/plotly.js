@@ -12,14 +12,16 @@ function Surface (config) {
 
 module.exports = Surface;
 
-function parseColorScale (colorscale) {
+function parseColorScale (colorscale, alpha) {
+    if (alpha === undefined) alpha = 1;
+
     return colorscale.map( function (elem) {
         var index = elem[0];
         var color = tinycolor(elem[1]);
         var rgb = color.toRgb();
         return {
             index: index,
-            rgb: [rgb.r, rgb.g, rgb.b]
+            rgb: [rgb.r, rgb.g, rgb.b, alpha]
         };
     });
 }
@@ -136,8 +138,9 @@ proto.flipScale = function (si) {
 
 proto.update = function update (scene, sceneLayout, data, surface) {
 
-    var i, j, 
-        colormap = parseColorScale(data.colorscale),
+    var i,
+        alpha = data.opacity,
+        colormap = parseColorScale(data.colorscale, alpha),
         z = data.z,
         x = data.x,
         y = data.y,
@@ -240,6 +243,8 @@ proto.update = function update (scene, sceneLayout, data, surface) {
     // uids determine which data is tied to which gl-object
     surface.uid = data.uid;
     surface.visible = data.visible;
+
+    if (alpha && alpha < 1) surface.supportsTransparency = true;
 
     return surface;
 

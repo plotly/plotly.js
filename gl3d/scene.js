@@ -237,24 +237,24 @@ proto.onTick = function() {
         this.dirty = true;
     }
     this.selection = pickResult;
-}
+};
 
 proto.handlePick = function(x, y) {
     if(this.moving) {
         return null;
     }
     if(!this._lastCamera) {
-        return null
+        return null;
     }
 
-    var cameraParameters = this._lastCamera
-    var pickResult = null, pickData = null
+    var cameraParameters = this._lastCamera;
+    var pickResult = null, pickData = null;
 
     //Do one pass for each group of objects, find the closest point in z
     for(var pass=0; pass<this.selectBuffers.length; ++pass) {
 
         //Run query
-        var curResult = this.selectBuffers[pass].query(x,y,this.pickRadius)
+        var curResult = this.selectBuffers[pass].query(x,y,this.pickRadius);
 
         //Skip this pass if the result was not valid
         if(!curResult || (pickResult && curResult.distance > pickResult.distance)) {
@@ -467,6 +467,7 @@ proto.onRender = function () {
      */
     for (i = 0; i < this.renderQueue.length; ++i) {
         glObject = this.renderQueue[i];
+        if (glObject.supportsTransparency) continue;
         glObject.axesBounds = [
           this.axis.bounds[0].slice(),
           this.axis.bounds[1].slice()
@@ -510,8 +511,8 @@ proto.onRender = function () {
 
 proto.plot = function (sceneLayout, data) {
 
-    this.dirty = true
-    this.selectDirty = true
+    this.dirty = true;
+    this.selectDirty = true;
 
     // sets the modules layout with incoming layout.
     // also set global layout properties.
@@ -521,12 +522,12 @@ proto.plot = function (sceneLayout, data) {
     this.setAndSyncLayout(sceneLayout);
 
   // allocate any extra select buffers
-    var bufferCount = this.groupCount()
+    var bufferCount = this.groupCount();
     while(this.selectBuffers.length < bufferCount) {
         this.selectBuffers.push(
             createSelect(
                 this.shell.gl,
-                [this.shell.height,this.shell.width]))
+                [this.shell.height,this.shell.width]));
     }
 
     if(!this.axisSpikes) {
