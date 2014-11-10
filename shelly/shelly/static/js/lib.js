@@ -1618,7 +1618,7 @@
             if(k.charAt(0)==='_' || typeof v === 'function') return;
             else if(k==='module') objOut[k] = v;
             else if(Array.isArray(v)) objOut[k] = v.slice(0,arrayLen);
-            else if(typeof v === 'object') objOut[k] = lib.minExtend(obj1[k], obj2[k]);
+            else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
             else objOut[k] = v;
         });
 
