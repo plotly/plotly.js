@@ -236,16 +236,11 @@ function str2RgbaArray(color) {
 }
 
 
-proto.plot = function Scatter (scene, sceneLayout, data) {
+proto.update = function update (scene, sceneLayout, data, scatter) {
     /*jshint camelcase: false */
-    var scatter = scene.glDataMap[data.uid];
     // handle visible trace cases
-    if (!data.visible) {
-        if (scatter) scatter.visible = data.visible;
-        return scene.update(sceneLayout, scatter);
-    }
 
-    var params, idx, i,
+    var params, i,
         points = [],
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
@@ -257,23 +252,13 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
         len = x.length;
 
     //Convert points
-    idx = 0;
     for (i = 0; i < len; i++) {
-        // sanitize numbers
-        xc = xaxis.d2c(x[i]);
-        yc = yaxis.d2c(y[i]);
-        zc = zaxis.d2c(z[i]);
+        // sanitize numbers and apply transforms based on axes.type
+        xc = xaxis.d2l(x[i]);
+        yc = yaxis.d2l(y[i]);
+        zc = zaxis.d2l(z[i]);
 
-        // apply any axis transforms
-        if (xaxis.type === 'log') xc = xaxis.c2l(xc);
-        if (yaxis.type === 'log') yc = yaxis.c2l(yc);
-        if (zaxis.type === 'log') zc = zaxis.c2l(zc);
-
-        points[idx] = [xc, yc, zc];
-        ++idx;
-    }
-    if (!points.length) {
-        return void 0;
+        points[i] = [xc, yc, zc];
     }
 
     //Build object parameters
@@ -328,29 +313,22 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
     params.delaunayAxis       = data.surfaceaxis;
     params.delaunayColor      = str2RgbaArray(data.surfacecolor);
 
-    if (scatter) {
-        /*
-         * We already have drawn this surface,
-         * lets just update it with the latest params
-         */
-        scatter.update(params);
-    } else {
-        /*
-         * Push it onto the render queue
-         */
-        params.pickId0   = (scene.objectCount++)%256;
-        params.pickId1   = (scene.objectCount++)%256;
-        params.pickId2   = (scene.objectCount++)%256;
-        params.pickId3   = (scene.objectCount++)%256;
-        scatter          = createScatterLine(scene.shell.gl, params);
-        scatter.groupId  = (scene.objectCount-1)>>8;
-        scatter.plotlyType  = data.type;
+    if (scatter) scatter.update(params);
+    else {
+        var pickIds = scene.allocIds(4);
 
-        scene.glDataMap[data.uid] = scatter;
+        params.pickId0   = pickIds.ids[0];
+        params.pickId1   = pickIds.ids[1];
+        params.pickId2   = pickIds.ids[2];
+        params.pickId3   = pickIds.ids[3];
+        scatter          = createScatterLine(scene.shell.gl, params);
+        scatter.groupId  = pickIds.group;
+        scatter.plotlyType  = data.type;
     }
+
     scatter.uid = data.uid;
-    scatter.visible = data.visible;
-    scene.update(sceneLayout, scatter);
+
+    return scatter;
 };
 
 

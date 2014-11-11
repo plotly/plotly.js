@@ -591,24 +591,12 @@
             var sceneLayout = fullLayout[sceneKey],
                 sceneOptions;
 
-            // maybe this initialization should happen somewhere else
-            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
-
-            var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
-                return trace.uid;
-            });
-            var sceneData = gd._fullData.filter( function (trace) {
-                return trace.scene === sceneKey &&
-                    queueUIDS.indexOf(trace.uid) === -1;
-            });
-
             // we are only modifying the x domain position with this
             // simple approach
-
             sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
 
             // convert domain to position in pixels
-            sceneLayout.position = {
+            sceneLayout._position = {
                 left: fullLayout._size.l + sceneLayout.domain.x[0]*fullLayout._size.w,
                 top: fullLayout._size.t + (1-sceneLayout.domain.y[1])*fullLayout._size.h,
                 width: fullLayout._size.w *
@@ -620,24 +608,37 @@
             // if this scene has already been loaded it will have it's webgl
             // context parameter so lets reset the domain of the scene as
             // it may have changed (this operates on the containing iframe)
-            if (sceneLayout._scene) sceneLayout._scene.setPosition(sceneLayout.position);
-
+            if (sceneLayout._scene){
+                SceneFrame.setFramePosition(sceneLayout._scene.container, sceneLayout._position);
+            }
             /*
              * We only want to continue to operate on scenes that have
              * data waiting to be displayed or require loading
              */
+            var scene = sceneLayout._scene;
 
-            if (sceneLayout._scene) {
+            // maybe this initialization should happen somewhere else
+            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
+
+            var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
+                return trace.uid;
+            });
+            var sceneData = gd._fullData.filter( function (trace) {
+                return trace.scene === sceneKey &&
+                    queueUIDS.indexOf(trace.uid) === -1;
+            });
+
+            sceneLayout._dataQueue = sceneLayout._dataQueue.concat(sceneData);
+
+            if (scene) {
                 //// if there is no data for this scene destroy it
                 //// woot, lets load all the data in the queue and bail outta here
-                while (sceneData.length) {
-                    var d = sceneData.shift();
-                    d.module.plot(sceneLayout._scene, sceneLayout, d);
+                while (sceneLayout._dataQueue.length) {
+                    var d = sceneLayout._dataQueue.shift();
+                    scene.plot(sceneLayout, d);
                 }
                 return;
             }
-
-            sceneLayout._dataQueue = sceneLayout._dataQueue.concat(sceneData);
 
             if (sceneLayout._loading) return;
             sceneLayout._loading = true;
@@ -652,10 +653,30 @@
                 sceneLayout: sceneLayout,
                 width: fullLayout.width,
                 height: fullLayout.height,
+                baseurl: ENV.BASE_URL,
                 glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
             };
 
             SceneFrame.createScene(sceneOptions);
+
+            SceneFrame.once('scene-error', function (scene) {
+                sceneLayout._scene = scene;
+                SceneFrame.setFramePosition(scene.container,
+                    sceneLayout._position);
+                if ('_modebar' in gd._fullLayout){
+                    gd._fullLayout._modebar.cleanup();
+                    gd._fullLayout._modebar = null;
+                }
+
+                gd._fullLayout._noGL3DSupport = true;
+
+                var pb = gd.querySelector('#plotlybars');
+
+                if (pb) {
+                    pb.innerHTML = '';
+                    pb.parentNode.removeChild(pb);
+                }
+            });
 
             SceneFrame.once('scene-loaded', function (scene) {
 
@@ -681,14 +702,15 @@
                     scene._cameraPositionLastSave = scene.getCameraPosition();
                 }
 
-                scene.setPosition(sceneLayout.position);
+                SceneFrame.setFramePosition(sceneLayout._container,
+                    sceneLayout._position);
 
                 // if data has accumulated on the queue while the iframe
                 // and the webgl-context were loading remove that data
                 // from the queue and draw.
                 while (sceneLayout._dataQueue.length) {
                     var d = sceneLayout._dataQueue.shift();
-                    d.module.plot(sceneLayout._scene, sceneLayout, d);
+                    scene.plot(sceneLayout, d);
                 }
 
                 // focus the iframe removing need to double click for interactivity
@@ -1771,6 +1793,16 @@
                 axswap(gd,gd.data[traces[0]]);
             }
 
+            // swap hovermode if set to "compare x/y data"
+            if (ai === 'orientationaxes') {
+                var hovermode = Plotly.Lib.nestedProperty(gd.layout, 'hovermode');
+                if (hovermode.get() === 'x') {
+                    hovermode.set('y');
+                } else if (hovermode.get() === 'y') {
+                    hovermode.set('x');
+                }
+            }
+
             // check if we need to call axis type
             if((traces.indexOf(0)!==-1) && (axtypeAttrs.indexOf(ai)!==-1)) {
                 Plotly.Axes.clearTypes(gd,traces);
@@ -1876,7 +1908,7 @@
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
             $(gd).trigger('plotly_restyle',[redoit,traces]);
-            if (gd._context.workspace && Themes) {
+            if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
                 Themes.reTile(gd);
             }
         });
@@ -2256,7 +2288,7 @@
         if(!plotDone || !plotDone.then) { plotDone = Promise.resolve(); }
         return plotDone.then(function(){
             $(gd).trigger('plotly_relayout',redoit);
-            if (gd._context.workspace && Themes) {
+            if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
                 Themes.reTile(gd);
             }
         });
