@@ -591,20 +591,8 @@
             var sceneLayout = fullLayout[sceneKey],
                 sceneOptions;
 
-            // maybe this initialization should happen somewhere else
-            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
-
-            var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
-                return trace.uid;
-            });
-            var sceneData = gd._fullData.filter( function (trace) {
-                return trace.scene === sceneKey &&
-                    queueUIDS.indexOf(trace.uid) === -1;
-            });
-
             // we are only modifying the x domain position with this
             // simple approach
-
             sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
 
             // convert domain to position in pixels
@@ -627,18 +615,30 @@
              * We only want to continue to operate on scenes that have
              * data waiting to be displayed or require loading
              */
+            var scene = sceneLayout._scene;
 
-            if (sceneLayout._scene) {
+            // maybe this initialization should happen somewhere else
+            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
+
+            var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
+                return trace.uid;
+            });
+            var sceneData = gd._fullData.filter( function (trace) {
+                return trace.scene === sceneKey &&
+                    queueUIDS.indexOf(trace.uid) === -1;
+            });
+
+            sceneLayout._dataQueue = sceneLayout._dataQueue.concat(sceneData);
+
+            if (scene) {
                 //// if there is no data for this scene destroy it
                 //// woot, lets load all the data in the queue and bail outta here
-                while (sceneData.length) {
-                    var d = sceneData.shift();
-                    d.module.plot(sceneLayout._scene, sceneLayout, d);
+                while (sceneLayout._dataQueue.length) {
+                    var d = sceneLayout._dataQueue.shift();
+                    scene.plot(sceneLayout, d);
                 }
                 return;
             }
-
-            sceneLayout._dataQueue = sceneLayout._dataQueue.concat(sceneData);
 
             if (sceneLayout._loading) return;
             sceneLayout._loading = true;
@@ -661,22 +661,22 @@
 
             SceneFrame.once('scene-error', function (scene) {
                 sceneLayout._scene = scene;
-                SceneFrame.setFramePosition(scene.container, 
+                SceneFrame.setFramePosition(scene.container,
                     sceneLayout._position);
                 if ('_modebar' in gd._fullLayout){
                     gd._fullLayout._modebar.cleanup();
-                    gd._fullLayout._modebar = null; 
+                    gd._fullLayout._modebar = null;
                 }
 
-                gd._fullLayout._noGL3DSupport = true; 
+                gd._fullLayout._noGL3DSupport = true;
 
                 var pb = gd.querySelector('#plotlybars');
-                
-                if (pb) { 
-                    pb.innerHTML = ''; 
+
+                if (pb) {
+                    pb.innerHTML = '';
                     pb.parentNode.removeChild(pb);
                 }
-            }); 
+            });
 
             SceneFrame.once('scene-loaded', function (scene) {
 
@@ -702,7 +702,7 @@
                     scene._cameraPositionLastSave = scene.getCameraPosition();
                 }
 
-                SceneFrame.setFramePosition(sceneLayout._container, 
+                SceneFrame.setFramePosition(sceneLayout._container,
                     sceneLayout._position);
 
                 // if data has accumulated on the queue while the iframe
@@ -710,7 +710,7 @@
                 // from the queue and draw.
                 while (sceneLayout._dataQueue.length) {
                     var d = sceneLayout._dataQueue.shift();
-                    d.module.plot(sceneLayout._scene, sceneLayout, d);
+                    scene.plot(sceneLayout, d);
                 }
 
                 // focus the iframe removing need to double click for interactivity
