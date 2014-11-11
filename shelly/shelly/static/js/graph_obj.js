@@ -5,10 +5,11 @@
 
     // ---Plotly global modules
     /* global Plotly:false, µ:false, micropolar:false,
-        SceneFrame:false, Tabs:false, Examples:false */
+        SceneFrame:false, Tabs:false, Examples:false,
+        Themes:false, ENV:false */
 
     // ---global functions not yet namespaced
-    /* global setFileAndCommentsSize:false, killPopovers:false */
+    /* global setFileAndCommentsSize:false */
 
     // ---external global dependencies
     /* global Promise:false, d3:false */
