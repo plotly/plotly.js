@@ -2391,10 +2391,7 @@
     plots.resize = function(gd) {
         if(typeof gd === 'string') gd = document.getElementById(gd);
 
-        if(gd._context.workspace){
-            killPopovers();
-            setFileAndCommentsSize(gd);
-        }
+        if(gd._context.workspace) setFileAndCommentsSize(gd);
 
         if(gd && $(gd).css('display')!=='none') {
             if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
