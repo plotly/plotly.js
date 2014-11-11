@@ -137,9 +137,10 @@ ModeBar.prototype.getLogo = function(){
     var group = this.createGroup(),
         a = document.createElement('a');
 
+    a.setAttribute('rel', 'tooltip');
     a.href = 'https://plot.ly/';
     a.target = '_blank';
-    a.title = 'Plotly';
+    a.title = 'Produced with Plot.ly';
     a.className = "ploticon-plotlylogo";
 
     group.appendChild(a);
@@ -297,8 +298,8 @@ function handleCamera3d (ev) {
 }
 
 ModeBar.prototype.cleanup = function(){
-    this.element.innerHTML = ''; 
-    var modebarParent = this.element.parentNode; 
+    this.element.innerHTML = '';
+    var modebarParent = this.element.parentNode;
     modebarParent.removeChild(this.element);
 };
 
