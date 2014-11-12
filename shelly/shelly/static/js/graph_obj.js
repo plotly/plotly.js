@@ -351,7 +351,7 @@
         // Polar plots
         if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
 
-        if(gd._context.editable) Plotly.ToolPanel.tweakMenu();
+        if(gd._context.editable) Plotly.ToolPanel.tweakMenu(gd);
 
         // so we don't try to re-call Plotly.plot from inside
         // legend and colorbar, if margins changed
@@ -822,7 +822,7 @@
 
             gd._fullLayout._paperdiv = paperDiv;
 
-            Plotly.ToolPanel.tweakMenu();
+            Plotly.ToolPanel.tweakMenu(gd);
         }
 
         // fulfill more gd requirements
