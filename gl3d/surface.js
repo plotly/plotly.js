@@ -2,30 +2,29 @@
 var createSurface = require('gl-surface-plot'),
     tinycolor = require('tinycolor2'),
     ndarray = require('ndarray'),
-    ops = require('ndarray-ops'),
     fill = require('ndarray-fill');
 
 function Surface (config) {
 
     this.config = config;
-
+    this.Plotly = config.Plotly;
 }
 
 module.exports = Surface;
 
-function parseColorScale (colorscale) {
+function parseColorScale (colorscale, alpha) {
+    if (alpha === undefined) alpha = 1;
+
     return colorscale.map( function (elem) {
         var index = elem[0];
         var color = tinycolor(elem[1]);
         var rgb = color.toRgb();
         return {
             index: index,
-            rgb: [rgb.r, rgb.g, rgb.b]
+            rgb: [rgb.r, rgb.g, rgb.b, alpha]
         };
     });
 }
-
-
 
 var proto = Surface.prototype;
 
@@ -35,12 +34,44 @@ proto.attributes = {
     z: {type: 'data_array'},
     colorscale: {from: 'Heatmap'},
     showscale: {from: 'Heatmap'},
-    reversescale: {from: 'Heatmap'}
+    reversescale: {from: 'Heatmap'},
+    lighting: {
+        ambient: {
+            type: 'number',
+            min: 0.01,
+            max: 0.99,
+            dflt: 0.8
+        },
+        diffuse: {
+            type: 'number',
+            min: 0.01,
+            max: 0.99,
+            dflt: 0.8
+        },
+        specular: {
+            type: 'number',
+            min: 0.01,
+            max: 0.99,
+            dflt: 0.05
+        },
+        roughness: {
+            type: 'number',
+            min: 0.01,
+            max: 0.99,
+            dflt: 0.5
+        },
+        fresnel: {
+            type: 'number',
+            min: 0.01,
+            max: 0.99,
+            dflt: 0.2
+        }
+    }
 };
 
 
 proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
-    var _this = this;
+    var i, _this = this;
     var Plotly = this.config.Plotly;
 
     function coerce(attr, dflt) {
@@ -56,8 +87,33 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         traceOut.visible = false;
         return;
     }
+
+    var xlen = z[0].length;
+    var ylen = z.length;
+
     coerce('x');
     coerce('y');
+
+    if (!Array.isArray(traceOut.x)) {
+        // build a linearly scaled x
+        traceOut.x = [];
+        for (i = 0; i < xlen; ++i) {
+            traceOut.x[i] = i;
+        }
+    }
+
+    if (!Array.isArray(traceOut.y)) {
+        traceOut.y = [];
+        for (i = 0; i < ylen; ++i) {
+            traceOut.y[i] = i;
+        }
+    }
+
+    coerce('lighting.ambient');
+    coerce('lighting.diffuse');
+    coerce('lighting.specular');
+    coerce('lighting.roughness');
+    coerce('lighting.fresnel');
 
     coerceHeatmap('colorscale');
 
@@ -67,7 +123,7 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     // apply the colorscale reversal here, so we don't have to
     // do it in separate modules later
     if(reverseScale) {
-        traceOut.colorscale = traceOut.colorscale.map(flipScale).reverse();
+        traceOut.colorscale = traceOut.colorscale.map(this.flipScale).reverse();
     }
 
     if(showScale) {
@@ -76,33 +132,32 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
 
 };
 
-function flipScale(si){ return [1 - si[0], si[1]]; }
+proto.flipScale = function (si) {
+    return [1 - si[0], si[1]];
+};
 
-proto.plot = function (scene, sceneLayout, data) {
+proto.update = function update (scene, sceneLayout, data, surface) {
 
-    /*
-     * Create a new surfac
-     */
-    var surface = scene.glDataMap[data.uid];
-    // handle visible trace cases
-    if (!data.visible) {
-        if (surface) surface.visible = data.visible;
-        return scene.update(sceneLayout, surface);
-    }
-
-
-    var i , j,
-        colormap = parseColorScale(data.colorscale),
-        zdata = data.z,
+    var i,
+        alpha = data.opacity,
+        colormap = parseColorScale(data.colorscale, alpha),
+        z = data.z,
         x = data.x,
         y = data.y,
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
         ticks = [[],[]],
-        Nx = zdata[0].length,
-        Ny = zdata.length,
-        field = ndarray(new Float32Array(Nx*Ny), [Nx, Ny]),
+        xlen = z[0].length,
+        ylen = z.length,
+        field = ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
+        coords = [
+            ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
+            ndarray(new Float32Array(xlen * ylen), [xlen, ylen])
+        ],
+        xc = coords[0],
+        yc = coords[1],
+        hasCoords = false,
         gl = scene.shell.gl;
 
     /*
@@ -113,49 +168,49 @@ proto.plot = function (scene, sceneLayout, data) {
      * which is the transpose of 'gl-surface-plot'.
      */
     fill(field, function(row, col) {
-        return Number(zdata[col][row]);
+        return zaxis.d2l(z[col][row]);
     });
 
-    // Map zdata if log axis
-    if (zaxis.type === 'log') {
-        ops.divseq(ops.logeq(field), Math.LN10);
-    }
+    // coords x
+    if (Array.isArray(x[0])) {
+        fill(xc, function(row, col) {
+            return zaxis.d2l(x[col][row]);
+        });
 
-    if (Array.isArray(x) && x.length) {
-       // if x is set, use it to defined the ticks
-        for (i=0; i<Nx; i++) {
-            ticks[0][i] = xaxis.d2c(x[i]);
-        }
+        hasCoords = true;
+
     } else {
-       // if not, make linear space
-        for (i=0; i<Nx; i++) {
-            if (xaxis.type === 'log') ticks[0][i] = xaxis.c2l(i);
-            else ticks[0][i] = i;
+        // ticks x
+        for (i = 0; i < xlen; i++) {
+            ticks[0][i] = xaxis.d2l(x[i]);
         }
     }
 
-    if (Array.isArray(y) && y.length) {
-       // if y is set, use it to defined the ticks
-        for (j=0; j<Ny; j++) {
-            ticks[1][j] = yaxis.d2c(y[j]);
-        }
+    // coords y
+    if (Array.isArray(y[0])) {
+        fill(yc, function(row, col) {
+            return zaxis.d2l(y[col][row]);
+        });
+
+        hasCoords = true;
+
     } else {
-       // if not, make linear space
-        for (j=0; j<Ny; j++) {
-            if (yaxis.type === 'log') ticks[1][j] = yaxis.c2l(j);
-            else ticks[1][j] = j;
+        // ticks y
+        for (i = 0; i < ylen; i++) {
+            ticks[1][i] = yaxis.d2l(y[i]);
         }
     }
-
 
     var params = {
         field: field,
-        ticks: ticks,
         colormap: colormap
     };
 
-
-    surface = scene.glDataMap[data.uid];
+    if (hasCoords) {
+        params.coords = coords;
+    } else {
+        params.ticks = ticks;
+    }
 
     if (surface) {
         /*
@@ -167,27 +222,34 @@ proto.plot = function (scene, sceneLayout, data) {
         /*
          * Push it onto the render queue
          */
-        params.pickId       = (scene.objectCount++) % 256;
+
+        var pickIds = scene.allocIds(1);
+
+        params.pickId       = pickIds.ids[0];
         surface             =  createSurface(gl, field, params);
-        surface.groupId     = (scene.objectCount-1) >>> 8;
+        surface.groupId     = pickIds.group;
         surface.plotlyType  = data.type;
 
         scene.glDataMap[data.uid] = surface;
     }
 
-    surface.ambientLight       = 0.8;
-    surface.diffuseLight       = 0.8;
-    surface.specularLight      = 0.0;
-    surface.roughness          = 0.5;
-    surface.fresnel            = 0.2;
-
+    if ('lighting' in data) {
+        surface.ambientLight   = data.lighting.ambient;
+        surface.diffuseLight   = data.lighting.diffuse;
+        surface.specularLight  = data.lighting.specular;
+        surface.roughness      = data.lighting.roughness;
+        surface.fresnel        = data.lighting.fresnel;
+    }
     // uids determine which data is tied to which gl-object
     surface.uid = data.uid;
     surface.visible = data.visible;
-    scene.update(sceneLayout, surface);
+
+    if (alpha && alpha < 1) surface.supportsTransparency = true;
+
+    return surface;
 
 };
 
 proto.colorbar = function(gd, cd) {
-    Plotly.Heatmap.colorbar(gd, cd);
+    this.Plotly.Heatmap.colorbar(gd, cd);
 };

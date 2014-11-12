@@ -1,3 +1,5 @@
+'use strict';
+
 (function () {
 
 /**
@@ -26,7 +28,7 @@ function ModeBar (config) {
         var group = _this.createGroup();
 
         buttonGroup.forEach( function (buttonName) {
-            var buttonConfig = _this.config[buttonName];
+            var buttonConfig = _this.config()[buttonName];
 
             if (!buttonConfig) {
                 throw new Error(buttonName + ' not specfied in modebar configuration');
@@ -41,6 +43,9 @@ function ModeBar (config) {
         _this.element.appendChild(group);
     });
 
+    if (this.graphInfo.displaylogo) {
+        this.element.appendChild(this.getLogo());
+    }
 
     config.container.appendChild(this.element);
 
@@ -125,6 +130,23 @@ ModeBar.prototype.hasButtons = function (buttons) {
     return true;
 };
 
+/**
+ * @return {HTMLDivElement} The logo image wrapped in a group
+ */
+ModeBar.prototype.getLogo = function(){
+    var group = this.createGroup(),
+        a = document.createElement('a');
+
+    a.setAttribute('rel', 'tooltip');
+    a.href = 'https://plot.ly/';
+    a.target = '_blank';
+    a.title = 'Produced with Plot.ly';
+    a.className = "ploticon-plotlylogo";
+
+    group.appendChild(a);
+    group.classList.add('btn-group--logo');
+    return group;
+}
 
 /**
  * Apply D3 cartesian mode attributes to layout to update hover functionality
@@ -140,8 +162,6 @@ function handleCartesian (ev) {
         Plotly = this.Plotly,
         _this = this;
 
-    aobj[astr] = val;
-
     if(astr === 'zoom') {
         var xr = layout.xaxis.range,
             yr = layout.yaxis.range,
@@ -154,6 +174,14 @@ function handleCartesian (ev) {
             'yaxis.range[1]': r0*yr[1] + r1*yr[0]
         };
     }
+
+    // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
+    if (astr==='hovermode' && (val==='x' || val==='y')) {
+        val = layout._isHoriz ? 'y' : 'x';
+        button.setAttribute('data-val', val);
+    }
+
+    aobj[astr] = val;
 
     Plotly.relayout(graphInfo, aobj).then( function() {
         _this.updateActiveButton();
@@ -198,11 +226,11 @@ function handleHover3d (ev) {
 }
 
 /**
- * Reconfigure keyboard bindings for webgl3D camera control
+ * Reconfigure keyboard bindings for webgl3D camera control on drag
  * @Param {object} ev event object
  * @Return {HTMLelement}
  */
-function handle3dCamera (ev) {
+function handleDrag3d (ev) {
     var _this = this,
         button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
@@ -216,18 +244,10 @@ function handle3dCamera (ev) {
             return layout[sceneKey];
         });
 
-    if (attr === 'reset') {
-        // Reset camera position to initial value, go in rotate mode
-        val = 'rotate';
-        var cameraPositionInitial = layout.scene._cameraPositionInitial;
-        layoutUpdate = {
-            'dragmode': 'rotate',
-            'scene.cameraposition': $.extend(true, [], cameraPositionInitial)
-        };
-    } else {
-        layoutUpdate[attr] = val;
-    }
+    // set dragmode to given value
+    layoutUpdate[attr] = val;
 
+    // update the webgl3D key binding
     scenes.forEach( function (sceneLayout) {
         if ('_scene' in sceneLayout && 'camera' in sceneLayout._scene) {
             sceneLayout._scene.camera.keyBindingMode = val;
@@ -242,95 +262,145 @@ function handle3dCamera (ev) {
 
 
 /**
+ * Reset the position of the webgl3D camera
+ * @Param {object} ev event object
+ * @Return {HTMLelement}
+ */
+function handleCamera3d (ev) {
+    var _this = this,
+        button = ev.currentTarget,
+        attr = button.getAttribute('data-attr'),
+        val = button.getAttribute('data-val') || true,
+        layoutUpdate = {},
+        graphInfo = this.graphInfo,
+        layout = graphInfo._fullLayout,
+        scenes = Object.keys(layout).filter(function(k){
+            return k.match(/^scene[0-9]*$/);
+        }).map( function (sceneKey) {
+            return layout[sceneKey];
+        }),
+        _scene = layout.scene._scene;
+
+    if (attr === 'resetDefault') {
+        // Reset camera position to default
+        _scene.setCameraToDefault();
+    } else if (attr === 'resetLastSave') {
+        // Reset camera back to the position at the last save
+        var cameraPositionLastSave = _scene._cameraPositionLastSave;
+        _scene.setCameraPosition(cameraPositionLastSave);
+    }
+
+    /**
+     * TODO multiple scenes!
+     * Ideally, in a multiple scene plot, the modebar buttons should
+     * reset the camera position of the scene last moved.
+     */
+}
+
+ModeBar.prototype.cleanup = function(){
+    this.element.innerHTML = '';
+    var modebarParent = this.element.parentNode;
+    modebarParent.removeChild(this.element);
+};
+
+/**
  *
  * @Property config specification hash of button parameters
  */
-ModeBar.prototype.config = {
-    zoom2d: {
-        title: 'Zoom',
-        attr: 'dragmode',
-        val: 'zoom',
-        icon: 'ploticon-zoombox',
-        click: handleCartesian
-    },
-    pan2d: {
-        title: 'Pan',
-        attr: 'dragmode',
-        val: 'pan',
-        icon: 'ploticon-pan',
-        click: handleCartesian
-    },
-    zoomIn2d: {
-        title: 'Zoom in',
-        attr: 'zoom',
-        val: 'in',
-        icon: 'ploticon-zoom_plus',
-        click: handleCartesian
-    },
-    zoomOut2d: {
-        title: 'Zoom out',
-        attr: 'zoom',
-        val: 'out',
-        icon: 'ploticon-zoom_minus',
-        click: handleCartesian
-    },
-    autoScale2d: {
-        title: 'Autoscale',
-        attr: 'allaxes.autorange',
-        val: '',
-        icon: 'ploticon-autoscale',
-        click: handleCartesian
-    },
-    hoverClosest2d: {
-        title: 'Show closest data on hover',
-        attr: 'hovermode',
-        val: 'closest',
-        icon: 'ploticon-tooltip_basic',
-        click: handleCartesian
-    },
-    hoverCompare2d: {
-        title: 'Compare data on hover',
-        attr: 'hovermode',
-        val: 'x',
-        icon: 'ploticon-tooltip_compare',
-        click: handleCartesian
-    },
-    resetCamera3d: {
-        title: 'Reset camera',
-        attr: 'reset',
-        val: '',
-        icon: 'icon-home',
-        click: handle3dCamera
-    },
-    zoom3d: {
-        title: 'Zoom',
-        attr: 'dragmode',
-        val: 'zoom',
-        icon: 'ploticon-zoombox',
-        click: handle3dCamera
-    },
-    pan3d: {
-        title: 'Pan',
-        attr: 'dragmode',
-        val: 'pan',
-        icon: 'ploticon-pan',
-        click: handle3dCamera
-    },
-    rotate3d: {
-        title: 'Rotate',
-        attr: 'dragmode',
-        val: 'rotate',
-        icon: 'icon-undo',
-        click: handle3dCamera
-    },
-    closest3d: {
-        title: 'Toggle show closest data on hover',
-        attr: 'hovermode',
-        val: 'closest',
-        icon: 'ploticon-tooltip_basic',
-        click: handleHover3d
-    }
-
+ModeBar.prototype.config = function config() {
+    return {
+        zoom2d: {
+            title: 'Zoom',
+            attr: 'dragmode',
+            val: 'zoom',
+            icon: 'ploticon-zoombox',
+            click: handleCartesian
+        },
+        pan2d: {
+            title: 'Pan',
+            attr: 'dragmode',
+            val: 'pan',
+            icon: 'ploticon-pan',
+            click: handleCartesian
+        },
+        zoomIn2d: {
+            title: 'Zoom in',
+            attr: 'zoom',
+            val: 'in',
+            icon: 'ploticon-zoom_plus',
+            click: handleCartesian
+        },
+        zoomOut2d: {
+            title: 'Zoom out',
+            attr: 'zoom',
+            val: 'out',
+            icon: 'ploticon-zoom_minus',
+            click: handleCartesian
+        },
+        autoScale2d: {
+            title: 'Autoscale',
+            attr: 'allaxes.autorange',
+            val: '',
+            icon: 'ploticon-autoscale',
+            click: handleCartesian
+        },
+        hoverClosest2d: {
+            title: 'Show closest data on hover',
+            attr: 'hovermode',
+            val: 'closest',
+            icon: 'ploticon-tooltip_basic',
+            click: handleCartesian
+        },
+        hoverCompare2d: {
+            title: 'Compare data on hover',
+            attr: 'hovermode',
+            val: this.graphInfo._fullLayout._isHoriz ? 'y' : 'x',
+            icon: 'ploticon-tooltip_compare',
+            click: handleCartesian
+        },
+        zoom3d: {
+            title: 'Zoom',
+            attr: 'dragmode',
+            val: 'zoom',
+            icon: 'ploticon-zoombox',
+            click: handleDrag3d
+        },
+        pan3d: {
+            title: 'Pan',
+            attr: 'dragmode',
+            val: 'pan',
+            icon: 'ploticon-pan',
+            click: handleDrag3d
+        },
+        rotate3d: {
+            title: 'Rotate',
+            attr: 'dragmode',
+            val: 'rotate',
+            icon: 'icon-undo',
+            click: handleDrag3d
+        },
+        resetCameraDefault3d: {
+            title: 'Reset camera to default',
+            attr: 'resetDefault',
+            val: false,
+            icon: 'icon-home',
+            click: handleCamera3d
+        },
+        resetCameraLastSave3d: {
+            title: 'Reset camera to last save',
+            attr: 'resetLastSave',
+            val: false,
+            icon: 'icon-camera-retro',
+            click: handleCamera3d
+        },
+        closest3d: {
+            title: 'Toggle show closest data on hover',
+            attr: 'hovermode',
+            val: 'closest',
+            icon: 'ploticon-tooltip_basic',
+            click: handleHover3d
+        }
+    };
 };
 
 

@@ -5,7 +5,7 @@ var camera = require('./scene-camera'),
     createAxes = require('gl-axes'),
     getAxesPixelRange = require('gl-axes/properties'),
     arrtools = require('arraytools'),
-    createSelect = require('gl-select'),
+    createSelect = require('gl-select-static'),
     createSpikes = require('gl-spikes'),
     pixelLength = require('./compute-tick-length'),
     project = require('./project'),
@@ -44,18 +44,28 @@ function Scene (options, shell) {
     if (!(this instanceof Scene)) return new Scene(shell);
 
     this.shell                   =  shell;
-    this.camera                  = camera(shell);
     this.container               = options.container || null;
     this.renderQueue             = [];
+    this.glDataMap               = {};
+
+    if (!this.shell) {
+         return void 0;
+    }
+
+    this.dirty                   = true;  //Set if drawing buffer needs redraw
+    this.selectDirty             = true;  //Set if selection buffer needs redraw
+    this.moving                  = false; //Set if camera moving (don't draw select axes)
+
+
+    this.camera                  = camera(shell, this);
     this.axis                    = null;
     this.id                      = options.id;
     this.Plotly                  = options.Plotly;
 
-    this.selectBuffer            = null;
-    this.pickRadius              = 30; //Number of pixels to search for closest point
+    this.selectBuffers           = [];
+    this.pickRadius              = 10; //Number of pixels to search for closest point
     this.objectCount             = 0;
 
-    this.glDataMap               = {};
     this.baseRange               = [ [ Infinity,  Infinity,  Infinity],  // min (init opposite)
                                      [-Infinity, -Infinity, -Infinity] ];  // max (init opposite)
 
@@ -63,7 +73,7 @@ function Scene (options, shell) {
                                      [ 6, 6, 6] ];  // max (init opposite)
 
     ////////////// AXES OPTIONS DEFAULTS ////////////////
-    this.axesOpts = {};
+    this.axesOpts                = {};
 
     this.axesOpts.bounds         = [ [-10, -10, -10],
                                      [ 10,  10,  10] ];
@@ -135,30 +145,41 @@ function Scene (options, shell) {
         0, 0, 0, 1
     ]);
 
+    // set default camera position
     this.defaultView = [
         1.25, 1.25, 1.25,
         0,    0,    0,
         0,    0,    1
     ];
+    this.setCameraToDefault();
 
-    // preconfigure view
-    this.camera.lookAt(
-        this.defaultView.slice(0,3),
-        this.defaultView.slice(3,6),
-        this.defaultView.slice(6,9)
-    );
+    /**
+     * get the default camera position in plotly coords,
+     * for reset camera modebar button
+     */
+    this.cameraPositionDefault = this.getCameraPosition();
 
     //Currently selected data point
     this.selection = null;
 
     // Bootstrap the initial scene if sceneLayout is provided
-    if (options.sceneLayout) this.update(options.sceneLayout, null);
+    if (options.sceneLayout) this.plot(options.sceneLayout, null);
 
     /*
      * gl-render is triggered in the animation loop, we hook in
      * glcontext object into the loop here
      */
     shell.on('gl-render', this.onRender.bind(this));
+
+    shell.on('tick', this.onTick.bind(this));
+
+    var self = this;
+    shell.on('resize', function() {
+        self.dirty = true;
+        self.selectDirty = true;
+    });
+
+    return void 0;
 }
 
 
@@ -166,33 +187,74 @@ module.exports = Scene;
 
 proto = Scene.prototype;
 
+proto.groupCount = function() {
+    if(this.objectCount === 0) {
+        return 0;
+    }
+    return (((this.objectCount-1)/255)|0) + 1;
+};
 
+//Allocates count pickIds.
+// The result is an object with two fields:
+//      * group is the group id for the object
+//      * ids is an array of pickIds
+proto.allocIds = function(count) {
+    var prevGroup = ((this.objectCount-1)/255)|0;
+    var nextGroup = ((this.objectCount+count-1)/255)|0;
+    if(nextGroup !== prevGroup) {
+        this.objectCount = nextGroup * 255;
+    }
+    var result = this.objectCount;
+    this.objectCount += count;
+    var array = new Array(count);
+    for(var i=0; i<count; ++i) {
+        array[i] = (result + i) % 255;
+    }
+    return {
+        group: nextGroup,
+        ids: array
+    };
+};
 
-proto.handlePick = function(cameraParameters) {
-    var i, pass, glObject,
-        pickResult=null,
-        pickData=null,
-        curResult=null,
-        curData=null;
+//Every tick query the select buffer and check for changes
+proto.onTick = function() {
+    if(this.moving) {
+        return;
+    }
+    var pickResult = this.handlePick(this.shell.mouseX, this.shell.height-this.shell.mouseY);
+    if(!pickResult) {
+        if(this.selection) {
+            this.dirty = true;
+        }
+    } else if(this.selection) {
+        //Compare selections
+        var prev = this.selection.mouseCoordinate;
+        var next = pickResult.mouseCoordinate;
+        if(prev[0] !== next[0] || prev[1] !== next[1]) {
+            this.dirty = true;
+        }
+    } else {
+        this.dirty = true;
+    }
+    this.selection = pickResult;
+};
 
-    if(!this.selectBuffer) {
+proto.handlePick = function(x, y) {
+    if(this.moving) {
+        return null;
+    }
+    if(!this._lastCamera) {
         return null;
     }
 
-    this.selectBuffer.shape = [this.shell.height,this.shell.width];
+    var cameraParameters = this._lastCamera;
+    var pickResult = null, pickData = null;
 
     //Do one pass for each group of objects, find the closest point in z
-    for(pass=0; (pass<<8)<this.objectCount; ++pass) {
+    for(var pass=0; pass<this.selectBuffers.length; ++pass) {
 
-        //First render all objects in this group to the select buffer
-        this.selectBuffer.begin(this.shell.mouseX, this.shell.mouseY, this.pickRadius);
-        for (i = 0; i < this.renderQueue.length; ++i) {
-            glObject = this.renderQueue[i];
-            if(glObject.groupId === pass) {
-                glObject.drawPick(cameraParameters);
-            }
-        }
-        curResult = this.selectBuffer.end();
+        //Run query
+        var curResult = this.selectBuffers[pass].query(x,y,this.pickRadius);
 
         //Skip this pass if the result was not valid
         if(!curResult || (pickResult && curResult.distance > pickResult.distance)) {
@@ -200,12 +262,12 @@ proto.handlePick = function(cameraParameters) {
         }
 
         //Scan through objects and find the selected point
-        for(i = 0; i < this.renderQueue.length; ++i) {
-            glObject = this.renderQueue[i];
+        for(var i = 0; i < this.renderQueue.length; ++i) {
+            var glObject = this.renderQueue[i];
             if(glObject.groupId !== pass) {
                 continue;
             }
-            curData = glObject.pick(curResult);
+            var curData = glObject.pick(curResult);
             if(curData) {
                 curData.glObject  = glObject;
 
@@ -223,7 +285,7 @@ proto.handlePick = function(cameraParameters) {
 
     //Compute data coordinate and screen location for pick result
     if(pickData) {
-        glObject = pickData.glObject;
+        var glObject = pickData.glObject;
 
         //Compute data coordinate for point
         switch(glObject.plotlyType) {
@@ -251,9 +313,39 @@ proto.handlePick = function(cameraParameters) {
     }
 
     return pickData;
+}
+
+proto.renderPick = function(cameraParameters) {
+    if(this.selectBuffers.length <= 0) {
+        return null;
+    }
+    if(!this.selectDirty) {
+        return;
+    }
+    this.selectDirty = false;
+    var curObject = 0;
+    for(var pass=0; pass<this.selectBuffers.length; ++pass) {
+        var select = this.selectBuffers[pass];
+        select.shape = [this.shell.width, this.shell.height];
+        select.begin();
+        for(var i=0; i<this.renderQueue.length; ++i) {
+            var glObject = this.renderQueue[i];
+            if(glObject.groupId === pass) {
+                glObject.drawPick(cameraParameters);
+            }
+        }
+        select.end();
+    }
 };
 
 proto.onRender = function () {
+
+    //Only draw if dirty
+    if(!this.dirty) {
+        return;
+    }
+    this.dirty = false;
+
     /*
      * On each render animation cycle reset camera parameters
      * in case view has changed.
@@ -271,6 +363,15 @@ proto.onRender = function () {
         model: this.model
     };
 
+    this._lastCamera = cameraParameters;
+
+    // render for point picking
+    if(!this.moving) {
+        this.renderPick(cameraParameters);
+    } else {
+        this.pickResult = null;
+    }
+
     var i, glObject, ticks = [],
         gl = this.shell.gl,
         sceneLayout = this.sceneLayout,
@@ -279,6 +380,15 @@ proto.onRender = function () {
         width = this.shell.width,
         height = this.shell.height,
         pickResult;
+
+    //Clear buffer
+    gl.clearColor(
+        this.shell.clearColor[0],
+        this.shell.clearColor[1],
+        this.shell.clearColor[2],
+        this.shell.clearColor[3]);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
 
     var centerPoint = [0,0,0];
     function solveLength(a, b) {
@@ -293,10 +403,9 @@ proto.onRender = function () {
 
     // turns on depth rendering order.
     gl.enable(gl.DEPTH_TEST);
-    gl.clear(gl.DEPTH_BUFFER_BIT);
 
-    // do point picking
-    this.selection = pickResult = this.handlePick(cameraParameters);
+    //Draw picking axes
+    pickResult = this.selection;
 
     if (this.axis) {
         glRange = getAxesPixelRange(this.axis,
@@ -358,14 +467,12 @@ proto.onRender = function () {
      */
     for (i = 0; i < this.renderQueue.length; ++i) {
         glObject = this.renderQueue[i];
+        if (glObject.supportsTransparency
+            && glObject.constructor.name === 'SurfacePlot') continue;
         glObject.axesBounds = [
           this.axis.bounds[0].slice(),
           this.axis.bounds[1].slice()
         ];
-        if (pickResult) {
-
-
-        }
         glObject.draw(cameraParameters, false);
     }
 
@@ -380,15 +487,17 @@ proto.onRender = function () {
      * Draw axes spikes for picking
      */
     if(pickResult && this.axisSpikes && this.spikeEnable) {
-        this.axisSpikes.update({
-            position:       pickResult.dataCoordinate,
-            bounds:         this.axis.bounds,
-            colors:         this.spikeProperties.colors,
-            drawSides:      this.spikeProperties.sides,
-            enabled:        this.spikeProperties.enable,
-            lineWidth:      this.spikeProperties.width
-        });
-        this.axisSpikes.draw(cameraParameters);
+        if(!this.moving) {
+            this.axisSpikes.update({
+                position:       pickResult.dataCoordinate,
+                bounds:         this.axis.bounds,
+                colors:         this.spikeProperties.colors,
+                drawSides:      this.spikeProperties.sides,
+                enabled:        this.spikeProperties.enable,
+                lineWidth:      this.spikeProperties.width
+            });
+            this.axisSpikes.draw(cameraParameters);
+        }
     }
 
     for (i = 0; i < this.renderQueue.length; ++i) {
@@ -401,7 +510,10 @@ proto.onRender = function () {
 };
 
 
-proto.update = function (sceneLayout, glObject) {
+proto.plot = function (sceneLayout, data) {
+
+    this.dirty = true;
+    this.selectDirty = true;
 
     // sets the modules layout with incoming layout.
     // also set global layout properties.
@@ -410,8 +522,43 @@ proto.update = function (sceneLayout, glObject) {
     // incoming layout in Plotly.plot()
     this.setAndSyncLayout(sceneLayout);
 
-    // add to queue if visible, remove if not visible.
-    this.updateRenderQueue(glObject);
+  // allocate any extra select buffers
+    var bufferCount = this.groupCount();
+    while(this.selectBuffers.length < bufferCount) {
+        this.selectBuffers.push(
+            createSelect(
+                this.shell.gl,
+                [this.shell.height,this.shell.width]));
+    }
+
+    if(!this.axisSpikes) {
+        this.axisSpikes = createSpikes(this.shell.gl);
+    }
+
+    for (var i = 0; i < 3; ++i) {
+
+        var axes = sceneLayout[this.axesNames[i]];
+
+        //////// configure Plotly axes functions
+        this.Plotly.Axes.setConvert(axes);
+        axes.setScale = function () {};
+    }
+
+    if (data) {
+
+        var glObject = this.glDataMap[data.uid] || null;
+
+        if (data.visible) {
+            glObject = data.module.update(this, sceneLayout, data, glObject);
+        }
+
+        if (!data.visible && glObject) glObject.visible = data.visible;
+
+        if (glObject) this.glDataMap[data.uid] = glObject;
+
+        // add to queue if visible, remove if not visible.
+        this.updateRenderQueue(glObject);
+    }
 
     // set manual range by clipping globjects, or calculate new auto-range
     this.setAxesRange();
@@ -419,57 +566,29 @@ proto.update = function (sceneLayout, glObject) {
     // uses internal range to set this.model to autoscale data
     this.setModelScale();
 
-    // configues axes: grabs necessary stuff out of the layouts and applies it.
+    // configues axes:
     this.configureAxes();
 
-    if(!this.selectBuffer) {
-        this.selectBuffer = createSelect(this.shell.gl, [this.shell.height,this.shell.width]);
-    }
-
-    if(!this.axisSpikes) {
-        this.axisSpikes = createSpikes(this.shell.gl);
-    }
-
-    return;
 };
 
 
 proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
-    var cameraPosition;
     this.sceneLayout = sceneLayout;
 
-    cameraPosition = sceneLayout.cameraposition;
-
+    // exception: set container color with layout bg color
     if (sceneLayout.bgcolor) {
         this.container.style.background = sceneLayout.bgcolor;
     }
 
-    // set webgl state from layout
-
-    if (Array.isArray(cameraPosition) && cameraPosition.length === 3) {
-        this.camera.rotation = cameraPosition[0];
-        this.camera.center = cameraPosition[1];
-        this.camera.distance = cameraPosition[2];
-    }
-
-    // set Layout state from webgl
-    this.saveStateToLayout(sceneLayout);
-};
-
-
-proto.saveStateToLayout = function () {
-    var sceneLayout = this.sceneLayout;
-    sceneLayout.cameraposition = [
-        arrayCopy1D(this.camera.rotation),
-        arrayCopy1D(this.camera.center),
-        this.camera.distance
-    ];
+    this.dirty = true;
+    this.selectDirty = true;
 };
 
 
 proto.updateRenderQueue = function (glObject) {
 
     if (!glObject) return;
+
     var visible = (glObject.visible === false) ? false : true;
     var idx = this.renderQueue.indexOf(glObject);
 
@@ -486,15 +605,6 @@ proto.updateRenderQueue = function (glObject) {
     } // other cases we don't need to do anything
 
     return;
-};
-
-
-proto.setPosition = function (viewport) {
-    this.container.style.position = 'absolute';
-    this.container.style.left = viewport.left + 'px';
-    this.container.style.top = viewport.top + 'px';
-    this.container.style.width = viewport.width + 'px';
-    this.container.style.height = viewport.height + 'px';
 };
 
 proto.getCenter = function () {
@@ -542,7 +652,7 @@ proto.setAxesRange = function () {
     // starting default, else use the maximal minimal infinite
     // range when computing.
     var i, j, bounds, glObj;
-    var axes, axesIn, range;
+    var axes, range;
     var sceneLayout = this.sceneLayout;
 
     if (this.renderQueue.length) {
@@ -600,6 +710,9 @@ proto.setAxesRange = function () {
     }
 
     this.range = range;
+
+    this.dirty = true;
+    this.selectDirty = true;
 };
 
 /**
@@ -625,6 +738,9 @@ proto.setModelScale = function () {
         d0,     d1,     d2,    1
     ]);
 
+    this.dirty = true
+    this.selectDirty = true
+
 };
 
 
@@ -637,7 +753,7 @@ proto.configureAxes = function configureAxes () {
     /*jshint camelcase: false */
 
     var axes,
-        opts = this.axesOpts,
+        opts        = this.axesOpts,
         sceneLayout = this.sceneLayout;
 
     for (var i = 0; i < 3; ++i) {
@@ -724,6 +840,9 @@ proto.configureAxes = function configureAxes () {
 
     if (this.axis) this.axis.update(this.axesOpts);
     else this.axis = createAxes(this.shell.gl, this.axesOpts);
+
+    this.dirty = true;
+    this.selectDirty = true;
 };
 
 
@@ -759,22 +878,69 @@ proto.toPNG = function () {
     return dataURL;
 };
 
+// for reset camera button in modebar
+proto.setCameraToDefault = function setCameraToDefault () {
+    this.camera.lookAt(
+        this.defaultView.slice(0,3),
+        this.defaultView.slice(3,6),
+        this.defaultView.slice(6,9)
+    );
+    this.dirty = true;
+    this.selectDirty = true;
+    return;
+};
+
+// get camera position in plotly coords from 'orbit-camera' coords
+proto.getCameraPosition = function getCameraPosition () {
+    return [
+        arrayCopy1D(this.camera.rotation),
+        arrayCopy1D(this.camera.center),
+        this.camera.distance
+   ];
+};
+
+// set camera position with a set of plotly coords
+proto.setCameraPosition = function setCameraPosition (cameraPosition) {
+    if (Array.isArray(cameraPosition) && cameraPosition.length === 3) {
+        this.camera.rotation = arrayCopy1D(cameraPosition[0]);
+        this.camera.center = arrayCopy1D(cameraPosition[1]);
+        this.camera.distance = cameraPosition[2];
+    }
+    this.dirty = true;
+    this.selectDirty = true;
+    return;
+};
+
+// save camera position to user layout (i.e. gd.layout)
+proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) {
+    var lib = this.Plotly.Lib;
+    var prop = lib.nestedProperty(layout, this.id + '.cameraposition');
+    var cameraposition = this.getCameraPosition();
+    prop.set(cameraposition);
+    this.dirty = true;
+    this.selectDirty = true;
+    return;
+};
+
 proto.disposeAll = function disposeAll () {
+
     this.renderQueue.forEach( function (glo) {
         glo.dispose();
     });
+
     this.renderQueue = [];
+    this.glDataMap = {};
+
     if (this.axis) {
         this.axis.dispose();
         this.axis = null;
     }
-    if(this.select) {
-        this.select.dispose();
-        this.select = null;
-    }
     if(this.axisSpikes) {
         this.axisSpikes.dispose();
         this.axisSpikes = null;
+    }
+    for(var i=0; i<this.selectBuffers.length; ++i) {
+        this.selectBuffers[i].dispose();
     }
 };
 
