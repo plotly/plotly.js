@@ -5,10 +5,11 @@
 
     // ---Plotly global modules
     /* global Plotly:false, µ:false, micropolar:false,
-        SceneFrame:false, Tabs:false, Examples:false */
+        SceneFrame:false, Tabs:false, Examples:false,
+        Themes:false, ENV:false */
 
     // ---global functions not yet namespaced
-    /* global setFileAndCommentsSize:false, killPopovers:false */
+    /* global setFileAndCommentsSize:false */
 
     // ---external global dependencies
     /* global Promise:false, d3:false */
@@ -350,7 +351,7 @@
         // Polar plots
         if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
 
-        if(gd._context.editable) Plotly.ToolPanel.tweakMenu();
+        if(gd._context.editable) Plotly.ToolPanel.tweakMenu(gd);
 
         // so we don't try to re-call Plotly.plot from inside
         // legend and colorbar, if margins changed
@@ -821,7 +822,7 @@
 
             gd._fullLayout._paperdiv = paperDiv;
 
-            Plotly.ToolPanel.tweakMenu();
+            Plotly.ToolPanel.tweakMenu(gd);
         }
 
         // fulfill more gd requirements
@@ -2391,10 +2392,7 @@
     plots.resize = function(gd) {
         if(typeof gd === 'string') gd = document.getElementById(gd);
 
-        if(gd._context.workspace){
-            killPopovers();
-            setFileAndCommentsSize(gd);
-        }
+        if(gd._context.workspace) setFileAndCommentsSize(gd);
 
         if(gd && $(gd).css('display')!=='none') {
             if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
