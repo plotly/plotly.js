@@ -56,7 +56,7 @@ proto.createScene = function (opts) {
     var canvas = document.createElement('canvas');
 
     //Try initializing WebGL
-    var gl = canvas.getContext('webgl', glOptions) || 
+    var gl = canvas.getContext('webgl', glOptions) ||
              canvas.getContext('experimental-webgl', glOptions);
 
         if(gl){
@@ -66,6 +66,12 @@ proto.createScene = function (opts) {
                 glOptions: glOptions,
                 tickRate: 3
             });
+
+            // contain all events within the iframe, necessary to
+            // contain zoom events to prevent parent window scrolling.
+            shell.preventDefaults = true;
+            shell.stopPropagation = true;
+
             // Once the shell has initialized create and pass a new scene to the user.
             // set the container of the shell to be the new iframe
             shell.once('gl-init', function () {
@@ -80,9 +86,9 @@ proto.createScene = function (opts) {
             newIframe.contentDocument.getElementById('no3D').style.display= 'block';
             _this.emit('scene-error', scene);
         }
-    
-    canvas = null; 
-    gl = null; 
+
+    canvas = null;
+    gl = null;
 
     };
 };
