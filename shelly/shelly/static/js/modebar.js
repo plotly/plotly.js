@@ -43,6 +43,9 @@ function ModeBar (config) {
         _this.element.appendChild(group);
     });
 
+    if (this.graphInfo.displaylogo) {
+        this.element.appendChild(this.getLogo());
+    }
 
     config.container.appendChild(this.element);
 
@@ -127,6 +130,23 @@ ModeBar.prototype.hasButtons = function (buttons) {
     return true;
 };
 
+/**
+ * @return {HTMLDivElement} The logo image wrapped in a group
+ */
+ModeBar.prototype.getLogo = function(){
+    var group = this.createGroup(),
+        a = document.createElement('a');
+
+    a.setAttribute('rel', 'tooltip');
+    a.href = 'https://plot.ly/';
+    a.target = '_blank';
+    a.title = 'Produced with Plot.ly';
+    a.className = "ploticon-plotlylogo";
+
+    group.appendChild(a);
+    group.classList.add('btn-group--logo');
+    return group;
+}
 
 /**
  * Apply D3 cartesian mode attributes to layout to update hover functionality
@@ -278,8 +298,8 @@ function handleCamera3d (ev) {
 }
 
 ModeBar.prototype.cleanup = function(){
-    this.element.innerHTML = ''; 
-    var modebarParent = this.element.parentNode; 
+    this.element.innerHTML = '';
+    var modebarParent = this.element.parentNode;
     modebarParent.removeChild(this.element);
 };
 
