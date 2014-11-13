@@ -274,7 +274,12 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
     }
 
     if ('marker' in data) {
-        params.scatterColor         = str2RgbaArray(data.marker.color);
+        var markerColor = data.marker.color;
+        if (Array.isArray(markerColor)) {
+            params.scatterColor = markerColor.map(str2RgbaArray);
+        } else {
+            params.scatterColor = str2RgbaArray(markerColor);
+        }
         params.scatterColor[3]     *= data.marker.opacity;
         params.scatterSize          = 2*data.marker.size;  // rough parity with Plotly 2D markers
         params.scatterMarker        = this.markerSymbols[data.marker.symbol];
