@@ -56,7 +56,7 @@
             dflt: 0
         },
         dtick: {
-            type: 'number',
+            type: 'any',
             dflt: 1
         },
         ticks: {
@@ -313,11 +313,10 @@
         if(autoTick) {
             if(axType!=='category') coerce('nticks');
         }
-        else {
-            // TODO date doesn't work yet, right? axType==='date' ? new Date(2000,0,1).getTime() : 0);
-            coerce('tick0', 0);
-            coerce('dtick');
-        }
+        // TODO date doesn't work yet, right? axType==='date' ? new Date(2000,0,1).getTime() : 0);
+        coerce('tick0', 0);
+        coerce('dtick');
+
 
         var showTicks = coerce('ticks', outerTicks ? 'outside' : '');
         if(showTicks) {
