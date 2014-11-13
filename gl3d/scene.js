@@ -468,7 +468,7 @@ proto.onRender = function () {
     for (i = 0; i < this.renderQueue.length; ++i) {
         glObject = this.renderQueue[i];
         if (glObject.supportsTransparency
-            && glObject.constructor.name === 'SurfacePlot') continue;
+            && glObject.plotlyType === 'surface') continue;
         glObject.axesBounds = [
           this.axis.bounds[0].slice(),
           this.axis.bounds[1].slice()
