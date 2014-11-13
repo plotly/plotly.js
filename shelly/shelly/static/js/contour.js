@@ -827,4 +827,8 @@
             .options(trace.colorbar)();
     };
 
+    contour.hoverPoints = function(pointData, xval, yval, hovermode) {
+        return Plotly.Heatmap.hoverPoints(pointData, xval, yval, hovermode, true);
+    };
+
 }()); // end Contour object definition

@@ -436,4 +436,69 @@
                 });
     };
 
+    boxes.hoverPoints = function(pointData, xval, yval, hovermode) {
+        // closest mode: handicap box plots a little relative to others
+        var cd = pointData.cd,
+            trace = cd[0].trace,
+            t = cd[0].t,
+            xa = pointData.xa,
+            ya = pointData.ya,
+            dd = (hovermode==='closest') ? Plotly.Fx.MAXDIST/5 : 0,
+            dx = function(di){
+                var x = di.x + t.bx - xval;
+                return Plotly.Fx.inbox(x - t.bdx, x + t.bdx) + dd;
+            },
+            dy = function(di){
+                return Plotly.Fx.inbox(di.min - yval, di.max - yval);
+            },
+            distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy),
+            closeData = [];
+        Plotly.Fx.getClosest(cd, distfn, pointData);
+
+        // skip the rest (for this trace) if we didn't find a close point
+        if(pointData.index===false) return;
+
+        // create the item(s) in closedata for this point
+
+        // the closest data point
+        var di = cd[pointData.index],
+
+            lc = trace.line.color,
+            mc = (trace.marker||{}).color;
+        if(Plotly.Color.opacity(lc) && trace.line.width) pointData.color = lc;
+        else if(Plotly.Color.opacity(mc) && trace.boxpoints) pointData.color = mc;
+        else pointData.color = trace.fillcolor;
+
+        pointData.x0 = xa.c2p(di.x + t.bx - t.bdx, true);
+        pointData.x1 = xa.c2p(di.x + t.bx + t.bdx, true);
+        pointData.xLabelVal = di.x;
+
+        // box plots: each "point" gets many labels
+        var yused = [];
+        ['med','min','lf','q1','mean','q3','uf','max']
+        .forEach(function(attr){
+            if(attr==='mean' && !trace.boxmean) return;
+            if(!(attr in di)) return;
+            if(attr==='lf' && di.lf===di.min) return;
+            if(attr==='uf' && di.uf===di.max) return;
+
+            // copy out to a new object for each value to label
+            var y = ya.c2p(di[attr],true);
+            if(yused.indexOf(y)!==-1) return;
+            yused.push(y);
+            var pointData2 = $.extend({}, pointData);
+            pointData2.y0 = pointData2.y1 = y;
+            pointData2.yLabelVal = di[attr];
+            pointData2.attr = attr;
+            pointData2.type = 'box';
+
+            if(attr==='mean' && ('sd' in di) && trace.boxmean==='sd') {
+                pointData2.ysd = di.sd;
+            }
+            pointData.name = ''; // only keep name on the first item (median)
+            closeData.push(pointData2);
+        });
+        return closeData;
+    };
+
 }()); // end Boxes object definition
