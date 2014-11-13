@@ -237,7 +237,7 @@ function str2RgbaArray(color) {
 
 function colorFormatter(colorIn, opacityIn) {
     var colorOut = null,
-        colorLength = colorIn.length
+        colorLength = colorIn.length;
     if (Array.isArray(colorIn)) {
         colorOut = [];
         for (var i = 0; i < colorLength; ++i) {
@@ -248,7 +248,7 @@ function colorFormatter(colorIn, opacityIn) {
             colorOut     = str2RgbaArray(colorIn);
             colorOut[3] *= opacityIn;
     }
-    return colorOut
+    return colorOut;
 }
 
 proto.update = function update (scene, sceneLayout, data, scatter) {
