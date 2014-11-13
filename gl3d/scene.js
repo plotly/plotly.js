@@ -468,7 +468,7 @@ proto.onRender = function () {
     for (i = 0; i < this.renderQueue.length; ++i) {
         glObject = this.renderQueue[i];
         if (glObject.supportsTransparency
-            && glObject.constructor.name === 'SurfacePlot') continue;
+            && glObject.plotlyType === 'surface') continue;
         glObject.axesBounds = [
           this.axis.bounds[0].slice(),
           this.axis.bounds[1].slice()
@@ -522,19 +522,6 @@ proto.plot = function (sceneLayout, data) {
     // incoming layout in Plotly.plot()
     this.setAndSyncLayout(sceneLayout);
 
-  // allocate any extra select buffers
-    var bufferCount = this.groupCount();
-    while(this.selectBuffers.length < bufferCount) {
-        this.selectBuffers.push(
-            createSelect(
-                this.shell.gl,
-                [this.shell.height,this.shell.width]));
-    }
-
-    if(!this.axisSpikes) {
-        this.axisSpikes = createSpikes(this.shell.gl);
-    }
-
     for (var i = 0; i < 3; ++i) {
 
         var axes = sceneLayout[this.axesNames[i]];
@@ -568,6 +555,19 @@ proto.plot = function (sceneLayout, data) {
 
     // configues axes:
     this.configureAxes();
+
+  // allocate any extra select buffers
+    var bufferCount = this.groupCount();
+    while(this.selectBuffers.length < bufferCount) {
+        this.selectBuffers.push(
+            createSelect(
+                this.shell.gl,
+                [this.shell.height,this.shell.width]));
+    }
+
+    if(!this.axisSpikes) {
+        this.axisSpikes = createSpikes(this.shell.gl);
+    }
 
 };
 
