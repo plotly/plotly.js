@@ -47,19 +47,21 @@
     lib.dateTime2ms = function(s) {
         // first check if s is a Date object
         if (s instanceof Date) {
-          return s.getTime();
+            return s.getTime();
         } else {
-          var ps = Plotly.Lib.parseDate(s);
-          if (ps instanceof Date) {
-            return ps.getTime();
-          } else {
-            return false;
-          }
+            var ps = Plotly.Lib.parseDate(s);
+            if (ps instanceof Date) {
+                return ps.getTime();
+            } else {
+                return false;
+            }
         }
     };
 
     // is string s a date? (see above)
-    lib.isDateTime = function(s) { return lib.dateTime2ms(s)!==false; };
+    lib.isDateTime = function(s) {
+        return (lib.dateTime2ms(s) !== false);
+    };
 
     // Turn ms into string of the form YYYY-mm-dd HH:MM:SS.sss
     // Crop any trailing zeros in time, but always leave full date
