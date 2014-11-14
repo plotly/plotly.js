@@ -251,6 +251,18 @@ function colorFormatter(colorIn, opacityIn) {
     return colorOut;
 }
 
+function sizeScaler(sizeIn) {
+    var sizeOut = null;
+    // rough parity with Plotly 2D markers
+    function scale(size) { return size * 2; }
+    if (Array.isArray(sizeIn)) {
+        sizeOut = sizeIn.map(scale);
+    } else {
+        sizeOut = scale(sizeIn);
+    }
+    return sizeOut;
+}
+
 proto.update = function update (scene, sceneLayout, data, scatter) {
     /*jshint camelcase: false */
     // handle visible trace cases
@@ -290,7 +302,7 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
 
     if ('marker' in data) {
         params.scatterColor         = colorFormatter(data.marker.color, data.marker.opacity);
-        params.scatterSize          = 2*data.marker.size;  // rough parity with Plotly 2D markers
+        params.scatterSize          = sizeScaler(data.marker.size);
         params.scatterMarker        = this.markerSymbols[data.marker.symbol];
         params.scatterLineWidth     = data.marker.line.width;
         params.scatterLineColor     = str2RgbaArray(data.marker.line.color);
