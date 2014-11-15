@@ -2584,8 +2584,12 @@
         });
 
         // single info (legend, annotations) and hover layers for the whole plot
-        fullLayout._infolayer = fullLayout._paper.append('g').classed('infolayer',true);
-        fullLayout._hoverlayer = fullLayout._paper.append('g').classed('hoverlayer',true);
+        // pointer-events:none means we don't have to worry about mousing over
+        // the hover text itself
+        fullLayout._infolayer = fullLayout._paper.append('g').classed('infolayer', true);
+        fullLayout._hoverlayer = fullLayout._paper.append('g')
+                                                  .classed('hoverlayer', true)
+                                                  .style('pointer-events', 'none');
 
         // position and style the containers, make main title
         var frameWorkDone = Plotly.Lib.syncOrAsync([
