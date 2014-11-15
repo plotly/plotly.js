@@ -303,7 +303,10 @@
         // Get the container div: we store all variables for this plot as
         // properties of this div
         // some callers send this in by dom element, others by id (string)
-        if(typeof gd === 'string') { gd = document.getElementById(gd); }
+        if(typeof gd === 'string') gd = document.getElementById(gd);
+
+        var okToPlot = $(gd).triggerHandler('plotly_beforeplot', [data, layout, config]);
+        if(okToPlot===false) return;
 
         // if there's no data or layout, and this isn't yet a plotly plot
         // container, log a warning to help plotly.js users debug
@@ -540,6 +543,7 @@
             // so mark it as done and let other procedures call a replot
             gd._replotting = false;
             Plotly.Lib.markTime('done plot');
+            $(gd).trigger('plotly_afterplot');
         }
 
         var donePlotting = Plotly.Lib.syncOrAsync([
