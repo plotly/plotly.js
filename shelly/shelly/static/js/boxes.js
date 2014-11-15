@@ -471,7 +471,15 @@
 
         pointData.x0 = xa.c2p(di.x + t.bx - t.bdx, true);
         pointData.x1 = xa.c2p(di.x + t.bx + t.bdx, true);
-        pointData.xLabelVal = di.x;
+
+        var xText = Plotly.Axes.tickText(xa, xa.c2l(di.x), 'hover').text;
+        if(hovermode==='closest') {
+            if(xText!==pointData.name) pointData.name += ': ' + xText;
+        }
+        else {
+            pointData.xLabelVal = di.x;
+            if(xText===pointData.name) pointData.name = '';
+        }
 
         // box plots: each "point" gets many labels
         var yused = [];
