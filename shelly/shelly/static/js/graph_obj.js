@@ -2470,8 +2470,8 @@
             svg.append('g').classed('maplayer', true);
             svg.append('g').classed('barlayer', true);
             svg.append('g').classed('errorlayer', true);
-            svg.append('g').classed('scatterlayer', true);
             svg.append('g').classed('boxlayer', true);
+            svg.append('g').classed('scatterlayer', true);
         }
 
         // create all the layers in order, so we know they'll stay in order
