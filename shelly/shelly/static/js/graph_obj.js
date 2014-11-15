@@ -1093,6 +1093,11 @@
         uid: {
             type: 'string',
             dflt: ''
+        },
+        hoverinfo: {
+            type: 'string',
+            note: 'all, none, or any combination x,y,z,name,text connected by +, such as "x+text"',
+            dflt: 'all'
         }
     };
 
@@ -1254,6 +1259,8 @@
 
         if(visible) {
             coerce('name', 'trace '+i);
+
+            coerce('hoverinfo');
 
             if(!plots.isScatter3D(type)) coerce('opacity');
 
