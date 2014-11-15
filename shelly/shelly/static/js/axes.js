@@ -512,8 +512,8 @@
             ax.type = axes.autoType(
                 data.filter(function(d){ return Plotly.Plots.isBox(d.type); })
                     .map(function(d){
-                        if('x' in d) { return d.x[0]; }
-                        if('name' in d) { return d.name; }
+                        if('x' in d) return d.x[0];
+                        if('name' in d) return d.name;
                         return 'text';
                     })
             );
@@ -548,8 +548,8 @@
             ai;
         for(var i=0; i<a.length; i+=inc) {
             ai = a[Math.round(i)];
-            if(Plotly.Lib.isDateTime(ai)) { dcnt+=1; }
-            if($.isNumeric(ai)) { ncnt+=1; }
+            if(Plotly.Lib.isDateTime(ai)) dcnt+=1;
+            if($.isNumeric(ai)) ncnt+=1;
         }
         return (dcnt>ncnt*2);
     };
@@ -568,8 +568,8 @@
             ai;
         for(var i=0; i<a.length; i+=inc) {
             ai = axes.cleanDatum(a[Math.round(i)]);
-            if($.isNumeric(ai)){ curvenums++; }
-            else if(ai && isStr(ai)){ curvecats++; }
+            if($.isNumeric(ai)) curvenums++;
+            else if(ai && isStr(ai)) curvecats++;
         }
         return curvecats>curvenums*2;
     };

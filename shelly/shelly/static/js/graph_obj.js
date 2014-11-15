@@ -53,9 +53,9 @@
         return HIST2DTYPES.indexOf(type) !== -1;
     };
 
+    var CARTESIANTYPES = ['scatter', 'box'].concat(BARTYPES, HEATMAPTYPES);
     plots.isCartesian = function(type) {
-        return plots.isScatter(type) || plots.isBar(type) ||
-            plots.isHeatmap(type) || plots.isBox(type);
+        return CARTESIANTYPES.indexOf(type) !== -1;
     };
 
     var GL3DTYPES = ['scatter3d', 'surface'];
@@ -75,7 +75,7 @@
         return type === 'surface';
     };
 
-    var ALLTYPES = ['scatter', 'box', 'scatter3d', 'surface'].concat(BARTYPES, HEATMAPTYPES);
+    var ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
 
     function getModule(trace) {
         var type = trace.type;
@@ -2200,16 +2200,16 @@
                 // check whether we can short-circuit a full redraw
                 // 3d at this point just needs to redraw.
                 if (p.parts[0].indexOf('scene') === 0) doplot = true;
-                else if(p.parts[0].indexOf('legend')!==-1) { dolegend = true; }
-                else if(ai.indexOf('title')!==-1) { doticks = true; }
-                else if(p.parts[0].indexOf('bgcolor')!==-1) {
-                    dolayoutstyle = true;
-                }
+                else if(p.parts[0].indexOf('legend')!==-1) dolegend = true;
+                else if(ai.indexOf('title')!==-1) doticks = true;
+                else if(p.parts[0].indexOf('bgcolor')!==-1) dolayoutstyle = true;
                 else if(p.parts.length>1 && (
-                    p.parts[1].indexOf('tick')!==-1 ||
-                    p.parts[1].indexOf('exponent')!==-1 ||
-                    p.parts[1].indexOf('grid')!==-1 ||
-                    p.parts[1].indexOf('zeroline')!==-1)) { doticks = true; }
+                        p.parts[1].indexOf('tick')!==-1 ||
+                        p.parts[1].indexOf('exponent')!==-1 ||
+                        p.parts[1].indexOf('grid')!==-1 ||
+                        p.parts[1].indexOf('zeroline')!==-1)) {
+                    doticks = true;
+                }
                 else if(ai.indexOf('.linewidth')!==-1 &&
                         ai.indexOf('axis')!==-1) {
                     doticks = dolayoutstyle = true;
@@ -2220,18 +2220,22 @@
                 else if(p.parts.length>1 && p.parts[1]==='mirror') {
                     doticks = dolayoutstyle = true;
                 }
-                else if(ai==='margin.pad') { doticks = dolayoutstyle = true; }
+                else if(ai==='margin.pad') {
+                    doticks = dolayoutstyle = true;
+                }
                 else if(p.parts[0]==='margin' ||
-                    p.parts[1]==='autorange' ||
-                    p.parts[1]==='rangemode' ||
-                    p.parts[1]==='type' ||
-                    ai.match(/^(bar|box|font)/)) { docalc = true; }
+                        p.parts[1]==='autorange' ||
+                        p.parts[1]==='rangemode' ||
+                        p.parts[1]==='type' ||
+                        ai.match(/^(bar|box|font)/)) {
+                    docalc = true;
+                }
                 // hovermode and dragmode don't need any redrawing,
                 // since they just
                 // affect reaction to user input. everything else,
                 // assume full replot.
                 // height, width, autosize get dealt with below
-                else if(ai==='hovermode') { domodebar = true; }
+                else if(ai==='hovermode') domodebar = true;
                 else if(['hovermode','dragmode','height',
                         'width','autosize'].indexOf(ai)===-1) {
                     doplot = true;
@@ -2241,9 +2245,7 @@
         }
         // now all attribute mods are done, as are
         // redo and undo so we can save them
-        if(Plotly.Queue) {
-            Plotly.Queue.add(gd,undoit,redoit,'relayout');
-        }
+        if(Plotly.Queue) Plotly.Queue.add(gd,undoit,redoit,'relayout');
 
         // calculate autosizing - if size hasn't changed,
         // will remove h&w so we don't need to redraw
@@ -2260,7 +2262,7 @@
                 // force plot() to redo the layout
                 gd.layout = undefined;
                 // force it to redo calcdata?
-                if(docalc) { gd.calcdata = undefined; }
+                if(docalc) gd.calcdata = undefined;
                 // replot with the modified layout
                 return Plotly.plot(gd,'',layout);
             });
@@ -2274,9 +2276,9 @@
                     return plots.previousPromises(gd);
                 });
             }
-            if(dolayoutstyle) {
-                seq.push(layoutStyles);
-            }
+
+            if(dolayoutstyle) seq.push(layoutStyles);
+
             if(doticks) {
                 seq.push(function(){
                     Plotly.Axes.doTicks(gd,'redraw');
@@ -2285,12 +2287,12 @@
                 });
             }
             // this is decoupled enough it doesn't need async regardless
-            if(domodebar) { Plotly.Fx.modeBar(gd); }
+            if(domodebar) Plotly.Fx.modeBar(gd);
         }
 
         var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
 
-        if(!plotDone || !plotDone.then) { plotDone = Promise.resolve(); }
+        if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
             $(gd).trigger('plotly_relayout',redoit);
             if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
