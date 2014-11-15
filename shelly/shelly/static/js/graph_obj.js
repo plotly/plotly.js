@@ -34,6 +34,10 @@
         return BARTYPES.indexOf(type)!==-1;
     };
 
+    plots.isBox = function(type) {
+        return type === 'box';
+    };
+
     var HEATMAPTYPES = ['heatmap','histogram2d','contour','histogram2dcontour'];
     plots.isHeatmap = function(type) {
         return HEATMAPTYPES.indexOf(type) !== -1;
@@ -51,7 +55,7 @@
 
     plots.isCartesian = function(type) {
         return plots.isScatter(type) || plots.isBar(type) ||
-            plots.isHeatmap(type) || type==='box';
+            plots.isHeatmap(type) || plots.isBox(type);
     };
 
     var GL3DTYPES = ['scatter3d', 'surface'];
@@ -88,8 +92,8 @@
         if (plots.isContour(type)) return Plotly.Contour;
         if (plots.isHeatmap(type)) return Plotly.Heatmap;
         if (plots.isScatter3D(type)) return Plotly.Scatter3D;
-        if(plots.isSurface(type)) return Plotly.Surface;
-        if(type==='box') return Plotly.Boxes;
+        if (plots.isSurface(type)) return Plotly.Surface;
+        if (plots.isBox(type)) return Plotly.Boxes;
 
         console.log('Unrecognized plot type ' + type +
             '. Ignoring this dataset.'

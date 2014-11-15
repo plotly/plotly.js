@@ -189,7 +189,7 @@
                 outerTicks[yaName] = true;
             }
 
-            if(Plotly.Plots.isBar(trace.type) || trace.type==='box') {
+            if(Plotly.Plots.isBar(trace.type) || Plotly.Plots.isBox(trace.type)) {
                 var positionAxis = trace.orientation==='h' ? yaName : xaName;
                 noGrids[positionAxis] = true;
             }
@@ -506,11 +506,11 @@
             return;
         }
         // then check the data supplied for that axis
-        if(d0.type==='box' && axLetter==='x' && !('x' in d0) && !('x0' in d0)) {
+        if(Plotly.Plots.isBox(d0.type) && axLetter==='x' && !('x' in d0) && !('x0' in d0)) {
             // check all boxes on this x axis to see
             // if they're dates, numbers, or categories
             ax.type = axes.autoType(
-                data.filter(function(d){ return d.type==='box'; })
+                data.filter(function(d){ return Plotly.Plots.isBox(d.type); })
                     .map(function(d){
                         if('x' in d) { return d.x[0]; }
                         if('name' in d) { return d.name; }

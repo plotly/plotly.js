@@ -146,7 +146,7 @@
         }
 
         var hasBoxes = fullData.some(function(trace) {
-            return trace.type==='box';
+            return Plotly.Plots.isBox(trace.type);
         });
 
         if(!hasBoxes) return;
@@ -261,7 +261,7 @@
         gd.calcdata.forEach(function(cd,i) {
             var t = cd[0].t,
                 trace = cd[0].trace;
-            if(trace.visible!==false && !t.emptybox && trace.type==='box' &&
+            if(trace.visible!==false && !t.emptybox && Plotly.Plots.isBox(trace.type) &&
               trace.xaxis===xa._id && trace.yaxis===ya._id) {
                 boxlist.push(i);
                 if(trace.boxpoints!==false) {
@@ -498,7 +498,6 @@
             pointData2.y0 = pointData2.y1 = y;
             pointData2.yLabelVal = di[attr];
             pointData2.attr = attr;
-            pointData2.type = 'box';
 
             if(attr==='mean' && ('sd' in di) && trace.boxmean==='sd') {
                 pointData2.ysd = di.sd;
