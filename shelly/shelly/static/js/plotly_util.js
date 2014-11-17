@@ -138,7 +138,7 @@
             };
             img.onerror = function() {
                 DOMURL.revokeObjectURL(url);
-                sendError('img didnt load');
+                return sendError('img didnt load');
             };
             img.src = url;
 
@@ -160,7 +160,7 @@
                         doc.addImage(imgData, 'JPEG', 0, 0, w*px2pt, h*px2pt);
                         imgData = doc.output('dataurlstring');
                     } else {
-                        sendError({err: 'Image format is not jpeg, png, svg, or pdf', code: 400});
+                        return sendError({err: 'Image format is not jpeg, png, svg, or pdf', code: 400});
                     }
 
                     if(debugLevel === 0) {
