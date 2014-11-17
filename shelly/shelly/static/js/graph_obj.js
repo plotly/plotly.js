@@ -1943,6 +1943,7 @@
 
     // swap all the data and data attributes associated with x and y
     function swapxydata(trace) {
+        var i;
         swapAttrs(trace, '?');
         swapAttrs(trace, '?0');
         swapAttrs(trace, 'd?');
@@ -1966,6 +1967,14 @@
                 swapAttrs(trace, 'error_?.thickness');
                 swapAttrs(trace, 'error_?.width');
             }
+        }
+        if(trace.hoverinfo) {
+            var hoverInfoParts = trace.hoverinfo.split('+');
+            for(i=0; i<hoverInfoParts.length; i++) {
+                if(hoverInfoParts[i]==='x') hoverInfoParts[i] = 'y';
+                else if(hoverInfoParts[i]==='y') hoverInfoParts[i] = 'x';
+            }
+            trace.hoverinfo = hoverInfoParts.join('+');
         }
     }
 
