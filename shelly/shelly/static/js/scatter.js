@@ -889,8 +889,8 @@
 
         // the closest data point
         var di = cd[pointData.index],
-            xc = xa.c2p(di.x),
-            yc = ya.c2p(di.y),
+            xc = xa.c2p(di.x, true),
+            yc = ya.c2p(di.y, true),
             rad = di.mrc||1;
 
         pointData.color = traceColor(trace, di);
