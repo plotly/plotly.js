@@ -905,6 +905,8 @@
 
         if(di.tx) pointData.text = di.tx;
 
+        Plotly.ErrorBars.hoverInfo(di, trace, pointData);
+
         return [pointData];
     };
 

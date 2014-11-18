@@ -504,7 +504,7 @@
             pointData2.attr = attr;
 
             if(attr==='mean' && ('sd' in di) && trace.boxmean==='sd') {
-                pointData2.ysd = di.sd;
+                pointData2.yerr = di.sd;
             }
             pointData.name = ''; // only keep name on the first item (median)
             closeData.push(pointData2);
