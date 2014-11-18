@@ -482,19 +482,23 @@
         }
 
         // box plots: each "point" gets many labels
-        var usedVals = [];
-        ['med','min','lf','q1','mean','q3','uf','max']
-        .forEach(function(attr){
-            if(attr==='mean' && !trace.boxmean) return;
-            if(!(attr in di)) return;
-            if(attr==='lf' && (di.lf===di.min || !trace.boxpoints)) return;
-            if(attr==='uf' && (di.uf===di.max || !trace.boxpoints)) return;
+        var usedVals = {},
+            attrs = ['med','min','q1','q3','max'],
+            attr,
+            y,
+            pointData2;
+        if(trace.boxmean) attrs.push('mean');
+        if(trace.boxpoints) [].push.apply(attrs,['lf', 'uf']);
+
+        for(var i=0; i<attrs.length; i++) {
+            attr = attrs[i];
+
+            if(!(attr in di) || (di[attr] in usedVals)) continue;
+            usedVals[di[attr]] = true;
 
             // copy out to a new object for each value to label
-            var y = ya.c2p(di[attr],true);
-            if(usedVals.indexOf(di[attr])!==-1) return;
-            usedVals.push(di[attr]);
-            var pointData2 = $.extend({}, pointData);
+            y = ya.c2p(di[attr], true);
+            pointData2 = $.extend({}, pointData);
             pointData2.y0 = pointData2.y1 = y;
             pointData2.yLabelVal = di[attr];
             pointData2.attr = attr;
@@ -504,7 +508,7 @@
             }
             pointData.name = ''; // only keep name on the first item (median)
             closeData.push(pointData2);
-        });
+        }
         return closeData;
     };
 
