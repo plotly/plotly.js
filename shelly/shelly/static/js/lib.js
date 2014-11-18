@@ -1558,6 +1558,27 @@
             }
             propOut.set(dflt);
         },
+        flaglist: function(v, propOut, dflt, opts) {
+            if(typeof v !== 'string') {
+                propOut.set(dflt);
+                return;
+            }
+            if(opts.extras.indexOf(v)!==-1) {
+                propOut.set(v);
+                return;
+            }
+            var vParts = v.split('+'),
+                i = 0;
+            while(i<vParts.length) {
+                var vi = vParts[i];
+                if(opts.flags.indexOf(vi)===-1 || vParts.indexOf(vi)<i) {
+                    vParts.splice(i,1);
+                }
+                else i++;
+            }
+            if(!vParts.length) propOut.set(dflt);
+            else propOut.set(vParts.join('+'));
+        },
         any: function(v, propOut, dflt) {
             if(v===undefined) propOut.set(dflt);
             else propOut.set(v);

@@ -42,9 +42,9 @@
             arrayOk: true
         },
         mode: {
-            type: 'enumerated',
-            values: ['none', 'lines', 'markers', 'lines+markers',
-                'text', 'lines+text', 'markers+text', 'lines+markers+text']
+            type: 'flaglist',
+            flags: ['lines','markers','text'],
+            extras: ['none']
         },
         line: {
             color: {

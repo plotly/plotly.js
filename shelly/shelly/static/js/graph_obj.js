@@ -1099,8 +1099,9 @@
             dflt: ''
         },
         hoverinfo: {
-            type: 'string',
-            note: 'all, none, or any combination x,y,z,name,text connected by +, such as "x+text"',
+            type: 'flaglist',
+            flags: ['x', 'y', 'z', 'text', 'name'],
+            extras: ['all', 'none'],
             dflt: 'all'
         }
     };
