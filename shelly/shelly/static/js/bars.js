@@ -9,39 +9,148 @@
 
     var bars = window.Plotly.Bars = {};
 
-    bars.calc = function(gd,gdc) {
-        // ignore as much processing as possible (including
-        // in autorange) if bar is not visible
-        if(gdc.visible===false) { return; }
+    // mark this module as allowing error bars
+    bars.errorBarsOK = true;
 
-        if(gdc.type==='histogram') { return Plotly.Histogram.calc(gd,gdc); }
+    bars.attributes = {
+        orientation: {
+            type: 'enumerated',
+            values: ['v', 'h']
+        }
+    };
+
+    bars.layoutAttributes = {
+        barmode: {
+            type: 'enumerated',
+            values: ['stack', 'group', 'overlay'],
+            dflt: 'group'
+        },
+        bargap: {
+            type: 'number',
+            min: 0,
+            max: 1
+        },
+        bargroupgap: {
+            type: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0
+        },
+        // Inherited attributes - not used by supplyDefaults, so if there's
+        // a better way to do this feel free to change.
+        x: {from: 'Scatter'},
+        x0: {from: 'Scatter'},
+        dx: {from: 'Scatter'},
+        y: {from: 'Scatter'},
+        y0: {from: 'Scatter'},
+        dy: {from: 'Scatter'},
+        marker: {
+            color: {from: 'Scatter'},
+            colorscale: {from: 'Scatter'},
+            cauto: {from: 'Scatter'},
+            cmax: {from: 'Scatter'},
+            cmin: {from: 'Scatter'},
+            line: {
+                color: {from: 'Scatter'},
+                colorscale: {from: 'Scatter'},
+                cauto: {from: 'Scatter'},
+                cmax: {from: 'Scatter'},
+                cmin: {from: 'Scatter'},
+                width: {from: 'Scatter'}
+            }
+        },
+        error_x: {allFrom: 'Errorbars'},
+        error_y: {allFrom: 'Errorbars'}
+    };
+
+    bars.supplyDefaults = function(traceIn, traceOut, defaultColor) {
+        function coerce(attr, dflt) {
+            return Plotly.Lib.coerce(traceIn, traceOut, bars.attributes, attr, dflt);
+        }
+
+        function coerceScatter(attr, dflt) {
+            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
+        }
+
+        if(traceOut.type==='histogram') {
+            // x, y, and orientation are coerced in Histogram.supplyDefaults
+            // (along with histogram-specific attributes)
+            Plotly.Histogram.supplyDefaults(traceIn, traceOut);
+            if(!traceOut.visible) return;
+        }
+        else {
+            var len = Plotly.Scatter.supplyXY(traceIn, traceOut);
+            if(!len) {
+                traceOut.visible = false;
+                return;
+            }
+
+            coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
+        }
+
+        Plotly.Scatter.colorScalableDefaults('marker.', coerceScatter, defaultColor);
+        Plotly.Scatter.colorScalableDefaults('marker.line.', coerceScatter, '#444');
+        coerceScatter('marker.line.width', 0);
+        coerceScatter('text');
+
+        // override defaultColor for error bars with #444
+        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'y'});
+        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'x', inherit: 'y'});
+    };
+
+    bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
+        function coerce(attr, dflt) {
+            return Plotly.Lib.coerce(layoutIn, layoutOut, bars.layoutAttributes, attr, dflt);
+        }
+
+        var hasBars = false,
+            shouldBeGapless = false;
+        fullData.forEach(function(trace) {
+            if(Plotly.Plots.isBar(trace.type)) hasBars = true;
+
+            if(trace.visible && trace.type==='histogram') {
+                var pa = Plotly.Axes.getFromId({_fullLayout:layoutOut},
+                            trace[trace.orientation==='v' ? 'xaxis' : 'yaxis']);
+                if(pa.type!=='category') shouldBeGapless = true;
+            }
+        });
+
+        if(!hasBars) return;
+
+        coerce('barmode');
+        coerce('bargap', shouldBeGapless ? 0 : 0.2);
+        coerce('bargroupgap');
+    };
+
+    bars.calc = function(gd, trace) {
+        if(trace.type==='histogram') return Plotly.Histogram.calc(gd,trace);
 
         // depending on bar direction, set position and size axes
         // and data ranges
         // note: this logic for choosing orientation is
         // duplicated in graph_obj->setstyles
-        var xa = Plotly.Axes.getFromId(gd,gdc.xaxis||'x'),
-            ya = Plotly.Axes.getFromId(gd,gdc.yaxis||'y'),
-            orientation = gdc.orientation || ((gdc.x && !gdc.y) ? 'h' : 'v'),
+        var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
+            ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
+            orientation = trace.orientation || ((trace.x && !trace.y) ? 'h' : 'v'),
             pos, size, i;
         if(orientation==='h') {
-            size = xa.makeCalcdata(gdc,'x');
-            pos = ya.makeCalcdata(gdc,'y');
+            size = xa.makeCalcdata(trace, 'x');
+            pos = ya.makeCalcdata(trace, 'y');
         }
         else {
-            size = ya.makeCalcdata(gdc,'y');
-            pos = xa.makeCalcdata(gdc,'x');
+            size = ya.makeCalcdata(trace, 'y');
+            pos = xa.makeCalcdata(trace, 'x');
         }
 
         // create the "calculated data" to plot
-        var serieslen = Math.min(pos.length,size.length),
+        var serieslen = Math.min(pos.length, size.length),
             cd = [];
-        for(i=0;i<serieslen;i++) {
+        for(i=0; i<serieslen; i++) {
             if(($.isNumeric(pos[i]) && $.isNumeric(size[i]))) {
-                cd.push({p:pos[i],s:size[i],b:0});
+                cd.push({p: pos[i], s: size[i], b: 0});
             }
         }
-        if(cd[0]) { cd[0].t = {orientation:orientation};}
+
         return cd;
     };
 
@@ -49,29 +158,28 @@
     // for each direction separately calculate the ranges and positions
     // note that this handles histograms too
     // now doing this one subplot at a time
-    bars.setPositions = function(gd,plotinfo) {
-        var gl = gd.layout,
-            xa = plotinfo.x,
-            ya = plotinfo.y,
+    bars.setPositions = function(gd, plotinfo) {
+        var fullLayout = gd._fullLayout,
+            xa = plotinfo.x(),
+            ya = plotinfo.y(),
             i, j;
 
         ['v','h'].forEach(function(dir){
             var bl = [],
                 pLetter = {v:'x',h:'y'}[dir],
                 sLetter = {v:'y',h:'x'}[dir],
-                pa = plotinfo[pLetter],
-                sa = plotinfo[sLetter];
+                pa = plotinfo[pLetter](),
+                sa = plotinfo[sLetter]();
 
-            gd.calcdata.forEach(function(cd,i) {
-                var t=cd[0].t;
-                if(t.visible!==false && Plotly.Plots.isBar(t.type) &&
-                        (t.orientation||'v')===dir &&
-                        (t.xaxis||'x')===xa._id &&
-                        (t.yaxis||'y')===ya._id) {
+            gd._fullData.forEach(function(trace,i) {
+                if(trace.visible && Plotly.Plots.isBar(trace.type) &&
+                        trace.orientation===dir &&
+                        trace.xaxis===xa._id &&
+                        trace.yaxis===ya._id) {
                     bl.push(i);
                 }
             });
-            if(!bl.length) { return; }
+            if(!bl.length) return;
 
             // bar position offset and width calculation
             // bl1 is a list of traces (in calcdata) to look at together
@@ -93,16 +201,16 @@
                 // if so, let them have full width even if mode is group
                 var overlap = false,
                     comparelist = [];
-                if(gl.barmode==='group') {
+                if(fullLayout.barmode==='group') {
                     bl1.forEach(function(i) {
-                        if(overlap) { return; }
+                        if(overlap) return;
                         gd.calcdata[i].forEach(function(v) {
-                            if(overlap) { return; }
+                            if(overlap) return;
                             comparelist.forEach(function(cp) {
-                                if(Math.abs(v.p-cp)<barDiff) { overlap = true; }
+                                if(Math.abs(v.p-cp) < barDiff) overlap = true;
                             });
                         });
-                        if(overlap) { return; }
+                        if(overlap) return;
                         gd.calcdata[i].forEach(function(v) {
                             comparelist.push(v.p);
                         });
@@ -110,21 +218,21 @@
                 }
 
                 // check forced minimum dtick
-                Plotly.Axes.minDtick(pa,barDiff,pv2[0],overlap);
+                Plotly.Axes.minDtick(pa, barDiff, pv2[0], overlap);
 
                 // position axis autorange - always tight fitting
-                Plotly.Axes.expand(pa,pv2,{vpad:barDiff/2});
+                Plotly.Axes.expand(pa, pv2, {vpad: barDiff/2});
 
                 // bar widths and position offsets
-                barDiff*=(1-gl.bargap);
-                if(overlap) { barDiff/=bl.length; }
+                barDiff *= 1-fullLayout.bargap;
+                if(overlap) barDiff/=bl.length;
 
                 var barCenter;
                 function setBarCenter(v) { v[pLetter] = v.p + barCenter; }
 
                 for(var i=0; i<bl1.length; i++){
-                    var t=gd.calcdata[bl1[i]][0].t;
-                    t.barwidth = barDiff*(1-gl.bargroupgap);
+                    var t = gd.calcdata[bl1[i]][0].t;
+                    t.barwidth = barDiff*(1-fullLayout.bargroupgap);
                     t.poffset = ((overlap ? (2*i+1-bl1.length)*barDiff : 0 ) -
                         t.barwidth)/2;
                     t.dbar = dv.minDiff;
@@ -134,13 +242,13 @@
                     gd.calcdata[bl1[i]].forEach(setBarCenter);
                 }
             }
-            if(gl.barmode==='overlay') {
+            if(fullLayout.barmode==='overlay') {
                 bl.forEach(function(bli){ barposition([bli]); });
             }
-            else { barposition(bl); }
+            else barposition(bl);
 
             // bar size range and stacking calculation
-            if(gl.barmode==='stack'){
+            if(fullLayout.barmode==='stack'){
                 // for stacked bars, we need to evaluate every step in every
                 // stack, because negative bars mean the extremes could be
                 // anywhere
@@ -171,7 +279,7 @@
                         }
                     }
                 }
-                Plotly.Axes.expand(sa,[sMin,sMax],{tozero:true,padded:true});
+                Plotly.Axes.expand(sa, [sMin, sMax], {tozero: true, padded: true});
             }
             else {
                 // for grouped or overlaid bars, just make sure zero is
@@ -180,17 +288,30 @@
                 var fs = function(v){ v[sLetter] = v.s; return v.s; };
 
                 for(i=0; i<bl.length; i++){
-                    Plotly.Axes.expand(sa,gd.calcdata[bl[i]].map(fs),
-                        {tozero:true,padded:true});
+                    Plotly.Axes.expand(sa, gd.calcdata[bl[i]].map(fs),
+                        {tozero: true, padded: true});
                 }
             }
         });
     };
 
-    bars.plot = function(gd,plotinfo,cdbar) {
-        var xa = plotinfo.x,
-            ya = plotinfo.y,
-            gl = gd.layout;
+    // arrayOk attributes, merge them into calcdata array
+    function arraysToCalcdata(cd) {
+        var trace = cd[0].trace,
+            marker = trace.marker,
+            markerLine = marker.line;
+
+        Plotly.Lib.mergeArray(trace.text, cd, 'tx');
+        Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
+        Plotly.Lib.mergeArray(marker.color, cd, 'mc');
+        Plotly.Lib.mergeArray(markerLine.color, cd, 'mlc');
+        Plotly.Lib.mergeArray(markerLine.width, cd, 'mlw');
+    }
+
+    bars.plot = function(gd, plotinfo, cdbar) {
+        var xa = plotinfo.x(),
+            ya = plotinfo.y(),
+            fullLayout = gd._fullLayout;
 
         var bartraces = plotinfo.plot.select('.barlayer')
             .selectAll('g.trace.bars')
@@ -201,7 +322,11 @@
         bartraces.append('g')
             .attr('class','points')
             .each(function(d){
-                var t = d[0].t;
+                var t = d[0].t,
+                    trace = d[0].trace;
+
+                arraysToCalcdata(d);
+
                 d3.select(this).selectAll('path')
                     .data(Plotly.Lib.identity)
                   .enter().append('path')
@@ -211,7 +336,7 @@
                         // log values go off-screen by plotwidth
                         // so you see them continue if you drag the plot
                         var x0,x1,y0,y1;
-                        if(t.orientation==='h') {
+                        if(trace.orientation==='h') {
                             y0 = ya.c2p(t.poffset+di.p, true);
                             y1 = ya.c2p(t.poffset+di.p+t.barwidth, true);
                             x0 = xa.c2p(di.b, true);
@@ -230,14 +355,14 @@
                             d3.select(this).remove();
                             return;
                         }
-                        var lw = (di.mlw+1 || t.mlw+1 ||
-                                (di.t ? di.t.mlw : 0)+1)-1,
+                        var lw = (di.mlw+1 || trace.marker.line.width+1 ||
+                                (di.trace ? di.trace.marker.line.width : 0)+1)-1,
                             offset = d3.round((lw/2)%1,2);
                         function roundWithLine(v) {
                             // if there are explicit gaps, don't round,
                             // it can make the gaps look crappy
-                            return (gl.bargap===0 && gl.bargroupgap===0) ?
-                                d3.round(Math.round(v)-offset,2) : v;
+                            return (fullLayout.bargap===0 && fullLayout.bargroupgap===0) ?
+                                d3.round(Math.round(v)-offset, 2) : v;
                         }
                         function expandToVisible(v,vc) {
                             // if it's not in danger of disappearing entirely,
@@ -248,15 +373,15 @@
                             // its neighbor
                             (v>vc ? Math.ceil(v) : Math.floor(v));
                         }
-                        if(!gl._forexport) {
+                        if(!gd._context.staticPlot) {
                             // if bars are not fully opaque or they have a line
                             // around them, round to integer pixels, mainly for
                             // safari so we prevent overlaps from its expansive
                             // pixelation. if the bars ARE fully opaque and have
                             // no line, expand to a full pixel to make sure we
                             // can see them
-                            var op = Plotly.Drawing.opacity(
-                                    di.mc || t.mc || (di.t ? di.t.mc : '')),
+                            var op = Plotly.Color.opacity(
+                                    di.mc || trace.marker.color),
                                 fixpx = (op<1 || lw>0.01) ?
                                     roundWithLine : expandToVisible;
                             x0 = fixpx(x0,x1);
@@ -270,39 +395,55 @@
             });
     };
 
-    bars.style = function(gp,gl) {
+    bars.style = function(gp, fullLayout) {
         var s = gp.selectAll('g.trace.bars'),
             barcount = s.size();
 
-        // first trace styling
-        s.style('opacity',function(d){ return d[0].t.op; })
+        // trace styling
+        s.style('opacity',function(d){ return d[0].trace.opacity; })
 
         // for gapless (either stacked or neighboring grouped) bars use
         // crispEdges to turn off antialiasing so an artificial gap
         // isn't introduced.
         .each(function(d){
-            if((gl.barmode==='stack' && barcount>1) ||
-                    (gl.bargap===0 && gl.bargroupgap===0 && !d[0].t.mlw)){
+            if((fullLayout.barmode==='stack' && barcount>1) ||
+                    (fullLayout.bargap===0 &&
+                     fullLayout.bargroupgap===0 &&
+                     !d[0].trace.marker.line.width)){
                 d3.select(this).attr('shape-rendering','crispEdges');
             }
         });
 
         // then style the individual bars
         s.selectAll('g.points').each(function(d){
-            var t = d.t||d[0].t;
+            var trace = d[0].trace,
+                marker = trace.marker,
+                markerLine = marker.line,
+                markerIn = (trace._input||{}).marker||{},
+                markerScale = Plotly.Drawing.tryColorscale(marker, markerIn, ''),
+                lineScale = Plotly.Drawing.tryColorscale(marker, markerIn, 'line.');
+
             d3.select(this).selectAll('path').each(function(d) {
                 // allow all marker and marker line colors to be scaled
                 // by given max and min to colorscales
-                var w = (d.mlw+1 || t.mlw+1 || (d.t ? d.t.mlw : 0)+1) - 1,
+                var fillColor,
+                    lineColor,
+                    lineWidth = (d.mlw+1 || markerLine.width+1) - 1,
                     p = d3.select(this);
-                p.style('stroke-width',w+'px')
-                    .call(Plotly.Drawing.fillColor,
-                        Plotly.Drawing.tryColorscale(s,t,'m')(
-                            d.mc || t.mc || (d.t ? d.t.mc : '')));
-                if(w) {
-                    p.call(Plotly.Drawing.strokeColor,
-                        Plotly.Drawing.tryColorscale(s,t,'ml')(
-                            d.mlc || t.mlc || (d.t ? d.t.mlc : '')));
+
+                if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
+                else if(Array.isArray(marker.color)) fillColor = '#444';
+                else fillColor = marker.color;
+
+                p.style('stroke-width', lineWidth + 'px')
+                    .call(Plotly.Color.fill, fillColor);
+                if(lineWidth) {
+                    if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
+                    // weird case: array wasn't long enough to apply to every point
+                    else if(Array.isArray(markerLine.color)) lineColor = '#444';
+                    else lineColor = markerLine.color;
+
+                    p.call(Plotly.Color.stroke, lineColor);
                 }
             });
             // TODO: text markers on bars, either extra text or just bar values
@@ -310,5 +451,79 @@
             //     .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
         });
     };
+
+    bars.hoverPoints = function(pointData, xval, yval, hovermode) {
+        var cd = pointData.cd,
+            trace = cd[0].trace,
+            t = cd[0].t,
+            xa = pointData.xa,
+            ya = pointData.ya,
+            barDelta = (hovermode==='closest') ?
+                t.barwidth/2 : t.dbar*(1-xa._td._fullLayout.bargap)/2,
+            barPos;
+        if(hovermode!=='closest') barPos = function(di) { return di.p; };
+        else if(trace.orientation==='h') barPos = function(di) { return di.y; };
+        else barPos = function(di) { return di.x; };
+
+        var dx, dy;
+        if(trace.orientation==='h') {
+            dx = function(di){
+                // add a gradient so hovering near the end of a
+                // bar makes it a little closer match
+                return Plotly.Fx.inbox(di.b-xval, di.x-xval) + (di.x-xval)/(di.x-di.b);
+            };
+            dy = function(di){
+                var centerPos = barPos(di) - yval;
+                return Plotly.Fx.inbox(centerPos - barDelta, centerPos + barDelta);
+            };
+        }
+        else {
+            dy = function(di){
+                return Plotly.Fx.inbox(di.b-yval, di.y-yval) + (di.y-yval)/(di.y-di.b);
+            };
+            dx = function(di){
+                var centerPos = barPos(di) - xval;
+                return Plotly.Fx.inbox(centerPos - barDelta, centerPos + barDelta);
+            };
+        }
+
+        var distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy);
+        Plotly.Fx.getClosest(cd, distfn, pointData);
+
+        // skip the rest (for this trace) if we didn't find a close point
+        if(pointData.index===false) return;
+
+        // the closest data point
+        var di = cd[pointData.index],
+            mc = di.mcc || trace.marker.color,
+            mlc = di.mlcc || trace.marker.line.color,
+            mlw = di.mlw || trace.marker.line.width;
+        if(Plotly.Color.opacity(mc)) pointData.color = mc;
+        else if(Plotly.Color.opacity(mlc) && mlw) pointData.color = mlc;
+
+        if(trace.orientation==='h') {
+            pointData.x0 = pointData.x1 = xa.c2p(di.x, true);
+            pointData.xLabelVal = di.s;
+
+            pointData.y0 = ya.c2p(barPos(di) - barDelta, true);
+            pointData.y1 = ya.c2p(barPos(di) + barDelta, true);
+            pointData.yLabelVal = di.p;
+        }
+        else {
+            pointData.y0 = pointData.y1 = ya.c2p(di.y,true);
+            pointData.yLabelVal = di.s;
+
+            pointData.x0 = xa.c2p(barPos(di) - barDelta, true);
+            pointData.x1 = xa.c2p(barPos(di) + barDelta, true);
+            pointData.xLabelVal = di.p;
+        }
+
+        if(di.tx) pointData.text = di.tx;
+
+        Plotly.ErrorBars.hoverInfo(di, trace, pointData);
+
+        return [pointData];
+    };
+
 
 }()); // end Bars object definition
