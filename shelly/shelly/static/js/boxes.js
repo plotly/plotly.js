@@ -482,18 +482,18 @@
         }
 
         // box plots: each "point" gets many labels
-        var yused = [];
+        var usedVals = [];
         ['med','min','lf','q1','mean','q3','uf','max']
         .forEach(function(attr){
             if(attr==='mean' && !trace.boxmean) return;
             if(!(attr in di)) return;
-            if(attr==='lf' && di.lf===di.min) return;
-            if(attr==='uf' && di.uf===di.max) return;
+            if(attr==='lf' && (di.lf===di.min || !trace.boxpoints)) return;
+            if(attr==='uf' && (di.uf===di.max || !trace.boxpoints)) return;
 
             // copy out to a new object for each value to label
             var y = ya.c2p(di[attr],true);
-            if(yused.indexOf(y)!==-1) return;
-            yused.push(y);
+            if(usedVals.indexOf(di[attr])!==-1) return;
+            usedVals.push(di[attr]);
             var pointData2 = $.extend({}, pointData);
             pointData2.y0 = pointData2.y1 = y;
             pointData2.yLabelVal = di[attr];
