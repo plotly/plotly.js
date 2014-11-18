@@ -116,7 +116,7 @@
                 w = svgNode.offsetWidth;
                 h = svgNode.offsetHeight;
             }
-            else sendError('wrong input svg (d3 selection or DOM node)');
+            else return sendError('wrong input svg (d3 selection or DOM node)');
 
             if(canvasContainer) canvasContainer.html('');
             canvasContainer = d3.select('body').append('div')
