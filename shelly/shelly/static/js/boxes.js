@@ -146,7 +146,7 @@
         }
 
         var hasBoxes = fullData.some(function(trace) {
-            return trace.type==='box';
+            return Plotly.Plots.isBox(trace.type);
         });
 
         if(!hasBoxes) return;
@@ -261,7 +261,7 @@
         gd.calcdata.forEach(function(cd,i) {
             var t = cd[0].t,
                 trace = cd[0].trace;
-            if(trace.visible!==false && !t.emptybox && trace.type==='box' &&
+            if(trace.visible!==false && !t.emptybox && Plotly.Plots.isBox(trace.type) &&
               trace.xaxis===xa._id && trace.yaxis===ya._id) {
                 boxlist.push(i);
                 if(trace.boxpoints!==false) {
@@ -434,6 +434,82 @@
                     d3.select(this).selectAll('path')
                         .call(Plotly.Drawing.pointStyle, trace);
                 });
+    };
+
+    boxes.hoverPoints = function(pointData, xval, yval, hovermode) {
+        // closest mode: handicap box plots a little relative to others
+        var cd = pointData.cd,
+            trace = cd[0].trace,
+            t = cd[0].t,
+            xa = pointData.xa,
+            ya = pointData.ya,
+            dd = (hovermode==='closest') ? Plotly.Fx.MAXDIST/5 : 0,
+            dx = function(di){
+                var x = di.x + t.bx - xval;
+                return Plotly.Fx.inbox(x - t.bdx, x + t.bdx) + dd;
+            },
+            dy = function(di){
+                return Plotly.Fx.inbox(di.min - yval, di.max - yval);
+            },
+            distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy),
+            closeData = [];
+        Plotly.Fx.getClosest(cd, distfn, pointData);
+
+        // skip the rest (for this trace) if we didn't find a close point
+        if(pointData.index===false) return;
+
+        // create the item(s) in closedata for this point
+
+        // the closest data point
+        var di = cd[pointData.index],
+
+            lc = trace.line.color,
+            mc = (trace.marker||{}).color;
+        if(Plotly.Color.opacity(lc) && trace.line.width) pointData.color = lc;
+        else if(Plotly.Color.opacity(mc) && trace.boxpoints) pointData.color = mc;
+        else pointData.color = trace.fillcolor;
+
+        pointData.x0 = xa.c2p(di.x + t.bx - t.bdx, true);
+        pointData.x1 = xa.c2p(di.x + t.bx + t.bdx, true);
+
+        var xText = Plotly.Axes.tickText(xa, xa.c2l(di.x), 'hover').text;
+        if(hovermode==='closest') {
+            if(xText!==pointData.name) pointData.name += ': ' + xText;
+        }
+        else {
+            pointData.xLabelVal = di.x;
+            if(xText===pointData.name) pointData.name = '';
+        }
+
+        // box plots: each "point" gets many labels
+        var usedVals = {},
+            attrs = ['med','min','q1','q3','max'],
+            attr,
+            y,
+            pointData2;
+        if(trace.boxmean) attrs.push('mean');
+        if(trace.boxpoints) [].push.apply(attrs,['lf', 'uf']);
+
+        for(var i=0; i<attrs.length; i++) {
+            attr = attrs[i];
+
+            if(!(attr in di) || (di[attr] in usedVals)) continue;
+            usedVals[di[attr]] = true;
+
+            // copy out to a new object for each value to label
+            y = ya.c2p(di[attr], true);
+            pointData2 = $.extend({}, pointData);
+            pointData2.y0 = pointData2.y1 = y;
+            pointData2.yLabelVal = di[attr];
+            pointData2.attr = attr;
+
+            if(attr==='mean' && ('sd' in di) && trace.boxmean==='sd') {
+                pointData2.yerr = di.sd;
+            }
+            pointData.name = ''; // only keep name on the first item (median)
+            closeData.push(pointData2);
+        }
+        return closeData;
     };
 
 }()); // end Boxes object definition
