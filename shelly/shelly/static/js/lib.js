@@ -1472,23 +1472,21 @@
     };
 
     var coerceIt = {
-        // yuicompressor doesn't like some of these keys if they're not quoted...
-        // chrome doesn't care but I guess yui thinks some are reserved words?
-        'data_array': function(v, propOut, dflt) {
+        data_array: function(v, propOut, dflt) {
             // data_array: value MUST be an array, or we ignore it
             // you can use dflt=[] to force said array to exist though
             if(Array.isArray(v)) propOut.set(v);
             else if(dflt!==undefined) propOut.set(dflt);
         },
-        'enumerated': function(v, propOut, dflt, opts) {
+        enumerated: function(v, propOut, dflt, opts) {
             if(opts.values.indexOf(v)===-1) propOut.set(dflt);
             else propOut.set(v);
         },
-        'boolean': function(v, propOut, dflt) {
+        boolean: function(v, propOut, dflt) {
             if(v===true || v===false) propOut.set(v);
             else propOut.set(dflt);
         },
-        'number': function(v, propOut, dflt, opts) {
+        number: function(v, propOut, dflt, opts) {
             if(!$.isNumeric(v) ||
                     (opts.min!==undefined && v<opts.min) ||
                     (opts.max!==undefined && v>opts.max)) {
@@ -1496,7 +1494,7 @@
             }
             else propOut.set(+v);
         },
-        'integer': function(v, propOut, dflt, opts) {
+        integer: function(v, propOut, dflt, opts) {
             if(v%1 || !$.isNumeric(v) ||
                     (opts.min!==undefined && v<opts.min) ||
                     (opts.max!==undefined && v>opts.max)) {
@@ -1504,21 +1502,21 @@
             }
             else propOut.set(+v);
         },
-        'string': function(v, propOut, dflt, opts) {
+        string: function(v, propOut, dflt, opts) {
             var s = String(v);
             if(v===undefined || (opts.noBlank===false && !s)) {
                 propOut.set(dflt);
             }
             else propOut.set(String(v));
         },
-        'color': function(v, propOut, dflt) {
+        color: function(v, propOut, dflt) {
             if(tinycolor(v).ok) propOut.set(v);
             else propOut.set(dflt);
         },
-        'colorscale': function(v, propOut, dflt) {
+        colorscale: function(v, propOut, dflt) {
             propOut.set(Plotly.Color.getScale(v, dflt));
         },
-        'font': function(v, propOut, dflt) {
+        font: function(v, propOut, dflt) {
             if(!v) v = {};
             var vOut = {};
 
@@ -1532,7 +1530,7 @@
 
             propOut.set(vOut);
         },
-        'angle': function(v, propOut, dflt) {
+        angle: function(v, propOut, dflt) {
             if(v==='auto') propOut.set('auto');
             else if(!$.isNumeric(v)) propOut.set(dflt);
             else {
@@ -1540,7 +1538,7 @@
                 propOut.set(+v);
             }
         },
-        'axisid': function(v, propOut, dflt) {
+        axisid: function(v, propOut, dflt) {
             if(typeof v === 'string' && v.charAt(0)===dflt) {
                 var axnum = Number(v.substr(1));
                 if(axnum%1 === 0 && axnum>1) {
@@ -1550,7 +1548,7 @@
             }
             propOut.set(dflt);
         },
-        'sceneid': function(v, propOut, dflt) {
+        sceneid: function(v, propOut, dflt) {
             if(typeof v === 'string' && v.substr(0,5)===dflt) {
                 var scenenum = Number(v.substr(5));
                 if(scenenum%1 === 0 && scenenum>1) {
@@ -1560,7 +1558,7 @@
             }
             propOut.set(dflt);
         },
-        'any': function(v, propOut, dflt) {
+        any: function(v, propOut, dflt) {
             if(v===undefined) propOut.set(dflt);
             else propOut.set(v);
         }
