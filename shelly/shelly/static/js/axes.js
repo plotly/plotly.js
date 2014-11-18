@@ -56,7 +56,7 @@
             dflt: 0
         },
         dtick: {
-            type: 'number',
+            type: 'any',
             dflt: 1
         },
         ticks: {
@@ -189,7 +189,7 @@
                 outerTicks[yaName] = true;
             }
 
-            if(Plotly.Plots.isBar(trace.type) || trace.type==='box') {
+            if(Plotly.Plots.isBar(trace.type) || Plotly.Plots.isBox(trace.type)) {
                 var positionAxis = trace.orientation==='h' ? yaName : xaName;
                 noGrids[positionAxis] = true;
             }
@@ -313,11 +313,10 @@
         if(autoTick) {
             if(axType!=='category') coerce('nticks');
         }
-        else {
-            // TODO date doesn't work yet, right? axType==='date' ? new Date(2000,0,1).getTime() : 0);
-            coerce('tick0', 0);
-            coerce('dtick');
-        }
+        // TODO date doesn't work yet, right? axType==='date' ? new Date(2000,0,1).getTime() : 0);
+        coerce('tick0', 0);
+        coerce('dtick');
+
 
         var showTicks = coerce('ticks', outerTicks ? 'outside' : '');
         if(showTicks) {
@@ -507,14 +506,14 @@
             return;
         }
         // then check the data supplied for that axis
-        if(d0.type==='box' && axLetter==='x' && !('x' in d0) && !('x0' in d0)) {
+        if(Plotly.Plots.isBox(d0.type) && axLetter==='x' && !('x' in d0) && !('x0' in d0)) {
             // check all boxes on this x axis to see
             // if they're dates, numbers, or categories
             ax.type = axes.autoType(
-                data.filter(function(d){ return d.type==='box'; })
+                data.filter(function(d){ return Plotly.Plots.isBox(d.type); })
                     .map(function(d){
-                        if('x' in d) { return d.x[0]; }
-                        if('name' in d) { return d.name; }
+                        if('x' in d) return d.x[0];
+                        if('name' in d) return d.name;
                         return 'text';
                     })
             );
@@ -549,8 +548,8 @@
             ai;
         for(var i=0; i<a.length; i+=inc) {
             ai = a[Math.round(i)];
-            if(Plotly.Lib.isDateTime(ai)) { dcnt+=1; }
-            if($.isNumeric(ai)) { ncnt+=1; }
+            if(Plotly.Lib.isDateTime(ai)) dcnt+=1;
+            if($.isNumeric(ai)) ncnt+=1;
         }
         return (dcnt>ncnt*2);
     };
@@ -569,8 +568,8 @@
             ai;
         for(var i=0; i<a.length; i+=inc) {
             ai = axes.cleanDatum(a[Math.round(i)]);
-            if($.isNumeric(ai)){ curvenums++; }
-            else if(ai && isStr(ai)){ curvecats++; }
+            if($.isNumeric(ai)) curvenums++;
+            else if(ai && isStr(ai)) curvecats++;
         }
         return curvecats>curvenums*2;
     };
