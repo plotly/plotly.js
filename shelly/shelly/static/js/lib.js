@@ -1389,14 +1389,6 @@
             return x;
         }
 
-        // transpose taken from:
-        // http://stackoverflow.com/questions/4492678/
-        //    to-swap-rows-with-columns-of-matrix-in-javascript-or-jquery
-        function transpose(a) {
-            return Object.keys(a[0]).map(
-                function (c) { return a.map(function (r) { return r[c]; }); });
-        }
-
         // two-arg zip
         function zip(x,y) {
             var ret = [];
@@ -1417,7 +1409,7 @@
             }
             else {
                 // vec-mat
-                return transpose(y).map(vecMat);
+                return lib.transposeRagged(y).map(vecMat);
             }
         }
         else {
