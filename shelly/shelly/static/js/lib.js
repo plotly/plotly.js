@@ -1360,6 +1360,36 @@
         return finalStep && finalStep(arg);
     };
 
+    // transpose function inspired by
+    // http://stackoverflow.com/questions/17428587/
+    // transposing-a-2d-array-in-javascript
+    lib.transposeRagged = function(z) {
+        // Transposes a (possibly ragged) 2d array z.
+        var rowlens = z.map(function(row) {
+            return row.length;
+        });
+        // Maximum row length:
+        var maxlen = Math.max.apply(null, rowlens);
+        // Pad rows with undefined as missing data.
+        for (var i = 0; i < rowlens.length; i++) {
+            if (z[i].length < maxlen) {
+                for (k = z[i].length; k < maxlen; k++) {
+                    z[i].push(undefined);
+                }
+            }
+        }
+
+        var t = [];
+        for (var x = 0; x < maxlen; x++) {
+            t[x] = [];
+            for (var y = 0; y < rowlens.length; y++) {
+                t[x][y] = z[y][x];
+            }
+        }
+
+        return t;
+    };
+
     // our own dot function so that we don't need to include numeric
     lib.dot = function(x, y) {
         if (!(x.length && y.length) || x.length !== y.length) {
