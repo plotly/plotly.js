@@ -47,67 +47,67 @@
     lib.dateTime2ms = function(s) {
         // first check if s is a date object
         try {
-            if(s.getTime) return +s;
+            if (s.getTime) return +s;
         }
-        catch(e){
+        catch(e) {
             return false;
         }
 
-        var y,m,d,h;
+        var y, m, d, h;
         // split date and time parts
         var datetime = String(s).split(' ');
-        if(datetime.length>2) return false;
+        if (datetime.length > 2) return false;
 
         var p = datetime[0].split('-'); // date part
-        if(p.length>3 || (p.length!==3 && datetime[1])) return false;
+        if (p.length > 3 || (p.length !== 3 && datetime[1])) return false;
 
         // year
-        if(p[0].length===4) y = Number(p[0]);
-        else if(p[0].length===2) {
-            var yNow=new Date().getFullYear();
-            y=((Number(p[0])-yNow+70)%100+200)%100+yNow-70;
+        if (p[0].length === 4) y = Number(p[0]);
+        else if (p[0].length === 2) {
+            var yNow = new Date().getFullYear();
+            y = ((Number(p[0]) - yNow + 70)%100 + 200)%100 + yNow - 70;
         }
         else return false;
-        if(!$.isNumeric(y)) return false;
-        if(p.length===1) return new Date(y,0,1).getTime(); // year only
+        if (!$.isNumeric(y)) return false;
+        if (p.length === 1) return new Date(y,0,1).getTime(); // year only
 
         // month
-        m = Number(p[1])-1; // new Date() uses zero-based months
-        if(p[1].length>2 || !(m>=0 && m<=11)) return false;
-        if(p.length===2) return new Date(y,m,1).getTime(); // year-month
+        m = Number(p[1]) - 1; // new Date() uses zero-based months
+        if (p[1].length > 2 || !(m >= 0 && m <= 11)) return false;
+        if (p.length === 2) return new Date(y, m, 1).getTime(); // year-month
 
         // day
         d = Number(p[2]);
-
-        if(p[2].length>2 || !(d>=1 && d<=31)) return false;
+        if (p[2].length > 2 || !(d >= 1 && d <= 31)) return false;
 
         // now save the date part
-        d = new Date(y,m,d).getTime();
-        if(!datetime[1]) return d; // year-month-day
-
+        d = new Date(y, m, d).getTime();
+        if (!datetime[1]) return d; // year-month-day
         p = datetime[1].split(':');
-        if(p.length>3) return false;
+        if (p.length > 3) return false;
 
         // hour
         h = Number(p[0]);
-        if(p[0].length>2 || !(h>=0 && h<=23)) return false;
+        if (p[0].length > 2 || !(h >= 0 && h <= 23)) return false;
         d += 3600000*h;
-        if(p.length===1) return d;
+        if (p.length === 1) return d;
 
         // minute
         m = Number(p[1]);
-        if(p[1].length>2 || !(m>=0 && m<=59)) return false;
+        if (p[1].length > 2 || !(m >= 0 && m <= 59)) return false;
         d += 60000*m;
-        if(p.length===2) return d;
+        if (p.length === 2) return d;
 
         // second
         s = Number(p[2]);
-        if(!(s>=0 && s<60)) return false;
+        if (!(s >= 0 && s < 60)) return false;
         return d+s*1000;
     };
 
     // is string s a date? (see above)
-    lib.isDateTime = function(s){ return lib.dateTime2ms(s)!==false; };
+    lib.isDateTime = function(s) {
+        return (lib.dateTime2ms(s) !== false);
+    };
 
     // Turn ms into string of the form YYYY-mm-dd HH:MM:SS.sss
     // Crop any trailing zeros in time, but always leave full date
@@ -1360,6 +1360,26 @@
         return finalStep && finalStep(arg);
     };
 
+    // transpose function inspired by
+    // http://stackoverflow.com/questions/17428587/
+    // transposing-a-2d-array-in-javascript
+    lib.transposeRagged = function(z) {
+        // Transposes a (possibly ragged) 2d array z.
+        var maxlen = 0;
+        // Maximum row length:
+        for (var i = 0; i < z.length; i++) maxlen = Math.max(maxlen, z[i].length);
+
+        var t = [];
+        for (var x = 0; x < maxlen; x++) {
+            t[x] = [];
+            for (var y = 0; y < z.length; y++) {
+                t[x][y] = z[y][x];
+            }
+        }
+
+        return t;
+    };
+
     // our own dot function so that we don't need to include numeric
     lib.dot = function(x, y) {
         if (!(x.length && y.length) || x.length !== y.length) {
@@ -1367,14 +1387,6 @@
         }
         if (x.length === 0) {
             return x;
-        }
-
-        // transpose taken from:
-        // http://stackoverflow.com/questions/4492678/
-        //    to-swap-rows-with-columns-of-matrix-in-javascript-or-jquery
-        function transpose(a) {
-            return Object.keys(a[0]).map(
-                function (c) { return a.map(function (r) { return r[c]; }); });
         }
 
         // two-arg zip
@@ -1397,7 +1409,7 @@
             }
             else {
                 // vec-mat
-                return transpose(y).map(vecMat);
+                return lib.transposeRagged(y).map(vecMat);
             }
         }
         else {
