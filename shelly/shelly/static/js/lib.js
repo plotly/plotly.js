@@ -1365,24 +1365,14 @@
     // transposing-a-2d-array-in-javascript
     lib.transposeRagged = function(z) {
         // Transposes a (possibly ragged) 2d array z.
-        var rowlens = z.map(function(row) {
-            return row.length;
-        });
+        var maxlen = 0;
         // Maximum row length:
-        var maxlen = Math.max.apply(null, rowlens);
-        // Pad rows with undefined as missing data.
-        for (var i = 0; i < rowlens.length; i++) {
-            if (z[i].length < maxlen) {
-                for (k = z[i].length; k < maxlen; k++) {
-                    z[i].push(undefined);
-                }
-            }
-        }
+        for (var i = 0; i < z.length; i++) maxlen = Math.max(maxlen, z[i].length);
 
         var t = [];
         for (var x = 0; x < maxlen; x++) {
             t[x] = [];
-            for (var y = 0; y < rowlens.length; y++) {
+            for (var y = 0; y < z.length; y++) {
                 t[x][y] = z[y][x];
             }
         }
