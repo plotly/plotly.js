@@ -197,7 +197,7 @@
         var trace = d[0].trace,
             pts = d3.select(this).select('g.legendpoints')
                 .selectAll('path.legendbox')
-                .data(trace.type==='box' && trace.visible ? [d] : []);
+                .data(Plotly.Plots.isBox(trace.type) && trace.visible ? [d] : []);
         pts.enter().append('path').classed('legendbox', true)
             // if we want the median bar, prepend M6,0H-6
             .attr('d', 'M6,6H-6V-6H6Z')

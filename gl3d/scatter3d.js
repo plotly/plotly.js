@@ -235,6 +235,33 @@ function str2RgbaArray(color) {
     return arrtools.str2RgbaArray(color.toRgbString());
 }
 
+function colorFormatter(colorIn, opacityIn) {
+    var colorOut = null,
+        colorLength = colorIn.length;
+    if (Array.isArray(colorIn)) {
+        colorOut = [];
+        for (var i = 0; i < colorLength; ++i) {
+            colorOut[i]     = str2RgbaArray(colorIn[i]);
+            colorOut[i][3] *= opacityIn;
+        }
+    } else {
+            colorOut     = str2RgbaArray(colorIn);
+            colorOut[3] *= opacityIn;
+    }
+    return colorOut;
+}
+
+function sizeScaler(sizeIn) {
+    var sizeOut = null;
+    // rough parity with Plotly 2D markers
+    function scale(size) { return size * 2; }
+    if (Array.isArray(sizeIn)) {
+        sizeOut = sizeIn.map(scale);
+    } else {
+        sizeOut = scale(sizeIn);
+    }
+    return sizeOut;
+}
 
 proto.update = function update (scene, sceneLayout, data, scatter) {
     /*jshint camelcase: false */
@@ -274,9 +301,8 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
     }
 
     if ('marker' in data) {
-        params.scatterColor         = str2RgbaArray(data.marker.color);
-        params.scatterColor[3]     *= data.marker.opacity;
-        params.scatterSize          = 2*data.marker.size;  // rough parity with Plotly 2D markers
+        params.scatterColor         = colorFormatter(data.marker.color, data.marker.opacity);
+        params.scatterSize          = sizeScaler(data.marker.size);
         params.scatterMarker        = this.markerSymbols[data.marker.symbol];
         params.scatterLineWidth     = data.marker.line.width;
         params.scatterLineColor     = str2RgbaArray(data.marker.line.color);

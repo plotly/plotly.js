@@ -85,6 +85,7 @@ ModeBar.prototype.createButton = function (config) {
     button.setAttribute('data-attr', config.attr);
     button.setAttribute('data-val', config.val);
     button.setAttribute('title', config.title);
+    button.setAttribute('data-gravity', config.gravity || 'n');
     button.addEventListener('click', config.click.bind(this));
 
     icon.className = config.icon;
@@ -140,8 +141,9 @@ ModeBar.prototype.getLogo = function(){
     a.setAttribute('rel', 'tooltip');
     a.href = 'https://plot.ly/';
     a.target = '_blank';
-    a.title = 'Produced with Plot.ly';
+    a.title = 'Produced with Plotly';
     a.className = "ploticon-plotlylogo";
+    a.setAttribute('data-gravity', 'ne');
 
     group.appendChild(a);
     group.classList.add('btn-group--logo');
@@ -349,6 +351,7 @@ ModeBar.prototype.config = function config() {
             attr: 'hovermode',
             val: 'closest',
             icon: 'ploticon-tooltip_basic',
+            gravity: 'ne',
             click: handleCartesian
         },
         hoverCompare2d: {
@@ -356,6 +359,7 @@ ModeBar.prototype.config = function config() {
             attr: 'hovermode',
             val: this.graphInfo._fullLayout._isHoriz ? 'y' : 'x',
             icon: 'ploticon-tooltip_compare',
+            gravity: 'ne',
             click: handleCartesian
         },
         zoom3d: {
@@ -398,6 +402,7 @@ ModeBar.prototype.config = function config() {
             attr: 'hovermode',
             val: 'closest',
             icon: 'ploticon-tooltip_basic',
+            gravity: 'ne',
             click: handleHover3d
         }
     };

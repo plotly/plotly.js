@@ -195,7 +195,7 @@
 
     color.rgb = function(cstr) { return tinyRGB(tinycolor(cstr)); };
 
-    color.opacity = function(cstr) { return tinycolor(cstr).alpha; };
+    color.opacity = function(cstr) { return cstr ? tinycolor(cstr).alpha : 0; };
 
     color.addOpacity = function(cstr, op) {
         var c = tinycolor(cstr).toRgb();
