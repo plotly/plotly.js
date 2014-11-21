@@ -246,13 +246,13 @@ proto.update = function update (scene, sceneLayout, data, surface) {
         colormap:       colormap,
         levels:         contourLevels.slice(),
         showContour:    [true, true, true],
-        projectContour: [false, false, false],
+        contourProject: [false, false, false],
         contourColor:   [ [], [], [] ],
         contourWidth:   [1,1,1],
         contourTint:    [1,1,1],
-        highlightColor: [ [], [], [] ],
-        highlightWidth: [1,1,1],
-        highlightTint:  [1,1,1]
+        dynamicColor: [ [], [], [] ],
+        dynamicWidth: [1,1,1],
+        dynamicTint:  [1,1,1]
     };
 
     var axis = [ 'x', 'y', 'z' ];
@@ -261,12 +261,12 @@ proto.update = function update (scene, sceneLayout, data, surface) {
     for(var i=0; i<3; ++i) {
         var contourParams = data.contour[axis[i]];
         contourEnable[i]          = contourParams.show;
-        params.projectContour[i]  = contourParams.project;
+        params.contourProject[i]  = contourParams.project;
         params.contourColor[i]    = contourParams.color;
         params.contourWidth[i]    = contourParams.width;
         highlightEnable[i]        = contourParams.highlight[i];
-        params.highlightColor[i]  = contourParams.highlightColor;
-        params.highlightWidth[i]  = contourParams.highlightWidth;
+        params.dynamicColor[i]    = contourParams.highlightColor;
+        params.dynamicWidth[i]    = contourParams.highlightWidth;
         if(!contourEnable[i]) {
             params.levels[i] = [];
         }
