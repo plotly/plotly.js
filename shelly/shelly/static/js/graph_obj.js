@@ -1601,6 +1601,11 @@
             'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
             'swapxy','swapxyaxes','orientationaxes'
         ];
+        var hasBoxes = traces.some(function(v) {
+            return Plotly.Plots.isBox(gd._fullData[v].type);
+        });
+        if(hasBoxes) recalcAttrs.push('name');
+
         // autorangeAttrs attributes need a full redo of calcdata
         // only if an axis is autoranged,
         // because .calc() is where the autorange gets determined
