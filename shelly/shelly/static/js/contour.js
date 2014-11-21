@@ -73,8 +73,9 @@
             if(coloring!=='lines') coerceScatter('line.color', '#000');
             coerceScatter('line.width', 0.5);
             coerceScatter('line.dash');
-            coerceScatter('line.smoothing');
         }
+
+        coerceScatter('line.smoothing');
 
         Plotly.Heatmap.supplyDefaults(traceIn, traceOut, defaultColor, layout);
     };
@@ -148,7 +149,7 @@
         Plotly.Lib.markTime('in Contour.plot');
         var trace = cd[0].trace,
             contours = trace.contours,
-            smoothing = (trace.line||{}).smoothing,
+            smoothing = trace.line.smoothing,
             uid = trace.uid,
             xa = plotinfo.x(),
             ya = plotinfo.y(),
