@@ -22,7 +22,7 @@
     bars.layoutAttributes = {
         barmode: {
             type: 'enumerated',
-            values: ['stack', 'group', 'overlay'],
+            values: ['stack', 'group', 'overlay', 'stackto1', 'stackto100'],
             dflt: 'group'
         },
         bargap: {
@@ -248,7 +248,7 @@
             else barposition(bl);
 
             // bar size range and stacking calculation
-            if(fullLayout.barmode==='stack'){
+            if(String(fullLayout.barmode).slice(0,5)==='stack'){
                 // for stacked bars, we need to evaluate every step in every
                 // stack, because negative bars mean the extremes could be
                 // anywhere
@@ -257,29 +257,66 @@
                 var sMax = sa.l2c(sa.c2l(0)),
                     sMin = sMax,
                     sums={},
-                    v=0,
 
                     // make sure if p is different only by rounding,
                     // we still stack
                     sumround = gd.calcdata[bl[0]][0].t.barwidth/100,
-                    sv = 0;
+                    sv = 0,
+                    padded = true,
+                    barEnd,
+                    ti,
+                    scale;
+
                 for(i=0; i<bl.length; i++){ // trace index
-                    var ti = gd.calcdata[bl[i]];
+                    ti = gd.calcdata[bl[i]];
                     for(j=0; j<ti.length; j++) {
                         sv = Math.round(ti[j].p/sumround);
                         ti[j].b = (sums[sv]||0);
-                        v = ti[j].b+ti[j].s;
+                        barEnd = ti[j].b+ti[j].s;
+                        sums[sv] = barEnd;
 
                         // store the bar top in each calcdata item
-                        ti[j][sLetter] = v;
-                        sums[sv] = v;
-                        if($.isNumeric(sa.c2l(v))) {
-                            sMax = Math.max(sMax,v);
-                            sMin = Math.min(sMin,v);
+                        if(fullLayout.barmode==='stack') {
+                            ti[j][sLetter] = barEnd;
+                            if($.isNumeric(sa.c2l(barEnd))) {
+                                sMax = Math.max(sMax,barEnd);
+                                sMin = Math.min(sMin,barEnd);
+                            }
                         }
                     }
                 }
-                Plotly.Axes.expand(sa, [sMin, sMax], {tozero: true, padded: true});
+
+                if(fullLayout.barmode!=='stack') {
+                    // stackto1 or stackto100
+                    padded = false;
+                    var top = fullLayout.barmode==='stackto1' ? 1 : 100,
+                        tiny = top/1e9; // in case of rounding error in sum
+                    sMin = 0;
+                    sMax = top;
+                    for(i=0; i<bl.length; i++){ // trace index
+                        ti = gd.calcdata[bl[i]];
+                        for(j=0; j<ti.length; j++) {
+                            scale = top / sums[Math.round(ti[j].p/sumround)];
+                            ti[j].b *= scale;
+                            ti[j].s *= scale;
+                            barEnd = ti[j].b + ti[j].s;
+                            ti[j][sLetter] = barEnd;
+
+                            if($.isNumeric(sa.c2l(barEnd))) {
+                                if(barEnd < sMin - tiny) {
+                                    padded = true;
+                                    sMin = barEnd;
+                                }
+                                if(barEnd > sMax + tiny) {
+                                    padded = true;
+                                    sMax = sMax;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Plotly.Axes.expand(sa, [sMin, sMax], {tozero: true, padded: padded});
             }
             else {
                 // for grouped or overlaid bars, just make sure zero is
