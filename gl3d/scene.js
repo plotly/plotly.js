@@ -37,6 +37,18 @@ function ticksChanged (ticksA, ticksB) {
     return false;
 }
 
+function contourLevelsFromTicks(ticks) {
+    var result = new Array(3);
+    for(var i=0; i<3; ++i) {
+        var tlevel = ticks[i];
+        var clevel = new Array(tlevel.length);
+        for(var j=0; j<tlevel.length; ++j) {
+            clevel[j] = tlevel[j].x;
+        }
+    }
+    return result;
+}
+
 
 // PASS IN GLOBAL LAYOUT, LET THIS THING CARVE OUT SCENELAYOUT
 function Scene (options, shell) {
@@ -71,6 +83,9 @@ function Scene (options, shell) {
 
     this.range                   = [ [ 0, 0, 0],    // min (init opposite)
                                      [ 6, 6, 6] ];  // max (init opposite)
+
+    //Computed contour levels
+    this.contourLevels           = [[], [], []];
 
     ////////////// AXES OPTIONS DEFAULTS ////////////////
     this.axesOpts                = {};
@@ -413,7 +428,6 @@ proto.onRender = function () {
                                     width,
                                     height);
 
-
         for (i = 0; i < 3; ++i) {
             axes = sceneLayout[this.axesNames[i]];
 
@@ -447,6 +461,23 @@ proto.onRender = function () {
         if (ticksChanged(this.axesOpts.ticks, ticks)) {
             this.axesOpts.ticks = ticks;
 
+            //Update contour levels for all surfaces using new ticks
+            this.contourLevels = contourLevelsFromTicks(ticks);
+            for(i=0; i<this.renderQueue.length; ++i) {
+                var glObject = this.renderQueue[i];
+                if(glObject.plotlyType === 'surface') {
+                    var nlevels = [ [], [], [] ];
+                    for(var j=0; j<3; ++j) {
+                        if(glObject.contourEnable[j]) {
+                            nlevels[j] = this.contourLevels[j];
+                        }
+                    }
+                    glObject.update({
+                        levels: nlevels
+                    });
+                }
+            }
+
             this.axis.update(this.axesOpts);
         }
 
@@ -467,6 +498,22 @@ proto.onRender = function () {
      */
     for (i = 0; i < this.renderQueue.length; ++i) {
         glObject = this.renderQueue[i];
+
+        //Update dynamic contours
+        if(glObject.plotlyType === 'surface') {
+            if(this.selection && this.selection.glObject === glObject) {
+                var coords = [NaN, NaN, NaN];
+                for(var j=0; j<3; ++j) {
+                    if(glObject.highlightEnable[j]) {
+                        coords[j] = this.selection.dataCoordinate[j];
+                    }
+                }
+                glObject.dynamic.apply(glObject, coords);
+            } else {
+                glObject.dynamic();
+            }
+        }
+
         if (glObject.supportsTransparency
             && glObject.plotlyType === 'surface') continue;
         glObject.axesBounds = [
@@ -707,6 +754,7 @@ proto.setAxesRange = function () {
     for(i=0; i<this.renderQueue.length; ++i) {
         glObj = this.renderQueue[i];
         glObj.clipBounds = range;
+        glObj.axesBounds = range;
     }
 
     this.range = range;

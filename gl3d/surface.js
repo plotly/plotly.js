@@ -35,40 +35,79 @@ proto.attributes = {
     colorscale: {from: 'Heatmap'},
     showscale: {from: 'Heatmap'},
     reversescale: {from: 'Heatmap'},
+    contour: (function() {
+        var result = {};
+        var axis = [ 'x', 'y', 'z' ];
+        axis.forEach(function(x) {
+            result[x] = {
+                show: {
+                    type: 'boolean',
+                    dflt: true
+                },
+                project: {
+                    type: 'boolean',
+                    dflt: false
+                },
+                color: {
+                    type: 'color',
+                    dflt: '#000'
+                },
+                width: {
+                    type: 'number',
+                    min: 1,
+                    max: 16,
+                    dflt: 2
+                },
+                highlight: {
+                    type: 'boolean',
+                    dflt: true
+                },
+                highlightColor: {
+                    type: 'color',
+                    dflt: '#000'
+                },
+                highlightWidth: {
+                    type: 'number',
+                    min: 1,
+                    max: 16,
+                    dflt: 4
+                }
+            };
+        });
+    })(),
     lighting: {
         ambient: {
             type: 'number',
-            min: 0.01,
-            max: 0.99,
+            min: 0.00,
+            max: 1.0,
             dflt: 0.8
         },
         diffuse: {
             type: 'number',
-            min: 0.01,
-            max: 0.99,
+            min: 0.00,
+            max: 1.00,
             dflt: 0.8
         },
         specular: {
             type: 'number',
-            min: 0.01,
-            max: 0.99,
+            min: 0.00,
+            max: 2.00,
             dflt: 0.05
         },
         roughness: {
             type: 'number',
-            min: 0.01,
-            max: 0.99,
+            min: 0.00,
+            max: 1.00,
             dflt: 0.5
         },
         fresnel: {
             type: 'number',
-            min: 0.01,
-            max: 0.99,
+            min: 0.00,
+            max: 5.00,
             dflt: 0.2
         }
     }
 };
-
 
 proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     var i, _this = this;
@@ -158,7 +197,8 @@ proto.update = function update (scene, sceneLayout, data, surface) {
         xc = coords[0],
         yc = coords[1],
         hasCoords = false,
-        gl = scene.shell.gl;
+        gl = scene.shell.gl,
+        contourLevels = scene.contourLevels;
 
     /*
      * Fill and transpose zdata.
@@ -202,9 +242,36 @@ proto.update = function update (scene, sceneLayout, data, surface) {
     }
 
     var params = {
-        field: field,
-        colormap: colormap
+        field:          field,
+        colormap:       colormap,
+        levels:         contourLevels.slice(),
+        showContour:    [true, true, true],
+        projectContour: [false, false, false],
+        contourColor:   [ [], [], [] ],
+        contourWidth:   [1,1,1],
+        contourTint:    [1,1,1],
+        highlightColor: [ [], [], [] ],
+        highlightWidth: [1,1,1],
+        highlightTint:  [1,1,1]
     };
+
+    var axis = [ 'x', 'y', 'z' ];
+    var highlightEnable = [ false, false, false ];
+    var contourEnable   = [ true, true, true ];
+    for(var i=0; i<3; ++i) {
+        var contourParams = data.contour[axis[i]];
+        contourEnable[i]          = contourParams.show;
+        params.projectContour[i]  = contourParams.project;
+        params.contourColor[i]    = contourParams.color;
+        params.contourWidth[i]    = contourParams.width;
+        highlightEnable[i]        = contourParams.highlight[i];
+        params.highlightColor[i]  = contourParams.highlightColor;
+        params.highlightWidth[i]  = contourParams.highlightWidth;
+        if(!contourEnable[i]) {
+            params.levels[i] = [];
+        }
+        params.showContour[i] = contourEnable[i] || highlightEnable[i];
+    }
 
     if (hasCoords) {
         params.coords = coords;
@@ -226,7 +293,7 @@ proto.update = function update (scene, sceneLayout, data, surface) {
         var pickIds = scene.allocIds(1);
 
         params.pickId       = pickIds.ids[0];
-        surface             =  createSurface(gl, field, params);
+        surface             = createSurface(gl, field, params);
         surface.groupId     = pickIds.group;
         surface.plotlyType  = data.type;
 
@@ -243,6 +310,9 @@ proto.update = function update (scene, sceneLayout, data, surface) {
     // uids determine which data is tied to which gl-object
     surface.uid = data.uid;
     surface.visible = data.visible;
+
+    surface.highlightEnable = highlightEnable;
+    surface.contourEnable = contourEnable;
 
     if (alpha && alpha < 1) surface.supportsTransparency = true;
 
