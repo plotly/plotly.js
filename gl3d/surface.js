@@ -265,33 +265,43 @@ proto.update = function update (scene, sceneLayout, data, surface) {
     var params = {
         field:          field,
         colormap:       colormap,
-        levels:         contourLevels.slice(),
-        showContour:    [true, true, true],
-        contourProject: [false, false, false],
-        contourColor:   [ [], [], [] ],
-        contourWidth:   [1,1,1],
-        contourTint:    [1,1,1],
-        dynamicColor: [ [], [], [] ],
-        dynamicWidth: [1,1,1],
-        dynamicTint:  [1,1,1]
+        levels:         [[],[],[]],
+        showContour:    []
     };
 
-    var axis = [ 'x', 'y', 'z' ];
-    var highlightEnable = [ false, false, false ];
-    var contourEnable   = [ true, true, true ];
-    for(var i=0; i<3; ++i) {
-        var contourParams = data.contour[axis[i]];
-        contourEnable[i]          = contourParams.show;
-        params.contourProject[i]  = contourParams.project;
-        params.contourColor[i]    = contourParams.color;
-        params.contourWidth[i]    = contourParams.width;
-        highlightEnable[i]        = contourParams.highlight[i];
-        params.dynamicColor[i]    = contourParams.highlightColor;
-        params.dynamicWidth[i]    = contourParams.highlightWidth;
-        if(!contourEnable[i]) {
-            params.levels[i] = [];
+    var highlightEnable            = [];
+    var contourEnable              = [];
+    var axis                       = [ 'x', 'y', 'z' ];
+
+    for(i = 0; i < 3; ++i) {
+        var contourParams          = data.contour[axis[i]];
+        highlightEnable[i]         = contourParams.highlight;
+        contourEnable[i]           = contourParams.show;
+
+        params.showContour[i]      = contourParams.show || contourParams.highlight;
+        if (!params.showContour[i])  continue;
+
+        if (!params.contourProject)  params.contourProject = [];
+        params.contourProject[i]   = contourParams.project;
+        params.levels[i]           = contourLevels[i];
+
+        if (contourParams.show) {
+            if (!params.contourColor) {
+                params.contourColor = [];
+                params.contourWidth = [];
+            }
+            params.contourColor[i] = contourParams.color;
+            params.contourWidth[i] = contourParams.width;
         }
-        params.showContour[i] = contourEnable[i] || highlightEnable[i];
+
+        if (contourParams.highlight) {
+            if (!params.dynamicColor) {
+                params.dynamicColor = [];
+                params.dynamicWidth = [];
+            }
+            params.dynamicColor[i] = contourParams.highlightColor;
+            params.dynamicWidth[i] = contourParams.highlightWidth;
+        }
     }
 
     if (hasCoords) {
@@ -311,15 +321,21 @@ proto.update = function update (scene, sceneLayout, data, surface) {
          * Push it onto the render queue
          */
 
-        var pickIds = scene.allocIds(1);
+        var pickIds         = scene.allocIds(1);
 
         params.pickId       = pickIds.ids[0];
         surface             = createSurface(gl, field, params);
         surface.groupId     = pickIds.group;
         surface.plotlyType  = data.type;
+        // uids determine which data is tied to which gl-object
+        surface.uid = data.uid;
+        scene.glDataMap[surface.uid] = surface;
 
-        scene.glDataMap[data.uid] = surface;
     }
+
+    surface.highlightEnable  = highlightEnable;
+    surface.contourEnable    = contourEnable;
+    surface.visible          = data.visible;
 
     if ('lighting' in data) {
         surface.ambientLight   = data.lighting.ambient;
@@ -328,12 +344,6 @@ proto.update = function update (scene, sceneLayout, data, surface) {
         surface.roughness      = data.lighting.roughness;
         surface.fresnel        = data.lighting.fresnel;
     }
-    // uids determine which data is tied to which gl-object
-    surface.uid = data.uid;
-    surface.visible = data.visible;
-
-    surface.highlightEnable = highlightEnable;
-    surface.contourEnable = contourEnable;
 
     if (alpha && alpha < 1) surface.supportsTransparency = true;
 
