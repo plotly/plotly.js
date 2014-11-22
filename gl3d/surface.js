@@ -28,6 +28,42 @@ function parseColorScale (colorscale, alpha) {
 
 var proto = Surface.prototype;
 
+
+proto.contourAttributes =  {
+    show: {
+        type: 'boolean',
+        dflt: true
+    },
+    project: {
+        type: 'boolean',
+        dflt: false
+    },
+    color: {
+        type: 'color',
+        dflt: '#000'
+    },
+    width: {
+        type: 'number',
+        min: 1,
+        max: 16,
+        dflt: 2
+    },
+    highlight: {
+        type: 'boolean',
+        dflt: true
+    },
+    highlightColor: {
+        type: 'color',
+        dflt: '#000'
+    },
+    highlightWidth: {
+        type: 'number',
+        min: 1,
+        max: 16,
+        dflt: 2
+    }
+};
+
 proto.attributes = {
     x: {type: 'data_array'},
     y: {type: 'data_array'},
@@ -35,46 +71,11 @@ proto.attributes = {
     colorscale: {from: 'Heatmap'},
     showscale: {from: 'Heatmap'},
     reversescale: {from: 'Heatmap'},
-    contour: (function() {
-        var result = {};
-        var axis = [ 'x', 'y', 'z' ];
-        axis.forEach(function(x) {
-            result[x] = {
-                show: {
-                    type: 'boolean',
-                    dflt: true
-                },
-                project: {
-                    type: 'boolean',
-                    dflt: false
-                },
-                color: {
-                    type: 'color',
-                    dflt: '#000'
-                },
-                width: {
-                    type: 'number',
-                    min: 1,
-                    max: 16,
-                    dflt: 2
-                },
-                highlight: {
-                    type: 'boolean',
-                    dflt: true
-                },
-                highlightColor: {
-                    type: 'color',
-                    dflt: '#000'
-                },
-                highlightWidth: {
-                    type: 'number',
-                    min: 1,
-                    max: 16,
-                    dflt: 4
-                }
-            };
-        });
-    })(),
+    contour: {
+        x: proto.contourAttributes,
+        y: proto.contourAttributes,
+        z: proto.contourAttributes
+    },
     lighting: {
         ambient: {
             type: 'number',
