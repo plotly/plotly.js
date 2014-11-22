@@ -508,7 +508,7 @@ proto.onRender = function () {
                         coords[j] = this.selection.dataCoordinate[j];
                     }
                 }
-                glObject.dynamic.apply(glObject, coords);
+                glObject.dynamic.call(glObject, coords);
             } else {
                 glObject.dynamic();
             }
