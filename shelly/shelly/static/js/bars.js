@@ -22,8 +22,13 @@
     bars.layoutAttributes = {
         barmode: {
             type: 'enumerated',
-            values: ['stack', 'group', 'overlay', 'stackto1', 'stackto100'],
+            values: ['stack', 'group', 'overlay'],
             dflt: 'group'
+        },
+        barnorm: {
+            type: 'enumerated',
+            values: ['', 'fraction', 'percent'],
+            dflt: ''
         },
         bargap: {
             type: 'number',
@@ -117,7 +122,9 @@
 
         if(!hasBars) return;
 
-        coerce('barmode');
+        var mode = coerce('barmode');
+        if(mode!=='overlay') coerce('barnorm');
+
         coerce('bargap', shouldBeGapless ? 0 : 0.2);
         coerce('bargroupgap');
     };
@@ -247,8 +254,11 @@
             }
             else barposition(bl);
 
+            var stack = fullLayout.barmode==='stack',
+                norm = fullLayout.barnorm;
+
             // bar size range and stacking calculation
-            if(String(fullLayout.barmode).slice(0,5)==='stack'){
+            if(stack || norm){
                 // for stacked bars, we need to evaluate every step in every
                 // stack, because negative bars mean the extremes could be
                 // anywhere
@@ -271,14 +281,15 @@
                     ti = gd.calcdata[bl[i]];
                     for(j=0; j<ti.length; j++) {
                         sv = Math.round(ti[j].p/sumround);
-                        ti[j].b = (sums[sv]||0);
+                        var previousSum = sums[sv]||0;
+                        if(stack) ti[j].b = previousSum;
                         barEnd = ti[j].b+ti[j].s;
-                        sums[sv] = barEnd;
+                        sums[sv] = previousSum + ti[j].s;
 
                         // store the bar top in each calcdata item
-                        if(fullLayout.barmode==='stack') {
+                        if(stack) {
                             ti[j][sLetter] = barEnd;
-                            if($.isNumeric(sa.c2l(barEnd))) {
+                            if(!norm && $.isNumeric(sa.c2l(barEnd))) {
                                 sMax = Math.max(sMax,barEnd);
                                 sMin = Math.min(sMin,barEnd);
                             }
@@ -286,10 +297,10 @@
                     }
                 }
 
-                if(fullLayout.barmode!=='stack') {
+                if(norm) {
                     // stackto1 or stackto100
                     padded = false;
-                    var top = fullLayout.barmode==='stackto1' ? 1 : 100,
+                    var top = norm==='fraction' ? 1 : 100,
                         tiny = top/1e9; // in case of rounding error in sum
                     sMin = 0;
                     sMax = top;

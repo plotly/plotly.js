@@ -1623,10 +1623,11 @@
         // these ones show up in restyle because they make more sense
         // in the style box, but they're graph-wide attributes, so set
         // in gd.layout also axis scales and range show up here because
-        // we may need to undo them these all trigger a recalc
+        // we may need to undo them. These all trigger a recalc
         var layoutAttrs = [
-            'barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap',
-            '?axis.autorange','?axis.range','?axis.rangemode'
+            'barmode', 'barnorm','bargap', 'bargroupgap',
+            'boxmode', 'boxgap', 'boxgroupgap',
+            '?axis.autorange', '?axis.range', '?axis.rangemode'
         ];
         // these ones may alter the axis type
         // (at least if the first trace is involved)
