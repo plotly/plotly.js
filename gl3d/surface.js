@@ -157,6 +157,26 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
 
     coerceHeatmap('colorscale');
 
+    var dims = ['x','y','z'];
+    for (i = 0; i < 3; ++i) {
+
+        var contourDim = 'contour.' + dims[i];
+        var show = coerce(contourDim + '.show');
+        var highlight = coerce(contourDim + '.highlight');
+
+        if (show || highlight ) coerce(contourDim + '.project');
+
+        if (show) {
+            coerce(contourDim + '.color');
+            coerce(contourDim + '.width');
+        }
+
+        if (highlight) {
+            coerce(contourDim + '.highlightColor');
+            coerce(contourDim + '.highlightWidth');
+        }
+    }
+
     var reverseScale = coerceHeatmap('reversescale'),
         showScale = coerceHeatmap('showscale');
 
