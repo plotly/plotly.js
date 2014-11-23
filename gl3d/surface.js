@@ -1,5 +1,6 @@
 'use strict';
 var createSurface = require('gl-surface-plot'),
+    str2RgbaArray = require('./str2rgbarray'),
     tinycolor = require('tinycolor2'),
     ndarray = require('ndarray'),
     fill = require('ndarray-fill');
