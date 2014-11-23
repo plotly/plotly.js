@@ -45,6 +45,7 @@ function contourLevelsFromTicks(ticks) {
         for(var j=0; j<tlevel.length; ++j) {
             clevel[j] = tlevel[j].x;
         }
+        result[i] = clevel
     }
     return result;
 }

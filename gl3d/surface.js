@@ -36,7 +36,7 @@ var proto = Surface.prototype;
 proto.contourAttributes =  {
     show: {
         type: 'boolean',
-        dflt: true
+        dflt: false
     },
     project: {
         type: 'boolean',
@@ -54,7 +54,7 @@ proto.contourAttributes =  {
     },
     highlight: {
         type: 'boolean',
-        dflt: true
+        dflt: false
     },
     highlightColor: {
         type: 'color',
@@ -270,11 +270,18 @@ proto.update = function update (scene, sceneLayout, data, surface) {
         field:          field,
         colormap:       colormap,
         levels:         [[],[],[]],
-        showContour:    []
+        showContour:    [ true, true, true ],
+        contourProject: [ false, false, false ],
+        contourWidth:   [ 1, 1, 1 ],
+        contourColor:   [ [1,1,1,1], [1,1,1,1], [1,1,1,1] ],
+        contourTint:    [ 1, 1, 1 ],
+        dynamicColor:   [ [1,1,1,1], [1,1,1,1], [1,1,1,1] ],
+        dynamicWidth:   [ 1, 1, 1 ],
+        dynamicTint:    [ 1, 1, 1 ]
     };
 
-    var highlightEnable            = [];
-    var contourEnable              = [];
+    var highlightEnable            = [ true, true, true ];
+    var contourEnable              = [ true, true, true ];
     var axis                       = [ 'x', 'y', 'z' ];
 
     for(i = 0; i < 3; ++i) {
@@ -283,26 +290,19 @@ proto.update = function update (scene, sceneLayout, data, surface) {
         contourEnable[i]           = contourParams.show;
 
         params.showContour[i]      = contourParams.show || contourParams.highlight;
-        if (!params.showContour[i])  continue;
+        if (!params.showContour[i]) {
+            continue;
+        }
 
-        if (!params.contourProject)  params.contourProject = [];
         params.contourProject[i]   = contourParams.project;
-        params.levels[i]           = contourLevels[i];
 
         if (contourParams.show) {
-            if (!params.contourColor) {
-                params.contourColor = [];
-                params.contourWidth = [];
-            }
+            params.levels[i]       = contourLevels[i];
             params.contourColor[i] = contourParams.color;
             params.contourWidth[i] = contourParams.width;
         }
 
         if (contourParams.highlight) {
-            if (!params.dynamicColor) {
-                params.dynamicColor = [];
-                params.dynamicWidth = [];
-            }
             params.dynamicColor[i] = str2RgbaArray(contourParams.highlightColor);
             params.dynamicWidth[i] = contourParams.highlightWidth;
         }
