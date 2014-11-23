@@ -13,6 +13,7 @@ function Surface (config) {
 
 module.exports = Surface;
 
+
 function parseColorScale (colorscale, alpha) {
     if (alpha === undefined) alpha = 1;
 
@@ -26,6 +27,8 @@ function parseColorScale (colorscale, alpha) {
         };
     });
 }
+
+
 
 var proto = Surface.prototype;
 
@@ -300,7 +303,7 @@ proto.update = function update (scene, sceneLayout, data, surface) {
                 params.dynamicColor = [];
                 params.dynamicWidth = [];
             }
-            params.dynamicColor[i] = contourParams.highlightColor;
+            params.dynamicColor[i] = str2RgbaArray(contourParams.highlightColor);
             params.dynamicWidth[i] = contourParams.highlightWidth;
         }
     }
