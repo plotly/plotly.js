@@ -136,10 +136,10 @@
         Plotly.Lib.markTime('start convert x&y');
         var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
-            x = trace.x ? xa.makeCalcdata(trace, 'x') : [],
+            x,
             x0,
             dx,
-            y = trace.y ? ya.makeCalcdata(trace, 'y') : [],
+            y,
             y0,
             dy,
             z,
@@ -152,200 +152,24 @@
         Plotly.Lib.markTime('done convert x&y');
 
         if(Plotly.Plots.isHist2D(trace.type)) {
-            var serieslen = Math.min(x.length, y.length);
-            if(x.length>serieslen) x.splice(serieslen, x.length-serieslen);
-            if(y.length>serieslen) y.splice(serieslen, y.length-serieslen);
-
-            Plotly.Lib.markTime('done convert data');
-
-            // calculate the bins
-            if(trace.autobinx || !('xbins' in trace)) {
-                trace.xbins = Plotly.Axes.autoBin(x, xa, trace.nbinsx, '2d');
-                if(trace.type==='histogram2dcontour') {
-                    trace.xbins.start -= trace.xbins.size;
-                    trace.xbins.end += trace.xbins.size;
-                }
-
-                // copy bin info back to the source data.
-                trace._input.xbins = trace.xbins;
-            }
-            if(trace.autobiny || !('ybins' in trace)) {
-                trace.ybins = Plotly.Axes.autoBin(y,ya,trace.nbinsy,'2d');
-                if(trace.type==='histogram2dcontour') {
-                    trace.ybins.start -= trace.ybins.size;
-                    trace.ybins.end += trace.ybins.size;
-                }
-                trace._input.ybins = trace.ybins;
-            }
-            Plotly.Lib.markTime('done autoBin');
-
-            // make the empty bin array & scale the map
-            z = [];
-            var onecol = [],
-                zerocol = [],
-                xbins = (typeof(trace.xbins.size)==='string') ? [] : trace.xbins,
-                ybins = (typeof(trace.xbins.size)==='string') ? [] : trace.ybins,
-                total = 0,n,m,cnt=[],
-                norm = trace.histnorm||'',
-                func = trace.histfunc||'',
-                densitynorm = (norm.indexOf('density')!==-1),
-                extremefunc = (func==='max' || func==='min'),
-                sizeinit = (extremefunc ? null : 0),
-                binfunc = function(m,n) {
-                    z[m][n]++;
-                    total++;
-                },
-                normfunc = null,
-                doavg = false,
-                xinc, yinc;
-
-            // set a binning function other than count?
-            // for binning functions: check first for 'z',
-            // then 'mc' in case we had a colored scatter plot
-            // and want to transfer these colors to the 2D histo
-            // TODO: this is why we need a data picker in the popover...
-            var counterdata = ('z' in trace) ?
-                trace.z :
-                (('marker' in trace && $.isArray(trace.marker.color)) ?
-                    trace.marker.color : '');
-            if(counterdata && ['sum', 'avg', 'min', 'max'].indexOf(func)!==-1) {
-                var counter0 = counterdata.map(Number);
-                if(func==='sum') {
-                    binfunc = function(m,n,i) {
-                        var v = counter0[i];
-                        if($.isNumeric(v)) {
-                            z[m][n]+=v;
-                            total+=v;
-                        }
-                    };
-                }
-                else if(func==='avg') {
-                    doavg = true;
-                    binfunc = function(m,n,i) {
-                        var v = counter0[i];
-                        if($.isNumeric(v)) {
-                            z[m][n]+=v;
-                            cnt[m][n]++;
-                        }
-                    };
-                }
-                else if(func==='min') {
-                    binfunc = function(m,n,i) {
-                        var v = counter0[i];
-                        if($.isNumeric(v)) {
-                            if(!$.isNumeric(z[m][n])) {
-                                total += v;
-                                z[m][n] = v;
-                            }
-                            else if(z[m][n]>v) {
-                                total += v - z[m][n];
-                                z[m][n] = v;
-                            }
-                        }
-                    };
-                }
-                else if(func==='max') {
-                    binfunc = function(m,n,i) {
-                        var v = counter0[i];
-                        if($.isNumeric(v)) {
-                            if(!$.isNumeric(z[m][n])) {
-                                total+=v;
-                                z[m][n] = v;
-                            }
-                            else if(z[m][n]<v) {
-                                total+=v-z[m][n];
-                                z[m][n] = v;
-                            }
-                        }
-                    };
-                }
-            }
-
-            // set a normalization function?
-            if(norm.indexOf('probability')!==-1 || norm.indexOf('percent')!==-1) {
-                normfunc = densitynorm ?
-                    function(m,n) { z[m][n]*=xinc[n]*yinc[m]/total; } :
-                    function(m,n) { z[m][n]/=total; };
-            }
-            else if(densitynorm) {
-                normfunc = function(m,n) { z[m][n]*=xinc[n]*yinc[m]; };
-            }
-
-
-            for(i=trace.xbins.start; i<trace.xbins.end;
-                    i=Plotly.Axes.tickIncrement(i,trace.xbins.size)) {
-                onecol.push(sizeinit);
-                if($.isArray(xbins)) xbins.push(i);
-                if(doavg) zerocol.push(0);
-            }
-            if($.isArray(xbins)) xbins.push(i);
-
-            var nx = onecol.length;
-            x0 = trace.xbins.start;
-            dx = (i-x0)/nx;
-            x0+=dx/2;
-
-            for(i=trace.ybins.start; i<trace.ybins.end;
-                    i=Plotly.Axes.tickIncrement(i,trace.ybins.size)) {
-                z.push(onecol.concat());
-                if($.isArray(ybins)) ybins.push(i);
-                if(doavg) cnt.push(zerocol.concat());
-            }
-            if($.isArray(ybins)) ybins.push(i);
-
-            var ny = z.length;
-            y0 = trace.ybins.start;
-            dy = (i-y0)/ny;
-            y0+=dy/2;
-
-            if(densitynorm) {
-                xinc = onecol.map(function(v,i){
-                    if(norm.indexOf('density')===-1) return 1;
-                    else if($.isArray(xbins)) return 1/(xbins[i+1]-xbins[i]);
-                    else return 1/dx;
-                });
-                yinc = z.map(function(v,i){
-                    if(norm.indexOf('density')===-1) return 1;
-                    else if($.isArray(ybins)) return 1/(ybins[i+1]-ybins[i]);
-                    else return 1/dy;
-                });
-            }
-
-
-            Plotly.Lib.markTime('done making bins');
-            // put data into bins
-            for(i=0; i<serieslen; i++) {
-                n = Plotly.Lib.findBin(x[i],xbins);
-                m = Plotly.Lib.findBin(y[i],ybins);
-                if(n>=0 && n<nx && m>=0 && m<ny) binfunc(m,n,i);
-            }
-            // normalize, if needed
-            if(doavg) {
-                for(n=0; n<nx; n++) {
-                    for(m=0; m<ny; m++) {
-                        if(cnt[m][n]>0) {
-                            z[m][n] /= cnt[m][n];
-                            total += z[m][n];
-                        }
-                        else z[m][n] = null;
-                    }
-                }
-            }
-            if(norm.indexOf('percent')!==-1) total/=100;
-            if(normfunc) {
-                for(n=0; n<nx; n++) {
-                    for(m=0; m<ny; m++) {
-                        if($.isNumeric(z[m][n])) normfunc(m,n);
-                    }
-                }
-            }
-            Plotly.Lib.markTime('done binning');
+            var binned = Plotly.Histogram.calc2d(gd, trace);
+            x = binned.x;
+            x0 = binned.x0;
+            dx = binned.dx;
+            y = binned.y;
+            y0 = binned.y0;
+            dy = binned.dy;
+            z = binned.z;
         }
         else {
+            x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
             x0 = trace.x0||0;
             dx = trace.dx||1;
+
+            y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
             y0 = trace.y0||0;
             dy = trace.dy||1;
+
             if(trace.transpose) {
                 var maxcols = Plotly.Lib.aggNums(Math.max,0,
                         trace.z.map(function(r){return r.length;}));
@@ -379,7 +203,7 @@
                         }
                     }
                 }
-                if(y.length) {
+                if(y.length && [true,'fast'].indexOf(trace.zsmooth)!==-1) {
                     var avgdy = (y[y.length-1]-y[0])/(y.length-1),
                     maxErrY = Math.abs(avgdy/100);
                     for(i=0; i<y.length-1; i++) {
@@ -766,8 +590,8 @@
             }
         }
         Plotly.Lib.markTime('done filling png');
-        gd.hmpixcount = (gd.hmpixcount||0)+pixcount;
-        gd.hmlumcount = (gd.hmlumcount||0)+lumcount;
+        gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
+        gd._hmlumcount = (gd._hmlumcount||0) + lumcount;
 
         // http://stackoverflow.com/questions/6249664/does-svg-support-embedding-of-bitmap-images
         // https://groups.google.com/forum/?fromgroups=#!topic/d3-js/aQSWnEDFxIc
@@ -817,6 +641,92 @@
 
     heatmap.style = function(gp) {
         gp.selectAll('image').style('opacity',function(d){ return d.trace.opacity; });
+    };
+
+    heatmap.hoverPoints = function(pointData, xval, yval, hovermode, contour) {
+        // never let a heatmap override another type as closest point
+        if(pointData.distance<Plotly.Fx.MAXDIST) return;
+
+        var cd = pointData.cd,
+            trace = cd[0].trace,
+            xa = pointData.xa,
+            ya = pointData.ya,
+            x = cd[0].x,
+            y = cd[0].y,
+            z = cd[0].z,
+            x2 = x,
+            y2 = y,
+            xl,
+            yl,
+            nx,
+            ny;
+        if(pointData.index!==false) {
+            try {
+                nx = Math.round(pointData.index[1]);
+                ny = Math.round(pointData.index[0]);
+            }
+            catch(e) {
+                console.log('Error hovering on heatmap, ' +
+                    'pointNumber must be [row,col], found:', pointData.index);
+                return;
+            }
+            if(nx<0 || nx>=z[0].length || ny<0 || ny>z.length) {
+                return;
+            }
+        }
+        else if(Plotly.Fx.inbox(xval-x[0], xval-x[x.length-1])>Plotly.Fx.MAXDIST ||
+                Plotly.Fx.inbox(yval-y[0], yval-y[y.length-1])>Plotly.Fx.MAXDIST) {
+            return;
+        }
+        else {
+            if(contour) {
+                x2 = [2*x[0]-x[1]];
+                for(var i2=1; i2<x.length; i2++) {
+                    x2.push((x[i2]+x[i2-1])/2);
+                }
+                x2.push([2*x[x.length-1]-x[x.length-2]]);
+
+                y2 = [2*y[0]-y[1]];
+                for(i2=1; i2<y.length; i2++) {
+                    y2.push((y[i2]+y[i2-1])/2);
+                }
+                y2.push([2*y[y.length-1]-y[y.length-2]]);
+            }
+            nx = Math.max(0,Math.min(x2.length-2,
+                Plotly.Lib.findBin(xval,x2)));
+            ny = Math.max(0,Math.min(y2.length-2,
+                Plotly.Lib.findBin(yval,y2)));
+        }
+        var x0 = xa.c2p(x[nx]),
+            x1 = xa.c2p(x[nx+1]),
+            y0 = ya.c2p(y[ny]),
+            y1 = ya.c2p(y[ny+1]);
+        if(contour) {
+            x1=x0;
+            xl=x[nx];
+            y1=y0;
+            yl=y[ny];
+        }
+        else {
+            xl = (x[nx]+x[nx+1])/2;
+            yl = (y[ny]+y[ny+1])/2;
+            if(trace.zsmooth) {
+                x0=x1=(x0+x1)/2;
+                y0=y1=(y0+y1)/2;
+            }
+        }
+        return [$.extend(pointData,{
+            index: [ny, nx],
+            // never let a 2D override 1D type as closest point
+            distance: Plotly.Fx.MAXDIST+10,
+            x0: x0,
+            x1: x1,
+            y0: y0,
+            y1: y1,
+            xLabelVal: xl,
+            yLabelVal: yl,
+            zLabelVal: z[ny][nx],
+        })];
     };
 
 }()); // end Heatmap object definition

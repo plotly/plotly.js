@@ -25,6 +25,11 @@
             values: ['stack', 'group', 'overlay'],
             dflt: 'group'
         },
+        barnorm: {
+            type: 'enumerated',
+            values: ['', 'fraction', 'percent'],
+            dflt: ''
+        },
         bargap: {
             type: 'number',
             min: 0,
@@ -91,6 +96,7 @@
         Plotly.Scatter.colorScalableDefaults('marker.', coerceScatter, defaultColor);
         Plotly.Scatter.colorScalableDefaults('marker.line.', coerceScatter, '#444');
         coerceScatter('marker.line.width', 0);
+        coerceScatter('text');
 
         // override defaultColor for error bars with #444
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'y'});
@@ -107,7 +113,7 @@
         fullData.forEach(function(trace) {
             if(Plotly.Plots.isBar(trace.type)) hasBars = true;
 
-            if(trace.type==='histogram') {
+            if(trace.visible && trace.type==='histogram') {
                 var pa = Plotly.Axes.getFromId({_fullLayout:layoutOut},
                             trace[trace.orientation==='v' ? 'xaxis' : 'yaxis']);
                 if(pa.type!=='category') shouldBeGapless = true;
@@ -116,7 +122,9 @@
 
         if(!hasBars) return;
 
-        coerce('barmode');
+        var mode = coerce('barmode');
+        if(mode!=='overlay') coerce('barnorm');
+
         coerce('bargap', shouldBeGapless ? 0 : 0.2);
         coerce('bargroupgap');
     };
@@ -246,8 +254,11 @@
             }
             else barposition(bl);
 
+            var stack = fullLayout.barmode==='stack',
+                norm = fullLayout.barnorm;
+
             // bar size range and stacking calculation
-            if(fullLayout.barmode==='stack'){
+            if(stack || norm){
                 // for stacked bars, we need to evaluate every step in every
                 // stack, because negative bars mean the extremes could be
                 // anywhere
@@ -256,29 +267,67 @@
                 var sMax = sa.l2c(sa.c2l(0)),
                     sMin = sMax,
                     sums={},
-                    v=0,
 
                     // make sure if p is different only by rounding,
                     // we still stack
                     sumround = gd.calcdata[bl[0]][0].t.barwidth/100,
-                    sv = 0;
+                    sv = 0,
+                    padded = true,
+                    barEnd,
+                    ti,
+                    scale;
+
                 for(i=0; i<bl.length; i++){ // trace index
-                    var ti = gd.calcdata[bl[i]];
+                    ti = gd.calcdata[bl[i]];
                     for(j=0; j<ti.length; j++) {
                         sv = Math.round(ti[j].p/sumround);
-                        ti[j].b = (sums[sv]||0);
-                        v = ti[j].b+ti[j].s;
+                        var previousSum = sums[sv]||0;
+                        if(stack) ti[j].b = previousSum;
+                        barEnd = ti[j].b+ti[j].s;
+                        sums[sv] = previousSum + ti[j].s;
 
                         // store the bar top in each calcdata item
-                        ti[j][sLetter] = v;
-                        sums[sv] = v;
-                        if($.isNumeric(sa.c2l(v))) {
-                            sMax = Math.max(sMax,v);
-                            sMin = Math.min(sMin,v);
+                        if(stack) {
+                            ti[j][sLetter] = barEnd;
+                            if(!norm && $.isNumeric(sa.c2l(barEnd))) {
+                                sMax = Math.max(sMax,barEnd);
+                                sMin = Math.min(sMin,barEnd);
+                            }
                         }
                     }
                 }
-                Plotly.Axes.expand(sa, [sMin, sMax], {tozero: true, padded: true});
+
+                if(norm) {
+                    // stackto1 or stackto100
+                    padded = false;
+                    var top = norm==='fraction' ? 1 : 100,
+                        tiny = top/1e9; // in case of rounding error in sum
+                    sMin = 0;
+                    sMax = top;
+                    for(i=0; i<bl.length; i++){ // trace index
+                        ti = gd.calcdata[bl[i]];
+                        for(j=0; j<ti.length; j++) {
+                            scale = top / sums[Math.round(ti[j].p/sumround)];
+                            ti[j].b *= scale;
+                            ti[j].s *= scale;
+                            barEnd = ti[j].b + ti[j].s;
+                            ti[j][sLetter] = barEnd;
+
+                            if($.isNumeric(sa.c2l(barEnd))) {
+                                if(barEnd < sMin - tiny) {
+                                    padded = true;
+                                    sMin = barEnd;
+                                }
+                                if(barEnd > sMax + tiny) {
+                                    padded = true;
+                                    sMax = sMax;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Plotly.Axes.expand(sa, [sMin, sMax], {tozero: true, padded: padded});
             }
             else {
                 // for grouped or overlaid bars, just make sure zero is
@@ -372,7 +421,7 @@
                             // its neighbor
                             (v>vc ? Math.ceil(v) : Math.floor(v));
                         }
-                        if(!gd.forexport) {
+                        if(!gd._context.staticPlot) {
                             // if bars are not fully opaque or they have a line
                             // around them, round to integer pixels, mainly for
                             // safari so we prevent overlaps from its expansive
@@ -450,5 +499,79 @@
             //     .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
         });
     };
+
+    bars.hoverPoints = function(pointData, xval, yval, hovermode) {
+        var cd = pointData.cd,
+            trace = cd[0].trace,
+            t = cd[0].t,
+            xa = pointData.xa,
+            ya = pointData.ya,
+            barDelta = (hovermode==='closest') ?
+                t.barwidth/2 : t.dbar*(1-xa._td._fullLayout.bargap)/2,
+            barPos;
+        if(hovermode!=='closest') barPos = function(di) { return di.p; };
+        else if(trace.orientation==='h') barPos = function(di) { return di.y; };
+        else barPos = function(di) { return di.x; };
+
+        var dx, dy;
+        if(trace.orientation==='h') {
+            dx = function(di){
+                // add a gradient so hovering near the end of a
+                // bar makes it a little closer match
+                return Plotly.Fx.inbox(di.b-xval, di.x-xval) + (di.x-xval)/(di.x-di.b);
+            };
+            dy = function(di){
+                var centerPos = barPos(di) - yval;
+                return Plotly.Fx.inbox(centerPos - barDelta, centerPos + barDelta);
+            };
+        }
+        else {
+            dy = function(di){
+                return Plotly.Fx.inbox(di.b-yval, di.y-yval) + (di.y-yval)/(di.y-di.b);
+            };
+            dx = function(di){
+                var centerPos = barPos(di) - xval;
+                return Plotly.Fx.inbox(centerPos - barDelta, centerPos + barDelta);
+            };
+        }
+
+        var distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy);
+        Plotly.Fx.getClosest(cd, distfn, pointData);
+
+        // skip the rest (for this trace) if we didn't find a close point
+        if(pointData.index===false) return;
+
+        // the closest data point
+        var di = cd[pointData.index],
+            mc = di.mcc || trace.marker.color,
+            mlc = di.mlcc || trace.marker.line.color,
+            mlw = di.mlw || trace.marker.line.width;
+        if(Plotly.Color.opacity(mc)) pointData.color = mc;
+        else if(Plotly.Color.opacity(mlc) && mlw) pointData.color = mlc;
+
+        if(trace.orientation==='h') {
+            pointData.x0 = pointData.x1 = xa.c2p(di.x, true);
+            pointData.xLabelVal = di.s;
+
+            pointData.y0 = ya.c2p(barPos(di) - barDelta, true);
+            pointData.y1 = ya.c2p(barPos(di) + barDelta, true);
+            pointData.yLabelVal = di.p;
+        }
+        else {
+            pointData.y0 = pointData.y1 = ya.c2p(di.y,true);
+            pointData.yLabelVal = di.s;
+
+            pointData.x0 = xa.c2p(barPos(di) - barDelta, true);
+            pointData.x1 = xa.c2p(barPos(di) + barDelta, true);
+            pointData.xLabelVal = di.p;
+        }
+
+        if(di.tx) pointData.text = di.tx;
+
+        Plotly.ErrorBars.hoverInfo(di, trace, pointData);
+
+        return [pointData];
+    };
+
 
 }()); // end Bars object definition

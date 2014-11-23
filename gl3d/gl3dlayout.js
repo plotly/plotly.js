@@ -8,12 +8,6 @@ function Gl3dLayout (config) {
 
 var proto = Gl3dLayout.prototype;
 
-proto.layoutAttributes = {
-    scene: {
-        type: 'sceneid'
-    }
-};
-
 proto.sceneLayoutAttributes = {
     bgcolor: {
         type: 'color',

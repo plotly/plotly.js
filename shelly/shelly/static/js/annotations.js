@@ -312,8 +312,13 @@
 
         // remember a few things about what was already there,
         var optionsIn = layout.annotations[index],
-            oldPrivate = fullLayout.annotations[index],
-            oldRef = {xref: optionsIn.xref, yref: optionsIn.yref};
+            oldPrivate = fullLayout.annotations[index];
+
+        // not sure how we're getting here... but C12 is seeing a bug
+        // where we fail here when they add/remove annotations
+        if(!optionsIn) return;
+
+        var oldRef = {xref: optionsIn.xref, yref: optionsIn.yref};
 
         // alter the input annotation as requested
         var optionsEdit = {};
@@ -609,7 +614,7 @@
                     .call(Plotly.Color.stroke, 'rgba(0,0,0,0)')
                     .call(Plotly.Color.fill, 'rgba(0,0,0,0)');
 
-                if(gd.mainsite) {
+                if(gd._context.editable) {
                     arrowdrag.node().onmousedown = function(e) {
                         // deal with other UI elements, and allow them
                         // to cancel dragging
@@ -618,7 +623,8 @@
                         var annx0 = Number(ann.attr('x')),
                             anny0 = Number(ann.attr('y')),
                             update = {},
-                            annbase = 'annotations['+index+']';
+                            annbase = 'annotations['+index+']',
+                            dragged = false;
 
                         if(xa && xa.autorange) {
                             update[xa._name+'.autorange'] = true;
@@ -627,13 +633,12 @@
                             update[ya._name+'.autorange'] = true;
                         }
 
-                        gd.dragged = false;
                         window.onmousemove = function(e2) {
                             var dx = e2.clientX-e.clientX,
                                 dy = e2.clientY-e.clientY;
                             if(Math.abs(dx)<MINDRAG) dx=0;
                             if(Math.abs(dy)<MINDRAG) dy=0;
-                            if(dx||dy) gd.dragged = true;
+                            if(dx||dy) dragged = true;
                             arrowgroup.attr('transform', 'translate('+dx+','+dy+')');
 
                             var annxy0 = applyTransform(annx0, anny0),
@@ -659,7 +664,9 @@
                         window.onmouseup = function(e2) {
                             window.onmousemove = null;
                             window.onmouseup = null;
-                            if(gd.dragged) Plotly.relayout(gd,update);
+
+                            if(dragged) Plotly.relayout(gd,update);
+
                             return Plotly.Lib.pauseEvent(e2);
                         };
                         return Plotly.Lib.pauseEvent(e);
@@ -676,7 +683,7 @@
                 applyTransform = Plotly.Lib.apply2DTransform(transform);
 
             // user dragging the annotation (text, not arrow)
-            if(gd.mainsite) {
+            if(gd._context.editable) {
                 ann.node().onmousedown = function(e) {
                     // deal with other UI elements, and allow them
                     // to cancel dragging
@@ -686,14 +693,16 @@
                         x0=Number(el3.attr('x')),
                         y0=Number(el3.attr('y')),
                         update = {},
-                        annbase = 'annotations['+index+']';
+                        annbase = 'annotations['+index+']',
+                        dragged = false;
+
                     if(xa && xa.autorange) {
                         update[xa._name+'.autorange'] = true;
                     }
                     if(ya && ya.autorange) {
                         update[ya._name+'.autorange'] = true;
                     }
-                    gd.dragged = false;
+
                     Plotly.Fx.setCursor(el3);
 
                     window.onmousemove = function(e2) {
@@ -702,7 +711,7 @@
 
                         if(Math.abs(dx)<MINDRAG) dx=0;
                         if(Math.abs(dy)<MINDRAG) dy=0;
-                        if(dx||dy) gd.dragged = true;
+                        if(dx||dy) dragged = true;
 
                         el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
                         var csr = 'pointer';
@@ -748,7 +757,7 @@
                         window.onmousemove = null;
                         window.onmouseup = null;
                         Plotly.Fx.setCursor(el3);
-                        if(gd.dragged) { Plotly.relayout(gd,update); }
+                        if(dragged) Plotly.relayout(gd,update);
                         return Plotly.Lib.pauseEvent(e2);
                     };
 
@@ -758,7 +767,7 @@
 
         }
 
-        if(gd.mainsite) {
+        if(gd._context.editable) {
             anntext.call(Plotly.util.makeEditable, annbg)
                 .call(textLayout)
                 .on('edit', function(_text){

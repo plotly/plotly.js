@@ -3,13 +3,11 @@
 var createScatterLine = require('./line-with-markers'),
     tinycolor = require('tinycolor2'),
     arrtools = require('arraytools'),
-    arrayCopy1D = arrtools.copy1D,
     calculateError = require('./calc-errors');
 
 function Scatter3D (config) {
 
     this.config = config;
-
 
 }
 
@@ -134,6 +132,7 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     var _this = this;
     var Plotly = this.config.Plotly;
     var Scatter = Plotly.Scatter;
+    var linecolor, markercolor;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, _this.attributes, attr, dflt);
@@ -145,17 +144,17 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
 
     this.supplyXYZ(traceIn, traceOut);
 
-    coerceScatter('mode', 'lines+markers');
-    coerceScatter('text');
+    if (coerceScatter('text')) coerceScatter('mode', 'lines+markers+text');
+    else coerceScatter('mode', 'lines+markers');
 
     if (Scatter.hasLines(traceOut)) {
-        var linecolor = coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
+        linecolor = coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
         coerceScatter('line.width');
         coerceScatter('line.dash');
     }
 
     if (Scatter.hasMarkers(traceOut)) {
-        var markercolor = coerceScatter('marker.color', defaultColor);
+        markercolor = coerceScatter('marker.color', defaultColor);
         coerceScatter('marker.symbol');
         coerceScatter('marker.size', 8);
         coerceScatter('marker.opacity', 1);
@@ -165,12 +164,11 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     }
 
     if (Scatter.hasText(traceOut)) {
-        coerceScatter('textposition');
+        coerceScatter('textposition', 'top center');
         coerceScatter('textfont', layout.font);
     }
 
     if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', linecolor || markercolor);
-
 
     var dims = ['x','y','z'];
     for (var i = 0; i < 3; ++i) {
@@ -237,17 +235,39 @@ function str2RgbaArray(color) {
     return arrtools.str2RgbaArray(color.toRgbString());
 }
 
-
-proto.plot = function Scatter (scene, sceneLayout, data) {
-    /*jshint camelcase: false */
-    var scatter = scene.glDataMap[data.uid];
-    // handle visible trace cases
-    if (!data.visible) {
-        if (scatter) scatter.visible = data.visible;
-        return scene.update(sceneLayout, scatter);
+function colorFormatter(colorIn, opacityIn) {
+    var colorOut = null,
+        colorLength = colorIn.length;
+    if (Array.isArray(colorIn)) {
+        colorOut = [];
+        for (var i = 0; i < colorLength; ++i) {
+            colorOut[i]     = str2RgbaArray(colorIn[i]);
+            colorOut[i][3] *= opacityIn;
+        }
+    } else {
+            colorOut     = str2RgbaArray(colorIn);
+            colorOut[3] *= opacityIn;
     }
+    return colorOut;
+}
 
-    var params, idx, i,
+function sizeScaler(sizeIn) {
+    var sizeOut = null;
+    // rough parity with Plotly 2D markers
+    function scale(size) { return size * 2; }
+    if (Array.isArray(sizeIn)) {
+        sizeOut = sizeIn.map(scale);
+    } else {
+        sizeOut = scale(sizeIn);
+    }
+    return sizeOut;
+}
+
+proto.update = function update (scene, sceneLayout, data, scatter) {
+    /*jshint camelcase: false */
+    // handle visible trace cases
+
+    var params, i,
         points = [],
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
@@ -259,23 +279,13 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
         len = x.length;
 
     //Convert points
-    idx = 0;
     for (i = 0; i < len; i++) {
-        // sanitize numbers
-        xc = xaxis.d2c(x[i]);
-        yc = yaxis.d2c(y[i]);
-        zc = zaxis.d2c(z[i]);
+        // sanitize numbers and apply transforms based on axes.type
+        xc = xaxis.d2l(x[i]);
+        yc = yaxis.d2l(y[i]);
+        zc = zaxis.d2l(z[i]);
 
-        // apply any axis transforms
-        if (xaxis.type === 'log') xc = xaxis.c2l(xc);
-        if (yaxis.type === 'log') yc = yaxis.c2l(yc);
-        if (zaxis.type === 'log') zc = zaxis.c2l(zc);
-
-        points[idx] = [xc, yc, zc];
-        ++idx;
-    }
-    if (!points.length) {
-        return void 0;
+        points[i] = [xc, yc, zc];
     }
 
     //Build object parameters
@@ -291,9 +301,8 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
     }
 
     if ('marker' in data) {
-        params.scatterColor         = str2RgbaArray(data.marker.color);
-        params.scatterColor[3]     *= data.marker.opacity;
-        params.scatterSize          = 2*data.marker.size;  // rough parity with Plotly 2D markers
+        params.scatterColor         = colorFormatter(data.marker.color, data.marker.opacity);
+        params.scatterSize          = sizeScaler(data.marker.size);
         params.scatterMarker        = this.markerSymbols[data.marker.symbol];
         params.scatterLineWidth     = data.marker.line.width;
         params.scatterLineColor     = str2RgbaArray(data.marker.line.color);
@@ -303,7 +312,7 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
 
     if ('textposition' in data) {
         params.text           = data.text;
-        params.textOffset     = calculateTextOffset(data.position);
+        params.textOffset     = calculateTextOffset(data.textposition);
         params.textColor      = str2RgbaArray(data.textfont.color);
         params.textSize       = data.textfont.size;
         params.textFont       = data.textfont.family;
@@ -330,29 +339,22 @@ proto.plot = function Scatter (scene, sceneLayout, data) {
     params.delaunayAxis       = data.surfaceaxis;
     params.delaunayColor      = str2RgbaArray(data.surfacecolor);
 
-    if (scatter) {
-        /*
-         * We already have drawn this surface,
-         * lets just update it with the latest params
-         */
-        scatter.update(params);
-    } else {
-        /*
-         * Push it onto the render queue
-         */
-        params.pickId0   = (scene.objectCount++)%256;
-        params.pickId1   = (scene.objectCount++)%256;
-        params.pickId2   = (scene.objectCount++)%256;
-        params.pickId3   = (scene.objectCount++)%256;
-        scatter          = createScatterLine(scene.shell.gl, params);
-        scatter.groupId  = (scene.objectCount-1)>>8;
-        scatter.plotlyType  = data.type;
+    if (scatter) scatter.update(params);
+    else {
+        var pickIds = scene.allocIds(4);
 
-        scene.glDataMap[data.uid] = scatter;
+        params.pickId0   = pickIds.ids[0];
+        params.pickId1   = pickIds.ids[1];
+        params.pickId2   = pickIds.ids[2];
+        params.pickId3   = pickIds.ids[3];
+        scatter          = createScatterLine(scene.shell.gl, params);
+        scatter.groupId  = pickIds.group;
+        scatter.plotlyType  = data.type;
     }
+
     scatter.uid = data.uid;
-    scatter.visible = data.visible;
-    scene.update(sceneLayout, scatter);
+
+    return scatter;
 };
 
 
