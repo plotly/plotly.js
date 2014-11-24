@@ -116,7 +116,7 @@
                 w = svgNode.offsetWidth;
                 h = svgNode.offsetHeight;
             }
-            else sendError('wrong input svg (d3 selection or DOM node)');
+            else return sendError('wrong input svg (d3 selection or DOM node)');
 
             if(canvasContainer) canvasContainer.html('');
             canvasContainer = d3.select('body').append('div')
@@ -138,7 +138,7 @@
             };
             img.onerror = function() {
                 DOMURL.revokeObjectURL(url);
-                sendError('img didnt load');
+                return sendError('img didnt load');
             };
             img.src = url;
 
@@ -160,7 +160,7 @@
                         doc.addImage(imgData, 'JPEG', 0, 0, w*px2pt, h*px2pt);
                         imgData = doc.output('dataurlstring');
                     } else {
-                        sendError({err: 'Image format is not jpeg, png, svg, or pdf', code: 400});
+                        return sendError({err: 'Image format is not jpeg, png, svg, or pdf', code: 400});
                     }
 
                     if(debugLevel === 0) {
