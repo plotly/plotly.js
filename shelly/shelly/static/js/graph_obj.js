@@ -34,6 +34,10 @@
         return BARTYPES.indexOf(type)!==-1;
     };
 
+    plots.isBox = function(type) {
+        return type === 'box';
+    };
+
     var HEATMAPTYPES = ['heatmap','histogram2d','contour','histogram2dcontour'];
     plots.isHeatmap = function(type) {
         return HEATMAPTYPES.indexOf(type) !== -1;
@@ -49,9 +53,9 @@
         return HIST2DTYPES.indexOf(type) !== -1;
     };
 
+    var CARTESIANTYPES = ['scatter', 'box'].concat(BARTYPES, HEATMAPTYPES);
     plots.isCartesian = function(type) {
-        return plots.isScatter(type) || plots.isBar(type) ||
-            plots.isHeatmap(type) || type==='box';
+        return CARTESIANTYPES.indexOf(type) !== -1;
     };
 
     var GL3DTYPES = ['scatter3d', 'surface'];
@@ -71,7 +75,7 @@
         return type === 'surface';
     };
 
-    var ALLTYPES = ['scatter', 'box', 'scatter3d', 'surface'].concat(BARTYPES, HEATMAPTYPES);
+    var ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
 
     function getModule(trace) {
         var type = trace.type;
@@ -88,8 +92,8 @@
         if (plots.isContour(type)) return Plotly.Contour;
         if (plots.isHeatmap(type)) return Plotly.Heatmap;
         if (plots.isScatter3D(type)) return Plotly.Scatter3D;
-        if(plots.isSurface(type)) return Plotly.Surface;
-        if(type==='box') return Plotly.Boxes;
+        if (plots.isSurface(type)) return Plotly.Surface;
+        if (plots.isBox(type)) return Plotly.Boxes;
 
         console.log('Unrecognized plot type ' + type +
             '. Ignoring this dataset.'
@@ -299,7 +303,10 @@
         // Get the container div: we store all variables for this plot as
         // properties of this div
         // some callers send this in by dom element, others by id (string)
-        if(typeof gd === 'string') { gd = document.getElementById(gd); }
+        if(typeof gd === 'string') gd = document.getElementById(gd);
+
+        var okToPlot = $(gd).triggerHandler('plotly_beforeplot', [data, layout, config]);
+        if(okToPlot===false) return;
 
         // if there's no data or layout, and this isn't yet a plotly plot
         // container, log a warning to help plotly.js users debug
@@ -536,6 +543,7 @@
             // so mark it as done and let other procedures call a replot
             gd._replotting = false;
             Plotly.Lib.markTime('done plot');
+            $(gd).trigger('plotly_afterplot');
         }
 
         var donePlotting = Plotly.Lib.syncOrAsync([
@@ -1089,6 +1097,12 @@
         uid: {
             type: 'string',
             dflt: ''
+        },
+        hoverinfo: {
+            type: 'flaglist',
+            flags: ['x', 'y', 'z', 'text', 'name'],
+            extras: ['all', 'none'],
+            dflt: 'all'
         }
     };
 
@@ -1250,6 +1264,8 @@
 
         if(visible) {
             coerce('name', 'trace '+i);
+
+            coerce('hoverinfo');
 
             if(!plots.isScatter3D(type)) coerce('opacity');
 
@@ -1585,6 +1601,11 @@
             'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
             'swapxy','swapxyaxes','orientationaxes'
         ];
+        var hasBoxes = traces.some(function(v) {
+            return Plotly.Plots.isBox(gd._fullData[v].type);
+        });
+        if(hasBoxes) recalcAttrs.push('name');
+
         // autorangeAttrs attributes need a full redo of calcdata
         // only if an axis is autoranged,
         // because .calc() is where the autorange gets determined
@@ -1607,10 +1628,11 @@
         // these ones show up in restyle because they make more sense
         // in the style box, but they're graph-wide attributes, so set
         // in gd.layout also axis scales and range show up here because
-        // we may need to undo them these all trigger a recalc
+        // we may need to undo them. These all trigger a recalc
         var layoutAttrs = [
-            'barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap',
-            '?axis.autorange','?axis.range','?axis.rangemode'
+            'barmode', 'barnorm','bargap', 'bargroupgap',
+            'boxmode', 'boxgap', 'boxgroupgap',
+            '?axis.autorange', '?axis.range', '?axis.rangemode'
         ];
         // these ones may alter the axis type
         // (at least if the first trace is involved)
@@ -1928,6 +1950,7 @@
 
     // swap all the data and data attributes associated with x and y
     function swapxydata(trace) {
+        var i;
         swapAttrs(trace, '?');
         swapAttrs(trace, '?0');
         swapAttrs(trace, 'd?');
@@ -1951,6 +1974,14 @@
                 swapAttrs(trace, 'error_?.thickness');
                 swapAttrs(trace, 'error_?.width');
             }
+        }
+        if(trace.hoverinfo) {
+            var hoverInfoParts = trace.hoverinfo.split('+');
+            for(i=0; i<hoverInfoParts.length; i++) {
+                if(hoverInfoParts[i]==='x') hoverInfoParts[i] = 'y';
+                else if(hoverInfoParts[i]==='y') hoverInfoParts[i] = 'x';
+            }
+            trace.hoverinfo = hoverInfoParts.join('+');
         }
     }
 
@@ -2196,16 +2227,16 @@
                 // check whether we can short-circuit a full redraw
                 // 3d at this point just needs to redraw.
                 if (p.parts[0].indexOf('scene') === 0) doplot = true;
-                else if(p.parts[0].indexOf('legend')!==-1) { dolegend = true; }
-                else if(ai.indexOf('title')!==-1) { doticks = true; }
-                else if(p.parts[0].indexOf('bgcolor')!==-1) {
-                    dolayoutstyle = true;
-                }
+                else if(p.parts[0].indexOf('legend')!==-1) dolegend = true;
+                else if(ai.indexOf('title')!==-1) doticks = true;
+                else if(p.parts[0].indexOf('bgcolor')!==-1) dolayoutstyle = true;
                 else if(p.parts.length>1 && (
-                    p.parts[1].indexOf('tick')!==-1 ||
-                    p.parts[1].indexOf('exponent')!==-1 ||
-                    p.parts[1].indexOf('grid')!==-1 ||
-                    p.parts[1].indexOf('zeroline')!==-1)) { doticks = true; }
+                        p.parts[1].indexOf('tick')!==-1 ||
+                        p.parts[1].indexOf('exponent')!==-1 ||
+                        p.parts[1].indexOf('grid')!==-1 ||
+                        p.parts[1].indexOf('zeroline')!==-1)) {
+                    doticks = true;
+                }
                 else if(ai.indexOf('.linewidth')!==-1 &&
                         ai.indexOf('axis')!==-1) {
                     doticks = dolayoutstyle = true;
@@ -2216,18 +2247,22 @@
                 else if(p.parts.length>1 && p.parts[1]==='mirror') {
                     doticks = dolayoutstyle = true;
                 }
-                else if(ai==='margin.pad') { doticks = dolayoutstyle = true; }
+                else if(ai==='margin.pad') {
+                    doticks = dolayoutstyle = true;
+                }
                 else if(p.parts[0]==='margin' ||
-                    p.parts[1]==='autorange' ||
-                    p.parts[1]==='rangemode' ||
-                    p.parts[1]==='type' ||
-                    ai.match(/^(bar|box|font)/)) { docalc = true; }
+                        p.parts[1]==='autorange' ||
+                        p.parts[1]==='rangemode' ||
+                        p.parts[1]==='type' ||
+                        ai.match(/^(bar|box|font)/)) {
+                    docalc = true;
+                }
                 // hovermode and dragmode don't need any redrawing,
                 // since they just
                 // affect reaction to user input. everything else,
                 // assume full replot.
                 // height, width, autosize get dealt with below
-                else if(ai==='hovermode') { domodebar = true; }
+                else if(ai==='hovermode') domodebar = true;
                 else if(['hovermode','dragmode','height',
                         'width','autosize'].indexOf(ai)===-1) {
                     doplot = true;
@@ -2237,9 +2272,7 @@
         }
         // now all attribute mods are done, as are
         // redo and undo so we can save them
-        if(Plotly.Queue) {
-            Plotly.Queue.add(gd,undoit,redoit,'relayout');
-        }
+        if(Plotly.Queue) Plotly.Queue.add(gd,undoit,redoit,'relayout');
 
         // calculate autosizing - if size hasn't changed,
         // will remove h&w so we don't need to redraw
@@ -2256,7 +2289,7 @@
                 // force plot() to redo the layout
                 gd.layout = undefined;
                 // force it to redo calcdata?
-                if(docalc) { gd.calcdata = undefined; }
+                if(docalc) gd.calcdata = undefined;
                 // replot with the modified layout
                 return Plotly.plot(gd,'',layout);
             });
@@ -2270,9 +2303,9 @@
                     return plots.previousPromises(gd);
                 });
             }
-            if(dolayoutstyle) {
-                seq.push(layoutStyles);
-            }
+
+            if(dolayoutstyle) seq.push(layoutStyles);
+
             if(doticks) {
                 seq.push(function(){
                     Plotly.Axes.doTicks(gd,'redraw');
@@ -2281,12 +2314,12 @@
                 });
             }
             // this is decoupled enough it doesn't need async regardless
-            if(domodebar) { Plotly.Fx.modeBar(gd); }
+            if(domodebar) Plotly.Fx.modeBar(gd);
         }
 
         var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
 
-        if(!plotDone || !plotDone.then) { plotDone = Promise.resolve(); }
+        if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
             $(gd).trigger('plotly_relayout',redoit);
             if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
@@ -2470,8 +2503,8 @@
             svg.append('g').classed('maplayer', true);
             svg.append('g').classed('barlayer', true);
             svg.append('g').classed('errorlayer', true);
-            svg.append('g').classed('scatterlayer', true);
             svg.append('g').classed('boxlayer', true);
+            svg.append('g').classed('scatterlayer', true);
         }
 
         // create all the layers in order, so we know they'll stay in order
@@ -2584,8 +2617,12 @@
         });
 
         // single info (legend, annotations) and hover layers for the whole plot
-        fullLayout._infolayer = fullLayout._paper.append('g').classed('infolayer',true);
-        fullLayout._hoverlayer = fullLayout._paper.append('g').classed('hoverlayer',true);
+        // pointer-events:none means we don't have to worry about mousing over
+        // the hover text itself
+        fullLayout._infolayer = fullLayout._paper.append('g').classed('infolayer', true);
+        fullLayout._hoverlayer = fullLayout._paper.append('g')
+                                                  .classed('hoverlayer', true)
+                                                  .style('pointer-events', 'none');
 
         // position and style the containers, make main title
         var frameWorkDone = Plotly.Lib.syncOrAsync([
