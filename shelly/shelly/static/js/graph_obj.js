@@ -695,21 +695,6 @@
                 sceneLayout._scene = scene;
                 sceneLayout._container = scene.container;
 
-                if ('cameraposition' in sceneLayout && sceneLayout.cameraposition.length) {
-                    /*
-                     * if cameraposition is not empty at this point,
-                     * it must have been saved in the workshop
-                     * or set via an API.
-                     * (1) set the camera position
-                     * (2) save a copy of *last save*
-                     */
-                    var cameraposition = sceneLayout.cameraposition;
-                    scene.setCameraPosition(cameraposition);
-                    scene._cameraPositionLastSave = scene.getCameraPosition();
-                } else {
-                    // if cameraposition is empty, set *last save* to default
-                    scene._cameraPositionLastSave = scene.getCameraPosition();
-                }
 
                 SceneFrame.setFramePosition(sceneLayout._container,
                     sceneLayout._position);

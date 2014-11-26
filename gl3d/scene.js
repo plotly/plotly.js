@@ -145,25 +145,32 @@ function Scene (options, shell) {
         0, 0, 0, 1
     ]);
 
-    // set default camera position
+    // set default camera view matrix
     this.defaultView = [
         1.25, 1.25, 1.25,
         0,    0,    0,
         0,    0,    1
     ];
-    this.setCameraToDefault();
 
-    /**
-     * get the default camera position in plotly coords,
-     * for reset camera modebar button
-     */
+    // get the default camera position (in plotly coords)
     this.cameraPositionDefault = this.getCameraPosition();
 
     //Currently selected data point
     this.selection = null;
 
     // Bootstrap the initial scene if sceneLayout is provided
-    if (options.sceneLayout) this.plot(options.sceneLayout, null);
+    var sceneLayout = options.sceneLayout || null;
+    if (sceneLayout) this.plot(sceneLayout, null);
+
+    // Set camera position if provided, store last save position
+    var cameraPosition = sceneLayout ? sceneLayout.cameraposition : null;
+    if (cameraPosition && cameraPosition.length) {
+        this.setCameraPosition(cameraPosition);
+        this._cameraPositionLastSave = this.getCameraPosition();
+    } else {
+        this.setCameraToDefault();
+        this._cameraPositionLastSave = this.cameraPositionDefault;
+    }
 
     /*
      * gl-render is triggered in the animation loop, we hook in
