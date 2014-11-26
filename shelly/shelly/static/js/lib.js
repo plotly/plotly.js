@@ -246,11 +246,11 @@
 
     lib.parseDate = function(v) {
         // is it already a date? just return it
-        if(v.getTime) { return v; }
+        if (v.getTime) return v;
         // otherwise, if it's not a string, return nothing
         // the case of numbers that just have years will get
         // dealt with elsewhere.
-        if(typeof v !== 'string') { return; }
+        if (typeof v !== 'string') return;
 
         // first clean up the string a bit to reduce the number
         // of formats we have to test
@@ -260,25 +260,24 @@
             // of a word match a month or weekday but that seems more likely
             // to fix typos than to make dates where they shouldn't be...
             // and then we can omit the long form of months from our testing
-            .replace(matchword,shortenword)
+            .replace(matchword, shortenword)
             // remove weekday names, as they get overridden anyway if they're
             // inconsistent also removes a few more words
             // (ie "tuesday the 26th of november")
             // TODO: language support?
             // for months too, but these seem to be built into d3
-            .replace(weekdaymatch,'')
+            .replace(weekdaymatch, '')
             // collapse all separators one ~ at a time, except : which seems
             // pretty consistent for the time part use ~ instead of space or
             // something since d3 can eat a space as padding on 1-digit numbers
-            .replace(separatormatch,'~')
+            .replace(separatormatch, '~')
             // in case of a.m. or p.m. (also take off any space before am/pm)
-            .replace(ampmmatch,replaceampm)
+            .replace(ampmmatch, replaceampm)
             // turn quarters Q1-4 into dates (quarter ends)
-            .replace(matchquarter,replacequarter)
+            .replace(matchquarter, replacequarter)
             .trim()
             // also try to ignore timezone info, at least for now
-            .replace(matchTZ,'');
-
+            .replace(matchTZ, '');
         // now test against the various formats that might match
         var dateType = (match4Y.test(v) ? 'Y' : 'y') +
                     (matchMonthName.test(v) ? 'b' : ''),
@@ -287,10 +286,14 @@
             formatList = dateTimeFormats[dateType][timeType],
             len = formatList.length,
             out = null;
-        for(var i = 0; i<len; i++) {
+        for (var i = 0; i < len; i++) {
             out = formatList[i].parse(v);
-            if(out) { break; }
+            if (out) break;
         }
+        // parse() method interprets arguments with local time zone.
+        var tzoff = out.getTimezoneOffset();
+        // In general (default) this is not what we want, so force into UTC:
+        out.setTime(out.getTime() + tzoff * 60 * 1000);
         return out;
     };
 
