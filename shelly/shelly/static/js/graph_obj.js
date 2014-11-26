@@ -1931,11 +1931,15 @@
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
             $(gd).trigger('plotly_restyle',[redoit,traces]);
-            if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
-                setTimeout(function () {
-                    Themes.reTile(gd);
-                }, 400);
-            }
+
+            // in a timeout to make sure promises are actually in gd._promises
+            setTimeout(function () {
+                if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
+                    Promise.all(gd._promises).then(function () {
+                        Themes.reTile(gd);
+                    });
+                }
+            }, 10);
         });
     };
 
@@ -2324,11 +2328,15 @@
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
             $(gd).trigger('plotly_relayout',redoit);
-            if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
-                setTimeout(function () {
-                    Themes.reTile(gd);
-                }, 400);
-            }
+
+            // in a timeout to make sure promises are actually in gd._promises
+            setTimeout(function () {
+                if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
+                    Promise.all(gd._promises).then(function () {
+                        Themes.reTile(gd);
+                    });
+                }
+            }, 10);
         });
     };
 
