@@ -187,6 +187,11 @@ function Scene (options, shell) {
         self.selectDirty = true;
     });
 
+    // Bind on-load method to 'scene-loaded' event
+    this.once('scene-loaded', this.onLoad.bind(this, sceneLayout));
+
+    // Emit 'scene-loaded' event
+    this.emit('scene-loaded', scene);
     return void 0;
 }
 
@@ -224,6 +229,29 @@ proto.allocIds = function(count) {
         group: nextGroup,
         ids: array
     };
+};
+
+// Set reference to scene and frame position
+proto.onLoad = function onLoad(sceneLayout) {
+    sceneLayout._loading = false;
+    sceneLayout._scene = this;  // keep reference to this in sceneLayout
+
+    // Set frame position
+    this.setFramePosition(sceneLayout._position);
+
+    // If data has accumulated on the queue while the iframe
+    // and the webgl-context were loading remove that data
+    // from the queue and draw.
+    while (sceneLayout._dataQueue.length) {
+        var d = sceneLayout._dataQueue.shift();
+        this.plot(sceneLayout, d);
+    }
+
+    // Focus the iframe removing need to double click for interactivity
+    this.container.focus();
+
+    // Emit scene ready
+    this.shell.emit('scene-ready', this);
 };
 
 //Every tick query the select buffer and check for changes
