@@ -77,7 +77,6 @@ proto.createScene = function (opts) {
             shell.once('gl-init', function () {
                 opts.container = newIframe;
                 var scene = new Scene(opts, shell);
-                _this.emit('scene-loaded', scene);
             });
 
         }else{
