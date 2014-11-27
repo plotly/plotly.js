@@ -288,7 +288,7 @@ function handleCamera3d (ev) {
         _scene.setCameraToDefault();
     } else if (attr === 'resetLastSave') {
         // Reset camera back to the position at the last save
-        var cameraPositionLastSave = _scene._cameraPositionLastSave;
+        var cameraPositionLastSave = _scene.cameraPositionLastSave;
         _scene.setCameraPosition(cameraPositionLastSave);
     }
 

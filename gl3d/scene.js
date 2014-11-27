@@ -166,10 +166,10 @@ function Scene (options, shell) {
     var cameraPosition = sceneLayout ? sceneLayout.cameraposition : null;
     if (cameraPosition && cameraPosition.length) {
         this.setCameraPosition(cameraPosition);
-        this._cameraPositionLastSave = this.getCameraPosition();
+        this.cameraPositionLastSave = this.getCameraPosition();
     } else {
         this.setCameraToDefault();
-        this._cameraPositionLastSave = this.cameraPositionDefault;
+        this.cameraPositionLastSave = this.cameraPositionDefault;
     }
 
     /*
