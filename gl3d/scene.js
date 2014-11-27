@@ -13,6 +13,8 @@ var camera = require('./scene-camera'),
     arrayCopy1D = arrtools.copy1D,
     arrayCopy2D = arrtools.copy2D,
     mat4 = glm.mat4,
+    util = require('util'),
+    EventEmitter = require('events').EventEmitter,
     proto;
 
 function str2RgbaArray(color) {
@@ -189,6 +191,8 @@ function Scene (options, shell) {
     return void 0;
 }
 
+
+util.inherits(Scene, EventEmitter);
 
 module.exports = Scene;
 
