@@ -651,8 +651,9 @@
 
             if (sceneLayout._loading) return;
             sceneLayout._loading = true;
+
             /*
-             * Create new scenee
+             * Create new scene
              */
             sceneOptions = {
                 container: gd.querySelector('.svg-container'),
