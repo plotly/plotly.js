@@ -614,17 +614,17 @@
                     (sceneLayout.domain.y[1] - sceneLayout.domain.y[0])
             };
 
-            // if this scene has already been loaded it will have it's webgl
-            // context parameter so lets reset the domain of the scene as
-            // it may have changed (this operates on the containing iframe)
-            if (sceneLayout._scene){
-                SceneFrame.setFramePosition(sceneLayout._scene.container, sceneLayout._position);
-            }
             /*
              * We only want to continue to operate on scenes that have
              * data waiting to be displayed or require loading
              */
             var scene = sceneLayout._scene;
+
+            // if this scene has already been loaded it will have it's webgl
+            // context parameter so lets reset the domain of the scene
+            if (scene){
+                scene.setFramePosition(sceneLayout._position);
+            }
 
             // maybe this initialization should happen somewhere else
             if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
