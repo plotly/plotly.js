@@ -932,6 +932,16 @@ proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) 
     return;
 };
 
+// set the frame position of the scene (i.e. its 'domain')
+proto.setFramePosition = function setFramePosition (viewport) {
+    var containerStyle = this.container.style;
+    containerStyle.position = 'absolute';
+    containerStyle.left = viewport.left + 'px';
+    containerStyle.top = viewport.top + 'px';
+    containerStyle.width = viewport.width + 'px';
+    containerStyle.height = viewport.height + 'px';
+};
+
 proto.disposeAll = function disposeAll () {
 
     this.renderQueue.forEach( function (glo) {

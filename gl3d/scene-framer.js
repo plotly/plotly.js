@@ -25,14 +25,6 @@ module.exports = new SceneFrame();
 
 var proto = SceneFrame.prototype;
 
-proto.setFramePosition = function (container, viewport) {
-    container.style.position = 'absolute';
-    container.style.left = viewport.left + 'px';
-    container.style.top = viewport.top + 'px';
-    container.style.width = viewport.width + 'px';
-    container.style.height = viewport.height + 'px';
-};
-
 proto.createScene = function (opts) {
     opts = opts || {};
     var container = opts.container || document.body;
