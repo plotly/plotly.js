@@ -47,67 +47,67 @@
     lib.dateTime2ms = function(s) {
         // first check if s is a date object
         try {
-            if(s.getTime) return +s;
+            if (s.getTime) return +s;
         }
-        catch(e){
+        catch(e) {
             return false;
         }
 
-        var y,m,d,h;
+        var y, m, d, h;
         // split date and time parts
         var datetime = String(s).split(' ');
-        if(datetime.length>2) return false;
+        if (datetime.length > 2) return false;
 
         var p = datetime[0].split('-'); // date part
-        if(p.length>3 || (p.length!==3 && datetime[1])) return false;
+        if (p.length > 3 || (p.length !== 3 && datetime[1])) return false;
 
         // year
-        if(p[0].length===4) y = Number(p[0]);
-        else if(p[0].length===2) {
-            var yNow=new Date().getFullYear();
-            y=((Number(p[0])-yNow+70)%100+200)%100+yNow-70;
+        if (p[0].length === 4) y = Number(p[0]);
+        else if (p[0].length === 2) {
+            var yNow = new Date().getFullYear();
+            y = ((Number(p[0]) - yNow + 70)%100 + 200)%100 + yNow - 70;
         }
         else return false;
-        if(!$.isNumeric(y)) return false;
-        if(p.length===1) return new Date(y,0,1).getTime(); // year only
+        if (!$.isNumeric(y)) return false;
+        if (p.length === 1) return new Date(y,0,1).getTime(); // year only
 
         // month
-        m = Number(p[1])-1; // new Date() uses zero-based months
-        if(p[1].length>2 || !(m>=0 && m<=11)) return false;
-        if(p.length===2) return new Date(y,m,1).getTime(); // year-month
+        m = Number(p[1]) - 1; // new Date() uses zero-based months
+        if (p[1].length > 2 || !(m >= 0 && m <= 11)) return false;
+        if (p.length === 2) return new Date(y, m, 1).getTime(); // year-month
 
         // day
         d = Number(p[2]);
-
-        if(p[2].length>2 || !(d>=1 && d<=31)) return false;
+        if (p[2].length > 2 || !(d >= 1 && d <= 31)) return false;
 
         // now save the date part
-        d = new Date(y,m,d).getTime();
-        if(!datetime[1]) return d; // year-month-day
-
+        d = new Date(y, m, d).getTime();
+        if (!datetime[1]) return d; // year-month-day
         p = datetime[1].split(':');
-        if(p.length>3) return false;
+        if (p.length > 3) return false;
 
         // hour
         h = Number(p[0]);
-        if(p[0].length>2 || !(h>=0 && h<=23)) return false;
+        if (p[0].length > 2 || !(h >= 0 && h <= 23)) return false;
         d += 3600000*h;
-        if(p.length===1) return d;
+        if (p.length === 1) return d;
 
         // minute
         m = Number(p[1]);
-        if(p[1].length>2 || !(m>=0 && m<=59)) return false;
+        if (p[1].length > 2 || !(m >= 0 && m <= 59)) return false;
         d += 60000*m;
-        if(p.length===2) return d;
+        if (p.length === 2) return d;
 
         // second
         s = Number(p[2]);
-        if(!(s>=0 && s<60)) return false;
+        if (!(s >= 0 && s < 60)) return false;
         return d+s*1000;
     };
 
     // is string s a date? (see above)
-    lib.isDateTime = function(s){ return lib.dateTime2ms(s)!==false; };
+    lib.isDateTime = function(s) {
+        return (lib.dateTime2ms(s) !== false);
+    };
 
     // Turn ms into string of the form YYYY-mm-dd HH:MM:SS.sss
     // Crop any trailing zeros in time, but always leave full date
@@ -1360,6 +1360,26 @@
         return finalStep && finalStep(arg);
     };
 
+    // transpose function inspired by
+    // http://stackoverflow.com/questions/17428587/
+    // transposing-a-2d-array-in-javascript
+    lib.transposeRagged = function(z) {
+        // Transposes a (possibly ragged) 2d array z.
+        var maxlen = 0;
+        // Maximum row length:
+        for (var i = 0; i < z.length; i++) maxlen = Math.max(maxlen, z[i].length);
+
+        var t = [];
+        for (var x = 0; x < maxlen; x++) {
+            t[x] = [];
+            for (var y = 0; y < z.length; y++) {
+                t[x][y] = z[y][x];
+            }
+        }
+
+        return t;
+    };
+
     // our own dot function so that we don't need to include numeric
     lib.dot = function(x, y) {
         if (!(x.length && y.length) || x.length !== y.length) {
@@ -1367,14 +1387,6 @@
         }
         if (x.length === 0) {
             return x;
-        }
-
-        // transpose taken from:
-        // http://stackoverflow.com/questions/4492678/
-        //    to-swap-rows-with-columns-of-matrix-in-javascript-or-jquery
-        function transpose(a) {
-            return Object.keys(a[0]).map(
-                function (c) { return a.map(function (r) { return r[c]; }); });
         }
 
         // two-arg zip
@@ -1397,7 +1409,7 @@
             }
             else {
                 // vec-mat
-                return transpose(y).map(vecMat);
+                return lib.transposeRagged(y).map(vecMat);
             }
         }
         else {
@@ -1472,23 +1484,21 @@
     };
 
     var coerceIt = {
-        // yuicompressor doesn't like some of these keys if they're not quoted...
-        // chrome doesn't care but I guess yui thinks some are reserved words?
-        'data_array': function(v, propOut, dflt) {
+        data_array: function(v, propOut, dflt) {
             // data_array: value MUST be an array, or we ignore it
             // you can use dflt=[] to force said array to exist though
             if(Array.isArray(v)) propOut.set(v);
             else if(dflt!==undefined) propOut.set(dflt);
         },
-        'enumerated': function(v, propOut, dflt, opts) {
+        enumerated: function(v, propOut, dflt, opts) {
             if(opts.values.indexOf(v)===-1) propOut.set(dflt);
             else propOut.set(v);
         },
-        'boolean': function(v, propOut, dflt) {
+        boolean: function(v, propOut, dflt) {
             if(v===true || v===false) propOut.set(v);
             else propOut.set(dflt);
         },
-        'number': function(v, propOut, dflt, opts) {
+        number: function(v, propOut, dflt, opts) {
             if(!$.isNumeric(v) ||
                     (opts.min!==undefined && v<opts.min) ||
                     (opts.max!==undefined && v>opts.max)) {
@@ -1496,7 +1506,7 @@
             }
             else propOut.set(+v);
         },
-        'integer': function(v, propOut, dflt, opts) {
+        integer: function(v, propOut, dflt, opts) {
             if(v%1 || !$.isNumeric(v) ||
                     (opts.min!==undefined && v<opts.min) ||
                     (opts.max!==undefined && v>opts.max)) {
@@ -1504,21 +1514,21 @@
             }
             else propOut.set(+v);
         },
-        'string': function(v, propOut, dflt, opts) {
+        string: function(v, propOut, dflt, opts) {
             var s = String(v);
             if(v===undefined || (opts.noBlank===false && !s)) {
                 propOut.set(dflt);
             }
             else propOut.set(String(v));
         },
-        'color': function(v, propOut, dflt) {
+        color: function(v, propOut, dflt) {
             if(tinycolor(v).ok) propOut.set(v);
             else propOut.set(dflt);
         },
-        'colorscale': function(v, propOut, dflt) {
+        colorscale: function(v, propOut, dflt) {
             propOut.set(Plotly.Color.getScale(v, dflt));
         },
-        'font': function(v, propOut, dflt) {
+        font: function(v, propOut, dflt) {
             if(!v) v = {};
             var vOut = {};
 
@@ -1532,7 +1542,7 @@
 
             propOut.set(vOut);
         },
-        'angle': function(v, propOut, dflt) {
+        angle: function(v, propOut, dflt) {
             if(v==='auto') propOut.set('auto');
             else if(!$.isNumeric(v)) propOut.set(dflt);
             else {
@@ -1540,7 +1550,7 @@
                 propOut.set(+v);
             }
         },
-        'axisid': function(v, propOut, dflt) {
+        axisid: function(v, propOut, dflt) {
             if(typeof v === 'string' && v.charAt(0)===dflt) {
                 var axnum = Number(v.substr(1));
                 if(axnum%1 === 0 && axnum>1) {
@@ -1550,7 +1560,7 @@
             }
             propOut.set(dflt);
         },
-        'sceneid': function(v, propOut, dflt) {
+        sceneid: function(v, propOut, dflt) {
             if(typeof v === 'string' && v.substr(0,5)===dflt) {
                 var scenenum = Number(v.substr(5));
                 if(scenenum%1 === 0 && scenenum>1) {
@@ -1560,7 +1570,28 @@
             }
             propOut.set(dflt);
         },
-        'any': function(v, propOut, dflt) {
+        flaglist: function(v, propOut, dflt, opts) {
+            if(typeof v !== 'string') {
+                propOut.set(dflt);
+                return;
+            }
+            if(opts.extras.indexOf(v)!==-1) {
+                propOut.set(v);
+                return;
+            }
+            var vParts = v.split('+'),
+                i = 0;
+            while(i<vParts.length) {
+                var vi = vParts[i];
+                if(opts.flags.indexOf(vi)===-1 || vParts.indexOf(vi)<i) {
+                    vParts.splice(i,1);
+                }
+                else i++;
+            }
+            if(!vParts.length) propOut.set(dflt);
+            else propOut.set(vParts.join('+'));
+        },
+        any: function(v, propOut, dflt) {
             if(v===undefined) propOut.set(dflt);
             else propOut.set(v);
         }
@@ -1632,5 +1663,18 @@
         return objOut;
     };
 
+    // Escapes special characters in the HTML string, suitable for inserting
+    // into a document.  NOT suitable for use in attributes.
+    // Safe: document.write('<div>' + Plotly.Lib.escapeForHtml(str) + '</div>');
+    // UNSAFE: document.write('<a href="'+ Plotly.Lib.escapeForHtml(str) + '">');
+    lib.escapeForHtml = function(html) {
+        return String(html)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/\//g, '&#x2f;');
+    };
 
 }()); // end Lib object definition
