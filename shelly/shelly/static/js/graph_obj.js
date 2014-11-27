@@ -666,7 +666,6 @@
                 baseurl: ENV.BASE_URL,
                 glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
             };
-
             SceneFrame.createScene(sceneOptions);
 
             SceneFrame.once('scene-error', function (scene) {
@@ -688,31 +687,9 @@
                 }
             });
 
-            SceneFrame.once('scene-loaded', function (scene) {
-
-                var sceneLayout = gd._fullLayout[scene.id];
-                // make the .scene (scene context) available through scene.
-                sceneLayout._loading = false; // loaded
-                sceneLayout._scene = scene;
-                sceneLayout._container = scene.container;
 
 
-                SceneFrame.setFramePosition(sceneLayout._container,
-                    sceneLayout._position);
 
-                // if data has accumulated on the queue while the iframe
-                // and the webgl-context were loading remove that data
-                // from the queue and draw.
-                while (sceneLayout._dataQueue.length) {
-                    var d = sceneLayout._dataQueue.shift();
-                    scene.plot(sceneLayout, d);
-                }
-
-                // focus the iframe removing need to double click for interactivity
-                scene.container.focus();
-
-                SceneFrame.emit('scene-ready', scene);
-            });
         });
     }
 
