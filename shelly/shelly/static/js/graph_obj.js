@@ -591,18 +591,18 @@
          *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
          *
          */
-        var scenes = Object.keys(fullLayout).filter(function(k){
+        var sceneKeys = Object.keys(fullLayout).filter(function(k){
             return k.match(/^scene[0-9]*$/);
         });
 
-        scenes.forEach( function (sceneKey, idx) {
+        sceneKeys.forEach( function (sceneKey, idx) {
 
             var sceneLayout = fullLayout[sceneKey],
                 sceneOptions;
 
             // we are only modifying the x domain position with this
             // simple approach
-            sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
+            sceneLayout.domain.x = [idx/sceneKeys.length, (idx+1)/sceneKeys.length];
 
             // convert domain to position in pixels
             sceneLayout._position = {
@@ -686,10 +686,6 @@
                     pb.parentNode.removeChild(pb);
                 }
             });
-
-
-
-
         });
     }
 
