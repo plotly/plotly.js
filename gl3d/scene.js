@@ -45,6 +45,7 @@ function Scene (options, shell) {
 
     this.shell                   =  shell;
     this.container               = options.container || null;
+    this.sceneLayout             = options.sceneLayout || null;
     this.renderQueue             = [];
     this.glDataMap               = {};
 
@@ -159,7 +160,7 @@ function Scene (options, shell) {
     this.selection = null;
 
     // Bootstrap the initial scene if sceneLayout is provided
-    var sceneLayout = options.sceneLayout || null;
+    var sceneLayout = this.sceneLayout;
     if (sceneLayout) this.plot(sceneLayout, null);
 
     // Set camera position if provided, store last save position
