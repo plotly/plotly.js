@@ -43,8 +43,6 @@ function ticksChanged (ticksA, ticksB) {
 // PASS IN GLOBAL LAYOUT, LET THIS THING CARVE OUT SCENELAYOUT
 function Scene (options, shell) {
 
-    if (!(this instanceof Scene)) return new Scene(shell);
-
     this.shell                   =  shell;
     this.container               = options.container || null;
     this.renderQueue             = [];
