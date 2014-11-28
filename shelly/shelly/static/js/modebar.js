@@ -394,7 +394,7 @@ ModeBar.prototype.config = function config() {
             icon: 'icon-camera-retro',
             click: handleCamera3d
         },
-        closest3d: {
+        hoverClosest3d: {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
             val: 'closest',
