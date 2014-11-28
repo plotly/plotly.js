@@ -153,9 +153,6 @@ function Scene (options, shell) {
         0,    0,    1
     ];
 
-    // get the default camera position (in plotly coords)
-    this.cameraPositionDefault = this.getCameraPosition();
-
     //Currently selected data point
     this.selection = null;
 
@@ -163,13 +160,15 @@ function Scene (options, shell) {
     var sceneLayout = this.sceneLayout;
     if (sceneLayout) this.plot(sceneLayout, null);
 
-    // Set camera position if provided, store last save position
     var cameraPosition = sceneLayout ? sceneLayout.cameraposition : null;
     if (cameraPosition && cameraPosition.length) {
+        // Set camera position if provided, store last save position
         this.setCameraPosition(cameraPosition);
         this.cameraPositionLastSave = this.getCameraPosition();
     } else {
+        // Set camera to default if not provided, save in plotly coords
         this.setCameraToDefault();
+        this.cameraPositionDefault = this.getCameraPosition();
         this.cameraPositionLastSave = this.cameraPositionDefault;
     }
 
