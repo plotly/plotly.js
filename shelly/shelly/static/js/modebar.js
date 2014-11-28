@@ -266,33 +266,28 @@ function handleDrag3d (ev) {
  * @Param {object} ev event object
  */
 function handleCamera3d (ev) {
-    var _this = this,
-        button = ev.currentTarget,
+    var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
-        val = button.getAttribute('data-val') || true,
-        layoutUpdate = {},
+        Plotly = this.Plotly,
         graphInfo = this.graphInfo,
-        layout = graphInfo._fullLayout,
-        scenes = Object.keys(layout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        }).map( function (sceneKey) {
-            return layout[sceneKey];
-        }),
-        _scene = layout.scene._scene;
+        fullLayout = graphInfo._fullLayout,
+        sceneLayouts = Plotly.Lib.getSceneLayouts(fullLayout);
 
-    if (attr === 'resetDefault') {
-        // Reset camera position to default
-        _scene.setCameraToDefault();
-    } else if (attr === 'resetLastSave') {
-        // Reset camera back to the position at the last save
-        var cameraPositionLastSave = _scene.cameraPositionLastSave;
-        _scene.setCameraPosition(cameraPositionLastSave);
-    }
+    // Reset camera of all scenes
+    sceneLayouts.forEach( function (sceneLayout) {
+        var scene = sceneLayout._scene;
+        if (attr === 'resetDefault') {
+            // Reset camera position to default
+            scene.setCameraToDefault();
+        } else if (attr === 'resetLastSave') {
+            // Reset camera back to the position at the last save
+            var cameraPositionLastSave = scene.cameraPositionLastSave;
+            scene.setCameraPosition(cameraPositionLastSave);
+        }
+    });
 
-    /**
-     * TODO multiple scenes!
-     * Ideally, in a multiple scene plot, the modebar buttons should
-     * reset the camera position of the scene last moved.
+    /* TODO have a sceneLastTouched in _fullLayout to only
+     * update the camera of the scene last touched by the user
      */
 }
 
