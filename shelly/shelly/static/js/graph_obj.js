@@ -3308,8 +3308,8 @@
             data.forEach(function(di){ delete di.stream; });
             layout = JSON.parse(jsonString).layout;
         }
-        var code = 'var data = ' + JSON.stringify(data) + ';\n';
-        code += 'var layout = ' + JSON.stringify(layout) + ';\n';
+        var code = 'var data = ' + Plotly.Lib.escapeForHtml(JSON.stringify(data)) + ';\n';
+        code += 'var layout = ' + Plotly.Lib.escapeForHtml(JSON.stringify(layout)) + ';\n';
         code += 'Plotly.plot(Tabs.get(), data, layout);';
 
         var jsonModal = $('#jsonModal');
