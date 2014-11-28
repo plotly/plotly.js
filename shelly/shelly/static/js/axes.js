@@ -1725,16 +1725,14 @@
         if(only2d) return axis2d;
 
         var axis3d = [];
-        var scenes = Object.keys(fullLayout).filter( function (k) {
-            return k.match(/^scene[0-9]*$/);
-        });
+        var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout);
 
-        if (scenes) {
-            scenes.forEach( function (sceneId) {
+        if (sceneKeys) {
+            sceneKeys.forEach( function (sceneKey) {
                 axis3d = axis3d.concat(
-                    filterAxis(fullLayout[sceneId])
+                    filterAxis(fullLayout[sceneKey])
                         .map(function(axName) {
-                            return sceneId + '.' + axName;
+                            return sceneKey + '.' + axName;
                         })
                     );
             });

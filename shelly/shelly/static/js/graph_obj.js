@@ -591,9 +591,7 @@
          *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
          *
          */
-        var sceneKeys = Object.keys(fullLayout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        });
+        var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout);
 
         sceneKeys.forEach( function (sceneKey, idx) {
 
@@ -855,12 +853,10 @@
 
         });
 
-        var scenes = Object.keys(layout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        });
+        var sceneKeys = Plotly.Lib.getSceneKeys(layout);
 
-        scenes.forEach( function (sceneName) {
-            var sceneLayout = layout[sceneName];
+        sceneKeys.forEach( function (sceneKey) {
+            var sceneLayout = layout[sceneKey];
             // fix for saved float32-arrays
             var camp = sceneLayout.cameraposition;
             if (Array.isArray(camp) && $.isPlainObject(camp[0])) {
@@ -1121,13 +1117,11 @@
     };
 
     function cleanScenes(newFullLayout, oldFullLayout) {
-        var oldScenes = Object.keys(oldFullLayout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        });
+        var oldSceneKeys = Plotly.Lib.getSceneKeys(oldFullLayout);
 
-        oldScenes.forEach(function(oldScene) {
-            if(!newFullLayout[oldScene] && !!oldFullLayout[oldScene]._scene) {
-                oldFullLayout[oldScene]._scene.destroy();
+        oldSceneKeys.forEach(function(oldSceneKey) {
+            if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
+                oldFullLayout[oldSceneKey]._scene.destroy();
             }
         });
     }
