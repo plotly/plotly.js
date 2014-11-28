@@ -1455,6 +1455,20 @@
         };
     };
 
+    // retrieve list of scene keys form a layout object
+    lib.getSceneKeys = function getSceneKeys(layout) {
+        function filterer(k) { return k.match(/^scene[0-9]*$/); }
+        return Object.keys(layout).filter(filterer);
+    };
+
+    // retrieve list of scene layout object from a layout object
+    lib.getSceneLayouts = function getSceneLayouts(layout) {
+        var sceneKeys = lib.getSceneKeys(layout);
+        return sceneKeys.map(function(sceneKey) {
+            return layout[sceneKey];
+        })
+    };
+
     // applies a 2D transformation matrix to an [x1,y1,x2,y2] array (to
     // transform a segment)
     lib.apply2DTransform2 = function(transform) {
