@@ -199,7 +199,6 @@ function handleCartesian (ev) {
 /**
  * Toggle the data hover mode
  * @Param {object} ev event object
- * @Return {HTMLelement}
  */
 function handleHover3d (ev) {
     var _this = this,
@@ -230,7 +229,6 @@ function handleHover3d (ev) {
 /**
  * Reconfigure keyboard bindings for webgl3D camera control on drag
  * @Param {object} ev event object
- * @Return {HTMLelement}
  */
 function handleDrag3d (ev) {
     var _this = this,
@@ -266,7 +264,6 @@ function handleDrag3d (ev) {
 /**
  * Reset the position of the webgl3D camera
  * @Param {object} ev event object
- * @Return {HTMLelement}
  */
 function handleCamera3d (ev) {
     var _this = this,
