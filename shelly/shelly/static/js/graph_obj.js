@@ -662,10 +662,11 @@
             };
             SceneFrame.createScene(sceneOptions);
 
-            SceneFrame.once('scene-error', function (scene) {
+            // TODO doesn't clean up everything in multiple-scene plots
+            // Attach scene-error event to Scene?
+            SceneFrame.once('scene-error', function (scene, idx) {
                 sceneLayout._scene = scene;
-                SceneFrame.setFramePosition(scene.container,
-                    sceneLayout._position);
+                scene.setFramePosition(sceneLayout._position);
                 if ('_modebar' in gd._fullLayout){
                     gd._fullLayout._modebar.cleanup();
                     gd._fullLayout._modebar = null;
