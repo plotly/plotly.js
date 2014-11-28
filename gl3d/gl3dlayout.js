@@ -18,8 +18,8 @@ proto.sceneLayoutAttributes = {
     },
     domain: {
         x: [
-            {type: 'number', min: 0, max: 1, dflt: 0},
-            {type: 'number', min: 0, max: 1, dflt: 1}
+            {type: 'number', min: 0, max: 1},
+            {type: 'number', min: 0, max: 1}
         ],
         y:[
             {type: 'number', min: 0, max: 1, dflt: 0},
@@ -51,8 +51,10 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
     delete layoutOut.xaxis;
     delete layoutOut.yaxis;
 
+    // Get number of scenes to compute default scene domain
+    scenesLength = Plotly.Lib.getSceneKeys(layoutOut).length;
 
-    scenes.forEach( function (scene) {
+    scenes.forEach( function (scene, idx) {
         /*
          * Scene numbering proceeds as follows
          * scene
@@ -70,8 +72,8 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
         coerceScene('bgcolor');
         coerceScene('cameraposition');
-        coerceScene('domain.x[0]');
-        coerceScene('domain.x[1]');
+        coerceScene('domain.x[0]', idx/scenesLength);
+        coerceScene('domain.x[1]', (idx+1)/scenesLength);
         coerceScene('domain.y[0]');
         coerceScene('domain.y[1]');
 

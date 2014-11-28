@@ -598,10 +598,6 @@
             var sceneLayout = fullLayout[sceneKey],
                 sceneOptions;
 
-            // we are only modifying the x domain position with this
-            // simple approach
-            sceneLayout.domain.x = [idx/sceneKeys.length, (idx+1)/sceneKeys.length];
-
             // convert domain to position in pixels
             sceneLayout._position = {
                 left: fullLayout._size.l + sceneLayout.domain.x[0]*fullLayout._size.w,
