@@ -127,7 +127,7 @@ function Scene (options, shell) {
     ///////////////////////////////////////////
 
     this.axisSpikes      = null;
-    this.spikeEnable     = true;
+    this.spikeEnable     = true;  // make 'hovermode' a scene property?
     this.spikeProperties = {
         enable:         [true, true, true],
         colors:         [[0,0,0,1],
