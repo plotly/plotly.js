@@ -299,6 +299,26 @@
         }
     };
 
+    // repeatable pseudorandom generator
+    var randSeed = 2000000000;
+
+    function seed() {
+        randSeed = 2000000000;
+    }
+
+    function rand() {
+        var lastVal = randSeed;
+        randSeed = (69069*randSeed + 1)%4294967296;
+        // don't let consecutive vals be too close together
+        // gets away from really trying to be random, in favor of better local uniformity
+        if(Math.abs(randSeed - lastVal) < 429496729) return rand();
+        return randSeed/4294967296;
+    }
+
+    // constants for dynamic jitter (ie less jitter for sparser points)
+    var JITTERCOUNT = 10, // points either side of this to include
+        JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
+
     boxes.plot = function(gd,plotinfo,cdbox) {
         var fullLayout = gd._fullLayout,
             xa = plotinfo.x(),
@@ -328,7 +348,7 @@
             t.bdx = bdx;
 
             // repeatable pseudorandom number generator
-            Plotly.Lib.seed();
+            seed();
 
             // boxes and whiskers
             d3.select(this).selectAll('path.box')
@@ -375,15 +395,45 @@
                   .selectAll('path')
                     .data(function(d){
                         var pts = (trace.boxpoints==='all') ? d.y :
-                            d.y.filter(function(v){ return (v<d.lf || v>d.uf); });
-                        return pts.map(function(v){
-                            var xo = trace.pointpos;
+                                d.y.filter(function(v){ return (v<d.lf || v>d.uf); }),
+                            spreadLimit = (d.q3 - d.q1) * JITTERSPREAD,
+                            jitterFactors = [],
+                            maxJitterFactor = 0,
+                            i,
+                            i0, i1,
+                            pmin,
+                            pmax,
+                            jitterFactor,
+                            newJitter;
+
+                        // dynamic jitter
+                        if(trace.jitter) {
+                            for(i=0; i<pts.length; i++) {
+                                i0 = Math.max(0, i-JITTERCOUNT);
+                                pmin = pts[i0];
+                                i1 = Math.min(pts.length-1, i+JITTERCOUNT);
+                                pmax = pts[i1];
+
+                                if(trace.boxpoints!=='all') {
+                                    if(pts[i]<d.lf) pmax = Math.min(pmax, d.lf);
+                                    else pmin = Math.max(pmin, d.uf);
+                                }
+
+                                jitterFactor = Math.min(Math.sqrt(spreadLimit * (i1-i0) / (pmax-pmin)), 1);
+                                jitterFactors.push(jitterFactor);
+                                maxJitterFactor = Math.max(jitterFactor, maxJitterFactor);
+                            }
+                            newJitter = trace.jitter * 2 / maxJitterFactor;
+                        }
+
+                        return pts.map(function(v, i){
+                            var xOffset = trace.pointpos;
                             if(trace.jitter) {
-                                xo += trace.jitter*(Plotly.Lib.random()-0.5)*2;
+                                xOffset += newJitter * jitterFactors[i] * (rand()-0.5);
                             }
 
                             var p = {
-                                x: d.x+xo*bdx+bx,
+                                x: d.x + xOffset*bdx + bx,
                                 y: v
                             };
 

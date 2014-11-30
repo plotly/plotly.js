@@ -1677,18 +1677,4 @@
             .replace(/\//g, '&#x2f;');
     };
 
-    // repeatable pseudorandom generator
-    var randSeed = 2147483648;
-
-    lib.seed = function(seed) {
-        if(seed===undefined) seed = 2147483648;
-        randSeed = seed;
-    };
-
-    lib.random = function () {
-        randSeed = (69069*randSeed + 1)%4294967296;
-        return randSeed/4294967296;
-    };
-
-
 }()); // end Lib object definition
