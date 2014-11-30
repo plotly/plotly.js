@@ -327,6 +327,9 @@
             t.bx = bx;
             t.bdx = bdx;
 
+            // repeatable pseudorandom number generator
+            Plotly.Lib.seed();
+
             // boxes and whiskers
             d3.select(this).selectAll('path.box')
                 .data(Plotly.Lib.identity)
@@ -374,9 +377,16 @@
                         var pts = (trace.boxpoints==='all') ? d.y :
                             d.y.filter(function(v){ return (v<d.lf || v>d.uf); });
                         return pts.map(function(v){
-                            var xo = (trace.jitter ? trace.jitter*(Math.random()-0.5)*2 : 0) +
-                                    trace.pointpos,
-                                p = {x: d.x+xo*bdx+bx, y: v};
+                            var xo = trace.pointpos;
+                            if(trace.jitter) {
+                                xo += trace.jitter*(Plotly.Lib.random()-0.5)*2;
+                            }
+
+                            var p = {
+                                x: d.x+xo*bdx+bx,
+                                y: v
+                            };
+
                             // tag suspected outliers
                             if(trace.boxpoints==='suspectedoutliers' && v<d.uo && v>d.lo) {
                                 p.so=true;
