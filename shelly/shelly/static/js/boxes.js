@@ -316,7 +316,7 @@
     }
 
     // constants for dynamic jitter (ie less jitter for sparser points)
-    var JITTERCOUNT = 10, // points either side of this to include
+    var JITTERCOUNT = 5, // points either side of this to include
         JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
     boxes.plot = function(gd,plotinfo,cdbox) {
