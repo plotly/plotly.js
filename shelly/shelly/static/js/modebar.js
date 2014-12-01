@@ -211,7 +211,7 @@ function handleHover3d (ev) {
         layoutUpdate = {};
 
     // 3D has only 1 hover mode; toggle it
-    var val = fullLayout[attr]!=='closest' ? 'closest' : '';
+    var val = fullLayout[attr]!=='closest' ? 'closest' : false;
     layoutUpdate[attr] = val;
 
     // Apply to all scenes
