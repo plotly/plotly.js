@@ -419,7 +419,9 @@
                                     else pmin = Math.max(pmin, d.uf);
                                 }
 
-                                jitterFactor = Math.min(Math.sqrt(spreadLimit * (i1-i0) / (pmax-pmin)), 1);
+                                jitterFactor = Math.sqrt(spreadLimit * (i1-i0) / (pmax-pmin)) || 0;
+                                jitterFactor = Plotly.Lib.constrain(Math.abs(jitterFactor), 0, 1);
+
                                 jitterFactors.push(jitterFactor);
                                 maxJitterFactor = Math.max(jitterFactor, maxJitterFactor);
                             }
