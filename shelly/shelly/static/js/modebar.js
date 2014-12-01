@@ -249,9 +249,9 @@ function handleDrag3d (ev) {
         var scene = sceneLayout._scene;
         if ('camera' in scene) {
             scene.camera.keyBindingMode = val;
+            scene.container.focus();
         }
     });
-            scene.container.focus();
 
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
         _this.updateActiveButton();
