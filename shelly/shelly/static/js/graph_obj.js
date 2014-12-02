@@ -6,7 +6,7 @@
     // ---Plotly global modules
     /* global Plotly:false, µ:false, micropolar:false,
         SceneFrame:false, Tabs:false, Examples:false,
-        Themes:false, ENV:false */
+        ENV:false */
 
     // ---global functions not yet namespaced
     /* global setFileAndCommentsSize:false */
@@ -1931,15 +1931,6 @@
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
             $(gd).trigger('plotly_restyle',[redoit,traces]);
-
-            // in a timeout to make sure promises are actually in gd._promises
-            setTimeout(function () {
-                if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
-                    Promise.all(gd._promises).then(function () {
-                        Themes.reTile(gd);
-                    });
-                }
-            }, 1);
         });
     };
 
@@ -2328,15 +2319,6 @@
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
             $(gd).trigger('plotly_relayout',redoit);
-
-            // in a timeout to make sure promises are actually in gd._promises
-            setTimeout(function () {
-                if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
-                    Promise.all(gd._promises).then(function () {
-                        Themes.reTile(gd);
-                    });
-                }
-            }, 1);
         });
     };
 
