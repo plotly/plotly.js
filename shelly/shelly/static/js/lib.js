@@ -290,6 +290,8 @@
             out = formatList[i].parse(v);
             if (out) break;
         }
+        // not an instance of Date at this point, just return it.
+        if (!(out instanceof Date)) return out;
         // parse() method interprets arguments with local time zone.
         var tzoff = out.getTimezoneOffset();
         // In general (default) this is not what we want, so force into UTC:
