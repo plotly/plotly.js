@@ -2606,14 +2606,14 @@
         subplots.forEach(function(subplot) {
             var plotinfo = fullLayout._plots[subplot];
             plotinfo.plot
-                .attr('preserveAspectRatio','none')
-                .style('fill','none');
+                .attr('preserveAspectRatio', 'none')
+                .style('fill', 'none');
             plotinfo.xlines
-                .style('fill','none')
-                .classed('crisp',true);
+                .style('fill', 'none')
+                .classed('crisp', true);
             plotinfo.ylines
-                .style('fill','none')
-                .classed('crisp',true);
+                .style('fill', 'none')
+                .classed('crisp', true);
         });
 
         // single info (legend, annotations) and hover layers for the whole plot
@@ -2783,9 +2783,8 @@
                 .call(Plotly.Drawing.setRect,
                     xa._offset, ya._offset, xa._length, ya._length);
 
-            var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
-                ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
-
+            var xlw = Plotly.Drawing.crispRound(gd, xa.linewidth, 1),
+                ylw = Plotly.Drawing.crispRound(gd, ya.linewidth, 1),
                 xp = gs.p+ylw,
                 xpathPrefix = 'M'+(-xp)+',',
                 xpathSuffix = 'h'+(xa._length+2*xp),
