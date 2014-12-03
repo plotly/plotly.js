@@ -226,7 +226,6 @@
             dom = new DOMParser().parseFromString(skeleton, 'application/xml'),
             childNode = dom.documentElement.firstChild;
         while(childNode) {
-            console.log(childNode);
             this.node().appendChild(this.node().ownerDocument.importNode(childNode, true));
             childNode = childNode.nextSibling;
         }
@@ -437,6 +436,20 @@
             // for Plotly.Drawing.bBox: unlink this txt from its cached val
             .attr('data-bb',null);
         $(_context.node()).parents().attr('data-bb', null);
+
+        function showText() {
+            if(!parent.empty()){
+                svgClass = that.attr('class') + '-math';
+                parent.select('svg.' + svgClass).remove();
+            }
+            _context.text('')
+                .style({visibility: 'visible'});
+            result = _context.appendSVG(converted);
+            if(!result) _context.text(str);
+
+            if(_callback) _callback.call(that);
+        }
+
         if(tex){
             var td = $(that.node()).parents('.js-plotly-plot')[0];
             ((td && td._promises)||[]).push(new Promise(function(resolve) {
@@ -446,12 +459,16 @@
                     parent.selectAll('svg.' + svgClass).remove();
                     parent.selectAll('g.' + svgClass + '-group').remove();
 
+                    var newSvg = _svgEl && _svgEl.select('svg');
+                    if(!newSvg || !newSvg.node()) {
+                        showText();
+                        resolve();
+                        return;
+                    }
+
                     var mathjaxGroup = parent.append('g')
                         .classed(svgClass + '-group', true)
                         .attr({'pointer-events': 'none'});
-
-                    var newSvg = _svgEl.select('svg');
-                    if(!newSvg || !newSvg.node()) return;
 
                     mathjaxGroup.node().appendChild(newSvg.node());
 
@@ -501,17 +518,8 @@
                 });
             }));
         }
-        else{
-            if(!parent.empty()){
-                svgClass = that.attr('class') + '-math';
-                parent.select('svg.' + svgClass).remove();
-            }
-            _context.text('');
-            result = _context.appendSVG(converted);
-            if(!result) _context.text(str);
+        else showText();
 
-            if(_callback) _callback.call(that);
-        }
         return _context;
     };
 
@@ -531,15 +539,14 @@
             var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
 
             if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()){
-                console.log('There was an error in the tex syntax.');
-                glyphDefs = null;
-
-                // revert to the raw text
-                tmpDiv.html('<span class="MathJax_SVG"><svg><text>'+_texString+'</text></svg></span>');
+                console.log('There was an error in the tex syntax.', _texString);
+                _callback();
+            }
+            else {
+                var svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
+                _callback(tmpDiv.select('.MathJax_SVG'), glyphDefs, svgBBox);
             }
 
-            var svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
-            _callback(tmpDiv.select('.MathJax_SVG'), glyphDefs, svgBBox);
             tmpDiv.remove();
         });
     };
