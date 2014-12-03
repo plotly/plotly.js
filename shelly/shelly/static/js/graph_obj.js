@@ -1930,7 +1930,8 @@
 
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
-            $(gd).trigger('plotly_restyle',[redoit,traces]);
+            $(gd).trigger('plotly_restyle',
+                          $.extend(true, [], [redoit, traces]));
         });
     };
 
@@ -2318,7 +2319,7 @@
 
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
-            $(gd).trigger('plotly_relayout',redoit);
+            $(gd).trigger('plotly_relayout', $.extend(true, {}, redoit));
         });
     };
 
