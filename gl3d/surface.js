@@ -75,7 +75,7 @@ proto.attributes = {
     colorscale: {from: 'Heatmap'},
     showscale: {from: 'Heatmap'},
     reversescale: {from: 'Heatmap'},
-    contour: {
+    contours: {
         x: proto.contourAttributes,
         y: proto.contourAttributes,
         z: proto.contourAttributes
@@ -164,7 +164,7 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     var dims = ['x','y','z'];
     for (i = 0; i < 3; ++i) {
 
-        var contourDim = 'contour.' + dims[i];
+        var contourDim = 'contours.' + dims[i];
         var show = coerce(contourDim + '.show');
         var highlight = coerce(contourDim + '.highlight');
 
@@ -285,7 +285,7 @@ proto.update = function update (scene, sceneLayout, data, surface) {
     var axis                       = [ 'x', 'y', 'z' ];
 
     for(i = 0; i < 3; ++i) {
-        var contourParams          = data.contour[axis[i]];
+        var contourParams          = data.contours[axis[i]];
         highlightEnable[i]         = contourParams.highlight;
         contourEnable[i]           = contourParams.show;
 
