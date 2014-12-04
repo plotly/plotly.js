@@ -13,7 +13,7 @@
     // ---external global dependencies
     /* global d3:false, Spinner:false, tinycolor:false */
 
-    if(!window.Plotly) { window.Plotly = {}; }
+    if (!window.Plotly) { window.Plotly = {}; }
     var lib = Plotly.Lib = {};
 
     // dateTime2ms - turn a date object or string s of the form
@@ -195,39 +195,38 @@
     };
 
     // use utc formatter since we're ignoring timezone info
-    if(typeof d3 !=='undefined'){
-        var formatter = d3.time.format.utc;
+    var formatter = d3.time.format.utc;
 
-        // ISO8601 and YYYYMMDDHHMMSS are the only one where date and time
-        // are not separated by a space, so they get inserted specially here.
-        // Also a couple formats with no day (so time makes no sense)
-        var dateTimeFormats = {
-            Y:{
-                H:['%Y~%m~%dT%H:%M:%S','%Y~%m~%dT%H:%M:%S~%L'].map(formatter),
-                I:[],
-                D:['%Y%m%d%H%M%S','%Y~%m','%m~%Y'].map(formatter)
-            },
-            Yb:{H:[],I:[],D:['%Y~%b','%b~%Y'].map(formatter)},
-            y:{H:[],I:[],D:[]},
-            yb:{H:[],I:[],D:[]}
-        };
-        // all the others get inserted in all possible combinations
-        // from dateFormats and timeFormats
-        ['Y','Yb','y','yb'].forEach(function(dateType) {
-            dateFormats[dateType].forEach(function(dateFormat){
-                // just a date (don't do just a time)
-                dateTimeFormats[dateType].D.push(formatter(dateFormat));
-                ['H','I','D'].forEach(function(timeType) {
-                    timeFormats[timeType].forEach(function(timeFormat) {
-                        var a = dateTimeFormats[dateType][timeType];
-                        // 'date time', then 'time date'
-                        a.push(formatter(dateFormat+'~'+timeFormat));
-                        a.push(formatter(timeFormat+'~'+dateFormat));
-                    });
+    // ISO8601 and YYYYMMDDHHMMSS are the only ones where date and time
+    // are not separated by a space, so they get inserted specially here.
+    // Also a couple formats with no day (so time makes no sense)
+    var dateTimeFormats = {
+        Y: {
+            H: ['%Y~%m~%dT%H:%M:%S', '%Y~%m~%dT%H:%M:%S~%L'].map(formatter),
+            I: [],
+            D: ['%Y%m%d%H%M%S', '%Y~%m', '%m~%Y'].map(formatter)
+        },
+        Yb: {H: [], I: [], D: ['%Y~%b', '%b~%Y'].map(formatter)},
+        y: {H: [], I: [], D: []},
+        yb: {H: [], I: [], D: []}
+    };
+    // all the others get inserted in all possible combinations
+    // from dateFormats and timeFormats
+    ['Y', 'Yb', 'y', 'yb'].forEach(function(dateType) {
+        dateFormats[dateType].forEach(function(dateFormat) {
+            // just a date (don't do just a time)
+            dateTimeFormats[dateType].D.push(formatter(dateFormat));
+            ['H', 'I', 'D'].forEach(function(timeType) {
+                timeFormats[timeType].forEach(function(timeFormat) {
+                var a = dateTimeFormats[dateType][timeType];
+                // 'date time', then 'time date'
+                    a.push(formatter(dateFormat+'~'+timeFormat));
+                    a.push(formatter(timeFormat+'~'+dateFormat));
                 });
             });
         });
-    }
+    });
+
     // precompiled regexps for performance
     var matchword = /[a-z]*/g,
         shortenword = function(m) { return m.substr(0,3); },
@@ -280,17 +279,17 @@
             .replace(matchTZ, '');
         // now test against the various formats that might match
         var dateType = (match4Y.test(v) ? 'Y' : 'y') +
-                    (matchMonthName.test(v) ? 'b' : ''),
-            timeType = matchcolon.test(v) ?
-                    (matchAMPM.test(v) ? 'I' : 'H') : 'D',
-            formatList = dateTimeFormats[dateType][timeType],
+                    (matchMonthName.test(v) ? 'b' : '');
+        var timeType = matchcolon.test(v) ?
+                    (matchAMPM.test(v) ? 'I' : 'H') : 'D';
+        var formatList = dateTimeFormats[dateType][timeType],
             len = formatList.length,
             out = null;
         for (var i = 0; i < len; i++) {
             out = formatList[i].parse(v);
             if (out) break;
         }
-        // not an instance of Date at this point, just return it.
+        // If not an instance of Date at this point, just return it.
         if (!(out instanceof Date)) return out;
         // parse() method interprets arguments with local time zone.
         var tzoff = out.getTimezoneOffset();
