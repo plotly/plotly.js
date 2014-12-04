@@ -1020,6 +1020,23 @@ proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) 
     return;
 };
 
+// Set camera position upon Scene instantiation
+proto.setCameraPositionInitial = function setCameraPositionInitial () {
+    var sceneLayout = this.sceneLayout,
+        cameraPosition = sceneLayout ? sceneLayout.cameraposition : null;
+
+    if (cameraPosition && cameraPosition.length) {
+        // Set camera to provided position, save a copy
+        this.setCameraPosition(cameraPosition);
+        this.cameraPositionLastSave = this.getCameraPosition();
+    } else {
+        // Set camera to default, save a copy in plotly coords
+        this.setCameraToDefault();
+        this.cameraPositionDefault = this.getCameraPosition();
+        this.cameraPositionLastSave = this.cameraPositionDefault;
+    }
+};
+
 // Set the frame position of the scene (i.e. its 'domain')
 proto.setFramePosition = function setFramePosition () {
     var containerStyle = this.container.style,
