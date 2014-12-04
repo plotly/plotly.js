@@ -1,8 +1,7 @@
 'use strict';
 
 var createScatterLine = require('./line-with-markers'),
-    tinycolor = require('tinycolor2'),
-    arrtools = require('arraytools'),
+    str2RgbaArray = require('./str2rgbarray'),
     calculateError = require('./calc-errors');
 
 function Scatter3D (config) {
@@ -228,11 +227,6 @@ function calculateTextOffset(textposition) {
         textOffset[0] += 1;
     }
     return textOffset;
-}
-
-function str2RgbaArray(color) {
-    color = tinycolor(color);
-    return arrtools.str2RgbaArray(color.toRgbString());
 }
 
 function colorFormatter(colorIn, opacityIn) {
