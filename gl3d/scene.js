@@ -836,8 +836,8 @@ proto.setModelScale = function () {
         d0,     d1,     d2,    1
     ]);
 
-    this.dirty = true
-    this.selectDirty = true
+    this.dirty = true;
+    this.selectDirty = true;
 
 };
 
