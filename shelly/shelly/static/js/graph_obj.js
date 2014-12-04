@@ -579,18 +579,11 @@
             background: fullLayout.paper_bgcolor
         });
 
-        /*
          * If there are scenes that need loading load them.
          * Recalibrate all domains now that there may be new scenes.
          * Once scenes load they will iteratively load any data
          * that might be on their queue.
          *
-         * scene arrangements need to be implemented: For now just splice
-         * along the horizontal direction. ie.
-         * x:[0,1] -> x:[0,0.5], x:[0.5,1] ->
-         *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
-         *
-         */
         var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout);
 
         sceneKeys.forEach( function (sceneKey, idx) {

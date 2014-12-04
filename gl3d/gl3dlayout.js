@@ -78,6 +78,13 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
         coerceScene('domain.y[0]');
         coerceScene('domain.y[1]');
 
+         /*
+          * scene arrangements need to be implemented: For now just splice
+          * along the horizontal direction. ie.
+          * x:[0,1] -> x:[0,0.5], x:[0.5,1] ->
+          *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
+          */
+
         Plotly.Gl3dAxes.supplyDefaults(sceneLayoutIn, sceneLayoutOut, {
             font: layoutOut.font,
             scene: scene,
