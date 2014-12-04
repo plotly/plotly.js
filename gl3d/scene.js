@@ -320,7 +320,6 @@ proto.allocIds = function(count) {
     };
 };
 
-
 //Every tick query the select buffer and check for changes
 proto.onTick = function() {
     if(this.moving) {
@@ -614,7 +613,6 @@ proto.onRender = function () {
     gl.disable(gl.BLEND);
 };
 
-
 proto.plotTrace = function (trace, sceneLayout) {
 
     this.dirty = true;
@@ -669,7 +667,6 @@ proto.plotTrace = function (trace, sceneLayout) {
 
 };
 
-
 proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
     this.sceneLayout = sceneLayout;
 
@@ -681,7 +678,6 @@ proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
     this.dirty = true;
     this.selectDirty = true;
 };
-
 
 proto.updateRenderQueue = function (glObject) {
 
