@@ -280,6 +280,17 @@ proto.plot = function plot(sceneData, sceneLayout) {
 
 };
 
+// Plot each trace in data queue
+proto.plotDataQueue = function () {
+    var sceneLayout = this.sceneLayout,
+        sceneDataQueue = this.sceneDataQueue;
+
+    while (sceneDataQueue.length) {
+        var trace = sceneDataQueue.shift();
+        this.plotTrace(trace, sceneLayout);
+    }
+};
+
 proto.groupCount = function() {
     if(this.objectCount === 0) {
         return 0;
