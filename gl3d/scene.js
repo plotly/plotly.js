@@ -264,7 +264,21 @@ proto.initCamera = function initCamera() {
 
 };
 
+// ALL YOU NEED TO CALL FROM THE OUTSIDE (i.e. graph_obj.js)
+proto.plot = function plot(sceneData, sceneLayout) {
 
+    // Update data queue, sync layout and set frame position
+    this.updateSceneDataQueue(sceneData);
+    this.setAndSyncLayout(sceneLayout);
+    this.setFramePosition();
+
+    // If scene is initialized, plot!
+    if (this.initialized) this.plotDataQueue();
+
+    // It not initialized or not initializing, initialize it!
+    if (!(this.initializing) && !(this.initialized)) this.init();
+
+};
 
 proto.groupCount = function() {
     if(this.objectCount === 0) {
