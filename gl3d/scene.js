@@ -170,22 +170,86 @@ proto.setProps = function setProps() {
 
 };
 
+// Takes care of all async stuff; needs to be call only once per scene
+proto.init = function init() {
 
-    shell.on('tick', this.onTick.bind(this));
+    this.intializing = true;  // keep track of initializing scene shell
 
-    var self = this;
-    shell.on('resize', function() {
-        self.dirty = true;
-        self.selectDirty = true;
+    var container = this.container,
+        glOptions = this.glOptions,
+        self      = this;
+
+    // Once scene is ready, plot!
+    this.once('scene-ready', function () {
+        self.plotDataQueue();
     });
 
-    // Bind on-load method to 'scene-loaded' event
-    this.once('scene-loaded', this.onLoad.bind(this, sceneLayout));
+    // Once iframe is loaded, init the shell!
+    container.onload = function () {
 
-    // Emit 'scene-loaded' event
-    this.emit('scene-loaded', scene);
-    return void 0;
-}
+        // Try initializing WebGl
+        self.shell = container.contentWindow.glnow({
+            clearFlags: 0,
+            glOptions: glOptions,
+            tickRate: 3
+        });
+
+        // contain all events within the iframe, necessary to
+        // contain zoom events to prevent parent window scrolling.
+        self.shell.preventDefaults = true;
+        self.shell.stopPropagation = true;
+
+        // Once gl is initialized, initialize the camera and let
+        // Scene know about it with 'scene-ready'.
+        self.shell.once('gl-init', function () {
+            self.initCamera();
+            self.emit('scene-ready', self);
+            self.initializing = false;
+            self.initialized = true;
+        });
+
+        /*
+         * gl-render is triggered in the animation loop, we hook in
+         * glcontext object into the loop here
+         */
+        self.shell.on('gl-render', self.onRender.bind(self));
+
+        // Attached 'tick' and 'resize' events to shell
+        self.shell.on('tick', self.onTick.bind(self));
+        self.shell.on('resize', function() {
+            self.dirty = true;
+            self.selectDirty = true;
+        });
+
+        // If an error occur, clean up container.
+        self.shell.on('gl-error', function () {
+
+            self.container.style.background = '#FFFFFF';
+            self.container.contentDocument.getElementById('no3D').style.display = 'block';
+            self.container.contentDocument.body.onclick = function () {
+                window.open("http://get.webgl.org")
+            };
+
+            // Clean up modebar, add flag in fullLayout (for graph_interact.js)
+            var fullLayout = self.fullLayout;
+            if ('_modebar' in fullLayout && fullLayout._modebar) {
+                fullLayout._modebar.cleanup();
+                fullLayout._modebar = null;
+            }
+            fullLayout._noGL3DSupport = true;
+
+//             // Old code to remove the loading bars
+//             // commented out as Scene does not have 'gd'
+//             var pb = gd.querySelector('#plotlybars'); // !!!
+//             if (pb) {
+//                 pb.innerHTML = '';
+//                 pb.parentNode.removeChild(pb);
+//             }
+        });
+
+    };
+
+};
 
 
 };
