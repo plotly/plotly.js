@@ -54,7 +54,8 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
     // Get number of scenes to compute default scene domain
     scenesLength = scenes.length;
 
-    scenes.forEach( function (scene, idx) {
+    for (var i_scene = 0; i_scene < scenesLength; ++i_scene) {
+        var scene = scenes[i_scene];
         /*
          * Scene numbering proceeds as follows
          * scene
@@ -72,8 +73,8 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
         coerceScene('bgcolor');
         coerceScene('cameraposition');
-        coerceScene('domain.x[0]', idx/scenesLength);
-        coerceScene('domain.x[1]', (idx+1)/scenesLength);
+        coerceScene('domain.x[0]', i_scene / scenesLength);
+        coerceScene('domain.x[1]', (i_scene+1) / scenesLength);
         coerceScene('domain.y[0]');
         coerceScene('domain.y[1]');
 
@@ -84,5 +85,5 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
         });
 
         layoutOut[scene] = sceneLayoutOut;
-    });
+    }
 };
