@@ -563,7 +563,9 @@
     };
 
     function plot3D(gd) {
-        var fullLayout = gd._fullLayout;
+        var fullLayout = gd._fullLayout,
+            fullData = gd._fullData;
+
         /*
          * Once Webgl plays well with other things we can remove this.
          * Unset examples, they misbehave with 3d plots
@@ -590,102 +592,36 @@
             }
             return sceneData;
         }
-         * If there are scenes that need loading load them.
-         * Recalibrate all domains now that there may be new scenes.
-         * Once scenes load they will iteratively load any data
-         * that might be on their queue.
-         *
-        var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout);
 
-        sceneKeys.forEach( function (sceneKey, idx) {
+        // Get list of scenes from fullLayout
+        var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout),
+            i_sceneKey = 0;
 
-            var sceneLayout = fullLayout[sceneKey],
-                sceneOptions;
+        // Loop through scenes
+        for (i_sceneKey; i_sceneKey < sceneKeys.length; ++i_sceneKey) {
+            var sceneKey = sceneKeys[i_sceneKey],
+                sceneData = getSceneData(fullData, sceneKey),
+                sceneLayout = fullLayout[sceneKey],
+                scene = sceneLayout._scene;  // ref. to corresp. Scene instance
 
-            // convert domain to position in pixels
-            sceneLayout._position = {
-                left: fullLayout._size.l + sceneLayout.domain.x[0]*fullLayout._size.w,
-                top: fullLayout._size.t + (1-sceneLayout.domain.y[1])*fullLayout._size.h,
-                width: fullLayout._size.w *
-                    (sceneLayout.domain.x[1] - sceneLayout.domain.x[0]),
-                height: fullLayout._size.h *
-                    (sceneLayout.domain.y[1] - sceneLayout.domain.y[0])
-            };
-
-            /*
-             * We only want to continue to operate on scenes that have
-             * data waiting to be displayed or require loading
-             */
-            var scene = sceneLayout._scene;
-
-            // if this scene has already been loaded it will have it's webgl
-            // context parameter so lets reset the domain of the scene
-            if (scene){
-                scene.setFramePosition(sceneLayout._position);
+            // If Scene is not instantiated, create one!
+            if (!(scene)) {
+                var sceneFrameOptions = {
+                    Plotly: Plotly,
+                    container: gd.querySelector('.svg-container'),
+                    sceneKey: sceneKey,
+                    sceneData: sceneData,
+                    sceneLayout: sceneLayout,
+                    fullLayout: fullLayout,
+                    baseurl: ENV.BASE_URL,
+                    glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
+                };
+                scene = SceneFrame.createScene(sceneFrameOptions);
+                sceneLayout._scene = scene;  // set ref to Scene instance
             }
 
-            // maybe this initialization should happen somewhere else
-            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
-
-            var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
-                return trace.uid;
-            });
-            var sceneData = gd._fullData.filter( function (trace) {
-                return trace.scene === sceneKey &&
-                    queueUIDS.indexOf(trace.uid) === -1;
-            });
-
-            sceneLayout._dataQueue = sceneLayout._dataQueue.concat(sceneData);
-
-            if (scene) {
-                //// if there is no data for this scene destroy it
-                //// woot, lets load all the data in the queue and bail outta here
-                while (sceneLayout._dataQueue.length) {
-                    var d = sceneLayout._dataQueue.shift();
-                    scene.plot(sceneLayout, d);
-                }
-                return;
-            }
-
-            if (sceneLayout._loading) return;
-            sceneLayout._loading = true;
-
-            /*
-             * Create new scene
-             */
-            sceneOptions = {
-                container: gd.querySelector('.svg-container'),
-                zIndex: '1000',
-                id: sceneKey,
-                Plotly: Plotly,
-                sceneLayout: sceneLayout,
-                width: fullLayout.width,
-                height: fullLayout.height,
-                baseurl: ENV.BASE_URL,
-                glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
-            };
-            SceneFrame.createScene(sceneOptions);
-
-            // TODO doesn't clean up everything in multiple-scene plots
-            // Attach scene-error event to Scene?
-            SceneFrame.once('scene-error', function (scene, idx) {
-                sceneLayout._scene = scene;
-                scene.setFramePosition(sceneLayout._position);
-                if ('_modebar' in gd._fullLayout){
-                    gd._fullLayout._modebar.cleanup();
-                    gd._fullLayout._modebar = null;
-                }
-
-                gd._fullLayout._noGL3DSupport = true;
-
-                var pb = gd.querySelector('#plotlybars');
-
-                if (pb) {
-                    pb.innerHTML = '';
-                    pb.parentNode.removeChild(pb);
-                }
-            });
-        });
+            scene.plot(sceneData, sceneLayout);  // takes care of business
+        }
     }
 
     function plotPolar(gd, data, layout, config) {
