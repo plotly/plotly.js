@@ -320,28 +320,6 @@ proto.allocIds = function(count) {
     };
 };
 
-// Set reference to scene and frame position
-proto.onLoad = function onLoad(sceneLayout) {
-    sceneLayout._loading = false;
-    sceneLayout._scene = this;  // keep reference to this in sceneLayout
-
-    // Set frame position
-    this.setFramePosition(sceneLayout._position);
-
-    // If data has accumulated on the queue while the iframe
-    // and the webgl-context were loading remove that data
-    // from the queue and draw.
-    while (sceneLayout._dataQueue.length) {
-        var d = sceneLayout._dataQueue.shift();
-        this.plot(sceneLayout, d);
-    }
-
-    // Focus the iframe removing need to double click for interactivity
-    this.container.focus();
-
-    // Emit scene ready
-    this.shell.emit('scene-ready', this);
-};
 
 //Every tick query the select buffer and check for changes
 proto.onTick = function() {
@@ -440,7 +418,7 @@ proto.handlePick = function(x, y) {
     }
 
     return pickData;
-}
+};
 
 proto.renderPick = function(cameraParameters) {
     if(this.selectBuffers.length <= 0) {
@@ -642,12 +620,6 @@ proto.plotTrace = function (trace, sceneLayout) {
     this.dirty = true;
     this.selectDirty = true;
 
-    // sets the modules layout with incoming layout.
-    // also set global layout properties.
-    // Relinking this on every update is necessary as
-    // the existing layout *may* be overwritten by a new
-    // incoming layout in Plotly.plot()
-    this.setAndSyncLayout(sceneLayout);
     for (var i = 0; i < 3; ++i) {
 
         var axes = sceneLayout[this.axesNames[i]];
