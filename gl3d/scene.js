@@ -1012,7 +1012,7 @@ proto.setCameraPosition = function setCameraPosition (cameraPosition) {
 // save camera position to user layout (i.e. gd.layout)
 proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) {
     var lib = this.Plotly.Lib;
-    var prop = lib.nestedProperty(layout, this.id + '.cameraposition');
+    var prop = lib.nestedProperty(layout, this.sceneKey + '.cameraposition');
     var cameraposition = this.getCameraPosition();
     prop.set(cameraposition);
     this.dirty = true;
