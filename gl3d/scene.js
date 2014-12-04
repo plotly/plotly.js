@@ -1020,14 +1020,30 @@ proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) 
     return;
 };
 
-// set the frame position of the scene (i.e. its 'domain')
-proto.setFramePosition = function setFramePosition (viewport) {
-    var containerStyle = this.container.style;
-    containerStyle.position = 'absolute';
-    containerStyle.left = viewport.left + 'px';
-    containerStyle.top = viewport.top + 'px';
-    containerStyle.width = viewport.width + 'px';
-    containerStyle.height = viewport.height + 'px';
+// Set the frame position of the scene (i.e. its 'domain')
+proto.setFramePosition = function setFramePosition () {
+    var containerStyle = this.container.style,
+        domain = this.sceneLayout.domain || null,
+        size = this.fullLayout._size || null;
+
+    function sizeToPosition(size, domain) {
+        return {
+            left: size.l + domain.x[0] * size.w,
+            top: size.t + (1 - domain.y[1]) * size.h,
+            width: size.w * (domain.x[1] - domain.x[0]),
+            height: size.h * (domain.y[1] - domain.y[0])
+        };
+    }
+
+    if (domain && size) {
+        var position = sizeToPosition(size, domain);
+        containerStyle.position = 'absolute';
+        containerStyle.left = position.left + 'px';
+        containerStyle.top = position.top + 'px';
+        containerStyle.width = position.width + 'px';
+        containerStyle.height = position.height + 'px';
+    }
+};
 };
 
 proto.disposeAll = function disposeAll () {
