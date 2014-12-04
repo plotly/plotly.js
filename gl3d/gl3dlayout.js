@@ -52,7 +52,7 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
     delete layoutOut.yaxis;
 
     // Get number of scenes to compute default scene domain
-    scenesLength = Plotly.Lib.getSceneKeys(layoutOut).length;
+    scenesLength = scenes.length;
 
     scenes.forEach( function (scene, idx) {
         /*
