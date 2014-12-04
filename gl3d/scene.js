@@ -251,6 +251,16 @@ proto.init = function init() {
 
 };
 
+proto.initCamera = function initCamera() {
+
+    // Attach camera onto scene
+    this.camera = camera(this.shell, this);
+
+    // Set initial camera position
+    this.setCameraPositionInitial();
+
+    // Focus the iframe removing need to double click for interactivity
+    this.container.focus();
 
 };
 
