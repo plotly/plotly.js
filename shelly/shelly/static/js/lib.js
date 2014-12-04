@@ -296,9 +296,7 @@
             timeType = lib._getTimeType(v),
             formatList,
             len;
-        dateType = (match4Y.test(v) ? 'Y' : 'y');
-        dateType = dateType + (matchMonthName.test(v) ? 'b' : '');
-        timeType = matchcolon.test(v) ? (matchAMPM.test(v) ? 'I' : 'H') : 'D';
+
         formatList = dateTimeFormats[dateType][timeType];
         len = formatList.length;
 
