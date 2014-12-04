@@ -63,6 +63,10 @@ module.exports = Scene;
 util.inherits(Scene, EventEmitter);
 
 proto = Scene.prototype;
+
+// Set Scene properties that are independent of 'options'
+proto.setProps = function setProps() {
+
     this.renderQueue             = [];
     this.glDataMap               = {};
 
@@ -173,6 +177,7 @@ proto = Scene.prototype;
     //Currently selected data point
     this.selection = null;
 
+};
     // Bootstrap the initial scene if sceneLayout is provided
     var sceneLayout = this.sceneLayout;
     if (sceneLayout) this.plot(sceneLayout, null);
