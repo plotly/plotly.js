@@ -579,6 +579,17 @@
             background: fullLayout.paper_bgcolor
         });
 
+        // Get traces attached to a scene
+        function getSceneData(data, sceneKey) {
+            var i_trace = 0,
+                trace = null,
+                sceneData = [];
+            for (i_trace; i_trace < data.length; ++i_trace) {
+                trace = data[i_trace];
+                if (trace.scene === sceneKey) sceneData.push(trace);
+            }
+            return sceneData;
+        }
          * If there are scenes that need loading load them.
          * Recalibrate all domains now that there may be new scenes.
          * Once scenes load they will iteratively load any data
