@@ -1601,6 +1601,11 @@
             'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
             'swapxy','swapxyaxes','orientationaxes'
         ];
+        var hasBoxes = traces.some(function(v) {
+            return Plotly.Plots.isBox(gd._fullData[v].type);
+        });
+        if(hasBoxes) recalcAttrs.push('name');
+
         // autorangeAttrs attributes need a full redo of calcdata
         // only if an axis is autoranged,
         // because .calc() is where the autorange gets determined
@@ -1623,10 +1628,11 @@
         // these ones show up in restyle because they make more sense
         // in the style box, but they're graph-wide attributes, so set
         // in gd.layout also axis scales and range show up here because
-        // we may need to undo them these all trigger a recalc
+        // we may need to undo them. These all trigger a recalc
         var layoutAttrs = [
-            'barmode','bargap','bargroupgap','boxmode','boxgap','boxgroupgap',
-            '?axis.autorange','?axis.range','?axis.rangemode'
+            'barmode', 'barnorm','bargap', 'bargroupgap',
+            'boxmode', 'boxgap', 'boxgroupgap',
+            '?axis.autorange', '?axis.range', '?axis.rangemode'
         ];
         // these ones may alter the axis type
         // (at least if the first trace is involved)
@@ -2600,14 +2606,14 @@
         subplots.forEach(function(subplot) {
             var plotinfo = fullLayout._plots[subplot];
             plotinfo.plot
-                .attr('preserveAspectRatio','none')
-                .style('fill','none');
+                .attr('preserveAspectRatio', 'none')
+                .style('fill', 'none');
             plotinfo.xlines
-                .style('fill','none')
-                .classed('crisp',true);
+                .style('fill', 'none')
+                .classed('crisp', true);
             plotinfo.ylines
-                .style('fill','none')
-                .classed('crisp',true);
+                .style('fill', 'none')
+                .classed('crisp', true);
         });
 
         // single info (legend, annotations) and hover layers for the whole plot
@@ -2777,9 +2783,8 @@
                 .call(Plotly.Drawing.setRect,
                     xa._offset, ya._offset, xa._length, ya._length);
 
-            var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
-                ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
-
+            var xlw = Plotly.Drawing.crispRound(gd, xa.linewidth, 1),
+                ylw = Plotly.Drawing.crispRound(gd, ya.linewidth, 1),
                 xp = gs.p+ylw,
                 xpathPrefix = 'M'+(-xp)+',',
                 xpathSuffix = 'h'+(xa._length+2*xp),
@@ -3302,8 +3307,8 @@
             data.forEach(function(di){ delete di.stream; });
             layout = JSON.parse(jsonString).layout;
         }
-        var code = 'var data = ' + JSON.stringify(data) + ';\n';
-        code += 'var layout = ' + JSON.stringify(layout) + ';\n';
+        var code = 'var data = ' + Plotly.Lib.escapeForHtml(JSON.stringify(data)) + ';\n';
+        code += 'var layout = ' + Plotly.Lib.escapeForHtml(JSON.stringify(layout)) + ';\n';
         code += 'Plotly.plot(Tabs.get(), data, layout);';
 
         var jsonModal = $('#jsonModal');
