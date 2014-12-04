@@ -1,16 +1,12 @@
 'use strict';
 
 var Scene = require('./scene.js'),
-    util = require('util'),
-    EventEmitter = require('events').EventEmitter,
     Gl3dLayout = require('./gl3dlayout'),
     Gl3dAxes = require('./gl3daxes'),
     Scatter3D = require('./scatter3d'),
     Surface = require('./surface');
 
 function SceneFrame () {
-    this.ID = 0;
-
     this.modules = [
         {module: Gl3dAxes,   namespace: 'Gl3dAxes'},
         {module: Gl3dLayout, namespace: 'Gl3dLayout'},
@@ -18,8 +14,6 @@ function SceneFrame () {
         {module: Surface,    namespace: 'Surface'}
     ];
 }
-
-util.inherits(SceneFrame, EventEmitter);
 
 module.exports = new SceneFrame();
 
