@@ -69,20 +69,12 @@ proto.setProps = function setProps() {
 
     this.renderQueue             = [];
     this.glDataMap               = {};
-
-    if (!this.shell) {
-         return void 0;
-    }
+    this.sceneDataQueue          = [];
 
     this.dirty                   = true;  //Set if drawing buffer needs redraw
     this.selectDirty             = true;  //Set if selection buffer needs redraw
     this.moving                  = false; //Set if camera moving (don't draw select axes)
 
-
-    this.camera                  = camera(shell, this);
-    this.axis                    = null;
-    this.id                      = options.id;
-    this.Plotly                  = options.Plotly;
 
     this.selectBuffers           = [];
     this.pickRadius              = 10; //Number of pixels to search for closest point
@@ -95,6 +87,7 @@ proto.setProps = function setProps() {
                                      [ 6, 6, 6] ];  // max (init opposite)
 
     ////////////// AXES OPTIONS DEFAULTS ////////////////
+    this.axis                    = null;
     this.axesOpts                = {};
 
     this.axesOpts.bounds         = [ [-10, -10, -10],
@@ -148,7 +141,7 @@ proto.setProps = function setProps() {
     ///////////////////////////////////////////
 
     this.axisSpikes      = null;
-    this.spikeEnable     = true;  // make 'hovermode' a scene property?
+    this.spikeEnable     = true;
     this.spikeProperties = {
         enable:         [true, true, true],
         colors:         [[0,0,0,1],
@@ -158,47 +151,25 @@ proto.setProps = function setProps() {
         width:          [1,1,1]
     };
 
-    this.axesNames = ['xaxis', 'yaxis', 'zaxis'];
+    this.axesNames       = ['xaxis', 'yaxis', 'zaxis'];
 
-    this.model = new Float32Array([
+    this.model = new Float32Array([  // ?duplicate?
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1
     ]);
 
-    // set default camera view matrix
-    this.defaultView = [
+    this.defaultView = [   // set default camera view matrix
         1.25, 1.25, 1.25,
         0,    0,    0,
         0,    0,    1
     ];
 
-    //Currently selected data point
-    this.selection = null;
+    this.selection = null;  // currently selected data point
 
 };
-    // Bootstrap the initial scene if sceneLayout is provided
-    var sceneLayout = this.sceneLayout;
-    if (sceneLayout) this.plot(sceneLayout, null);
 
-    var cameraPosition = sceneLayout ? sceneLayout.cameraposition : null;
-    if (cameraPosition && cameraPosition.length) {
-        // Set camera position if provided, store last save position
-        this.setCameraPosition(cameraPosition);
-        this.cameraPositionLastSave = this.getCameraPosition();
-    } else {
-        // Set camera to default if not provided, save in plotly coords
-        this.setCameraToDefault();
-        this.cameraPositionDefault = this.getCameraPosition();
-        this.cameraPositionLastSave = this.cameraPositionDefault;
-    }
-
-    /*
-     * gl-render is triggered in the animation loop, we hook in
-     * glcontext object into the loop here
-     */
-    shell.on('gl-render', this.onRender.bind(this));
 
     shell.on('tick', this.onTick.bind(this));
 
