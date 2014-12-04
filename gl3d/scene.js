@@ -1061,6 +1061,30 @@ proto.setFramePosition = function setFramePosition () {
         containerStyle.height = position.height + 'px';
     }
 };
+
+// Update the data queue
+proto.updateSceneDataQueue = function updateSceneDataQueue(sceneData) {
+    var newSceneData = sceneData || this.sceneData,
+        sceneDataQueue = this.sceneDataQueue,
+        sceneDataQueueUIDS = [],
+        sceneDataNotInQueue = [],
+        i = null;
+
+    // Get uids of traces in data queue
+    for (i = 0; i < sceneDataQueue.length; ++i) {
+        sceneDataQueueUIDS.push(sceneDataQueue[i].uid);
+    }
+
+    // Filter out new traces that are already in the queue
+    for (i = 0; i < newSceneData.length; ++i) {
+        var trace = newSceneData[i];
+        if (sceneDataQueueUIDS.indexOf(trace.uid) === -1) {
+            sceneDataNotInQueue.push(trace);
+        }
+    }
+
+    // Append scene data queue
+    this.sceneDataQueue = sceneDataQueue.concat(sceneDataNotInQueue);
 };
 
 proto.disposeAll = function disposeAll () {
