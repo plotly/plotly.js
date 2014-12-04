@@ -637,7 +637,7 @@ proto.onRender = function () {
 };
 
 
-proto.plot = function (sceneLayout, data) {
+proto.plotTrace = function (trace, sceneLayout) {
 
     this.dirty = true;
     this.selectDirty = true;
@@ -648,7 +648,6 @@ proto.plot = function (sceneLayout, data) {
     // the existing layout *may* be overwritten by a new
     // incoming layout in Plotly.plot()
     this.setAndSyncLayout(sceneLayout);
-
     for (var i = 0; i < 3; ++i) {
 
         var axes = sceneLayout[this.axesNames[i]];
@@ -658,17 +657,17 @@ proto.plot = function (sceneLayout, data) {
         axes.setScale = function () {};
     }
 
-    if (data) {
+    if (trace) {
 
-        var glObject = this.glDataMap[data.uid] || null;
+        var glObject = this.glDataMap[trace.uid] || null;
 
-        if (data.visible) {
-            glObject = data.module.update(this, sceneLayout, data, glObject);
+        if (trace.visible) {
+            glObject = trace.module.update(this, sceneLayout, trace, glObject);
         }
 
-        if (!data.visible && glObject) glObject.visible = data.visible;
+        if (!trace.visible && glObject) glObject.visible = trace.visible;
 
-        if (glObject) this.glDataMap[data.uid] = glObject;
+        if (glObject) this.glDataMap[trace.uid] = glObject;
 
         // add to queue if visible, remove if not visible.
         this.updateRenderQueue(glObject);
