@@ -40,12 +40,29 @@ function ticksChanged (ticksA, ticksB) {
 }
 
 
-// PASS IN GLOBAL LAYOUT, LET THIS THING CARVE OUT SCENELAYOUT
-function Scene (options, shell) {
+// Scene Constructor
+function Scene (options) {
 
-    this.shell                   =  shell;
+    EventEmitter.call(this);
+
+    this.Plotly                  = options.Plotly;
     this.container               = options.container || null;
+    this.sceneKey                = options.sceneKey || 'scene';
+    this.sceneData               = options.sceneData || null;
     this.sceneLayout             = options.sceneLayout || null;
+    this.fullLayout              = options.fullLayout || null;
+    this.glOptions               = options.glOptions;
+
+    this.initialized             = false;  // needs to go through .init()
+    this.setProps();
+
+}
+
+module.exports = Scene;
+
+util.inherits(Scene, EventEmitter);
+
+proto = Scene.prototype;
     this.renderQueue             = [];
     this.glDataMap               = {};
 
@@ -195,11 +212,9 @@ function Scene (options, shell) {
 }
 
 
-util.inherits(Scene, EventEmitter);
+};
 
-module.exports = Scene;
 
-proto = Scene.prototype;
 
 proto.groupCount = function() {
     if(this.objectCount === 0) {
