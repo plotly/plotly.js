@@ -243,6 +243,19 @@
         replacequarter = function(m,n) { return quarters[n-1]; },
         matchTZ = / ?([+\-]\d\d:?\d\d|Z)$/;
 
+    lib._getDateType = function(v) {
+        var dateType;
+        dateType = (match4Y.test(v) ? 'Y' : 'y');
+        dateType = dateType + (matchMonthName.test(v) ? 'b' : '');
+        return dateType;
+    };
+
+    lib._getTimeType = function(v) {
+        var timeType;
+        timeType = matchcolon.test(v) ? (matchAMPM.test(v) ? 'I' : 'H') : 'D';
+        return timeType;
+    };
+
     lib.parseDate = function(v) {
         // is it already a date? just return it
         if (v.getTime) return v;
@@ -279,14 +292,11 @@
             .replace(matchTZ, '');
         // now test against the various formats that might match
         var out = null,
-            dateType,
-            timeType,
+            dateType = lib._getDateType(v),
+            timeType = lib._getTimeType(v),
             formatList,
             len;
-        dateType = (match4Y.test(v) ? 'Y' : 'y');
-        dateType = dateType + (matchMonthName.test(v) ? 'b' : '');
-        timeType = matchcolon.test(v);
-        timeType = timeType + (matchAMPM.test(v) ? 'I' : 'H') : 'D';
+
         formatList = dateTimeFormats[dateType][timeType];
         len = formatList.length;
 
