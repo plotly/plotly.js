@@ -402,6 +402,7 @@ ModeBar.prototype.config = function config() {
             attr: 'hovermode',
             val: 'closest',
             icon: 'ploticon-tooltip_basic',
+            gravity: 'ne',
             click: handleHover3d
         }
     };

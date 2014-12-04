@@ -312,8 +312,13 @@
 
         // remember a few things about what was already there,
         var optionsIn = layout.annotations[index],
-            oldPrivate = fullLayout.annotations[index],
-            oldRef = {xref: optionsIn.xref, yref: optionsIn.yref};
+            oldPrivate = fullLayout.annotations[index];
+
+        // not sure how we're getting here... but C12 is seeing a bug
+        // where we fail here when they add/remove annotations
+        if(!optionsIn) return;
+
+        var oldRef = {xref: optionsIn.xref, yref: optionsIn.yref};
 
         // alter the input annotation as requested
         var optionsEdit = {};

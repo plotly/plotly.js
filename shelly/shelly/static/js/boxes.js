@@ -146,7 +146,7 @@
         }
 
         var hasBoxes = fullData.some(function(trace) {
-            return trace.type==='box';
+            return Plotly.Plots.isBox(trace.type);
         });
 
         if(!hasBoxes) return;
@@ -261,7 +261,7 @@
         gd.calcdata.forEach(function(cd,i) {
             var t = cd[0].t,
                 trace = cd[0].trace;
-            if(trace.visible!==false && !t.emptybox && trace.type==='box' &&
+            if(trace.visible!==false && !t.emptybox && Plotly.Plots.isBox(trace.type) &&
               trace.xaxis===xa._id && trace.yaxis===ya._id) {
                 boxlist.push(i);
                 if(trace.boxpoints!==false) {
@@ -299,6 +299,26 @@
         }
     };
 
+    // repeatable pseudorandom generator
+    var randSeed = 2000000000;
+
+    function seed() {
+        randSeed = 2000000000;
+    }
+
+    function rand() {
+        var lastVal = randSeed;
+        randSeed = (69069*randSeed + 1)%4294967296;
+        // don't let consecutive vals be too close together
+        // gets away from really trying to be random, in favor of better local uniformity
+        if(Math.abs(randSeed - lastVal) < 429496729) return rand();
+        return randSeed/4294967296;
+    }
+
+    // constants for dynamic jitter (ie less jitter for sparser points)
+    var JITTERCOUNT = 5, // points either side of this to include
+        JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
+
     boxes.plot = function(gd,plotinfo,cdbox) {
         var fullLayout = gd._fullLayout,
             xa = plotinfo.x(),
@@ -326,6 +346,9 @@
             // save the box size and box position for use by hover
             t.bx = bx;
             t.bdx = bdx;
+
+            // repeatable pseudorandom number generator
+            seed();
 
             // boxes and whiskers
             d3.select(this).selectAll('path.box')
@@ -372,11 +395,50 @@
                   .selectAll('path')
                     .data(function(d){
                         var pts = (trace.boxpoints==='all') ? d.y :
-                            d.y.filter(function(v){ return (v<d.lf || v>d.uf); });
-                        return pts.map(function(v){
-                            var xo = (trace.jitter ? trace.jitter*(Math.random()-0.5)*2 : 0) +
-                                    trace.pointpos,
-                                p = {x: d.x+xo*bdx+bx, y: v};
+                                d.y.filter(function(v){ return (v<d.lf || v>d.uf); }),
+                            spreadLimit = (d.q3 - d.q1) * JITTERSPREAD,
+                            jitterFactors = [],
+                            maxJitterFactor = 0,
+                            i,
+                            i0, i1,
+                            pmin,
+                            pmax,
+                            jitterFactor,
+                            newJitter;
+
+                        // dynamic jitter
+                        if(trace.jitter) {
+                            for(i=0; i<pts.length; i++) {
+                                i0 = Math.max(0, i-JITTERCOUNT);
+                                pmin = pts[i0];
+                                i1 = Math.min(pts.length-1, i+JITTERCOUNT);
+                                pmax = pts[i1];
+
+                                if(trace.boxpoints!=='all') {
+                                    if(pts[i]<d.lf) pmax = Math.min(pmax, d.lf);
+                                    else pmin = Math.max(pmin, d.uf);
+                                }
+
+                                jitterFactor = Math.sqrt(spreadLimit * (i1-i0) / (pmax-pmin)) || 0;
+                                jitterFactor = Plotly.Lib.constrain(Math.abs(jitterFactor), 0, 1);
+
+                                jitterFactors.push(jitterFactor);
+                                maxJitterFactor = Math.max(jitterFactor, maxJitterFactor);
+                            }
+                            newJitter = trace.jitter * 2 / maxJitterFactor;
+                        }
+
+                        return pts.map(function(v, i){
+                            var xOffset = trace.pointpos;
+                            if(trace.jitter) {
+                                xOffset += newJitter * jitterFactors[i] * (rand()-0.5);
+                            }
+
+                            var p = {
+                                x: d.x + xOffset*bdx + bx,
+                                y: v
+                            };
+
                             // tag suspected outliers
                             if(trace.boxpoints==='suspectedoutliers' && v<d.uo && v>d.lo) {
                                 p.so=true;
@@ -434,6 +496,82 @@
                     d3.select(this).selectAll('path')
                         .call(Plotly.Drawing.pointStyle, trace);
                 });
+    };
+
+    boxes.hoverPoints = function(pointData, xval, yval, hovermode) {
+        // closest mode: handicap box plots a little relative to others
+        var cd = pointData.cd,
+            trace = cd[0].trace,
+            t = cd[0].t,
+            xa = pointData.xa,
+            ya = pointData.ya,
+            dd = (hovermode==='closest') ? Plotly.Fx.MAXDIST/5 : 0,
+            dx = function(di){
+                var x = di.x + t.bx - xval;
+                return Plotly.Fx.inbox(x - t.bdx, x + t.bdx) + dd;
+            },
+            dy = function(di){
+                return Plotly.Fx.inbox(di.min - yval, di.max - yval);
+            },
+            distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy),
+            closeData = [];
+        Plotly.Fx.getClosest(cd, distfn, pointData);
+
+        // skip the rest (for this trace) if we didn't find a close point
+        if(pointData.index===false) return;
+
+        // create the item(s) in closedata for this point
+
+        // the closest data point
+        var di = cd[pointData.index],
+
+            lc = trace.line.color,
+            mc = (trace.marker||{}).color;
+        if(Plotly.Color.opacity(lc) && trace.line.width) pointData.color = lc;
+        else if(Plotly.Color.opacity(mc) && trace.boxpoints) pointData.color = mc;
+        else pointData.color = trace.fillcolor;
+
+        pointData.x0 = xa.c2p(di.x + t.bx - t.bdx, true);
+        pointData.x1 = xa.c2p(di.x + t.bx + t.bdx, true);
+
+        var xText = Plotly.Axes.tickText(xa, xa.c2l(di.x), 'hover').text;
+        if(hovermode==='closest') {
+            if(xText!==pointData.name) pointData.name += ': ' + xText;
+        }
+        else {
+            pointData.xLabelVal = di.x;
+            if(xText===pointData.name) pointData.name = '';
+        }
+
+        // box plots: each "point" gets many labels
+        var usedVals = {},
+            attrs = ['med','min','q1','q3','max'],
+            attr,
+            y,
+            pointData2;
+        if(trace.boxmean) attrs.push('mean');
+        if(trace.boxpoints) [].push.apply(attrs,['lf', 'uf']);
+
+        for(var i=0; i<attrs.length; i++) {
+            attr = attrs[i];
+
+            if(!(attr in di) || (di[attr] in usedVals)) continue;
+            usedVals[di[attr]] = true;
+
+            // copy out to a new object for each value to label
+            y = ya.c2p(di[attr], true);
+            pointData2 = $.extend({}, pointData);
+            pointData2.y0 = pointData2.y1 = y;
+            pointData2.yLabelVal = di[attr];
+            pointData2.attr = attr;
+
+            if(attr==='mean' && ('sd' in di) && trace.boxmean==='sd') {
+                pointData2.yerr = di.sd;
+            }
+            pointData.name = ''; // only keep name on the first item (median)
+            closeData.push(pointData2);
+        }
+        return closeData;
     };
 
 }()); // end Boxes object definition
