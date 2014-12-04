@@ -278,13 +278,18 @@
             // also try to ignore timezone info, at least for now
             .replace(matchTZ, '');
         // now test against the various formats that might match
-        var dateType = (match4Y.test(v) ? 'Y' : 'y') +
-                    (matchMonthName.test(v) ? 'b' : '');
-        var timeType = matchcolon.test(v) ?
-                    (matchAMPM.test(v) ? 'I' : 'H') : 'D';
-        var formatList = dateTimeFormats[dateType][timeType],
-            len = formatList.length,
-            out = null;
+        var out = null,
+            dateType,
+            timeType,
+            formatList,
+            len;
+        dateType = (match4Y.test(v) ? 'Y' : 'y');
+        dateType = dateType + (matchMonthName.test(v) ? 'b' : '');
+        timeType = matchcolon.test(v);
+        timeType = timeType + (matchAMPM.test(v) ? 'I' : 'H') : 'D';
+        formatList = dateTimeFormats[dateType][timeType];
+        len = formatList.length;
+
         for (var i = 0; i < len; i++) {
             out = formatList[i].parse(v);
             if (out) break;
