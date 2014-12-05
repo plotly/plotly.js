@@ -1181,10 +1181,7 @@
     function relinkPrivateKeys(toLayout, fromLayout) {
 
         var keys = Object.keys(fromLayout),
-            arrayObj,
-            prevVal,
-            j,
-            ix;
+            j;
 
         for (var i = 0; i < keys.length; ++i) {
             var k = keys[i];
@@ -1195,37 +1192,23 @@
 
                 toLayout[k] = fromLayout[k];
             }
-            else if (Array.isArray(fromLayout[k]) && fromLayout[k].length &&
+            else if (Array.isArray(fromLayout[k]) &&
+                     Array.isArray(toLayout[k]) &&
+                     fromLayout[k].length &&
                      $.isPlainObject(fromLayout[k][0])) {
-                if (!(k in toLayout)) toLayout[k] = [];
-                else if (!Array.isArray(toLayout[k])) {
-                    prevVal = toLayout[k];
-                    toLayout[k] = [];
+                if(fromLayout[k].length !== toLayout[k].length) {
+                    // this should be handled elsewhere, it causes
+                    // ambiguity if we try to deal with it here.
+                    throw new Error('relinkPrivateKeys needs equal ' +
+                                    'length arrays');
                 }
 
-                for (j = ix = 0; j < fromLayout[k].length; ++j) {
-                    arrayObj = toLayout[k][ix];
-                    toLayout[k][ix] = {};
-                    relinkPrivateKeys(toLayout[k][ix], fromLayout[k][j]);
-                    if (!Object.keys(toLayout[k][ix]).length) {
-                        if (arrayObj) {
-                            toLayout[k][ix] = arrayObj;
-                            ++ix;
-                        }
-                        else toLayout[k].splice(ix, 1);
-                    }
-                    else ++ix;
-                }
-
-                if (!toLayout[k].length) {
-                    if (prevVal) {
-                        toLayout[k] = prevVal;
-                        prevVal = undefined;
-                    }
-                    else delete toLayout[k];
+                for(j = 0; j < fromLayout[k].length; j++) {
+                    relinkPrivateKeys(toLayout[k][j], fromLayout[k][j]);
                 }
             }
-            else if ($.isPlainObject(fromLayout[k]) && (k in toLayout)) {
+            else if ($.isPlainObject(fromLayout[k]) &&
+                     $.isPlainObject(toLayout[k])) {
                 // recurse into objects, but only if they still exist
                 relinkPrivateKeys(toLayout[k], fromLayout[k]);
                 if (!Object.keys(toLayout[k]).length) delete toLayout[k];
