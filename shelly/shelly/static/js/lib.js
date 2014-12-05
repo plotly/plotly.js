@@ -13,7 +13,7 @@
     // ---external global dependencies
     /* global d3:false, Spinner:false, tinycolor:false */
 
-    if (!window.Plotly) { window.Plotly = {}; }
+    if (!window.Plotly) window.Plotly = {};
     var lib = Plotly.Lib = {};
 
     // dateTime2ms - turn a date object or string s of the form
@@ -243,18 +243,18 @@
         replacequarter = function(m,n) { return quarters[n-1]; },
         matchTZ = / ?([+\-]\d\d:?\d\d|Z)$/;
 
-    lib._getDateType = function(v) {
+    function getDateType(v) {
         var dateType;
         dateType = (match4Y.test(v) ? 'Y' : 'y');
         dateType = dateType + (matchMonthName.test(v) ? 'b' : '');
         return dateType;
-    };
+    }
 
-    lib._getTimeType = function(v) {
+    function getTimeType(v) {
         var timeType;
         timeType = matchcolon.test(v) ? (matchAMPM.test(v) ? 'I' : 'H') : 'D';
         return timeType;
-    };
+    }
 
     lib.parseDate = function(v) {
         // is it already a date? just return it
@@ -292,8 +292,8 @@
             .replace(matchTZ, '');
         // now test against the various formats that might match
         var out = null,
-            dateType = lib._getDateType(v),
-            timeType = lib._getTimeType(v),
+            dateType = getDateType(v),
+            timeType = getTimeType(v),
             formatList,
             len;
 
