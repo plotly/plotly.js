@@ -1180,10 +1180,12 @@
     // a webgl context.
     function relinkPrivateKeys(toLayout, fromLayout) {
 
-        var keys = Object.keys(fromLayout);
-        var arrayObj;
-        var prevVal;
-        var j, ix;
+        var keys = Object.keys(fromLayout),
+            arrayObj,
+            prevVal,
+            j,
+            ix;
+
         for (var i = 0; i < keys.length; ++i) {
             var k = keys[i];
             if(k.charAt(0)==='_' || typeof fromLayout[k]==='function') {
@@ -1200,6 +1202,7 @@
                     prevVal = toLayout[k];
                     toLayout[k] = [];
                 }
+
                 for (j = ix = 0; j < fromLayout[k].length; ++j) {
                     arrayObj = toLayout[k][ix];
                     toLayout[k][ix] = {};
@@ -1209,12 +1212,11 @@
                             toLayout[k][ix] = arrayObj;
                             ++ix;
                         }
-                        else {
-                            toLayout[k].splice(ix, 1);
-                        }
+                        else toLayout[k].splice(ix, 1);
                     }
                     else ++ix;
                 }
+
                 if (!toLayout[k].length) {
                     if (prevVal) {
                         toLayout[k] = prevVal;
