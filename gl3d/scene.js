@@ -451,6 +451,10 @@ proto.renderPick = function(cameraParameters) {
         for(var i=0; i<this.renderQueue.length; ++i) {
             var glObject = this.renderQueue[i];
             if(glObject.groupId === pass) {
+                glObject.axesBounds = [
+                  this.axis.bounds[0].slice(),
+                  this.axis.bounds[1].slice()
+                ];
                 glObject.drawPick(cameraParameters);
             }
         }
@@ -619,12 +623,14 @@ proto.onRender = function () {
             }
         }
 
-        if (glObject.supportsTransparency
-            && glObject.plotlyType === 'surface') continue;
         glObject.axesBounds = [
           this.axis.bounds[0].slice(),
           this.axis.bounds[1].slice()
         ];
+
+        if (glObject.supportsTransparency
+            && glObject.plotlyType === 'surface') continue;
+        
         glObject.draw(cameraParameters, false);
     }
 
