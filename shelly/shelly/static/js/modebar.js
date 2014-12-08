@@ -78,7 +78,7 @@ ModeBar.prototype.createGroup = function () {
 ModeBar.prototype.createButton = function (config) {
     var button = document.createElement('button');
     var icon = document.createElement('i');
-
+    var self = this;
     button.setAttribute('rel', 'tooltip');
     button.className = 'btn btn--icon btn--plot ploticon';
 
@@ -86,7 +86,9 @@ ModeBar.prototype.createButton = function (config) {
     button.setAttribute('data-val', config.val);
     button.setAttribute('title', config.title);
     button.setAttribute('data-gravity', config.gravity || 'n');
-    button.addEventListener('click', config.click.bind(this));
+    button.addEventListener('click', function () {
+           config.click.apply(self, arguments)
+        });
 
     icon.className = config.icon;
     button.appendChild(icon);
