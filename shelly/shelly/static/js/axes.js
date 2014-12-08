@@ -310,9 +310,8 @@
 
         var autoTick = coerce('autotick');
         if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
-        if(autoTick) {
-            if(axType!=='category') coerce('nticks');
-        }
+        if(autoTick) coerce('nticks');
+
         // TODO date doesn't work yet, right? axType==='date' ? new Date(2000,0,1).getTime() : 0);
         coerce('tick0', 0);
         coerce('dtick');
@@ -1137,8 +1136,18 @@
     axes.calcTicks = function calcTicks (ax) {
         // calculate max number of (auto) ticks to display based on plot size
         if(ax.autotick || !ax.dtick){
-            var nt = (ax.nticks || Plotly.Lib.constrain(ax._length /
-                    (ax._id.charAt(0)==='y' ? 40 : 80), 4, 9) + 1);
+            var nt = ax.nticks,
+                minPx;
+            if(!nt) {
+                if(ax.type==='category') {
+                    minPx = ax.tickfont ? (ax.tickfont.size || 12) * 1.2 : 15;
+                    nt = ax._length / minPx;
+                }
+                else {
+                    minPx = ax._id.charAt(0)==='y' ? 40 : 80;
+                    nt = Plotly.Lib.constrain(ax._length / minPx, 4, 9) + 1;
+                }
+            }
             axes.autoTicks(ax,Math.abs(ax.range[1]-ax.range[0])/nt);
             // check for a forced minimum dtick
             if(ax._minDtick>0 && ax.dtick<ax._minDtick*2) {
@@ -1273,7 +1282,7 @@
         }
         else if(ax.type==='category') {
             ax.tick0 = 0;
-            ax.dtick = 1;
+            ax.dtick = Math.ceil(Math.max(rt,1));
         }
         else{
             // auto ticks always start at 0
@@ -1282,8 +1291,8 @@
             ax.dtick = rtexp*Plotly.Lib.roundUp(rt/rtexp,[2,5,10]);
         }
 
-        // prevent infinite loops...
-        if(ax.dtick===0) { ax.dtick = 1; }
+        // prevent infinite loops
+        if(ax.dtick===0) ax.dtick = 1;
 
         // TODO: this is from log axis histograms with autorange off
         if(!$.isNumeric(ax.dtick) && typeof ax.dtick !=='string') {
