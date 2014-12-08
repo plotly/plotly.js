@@ -1140,7 +1140,7 @@
                 minPx;
             if(!nt) {
                 if(ax.type==='category') {
-                    minPx = ax.tickfont ? (ax.tickfont.size || 12) * 1.2 : 0;
+                    minPx = ax.tickfont ? (ax.tickfont.size || 12) * 1.2 : 15;
                     nt = ax._length / minPx;
                 }
                 else {
