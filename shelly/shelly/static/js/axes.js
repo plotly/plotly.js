@@ -1136,8 +1136,14 @@
     axes.calcTicks = function calcTicks (ax) {
         // calculate max number of (auto) ticks to display based on plot size
         if(ax.autotick || !ax.dtick){
-            var nt = (ax.nticks || Plotly.Lib.constrain(ax._length /
-                    (ax._id.charAt(0)==='y' ? 40 : 80), 4, 9) + 1);
+            var nt = ax.nticks;
+            if(!nt) {
+                if(ax.type==='category') nt = ax._length / (ax.tickfont.size * 1.2);
+                else {
+                    var minPx = ax._id.charAt(0)==='y' ? 40 : 80;
+                    nt = Plotly.Lib.constrain(ax._length / minPx, 4, 9) + 1;
+                }
+            }
             axes.autoTicks(ax,Math.abs(ax.range[1]-ax.range[0])/nt);
             // check for a forced minimum dtick
             if(ax._minDtick>0 && ax.dtick<ax._minDtick*2) {
