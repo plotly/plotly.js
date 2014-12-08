@@ -215,11 +215,13 @@ function handleHover3d (ev) {
     layoutUpdate[attr] = val;
 
     // Apply to all scenes
-    sceneLayouts.forEach( function (sceneLayout) {
-        var scene = sceneLayout._scene;
+    for (var i = 0;  i < sceneLayouts.length; ++i) {
+        var sceneLayout = sceneLayouts[i],
+            scene = sceneLayout._scene;
+
         scene.spikeEnable = !scene.spikeEnable;
         scene.container.focus();
-    });
+    }
 
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
         _this.updateActiveButton();
@@ -245,13 +247,15 @@ function handleDrag3d (ev) {
     layoutUpdate[attr] = val;
 
     // Update the webgl3D key binding of all scenes
-    sceneLayouts.forEach( function (sceneLayout) {
-        var scene = sceneLayout._scene;
+    for (var i = 0;  i < sceneLayouts.length; ++i) {
+        var sceneLayout = sceneLayouts[i],
+            scene = sceneLayout._scene;
+
         if ('camera' in scene) {
             scene.camera.keyBindingMode = val;
             scene.container.focus();
         }
-    });
+    }
 
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
         _this.updateActiveButton();
@@ -272,8 +276,10 @@ function handleCamera3d (ev) {
         sceneLayouts = Plotly.Lib.getSceneLayouts(fullLayout);
 
     // Reset camera of all scenes
-    sceneLayouts.forEach( function (sceneLayout) {
-        var scene = sceneLayout._scene;
+    for (var i = 0;  i < sceneLayouts.length; ++i) {
+        var sceneLayout = sceneLayouts[i],
+            scene = sceneLayout._scene;
+
         if (attr === 'resetDefault') {
             // Reset camera position to default
             scene.setCameraToDefault();
@@ -282,7 +288,7 @@ function handleCamera3d (ev) {
             var cameraPositionLastSave = scene.cameraPositionLastSave;
             scene.setCameraPosition(cameraPositionLastSave);
         }
-    });
+    }
 
     /* TODO have a sceneLastTouched in _fullLayout to only
      * update the camera of the scene last touched by the user
