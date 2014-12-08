@@ -150,7 +150,7 @@ ModeBar.prototype.getLogo = function(){
     group.appendChild(a);
     group.classList.add('btn-group--logo');
     return group;
-}
+};
 
 /**
  * Apply D3 cartesian mode attributes to layout to update hover functionality
@@ -160,15 +160,15 @@ function handleCartesian (ev) {
     var button = ev.currentTarget,
         astr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
-        aobj = {},
         graphInfo = this.graphInfo,
-        layout = this.graphInfo._fullLayout,
+        fullLayout = this.graphInfo._fullLayout,
         Plotly = this.Plotly,
-        _this = this;
+        _this = this,
+        aobj = {};
 
     if(astr === 'zoom') {
-        var xr = layout.xaxis.range,
-            yr = layout.yaxis.range,
+        var xr = fullLayout.xaxis.range,
+            yr = fullLayout.yaxis.range,
             mag = (val==='in') ? 0.5 : 2,
             r0 = (1+mag)/2, r1 = (1-mag)/2;
         aobj = {
@@ -181,7 +181,7 @@ function handleCartesian (ev) {
 
     // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
     if (astr==='hovermode' && (val==='x' || val==='y')) {
-        val = layout._isHoriz ? 'y' : 'x';
+        val = fullLayout._isHoriz ? 'y' : 'x';
         button.setAttribute('data-val', val);
     }
 
@@ -191,7 +191,7 @@ function handleCartesian (ev) {
         _this.updateActiveButton();
         if(astr === 'dragmode') {
             Plotly.Fx.setCursor(
-                layout._paper.select('.nsewdrag'),
+                fullLayout._paper.select('.nsewdrag'),
                 {pan:'move', zoom:'crosshair'}[val]
             );
         }
@@ -201,66 +201,66 @@ function handleCartesian (ev) {
 /**
  * Toggle the data hover mode
  * @Param {object} ev event object
- * @Return {HTMLelement}
  */
 function handleHover3d (ev) {
-    var _this = this,
-        button = ev.currentTarget,
+    var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
-        val = button.getAttribute('data-val') || true,
-        layoutUpdate = {},
+        _this = this,
+        Plotly = this.Plotly,
         graphInfo = this.graphInfo,
-        layout = graphInfo._fullLayout,
-        scenes = Object.keys(layout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        }).map( function (sceneKey) {
-            return layout[sceneKey];
-        });
+        fullLayout = graphInfo._fullLayout,
+        sceneLayouts = Plotly.Lib.getSceneLayouts(fullLayout),
+        layoutUpdate = {};
 
+    // 3D has only 1 hover mode; toggle it
+    var val = fullLayout[attr]!=='closest' ? 'closest' : false;
     layoutUpdate[attr] = val;
 
-    scenes.forEach( function (sceneLayout) {
-        sceneLayout._scene.spikeEnable = !sceneLayout._scene.spikeEnable;
-    });
+    // Apply to all scenes
+    for (var i = 0;  i < sceneLayouts.length; ++i) {
+        var sceneLayout = sceneLayouts[i],
+            scene = sceneLayout._scene;
 
-    this.Plotly.relayout(graphInfo, layoutUpdate).then( function() {
+        scene.spikeEnable = !scene.spikeEnable;
+        scene.container.focus();
+    }
+
+    Plotly.relayout(graphInfo, layoutUpdate).then( function() {
         _this.updateActiveButton();
-        scenes[0]._container.focus();
     });
 }
 
 /**
  * Reconfigure keyboard bindings for webgl3D camera control on drag
  * @Param {object} ev event object
- * @Return {HTMLelement}
  */
 function handleDrag3d (ev) {
-    var _this = this,
-        button = ev.currentTarget,
+    var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
-        layoutUpdate = {},
+        _this = this,
+        Plotly = this.Plotly,
         graphInfo = this.graphInfo,
-        layout = graphInfo._fullLayout,
-        scenes = Object.keys(layout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        }).map( function (sceneKey) {
-            return layout[sceneKey];
-        });
+        fullLayout = graphInfo._fullLayout,
+        sceneLayouts = Plotly.Lib.getSceneLayouts(fullLayout),
+        layoutUpdate = {};
 
     // set dragmode to given value
     layoutUpdate[attr] = val;
 
-    // update the webgl3D key binding
-    scenes.forEach( function (sceneLayout) {
-        if ('_scene' in sceneLayout && 'camera' in sceneLayout._scene) {
-            sceneLayout._scene.camera.keyBindingMode = val;
-        }
-    });
+    // Update the webgl3D key binding of all scenes
+    for (var i = 0;  i < sceneLayouts.length; ++i) {
+        var sceneLayout = sceneLayouts[i],
+            scene = sceneLayout._scene;
 
-    this.Plotly.relayout(graphInfo, layoutUpdate).then( function() {
+        if ('camera' in scene) {
+            scene.camera.keyBindingMode = val;
+            scene.container.focus();
+        }
+    }
+
+    Plotly.relayout(graphInfo, layoutUpdate).then( function() {
         _this.updateActiveButton();
-        scenes[0]._container.focus();
     });
 }
 
@@ -268,36 +268,32 @@ function handleDrag3d (ev) {
 /**
  * Reset the position of the webgl3D camera
  * @Param {object} ev event object
- * @Return {HTMLelement}
  */
 function handleCamera3d (ev) {
-    var _this = this,
-        button = ev.currentTarget,
+    var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
-        val = button.getAttribute('data-val') || true,
-        layoutUpdate = {},
+        Plotly = this.Plotly,
         graphInfo = this.graphInfo,
-        layout = graphInfo._fullLayout,
-        scenes = Object.keys(layout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        }).map( function (sceneKey) {
-            return layout[sceneKey];
-        }),
-        _scene = layout.scene._scene;
+        fullLayout = graphInfo._fullLayout,
+        sceneLayouts = Plotly.Lib.getSceneLayouts(fullLayout);
 
-    if (attr === 'resetDefault') {
-        // Reset camera position to default
-        _scene.setCameraToDefault();
-    } else if (attr === 'resetLastSave') {
-        // Reset camera back to the position at the last save
-        var cameraPositionLastSave = _scene._cameraPositionLastSave;
-        _scene.setCameraPosition(cameraPositionLastSave);
+    // Reset camera of all scenes
+    for (var i = 0;  i < sceneLayouts.length; ++i) {
+        var sceneLayout = sceneLayouts[i],
+            scene = sceneLayout._scene;
+
+        if (attr === 'resetDefault') {
+            // Reset camera position to default
+            scene.setCameraToDefault();
+        } else if (attr === 'resetLastSave') {
+            // Reset camera back to the position at the last save
+            var cameraPositionLastSave = scene.cameraPositionLastSave;
+            scene.setCameraPosition(cameraPositionLastSave);
+        }
     }
 
-    /**
-     * TODO multiple scenes!
-     * Ideally, in a multiple scene plot, the modebar buttons should
-     * reset the camera position of the scene last moved.
+    /* TODO have a sceneLastTouched in _fullLayout to only
+     * update the camera of the scene last touched by the user
      */
 }
 
@@ -399,7 +395,7 @@ ModeBar.prototype.config = function config() {
             icon: 'icon-camera-retro',
             click: handleCamera3d
         },
-        closest3d: {
+        hoverClosest3d: {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
             val: 'closest',
