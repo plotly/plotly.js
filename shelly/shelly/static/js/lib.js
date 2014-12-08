@@ -262,7 +262,7 @@
         // otherwise, if it's not a string, return nothing
         // the case of numbers that just have years will get
         // dealt with elsewhere.
-        if (typeof v !== 'string') return;
+        if (typeof v !== 'string') return false;
 
         // first clean up the string a bit to reduce the number
         // of formats we have to test
@@ -304,8 +304,9 @@
             out = formatList[i].parse(v);
             if (out) break;
         }
+
         // If not an instance of Date at this point, just return it.
-        if (!(out instanceof Date)) return out;
+        if (!(out instanceof Date)) return false;
         // parse() method interprets arguments with local time zone.
         var tzoff = out.getTimezoneOffset();
         // In general (default) this is not what we want, so force into UTC:
