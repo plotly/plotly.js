@@ -310,9 +310,8 @@
 
         var autoTick = coerce('autotick');
         if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
-        if(autoTick) {
-            if(axType!=='category') coerce('nticks');
-        }
+        if(autoTick) coerce('nticks');
+
         // TODO date doesn't work yet, right? axType==='date' ? new Date(2000,0,1).getTime() : 0);
         coerce('tick0', 0);
         coerce('dtick');
@@ -1273,7 +1272,7 @@
         }
         else if(ax.type==='category') {
             ax.tick0 = 0;
-            ax.dtick = 1;
+            ax.dtick = Math.ceil(Math.max(rt,1));
         }
         else{
             // auto ticks always start at 0
@@ -1282,8 +1281,8 @@
             ax.dtick = rtexp*Plotly.Lib.roundUp(rt/rtexp,[2,5,10]);
         }
 
-        // prevent infinite loops...
-        if(ax.dtick===0) { ax.dtick = 1; }
+        // prevent infinite loops
+        if(ax.dtick===0) ax.dtick = 1;
 
         // TODO: this is from log axis histograms with autorange off
         if(!$.isNumeric(ax.dtick) && typeof ax.dtick !=='string') {
