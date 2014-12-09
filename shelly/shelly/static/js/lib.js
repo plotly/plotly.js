@@ -559,12 +559,19 @@
             function(a,b){return a+Math.pow(b-mean,2);},0,data)/len);
     };
 
-    // interpolate an array given a (possibly non-integer) index n
-    // clip the ends to the extreme values in the array
+    // This function returns the p^th percentile (quantile) of the 'distribution'
+    // given by the values in array arr.
+    // n = p/100 so that, for example, the 50th percentile (or median) corresponds
+    // to n = 0.5
+    // Typically the index (rank), i.e., n * arr.length, may be non-integer:
+    // We then interpolate the distribution (we follow method #4 here:
+    // http://www.amstat.org/publications/jse/v14n3/langford.html).
+    // For reference: clip the ends to the extreme values in the array
     // special version for box plots: index you get is half a point too high
     // see http://en.wikipedia.org/wiki/Percentile#Nearest_rank but note
     // that this definition indexes from 1 rather than 0, so we subtract 1/2 instead of add
     lib.interp = function(arr, n) {
+        n = n * arr.length
         n -= 0.5;
         if (n<0) return arr[0];
         if (n>arr.length-1) return arr[arr.length-1];

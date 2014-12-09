@@ -214,9 +214,9 @@
             p.max = v[l-1];
             p.mean = Plotly.Lib.mean(v,l);
             p.sd = Plotly.Lib.stdev(v,l,p.mean);
-            p.q1 = Plotly.Lib.interp(v, l/4); // first quartile
-            p.med = Plotly.Lib.interp(v, l/2); // median
-            p.q3 = Plotly.Lib.interp(v, 0.75*l); // third quartile
+            p.q1 = Plotly.Lib.interp(v, 0.25);  // first quartile
+            p.med = Plotly.Lib.interp(v, 0.5);  // median
+            p.q3 = Plotly.Lib.interp(v, 0.75);  // third quartile
             // lower and upper fences - last point inside
             // 1.5 interquartile ranges from quartiles
             p.lf = Math.min(p.q1, v[
