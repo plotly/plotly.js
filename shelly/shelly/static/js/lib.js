@@ -559,6 +559,18 @@
             function(a,b){return a+Math.pow(b-mean,2);},0,data)/len);
     };
 
+    // interpolate an array given a (possibly non-integer) index n
+    // clip the ends to the extreme values in the array
+    // special version for box plots: index you get is half a point too high
+    // see http://en.wikipedia.org/wiki/Percentile#Nearest_rank but note
+    // that this definition indexes from 1 rather than 0, so we subtract 1/2 instead of add
+    lib.interp = function(arr, n) {
+        n -= 0.5;
+        if (n<0) return arr[0];
+        if (n>arr.length-1) return arr[arr.length-1];
+        var frac = n%1;
+        return frac * arr[Math.ceil(n)] + (1-frac) * arr[Math.floor(n)];
+    };
     // ------------------------------------------
     // debugging tools
     // ------------------------------------------
