@@ -13,6 +13,8 @@ var camera = require('./scene-camera'),
     arrayCopy1D = arrtools.copy1D,
     arrayCopy2D = arrtools.copy2D,
     mat4 = glm.mat4,
+    util = require('util'),
+    EventEmitter = require('events').EventEmitter,
     proto;
 
 function str2RgbaArray(color) {
@@ -51,29 +53,41 @@ function contourLevelsFromTicks(ticks) {
 }
 
 
-// PASS IN GLOBAL LAYOUT, LET THIS THING CARVE OUT SCENELAYOUT
-function Scene (options, shell) {
+// Scene Constructor
+function Scene (options) {
 
-    if (!(this instanceof Scene)) return new Scene(shell);
+    EventEmitter.call(this);
 
-    this.shell                   =  shell;
+    this.Plotly                  = options.Plotly;
     this.container               = options.container || null;
+    this.sceneKey                = options.sceneKey || 'scene';
+    this.sceneData               = options.sceneData || null;
+    this.sceneLayout             = options.sceneLayout || null;
+    this.fullLayout              = options.fullLayout || null;
+    this.glOptions               = options.glOptions;
+
+    this.initialized             = false;  // needs to go through .init()
+    this.setProps();
+
+}
+
+module.exports = Scene;
+
+util.inherits(Scene, EventEmitter);
+
+proto = Scene.prototype;
+
+// Set Scene properties that are independent of 'options'
+proto.setProps = function setProps() {
+
     this.renderQueue             = [];
     this.glDataMap               = {};
-
-    if (!this.shell) {
-         return void 0;
-    }
+    this.sceneDataQueue          = [];
 
     this.dirty                   = true;  //Set if drawing buffer needs redraw
     this.selectDirty             = true;  //Set if selection buffer needs redraw
     this.moving                  = false; //Set if camera moving (don't draw select axes)
 
-
-    this.camera                  = camera(shell, this);
-    this.axis                    = null;
-    this.id                      = options.id;
-    this.Plotly                  = options.Plotly;
 
     this.selectBuffers           = [];
     this.pickRadius              = 10; //Number of pixels to search for closest point
@@ -89,6 +103,7 @@ function Scene (options, shell) {
     this.contourLevels           = [[], [], []];
 
     ////////////// AXES OPTIONS DEFAULTS ////////////////
+    this.axis                    = null;
     this.axesOpts                = {};
 
     this.axesOpts.bounds         = [ [-10, -10, -10],
@@ -152,56 +167,145 @@ function Scene (options, shell) {
         width:          [1,1,1]
     };
 
-    this.axesNames = ['xaxis', 'yaxis', 'zaxis'];
+    this.axesNames       = ['xaxis', 'yaxis', 'zaxis'];
 
-    this.model = new Float32Array([
+    this.model = new Float32Array([  // ?duplicate?
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1
     ]);
 
-    // set default camera position
-    this.defaultView = [
+    this.defaultView = [   // set default camera view matrix
         1.25, 1.25, 1.25,
         0,    0,    0,
         0,    0,    1
     ];
-    this.setCameraToDefault();
 
-    /**
-     * get the default camera position in plotly coords,
-     * for reset camera modebar button
-     */
-    this.cameraPositionDefault = this.getCameraPosition();
+    this.selection = null;  // currently selected data point
 
-    //Currently selected data point
-    this.selection = null;
+};
 
-    // Bootstrap the initial scene if sceneLayout is provided
-    if (options.sceneLayout) this.plot(options.sceneLayout, null);
+// Takes care of all async stuff; needs to be call only once per scene
+proto.init = function init() {
 
-    /*
-     * gl-render is triggered in the animation loop, we hook in
-     * glcontext object into the loop here
-     */
-    shell.on('gl-render', this.onRender.bind(this));
+    this.intializing = true;  // keep track of initializing scene shell
 
-    shell.on('tick', this.onTick.bind(this));
+    var container = this.container,
+        glOptions = this.glOptions,
+        self      = this;
 
-    var self = this;
-    shell.on('resize', function() {
-        self.dirty = true;
-        self.selectDirty = true;
+    // Once scene is ready, plot!
+    this.once('scene-ready', function () {
+        self.plotDataQueue();
     });
 
-    return void 0;
-}
+    // Once iframe is loaded, init the shell!
+    container.onload = function () {
 
+        // Try initializing WebGl
+        self.shell = container.contentWindow.glnow({
+            clearFlags: 0,
+            glOptions: glOptions,
+            tickRate: 3
+        });
 
-module.exports = Scene;
+        // contain all events within the iframe, necessary to
+        // contain zoom events to prevent parent window scrolling.
+        self.shell.preventDefaults = true;
+        self.shell.stopPropagation = true;
 
-proto = Scene.prototype;
+        // Once gl is initialized, initialize the camera and let
+        // Scene know about it with 'scene-ready'.
+        self.shell.once('gl-init', function () {
+            self.initCamera();
+            self.emit('scene-ready', self);
+            self.initializing = false;
+            self.initialized = true;
+        });
+
+        /*
+         * gl-render is triggered in the animation loop, we hook in
+         * glcontext object into the loop here
+         */
+        self.shell.on('gl-render', self.onRender.bind(self));
+
+        // Attached 'tick' and 'resize' events to shell
+        self.shell.on('tick', self.onTick.bind(self));
+        self.shell.on('resize', function() {
+            self.dirty = true;
+            self.selectDirty = true;
+        });
+
+        // If an error occur, clean up container.
+        self.shell.on('gl-error', function () {
+
+            self.container.style.background = '#FFFFFF';
+            self.container.contentDocument.getElementById('no3D').style.display = 'block';
+            self.container.contentDocument.body.onclick = function () {
+                window.open("http://get.webgl.org")
+            };
+
+            // Clean up modebar, add flag in fullLayout (for graph_interact.js)
+            var fullLayout = self.fullLayout;
+            if ('_modebar' in fullLayout && fullLayout._modebar) {
+                fullLayout._modebar.cleanup();
+                fullLayout._modebar = null;
+            }
+            fullLayout._noGL3DSupport = true;
+
+//             // Old code to remove the loading bars
+//             // commented out as Scene does not have 'gd'
+//             var pb = gd.querySelector('#plotlybars'); // !!!
+//             if (pb) {
+//                 pb.innerHTML = '';
+//                 pb.parentNode.removeChild(pb);
+//             }
+        });
+
+    };
+
+};
+
+proto.initCamera = function initCamera() {
+
+    // Attach camera onto scene
+    this.camera = camera(this.shell, this);
+
+    // Set initial camera position
+    this.setCameraPositionInitial();
+
+    // Focus the iframe removing need to double click for interactivity
+    this.container.focus();
+
+};
+
+// ALL YOU NEED TO CALL FROM THE OUTSIDE (i.e. graph_obj.js)
+proto.plot = function plot(sceneData, sceneLayout) {
+
+    // Update data queue, sync layout and set frame position
+    this.updateSceneDataQueue(sceneData);
+    this.setAndSyncLayout(sceneLayout);
+    this.setFramePosition();
+
+    // If scene is initialized, plot!
+    if (this.initialized) this.plotDataQueue();
+
+    // It not initialized or not initializing, initialize it!
+    if (!(this.initializing) && !(this.initialized)) this.init();
+
+};
+
+// Plot each trace in data queue
+proto.plotDataQueue = function () {
+    var sceneLayout = this.sceneLayout,
+        sceneDataQueue = this.sceneDataQueue;
+
+    while (sceneDataQueue.length) {
+        var trace = sceneDataQueue.shift();
+        this.plotTrace(trace, sceneLayout);
+    }
+};
 
 proto.groupCount = function() {
     if(this.objectCount === 0) {
@@ -329,7 +433,7 @@ proto.handlePick = function(x, y) {
     }
 
     return pickData;
-}
+};
 
 proto.renderPick = function(cameraParameters) {
     if(this.selectBuffers.length <= 0) {
@@ -563,18 +667,10 @@ proto.onRender = function () {
     gl.disable(gl.BLEND);
 };
 
-
-proto.plot = function (sceneLayout, data) {
+proto.plotTrace = function (trace, sceneLayout) {
 
     this.dirty = true;
     this.selectDirty = true;
-
-    // sets the modules layout with incoming layout.
-    // also set global layout properties.
-    // Relinking this on every update is necessary as
-    // the existing layout *may* be overwritten by a new
-    // incoming layout in Plotly.plot()
-    this.setAndSyncLayout(sceneLayout);
 
     for (var i = 0; i < 3; ++i) {
 
@@ -585,17 +681,17 @@ proto.plot = function (sceneLayout, data) {
         axes.setScale = function () {};
     }
 
-    if (data) {
+    if (trace) {
 
-        var glObject = this.glDataMap[data.uid] || null;
+        var glObject = this.glDataMap[trace.uid] || null;
 
-        if (data.visible) {
-            glObject = data.module.update(this, sceneLayout, data, glObject);
+        if (trace.visible) {
+            glObject = trace.module.update(this, sceneLayout, trace, glObject);
         }
 
-        if (!data.visible && glObject) glObject.visible = data.visible;
+        if (!trace.visible && glObject) glObject.visible = trace.visible;
 
-        if (glObject) this.glDataMap[data.uid] = glObject;
+        if (glObject) this.glDataMap[trace.uid] = glObject;
 
         // add to queue if visible, remove if not visible.
         this.updateRenderQueue(glObject);
@@ -625,7 +721,6 @@ proto.plot = function (sceneLayout, data) {
 
 };
 
-
 proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
     this.sceneLayout = sceneLayout;
 
@@ -637,7 +732,6 @@ proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
     this.dirty = true;
     this.selectDirty = true;
 };
-
 
 proto.updateRenderQueue = function (glObject) {
 
@@ -793,8 +887,8 @@ proto.setModelScale = function () {
         d0,     d1,     d2,    1
     ]);
 
-    this.dirty = true
-    this.selectDirty = true
+    this.dirty = true;
+    this.selectDirty = true;
 
 };
 
@@ -969,12 +1063,79 @@ proto.setCameraPosition = function setCameraPosition (cameraPosition) {
 // save camera position to user layout (i.e. gd.layout)
 proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) {
     var lib = this.Plotly.Lib;
-    var prop = lib.nestedProperty(layout, this.id + '.cameraposition');
+    var prop = lib.nestedProperty(layout, this.sceneKey + '.cameraposition');
     var cameraposition = this.getCameraPosition();
     prop.set(cameraposition);
     this.dirty = true;
     this.selectDirty = true;
     return;
+};
+
+// Set camera position upon Scene instantiation
+proto.setCameraPositionInitial = function setCameraPositionInitial () {
+    var sceneLayout = this.sceneLayout,
+        cameraPosition = sceneLayout ? sceneLayout.cameraposition : null;
+
+    if (cameraPosition && cameraPosition.length) {
+        // Set camera to provided position, save a copy
+        this.setCameraPosition(cameraPosition);
+        this.cameraPositionLastSave = this.getCameraPosition();
+    } else {
+        // Set camera to default, save a copy in plotly coords
+        this.setCameraToDefault();
+        this.cameraPositionDefault = this.getCameraPosition();
+        this.cameraPositionLastSave = this.cameraPositionDefault;
+    }
+};
+
+// Set the frame position of the scene (i.e. its 'domain')
+proto.setFramePosition = function setFramePosition () {
+    var containerStyle = this.container.style,
+        domain = this.sceneLayout.domain || null,
+        size = this.fullLayout._size || null;
+
+    function sizeToPosition(size, domain) {
+        return {
+            left: size.l + domain.x[0] * size.w,
+            top: size.t + (1 - domain.y[1]) * size.h,
+            width: size.w * (domain.x[1] - domain.x[0]),
+            height: size.h * (domain.y[1] - domain.y[0])
+        };
+    }
+
+    if (domain && size) {
+        var position = sizeToPosition(size, domain);
+        containerStyle.position = 'absolute';
+        containerStyle.left = position.left + 'px';
+        containerStyle.top = position.top + 'px';
+        containerStyle.width = position.width + 'px';
+        containerStyle.height = position.height + 'px';
+    }
+};
+
+// Update the data queue
+proto.updateSceneDataQueue = function updateSceneDataQueue(sceneData) {
+    var newSceneData = sceneData || this.sceneData,
+        sceneDataQueue = this.sceneDataQueue,
+        sceneDataQueueUIDS = [],
+        sceneDataNotInQueue = [],
+        i = null;
+
+    // Get uids of traces in data queue
+    for (i = 0; i < sceneDataQueue.length; ++i) {
+        sceneDataQueueUIDS.push(sceneDataQueue[i].uid);
+    }
+
+    // Filter out new traces that are already in the queue
+    for (i = 0; i < newSceneData.length; ++i) {
+        var trace = newSceneData[i];
+        if (sceneDataQueueUIDS.indexOf(trace.uid) === -1) {
+            sceneDataNotInQueue.push(trace);
+        }
+    }
+
+    // Append scene data queue
+    this.sceneDataQueue = sceneDataQueue.concat(sceneDataNotInQueue);
 };
 
 proto.disposeAll = function disposeAll () {
