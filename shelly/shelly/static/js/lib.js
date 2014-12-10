@@ -571,10 +571,10 @@
     // see http://en.wikipedia.org/wiki/Percentile#Nearest_rank but note
     // that this definition indexes from 1 rather than 0, so we subtract 1/2 instead of add
     lib.interp = function(arr, n) {
-        n = n * arr.length
+        n = n * arr.length;
         n -= 0.5;
-        if (n<0) return arr[0];
-        if (n>arr.length-1) return arr[arr.length-1];
+        if (n < 0) return arr[0];
+        if (n > arr.length-1) return arr[arr.length-1];
         var frac = n%1;
         return frac * arr[Math.ceil(n)] + (1-frac) * arr[Math.floor(n)];
     };
