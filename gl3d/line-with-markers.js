@@ -237,17 +237,14 @@ proto.update = function(options) {
         pickId:       this.pickId2,
         lineWidth:    0
     };
-    if(this.textMarkers) {
+
+    if(this.mode.indexOf('text') !== -1) {
         this.textTransparent = isTransparent(options.textColor);
-        if(this.mode.indexOf('text') >= 0) {
-            this.textMarkers.update(textOptions);
-        } else {
-            this.textMarkers.dispose();
-            this.textMarkers = null;
-        }
-    } else if(this.mode.indexOf('text') >= 0) {
-        this.textTransparent = isTransparent(options.textColor);
-        this.textMarkers = createScatterPlot(gl, textOptions);
+        if (this.textMarkers) this.textMarkers.update(textOptions);
+        else this.textMarkers = createScatterPlot(gl, textOptions);
+    } else if (this.textMarkers) {
+        this.textMarkers.dispose();
+        this.textMarkers = null;
     }
 
     errorOptions = {
