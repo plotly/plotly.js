@@ -550,6 +550,18 @@
         return lib.aggNums(function(a,b){return a+b;},0,data)/len;
     };
 
+    lib.variance = function(data, len, mean) {
+        if (!len) len = lib.len(data);
+        if (!$.isNumeric(mean)) {
+            mean = lib.aggNums(function(a, b) {
+                return a + b;
+            }, 0, data)/len;
+        }
+        return lib.aggNums(function(a, b) {
+            return a + Math.pow(b-mean, 2);
+        }, 0, data)/len;
+    };
+
     lib.stdev = function(data, len, mean) {
         if (!len) len = lib.len(data);
         if (!$.isNumeric(mean)) {
