@@ -143,8 +143,8 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
 
     this.supplyXYZ(traceIn, traceOut);
 
-    if (coerceScatter('text')) coerceScatter('mode', 'lines+markers+text');
-    else coerceScatter('mode', 'lines+markers');
+    coerceScatter('text');
+    coerceScatter('mode', 'lines+markers');
 
     if (Scatter.hasLines(traceOut)) {
         linecolor = coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);

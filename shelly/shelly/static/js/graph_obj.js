@@ -6,7 +6,7 @@
     // ---Plotly global modules
     /* global Plotly:false, µ:false, micropolar:false,
         SceneFrame:false, Tabs:false, Examples:false,
-        Themes:false, ENV:false */
+        ENV:false */
 
     // ---global functions not yet namespaced
     /* global setFileAndCommentsSize:false */
@@ -563,7 +563,9 @@
     };
 
     function plot3D(gd) {
-        var fullLayout = gd._fullLayout;
+        var fullLayout = gd._fullLayout,
+            fullData = gd._fullData;
+
         /*
          * Once Webgl plays well with other things we can remove this.
          * Unset examples, they misbehave with 3d plots
@@ -579,155 +581,47 @@
             background: fullLayout.paper_bgcolor
         });
 
-        /*
-         * If there are scenes that need loading load them.
-         * Recalibrate all domains now that there may be new scenes.
-         * Once scenes load they will iteratively load any data
-         * that might be on their queue.
-         *
-         * scene arrangements need to be implemented: For now just splice
-         * along the horizontal direction. ie.
-         * x:[0,1] -> x:[0,0.5], x:[0.5,1] ->
-         *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
-         *
-         */
-        var scenes = Object.keys(fullLayout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        });
-
-        scenes.forEach( function (sceneKey, idx) {
-
-            var sceneLayout = fullLayout[sceneKey],
-                sceneOptions;
-
-            // we are only modifying the x domain position with this
-            // simple approach
-            sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
-
-            // convert domain to position in pixels
-            sceneLayout._position = {
-                left: fullLayout._size.l + sceneLayout.domain.x[0]*fullLayout._size.w,
-                top: fullLayout._size.t + (1-sceneLayout.domain.y[1])*fullLayout._size.h,
-                width: fullLayout._size.w *
-                    (sceneLayout.domain.x[1] - sceneLayout.domain.x[0]),
-                height: fullLayout._size.h *
-                    (sceneLayout.domain.y[1] - sceneLayout.domain.y[0])
-            };
-
-            // if this scene has already been loaded it will have it's webgl
-            // context parameter so lets reset the domain of the scene as
-            // it may have changed (this operates on the containing iframe)
-            if (sceneLayout._scene){
-                SceneFrame.setFramePosition(sceneLayout._scene.container, sceneLayout._position);
+        // Get traces attached to a scene
+        function getSceneData(data, sceneKey) {
+            var i_trace = 0,
+                trace = null,
+                sceneData = [];
+            for (i_trace; i_trace < data.length; ++i_trace) {
+                trace = data[i_trace];
+                if (trace.scene === sceneKey) sceneData.push(trace);
             }
-            /*
-             * We only want to continue to operate on scenes that have
-             * data waiting to be displayed or require loading
-             */
-            var scene = sceneLayout._scene;
+            return sceneData;
+        }
 
-            // maybe this initialization should happen somewhere else
-            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
+        // Get list of scenes from fullLayout
+        var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout),
+            i_sceneKey = 0;
 
-            var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
-                return trace.uid;
-            });
-            var sceneData = gd._fullData.filter( function (trace) {
-                return trace.scene === sceneKey &&
-                    queueUIDS.indexOf(trace.uid) === -1;
-            });
+        // Loop through scenes
+        for (i_sceneKey; i_sceneKey < sceneKeys.length; ++i_sceneKey) {
+            var sceneKey = sceneKeys[i_sceneKey],
+                sceneData = getSceneData(fullData, sceneKey),
+                sceneLayout = fullLayout[sceneKey],
+                scene = sceneLayout._scene;  // ref. to corresp. Scene instance
 
-            sceneLayout._dataQueue = sceneLayout._dataQueue.concat(sceneData);
-
-            if (scene) {
-                //// if there is no data for this scene destroy it
-                //// woot, lets load all the data in the queue and bail outta here
-                while (sceneLayout._dataQueue.length) {
-                    var d = sceneLayout._dataQueue.shift();
-                    scene.plot(sceneLayout, d);
-                }
-                return;
+            // If Scene is not instantiated, create one!
+            if (!(scene)) {
+                var sceneFrameOptions = {
+                    Plotly: Plotly,
+                    container: gd.querySelector('.svg-container'),
+                    sceneKey: sceneKey,
+                    sceneData: sceneData,
+                    sceneLayout: sceneLayout,
+                    fullLayout: fullLayout,
+                    baseurl: ENV.BASE_URL,
+                    glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
+                };
+                scene = SceneFrame.createScene(sceneFrameOptions);
+                sceneLayout._scene = scene;  // set ref to Scene instance
             }
 
-            if (sceneLayout._loading) return;
-            sceneLayout._loading = true;
-            /*
-             * Create new scenee
-             */
-            sceneOptions = {
-                container: gd.querySelector('.svg-container'),
-                zIndex: '1000',
-                id: sceneKey,
-                Plotly: Plotly,
-                sceneLayout: sceneLayout,
-                width: fullLayout.width,
-                height: fullLayout.height,
-                baseurl: ENV.BASE_URL,
-                glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
-            };
-
-            SceneFrame.createScene(sceneOptions);
-
-            SceneFrame.once('scene-error', function (scene) {
-                sceneLayout._scene = scene;
-                SceneFrame.setFramePosition(scene.container,
-                    sceneLayout._position);
-                if ('_modebar' in gd._fullLayout){
-                    gd._fullLayout._modebar.cleanup();
-                    gd._fullLayout._modebar = null;
-                }
-
-                gd._fullLayout._noGL3DSupport = true;
-
-                var pb = gd.querySelector('#plotlybars');
-
-                if (pb) {
-                    pb.innerHTML = '';
-                    pb.parentNode.removeChild(pb);
-                }
-            });
-
-            SceneFrame.once('scene-loaded', function (scene) {
-
-                var sceneLayout = gd._fullLayout[scene.id];
-                // make the .scene (scene context) available through scene.
-                sceneLayout._loading = false; // loaded
-                sceneLayout._scene = scene;
-                sceneLayout._container = scene.container;
-
-                if ('cameraposition' in sceneLayout && sceneLayout.cameraposition.length) {
-                    /*
-                     * if cameraposition is not empty at this point,
-                     * it must have been saved in the workshop
-                     * or set via an API.
-                     * (1) set the camera position
-                     * (2) save a copy of *last save*
-                     */
-                    var cameraposition = sceneLayout.cameraposition;
-                    scene.setCameraPosition(cameraposition);
-                    scene._cameraPositionLastSave = scene.getCameraPosition();
-                } else {
-                    // if cameraposition is empty, set *last save* to default
-                    scene._cameraPositionLastSave = scene.getCameraPosition();
-                }
-
-                SceneFrame.setFramePosition(sceneLayout._container,
-                    sceneLayout._position);
-
-                // if data has accumulated on the queue while the iframe
-                // and the webgl-context were loading remove that data
-                // from the queue and draw.
-                while (sceneLayout._dataQueue.length) {
-                    var d = sceneLayout._dataQueue.shift();
-                    scene.plot(sceneLayout, d);
-                }
-
-                // focus the iframe removing need to double click for interactivity
-                scene.container.focus();
-
-                SceneFrame.emit('scene-ready', scene);
-            });
-        });
+            scene.plot(sceneData, sceneLayout);  // takes care of business
+        }
     }
 
     function plotPolar(gd, data, layout, config) {
@@ -896,12 +790,10 @@
 
         });
 
-        var scenes = Object.keys(layout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        });
+        var sceneKeys = Plotly.Lib.getSceneKeys(layout);
 
-        scenes.forEach( function (sceneName) {
-            var sceneLayout = layout[sceneName];
+        sceneKeys.forEach( function (sceneKey) {
+            var sceneLayout = layout[sceneKey];
             // fix for saved float32-arrays
             var camp = sceneLayout.cameraposition;
             if (Array.isArray(camp) && $.isPlainObject(camp[0])) {
@@ -1162,13 +1054,11 @@
     };
 
     function cleanScenes(newFullLayout, oldFullLayout) {
-        var oldScenes = Object.keys(oldFullLayout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        });
+        var oldSceneKeys = Plotly.Lib.getSceneKeys(oldFullLayout);
 
-        oldScenes.forEach(function(oldScene) {
-            if(!newFullLayout[oldScene] && !!oldFullLayout[oldScene]._scene) {
-                oldFullLayout[oldScene]._scene.destroy();
+        oldSceneKeys.forEach(function(oldSceneKey) {
+            if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
+                oldFullLayout[oldSceneKey]._scene.destroy();
             }
         });
     }
@@ -1180,10 +1070,9 @@
     // a webgl context.
     function relinkPrivateKeys(toLayout, fromLayout) {
 
-        var keys = Object.keys(fromLayout);
-        var arrayObj;
-        var prevVal;
-        var j, ix;
+        var keys = Object.keys(fromLayout),
+            j;
+
         for (var i = 0; i < keys.length; ++i) {
             var k = keys[i];
             if(k.charAt(0)==='_' || typeof fromLayout[k]==='function') {
@@ -1193,37 +1082,23 @@
 
                 toLayout[k] = fromLayout[k];
             }
-            else if (Array.isArray(fromLayout[k]) && fromLayout[k].length &&
+            else if (Array.isArray(fromLayout[k]) &&
+                     Array.isArray(toLayout[k]) &&
+                     fromLayout[k].length &&
                      $.isPlainObject(fromLayout[k][0])) {
-                if (!(k in toLayout)) toLayout[k] = [];
-                else if (!Array.isArray(toLayout[k])) {
-                    prevVal = toLayout[k];
-                    toLayout[k] = [];
+                if(fromLayout[k].length !== toLayout[k].length) {
+                    // this should be handled elsewhere, it causes
+                    // ambiguity if we try to deal with it here.
+                    throw new Error('relinkPrivateKeys needs equal ' +
+                                    'length arrays');
                 }
-                for (j = ix = 0; j < fromLayout[k].length; ++j) {
-                    arrayObj = toLayout[k][ix];
-                    toLayout[k][ix] = {};
-                    relinkPrivateKeys(toLayout[k][ix], fromLayout[k][j]);
-                    if (!Object.keys(toLayout[k][ix]).length) {
-                        if (arrayObj) {
-                            toLayout[k][ix] = arrayObj;
-                            ++ix;
-                        }
-                        else {
-                            toLayout[k].splice(ix, 1);
-                        }
-                    }
-                    else ++ix;
-                }
-                if (!toLayout[k].length) {
-                    if (prevVal) {
-                        toLayout[k] = prevVal;
-                        prevVal = undefined;
-                    }
-                    else delete toLayout[k];
+
+                for(j = 0; j < fromLayout[k].length; j++) {
+                    relinkPrivateKeys(toLayout[k][j], fromLayout[k][j]);
                 }
             }
-            else if ($.isPlainObject(fromLayout[k]) && (k in toLayout)) {
+            else if ($.isPlainObject(fromLayout[k]) &&
+                     $.isPlainObject(toLayout[k])) {
                 // recurse into objects, but only if they still exist
                 relinkPrivateKeys(toLayout[k], fromLayout[k]);
                 if (!Object.keys(toLayout[k]).length) delete toLayout[k];
@@ -1930,10 +1805,8 @@
 
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
-            $(gd).trigger('plotly_restyle',[redoit,traces]);
-            if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
-                Themes.reTile(gd);
-            }
+            $(gd).trigger('plotly_restyle',
+                          $.extend(true, [], [redoit, traces]));
         });
     };
 
@@ -2321,10 +2194,7 @@
 
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
-            $(gd).trigger('plotly_relayout',redoit);
-            if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
-                Themes.reTile(gd);
-            }
+            $(gd).trigger('plotly_relayout', $.extend(true, {}, redoit));
         });
     };
 

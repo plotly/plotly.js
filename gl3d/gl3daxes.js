@@ -135,13 +135,11 @@ proto.initAxes = function (td) {
     delete fullLayout.xaxis;
     delete fullLayout.yaxis;
 
-    var scenes = Object.keys(fullLayout).filter(function(k){
-        return k.match(/^scene[0-9]*$/);
-    });
+    var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout);
 
-    for (var i = 0; i < scenes.length; ++i) {
-        var scene = scenes[i];
-        var sceneLayout = fullLayout[scene];
+    for (var i = 0; i < sceneKeys.length; ++i) {
+        var sceneKey = sceneKeys[i];
+        var sceneLayout = fullLayout[sceneKey];
         for (var j = 0; j < 3; ++j) {
             var axisName = this.axesNames[j];
             var ax = sceneLayout[axisName];

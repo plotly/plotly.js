@@ -28,8 +28,6 @@ function parseColorScale (colorscale, alpha) {
     });
 }
 
-
-
 var proto = Surface.prototype;
 
 
@@ -39,8 +37,18 @@ proto.contourAttributes =  {
         dflt: false
     },
     project: {
-        type: 'boolean',
-        dflt: false
+        x: { 
+            type: 'boolean',
+            dflt: false
+        },
+        y: { 
+            type: 'boolean',
+            dflt: false
+        },
+        z: { 
+            type: 'boolean',
+            dflt: false
+        }
     },
     color: {
         type: 'color',
@@ -115,7 +123,7 @@ proto.attributes = {
 };
 
 proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
-    var i, _this = this;
+    var i, j, _this = this;
     var Plotly = this.config.Plotly;
 
     function coerce(attr, dflt) {
@@ -168,7 +176,11 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         var show = coerce(contourDim + '.show');
         var highlight = coerce(contourDim + '.highlight');
 
-        if (show || highlight ) coerce(contourDim + '.project');
+        if (show || highlight ) {
+            for (j = 0; j < 3; ++j) {
+                coerce(contourDim + '.project.' + dims[j]);
+            }
+        }
 
         if (show) {
             coerce(contourDim + '.color');
@@ -271,7 +283,9 @@ proto.update = function update (scene, sceneLayout, data, surface) {
         colormap:       colormap,
         levels:         [[],[],[]],
         showContour:    [ true, true, true ],
-        contourProject: [ false, false, false ],
+        contourProject: [ [ false, false, false ],
+                          [ false, false, false ],
+                          [ false, false, false ] ],
         contourWidth:   [ 1, 1, 1 ],
         contourColor:   [ [1,1,1,1], [1,1,1,1], [1,1,1,1] ],
         contourTint:    [ 1, 1, 1 ],
@@ -294,7 +308,10 @@ proto.update = function update (scene, sceneLayout, data, surface) {
             continue;
         }
 
-        params.contourProject[i]   = contourParams.project;
+        params.contourProject[i]   = [
+            contourParams.project.x,
+            contourParams.project.y,
+            contourParams.project.z ];
 
         if (contourParams.show) {
             params.levels[i]       = contourLevels[i];
