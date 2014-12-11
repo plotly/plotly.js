@@ -550,13 +550,16 @@
         return lib.aggNums(function(a,b){return a+b;},0,data)/len;
     };
 
-    lib.stdev = function(data,len,mean) {
-        if(!len) { len = lib.len(data); }
-        if(!$.isNumeric(mean)) {
-            mean = lib.aggNums(function(a,b){return a+b;},0,data)/len;
+    lib.stdev = function(data, len, mean) {
+        if (!len) len = lib.len(data);
+        if (!$.isNumeric(mean)) {
+            mean = lib.aggNums(function(a, b) {
+                return a + b;
+            }, 0, data)/len;
         }
-        return Math.sqrt(lib.aggNums(
-            function(a,b){return a+Math.pow(b-mean,2);},0,data)/len);
+        return Math.sqrt(lib.aggNums(function(a, b) {
+            return a + Math.pow(b-mean, 2);
+        }, 0, data)/len);
     };
 
     // This function returns the p^th percentile (quantile) of the 'distribution'
