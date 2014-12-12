@@ -549,15 +549,23 @@
                     .attr('class','mean')
                     .style('fill','none')
                     .each(function(d){
-                        var xc = xa.c2p(d.x+bx, true),
-                            x0 = xa.c2p(d.x+bx-bdx, true),
-                            x1 = xa.c2p(d.x+bx+bdx, true),
-                            ym = ya.c2p(d.mean, true),
-                            ysl = ya.c2p(d.mean-d.sd, true),
-                            ysh = ya.c2p(d.mean+d.sd, true);
-                        d3.select(this).attr('d','M'+x0+','+ym+'H'+x1+
+                        var posc = posAxis.c2p(d.pos + bPos, true),
+                            pos0 = posAxis.c2p(d.pos + bPos - bdPos, true),
+                            pos1 = posAxis.c2p(d.pos + bPos + bdPos, true),
+                            m = dstAxis.c2p(d.mean, true),
+                            sl = dstAxis.c2p(d.mean-d.sd, true),
+                            sh = dstAxis.c2p(d.mean+d.sd, true);
+                        if (trace.orientation==='h') {
+                        d3.select(this).attr('d',
+                            'M'+m+','+pos0+'V'+pos1+
                             ((trace.boxmean!=='sd') ? '' :
-                            'm0,0L'+xc+','+ysl+'L'+x0+','+ym+'L'+xc+','+ysh+'Z'));
+                                'm0,0L'+sl+','+posc+'L'+m+','+pos0+'L'+sh+','+posc+'Z'));
+                        } else {
+                        d3.select(this).attr('d',
+                            'M'+pos0+','+m+'H'+pos1+
+                            ((trace.boxmean!=='sd') ? '' :
+                                'm0,0L'+posc+','+sl+'L'+pos0+','+m+'L'+posc+','+sh+'Z'));
+                        }
                     });
             }
         });
