@@ -399,19 +399,19 @@
                 trace = d[0].trace,
                 group = (fullLayout.boxmode==='group' && gd.numboxes>1),
                 // box half width
-                bdx = t.dx*(1-fullLayout.boxgap)*(1-fullLayout.boxgroupgap)/(group ? gd.numboxes : 1),
+                bdPos = t.dPos*(1-fullLayout.boxgap)*(1-fullLayout.boxgroupgap)/(group ? gd.numboxes : 1),
                 // box center offset
-                bx = group ? 2*t.dx*(-0.5+(t.boxnum+0.5)/gd.numboxes)*(1-fullLayout.boxgap) : 0,
+                bPos = group ? 2*t.dPos*(-0.5+(t.boxnum+0.5)/gd.numboxes)*(1-fullLayout.boxgap) : 0,
                 // whisker width
-                wdx = bdx*trace.whiskerwidth;
+                wdPos = bdPos*trace.whiskerwidth;
             if(trace.visible===false || t.emptybox) {
                 d3.select(this).remove();
                 return;
             }
 
             // save the box size and box position for use by hover
-            t.bx = bx;
-            t.bdx = bdx;
+            t.bPos = bPos;
+            t.bdPos = bdPos;
 
             // repeatable pseudorandom number generator
             seed();
