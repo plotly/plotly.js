@@ -445,12 +445,21 @@
                             Math.min(q1, q3)+1, Math.max(q1, q3)-1),
                         lf = dstAxis.c2p(trace.boxpoints===false ? d.min : d.lf, true),
                         uf = dstAxis.c2p(trace.boxpoints===false ? d.max : d.uf, true);
-                    d3.select(this).attr('d',
-                        'M'+x0+','+ym+'H'+x1+ // median line
-                        'M'+x0+','+yq1+'H'+x1+'V'+yq3+'H'+x0+'Z'+ // box
-                        'M'+xc+','+yq1+'V'+ylf+'M'+xc+','+yq3+'V'+yuf+ // whiskers
-                        ((trace.whiskerwidth===0) ? '' : // whisker caps
-                            'M'+xw0+','+ylf+'H'+xw1+'M'+xw0+','+yuf+'H'+xw1));
+                    if (trace.orientation==='h') {
+                        d3.select(this).attr('d',
+                            'M'+m+','+pos0+'V'+pos1+ // median line
+                            'M'+q1+','+pos0+'V'+pos1+'H'+q3+'V'+pos0+'Z'+ // box
+                            'M'+q1+','+posc+','+'H'+lf+'M'+q3+','+posc+'H'+uf+ // whiskers
+                            ((trace.whiskerwidth===0) ? '' : // whisker caps
+                                'M'+lf+','+posw0+'V'+posw1+'M'+uf+','+posw0+'V'+posw1));
+                    } else {
+                        d3.select(this).attr('d',
+                            'M'+pos0+','+m+'H'+pos1+ // median line
+                            'M'+pos0+','+q1+'H'+pos1+'V'+q3+'H'+pos0+'Z'+ // box
+                            'M'+posc+','+q1+'V'+lf+'M'+posc+','+q3+'V'+uf+ // whiskers
+                            ((trace.whiskerwidth===0) ? '' : // whisker caps
+                                'M'+posw0+','+lf+'H'+posw1+'M'+posw0+','+uf+'H'+posw1));
+                    }
                 });
 
             // draw points, if desired
