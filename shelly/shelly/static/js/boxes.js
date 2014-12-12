@@ -519,10 +519,17 @@
                                 posOffset += newJitter * jitterFactors[i] * (rand()-0.5);
                             }
 
-                            var p = {
-                                x: d.x + xOffset*bdx + bx,
-                                y: v
-                            };
+                            if (trace.orientation==='h') {
+                                p = {
+                                    y: d.pos + posOffset*bdPos + bPos,
+                                    x: v
+                                };
+                            } else {
+                                p = {
+                                    x: d.pos + posOffset*bdPos + bPos,
+                                    y: v
+                                };
+                            }
 
                             // tag suspected outliers
                             if(trace.boxpoints==='suspectedoutliers' && v<d.uo && v>d.lo) {
