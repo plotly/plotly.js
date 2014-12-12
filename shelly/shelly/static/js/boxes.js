@@ -388,7 +388,8 @@
     boxes.plot = function(gd,plotinfo,cdbox) {
         var fullLayout = gd._fullLayout,
             xa = plotinfo.x(),
-            ya = plotinfo.y();
+            ya = plotinfo.y(),
+            posAxis, dstAxis;
         var boxtraces = plotinfo.plot.select('.boxlayer').selectAll('g.trace.boxes')
             .data(cdbox)
           .enter().append('g')
@@ -407,6 +408,15 @@
             if(trace.visible===false || t.emptybox) {
                 d3.select(this).remove();
                 return;
+            }
+
+            // set axis via orientation
+            if (trace.orientation==='h') {
+                posAxis = ya;
+                dstAxis = xa;
+            } else {
+                posAxis = xa;
+                dstAxis = ya;
             }
 
             // save the box size and box position for use by hover
