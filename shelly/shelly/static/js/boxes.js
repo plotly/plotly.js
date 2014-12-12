@@ -652,16 +652,15 @@
         else if(Plotly.Color.opacity(mc) && trace.boxpoints) pointData.color = mc;
         else pointData.color = trace.fillcolor;
 
-        pointData.x0 = xa.c2p(di.x + t.bx - t.bdx, true);
-        pointData.x1 = xa.c2p(di.x + t.bx + t.bdx, true);
+        pointData[posLetter+'0'] = posAxis.c2p(di.pos + t.bPos - t.bdPos, true);
+        pointData[posLetter+'1'] = posAxis.c2p(di.pos + t.bPos + t.bdPos, true);
 
-        var xText = Plotly.Axes.tickText(xa, xa.c2l(di.x), 'hover').text;
+        posText = Plotly.Axes.tickText(posAxis, posAxis.c2l(di.pos), 'hover').text;
         if(hovermode==='closest') {
-            if(xText!==pointData.name) pointData.name += ': ' + xText;
-        }
-        else {
-            pointData.xLabelVal = di.x;
-            if(xText===pointData.name) pointData.name = '';
+            if(posText!==pointData.name) pointData.name += ': ' + posText;
+        } else {
+            pointData[posLetter+'LabelVal'] = di.pos;
+            if (posText===pointData.name) pointData.name = '';
         }
 
         // box plots: each "point" gets many labels
@@ -680,14 +679,14 @@
             usedVals[di[attr]] = true;
 
             // copy out to a new object for each value to label
-            y = ya.c2p(di[attr], true);
+            dst = dstAxis.c2p(di[attr], true);
             pointData2 = $.extend({}, pointData);
-            pointData2.y0 = pointData2.y1 = y;
-            pointData2.yLabelVal = di[attr];
+            pointData2[dstLetter+'0'] = pointData2[dstLetter+'1'] = dst;
+            pointData2[dstLetter+'LabelVal'] = di[attr];
             pointData2.attr = attr;
 
             if(attr==='mean' && ('sd' in di) && trace.boxmean==='sd') {
-                pointData2.yerr = di.sd;
+                pointData2[dstLetter+'err'] = di.sd;
             }
             pointData.name = ''; // only keep name on the first item (median)
             closeData.push(pointData2);
