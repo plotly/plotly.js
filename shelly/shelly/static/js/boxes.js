@@ -207,26 +207,36 @@
             pos0 = posAxis.d2c(pos0);
             pos = dst.map(function(){ return pos0; });
         }
-        // find x values
-        var dv = Plotly.Lib.distinctVals(x),
-            xvals = dv.vals,
-            dx = dv.minDiff/2,
-            cd = xvals.map(function(v){ return {x:v}; }),
-            pts = xvals.map(function(){ return []; }),
-            bins = xvals.map(function(v){ return v-dx; }),
-            l = xvals.length;
-        bins.push(xvals[l-1]+dx);
 
-        // y autorange based on all source points
-        // x happens afterward when we know all the x values
-        Plotly.Axes.expand(ya, y, {padded: true});
+        var dv = Plotly.Lib.distinctVals(pos),
+            posVals = dv.vals,
+            dPos = dv.minDiff/2,
+            posLength = posVals.length,
+            cd = [],
+            pts = [],
+            bins = [];
 
-        // bin the points
-        y.forEach(function(v,i){
+        // find x (y) values
+        for (i = 0; i < posLength; ++i) {
+            var posVal = posVals[i];
+            cd[i] = {pos: posVal};
+            pts[i] = [];
+            bins[i] = posVal - dPos;
+        }
+        bins.push(posVals[posLength-1] + dPos);
+
+        // size autorange based on all source points
+        // position happens afterward when we know all the x values
+        Plotly.Axes.expand(dstAxis, dst, {padded: true});
+
+        // bin the distribution points
+        var dstLength = dst.length;
+        for (i = 0; i < dstLength; ++i) {
+            var v = dst[i];
             if(!$.isNumeric(v)) return;
-            var n = Plotly.Lib.findBin(x[i],bins);
-            if(n>=0 && n<l) pts[n].push(v);
-        });
+            var n = Plotly.Lib.findBin(pos[i], bins);
+            if(n>=0 && n<dstLength) pts[n].push(v);
+        }
 
         // interpolate an array given a (possibly non-integer) index n
         // clip the ends to the extreme values in the array
@@ -242,11 +252,12 @@
         }
 
         // sort the bins and calculate the stats
-        pts.forEach(function(v,i){
-            v.sort(function(a, b){ return a - b; });
-            var l = v.length,
+        for (i = 0; i < pts.length; ++i) {
+            var v = pts[i].sort(function(a, b){ return a - b; }),
+                l = v.length,
                 p = cd[i];
-            p.y = v; // put all points into calcdata
+
+            p.dst = v;  // put all points into calcdata
             p.min = v[0];
             p.max = v[l-1];
             p.mean = Plotly.Lib.mean(v,l);
@@ -264,10 +275,10 @@
             // this is only for discriminating suspected & far outliers)
             p.lo = 4*p.q1-3*p.q3;
             p.uo = 4*p.q3-3*p.q1;
-        });
+        }
 
         // remove empty bins
-        cd = cd.filter(function(p){ return p.y && p.y.length; });
+        cd = cd.filter(function(p){ return p.dst && p.dst.length; });
         if(!cd.length) return [{t: {emptybox: true}}];
 
         cd[0].t = {boxnum: gd.numboxes, dx: dx};
