@@ -281,7 +281,7 @@
         cd = cd.filter(function(p){ return p.dst && p.dst.length; });
         if(!cd.length) return [{t: {emptybox: true}}];
 
-        cd[0].t = {boxnum: gd.numboxes, dx: dx};
+        cd[0].t = {boxnum: gd.numboxes, dPos: dPos};
         gd.numboxes++;
         return cd;
     };
