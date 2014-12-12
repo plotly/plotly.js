@@ -106,17 +106,20 @@
             return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
-        var y = coerceScatter('y');
-        if(!y) {
+        // In vertical (horizontal) box plots:
+        // if you supply an x (y) array, you will get one box
+        // per distinct x (y) value
+        // if not, we make a single box and position / label it with x0 (y0)
+        // (or name, if no x0 (y0) is found)
+
+        // TODO Need to override Scatter 'x0' default
+        var len = Plotly.Scatter.supplyXY(traceIn, traceOut);
+        if(!len) {
             traceOut.visible = false;
             return;
         }
 
-        // if you supply an x array, you will get one box per distinct x value
-        // if not, we make a single box and position / label it with x0
-        // (or name, if no x0 is found)
-        var x = coerceScatter('x');
-        if(!x) coerce('x0');
+        coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
 
         // inherited from Scatter... should we mention this somehow in boxes.attributes?
         coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
