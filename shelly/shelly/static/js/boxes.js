@@ -185,27 +185,27 @@
         }
 
         dst = dstAxis.makeCalcdata(trace, dstLetter);
-        if('x' in trace) x = xa.makeCalcdata(trace, 'x');
 
         // In vertical (horizontal) box plots:
         // if no x (y) data, use x0 (y0), or name
         // so if you want one box
         // per trace, set x0 (y0) to the x (y) value or category for this trace
         // (or set x (y) to a constant array matching y (x))
+        if (posLetter in trace) pos = posAxis.makeCalcdata(trace, posLetter);
         else {
-            var x0;
-            if('x0' in trace) x0 = trace.x0;
-            else if('name' in trace && (
-                        xa.type==='category' ||
+            if (posLetter+'0' in trace) pos0 = trace[posLetter+'0'];
+            else if ('name' in trace && (
+                        posAxis.type==='category' ||
                         ($.isNumeric(trace.name) &&
-                            ['linear','log'].indexOf(xa.type)!==-1) ||
-                        (Plotly.Lib.isDateTime(trace.name) && xa.type==='date')
+                            ['linear','log'].indexOf(posAxis.type)!==-1) ||
+                        (Plotly.Lib.isDateTime(trace.name) &&
+                         posAxis.type==='date')
                     )) {
-                x0 = trace.name;
+                pos0 = trace.name;
             }
-            else x0 = gd.numboxes;
-            x0 = xa.d2c(x0);
-            x = y.map(function(){ return x0; });
+            else pos0 = gd.numboxes;
+            pos0 = posAxis.d2c(pos0);
+            pos = dst.map(function(){ return pos0; });
         }
         // find x values
         var dv = Plotly.Lib.distinctVals(x),
