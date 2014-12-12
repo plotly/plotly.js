@@ -478,8 +478,8 @@
                     .attr('class','points')
                   .selectAll('path')
                     .data(function(d){
-                        var pts = (trace.boxpoints==='all') ? d.y :
-                                d.y.filter(function(v){ return (v<d.lf || v>d.uf); }),
+                        var pts = (trace.boxpoints==='all') ? d.dst :
+                                d.dst.filter(function(v){ return (v<d.lf || v>d.uf); }),
                             spreadLimit = (d.q3 - d.q1) * JITTERSPREAD,
                             jitterFactors = [],
                             maxJitterFactor = 0,
@@ -513,9 +513,10 @@
                         }
 
                         return pts.map(function(v, i){
-                            var xOffset = trace.pointpos;
+                            var posOffset = trace.pointpos,
+                                p;
                             if(trace.jitter) {
-                                xOffset += newJitter * jitterFactors[i] * (rand()-0.5);
+                                posOffset += newJitter * jitterFactors[i] * (rand()-0.5);
                             }
 
                             var p = {
