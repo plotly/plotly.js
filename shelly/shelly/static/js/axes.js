@@ -494,24 +494,28 @@
         });
 
         if(!data.length) return;
-        var d0 = data[0];
 
+        var d0 = data[0],
+            // position axis letter depending on orientation
+            posLetter = {v:'y',h:'x'}[d0.orientation||'v'];
 
         // first check for histograms, as the count direction
         // should always default to a linear axis
-        if(d0.type==='histogram' &&
-                axLetter==={v:'y',h:'x'}[d0.orientation||'v']) {
+        if(d0.type==='histogram' && axLetter===posLetter) {
             ax.type='linear';
             return;
         }
         // then check the data supplied for that axis
-        if(Plotly.Plots.isBox(d0.type) && axLetter==='x' && !('x' in d0) && !('x0' in d0)) {
+        if(Plotly.Plots.isBox(d0.type) &&
+                axLetter===posLetter &&
+                !(posLetter in d0) &&
+                !(posLetter+'0' in d0)) {
             // check all boxes on this x axis to see
             // if they're dates, numbers, or categories
             ax.type = axes.autoType(
                 data.filter(function(d){ return Plotly.Plots.isBox(d.type); })
                     .map(function(d){
-                        if('x' in d) return d.x[0];
+                        if(posLetter in d) return d.pos[0];
                         if('name' in d) return d.name;
                         return 'text';
                     })
