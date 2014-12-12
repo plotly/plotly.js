@@ -606,15 +606,36 @@
             xa = pointData.xa,
             ya = pointData.ya,
             dd = (hovermode==='closest') ? Plotly.Fx.MAXDIST/5 : 0,
+            closeData = [],
+            dx, dy, distfn, posLetter, posAxis, posText, dst, dstLetter, dstAxis;
+
+        if (trace.orientation==='h') {
             dx = function(di){
-                var x = di.x + t.bx - xval;
-                return Plotly.Fx.inbox(x - t.bdx, x + t.bdx) + dd;
-            },
+                return Plotly.Fx.inbox(di.min - xval, di.max - xval);
+            };
+            dy = function(di){
+                var pos = di.pos + t.bPos - yval;
+                return Plotly.Fx.inbox(pos - t.bdPos, pos + t.bdPos) + dd;
+            };
+            posLetter = 'y';
+            posAxis = ya;
+            dstLetter = 'x';
+            dstAxis = xa;
+        } else {
+            dx = function(di){
+                var pos = di.pos + t.bPos - xval;
+                return Plotly.Fx.inbox(pos - t.bdPos, pos + t.bdPos) + dd;
+            };
             dy = function(di){
                 return Plotly.Fx.inbox(di.min - yval, di.max - yval);
-            },
-            distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy),
-            closeData = [];
+            };
+            posLetter = 'x';
+            posAxis = xa;
+            dstLetter = 'y';
+            dstAxis = ya;
+        }
+
+        distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy);
         Plotly.Fx.getClosest(cd, distfn, pointData);
 
         // skip the rest (for this trace) if we didn't find a close point
