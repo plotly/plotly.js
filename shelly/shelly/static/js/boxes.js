@@ -605,7 +605,7 @@
             t = cd[0].t,
             xa = pointData.xa,
             ya = pointData.ya,
-            dd = (hovermode==='closest') ? Plotly.Fx.MAXDIST/5 : 0,
+            dd = (hovermode==='closest') ? Plotly.Fx.MAXDIST/5 : 0, // TODO
             closeData = [],
             dx, dy, distfn, posLetter, posAxis, posText, dst, dstLetter, dstAxis;
 
