@@ -432,20 +432,19 @@
                 .enter().append('path')
                 .attr('class','box')
                 .each(function(d){
-                    // draw the bars and whiskers
-                    var xc = xa.c2p(d.x+bx, true),
-                        x0 = xa.c2p(d.x+bx-bdx, true),
-                        x1 = xa.c2p(d.x+bx+bdx, true),
-                        xw0 = xa.c2p(d.x+bx-wdx, true),
-                        xw1 = xa.c2p(d.x+bx+wdx, true),
-                        yq1 = ya.c2p(d.q1, true),
-                        yq3 = ya.c2p(d.q3, true),
+                    var posc = posAxis.c2p(d.pos + bPos, true),
+                        pos0 = posAxis.c2p(d.pos + bPos - bdPos, true),
+                        pos1 = posAxis.c2p(d.pos + bPos + bdPos, true),
+                        posw0 = posAxis.c2p(d.pos + bPos - wdPos, true),
+                        posw1 = posAxis.c2p(d.pos + bPos + wdPos, true),
+                        q1 = dstAxis.c2p(d.q1, true),
+                        q3 = dstAxis.c2p(d.q3, true),
                         // make sure median isn't identical to either of the
                         // quartiles, so we can see it
-                        ym = Plotly.Lib.constrain(ya.c2p(d.med, true),
-                            Math.min(yq1, yq3)+1, Math.max(yq1, yq3)-1),
-                        ylf = ya.c2p(trace.boxpoints===false ? d.min : d.lf, true),
-                        yuf = ya.c2p(trace.boxpoints===false ? d.max : d.uf, true);
+                        m = Plotly.Lib.constrain(dstAxis.c2p(d.med, true),
+                            Math.min(q1, q3)+1, Math.max(q1, q3)-1),
+                        lf = dstAxis.c2p(trace.boxpoints===false ? d.min : d.lf, true),
+                        uf = dstAxis.c2p(trace.boxpoints===false ? d.max : d.uf, true);
                     d3.select(this).attr('d',
                         'M'+x0+','+ym+'H'+x1+ // median line
                         'M'+x0+','+yq1+'H'+x1+'V'+yq3+'H'+x0+'Z'+ // box
