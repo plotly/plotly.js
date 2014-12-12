@@ -290,46 +290,77 @@
         var fullLayout = gd._fullLayout,
             xa = plotinfo.x(),
             ya = plotinfo.y(),
-            boxlist = [],
-            minPad = 0,
-            maxPad = 0;
-        gd.calcdata.forEach(function(cd,i) {
-            var t = cd[0].t,
-                trace = cd[0].trace;
-            if(trace.visible!==false && !t.emptybox && Plotly.Plots.isBox(trace.type) &&
-              trace.xaxis===xa._id && trace.yaxis===ya._id) {
-                boxlist.push(i);
-                if(trace.boxpoints!==false) {
-                    minPad = Math.max(minPad, trace.jitter-trace.pointpos-1);
-                    maxPad = Math.max(maxPad, trace.jitter+trace.pointpos-1);
+            orientations = ['v', 'h'],
+            posAxis, dstAxis, i, j, k;
+
+        for (i=0; i < orientations.length; ++i) {
+            var orientation = orientations[i],
+                boxlist = [],
+                boxpointlist = [],
+                minPad = 0,
+                maxPad = 0;
+
+            // set axis via orientation
+            if (orientation==='h') {
+                posAxis = ya;
+                dstAxis = xa;
+            } else {
+                posAxis = xa;
+                dstAxis = ya;
+            }
+
+            // make list of boxes
+            for (j=0; j < gd.calcdata.length; ++j) {
+                var cd = gd.calcdata[j],
+                    t = cd[0].t,
+                    trace = cd[0].trace;
+                if (trace.visible!==false && Plotly.Plots.isBox(trace.type) &&
+                        !t.emptybox &&
+                        trace.orientation===orientation &&
+                        trace.xaxis===xa._id &&
+                        trace.yaxis===ya._id) {
+                    boxlist.push(j);
+                    if (trace.boxpoints!==false) {
+                        minPad = Math.max(minPad, trace.jitter-trace.pointpos-1);
+                        maxPad = Math.max(maxPad, trace.jitter+trace.pointpos-1);
+                    }
                 }
             }
-        });
 
-        // box plots - update dx based on multiple traces, and then use for x autorange
-        var boxx = [];
-        boxlist.forEach(function(i){ gd.calcdata[i].forEach(function(v){ boxx.push(v.x); }); });
-        if(boxx.length) {
-            var boxdv = Plotly.Lib.distinctVals(boxx),
-                dx = boxdv.minDiff/2;
+            // make list of box points
+            for (j=0; j < boxlist.length; ++j) {
+                for (k=0; k < gd.calcdata[j].length; ++k) {
+                    boxpointlist.push(gd.calcdata[j][k].pos);
+                }
+            }
+            if (!boxpointlist) return;
 
-            // if there's no duplication of x points, disable 'group' mode by setting numboxes=1
-            if(boxx.length===boxdv.vals.length) gd.numboxes = 1;
+            // box plots - update dPos based on multiple traces
+            // and then use for posAxis autorange
+
+            var boxdv = Plotly.Lib.distinctVals(boxpointlist),
+                dPos = boxdv.minDiff/2;
+
+            // if there's no duplication of x points,
+            // disable 'group' mode by setting numboxes=1
+            if(boxpointlist.length===boxdv.vals.length) gd.numboxes = 1;
 
             // check for forced minimum dtick
-            Plotly.Axes.minDtick(xa,boxdv.minDiff,boxdv.vals[0],true);
+            Plotly.Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
 
             // set the width of all boxes
-            boxlist.forEach(function(i){ gd.calcdata[i][0].t.dx = dx; });
+            for (i=0; i < boxlist.length; ++i) {
+                gd.calcdata[i][0].t.dPos = dPos;
+            }
 
             // autoscale the x axis - including space for points if they're off the side
             // TODO: this will overdo it if the outermost boxes don't have
             // their points as far out as the other boxes
             var padfactor = (1-fullLayout.boxgap) * (1-fullLayout.boxgroupgap) *
-                    dx / gd.numboxes;
-            Plotly.Axes.expand(xa, boxdv.vals, {
-                vpadminus: dx+minPad*padfactor,
-                vpadplus: dx+maxPad*padfactor
+                    dPos / gd.numboxes;
+            Plotly.Axes.expand(posAxis, boxdv.vals, {
+                vpadminus: dPos+minPad*padfactor,
+                vpadplus: dPos+maxPad*padfactor
             });
         }
     };
