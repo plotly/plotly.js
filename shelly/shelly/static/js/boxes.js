@@ -74,7 +74,7 @@
             color: {from: 'Scatter'},
             width: {from: 'Scatter'}
         },
-        fillcolor: {from: 'Scatter'},
+        fillcolor: {from: 'Scatter'}
     };
 
     boxes.layoutAttributes = {
@@ -286,7 +286,7 @@
         return cd;
     };
 
-    boxes.setPositions = function(gd,plotinfo) {
+    boxes.setPositions = function(gd, plotinfo) {
         var fullLayout = gd._fullLayout,
             xa = plotinfo.x(),
             ya = plotinfo.y(),
@@ -385,13 +385,15 @@
     var JITTERCOUNT = 5, // points either side of this to include
         JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
-    boxes.plot = function(gd,plotinfo,cdbox) {
+    boxes.plot = function(gd, plotinfo, cdbox) {
         var fullLayout = gd._fullLayout,
             xa = plotinfo.x(),
             ya = plotinfo.y(),
             posAxis, dstAxis;
-        var boxtraces = plotinfo.plot.select('.boxlayer').selectAll('g.trace.boxes')
-            .data(cdbox)
+
+        var boxtraces = plotinfo.plot.select('.boxlayer')
+            .selectAll('g.trace.boxes')
+                .data(cdbox)
           .enter().append('g')
             .attr('class','trace boxes');
 
@@ -539,7 +541,7 @@
                         });
                     })
                     .enter().append('path')
-                    .call(Plotly.Drawing.translatePoints,xa,ya);
+                    .call(Plotly.Drawing.translatePoints, xa, ya);
             }
             // draw mean (and stdev diamond) if desired
             if(trace.boxmean) {
@@ -645,7 +647,6 @@
 
         // the closest data point
         var di = cd[pointData.index],
-
             lc = trace.line.color,
             mc = (trace.marker||{}).color;
         if(Plotly.Color.opacity(lc) && trace.line.width) pointData.color = lc;
@@ -667,12 +668,11 @@
         var usedVals = {},
             attrs = ['med','min','q1','q3','max'],
             attr,
-            y,
             pointData2;
         if(trace.boxmean) attrs.push('mean');
         if(trace.boxpoints) [].push.apply(attrs,['lf', 'uf']);
 
-        for(var i=0; i<attrs.length; i++) {
+        for (var i=0; i<attrs.length; i++) {
             attr = attrs[i];
 
             if(!(attr in di) || (di[attr] in usedVals)) continue;
