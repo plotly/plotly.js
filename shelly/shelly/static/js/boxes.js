@@ -13,6 +13,7 @@
 
     boxes.attributes = {
         x0: {type: 'any'},
+        y0: {type: 'any'},
         whiskerwidth: {
             type: 'number',
             min: 0,
@@ -38,6 +39,10 @@
             type: 'number',
             min: -2,
             max: 2
+        },
+        orientation: {
+            type: 'enumerated',
+            values: ['v', 'h']
         },
         marker: {
             outliercolor: {
