@@ -168,14 +168,30 @@
         // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
         var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
-            x,
-            y = ya.makeCalcdata(trace, 'y');
+            orientation = trace.orientation,  // need to add || (trace.x && ...) ?
+            dstAxis, dstLetter, dst, posAxis, posLetter, pos, pos0, i;
 
+        // Set distribution (dst) and position (pos) keys via orientation
+        if (orientation==='h') {
+            dstAxis = xa;
+            dstLetter = 'x';
+            posAxis = ya;
+            posLetter = 'y';
+        } else {
+            dstAxis = ya;
+            dstLetter = 'y';
+            posAxis = xa;
+            posLetter = 'x';
+        }
+
+        dst = dstAxis.makeCalcdata(trace, dstLetter);
         if('x' in trace) x = xa.makeCalcdata(trace, 'x');
 
-        // if no x data, use x0, or name, or text - so if you want one box
-        // per trace, set x0 to the x value or category for this trace
-        // (or set x to a constant array matching y)
+        // In vertical (horizontal) box plots:
+        // if no x (y) data, use x0 (y0), or name
+        // so if you want one box
+        // per trace, set x0 (y0) to the x (y) value or category for this trace
+        // (or set x (y) to a constant array matching y (x))
         else {
             var x0;
             if('x0' in trace) x0 = trace.x0;
