@@ -517,24 +517,32 @@
 
     // STATISTICS FUNCTIONS
 
-    // aggregate numeric values, throwing out non-numerics.
-    //   f: aggregation function (ie Math.min, etc)
-    //   v: initial value (continuing from previous calls)
-    //      if there's no continuing value, use null for selector-type
-    //      functions (max,min), or 0 for summations
-    //   a: array to aggregate (may be nested, we will recurse,
-    //      but all elements must have the same dimension)
-    //   len: maximum length of a to aggregate
-    lib.aggNums = function(f,v,a,len) {
+    /**
+     * aggNums() returns the result of an aggregate function applied to an array of
+     * values, where non-numerical values have been tossed out.
+     *
+     * @param {function} f - aggregation function (e.g., Math.min)
+     * @param {Number} v - initial value (continuing from previous calls)
+     *      if there's no continuing value, use null for selector-type
+     *      functions (max,min), or 0 for summations
+     * @param {Array} a - array to aggregate (may be nested, we will recurse,
+     *                    but all elements must have the same dimension)
+     * @param {Number} len - maximum length of a to aggregate
+     * @return {Number} - result of f applied to a starting from v
+     */
+    lib.aggNums = function(f, v, a, len) {
         var i;
-        if(!len) { len=a.length; }
-        if(!$.isNumeric(v)) { v=false; }
-        if($.isArray(a[0])) {
-            a = a.map(function(row){ return lib.aggNums(f,v,row); });
+        if (!len) len = a.length;
+        if (!$.isNumeric(v)) v = false;
+        if ($.isArray(a[0])) {
+            a = a.map(function(row) {
+                return lib.aggNums(f,v,row);
+            });
         }
-        for(i=0; i<len; i++) {
-            if(!$.isNumeric(v)) { v=a[i]; }
-            else if($.isNumeric(a[i])) { v=f(v,a[i]); }
+
+        for (i = 0; i < len; i++) {
+            if (!$.isNumeric(v)) v = a[i];
+            else if ($.isNumeric(a[i])) v = f(v, a[i]);
         }
         return v;
     };
