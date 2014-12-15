@@ -198,11 +198,11 @@
         Plotly.Axes.expand(ya, y, {padded: true});
 
         // bin the points
-        y.forEach(function(v, i) {
-            if (!$.isNumeric(v)) return;
+        for (var i = 0; i < y.length; i++) {
+            if (!$.isNumeric(y[i])) continue;
             var n = Plotly.Lib.findBin(x[i], bins);
-            if (n >= 0 && n < l) pts[n].push(v);
-        })
+            if (n >= 0 && n < l) pts[n].push(y[i]);
+        }
 
         // sort the bins and calculate the stats
         pts.forEach(function(v,i){
