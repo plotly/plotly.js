@@ -222,34 +222,44 @@
                 pos0 = posAxis.d2c(pos0);
                 pos = val.map(function(){ return pos0; });
             }
-
-        var dv = Plotly.Lib.distinctVals(pos),
-            posVals = dv.vals,
-            dPos = dv.minDiff/2,
-            posLength = posVals.length,
-            cd = [],
-            pts = [],
-            bins = [];
-
-        // find x (y) values
-        for (i = 0; i < posLength; ++i) {
-            var posVal = posVals[i];
-            cd[i] = {pos: posVal};
-            pts[i] = [];
-            bins[i] = posVal - dPos;
+            return pos;
         }
-        bins.push(posVals[posLength-1] + dPos);
 
         pos = getPos(gd, trace, posLetter, posAxis, val);
 
-        // bin the distribution points
-        var dstLength = dst.length;
-        for (i = 0; i < dstLength; ++i) {
-            var v = dst[i];
-            if(!$.isNumeric(v)) return;
-            var n = Plotly.Lib.findBin(pos[i], bins);
-            if(n>=0 && n<dstLength) pts[n].push(v);
+        // get distinct positions and min difference
+        var dv = Plotly.Lib.distinctVals(pos);
+        posDistinct = dv.vals;
+        dPos = dv.minDiff/2;
+
+        function binVal (cd, val, pos, posDistinct, dPos) {
+            var posDistinctLength = posDistinct.length,
+                valLength = val.length,
+                valBinned = [],
+                bins = [],
+                i, p, n, v;
+
+            // store distinct pos in cd, find bins init. valBinned
+            for (i = 0; i < posDistinctLength; ++i) {
+                p = posDistinct[i];
+                cd[i] = {pos: p};
+                valBinned[i] = [];
+                bins[i] = p - dPos;
+            }
+            bins.push(posDistinct[posDistinctLength-1] + dPos);
+
+            // bin the values
+            for (i = 0; i < valLength; ++i) {
+                v = val[i];
+                if(!$.isNumeric(v)) return;
+                n = Plotly.Lib.findBin(pos[i], bins);
+                if(n>=0 && n<valLength) valBinned[n].push(v);
+            }
+
+            return valBinned;
         }
+
+        valBinned = binVal(cd, val, pos, posDistinct, dPos);
 
         // interpolate an array given a (possibly non-integer) index n
         // clip the ends to the extreme values in the array
