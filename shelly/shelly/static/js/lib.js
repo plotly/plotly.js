@@ -598,7 +598,7 @@
      * @return {Number} - percentile
      */
     lib.interp = function(arr, n) {
-        if (!$.isNumeric(n)) throw "n should be a number";
+        if (!$.isNumeric(n)) throw "n should be a finite number";
         for (var i = 0; i < arr.length; i++) {
             if (!$.isNumeric(arr[i])) arr.splice(i, 1);
         }
