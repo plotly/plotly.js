@@ -414,7 +414,7 @@
         var fullLayout = gd._fullLayout,
             xa = plotinfo.x(),
             ya = plotinfo.y(),
-            posAxis, dstAxis;
+            posAxis, valAxis;
 
         var boxtraces = plotinfo.plot.select('.boxlayer')
             .selectAll('g.trace.boxes')
@@ -440,10 +440,10 @@
             // set axis via orientation
             if (trace.orientation==='h') {
                 posAxis = ya;
-                dstAxis = xa;
+                valAxis = xa;
             } else {
                 posAxis = xa;
-                dstAxis = ya;
+                valAxis = ya;
             }
 
             // save the box size and box position for use by hover
@@ -464,14 +464,14 @@
                         pos1 = posAxis.c2p(d.pos + bPos + bdPos, true),
                         posw0 = posAxis.c2p(d.pos + bPos - wdPos, true),
                         posw1 = posAxis.c2p(d.pos + bPos + wdPos, true),
-                        q1 = dstAxis.c2p(d.q1, true),
-                        q3 = dstAxis.c2p(d.q3, true),
+                        q1 = valAxis.c2p(d.q1, true),
+                        q3 = valAxis.c2p(d.q3, true),
                         // make sure median isn't identical to either of the
                         // quartiles, so we can see it
-                        m = Plotly.Lib.constrain(dstAxis.c2p(d.med, true),
+                        m = Plotly.Lib.constrain(valAxis.c2p(d.med, true),
                             Math.min(q1, q3)+1, Math.max(q1, q3)-1),
-                        lf = dstAxis.c2p(trace.boxpoints===false ? d.min : d.lf, true),
-                        uf = dstAxis.c2p(trace.boxpoints===false ? d.max : d.uf, true);
+                        lf = valAxis.c2p(trace.boxpoints===false ? d.min : d.lf, true),
+                        uf = valAxis.c2p(trace.boxpoints===false ? d.max : d.uf, true);
                     if (trace.orientation==='h') {
                         d3.select(this).attr('d',
                             'M'+m+','+pos0+'V'+pos1+ // median line
@@ -505,8 +505,8 @@
                     .attr('class','points')
                   .selectAll('path')
                     .data(function(d){
-                        var pts = (trace.boxpoints==='all') ? d.dst :
-                                d.dst.filter(function(v){ return (v<d.lf || v>d.uf); }),
+                        var pts = (trace.boxpoints==='all') ? d.val :
+                                d.val.filter(function(v){ return (v<d.lf || v>d.uf); }),
                             spreadLimit = (d.q3 - d.q1) * JITTERSPREAD,
                             jitterFactors = [],
                             maxJitterFactor = 0,
@@ -579,9 +579,9 @@
                         var posc = posAxis.c2p(d.pos + bPos, true),
                             pos0 = posAxis.c2p(d.pos + bPos - bdPos, true),
                             pos1 = posAxis.c2p(d.pos + bPos + bdPos, true),
-                            m = dstAxis.c2p(d.mean, true),
-                            sl = dstAxis.c2p(d.mean-d.sd, true),
-                            sh = dstAxis.c2p(d.mean+d.sd, true);
+                            m = valAxis.c2p(d.mean, true),
+                            sl = valAxis.c2p(d.mean-d.sd, true),
+                            sh = valAxis.c2p(d.mean+d.sd, true);
                         if (trace.orientation==='h') {
                         d3.select(this).attr('d',
                             'M'+m+','+pos0+'V'+pos1+
