@@ -275,30 +275,36 @@
         }
 
         // sort the bins and calculate the stats
-        for (i = 0; i < pts.length; ++i) {
-            var v = pts[i].sort(function(a, b){ return a - b; }),
-                l = v.length,
-                p = cd[i];
+        function calculateStats (cd, valBinned) {
+            var v, l, cdi, i;
 
-            p.dst = v;  // put all points into calcdata
-            p.min = v[0];
-            p.max = v[l-1];
-            p.mean = Plotly.Lib.mean(v,l);
-            p.sd = Plotly.Lib.stdev(v,l,p.mean);
-            p.q1 = interp(v,l/4); // first quartile
-            p.med = interp(v,l/2); // median
-            p.q3 = interp(v,0.75*l); // third quartile
-            // lower and upper fences - last point inside
-            // 1.5 interquartile ranges from quartiles
-            p.lf = Math.min(p.q1, v[
-                Math.min(Plotly.Lib.findBin(2.5*p.q1-1.5*p.q3,v,true)+1, l-1)]);
-            p.uf = Math.max(p.q3,v[
-                Math.max(Plotly.Lib.findBin(2.5*p.q3-1.5*p.q1,v), 0)]);
-            // lower and upper outliers - 3 IQR out (don't clip to max/min,
-            // this is only for discriminating suspected & far outliers)
-            p.lo = 4*p.q1-3*p.q3;
-            p.uo = 4*p.q3-3*p.q1;
+            for (i = 0; i < valBinned.length; ++i) {
+                v = valBinned[i].sort(function(a, b){ return a - b; });
+                l = v.length;
+                cdi = cd[i];
+
+                cdi.val = v;  // put all values into calcdata
+                cdi.min = v[0];
+                cdi.max = v[l-1];
+                cdi.mean = Plotly.Lib.mean(v,l);
+                cdi.sd = Plotly.Lib.stdev(v,l,cdi.mean);
+                cdi.q1 = interp(v,l/4); // first quartile
+                cdi.med = interp(v,l/2); // median
+                cdi.q3 = interp(v,0.75*l); // third quartile
+                // lower and upper fences - last point inside
+                // 1.5 interquartile ranges from quartiles
+                cdi.lf = Math.min(cdi.q1, v[
+                    Math.min(Plotly.Lib.findBin(2.5*cdi.q1-1.5*cdi.q3,v,true)+1, l-1)]);
+                cdi.uf = Math.max(cdi.q3,v[
+                    Math.max(Plotly.Lib.findBin(2.5*cdi.q3-1.5*cdi.q1,v), 0)]);
+                // lower and upper outliers - 3 IQR out (don't clip to max/min,
+                // this is only for discriminating suspected & far outliers)
+                cdi.lo = 4*cdi.q1-3*cdi.q3;
+                cdi.uo = 4*cdi.q3-3*cdi.q1;
+            }
         }
+
+        calculateStats(cd, valBinned);
 
         // remove empty bins
         cd = cd.filter(function(p){ return p.dst && p.dst.length; });
