@@ -204,22 +204,24 @@
         // so if you want one box
         // per trace, set x0 (y0) to the x (y) value or category for this trace
         // (or set x (y) to a constant array matching y (x))
-        if (posLetter in trace) pos = posAxis.makeCalcdata(trace, posLetter);
-        else {
-            if (posLetter+'0' in trace) pos0 = trace[posLetter+'0'];
-            else if ('name' in trace && (
-                        posAxis.type==='category' ||
-                        ($.isNumeric(trace.name) &&
-                            ['linear','log'].indexOf(posAxis.type)!==-1) ||
-                        (Plotly.Lib.isDateTime(trace.name) &&
-                         posAxis.type==='date')
-                    )) {
-                pos0 = trace.name;
+        function getPos (gd, trace, posLetter, posAxis, val) {
+            var pos0;
+            if (posLetter in trace) pos = posAxis.makeCalcdata(trace, posLetter);
+            else {
+                if (posLetter+'0' in trace) pos0 = trace[posLetter+'0'];
+                else if ('name' in trace && (
+                            posAxis.type==='category' ||
+                            ($.isNumeric(trace.name) &&
+                                ['linear','log'].indexOf(posAxis.type)!==-1) ||
+                            (Plotly.Lib.isDateTime(trace.name) &&
+                             posAxis.type==='date')
+                        )) {
+                    pos0 = trace.name;
+                }
+                else pos0 = gd.numboxes;
+                pos0 = posAxis.d2c(pos0);
+                pos = val.map(function(){ return pos0; });
             }
-            else pos0 = gd.numboxes;
-            pos0 = posAxis.d2c(pos0);
-            pos = dst.map(function(){ return pos0; });
-        }
 
         var dv = Plotly.Lib.distinctVals(pos),
             posVals = dv.vals,
@@ -238,6 +240,7 @@
         }
         bins.push(posVals[posLength-1] + dPos);
 
+        pos = getPos(gd, trace, posLetter, posAxis, val);
 
         // bin the distribution points
         var dstLength = dst.length;
