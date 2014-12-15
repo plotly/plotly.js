@@ -175,7 +175,7 @@
         // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
         var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
-            orientation = trace.orientation,  // need to add || (trace.x && ...) ?
+            orientation = trace.orientation,
             dstAxis, dstLetter, dst, posAxis, posLetter, pos, pos0, i;
 
         // Set distribution (dst) and position (pos) keys via orientation
