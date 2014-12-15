@@ -497,7 +497,7 @@
 
         var d0 = data[0],
             // position axis letter depending on orientation
-            posLetter = {v:'y',h:'x'}[d0.orientation||'v'];
+            posLetter = {v:'x', h:'y'}[d0.orientation || 'v'];
 
         // first check for histograms, as the count direction
         // should always default to a linear axis
