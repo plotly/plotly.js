@@ -307,7 +307,7 @@
         calculateStats(cd, valBinned);
 
         // remove empty bins
-        cd = cd.filter(function(p){ return p.dst && p.dst.length; });
+        cd = cd.filter(function(cdi){ return cdi.val && cdi.val.length; });
         if(!cd.length) return [{t: {emptybox: true}}];
 
         cd[0].t = {boxnum: gd.numboxes, dPos: dPos};
