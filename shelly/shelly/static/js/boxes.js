@@ -310,6 +310,7 @@
         cd = cd.filter(function(cdi){ return cdi.val && cdi.val.length; });
         if(!cd.length) return [{t: {emptybox: true}}];
 
+        // add numboxes and dPos to cd
         cd[0].t = {boxnum: gd.numboxes, dPos: dPos};
         gd.numboxes++;
         return cd;
