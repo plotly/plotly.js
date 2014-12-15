@@ -176,22 +176,28 @@
         var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
             orientation = trace.orientation,
-            dstAxis, dstLetter, dst, posAxis, posLetter, pos, pos0, i;
+            cd = [],
+            valAxis, valLetter, val, valBinned,
+            posAxis, posLetter, pos, posDistinct, dPos;
 
-        // Set distribution (dst) and position (pos) keys via orientation
+        // Set value (val) and position (pos) keys via orientation
         if (orientation==='h') {
-            dstAxis = xa;
-            dstLetter = 'x';
+            valAxis = xa;
+            valLetter = 'x';
             posAxis = ya;
             posLetter = 'y';
         } else {
-            dstAxis = ya;
-            dstLetter = 'y';
+            valAxis = ya;
+            valLetter = 'y';
             posAxis = xa;
             posLetter = 'x';
         }
 
-        dst = dstAxis.makeCalcdata(trace, dstLetter);
+        val = valAxis.makeCalcdata(trace, valLetter);  // get val
+
+        // size autorange based on all source points
+        // position happens afterward when we know all the pos
+        Plotly.Axes.expand(valAxis, val, {padded: true});
 
         // In vertical (horizontal) box plots:
         // if no x (y) data, use x0 (y0), or name
@@ -232,9 +238,6 @@
         }
         bins.push(posVals[posLength-1] + dPos);
 
-        // size autorange based on all source points
-        // position happens afterward when we know all the x values
-        Plotly.Axes.expand(dstAxis, dst, {padded: true});
 
         // bin the distribution points
         var dstLength = dst.length;
