@@ -534,7 +534,7 @@
         var i;
         if (!len) len = a.length;
         if (!$.isNumeric(v)) v = false;
-        if ($.isArray(a[0])) {
+        if (Array.isArray(a[0])) {
             a = a.map(function(row) {
                 return lib.aggNums(f,v,row);
             });
@@ -542,7 +542,7 @@
 
         for (i = 0; i < len; i++) {
             if (!$.isNumeric(v)) v = a[i];
-            else if ($.isNumeric(a[i])) v = f(v, a[i]);
+            else if ($.isNumeric(a[i])) v = f(+v, +a[i]);
         }
         return v;
     };
@@ -598,6 +598,10 @@
      * @return {Number} - percentile
      */
     lib.interp = function(arr, n) {
+        if (!$.isNumeric(n)) throw "n should be a number";
+        for (var i = 0; i < arr.length; i++) {
+            if (!$.isNumeric(arr[i])) arr.splice(i, 1);
+        }
         n = n * arr.length;
         n -= 0.5;
         if (n < 0) return arr[0];
