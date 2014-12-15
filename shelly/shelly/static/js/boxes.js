@@ -12,8 +12,10 @@
     var scatterMarker = Plotly.Scatter.attributes.marker;
 
     boxes.attributes = {
-        x0: {type: 'any'},
+        y: {type: 'data_array'},
         y0: {type: 'any'},
+        x: {type: 'data_array'},
+        x0: {type: 'any'},
         whiskerwidth: {
             type: 'number',
             min: 0,
@@ -68,8 +70,6 @@
         },
         // Inherited attributes - not used by supplyDefaults, so if there's
         // a better way to do this feel free to change.
-        y: {from: 'Scatter'},
-        x: {from: 'Scatter'},
         line: {
             color: {from: 'Scatter'},
             width: {from: 'Scatter'}
