@@ -198,23 +198,10 @@
         Plotly.Axes.expand(ya, y, {padded: true});
 
         // bin the points
-        y.forEach(function(v,i){
-            if(!$.isNumeric(v)) return;
-            var n = Plotly.Lib.findBin(x[i],bins);
-            if(n>=0 && n<l) pts[n].push(v);
-        });
-
-        // interpolate an array given a (possibly non-integer) index n
-        // clip the ends to the extreme values in the array
-        // special version for box plots: index you get is half a point too high
-        // see http://en.wikipedia.org/wiki/Percentile#Nearest_rank but note
-        // that this definition indexes from 1 rather than 0, so we subtract 1/2 instead of add
-        function interp(arr,n) {
-            n-=0.5;
-            if(n<0) return arr[0];
-            if(n>arr.length-1) return arr[arr.length-1];
-            var frac = n%1;
-            return frac * arr[Math.ceil(n)] + (1-frac) * arr[Math.floor(n)];
+        for (var i = 0; i < y.length; i++) {
+            if (!$.isNumeric(y[i])) continue;
+            var n = Plotly.Lib.findBin(x[i], bins);
+            if (n >= 0 && n < l) pts[n].push(y[i]);
         }
 
         // sort the bins and calculate the stats
@@ -227,9 +214,9 @@
             p.max = v[l-1];
             p.mean = Plotly.Lib.mean(v,l);
             p.sd = Plotly.Lib.stdev(v,l,p.mean);
-            p.q1 = interp(v,l/4); // first quartile
-            p.med = interp(v,l/2); // median
-            p.q3 = interp(v,0.75*l); // third quartile
+            p.q1 = Plotly.Lib.interp(v, 0.25);  // first quartile
+            p.med = Plotly.Lib.interp(v, 0.5);  // median
+            p.q3 = Plotly.Lib.interp(v, 0.75);  // third quartile
             // lower and upper fences - last point inside
             // 1.5 interquartile ranges from quartiles
             p.lf = Math.min(p.q1, v[
