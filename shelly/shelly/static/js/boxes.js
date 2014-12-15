@@ -637,13 +637,16 @@
             posLetter, posAxis, posText,
             val, valLetter, valAxis;
 
+        // adjust inbox w.r.t. to calculate box size
+        boxDelta = (hovermode==='closest') ? 2.5*t.bdPos : t.bdPos;
+
         if (trace.orientation==='h') {
             dx = function(di){
                 return Plotly.Fx.inbox(di.min - xval, di.max - xval);
             };
             dy = function(di){
                 var pos = di.pos + t.bPos - yval;
-                return Plotly.Fx.inbox(pos - t.bdPos, pos + t.bdPos) + dd;
+                return Plotly.Fx.inbox(pos - boxDelta, pos + boxDelta);
             };
             posLetter = 'y';
             posAxis = ya;
@@ -652,7 +655,7 @@
         } else {
             dx = function(di){
                 var pos = di.pos + t.bPos - xval;
-                return Plotly.Fx.inbox(pos - t.bdPos, pos + t.bdPos) + dd;
+                return Plotly.Fx.inbox(pos - boxDelta, pos + boxDelta);
             };
             dy = function(di){
                 return Plotly.Fx.inbox(di.min - yval, di.max - yval);
