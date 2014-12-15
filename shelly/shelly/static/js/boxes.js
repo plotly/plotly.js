@@ -646,8 +646,8 @@
             };
             posLetter = 'y';
             posAxis = ya;
-            dstLetter = 'x';
-            dstAxis = xa;
+            valLetter = 'x';
+            valAxis = xa;
         } else {
             dx = function(di){
                 var pos = di.pos + t.bPos - xval;
@@ -658,8 +658,8 @@
             };
             posLetter = 'x';
             posAxis = xa;
-            dstLetter = 'y';
-            dstAxis = ya;
+            valLetter = 'y';
+            valAxis = ya;
         }
 
         distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy);
@@ -704,14 +704,14 @@
             usedVals[di[attr]] = true;
 
             // copy out to a new object for each value to label
-            dst = dstAxis.c2p(di[attr], true);
+            val = valAxis.c2p(di[attr], true);
             pointData2 = $.extend({}, pointData);
-            pointData2[dstLetter+'0'] = pointData2[dstLetter+'1'] = dst;
-            pointData2[dstLetter+'LabelVal'] = di[attr];
+            pointData2[valLetter+'0'] = pointData2[valLetter+'1'] = val;
+            pointData2[valLetter+'LabelVal'] = di[attr];
             pointData2.attr = attr;
 
             if(attr==='mean' && ('sd' in di) && trace.boxmean==='sd') {
-                pointData2[dstLetter+'err'] = di.sd;
+                pointData2[valLetter+'err'] = di.sd;
             }
             pointData.name = ''; // only keep name on the first item (median)
             closeData.push(pointData2);
