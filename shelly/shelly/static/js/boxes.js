@@ -321,7 +321,7 @@
             xa = plotinfo.x(),
             ya = plotinfo.y(),
             orientations = ['v', 'h'],
-            posAxis, dstAxis, i, j, k;
+            posAxis, i, j, k;
 
         for (i=0; i < orientations.length; ++i) {
             var orientation = orientations[i],
@@ -331,13 +331,8 @@
                 maxPad = 0;
 
             // set axis via orientation
-            if (orientation==='h') {
-                posAxis = ya;
-                dstAxis = xa;
-            } else {
-                posAxis = xa;
-                dstAxis = ya;
-            }
+            if (orientation==='h') posAxis = ya;
+            else posAxis = xa;
 
             // make list of boxes
             for (j=0; j < gd.calcdata.length; ++j) {
