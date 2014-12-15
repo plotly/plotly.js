@@ -599,9 +599,6 @@
      */
     lib.interp = function(arr, n) {
         if (!$.isNumeric(n)) throw "n should be a finite number";
-        for (var i = 0; i < arr.length; i++) {
-            if (!$.isNumeric(arr[i])) arr.splice(i, 1);
-        }
         n = n * arr.length;
         n -= 0.5;
         if (n < 0) return arr[0];
