@@ -683,12 +683,7 @@
         pointData[posLetter+'1'] = posAxis.c2p(di.pos + t.bPos + t.bdPos, true);
 
         posText = Plotly.Axes.tickText(posAxis, posAxis.c2l(di.pos), 'hover').text;
-        if(hovermode==='closest') {
-            if(posText!==pointData.name) pointData.name += ': ' + posText;
-        } else {
-            pointData[posLetter+'LabelVal'] = di.pos;
-            if (posText===pointData.name) pointData.name = '';
-        }
+        pointData[posLetter+'LabelVal'] = di.pos;
 
         // box plots: each "point" gets many labels
         var usedVals = {},
