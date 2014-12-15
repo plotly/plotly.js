@@ -111,15 +111,22 @@
         // per distinct x (y) value
         // if not, we make a single box and position / label it with x0 (y0)
         // (or name, if no x0 (y0) is found)
+        var y = coerce('y'),
+            x = coerce('x'),
+            defaultOrientation;
 
-        // TODO Need to override Scatter 'x0' default
-        var len = Plotly.Scatter.supplyXY(traceIn, traceOut);
-        if(!len) {
+        if (y) {
+            defaultOrientation = 'v';
+            if (!x) coerce('x0');
+        } else if (x) {
+            defaultOrientation = 'h';
+            coerce('y0');
+        } else {
             traceOut.visible = false;
             return;
         }
 
-        coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
+        coerce('orientation', defaultOrientation);
 
         // inherited from Scatter... should we mention this somehow in boxes.attributes?
         coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
