@@ -224,6 +224,7 @@
             }
             return pos;
         }
+<<<<<<< HEAD
 
         pos = getPos(gd, trace, posLetter, posAxis, val);
 
@@ -261,19 +262,6 @@
 
         valBinned = binVal(cd, val, pos, posDistinct, dPos);
 
-        // interpolate an array given a (possibly non-integer) index n
-        // clip the ends to the extreme values in the array
-        // special version for box plots: index you get is half a point too high
-        // see http://en.wikipedia.org/wiki/Percentile#Nearest_rank but note
-        // that this definition indexes from 1 rather than 0, so we subtract 1/2 instead of add
-        function interp(arr,n) {
-            n-=0.5;
-            if(n<0) return arr[0];
-            if(n>arr.length-1) return arr[arr.length-1];
-            var frac = n%1;
-            return frac * arr[Math.ceil(n)] + (1-frac) * arr[Math.floor(n)];
-        }
-
         // sort the bins and calculate the stats
         function calculateStats (cd, valBinned) {
             var v, l, cdi, i;
@@ -288,9 +276,9 @@
                 cdi.max = v[l-1];
                 cdi.mean = Plotly.Lib.mean(v,l);
                 cdi.sd = Plotly.Lib.stdev(v,l,cdi.mean);
-                cdi.q1 = interp(v,l/4); // first quartile
-                cdi.med = interp(v,l/2); // median
-                cdi.q3 = interp(v,0.75*l); // third quartile
+                cdi.q1 = Plotly.Lib.interp(v, 0.25);  // first quartile
+                cdi.med = Plotly.Lib.interp(v, 0.5);  // median
+                cdi.q3 = Plotly.Lib.interp(v, 0.75);  // third quartile
                 // lower and upper fences - last point inside
                 // 1.5 interquartile ranges from quartiles
                 cdi.lf = Math.min(cdi.q1, v[

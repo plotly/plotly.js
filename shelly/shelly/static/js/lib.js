@@ -517,24 +517,32 @@
 
     // STATISTICS FUNCTIONS
 
-    // aggregate numeric values, throwing out non-numerics.
-    //   f: aggregation function (ie Math.min, etc)
-    //   v: initial value (continuing from previous calls)
-    //      if there's no continuing value, use null for selector-type
-    //      functions (max,min), or 0 for summations
-    //   a: array to aggregate (may be nested, we will recurse,
-    //      but all elements must have the same dimension)
-    //   len: maximum length of a to aggregate
-    lib.aggNums = function(f,v,a,len) {
+    /**
+     * aggNums() returns the result of an aggregate function applied to an array of
+     * values, where non-numerical values have been tossed out.
+     *
+     * @param {function} f - aggregation function (e.g., Math.min)
+     * @param {Number} v - initial value (continuing from previous calls)
+     *      if there's no continuing value, use null for selector-type
+     *      functions (max,min), or 0 for summations
+     * @param {Array} a - array to aggregate (may be nested, we will recurse,
+     *                    but all elements must have the same dimension)
+     * @param {Number} len - maximum length of a to aggregate
+     * @return {Number} - result of f applied to a starting from v
+     */
+    lib.aggNums = function(f, v, a, len) {
         var i;
-        if(!len) { len=a.length; }
-        if(!$.isNumeric(v)) { v=false; }
-        if($.isArray(a[0])) {
-            a = a.map(function(row){ return lib.aggNums(f,v,row); });
+        if (!len) len = a.length;
+        if (!$.isNumeric(v)) v = false;
+        if (Array.isArray(a[0])) {
+            a = a.map(function(row) {
+                return lib.aggNums(f,v,row);
+            });
         }
-        for(i=0; i<len; i++) {
-            if(!$.isNumeric(v)) { v=a[i]; }
-            else if($.isNumeric(a[i])) { v=f(v,a[i]); }
+
+        for (i = 0; i < len; i++) {
+            if (!$.isNumeric(v)) v = a[i];
+            else if ($.isNumeric(a[i])) v = f(+v, +a[i]);
         }
         return v;
     };
@@ -550,15 +558,54 @@
         return lib.aggNums(function(a,b){return a+b;},0,data)/len;
     };
 
-    lib.stdev = function(data,len,mean) {
-        if(!len) { len = lib.len(data); }
-        if(!$.isNumeric(mean)) {
-            mean = lib.aggNums(function(a,b){return a+b;},0,data)/len;
+    lib.variance = function(data, len, mean) {
+        if (!len) len = lib.len(data);
+        if (!$.isNumeric(mean)) {
+            mean = lib.aggNums(function(a, b) {
+                return a + b;
+            }, 0, data)/len;
         }
-        return Math.sqrt(lib.aggNums(
-            function(a,b){return a+Math.pow(b-mean,2);},0,data)/len);
+        return lib.aggNums(function(a, b) {
+            return a + Math.pow(b-mean, 2);
+        }, 0, data)/len;
     };
 
+    lib.stdev = function(data, len, mean) {
+        if (!len) len = lib.len(data);
+        if (!$.isNumeric(mean)) {
+            mean = lib.aggNums(function(a, b) {
+                return a + b;
+            }, 0, data)/len;
+        }
+        return Math.sqrt(lib.aggNums(function(a, b) {
+            return a + Math.pow(b-mean, 2);
+        }, 0, data)/len);
+    };
+
+    /**
+     * interp() computes a percentile (quantile) for a given distribution.
+     * We interpolate the distribution (to compute quantiles, we follow method #10 here:
+     * http://www.amstat.org/publications/jse/v14n3/langford.html).
+     * Typically the index or rank (n * arr.length) may be non-integer.
+     * For reference: ends are clipped to the extreme values in the array;
+     * For box plots: index you get is half a point too high (see
+     * http://en.wikipedia.org/wiki/Percentile#Nearest_rank) but note that this definition
+     * indexes from 1 rather than 0, so we subtract 1/2 (instead of add).
+     *
+     * @param {Array} arr - This array contains the values that make up the distribution.
+     * @param {Number} n - Between 0 and 1, n = p/100 is such that we compute the p^th percentile.
+     * For example, the 50th percentile (or median) corresponds to n = 0.5
+     * @return {Number} - percentile
+     */
+    lib.interp = function(arr, n) {
+        if (!$.isNumeric(n)) throw "n should be a finite number";
+        n = n * arr.length;
+        n -= 0.5;
+        if (n < 0) return arr[0];
+        if (n > arr.length-1) return arr[arr.length-1];
+        var frac = n%1;
+        return frac * arr[Math.ceil(n)] + (1-frac) * arr[Math.floor(n)];
+    };
     // ------------------------------------------
     // debugging tools
     // ------------------------------------------
