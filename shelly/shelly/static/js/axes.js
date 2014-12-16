@@ -495,17 +495,17 @@
 
         if(!data.length) return;
 
-        var d0 = data[0],
-            // position axis letter depending on orientation
-            posLetter = {v:'x', h:'y'}[d0.orientation || 'v'];
+        var d0 = data[0];
 
         // first check for histograms, as the count direction
         // should always default to a linear axis
-        if(d0.type==='histogram' && axLetter===posLetter) {
+        if(d0.type==='histogram' &&
+                axLetter==={v:'y', h:'x'}[d0.orientation || 'v']) {
             ax.type='linear';
             return;
         }
         // then check the data supplied for that axis
+        var posLetter = {v:'x', h:'y'}[d0.orientation || 'v'];
         if(Plotly.Plots.isBox(d0.type) &&
                 axLetter===posLetter &&
                 !(posLetter in d0) &&
