@@ -13,7 +13,7 @@
     // ---external global dependencies
     /* global d3:false, Spinner:false, tinycolor:false */
 
-    if(!window.Plotly) { window.Plotly = {}; }
+    if (!window.Plotly) window.Plotly = {};
     var lib = Plotly.Lib = {};
 
     // dateTime2ms - turn a date object or string s of the form
@@ -195,39 +195,38 @@
     };
 
     // use utc formatter since we're ignoring timezone info
-    if(typeof d3 !=='undefined'){
-        var formatter = d3.time.format.utc;
+    var formatter = d3.time.format.utc;
 
-        // ISO8601 and YYYYMMDDHHMMSS are the only one where date and time
-        // are not separated by a space, so they get inserted specially here.
-        // Also a couple formats with no day (so time makes no sense)
-        var dateTimeFormats = {
-            Y:{
-                H:['%Y~%m~%dT%H:%M:%S','%Y~%m~%dT%H:%M:%S~%L'].map(formatter),
-                I:[],
-                D:['%Y%m%d%H%M%S','%Y~%m','%m~%Y'].map(formatter)
-            },
-            Yb:{H:[],I:[],D:['%Y~%b','%b~%Y'].map(formatter)},
-            y:{H:[],I:[],D:[]},
-            yb:{H:[],I:[],D:[]}
-        };
-        // all the others get inserted in all possible combinations
-        // from dateFormats and timeFormats
-        ['Y','Yb','y','yb'].forEach(function(dateType) {
-            dateFormats[dateType].forEach(function(dateFormat){
-                // just a date (don't do just a time)
-                dateTimeFormats[dateType].D.push(formatter(dateFormat));
-                ['H','I','D'].forEach(function(timeType) {
-                    timeFormats[timeType].forEach(function(timeFormat) {
-                        var a = dateTimeFormats[dateType][timeType];
-                        // 'date time', then 'time date'
-                        a.push(formatter(dateFormat+'~'+timeFormat));
-                        a.push(formatter(timeFormat+'~'+dateFormat));
-                    });
+    // ISO8601 and YYYYMMDDHHMMSS are the only ones where date and time
+    // are not separated by a space, so they get inserted specially here.
+    // Also a couple formats with no day (so time makes no sense)
+    var dateTimeFormats = {
+        Y: {
+            H: ['%Y~%m~%dT%H:%M:%S', '%Y~%m~%dT%H:%M:%S~%L'].map(formatter),
+            I: [],
+            D: ['%Y%m%d%H%M%S', '%Y~%m', '%m~%Y'].map(formatter)
+        },
+        Yb: {H: [], I: [], D: ['%Y~%b', '%b~%Y'].map(formatter)},
+        y: {H: [], I: [], D: []},
+        yb: {H: [], I: [], D: []}
+    };
+    // all the others get inserted in all possible combinations
+    // from dateFormats and timeFormats
+    ['Y', 'Yb', 'y', 'yb'].forEach(function(dateType) {
+        dateFormats[dateType].forEach(function(dateFormat) {
+            // just a date (don't do just a time)
+            dateTimeFormats[dateType].D.push(formatter(dateFormat));
+            ['H', 'I', 'D'].forEach(function(timeType) {
+                timeFormats[timeType].forEach(function(timeFormat) {
+                var a = dateTimeFormats[dateType][timeType];
+                // 'date time', then 'time date'
+                    a.push(formatter(dateFormat+'~'+timeFormat));
+                    a.push(formatter(timeFormat+'~'+dateFormat));
                 });
             });
         });
-    }
+    });
+
     // precompiled regexps for performance
     var matchword = /[a-z]*/g,
         shortenword = function(m) { return m.substr(0,3); },
@@ -244,13 +243,26 @@
         replacequarter = function(m,n) { return quarters[n-1]; },
         matchTZ = / ?([+\-]\d\d:?\d\d|Z)$/;
 
+    function getDateType(v) {
+        var dateType;
+        dateType = (match4Y.test(v) ? 'Y' : 'y');
+        dateType = dateType + (matchMonthName.test(v) ? 'b' : '');
+        return dateType;
+    }
+
+    function getTimeType(v) {
+        var timeType;
+        timeType = matchcolon.test(v) ? (matchAMPM.test(v) ? 'I' : 'H') : 'D';
+        return timeType;
+    }
+
     lib.parseDate = function(v) {
         // is it already a date? just return it
         if (v.getTime) return v;
         // otherwise, if it's not a string, return nothing
         // the case of numbers that just have years will get
         // dealt with elsewhere.
-        if (typeof v !== 'string') return;
+        if (typeof v !== 'string') return false;
 
         // first clean up the string a bit to reduce the number
         // of formats we have to test
@@ -279,19 +291,22 @@
             // also try to ignore timezone info, at least for now
             .replace(matchTZ, '');
         // now test against the various formats that might match
-        var dateType = (match4Y.test(v) ? 'Y' : 'y') +
-                    (matchMonthName.test(v) ? 'b' : ''),
-            timeType = matchcolon.test(v) ?
-                    (matchAMPM.test(v) ? 'I' : 'H') : 'D',
-            formatList = dateTimeFormats[dateType][timeType],
-            len = formatList.length,
-            out = null;
+        var out = null,
+            dateType = getDateType(v),
+            timeType = getTimeType(v),
+            formatList,
+            len;
+
+        formatList = dateTimeFormats[dateType][timeType];
+        len = formatList.length;
+
         for (var i = 0; i < len; i++) {
             out = formatList[i].parse(v);
             if (out) break;
         }
-        // not an instance of Date at this point, just return it.
-        if (!(out instanceof Date)) return out;
+
+        // If not an instance of Date at this point, just return it.
+        if (!(out instanceof Date)) return false;
         // parse() method interprets arguments with local time zone.
         var tzoff = out.getTimezoneOffset();
         // In general (default) this is not what we want, so force into UTC:
@@ -502,24 +517,32 @@
 
     // STATISTICS FUNCTIONS
 
-    // aggregate numeric values, throwing out non-numerics.
-    //   f: aggregation function (ie Math.min, etc)
-    //   v: initial value (continuing from previous calls)
-    //      if there's no continuing value, use null for selector-type
-    //      functions (max,min), or 0 for summations
-    //   a: array to aggregate (may be nested, we will recurse,
-    //      but all elements must have the same dimension)
-    //   len: maximum length of a to aggregate
-    lib.aggNums = function(f,v,a,len) {
+    /**
+     * aggNums() returns the result of an aggregate function applied to an array of
+     * values, where non-numerical values have been tossed out.
+     *
+     * @param {function} f - aggregation function (e.g., Math.min)
+     * @param {Number} v - initial value (continuing from previous calls)
+     *      if there's no continuing value, use null for selector-type
+     *      functions (max,min), or 0 for summations
+     * @param {Array} a - array to aggregate (may be nested, we will recurse,
+     *                    but all elements must have the same dimension)
+     * @param {Number} len - maximum length of a to aggregate
+     * @return {Number} - result of f applied to a starting from v
+     */
+    lib.aggNums = function(f, v, a, len) {
         var i;
-        if(!len) { len=a.length; }
-        if(!$.isNumeric(v)) { v=false; }
-        if($.isArray(a[0])) {
-            a = a.map(function(row){ return lib.aggNums(f,v,row); });
+        if (!len) len = a.length;
+        if (!$.isNumeric(v)) v = false;
+        if (Array.isArray(a[0])) {
+            a = a.map(function(row) {
+                return lib.aggNums(f,v,row);
+            });
         }
-        for(i=0; i<len; i++) {
-            if(!$.isNumeric(v)) { v=a[i]; }
-            else if($.isNumeric(a[i])) { v=f(v,a[i]); }
+
+        for (i = 0; i < len; i++) {
+            if (!$.isNumeric(v)) v = a[i];
+            else if ($.isNumeric(a[i])) v = f(+v, +a[i]);
         }
         return v;
     };
@@ -535,15 +558,54 @@
         return lib.aggNums(function(a,b){return a+b;},0,data)/len;
     };
 
-    lib.stdev = function(data,len,mean) {
-        if(!len) { len = lib.len(data); }
-        if(!$.isNumeric(mean)) {
-            mean = lib.aggNums(function(a,b){return a+b;},0,data)/len;
+    lib.variance = function(data, len, mean) {
+        if (!len) len = lib.len(data);
+        if (!$.isNumeric(mean)) {
+            mean = lib.aggNums(function(a, b) {
+                return a + b;
+            }, 0, data)/len;
         }
-        return Math.sqrt(lib.aggNums(
-            function(a,b){return a+Math.pow(b-mean,2);},0,data)/len);
+        return lib.aggNums(function(a, b) {
+            return a + Math.pow(b-mean, 2);
+        }, 0, data)/len;
     };
 
+    lib.stdev = function(data, len, mean) {
+        if (!len) len = lib.len(data);
+        if (!$.isNumeric(mean)) {
+            mean = lib.aggNums(function(a, b) {
+                return a + b;
+            }, 0, data)/len;
+        }
+        return Math.sqrt(lib.aggNums(function(a, b) {
+            return a + Math.pow(b-mean, 2);
+        }, 0, data)/len);
+    };
+
+    /**
+     * interp() computes a percentile (quantile) for a given distribution.
+     * We interpolate the distribution (to compute quantiles, we follow method #10 here:
+     * http://www.amstat.org/publications/jse/v14n3/langford.html).
+     * Typically the index or rank (n * arr.length) may be non-integer.
+     * For reference: ends are clipped to the extreme values in the array;
+     * For box plots: index you get is half a point too high (see
+     * http://en.wikipedia.org/wiki/Percentile#Nearest_rank) but note that this definition
+     * indexes from 1 rather than 0, so we subtract 1/2 (instead of add).
+     *
+     * @param {Array} arr - This array contains the values that make up the distribution.
+     * @param {Number} n - Between 0 and 1, n = p/100 is such that we compute the p^th percentile.
+     * For example, the 50th percentile (or median) corresponds to n = 0.5
+     * @return {Number} - percentile
+     */
+    lib.interp = function(arr, n) {
+        if (!$.isNumeric(n)) throw "n should be a finite number";
+        n = n * arr.length;
+        n -= 0.5;
+        if (n < 0) return arr[0];
+        if (n > arr.length-1) return arr[arr.length-1];
+        var frac = n%1;
+        return frac * arr[Math.ceil(n)] + (1-frac) * arr[Math.floor(n)];
+    };
     // ------------------------------------------
     // debugging tools
     // ------------------------------------------
@@ -1458,6 +1520,34 @@
             var xy = arguments.length === 1 ? args[0] : [args[0], args[1]];
             return lib.dot(transform, [xy[0], xy[1], 1]).slice(0,2);
         };
+    };
+
+    // retrieve list of scene keys form a layout object
+    lib.getSceneKeys = function getSceneKeys(layout) {
+        var keys = Object.keys(layout),
+            key = null,
+            sceneKeys = [],
+            i_key = 0;
+        for (i_key; i_key < keys.length; ++i_key) {
+            key = keys[i_key];
+            if (key.match(/^scene[0-9]*$/)) {
+                sceneKeys.push(key);
+            }
+        }
+        return sceneKeys;
+    };
+
+    // retrieve list of scene layout object from a layout object
+    lib.getSceneLayouts = function getSceneLayouts(layout) {
+        var sceneKeys = lib.getSceneKeys(layout),
+            sceneKey = null,
+            sceneLayouts = [],
+            i_sceneKey = 0;
+        for (i_sceneKey; i_sceneKey < sceneKeys.length; ++i_sceneKey) {
+            sceneKey = sceneKeys[i_sceneKey];
+            sceneLayouts.push(layout[sceneKey]);
+        }
+        return sceneLayouts;
     };
 
     // applies a 2D transformation matrix to an [x1,y1,x2,y2] array (to
