@@ -224,7 +224,6 @@
             }
             return pos;
         }
-<<<<<<< HEAD
 
         pos = getPos(gd, trace, posLetter, posAxis, val);
 
@@ -240,12 +239,12 @@
                 bins = [],
                 i, p, n, v;
 
-            // store distinct pos in cd, find bins init. valBinned
+            // store distinct pos in cd, find bins, init. valBinned
             for (i = 0; i < posDistinctLength; ++i) {
                 p = posDistinct[i];
                 cd[i] = {pos: p};
-                valBinned[i] = [];
                 bins[i] = p - dPos;
+                valBinned[i] = [];
             }
             bins.push(posDistinct[posDistinctLength-1] + dPos);
 
