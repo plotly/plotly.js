@@ -12,6 +12,9 @@
     var scatterMarker = Plotly.Scatter.attributes.marker;
 
     boxes.attributes = {
+        y: {type: 'data_array'},
+        y0: {type: 'any'},
+        x: {type: 'data_array'},
         x0: {type: 'any'},
         whiskerwidth: {
             type: 'number',
@@ -39,6 +42,10 @@
             min: -2,
             max: 2
         },
+        orientation: {
+            type: 'enumerated',
+            values: ['v', 'h']
+        },
         marker: {
             outliercolor: {
                 type: 'color',
@@ -63,13 +70,11 @@
         },
         // Inherited attributes - not used by supplyDefaults, so if there's
         // a better way to do this feel free to change.
-        y: {from: 'Scatter'},
-        x: {from: 'Scatter'},
         line: {
             color: {from: 'Scatter'},
             width: {from: 'Scatter'}
         },
-        fillcolor: {from: 'Scatter'},
+        fillcolor: {from: 'Scatter'}
     };
 
     boxes.layoutAttributes = {
@@ -101,17 +106,27 @@
             return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
-        var y = coerceScatter('y');
-        if(!y) {
+        // In vertical (horizontal) box plots:
+        // if you supply an x (y) array, you will get one box
+        // per distinct x (y) value
+        // if not, we make a single box and position / label it with x0 (y0)
+        // (or name, if no x0 (y0) is found)
+        var y = coerce('y'),
+            x = coerce('x'),
+            defaultOrientation;
+
+        if (y) {
+            defaultOrientation = 'v';
+            if (!x) coerce('x0');
+        } else if (x) {
+            defaultOrientation = 'h';
+            coerce('y0');
+        } else {
             traceOut.visible = false;
             return;
         }
 
-        // if you supply an x array, you will get one box per distinct x value
-        // if not, we make a single box and position / label it with x0
-        // (or name, if no x0 is found)
-        var x = coerceScatter('x');
-        if(!x) coerce('x0');
+        coerce('orientation', defaultOrientation);
 
         // inherited from Scatter... should we mention this somehow in boxes.attributes?
         coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
@@ -160,128 +175,204 @@
         // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
         var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
-            x,
-            y = ya.makeCalcdata(trace, 'y');
+            orientation = trace.orientation,
+            cd = [],
+            valAxis, valLetter, val, valBinned,
+            posAxis, posLetter, pos, posDistinct, dPos;
 
-        if('x' in trace) x = xa.makeCalcdata(trace, 'x');
+        // Set value (val) and position (pos) keys via orientation
+        if (orientation==='h') {
+            valAxis = xa;
+            valLetter = 'x';
+            posAxis = ya;
+            posLetter = 'y';
+        } else {
+            valAxis = ya;
+            valLetter = 'y';
+            posAxis = xa;
+            posLetter = 'x';
+        }
 
-        // if no x data, use x0, or name, or text - so if you want one box
-        // per trace, set x0 to the x value or category for this trace
-        // (or set x to a constant array matching y)
-        else {
-            var x0;
-            if('x0' in trace) x0 = trace.x0;
-            else if('name' in trace && (
-                        xa.type==='category' ||
-                        ($.isNumeric(trace.name) &&
-                            ['linear','log'].indexOf(xa.type)!==-1) ||
-                        (Plotly.Lib.isDateTime(trace.name) && xa.type==='date')
-                    )) {
-                x0 = trace.name;
+        val = valAxis.makeCalcdata(trace, valLetter);  // get val
+
+        // size autorange based on all source points
+        // position happens afterward when we know all the pos
+        Plotly.Axes.expand(valAxis, val, {padded: true});
+
+        // In vertical (horizontal) box plots:
+        // if no x (y) data, use x0 (y0), or name
+        // so if you want one box
+        // per trace, set x0 (y0) to the x (y) value or category for this trace
+        // (or set x (y) to a constant array matching y (x))
+        function getPos (gd, trace, posLetter, posAxis, val) {
+            var pos0;
+            if (posLetter in trace) pos = posAxis.makeCalcdata(trace, posLetter);
+            else {
+                if (posLetter+'0' in trace) pos0 = trace[posLetter+'0'];
+                else if ('name' in trace && (
+                            posAxis.type==='category' ||
+                            ($.isNumeric(trace.name) &&
+                                ['linear','log'].indexOf(posAxis.type)!==-1) ||
+                            (Plotly.Lib.isDateTime(trace.name) &&
+                             posAxis.type==='date')
+                        )) {
+                    pos0 = trace.name;
+                }
+                else pos0 = gd.numboxes;
+                pos0 = posAxis.d2c(pos0);
+                pos = val.map(function(){ return pos0; });
             }
-            else x0 = gd.numboxes;
-            x0 = xa.d2c(x0);
-            x = y.map(function(){ return x0; });
+            return pos;
         }
-        // find x values
-        var dv = Plotly.Lib.distinctVals(x),
-            xvals = dv.vals,
-            dx = dv.minDiff/2,
-            cd = xvals.map(function(v){ return {x:v}; }),
-            pts = xvals.map(function(){ return []; }),
-            bins = xvals.map(function(v){ return v-dx; }),
-            l = xvals.length;
-        bins.push(xvals[l-1]+dx);
 
-        // y autorange based on all source points
-        // x happens afterward when we know all the x values
-        Plotly.Axes.expand(ya, y, {padded: true});
+        pos = getPos(gd, trace, posLetter, posAxis, val);
 
-        // bin the points
-        for (var i = 0; i < y.length; i++) {
-            if (!$.isNumeric(y[i])) continue;
-            var n = Plotly.Lib.findBin(x[i], bins);
-            if (n >= 0 && n < l) pts[n].push(y[i]);
+        // get distinct positions and min difference
+        var dv = Plotly.Lib.distinctVals(pos);
+        posDistinct = dv.vals;
+        dPos = dv.minDiff/2;
+
+        function binVal (cd, val, pos, posDistinct, dPos) {
+            var posDistinctLength = posDistinct.length,
+                valLength = val.length,
+                valBinned = [],
+                bins = [],
+                i, p, n, v;
+
+            // store distinct pos in cd, find bins, init. valBinned
+            for (i = 0; i < posDistinctLength; ++i) {
+                p = posDistinct[i];
+                cd[i] = {pos: p};
+                bins[i] = p - dPos;
+                valBinned[i] = [];
+            }
+            bins.push(posDistinct[posDistinctLength-1] + dPos);
+
+            // bin the values
+            for (i = 0; i < valLength; ++i) {
+                v = val[i];
+                if(!$.isNumeric(v)) return;
+                n = Plotly.Lib.findBin(pos[i], bins);
+                if(n>=0 && n<valLength) valBinned[n].push(v);
+            }
+
+            return valBinned;
         }
+
+        valBinned = binVal(cd, val, pos, posDistinct, dPos);
 
         // sort the bins and calculate the stats
-        pts.forEach(function(v,i){
-            v.sort(function(a, b){ return a - b; });
-            var l = v.length,
-                p = cd[i];
-            p.y = v; // put all points into calcdata
-            p.min = v[0];
-            p.max = v[l-1];
-            p.mean = Plotly.Lib.mean(v,l);
-            p.sd = Plotly.Lib.stdev(v,l,p.mean);
-            p.q1 = Plotly.Lib.interp(v, 0.25);  // first quartile
-            p.med = Plotly.Lib.interp(v, 0.5);  // median
-            p.q3 = Plotly.Lib.interp(v, 0.75);  // third quartile
-            // lower and upper fences - last point inside
-            // 1.5 interquartile ranges from quartiles
-            p.lf = Math.min(p.q1, v[
-                Math.min(Plotly.Lib.findBin(2.5*p.q1-1.5*p.q3,v,true)+1, l-1)]);
-            p.uf = Math.max(p.q3,v[
-                Math.max(Plotly.Lib.findBin(2.5*p.q3-1.5*p.q1,v), 0)]);
-            // lower and upper outliers - 3 IQR out (don't clip to max/min,
-            // this is only for discriminating suspected & far outliers)
-            p.lo = 4*p.q1-3*p.q3;
-            p.uo = 4*p.q3-3*p.q1;
-        });
+        function calculateStats (cd, valBinned) {
+            var v, l, cdi, i;
+
+            for (i = 0; i < valBinned.length; ++i) {
+                v = valBinned[i].sort(function(a, b){ return a - b; });
+                l = v.length;
+                cdi = cd[i];
+
+                cdi.val = v;  // put all values into calcdata
+                cdi.min = v[0];
+                cdi.max = v[l-1];
+                cdi.mean = Plotly.Lib.mean(v,l);
+                cdi.sd = Plotly.Lib.stdev(v,l,cdi.mean);
+                cdi.q1 = Plotly.Lib.interp(v, 0.25);  // first quartile
+                cdi.med = Plotly.Lib.interp(v, 0.5);  // median
+                cdi.q3 = Plotly.Lib.interp(v, 0.75);  // third quartile
+                // lower and upper fences - last point inside
+                // 1.5 interquartile ranges from quartiles
+                cdi.lf = Math.min(cdi.q1, v[
+                    Math.min(Plotly.Lib.findBin(2.5*cdi.q1-1.5*cdi.q3,v,true)+1, l-1)]);
+                cdi.uf = Math.max(cdi.q3,v[
+                    Math.max(Plotly.Lib.findBin(2.5*cdi.q3-1.5*cdi.q1,v), 0)]);
+                // lower and upper outliers - 3 IQR out (don't clip to max/min,
+                // this is only for discriminating suspected & far outliers)
+                cdi.lo = 4*cdi.q1-3*cdi.q3;
+                cdi.uo = 4*cdi.q3-3*cdi.q1;
+            }
+        }
+
+        calculateStats(cd, valBinned);
 
         // remove empty bins
-        cd = cd.filter(function(p){ return p.y && p.y.length; });
+        cd = cd.filter(function(cdi){ return cdi.val && cdi.val.length; });
         if(!cd.length) return [{t: {emptybox: true}}];
 
-        cd[0].t = {boxnum: gd.numboxes, dx: dx};
+        // add numboxes and dPos to cd
+        cd[0].t = {boxnum: gd.numboxes, dPos: dPos};
         gd.numboxes++;
         return cd;
     };
 
-    boxes.setPositions = function(gd,plotinfo) {
+    boxes.setPositions = function(gd, plotinfo) {
         var fullLayout = gd._fullLayout,
             xa = plotinfo.x(),
             ya = plotinfo.y(),
-            boxlist = [],
-            minPad = 0,
-            maxPad = 0;
-        gd.calcdata.forEach(function(cd,i) {
-            var t = cd[0].t,
-                trace = cd[0].trace;
-            if(trace.visible!==false && !t.emptybox && Plotly.Plots.isBox(trace.type) &&
-              trace.xaxis===xa._id && trace.yaxis===ya._id) {
-                boxlist.push(i);
-                if(trace.boxpoints!==false) {
-                    minPad = Math.max(minPad, trace.jitter-trace.pointpos-1);
-                    maxPad = Math.max(maxPad, trace.jitter+trace.pointpos-1);
+            orientations = ['v', 'h'],
+            posAxis, i, j, k;
+
+        for (i=0; i < orientations.length; ++i) {
+            var orientation = orientations[i],
+                boxlist = [],
+                boxpointlist = [],
+                minPad = 0,
+                maxPad = 0;
+
+            // set axis via orientation
+            if (orientation==='h') posAxis = ya;
+            else posAxis = xa;
+
+            // make list of boxes
+            for (j=0; j < gd.calcdata.length; ++j) {
+                var cd = gd.calcdata[j],
+                    t = cd[0].t,
+                    trace = cd[0].trace;
+                if (trace.visible!==false && Plotly.Plots.isBox(trace.type) &&
+                        !t.emptybox &&
+                        trace.orientation===orientation &&
+                        trace.xaxis===xa._id &&
+                        trace.yaxis===ya._id) {
+                    boxlist.push(j);
+                    if (trace.boxpoints!==false) {
+                        minPad = Math.max(minPad, trace.jitter-trace.pointpos-1);
+                        maxPad = Math.max(maxPad, trace.jitter+trace.pointpos-1);
+                    }
                 }
             }
-        });
 
-        // box plots - update dx based on multiple traces, and then use for x autorange
-        var boxx = [];
-        boxlist.forEach(function(i){ gd.calcdata[i].forEach(function(v){ boxx.push(v.x); }); });
-        if(boxx.length) {
-            var boxdv = Plotly.Lib.distinctVals(boxx),
-                dx = boxdv.minDiff/2;
+            // make list of box points
+            for (j=0; j < boxlist.length; ++j) {
+                for (k=0; k < gd.calcdata[j].length; ++k) {
+                    boxpointlist.push(gd.calcdata[j][k].pos);
+                }
+            }
+            if (!boxpointlist) return;
 
-            // if there's no duplication of x points, disable 'group' mode by setting numboxes=1
-            if(boxx.length===boxdv.vals.length) gd.numboxes = 1;
+            // box plots - update dPos based on multiple traces
+            // and then use for posAxis autorange
+
+            var boxdv = Plotly.Lib.distinctVals(boxpointlist),
+                dPos = boxdv.minDiff/2;
+
+            // if there's no duplication of x points,
+            // disable 'group' mode by setting numboxes=1
+            if(boxpointlist.length===boxdv.vals.length) gd.numboxes = 1;
 
             // check for forced minimum dtick
-            Plotly.Axes.minDtick(xa,boxdv.minDiff,boxdv.vals[0],true);
+            Plotly.Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
 
             // set the width of all boxes
-            boxlist.forEach(function(i){ gd.calcdata[i][0].t.dx = dx; });
+            for (i=0; i < boxlist.length; ++i) {
+                gd.calcdata[i][0].t.dPos = dPos;
+            }
 
             // autoscale the x axis - including space for points if they're off the side
             // TODO: this will overdo it if the outermost boxes don't have
             // their points as far out as the other boxes
             var padfactor = (1-fullLayout.boxgap) * (1-fullLayout.boxgroupgap) *
-                    dx / gd.numboxes;
-            Plotly.Axes.expand(xa, boxdv.vals, {
-                vpadminus: dx+minPad*padfactor,
-                vpadplus: dx+maxPad*padfactor
+                    dPos / gd.numboxes;
+            Plotly.Axes.expand(posAxis, boxdv.vals, {
+                vpadminus: dPos+minPad*padfactor,
+                vpadplus: dPos+maxPad*padfactor
             });
         }
     };
@@ -306,12 +397,15 @@
     var JITTERCOUNT = 5, // points either side of this to include
         JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
-    boxes.plot = function(gd,plotinfo,cdbox) {
+    boxes.plot = function(gd, plotinfo, cdbox) {
         var fullLayout = gd._fullLayout,
             xa = plotinfo.x(),
-            ya = plotinfo.y();
-        var boxtraces = plotinfo.plot.select('.boxlayer').selectAll('g.trace.boxes')
-            .data(cdbox)
+            ya = plotinfo.y(),
+            posAxis, valAxis;
+
+        var boxtraces = plotinfo.plot.select('.boxlayer')
+            .selectAll('g.trace.boxes')
+                .data(cdbox)
           .enter().append('g')
             .attr('class','trace boxes');
 
@@ -320,19 +414,28 @@
                 trace = d[0].trace,
                 group = (fullLayout.boxmode==='group' && gd.numboxes>1),
                 // box half width
-                bdx = t.dx*(1-fullLayout.boxgap)*(1-fullLayout.boxgroupgap)/(group ? gd.numboxes : 1),
+                bdPos = t.dPos*(1-fullLayout.boxgap)*(1-fullLayout.boxgroupgap)/(group ? gd.numboxes : 1),
                 // box center offset
-                bx = group ? 2*t.dx*(-0.5+(t.boxnum+0.5)/gd.numboxes)*(1-fullLayout.boxgap) : 0,
+                bPos = group ? 2*t.dPos*(-0.5+(t.boxnum+0.5)/gd.numboxes)*(1-fullLayout.boxgap) : 0,
                 // whisker width
-                wdx = bdx*trace.whiskerwidth;
+                wdPos = bdPos*trace.whiskerwidth;
             if(trace.visible===false || t.emptybox) {
                 d3.select(this).remove();
                 return;
             }
 
+            // set axis via orientation
+            if (trace.orientation==='h') {
+                posAxis = ya;
+                valAxis = xa;
+            } else {
+                posAxis = xa;
+                valAxis = ya;
+            }
+
             // save the box size and box position for use by hover
-            t.bx = bx;
-            t.bdx = bdx;
+            t.bPos = bPos;
+            t.bdPos = bdPos;
 
             // repeatable pseudorandom number generator
             seed();
@@ -343,26 +446,34 @@
                 .enter().append('path')
                 .attr('class','box')
                 .each(function(d){
-                    // draw the bars and whiskers
-                    var xc = xa.c2p(d.x+bx, true),
-                        x0 = xa.c2p(d.x+bx-bdx, true),
-                        x1 = xa.c2p(d.x+bx+bdx, true),
-                        xw0 = xa.c2p(d.x+bx-wdx, true),
-                        xw1 = xa.c2p(d.x+bx+wdx, true),
-                        yq1 = ya.c2p(d.q1, true),
-                        yq3 = ya.c2p(d.q3, true),
+                    var posc = posAxis.c2p(d.pos + bPos, true),
+                        pos0 = posAxis.c2p(d.pos + bPos - bdPos, true),
+                        pos1 = posAxis.c2p(d.pos + bPos + bdPos, true),
+                        posw0 = posAxis.c2p(d.pos + bPos - wdPos, true),
+                        posw1 = posAxis.c2p(d.pos + bPos + wdPos, true),
+                        q1 = valAxis.c2p(d.q1, true),
+                        q3 = valAxis.c2p(d.q3, true),
                         // make sure median isn't identical to either of the
                         // quartiles, so we can see it
-                        ym = Plotly.Lib.constrain(ya.c2p(d.med, true),
-                            Math.min(yq1, yq3)+1, Math.max(yq1, yq3)-1),
-                        ylf = ya.c2p(trace.boxpoints===false ? d.min : d.lf, true),
-                        yuf = ya.c2p(trace.boxpoints===false ? d.max : d.uf, true);
-                    d3.select(this).attr('d',
-                        'M'+x0+','+ym+'H'+x1+ // median line
-                        'M'+x0+','+yq1+'H'+x1+'V'+yq3+'H'+x0+'Z'+ // box
-                        'M'+xc+','+yq1+'V'+ylf+'M'+xc+','+yq3+'V'+yuf+ // whiskers
-                        ((trace.whiskerwidth===0) ? '' : // whisker caps
-                            'M'+xw0+','+ylf+'H'+xw1+'M'+xw0+','+yuf+'H'+xw1));
+                        m = Plotly.Lib.constrain(valAxis.c2p(d.med, true),
+                            Math.min(q1, q3)+1, Math.max(q1, q3)-1),
+                        lf = valAxis.c2p(trace.boxpoints===false ? d.min : d.lf, true),
+                        uf = valAxis.c2p(trace.boxpoints===false ? d.max : d.uf, true);
+                    if (trace.orientation==='h') {
+                        d3.select(this).attr('d',
+                            'M'+m+','+pos0+'V'+pos1+ // median line
+                            'M'+q1+','+pos0+'V'+pos1+'H'+q3+'V'+pos0+'Z'+ // box
+                            'M'+q1+','+posc+','+'H'+lf+'M'+q3+','+posc+'H'+uf+ // whiskers
+                            ((trace.whiskerwidth===0) ? '' : // whisker caps
+                                'M'+lf+','+posw0+'V'+posw1+'M'+uf+','+posw0+'V'+posw1));
+                    } else {
+                        d3.select(this).attr('d',
+                            'M'+pos0+','+m+'H'+pos1+ // median line
+                            'M'+pos0+','+q1+'H'+pos1+'V'+q3+'H'+pos0+'Z'+ // box
+                            'M'+posc+','+q1+'V'+lf+'M'+posc+','+q3+'V'+uf+ // whiskers
+                            ((trace.whiskerwidth===0) ? '' : // whisker caps
+                                'M'+posw0+','+lf+'H'+posw1+'M'+posw0+','+uf+'H'+posw1));
+                    }
                 });
 
             // draw points, if desired
@@ -381,8 +492,8 @@
                     .attr('class','points')
                   .selectAll('path')
                     .data(function(d){
-                        var pts = (trace.boxpoints==='all') ? d.y :
-                                d.y.filter(function(v){ return (v<d.lf || v>d.uf); }),
+                        var pts = (trace.boxpoints==='all') ? d.val :
+                                d.val.filter(function(v){ return (v<d.lf || v>d.uf); }),
                             spreadLimit = (d.q3 - d.q1) * JITTERSPREAD,
                             jitterFactors = [],
                             maxJitterFactor = 0,
@@ -416,15 +527,23 @@
                         }
 
                         return pts.map(function(v, i){
-                            var xOffset = trace.pointpos;
+                            var posOffset = trace.pointpos,
+                                p;
                             if(trace.jitter) {
-                                xOffset += newJitter * jitterFactors[i] * (rand()-0.5);
+                                posOffset += newJitter * jitterFactors[i] * (rand()-0.5);
                             }
 
-                            var p = {
-                                x: d.x + xOffset*bdx + bx,
-                                y: v
-                            };
+                            if (trace.orientation==='h') {
+                                p = {
+                                    y: d.pos + posOffset*bdPos + bPos,
+                                    x: v
+                                };
+                            } else {
+                                p = {
+                                    x: d.pos + posOffset*bdPos + bPos,
+                                    y: v
+                                };
+                            }
 
                             // tag suspected outliers
                             if(trace.boxpoints==='suspectedoutliers' && v<d.uo && v>d.lo) {
@@ -434,7 +553,7 @@
                         });
                     })
                     .enter().append('path')
-                    .call(Plotly.Drawing.translatePoints,xa,ya);
+                    .call(Plotly.Drawing.translatePoints, xa, ya);
             }
             // draw mean (and stdev diamond) if desired
             if(trace.boxmean) {
@@ -444,15 +563,23 @@
                     .attr('class','mean')
                     .style('fill','none')
                     .each(function(d){
-                        var xc = xa.c2p(d.x+bx, true),
-                            x0 = xa.c2p(d.x+bx-bdx, true),
-                            x1 = xa.c2p(d.x+bx+bdx, true),
-                            ym = ya.c2p(d.mean, true),
-                            ysl = ya.c2p(d.mean-d.sd, true),
-                            ysh = ya.c2p(d.mean+d.sd, true);
-                        d3.select(this).attr('d','M'+x0+','+ym+'H'+x1+
+                        var posc = posAxis.c2p(d.pos + bPos, true),
+                            pos0 = posAxis.c2p(d.pos + bPos - bdPos, true),
+                            pos1 = posAxis.c2p(d.pos + bPos + bdPos, true),
+                            m = valAxis.c2p(d.mean, true),
+                            sl = valAxis.c2p(d.mean-d.sd, true),
+                            sh = valAxis.c2p(d.mean+d.sd, true);
+                        if (trace.orientation==='h') {
+                        d3.select(this).attr('d',
+                            'M'+m+','+pos0+'V'+pos1+
                             ((trace.boxmean!=='sd') ? '' :
-                            'm0,0L'+xc+','+ysl+'L'+x0+','+ym+'L'+xc+','+ysh+'Z'));
+                                'm0,0L'+sl+','+posc+'L'+m+','+pos0+'L'+sh+','+posc+'Z'));
+                        } else {
+                        d3.select(this).attr('d',
+                            'M'+pos0+','+m+'H'+pos1+
+                            ((trace.boxmean!=='sd') ? '' :
+                                'm0,0L'+posc+','+sl+'L'+pos0+','+m+'L'+posc+','+sh+'Z'));
+                        }
                     });
             }
         });
@@ -492,16 +619,41 @@
             t = cd[0].t,
             xa = pointData.xa,
             ya = pointData.ya,
-            dd = (hovermode==='closest') ? Plotly.Fx.MAXDIST/5 : 0,
+            closeData = [],
+            dx, dy, distfn, boxDelta,
+            posLetter, posAxis, posText,
+            val, valLetter, valAxis;
+
+        // adjust inbox w.r.t. to calculate box size
+        boxDelta = (hovermode==='closest') ? 2.5*t.bdPos : t.bdPos;
+
+        if (trace.orientation==='h') {
             dx = function(di){
-                var x = di.x + t.bx - xval;
-                return Plotly.Fx.inbox(x - t.bdx, x + t.bdx) + dd;
-            },
+                return Plotly.Fx.inbox(di.min - xval, di.max - xval);
+            };
+            dy = function(di){
+                var pos = di.pos + t.bPos - yval;
+                return Plotly.Fx.inbox(pos - boxDelta, pos + boxDelta);
+            };
+            posLetter = 'y';
+            posAxis = ya;
+            valLetter = 'x';
+            valAxis = xa;
+        } else {
+            dx = function(di){
+                var pos = di.pos + t.bPos - xval;
+                return Plotly.Fx.inbox(pos - boxDelta, pos + boxDelta);
+            };
             dy = function(di){
                 return Plotly.Fx.inbox(di.min - yval, di.max - yval);
-            },
-            distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy),
-            closeData = [];
+            };
+            posLetter = 'x';
+            posAxis = xa;
+            valLetter = 'y';
+            valAxis = ya;
+        }
+
+        distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy);
         Plotly.Fx.getClosest(cd, distfn, pointData);
 
         // skip the rest (for this trace) if we didn't find a close point
@@ -511,49 +663,41 @@
 
         // the closest data point
         var di = cd[pointData.index],
-
             lc = trace.line.color,
             mc = (trace.marker||{}).color;
         if(Plotly.Color.opacity(lc) && trace.line.width) pointData.color = lc;
         else if(Plotly.Color.opacity(mc) && trace.boxpoints) pointData.color = mc;
         else pointData.color = trace.fillcolor;
 
-        pointData.x0 = xa.c2p(di.x + t.bx - t.bdx, true);
-        pointData.x1 = xa.c2p(di.x + t.bx + t.bdx, true);
+        pointData[posLetter+'0'] = posAxis.c2p(di.pos + t.bPos - t.bdPos, true);
+        pointData[posLetter+'1'] = posAxis.c2p(di.pos + t.bPos + t.bdPos, true);
 
-        var xText = Plotly.Axes.tickText(xa, xa.c2l(di.x), 'hover').text;
-        if(hovermode==='closest') {
-            if(xText!==pointData.name) pointData.name += ': ' + xText;
-        }
-        else {
-            pointData.xLabelVal = di.x;
-            if(xText===pointData.name) pointData.name = '';
-        }
+        posText = Plotly.Axes.tickText(posAxis, posAxis.c2l(di.pos), 'hover').text;
+        pointData[posLetter+'LabelVal'] = di.pos;
 
         // box plots: each "point" gets many labels
         var usedVals = {},
             attrs = ['med','min','q1','q3','max'],
             attr,
-            y,
             pointData2;
         if(trace.boxmean) attrs.push('mean');
         if(trace.boxpoints) [].push.apply(attrs,['lf', 'uf']);
 
-        for(var i=0; i<attrs.length; i++) {
+        for (var i=0; i<attrs.length; i++) {
             attr = attrs[i];
 
             if(!(attr in di) || (di[attr] in usedVals)) continue;
             usedVals[di[attr]] = true;
 
             // copy out to a new object for each value to label
-            y = ya.c2p(di[attr], true);
+            val = valAxis.c2p(di[attr], true);
             pointData2 = $.extend({}, pointData);
-            pointData2.y0 = pointData2.y1 = y;
-            pointData2.yLabelVal = di[attr];
+            pointData2[valLetter+'0'] = pointData2[valLetter+'1'] = val;
+            pointData2[valLetter+'LabelVal'] = di[attr];
             pointData2.attr = attr;
 
             if(attr==='mean' && ('sd' in di) && trace.boxmean==='sd') {
-                pointData2.yerr = di.sd;
+                pointData2[valLetter+'err'] = di.sd;
             }
             pointData.name = ''; // only keep name on the first item (median)
             closeData.push(pointData2);
