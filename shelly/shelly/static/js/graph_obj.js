@@ -386,9 +386,6 @@
 
         var fullLayout = gd._fullLayout;
 
-        ////////////////////////////////  3D   ///////////////////////////////
-        // if (fullLayout._hasGL3D) plot3D(gd);
-
         // prepare the data and find the autorange
 
         // generate calcdata, if we need to
