@@ -19,25 +19,25 @@
         // no arrow
         '',
         // wide with flat back
-        {path:'M-2,-3V3L1,0Z',centerx:0.4},
+        {path: 'M-2,-3V3L1,0Z', centerx: 0.4},
         // narrower with flat back
-        {path:'M-3,-2.5V2.5L2,0Z',centerx:0.7},
+        {path: 'M-3,-2.5V2.5L2,0Z', centerx: 0.7},
         // barbed
-        {path:'M-4,-3L-1.2,-0.2V0.2L-4,3L2,0Z',centerx:0.45},
+        {path: 'M-4,-3L-1.2,-0.2V0.2L-4,3L2,0Z', centerx: 0.45},
         // wide line-drawn
         {
-            path:'M-2.2,-2.2L-0.2,-0.2V0.2L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',
-            centerx:0
+            path: 'M-2.2,-2.2L-0.2,-0.2V0.2L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',
+            centerx: 0
         },
         // narrower line-drawn
         {
-            path:'M-4.2,-2.1L-0.4,-0.2V0.2L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',
-            centerx:0.2
+            path: 'M-4.2,-2.1L-0.4,-0.2V0.2L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',
+            centerx: 0.2
         },
         // circle
-        {path:'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',centerx:0},
+        {path: 'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z', centerx: 0},
         // square
-        {path:'M2,2V-2H-2V2Z',centerx:0}
+        {path: 'M2,2V-2H-2V2Z', centerx: 0}
     ];
 
     annotations.attributes = {
@@ -85,7 +85,7 @@
             dflt: true
         },
         arrowcolor: {
-            type: 'color',
+            type: 'color'
         },
         arrowhead: {
             type: 'integer',
@@ -369,8 +369,7 @@
                 }
                 else if(axTypeOld!=='log' && axNew.type==='log') {
                     position = (position>0) ?
-                        Math.log(position)/Math.LN10 :
-                        undefined;
+                        Math.log(position)/Math.LN10 : undefined;
                 }
             }
 
@@ -382,7 +381,7 @@
 
         var xa = Plotly.Axes.getFromId(gd, options.xref),
             ya = Plotly.Axes.getFromId(gd, options.yref),
-            annPosPx = {x:0, y:0},
+            annPosPx = {x: 0, y: 0},
             textangle = +options.textangle || 0;
 
         // create the components
@@ -396,7 +395,7 @@
 
         // another group for text+background so that they can rotate together
         var anng = anngroup.append('g')
-            .classed('annotation-text-g',true)
+            .classed('annotation-text-g', true)
             .attr('data-index', String(index));
 
         var ann = anng.append('svg')
@@ -408,7 +407,7 @@
 
         var annbg = ann.append('rect')
             .attr('class','bg')
-            .style('stroke-width',borderwidth+'px')
+            .style('stroke-width', borderwidth+'px')
             .call(Plotly.Color.stroke, options.bordercolor)
             .call(Plotly.Color.fill, options.bgcolor);
 
@@ -425,7 +424,7 @@
                 'text-anchor': {
                     left: 'start',
                     right: 'end'
-                }[options.align]||'middle'
+                }[options.align] || 'middle'
             });
             Plotly.util.convertToTspans(s, drawGraphicalElements);
             return s;
@@ -450,7 +449,7 @@
 
             function fshift(v,anchor){
                 if(anchor==='auto'){
-                    return Plotly.Lib.constrain(Math.floor(v*3-1),-0.5,0.5);
+                    return Plotly.Lib.constrain(Math.floor(v * 3 - 1), -0.5, 0.5);
                 }
                 return {
                     center: 0,
@@ -463,13 +462,13 @@
             }
 
             var annotationIsOffscreen = false;
-            ['x','y'].forEach(function(axletter) {
+            ['x', 'y'].forEach(function(axletter) {
                 var ax = Plotly.Axes.getFromId(gd,
                         options[axletter+'ref']||axletter),
                     dimAngle = (textangle + (axletter==='x' ? 0 : 90)) * Math.PI/180,
                     annSize = (annwidth + 2 * borderfull) * Math.abs(Math.cos(dimAngle)) +
-                              (annheight + 2 *borderfull) * Math.abs(Math.sin(dimAngle)),
-                    anchor = options[axletter+'anchor'];
+                              (annheight + 2 * borderfull) * Math.abs(Math.sin(dimAngle)),
+                    anchor = options[axletter + 'anchor'];
 
                 // calculate pixel position
                 if(ax) {
@@ -477,21 +476,21 @@
                     // outside the visible plot (as long as the axis
                     // isn't autoranged - then we need to draw it
                     // anyway to get its bounding box)
-                    if(!ax.autorange && ((options[axletter]-ax.range[0]) *
-                                         (options[axletter]-ax.range[1]) > 0)) {
+                    if(!ax.autorange && ((options[axletter] - ax.range[0]) *
+                                         (options[axletter] - ax.range[1]) > 0)) {
                         annotationIsOffscreen = true;
                     }
                     annPosPx[axletter] = ax._offset+ax.l2p(options[axletter]);
                 }
                 else {
-                    annPosPx[axletter] = (axletter==='x') ?
-                        (gs.l + (gs.w)*options[axletter]) :
-                        (gs.t + (gs.h)*(1-options[axletter]));
+                    annPosPx[axletter] = (axletter === 'x') ?
+                        (gs.l + (gs.w) * options[axletter]) :
+                        (gs.t + (gs.h) * (1 - options[axletter]));
                 }
 
                 if(!options.showarrow) {
                     annPosPx[axletter] += annSize *
-                        fshift(ax ? 0 : options[axletter],anchor);
+                        fshift(ax ? 0 : options[axletter], anchor);
                 }
 
                 // save the current axis type for later log/linear changes
@@ -509,39 +508,39 @@
             var ax, ay;
 
             if(options.showarrow){
-                ax = Plotly.Lib.constrain(annPosPx.x,1,fullLayout.width-1);
-                ay = Plotly.Lib.constrain(annPosPx.y,1,fullLayout.height-1);
+                ax = Plotly.Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
+                ay = Plotly.Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
                 annPosPx.x += options.ax;
                 annPosPx.y += options.ay;
             }
-            annPosPx.x = Plotly.Lib.constrain(annPosPx.x,1,fullLayout.width-1);
-            annPosPx.y = Plotly.Lib.constrain(annPosPx.y,1,fullLayout.height-1);
+            annPosPx.x = Plotly.Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
+            annPosPx.y = Plotly.Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
 
-            var texty = borderfull-anntextBB.top,
-                textx = borderfull-anntextBB.left;
+            var texty = borderfull - anntextBB.top,
+                textx = borderfull - anntextBB.left;
 
             if(hasMathjax) {
-                mathjaxGroup.select('svg').attr({x:borderfull-1, y:borderfull});
+                mathjaxGroup.select('svg').attr({x: borderfull - 1, y: borderfull});
             }
             else {
                 anntext.attr({x: textx, y: texty});
                 anntext.selectAll('tspan.line').attr({y: texty, x: textx});
             }
 
-            var outerwidth = Math.round(annwidth + 2*borderfull),
-                outerheight = Math.round(annheight + 2*borderfull);
+            var outerwidth = Math.round(annwidth + 2 * borderfull),
+                outerheight = Math.round(annheight + 2 * borderfull);
 
-            annbg.call(Plotly.Drawing.setRect, borderwidth/2, borderwidth/2,
-                outerwidth-borderwidth, outerheight-borderwidth);
+            annbg.call(Plotly.Drawing.setRect, borderwidth / 2, borderwidth / 2,
+                outerwidth-borderwidth, outerheight - borderwidth);
             ann.call(Plotly.Drawing.setRect,
-                Math.round(annPosPx.x-outerwidth/2),
-                Math.round(annPosPx.y-outerheight/2),
+                Math.round(annPosPx.x - outerwidth / 2),
+                Math.round(annPosPx.y - outerheight / 2),
                 outerwidth, outerheight);
 
             // add the arrow
             // uses options[arrowwidth,arrowcolor,arrowhead] for styling
-            var drawArrow = function(dx,dy){
-                $(gd).find('.annotation-arrow-g[data-index="'+index+'"]')
+            var drawArrow = function(dx, dy){
+                $(gd).find('.annotation-arrow-g[data-index="' + index + '"]')
                     .remove();
                 // find where to start the arrow:
                 // at the border of the textbox, if that border is visible,
@@ -550,8 +549,8 @@
                 // looks like there may be a cross-browser solution, see
                 // http://stackoverflow.com/questions/5364980/
                 //    how-to-get-the-width-of-an-svg-tspan-element
-                var ax0 = annPosPx.x+dx,
-                    ay0 = annPosPx.y+dy,
+                var ax0 = annPosPx.x + dx,
+                    ay0 = annPosPx.y + dy,
 
                     // create transform matrix and related functions
                     transform =
@@ -563,19 +562,19 @@
                     xHalf = annbg.attr('width')/2,
                     yHalf = annbg.attr('height')/2,
                     edges = [
-                        [ax0-xHalf, ay0-yHalf, ax0-xHalf, ay0+yHalf],
-                        [ax0-xHalf, ay0+yHalf, ax0+xHalf, ay0+yHalf],
-                        [ax0+xHalf, ay0+yHalf, ax0+xHalf, ay0-yHalf],
-                        [ax0+xHalf, ay0-yHalf, ax0-xHalf, ay0-yHalf],
+                        [ax0 - xHalf, ay0 - yHalf, ax0 - xHalf, ay0 + yHalf],
+                        [ax0 - xHalf, ay0 + yHalf, ax0 + xHalf, ay0 + yHalf],
+                        [ax0 + xHalf, ay0 + yHalf, ax0 + xHalf, ay0 - yHalf],
+                        [ax0 + xHalf, ay0 - yHalf, ax0 - xHalf, ay0 - yHalf]
                     ].map(applyTransform2);
 
                 // Remove the line if it ends inside the box.  Use ray
                 // casting for rotated boxes: see which edges intersect a
                 // line from the arrowhead to far away and reduce with xor
                 // to get the parity of the number of intersections.
-                if(edges.reduce(function(a,x) {
+                if(edges.reduce(function(a, x) {
                             return a ^
-                                !!lineIntersect(ax, ay, ax+1e6, ay+1e6,
+                                !!lineIntersect(ax, ay, ax + 1e6, ay + 1e6,
                                     x[0], x[1], x[2], x[3]);
                         },false)) {
                     // no line or arrow - so quit drawArrow now
@@ -583,8 +582,8 @@
                 }
 
                 edges.forEach(function(x){
-                    var p = lineIntersect(ax0,ay0,ax,ay,
-                                x[0],x[1],x[2],x[3]);
+                    var p = lineIntersect(ax0, ay0, ax, ay,
+                                x[0], x[1], x[2], x[3]);
                     if(p) {
                         ax0 = p.x;
                         ay0 = p.y;
@@ -612,7 +611,7 @@
                     .classed('anndrag', true)
                     .attr({
                         'data-index': String(index),
-                        d: 'M3,3H-3V-3H3ZM0,0L'+(ax0-ax)+','+(ay0-ay),
+                        d: 'M3,3H-3V-3H3ZM0,0L' + (ax0-ax) + ',' + (ay0-ay),
                         transform:'translate('+ax+','+ay+')'
                     })
                     .style('stroke-width', (strokewidth+6)+'px')
@@ -639,16 +638,16 @@
                         }
 
                         window.onmousemove = function(e2) {
-                            var dx = e2.clientX-e.clientX,
-                                dy = e2.clientY-e.clientY;
-                            if(Math.abs(dx)<MINDRAG) dx=0;
-                            if(Math.abs(dy)<MINDRAG) dy=0;
+                            var dx = e2.clientX - e.clientX,
+                                dy = e2.clientY - e.clientY;
+                            if(Math.abs(dx) < MINDRAG) dx = 0;
+                            if(Math.abs(dy) < MINDRAG) dy = 0;
                             if(dx||dy) dragged = true;
                             arrowgroup.attr('transform', 'translate('+dx+','+dy+')');
 
                             var annxy0 = applyTransform(annx0, anny0),
-                                xcenter = annxy0[0]+dx,
-                                ycenter = annxy0[1]+dy;
+                                xcenter = annxy0[0] + dx,
+                                ycenter = annxy0[1] + dy;
                             ann.call(Plotly.Drawing.setPosition,
                                 xcenter, ycenter);
 
@@ -670,7 +669,7 @@
                             window.onmousemove = null;
                             window.onmouseup = null;
 
-                            if(dragged) Plotly.relayout(gd,update);
+                            if(dragged) Plotly.relayout(gd, update);
 
                             return Plotly.Lib.pauseEvent(e2);
                         };
@@ -679,7 +678,7 @@
                 }
             };
 
-            if(options.showarrow) drawArrow(0,0);
+            if(options.showarrow) drawArrow(0, 0);
 
 
             // create transform matrix and related functions
@@ -694,9 +693,9 @@
                     // to cancel dragging
                     if(Plotly.Fx.dragClear(gd)) return true;
 
-                    var el3=d3.select(this),
-                        x0=Number(el3.attr('x')),
-                        y0=Number(el3.attr('y')),
+                    var el3 = d3.select(this),
+                        x0 = Number(el3.attr('x')),
+                        y0 = Number(el3.attr('y')),
                         update = {},
                         annbase = 'annotations['+index+']',
                         dragged = false;
@@ -711,33 +710,33 @@
                     Plotly.Fx.setCursor(el3);
 
                     window.onmousemove = function(e2) {
-                        var dx = e2.clientX-e.clientX,
-                            dy = e2.clientY-e.clientY;
+                        var dx = e2.clientX - e.clientX,
+                            dy = e2.clientY - e.clientY;
 
-                        if(Math.abs(dx)<MINDRAG) dx=0;
-                        if(Math.abs(dy)<MINDRAG) dy=0;
+                        if(Math.abs(dx) < MINDRAG) dx = 0;
+                        if(Math.abs(dy) < MINDRAG) dy = 0;
                         if(dx||dy) dragged = true;
 
-                        el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
+                        el3.call(Plotly.Drawing.setPosition, x0 + dx, y0 + dy);
                         var csr = 'pointer';
                         if(options.showarrow) {
-                            update[annbase+'.ax'] = options.ax+dx;
-                            update[annbase+'.ay'] = options.ay+dy;
-                            drawArrow(dx,dy);
+                            update[annbase+'.ax'] = options.ax + dx;
+                            update[annbase+'.ay'] = options.ay + dy;
+                            drawArrow(dx, dy);
                         }
                         else {
                             update[annbase+'.x'] = xa ?
-                                (options.x+dx/xa._m) :
-                                (Plotly.Fx.dragAlign(x0+dx+borderfull,
-                                    annwidth,gs.l,gs.l+gs.w,options.xanchor));
+                                (options.x + dx / xa._m) :
+                                (Plotly.Fx.dragAlign(x0 + dx + borderfull,
+                                    annwidth, gs.l, gs.l + gs.w, options.xanchor));
                             update[annbase+'.y'] = ya ?
-                                (options.y+dy/ya._m) :
+                                (options.y + dy / ya._m) :
                                 (Plotly.Fx.dragAlign(y0+dy+borderfull+annheight,
                                     -annheight,gs.t+gs.h,gs.t,options.yanchor));
                             if(!xa || !ya) {
                                 csr = Plotly.Fx.dragCursors(
-                                    xa ? 0.5 : update[annbase+'.x'],
-                                    ya ? 0.5 : update[annbase+'.y'],
+                                    xa ? 0.5 : update[annbase + '.x'],
+                                    ya ? 0.5 : update[annbase + '.y'],
                                     options.xanchor, options.yanchor
                                 );
                             }
@@ -754,7 +753,7 @@
                                    x1 + ',' + y1 + ')'
                         });
 
-                        Plotly.Fx.setCursor(el3,csr);
+                        Plotly.Fx.setCursor(el3, csr);
                         return Plotly.Lib.pauseEvent(e2);
                     };
 
@@ -762,7 +761,7 @@
                         window.onmousemove = null;
                         window.onmouseup = null;
                         Plotly.Fx.setCursor(el3);
-                        if(dragged) Plotly.relayout(gd,update);
+                        if(dragged) Plotly.relayout(gd, update);
                         return Plotly.Lib.pauseEvent(e2);
                     };
 
@@ -802,44 +801,49 @@
     // style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none
     // ends is 'start', 'end' (default), 'start+end'
     // mag is magnification vs. default (default 1)
-    function arrowhead(el3,style,ends,mag) {
-        if(!$.isNumeric(mag)) { mag=1; }
+    function arrowhead(el3, style, ends, mag) {
+        if(!$.isNumeric(mag)) mag = 1;
         var el = el3.node(),
             headStyle = ARROWPATHS[style||0];
         if(!headStyle) return;
 
         if(typeof ends !== 'string' || !ends) ends = 'end';
 
-        var start,end,dstart,dend,pathlen;
-        if(el.nodeName==='line') {
-            start = {x:el3.attr('x1'), y:el3.attr('y1')};
-            end = {x:el3.attr('x2'), y:el3.attr('y2')};
+        var start,
+            end,
+            dstart,
+            dend,
+            pathlen;
+
+        if(el.nodeName === 'line') {
+            start = {x: el3.attr('x1'), y: el3.attr('y1')};
+            end = {x: el3.attr('x2'), y: el3.attr('y2')};
             dstart = end;
             dend = start;
         }
-        else if(el.nodeName==='path') {
+        else if(el.nodeName === 'path') {
             start = el.getPointAtLength(0);
             dstart = el.getPointAtLength(0.1);
             pathlen = el.getTotalLength();
             end = el.getPointAtLength(pathlen);
-            dend = el.getPointAtLength(pathlen-0.1);
+            dend = el.getPointAtLength(pathlen - 0.1);
         }
 
-        var drawhead = function(p,q) {
-            var rot = Math.atan2(p.y-q.y,p.x-q.x)*180/Math.PI,
-                scale = (Plotly.Drawing.getPx(el3,'stroke-width') || 1)*(mag),
+        var drawhead = function(p, q) {
+            var rot = Math.atan2(p.y - q.y, p.x - q.x) * 180 / Math.PI,
+                scale = (Plotly.Drawing.getPx(el3,'stroke-width') || 1) * mag,
                 stroke = el3.style('stroke') || '#444',
                 opacity = el3.style('stroke-opacity') || 1;
-            if(style>5) { rot=0; } // don't rotate square or circle
+            if(style>5) rot=0; // don't rotate square or circle
             d3.select(el.parentElement).append('path')
                 .attr({
                     'class': el3.attr('class'),
                     d: headStyle.path,
                     transform:
-                        'translate('+p.x+','+p.y+')'+
-                        'rotate('+rot+')'+
-                        'translate('+(headStyle.centerx*scale*(1/mag-1))+',0)'+
-                        'scale('+scale+')'
+                        'translate(' + p.x + ',' + p.y + ')' +
+                        'rotate(' + rot + ')' +
+                        'translate(' + (headStyle.centerx * scale * (1 / mag - 1)) + ',0)' +
+                        'scale(' + scale + ')'
                 })
                 .style({
                     fill: stroke,
@@ -848,8 +852,8 @@
                 });
         };
 
-        if(ends.indexOf('start')>=0) drawhead(start, dstart);
-        if(ends.indexOf('end')>=0) drawhead(end, dend);
+        if(ends.indexOf('start') >= 0) drawhead(start, dstart);
+        if(ends.indexOf('end') >= 0) drawhead(end, dend);
     }
 
     // allArrowheads: call twice to make an arrowheads dropdown.
@@ -861,20 +865,20 @@
         if(container) {
             $(container).find('[data-arrowhead]').each(function(){
                 var s = d3.select(this);
-                arrowhead(s.select('line'),Number(s.attr('data-arrowhead')));
+                arrowhead(s.select('line'), Number(s.attr('data-arrowhead')));
             });
             return;
         }
         // with no args, output an array of elements for the dropdown list
         var outArray = [];
-        for(var i=0; i<ARROWPATHS.length; i++) {
+        for(var i = 0; i < ARROWPATHS.length; i++) {
             outArray.push({
                 val:i,
-                name:'<svg width="40" height="20" data-arrowhead="'+i+
-                            '" style="position: relative; top: 2px;">'+
-                        '<line stroke="rgb(0,0,0)" style="fill: none;" '+
-                        'x1="5" y1="10" x2="25" y2="10" stroke-width="2">'+
-                        '</line>'+
+                name:'<svg width="40" height="20" data-arrowhead="' + i +
+                            '" style="position: relative; top: 2px;">' +
+                        '<line stroke="rgb(0,0,0)" style="fill: none;" ' +
+                        'x1="5" y1="10" x2="25" y2="10" stroke-width="2">' +
+                        '</line>' +
                     '</svg>'
             });
         }
@@ -915,7 +919,7 @@
         fullLayout.annotations.forEach(function(ann){
             var xa = Plotly.Axes.getFromId(gd, ann.xref),
                 ya = Plotly.Axes.getFromId(gd, ann.yref);
-            if(!(xa||ya)) return;
+            if(!(xa || ya)) return;
 
             var annBB,
                 textWidth = ann._xsize || 0,
@@ -923,22 +927,22 @@
             if(ann.showarrow) {
                 var headSize = 3 * ann.arrowsize * ann.arrowwidth;
                 annBB = {
-                    left: Math.min(ann.ax - textWidth/2, -headSize),
-                    right: Math.max(ann.ax + textWidth/2, headSize),
-                    top: Math.min(ann.ay - textHeight/2, -headSize),
-                    bottom: Math.max(ann.ay + textHeight/2, headSize)
+                    left: Math.min(ann.ax - textWidth / 2, -headSize),
+                    right: Math.max(ann.ax + textWidth / 2, headSize),
+                    top: Math.min(ann.ay - textHeight / 2, -headSize),
+                    bottom: Math.max(ann.ay + textHeight / 2, headSize)
                 };
             }
             else {
                 annBB = {
                     left: textWidth *
-                        ({center: -0.5, right: -1}[ann.xanchor]||0),
+                        ({center: -0.5, right: -1}[ann.xanchor] || 0),
                     right: textWidth *
-                        ({center: 0.5, right: 0}[ann.xanchor]||1),
+                        ({center: 0.5, right: 0}[ann.xanchor] || 1),
                     top: textHeight *
-                        ({middle: -0.5, top: 0}[ann.yanchor]||1),
+                        ({middle: -0.5, top: 0}[ann.yanchor] || 1),
                     bottom: textHeight *
-                        ({middle: 0.5, top: 1}[ann.yanchor]||0)
+                        ({middle: 0.5, top: 1}[ann.yanchor] || 0)
                 };
             }
             if(xa && xa.autorange) {
@@ -958,19 +962,23 @@
 
     // look for intersection of two line segments
     //   (1->2 and 3->4) - returns array [x,y] if they do, null if not
-    function lineIntersect(x1,y1,x2,y2,x3,y3,x4,y4) {
-        var a=x2-x1, b=x3-x1, c=x4-x3,
-            d=y2-y1, e=y3-y1, f=y4-y3,
-            det=a*f-c*d;
+    function lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
+        var a = x2 - x1,
+            b = x3 - x1,
+            c = x4 - x3,
+            d = y2 - y1,
+            e = y3 - y1,
+            f = y4 - y3,
+            det = a * f - c * d;
         // parallel lines? intersection is undefined
         // ignore the case where they are colinear
-        if(det===0) return null;
-        var t=(b*f-c*e)/det,
-            u=(b*d-a*e)/det;
+        if(det === 0) return null;
+        var t = (b * f - c * e) / det,
+            u = (b * d - a * e) / det;
         // segments do not intersect?
         if(u<0 || u>1 || t<0 || t>1) return null;
 
-        return {x:x1+a*t, y:y1+d*t};
+        return {x: x1 + a * t, y: y1 + d * t};
     }
 
 }()); // end Annotations object definition
