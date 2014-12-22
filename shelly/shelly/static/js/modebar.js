@@ -194,6 +194,8 @@ function handleCartesian (ev) {
                 fullLayout._paper.select('.nsewdrag'),
                 {pan:'move', zoom:'crosshair'}[val]
             );
+            Plotly.Fx.supplyDefaults(graphInfo.layout, fullLayout,
+                graphInfo._fullData);
         }
     });
 }
