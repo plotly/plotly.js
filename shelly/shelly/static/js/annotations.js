@@ -441,7 +441,10 @@
                 anntextBB = Plotly.Drawing.bBox(
                     (hasMathjax ? mathjaxGroup : anntext).node()),
                 annwidth = anntextBB.width,
-                annheight = anntextBB.height;
+                annheight = anntextBB.height,
+                outerwidth = Math.round(annwidth + 2 * borderfull),
+                outerheight = Math.round(annheight + 2 * borderfull);
+
 
             // save size in the annotation object for use by autoscale
             options._w = annwidth;
@@ -466,8 +469,8 @@
                 var ax = Plotly.Axes.getFromId(gd,
                         options[axletter+'ref']||axletter),
                     dimAngle = (textangle + (axletter==='x' ? 0 : 90)) * Math.PI/180,
-                    annSize = (annwidth + 2 * borderfull) * Math.abs(Math.cos(dimAngle)) +
-                              (annheight + 2 * borderfull) * Math.abs(Math.sin(dimAngle)),
+                    annSize = outerwidth * Math.abs(Math.cos(dimAngle)) +
+                              outerheight * Math.abs(Math.sin(dimAngle)),
                     anchor = options[axletter + 'anchor'];
 
                 // calculate pixel position
@@ -526,9 +529,6 @@
                 anntext.attr({x: textx, y: texty});
                 anntext.selectAll('tspan.line').attr({y: texty, x: textx});
             }
-
-            var outerwidth = Math.round(annwidth + 2 * borderfull),
-                outerheight = Math.round(annheight + 2 * borderfull);
 
             annbg.call(Plotly.Drawing.setRect, borderwidth / 2, borderwidth / 2,
                 outerwidth-borderwidth, outerheight - borderwidth);
