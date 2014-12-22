@@ -402,7 +402,9 @@
         var ann = anng.append('svg')
             .call(Plotly.Drawing.setPosition, 0, 0);
 
-        var borderwidth = options.borderwidth;
+        var borderwidth = options.borderwidth,
+            borderpad = options.borderpad,
+            borderfull = borderwidth + borderpad;
 
         var annbg = ann.append('rect')
             .attr('class','bg')
@@ -464,7 +466,9 @@
             ['x','y'].forEach(function(axletter) {
                 var ax = Plotly.Axes.getFromId(gd,
                         options[axletter+'ref']||axletter),
-                    annSize = axletter==='x' ? annwidth : -annheight,
+                    dimAngle = (textangle + (axletter==='x' ? 0 : 90)) * Math.PI/180,
+                    annSize = (annwidth + 2 * borderfull) * Math.abs(Math.cos(dimAngle)) +
+                              (annheight + 2 *borderfull) * Math.abs(Math.sin(dimAngle)),
                     anchor = options[axletter+'anchor'];
 
                 // calculate pixel position
@@ -486,12 +490,15 @@
                 }
 
                 if(!options.showarrow) {
-                    annPosPx[axletter] -= annSize *
+                    annPosPx[axletter] += annSize *
                         fshift(ax ? 0 : options[axletter],anchor);
                 }
 
                 // save the current axis type for later log/linear changes
-                options['_'+axletter+'type'] = ax && ax.type;
+                options['_' + axletter + 'type'] = ax && ax.type;
+
+                // save the size in this dim for autorange
+                options['_' + axletter + 'size'] = annSize;
             });
 
             if(annotationIsOffscreen) {
@@ -510,9 +517,7 @@
             annPosPx.x = Plotly.Lib.constrain(annPosPx.x,1,fullLayout.width-1);
             annPosPx.y = Plotly.Lib.constrain(annPosPx.y,1,fullLayout.height-1);
 
-            var borderpad = Number(options.borderpad),
-                borderfull = borderwidth+borderpad,
-                texty = borderfull-anntextBB.top,
+            var texty = borderfull-anntextBB.top,
                 textx = borderfull-anntextBB.left;
 
             if(hasMathjax) {
@@ -901,26 +906,20 @@
     };
 
     function annAutorange(gd) {
-        var fullLayout = gd._fullLayout,
-            blank = {left:0, right:0, top:0, bottom:0, width:0, height:0};
+        var fullLayout = gd._fullLayout;
 
         // find the bounding boxes for each of these annotations'
         // relative to their anchor points
         // use the arrow and the text bg rectangle,
         // as the whole anno may include hidden text in its bbox
-        fullLayout.annotations.forEach(function(ann,i){
+        fullLayout.annotations.forEach(function(ann){
             var xa = Plotly.Axes.getFromId(gd, ann.xref),
                 ya = Plotly.Axes.getFromId(gd, ann.yref);
             if(!(xa||ya)) return;
 
             var annBB,
-                textNode = fullLayout._infolayer
-                    .selectAll('g.annotation[data-index="'+i+'"] rect.bg')
-                    .node(),
-                textBB = textNode ? Plotly.Drawing.bBox(textNode) : blank,
-                textExtra = ann.borderwidth,
-                textWidth = textBB.width + textExtra,
-                textHeight = textBB.height + textExtra;
+                textWidth = ann._xsize || 0,
+                textHeight = ann._ysize || 0;
             if(ann.showarrow) {
                 var headSize = 3 * ann.arrowsize * ann.arrowwidth;
                 annBB = {
