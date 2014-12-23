@@ -1,8 +1,7 @@
 'use strict';
 
 var createScatterLine = require('./line-with-markers'),
-    tinycolor = require('tinycolor2'),
-    arrtools = require('arraytools'),
+    str2RgbaArray = require('./str2rgbarray'),
     calculateError = require('./calc-errors');
 
 function Scatter3D (config) {
@@ -144,8 +143,8 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
 
     this.supplyXYZ(traceIn, traceOut);
 
-    if (coerceScatter('text')) coerceScatter('mode', 'lines+markers+text');
-    else coerceScatter('mode', 'lines+markers');
+    coerceScatter('text');
+    coerceScatter('mode', 'lines+markers');
 
     if (Scatter.hasLines(traceOut)) {
         linecolor = coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
@@ -228,11 +227,6 @@ function calculateTextOffset(textposition) {
         textOffset[0] += 1;
     }
     return textOffset;
-}
-
-function str2RgbaArray(color) {
-    color = tinycolor(color);
-    return arrtools.str2RgbaArray(color.toRgbString());
 }
 
 function colorFormatter(colorIn, opacityIn) {

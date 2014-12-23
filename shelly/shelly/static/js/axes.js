@@ -310,9 +310,8 @@
 
         var autoTick = coerce('autotick');
         if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
-        if(autoTick) {
-            if(axType!=='category') coerce('nticks');
-        }
+        if(autoTick) coerce('nticks');
+
         // TODO date doesn't work yet, right? axType==='date' ? new Date(2000,0,1).getTime() : 0);
         coerce('tick0', 0);
         coerce('dtick');
@@ -495,24 +494,28 @@
         });
 
         if(!data.length) return;
-        var d0 = data[0];
 
+        var d0 = data[0];
 
         // first check for histograms, as the count direction
         // should always default to a linear axis
         if(d0.type==='histogram' &&
-                axLetter==={v:'y',h:'x'}[d0.orientation||'v']) {
+                axLetter==={v:'y', h:'x'}[d0.orientation || 'v']) {
             ax.type='linear';
             return;
         }
         // then check the data supplied for that axis
-        if(Plotly.Plots.isBox(d0.type) && axLetter==='x' && !('x' in d0) && !('x0' in d0)) {
+        var posLetter = {v:'x', h:'y'}[d0.orientation || 'v'];
+        if(Plotly.Plots.isBox(d0.type) &&
+                axLetter===posLetter &&
+                !(posLetter in d0) &&
+                !(posLetter+'0' in d0)) {
             // check all boxes on this x axis to see
             // if they're dates, numbers, or categories
             ax.type = axes.autoType(
                 data.filter(function(d){ return Plotly.Plots.isBox(d.type); })
                     .map(function(d){
-                        if('x' in d) return d.x[0];
+                        if(posLetter in d) return d.pos[0];
                         if('name' in d) return d.name;
                         return 'text';
                     })
@@ -1137,8 +1140,18 @@
     axes.calcTicks = function calcTicks (ax) {
         // calculate max number of (auto) ticks to display based on plot size
         if(ax.autotick || !ax.dtick){
-            var nt = (ax.nticks || Plotly.Lib.constrain(ax._length /
-                    (ax._id.charAt(0)==='y' ? 40 : 80), 4, 9) + 1);
+            var nt = ax.nticks,
+                minPx;
+            if(!nt) {
+                if(ax.type==='category') {
+                    minPx = ax.tickfont ? (ax.tickfont.size || 12) * 1.2 : 15;
+                    nt = ax._length / minPx;
+                }
+                else {
+                    minPx = ax._id.charAt(0)==='y' ? 40 : 80;
+                    nt = Plotly.Lib.constrain(ax._length / minPx, 4, 9) + 1;
+                }
+            }
             axes.autoTicks(ax,Math.abs(ax.range[1]-ax.range[0])/nt);
             // check for a forced minimum dtick
             if(ax._minDtick>0 && ax.dtick<ax._minDtick*2) {
@@ -1273,7 +1286,7 @@
         }
         else if(ax.type==='category') {
             ax.tick0 = 0;
-            ax.dtick = 1;
+            ax.dtick = Math.ceil(Math.max(rt,1));
         }
         else{
             // auto ticks always start at 0
@@ -1282,8 +1295,8 @@
             ax.dtick = rtexp*Plotly.Lib.roundUp(rt/rtexp,[2,5,10]);
         }
 
-        // prevent infinite loops...
-        if(ax.dtick===0) { ax.dtick = 1; }
+        // prevent infinite loops
+        if(ax.dtick===0) ax.dtick = 1;
 
         // TODO: this is from log axis histograms with autorange off
         if(!$.isNumeric(ax.dtick) && typeof ax.dtick !=='string') {
@@ -1725,16 +1738,14 @@
         if(only2d) return axis2d;
 
         var axis3d = [];
-        var scenes = Object.keys(fullLayout).filter( function (k) {
-            return k.match(/^scene[0-9]*$/);
-        });
+        var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout);
 
-        if (scenes) {
-            scenes.forEach( function (sceneId) {
+        if (sceneKeys) {
+            sceneKeys.forEach( function (sceneKey) {
                 axis3d = axis3d.concat(
-                    filterAxis(fullLayout[sceneId])
+                    filterAxis(fullLayout[sceneKey])
                         .map(function(axName) {
-                            return sceneId + '.' + axName;
+                            return sceneKey + '.' + axName;
                         })
                     );
             });
