@@ -457,21 +457,21 @@
                 return {
                     center: 0,
                     middle: 0,
-                    left: -0.5,
+                    left: 0.5,
                     bottom: -0.5,
-                    right: 0.5,
+                    right: -0.5,
                     top: 0.5
                 }[anchor];
             }
 
             var annotationIsOffscreen = false;
-            ['x', 'y'].forEach(function(axletter) {
+            ['x', 'y'].forEach(function(axLetter) {
                 var ax = Plotly.Axes.getFromId(gd,
-                        options[axletter+'ref']||axletter),
-                    dimAngle = (textangle + (axletter==='x' ? 0 : 90)) * Math.PI/180,
+                        options[axLetter+'ref']||axLetter),
+                    dimAngle = (textangle + (axLetter==='x' ? 0 : 90)) * Math.PI/180,
                     annSize = outerwidth * Math.abs(Math.cos(dimAngle)) +
                               outerheight * Math.abs(Math.sin(dimAngle)),
-                    anchor = options[axletter + 'anchor'];
+                    anchor = options[axLetter + 'anchor'];
 
                 // calculate pixel position
                 if(ax) {
@@ -479,28 +479,34 @@
                     // outside the visible plot (as long as the axis
                     // isn't autoranged - then we need to draw it
                     // anyway to get its bounding box)
-                    if(!ax.autorange && ((options[axletter] - ax.range[0]) *
-                                         (options[axletter] - ax.range[1]) > 0)) {
+                    if(!ax.autorange && ((options[axLetter] - ax.range[0]) *
+                                         (options[axLetter] - ax.range[1]) > 0)) {
                         annotationIsOffscreen = true;
+                        return;
                     }
-                    annPosPx[axletter] = ax._offset+ax.l2p(options[axletter]);
+                    annPosPx[axLetter] = ax._offset+ax.l2p(options[axLetter]);
                 }
                 else {
-                    annPosPx[axletter] = (axletter === 'x') ?
-                        (gs.l + (gs.w) * options[axletter]) :
-                        (gs.t + (gs.h) * (1 - options[axletter]));
+                    annPosPx[axLetter] = (axLetter === 'x') ?
+                        (gs.l + (gs.w) * options[axLetter]) :
+                        (gs.t + (gs.h) * (1 - options[axLetter]));
                 }
 
-                if(!options.showarrow) {
-                    annPosPx[axletter] += annSize *
-                        fshift(ax ? 0 : options[axletter], anchor);
+                var alignShift = 0;
+                if(options.showarrow) {
+                    alignShift = options['a' + axLetter];
                 }
+                else {
+                    alignShift = annSize * fshift(ax ? 0 : options[axLetter], anchor);
+                }
+                annPosPx[axLetter] += alignShift;
 
                 // save the current axis type for later log/linear changes
-                options['_' + axletter + 'type'] = ax && ax.type;
+                options['_' + axLetter + 'type'] = ax && ax.type;
 
-                // save the size in this dim for autorange
-                options['_' + axletter + 'size'] = annSize;
+                // save the size and shift in this dim for autorange
+                options['_' + axLetter + 'size'] = annSize;
+                options['_' + axLetter + 'shift'] = alignShift;
             });
 
             if(annotationIsOffscreen) {
@@ -508,13 +514,13 @@
                 return;
             }
 
-            var ax, ay;
+            var arrowX, arrowY;
 
+            // make sure the arrowhead (if there is one)
+            // and the annotation center are visible
             if(options.showarrow){
-                ax = Plotly.Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
-                ay = Plotly.Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
-                annPosPx.x += options.ax;
-                annPosPx.y += options.ay;
+                arrowX = Plotly.Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
+                arrowY = Plotly.Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
             }
             annPosPx.x = Plotly.Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
             annPosPx.y = Plotly.Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
@@ -549,12 +555,12 @@
                 // looks like there may be a cross-browser solution, see
                 // http://stackoverflow.com/questions/5364980/
                 //    how-to-get-the-width-of-an-svg-tspan-element
-                var ax0 = annPosPx.x + dx,
-                    ay0 = annPosPx.y + dy,
+                var arrowX0 = annPosPx.x + dx,
+                    arrowY0 = annPosPx.y + dy,
 
                     // create transform matrix and related functions
                     transform =
-                        Plotly.Lib.rotationXYMatrix(textangle, ax0, ay0),
+                        Plotly.Lib.rotationXYMatrix(textangle, arrowX0, arrowY0),
                     applyTransform = Plotly.Lib.apply2DTransform(transform),
                     applyTransform2 = Plotly.Lib.apply2DTransform2(transform),
 
@@ -562,10 +568,10 @@
                     xHalf = annbg.attr('width')/2,
                     yHalf = annbg.attr('height')/2,
                     edges = [
-                        [ax0 - xHalf, ay0 - yHalf, ax0 - xHalf, ay0 + yHalf],
-                        [ax0 - xHalf, ay0 + yHalf, ax0 + xHalf, ay0 + yHalf],
-                        [ax0 + xHalf, ay0 + yHalf, ax0 + xHalf, ay0 - yHalf],
-                        [ax0 + xHalf, ay0 - yHalf, ax0 - xHalf, ay0 - yHalf]
+                        [arrowX0 - xHalf, arrowY0 - yHalf, arrowX0 - xHalf, arrowY0 + yHalf],
+                        [arrowX0 - xHalf, arrowY0 + yHalf, arrowX0 + xHalf, arrowY0 + yHalf],
+                        [arrowX0 + xHalf, arrowY0 + yHalf, arrowX0 + xHalf, arrowY0 - yHalf],
+                        [arrowX0 + xHalf, arrowY0 - yHalf, arrowX0 - xHalf, arrowY0 - yHalf]
                     ].map(applyTransform2);
 
                 // Remove the line if it ends inside the box.  Use ray
@@ -574,7 +580,7 @@
                 // to get the parity of the number of intersections.
                 if(edges.reduce(function(a, x) {
                             return a ^
-                                !!lineIntersect(ax, ay, ax + 1e6, ay + 1e6,
+                                !!lineIntersect(arrowX, arrowY, arrowX + 1e6, arrowY + 1e6,
                                     x[0], x[1], x[2], x[3]);
                         },false)) {
                     // no line or arrow - so quit drawArrow now
@@ -582,11 +588,11 @@
                 }
 
                 edges.forEach(function(x){
-                    var p = lineIntersect(ax0, ay0, ax, ay,
+                    var p = lineIntersect(arrowX0, arrowY0, arrowX, arrowY,
                                 x[0], x[1], x[2], x[3]);
                     if(p) {
-                        ax0 = p.x;
-                        ay0 = p.y;
+                        arrowX0 = p.x;
+                        arrowY0 = p.y;
                     }
                 });
 
@@ -599,7 +605,7 @@
                     .attr('data-index', String(index));
 
                 var arrow = arrowgroup.append('path')
-                    .attr('d', 'M'+ax0+','+ay0+'L'+ax+','+ay)
+                    .attr('d', 'M'+arrowX0+','+arrowY0+'L'+arrowX+','+arrowY)
                     .style('stroke-width', strokewidth+'px')
                     .call(Plotly.Color.stroke,
                         Plotly.Color.rgb(arrowColor));
@@ -611,8 +617,8 @@
                     .classed('anndrag', true)
                     .attr({
                         'data-index': String(index),
-                        d: 'M3,3H-3V-3H3ZM0,0L' + (ax0-ax) + ',' + (ay0-ay),
-                        transform:'translate('+ax+','+ay+')'
+                        d: 'M3,3H-3V-3H3ZM0,0L' + (arrowX0-arrowX) + ',' + (arrowY0-arrowY),
+                        transform:'translate('+arrowX+','+arrowY+')'
                     })
                     .style('stroke-width', (strokewidth+6)+'px')
                     .call(Plotly.Color.stroke, 'rgba(0,0,0,0)')
@@ -652,11 +658,11 @@
                                 xcenter, ycenter);
 
                             update[annbase+'.x'] = xa ?
-                                (options.x+dx / xa._m) :
-                                ((ax+dx-gs.l) / gs.w);
+                                (options.x + dx / xa._m) :
+                                ((arrowX + dx - gs.l) / gs.w);
                             update[annbase+'.y'] = ya ?
-                                (options.y+dy / ya._m) :
-                                (1 - ((ay+dy-gs.t) / gs.h));
+                                (options.y + dy / ya._m) :
+                                (1 - ((arrowY + dy - gs.t) / gs.h));
 
                             anng.attr({
                                 transform: 'rotate(' + textangle + ',' +
@@ -921,40 +927,49 @@
                 ya = Plotly.Axes.getFromId(gd, ann.yref);
             if(!(xa || ya)) return;
 
-            var annBB,
-                textWidth = ann._xsize || 0,
-                textHeight = ann._ysize || 0;
+            var halfWidth = (ann._xsize || 0)/2,
+                xShift = ann._xshift || 0,
+                halfHeight = (ann._ysize || 0)/2,
+                yShift = ann._yshift || 0,
+                leftSize = halfWidth - xShift,
+                rightSize = halfWidth + xShift,
+                topSize = halfHeight - yShift,
+                bottomSize = halfHeight + yShift;
             if(ann.showarrow) {
                 var headSize = 3 * ann.arrowsize * ann.arrowwidth;
-                annBB = {
-                    left: Math.min(ann.ax - textWidth / 2, -headSize),
-                    right: Math.max(ann.ax + textWidth / 2, headSize),
-                    top: Math.min(ann.ay - textHeight / 2, -headSize),
-                    bottom: Math.max(ann.ay + textHeight / 2, headSize)
-                };
+                leftSize = Math.max(leftSize, headSize);
+                rightSize = Math.max(rightSize, headSize);
+                topSize = Math.max(topSize, headSize);
+                bottomSize = Math.max(bottomSize, headSize);
+                // annBB = {
+                //     left: Math.min(ann.ax - textWidth / 2, -headSize),
+                //     right: Math.max(ann.ax + textWidth / 2, headSize),
+                //     top: Math.min(ann.ay - textHeight / 2, -headSize),
+                //     bottom: Math.max(ann.ay + textHeight / 2, headSize)
+                // };
             }
-            else {
-                annBB = {
-                    left: textWidth *
-                        ({center: -0.5, right: -1}[ann.xanchor] || 0),
-                    right: textWidth *
-                        ({center: 0.5, right: 0}[ann.xanchor] || 1),
-                    top: textHeight *
-                        ({middle: -0.5, top: 0}[ann.yanchor] || 1),
-                    bottom: textHeight *
-                        ({middle: 0.5, top: 1}[ann.yanchor] || 0)
-                };
-            }
+            // else {
+            //     annBB = {
+            //         left: textWidth *
+            //             ({center: -0.5, right: -1}[ann.xanchor] || 0),
+            //         right: textWidth *
+            //             ({center: 0.5, right: 0}[ann.xanchor] || 1),
+            //         top: textHeight *
+            //             ({middle: -0.5, top: 0}[ann.yanchor] || 1),
+            //         bottom: textHeight *
+            //             ({middle: 0.5, top: 1}[ann.yanchor] || 0)
+            //     };
+            // }
             if(xa && xa.autorange) {
                 Plotly.Axes.expand(xa, [xa.l2c(ann.x)],{
-                    ppadplus: annBB.right,
-                    ppadminus: -annBB.left
+                    ppadplus: rightSize,
+                    ppadminus: leftSize
                 });
             }
             if(ya && ya.autorange) {
                 Plotly.Axes.expand(ya, [ya.l2c(ann.y)], {
-                    ppadplus: annBB.bottom,
-                    ppadminus: -annBB.top
+                    ppadplus: bottomSize,
+                    ppadminus: topSize
                 });
             }
         });
