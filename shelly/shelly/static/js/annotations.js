@@ -774,7 +774,11 @@
                         window.onmousemove = null;
                         window.onmouseup = null;
                         Plotly.Fx.setCursor(el3);
-                        if(dragged) Plotly.relayout(gd, update);
+                        if(dragged) {
+                            Plotly.relayout(gd, update);
+                            var notesBox = $('.js-notes-box-panel')[0];
+                            if(notesBox) notesBox.redraw(notesBox.selectedObj);
+                        }
                         return Plotly.Lib.pauseEvent(e2);
                     };
 
