@@ -455,7 +455,6 @@
                     if(v < 1/3) anchor = 'left';
                     else if(v > 2/3) anchor = 'right';
                     else anchor = 'center';
-                    // return Plotly.Lib.constrain(Math.floor(2 - v * 3 ), -0.5, 0.5);
                 }
                 return {
                     center: 0,
