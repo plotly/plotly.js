@@ -988,25 +988,7 @@
                 rightSize = Math.max(rightSize, headSize);
                 topSize = Math.max(topSize, headSize);
                 bottomSize = Math.max(bottomSize, headSize);
-                // annBB = {
-                //     left: Math.min(ann.ax - textWidth / 2, -headSize),
-                //     right: Math.max(ann.ax + textWidth / 2, headSize),
-                //     top: Math.min(ann.ay - textHeight / 2, -headSize),
-                //     bottom: Math.max(ann.ay + textHeight / 2, headSize)
-                // };
             }
-            // else {
-            //     annBB = {
-            //         left: textWidth *
-            //             ({center: -0.5, right: -1}[ann.xanchor] || 0),
-            //         right: textWidth *
-            //             ({center: 0.5, right: 0}[ann.xanchor] || 1),
-            //         top: textHeight *
-            //             ({middle: -0.5, top: 0}[ann.yanchor] || 1),
-            //         bottom: textHeight *
-            //             ({middle: 0.5, top: 1}[ann.yanchor] || 0)
-            //     };
-            // }
             if(xa && xa.autorange) {
                 Plotly.Axes.expand(xa, [xa.l2c(ann.x)],{
                     ppadplus: rightSize,
