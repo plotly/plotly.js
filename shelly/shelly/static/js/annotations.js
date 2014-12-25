@@ -352,7 +352,19 @@
                     plotSize = (axLetter === 'x' ? gs.w : gs.h),
                     halfSizeFrac = (oldPrivate['_' + axLetter + 'size'] || 0) /
                         (2 * plotSize);
-                if(axOld) { // data -> paper
+                if(axOld && axNew) { // data -> different data
+                    // go to the same fraction of the axis length
+                    // whether or not these axes share a domain
+
+                    // first convert to fraction of the axis
+                    position = (position - axOld.range[0]) /
+                        (axOld.range[1] - axOld.range[0]);
+
+                    // then convert to new data coordinates at the same fraction
+                    position = axNew.range[0] +
+                        position * (axNew.range[1] - axNew.range[0]);
+                }
+                else if(axOld) { // data -> paper
                     // first convert to fraction of the axis
                     position = (position - axOld.range[0]) /
                         (axOld.range[1] - axOld.range[0]);
@@ -371,13 +383,7 @@
                         else if(position + posPlus > 4/3) position = posPlus;
                     }
                 }
-                if(axNew) { // paper -> data
-                    // note: data -> different data sees both transformations
-                    // this and the immediately above. If the axes are overlaying
-                    // this should keep the annotation in the same place. And if
-                    // they are separate, this should at least put the annotation
-                    // in a visible place on the new axis
-
+                else if(axNew) { // paper -> data
                     // first see if we need to adjust auto alignment
                     if(autoAnchor) {
                         if(position < 1/3) position += halfSizeFrac;
