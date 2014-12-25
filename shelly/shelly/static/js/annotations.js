@@ -348,9 +348,28 @@
                 axTypeOld = oldPrivate['_' + axLetter + 'type'];
 
             if(optionsEdit[axLetter + 'ref']!==undefined) {
+                var autoAnchor = optionsIn[axLetter + 'anchor'] === 'auto',
+                    plotSize = (axLetter === 'x' ? gs.w : gs.h),
+                    halfSizeFrac = (oldPrivate['_' + axLetter + 'size'] || 0) /
+                        (2 * plotSize);
                 if(axOld) { // data -> paper
+                    // first convert to fraction of the axis
                     position = (position - axOld.range[0]) /
                         (axOld.range[1] - axOld.range[0]);
+
+                    // next scale the axis to the whole plot
+                    position = axOld.domain[0] +
+                        position * (axOld.domain[1] - axOld.domain[0]);
+
+                    // finally see if we need to adjust auto alignment
+                    // because auto always means middle / center alignment for data,
+                    // but it changes for page alignment based on the closest side
+                    if(autoAnchor) {
+                        var posPlus = position + halfSizeFrac,
+                            posMinus = position - halfSizeFrac;
+                        if(position + posMinus < 2/3) position = posMinus;
+                        else if(position + posPlus > 4/3) position = posPlus;
+                    }
                 }
                 if(axNew) { // paper -> data
                     // note: data -> different data sees both transformations
@@ -358,8 +377,20 @@
                     // this should keep the annotation in the same place. And if
                     // they are separate, this should at least put the annotation
                     // in a visible place on the new axis
-                    position = axNew.range[0] + position *
-                        (axNew.range[1] - axNew.range[0]);
+
+                    // first see if we need to adjust auto alignment
+                    if(autoAnchor) {
+                        if(position < 1/3) position += halfSizeFrac;
+                        else if(position > 2/3) position -= halfSizeFrac;
+                    }
+
+                    // next convert to fraction of the axis
+                    position = (position - axNew.domain[0]) /
+                        (axNew.domain[1] - axNew.domain[0]);
+
+                    // finally convert to data coordinates
+                    position = axNew.range[0] +
+                        position * (axNew.range[1] - axNew.range[0]);
                 }
             }
 
