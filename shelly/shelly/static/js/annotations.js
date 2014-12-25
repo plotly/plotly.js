@@ -743,6 +743,10 @@
                     if(Plotly.Fx.dragClear(gd)) return true;
 
                     var el3 = d3.select(this),
+                        // paperBox = gd._fullLayout._paper.node().getBoundingClientRect(),
+                        // annBox = this.getBoundingClientRect(),
+                        // x0 = annBox.left + (annBox.width - options._xsize)/2 - paperBox.left,
+                        // y0 = annBox.top + (annBox.height - options._ysize)/2 - paperBox.top,
                         x0 = Number(el3.attr('x')),
                         y0 = Number(el3.attr('y')),
                         update = {},
@@ -774,14 +778,23 @@
                             drawArrow(dx, dy);
                         }
                         else {
-                            update[annbase+'.x'] = xa ?
-                                (options.x + dx / xa._m) :
-                                (Plotly.Fx.dragAlign(x0 + dx,
-                                    options._xsize, gs.l, gs.l + gs.w, options.xanchor));
-                            update[annbase+'.y'] = ya ?
-                                (options.y + dy / ya._m) :
-                                (Plotly.Fx.dragAlign(y0 + dy + options._ysize,
-                                    -options._ysize, gs.t + gs.h, gs.t, options.yanchor));
+                            if(xa) update[annbase + '.x'] = options.x + dx / xa._m;
+                            else {
+                                var widthFraction = options._xsize / gs.w,
+                                    xLeft = options.x + options._xshift / gs.w - widthFraction / 2;
+
+                                update[annbase + '.x'] = Plotly.Fx.dragAlign(xLeft + dx / gs.w,
+                                    widthFraction, 0, 1, options.xanchor);
+                            }
+
+                            if(ya) update[annbase + '.y'] = options.y + dy / ya._m;
+                            else {
+                                var heightFraction = options._ysize / gs.h,
+                                    yBottom = options.y - options._yshift / gs.h - heightFraction / 2;
+
+                                update[annbase + '.y'] = Plotly.Fx.dragAlign(yBottom - dy / gs.h,
+                                    heightFraction, 0, 1, options.yanchor);
+                            }
                             if(!xa || !ya) {
                                 csr = Plotly.Fx.dragCursors(
                                     xa ? 0.5 : update[annbase + '.x'],
