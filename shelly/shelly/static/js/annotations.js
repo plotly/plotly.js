@@ -450,9 +450,12 @@
             options._w = annwidth;
             options._h = annheight;
 
-            function fshift(v,anchor){
+            function shiftFraction(v, anchor){
                 if(anchor==='auto'){
-                    return Plotly.Lib.constrain(Math.floor(v * 3 - 1), -0.5, 0.5);
+                    if(v < 1/3) anchor = 'left';
+                    else if(v > 2/3) anchor = 'right';
+                    else anchor = 'center';
+                    // return Plotly.Lib.constrain(Math.floor(2 - v * 3 ), -0.5, 0.5);
                 }
                 return {
                     center: 0,
@@ -471,7 +474,8 @@
                     dimAngle = (textangle + (axLetter==='x' ? 0 : 90)) * Math.PI/180,
                     annSize = outerwidth * Math.abs(Math.cos(dimAngle)) +
                               outerheight * Math.abs(Math.sin(dimAngle)),
-                    anchor = options[axLetter + 'anchor'];
+                    anchor = options[axLetter + 'anchor'],
+                    alignPosition;
 
                 // calculate pixel position
                 if(ax) {
@@ -485,11 +489,14 @@
                         return;
                     }
                     annPosPx[axLetter] = ax._offset+ax.l2p(options[axLetter]);
+                    alignPosition = 0.5;
                 }
                 else {
+                    alignPosition = options[axLetter];
+                    if(axLetter === 'y') alignPosition = 1 - alignPosition;
                     annPosPx[axLetter] = (axLetter === 'x') ?
-                        (gs.l + (gs.w) * options[axLetter]) :
-                        (gs.t + (gs.h) * (1 - options[axLetter]));
+                        (gs.l + gs.w * alignPosition) :
+                        (gs.t + gs.h * alignPosition);
                 }
 
                 var alignShift = 0;
@@ -497,7 +504,7 @@
                     alignShift = options['a' + axLetter];
                 }
                 else {
-                    alignShift = annSize * fshift(ax ? 0 : options[axLetter], anchor);
+                    alignShift = annSize * shiftFraction(alignPosition, anchor);
                 }
                 annPosPx[axLetter] += alignShift;
 
@@ -733,12 +740,12 @@
                         else {
                             update[annbase+'.x'] = xa ?
                                 (options.x + dx / xa._m) :
-                                (Plotly.Fx.dragAlign(x0 + dx + borderfull,
-                                    annwidth, gs.l, gs.l + gs.w, options.xanchor));
+                                (Plotly.Fx.dragAlign(x0 + dx,
+                                    options._xsize, gs.l, gs.l + gs.w, options.xanchor));
                             update[annbase+'.y'] = ya ?
                                 (options.y + dy / ya._m) :
-                                (Plotly.Fx.dragAlign(y0+dy+borderfull+annheight,
-                                    -annheight,gs.t+gs.h,gs.t,options.yanchor));
+                                (Plotly.Fx.dragAlign(y0 + dy + options._ysize,
+                                    -options._ysize, gs.t + gs.h, gs.t, options.yanchor));
                             if(!xa || !ya) {
                                 csr = Plotly.Fx.dragCursors(
                                     xa ? 0.5 : update[annbase + '.x'],
