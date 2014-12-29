@@ -157,6 +157,9 @@
             coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
             coerce('ax');
             coerce('ay');
+
+            // if you have one part of arrow length you should have both
+            Plotly.Lib.noneOrBoth(annIn, annOut, 'ax', 'ay');
         }
         coerce('text', showArrow ? '&nbsp;' : 'new text');
         coerce('textangle');
@@ -194,6 +197,9 @@
             // xanchor, yanchor
             if(!showArrow) coerce(axLetter + 'anchor');
         });
+
+        // if you have one coordinate you should have both
+        Plotly.Lib.noneOrBoth(annIn, annOut, 'x', 'y');
 
         return annOut;
     }
