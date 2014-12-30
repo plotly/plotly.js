@@ -12,6 +12,8 @@
     // centerx is a center of scaling tuned for maximum scalability of
     // the arrowhead ie throughout mag=0.3..3 the head is joined smoothly
     // to the line, but the endpoint moves.
+    // backoff is the distance to move the arrowhead, and the end of the
+    // line, in order to end at the right place
     // TODO: option to have the pointed-to
     // point a little in front of the end of the line, as people tend
     // to want a bit of a gap there...
@@ -19,25 +21,40 @@
         // no arrow
         '',
         // wide with flat back
-        {path: 'M-2,-3V3L1,0Z', centerx: 0.4},
+        {
+            path: 'M-2.4,-3V3L0.6,0Z',
+            backoff: 0.6
+        },
         // narrower with flat back
-        {path: 'M-3,-2.5V2.5L2,0Z', centerx: 0.7},
+        {
+            path: 'M-3.7,-2.5V2.5L1.3,0Z',
+            backoff: 1.3
+        },
         // barbed
-        {path: 'M-4,-3L-1.2,-0.2V0.2L-4,3L2,0Z', centerx: 0.45},
+        {
+            path: 'M-4.45,-3L-1.65,-0.2V0.2L-4.45,3L1.55,0Z',
+            backoff: 1.55
+        },
         // wide line-drawn
         {
             path: 'M-2.2,-2.2L-0.2,-0.2V0.2L-2.2,2.2L-1.4,3L1.6,0L-1.4,-3Z',
-            centerx: 0
+            backoff: 1.6
         },
         // narrower line-drawn
         {
-            path: 'M-4.2,-2.1L-0.4,-0.2V0.2L-4.2,2.1L-3.8,3L2.2,0L-3.8,-3Z',
-            centerx: 0.2
+            path: 'M-4.4,-2.1L-0.6,-0.2V0.2L-4.4,2.1L-4,3L2,0L-4,-3Z',
+            backoff: 2
         },
         // circle
-        {path: 'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z', centerx: 0},
+        {
+            path: 'M2,0A2,2 0 1,1 0,-2A2,2 0 0,1 2,0Z',
+            backoff: 0
+        },
         // square
-        {path: 'M2,2V-2H-2V2Z', centerx: 0}
+        {
+            path: 'M2,2V-2H-2V2Z',
+            backoff: 0
+        }
     ];
 
     annotations.attributes = {
@@ -881,31 +898,71 @@
 
         if(typeof ends !== 'string' || !ends) ends = 'end';
 
-        var start,
+        var scale = (Plotly.Drawing.getPx(el3,'stroke-width') || 1) * mag,
+            stroke = el3.style('stroke') || '#444',
+            opacity = el3.style('stroke-opacity') || 1,
+            doStart = ends.indexOf('start') >= 0,
+            doEnd = ends.indexOf('end') >= 0,
+            backOff = headStyle.backoff * scale,
+            start,
             end,
-            dstart,
-            dend,
-            pathlen;
+            startRot,
+            endRot;
 
         if(el.nodeName === 'line') {
-            start = {x: el3.attr('x1'), y: el3.attr('y1')};
-            end = {x: el3.attr('x2'), y: el3.attr('y2')};
-            dstart = end;
-            dend = start;
+            start = {x: +el3.attr('x1'), y: +el3.attr('y1')};
+            end = {x: +el3.attr('x2'), y: +el3.attr('y2')};
+            startRot = Math.atan2(start.y - end.y, start.x - end.x);
+            endRot = startRot + Math.PI;
+            if(backOff) {
+                var backOffX = backOff * Math.cos(startRot),
+                    backOffY = backOff * Math.sin(startRot);
+
+                if(doStart) {
+                    start.x -= backOffX;
+                    start.y -= backOffY;
+                    el3.attr({x1: start.x, y1: start.y});
+                }
+                if(doEnd) {
+                    end.x += backOffX;
+                    end.y += backOffY;
+                    el3.attr({x2: end.x, y2: end.y});
+                }
+            }
         }
         else if(el.nodeName === 'path') {
-            start = el.getPointAtLength(0);
-            dstart = el.getPointAtLength(0.1);
-            pathlen = el.getTotalLength();
-            end = el.getPointAtLength(pathlen);
-            dend = el.getPointAtLength(pathlen - 0.1);
+            var pathlen = el.getTotalLength(),
+                // using dash to hide the backOff region of the path.
+                // if we ever allow dash for the arrow we'll have to
+                // do better than this hack... maybe just manually
+                // combine the two
+                dashArray = '';
+
+            if(doStart) {
+                var start0 = el.getPointAtLength(0),
+                    dstart = el.getPointAtLength(0.1);
+                startRot = Math.atan2(start0.y - dstart.y, start0.x - dstart.x);
+                start = el.getPointAtLength(Math.min(backOff, pathlen));
+                if(backOff) dashArray = '0px,' + backOff + 'px,';
+            }
+
+            if(doEnd) {
+                var end0 = el.getPointAtLength(pathlen),
+                    dend = el.getPointAtLength(pathlen - 0.1);
+                endRot = Math.atan2(end0.y - dend.y, end0.x - dend.x);
+                end = el.getPointAtLength(Math.max(0, pathlen - backOff));
+
+                if(backOff) {
+                    var shortening = dashArray ? 2 * backOff : backOff;
+                    dashArray += (pathlen - shortening) + 'px,' + pathlen + 'px';
+                }
+            }
+            else if(dashArray) dashArray += pathlen + 'px';
+
+            if(dashArray) el3.style('stroke-dasharray', dashArray);
         }
 
-        var drawhead = function(p, q) {
-            var rot = Math.atan2(p.y - q.y, p.x - q.x) * 180 / Math.PI,
-                scale = (Plotly.Drawing.getPx(el3,'stroke-width') || 1) * mag,
-                stroke = el3.style('stroke') || '#444',
-                opacity = el3.style('stroke-opacity') || 1;
+        var drawhead = function(p, rot) {
             if(style>5) rot=0; // don't rotate square or circle
             d3.select(el.parentElement).append('path')
                 .attr({
@@ -913,8 +970,7 @@
                     d: headStyle.path,
                     transform:
                         'translate(' + p.x + ',' + p.y + ')' +
-                        'rotate(' + rot + ')' +
-                        'translate(' + (headStyle.centerx * scale * (1 / mag - 1)) + ',0)' +
+                        'rotate(' + (rot * 180 / Math.PI) + ')' +
                         'scale(' + scale + ')'
                 })
                 .style({
@@ -924,8 +980,8 @@
                 });
         };
 
-        if(ends.indexOf('start') >= 0) drawhead(start, dstart);
-        if(ends.indexOf('end') >= 0) drawhead(end, dend);
+        if(doStart) drawhead(start, startRot);
+        if(doEnd) drawhead(end, endRot);
     }
 
     // allArrowheads: call twice to make an arrowheads dropdown.
