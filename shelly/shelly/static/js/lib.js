@@ -402,12 +402,16 @@
         if($.isNumeric(propStr)) propStr = String(propStr);
         else if(typeof propStr !== 'string') throw 'bad property string';
 
-        var prop, parent,
-            indexed, indices,
-            i, suffix, npArray,
-            j = 0,
+        var j = 0,
             nestedCont = container,
-            propParts = propStr.split('.');
+            propParts = propStr.split('.'),
+            prop,
+            parent,
+            indexed,
+            indices,
+            i,
+            suffix,
+            npArray;
         // check for parts of the nesting hierarchy that are numbers
         // (ie array elements)
         while(j < propParts.length) {
@@ -437,9 +441,7 @@
         // to apply different to each entry. Get can also return either
         suffix = propStr.substr(propStr.indexOf('[-1]')+4);
 
-        if(suffix.charAt(0)==='.') {
-            suffix = suffix.substr(1);
-        }
+        if(suffix.charAt(0)==='.') suffix = suffix.substr(1);
 
         function subNP(entry) {
             return lib.nestedProperty(entry,suffix);
@@ -455,7 +457,7 @@
             var allsame = true, out = [];
             for(i=0; i<npArray.length; i++) {
                 out[i] = npArray[i].get();
-                if(out[i]!==out[0]) { allsame = false; }
+                if(out[i]!==out[0]) allsame = false;
             }
             return allsame ? out[0] : out;
         }
