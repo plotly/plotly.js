@@ -396,31 +396,38 @@
     };
 
     // convert a string s (such as 'xaxis.range[0]')
-    // representing a property of nested object o into set and get methods
+    // representing a property of nested object into set and get methods
     // also return the string and object so we don't have to keep track of them
-    lib.nestedProperty = function(o,s) {
+    lib.nestedProperty = function(container, propStr) {
+        if($.isNumeric(propStr)) propStr = String(propStr);
+        else if(typeof propStr !== 'string') throw 'bad property string';
+
         var prop, parent,
             indexed, indices,
             i, suffix, npArray,
             j = 0,
-            cont = o,
-            aa = s.split('.');
+            nestedCont = container,
+            propParts = propStr.split('.');
         // check for parts of the nesting hierarchy that are numbers
         // (ie array elements)
-        while(j<aa.length) {
+        while(j < propParts.length) {
             // look for non-bracket chars, then any number of [##] blocks
-            indexed = String(aa[j]).match(/^([^\[\]]+)((\[\-?[0-9]*\])+)$/);
+            indexed = String(propParts[j]).match(/^([^\[\]]+)((\[\-?[0-9]*\])+)$/);
             if(indexed) {
                 indices = indexed[2]
                     .substr(1,indexed[2].length-2)
                     .split('][');
-                aa.splice(j,1,indexed[1]);
+                propParts.splice(j,1,indexed[1]);
                 for(i=0; i<indices.length; i++) {
                     j++;
-                    aa.splice(j,0,Number(indices[i]));
+                    propParts.splice(j,0,Number(indices[i]));
                 }
             }
             j++;
+        }
+
+        if(typeof container !== 'object') {
+            return badContainer(container, propStr, propParts);
         }
 
         // Special array index -1 gets and sets properties of an entire
@@ -428,7 +435,7 @@
         // eg: "annotations[-1].showarrow" sets showarrow for all annotations
         // set() can take either a single value to apply to all or an array
         // to apply different to each entry. Get can also return either
-        suffix = s.substr(s.indexOf('[-1]')+4);
+        suffix = propStr.substr(propStr.indexOf('[-1]')+4);
 
         if(suffix.charAt(0)==='.') {
             suffix = suffix.substr(1);
@@ -454,46 +461,56 @@
         }
 
         // dive in to the 2nd to last level
-        for(j=0; j<aa.length-1; j++) {
-            if(aa[j]===-1) {
-                npArray = cont.map(subNP);
+        for(j=0; j<propParts.length-1; j++) {
+            if(propParts[j]===-1) {
+                npArray = nestedCont.map(subNP);
                 return {
                     set: subSet,
                     get: subGet,
-                    astr: s,
-                    parts: aa,
+                    astr: propStr,
+                    parts: propParts,
                     parent: parent,
-                    obj: o
+                    obj: container
                 };
             }
 
             // make the heirarchy if it doesn't exist
-            if(!(aa[j] in cont)) {
-                cont[aa[j]] = (typeof aa[j+1]==='string') ? {} : [];
+            if(!(propParts[j] in nestedCont)) {
+                nestedCont[propParts[j]] = (typeof propParts[j+1]==='string') ? {} : [];
             }
 
-            if(typeof aa[j+1] === 'number') {
-                parent = cont;
-            } else parent = cont[aa[j]];
+            if(typeof propParts[j+1] === 'number') parent = nestedCont;
+            else parent = nestedCont[propParts[j]];
 
-            cont = cont[aa[j]];
+            nestedCont = nestedCont[propParts[j]];
         }
-        prop = aa[j];
+        prop = propParts[j];
 
         return {
             set: function(v){
-                if(v===undefined || v===null) { delete cont[prop]; }
+                if(v===undefined || v===null) delete nestedCont[prop];
                 // references to same structure across traces causes undefined behaviour
-                else if (Array.isArray(v)) cont[prop] = v.map( lib.identity );
-                else cont[prop] = v;
+                else if (Array.isArray(v)) nestedCont[prop] = v.map(lib.identity);
+                else nestedCont[prop] = v;
             },
-            get:function(){ return cont[prop]; },
-            astr:s,
-            parts:aa,
+            get: function(){ return nestedCont[prop]; },
+            astr: propStr,
+            parts: propParts,
             parent: parent,
-            obj:o
+            obj: container
         };
     };
+
+    function badContainer(container, propStr, propParts) {
+        return {
+            set: function() { throw 'bad container'; },
+            get: function() {},
+            astr: propStr,
+            parts: propParts,
+            parent: undefined,
+            obj: container
+        };
+    }
 
     // to prevent event bubbling, in particular text selection during drag.
     // see http://stackoverflow.com/questions/5429827/
