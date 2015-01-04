@@ -130,7 +130,7 @@
     annotations.supplyDefaults = function(layoutIn, layoutOut) {
         var containerIn = layoutIn.annotations || [];
         layoutOut.annotations = containerIn.map(function(annIn) {
-            return supplyAnnotationDefaults(annIn, layoutOut);
+            return supplyAnnotationDefaults(annIn || {}, layoutOut);
         });
     };
 
