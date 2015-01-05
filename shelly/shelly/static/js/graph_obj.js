@@ -764,6 +764,9 @@
             delete ax.islog;
             delete ax.isdate;
             delete ax.categories; // replaced by _categories
+
+            // prune empty domain arrays made before the new nestedProperty
+            Plotly.Lib.nestedProperty(ax,'domain[2]').set();
         });
 
         (layout.annotations||[]).forEach(function(ann) {
@@ -924,6 +927,10 @@
             else if(trace.textposition) {
                 trace.textposition = cleanTextPosition(trace.textposition);
             }
+
+            // prune empty containers made before the new nestedProperty
+            Plotly.Lib.nestedProperty(trace, 'line._XXX').set();
+            Plotly.Lib.nestedProperty(trace, 'marker.line._XXX').set();
         });
     }
 
