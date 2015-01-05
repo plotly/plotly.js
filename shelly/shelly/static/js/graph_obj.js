@@ -766,7 +766,7 @@
             delete ax.categories; // replaced by _categories
 
             // prune empty domain arrays made before the new nestedProperty
-            Plotly.Lib.nestedProperty(ax,'domain[2]').set();
+            if(emptyContainer(ax, 'domain')) delete ax.domain;
         });
 
         (layout.annotations||[]).forEach(function(ann) {
@@ -929,9 +929,18 @@
             }
 
             // prune empty containers made before the new nestedProperty
-            Plotly.Lib.nestedProperty(trace, 'line._XXX').set();
-            Plotly.Lib.nestedProperty(trace, 'marker.line._XXX').set();
+            if(emptyContainer(trace, 'line')) delete trace.line;
+            if('marker' in trace) {
+                if(emptyContainer(trace.marker, 'line')) delete trace.marker.line;
+                if(emptyContainer(trace, 'marker')) delete trace.marker;
+            }
         });
+    }
+
+    function emptyContainer(outer, innerStr) {
+        return (innerStr in outer) &&
+            (typeof outer[innerStr] === 'object') &&
+            (Object.keys(outer[innerStr]).length === 0);
     }
 
     // for use in Plotly.Lib.syncOrAsync, check if there are any
