@@ -764,6 +764,9 @@
             delete ax.islog;
             delete ax.isdate;
             delete ax.categories; // replaced by _categories
+
+            // prune empty domain arrays made before the new nestedProperty
+            if(emptyContainer(ax, 'domain')) delete ax.domain;
         });
 
         (layout.annotations||[]).forEach(function(ann) {
@@ -924,7 +927,20 @@
             else if(trace.textposition) {
                 trace.textposition = cleanTextPosition(trace.textposition);
             }
+
+            // prune empty containers made before the new nestedProperty
+            if(emptyContainer(trace, 'line')) delete trace.line;
+            if('marker' in trace) {
+                if(emptyContainer(trace.marker, 'line')) delete trace.marker.line;
+                if(emptyContainer(trace, 'marker')) delete trace.marker;
+            }
         });
+    }
+
+    function emptyContainer(outer, innerStr) {
+        return (innerStr in outer) &&
+            (typeof outer[innerStr] === 'object') &&
+            (Object.keys(outer[innerStr]).length === 0);
     }
 
     // for use in Plotly.Lib.syncOrAsync, check if there are any
