@@ -2131,6 +2131,7 @@
                         p.parts[1]==='autorange' ||
                         p.parts[1]==='rangemode' ||
                         p.parts[1]==='type' ||
+                        p.parts[1]==='domain' ||
                         ai.match(/^(bar|box|font)/)) {
                     docalc = true;
                 }

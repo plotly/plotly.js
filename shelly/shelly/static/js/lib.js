@@ -1852,6 +1852,19 @@
         return propOut.get();
     };
 
+    lib.noneOrBoth = function(containerIn, containerOut, attr1, attr2) {
+        // some attributes come in pairs, so if you have one of them
+        // in the input, you should copy the default value of the other
+        // to the input as well.
+        if(!containerIn) return;
+
+        var has1 = containerIn[attr1] !== undefined && containerIn[attr1] !== null,
+            has2 = containerIn[attr2] !== undefined && containerIn[attr2] !== null;
+
+        if(has2 && !has1) containerIn[attr1] = containerOut[attr1];
+        else if(has1 && !has2) containerIn[attr2] = containerOut[attr2];
+    };
+
     lib.mergeArray = function(traceAttr, cd, cdAttr) {
         if($.isArray(traceAttr)) {
             var imax = Math.min(traceAttr.length, cd.length);
