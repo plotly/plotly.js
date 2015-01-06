@@ -2001,7 +2001,6 @@
         for(var ai in aobj) {
             var p = Plotly.Lib.nestedProperty(layout,ai),
                 vi = aobj[ai],
-                parent = p.parent,
                 plen = p.parts.length,
                 // p.parts may end with an index integer if the property is an array
                 pend = typeof p.parts[plen-1] === 'string' ? (plen-1) : (plen-2),
@@ -2010,7 +2009,8 @@
                 // leaf plus immediate parent
                 pleafPlus = p.parts[pend - 1] + '.' + pleaf,
                 // trunk nodes (everything except the leaf)
-                ptrunk = p.parts.slice(0, pend).join('.');
+                ptrunk = p.parts.slice(0, pend).join('.'),
+                parent = Plotly.Lib.nestedProperty(layout, ptrunk).get();
 
             redoit[ai] = aobj[ai];
 
