@@ -1426,6 +1426,17 @@
         });
     }
 
+    /**
+     * Add a data trace to an existing graph div.
+     *
+     * @param {Object} gd
+     * @param {Object} trace
+     */
+    Plotly.addTrace = function (gd, trace) {
+        gd.data.push(trace);
+        Plotly.redraw(gd);
+    };
+
     // -----------------------------------------------------
     // restyle and relayout: these two control all redrawing
     // for data (restyle) and everything else (relayout)
