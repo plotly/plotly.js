@@ -183,6 +183,10 @@
                 }
             }
             else z = trace.z.map(function(row){return row.map(cleanZ); });
+
+            if(Plotly.Plots.isContour(trace.type) || trace.connectgaps) {
+                interp2d(z);
+            }
         }
 
         // check whether we really can smooth (ie all boxes are about the same size)
@@ -257,8 +261,10 @@
     };
 
     function cleanZ(v) {
-        if(!v && v!==0) return null;
-        return Number(v);
+        if(!v && v!==0) return undefined;
+        v = Number(v);
+        if(isNaN(v)) return undefined;
+        return v;
     }
 
     function makeBoundArray(type, arrayIn, v0In, dvIn, numbricks, ax) {
@@ -301,6 +307,191 @@
         }
         return arrayOut;
     }
+
+    var INTERPTHRESHOLD = 0.0001;
+    function interp2d(z) {
+        // fill in any missing data in 2D array z using an iterative
+        // poisson equation solver with zero-derivative BC at edges
+        // amazingly, this just amounts to repeatedly averaging all the existing
+        // nearest neighbors (at least if we don't take x/y scaling into account)
+        var emptyPoints = findEmpties(z),
+            maxFractionalChange = 1,
+            i;
+
+        console.log(z, emptyPoints);
+
+        // one pass to fill in a starting value for all the empties
+        iterateInterp2d(z, emptyPoints);
+        console.log(z.map(function(row){ return row.slice(); }));
+
+        // we're don't need to iterate lone empties - remove them
+        for(i = 0; i < emptyPoints.length; i++) {
+            if(emptyPoints[i][2] < 4) break;
+        }
+        emptyPoints.splice(0, i);
+
+        for(i = 0; i < 100 && maxFractionalChange > INTERPTHRESHOLD; i++) {
+            maxFractionalChange = iterateInterp2d(z, emptyPoints);
+            console.log(i, maxFractionalChange,
+                z.map(function(row){ return row.slice(); }));
+        }
+    }
+
+    function findEmpties(z) {
+        // return a list of empty points in 2D array z
+        // each empty point z[i][j] gives an array [i, j, neighborCount]
+        // neighborCount is the count of 4 nearest neighbors that DO exist
+        // this is to give us an order of points to evaluate for interpolation.
+        // if no neighbors exist, we iteratively look for neighbors that HAVE
+        // neighbors, and add a fractional neighborCount
+        var empties = [],
+            neighborHash = {},
+            noNeighborList = [],
+            nextRow = z[0],
+            row = [],
+            blank = [0, 0, 0],
+            prevRow,
+            i,
+            j,
+            thisPt,
+            p,
+            neighborCount,
+            newNeighborHash,
+            foundNewNeighbors;
+
+        for(i = 0; i < z.length; i++) {
+            prevRow = row;
+            row = nextRow;
+            nextRow = z[i + 1] || [];
+            for(j = 0; j < row.length; j++) {
+                if(row[j]===undefined) {
+                    neighborCount = (row[j - 1] !== undefined ? 1 : 0) +
+                        (row[j + 1] !== undefined ? 1 : 0) +
+                        (prevRow[j] !== undefined ? 1 : 0) +
+                        (nextRow[j] !== undefined ? 1 : 0);
+
+                    if(neighborCount) {
+                        // for this purpose, don't count off-the-edge points
+                        // as undefined neighbors
+                        if(i === 0) neighborCount++;
+                        if(j === 0) neighborCount++;
+                        if(i === z.length - 1) neighborCount++;
+                        if(j === row.length - 1) neighborCount++;
+
+                        // if all neighbors that could exist do, we don't
+                        // need this for finding farther neighbors
+                        if(neighborCount < 4) {
+                            neighborHash[[i,j]] = [i, j, neighborCount];
+                        }
+
+                        empties.push([i, j, neighborCount]);
+                    }
+                    else noNeighborList.push([i, j]);
+                }
+            }
+        }
+
+        while(noNeighborList.length) {
+            newNeighborHash = {};
+            foundNewNeighbors = false;
+
+            // look for cells that now have neighbors but didn't before
+            for(p = noNeighborList.length - 1; p >= 0; p--) {
+                thisPt = noNeighborList[p];
+                i = thisPt[0];
+                j = thisPt[1];
+
+                neighborCount = ((neighborHash[[i - 1, j]] || blank)[2] +
+                    (neighborHash[[i + 1, j]] || blank)[2] +
+                    (neighborHash[[i, j - 1]] || blank)[2] +
+                    (neighborHash[[i, j + 1]] || blank)[2])/20;
+
+                if(neighborCount) {
+                    newNeighborHash[thisPt] = [i, j, neighborCount];
+                    noNeighborList.splice(p, 1);
+                    foundNewNeighbors = true;
+                }
+            }
+
+            if(!foundNewNeighbors) {
+                throw 'findEmpties iterated with no new neighbors';
+            }
+
+            // put these new cells into the main neighbor list
+            for(thisPt in newNeighborHash) {
+                neighborHash[thisPt] = newNeighborHash[thisPt];
+                empties.push(newNeighborHash[thisPt]);
+            }
+        }
+
+        // sort the full list in descending order of neighbor count
+        return empties.sort(function(a, b) { return b[2] - a[2]; });
+    }
+
+    var NEIGHBORSHIFTS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    function iterateInterp2d(z, emptyPoints) {
+        var maxFractionalChange = 0,
+            thisPt,
+            i,
+            j,
+            p,
+            q,
+            neighborShift,
+            neighborRow,
+            neighborVal,
+            neighborCount,
+            neighborSum,
+            initialVal,
+            minNeighbor,
+            maxNeighbor;
+
+        for(p = 0; p < emptyPoints.length; p++) {
+            thisPt = emptyPoints[p];
+            i = thisPt[0];
+            j = thisPt[1];
+            initialVal = z[i][j];
+            neighborSum = 0;
+            neighborCount = 0;
+
+            for (q = 0; q < 4; q++) {
+                neighborShift = NEIGHBORSHIFTS[q];
+                neighborRow = z[i + neighborShift[0]];
+                if(!neighborRow) continue;
+                neighborVal = neighborRow[j + neighborShift[1]];
+                if(neighborVal !== undefined) {
+                    neighborCount++;
+                    neighborSum += neighborVal;
+                    if(minNeighbor) {
+                        minNeighbor = Math.min(minNeighbor, neighborVal);
+                        maxNeighbor = Math.max(maxNeighbor, neighborVal);
+                    }
+                    else {
+                        minNeighbor = maxNeighbor = neighborVal;
+                    }
+                }
+            }
+
+            if(neighborCount === 0) {
+                throw 'iterateInterp2d order is wrong: no defined neighbors';
+            }
+
+            z[i][j] = neighborSum / neighborCount;
+
+            if(initialVal === undefined) {
+                if(neighborCount < 4) maxFractionalChange = 1;
+            }
+            else if(maxNeighbor > minNeighbor) {
+                maxFractionalChange = Math.max(maxFractionalChange,
+                    Math.abs(z[i][j] - initialVal) / (maxNeighbor - minNeighbor));
+            }
+        }
+
+        return maxFractionalChange;
+    }
+
+    heatmap.interp2d = interp2d;
+    heatmap.findEmpties = findEmpties;
+    heatmap.iterateInterp2d = iterateInterp2d;
 
     // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
     heatmap.plot = function(gd, plotinfo, cdheatmaps) {
