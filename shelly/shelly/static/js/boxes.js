@@ -56,8 +56,10 @@
             size: $.extend({arrayOk: false}, scatterMarker.size),
             color: $.extend({arrayOk: false}, scatterMarker.color),
             line: {
-                color: $.extend({arrayOk: false}, scatterMarker.line.color),
-                width: $.extend({arrayOk: false}, scatterMarker.line.width),
+                color: $.extend({arrayOk: false, dflt: '#444'},
+                    scatterMarker.line.color),
+                width: $.extend({arrayOk: false, dflt: 0},
+                    scatterMarker.line.width),
                 outliercolor: {
                     type: 'color'
                 },
