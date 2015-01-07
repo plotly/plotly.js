@@ -1476,6 +1476,7 @@
         var recalcAttrs = [
             'mode','visible','type','orientation','fill',
             'histfunc','histnorm','text',
+            'x', 'y', 'z',
             'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
             'line.width','showscale','zauto',
             'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
