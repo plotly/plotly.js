@@ -416,7 +416,6 @@
 
         var j = 0,
             propParts = propStr.split('.'),
-            parent,
             indexed,
             indices,
             i;
@@ -453,7 +452,6 @@
             get: npGet(container, propParts),
             astr: propStr,
             parts: propParts,
-            parent: parent,
             obj: container
         };
     };
@@ -618,7 +616,6 @@
             get: function() {},
             astr: propStr,
             parts: propParts,
-            parent: undefined,
             obj: container
         };
     }
