@@ -1513,6 +1513,100 @@
         if (typeof newIndices !== 'undefined' && currentIndices.length !== newIndices.length) {
             throw new Error('current and new indices must be of equal length.');
         }
+
+    }
+    /**
+     * A private function to reduce the type checking clutter in addTraces.
+     *
+     * @param gd
+     * @param traces
+     * @param newIndices
+     */
+    function checkAddTracesArgs(gd, traces, newIndices) {
+
+        // check that gd has attribute 'data' and 'data' is array
+        if (!Array.isArray(gd.data)) {
+            throw new Error('gd.data must be an array.');
+        }
+
+        // make sure traces exists
+        if (typeof traces === 'undefined') {
+            throw new Error('traces must be defined.');
+        }
+
+        // make sure traces is an array
+        if (!Array.isArray(traces)) {
+            traces = [traces];
+        }
+
+        // make sure each value in traces is an object
+        function valueIsAnObject(value) {
+            return (typeof value === 'object' && !(Array.isArray(value)));
+        }
+        if (!traces.every(valueIsAnObject)) {
+            throw new Error('all values in traces array must be non-array objects');
+        }
+
+        // make sure we have an index for each trace
+        if (typeof newIndices !== 'undefined' && newIndices.length !== traces.length) {
+            throw new Error(
+                'if indices is specified, traces.length must equal indices.length'
+            );
+        }
+    }
+
+    /**
+     * Add data traces to an existing graph div.
+     *
+     * @param {Object} gd The graph div
+     * @param {Object[]} gd.data The array of traces we're adding to
+     * @param {Object[]|Object} traces The object or array of objects to add
+     * @param {Number[]|Number} [newIndices=[gd.data.length]] Locations to add traces
+     *
+     */
+    Plotly.addTraces = function (gd, traces, newIndices) {
+        var i,
+            currentIndices;
+
+        // all validation is done elsewhere to remove clutter here
+        checkAddTracesArgs(gd, traces, newIndices);
+
+        // make sure traces is an array
+        if (!Array.isArray(traces)) {
+            traces = [traces];
+        }
+
+        // make sure indices is property defined
+        if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
+            newIndices = [newIndices];
+        } else if (typeof newIndices === 'undefined') {
+            newIndices = traces.map(function (_, i) {
+                return -traces.length + i;
+            });
+        }
+
+        for (i = 0; i < traces.length; i += 1) {
+            gd.data.push(traces[i]);
+        }
+
+        currentIndices = traces.map(function (_, i) {
+                return -traces.length + i;
+            });
+
+        try {
+            // this is redundant, but necessary to not catch later possible errors!
+            checkMoveTracesArgs(gd, currentIndices, newIndices);
+        }
+        catch(error) {
+
+            // something went wrong, reset gd to be safe and rethrow error
+            gd.data.splice(gd.data.length - traces.length, traces.length);
+            throw error;
+        }
+
+        // ok, do it!
+        Plotly.moveTraces(gd, currentIndices, newIndices);
+    };
     /**
      * Move traces at currentIndices array to locations in newIndices array.
      *
