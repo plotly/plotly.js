@@ -1024,16 +1024,21 @@
         plots.supplyLayoutGlobalDefaults(gd.layout||{}, newFullLayout);
 
         // then do the data
-        gd._fullData = (gd.data||[]).map(function(trace, i) {
+        var oldFullData = gd._fullData || [],
+            newData = gd.data || [];
+        gd._fullData = newData.map(function(trace, i) {
             return plots.supplyDataDefaults(trace, i, newFullLayout);
         });
 
         // DETECT 3D, Cartesian, and Polar
-        gd._fullData.forEach(function(d) {
+        gd._fullData.forEach(function(d, i) {
             if(plots.isGL3D(d.type)) newFullLayout._hasGL3D = true;
             if(plots.isCartesian(d.type)) {
                 if('r' in d) newFullLayout._hasPolar = true;
                 else newFullLayout._hasCartesian = true;
+            }
+            if(oldFullData.length === newData.length) {
+                relinkPrivateKeys(d, oldFullData[i]);
             }
         });
 
