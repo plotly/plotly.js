@@ -1427,14 +1427,204 @@
     }
 
     /**
-     * Add a data trace to an existing graph div.
+     * Ensures that an index array for manipulating gd.data is valid.
      *
-     * @param {Object} gd
-     * @param {Object} trace
+     * Intended for use with addTraces, deleteTraces, and moveTraces.
+     *
+     * @param gd
+     * @param indices
+     * @param arrayName
      */
-    Plotly.addTrace = function (gd, trace) {
-        gd.data.push(trace);
-        Plotly.redraw(gd);
+    function validateIndexArray(gd, indices, arrayName) {
+
+        function indexIsInteger(index) {
+            return index === parseInt(index, 10);
+        }
+
+        function indexOutOfBounds (index) {
+            return index >= gd.data.length || index < -gd.data.length;
+        }
+
+        function indexIsRepeated (index) {
+
+            // check if literally, the same number is repeated
+            if (indices.indexOf(index, indices.indexOf(index) + 1) > -1) {
+                return true;
+            }
+
+            // check if the reverse-index is there
+            if (index >= 0 && indices.indexOf(-gd.data.length + index) > -1) {
+                return true;
+            } else if (index < 0 && indices.indexOf(gd.data.length + index) > -1) {
+                return true;
+            }
+
+            // okay, woof, no repeats!
+            return false;
+        }
+
+        // validate that indices are indeed integers
+        if (!indices.every(indexIsInteger)) {
+            throw new Error('all values in ' + arrayName + ' must be integers');
+        }
+
+        // check that all indices are in bounds for given gd.data array length
+        if (indices.some(indexOutOfBounds)) {
+            throw new Error(arrayName + ' must be valid indices for gd.data.');
+        }
+
+        // check that indices aren't repeated
+        if (indices.some(indexIsRepeated)) {
+            throw new Error('each index in ' + arrayName + ' must be unique.');
+        }
+    }
+
+    /**
+     * Private function used by Plotly.moveTraces to check input args
+     *
+     * @param gd
+     * @param currentIndices
+     * @param newIndices
+     */
+    function checkMoveTracesArgs(gd, currentIndices, newIndices) {
+
+        // check that gd has attribute 'data' and 'data' is array
+        if (!Array.isArray(gd.data)) {
+            throw new Error('gd.data must be an array.');
+        }
+
+        // validate currentIndices array
+        if (typeof currentIndices === 'undefined') {
+            throw new Error('currentIndices is a required argument.');
+        } else if (!Array.isArray(currentIndices)) {
+            currentIndices = [currentIndices];
+        }
+        validateIndexArray(gd, currentIndices, 'currentIndices');
+
+        // validate newIndices array if it exists
+        if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
+            newIndices = [newIndices];
+        }
+        if (typeof newIndices !== 'undefined') {
+            validateIndexArray(gd, newIndices, 'newIndices');
+        }
+
+        // check currentIndices and newIndices are the same length if newIdices exists
+        if (typeof newIndices !== 'undefined' && currentIndices.length !== newIndices.length) {
+            throw new Error('current and new indices must be of equal length.');
+        }
+    /**
+     * Move traces at currentIndices array to locations in newIndices array.
+     *
+     * If newIndices is omitted, currentIndices will be moved to the end. E.g.,
+     * these are equivalent:
+     *
+     * Plotly.moveTraces(gd, [1, 2, 3], [-3, -2, -1])
+     * Plotly.moveTraces(gd, [1, 2, 3])
+     *
+     * @param {Object} gd The graph div
+     * @param {Object[]} gd.data The array of traces we're removing from
+     * @param {Number|Number[]} currentIndices The locations of traces to be moved
+     * @param {Number|Number[]} [newIndices] The locations to move traces to
+     *
+     * Example calls:
+     *
+     *      // move trace i to location x
+     *      Plotly.moveTraces(gd, i, x)
+     *
+     *      // move trace i to end of array
+     *      Plotly.moveTraces(gd, i)
+     *
+     *      // move traces i, j, k to end of array (i != j != k)
+     *      Plotly.moveTraces(gd, [i, j, k])
+     *
+     *      // move traces [i, j, k] to [x, y, z] (i != j != k) (x != y != z)
+     *      Plotly.moveTraces(gd, [i, j, k], [x, y, z])
+     *
+     *      // reorder all traces (assume there are 5--a, b, c, d, e)
+     *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
+     */
+    Plotly.moveTraces = function (gd, currentIndices, newIndices) {
+        var i,
+            ignoredTraces,
+            movingTraceMap,
+            newData;
+
+        // to reduce complexity here, check args elsewhere
+        // this throws errors where appropriate
+        checkMoveTracesArgs(gd, currentIndices, newIndices);
+
+        // make sure currentIndices is an array
+        if (!Array.isArray(currentIndices)) {
+            currentIndices = [currentIndices];
+        }
+
+        // if undefined, define newIndices to point to the end of gd.data array
+        if (typeof newIndices === 'undefined') {
+            newIndices = currentIndices.map(function (_, i) {
+                return -currentIndices.length + i;
+            });
+        }
+
+        // make sure newIndices is an array if it's user-defined
+        if (!Array.isArray(newIndices)) {
+            newIndices = [newIndices];
+        }
+
+        // convert negative indices to positive indices
+        function positivifyIndex (index) {
+            if (index >= 0) {
+                return index;
+            } else {
+                return gd.data.length + index;
+            }
+        }
+        currentIndices = currentIndices.map(positivifyIndex);
+        newIndices = newIndices.map(positivifyIndex);
+
+        // at this point, we've coerced the index arrays into predictable forms
+        // finally...
+
+        // get the traces that aren't being moved around
+        ignoredTraces = gd.data.reduce(function (pre, cur, index) {
+
+            // if index isn't in currentIndices, include it in ignored!
+            if (currentIndices.indexOf(index) === -1) {
+                return pre.concat(cur);
+            } else {
+                return pre;
+            }
+        }, []);
+
+        // get a mapping of indices to moving traces
+        movingTraceMap = currentIndices.map(function (currentIndex, i) {
+            return {newIndex: newIndices[i], trace: gd.data[currentIndex]};
+        });
+
+        // reorder this mapping by newIndex, ascending
+        movingTraceMap.sort(function (a, b) {
+                if (a.newIndex > b.newIndex) {
+                    return 1;
+                } else if (a.newIndex < b.newIndex) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            });
+
+        // move the traces that are being ignored to the front of gd.data
+        newData = ignoredTraces;
+
+        // now, add the moving traces back in, in order!
+        for (i = 0; i < movingTraceMap.length; i += 1) {
+            newData.splice(movingTraceMap[i].newIndex, 0, movingTraceMap[i].trace);
+        }
+
+        gd.data = newData;
+
+        // TODO add to undo/redo queue
+
+        // TODO call a redraw or something ?
     };
 
     // -----------------------------------------------------
