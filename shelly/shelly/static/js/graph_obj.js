@@ -748,7 +748,9 @@
             delete layout.yaxis1;
         }
         Plotly.Axes.list({_fullLayout:layout}).forEach(function(ax) {
-            if(ax.anchor) ax.anchor = Plotly.Axes.cleanId(ax.anchor);
+            if(ax.anchor && ax.anchor !== 'free') {
+                ax.anchor = Plotly.Axes.cleanId(ax.anchor);
+            }
             if(ax.overlaying) ax.overlaying = Plotly.Axes.cleanId(ax.overlaying);
 
             // old method of axis type - isdate and islog (before category existed)
