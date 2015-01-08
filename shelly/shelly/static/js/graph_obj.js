@@ -1548,6 +1548,9 @@
         }
 
         // make sure we have an index for each trace
+        if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
+            newIndices = [newIndices];
+        }
         if (typeof newIndices !== 'undefined' && newIndices.length !== traces.length) {
             throw new Error(
                 'if indices is specified, traces.length must equal indices.length'
