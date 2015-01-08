@@ -1654,7 +1654,7 @@
 
         // TODO use indices and traces to create redo/undo stuff
 
-        Plotly.plot(gd);
+        Plotly.redraw(gd);
     };
 
     /**
@@ -1768,10 +1768,7 @@
 
         // TODO add to undo/redo queue
 
-        // we want to force a redoing calcdata on Plotly.plot
-        if (gd.calcdata) delete gd.calcdata;
-
-        Plotly.plot(gd);
+        Plotly.redraw(gd);
     };
 
     // -----------------------------------------------------
