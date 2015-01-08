@@ -1607,6 +1607,53 @@
         // ok, do it!
         Plotly.moveTraces(gd, currentIndices, newIndices);
     };
+
+    /**
+     * Delete traces at `indices` from gd.data array.
+     *
+     * @param {Object} gd The graph div
+     * @param {Object[]} gd.data The array of traces we're removing from
+     * @param {Number|Number[]} indices The indices
+     */
+    Plotly.deleteTraces = function (gd, indices) {
+        var i,
+            index,
+            traces;
+
+        // make sure indices are defined
+        if (typeof indices === 'undefined') {
+            throw new Error('indices must be an integer or array of integers.');
+        } else if (!Array.isArray(indices)) {
+            indices = [indices];
+        }
+        validateIndexArray(gd, indices, 'indices');
+
+        // convert negative indices to positive indices
+        function positivifyIndex (index) {
+            if (index >= 0) {
+                return index;
+            } else {
+                return gd.data.length + index;
+            }
+        }
+        indices = indices.map(positivifyIndex);
+
+        indices.sort();
+
+        traces = [];
+        for (i = 0; i < indices.length; i += 1) {
+
+            // the length of gd.data is changing, take this into account!
+            index = indices[i] - i;
+
+            traces.push(gd.data.splice(index, 1));
+        }
+
+        // TODO use indices and traces to create redo/undo stuff
+
+        // TODO call a redraw or something?
+    };
+
     /**
      * Move traces at currentIndices array to locations in newIndices array.
      *
