@@ -185,7 +185,7 @@
             else z = trace.z.map(function(row){return row.map(cleanZ); });
 
             if(Plotly.Plots.isContour(trace.type) || trace.connectgaps) {
-                interp2d(z);
+                trace._interpz = interp2d(z, trace._interpz);
             }
         }
 
@@ -308,21 +308,32 @@
         return arrayOut;
     }
 
-    var INTERPTHRESHOLD = 0.0001;
-    function interp2d(z) {
+    var INTERPTHRESHOLD = 1e-4,
+        CORRECTION_OVERSHOOT = 0.4,
+        NEIGHBORSHIFTS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+    function interp2d(z, savedInterpZ) {
         // fill in any missing data in 2D array z using an iterative
         // poisson equation solver with zero-derivative BC at edges
         // amazingly, this just amounts to repeatedly averaging all the existing
         // nearest neighbors (at least if we don't take x/y scaling into account)
         var emptyPoints = findEmpties(z),
             maxFractionalChange = 1,
-            i;
+            i,
+            thisPt;
 
-        console.log(z, emptyPoints);
+        heatmap.MFC = [];
 
-        // one pass to fill in a starting value for all the empties
-        iterateInterp2d(z, emptyPoints);
-        console.log(z.map(function(row){ return row.slice(); }));
+        if(Array.isArray(savedInterpZ)) {
+            for(i = 0; i < emptyPoints.length; i++) {
+                thisPt = emptyPoints[i];
+                z[thisPt[0]][thisPt[1]] = savedInterpZ[thisPt[0]][thisPt[1]];
+            }
+        }
+        else {
+            // one pass to fill in a starting value for all the empties
+            iterateInterp2d(z, emptyPoints);
+        }
 
         // we're don't need to iterate lone empties - remove them
         for(i = 0; i < emptyPoints.length; i++) {
@@ -332,9 +343,10 @@
 
         for(i = 0; i < 100 && maxFractionalChange > INTERPTHRESHOLD; i++) {
             maxFractionalChange = iterateInterp2d(z, emptyPoints);
-            console.log(i, maxFractionalChange,
-                z.map(function(row){ return row.slice(); }));
+            console.log(i, maxFractionalChange);
+            heatmap.MFC.push(maxFractionalChange);
         }
+        return z;
     }
 
     function findEmpties(z) {
@@ -428,7 +440,6 @@
         return empties.sort(function(a, b) { return b[2] - a[2]; });
     }
 
-    var NEIGHBORSHIFTS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
     function iterateInterp2d(z, emptyPoints) {
         var maxFractionalChange = 0,
             thisPt,
@@ -480,18 +491,19 @@
             if(initialVal === undefined) {
                 if(neighborCount < 4) maxFractionalChange = 1;
             }
-            else if(maxNeighbor > minNeighbor) {
-                maxFractionalChange = Math.max(maxFractionalChange,
-                    Math.abs(z[i][j] - initialVal) / (maxNeighbor - minNeighbor));
+            else {
+                z[i][j] = (1 + CORRECTION_OVERSHOOT) * z[i][j] -
+                    CORRECTION_OVERSHOOT * initialVal;
+
+                if(maxNeighbor > minNeighbor) {
+                    maxFractionalChange = Math.max(maxFractionalChange,
+                        Math.abs(z[i][j] - initialVal) / (maxNeighbor - minNeighbor));
+                }
             }
         }
 
         return maxFractionalChange;
     }
-
-    heatmap.interp2d = interp2d;
-    heatmap.findEmpties = findEmpties;
-    heatmap.iterateInterp2d = iterateInterp2d;
 
     // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
     heatmap.plot = function(gd, plotinfo, cdheatmaps) {
