@@ -343,9 +343,10 @@
 
         for(i = 0; i < 100 && maxFractionalChange > INTERPTHRESHOLD; i++) {
             maxFractionalChange = iterateInterp2d(z, emptyPoints);
-            console.log(i, maxFractionalChange);
             heatmap.MFC.push(maxFractionalChange);
         }
+
+        console.log(i, maxFractionalChange);
         return z;
     }
 
@@ -470,15 +471,15 @@
                 if(!neighborRow) continue;
                 neighborVal = neighborRow[j + neighborShift[1]];
                 if(neighborVal !== undefined) {
-                    neighborCount++;
-                    neighborSum += neighborVal;
-                    if(minNeighbor) {
+                    if(neighborSum === 0) {
+                        minNeighbor = maxNeighbor = neighborVal;
+                    }
+                    else {
                         minNeighbor = Math.min(minNeighbor, neighborVal);
                         maxNeighbor = Math.max(maxNeighbor, neighborVal);
                     }
-                    else {
-                        minNeighbor = maxNeighbor = neighborVal;
-                    }
+                    neighborCount++;
+                    neighborSum += neighborVal;
                 }
             }
 
@@ -486,12 +487,19 @@
                 throw 'iterateInterp2d order is wrong: no defined neighbors';
             }
 
+            // this is the laplace equation interpolation:
+            // each point is just the average of its neighbors
+            // note that this ignores differential x/y scaling
+            // which I think is the right approach, since we
+            // don't know what that scaling means
             z[i][j] = neighborSum / neighborCount;
 
             if(initialVal === undefined) {
                 if(neighborCount < 4) maxFractionalChange = 1;
             }
             else {
+                // we can make large empty regions converge faster
+                // if we overshoot the expected value
                 z[i][j] = (1 + CORRECTION_OVERSHOOT) * z[i][j] -
                     CORRECTION_OVERSHOOT * initialVal;
 
