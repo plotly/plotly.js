@@ -308,9 +308,14 @@
         return arrayOut;
     }
 
-    var INTERPTHRESHOLD = 1e-4,
-        CORRECTION_OVERSHOOT = 0.4,
+    var INTERPTHRESHOLD = 1e-2,
         NEIGHBORSHIFTS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+    function correctionOvershoot(maxFractionalChange) {
+        // start with less overshoot, until we know it's converging,
+        // then ramp up the overshoot for faster convergence
+        return 0.5 - 0.25 * Math.min(1, maxFractionalChange * 0.5);
+    }
 
     function interp2d(z, savedInterpZ) {
         // fill in any missing data in 2D array z using an iterative
@@ -342,7 +347,8 @@
         emptyPoints.splice(0, i);
 
         for(i = 0; i < 100 && maxFractionalChange > INTERPTHRESHOLD; i++) {
-            maxFractionalChange = iterateInterp2d(z, emptyPoints);
+            maxFractionalChange = iterateInterp2d(z, emptyPoints,
+                correctionOvershoot(maxFractionalChange));
             heatmap.MFC.push(maxFractionalChange);
         }
 
@@ -441,7 +447,7 @@
         return empties.sort(function(a, b) { return b[2] - a[2]; });
     }
 
-    function iterateInterp2d(z, emptyPoints) {
+    function iterateInterp2d(z, emptyPoints, overshoot) {
         var maxFractionalChange = 0,
             thisPt,
             i,
@@ -499,9 +505,8 @@
             }
             else {
                 // we can make large empty regions converge faster
-                // if we overshoot the expected value
-                z[i][j] = (1 + CORRECTION_OVERSHOOT) * z[i][j] -
-                    CORRECTION_OVERSHOOT * initialVal;
+                // if we overshoot the change vs the previous value
+                z[i][j] = (1 + overshoot) * z[i][j] - overshoot * initialVal;
 
                 if(maxNeighbor > minNeighbor) {
                     maxFractionalChange = Math.max(maxFractionalChange,
