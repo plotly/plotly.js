@@ -51,6 +51,9 @@
             values: ['fast', 'best', false],
             dflt: false
         },
+        connectgaps: {
+            type: 'boolean'
+        },
         // Inherited attributes - not used by supplyDefaults, so if there's
         // a better way to do this feel free to change.
         x: {from: 'Scatter'},
@@ -100,6 +103,8 @@
                 coerceScatter('y0');
                 coerceScatter('dy');
             }
+
+            coerce('connectgaps', Plotly.Plots.isContour(traceOut.type));
         }
 
         coerce('zauto');
@@ -125,7 +130,6 @@
         if(!Plotly.Plots.isContour(traceOut.type) || (traceOut.contours||{}).coloring==='heatmap') {
             coerce('zsmooth');
         }
-
     };
 
     function flipScale(si){ return [1 - si[0], si[1]]; }
