@@ -1436,46 +1436,28 @@
      * @param arrayName
      */
     function validateIndexArray(gd, indices, arrayName) {
+        var i,
+            index;
 
-        function indexIsInteger(index) {
-            return index === parseInt(index, 10);
-        }
+        for (i = 0; i < indices.length; i++) {
+            index = indices[i];
 
-        function indexOutOfBounds (index) {
-            return index >= gd.data.length || index < -gd.data.length;
-        }
-
-        function indexIsRepeated (index) {
-
-            // check if literally, the same number is repeated
-            if (indices.indexOf(index, indices.indexOf(index) + 1) > -1) {
-                return true;
+            // validate that indices are indeed integers
+            if (index !== parseInt(index, 10)) {
+                throw new Error('all values in ' + arrayName + ' must be integers');
             }
 
-            // check if the reverse-index is there
-            if (index >= 0 && indices.indexOf(-gd.data.length + index) > -1) {
-                return true;
-            } else if (index < 0 && indices.indexOf(gd.data.length + index) > -1) {
-                return true;
+            // check that all indices are in bounds for given gd.data array length
+            if (index >= gd.data.length || index < -gd.data.length) {
+                throw new Error(arrayName + ' must be valid indices for gd.data.');
             }
 
-            // okay, woof, no repeats!
-            return false;
-        }
-
-        // validate that indices are indeed integers
-        if (!indices.every(indexIsInteger)) {
-            throw new Error('all values in ' + arrayName + ' must be integers');
-        }
-
-        // check that all indices are in bounds for given gd.data array length
-        if (indices.some(indexOutOfBounds)) {
-            throw new Error(arrayName + ' must be valid indices for gd.data.');
-        }
-
-        // check that indices aren't repeated
-        if (indices.some(indexIsRepeated)) {
-            throw new Error('each index in ' + arrayName + ' must be unique.');
+            // check that indices aren't repeated
+            if (indices.indexOf(index, i + 1) > -1 ||
+                    index >= 0 && indices.indexOf(-gd.data.length + index) > -1 ||
+                    index < 0 && indices.indexOf(gd.data.length + index) > -1) {
+                throw new Error('each index in ' + arrayName + ' must be unique.');
+            }
         }
     }
 
@@ -1523,6 +1505,8 @@
      * @param newIndices
      */
     function checkAddTracesArgs(gd, traces, newIndices) {
+        var i,
+            value;
 
         // check that gd has attribute 'data' and 'data' is array
         if (!Array.isArray(gd.data)) {
@@ -1540,11 +1524,11 @@
         }
 
         // make sure each value in traces is an object
-        function valueIsAnObject(value) {
-            return (typeof value === 'object' && !(Array.isArray(value)));
-        }
-        if (!traces.every(valueIsAnObject)) {
-            throw new Error('all values in traces array must be non-array objects');
+        for (i = 0; i < traces.length; i++) {
+            value = traces[i];
+            if (typeof value !== 'object' || (Array.isArray(value) || value === null)) {
+                throw new Error('all values in traces array must be non-array objects');
+            }
         }
 
         // make sure we have an index for each trace
