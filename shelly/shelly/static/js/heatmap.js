@@ -127,9 +127,7 @@
             }
         }
 
-        if(!Plotly.Plots.isContour(traceOut.type) || (traceOut.contours||{}).coloring==='heatmap') {
-            coerce('zsmooth');
-        }
+        if(!Plotly.Plots.isContour(traceOut.type)) coerce('zsmooth');
     };
 
     function flipScale(si){ return [1 - si[0], si[1]]; }
@@ -140,6 +138,7 @@
         Plotly.Lib.markTime('start convert x&y');
         var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
+            zsmooth = Plotly.Plots.isContour(trace.type) ? 'best' : trace.zsmooth,
             x,
             x0,
             dx,
@@ -193,11 +192,15 @@
             }
         }
 
+        function noZsmooth(msg) {
+            zsmooth = trace._input.zsmooth = trace.zsmooth = false;
+            Plotly.Lib.notifier('cannot fast-zsmooth: ' + msg);
+        }
+
         // check whether we really can smooth (ie all boxes are about the same size)
-        if([true,'fast'].indexOf(trace.zsmooth)!==-1) {
+        if(zsmooth === 'fast') {
             if(xa.type==='log' || ya.type==='log') {
-                trace._input.zsmooth = trace.zsmooth = false;
-                Plotly.Lib.notifier('cannot fast-zsmooth: log axis found');
+                noZsmooth('log axis found');
             }
             else if(!Plotly.Plots.isHist2D(trace.type)) {
                 if(x.length) {
@@ -205,19 +208,17 @@
                         maxErrX = Math.abs(avgdx/100);
                     for(i=0; i<x.length-1; i++) {
                         if(Math.abs(x[i+1]-x[i]-avgdx)>maxErrX) {
-                            trace._input.zsmooth = trace.zsmooth = false;
-                            Plotly.Lib.notifier('cannot fast-zsmooth: x scale is not linear');
+                            noZsmooth('x scale is not linear');
                             break;
                         }
                     }
                 }
-                if(y.length && [true,'fast'].indexOf(trace.zsmooth)!==-1) {
+                if(y.length && zsmooth === 'fast') {
                     var avgdy = (y[y.length-1]-y[0])/(y.length-1),
                     maxErrY = Math.abs(avgdy/100);
                     for(i=0; i<y.length-1; i++) {
                         if(Math.abs(y[i+1]-y[i]-avgdy)>maxErrY) {
-                            trace._input.zsmooth = trace.zsmooth = false;
-                            Plotly.Lib.notifier('cannot fast-zsmooth: y scale is not linear');
+                            noZsmooth('y scale is not linear');
                             break;
                         }
                     }
@@ -559,8 +560,7 @@
             scl = Plotly.Color.getScale(trace.colorscale),
             x = cd[0].x,
             y = cd[0].y,
-            // fast smoothing - one pixel per brick
-            fastsmooth = [true,'fast'].indexOf(trace.zsmooth)!==-1,
+            zsmooth = Plotly.Plots.isContour(trace.type) ? 'best' : trace.zsmooth,
 
             // get z dims
             m = z.length,
@@ -635,8 +635,8 @@
         // time reasonable when you zoom in. if zsmooth is true/fast, don't worry
         // about this, because zooming doesn't increase number of pixels
         // if zsmooth is best, don't include anything off screen because it takes too long
-        if(!fastsmooth) {
-            var extra = trace.zsmooth==='best' ? 0 : 0.5;
+        if(zsmooth !== 'fast') {
+            var extra = zsmooth==='best' ? 0 : 0.5;
             left = Math.max(-extra*xa._length,left);
             right = Math.min((1+extra)*xa._length,right);
             top = Math.max(-extra*ya._length,top);
@@ -651,7 +651,7 @@
         // if image is entirely off-screen, don't even draw it
         if(wd<=0 || ht<=0) return;
 
-        var p = fastsmooth ? new PNGlib(n,m,256) : new PNGlib(wd,ht, 256);
+        var p = zsmooth==='fast' ? new PNGlib(n,m,256) : new PNGlib(wd,ht, 256);
 
         // interpolate for color scale
         // https://github.com/mbostock/d3/wiki/Quantitative-Scales
@@ -664,7 +664,7 @@
 
         // map brick boundaries to image pixels
         var xpx,ypx;
-        if(fastsmooth) {
+        if(zsmooth === 'fast') {
             xpx = xrev ? function(index){ return n-1-index; } : Plotly.Lib.identity;
             ypx = yrev ? function(index){ return m-1-index; } : Plotly.Lib.identity;
         }
@@ -738,7 +738,7 @@
             pc,
             v,
             row;
-        if(trace.zsmooth==='best') {
+        if(zsmooth === 'best') {
             //first make arrays of x and y pixel locations of brick boundaries
             var xPixArray = x.map(function(v){ return Math.round(xa.c2p(v)-left); }),
                 yPixArray = y.map(function(v){ return Math.round(ya.c2p(v)-top); }),
@@ -780,7 +780,7 @@
                 }
             }
         }
-        else if(fastsmooth) {
+        else if(zsmooth === 'fast') {
             for(j=0; j<m; j++) {
                 row = z[j];
                 yb = ypx(j);
@@ -937,7 +937,7 @@
         else {
             xl = (x[nx]+x[nx+1])/2;
             yl = (y[ny]+y[ny+1])/2;
-            if(trace.zsmooth) {
+            if(zsmooth) {
                 x0=x1=(x0+x1)/2;
                 y0=y1=(y0+y1)/2;
             }

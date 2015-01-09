@@ -167,7 +167,6 @@
 
         // use a heatmap to fill - draw it behind the lines
         if(contours.coloring==='heatmap') {
-            trace.zsmooth = 'best';
             if(trace.zauto && trace.autocontour===false) {
                 trace._input.zmin = trace.zmin =
                     contours.start - contours.size/2;
