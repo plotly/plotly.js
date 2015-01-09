@@ -212,30 +212,6 @@
         // find all the contourLevels at once
         // since we want to be exhaustive we'll check for contour crossings
         // at every intersection
-        // modified marching squares algorithm,
-        // so we disambiguate the saddle points from the start
-        // and we ignore the cases with no crossings
-        // the index I'm using is based on:
-        // http://en.wikipedia.org/wiki/Marching_squares
-        // except that the saddles bifurcate and I represent them
-        // as the decimal combination of the two appropriate
-        // non-saddle indices
-        function getMarchingIndex(val,corners) {
-            var mi = (corners[0][0]>val ? 0:1) +
-                     (corners[0][1]>val ? 0:2) +
-                     (corners[1][1]>val ? 0:4) +
-                     (corners[1][0]>val ? 0:8);
-            if(mi===5||mi===10) {
-                var avg = (corners[0][0] + corners[0][1] +
-                           corners[1][0] + corners[1][1]) / 4;
-                // two peaks with a big valley
-                if(val>avg) return (mi===5) ? 713 : 1114;
-                // two valleys with a big ridge
-                return (mi===5) ? 104 : 208;
-            }
-            return (mi===15) ? 0 : mi;
-        }
-
         function makeCrossings(pi) {
             var mi = getMarchingIndex(pi.level,corners);
             if(!mi) return;
@@ -658,6 +634,32 @@
         Plotly.Lib.markTime('done Contour.plot');
     }
 
+    // modified marching squares algorithm,
+    // so we disambiguate the saddle points from the start
+    // and we ignore the cases with no crossings
+    // the index I'm using is based on:
+    // http://en.wikipedia.org/wiki/Marching_squares
+    // except that the saddles bifurcate and I represent them
+    // as the decimal combination of the two appropriate
+    // non-saddle indices
+    function getMarchingIndex(val,corners) {
+        var mi = (corners[0][0] > val ? 0 : 1) +
+                 (corners[0][1] > val ? 0 : 2) +
+                 (corners[1][1] > val ? 0 : 4) +
+                 (corners[1][0] > val ? 0 : 8);
+        if(mi === 5 || mi === 10) {
+            var avg = (corners[0][0] + corners[0][1] +
+                       corners[1][0] + corners[1][1]) / 4;
+            // two peaks with a big valley
+            if(val > avg) return (mi === 5) ? 713 : 1114;
+            // two valleys with a big ridge
+            return (mi === 5) ? 104 : 208;
+        }
+        return (mi === 15) ? 0 : mi;
+    }
+
+    // special function to get the marching step of the
+    // first point in the path (leading to loc)
     function startStep(mi, edgeflag, loc) {
         var dx = 0,
             dy = 0;
