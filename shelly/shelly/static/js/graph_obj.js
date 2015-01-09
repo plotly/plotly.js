@@ -1427,6 +1427,29 @@
     }
 
     /**
+     * Wrap negative indicies to their positive counterparts.
+     *
+     * @param {Number[]} indices An array of indices
+     * @param {Number} maxIndex The maximum index allowable (arr.length - 1)
+     */
+    function positivifyIndices(indices, maxIndex) {
+        var parentLength = maxIndex + 1,
+            positiveIndices = [],
+            i,
+            index;
+
+        for (i = 0; i < indices.length; i++) {
+            index = indices[i];
+            if (index < 0) {
+                positiveIndices.push(parentLength + index);
+            } else {
+                positiveIndices.push(index);
+            }
+        }
+        return positiveIndices;
+    }
+
+    /**
      * Ensures that an index array for manipulating gd.data is valid.
      *
      * Intended for use with addTraces, deleteTraces, and moveTraces.
@@ -1622,14 +1645,7 @@
         validateIndexArray(gd, indices, 'indices');
 
         // convert negative indices to positive indices
-        function positivifyIndex (index) {
-            if (index >= 0) {
-                return index;
-            } else {
-                return gd.data.length + index;
-            }
-        }
-        indices = indices.map(positivifyIndex);
+        indices = positivifyIndices(indices, gd.data.length - 1);
 
         // we want descending here so that splicing later doesn't affect indexing
         indices.sort().reverse();
@@ -1704,16 +1720,9 @@
             newIndices = [newIndices];
         }
 
-        // convert negative indices to positive indices
-        function positivifyIndex (index) {
-            if (index >= 0) {
-                return index;
-            } else {
-                return gd.data.length + index;
-            }
-        }
-        currentIndices = currentIndices.map(positivifyIndex);
-        newIndices = newIndices.map(positivifyIndex);
+        // convert negative indices to positive indices (they're the same length)
+        currentIndices = positivifyIndices(currentIndices, gd.data.length - 1);
+        newIndices = positivifyIndices(newIndices, gd.data.length - 1);
 
         // at this point, we've coerced the index arrays into predictable forms
         // finally...
