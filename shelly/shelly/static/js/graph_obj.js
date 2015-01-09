@@ -1611,7 +1611,6 @@
      */
     Plotly.deleteTraces = function (gd, indices) {
         var i,
-            index,
             traces;
 
         // make sure indices are defined
@@ -1632,18 +1631,17 @@
         }
         indices = indices.map(positivifyIndex);
 
-        indices.sort();
+        // we want descending here so that splicing later doesn't affect indexing
+        indices.sort().reverse();
 
         traces = [];
         for (i = 0; i < indices.length; i += 1) {
-
-            // the length of gd.data is changing, take this into account!
-            index = indices[i] - i;
-
-            traces.push(gd.data.splice(index, 1));
+            traces.push(gd.data.splice(indices[i], 1));
         }
 
-        // TODO use indices and traces to create redo/undo stuff
+        // TODO: use indices and traces to create redo/undo stuff note that
+        // because we reverse indices here, we need to be careful about the
+        // mutable reference eventually added to redo/undo
 
         Plotly.redraw(gd);
     };
