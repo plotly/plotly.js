@@ -1704,9 +1704,7 @@
         checkMoveTracesArgs(gd, currentIndices, newIndices);
 
         // make sure currentIndices is an array
-        if (!Array.isArray(currentIndices)) {
-            currentIndices = [currentIndices];
-        }
+        currentIndices = Array.isArray(currentIndices) ? currentIndices : [currentIndices];
 
         // if undefined, define newIndices to point to the end of gd.data array
         if (typeof newIndices === 'undefined') {
@@ -1716,9 +1714,7 @@
         }
 
         // make sure newIndices is an array if it's user-defined
-        if (!Array.isArray(newIndices)) {
-            newIndices = [newIndices];
-        }
+        newIndices = Array.isArray(newIndices) ? newIndices : [newIndices];
 
         // convert negative indices to positive indices (they're the same length)
         currentIndices = positivifyIndices(currentIndices, gd.data.length - 1);
