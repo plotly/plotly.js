@@ -211,7 +211,8 @@
 
         // find all the contourLevels at once
         // since we want to be exhaustive we'll check for contour crossings
-        // at every intersection using a modified marching squares algorithm,
+        // at every intersection
+        // modified marching squares algorithm,
         // so we disambiguate the saddle points from the start
         // and we ignore the cases with no crossings
         // the index I'm using is based on:
@@ -275,29 +276,22 @@
 
         // now calculate the paths
 
-        function getHInterp(level, locx, locy) {
-            var zxy = z[locy][locx],
-                dx = (level - zxy) / (z[locy][locx+1] - zxy);
-            return [xa.c2p((1-dx)*x[locx] + dx*x[locx+1]), ya.c2p(y[locy])];
-        }
+        function getInterpPx(level, loc, step) {
+            var locx = loc[0] + Math.max(step[0], 0),
+                locy = loc[1] + Math.max(step[1], 0),
+                zxy = z[locy][locx];
 
-        function getVInterp(level, locx, locy) {
-            var zxy = z[locy][locx],
-                dy = (level - zxy) / (z[locy+1][locx] - zxy);
-            return [xa.c2p(x[locx]), ya.c2p((1-dy)*y[locy] + dy*y[locy+1])];
+            if(step[1]) {
+                var dx = (level - zxy) / (z[locy][locx+1] - zxy);
+                return [xa.c2p((1-dx)*x[locx] + dx*x[locx+1]),
+                        ya.c2p(y[locy])];
+            }
+            else {
+                var dy = (level - zxy) / (z[locy+1][locx] - zxy);
+                return [xa.c2p(x[locx]),
+                        ya.c2p((1-dy)*y[locy] + dy*y[locy+1])];
+            }
         }
-
-        function equalPts(pt1, pt2) {
-            return Math.abs(pt1[0] - pt2[0]) < 0.01 &&
-                   Math.abs(pt1[1] - pt2[1]) < 0.01;
-        }
-
-        function ptDist(p1, p2) {
-            var dx = p1[0] - p2[0],
-                dy = p1[1] - p2[1];
-            return Math.sqrt(dx*dx + dy*dy);
-        }
-
 
         function makePath(nc, start, edgeflag) {
             var pi = pathinfo[nc],
@@ -307,46 +301,12 @@
                 loclist = [];
 
             // find the interpolated starting point
-            var interpFunc,
-                // dx, dy are the index step we took to get where we are
-                // at the beginning of the loop
-                dx = 0,
-                dy = 0;
-            if(mi>20 && edgeflag) {
-                // these saddles start at +/- x
-                if(mi===208 || mi===1114) {
-                    interpFunc = getVInterp;
-                    // if we're starting at the left side, we must be going right
-                    dx = loc[0]===0 ? 1 : -1;
-                }
-                else {
-                    interpFunc = getHInterp;
-                    // if we're starting at the bottom, we must be going up
-                    dy = loc[1]===0 ? 1 : -1;
-                }
-            }
-            else if(BOTTOMSTART.indexOf(mi)!==-1) {
-                interpFunc = getHInterp;
-                dy = 1;
-            }
-            else if(LEFTSTART.indexOf(mi)!==-1) {
-                interpFunc = getVInterp;
-                dx = 1;
-            }
-            else if(TOPSTART.indexOf(mi)!==-1) {
-                interpFunc = getHInterp;
-                dy = -1;
-            }
-            else {
-                interpFunc = getVInterp;
-                dx = -1;
-            }
+            var marchStep = startStep(mi, edgeflag, loc);
 
             // start by going backward a half step and finding the crossing point
-            var pts = [interpFunc(level,
-                                  loc[0] + Math.max(-dx, 0),
-                                  loc[1] + Math.max(-dy, 0))],
-                startDelta = dx+','+dy,
+            var //interpFunc = marchStep[0] ? getVInterp : getHInterp,
+                pts = [getInterpPx(level, loc, [-marchStep[0], -marchStep[1]])],
+                startStepStr = marchStep.join(','),
                 miTaken,
                 locstr = loc.join(',');
 
@@ -354,7 +314,7 @@
             for(var cnt=0; cnt<10000; cnt++) { // just to avoid infinite loops
                 loclist.push(locstr);
                 if(mi>20) {
-                    miTaken = CHOOSESADDLE[mi][(dx||dy)<0 ? 0 : 1];
+                    miTaken = CHOOSESADDLE[mi][(marchStep[0]||marchStep[1])<0 ? 0 : 1];
                     pi.crossings[locstr] = SADDLEREMAINDER[miTaken];
                 }
                 else {
@@ -362,33 +322,26 @@
                     delete pi.crossings[locstr];
                 }
 
-                if(!NEWDELTA[miTaken]) {
+                marchStep = NEWDELTA[miTaken];
+                if(!marchStep) {
                     console.log('found bad marching index', mi, miTaken, loc, nc);
                     break;
                 }
-                dx = NEWDELTA[miTaken][0];
-                dy = NEWDELTA[miTaken][1];
 
                 // find the crossing a half step forward, and then take the full step
-                if(dx) {
-                    pts.push(getVInterp(level, loc[0] + Math.max(dx, 0), loc[1]));
-                    loc[0] += dx;
-                }
-                else {
-                    pts.push(getHInterp(level, loc[0], loc[1] + Math.max(dy, 0)));
-                    loc[1] += dy;
-                }
+                pts.push(getInterpPx(level, loc, marchStep));
+                loc[0] += marchStep[0];
+                loc[1] += marchStep[1];
+
                 // don't include the same point multiple times
-                if(equalPts(pts[pts.length-1], pts[pts.length-2])) {
-                    pts.pop();
-                }
+                if(equalPts(pts[pts.length-1], pts[pts.length-2])) pts.pop();
                 locstr = loc.join(',');
 
                 // have we completed a loop, or reached an edge?
-                if( (locstr===start && dx+','+dy===startDelta) ||
+                if( (locstr===start && marchStep.join(',')===startStepStr) ||
                     (edgeflag && (
-                        (dx && (loc[0]<0 || loc[0]>n-2)) ||
-                        (dy && (loc[1]<0 || loc[1]>m-2))))) {
+                        (marchStep[0] && (loc[0]<0 || loc[0]>n-2)) ||
+                        (marchStep[1] && (loc[1]<0 || loc[1]>m-2))))) {
                     break;
                 }
                 mi = pi.crossings[locstr];
@@ -703,6 +656,38 @@
             .style('stroke-miterlimit',1);
 
         Plotly.Lib.markTime('done Contour.plot');
+    }
+
+    function startStep(mi, edgeflag, loc) {
+        var dx = 0,
+            dy = 0;
+        if(mi>20 && edgeflag) {
+            // these saddles start at +/- x
+            if(mi===208 || mi===1114) {
+                // if we're starting at the left side, we must be going right
+                dx = loc[0]===0 ? 1 : -1;
+            }
+            else {
+                // if we're starting at the bottom, we must be going up
+                dy = loc[1]===0 ? 1 : -1;
+            }
+        }
+        else if(BOTTOMSTART.indexOf(mi)!==-1) dy = 1;
+        else if(LEFTSTART.indexOf(mi)!==-1) dx = 1;
+        else if(TOPSTART.indexOf(mi)!==-1) dy = -1;
+        else dx = -1;
+        return [dx, dy];
+    }
+
+    function equalPts(pt1, pt2) {
+        return Math.abs(pt1[0] - pt2[0]) < 0.01 &&
+               Math.abs(pt1[1] - pt2[1]) < 0.01;
+    }
+
+    function ptDist(pt1, pt2) {
+        var dx = pt1[0] - pt2[0],
+            dy = pt1[1] - pt2[1];
+        return Math.sqrt(dx*dx + dy*dy);
     }
 
     contour.style = function(gp) {
