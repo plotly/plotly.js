@@ -115,7 +115,9 @@
     };
 
     contour.plot = function(gd, plotinfo, cdcontours) {
-        cdcontours.forEach(function(cd) { plotOne(gd, plotinfo, cd); });
+        for(var i = 0; i < cdcontours.length; i++) {
+            plotOne(gd, plotinfo, cdcontours[i]);
+        }
     };
 
     // some constants to help with marching squares algorithm
