@@ -141,13 +141,16 @@
             713: [7, 13],
             1114: [11, 14]
         },
-        // after one index has been used for a saddle, which to we
+        // after one index has been used for a saddle, which do we
         // substitute to be used up later?
         SADDLEREMAINDER = {1: 4, 2: 8, 4: 1, 7: 13, 8: 2, 11: 14, 13: 7, 14: 11};
 
     function plotOne(gd, plotinfo, cd) {
         Plotly.Lib.markTime('in Contour.plot');
         var trace = cd[0].trace,
+            z = cd[0].z,
+            x = cd[0].x,
+            y = cd[0].y,
             contours = trace.contours,
             smoothing = trace.line.smoothing,
             uid = trace.uid,
@@ -155,29 +158,11 @@
             ya = plotinfo.y(),
             fullLayout = gd._fullLayout,
             id = 'contour' + uid,
-            contourLevels = [],
-            pathinfo = [],
-            cs = contours.size||1;
+            pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
 
         if(trace.visible===false) {
             fullLayout._paper.selectAll('.'+id+',.cb'+uid+',.hm'+uid).remove();
             return;
-        }
-
-        for(var ci=contours.start; ci<contours.end+cs/10; ci+=cs) {
-            contourLevels.push(ci);
-            pathinfo.push({
-                level:ci,
-                // all the cells with nontrivial marching index
-                crossings:{},
-                // starting points on the edges of the lattice for each contour
-                starts:[],
-                // all unclosed paths (may have less items than starts,
-                // if a path is closed by rounding)
-                edgepaths:[],
-                // all closed paths
-                paths:[]
-            });
         }
 
         // use a heatmap to fill - draw it behind the lines
@@ -187,285 +172,15 @@
                 trace._input.zmin = trace.zmin =
                     contours.start - contours.size/2;
                 trace._input.zmax = trace.zmax =
-                    trace.zmin + contourLevels.length * contours.size;
+                    trace.zmin + pathinfo.length * contours.size;
             }
             Plotly.Heatmap.plot(gd, plotinfo, [cd]);
         }
         // in case this used to be a heatmap (or have heatmap fill)
         else fullLayout._paper.selectAll('.hm'+uid).remove();
 
-        var z = cd[0].z,
-            x = cd[0].x,
-            y = cd[0].y,
-            // get z dimensions (n allows uneven rows)
-            m = z.length,
-            n = Plotly.Lib.aggNums(Math.max, null,
-                    z.map(function(row) { return row.length; })),
-            twoWide = m===2 || n===2,
-            xi,
-            yi,
-            ystartIndices,
-            startIndices,
-            label,
-            corners;
-
-        // find all the contourLevels at once
-        // since we want to be exhaustive we'll check for contour crossings
-        // at every intersection
-        function makeCrossings(pi) {
-            var mi = getMarchingIndex(pi.level,corners);
-            if(!mi) return;
-
-            pi.crossings[label] = mi;
-            var startIndexIndex = startIndices.indexOf(mi);
-            if(startIndexIndex!==-1) {
-                var loc = label.split(',').map(Number);
-                pi.starts.push(loc);
-                if(twoWide && startIndices.indexOf(mi,startIndexIndex+1)!==-1) {
-                    // the same square has starts from opposite sides
-                    // it's not possible to have starts on opposite edges
-                    // of a corner, only a start and an end...
-                    // but if the array is only two points wide (either way)
-                    // you can have starts on opposite sides.
-                    pi.starts.push(loc);
-                }
-            }
-        }
-
-        // here's the actual loop that calculates all the crossings
-        for(yi = 0; yi<m-1; yi++) {
-            ystartIndices = [];
-            if(yi===0) ystartIndices = ystartIndices.concat(BOTTOMSTART);
-            if(yi===m-2) ystartIndices = ystartIndices.concat(TOPSTART);
-
-            for(xi = 0; xi<n-1; xi++) {
-                startIndices = [].concat(ystartIndices);
-                if(xi===0) startIndices = startIndices.concat(LEFTSTART);
-                if(xi===n-2) startIndices = startIndices.concat(RIGHTSTART);
-
-                label = xi+','+yi;
-                corners = [[z[yi][xi], z[yi][xi+1]],
-                           [z[yi+1][xi], z[yi+1][xi+1]]];
-                pathinfo.forEach(makeCrossings);
-            }
-        }
-
-        // now calculate the paths
-
-        function getInterpPx(level, loc, step) {
-            var locx = loc[0] + Math.max(step[0], 0),
-                locy = loc[1] + Math.max(step[1], 0),
-                zxy = z[locy][locx];
-
-            if(step[1]) {
-                var dx = (level - zxy) / (z[locy][locx+1] - zxy);
-                return [xa.c2p((1-dx)*x[locx] + dx*x[locx+1]),
-                        ya.c2p(y[locy])];
-            }
-            else {
-                var dy = (level - zxy) / (z[locy+1][locx] - zxy);
-                return [xa.c2p(x[locx]),
-                        ya.c2p((1-dy)*y[locy] + dy*y[locy+1])];
-            }
-        }
-
-        function makePath(nc, start, edgeflag) {
-            var pi = pathinfo[nc],
-                loc = start.split(',').map(Number),
-                mi = pi.crossings[start],
-                level = pi.level,
-                loclist = [];
-
-            // find the interpolated starting point
-            var marchStep = startStep(mi, edgeflag, loc);
-
-            // start by going backward a half step and finding the crossing point
-            var //interpFunc = marchStep[0] ? getVInterp : getHInterp,
-                pts = [getInterpPx(level, loc, [-marchStep[0], -marchStep[1]])],
-                startStepStr = marchStep.join(','),
-                miTaken,
-                locstr = loc.join(',');
-
-            // now follow the path
-            for(var cnt=0; cnt<10000; cnt++) { // just to avoid infinite loops
-                loclist.push(locstr);
-                if(mi>20) {
-                    miTaken = CHOOSESADDLE[mi][(marchStep[0]||marchStep[1])<0 ? 0 : 1];
-                    pi.crossings[locstr] = SADDLEREMAINDER[miTaken];
-                }
-                else {
-                    miTaken = mi;
-                    delete pi.crossings[locstr];
-                }
-
-                marchStep = NEWDELTA[miTaken];
-                if(!marchStep) {
-                    console.log('found bad marching index', mi, miTaken, loc, nc);
-                    break;
-                }
-
-                // find the crossing a half step forward, and then take the full step
-                pts.push(getInterpPx(level, loc, marchStep));
-                loc[0] += marchStep[0];
-                loc[1] += marchStep[1];
-
-                // don't include the same point multiple times
-                if(equalPts(pts[pts.length-1], pts[pts.length-2])) pts.pop();
-                locstr = loc.join(',');
-
-                // have we completed a loop, or reached an edge?
-                if( (locstr===start && marchStep.join(',')===startStepStr) ||
-                    (edgeflag && (
-                        (marchStep[0] && (loc[0]<0 || loc[0]>n-2)) ||
-                        (marchStep[1] && (loc[1]<0 || loc[1]>m-2))))) {
-                    break;
-                }
-                mi = pi.crossings[locstr];
-            }
-
-            if(cnt===10000) {
-                console.log('Infinite loop in contour?');
-            }
-            var closedpath = equalPts(pts[0], pts[pts.length-1]),
-                totaldist = 0,
-                distThresholdFactor = 0.2*smoothing,
-                alldists = [],
-                cropstart = 0,
-                distgroup,
-                cnt2,
-                cnt3,
-                newpt,
-                ptcnt,
-                ptavg,
-                thisdist;
-
-            // check for points that are too close together (<1/5 the average dist,
-            // less if less smoothed) and just take the center (or avg of center 2)
-            // this cuts down on funny behavior when a point is very close to a contour level
-            for(cnt=1; cnt<pts.length; cnt++) {
-                thisdist = ptDist(pts[cnt], pts[cnt-1]);
-                totaldist += thisdist;
-                alldists.push(thisdist);
-            }
-
-            var distThreshold = totaldist/alldists.length*distThresholdFactor;
-
-            function getpt(i) { return pts[i%pts.length]; }
-
-            for(cnt=pts.length-2; cnt>=cropstart; cnt--) {
-                distgroup = alldists[cnt];
-                if(distgroup<distThreshold) {
-                    cnt3 = 0;
-                    for(cnt2=cnt-1; cnt2>=cropstart; cnt2--) {
-                        if(distgroup+alldists[cnt2]<distThreshold) {
-                            distgroup += alldists[cnt2];
-                        }
-                        else break;
-                    }
-
-                    // closed path with close points wrapping around the boundary?
-                    if(closedpath && cnt===pts.length-2) {
-                        for(cnt3=0; cnt3<cnt2; cnt3++) {
-                            if(distgroup+alldists[cnt3]<distThreshold) {
-                                distgroup += alldists[cnt3];
-                            }
-                            else break;
-                        }
-                    }
-                    ptcnt = cnt-cnt2+cnt3+1;
-                    ptavg = Math.floor((cnt+cnt2+cnt3+2)/2);
-
-                    // either endpoint included: keep the endpoint
-                    if(!closedpath && cnt===pts.length-2) newpt = pts[pts.length-1];
-                    else if(!closedpath && cnt2===-1) newpt = pts[0];
-
-                    // odd # of points - just take the central one
-                    else if(ptcnt%2) newpt = getpt(ptavg);
-
-                    // even # of pts - average central two
-                    else  {
-                        newpt = [(getpt(ptavg)[0] + getpt(ptavg+1)[0]) / 2,
-                                 (getpt(ptavg)[1] + getpt(ptavg+1)[1]) / 2];
-                    }
-
-                    pts.splice(cnt2+1, cnt-cnt2+1, newpt);
-                    cnt = cnt2+1;
-                    if(cnt3) cropstart = cnt3;
-                    if(closedpath) {
-                        if(cnt===pts.length-2) pts[cnt3] = pts[pts.length-1];
-                        else if(cnt===0) pts[pts.length-1] = pts[0];
-                    }
-                }
-            }
-            pts.splice(0, cropstart);
-
-            // don't return single-point paths (ie all points were the same
-            // so they got deleted?)
-            if(pts.length<2) return;
-            else if(closedpath) {
-                pts.pop();
-                pi.paths.push(pts);
-            }
-            else {
-                if(!edgeflag) {
-                    console.log('unclosed interior contour?',
-                        nc,start,loclist,pts.join('L'));
-                }
-
-                // edge path - does it start where an existing edge path ends, or vice versa?
-                var merged = false;
-                pi.edgepaths.forEach(function(edgepath, edgei) {
-                    if(!merged && equalPts(edgepath[0], pts[pts.length-1])) {
-                        pts.pop();
-                        merged = true;
-
-                        // now does it ALSO meet the end of another (or the same) path?
-                        var doublemerged = false;
-                        pi.edgepaths.forEach(function(edgepath2, edgei2) {
-                            if(!doublemerged && equalPts(
-                                    edgepath2[edgepath2.length-1], pts[0])) {
-                                doublemerged = true;
-                                pts.splice(0, 1);
-                                pi.edgepaths.splice(edgei, 1);
-                                if(edgei2===edgei) {
-                                    // the path is now closed
-                                    pi.paths.push(pts.concat(edgepath2));
-                                }
-                                else {
-                                    pi.edgepaths[edgei2] =
-                                        pi.edgepaths[edgei2].concat(pts, edgepath2);
-                                }
-                            }
-                        });
-                        if(!doublemerged) {
-                            pi.edgepaths[edgei] = pts.concat(edgepath);
-                        }
-                    }
-                });
-                pi.edgepaths.forEach(function(edgepath, edgei) {
-                    if(!merged && equalPts(edgepath[edgepath.length-1], pts[0])) {
-                        pts.splice(0, 1);
-                        pi.edgepaths[edgei] = edgepath.concat(pts);
-                        merged = true;
-                    }
-                });
-
-                if(!merged) pi.edgepaths.push(pts);
-            }
-        }
-
-        pathinfo.forEach(function(pi, nc){
-            var cnt=0;
-            pi.starts.forEach(function(start){
-                makePath(nc, String(start), 'edge');
-            });
-
-            while(Object.keys(pi.crossings).length && cnt<10000) {
-                cnt++;
-                makePath(nc, Object.keys(pi.crossings)[0]);
-            }
-            if(cnt===10000) console.log('Infinite loop in contour?');
-        });
+        makeCrossings(pathinfo);
+        findAllPaths(pathinfo);
 
         // and draw everything
         var plotgroup = plotinfo.plot.select('.maplayer')
@@ -634,6 +349,34 @@
         Plotly.Lib.markTime('done Contour.plot');
     }
 
+    function emptyPathinfo(contours, plotinfo, cd0) {
+        var cs = contours.size || 1,
+            pathinfo = [];
+        for(var ci = contours.start; ci < contours.end + cs/10; ci += cs) {
+            pathinfo.push({
+                level:ci,
+                // all the cells with nontrivial marching index
+                crossings:{},
+                // starting points on the edges of the lattice for each contour
+                starts:[],
+                // all unclosed paths (may have less items than starts,
+                // if a path is closed by rounding)
+                edgepaths:[],
+                // all closed paths
+                paths:[],
+                // store axes so we can convert to px
+                xaxis: plotinfo.x(),
+                yaxis: plotinfo.y(),
+                // full data arrays to use for interpolation
+                x: cd0.x,
+                y: cd0.y,
+                z: cd0.z,
+                smoothing: cd0.trace.smoothing
+            });
+        }
+        return pathinfo;
+    }
+
     // modified marching squares algorithm,
     // so we disambiguate the saddle points from the start
     // and we ignore the cases with no crossings
@@ -656,6 +399,263 @@
             return (mi === 5) ? 104 : 208;
         }
         return (mi === 15) ? 0 : mi;
+    }
+
+    // Calculate all the marching indices, for ALL levels at once.
+    // since we want to be exhaustive we'll check for contour crossings
+    // at every intersection, rather than just following a path
+    // TODO: shorten the inner loop to only the relevant levels
+    function makeCrossings(pathinfo) {
+        var z = pathinfo[0].z,
+            m = z.length,
+            n = z[0].length, // we already made sure z isn't ragged in interp2d
+            twoWide = m===2 || n===2,
+            xi,
+            yi,
+            startIndices,
+            ystartIndices,
+            label,
+            corners,
+            mi,
+            pi,
+            i;
+
+        for(yi = 0; yi<m-1; yi++) {
+            ystartIndices = [];
+            if(yi===0) ystartIndices = ystartIndices.concat(BOTTOMSTART);
+            if(yi===m-2) ystartIndices = ystartIndices.concat(TOPSTART);
+
+            for(xi = 0; xi<n-1; xi++) {
+                startIndices = ystartIndices.slice();
+                if(xi===0) startIndices = startIndices.concat(LEFTSTART);
+                if(xi===n-2) startIndices = startIndices.concat(RIGHTSTART);
+
+                label = xi+','+yi;
+                corners = [[z[yi][xi], z[yi][xi+1]],
+                           [z[yi+1][xi], z[yi+1][xi+1]]];
+                for(i = 0; i < pathinfo.length; i++) {
+                    pi = pathinfo[i];
+                    mi = getMarchingIndex(pi.level,corners);
+                    if(!mi) continue;
+
+                    pi.crossings[label] = mi;
+                    if(startIndices.indexOf(mi)!==-1) {
+                        pi.starts.push([xi, yi]);
+                        if(twoWide && startIndices.indexOf(mi,
+                                startIndices.indexOf(mi) + 1) !== -1) {
+                            // the same square has starts from opposite sides
+                            // it's not possible to have starts on opposite edges
+                            // of a corner, only a start and an end...
+                            // but if the array is only two points wide (either way)
+                            // you can have starts on opposite sides.
+                            pi.starts.push([xi, yi]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function makePath(pi, loc, edgeflag) {
+        var startLocStr = loc.join(','),
+            locStr = startLocStr,
+            mi = pi.crossings[locStr],
+            marchStep = startStep(mi, edgeflag, loc),
+            // start by going backward a half step and finding the crossing point
+            pts = [getInterpPx(pi, loc, [-marchStep[0], -marchStep[1]])],
+            startStepStr = marchStep.join(','),
+            m = pi.z.length,
+            n = pi.z[0].length;
+
+        // now follow the path
+        for(var cnt=0; cnt<10000; cnt++) { // just to avoid infinite loops
+            if(mi>20) {
+                mi = CHOOSESADDLE[mi][(marchStep[0]||marchStep[1])<0 ? 0 : 1];
+                pi.crossings[locStr] = SADDLEREMAINDER[mi];
+            }
+            else {
+                delete pi.crossings[locStr];
+            }
+
+            marchStep = NEWDELTA[mi];
+            if(!marchStep) {
+                console.log('found bad marching index', mi, loc, pi.level);
+                break;
+            }
+
+            // find the crossing a half step forward, and then take the full step
+            pts.push(getInterpPx(pi, loc, marchStep));
+            loc[0] += marchStep[0];
+            loc[1] += marchStep[1];
+
+            // don't include the same point multiple times
+            if(equalPts(pts[pts.length-1], pts[pts.length-2])) pts.pop();
+            locStr = loc.join(',');
+
+            // have we completed a loop, or reached an edge?
+            if( (locStr===startLocStr && marchStep.join(',')===startStepStr) ||
+                (edgeflag && (
+                    (marchStep[0] && (loc[0]<0 || loc[0]>n-2)) ||
+                    (marchStep[1] && (loc[1]<0 || loc[1]>m-2))))) {
+                break;
+            }
+            mi = pi.crossings[locStr];
+        }
+
+        if(cnt===10000) {
+            console.log('Infinite loop in contour?');
+        }
+        var closedpath = equalPts(pts[0], pts[pts.length-1]),
+            totaldist = 0,
+            distThresholdFactor = 0.2 * pi.smoothing,
+            alldists = [],
+            cropstart = 0,
+            distgroup,
+            cnt2,
+            cnt3,
+            newpt,
+            ptcnt,
+            ptavg,
+            thisdist;
+
+        // check for points that are too close together (<1/5 the average dist,
+        // less if less smoothed) and just take the center (or avg of center 2)
+        // this cuts down on funny behavior when a point is very close to a contour level
+        for(cnt=1; cnt<pts.length; cnt++) {
+            thisdist = ptDist(pts[cnt], pts[cnt-1]);
+            totaldist += thisdist;
+            alldists.push(thisdist);
+        }
+
+        var distThreshold = totaldist/alldists.length*distThresholdFactor;
+
+        function getpt(i) { return pts[i%pts.length]; }
+
+        for(cnt=pts.length-2; cnt>=cropstart; cnt--) {
+            distgroup = alldists[cnt];
+            if(distgroup<distThreshold) {
+                cnt3 = 0;
+                for(cnt2=cnt-1; cnt2>=cropstart; cnt2--) {
+                    if(distgroup+alldists[cnt2]<distThreshold) {
+                        distgroup += alldists[cnt2];
+                    }
+                    else break;
+                }
+
+                // closed path with close points wrapping around the boundary?
+                if(closedpath && cnt===pts.length-2) {
+                    for(cnt3=0; cnt3<cnt2; cnt3++) {
+                        if(distgroup+alldists[cnt3]<distThreshold) {
+                            distgroup += alldists[cnt3];
+                        }
+                        else break;
+                    }
+                }
+                ptcnt = cnt-cnt2+cnt3+1;
+                ptavg = Math.floor((cnt+cnt2+cnt3+2)/2);
+
+                // either endpoint included: keep the endpoint
+                if(!closedpath && cnt===pts.length-2) newpt = pts[pts.length-1];
+                else if(!closedpath && cnt2===-1) newpt = pts[0];
+
+                // odd # of points - just take the central one
+                else if(ptcnt%2) newpt = getpt(ptavg);
+
+                // even # of pts - average central two
+                else  {
+                    newpt = [(getpt(ptavg)[0] + getpt(ptavg+1)[0]) / 2,
+                             (getpt(ptavg)[1] + getpt(ptavg+1)[1]) / 2];
+                }
+
+                pts.splice(cnt2+1, cnt-cnt2+1, newpt);
+                cnt = cnt2+1;
+                if(cnt3) cropstart = cnt3;
+                if(closedpath) {
+                    if(cnt===pts.length-2) pts[cnt3] = pts[pts.length-1];
+                    else if(cnt===0) pts[pts.length-1] = pts[0];
+                }
+            }
+        }
+        pts.splice(0, cropstart);
+
+        // don't return single-point paths (ie all points were the same
+        // so they got deleted?)
+        if(pts.length<2) return;
+        else if(closedpath) {
+            pts.pop();
+            pi.paths.push(pts);
+        }
+        else {
+            if(!edgeflag) {
+                console.log('unclosed interior contour?',
+                    pi.level,startLocStr,pts.join('L'));
+            }
+
+            // edge path - does it start where an existing edge path ends, or vice versa?
+            var merged = false;
+            pi.edgepaths.forEach(function(edgepath, edgei) {
+                if(!merged && equalPts(edgepath[0], pts[pts.length-1])) {
+                    pts.pop();
+                    merged = true;
+
+                    // now does it ALSO meet the end of another (or the same) path?
+                    var doublemerged = false;
+                    pi.edgepaths.forEach(function(edgepath2, edgei2) {
+                        if(!doublemerged && equalPts(
+                                edgepath2[edgepath2.length-1], pts[0])) {
+                            doublemerged = true;
+                            pts.splice(0, 1);
+                            pi.edgepaths.splice(edgei, 1);
+                            if(edgei2===edgei) {
+                                // the path is now closed
+                                pi.paths.push(pts.concat(edgepath2));
+                            }
+                            else {
+                                pi.edgepaths[edgei2] =
+                                    pi.edgepaths[edgei2].concat(pts, edgepath2);
+                            }
+                        }
+                    });
+                    if(!doublemerged) {
+                        pi.edgepaths[edgei] = pts.concat(edgepath);
+                    }
+                }
+            });
+            pi.edgepaths.forEach(function(edgepath, edgei) {
+                if(!merged && equalPts(edgepath[edgepath.length-1], pts[0])) {
+                    pts.splice(0, 1);
+                    pi.edgepaths[edgei] = edgepath.concat(pts);
+                    merged = true;
+                }
+            });
+
+            if(!merged) pi.edgepaths.push(pts);
+        }
+    }
+
+    function findAllPaths(pathinfo) {
+        var cnt,
+            startLoc,
+            i,
+            pi,
+            j;
+
+        for(i = 0; i < pathinfo.length; i++) {
+            pi = pathinfo[i];
+
+            for(j = 0; j < pi.starts.length; j++) {
+                startLoc = pi.starts[j];
+                makePath(pi, startLoc, 'edge');
+            }
+
+            cnt = 0;
+            while(Object.keys(pi.crossings).length && cnt<10000) {
+                cnt++;
+                startLoc = Object.keys(pi.crossings)[0].split(',').map(Number);
+                makePath(pi, startLoc);
+            }
+            if(cnt===10000) console.log('Infinite loop in contour?');
+        }
     }
 
     // special function to get the marching step of the
@@ -690,6 +690,25 @@
         var dx = pt1[0] - pt2[0],
             dy = pt1[1] - pt2[1];
         return Math.sqrt(dx*dx + dy*dy);
+    }
+
+    function getInterpPx(pi, loc, step) {
+        var locx = loc[0] + Math.max(step[0], 0),
+            locy = loc[1] + Math.max(step[1], 0),
+            zxy = pi.z[locy][locx],
+            xa = pi.xaxis,
+            ya = pi.yaxis;
+
+        if(step[1]) {
+            var dx = (pi.level - zxy) / (pi.z[locy][locx+1] - zxy);
+            return [xa.c2p((1-dx) * pi.x[locx] + dx * pi.x[locx+1]),
+                    ya.c2p(pi.y[locy])];
+        }
+        else {
+            var dy = (pi.level - zxy) / (pi.z[locy+1][locx] - zxy);
+            return [xa.c2p(pi.x[locx]),
+                    ya.c2p((1-dy) * pi.y[locy] + dy * pi.y[locy+1])];
+        }
     }
 
     contour.style = function(gp) {
