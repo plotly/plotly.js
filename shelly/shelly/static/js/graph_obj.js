@@ -748,7 +748,9 @@
             delete layout.yaxis1;
         }
         Plotly.Axes.list({_fullLayout:layout}).forEach(function(ax) {
-            if(ax.anchor) ax.anchor = Plotly.Axes.cleanId(ax.anchor);
+            if(ax.anchor && ax.anchor !== 'free') {
+                ax.anchor = Plotly.Axes.cleanId(ax.anchor);
+            }
             if(ax.overlaying) ax.overlaying = Plotly.Axes.cleanId(ax.overlaying);
 
             // old method of axis type - isdate and islog (before category existed)
@@ -764,6 +766,9 @@
             delete ax.islog;
             delete ax.isdate;
             delete ax.categories; // replaced by _categories
+
+            // prune empty domain arrays made before the new nestedProperty
+            if(emptyContainer(ax, 'domain')) delete ax.domain;
         });
 
         (layout.annotations||[]).forEach(function(ann) {
@@ -924,7 +929,20 @@
             else if(trace.textposition) {
                 trace.textposition = cleanTextPosition(trace.textposition);
             }
+
+            // prune empty containers made before the new nestedProperty
+            if(emptyContainer(trace, 'line')) delete trace.line;
+            if('marker' in trace) {
+                if(emptyContainer(trace.marker, 'line')) delete trace.marker.line;
+                if(emptyContainer(trace, 'marker')) delete trace.marker;
+            }
         });
+    }
+
+    function emptyContainer(outer, innerStr) {
+        return (innerStr in outer) &&
+            (typeof outer[innerStr] === 'object') &&
+            (Object.keys(outer[innerStr]).length === 0);
     }
 
     // for use in Plotly.Lib.syncOrAsync, check if there are any
@@ -1460,6 +1478,7 @@
         var recalcAttrs = [
             'mode','visible','type','orientation','fill',
             'histfunc','histnorm','text',
+            'x', 'y', 'z',
             'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
             'line.width','showscale','zauto',
             'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
@@ -1985,7 +2004,6 @@
         for(var ai in aobj) {
             var p = Plotly.Lib.nestedProperty(layout,ai),
                 vi = aobj[ai],
-                parent = p.parent,
                 plen = p.parts.length,
                 // p.parts may end with an index integer if the property is an array
                 pend = typeof p.parts[plen-1] === 'string' ? (plen-1) : (plen-2),
@@ -1994,7 +2012,8 @@
                 // leaf plus immediate parent
                 pleafPlus = p.parts[pend - 1] + '.' + pleaf,
                 // trunk nodes (everything except the leaf)
-                ptrunk = p.parts.slice(0, pend).join('.');
+                ptrunk = p.parts.slice(0, pend).join('.'),
+                parent = Plotly.Lib.nestedProperty(layout, ptrunk).get();
 
             redoit[ai] = aobj[ai];
 

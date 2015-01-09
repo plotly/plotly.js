@@ -147,7 +147,7 @@
     annotations.supplyDefaults = function(layoutIn, layoutOut) {
         var containerIn = layoutIn.annotations || [];
         layoutOut.annotations = containerIn.map(function(annIn) {
-            return supplyAnnotationDefaults(annIn, layoutOut);
+            return supplyAnnotationDefaults(annIn || {}, layoutOut);
         });
     };
 
@@ -318,8 +318,14 @@
             }
             else if(value==='add' || $.isPlainObject(value)) {
                 fullLayout.annotations.splice(index,0,{});
-                layout.annotations.splice(index,0,
-                    $.isPlainObject(value) ? $.extend({},value) : {text: 'New text'});
+
+                var rule = $.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
+
+                if (layout.annotations) {
+                    layout.annotations.splice(index,0, rule)
+                } else {
+                    layout.annotations = [rule]
+                }
 
                 for(i=fullLayout.annotations.length-1; i>index; i--) {
                     fullLayout._infolayer
