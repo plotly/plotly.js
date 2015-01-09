@@ -150,11 +150,9 @@
     function plotOne(gd, plotinfo, cd) {
         Plotly.Lib.markTime('in Contour.plot');
         var trace = cd[0].trace,
-            z = cd[0].z,
             x = cd[0].x,
             y = cd[0].y,
             contours = trace.contours,
-            smoothing = trace.line.smoothing,
             uid = trace.uid,
             xa = plotinfo.x(),
             ya = plotinfo.y(),
@@ -184,15 +182,6 @@
         makeCrossings(pathinfo);
         findAllPaths(pathinfo);
 
-        // and draw everything
-        var plotgroup = plotinfo.plot.select('.maplayer')
-            .selectAll('g.contour.'+id)
-            .data(cd);
-        plotgroup.enter().append('g')
-            .classed('contour',true)
-            .classed(id,true);
-        plotgroup.exit().remove();
-
         var leftedge = xa.c2p(x[0]),
             rightedge = xa.c2p(x[x.length-1]),
             bottomedge = ya.c2p(y[0]),
@@ -204,149 +193,18 @@
                 [leftedge, bottomedge]
             ];
 
-        function istop(pt) { return Math.abs(pt[1]-topedge) < 0.01; }
-        function isbottom(pt) { return Math.abs(pt[1]-bottomedge) < 0.01; }
-        function isleft(pt) { return Math.abs(pt[0]-leftedge) < 0.01; }
-        function isright(pt) { return Math.abs(pt[0]-rightedge) < 0.01; }
+        // draw everything
+        var plotgroup = plotinfo.plot.select('.maplayer')
+            .selectAll('g.contour.'+id)
+            .data(cd);
+        plotgroup.enter().append('g')
+            .classed('contour',true)
+            .classed(id,true);
+        plotgroup.exit().remove();
 
-        var bggroup = plotgroup.selectAll('g.contourbg').data([0]);
-        bggroup.enter().append('g').classed('contourbg',true);
-
-        var bgfill = bggroup.selectAll('path')
-            .data(contours.coloring==='fill' ? [0] : []);
-        bgfill.enter().append('path');
-        bgfill.exit().remove();
-        bgfill
-            .attr('d','M'+perimeter.join('L')+'Z')
-            .style('stroke','none');
-
-        var fillgroup = plotgroup.selectAll('g.contourfill')
-            .data([0]);
-        fillgroup.enter().append('g')
-            .classed('contourfill',true);
-
-        var fillitems = fillgroup.selectAll('path')
-            .data(contours.coloring==='fill' ? pathinfo : []);
-        fillitems.enter().append('path');
-        fillitems.exit().remove();
-        fillitems.each(function(d){
-            // join all paths for this level together into a single path
-            // first follow clockwise around the perimeter to close any open paths
-            // if the whole perimeter is above this level, start with a path
-            // enclosing the whole thing. With all that, the parity should mean
-            // that we always fill everything above the contour, nothing below
-            var fullpath = (d.edgepaths.length || z[0][0] < d.level) ?
-                    '' : ('M'+perimeter.join('L')+'Z'),
-                i = 0,
-                startsleft = d.edgepaths.map(function(v,i){ return i; }),
-                newloop = true,
-                endpt,
-                newendpt,
-                cnt,
-                nexti,
-                possiblei,
-                addpath;
-
-            while(startsleft.length) {
-                addpath = Plotly.Drawing.smoothopen(d.edgepaths[i], smoothing);
-                fullpath += newloop ? addpath : addpath.replace(/^M/, 'L');
-                startsleft.splice(startsleft.indexOf(i), 1);
-                endpt = d.edgepaths[i][d.edgepaths[i].length-1];
-                nexti = -1;
-
-                //now loop through sides, moving our endpoint until we find a new start
-                for(cnt=0; cnt<4; cnt++) { // just to prevent infinite loops
-                    if(!endpt) {
-                        console.log('missing end?',i,d);
-                        break;
-                    }
-
-                    if(istop(endpt) && !isright(endpt)) newendpt = [rightedge, topedge];
-                    else if(isleft(endpt)) newendpt = [leftedge, topedge];
-                    else if(isbottom(endpt)) newendpt = [leftedge, bottomedge];
-                    else if(isright(endpt)) newendpt = [rightedge, bottomedge];
-
-                    for(possiblei=0; possiblei<d.edgepaths.length; possiblei++) {
-                        var ptNew = d.edgepaths[possiblei][0];
-                        // is ptNew on the (horz. or vert.) segment from endpt to newendpt?
-                        if(Math.abs(endpt[0]-newendpt[0]) < 0.01) {
-                            if(Math.abs(endpt[0]-ptNew[0]) < 0.01 &&
-                                    (ptNew[1]-endpt[1]) * (newendpt[1]-ptNew[1]) >= 0) {
-                                newendpt = ptNew;
-                                nexti = possiblei;
-                            }
-                        }
-                        else if(Math.abs(endpt[1]-newendpt[1]) < 0.01) {
-                            if(Math.abs(endpt[1]-ptNew[1]) < 0.01 &&
-                                    (ptNew[0]-endpt[0]) * (newendpt[0]-ptNew[0]) >= 0) {
-                                newendpt = ptNew;
-                                nexti = possiblei;
-                            }
-                        }
-                        else {
-                            console.log('endpt to newendpt is not vert. or horz.',
-                                endpt, newendpt, ptNew);
-                        }
-                    }
-
-                    endpt = newendpt;
-
-                    if(nexti>=0) break;
-                    fullpath += 'L'+newendpt;
-                }
-
-                if(nexti===d.edgepaths.length) {
-                    console.log('unclosed perimeter path');
-                    break;
-                }
-
-                i = nexti;
-
-                // if we closed back on a loop we already included,
-                // close it and start a new loop
-                newloop = (startsleft.indexOf(i)===-1);
-                if(newloop) {
-                    i = startsleft[0];
-                    fullpath += 'Z';
-                }
-            }
-
-            // finally add the interior paths
-            d.paths.forEach(function(path) {
-                fullpath += Plotly.Drawing.smoothclosed(path, smoothing);
-            });
-
-            if(!fullpath) d3.select(this).remove();
-            else d3.select(this).attr('d',fullpath).style('stroke', 'none');
-        });
-
-        var linegroup = plotgroup.selectAll('g.contourlevel')
-            .data(contours.showlines===false ? [] : pathinfo);
-        linegroup.enter().append('g')
-            .classed('contourlevel',true);
-        linegroup.exit().remove();
-
-        var opencontourlines = linegroup.selectAll('path.openline')
-            .data(function(d){ return d.edgepaths; });
-        opencontourlines.enter().append('path')
-            .classed('openline',true);
-        opencontourlines.exit().remove();
-        opencontourlines
-            .attr('d', function(d){
-                return Plotly.Drawing.smoothopen(d, smoothing);
-            })
-            .style('stroke-miterlimit',1);
-
-        var closedcontourlines = linegroup.selectAll('path.closedline')
-            .data(function(d){ return d.paths; });
-        closedcontourlines.enter().append('path')
-            .classed('closedline',true);
-        closedcontourlines.exit().remove();
-        closedcontourlines
-            .attr('d', function(d){
-                return Plotly.Drawing.smoothclosed(d, smoothing);
-            })
-            .style('stroke-miterlimit',1);
+        makeBackground(plotgroup, perimeter, contours);
+        makeFills(plotgroup, pathinfo, perimeter, contours);
+        makeLines(plotgroup, pathinfo, contours);
 
         Plotly.Lib.markTime('done Contour.plot');
     }
@@ -373,7 +231,7 @@
                 x: cd0.x,
                 y: cd0.y,
                 z: cd0.z,
-                smoothing: cd0.trace.smoothing
+                smoothing: cd0.trace.line.smoothing
             });
         }
         return pathinfo;
@@ -711,6 +569,165 @@
             return [xa.c2p(pi.x[locx]),
                     ya.c2p((1-dy) * pi.y[locy] + dy * pi.y[locy+1])];
         }
+    }
+
+    function makeBackground(plotgroup, perimeter, contours) {
+        var bggroup = plotgroup.selectAll('g.contourbg').data([0]);
+        bggroup.enter().append('g').classed('contourbg',true);
+
+        var bgfill = bggroup.selectAll('path')
+            .data(contours.coloring==='fill' ? [0] : []);
+        bgfill.enter().append('path');
+        bgfill.exit().remove();
+        bgfill
+            .attr('d','M'+perimeter.join('L')+'Z')
+            .style('stroke','none');
+    }
+
+    function makeFills(plotgroup, pathinfo, perimeter, contours) {
+        var z00 = pathinfo[0].z[0][0],
+            smoothing = pathinfo[0].smoothing,
+            topedge = perimeter[0][1],
+            bottomedge = perimeter[2][1],
+            leftedge = perimeter[0][0],
+            rightedge = perimeter[2][0];
+
+        function istop(pt) { return Math.abs(pt[1]-topedge) < 0.01; }
+        function isbottom(pt) { return Math.abs(pt[1]-bottomedge) < 0.01; }
+        function isleft(pt) { return Math.abs(pt[0]-leftedge) < 0.01; }
+        function isright(pt) { return Math.abs(pt[0]-rightedge) < 0.01; }
+
+        var fillgroup = plotgroup.selectAll('g.contourfill')
+            .data([0]);
+        fillgroup.enter().append('g')
+            .classed('contourfill',true);
+
+        var fillitems = fillgroup.selectAll('path')
+            .data(contours.coloring==='fill' ? pathinfo : []);
+        fillitems.enter().append('path');
+        fillitems.exit().remove();
+        fillitems.each(function(d){
+            // join all paths for this level together into a single path
+            // first follow clockwise around the perimeter to close any open paths
+            // if the whole perimeter is above this level, start with a path
+            // enclosing the whole thing. With all that, the parity should mean
+            // that we always fill everything above the contour, nothing below
+            var fullpath = (d.edgepaths.length || z00 < d.level) ?
+                    '' : ('M'+perimeter.join('L')+'Z'),
+                i = 0,
+                startsleft = d.edgepaths.map(function(v,i){ return i; }),
+                newloop = true,
+                endpt,
+                newendpt,
+                cnt,
+                nexti,
+                possiblei,
+                addpath;
+
+            while(startsleft.length) {
+                addpath = Plotly.Drawing.smoothopen(d.edgepaths[i], smoothing);
+                fullpath += newloop ? addpath : addpath.replace(/^M/, 'L');
+                startsleft.splice(startsleft.indexOf(i), 1);
+                endpt = d.edgepaths[i][d.edgepaths[i].length-1];
+                nexti = -1;
+
+                //now loop through sides, moving our endpoint until we find a new start
+                for(cnt=0; cnt<4; cnt++) { // just to prevent infinite loops
+                    if(!endpt) {
+                        console.log('missing end?',i,d);
+                        break;
+                    }
+
+                    if(istop(endpt) && !isright(endpt)) newendpt = [rightedge, topedge];
+                    else if(isleft(endpt)) newendpt = [leftedge, topedge];
+                    else if(isbottom(endpt)) newendpt = [leftedge, bottomedge];
+                    else if(isright(endpt)) newendpt = [rightedge, bottomedge];
+
+                    for(possiblei=0; possiblei<d.edgepaths.length; possiblei++) {
+                        var ptNew = d.edgepaths[possiblei][0];
+                        // is ptNew on the (horz. or vert.) segment from endpt to newendpt?
+                        if(Math.abs(endpt[0]-newendpt[0]) < 0.01) {
+                            if(Math.abs(endpt[0]-ptNew[0]) < 0.01 &&
+                                    (ptNew[1]-endpt[1]) * (newendpt[1]-ptNew[1]) >= 0) {
+                                newendpt = ptNew;
+                                nexti = possiblei;
+                            }
+                        }
+                        else if(Math.abs(endpt[1]-newendpt[1]) < 0.01) {
+                            if(Math.abs(endpt[1]-ptNew[1]) < 0.01 &&
+                                    (ptNew[0]-endpt[0]) * (newendpt[0]-ptNew[0]) >= 0) {
+                                newendpt = ptNew;
+                                nexti = possiblei;
+                            }
+                        }
+                        else {
+                            console.log('endpt to newendpt is not vert. or horz.',
+                                endpt, newendpt, ptNew);
+                        }
+                    }
+
+                    endpt = newendpt;
+
+                    if(nexti>=0) break;
+                    fullpath += 'L'+newendpt;
+                }
+
+                if(nexti===d.edgepaths.length) {
+                    console.log('unclosed perimeter path');
+                    break;
+                }
+
+                i = nexti;
+
+                // if we closed back on a loop we already included,
+                // close it and start a new loop
+                newloop = (startsleft.indexOf(i)===-1);
+                if(newloop) {
+                    i = startsleft[0];
+                    fullpath += 'Z';
+                }
+            }
+
+            // finally add the interior paths
+            d.paths.forEach(function(path) {
+                fullpath += Plotly.Drawing.smoothclosed(path, smoothing);
+            });
+
+            if(!fullpath) d3.select(this).remove();
+            else d3.select(this).attr('d',fullpath).style('stroke', 'none');
+        });
+    }
+
+    function makeLines(plotgroup, pathinfo, contours) {
+        var smoothing = pathinfo[0].smoothing;
+
+        var linegroup = plotgroup.selectAll('g.contourlevel')
+            .data(contours.showlines===false ? [] : pathinfo);
+        linegroup.enter().append('g')
+            .classed('contourlevel',true);
+        linegroup.exit().remove();
+
+        var opencontourlines = linegroup.selectAll('path.openline')
+            .data(function(d){ return d.edgepaths; });
+        opencontourlines.enter().append('path')
+            .classed('openline',true);
+        opencontourlines.exit().remove();
+        opencontourlines
+            .attr('d', function(d){
+                return Plotly.Drawing.smoothopen(d, smoothing);
+            })
+            .style('stroke-miterlimit',1);
+
+        var closedcontourlines = linegroup.selectAll('path.closedline')
+            .data(function(d){ return d.paths; });
+        closedcontourlines.enter().append('path')
+            .classed('closedline',true);
+        closedcontourlines.exit().remove();
+        closedcontourlines
+            .attr('d', function(d){
+                return Plotly.Drawing.smoothclosed(d, smoothing);
+            })
+            .style('stroke-miterlimit',1);
     }
 
     contour.style = function(gp) {
