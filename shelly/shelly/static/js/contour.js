@@ -194,17 +194,10 @@
             ];
 
         // draw everything
-        var plotgroup = plotinfo.plot.select('.maplayer')
-            .selectAll('g.contour.'+id)
-            .data(cd);
-        plotgroup.enter().append('g')
-            .classed('contour',true)
-            .classed(id,true);
-        plotgroup.exit().remove();
-
-        makeBackground(plotgroup, perimeter, contours);
-        makeFills(plotgroup, pathinfo, perimeter, contours);
-        makeLines(plotgroup, pathinfo, contours);
+        var plotGroup = makeContourGroup(plotinfo, cd, id);
+        makeBackground(plotGroup, perimeter, contours);
+        makeFills(plotGroup, pathinfo, perimeter, contours);
+        makeLines(plotGroup, pathinfo, contours);
 
         Plotly.Lib.markTime('done Contour.plot');
     }
@@ -569,6 +562,17 @@
             return [xa.c2p(pi.x[locx]),
                     ya.c2p((1-dy) * pi.y[locy] + dy * pi.y[locy+1])];
         }
+    }
+
+    function makeContourGroup(plotinfo, cd, id) {
+        var plotgroup = plotinfo.plot.select('.maplayer')
+            .selectAll('g.contour.'+id)
+            .data(cd);
+        plotgroup.enter().append('g')
+            .classed('contour',true)
+            .classed(id,true);
+        plotgroup.exit().remove();
+        return plotgroup;
     }
 
     function makeBackground(plotgroup, perimeter, contours) {
