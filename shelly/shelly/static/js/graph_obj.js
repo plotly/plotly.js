@@ -1568,7 +1568,7 @@
     /**
      * Add data traces to an existing graph div.
      *
-     * @param {Object} gd The graph div
+     * @param {Object|HTMLDivElement} gd The graph div
      * @param {Object[]} gd.data The array of traces we're adding to
      * @param {Object[]|Object} traces The object or array of objects to add
      * @param {Number[]|Number} [newIndices=[gd.data.length]] Locations to add traces
@@ -1628,7 +1628,7 @@
     /**
      * Delete traces at `indices` from gd.data array.
      *
-     * @param {Object} gd The graph div
+     * @param {Object|HTMLDivElement} gd The graph div
      * @param {Object[]} gd.data The array of traces we're removing from
      * @param {Number|Number[]} indices The indices
      */
@@ -1671,7 +1671,7 @@
      * Plotly.moveTraces(gd, [1, 2, 3], [-3, -2, -1])
      * Plotly.moveTraces(gd, [1, 2, 3])
      *
-     * @param {Object} gd The graph div
+     * @param {Object|HTMLDivElement} gd The graph div
      * @param {Object[]} gd.data The array of traces we're removing from
      * @param {Number|Number[]} currentIndices The locations of traces to be moved
      * @param {Number|Number[]} [newIndices] The locations to move traces to
