@@ -1563,6 +1563,18 @@
             traces = [traces];
         }
 
+        // add the traces to gd.data (no redrawing yet!)
+        for (i = 0; i < traces.length; i += 1) {
+            gd.data.push(traces[i]);
+        }
+
+        // if the user didn't define newIndices, they just want the traces appended
+        // i.e., we can simply redraw and be done
+        if (typeof newIndices === 'undefined') {
+            Plotly.redraw(gd);
+            return;
+        }
+
         // make sure indices is property defined
         if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
             newIndices = [newIndices];
