@@ -1694,10 +1694,9 @@
      *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
      */
     Plotly.moveTraces = function (gd, currentIndices, newIndices) {
-        var i,
-            ignoredTraces,
-            movingTraceMap,
-            newData;
+        var newData = [],
+            movingTraceMap = [],
+            i;
 
         // to reduce complexity here, check args elsewhere
         // this throws errors where appropriate
@@ -1708,9 +1707,10 @@
 
         // if undefined, define newIndices to point to the end of gd.data array
         if (typeof newIndices === 'undefined') {
-            newIndices = currentIndices.map(function (_, i) {
-                return -currentIndices.length + i;
-            });
+            newIndices = [];
+            for (i = 0; i < currentIndices.length; i++) {
+                newIndices.push(-currentIndices.length + i);
+            }
         }
 
         // make sure newIndices is an array if it's user-defined
@@ -1721,31 +1721,25 @@
         newIndices = positivifyIndices(newIndices, gd.data.length - 1);
 
         // at this point, we've coerced the index arrays into predictable forms
-        // finally...
 
         // get the traces that aren't being moved around
-        ignoredTraces = gd.data.reduce(function (pre, cur, index) {
+        for (i = 0; i < gd.data.length; i++) {
 
             // if index isn't in currentIndices, include it in ignored!
-            if (currentIndices.indexOf(index) === -1) {
-                return pre.concat(cur);
-            } else {
-                return pre;
+            if (currentIndices.indexOf(i) === -1) {
+                newData.push(gd.data[i]);
             }
-        }, []);
+        }
 
         // get a mapping of indices to moving traces
-        movingTraceMap = currentIndices.map(function (currentIndex, i) {
-            return {newIndex: newIndices[i], trace: gd.data[currentIndex]};
-        });
+        for (i = 0; i < currentIndices.length; i++) {
+            movingTraceMap.push({newIndex: newIndices[i], trace: gd.data[currentIndices[i]]});
+        }
 
         // reorder this mapping by newIndex, ascending
         movingTraceMap.sort(function (a, b) {
             return a.newIndex - b.newIndex;
         });
-
-        // move the traces that are being ignored to the front of gd.data
-        newData = ignoredTraces;
 
         // now, add the moving traces back in, in order!
         for (i = 0; i < movingTraceMap.length; i += 1) {
