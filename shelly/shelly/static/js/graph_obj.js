@@ -1736,14 +1736,8 @@
 
         // reorder this mapping by newIndex, ascending
         movingTraceMap.sort(function (a, b) {
-                if (a.newIndex > b.newIndex) {
-                    return 1;
-                } else if (a.newIndex < b.newIndex) {
-                    return -1;
-                } else {
-                    return 0;
-                }
-            });
+            return a.newIndex - b.newIndex;
+        });
 
         // move the traces that are being ignored to the front of gd.data
         newData = ignoredTraces;
