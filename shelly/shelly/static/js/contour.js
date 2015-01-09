@@ -255,16 +255,6 @@
             }
         }
 
-        // for heatmaps we leave empty values in place, but for contours
-        // we should provide a value
-        // TODO: for the moment we just set them to the min value, but it
-        // would be cool to use interpolated / extrapolated values
-        // (although exactly how to do this is a little unclear in 2D)
-        function zClean(xi,yi) {
-            var v = z[yi][xi];
-            return $.isNumeric(v) ? v : trace.zmin;
-        }
-
         // here's the actual loop that calculates all the crossings
         for(yi = 0; yi<m-1; yi++) {
             ystartIndices = [];
@@ -277,8 +267,8 @@
                 if(xi===n-2) startIndices = startIndices.concat(RIGHTSTART);
 
                 label = xi+','+yi;
-                corners = [[zClean(xi, yi), zClean(xi+1, yi)],
-                           [zClean(xi, yi+1), zClean(xi+1, yi+1)]];
+                corners = [[z[yi][xi], z[yi][xi+1]],
+                           [z[yi+1][xi], z[yi+1][xi+1]]];
                 pathinfo.forEach(makeCrossings);
             }
         }
@@ -286,14 +276,14 @@
         // now calculate the paths
 
         function getHInterp(level, locx, locy) {
-            var dx = (level - zClean(locx, locy)) /
-                    (zClean(locx+1, locy) - zClean(locx, locy));
+            var zxy = z[locy][locx],
+                dx = (level - zxy) / (z[locy][locx+1] - zxy);
             return [xa.c2p((1-dx)*x[locx] + dx*x[locx+1]), ya.c2p(y[locy])];
         }
 
         function getVInterp(level, locx, locy) {
-            var dy = (level - zClean(locx, locy)) /
-                    (zClean(locx, locy+1) - zClean(locx, locy));
+            var zxy = z[locy][locx],
+                dy = (level - zxy) / (z[locy+1][locx] - zxy);
             return [xa.c2p(x[locx]), ya.c2p((1-dy)*y[locy] + dy*y[locy+1])];
         }
 
@@ -599,7 +589,7 @@
             // if the whole perimeter is above this level, start with a path
             // enclosing the whole thing. With all that, the parity should mean
             // that we always fill everything above the contour, nothing below
-            var fullpath = (d.edgepaths.length || zClean(0,0)<d.level) ?
+            var fullpath = (d.edgepaths.length || z[0][0] < d.level) ?
                     '' : ('M'+perimeter.join('L')+'Z'),
                 i = 0,
                 startsleft = d.edgepaths.map(function(v,i){ return i; }),
