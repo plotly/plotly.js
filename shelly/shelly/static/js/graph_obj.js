@@ -1553,7 +1553,7 @@
      */
     Plotly.addTraces = function (gd, traces, newIndices) {
         var i,
-            currentIndices;
+            currentIndices = [];
 
         // all validation is done elsewhere to remove clutter here
         checkAddTracesArgs(gd, traces, newIndices);
@@ -1576,23 +1576,17 @@
         }
 
         // make sure indices is property defined
-        if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
+        if (!Array.isArray(newIndices)) {
             newIndices = [newIndices];
-        } else if (typeof newIndices === 'undefined') {
-            newIndices = traces.map(function (_, i) {
-                return -traces.length + i;
-            });
         }
 
-        for (i = 0; i < traces.length; i += 1) {
-            gd.data.push(traces[i]);
+        // to continue, we need to call moveTraces which requires currentIndices
+        for (i = 0; i < traces.length; i++) {
+            currentIndices.push(-traces.length + i);
         }
-
-        currentIndices = traces.map(function (_, i) {
-                return -traces.length + i;
-            });
 
         try {
+
             // this is redundant, but necessary to not catch later possible errors!
             checkMoveTracesArgs(gd, currentIndices, newIndices);
         }
@@ -1603,7 +1597,8 @@
             throw error;
         }
 
-        // ok, do it!
+        // if we're here, the user has defined specific places to place the new traces
+        // this requires some extra work that moveTraces will do
         Plotly.moveTraces(gd, currentIndices, newIndices);
     };
 
