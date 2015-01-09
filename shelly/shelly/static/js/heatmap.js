@@ -331,8 +331,6 @@
             i,
             thisPt;
 
-        heatmap.MFC = [];
-
         if(Array.isArray(savedInterpZ)) {
             for(i = 0; i < emptyPoints.length; i++) {
                 thisPt = emptyPoints[i];
@@ -353,10 +351,11 @@
         for(i = 0; i < 100 && maxFractionalChange > INTERPTHRESHOLD; i++) {
             maxFractionalChange = iterateInterp2d(z, emptyPoints,
                 correctionOvershoot(maxFractionalChange));
-            heatmap.MFC.push(maxFractionalChange);
+        }
+        if(maxFractionalChange > INTERPTHRESHOLD) {
+            console.log('interp2d didn\'t converge quickly', maxFractionalChange);
         }
 
-        console.log(i, maxFractionalChange);
         return z;
     }
 
