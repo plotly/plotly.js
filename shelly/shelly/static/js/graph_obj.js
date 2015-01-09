@@ -1485,7 +1485,7 @@
             'histfunc','histnorm','text',
             'x', 'y', 'z',
             'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
-            'line.width','showscale','zauto',
+            'line.width','showscale','zauto','connectgaps',
             'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
             'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
             'autocontour','ncontours','contours.coloring',
@@ -1513,7 +1513,7 @@
         // replotAttrs attributes need a replot (because different
         // objects need to be made) but not a recalc
         var replotAttrs = [
-            'connectgaps','zmin','zmax','zauto','mincolor','maxcolor',
+            'zmin','zmax','zauto','mincolor','maxcolor',
             'colorscale','reversescale','zsmooth',
             'contours.start','contours.end','contours.size',
             'contours.showlines',
