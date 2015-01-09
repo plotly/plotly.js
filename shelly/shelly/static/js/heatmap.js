@@ -359,6 +359,14 @@
         return z;
     }
 
+    heatmap.maxRowLength = function(z) {
+        var len = 0;
+        for(var i = 0; i < z.length; i++) {
+            len = Math.max(len, z[i].length);
+        }
+        return len;
+    };
+
     function findEmpties(z) {
         // return a list of empty points in 2D array z
         // each empty point z[i][j] gives an array [i, j, neighborCount]
@@ -372,6 +380,7 @@
             nextRow = z[0],
             row = [],
             blank = [0, 0, 0],
+            rowLength = heatmap.maxRowLength(z),
             prevRow,
             i,
             j,
@@ -385,7 +394,7 @@
             prevRow = row;
             row = nextRow;
             nextRow = z[i + 1] || [];
-            for(j = 0; j < row.length; j++) {
+            for(j = 0; j < rowLength; j++) {
                 if(row[j]===undefined) {
                     neighborCount = (row[j - 1] !== undefined ? 1 : 0) +
                         (row[j + 1] !== undefined ? 1 : 0) +
@@ -553,10 +562,9 @@
             // fast smoothing - one pixel per brick
             fastsmooth = [true,'fast'].indexOf(trace.zsmooth)!==-1,
 
-            // get z dims (n gets max row length, in case of uneven rows)
+            // get z dims
             m = z.length,
-            n = Plotly.Lib.aggNums(Math.max,null,
-                z.map(function(row) { return row.length; })),
+            n = heatmap.maxRowLength(z),
             xrev = false,
             left,
             right,
