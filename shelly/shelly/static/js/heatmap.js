@@ -177,9 +177,9 @@
                 var maxcols = Plotly.Lib.aggNums(Math.max,0,
                         trace.z.map(function(r){return r.length;}));
                 z = [];
-                for(var c=0; c<maxcols; c++) {
+                for(var c = 0; c < maxcols; c++) {
                     var newrow = [];
-                    for(var r=0; r<trace.z.length; r++) {
+                    for(var r = 0; r < trace.z.length; r++) {
                         newrow.push(cleanZ(trace.z[r][c]));
                     }
                     z.push(newrow);
@@ -347,7 +347,9 @@
         for(i = 0; i < emptyPoints.length; i++) {
             if(emptyPoints[i][2] < 4) break;
         }
-        emptyPoints.splice(0, i);
+        // but don't remove these points from the original array,
+        // we'll use them for masking, so make a copy.
+        emptyPoints = emptyPoints.slice(i);
 
         for(i = 0; i < 100 && maxFractionalChange > INTERPTHRESHOLD; i++) {
             maxFractionalChange = iterateInterp2d(z, emptyPoints,
@@ -356,6 +358,7 @@
         if(maxFractionalChange > INTERPTHRESHOLD) {
             console.log('interp2d didn\'t converge quickly', maxFractionalChange);
         }
+        console.log(i);
 
         return z;
     }
@@ -874,13 +877,14 @@
         // never let a heatmap override another type as closest point
         if(pointData.distance<Plotly.Fx.MAXDIST) return;
 
-        var cd = pointData.cd,
-            trace = cd[0].trace,
+        var cd0 = pointData.cd[0],
+            trace = cd0.trace,
             xa = pointData.xa,
             ya = pointData.ya,
-            x = cd[0].x,
-            y = cd[0].y,
-            z = cd[0].z,
+            x = cd0.x,
+            y = cd0.y,
+            z = cd0.z,
+            zmask = cd0.zmask,
             x2 = x,
             y2 = y,
             xl,
@@ -937,11 +941,15 @@
         else {
             xl = (x[nx]+x[nx+1])/2;
             yl = (y[ny]+y[ny+1])/2;
-            if(zsmooth) {
+            if(trace.zsmooth) {
                 x0=x1=(x0+x1)/2;
                 y0=y1=(y0+y1)/2;
             }
         }
+
+        var zVal = z[ny][nx];
+        if(zmask && !zmask[ny][nx]) zVal = undefined;
+
         return [$.extend(pointData,{
             index: [ny, nx],
             // never let a 2D override 1D type as closest point
@@ -952,7 +960,7 @@
             y1: y1,
             xLabelVal: xl,
             yLabelVal: yl,
-            zLabelVal: z[ny][nx],
+            zLabelVal: zVal
         })];
     };
 

@@ -197,7 +197,7 @@
         makeBackground(plotGroup, perimeter, contours);
         makeFills(plotGroup, pathinfo, perimeter, contours);
         makeLines(plotGroup, pathinfo, contours);
-        if(!trace.connectgaps) clipGaps(plotGroup, cd[0], perimeter);
+        clipGaps(plotGroup, plotinfo, cd[0], perimeter);
 
         Plotly.Lib.markTime('done Contour.plot');
     }
@@ -733,32 +733,7 @@
             .style('stroke-miterlimit',1);
     }
 
-    function clipGaps(plotGroup, cd0, perimeter) {
-        var clipPathInfo = {
-            level: 0.8,
-            // all the cells with nontrivial marching index
-            crossings: {},
-            // starting points on the edges of the lattice for each contour
-            starts: [],
-            // all unclosed paths (may have less items than starts,
-            // if a path is closed by rounding)
-            edgepaths: [],
-            // all closed paths
-            paths: [],
-            // store axes so we can convert to px
-            xaxis: cd0.trace.xaxis,
-            yaxis: cd0.trace.yaxis,
-            // full data arrays to use for interpolation
-            x: cd0.x,
-            y: cd0.y,
-            z: makeClipMask(cd0),
-            smoothing: 0
-        };
-
-        makeCrossings([clipPathInfo]);
-        findAllPaths([clipPathInfo]);
-        var fullpath = joinAllPaths(clipPathInfo, perimeter);
-
+    function clipGaps(plotGroup, plotinfo, cd0, perimeter) {
         var clipId = 'clip' + cd0.trace.uid,
             clipUrl = 'url(#' + clipId + ')';
 
@@ -769,13 +744,40 @@
         defs.enter().append('defs');
 
         var clipPath = defs.selectAll('#' + clipId)
-            .data([0]);
+            .data(cd0.trace.connectgaps ? [] : [0]);
         clipPath.enter().append('clipPath').attr('id', clipId);
+        clipPath.exit().remove();
 
-        var path = clipPath.selectAll('path')
-            .data([0]);
-        path.enter().append('path');
-        path.attr('d', fullpath);
+        if(!cd0.trace.connectgaps) {
+            var clipPathInfo = {
+                // fraction of the way from missing to present point
+                // to draw the boundary.
+                // if you make this 1 (or 1-epsilon) then a point in
+                // a sea of missing data will disappear entirely.
+                level: 0.9,
+                crossings: {},
+                starts: [],
+                edgepaths: [],
+                paths: [],
+                xaxis: plotinfo.x(),
+                yaxis: plotinfo.y(),
+                x: cd0.x,
+                y: cd0.y,
+                // 0 = no data, 1 = data
+                z: makeClipMask(cd0),
+                smoothing: 0
+            };
+
+            makeCrossings([clipPathInfo]);
+            findAllPaths([clipPathInfo]);
+            var fullpath = joinAllPaths(clipPathInfo, perimeter);
+
+            var path = clipPath.selectAll('path')
+                .data([0]);
+            path.enter().append('path');
+            path.attr('d', fullpath);
+        }
+        else clipUrl = null;
 
         plotGroup.attr('clip-path', clipUrl);
         mapLayer.select('.hm' + cd0.trace.uid).attr('clip-path', clipUrl);
@@ -794,8 +796,10 @@
         for(i = 0; i < m; i++) z.push(row.slice());
         for(i = 0; i < empties.length; i++) {
             emptyPoint = empties[i];
-            z[empties[0]][empties[1]] = 0;
+            z[emptyPoint[0]][emptyPoint[1]] = 0;
         }
+        // save this mask to determine whether to show this data in hover
+        cd0.zmask = z;
         return z;
     }
 
