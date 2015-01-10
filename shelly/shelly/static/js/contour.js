@@ -589,18 +589,6 @@
     }
 
     function makeFills(plotgroup, pathinfo, perimeter, contours) {
-        var z00 = pathinfo[0].z[0][0],
-            smoothing = pathinfo[0].smoothing,
-            topedge = perimeter[0][1],
-            bottomedge = perimeter[2][1],
-            leftedge = perimeter[0][0],
-            rightedge = perimeter[2][0];
-
-        function istop(pt) { return Math.abs(pt[1]-topedge) < 0.01; }
-        function isbottom(pt) { return Math.abs(pt[1]-bottomedge) < 0.01; }
-        function isleft(pt) { return Math.abs(pt[0]-leftedge) < 0.01; }
-        function isright(pt) { return Math.abs(pt[0]-rightedge) < 0.01; }
-
         var fillgroup = plotgroup.selectAll('g.contourfill')
             .data([0]);
         fillgroup.enter().append('g')
@@ -610,96 +598,107 @@
             .data(contours.coloring==='fill' ? pathinfo : []);
         fillitems.enter().append('path');
         fillitems.exit().remove();
-        fillitems.each(function(d){
+        fillitems.each(function(pi){
             // join all paths for this level together into a single path
             // first follow clockwise around the perimeter to close any open paths
             // if the whole perimeter is above this level, start with a path
             // enclosing the whole thing. With all that, the parity should mean
             // that we always fill everything above the contour, nothing below
-            var fullpath = (d.edgepaths.length || z00 < d.level) ?
-                    '' : ('M'+perimeter.join('L')+'Z'),
-                i = 0,
-                startsleft = d.edgepaths.map(function(v,i){ return i; }),
-                newloop = true,
-                endpt,
-                newendpt,
-                cnt,
-                nexti,
-                possiblei,
-                addpath;
-
-            while(startsleft.length) {
-                addpath = Plotly.Drawing.smoothopen(d.edgepaths[i], smoothing);
-                fullpath += newloop ? addpath : addpath.replace(/^M/, 'L');
-                startsleft.splice(startsleft.indexOf(i), 1);
-                endpt = d.edgepaths[i][d.edgepaths[i].length-1];
-                nexti = -1;
-
-                //now loop through sides, moving our endpoint until we find a new start
-                for(cnt=0; cnt<4; cnt++) { // just to prevent infinite loops
-                    if(!endpt) {
-                        console.log('missing end?',i,d);
-                        break;
-                    }
-
-                    if(istop(endpt) && !isright(endpt)) newendpt = [rightedge, topedge];
-                    else if(isleft(endpt)) newendpt = [leftedge, topedge];
-                    else if(isbottom(endpt)) newendpt = [leftedge, bottomedge];
-                    else if(isright(endpt)) newendpt = [rightedge, bottomedge];
-
-                    for(possiblei=0; possiblei<d.edgepaths.length; possiblei++) {
-                        var ptNew = d.edgepaths[possiblei][0];
-                        // is ptNew on the (horz. or vert.) segment from endpt to newendpt?
-                        if(Math.abs(endpt[0]-newendpt[0]) < 0.01) {
-                            if(Math.abs(endpt[0]-ptNew[0]) < 0.01 &&
-                                    (ptNew[1]-endpt[1]) * (newendpt[1]-ptNew[1]) >= 0) {
-                                newendpt = ptNew;
-                                nexti = possiblei;
-                            }
-                        }
-                        else if(Math.abs(endpt[1]-newendpt[1]) < 0.01) {
-                            if(Math.abs(endpt[1]-ptNew[1]) < 0.01 &&
-                                    (ptNew[0]-endpt[0]) * (newendpt[0]-ptNew[0]) >= 0) {
-                                newendpt = ptNew;
-                                nexti = possiblei;
-                            }
-                        }
-                        else {
-                            console.log('endpt to newendpt is not vert. or horz.',
-                                endpt, newendpt, ptNew);
-                        }
-                    }
-
-                    endpt = newendpt;
-
-                    if(nexti>=0) break;
-                    fullpath += 'L'+newendpt;
-                }
-
-                if(nexti===d.edgepaths.length) {
-                    console.log('unclosed perimeter path');
-                    break;
-                }
-
-                i = nexti;
-
-                // if we closed back on a loop we already included,
-                // close it and start a new loop
-                newloop = (startsleft.indexOf(i)===-1);
-                if(newloop) {
-                    i = startsleft[0];
-                    fullpath += 'Z';
-                }
-            }
-
-            // finally add the interior paths
-            d.paths.forEach(function(path) {
-                fullpath += Plotly.Drawing.smoothclosed(path, smoothing);
-            });
+            var fullpath = joinAllPaths(pi, perimeter);
 
             if(!fullpath) d3.select(this).remove();
             else d3.select(this).attr('d',fullpath).style('stroke', 'none');
         });
+    }
+
+    function joinAllPaths(pi, perimeter) {
+        var fullpath = (pi.edgepaths.length || pi.z[0][0] < pi.level) ?
+                '' : ('M'+perimeter.join('L')+'Z'),
+            i = 0,
+            startsleft = pi.edgepaths.map(function(v,i){ return i; }),
+            newloop = true,
+            endpt,
+            newendpt,
+            cnt,
+            nexti,
+            possiblei,
+            addpath;
+
+        function istop(pt) { return Math.abs(pt[1] - perimeter[0][1]) < 0.01; }
+        function isbottom(pt) { return Math.abs(pt[1] - perimeter[2][1]) < 0.01; }
+        function isleft(pt) { return Math.abs(pt[0] - perimeter[0][0]) < 0.01; }
+        function isright(pt) { return Math.abs(pt[0] - perimeter[2][0]) < 0.01; }
+
+        while(startsleft.length) {
+            addpath = Plotly.Drawing.smoothopen(pi.edgepaths[i], pi.smoothing);
+            fullpath += newloop ? addpath : addpath.replace(/^M/, 'L');
+            startsleft.splice(startsleft.indexOf(i), 1);
+            endpt = pi.edgepaths[i][pi.edgepaths[i].length-1];
+            nexti = -1;
+
+            //now loop through sides, moving our endpoint until we find a new start
+            for(cnt=0; cnt<4; cnt++) { // just to prevent infinite loops
+                if(!endpt) {
+                    console.log('missing end?',i,pi);
+                    break;
+                }
+
+                if(istop(endpt) && !isright(endpt)) newendpt = perimeter[1]; // right top
+                else if(isleft(endpt)) newendpt = perimeter[0]; // left top
+                else if(isbottom(endpt)) newendpt = perimeter[3]; // right bottom
+                else if(isright(endpt)) newendpt = perimeter[2]; // left bottom
+
+                for(possiblei=0; possiblei < pi.edgepaths.length; possiblei++) {
+                    var ptNew = pi.edgepaths[possiblei][0];
+                    // is ptNew on the (horz. or vert.) segment from endpt to newendpt?
+                    if(Math.abs(endpt[0]-newendpt[0]) < 0.01) {
+                        if(Math.abs(endpt[0]-ptNew[0]) < 0.01 &&
+                                (ptNew[1]-endpt[1]) * (newendpt[1]-ptNew[1]) >= 0) {
+                            newendpt = ptNew;
+                            nexti = possiblei;
+                        }
+                    }
+                    else if(Math.abs(endpt[1]-newendpt[1]) < 0.01) {
+                        if(Math.abs(endpt[1]-ptNew[1]) < 0.01 &&
+                                (ptNew[0]-endpt[0]) * (newendpt[0]-ptNew[0]) >= 0) {
+                            newendpt = ptNew;
+                            nexti = possiblei;
+                        }
+                    }
+                    else {
+                        console.log('endpt to newendpt is not vert. or horz.',
+                            endpt, newendpt, ptNew);
+                    }
+                }
+
+                endpt = newendpt;
+
+                if(nexti>=0) break;
+                fullpath += 'L'+newendpt;
+            }
+
+            if(nexti === pi.edgepaths.length) {
+                console.log('unclosed perimeter path');
+                break;
+            }
+
+            i = nexti;
+
+            // if we closed back on a loop we already included,
+            // close it and start a new loop
+            newloop = (startsleft.indexOf(i)===-1);
+            if(newloop) {
+                i = startsleft[0];
+                fullpath += 'Z';
+            }
+        }
+
+        // finally add the interior paths
+        for(i = 0; i < pi.paths.length; i++) {
+            fullpath += Plotly.Drawing.smoothclosed(pi.paths[i], pi.smoothing);
+        }
+
+        return fullpath;
     }
 
     function makeLines(plotgroup, pathinfo, contours) {
