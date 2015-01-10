@@ -188,7 +188,8 @@
             else z = trace.z.map(function(row){return row.map(cleanZ); });
 
             if(Plotly.Plots.isContour(trace.type) || trace.connectgaps) {
-                trace._interpz = interp2d(z, trace._interpz);
+                trace._emptypoints = findEmpties(z);
+                trace._interpz = interp2d(z, trace._emptypoints, trace._interpz);
             }
         }
 
@@ -322,13 +323,12 @@
         return 0.5 - 0.25 * Math.min(1, maxFractionalChange * 0.5);
     }
 
-    function interp2d(z, savedInterpZ) {
+    function interp2d(z, emptyPoints, savedInterpZ) {
         // fill in any missing data in 2D array z using an iterative
         // poisson equation solver with zero-derivative BC at edges
         // amazingly, this just amounts to repeatedly averaging all the existing
         // nearest neighbors (at least if we don't take x/y scaling into account)
-        var emptyPoints = findEmpties(z),
-            maxFractionalChange = 1,
+        var maxFractionalChange = 1,
             i,
             thisPt;
 
