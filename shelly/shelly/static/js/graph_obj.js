@@ -1606,7 +1606,7 @@
         // i.e., we can simply redraw and be done
         if (typeof newIndices === 'undefined') {
             Plotly.redraw(gd);
-            Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+            if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
             return;
         }
 
@@ -1629,10 +1629,10 @@
 
         // if we're here, the user has defined specific places to place the new traces
         // this requires some extra work that moveTraces will do
-        Plotly.Queue.startSequence(gd);
-        Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+        if (Plotly.Queue) Plotly.Queue.startSequence(gd);
+        if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
         Plotly.moveTraces(gd, currentIndices, newIndices);
-        Plotly.Queue.stopSequence(gd);
+        if (Plotly.Queue) Plotly.Queue.stopSequence(gd);
     };
 
     /**
@@ -1670,7 +1670,7 @@
 
         Plotly.redraw(gd);
 
-        Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+        if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
     };
 
     /**
@@ -1765,7 +1765,7 @@
 
         Plotly.redraw(gd);
 
-        Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+        if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
     };
 
     // -----------------------------------------------------
