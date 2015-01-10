@@ -197,7 +197,7 @@
         makeBackground(plotGroup, perimeter, contours);
         makeFills(plotGroup, pathinfo, perimeter, contours);
         makeLines(plotGroup, pathinfo, contours);
-        if(!trace.connectgaps) clipGaps(plotGroup, cd, perimeter);
+        if(!trace.connectgaps) clipGaps(plotGroup, cd[0], perimeter);
 
         Plotly.Lib.markTime('done Contour.plot');
     }
@@ -733,8 +733,33 @@
             .style('stroke-miterlimit',1);
     }
 
-    function clipGaps(plotGroup, cd, perimeter) {
-        var clipId = 'clip' + cd[0].trace.uid,
+    function clipGaps(plotGroup, cd0, perimeter) {
+        var clipPathInfo = {
+            level: 0.8,
+            // all the cells with nontrivial marching index
+            crossings: {},
+            // starting points on the edges of the lattice for each contour
+            starts: [],
+            // all unclosed paths (may have less items than starts,
+            // if a path is closed by rounding)
+            edgepaths: [],
+            // all closed paths
+            paths: [],
+            // store axes so we can convert to px
+            xaxis: cd0.trace.xaxis,
+            yaxis: cd0.trace.yaxis,
+            // full data arrays to use for interpolation
+            x: cd0.x,
+            y: cd0.y,
+            z: makeClipMask(cd0),
+            smoothing: 0
+        };
+
+        makeCrossings([clipPathInfo]);
+        findAllPaths([clipPathInfo]);
+        var fullpath = joinAllPaths(clipPathInfo, perimeter);
+
+        var clipId = 'clip' + cd0.trace.uid,
             clipUrl = 'url(#' + clipId + ')';
 
         var mapLayer = d3.select(plotGroup.node().parentNode);
@@ -750,11 +775,28 @@
         var path = clipPath.selectAll('path')
             .data([0]);
         path.enter().append('path');
-
-        // TODO: make the actual path
+        path.attr('d', fullpath);
 
         plotGroup.attr('clip-path', clipUrl);
-        mapLayer.select('.hm' + cd[0].trace.uid).attr('clip-path', clipUrl);
+        mapLayer.select('.hm' + cd0.trace.uid).attr('clip-path', clipUrl);
+    }
+
+    function makeClipMask(cd0) {
+        var empties = cd0.trace._emptypoints,
+            z = [],
+            m = cd0.z.length,
+            n = cd0.z[0].length,
+            i,
+            row = [],
+            emptyPoint;
+
+        for(i = 0; i < n; i++) row.push(1);
+        for(i = 0; i < m; i++) z.push(row.slice());
+        for(i = 0; i < empties.length; i++) {
+            emptyPoint = empties[i];
+            z[empties[0]][empties[1]] = 0;
+        }
+        return z;
     }
 
     contour.style = function(gp) {
