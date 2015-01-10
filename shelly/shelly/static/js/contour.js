@@ -197,6 +197,7 @@
         makeBackground(plotGroup, perimeter, contours);
         makeFills(plotGroup, pathinfo, perimeter, contours);
         makeLines(plotGroup, pathinfo, contours);
+        if(!trace.connectgaps) clipGaps(plotGroup, cd, perimeter);
 
         Plotly.Lib.markTime('done Contour.plot');
     }
@@ -731,6 +732,30 @@
                 return Plotly.Drawing.smoothclosed(d, smoothing);
             })
             .style('stroke-miterlimit',1);
+    }
+
+    function clipGaps(plotGroup, cd, perimeter) {
+        var clipId = 'clip' + cd[0].trace.uid,
+            clipUrl = 'url(#' + clipId + ')';
+
+        var mapLayer = d3.select(plotGroup.node().parentNode);
+
+        var defs = mapLayer.selectAll('defs')
+            .data([0]);
+        defs.enter().append('defs');
+
+        var clipPath = defs.selectAll('#' + clipId)
+            .data([0]);
+        clipPath.enter().append('clipPath').attr('id', clipId);
+
+        var path = clipPath.selectAll('path')
+            .data([0]);
+        path.enter().append('path');
+
+        // TODO: make the actual path
+
+        plotGroup.attr('clip-path', clipUrl);
+        mapLayer.select('.hm' + cd[0].trace.uid).attr('clip-path', clipUrl);
     }
 
     contour.style = function(gp) {
