@@ -358,7 +358,6 @@
         if(maxFractionalChange > INTERPTHRESHOLD) {
             console.log('interp2d didn\'t converge quickly', maxFractionalChange);
         }
-        console.log(i);
 
         return z;
     }
