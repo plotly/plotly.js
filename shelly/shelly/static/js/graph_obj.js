@@ -1574,9 +1574,13 @@
      * @param {Number[]|Number} [newIndices=[gd.data.length]] Locations to add traces
      *
      */
-    Plotly.addTraces = function (gd, traces, newIndices) {
-        var i,
-            currentIndices = [];
+    Plotly.addTraces = function addTraces (gd, traces, newIndices) {
+        var currentIndices = [],
+            undoFunc = Plotly.deleteTraces,
+            redoFunc = addTraces,
+            undoArgs = [gd, currentIndices],
+            redoArgs = [gd, traces],  // no newIndices here
+            i;
 
         // all validation is done elsewhere to remove clutter here
         checkAddTracesArgs(gd, traces, newIndices);
@@ -1591,21 +1595,22 @@
             gd.data.push(traces[i]);
         }
 
+        // to continue, we need to call moveTraces which requires currentIndices
+        for (i = 0; i < traces.length; i++) {
+            currentIndices.push(-traces.length + i);
+        }
+
         // if the user didn't define newIndices, they just want the traces appended
         // i.e., we can simply redraw and be done
         if (typeof newIndices === 'undefined') {
             Plotly.redraw(gd);
+            Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
             return;
         }
 
         // make sure indices is property defined
         if (!Array.isArray(newIndices)) {
             newIndices = [newIndices];
-        }
-
-        // to continue, we need to call moveTraces which requires currentIndices
-        for (i = 0; i < traces.length; i++) {
-            currentIndices.push(-traces.length + i);
         }
 
         try {
@@ -1622,7 +1627,10 @@
 
         // if we're here, the user has defined specific places to place the new traces
         // this requires some extra work that moveTraces will do
+        Plotly.Queue.startSequence(gd);
+        Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
         Plotly.moveTraces(gd, currentIndices, newIndices);
+        Plotly.Queue.stopSequence(gd);
     };
 
     /**
@@ -1632,9 +1640,13 @@
      * @param {Object[]} gd.data The array of traces we're removing from
      * @param {Number|Number[]} indices The indices
      */
-    Plotly.deleteTraces = function (gd, indices) {
-        var i,
-            traces;
+    Plotly.deleteTraces = function deleteTraces (gd, indices) {
+        var traces = [],
+            undoFunc = Plotly.addTraces,
+            redoFunc = deleteTraces,
+            undoArgs = [gd, traces, indices],
+            redoArgs = [gd, indices],
+            i;
 
         // make sure indices are defined
         if (typeof indices === 'undefined') {
@@ -1650,16 +1662,13 @@
         // we want descending here so that splicing later doesn't affect indexing
         indices.sort().reverse();
 
-        traces = [];
         for (i = 0; i < indices.length; i += 1) {
             traces.push(gd.data.splice(indices[i], 1));
         }
 
-        // TODO: use indices and traces to create redo/undo stuff note that
-        // because we reverse indices here, we need to be careful about the
-        // mutable reference eventually added to redo/undo
-
         Plotly.redraw(gd);
+
+        Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
     };
 
     /**
@@ -1693,9 +1702,13 @@
      *      // reorder all traces (assume there are 5--a, b, c, d, e)
      *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
      */
-    Plotly.moveTraces = function (gd, currentIndices, newIndices) {
+    Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
         var newData = [],
             movingTraceMap = [],
+            undoFunc = moveTraces,
+            redoFunc = moveTraces,
+            undoArgs = [gd, newIndices, currentIndices],
+            redoArgs = [gd, currentIndices, newIndices],
             i;
 
         // to reduce complexity here, check args elsewhere
@@ -1748,9 +1761,9 @@
 
         gd.data = newData;
 
-        // TODO add to undo/redo queue
-
         Plotly.redraw(gd);
+
+        Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
     };
 
     // -----------------------------------------------------
@@ -1773,7 +1786,7 @@
     //  to apply different values to each trace
     // if the array is too short, it will wrap around (useful for
     //  style files that want to specify cyclical default values)
-    Plotly.restyle = function(gd,astr,val,traces) {
+    Plotly.restyle = function restyle (gd,astr,val,traces) {
         if(typeof gd === 'string') gd = document.getElementById(gd);
 
         var i, fullLayout = gd._fullLayout,
@@ -2085,7 +2098,9 @@
         }
         // now all attribute mods are done, as are redo and undo
         // so we can save them
-        if(Plotly.Queue) Plotly.Queue.add(gd,undoit,redoit,traces);
+        if(Plotly.Queue) {
+            Plotly.Queue.add(gd, restyle, [gd, undoit, traces], restyle, [gd, redoit, traces]);
+        }
 
         // do we need to force a recalc?
         var autorangeOn = false;
@@ -2243,7 +2258,7 @@
     // relayout(gd,aobj)
     //      aobj - {astr1:val1, astr2:val2...}
     //          allows setting multiple attributes simultaneously
-    Plotly.relayout = function(gd,astr,val) {
+    Plotly.relayout = function relayout (gd, astr, val) {
         if(gd.framework && gd.framework.isPolar) return;
         if(typeof gd === 'string') gd = document.getElementById(gd);
 
@@ -2487,7 +2502,9 @@
         }
         // now all attribute mods are done, as are
         // redo and undo so we can save them
-        if(Plotly.Queue) Plotly.Queue.add(gd,undoit,redoit,'relayout');
+        if(Plotly.Queue) {
+            Plotly.Queue.add(gd, relayout, [gd, undoit], relayout, [gd, redoit]);
+        }
 
         // calculate autosizing - if size hasn't changed,
         // will remove h&w so we don't need to redraw
