@@ -748,7 +748,7 @@
         clipPath.enter().append('clipPath').attr('id', clipId);
         clipPath.exit().remove();
 
-        if(!cd0.trace.connectgaps) {
+        if(cd0.trace.connectgaps === false) {
             var clipPathInfo = {
                 // fraction of the way from missing to present point
                 // to draw the boundary.
