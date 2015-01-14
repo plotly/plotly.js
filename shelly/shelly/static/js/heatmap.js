@@ -52,7 +52,8 @@
             dflt: false
         },
         connectgaps: {
-            type: 'boolean'
+            type: 'boolean',
+            dflt: false
         },
         // Inherited attributes - not used by supplyDefaults, so if there's
         // a better way to do this feel free to change.
@@ -104,7 +105,7 @@
                 coerceScatter('dy');
             }
 
-            coerce('connectgaps', Plotly.Plots.isContour(traceOut.type));
+            coerce('connectgaps');
         }
 
         coerce('zauto');
