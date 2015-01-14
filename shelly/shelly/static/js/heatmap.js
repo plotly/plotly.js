@@ -723,14 +723,45 @@
             else return colors[256];
         }
 
+        function interpColor(r0, r1, xinterp, yinterp) {
+            var z00 = r0[xinterp.bin0];
+            if(z00 === undefined) return setColor(null,1);
+
+            var z01 = r0[xinterp.bin1],
+                z10 = r1[xinterp.bin0],
+                z11 = r1[xinterp.bin1],
+                dx = (z01 - z00) || 0,
+                dy = (z10 - z00) || 0,
+                dxy;
+
+            // the bilinear interpolation term needs different calculations
+            // for all the different permutations of missing data
+            // among the neighbors of the main point, to ensure
+            // continuity across brick boundaries.
+            if(z01 === undefined) {
+                if(z11 === undefined) dxy = 0;
+                else if(z10 === undefined) dxy = 2 * (z11 - z00);
+                else dxy = (2 * z11 - z10 - z00) * 2/3;
+            }
+            else if(z11 === undefined) {
+                if(z10 === undefined) dxy = 0;
+                else dxy = (2 * z00 - z01 - z10) * 2/3;
+            }
+            else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2/3;
+            else dxy = (z11 + z00 - z01 - z10);
+
+            return setColor(z00 + xinterp.frac * dx +
+                yinterp.frac*(dy + xinterp.frac * dxy));
+        }
+
         Plotly.Lib.markTime('done init png');
         // build the pixel map brick-by-brick
         // cruise through z-matrix row-by-row
         // build a brick at each z-matrix value
-        var yi=ypx(0),
-            yb=[yi,yi],
-            xbi = xrev?0:1,
-            ybi = yrev?0:1,
+        var yi = ypx(0),
+            yb = [yi, yi],
+            xbi = xrev ? 0 : 1,
+            ybi = yrev ? 0 : 1,
             // for collecting an average luminosity of the heatmap
             pixcount = 0,
             lumcount = 0,
@@ -740,101 +771,64 @@
             pc,
             v,
             row;
+
         if(zsmooth === 'best') {
-            //first make arrays of x and y pixel locations of brick boundaries
-            var xPixArray = x.map(function(v){ return Math.round(xa.c2p(v)-left); }),
-                yPixArray = y.map(function(v){ return Math.round(ya.c2p(v)-top); }),
-            // then make arrays of interpolations
-            // (bin0=closest, bin1=next, frac=fractional dist.)
+            var xPixArray = [],
+                yPixArray = [],
                 xinterpArray = [],
-                yinterpArray=[],
-                xinterp,
                 yinterp,
                 r0,
-                r1,
-                z00,
-                z10,
-                z01,
-                z11,
-                dx,
-                dy,
-                dxy;
-            for(i=0; i<wd; i++) { xinterpArray.push(findInterp(i,xPixArray)); }
-            for(j=0; j<ht; j++) { yinterpArray.push(findInterp(j,yPixArray)); }
+                r1;
+
+            // first make arrays of x and y pixel locations of brick boundaries
+            for(i = 0; i < x.length; i++) xPixArray.push(Math.round(xa.c2p(x[i]) - left));
+            for(i = 0; i < y.length; i++) yPixArray.push(Math.round(ya.c2p(y[i]) - top));
+
+            // then make arrays of interpolations
+            // (bin0=closest, bin1=next, frac=fractional dist.)
+            for(i = 0; i < wd; i++) xinterpArray.push(findInterp(i, xPixArray));
+
             // now do the interpolations and fill the png
-            for(j=0; j<ht; j++) {
-                yinterp = yinterpArray[j];
+            for(j = 0; j < ht; j++) {
+                yinterp = findInterp(j, yPixArray);
                 r0 = z[yinterp.bin0];
                 r1 = z[yinterp.bin1];
-                if(!r0 || !r1) console.log(j,yinterp,z);
-                for(i=0; i<wd; i++) {
-                    xinterp = xinterpArray[i];
-                    z00 = r0[xinterp.bin0];
-                    if(!$.isNumeric(z00)) pc = setColor(null,1);
-                    else {
-                        z01 = r0[xinterp.bin1];
-                        z10 = r1[xinterp.bin0];
-                        z11 = r1[xinterp.bin1];
-
-                        if(z10 === undefined) dy = 0;
-                        else dy = z10 - z00;
-
-                        if(z01 === undefined) {
-                            dx = 0;
-                            if(z11 === undefined) dxy = 0;
-                            else {
-                                if(z10 === undefined) dxy = 2 * (z11 - z00);
-                                else dxy = (2 * z11 - z10 - z00) * 2/3;
-                            }
-                        }
-                        else {
-                            dx = z01 - z00;
-                            if(z11 === undefined) {
-                                if(z10 === undefined) dxy = 0;
-                                else dxy = (2 * z00 - z01 - z10) * 2/3;
-                            }
-                            else {
-                                if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2/3;
-                                else dxy = (z11 + z00 - z01 - z10);
-                            }
-                        }
-                        pc = setColor(z00 + xinterp.frac * dx +
-                            yinterp.frac*(dy + xinterp.frac * dxy));
-                    }
-                    p.buffer[p.index(i,j)] = pc;
+                for(i = 0; i < wd; i++) {
+                    p.buffer[p.index(i, j)] = interpColor(r0, r1, xinterpArray[i],
+                                                          yinterp);
                 }
             }
         }
         else if(zsmooth === 'fast') {
-            for(j=0; j<m; j++) {
+            for(j = 0; j < m; j++) {
                 row = z[j];
                 yb = ypx(j);
-                for(i=0; i<n; i++) {
+                for(i = 0; i < n; i++) {
                     p.buffer[p.index(xpx(i),yb)] = setColor(row[i],1);
                 }
             }
         }
         else {
-            for(j=0; j<m; j++) {
+            for(j = 0; j < m; j++) {
                 row = z[j];
                 yb.reverse();
-                yb[ybi] = ypx(j+1);
-                if(yb[0]===yb[1] || yb[0]===undefined || yb[1]===undefined) {
+                yb[ybi] = ypx(j + 1);
+                if(yb[0] === yb[1] || yb[0] === undefined || yb[1] === undefined) {
                     continue;
                 }
-                xi=xpx(0);
-                xb=[xi, xi];
-                for(i=0; i<n; i++) {
+                xi = xpx(0);
+                xb = [xi, xi];
+                for(i = 0; i < n; i++) {
                     // build one color brick!
                     xb.reverse();
-                    xb[xbi] = xpx(i+1);
-                    if(xb[0]===xb[1] || xb[0]===undefined || xb[1]===undefined) {
+                    xb[xbi] = xpx(i + 1);
+                    if(xb[0] === xb[1] || xb[0] === undefined || xb[1] === undefined) {
                         continue;
                     }
-                    v=row[i];
-                    pc = setColor(v, (xb[1]-xb[0])*(yb[1]-yb[0]));
-                    for(xi=xb[0]; xi<xb[1]; xi++) {
-                        for(yi=yb[0]; yi<yb[1]; yi++) {
+                    v = row[i];
+                    pc = setColor(v, (xb[1] - xb[0]) * (yb[1] - yb[0]));
+                    for(xi = xb[0]; xi < xb[1]; xi++) {
+                        for(yi = yb[0]; yi < yb[1]; yi++) {
                             p.buffer[p.index(xi, yi)] = pc;
                         }
                     }
