@@ -780,7 +780,7 @@
         else clipUrl = null;
 
         plotGroup.attr('clip-path', clipUrl);
-        mapLayer.select('.hm' + cd0.trace.uid).attr('clip-path', clipUrl);
+        mapLayer.selectAll('.hm' + cd0.trace.uid).attr('clip-path', clipUrl);
     }
 
     function makeClipMask(cd0) {
