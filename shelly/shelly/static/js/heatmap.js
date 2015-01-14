@@ -755,7 +755,10 @@
                 z00,
                 z10,
                 z01,
-                z11;
+                z11,
+                dx,
+                dy,
+                dxy;
             for(i=0; i<wd; i++) { xinterpArray.push(findInterp(i,xPixArray)); }
             for(j=0; j<ht; j++) { yinterpArray.push(findInterp(j,yPixArray)); }
             // now do the interpolations and fill the png
@@ -772,11 +775,31 @@
                         z01 = r0[xinterp.bin1];
                         z10 = r1[xinterp.bin0];
                         z11 = r1[xinterp.bin1];
-                        if(!$.isNumeric(z01)) z01 = z00;
-                        if(!$.isNumeric(z10)) z10 = z00;
-                        if(!$.isNumeric(z11)) z11 = z00;
-                        pc = setColor( z00 + xinterp.frac*(z01-z00) +
-                            yinterp.frac*((z10-z00) + xinterp.frac*(z00+z11-z01-z10)) );
+
+                        if(z10 === undefined) dy = 0;
+                        else dy = z10 - z00;
+
+                        if(z01 === undefined) {
+                            dx = 0;
+                            if(z11 === undefined) dxy = 0;
+                            else {
+                                if(z10 === undefined) dxy = 2 * (z11 - z00);
+                                else dxy = (2 * z11 - z10 - z00) * 2/3;
+                            }
+                        }
+                        else {
+                            dx = z01 - z00;
+                            if(z11 === undefined) {
+                                if(z10 === undefined) dxy = 0;
+                                else dxy = (2 * z00 - z01 - z10) * 2/3;
+                            }
+                            else {
+                                if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2/3;
+                                else dxy = (z11 + z00 - z01 - z10);
+                            }
+                        }
+                        pc = setColor(z00 + xinterp.frac * dx +
+                            yinterp.frac*(dy + xinterp.frac * dxy));
                     }
                     p.buffer[p.index(i,j)] = pc;
                 }
