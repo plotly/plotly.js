@@ -716,7 +716,19 @@
                     else if(Math.abs(pti[decimationMode] - lastEntered[decimationMode]) >=
                             decimationTolerance) {
                         // we were decimating, now we're done
-                        finishDecimation(pti);
+                        if(Math.abs(pti[decimationMode] - prevPt[decimationMode]) >=
+                            decimationTolerance) {
+                            // a big jump after finishing decimation: end on prevPt
+                            finishDecimation();
+                            // then add the new point
+                            lastEntered = pti;
+                            addPt(lastEntered);
+                        }
+                        else {
+                            // small change... probably going to start a new
+                            // decimation block.
+                            finishDecimation(pti);
+                        }
                         continue;
                     }
 
