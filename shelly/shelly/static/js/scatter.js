@@ -623,13 +623,11 @@
             // add a single [x,y] to the pts array
             function addPt(pt) {
                 atLeastTwo = true;
-                add0(pt); // implicit array stringifying
+                add0(pt);
                 pt1 = pt;
             }
 
             // simpler version where we don't need the extra assignments
-            // but I made this a function so in principle we can do more than just lines in the
-            // future, like smoothing splines.
             function add0(pt) {
                 if(!$.isNumeric(pt[0]) || !$.isNumeric(pt[1])) return;
                 pts.push(pt);
