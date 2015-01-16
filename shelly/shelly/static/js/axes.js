@@ -1803,11 +1803,13 @@
     // and at axes and their anchors
 
     axes.getSubplots = function(gd,ax) {
-        var data = gd.data, subplots = [];
+        var data = gd.data,
+            subplots = [];
 
         // look for subplots in the data
         (data||[]).forEach(function(trace) {
-            if(trace.visible!==true || Plotly.Plots.isGL3D(trace.type)) {
+            if([false, 'legendonly'].indexOf(trace.visible) !== -1 ||
+                    Plotly.Plots.isGL3D(trace.type)) {
                 return;
             }
             var xid = (trace.xaxis||'x'),
