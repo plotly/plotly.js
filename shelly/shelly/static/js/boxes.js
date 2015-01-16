@@ -350,7 +350,7 @@
                 cd = gd.calcdata[boxlist[j]];
                 for (k = 0; k < cd.length; k++) boxpointlist.push(cd[k].pos);
             }
-            if (!boxpointlist.length) return;
+            if (!boxpointlist.length) continue;
 
             // box plots - update dPos based on multiple traces
             // and then use for posAxis autorange
