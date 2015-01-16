@@ -1026,16 +1026,21 @@
         plots.supplyLayoutGlobalDefaults(gd.layout||{}, newFullLayout);
 
         // then do the data
-        gd._fullData = (gd.data||[]).map(function(trace, i) {
+        var oldFullData = gd._fullData || [],
+            newData = gd.data || [];
+        gd._fullData = newData.map(function(trace, i) {
             return plots.supplyDataDefaults(trace, i, newFullLayout);
         });
 
         // DETECT 3D, Cartesian, and Polar
-        gd._fullData.forEach(function(d) {
+        gd._fullData.forEach(function(d, i) {
             if(plots.isGL3D(d.type)) newFullLayout._hasGL3D = true;
             if(plots.isCartesian(d.type)) {
                 if('r' in d) newFullLayout._hasPolar = true;
                 else newFullLayout._hasCartesian = true;
+            }
+            if(oldFullData.length === newData.length) {
+                relinkPrivateKeys(d, oldFullData[i]);
             }
         });
 
@@ -1428,6 +1433,346 @@
         });
     }
 
+    /**
+     * Wrap negative indicies to their positive counterparts.
+     *
+     * @param {Number[]} indices An array of indices
+     * @param {Number} maxIndex The maximum index allowable (arr.length - 1)
+     */
+    function positivifyIndices(indices, maxIndex) {
+        var parentLength = maxIndex + 1,
+            positiveIndices = [],
+            i,
+            index;
+
+        for (i = 0; i < indices.length; i++) {
+            index = indices[i];
+            if (index < 0) {
+                positiveIndices.push(parentLength + index);
+            } else {
+                positiveIndices.push(index);
+            }
+        }
+        return positiveIndices;
+    }
+
+    /**
+     * Ensures that an index array for manipulating gd.data is valid.
+     *
+     * Intended for use with addTraces, deleteTraces, and moveTraces.
+     *
+     * @param gd
+     * @param indices
+     * @param arrayName
+     */
+    function validateIndexArray(gd, indices, arrayName) {
+        var i,
+            index;
+
+        for (i = 0; i < indices.length; i++) {
+            index = indices[i];
+
+            // validate that indices are indeed integers
+            if (index !== parseInt(index, 10)) {
+                throw new Error('all values in ' + arrayName + ' must be integers');
+            }
+
+            // check that all indices are in bounds for given gd.data array length
+            if (index >= gd.data.length || index < -gd.data.length) {
+                throw new Error(arrayName + ' must be valid indices for gd.data.');
+            }
+
+            // check that indices aren't repeated
+            if (indices.indexOf(index, i + 1) > -1 ||
+                    index >= 0 && indices.indexOf(-gd.data.length + index) > -1 ||
+                    index < 0 && indices.indexOf(gd.data.length + index) > -1) {
+                throw new Error('each index in ' + arrayName + ' must be unique.');
+            }
+        }
+    }
+
+    /**
+     * Private function used by Plotly.moveTraces to check input args
+     *
+     * @param gd
+     * @param currentIndices
+     * @param newIndices
+     */
+    function checkMoveTracesArgs(gd, currentIndices, newIndices) {
+
+        // check that gd has attribute 'data' and 'data' is array
+        if (!Array.isArray(gd.data)) {
+            throw new Error('gd.data must be an array.');
+        }
+
+        // validate currentIndices array
+        if (typeof currentIndices === 'undefined') {
+            throw new Error('currentIndices is a required argument.');
+        } else if (!Array.isArray(currentIndices)) {
+            currentIndices = [currentIndices];
+        }
+        validateIndexArray(gd, currentIndices, 'currentIndices');
+
+        // validate newIndices array if it exists
+        if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
+            newIndices = [newIndices];
+        }
+        if (typeof newIndices !== 'undefined') {
+            validateIndexArray(gd, newIndices, 'newIndices');
+        }
+
+        // check currentIndices and newIndices are the same length if newIdices exists
+        if (typeof newIndices !== 'undefined' && currentIndices.length !== newIndices.length) {
+            throw new Error('current and new indices must be of equal length.');
+        }
+
+    }
+    /**
+     * A private function to reduce the type checking clutter in addTraces.
+     *
+     * @param gd
+     * @param traces
+     * @param newIndices
+     */
+    function checkAddTracesArgs(gd, traces, newIndices) {
+        var i,
+            value;
+
+        // check that gd has attribute 'data' and 'data' is array
+        if (!Array.isArray(gd.data)) {
+            throw new Error('gd.data must be an array.');
+        }
+
+        // make sure traces exists
+        if (typeof traces === 'undefined') {
+            throw new Error('traces must be defined.');
+        }
+
+        // make sure traces is an array
+        if (!Array.isArray(traces)) {
+            traces = [traces];
+        }
+
+        // make sure each value in traces is an object
+        for (i = 0; i < traces.length; i++) {
+            value = traces[i];
+            if (typeof value !== 'object' || (Array.isArray(value) || value === null)) {
+                throw new Error('all values in traces array must be non-array objects');
+            }
+        }
+
+        // make sure we have an index for each trace
+        if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
+            newIndices = [newIndices];
+        }
+        if (typeof newIndices !== 'undefined' && newIndices.length !== traces.length) {
+            throw new Error(
+                'if indices is specified, traces.length must equal indices.length'
+            );
+        }
+    }
+
+    /**
+     * Add data traces to an existing graph div.
+     *
+     * @param {Object|HTMLDivElement} gd The graph div
+     * @param {Object[]} gd.data The array of traces we're adding to
+     * @param {Object[]|Object} traces The object or array of objects to add
+     * @param {Number[]|Number} [newIndices=[gd.data.length]] Locations to add traces
+     *
+     */
+    Plotly.addTraces = function addTraces (gd, traces, newIndices) {
+        var currentIndices = [],
+            undoFunc = Plotly.deleteTraces,
+            redoFunc = addTraces,
+            undoArgs = [gd, currentIndices],
+            redoArgs = [gd, traces],  // no newIndices here
+            i;
+
+        // all validation is done elsewhere to remove clutter here
+        checkAddTracesArgs(gd, traces, newIndices);
+
+        // make sure traces is an array
+        if (!Array.isArray(traces)) {
+            traces = [traces];
+        }
+
+        // add the traces to gd.data (no redrawing yet!)
+        for (i = 0; i < traces.length; i += 1) {
+            gd.data.push(traces[i]);
+        }
+
+        // to continue, we need to call moveTraces which requires currentIndices
+        for (i = 0; i < traces.length; i++) {
+            currentIndices.push(-traces.length + i);
+        }
+
+        // if the user didn't define newIndices, they just want the traces appended
+        // i.e., we can simply redraw and be done
+        if (typeof newIndices === 'undefined') {
+            Plotly.redraw(gd);
+            if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+            return;
+        }
+
+        // make sure indices is property defined
+        if (!Array.isArray(newIndices)) {
+            newIndices = [newIndices];
+        }
+
+        try {
+
+            // this is redundant, but necessary to not catch later possible errors!
+            checkMoveTracesArgs(gd, currentIndices, newIndices);
+        }
+        catch(error) {
+
+            // something went wrong, reset gd to be safe and rethrow error
+            gd.data.splice(gd.data.length - traces.length, traces.length);
+            throw error;
+        }
+
+        // if we're here, the user has defined specific places to place the new traces
+        // this requires some extra work that moveTraces will do
+        if (Plotly.Queue) Plotly.Queue.startSequence(gd);
+        if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+        Plotly.moveTraces(gd, currentIndices, newIndices);
+        if (Plotly.Queue) Plotly.Queue.stopSequence(gd);
+    };
+
+    /**
+     * Delete traces at `indices` from gd.data array.
+     *
+     * @param {Object|HTMLDivElement} gd The graph div
+     * @param {Object[]} gd.data The array of traces we're removing from
+     * @param {Number|Number[]} indices The indices
+     */
+    Plotly.deleteTraces = function deleteTraces (gd, indices) {
+        var traces = [],
+            undoFunc = Plotly.addTraces,
+            redoFunc = deleteTraces,
+            undoArgs = [gd, traces, indices],
+            redoArgs = [gd, indices],
+            i;
+
+        // make sure indices are defined
+        if (typeof indices === 'undefined') {
+            throw new Error('indices must be an integer or array of integers.');
+        } else if (!Array.isArray(indices)) {
+            indices = [indices];
+        }
+        validateIndexArray(gd, indices, 'indices');
+
+        // convert negative indices to positive indices
+        indices = positivifyIndices(indices, gd.data.length - 1);
+
+        // we want descending here so that splicing later doesn't affect indexing
+        indices.sort().reverse();
+
+        for (i = 0; i < indices.length; i += 1) {
+            traces.push(gd.data.splice(indices[i], 1));
+        }
+
+        Plotly.redraw(gd);
+
+        if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    };
+
+    /**
+     * Move traces at currentIndices array to locations in newIndices array.
+     *
+     * If newIndices is omitted, currentIndices will be moved to the end. E.g.,
+     * these are equivalent:
+     *
+     * Plotly.moveTraces(gd, [1, 2, 3], [-3, -2, -1])
+     * Plotly.moveTraces(gd, [1, 2, 3])
+     *
+     * @param {Object|HTMLDivElement} gd The graph div
+     * @param {Object[]} gd.data The array of traces we're removing from
+     * @param {Number|Number[]} currentIndices The locations of traces to be moved
+     * @param {Number|Number[]} [newIndices] The locations to move traces to
+     *
+     * Example calls:
+     *
+     *      // move trace i to location x
+     *      Plotly.moveTraces(gd, i, x)
+     *
+     *      // move trace i to end of array
+     *      Plotly.moveTraces(gd, i)
+     *
+     *      // move traces i, j, k to end of array (i != j != k)
+     *      Plotly.moveTraces(gd, [i, j, k])
+     *
+     *      // move traces [i, j, k] to [x, y, z] (i != j != k) (x != y != z)
+     *      Plotly.moveTraces(gd, [i, j, k], [x, y, z])
+     *
+     *      // reorder all traces (assume there are 5--a, b, c, d, e)
+     *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
+     */
+    Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
+        var newData = [],
+            movingTraceMap = [],
+            undoFunc = moveTraces,
+            redoFunc = moveTraces,
+            undoArgs = [gd, newIndices, currentIndices],
+            redoArgs = [gd, currentIndices, newIndices],
+            i;
+
+        // to reduce complexity here, check args elsewhere
+        // this throws errors where appropriate
+        checkMoveTracesArgs(gd, currentIndices, newIndices);
+
+        // make sure currentIndices is an array
+        currentIndices = Array.isArray(currentIndices) ? currentIndices : [currentIndices];
+
+        // if undefined, define newIndices to point to the end of gd.data array
+        if (typeof newIndices === 'undefined') {
+            newIndices = [];
+            for (i = 0; i < currentIndices.length; i++) {
+                newIndices.push(-currentIndices.length + i);
+            }
+        }
+
+        // make sure newIndices is an array if it's user-defined
+        newIndices = Array.isArray(newIndices) ? newIndices : [newIndices];
+
+        // convert negative indices to positive indices (they're the same length)
+        currentIndices = positivifyIndices(currentIndices, gd.data.length - 1);
+        newIndices = positivifyIndices(newIndices, gd.data.length - 1);
+
+        // at this point, we've coerced the index arrays into predictable forms
+
+        // get the traces that aren't being moved around
+        for (i = 0; i < gd.data.length; i++) {
+
+            // if index isn't in currentIndices, include it in ignored!
+            if (currentIndices.indexOf(i) === -1) {
+                newData.push(gd.data[i]);
+            }
+        }
+
+        // get a mapping of indices to moving traces
+        for (i = 0; i < currentIndices.length; i++) {
+            movingTraceMap.push({newIndex: newIndices[i], trace: gd.data[currentIndices[i]]});
+        }
+
+        // reorder this mapping by newIndex, ascending
+        movingTraceMap.sort(function (a, b) {
+            return a.newIndex - b.newIndex;
+        });
+
+        // now, add the moving traces back in, in order!
+        for (i = 0; i < movingTraceMap.length; i += 1) {
+            newData.splice(movingTraceMap[i].newIndex, 0, movingTraceMap[i].trace);
+        }
+
+        gd.data = newData;
+
+        Plotly.redraw(gd);
+
+        if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    };
+
     // -----------------------------------------------------
     // restyle and relayout: these two control all redrawing
     // for data (restyle) and everything else (relayout)
@@ -1448,7 +1793,7 @@
     //  to apply different values to each trace
     // if the array is too short, it will wrap around (useful for
     //  style files that want to specify cyclical default values)
-    Plotly.restyle = function(gd,astr,val,traces) {
+    Plotly.restyle = function restyle (gd,astr,val,traces) {
         if(typeof gd === 'string') gd = document.getElementById(gd);
 
         var i, fullLayout = gd._fullLayout,
@@ -1480,7 +1825,7 @@
             'histfunc','histnorm','text',
             'x', 'y', 'z',
             'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
-            'line.width','showscale','zauto',
+            'line.width','showscale','zauto','connectgaps',
             'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
             'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
             'autocontour','ncontours','contours.coloring',
@@ -1508,7 +1853,7 @@
         // replotAttrs attributes need a replot (because different
         // objects need to be made) but not a recalc
         var replotAttrs = [
-            'connectgaps','zmin','zmax','zauto','mincolor','maxcolor',
+            'zmin','zmax','zauto','mincolor','maxcolor',
             'colorscale','reversescale','zsmooth',
             'contours.start','contours.end','contours.size',
             'contours.showlines',
@@ -1760,7 +2105,9 @@
         }
         // now all attribute mods are done, as are redo and undo
         // so we can save them
-        if(Plotly.Queue) Plotly.Queue.add(gd,undoit,redoit,traces);
+        if(Plotly.Queue) {
+            Plotly.Queue.add(gd, restyle, [gd, undoit, traces], restyle, [gd, redoit, traces]);
+        }
 
         // do we need to force a recalc?
         var autorangeOn = false;
@@ -1918,7 +2265,7 @@
     // relayout(gd,aobj)
     //      aobj - {astr1:val1, astr2:val2...}
     //          allows setting multiple attributes simultaneously
-    Plotly.relayout = function(gd,astr,val) {
+    Plotly.relayout = function relayout (gd, astr, val) {
         if(gd.framework && gd.framework.isPolar) return;
         if(typeof gd === 'string') gd = document.getElementById(gd);
 
@@ -2162,7 +2509,9 @@
         }
         // now all attribute mods are done, as are
         // redo and undo so we can save them
-        if(Plotly.Queue) Plotly.Queue.add(gd,undoit,redoit,'relayout');
+        if(Plotly.Queue) {
+            Plotly.Queue.add(gd, relayout, [gd, undoit], relayout, [gd, redoit]);
+        }
 
         // calculate autosizing - if size hasn't changed,
         // will remove h&w so we don't need to redraw
