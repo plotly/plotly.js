@@ -211,19 +211,21 @@
 
     legend.style = function(s) {
         s.each(function(d){
-            var fill = d3.select(this)
+            var traceGroup = d3.select(this);
+
+            var fill = traceGroup
                 .selectAll('g.legendfill')
                     .data([d]);
             fill.enter().append('g')
                 .classed('legendfill',true);
 
-            var line = d3.select(this)
+            var line = traceGroup
                 .selectAll('g.legendlines')
                     .data([d]);
             line.enter().append('g')
                 .classed('legendlines',true);
 
-            var symbol = d3.select(this)
+            var symbol = traceGroup
                 .selectAll('g.legendsymbols')
                     .data([d]);
             symbol.enter().append('g')
@@ -252,7 +254,7 @@
         text.enter().append('text').classed('legendtext', true);
         text.attr({
                 x: 40,
-                y: 0,
+                y: 0
             })
             .style('text-anchor', 'start')
             .call(Plotly.Drawing.font, fullLayout.legend.font)
@@ -347,7 +349,23 @@
             .style('opacity', function(d) {
                 return d[0].trace.visible === 'legendonly' ? 0.5 : 1;
             })
-            .each(function(d, i){ legend.texts(this, td, d, i, traces); });
+            .each(function(d, i){
+                legend.texts(this, td, d, i, traces);
+
+                var traceToggle = d3.select(this).selectAll('rect')
+                    .data([0]);
+                traceToggle.enter().append('rect')
+                    .classed('legendtoggle', true)
+                    .call(Plotly.Color.fill, 'rgba(0,0,0,0)');
+                traceToggle.on('click', function() {
+                    if(td.dragged) return;
+
+                    var trace = d[0].trace,
+                        newVisible = trace.visible===true ?
+                            'legendonly' : true;
+                    Plotly.restyle(td, 'visible', newVisible, trace.index);
+                });
+            });
 
         legend.repositionLegend(td, traces);
 
@@ -417,7 +435,8 @@
         traces.each(function(d){
             var trace = d[0].trace,
                 g = d3.select(this),
-                text = g.select('.legendtext'),
+                bg = g.selectAll('.legendtoggle'),
+                text = g.selectAll('.legendtext'),
                 tspans = g.selectAll('.legendtext>tspan'),
                 tHeight = opts.font.size * 1.3,
                 tLines = tspans[0].length||1,
@@ -448,9 +467,15 @@
             tHeightFull = Math.max(tHeight*tLines, 16)+3;
             g.attr('transform','translate('+borderwidth+',' +
                 (5+borderwidth+legendheight+tHeightFull/2)+')');
+            bg.attr({x: 0, y: -tHeightFull / 2, height: tHeightFull});
+
             legendheight += tHeightFull;
             legendwidth = Math.max(legendwidth, tWidth||0);
         });
+
+        traces.selectAll('.legendtoggle')
+            .attr('width', (td._context.editable ? 0 : legendwidth) + 40);
+
         legendwidth += 45+borderwidth*2;
         legendheight += 10+borderwidth*2;
 
