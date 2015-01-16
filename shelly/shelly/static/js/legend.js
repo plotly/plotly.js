@@ -61,13 +61,7 @@
         var visibleTraces = 0,
             defaultOrder = 'normal';
         fullData.forEach(function(trace) {
-            if(trace.visible &&
-                    // eventually this will just exclude 2D and 3D surfaces,
-                    // but for now polar and 3d scatter are excluded too
-                    Plotly.Plots.isCartesian(trace.type) &&
-                    !Plotly.Plots.isHeatmap(trace.type)) {
-                visibleTraces++;
-            }
+            if(legendGetsTrace(trace)) visibleTraces++;
 
             if((Plotly.Plots.isBar(trace.type) && layoutOut.barmode==='stack') ||
                     ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
@@ -290,6 +284,14 @@
     // legend drawing
     // -----------------------------------------------------
 
+    // all types we currently support in legends
+    var LEGENDTYPES = ['scatter', 'scatter3d', 'box', 'bar', 'histogram'];
+
+    function legendGetsTrace(trace) {
+        return trace.visible &&
+            LEGENDTYPES.indexOf(trace.type) !== -1;
+    }
+
     legend.draw = function(td, showlegend) {
         var layout = td.layout,
             fullLayout = td._fullLayout;
@@ -302,15 +304,15 @@
 
         var opts = fullLayout.legend;
 
-        var ldata = td.calcdata
-            .filter(function(cd) {
-                var trace = cd[0].trace;
-                return trace.visible &&
-                    trace.showlegend &&
-                    !Plotly.Plots.isHeatmap(trace.type) &&
-                    !Plotly.Plots.isSurface(trace.type);
-            })
-            .map(function(cd) { return [cd[0]]; });
+        var ldata = [];
+        for(var i = 0; i < td.calcdata.length; i++) {
+            var cd0 = td.calcdata[i][0],
+                trace = cd0.trace;
+
+            if(legendGetsTrace(trace) && trace.showlegend) {
+                ldata.push([cd0]);
+            }
+        }
 
         if(opts.traceorder==='reversed') ldata.reverse();
 
@@ -342,6 +344,9 @@
         traces.enter().append('g').attr('class','traces');
         traces.exit().remove();
         traces.call(legend.style)
+            .style('opacity', function(d) {
+                return d[0].trace.visible === 'legendonly' ? 0.5 : 1;
+            })
             .each(function(d, i){ legend.texts(this, td, d, i, traces); });
 
         legend.repositionLegend(td, traces);

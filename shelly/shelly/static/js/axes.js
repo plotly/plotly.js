@@ -1807,7 +1807,7 @@
 
         // look for subplots in the data
         (data||[]).forEach(function(trace) {
-            if(trace.visible===false || Plotly.Plots.isGL3D(trace.type)) {
+            if(trace.visible!==true || Plotly.Plots.isGL3D(trace.type)) {
                 return;
             }
             var xid = (trace.xaxis||'x'),
@@ -2205,7 +2205,7 @@
 
             // zero line
             var hasBarsOrFill = (td.data||[]).filter(function(tdc){
-                return tdc.visible!==false &&
+                return tdc.visible===true &&
                     ((tdc.xaxis||'x')+(tdc.yaxis||'y')===subplot) &&
                     ((Plotly.Plots.isBar(tdc.type) &&
                         (tdc.orientation||'v')==={x:'h',y:'v'}[axletter]) ||

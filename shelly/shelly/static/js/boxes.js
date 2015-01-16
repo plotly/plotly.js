@@ -328,7 +328,7 @@
                 var cd = gd.calcdata[j],
                     t = cd[0].t,
                     trace = cd[0].trace;
-                if (trace.visible!==false && Plotly.Plots.isBox(trace.type) &&
+                if (trace.visible===true && Plotly.Plots.isBox(trace.type) &&
                         !t.emptybox &&
                         trace.orientation===orientation &&
                         trace.xaxis===xa._id &&
@@ -421,7 +421,7 @@
                 bPos = group ? 2*t.dPos*(-0.5+(t.boxnum+0.5)/gd.numboxes)*(1-fullLayout.boxgap) : 0,
                 // whisker width
                 wdPos = bdPos*trace.whiskerwidth;
-            if(trace.visible===false || t.emptybox) {
+            if(trace.visible!==true || t.emptybox) {
                 d3.select(this).remove();
                 return;
             }

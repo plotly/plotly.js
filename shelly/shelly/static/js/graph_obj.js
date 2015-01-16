@@ -411,7 +411,7 @@
                 (gd.calcdata.length>1 && fullLayout.showlegend!==false));
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(!trace.visible || !trace.module.colorbar) {
+                if(trace.visible !== true || !trace.module.colorbar) {
                     plots.autoMargin(gd,'cb'+trace.uid);
                 }
                 else trace.module.colorbar(gd,cd);
@@ -484,7 +484,7 @@
             // previously, remove them and their colorbars explicitly
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(!trace.visible || !trace.module.colorbar) {
+                if(trace.visible !== true || !trace.module.colorbar) {
                     var uid = trace.uid;
                     fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid)
                         .remove();
@@ -509,7 +509,7 @@
                     // plot all traces of this type on this subplot at once
                     var cdmod = cdSubplot.filter(function(cd){
                         var trace = cd[0].trace;
-                        return trace.module===module && trace.visible;
+                        return trace.module===module && trace.visible === true;
                     });
                     module.plot(gd,plotinfo,cdmod);
                     Plotly.Lib.markTime('done ' + (cdmod[0] && cdmod[0][0].trace.type));
@@ -973,7 +973,8 @@
             dflt: 'scatter'
         },
         visible: {
-            type: 'boolean',
+            type: 'enumerated',
+            values: [true, false, 'legendonly'],
             dflt: true
         },
         scene: {
@@ -1393,7 +1394,7 @@
             var module = getModule(trace),
                 cd = [];
 
-            if(module && trace.visible) {
+            if(module && trace.visible===true) {
                 if(module.calc) cd = module.calc(gd,trace);
                 if(gd._modules.indexOf(module)===-1) gd._modules.push(module);
             }

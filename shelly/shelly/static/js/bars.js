@@ -179,7 +179,8 @@
                 sa = plotinfo[sLetter]();
 
             gd._fullData.forEach(function(trace,i) {
-                if(trace.visible && Plotly.Plots.isBar(trace.type) &&
+                if(trace.visible===true &&
+                        Plotly.Plots.isBar(trace.type) &&
                         trace.orientation===dir &&
                         trace.xaxis===xa._id &&
                         trace.yaxis===ya._id) {

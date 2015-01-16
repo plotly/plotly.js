@@ -349,15 +349,18 @@
     };
 
     scatter.hasLines = function(trace) {
-        return trace.visible && trace.mode && trace.mode.indexOf('lines')!==-1;
+        return trace.visible && trace.mode &&
+            trace.mode.indexOf('lines')!==-1;
     };
 
     scatter.hasMarkers = function(trace) {
-        return trace.visible && trace.mode && trace.mode.indexOf('markers')!==-1;
+        return trace.visible && trace.mode &&
+            trace.mode.indexOf('markers')!==-1;
     };
 
     scatter.hasText = function(trace) {
-        return trace.visible && trace.mode && trace.mode.indexOf('text')!==-1;
+        return trace.visible && trace.mode &&
+            trace.mode.indexOf('text')!==-1;
     };
 
     scatter.calc = function(gd,trace) {
@@ -542,7 +545,7 @@
         scattertraces.each(function(d){
             var trace = d[0].trace,
                 line = trace.line;
-            if(trace.visible===false) return;
+            if(trace.visible!==true) return;
 
             scatter.arraysToCalcdata(d);
 
@@ -791,7 +794,7 @@
                     showMarkers = scatter.hasMarkers(trace),
                     showText = scatter.hasText(trace);
 
-                if((!showMarkers && !showText) || trace.visible===false) s.remove();
+                if((!showMarkers && !showText) || trace.visible !== true) s.remove();
                 else {
                     if(showMarkers) {
                         s.selectAll('path.point')
