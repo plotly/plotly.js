@@ -317,7 +317,10 @@
                 boxlist = [],
                 boxpointlist = [],
                 minPad = 0,
-                maxPad = 0;
+                maxPad = 0,
+                cd,
+                t,
+                trace;
 
             // set axis via orientation
             if (orientation==='h') posAxis = ya;
@@ -325,9 +328,10 @@
 
             // make list of boxes
             for (j=0; j < gd.calcdata.length; ++j) {
-                var cd = gd.calcdata[j],
-                    t = cd[0].t,
-                    trace = cd[0].trace;
+                cd = gd.calcdata[j];
+                t = cd[0].t;
+                trace = cd[0].trace;
+
                 if (trace.visible===true && Plotly.Plots.isBox(trace.type) &&
                         !t.emptybox &&
                         trace.orientation===orientation &&
@@ -342,10 +346,9 @@
             }
 
             // make list of box points
-            for (j=0; j < boxlist.length; ++j) {
-                for (k=0; k < gd.calcdata[j].length; ++k) {
-                    boxpointlist.push(gd.calcdata[j][k].pos);
-                }
+            for (j=0; j < boxlist.length; j++) {
+                cd = gd.calcdata[boxlist[j]];
+                for (k = 0; k < cd.length; k++) boxpointlist.push(cd[k].pos);
             }
             if (!boxpointlist.length) return;
 
