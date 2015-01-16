@@ -347,7 +347,7 @@
                     boxpointlist.push(gd.calcdata[j][k].pos);
                 }
             }
-            if (!boxpointlist) return;
+            if (!boxpointlist.length) return;
 
             // box plots - update dPos based on multiple traces
             // and then use for posAxis autorange
