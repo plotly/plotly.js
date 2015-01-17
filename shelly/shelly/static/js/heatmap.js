@@ -55,6 +55,7 @@
             type: 'boolean',
             dflt: false
         },
+        text: {type: 'data_array'},
         // Inherited attributes - not used by supplyDefaults, so if there's
         // a better way to do this feel free to change.
         x: {from: 'Scatter'},
@@ -106,6 +107,7 @@
             }
 
             coerce('connectgaps');
+            coerce('text');
         }
 
         coerce('zauto');
@@ -967,6 +969,11 @@
         var zVal = z[ny][nx];
         if(zmask && !zmask[ny][nx]) zVal = undefined;
 
+        var text;
+        if(Array.isArray(trace.text) && Array.isArray(trace.text[ny])) {
+            text = trace.text[ny][nx];
+        }
+
         return [$.extend(pointData,{
             index: [ny, nx],
             // never let a 2D override 1D type as closest point
@@ -977,7 +984,8 @@
             y1: y1,
             xLabelVal: xl,
             yLabelVal: yl,
-            zLabelVal: zVal
+            zLabelVal: zVal,
+            text: text
         })];
     };
 
