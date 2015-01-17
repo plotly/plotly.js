@@ -356,6 +356,7 @@
                     .data([0]);
                 traceToggle.enter().append('rect')
                     .classed('legendtoggle', true)
+                    .style('cursor', 'pointer')
                     .call(Plotly.Color.fill, 'rgba(0,0,0,0)');
                 traceToggle.on('click', function() {
                     if(td.dragged) return;
