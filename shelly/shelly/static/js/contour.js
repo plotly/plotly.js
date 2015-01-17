@@ -160,7 +160,7 @@
             id = 'contour' + uid,
             pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
 
-        if(trace.visible===false) {
+        if(trace.visible !== true) {
             fullLayout._paper.selectAll('.'+id+',.cb'+uid+',.hm'+uid).remove();
             return;
         }

@@ -80,7 +80,7 @@
             // in Histogram.supplyDefaults
             // (along with histogram-specific attributes)
             Plotly.Histogram.supplyDefaults(traceIn, traceOut);
-            if(!traceOut.visible) return;
+            if(traceOut.visible === false) return;
         }
         else {
             var z = coerce('z');
@@ -551,7 +551,7 @@
 
         fullLayout._paper.selectAll('.contour'+uid).remove(); // in case this used to be a contour map
 
-        if(!trace.visible) {
+        if(trace.visible !== true) {
             fullLayout._paper.selectAll('.'+id).remove();
             fullLayout._paper.selectAll('.'+cbId).remove();
             return;
