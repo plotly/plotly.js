@@ -1808,7 +1808,7 @@
 
         // look for subplots in the data
         (data||[]).forEach(function(trace) {
-            if([false, 'legendonly'].indexOf(trace.visible) !== -1 ||
+            if(trace.visible === false || trace.visible === 'legendonly' ||
                     Plotly.Plots.isGL3D(trace.type)) {
                 return;
             }
@@ -2206,13 +2206,13 @@
             grid.exit().remove();
 
             // zero line
-            var hasBarsOrFill = (td.data||[]).filter(function(tdc){
-                return tdc.visible===true &&
-                    ((tdc.xaxis||'x')+(tdc.yaxis||'y')===subplot) &&
+            var hasBarsOrFill = (td.data || []).filter(function(tdc) {
+                return tdc.visible === true &&
+                    ((tdc.xaxis || 'x') + (tdc.yaxis || 'y') === subplot) &&
                     ((Plotly.Plots.isBar(tdc.type) &&
-                        (tdc.orientation||'v')==={x:'h',y:'v'}[axletter]) ||
-                    ((tdc.type||'scatter')==='scatter' && tdc.fill &&
-                        tdc.fill.charAt(tdc.fill.length-1)===axletter));
+                        (tdc.orientation || 'v') === {x: 'h', y: 'v'}[axletter]) ||
+                    ((tdc.type || 'scatter') === 'scatter' && tdc.fill &&
+                        tdc.fill.charAt(tdc.fill.length - 1) === axletter));
             }).length;
             var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline &&
                 (ax.type==='linear' || ax.type==='-') && gridvals.length &&

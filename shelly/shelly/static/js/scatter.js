@@ -350,17 +350,17 @@
 
     scatter.hasLines = function(trace) {
         return trace.visible && trace.mode &&
-            trace.mode.indexOf('lines')!==-1;
+            trace.mode.indexOf('lines') !== -1;
     };
 
     scatter.hasMarkers = function(trace) {
         return trace.visible && trace.mode &&
-            trace.mode.indexOf('markers')!==-1;
+            trace.mode.indexOf('markers') !== -1;
     };
 
     scatter.hasText = function(trace) {
         return trace.visible && trace.mode &&
-            trace.mode.indexOf('text')!==-1;
+            trace.mode.indexOf('text') !== -1;
     };
 
     scatter.calc = function(gd,trace) {
@@ -545,7 +545,7 @@
         scattertraces.each(function(d){
             var trace = d[0].trace,
                 line = trace.line;
-            if(trace.visible!==true) return;
+            if(trace.visible !== true) return;
 
             scatter.arraysToCalcdata(d);
 

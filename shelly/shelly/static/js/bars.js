@@ -179,11 +179,11 @@
                 sa = plotinfo[sLetter]();
 
             gd._fullData.forEach(function(trace,i) {
-                if(trace.visible===true &&
+                if(trace.visible === true &&
                         Plotly.Plots.isBar(trace.type) &&
-                        trace.orientation===dir &&
-                        trace.xaxis===xa._id &&
-                        trace.yaxis===ya._id) {
+                        trace.orientation === dir &&
+                        trace.xaxis === xa._id &&
+                        trace.yaxis === ya._id) {
                     bl.push(i);
                 }
             });

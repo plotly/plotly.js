@@ -349,7 +349,7 @@
             .style('opacity', function(d) {
                 return d[0].trace.visible === 'legendonly' ? 0.5 : 1;
             })
-            .each(function(d, i){
+            .each(function(d, i) {
                 legend.texts(this, td, d, i, traces);
 
                 var traceToggle = d3.select(this).selectAll('rect')
@@ -362,7 +362,7 @@
                     if(td.dragged) return;
 
                     var trace = d[0].trace,
-                        newVisible = trace.visible===true ?
+                        newVisible = trace.visible === true ?
                             'legendonly' : true;
                     Plotly.restyle(td, 'visible', newVisible, trace.index);
                 });

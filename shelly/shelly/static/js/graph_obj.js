@@ -509,7 +509,7 @@
                     // plot all traces of this type on this subplot at once
                     var cdmod = cdSubplot.filter(function(cd){
                         var trace = cd[0].trace;
-                        return trace.module===module && trace.visible === true;
+                        return trace.module === module && trace.visible === true;
                     });
                     module.plot(gd,plotinfo,cdmod);
                     Plotly.Lib.markTime('done ' + (cdmod[0] && cdmod[0][0].trace.type));
@@ -1394,7 +1394,7 @@
             var module = getModule(trace),
                 cd = [];
 
-            if(module && trace.visible===true) {
+            if(module && trace.visible === true) {
                 if(module.calc) cd = module.calc(gd,trace);
                 if(gd._modules.indexOf(module)===-1) gd._modules.push(module);
             }
