@@ -55,6 +55,7 @@
             type: 'boolean',
             dflt: false
         },
+        text: {type: 'data_array'},
         // Inherited attributes - not used by supplyDefaults, so if there's
         // a better way to do this feel free to change.
         x: {from: 'Scatter'},
@@ -80,7 +81,7 @@
             // in Histogram.supplyDefaults
             // (along with histogram-specific attributes)
             Plotly.Histogram.supplyDefaults(traceIn, traceOut);
-            if(!traceOut.visible) return;
+            if(traceOut.visible === false) return;
         }
         else {
             var z = coerce('z');
@@ -106,6 +107,7 @@
             }
 
             coerce('connectgaps');
+            coerce('text');
         }
 
         coerce('zauto');
@@ -551,7 +553,7 @@
 
         fullLayout._paper.selectAll('.contour'+uid).remove(); // in case this used to be a contour map
 
-        if(!trace.visible) {
+        if(trace.visible !== true) {
             fullLayout._paper.selectAll('.'+id).remove();
             fullLayout._paper.selectAll('.'+cbId).remove();
             return;
@@ -967,6 +969,11 @@
         var zVal = z[ny][nx];
         if(zmask && !zmask[ny][nx]) zVal = undefined;
 
+        var text;
+        if(Array.isArray(trace.text) && Array.isArray(trace.text[ny])) {
+            text = trace.text[ny][nx];
+        }
+
         return [$.extend(pointData,{
             index: [ny, nx],
             // never let a 2D override 1D type as closest point
@@ -977,7 +984,8 @@
             y1: y1,
             xLabelVal: xl,
             yLabelVal: yl,
-            zLabelVal: zVal
+            zLabelVal: zVal,
+            text: text
         })];
     };
 

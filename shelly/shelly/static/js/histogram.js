@@ -218,7 +218,7 @@
 
     histogram.calc = function(gd, trace) {
         // ignore as much processing as possible (and including in autorange) if bar is not visible
-        if(trace.visible===false) return;
+        if(trace.visible !== true) return;
 
         // depending on orientation, set position and size axes and data ranges
         // note: this logic for choosing orientation is duplicated in graph_obj->setstyles
