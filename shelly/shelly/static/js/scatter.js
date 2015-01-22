@@ -20,7 +20,7 @@
     // ---external global dependencies
     /* global d3:false */
 
-    var scatter = window.Plotly.Scatter = {};
+    var scatter = Plotly.Scatter = {};
 
     // mark this module as allowing error bars
     scatter.errorBarsOK = true;

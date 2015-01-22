@@ -19,7 +19,7 @@
     // ---external global dependencies
     /* global d3:false, PNGlib:false, tinycolor:false */
 
-    var heatmap = window.Plotly.Heatmap = {};
+    var heatmap = Plotly.Heatmap = {};
 
     heatmap.attributes = {
         z: {type: 'data_array'},
