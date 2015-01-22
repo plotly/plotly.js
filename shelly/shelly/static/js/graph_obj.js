@@ -411,10 +411,10 @@
                 (gd.calcdata.length>1 && fullLayout.showlegend!==false));
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(trace.visible !== true || !trace.module.colorbar) {
+                if(trace.visible !== true || !trace._module.colorbar) {
                     plots.autoMargin(gd,'cb'+trace.uid);
                 }
-                else trace.module.colorbar(gd,cd);
+                else trace._module.colorbar(gd,cd);
             });
             doAutoMargin(gd);
             return plots.previousPromises(gd);
@@ -484,7 +484,7 @@
             // previously, remove them and their colorbars explicitly
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(trace.visible !== true || !trace.module.colorbar) {
+                if(trace.visible !== true || !trace._module.colorbar) {
                     var uid = trace.uid;
                     fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid)
                         .remove();
@@ -509,7 +509,7 @@
                     // plot all traces of this type on this subplot at once
                     var cdmod = cdSubplot.filter(function(cd){
                         var trace = cd[0].trace;
-                        return trace.module === module && trace.visible === true;
+                        return trace._module === module && trace.visible === true;
                     });
                     module.plot(gd,plotinfo,cdmod);
                     Plotly.Lib.markTime('done ' + (cdmod[0] && cdmod[0][0].trace.type));
@@ -1153,7 +1153,7 @@
         // the 3D modules to have it removed from the webgl context.
         if (visible || scene) {
             module = getModule(traceOut);
-            traceOut.module = module;
+            traceOut._module = module;
         }
 
         if (module && visible) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
