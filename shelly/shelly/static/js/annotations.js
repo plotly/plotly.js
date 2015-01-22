@@ -457,7 +457,14 @@
         var anngroup = fullLayout._infolayer.append('g')
             .classed('annotation', true)
             .attr('data-index', String(index))
-            .style('opacity', options.opacity);
+            .style('opacity', options.opacity)
+            .on('click', function() {
+                $(gd).trigger('plotly_clickannotation', {
+                    index: index,
+                    annotation: optionsIn,
+                    fullAnnotation: options
+                });
+            });
 
         // another group for text+background so that they can rotate together
         var anng = anngroup.append('g')
