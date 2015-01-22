@@ -13,6 +13,6 @@
   "license": "ISC",
   "dependencies": {
     "browserify": "^8.1.1",
-    "uglify": "^0.1.1"
+    "uglifyjs": "^2.3.6"
   }
 }
