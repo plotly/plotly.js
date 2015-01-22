@@ -353,6 +353,11 @@
 
         if(!gd.layout || graphwasempty) gd.layout = cleanLayout(layout);
 
+        // if the user is trying to drag the axes, allow new data and layout
+        // to come in but don't allow a replot - that'll happen after they
+        // finish dragging.
+        if(gd._dragging) return;
+
         plots.supplyDefaults(gd);
 
         // Polar plots
