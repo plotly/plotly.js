@@ -663,7 +663,7 @@
         });
 
         // instantiate framework
-        gd.framework = micropolar.manager.framework();
+        gd.framework = Plotly.micropolar.manager.framework();
         //get rid of gd.layout stashed nodes
         layout = µ.util.deepExtend({}, gd._fullLayout);
         delete layout._container;
