@@ -6,11 +6,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-dev": "browserify index.js --standalone Plotly -o build/plotly.js"
+    "build-dev": "browserify index.js --standalone Plotly -o build/plotly.js",
+    "build-prod": "browserify index.js --standalone Plotly | uglifyjs > build/plotly.js"
   },
   "author": "Plotly amazing team",
   "license": "ISC",
   "dependencies": {
-    "browserify": "^8.1.1"
+    "browserify": "^8.1.1",
+    "uglify": "^0.1.1"
   }
 }
