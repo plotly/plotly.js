@@ -419,4 +419,4 @@
 
     return exports.ModeBar = ModeBar;
 
-})();
+}));
