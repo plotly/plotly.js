@@ -1369,6 +1369,8 @@
         delete gd.hmlumcount;
         delete gd.hmpixcount;
         delete gd.numboxes;
+        delete gd._hoverTimer;
+        delete gd._lastHoverTime;
     };
 
     function doCalcdata(gd) {
