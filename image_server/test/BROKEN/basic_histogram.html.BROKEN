@@ -1,0 +1,9 @@
+var x = Math.random() * 500
+var data = [
+  {
+    x: x, 
+    type: "histogram"
+  }
+];
+
+Plotly.plot(divid, data);

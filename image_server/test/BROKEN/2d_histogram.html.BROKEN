@@ -1,0 +1,11 @@
+var x = Math.random() * 50
+var y = Math.random() * 50 + 1
+var data = [
+  {
+    x: x, 
+    y: y, 
+    type: "histogram2d"
+  }
+];
+
+Plotly.plot(divid, data);
