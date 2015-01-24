@@ -354,9 +354,13 @@
         if(!gd.layout || graphwasempty) gd.layout = cleanLayout(layout);
 
         // if the user is trying to drag the axes, allow new data and layout
-        // to come in but don't allow a replot - that'll happen after they
-        // finish dragging.
-        if(gd._dragging) return;
+        // to come in but don't allow a replot.
+        if(gd._dragging) {
+            // mark the plot as dragged, so we guarantee the drag finish
+            // event, with its replot, will occur after mouseup
+            gd._dragged = true;
+            return;
+        }
 
         plots.supplyDefaults(gd);
 

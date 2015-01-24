@@ -359,7 +359,7 @@
                     .style('cursor', 'pointer')
                     .call(Plotly.Color.fill, 'rgba(0,0,0,0)');
                 traceToggle.on('click', function() {
-                    if(td.dragged) return;
+                    if(td._dragged) return;
 
                     var trace = d[0].trace,
                         newVisible = trace.visible === true ?
@@ -371,32 +371,26 @@
         legend.repositionLegend(td, traces);
 
         if(td._context.editable) {
-            legendsvg.node().onmousedown = function(e) {
-                // deal with other UI elements, and allow them
-                // to cancel dragging
-                if(Plotly.Fx.dragClear(td)) return true;
+            var xf,
+                yf,
+                x0,
+                y0,
+                lw,
+                lh;
 
-                var el3=d3.select(this),
-                    x0 = +el3.attr('x'),
-                    y0 = +el3.attr('y'),
-                    xf = null,
-                    yf = null;
-                td.dragged = false;
-                Plotly.Fx.setCursor(el3);
+            Plotly.Fx.dragElement({
+                element: legendsvg.node(),
+                prepFn: function() {
+                    x0 = Number(legendsvg.attr('x'));
+                    y0 = Number(legendsvg.attr('y'));
+                    lw = Number(legendsvg.attr('width'));
+                    lh = Number(legendsvg.attr('height'));
+                    Plotly.Fx.setCursor(legendsvg);
+                },
+                moveFn: function(dx, dy) {
+                    var gs = td._fullLayout._size;
 
-                window.onmousemove = function(e2) {
-                    var dx = e2.clientX-e.clientX,
-                        dy = e2.clientY-e.clientY,
-                        gs = fullLayout._size,
-                        lw = +el3.attr('width'),
-                        lh = +el3.attr('height'),
-                        MINDRAG = Plotly.Fx.MINDRAG;
-
-                    if(Math.abs(dx)<MINDRAG) dx=0;
-                    if(Math.abs(dy)<MINDRAG) dy=0;
-                    if(dx||dy) td.dragged = true;
-
-                    el3.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
+                    legendsvg.call(Plotly.Drawing.setPosition, x0+dx, y0+dy);
 
                     xf = Plotly.Fx.dragAlign(x0+dx, lw, gs.l, gs.l+gs.w,
                         opts.xanchor);
@@ -405,20 +399,15 @@
 
                     var csr = Plotly.Fx.dragCursors(xf, yf,
                         opts.xanchor, opts.yanchor);
-                    Plotly.Fx.setCursor(el3, csr);
-                    return Plotly.Lib.pauseEvent(e2);
-                };
-                window.onmouseup = function(e2) {
-                    window.onmousemove = null;
-                    window.onmouseup = null;
-                    Plotly.Fx.setCursor(el3);
-                    if(td.dragged && xf!==null && yf!==null) {
+                    Plotly.Fx.setCursor(legendsvg, csr);
+                },
+                doneFn: function(dragged) {
+                    Plotly.Fx.setCursor(legendsvg);
+                    if(dragged && xf!==undefined && yf!==undefined) {
                         Plotly.relayout(td, {'legend.x': xf, 'legend.y': yf});
                     }
-                    return Plotly.Lib.pauseEvent(e2);
-                };
-                return Plotly.Lib.pauseEvent(e);
-            };
+                }
+            });
         }
     };
 
