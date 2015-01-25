@@ -19,11 +19,11 @@
     "ndarray-fill": "^1.0.1",
     "ndarray-pack": "^1.0.1",
     "orbit-camera": "^1.0.0",
-    "tinycolor2": "^1.0.0"
-  },
-  "devDependencies": {
+    "tinycolor2": "^1.0.0",
     "browserify": "^6.1.0",
     "uglify-js": "~2.4.13"
+  },
+  "devDependencies": {
   },
   "scripts": {
     "test": "echo \"NO TESTS TO RUN\" && exit 0",
