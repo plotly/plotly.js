@@ -151,6 +151,9 @@
                     else if (imageFormat === 'png') {
                         imgData = canvasNode.toDataURL('image/png');
                     }
+                    else if (imageFormat === 'webp'){
+                        imgData = canvasNode.toDataURL('image/webp');
+                    }
                     else if (imageFormat === 'svg') imgData = _svg;
                     else if (imageFormat === 'pdf'){
                         imgData = canvasNode.toDataURL('image/jpeg');
