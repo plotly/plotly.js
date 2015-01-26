@@ -396,104 +396,229 @@
     };
 
     // convert a string s (such as 'xaxis.range[0]')
-    // representing a property of nested object o into set and get methods
+    // representing a property of nested object into set and get methods
     // also return the string and object so we don't have to keep track of them
-    lib.nestedProperty = function(o,s) {
-        var prop, parent,
-            indexed, indices,
-            i, suffix, npArray,
-            j = 0,
-            cont = o,
-            aa = s.split('.');
+    // allows [-1] for an array index, to set a property inside all elements
+    // of an array
+    // eg if obj = {arr: [{a: 1}, {a: 2}]}
+    // you can do p = nestedProperty(obj, 'arr[-1].a')
+    // but you cannot set the array itself this way, to do that
+    // just set the whole array.
+    // eg if obj = {arr: [1, 2, 3]}
+    // you can't do nestedProperty(obj, 'arr[-1]').set(5)
+    // but you can do nestedProperty(obj, 'arr').set([5, 5, 5])
+    lib.nestedProperty = function(container, propStr) {
+        if($.isNumeric(propStr)) propStr = String(propStr);
+        else if(typeof propStr !== 'string' ||
+                propStr.substr(propStr.length - 4) === '[-1]') {
+            throw 'bad property string';
+        }
+
+        var j = 0,
+            propParts = propStr.split('.'),
+            indexed,
+            indices,
+            i;
+
         // check for parts of the nesting hierarchy that are numbers
         // (ie array elements)
-        while(j<aa.length) {
+        while(j < propParts.length) {
             // look for non-bracket chars, then any number of [##] blocks
-            indexed = String(aa[j]).match(/^([^\[\]]+)((\[\-?[0-9]*\])+)$/);
+            indexed = String(propParts[j]).match(/^([^\[\]]*)((\[\-?[0-9]*\])+)$/);
             if(indexed) {
+                if(indexed[1]) propParts[j] = indexed[1];
+                // allow propStr to start with bracketed array indices
+                else if(j === 0) propParts.splice(0,1);
+                else throw 'bad property string';
+
                 indices = indexed[2]
                     .substr(1,indexed[2].length-2)
                     .split('][');
-                aa.splice(j,1,indexed[1]);
+
                 for(i=0; i<indices.length; i++) {
                     j++;
-                    aa.splice(j,0,Number(indices[i]));
+                    propParts.splice(j,0,Number(indices[i]));
                 }
             }
             j++;
         }
 
-        // Special array index -1 gets and sets properties of an entire
-        // array at once.
-        // eg: "annotations[-1].showarrow" sets showarrow for all annotations
-        // set() can take either a single value to apply to all or an array
-        // to apply different to each entry. Get can also return either
-        suffix = s.substr(s.indexOf('[-1]')+4);
-
-        if(suffix.charAt(0)==='.') {
-            suffix = suffix.substr(1);
+        if(typeof container !== 'object') {
+            return badContainer(container, propStr, propParts);
         }
-
-        function subNP(entry) {
-            return lib.nestedProperty(entry,suffix);
-        }
-
-        function subSet(v) {
-            for(i=0; i<npArray.length; i++) {
-                npArray[i].set($.isArray(v) ? v[i%v.length] : v);
-            }
-        }
-
-        function subGet() {
-            var allsame = true, out = [];
-            for(i=0; i<npArray.length; i++) {
-                out[i] = npArray[i].get();
-                if(out[i]!==out[0]) { allsame = false; }
-            }
-            return allsame ? out[0] : out;
-        }
-
-        // dive in to the 2nd to last level
-        for(j=0; j<aa.length-1; j++) {
-            if(aa[j]===-1) {
-                npArray = cont.map(subNP);
-                return {
-                    set: subSet,
-                    get: subGet,
-                    astr: s,
-                    parts: aa,
-                    parent: parent,
-                    obj: o
-                };
-            }
-
-            // make the heirarchy if it doesn't exist
-            if(!(aa[j] in cont)) {
-                cont[aa[j]] = (typeof aa[j+1]==='string') ? {} : [];
-            }
-
-            if(typeof aa[j+1] === 'number') {
-                parent = cont;
-            } else parent = cont[aa[j]];
-
-            cont = cont[aa[j]];
-        }
-        prop = aa[j];
 
         return {
-            set: function(v){
-                if(v===undefined || v===null) { delete cont[prop]; }
-                // references to same structure across traces causes undefined behaviour
-                else if (Array.isArray(v)) cont[prop] = v.map( lib.identity );
-                else cont[prop] = v;
-            },
-            get:function(){ return cont[prop]; },
-            astr:s,
-            parts:aa,
-            parent: parent,
-            obj:o
+            set: npSet(container, propParts),
+            get: npGet(container, propParts),
+            astr: propStr,
+            parts: propParts,
+            obj: container
         };
     };
+
+    function npGet(cont, parts) {
+        return function() {
+            var curCont = cont,
+                curPart,
+                allSame,
+                out,
+                i,
+                j;
+
+            for(i = 0; i < parts.length - 1; i++) {
+                curPart = parts[i];
+                if(curPart===-1) {
+                    allSame = true;
+                    out = [];
+                    for(j = 0; j < curCont.length; j++) {
+                        out[j] = npGet(curCont[j], parts.slice(i + 1))();
+                        if(out[j]!==out[0]) allSame = false;
+                    }
+                    return allSame ? out[0] : out;
+                }
+                if(typeof curPart === 'number' && !Array.isArray(curCont)) {
+                    return undefined;
+                }
+                curCont = curCont[curPart];
+                if(typeof curCont !== 'object' || curCont === null) {
+                    return undefined;
+                }
+            }
+
+            // only hit this if parts.length === 1
+            if(typeof curCont !== 'object' || curCont === null) return undefined;
+
+            out = curCont[parts[i]];
+            if(out === null) return undefined;
+            return out;
+        };
+    }
+
+    function npSet(cont, parts) {
+        return function(val) {
+            var curCont = cont,
+                containerLevels = [cont],
+                toDelete = emptyObj(val),
+                curPart,
+                i;
+
+            for(i = 0; i < parts.length - 1; i++) {
+                curPart = parts[i];
+
+                if(typeof curPart === 'number' && !Array.isArray(curCont)) {
+                    throw 'array index but container is not an array';
+                }
+
+                // handle special -1 array index
+                if(curPart===-1) {
+                    toDelete = !setArrayAll(curCont, parts.slice(i + 1), val);
+                    if(toDelete) break;
+                    else return;
+                }
+
+                if(!checkNewContainer(curCont, curPart, parts[i + 1], toDelete)) {
+                    break;
+                }
+
+                curCont = curCont[curPart];
+
+                if(typeof curCont !== 'object' || curCont === null) {
+                    throw 'container is not an object';
+                }
+
+                containerLevels.push(curCont);
+            }
+
+            if(toDelete) {
+                if(i === parts.length - 1) delete curCont[parts[i]];
+                pruneContainers(containerLevels);
+            }
+            else curCont[parts[i]] = val;
+        };
+    }
+
+    // handle special -1 array index
+    function setArrayAll(containerArray, innerParts, val) {
+        var arrayVal = Array.isArray(val),
+            allSet = true,
+            thisVal = val,
+            deleteThis = arrayVal ? false : emptyObj(val),
+            firstPart = innerParts[0],
+            i;
+
+        for(i = 0; i < containerArray.length; i++) {
+            if(arrayVal) {
+                thisVal = val[i % val.length];
+                deleteThis = emptyObj(thisVal);
+            }
+            if(deleteThis) allSet = false;
+            if(!checkNewContainer(containerArray, i, firstPart, deleteThis)) {
+                continue;
+            }
+            npSet(containerArray[i], innerParts)(thisVal);
+        }
+        return allSet;
+    }
+
+    // make new sub-container as needed.
+    // returns false if there's no container and none is needed
+    // because we're only deleting an attribute
+    function checkNewContainer(container, part, nextPart, toDelete) {
+        if(container[part] === undefined) {
+            if(toDelete) return false;
+
+            if(typeof nextPart === 'number') container[part] = [];
+            else container[part] = {};
+        }
+        return true;
+    }
+
+    function pruneContainers(containerLevels) {
+        var i,
+            j,
+            curCont,
+            keys,
+            remainingKeys;
+        for(i = containerLevels.length - 1; i >= 0; i--) {
+            curCont = containerLevels[i];
+            remainingKeys = false;
+            if(Array.isArray(curCont)) {
+                for(j = curCont.length - 1; j >= 0; j--) {
+                    if(emptyObj(curCont[j])) {
+                        if(remainingKeys) curCont[j] = undefined;
+                        else curCont.pop();
+                    }
+                    else remainingKeys = true;
+                }
+            }
+            else if(typeof curCont === 'object' && curCont !== null)  {
+                keys = Object.keys(curCont);
+                remainingKeys = false;
+                for(j = keys.length - 1; j >= 0; j--) {
+                    if(emptyObj(curCont[keys[j]])) delete curCont[keys[j]];
+                    else remainingKeys = true;
+                }
+            }
+            if(remainingKeys) return;
+        }
+    }
+
+    function emptyObj(obj) {
+        if(obj===undefined || obj===null) return true;
+        if(typeof obj !== 'object') return false; // any plain value
+        if(Array.isArray(obj)) return !obj.length; // []
+        return !Object.keys(obj).length; // {}
+    }
+
+    function badContainer(container, propStr, propParts) {
+        return {
+            set: function() { throw 'bad container'; },
+            get: function() {},
+            astr: propStr,
+            parts: propParts,
+            obj: container
+        };
+    }
 
     // to prevent event bubbling, in particular text selection during drag.
     // see http://stackoverflow.com/questions/5429827/
@@ -1722,6 +1847,19 @@
         coerceIt[opts.type](v, propOut, dflt, opts);
 
         return propOut.get();
+    };
+
+    lib.noneOrBoth = function(containerIn, containerOut, attr1, attr2) {
+        // some attributes come in pairs, so if you have one of them
+        // in the input, you should copy the default value of the other
+        // to the input as well.
+        if(!containerIn) return;
+
+        var has1 = containerIn[attr1] !== undefined && containerIn[attr1] !== null,
+            has2 = containerIn[attr2] !== undefined && containerIn[attr2] !== null;
+
+        if(has2 && !has1) containerIn[attr1] = containerOut[attr1];
+        else if(has1 && !has2) containerIn[attr2] = containerOut[attr2];
     };
 
     lib.mergeArray = function(traceAttr, cd, cdAttr) {

@@ -349,15 +349,18 @@
     };
 
     scatter.hasLines = function(trace) {
-        return trace.visible && trace.mode && trace.mode.indexOf('lines')!==-1;
+        return trace.visible && trace.mode &&
+            trace.mode.indexOf('lines') !== -1;
     };
 
     scatter.hasMarkers = function(trace) {
-        return trace.visible && trace.mode && trace.mode.indexOf('markers')!==-1;
+        return trace.visible && trace.mode &&
+            trace.mode.indexOf('markers') !== -1;
     };
 
     scatter.hasText = function(trace) {
-        return trace.visible && trace.mode && trace.mode.indexOf('text')!==-1;
+        return trace.visible && trace.mode &&
+            trace.mode.indexOf('text') !== -1;
     };
 
     scatter.calc = function(gd,trace) {
@@ -542,7 +545,7 @@
         scattertraces.each(function(d){
             var trace = d[0].trace,
                 line = trace.line;
-            if(trace.visible===false) return;
+            if(trace.visible !== true) return;
 
             scatter.arraysToCalcdata(d);
 
@@ -623,13 +626,11 @@
             // add a single [x,y] to the pts array
             function addPt(pt) {
                 atLeastTwo = true;
-                add0(pt); // implicit array stringifying
+                add0(pt);
                 pt1 = pt;
             }
 
             // simpler version where we don't need the extra assignments
-            // but I made this a function so in principle we can do more than just lines in the
-            // future, like smoothing splines.
             function add0(pt) {
                 if(!$.isNumeric(pt[0]) || !$.isNumeric(pt[1])) return;
                 pts.push(pt);
@@ -718,7 +719,19 @@
                     else if(Math.abs(pti[decimationMode] - lastEntered[decimationMode]) >=
                             decimationTolerance) {
                         // we were decimating, now we're done
-                        finishDecimation(pti);
+                        if(Math.abs(pti[decimationMode] - prevPt[decimationMode]) >=
+                            decimationTolerance) {
+                            // a big jump after finishing decimation: end on prevPt
+                            finishDecimation();
+                            // then add the new point
+                            lastEntered = pti;
+                            addPt(lastEntered);
+                        }
+                        else {
+                            // small change... probably going to start a new
+                            // decimation block.
+                            finishDecimation(pti);
+                        }
                         continue;
                     }
 
@@ -781,7 +794,7 @@
                     showMarkers = scatter.hasMarkers(trace),
                     showText = scatter.hasText(trace);
 
-                if((!showMarkers && !showText) || trace.visible===false) s.remove();
+                if((!showMarkers && !showText) || trace.visible !== true) s.remove();
                 else {
                     if(showMarkers) {
                         s.selectAll('path.point')

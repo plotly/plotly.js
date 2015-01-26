@@ -61,13 +61,7 @@
         var visibleTraces = 0,
             defaultOrder = 'normal';
         fullData.forEach(function(trace) {
-            if(trace.visible &&
-                    // eventually this will just exclude 2D and 3D surfaces,
-                    // but for now polar and 3d scatter are excluded too
-                    Plotly.Plots.isCartesian(trace.type) &&
-                    !Plotly.Plots.isHeatmap(trace.type)) {
-                visibleTraces++;
-            }
+            if(legendGetsTrace(trace)) visibleTraces++;
 
             if((Plotly.Plots.isBar(trace.type) && layoutOut.barmode==='stack') ||
                     ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
@@ -93,6 +87,7 @@
             coerce('xanchor');
             coerce('y');
             coerce('yanchor');
+            Plotly.Lib.noneOrBoth(containerIn, containerOut, 'x', 'y');
         }
     };
 
@@ -216,19 +211,21 @@
 
     legend.style = function(s) {
         s.each(function(d){
-            var fill = d3.select(this)
+            var traceGroup = d3.select(this);
+
+            var fill = traceGroup
                 .selectAll('g.legendfill')
                     .data([d]);
             fill.enter().append('g')
                 .classed('legendfill',true);
 
-            var line = d3.select(this)
+            var line = traceGroup
                 .selectAll('g.legendlines')
                     .data([d]);
             line.enter().append('g')
                 .classed('legendlines',true);
 
-            var symbol = d3.select(this)
+            var symbol = traceGroup
                 .selectAll('g.legendsymbols')
                     .data([d]);
             symbol.enter().append('g')
@@ -257,7 +254,7 @@
         text.enter().append('text').classed('legendtext', true);
         text.attr({
                 x: 40,
-                y: 0,
+                y: 0
             })
             .style('text-anchor', 'start')
             .call(Plotly.Drawing.font, fullLayout.legend.font)
@@ -289,6 +286,14 @@
     // legend drawing
     // -----------------------------------------------------
 
+    // all types we currently support in legends
+    var LEGENDTYPES = ['scatter', 'scatter3d', 'box', 'bar', 'histogram'];
+
+    function legendGetsTrace(trace) {
+        return trace.visible &&
+            LEGENDTYPES.indexOf(trace.type) !== -1;
+    }
+
     legend.draw = function(td, showlegend) {
         var layout = td.layout,
             fullLayout = td._fullLayout;
@@ -301,15 +306,15 @@
 
         var opts = fullLayout.legend;
 
-        var ldata = td.calcdata
-            .filter(function(cd) {
-                var trace = cd[0].trace;
-                return trace.visible &&
-                    trace.showlegend &&
-                    !Plotly.Plots.isHeatmap(trace.type) &&
-                    !Plotly.Plots.isSurface(trace.type);
-            })
-            .map(function(cd) { return [cd[0]]; });
+        var ldata = [];
+        for(var i = 0; i < td.calcdata.length; i++) {
+            var cd0 = td.calcdata[i][0],
+                trace = cd0.trace;
+
+            if(legendGetsTrace(trace) && trace.showlegend) {
+                ldata.push([cd0]);
+            }
+        }
 
         if(opts.traceorder==='reversed') ldata.reverse();
 
@@ -341,7 +346,27 @@
         traces.enter().append('g').attr('class','traces');
         traces.exit().remove();
         traces.call(legend.style)
-            .each(function(d, i){ legend.texts(this, td, d, i, traces); });
+            .style('opacity', function(d) {
+                return d[0].trace.visible === 'legendonly' ? 0.5 : 1;
+            })
+            .each(function(d, i) {
+                legend.texts(this, td, d, i, traces);
+
+                var traceToggle = d3.select(this).selectAll('rect')
+                    .data([0]);
+                traceToggle.enter().append('rect')
+                    .classed('legendtoggle', true)
+                    .style('cursor', 'pointer')
+                    .call(Plotly.Color.fill, 'rgba(0,0,0,0)');
+                traceToggle.on('click', function() {
+                    if(td.dragged) return;
+
+                    var trace = d[0].trace,
+                        newVisible = trace.visible === true ?
+                            'legendonly' : true;
+                    Plotly.restyle(td, 'visible', newVisible, trace.index);
+                });
+            });
 
         legend.repositionLegend(td, traces);
 
@@ -411,7 +436,8 @@
         traces.each(function(d){
             var trace = d[0].trace,
                 g = d3.select(this),
-                text = g.select('.legendtext'),
+                bg = g.selectAll('.legendtoggle'),
+                text = g.selectAll('.legendtext'),
                 tspans = g.selectAll('.legendtext>tspan'),
                 tHeight = opts.font.size * 1.3,
                 tLines = tspans[0].length||1,
@@ -442,9 +468,15 @@
             tHeightFull = Math.max(tHeight*tLines, 16)+3;
             g.attr('transform','translate('+borderwidth+',' +
                 (5+borderwidth+legendheight+tHeightFull/2)+')');
+            bg.attr({x: 0, y: -tHeightFull / 2, height: tHeightFull});
+
             legendheight += tHeightFull;
             legendwidth = Math.max(legendwidth, tWidth||0);
         });
+
+        traces.selectAll('.legendtoggle')
+            .attr('width', (td._context.editable ? 0 : legendwidth) + 40);
+
         legendwidth += 45+borderwidth*2;
         legendheight += 10+borderwidth*2;
 

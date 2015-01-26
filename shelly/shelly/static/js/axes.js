@@ -307,6 +307,7 @@
         if(range0===range1) {
             containerOut.range = [range0 - 1, range0 + 1];
         }
+        Plotly.Lib.noneOrBoth(containerIn.range, containerOut.range, 0, 1);
 
         var autoTick = coerce('autotick');
         if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
@@ -417,6 +418,7 @@
             var domainStart = coerce('domain[0]'),
                 domainEnd = coerce('domain[1]');
             if(domainStart > domainEnd - 0.01) containerOut.domain = [0,1];
+            Plotly.Lib.noneOrBoth(containerIn.domain, containerOut.domain, 0, 1);
         }
 
         return containerOut;
@@ -1801,11 +1803,13 @@
     // and at axes and their anchors
 
     axes.getSubplots = function(gd,ax) {
-        var data = gd.data, subplots = [];
+        var data = gd.data,
+            subplots = [];
 
         // look for subplots in the data
         (data||[]).forEach(function(trace) {
-            if(trace.visible===false || Plotly.Plots.isGL3D(trace.type)) {
+            if(trace.visible === false || trace.visible === 'legendonly' ||
+                    Plotly.Plots.isGL3D(trace.type)) {
                 return;
             }
             var xid = (trace.xaxis||'x'),
@@ -2202,13 +2206,13 @@
             grid.exit().remove();
 
             // zero line
-            var hasBarsOrFill = (td.data||[]).filter(function(tdc){
-                return tdc.visible!==false &&
-                    ((tdc.xaxis||'x')+(tdc.yaxis||'y')===subplot) &&
+            var hasBarsOrFill = (td.data || []).filter(function(tdc) {
+                return tdc.visible === true &&
+                    ((tdc.xaxis || 'x') + (tdc.yaxis || 'y') === subplot) &&
                     ((Plotly.Plots.isBar(tdc.type) &&
-                        (tdc.orientation||'v')==={x:'h',y:'v'}[axletter]) ||
-                    ((tdc.type||'scatter')==='scatter' && tdc.fill &&
-                        tdc.fill.charAt(tdc.fill.length-1)===axletter));
+                        (tdc.orientation || 'v') === {x: 'h', y: 'v'}[axletter]) ||
+                    ((tdc.type || 'scatter') === 'scatter' && tdc.fill &&
+                        tdc.fill.charAt(tdc.fill.length - 1) === axletter));
             }).length;
             var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline &&
                 (ax.type==='linear' || ax.type==='-') && gridvals.length &&

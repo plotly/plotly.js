@@ -179,10 +179,11 @@
                 sa = plotinfo[sLetter]();
 
             gd._fullData.forEach(function(trace,i) {
-                if(trace.visible && Plotly.Plots.isBar(trace.type) &&
-                        trace.orientation===dir &&
-                        trace.xaxis===xa._id &&
-                        trace.yaxis===ya._id) {
+                if(trace.visible === true &&
+                        Plotly.Plots.isBar(trace.type) &&
+                        trace.orientation === dir &&
+                        trace.xaxis === xa._id &&
+                        trace.yaxis === ya._id) {
                     bl.push(i);
                 }
             });
@@ -298,12 +299,11 @@
                 }
 
                 if(norm) {
-                    // stackto1 or stackto100
                     padded = false;
                     var top = norm==='fraction' ? 1 : 100,
                         tiny = top/1e9; // in case of rounding error in sum
                     sMin = 0;
-                    sMax = top;
+                    sMax = stack ? top : 0;
                     for(i=0; i<bl.length; i++){ // trace index
                         ti = gd.calcdata[bl[i]];
                         for(j=0; j<ti.length; j++) {
@@ -320,7 +320,7 @@
                                 }
                                 if(barEnd > sMax + tiny) {
                                     padded = true;
-                                    sMax = sMax;
+                                    sMax = barEnd;
                                 }
                             }
                         }
