@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-dev": "browserify index.js --standalone Plotly -o build/plotlyjs-bundle.js",
+    "build-dev": "browserify index.js --debug --standalone Plotly -o build/plotlyjs-bundle.js",
     "build-prod": "browserify index.js --standalone Plotly | uglifyjs > build/plotlyjs-bundle.js"
   },
   "author": "Plotly amazing team",
