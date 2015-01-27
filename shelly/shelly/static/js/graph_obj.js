@@ -420,10 +420,10 @@
                 (gd.calcdata.length>1 && fullLayout.showlegend!==false));
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(trace.visible !== true || !trace.module.colorbar) {
+                if(trace.visible !== true || !trace._module.colorbar) {
                     plots.autoMargin(gd,'cb'+trace.uid);
                 }
-                else trace.module.colorbar(gd,cd);
+                else trace._module.colorbar(gd,cd);
             });
             doAutoMargin(gd);
             return plots.previousPromises(gd);
@@ -493,7 +493,7 @@
             // previously, remove them and their colorbars explicitly
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(trace.visible !== true || !trace.module.colorbar) {
+                if(trace.visible !== true || !trace._module.colorbar) {
                     var uid = trace.uid;
                     fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid)
                         .remove();
@@ -518,7 +518,7 @@
                     // plot all traces of this type on this subplot at once
                     var cdmod = cdSubplot.filter(function(cd){
                         var trace = cd[0].trace;
-                        return trace.module === module && trace.visible === true;
+                        return trace._module === module && trace.visible === true;
                     });
                     module.plot(gd,plotinfo,cdmod);
                     Plotly.Lib.markTime('done ' + (cdmod[0] && cdmod[0][0].trace.type));
@@ -1162,7 +1162,7 @@
         // the 3D modules to have it removed from the webgl context.
         if (visible || scene) {
             module = getModule(traceOut);
-            traceOut.module = module;
+            traceOut._module = module;
         }
 
         if (module && visible) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
@@ -3453,23 +3453,40 @@
     // Utility functions
     // ----------------------------------------------------
 
-    // graphJson - jsonify the graph data and layout
-    // needs to recurse because some src can be inside sub-objects
-    // also strips out functions and private (start with _) elements
-    // so we can add temporary things to data and layout that don't get saved
-    //
-    // dataonly = truthy will omit layout and any arrays that aren't data
-    //      (note that we have to do this on the server side too)
-    // mode:
-    //      keepref (default): remove data for which there's a src present,
-    //          eg if there's xsrc present (and xsrc is well-formed,
-    //          ie has : and some chars before it), strip out x
-    //      keepdata: remove all src tags, don't remove the data itself
-    //      keepall: keep data and src
-    // output:
-    //      'object' to not stringify
-    plots.graphJson = function(gd, dataonly, mode, output){
+    /**
+     * JSONify the graph data and layout
+     *
+     * This function needs to recurse because some src can be inside
+     * sub-objects.
+     *
+     * It also strips out functions and private (starts with _) elements.
+     * Therefore, we can add temporary things to data and layout that don't
+     * get saved.
+     *
+     * @param gd The graphDiv
+     * @param {Boolean} dataonly If true, don't return layout.
+     * @param {'keepref'|'keepdata'|'keepall'} [mode='keepref'] Filter what's kept
+     *      keepref: remove data for which there's a src present
+     *          eg if there's xsrc present (and xsrc is well-formed,
+     *          ie has : and some chars before it), strip out x
+     *      keepdata: remove all src tags, don't remove the data itself
+     *      keepall: keep data and src
+     * @param {String} output If you specify 'object', the result will not be stringified
+     * @param {Boolean} useDefaults If truthy, use _fullLayout and _fullData
+     * @returns {Object|String}
+     */
+    plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
+
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
+
+        // if the defaults aren't supplied yet, we need to do that...
+        if ((useDefaults && dataonly && !gd._fullData) ||
+                (useDefaults && !dataonly && !gd._fullLayout)) {
+            plots.supplyDefaults(gd);
+        }
+
+        var data = (useDefaults) ? gd._fullData : gd.data,
+            layout = (useDefaults) ? gd._fullLayout : gd.layout;
 
         function stripObj(d) {
             if(typeof d === 'function') {
@@ -3522,7 +3539,7 @@
         }
 
         var obj = {
-            data:(gd.data||[]).map(function(v){
+            data:(data||[]).map(function(v){
                 var d = stripObj(v);
                 // fit has some little arrays in it that don't contain data,
                 // just fit params and meta
@@ -3530,7 +3547,7 @@
                 return d;
             })
         };
-        if(!dataonly) { obj.layout = stripObj(gd.layout); }
+        if(!dataonly) { obj.layout = stripObj(layout); }
 
         if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
