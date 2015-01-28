@@ -1,4 +1,16 @@
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
     /* jshint camelcase: false */
 
@@ -8,7 +20,7 @@
     // ---external global dependencies
     /* global d3:false */
 
-    var scatter = window.Plotly.Scatter = {};
+    var scatter = Plotly.Scatter = {};
 
     // mark this module as allowing error bars
     scatter.errorBarsOK = true;
@@ -923,4 +935,5 @@
         return [pointData];
     };
 
-}()); // end Scatter object definition
+    return scatter;
+}));
