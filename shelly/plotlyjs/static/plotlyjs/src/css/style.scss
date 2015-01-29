@@ -1,7 +1,10 @@
 @import "vars.scss";
 
+@import "../fonts/ploticon/ploticon.scss";
+
 @import "base.scss";
-@import "layout.scss";
+@import "cursor.scss";
 @import "modebar.scss";
-@import "module-shared.scss";
-@import "theme.scss";
+
+
+.ploticon-plotlylogo { color: $color-brand-primary !important;}

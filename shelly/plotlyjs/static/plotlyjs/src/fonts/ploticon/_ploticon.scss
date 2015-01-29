@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'ploticon';
-  src: url('#{$font-dir}/ploticon/ploticon.eot?91282052');
-  src: url('#{$font-dir}/ploticon/ploticon.eot?91282052#iefix') format('embedded-opentype'),
-       url('#{$font-dir}/ploticon/ploticon.woff?91282052') format('woff'),
-       url('#{$font-dir}/ploticon/ploticon.ttf?91282052') format('truetype'),
-       url('#{$font-dir}/ploticon/ploticon.svg?91282052#ploticon') format('svg');
+  src: url('#{$font-url}/ploticon/ploticon.eot?91282052');
+  src: url('#{$font-url}/ploticon/ploticon.eot?91282052#iefix') format('embedded-opentype'),
+       url('#{$font-url}/ploticon/ploticon.woff?91282052') format('woff'),
+       url('#{$font-url}/ploticon/ploticon.ttf?91282052') format('truetype'),
+       url('#{$font-url}/ploticon/ploticon.svg?91282052#ploticon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
