@@ -1,0 +1,308 @@
+
+/*---------------------------  Inputs and buttons  --------------------------*/
+
+input, button {
+    &:focus {
+        outline: none;
+    }
+}
+
+/*----------------------------------  Text  ---------------------------------*/
+
+.small {
+    font-size: 12px;
+}
+
+.keyword {
+    font-weight: 600;
+}
+
+p:last-child {
+    margin-bottom: 0;
+}
+
+/*---------------------------------  Links  ---------------------------------*/
+
+a {
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+.link--default {
+    cursor: pointer;
+    color: #888;
+
+    &:hover {
+        color: #444;
+        text-decoration: none;
+    }
+}
+
+.link--blocky {
+    display: inline-block;
+    padding: 5px;
+
+    &:not(.link--impt):hover {
+        background: #f5f5f5;
+    }
+
+    i {
+        padding: 2px 5px;
+    }
+}
+
+
+.code {
+    font-family: 'Inconsolata', monospace, verdana, sans-serif;
+}
+
+.code--inline {
+    color: $color-inline-code;
+}
+
+.link--impt {
+    color: $color-brand-primary;
+
+    &:hover {
+        color: #3c6dc5;
+    }
+}
+.link--impt-highlight {
+    padding: 10px;
+    color: $color-brand-primary;
+    cursor:pointer;
+
+    &:hover {
+        color: white;
+        background-color: $color-brand-primary;
+    }
+}
+.link--impt-inv {
+    background: $color-brand-primary;
+    color: #fff;
+
+    &:hover {
+        background: #3c6dc5;
+    }
+}
+
+.link--tool {
+    color: $color-click;
+
+    &.disabled {
+        cursor: default;
+        color: #a0a6b3;
+    }
+
+    &:hover, &:active, &.active {
+        color: $color-brand-primary;
+
+        &.disabled {
+            color: #a0a6b3;
+        }
+    }
+}
+
+.link--plain {
+    color: black;
+
+    &:hover, &:active, &.active {
+        color: $color-brand-primary;
+
+        &.disabled {
+            color: #a0a6b3;
+        }
+    }
+}
+
+.link--icon {
+    color: #a0a6b3;
+
+    &:hover, &:active, &.active {
+        color: $color-brand-primary;
+    }
+}
+
+.link--img {
+    color: #a0a6b3;
+
+    &:hover, &:active, &.active {
+        color: $color-click;
+    }
+}
+
+.link--bold {
+    font-weight: 600;
+}
+
+.link--primary-nav {
+    color: $color-click;
+    font-size: 14px;
+
+    &:hover, &:active, &.active {
+        color: $color-brand-primary;
+    }
+
+    &.active {
+        font-weight: 600;
+    }
+
+}
+
+/*------------------------------  Form fields  ------------------------------*/
+
+.input, .text-area {
+    border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    display: inline;
+    vertical-align: middle;
+    padding: 5px;
+    border: 1px solid #ccc;
+    overflow: hidden;
+
+    &:focus {
+        outline: none;
+        border: 1px solid #a9b3c7 !important;
+
+        box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        -moz-box-shadow: none !important;
+
+        transition: none !important;
+        -webkit-transition: none !important;
+        -moz-transition: none !important;
+    }
+}
+
+.input {
+    white-space: nowrap;
+}
+
+.text-area {
+    white-space: pre-wrap;
+}
+
+.input--width-max {
+    width: 100%;
+}
+
+.input--width-lrg {
+    width: 300px;
+}
+
+.input--width-huge {
+    width: 500px;
+}
+
+.input--width-medium {
+    width: 150px;
+}
+
+.input--width-small {
+    width: 83px;
+}
+
+.input--width-tiny {
+    width: 50px;
+}
+
+.input--big {
+    padding: 10px;
+}
+
+.input--small {
+    padding: 3px;
+    font-size: 12px;
+}
+
+.input--jstree {
+    position: absolute;
+    margin: 7px 10px;
+    padding: 2px;
+    max-width: 150px;
+}
+
+.select--tool {
+    width: auto; /* override bootstrap :( */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+}
+
+/*------------------------  Content-editable fields  ------------------------*/
+
+.editable {
+    @extend .input;
+    border-color: transparent;
+
+    &:hover {
+        border-color: #ccc;
+    }
+}
+
+
+/*-------------------------------  Headings  --------------------------------*/
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    text-align: center;
+    font-weight: 300;
+}
+
+.mega {
+    font-size: $mega-size;
+    @include media-query(portable){ font-size: 1.2*$kilo-size; }
+    @include media-query(lap){ font-size: 0.9*$kilo-size; }
+    @include media-query(palm){ font-size: $h1-size; }
+}
+
+.kilo {
+    font-size: $kilo-size;
+}
+
+.beta, .gamma, .delta {
+    line-height: 1.5;
+}
+
+/*---------------------------------  Code  ----------------------------------*/
+
+pre, code {
+    font-family: 'Inconsolata', monospace, verdana, sans-serif;
+}
+
+/*--------------------------------  Iframes  --------------------------------*/
+
+iframe {
+    border: 1px solid #ccc;
+}
+
+/*----------------------------------  Ins  ----------------------------------*/
+
+ins {
+    border: none !important;
+}
+
+/*--------------------------------  Cursors  --------------------------------*/
+
+.crisp { shape-rendering: crispEdges; }
+svg a { fill: $color-brand-primary; }
+svg a:hover { fill: #3c6dc5; }
+.cursor-pointer { cursor: pointer; }
+.cursor-crosshair { cursor: crosshair; }
+.cursor-move { cursor: move; }
+.cursor-col-resize { cursor: col-resize; }
+.cursor-row-resize { cursor: row-resize; }
+.cursor-ns-resize { cursor: ns-resize; }
+.cursor-ew-resize { cursor: ew-resize; }
+.cursor-sw-resize { cursor: sw-resize; }
+.cursor-s-resize { cursor: s-resize; }
+.cursor-se-resize { cursor: se-resize; }
+.cursor-w-resize { cursor: w-resize; }
+.cursor-e-resize { cursor: e-resize; }
+.cursor-nw-resize { cursor: nw-resize; }
+.cursor-n-resize { cursor: n-resize; }
+.cursor-ne-resize { cursor: ne-resize; }

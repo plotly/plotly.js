@@ -1,0 +1,42 @@
+.modebar {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    z-index: 1001;
+}
+
+.modebar-group {
+    float: left;
+    display: inline-block;
+    margin-left: 5px;
+
+    &:first-child {
+        margin-left: 0px;
+    }
+}
+
+
+.modebar-btn {
+    font-size: 16px;
+    color: #8C97AF;
+    background: white;
+    box-shadow: none;
+    -webkit-font-smoothing: antialiased;
+    border: none;
+    padding: 3px 4px;
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+    outline: none;
+    line-height: normal;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.modebar-btn--logo {
+    -webkit-transform: translate(-5px, 2px);
+    transform: translate(-5px, 2px);
+    margin-left: 10px;
+}
