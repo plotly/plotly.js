@@ -6,6 +6,8 @@ var fs = require('fs');
 var path = require('path');
 var gm = require('gm');
 
+if (!fs.existsSync('./test-images-diffs')) fs.mkdirSync('./test-images-diffs');
+if (!fs.existsSync('./test-images')) fs.mkdirSync('./test-images');
 
 test('testing thumbnail image server call', function (t) {
     t.plan(2);
