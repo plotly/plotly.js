@@ -1,10 +1,22 @@
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
 
     // ---Plotly global modules
     /* global Plotly:false */
 
-    var histogram = window.Plotly.Histogram = {};
+    var histogram = Plotly.Histogram = {};
     // histogram is a weird one... it has its own calc function, but uses Bars.plot to display
     // and Bars.setPositions for stacking and grouping
 
@@ -475,4 +487,6 @@
             z: z
         };
     };
-}()); // end Histogram object definition
+
+    return histogram;
+}));

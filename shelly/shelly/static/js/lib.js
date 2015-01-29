@@ -1,5 +1,17 @@
 // common library functions, mostly for plotting but used elsewhere too
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
     // TODO: can use camelcase after fixing conf_modal and showSources
     /* jshint camelcase: false */
@@ -13,7 +25,6 @@
     // ---external global dependencies
     /* global d3:false, Spinner:false, tinycolor:false */
 
-    if (!window.Plotly) window.Plotly = {};
     var lib = Plotly.Lib = {};
 
     // dateTime2ms - turn a date object or string s of the form
@@ -1910,4 +1921,5 @@
             .replace(/\//g, '&#x2f;');
     };
 
-}()); // end Lib object definition
+    return lib;
+}));

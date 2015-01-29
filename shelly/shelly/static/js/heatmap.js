@@ -1,4 +1,16 @@
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
 
     // ---Plotly global modules
@@ -7,7 +19,7 @@
     // ---external global dependencies
     /* global d3:false, PNGlib:false, tinycolor:false */
 
-    var heatmap = window.Plotly.Heatmap = {};
+    var heatmap = Plotly.Heatmap = {};
 
     heatmap.attributes = {
         z: {type: 'data_array'},
@@ -989,4 +1001,5 @@
         })];
     };
 
-}()); // end Heatmap object definition
+    return heatmap;
+}));
