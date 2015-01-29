@@ -70,7 +70,7 @@
      */
     ModeBar.prototype.createGroup = function () {
         var group = document.createElement('div');
-        group.className = 'btn-group float--left';
+        group.className = 'modebar-group';
 
         return group;
     };
@@ -89,7 +89,7 @@
         var icon = document.createElement('i');
         var _this = this;
         button.setAttribute('rel', 'tooltip');
-        button.className = 'btn btn--icon btn--plot ploticon';
+        button.className = 'modebar-btn ploticon';
 
         button.setAttribute('data-attr', config.attr);
         button.setAttribute('data-val', config.val);
@@ -157,7 +157,7 @@
         a.setAttribute('data-gravity', 'ne');
 
         group.appendChild(a);
-        group.classList.add('btn-group--logo');
+        group.classList.add('modebar-btn--logo');
         return group;
     };
 
