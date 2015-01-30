@@ -8,7 +8,7 @@
 .modebar-group {
     float: left;
     display: inline-block;
-    margin-left: 5px;
+    margin-left: 10.5px;
 
     &:first-child {
         margin-left: 0px;
@@ -18,8 +18,8 @@
 
 .modebar-btn {
     font-size: 16px;
-    color: #8C97AF;
     background: white;
+    color: #a9b3c7;
     box-shadow: none;
     -webkit-font-smoothing: antialiased;
     border: none;
@@ -29,9 +29,14 @@
     position: relative;
     outline: none;
     line-height: normal;
+    margin-left: -1px;
 
-    &:hover {
-        opacity: 0.8;
+    &.active, &.hover {
+        color: #8C97AF;
+    }
+
+    &:first-child {
+        margin-left: 0px;
     }
 }
 
