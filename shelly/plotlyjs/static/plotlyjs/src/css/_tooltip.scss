@@ -4,39 +4,12 @@
 @mixin vendor($property, $value) {
     -webkit-#{$property}: $value;
     -moz-#{$property}: $value;
+    -ms-#{$property}: $value;
+    -o-#{$property}: $value;
     #{$property}: $value;
 }
 
 
-// mixin to set margin on tooltip using translate transform
-@mixin set-margin($property, $transitionDirection) {
-    $value: unquote("#{$property}(#{$transitionDistance * $transitionDirection})");
-    &:after, &:before {
-        @include vendor('transform', $value);
-    }
-}
-
-// Generates border-color rules for all 4 positions
-@mixin arrow-border-color($color, $isInsideSelector: "true") {
-    @each $position in top, bottom, left, right {
-        // if the current mixin is called from within a selector, use a '&'. Otherwise not.
-        @if $isInsideSelector == "true" {
-            &.#{$prefix}#{$position}:before {
-                border-#{$position}-color: $color;
-            }
-        }
-        @else {
-            .#{$prefix}#{$position}:before {
-                border-#{$position}-color: $color;
-            }
-        }
-    }
-}
-
-
-// Tooltip variables
-$showDelay: 100ms !default; // Delay in showing the tooltips.
-$hideDelay: 0ms !default; // Delay in hiding the tooltips.
 $fontSize: 12px;
 
 $verticalPadding: 8px;
@@ -66,7 +39,7 @@ $infoColor: hsl(200, 50%, 45%) !default;
 // Success Color
 $successColor: hsl(121, 32%, 40%) !default;
 
-@mixin tooltip(){
+@mixin tooltip2(){
     &:before, &:after {
         position: absolute;
         @include vendor('transform', translate3d(0, 0, 0));
@@ -119,6 +92,56 @@ $successColor: hsl(121, 32%, 40%) !default;
         line-height: $fontSize; // Vertical centering.
         white-space: nowrap; // Prevent breaking to new line.
         margin-left: -1 * $arrowOffsetX;
+        border-radius: 2px;
+    }
+}
+
+
+[data-title] {
+    &:before, &:after {
+        position: absolute;
+        @include vendor('transform', translate3d(0, 0, 0));
+        visibility: hidden;
+        opacity: 0;
+        z-index: $zIndex;
+        pointer-events: none;
+
+        //@include vendor('transition', 0.3s ease);
+        //@include vendor('transition-delay', 0);
+
+        top: 110%;
+        right: 50%;
+    }
+
+    &:hover:before, &:hover:after {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    // Arrow
+    &:before {
+        content: '';
+        position: absolute;
+        background: transparent;
+        border: $arrowBorderWidth solid transparent;
+        z-index: $zIndex + 1;
+        margin-top: -2 * $arrowBorderWidth;
+        border-bottom-color: $defaultColor;
+        margin-right: -1 * $arrowBorderWidth;
+    }
+
+    /**
+     * tooltip body
+     */
+    &:after {
+        content: attr(data-title); // The magic!
+        background: $defaultColor;
+        color: white;
+        padding: $verticalPadding $horizontalPadding;
+        font-size: $fontSize;
+        line-height: $fontSize; // Vertical centering.
+        white-space: nowrap; // Prevent breaking to new line.
+        margin-right: -1 * $arrowOffsetX;
         border-radius: 2px;
     }
 }

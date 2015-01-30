@@ -147,17 +147,18 @@
      */
     ModeBar.prototype.getLogo = function(){
         var group = this.createGroup(),
-            a = document.createElement('a');
+            a = document.createElement('a'),
+            i = document.createElement('i');
 
-        a.setAttribute('rel', 'tooltip');
+
         a.href = 'https://plot.ly/';
         a.target = '_blank';
-        a.title = 'Produced with Plotly';
-        a.className = 'ploticon-plotlylogo';
-        a.setAttribute('data-gravity', 'ne');
+        a.setAttribute('data-title', 'Produced with Plotly');
+        a.className = 'modebar-btn ploticon';
 
+        i.className = 'ploticon-plotlylogo';
+        a.appendChild(i);
         group.appendChild(a);
-        group.classList.add('modebar-btn--logo');
         return group;
     };
 

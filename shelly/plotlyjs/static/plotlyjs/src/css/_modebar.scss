@@ -34,7 +34,7 @@
     position: relative;
     outline: none;
     line-height: normal;
-    margin-left: -1px;
+    box-sizing: border-box;
 
     &.active, &.hover {
         color: #8C97AF;
@@ -48,12 +48,4 @@
         font-style: normal !important;
         box-sizing: border-box;
     }
-
-    @include tooltip();
-}
-
-.modebar-btn--logo {
-    -webkit-transform: translate(-5px, 3px);
-    transform: translate(-5px, 3px);
-    margin-left: 10px;
 }
