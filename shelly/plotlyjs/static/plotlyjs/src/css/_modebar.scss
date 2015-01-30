@@ -8,6 +8,7 @@
 .modebar-group {
     float: left;
     display: inline-block;
+    box-sizing: border-box;
     margin-left: 10.5px;
     position: relative;
     vertical-align: middle;
@@ -49,7 +50,7 @@
 }
 
 .modebar-btn--logo {
-    -webkit-transform: translate(-5px, 2px);
-    transform: translate(-5px, 2px);
+    -webkit-transform: translate(-5px, 3px);
+    transform: translate(-5px, 3px);
     margin-left: 10px;
 }

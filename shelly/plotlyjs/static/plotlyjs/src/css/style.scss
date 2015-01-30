@@ -1,11 +1,12 @@
 @import "vars.scss";
-@import "../fonts/ploticon/ploticon.scss";
 
 .js-plotly-plot .plotly {
     @import "base.scss";
     @import "cursor.scss";
     @import "modebar.scss";
 }
+
+@import "../fonts/ploticon/ploticon.scss";
 
 .ploticon-plotlylogo {
     color: $color-brand-primary !important;
