@@ -3,13 +3,14 @@
     top: 2px;
     right: 2px;
     z-index: 1001;
+    background: rgba(255,255,255,0.7);
 }
 
 .modebar-group {
     float: left;
     display: inline-block;
     box-sizing: border-box;
-    margin-left: 10.5px;
+    margin-left: 9px;
     position: relative;
     vertical-align: middle;
     white-space: nowrap;
@@ -23,8 +24,7 @@
 .modebar-btn {
     position: relative;
     font-size: 16px;
-    background: white;
-    color: #a9b3c7;
+    color: rgba(0,31,95,0.3);
     box-shadow: none;
     -webkit-font-smoothing: antialiased;
     border: none;
@@ -36,8 +36,8 @@
     line-height: normal;
     box-sizing: border-box;
 
-    &.active, &.hover {
-        color: #8C97AF;
+    &.active, &:hover {
+        color: rgba(0,22,72,0.5);
     }
 
     &:first-child {
@@ -48,4 +48,8 @@
         font-style: normal !important;
         box-sizing: border-box;
     }
+}
+
+.modebar-btn--logo {
+    padding: 3px 1px;
 }
