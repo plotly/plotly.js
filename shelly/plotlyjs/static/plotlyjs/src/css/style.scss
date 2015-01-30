@@ -4,13 +4,12 @@
     @import "base.scss";
     @import "cursor.scss";
     @import "modebar.scss";
+    @import "tooltip.scss";
 }
 
 @import "../fonts/ploticon/ploticon.scss";
 
+
 .ploticon-plotlylogo {
     color: $color-brand-primary !important;
-    -webkit-font-smoothing: antialiased;
-    line-height: 1 !important;
-    text-transform: none;
 }

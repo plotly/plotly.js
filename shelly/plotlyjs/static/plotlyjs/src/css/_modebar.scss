@@ -22,6 +22,7 @@
 
 
 .modebar-btn {
+    position: relative;
     font-size: 16px;
     color: rgba(0,31,95,0.3);
     box-shadow: none;
@@ -33,7 +34,7 @@
     position: relative;
     outline: none;
     line-height: normal;
-    margin-left: -1px;
+    box-sizing: border-box;
 
     &.active, &:hover {
         color: rgba(0,22,72,0.5);
