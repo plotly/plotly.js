@@ -7,4 +7,9 @@
     @import "modebar.scss";
 }
 
-.ploticon-plotlylogo { color: $color-brand-primary !important;}
+.ploticon-plotlylogo {
+    color: $color-brand-primary !important;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1 !important;
+    text-transform: none;
+}

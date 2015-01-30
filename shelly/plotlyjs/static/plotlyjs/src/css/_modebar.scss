@@ -12,6 +12,10 @@
     position: relative;
     vertical-align: middle;
     white-space: nowrap;
+
+    &:first-child {
+        margin-left: 0px;
+    }
 }
 
 
