@@ -3554,52 +3554,6 @@
         return (output==='object') ? obj : JSON.stringify(obj);
     };
 
-    plots.viewJson = function(){
-        var gd = Tabs.get();
-        var jsonString, data, layout;
-        if(gd.framework && gd.framework.isPolar){
-            var json= gd.framework.getLiveConfig();
-            jsonString = JSON.stringify(json);
-            data = json.data;
-            layout = json.layout;
-        }
-        else{
-            jsonString = Plotly.Plots.graphJson(gd);
-            data = JSON.parse(jsonString).data;
-            // Remove stream meta info
-            data.forEach(function(di){ delete di.stream; });
-            layout = JSON.parse(jsonString).layout;
-        }
-        var code = 'var data = ' + Plotly.Lib.escapeForHtml(JSON.stringify(data)) + ';\n';
-        code += 'var layout = ' + Plotly.Lib.escapeForHtml(JSON.stringify(layout)) + ';\n';
-        code += 'Plotly.plot(Tabs.get(), data, layout);';
-
-        var jsonModal = $('#jsonModal');
-        var jsonViewer = jsonModal.find('#json-viewer').empty();
-        jsonViewer.data('jsontree', '')
-            .jsontree(jsonString,{collapsibleOuter:false}).show();
-        jsonModal.modal('show');
-
-        var jsonText = jsonModal.find('#json-text')
-            .text('').append(code).hide();
-        var buttonTexts = ['Switch to Plain Text', 'Switch to JSON Viewer'];
-        var viewerToggle = $('.js-plain-text-toggle').text(buttonTexts[0]);
-
-        viewerToggle.off('click').on('click', function(){
-            var isPlaintText = $(this).text() === buttonTexts[0];
-            jsonViewer.toggle(!isPlaintText);
-            jsonText.toggle(isPlaintText);
-            jsonText.get(0).select();
-            $(this).text(buttonTexts[+isPlaintText]);
-            return false;
-        });
-
-        jsonModal.find('.close').off('click').on('click', function(){
-            jsonModal.modal('hide');
-            return false;
-        });
-    };
-
     return plots;
 
 }));
