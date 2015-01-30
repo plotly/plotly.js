@@ -85,7 +85,7 @@
      * @Return {HTMLelement}
      */
     ModeBar.prototype.createButton = function (config) {
-        var button = document.createElement('button');
+        var button = document.createElement('a');
         var icon = document.createElement('i');
         var _this = this;
         button.setAttribute('rel', 'tooltip');
