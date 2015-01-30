@@ -9,10 +9,9 @@
     float: left;
     display: inline-block;
     margin-left: 10.5px;
-
-    &:first-child {
-        margin-left: 0px;
-    }
+    position: relative;
+    vertical-align: middle;
+    white-space: nowrap;
 }
 
 
@@ -37,6 +36,11 @@
 
     &:first-child {
         margin-left: 0px;
+    }
+
+    [class^="ploticon-"]:before {
+        font-style: normal !important;
+        box-sizing: border-box;
     }
 }
 
