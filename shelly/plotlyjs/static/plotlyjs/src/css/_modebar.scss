@@ -21,6 +21,7 @@
 
 
 .modebar-btn {
+    position: relative;
     font-size: 16px;
     background: white;
     color: #a9b3c7;
@@ -47,6 +48,8 @@
         font-style: normal !important;
         box-sizing: border-box;
     }
+
+    @include tooltip();
 }
 
 .modebar-btn--logo {

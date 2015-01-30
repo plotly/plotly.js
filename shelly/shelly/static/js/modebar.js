@@ -93,7 +93,7 @@
 
         button.setAttribute('data-attr', config.attr);
         button.setAttribute('data-val', config.val);
-        button.setAttribute('title', config.title);
+        button.setAttribute('data-title', config.title);
         button.setAttribute('data-gravity', config.gravity || 'n');
         button.addEventListener('click', function () {
                 config.click.apply(_this, arguments);
