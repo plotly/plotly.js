@@ -10,7 +10,7 @@
     "build-prod": "npm run browserify-prod; npm run sass-prod",
     "browserify-dev": "browserify index.js --debug --standalone Plotly -o build/plotlyjs-bundle.js",
     "browserify-prod": "browserify index.js --standalone Plotly | uglifyjs > build/plotlyjs-bundle.js",
-    "sass-dev": "node-sass --output-style expanded src/css/style.scss build/plotly-style.css",
+    "sass-dev": "node-sass --output-style expanded src/css/style.scss build/plotly-style.css --source-map-embed",
     "sass-prod": "node-sass --output-style compressed src/css/style.scss build/plotly-style.css"
   },
   "author": "Plotly amazing team",
