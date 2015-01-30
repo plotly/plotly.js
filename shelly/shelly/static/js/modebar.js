@@ -154,7 +154,7 @@
         a.href = 'https://plot.ly/';
         a.target = '_blank';
         a.setAttribute('data-title', 'Produced with Plotly');
-        a.className = 'modebar-btn ploticon';
+        a.className = 'modebar-btn ploticon modebar-btn--logo';
 
         i.className = 'ploticon-plotlylogo';
         a.appendChild(i);
