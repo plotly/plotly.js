@@ -43,7 +43,7 @@ $successColor: hsl(121, 32%, 40%) !default;
     &:before, &:after {
         position: absolute;
         @include vendor('transform', translate3d(0, 0, 0));
-        visibility: hidden;
+        display: none;
         opacity: 0;
         z-index: $zIndex;
         pointer-events: none;
@@ -57,7 +57,7 @@ $successColor: hsl(121, 32%, 40%) !default;
 
     &:hover:before, &:hover:after,
     &:focus:before, &:focus:after {
-        visibility: visible;
+        display: block;
         opacity: 1;
 
         @include set-margin('translateY', 1);
@@ -101,7 +101,7 @@ $successColor: hsl(121, 32%, 40%) !default;
     &:before, &:after {
         position: absolute;
         @include vendor('transform', translate3d(0, 0, 0));
-        visibility: hidden;
+        display: none;
         opacity: 0;
         z-index: $zIndex;
         pointer-events: none;
@@ -114,7 +114,7 @@ $successColor: hsl(121, 32%, 40%) !default;
     }
 
     &:hover:before, &:hover:after {
-        visibility: visible;
+        display: block;
         opacity: 1;
     }
 
