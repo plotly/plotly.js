@@ -1,4 +1,16 @@
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
 
     // ---Plotly global modules
@@ -7,7 +19,7 @@
     // ---external global dependencies
     /* global d3:false, PNGlib:false, tinycolor:false */
 
-    var heatmap = window.Plotly.Heatmap = {};
+    var heatmap = Plotly.Heatmap = {};
 
     heatmap.attributes = {
         z: {type: 'data_array'},
@@ -51,6 +63,11 @@
             values: ['fast', 'best', false],
             dflt: false
         },
+        connectgaps: {
+            type: 'boolean',
+            dflt: false
+        },
+        text: {type: 'data_array'},
         // Inherited attributes - not used by supplyDefaults, so if there's
         // a better way to do this feel free to change.
         x: {from: 'Scatter'},
@@ -76,7 +93,7 @@
             // in Histogram.supplyDefaults
             // (along with histogram-specific attributes)
             Plotly.Histogram.supplyDefaults(traceIn, traceOut);
-            if(!traceOut.visible) return;
+            if(traceOut.visible === false) return;
         }
         else {
             var z = coerce('z');
@@ -100,6 +117,9 @@
                 coerceScatter('y0');
                 coerceScatter('dy');
             }
+
+            coerce('connectgaps');
+            coerce('text');
         }
 
         coerce('zauto');
@@ -122,10 +142,7 @@
             }
         }
 
-        if(!Plotly.Plots.isContour(traceOut.type) || (traceOut.contours||{}).coloring==='heatmap') {
-            coerce('zsmooth');
-        }
-
+        if(!Plotly.Plots.isContour(traceOut.type)) coerce('zsmooth');
     };
 
     function flipScale(si){ return [1 - si[0], si[1]]; }
@@ -136,6 +153,7 @@
         Plotly.Lib.markTime('start convert x&y');
         var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
             ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
+            zsmooth = Plotly.Plots.isContour(trace.type) ? 'best' : trace.zsmooth,
             x,
             x0,
             dx,
@@ -174,22 +192,31 @@
                 var maxcols = Plotly.Lib.aggNums(Math.max,0,
                         trace.z.map(function(r){return r.length;}));
                 z = [];
-                for(var c=0; c<maxcols; c++) {
+                for(var c = 0; c < maxcols; c++) {
                     var newrow = [];
-                    for(var r=0; r<trace.z.length; r++) {
+                    for(var r = 0; r < trace.z.length; r++) {
                         newrow.push(cleanZ(trace.z[r][c]));
                     }
                     z.push(newrow);
                 }
             }
             else z = trace.z.map(function(row){return row.map(cleanZ); });
+
+            if(Plotly.Plots.isContour(trace.type) || trace.connectgaps) {
+                trace._emptypoints = findEmpties(z);
+                trace._interpz = interp2d(z, trace._emptypoints, trace._interpz);
+            }
+        }
+
+        function noZsmooth(msg) {
+            zsmooth = trace._input.zsmooth = trace.zsmooth = false;
+            Plotly.Lib.notifier('cannot fast-zsmooth: ' + msg);
         }
 
         // check whether we really can smooth (ie all boxes are about the same size)
-        if([true,'fast'].indexOf(trace.zsmooth)!==-1) {
+        if(zsmooth === 'fast') {
             if(xa.type==='log' || ya.type==='log') {
-                trace._input.zsmooth = trace.zsmooth = false;
-                Plotly.Lib.notifier('cannot fast-zsmooth: log axis found');
+                noZsmooth('log axis found');
             }
             else if(!Plotly.Plots.isHist2D(trace.type)) {
                 if(x.length) {
@@ -197,19 +224,17 @@
                         maxErrX = Math.abs(avgdx/100);
                     for(i=0; i<x.length-1; i++) {
                         if(Math.abs(x[i+1]-x[i]-avgdx)>maxErrX) {
-                            trace._input.zsmooth = trace.zsmooth = false;
-                            Plotly.Lib.notifier('cannot fast-zsmooth: x scale is not linear');
+                            noZsmooth('x scale is not linear');
                             break;
                         }
                     }
                 }
-                if(y.length && [true,'fast'].indexOf(trace.zsmooth)!==-1) {
+                if(y.length && zsmooth === 'fast') {
                     var avgdy = (y[y.length-1]-y[0])/(y.length-1),
                     maxErrY = Math.abs(avgdy/100);
                     for(i=0; i<y.length-1; i++) {
                         if(Math.abs(y[i+1]-y[i]-avgdy)>maxErrY) {
-                            trace._input.zsmooth = trace.zsmooth = false;
-                            Plotly.Lib.notifier('cannot fast-zsmooth: y scale is not linear');
+                            noZsmooth('y scale is not linear');
                             break;
                         }
                     }
@@ -257,8 +282,10 @@
     };
 
     function cleanZ(v) {
-        if(!v && v!==0) return null;
-        return Number(v);
+        if(!v && v!==0) return undefined;
+        v = Number(v);
+        if(isNaN(v)) return undefined;
+        return v;
     }
 
     function makeBoundArray(type, arrayIn, v0In, dvIn, numbricks, ax) {
@@ -302,6 +329,225 @@
         return arrayOut;
     }
 
+    var INTERPTHRESHOLD = 1e-2,
+        NEIGHBORSHIFTS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+    function correctionOvershoot(maxFractionalChange) {
+        // start with less overshoot, until we know it's converging,
+        // then ramp up the overshoot for faster convergence
+        return 0.5 - 0.25 * Math.min(1, maxFractionalChange * 0.5);
+    }
+
+    function interp2d(z, emptyPoints, savedInterpZ) {
+        // fill in any missing data in 2D array z using an iterative
+        // poisson equation solver with zero-derivative BC at edges
+        // amazingly, this just amounts to repeatedly averaging all the existing
+        // nearest neighbors (at least if we don't take x/y scaling into account)
+        var maxFractionalChange = 1,
+            i,
+            thisPt;
+
+        if(Array.isArray(savedInterpZ)) {
+            for(i = 0; i < emptyPoints.length; i++) {
+                thisPt = emptyPoints[i];
+                z[thisPt[0]][thisPt[1]] = savedInterpZ[thisPt[0]][thisPt[1]];
+            }
+        }
+        else {
+            // one pass to fill in a starting value for all the empties
+            iterateInterp2d(z, emptyPoints);
+        }
+
+        // we're don't need to iterate lone empties - remove them
+        for(i = 0; i < emptyPoints.length; i++) {
+            if(emptyPoints[i][2] < 4) break;
+        }
+        // but don't remove these points from the original array,
+        // we'll use them for masking, so make a copy.
+        emptyPoints = emptyPoints.slice(i);
+
+        for(i = 0; i < 100 && maxFractionalChange > INTERPTHRESHOLD; i++) {
+            maxFractionalChange = iterateInterp2d(z, emptyPoints,
+                correctionOvershoot(maxFractionalChange));
+        }
+        if(maxFractionalChange > INTERPTHRESHOLD) {
+            console.log('interp2d didn\'t converge quickly', maxFractionalChange);
+        }
+
+        return z;
+    }
+
+    heatmap.maxRowLength = function(z) {
+        var len = 0;
+        for(var i = 0; i < z.length; i++) {
+            len = Math.max(len, z[i].length);
+        }
+        return len;
+    };
+
+    function findEmpties(z) {
+        // return a list of empty points in 2D array z
+        // each empty point z[i][j] gives an array [i, j, neighborCount]
+        // neighborCount is the count of 4 nearest neighbors that DO exist
+        // this is to give us an order of points to evaluate for interpolation.
+        // if no neighbors exist, we iteratively look for neighbors that HAVE
+        // neighbors, and add a fractional neighborCount
+        var empties = [],
+            neighborHash = {},
+            noNeighborList = [],
+            nextRow = z[0],
+            row = [],
+            blank = [0, 0, 0],
+            rowLength = heatmap.maxRowLength(z),
+            prevRow,
+            i,
+            j,
+            thisPt,
+            p,
+            neighborCount,
+            newNeighborHash,
+            foundNewNeighbors;
+
+        for(i = 0; i < z.length; i++) {
+            prevRow = row;
+            row = nextRow;
+            nextRow = z[i + 1] || [];
+            for(j = 0; j < rowLength; j++) {
+                if(row[j]===undefined) {
+                    neighborCount = (row[j - 1] !== undefined ? 1 : 0) +
+                        (row[j + 1] !== undefined ? 1 : 0) +
+                        (prevRow[j] !== undefined ? 1 : 0) +
+                        (nextRow[j] !== undefined ? 1 : 0);
+
+                    if(neighborCount) {
+                        // for this purpose, don't count off-the-edge points
+                        // as undefined neighbors
+                        if(i === 0) neighborCount++;
+                        if(j === 0) neighborCount++;
+                        if(i === z.length - 1) neighborCount++;
+                        if(j === row.length - 1) neighborCount++;
+
+                        // if all neighbors that could exist do, we don't
+                        // need this for finding farther neighbors
+                        if(neighborCount < 4) {
+                            neighborHash[[i,j]] = [i, j, neighborCount];
+                        }
+
+                        empties.push([i, j, neighborCount]);
+                    }
+                    else noNeighborList.push([i, j]);
+                }
+            }
+        }
+
+        while(noNeighborList.length) {
+            newNeighborHash = {};
+            foundNewNeighbors = false;
+
+            // look for cells that now have neighbors but didn't before
+            for(p = noNeighborList.length - 1; p >= 0; p--) {
+                thisPt = noNeighborList[p];
+                i = thisPt[0];
+                j = thisPt[1];
+
+                neighborCount = ((neighborHash[[i - 1, j]] || blank)[2] +
+                    (neighborHash[[i + 1, j]] || blank)[2] +
+                    (neighborHash[[i, j - 1]] || blank)[2] +
+                    (neighborHash[[i, j + 1]] || blank)[2])/20;
+
+                if(neighborCount) {
+                    newNeighborHash[thisPt] = [i, j, neighborCount];
+                    noNeighborList.splice(p, 1);
+                    foundNewNeighbors = true;
+                }
+            }
+
+            if(!foundNewNeighbors) {
+                throw 'findEmpties iterated with no new neighbors';
+            }
+
+            // put these new cells into the main neighbor list
+            for(thisPt in newNeighborHash) {
+                neighborHash[thisPt] = newNeighborHash[thisPt];
+                empties.push(newNeighborHash[thisPt]);
+            }
+        }
+
+        // sort the full list in descending order of neighbor count
+        return empties.sort(function(a, b) { return b[2] - a[2]; });
+    }
+
+    function iterateInterp2d(z, emptyPoints, overshoot) {
+        var maxFractionalChange = 0,
+            thisPt,
+            i,
+            j,
+            p,
+            q,
+            neighborShift,
+            neighborRow,
+            neighborVal,
+            neighborCount,
+            neighborSum,
+            initialVal,
+            minNeighbor,
+            maxNeighbor;
+
+        for(p = 0; p < emptyPoints.length; p++) {
+            thisPt = emptyPoints[p];
+            i = thisPt[0];
+            j = thisPt[1];
+            initialVal = z[i][j];
+            neighborSum = 0;
+            neighborCount = 0;
+
+            for (q = 0; q < 4; q++) {
+                neighborShift = NEIGHBORSHIFTS[q];
+                neighborRow = z[i + neighborShift[0]];
+                if(!neighborRow) continue;
+                neighborVal = neighborRow[j + neighborShift[1]];
+                if(neighborVal !== undefined) {
+                    if(neighborSum === 0) {
+                        minNeighbor = maxNeighbor = neighborVal;
+                    }
+                    else {
+                        minNeighbor = Math.min(minNeighbor, neighborVal);
+                        maxNeighbor = Math.max(maxNeighbor, neighborVal);
+                    }
+                    neighborCount++;
+                    neighborSum += neighborVal;
+                }
+            }
+
+            if(neighborCount === 0) {
+                throw 'iterateInterp2d order is wrong: no defined neighbors';
+            }
+
+            // this is the laplace equation interpolation:
+            // each point is just the average of its neighbors
+            // note that this ignores differential x/y scaling
+            // which I think is the right approach, since we
+            // don't know what that scaling means
+            z[i][j] = neighborSum / neighborCount;
+
+            if(initialVal === undefined) {
+                if(neighborCount < 4) maxFractionalChange = 1;
+            }
+            else {
+                // we can make large empty regions converge faster
+                // if we overshoot the change vs the previous value
+                z[i][j] = (1 + overshoot) * z[i][j] - overshoot * initialVal;
+
+                if(maxNeighbor > minNeighbor) {
+                    maxFractionalChange = Math.max(maxFractionalChange,
+                        Math.abs(z[i][j] - initialVal) / (maxNeighbor - minNeighbor));
+                }
+            }
+        }
+
+        return maxFractionalChange;
+    }
+
     // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
     heatmap.plot = function(gd, plotinfo, cdheatmaps) {
         cdheatmaps.forEach(function(cd) { plotOne(gd, plotinfo, cd); });
@@ -319,7 +565,7 @@
 
         fullLayout._paper.selectAll('.contour'+uid).remove(); // in case this used to be a contour map
 
-        if(!trace.visible) {
+        if(trace.visible !== true) {
             fullLayout._paper.selectAll('.'+id).remove();
             fullLayout._paper.selectAll('.'+cbId).remove();
             return;
@@ -331,13 +577,11 @@
             scl = Plotly.Color.getScale(trace.colorscale),
             x = cd[0].x,
             y = cd[0].y,
-            // fast smoothing - one pixel per brick
-            fastsmooth = [true,'fast'].indexOf(trace.zsmooth)!==-1,
+            zsmooth = Plotly.Plots.isContour(trace.type) ? 'best' : trace.zsmooth,
 
-            // get z dims (n gets max row length, in case of uneven rows)
+            // get z dims
             m = z.length,
-            n = Plotly.Lib.aggNums(Math.max,null,
-                z.map(function(row) { return row.length; })),
+            n = heatmap.maxRowLength(z),
             xrev = false,
             left,
             right,
@@ -408,8 +652,8 @@
         // time reasonable when you zoom in. if zsmooth is true/fast, don't worry
         // about this, because zooming doesn't increase number of pixels
         // if zsmooth is best, don't include anything off screen because it takes too long
-        if(!fastsmooth) {
-            var extra = trace.zsmooth==='best' ? 0 : 0.5;
+        if(zsmooth !== 'fast') {
+            var extra = zsmooth==='best' ? 0 : 0.5;
             left = Math.max(-extra*xa._length,left);
             right = Math.min((1+extra)*xa._length,right);
             top = Math.max(-extra*ya._length,top);
@@ -424,7 +668,7 @@
         // if image is entirely off-screen, don't even draw it
         if(wd<=0 || ht<=0) return;
 
-        var p = fastsmooth ? new PNGlib(n,m,256) : new PNGlib(wd,ht, 256);
+        var p = zsmooth==='fast' ? new PNGlib(n,m,256) : new PNGlib(wd,ht, 256);
 
         // interpolate for color scale
         // https://github.com/mbostock/d3/wiki/Quantitative-Scales
@@ -437,7 +681,7 @@
 
         // map brick boundaries to image pixels
         var xpx,ypx;
-        if(fastsmooth) {
+        if(zsmooth === 'fast') {
             xpx = xrev ? function(index){ return n-1-index; } : Plotly.Lib.identity;
             ypx = yrev ? function(index){ return m-1-index; } : Plotly.Lib.identity;
         }
@@ -494,14 +738,45 @@
             else return colors[256];
         }
 
+        function interpColor(r0, r1, xinterp, yinterp) {
+            var z00 = r0[xinterp.bin0];
+            if(z00 === undefined) return setColor(null,1);
+
+            var z01 = r0[xinterp.bin1],
+                z10 = r1[xinterp.bin0],
+                z11 = r1[xinterp.bin1],
+                dx = (z01 - z00) || 0,
+                dy = (z10 - z00) || 0,
+                dxy;
+
+            // the bilinear interpolation term needs different calculations
+            // for all the different permutations of missing data
+            // among the neighbors of the main point, to ensure
+            // continuity across brick boundaries.
+            if(z01 === undefined) {
+                if(z11 === undefined) dxy = 0;
+                else if(z10 === undefined) dxy = 2 * (z11 - z00);
+                else dxy = (2 * z11 - z10 - z00) * 2/3;
+            }
+            else if(z11 === undefined) {
+                if(z10 === undefined) dxy = 0;
+                else dxy = (2 * z00 - z01 - z10) * 2/3;
+            }
+            else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2/3;
+            else dxy = (z11 + z00 - z01 - z10);
+
+            return setColor(z00 + xinterp.frac * dx +
+                yinterp.frac*(dy + xinterp.frac * dxy));
+        }
+
         Plotly.Lib.markTime('done init png');
         // build the pixel map brick-by-brick
         // cruise through z-matrix row-by-row
         // build a brick at each z-matrix value
-        var yi=ypx(0),
-            yb=[yi,yi],
-            xbi = xrev?0:1,
-            ybi = yrev?0:1,
+        var yi = ypx(0),
+            yb = [yi, yi],
+            xbi = xrev ? 0 : 1,
+            ybi = yrev ? 0 : 1,
             // for collecting an average luminosity of the heatmap
             pixcount = 0,
             lumcount = 0,
@@ -511,78 +786,64 @@
             pc,
             v,
             row;
-        if(trace.zsmooth==='best') {
-            //first make arrays of x and y pixel locations of brick boundaries
-            var xPixArray = x.map(function(v){ return Math.round(xa.c2p(v)-left); }),
-                yPixArray = y.map(function(v){ return Math.round(ya.c2p(v)-top); }),
-            // then make arrays of interpolations
-            // (bin0=closest, bin1=next, frac=fractional dist.)
+
+        if(zsmooth === 'best') {
+            var xPixArray = [],
+                yPixArray = [],
                 xinterpArray = [],
-                yinterpArray=[],
-                xinterp,
                 yinterp,
                 r0,
-                r1,
-                z00,
-                z10,
-                z01,
-                z11;
-            for(i=0; i<wd; i++) { xinterpArray.push(findInterp(i,xPixArray)); }
-            for(j=0; j<ht; j++) { yinterpArray.push(findInterp(j,yPixArray)); }
+                r1;
+
+            // first make arrays of x and y pixel locations of brick boundaries
+            for(i = 0; i < x.length; i++) xPixArray.push(Math.round(xa.c2p(x[i]) - left));
+            for(i = 0; i < y.length; i++) yPixArray.push(Math.round(ya.c2p(y[i]) - top));
+
+            // then make arrays of interpolations
+            // (bin0=closest, bin1=next, frac=fractional dist.)
+            for(i = 0; i < wd; i++) xinterpArray.push(findInterp(i, xPixArray));
+
             // now do the interpolations and fill the png
-            for(j=0; j<ht; j++) {
-                yinterp = yinterpArray[j];
+            for(j = 0; j < ht; j++) {
+                yinterp = findInterp(j, yPixArray);
                 r0 = z[yinterp.bin0];
                 r1 = z[yinterp.bin1];
-                if(!r0 || !r1) console.log(j,yinterp,z);
-                for(i=0; i<wd; i++) {
-                    xinterp = xinterpArray[i];
-                    z00 = r0[xinterp.bin0];
-                    if(!$.isNumeric(z00)) pc = setColor(null,1);
-                    else {
-                        z01 = r0[xinterp.bin1];
-                        z10 = r1[xinterp.bin0];
-                        z11 = r1[xinterp.bin1];
-                        if(!$.isNumeric(z01)) z01 = z00;
-                        if(!$.isNumeric(z10)) z10 = z00;
-                        if(!$.isNumeric(z11)) z11 = z00;
-                        pc = setColor( z00 + xinterp.frac*(z01-z00) +
-                            yinterp.frac*((z10-z00) + xinterp.frac*(z00+z11-z01-z10)) );
-                    }
-                    p.buffer[p.index(i,j)] = pc;
+                for(i = 0; i < wd; i++) {
+                    p.buffer[p.index(i, j)] = interpColor(r0, r1, xinterpArray[i],
+                                                          yinterp);
                 }
             }
         }
-        else if(fastsmooth) {
-            for(j=0; j<m; j++) {
+        else if(zsmooth === 'fast') {
+            for(j = 0; j < m; j++) {
                 row = z[j];
                 yb = ypx(j);
-                for(i=0; i<n; i++) {
+                for(i = 0; i < n; i++) {
                     p.buffer[p.index(xpx(i),yb)] = setColor(row[i],1);
                 }
             }
         }
         else {
-            for(j=0; j<m; j++) {
+            for(j = 0; j < m; j++) {
                 row = z[j];
                 yb.reverse();
-                yb[ybi] = ypx(j+1);
-                if(yb[0]===yb[1] || yb[0]===undefined || yb[1]===undefined) {
+                yb[ybi] = ypx(j + 1);
+                if(yb[0] === yb[1] || yb[0] === undefined || yb[1] === undefined) {
                     continue;
                 }
-                xi=xpx(0);
-                xb=[xi, xi];
-                for(i=0; i<n; i++) {
+                xi = xpx(0);
+                xb = [xi, xi];
+                for(i = 0; i < n; i++) {
                     // build one color brick!
                     xb.reverse();
-                    xb[xbi] = xpx(i+1);
-                    if(xb[0]===xb[1] || xb[0]===undefined || xb[1]===undefined) {
+                    xb[xbi] = xpx(i + 1);
+                    if(xb[0] === xb[1] || xb[0] === undefined || xb[1] === undefined) {
                         continue;
                     }
-                    v=row[i];
-                    pc = setColor(v, (xb[1]-xb[0])*(yb[1]-yb[0]));
-                    for(xi=xb[0]; xi<xb[1]; xi++) {
-                        for(yi=yb[0]; yi<yb[1]; yi++) {
+                    v = row[i];
+                    pc = setColor(v, (xb[1] - xb[0]) * (yb[1] - yb[0]));
+                    for(xi = xb[0]; xi < xb[1]; xi++) {
+                        for(yi = yb[0]; yi < yb[1]; yi++) {
                             p.buffer[p.index(xi, yi)] = pc;
                         }
                     }
@@ -647,13 +908,14 @@
         // never let a heatmap override another type as closest point
         if(pointData.distance<Plotly.Fx.MAXDIST) return;
 
-        var cd = pointData.cd,
-            trace = cd[0].trace,
+        var cd0 = pointData.cd[0],
+            trace = cd0.trace,
             xa = pointData.xa,
             ya = pointData.ya,
-            x = cd[0].x,
-            y = cd[0].y,
-            z = cd[0].z,
+            x = cd0.x,
+            y = cd0.y,
+            z = cd0.z,
+            zmask = cd0.zmask,
             x2 = x,
             y2 = y,
             xl,
@@ -715,6 +977,15 @@
                 y0=y1=(y0+y1)/2;
             }
         }
+
+        var zVal = z[ny][nx];
+        if(zmask && !zmask[ny][nx]) zVal = undefined;
+
+        var text;
+        if(Array.isArray(trace.text) && Array.isArray(trace.text[ny])) {
+            text = trace.text[ny][nx];
+        }
+
         return [$.extend(pointData,{
             index: [ny, nx],
             // never let a 2D override 1D type as closest point
@@ -725,8 +996,10 @@
             y1: y1,
             xLabelVal: xl,
             yLabelVal: yl,
-            zLabelVal: z[ny][nx],
+            zLabelVal: zVal,
+            text: text
         })];
     };
 
-}()); // end Heatmap object definition
+    return heatmap;
+}));

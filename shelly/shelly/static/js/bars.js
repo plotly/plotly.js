@@ -1,4 +1,15 @@
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
     'use strict';
 
     // ---Plotly global modules
@@ -7,7 +18,7 @@
     // ---external global dependencies
     /* global d3:false */
 
-    var bars = window.Plotly.Bars = {};
+    var bars = Plotly.Bars = {};
 
     // mark this module as allowing error bars
     bars.errorBarsOK = true;
@@ -179,10 +190,11 @@
                 sa = plotinfo[sLetter]();
 
             gd._fullData.forEach(function(trace,i) {
-                if(trace.visible && Plotly.Plots.isBar(trace.type) &&
-                        trace.orientation===dir &&
-                        trace.xaxis===xa._id &&
-                        trace.yaxis===ya._id) {
+                if(trace.visible === true &&
+                        Plotly.Plots.isBar(trace.type) &&
+                        trace.orientation === dir &&
+                        trace.xaxis === xa._id &&
+                        trace.yaxis === ya._id) {
                     bl.push(i);
                 }
             });
@@ -572,5 +584,5 @@
         return [pointData];
     };
 
-
-}()); // end Bars object definition
+    return bars;
+}));

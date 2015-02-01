@@ -1,4 +1,16 @@
-(function () {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
 
     /**
@@ -52,15 +64,13 @@
 
     }
 
-    window.ModeBar = ModeBar;
-
     /**
      * Empty div for containing a group of buttons
      * @Return {HTMLelement}
      */
     ModeBar.prototype.createGroup = function () {
         var group = document.createElement('div');
-        group.className = 'btn-group float--left';
+        group.className = 'modebar-group';
 
         return group;
     };
@@ -75,15 +85,15 @@
      * @Return {HTMLelement}
      */
     ModeBar.prototype.createButton = function (config) {
-        var button = document.createElement('button');
+        var button = document.createElement('a');
         var icon = document.createElement('i');
         var _this = this;
         button.setAttribute('rel', 'tooltip');
-        button.className = 'btn btn--icon btn--plot ploticon';
+        button.className = 'modebar-btn ploticon';
 
         button.setAttribute('data-attr', config.attr);
         button.setAttribute('data-val', config.val);
-        button.setAttribute('title', config.title);
+        button.setAttribute('data-title', config.title);
         button.setAttribute('data-gravity', config.gravity || 'n');
         button.addEventListener('click', function () {
                 config.click.apply(_this, arguments);
@@ -137,17 +147,18 @@
      */
     ModeBar.prototype.getLogo = function(){
         var group = this.createGroup(),
-            a = document.createElement('a');
+            a = document.createElement('a'),
+            i = document.createElement('i');
 
-        a.setAttribute('rel', 'tooltip');
+
         a.href = 'https://plot.ly/';
         a.target = '_blank';
-        a.title = 'Produced with Plotly';
-        a.className = 'ploticon-plotlylogo';
-        a.setAttribute('data-gravity', 'ne');
+        a.setAttribute('data-title', 'Produced with Plotly');
+        a.className = 'modebar-btn ploticon modebar-btn--logo';
 
+        i.className = 'ploticon-plotlylogo';
+        a.appendChild(i);
         group.appendChild(a);
-        group.classList.add('btn-group--logo');
         return group;
     };
 
@@ -407,4 +418,6 @@
         };
     };
 
-})();
+    return exports.ModeBar = Plotly.ModeBar =ModeBar;
+
+}));
