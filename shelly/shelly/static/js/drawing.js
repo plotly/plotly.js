@@ -1,4 +1,16 @@
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
 
     // ---Plotly global modules
@@ -49,6 +61,19 @@
         // helper to pull out a px value from a style that may contain px units
         // s is a d3 selection (will pull from the first one)
         return Number(s.style(styleAttr).replace(/px$/,''));
+    };
+
+    drawing.crispRound = function(td, lineWidth, dflt) {
+        // for lines that disable antialiasing we want to
+        // make sure the width is an integer, and at least 1 if it's nonzero
+
+        if(!lineWidth || !$.isNumeric(lineWidth)) return dflt || 0;
+
+        // but not for static plots - these don't get antialiased anyway.
+        if(td._context.staticPlot) return lineWidth;
+
+        if(lineWidth<1) return 1;
+        return Math.round(lineWidth);
     };
 
     drawing.lineGroupStyle = function(s, lw, lc, ld) {
@@ -965,4 +990,6 @@
         return $.extend({}, bb);
     };
 
-}()); // end Drawing object definition
+
+    return drawing;
+}));

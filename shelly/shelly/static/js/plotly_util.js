@@ -1,16 +1,17 @@
-(function() {
-    'use strict';
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
-    // ---external global dependencies
-    /* global d3:false, MathJax:false, FB:false, ENV:false,
-        self:false, jsPDF:false, Promise:false */
-
-    if(!window.Plotly) { window.Plotly = {}; }
-
-    var util = window.Plotly.util = {};
+    var util = Plotly.util = {};
 
     // Script Loader
     /////////////////////////////
@@ -150,6 +151,9 @@
                     }
                     else if (imageFormat === 'png') {
                         imgData = canvasNode.toDataURL('image/png');
+                    }
+                    else if (imageFormat === 'webp'){
+                        imgData = canvasNode.toDataURL('image/webp');
                     }
                     else if (imageFormat === 'svg') imgData = _svg;
                     else if (imageFormat === 'pdf'){
@@ -435,32 +439,49 @@
         _context.style({visibility: null})
             // for Plotly.Drawing.bBox: unlink this txt from its cached val
             .attr('data-bb',null);
-        $(_context.node()).parents().attr('data-bb',null);
+        $(_context.node()).parents().attr('data-bb', null);
+
+        function showText() {
+            if(!parent.empty()){
+                svgClass = that.attr('class') + '-math';
+                parent.select('svg.' + svgClass).remove();
+            }
+            _context.text('')
+                .style({visibility: 'visible'});
+            result = _context.appendSVG(converted);
+            if(!result) _context.text(str);
+
+            if(_callback) _callback.call(that);
+        }
+
         if(tex){
             var td = $(that.node()).parents('.js-plotly-plot')[0];
             ((td && td._promises)||[]).push(new Promise(function(resolve) {
                 that.style({visibility: 'hidden'});
-                var config = {fontSize: parseInt(that.style('font-size'),10)};
-                Plotly.util.texToSVG(tex[2], config, function(_svgString, _glyphDefs, _svgBBox){
-                    var newString = '<g class="' + svgClass + '-group">' + _svgString + '</g>';
-
+                var config = {fontSize: parseInt(that.style('font-size'), 10)};
+                Plotly.util.texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox){
                     parent.selectAll('svg.' + svgClass).remove();
                     parent.selectAll('g.' + svgClass + '-group').remove();
-                    var newSvg = parent.appendSVG(newString).select('svg');
 
-                    // var newSvg = parent.select('svg[style]:not([class])');
-                    if(!newSvg) { return; }
+                    var newSvg = _svgEl && _svgEl.select('svg');
+                    if(!newSvg || !newSvg.node()) {
+                        showText();
+                        resolve();
+                        return;
+                    }
+
+                    var mathjaxGroup = parent.append('g')
+                        .classed(svgClass + '-group', true)
+                        .attr({'pointer-events': 'none'});
+
+                    mathjaxGroup.node().appendChild(newSvg.node());
+
                     // stitch the glyph defs
                     if(_glyphDefs && _glyphDefs.node()) {
-                        newSvg.node().insertBefore(_glyphDefs.node().cloneNode(true), newSvg.node().firstChild);
+                        newSvg.node().insertBefore(_glyphDefs.node().cloneNode(true),
+                                                   newSvg.node().firstChild);
                     }
-                    var mathjaxGroup = parent.select('g.' + svgClass + '-group').attr({
-                        'pointer-events': 'none'
-                    });
-                    var textRect = {
-                        width: Plotly.util.getSize(that, 'width'),
-                        height: parseInt(that.style('font-size'),10) || Plotly.util.getSize(that, 'height')
-                    };
+
                     newSvg.attr({
                             'class': svgClass,
                             height: _svgBBox.height,
@@ -468,12 +489,17 @@
                         })
                         .style({overflow: 'visible', 'pointer-events': 'none'});
                     var fill = that.style('fill') || 'black';
-                    newSvg.select('g').attr({fill: fill, stroke:fill});
+                    newSvg.select('g').attr({fill: fill, stroke: fill});
+
                     var newSvgW = Plotly.util.getSize(newSvg, 'width'),
                         newSvgH = Plotly.util.getSize(newSvg, 'height'),
                         newX = +that.attr('x') - newSvgW *
                             {start:0, middle:0.5, end:1}[that.attr('text-anchor') || 'start'],
-                        dy = -textRect.height/4; // font baseline is about 1/4 fontSize below centerline
+                        // font baseline is about 1/4 fontSize below centerline
+                        textHeight = parseInt(that.style('font-size'), 10) ||
+                            Plotly.util.getSize(that, 'height'),
+                        dy = -textHeight/4;
+
                     if(svgClass[0] === 'y'){
                         mathjaxGroup.attr({
                             transform: 'rotate(' + [-90, +that.attr('x'), +that.attr('y')] +
@@ -491,22 +517,13 @@
                         newSvg.attr({x: newX, y: (+that.attr('y') + dy - newSvgH / 2)});
                     }
 
-                    if(_callback) { _callback.call(that, mathjaxGroup); }
+                    if(_callback) _callback.call(that, mathjaxGroup);
                     resolve(mathjaxGroup);
                 });
             }));
         }
-        else{
-            if(!parent.empty()){
-                svgClass = that.attr('class') + '-math';
-                parent.select('svg.' + svgClass).remove();
-            }
-            _context.text('');
-            result = _context.appendSVG(converted);
-            if(!result) { _context.text(str); }
+        else showText();
 
-            if(_callback) { _callback.call(that); }
-        }
         return _context;
     };
 
@@ -515,7 +532,7 @@
     /////////////////////////////
 
     util.texToSVG = function(_texString, _config, _callback){
-        var randomID = 'math-output-' + Math.random();
+        var randomID = 'math-output-' + Plotly.Lib.randstr([],64);
         var tmpDiv = d3.select('body').append('div')
             .attr({id: randomID})
             .style({visibility: 'hidden', position: 'absolute'})
@@ -523,20 +540,17 @@
             .text(_texString);
 
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, tmpDiv.node()], function(){
-            var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs'),
-                svgBBox;
-            if(!tmpDiv.select('.MathJax_SVG').empty() && tmpDiv.select('svg').node()){
-                svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
-                _callback(tmpDiv.select('.MathJax_SVG').html(), glyphDefs, svgBBox);
+            var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
+
+            if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()){
+                console.log('There was an error in the tex syntax.', _texString);
+                _callback();
             }
             else {
-                console.log('There was an error in the tex syntax.');
-
-                // revert to the raw text
-                tmpDiv.html('<svg><text>'+_texString+'</text></svg>');
-                svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
-                _callback(tmpDiv.html(),null,svgBBox);
+                var svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
+                _callback(tmpDiv.select('.MathJax_SVG'), glyphDefs, svgBBox);
             }
+
             tmpDiv.remove();
         });
     };
@@ -859,4 +873,7 @@
             getIndex: function(){ return index; },
         };
     };
-}());
+
+    return util;
+
+}));

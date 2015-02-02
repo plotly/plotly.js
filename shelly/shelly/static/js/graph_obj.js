@@ -1,21 +1,30 @@
 // Main plotting library - Creates the Plotly object and Plotly.Plots
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
     /* jshint camelcase: false */
 
     // ---Plotly global modules
     /* global Plotly:false, µ:false, micropolar:false,
         SceneFrame:false, Tabs:false, Examples:false,
-        Themes:false, ENV:false */
+        ENV:false */
 
     // ---global functions not yet namespaced
     /* global setFileAndCommentsSize:false */
 
     // ---external global dependencies
     /* global Promise:false, d3:false */
-
-    if(!window.Plotly) window.Plotly = {};
-
     var plots = Plotly.Plots = {};
 
     // Most of the generic plotting functions get put into Plotly.Plots,
@@ -386,9 +395,6 @@
 
         var fullLayout = gd._fullLayout;
 
-        ////////////////////////////////  3D   ///////////////////////////////
-        // if (fullLayout._hasGL3D) plot3D(gd);
-
         // prepare the data and find the autorange
 
         // generate calcdata, if we need to
@@ -414,10 +420,10 @@
                 (gd.calcdata.length>1 && fullLayout.showlegend!==false));
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(!trace.visible || !trace.module.colorbar) {
+                if(trace.visible !== true || !trace._module.colorbar) {
                     plots.autoMargin(gd,'cb'+trace.uid);
                 }
-                else trace.module.colorbar(gd,cd);
+                else trace._module.colorbar(gd,cd);
             });
             doAutoMargin(gd);
             return plots.previousPromises(gd);
@@ -487,7 +493,7 @@
             // previously, remove them and their colorbars explicitly
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(!trace.visible || !trace.module.colorbar) {
+                if(trace.visible !== true || !trace._module.colorbar) {
                     var uid = trace.uid;
                     fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid)
                         .remove();
@@ -512,7 +518,7 @@
                     // plot all traces of this type on this subplot at once
                     var cdmod = cdSubplot.filter(function(cd){
                         var trace = cd[0].trace;
-                        return trace.module===module && trace.visible;
+                        return trace._module === module && trace.visible === true;
                     });
                     module.plot(gd,plotinfo,cdmod);
                     Plotly.Lib.markTime('done ' + (cdmod[0] && cdmod[0][0].trace.type));
@@ -563,7 +569,9 @@
     };
 
     function plot3D(gd) {
-        var fullLayout = gd._fullLayout;
+        var fullLayout = gd._fullLayout,
+            fullData = gd._fullData;
+
         /*
          * Once Webgl plays well with other things we can remove this.
          * Unset examples, they misbehave with 3d plots
@@ -579,155 +587,47 @@
             background: fullLayout.paper_bgcolor
         });
 
-        /*
-         * If there are scenes that need loading load them.
-         * Recalibrate all domains now that there may be new scenes.
-         * Once scenes load they will iteratively load any data
-         * that might be on their queue.
-         *
-         * scene arrangements need to be implemented: For now just splice
-         * along the horizontal direction. ie.
-         * x:[0,1] -> x:[0,0.5], x:[0.5,1] ->
-         *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
-         *
-         */
-        var scenes = Object.keys(fullLayout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        });
-
-        scenes.forEach( function (sceneKey, idx) {
-
-            var sceneLayout = fullLayout[sceneKey],
-                sceneOptions;
-
-            // we are only modifying the x domain position with this
-            // simple approach
-            sceneLayout.domain.x = [idx/scenes.length, (idx+1)/scenes.length];
-
-            // convert domain to position in pixels
-            sceneLayout._position = {
-                left: fullLayout._size.l + sceneLayout.domain.x[0]*fullLayout._size.w,
-                top: fullLayout._size.t + (1-sceneLayout.domain.y[1])*fullLayout._size.h,
-                width: fullLayout._size.w *
-                    (sceneLayout.domain.x[1] - sceneLayout.domain.x[0]),
-                height: fullLayout._size.h *
-                    (sceneLayout.domain.y[1] - sceneLayout.domain.y[0])
-            };
-
-            // if this scene has already been loaded it will have it's webgl
-            // context parameter so lets reset the domain of the scene as
-            // it may have changed (this operates on the containing iframe)
-            if (sceneLayout._scene){
-                SceneFrame.setFramePosition(sceneLayout._scene.container, sceneLayout._position);
+        // Get traces attached to a scene
+        function getSceneData(data, sceneKey) {
+            var i_trace = 0,
+                trace = null,
+                sceneData = [];
+            for (i_trace; i_trace < data.length; ++i_trace) {
+                trace = data[i_trace];
+                if (trace.scene === sceneKey) sceneData.push(trace);
             }
-            /*
-             * We only want to continue to operate on scenes that have
-             * data waiting to be displayed or require loading
-             */
-            var scene = sceneLayout._scene;
+            return sceneData;
+        }
 
-            // maybe this initialization should happen somewhere else
-            if (!Array.isArray(sceneLayout._dataQueue)) sceneLayout._dataQueue = [];
+        // Get list of scenes from fullLayout
+        var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout),
+            i_sceneKey = 0;
 
-            var queueUIDS = sceneLayout._dataQueue.map( function (trace) {
-                return trace.uid;
-            });
-            var sceneData = gd._fullData.filter( function (trace) {
-                return trace.scene === sceneKey &&
-                    queueUIDS.indexOf(trace.uid) === -1;
-            });
+        // Loop through scenes
+        for (i_sceneKey; i_sceneKey < sceneKeys.length; ++i_sceneKey) {
+            var sceneKey = sceneKeys[i_sceneKey],
+                sceneData = getSceneData(fullData, sceneKey),
+                sceneLayout = fullLayout[sceneKey],
+                scene = sceneLayout._scene;  // ref. to corresp. Scene instance
 
-            sceneLayout._dataQueue = sceneLayout._dataQueue.concat(sceneData);
-
-            if (scene) {
-                //// if there is no data for this scene destroy it
-                //// woot, lets load all the data in the queue and bail outta here
-                while (sceneLayout._dataQueue.length) {
-                    var d = sceneLayout._dataQueue.shift();
-                    scene.plot(sceneLayout, d);
-                }
-                return;
+            // If Scene is not instantiated, create one!
+            if (!(scene)) {
+                var sceneFrameOptions = {
+                    Plotly: Plotly,
+                    container: gd.querySelector('.svg-container'),
+                    sceneKey: sceneKey,
+                    sceneData: sceneData,
+                    sceneLayout: sceneLayout,
+                    fullLayout: fullLayout,
+                    baseurl: ENV.BASE_URL,
+                    glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
+                };
+                scene = SceneFrame.createScene(sceneFrameOptions);
+                sceneLayout._scene = scene;  // set ref to Scene instance
             }
 
-            if (sceneLayout._loading) return;
-            sceneLayout._loading = true;
-            /*
-             * Create new scenee
-             */
-            sceneOptions = {
-                container: gd.querySelector('.svg-container'),
-                zIndex: '1000',
-                id: sceneKey,
-                Plotly: Plotly,
-                sceneLayout: sceneLayout,
-                width: fullLayout.width,
-                height: fullLayout.height,
-                baseurl: ENV.BASE_URL,
-                glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
-            };
-
-            SceneFrame.createScene(sceneOptions);
-
-            SceneFrame.once('scene-error', function (scene) {
-                sceneLayout._scene = scene;
-                SceneFrame.setFramePosition(scene.container,
-                    sceneLayout._position);
-                if ('_modebar' in gd._fullLayout){
-                    gd._fullLayout._modebar.cleanup();
-                    gd._fullLayout._modebar = null;
-                }
-
-                gd._fullLayout._noGL3DSupport = true;
-
-                var pb = gd.querySelector('#plotlybars');
-
-                if (pb) {
-                    pb.innerHTML = '';
-                    pb.parentNode.removeChild(pb);
-                }
-            });
-
-            SceneFrame.once('scene-loaded', function (scene) {
-
-                var sceneLayout = gd._fullLayout[scene.id];
-                // make the .scene (scene context) available through scene.
-                sceneLayout._loading = false; // loaded
-                sceneLayout._scene = scene;
-                sceneLayout._container = scene.container;
-
-                if ('cameraposition' in sceneLayout && sceneLayout.cameraposition.length) {
-                    /*
-                     * if cameraposition is not empty at this point,
-                     * it must have been saved in the workshop
-                     * or set via an API.
-                     * (1) set the camera position
-                     * (2) save a copy of *last save*
-                     */
-                    var cameraposition = sceneLayout.cameraposition;
-                    scene.setCameraPosition(cameraposition);
-                    scene._cameraPositionLastSave = scene.getCameraPosition();
-                } else {
-                    // if cameraposition is empty, set *last save* to default
-                    scene._cameraPositionLastSave = scene.getCameraPosition();
-                }
-
-                SceneFrame.setFramePosition(sceneLayout._container,
-                    sceneLayout._position);
-
-                // if data has accumulated on the queue while the iframe
-                // and the webgl-context were loading remove that data
-                // from the queue and draw.
-                while (sceneLayout._dataQueue.length) {
-                    var d = sceneLayout._dataQueue.shift();
-                    scene.plot(sceneLayout, d);
-                }
-
-                // focus the iframe removing need to double click for interactivity
-                scene.container.focus();
-
-                SceneFrame.emit('scene-ready', scene);
-            });
-        });
+            scene.plot(sceneData, sceneLayout);  // takes care of business
+        }
     }
 
     function plotPolar(gd, data, layout, config) {
@@ -763,7 +663,7 @@
         });
 
         // instantiate framework
-        gd.framework = micropolar.manager.framework();
+        gd.framework = Plotly.micropolar.manager.framework();
         //get rid of gd.layout stashed nodes
         layout = µ.util.deepExtend({}, gd._fullLayout);
         delete layout._container;
@@ -857,7 +757,9 @@
             delete layout.yaxis1;
         }
         Plotly.Axes.list({_fullLayout:layout}).forEach(function(ax) {
-            if(ax.anchor) ax.anchor = Plotly.Axes.cleanId(ax.anchor);
+            if(ax.anchor && ax.anchor !== 'free') {
+                ax.anchor = Plotly.Axes.cleanId(ax.anchor);
+            }
             if(ax.overlaying) ax.overlaying = Plotly.Axes.cleanId(ax.overlaying);
 
             // old method of axis type - isdate and islog (before category existed)
@@ -873,6 +775,9 @@
             delete ax.islog;
             delete ax.isdate;
             delete ax.categories; // replaced by _categories
+
+            // prune empty domain arrays made before the new nestedProperty
+            if(emptyContainer(ax, 'domain')) delete ax.domain;
         });
 
         (layout.annotations||[]).forEach(function(ann) {
@@ -896,12 +801,10 @@
 
         });
 
-        var scenes = Object.keys(layout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        });
+        var sceneKeys = Plotly.Lib.getSceneKeys(layout);
 
-        scenes.forEach( function (sceneName) {
-            var sceneLayout = layout[sceneName];
+        sceneKeys.forEach( function (sceneKey) {
+            var sceneLayout = layout[sceneKey];
             // fix for saved float32-arrays
             var camp = sceneLayout.cameraposition;
             if (Array.isArray(camp) && $.isPlainObject(camp[0])) {
@@ -1035,7 +938,20 @@
             else if(trace.textposition) {
                 trace.textposition = cleanTextPosition(trace.textposition);
             }
+
+            // prune empty containers made before the new nestedProperty
+            if(emptyContainer(trace, 'line')) delete trace.line;
+            if('marker' in trace) {
+                if(emptyContainer(trace.marker, 'line')) delete trace.marker.line;
+                if(emptyContainer(trace, 'marker')) delete trace.marker;
+            }
         });
+    }
+
+    function emptyContainer(outer, innerStr) {
+        return (innerStr in outer) &&
+            (typeof outer[innerStr] === 'object') &&
+            (Object.keys(outer[innerStr]).length === 0);
     }
 
     // for use in Plotly.Lib.syncOrAsync, check if there are any
@@ -1066,7 +982,8 @@
             dflt: 'scatter'
         },
         visible: {
-            type: 'boolean',
+            type: 'enumerated',
+            values: [true, false, 'legendonly'],
             dflt: true
         },
         scene: {
@@ -1119,16 +1036,21 @@
         plots.supplyLayoutGlobalDefaults(gd.layout||{}, newFullLayout);
 
         // then do the data
-        gd._fullData = (gd.data||[]).map(function(trace, i) {
+        var oldFullData = gd._fullData || [],
+            newData = gd.data || [];
+        gd._fullData = newData.map(function(trace, i) {
             return plots.supplyDataDefaults(trace, i, newFullLayout);
         });
 
         // DETECT 3D, Cartesian, and Polar
-        gd._fullData.forEach(function(d) {
+        gd._fullData.forEach(function(d, i) {
             if(plots.isGL3D(d.type)) newFullLayout._hasGL3D = true;
             if(plots.isCartesian(d.type)) {
                 if('r' in d) newFullLayout._hasPolar = true;
                 else newFullLayout._hasCartesian = true;
+            }
+            if(oldFullData.length === newData.length) {
+                relinkPrivateKeys(d, oldFullData[i]);
             }
         });
 
@@ -1162,13 +1084,11 @@
     };
 
     function cleanScenes(newFullLayout, oldFullLayout) {
-        var oldScenes = Object.keys(oldFullLayout).filter(function(k){
-            return k.match(/^scene[0-9]*$/);
-        });
+        var oldSceneKeys = Plotly.Lib.getSceneKeys(oldFullLayout);
 
-        oldScenes.forEach(function(oldScene) {
-            if(!newFullLayout[oldScene] && !!oldFullLayout[oldScene]._scene) {
-                oldFullLayout[oldScene]._scene.destroy();
+        oldSceneKeys.forEach(function(oldSceneKey) {
+            if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
+                oldFullLayout[oldSceneKey]._scene.destroy();
             }
         });
     }
@@ -1180,10 +1100,9 @@
     // a webgl context.
     function relinkPrivateKeys(toLayout, fromLayout) {
 
-        var keys = Object.keys(fromLayout);
-        var arrayObj;
-        var prevVal;
-        var j, ix;
+        var keys = Object.keys(fromLayout),
+            j;
+
         for (var i = 0; i < keys.length; ++i) {
             var k = keys[i];
             if(k.charAt(0)==='_' || typeof fromLayout[k]==='function') {
@@ -1193,37 +1112,23 @@
 
                 toLayout[k] = fromLayout[k];
             }
-            else if (Array.isArray(fromLayout[k]) && fromLayout[k].length &&
+            else if (Array.isArray(fromLayout[k]) &&
+                     Array.isArray(toLayout[k]) &&
+                     fromLayout[k].length &&
                      $.isPlainObject(fromLayout[k][0])) {
-                if (!(k in toLayout)) toLayout[k] = [];
-                else if (!Array.isArray(toLayout[k])) {
-                    prevVal = toLayout[k];
-                    toLayout[k] = [];
+                if(fromLayout[k].length !== toLayout[k].length) {
+                    // this should be handled elsewhere, it causes
+                    // ambiguity if we try to deal with it here.
+                    throw new Error('relinkPrivateKeys needs equal ' +
+                                    'length arrays');
                 }
-                for (j = ix = 0; j < fromLayout[k].length; ++j) {
-                    arrayObj = toLayout[k][ix];
-                    toLayout[k][ix] = {};
-                    relinkPrivateKeys(toLayout[k][ix], fromLayout[k][j]);
-                    if (!Object.keys(toLayout[k][ix]).length) {
-                        if (arrayObj) {
-                            toLayout[k][ix] = arrayObj;
-                            ++ix;
-                        }
-                        else {
-                            toLayout[k].splice(ix, 1);
-                        }
-                    }
-                    else ++ix;
-                }
-                if (!toLayout[k].length) {
-                    if (prevVal) {
-                        toLayout[k] = prevVal;
-                        prevVal = undefined;
-                    }
-                    else delete toLayout[k];
+
+                for(j = 0; j < fromLayout[k].length; j++) {
+                    relinkPrivateKeys(toLayout[k][j], fromLayout[k][j]);
                 }
             }
-            else if ($.isPlainObject(fromLayout[k]) && (k in toLayout)) {
+            else if ($.isPlainObject(fromLayout[k]) &&
+                     $.isPlainObject(toLayout[k])) {
                 // recurse into objects, but only if they still exist
                 relinkPrivateKeys(toLayout[k], fromLayout[k]);
                 if (!Object.keys(toLayout[k]).length) delete toLayout[k];
@@ -1257,7 +1162,7 @@
         // the 3D modules to have it removed from the webgl context.
         if (visible || scene) {
             module = getModule(traceOut);
-            traceOut.module = module;
+            traceOut._module = module;
         }
 
         if (module && visible) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
@@ -1498,7 +1403,7 @@
             var module = getModule(trace),
                 cd = [];
 
-            if(module && trace.visible) {
+            if(module && trace.visible === true) {
                 if(module.calc) cd = module.calc(gd,trace);
                 if(gd._modules.indexOf(module)===-1) gd._modules.push(module);
             }
@@ -1538,6 +1443,346 @@
         });
     }
 
+    /**
+     * Wrap negative indicies to their positive counterparts.
+     *
+     * @param {Number[]} indices An array of indices
+     * @param {Number} maxIndex The maximum index allowable (arr.length - 1)
+     */
+    function positivifyIndices(indices, maxIndex) {
+        var parentLength = maxIndex + 1,
+            positiveIndices = [],
+            i,
+            index;
+
+        for (i = 0; i < indices.length; i++) {
+            index = indices[i];
+            if (index < 0) {
+                positiveIndices.push(parentLength + index);
+            } else {
+                positiveIndices.push(index);
+            }
+        }
+        return positiveIndices;
+    }
+
+    /**
+     * Ensures that an index array for manipulating gd.data is valid.
+     *
+     * Intended for use with addTraces, deleteTraces, and moveTraces.
+     *
+     * @param gd
+     * @param indices
+     * @param arrayName
+     */
+    function validateIndexArray(gd, indices, arrayName) {
+        var i,
+            index;
+
+        for (i = 0; i < indices.length; i++) {
+            index = indices[i];
+
+            // validate that indices are indeed integers
+            if (index !== parseInt(index, 10)) {
+                throw new Error('all values in ' + arrayName + ' must be integers');
+            }
+
+            // check that all indices are in bounds for given gd.data array length
+            if (index >= gd.data.length || index < -gd.data.length) {
+                throw new Error(arrayName + ' must be valid indices for gd.data.');
+            }
+
+            // check that indices aren't repeated
+            if (indices.indexOf(index, i + 1) > -1 ||
+                    index >= 0 && indices.indexOf(-gd.data.length + index) > -1 ||
+                    index < 0 && indices.indexOf(gd.data.length + index) > -1) {
+                throw new Error('each index in ' + arrayName + ' must be unique.');
+            }
+        }
+    }
+
+    /**
+     * Private function used by Plotly.moveTraces to check input args
+     *
+     * @param gd
+     * @param currentIndices
+     * @param newIndices
+     */
+    function checkMoveTracesArgs(gd, currentIndices, newIndices) {
+
+        // check that gd has attribute 'data' and 'data' is array
+        if (!Array.isArray(gd.data)) {
+            throw new Error('gd.data must be an array.');
+        }
+
+        // validate currentIndices array
+        if (typeof currentIndices === 'undefined') {
+            throw new Error('currentIndices is a required argument.');
+        } else if (!Array.isArray(currentIndices)) {
+            currentIndices = [currentIndices];
+        }
+        validateIndexArray(gd, currentIndices, 'currentIndices');
+
+        // validate newIndices array if it exists
+        if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
+            newIndices = [newIndices];
+        }
+        if (typeof newIndices !== 'undefined') {
+            validateIndexArray(gd, newIndices, 'newIndices');
+        }
+
+        // check currentIndices and newIndices are the same length if newIdices exists
+        if (typeof newIndices !== 'undefined' && currentIndices.length !== newIndices.length) {
+            throw new Error('current and new indices must be of equal length.');
+        }
+
+    }
+    /**
+     * A private function to reduce the type checking clutter in addTraces.
+     *
+     * @param gd
+     * @param traces
+     * @param newIndices
+     */
+    function checkAddTracesArgs(gd, traces, newIndices) {
+        var i,
+            value;
+
+        // check that gd has attribute 'data' and 'data' is array
+        if (!Array.isArray(gd.data)) {
+            throw new Error('gd.data must be an array.');
+        }
+
+        // make sure traces exists
+        if (typeof traces === 'undefined') {
+            throw new Error('traces must be defined.');
+        }
+
+        // make sure traces is an array
+        if (!Array.isArray(traces)) {
+            traces = [traces];
+        }
+
+        // make sure each value in traces is an object
+        for (i = 0; i < traces.length; i++) {
+            value = traces[i];
+            if (typeof value !== 'object' || (Array.isArray(value) || value === null)) {
+                throw new Error('all values in traces array must be non-array objects');
+            }
+        }
+
+        // make sure we have an index for each trace
+        if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
+            newIndices = [newIndices];
+        }
+        if (typeof newIndices !== 'undefined' && newIndices.length !== traces.length) {
+            throw new Error(
+                'if indices is specified, traces.length must equal indices.length'
+            );
+        }
+    }
+
+    /**
+     * Add data traces to an existing graph div.
+     *
+     * @param {Object|HTMLDivElement} gd The graph div
+     * @param {Object[]} gd.data The array of traces we're adding to
+     * @param {Object[]|Object} traces The object or array of objects to add
+     * @param {Number[]|Number} [newIndices=[gd.data.length]] Locations to add traces
+     *
+     */
+    Plotly.addTraces = function addTraces (gd, traces, newIndices) {
+        var currentIndices = [],
+            undoFunc = Plotly.deleteTraces,
+            redoFunc = addTraces,
+            undoArgs = [gd, currentIndices],
+            redoArgs = [gd, traces],  // no newIndices here
+            i;
+
+        // all validation is done elsewhere to remove clutter here
+        checkAddTracesArgs(gd, traces, newIndices);
+
+        // make sure traces is an array
+        if (!Array.isArray(traces)) {
+            traces = [traces];
+        }
+
+        // add the traces to gd.data (no redrawing yet!)
+        for (i = 0; i < traces.length; i += 1) {
+            gd.data.push(traces[i]);
+        }
+
+        // to continue, we need to call moveTraces which requires currentIndices
+        for (i = 0; i < traces.length; i++) {
+            currentIndices.push(-traces.length + i);
+        }
+
+        // if the user didn't define newIndices, they just want the traces appended
+        // i.e., we can simply redraw and be done
+        if (typeof newIndices === 'undefined') {
+            Plotly.redraw(gd);
+            if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+            return;
+        }
+
+        // make sure indices is property defined
+        if (!Array.isArray(newIndices)) {
+            newIndices = [newIndices];
+        }
+
+        try {
+
+            // this is redundant, but necessary to not catch later possible errors!
+            checkMoveTracesArgs(gd, currentIndices, newIndices);
+        }
+        catch(error) {
+
+            // something went wrong, reset gd to be safe and rethrow error
+            gd.data.splice(gd.data.length - traces.length, traces.length);
+            throw error;
+        }
+
+        // if we're here, the user has defined specific places to place the new traces
+        // this requires some extra work that moveTraces will do
+        if (Plotly.Queue) Plotly.Queue.startSequence(gd);
+        if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+        Plotly.moveTraces(gd, currentIndices, newIndices);
+        if (Plotly.Queue) Plotly.Queue.stopSequence(gd);
+    };
+
+    /**
+     * Delete traces at `indices` from gd.data array.
+     *
+     * @param {Object|HTMLDivElement} gd The graph div
+     * @param {Object[]} gd.data The array of traces we're removing from
+     * @param {Number|Number[]} indices The indices
+     */
+    Plotly.deleteTraces = function deleteTraces (gd, indices) {
+        var traces = [],
+            undoFunc = Plotly.addTraces,
+            redoFunc = deleteTraces,
+            undoArgs = [gd, traces, indices],
+            redoArgs = [gd, indices],
+            i;
+
+        // make sure indices are defined
+        if (typeof indices === 'undefined') {
+            throw new Error('indices must be an integer or array of integers.');
+        } else if (!Array.isArray(indices)) {
+            indices = [indices];
+        }
+        validateIndexArray(gd, indices, 'indices');
+
+        // convert negative indices to positive indices
+        indices = positivifyIndices(indices, gd.data.length - 1);
+
+        // we want descending here so that splicing later doesn't affect indexing
+        indices.sort().reverse();
+
+        for (i = 0; i < indices.length; i += 1) {
+            traces.push(gd.data.splice(indices[i], 1));
+        }
+
+        Plotly.redraw(gd);
+
+        if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    };
+
+    /**
+     * Move traces at currentIndices array to locations in newIndices array.
+     *
+     * If newIndices is omitted, currentIndices will be moved to the end. E.g.,
+     * these are equivalent:
+     *
+     * Plotly.moveTraces(gd, [1, 2, 3], [-3, -2, -1])
+     * Plotly.moveTraces(gd, [1, 2, 3])
+     *
+     * @param {Object|HTMLDivElement} gd The graph div
+     * @param {Object[]} gd.data The array of traces we're removing from
+     * @param {Number|Number[]} currentIndices The locations of traces to be moved
+     * @param {Number|Number[]} [newIndices] The locations to move traces to
+     *
+     * Example calls:
+     *
+     *      // move trace i to location x
+     *      Plotly.moveTraces(gd, i, x)
+     *
+     *      // move trace i to end of array
+     *      Plotly.moveTraces(gd, i)
+     *
+     *      // move traces i, j, k to end of array (i != j != k)
+     *      Plotly.moveTraces(gd, [i, j, k])
+     *
+     *      // move traces [i, j, k] to [x, y, z] (i != j != k) (x != y != z)
+     *      Plotly.moveTraces(gd, [i, j, k], [x, y, z])
+     *
+     *      // reorder all traces (assume there are 5--a, b, c, d, e)
+     *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
+     */
+    Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
+        var newData = [],
+            movingTraceMap = [],
+            undoFunc = moveTraces,
+            redoFunc = moveTraces,
+            undoArgs = [gd, newIndices, currentIndices],
+            redoArgs = [gd, currentIndices, newIndices],
+            i;
+
+        // to reduce complexity here, check args elsewhere
+        // this throws errors where appropriate
+        checkMoveTracesArgs(gd, currentIndices, newIndices);
+
+        // make sure currentIndices is an array
+        currentIndices = Array.isArray(currentIndices) ? currentIndices : [currentIndices];
+
+        // if undefined, define newIndices to point to the end of gd.data array
+        if (typeof newIndices === 'undefined') {
+            newIndices = [];
+            for (i = 0; i < currentIndices.length; i++) {
+                newIndices.push(-currentIndices.length + i);
+            }
+        }
+
+        // make sure newIndices is an array if it's user-defined
+        newIndices = Array.isArray(newIndices) ? newIndices : [newIndices];
+
+        // convert negative indices to positive indices (they're the same length)
+        currentIndices = positivifyIndices(currentIndices, gd.data.length - 1);
+        newIndices = positivifyIndices(newIndices, gd.data.length - 1);
+
+        // at this point, we've coerced the index arrays into predictable forms
+
+        // get the traces that aren't being moved around
+        for (i = 0; i < gd.data.length; i++) {
+
+            // if index isn't in currentIndices, include it in ignored!
+            if (currentIndices.indexOf(i) === -1) {
+                newData.push(gd.data[i]);
+            }
+        }
+
+        // get a mapping of indices to moving traces
+        for (i = 0; i < currentIndices.length; i++) {
+            movingTraceMap.push({newIndex: newIndices[i], trace: gd.data[currentIndices[i]]});
+        }
+
+        // reorder this mapping by newIndex, ascending
+        movingTraceMap.sort(function (a, b) {
+            return a.newIndex - b.newIndex;
+        });
+
+        // now, add the moving traces back in, in order!
+        for (i = 0; i < movingTraceMap.length; i += 1) {
+            newData.splice(movingTraceMap[i].newIndex, 0, movingTraceMap[i].trace);
+        }
+
+        gd.data = newData;
+
+        Plotly.redraw(gd);
+
+        if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    };
+
     // -----------------------------------------------------
     // restyle and relayout: these two control all redrawing
     // for data (restyle) and everything else (relayout)
@@ -1558,7 +1803,7 @@
     //  to apply different values to each trace
     // if the array is too short, it will wrap around (useful for
     //  style files that want to specify cyclical default values)
-    Plotly.restyle = function(gd,astr,val,traces) {
+    Plotly.restyle = function restyle (gd,astr,val,traces) {
         if(typeof gd === 'string') gd = document.getElementById(gd);
 
         var i, fullLayout = gd._fullLayout,
@@ -1588,8 +1833,9 @@
         var recalcAttrs = [
             'mode','visible','type','orientation','fill',
             'histfunc','histnorm','text',
+            'x', 'y', 'z',
             'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
-            'line.width','showscale','zauto',
+            'line.width','showscale','zauto','connectgaps',
             'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
             'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
             'autocontour','ncontours','contours.coloring',
@@ -1617,7 +1863,7 @@
         // replotAttrs attributes need a replot (because different
         // objects need to be made) but not a recalc
         var replotAttrs = [
-            'connectgaps','zmin','zmax','zauto','mincolor','maxcolor',
+            'zmin','zmax','zauto','mincolor','maxcolor',
             'colorscale','reversescale','zsmooth',
             'contours.start','contours.end','contours.size',
             'contours.showlines',
@@ -1869,7 +2115,9 @@
         }
         // now all attribute mods are done, as are redo and undo
         // so we can save them
-        if(Plotly.Queue) Plotly.Queue.add(gd,undoit,redoit,traces);
+        if(Plotly.Queue) {
+            Plotly.Queue.add(gd, restyle, [gd, undoit, traces], restyle, [gd, redoit, traces]);
+        }
 
         // do we need to force a recalc?
         var autorangeOn = false;
@@ -1930,10 +2178,8 @@
 
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
-            $(gd).trigger('plotly_restyle',[redoit,traces]);
-            if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
-                Themes.reTile(gd);
-            }
+            $(gd).trigger('plotly_restyle',
+                          $.extend(true, [], [redoit, traces]));
         });
     };
 
@@ -2029,7 +2275,7 @@
     // relayout(gd,aobj)
     //      aobj - {astr1:val1, astr2:val2...}
     //          allows setting multiple attributes simultaneously
-    Plotly.relayout = function(gd,astr,val) {
+    Plotly.relayout = function relayout (gd, astr, val) {
         if(gd.framework && gd.framework.isPolar) return;
         if(typeof gd === 'string') gd = document.getElementById(gd);
 
@@ -2115,7 +2361,6 @@
         for(var ai in aobj) {
             var p = Plotly.Lib.nestedProperty(layout,ai),
                 vi = aobj[ai],
-                parent = p.parent,
                 plen = p.parts.length,
                 // p.parts may end with an index integer if the property is an array
                 pend = typeof p.parts[plen-1] === 'string' ? (plen-1) : (plen-2),
@@ -2124,7 +2369,8 @@
                 // leaf plus immediate parent
                 pleafPlus = p.parts[pend - 1] + '.' + pleaf,
                 // trunk nodes (everything except the leaf)
-                ptrunk = p.parts.slice(0, pend).join('.');
+                ptrunk = p.parts.slice(0, pend).join('.'),
+                parent = Plotly.Lib.nestedProperty(layout, ptrunk).get();
 
             redoit[ai] = aobj[ai];
 
@@ -2254,6 +2500,7 @@
                         p.parts[1]==='autorange' ||
                         p.parts[1]==='rangemode' ||
                         p.parts[1]==='type' ||
+                        p.parts[1]==='domain' ||
                         ai.match(/^(bar|box|font)/)) {
                     docalc = true;
                 }
@@ -2272,7 +2519,9 @@
         }
         // now all attribute mods are done, as are
         // redo and undo so we can save them
-        if(Plotly.Queue) Plotly.Queue.add(gd,undoit,redoit,'relayout');
+        if(Plotly.Queue) {
+            Plotly.Queue.add(gd, relayout, [gd, undoit], relayout, [gd, redoit]);
+        }
 
         // calculate autosizing - if size hasn't changed,
         // will remove h&w so we don't need to redraw
@@ -2321,10 +2570,7 @@
 
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function(){
-            $(gd).trigger('plotly_relayout',redoit);
-            if (gd._context.workspace && Themes && gd.themes && gd.themes.visible) {
-                Themes.reTile(gd);
-            }
+            $(gd).trigger('plotly_relayout', $.extend(true, {}, redoit));
         });
     };
 
@@ -2606,14 +2852,14 @@
         subplots.forEach(function(subplot) {
             var plotinfo = fullLayout._plots[subplot];
             plotinfo.plot
-                .attr('preserveAspectRatio','none')
-                .style('fill','none');
+                .attr('preserveAspectRatio', 'none')
+                .style('fill', 'none');
             plotinfo.xlines
-                .style('fill','none')
-                .classed('crisp',true);
+                .style('fill', 'none')
+                .classed('crisp', true);
             plotinfo.ylines
-                .style('fill','none')
-                .classed('crisp',true);
+                .style('fill', 'none')
+                .classed('crisp', true);
         });
 
         // single info (legend, annotations) and hover layers for the whole plot
@@ -2783,9 +3029,8 @@
                 .call(Plotly.Drawing.setRect,
                     xa._offset, ya._offset, xa._length, ya._length);
 
-            var xlw = $.isNumeric(xa.linewidth) ? xa.linewidth : 1,
-                ylw = $.isNumeric(ya.linewidth) ? ya.linewidth : 1,
-
+            var xlw = Plotly.Drawing.crispRound(gd, xa.linewidth, 1),
+                ylw = Plotly.Drawing.crispRound(gd, ya.linewidth, 1),
                 xp = gs.p+ylw,
                 xpathPrefix = 'M'+(-xp)+',',
                 xpathSuffix = 'h'+(xa._length+2*xp),
@@ -3208,23 +3453,40 @@
     // Utility functions
     // ----------------------------------------------------
 
-    // graphJson - jsonify the graph data and layout
-    // needs to recurse because some src can be inside sub-objects
-    // also strips out functions and private (start with _) elements
-    // so we can add temporary things to data and layout that don't get saved
-    //
-    // dataonly = truthy will omit layout and any arrays that aren't data
-    //      (note that we have to do this on the server side too)
-    // mode:
-    //      keepref (default): remove data for which there's a src present,
-    //          eg if there's xsrc present (and xsrc is well-formed,
-    //          ie has : and some chars before it), strip out x
-    //      keepdata: remove all src tags, don't remove the data itself
-    //      keepall: keep data and src
-    // output:
-    //      'object' to not stringify
-    plots.graphJson = function(gd, dataonly, mode, output){
+    /**
+     * JSONify the graph data and layout
+     *
+     * This function needs to recurse because some src can be inside
+     * sub-objects.
+     *
+     * It also strips out functions and private (starts with _) elements.
+     * Therefore, we can add temporary things to data and layout that don't
+     * get saved.
+     *
+     * @param gd The graphDiv
+     * @param {Boolean} dataonly If true, don't return layout.
+     * @param {'keepref'|'keepdata'|'keepall'} [mode='keepref'] Filter what's kept
+     *      keepref: remove data for which there's a src present
+     *          eg if there's xsrc present (and xsrc is well-formed,
+     *          ie has : and some chars before it), strip out x
+     *      keepdata: remove all src tags, don't remove the data itself
+     *      keepall: keep data and src
+     * @param {String} output If you specify 'object', the result will not be stringified
+     * @param {Boolean} useDefaults If truthy, use _fullLayout and _fullData
+     * @returns {Object|String}
+     */
+    plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
+
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
+
+        // if the defaults aren't supplied yet, we need to do that...
+        if ((useDefaults && dataonly && !gd._fullData) ||
+                (useDefaults && !dataonly && !gd._fullLayout)) {
+            plots.supplyDefaults(gd);
+        }
+
+        var data = (useDefaults) ? gd._fullData : gd.data,
+            layout = (useDefaults) ? gd._fullLayout : gd.layout;
 
         function stripObj(d) {
             if(typeof d === 'function') {
@@ -3277,7 +3539,7 @@
         }
 
         var obj = {
-            data:(gd.data||[]).map(function(v){
+            data:(data||[]).map(function(v){
                 var d = stripObj(v);
                 // fit has some little arrays in it that don't contain data,
                 // just fit params and meta
@@ -3285,56 +3547,13 @@
                 return d;
             })
         };
-        if(!dataonly) { obj.layout = stripObj(gd.layout); }
+        if(!dataonly) { obj.layout = stripObj(layout); }
 
         if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
         return (output==='object') ? obj : JSON.stringify(obj);
     };
 
-    plots.viewJson = function(){
-        var gd = Tabs.get();
-        var jsonString, data, layout;
-        if(gd.framework && gd.framework.isPolar){
-            var json= gd.framework.getLiveConfig();
-            jsonString = JSON.stringify(json);
-            data = json.data;
-            layout = json.layout;
-        }
-        else{
-            jsonString = Plotly.Plots.graphJson(gd);
-            data = JSON.parse(jsonString).data;
-            // Remove stream meta info
-            data.forEach(function(di){ delete di.stream; });
-            layout = JSON.parse(jsonString).layout;
-        }
-        var code = 'var data = ' + Plotly.Lib.escapeForHtml(JSON.stringify(data)) + ';\n';
-        code += 'var layout = ' + Plotly.Lib.escapeForHtml(JSON.stringify(layout)) + ';\n';
-        code += 'Plotly.plot(Tabs.get(), data, layout);';
+    return plots;
 
-        var jsonModal = $('#jsonModal');
-        var jsonViewer = jsonModal.find('#json-viewer').empty();
-        jsonViewer.data('jsontree', '')
-            .jsontree(jsonString,{collapsibleOuter:false}).show();
-        jsonModal.modal('show');
-
-        var jsonText = jsonModal.find('#json-text')
-            .text('').append(code).hide();
-        var buttonTexts = ['Switch to Plain Text', 'Switch to JSON Viewer'];
-        var viewerToggle = $('.js-plain-text-toggle').text(buttonTexts[0]);
-
-        viewerToggle.off('click').on('click', function(){
-            var isPlaintText = $(this).text() === buttonTexts[0];
-            jsonViewer.toggle(!isPlaintText);
-            jsonText.toggle(isPlaintText);
-            jsonText.get(0).select();
-            $(this).text(buttonTexts[+isPlaintText]);
-            return false;
-        });
-
-        jsonModal.find('.close').off('click').on('click', function(){
-            jsonModal.modal('hide');
-            return false;
-        });
-    };
-}()); // end Plots object definition
+}));

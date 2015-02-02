@@ -5,7 +5,18 @@
 //      - calculating and drawing ticks
 
 
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
     'use strict';
 
     // ---Plotly global modules
@@ -307,12 +318,12 @@
         if(range0===range1) {
             containerOut.range = [range0 - 1, range0 + 1];
         }
+        Plotly.Lib.noneOrBoth(containerIn.range, containerOut.range, 0, 1);
 
         var autoTick = coerce('autotick');
         if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
-        if(autoTick) {
-            if(axType!=='category') coerce('nticks');
-        }
+        if(autoTick) coerce('nticks');
+
         // TODO date doesn't work yet, right? axType==='date' ? new Date(2000,0,1).getTime() : 0);
         coerce('tick0', 0);
         coerce('dtick');
@@ -418,6 +429,7 @@
             var domainStart = coerce('domain[0]'),
                 domainEnd = coerce('domain[1]');
             if(domainStart > domainEnd - 0.01) containerOut.domain = [0,1];
+            Plotly.Lib.noneOrBoth(containerIn.domain, containerOut.domain, 0, 1);
         }
 
         return containerOut;
@@ -495,24 +507,28 @@
         });
 
         if(!data.length) return;
-        var d0 = data[0];
 
+        var d0 = data[0];
 
         // first check for histograms, as the count direction
         // should always default to a linear axis
         if(d0.type==='histogram' &&
-                axLetter==={v:'y',h:'x'}[d0.orientation||'v']) {
+                axLetter==={v:'y', h:'x'}[d0.orientation || 'v']) {
             ax.type='linear';
             return;
         }
         // then check the data supplied for that axis
-        if(Plotly.Plots.isBox(d0.type) && axLetter==='x' && !('x' in d0) && !('x0' in d0)) {
+        var posLetter = {v:'x', h:'y'}[d0.orientation || 'v'];
+        if(Plotly.Plots.isBox(d0.type) &&
+                axLetter===posLetter &&
+                !(posLetter in d0) &&
+                !(posLetter+'0' in d0)) {
             // check all boxes on this x axis to see
             // if they're dates, numbers, or categories
             ax.type = axes.autoType(
                 data.filter(function(d){ return Plotly.Plots.isBox(d.type); })
                     .map(function(d){
-                        if('x' in d) return d.x[0];
+                        if(posLetter in d) return d.pos[0];
                         if('name' in d) return d.name;
                         return 'text';
                     })
@@ -1137,8 +1153,18 @@
     axes.calcTicks = function calcTicks (ax) {
         // calculate max number of (auto) ticks to display based on plot size
         if(ax.autotick || !ax.dtick){
-            var nt = (ax.nticks || Plotly.Lib.constrain(ax._length /
-                    (ax._id.charAt(0)==='y' ? 40 : 80), 4, 9) + 1);
+            var nt = ax.nticks,
+                minPx;
+            if(!nt) {
+                if(ax.type==='category') {
+                    minPx = ax.tickfont ? (ax.tickfont.size || 12) * 1.2 : 15;
+                    nt = ax._length / minPx;
+                }
+                else {
+                    minPx = ax._id.charAt(0)==='y' ? 40 : 80;
+                    nt = Plotly.Lib.constrain(ax._length / minPx, 4, 9) + 1;
+                }
+            }
             axes.autoTicks(ax,Math.abs(ax.range[1]-ax.range[0])/nt);
             // check for a forced minimum dtick
             if(ax._minDtick>0 && ax.dtick<ax._minDtick*2) {
@@ -1273,7 +1299,7 @@
         }
         else if(ax.type==='category') {
             ax.tick0 = 0;
-            ax.dtick = 1;
+            ax.dtick = Math.ceil(Math.max(rt,1));
         }
         else{
             // auto ticks always start at 0
@@ -1282,8 +1308,8 @@
             ax.dtick = rtexp*Plotly.Lib.roundUp(rt/rtexp,[2,5,10]);
         }
 
-        // prevent infinite loops...
-        if(ax.dtick===0) { ax.dtick = 1; }
+        // prevent infinite loops
+        if(ax.dtick===0) ax.dtick = 1;
 
         // TODO: this is from log axis histograms with autorange off
         if(!$.isNumeric(ax.dtick) && typeof ax.dtick !=='string') {
@@ -1725,16 +1751,14 @@
         if(only2d) return axis2d;
 
         var axis3d = [];
-        var scenes = Object.keys(fullLayout).filter( function (k) {
-            return k.match(/^scene[0-9]*$/);
-        });
+        var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout);
 
-        if (scenes) {
-            scenes.forEach( function (sceneId) {
+        if (sceneKeys) {
+            sceneKeys.forEach( function (sceneKey) {
                 axis3d = axis3d.concat(
-                    filterAxis(fullLayout[sceneId])
+                    filterAxis(fullLayout[sceneKey])
                         .map(function(axName) {
-                            return sceneId + '.' + axName;
+                            return sceneKey + '.' + axName;
                         })
                     );
             });
@@ -1790,11 +1814,13 @@
     // and at axes and their anchors
 
     axes.getSubplots = function(gd,ax) {
-        var data = gd.data, subplots = [];
+        var data = gd.data,
+            subplots = [];
 
         // look for subplots in the data
         (data||[]).forEach(function(trace) {
-            if(trace.visible===false || Plotly.Plots.isGL3D(trace.type)) {
+            if(trace.visible === false || trace.visible === 'legendonly' ||
+                    Plotly.Plots.isGL3D(trace.type)) {
                 return;
             }
             var xid = (trace.xaxis||'x'),
@@ -1914,20 +1940,22 @@
         var axletter = axid.charAt(0),
             counterLetter = axes.counterLetter(axid),
             vals = axes.calcTicks(ax),
-            datafn = function(d){ return d.text+d.x+ax.mirror; },
+            datafn = function(d){ return d.text + d.x + ax.mirror; },
             tcls = axid+'tick',
             gcls = axid+'grid',
             zcls = axid+'zl',
             pad = (ax.linewidth||1) / 2,
             labelStandoff =
                 (ax.ticks==='outside' ? ax.ticklen : 1) + (ax.linewidth||0),
-            gridwidth = ax.gridwidth || 1,
+            gridWidth = Plotly.Drawing.crispRound(td, ax.gridwidth, 1),
+            zeroLineWidth = Plotly.Drawing.crispRound(td, ax.zerolinewidth, gridWidth),
+            tickWidth = Plotly.Drawing.crispRound(td, ax.tickwidth, 1),
             sides, transfn, tickprefix, tickmid,
             i;
 
         // positioning arguments for x vs y axes
         if(axletter==='x') {
-            sides = ['bottom','top'];
+            sides = ['bottom', 'top'];
             transfn = function(d){
                 return 'translate('+ax.l2p(d.x)+',0)';
             };
@@ -1937,7 +1965,7 @@
             tickmid = 'v';
         }
         else if(axletter==='y') {
-            sides = ['left','right'];
+            sides = ['left', 'right'];
             transfn = function(d){
                 return 'translate(0,'+ax.l2p(d.x)+')';
             };
@@ -1945,14 +1973,14 @@
             tickmid = ',0h';
         }
         else {
-            console.log('unrecognized doTicks axis',axid);
+            console.log('unrecognized doTicks axis', axid);
             return;
         }
         var axside = ax.side||sides[0],
         // which direction do the side[0], side[1], and free ticks go?
         // then we flip if outside XOR y axis
-            ticksign = [-1,1,axside===sides[1] ? 1 : -1];
-        if((ax.ticks!=='inside')===(axletter==='x')) {
+            ticksign = [-1, 1, axside===sides[1] ? 1 : -1];
+        if((ax.ticks!=='inside') === (axletter==='x')) {
             ticksign = ticksign.map(function(v){ return -v; });
         }
 
@@ -1969,15 +1997,15 @@
             var ticks=container.selectAll('path.'+tcls)
                 .data(ax.ticks==='inside' ? valsClipped : vals, datafn);
             if(tickpath && ax.ticks) {
-                ticks.enter().append('path').classed(tcls,1).classed('ticks',1)
-                    .classed('crisp',1)
-                    .call(Plotly.Color.stroke, ax.tickcolor || '#444')
-                    .style('stroke-width', (ax.tickwidth || 1)+'px')
+                ticks.enter().append('path').classed(tcls, 1).classed('ticks', 1)
+                    .classed('crisp', 1)
+                    .call(Plotly.Color.stroke, ax.tickcolor)
+                    .style('stroke-width', tickWidth + 'px')
                     .attr('d',tickpath);
-                ticks.attr('transform',transfn);
+                ticks.attr('transform', transfn);
                 ticks.exit().remove();
             }
-            else { ticks.remove(); }
+            else ticks.remove();
         }
 
         function drawLabels(container,position) {
@@ -1986,7 +2014,7 @@
             var tickLabels=container.selectAll('g.'+tcls).data(vals, datafn);
             if(!ax.showticklabels || !$.isNumeric(position)) {
                 tickLabels.remove();
-                Plotly.Plots.titles(td,axid+'title');
+                Plotly.Plots.titles(td, axid+'title');
                 return;
             }
 
@@ -2035,7 +2063,7 @@
                             .call(Plotly.Drawing.setPosition,
                                 labelx(d), labely(d))
                             .call(Plotly.Drawing.font,
-                                d.font,d.fontSize,d.fontColor)
+                                d.font, d.fontSize, d.fontColor)
                             .text(d.text)
                             .call(Plotly.util.convertToTspans);
                         newPromise = td._promises[newPromise];
@@ -2056,7 +2084,7 @@
             tickLabels.exit().remove();
 
             tickLabels.each(function(d){
-                maxFontSize = Math.max(maxFontSize,d.fontSize);
+                maxFontSize = Math.max(maxFontSize, d.fontSize);
             });
 
             function positionLabels(s,angle) {
@@ -2154,7 +2182,7 @@
                 // (so it can move out of the way if needed)
                 // TODO: separate out scoot so we don't need to do
                 // a full redraw of the title (modtly relevant for MathJax)
-                if(!skipTitle) { Plotly.Plots.titles(td,axid+'title'); }
+                if(!skipTitle) Plotly.Plots.titles(td,axid+'title');
                 return axid+' done';
             }
 
@@ -2162,7 +2190,7 @@
                 allLabelsReady,
                 fixLabelOverlaps
             ]);
-            if(done && done.then) { td._promises.push(done); }
+            if(done && done.then) td._promises.push(done);
             return done;
         }
 
@@ -2174,9 +2202,9 @@
                     counteraxis._length,
                 grid = gridcontainer.selectAll('path.'+gcls)
                     .data(ax.showgrid===false ? [] : gridvals, datafn);
-            grid.enter().append('path').classed(gcls,1)
-                .classed('crisp',1)
-                .attr('d',gridpath)
+            grid.enter().append('path').classed(gcls, 1)
+                .classed('crisp', 1)
+                .attr('d', gridpath)
                 .each(function(d) {
                     if(ax.zeroline && (ax.type==='linear'||ax.type==='-') &&
                             Math.abs(d.x)<ax.dtick/100) {
@@ -2185,17 +2213,17 @@
                 });
             grid.attr('transform',transfn)
                 .call(Plotly.Color.stroke, ax.gridcolor || '#ddd')
-                .style('stroke-width', gridwidth+'px');
+                .style('stroke-width', gridWidth+'px');
             grid.exit().remove();
 
             // zero line
-            var hasBarsOrFill = (td.data||[]).filter(function(tdc){
-                return tdc.visible!==false &&
-                    ((tdc.xaxis||'x')+(tdc.yaxis||'y')===subplot) &&
+            var hasBarsOrFill = (td.data || []).filter(function(tdc) {
+                return tdc.visible === true &&
+                    ((tdc.xaxis || 'x') + (tdc.yaxis || 'y') === subplot) &&
                     ((Plotly.Plots.isBar(tdc.type) &&
-                        (tdc.orientation||'v')==={x:'h',y:'v'}[axletter]) ||
-                    ((tdc.type||'scatter')==='scatter' && tdc.fill &&
-                        tdc.fill.charAt(tdc.fill.length-1)===axletter));
+                        (tdc.orientation || 'v') === {x: 'h', y: 'v'}[axletter]) ||
+                    ((tdc.type || 'scatter') === 'scatter' && tdc.fill &&
+                        tdc.fill.charAt(tdc.fill.length - 1) === axletter));
             }).length;
             var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline &&
                 (ax.type==='linear' || ax.type==='-') && gridvals.length &&
@@ -2208,7 +2236,7 @@
                 .attr('d',gridpath);
             zl.attr('transform',transfn)
                 .call(Plotly.Color.stroke, ax.zerolinecolor || '#444')
-                .style('stroke-width', (ax.zerolinewidth || gridwidth)+'px');
+                .style('stroke-width', zeroLineWidth+'px');
             zl.exit().remove();
         }
 
@@ -2226,36 +2254,28 @@
                     linepositions = ax._linepositions[subplot]||[],
                     counteraxis = plotinfo[counterLetter](),
                     mainSubplot = counteraxis._id===ax.anchor,
-                    ticksides = [false,false,false],
+                    ticksides = [false, false, false],
                     tickpath='';
 
                 // ticks
-                if(ax.mirror==='allticks') {
-                    ticksides = [true,true,false];
-                }
+                if(ax.mirror==='allticks') ticksides = [true, true, false];
                 else if(mainSubplot) {
-                    if(ax.mirror==='ticks') {
-                        ticksides = [true,true,false];
-                    }
-                    else {
-                        ticksides[sides.indexOf(axside)] = true;
-                    }
+                    if(ax.mirror==='ticks') ticksides = [true, true, false];
+                    else ticksides[sides.indexOf(axside)] = true;
                 }
                 if(ax.mirrors) {
                     for(i=0; i<2; i++) {
-                        var thisMirror =
-                            ax.mirrors[counteraxis._id+sides[i]];
-                        if(thisMirror==='ticks' ||
-                                thisMirror==='labels') {
+                        var thisMirror = ax.mirrors[counteraxis._id+sides[i]];
+                        if(thisMirror==='ticks' || thisMirror==='labels') {
                             ticksides[i] = true;
                         }
                     }
                 }
+
                 // free axis ticks
-                if(linepositions[2]!==undefined) {
-                    ticksides[2] = true;
-                }
-                ticksides.forEach(function(showside,sidei) {
+                if(linepositions[2]!==undefined) ticksides[2] = true;
+
+                ticksides.forEach(function(showside, sidei) {
                     var pos = linepositions[sidei],
                         tsign = ticksign[sidei];
                     if(showside && $.isNumeric(pos)) {
@@ -2264,7 +2284,7 @@
                     }
                 });
 
-                drawTicks(container,tickpath);
+                drawTicks(container, tickpath);
                 drawGrid(plotinfo, counteraxis, subplot);
                 return drawLabels(container,linepositions[3]);
             }).filter(function(onedone) { return onedone && onedone.then; });
@@ -2277,4 +2297,5 @@
     // rather than built-in % which gives a negative value for negative v
     function mod(v,d){ return ((v%d) + d) % d; }
 
-}()); // end Axes object definition
+    return axes;
+}));

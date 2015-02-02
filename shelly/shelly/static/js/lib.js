@@ -1,5 +1,17 @@
 // common library functions, mostly for plotting but used elsewhere too
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
     // TODO: can use camelcase after fixing conf_modal and showSources
     /* jshint camelcase: false */
@@ -13,7 +25,6 @@
     // ---external global dependencies
     /* global d3:false, Spinner:false, tinycolor:false */
 
-    if(!window.Plotly) { window.Plotly = {}; }
     var lib = Plotly.Lib = {};
 
     // dateTime2ms - turn a date object or string s of the form
@@ -195,39 +206,38 @@
     };
 
     // use utc formatter since we're ignoring timezone info
-    if(typeof d3 !=='undefined'){
-        var formatter = d3.time.format.utc;
+    var formatter = d3.time.format.utc;
 
-        // ISO8601 and YYYYMMDDHHMMSS are the only one where date and time
-        // are not separated by a space, so they get inserted specially here.
-        // Also a couple formats with no day (so time makes no sense)
-        var dateTimeFormats = {
-            Y:{
-                H:['%Y~%m~%dT%H:%M:%S','%Y~%m~%dT%H:%M:%S~%L'].map(formatter),
-                I:[],
-                D:['%Y%m%d%H%M%S','%Y~%m','%m~%Y'].map(formatter)
-            },
-            Yb:{H:[],I:[],D:['%Y~%b','%b~%Y'].map(formatter)},
-            y:{H:[],I:[],D:[]},
-            yb:{H:[],I:[],D:[]}
-        };
-        // all the others get inserted in all possible combinations
-        // from dateFormats and timeFormats
-        ['Y','Yb','y','yb'].forEach(function(dateType) {
-            dateFormats[dateType].forEach(function(dateFormat){
-                // just a date (don't do just a time)
-                dateTimeFormats[dateType].D.push(formatter(dateFormat));
-                ['H','I','D'].forEach(function(timeType) {
-                    timeFormats[timeType].forEach(function(timeFormat) {
-                        var a = dateTimeFormats[dateType][timeType];
-                        // 'date time', then 'time date'
-                        a.push(formatter(dateFormat+'~'+timeFormat));
-                        a.push(formatter(timeFormat+'~'+dateFormat));
-                    });
+    // ISO8601 and YYYYMMDDHHMMSS are the only ones where date and time
+    // are not separated by a space, so they get inserted specially here.
+    // Also a couple formats with no day (so time makes no sense)
+    var dateTimeFormats = {
+        Y: {
+            H: ['%Y~%m~%dT%H:%M:%S', '%Y~%m~%dT%H:%M:%S~%L'].map(formatter),
+            I: [],
+            D: ['%Y%m%d%H%M%S', '%Y~%m', '%m~%Y'].map(formatter)
+        },
+        Yb: {H: [], I: [], D: ['%Y~%b', '%b~%Y'].map(formatter)},
+        y: {H: [], I: [], D: []},
+        yb: {H: [], I: [], D: []}
+    };
+    // all the others get inserted in all possible combinations
+    // from dateFormats and timeFormats
+    ['Y', 'Yb', 'y', 'yb'].forEach(function(dateType) {
+        dateFormats[dateType].forEach(function(dateFormat) {
+            // just a date (don't do just a time)
+            dateTimeFormats[dateType].D.push(formatter(dateFormat));
+            ['H', 'I', 'D'].forEach(function(timeType) {
+                timeFormats[timeType].forEach(function(timeFormat) {
+                var a = dateTimeFormats[dateType][timeType];
+                // 'date time', then 'time date'
+                    a.push(formatter(dateFormat+'~'+timeFormat));
+                    a.push(formatter(timeFormat+'~'+dateFormat));
                 });
             });
         });
-    }
+    });
+
     // precompiled regexps for performance
     var matchword = /[a-z]*/g,
         shortenword = function(m) { return m.substr(0,3); },
@@ -244,13 +254,26 @@
         replacequarter = function(m,n) { return quarters[n-1]; },
         matchTZ = / ?([+\-]\d\d:?\d\d|Z)$/;
 
+    function getDateType(v) {
+        var dateType;
+        dateType = (match4Y.test(v) ? 'Y' : 'y');
+        dateType = dateType + (matchMonthName.test(v) ? 'b' : '');
+        return dateType;
+    }
+
+    function getTimeType(v) {
+        var timeType;
+        timeType = matchcolon.test(v) ? (matchAMPM.test(v) ? 'I' : 'H') : 'D';
+        return timeType;
+    }
+
     lib.parseDate = function(v) {
         // is it already a date? just return it
         if (v.getTime) return v;
         // otherwise, if it's not a string, return nothing
         // the case of numbers that just have years will get
         // dealt with elsewhere.
-        if (typeof v !== 'string') return;
+        if (typeof v !== 'string') return false;
 
         // first clean up the string a bit to reduce the number
         // of formats we have to test
@@ -279,17 +302,22 @@
             // also try to ignore timezone info, at least for now
             .replace(matchTZ, '');
         // now test against the various formats that might match
-        var dateType = (match4Y.test(v) ? 'Y' : 'y') +
-                    (matchMonthName.test(v) ? 'b' : ''),
-            timeType = matchcolon.test(v) ?
-                    (matchAMPM.test(v) ? 'I' : 'H') : 'D',
-            formatList = dateTimeFormats[dateType][timeType],
-            len = formatList.length,
-            out = null;
+        var out = null,
+            dateType = getDateType(v),
+            timeType = getTimeType(v),
+            formatList,
+            len;
+
+        formatList = dateTimeFormats[dateType][timeType];
+        len = formatList.length;
+
         for (var i = 0; i < len; i++) {
             out = formatList[i].parse(v);
             if (out) break;
         }
+
+        // If not an instance of Date at this point, just return it.
+        if (!(out instanceof Date)) return false;
         // parse() method interprets arguments with local time zone.
         var tzoff = out.getTimezoneOffset();
         // In general (default) this is not what we want, so force into UTC:
@@ -379,104 +407,229 @@
     };
 
     // convert a string s (such as 'xaxis.range[0]')
-    // representing a property of nested object o into set and get methods
+    // representing a property of nested object into set and get methods
     // also return the string and object so we don't have to keep track of them
-    lib.nestedProperty = function(o,s) {
-        var prop, parent,
-            indexed, indices,
-            i, suffix, npArray,
-            j = 0,
-            cont = o,
-            aa = s.split('.');
+    // allows [-1] for an array index, to set a property inside all elements
+    // of an array
+    // eg if obj = {arr: [{a: 1}, {a: 2}]}
+    // you can do p = nestedProperty(obj, 'arr[-1].a')
+    // but you cannot set the array itself this way, to do that
+    // just set the whole array.
+    // eg if obj = {arr: [1, 2, 3]}
+    // you can't do nestedProperty(obj, 'arr[-1]').set(5)
+    // but you can do nestedProperty(obj, 'arr').set([5, 5, 5])
+    lib.nestedProperty = function(container, propStr) {
+        if($.isNumeric(propStr)) propStr = String(propStr);
+        else if(typeof propStr !== 'string' ||
+                propStr.substr(propStr.length - 4) === '[-1]') {
+            throw 'bad property string';
+        }
+
+        var j = 0,
+            propParts = propStr.split('.'),
+            indexed,
+            indices,
+            i;
+
         // check for parts of the nesting hierarchy that are numbers
         // (ie array elements)
-        while(j<aa.length) {
+        while(j < propParts.length) {
             // look for non-bracket chars, then any number of [##] blocks
-            indexed = String(aa[j]).match(/^([^\[\]]+)((\[\-?[0-9]*\])+)$/);
+            indexed = String(propParts[j]).match(/^([^\[\]]*)((\[\-?[0-9]*\])+)$/);
             if(indexed) {
+                if(indexed[1]) propParts[j] = indexed[1];
+                // allow propStr to start with bracketed array indices
+                else if(j === 0) propParts.splice(0,1);
+                else throw 'bad property string';
+
                 indices = indexed[2]
                     .substr(1,indexed[2].length-2)
                     .split('][');
-                aa.splice(j,1,indexed[1]);
+
                 for(i=0; i<indices.length; i++) {
                     j++;
-                    aa.splice(j,0,Number(indices[i]));
+                    propParts.splice(j,0,Number(indices[i]));
                 }
             }
             j++;
         }
 
-        // Special array index -1 gets and sets properties of an entire
-        // array at once.
-        // eg: "annotations[-1].showarrow" sets showarrow for all annotations
-        // set() can take either a single value to apply to all or an array
-        // to apply different to each entry. Get can also return either
-        suffix = s.substr(s.indexOf('[-1]')+4);
-
-        if(suffix.charAt(0)==='.') {
-            suffix = suffix.substr(1);
+        if(typeof container !== 'object') {
+            return badContainer(container, propStr, propParts);
         }
-
-        function subNP(entry) {
-            return lib.nestedProperty(entry,suffix);
-        }
-
-        function subSet(v) {
-            for(i=0; i<npArray.length; i++) {
-                npArray[i].set($.isArray(v) ? v[i%v.length] : v);
-            }
-        }
-
-        function subGet() {
-            var allsame = true, out = [];
-            for(i=0; i<npArray.length; i++) {
-                out[i] = npArray[i].get();
-                if(out[i]!==out[0]) { allsame = false; }
-            }
-            return allsame ? out[0] : out;
-        }
-
-        // dive in to the 2nd to last level
-        for(j=0; j<aa.length-1; j++) {
-            if(aa[j]===-1) {
-                npArray = cont.map(subNP);
-                return {
-                    set: subSet,
-                    get: subGet,
-                    astr: s,
-                    parts: aa,
-                    parent: parent,
-                    obj: o
-                };
-            }
-
-            // make the heirarchy if it doesn't exist
-            if(!(aa[j] in cont)) {
-                cont[aa[j]] = (typeof aa[j+1]==='string') ? {} : [];
-            }
-
-            if(typeof aa[j+1] === 'number') {
-                parent = cont;
-            } else parent = cont[aa[j]];
-
-            cont = cont[aa[j]];
-        }
-        prop = aa[j];
 
         return {
-            set: function(v){
-                if(v===undefined || v===null) { delete cont[prop]; }
-                // references to same structure across traces causes undefined behaviour
-                else if (Array.isArray(v)) cont[prop] = v.map( lib.identity );
-                else cont[prop] = v;
-            },
-            get:function(){ return cont[prop]; },
-            astr:s,
-            parts:aa,
-            parent: parent,
-            obj:o
+            set: npSet(container, propParts),
+            get: npGet(container, propParts),
+            astr: propStr,
+            parts: propParts,
+            obj: container
         };
     };
+
+    function npGet(cont, parts) {
+        return function() {
+            var curCont = cont,
+                curPart,
+                allSame,
+                out,
+                i,
+                j;
+
+            for(i = 0; i < parts.length - 1; i++) {
+                curPart = parts[i];
+                if(curPart===-1) {
+                    allSame = true;
+                    out = [];
+                    for(j = 0; j < curCont.length; j++) {
+                        out[j] = npGet(curCont[j], parts.slice(i + 1))();
+                        if(out[j]!==out[0]) allSame = false;
+                    }
+                    return allSame ? out[0] : out;
+                }
+                if(typeof curPart === 'number' && !Array.isArray(curCont)) {
+                    return undefined;
+                }
+                curCont = curCont[curPart];
+                if(typeof curCont !== 'object' || curCont === null) {
+                    return undefined;
+                }
+            }
+
+            // only hit this if parts.length === 1
+            if(typeof curCont !== 'object' || curCont === null) return undefined;
+
+            out = curCont[parts[i]];
+            if(out === null) return undefined;
+            return out;
+        };
+    }
+
+    function npSet(cont, parts) {
+        return function(val) {
+            var curCont = cont,
+                containerLevels = [cont],
+                toDelete = emptyObj(val),
+                curPart,
+                i;
+
+            for(i = 0; i < parts.length - 1; i++) {
+                curPart = parts[i];
+
+                if(typeof curPart === 'number' && !Array.isArray(curCont)) {
+                    throw 'array index but container is not an array';
+                }
+
+                // handle special -1 array index
+                if(curPart===-1) {
+                    toDelete = !setArrayAll(curCont, parts.slice(i + 1), val);
+                    if(toDelete) break;
+                    else return;
+                }
+
+                if(!checkNewContainer(curCont, curPart, parts[i + 1], toDelete)) {
+                    break;
+                }
+
+                curCont = curCont[curPart];
+
+                if(typeof curCont !== 'object' || curCont === null) {
+                    throw 'container is not an object';
+                }
+
+                containerLevels.push(curCont);
+            }
+
+            if(toDelete) {
+                if(i === parts.length - 1) delete curCont[parts[i]];
+                pruneContainers(containerLevels);
+            }
+            else curCont[parts[i]] = val;
+        };
+    }
+
+    // handle special -1 array index
+    function setArrayAll(containerArray, innerParts, val) {
+        var arrayVal = Array.isArray(val),
+            allSet = true,
+            thisVal = val,
+            deleteThis = arrayVal ? false : emptyObj(val),
+            firstPart = innerParts[0],
+            i;
+
+        for(i = 0; i < containerArray.length; i++) {
+            if(arrayVal) {
+                thisVal = val[i % val.length];
+                deleteThis = emptyObj(thisVal);
+            }
+            if(deleteThis) allSet = false;
+            if(!checkNewContainer(containerArray, i, firstPart, deleteThis)) {
+                continue;
+            }
+            npSet(containerArray[i], innerParts)(thisVal);
+        }
+        return allSet;
+    }
+
+    // make new sub-container as needed.
+    // returns false if there's no container and none is needed
+    // because we're only deleting an attribute
+    function checkNewContainer(container, part, nextPart, toDelete) {
+        if(container[part] === undefined) {
+            if(toDelete) return false;
+
+            if(typeof nextPart === 'number') container[part] = [];
+            else container[part] = {};
+        }
+        return true;
+    }
+
+    function pruneContainers(containerLevels) {
+        var i,
+            j,
+            curCont,
+            keys,
+            remainingKeys;
+        for(i = containerLevels.length - 1; i >= 0; i--) {
+            curCont = containerLevels[i];
+            remainingKeys = false;
+            if(Array.isArray(curCont)) {
+                for(j = curCont.length - 1; j >= 0; j--) {
+                    if(emptyObj(curCont[j])) {
+                        if(remainingKeys) curCont[j] = undefined;
+                        else curCont.pop();
+                    }
+                    else remainingKeys = true;
+                }
+            }
+            else if(typeof curCont === 'object' && curCont !== null)  {
+                keys = Object.keys(curCont);
+                remainingKeys = false;
+                for(j = keys.length - 1; j >= 0; j--) {
+                    if(emptyObj(curCont[keys[j]])) delete curCont[keys[j]];
+                    else remainingKeys = true;
+                }
+            }
+            if(remainingKeys) return;
+        }
+    }
+
+    function emptyObj(obj) {
+        if(obj===undefined || obj===null) return true;
+        if(typeof obj !== 'object') return false; // any plain value
+        if(Array.isArray(obj)) return !obj.length; // []
+        return !Object.keys(obj).length; // {}
+    }
+
+    function badContainer(container, propStr, propParts) {
+        return {
+            set: function() { throw 'bad container'; },
+            get: function() {},
+            astr: propStr,
+            parts: propParts,
+            obj: container
+        };
+    }
 
     // to prevent event bubbling, in particular text selection during drag.
     // see http://stackoverflow.com/questions/5429827/
@@ -500,24 +653,32 @@
 
     // STATISTICS FUNCTIONS
 
-    // aggregate numeric values, throwing out non-numerics.
-    //   f: aggregation function (ie Math.min, etc)
-    //   v: initial value (continuing from previous calls)
-    //      if there's no continuing value, use null for selector-type
-    //      functions (max,min), or 0 for summations
-    //   a: array to aggregate (may be nested, we will recurse,
-    //      but all elements must have the same dimension)
-    //   len: maximum length of a to aggregate
-    lib.aggNums = function(f,v,a,len) {
+    /**
+     * aggNums() returns the result of an aggregate function applied to an array of
+     * values, where non-numerical values have been tossed out.
+     *
+     * @param {function} f - aggregation function (e.g., Math.min)
+     * @param {Number} v - initial value (continuing from previous calls)
+     *      if there's no continuing value, use null for selector-type
+     *      functions (max,min), or 0 for summations
+     * @param {Array} a - array to aggregate (may be nested, we will recurse,
+     *                    but all elements must have the same dimension)
+     * @param {Number} len - maximum length of a to aggregate
+     * @return {Number} - result of f applied to a starting from v
+     */
+    lib.aggNums = function(f, v, a, len) {
         var i;
-        if(!len) { len=a.length; }
-        if(!$.isNumeric(v)) { v=false; }
-        if($.isArray(a[0])) {
-            a = a.map(function(row){ return lib.aggNums(f,v,row); });
+        if (!len) len = a.length;
+        if (!$.isNumeric(v)) v = false;
+        if (Array.isArray(a[0])) {
+            a = a.map(function(row) {
+                return lib.aggNums(f,v,row);
+            });
         }
-        for(i=0; i<len; i++) {
-            if(!$.isNumeric(v)) { v=a[i]; }
-            else if($.isNumeric(a[i])) { v=f(v,a[i]); }
+
+        for (i = 0; i < len; i++) {
+            if (!$.isNumeric(v)) v = a[i];
+            else if ($.isNumeric(a[i])) v = f(+v, +a[i]);
         }
         return v;
     };
@@ -533,15 +694,54 @@
         return lib.aggNums(function(a,b){return a+b;},0,data)/len;
     };
 
-    lib.stdev = function(data,len,mean) {
-        if(!len) { len = lib.len(data); }
-        if(!$.isNumeric(mean)) {
-            mean = lib.aggNums(function(a,b){return a+b;},0,data)/len;
+    lib.variance = function(data, len, mean) {
+        if (!len) len = lib.len(data);
+        if (!$.isNumeric(mean)) {
+            mean = lib.aggNums(function(a, b) {
+                return a + b;
+            }, 0, data)/len;
         }
-        return Math.sqrt(lib.aggNums(
-            function(a,b){return a+Math.pow(b-mean,2);},0,data)/len);
+        return lib.aggNums(function(a, b) {
+            return a + Math.pow(b-mean, 2);
+        }, 0, data)/len;
     };
 
+    lib.stdev = function(data, len, mean) {
+        if (!len) len = lib.len(data);
+        if (!$.isNumeric(mean)) {
+            mean = lib.aggNums(function(a, b) {
+                return a + b;
+            }, 0, data)/len;
+        }
+        return Math.sqrt(lib.aggNums(function(a, b) {
+            return a + Math.pow(b-mean, 2);
+        }, 0, data)/len);
+    };
+
+    /**
+     * interp() computes a percentile (quantile) for a given distribution.
+     * We interpolate the distribution (to compute quantiles, we follow method #10 here:
+     * http://www.amstat.org/publications/jse/v14n3/langford.html).
+     * Typically the index or rank (n * arr.length) may be non-integer.
+     * For reference: ends are clipped to the extreme values in the array;
+     * For box plots: index you get is half a point too high (see
+     * http://en.wikipedia.org/wiki/Percentile#Nearest_rank) but note that this definition
+     * indexes from 1 rather than 0, so we subtract 1/2 (instead of add).
+     *
+     * @param {Array} arr - This array contains the values that make up the distribution.
+     * @param {Number} n - Between 0 and 1, n = p/100 is such that we compute the p^th percentile.
+     * For example, the 50th percentile (or median) corresponds to n = 0.5
+     * @return {Number} - percentile
+     */
+    lib.interp = function(arr, n) {
+        if (!$.isNumeric(n)) throw "n should be a finite number";
+        n = n * arr.length;
+        n -= 0.5;
+        if (n < 0) return arr[0];
+        if (n > arr.length-1) return arr[arr.length-1];
+        var frac = n%1;
+        return frac * arr[Math.ceil(n)] + (1-frac) * arr[Math.floor(n)];
+    };
     // ------------------------------------------
     // debugging tools
     // ------------------------------------------
@@ -1458,6 +1658,34 @@
         };
     };
 
+    // retrieve list of scene keys form a layout object
+    lib.getSceneKeys = function getSceneKeys(layout) {
+        var keys = Object.keys(layout),
+            key = null,
+            sceneKeys = [],
+            i_key = 0;
+        for (i_key; i_key < keys.length; ++i_key) {
+            key = keys[i_key];
+            if (key.match(/^scene[0-9]*$/)) {
+                sceneKeys.push(key);
+            }
+        }
+        return sceneKeys;
+    };
+
+    // retrieve list of scene layout object from a layout object
+    lib.getSceneLayouts = function getSceneLayouts(layout) {
+        var sceneKeys = lib.getSceneKeys(layout),
+            sceneKey = null,
+            sceneLayouts = [],
+            i_sceneKey = 0;
+        for (i_sceneKey; i_sceneKey < sceneKeys.length; ++i_sceneKey) {
+            sceneKey = sceneKeys[i_sceneKey];
+            sceneLayouts.push(layout[sceneKey]);
+        }
+        return sceneLayouts;
+    };
+
     // applies a 2D transformation matrix to an [x1,y1,x2,y2] array (to
     // transform a segment)
     lib.apply2DTransform2 = function(transform) {
@@ -1632,6 +1860,19 @@
         return propOut.get();
     };
 
+    lib.noneOrBoth = function(containerIn, containerOut, attr1, attr2) {
+        // some attributes come in pairs, so if you have one of them
+        // in the input, you should copy the default value of the other
+        // to the input as well.
+        if(!containerIn) return;
+
+        var has1 = containerIn[attr1] !== undefined && containerIn[attr1] !== null,
+            has2 = containerIn[attr2] !== undefined && containerIn[attr2] !== null;
+
+        if(has2 && !has1) containerIn[attr1] = containerOut[attr1];
+        else if(has1 && !has2) containerIn[attr2] = containerOut[attr2];
+    };
+
     lib.mergeArray = function(traceAttr, cd, cdAttr) {
         if($.isArray(traceAttr)) {
             var imax = Math.min(traceAttr.length, cd.length);
@@ -1680,4 +1921,5 @@
             .replace(/\//g, '&#x2f;');
     };
 
-}()); // end Lib object definition
+    return lib;
+}));
