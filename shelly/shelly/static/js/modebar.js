@@ -390,21 +390,21 @@
                 title: 'Rotate',
                 attr: 'dragmode',
                 val: 'rotate',
-                icon: 'icon-undo',
+                icon: 'ploticon-undo',
                 click: this.handleDrag3d
             },
             resetCameraDefault3d: {
                 title: 'Reset camera to default',
                 attr: 'resetDefault',
                 val: false,
-                icon: 'icon-home',
+                icon: 'ploticon-home',
                 click: this.handleCamera3d
             },
             resetCameraLastSave3d: {
                 title: 'Reset camera to last save',
                 attr: 'resetLastSave',
                 val: false,
-                icon: 'icon-camera-retro',
+                icon: 'ploticon-camera-retro',
                 click: this.handleCamera3d
             },
             hoverClosest3d: {
