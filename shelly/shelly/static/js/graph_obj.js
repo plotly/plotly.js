@@ -84,9 +84,11 @@
         return type === 'surface';
     };
 
-    var ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
+    // ALLTYPES and getModule are used for the graph_reference app
 
-    function getModule(trace) {
+    plots.ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
+
+    plots.getModule = function getModule(trace) {
         var type = trace.type;
 
         if('r' in trace) {
@@ -978,7 +980,7 @@
     plots.attributes = {
         type: {
             type: 'enumerated',
-            values: ALLTYPES,
+            values: plots.ALLTYPES,
             dflt: 'scatter'
         },
         visible: {
@@ -1161,7 +1163,7 @@
         // module-specific attributes --- note: we need to send a trace into
         // the 3D modules to have it removed from the webgl context.
         if (visible || scene) {
-            module = getModule(traceOut);
+            module = plots.getModule(traceOut);
             traceOut._module = module;
         }
 
@@ -1400,7 +1402,7 @@
         Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
 
         gd.calcdata = gd._fullData.map(function(trace, i) {
-            var module = getModule(trace),
+            var module = plots.getModule(trace),
                 cd = [];
 
             if(module && trace.visible === true) {
