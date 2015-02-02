@@ -6,13 +6,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-dev": "browserify index.js --debug --standalone Plotly -o build/plotlyjs-bundle.js",
-    "build-prod": "browserify index.js --standalone Plotly | uglifyjs > build/plotlyjs-bundle.js"
+    "build-dev": "npm run browserify-dev; npm run sass-dev",
+    "build-prod": "npm run browserify-prod; npm run sass-prod",
+    "browserify-dev": "browserify index.js --debug --standalone Plotly -o build/plotlyjs-bundle.js",
+    "browserify-prod": "browserify index.js --standalone Plotly | uglifyjs > build/plotlyjs-bundle.js",
+    "sass-dev": "node-sass --output-style expanded src/css/style.scss build/plotly-style.css --source-map-embed",
+    "sass-prod": "node-sass --output-style compressed src/css/style.scss build/plotly-style.css"
   },
   "author": "Plotly amazing team",
   "license": "ISC",
   "dependencies": {
     "browserify": "^8.1.1",
+    "node-sass": "^2.0.0-beta",
     "uglify-js": "^2.4.16"
   }
 }
