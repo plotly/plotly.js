@@ -630,7 +630,7 @@ proto.onRender = function () {
 
         if (glObject.supportsTransparency
             && glObject.plotlyType === 'surface') continue;
-        
+
         glObject.draw(cameraParameters, false);
     }
 
@@ -686,7 +686,7 @@ proto.plotTrace = function (trace, sceneLayout) {
         var glObject = this.glDataMap[trace.uid] || null;
 
         if (trace.visible) {
-            glObject = trace.module.update(this, sceneLayout, trace, glObject);
+            glObject = trace._module.update(this, sceneLayout, trace, glObject);
         }
 
         if (!trace.visible && glObject) glObject.visible = trace.visible;

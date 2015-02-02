@@ -1,4 +1,16 @@
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
 
     // ---Plotly global modules
@@ -978,4 +990,6 @@
         return $.extend({}, bb);
     };
 
-}()); // end Drawing object definition
+
+    return drawing;
+}));
