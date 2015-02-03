@@ -159,11 +159,11 @@
     annotations.supplyLayoutDefaults = function(layoutIn, layoutOut) {
         var containerIn = layoutIn.annotations || [];
         layoutOut.annotations = containerIn.map(function(annIn) {
-            return supplyAnnotationDefaults(annIn || {}, layoutOut);
+            return handleAnnotationDefaults(annIn || {}, layoutOut);
         });
     };
 
-    function supplyAnnotationDefaults(annIn, fullLayout) {
+    function handleAnnotationDefaults(annIn, fullLayout) {
         var annOut = {};
 
         function coerce(attr, dflt) {
@@ -456,7 +456,7 @@
             optionsIn[axLetter] = position;
         });
 
-        var options = supplyAnnotationDefaults(optionsIn, fullLayout);
+        var options = handleAnnotationDefaults(optionsIn, fullLayout);
         fullLayout.annotations[index] = options;
 
         var xa = Plotly.Axes.getFromId(gd, options.xref),
