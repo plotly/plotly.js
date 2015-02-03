@@ -1261,7 +1261,7 @@
             dflt: '#fff'
         },
         plot_bgcolor: {
-            // defined here, but set in Axes.supplyDefaults
+            // defined here, but set in Axes.supplyLayoutDefaults
             // because it needs to know if there are (2D) axes or not
             type: 'color',
             dflt: '#fff'
@@ -1281,7 +1281,7 @@
             dflt: false
         },
         showlegend: {
-            // handled in legend.supplyDefaults
+            // handled in legend.supplyLayoutDefaults
             // but included here because it's not in the legend object
             type: 'boolean'
         },
@@ -1332,14 +1332,11 @@
 
     plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
 
-        var moduleDefaults = ['Axes', 'Legend', 'Annotations', 'Fx'];
-        var moduleLayoutDefaults = ['Bars', 'Boxes', 'Gl3dLayout'];
+        var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Fx',
+                                    'Bars', 'Boxes', 'Gl3dLayout'];
 
         // don't add a check for 'function in module' as it is better to error out and
         // secure the module API then not apply the default function.
-        moduleDefaults.forEach( function (module) {
-            if (Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
-        });
         moduleLayoutDefaults.forEach( function (module) {
             if (Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         });

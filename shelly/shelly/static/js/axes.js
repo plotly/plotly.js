@@ -177,7 +177,7 @@
         }
     };
 
-    axes.supplyDefaults = function(layoutIn, layoutOut, fullData) {
+    axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         // get the full list of axes already defined
         var xaList = Object.keys(layoutIn)
                 .filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),

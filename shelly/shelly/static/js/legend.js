@@ -66,7 +66,7 @@
         }
     };
 
-    legend.supplyDefaults = function(layoutIn, layoutOut, fullData){
+    legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
         var containerIn = layoutIn.legend || {},
             containerOut = layoutOut.legend = {};
 
@@ -313,7 +313,7 @@
         if(!fullLayout._infolayer || !td.calcdata) return;
 
         if(showlegend!==undefined) layout.showlegend = showlegend;
-        legend.supplyDefaults(layout, fullLayout, td._fullData);
+        legend.supplyLayoutDefaults(layout, fullLayout, td._fullData);
         showlegend = fullLayout.showlegend;
 
         var opts = fullLayout.legend;
