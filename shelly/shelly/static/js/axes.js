@@ -383,7 +383,7 @@
             letter = options.letter;
 
         var anchor = Plotly.Lib.coerce(containerIn, containerOut,
-            {
+            {   // TODO incorporate into layoutAttributes
                 anchor: {
                     type:'enumerated',
                     values: ['free'].concat(counterAxes),
@@ -396,7 +396,7 @@
         if(anchor==='free') coerce('position');
 
         Plotly.Lib.coerce(containerIn, containerOut,
-            {
+            {   // TODO incorporate into layoutAttributes
                 side: {
                     type: 'enumerated',
                     values: letter==='x' ? ['bottom', 'top'] : ['left', 'right'],
@@ -407,13 +407,15 @@
 
         var overlaying = false;
         if(overlayableAxes.length) {
-            overlaying = Plotly.Lib.coerce(containerIn, containerOut, {
+            overlaying = Plotly.Lib.coerce(containerIn, containerOut,
+            {   // TODO incorporate into layoutAttributes
                 overlaying: {
                     type: 'enumerated',
                     values: [false].concat(overlayableAxes),
                     dflt: false
                 }
-            }, 'overlaying');
+            },
+            'overlaying');
         }
 
         if(!overlaying) {

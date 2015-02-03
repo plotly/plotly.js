@@ -17,7 +17,8 @@
     /* global Plotly:false */
 
     var histogram = Plotly.Histogram = {};
-    // histogram is a weird one... it has its own calc function, but uses Bars.plot to display
+    // histogram is a weird one...
+    // it has its own calc function, but uses Bars.plot to display
     // and Bars.setPositions for stacking and grouping
 
     var scatterAttrs = Plotly.Scatter.attributes,

@@ -989,6 +989,7 @@
             dflt: true
         },
         scene: {
+            // TODO should not be available in 2d layouts
             type: 'sceneid',
             dflt: 'scene'
         },
@@ -1006,10 +1007,12 @@
             type: 'string'
         },
         xaxis: {
+            // TODO should not be available in 3d layouts
             type: 'axisid',
             dflt: 'x'
         },
         yaxis: {
+            // TODO should not be available in 3d layouts
             type: 'axisid',
             dflt: 'y'
         },
