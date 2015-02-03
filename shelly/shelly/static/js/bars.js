@@ -55,6 +55,12 @@
                 width: scatterMarkerLineAttrs.width
             }
         },
+        _nestedModules: {  // nested module coupling
+            'error_y': 'ErrorBars',
+            'error_x': 'ErrorBars'
+        },
+        _composedModules: {  // composed module coupling
+            'histogram': 'Histogram'
         }
     };
 

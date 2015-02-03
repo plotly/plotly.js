@@ -25,6 +25,10 @@
     var scatterLineAttrs = Plotly.Scatter.attributes.line;
 
     contour.attributes = {
+        _composedModules: {  // composed module coupling
+            'contour': 'Heatmap',
+            'histogram2dcontour': 'Heatmap'
+        },
         autocontour: {
             type: 'boolean',
             dflt: true

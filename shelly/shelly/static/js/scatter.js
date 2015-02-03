@@ -192,9 +192,13 @@
         // TODO: all three of the sub-attributes here should be arrayOk
         // that'll be easier once we work in Etienne's idea about how fonts should work.
         // also maybe we should add colorscale?
-        textfont: {type: 'font'}
-    };
+        textfont: {type: 'font'},
+        _nestedModules: {  // nested module coupling
+            'error_y': 'ErrorBars',
+            'error_x': 'ErrorBars'
+            // TODO: we should add colorbar?
         }
+    };
 
     scatter.handleXYDefaults = function(traceIn, traceOut, coerce) {
         var len,

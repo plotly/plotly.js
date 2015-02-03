@@ -76,6 +76,13 @@
             type: 'boolean',
             dflt: false
         },
+        _nestedModules: {  // nested module coupling
+            'colorbar': 'Colorbar'
+        },
+        _composedModules: {  // composed module coupling
+            'histogram2d': 'Histogram',
+            'histogram2dcontour': 'Histogram'
+        }
     };
 
     heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
