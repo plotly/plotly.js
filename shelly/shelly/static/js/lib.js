@@ -1907,6 +1907,18 @@
         return objOut;
     };
 
+    // Simple extend function for module attributes
+    // (no need for nested support, in this case)
+    lib.extendAttr = function extendAttr(obj1, obj2) {
+        var objOut = obj1;
+
+        Object.keys(obj2).forEach(function(k) {
+            objOut[k] = obj2[k];
+        });
+
+        return objOut;
+    };
+
     // Escapes special characters in the HTML string, suitable for inserting
     // into a document.  NOT suitable for use in attributes.
     // Safe: document.write('<div>' + Plotly.Lib.escapeForHtml(str) + '</div>');
