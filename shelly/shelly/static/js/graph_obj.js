@@ -1,5 +1,17 @@
 // Main plotting library - Creates the Plotly object and Plotly.Plots
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
     /* jshint camelcase: false */
 
@@ -13,9 +25,6 @@
 
     // ---external global dependencies
     /* global Promise:false, d3:false */
-
-    if(!window.Plotly) window.Plotly = {};
-
     var plots = Plotly.Plots = {};
 
     // Most of the generic plotting functions get put into Plotly.Plots,
@@ -423,10 +432,10 @@
                 (gd.calcdata.length>1 && fullLayout.showlegend!==false));
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(trace.visible !== true || !trace.module.colorbar) {
+                if(trace.visible !== true || !trace._module.colorbar) {
                     plots.autoMargin(gd,'cb'+trace.uid);
                 }
-                else trace.module.colorbar(gd,cd);
+                else trace._module.colorbar(gd,cd);
             });
             doAutoMargin(gd);
             return plots.previousPromises(gd);
@@ -496,7 +505,7 @@
             // previously, remove them and their colorbars explicitly
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(trace.visible !== true || !trace.module.colorbar) {
+                if(trace.visible !== true || !trace._module.colorbar) {
                     var uid = trace.uid;
                     fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid)
                         .remove();
@@ -521,7 +530,7 @@
                     // plot all traces of this type on this subplot at once
                     var cdmod = cdSubplot.filter(function(cd){
                         var trace = cd[0].trace;
-                        return trace.module === module && trace.visible === true;
+                        return trace._module === module && trace.visible === true;
                     });
                     module.plot(gd,plotinfo,cdmod);
                     Plotly.Lib.markTime('done ' + (cdmod[0] && cdmod[0][0].trace.type));
@@ -666,7 +675,7 @@
         });
 
         // instantiate framework
-        gd.framework = micropolar.manager.framework();
+        gd.framework = Plotly.micropolar.manager.framework();
         //get rid of gd.layout stashed nodes
         layout = µ.util.deepExtend({}, gd._fullLayout);
         delete layout._container;
@@ -1165,7 +1174,7 @@
         // the 3D modules to have it removed from the webgl context.
         if (visible || scene) {
             module = getModule(traceOut);
-            traceOut.module = module;
+            traceOut._module = module;
         }
 
         if (module && visible) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
@@ -3458,23 +3467,40 @@
     // Utility functions
     // ----------------------------------------------------
 
-    // graphJson - jsonify the graph data and layout
-    // needs to recurse because some src can be inside sub-objects
-    // also strips out functions and private (start with _) elements
-    // so we can add temporary things to data and layout that don't get saved
-    //
-    // dataonly = truthy will omit layout and any arrays that aren't data
-    //      (note that we have to do this on the server side too)
-    // mode:
-    //      keepref (default): remove data for which there's a src present,
-    //          eg if there's xsrc present (and xsrc is well-formed,
-    //          ie has : and some chars before it), strip out x
-    //      keepdata: remove all src tags, don't remove the data itself
-    //      keepall: keep data and src
-    // output:
-    //      'object' to not stringify
-    plots.graphJson = function(gd, dataonly, mode, output){
+    /**
+     * JSONify the graph data and layout
+     *
+     * This function needs to recurse because some src can be inside
+     * sub-objects.
+     *
+     * It also strips out functions and private (starts with _) elements.
+     * Therefore, we can add temporary things to data and layout that don't
+     * get saved.
+     *
+     * @param gd The graphDiv
+     * @param {Boolean} dataonly If true, don't return layout.
+     * @param {'keepref'|'keepdata'|'keepall'} [mode='keepref'] Filter what's kept
+     *      keepref: remove data for which there's a src present
+     *          eg if there's xsrc present (and xsrc is well-formed,
+     *          ie has : and some chars before it), strip out x
+     *      keepdata: remove all src tags, don't remove the data itself
+     *      keepall: keep data and src
+     * @param {String} output If you specify 'object', the result will not be stringified
+     * @param {Boolean} useDefaults If truthy, use _fullLayout and _fullData
+     * @returns {Object|String}
+     */
+    plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
+
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
+
+        // if the defaults aren't supplied yet, we need to do that...
+        if ((useDefaults && dataonly && !gd._fullData) ||
+                (useDefaults && !dataonly && !gd._fullLayout)) {
+            plots.supplyDefaults(gd);
+        }
+
+        var data = (useDefaults) ? gd._fullData : gd.data,
+            layout = (useDefaults) ? gd._fullLayout : gd.layout;
 
         function stripObj(d) {
             if(typeof d === 'function') {
@@ -3527,7 +3553,7 @@
         }
 
         var obj = {
-            data:(gd.data||[]).map(function(v){
+            data:(data||[]).map(function(v){
                 var d = stripObj(v);
                 // fit has some little arrays in it that don't contain data,
                 // just fit params and meta
@@ -3535,56 +3561,13 @@
                 return d;
             })
         };
-        if(!dataonly) { obj.layout = stripObj(gd.layout); }
+        if(!dataonly) { obj.layout = stripObj(layout); }
 
         if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
         return (output==='object') ? obj : JSON.stringify(obj);
     };
 
-    plots.viewJson = function(){
-        var gd = Tabs.get();
-        var jsonString, data, layout;
-        if(gd.framework && gd.framework.isPolar){
-            var json= gd.framework.getLiveConfig();
-            jsonString = JSON.stringify(json);
-            data = json.data;
-            layout = json.layout;
-        }
-        else{
-            jsonString = Plotly.Plots.graphJson(gd);
-            data = JSON.parse(jsonString).data;
-            // Remove stream meta info
-            data.forEach(function(di){ delete di.stream; });
-            layout = JSON.parse(jsonString).layout;
-        }
-        var code = 'var data = ' + Plotly.Lib.escapeForHtml(JSON.stringify(data)) + ';\n';
-        code += 'var layout = ' + Plotly.Lib.escapeForHtml(JSON.stringify(layout)) + ';\n';
-        code += 'Plotly.plot(Tabs.get(), data, layout);';
+    return plots;
 
-        var jsonModal = $('#jsonModal');
-        var jsonViewer = jsonModal.find('#json-viewer').empty();
-        jsonViewer.data('jsontree', '')
-            .jsontree(jsonString,{collapsibleOuter:false}).show();
-        jsonModal.modal('show');
-
-        var jsonText = jsonModal.find('#json-text')
-            .text('').append(code).hide();
-        var buttonTexts = ['Switch to Plain Text', 'Switch to JSON Viewer'];
-        var viewerToggle = $('.js-plain-text-toggle').text(buttonTexts[0]);
-
-        viewerToggle.off('click').on('click', function(){
-            var isPlaintText = $(this).text() === buttonTexts[0];
-            jsonViewer.toggle(!isPlaintText);
-            jsonText.toggle(isPlaintText);
-            jsonText.get(0).select();
-            $(this).text(buttonTexts[+isPlaintText]);
-            return false;
-        });
-
-        jsonModal.find('.close').off('click').on('click', function(){
-            jsonModal.modal('hide');
-            return false;
-        });
-    };
-}()); // end Plots object definition
+}));

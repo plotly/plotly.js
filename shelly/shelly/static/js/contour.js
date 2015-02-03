@@ -1,4 +1,16 @@
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
 
     // ---Plotly global modules
@@ -7,7 +19,7 @@
     // ---external global dependencies
     /* global d3:false */
 
-    var contour = window.Plotly.Contour = {};
+    var contour = Plotly.Contour = {};
 
     contour.attributes = {
         allFrom: 'Heatmap',
@@ -920,4 +932,5 @@
         return Plotly.Heatmap.hoverPoints(pointData, xval, yval, hovermode, true);
     };
 
-}()); // end Contour object definition
+    return contour;
+}));

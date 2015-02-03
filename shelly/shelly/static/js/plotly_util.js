@@ -1,16 +1,17 @@
-(function() {
-    'use strict';
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
-    // ---external global dependencies
-    /* global d3:false, MathJax:false, FB:false, ENV:false,
-        self:false, jsPDF:false, Promise:false */
-
-    if(!window.Plotly) { window.Plotly = {}; }
-
-    var util = window.Plotly.util = {};
+    var util = Plotly.util = {};
 
     // Script Loader
     /////////////////////////////
@@ -150,6 +151,9 @@
                     }
                     else if (imageFormat === 'png') {
                         imgData = canvasNode.toDataURL('image/png');
+                    }
+                    else if (imageFormat === 'webp'){
+                        imgData = canvasNode.toDataURL('image/webp');
                     }
                     else if (imageFormat === 'svg') imgData = _svg;
                     else if (imageFormat === 'pdf'){
@@ -869,4 +873,7 @@
             getIndex: function(){ return index; },
         };
     };
-}());
+
+    return util;
+
+}));
