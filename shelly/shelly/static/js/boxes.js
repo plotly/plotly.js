@@ -26,7 +26,7 @@
         scatterMarkerAttrs = scatterAttrs.marker,
         scatterLineAttrs = scatterAttrs.line,
         scatterMarkerLineAttrs = scatterMarkerAttrs.line,
-        extend = Plotly.Lib.minExtend;
+        extendAttr = Plotly.Lib.extendAttr;
 
     boxes.attributes = {
         y: {type: 'data_array'},
@@ -68,19 +68,19 @@
                 type: 'color',
                 dflt: 'rgba(0,0,0,0)'
             },
-            symbol: extend({arrayOk: false},
-                            scatterMarkerAttrs.symbol),
-            opacity: extend({arrayOk: false, dflt: 1},
-                             scatterMarkerAttrs.opacity),
-            size: extend({arrayOk: false},
-                          scatterMarkerAttrs.size),
-            color: extend({arrayOk: false},
-                           scatterMarkerAttrs.color),
+            symbol: extendAttr(scatterMarkerAttrs.symbol,
+                               {arrayOk: false}),
+            opacity: extendAttr(scatterMarkerAttrs.opacity,
+                                {arrayOk: false, dflt: 1}),
+            size: extendAttr(scatterMarkerAttrs.size,
+                             {arrayOk: false}),
+            color: extendAttr(scatterMarkerAttrs.color,
+                              {arrayOk: false}),
             line: {
-                color: extend({arrayOk: false, dflt: '#444'},
-                               scatterMarkerLineAttrs.color),
-                width: extend({arrayOk: false, dflt: 0},
-                               scatterMarkerLineAttrs.width),
+                color: extendAttr(scatterMarkerLineAttrs.color,
+                                  {arrayOk: false, dflt: '#444'}),
+                width: extendAttr(scatterMarkerLineAttrs.width,
+                                  {arrayOk: false, dflt: 0}),
                 outliercolor: {
                     type: 'color'
                 },
