@@ -86,8 +86,8 @@
 
         var binDirections = ['x'],
             hasAggregationData,
-            x = coerce('Scatter', 'x'),
-            y = coerce('Scatter', 'y');
+            x = coerce('x'),
+            y = coerce('y');
 
         if(Plotly.Plots.isHist2D(traceOut.type)) {
             // we could try to accept x0 and dx, etc...

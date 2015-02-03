@@ -247,7 +247,7 @@
                                          attr, dflt);
             }
 
-            axes.handlAxisDefaults(axLayoutIn, axLayoutOut,
+            axes.handleAxisDefaults(axLayoutIn, axLayoutOut,
                                    coerce, defaultOptions);
             axes.handleAxisPositioningDefaults(axLayoutIn, axLayoutOut,
                                          coerce, positioningOptions);
