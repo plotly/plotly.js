@@ -16,9 +16,7 @@
     /* jshint camelcase: false */
 
     // ---Plotly global modules
-    /* global Plotly:false, µ:false, micropolar:false,
-        SceneFrame:false, Tabs:false, Examples:false,
-        ENV:false */
+    /* global µ:false, SceneFrame:false, Examples:false, ENV:false */
 
     // ---global functions not yet namespaced
     /* global setFileAndCommentsSize:false */
