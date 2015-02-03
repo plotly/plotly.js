@@ -69,7 +69,7 @@
         }
     ];
 
-    annotations.attributes = {
+    annotations.layoutAttributes = {
         text: {
             type: 'string',
             blankOk: false
@@ -167,7 +167,9 @@
         var annOut = {};
 
         function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(annIn, annOut, annotations.attributes, attr, dflt);
+            return Plotly.Lib.coerce(annIn, annOut,
+                                     annotations.layoutAttributes,
+                                     attr, dflt);
         }
 
         coerce('opacity');

@@ -26,7 +26,7 @@
     // same functions for styling traces in the style box
     // -----------------------------------------------------
 
-    legend.attributes = {
+    legend.layoutAttributes = {
         bgcolor: {type: 'color'},
         bordercolor: {
             type: 'color',
@@ -83,7 +83,7 @@
 
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(containerIn, containerOut,
-                legend.attributes, attr, dflt);
+                legend.layoutAttributes, attr, dflt);
         }
 
         var showLegend = Plotly.Lib.coerce(layoutIn, layoutOut,

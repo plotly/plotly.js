@@ -27,7 +27,7 @@
 
     var axes = Plotly.Axes = {};
 
-    axes.attributes = {
+    axes.layoutAttributes = {
         title: {type: 'string'},
         titlefont: {type: 'font'},
         type: {
