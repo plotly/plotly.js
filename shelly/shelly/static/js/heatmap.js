@@ -67,16 +67,6 @@
             type: 'boolean',
             dflt: false
         },
-        text: {type: 'data_array'},
-        // Inherited attributes - not used by supplyDefaults, so if there's
-        // a better way to do this feel free to change.
-        x: {from: 'Scatter'},
-        x0: {from: 'Scatter'},
-        dx: {from: 'Scatter'},
-        y: {from: 'Scatter'},
-        y0: {from: 'Scatter'},
-        dy: {from: 'Scatter'},
-        colorbar: {allFrom: 'Colorbar'}
     };
 
     heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {

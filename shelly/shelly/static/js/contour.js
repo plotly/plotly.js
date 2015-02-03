@@ -22,7 +22,6 @@
     var contour = Plotly.Contour = {};
 
     contour.attributes = {
-        allFrom: 'Heatmap',
         autocontour: {
             type: 'boolean',
             dflt: true
@@ -55,10 +54,6 @@
             }
         },
         line: {
-            color: {from: 'Scatter'},
-            width: {from: 'Scatter'},
-            dash: {from: 'Scatter'},
-            smoothing: {from: 'Scatter'}
         }
     };
 

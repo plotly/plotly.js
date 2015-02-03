@@ -36,15 +36,6 @@
     };
 
     histogram.attributes = {
-        // Not so excited about either of these inheritance patterns... but I
-        // think it's clear what they mean: histogram2d inherits everything from
-        // Heatmap.attributes plus marker color from Scatter (not anymore), and histogram
-        // inherits everything from Bars
-        allFrom: {
-            histogram: 'Bars',
-            histogram2d: 'Heatmap',
-            histogram2dcontour: 'Contour'
-        },
         z: {type: 'data_array'},
         marker: {
             color: {type: 'data_array'}
