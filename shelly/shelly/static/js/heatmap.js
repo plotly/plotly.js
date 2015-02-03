@@ -19,10 +19,19 @@
     // ---external global dependencies
     /* global d3:false, PNGlib:false, tinycolor:false */
 
+    var scatterAttrs = Plotly.Scatter.attributes;
+
     var heatmap = Plotly.Heatmap = {};
 
     heatmap.attributes = {
         z: {type: 'data_array'},
+        x: scatterAttrs.x,
+        x0: scatterAttrs.x0,
+        dx: scatterAttrs.dx,
+        y: scatterAttrs.y,
+        y0: scatterAttrs.y0,
+        dy: scatterAttrs.dy,
+        text: {type: 'data_array'},
         transpose: {
             type: 'boolean',
             dflt: false
@@ -74,10 +83,6 @@
             return Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
         }
 
-        function coerceScatter(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
-        }
-
         if(Plotly.Plots.isHist2D(traceOut.type)) {
             // x, y, z, marker.color, and x0, dx, y0, dy are coerced
             // in Histogram.supplyDefaults
@@ -94,18 +99,18 @@
 
             coerce('transpose');
 
-            var x = coerceScatter('x'),
+            var x = coerce('x'),
                 xtype = x ? coerce('xtype', 'array') : 'scaled';
             if(xtype==='scaled') {
-                coerceScatter('x0');
-                coerceScatter('dx');
+                coerce('x0');
+                coerce('dx');
             }
 
-            var y = coerceScatter('y'),
+            var y = coerce('y'),
                 ytype = y ? coerce('ytype', 'array') : 'scaled';
             if(ytype==='scaled') {
-                coerceScatter('y0');
-                coerceScatter('dy');
+                coerce('y0');
+                coerce('dy');
             }
 
             coerce('connectgaps');

@@ -20,6 +20,9 @@
     // histogram is a weird one... it has its own calc function, but uses Bars.plot to display
     // and Bars.setPositions for stacking and grouping
 
+    var scatterAttrs = Plotly.Scatter.attributes,
+        barAttrs = Plotly.Bars.attributes;
+
     var defaultBins = {
         start: {
             type: 'number',
@@ -37,9 +40,12 @@
 
     histogram.attributes = {
         z: {type: 'data_array'},
+        x: scatterAttrs.x,
+        y: scatterAttrs.y,
         marker: {
             color: {type: 'data_array'}
         },
+        orientation: barAttrs.orientation,
         histfunc: {
             type: 'enumerated',
             values: ['count', 'sum', 'avg', 'min', 'max'],
@@ -77,14 +83,11 @@
             return Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, attr, dflt);
         }
 
-        function coerceModule(module, attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Plotly[module].attributes, attr, dflt);
-        }
-
         var binDirections = ['x'],
             hasAggregationData,
-            x = coerceModule('Scatter', 'x'),
-            y = coerceModule('Scatter', 'y');
+            x = coerce('Scatter', 'x'),
+            y = coerce('Scatter', 'y');
+
         if(Plotly.Plots.isHist2D(traceOut.type)) {
             // we could try to accept x0 and dx, etc...
             // but that's a pretty weird use case.
@@ -98,9 +101,8 @@
             hasAggregationData = coerce('z') || coerce('marker.color');
 
             binDirections = ['x','y'];
-        }
-        else {
-            coerceModule('Bars', 'orientation', (y && !x) ? 'h' : 'v');
+        } else {
+            coerce('orientation', (y && !x) ? 'h' : 'v');
 
             if(!traceOut[traceOut.orientation==='v' ? 'x' : 'y']) {
                 traceOut.visible = false;

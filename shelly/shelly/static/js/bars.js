@@ -23,10 +23,38 @@
     // mark this module as allowing error bars
     bars.errorBarsOK = true;
 
+    // For coerce-level coupling
+    var scatterAttrs = Plotly.Scatter.attributes,
+        scatterMarkerAttrs = scatterAttrs.marker,
+        scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+
     bars.attributes = {
+        x: scatterAttrs.x,
+        x0: scatterAttrs.x0,
+        dx: scatterAttrs.dx,
+        y: scatterAttrs.y,
+        y0: scatterAttrs.y0,
+        dy: scatterAttrs.dy,
+        text: scatterAttrs.text,
         orientation: {
             type: 'enumerated',
             values: ['v', 'h']
+        },
+        marker: {
+            color: scatterMarkerAttrs.color,
+            colorscale: scatterMarkerAttrs.colorscale,
+            cauto: scatterMarkerAttrs.cauto,
+            cmax: scatterMarkerAttrs.cmax,
+            cmin: scatterMarkerAttrs.cmin,
+            line: {
+                color: scatterMarkerLineAttrs.color,
+                colorscale: scatterMarkerLineAttrs.colorscale,
+                cauto: scatterMarkerLineAttrs.cauto,
+                cmax: scatterMarkerLineAttrs.cmax,
+                cmin: scatterMarkerLineAttrs.cmin,
+                width: scatterMarkerLineAttrs.width
+            }
+        },
         }
     };
 
@@ -59,10 +87,6 @@
             return Plotly.Lib.coerce(traceIn, traceOut, bars.attributes, attr, dflt);
         }
 
-        function coerceScatter(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
-        }
-
         if(traceOut.type==='histogram') {
             // x, y, and orientation are coerced in Histogram.supplyDefaults
             // (along with histogram-specific attributes)
@@ -79,10 +103,10 @@
             coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
         }
 
-        Plotly.Scatter.colorScalableDefaults('marker.', coerceScatter, defaultColor);
-        Plotly.Scatter.colorScalableDefaults('marker.line.', coerceScatter, '#444');
-        coerceScatter('marker.line.width', 0);
-        coerceScatter('text');
+        Plotly.Scatter.colorScalableDefaults('marker.', coerce, defaultColor);
+        Plotly.Scatter.colorScalableDefaults('marker.line.', coerce, '#444');
+        coerce('marker.line.width', 0);
+        coerce('text');
 
         // override defaultColor for error bars with #444
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'y'});
