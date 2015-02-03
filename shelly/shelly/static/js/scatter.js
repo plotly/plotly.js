@@ -194,12 +194,9 @@
         // also maybe we should add colorscale?
         textfont: {type: 'font'}
     };
-
-    scatter.supplyXY = function(traceIn, traceOut) {
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
+    scatter.handleXYDefaults = function(traceIn, traceOut, coerce) {
         var len,
             x = coerce('x'),
             y = coerce('y');
@@ -236,7 +233,7 @@
             return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
-        var len = scatter.supplyXY(traceIn, traceOut),
+        var len = scatter.handleXYDefaults(traceIn, traceOut, coerce),
             // TODO: default mode by orphan points...
             defaultMode = len < scatter.PTS_LINESONLY ? 'lines+markers' : 'lines';
         if(!len) {

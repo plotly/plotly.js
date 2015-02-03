@@ -95,7 +95,7 @@
             if(!traceOut.visible) return;
         }
         else {
-            var len = Plotly.Scatter.supplyXY(traceIn, traceOut);
+            var len = Plotly.Scatter.handleXYDefaults(traceIn, traceOut, coerce);
             if(!len) {
                 traceOut.visible = false;
                 return;

@@ -224,6 +224,7 @@
         xaList.concat(yaList).forEach(function(axName){
             var axLetter = axName.charAt(0),
                 axLayoutIn = layoutIn[axName] || {},
+                axLayoutOut = {},
                 defaultOptions = {
                     letter: axLetter,
                     font: layoutOut.font,
@@ -240,10 +241,17 @@
                     }).map(axes.name2id)
                 };
 
-            layoutOut[axName] = axes.supplyAxisDefaults(axLayoutIn, null, defaultOptions);
-            axes.supplyAxisPositioningDefaults(axLayoutIn,
-                                               layoutOut[axName],
-                                               positioningOptions);
+            function coerce(attr, dflt) {
+                return Plotly.Lib.coerce(axLayoutIn, axLayoutOut,
+                                         axes.layoutAttributes,
+                                         attr, dflt);
+            }
+
+            axes.handlAxisDefaults(axLayoutIn, axLayoutOut,
+                                   coerce, defaultOptions);
+            axes.handleAxisPositioningDefaults(axLayoutIn, axLayoutOut,
+                                         coerce, positioningOptions);
+            layoutOut[axName] = axLayoutOut;
 
             // so we don't have to repeat autotype unnecessarily,
             // copy an autotype back to layoutIn
@@ -261,13 +269,7 @@
         }
     };
 
-    axes.supplyAxisDefaults = function(containerIn, containerOut, options) {
-        containerOut = containerOut || {};
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(containerIn, containerOut,
-                axes.attributes, attr, dflt);
-        }
-
+    axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
         var letter = options.letter,
             defaultTitle = 'Click to enter ' +
                 (options.title || (letter.toUpperCase() + ' axis')) +
@@ -375,14 +377,7 @@
         return containerOut;
     };
 
-    axes.supplyAxisPositioningDefaults = function(containerIn, containerOut, options) {
-        if (!containerOut) containerOut = {};
-
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(containerIn, containerOut,
-                axes.attributes, attr, dflt);
-        }
-
+    axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce, options) {
         var counterAxes = options.counterAxes||[],
             overlayableAxes = options.overlayableAxes||[],
             letter = options.letter;
