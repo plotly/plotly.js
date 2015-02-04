@@ -8,10 +8,105 @@ var createSurface = require('gl-surface-plot'),
 function Surface (config) {
 
     this.config = config;
-    this.Plotly = config.Plotly;
+
+    var Plotly = config.Plotly,
+        heatmapAttrs = Plotly.Heatmap.attributes,
+        contourAttributes =  {
+            show: {
+                type: 'boolean',
+                dflt: false
+            },
+            project: {
+                x: {
+                    type: 'boolean',
+                    dflt: false
+                },
+                y: {
+                    type: 'boolean',
+                    dflt: false
+                },
+                z: {
+                    type: 'boolean',
+                    dflt: false
+                }
+            },
+            color: {
+                type: 'color',
+                dflt: '#000'
+            },
+            width: {
+                type: 'number',
+                min: 1,
+                max: 16,
+                dflt: 2
+            },
+            highlight: {
+                type: 'boolean',
+                dflt: false
+            },
+            highlightColor: {
+                type: 'color',
+                dflt: '#000'
+            },
+            highlightWidth: {
+                type: 'number',
+                min: 1,
+                max: 16,
+                dflt: 2
+            }
+        };
+
+    this.attributes = {
+        x: {type: 'data_array'},
+        y: {type: 'data_array'},
+        z: {type: 'data_array'},
+        colorscale: heatmapAttrs.colorscale,
+        showscale: heatmapAttrs.colorscale,
+        reversescale: heatmapAttrs.colorscale,
+        contours: {
+            x: contourAttributes,
+            y: contourAttributes,
+            z: contourAttributes
+        },
+        lighting: {
+            ambient: {
+                type: 'number',
+                min: 0.00,
+                max: 1.0,
+                dflt: 0.8
+            },
+            diffuse: {
+                type: 'number',
+                min: 0.00,
+                max: 1.00,
+                dflt: 0.8
+            },
+            specular: {
+                type: 'number',
+                min: 0.00,
+                max: 2.00,
+                dflt: 0.05
+            },
+            roughness: {
+                type: 'number',
+                min: 0.00,
+                max: 1.00,
+                dflt: 0.5
+            },
+            fresnel: {
+                type: 'number',
+                min: 0.00,
+                max: 5.00,
+                dflt: 0.2
+            }
+        }
+    };
+
 }
 
 module.exports = Surface;
+
+var proto = Surface.prototype;
 
 
 function parseColorScale (colorscale, alpha) {
@@ -28,110 +123,12 @@ function parseColorScale (colorscale, alpha) {
     });
 }
 
-var proto = Surface.prototype;
-
-
-proto.contourAttributes =  {
-    show: {
-        type: 'boolean',
-        dflt: false
-    },
-    project: {
-        x: { 
-            type: 'boolean',
-            dflt: false
-        },
-        y: { 
-            type: 'boolean',
-            dflt: false
-        },
-        z: { 
-            type: 'boolean',
-            dflt: false
-        }
-    },
-    color: {
-        type: 'color',
-        dflt: '#000'
-    },
-    width: {
-        type: 'number',
-        min: 1,
-        max: 16,
-        dflt: 2
-    },
-    highlight: {
-        type: 'boolean',
-        dflt: false
-    },
-    highlightColor: {
-        type: 'color',
-        dflt: '#000'
-    },
-    highlightWidth: {
-        type: 'number',
-        min: 1,
-        max: 16,
-        dflt: 2
-    }
-};
-
-proto.attributes = {
-    x: {type: 'data_array'},
-    y: {type: 'data_array'},
-    z: {type: 'data_array'},
-    colorscale: {from: 'Heatmap'},
-    showscale: {from: 'Heatmap'},
-    reversescale: {from: 'Heatmap'},
-    contours: {
-        x: proto.contourAttributes,
-        y: proto.contourAttributes,
-        z: proto.contourAttributes
-    },
-    lighting: {
-        ambient: {
-            type: 'number',
-            min: 0.00,
-            max: 1.0,
-            dflt: 0.8
-        },
-        diffuse: {
-            type: 'number',
-            min: 0.00,
-            max: 1.00,
-            dflt: 0.8
-        },
-        specular: {
-            type: 'number',
-            min: 0.00,
-            max: 2.00,
-            dflt: 0.05
-        },
-        roughness: {
-            type: 'number',
-            min: 0.00,
-            max: 1.00,
-            dflt: 0.5
-        },
-        fresnel: {
-            type: 'number',
-            min: 0.00,
-            max: 5.00,
-            dflt: 0.2
-        }
-    }
-};
-
 proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     var i, j, _this = this;
     var Plotly = this.config.Plotly;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, _this.attributes, attr, dflt);
-    }
-
-    function coerceHeatmap(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Heatmap.attributes, attr, dflt);
     }
 
     var z = coerce('z');
@@ -167,7 +164,7 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     coerce('lighting.roughness');
     coerce('lighting.fresnel');
 
-    coerceHeatmap('colorscale');
+    coerce('colorscale');
 
     var dims = ['x','y','z'];
     for (i = 0; i < 3; ++i) {
@@ -193,8 +190,8 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         }
     }
 
-    var reverseScale = coerceHeatmap('reversescale'),
-        showScale = coerceHeatmap('showscale');
+    var reverseScale = coerce('reversescale'),
+        showScale = coerce('showscale');
 
     // apply the colorscale reversal here, so we don't have to
     // do it in separate modules later
@@ -373,5 +370,5 @@ proto.update = function update (scene, sceneLayout, data, surface) {
 };
 
 proto.colorbar = function(gd, cd) {
-    this.Plotly.Heatmap.colorbar(gd, cd);
+    this.config.Plotly.Heatmap.colorbar(gd, cd);
 };
