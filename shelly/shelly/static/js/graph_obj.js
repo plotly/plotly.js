@@ -156,6 +156,7 @@
         showTips: true, // new users see some hints about interactivity
         showLink: true, // link to open this plot in plotly
         sendData: true, // if we show a link, does it contain data or just link to a plotly file?
+        displayModeBar: true, // display the modebar (true, false, or 'hover')
         displaylogo: true // add the plotly logo on the end of the modebar
     };
 
@@ -167,8 +168,14 @@
             Object.keys(config).forEach(function(key) {
                 if(key in context) context[key] = config[key];
             });
+
+            // cause a remake of the modebar any time we change context
+            if(gd._fullLayout && gd._fullLayout._modebar) {
+                delete gd._fullLayout._modebar;
+            }
         }
 
+        // TODO: get rid of this - don't use gd.<attribute>, only gd._context.<attribute>
         Object.keys(plots.defaultConfig).forEach( function (key) {
             if (config && key in config) gd[key] = config[key];
             else gd[key] = plots.defaultConfig[key];
@@ -182,6 +189,7 @@
             context.scrollZoom = false;
             context.showTips = false;
             context.showLink = false;
+            context.displayModeBar = false;
         }
     }
 

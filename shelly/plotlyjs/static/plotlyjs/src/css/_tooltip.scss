@@ -1,15 +1,5 @@
 //@see https://github.com/chinchang/hint.css
 
-// Vendor prefixer mixin.
-@mixin vendor($property, $value) {
-    -webkit-#{$property}: $value;
-    -moz-#{$property}: $value;
-    -ms-#{$property}: $value;
-    -o-#{$property}: $value;
-    #{$property}: $value;
-}
-
-
 $fontSize: 12px;
 
 $verticalPadding: 8px;
@@ -49,8 +39,8 @@ $successColor: hsl(121, 32%, 40%) !default;
         z-index: $zIndex;
         pointer-events: none;
 
-        //@include vendor('transition', 0.3s ease);
-        //@include vendor('transition-delay', 0);
+        // @include vendor('transition', opacity 0.3s ease 0);
+        // @include vendor('transition-delay', 0);
 
         top: 110%;
         right: 50%;
