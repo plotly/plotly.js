@@ -13,7 +13,7 @@ function Scatter3D (config) {
         scatterLineAttrs = scatterAttrs.line,
         scatterMarkerAttrs = scatterAttrs.marker,
         scatterMarkerLineAttrs = scatterMarkerAttrs.line,
-        extendAttr = Plotly.Lib.extendAttr;
+        extendFlat = Plotly.Lib.extendFlat;
 
     this.attributes = {
         x: {type: 'data_array'},
@@ -84,7 +84,7 @@ function Scatter3D (config) {
                 }
             }
         },
-        mode: extendAttr(scatterAttrs.mode,  // shouldn't this be on-par with 2D?
+        mode: extendFlat(scatterAttrs.mode,  // shouldn't this be on-par with 2D?
                          {dflt: 'lines+markers'}),
         line: {
             color: scatterLineAttrs.color,
@@ -94,19 +94,19 @@ function Scatter3D (config) {
         marker: {  // Parity with scatter.js?
             color: scatterMarkerAttrs.color,
             symbol: scatterMarkerAttrs.symbol,
-            size: extendAttr(scatterMarkerAttrs.size,
+            size: extendFlat(scatterMarkerAttrs.size,
                              {dflt: 8}),
-            opacity: extendAttr(scatterMarkerAttrs.opacity,
+            opacity: extendFlat(scatterMarkerAttrs.opacity,
                                 {dflt: 1}),
             line: {
-                color: extendAttr(scatterMarkerLineAttrs.color,
+                color: extendFlat(scatterMarkerLineAttrs.color,
                                   {dflt: 'rgb(0,0,0)'}),
-                width: extendAttr(scatterMarkerLineAttrs.width,
+                width: extendFlat(scatterMarkerLineAttrs.width,
                                   {dflt: 0})
             }
 
         },
-        textposition: extendAttr(scatterAttrs.textposition,
+        textposition: extendFlat(scatterAttrs.textposition,
                                  {dflt: 'top center'}),
         textfont: scatterAttrs.textfont,
         _nestedModules: {  // nested module coupling

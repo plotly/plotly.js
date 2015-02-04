@@ -7,7 +7,7 @@ function Gl3dAxes (config) {
 
     var Plotly = config.Plotly,
         axesAttrs = Plotly.Axes.layoutAttributes,
-        extendAttr = Plotly.Lib.extendAttr;
+        extendFlat = Plotly.Lib.extendFlat;
 
     this.layoutAttributes = {
         showspikes: {
@@ -65,7 +65,7 @@ function Gl3dAxes (config) {
         linecolor: axesAttrs.linecolor,
         linewidth: axesAttrs.linewidth,
         showgrid: axesAttrs.showgrid,
-        gridcolor: extendAttr(axesAttrs.gridcolor,  // shouldn't this be on-par with 2D?
+        gridcolor: extendFlat(axesAttrs.gridcolor,  // shouldn't this be on-par with 2D?
                               {dflt: 'rgb(204, 204, 204)'}),
         gridwidth: axesAttrs.gridwidth,
         zeroline: axesAttrs.zeroline,
