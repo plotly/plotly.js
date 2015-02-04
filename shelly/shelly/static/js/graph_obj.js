@@ -156,7 +156,7 @@
         showTips: true, // new users see some hints about interactivity
         showLink: true, // link to open this plot in plotly
         sendData: true, // if we show a link, does it contain data or just link to a plotly file?
-        displayModeBar: true, // display the modebar (true, false, or 'hover')
+        displayModeBar: 'hover', // display the modebar (true, false, or 'hover')
         displaylogo: true // add the plotly logo on the end of the modebar
     };
 
