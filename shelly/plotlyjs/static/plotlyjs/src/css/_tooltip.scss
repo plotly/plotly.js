@@ -39,63 +39,6 @@ $infoColor: hsl(200, 50%, 45%) !default;
 // Success Color
 $successColor: hsl(121, 32%, 40%) !default;
 
-@mixin tooltip2(){
-    &:before, &:after {
-        position: absolute;
-        @include vendor('transform', translate3d(0, 0, 0));
-        display: none;
-        opacity: 0;
-        z-index: $zIndex;
-        pointer-events: none;
-
-        @include vendor('transition', 0.3s ease);
-        @include vendor('transition-delay', 0);
-
-        top: 125%;
-        left: 50%;
-    }
-
-    &:hover:before, &:hover:after,
-    &:focus:before, &:focus:after {
-        display: block;
-        opacity: 1;
-
-        @include set-margin('translateY', 1);
-    }
-
-    &:hover:before, &:hover:after {
-        @include vendor('transition-delay', $showDelay);
-    }
-
-    /**
-     * tooltip arrow
-     */
-    &:before {
-        content: '';
-        position: absolute;
-        background: transparent;
-        border: $arrowBorderWidth solid transparent;
-        z-index: $zIndex + 1;
-        margin-top: -2 * $arrowBorderWidth;
-        border-bottom-color: $defaultColor;
-    }
-
-    /**
-     * tooltip body
-     */
-    &:after {
-        content: attr(data-title); // The magic!
-        background: $defaultColor;
-        color: white;
-        padding: $verticalPadding $horizontalPadding;
-        font-size: $fontSize;
-        line-height: $fontSize; // Vertical centering.
-        white-space: nowrap; // Prevent breaking to new line.
-        margin-left: -1 * $arrowOffsetX;
-        border-radius: 2px;
-    }
-}
-
 
 [data-title] {
     &:before, &:after {
