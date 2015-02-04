@@ -1,5 +1,17 @@
 // Main plotting library - Creates the Plotly object and Plotly.Plots
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
     /* jshint camelcase: false */
 
@@ -13,9 +25,6 @@
 
     // ---external global dependencies
     /* global Promise:false, d3:false */
-
-    if(!window.Plotly) window.Plotly = {};
-
     var plots = Plotly.Plots = {};
 
     // Most of the generic plotting functions get put into Plotly.Plots,
@@ -654,7 +663,7 @@
         });
 
         // instantiate framework
-        gd.framework = micropolar.manager.framework();
+        gd.framework = Plotly.micropolar.manager.framework();
         //get rid of gd.layout stashed nodes
         layout = µ.util.deepExtend({}, gd._fullLayout);
         delete layout._container;
@@ -2361,7 +2370,8 @@
                 pleafPlus = p.parts[pend - 1] + '.' + pleaf,
                 // trunk nodes (everything except the leaf)
                 ptrunk = p.parts.slice(0, pend).join('.'),
-                parent = Plotly.Lib.nestedProperty(layout, ptrunk).get();
+                parentIn = Plotly.Lib.nestedProperty(gd.layout, ptrunk).get(),
+                parentFull = Plotly.Lib.nestedProperty(gd._fullLayout, ptrunk).get();
 
             redoit[ai] = aobj[ai];
 
@@ -2381,47 +2391,49 @@
             }
 
             // toggling log without autorange: need to also recalculate ranges
-            // logical XOR (ie will islog actually change)
-            if(pleaf==='type' && (parent.type ==='log' ?
-                    vi!=='log' : vi==='log')) {
-                var ax = parent;
-                if (!parent.range) {
+            // logical XOR (ie are we toggling log)
+            if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
+                var ax = parentIn;
+                if (!ax || !ax.range) {
                     doextra(ptrunk+'.autorange', true);
-                    continue;
                 }
-                if(!parent.autorange) {
+                else if(!parentFull.autorange) {
                     var r0 = ax.range[0],
                         r1 = ax.range[1];
-                    if(vi==='log') {
+                    if(vi === 'log') {
                         // if both limits are negative, autorange
-                        if(r0<=0 && r1<=0) {
-                            doextra(ptrunk+'.autorange',true);
-                            continue;
+                        if(r0 <= 0 && r1 <= 0) {
+                            doextra(ptrunk+'.autorange', true);
                         }
                         // if one is negative, set it 6 orders below the other.
                         // TODO: find the smallest positive val?
-                        else if(r0<=0) { r0 = r1/1e6; }
-                        else if(r1<=0) { r1 = r0/1e6; }
+                        if(r0 <= 0) r0 = r1/1e6;
+                        else if(r1 <= 0) r1 = r0/1e6;
                         // now set the range values as appropriate
-                        doextra(ptrunk+'.range[0]', Math.log(r0)/Math.LN10);
-                        doextra(ptrunk+'.range[1]', Math.log(r1)/Math.LN10);
+                        doextra(ptrunk+'.range[0]', Math.log(r0) / Math.LN10);
+                        doextra(ptrunk+'.range[1]', Math.log(r1) / Math.LN10);
                     }
                     else {
                         doextra(ptrunk+'.range[0]', Math.pow(10, r0));
                         doextra(ptrunk+'.range[1]', Math.pow(10, r1));
                     }
                 }
-                else if(vi==='log' && ax.range) {
+                else if(vi === 'log') {
                     // just make sure the range is positive and in the right
                     // order, it'll get recalculated later
-                    ax.range = ax.range[1]>ax.range[0] ? [1,2] : [2,1];
+                    ax.range = (ax.range[1] > ax.range[0]) ? [1, 2] : [2, 1];
                 }
             }
 
             // handle axis reversal explicitly, as there's no 'reverse' flag
             if(pleaf ==='reverse') {
-                parent.range.reverse();
-                if(parent.autorange) docalc = true;
+                if(parentIn.range) parentIn.range.reverse();
+                else {
+                    doextra(ptrunk+'.autorange', true);
+                    parentIn.range = [1, 0];
+                }
+
+                if(parentFull.autorange) docalc = true;
                 else doplot = true;
             }
             // send annotation mods one-by-one through Annotations.draw(),
@@ -3545,49 +3557,6 @@
         return (output==='object') ? obj : JSON.stringify(obj);
     };
 
-    plots.viewJson = function(){
-        var gd = Tabs.get();
-        var jsonString, data, layout;
-        if(gd.framework && gd.framework.isPolar){
-            var json= gd.framework.getLiveConfig();
-            jsonString = JSON.stringify(json);
-            data = json.data;
-            layout = json.layout;
-        }
-        else{
-            jsonString = Plotly.Plots.graphJson(gd);
-            data = JSON.parse(jsonString).data;
-            // Remove stream meta info
-            data.forEach(function(di){ delete di.stream; });
-            layout = JSON.parse(jsonString).layout;
-        }
-        var code = 'var data = ' + Plotly.Lib.escapeForHtml(JSON.stringify(data)) + ';\n';
-        code += 'var layout = ' + Plotly.Lib.escapeForHtml(JSON.stringify(layout)) + ';\n';
-        code += 'Plotly.plot(Tabs.get(), data, layout);';
+    return plots;
 
-        var jsonModal = $('#jsonModal');
-        var jsonViewer = jsonModal.find('#json-viewer').empty();
-        jsonViewer.data('jsontree', '')
-            .jsontree(jsonString,{collapsibleOuter:false}).show();
-        jsonModal.modal('show');
-
-        var jsonText = jsonModal.find('#json-text')
-            .text('').append(code).hide();
-        var buttonTexts = ['Switch to Plain Text', 'Switch to JSON Viewer'];
-        var viewerToggle = $('.js-plain-text-toggle').text(buttonTexts[0]);
-
-        viewerToggle.off('click').on('click', function(){
-            var isPlaintText = $(this).text() === buttonTexts[0];
-            jsonViewer.toggle(!isPlaintText);
-            jsonText.toggle(isPlaintText);
-            jsonText.get(0).select();
-            $(this).text(buttonTexts[+isPlaintText]);
-            return false;
-        });
-
-        jsonModal.find('.close').off('click').on('click', function(){
-            jsonModal.modal('hide');
-            return false;
-        });
-    };
-}()); // end Plots object definition
+}));
