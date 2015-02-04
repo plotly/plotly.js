@@ -109,7 +109,7 @@
         console.log('Unrecognized plot type ' + type +
             '. Ignoring this dataset.'
         );
-    }
+    };
 
     // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
     plots.newTab = function(divid, layout) {
