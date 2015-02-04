@@ -2384,7 +2384,8 @@
                 pleafPlus = p.parts[pend - 1] + '.' + pleaf,
                 // trunk nodes (everything except the leaf)
                 ptrunk = p.parts.slice(0, pend).join('.'),
-                parent = Plotly.Lib.nestedProperty(layout, ptrunk).get();
+                parentIn = Plotly.Lib.nestedProperty(gd.layout, ptrunk).get(),
+                parentFull = Plotly.Lib.nestedProperty(gd._fullLayout, ptrunk).get();
 
             redoit[ai] = aobj[ai];
 
@@ -2404,47 +2405,49 @@
             }
 
             // toggling log without autorange: need to also recalculate ranges
-            // logical XOR (ie will islog actually change)
-            if(pleaf==='type' && (parent.type ==='log' ?
-                    vi!=='log' : vi==='log')) {
-                var ax = parent;
-                if (!parent.range) {
+            // logical XOR (ie are we toggling log)
+            if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
+                var ax = parentIn;
+                if (!ax || !ax.range) {
                     doextra(ptrunk+'.autorange', true);
-                    continue;
                 }
-                if(!parent.autorange) {
+                else if(!parentFull.autorange) {
                     var r0 = ax.range[0],
                         r1 = ax.range[1];
-                    if(vi==='log') {
+                    if(vi === 'log') {
                         // if both limits are negative, autorange
-                        if(r0<=0 && r1<=0) {
-                            doextra(ptrunk+'.autorange',true);
-                            continue;
+                        if(r0 <= 0 && r1 <= 0) {
+                            doextra(ptrunk+'.autorange', true);
                         }
                         // if one is negative, set it 6 orders below the other.
                         // TODO: find the smallest positive val?
-                        else if(r0<=0) { r0 = r1/1e6; }
-                        else if(r1<=0) { r1 = r0/1e6; }
+                        if(r0 <= 0) r0 = r1/1e6;
+                        else if(r1 <= 0) r1 = r0/1e6;
                         // now set the range values as appropriate
-                        doextra(ptrunk+'.range[0]', Math.log(r0)/Math.LN10);
-                        doextra(ptrunk+'.range[1]', Math.log(r1)/Math.LN10);
+                        doextra(ptrunk+'.range[0]', Math.log(r0) / Math.LN10);
+                        doextra(ptrunk+'.range[1]', Math.log(r1) / Math.LN10);
                     }
                     else {
                         doextra(ptrunk+'.range[0]', Math.pow(10, r0));
                         doextra(ptrunk+'.range[1]', Math.pow(10, r1));
                     }
                 }
-                else if(vi==='log' && ax.range) {
+                else if(vi === 'log') {
                     // just make sure the range is positive and in the right
                     // order, it'll get recalculated later
-                    ax.range = ax.range[1]>ax.range[0] ? [1,2] : [2,1];
+                    ax.range = (ax.range[1] > ax.range[0]) ? [1, 2] : [2, 1];
                 }
             }
 
             // handle axis reversal explicitly, as there's no 'reverse' flag
             if(pleaf ==='reverse') {
-                parent.range.reverse();
-                if(parent.autorange) docalc = true;
+                if(parentIn.range) parentIn.range.reverse();
+                else {
+                    doextra(ptrunk+'.autorange', true);
+                    parentIn.range = [1, 0];
+                }
+
+                if(parentFull.autorange) docalc = true;
                 else doplot = true;
             }
             // send annotation mods one-by-one through Annotations.draw(),
