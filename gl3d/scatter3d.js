@@ -188,10 +188,6 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
 
 };
 
-function isTrue (bool) {
-    return bool;
-}
-
 function calculateErrorParams(errors) {
     /*jshint camelcase: false */
     var capSize = [0.0, 0.0, 0.0], i, e;
