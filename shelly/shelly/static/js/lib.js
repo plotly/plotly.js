@@ -1907,11 +1907,13 @@
         return objOut;
     };
 
-    // Simple extend function for module attributes
-    // (no need for nested support, in this case)
-    lib.extendAttr = function extendAttr(obj1, obj2) {
-        var objOut = obj1;
+    // Flat extend function (only copies values of first level keys)
+    lib.extendFlat = function extendFlat(obj1, obj2) {
+        var objOut = {};
 
+        Object.keys(obj1).forEach(function(k) {
+            objOut[k] = obj1[k];
+        });
         Object.keys(obj2).forEach(function(k) {
             objOut[k] = obj2[k];
         });
