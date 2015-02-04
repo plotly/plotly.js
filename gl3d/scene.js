@@ -730,7 +730,9 @@ proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
 proto.updateRenderQueue = function (glObject) {
     if (!glObject) return;
 
-    var visible = (glObject.visible === true) ? true : false;
+    // if visible === 'legendonly' -> don't render trace
+    var visible = (glObject.visible === true);
+
     var idx = this.renderQueue.indexOf(glObject);
 
     if (visible && idx === -1) {
