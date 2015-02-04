@@ -24,9 +24,9 @@ function Gl3dLayout (config) {
             ]
         },
         _nestedModules: {  // nested module coupling
-            'error_z': 'ErrorBars',
-            'error_x': 'ErrorBars',
-            'error_y': 'ErrorBars'
+            'xaxis': 'Gl3dAxes',
+            'yaxis': 'Gl3dAxes',
+            'zaxis': 'Gl3dAxes'
         }
     };
 

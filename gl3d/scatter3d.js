@@ -108,7 +108,12 @@ function Scatter3D (config) {
         },
         textposition: extendAttr(scatterAttrs.textposition,
                                  {dflt: 'top center'}),
-        textfont: scatterAttrs.textfont
+        textfont: scatterAttrs.textfont,
+        _nestedModules: {  // nested module coupling
+            'error_x': 'ErrorBars',
+            'error_y': 'ErrorBars',
+            'error_z': 'ErrorBars'
+        }
     };
 }
 

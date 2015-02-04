@@ -99,6 +99,9 @@ function Surface (config) {
                 max: 5.00,
                 dflt: 0.2
             }
+        },
+        _nestedModules: {  // nested module coupling
+            'colorbar': 'Colorbar'
         }
     };
 
