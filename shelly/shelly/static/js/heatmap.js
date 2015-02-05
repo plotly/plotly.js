@@ -295,16 +295,27 @@
             var len = arrayIn.length;
 
             // given vals are brick centers
-            if(len===numbricks) {
+            // hopefully length==numbricks, but use this method even if too few are supplied
+            // and extend it linearly based on the last two points
+            if(len <= numbricks) {
                 // contour plots only want the centers
-                if(Plotly.Plots.isContour(type)) return arrayIn.slice(0,numbricks);
-                if(numbricks===1) return [arrayIn[0]-0.5,arrayIn[0]+0.5];
+                if(Plotly.Plots.isContour(type)) arrayOut = arrayIn.slice(0,numbricks);
+                if(numbricks === 1) arrayOut = [arrayIn[0]-0.5,arrayIn[0]+0.5];
                 else {
                     arrayOut = [1.5*arrayIn[0]-0.5*arrayIn[1]];
                     for(i=1; i<len; i++) {
                         arrayOut.push((arrayIn[i-1] + arrayIn[i])*0.5);
                     }
                     arrayOut.push(1.5*arrayIn[len-1] - 0.5*arrayIn[len-2]);
+                }
+
+                if(len < numbricks) {
+                    var lastPt = arrayOut[arrayOut.length - 1],
+                        delta = lastPt - arrayOut[arrayOut.length - 2];
+                    for(i = len; i < numbricks; i++) {
+                        lastPt += delta;
+                        arrayOut.push(lastPt);
+                    }
                 }
             }
             // hopefully length==numbricks+1, but do something regardless:
