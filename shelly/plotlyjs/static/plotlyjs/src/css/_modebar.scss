@@ -6,6 +6,15 @@
     background: rgba(255,255,255,0.7);
 }
 
+.modebar--hover {
+    opacity: 0;
+    @include vendor('transition', opacity 0.3s ease 0);
+}
+
+&:hover .modebar--hover {
+    opacity: 1;
+}
+
 .modebar-group {
     float: left;
     display: inline-block;
