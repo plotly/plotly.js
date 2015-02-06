@@ -19,10 +19,19 @@
     // ---external global dependencies
     /* global d3:false, PNGlib:false, tinycolor:false */
 
+    var scatterAttrs = Plotly.Scatter.attributes;
+
     var heatmap = Plotly.Heatmap = {};
 
     heatmap.attributes = {
         z: {type: 'data_array'},
+        x: scatterAttrs.x,
+        x0: scatterAttrs.x0,
+        dx: scatterAttrs.dx,
+        y: scatterAttrs.y,
+        y0: scatterAttrs.y0,
+        dy: scatterAttrs.dy,
+        text: {type: 'data_array'},
         transpose: {
             type: 'boolean',
             dflt: false
@@ -67,25 +76,18 @@
             type: 'boolean',
             dflt: false
         },
-        text: {type: 'data_array'},
-        // Inherited attributes - not used by supplyDefaults, so if there's
-        // a better way to do this feel free to change.
-        x: {from: 'Scatter'},
-        x0: {from: 'Scatter'},
-        dx: {from: 'Scatter'},
-        y: {from: 'Scatter'},
-        y0: {from: 'Scatter'},
-        dy: {from: 'Scatter'},
-        colorbar: {allFrom: 'Colorbar'}
+        _nestedModules: {  // nested module coupling
+            'colorbar': 'Colorbar'
+        },
+        _composedModules: {  // composed module coupling
+            'histogram2d': 'Histogram',
+            'histogram2dcontour': 'Histogram'
+        }
     };
 
     heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
-        }
-
-        function coerceScatter(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
         if(Plotly.Plots.isHist2D(traceOut.type)) {
@@ -104,18 +106,18 @@
 
             coerce('transpose');
 
-            var x = coerceScatter('x'),
+            var x = coerce('x'),
                 xtype = x ? coerce('xtype', 'array') : 'scaled';
             if(xtype==='scaled') {
-                coerceScatter('x0');
-                coerceScatter('dx');
+                coerce('x0');
+                coerce('dx');
             }
 
-            var y = coerceScatter('y'),
+            var y = coerce('y'),
                 ytype = y ? coerce('ytype', 'array') : 'scaled';
             if(ytype==='scaled') {
-                coerceScatter('y0');
-                coerceScatter('dy');
+                coerce('y0');
+                coerce('dy');
             }
 
             coerce('connectgaps');

@@ -21,8 +21,14 @@
 
     var contour = Plotly.Contour = {};
 
+    // For coerce-level coupling
+    var scatterLineAttrs = Plotly.Scatter.attributes.line;
+
     contour.attributes = {
-        allFrom: 'Heatmap',
+        _composedModules: {  // composed module coupling
+            'contour': 'Heatmap',
+            'histogram2dcontour': 'Heatmap'
+        },
         autocontour: {
             type: 'boolean',
             dflt: true
@@ -55,20 +61,16 @@
             }
         },
         line: {
-            color: {from: 'Scatter'},
-            width: {from: 'Scatter'},
-            dash: {from: 'Scatter'},
-            smoothing: {from: 'Scatter'}
+            color: scatterLineAttrs.color,
+            width: scatterLineAttrs.width,
+            dash: scatterLineAttrs.dash,
+            smoothing: scatterLineAttrs.smoothing
         }
     };
 
     contour.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(traceIn, traceOut, contour.attributes, attr, dflt);
-        }
-
-        function coerceScatter(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
         var autocontour = coerce('autocontour');
@@ -82,12 +84,12 @@
         if(coloring==='fill') coerce('contours.showlines');
 
         if(traceOut.contours.showlines!==false) {
-            if(coloring!=='lines') coerceScatter('line.color', '#000');
-            coerceScatter('line.width', 0.5);
-            coerceScatter('line.dash');
+            if(coloring!=='lines') coerce('line.color', '#000');
+            coerce('line.width', 0.5);
+            coerce('line.dash');
         }
 
-        coerceScatter('line.smoothing');
+        coerce('line.smoothing');
 
         Plotly.Heatmap.supplyDefaults(traceIn, traceOut, defaultColor, layout);
     };
