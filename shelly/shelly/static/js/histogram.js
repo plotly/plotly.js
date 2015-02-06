@@ -17,8 +17,12 @@
     /* global Plotly:false */
 
     var histogram = Plotly.Histogram = {};
-    // histogram is a weird one... it has its own calc function, but uses Bars.plot to display
+    // histogram is a weird one...
+    // it has its own calc function, but uses Bars.plot to display
     // and Bars.setPositions for stacking and grouping
+
+    var scatterAttrs = Plotly.Scatter.attributes,
+        barAttrs = Plotly.Bars.attributes;
 
     var defaultBins = {
         start: {
@@ -36,19 +40,13 @@
     };
 
     histogram.attributes = {
-        // Not so excited about either of these inheritance patterns... but I
-        // think it's clear what they mean: histogram2d inherits everything from
-        // Heatmap.attributes plus marker color from Scatter (not anymore), and histogram
-        // inherits everything from Bars
-        allFrom: {
-            histogram: 'Bars',
-            histogram2d: 'Heatmap',
-            histogram2dcontour: 'Contour'
-        },
         z: {type: 'data_array'},
+        x: scatterAttrs.x,
+        y: scatterAttrs.y,
         marker: {
             color: {type: 'data_array'}
         },
+        orientation: barAttrs.orientation,
         histfunc: {
             type: 'enumerated',
             values: ['count', 'sum', 'avg', 'min', 'max'],
@@ -86,14 +84,11 @@
             return Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, attr, dflt);
         }
 
-        function coerceModule(module, attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Plotly[module].attributes, attr, dflt);
-        }
-
         var binDirections = ['x'],
             hasAggregationData,
-            x = coerceModule('Scatter', 'x'),
-            y = coerceModule('Scatter', 'y');
+            x = coerce('x'),
+            y = coerce('y');
+
         if(Plotly.Plots.isHist2D(traceOut.type)) {
             // we could try to accept x0 and dx, etc...
             // but that's a pretty weird use case.
@@ -107,9 +102,8 @@
             hasAggregationData = coerce('z') || coerce('marker.color');
 
             binDirections = ['x','y'];
-        }
-        else {
-            coerceModule('Bars', 'orientation', (y && !x) ? 'h' : 'v');
+        } else {
+            coerce('orientation', (y && !x) ? 'h' : 'v');
 
             if(!traceOut[traceOut.orientation==='v' ? 'x' : 'y']) {
                 traceOut.visible = false;

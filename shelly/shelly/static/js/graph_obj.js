@@ -82,9 +82,11 @@
         return type === 'surface';
     };
 
-    var ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
+    // ALLTYPES and getModule are used for the graph_reference app
 
-    function getModule(trace) {
+    plots.ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
+
+    plots.getModule = function getModule(trace) {
         var type = trace.type;
 
         if('r' in trace) {
@@ -105,7 +107,7 @@
         console.log('Unrecognized plot type ' + type +
             '. Ignoring this dataset.'
         );
-    }
+    };
 
     // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
     plots.newTab = function(divid, layout) {
@@ -984,7 +986,7 @@
     plots.attributes = {
         type: {
             type: 'enumerated',
-            values: ALLTYPES,
+            values: plots.ALLTYPES,
             dflt: 'scatter'
         },
         visible: {
@@ -993,6 +995,7 @@
             dflt: true
         },
         scene: {
+            // TODO should not be available in 2d layouts
             type: 'sceneid',
             dflt: 'scene'
         },
@@ -1010,10 +1013,12 @@
             type: 'string'
         },
         xaxis: {
+            // TODO should not be available in 3d layouts
             type: 'axisid',
             dflt: 'x'
         },
         yaxis: {
+            // TODO should not be available in 3d layouts
             type: 'axisid',
             dflt: 'y'
         },
@@ -1167,7 +1172,7 @@
         // module-specific attributes --- note: we need to send a trace into
         // the 3D modules to have it removed from the webgl context.
         if (visible || scene) {
-            module = getModule(traceOut);
+            module = plots.getModule(traceOut);
             traceOut._module = module;
         }
 
@@ -1265,7 +1270,7 @@
             dflt: '#fff'
         },
         plot_bgcolor: {
-            // defined here, but set in Axes.supplyDefaults
+            // defined here, but set in Axes.supplyLayoutDefaults
             // because it needs to know if there are (2D) axes or not
             type: 'color',
             dflt: '#fff'
@@ -1285,7 +1290,7 @@
             dflt: false
         },
         showlegend: {
-            // handled in legend.supplyDefaults
+            // handled in legend.supplyLayoutDefaults
             // but included here because it's not in the legend object
             type: 'boolean'
         },
@@ -1336,14 +1341,11 @@
 
     plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
 
-        var moduleDefaults = ['Axes', 'Legend', 'Annotations', 'Fx'];
-        var moduleLayoutDefaults = ['Bars', 'Boxes', 'Gl3dLayout'];
+        var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Fx',
+                                    'Bars', 'Boxes', 'Gl3dLayout'];
 
         // don't add a check for 'function in module' as it is better to error out and
         // secure the module API then not apply the default function.
-        moduleDefaults.forEach( function (module) {
-            if (Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
-        });
         moduleLayoutDefaults.forEach( function (module) {
             if (Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         });
@@ -1406,7 +1408,7 @@
         Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
 
         gd.calcdata = gd._fullData.map(function(trace, i) {
-            var module = getModule(trace),
+            var module = plots.getModule(trace),
                 cd = [];
 
             if(module && trace.visible === true) {
