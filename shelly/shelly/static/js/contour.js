@@ -193,10 +193,10 @@
         makeCrossings(pathinfo);
         findAllPaths(pathinfo);
 
-        var leftedge = xa.c2p(x[0]),
-            rightedge = xa.c2p(x[x.length-1]),
-            bottomedge = ya.c2p(y[0]),
-            topedge = ya.c2p(y[y.length-1]),
+        var leftedge = xa.c2p(x[0], true),
+            rightedge = xa.c2p(x[x.length-1], true),
+            bottomedge = ya.c2p(y[0], true),
+            topedge = ya.c2p(y[y.length-1], true),
             perimeter = [
                 [leftedge, topedge],
                 [rightedge, topedge],
@@ -566,13 +566,13 @@
 
         if(step[1]) {
             var dx = (pi.level - zxy) / (pi.z[locy][locx+1] - zxy);
-            return [xa.c2p((1-dx) * pi.x[locx] + dx * pi.x[locx+1]),
-                    ya.c2p(pi.y[locy])];
+            return [xa.c2p((1-dx) * pi.x[locx] + dx * pi.x[locx+1], true),
+                    ya.c2p(pi.y[locy], true)];
         }
         else {
             var dy = (pi.level - zxy) / (pi.z[locy+1][locx] - zxy);
-            return [xa.c2p(pi.x[locx]),
-                    ya.c2p((1-dy) * pi.y[locy] + dy * pi.y[locy+1])];
+            return [xa.c2p(pi.x[locx], true),
+                    ya.c2p((1-dy) * pi.y[locy] + dy * pi.y[locy+1], true)];
         }
     }
 
