@@ -678,11 +678,12 @@ proto.plotTrace = function (trace, sceneLayout) {
 
         var glObject = this.glDataMap[trace.uid] || null;
 
-        if (trace.visible) {
+        if (trace.visible === true) {
             glObject = trace._module.update(this, sceneLayout, trace, glObject);
+            glObject.visible = true;
         }
 
-        if (!trace.visible && glObject) glObject.visible = trace.visible;
+        if (trace.visible!==true && glObject) glObject.visible = trace.visible;
 
         if (glObject) this.glDataMap[trace.uid] = glObject;
 
@@ -727,10 +728,11 @@ proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
 };
 
 proto.updateRenderQueue = function (glObject) {
-
     if (!glObject) return;
 
-    var visible = (glObject.visible === false) ? false : true;
+    // if visible === 'legendonly' -> don't render trace
+    var visible = (glObject.visible === true);
+
     var idx = this.renderQueue.indexOf(glObject);
 
     if (visible && idx === -1) {
