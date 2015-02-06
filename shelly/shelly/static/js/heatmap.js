@@ -300,7 +300,7 @@
             if(len <= numbricks) {
                 // contour plots only want the centers
                 if(Plotly.Plots.isContour(type)) arrayOut = arrayIn.slice(0,numbricks);
-                if(numbricks === 1) arrayOut = [arrayIn[0]-0.5,arrayIn[0]+0.5];
+                else if(numbricks === 1) arrayOut = [arrayIn[0]-0.5,arrayIn[0]+0.5];
                 else {
                     arrayOut = [1.5*arrayIn[0]-0.5*arrayIn[1]];
                     for(i=1; i<len; i++) {
