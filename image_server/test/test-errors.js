@@ -2,6 +2,7 @@
 
 var test = require('tape');
 var request = require('request');
+var getOptions = require('./tools/get-options');
 var fs = require('fs');
 
 if (!fs.existsSync('./test-images')) fs.mkdirSync('./test-images');
@@ -141,22 +142,3 @@ test('test bad figure, should get error 534: bad user json', function (t) {
 
 
 });
-
-
-
-/*
-*   Give it a json object for the body,
-*   it'll return an options object ready
-*   for request().
-*/
-function getOptions (body, url) {
-
-    var opts = {
-        url: url || 'http://localhost:9010/',
-        method: 'POST'
-    };
-
-    if (body) opts.body = JSON.stringify(body);
-
-    return opts;
-}
