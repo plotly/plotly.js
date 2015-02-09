@@ -190,16 +190,15 @@
             arrayOk: true
         },
         // TODO: all three of the sub-attributes here should be arrayOk
-        // that'll be easier once we work in Etienne's idea about how fonts should work.
-        // also maybe we should add colorscale?
-        textfont: {type: 'font'}
+        textfont: {type: 'font'},
+        _nestedModules: {  // nested module coupling
+            'error_y': 'ErrorBars',
+            'error_x': 'ErrorBars'
+            // TODO: we should add colorbar?
+        }
     };
 
-    scatter.supplyXY = function(traceIn, traceOut) {
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-        }
-
+    scatter.handleXYDefaults = function(traceIn, traceOut, coerce) {
         var len,
             x = coerce('x'),
             y = coerce('y');
@@ -236,7 +235,7 @@
             return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
-        var len = scatter.supplyXY(traceIn, traceOut),
+        var len = scatter.handleXYDefaults(traceIn, traceOut, coerce),
             // TODO: default mode by orphan points...
             defaultMode = len < scatter.PTS_LINESONLY ? 'lines+markers' : 'lines';
         if(!len) {
