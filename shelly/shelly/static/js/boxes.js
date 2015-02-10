@@ -621,14 +621,9 @@
                         'stroke-dasharray': (2*lineWidth)+'px,'+lineWidth+'px'
                     })
                     .call(Plotly.Color.stroke, trace.line.color);
-            })
-            .selectAll('g.points')
-                .each(function(d){
-                    var trace = d.trace;
-
-                    d3.select(this).selectAll('path')
-                        .call(Plotly.Drawing.pointStyle, trace);
-                });
+                d3.select(this).selectAll('g.points path')
+                    .call(Plotly.Drawing.pointStyle, trace);
+            });
     };
 
     boxes.hoverPoints = function(pointData, xval, yval, hovermode) {
