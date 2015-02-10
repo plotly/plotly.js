@@ -809,8 +809,13 @@
 
         });
 
-        var sceneKeys = Plotly.Lib.getSceneKeys(layout);
+        // cannot have scene1, numbering goes scene, scene2, scene3...
+        if(layout.scene1) {
+            if(!layout.scene) layout.scene = layout.scene1;
+            delete layout.scene1;
+        }
 
+        var sceneKeys = Plotly.Lib.getSceneKeys(layout);
         sceneKeys.forEach( function (sceneKey) {
             var sceneLayout = layout[sceneKey];
             // fix for saved float32-arrays
@@ -820,7 +825,6 @@
                 camp[1] = [camp[1][0], camp[1][1], camp[1][2]];
             }
         });
-
 
         var legend = layout.legend;
         if(legend) {
@@ -925,6 +929,11 @@
             // axis ids x1 -> x, y1-> y
             if(trace.xaxis) trace.xaxis = Plotly.Axes.cleanId(trace.xaxis, 'x');
             if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
+
+            // scene ids scene1 -> scene
+            if (plots.isGL3D(trace.type) && trace.scene) {
+                trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
+            }
 
             // textposition - support partial attributes (ie just 'top')
             // and incorrect use of middle / center etc.
