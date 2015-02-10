@@ -1089,7 +1089,13 @@
         // update object references in calcdata
         if((gd.calcdata||[]).length===gd._fullData.length) {
             gd._fullData.forEach(function(trace, i) {
-                (gd.calcdata[i][0]||{}).trace = trace;
+                if (trace.type === 'box' && gd.calcdata[i].length) {
+                    gd.calcdata[i].forEach(function (d) {
+                        d.trace = trace;
+                    });
+                } else {
+                    (gd.calcdata[i][0]||{}).trace = trace;
+                }
             });
         }
     };
