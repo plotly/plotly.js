@@ -16,9 +16,7 @@
     /* jshint camelcase: false */
 
     // ---Plotly global modules
-    /* global Plotly:false, µ:false, micropolar:false,
-        SceneFrame:false, Tabs:false, Examples:false,
-        ENV:false */
+    /* global µ:false, SceneFrame:false, Examples:false, ENV:false */
 
     // ---global functions not yet namespaced
     /* global setFileAndCommentsSize:false */
@@ -84,9 +82,11 @@
         return type === 'surface';
     };
 
-    var ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
+    // ALLTYPES and getModule are used for the graph_reference app
 
-    function getModule(trace) {
+    plots.ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
+
+    plots.getModule = function getModule(trace) {
         var type = trace.type;
 
         if('r' in trace) {
@@ -107,7 +107,7 @@
         console.log('Unrecognized plot type ' + type +
             '. Ignoring this dataset.'
         );
-    }
+    };
 
     // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
     plots.newTab = function(divid, layout) {
@@ -158,6 +158,7 @@
         showTips: true, // new users see some hints about interactivity
         showLink: true, // link to open this plot in plotly
         sendData: true, // if we show a link, does it contain data or just link to a plotly file?
+        displayModeBar: 'hover', // display the modebar (true, false, or 'hover')
         displaylogo: true // add the plotly logo on the end of the modebar
     };
 
@@ -169,8 +170,14 @@
             Object.keys(config).forEach(function(key) {
                 if(key in context) context[key] = config[key];
             });
+
+            // cause a remake of the modebar any time we change context
+            if(gd._fullLayout && gd._fullLayout._modebar) {
+                delete gd._fullLayout._modebar;
+            }
         }
 
+        // TODO: get rid of this - don't use gd.<attribute>, only gd._context.<attribute>
         Object.keys(plots.defaultConfig).forEach( function (key) {
             if (config && key in config) gd[key] = config[key];
             else gd[key] = plots.defaultConfig[key];
@@ -184,6 +191,7 @@
             context.scrollZoom = false;
             context.showTips = false;
             context.showLink = false;
+            context.displayModeBar = false;
         }
     }
 
@@ -665,7 +673,7 @@
         // instantiate framework
         gd.framework = Plotly.micropolar.manager.framework();
         //get rid of gd.layout stashed nodes
-        layout = µ.util.deepExtend({}, gd._fullLayout);
+        layout = Plotly.micropolar.util.deepExtend({}, gd._fullLayout);
         delete layout._container;
         delete layout._paperdiv;
         delete layout.autosize;
@@ -978,7 +986,7 @@
     plots.attributes = {
         type: {
             type: 'enumerated',
-            values: ALLTYPES,
+            values: plots.ALLTYPES,
             dflt: 'scatter'
         },
         visible: {
@@ -987,6 +995,7 @@
             dflt: true
         },
         scene: {
+            // TODO should not be available in 2d layouts
             type: 'sceneid',
             dflt: 'scene'
         },
@@ -1004,10 +1013,12 @@
             type: 'string'
         },
         xaxis: {
+            // TODO should not be available in 3d layouts
             type: 'axisid',
             dflt: 'x'
         },
         yaxis: {
+            // TODO should not be available in 3d layouts
             type: 'axisid',
             dflt: 'y'
         },
@@ -1161,7 +1172,7 @@
         // module-specific attributes --- note: we need to send a trace into
         // the 3D modules to have it removed from the webgl context.
         if (visible || scene) {
-            module = getModule(traceOut);
+            module = plots.getModule(traceOut);
             traceOut._module = module;
         }
 
@@ -1259,7 +1270,7 @@
             dflt: '#fff'
         },
         plot_bgcolor: {
-            // defined here, but set in Axes.supplyDefaults
+            // defined here, but set in Axes.supplyLayoutDefaults
             // because it needs to know if there are (2D) axes or not
             type: 'color',
             dflt: '#fff'
@@ -1279,7 +1290,7 @@
             dflt: false
         },
         showlegend: {
-            // handled in legend.supplyDefaults
+            // handled in legend.supplyLayoutDefaults
             // but included here because it's not in the legend object
             type: 'boolean'
         },
@@ -1330,14 +1341,11 @@
 
     plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
 
-        var moduleDefaults = ['Axes', 'Legend', 'Annotations', 'Fx'];
-        var moduleLayoutDefaults = ['Bars', 'Boxes', 'Gl3dLayout'];
+        var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Fx',
+                                    'Bars', 'Boxes', 'Gl3dLayout'];
 
         // don't add a check for 'function in module' as it is better to error out and
         // secure the module API then not apply the default function.
-        moduleDefaults.forEach( function (module) {
-            if (Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
-        });
         moduleLayoutDefaults.forEach( function (module) {
             if (Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         });
@@ -1400,7 +1408,7 @@
         Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
 
         gd.calcdata = gd._fullData.map(function(trace, i) {
-            var module = getModule(trace),
+            var module = plots.getModule(trace),
                 cd = [];
 
             if(module && trace.visible === true) {
@@ -1663,7 +1671,8 @@
             redoFunc = deleteTraces,
             undoArgs = [gd, traces, indices],
             redoArgs = [gd, indices],
-            i;
+            i,
+            deletedTrace;
 
         // make sure indices are defined
         if (typeof indices === 'undefined') {
@@ -1678,9 +1687,9 @@
 
         // we want descending here so that splicing later doesn't affect indexing
         indices.sort().reverse();
-
         for (i = 0; i < indices.length; i += 1) {
-            traces.push(gd.data.splice(indices[i], 1));
+            deletedTrace = gd.data.splice(indices[i], 1)[0];
+            traces.push(deletedTrace);
         }
 
         Plotly.redraw(gd);

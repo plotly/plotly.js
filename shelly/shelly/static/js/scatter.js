@@ -190,16 +190,15 @@
             arrayOk: true
         },
         // TODO: all three of the sub-attributes here should be arrayOk
-        // that'll be easier once we work in Etienne's idea about how fonts should work.
-        // also maybe we should add colorscale?
-        textfont: {type: 'font'}
+        textfont: {type: 'font'},
+        _nestedModules: {  // nested module coupling
+            'error_y': 'ErrorBars',
+            'error_x': 'ErrorBars'
+            // TODO: we should add colorbar?
+        }
     };
 
-    scatter.supplyXY = function(traceIn, traceOut) {
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-        }
-
+    scatter.handleXYDefaults = function(traceIn, traceOut, coerce) {
         var len,
             x = coerce('x'),
             y = coerce('y');
@@ -236,7 +235,7 @@
             return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
-        var len = scatter.supplyXY(traceIn, traceOut),
+        var len = scatter.handleXYDefaults(traceIn, traceOut, coerce),
             // TODO: default mode by orphan points...
             defaultMode = len < scatter.PTS_LINESONLY ? 'lines+markers' : 'lines';
         if(!len) {
@@ -396,8 +395,20 @@
         // most cases both should be padded on both ends, so start with that.
         var xOptions = {padded:true},
             yOptions = {padded:true};
-        // include marker size
+
         if(scatter.hasMarkers(trace)) {
+
+            // Treat size like x or y arrays --- Run d2c
+            // this needs to go before ppad computation
+            var s = trace.marker.size;
+            if (Array.isArray(s)) {
+                // I tried auto-type but category and dates dont make much sense.
+                var ax = {type: 'linear'};
+                Plotly.Axes.setConvert(ax);
+                s = ax.makeCalcdata(trace.marker, 'size');
+                if(s.length>serieslen) s.splice(serieslen, s.length-serieslen);
+            }
+
             var sizeref = 1.6*(trace.marker.sizeref||1),
                 markerTrans;
             if(trace.marker.sizemode==='area') {
@@ -410,9 +421,9 @@
                     return Math.max((v||0)/sizeref,3);
                 };
             }
-            xOptions.ppad = yOptions.ppad = $.isArray(trace.marker.size) ?
-                trace.marker.size.map(markerTrans) :
-                markerTrans(trace.marker.size);
+            xOptions.ppad = yOptions.ppad = $.isArray(s) ?
+                s.map(markerTrans) : markerTrans(s);
+
         }
         // TODO: text size
 
@@ -456,6 +467,10 @@
             cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ?
                 {x:x[i],y:y[i]} : {x:false, y:false});
         }
+
+        // this has migrated up from arraysToCalcdata as we have a reference to 's' here
+        if (typeof s !== undefined) Plotly.Lib.mergeArray(s, cd, 'ms');
+
         gd.firstscatter = false;
         return cd;
     };
@@ -520,7 +535,6 @@
         if(marker && marker.line) {
             var markerLine = marker.line;
             Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
-            Plotly.Lib.mergeArray(marker.size, cd, 'ms');
             Plotly.Lib.mergeArray(marker.symbol, cd, 'mx');
             Plotly.Lib.mergeArray(marker.color, cd, 'mc');
             Plotly.Lib.mergeArray(markerLine.color, cd, 'mlc');

@@ -8,110 +8,121 @@ function Scatter3D (config) {
 
     this.config = config;
 
+    var Plotly = config.Plotly,
+        scatterAttrs = Plotly.Scatter.attributes,
+        scatterLineAttrs = scatterAttrs.line,
+        scatterMarkerAttrs = scatterAttrs.marker,
+        scatterMarkerLineAttrs = scatterMarkerAttrs.line,
+        extendFlat = Plotly.Lib.extendFlat;
+
+    this.attributes = {
+        x: {type: 'data_array'},
+        y: {type: 'data_array'},
+        z: {type: 'data_array'},
+        text: scatterAttrs.text,
+        surfaceaxis: {
+            type: 'enumerated',
+            values: [-1,0,1,2],
+            dflt: -1
+        },
+        surfacecolor: {
+            type: 'color'
+        },
+        projection: {
+            x: {
+                show: {
+                    type: 'boolean',
+                    dflt: false
+                },
+                opacity: {
+                    type: 'number',
+                    min: 0,
+                    max: 1,
+                    dflt: 1
+                },
+                scale: {
+                    type: 'number',
+                    min: 0,
+                    max: 10,
+                    dflt: 2/3
+                }
+            },
+            y: {
+                show: {
+                    type: 'boolean',
+                    dflt: false
+                },
+                opacity: {
+                    type: 'number',
+                    min: 0,
+                    max: 1,
+                    dflt: 1
+                },
+                scale: {
+                    type: 'number',
+                    min: 0,
+                    max: 10,
+                    dflt: 2/3
+                }
+            },
+            z: {
+                show: {
+                    type: 'boolean',
+                    dflt: false
+                },
+                opacity: {
+                    type: 'number',
+                    min: 0,
+                    max: 1,
+                    dflt: 1
+                },
+                scale: {
+                    type: 'number',
+                    min: 0,
+                    max: 10,
+                    dflt: 2/3
+                }
+            }
+        },
+        mode: extendFlat(scatterAttrs.mode,  // shouldn't this be on-par with 2D?
+                         {dflt: 'lines+markers'}),
+        line: {
+            color: scatterLineAttrs.color,
+            width: scatterLineAttrs.width,
+            dash: scatterLineAttrs.dash
+        },
+        marker: {  // Parity with scatter.js?
+            color: scatterMarkerAttrs.color,
+            symbol: scatterMarkerAttrs.symbol,
+            size: extendFlat(scatterMarkerAttrs.size,
+                             {dflt: 8}),
+            opacity: extendFlat(scatterMarkerAttrs.opacity,
+                                {dflt: 1}),
+            line: {
+                color: extendFlat(scatterMarkerLineAttrs.color,
+                                  {dflt: 'rgb(0,0,0)'}),
+                width: extendFlat(scatterMarkerLineAttrs.width,
+                                  {dflt: 0})
+            }
+
+        },
+        textposition: extendFlat(scatterAttrs.textposition,
+                                 {dflt: 'top center'}),
+        textfont: scatterAttrs.textfont,
+        _nestedModules: {  // nested module coupling
+            'error_x': 'ErrorBars',
+            'error_y': 'ErrorBars',
+            'error_z': 'ErrorBars'
+        }
+    };
 }
 
 module.exports = Scatter3D;
 
 var proto = Scatter3D.prototype;
 
-proto.attributes = {
-    x: {type: 'data_array'},
-    y: {type: 'data_array'},
-    z: {type: 'data_array'},
-    text: {from: 'Scatter'},
-    surfaceaxis: {
-        type: 'enumerated',
-        values: [-1,0,1,2],
-        dflt: -1
-    },
-    surfacecolor: {
-        type: 'color'
-    },
-    projection: {
-        x: {
-            show: {
-                type: 'boolean',
-                dflt: false
-            },
-            opacity: {
-                type: 'number',
-                min: 0,
-                max: 1,
-                dflt: 1
-            },
-            scale: {
-                type: 'number',
-                min: 0,
-                max: 10,
-                dflt: 2/3
-            }
-        },
-        y: {
-            show: {
-                type: 'boolean',
-                dflt: false
-            },
-            opacity: {
-                type: 'number',
-                min: 0,
-                max: 1,
-                dflt: 1
-            },
-            scale: {
-                type: 'number',
-                min: 0,
-                max: 10,
-                dflt: 2/3
-            }
-        },
-        z: {
-            show: {
-                type: 'boolean',
-                dflt: false
-            },
-            opacity: {
-                type: 'number',
-                min: 0,
-                max: 1,
-                dflt: 1
-            },
-            scale: {
-                type: 'number',
-                min: 0,
-                max: 10,
-                dflt: 2/3
-            }
-        }
-    },
-    mode: {from: 'Scatter'},
-    line: {
-        color: {from: 'Scatter'},
-        width: {from: 'Scatter'},
-        dash: {from: 'Scatter'}
-    },
-    marker: {
-        symbol: {from: 'Scatter'},
-        size: {from: 'Scatter'},
-        opacity: {from: 'Scatter'},
-        line: {
-            color: {from: 'Scatter'},
-            width: {from: 'Scatter'}
-        }
 
-    },
-    textposition: {from: 'Scatter'},
-    textfont: {from: 'Scatter'}
-};
-
-
-proto.supplyXYZ = function (traceIn, traceOut) {
-    var _this = this;
-    var Plotly = this.config.Plotly;
-
-    function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, _this.attributes, attr, dflt);
-    }
-
+proto.handleXYZDefaults = function (traceIn, traceOut, coerce) {
     var len = 0,
         x = coerce('x'),
         y = coerce('y'),
@@ -137,34 +148,29 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         return Plotly.Lib.coerce(traceIn, traceOut, _this.attributes, attr, dflt);
     }
 
-    function coerceScatter(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, Scatter.attributes, attr, dflt);
-    }
+    this.handleXYZDefaults(traceIn, traceOut, coerce);
 
-    this.supplyXYZ(traceIn, traceOut);
-
-    coerceScatter('text');
-    coerceScatter('mode', 'lines+markers');
+    coerce('text');
+    coerce('mode');
 
     if (Scatter.hasLines(traceOut)) {
-        linecolor = coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
-        coerceScatter('line.width');
-        coerceScatter('line.dash');
+        linecolor = coerce('line.color', (traceIn.marker||{}).color || defaultColor);
+        coerce('line.width');
+        coerce('line.dash');
     }
 
     if (Scatter.hasMarkers(traceOut)) {
-        markercolor = coerceScatter('marker.color', defaultColor);
-        coerceScatter('marker.symbol');
-        coerceScatter('marker.size', 8);
-        coerceScatter('marker.opacity', 1);
-        coerceScatter('marker.line.width', 0);
-        // TODO parity with scatter.js
-        coerceScatter('marker.line.color', 'rgb(0,0,0)');
+        markercolor = coerce('marker.color', defaultColor);
+        coerce('marker.symbol');
+        coerce('marker.size');
+        coerce('marker.opacity');
+        coerce('marker.line.width');
+        coerce('marker.line.color');
     }
 
     if (Scatter.hasText(traceOut)) {
-        coerceScatter('textposition', 'top center');
-        coerceScatter('textfont', layout.font);
+        coerce('textposition');
+        coerce('textfont', layout.font);
     }
 
     if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', linecolor || markercolor);
@@ -187,10 +193,6 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
 
 };
-
-function isTrue (bool) {
-    return bool;
-}
 
 function calculateErrorParams(errors) {
     /*jshint camelcase: false */

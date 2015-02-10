@@ -4,29 +4,35 @@ module.exports = Gl3dLayout;
 function Gl3dLayout (config) {
 
     this.config = config;
+
+    this.layoutAttributes = {
+        bgcolor: {
+            type: 'color',
+            dflt: '#fff'
+        },
+        cameraposition: {
+            type: 'data_array'
+        },
+        domain: {
+            x: [
+                {type: 'number', min: 0, max: 1},
+                {type: 'number', min: 0, max: 1}
+            ],
+            y:[
+                {type: 'number', min: 0, max: 1, dflt: 0},
+                {type: 'number', min: 0, max: 1, dflt: 1}
+            ]
+        },
+        _nestedModules: {  // nested module coupling
+            'xaxis': 'Gl3dAxes',
+            'yaxis': 'Gl3dAxes',
+            'zaxis': 'Gl3dAxes'
+        }
+    };
+
 }
 
 var proto = Gl3dLayout.prototype;
-
-proto.sceneLayoutAttributes = {
-    bgcolor: {
-        type: 'color',
-        dflt: '#fff'
-    },
-    cameraposition: {
-        type: 'data_array'
-    },
-    domain: {
-        x: [
-            {type: 'number', min: 0, max: 1},
-            {type: 'number', min: 0, max: 1}
-        ],
-        y:[
-            {type: 'number', min: 0, max: 1, dflt: 0},
-            {type: 'number', min: 0, max: 1, dflt: 1}
-        ]
-    }
-};
 
 
 proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
@@ -36,7 +42,6 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
     var _this = this;
     var scenes = [];
     var Plotly = this.config.Plotly;
-    var $ = this.config.jQuery;
 
     for (var i = 0; i < fullData.length; ++i) {
         var d = fullData[i];
@@ -52,7 +57,7 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
     delete layoutOut.yaxis;
 
     // Get number of scenes to compute default scene domain
-    scenesLength = scenes.length;
+    var scenesLength = scenes.length;
 
     for (var i_scene = 0; i_scene < scenesLength; ++i_scene) {
         var scene = scenes[i_scene];
@@ -67,16 +72,17 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
         var sceneLayoutIn = layoutIn[scene] || {};
         var sceneLayoutOut = {};
 
-        function coerceScene(attr, dflt) {
-            return Plotly.Lib.coerce(sceneLayoutIn, sceneLayoutOut, _this.sceneLayoutAttributes, attr, dflt);
+        function coerce(attr, dflt) {
+            return Plotly.Lib.coerce(sceneLayoutIn, sceneLayoutOut,
+                                     _this.layoutAttributes, attr, dflt);
         }
 
-        coerceScene('bgcolor');
-        coerceScene('cameraposition');
-        coerceScene('domain.x[0]', i_scene / scenesLength);
-        coerceScene('domain.x[1]', (i_scene+1) / scenesLength);
-        coerceScene('domain.y[0]');
-        coerceScene('domain.y[1]');
+        coerce('bgcolor');
+        coerce('cameraposition');
+        coerce('domain.x[0]', i_scene / scenesLength);
+        coerce('domain.x[1]', (i_scene+1) / scenesLength);
+        coerce('domain.y[0]');
+        coerce('domain.y[1]');
 
          /*
           * scene arrangements need to be implemented: For now just splice
@@ -85,7 +91,7 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
           *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
           */
 
-        Plotly.Gl3dAxes.supplyDefaults(sceneLayoutIn, sceneLayoutOut, {
+        Plotly.Gl3dAxes.supplyLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
             font: layoutOut.font,
             scene: scene,
             data: fullData

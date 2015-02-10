@@ -31,7 +31,13 @@
         this.Plotly = config.Plotly;
         this.graphInfo = config.graphInfo;
         this.element = document.createElement('div');
-        this.element.className = 'modebar';
+
+        if(this.graphInfo._context.displayModeBar === 'hover') {
+            this.element.className = 'modebar modebar--hover';
+        } else {
+            this.element.className = 'modebar';
+        }
+
         this.buttons = config.buttons;
         this.buttonElements = [];
 
@@ -54,7 +60,7 @@
             _this.element.appendChild(group);
         });
 
-        if (this.graphInfo.displaylogo) {
+        if (this.graphInfo._context.displaylogo) {
             this.element.appendChild(this.getLogo());
         }
 
