@@ -1,4 +1,16 @@
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
 
     // ---Plotly global modules
@@ -7,9 +19,14 @@
     // ---external global dependencies
     /* global d3:false */
 
-    var boxes = window.Plotly.Boxes = {};
+    var boxes = Plotly.Boxes = {};
 
-    var scatterMarker = Plotly.Scatter.attributes.marker;
+    // For coerce-level coupling
+    var scatterAttrs = Plotly.Scatter.attributes,
+        scatterMarkerAttrs = scatterAttrs.marker,
+        scatterLineAttrs = scatterAttrs.line,
+        scatterMarkerLineAttrs = scatterMarkerAttrs.line,
+        extendFlat = Plotly.Lib.extendFlat;
 
     boxes.attributes = {
         y: {type: 'data_array'},
@@ -51,15 +68,19 @@
                 type: 'color',
                 dflt: 'rgba(0,0,0,0)'
             },
-            symbol: $.extend({arrayOk: false}, scatterMarker.symbol),
-            opacity: $.extend({arrayOk: false, dflt: 1}, scatterMarker.opacity),
-            size: $.extend({arrayOk: false}, scatterMarker.size),
-            color: $.extend({arrayOk: false}, scatterMarker.color),
+            symbol: extendFlat(scatterMarkerAttrs.symbol,
+                               {arrayOk: false}),
+            opacity: extendFlat(scatterMarkerAttrs.opacity,
+                                {arrayOk: false, dflt: 1}),
+            size: extendFlat(scatterMarkerAttrs.size,
+                             {arrayOk: false}),
+            color: extendFlat(scatterMarkerAttrs.color,
+                              {arrayOk: false}),
             line: {
-                color: $.extend({arrayOk: false, dflt: '#444'},
-                    scatterMarker.line.color),
-                width: $.extend({arrayOk: false, dflt: 0},
-                    scatterMarker.line.width),
+                color: extendFlat(scatterMarkerLineAttrs.color,
+                                  {arrayOk: false, dflt: '#444'}),
+                width: extendFlat(scatterMarkerLineAttrs.width,
+                                  {arrayOk: false, dflt: 0}),
                 outliercolor: {
                     type: 'color'
                 },
@@ -70,13 +91,11 @@
                 }
             }
         },
-        // Inherited attributes - not used by supplyDefaults, so if there's
-        // a better way to do this feel free to change.
         line: {
-            color: {from: 'Scatter'},
-            width: {from: 'Scatter'}
+            color: scatterLineAttrs.color,
+            width: scatterLineAttrs.width
         },
-        fillcolor: {from: 'Scatter'}
+        fillcolor: scatterAttrs.fillcolor
     };
 
     boxes.layoutAttributes = {
@@ -104,10 +123,6 @@
             return Plotly.Lib.coerce(traceIn, traceOut, boxes.attributes, attr, dflt);
         }
 
-        function coerceScatter(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
-        }
-
         // In vertical (horizontal) box plots:
         // if you supply an x (y) array, you will get one box
         // per distinct x (y) value
@@ -130,10 +145,9 @@
 
         coerce('orientation', defaultOrientation);
 
-        // inherited from Scatter... should we mention this somehow in boxes.attributes?
-        coerceScatter('line.color', (traceIn.marker||{}).color || defaultColor);
-        coerceScatter('line.width', 2);
-        coerceScatter('fillcolor', Plotly.Color.addOpacity(traceOut.line.color, 0.5));
+        coerce('line.color', (traceIn.marker||{}).color || defaultColor);
+        coerce('line.width', 2);
+        coerce('fillcolor', Plotly.Color.addOpacity(traceOut.line.color, 0.5));
 
         coerce('whiskerwidth');
         coerce('boxmean');
@@ -607,14 +621,9 @@
                         'stroke-dasharray': (2*lineWidth)+'px,'+lineWidth+'px'
                     })
                     .call(Plotly.Color.stroke, trace.line.color);
-            })
-            .selectAll('g.points')
-                .each(function(d){
-                    var trace = d.trace;
-
-                    d3.select(this).selectAll('path')
-                        .call(Plotly.Drawing.pointStyle, trace);
-                });
+                d3.select(this).selectAll('g.points path')
+                    .call(Plotly.Drawing.pointStyle, trace);
+            });
     };
 
     boxes.hoverPoints = function(pointData, xval, yval, hovermode) {
@@ -710,4 +719,5 @@
         return closeData;
     };
 
-}()); // end Boxes object definition
+    return boxes;
+}));

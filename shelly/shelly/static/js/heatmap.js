@@ -1,4 +1,16 @@
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
 
     // ---Plotly global modules
@@ -7,10 +19,19 @@
     // ---external global dependencies
     /* global d3:false, PNGlib:false, tinycolor:false */
 
-    var heatmap = window.Plotly.Heatmap = {};
+    var scatterAttrs = Plotly.Scatter.attributes;
+
+    var heatmap = Plotly.Heatmap = {};
 
     heatmap.attributes = {
         z: {type: 'data_array'},
+        x: scatterAttrs.x,
+        x0: scatterAttrs.x0,
+        dx: scatterAttrs.dx,
+        y: scatterAttrs.y,
+        y0: scatterAttrs.y0,
+        dy: scatterAttrs.dy,
+        text: {type: 'data_array'},
         transpose: {
             type: 'boolean',
             dflt: false
@@ -55,25 +76,18 @@
             type: 'boolean',
             dflt: false
         },
-        text: {type: 'data_array'},
-        // Inherited attributes - not used by supplyDefaults, so if there's
-        // a better way to do this feel free to change.
-        x: {from: 'Scatter'},
-        x0: {from: 'Scatter'},
-        dx: {from: 'Scatter'},
-        y: {from: 'Scatter'},
-        y0: {from: 'Scatter'},
-        dy: {from: 'Scatter'},
-        colorbar: {allFrom: 'Colorbar'}
+        _nestedModules: {  // nested module coupling
+            'colorbar': 'Colorbar'
+        },
+        _composedModules: {  // composed module coupling
+            'histogram2d': 'Histogram',
+            'histogram2dcontour': 'Histogram'
+        }
     };
 
     heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
-        }
-
-        function coerceScatter(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
         if(Plotly.Plots.isHist2D(traceOut.type)) {
@@ -92,18 +106,18 @@
 
             coerce('transpose');
 
-            var x = coerceScatter('x'),
+            var x = coerce('x'),
                 xtype = x ? coerce('xtype', 'array') : 'scaled';
             if(xtype==='scaled') {
-                coerceScatter('x0');
-                coerceScatter('dx');
+                coerce('x0');
+                coerce('dx');
             }
 
-            var y = coerceScatter('y'),
+            var y = coerce('y'),
                 ytype = y ? coerce('ytype', 'array') : 'scaled';
             if(ytype==='scaled') {
-                coerceScatter('y0');
-                coerceScatter('dy');
+                coerce('y0');
+                coerce('dy');
             }
 
             coerce('connectgaps');
@@ -283,16 +297,27 @@
             var len = arrayIn.length;
 
             // given vals are brick centers
-            if(len===numbricks) {
+            // hopefully length==numbricks, but use this method even if too few are supplied
+            // and extend it linearly based on the last two points
+            if(len <= numbricks) {
                 // contour plots only want the centers
-                if(Plotly.Plots.isContour(type)) return arrayIn.slice(0,numbricks);
-                if(numbricks===1) return [arrayIn[0]-0.5,arrayIn[0]+0.5];
+                if(Plotly.Plots.isContour(type)) arrayOut = arrayIn.slice(0,numbricks);
+                else if(numbricks === 1) arrayOut = [arrayIn[0]-0.5,arrayIn[0]+0.5];
                 else {
                     arrayOut = [1.5*arrayIn[0]-0.5*arrayIn[1]];
                     for(i=1; i<len; i++) {
                         arrayOut.push((arrayIn[i-1] + arrayIn[i])*0.5);
                     }
                     arrayOut.push(1.5*arrayIn[len-1] - 0.5*arrayIn[len-2]);
+                }
+
+                if(len < numbricks) {
+                    var lastPt = arrayOut[arrayOut.length - 1],
+                        delta = lastPt - arrayOut[arrayOut.length - 2];
+                    for(i = len; i < numbricks; i++) {
+                        lastPt += delta;
+                        arrayOut.push(lastPt);
+                    }
                 }
             }
             // hopefully length==numbricks+1, but do something regardless:
@@ -989,4 +1014,5 @@
         })];
     };
 
-}()); // end Heatmap object definition
+    return heatmap;
+}));

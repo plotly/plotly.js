@@ -1,21 +1,28 @@
 // Main plotting library - Creates the Plotly object and Plotly.Plots
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
     /* jshint camelcase: false */
 
     // ---Plotly global modules
-    /* global Plotly:false, µ:false, micropolar:false,
-        SceneFrame:false, Tabs:false, Examples:false,
-        ENV:false */
+    /* global µ:false, SceneFrame:false, Examples:false, ENV:false */
 
     // ---global functions not yet namespaced
     /* global setFileAndCommentsSize:false */
 
     // ---external global dependencies
     /* global Promise:false, d3:false */
-
-    if(!window.Plotly) window.Plotly = {};
-
     var plots = Plotly.Plots = {};
 
     // Most of the generic plotting functions get put into Plotly.Plots,
@@ -75,9 +82,11 @@
         return type === 'surface';
     };
 
-    var ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
+    // ALLTYPES and getModule are used for the graph_reference app
 
-    function getModule(trace) {
+    plots.ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
+
+    plots.getModule = function getModule(trace) {
         var type = trace.type;
 
         if('r' in trace) {
@@ -98,7 +107,7 @@
         console.log('Unrecognized plot type ' + type +
             '. Ignoring this dataset.'
         );
-    }
+    };
 
     // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
     plots.newTab = function(divid, layout) {
@@ -149,6 +158,7 @@
         showTips: true, // new users see some hints about interactivity
         showLink: true, // link to open this plot in plotly
         sendData: true, // if we show a link, does it contain data or just link to a plotly file?
+        displayModeBar: 'hover', // display the modebar (true, false, or 'hover')
         displaylogo: true // add the plotly logo on the end of the modebar
     };
 
@@ -160,8 +170,14 @@
             Object.keys(config).forEach(function(key) {
                 if(key in context) context[key] = config[key];
             });
+
+            // cause a remake of the modebar any time we change context
+            if(gd._fullLayout && gd._fullLayout._modebar) {
+                delete gd._fullLayout._modebar;
+            }
         }
 
+        // TODO: get rid of this - don't use gd.<attribute>, only gd._context.<attribute>
         Object.keys(plots.defaultConfig).forEach( function (key) {
             if (config && key in config) gd[key] = config[key];
             else gd[key] = plots.defaultConfig[key];
@@ -175,6 +191,7 @@
             context.scrollZoom = false;
             context.showTips = false;
             context.showLink = false;
+            context.displayModeBar = false;
         }
     }
 
@@ -411,10 +428,10 @@
                 (gd.calcdata.length>1 && fullLayout.showlegend!==false));
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(trace.visible !== true || !trace.module.colorbar) {
+                if(trace.visible !== true || !trace._module.colorbar) {
                     plots.autoMargin(gd,'cb'+trace.uid);
                 }
-                else trace.module.colorbar(gd,cd);
+                else trace._module.colorbar(gd,cd);
             });
             doAutoMargin(gd);
             return plots.previousPromises(gd);
@@ -484,7 +501,7 @@
             // previously, remove them and their colorbars explicitly
             gd.calcdata.forEach(function(cd) {
                 var trace = cd[0].trace;
-                if(trace.visible !== true || !trace.module.colorbar) {
+                if(trace.visible !== true || !trace._module.colorbar) {
                     var uid = trace.uid;
                     fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid)
                         .remove();
@@ -509,7 +526,7 @@
                     // plot all traces of this type on this subplot at once
                     var cdmod = cdSubplot.filter(function(cd){
                         var trace = cd[0].trace;
-                        return trace.module === module && trace.visible === true;
+                        return trace._module === module && trace.visible === true;
                     });
                     module.plot(gd,plotinfo,cdmod);
                     Plotly.Lib.markTime('done ' + (cdmod[0] && cdmod[0][0].trace.type));
@@ -654,7 +671,7 @@
         });
 
         // instantiate framework
-        gd.framework = micropolar.manager.framework();
+        gd.framework = Plotly.micropolar.manager.framework();
         //get rid of gd.layout stashed nodes
         layout = µ.util.deepExtend({}, gd._fullLayout);
         delete layout._container;
@@ -969,7 +986,7 @@
     plots.attributes = {
         type: {
             type: 'enumerated',
-            values: ALLTYPES,
+            values: plots.ALLTYPES,
             dflt: 'scatter'
         },
         visible: {
@@ -978,6 +995,7 @@
             dflt: true
         },
         scene: {
+            // TODO should not be available in 2d layouts
             type: 'sceneid',
             dflt: 'scene'
         },
@@ -995,10 +1013,12 @@
             type: 'string'
         },
         xaxis: {
+            // TODO should not be available in 3d layouts
             type: 'axisid',
             dflt: 'x'
         },
         yaxis: {
+            // TODO should not be available in 3d layouts
             type: 'axisid',
             dflt: 'y'
         },
@@ -1152,8 +1172,8 @@
         // module-specific attributes --- note: we need to send a trace into
         // the 3D modules to have it removed from the webgl context.
         if (visible || scene) {
-            module = getModule(traceOut);
-            traceOut.module = module;
+            module = plots.getModule(traceOut);
+            traceOut._module = module;
         }
 
         if (module && visible) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
@@ -1250,7 +1270,7 @@
             dflt: '#fff'
         },
         plot_bgcolor: {
-            // defined here, but set in Axes.supplyDefaults
+            // defined here, but set in Axes.supplyLayoutDefaults
             // because it needs to know if there are (2D) axes or not
             type: 'color',
             dflt: '#fff'
@@ -1270,7 +1290,7 @@
             dflt: false
         },
         showlegend: {
-            // handled in legend.supplyDefaults
+            // handled in legend.supplyLayoutDefaults
             // but included here because it's not in the legend object
             type: 'boolean'
         },
@@ -1321,14 +1341,11 @@
 
     plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
 
-        var moduleDefaults = ['Axes', 'Legend', 'Annotations', 'Fx'];
-        var moduleLayoutDefaults = ['Bars', 'Boxes', 'Gl3dLayout'];
+        var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Fx',
+                                    'Bars', 'Boxes', 'Gl3dLayout'];
 
         // don't add a check for 'function in module' as it is better to error out and
         // secure the module API then not apply the default function.
-        moduleDefaults.forEach( function (module) {
-            if (Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
-        });
         moduleLayoutDefaults.forEach( function (module) {
             if (Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         });
@@ -1391,7 +1408,7 @@
         Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
 
         gd.calcdata = gd._fullData.map(function(trace, i) {
-            var module = getModule(trace),
+            var module = plots.getModule(trace),
                 cd = [];
 
             if(module && trace.visible === true) {
@@ -2361,7 +2378,8 @@
                 pleafPlus = p.parts[pend - 1] + '.' + pleaf,
                 // trunk nodes (everything except the leaf)
                 ptrunk = p.parts.slice(0, pend).join('.'),
-                parent = Plotly.Lib.nestedProperty(layout, ptrunk).get();
+                parentIn = Plotly.Lib.nestedProperty(gd.layout, ptrunk).get(),
+                parentFull = Plotly.Lib.nestedProperty(gd._fullLayout, ptrunk).get();
 
             redoit[ai] = aobj[ai];
 
@@ -2381,47 +2399,49 @@
             }
 
             // toggling log without autorange: need to also recalculate ranges
-            // logical XOR (ie will islog actually change)
-            if(pleaf==='type' && (parent.type ==='log' ?
-                    vi!=='log' : vi==='log')) {
-                var ax = parent;
-                if (!parent.range) {
+            // logical XOR (ie are we toggling log)
+            if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
+                var ax = parentIn;
+                if (!ax || !ax.range) {
                     doextra(ptrunk+'.autorange', true);
-                    continue;
                 }
-                if(!parent.autorange) {
+                else if(!parentFull.autorange) {
                     var r0 = ax.range[0],
                         r1 = ax.range[1];
-                    if(vi==='log') {
+                    if(vi === 'log') {
                         // if both limits are negative, autorange
-                        if(r0<=0 && r1<=0) {
-                            doextra(ptrunk+'.autorange',true);
-                            continue;
+                        if(r0 <= 0 && r1 <= 0) {
+                            doextra(ptrunk+'.autorange', true);
                         }
                         // if one is negative, set it 6 orders below the other.
                         // TODO: find the smallest positive val?
-                        else if(r0<=0) { r0 = r1/1e6; }
-                        else if(r1<=0) { r1 = r0/1e6; }
+                        if(r0 <= 0) r0 = r1/1e6;
+                        else if(r1 <= 0) r1 = r0/1e6;
                         // now set the range values as appropriate
-                        doextra(ptrunk+'.range[0]', Math.log(r0)/Math.LN10);
-                        doextra(ptrunk+'.range[1]', Math.log(r1)/Math.LN10);
+                        doextra(ptrunk+'.range[0]', Math.log(r0) / Math.LN10);
+                        doextra(ptrunk+'.range[1]', Math.log(r1) / Math.LN10);
                     }
                     else {
                         doextra(ptrunk+'.range[0]', Math.pow(10, r0));
                         doextra(ptrunk+'.range[1]', Math.pow(10, r1));
                     }
                 }
-                else if(vi==='log' && ax.range) {
+                else if(vi === 'log') {
                     // just make sure the range is positive and in the right
                     // order, it'll get recalculated later
-                    ax.range = ax.range[1]>ax.range[0] ? [1,2] : [2,1];
+                    ax.range = (ax.range[1] > ax.range[0]) ? [1, 2] : [2, 1];
                 }
             }
 
             // handle axis reversal explicitly, as there's no 'reverse' flag
             if(pleaf ==='reverse') {
-                parent.range.reverse();
-                if(parent.autorange) docalc = true;
+                if(parentIn.range) parentIn.range.reverse();
+                else {
+                    doextra(ptrunk+'.autorange', true);
+                    parentIn.range = [1, 0];
+                }
+
+                if(parentFull.autorange) docalc = true;
                 else doplot = true;
             }
             // send annotation mods one-by-one through Annotations.draw(),
@@ -3444,23 +3464,40 @@
     // Utility functions
     // ----------------------------------------------------
 
-    // graphJson - jsonify the graph data and layout
-    // needs to recurse because some src can be inside sub-objects
-    // also strips out functions and private (start with _) elements
-    // so we can add temporary things to data and layout that don't get saved
-    //
-    // dataonly = truthy will omit layout and any arrays that aren't data
-    //      (note that we have to do this on the server side too)
-    // mode:
-    //      keepref (default): remove data for which there's a src present,
-    //          eg if there's xsrc present (and xsrc is well-formed,
-    //          ie has : and some chars before it), strip out x
-    //      keepdata: remove all src tags, don't remove the data itself
-    //      keepall: keep data and src
-    // output:
-    //      'object' to not stringify
-    plots.graphJson = function(gd, dataonly, mode, output){
+    /**
+     * JSONify the graph data and layout
+     *
+     * This function needs to recurse because some src can be inside
+     * sub-objects.
+     *
+     * It also strips out functions and private (starts with _) elements.
+     * Therefore, we can add temporary things to data and layout that don't
+     * get saved.
+     *
+     * @param gd The graphDiv
+     * @param {Boolean} dataonly If true, don't return layout.
+     * @param {'keepref'|'keepdata'|'keepall'} [mode='keepref'] Filter what's kept
+     *      keepref: remove data for which there's a src present
+     *          eg if there's xsrc present (and xsrc is well-formed,
+     *          ie has : and some chars before it), strip out x
+     *      keepdata: remove all src tags, don't remove the data itself
+     *      keepall: keep data and src
+     * @param {String} output If you specify 'object', the result will not be stringified
+     * @param {Boolean} useDefaults If truthy, use _fullLayout and _fullData
+     * @returns {Object|String}
+     */
+    plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
+
         if(typeof gd === 'string') { gd = document.getElementById(gd); }
+
+        // if the defaults aren't supplied yet, we need to do that...
+        if ((useDefaults && dataonly && !gd._fullData) ||
+                (useDefaults && !dataonly && !gd._fullLayout)) {
+            plots.supplyDefaults(gd);
+        }
+
+        var data = (useDefaults) ? gd._fullData : gd.data,
+            layout = (useDefaults) ? gd._fullLayout : gd.layout;
 
         function stripObj(d) {
             if(typeof d === 'function') {
@@ -3513,7 +3550,7 @@
         }
 
         var obj = {
-            data:(gd.data||[]).map(function(v){
+            data:(data||[]).map(function(v){
                 var d = stripObj(v);
                 // fit has some little arrays in it that don't contain data,
                 // just fit params and meta
@@ -3521,56 +3558,13 @@
                 return d;
             })
         };
-        if(!dataonly) { obj.layout = stripObj(gd.layout); }
+        if(!dataonly) { obj.layout = stripObj(layout); }
 
         if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
         return (output==='object') ? obj : JSON.stringify(obj);
     };
 
-    plots.viewJson = function(){
-        var gd = Tabs.get();
-        var jsonString, data, layout;
-        if(gd.framework && gd.framework.isPolar){
-            var json= gd.framework.getLiveConfig();
-            jsonString = JSON.stringify(json);
-            data = json.data;
-            layout = json.layout;
-        }
-        else{
-            jsonString = Plotly.Plots.graphJson(gd);
-            data = JSON.parse(jsonString).data;
-            // Remove stream meta info
-            data.forEach(function(di){ delete di.stream; });
-            layout = JSON.parse(jsonString).layout;
-        }
-        var code = 'var data = ' + Plotly.Lib.escapeForHtml(JSON.stringify(data)) + ';\n';
-        code += 'var layout = ' + Plotly.Lib.escapeForHtml(JSON.stringify(layout)) + ';\n';
-        code += 'Plotly.plot(Tabs.get(), data, layout);';
+    return plots;
 
-        var jsonModal = $('#jsonModal');
-        var jsonViewer = jsonModal.find('#json-viewer').empty();
-        jsonViewer.data('jsontree', '')
-            .jsontree(jsonString,{collapsibleOuter:false}).show();
-        jsonModal.modal('show');
-
-        var jsonText = jsonModal.find('#json-text')
-            .text('').append(code).hide();
-        var buttonTexts = ['Switch to Plain Text', 'Switch to JSON Viewer'];
-        var viewerToggle = $('.js-plain-text-toggle').text(buttonTexts[0]);
-
-        viewerToggle.off('click').on('click', function(){
-            var isPlaintText = $(this).text() === buttonTexts[0];
-            jsonViewer.toggle(!isPlaintText);
-            jsonText.toggle(isPlaintText);
-            jsonText.get(0).select();
-            $(this).text(buttonTexts[+isPlaintText]);
-            return false;
-        });
-
-        jsonModal.find('.close').off('click').on('click', function(){
-            jsonModal.modal('hide');
-            return false;
-        });
-    };
-}()); // end Plots object definition
+}));

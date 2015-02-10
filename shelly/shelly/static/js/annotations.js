@@ -1,4 +1,16 @@
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
 
     // ---Plotly global modules
@@ -57,7 +69,7 @@
         }
     ];
 
-    annotations.attributes = {
+    annotations.layoutAttributes = {
         text: {
             type: 'string',
             blankOk: false
@@ -144,18 +156,20 @@
         }
     };
 
-    annotations.supplyDefaults = function(layoutIn, layoutOut) {
+    annotations.supplyLayoutDefaults = function(layoutIn, layoutOut) {
         var containerIn = layoutIn.annotations || [];
         layoutOut.annotations = containerIn.map(function(annIn) {
-            return supplyAnnotationDefaults(annIn || {}, layoutOut);
+            return handleAnnotationDefaults(annIn || {}, layoutOut);
         });
     };
 
-    function supplyAnnotationDefaults(annIn, fullLayout) {
+    function handleAnnotationDefaults(annIn, fullLayout) {
         var annOut = {};
 
         function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(annIn, annOut, annotations.attributes, attr, dflt);
+            return Plotly.Lib.coerce(annIn, annOut,
+                                     annotations.layoutAttributes,
+                                     attr, dflt);
         }
 
         coerce('opacity');
@@ -274,7 +288,7 @@
                 // a whole annotation array is passed in
                 // (as in, redo of delete all)
                 layout.annotations = value;
-                annotations.supplyDefaults(layout, fullLayout);
+                annotations.supplyLayoutDefaults(layout, fullLayout);
                 annotations.drawAll(gd);
                 return;
             }
@@ -442,7 +456,7 @@
             optionsIn[axLetter] = position;
         });
 
-        var options = supplyAnnotationDefaults(optionsIn, fullLayout);
+        var options = handleAnnotationDefaults(optionsIn, fullLayout);
         fullLayout.annotations[index] = options;
 
         var xa = Plotly.Axes.getFromId(gd, options.xref),
@@ -1106,4 +1120,5 @@
         return {x: x1 + a * t, y: y1 + d * t};
     }
 
-}()); // end Annotations object definition
+    return annotations;
+}));

@@ -1,4 +1,16 @@
-(function() {
+(function(root, factory){
+    if (typeof exports == 'object') {
+        // CommonJS
+        module.exports = factory(root, require('./plotly'));
+    } else {
+        // Browser globals
+        if (!root.Plotly) { root.Plotly = {}; }
+        factory(root, root.Plotly);
+    }
+}(this, function(exports, Plotly){
+    // `exports` is `window`
+    // `Plotly` is `window.Plotly`
+
     'use strict';
     /* jshint camelcase: false */
 
@@ -14,7 +26,7 @@
     // same functions for styling traces in the style box
     // -----------------------------------------------------
 
-    legend.attributes = {
+    legend.layoutAttributes = {
         bgcolor: {type: 'color'},
         bordercolor: {
             type: 'color',
@@ -54,7 +66,7 @@
         }
     };
 
-    legend.supplyDefaults = function(layoutIn, layoutOut, fullData){
+    legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
         var containerIn = layoutIn.legend || {},
             containerOut = layoutOut.legend = {};
 
@@ -71,7 +83,7 @@
 
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(containerIn, containerOut,
-                legend.attributes, attr, dflt);
+                legend.layoutAttributes, attr, dflt);
         }
 
         var showLegend = Plotly.Lib.coerce(layoutIn, layoutOut,
@@ -301,7 +313,7 @@
         if(!fullLayout._infolayer || !td.calcdata) return;
 
         if(showlegend!==undefined) layout.showlegend = showlegend;
-        legend.supplyDefaults(layout, fullLayout, td._fullData);
+        legend.supplyLayoutDefaults(layout, fullLayout, td._fullData);
         showlegend = fullLayout.showlegend;
 
         var opts = fullLayout.legend;
@@ -532,4 +544,5 @@
         });
     };
 
-}()); // end Legend object definition
+    return legend;
+}));
