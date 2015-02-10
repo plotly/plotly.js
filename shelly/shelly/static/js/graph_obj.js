@@ -1671,7 +1671,8 @@
             redoFunc = deleteTraces,
             undoArgs = [gd, traces, indices],
             redoArgs = [gd, indices],
-            i;
+            i,
+            deletedTrace;
 
         // make sure indices are defined
         if (typeof indices === 'undefined') {
@@ -1686,9 +1687,9 @@
 
         // we want descending here so that splicing later doesn't affect indexing
         indices.sort().reverse();
-
         for (i = 0; i < indices.length; i += 1) {
-            traces.push(gd.data.splice(indices[i], 1));
+            deletedTrace = gd.data.splice(indices[i], 1)[0];
+            traces.push(deletedTrace);
         }
 
         Plotly.redraw(gd);
