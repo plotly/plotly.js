@@ -23,10 +23,44 @@
     // mark this module as allowing error bars
     bars.errorBarsOK = true;
 
+    // For coerce-level coupling
+    var scatterAttrs = Plotly.Scatter.attributes,
+        scatterMarkerAttrs = scatterAttrs.marker,
+        scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+
     bars.attributes = {
+        x: scatterAttrs.x,
+        x0: scatterAttrs.x0,
+        dx: scatterAttrs.dx,
+        y: scatterAttrs.y,
+        y0: scatterAttrs.y0,
+        dy: scatterAttrs.dy,
+        text: scatterAttrs.text,
         orientation: {
             type: 'enumerated',
             values: ['v', 'h']
+        },
+        marker: {
+            color: scatterMarkerAttrs.color,
+            colorscale: scatterMarkerAttrs.colorscale,
+            cauto: scatterMarkerAttrs.cauto,
+            cmax: scatterMarkerAttrs.cmax,
+            cmin: scatterMarkerAttrs.cmin,
+            line: {
+                color: scatterMarkerLineAttrs.color,
+                colorscale: scatterMarkerLineAttrs.colorscale,
+                cauto: scatterMarkerLineAttrs.cauto,
+                cmax: scatterMarkerLineAttrs.cmax,
+                cmin: scatterMarkerLineAttrs.cmin,
+                width: scatterMarkerLineAttrs.width
+            }
+        },
+        _nestedModules: {  // nested module coupling
+            'error_y': 'ErrorBars',
+            'error_x': 'ErrorBars'
+        },
+        _composedModules: {  // composed module coupling
+            'histogram': 'Histogram'
         }
     };
 
@@ -52,40 +86,11 @@
             max: 1,
             dflt: 0
         },
-        // Inherited attributes - not used by supplyDefaults, so if there's
-        // a better way to do this feel free to change.
-        x: {from: 'Scatter'},
-        x0: {from: 'Scatter'},
-        dx: {from: 'Scatter'},
-        y: {from: 'Scatter'},
-        y0: {from: 'Scatter'},
-        dy: {from: 'Scatter'},
-        marker: {
-            color: {from: 'Scatter'},
-            colorscale: {from: 'Scatter'},
-            cauto: {from: 'Scatter'},
-            cmax: {from: 'Scatter'},
-            cmin: {from: 'Scatter'},
-            line: {
-                color: {from: 'Scatter'},
-                colorscale: {from: 'Scatter'},
-                cauto: {from: 'Scatter'},
-                cmax: {from: 'Scatter'},
-                cmin: {from: 'Scatter'},
-                width: {from: 'Scatter'}
-            }
-        },
-        error_x: {allFrom: 'Errorbars'},
-        error_y: {allFrom: 'Errorbars'}
     };
 
     bars.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(traceIn, traceOut, bars.attributes, attr, dflt);
-        }
-
-        function coerceScatter(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
         }
 
         if(traceOut.type==='histogram') {
@@ -95,7 +100,7 @@
             if(!traceOut.visible) return;
         }
         else {
-            var len = Plotly.Scatter.supplyXY(traceIn, traceOut);
+            var len = Plotly.Scatter.handleXYDefaults(traceIn, traceOut, coerce);
             if(!len) {
                 traceOut.visible = false;
                 return;
@@ -104,10 +109,10 @@
             coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
         }
 
-        Plotly.Scatter.colorScalableDefaults('marker.', coerceScatter, defaultColor);
-        Plotly.Scatter.colorScalableDefaults('marker.line.', coerceScatter, '#444');
-        coerceScatter('marker.line.width', 0);
-        coerceScatter('text');
+        Plotly.Scatter.colorScalableDefaults('marker.', coerce, defaultColor);
+        Plotly.Scatter.colorScalableDefaults('marker.line.', coerce, '#444');
+        coerce('marker.line.width', 0);
+        coerce('text');
 
         // override defaultColor for error bars with #444
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'y'});
