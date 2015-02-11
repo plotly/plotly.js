@@ -216,13 +216,13 @@
             });
 
         // The text node inside svg
-        var text = jQuery.isArray(linkContainer[0]) ? linkContainer[0][0] : null,
+        var text = Array.isArray(linkContainer[0]) ? linkContainer[0][0] : null,
             attrs = {
-                y: fullLayout._paper.attr('height')-9
+                y: fullLayout._paper.attr('height') - 9
             };
 
         // If text's width is bigger than the layout
-        if (text && text.getComputedTextLength() => (fullLayout.width - 20)) {
+        if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
             // Align the text at the left
             attrs['text-anchor'] = 'start';
             attrs['x'] = 5;
