@@ -931,7 +931,7 @@
             if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
 
             // scene ids scene1 -> scene
-            if (plots.isGL3D(trace.type) && trace.scene) {
+            if (trace.scene) {
                 trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
             }
 
