@@ -1001,7 +1001,9 @@
             return;
         }
         gd.calcdata = undefined;
-        Plotly.plot(gd);
+        Plotly.plot(gd).then(function () {
+            $(gd).trigger('plotly_redraw');
+        });
     };
 
     plots.attributes = {
