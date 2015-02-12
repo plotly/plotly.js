@@ -370,7 +370,7 @@
         for(i = 0; i < fullData.length; i++) {
             tracei = fullData[i];
             filli = tracei.fill;
-            if(!filli || (tracei.type !== 'scatter')) continue;
+            if(filli==='none' || (tracei.type !== 'scatter')) continue;
             tracei.opacity = undefined;
 
             if(filli === 'tonexty' || filli === 'tonextx') {
