@@ -374,7 +374,7 @@
             tracei.opacity = undefined;
 
             if(filli === 'tonexty' || filli === 'tonextx') {
-                for(j = i; j >= 0; j--) {
+                for(j = i - 1; j >= 0; j--) {
                     tracej = fullData[j];
                     if((tracej.type === 'scatter') &&
                             (tracej.xaxis === tracei.xaxis) &&
