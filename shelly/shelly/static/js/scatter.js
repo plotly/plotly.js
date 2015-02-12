@@ -359,6 +359,34 @@
         if($.isArray(colorVal)) attrs.forEach(coerce);
     };
 
+    scatter.cleanData = function(fullData) {
+        var i,
+            tracei,
+            filli,
+            j,
+            tracej;
+
+        // remove opacity for any trace that has a fill or is filled to
+        for(i = 0; i < fullData.length; i++) {
+            tracei = fullData[i];
+            filli = tracei.fill;
+            if(!filli || (tracei.type !== 'scatter')) continue;
+            tracei.opacity = undefined;
+
+            if(filli === 'tonexty' || filli === 'tonextx') {
+                for(j = i; j >= 0; j--) {
+                    tracej = fullData[j];
+                    if((tracej.type === 'scatter') &&
+                            (tracej.xaxis === tracei.xaxis) &&
+                            (tracej.yaxis === tracei.yaxis)) {
+                        tracej.opacity = undefined;
+                        break;
+                    }
+                }
+            }
+        }
+    };
+
     scatter.hasLines = function(trace) {
         return trace.visible && trace.mode &&
             trace.mode.indexOf('lines') !== -1;
@@ -845,7 +873,11 @@
     scatter.style = function(gp) {
         var s = gp.selectAll('g.trace.scatter');
 
-        s.style('opacity',function(d){ return d[0].trace.opacity; });
+        s.style('opacity',function(d){
+            var opacity = d[0].trace.opacity;
+            if(opacity === undefined) return 1;
+            return opacity;
+        });
 
         s.selectAll('g.points')
             .each(function(d){
