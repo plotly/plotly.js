@@ -873,11 +873,7 @@
     scatter.style = function(gp) {
         var s = gp.selectAll('g.trace.scatter');
 
-        s.style('opacity',function(d){
-            var opacity = d[0].trace.opacity;
-            if(opacity === undefined) return 1;
-            return opacity;
-        });
+        s.style('opacity',function(d){ return d[0].trace.opacity; });
 
         s.selectAll('g.points')
             .each(function(d){
