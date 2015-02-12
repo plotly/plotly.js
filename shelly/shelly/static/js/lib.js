@@ -1658,34 +1658,6 @@
         };
     };
 
-    // retrieve list of scene keys form a layout object
-    lib.getSceneKeys = function getSceneKeys(layout) {
-        var keys = Object.keys(layout),
-            key = null,
-            sceneKeys = [],
-            i_key = 0;
-        for (i_key; i_key < keys.length; ++i_key) {
-            key = keys[i_key];
-            if (key.match(/^scene[0-9]*$/)) {
-                sceneKeys.push(key);
-            }
-        }
-        return sceneKeys;
-    };
-
-    // retrieve list of scene layout object from a layout object
-    lib.getSceneLayouts = function getSceneLayouts(layout) {
-        var sceneKeys = lib.getSceneKeys(layout),
-            sceneKey = null,
-            sceneLayouts = [],
-            i_sceneKey = 0;
-        for (i_sceneKey; i_sceneKey < sceneKeys.length; ++i_sceneKey) {
-            sceneKey = sceneKeys[i_sceneKey];
-            sceneLayouts.push(layout[sceneKey]);
-        }
-        return sceneLayouts;
-    };
-
     // applies a 2D transformation matrix to an [x1,y1,x2,y2] array (to
     // transform a segment)
     lib.apply2DTransform2 = function(transform) {
@@ -1880,6 +1852,34 @@
         }
     };
 
+    // retrieve list of scene keys form a layout object
+    lib.getSceneKeys = function getSceneKeys(layout) {
+        var keys = Object.keys(layout),
+            key = null,
+            sceneKeys = [],
+            i_key = 0;
+        for (i_key; i_key < keys.length; ++i_key) {
+            key = keys[i_key];
+            if (key.match(/^scene[0-9]*$/)) {
+                sceneKeys.push(key);
+            }
+        }
+        return sceneKeys;
+    };
+
+    // retrieve list of scene layout object from a layout object
+    lib.getSceneLayouts = function getSceneLayouts(layout) {
+        var sceneKeys = lib.getSceneKeys(layout),
+            sceneKey = null,
+            sceneLayouts = [],
+            i_sceneKey = 0;
+        for (i_sceneKey; i_sceneKey < sceneKeys.length; ++i_sceneKey) {
+            sceneKey = sceneKeys[i_sceneKey];
+            sceneLayouts.push(layout[sceneKey]);
+        }
+        return sceneLayouts;
+    };
+
     // modified version of $.extend to strip out private objs and functions,
     // and cut arrays down to first <arraylen> or 1 elements
     // because $.extend is hella slow
@@ -1902,6 +1902,20 @@
             if(typeof v !== 'object' || !(k in objOut) || typeof objOut[k] !== 'object') {
                 objOut[k] = v;
             }
+        });
+
+        return objOut;
+    };
+
+    // Flat extend function (only copies values of first level keys)
+    lib.extendFlat = function extendFlat(obj1, obj2) {
+        var objOut = {};
+
+        Object.keys(obj1).forEach(function(k) {
+            objOut[k] = obj1[k];
+        });
+        Object.keys(obj2).forEach(function(k) {
+            objOut[k] = obj2[k];
         });
 
         return objOut;

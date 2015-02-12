@@ -243,7 +243,7 @@ proto.init = function init() {
             self.container.style.background = '#FFFFFF';
             self.container.contentDocument.getElementById('no3D').style.display = 'block';
             self.container.contentDocument.body.onclick = function () {
-                window.open("http://get.webgl.org")
+                window.open("http://get.webgl.org");
             };
 
             // Clean up modebar, add flag in fullLayout (for graph_interact.js)
@@ -254,13 +254,6 @@ proto.init = function init() {
             }
             fullLayout._noGL3DSupport = true;
 
-//             // Old code to remove the loading bars
-//             // commented out as Scene does not have 'gd'
-//             var pb = gd.querySelector('#plotlybars'); // !!!
-//             if (pb) {
-//                 pb.innerHTML = '';
-//                 pb.parentNode.removeChild(pb);
-//             }
         });
 
     };
@@ -685,11 +678,12 @@ proto.plotTrace = function (trace, sceneLayout) {
 
         var glObject = this.glDataMap[trace.uid] || null;
 
-        if (trace.visible) {
+        if (trace.visible === true) {
             glObject = trace._module.update(this, sceneLayout, trace, glObject);
+            glObject.visible = true;
         }
 
-        if (!trace.visible && glObject) glObject.visible = trace.visible;
+        if (trace.visible!==true && glObject) glObject.visible = trace.visible;
 
         if (glObject) this.glDataMap[trace.uid] = glObject;
 
@@ -734,10 +728,11 @@ proto.setAndSyncLayout = function setAndSyncLayout (sceneLayout) {
 };
 
 proto.updateRenderQueue = function (glObject) {
-
     if (!glObject) return;
 
-    var visible = (glObject.visible === false) ? false : true;
+    // if visible === 'legendonly' -> don't render trace
+    var visible = (glObject.visible === true);
+
     var idx = this.renderQueue.indexOf(glObject);
 
     if (visible && idx === -1) {
@@ -848,6 +843,13 @@ proto.setAxesRange = function () {
             range[0][i] = -1.0;
             range[1][i] = 1.0;
         }
+
+        axes = sceneLayout[this.axesNames[i]];
+
+        // Assign range to layout
+        axes.range[0] = range[0][i];
+        axes.range[1] = range[1][i];
+
     }
 
 
