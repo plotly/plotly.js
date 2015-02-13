@@ -359,6 +359,34 @@
         if($.isArray(colorVal)) attrs.forEach(coerce);
     };
 
+    scatter.cleanData = function(fullData) {
+        var i,
+            tracei,
+            filli,
+            j,
+            tracej;
+
+        // remove opacity for any trace that has a fill or is filled to
+        for(i = 0; i < fullData.length; i++) {
+            tracei = fullData[i];
+            filli = tracei.fill;
+            if(filli==='none' || (tracei.type !== 'scatter')) continue;
+            tracei.opacity = undefined;
+
+            if(filli === 'tonexty' || filli === 'tonextx') {
+                for(j = i - 1; j >= 0; j--) {
+                    tracej = fullData[j];
+                    if((tracej.type === 'scatter') &&
+                            (tracej.xaxis === tracei.xaxis) &&
+                            (tracej.yaxis === tracei.yaxis)) {
+                        tracej.opacity = undefined;
+                        break;
+                    }
+                }
+            }
+        }
+    };
+
     scatter.hasLines = function(trace) {
         return trace.visible && trace.mode &&
             trace.mode.indexOf('lines') !== -1;
