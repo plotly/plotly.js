@@ -199,9 +199,8 @@
     // so it can regenerate whenever it replots
     plots.addLinks = function(gd) {
         var fullLayout = gd._fullLayout;
-        var linkContainer = fullLayout._paper
-            .selectAll('text.js-plot-link-container')
-                .data([0]);
+        var linkContainer = fullLayout._paper.selectAll('text.js-plot-link-container').data([0]);
+
         linkContainer.enter().append('text')
             .classed('js-plot-link-container',true)
             .style({
@@ -216,11 +215,24 @@
                 links.append('tspan').classed('js-sourcelinks',true);
             });
 
-        linkContainer.attr({
-            'text-anchor': 'end',
-            x: fullLayout._paper.attr('width')-7,
-            y: fullLayout._paper.attr('height')-9
-        });
+        // The text node inside svg
+        var text = Array.isArray(linkContainer[0]) ? linkContainer[0][0] : null,
+            attrs = {
+                y: fullLayout._paper.attr('height') - 9
+            };
+
+        // If text's width is bigger than the layout
+        if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
+            // Align the text at the left
+            attrs['text-anchor'] = 'start';
+            attrs['x'] = 5;
+        } else {
+            // Align the text at the right
+            attrs['text-anchor'] = 'end';
+            attrs['x'] = fullLayout._paper.attr('width') - 7;
+        }
+
+        linkContainer.attr(attrs);
 
 
         var toolspan = linkContainer.select('.js-link-to-tool'),
@@ -989,7 +1001,9 @@
             return;
         }
         gd.calcdata = undefined;
-        Plotly.plot(gd);
+        Plotly.plot(gd).then(function () {
+            $(gd).trigger('plotly_redraw');
+        });
     };
 
     plots.attributes = {
