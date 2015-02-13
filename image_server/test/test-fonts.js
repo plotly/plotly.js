@@ -12,6 +12,7 @@ if (!fs.existsSync('./test-images')) fs.mkdirSync('./test-images');
 
 test('testing fonts', function (t) {
 
+    t.plan(2);
     var fileName = 'fonts.json';
     var figure = require('./mocks/' + fileName);
     var bodyMock = {
@@ -43,6 +44,7 @@ test('testing fonts', function (t) {
         if (err) return console.error(err);
         if (isEqual) fs.unlinkSync(diffPath);
         t.ok(isEqual, savedImagePath + ' should be pixel perfect');
+        t.end();
     }
 
     request(options, checkFormat)
