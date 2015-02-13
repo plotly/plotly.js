@@ -199,9 +199,8 @@
     // so it can regenerate whenever it replots
     plots.addLinks = function(gd) {
         var fullLayout = gd._fullLayout;
-        var linkContainer = fullLayout._paper
-            .selectAll('text.js-plot-link-container')
-                .data([0]);
+        var linkContainer = fullLayout._paper.selectAll('text.js-plot-link-container').data([0]);
+
         linkContainer.enter().append('text')
             .classed('js-plot-link-container',true)
             .style({
@@ -216,11 +215,24 @@
                 links.append('tspan').classed('js-sourcelinks',true);
             });
 
-        linkContainer.attr({
-            'text-anchor': 'end',
-            x: fullLayout._paper.attr('width')-7,
-            y: fullLayout._paper.attr('height')-9
-        });
+        // The text node inside svg
+        var text = Array.isArray(linkContainer[0]) ? linkContainer[0][0] : null,
+            attrs = {
+                y: fullLayout._paper.attr('height') - 9
+            };
+
+        // If text's width is bigger than the layout
+        if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
+            // Align the text at the left
+            attrs['text-anchor'] = 'start';
+            attrs['x'] = 5;
+        } else {
+            // Align the text at the right
+            attrs['text-anchor'] = 'end';
+            attrs['x'] = fullLayout._paper.attr('width') - 7;
+        }
+
+        linkContainer.attr(attrs);
 
 
         var toolspan = linkContainer.select('.js-link-to-tool'),
@@ -809,8 +821,13 @@
 
         });
 
-        var sceneKeys = Plotly.Lib.getSceneKeys(layout);
+        // cannot have scene1, numbering goes scene, scene2, scene3...
+        if(layout.scene1) {
+            if(!layout.scene) layout.scene = layout.scene1;
+            delete layout.scene1;
+        }
 
+        var sceneKeys = Plotly.Lib.getSceneKeys(layout);
         sceneKeys.forEach( function (sceneKey) {
             var sceneLayout = layout[sceneKey];
             // fix for saved float32-arrays
@@ -820,7 +837,6 @@
                 camp[1] = [camp[1][0], camp[1][1], camp[1][2]];
             }
         });
-
 
         var legend = layout.legend;
         if(legend) {
@@ -926,6 +942,11 @@
             if(trace.xaxis) trace.xaxis = Plotly.Axes.cleanId(trace.xaxis, 'x');
             if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
 
+            // scene ids scene1 -> scene
+            if (trace.scene) {
+                trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
+            }
+
             // textposition - support partial attributes (ie just 'top')
             // and incorrect use of middle / center etc.
             function cleanTextPosition(textposition) {
@@ -980,7 +1001,9 @@
             return;
         }
         gd.calcdata = undefined;
-        Plotly.plot(gd);
+        Plotly.plot(gd).then(function () {
+            $(gd).trigger('plotly_redraw');
+        });
     };
 
     plots.attributes = {
