@@ -27,7 +27,7 @@
 
     var axes = Plotly.Axes = {};
 
-    axes.attributes = {
+    axes.layoutAttributes = {
         title: {type: 'string'},
         titlefont: {type: 'font'},
         type: {
@@ -177,7 +177,7 @@
         }
     };
 
-    axes.supplyDefaults = function(layoutIn, layoutOut, fullData) {
+    axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         // get the full list of axes already defined
         var xaList = Object.keys(layoutIn)
                 .filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
@@ -224,6 +224,7 @@
         xaList.concat(yaList).forEach(function(axName){
             var axLetter = axName.charAt(0),
                 axLayoutIn = layoutIn[axName] || {},
+                axLayoutOut = {},
                 defaultOptions = {
                     letter: axLetter,
                     font: layoutOut.font,
@@ -240,10 +241,17 @@
                     }).map(axes.name2id)
                 };
 
-            layoutOut[axName] = axes.supplyAxisDefaults(axLayoutIn, null, defaultOptions);
-            axes.supplyAxisPositioningDefaults(axLayoutIn,
-                                               layoutOut[axName],
-                                               positioningOptions);
+            function coerce(attr, dflt) {
+                return Plotly.Lib.coerce(axLayoutIn, axLayoutOut,
+                                         axes.layoutAttributes,
+                                         attr, dflt);
+            }
+
+            axes.handleAxisDefaults(axLayoutIn, axLayoutOut,
+                                   coerce, defaultOptions);
+            axes.handleAxisPositioningDefaults(axLayoutIn, axLayoutOut,
+                                         coerce, positioningOptions);
+            layoutOut[axName] = axLayoutOut;
 
             // so we don't have to repeat autotype unnecessarily,
             // copy an autotype back to layoutIn
@@ -261,13 +269,7 @@
         }
     };
 
-    axes.supplyAxisDefaults = function(containerIn, containerOut, options) {
-        containerOut = containerOut || {};
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(containerIn, containerOut,
-                axes.attributes, attr, dflt);
-        }
-
+    axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
         var letter = options.letter,
             defaultTitle = 'Click to enter ' +
                 (options.title || (letter.toUpperCase() + ' axis')) +
@@ -375,20 +377,13 @@
         return containerOut;
     };
 
-    axes.supplyAxisPositioningDefaults = function(containerIn, containerOut, options) {
-        if (!containerOut) containerOut = {};
-
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(containerIn, containerOut,
-                axes.attributes, attr, dflt);
-        }
-
+    axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce, options) {
         var counterAxes = options.counterAxes||[],
             overlayableAxes = options.overlayableAxes||[],
             letter = options.letter;
 
         var anchor = Plotly.Lib.coerce(containerIn, containerOut,
-            {
+            {   // TODO incorporate into layoutAttributes
                 anchor: {
                     type:'enumerated',
                     values: ['free'].concat(counterAxes),
@@ -401,7 +396,7 @@
         if(anchor==='free') coerce('position');
 
         Plotly.Lib.coerce(containerIn, containerOut,
-            {
+            {   // TODO incorporate into layoutAttributes
                 side: {
                     type: 'enumerated',
                     values: letter==='x' ? ['bottom', 'top'] : ['left', 'right'],
@@ -412,13 +407,15 @@
 
         var overlaying = false;
         if(overlayableAxes.length) {
-            overlaying = Plotly.Lib.coerce(containerIn, containerOut, {
+            overlaying = Plotly.Lib.coerce(containerIn, containerOut,
+            {   // TODO incorporate into layoutAttributes
                 overlaying: {
                     type: 'enumerated',
                     values: [false].concat(overlayableAxes),
                     dflt: false
                 }
-            }, 'overlaying');
+            },
+            'overlaying');
         }
 
         if(!overlaying) {
@@ -1797,8 +1794,10 @@
         var fullLayout = td._fullLayout;
         var ax = null;
         if (Plotly.Plots.isGL3D(fullTrace.type)) {
-            var scene = fullTrace.scene || 'scene';
-            ax = fullLayout[scene][type + 'axis'];
+            var scene = fullTrace.scene;
+            if (scene.substr(0,5)==='scene') {
+                ax = fullLayout[scene][type + 'axis'];
+            }
         } else {
             ax = Plotly.Axes.getFromId(td, fullTrace[type + 'axis'] || type);
         }
