@@ -1794,8 +1794,10 @@
         var fullLayout = td._fullLayout;
         var ax = null;
         if (Plotly.Plots.isGL3D(fullTrace.type)) {
-            var scene = fullTrace.scene || 'scene';
-            ax = fullLayout[scene][type + 'axis'];
+            var scene = fullTrace.scene;
+            if (scene.substr(0,5)==='scene') {
+                ax = fullLayout[scene][type + 'axis'];
+            }
         } else {
             ax = Plotly.Axes.getFromId(td, fullTrace[type + 'axis'] || type);
         }
