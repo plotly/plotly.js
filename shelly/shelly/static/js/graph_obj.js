@@ -1006,6 +1006,18 @@
         });
     };
 
+    /**
+     * Conveniece function to make idempotent plot option obvious to users.
+     *
+     * @param gd
+     * @param {Object[]} data
+     * @param {Object} layout
+     */
+    Plotly.newPlot = function (gd, data, layout) {
+        Plotly.Plots.purge(gd);
+        Plotly.plot(gd, data, layout);
+    };
+
     plots.attributes = {
         type: {
             type: 'enumerated',
