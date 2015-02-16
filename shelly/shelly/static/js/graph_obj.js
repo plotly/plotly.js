@@ -199,9 +199,8 @@
     // so it can regenerate whenever it replots
     plots.addLinks = function(gd) {
         var fullLayout = gd._fullLayout;
-        var linkContainer = fullLayout._paper
-            .selectAll('text.js-plot-link-container')
-                .data([0]);
+        var linkContainer = fullLayout._paper.selectAll('text.js-plot-link-container').data([0]);
+
         linkContainer.enter().append('text')
             .classed('js-plot-link-container',true)
             .style({
@@ -216,11 +215,24 @@
                 links.append('tspan').classed('js-sourcelinks',true);
             });
 
-        linkContainer.attr({
-            'text-anchor': 'end',
-            x: fullLayout._paper.attr('width')-7,
-            y: fullLayout._paper.attr('height')-9
-        });
+        // The text node inside svg
+        var text = Array.isArray(linkContainer[0]) ? linkContainer[0][0] : null,
+            attrs = {
+                y: fullLayout._paper.attr('height') - 9
+            };
+
+        // If text's width is bigger than the layout
+        if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
+            // Align the text at the left
+            attrs['text-anchor'] = 'start';
+            attrs['x'] = 5;
+        } else {
+            // Align the text at the right
+            attrs['text-anchor'] = 'end';
+            attrs['x'] = fullLayout._paper.attr('width') - 7;
+        }
+
+        linkContainer.attr(attrs);
 
 
         var toolspan = linkContainer.select('.js-link-to-tool'),
@@ -673,7 +685,7 @@
         // instantiate framework
         gd.framework = Plotly.micropolar.manager.framework();
         //get rid of gd.layout stashed nodes
-        layout = µ.util.deepExtend({}, gd._fullLayout);
+        layout = Plotly.micropolar.util.deepExtend({}, gd._fullLayout);
         delete layout._container;
         delete layout._paperdiv;
         delete layout.autosize;
@@ -809,8 +821,13 @@
 
         });
 
-        var sceneKeys = Plotly.Lib.getSceneKeys(layout);
+        // cannot have scene1, numbering goes scene, scene2, scene3...
+        if(layout.scene1) {
+            if(!layout.scene) layout.scene = layout.scene1;
+            delete layout.scene1;
+        }
 
+        var sceneKeys = Plotly.Lib.getSceneKeys(layout);
         sceneKeys.forEach( function (sceneKey) {
             var sceneLayout = layout[sceneKey];
             // fix for saved float32-arrays
@@ -820,7 +837,6 @@
                 camp[1] = [camp[1][0], camp[1][1], camp[1][2]];
             }
         });
-
 
         var legend = layout.legend;
         if(legend) {
@@ -926,6 +942,11 @@
             if(trace.xaxis) trace.xaxis = Plotly.Axes.cleanId(trace.xaxis, 'x');
             if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
 
+            // scene ids scene1 -> scene
+            if (trace.scene) {
+                trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
+            }
+
             // textposition - support partial attributes (ie just 'top')
             // and incorrect use of middle / center etc.
             function cleanTextPosition(textposition) {
@@ -980,7 +1001,9 @@
             return;
         }
         gd.calcdata = undefined;
-        Plotly.plot(gd);
+        Plotly.plot(gd).then(function () {
+            $(gd).trigger('plotly_redraw');
+        });
     };
 
     plots.attributes = {
@@ -1039,8 +1062,10 @@
         // gd.data, gd.layout are precisely what the user specified
         // gd._fullData, gd._fullLayout are complete descriptions
         //      of how to draw the plot
-        var oldFullLayout = gd._fullLayout || {};
-        var newFullLayout = gd._fullLayout = {};
+        var oldFullLayout = gd._fullLayout || {},
+            newFullLayout = gd._fullLayout = {},
+            i,
+            modulei;
 
         // first fill in what we can of layout without looking at data
         // because fullData needs a few things from layout
@@ -1049,9 +1074,21 @@
         // then do the data
         var oldFullData = gd._fullData || [],
             newData = gd.data || [];
+        gd._modules = [];
         gd._fullData = newData.map(function(trace, i) {
-            return plots.supplyDataDefaults(trace, i, newFullLayout);
+            var fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout),
+                module = fullTrace._module;
+
+            if(module && gd._modules.indexOf(module)===-1) gd._modules.push(module);
+
+            return fullTrace;
         });
+
+        // special cases that introduce interactions between traces
+        for(i = 0; i < gd._modules.length; i++) {
+            modulei = gd._modules[i];
+            if(modulei.cleanData) modulei.cleanData(gd._fullData);
+        }
 
         // DETECT 3D, Cartesian, and Polar
         gd._fullData.forEach(function(d, i) {
@@ -1390,7 +1427,6 @@
 
     function doCalcdata(gd) {
         gd.calcdata = [];
-        gd._modules = [];
 
         // extra helper variables
         // firstscatter: fill-to-next on the first trace goes to zero
@@ -1408,12 +1444,11 @@
         Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
 
         gd.calcdata = gd._fullData.map(function(trace, i) {
-            var module = plots.getModule(trace),
+            var module = trace._module,
                 cd = [];
 
             if(module && trace.visible === true) {
                 if(module.calc) cd = module.calc(gd,trace);
-                if(gd._modules.indexOf(module)===-1) gd._modules.push(module);
             }
 
             // make sure there is a first point
@@ -1671,7 +1706,8 @@
             redoFunc = deleteTraces,
             undoArgs = [gd, traces, indices],
             redoArgs = [gd, indices],
-            i;
+            i,
+            deletedTrace;
 
         // make sure indices are defined
         if (typeof indices === 'undefined') {
@@ -1686,9 +1722,9 @@
 
         // we want descending here so that splicing later doesn't affect indexing
         indices.sort().reverse();
-
         for (i = 0; i < indices.length; i += 1) {
-            traces.push(gd.data.splice(indices[i], 1));
+            deletedTrace = gd.data.splice(indices[i], 1)[0];
+            traces.push(deletedTrace);
         }
 
         Plotly.redraw(gd);
