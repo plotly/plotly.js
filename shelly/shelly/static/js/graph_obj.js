@@ -1062,8 +1062,10 @@
         // gd.data, gd.layout are precisely what the user specified
         // gd._fullData, gd._fullLayout are complete descriptions
         //      of how to draw the plot
-        var oldFullLayout = gd._fullLayout || {};
-        var newFullLayout = gd._fullLayout = {};
+        var oldFullLayout = gd._fullLayout || {},
+            newFullLayout = gd._fullLayout = {},
+            i,
+            modulei;
 
         // first fill in what we can of layout without looking at data
         // because fullData needs a few things from layout
@@ -1072,9 +1074,21 @@
         // then do the data
         var oldFullData = gd._fullData || [],
             newData = gd.data || [];
+        gd._modules = [];
         gd._fullData = newData.map(function(trace, i) {
-            return plots.supplyDataDefaults(trace, i, newFullLayout);
+            var fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout),
+                module = fullTrace._module;
+
+            if(module && gd._modules.indexOf(module)===-1) gd._modules.push(module);
+
+            return fullTrace;
         });
+
+        // special cases that introduce interactions between traces
+        for(i = 0; i < gd._modules.length; i++) {
+            modulei = gd._modules[i];
+            if(modulei.cleanData) modulei.cleanData(gd._fullData);
+        }
 
         // DETECT 3D, Cartesian, and Polar
         gd._fullData.forEach(function(d, i) {
@@ -1413,7 +1427,6 @@
 
     function doCalcdata(gd) {
         gd.calcdata = [];
-        gd._modules = [];
 
         // extra helper variables
         // firstscatter: fill-to-next on the first trace goes to zero
@@ -1431,12 +1444,11 @@
         Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
 
         gd.calcdata = gd._fullData.map(function(trace, i) {
-            var module = plots.getModule(trace),
+            var module = trace._module,
                 cd = [];
 
             if(module && trace.visible === true) {
                 if(module.calc) cd = module.calc(gd,trace);
-                if(gd._modules.indexOf(module)===-1) gd._modules.push(module);
             }
 
             // make sure there is a first point
