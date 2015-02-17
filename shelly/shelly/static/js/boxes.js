@@ -267,7 +267,7 @@
             // bin the values
             for (i = 0; i < valLength; ++i) {
                 v = val[i];
-                if(!$.isNumeric(v)) return;
+                if(!$.isNumeric(v)) continue;
                 n = Plotly.Lib.findBin(pos[i], bins);
                 if(n>=0 && n<valLength) valBinned[n].push(v);
             }
