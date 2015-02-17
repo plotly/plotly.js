@@ -382,6 +382,18 @@
 
         if(!gd.layout || graphwasempty) gd.layout = cleanLayout(layout);
 
+        // if the user is trying to drag the axes, allow new data and layout
+        // to come in but don't allow a replot.
+        if(gd._dragging) {
+            // signal to drag handler that after everything else is done
+            // we need to replot, because something has changed
+            gd._replotPending = true;
+            return;
+        } else {
+            // we're going ahead with a replot now
+            gd._replotPending = false;
+        }
+
         plots.supplyDefaults(gd);
 
         // Polar plots
@@ -1423,6 +1435,8 @@
         delete gd.hmlumcount;
         delete gd.hmpixcount;
         delete gd.numboxes;
+        delete gd._hoverTimer;
+        delete gd._lastHoverTime;
     };
 
     function doCalcdata(gd) {
