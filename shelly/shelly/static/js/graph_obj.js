@@ -1710,7 +1710,7 @@
      *
      * @param {Object|HTMLDivElement} gd The graph div
      * @param {Object[]} gd.data The array of traces we're removing from
-     * @param {Number|Number[]|String} indices The indices to delete or 'all'
+     * @param {Number|Number[]} indices The indices
      */
     Plotly.deleteTraces = function deleteTraces (gd, indices) {
         var traces = [],
@@ -1721,11 +1721,9 @@
             i,
             deletedTrace;
 
-        // make sure indices are defined as an array of integers
+        // make sure indices are defined
         if (typeof indices === 'undefined') {
-            throw new Error('indices must be an integer, array of integers, or \'all\'.');
-        } else if (indices === 'all') {
-            indices = gd.data.map(function (_, i) {return i;});
+            throw new Error('indices must be an integer or array of integers.');
         } else if (!Array.isArray(indices)) {
             indices = [indices];
         }
