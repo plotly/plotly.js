@@ -1007,7 +1007,7 @@
     };
 
     /**
-     * Conveniece function to make idempotent plot option obvious to users.
+     * Convenience function to make idempotent plot option obvious to users.
      *
      * @param gd
      * @param {Object[]} data
