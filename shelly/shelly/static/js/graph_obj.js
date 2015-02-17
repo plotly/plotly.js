@@ -2386,7 +2386,8 @@
 
         // now swap x&y for any annotations anchored to these x & y
         (layout.annotations||[]).forEach(function(ann) {
-            if(xIds.indexOf(ann.xref) !== -1 && yIds.indexOf(ann.yref) !== -1) {
+            if(xIds.indexOf(ann.xref || 'x') !== -1 &&
+                    yIds.indexOf(ann.yref || 'y') !== -1) {
                 swapAttrs(ann,'?');
             }
         });
