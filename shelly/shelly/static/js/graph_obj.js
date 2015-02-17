@@ -1012,10 +1012,11 @@
      * @param gd
      * @param {Object[]} data
      * @param {Object} layout
+     * @param {Object} config
      */
-    Plotly.newPlot = function (gd, data, layout) {
+    Plotly.newPlot = function (gd, data, layout, config) {
         Plotly.Plots.purge(gd);
-        Plotly.plot(gd, data, layout);
+        Plotly.plot(gd, data, layout, config);
     };
 
     plots.attributes = {
