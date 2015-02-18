@@ -916,14 +916,14 @@
                 if(trace.bardir==='h' && (plots.isBar(trace.type) ||
                          trace.type.substr(0,9)==='histogram')) {
                     trace.orientation = 'h';
-                    swapxydata(trace);
+                    swapXYData(trace);
                 }
                 delete trace.bardir;
             }
 
             // now we have only one 1D histogram type, and whether
             // it uses x or y data depends on trace.orientation
-            if(trace.type==='histogramy') swapxydata(trace);
+            if(trace.type==='histogramy') swapXYData(trace);
             if(trace.type==='histogramx' || trace.type==='histogramy') {
                 trace.type = 'histogram';
             }
@@ -2094,7 +2094,7 @@
                         cont.orientation =
                             {v:'h', h:'v'}[contFull.orientation];
                     }
-                    swapxydata(cont);
+                    swapXYData(cont);
                 }
                 // all the other ones, just modify that one attribute
                 else param.set($.isArray(vi) ? vi[i%vi.length] : vi);
@@ -2229,40 +2229,33 @@
 
     // swap x and y of the same attribute in container cont
     // specify attr with a ? in place of x/y
-    // optionally, use a longer name for each x and y (for axes, like x2<->y3)
-    function swapAttrs(cont,attr,xname,yname) {
-        var xp = Plotly.Lib.nestedProperty(cont,attr.replace('?',xname||'x')),
-            yp = Plotly.Lib.nestedProperty(cont,attr.replace('?',yname||'y')),
-            temp = xp.get();
-        xp.set(yp.get());
-        yp.set(temp);
+    function swapXYAttrs(cont,attrList) {
+        var np = Plotly.Lib.nestedProperty;
+        for(var i = 0; i < attrList.length; i++) {
+            var attr = attrList[i],
+                xp = np(cont, attr.replace('?', 'x')),
+                yp = np(cont, attr.replace('?', 'y')),
+                temp = xp.get();
+            xp.set(yp.get());
+            yp.set(temp);
+        }
     }
 
     // swap all the data and data attributes associated with x and y
-    function swapxydata(trace) {
+    function swapXYData(trace) {
         var i;
-        swapAttrs(trace, '?');
-        swapAttrs(trace, '?0');
-        swapAttrs(trace, 'd?');
-        swapAttrs(trace, '?bins');
-        swapAttrs(trace, 'nbins?');
-        swapAttrs(trace, 'autobin?');
+        swapXYAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
         if($.isArray(trace.z) && $.isArray(trace.z[0])) {
             if(trace.transpose) delete trace.transpose;
             else trace.transpose = true;
         }
-        swapAttrs(trace, '?src');
-        swapAttrs(trace, 'error_?');
         if(trace.error_x && trace.error_y) {
-            var copyYstyle = ('copy_ystyle' in trace.error_y) ?
-                    trace.error_y.copy_ystyle :
-                    ((trace.error_y.color || trace.error_y.thickness ||
-                        trace.error_y.width) ? false : true);
-            swapAttrs(trace, 'error_?.copy_ystyle');
+            var errorY = trace.error_y,
+                copyYstyle = ('copy_ystyle' in errorY) ? errorY.copy_ystyle :
+                    !(errorY.color || errorY.thickness || errorY.width);
+            swapXYAttrs(trace, ['error_?.copy_ystyle']);
             if(copyYstyle) {
-                swapAttrs(trace, 'error_?.color');
-                swapAttrs(trace, 'error_?.thickness');
-                swapAttrs(trace, 'error_?.width');
+                swapXYAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
             }
         }
         if(trace.hoverinfo) {
@@ -2278,15 +2271,12 @@
     function makeAxisGroups(gd, traces) {
         var groups = [],
             i,
-            j,
-            xi,
-            yi,
-            groupsi;
+            j;
 
         for(i = 0; i < traces.length; i++) {
-            groupsi = [];
-            xi = gd._fullData[traces[i]].xaxis;
-            yi = gd._fullData[traces[i]].yaxis;
+            var groupsi = [],
+                xi = gd._fullData[traces[i]].xaxis,
+                yi = gd._fullData[traces[i]].yaxis;
             if(!xi || !yi) continue; // not a 2D cartesian trace?
 
             for(j = 0; j < groups.length; j++) {
@@ -2387,12 +2377,13 @@
         }
 
         // now swap x&y for any annotations anchored to these x & y
-        gd._fullLayout.annotations.forEach(function(ann, i) {
+        for(i = 0; i < gd._fullLayout.annotations.length; i++) {
+            var ann = gd._fullLayout.annotations[i];
             if(xIds.indexOf(ann.xref) !== -1 &&
                     yIds.indexOf(ann.yref) !== -1) {
-                swapAttrs(layout.annotations[i],'?');
+                swapXYAttrs(layout.annotations[i],['?']);
             }
-        });
+        }
     }
 
     function swapAxAttrs(layout, key, xFullAxes, yFullAxes) {
