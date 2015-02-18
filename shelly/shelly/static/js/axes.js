@@ -2292,6 +2292,150 @@
         }
     };
 
+    // swap all the presentation attributes of the axes showing these traces
+    axes.swap = function(gd, traces) {
+        var axGroups = makeAxisGroups(gd, traces);
+
+        for(var i = 0; i < axGroups.length; i++) {
+            swapAxisGroup(gd, axGroups[i].x, axGroups[i].y);
+        }
+    };
+
+    function makeAxisGroups(gd, traces) {
+        var groups = [],
+            i,
+            j;
+
+        for(i = 0; i < traces.length; i++) {
+            var groupsi = [],
+                xi = gd._fullData[traces[i]].xaxis,
+                yi = gd._fullData[traces[i]].yaxis;
+            if(!xi || !yi) continue; // not a 2D cartesian trace?
+
+            for(j = 0; j < groups.length; j++) {
+                if(groups[j].x.indexOf(xi) !== -1 || groups[j].y.indexOf(yi) !== -1) {
+                    groupsi.push(j);
+                }
+            }
+
+            if(!groupsi.length) {
+                groups.push({x:[xi], y: [yi]});
+                continue;
+            }
+
+            var group0 = groups[groupsi[0]],
+                groupj;
+
+            if(groupsi.length>1) {
+                for(j = 1; j < groupsi.length; j++) {
+                    groupj = groups[groupsi[j]];
+                    mergeAxisGroups(group0.x, groupj.x);
+                    mergeAxisGroups(group0.y, groupj.y);
+                }
+            }
+            mergeAxisGroups(group0.x, [xi]);
+            mergeAxisGroups(group0.y, [yi]);
+        }
+
+        return groups;
+    }
+
+    function mergeAxisGroups(intoSet, fromSet) {
+        for(var i = 0; i < fromSet.length; i++) {
+            if(intoSet.indexOf(fromSet[i]) === -1) intoSet.push(fromSet[i]);
+        }
+    }
+
+    function swapAxisGroup(gd, xIds, yIds) {
+        var i,
+            j,
+            xFullAxes = [],
+            yFullAxes = [],
+            layout = gd.layout;
+
+        for(i = 0; i < xIds.length; i++) xFullAxes.push(Plotly.Axes.getFromId(gd, xIds[i]));
+        for(i = 0; i < yIds.length; i++) yFullAxes.push(Plotly.Axes.getFromId(gd, yIds[i]));
+
+        var allAxKeys = Object.keys(xFullAxes[0]),
+            noSwapAttrs = [
+                'anchor', 'domain', 'overlaying', 'position', 'side', 'tickangle'
+            ],
+            numericTypes = ['linear', 'log'];
+
+        for(i = 0; i < allAxKeys.length; i++) {
+            var keyi = allAxKeys[i],
+                xVal = xFullAxes[0][keyi],
+                yVal = yFullAxes[0][keyi],
+                allEqual = true,
+                coerceLinearX = false,
+                coerceLinearY = false;
+            if(keyi.charAt(0) === '_' || typeof xVal === 'function' ||
+                    noSwapAttrs.indexOf(keyi) !== -1) {
+                continue;
+            }
+            for(j = 1; j < xFullAxes.length && allEqual; j++) {
+                var xVali = xFullAxes[j][keyi];
+                if(keyi === 'type' && numericTypes.indexOf(xVal) !== -1 &&
+                        numericTypes.indexOf(xVali) !== -1 && xVal !== xVali) {
+                    // type is special - if we find a mixture of linear and log,
+                    // coerce them all to linear on flipping
+                    coerceLinearX = true;
+                }
+                else if(xVali !== xVal) allEqual = false;
+            }
+            for(j = 1; j < yFullAxes.length && allEqual; j++) {
+                var yVali = yFullAxes[j][keyi];
+                if(keyi === 'type' && numericTypes.indexOf(yVal) !== -1 &&
+                        numericTypes.indexOf(yVali) !== -1 && yVal !== yVali) {
+                    // type is special - if we find a mixture of linear and log,
+                    // coerce them all to linear on flipping
+                    coerceLinearY = true;
+                }
+                else if(yFullAxes[j][keyi] !== yVal) allEqual = false;
+            }
+            if(allEqual) {
+                if(coerceLinearX) layout[xFullAxes[0]._name].type = 'linear';
+                if(coerceLinearY) layout[yFullAxes[0]._name].type = 'linear';
+                swapAxisAttrs(layout, keyi, xFullAxes, yFullAxes);
+            }
+        }
+
+        // now swap x&y for any annotations anchored to these x & y
+        for(i = 0; i < gd._fullLayout.annotations.length; i++) {
+            var ann = gd._fullLayout.annotations[i];
+            if(xIds.indexOf(ann.xref) !== -1 &&
+                    yIds.indexOf(ann.yref) !== -1) {
+                Plotly.Lib.swapXYAttrs(layout.annotations[i],['?']);
+            }
+        }
+    }
+
+    function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
+        // in case the value is the default for either axis,
+        // look at the first axis in each list and see if
+        // this key's value is undefined
+        var np = Plotly.Lib.nestedProperty,
+            xVal = np(layout[xFullAxes[0]._name], key).get(),
+            yVal = np(layout[yFullAxes[0]._name], key).get(),
+            i;
+        if(key === 'title') {
+            // special handling of placeholder titles
+            if(xVal === 'Click to enter X axis title') {
+                xVal = 'Click to enter Y axis title';
+            }
+            if(yVal === 'Click to enter Y axis title') {
+                yVal = 'Click to enter X axis title';
+            }
+        }
+
+        for(i = 0; i < xFullAxes.length; i++) {
+            np(layout, xFullAxes[i]._name + '.' + key).set(yVal);
+        }
+        for(i = 0; i < yFullAxes.length; i++) {
+            np(layout, yFullAxes[i]._name + '.' + key).set(xVal);
+        }
+    }
+
     // mod - version of modulus that always restricts to [0,divisor)
     // rather than built-in % which gives a negative value for negative v
     function mod(v,d){ return ((v%d) + d) % d; }
