@@ -928,14 +928,14 @@
                 if(trace.bardir==='h' && (plots.isBar(trace.type) ||
                          trace.type.substr(0,9)==='histogram')) {
                     trace.orientation = 'h';
-                    swapxydata(trace);
+                    swapXYData(trace);
                 }
                 delete trace.bardir;
             }
 
             // now we have only one 1D histogram type, and whether
             // it uses x or y data depends on trace.orientation
-            if(trace.type==='histogramy') swapxydata(trace);
+            if(trace.type==='histogramy') swapXYData(trace);
             if(trace.type==='histogramx' || trace.type==='histogramy') {
                 trace.type = 'histogram';
             }
@@ -2108,7 +2108,7 @@
                         cont.orientation =
                             {v:'h', h:'v'}[contFull.orientation];
                     }
-                    swapxydata(cont);
+                    swapXYData(cont);
                 }
                 // all the other ones, just modify that one attribute
                 else param.set($.isArray(vi) ? vi[i%vi.length] : vi);
@@ -2117,7 +2117,7 @@
 
             // swap the data attributes of the relevant x and y axes?
             if(['swapxyaxes','orientationaxes'].indexOf(ai)!==-1) {
-                axswap(gd,gd.data[traces[0]]);
+                Plotly.Axes.swap(gd, traces);
             }
 
             // swap hovermode if set to "compare x/y data"
@@ -2241,42 +2241,21 @@
         });
     };
 
-    // swap x and y of the same attribute in container cont
-    // specify attr with a ? in place of x/y
-    // optionally, use a longer name for each x and y (for axes, like x2<->y3)
-    function swapAttrs(cont,attr,xname,yname) {
-        var xp = Plotly.Lib.nestedProperty(cont,attr.replace('?',xname||'x')),
-            yp = Plotly.Lib.nestedProperty(cont,attr.replace('?',yname||'y')),
-            temp = xp.get();
-        xp.set(yp.get());
-        yp.set(temp);
-    }
-
     // swap all the data and data attributes associated with x and y
-    function swapxydata(trace) {
+    function swapXYData(trace) {
         var i;
-        swapAttrs(trace, '?');
-        swapAttrs(trace, '?0');
-        swapAttrs(trace, 'd?');
-        swapAttrs(trace, '?bins');
-        swapAttrs(trace, 'nbins?');
-        swapAttrs(trace, 'autobin?');
+        Plotly.Lib.swapXYAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
         if($.isArray(trace.z) && $.isArray(trace.z[0])) {
             if(trace.transpose) delete trace.transpose;
             else trace.transpose = true;
         }
-        swapAttrs(trace, '?src');
-        swapAttrs(trace, 'error_?');
         if(trace.error_x && trace.error_y) {
-            var copyYstyle = ('copy_ystyle' in trace.error_y) ?
-                    trace.error_y.copy_ystyle :
-                    ((trace.error_y.color || trace.error_y.thickness ||
-                        trace.error_y.width) ? false : true);
-            swapAttrs(trace, 'error_?.copy_ystyle');
+            var errorY = trace.error_y,
+                copyYstyle = ('copy_ystyle' in errorY) ? errorY.copy_ystyle :
+                    !(errorY.color || errorY.thickness || errorY.width);
+            Plotly.Lib.swapXYAttrs(trace, ['error_?.copy_ystyle']);
             if(copyYstyle) {
-                swapAttrs(trace, 'error_?.color');
-                swapAttrs(trace, 'error_?.thickness');
-                swapAttrs(trace, 'error_?.width');
+                Plotly.Lib.swapXYAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
             }
         }
         if(trace.hoverinfo) {
@@ -2286,41 +2265,6 @@
                 else if(hoverInfoParts[i]==='y') hoverInfoParts[i] = 'x';
             }
             trace.hoverinfo = hoverInfoParts.join('+');
-        }
-    }
-
-    // swap all the presentation attributes of the axes showing this trace
-    function axswap(gd, trace) {
-        var layout = gd.layout,
-            xid = trace.xaxis||'x',
-            yid = trace.yaxis||'y',
-            xa = Plotly.Axes.getFromId(gd, xid),
-            xname = xa._name,
-            ya = Plotly.Axes.getFromId(gd, yid),
-            yname = ya._name,
-            noSwapAttrs = [
-                'anchor','domain','overlaying','position','tickangle'
-            ],
-            axkeylist = Object.keys(layout[xname]).filter(function(n) {
-                return n.charAt(0)!=='_' &&
-                    (typeof layout[xname][n]!=='function') &&
-                    noSwapAttrs.indexOf(n)===-1;
-            });
-        axkeylist.forEach(function(attr){
-            swapAttrs(layout, '?.'+attr, xname, yname);
-        });
-
-        // now swap x&y for any annotations anchored to these x & y
-        (layout.annotations||[]).forEach(function(ann) {
-            if(ann.xref===xid && ann.yref===yid) swapAttrs(ann,'?');
-        });
-
-        // check for swapped placeholder titles
-        if(xa.title==='Click to enter Y axis title') {
-            xa.title = 'Click to enter X axis title';
-        }
-        if(ya.title==='Click to enter X axis title') {
-            ya.title = 'Click to enter Y axis title';
         }
     }
 
