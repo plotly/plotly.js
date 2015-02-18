@@ -10,6 +10,8 @@ function func(config){
     config.set(func.defaultConfig);
 }
 
+var shellyStatic = '../../../shelly/static/js/';
+
 func.defaultConfig = {
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -21,37 +23,31 @@ func.defaultConfig = {
 
     // list of files / patterns to load in the browser
     files: [
-        '../plugins/jquery-1.8.3.min.js',
-        '../plugins/streamhead-bundle.js',
-        '../plugins/d3.v3.min.js',
-        '../plugins/png.js',
-        '../plugins/tinycolor.js',
-        '../lib.js', // soon this all will get replaced with the plotly.js bundle...
-        '../plotly_util.js',
-        '../axes.js',
-        '../graph_obj.js',
-        '../color.js',
-        '../drawing.js',
-        '../scatter.js',
-        '../annotations.js',
-        '../bars.js',
-        '../boxes.js',
-        '../colorbar.js',
-        '../contour.js',
-        '../errorbars.js',
-        '../graph_interact.js',
-        '../heatmap.js',
-        '../histogram.js',
-        '../legend.js',
-        '../storage.js',
-        '../modebar.js',
-        '../plugins/promise-4.0.0.min.js',
-        '../plugins/promise-done-1.0.0.js', // end plotly.js bundle
-        '../graph_reference.js',
-        '../themes.js',
-        '../graph_edit.js',
-        '../plot_tile.js',
-        '*_test.js'
+        shellyStatic + 'plugins/jquery-1.8.3.min.js',
+        shellyStatic + 'plugins/streamhead-bundle.js',
+        shellyStatic + 'plugins/d3.v3.min.js',
+        shellyStatic + 'plugins/png.js',
+        shellyStatic + 'plugins/tinycolor.js',
+        './src/lib.js', // soon this all will get replaced with the plotly.js bundle...
+        './src/plotly_util.js',
+        './src/axes.js',
+        './src/graph_obj.js',
+        './src/color.js',
+        './src/drawing.js',
+        './src/scatter.js',
+        './src/annotations.js',
+        './src/bars.js',
+        './src/boxes.js',
+        './src/colorbar.js',
+        './src/contour.js',
+        './src/errorbars.js',
+        './src/graph_interact.js',
+        './src/heatmap.js',
+        './src/histogram.js',
+        './src/legend.js',
+        './src/modebar.js',
+        shellyStatic + 'plugins/promise-4.0.0.min.js', // end plotly.js bundle
+        'tests/*_test.js'
     ],
 
     // list of files to exclude
@@ -61,8 +57,10 @@ func.defaultConfig = {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        '../themes.js': ['coverage'],
-        '../graph_edit.js': ['coverage']
+        './src/axes.js': ['coverage'],
+        './src/graph_obj.js': ['coverage'],
+        './src/lib.js': ['coverage'],
+        './src/modebar.js': ['coverage']
     },
 
     // test results reporter to use

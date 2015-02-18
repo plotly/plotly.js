@@ -16,7 +16,6 @@ describe('Test graph_obj', function () {
                 ]
             };
             spyOn(Plotly, 'redraw');
-            spyOn(Plotly.Queue, 'add');
         });
 
         it('throw an error when indices are omitted', function () {
@@ -100,9 +99,6 @@ describe('Test graph_obj', function () {
             };
             spyOn(Plotly, 'redraw');
             spyOn(Plotly, 'moveTraces');
-            spyOn(Plotly.Queue, 'add');
-            spyOn(Plotly.Queue, 'startSequence');
-            spyOn(Plotly.Queue, 'stopSequence');
         });
 
         it('throw an error when traces is not an object or an array of objects', function () {
@@ -220,7 +216,6 @@ describe('Test graph_obj', function () {
                 ]
             };
             spyOn(Plotly, 'redraw');
-            spyOn(Plotly.Queue, 'add');
         });
 
         it('throw an error when index arrays are unequal', function () {
