@@ -27,6 +27,8 @@ Plotly.Legend = require('./legend');
 require('./modebar');
 
 // promise polyfill, embed rather than requiring dependencies
-var promise = require('promise')
-if(!Promise) Promise = promise;
-else Promise.prototype.done = promise.prototype.done;
+// var promise = require('promise')
+// if(!Promise) Promise = promise;
+// else Promise.prototype.done = promise.prototype.done;
+require('../../../../shelly/static/js/plugins/promise-1.0.0.min.js');
+require('../../../../shelly/static/js/plugins/promise-done-1.0.0.js');
