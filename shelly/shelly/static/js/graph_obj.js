@@ -2227,24 +2227,10 @@
         });
     };
 
-    // swap x and y of the same attribute in container cont
-    // specify attr with a ? in place of x/y
-    function swapXYAttrs(cont,attrList) {
-        var np = Plotly.Lib.nestedProperty;
-        for(var i = 0; i < attrList.length; i++) {
-            var attr = attrList[i],
-                xp = np(cont, attr.replace('?', 'x')),
-                yp = np(cont, attr.replace('?', 'y')),
-                temp = xp.get();
-            xp.set(yp.get());
-            yp.set(temp);
-        }
-    }
-
     // swap all the data and data attributes associated with x and y
     function swapXYData(trace) {
         var i;
-        swapXYAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
+        Plotly.Lib.swapXYAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
         if($.isArray(trace.z) && $.isArray(trace.z[0])) {
             if(trace.transpose) delete trace.transpose;
             else trace.transpose = true;
@@ -2253,9 +2239,9 @@
             var errorY = trace.error_y,
                 copyYstyle = ('copy_ystyle' in errorY) ? errorY.copy_ystyle :
                     !(errorY.color || errorY.thickness || errorY.width);
-            swapXYAttrs(trace, ['error_?.copy_ystyle']);
+            Plotly.Lib.swapXYAttrs(trace, ['error_?.copy_ystyle']);
             if(copyYstyle) {
-                swapXYAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
+                Plotly.Lib.swapXYAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
             }
         }
         if(trace.hoverinfo) {
@@ -2381,7 +2367,7 @@
             var ann = gd._fullLayout.annotations[i];
             if(xIds.indexOf(ann.xref) !== -1 &&
                     yIds.indexOf(ann.yref) !== -1) {
-                swapXYAttrs(layout.annotations[i],['?']);
+                Plotly.Lib.swapXYAttrs(layout.annotations[i],['?']);
             }
         }
     }
