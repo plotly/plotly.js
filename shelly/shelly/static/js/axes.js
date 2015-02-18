@@ -1799,7 +1799,7 @@
                 ax = fullLayout[scene][type + 'axis'];
             }
         } else {
-            ax = Plotly.Axes.getFromId(td, fullTrace[type + 'axis'] || type);
+            ax = axes.getFromId(td, fullTrace[type + 'axis'] || type);
         }
 
         return ax;
@@ -1834,7 +1834,7 @@
             var ax2letter = ax2._id.charAt(0),
                 ax3id = ax2.anchor==='free' ?
                     {x:'y',y:'x'}[ax2letter] : ax2.anchor,
-                ax3 = Plotly.Axes.getFromId(gd,ax3id);
+                ax3 = axes.getFromId(gd,ax3id);
 
             function hasAx2(sp){ return sp.indexOf(ax2._id)!==-1; }
 
@@ -2353,8 +2353,8 @@
             yFullAxes = [],
             layout = gd.layout;
 
-        for(i = 0; i < xIds.length; i++) xFullAxes.push(Plotly.Axes.getFromId(gd, xIds[i]));
-        for(i = 0; i < yIds.length; i++) yFullAxes.push(Plotly.Axes.getFromId(gd, yIds[i]));
+        for(i = 0; i < xIds.length; i++) xFullAxes.push(axes.getFromId(gd, xIds[i]));
+        for(i = 0; i < yIds.length; i++) yFullAxes.push(axes.getFromId(gd, yIds[i]));
 
         var allAxKeys = Object.keys(xFullAxes[0]),
             noSwapAttrs = [
