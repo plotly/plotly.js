@@ -2343,7 +2343,9 @@
         for(i = 0; i < yIds.length; i++) yFullAxes.push(Plotly.Axes.getFromId(gd, yIds[i]));
 
         var allAxKeys = Object.keys(xFullAxes[0]),
-            noSwapAttrs = ['anchor', 'domain', 'overlaying', 'position', 'tickangle'],
+            noSwapAttrs = [
+                'anchor', 'domain', 'overlaying', 'position', 'side', 'tickangle'
+            ],
             numericTypes = ['linear', 'log'];
 
         for(i = 0; i < allAxKeys.length; i++) {
@@ -2385,10 +2387,10 @@
         }
 
         // now swap x&y for any annotations anchored to these x & y
-        (layout.annotations||[]).forEach(function(ann) {
-            if(xIds.indexOf(ann.xref || 'x') !== -1 &&
-                    yIds.indexOf(ann.yref || 'y') !== -1) {
-                swapAttrs(ann,'?');
+        gd._fullLayout.annotations.forEach(function(ann, i) {
+            if(xIds.indexOf(ann.xref) !== -1 &&
+                    yIds.indexOf(ann.yref) !== -1) {
+                swapAttrs(layout.annotations[i],'?');
             }
         });
     }
