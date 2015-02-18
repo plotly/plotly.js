@@ -2378,10 +2378,16 @@
 
         // now swap x&y for any annotations anchored to these x & y
         for(i = 0; i < gd._fullLayout.annotations.length; i++) {
-            var ann = gd._fullLayout.annotations[i];
-            if(xIds.indexOf(ann.xref) !== -1 &&
-                    yIds.indexOf(ann.yref) !== -1) {
-                swapXYAttrs(layout.annotations[i],['?']);
+            var fullAnn = gd._fullLayout.annotations[i];
+            if(xIds.indexOf(fullAnn.xref) !== -1 &&
+                    yIds.indexOf(fullAnn.yref) !== -1) {
+                var ann = layout.annotations[i],
+                    np = Plotly.Lib.nestedProperty,
+                    xp = np(ann, 'x'),
+                    yp = np(ann, 'y'),
+                    temp = yp.get();
+                yp.set(xp.get());
+                xp.set(temp);
             }
         }
     }
