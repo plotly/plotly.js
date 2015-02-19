@@ -234,7 +234,7 @@
                 "y": 0.7272727272727273,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Droid Sans <b>Bold</b> <i>Italic</i>",
+                "text": "Droid Sans <b>Bold</b>",
                 "showarrow": false,
                 "font": {
                     "family": "Droid Sans, sans-serif",
@@ -288,7 +288,7 @@
                 "y": 0.5454545454545454,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Droid Sans Mono <b>Bold</b> <i>Italic</i>",
+                "text": "Droid Sans Mono",
                 "showarrow": false,
                 "font": {
                     "family": "Droid Sans Mono, sans-serif",
@@ -315,7 +315,7 @@
                 "y": 0.4545454545454546,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Gravitas One <i>Italic</i>",
+                "text": "Gravitas One",
                 "showarrow": false,
                 "font": {
                     "family": "Gravitas One, cursive",
@@ -396,7 +396,7 @@
                 "y": 0.18181818181818177,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "PT Sans Narrow <b>Bold</b> <i>Italic</i>",
+                "text": "PT Sans Narrow <b>Bold</b>",
                 "showarrow": false,
                 "font": {
                     "family": "PT Sans Narrow, sans-serif",
