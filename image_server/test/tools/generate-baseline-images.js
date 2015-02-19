@@ -9,11 +9,13 @@ var root = __dirname;
 
 function createBaselineImage (fileName) {
     if (path.extname(fileName) !== '.json') return;
+    if (fileName !== 'fonts.json') return;
 
     var figure = require('../mocks/' + fileName);
     var bodyMock = {
         figure: figure,
-        format: 'png'
+        format: 'png',
+        scale: 3
     };
 
     var imageFileName = fileName.split('.')[0] + '.png';
