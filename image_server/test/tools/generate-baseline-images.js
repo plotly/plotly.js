@@ -9,7 +9,6 @@ var root = __dirname;
 
 function createBaselineImage (fileName) {
     if (path.extname(fileName) !== '.json') return;
-    if (fileName !== 'fonts.json') return;
 
     var figure = require('../mocks/' + fileName);
     var bodyMock = {
