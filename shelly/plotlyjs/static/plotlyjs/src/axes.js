@@ -1517,12 +1517,28 @@
             // with only the first tick
             suffix = '',
             tt,
-            hideexp = ax.exponentformat!=='none' && (hover ?
-                ax.showexponent==='none' :
-                (ax.showexponent!=='all' &&
-                    x!=={first:ax._tmin,last:ax._tmax}[ax.showexponent]) );
+            hideexp,
+            hideprefix,
+            hidesuffix;
 
+        function isHidden(showAttr) {
+            var first_or_last;
+
+            if (hover) return showAttr==='none';
+
+            first_or_last = {
+                first: ax._tmin,
+                last: ax._tmax
+            }[showAttr];
+
+            return showAttr!=='all' && x!==first_or_last;
+        }
+
+        hideexp = ax.exponentformat!=='none' && isHidden(ax.showexponent)
         if(hideexp) hideexp = 'hide';
+
+        hideprefix = isHidden(ax.showtickprefix);
+        hidesuffix = isHidden(ax.showticksuffix);
 
         if(ax.type==='date'){
             var d = new Date(x);
@@ -1616,7 +1632,14 @@
                     fontSize * (x<0 ? 0.5 : 0.25);
             }
         }
+
+        // add exponent suffix
         tt += suffix;
+
+        // add prefix and suffix
+        if (!hideprefix) tt = ax.tickprefix + tt;
+        if (!hidesuffix) tt = tt + ax.ticksuffix;
+
         // replace standard minus character (which is technically a hyphen)
         // with a true minus sign
         if(ax.type!=='category') tt = tt.replace(/-/g,'\u2212');
