@@ -103,6 +103,24 @@
             type: 'angle',
             dflt: 'auto'
         },
+        tickprefix: {
+            type: 'string',
+            dflt: ''
+        },
+        showtickprefix: {
+            type: 'enumerated',
+            values: ['all', 'first', 'last', 'none'],
+            dflt: 'all'
+        },
+        ticksuffix: {
+            type: 'string',
+            dflt: ''
+        },
+        showticksuffix: {
+            type: 'enumerated',
+            values: ['all', 'first', 'last', 'none'],
+            dflt: 'all'
+        },
         showexponent: {
             type: 'enumerated',
             values: ['all', 'first', 'last', 'none'],
@@ -351,6 +369,11 @@
                 coerce('showexponent');
                 coerce('exponentformat');
             }
+
+            coerce('tickprefix');
+            coerce('showtickprefix');
+            coerce('ticksuffix');
+            coerce('showticksuffix');
         }
 
         var showLine = coerce('showline');
