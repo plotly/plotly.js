@@ -31,7 +31,13 @@
         this.Plotly = config.Plotly;
         this.graphInfo = config.graphInfo;
         this.element = document.createElement('div');
-        this.element.className = 'modebar';
+
+        if(this.graphInfo._context.displayModeBar === 'hover') {
+            this.element.className = 'modebar modebar--hover';
+        } else {
+            this.element.className = 'modebar';
+        }
+
         this.buttons = config.buttons;
         this.buttonElements = [];
 
@@ -54,7 +60,7 @@
             _this.element.appendChild(group);
         });
 
-        if (this.graphInfo.displaylogo) {
+        if (this.graphInfo._context.displaylogo) {
             this.element.appendChild(this.getLogo());
         }
 
@@ -89,7 +95,7 @@
         var icon = document.createElement('i');
         var _this = this;
         button.setAttribute('rel', 'tooltip');
-        button.className = 'modebar-btn ploticon';
+        button.className = 'modebar-btn plotlyjsicon';
 
         button.setAttribute('data-attr', config.attr);
         button.setAttribute('data-val', config.val);
@@ -154,9 +160,9 @@
         a.href = 'https://plot.ly/';
         a.target = '_blank';
         a.setAttribute('data-title', 'Produced with Plotly');
-        a.className = 'modebar-btn ploticon modebar-btn--logo';
+        a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
-        i.className = 'ploticon-plotlylogo';
+        i.className = 'plotlyjsicon-plotlylogo';
         a.appendChild(i);
         group.appendChild(a);
         return group;
@@ -325,42 +331,42 @@
                 title: 'Zoom',
                 attr: 'dragmode',
                 val: 'zoom',
-                icon: 'ploticon-zoombox',
+                icon: 'plotlyjsicon-zoombox',
                 click: this.handleCartesian
             },
             pan2d: {
                 title: 'Pan',
                 attr: 'dragmode',
                 val: 'pan',
-                icon: 'ploticon-pan',
+                icon: 'plotlyjsicon-pan',
                 click: this.handleCartesian
             },
             zoomIn2d: {
                 title: 'Zoom in',
                 attr: 'zoom',
                 val: 'in',
-                icon: 'ploticon-zoom_plus',
+                icon: 'plotlyjsicon-zoom_plus',
                 click: this.handleCartesian
             },
             zoomOut2d: {
                 title: 'Zoom out',
                 attr: 'zoom',
                 val: 'out',
-                icon: 'ploticon-zoom_minus',
+                icon: 'plotlyjsicon-zoom_minus',
                 click: this.handleCartesian
             },
             autoScale2d: {
                 title: 'Autoscale',
                 attr: 'allaxes.autorange',
                 val: '',
-                icon: 'ploticon-autoscale',
+                icon: 'plotlyjsicon-autoscale',
                 click: this.handleCartesian
             },
             hoverClosest2d: {
                 title: 'Show closest data on hover',
                 attr: 'hovermode',
                 val: 'closest',
-                icon: 'ploticon-tooltip_basic',
+                icon: 'plotlyjsicon-tooltip_basic',
                 gravity: 'ne',
                 click: this.handleCartesian
             },
@@ -368,7 +374,7 @@
                 title: 'Compare data on hover',
                 attr: 'hovermode',
                 val: this.graphInfo._fullLayout._isHoriz ? 'y' : 'x',
-                icon: 'ploticon-tooltip_compare',
+                icon: 'plotlyjsicon-tooltip_compare',
                 gravity: 'ne',
                 click: this.handleCartesian
             },
@@ -376,42 +382,42 @@
                 title: 'Zoom',
                 attr: 'dragmode',
                 val: 'zoom',
-                icon: 'ploticon-zoombox',
+                icon: 'plotlyjsicon-zoombox',
                 click: this.handleDrag3d
             },
             pan3d: {
                 title: 'Pan',
                 attr: 'dragmode',
                 val: 'pan',
-                icon: 'ploticon-pan',
+                icon: 'plotlyjsicon-pan',
                 click: this.handleDrag3d
             },
             rotate3d: {
                 title: 'Rotate',
                 attr: 'dragmode',
                 val: 'rotate',
-                icon: 'ploticon-undo',
+                icon: 'plotlyjsicon-undo',
                 click: this.handleDrag3d
             },
             resetCameraDefault3d: {
                 title: 'Reset camera to default',
                 attr: 'resetDefault',
                 val: false,
-                icon: 'ploticon-home',
+                icon: 'plotlyjsicon-home',
                 click: this.handleCamera3d
             },
             resetCameraLastSave3d: {
                 title: 'Reset camera to last save',
                 attr: 'resetLastSave',
                 val: false,
-                icon: 'ploticon-camera-retro',
+                icon: 'plotlyjsicon-camera-retro',
                 click: this.handleCamera3d
             },
             hoverClosest3d: {
                 title: 'Toggle show closest data on hover',
                 attr: 'hovermode',
                 val: 'closest',
-                icon: 'ploticon-tooltip_basic',
+                icon: 'plotlyjsicon-tooltip_basic',
                 gravity: 'ne',
                 click: this.handleHover3d
             }

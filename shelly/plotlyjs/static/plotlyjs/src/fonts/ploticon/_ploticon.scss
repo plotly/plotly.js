@@ -1,5 +1,5 @@
 @font-face {
-  font-family: 'ploticon';
+  font-family: 'plotlyjsicon';
   src: url('#{$font-url}/ploticon/ploticon.eot?91282052');
   src: url('#{$font-url}/ploticon/ploticon.eot?91282052#iefix') format('embedded-opentype'),
        url('#{$font-url}/ploticon/ploticon.woff?91282052') format('woff'),
@@ -8,19 +8,10 @@
   font-weight: normal;
   font-style: normal;
 }
-/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
-/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
-/*
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-  @font-face {
-    font-family: 'ploticon';
-    src: url('../font/ploticon.svg?91282052#ploticon') format('svg');
-  }
-}
-*/
 
-[class^="ploticon-"]:before, [class*=" ploticon-"]:before {
-  font-family: "ploticon";
+
+[class^="plotlyjsicon-"]:before, [class*=" plotlyjsicon-"]:before {
+  font-family: "plotlyjsicon";
   speak: none;
   font-style: normal;
   font-weight: normal;
@@ -33,14 +24,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.ploticon-undo:before { content: '\e800'; } /* '' */
-.ploticon-home:before { content: '\e801'; } /* '' */
-.ploticon-camera-retro:before { content: '\e802'; } /* '' */
-.ploticon-zoombox:before { content: '\e803'; } /* '' */
-.ploticon-pan:before { content: '\e804'; } /* '' */
-.ploticon-zoom_plus:before { content: '\e805'; } /* '' */
-.ploticon-zoom_minus:before { content: '\e806'; } /* '' */
-.ploticon-autoscale:before { content: '\e807'; } /* '' */
-.ploticon-tooltip_basic:before { content: '\e808'; } /* '' */
-.ploticon-tooltip_compare:before { content: '\e809'; } /* '' */
-.ploticon-plotlylogo:before { content: '\e80a'; } /* '' */
+.plotlyjsicon-undo:before { content: '\e800'; } /* '' */
+.plotlyjsicon-home:before { content: '\e801'; } /* '' */
+.plotlyjsicon-camera-retro:before { content: '\e802'; } /* '' */
+.plotlyjsicon-zoombox:before { content: '\e803'; } /* '' */
+.plotlyjsicon-pan:before { content: '\e804'; } /* '' */
+.plotlyjsicon-zoom_plus:before { content: '\e805'; } /* '' */
+.plotlyjsicon-zoom_minus:before { content: '\e806'; } /* '' */
+.plotlyjsicon-autoscale:before { content: '\e807'; } /* '' */
+.plotlyjsicon-tooltip_basic:before { content: '\e808'; } /* '' */
+.plotlyjsicon-tooltip_compare:before { content: '\e809'; } /* '' */
+.plotlyjsicon-plotlylogo:before { content: '\e80a'; } /* '' */

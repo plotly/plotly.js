@@ -16,9 +16,7 @@
     /* jshint camelcase: false */
 
     // ---Plotly global modules
-    /* global Plotly:false, µ:false, micropolar:false,
-        SceneFrame:false, Tabs:false, Examples:false,
-        ENV:false */
+    /* global µ:false, SceneFrame:false, Examples:false, ENV:false */
 
     // ---global functions not yet namespaced
     /* global setFileAndCommentsSize:false */
@@ -84,9 +82,11 @@
         return type === 'surface';
     };
 
-    var ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
+    // ALLTYPES and getModule are used for the graph_reference app
 
-    function getModule(trace) {
+    plots.ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
+
+    plots.getModule = function getModule(trace) {
         var type = trace.type;
 
         if('r' in trace) {
@@ -107,7 +107,7 @@
         console.log('Unrecognized plot type ' + type +
             '. Ignoring this dataset.'
         );
-    }
+    };
 
     // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
     plots.newTab = function(divid, layout) {
@@ -158,6 +158,7 @@
         showTips: true, // new users see some hints about interactivity
         showLink: true, // link to open this plot in plotly
         sendData: true, // if we show a link, does it contain data or just link to a plotly file?
+        displayModeBar: 'hover', // display the modebar (true, false, or 'hover')
         displaylogo: true // add the plotly logo on the end of the modebar
     };
 
@@ -169,8 +170,14 @@
             Object.keys(config).forEach(function(key) {
                 if(key in context) context[key] = config[key];
             });
+
+            // cause a remake of the modebar any time we change context
+            if(gd._fullLayout && gd._fullLayout._modebar) {
+                delete gd._fullLayout._modebar;
+            }
         }
 
+        // TODO: get rid of this - don't use gd.<attribute>, only gd._context.<attribute>
         Object.keys(plots.defaultConfig).forEach( function (key) {
             if (config && key in config) gd[key] = config[key];
             else gd[key] = plots.defaultConfig[key];
@@ -184,6 +191,7 @@
             context.scrollZoom = false;
             context.showTips = false;
             context.showLink = false;
+            context.displayModeBar = false;
         }
     }
 
@@ -191,9 +199,8 @@
     // so it can regenerate whenever it replots
     plots.addLinks = function(gd) {
         var fullLayout = gd._fullLayout;
-        var linkContainer = fullLayout._paper
-            .selectAll('text.js-plot-link-container')
-                .data([0]);
+        var linkContainer = fullLayout._paper.selectAll('text.js-plot-link-container').data([0]);
+
         linkContainer.enter().append('text')
             .classed('js-plot-link-container',true)
             .style({
@@ -208,11 +215,24 @@
                 links.append('tspan').classed('js-sourcelinks',true);
             });
 
-        linkContainer.attr({
-            'text-anchor': 'end',
-            x: fullLayout._paper.attr('width')-7,
-            y: fullLayout._paper.attr('height')-9
-        });
+        // The text node inside svg
+        var text = Array.isArray(linkContainer[0]) ? linkContainer[0][0] : null,
+            attrs = {
+                y: fullLayout._paper.attr('height') - 9
+            };
+
+        // If text's width is bigger than the layout
+        if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
+            // Align the text at the left
+            attrs['text-anchor'] = 'start';
+            attrs['x'] = 5;
+        } else {
+            // Align the text at the right
+            attrs['text-anchor'] = 'end';
+            attrs['x'] = fullLayout._paper.attr('width') - 7;
+        }
+
+        linkContainer.attr(attrs);
 
 
         var toolspan = linkContainer.select('.js-link-to-tool'),
@@ -361,6 +381,18 @@
         }
 
         if(!gd.layout || graphwasempty) gd.layout = cleanLayout(layout);
+
+        // if the user is trying to drag the axes, allow new data and layout
+        // to come in but don't allow a replot.
+        if(gd._dragging) {
+            // signal to drag handler that after everything else is done
+            // we need to replot, because something has changed
+            gd._replotPending = true;
+            return;
+        } else {
+            // we're going ahead with a replot now
+            gd._replotPending = false;
+        }
 
         plots.supplyDefaults(gd);
 
@@ -665,7 +697,7 @@
         // instantiate framework
         gd.framework = Plotly.micropolar.manager.framework();
         //get rid of gd.layout stashed nodes
-        layout = µ.util.deepExtend({}, gd._fullLayout);
+        layout = Plotly.micropolar.util.deepExtend({}, gd._fullLayout);
         delete layout._container;
         delete layout._paperdiv;
         delete layout.autosize;
@@ -801,8 +833,13 @@
 
         });
 
-        var sceneKeys = Plotly.Lib.getSceneKeys(layout);
+        // cannot have scene1, numbering goes scene, scene2, scene3...
+        if(layout.scene1) {
+            if(!layout.scene) layout.scene = layout.scene1;
+            delete layout.scene1;
+        }
 
+        var sceneKeys = Plotly.Lib.getSceneKeys(layout);
         sceneKeys.forEach( function (sceneKey) {
             var sceneLayout = layout[sceneKey];
             // fix for saved float32-arrays
@@ -812,7 +849,6 @@
                 camp[1] = [camp[1][0], camp[1][1], camp[1][2]];
             }
         });
-
 
         var legend = layout.legend;
         if(legend) {
@@ -892,14 +928,14 @@
                 if(trace.bardir==='h' && (plots.isBar(trace.type) ||
                          trace.type.substr(0,9)==='histogram')) {
                     trace.orientation = 'h';
-                    swapxydata(trace);
+                    swapXYData(trace);
                 }
                 delete trace.bardir;
             }
 
             // now we have only one 1D histogram type, and whether
             // it uses x or y data depends on trace.orientation
-            if(trace.type==='histogramy') swapxydata(trace);
+            if(trace.type==='histogramy') swapXYData(trace);
             if(trace.type==='histogramx' || trace.type==='histogramy') {
                 trace.type = 'histogram';
             }
@@ -917,6 +953,11 @@
             // axis ids x1 -> x, y1-> y
             if(trace.xaxis) trace.xaxis = Plotly.Axes.cleanId(trace.xaxis, 'x');
             if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
+
+            // scene ids scene1 -> scene
+            if (trace.scene) {
+                trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
+            }
 
             // textposition - support partial attributes (ie just 'top')
             // and incorrect use of middle / center etc.
@@ -972,13 +1013,28 @@
             return;
         }
         gd.calcdata = undefined;
-        Plotly.plot(gd);
+        Plotly.plot(gd).then(function () {
+            $(gd).trigger('plotly_redraw');
+        });
+    };
+
+    /**
+     * Convenience function to make idempotent plot option obvious to users.
+     *
+     * @param gd
+     * @param {Object[]} data
+     * @param {Object} layout
+     * @param {Object} config
+     */
+    Plotly.newPlot = function (gd, data, layout, config) {
+        Plotly.Plots.purge(gd);
+        Plotly.plot(gd, data, layout, config);
     };
 
     plots.attributes = {
         type: {
             type: 'enumerated',
-            values: ALLTYPES,
+            values: plots.ALLTYPES,
             dflt: 'scatter'
         },
         visible: {
@@ -987,6 +1043,7 @@
             dflt: true
         },
         scene: {
+            // TODO should not be available in 2d layouts
             type: 'sceneid',
             dflt: 'scene'
         },
@@ -1004,10 +1061,12 @@
             type: 'string'
         },
         xaxis: {
+            // TODO should not be available in 3d layouts
             type: 'axisid',
             dflt: 'x'
         },
         yaxis: {
+            // TODO should not be available in 3d layouts
             type: 'axisid',
             dflt: 'y'
         },
@@ -1028,8 +1087,10 @@
         // gd.data, gd.layout are precisely what the user specified
         // gd._fullData, gd._fullLayout are complete descriptions
         //      of how to draw the plot
-        var oldFullLayout = gd._fullLayout || {};
-        var newFullLayout = gd._fullLayout = {};
+        var oldFullLayout = gd._fullLayout || {},
+            newFullLayout = gd._fullLayout = {},
+            i,
+            modulei;
 
         // first fill in what we can of layout without looking at data
         // because fullData needs a few things from layout
@@ -1038,9 +1099,21 @@
         // then do the data
         var oldFullData = gd._fullData || [],
             newData = gd.data || [];
+        gd._modules = [];
         gd._fullData = newData.map(function(trace, i) {
-            return plots.supplyDataDefaults(trace, i, newFullLayout);
+            var fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout),
+                module = fullTrace._module;
+
+            if(module && gd._modules.indexOf(module)===-1) gd._modules.push(module);
+
+            return fullTrace;
         });
+
+        // special cases that introduce interactions between traces
+        for(i = 0; i < gd._modules.length; i++) {
+            modulei = gd._modules[i];
+            if(modulei.cleanData) modulei.cleanData(gd._fullData);
+        }
 
         // DETECT 3D, Cartesian, and Polar
         gd._fullData.forEach(function(d, i) {
@@ -1161,7 +1234,7 @@
         // module-specific attributes --- note: we need to send a trace into
         // the 3D modules to have it removed from the webgl context.
         if (visible || scene) {
-            module = getModule(traceOut);
+            module = plots.getModule(traceOut);
             traceOut._module = module;
         }
 
@@ -1259,7 +1332,7 @@
             dflt: '#fff'
         },
         plot_bgcolor: {
-            // defined here, but set in Axes.supplyDefaults
+            // defined here, but set in Axes.supplyLayoutDefaults
             // because it needs to know if there are (2D) axes or not
             type: 'color',
             dflt: '#fff'
@@ -1279,7 +1352,7 @@
             dflt: false
         },
         showlegend: {
-            // handled in legend.supplyDefaults
+            // handled in legend.supplyLayoutDefaults
             // but included here because it's not in the legend object
             type: 'boolean'
         },
@@ -1330,14 +1403,11 @@
 
     plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
 
-        var moduleDefaults = ['Axes', 'Legend', 'Annotations', 'Fx'];
-        var moduleLayoutDefaults = ['Bars', 'Boxes', 'Gl3dLayout'];
+        var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Fx',
+                                    'Bars', 'Boxes', 'Gl3dLayout'];
 
         // don't add a check for 'function in module' as it is better to error out and
         // secure the module API then not apply the default function.
-        moduleDefaults.forEach( function (module) {
-            if (Plotly[module]) Plotly[module].supplyDefaults(layoutIn, layoutOut, fullData);
-        });
         moduleLayoutDefaults.forEach( function (module) {
             if (Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         });
@@ -1378,11 +1448,12 @@
         delete gd.hmlumcount;
         delete gd.hmpixcount;
         delete gd.numboxes;
+        delete gd._hoverTimer;
+        delete gd._lastHoverTime;
     };
 
     function doCalcdata(gd) {
         gd.calcdata = [];
-        gd._modules = [];
 
         // extra helper variables
         // firstscatter: fill-to-next on the first trace goes to zero
@@ -1400,12 +1471,11 @@
         Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
 
         gd.calcdata = gd._fullData.map(function(trace, i) {
-            var module = getModule(trace),
+            var module = trace._module,
                 cd = [];
 
             if(module && trace.visible === true) {
                 if(module.calc) cd = module.calc(gd,trace);
-                if(gd._modules.indexOf(module)===-1) gd._modules.push(module);
             }
 
             // make sure there is a first point
@@ -1663,7 +1733,8 @@
             redoFunc = deleteTraces,
             undoArgs = [gd, traces, indices],
             redoArgs = [gd, indices],
-            i;
+            i,
+            deletedTrace;
 
         // make sure indices are defined
         if (typeof indices === 'undefined') {
@@ -1678,9 +1749,9 @@
 
         // we want descending here so that splicing later doesn't affect indexing
         indices.sort().reverse();
-
         for (i = 0; i < indices.length; i += 1) {
-            traces.push(gd.data.splice(indices[i], 1));
+            deletedTrace = gd.data.splice(indices[i], 1)[0];
+            traces.push(deletedTrace);
         }
 
         Plotly.redraw(gd);
@@ -2050,7 +2121,7 @@
                         cont.orientation =
                             {v:'h', h:'v'}[contFull.orientation];
                     }
-                    swapxydata(cont);
+                    swapXYData(cont);
                 }
                 // all the other ones, just modify that one attribute
                 else param.set($.isArray(vi) ? vi[i%vi.length] : vi);
@@ -2059,7 +2130,7 @@
 
             // swap the data attributes of the relevant x and y axes?
             if(['swapxyaxes','orientationaxes'].indexOf(ai)!==-1) {
-                axswap(gd,gd.data[traces[0]]);
+                Plotly.Axes.swap(gd, traces);
             }
 
             // swap hovermode if set to "compare x/y data"
@@ -2183,42 +2254,21 @@
         });
     };
 
-    // swap x and y of the same attribute in container cont
-    // specify attr with a ? in place of x/y
-    // optionally, use a longer name for each x and y (for axes, like x2<->y3)
-    function swapAttrs(cont,attr,xname,yname) {
-        var xp = Plotly.Lib.nestedProperty(cont,attr.replace('?',xname||'x')),
-            yp = Plotly.Lib.nestedProperty(cont,attr.replace('?',yname||'y')),
-            temp = xp.get();
-        xp.set(yp.get());
-        yp.set(temp);
-    }
-
     // swap all the data and data attributes associated with x and y
-    function swapxydata(trace) {
+    function swapXYData(trace) {
         var i;
-        swapAttrs(trace, '?');
-        swapAttrs(trace, '?0');
-        swapAttrs(trace, 'd?');
-        swapAttrs(trace, '?bins');
-        swapAttrs(trace, 'nbins?');
-        swapAttrs(trace, 'autobin?');
+        Plotly.Lib.swapXYAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
         if($.isArray(trace.z) && $.isArray(trace.z[0])) {
             if(trace.transpose) delete trace.transpose;
             else trace.transpose = true;
         }
-        swapAttrs(trace, '?src');
-        swapAttrs(trace, 'error_?');
         if(trace.error_x && trace.error_y) {
-            var copyYstyle = ('copy_ystyle' in trace.error_y) ?
-                    trace.error_y.copy_ystyle :
-                    ((trace.error_y.color || trace.error_y.thickness ||
-                        trace.error_y.width) ? false : true);
-            swapAttrs(trace, 'error_?.copy_ystyle');
+            var errorY = trace.error_y,
+                copyYstyle = ('copy_ystyle' in errorY) ? errorY.copy_ystyle :
+                    !(errorY.color || errorY.thickness || errorY.width);
+            Plotly.Lib.swapXYAttrs(trace, ['error_?.copy_ystyle']);
             if(copyYstyle) {
-                swapAttrs(trace, 'error_?.color');
-                swapAttrs(trace, 'error_?.thickness');
-                swapAttrs(trace, 'error_?.width');
+                Plotly.Lib.swapXYAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
             }
         }
         if(trace.hoverinfo) {
@@ -2228,41 +2278,6 @@
                 else if(hoverInfoParts[i]==='y') hoverInfoParts[i] = 'x';
             }
             trace.hoverinfo = hoverInfoParts.join('+');
-        }
-    }
-
-    // swap all the presentation attributes of the axes showing this trace
-    function axswap(gd, trace) {
-        var layout = gd.layout,
-            xid = trace.xaxis||'x',
-            yid = trace.yaxis||'y',
-            xa = Plotly.Axes.getFromId(gd, xid),
-            xname = xa._name,
-            ya = Plotly.Axes.getFromId(gd, yid),
-            yname = ya._name,
-            noSwapAttrs = [
-                'anchor','domain','overlaying','position','tickangle'
-            ],
-            axkeylist = Object.keys(layout[xname]).filter(function(n) {
-                return n.charAt(0)!=='_' &&
-                    (typeof layout[xname][n]!=='function') &&
-                    noSwapAttrs.indexOf(n)===-1;
-            });
-        axkeylist.forEach(function(attr){
-            swapAttrs(layout, '?.'+attr, xname, yname);
-        });
-
-        // now swap x&y for any annotations anchored to these x & y
-        (layout.annotations||[]).forEach(function(ann) {
-            if(ann.xref===xid && ann.yref===yid) swapAttrs(ann,'?');
-        });
-
-        // check for swapped placeholder titles
-        if(xa.title==='Click to enter Y axis title') {
-            xa.title = 'Click to enter X axis title';
-        }
-        if(ya.title==='Click to enter X axis title') {
-            ya.title = 'Click to enter Y axis title';
         }
     }
 
@@ -2370,7 +2385,8 @@
                 pleafPlus = p.parts[pend - 1] + '.' + pleaf,
                 // trunk nodes (everything except the leaf)
                 ptrunk = p.parts.slice(0, pend).join('.'),
-                parent = Plotly.Lib.nestedProperty(layout, ptrunk).get();
+                parentIn = Plotly.Lib.nestedProperty(gd.layout, ptrunk).get(),
+                parentFull = Plotly.Lib.nestedProperty(gd._fullLayout, ptrunk).get();
 
             redoit[ai] = aobj[ai];
 
@@ -2390,47 +2406,49 @@
             }
 
             // toggling log without autorange: need to also recalculate ranges
-            // logical XOR (ie will islog actually change)
-            if(pleaf==='type' && (parent.type ==='log' ?
-                    vi!=='log' : vi==='log')) {
-                var ax = parent;
-                if (!parent.range) {
+            // logical XOR (ie are we toggling log)
+            if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
+                var ax = parentIn;
+                if (!ax || !ax.range) {
                     doextra(ptrunk+'.autorange', true);
-                    continue;
                 }
-                if(!parent.autorange) {
+                else if(!parentFull.autorange) {
                     var r0 = ax.range[0],
                         r1 = ax.range[1];
-                    if(vi==='log') {
+                    if(vi === 'log') {
                         // if both limits are negative, autorange
-                        if(r0<=0 && r1<=0) {
-                            doextra(ptrunk+'.autorange',true);
-                            continue;
+                        if(r0 <= 0 && r1 <= 0) {
+                            doextra(ptrunk+'.autorange', true);
                         }
                         // if one is negative, set it 6 orders below the other.
                         // TODO: find the smallest positive val?
-                        else if(r0<=0) { r0 = r1/1e6; }
-                        else if(r1<=0) { r1 = r0/1e6; }
+                        if(r0 <= 0) r0 = r1/1e6;
+                        else if(r1 <= 0) r1 = r0/1e6;
                         // now set the range values as appropriate
-                        doextra(ptrunk+'.range[0]', Math.log(r0)/Math.LN10);
-                        doextra(ptrunk+'.range[1]', Math.log(r1)/Math.LN10);
+                        doextra(ptrunk+'.range[0]', Math.log(r0) / Math.LN10);
+                        doextra(ptrunk+'.range[1]', Math.log(r1) / Math.LN10);
                     }
                     else {
                         doextra(ptrunk+'.range[0]', Math.pow(10, r0));
                         doextra(ptrunk+'.range[1]', Math.pow(10, r1));
                     }
                 }
-                else if(vi==='log' && ax.range) {
+                else if(vi === 'log') {
                     // just make sure the range is positive and in the right
                     // order, it'll get recalculated later
-                    ax.range = ax.range[1]>ax.range[0] ? [1,2] : [2,1];
+                    ax.range = (ax.range[1] > ax.range[0]) ? [1, 2] : [2, 1];
                 }
             }
 
             // handle axis reversal explicitly, as there's no 'reverse' flag
             if(pleaf ==='reverse') {
-                parent.range.reverse();
-                if(parent.autorange) docalc = true;
+                if(parentIn.range) parentIn.range.reverse();
+                else {
+                    doextra(ptrunk+'.autorange', true);
+                    parentIn.range = [1, 0];
+                }
+
+                if(parentFull.autorange) docalc = true;
                 else doplot = true;
             }
             // send annotation mods one-by-one through Annotations.draw(),

@@ -6,18 +6,30 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+
     "build-dev": "npm run browserify-dev; npm run sass-dev",
     "build-prod": "npm run browserify-prod; npm run sass-prod",
+    "build-plotlyjs": "npm run browserify-jsbuild; npm run sass-jsbuild; npm run sass-jsbuild-demo; npm run package-jsbuild",
+
     "browserify-dev": "browserify index.js --debug --standalone Plotly -o build/plotlyjs-bundle.js",
     "browserify-prod": "browserify index.js --standalone Plotly | uglifyjs > build/plotlyjs-bundle.js",
+    "browserify-jsbuild": "browserify index.js --standalone Plotly | uglifyjs > build/plotlyjs-bundle-jsbuild.js",
+
     "sass-dev": "node-sass --output-style expanded src/css/style.scss build/plotly-style.css --source-map-embed",
-    "sass-prod": "node-sass --output-style compressed src/css/style.scss build/plotly-style.css"
+    "sass-prod": "node-sass --output-style compressed src/css/style.scss build/plotly-style.css",
+    "sass-jsbuild": "node-sass --output-style compressed src/css/style.scss build/plotly-style-jsbuild.css",
+    "sass-jsbuild-demo": "node-sass --output-style compressed ../../../shelly/static/css/style.scss build/demo-style-jsbuild.css",
+
+    "package-jsbuild": "python ./jsbuild.py",
+
+    "watch": "watchify index.js --debug --standalone Plotly -o build/plotlyjs-bundle.js"
   },
   "author": "Plotly amazing team",
   "license": "ISC",
   "dependencies": {
     "browserify": "^8.1.1",
     "node-sass": "^2.0.0-beta",
+    "watchify": "^2.3.0",
     "uglify-js": "^2.4.16"
   }
 }
