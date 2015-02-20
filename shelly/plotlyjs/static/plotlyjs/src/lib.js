@@ -631,6 +631,19 @@
         };
     }
 
+    // swap x and y of the same attribute in container cont
+    // specify attr with a ? in place of x/y
+    lib.swapXYAttrs = function(cont,attrList) {
+        for(var i = 0; i < attrList.length; i++) {
+            var attr = attrList[i],
+                xp = lib.nestedProperty(cont, attr.replace('?', 'x')),
+                yp = lib.nestedProperty(cont, attr.replace('?', 'y')),
+                temp = xp.get();
+            xp.set(yp.get());
+            yp.set(temp);
+        }
+    };
+
     // to prevent event bubbling, in particular text selection during drag.
     // see http://stackoverflow.com/questions/5429827/
     //      how-can-i-prevent-text-element-selection-with-cursor-drag

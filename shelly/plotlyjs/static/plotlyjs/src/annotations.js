@@ -471,7 +471,15 @@
         var anngroup = fullLayout._infolayer.append('g')
             .classed('annotation', true)
             .attr('data-index', String(index))
-            .style('opacity', options.opacity);
+            .style('opacity', options.opacity)
+            .on('click', function() {
+                gd._dragging = false;
+                $(gd).trigger('plotly_clickannotation', {
+                    index: index,
+                    annotation: optionsIn,
+                    fullAnnotation: options
+                });
+            });
 
         // another group for text+background so that they can rotate together
         var anng = anngroup.append('g')
@@ -629,6 +637,8 @@
                 Math.round(annPosPx.y - outerheight / 2),
                 outerwidth, outerheight);
 
+            var annbase = 'annotations['+index+']';
+
             // add the arrow
             // uses options[arrowwidth,arrowcolor,arrowhead] for styling
             var drawArrow = function(dx, dy){
@@ -711,30 +721,24 @@
                     .call(Plotly.Color.fill, 'rgba(0,0,0,0)');
 
                 if(gd._context.editable) {
-                    arrowdrag.node().onmousedown = function(e) {
-                        // deal with other UI elements, and allow them
-                        // to cancel dragging
-                        if(Plotly.Fx.dragClear(gd)) return true;
+                    var update,
+                        annx0,
+                        anny0;
 
-                        var annx0 = Number(ann.attr('x')),
-                            anny0 = Number(ann.attr('y')),
-                            update = {},
-                            annbase = 'annotations['+index+']',
-                            dragged = false;
-
-                        if(xa && xa.autorange) {
-                            update[xa._name+'.autorange'] = true;
-                        }
-                        if(ya && ya.autorange) {
-                            update[ya._name+'.autorange'] = true;
-                        }
-
-                        window.onmousemove = function(e2) {
-                            var dx = e2.clientX - e.clientX,
-                                dy = e2.clientY - e.clientY;
-                            if(Math.abs(dx) < MINDRAG) dx = 0;
-                            if(Math.abs(dy) < MINDRAG) dy = 0;
-                            if(dx||dy) dragged = true;
+                    Plotly.Fx.dragElement({
+                        element: arrowdrag.node(),
+                        prepFn: function() {
+                            annx0 = Number(ann.attr('x'));
+                            anny0 = Number(ann.attr('y'));
+                            update = {};
+                            if(xa && xa.autorange) {
+                                update[xa._name+'.autorange'] = true;
+                            }
+                            if(ya && ya.autorange) {
+                                update[ya._name+'.autorange'] = true;
+                            }
+                        },
+                        moveFn: function(dx, dy) {
                             arrowgroup.attr('transform', 'translate('+dx+','+dy+')');
 
                             var annxy0 = applyTransform(annx0, anny0),
@@ -754,24 +758,19 @@
                                 transform: 'rotate(' + textangle + ',' +
                                        xcenter + ',' + ycenter + ')'
                             });
-
-                            return Plotly.Lib.pauseEvent(e2);
-                        };
-                        window.onmouseup = function(e2) {
-                            window.onmousemove = null;
-                            window.onmouseup = null;
-
-                            if(dragged) Plotly.relayout(gd, update);
-
-                            return Plotly.Lib.pauseEvent(e2);
-                        };
-                        return Plotly.Lib.pauseEvent(e);
-                    };
+                        },
+                        doneFn: function(dragged) {
+                            if(dragged) {
+                                Plotly.relayout(gd, update);
+                                var notesBox = $('.js-notes-box-panel')[0];
+                                if(notesBox) notesBox.redraw(notesBox.selectedObj);
+                            }
+                        }
+                    });
                 }
             };
 
             if(options.showarrow) drawArrow(0, 0);
-
 
             // create transform matrix and related functions
             var transform = Plotly.Lib.rotationXYMatrix(textangle,
@@ -780,40 +779,19 @@
 
             // user dragging the annotation (text, not arrow)
             if(gd._context.editable) {
-                ann.node().onmousedown = function(e) {
-                    // deal with other UI elements, and allow them
-                    // to cancel dragging
-                    if(Plotly.Fx.dragClear(gd)) return true;
+                var x0,
+                    y0,
+                    update;
 
-                    var el3 = d3.select(this),
-                        // paperBox = gd._fullLayout._paper.node().getBoundingClientRect(),
-                        // annBox = this.getBoundingClientRect(),
-                        // x0 = annBox.left + (annBox.width - options._xsize)/2 - paperBox.left,
-                        // y0 = annBox.top + (annBox.height - options._ysize)/2 - paperBox.top,
-                        x0 = Number(el3.attr('x')),
-                        y0 = Number(el3.attr('y')),
-                        update = {},
-                        annbase = 'annotations['+index+']',
-                        dragged = false;
-
-                    if(xa && xa.autorange) {
-                        update[xa._name+'.autorange'] = true;
-                    }
-                    if(ya && ya.autorange) {
-                        update[ya._name+'.autorange'] = true;
-                    }
-
-                    Plotly.Fx.setCursor(el3);
-
-                    window.onmousemove = function(e2) {
-                        var dx = e2.clientX - e.clientX,
-                            dy = e2.clientY - e.clientY;
-
-                        if(Math.abs(dx) < MINDRAG) dx = 0;
-                        if(Math.abs(dy) < MINDRAG) dy = 0;
-                        if(dx||dy) dragged = true;
-
-                        el3.call(Plotly.Drawing.setPosition, x0 + dx, y0 + dy);
+                Plotly.Fx.dragElement({
+                    element: ann.node(),
+                    prepFn: function() {
+                        x0 = Number(ann.attr('x'));
+                        y0 = Number(ann.attr('y'));
+                        update = {};
+                    },
+                    moveFn: function(dx, dy) {
+                        ann.call(Plotly.Drawing.setPosition, x0 + dx, y0 + dy);
                         var csr = 'pointer';
                         if(options.showarrow) {
                             update[annbase+'.ax'] = options.ax + dx;
@@ -851,33 +829,25 @@
                             x1 = xy1[0] + dx,
                             y1 = xy1[1] + dy;
 
-                        el3.call(Plotly.Drawing.setPosition, x1, y1);
+                        ann.call(Plotly.Drawing.setPosition, x1, y1);
 
                         anng.attr({
                             transform: 'rotate(' + textangle + ',' +
                                    x1 + ',' + y1 + ')'
                         });
 
-                        Plotly.Fx.setCursor(el3, csr);
-                        return Plotly.Lib.pauseEvent(e2);
-                    };
-
-                    window.onmouseup = function(e2) {
-                        window.onmousemove = null;
-                        window.onmouseup = null;
-                        Plotly.Fx.setCursor(el3);
+                        Plotly.Fx.setCursor(ann, csr);
+                    },
+                    doneFn: function(dragged) {
+                        Plotly.Fx.setCursor(ann);
                         if(dragged) {
                             Plotly.relayout(gd, update);
                             var notesBox = $('.js-notes-box-panel')[0];
                             if(notesBox) notesBox.redraw(notesBox.selectedObj);
                         }
-                        return Plotly.Lib.pauseEvent(e2);
-                    };
-
-                    return Plotly.Lib.pauseEvent(e);
-                };
+                    }
+                });
             }
-
         }
 
         if(gd._context.editable) {
@@ -898,7 +868,7 @@
                     Plotly.relayout(gd,update);
                 });
         }
-        else { anntext.call(textLayout); }
+        else anntext.call(textLayout);
 
         // rotate and position text and background
         anng.attr({transform: 'rotate(' + textangle + ',' +
