@@ -21,13 +21,16 @@
     "sass-jsbuild": "node-sass --output-style compressed src/css/style.scss build/plotly-style-jsbuild.css",
     "sass-jsbuild-demo": "node-sass --output-style compressed ../../../shelly/static/css/style.scss build/demo-style-jsbuild.css",
 
-    "package-jsbuild": "python ./jsbuild.py"
+    "package-jsbuild": "python ./jsbuild.py",
+
+    "watch": "watchify index.js --debug --standalone Plotly -o build/plotlyjs-bundle.js"
   },
   "author": "Plotly amazing team",
   "license": "ISC",
   "dependencies": {
     "browserify": "^8.1.1",
     "node-sass": "^2.0.0-beta",
+    "watchify": "^2.3.0",
     "uglify-js": "^2.4.16",
     "promise": "^6.1.0"
   },
