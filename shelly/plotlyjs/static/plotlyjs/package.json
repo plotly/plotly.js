@@ -7,5 +7,7 @@
   "scripts": {},
   "author": "Plotly amazing team",
   "license": "ISC",
-  "dependencies": {}
+  "dependencies": {
+    "promise": "^6.1.0"
+  }
 }
