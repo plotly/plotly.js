@@ -401,10 +401,11 @@
                 coerce('exponentformat');
             }
 
-            coerce('tickprefix');
-            coerce('showtickprefix', showAttrDflt);
-            coerce('ticksuffix');
-            coerce('showticksuffix', showAttrDflt);
+            var tickPrefix = coerce('tickprefix');
+            if(tickPrefix) coerce('showtickprefix', showAttrDflt);
+
+            var tickSuffix = coerce('ticksuffix');
+            if(tickSuffix) coerce('showticksuffix', showAttrDflt);
         }
 
         var showLine = coerce('showline');
