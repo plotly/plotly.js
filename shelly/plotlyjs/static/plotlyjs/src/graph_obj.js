@@ -490,6 +490,7 @@
 
                 // TODO: autosize extra for text markers
                 return Plotly.Lib.syncOrAsync([
+                    Plotly.Shapes.calcAutorange,
                     Plotly.Annotations.calcAutorange,
                     doAutoRange
                 ], gd);
@@ -567,7 +568,8 @@
             applyStyle(gd);
             Plotly.Lib.markTime('done applyStyle');
 
-            // show annotations
+            // show annotations and shapes
+            Plotly.Shapes.drawAll(gd);
             Plotly.Annotations.drawAll(gd);
 
             // source links
@@ -824,13 +826,13 @@
                 }
                 delete ann.ref;
             }
-            if(ann.xref && ann.xref!=='paper') {
-                ann.xref = Plotly.Axes.cleanId(ann.xref, 'x');
-            }
-            if(ann.yref && ann.yref!=='paper') {
-                ann.yref = Plotly.Axes.cleanId(ann.yref, 'y');
-            }
+            cleanAxRef(ann, 'xref');
+            cleanAxRef(ann, 'yref');
+        });
 
+        (layout.shapes||[]).forEach(function(shape) {
+            cleanAxRef(shape, 'xref');
+            cleanAxRef(shape, 'yref');
         });
 
         // cannot have scene1, numbering goes scene, scene2, scene3...
@@ -873,6 +875,14 @@
         }
 
         return layout;
+    }
+
+    function cleanAxRef(container, attr) {
+        var valIn = container[attr],
+            axLetter = attr.charAt(0);
+        if(valIn && valIn !== 'paper') {
+            container[attr] = Plotly.Axes.cleanId(valIn, axLetter);
+        }
     }
 
     function cleanData(data, existingData) {
@@ -1403,7 +1413,7 @@
 
     plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
 
-        var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Fx',
+        var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Shapes', 'Fx',
                                     'Bars', 'Boxes', 'Gl3dLayout'];
 
         // don't add a check for 'function in module' as it is better to error out and
@@ -2364,9 +2374,9 @@
             if(val!==undefined) p.set(val);
         }
 
-        // for editing annotations - is it on autoscaled axes?
-        function annAutorange(anni,axletter) {
-            var axName = Plotly.Axes.id2name(anni[axletter+'ref']||axletter);
+        // for editing annotations or shapes - is it on autoscaled axes?
+        function refAutorange(obj, axletter) {
+            var axName = Plotly.Axes.id2name(obj[axletter+'ref']||axletter);
             return (gd._fullLayout[axName]||{}).autorange;
         }
 
@@ -2451,13 +2461,15 @@
                 if(parentFull.autorange) docalc = true;
                 else doplot = true;
             }
-            // send annotation mods one-by-one through Annotations.draw(),
+            // send annotation and shape mods one-by-one through Annotations.draw(),
             // don't set via nestedProperty
             // that's because add and remove are special
-            else if(p.parts[0] ==='annotations') {
+            else if(p.parts[0] === 'annotations' || p.parts[0] === 'shapes') {
                 var anum = p.parts[1],
-                    anns = layout.annotations,
-                    anni = (anns && anns[anum])||{};
+                    objType = p.parts[0],
+                    objList = layout[objType],
+                    objModule = Plotly[Plotly.Lib.titleCase(objType)],
+                    obji = (objList && objList[anum])||{};
                 // if p.parts is just an annotation number, and val is either
                 // 'add' or an entire annotation to add, the undo is 'remove'
                 // if val is 'remove' then undo is the whole annotation object
@@ -2467,22 +2479,20 @@
                     }
                     else if(aobj[ai]==='remove') {
                         if(anum===-1) {
-                            undoit.annotations = anns;
+                            undoit[objType] = objList;
                             delete undoit[ai];
                         }
-                        else { undoit[ai]=anni; }
+                        else undoit[ai]=obji;
                     }
-                    else { console.log('???',aobj); }
+                    else console.log('???',aobj);
                 }
-                if((annAutorange(anni,'x') || annAutorange(anni,'y')) &&
-                        ai.indexOf('color')===-1 &&
-                        ai.indexOf('opacity')===-1 &&
-                        ai.indexOf('align')===-1) {
+                if((refAutorange(obji,'x') || refAutorange(obji,'y')) &&
+                        !Plotly.Lib.hasAny(ai, ['color', 'opacity', 'align', 'dash'])) {
                     docalc = true;
                 }
-                // TODO: combine all edits to a given annotation into one call
+                // TODO: combine all edits to a given annotation / shape into one call
                 // as it is we get separate calls for x and y (or ax and ay) on move
-                Plotly.Annotations.draw(gd,anum,
+                Plotly[objModule].draw(gd,anum,
                     p.parts.slice(2).join('.'),aobj[ai]);
                 delete aobj[ai];
             }
@@ -2494,11 +2504,8 @@
                 else if(p.parts[0].indexOf('legend')!==-1) dolegend = true;
                 else if(ai.indexOf('title')!==-1) doticks = true;
                 else if(p.parts[0].indexOf('bgcolor')!==-1) dolayoutstyle = true;
-                else if(p.parts.length>1 && (
-                        p.parts[1].indexOf('tick')!==-1 ||
-                        p.parts[1].indexOf('exponent')!==-1 ||
-                        p.parts[1].indexOf('grid')!==-1 ||
-                        p.parts[1].indexOf('zeroline')!==-1)) {
+                else if(p.parts.length>1 &&
+                        Plotly.Lib.hasAny(p.parts[1], ['tick', 'exponent', 'grid', 'zeroline'])) {
                     doticks = true;
                 }
                 else if(ai.indexOf('.linewidth')!==-1 &&
@@ -2880,9 +2887,10 @@
                 .classed('crisp', true);
         });
 
-        // single info (legend, annotations) and hover layers for the whole plot
+        // single shape, info (legend, annotations) and hover layers for the whole plot
         // pointer-events:none means we don't have to worry about mousing over
         // the hover text itself
+        fullLayout._shapeLayer = fullLayout._paper.append('g').classed('shapelayer', true);
         fullLayout._infolayer = fullLayout._paper.append('g').classed('infolayer', true);
         fullLayout._hoverlayer = fullLayout._paper.append('g')
                                                   .classed('hoverlayer', true)

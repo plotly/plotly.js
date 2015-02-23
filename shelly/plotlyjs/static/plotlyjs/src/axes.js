@@ -642,6 +642,7 @@
 
         ax.c2l = (ax.type==='log') ? toLog : num;
         ax.l2c = (ax.type==='log') ? fromLog : num;
+        ax.l2d = function(v) { return ax.c2d(ax.l2c(v)); };
 
         // set scaling to pixels
         ax.setScale = function(){
