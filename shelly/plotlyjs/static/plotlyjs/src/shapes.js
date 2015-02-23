@@ -328,8 +328,8 @@
                 d: shapePath(gd, options)
             })
             .style('opacity', options.opacity)
-            .call(Plotly.Color.stroke(options.line.color))
-            .call(Plotly.Color.fill(options.fillcolor))
+            .call(Plotly.Color.stroke, options.line.color)
+            .call(Plotly.Color.fill, options.fillcolor)
             .call(Plotly.Drawing.dashLine, options.line.dash, options.line.width);
     };
 
