@@ -2492,8 +2492,7 @@
                 }
                 // TODO: combine all edits to a given annotation / shape into one call
                 // as it is we get separate calls for x and y (or ax and ay) on move
-                Plotly[objModule].draw(gd,anum,
-                    p.parts.slice(2).join('.'),aobj[ai]);
+                objModule.draw(gd,anum, p.parts.slice(2).join('.'),aobj[ai]);
                 delete aobj[ai];
             }
             // alter gd.layout
