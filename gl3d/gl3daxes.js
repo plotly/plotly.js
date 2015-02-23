@@ -58,6 +58,10 @@ function Gl3dAxes (config) {
         showticklabels: axesAttrs.showticklabels,
         tickfont: axesAttrs.tickfont,
         tickangle: axesAttrs.tickangle,
+        tickprefix: axesAttrs.tickprefix,
+        showtickprefix: axesAttrs.showtickprefix,
+        ticksuffix: axesAttrs.ticksuffix,
+        showticksuffix: axesAttrs.showticksuffix,
         showexponent: axesAttrs.showexponent,
         exponentformat: axesAttrs.exponentformat,
         // lines and grids
