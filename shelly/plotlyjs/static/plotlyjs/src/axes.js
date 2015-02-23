@@ -103,6 +103,24 @@
             type: 'angle',
             dflt: 'auto'
         },
+        tickprefix: {
+            type: 'string',
+            dflt: ''
+        },
+        showtickprefix: {
+            type: 'enumerated',
+            values: ['all', 'first', 'last', 'none'],
+            dflt: 'all'
+        },
+        ticksuffix: {
+            type: 'string',
+            dflt: ''
+        },
+        showticksuffix: {
+            type: 'enumerated',
+            values: ['all', 'first', 'last', 'none'],
+            dflt: 'all'
+        },
         showexponent: {
             type: 'enumerated',
             values: ['all', 'first', 'last', 'none'],
@@ -338,19 +356,56 @@
             coerce('tickcolor');
         }
 
+        /*
+         * Attributes 'showexponent', 'showtickprefix' and 'showticksuffix'
+         * share values.
+         *
+         * If only 1 attribute is set,
+         * the remaining attributes inherit that value.
+         *
+         * If 2 attributes are set to the same value,
+         * the remaining attribute inherits that value.
+         *
+         * If 2 attributes are set to different values,
+         * the remaining is set to its dflt value.
+         *
+         */
+        function getShowAttrDflt() {
+            var showAttrsAll = ['showexponent',
+                                'showtickprefix',
+                                'showticksuffix'],
+                showAttrs = showAttrsAll.filter(function(a){
+                    return containerIn[a]!==undefined;
+                }),
+                sameVal = function(a){
+                    return containerIn[a]===containerIn[showAttrs[0]];
+                };
+            if (showAttrs.every(sameVal) || showAttrs.length===1) {
+                return containerIn[showAttrs[0]];
+            }
+        }
+
         var showTickLabels = coerce('showticklabels');
         if(showTickLabels) {
             coerce('tickfont', font);
             coerce('tickangle');
+
+            var showAttrDflt = getShowAttrDflt();
 
             if(axType==='date') {
                 coerce('tickformat');
                 coerce('hoverformat');
             }
             else {
-                coerce('showexponent');
+                coerce('showexponent', showAttrDflt);
                 coerce('exponentformat');
             }
+
+            var tickPrefix = coerce('tickprefix');
+            if(tickPrefix) coerce('showtickprefix', showAttrDflt);
+
+            var tickSuffix = coerce('ticksuffix');
+            if(tickSuffix) coerce('showticksuffix', showAttrDflt);
         }
 
         var showLine = coerce('showline');
@@ -1511,12 +1566,28 @@
             // with only the first tick
             suffix = '',
             tt,
-            hideexp = ax.exponentformat!=='none' && (hover ?
-                ax.showexponent==='none' :
-                (ax.showexponent!=='all' &&
-                    x!=={first:ax._tmin,last:ax._tmax}[ax.showexponent]) );
+            hideexp,
+            hideprefix,
+            hidesuffix;
 
+        function isHidden(showAttr) {
+            var first_or_last;
+
+            if (hover) return showAttr==='none';
+
+            first_or_last = {
+                first: ax._tmin,
+                last: ax._tmax
+            }[showAttr];
+
+            return showAttr!=='all' && x!==first_or_last;
+        }
+
+        hideexp = ax.exponentformat!=='none' && isHidden(ax.showexponent);
         if(hideexp) hideexp = 'hide';
+
+        hideprefix = isHidden(ax.showtickprefix);
+        hidesuffix = isHidden(ax.showticksuffix);
 
         if(ax.type==='date'){
             var d = new Date(x);
@@ -1610,7 +1681,14 @@
                     fontSize * (x<0 ? 0.5 : 0.25);
             }
         }
+
+        // add exponent suffix
         tt += suffix;
+
+        // add prefix and suffix
+        if (!hideprefix) tt = ax.tickprefix + tt;
+        if (!hidesuffix) tt = tt + ax.ticksuffix;
+
         // replace standard minus character (which is technically a hyphen)
         // with a true minus sign
         if(ax.type!=='category') tt = tt.replace(/-/g,'\u2212');
