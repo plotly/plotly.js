@@ -5,7 +5,8 @@
   "repository": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/karma/bin/karma start karma.conf.js",
+    "citest": "./node_modules/karma/bin/karma start karma.ciconf.js",
 
     "build-dev": "npm run browserify-dev; npm run sass-dev",
     "build-prod": "npm run browserify-prod; npm run sass-prod",
@@ -30,6 +31,13 @@
     "browserify": "^8.1.1",
     "node-sass": "^2.0.0-beta",
     "watchify": "^2.3.0",
-    "uglify-js": "^2.4.16"
+    "uglify-js": "^2.4.16",
+    "promise": "^6.1.0"
+  },
+  "devDependencies": {
+    "karma": "~0.12.23",
+    "karma-coverage": "~0.2.6",
+    "karma-jasmine": "~0.2.2",
+    "karma-chrome-launcher": "~0.1.7"
   }
 }
