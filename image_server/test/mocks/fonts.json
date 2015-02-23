@@ -234,7 +234,7 @@
                 "y": 0.7272727272727273,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Droid Sans <b>Bold</b> <i>Italic</i>",
+                "text": "Droid Sans <b>Bold</b>",
                 "showarrow": false,
                 "font": {
                     "family": "Droid Sans, sans-serif",
@@ -288,7 +288,7 @@
                 "y": 0.5454545454545454,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Droid Sans Mono <b>Bold</b>",
+                "text": "Droid Sans Mono",
                 "showarrow": false,
                 "font": {
                     "family": "Droid Sans Mono, sans-serif",
