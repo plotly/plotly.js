@@ -432,6 +432,22 @@
         return containerOut;
     };
 
+    // find the list of possible axes to reference with an xref or yref attribute
+    // and coerce it to that list
+    axes.coerceRef = function(containerIn, containerOut, td, axLetter) {
+        var axlist = axes.listIds(td, axLetter),
+            refAttr = axLetter + 'ref',
+            attrDef = {};
+        attrDef[refAttr] = {
+            type: 'enumerated',
+            values: axlist.concat(['paper']),
+            dflt: axlist[0]
+        };
+
+        // xref, yref
+        return Plotly.Lib.coerce(containerIn, containerOut, attrDef, refAttr, axLetter);
+    };
+
     // empty out types for all axes containing these traces
     // so we auto-set them again
     axes.clearTypes = function(gd, traces) {

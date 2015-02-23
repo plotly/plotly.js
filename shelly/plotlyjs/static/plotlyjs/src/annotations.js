@@ -198,7 +198,7 @@
             var tdMock = {_fullLayout: fullLayout};
 
             // xref, yref
-            var axRef = coerceAxRef(annIn, annOut, tdMock, axLetter);
+            var axRef = Plotly.Axes.coerceRef(annIn, annOut, tdMock, axLetter);
 
             // x, y
             var defaultPosition = 0.5;
@@ -227,23 +227,9 @@
         });
 
         // if you have one coordinate you should have both
-        Plotly.Lib.noneOrBoth(annIn, annOut, 'x', 'y');
+        Plotly.Lib.noneOrAll(annIn, annOut, ['x', 'y']);
 
         return annOut;
-    }
-
-    function coerceAxRef(annIn, annOut, tdMock, axLetter) {
-        var axlist = Plotly.Axes.listIds(tdMock, axLetter),
-            refAttr = axLetter + 'ref',
-            attrDef = {};
-        attrDef[refAttr] = {
-            type: 'enumerated',
-            values: axlist.concat(['paper']),
-            dflt: axlist[0]
-        };
-
-        // xref, yref
-        return Plotly.Lib.coerce(annIn, annOut, attrDef, refAttr, axLetter);
     }
 
     annotations.drawAll = function(gd) {
@@ -381,9 +367,9 @@
             }
 
             var axOld = Plotly.Axes.getFromId(gd,
-                    coerceAxRef(oldRef, {}, gd, axLetter)),
+                    Plotly.Axes.coerceRef(oldRef, {}, gd, axLetter)),
                 axNew = Plotly.Axes.getFromId(gd,
-                    coerceAxRef(optionsIn, {}, gd, axLetter)),
+                    Plotly.Axes.coerceRef(optionsIn, {}, gd, axLetter)),
                 position = optionsIn[axLetter],
                 axTypeOld = oldPrivate['_' + axLetter + 'type'];
 
