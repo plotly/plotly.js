@@ -17,7 +17,8 @@ test('testing fonts', function (t) {
     var figure = require('./mocks/' + fileName);
     var bodyMock = {
         figure: figure,
-        format: 'png'
+        format: 'png',
+        scale: 3
     };
 
     var imageFileName = fileName.split('.')[0] + '.png';
