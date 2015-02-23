@@ -1651,6 +1651,14 @@
                     Plotly.Annotations.draw(gd,i);
                 }
             }
+
+            for(i = 0; i < shapes.length; i++) {
+                obji = shapes[i];
+                if( (ew && xids.indexOf(obji.xref)!==-1) ||
+                        (ns && yids.indexOf(obji.yref)!==-1) ) {
+                    Plotly.Shapes.draw(gd,i);
+                }
+            }
         }
 
         // dragAutoRange - set one or both axes to autorange on doubleclick

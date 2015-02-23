@@ -334,7 +334,7 @@
     };
 
     function decodeDate(convertToPx) {
-        return function(v) { return convertToPx(v.replace('_', ' ')); }
+        return function(v) { return convertToPx(v.replace('_', ' ')); };
     }
 
     function shapePath(gd, options) {
