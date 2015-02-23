@@ -23,9 +23,8 @@
     // to the line, but the endpoint moves.
     // backoff is the distance to move the arrowhead, and the end of the
     // line, in order to end at the right place
-    // TODO: option to have the pointed-to
-    // point a little in front of the end of the line, as people tend
-    // to want a bit of a gap there...
+    // TODO: option to have the pointed-to  point a little in front of the
+    // end of the line, as people tend to want a bit of a gap there...
     var ARROWPATHS = [
         // no arrow
         '',
@@ -261,8 +260,6 @@
     annotations.draw = function(gd, index, opt, value) {
         var layout = gd.layout,
             fullLayout = gd._fullLayout,
-            gs = fullLayout._size,
-            MINDRAG = Plotly.Fx.MINDRAG,
             i;
 
         if(!$.isNumeric(index) || index===-1) {
@@ -319,9 +316,9 @@
                 var rule = $.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
 
                 if (layout.annotations) {
-                    layout.annotations.splice(index,0, rule)
+                    layout.annotations.splice(index, 0, rule);
                 } else {
-                    layout.annotations = [rule]
+                    layout.annotations = [rule];
                 }
 
                 for(i=fullLayout.annotations.length-1; i>index; i--) {
@@ -354,6 +351,8 @@
         Object.keys(optionsEdit).forEach(function(k){
             Plotly.Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
         });
+
+        var gs = fullLayout._size;
 
         ['x', 'y'].forEach(function(axLetter){
             // if we don't have an explicit position already,
