@@ -99,7 +99,7 @@
             coerce('xanchor');
             coerce('y');
             coerce('yanchor');
-            Plotly.Lib.noneOrBoth(containerIn, containerOut, 'x', 'y');
+            Plotly.Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
         }
     };
 

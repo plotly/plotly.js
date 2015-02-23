@@ -13,9 +13,6 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
@@ -190,7 +187,7 @@
             coerce('ay');
 
             // if you have one part of arrow length you should have both
-            Plotly.Lib.noneOrBoth(annIn, annOut, 'ax', 'ay');
+            Plotly.Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
         }
         coerce('text', showArrow ? '&nbsp;' : 'new text');
         coerce('textangle');

@@ -1845,17 +1845,28 @@
         return propOut.get();
     };
 
-    lib.noneOrBoth = function(containerIn, containerOut, attr1, attr2) {
-        // some attributes come in pairs, so if you have one of them
-        // in the input, you should copy the default value of the other
+    lib.noneOrAll = function(containerIn, containerOut, attrList) {
+        // some attributes come together, so if you have one of them
+        // in the input, you should copy the default values of the others
         // to the input as well.
         if(!containerIn) return;
 
-        var has1 = containerIn[attr1] !== undefined && containerIn[attr1] !== null,
-            has2 = containerIn[attr2] !== undefined && containerIn[attr2] !== null;
+        var hasAny = false,
+            hasAll = true,
+            i,
+            val;
 
-        if(has2 && !has1) containerIn[attr1] = containerOut[attr1];
-        else if(has1 && !has2) containerIn[attr2] = containerOut[attr2];
+        for(i = 0; i < attrList.length; i++) {
+            val = containerIn[attrList[i]];
+            if(val !== undefined && val !== null) hasAny = true;
+            else hasAll = false;
+        }
+
+        if(hasAny && !hasAll) {
+            for(i = 0; i < attrList.length; i++) {
+                containerIn[attrList[i]] = containerOut[attrList[i]];
+            }
+        }
     };
 
     lib.mergeArray = function(traceAttr, cd, cdAttr) {

@@ -320,7 +320,7 @@
         if(range0===range1) {
             containerOut.range = [range0 - 1, range0 + 1];
         }
-        Plotly.Lib.noneOrBoth(containerIn.range, containerOut.range, 0, 1);
+        Plotly.Lib.noneOrAll(containerIn.range, containerOut.range, [0, 1]);
 
         var autoTick = coerce('autotick');
         if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
@@ -426,7 +426,7 @@
             var domainStart = coerce('domain[0]'),
                 domainEnd = coerce('domain[1]');
             if(domainStart > domainEnd - 0.01) containerOut.domain = [0,1];
-            Plotly.Lib.noneOrBoth(containerIn.domain, containerOut.domain, 0, 1);
+            Plotly.Lib.noneOrAll(containerIn.domain, containerOut.domain, [0, 1]);
         }
 
         return containerOut;
