@@ -375,7 +375,7 @@
             y1 = y2p(options.y1);
 
         if(type==='line') return 'M'+x0+','+y0+'L'+x1+','+y1;
-        if(type==='rect') return 'M'+x0+','+y0+'H'+x1+'V'+y1+'H'+x1+'Z';
+        if(type==='rect') return 'M'+x0+','+y0+'H'+x1+'V'+y1+'H'+x0+'Z';
         // circle
         var cx = (x0 + x1) / 2,
             cy = (y0 + y1) / 2,
