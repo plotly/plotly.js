@@ -81,25 +81,34 @@
         .each(function(d){
             var line = (((d||[])[0]||{}).trace||{}).line||{},
                 lw1 = lw||line.width||0,
-                da = ld||line.dash||'',
-                dlw = Math.max(lw1,3);
-            if(da==='solid') { da = ''; }
-            else if(da==='dot') { da = dlw+'px,'+dlw+'px'; }
-            else if(da==='dash') { da = (3*dlw)+'px,'+(3*dlw)+'px'; }
-            else if(da==='longdash') { da = (5*dlw)+'px,'+(5*dlw)+'px'; }
-            else if(da==='dashdot') {
-                da = (3*dlw)+'px,'+dlw+'px,'+dlw+'px,'+dlw+'px';
-            }
-            else if(da==='longdashdot') {
-                da = (5*dlw)+'px,'+(2*dlw)+'px,'+dlw+'px,'+(2*dlw)+'px';
-            }
-            // otherwise user wrote the dasharray themselves - leave it be
+                dash = ld||line.dash||'';
 
             d3.select(this)
                 .call(Plotly.Color.stroke,lc||line.color)
-                .style({'stroke-dasharray': da, 'stroke-width': lw1+'px'});
+                .call(drawing.dashLine, dash, lw1);
         });
     };
+
+    drawing.dashLine = function(s, dash, lineWidth) {
+        var dlw = Math.max(lineWidth, 3);
+
+        if(dash==='solid') dash = '';
+        else if(dash==='dot') dash = dlw+'px,'+dlw+'px';
+        else if(dash==='dash') dash = (3*dlw)+'px,'+(3*dlw)+'px';
+        else if(dash==='longdash') dash = (5*dlw)+'px,'+(5*dlw)+'px';
+        else if(dash==='dashdot') {
+            dash = (3*dlw)+'px,'+dlw+'px,'+dlw+'px,'+dlw+'px';
+        }
+        else if(dash==='longdashdot') {
+            dash = (5*dlw)+'px,'+(2*dlw)+'px,'+dlw+'px,'+(2*dlw)+'px';
+        }
+        // otherwise user wrote the dasharray themselves - leave it be
+
+        s.style({
+            'stroke-dasharray': dash,
+            'stroke-width': lineWidth + 'px'
+        });
+    }
 
     drawing.fillGroupStyle = function(s) {
         s.style('stroke-width',0)
