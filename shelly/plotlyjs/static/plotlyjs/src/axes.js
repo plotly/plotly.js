@@ -1556,6 +1556,7 @@
         function isHidden(showAttr) {
             var first_or_last;
 
+            if (showAttr===undefined) return true
             if (hover) return showAttr==='none';
 
             first_or_last = {
