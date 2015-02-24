@@ -67,8 +67,8 @@
              *   arcs (A) are not allowed because radius rx and ry are relative.
              *   In the future we could consider supporting relative commands,
              *   but we would have to decide on how to handle date and log axes.
-             *   Note that even as is, Q and C Bezier paths that are continuous on
-             *   linear axes may not be continuous on log, and vice versa.
+             *   Note that even as is, Q and C Bezier paths that are smooth on
+             *   linear axes may not be smooth on log, and vice versa.
              *
              * - no chained "polybezier" commands - specify the segment type for
              *   each one.
