@@ -301,12 +301,14 @@
                     Plotly.Axes.coerceRef(oldRef, {}, gd, axLetter)),
                 axNew = Plotly.Axes.getFromId(gd,
                     Plotly.Axes.coerceRef(optionsIn, {}, gd, axLetter)),
-                position = optionsIn[posAttr];
+                position = optionsIn[posAttr],
+                linearizedPosition;
 
             if(optionsEdit[axLetter + 'ref']!==undefined) {
                 // first convert to fraction of the axis
                 if(axOld) {
-                    position = (dataToLinear(axOld)(position) - axOld.range[0]) /
+                    linearizedPosition = dataToLinear(axOld)(position);
+                    position = (linearizedPosition - axOld.range[0]) /
                         (axOld.range[1] - axOld.range[0]);
                 } else {
                     position = (position - axNew.domain[0]) /
@@ -315,8 +317,9 @@
 
                 if(axNew) {
                     // then convert to new data coordinates at the same fraction
-                    position = axNew.range[0] + linearToData(axNew)(position) *
+                    linearizedPosition = axNew.range[0] + position *
                         (axNew.range[1] - axNew.range[0]);
+                    position = linearToData(axNew)(linearizedPosition);
                 } else {
                     // or scale to the whole plot
                     position = axOld.domain[0] +
