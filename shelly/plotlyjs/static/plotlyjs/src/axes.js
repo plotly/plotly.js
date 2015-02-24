@@ -1969,6 +1969,52 @@
         else { return allSubplots; }
     };
 
+    // makeClipPaths: prepare clipPaths for all single axes and all possible xy pairings
+    axes.makeClipPaths = function(td) {
+        var layout = td._fullLayout,
+            defs = layout._defs,
+            fullWidth = {_offset: 0, _length: layout.width, _id: ''},
+            fullHeight = {_offset: 0, _length: layout.height, _id: ''},
+            xaList = axes.list(td, 'x', true),
+            yaList = axes.list(td, 'y', true),
+            clipList = [],
+            i,
+            j;
+
+        for(i = 0; i < xaList.length; i++) {
+            clipList.push({x: xaList[i], y: fullHeight});
+            for(j = 0; j < yaList.length; j++) {
+                if(i===0) clipList.push({x: fullWidth, y: yaList[j]});
+                clipList.push({x: xaList[i], y: yaList[j]});
+            }
+        }
+
+        var defGroup = defs.selectAll('g.clips')
+            .data([0]);
+        defGroup.enter().append('g')
+            .classed('clips', true);
+
+        // selectors don't work right with camelCase tags,
+        // have to use class instead
+        // https://groups.google.com/forum/#!topic/d3-js/6EpAzQ2gU9I
+        var axClips = defGroup.selectAll('.axesclip')
+            .data(clipList, function(d) { return d.x._id + d.y._id; });
+        axClips.enter().append('clipPath')
+            .classed('axesclip', true)
+            .attr('id', function(d) { return 'clip' + layout._uid + d.x._id + d.y._id; } )
+          .append('rect');
+        axClips.exit().remove();
+        axClips.each(function(d) {
+            d3.select(this).select('rect').attr({
+                x: d.x._offset || 0,
+                y: d.y._offset || 0,
+                width: d.x._length || 1,
+                height: d.y._length || 1
+            });
+        });
+    };
+
+
     // doTicks: draw ticks, grids, and tick labels
     // axid: 'x', 'y', 'x2' etc,
     //     blank to do all,

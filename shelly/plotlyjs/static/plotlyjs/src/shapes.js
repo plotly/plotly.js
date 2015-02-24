@@ -322,11 +322,15 @@
         var options = handleShapeDefaults(optionsIn, fullLayout);
         fullLayout.shapes[index] = options;
 
-        fullLayout._shapelayer.append('path')
-            .attr({
+        var attrs = {
                 'data-index': String(index),
                 d: shapePath(gd, options)
-            })
+            },
+            clipAxes = (options.xref + options.yref).replace(/paper/g, '');
+        if(clipAxes) attrs['clip-path'] = 'url(#clip' + fullLayout._uid + clipAxes + ')';
+
+        fullLayout._shapelayer.append('path')
+            .attr(attrs)
             .style('opacity', options.opacity)
             .call(Plotly.Color.stroke, options.line.color)
             .call(Plotly.Color.fill, options.fillcolor)

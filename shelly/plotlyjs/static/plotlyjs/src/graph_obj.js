@@ -2754,6 +2754,14 @@
         // right, rather than enter/exit which can muck up the order
         fullLayout._paperdiv.selectAll('svg').remove();
 
+        if(!fullLayout._uid) {
+            var otherUids = [];
+            d3.selectAll('defs').each(function() {
+                if(this.id) otherUids.push(this.id.split('-')[1]);
+            });
+            fullLayout._uid = Plotly.Lib.randstr(otherUids);
+        }
+
         fullLayout._paper = fullLayout._paperdiv.append('svg')
             .attr({
                 xmlns: 'http://www.w3.org/2000/svg',
@@ -2761,6 +2769,9 @@
                 'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
                 'xml:xml:space': 'preserve'
             });
+
+        fullLayout._defs = fullLayout._paper.append('defs')
+            .attr('id', 'defs-' + fullLayout._uid);
 
         // Layers to keep plot types in the right order.
         // from back to front:
@@ -2889,7 +2900,11 @@
         // single shape, info (legend, annotations) and hover layers for the whole plot
         // pointer-events:none means we don't have to worry about mousing over
         // the hover text itself
-        fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
+        // shapelayer gets no pointer events for now, later if we support
+        // clicking or dragging on shapes we can change this.
+        fullLayout._shapelayer = fullLayout._paper.append('g')
+                                                  .classed('shapelayer', true)
+                                                  .style('pointer-events', 'none');
         fullLayout._infolayer = fullLayout._paper.append('g').classed('infolayer', true);
         fullLayout._hoverlayer = fullLayout._paper.append('g')
                                                   .classed('hoverlayer', true)
@@ -3174,6 +3189,8 @@
             if(showfreex) { freefinished.push(xa._id); }
             if(showfreey) { freefinished.push(ya._id); }
         });
+
+        Plotly.Axes.makeClipPaths(gd);
 
         plots.titles(gd,'gtitle');
 
