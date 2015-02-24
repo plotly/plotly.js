@@ -460,7 +460,7 @@
             });
 
             if(paramNumber > nParams) {
-                paramString = paramString.sub(/[\s,]*X.*/, '');
+                paramString = paramString.replace(/[\s,]*X.*/, '');
                     console.log('ignoring extra params in segment ' + segment);
             }
 
