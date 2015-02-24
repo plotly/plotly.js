@@ -324,6 +324,7 @@
 
         var attrs = {
                 'data-index': String(index),
+                'fill-rule': 'evenodd',
                 d: shapePath(gd, options)
             },
             clipAxes = (options.xref + options.yref).replace(/paper/g, '');
