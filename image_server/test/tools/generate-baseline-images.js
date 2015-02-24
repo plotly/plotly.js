@@ -23,7 +23,7 @@ function createBaselineImage (fileName) {
     var bodyMock = {
         figure: figure,
         format: 'png',
-        scale: 3
+        scale: 1
     };
 
     var imageFileName = fileName.split('.')[0] + '.png';
