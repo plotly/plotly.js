@@ -1636,15 +1636,29 @@
         }
 
         function ticksAndAnnotations(ns,ew){
-            (ew ? xa : []).concat(ns ? ya : []).forEach(function(axi) {
-                Plotly.Axes.doTicks(gd,axi._id, true);
-            });
-            (fullLayout.annotations||[]).forEach(function(ann,i) {
-                if( (ew && xids.indexOf(ann.xref)!==-1) ||
-                        (ns && yids.indexOf(ann.yref)!==-1) ) {
+            var annotations = fullLayout.annotations || [],
+                shapes = fullLayout.shapes || [],
+                i,
+                obji;
+
+            if(ew) Plotly.Axes.doTicks(gd, xa._id, true);
+            if(ns) Plotly.Axes.doTicks(gd, ya._id, true);
+
+            for(i = 0; i < annotations.length; i++) {
+                obji = annotations[i];
+                if( (ew && xids.indexOf(obji.xref)!==-1) ||
+                        (ns && yids.indexOf(obji.yref)!==-1) ) {
                     Plotly.Annotations.draw(gd,i);
                 }
-            });
+            }
+
+            for(i = 0; i < shapes.length; i++) {
+                obji = shapes[i];
+                if( (ew && xids.indexOf(obji.xref)!==-1) ||
+                        (ns && yids.indexOf(obji.yref)!==-1) ) {
+                    Plotly.Shapes.draw(gd,i);
+                }
+            }
         }
 
         // dragAutoRange - set one or both axes to autorange on doubleclick

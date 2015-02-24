@@ -13,9 +13,6 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
@@ -26,9 +23,8 @@
     // to the line, but the endpoint moves.
     // backoff is the distance to move the arrowhead, and the end of the
     // line, in order to end at the right place
-    // TODO: option to have the pointed-to
-    // point a little in front of the end of the line, as people tend
-    // to want a bit of a gap there...
+    // TODO: option to have the pointed-to  point a little in front of the
+    // end of the line, as people tend to want a bit of a gap there...
     var ARROWPATHS = [
         // no arrow
         '',
@@ -157,10 +153,12 @@
     };
 
     annotations.supplyLayoutDefaults = function(layoutIn, layoutOut) {
-        var containerIn = layoutIn.annotations || [];
-        layoutOut.annotations = containerIn.map(function(annIn) {
-            return handleAnnotationDefaults(annIn || {}, layoutOut);
-        });
+        var containerIn = layoutIn.annotations || [],
+            containerOut = layoutOut.annotations = [];
+
+        for(var i = 0; i < containerIn.length; i++) {
+            containerOut.push(handleAnnotationDefaults(containerIn[i] || {}, layoutOut));
+        }
     };
 
     function handleAnnotationDefaults(annIn, fullLayout) {
@@ -190,18 +188,20 @@
             coerce('ay');
 
             // if you have one part of arrow length you should have both
-            Plotly.Lib.noneOrBoth(annIn, annOut, 'ax', 'ay');
+            Plotly.Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
         }
         coerce('text', showArrow ? '&nbsp;' : 'new text');
         coerce('textangle');
         coerce('font', fullLayout.font);
 
         // positioning
-        ['x','y'].forEach(function(axLetter){
-            var tdMock = {_fullLayout: fullLayout};
+        var axLetters = ['x','y'];
+        for(var i = 0; i < 2; i++) {
+            var axLetter = axLetters[i],
+                tdMock = {_fullLayout: fullLayout};
 
             // xref, yref
-            var axRef = coerceAxRef(annIn, annOut, tdMock, axLetter);
+            var axRef = Plotly.Axes.coerceRef(annIn, annOut, tdMock, axLetter);
 
             // x, y
             var defaultPosition = 0.5;
@@ -227,34 +227,20 @@
 
             // xanchor, yanchor
             if(!showArrow) coerce(axLetter + 'anchor');
-        });
+        }
 
         // if you have one coordinate you should have both
-        Plotly.Lib.noneOrBoth(annIn, annOut, 'x', 'y');
+        Plotly.Lib.noneOrAll(annIn, annOut, ['x', 'y']);
 
         return annOut;
-    }
-
-    function coerceAxRef(annIn, annOut, tdMock, axLetter) {
-        var axlist = Plotly.Axes.listIds(tdMock, axLetter),
-            refAttr = axLetter + 'ref',
-            attrDef = {};
-        attrDef[refAttr] = {
-            type: 'enumerated',
-            values: axlist.concat(['paper']),
-            dflt: axlist[0]
-        };
-
-        // xref, yref
-        return Plotly.Lib.coerce(annIn, annOut, attrDef, refAttr, axLetter);
     }
 
     annotations.drawAll = function(gd) {
         var fullLayout = gd._fullLayout;
         fullLayout._infolayer.selectAll('.annotation').remove();
-        fullLayout.annotations.forEach(function(ann, i) {
-            annotations.draw(gd,i);
-        });
+        for(var i = 0; i < fullLayout.annotations.length; i++) {
+            annotations.draw(gd, i);
+        }
         return Plotly.Plots.previousPromises(gd);
     };
 
@@ -278,13 +264,11 @@
     annotations.draw = function(gd, index, opt, value) {
         var layout = gd.layout,
             fullLayout = gd._fullLayout,
-            gs = fullLayout._size,
-            MINDRAG = Plotly.Fx.MINDRAG,
             i;
 
         if(!$.isNumeric(index) || index===-1) {
             // no index provided - we're operating on ALL annotations
-            if(!index && $.isArray(value)) {
+            if(!index && Array.isArray(value)) {
                 // a whole annotation array is passed in
                 // (as in, redo of delete all)
                 layout.annotations = value;
@@ -301,9 +285,9 @@
             }
             else if(opt && value!=='add') {
                 // make the same change to all annotations
-                fullLayout.annotations.forEach(function(ann, i) {
+                for(i = 0; i < fullLayout.annotations.length; i++) {
                     annotations.draw(gd, i, opt, value);
-                });
+                }
                 return;
             }
             else {
@@ -336,9 +320,9 @@
                 var rule = $.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
 
                 if (layout.annotations) {
-                    layout.annotations.splice(index,0, rule)
+                    layout.annotations.splice(index, 0, rule);
                 } else {
-                    layout.annotations = [rule]
+                    layout.annotations = [rule];
                 }
 
                 for(i=fullLayout.annotations.length-1; i>index; i--) {
@@ -368,11 +352,17 @@
         if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
         else if($.isPlainObject(opt)) optionsEdit = opt;
 
-        Object.keys(optionsEdit).forEach(function(k){
+        var optionKeys = Object.keys(optionsEdit);
+        for(i = 0; i < optionKeys.length; i++) {
+            var k = optionKeys[i];
             Plotly.Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
-        });
+        }
 
-        ['x', 'y'].forEach(function(axLetter){
+        var gs = fullLayout._size;
+
+        var axLetters = ['x', 'y'];
+        for(i = 0; i < 2; i++) {
+            var axLetter = axLetters[i];
             // if we don't have an explicit position already,
             // don't set one just because we're changing references
             // or axis type.
@@ -380,13 +370,13 @@
             // except in log/linear changes
             if(optionsEdit[axLetter]!==undefined ||
                     optionsIn[axLetter]===undefined) {
-                return;
+                continue;
             }
 
             var axOld = Plotly.Axes.getFromId(gd,
-                    coerceAxRef(oldRef, {}, gd, axLetter)),
+                    Plotly.Axes.coerceRef(oldRef, {}, gd, axLetter)),
                 axNew = Plotly.Axes.getFromId(gd,
-                    coerceAxRef(optionsIn, {}, gd, axLetter)),
+                    Plotly.Axes.coerceRef(optionsIn, {}, gd, axLetter)),
                 position = optionsIn[axLetter],
                 axTypeOld = oldPrivate['_' + axLetter + 'type'];
 
@@ -454,7 +444,7 @@
             }
 
             optionsIn[axLetter] = position;
-        });
+        }
 
         var options = handleAnnotationDefaults(optionsIn, fullLayout);
         fullLayout.annotations[index] = options;
