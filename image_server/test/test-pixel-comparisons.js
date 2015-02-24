@@ -17,7 +17,7 @@ test('testing mocks', function (t) {
 
     function testMock (fileName) {
         if (path.extname(fileName) !== '.json') return;
-        if (fileName !== 'fonts.json') return;
+
         var figure = require('./mocks/' + fileName);
         var bodyMock = {
             figure: figure,
