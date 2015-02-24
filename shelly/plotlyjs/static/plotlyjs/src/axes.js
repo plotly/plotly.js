@@ -1556,6 +1556,7 @@
         function isHidden(showAttr) {
             var first_or_last;
 
+            if (showAttr===undefined) return true
             if (hover) return showAttr==='none';
 
             first_or_last = {
@@ -1569,8 +1570,8 @@
         hideexp = ax.exponentformat!=='none' && isHidden(ax.showexponent);
         if(hideexp) hideexp = 'hide';
 
-        hideprefix = ax.showtickprefix===undefined || isHidden(ax.showtickprefix);
-        hidesuffix = ax.showticksuffix===undefined || isHidden(ax.showticksuffix);
+        hideprefix = isHidden(ax.showtickprefix);
+        hidesuffix = isHidden(ax.showticksuffix);
 
         if(ax.type==='date'){
             var d = new Date(x);
