@@ -111,9 +111,9 @@
             "y":1.808488612836439
          },
          {
-            "text":"Gravitas",
+            "text":"Arial",
             "font":{
-               "family":"Gravitas One, cursive",
+               "family":"Arial, sans-serif",
                "size":18,
                "color":"rgb(44, 160, 44)"
             },

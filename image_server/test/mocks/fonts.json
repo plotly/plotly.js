@@ -312,33 +312,6 @@
             },
             {
                 "x": 0.1,
-                "y": 0.4545454545454546,
-                "xref": "paper",
-                "yref": "paper",
-                "text": "Gravitas One",
-                "showarrow": false,
-                "font": {
-                    "family": "Gravitas One, cursive",
-                    "size": 20
-                },
-                "xanchor": "left",
-                "yanchor": "middle",
-                "align": "center",
-                "arrowhead": 1,
-                "arrowsize": 1,
-                "arrowwidth": 0,
-                "arrowcolor": "",
-                "ax": -10,
-                "ay": -27.640625,
-                "textangle": 0,
-                "bordercolor": "",
-                "borderwidth": 1,
-                "borderpad": 1,
-                "bgcolor": "rgba(0,0,0,0)",
-                "opacity": 1
-            },
-            {
-                "x": 0.1,
                 "y": 0.36363636363636365,
                 "xref": "paper",
                 "yref": "paper",
