@@ -349,7 +349,7 @@
 
         if(xa) {
             x2l = dataToLinear(xa);
-            x2p = function(v) { return xa._offset + xa.l2p(x2l(v)); };
+            x2p = function(v) { return xa._offset + xa.l2p(x2l(v, true)); };
         }
         else {
             x2p = function(v) { return gs.l + gs.w * v; };
@@ -357,7 +357,7 @@
 
         if(ya) {
             y2l = dataToLinear(ya);
-            y2p = function(v) { return ya._offset + ya.l2p(y2l(v)); };
+            y2p = function(v) { return ya._offset + ya.l2p(y2l(v, true)); };
         }
         else {
             y2p = function(v) { return gs.t + gs.h * (1 - v); };

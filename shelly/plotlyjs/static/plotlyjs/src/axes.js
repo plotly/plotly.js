@@ -691,7 +691,24 @@
     // and looks for date ranges that aren't yet in numeric format
     axes.setConvert = function(ax) {
         var BADNUM = undefined;
-        function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : BADNUM; }
+        // clipMult: how many axis lengths past the edge do we render?
+        // for panning, 1-2 would suffice, but for zooming more is nice.
+        // also, clipping can affect the direction of lines off the edge...
+        var clipMult = 10;
+
+        function toLog(v, clip){
+            if(v>0) return Math.log(v)/Math.LN10;
+
+            else if(v<=0 && clip && ax.range && ax.range.length===2) {
+                // clip NaN (ie past negative infinity) to clipMult axis
+                // length past the negative edge
+                var r0 = ax.range[0],
+                    r1 = ax.range[1];
+                return 0.5*(r0 + r1 - 3 * clipMult * Math.abs(r0 - r1));
+            }
+
+            else return BADNUM;
+        }
         function fromLog(v){ return Math.pow(10,v); }
         function num(v){ return $.isNumeric(v) ? Number(v) : BADNUM; }
 
@@ -749,30 +766,16 @@
             }
         };
 
-        // clipMult: how many axis lengths past the edge do we render?
-        // for panning, 1-2 would suffice, but for zooming more is nice.
-        // also, clipping can affect the direction of lines off the edge...
-        var clipMult = 10;
-
         ax.l2p = function(v) {
+            if(!$.isNumeric(v)) return BADNUM;
+            // include 2 fractional digits on pixel, for PDF zooming etc
             return d3.round(Plotly.Lib.constrain(ax._b + ax._m*v,
                 -clipMult*ax._length, (1+clipMult)*ax._length), 2);
         };
 
         ax.p2l = function(px) { return (px-ax._b)/ax._m; };
 
-        ax.c2p = function(v,clip) {
-            var va = ax.c2l(v);
-            // include 2 fractional digits on pixel, for PDF zooming etc
-            if($.isNumeric(va)) return ax.l2p(va);
-            // clip NaN (ie past negative infinity) to clipMult axis
-            // length past the negative edge
-            if(clip && $.isNumeric(v)) {
-                var r0 = ax.range[0], r1 = ax.range[1];
-                return ax.l2p(0.5*(r0+r1-3*clipMult*Math.abs(r0-r1)));
-            }
-            return BADNUM;
-        };
+        ax.c2p = function(v, clip) { return ax.l2p(ax.c2l(v, clip)); };
         ax.p2c = function(px){ return ax.l2c(ax.p2l(px)); };
 
         if(['linear','log','-'].indexOf(ax.type)!==-1) {
@@ -781,8 +784,8 @@
                 v = axes.cleanDatum(v);
                 return $.isNumeric(v) ? Number(v) : BADNUM;
             };
-            ax.d2l = function (v) {
-                if (ax.type === 'log') return ax.c2l(ax.d2c(v));
+            ax.d2l = function (v, clip) {
+                if (ax.type === 'log') return ax.c2l(ax.d2c(v), clip);
                 else return ax.d2c(v);
             };
         }
