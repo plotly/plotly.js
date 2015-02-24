@@ -150,9 +150,9 @@
     shapes.drawAll = function(gd) {
         var fullLayout = gd._fullLayout;
         fullLayout._shapelayer.selectAll('path').remove();
-        fullLayout.shapes.forEach(function(shape, i) {
-            shapes.draw(gd,i);
-        });
+        for(var i = 0; i < fullLayout.shapes.length; i++) {
+            shapes.draw(gd, i);
+        }
         // may need to resurrect this if we put text (LaTeX) in shapes
         // return Plotly.Plots.previousPromises(gd);
     };

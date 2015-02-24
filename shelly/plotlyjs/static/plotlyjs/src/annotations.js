@@ -238,9 +238,9 @@
     annotations.drawAll = function(gd) {
         var fullLayout = gd._fullLayout;
         fullLayout._infolayer.selectAll('.annotation').remove();
-        fullLayout.annotations.forEach(function(ann, i) {
-            annotations.draw(gd,i);
-        });
+        for(var i = 0; i < fullLayout.annotations.length; i++) {
+            annotations.draw(gd, i);
+        }
         return Plotly.Plots.previousPromises(gd);
     };
 
