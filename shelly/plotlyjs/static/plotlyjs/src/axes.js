@@ -1569,8 +1569,8 @@
         hideexp = ax.exponentformat!=='none' && isHidden(ax.showexponent);
         if(hideexp) hideexp = 'hide';
 
-        hideprefix = isHidden(ax.showtickprefix);
-        hidesuffix = isHidden(ax.showticksuffix);
+        hideprefix = ax.showtickprefix===undefined || isHidden(ax.showtickprefix);
+        hidesuffix = ax.showticksuffix===undefined || isHidden(ax.showticksuffix);
 
         if(ax.type==='date'){
             var d = new Date(x);
