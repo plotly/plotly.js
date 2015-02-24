@@ -88,10 +88,12 @@
     };
 
     shapes.supplyLayoutDefaults = function(layoutIn, layoutOut) {
-        var containerIn = layoutIn.shapes || [];
-        layoutOut.shapes = containerIn.map(function(shapeIn) {
-            return handleShapeDefaults(shapeIn || {}, layoutOut);
-        });
+        var containerIn = layoutIn.shapes || [],
+            containerOut = layoutOut.shapes = [];
+
+        for(var i = 0; i < containerIn.length; i++) {
+            containerOut.push(handleShapeDefaults(containerIn[i] || {}, layoutOut));
+        }
     };
 
     function handleShapeDefaults(shapeIn, fullLayout) {
@@ -112,8 +114,10 @@
             shapeType = coerce('type', dfltType);
 
         // positioning
-        ['x','y'].forEach(function(axLetter){
-            var tdMock = {_fullLayout: fullLayout};
+        var axLetters = ['x','y'];
+        for(var i = 0; i < 2; i++) {
+            var axLetter = axLetters[i],
+                tdMock = {_fullLayout: fullLayout};
 
             // xref, yref
             var axRef = Plotly.Axes.coerceRef(shapeIn, shapeOut, tdMock, axLetter);
@@ -131,7 +135,7 @@
                 coerce(axLetter + '0', dflt0);
                 coerce(axLetter + '1', dflt1);
             }
-        });
+        }
 
         if(shapeType === 'path') {
             coerce('path');
@@ -206,9 +210,9 @@
             }
             else if(opt && value!=='add') {
                 // make the same change to all shapes
-                fullLayout.shapes.forEach(function(shape, i) {
+                for(i = 0; i < fullLayout.shapes.length; i++) {
                     shapes.draw(gd, i, opt, value);
-                });
+                }
                 return;
             }
             else {
@@ -273,11 +277,15 @@
         if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
         else if($.isPlainObject(opt)) optionsEdit = opt;
 
-        Object.keys(optionsEdit).forEach(function(k){
+        var optionKeys = Object.keys(optionsEdit);
+        for(i = 0; i < optionsEdit.length; i++) {
+            var k = optionKeys[i];
             Plotly.Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
-        });
+        }
 
-        ['x0', 'x1', 'y0', 'y1'].forEach(function(posAttr){
+        var posAttrs = ['x0', 'x1', 'y0', 'y1'];
+        for(i = 0; i < 4; i++) {
+            var posAttr = posAttrs[i];
             // if we don't have an explicit position already,
             // don't set one just because we're changing references
             // or axis type.
@@ -317,7 +325,7 @@
             }
 
             optionsIn[posAttr] = position;
-        });
+        }
 
         var options = handleShapeDefaults(optionsIn, fullLayout);
         fullLayout.shapes[index] = options;

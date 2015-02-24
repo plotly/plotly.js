@@ -778,6 +778,7 @@
         // make a few changes to the layout right away
         // before it gets used for anything
         // backward compatibility and cleanup of nonstandard options
+        var i;
 
         if(!layout) layout = {};
 
@@ -790,7 +791,10 @@
             if(!layout.yaxis) layout.yaxis = layout.yaxis1;
             delete layout.yaxis1;
         }
-        Plotly.Axes.list({_fullLayout:layout}).forEach(function(ax) {
+
+        var axList = Plotly.Axes.list({_fullLayout:layout});
+        for(i = 0; i < axList.length; i++) {
+            var ax = axList[i];
             if(ax.anchor && ax.anchor !== 'free') {
                 ax.anchor = Plotly.Axes.cleanId(ax.anchor);
             }
@@ -812,9 +816,15 @@
 
             // prune empty domain arrays made before the new nestedProperty
             if(emptyContainer(ax, 'domain')) delete ax.domain;
-        });
+        }
 
-        (layout.annotations||[]).forEach(function(ann) {
+        if(layout.annotations !== undefined && !Array.isArray(layout.annotations)) {
+            console.log('annotations must be an array');
+            delete layout.annotations;
+        }
+        var annotationsLen = (layout.annotations || []).length;
+        for(i = 0; i < annotationsLen; i++) {
+            var ann = layout.annotations[i];
             if(ann.ref) {
                 if(ann.ref==='paper') {
                     ann.xref = 'paper';
@@ -828,12 +838,18 @@
             }
             cleanAxRef(ann, 'xref');
             cleanAxRef(ann, 'yref');
-        });
+        }
 
-        (layout.shapes||[]).forEach(function(shape) {
+        if(layout.shapes !== undefined && !Array.isArray(layout.shapes)) {
+            console.log('shapes must be an array');
+            delete layout.shapes;
+        }
+        var shapesLen = (layout.shapes||[]).length;
+        for(i = 0; i < shapesLen; i++) {
+            var shape = layout.shapes[i];
             cleanAxRef(shape, 'xref');
             cleanAxRef(shape, 'yref');
-        });
+        }
 
         // cannot have scene1, numbering goes scene, scene2, scene3...
         if(layout.scene1) {
@@ -842,15 +858,15 @@
         }
 
         var sceneKeys = Plotly.Lib.getSceneKeys(layout);
-        sceneKeys.forEach( function (sceneKey) {
-            var sceneLayout = layout[sceneKey];
+        for(i = 0; i < sceneKeys.length; i++) {
+            var sceneLayout = layout[sceneKeys[i]];
             // fix for saved float32-arrays
             var camp = sceneLayout.cameraposition;
             if (Array.isArray(camp) && $.isPlainObject(camp[0])) {
                 camp[0] = [camp[0][0], camp[0][1], camp[0][2], camp[0][3]];
                 camp[1] = [camp[1][0], camp[1][1], camp[1][2]];
             }
-        });
+        }
 
         var legend = layout.legend;
         if(legend) {
@@ -897,7 +913,8 @@
                    .filter( function(trace) { return 'uid' in trace; } )
                    .map( function(trace) { return trace.uid; });
 
-        data.forEach(function(trace, tracei) {
+        for(var tracei = 0; tracei < data.length; tracei++) {
+            var trace = data[tracei];
             // assign uids to each trace and detect collisions.
             if (!('uid' in trace) || suids.indexOf(trace.uid) !== -1) {
                 var newUid, i;
@@ -969,20 +986,6 @@
                 trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
             }
 
-            // textposition - support partial attributes (ie just 'top')
-            // and incorrect use of middle / center etc.
-            function cleanTextPosition(textposition) {
-                var posY = 'middle',
-                    posX = 'center';
-                if(textposition.indexOf('top')!==-1) posY = 'top';
-                else if(textposition.indexOf('bottom')!==-1) posY = 'bottom';
-
-                if(textposition.indexOf('left')!==-1) posX = 'left';
-                else if(textposition.indexOf('right')!==-1) posX = 'right';
-
-                return posY + ' ' + posX;
-            }
-
             if(Array.isArray(trace.textposition)) {
                 trace.textposition = trace.textposition.map(cleanTextPosition);
             }
@@ -996,7 +999,21 @@
                 if(emptyContainer(trace.marker, 'line')) delete trace.marker.line;
                 if(emptyContainer(trace, 'marker')) delete trace.marker;
             }
-        });
+        }
+    }
+
+    // textposition - support partial attributes (ie just 'top')
+    // and incorrect use of middle / center etc.
+    function cleanTextPosition(textposition) {
+        var posY = 'middle',
+            posX = 'center';
+        if(textposition.indexOf('top')!==-1) posY = 'top';
+        else if(textposition.indexOf('bottom')!==-1) posY = 'bottom';
+
+        if(textposition.indexOf('left')!==-1) posX = 'left';
+        else if(textposition.indexOf('right')!==-1) posX = 'right';
+
+        return posY + ' ' + posX;
     }
 
     function emptyContainer(outer, innerStr) {

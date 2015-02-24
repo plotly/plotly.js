@@ -153,10 +153,12 @@
     };
 
     annotations.supplyLayoutDefaults = function(layoutIn, layoutOut) {
-        var containerIn = layoutIn.annotations || [];
-        layoutOut.annotations = containerIn.map(function(annIn) {
-            return handleAnnotationDefaults(annIn || {}, layoutOut);
-        });
+        var containerIn = layoutIn.annotations || [],
+            containerOut = layoutOut.annotations = [];
+
+        for(var i = 0; i < containerIn.length; i++) {
+            containerOut.push(handleAnnotationDefaults(containerIn[i] || {}, layoutOut));
+        }
     };
 
     function handleAnnotationDefaults(annIn, fullLayout) {
@@ -193,8 +195,10 @@
         coerce('font', fullLayout.font);
 
         // positioning
-        ['x','y'].forEach(function(axLetter){
-            var tdMock = {_fullLayout: fullLayout};
+        var axLetters = ['x','y'];
+        for(var i = 0; i < 2; i++) {
+            var axLetter = axLetters[i],
+                tdMock = {_fullLayout: fullLayout};
 
             // xref, yref
             var axRef = Plotly.Axes.coerceRef(annIn, annOut, tdMock, axLetter);
@@ -223,7 +227,7 @@
 
             // xanchor, yanchor
             if(!showArrow) coerce(axLetter + 'anchor');
-        });
+        }
 
         // if you have one coordinate you should have both
         Plotly.Lib.noneOrAll(annIn, annOut, ['x', 'y']);
@@ -281,9 +285,9 @@
             }
             else if(opt && value!=='add') {
                 // make the same change to all annotations
-                fullLayout.annotations.forEach(function(ann, i) {
+                for(i = 0; i < fullLayout.annotations.length; i++) {
                     annotations.draw(gd, i, opt, value);
-                });
+                }
                 return;
             }
             else {
@@ -348,13 +352,17 @@
         if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
         else if($.isPlainObject(opt)) optionsEdit = opt;
 
-        Object.keys(optionsEdit).forEach(function(k){
+        var optionKeys = Object.keys(optionsEdit);
+        for(i = 0; i < optionKeys.length; i++) {
+            var k = optionKeys[i];
             Plotly.Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
-        });
+        }
 
         var gs = fullLayout._size;
 
-        ['x', 'y'].forEach(function(axLetter){
+        var axLetters = ['x', 'y'];
+        for(i = 0; i < 2; i++) {
+            var axLetter = axLetters[i];
             // if we don't have an explicit position already,
             // don't set one just because we're changing references
             // or axis type.
@@ -436,7 +444,7 @@
             }
 
             optionsIn[axLetter] = position;
-        });
+        }
 
         var options = handleAnnotationDefaults(optionsIn, fullLayout);
         fullLayout.annotations[index] = options;
