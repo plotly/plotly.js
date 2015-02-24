@@ -2482,34 +2482,34 @@
             // don't set via nestedProperty
             // that's because add and remove are special
             else if(p.parts[0] === 'annotations' || p.parts[0] === 'shapes') {
-                var anum = p.parts[1],
+                var objNum = p.parts[1],
                     objType = p.parts[0],
-                    objList = layout[objType],
+                    objList = layout[objType] || [],
                     objModule = Plotly[Plotly.Lib.titleCase(objType)],
-                    obji = (objList && objList[anum])||{};
+                    obji = objList[objNum] || {};
                 // if p.parts is just an annotation number, and val is either
                 // 'add' or an entire annotation to add, the undo is 'remove'
                 // if val is 'remove' then undo is the whole annotation object
-                if(p.parts.length===2) {
-                    if(aobj[ai]==='add' || $.isPlainObject(aobj[ai])) {
-                        undoit[ai]='remove';
+                if(p.parts.length === 2) {
+                    if(aobj[ai] === 'add' || $.isPlainObject(aobj[ai])) {
+                        undoit[ai] = 'remove';
                     }
-                    else if(aobj[ai]==='remove') {
-                        if(anum===-1) {
+                    else if(aobj[ai] === 'remove') {
+                        if(objNum === -1) {
                             undoit[objType] = objList;
                             delete undoit[ai];
                         }
-                        else undoit[ai]=obji;
+                        else undoit[ai] = obji;
                     }
-                    else console.log('???',aobj);
+                    else console.log('???', aobj);
                 }
-                if((refAutorange(obji,'x') || refAutorange(obji,'y')) &&
+                if((refAutorange(obji, 'x') || refAutorange(obji, 'y')) &&
                         !Plotly.Lib.hasAny(ai, ['color', 'opacity', 'align', 'dash'])) {
                     docalc = true;
                 }
                 // TODO: combine all edits to a given annotation / shape into one call
                 // as it is we get separate calls for x and y (or ax and ay) on move
-                objModule.draw(gd,anum, p.parts.slice(2).join('.'),aobj[ai]);
+                objModule.draw(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
                 delete aobj[ai];
             }
             // alter gd.layout
