@@ -4,12 +4,20 @@ var request = require('request');
 var getOptions = require('./get-options');
 var fs = require('fs');
 var path = require('path');
+var ProgressBar = require('progress');
+var bar;
 
 var root = __dirname;
 
+fs.readdir(root + '/../mocks', function (err, files) {
+    console.log('#####  ' + files.length + ' total baseline images to build  #####');
+    bar = new ProgressBar(':bar :percent', { total: files.length });
+    if (err) return console.log(err);
+    files.forEach(createBaselineImage);
+});
+
 function createBaselineImage (fileName) {
     if (path.extname(fileName) !== '.json') return;
-    if (fileName !== 'fonts.json') return;
 
     var figure = require('../mocks/' + fileName);
     var bodyMock = {
@@ -29,16 +37,11 @@ function createBaselineImage (fileName) {
     }
 
     function onClose () {
-        console.log('successfully created Image: ' + savedImagePath);
+        bar.tick();
+        //console.log('successfully created baseline Image for: ' + fileName);
     }
 
     request(options, checkFormat)
         .pipe(savedImageStream)
         .on('close', onClose);
 }
-
-fs.readdir(root + '/../mocks', function (err, files) {
-    if (err) return console.log(err);
-    files.forEach(createBaselineImage);
-
-});
