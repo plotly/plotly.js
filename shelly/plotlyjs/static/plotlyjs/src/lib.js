@@ -1963,7 +1963,7 @@
         return s.charAt(0).toUpperCase() + s.substr(1);
     };
 
-    lib.hasAny = function(s, fragments) {
+    lib.containsAny = function(s, fragments) {
         for(var i = 0; i < fragments.length; i++) {
             if(s.indexOf(fragments[i])!== -1) return true;
         }

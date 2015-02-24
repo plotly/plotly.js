@@ -2504,7 +2504,7 @@
                     else console.log('???', aobj);
                 }
                 if((refAutorange(obji, 'x') || refAutorange(obji, 'y')) &&
-                        !Plotly.Lib.hasAny(ai, ['color', 'opacity', 'align', 'dash'])) {
+                        !Plotly.Lib.containsAny(ai, ['color', 'opacity', 'align', 'dash'])) {
                     docalc = true;
                 }
                 // TODO: combine all edits to a given annotation / shape into one call
@@ -2521,7 +2521,7 @@
                 else if(ai.indexOf('title')!==-1) doticks = true;
                 else if(p.parts[0].indexOf('bgcolor')!==-1) dolayoutstyle = true;
                 else if(p.parts.length>1 &&
-                        Plotly.Lib.hasAny(p.parts[1], ['tick', 'exponent', 'grid', 'zeroline'])) {
+                        Plotly.Lib.containsAny(p.parts[1], ['tick', 'exponent', 'grid', 'zeroline'])) {
                     doticks = true;
                 }
                 else if(ai.indexOf('.linewidth')!==-1 &&
