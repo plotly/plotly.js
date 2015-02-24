@@ -370,7 +370,7 @@
             // except in log/linear changes
             if(optionsEdit[axLetter]!==undefined ||
                     optionsIn[axLetter]===undefined) {
-                return;
+                continue;
             }
 
             var axOld = Plotly.Axes.getFromId(gd,

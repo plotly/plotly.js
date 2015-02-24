@@ -39,24 +39,13 @@
         },
 
         xref: {type: 'enumerated'},
-        x0: {
-            type: 'any',
-            dflt: 0
-        },
-        x1: {
-            type: 'any',
-            dflt: 1
-        },
+        x0: {type: 'any'},
+        x1: {type: 'any'},
 
         yref: {type: 'enumerated'},
-        y0: {
-            type: 'any',
-            dflt: 0
-        },
-        y1: {
-            type: 'any',
-            dflt: 1
-        },
+        y0: {type: 'any'},
+        y1: {type: 'any'},
+
         path: {
             /**
              * for type 'path' - a valid SVG path but with the pixel values
@@ -293,7 +282,7 @@
             // except in log/linear changes
             if(optionsEdit[posAttr]!==undefined ||
                     optionsIn[posAttr]===undefined) {
-                return;
+                continue;
             }
 
             var axLetter = posAttr.charAt(0),
