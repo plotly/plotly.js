@@ -330,10 +330,12 @@
             clipAxes = (options.xref + options.yref).replace(/paper/g, '');
         if(clipAxes) attrs['clip-path'] = 'url(#clip' + fullLayout._uid + clipAxes + ')';
 
+        var lineColor = options.line.width ? options.line.color : 'rgba(0,0,0,0)';
+
         fullLayout._shapelayer.append('path')
             .attr(attrs)
             .style('opacity', options.opacity)
-            .call(Plotly.Color.stroke, options.line.color)
+            .call(Plotly.Color.stroke, lineColor)
             .call(Plotly.Color.fill, options.fillcolor)
             .call(Plotly.Drawing.dashLine, options.line.dash, options.line.width);
     };
