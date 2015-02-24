@@ -193,7 +193,7 @@
         // TODO: abstract out these drawAll, add, and remove blocks for shapes and annotations
         if(!$.isNumeric(index) || index===-1) {
             // no index provided - we're operating on ALL shapes
-            if(!index && $.isArray(value)) {
+            if(!index && Array.isArray(value)) {
                 // a whole annotation array is passed in
                 // (as in, redo of delete all)
                 layout.shapes = value;

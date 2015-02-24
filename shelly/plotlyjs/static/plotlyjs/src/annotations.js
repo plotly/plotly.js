@@ -268,7 +268,7 @@
 
         if(!$.isNumeric(index) || index===-1) {
             // no index provided - we're operating on ALL annotations
-            if(!index && $.isArray(value)) {
+            if(!index && Array.isArray(value)) {
                 // a whole annotation array is passed in
                 // (as in, redo of delete all)
                 layout.annotations = value;
