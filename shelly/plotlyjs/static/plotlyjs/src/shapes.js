@@ -422,6 +422,18 @@
             S: {1: true, 3: true, drawn: 5},
             // A: {1: true, 6: true},
             Z: {}
+        },
+        numParams = {
+            M: 2,
+            L: 2,
+            H: 1,
+            V: 1,
+            Q: 4,
+            C: 6,
+            T: 2,
+            S: 4,
+            // A: 7,
+            Z: 0
         };
 
     shapes.convertPath = function(pathIn, x2p, y2p) {
@@ -430,15 +442,24 @@
             var paramNumber = 0,
                 segmentType = segment.charAt(0),
                 xParams = paramIsX[segmentType],
-                yParams = paramIsY[segmentType];
+                yParams = paramIsY[segmentType],
+                nParams = numParams[segmentType];
 
-            return segment.substr(1).replace(paramRE, function(param) {
+            var paramString = segment.substr(1).replace(paramRE, function(param) {
                 if(xParams[paramNumber]) param = x2p(param);
                 else if(yParams[paramNumber]) param = y2p(param);
-
                 paramNumber++;
+
+                if(paramNumber > nParams) param = 'X';
                 return param;
             });
+
+            if(paramNumber > nParams) {
+                paramString = paramString.sub(/[\s,]*X.*/, '');
+                    console.log('ignoring extra params in segment ' + segment);
+            }
+
+            return segmentType + paramString;
         });
     };
 
