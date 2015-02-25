@@ -11,7 +11,7 @@ if (!fs.existsSync('./test-images-diffs')) fs.mkdirSync('./test-images-diffs');
 if (!fs.existsSync('./test-images')) fs.mkdirSync('./test-images');
 
 test('testing mocks', function (t) {
-
+    console.error('### beginning pixel comparison tests ###');
     var files = fs.readdirSync('./mocks');
     t.plan(files.length * 2);
 
@@ -48,6 +48,7 @@ test('testing mocks', function (t) {
         function onEqualityCheck (err, isEqual) {
             if (err) return console.error(err);
             if (isEqual) fs.unlinkSync(diffPath);
+            console.error(imageFileName + ' is pixel perfect');
             t.ok(isEqual, savedImagePath + ' should be pixel perfect');
         }
 
