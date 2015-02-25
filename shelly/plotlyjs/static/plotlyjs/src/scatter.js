@@ -407,8 +407,8 @@
     };
 
     scatter.isBubble = function(trace) {
-        var marker = trace.marker || {};
-        return Array.isArray(marker.size);
+        return (typeof trace.marker === 'object' &&
+                    Array.isArray(trace.marker.size))
     };
 
     scatter.calc = function(gd,trace) {
