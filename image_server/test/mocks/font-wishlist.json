@@ -1,0 +1,362 @@
+{
+    "data": [
+        {
+            "x": [
+                "1",
+                "2",
+                "1",
+                "2"
+            ],
+            "y": [
+                "1",
+                "1",
+                "2",
+                "2"
+            ],
+            "mode": "markers",
+            "name": "Col2",
+            "type": "scatter"
+        }
+    ],
+    "layout": {
+        "title": "Click to enter Plot title",
+        "titlefont": {
+            "family": "",
+            "size": 0,
+            "color": ""
+        },
+        "font": {
+            "family": "\"Open sans\", verdana, arial, sans-serif",
+            "size": 16,
+            "color": "#444"
+        },
+        "showlegend": false,
+        "autosize": true,
+        "width": 1152,
+        "height": 516,
+        "xaxis": {
+            "title": "Click to enter X axis title",
+            "titlefont": {
+                "family": "",
+                "size": 0,
+                "color": ""
+            },
+            "range": [
+                0.9397379419405851,
+                2.060262058059415
+            ],
+            "domain": [
+                0,
+                1
+            ],
+            "type": "linear",
+            "rangemode": "normal",
+            "autorange": true,
+            "showgrid": false,
+            "zeroline": false,
+            "showline": false,
+            "autotick": true,
+            "nticks": 0,
+            "ticks": "",
+            "showticklabels": false,
+            "tick0": 0,
+            "dtick": 0.2,
+            "ticklen": 5,
+            "tickwidth": 1,
+            "tickcolor": "#444",
+            "tickangle": "auto",
+            "tickfont": {
+                "family": "",
+                "size": 0,
+                "color": ""
+            },
+            "exponentformat": "B",
+            "showexponent": "all",
+            "mirror": false,
+            "gridcolor": "#eee",
+            "gridwidth": 1,
+            "zerolinecolor": "#444",
+            "zerolinewidth": 1,
+            "linecolor": "#444",
+            "linewidth": 1,
+            "anchor": "y",
+            "overlaying": false,
+            "position": 0
+        },
+        "yaxis": {
+            "title": "Click to enter Y axis title",
+            "titlefont": {
+                "family": "",
+                "size": 0,
+                "color": ""
+            },
+            "range": [
+                0.9303153611393693,
+                2.0696846388606307
+            ],
+            "domain": [
+                0,
+                1
+            ],
+            "type": "linear",
+            "rangemode": "normal",
+            "autorange": true,
+            "showgrid": false,
+            "zeroline": false,
+            "showline": false,
+            "autotick": true,
+            "nticks": 0,
+            "ticks": "",
+            "showticklabels": false,
+            "tick0": 0,
+            "dtick": 0.2,
+            "ticklen": 5,
+            "tickwidth": 1,
+            "tickcolor": "#444",
+            "tickangle": "auto",
+            "tickfont": {
+                "family": "",
+                "size": 0,
+                "color": ""
+            },
+            "exponentformat": "B",
+            "showexponent": "all",
+            "mirror": false,
+            "gridcolor": "#eee",
+            "gridwidth": 1,
+            "zerolinecolor": "#444",
+            "zerolinewidth": 1,
+            "linecolor": "#444",
+            "linewidth": 1,
+            "anchor": "x",
+            "overlaying": false,
+            "position": 0
+        },
+        "legend": {
+            "x": 1.02,
+            "y": 1,
+            "traceorder": "normal",
+            "font": {
+                "family": "",
+                "size": 0,
+                "color": ""
+            },
+            "bgcolor": "#fff",
+            "bordercolor": "#444",
+            "borderwidth": 0,
+            "xanchor": "left",
+            "yanchor": "top"
+        },
+        "annotations": [
+            {
+                "x": 0.1,
+                "y": 1,
+                "xref": "paper",
+                "yref": "paper",
+                "text": "",
+                "showarrow": false,
+                "font": {
+                    "family": "Arial, sans-serif",
+                    "size": 28
+                },
+                "xanchor": "left",
+                "yanchor": "middle",
+                "align": "center",
+                "arrowhead": 1,
+                "arrowsize": 1,
+                "arrowwidth": 0,
+                "arrowcolor": "",
+                "ax": -10,
+                "ay": -26.7109375,
+                "textangle": 0,
+                "bordercolor": "rgb(0, 0, 0)",
+                "borderwidth": 1,
+                "borderpad": 0,
+                "bgcolor": "rgba(0,0,0,0)",
+                "opacity": 1
+            },
+            {
+                "x": 0.1,
+                "y": 0.9147727272727273,
+                "xref": "paper",
+                "yref": "paper",
+                "text": "<i>Droid Sans Italic</i>",
+                "showarrow": false,
+                "font": {
+                    "family": "Droid Sans, sans-serif",
+                    "size": 28
+                },
+                "xanchor": "left",
+                "yanchor": "middle",
+                "align": "center",
+                "arrowhead": 1,
+                "arrowsize": 1,
+                "arrowwidth": 0,
+                "arrowcolor": "",
+                "ax": -10,
+                "ay": -27.0390625,
+                "textangle": 0,
+                "bordercolor": "rgb(0, 0, 0)",
+                "borderwidth": 1,
+                "borderpad": 0,
+                "bgcolor": "rgba(0,0,0,0)",
+                "opacity": 1
+            },
+            {
+                "x": 0.1,
+                "y": 0.780573593073593,
+                "xref": "paper",
+                "yref": "paper",
+                "text": "Droid Sans Mono <b>Bold</b> <i>Italic</i>",
+                "showarrow": false,
+                "font": {
+                    "family": "Droid Sans Mono, sans-serif",
+                    "size": 28
+                },
+                "xanchor": "left",
+                "yanchor": "middle",
+                "align": "center",
+                "arrowhead": 1,
+                "arrowsize": 1,
+                "arrowwidth": 0,
+                "arrowcolor": "",
+                "ax": -10,
+                "ay": -27.9765625,
+                "textangle": 0,
+                "bordercolor": "rgb(0, 0, 0)",
+                "borderwidth": 1,
+                "borderpad": 0,
+                "bgcolor": "rgba(0,0,0,0)",
+                "opacity": 1
+            },
+            {
+                "x": 0.09999999999999998,
+                "y": 0.6390692640692641,
+                "xref": "paper",
+                "yref": "paper",
+                "text": "Gravitas One <b>Bold</b> <i>Italic</i>",
+                "showarrow": false,
+                "font": {
+                    "family": "Gravitas One, cursive",
+                    "size": 28
+                },
+                "xanchor": "left",
+                "yanchor": "middle",
+                "align": "center",
+                "arrowhead": 1,
+                "arrowsize": 1,
+                "arrowwidth": 0,
+                "arrowcolor": "",
+                "ax": -10,
+                "ay": -27.640625,
+                "textangle": 0,
+                "bordercolor": "rgb(0, 0, 0)",
+                "borderwidth": 1,
+                "borderpad": 0,
+                "bgcolor": "rgba(0,0,0,0)",
+                "opacity": 1
+            },
+            {
+                "x": 0.1,
+                "y": 0.5005411255411255,
+                "xref": "paper",
+                "yref": "paper",
+                "text": "<i>Old Standard TT Italic</i>",
+                "showarrow": false,
+                "font": {
+                    "family": "Old Standard TT, serif",
+                    "size": 28
+                },
+                "xanchor": "left",
+                "yanchor": "middle",
+                "align": "center",
+                "arrowhead": 1,
+                "arrowsize": 1,
+                "arrowwidth": 0,
+                "arrowcolor": "",
+                "ax": -10,
+                "ay": -27.390625,
+                "textangle": 0,
+                "bordercolor": "rgb(0, 0, 0)",
+                "borderwidth": 1,
+                "borderpad": 0,
+                "bgcolor": "rgba(0,0,0,0)",
+                "opacity": 1
+            },
+            {
+                "x": 0.10000000000000002,
+                "y": 0.36038961038961037,
+                "xref": "paper",
+                "yref": "paper",
+                "text": "<i>PT Sans NarrowItalic</i>",
+                "showarrow": false,
+                "font": {
+                    "family": "PT Sans Narrow, sans-serif",
+                    "size": 28
+                },
+                "xanchor": "left",
+                "yanchor": "middle",
+                "align": "center",
+                "arrowhead": 1,
+                "arrowsize": 1,
+                "arrowwidth": 0,
+                "arrowcolor": "",
+                "ax": -10,
+                "ay": -27.0625,
+                "textangle": 0,
+                "bordercolor": "rgb(0, 0, 0)",
+                "borderwidth": 1,
+                "borderpad": 0,
+                "bgcolor": "rgba(0,0,0,0)",
+                "opacity": 1
+            },
+            {
+                "x": 0.1,
+                "y": 0.22916666666666666,
+                "xref": "paper",
+                "yref": "paper",
+                "text": "<i>Times New Roman Italic</i>",
+                "showarrow": false,
+                "font": {
+                    "family": "Times New Roman, Times, serif",
+                    "size": 28
+                },
+                "xanchor": "left",
+                "yanchor": "middle",
+                "align": "center",
+                "arrowhead": 1,
+                "arrowsize": 1,
+                "arrowwidth": 0,
+                "arrowcolor": "",
+                "ax": -10,
+                "ay": -26.65625,
+                "textangle": 0,
+                "bordercolor": "rgb(0, 0, 0)",
+                "borderwidth": 1,
+                "borderpad": 0,
+                "bgcolor": "rgba(0,0,0,0)",
+                "opacity": 1
+            }
+        ],
+        "margin": {
+            "l": 80,
+            "r": 80,
+            "b": 80,
+            "t": 100,
+            "pad": 0,
+            "autoexpand": true
+        },
+        "paper_bgcolor": "#fff",
+        "plot_bgcolor": "#fff",
+        "hovermode": "x",
+        "dragmode": "zoom",
+        "separators": ".,",
+        "barmode": "group",
+        "bargap": 0.2,
+        "bargroupgap": 0,
+        "boxmode": "overlay",
+        "boxgap": 0.3,
+        "boxgroupgap": 0.3,
+        "hidesources": false
+    }
+}
