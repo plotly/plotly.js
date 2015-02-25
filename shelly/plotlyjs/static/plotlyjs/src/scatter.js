@@ -356,7 +356,11 @@
                 prefix + 'cmin'
             ];
 
-        if($.isArray(colorVal)) attrs.forEach(coerce);
+        if(Array.isArray(colorVal)) {
+            for (var i = 0; i < attrs.length; i++) {
+                coerce(attrs[i]);
+            }
+        }
     };
 
     scatter.cleanData = function(fullData) {
