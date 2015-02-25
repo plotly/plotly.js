@@ -67,7 +67,7 @@ test('request huge image: should return error 413', function (t) {
 
 });
 
-test('test bad figure, should get error 460: bad figure', function (t) {
+test('test bad figure, should get error 422', function (t) {
     t.plan(2);
 
     var bodyMock = {
@@ -89,7 +89,7 @@ test('test bad figure, should get error 460: bad figure', function (t) {
 
 });
 
-test('test bad figure, should get error 460: bad figure not an object', function (t) {
+test('test bad figure, should get error 422', function (t) {
     t.plan(2);
 
     var bodyMock = {
@@ -115,8 +115,8 @@ test('test bad figure, should get error 460: bad figure not an object', function
 
 });
 
-test('test bad figure, should get error 534: bad user json', function (t) {
-    t.plan(1);
+test('test including wrong data in plotly.js figure. should 525: plotly.js error', function (t) {
+    t.plan(2);
 
     var bodyMock = {
         'figure' : {
@@ -136,7 +136,8 @@ test('test bad figure, should get error 534: bad user json', function (t) {
 
     request(options, function (err, res) {
         if (err) return console.error(err);
-        t.equal(res.statusCode, 500, 'Server handled bad json');
+        t.equal(res.statusCode, 525, 'plotlyjs handled bad json as expected');
+        t.equal(res.body, 'plotlyjs error', 'error message matches');
         t.end();
     });
 
