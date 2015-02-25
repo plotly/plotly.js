@@ -38,7 +38,6 @@ function createBaselineImage (fileName) {
 
     function onClose () {
         bar.tick();
-        //console.log('successfully created baseline Image for: ' + fileName);
     }
 
     request(options, checkFormat)
