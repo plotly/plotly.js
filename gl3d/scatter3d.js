@@ -139,10 +139,12 @@ proto.handleXYZDefaults = function (traceIn, traceOut, coerce) {
 };
 
 proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
-    var _this = this;
-    var Plotly = this.config.Plotly;
-    var Scatter = Plotly.Scatter;
-    var linecolor, markercolor;
+    var _this = this,
+        Plotly = this.config.Plotly,
+        Scatter = Plotly.Scatter,
+        lineColor,
+        markerColor,
+        isBubble;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, _this.attributes, attr, dflt);
@@ -153,14 +155,16 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     coerce('text');
     coerce('mode');
 
+    isBubble = Scatter.isBubble(traceIn);
 
     if (Scatter.hasMarkers(traceOut)) {
-        markercolor = coerce('marker.color', defaultColor);
+        markerColor = coerce('marker.color', defaultColor);
         coerce('marker.symbol');
         coerce('marker.size');
-        coerce('marker.opacity');
-        coerce('marker.line.width');
-        coerce('marker.line.color');
+        coerce('marker.opacity', isBubble ? 0.7 : 1);
+        coerce('marker.line.width', isBubble ? 1 : 0);
+        coerce('marker.line.color', isBubble ? '#fff' : '#444');
+    }
 
     if (Scatter.hasLines(traceOut)) {
         // don't try to inherit a color array
@@ -175,7 +179,7 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         coerce('textfont', layout.font);
     }
 
-    if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', linecolor || markercolor);
+    if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', lineColor || markerColor);
 
     var dims = ['x','y','z'];
     for (var i = 0; i < 3; ++i) {
