@@ -237,32 +237,77 @@ function calculateTextOffset(textposition) {
     return textOffset;
 }
 
-function colorFormatter(colorIn, opacityIn) {
-    var colorOut = null,
-        colorLength = colorIn.length;
-    if (Array.isArray(colorIn)) {
-        colorOut = [];
-        for (var i = 0; i < colorLength; ++i) {
-            colorOut[i]     = str2RgbaArray(colorIn[i]);
-            colorOut[i][3] *= opacityIn;
-        }
-    } else {
-            colorOut     = str2RgbaArray(colorIn);
-            colorOut[3] *= opacityIn;
-    }
+function calculateColor(colorIn, opacityIn) {
+    var colorOut = null;
+    colorOut     = str2RgbaArray(colorIn);
+    colorOut[3] *= opacityIn;
     return colorOut;
 }
 
-function sizeScaler(sizeIn) {
-    var sizeOut = null;
-    // rough parity with Plotly 2D markers
-    function scale(size) { return size * 2; }
-    if (Array.isArray(sizeIn)) {
-        sizeOut = sizeIn.map(scale);
+function formatColor(colorIn, opacityIn, len) {
+    var colorDflt = '#444',  // on par with 2D
+        opacityDflt = 1,
+        isArrayColorIn = Array.isArray(colorIn),
+        isArrayOpacityIn = Array.isArray(opacityIn),
+        colorOut = null,
+        getColor,
+        getOpacity,
+        colori,
+        opacityi;
+
+    if (isArrayColorIn) {
+        getColor = function(c, i){
+            return (c[i]===undefined) ? colorDflt : c[i];
+        };
     } else {
-        sizeOut = scale(sizeIn);
+        getColor = function(c) { return c; };
     }
-    return sizeOut;
+
+    if (isArrayOpacityIn) {
+        getOpacity = function(o, i){
+            return (o[i]===undefined) ? opacityDflt : o[i];
+        };
+    } else {
+        getOpacity = function(o){ return o; };
+    }
+
+    if (isArrayColorIn || isArrayOpacityIn) {
+        colorOut = [];
+        for (var i = 0; i < len; i++) {
+            colori = getColor(colorIn, i);
+            opacityi = getOpacity(opacityIn, i);
+            colorOut[i] = calculateColor(colori, opacityi);
+        }
+    } else {
+        colorOut = calculateColor(colorIn, opacityIn);
+    }
+
+    return colorOut;
+}
+
+function calculateSize(sizeIn) {
+    // rough parity with Plotly 2D markers
+    return sizeIn * 2;
+}
+
+function calculateSymbol(symbolIn) {
+    return proto.markerSymbols[symbolIn];
+}
+
+function formatParam(paramIn, len, calculate, dflt) {
+    var paramOut = null;
+
+    if (Array.isArray(paramIn)) {
+        paramOut = [];
+
+        for (var i = 0; i < len; i++) {
+            if (paramIn[i]===undefined) paramOut[i] = dflt;
+            else paramOut[i] = calculate(paramIn[i]);
+        }
+
+    } else paramOut = calculate(paramIn);
+
+    return paramOut;
 }
 
 proto.update = function update (scene, sceneLayout, data, scatter) {
@@ -305,12 +350,11 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
     }
 
     if ('marker' in data) {
-        params.scatterColor         = colorFormatter(data.marker.color, data.marker.opacity);
-        params.scatterSize          = sizeScaler(data.marker.size);
-        params.scatterMarker        = this.markerSymbols[data.marker.symbol];
-        params.scatterLineWidth     = data.marker.line.width;
-        params.scatterLineColor     = str2RgbaArray(data.marker.line.color);
-        params.scatterLineColor[3] *= data.marker.opacity;
+        params.scatterColor         = formatColor(marker.color, marker.opacity, len);
+        params.scatterSize          = formatParam(marker.size, len, calculateSize, 20);
+        params.scatterMarker        = formatParam(marker.symbol, len, calculateSymbol, '●');
+        params.scatterLineWidth     = marker.line.width;  // arrayOk === false
+        params.scatterLineColor     = formatColor(marker.line.color, marker.opacity, len);
         params.scatterAngle         = 0;
     }
 
