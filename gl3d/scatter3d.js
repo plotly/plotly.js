@@ -245,7 +245,7 @@ function calculateColor(colorIn, opacityIn) {
 }
 
 function formatColor(colorIn, opacityIn, len) {
-    var colorDflt = '#444',  // on par with 2D
+    var colorDflt = this.config.Plotly.Color.base,
         opacityDflt = 1,
         isArrayColorIn = Array.isArray(colorIn),
         isArrayOpacityIn = Array.isArray(opacityIn),
