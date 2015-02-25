@@ -9,12 +9,22 @@ var bar;
 
 var root = __dirname;
 
-fs.readdir(root + '/../mocks', function (err, files) {
-    console.log('#######  ' + files.length + ' total baseline images to build  #######');
-    bar = new ProgressBar('processing [:bar] [:current / :total]', { total: files.length, width: 30 });
-    if (err) return console.log(err);
-    files.forEach(createBaselineImage);
-});
+var userFileName = process.argv[2];
+
+
+if (!userFileName) {
+    fs.readdir(root + '/../mocks', function (err, files) {
+        console.log('#######  ' + files.length + ' total baseline images to build  #######');
+        bar = new ProgressBar('processing [:bar] [:current / :total]', { total: files.length, width: 30 });
+        if (err) return console.log(err);
+        files.forEach(createBaselineImage);
+    });
+} else {
+    createBaselineImage(userFileName);
+}
+
+
+
 
 function createBaselineImage (fileName) {
     if (path.extname(fileName) !== '.json') return;
@@ -37,7 +47,8 @@ function createBaselineImage (fileName) {
     }
 
     function onClose () {
-        bar.tick();
+        if (bar) bar.tick();
+        if (userFileName) console.log('generated : ' + imageFileName + ' successfully');
     }
 
     request(options, checkFormat)
