@@ -102,7 +102,7 @@ function Scatter3D (config) {
                 color: extendFlat(scatterMarkerLineAttrs.color,
                                   {dflt: 'rgb(0,0,0)'}),
                 width: extendFlat(scatterMarkerLineAttrs.width,
-                                  {dflt: 0})
+                                  {dflt: 0, arrayOk: false})
             }
 
         },
