@@ -316,7 +316,7 @@
             return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
-        var isBubble = $.isArray((traceIn.marker||{}).size),
+        var isBubble = scatter.isBubble(traceIn),
             lineColor = (traceIn.line||{}).color,
             defaultMLC;
         if(lineColor) defaultColor = lineColor;
@@ -400,6 +400,11 @@
     scatter.hasText = function(trace) {
         return trace.visible && trace.mode &&
             trace.mode.indexOf('text') !== -1;
+    };
+
+    scatter.isBubble = function(trace) {
+        var marker = trace.marker || {};
+        return Array.isArray(marker.size);
     };
 
     scatter.calc = function(gd,trace) {
