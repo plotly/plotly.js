@@ -656,7 +656,7 @@
         coerce('y');
         coerce('yanchor');
         coerce('ypad');
-        Plotly.Lib.noneOrBoth(containerIn, containerOut, 'x', 'y');
+        Plotly.Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 
         coerce('outlinecolor');
         coerce('outlinewidth');

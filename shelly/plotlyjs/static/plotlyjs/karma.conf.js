@@ -36,6 +36,7 @@ func.defaultConfig = {
         './src/drawing.js',
         './src/scatter.js',
         './src/annotations.js',
+        './src/shapes.js',
         './src/bars.js',
         './src/boxes.js',
         './src/colorbar.js',
