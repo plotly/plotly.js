@@ -10,8 +10,8 @@ var bar;
 var root = __dirname;
 
 fs.readdir(root + '/../mocks', function (err, files) {
-    console.log('#####  ' + files.length + ' total baseline images to build  #####');
-    bar = new ProgressBar(':bar :percent', { total: files.length });
+    console.log('#######  ' + files.length + ' total baseline images to build  #######');
+    bar = new ProgressBar('processing [:bar] [:current / :total]', { total: files.length, width: 30 });
     if (err) return console.log(err);
     files.forEach(createBaselineImage);
 });
