@@ -11,12 +11,10 @@ if (!fs.existsSync('./test-images-diffs')) fs.mkdirSync('./test-images-diffs');
 if (!fs.existsSync('./test-images')) fs.mkdirSync('./test-images');
 
 test('testing mocks', function (t) {
-    console.error('### beginning pixel comparison tests ###');
-    var files = fs.readdirSync('./mocks');
-    t.plan(files.length * 2);
 
     function testMock (fileName) {
         if (path.extname(fileName) !== '.json') return;
+        if (fileName === 'font-wishlist.json') return;
 
         var figure = require('./mocks/' + fileName);
         var bodyMock = {
@@ -30,11 +28,6 @@ test('testing mocks', function (t) {
         var diffPath = 'test-images-diffs/' + 'diff-' + imageFileName;
         var savedImageStream = fs.createWriteStream(savedImagePath);
         var options = getOptions(bodyMock, 'http://localhost:9010/');
-
-        function checkFormat (err, res) {
-            if (err) return console.error(err);
-            t.equal(res.headers['content-type'], 'image/png', 'data is in correct png format');
-        }
 
         function checkImage () {
             var options = {
@@ -52,11 +45,15 @@ test('testing mocks', function (t) {
             t.ok(isEqual, savedImagePath + ' should be pixel perfect');
         }
 
-        request(options, checkFormat)
+        request(options)
             .pipe(savedImageStream)
             .on('close', checkImage);
     }
 
+    console.error('### beginning pixel comparison tests ###');
+    var files = fs.readdirSync('./mocks');
+
+    t.plan(files.length - 1); // -1 is for font-wishlist...
     for (var i = 0; i < files.length; i ++) {
         testMock(files[i]);
     }
