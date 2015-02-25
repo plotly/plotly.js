@@ -153,11 +153,6 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     coerce('text');
     coerce('mode');
 
-    if (Scatter.hasLines(traceOut)) {
-        linecolor = coerce('line.color', (traceIn.marker||{}).color || defaultColor);
-        coerce('line.width');
-        coerce('line.dash');
-    }
 
     if (Scatter.hasMarkers(traceOut)) {
         markercolor = coerce('marker.color', defaultColor);
@@ -166,6 +161,13 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         coerce('marker.opacity');
         coerce('marker.line.width');
         coerce('marker.line.color');
+
+    if (Scatter.hasLines(traceOut)) {
+        // don't try to inherit a color array
+        lineColor = coerce('line.color', (Array.isArray(markerColor) ? false : markerColor) ||
+                             defaultColor);
+        coerce('line.width');
+        coerce('line.dash');
     }
 
     if (Scatter.hasText(traceOut)) {
