@@ -274,6 +274,8 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
+        marker = data.marker,
+        line = data.line,
         errorParams = calculateErrorParams([ data.error_x, data.error_y, data.error_z ]),
         xc, x = data.x,
         yc, y = data.y,
@@ -297,9 +299,9 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
     };
 
     if ('line' in data) {
-        params.lineColor     = str2RgbaArray(data.line.color);
-        params.lineWidth     = data.line.width;
-        params.lineDashes    = data.line.dash;
+        params.lineColor     = str2RgbaArray(line.color);
+        params.lineWidth     = line.width;
+        params.lineDashes    = line.dash;
     }
 
     if ('marker' in data) {
