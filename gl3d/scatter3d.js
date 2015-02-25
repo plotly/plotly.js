@@ -237,23 +237,22 @@ function calculateTextOffset(textposition) {
     return textOffset;
 }
 
-function calculateColor(colorIn, opacityIn) {
-    var colorOut = null;
-    colorOut     = str2RgbaArray(colorIn);
-    colorOut[3] *= opacityIn;
-    return colorOut;
-}
-
-function formatColor(colorIn, opacityIn, len) {
+proto.formatColor = function formatColor(colorIn, opacityIn, len) {
     var colorDflt = this.config.Plotly.Color.base,
         opacityDflt = 1,
         isArrayColorIn = Array.isArray(colorIn),
         isArrayOpacityIn = Array.isArray(opacityIn),
-        colorOut = null,
+        colorOut = [],
         getColor,
         getOpacity,
         colori,
         opacityi;
+
+    function calculateColor(colorIn, opacityIn) {
+        var colorOut = str2RgbaArray(colorIn);
+        colorOut[3] *= opacityIn;
+        return colorOut;
+    }
 
     if (isArrayColorIn) {
         getColor = function(c, i){
@@ -283,7 +282,7 @@ function formatColor(colorIn, opacityIn, len) {
     }
 
     return colorOut;
-}
+};
 
 function calculateSize(sizeIn) {
     // rough parity with Plotly 2D markers
@@ -350,11 +349,11 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
     }
 
     if ('marker' in data) {
-        params.scatterColor         = formatColor(marker.color, marker.opacity, len);
+        params.scatterColor         = this.formatColor(marker.color, marker.opacity, len);
         params.scatterSize          = formatParam(marker.size, len, calculateSize, 20);
         params.scatterMarker        = formatParam(marker.symbol, len, calculateSymbol, '●');
         params.scatterLineWidth     = marker.line.width;  // arrayOk === false
-        params.scatterLineColor     = formatColor(marker.line.color, marker.opacity, len);
+        params.scatterLineColor     = this.formatColor(marker.line.color, marker.opacity, len);
         params.scatterAngle         = 0;
     }
 
