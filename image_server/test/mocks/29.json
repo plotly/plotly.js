@@ -3803,11 +3803,11 @@
         "title": "Home Temperature",
         "titlefont": {
             "color": "black",
-            "family": "Arial, sans-serif",
+            "family": "Open Sans, sans-serif",
             "size": 25
         },
         "font": {
-            "family": "Arial, sans-serif",
+            "family": "Open Sans, sans-serif",
             "size": 12,
             "color": "black"
         },
@@ -3819,7 +3819,7 @@
             "title": "Time",
             "titlefont": {
                 "color": "black",
-                "family": "Arial, sans-serif",
+                "family": "Open Sans, sans-serif",
                 "size": 18
             },
             "range": [
@@ -3868,7 +3868,7 @@
             "title": "Temperature (F)",
             "titlefont": {
                 "color": "black",
-                "family": "Arial, sans-serif",
+                "family": "Open Sans, sans-serif",
                 "size": 18
             },
             "range": [
@@ -3918,7 +3918,7 @@
             "y": 1,
             "traceorder": "normal",
             "font": {
-                "family": "Arial, sans-serif",
+                "family": "Open Sans, sans-serif",
                 "size": 12,
                 "color": "black"
             },
@@ -3934,9 +3934,9 @@
                 "y": -0.1,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "<i><b>View the code used</b></i><i><b> to generate this plot <a href = 'https://github.com/flann321/HomeCoolingPi'> here</a></b></i>",
+                "text": "<i>View the code used to generate this plot <a href = 'https://github.com/flann321/HomeCoolingPi'>here</a></i>",
                 "font": {
-                    "family": "Arial, sans-serif",
+                    "family": "Open Sans, sans-serif",
                     "size": "12"
                 },
                 "align": "left",
