@@ -9,7 +9,7 @@ var getOptions = require('./tools/get-options');
 if (!fs.existsSync('./test-images')) fs.mkdirSync('./test-images');
 
 
-test('request unscaled JPEG from figure', function (t) {
+test('request unscaled JPEG with figure size', function (t) {
     t.plan(3);
 
     var bodyMock = {
@@ -22,8 +22,7 @@ test('request unscaled JPEG from figure', function (t) {
             ],
             'layout': {
                 'width': 1200,
-                'height': 600,
-                'autosize': false
+                'height': 600 // undefined autosize
             }
         },
         'format': 'jpeg'
@@ -53,7 +52,7 @@ test('request unscaled JPEG from figure', function (t) {
         .on('close', checkImage);
 });
 
-test('request scaled JPEG from figure', function (t) {
+test('request scaled JPEG with figure size', function (t) {
     t.plan(3);
 
     var bodyMock = {
@@ -98,7 +97,7 @@ test('request scaled JPEG from figure', function (t) {
         .on('close', checkImage);
 });
 
-test('request unscaled JPEG from body', function (t) {
+test('request unscaled JPEG with body size', function (t) {
     t.plan(3);
 
     var bodyMock = {
@@ -144,7 +143,7 @@ test('request unscaled JPEG from body', function (t) {
         .on('close', checkImage);
 });
 
-test('request scaled JPEG from body', function (t) {
+test('request scaled JPEG with body size', function (t) {
     t.plan(3);
 
     var bodyMock = {
@@ -158,7 +157,7 @@ test('request scaled JPEG from body', function (t) {
             'layout': {
                 'width': 1200,
                 'height': 600,
-                'autosize': false
+                'autosize': true
             }
         },
         'format': 'jpeg',
@@ -192,7 +191,7 @@ test('request scaled JPEG from body', function (t) {
 
 });
 
-test('request default size unscaled JPEG from body', function (t) {
+test('request default size unscaled JPEG', function (t) {
     t.plan(3);
 
     var bodyMock = {
@@ -202,7 +201,12 @@ test('request default size unscaled JPEG from body', function (t) {
                     'x': [1,2],
                     'y': [10,20]
                 }
-            ]
+            ],
+            'layout': {
+                'width': 5000,  // wont ever make it
+                'height': 5000, // because autosize is set to true
+                'autosize': true
+            }
         },
         'format': 'jpeg'
     };
@@ -241,7 +245,10 @@ test('request default size scaled JPEG from body', function (t) {
                     'x': [1,2],
                     'y': [10,20]
                 }
-            ]
+            ],
+            'layout': {
+                'autosize': true
+            }
         },
         'format': 'jpeg',
         'scale': 3
