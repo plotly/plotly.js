@@ -398,7 +398,7 @@
         // TODO: this is why we need a data picker in the popover...
         var counterdata = ('z' in trace) ?
             trace.z :
-            (('marker' in trace && $.isArray(trace.marker.color)) ?
+            (('marker' in trace && Array.isArray(trace.marker.color)) ?
                 trace.marker.color : '');
         if(counterdata && func!=='count') {
             counter0 = counterdata.map(Number);
@@ -414,10 +414,10 @@
         for(i=binspec.start; i<binend;
                 i=Plotly.Axes.tickIncrement(i,binspec.size)) {
             onecol.push(sizeinit);
-            if($.isArray(xbins)) xbins.push(i);
+            if(Array.isArray(xbins)) xbins.push(i);
             if(doavg) zerocol.push(0);
         }
-        if($.isArray(xbins)) xbins.push(i);
+        if(Array.isArray(xbins)) xbins.push(i);
 
         var nx = onecol.length;
         x0 = trace.xbins.start;
@@ -431,10 +431,10 @@
         for(i=binspec.start; i<binend;
                 i=Plotly.Axes.tickIncrement(i,binspec.size)) {
             z.push(onecol.concat());
-            if($.isArray(ybins)) ybins.push(i);
+            if(Array.isArray(ybins)) ybins.push(i);
             if(doavg) counts.push(zerocol.concat());
         }
-        if($.isArray(ybins)) ybins.push(i);
+        if(Array.isArray(ybins)) ybins.push(i);
 
         var ny = z.length;
         y0 = trace.ybins.start;
@@ -443,11 +443,11 @@
 
         if(densitynorm) {
             xinc = onecol.map(function(v,i){
-                if($.isArray(xbins)) return 1/(xbins[i+1]-xbins[i]);
+                if(Array.isArray(xbins)) return 1/(xbins[i+1]-xbins[i]);
                 return 1/dx;
             });
             yinc = z.map(function(v,i){
-                if($.isArray(ybins)) return 1/(ybins[i+1]-ybins[i]);
+                if(Array.isArray(ybins)) return 1/(ybins[i+1]-ybins[i]);
                 return 1/dy;
             });
         }

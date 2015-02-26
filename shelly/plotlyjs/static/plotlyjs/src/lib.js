@@ -1235,7 +1235,7 @@
         if(!fid && !extrarefs) { return; }
         $.get('/getsources', {fid:fid, extrarefs:extrarefs}, function(res) {
             td.sourcelist = JSON.parse(res);
-            if(!$.isArray(td.sourcelist)) {
+            if(!Array.isArray(td.sourcelist)) {
                 console.log('sourcelist error',td.sourcelist);
                 td.sourcelist = [];
             }
@@ -1870,7 +1870,7 @@
     };
 
     lib.mergeArray = function(traceAttr, cd, cdAttr) {
-        if($.isArray(traceAttr)) {
+        if(Array.isArray(traceAttr)) {
             var imax = Math.min(traceAttr.length, cd.length);
             for(var i=0; i<imax; i++) cd[i][cdAttr] = traceAttr[i];
         }

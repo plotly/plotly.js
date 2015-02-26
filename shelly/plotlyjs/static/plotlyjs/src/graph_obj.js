@@ -367,8 +367,8 @@
 
         // if there is already data on the graph, append the new data
         // if you only want to redraw, pass a non-array for data
-        var graphwasempty = ((gd.data||[]).length===0 && $.isArray(data));
-        if($.isArray(data)) {
+        var graphwasempty = ((gd.data||[]).length===0 && Array.isArray(data));
+        if(Array.isArray(data)) {
             cleanData(data, gd.data);
 
             if(graphwasempty) gd.data=data;
@@ -909,7 +909,7 @@
          * Enforce unique IDs
          */
         var suids = [], // seen uids --- so we can weed out incoming repeats
-            uids = data.concat($.isArray(existingData) ? existingData : [])
+            uids = data.concat(Array.isArray(existingData) ? existingData : [])
                    .filter( function(trace) { return 'uid' in trace; } )
                    .map( function(trace) { return trace.uid; });
 
@@ -1508,7 +1508,7 @@
             // make sure there is a first point
             // this ensures there is a calcdata item for every trace,
             // even if cartesian logic doesn't handle it
-            if(!$.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
+            if(!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
 
             // add the trace-wide properties to the first point,
             // per point properties to every point
@@ -1919,7 +1919,7 @@
         if(Object.keys(aobj).length) gd.changed = true;
 
         if($.isNumeric(traces)) traces=[traces];
-        else if(!$.isArray(traces) || !traces.length) {
+        else if(!Array.isArray(traces) || !traces.length) {
             traces=gd._fullData.map(function(v,i){ return i; });
         }
 
@@ -2016,7 +2016,7 @@
         // val=undefined will not set a value, just record what the value was.
         // attr can be an array to set several at once (all to the same val)
         function doextra(cont,attr,val,i) {
-            if($.isArray(attr)) {
+            if(Array.isArray(attr)) {
                 attr.forEach(function(a){ doextra(cont,a,val,i); });
                 return;
             }
@@ -2052,7 +2052,7 @@
                 undoit[ai] = [param.get()];
                 // since we're allowing val to be an array, allow it here too,
                 // even though that's meaningless
-                param.set($.isArray(vi) ? vi[0] : vi);
+                param.set(Array.isArray(vi) ? vi[0] : vi);
                 // ironically, the layout attrs in restyle only require replot,
                 // not relayout
                 docalc = true;
@@ -2139,7 +2139,7 @@
                     // setting an orientation: make sure it's changing
                     // before we swap everything else
                     if(ai==='orientation') {
-                        param.set($.isArray(vi) ? vi[i%vi.length] : vi);
+                        param.set(Array.isArray(vi) ? vi[i%vi.length] : vi);
                         if(param.get()===undoit[ai][i]) continue;
                     }
                     // orientationaxes has no value,
@@ -2151,7 +2151,7 @@
                     swapXYData(cont);
                 }
                 // all the other ones, just modify that one attribute
-                else param.set($.isArray(vi) ? vi[i%vi.length] : vi);
+                else param.set(Array.isArray(vi) ? vi[i%vi.length] : vi);
 
             }
 
@@ -2285,7 +2285,7 @@
     function swapXYData(trace) {
         var i;
         Plotly.Lib.swapXYAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
-        if($.isArray(trace.z) && $.isArray(trace.z[0])) {
+        if(Array.isArray(trace.z) && Array.isArray(trace.z[0])) {
             if(trace.transpose) delete trace.transpose;
             else trace.transpose = true;
         }
@@ -2379,7 +2379,7 @@
         // val=undefined will not set a value, just record what the value was.
         // attr can be an array to set several at once (all to the same val)
         function doextra(attr,val) {
-            if($.isArray(attr)) {
+            if(Array.isArray(attr)) {
                 attr.forEach(function(a) { doextra(a,val); });
                 return;
             }
@@ -3584,7 +3584,7 @@
                 return o;
             }
 
-            if($.isArray(d)) {
+            if(Array.isArray(d)) {
                 return d.map(stripObj);
             }
 

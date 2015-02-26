@@ -316,7 +316,7 @@
             return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
-        var isBubble = $.isArray((traceIn.marker||{}).size),
+        var isBubble = Array.isArray((traceIn.marker||{}).size),
             lineColor = (traceIn.line||{}).color,
             defaultMLC;
         if(lineColor) defaultColor = lineColor;
@@ -356,7 +356,7 @@
                 prefix + 'cmin'
             ];
 
-        if($.isArray(colorVal)) attrs.forEach(coerce);
+        if(Array.isArray(colorVal)) attrs.forEach(coerce);
     };
 
     scatter.cleanData = function(fullData) {
@@ -449,7 +449,7 @@
                     return Math.max((v||0)/sizeref,3);
                 };
             }
-            xOptions.ppad = yOptions.ppad = $.isArray(s) ?
+            xOptions.ppad = yOptions.ppad = Array.isArray(s) ?
                 s.map(markerTrans) : markerTrans(s);
 
         }

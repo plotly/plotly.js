@@ -506,7 +506,7 @@
     // empty out types for all axes containing these traces
     // so we auto-set them again
     axes.clearTypes = function(gd, traces) {
-        if(!$.isArray(traces) || !traces.length) {
+        if(!Array.isArray(traces) || !traces.length) {
             traces = (gd._fullData).map(function(d,i) { return i; });
         }
         traces.forEach(function(tracenum) {
@@ -1016,7 +1016,7 @@
             ppadiplus, ppadiminus, includeThis, vmin, vmax;
 
         function getPad(item) {
-            if($.isArray(item)) {
+            if(Array.isArray(item)) {
                 return function(i) { return Math.max(Number(item[i]||0),0); };
             }
             else {
