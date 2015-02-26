@@ -424,6 +424,5 @@
         };
     };
 
-    return exports.ModeBar = Plotly.ModeBar =ModeBar;
-
+    return ModeBar;
 }));
