@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "plotly.js library",
   "repository": "",
-  "main": "index.js",
+  "main": "src/plotly.js",
   "scripts": {
     "test": "./node_modules/karma/bin/karma start karma.conf.js",
     "citest": "./node_modules/karma/bin/karma start karma.ciconf.js",
@@ -12,9 +12,9 @@
     "build-prod": "npm run browserify-prod; npm run sass-prod",
     "build-plotlyjs": "npm run browserify-jsbuild; npm run sass-jsbuild; npm run sass-jsbuild-demo; npm run package-jsbuild",
 
-    "browserify-dev": "browserify index.js --debug --standalone Plotly -o build/plotlyjs-bundle.js",
-    "browserify-prod": "browserify index.js --standalone Plotly | uglifyjs > build/plotlyjs-bundle.js",
-    "browserify-jsbuild": "browserify index.js --standalone Plotly | uglifyjs > build/plotlyjs-bundle-jsbuild.js",
+    "browserify-dev": "browserify src/plotly.js --debug --standalone Plotly -o build/plotlyjs-bundle.js",
+    "browserify-prod": "browserify src/plotly.js --standalone Plotly | uglifyjs > build/plotlyjs-bundle.js",
+    "browserify-jsbuild": "browserify src/plotly.js --standalone Plotly | uglifyjs > build/plotlyjs-bundle-jsbuild.js",
 
     "sass-dev": "node-sass --output-style expanded src/css/style.scss build/plotly-style.css --source-map-embed",
     "sass-prod": "node-sass --output-style compressed src/css/style.scss build/plotly-style.css",
@@ -23,7 +23,7 @@
 
     "package-jsbuild": "python ./jsbuild.py",
 
-    "watch": "watchify index.js --debug --standalone Plotly -o build/plotlyjs-bundle.js"
+    "watch": "watchify src/plotly.js --debug --standalone Plotly -o build/plotlyjs-bundle.js"
   },
   "author": "Plotly amazing team",
   "license": "ISC",
