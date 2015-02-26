@@ -1121,11 +1121,11 @@
         "title": "Stacked Bar Chart", 
         "titlefont": {
             "color": "", 
-            "family": "Arial, sans-serif;", 
+            "family": "Arial, sans-serif", 
             "size": 0
         }, 
         "font": {
-            "family": "Arial, sans-serif;", 
+            "family": "Arial, sans-serif", 
             "size": 12, 
             "color": "#000"
         }, 
@@ -1137,7 +1137,7 @@
             "title": "", 
             "titlefont": {
                 "color": "", 
-                "family": "Arial, sans-serif;", 
+                "family": "Arial, sans-serif", 
                 "size": 0
             }, 
             "range": [
@@ -1164,7 +1164,7 @@
             "tickcolor": "#000", 
             "tickangle": 0, 
             "tickfont": {
-                "family": "Arial, sans-serif;", 
+                "family": "Arial, sans-serif", 
                 "size": 0, 
                 "color": ""
             }, 
@@ -1186,7 +1186,7 @@
             "title": "", 
             "titlefont": {
                 "color": "", 
-                "family": "Arial, sans-serif;", 
+                "family": "Arial, sans-serif", 
                 "size": 0
             }, 
             "range": [
@@ -1213,7 +1213,7 @@
             "tickcolor": "#000", 
             "tickangle": 0, 
             "tickfont": {
-                "family": "Arial, sans-serif;", 
+                "family": "Arial, sans-serif", 
                 "size": 0, 
                 "color": ""
             }, 
@@ -1236,7 +1236,7 @@
             "y": 0.9711504424778762, 
             "traceorder": "normal", 
             "font": {
-                "family": "Arial, sans-serif;", 
+                "family": "Arial, sans-serif", 
                 "size": 0, 
                 "color": ""
             }, 
