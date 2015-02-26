@@ -92,7 +92,7 @@
         },
         tickcolor: {
             type: 'color',
-            dflt: '#444'
+            dflt: Plotly.Color.defaultLine
         },
         showticklabels: {
             type: 'boolean',
@@ -146,7 +146,7 @@
         },
         linecolor: {
             type: 'color',
-            dflt: '#444'
+            dflt: Plotly.Color.defaultLine
         },
         linewidth: {
             type: 'number',
@@ -166,7 +166,7 @@
         zeroline: {type: 'boolean'},
         zerolinecolor: {
             type: 'color',
-            dflt: '#444'
+            dflt: Plotly.Color.defaultLine
         },
         zerolinewidth: {
             type: 'number',
@@ -2379,7 +2379,7 @@
                 .classed('crisp',1)
                 .attr('d',gridpath);
             zl.attr('transform',transfn)
-                .call(Plotly.Color.stroke, ax.zerolinecolor || '#444')
+                .call(Plotly.Color.stroke, ax.zerolinecolor || Plotly.Color.defaultLine)
                 .style('stroke-width', zeroLineWidth+'px');
             zl.exit().remove();
         }

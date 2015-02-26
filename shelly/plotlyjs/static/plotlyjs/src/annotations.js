@@ -180,7 +180,7 @@
         var showArrow = coerce('showarrow');
         if(showArrow) {
             coerce('arrowcolor',
-                borderOpacity ? annOut.bordercolor : '#444');
+                borderOpacity ? annOut.bordercolor : Plotly.Color.defaultLine);
             coerce('arrowhead');
             coerce('arrowsize');
             coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
@@ -879,7 +879,7 @@
         if(typeof ends !== 'string' || !ends) ends = 'end';
 
         var scale = (Plotly.Drawing.getPx(el3,'stroke-width') || 1) * mag,
-            stroke = el3.style('stroke') || '#444',
+            stroke = el3.style('stroke') || Plotly.Color.defaultLine,
             opacity = el3.style('stroke-opacity') || 1,
             doStart = ends.indexOf('start') >= 0,
             doEnd = ends.indexOf('end') >= 0,

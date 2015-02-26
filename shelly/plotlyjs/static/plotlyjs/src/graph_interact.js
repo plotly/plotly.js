@@ -421,7 +421,7 @@
                 // point properties - override all of these
                 index: false, // point index in trace - only used by plotly.js hoverdata consumers
                 distance: Math.min(distance, fx.MAXDIST), // pixel distance or pseudo-distance
-                color: '#444', // trace color
+                color: Plotly.Color.defaultLine, // trace color
                 x0: undefined,
                 x1: undefined,
                 y0: undefined,
@@ -669,7 +669,7 @@
         //      a dom <svg> element - must be big enough to contain the whole
         //      hover label
         var pointData = {
-            color: hoverItem.color || '#444',
+            color: hoverItem.color || Plotly.Color.defaultLine,
             x0: hoverItem.x0 || hoverItem.x || 0,
             x1: hoverItem.x1 || hoverItem.x || 0,
             y0: hoverItem.y0 || hoverItem.y || 0,
@@ -739,7 +739,7 @@
                 ltext = label.selectAll('text').data([0]);
 
             lpath.enter().append('path')
-                .style({fill: '#444', 'stroke-width': '1px', stroke: '#fff'});
+                .style({fill: Plotly.Color.defaultLine, 'stroke-width': '1px', stroke: '#fff'});
             ltext.enter().append('text')
                 .call(Plotly.Drawing.font, HOVERFONT, HOVERFONTSIZE, '#fff')
                 // prohibit tex interpretation until we can handle
@@ -837,7 +837,7 @@
                 name = (d.name && d.zLabelVal===undefined) ?
                     $('<p>'+d.name+'</p>').text() : '',
                 // combine possible non-opaque trace color with bgColor
-                traceColor = combineColors(Plotly.Color.opacity(d.color) ? d.color : '#444', bgColor),
+                traceColor = combineColors(Plotly.Color.opacity(d.color) ? d.color : Plotly.Color.defaultLine, bgColor),
                 traceRGB = tinycolor(traceColor).toRgb(),
 
                 // find a contrasting color for border and text
@@ -1376,7 +1376,7 @@
                 .attr('class', 'zoombox-corners')
                 .style({
                     fill: '#FFF',
-                    stroke: '#444',
+                    stroke: Plotly.Color.defaultLine,
                     'stroke-width': 1,
                     opacity: 0
                 })

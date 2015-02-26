@@ -335,7 +335,7 @@
             defaultMLC = lineColor;
         }
         else if(isBubble) defaultMLC = '#fff';
-        else defaultMLC = '#444';
+        else defaultMLC = Plotly.Color.defaultLine;
         scatter.colorScalableDefaults('marker.line.', coerce, defaultMLC);
 
         coerce('marker.line.width', isBubble ? 1 : 0);

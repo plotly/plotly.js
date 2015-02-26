@@ -206,7 +206,7 @@
             .style({
                 'font-family':'"Open Sans",Arial,sans-serif',
                 'font-size':'12px',
-                'fill':'#444'
+                'fill': Plotly.Color.defaultLine
             })
             .each(function(){
                 var links = d3.select(this);
@@ -942,7 +942,7 @@
             if(trace.error_y && 'opacity' in trace.error_y) {
                 var dc = Plotly.Color.defaults,
                     yeColor = trace.error_y.color ||
-                    (plots.isBar(trace.type) ? '#444' : dc[tracei % dc.length]);
+                    (plots.isBar(trace.type) ? Plotly.Color.defaultLine : dc[tracei % dc.length]);
                 trace.error_y.color = Plotly.Color.addOpacity(
                     Plotly.Color.rgb(yeColor),
                     Plotly.Color.opacity(yeColor) * trace.error_y.opacity);
@@ -1300,7 +1300,7 @@
             dflt: {
                 family: '"Open sans", verdana, arial, sans-serif',
                 size: 12,
-                color: '#444'
+                color: Plotly.Color.defaultLine
             }
         },
         title: {

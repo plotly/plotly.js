@@ -110,13 +110,13 @@
         }
 
         Plotly.Scatter.colorScalableDefaults('marker.', coerce, defaultColor);
-        Plotly.Scatter.colorScalableDefaults('marker.line.', coerce, '#444');
+        Plotly.Scatter.colorScalableDefaults('marker.line.', coerce, Plotly.Color.defaultLine);
         coerce('marker.line.width', 0);
         coerce('text');
 
-        // override defaultColor for error bars with #444
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'y'});
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'x', inherit: 'y'});
+        // override defaultColor for error bars with defaultLine
+        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'y'});
+        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'x', inherit: 'y'});
     };
 
     bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
@@ -496,7 +496,7 @@
                     p = d3.select(this);
 
                 if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
-                else if(Array.isArray(marker.color)) fillColor = '#444';
+                else if(Array.isArray(marker.color)) fillColor = Plotly.Color.defaultLine;
                 else fillColor = marker.color;
 
                 p.style('stroke-width', lineWidth + 'px')
@@ -504,7 +504,7 @@
                 if(lineWidth) {
                     if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
                     // weird case: array wasn't long enough to apply to every point
-                    else if(Array.isArray(markerLine.color)) lineColor = '#444';
+                    else if(Array.isArray(markerLine.color)) lineColor = Plotly.Color.defaultLine;
                     else lineColor = markerLine.color;
 
                     p.call(Plotly.Color.stroke, lineColor);
