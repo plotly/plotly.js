@@ -34,39 +34,6 @@ test('request nonsense format: should return error 400', function (t) {
 
 });
 
-test('request huge image: should return error 413', function (t) {
-    t.plan(2);
-
-    var hugeArray = [];
-    for (var i = 0; i < 200001; i ++) {
-        hugeArray[i] = 1;
-    }
-
-    var bodyMock = {
-        'figure': {
-            'data': [
-                {
-                    'x': hugeArray,
-                    'y': hugeArray
-                }
-            ]
-        },
-        'format': 'svg'
-    };
-
-    var options = getOptions(bodyMock);
-
-    request(options, function (err, res) {
-        if (err) return console.error(err);
-        t.equal(res.statusCode, 413, 'Server correctly handles large image error');
-        var errMsg = 'Request Entity Too Large';
-        t.equal(res.body, errMsg, 'error message matches');
-        t.end();
-    });
-
-
-});
-
 test('test bad figure, should get error 422', function (t) {
     t.plan(2);
 
