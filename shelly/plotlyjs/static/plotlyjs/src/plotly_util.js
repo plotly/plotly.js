@@ -11,7 +11,7 @@
     // `exports` is `window`
     // `Plotly` is `window.Plotly`
 
-    var util = Plotly.util = {};
+    var util = {};
 
     // Script Loader
     /////////////////////////////

@@ -13,10 +13,7 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
-    var histogram = Plotly.Histogram = {};
+    var histogram = {};
     // histogram is a weird one...
     // it has its own calc function, but uses Bars.plot to display
     // and Bars.setPositions for stacking and grouping

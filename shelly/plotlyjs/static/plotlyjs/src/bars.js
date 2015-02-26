@@ -12,13 +12,10 @@
     // `Plotly` is `window.Plotly`
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var bars = Plotly.Bars = {};
+    var bars = {};
 
     // mark this module as allowing error bars
     bars.errorBarsOK = true;

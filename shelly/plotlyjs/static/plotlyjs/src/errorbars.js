@@ -14,13 +14,10 @@
     'use strict';
     /* jshint camelcase: false */
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var errorBars = Plotly.ErrorBars = {};
+    var errorBars = {};
 
     errorBars.attributes = {
         visible: {

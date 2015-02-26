@@ -17,7 +17,7 @@
     // ---external global dependencies
     /* global d3:false, tinycolor:false */
 
-    var fx = Plotly.Fx = {};
+    var fx = {};
 
     fx.layoutAttributes = {
         dragmode: {

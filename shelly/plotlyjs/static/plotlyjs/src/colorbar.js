@@ -14,13 +14,10 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var colorbar = Plotly.Colorbar = function(td,id) {
+    var colorbar = function(td,id) {
         // opts: options object, containing everything from attributes
         // plus a few others that are the equivalent of the colorbar "data"
         var opts = {};

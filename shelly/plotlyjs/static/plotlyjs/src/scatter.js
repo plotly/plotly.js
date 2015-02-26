@@ -14,13 +14,10 @@
     'use strict';
     /* jshint camelcase: false */
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var scatter = Plotly.Scatter = {};
+    var scatter = {};
 
     // mark this module as allowing error bars
     scatter.errorBarsOK = true;

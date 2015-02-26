@@ -1,10 +1,3 @@
-// This file defines the Axes object. Publically available methods are
-// defined as axes.XXX = function(){} and called by Plotly.Axes.XXX()
-// functions include:
-//      - data conversions
-//      - calculating and drawing ticks
-
-
 (function(root, factory){
     if (typeof exports == 'object') {
         // CommonJS
@@ -19,13 +12,10 @@
     // `Plotly` is `window.Plotly`
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false, Promise:false */
 
-    var axes = Plotly.Axes = {};
+    var axes = {};
 
     axes.layoutAttributes = {
         title: {type: 'string'},

@@ -13,13 +13,10 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var drawing = Plotly.Drawing = {};
+    var drawing = {};
     // -----------------------------------------------------
     // styling functions for plot elements
     // -----------------------------------------------------
@@ -998,7 +995,6 @@
 
         return $.extend({}, bb);
     };
-
 
     return drawing;
 }));
