@@ -1,6 +1,3 @@
-// var exports = {};
-// exports.exports = exports;
-
 exports.micropolar = require('./micropolar');
 exports.micropolar.manager = require('./micropolar_manager');
 
