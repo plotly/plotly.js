@@ -692,7 +692,7 @@
         var fullOpts = {
             hovermode: 'closest',
             rotateLabels: false,
-            bgColor: opts.bgColor || '#fff',
+            bgColor: opts.bgColor || Plotly.Color.background,
             container: container3,
             outerContainer: container3
         };
@@ -739,9 +739,9 @@
                 ltext = label.selectAll('text').data([0]);
 
             lpath.enter().append('path')
-                .style({fill: Plotly.Color.defaultLine, 'stroke-width': '1px', stroke: '#fff'});
+                .style({fill: Plotly.Color.defaultLine, 'stroke-width': '1px', stroke: Plotly.Color.background});
             ltext.enter().append('text')
-                .call(Plotly.Drawing.font, HOVERFONT, HOVERFONTSIZE, '#fff')
+                .call(Plotly.Drawing.font, HOVERFONT, HOVERFONTSIZE, Plotly.Color.background)
                 // prohibit tex interpretation until we can handle
                 // tex and regular text together
                 .attr('data-notex',1);
@@ -845,7 +845,7 @@
                 //      formula-to-determine-brightness-of-rgb-color
                 contrastColor =
                     (0.299*traceRGB.r + 0.587*traceRGB.g + 0.114*traceRGB.b)>128 ?
-                    '#000' : '#FFF',
+                    '#000' : Plotly.Color.background,
                 text = '';
 
 
@@ -1375,7 +1375,7 @@
             corners = plotinfo.plot.append('path')
                 .attr('class', 'zoombox-corners')
                 .style({
-                    fill: '#FFF',
+                    fill: Plotly.Color.background,
                     stroke: Plotly.Color.defaultLine,
                     'stroke-width': 1,
                     opacity: 0
@@ -2079,7 +2079,7 @@
     // if back has transparency or is missing, white is assumed behind it
     function combineColors(front,back){
         var fc = tinycolor(front).toRgb(),
-            bc = tinycolor(back||'#FFF').toRgb();
+            bc = tinycolor(back||Plotly.Color.background).toRgb();
         if(fc.a===1) return tinycolor(front).toRgbString();
 
         var bcflat = bc.a===1 ? bc : {

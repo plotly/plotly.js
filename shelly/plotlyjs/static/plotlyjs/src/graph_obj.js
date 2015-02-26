@@ -1356,13 +1356,13 @@
         },
         paper_bgcolor: {
             type: 'color',
-            dflt: '#fff'
+            dflt: Plotly.Color.background
         },
         plot_bgcolor: {
             // defined here, but set in Axes.supplyLayoutDefaults
             // because it needs to know if there are (2D) axes or not
             type: 'color',
-            dflt: '#fff'
+            dflt: Plotly.Color.background
         },
         separators: {
             type: 'string',

@@ -156,7 +156,7 @@
         showgrid: {type: 'boolean'},
         gridcolor: {
             type: 'color',
-            dflt: '#eee'
+            dflt: Plotly.Color.lightLine
         },
         gridwidth: {
             type: 'number',

@@ -334,7 +334,7 @@
         if(lineColor && traceOut.marker.color!==lineColor) {
             defaultMLC = lineColor;
         }
-        else if(isBubble) defaultMLC = '#fff';
+        else if(isBubble) defaultMLC = Plotly.Color.background;
         else defaultMLC = Plotly.Color.defaultLine;
         scatter.colorScalableDefaults('marker.line.', coerce, defaultMLC);
 

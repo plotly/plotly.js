@@ -163,7 +163,7 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         coerce('marker.size');
         coerce('marker.opacity', isBubble ? 0.7 : 1);
         coerce('marker.line.width', isBubble ? 1 : 0);
-        coerce('marker.line.color', isBubble ? '#fff' : Plotly.Color.defaultLine);
+        coerce('marker.line.color', isBubble ? Plotly.Color.background : Plotly.Color.defaultLine);
     }
 
     if (Scatter.hasLines(traceOut)) {
