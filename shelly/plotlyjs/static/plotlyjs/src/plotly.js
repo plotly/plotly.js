@@ -12,6 +12,7 @@ Plotly.Color = require('./color');
 Plotly.Drawing = require('./drawing');
 Plotly.Scatter = require('./scatter');
 Plotly.Annotations = require('./annotations');
+Plotly.Annotations = require('./shapes');
 Plotly.Bars = require('./bars');
 Plotly.Boxes = require('./boxes');
 Plotly.Colorbar = require('./colorbar');
