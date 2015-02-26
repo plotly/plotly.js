@@ -24,7 +24,7 @@ func.defaultConfig = {
     // list of files / patterns to load in the browser
     files: [
         shellyStatic + 'plugins/jquery-1.8.3.min.js',
-        shellyStatic + 'plugins/streamhead-bundle.js',
+        '../../../streaming/static/streaming/build/streamhead-bundle.js',
         shellyStatic + 'plugins/d3.v3.min.js',
         shellyStatic + 'plugins/png.js',
         shellyStatic + 'plugins/tinycolor.js',
