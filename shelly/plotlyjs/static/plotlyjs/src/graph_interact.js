@@ -328,7 +328,7 @@
         // Figure out what we're hovering on:
         // mouse location or user-supplied data
 
-        if($.isArray(evt)){
+        if(Array.isArray(evt)){
             // user specified an array of points to highlight
             hovermode = 'array';
             for(itemnum = 0; itemnum<evt.length; itemnum++) {
@@ -1466,7 +1466,7 @@
                 if(numClicks === 2) dragAutoRange();
                 else pauseForDrag(gd);
 
-                return removeZoombox();
+                return removeZoombox(gd);
             }
 
             if(zoomMode.indexOf('x')>-1) {
@@ -1488,7 +1488,7 @@
                 });
             }
 
-            removeZoombox();
+            removeZoombox(gd);
             dragTail(zoomMode);
 
             if(SHOWZOOMOUTTIP && gd.data && !gd._context.showTips) {
@@ -1520,7 +1520,7 @@
             if(!gd._context.scrollZoom && !fullLayout._enablescrollzoom) {
                 return;
             }
-            var pc = $(gd).find('.plotly')[0];
+            var pc = gd.querySelector('.plotly');
 
             // if the plot has scrollbars (more than a tiny excess)
             // disable scrollzoom too.
@@ -1738,8 +1738,10 @@
         if(gd._replotPending) Plotly.plot(gd);
     }
 
-    function removeZoombox() {
-        $('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners').remove();
+    function removeZoombox(gd) {
+        d3.select(gd)
+            .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
+            .remove();
     }
 
     // for automatic alignment on dragging, <1/3 means left align,
