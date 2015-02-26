@@ -34,8 +34,7 @@
         '#17becf' // blue-teal
     ];
 
-    // color used to fill in under-specified color arrays
-    color.base = '#444';
+    color.defaultLine = '#444';
 
     color.scales = {
         'Greys':[[0,'rgb(0,0,0)'],[1,'rgb(255,255,255)']],

@@ -163,7 +163,7 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         coerce('marker.size');
         coerce('marker.opacity', isBubble ? 0.7 : 1);
         coerce('marker.line.width', isBubble ? 1 : 0);
-        coerce('marker.line.color', isBubble ? '#fff' : '#444');
+        coerce('marker.line.color', isBubble ? '#fff' : Plotly.Color.defaultLine);
     }
 
     if (Scatter.hasLines(traceOut)) {
@@ -238,7 +238,7 @@ function calculateTextOffset(textposition) {
 }
 
 proto.formatColor = function formatColor(colorIn, opacityIn, len) {
-    var colorDflt = this.config.Plotly.Color.base,
+    var colorDflt = this.config.Plotly.Color.defaultLine,
         opacityDflt = 1,
         isArrayColorIn = Array.isArray(colorIn),
         isArrayOpacityIn = Array.isArray(opacityIn),
@@ -271,7 +271,6 @@ proto.formatColor = function formatColor(colorIn, opacityIn, len) {
     }
 
     if (isArrayColorIn || isArrayOpacityIn) {
-        colorOut = [];
         for (var i = 0; i < len; i++) {
             colori = getColor(colorIn, i);
             opacityi = getOpacity(opacityIn, i);

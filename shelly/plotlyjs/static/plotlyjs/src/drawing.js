@@ -692,11 +692,11 @@
 
                 if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
                 // weird case: array wasn't long enough to apply to every point
-                else if(Array.isArray(markerLine.color)) lineColor = Plotly.Color.base;
+                else if(Array.isArray(markerLine.color)) lineColor = Plotly.Color.defaultLine;
                 else lineColor = markerLine.color;
 
                 if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
-                else if(Array.isArray(marker.color)) fillColor = Plotly.Color.base;
+                else if(Array.isArray(marker.color)) fillColor = Plotly.Color.defaultLine;
                 else fillColor = marker.color;
             }
 
