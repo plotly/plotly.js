@@ -39,7 +39,7 @@ function runSingle (userFileName) {
 
 function testMock (fileName, t) {
     if (path.extname(fileName) !== '.json') return;
-    if (fileName === 'font-wishlist.json') return;
+    if (fileName === 'font-wishlist.json' && !userFileName) return;
 
     var figure = require('./mocks/' + fileName);
     var bodyMock = {
