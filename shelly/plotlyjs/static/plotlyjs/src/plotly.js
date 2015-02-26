@@ -1,36 +1,34 @@
-var Plotly = {};
-exports.Plotly = Plotly;
+// var exports = {};
+// exports.exports = exports;
 
-Plotly.micropolar = require('./micropolar');
-Plotly.micropolar.manager = require('./micropolar_manager');
+exports.micropolar = require('./micropolar');
+exports.micropolar.manager = require('./micropolar_manager');
 
 // order of requires should matter only for interdependencies
 // in attributes definitions. put the common modules first
-Plotly.Lib = require('./lib');
-Plotly.util = require('./plotly_util');
-Plotly.Color = require('./color');
-Plotly.Drawing = require('./drawing');
+exports.Lib = require('./lib');
+exports.util = require('./plotly_util');
+exports.Color = require('./color');
+exports.Drawing = require('./drawing');
 // then the plot structure
-Plotly.Plots = require('./graph_obj');
-Plotly.Axes = require('./axes');
-Plotly.Fx = require('./graph_interact');
+exports.Plots = require('./graph_obj');
+exports.Axes = require('./axes');
+exports.Fx = require('./graph_interact');
 // then trace modules - scatter has to come first
-Plotly.Scatter = require('./scatter');
-Plotly.Bars = require('./bars');
-Plotly.Boxes = require('./boxes');
-Plotly.Contour = require('./contour');
-Plotly.ErrorBars = require('./errorbars');
-Plotly.Heatmap = require('./heatmap');
-Plotly.Histogram = require('./histogram');
+exports.Scatter = require('./scatter');
+exports.Bars = require('./bars');
+exports.Boxes = require('./boxes');
+exports.Contour = require('./contour');
+exports.ErrorBars = require('./errorbars');
+exports.Heatmap = require('./heatmap');
+exports.Histogram = require('./histogram');
 // and extra plot components
-Plotly.Annotations = require('./annotations');
-Plotly.Shapes = require('./shapes');
-Plotly.Legend = require('./legend');
-Plotly.Colorbar = require('./colorbar');
-
-// Modebar doesn't attach to Plotly object
-// TODO: it should.
-require('./modebar');
+exports.Annotations = require('./annotations');
+exports.Shapes = require('./shapes');
+exports.Legend = require('./legend');
+exports.Colorbar = require('./colorbar');
+exports.ModeBar = require('./modebar');
+exports.XXX = 'foo';
 
 // promise polyfill, embed rather than requiring dependencies
 // var promise = require('promise')
