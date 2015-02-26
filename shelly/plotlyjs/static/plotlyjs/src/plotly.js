@@ -4,24 +4,29 @@ exports.Plotly = Plotly;
 Plotly.micropolar = require('./micropolar');
 Plotly.micropolar.manager = require('./micropolar_manager');
 
+// order of requires should matter only for interdependencies
+// in attributes definitions. put the common modules first
 Plotly.Lib = require('./lib');
 Plotly.util = require('./plotly_util');
-Plotly.Axes = require('./axes');
-Plotly.Plots = require('./graph_obj');
 Plotly.Color = require('./color');
 Plotly.Drawing = require('./drawing');
+// then the plot structure
+Plotly.Plots = require('./graph_obj');
+Plotly.Axes = require('./axes');
+Plotly.Fx = require('./graph_interact');
+// then trace modules - scatter has to come first
 Plotly.Scatter = require('./scatter');
-Plotly.Annotations = require('./annotations');
-Plotly.Annotations = require('./shapes');
 Plotly.Bars = require('./bars');
 Plotly.Boxes = require('./boxes');
-Plotly.Colorbar = require('./colorbar');
 Plotly.Contour = require('./contour');
 Plotly.ErrorBars = require('./errorbars');
-Plotly.Fx = require('./graph_interact');
 Plotly.Heatmap = require('./heatmap');
 Plotly.Histogram = require('./histogram');
+// and extra plot components
+Plotly.Annotations = require('./annotations');
+Plotly.Shapes = require('./shapes');
 Plotly.Legend = require('./legend');
+Plotly.Colorbar = require('./colorbar');
 
 // Modebar doesn't attach to Plotly object
 // TODO: it should.
