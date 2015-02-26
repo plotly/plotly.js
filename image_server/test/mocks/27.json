@@ -185,11 +185,11 @@
         "title": "<b>Income inequality,by type of income measured,1979-2007</b>", 
         "titlefont": {
             "color": "", 
-            "family": "Verdana, sans-serif", 
+            "family": "Arial, sans-serif", 
             "size": 14
         }, 
         "font": {
-            "family": "Verdana, sans-serif", 
+            "family": "Arial, sans-serif", 
             "size": 12, 
             "color": "#000"
         }, 
@@ -201,7 +201,7 @@
             "title": "<b>Source: </b>Andrew Fieldhouse, Economic Policy Institute, 6/14/2013", 
             "titlefont": {
                 "color": "", 
-                "family": "Verdana, sans-serif", 
+                "family": "Arial, sans-serif", 
                 "size": 10
             }, 
             "range": [

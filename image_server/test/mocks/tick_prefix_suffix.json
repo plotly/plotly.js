@@ -1,0 +1,24 @@
+{
+    "data": [
+        {
+            "x": [1,2,3,4,5,6,7],
+            "y": [1e5,1e5,2e6,2e6,2e6,3e7,3e7],
+            "line": {
+                "shape": "spline"
+            }
+        }
+    ],
+    "layout": {
+        "title": "tick label prefix and suffix",
+        "xaxis": {
+            "tickprefix": "-> ",
+            "ticksuffix": " s"
+        },
+        "yaxis": {
+            "tickprefix": "*** ",
+            "showtickprefix": "first",
+            "ticksuffix": " €",
+            "showticksuffix": "last"
+        }
+    }
+}
