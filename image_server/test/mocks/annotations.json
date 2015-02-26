@@ -1,203 +1,47 @@
 {
-   "data":[
-      {
-         "x":[
-            "1",
-            "2"
-         ],
-         "y":[
-            "1",
-            "2"
-         ],
-         "name":"Col2",
-         "type":"scatter",
-         "mode":"markers"
-      }
-   ],
-   "layout":{
-      "yaxis":{
-         "autorange":true,
-         "range":[
-            0.9295900178253119,
-            2.070409982174688
-         ],
-         "showgrid":false,
-         "zeroline":false,
-         "showticklabels":false
-      },
-      "xaxis":{
-         "autorange":true,
-         "range":[
-            0.9371152154793316,
-            2.0628847845206684
-         ],
-         "showgrid":false,
-         "zeroline":false,
-         "showticklabels":false
-      },
-      "height":500,
-      "width":800,
-      "showlegend":false,
-      "annotations":[
-         {
-            "text":"default"
-         },
-         {
-            "text":"move with page",
-            "xref":"paper",
-            "yref":"paper",
-            "x":0.4216417910447761,
-            "y":0.8834862385321101
-         },
-         {
-            "text":"opacity",
-            "opacity":0.5,
-            "x":1.4092305543918446,
-            "y":1.7567287784679089
-         },
-         {
-            "text":"no arrow",
-            "x":1.5614439324116745,
-            "y":1.7857142857142858,
-            "showarrow":false
-         },
-         {
-            "text":"no arrow move with page auto",
-            "showarrow":false,
-            "xref":"paper",
-            "yref":"paper",
-            "x":0.7860696517412935,
-            "y":0.9412844036697248
-         },
-         {
-            "text":"left top",
-            "showarrow":false,
-            "xref":"paper",
-            "yref":"paper",
-            "xanchor":"left",
-            "yanchor":"top",
-            "x":0.20771144278606965,
-            "y":0.944954128440367
-         },
-         {
-            "text":"center middle",
-            "showarrow":false,
-            "xref":"paper",
-            "yref":"paper",
-            "xanchor":"center",
-            "yanchor":"middle",
-            "x":0.23569651741293532,
-            "y":0.7666571100917432
-         },
-         {
-            "text":"right bottom",
-            "showarrow":false,
-            "xref":"paper",
-            "yref":"paper",
-            "xanchor":"right",
-            "yanchor":"bottom",
-            "x":0.2798507462686567,
-            "y":0.582855504587156
-         },
-         {
-            "text":"arrowhead styling",
-            "arrowcolor":"rgb(214, 39, 40)",
-            "arrowwidth":4.1,
-            "arrowhead":7,
-            "ax":34,
-            "ay":37,
-            "arrowsize":2,
-            "x":1.784876413908672,
-            "y":1.808488612836439
-         },
-         {
-            "text":"Gravitas",
-            "font":{
-               "family":"Gravitas One, cursive",
-               "size":18,
-               "color":"rgb(44, 160, 44)"
+    "data":[{
+        "x":[1,1,1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,5,5],
+        "y":[1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5],
+        "mode":"markers"
+    }],
+    "layout": {
+        "yaxis":{"autorange":false,"range":[1,5],"showgrid":false,"zeroline":false,"showticklabels":false},
+        "xaxis":{"autorange":false,"range":[1,5],"showgrid":false,"zeroline":false,"showticklabels":false},
+        "height":500,
+        "width":800,
+        "margin": {"l":100,"r":100,"top":80,"bottom":80,"pad":0},
+        "showlegend":false,
+        "annotations":[
+            {"text":"left top","showarrow":false,"xref":"paper","yref":"paper","xanchor":"left","yanchor":"top","x":0,"y":1},
+            {"text":"center middle","showarrow":false,"xref":"paper","yref":"paper","xanchor":"center","yanchor":"middle","x":0.25,"y":1},
+            {"text":"right bottom","showarrow":false,"xref":"paper","yref":"paper","xanchor":"right","yanchor":"bottom","x":0.5,"y":1},
+            {"text":"move with page","xref":"paper","yref":"paper","x":0.75,"y":1},
+            {"text":"opacity","opacity":0.5,"x":5,"y":5},
+            {"text":"left<br>justified","showarrow":false,"align":"left","x":1,"y":4},
+            {"text":"center<br>justified","showarrow":false,"x":2,"y":4},
+            {"text":"right<br>justified","showarrow":false,"align":"right","x":3,"y":4},
+            {"text":"no arrow<br>page auto TR","showarrow":false,"xref":"paper","yref":"paper","x":0.75,"y":0.75},
+            {"text":"no arrow<br>page auto ML","showarrow":false,"xref":"paper","yref":"paper","x":0.25,"y":0.5},
+            {"text":"no arrow<br>page auto BC","showarrow":false,"xref":"paper","yref":"paper","x":0.5,"y":0.25},
+            {"text":"default"},
+            {"text":"no arrow","x":5,"y":4,"showarrow":false},
+            {"text":"border","showarrow":false,"bordercolor":"rgb(148, 103, 189)","x":4,"y":3},
+            {"text":"border width","showarrow":false,"bordercolor":"rgb(0, 0, 255)","borderwidth":3,"x":5,"y":3},
+            {"text":"background","showarrow":false,"bgcolor":"rgb(255, 127, 14)","x":4,"y":2},
+            {"text":"padding","showarrow":false,"bordercolor":"rgb(0, 0, 0)","borderpad":3,"x":5,"y":2},
+            {"text":"angle<br>Bottom R","showarrow":false,"textangle":40,"x":1,"y":1,"xanchor":"right","yanchor":"bottom"},
+            {"text":"angle<br>Middle C","showarrow":false,"textangle":-70,"x":2,"y":1,"xanchor":"center","yanchor":"middle"},
+            {"text":"angle<br>Top L","showarrow":false,"textangle":160,"x":3,"y":1,"xanchor":"left","yanchor":"top"},
+            {
+                "text":"arrowhead styling","arrowcolor":"rgb(214, 39, 40)","arrowwidth":4.1,"arrowhead":7,
+                "ax":-34,"ay":37,"arrowsize":2,"x":4,"y":1
             },
-            "showarrow":false,
-            "x":1.0210166177908113,
-            "y":1.3778467908902692
-         },
-         {
-            "text":"centerjustified",
-            "showarrow":false,
-            "x":1.0000698226504676,
-            "y":1.7815734989648033
-         },
-         {
-            "text":"leftjustified",
-            "showarrow":false,
-            "align":"left",
-            "x":1.0000698226504676,
-            "y":1.938923395445135
-         },
-         {
-            "text":"rightjustified",
-            "showarrow":false,
-            "align":"right",
-            "x":1.0028627286691802,
-            "y":1.5745341614906831
-         },
-         {
-            "text":"border",
-            "showarrow":false,
-            "bordercolor":"rgb(148, 103, 189)",
-            "x":1.0601173020527859,
-            "y":1.1853002070393375
-         },
-         {
-            "text":"border width",
-            "showarrow":false,
-            "bordercolor":"rgb(0, 0, 255)",
-            "borderwidth":3,
-            "x":1.2402597402597402,
-            "y":1.1770186335403725
-         },
-         {
-            "text":"background",
-            "showarrow":false,
-            "bgcolor":"rgb(255, 127, 14)",
-            "x":1.2402597402597404,
-            "y":0.9906832298136644
-         },
-         {
-            "text":"padding",
-            "showarrow":false,
-            "bordercolor":"rgb(0, 0, 0)",
-            "borderpad":3,
-            "x":1.054531490015361,
-            "y":0.996894409937888
-         },
-         {
-            "text":"angle",
-            "showarrow":false,
-            "textangle":-70,
-            "x":1.5502723083368244,
-            "y":1.168737060041408
-         },
-         {
-            "text":"All together",
-            "opacity":0.6,
-            "arrowwidth":5,
-            "arrowhead":3,
-            "ax":0,
-            "ay":-77,
-            "bordercolor":"rgb(255, 0, 0)",
-            "borderwidth":4,
-            "font":{
-               "family":"Raleway, sans-serif",
-               "color":"rgb(0, 0, 255)",
-               "size":20
-            },
-            "arrowcolor":"rgb(166, 28, 0)",
-            "borderpad":3,
-            "textangle":50,
-            "x":1.8197877391425779,
-            "y":1.1749482401656313
-         }
-      ]
-   }
+            {
+                "text":"All together","opacity":0.6,"arrowwidth":5,"arrowhead":3,"ax":-77,"ay":-5,
+                "bordercolor":"rgb(255, 0, 0)","borderwidth":4,"bgcolor":"rgba(255,255,0,0.5)",
+                "font":{"color":"rgb(0, 0, 255)","size":20},
+                "arrowcolor":"rgb(166, 28, 0)","borderpad":3,"textangle":50,"x":5,"y":1
+            }
+        ]
+    }
 }

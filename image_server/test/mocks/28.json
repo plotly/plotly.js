@@ -872,11 +872,11 @@
         "title": "<br><b>Average effective tax rates, by income percentiles, 1960-2004</b>", 
         "titlefont": {
             "color": "", 
-            "family": "Verdana, sans-serif", 
+            "family": "Arial, sans-serif", 
             "size": 14
         }, 
         "font": {
-            "family": "Verdana, sans-serif", 
+            "family": "Arial, sans-serif", 
             "size": 12, 
             "color": "#000"
         }, 

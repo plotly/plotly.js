@@ -19,7 +19,7 @@
         "Text C"
       ],
       "textfont": {
-        "family": "sans serif",
+        "family": "Arial, sans-serif",
         "size": 18,
         "color": "#1f77b4"
       },
@@ -45,7 +45,7 @@
         "Text I"
       ],
       "textfont": {
-        "family": "sans serif",
+        "family": "Arial, sans-serif",
         "size": 18,
         "color": "#ff7f0e"
       },

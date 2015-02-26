@@ -338,7 +338,7 @@
         if(range0===range1) {
             containerOut.range = [range0 - 1, range0 + 1];
         }
-        Plotly.Lib.noneOrBoth(containerIn.range, containerOut.range, 0, 1);
+        Plotly.Lib.noneOrAll(containerIn.range, containerOut.range, [0, 1]);
 
         var autoTick = coerce('autotick');
         if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
@@ -481,10 +481,26 @@
             var domainStart = coerce('domain[0]'),
                 domainEnd = coerce('domain[1]');
             if(domainStart > domainEnd - 0.01) containerOut.domain = [0,1];
-            Plotly.Lib.noneOrBoth(containerIn.domain, containerOut.domain, 0, 1);
+            Plotly.Lib.noneOrAll(containerIn.domain, containerOut.domain, [0, 1]);
         }
 
         return containerOut;
+    };
+
+    // find the list of possible axes to reference with an xref or yref attribute
+    // and coerce it to that list
+    axes.coerceRef = function(containerIn, containerOut, td, axLetter) {
+        var axlist = axes.listIds(td, axLetter),
+            refAttr = axLetter + 'ref',
+            attrDef = {};
+        attrDef[refAttr] = {
+            type: 'enumerated',
+            values: axlist.concat(['paper']),
+            dflt: axlist[0]
+        };
+
+        // xref, yref
+        return Plotly.Lib.coerce(containerIn, containerOut, attrDef, refAttr, axLetter);
     };
 
     // empty out types for all axes containing these traces
@@ -675,12 +691,30 @@
     // and looks for date ranges that aren't yet in numeric format
     axes.setConvert = function(ax) {
         var BADNUM = undefined;
-        function toLog(v){ return (v>0) ? Math.log(v)/Math.LN10 : BADNUM; }
+        // clipMult: how many axis lengths past the edge do we render?
+        // for panning, 1-2 would suffice, but for zooming more is nice.
+        // also, clipping can affect the direction of lines off the edge...
+        var clipMult = 10;
+
+        function toLog(v, clip){
+            if(v>0) return Math.log(v)/Math.LN10;
+
+            else if(v<=0 && clip && ax.range && ax.range.length===2) {
+                // clip NaN (ie past negative infinity) to clipMult axis
+                // length past the negative edge
+                var r0 = ax.range[0],
+                    r1 = ax.range[1];
+                return 0.5*(r0 + r1 - 3 * clipMult * Math.abs(r0 - r1));
+            }
+
+            else return BADNUM;
+        }
         function fromLog(v){ return Math.pow(10,v); }
         function num(v){ return $.isNumeric(v) ? Number(v) : BADNUM; }
 
         ax.c2l = (ax.type==='log') ? toLog : num;
         ax.l2c = (ax.type==='log') ? fromLog : num;
+        ax.l2d = function(v) { return ax.c2d(ax.l2c(v)); };
 
         // set scaling to pixels
         ax.setScale = function(){
@@ -732,30 +766,16 @@
             }
         };
 
-        // clipMult: how many axis lengths past the edge do we render?
-        // for panning, 1-2 would suffice, but for zooming more is nice.
-        // also, clipping can affect the direction of lines off the edge...
-        var clipMult = 10;
-
         ax.l2p = function(v) {
+            if(!$.isNumeric(v)) return BADNUM;
+            // include 2 fractional digits on pixel, for PDF zooming etc
             return d3.round(Plotly.Lib.constrain(ax._b + ax._m*v,
                 -clipMult*ax._length, (1+clipMult)*ax._length), 2);
         };
 
         ax.p2l = function(px) { return (px-ax._b)/ax._m; };
 
-        ax.c2p = function(v,clip) {
-            var va = ax.c2l(v);
-            // include 2 fractional digits on pixel, for PDF zooming etc
-            if($.isNumeric(va)) return ax.l2p(va);
-            // clip NaN (ie past negative infinity) to clipMult axis
-            // length past the negative edge
-            if(clip && $.isNumeric(v)) {
-                var r0 = ax.range[0], r1 = ax.range[1];
-                return ax.l2p(0.5*(r0+r1-3*clipMult*Math.abs(r0-r1)));
-            }
-            return BADNUM;
-        };
+        ax.c2p = function(v, clip) { return ax.l2p(ax.c2l(v, clip)); };
         ax.p2c = function(px){ return ax.l2c(ax.p2l(px)); };
 
         if(['linear','log','-'].indexOf(ax.type)!==-1) {
@@ -764,8 +784,8 @@
                 v = axes.cleanDatum(v);
                 return $.isNumeric(v) ? Number(v) : BADNUM;
             };
-            ax.d2l = function (v) {
-                if (ax.type === 'log') return ax.c2l(ax.d2c(v));
+            ax.d2l = function (v, clip) {
+                if (ax.type === 'log') return ax.c2l(ax.d2c(v), clip);
                 else return ax.d2c(v);
             };
         }
@@ -1556,6 +1576,7 @@
         function isHidden(showAttr) {
             var first_or_last;
 
+            if (showAttr===undefined) return true
             if (hover) return showAttr==='none';
 
             first_or_last = {
@@ -1948,6 +1969,52 @@
         }
         else { return allSubplots; }
     };
+
+    // makeClipPaths: prepare clipPaths for all single axes and all possible xy pairings
+    axes.makeClipPaths = function(td) {
+        var layout = td._fullLayout,
+            defs = layout._defs,
+            fullWidth = {_offset: 0, _length: layout.width, _id: ''},
+            fullHeight = {_offset: 0, _length: layout.height, _id: ''},
+            xaList = axes.list(td, 'x', true),
+            yaList = axes.list(td, 'y', true),
+            clipList = [],
+            i,
+            j;
+
+        for(i = 0; i < xaList.length; i++) {
+            clipList.push({x: xaList[i], y: fullHeight});
+            for(j = 0; j < yaList.length; j++) {
+                if(i===0) clipList.push({x: fullWidth, y: yaList[j]});
+                clipList.push({x: xaList[i], y: yaList[j]});
+            }
+        }
+
+        var defGroup = defs.selectAll('g.clips')
+            .data([0]);
+        defGroup.enter().append('g')
+            .classed('clips', true);
+
+        // selectors don't work right with camelCase tags,
+        // have to use class instead
+        // https://groups.google.com/forum/#!topic/d3-js/6EpAzQ2gU9I
+        var axClips = defGroup.selectAll('.axesclip')
+            .data(clipList, function(d) { return d.x._id + d.y._id; });
+        axClips.enter().append('clipPath')
+            .classed('axesclip', true)
+            .attr('id', function(d) { return 'clip' + layout._uid + d.x._id + d.y._id; } )
+          .append('rect');
+        axClips.exit().remove();
+        axClips.each(function(d) {
+            d3.select(this).select('rect').attr({
+                x: d.x._offset || 0,
+                y: d.y._offset || 0,
+                width: d.x._length || 1,
+                height: d.y._length || 1
+            });
+        });
+    };
+
 
     // doTicks: draw ticks, grids, and tick labels
     // axid: 'x', 'y', 'x2' etc,
