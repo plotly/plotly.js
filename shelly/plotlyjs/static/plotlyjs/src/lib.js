@@ -1911,22 +1911,29 @@
     lib.minExtend = function(obj1, obj2) {
         var objOut = {};
         if(typeof obj2 !== 'object') obj2 = {};
-        var arrayLen = 3;
-        Object.keys(obj1).forEach(function(k) {
-            var v = obj1[k];
-            if(k.charAt(0)==='_' || typeof v === 'function') return;
+        var arrayLen = 3,
+            keys = Object.keys(obj1),
+            i,
+            k,
+            v;
+        for(i = 0; i < keys.length; i++) {
+            k = keys[i];
+            v = obj1[k];
+            if(k.charAt(0)==='_' || typeof v === 'function') continue;
             else if(k==='module') objOut[k] = v;
             else if(Array.isArray(v)) objOut[k] = v.slice(0,arrayLen);
             else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
             else objOut[k] = v;
-        });
+        }
 
-        Object.keys(obj2).forEach(function(k) {
-            var v = obj2[k];
+        keys = Object.keys(obj2);
+        for(i = 0; i < keys.length; i++) {
+            k = keys[i];
+            v = obj2[k];
             if(typeof v !== 'object' || !(k in objOut) || typeof objOut[k] !== 'object') {
                 objOut[k] = v;
             }
-        });
+        }
 
         return objOut;
     };
