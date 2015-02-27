@@ -133,6 +133,7 @@ describe('Test lib.js:', function() {
 
     describe('nestedProperty', function() {
         var np = Plotly.Lib.nestedProperty;
+
         it('should access simple objects', function() {
             var obj = {a: 'b', c: 'd'},
                 propA = np(obj, 'a'),
@@ -160,14 +161,19 @@ describe('Test lib.js:', function() {
 
             expect(prop1.get()).toBe(2);
             expect(arr).toEqual([1, 2, 3]);
+
             prop1.set('cats');
             expect(prop1.get()).toBe('cats');
-            prop1.set(2);
 
+            prop1.set(2);
             expect(prop5.get()).toBe(undefined);
             expect(arr).toEqual([1, 2, 3]);
+
             prop5.set(5);
-            expect(arr).toEqual([1, 2, 3, undefined, undefined, 5]);
+            var localArr = [1, 2, 3];
+            localArr[5] = 5;
+            expect(arr).toEqual(localArr);
+
             prop5.set(null);
             expect(arr).toEqual([1, 2, 3]);
             expect(arr.length).toBe(3);
@@ -234,13 +240,16 @@ describe('Test lib.js:', function() {
 
         it('should have no empty sub-containers', function() {
             var obj = {},
-                prop = np(obj, 'a[1].b.c');
+                prop = np(obj, 'a[1].b.c'),
+                expectedArr = [];
+
+            expectedArr[1] = {b: {c: 'pizza'}};
 
             expect(prop.get()).toBe(undefined);
             expect(obj).toEqual({});
 
             prop.set('pizza');
-            expect(obj).toEqual({a:[undefined, {b: {c: 'pizza'}}]});
+            expect(obj).toEqual({a: expectedArr});
             expect(prop.get()).toBe('pizza');
 
             prop.set(null);
