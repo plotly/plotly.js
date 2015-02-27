@@ -1935,12 +1935,14 @@
     lib.extendFlat = function extendFlat(obj1, obj2) {
         var objOut = {};
 
-        Object.keys(obj1).forEach(function(k) {
-            objOut[k] = obj1[k];
-        });
-        Object.keys(obj2).forEach(function(k) {
-            objOut[k] = obj2[k];
-        });
+        function copyToOut(obj) {
+            var keys = Object.keys(obj);
+            for(var i = 0; i < keys.length; i++) {
+                objOut[keys[i]] = obj[keys[i]];
+            }
+        }
+        if(typeof obj1 === 'object') copyToOut(obj1);
+        if(typeof obj2 === 'object') copyToOut(obj2);
 
         return objOut;
     };
