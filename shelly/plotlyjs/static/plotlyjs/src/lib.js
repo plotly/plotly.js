@@ -833,17 +833,6 @@
     // minor convenience/performance booster for d3...
     lib.identity = function(d){ return d; };
 
-    var CARDINALS = [
-        'zero', 'one', 'two', 'three', 'four',
-        'five', 'six', 'seven', 'eight', 'nine'
-    ];
-
-    lib.ppn = function(n){
-        // pretty print the number: 1-9 -> one-nine, >10 remain the same
-        n = parseInt(n,10);
-        return (n>=0 && n<=9 ? CARDINALS[n] : n);
-    };
-
     // random string generator
     lib.randstr = function randstr(existing, bits, base) {
         /*
