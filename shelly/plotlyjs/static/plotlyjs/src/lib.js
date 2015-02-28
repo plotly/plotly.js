@@ -17,7 +17,7 @@
     /* jshint camelcase: false */
 
     // ---Plotly global modules
-    /* global Plotly:false, Tabs:false */
+    /* global Tabs:false */
 
     // ---global functions not yet namespaced
     /* global pullf:false */
@@ -25,7 +25,7 @@
     // ---external global dependencies
     /* global d3:false, Spinner:false, tinycolor:false */
 
-    var lib = Plotly.Lib = {};
+    var lib = {};
 
     // dateTime2ms - turn a date object or string s of the form
     // YYYY-mm-dd HH:MM:SS.sss into milliseconds (relative to 1970-01-01,

@@ -13,15 +13,12 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false, PNGlib:false, tinycolor:false */
 
     var scatterAttrs = Plotly.Scatter.attributes;
 
-    var heatmap = Plotly.Heatmap = {};
+    var heatmap = {};
 
     heatmap.attributes = {
         z: {type: 'data_array'},
