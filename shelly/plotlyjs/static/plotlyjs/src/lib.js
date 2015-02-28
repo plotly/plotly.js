@@ -873,20 +873,6 @@
         return (n>=0 && n<=9 ? CARDINALS[n] : n);
     };
 
-    // used to display and show html containers
-    // HTML content must be formatted as:
-    //      <div class="js-toggle--key js-toggle--key__value1">
-    // if HTML Content:
-    //      <div class="js-toggle--fruit js-toggle--fruit__oranges
-    //                                   js-toggle--fruit__apples"></div>
-    // then:
-    //      togglecontent('', 'fruit', 'oranges');  // displays that div
-    //      togglecontent('', 'fruit', 'kiwi');     // hides that div
-    lib.togglecontent = function(parentSelector, dataKey, dataValue){
-        $(parentSelector+' .js-toggle--'+dataKey).hide();
-        $(parentSelector+' .js-toggle--'+dataKey+'__'+dataValue).show();
-    };
-
     lib.plotlyurl = function(page){
         return window.location.origin+'/'+page;
     };
