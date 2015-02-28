@@ -833,39 +833,10 @@
     // minor convenience/performance booster for d3...
     lib.identity = function(d){ return d; };
 
-    var ORDINALS = [
-        'first', 'second', 'third', 'fourth', 'fifth',
-        'sixth', 'seventh', 'eighth', 'ninth'
-    ];
-    var ORDINALENDS = ['th', 'st', 'nd', 'rd'];
     var CARDINALS = [
         'zero', 'one', 'two', 'three', 'four',
         'five', 'six', 'seven', 'eight', 'nine'
     ];
-
-    lib.num2ordinal = function(n) {
-        // 1-9 -> first-ninth
-        // 10 -> 10th
-        // 11 -> 11th
-        // etc
-        // num2ordinal(true);     // true
-        // num2ordinal(Infinity); // Infinity
-        // num2ordinal(NaN);      // NaN
-        // num2ordinal(void 0);   // undefined
-        // From: http://stackoverflow.com/questions/12487422/
-        //      take-a-value-1-31-and-convert-it-to-ordinal-date-w-javascript
-
-        if((parseFloat(n) === parseInt(n,10)) && !isNaN(n)){
-            if(parseInt(n,10)>=1 && parseInt(n,10)<=9){
-                return ORDINALS[parseInt(n,10)-1];
-            } else{
-                var v = n%100;
-                return n + (ORDINALENDS[(v-20)%10] ||
-                            ORDINALENDS[v] || ORDINALENDS[0]);
-            }
-        }
-        return n;
-    };
 
     lib.ppn = function(n){
         // pretty print the number: 1-9 -> one-nine, >10 remain the same
