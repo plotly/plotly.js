@@ -13,13 +13,10 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var boxes = Plotly.Boxes = {};
+    var boxes = {};
 
     // For coerce-level coupling
     var scatterAttrs = Plotly.Scatter.attributes,

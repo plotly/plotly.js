@@ -17,7 +17,7 @@
     // ---external global dependencies
     /* global d3:false, tinycolor:false */
 
-    var fx = Plotly.Fx = {};
+    var fx = {};
 
     fx.layoutAttributes = {
         dragmode: {
@@ -244,6 +244,7 @@
     var HOVERMINTIME = 100; // minimum time between hover calls
 
     fx.hover = function (gd, evt, subplot) {
+        if(typeof gd === 'string') gd = document.getElementById(gd);
         if(gd._lastHoverTime === undefined) gd._lastHoverTime = 0;
 
         // If we have an update queued, discard it now
@@ -267,6 +268,7 @@
     };
 
     fx.unhover = function (gd, evt, subplot) {
+        if(typeof gd === 'string') gd = document.getElementById(gd);
         // Important, clear any queued hovers
         if (gd._hoverTimer) {
             clearTimeout(gd._hoverTimer);
@@ -278,7 +280,6 @@
     // The actual implementation is here:
 
     function hover(gd, evt, subplot){
-        if(typeof gd === 'string') gd = document.getElementById(gd);
         if(!subplot) subplot = 'xy';
 
         var fullLayout = gd._fullLayout,
@@ -1183,7 +1184,6 @@
     function unhover(gd, evt){
         var fullLayout = gd._fullLayout;
         if(!evt) evt = {};
-        if(typeof gd === 'string') gd = document.getElementById(gd);
         if(evt.target &&
                 $(gd).triggerHandler('plotly_beforehover',evt)===false) {
             return;

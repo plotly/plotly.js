@@ -1,5 +1,7 @@
 describe('Test Modebar', function() {
     'use strict';
+    /* global Plotly:false */
+
     var getMockGraphInfo = function() {
         var graphInfo = {
             _fullLayout: {
@@ -27,7 +29,7 @@ describe('Test Modebar', function() {
         var container = getMockContainerTree(),
             graphInfo = getMockGraphInfo();
 
-        var modebar = new ModeBar({
+        var modebar = new Plotly.ModeBar({
             buttons: buttons,
             container: container,
             Plotly: Plotly,
