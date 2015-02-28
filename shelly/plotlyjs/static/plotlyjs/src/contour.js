@@ -13,13 +13,10 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var contour = Plotly.Contour = {};
+    var contour = {};
 
     // For coerce-level coupling
     var scatterLineAttrs = Plotly.Scatter.attributes.line;

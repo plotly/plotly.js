@@ -16,14 +16,15 @@
     /* jshint camelcase: false */
 
     // ---Plotly global modules
-    /* global µ:false, SceneFrame:false, Examples:false, ENV:false */
+    /* global SceneFrame:false, Examples:false, ENV:false */
 
     // ---global functions not yet namespaced
     /* global setFileAndCommentsSize:false */
 
     // ---external global dependencies
     /* global Promise:false, d3:false */
-    var plots = Plotly.Plots = {};
+
+    var plots = {};
 
     // Most of the generic plotting functions get put into Plotly.Plots,
     // but some - the ones we want 3rd-party developers to use - go directly

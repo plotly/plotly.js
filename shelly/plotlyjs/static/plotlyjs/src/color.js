@@ -12,13 +12,10 @@
     // `Plotly` is `window.Plotly`
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global tinycolor:false */
 
-    var color = Plotly.Color = {};
+    var color = {};
 
     // IMPORTANT - default colors should be in hex for grid.js
     color.defaults = [
