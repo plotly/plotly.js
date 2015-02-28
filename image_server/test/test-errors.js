@@ -2,6 +2,7 @@
 
 var test = require('tape');
 var request = require('request');
+var getOptions = require('./tools/get-options');
 var fs = require('fs');
 
 if (!fs.existsSync('./test-images')) fs.mkdirSync('./test-images');
@@ -33,40 +34,7 @@ test('request nonsense format: should return error 400', function (t) {
 
 });
 
-test('request huge image: should return error 413', function (t) {
-    t.plan(2);
-
-    var hugeArray = [];
-    for (var i = 0; i < 200001; i ++) {
-        hugeArray[i] = 1;
-    }
-
-    var bodyMock = {
-        'figure': {
-            'data': [
-                {
-                    'x': hugeArray,
-                    'y': hugeArray
-                }
-            ]
-        },
-        'format': 'svg'
-    };
-
-    var options = getOptions(bodyMock);
-
-    request(options, function (err, res) {
-        if (err) return console.error(err);
-        t.equal(res.statusCode, 413, 'Server correctly handles large image error');
-        var errMsg = 'Request Entity Too Large';
-        t.equal(res.body, errMsg, 'error message matches');
-        t.end();
-    });
-
-
-});
-
-test('test bad figure, should get error 460: bad figure', function (t) {
+test('test bad figure, should get error 422', function (t) {
     t.plan(2);
 
     var bodyMock = {
@@ -88,7 +56,7 @@ test('test bad figure, should get error 460: bad figure', function (t) {
 
 });
 
-test('test bad figure, should get error 460: bad figure not an object', function (t) {
+test('test bad figure, should get error 422', function (t) {
     t.plan(2);
 
     var bodyMock = {
@@ -114,8 +82,8 @@ test('test bad figure, should get error 460: bad figure not an object', function
 
 });
 
-test('test bad figure, should get error 534: bad user json', function (t) {
-    t.plan(1);
+test('test including wrong data in plotly.js figure. should 525: plotly.js error', function (t) {
+    t.plan(2);
 
     var bodyMock = {
         'figure' : {
@@ -135,28 +103,10 @@ test('test bad figure, should get error 534: bad user json', function (t) {
 
     request(options, function (err, res) {
         if (err) return console.error(err);
-        t.equal(res.statusCode, 500, 'Server handled bad json');
+        t.equal(res.statusCode, 525, 'plotlyjs handled bad json as expected');
+        t.equal(res.body, 'plotlyjs error', 'error message matches');
         t.end();
     });
 
 
 });
-
-
-
-/*
-*   Give it a json object for the body,
-*   it'll return an options object ready
-*   for request().
-*/
-function getOptions (body, url) {
-
-    var opts = {
-        url: url || 'http://localhost:9010/',
-        method: 'POST'
-    };
-
-    if (body) opts.body = JSON.stringify(body);
-
-    return opts;
-}

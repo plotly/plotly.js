@@ -15,7 +15,7 @@
         version: "0.2.2"
     };
 
-    var µ = Plotly.micropolar = micropolar;
+    var µ = micropolar;
 
     µ.Axis = function module() {
         var config = {

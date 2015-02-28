@@ -13,13 +13,10 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var boxes = Plotly.Boxes = {};
+    var boxes = {};
 
     // For coerce-level coupling
     var scatterAttrs = Plotly.Scatter.attributes,
@@ -482,7 +479,7 @@
                         d3.select(this).attr('d',
                             'M'+m+','+pos0+'V'+pos1+ // median line
                             'M'+q1+','+pos0+'V'+pos1+'H'+q3+'V'+pos0+'Z'+ // box
-                            'M'+q1+','+posc+','+'H'+lf+'M'+q3+','+posc+'H'+uf+ // whiskers
+                            'M'+q1+','+posc+'H'+lf+'M'+q3+','+posc+'H'+uf+ // whiskers
                             ((trace.whiskerwidth===0) ? '' : // whisker caps
                                 'M'+lf+','+posw0+'V'+posw1+'M'+uf+','+posw0+'V'+posw1));
                     } else {

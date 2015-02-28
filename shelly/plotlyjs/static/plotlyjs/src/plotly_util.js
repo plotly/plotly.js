@@ -11,7 +11,7 @@
     // `exports` is `window`
     // `Plotly` is `window.Plotly`
 
-    var util = Plotly.util = {};
+    var util = {};
 
     // Script Loader
     /////////////////////////////
@@ -531,13 +531,18 @@
     // MathJax
     /////////////////////////////
 
+    function cleanEscapesForTex(s) {
+        return s.replace(/(<|&lt;|&#60;)/g, '\\lt ')
+            .replace(/(>|&gt;|&#62;)/g, '\\gt ');
+    }
+
     util.texToSVG = function(_texString, _config, _callback){
         var randomID = 'math-output-' + Plotly.Lib.randstr([],64);
         var tmpDiv = d3.select('body').append('div')
             .attr({id: randomID})
             .style({visibility: 'hidden', position: 'absolute'})
             .style({'font-size': _config.fontSize + 'px'})
-            .text(_texString);
+            .text(cleanEscapesForTex(_texString));
 
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, tmpDiv.node()], function(){
             var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');

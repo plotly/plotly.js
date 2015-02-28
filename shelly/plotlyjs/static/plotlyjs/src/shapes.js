@@ -13,7 +13,7 @@
 
     'use strict';
 
-    var shapes = Plotly.Shapes = {};
+    var shapes = {};
 
     var scatterLineAttrs = Plotly.Scatter.attributes.line;
 

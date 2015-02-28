@@ -210,7 +210,7 @@
                     fullLayout._paper.select('.nsewdrag'),
                     {pan:'move', zoom:'crosshair'}[val]
                 );
-                Plotly.Fx.supplyDefaults(graphInfo.layout, fullLayout,
+                Plotly.Fx.supplyLayoutDefaults(graphInfo.layout, fullLayout,
                     graphInfo._fullData);
             }
         });
@@ -424,6 +424,5 @@
         };
     };
 
-    return exports.ModeBar = Plotly.ModeBar =ModeBar;
-
+    return ModeBar;
 }));

@@ -16,7 +16,7 @@
     // ---external global dependencies
     /* global d3:false */
 
-    var annotations = Plotly.Annotations = {};
+    var annotations = {};
 
     // centerx is a center of scaling tuned for maximum scalability of
     // the arrowhead ie throughout mag=0.3..3 the head is joined smoothly
