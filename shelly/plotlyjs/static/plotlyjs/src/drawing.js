@@ -985,7 +985,7 @@
         // or a long session could overload on memory
         // by saving boxes for long-gone elements
         if(savedBBoxes.length>=maxSavedBBoxes) {
-            $('[data-bb]').attr('data-bb',null);
+            d3.selectAll('[data-bb]').attr('data-bb', null);
             savedBBoxes = [];
         }
 
@@ -993,7 +993,7 @@
         node.setAttribute('data-bb',savedBBoxes.length);
         savedBBoxes.push(bb);
 
-        return $.extend({}, bb);
+        return Plotly.Lib.extendFlat(bb);
     };
 
     return drawing;

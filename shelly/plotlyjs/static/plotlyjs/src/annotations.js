@@ -752,7 +752,7 @@
                         doneFn: function(dragged) {
                             if(dragged) {
                                 Plotly.relayout(gd, update);
-                                var notesBox = $('.js-notes-box-panel')[0];
+                                var notesBox = document.querySelector('.js-notes-box-panel');
                                 if(notesBox) notesBox.redraw(notesBox.selectedObj);
                             }
                         }
@@ -832,7 +832,7 @@
                         Plotly.Fx.setCursor(ann);
                         if(dragged) {
                             Plotly.relayout(gd, update);
-                            var notesBox = $('.js-notes-box-panel')[0];
+                            var notesBox = document.querySelector('.js-notes-box-panel');
                             if(notesBox) notesBox.redraw(notesBox.selectedObj);
                         }
                     }

@@ -139,7 +139,7 @@
     // css syntax from http://www.colorzilla.com/gradient-editor/
     (function() {
         //only on main site - though later we may expand to embeds
-        if(!$('#plotlyMainMarker').length) return;
+        if(!document.getElementById('plotlyMainMarker')) return;
 
         var style = document.createElement('style');
         // WebKit hack :(

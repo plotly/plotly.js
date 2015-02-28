@@ -2678,20 +2678,20 @@
         else if(gd._context.fillFrame) {
             // embedded in an iframe - just take the full iframe size
             // if we get to this point, with no aspect ratio restrictions
-            newwidth = $(window).width();
-            newheight = $(window).height();
+            newwidth = window.innerWidth;
+            newheight = window.innerHeight;
 
             // somehow we get a few extra px height sometimes...
             // just hide it
-            $('body').css('overflow','hidden');
+            document.body.style.overflow = 'hidden';
         }
         else {
             // plotly.js - let the developers do what they want, either
             // provide height and width for the container div,
             // specify size in layout, or take the defaults,
             // but don't enforce any ratio restrictions
-            newheight = $(gd).height() || fullLayout.height;
-            newwidth = $(gd).width() || fullLayout.width;
+            newheight = gd.style.height || fullLayout.height;
+            newwidth = gd.style.width || fullLayout.width;
         }
 
         if(Math.abs(fullLayout.width - newwidth) > 1 ||
