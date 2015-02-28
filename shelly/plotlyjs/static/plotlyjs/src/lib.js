@@ -16,14 +16,11 @@
     // TODO: can use camelcase after fixing conf_modal and showSources
     /* jshint camelcase: false */
 
-    // ---Plotly global modules
-    /* global Tabs:false */
-
     // ---global functions not yet namespaced
     /* global pullf:false */
 
     // ---external global dependencies
-    /* global d3:false, Spinner:false, tinycolor:false */
+    /* global d3:false, tinycolor:false */
 
     var lib = {};
 
@@ -787,72 +784,6 @@
         if(v0>v1) return Math.max(v1,Math.min(v0,v));
         return Math.max(v0,Math.min(v1,v));
     };
-
-    // -------------------------------------------------------- SPINNERS
-    // allows spinners for multiple reasons on the same parent via spincount
-    // spinner is only removed when spincount goes to zero
-
-    // kill a spinner
-    lib.killspin = function(parent){
-        if(parent===undefined && typeof Tabs!=='undefined'){
-            parent=Tabs.get();
-        }
-        if(!parent || !parent.spinner) {
-            // something is wrong - kill all spinners
-            $('.spinner').remove();
-            return;
-        }
-        parent.spincount--;
-        if(parent.spincount>0) { return; }
-        parent.spinner.stop();
-        // in case something weird happened and we had several spinners
-        $(parent).find('.spinner').remove();
-    };
-
-    // start the main spinner
-    lib.startspin = function(parent,spinsize,options){
-        if(parent===undefined && typeof Tabs!=='undefined'){
-            parent=Tabs.get();
-        }
-        options = options || {};
-        if((typeof parent.spincount === 'number') && parent.spincount>0) {
-            parent.spincount++;
-        } else {
-            parent.spincount=1;
-            // big spinny
-            var opts = {
-                lines: 17, // The number of lines to draw
-                length: 30, // The length of each line _30
-                width: 6, // The line thickness
-                radius: 37, // The radius of the inner circle
-                corners: 1, // Corner roundness (0..1)
-                rotate: 0, // The rotation offset
-                direction: 1, // 1: clockwise, -1: counterclockwise
-                color: '#000', // #rgb or #rrggbb
-                speed: 1, // Rounds per second
-                trail: 60, // Afterglow percentage
-                shadow: false, // Whether to render a shadow
-                hwaccel: false, // Whether to use hardware acceleration
-                className: 'spinner', // The CSS class to assign to the spinner
-                zIndex: 2e9, // The z-index (defaults to 2000000000)
-                top: 'auto', // Top position relative to parent in px
-                left: 'auto' // Left position relative to parent in px
-            };
-            // modify for tiny spinny
-            if(spinsize==='tiny') {
-                opts.lines = 13;
-                opts.length = 5;
-                opts.width = 2;
-                opts.radius = 5;
-                opts.corners = 0.6;
-            }
-            // apply optional options
-            opts = $.extend({}, opts, options);
-            var spinner=new Spinner(opts).spin(parent);
-            parent.spinner=spinner;
-        }
-    };
-
 
     /**
      * notifier
