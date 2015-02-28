@@ -873,10 +873,6 @@
         return (n>=0 && n<=9 ? CARDINALS[n] : n);
     };
 
-    lib.plotlyurl = function(page){
-        return window.location.origin+'/'+page;
-    };
-
     // random string generator
     lib.randstr = function randstr(existing, bits, base) {
         /*
