@@ -716,7 +716,8 @@
     // Editable title
     /////////////////////////////
 
-    util.makeEditable = function(context, _delegate){
+    util.makeEditable = function(context, _delegate, options){
+        if(!options) options = {};
         var that = this;
         var dispatch = d3.dispatch('edit', 'input', 'cancel');
         var textSelection = d3.select(this.node())
@@ -726,18 +727,18 @@
         var handlerElement = _delegate || textSelection;
         if(_delegate) textSelection.style({'pointer-events': 'none'});
 
-        handlerElement.on('click', function(){
+        function handleClick(){
             appendEditable();
             that.style({opacity: 0});
             // also hide any mathjax svg
-            var svgClass = d3.select(this).attr('class'),
+            var svgClass = handlerElement.attr('class'),
                 mathjaxClass;
             if(svgClass) mathjaxClass = '.' + svgClass.split(' ')[0] + '-math-group';
             else mathjaxClass = '[class*=-math-group]';
             if(mathjaxClass) {
                 d3.select(that.node().parentNode).select(mathjaxClass).style({opacity: 0});
             }
-        });
+        }
 
         function selectElementContents(_el) {
             var el = _el.node();
@@ -755,16 +756,16 @@
                     position: 'absolute',
                     'font-family': that.style('font-family') || 'Arial',
                     'font-size': that.style('font-size') || 12,
-                    color: that.style('fill') || 'black',
+                    color: options.fill || that.style('fill') || 'black',
                     opacity: 1,
-                    'background-color': 'transparent',
+                    'background-color': options.background || 'transparent',
                     outline: '#ffffff33 1px solid',
                     margin: [-parseFloat(that.style('font-size'))/8+1, 0, 0, -1].join('px ') + 'px',
                     padding: '0',
                     'box-sizing': 'border-box'
                 })
                 .attr({contenteditable: true})
-                .text(that.attr('data-unformatted'))
+                .text(options.text || that.attr('data-unformatted'))
                 .call(Plotly.util.alignHTMLWith(that))
                 .on('blur', function(){
                     that.text(this.textContent)
@@ -806,8 +807,11 @@
                     if(d3.event.which === 13) this.blur();
                 })
                 .call(selectElementContents);
-
         }
+
+        if(options.immediate) handleClick();
+        else handlerElement.on('click', handleClick);
+
         return d3.rebind(this, dispatch, 'on');
     };
 
