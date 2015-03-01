@@ -1163,17 +1163,6 @@
     };
 
     /*
-     * purgeStreams
-     * @UTILITY
-     * remove stream properties from data objects
-     */
-    lib.purgeStream = function purgeStream (dobj) {
-        var data = dobj.data;
-        if (!(data && data.length)) { return; }
-        data.forEach(function (d) { delete d.stream; });
-    };
-
-    /*
      * Dropdown Selector
      *
      * A basic JQUERY + bootstrap implementation
