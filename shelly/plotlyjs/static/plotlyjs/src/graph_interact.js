@@ -296,7 +296,7 @@
             hovermode = evt.hovermode || fullLayout.hovermode;
 
         if(['x','y','closest'].indexOf(hovermode)===-1 || !gd.calcdata ||
-                $(gd).find('.zoombox').length || gd._dragging) {
+                gd.querySelector('.zoombox') || gd._dragging) {
             return unhover(gd, evt);
         }
 
@@ -1222,9 +1222,9 @@
             });
 
             if(fullLayout._privateplot) {
-                $(modebar.element).append(
-                    '<span class="badge-private float--left">PRIVATE</span>'
-                );
+                d3.select(modebar.element).append('span')
+                    .classed('badge-private float--left', true)
+                    .text('PRIVATE');
             }
 
             return modebar;
