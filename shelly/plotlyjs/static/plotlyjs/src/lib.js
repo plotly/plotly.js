@@ -930,10 +930,11 @@
     };
 
     lib.getSources = function(td) {
-        var fid = lib.fullFid(td.fid);
         var extrarefs = (td.ref_fids||[]).join(',');
-        if(!fid && !extrarefs) { return; }
-        $.get('/getsources', {fid:fid, extrarefs:extrarefs}, function(res) {
+        if(!td.fid && !extrarefs) return;
+        if(!window.ENV || !window.ENV.DOMAIN_WEBAPP) return;
+
+        $.get('/getsources', {fid: td.fid, extrarefs:extrarefs}, function(res) {
             td.sourcelist = JSON.parse(res);
             if(!Array.isArray(td.sourcelist)) {
                 console.log('sourcelist error',td.sourcelist);
@@ -941,17 +942,6 @@
             }
             lib.showSources(td);
         });
-    };
-
-    // fullfid - include the username in fid whether it was there or not
-    // also strip out backslash if one was there for selectability
-    // and turn tree roots into -1
-    lib.fullFid = function(fid) {
-        if (typeof fid === 'number') { fid = String(fid); }
-        if (typeof fid !== 'string' || fid==='') { return ''; }
-        if (fid.substr(fid.length-4)==='tree') { return '-1'; }
-        return ($.isNumeric(fid) && window.user ?
-            (window.user+':'+fid) : fid).replace('\\:',':');
     };
 
     lib.showSources = function(td) {
