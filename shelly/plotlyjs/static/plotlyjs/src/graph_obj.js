@@ -178,12 +178,6 @@
             }
         }
 
-        // TODO: get rid of this - don't use gd.<attribute>, only gd._context.<attribute>
-        Object.keys(plots.defaultConfig).forEach( function (key) {
-            if (config && key in config) gd[key] = config[key];
-            else gd[key] = plots.defaultConfig[key];
-        });
-
         //staticPlot forces a bunch of others:
         if(context.staticPlot) {
             context.workspace = false;
@@ -226,11 +220,11 @@
         if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
             // Align the text at the left
             attrs['text-anchor'] = 'start';
-            attrs['x'] = 5;
+            attrs.x = 5;
         } else {
             // Align the text at the right
             attrs['text-anchor'] = 'end';
-            attrs['x'] = fullLayout._paper.attr('width') - 7;
+            attrs.x = fullLayout._paper.attr('width') - 7;
         }
 
         linkContainer.attr(attrs);
