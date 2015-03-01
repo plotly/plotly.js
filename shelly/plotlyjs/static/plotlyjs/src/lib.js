@@ -1119,60 +1119,6 @@
             sourceObj = makeSourceObj({}, null);
     };
 
-    /*
-     * Dropdown Selector
-     *
-     * A basic JQUERY + bootstrap implementation
-     * Pass in a specification object with:
-     * {
-     *   items: array of items
-     *   callback: an optional callback to be called on item selection:
-     *       cb(item, itemindex)
-     *   defaults: An array index of the item to initialize with, defaults to 0
-     * }
-     */
-    lib.dropdownSelector = function dropdownSelector (spec) {
-        // return the select control for mixed types
-
-        var items = spec.items;
-        spec.defaults = spec.defaults || 0;
-        var cls = spec.cls || '';
-        // http://getbootstrap.com/2.3.2/javascript.html#dropdowns
-        var $html = $('<div class="dropdown '+ cls +'">'+
-                '<a class="link--default link--blocky '+
-                        'dropdown-toggle--fixed-width js-dropdown-text" '+
-                        'data-toggle="dropdown" data-target="#" href="/">'+
-                     '<span class="caret user-caret"></span>'+
-                '</a>'+
-                    '<ul class="dropdown-menu dropdown-toggle--fixed-width" '+
-                        'role="menu"></ul>'+
-            '</div>');
-
-        var $ul = $html.find('ul'),
-            ul3 = d3.select($ul[0]),
-            $aShow = $html.find('.js-dropdown-text')
-                .html('<span class="js-selected-val"></span>' +
-                    '<span class="caret user-caret"></span>'),
-            spanSelected = d3.select($aShow[0]).select('.js-selected-val');
-
-        var listItems = ul3.selectAll('li').data(items)
-            .enter()
-            .append('li')
-            .on('click', function(item, i) {
-                spanSelected.text(Plotly.util.plainText(item));
-                if(spec.callback) spec.callback(item, i);
-            });
-        listItems.append('a')
-            .attr('href', '#')
-            .text(Plotly.util.plainText);
-
-        listItems.each(function(d, i) {
-            if(i===spec.defaults) $(this).click();
-        });
-
-        return $html;
-    };
-
     // helpers for promises
 
     // promiseError: log errors properly inside promises
