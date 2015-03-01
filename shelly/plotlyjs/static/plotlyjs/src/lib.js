@@ -1536,20 +1536,6 @@
         return objOut;
     };
 
-    // Escapes special characters in the HTML string, suitable for inserting
-    // into a document.  NOT suitable for use in attributes.
-    // Safe: document.write('<div>' + Plotly.Lib.escapeForHtml(str) + '</div>');
-    // UNSAFE: document.write('<a href="'+ Plotly.Lib.escapeForHtml(str) + '">');
-    lib.escapeForHtml = function(html) {
-        return String(html)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;')
-            .replace(/\//g, '&#x2f;');
-    };
-
     lib.titleCase = function(s) {
         return s.charAt(0).toUpperCase() + s.substr(1);
     };
