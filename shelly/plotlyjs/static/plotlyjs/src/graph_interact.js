@@ -422,7 +422,7 @@
                 // point properties - override all of these
                 index: false, // point index in trace - only used by plotly.js hoverdata consumers
                 distance: Math.min(distance, fx.MAXDIST), // pixel distance or pseudo-distance
-                color: '#444', // trace color
+                color: Plotly.Color.defaultLine, // trace color
                 x0: undefined,
                 x1: undefined,
                 y0: undefined,
@@ -670,7 +670,7 @@
         //      a dom <svg> element - must be big enough to contain the whole
         //      hover label
         var pointData = {
-            color: hoverItem.color || '#444',
+            color: hoverItem.color || Plotly.Color.defaultLine,
             x0: hoverItem.x0 || hoverItem.x || 0,
             x1: hoverItem.x1 || hoverItem.x || 0,
             y0: hoverItem.y0 || hoverItem.y || 0,
@@ -693,7 +693,7 @@
         var fullOpts = {
             hovermode: 'closest',
             rotateLabels: false,
-            bgColor: opts.bgColor || '#fff',
+            bgColor: opts.bgColor || Plotly.Color.background,
             container: container3,
             outerContainer: container3
         };
@@ -740,9 +740,9 @@
                 ltext = label.selectAll('text').data([0]);
 
             lpath.enter().append('path')
-                .style({fill: '#444', 'stroke-width': '1px', stroke: '#fff'});
+                .style({fill: Plotly.Color.defaultLine, 'stroke-width': '1px', stroke: Plotly.Color.background});
             ltext.enter().append('text')
-                .call(Plotly.Drawing.font, HOVERFONT, HOVERFONTSIZE, '#fff')
+                .call(Plotly.Drawing.font, HOVERFONT, HOVERFONTSIZE, Plotly.Color.background)
                 // prohibit tex interpretation until we can handle
                 // tex and regular text together
                 .attr('data-notex',1);
@@ -838,7 +838,7 @@
                 name = (d.name && d.zLabelVal===undefined) ?
                     $('<p>'+d.name+'</p>').text() : '',
                 // combine possible non-opaque trace color with bgColor
-                traceColor = combineColors(Plotly.Color.opacity(d.color) ? d.color : '#444', bgColor),
+                traceColor = combineColors(Plotly.Color.opacity(d.color) ? d.color : Plotly.Color.defaultLine, bgColor),
                 traceRGB = tinycolor(traceColor).toRgb(),
 
                 // find a contrasting color for border and text
@@ -846,7 +846,7 @@
                 //      formula-to-determine-brightness-of-rgb-color
                 contrastColor =
                     (0.299*traceRGB.r + 0.587*traceRGB.g + 0.114*traceRGB.b)>128 ?
-                    '#000' : '#FFF',
+                    '#000' : Plotly.Color.background,
                 text = '';
 
 
@@ -1375,8 +1375,8 @@
             corners = plotinfo.plot.append('path')
                 .attr('class', 'zoombox-corners')
                 .style({
-                    fill: '#FFF',
-                    stroke: '#444',
+                    fill: Plotly.Color.background,
+                    stroke: Plotly.Color.defaultLine,
                     'stroke-width': 1,
                     opacity: 0
                 })
@@ -2079,7 +2079,7 @@
     // if back has transparency or is missing, white is assumed behind it
     function combineColors(front,back){
         var fc = tinycolor(front).toRgb(),
-            bc = tinycolor(back||'#FFF').toRgb();
+            bc = tinycolor(back||Plotly.Color.background).toRgb();
         if(fc.a===1) return tinycolor(front).toRgbString();
 
         var bcflat = bc.a===1 ? bc : {
