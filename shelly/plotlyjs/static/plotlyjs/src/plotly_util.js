@@ -442,7 +442,7 @@
         parent.selectAll('g.' + svgClass + '-group').remove();
         _context.style({visibility: null});
         // for Plotly.Drawing.bBox: unlink text and all parents from its cached box
-        for(var up = _context.node(); up && up !== document; up = up.parentNode) {
+        for(var up = _context.node(); up && up.removeAttribute; up = up.parentNode) {
             up.removeAttribute('data-bb');
         }
 

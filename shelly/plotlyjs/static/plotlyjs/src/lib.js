@@ -1550,7 +1550,7 @@
     // get the parent Plotly plot of any element
     // whoo jquery-free tree climbing!
     lib.getPlotDiv = function(el) {
-        for(; el && el !== document; el = el.parentNode) {
+        for(; el && el.removeAttribute; el = el.parentNode) {
             if(lib.isPlotDiv(el)) return el;
         }
     };
