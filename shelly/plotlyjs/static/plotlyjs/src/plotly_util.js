@@ -440,10 +440,11 @@
         svgClass += '-math';
         parent.selectAll('svg.' + svgClass).remove();
         parent.selectAll('g.' + svgClass + '-group').remove();
-        _context.style({visibility: null})
-            // for Plotly.Drawing.bBox: unlink this txt from its cached val
-            .attr('data-bb',null);
-        $(_context.node()).parents().attr('data-bb', null);
+        _context.style({visibility: null});
+        // for Plotly.Drawing.bBox: unlink text and all parents from its cached box
+        for(var up = _context.node(); up && up !== document; up = up.parentNode) {
+            up.removeAttribute('data-bb');
+        }
 
         function showText() {
             if(!parent.empty()){
