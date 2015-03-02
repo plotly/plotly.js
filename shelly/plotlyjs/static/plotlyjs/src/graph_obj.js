@@ -178,12 +178,6 @@
             }
         }
 
-        // TODO: get rid of this - don't use gd.<attribute>, only gd._context.<attribute>
-        Object.keys(plots.defaultConfig).forEach( function (key) {
-            if (config && key in config) gd[key] = config[key];
-            else gd[key] = plots.defaultConfig[key];
-        });
-
         //staticPlot forces a bunch of others:
         if(context.staticPlot) {
             context.workspace = false;
@@ -226,11 +220,11 @@
         if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
             // Align the text at the left
             attrs['text-anchor'] = 'start';
-            attrs['x'] = 5;
+            attrs.x = 5;
         } else {
             // Align the text at the right
             attrs['text-anchor'] = 'end';
-            attrs['x'] = fullLayout._paper.attr('width') - 7;
+            attrs.x = fullLayout._paper.attr('width') - 7;
         }
 
         linkContainer.attr(attrs);
@@ -340,7 +334,7 @@
 
         // if there's no data or layout, and this isn't yet a plotly plot
         // container, log a warning to help plotly.js users debug
-        if(!data && !layout && !d3.select(gd).classed('js-plotly-plot')) {
+        if(!data && !layout && !Plotly.Lib.isPlotDiv(gd)) {
             console.log('Warning: calling Plotly.plot as if redrawing ' +
                 'but this container doesn\'t yet have a plot.', gd);
         }
@@ -368,8 +362,8 @@
 
         // if there is already data on the graph, append the new data
         // if you only want to redraw, pass a non-array for data
-        var graphwasempty = ((gd.data||[]).length===0 && $.isArray(data));
-        if($.isArray(data)) {
+        var graphwasempty = ((gd.data||[]).length===0 && Array.isArray(data));
+        if(Array.isArray(data)) {
             cleanData(data, gd.data);
 
             if(graphwasempty) gd.data=data;
@@ -910,7 +904,7 @@
          * Enforce unique IDs
          */
         var suids = [], // seen uids --- so we can weed out incoming repeats
-            uids = data.concat($.isArray(existingData) ? existingData : [])
+            uids = data.concat(Array.isArray(existingData) ? existingData : [])
                    .filter( function(trace) { return 'uid' in trace; } )
                    .map( function(trace) { return trace.uid; });
 
@@ -1036,7 +1030,7 @@
     Plotly.redraw = function(divid) {
         var gd = (typeof divid === 'string') ?
             document.getElementById(divid) : divid;
-        if(!d3.select(gd).classed('js-plotly-plot')) {
+        if(!Plotly.Lib.isPlotDiv(gd)) {
             console.log('This element is not a Plotly Plot', divid, gd);
             return;
         }
@@ -1509,7 +1503,7 @@
             // make sure there is a first point
             // this ensures there is a calcdata item for every trace,
             // even if cartesian logic doesn't handle it
-            if(!$.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
+            if(!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
 
             // add the trace-wide properties to the first point,
             // per point properties to every point
@@ -1920,7 +1914,7 @@
         if(Object.keys(aobj).length) gd.changed = true;
 
         if($.isNumeric(traces)) traces=[traces];
-        else if(!$.isArray(traces) || !traces.length) {
+        else if(!Array.isArray(traces) || !traces.length) {
             traces=gd._fullData.map(function(v,i){ return i; });
         }
 
@@ -2017,7 +2011,7 @@
         // val=undefined will not set a value, just record what the value was.
         // attr can be an array to set several at once (all to the same val)
         function doextra(cont,attr,val,i) {
-            if($.isArray(attr)) {
+            if(Array.isArray(attr)) {
                 attr.forEach(function(a){ doextra(cont,a,val,i); });
                 return;
             }
@@ -2053,7 +2047,7 @@
                 undoit[ai] = [param.get()];
                 // since we're allowing val to be an array, allow it here too,
                 // even though that's meaningless
-                param.set($.isArray(vi) ? vi[0] : vi);
+                param.set(Array.isArray(vi) ? vi[0] : vi);
                 // ironically, the layout attrs in restyle only require replot,
                 // not relayout
                 docalc = true;
@@ -2140,7 +2134,7 @@
                     // setting an orientation: make sure it's changing
                     // before we swap everything else
                     if(ai==='orientation') {
-                        param.set($.isArray(vi) ? vi[i%vi.length] : vi);
+                        param.set(Array.isArray(vi) ? vi[i%vi.length] : vi);
                         if(param.get()===undoit[ai][i]) continue;
                     }
                     // orientationaxes has no value,
@@ -2152,7 +2146,7 @@
                     swapXYData(cont);
                 }
                 // all the other ones, just modify that one attribute
-                else param.set($.isArray(vi) ? vi[i%vi.length] : vi);
+                else param.set(Array.isArray(vi) ? vi[i%vi.length] : vi);
 
             }
 
@@ -2286,7 +2280,7 @@
     function swapXYData(trace) {
         var i;
         Plotly.Lib.swapXYAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
-        if($.isArray(trace.z) && $.isArray(trace.z[0])) {
+        if(Array.isArray(trace.z) && Array.isArray(trace.z[0])) {
             if(trace.transpose) delete trace.transpose;
             else trace.transpose = true;
         }
@@ -2380,7 +2374,7 @@
         // val=undefined will not set a value, just record what the value was.
         // attr can be an array to set several at once (all to the same val)
         function doextra(attr,val) {
-            if($.isArray(attr)) {
+            if(Array.isArray(attr)) {
                 attr.forEach(function(a) { doextra(a,val); });
                 return;
             }
@@ -2678,20 +2672,20 @@
         else if(gd._context.fillFrame) {
             // embedded in an iframe - just take the full iframe size
             // if we get to this point, with no aspect ratio restrictions
-            newwidth = $(window).width();
-            newheight = $(window).height();
+            newwidth = window.innerWidth;
+            newheight = window.innerHeight;
 
             // somehow we get a few extra px height sometimes...
             // just hide it
-            $('body').css('overflow','hidden');
+            document.body.style.overflow = 'hidden';
         }
         else {
             // plotly.js - let the developers do what they want, either
             // provide height and width for the container div,
             // specify size in layout, or take the defaults,
             // but don't enforce any ratio restrictions
-            newheight = $(gd).height() || fullLayout.height;
-            newwidth = $(gd).width() || fullLayout.width;
+            newheight = parseFloat(window.getComputedStyle(gd).height) || fullLayout.height;
+            newwidth = parseFloat(window.getComputedStyle(gd).width) || fullLayout.width;
         }
 
         if(Math.abs(fullLayout.width - newwidth) > 1 ||
@@ -3585,7 +3579,7 @@
                 return o;
             }
 
-            if($.isArray(d)) {
+            if(Array.isArray(d)) {
                 return d.map(stripObj);
             }
 

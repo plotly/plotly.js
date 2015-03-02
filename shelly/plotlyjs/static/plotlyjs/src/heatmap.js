@@ -289,7 +289,7 @@
 
     function makeBoundArray(type, arrayIn, v0In, dvIn, numbricks, ax) {
         var arrayOut = [], v0, dv, i;
-        if($.isArray(arrayIn) && (!Plotly.Plots.isHist2D(type)) && (ax.type!=='category')) {
+        if(Array.isArray(arrayIn) && (!Plotly.Plots.isHist2D(type)) && (ax.type!=='category')) {
             arrayIn = arrayIn.map(ax.d2c);
             var len = arrayIn.length;
 
