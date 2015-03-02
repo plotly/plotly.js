@@ -334,7 +334,7 @@
 
         // if there's no data or layout, and this isn't yet a plotly plot
         // container, log a warning to help plotly.js users debug
-        if(!data && !layout && !d3.select(gd).classed('js-plotly-plot')) {
+        if(!data && !layout && !Plotly.Lib.isPlotDiv(gd)) {
             console.log('Warning: calling Plotly.plot as if redrawing ' +
                 'but this container doesn\'t yet have a plot.', gd);
         }
@@ -1030,7 +1030,7 @@
     Plotly.redraw = function(divid) {
         var gd = (typeof divid === 'string') ?
             document.getElementById(divid) : divid;
-        if(!d3.select(gd).classed('js-plotly-plot')) {
+        if(!Plotly.Lib.isPlotDiv(gd)) {
             console.log('This element is not a Plotly Plot', divid, gd);
             return;
         }

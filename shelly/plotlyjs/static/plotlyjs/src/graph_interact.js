@@ -1849,7 +1849,7 @@
      *          a doubleclick time
      */
     fx.dragElement = function(options) {
-        var gd = $(options.element).parents('.js-plotly-plot')[0] || {},
+        var gd = Plotly.Lib.getPlotDiv(options.element) || {},
             numClicks = 1,
             startX,
             startY,

@@ -970,7 +970,7 @@
         });
 
         var fidparts = String(firstsource.ref_fid).split(':'),
-            isplot = $(td).hasClass('js-plotly-plot'),
+            isplot = lib.isPlotDiv(td),
             workspace = !isplot || td._context.workspace,
             mainlink,
             extraslink;
@@ -1545,6 +1545,18 @@
             if(s.indexOf(fragments[i])!== -1) return true;
         }
         return false;
+    };
+
+    // get the parent Plotly plot of any element
+    // whoo jquery-free tree climbing!
+    lib.getPlotDiv = function(el) {
+        for(; el && el !== document; el = el.parentNode) {
+            if(lib.isPlotDiv(el)) return el;
+        }
+    };
+
+    lib.isPlotDiv = function(el) {
+        return el.classList.contains('js-plotly-plot');
     };
 
     return lib;

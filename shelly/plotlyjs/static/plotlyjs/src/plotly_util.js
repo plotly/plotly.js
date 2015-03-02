@@ -11,6 +11,10 @@
     // `exports` is `window`
     // `Plotly` is `window.Plotly`
 
+    'use strict';
+    // ---external global dependencies
+    /* global d3:false, MathJax:false */
+
     var util = {};
 
     // Script Loader
@@ -455,7 +459,7 @@
         }
 
         if(tex){
-            var td = $(that.node()).parents('.js-plotly-plot')[0];
+            var td = Plotly.Lib.getPlotDiv(that.node());
             ((td && td._promises)||[]).push(new Promise(function(resolve) {
                 that.style({visibility: 'hidden'});
                 var config = {fontSize: parseInt(that.style('font-size'), 10)};
@@ -485,7 +489,7 @@
                     newSvg.attr({
                             'class': svgClass,
                             height: _svgBBox.height,
-                            preserveAspectRatio: 'xMinYMin meet',
+                            preserveAspectRatio: 'xMinYMin meet'
                         })
                         .style({overflow: 'visible', 'pointer-events': 'none'});
                     var fill = that.style('fill') || 'black';
