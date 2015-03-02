@@ -27,7 +27,7 @@
         bgcolor: {type: 'color'},
         bordercolor: {
             type: 'color',
-            dflt: '#444'
+            dflt: Plotly.Color.defaultLine
         },
         borderwidth: {
             type: 'number',

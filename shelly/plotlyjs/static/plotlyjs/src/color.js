@@ -31,6 +31,10 @@
         '#17becf' // blue-teal
     ];
 
+    color.defaultLine = '#444';
+    color.lightLine = '#eee';
+    color.background = '#fff';
+
     color.scales = {
         'Greys':[[0,'rgb(0,0,0)'],[1,'rgb(255,255,255)']],
 

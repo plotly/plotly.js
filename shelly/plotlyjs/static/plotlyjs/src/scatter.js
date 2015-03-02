@@ -313,7 +313,7 @@
             return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
         }
 
-        var isBubble = $.isArray((traceIn.marker||{}).size),
+        var isBubble = scatter.isBubble(traceIn),
             lineColor = (traceIn.line||{}).color,
             defaultMLC;
         if(lineColor) defaultColor = lineColor;
@@ -331,8 +331,8 @@
         if(lineColor && traceOut.marker.color!==lineColor) {
             defaultMLC = lineColor;
         }
-        else if(isBubble) defaultMLC = '#fff';
-        else defaultMLC = '#444';
+        else if(isBubble) defaultMLC = Plotly.Color.background;
+        else defaultMLC = Plotly.Color.defaultLine;
         scatter.colorScalableDefaults('marker.line.', coerce, defaultMLC);
 
         coerce('marker.line.width', isBubble ? 1 : 0);
@@ -353,7 +353,11 @@
                 prefix + 'cmin'
             ];
 
-        if($.isArray(colorVal)) attrs.forEach(coerce);
+        if(Array.isArray(colorVal)) {
+            for (var i = 0; i < attrs.length; i++) {
+                coerce(attrs[i]);
+            }
+        }
     };
 
     scatter.cleanData = function(fullData) {
@@ -397,6 +401,11 @@
     scatter.hasText = function(trace) {
         return trace.visible && trace.mode &&
             trace.mode.indexOf('text') !== -1;
+    };
+
+    scatter.isBubble = function(trace) {
+        return (typeof trace.marker === 'object' &&
+                    Array.isArray(trace.marker.size))
     };
 
     scatter.calc = function(gd,trace) {

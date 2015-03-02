@@ -75,7 +75,7 @@
                               {arrayOk: false}),
             line: {
                 color: extendFlat(scatterMarkerLineAttrs.color,
-                                  {arrayOk: false, dflt: '#444'}),
+                                  {arrayOk: false, dflt: Plotly.Color.defaultLine}),
                 width: extendFlat(scatterMarkerLineAttrs.width,
                                   {arrayOk: false, dflt: 0}),
                 outliercolor: {
