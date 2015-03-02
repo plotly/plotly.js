@@ -14,13 +14,10 @@
     'use strict';
     /* jshint camelcase: false */
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var legend = Plotly.Legend = {};
+    var legend = {};
     // -----------------------------------------------------
     // styling functions for traces in legends.
     // same functions for styling traces in the style box
@@ -30,7 +27,7 @@
         bgcolor: {type: 'color'},
         bordercolor: {
             type: 'color',
-            dflt: '#444'
+            dflt: Plotly.Color.defaultLine
         },
         borderwidth: {
             type: 'number',
