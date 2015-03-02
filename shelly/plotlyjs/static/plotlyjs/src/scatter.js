@@ -416,7 +416,9 @@
         Plotly.Lib.markTime('finished convert x');
         var y = ya.makeCalcdata(trace,'y');
         Plotly.Lib.markTime('finished convert y');
-        var serieslen = Math.min(x.length,y.length);
+        var serieslen = Math.min(x.length,y.length),
+            s,
+            i;
 
         // cancel minimum tick spacings (only applies to bars and boxes)
         xa._minDtick = 0;
@@ -434,7 +436,7 @@
 
             // Treat size like x or y arrays --- Run d2c
             // this needs to go before ppad computation
-            var s = trace.marker.size;
+            s = trace.marker.size;
             if (Array.isArray(s)) {
                 // I tried auto-type but category and dates dont make much sense.
                 var ax = {type: 'linear'};
@@ -496,10 +498,10 @@
         Plotly.Lib.markTime('done expand y');
 
         // create the "calculated data" to plot
-        var cd = [];
-        for(var i=0; i<serieslen; i++) {
-            cd.push(($.isNumeric(x[i]) && $.isNumeric(y[i])) ?
-                {x:x[i],y:y[i]} : {x:false, y:false});
+        var cd = new Array(serieslen);
+        for(i = 0; i < serieslen; i++) {
+            cd[i] = ($.isNumeric(x[i]) && $.isNumeric(y[i])) ?
+                {x: x[i], y: y[i]} : {x: false, y: false};
         }
 
         // this has migrated up from arraysToCalcdata as we have a reference to 's' here
