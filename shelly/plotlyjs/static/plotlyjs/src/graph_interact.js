@@ -1510,14 +1510,24 @@
                 var ax = ns ? ya[0] : xa[0],
                     end = (ns==='s' || ew==='w') ? 0 : 1,
                     attrStr = ax._name + '.range[' + end + ']',
-                    initialText = getEndText(ax, end);
+                    initialText = getEndText(ax, end),
+                    hAlign = 'left',
+                    vAlign = 'middle';
+
+                if(ns) {
+                    vAlign = (ns === 'n') ? 'top' : 'bottom';
+                    if(ax.side === 'right') hAlign = 'right';
+                }
+                else if(ew === 'e') hAlign = 'right';
 
                 d3.select(dragger)
                     .call(Plotly.util.makeEditable, null, {
                         immediate: true,
                         background: fullLayout.paper_bgcolor,
                         text: String(initialText),
-                        fill: ax.tickfont ? ax.tickfont.color : '#444'
+                        fill: ax.tickfont ? ax.tickfont.color : '#444',
+                        horizontalAlign: hAlign,
+                        verticalAlign: vAlign
                     })
                     .on('edit', function(text) {
                         var v = ax.type==='category' ? ax.c2l(text) : ax.d2l(text);

@@ -694,23 +694,36 @@
         };
     };
 
-    util.alignHTMLWith = function (_base){
-        return function(){
-            var bRect = _base.node().getBoundingClientRect();
-            this.style({
-                top: bRect.top + 'px',
-                left: bRect.left + 'px',
-                'z-index': 1000
-            });
-            return this;
-        };
-    };
+    util.alignHTMLWith = function (_base, container, options){
+        var alignH = options.horizontalAlign,
+            alignV = options.verticalAlign || 'top',
+            bRect = _base.node().getBoundingClientRect(),
+            cRect = container.node().getBoundingClientRect(),
+            thisRect,
+            getTop,
+            getLeft;
 
-    util.alignHTMLWith2 = function (_base){
+        if(alignV === 'bottom') {
+            getTop = function() { return bRect.bottom - thisRect.height; };
+        } else if(alignV === 'middle') {
+            getTop = function() { return bRect.top + (bRect.height - thisRect.height) / 2; };
+        } else { // default: top
+            getTop = function() { return bRect.top; };
+        }
+
+        if(alignH === 'right') {
+            getLeft = function() { return bRect.right - thisRect.width; };
+        } else if(alignH === 'center') {
+            getLeft = function() { return bRect.left + (bRect.width - thisRect.width) / 2; };
+        } else { // default: left
+            getLeft = function() { return bRect.left; };
+        }
+
         return function(){
-            var bRect = _base.node().getBoundingClientRect();
+            thisRect = this.node().getBoundingClientRect();
             this.style({
-                left: bRect.left + 'px',
+                top: (getTop() - cRect.top) + 'px',
+                left: (getLeft() - cRect.left) + 'px',
                 'z-index': 1000
             });
             return this;
@@ -755,8 +768,11 @@
         }
 
         function appendEditable(){
-            var div = d3.select('body').append('div').classed('plugin-editable editable', true);
-            div.style({
+            var plotDiv = d3.select(Plotly.Lib.getPlotDiv(that.node())),
+                container = plotDiv.select('.svg-container'),
+                div = container.append('div');
+            div.classed('plugin-editable editable', true)
+                .style({
                     position: 'absolute',
                     'font-family': that.style('font-family') || 'Arial',
                     'font-size': that.style('font-size') || 12,
@@ -770,7 +786,7 @@
                 })
                 .attr({contenteditable: true})
                 .text(options.text || that.attr('data-unformatted'))
-                .call(Plotly.util.alignHTMLWith(that))
+                .call(util.alignHTMLWith(that, container, options))
                 .on('blur', function(){
                     that.text(this.textContent)
                         .style({opacity: 1});
@@ -804,7 +820,7 @@
                     }
                     else{
                         dispatch.input.call(that, this.textContent);
-                        d3.select(this).call(Plotly.util.alignHTMLWith2(that));
+                        d3.select(this).call(util.alignHTMLWith(that, container, options));
                     }
                 })
                 .on('keydown', function(){
