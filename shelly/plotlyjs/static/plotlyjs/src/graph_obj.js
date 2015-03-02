@@ -2684,8 +2684,8 @@
             // provide height and width for the container div,
             // specify size in layout, or take the defaults,
             // but don't enforce any ratio restrictions
-            newheight = gd.style.height || fullLayout.height;
-            newwidth = gd.style.width || fullLayout.width;
+            newheight = parseFloat(window.getComputedStyle(gd).height) || fullLayout.height;
+            newwidth = parseFloat(window.getComputedStyle(gd).width) || fullLayout.width;
         }
 
         if(Math.abs(fullLayout.width - newwidth) > 1 ||
