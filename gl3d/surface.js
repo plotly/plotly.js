@@ -61,8 +61,8 @@ function Surface (config) {
         y: {type: 'data_array'},
         z: {type: 'data_array'},
         colorscale: heatmapAttrs.colorscale,
-        showscale: heatmapAttrs.colorscale,
-        reversescale: heatmapAttrs.colorscale,
+        showscale: heatmapAttrs.showscale,
+        reversescale: heatmapAttrs.reversescale,
         contours: {
             x: contourAttributes,
             y: contourAttributes,

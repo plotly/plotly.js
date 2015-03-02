@@ -13,13 +13,10 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var boxes = Plotly.Boxes = {};
+    var boxes = {};
 
     // For coerce-level coupling
     var scatterAttrs = Plotly.Scatter.attributes,
@@ -78,7 +75,7 @@
                               {arrayOk: false}),
             line: {
                 color: extendFlat(scatterMarkerLineAttrs.color,
-                                  {arrayOk: false, dflt: '#444'}),
+                                  {arrayOk: false, dflt: Plotly.Color.defaultLine}),
                 width: extendFlat(scatterMarkerLineAttrs.width,
                                   {arrayOk: false, dflt: 0}),
                 outliercolor: {

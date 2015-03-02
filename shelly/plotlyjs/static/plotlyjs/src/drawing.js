@@ -13,13 +13,10 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var drawing = Plotly.Drawing = {};
+    var drawing = {};
     // -----------------------------------------------------
     // styling functions for plot elements
     // -----------------------------------------------------
@@ -692,11 +689,11 @@
 
                 if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
                 // weird case: array wasn't long enough to apply to every point
-                else if(Array.isArray(markerLine.color)) lineColor = '#444';
+                else if(Array.isArray(markerLine.color)) lineColor = Plotly.Color.defaultLine;
                 else lineColor = markerLine.color;
 
                 if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
-                else if(Array.isArray(marker.color)) fillColor = '#444';
+                else if(Array.isArray(marker.color)) fillColor = Plotly.Color.defaultLine;
                 else fillColor = marker.color;
             }
 
@@ -988,7 +985,7 @@
         // or a long session could overload on memory
         // by saving boxes for long-gone elements
         if(savedBBoxes.length>=maxSavedBBoxes) {
-            $('[data-bb]').attr('data-bb',null);
+            d3.selectAll('[data-bb]').attr('data-bb', null);
             savedBBoxes = [];
         }
 
@@ -996,9 +993,8 @@
         node.setAttribute('data-bb',savedBBoxes.length);
         savedBBoxes.push(bb);
 
-        return $.extend({}, bb);
+        return Plotly.Lib.extendFlat(bb);
     };
-
 
     return drawing;
 }));

@@ -16,7 +16,7 @@
     // ---external global dependencies
     /* global d3:false */
 
-    var annotations = Plotly.Annotations = {};
+    var annotations = {};
 
     // centerx is a center of scaling tuned for maximum scalability of
     // the arrowhead ie throughout mag=0.3..3 the head is joined smoothly
@@ -25,7 +25,7 @@
     // line, in order to end at the right place
     // TODO: option to have the pointed-to  point a little in front of the
     // end of the line, as people tend to want a bit of a gap there...
-    var ARROWPATHS = [
+    annotations.ARROWPATHS = [
         // no arrow
         '',
         // wide with flat back
@@ -115,7 +115,7 @@
         arrowhead: {
             type: 'integer',
             min: 0,
-            max: ARROWPATHS.length,
+            max: annotations.ARROWPATHS.length,
             dflt: 1
         },
         arrowsize: {
@@ -180,7 +180,7 @@
         var showArrow = coerce('showarrow');
         if(showArrow) {
             coerce('arrowcolor',
-                borderOpacity ? annOut.bordercolor : '#444');
+                borderOpacity ? annOut.bordercolor : Plotly.Color.defaultLine);
             coerce('arrowhead');
             coerce('arrowsize');
             coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
@@ -696,7 +696,7 @@
                     .call(Plotly.Color.stroke,
                         Plotly.Color.rgb(arrowColor));
 
-                arrowhead(arrow, options.arrowhead, 'end', options.arrowsize);
+                annotations.arrowhead(arrow, options.arrowhead, 'end', options.arrowsize);
 
                 var arrowdrag = arrowgroup.append('path')
                     .classed('annotation', true)
@@ -752,7 +752,7 @@
                         doneFn: function(dragged) {
                             if(dragged) {
                                 Plotly.relayout(gd, update);
-                                var notesBox = $('.js-notes-box-panel')[0];
+                                var notesBox = document.querySelector('.js-notes-box-panel');
                                 if(notesBox) notesBox.redraw(notesBox.selectedObj);
                             }
                         }
@@ -832,7 +832,7 @@
                         Plotly.Fx.setCursor(ann);
                         if(dragged) {
                             Plotly.relayout(gd, update);
-                            var notesBox = $('.js-notes-box-panel')[0];
+                            var notesBox = document.querySelector('.js-notes-box-panel');
                             if(notesBox) notesBox.redraw(notesBox.selectedObj);
                         }
                     }
@@ -870,16 +870,16 @@
     // style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none
     // ends is 'start', 'end' (default), 'start+end'
     // mag is magnification vs. default (default 1)
-    function arrowhead(el3, style, ends, mag) {
+    annotations.arrowhead = function(el3, style, ends, mag) {
         if(!$.isNumeric(mag)) mag = 1;
         var el = el3.node(),
-            headStyle = ARROWPATHS[style||0];
+            headStyle = annotations.ARROWPATHS[style||0];
         if(!headStyle) return;
 
         if(typeof ends !== 'string' || !ends) ends = 'end';
 
         var scale = (Plotly.Drawing.getPx(el3,'stroke-width') || 1) * mag,
-            stroke = el3.style('stroke') || '#444',
+            stroke = el3.style('stroke') || Plotly.Color.defaultLine,
             opacity = el3.style('stroke-opacity') || 1,
             doStart = ends.indexOf('start') >= 0,
             doEnd = ends.indexOf('end') >= 0,
@@ -962,35 +962,6 @@
 
         if(doStart) drawhead(start, startRot);
         if(doEnd) drawhead(end, endRot);
-    }
-
-    // allArrowheads: call twice to make an arrowheads dropdown.
-    // once (with no container) for the data to send to layoutBoxDrop,
-    // and again (with a container) to add arrowheads to the list
-    annotations.allArrowheads = function(container){
-        // if a dom element is passed in, add appropriate arrowheads
-        // to every arrowhead selector in the container
-        if(container) {
-            $(container).find('[data-arrowhead]').each(function(){
-                var s = d3.select(this);
-                arrowhead(s.select('line'), Number(s.attr('data-arrowhead')));
-            });
-            return;
-        }
-        // with no args, output an array of elements for the dropdown list
-        var outArray = [];
-        for(var i = 0; i < ARROWPATHS.length; i++) {
-            outArray.push({
-                val:i,
-                name:'<svg width="40" height="20" data-arrowhead="' + i +
-                            '" style="position: relative; top: 2px;">' +
-                        '<line stroke="rgb(0,0,0)" style="fill: none;" ' +
-                        'x1="5" y1="10" x2="25" y2="10" stroke-width="2">' +
-                        '</line>' +
-                    '</svg>'
-            });
-        }
-        return outArray;
     };
 
     annotations.calcAutorange = function(gd) {
