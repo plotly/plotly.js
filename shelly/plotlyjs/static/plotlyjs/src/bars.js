@@ -122,23 +122,38 @@
         }
 
         var hasBars = false,
-            shouldBeGapless = false;
-        fullData.forEach(function(trace) {
+            shouldBeGapless = false,
+            gappedAnyway = false,
+            usedSubplots = {},
+            i,
+            trace,
+            subploti;
+        for(i = 0; i < fullData.length; i++) {
+            trace = fullData[i];
             if(Plotly.Plots.isBar(trace.type)) hasBars = true;
+            else continue;
+
+            // if we have at least 2 grouped bar traces on the same subplot,
+            // we should default to a gap anyway, even if the data is histograms
+            if(layoutIn.barmode !== 'overlay' && layoutIn.barmode !== 'stack') {
+                subploti = trace.xaxis + trace.yaxis;
+                if(usedSubplots[subploti]) gappedAnyway = true;
+                usedSubplots[subploti] = true;
+            }
 
             if(trace.visible && trace.type==='histogram') {
                 var pa = Plotly.Axes.getFromId({_fullLayout:layoutOut},
                             trace[trace.orientation==='v' ? 'xaxis' : 'yaxis']);
                 if(pa.type!=='category') shouldBeGapless = true;
             }
-        });
+        }
 
         if(!hasBars) return;
 
         var mode = coerce('barmode');
         if(mode!=='overlay') coerce('barnorm');
 
-        coerce('bargap', shouldBeGapless ? 0 : 0.2);
+        coerce('bargap', shouldBeGapless && !gappedAnyway ? 0 : 0.2);
         coerce('bargroupgap');
     };
 
