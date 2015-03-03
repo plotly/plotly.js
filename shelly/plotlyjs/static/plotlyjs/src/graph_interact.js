@@ -1565,7 +1565,14 @@
 
             clearTimeout(redrawTimer);
 
-            var zoom = Math.exp(-Math.min(Math.max(-e.deltaY, -20), 20) / 100),
+            var wheelDelta = -e.deltaY;
+            if(!isFinite(wheelDelta)) wheelDelta = e.wheelDelta / 10;
+            if(!isFinite(wheelDelta)) {
+                console.log('did not find wheel motion attributes', e);
+                return;
+            }
+
+            var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 100),
                 gbb = mainplot.draglayer.select('.nsewdrag')
                     .node().getBoundingClientRect(),
                 xfrac = (e.clientX - gbb.left) / gbb.width,
