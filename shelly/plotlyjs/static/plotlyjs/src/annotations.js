@@ -13,23 +13,19 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var annotations = Plotly.Annotations = {};
+    var annotations = {};
 
     // centerx is a center of scaling tuned for maximum scalability of
     // the arrowhead ie throughout mag=0.3..3 the head is joined smoothly
     // to the line, but the endpoint moves.
     // backoff is the distance to move the arrowhead, and the end of the
     // line, in order to end at the right place
-    // TODO: option to have the pointed-to
-    // point a little in front of the end of the line, as people tend
-    // to want a bit of a gap there...
-    var ARROWPATHS = [
+    // TODO: option to have the pointed-to  point a little in front of the
+    // end of the line, as people tend to want a bit of a gap there...
+    annotations.ARROWPATHS = [
         // no arrow
         '',
         // wide with flat back
@@ -119,7 +115,7 @@
         arrowhead: {
             type: 'integer',
             min: 0,
-            max: ARROWPATHS.length,
+            max: annotations.ARROWPATHS.length,
             dflt: 1
         },
         arrowsize: {
@@ -157,10 +153,12 @@
     };
 
     annotations.supplyLayoutDefaults = function(layoutIn, layoutOut) {
-        var containerIn = layoutIn.annotations || [];
-        layoutOut.annotations = containerIn.map(function(annIn) {
-            return handleAnnotationDefaults(annIn || {}, layoutOut);
-        });
+        var containerIn = layoutIn.annotations || [],
+            containerOut = layoutOut.annotations = [];
+
+        for(var i = 0; i < containerIn.length; i++) {
+            containerOut.push(handleAnnotationDefaults(containerIn[i] || {}, layoutOut));
+        }
     };
 
     function handleAnnotationDefaults(annIn, fullLayout) {
@@ -182,7 +180,7 @@
         var showArrow = coerce('showarrow');
         if(showArrow) {
             coerce('arrowcolor',
-                borderOpacity ? annOut.bordercolor : '#444');
+                borderOpacity ? annOut.bordercolor : Plotly.Color.defaultLine);
             coerce('arrowhead');
             coerce('arrowsize');
             coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
@@ -190,18 +188,20 @@
             coerce('ay');
 
             // if you have one part of arrow length you should have both
-            Plotly.Lib.noneOrBoth(annIn, annOut, 'ax', 'ay');
+            Plotly.Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
         }
         coerce('text', showArrow ? '&nbsp;' : 'new text');
         coerce('textangle');
         coerce('font', fullLayout.font);
 
         // positioning
-        ['x','y'].forEach(function(axLetter){
-            var tdMock = {_fullLayout: fullLayout};
+        var axLetters = ['x','y'];
+        for(var i = 0; i < 2; i++) {
+            var axLetter = axLetters[i],
+                tdMock = {_fullLayout: fullLayout};
 
             // xref, yref
-            var axRef = coerceAxRef(annIn, annOut, tdMock, axLetter);
+            var axRef = Plotly.Axes.coerceRef(annIn, annOut, tdMock, axLetter);
 
             // x, y
             var defaultPosition = 0.5;
@@ -227,34 +227,20 @@
 
             // xanchor, yanchor
             if(!showArrow) coerce(axLetter + 'anchor');
-        });
+        }
 
         // if you have one coordinate you should have both
-        Plotly.Lib.noneOrBoth(annIn, annOut, 'x', 'y');
+        Plotly.Lib.noneOrAll(annIn, annOut, ['x', 'y']);
 
         return annOut;
-    }
-
-    function coerceAxRef(annIn, annOut, tdMock, axLetter) {
-        var axlist = Plotly.Axes.listIds(tdMock, axLetter),
-            refAttr = axLetter + 'ref',
-            attrDef = {};
-        attrDef[refAttr] = {
-            type: 'enumerated',
-            values: axlist.concat(['paper']),
-            dflt: axlist[0]
-        };
-
-        // xref, yref
-        return Plotly.Lib.coerce(annIn, annOut, attrDef, refAttr, axLetter);
     }
 
     annotations.drawAll = function(gd) {
         var fullLayout = gd._fullLayout;
         fullLayout._infolayer.selectAll('.annotation').remove();
-        fullLayout.annotations.forEach(function(ann, i) {
-            annotations.draw(gd,i);
-        });
+        for(var i = 0; i < fullLayout.annotations.length; i++) {
+            annotations.draw(gd, i);
+        }
         return Plotly.Plots.previousPromises(gd);
     };
 
@@ -278,13 +264,11 @@
     annotations.draw = function(gd, index, opt, value) {
         var layout = gd.layout,
             fullLayout = gd._fullLayout,
-            gs = fullLayout._size,
-            MINDRAG = Plotly.Fx.MINDRAG,
             i;
 
         if(!$.isNumeric(index) || index===-1) {
             // no index provided - we're operating on ALL annotations
-            if(!index && $.isArray(value)) {
+            if(!index && Array.isArray(value)) {
                 // a whole annotation array is passed in
                 // (as in, redo of delete all)
                 layout.annotations = value;
@@ -301,9 +285,9 @@
             }
             else if(opt && value!=='add') {
                 // make the same change to all annotations
-                fullLayout.annotations.forEach(function(ann, i) {
+                for(i = 0; i < fullLayout.annotations.length; i++) {
                     annotations.draw(gd, i, opt, value);
-                });
+                }
                 return;
             }
             else {
@@ -336,9 +320,9 @@
                 var rule = $.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
 
                 if (layout.annotations) {
-                    layout.annotations.splice(index,0, rule)
+                    layout.annotations.splice(index, 0, rule);
                 } else {
-                    layout.annotations = [rule]
+                    layout.annotations = [rule];
                 }
 
                 for(i=fullLayout.annotations.length-1; i>index; i--) {
@@ -368,11 +352,17 @@
         if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
         else if($.isPlainObject(opt)) optionsEdit = opt;
 
-        Object.keys(optionsEdit).forEach(function(k){
+        var optionKeys = Object.keys(optionsEdit);
+        for(i = 0; i < optionKeys.length; i++) {
+            var k = optionKeys[i];
             Plotly.Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
-        });
+        }
 
-        ['x', 'y'].forEach(function(axLetter){
+        var gs = fullLayout._size;
+
+        var axLetters = ['x', 'y'];
+        for(i = 0; i < 2; i++) {
+            var axLetter = axLetters[i];
             // if we don't have an explicit position already,
             // don't set one just because we're changing references
             // or axis type.
@@ -380,13 +370,13 @@
             // except in log/linear changes
             if(optionsEdit[axLetter]!==undefined ||
                     optionsIn[axLetter]===undefined) {
-                return;
+                continue;
             }
 
             var axOld = Plotly.Axes.getFromId(gd,
-                    coerceAxRef(oldRef, {}, gd, axLetter)),
+                    Plotly.Axes.coerceRef(oldRef, {}, gd, axLetter)),
                 axNew = Plotly.Axes.getFromId(gd,
-                    coerceAxRef(optionsIn, {}, gd, axLetter)),
+                    Plotly.Axes.coerceRef(optionsIn, {}, gd, axLetter)),
                 position = optionsIn[axLetter],
                 axTypeOld = oldPrivate['_' + axLetter + 'type'];
 
@@ -454,7 +444,7 @@
             }
 
             optionsIn[axLetter] = position;
-        });
+        }
 
         var options = handleAnnotationDefaults(optionsIn, fullLayout);
         fullLayout.annotations[index] = options;
@@ -706,7 +696,7 @@
                     .call(Plotly.Color.stroke,
                         Plotly.Color.rgb(arrowColor));
 
-                arrowhead(arrow, options.arrowhead, 'end', options.arrowsize);
+                annotations.arrowhead(arrow, options.arrowhead, 'end', options.arrowsize);
 
                 var arrowdrag = arrowgroup.append('path')
                     .classed('annotation', true)
@@ -762,7 +752,7 @@
                         doneFn: function(dragged) {
                             if(dragged) {
                                 Plotly.relayout(gd, update);
-                                var notesBox = $('.js-notes-box-panel')[0];
+                                var notesBox = document.querySelector('.js-notes-box-panel');
                                 if(notesBox) notesBox.redraw(notesBox.selectedObj);
                             }
                         }
@@ -842,7 +832,7 @@
                         Plotly.Fx.setCursor(ann);
                         if(dragged) {
                             Plotly.relayout(gd, update);
-                            var notesBox = $('.js-notes-box-panel')[0];
+                            var notesBox = document.querySelector('.js-notes-box-panel');
                             if(notesBox) notesBox.redraw(notesBox.selectedObj);
                         }
                     }
@@ -880,16 +870,16 @@
     // style: 1-6, first 5 are pointers, 6 is circle, 7 is square, 8 is none
     // ends is 'start', 'end' (default), 'start+end'
     // mag is magnification vs. default (default 1)
-    function arrowhead(el3, style, ends, mag) {
+    annotations.arrowhead = function(el3, style, ends, mag) {
         if(!$.isNumeric(mag)) mag = 1;
         var el = el3.node(),
-            headStyle = ARROWPATHS[style||0];
+            headStyle = annotations.ARROWPATHS[style||0];
         if(!headStyle) return;
 
         if(typeof ends !== 'string' || !ends) ends = 'end';
 
         var scale = (Plotly.Drawing.getPx(el3,'stroke-width') || 1) * mag,
-            stroke = el3.style('stroke') || '#444',
+            stroke = el3.style('stroke') || Plotly.Color.defaultLine,
             opacity = el3.style('stroke-opacity') || 1,
             doStart = ends.indexOf('start') >= 0,
             doEnd = ends.indexOf('end') >= 0,
@@ -972,35 +962,6 @@
 
         if(doStart) drawhead(start, startRot);
         if(doEnd) drawhead(end, endRot);
-    }
-
-    // allArrowheads: call twice to make an arrowheads dropdown.
-    // once (with no container) for the data to send to layoutBoxDrop,
-    // and again (with a container) to add arrowheads to the list
-    annotations.allArrowheads = function(container){
-        // if a dom element is passed in, add appropriate arrowheads
-        // to every arrowhead selector in the container
-        if(container) {
-            $(container).find('[data-arrowhead]').each(function(){
-                var s = d3.select(this);
-                arrowhead(s.select('line'), Number(s.attr('data-arrowhead')));
-            });
-            return;
-        }
-        // with no args, output an array of elements for the dropdown list
-        var outArray = [];
-        for(var i = 0; i < ARROWPATHS.length; i++) {
-            outArray.push({
-                val:i,
-                name:'<svg width="40" height="20" data-arrowhead="' + i +
-                            '" style="position: relative; top: 2px;">' +
-                        '<line stroke="rgb(0,0,0)" style="fill: none;" ' +
-                        'x1="5" y1="10" x2="25" y2="10" stroke-width="2">' +
-                        '</line>' +
-                    '</svg>'
-            });
-        }
-        return outArray;
     };
 
     annotations.calcAutorange = function(gd) {

@@ -12,13 +12,10 @@
     // `Plotly` is `window.Plotly`
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global tinycolor:false */
 
-    var color = Plotly.Color = {};
+    var color = {};
 
     // IMPORTANT - default colors should be in hex for grid.js
     color.defaults = [
@@ -33,6 +30,10 @@
         '#bcbd22', // curry yellow-green
         '#17becf' // blue-teal
     ];
+
+    color.defaultLine = '#444';
+    color.lightLine = '#eee';
+    color.background = '#fff';
 
     color.scales = {
         'Greys':[[0,'rgb(0,0,0)'],[1,'rgb(255,255,255)']],
@@ -142,7 +143,7 @@
     // css syntax from http://www.colorzilla.com/gradient-editor/
     (function() {
         //only on main site - though later we may expand to embeds
-        if(!$('#plotlyMainMarker').length) return;
+        if(!document.getElementById('plotlyMainMarker')) return;
 
         var style = document.createElement('style');
         // WebKit hack :(

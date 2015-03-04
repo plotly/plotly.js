@@ -102,7 +102,7 @@ function Scatter3D (config) {
                 color: extendFlat(scatterMarkerLineAttrs.color,
                                   {dflt: 'rgb(0,0,0)'}),
                 width: extendFlat(scatterMarkerLineAttrs.width,
-                                  {dflt: 0})
+                                  {dflt: 0, arrayOk: false})
             }
 
         },
@@ -139,10 +139,12 @@ proto.handleXYZDefaults = function (traceIn, traceOut, coerce) {
 };
 
 proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
-    var _this = this;
-    var Plotly = this.config.Plotly;
-    var Scatter = Plotly.Scatter;
-    var linecolor, markercolor;
+    var _this = this,
+        Plotly = this.config.Plotly,
+        Scatter = Plotly.Scatter,
+        lineColor,
+        markerColor,
+        isBubble;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, _this.attributes, attr, dflt);
@@ -153,19 +155,23 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     coerce('text');
     coerce('mode');
 
-    if (Scatter.hasLines(traceOut)) {
-        linecolor = coerce('line.color', (traceIn.marker||{}).color || defaultColor);
-        coerce('line.width');
-        coerce('line.dash');
-    }
+    isBubble = Scatter.isBubble(traceIn);
 
     if (Scatter.hasMarkers(traceOut)) {
-        markercolor = coerce('marker.color', defaultColor);
+        markerColor = coerce('marker.color', defaultColor);
         coerce('marker.symbol');
         coerce('marker.size');
-        coerce('marker.opacity');
-        coerce('marker.line.width');
-        coerce('marker.line.color');
+        coerce('marker.opacity', isBubble ? 0.7 : 1);
+        coerce('marker.line.width', isBubble ? 1 : 0);
+        coerce('marker.line.color', isBubble ? Plotly.Color.background : Plotly.Color.defaultLine);
+    }
+
+    if (Scatter.hasLines(traceOut)) {
+        // don't try to inherit a color array
+        lineColor = coerce('line.color', (Array.isArray(markerColor) ? false : markerColor) ||
+                             defaultColor);
+        coerce('line.width');
+        coerce('line.dash');
     }
 
     if (Scatter.hasText(traceOut)) {
@@ -173,7 +179,7 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         coerce('textfont', layout.font);
     }
 
-    if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', linecolor || markercolor);
+    if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', lineColor || markerColor);
 
     var dims = ['x','y','z'];
     for (var i = 0; i < 3; ++i) {
@@ -231,32 +237,75 @@ function calculateTextOffset(textposition) {
     return textOffset;
 }
 
-function colorFormatter(colorIn, opacityIn) {
-    var colorOut = null,
-        colorLength = colorIn.length;
-    if (Array.isArray(colorIn)) {
-        colorOut = [];
-        for (var i = 0; i < colorLength; ++i) {
-            colorOut[i]     = str2RgbaArray(colorIn[i]);
-            colorOut[i][3] *= opacityIn;
+proto.formatColor = function formatColor(colorIn, opacityIn, len) {
+    var colorDflt = this.config.Plotly.Color.defaultLine,
+        opacityDflt = 1,
+        isArrayColorIn = Array.isArray(colorIn),
+        isArrayOpacityIn = Array.isArray(opacityIn),
+        colorOut = [],
+        getColor,
+        getOpacity,
+        colori,
+        opacityi;
+
+    function calculateColor(colorIn, opacityIn) {
+        var colorOut = str2RgbaArray(colorIn);
+        colorOut[3] *= opacityIn;
+        return colorOut;
+    }
+
+    if (isArrayColorIn) {
+        getColor = function(c, i){
+            return (c[i]===undefined) ? colorDflt : c[i];
+        };
+    } else {
+        getColor = function(c) { return c; };
+    }
+
+    if (isArrayOpacityIn) {
+        getOpacity = function(o, i){
+            return (o[i]===undefined) ? opacityDflt : o[i];
+        };
+    } else {
+        getOpacity = function(o){ return o; };
+    }
+
+    if (isArrayColorIn || isArrayOpacityIn) {
+        for (var i = 0; i < len; i++) {
+            colori = getColor(colorIn, i);
+            opacityi = getOpacity(opacityIn, i);
+            colorOut[i] = calculateColor(colori, opacityi);
         }
     } else {
-            colorOut     = str2RgbaArray(colorIn);
-            colorOut[3] *= opacityIn;
+        colorOut = calculateColor(colorIn, opacityIn);
     }
+
     return colorOut;
+};
+
+function calculateSize(sizeIn) {
+    // rough parity with Plotly 2D markers
+    return sizeIn * 2;
 }
 
-function sizeScaler(sizeIn) {
-    var sizeOut = null;
-    // rough parity with Plotly 2D markers
-    function scale(size) { return size * 2; }
-    if (Array.isArray(sizeIn)) {
-        sizeOut = sizeIn.map(scale);
-    } else {
-        sizeOut = scale(sizeIn);
-    }
-    return sizeOut;
+function calculateSymbol(symbolIn) {
+    return proto.markerSymbols[symbolIn];
+}
+
+function formatParam(paramIn, len, calculate, dflt) {
+    var paramOut = null;
+
+    if (Array.isArray(paramIn)) {
+        paramOut = [];
+
+        for (var i = 0; i < len; i++) {
+            if (paramIn[i]===undefined) paramOut[i] = dflt;
+            else paramOut[i] = calculate(paramIn[i]);
+        }
+
+    } else paramOut = calculate(paramIn);
+
+    return paramOut;
 }
 
 proto.update = function update (scene, sceneLayout, data, scatter) {
@@ -268,6 +317,8 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
+        marker = data.marker,
+        line = data.line,
         errorParams = calculateErrorParams([ data.error_x, data.error_y, data.error_z ]),
         xc, x = data.x,
         yc, y = data.y,
@@ -291,18 +342,17 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
     };
 
     if ('line' in data) {
-        params.lineColor     = str2RgbaArray(data.line.color);
-        params.lineWidth     = data.line.width;
-        params.lineDashes    = data.line.dash;
+        params.lineColor     = str2RgbaArray(line.color);
+        params.lineWidth     = line.width;
+        params.lineDashes    = line.dash;
     }
 
     if ('marker' in data) {
-        params.scatterColor         = colorFormatter(data.marker.color, data.marker.opacity);
-        params.scatterSize          = sizeScaler(data.marker.size);
-        params.scatterMarker        = this.markerSymbols[data.marker.symbol];
-        params.scatterLineWidth     = data.marker.line.width;
-        params.scatterLineColor     = str2RgbaArray(data.marker.line.color);
-        params.scatterLineColor[3] *= data.marker.opacity;
+        params.scatterColor         = this.formatColor(marker.color, marker.opacity, len);
+        params.scatterSize          = formatParam(marker.size, len, calculateSize, 20);
+        params.scatterMarker        = formatParam(marker.symbol, len, calculateSymbol, '●');
+        params.scatterLineWidth     = marker.line.width;  // arrayOk === false
+        params.scatterLineColor     = this.formatColor(marker.line.color, marker.opacity, len);
         params.scatterAngle         = 0;
     }
 

@@ -16,14 +16,15 @@
     /* jshint camelcase: false */
 
     // ---Plotly global modules
-    /* global µ:false, SceneFrame:false, Examples:false, ENV:false */
+    /* global SceneFrame:false, Examples:false, ENV:false */
 
     // ---global functions not yet namespaced
     /* global setFileAndCommentsSize:false */
 
     // ---external global dependencies
     /* global Promise:false, d3:false */
-    var plots = Plotly.Plots = {};
+
+    var plots = {};
 
     // Most of the generic plotting functions get put into Plotly.Plots,
     // but some - the ones we want 3rd-party developers to use - go directly
@@ -177,12 +178,6 @@
             }
         }
 
-        // TODO: get rid of this - don't use gd.<attribute>, only gd._context.<attribute>
-        Object.keys(plots.defaultConfig).forEach( function (key) {
-            if (config && key in config) gd[key] = config[key];
-            else gd[key] = plots.defaultConfig[key];
-        });
-
         //staticPlot forces a bunch of others:
         if(context.staticPlot) {
             context.workspace = false;
@@ -206,7 +201,7 @@
             .style({
                 'font-family':'"Open Sans",Arial,sans-serif',
                 'font-size':'12px',
-                'fill':'#444'
+                'fill': Plotly.Color.defaultLine
             })
             .each(function(){
                 var links = d3.select(this);
@@ -225,11 +220,11 @@
         if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
             // Align the text at the left
             attrs['text-anchor'] = 'start';
-            attrs['x'] = 5;
+            attrs.x = 5;
         } else {
             // Align the text at the right
             attrs['text-anchor'] = 'end';
-            attrs['x'] = fullLayout._paper.attr('width') - 7;
+            attrs.x = fullLayout._paper.attr('width') - 7;
         }
 
         linkContainer.attr(attrs);
@@ -339,7 +334,7 @@
 
         // if there's no data or layout, and this isn't yet a plotly plot
         // container, log a warning to help plotly.js users debug
-        if(!data && !layout && !d3.select(gd).classed('js-plotly-plot')) {
+        if(!data && !layout && !Plotly.Lib.isPlotDiv(gd)) {
             console.log('Warning: calling Plotly.plot as if redrawing ' +
                 'but this container doesn\'t yet have a plot.', gd);
         }
@@ -367,8 +362,8 @@
 
         // if there is already data on the graph, append the new data
         // if you only want to redraw, pass a non-array for data
-        var graphwasempty = ((gd.data||[]).length===0 && $.isArray(data));
-        if($.isArray(data)) {
+        var graphwasempty = ((gd.data||[]).length===0 && Array.isArray(data));
+        if(Array.isArray(data)) {
             cleanData(data, gd.data);
 
             if(graphwasempty) gd.data=data;
@@ -490,6 +485,7 @@
 
                 // TODO: autosize extra for text markers
                 return Plotly.Lib.syncOrAsync([
+                    Plotly.Shapes.calcAutorange,
                     Plotly.Annotations.calcAutorange,
                     doAutoRange
                 ], gd);
@@ -567,7 +563,8 @@
             applyStyle(gd);
             Plotly.Lib.markTime('done applyStyle');
 
-            // show annotations
+            // show annotations and shapes
+            Plotly.Shapes.drawAll(gd);
             Plotly.Annotations.drawAll(gd);
 
             // source links
@@ -776,6 +773,7 @@
         // make a few changes to the layout right away
         // before it gets used for anything
         // backward compatibility and cleanup of nonstandard options
+        var i;
 
         if(!layout) layout = {};
 
@@ -788,7 +786,10 @@
             if(!layout.yaxis) layout.yaxis = layout.yaxis1;
             delete layout.yaxis1;
         }
-        Plotly.Axes.list({_fullLayout:layout}).forEach(function(ax) {
+
+        var axList = Plotly.Axes.list({_fullLayout:layout});
+        for(i = 0; i < axList.length; i++) {
+            var ax = axList[i];
             if(ax.anchor && ax.anchor !== 'free') {
                 ax.anchor = Plotly.Axes.cleanId(ax.anchor);
             }
@@ -810,9 +811,15 @@
 
             // prune empty domain arrays made before the new nestedProperty
             if(emptyContainer(ax, 'domain')) delete ax.domain;
-        });
+        }
 
-        (layout.annotations||[]).forEach(function(ann) {
+        if(layout.annotations !== undefined && !Array.isArray(layout.annotations)) {
+            console.log('annotations must be an array');
+            delete layout.annotations;
+        }
+        var annotationsLen = (layout.annotations || []).length;
+        for(i = 0; i < annotationsLen; i++) {
+            var ann = layout.annotations[i];
             if(ann.ref) {
                 if(ann.ref==='paper') {
                     ann.xref = 'paper';
@@ -824,14 +831,20 @@
                 }
                 delete ann.ref;
             }
-            if(ann.xref && ann.xref!=='paper') {
-                ann.xref = Plotly.Axes.cleanId(ann.xref, 'x');
-            }
-            if(ann.yref && ann.yref!=='paper') {
-                ann.yref = Plotly.Axes.cleanId(ann.yref, 'y');
-            }
+            cleanAxRef(ann, 'xref');
+            cleanAxRef(ann, 'yref');
+        }
 
-        });
+        if(layout.shapes !== undefined && !Array.isArray(layout.shapes)) {
+            console.log('shapes must be an array');
+            delete layout.shapes;
+        }
+        var shapesLen = (layout.shapes||[]).length;
+        for(i = 0; i < shapesLen; i++) {
+            var shape = layout.shapes[i];
+            cleanAxRef(shape, 'xref');
+            cleanAxRef(shape, 'yref');
+        }
 
         // cannot have scene1, numbering goes scene, scene2, scene3...
         if(layout.scene1) {
@@ -840,15 +853,15 @@
         }
 
         var sceneKeys = Plotly.Lib.getSceneKeys(layout);
-        sceneKeys.forEach( function (sceneKey) {
-            var sceneLayout = layout[sceneKey];
+        for(i = 0; i < sceneKeys.length; i++) {
+            var sceneLayout = layout[sceneKeys[i]];
             // fix for saved float32-arrays
             var camp = sceneLayout.cameraposition;
             if (Array.isArray(camp) && $.isPlainObject(camp[0])) {
                 camp[0] = [camp[0][0], camp[0][1], camp[0][2], camp[0][3]];
                 camp[1] = [camp[1][0], camp[1][1], camp[1][2]];
             }
-        });
+        }
 
         var legend = layout.legend;
         if(legend) {
@@ -875,6 +888,14 @@
         return layout;
     }
 
+    function cleanAxRef(container, attr) {
+        var valIn = container[attr],
+            axLetter = attr.charAt(0);
+        if(valIn && valIn !== 'paper') {
+            container[attr] = Plotly.Axes.cleanId(valIn, axLetter);
+        }
+    }
+
     function cleanData(data, existingData) {
         // make a few changes to the data right away
         // before it gets used for anything
@@ -883,11 +904,12 @@
          * Enforce unique IDs
          */
         var suids = [], // seen uids --- so we can weed out incoming repeats
-            uids = data.concat($.isArray(existingData) ? existingData : [])
+            uids = data.concat(Array.isArray(existingData) ? existingData : [])
                    .filter( function(trace) { return 'uid' in trace; } )
                    .map( function(trace) { return trace.uid; });
 
-        data.forEach(function(trace, tracei) {
+        for(var tracei = 0; tracei < data.length; tracei++) {
+            var trace = data[tracei];
             // assign uids to each trace and detect collisions.
             if (!('uid' in trace) || suids.indexOf(trace.uid) !== -1) {
                 var newUid, i;
@@ -915,7 +937,7 @@
             if(trace.error_y && 'opacity' in trace.error_y) {
                 var dc = Plotly.Color.defaults,
                     yeColor = trace.error_y.color ||
-                    (plots.isBar(trace.type) ? '#444' : dc[tracei % dc.length]);
+                    (plots.isBar(trace.type) ? Plotly.Color.defaultLine : dc[tracei % dc.length]);
                 trace.error_y.color = Plotly.Color.addOpacity(
                     Plotly.Color.rgb(yeColor),
                     Plotly.Color.opacity(yeColor) * trace.error_y.opacity);
@@ -959,20 +981,6 @@
                 trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
             }
 
-            // textposition - support partial attributes (ie just 'top')
-            // and incorrect use of middle / center etc.
-            function cleanTextPosition(textposition) {
-                var posY = 'middle',
-                    posX = 'center';
-                if(textposition.indexOf('top')!==-1) posY = 'top';
-                else if(textposition.indexOf('bottom')!==-1) posY = 'bottom';
-
-                if(textposition.indexOf('left')!==-1) posX = 'left';
-                else if(textposition.indexOf('right')!==-1) posX = 'right';
-
-                return posY + ' ' + posX;
-            }
-
             if(Array.isArray(trace.textposition)) {
                 trace.textposition = trace.textposition.map(cleanTextPosition);
             }
@@ -986,7 +994,21 @@
                 if(emptyContainer(trace.marker, 'line')) delete trace.marker.line;
                 if(emptyContainer(trace, 'marker')) delete trace.marker;
             }
-        });
+        }
+    }
+
+    // textposition - support partial attributes (ie just 'top')
+    // and incorrect use of middle / center etc.
+    function cleanTextPosition(textposition) {
+        var posY = 'middle',
+            posX = 'center';
+        if(textposition.indexOf('top')!==-1) posY = 'top';
+        else if(textposition.indexOf('bottom')!==-1) posY = 'bottom';
+
+        if(textposition.indexOf('left')!==-1) posX = 'left';
+        else if(textposition.indexOf('right')!==-1) posX = 'right';
+
+        return posY + ' ' + posX;
     }
 
     function emptyContainer(outer, innerStr) {
@@ -1008,7 +1030,7 @@
     Plotly.redraw = function(divid) {
         var gd = (typeof divid === 'string') ?
             document.getElementById(divid) : divid;
-        if(!d3.select(gd).classed('js-plotly-plot')) {
+        if(!Plotly.Lib.isPlotDiv(gd)) {
             console.log('This element is not a Plotly Plot', divid, gd);
             return;
         }
@@ -1273,7 +1295,7 @@
             dflt: {
                 family: '"Open sans", verdana, arial, sans-serif',
                 size: 12,
-                color: '#444'
+                color: Plotly.Color.defaultLine
             }
         },
         title: {
@@ -1329,13 +1351,13 @@
         },
         paper_bgcolor: {
             type: 'color',
-            dflt: '#fff'
+            dflt: Plotly.Color.background
         },
         plot_bgcolor: {
             // defined here, but set in Axes.supplyLayoutDefaults
             // because it needs to know if there are (2D) axes or not
             type: 'color',
-            dflt: '#fff'
+            dflt: Plotly.Color.background
         },
         separators: {
             type: 'string',
@@ -1403,7 +1425,7 @@
 
     plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
 
-        var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Fx',
+        var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Shapes', 'Fx',
                                     'Bars', 'Boxes', 'Gl3dLayout'];
 
         // don't add a check for 'function in module' as it is better to error out and
@@ -1481,7 +1503,7 @@
             // make sure there is a first point
             // this ensures there is a calcdata item for every trace,
             // even if cartesian logic doesn't handle it
-            if(!$.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
+            if(!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
 
             // add the trace-wide properties to the first point,
             // per point properties to every point
@@ -1892,7 +1914,7 @@
         if(Object.keys(aobj).length) gd.changed = true;
 
         if($.isNumeric(traces)) traces=[traces];
-        else if(!$.isArray(traces) || !traces.length) {
+        else if(!Array.isArray(traces) || !traces.length) {
             traces=gd._fullData.map(function(v,i){ return i; });
         }
 
@@ -1989,7 +2011,7 @@
         // val=undefined will not set a value, just record what the value was.
         // attr can be an array to set several at once (all to the same val)
         function doextra(cont,attr,val,i) {
-            if($.isArray(attr)) {
+            if(Array.isArray(attr)) {
                 attr.forEach(function(a){ doextra(cont,a,val,i); });
                 return;
             }
@@ -2025,7 +2047,7 @@
                 undoit[ai] = [param.get()];
                 // since we're allowing val to be an array, allow it here too,
                 // even though that's meaningless
-                param.set($.isArray(vi) ? vi[0] : vi);
+                param.set(Array.isArray(vi) ? vi[0] : vi);
                 // ironically, the layout attrs in restyle only require replot,
                 // not relayout
                 docalc = true;
@@ -2112,7 +2134,7 @@
                     // setting an orientation: make sure it's changing
                     // before we swap everything else
                     if(ai==='orientation') {
-                        param.set($.isArray(vi) ? vi[i%vi.length] : vi);
+                        param.set(Array.isArray(vi) ? vi[i%vi.length] : vi);
                         if(param.get()===undoit[ai][i]) continue;
                     }
                     // orientationaxes has no value,
@@ -2124,7 +2146,7 @@
                     swapXYData(cont);
                 }
                 // all the other ones, just modify that one attribute
-                else param.set($.isArray(vi) ? vi[i%vi.length] : vi);
+                else param.set(Array.isArray(vi) ? vi[i%vi.length] : vi);
 
             }
 
@@ -2258,7 +2280,7 @@
     function swapXYData(trace) {
         var i;
         Plotly.Lib.swapXYAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
-        if($.isArray(trace.z) && $.isArray(trace.z[0])) {
+        if(Array.isArray(trace.z) && Array.isArray(trace.z[0])) {
             if(trace.transpose) delete trace.transpose;
             else trace.transpose = true;
         }
@@ -2352,7 +2374,7 @@
         // val=undefined will not set a value, just record what the value was.
         // attr can be an array to set several at once (all to the same val)
         function doextra(attr,val) {
-            if($.isArray(attr)) {
+            if(Array.isArray(attr)) {
                 attr.forEach(function(a) { doextra(a,val); });
                 return;
             }
@@ -2364,9 +2386,9 @@
             if(val!==undefined) p.set(val);
         }
 
-        // for editing annotations - is it on autoscaled axes?
-        function annAutorange(anni,axletter) {
-            var axName = Plotly.Axes.id2name(anni[axletter+'ref']||axletter);
+        // for editing annotations or shapes - is it on autoscaled axes?
+        function refAutorange(obj, axletter) {
+            var axName = Plotly.Axes.id2name(obj[axletter+'ref']||axletter);
             return (gd._fullLayout[axName]||{}).autorange;
         }
 
@@ -2451,39 +2473,38 @@
                 if(parentFull.autorange) docalc = true;
                 else doplot = true;
             }
-            // send annotation mods one-by-one through Annotations.draw(),
+            // send annotation and shape mods one-by-one through Annotations.draw(),
             // don't set via nestedProperty
             // that's because add and remove are special
-            else if(p.parts[0] ==='annotations') {
-                var anum = p.parts[1],
-                    anns = layout.annotations,
-                    anni = (anns && anns[anum])||{};
+            else if(p.parts[0] === 'annotations' || p.parts[0] === 'shapes') {
+                var objNum = p.parts[1],
+                    objType = p.parts[0],
+                    objList = layout[objType] || [],
+                    objModule = Plotly[Plotly.Lib.titleCase(objType)],
+                    obji = objList[objNum] || {};
                 // if p.parts is just an annotation number, and val is either
                 // 'add' or an entire annotation to add, the undo is 'remove'
                 // if val is 'remove' then undo is the whole annotation object
-                if(p.parts.length===2) {
-                    if(aobj[ai]==='add' || $.isPlainObject(aobj[ai])) {
-                        undoit[ai]='remove';
+                if(p.parts.length === 2) {
+                    if(aobj[ai] === 'add' || $.isPlainObject(aobj[ai])) {
+                        undoit[ai] = 'remove';
                     }
-                    else if(aobj[ai]==='remove') {
-                        if(anum===-1) {
-                            undoit.annotations = anns;
+                    else if(aobj[ai] === 'remove') {
+                        if(objNum === -1) {
+                            undoit[objType] = objList;
                             delete undoit[ai];
                         }
-                        else { undoit[ai]=anni; }
+                        else undoit[ai] = obji;
                     }
-                    else { console.log('???',aobj); }
+                    else console.log('???', aobj);
                 }
-                if((annAutorange(anni,'x') || annAutorange(anni,'y')) &&
-                        ai.indexOf('color')===-1 &&
-                        ai.indexOf('opacity')===-1 &&
-                        ai.indexOf('align')===-1) {
+                if((refAutorange(obji, 'x') || refAutorange(obji, 'y')) &&
+                        !Plotly.Lib.containsAny(ai, ['color', 'opacity', 'align', 'dash'])) {
                     docalc = true;
                 }
-                // TODO: combine all edits to a given annotation into one call
+                // TODO: combine all edits to a given annotation / shape into one call
                 // as it is we get separate calls for x and y (or ax and ay) on move
-                Plotly.Annotations.draw(gd,anum,
-                    p.parts.slice(2).join('.'),aobj[ai]);
+                objModule.draw(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
                 delete aobj[ai];
             }
             // alter gd.layout
@@ -2494,11 +2515,8 @@
                 else if(p.parts[0].indexOf('legend')!==-1) dolegend = true;
                 else if(ai.indexOf('title')!==-1) doticks = true;
                 else if(p.parts[0].indexOf('bgcolor')!==-1) dolayoutstyle = true;
-                else if(p.parts.length>1 && (
-                        p.parts[1].indexOf('tick')!==-1 ||
-                        p.parts[1].indexOf('exponent')!==-1 ||
-                        p.parts[1].indexOf('grid')!==-1 ||
-                        p.parts[1].indexOf('zeroline')!==-1)) {
+                else if(p.parts.length>1 &&
+                        Plotly.Lib.containsAny(p.parts[1], ['tick', 'exponent', 'grid', 'zeroline'])) {
                     doticks = true;
                 }
                 else if(ai.indexOf('.linewidth')!==-1 &&
@@ -2654,20 +2672,20 @@
         else if(gd._context.fillFrame) {
             // embedded in an iframe - just take the full iframe size
             // if we get to this point, with no aspect ratio restrictions
-            newwidth = $(window).width();
-            newheight = $(window).height();
+            newwidth = window.innerWidth;
+            newheight = window.innerHeight;
 
             // somehow we get a few extra px height sometimes...
             // just hide it
-            $('body').css('overflow','hidden');
+            document.body.style.overflow = 'hidden';
         }
         else {
             // plotly.js - let the developers do what they want, either
             // provide height and width for the container div,
             // specify size in layout, or take the defaults,
             // but don't enforce any ratio restrictions
-            newheight = $(gd).height() || fullLayout.height;
-            newwidth = $(gd).width() || fullLayout.width;
+            newheight = parseFloat(window.getComputedStyle(gd).height) || fullLayout.height;
+            newwidth = parseFloat(window.getComputedStyle(gd).width) || fullLayout.width;
         }
 
         if(Math.abs(fullLayout.width - newwidth) > 1 ||
@@ -2748,6 +2766,14 @@
         // right, rather than enter/exit which can muck up the order
         fullLayout._paperdiv.selectAll('svg').remove();
 
+        if(!fullLayout._uid) {
+            var otherUids = [];
+            d3.selectAll('defs').each(function() {
+                if(this.id) otherUids.push(this.id.split('-')[1]);
+            });
+            fullLayout._uid = Plotly.Lib.randstr(otherUids);
+        }
+
         fullLayout._paper = fullLayout._paperdiv.append('svg')
             .attr({
                 xmlns: 'http://www.w3.org/2000/svg',
@@ -2755,6 +2781,9 @@
                 'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
                 'xml:xml:space': 'preserve'
             });
+
+        fullLayout._defs = fullLayout._paper.append('defs')
+            .attr('id', 'defs-' + fullLayout._uid);
 
         // Layers to keep plot types in the right order.
         // from back to front:
@@ -2880,9 +2909,14 @@
                 .classed('crisp', true);
         });
 
-        // single info (legend, annotations) and hover layers for the whole plot
+        // single shape, info (legend, annotations) and hover layers for the whole plot
         // pointer-events:none means we don't have to worry about mousing over
         // the hover text itself
+        // shapelayer gets no pointer events for now, later if we support
+        // clicking or dragging on shapes we can change this.
+        fullLayout._shapelayer = fullLayout._paper.append('g')
+                                                  .classed('shapelayer', true)
+                                                  .style('pointer-events', 'none');
         fullLayout._infolayer = fullLayout._paper.append('g').classed('infolayer', true);
         fullLayout._hoverlayer = fullLayout._paper.append('g')
                                                   .classed('hoverlayer', true)
@@ -3167,6 +3201,8 @@
             if(showfreex) { freefinished.push(xa._id); }
             if(showfreey) { freefinished.push(ya._id); }
         });
+
+        Plotly.Axes.makeClipPaths(gd);
 
         plots.titles(gd,'gtitle');
 
@@ -3543,7 +3579,7 @@
                 return o;
             }
 
-            if($.isArray(d)) {
+            if(Array.isArray(d)) {
                 return d.map(stripObj);
             }
 

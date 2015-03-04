@@ -689,11 +689,11 @@
   "layout": {
     "title": "Mic Patterns",
     "font": {
-      "family": "Arial, sans-serif;",
+      "family": "Arial, sans-serif",
       "size": 12,
       "color": "#000"
     },
-    "showlegend": true,
+    "showlegend": false,
     "width": 500,
     "height": 400,
     "margin": {
