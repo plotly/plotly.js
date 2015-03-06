@@ -25,7 +25,11 @@ exports.Shapes = require('./shapes');
 exports.Legend = require('./legend');
 exports.Colorbar = require('./colorbar');
 exports.ModeBar = require('./modebar');
+// configuration
+exports.Config = require('./config');
 
 // promise polyfill, embed rather than requiring dependencies
 require('../../../../shelly/static/js/plugins/promise-1.0.0.min.js');
 require('../../../../shelly/static/js/plugins/promise-done-1.0.0.js');
+
+
