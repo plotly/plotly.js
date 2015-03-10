@@ -238,7 +238,7 @@
             childNode = childNode.nextSibling;
         }
         if (dom.querySelector('parsererror')){
-            console.log(dom.querySelector('parsererror div').innerText);
+            console.log(dom.querySelector('parsererror div').textContent);
             return null;
         }
         return d3.select(this.node().lastChild);
