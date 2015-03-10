@@ -13,13 +13,10 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var drawing = Plotly.Drawing = {};
+    var drawing = {};
     // -----------------------------------------------------
     // styling functions for plot elements
     // -----------------------------------------------------
@@ -81,25 +78,34 @@
         .each(function(d){
             var line = (((d||[])[0]||{}).trace||{}).line||{},
                 lw1 = lw||line.width||0,
-                da = ld||line.dash||'',
-                dlw = Math.max(lw1,3);
-            if(da==='solid') { da = ''; }
-            else if(da==='dot') { da = dlw+'px,'+dlw+'px'; }
-            else if(da==='dash') { da = (3*dlw)+'px,'+(3*dlw)+'px'; }
-            else if(da==='longdash') { da = (5*dlw)+'px,'+(5*dlw)+'px'; }
-            else if(da==='dashdot') {
-                da = (3*dlw)+'px,'+dlw+'px,'+dlw+'px,'+dlw+'px';
-            }
-            else if(da==='longdashdot') {
-                da = (5*dlw)+'px,'+(2*dlw)+'px,'+dlw+'px,'+(2*dlw)+'px';
-            }
-            // otherwise user wrote the dasharray themselves - leave it be
+                dash = ld||line.dash||'';
 
             d3.select(this)
                 .call(Plotly.Color.stroke,lc||line.color)
-                .style({'stroke-dasharray': da, 'stroke-width': lw1+'px'});
+                .call(drawing.dashLine, dash, lw1);
         });
     };
+
+    drawing.dashLine = function(s, dash, lineWidth) {
+        var dlw = Math.max(lineWidth, 3);
+
+        if(dash==='solid') dash = '';
+        else if(dash==='dot') dash = dlw+'px,'+dlw+'px';
+        else if(dash==='dash') dash = (3*dlw)+'px,'+(3*dlw)+'px';
+        else if(dash==='longdash') dash = (5*dlw)+'px,'+(5*dlw)+'px';
+        else if(dash==='dashdot') {
+            dash = (3*dlw)+'px,'+dlw+'px,'+dlw+'px,'+dlw+'px';
+        }
+        else if(dash==='longdashdot') {
+            dash = (5*dlw)+'px,'+(2*dlw)+'px,'+dlw+'px,'+(2*dlw)+'px';
+        }
+        // otherwise user wrote the dasharray themselves - leave it be
+
+        s.style({
+            'stroke-dasharray': dash,
+            'stroke-width': lineWidth + 'px'
+        });
+    }
 
     drawing.fillGroupStyle = function(s) {
         s.style('stroke-width',0)
@@ -683,11 +689,11 @@
 
                 if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
                 // weird case: array wasn't long enough to apply to every point
-                else if(Array.isArray(markerLine.color)) lineColor = '#444';
+                else if(Array.isArray(markerLine.color)) lineColor = Plotly.Color.defaultLine;
                 else lineColor = markerLine.color;
 
                 if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
-                else if(Array.isArray(marker.color)) fillColor = '#444';
+                else if(Array.isArray(marker.color)) fillColor = Plotly.Color.defaultLine;
                 else fillColor = marker.color;
             }
 
@@ -979,7 +985,7 @@
         // or a long session could overload on memory
         // by saving boxes for long-gone elements
         if(savedBBoxes.length>=maxSavedBBoxes) {
-            $('[data-bb]').attr('data-bb',null);
+            d3.selectAll('[data-bb]').attr('data-bb', null);
             savedBBoxes = [];
         }
 
@@ -987,9 +993,8 @@
         node.setAttribute('data-bb',savedBBoxes.length);
         savedBBoxes.push(bb);
 
-        return $.extend({}, bb);
+        return Plotly.Lib.extendFlat(bb);
     };
-
 
     return drawing;
 }));

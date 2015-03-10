@@ -828,6 +828,7 @@
     "font": {
       "size": 15
     },
+    "showlegend": false,
     "plot_bgcolor": "rgb(223, 223, 223)",
     "angularaxis": {
       "tickcolor": "rgb(253,253,253)"

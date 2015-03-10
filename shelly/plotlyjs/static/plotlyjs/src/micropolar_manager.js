@@ -5,16 +5,15 @@
     } else {
         // Browser globals
         if (!root.Plotly) { root.Plotly = {}; }
-        if (!root.Plotly.micropolar) { root.Plotly.micropolar = {}; }
         factory(root, root.Plotly);
     }
 }(this, function(exports, Plotly){
     // `exports` is `window`
     // `Plotly` is `window.Plotly`
 
-    Plotly.micropolar.manager = {};
+    var manager = {};
 
-    Plotly.micropolar.manager.framework = function(){
+    manager.framework = function(){
         var config, previousConfigClone, plot, convertedInput, container;
         var undoManager = new Plotly.util.UndoManager();
         function exports(_inputConfig, _container){
@@ -55,5 +54,5 @@
         return exports;
     };
 
-    return Plotly.micropolar.manager;
+    return manager;
 }));
