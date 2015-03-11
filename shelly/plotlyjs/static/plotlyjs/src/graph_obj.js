@@ -2780,10 +2780,14 @@
                 // odd d3 quirk - need namespace twice??
                 'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
                 'xml:xml:space': 'preserve'
-            });
+            })
+            .classed('main-svg', true);
 
         fullLayout._defs = fullLayout._paper.append('defs')
             .attr('id', 'defs-' + fullLayout._uid);
+
+        fullLayout._draggers = fullLayout._paper.append('g')
+            .classed('draglayer', true);
 
         // Layers to keep plot types in the right order.
         // from back to front:
@@ -2875,7 +2879,7 @@
                     // but append them to paper rather than the plot groups,
                     // so they end up on top of the rest
                 }
-                plotinfo.draglayer = fullLayout._paper.append('g');
+                plotinfo.draglayer = fullLayout._draggers.append('g');
             });
 
         // now make the components of overlaid subplots
@@ -2910,17 +2914,9 @@
         });
 
         // single shape, info (legend, annotations) and hover layers for the whole plot
-        // pointer-events:none means we don't have to worry about mousing over
-        // the hover text itself
-        // shapelayer gets no pointer events for now, later if we support
-        // clicking or dragging on shapes we can change this.
-        fullLayout._shapelayer = fullLayout._paper.append('g')
-                                                  .classed('shapelayer', true)
-                                                  .style('pointer-events', 'none');
+        fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
         fullLayout._infolayer = fullLayout._paper.append('g').classed('infolayer', true);
-        fullLayout._hoverlayer = fullLayout._paper.append('g')
-                                                  .classed('hoverlayer', true)
-                                                  .style('pointer-events', 'none');
+        fullLayout._hoverlayer = fullLayout._paper.append('g').classed('hoverlayer', true);
 
         // position and style the containers, make main title
         var frameWorkDone = Plotly.Lib.syncOrAsync([
