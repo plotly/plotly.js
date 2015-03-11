@@ -17,7 +17,7 @@
     // ---external global dependencies
     /* global d3:false, tinycolor:false */
 
-    var fx = Plotly.Fx = {};
+    var fx = {};
 
     fx.layoutAttributes = {
         dragmode: {
@@ -244,6 +244,7 @@
     var HOVERMINTIME = 100; // minimum time between hover calls
 
     fx.hover = function (gd, evt, subplot) {
+        if(typeof gd === 'string') gd = document.getElementById(gd);
         if(gd._lastHoverTime === undefined) gd._lastHoverTime = 0;
 
         // If we have an update queued, discard it now
@@ -267,6 +268,7 @@
     };
 
     fx.unhover = function (gd, evt, subplot) {
+        if(typeof gd === 'string') gd = document.getElementById(gd);
         // Important, clear any queued hovers
         if (gd._hoverTimer) {
             clearTimeout(gd._hoverTimer);
@@ -278,7 +280,6 @@
     // The actual implementation is here:
 
     function hover(gd, evt, subplot){
-        if(typeof gd === 'string') gd = document.getElementById(gd);
         if(!subplot) subplot = 'xy';
 
         var fullLayout = gd._fullLayout,
@@ -295,7 +296,7 @@
             hovermode = evt.hovermode || fullLayout.hovermode;
 
         if(['x','y','closest'].indexOf(hovermode)===-1 || !gd.calcdata ||
-                $(gd).find('.zoombox').length || gd._dragging) {
+                gd.querySelector('.zoombox') || gd._dragging) {
             return unhover(gd, evt);
         }
 
@@ -328,7 +329,7 @@
         // Figure out what we're hovering on:
         // mouse location or user-supplied data
 
-        if($.isArray(evt)){
+        if(Array.isArray(evt)){
             // user specified an array of points to highlight
             hovermode = 'array';
             for(itemnum = 0; itemnum<evt.length; itemnum++) {
@@ -421,7 +422,7 @@
                 // point properties - override all of these
                 index: false, // point index in trace - only used by plotly.js hoverdata consumers
                 distance: Math.min(distance, fx.MAXDIST), // pixel distance or pseudo-distance
-                color: '#444', // trace color
+                color: Plotly.Color.defaultLine, // trace color
                 x0: undefined,
                 x1: undefined,
                 y0: undefined,
@@ -669,7 +670,7 @@
         //      a dom <svg> element - must be big enough to contain the whole
         //      hover label
         var pointData = {
-            color: hoverItem.color || '#444',
+            color: hoverItem.color || Plotly.Color.defaultLine,
             x0: hoverItem.x0 || hoverItem.x || 0,
             x1: hoverItem.x1 || hoverItem.x || 0,
             y0: hoverItem.y0 || hoverItem.y || 0,
@@ -692,7 +693,7 @@
         var fullOpts = {
             hovermode: 'closest',
             rotateLabels: false,
-            bgColor: opts.bgColor || '#fff',
+            bgColor: opts.bgColor || Plotly.Color.background,
             container: container3,
             outerContainer: container3
         };
@@ -739,9 +740,9 @@
                 ltext = label.selectAll('text').data([0]);
 
             lpath.enter().append('path')
-                .style({fill: '#444', 'stroke-width': '1px', stroke: '#fff'});
+                .style({fill: Plotly.Color.defaultLine, 'stroke-width': '1px', stroke: Plotly.Color.background});
             ltext.enter().append('text')
-                .call(Plotly.Drawing.font, HOVERFONT, HOVERFONTSIZE, '#fff')
+                .call(Plotly.Drawing.font, HOVERFONT, HOVERFONTSIZE, Plotly.Color.background)
                 // prohibit tex interpretation until we can handle
                 // tex and regular text together
                 .attr('data-notex',1);
@@ -831,13 +832,9 @@
         // and figure out sizes
         hoverLabels.each(function(d){
             var g = d3.select(this).attr('transform',''),
-                // strip out any html elements from d.name (if it exists at all)
-                // Note that this isn't an XSS vector, only because it never gets
-                // attached to the DOM
-                name = (d.name && d.zLabelVal===undefined) ?
-                    $('<p>'+d.name+'</p>').text() : '',
+                name = '',
                 // combine possible non-opaque trace color with bgColor
-                traceColor = combineColors(Plotly.Color.opacity(d.color) ? d.color : '#444', bgColor),
+                traceColor = combineColors(Plotly.Color.opacity(d.color) ? d.color : Plotly.Color.defaultLine, bgColor),
                 traceRGB = tinycolor(traceColor).toRgb(),
 
                 // find a contrasting color for border and text
@@ -845,11 +842,20 @@
                 //      formula-to-determine-brightness-of-rgb-color
                 contrastColor =
                     (0.299*traceRGB.r + 0.587*traceRGB.g + 0.114*traceRGB.b)>128 ?
-                    '#000' : '#FFF',
+                    '#000' : Plotly.Color.background,
                 text = '';
 
 
-            if(name.length>15) name = name.substr(0,12)+'...';
+            if(d.name && d.zLabelVal===undefined) {
+                // strip out any html elements from d.name (if it exists at all)
+                // Note that this isn't an XSS vector, only because it never gets
+                // attached to the DOM
+                var tmp = document.createElement('p');
+                tmp.innerHTML = d.name;
+                name = tmp.textContent;
+
+                if(name.length>15) name = name.substr(0,12)+'...';
+            }
 
             if(d.zLabel!==undefined) {
                 if(d.xLabel!==undefined) text += 'x: ' + d.xLabel + '<br>';
@@ -1183,7 +1189,6 @@
     function unhover(gd, evt){
         var fullLayout = gd._fullLayout;
         if(!evt) evt = {};
-        if(typeof gd === 'string') gd = document.getElementById(gd);
         if(evt.target &&
                 $(gd).triggerHandler('plotly_beforehover',evt)===false) {
             return;
@@ -1217,9 +1222,9 @@
             });
 
             if(fullLayout._privateplot) {
-                $(modebar.element).append(
-                    '<span class="badge-private float--left">PRIVATE</span>'
-                );
+                d3.select(modebar.element).append('span')
+                    .classed('badge-private float--left', true)
+                    .text('PRIVATE');
             }
 
             return modebar;
@@ -1305,7 +1310,7 @@
         dragger.enter().append('rect')
             .classed('drag',true)
             .classed(dragClass,true)
-            .style({fill:'black', opacity:0, 'stroke-width':0})
+            .style({fill:'transparent', 'stroke-width':0})
             .attr('data-subplot', plotinfo.id);
         dragger.call(Plotly.Drawing.setRect, x,y,w,h)
             .call(fx.setCursor,cursor);
@@ -1375,8 +1380,8 @@
             corners = plotinfo.plot.append('path')
                 .attr('class', 'zoombox-corners')
                 .style({
-                    fill: '#FFF',
-                    stroke: '#444',
+                    fill: Plotly.Color.background,
+                    stroke: Plotly.Color.defaultLine,
                     'stroke-width': 1,
                     opacity: 0
                 })
@@ -1466,7 +1471,7 @@
                 if(numClicks === 2) dragAutoRange();
                 else pauseForDrag(gd);
 
-                return removeZoombox();
+                return removeZoombox(gd);
             }
 
             if(zoomMode.indexOf('x')>-1) {
@@ -1488,7 +1493,7 @@
                 });
             }
 
-            removeZoombox();
+            removeZoombox(gd);
             dragTail(zoomMode);
 
             if(SHOWZOOMOUTTIP && gd.data && !gd._context.showTips) {
@@ -1501,7 +1506,36 @@
         function dragDone(dragged, numClicks) {
             if(dragged) dragTail();
             else if(numClicks === 2 && (ns+ew).length!==1) dragAutoRange();
-            else if(numClicks===1 &&(ns+ew).length===1) dragInput(dragger);
+            else if(numClicks===1 &&(ns+ew).length===1) {
+                var ax = ns ? ya[0] : xa[0],
+                    end = (ns==='s' || ew==='w') ? 0 : 1,
+                    attrStr = ax._name + '.range[' + end + ']',
+                    initialText = getEndText(ax, end),
+                    hAlign = 'left',
+                    vAlign = 'middle';
+
+                if(ns) {
+                    vAlign = (ns === 'n') ? 'top' : 'bottom';
+                    if(ax.side === 'right') hAlign = 'right';
+                }
+                else if(ew === 'e') hAlign = 'right';
+
+                d3.select(dragger)
+                    .call(Plotly.util.makeEditable, null, {
+                        immediate: true,
+                        background: fullLayout.paper_bgcolor,
+                        text: String(initialText),
+                        fill: ax.tickfont ? ax.tickfont.color : '#444',
+                        horizontalAlign: hAlign,
+                        verticalAlign: vAlign
+                    })
+                    .on('edit', function(text) {
+                        var v = ax.type==='category' ? ax.c2l(text) : ax.d2l(text);
+                        if(v !== undefined) {
+                            Plotly.relayout(gd, attrStr, v);
+                        }
+                    });
+            }
             else pauseForDrag(gd);
         }
 
@@ -1520,7 +1554,7 @@
             if(!gd._context.scrollZoom && !fullLayout._enablescrollzoom) {
                 return;
             }
-            var pc = $(gd).find('.plotly')[0];
+            var pc = gd.querySelector('.plotly');
 
             // if the plot has scrollbars (more than a tiny excess)
             // disable scrollzoom too.
@@ -1531,7 +1565,14 @@
 
             clearTimeout(redrawTimer);
 
-            var zoom = Math.exp(-Math.min(Math.max(-e.deltaY, -20), 20) / 100),
+            var wheelDelta = -e.deltaY;
+            if(!isFinite(wheelDelta)) wheelDelta = e.wheelDelta / 10;
+            if(!isFinite(wheelDelta)) {
+                console.log('did not find wheel motion attributes', e);
+                return;
+            }
+
+            var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 100),
                 gbb = mainplot.draglayer.select('.nsewdrag')
                     .node().getBoundingClientRect(),
                 xfrac = (e.clientX - gbb.left) / gbb.width,
@@ -1719,6 +1760,25 @@
         return dragger;
     }
 
+    function getEndText(ax, end) {
+        var initialVal = ax.range[end],
+            diff = Math.abs(initialVal - ax.range[1 - end]),
+            dig;
+
+        if(ax.type === 'date'){
+            return Plotly.Lib.ms2DateTime(initialVal, diff);
+        }
+        else if(ax.type==='log') {
+            dig = Math.ceil(Math.max(0, -Math.log(diff) / Math.LN10)) + 3;
+            return d3.format('.' + dig + 'g')(Math.pow(10, initialVal));
+        }
+        else { // linear numeric (or category... but just show numbers here)
+            dig = Math.floor(Math.log(Math.abs(initialVal)) / Math.LN10) -
+                Math.floor(Math.log(diff) / Math.LN10) + 4;
+            return d3.format('.'+String(dig)+'g')(initialVal);
+        }
+    }
+
     function pauseForDrag(gd) {
         // prevent more redraws until we know if a doubleclick
         // has occurred
@@ -1738,8 +1798,10 @@
         if(gd._replotPending) Plotly.plot(gd);
     }
 
-    function removeZoombox() {
-        $('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners').remove();
+    function removeZoombox(gd) {
+        d3.select(gd)
+            .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
+            .remove();
     }
 
     // for automatic alignment on dragging, <1/3 means left align,
@@ -1783,154 +1845,6 @@
         return cursorset[y][x];
     };
 
-    // -----------------------------------------------------
-    // Auto-grow text input, for editing graph items
-    // from http://jsbin.com/ahaxe, heavily edited
-    // -----------------------------------------------------
-    // TODO: switch to Plotly.Util.makeEditable and remove?
-    // only draggers use this any more
-
-    // dragInput - make an editbox that grows with the text you
-    // type in it, for editing values on a plot
-    //      eln - the DOM element to edit
-    function dragInput(eln) {
-        var gd = $(eln).parents('.js-plotly-plot')[0],
-            fullLayout = gd._fullLayout,
-            el3 = d3.select(eln),
-
-            // use the class to determine what this element is
-            cls = el3.attr('class'),
-            ref=$(eln),
-            property, // the property to set (a nestedProperty object)
-            options = {maxWidth: 1000, minWidth: 20},
-            fontCss={},
-            axletter,
-            axid,
-            ax,
-            end,
-            i,
-            dig;
-
-        var subplot = ($(eln).attr('data-subplot')
-            .match(/(x[0-9]*)(y[0-9]*)/)||['','x','y']);
-        axletter = (['n','s'].indexOf(cls.charAt(5))!==-1) ? 'y' : 'x';
-        axid = subplot[axletter==='x' ? 1 : 2];
-        ax = Plotly.Axes.getFromId(gd,axid);
-        end = (['s','w'].indexOf(cls.charAt(5))!==-1) ? 0 : 1;
-        property = Plotly.Lib.nestedProperty(fullLayout, ax._name+'.range['+end+']');
-        options.align = (cls==='drag edrag' || ax.side==='right') ?
-            'right' : 'left';
-        ref=$(gd).find('.'+ax._id+'title'); // font properties reference
-
-        var fa=['font-size','font-family','font-weight','font-style',
-            'font-stretch','font-variant','letter-spacing','word-spacing'];
-        var fapx=['font-size','letter-spacing','word-spacing'];
-        for(i in fa) {
-            var ra=ref.attr(fa[i]);
-            if(fapx.indexOf(fa[i])>=0 && Number(ra)>0) { ra+='px'; }
-            if(ra) { fontCss[fa[i]]=ra; }
-        }
-
-        options.comfortZone = 3 + (Number(
-            String(fontCss['font-size']).split('px')[0]) || 20);
-
-        var bbox = eln.getBoundingClientRect(),
-            input = $('<input/>').appendTo(gd);
-        gd._input = input;
-
-        // first put the input box at 0,0, then calculate
-        // the correct offset vs orig. element
-        input.css(fontCss)
-            .css({position:'absolute', top:0, left:0, 'z-index':6000});
-
-        // show enough digits to specify the position
-        // to about a pixel, but not more
-        var v = property.get(),
-            diff = Math.abs(v-ax.range[1-end]);
-        if(ax.type==='date'){
-            input.val(Plotly.Lib.ms2DateTime(v,diff));
-        }
-        else if(ax.type==='log') {
-            dig = Math.ceil(Math.max(0,-Math.log(diff)/Math.LN10))+3;
-            input.val(d3.format('.'+String(dig)+'g')(Math.pow(10,v)));
-        }
-        else { // linear numeric (or category... but just show numbers here)
-            dig = Math.floor(Math.log(Math.abs(v))/Math.LN10) -
-                Math.floor(Math.log(diff)/Math.LN10)+4;
-            input.val(d3.format('.'+String(dig)+'g')(v));
-        }
-
-        var val = input.val(),
-            testSubject = $('<tester/>').css({
-                position: 'absolute',
-                top: -9999,
-                left: -9999,
-                width: 'auto',
-                whiteSpace: 'nowrap'
-            })
-            .css(fontCss)
-            .insertAfter(input)
-            .html(escaped(val));
-
-        function testWidth(){
-            return Plotly.Lib.constrain(testSubject.width()+options.comfortZone,
-                options.minWidth, options.maxWidth);
-        }
-        input.width(testWidth());
-
-        var ibbox=input[0].getBoundingClientRect(),ileft=bbox.left-ibbox.left;
-        input.css('top',(bbox.top-ibbox.top+(bbox.height-ibbox.height)/2)+'px');
-
-        if(options.align==='right') {
-            ileft+=bbox.width-ibbox.width;
-        }
-        else if(options.align==='center') {
-            ileft+=(bbox.width+options.comfortZone-ibbox.width)/2;
-        }
-        input.css('left',ileft+'px');
-
-        var leftshift={left:0, center:0.5, right:1}[options.align];
-        var left0=input.position().left+input.width()*leftshift;
-
-        input[0].select();
-
-        function removeInput(){
-            input.remove();
-            testSubject.remove();
-            gd._input = null;
-        }
-
-        input.bind('keyup keydown blur update',function(e) {
-            var valold = val;
-            val = input.val();
-            var v = $.trim(val);
-
-            // occasionally we get two events firing...
-            if(!gd._input || !fullLayout) return;
-
-            // leave the input or press return: accept the change
-            if((e.type==='blur') || (e.type==='keydown' && e.which===13)) {
-                v = ax.c2l(ax.type==='category' ? v : ax.d2c(v));
-                if(!$.isNumeric(v)) { return; }
-                var attrs = {};
-                attrs[property.astr] = v;
-                Plotly.relayout(gd,attrs);
-                removeInput();
-            }
-            else if(e.type==='keydown' && e.which===27) {
-                // press escape: revert the change
-                removeInput();
-            }
-            else if(val!==valold) {
-                // If content has changed, enter in testSubject
-                // and update input width & position
-                testSubject.html(escaped(val));
-                var newWidth = testWidth();
-                input.css({width: newWidth, left: left0-newWidth*leftshift});
-            }
-        });
-    }
-
     /**
      * Abstracts click & drag interactions
      * @param {object} options with keys:
@@ -1952,7 +1866,7 @@
      *          a doubleclick time
      */
     fx.dragElement = function(options) {
-        var gd = $(options.element).parents('.js-plotly-plot')[0] || {},
+        var gd = Plotly.Lib.getPlotDiv(options.element) || {},
             numClicks = 1,
             startX,
             startY,
@@ -1965,7 +1879,8 @@
         function onStart(e) {
             // because we cancel event bubbling,
             // explicitly trigger input blur event.
-            if(gd._input) gd._input.trigger('blur');
+            var inputBox = document.querySelector('.plugin-editable');
+            if(inputBox) d3.select(inputBox).on('blur').call(inputBox);
 
             // make dragging and dragged into properties of gd
             // so that others can look at and modify them
@@ -2079,7 +1994,7 @@
     // if back has transparency or is missing, white is assumed behind it
     function combineColors(front,back){
         var fc = tinycolor(front).toRgb(),
-            bc = tinycolor(back||'#FFF').toRgb();
+            bc = tinycolor(back||Plotly.Color.background).toRgb();
         if(fc.a===1) return tinycolor(front).toRgbString();
 
         var bcflat = bc.a===1 ? bc : {

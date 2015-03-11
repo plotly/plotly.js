@@ -11,7 +11,11 @@
     // `exports` is `window`
     // `Plotly` is `window.Plotly`
 
-    var util = Plotly.util = {};
+    'use strict';
+    // ---external global dependencies
+    /* global d3:false, MathJax:false */
+
+    var util = {};
 
     // Script Loader
     /////////////////////////////
@@ -234,7 +238,7 @@
             childNode = childNode.nextSibling;
         }
         if (dom.querySelector('parsererror')){
-            console.log(dom.querySelector('parsererror div').innerText);
+            console.log(dom.querySelector('parsererror div').textContent);
             return null;
         }
         return d3.select(this.node().lastChild);
@@ -436,10 +440,11 @@
         svgClass += '-math';
         parent.selectAll('svg.' + svgClass).remove();
         parent.selectAll('g.' + svgClass + '-group').remove();
-        _context.style({visibility: null})
-            // for Plotly.Drawing.bBox: unlink this txt from its cached val
-            .attr('data-bb',null);
-        $(_context.node()).parents().attr('data-bb', null);
+        _context.style({visibility: null});
+        // for Plotly.Drawing.bBox: unlink text and all parents from its cached box
+        for(var up = _context.node(); up && up.removeAttribute; up = up.parentNode) {
+            up.removeAttribute('data-bb');
+        }
 
         function showText() {
             if(!parent.empty()){
@@ -455,7 +460,7 @@
         }
 
         if(tex){
-            var td = $(that.node()).parents('.js-plotly-plot')[0];
+            var td = Plotly.Lib.getPlotDiv(that.node());
             ((td && td._promises)||[]).push(new Promise(function(resolve) {
                 that.style({visibility: 'hidden'});
                 var config = {fontSize: parseInt(that.style('font-size'), 10)};
@@ -485,7 +490,7 @@
                     newSvg.attr({
                             'class': svgClass,
                             height: _svgBBox.height,
-                            preserveAspectRatio: 'xMinYMin meet',
+                            preserveAspectRatio: 'xMinYMin meet'
                         })
                         .style({overflow: 'visible', 'pointer-events': 'none'});
                     var fill = that.style('fill') || 'black';
@@ -531,13 +536,18 @@
     // MathJax
     /////////////////////////////
 
+    function cleanEscapesForTex(s) {
+        return s.replace(/(<|&lt;|&#60;)/g, '\\lt ')
+            .replace(/(>|&gt;|&#62;)/g, '\\gt ');
+    }
+
     util.texToSVG = function(_texString, _config, _callback){
         var randomID = 'math-output-' + Plotly.Lib.randstr([],64);
         var tmpDiv = d3.select('body').append('div')
             .attr({id: randomID})
             .style({visibility: 'hidden', position: 'absolute'})
             .style({'font-size': _config.fontSize + 'px'})
-            .text(_texString);
+            .text(cleanEscapesForTex(_texString));
 
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, tmpDiv.node()], function(){
             var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
@@ -685,23 +695,36 @@
         };
     };
 
-    util.alignHTMLWith = function (_base){
-        return function(){
-            var bRect = _base.node().getBoundingClientRect();
-            this.style({
-                top: bRect.top + 'px',
-                left: bRect.left + 'px',
-                'z-index': 1000
-            });
-            return this;
-        };
-    };
+    util.alignHTMLWith = function (_base, container, options){
+        var alignH = options.horizontalAlign,
+            alignV = options.verticalAlign || 'top',
+            bRect = _base.node().getBoundingClientRect(),
+            cRect = container.node().getBoundingClientRect(),
+            thisRect,
+            getTop,
+            getLeft;
 
-    util.alignHTMLWith2 = function (_base){
+        if(alignV === 'bottom') {
+            getTop = function() { return bRect.bottom - thisRect.height; };
+        } else if(alignV === 'middle') {
+            getTop = function() { return bRect.top + (bRect.height - thisRect.height) / 2; };
+        } else { // default: top
+            getTop = function() { return bRect.top; };
+        }
+
+        if(alignH === 'right') {
+            getLeft = function() { return bRect.right - thisRect.width; };
+        } else if(alignH === 'center') {
+            getLeft = function() { return bRect.left + (bRect.width - thisRect.width) / 2; };
+        } else { // default: left
+            getLeft = function() { return bRect.left; };
+        }
+
         return function(){
-            var bRect = _base.node().getBoundingClientRect();
+            thisRect = this.node().getBoundingClientRect();
             this.style({
-                left: bRect.left + 'px',
+                top: (getTop() - cRect.top) + 'px',
+                left: (getLeft() - cRect.left) + 'px',
                 'z-index': 1000
             });
             return this;
@@ -711,7 +734,8 @@
     // Editable title
     /////////////////////////////
 
-    util.makeEditable = function(context, _delegate){
+    util.makeEditable = function(context, _delegate, options){
+        if(!options) options = {};
         var that = this;
         var dispatch = d3.dispatch('edit', 'input', 'cancel');
         var textSelection = d3.select(this.node())
@@ -721,18 +745,18 @@
         var handlerElement = _delegate || textSelection;
         if(_delegate) textSelection.style({'pointer-events': 'none'});
 
-        handlerElement.on('click', function(){
+        function handleClick(){
             appendEditable();
             that.style({opacity: 0});
             // also hide any mathjax svg
-            var svgClass = d3.select(this).attr('class'),
+            var svgClass = handlerElement.attr('class'),
                 mathjaxClass;
             if(svgClass) mathjaxClass = '.' + svgClass.split(' ')[0] + '-math-group';
             else mathjaxClass = '[class*=-math-group]';
             if(mathjaxClass) {
                 d3.select(that.node().parentNode).select(mathjaxClass).style({opacity: 0});
             }
-        });
+        }
 
         function selectElementContents(_el) {
             var el = _el.node();
@@ -745,22 +769,25 @@
         }
 
         function appendEditable(){
-            var div = d3.select('body').append('div').classed('plugin-editable editable', true);
-            div.style({
+            var plotDiv = d3.select(Plotly.Lib.getPlotDiv(that.node())),
+                container = plotDiv.select('.svg-container'),
+                div = container.append('div');
+            div.classed('plugin-editable editable', true)
+                .style({
                     position: 'absolute',
                     'font-family': that.style('font-family') || 'Arial',
                     'font-size': that.style('font-size') || 12,
-                    color: that.style('fill') || 'black',
+                    color: options.fill || that.style('fill') || 'black',
                     opacity: 1,
-                    'background-color': 'transparent',
+                    'background-color': options.background || 'transparent',
                     outline: '#ffffff33 1px solid',
                     margin: [-parseFloat(that.style('font-size'))/8+1, 0, 0, -1].join('px ') + 'px',
                     padding: '0',
                     'box-sizing': 'border-box'
                 })
                 .attr({contenteditable: true})
-                .text(that.attr('data-unformatted'))
-                .call(Plotly.util.alignHTMLWith(that))
+                .text(options.text || that.attr('data-unformatted'))
+                .call(util.alignHTMLWith(that, container, options))
                 .on('blur', function(){
                     that.text(this.textContent)
                         .style({opacity: 1});
@@ -794,15 +821,18 @@
                     }
                     else{
                         dispatch.input.call(that, this.textContent);
-                        d3.select(this).call(Plotly.util.alignHTMLWith2(that));
+                        d3.select(this).call(util.alignHTMLWith(that, container, options));
                     }
                 })
                 .on('keydown', function(){
                     if(d3.event.which === 13) this.blur();
                 })
                 .call(selectElementContents);
-
         }
+
+        if(options.immediate) handleClick();
+        else handlerElement.on('click', handleClick);
+
         return d3.rebind(this, dispatch, 'on');
     };
 
