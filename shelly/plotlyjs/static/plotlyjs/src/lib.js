@@ -16,16 +16,13 @@
     // TODO: can use camelcase after fixing conf_modal and showSources
     /* jshint camelcase: false */
 
-    // ---Plotly global modules
-    /* global Plotly:false, Tabs:false */
-
     // ---global functions not yet namespaced
     /* global pullf:false */
 
     // ---external global dependencies
-    /* global d3:false, Spinner:false, tinycolor:false */
+    /* global d3:false, tinycolor:false */
 
-    var lib = Plotly.Lib = {};
+    var lib = {};
 
     // dateTime2ms - turn a date object or string s of the form
     // YYYY-mm-dd HH:MM:SS.sss into milliseconds (relative to 1970-01-01,
@@ -788,72 +785,6 @@
         return Math.max(v0,Math.min(v1,v));
     };
 
-    // -------------------------------------------------------- SPINNERS
-    // allows spinners for multiple reasons on the same parent via spincount
-    // spinner is only removed when spincount goes to zero
-
-    // kill a spinner
-    lib.killspin = function(parent){
-        if(parent===undefined && typeof Tabs!=='undefined'){
-            parent=Tabs.get();
-        }
-        if(!parent || !parent.spinner) {
-            // something is wrong - kill all spinners
-            $('.spinner').remove();
-            return;
-        }
-        parent.spincount--;
-        if(parent.spincount>0) { return; }
-        parent.spinner.stop();
-        // in case something weird happened and we had several spinners
-        $(parent).find('.spinner').remove();
-    };
-
-    // start the main spinner
-    lib.startspin = function(parent,spinsize,options){
-        if(parent===undefined && typeof Tabs!=='undefined'){
-            parent=Tabs.get();
-        }
-        options = options || {};
-        if((typeof parent.spincount === 'number') && parent.spincount>0) {
-            parent.spincount++;
-        } else {
-            parent.spincount=1;
-            // big spinny
-            var opts = {
-                lines: 17, // The number of lines to draw
-                length: 30, // The length of each line _30
-                width: 6, // The line thickness
-                radius: 37, // The radius of the inner circle
-                corners: 1, // Corner roundness (0..1)
-                rotate: 0, // The rotation offset
-                direction: 1, // 1: clockwise, -1: counterclockwise
-                color: '#000', // #rgb or #rrggbb
-                speed: 1, // Rounds per second
-                trail: 60, // Afterglow percentage
-                shadow: false, // Whether to render a shadow
-                hwaccel: false, // Whether to use hardware acceleration
-                className: 'spinner', // The CSS class to assign to the spinner
-                zIndex: 2e9, // The z-index (defaults to 2000000000)
-                top: 'auto', // Top position relative to parent in px
-                left: 'auto' // Left position relative to parent in px
-            };
-            // modify for tiny spinny
-            if(spinsize==='tiny') {
-                opts.lines = 13;
-                opts.length = 5;
-                opts.width = 2;
-                opts.radius = 5;
-                opts.corners = 0.6;
-            }
-            // apply optional options
-            opts = $.extend({}, opts, options);
-            var spinner=new Spinner(opts).spin(parent);
-            parent.spinner=spinner;
-        }
-    };
-
-
     /**
      * notifier
      * @param {String} text The person's user name
@@ -888,179 +819,6 @@
             .fadeOut(700,function(){ n.remove(); });
     };
 
-    lib.conf_modal = (function(){
-        var options;
-        function initialize(opts){
-            // default options
-            options = {
-                header: '',
-                body: '',
-                conf_btn_txt: 'Done',
-                canc_btn_txt: '',
-                conf_func: function(){},
-                canc_func: function(){},
-                selector: 'body',
-                hideonclick: true,
-                closex: false,
-                backdrop: true,
-                alt_btn_txt: '',
-                alt_func: function(){},
-            };
-
-            options = $.extend({}, options, opts);
-
-            // set z-indices manually so that this modal appears
-            // whereever it is bound
-            var zi, backdropzi, modalzi;
-            if($(options.selector).css('z-index') === 'auto'){
-                zi = backdropzi = modalzi ='';
-            } else{
-                zi = $(options.selector).css('z-index');
-                backdropzi = zi+1;
-                modalzi = zi+2;
-            }
-            // backdrop w/custom z-index -- appears over the $(selector) element
-            if(options.backdrop){
-                $('.modal-backdrop:visible').hide();
-                $(options.selector).first().append(
-                    '<div id="confirmModalBackdrop" '+
-                        'class="modal-backdrop confirmModal '+
-                        (backdropzi==='' ? '' : 'style="z-index:'+backdropzi)+
-                    '"></div>');
-            }
-            var confirmModal =
-                '<div id="confirmModal" '+
-                        'class="modal modal--default hide confirmModal" '+
-                        'style="z-index:'+modalzi+'">'+
-                  '<div class="modal__header">'+
-                    (options.closex ?
-                        '<button type="button" id="closeConfirmModal" '+
-                        'class="close cm-canc_func" aria-hidden="true">'+
-                            '&times;'+
-                        '</button>' : '')+
-                    '<h3 class="cm-header"></h3>'+
-                  '</div>'+
-                  '<div class="modal__body">'+
-                    '<p class="cm-body"></p>'+
-                  '</div>'+
-                  '<div class="modal__footer">'+
-                    '<button class="btn btn--small btn--cta2 cm-alt_btn_txt '+
-                        'cm-alt_func"></button>'+
-                    '<button class="btn btn--small btn--cta2 cm-canc_btn_txt '+
-                        'cm-canc_func push-half--left"></button>'+
-                    '<button class="btn btn--small btn--cta  cm-conf_btn_txt '+
-                        'cm-conf_func push-half--left"></button>'+
-                    '<div class="messages success--inline" '+
-                        'style="text-align: right;"></div>'+
-                  '</div>'+
-                '</div>';
-
-            $(options.selector).append(confirmModal);
-            // backdrop=false because we add our own backdrop (bd)
-            // with custom z-index
-            $('#confirmModal').modal({'backdrop': false});
-
-            // Fill it in
-            applyOptions(options);
-            // Destroy on hide
-            $('#confirmModal').on('hide', function(){ destroy(); });
-        }
-
-        function destroy(){
-            $('#confirmModalBackdrop').remove();
-            $('#confirmModal').remove();
-            $('.confirmModalBackdrop').remove();
-            $('.confirmModal').remove();
-        }
-
-        function applyOptions(opts){
-            function doConf(){
-                if(options.hideonclick){ destroy(); }
-                opts.conf_func();
-                return false;
-            }
-
-            function doCanc(){
-                if(options.hideonclick){ destroy(); }
-                opts.canc_func();
-                return false;
-            }
-
-            function doAlt(){
-                if(options.hideonclick){ destroy(); }
-                opts.alt_func();
-                return false;
-            }
-
-            for(var key in opts){
-                if($.inArray(key, ['header', 'body'])>-1){
-                    $('#confirmModal .cm-'+key).html(opts[key]);
-                } else if($.inArray(key,
-                        ['alt_btn_txt', 'canc_btn_txt', 'conf_btn_txt'])>-1) {
-                    if(opts[key]===''){
-                        $('#confirmModal .cm-'+key).hide();
-                    } else{
-                        $('#confirmModal .cm-'+key).show();
-                        $('#confirmModal .cm-'+key).html(opts[key]);
-                    }
-                } else if(key==='conf_func'){
-                    $('#confirmModal .cm-conf_func')
-                        .removeClass('disabled')
-                        .off('click')
-                        .on('click', doConf);
-                }
-                else if(key==='canc_func'){
-                    $('#confirmModal .cm-canc_func')
-                        .removeClass('disabled')
-                        .off('click')
-                        .on('click', doCanc);
-                }
-                else if(key==='alt_func'){
-                    $('#confirmModal .cm-alt_func')
-                        .removeClass('disabled')
-                        .off('click')
-                        .on('click', doAlt);
-                }
-            }
-        }
-
-        function updateOptions(opts){
-            options = $.extend({}, options, opts);
-            applyOptions(opts);
-        }
-
-        function addMsg(msg){
-            $('#confirmModal .messages').html(msg);
-        }
-
-        function rmMsg(){
-            addMsg('');
-        }
-
-        function disableConf(){
-            $('#confirmModal .cm-conf_func')
-                .addClass('disabled')
-                .off('click');
-        }
-
-        function disableCanc(){
-            $('#confirmModal .cm-canc_func')
-                .addClass('disabled')
-                .off('click');
-        }
-
-        return {
-            init: initialize,
-            settings: updateOptions,
-            addMsg: addMsg,
-            rmMsg: rmMsg,
-            hide: destroy,
-            disableConf: disableConf,
-            disableCanc: disableCanc
-        };
-    })();
-
-
     // do two bounding boxes from getBoundingClientRect,
     // ie {left,right,top,bottom,width,height}, overlap?
     // takes optional padding pixels
@@ -1074,64 +832,6 @@
 
     // minor convenience/performance booster for d3...
     lib.identity = function(d){ return d; };
-
-    var ORDINALS = [
-        'first', 'second', 'third', 'fourth', 'fifth',
-        'sixth', 'seventh', 'eighth', 'ninth'
-    ];
-    var ORDINALENDS = ['th', 'st', 'nd', 'rd'];
-    var CARDINALS = [
-        'zero', 'one', 'two', 'three', 'four',
-        'five', 'six', 'seven', 'eight', 'nine'
-    ];
-
-    lib.num2ordinal = function(n) {
-        // 1-9 -> first-ninth
-        // 10 -> 10th
-        // 11 -> 11th
-        // etc
-        // num2ordinal(true);     // true
-        // num2ordinal(Infinity); // Infinity
-        // num2ordinal(NaN);      // NaN
-        // num2ordinal(void 0);   // undefined
-        // From: http://stackoverflow.com/questions/12487422/
-        //      take-a-value-1-31-and-convert-it-to-ordinal-date-w-javascript
-
-        if((parseFloat(n) === parseInt(n,10)) && !isNaN(n)){
-            if(parseInt(n,10)>=1 && parseInt(n,10)<=9){
-                return ORDINALS[parseInt(n,10)-1];
-            } else{
-                var v = n%100;
-                return n + (ORDINALENDS[(v-20)%10] ||
-                            ORDINALENDS[v] || ORDINALENDS[0]);
-            }
-        }
-        return n;
-    };
-
-    lib.ppn = function(n){
-        // pretty print the number: 1-9 -> one-nine, >10 remain the same
-        n = parseInt(n,10);
-        return (n>=0 && n<=9 ? CARDINALS[n] : n);
-    };
-
-    // used to display and show html containers
-    // HTML content must be formatted as:
-    //      <div class="js-toggle--key js-toggle--key__value1">
-    // if HTML Content:
-    //      <div class="js-toggle--fruit js-toggle--fruit__oranges
-    //                                   js-toggle--fruit__apples"></div>
-    // then:
-    //      togglecontent('', 'fruit', 'oranges');  // displays that div
-    //      togglecontent('', 'fruit', 'kiwi');     // hides that div
-    lib.togglecontent = function(parentSelector, dataKey, dataValue){
-        $(parentSelector+' .js-toggle--'+dataKey).hide();
-        $(parentSelector+' .js-toggle--'+dataKey+'__'+dataValue).show();
-    };
-
-    lib.plotlyurl = function(page){
-        return window.location.origin+'/'+page;
-    };
 
     // random string generator
     lib.randstr = function randstr(existing, bits, base) {
@@ -1230,28 +930,18 @@
     };
 
     lib.getSources = function(td) {
-        var fid = lib.fullFid(td.fid);
         var extrarefs = (td.ref_fids||[]).join(',');
-        if(!fid && !extrarefs) { return; }
-        $.get('/getsources', {fid:fid, extrarefs:extrarefs}, function(res) {
+        if(!td.fid && !extrarefs) return;
+        if(!window.ENV || !window.ENV.DOMAIN_WEBAPP) return;
+
+        $.get('/getsources', {fid: td.fid, extrarefs:extrarefs}, function(res) {
             td.sourcelist = JSON.parse(res);
-            if(!$.isArray(td.sourcelist)) {
+            if(!Array.isArray(td.sourcelist)) {
                 console.log('sourcelist error',td.sourcelist);
                 td.sourcelist = [];
             }
             lib.showSources(td);
         });
-    };
-
-    // fullfid - include the username in fid whether it was there or not
-    // also strip out backslash if one was there for selectability
-    // and turn tree roots into -1
-    lib.fullFid = function(fid) {
-        if (typeof fid === 'number') { fid = String(fid); }
-        if (typeof fid !== 'string' || fid==='') { return ''; }
-        if (fid.substr(fid.length-4)==='tree') { return '-1'; }
-        return ($.isNumeric(fid) && window.user ?
-            (window.user+':'+fid) : fid).replace('\\:',':');
     };
 
     lib.showSources = function(td) {
@@ -1280,7 +970,7 @@
         });
 
         var fidparts = String(firstsource.ref_fid).split(':'),
-            isplot = $(td).hasClass('js-plotly-plot'),
+            isplot = lib.isPlotDiv(td),
             workspace = !isplot || td._context.workspace,
             mainlink,
             extraslink;
@@ -1427,114 +1117,6 @@
 
         var cnt = allsources.length,
             sourceObj = makeSourceObj({}, null);
-    };
-
-    /*
-     * isEmpty
-     * @UTILITY
-     * check if object is empty and all arrays strings
-     * and objects within are empty
-     */
-    lib.isEmpty = function isEmpty (obj) {
-        /*
-         * Recursively checks for empty arrays,
-         * objects and empty strings, nulls and undefined
-         * and objects and arrays that
-         * only contain empty arrays, objects
-         * and strings and so on.
-         *
-         * false and NaN are NOT EMPTY... they contain information...
-         */
-        function definiteEmpty (obj) {
-            return ( obj === null ||
-                  obj === undefined ||
-                  obj === '' );
-        }
-
-        function definiteValue (obj) {
-            return !definiteEmpty && typeof(obj) !== 'object';
-        }
-
-        // is definitely empty
-        if (definiteEmpty(obj)) { return true; }
-        // is definitely full
-        if (typeof(obj) !== 'object') return false;
-
-        // it's indefinite. Scan for possible information.
-        // (non empty values and non empty objects)
-        if (Object.keys(obj)
-                .map( function (key) { return definiteValue(obj[key]); } )
-                .some( function (bool) { return bool; } ) )  {
-            return true;
-        }
-        // Object contains only indefinite and falsey values - recurse
-        return !Object.keys(obj)
-                .some( function (key) {return !isEmpty(obj[key]); } );
-    };
-
-    /*
-     * purgeStreams
-     * @UTILITY
-     * remove stream properties from data objects
-     */
-    lib.purgeStream = function purgeStream (dobj) {
-        var data = dobj.data;
-        if (!(data && data.length)) { return; }
-        data.forEach(function (d) { delete d.stream; });
-    };
-
-    /*
-     * Dropdown Selector
-     *
-     * A basic JQUERY + bootstrap implementation
-     * Pass in a specification object with:
-     * {
-     *   items: array of items
-     *   callback: an optional callback to be called on item selection:
-     *       cb(item, itemindex)
-     *   defaults: An array index of the item to initialize with, defaults to 0
-     * }
-     */
-    lib.dropdownSelector = function dropdownSelector (spec) {
-        // return the select control for mixed types
-
-        var items = spec.items;
-        spec.defaults = spec.defaults || 0;
-        var cls = spec.cls || '';
-        // http://getbootstrap.com/2.3.2/javascript.html#dropdowns
-        var $html = $('<div class="dropdown '+ cls +'">'+
-                '<a class="link--default link--blocky '+
-                        'dropdown-toggle--fixed-width js-dropdown-text" '+
-                        'data-toggle="dropdown" data-target="#" href="/">'+
-                     '<span class="caret user-caret"></span>'+
-                '</a>'+
-                    '<ul class="dropdown-menu dropdown-toggle--fixed-width" '+
-                        'role="menu"></ul>'+
-            '</div>');
-
-        var $ul = $html.find('ul'),
-            ul3 = d3.select($ul[0]),
-            $aShow = $html.find('.js-dropdown-text')
-                .html('<span class="js-selected-val"></span>' +
-                    '<span class="caret user-caret"></span>'),
-            spanSelected = d3.select($aShow[0]).select('.js-selected-val');
-
-        var listItems = ul3.selectAll('li').data(items)
-            .enter()
-            .append('li')
-            .on('click', function(item, i) {
-                spanSelected.text(Plotly.util.plainText(item));
-                if(spec.callback) spec.callback(item, i);
-            });
-        listItems.append('a')
-            .attr('href', '#')
-            .text(Plotly.util.plainText);
-
-        listItems.each(function(d, i) {
-            if(i===spec.defaults) $(this).click();
-        });
-
-        return $html;
     };
 
     // helpers for promises
@@ -1870,7 +1452,7 @@
     };
 
     lib.mergeArray = function(traceAttr, cd, cdAttr) {
-        if($.isArray(traceAttr)) {
+        if(Array.isArray(traceAttr)) {
             var imax = Math.min(traceAttr.length, cd.length);
             for(var i=0; i<imax; i++) cd[i][cdAttr] = traceAttr[i];
         }
@@ -1911,22 +1493,29 @@
     lib.minExtend = function(obj1, obj2) {
         var objOut = {};
         if(typeof obj2 !== 'object') obj2 = {};
-        var arrayLen = 3;
-        Object.keys(obj1).forEach(function(k) {
-            var v = obj1[k];
-            if(k.charAt(0)==='_' || typeof v === 'function') return;
+        var arrayLen = 3,
+            keys = Object.keys(obj1),
+            i,
+            k,
+            v;
+        for(i = 0; i < keys.length; i++) {
+            k = keys[i];
+            v = obj1[k];
+            if(k.charAt(0)==='_' || typeof v === 'function') continue;
             else if(k==='module') objOut[k] = v;
             else if(Array.isArray(v)) objOut[k] = v.slice(0,arrayLen);
             else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
             else objOut[k] = v;
-        });
+        }
 
-        Object.keys(obj2).forEach(function(k) {
-            var v = obj2[k];
+        keys = Object.keys(obj2);
+        for(i = 0; i < keys.length; i++) {
+            k = keys[i];
+            v = obj2[k];
             if(typeof v !== 'object' || !(k in objOut) || typeof objOut[k] !== 'object') {
                 objOut[k] = v;
             }
-        });
+        }
 
         return objOut;
     };
@@ -1935,28 +1524,16 @@
     lib.extendFlat = function extendFlat(obj1, obj2) {
         var objOut = {};
 
-        Object.keys(obj1).forEach(function(k) {
-            objOut[k] = obj1[k];
-        });
-        Object.keys(obj2).forEach(function(k) {
-            objOut[k] = obj2[k];
-        });
+        function copyToOut(obj) {
+            var keys = Object.keys(obj);
+            for(var i = 0; i < keys.length; i++) {
+                objOut[keys[i]] = obj[keys[i]];
+            }
+        }
+        if(typeof obj1 === 'object') copyToOut(obj1);
+        if(typeof obj2 === 'object') copyToOut(obj2);
 
         return objOut;
-    };
-
-    // Escapes special characters in the HTML string, suitable for inserting
-    // into a document.  NOT suitable for use in attributes.
-    // Safe: document.write('<div>' + Plotly.Lib.escapeForHtml(str) + '</div>');
-    // UNSAFE: document.write('<a href="'+ Plotly.Lib.escapeForHtml(str) + '">');
-    lib.escapeForHtml = function(html) {
-        return String(html)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;')
-            .replace(/\//g, '&#x2f;');
     };
 
     lib.titleCase = function(s) {
@@ -1968,6 +1545,18 @@
             if(s.indexOf(fragments[i])!== -1) return true;
         }
         return false;
+    };
+
+    // get the parent Plotly plot of any element
+    // whoo jquery-free tree climbing!
+    lib.getPlotDiv = function(el) {
+        for(; el && el.removeAttribute; el = el.parentNode) {
+            if(lib.isPlotDiv(el)) return el;
+        }
+    };
+
+    lib.isPlotDiv = function(el) {
+        return el.classList.contains('js-plotly-plot');
     };
 
     return lib;

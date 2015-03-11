@@ -1,0 +1,10 @@
+{
+    "data":[{
+        "x":["1","2","3","4"],
+        "type":"histogram"
+    },{
+        "x":["1","2","3","4"],
+        "type":"histogram"
+    }],
+    "layout":{"height":300,"width":400}
+}

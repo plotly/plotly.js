@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "plotly.js library",
   "repository": "",
-  "main": "index.js",
+  "main": "src/plotly.js",
   "scripts": {},
   "author": "Plotly amazing team",
   "license": "ISC",

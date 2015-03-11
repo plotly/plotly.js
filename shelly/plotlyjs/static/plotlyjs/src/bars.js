@@ -12,13 +12,10 @@
     // `Plotly` is `window.Plotly`
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false */
 
-    var bars = Plotly.Bars = {};
+    var bars = {};
 
     // mark this module as allowing error bars
     bars.errorBarsOK = true;
@@ -110,13 +107,13 @@
         }
 
         Plotly.Scatter.colorScalableDefaults('marker.', coerce, defaultColor);
-        Plotly.Scatter.colorScalableDefaults('marker.line.', coerce, '#444');
+        Plotly.Scatter.colorScalableDefaults('marker.line.', coerce, Plotly.Color.defaultLine);
         coerce('marker.line.width', 0);
         coerce('text');
 
-        // override defaultColor for error bars with #444
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'y'});
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, '#444', {axis: 'x', inherit: 'y'});
+        // override defaultColor for error bars with defaultLine
+        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'y'});
+        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'x', inherit: 'y'});
     };
 
     bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
@@ -125,23 +122,38 @@
         }
 
         var hasBars = false,
-            shouldBeGapless = false;
-        fullData.forEach(function(trace) {
+            shouldBeGapless = false,
+            gappedAnyway = false,
+            usedSubplots = {},
+            i,
+            trace,
+            subploti;
+        for(i = 0; i < fullData.length; i++) {
+            trace = fullData[i];
             if(Plotly.Plots.isBar(trace.type)) hasBars = true;
+            else continue;
+
+            // if we have at least 2 grouped bar traces on the same subplot,
+            // we should default to a gap anyway, even if the data is histograms
+            if(layoutIn.barmode !== 'overlay' && layoutIn.barmode !== 'stack') {
+                subploti = trace.xaxis + trace.yaxis;
+                if(usedSubplots[subploti]) gappedAnyway = true;
+                usedSubplots[subploti] = true;
+            }
 
             if(trace.visible && trace.type==='histogram') {
                 var pa = Plotly.Axes.getFromId({_fullLayout:layoutOut},
                             trace[trace.orientation==='v' ? 'xaxis' : 'yaxis']);
                 if(pa.type!=='category') shouldBeGapless = true;
             }
-        });
+        }
 
         if(!hasBars) return;
 
         var mode = coerce('barmode');
         if(mode!=='overlay') coerce('barnorm');
 
-        coerce('bargap', shouldBeGapless ? 0 : 0.2);
+        coerce('bargap', shouldBeGapless && !gappedAnyway ? 0 : 0.2);
         coerce('bargroupgap');
     };
 
@@ -496,7 +508,7 @@
                     p = d3.select(this);
 
                 if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
-                else if(Array.isArray(marker.color)) fillColor = '#444';
+                else if(Array.isArray(marker.color)) fillColor = Plotly.Color.defaultLine;
                 else fillColor = marker.color;
 
                 p.style('stroke-width', lineWidth + 'px')
@@ -504,7 +516,7 @@
                 if(lineWidth) {
                     if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
                     // weird case: array wasn't long enough to apply to every point
-                    else if(Array.isArray(markerLine.color)) lineColor = '#444';
+                    else if(Array.isArray(markerLine.color)) lineColor = Plotly.Color.defaultLine;
                     else lineColor = markerLine.color;
 
                     p.call(Plotly.Color.stroke, lineColor);

@@ -13,15 +13,12 @@
 
     'use strict';
 
-    // ---Plotly global modules
-    /* global Plotly:false */
-
     // ---external global dependencies
     /* global d3:false, PNGlib:false, tinycolor:false */
 
     var scatterAttrs = Plotly.Scatter.attributes;
 
-    var heatmap = Plotly.Heatmap = {};
+    var heatmap = {};
 
     heatmap.attributes = {
         z: {type: 'data_array'},
@@ -292,7 +289,7 @@
 
     function makeBoundArray(type, arrayIn, v0In, dvIn, numbricks, ax) {
         var arrayOut = [], v0, dv, i;
-        if($.isArray(arrayIn) && (!Plotly.Plots.isHist2D(type)) && (ax.type!=='category')) {
+        if(Array.isArray(arrayIn) && (!Plotly.Plots.isHist2D(type)) && (ax.type!=='category')) {
             arrayIn = arrayIn.map(ax.d2c);
             var len = arrayIn.length;
 
