@@ -211,13 +211,18 @@
             });
 
         // The text node inside svg
-        var text = Array.isArray(linkContainer[0]) ? linkContainer[0][0] : null,
+        var text = linkContainer.node(),
             attrs = {
                 y: fullLayout._paper.attr('height') - 9
             };
 
         // If text's width is bigger than the layout
-        if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
+        // IE doesn't like getComputedTextLength if an element
+        // isn't visible, which it (sometimes?) isn't
+        // apparently offsetParent is null for invisibles.
+        // http://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
+        if (text && text.offsetParent &&
+                text.getComputedTextLength() >= (fullLayout.width - 20)) {
             // Align the text at the left
             attrs['text-anchor'] = 'start';
             attrs.x = 5;
