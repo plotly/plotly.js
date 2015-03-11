@@ -1955,6 +1955,7 @@
         }
 
         options.element.onmousedown = onStart;
+        options.element.style.pointerEvents = 'all';
     };
 
     function coverSlip() {
