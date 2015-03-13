@@ -12,6 +12,7 @@
     // `Plotly` is `window.Plotly`
 
     'use strict';
+    /* global d3:false */
 
     /**
      * UI controller for interactive plots
@@ -123,7 +124,7 @@
                 dataAttr = button.getAttribute('data-attr'),
                 curval = graphInfo._fullLayout[dataAttr];
 
-            button.classList.toggle('active', curval===thisval);
+            d3.select(button).classed('active', curval===thisval);
         });
     };
 

@@ -1231,8 +1231,7 @@
         }
 
         function deleteModebar() {
-            var modebarUI = gd.querySelector('.modebar');
-            if (modebarUI) modebarUI.parentNode.removeChild(modebarUI);
+            Plotly.Lib.removeElement(gd.querySelector('.modebar'));
         }
 
         var modebar,
@@ -1928,9 +1927,7 @@
             dragCover.onmousemove = null;
             dragCover.onmouseup = null;
             dragCover.onmouseout = null;
-            if(dragCover.parentNode) {
-                dragCover.parentNode.removeChild(dragCover);
-            }
+            Plotly.Lib.removeElement(dragCover);
 
             if(!gd._dragging) return;
             gd._dragging = false;
@@ -1955,6 +1952,7 @@
         }
 
         options.element.onmousedown = onStart;
+        options.element.style.pointerEvents = 'all';
     };
 
     function coverSlip() {
