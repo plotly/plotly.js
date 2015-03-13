@@ -464,7 +464,7 @@
         function marginPushersAgain(){
             // in case the margins changed, draw margin pushers again
             var seq = JSON.stringify(fullLayout._size)===oldmargins ?
-                [] : [marginPushers];
+                [] : [marginPushers, layoutStyles];
             return Plotly.Lib.syncOrAsync(seq.concat(Plotly.Fx.init),gd);
         }
 
