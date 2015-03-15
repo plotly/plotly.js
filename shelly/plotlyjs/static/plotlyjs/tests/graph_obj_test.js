@@ -362,6 +362,7 @@ describe('Test graph_obj', function () {
             expect(function () {
                 Plotly.extendTraces({}, {x: [[1]]}, [0]);
             }).toThrow(new Error('gd.data must be an array.'));
+
             expect(function () {
                 Plotly.extendTraces({data: 'meow'}, {x: [[1]]}, [0]);
             }).toThrow(new Error('gd.data must be an array.'));
@@ -397,6 +398,7 @@ describe('Test graph_obj', function () {
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0], {y: [1]});
             }).toThrow(new Error('maxPoint object must match update Object'));
+
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0], {x: [1, 2]});
             }).toThrow(new Error('maxPoint object must match update Object'));
@@ -419,6 +421,7 @@ describe('Test graph_obj', function () {
 
         it('extend and window traces with update keys', function () {
             var maxPoints = 3;
+
             Plotly.extendTraces(gd, {
                 x: [[3, 4],[4, 5]], 'marker.size': [[0, -1],[5, 6]]
             }, [0, 1], maxPoints);
