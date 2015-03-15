@@ -1679,6 +1679,229 @@
         }
     }
 
+    function assertExtendTracesArgs(gd, update, indices, maxPoints) {
+
+        var isPlain = $.isPlainObject(maxPoints);
+
+        if (!Array.isArray(gd.data)) {
+            throw new Error('gd.data must be an array.');
+        }
+        if (typeof update === 'undefined') {
+            throw new Error('update must be defined.');
+        }
+
+        if (typeof indices === 'undefined') {
+            throw new Error('indices must be an integer or array of integers.');
+        }
+
+        assertIndexArray(gd, indices, 'indices');
+
+        /*
+         * if maxPoints is an object, it must match keys and array lengths of 'update' 1:1
+         */
+        for (var key in update) {
+            if (isPlain &&
+                (!(key in maxPoints) || !Array.isArray(maxPoints[key]) ||
+                 maxPoints[key].length !== update[key].length )) {
+                     throw new Error('maxPoint object must match update Object');
+                 }
+        }
+    }
+
+    /**
+     * get all update Properties from gd.data. Validate inputs and outputs.
+     * Used by prependTrace and extendTraces
+     */
+    function getExtendProperties (gd, update, indices, maxPoints) {
+
+        var isPlain = $.isPlainObject(maxPoints),
+            updateProps = [];
+        var trace, target, prop, insert, maxp;
+
+        // allow scalar index to represent a single trace position
+        if (!Array.isArray(indices)) {
+            indices = [indices];
+        }
+
+        // negative indices are wrapped around to their positive value. Equivalent to python indexing.
+        indices = positivifyIndices(indices, gd.data.length - 1);
+
+        // loop through all update keys and traces and harvest validated data.
+        for (var key in update) {
+
+            for (var j = 0; j < indices.length; j++) {
+
+                /*
+                 * Choose the trace indexed by the indice map argument and get the prop setter-getter
+                 * instance that references the key and value for this particular trace.
+                 */
+                trace = gd.data[indices[j]];
+                prop = Plotly.Lib.nestedProperty(trace, key);
+
+                /*
+                 * Target is the existing gd.data.trace.dataArray value like "x" or "marker.size"
+                 * Target must exist as an Array to allow the extend operation to be performed.
+                 */
+                target = prop.get();
+                insert = update[key][j];
+
+                if (!Array.isArray(insert)) {
+                    throw new Error('attribute: ' + key + ' index: ' + j + ' must be an array');
+                }
+                if (!Array.isArray(target)) {
+                    throw new Error('cannot extend missing or non-array attribute: ' + key);
+                }
+
+                /*
+                 * maxPoints may be an object map or a scalar. If object select the key:value, else
+                 * Use the scalar maxPoints for all key and trace combinations.
+                 */
+                maxp = isPlain ? maxPoints[key][j] : maxPoints;
+
+                // could have chosen null here, -1 just tells us to not take a window
+                if (!$.isNumeric(maxp)) maxp = -1;
+
+                /*
+                 * Wrap the nestedProperty in an object containing required data
+                 * for lengthening and windowing this particular trace - key combination.
+                 * Flooring maxp mirrors the behaviour of floats in the Array.slice JSnative function.
+                 */
+                updateProps.push({
+                    prop: prop,
+                    target: target,
+                    insert: insert,
+                    maxp: Math.floor(maxp)
+                });
+            }
+        }
+
+        // all target and insertion data now validated
+        return updateProps;
+    }
+
+    function spliceTraces (gd, update, indices, maxPoints, lengthenArray, spliceArray) {
+
+        assertExtendTracesArgs(gd, update, indices, maxPoints);
+
+        var updateProps = getExtendProperties(gd, update, indices, maxPoints),
+            remainder = [],
+            undoUpdate = {},
+            undoPoints = {};
+        var target, prop, maxp;
+
+        for (var i = 0; i < updateProps.length; i++) {
+
+            /*
+             * prop is the object returned by Lib.nestedProperties
+             */
+            prop = updateProps[i].prop;
+            maxp = updateProps[i].maxp;
+
+            target = lengthenArray(updateProps[i].target, updateProps[i].insert);
+
+            /*
+             * If maxp is set within post-extension trace.length splice to maxp length,
+             * otherwise skip function call is will have no effect.
+             */
+            if (maxp > 0 && maxp < target.length) remainder = spliceArray(target, maxp);
+
+            /*
+             * to reverse this operation we need the size of the original trace as the reverse
+             * operation will need to window out any lengthening operation performed in this pass.
+             */
+            maxp = updateProps[i].target.length;
+
+            /*
+             * Magic happens here! update gd.data.trace[key] with new array data.
+             */
+            prop.set(target);
+
+            if (!Array.isArray(undoUpdate[prop.astr])) undoUpdate[prop.astr] = [];
+            if (!Array.isArray(undoPoints[prop.astr])) undoPoints[prop.astr] = [];
+
+            /*
+             * build the inverse update object for the undo operation
+             */
+            undoUpdate[prop.astr].push(remainder);
+
+            /*
+             * build the matching maxPoints undo object containing original trace lengths.
+             */
+            undoPoints[prop.astr].push(maxp);
+        }
+
+        return {update: undoUpdate, maxPoints: undoPoints};
+    }
+
+    /**
+     * extend && prepend traces at indices with update arrays, window trace lengths to maxPoints
+     *
+     * Extend and Prepend have identical APIs. Prepend inserts an array at the head while Extend
+     * iserts an array off the tail. Prepend truncates the tail of the array - counting maxPoints
+     * from the head, whereas Extend truncates the head of the array, counting backward maxPoints
+     * from the tail.
+     *
+     * If maxPoints is undefined, nonNumeric, negative or greater than extended trace length no
+     * truncation / windowing will be performed.
+     *
+     * @param {Object|HTMLDivElement} gd The graph div
+     * @param {Object} update The key:array map of target attributes to extend
+     * @param {Number|Number[]} indices The locations of traces to be extended
+     * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening.
+     *
+     */
+    Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
+
+        var undo = spliceTraces(gd, update, indices, maxPoints,
+
+                               /*
+                                * The Lengthen operation extends trace from end with insert
+                                */
+                                function(target, insert) {
+                                    return target.concat(insert);
+                                },
+
+                                /*
+                                 * Window the trace keeping maxPoints, counting back from the end
+                                 */
+                                function(target, maxPoints) {
+                                    return target.splice(0, target.length - maxPoints);
+                                });
+
+        Plotly.redraw(gd);
+
+        var undoArgs = [gd, undo.update, indices, undo.maxPoints];
+        if (Plotly.Queue) {
+            Plotly.Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
+        }
+    };
+
+    Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) {
+
+        var undo = spliceTraces(gd, update, indices, maxPoints,
+
+                               /*
+                                * The Lengthen operation extends trace by appending insert to start
+                                */
+                                function(target, insert) {
+                                    return insert.concat(target);
+                                },
+
+                                /*
+                                 * Window the trace keeping maxPoints, counting forward from the start
+                                 */
+                                function(target, maxPoints) {
+                                    return target.splice(maxPoints, target.length);
+                                });
+
+        Plotly.redraw(gd);
+
+        var undoArgs = [gd, undo.update, indices, undo.maxPoints];
+        if (Plotly.Queue) {
+            Plotly.Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
+        }
+    };
+
     /**
      * Add data traces to an existing graph div.
      *
@@ -2256,7 +2479,7 @@
                             var trace = cd[0].trace,
                                 cb = cd[0].t.cb;
                             if(plots.isContour(trace.type)) {
-                                cb.line({
+                                  cb.line({
                                     width: trace.contours.showlines!==false ?
                                         trace.line.width : 0,
                                     dash: trace.line.dash,
