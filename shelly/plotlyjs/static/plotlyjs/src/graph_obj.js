@@ -1572,7 +1572,7 @@
      * @param indices
      * @param arrayName
      */
-    function validateIndexArray(gd, indices, arrayName) {
+    function assertIndexArray(gd, indices, arrayName) {
         var i,
             index;
 
@@ -1618,14 +1618,14 @@
         } else if (!Array.isArray(currentIndices)) {
             currentIndices = [currentIndices];
         }
-        validateIndexArray(gd, currentIndices, 'currentIndices');
+        assertIndexArray(gd, currentIndices, 'currentIndices');
 
         // validate newIndices array if it exists
         if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
             newIndices = [newIndices];
         }
         if (typeof newIndices !== 'undefined') {
-            validateIndexArray(gd, newIndices, 'newIndices');
+            assertIndexArray(gd, newIndices, 'newIndices');
         }
 
         // check currentIndices and newIndices are the same length if newIdices exists
@@ -1769,7 +1769,7 @@
         } else if (!Array.isArray(indices)) {
             indices = [indices];
         }
-        validateIndexArray(gd, indices, 'indices');
+        assertIndexArray(gd, indices, 'indices');
 
         // convert negative indices to positive indices
         indices = positivifyIndices(indices, gd.data.length - 1);
