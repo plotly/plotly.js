@@ -1719,9 +1719,7 @@
         var trace, target, prop, insert, maxp;
 
         // allow scalar index to represent a single trace position
-        if (!Array.isArray(indices)) {
-            indices = [indices];
-        }
+        if (!Array.isArray(indices)) indices = [indices];
 
         // negative indices are wrapped around to their positive value. Equivalent to python indexing.
         indices = positivifyIndices(indices, gd.data.length - 1);
