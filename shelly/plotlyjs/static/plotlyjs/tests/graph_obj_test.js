@@ -393,6 +393,18 @@ describe('Test graph_obj', function () {
 
         });
 
+       it('thow an error when number of Indices does not match Update arrays', function () {
+
+            expect(function () {
+                Plotly.extendTraces(gd, {x: [[1, 2], [2, 3]] }, [0]);
+            }).toThrow(new Error('attribute x must be an array with indice array length'));
+
+            expect(function () {
+                Plotly.extendTraces(gd, {x: [[1]]}, [0, 1]);
+            }).toThrow(new Error('attribute x must be an array with indice array length'));
+
+        });
+
         it('thow an error when maxPoints is an Object but does not match Update', function () {
 
             expect(function () {

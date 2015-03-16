@@ -1700,6 +1700,16 @@
          * if maxPoints is an object, it must match keys and array lengths of 'update' 1:1
          */
         for (var key in update) {
+
+            /*
+             * Verify that the attribute to be updated contains as many trace updates
+             * as Indicies. Failure must result in throw and no-op
+             */
+            if (!Array.isArray(update[key]) || update[key].length !== indices.length) {
+                throw new Error('attribute ' + key + ' must be an array with indice array length');
+            }
+
+
             if (isPlain &&
                 (!(key in maxPoints) || !Array.isArray(maxPoints[key]) ||
                  maxPoints[key].length !== update[key].length )) {
