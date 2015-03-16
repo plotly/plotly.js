@@ -23,3 +23,11 @@ a {
 .crisp { shape-rendering: crispEdges; }
 svg a { fill: $color-brand-primary; }
 svg a:hover { fill: #3c6dc5; }
+
+.main-svg>g {
+    pointer-events: none;
+
+    &.draglayer {
+        pointer-events: all;
+    }
+}
