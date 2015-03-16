@@ -427,6 +427,16 @@ describe('Test graph_obj', function () {
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0], {x: [1, 2]});
             }).toThrow(new Error('maxPoint object must match update Object'));
+        it('throw an error when update keys mismatch trace keys', function () {
+
+            // lets update y on both traces, but only 1 trace has "y"
+            gd.data[1].y = [1,2,3];
+
+            expect(function () {
+                Plotly.extendTraces(gd, {
+                    y: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
+                }, [0, 1]);
+            }).toThrow(new Error('cannot extend missing or non-array attribute: y'));
 
         });
 
