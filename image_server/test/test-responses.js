@@ -2,6 +2,7 @@
 
 var test = require('tape');
 var request = require('request');
+var getOptions = require('./tools/get-options');
 var fs = require('fs');
 var sizeOf = require('image-size');
 
@@ -36,10 +37,6 @@ test('basic figure to image test', function (t) {
     var imageStream = fs.createWriteStream(path);
     var options = getOptions(bodyMock);
 
-    request(options, checkFormat)
-        .pipe(imageStream)
-        .on('close', checkImage);
-
     function checkFormat (err, res) {
         if (err) return console.error(err);
         t.equal(res.headers['content-type'], 'image/png', 'data is in correct png format');
@@ -54,7 +51,9 @@ test('basic figure to image test', function (t) {
         t.end();
     }
 
-
+    request(options, checkFormat)
+        .pipe(imageStream)
+        .on('close', checkImage);
 });
 
 test('request SVG from figure', function (t) {
@@ -83,10 +82,6 @@ test('request SVG from figure', function (t) {
     var imageStream = fs.createWriteStream(path);
     var options = getOptions(bodyMock);
 
-    request(options, checkFormat)
-        .pipe(imageStream)
-        .on('close', checkImage);
-
     function checkFormat (err, res) {
         if (err) return console.error(err);
         t.equal(res.headers['content-type'], 'image/svg+xml', 'Returned Data is in SVG Format');
@@ -101,6 +96,10 @@ test('request SVG from figure', function (t) {
         t.equal(width, bodyMock.width, 'output svg width matches body width');
         t.end();
     }
+
+    request(options, checkFormat)
+        .pipe(imageStream)
+        .on('close', checkImage);
 
 });
 
@@ -130,10 +129,6 @@ test('request JPEG from figure', function (t) {
     var imageStream = fs.createWriteStream(path);
     var options = getOptions(bodyMock);
 
-    request(options, checkFormat)
-        .pipe(imageStream)
-        .on('close', checkImage);
-
     function checkFormat (err, res) {
         if (err) return console.error(err);
         t.equal(res.headers['content-type'], 'image/jpeg', 'Returned Data is in JPEG Format');
@@ -149,7 +144,9 @@ test('request JPEG from figure', function (t) {
         t.end();
     }
 
-
+    request(options, checkFormat)
+        .pipe(imageStream)
+        .on('close', checkImage);
 });
 
 test('request PDF from figure', function (t) {
@@ -174,15 +171,15 @@ test('request PDF from figure', function (t) {
         'height': 500
     };
 
-    // TODO : PDF with Batik, and/or verify terrible this raster somehow.
     var options = getOptions(bodyMock);
-    request(options, checkFormat);
 
     function checkFormat (err, res) {
         if (err) return console.error(err);
         t.equal(res.headers['content-type'], 'application/pdf', 'Returned Data is in PDF Format');
         t.end();
     }
+
+    request(options, checkFormat);
 
 });
 
@@ -208,15 +205,16 @@ test('request EPS from figure', function (t) {
         'height': 500
     };
 
-    // TODO : PDF with Batik, and/or verify terrible this raster somehow.
     var options = getOptions(bodyMock);
-    request(options, checkFormat);
+
 
     function checkFormat (err, res) {
         if (err) return console.error(err);
         t.equal(res.headers['content-type'], 'application/postscript', 'Returned Data is in EPS Format');
         t.end();
     }
+
+    request(options, checkFormat);
 
 });
 
@@ -247,10 +245,6 @@ test('request WEBP from figure', function (t) {
     var imageStream = fs.createWriteStream(path);
     var options = getOptions(bodyMock);
 
-    request(options, checkFormat)
-        .pipe(imageStream)
-        .on('close', checkImage);
-
     function checkFormat (err, res) {
         if (err) return console.error(err);
         t.equal(res.headers['content-type'], 'image/webp', 'Returned Data is in WEBP Format');
@@ -266,7 +260,9 @@ test('request WEBP from figure', function (t) {
         t.end();
     }
 
-
+    request(options, checkFormat)
+        .pipe(imageStream)
+        .on('close', checkImage);
 });
 
 
@@ -323,10 +319,6 @@ test('request WEBP from figure', function (t) {
     var imageStream = fs.createWriteStream(path);
     var options = getOptions(bodyMock);
 
-    request(options, checkFormat)
-        .pipe(imageStream)
-        .on('close', checkImage);
-
     function checkFormat (err, res) {
         if (err) return console.error(err);
         t.equal(res.headers['content-type'], 'image/webp', 'Returned Data is in WEBP Format');
@@ -342,23 +334,7 @@ test('request WEBP from figure', function (t) {
         t.end();
     }
 
-
+    request(options, checkFormat)
+        .pipe(imageStream)
+        .on('close', checkImage);
 });
-
-/*
-*   Give it a json object for the body,
-*   it'll return an options object ready
-*   for request().
-*   Just for added testing easypeasyness.
-*/
-function getOptions (body, url) {
-
-    var opts = {
-        url: url || 'http://localhost:9010/',
-        method: 'POST'
-    };
-
-    if (body) opts.body = JSON.stringify(body);
-
-    return opts;
-}

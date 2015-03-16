@@ -2,6 +2,7 @@
 
 var test = require('tape');
 var request = require('request');
+var getOptions = require('./tools/get-options');
 var fs = require('fs');
 var path = require('path');
 var gm = require('gm');

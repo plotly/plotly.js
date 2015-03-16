@@ -8,7 +8,7 @@ function Gl3dLayout (config) {
     this.layoutAttributes = {
         bgcolor: {
             type: 'color',
-            dflt: '#fff'
+            dflt: Plotly.Color.background
         },
         cameraposition: {
             type: 'data_array'
@@ -99,4 +99,14 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
         layoutOut[scene] = sceneLayoutOut;
     }
+};
+
+// Clean scene ids, 'scene1' -> 'scene'
+proto.cleanId = function cleanId(id) {
+    if(!id.match(/^scene[0-9]*$/)) return;
+
+    var sceneNum = id.substr(5);
+    if (sceneNum === '1') sceneNum = '';
+
+    return 'scene' + sceneNum;
 };
