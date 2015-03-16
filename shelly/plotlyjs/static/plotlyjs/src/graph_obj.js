@@ -1696,9 +1696,6 @@
 
         assertIndexArray(gd, indices, 'indices');
 
-        /*
-         * if maxPoints is an object, it must match keys and array lengths of 'update' 1:1
-         */
         for (var key in update) {
 
             /*
@@ -1709,7 +1706,9 @@
                 throw new Error('attribute ' + key + ' must be an array with indice array length');
             }
 
-
+            /*
+             * if maxPoints is an object it must match keys and array lengths of 'update' 1:1
+             */
             if (isPlain &&
                 (!(key in maxPoints) || !Array.isArray(maxPoints[key]) ||
                  maxPoints[key].length !== update[key].length )) {
