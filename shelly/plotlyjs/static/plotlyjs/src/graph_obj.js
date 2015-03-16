@@ -1679,19 +1679,29 @@
         }
     }
 
+    /**
+     * A private function to reduce the type checking clutter in spliceTraces.
+     * Get all update Properties from gd.data. Validate inputs and outputs.
+     * Used by prependTrace and extendTraces
+     *
+     * @param gd
+     * @param update
+     * @param indices
+     * @param maxPoints
+     */
     function assertExtendTracesArgs(gd, update, indices, maxPoints) {
 
         var maxPointsIsObject = $.isPlainObject(maxPoints);
 
         if (!Array.isArray(gd.data)) {
-            throw new Error('gd.data must be an array.');
+            throw new Error('gd.data must be an array');
         }
-        if (typeof update === 'undefined') {
-            throw new Error('update must be defined.');
+        if (!$.isPlainObject(update)) {
+            throw new Error('update must be a key:value object');
         }
 
         if (typeof indices === 'undefined') {
-            throw new Error('indices must be an integer or array of integers.');
+            throw new Error('indices must be an integer or array of integers');
         }
 
         assertIndexArray(gd, indices, 'indices');
@@ -1700,10 +1710,10 @@
 
             /*
              * Verify that the attribute to be updated contains as many trace updates
-             * as Indicies. Failure must result in throw and no-op
+             * as indices. Failure must result in throw and no-op
              */
             if (!Array.isArray(update[key]) || update[key].length !== indices.length) {
-                throw new Error('attribute ' + key + ' must be an array with indice array length');
+                throw new Error('attribute ' + key + ' must be an array of length equal to indices array length');
             }
 
             /*
@@ -1712,14 +1722,20 @@
             if (maxPointsIsObject &&
                 (!(key in maxPoints) || !Array.isArray(maxPoints[key]) ||
                  maxPoints[key].length !== update[key].length )) {
-                     throw new Error('maxPoint object must match update Object');
+                     throw new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
+                                    'corrispondence with the keys and number of traces in the update object');
                  }
         }
     }
 
     /**
-     * get all update Properties from gd.data. Validate inputs and outputs.
-     * Used by prependTrace and extendTraces
+     * A private function to reduce the type checking clutter in spliceTraces.
+     *
+     * @param {Object|HTMLDivElement} gd
+     * @param {Object} update
+     * @param {Number[]} indices
+     * @param {Number||Object} maxPoints
+     * @return {Object[]}
      */
     function getExtendProperties (gd, update, indices, maxPoints) {
 
@@ -1739,7 +1755,7 @@
             for (var j = 0; j < indices.length; j++) {
 
                 /*
-                 * Choose the trace indexed by the indice map argument and get the prop setter-getter
+                 * Choose the trace indexed by the indices map argument and get the prop setter-getter
                  * instance that references the key and value for this particular trace.
                  */
                 trace = gd.data[indices[j]];
@@ -1786,6 +1802,17 @@
         return updateProps;
     }
 
+    /**
+     * A private function to keey Extend and Prepend traces DRY
+     *
+     * @param {Object|HTMLDivElement} gd
+     * @param {Object} update
+     * @param {Number[]} indices
+     * @param {Number||Object} maxPoints
+     * @param {Function} lengthenArray
+     * @param {Function} spliceArray
+     * @return {Object}
+     */
     function spliceTraces (gd, update, indices, maxPoints, lengthenArray, spliceArray) {
 
         assertExtendTracesArgs(gd, update, indices, maxPoints);
@@ -1807,10 +1834,10 @@
             target = lengthenArray(updateProps[i].target, updateProps[i].insert);
 
             /*
-             * If maxp is set within post-extension trace.length splice to maxp length,
-             * otherwise skip function call is will have no effect.
+             * If maxp is set within post-extension trace.length, splice to maxp length.
+             * Otherwise skip function call as splice op will have no effect anyway.
              */
-            if (maxp > 0 && maxp < target.length) remainder = spliceArray(target, maxp);
+            if (maxp >= 0 && maxp < target.length) remainder = spliceArray(target, maxp);
 
             /*
              * to reverse this operation we need the size of the original trace as the reverse
@@ -1844,12 +1871,12 @@
      * extend && prepend traces at indices with update arrays, window trace lengths to maxPoints
      *
      * Extend and Prepend have identical APIs. Prepend inserts an array at the head while Extend
-     * iserts an array off the tail. Prepend truncates the tail of the array - counting maxPoints
+     * inserts an array off the tail. Prepend truncates the tail of the array - counting maxPoints
      * from the head, whereas Extend truncates the head of the array, counting backward maxPoints
      * from the tail.
      *
      * If maxPoints is undefined, nonNumeric, negative or greater than extended trace length no
-     * truncation / windowing will be performed.
+     * truncation / windowing will be performed. If its zero, well the whole trace is truncated.
      *
      * @param {Object|HTMLDivElement} gd The graph div
      * @param {Object} update The key:array map of target attributes to extend
