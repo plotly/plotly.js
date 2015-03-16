@@ -1681,7 +1681,7 @@
 
     function assertExtendTracesArgs(gd, update, indices, maxPoints) {
 
-        var isPlain = $.isPlainObject(maxPoints);
+        var maxPointsIsObject = $.isPlainObject(maxPoints);
 
         if (!Array.isArray(gd.data)) {
             throw new Error('gd.data must be an array.');
@@ -1709,7 +1709,7 @@
             /*
              * if maxPoints is an object it must match keys and array lengths of 'update' 1:1
              */
-            if (isPlain &&
+            if (maxPointsIsObject &&
                 (!(key in maxPoints) || !Array.isArray(maxPoints[key]) ||
                  maxPoints[key].length !== update[key].length )) {
                      throw new Error('maxPoint object must match update Object');
@@ -1723,7 +1723,7 @@
      */
     function getExtendProperties (gd, update, indices, maxPoints) {
 
-        var isPlain = $.isPlainObject(maxPoints),
+        var maxPointsIsObject = $.isPlainObject(maxPoints),
             updateProps = [];
         var trace, target, prop, insert, maxp;
 
@@ -1763,7 +1763,7 @@
                  * maxPoints may be an object map or a scalar. If object select the key:value, else
                  * Use the scalar maxPoints for all key and trace combinations.
                  */
-                maxp = isPlain ? maxPoints[key][j] : maxPoints;
+                maxp = maxPointsIsObject ? maxPoints[key][j] : maxPoints;
 
                 // could have chosen null here, -1 just tells us to not take a window
                 if (!$.isNumeric(maxp)) maxp = -1;
