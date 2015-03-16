@@ -410,11 +410,11 @@ describe('Test graph_obj', function () {
 
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1, 2], [2, 3]] }, [0]);
-            }).toThrow(new Error('attribute x must be an array with indice array length'));
+            }).toThrow(new Error('attribute x must be an array of length equal to indices array length'));
 
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0, 1]);
-            }).toThrow(new Error('attribute x must be an array with indice array length'));
+            }).toThrow(new Error('attribute x must be an array of length equal to indices array length'));
 
         });
 
@@ -422,11 +422,16 @@ describe('Test graph_obj', function () {
 
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0], {y: [1]});
-            }).toThrow(new Error('maxPoint object must match update Object'));
+            }).toThrow(new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
+                                 'corrispondence with the keys and number of traces in the update object'));
 
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0], {x: [1, 2]});
-            }).toThrow(new Error('maxPoint object must match update Object'));
+            }).toThrow(new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
+                                 'corrispondence with the keys and number of traces in the update object'));
+
+        });
+
         it('throw an error when update keys mismatch trace keys', function () {
 
             // lets update y on both traces, but only 1 trace has "y"
