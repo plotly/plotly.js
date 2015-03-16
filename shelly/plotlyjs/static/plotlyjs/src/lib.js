@@ -506,7 +506,7 @@
      * Check known non-data-array arrays (containers). Data arrays only contain scalars,
      * so parts[end] values, such as -1 or n, indicate we are not dealing with a dataArray.
      * The ONLY case we are looking for is where the entire array is selected, parts[end] === 'x'
-     * AND the replacement value is an empty array [].
+     * AND the replacement value is an array.
      */
     function isDataArray(val, key) {
 
