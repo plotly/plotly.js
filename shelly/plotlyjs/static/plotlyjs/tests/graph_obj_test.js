@@ -483,6 +483,20 @@ describe('Test graph_obj', function () {
             ]);
         });
 
+        it('truncates arrays when maxPoints is zero', function () {
+
+            Plotly.extendTraces(gd, {
+                x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
+            }, [0, 1], 0);
+
+            expect(gd.data).toEqual([
+                {x: [], marker: {size: []}},
+                {x: [], marker: {size: []}}
+            ]);
+
+            expect(Plotly.redraw).toHaveBeenCalled();
+        });
+
         it('prepend is the inverse of extend - no maxPoints', function () {
             var cachedData = $.extend(true, [], gd.data);
 
