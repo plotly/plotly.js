@@ -361,19 +361,32 @@ describe('Test graph_obj', function () {
 
             expect(function () {
                 Plotly.extendTraces({}, {x: [[1]]}, [0]);
-            }).toThrow(new Error('gd.data must be an array.'));
+            }).toThrow(new Error('gd.data must be an array'));
 
             expect(function () {
                 Plotly.extendTraces({data: 'meow'}, {x: [[1]]}, [0]);
-            }).toThrow(new Error('gd.data must be an array.'));
+            }).toThrow(new Error('gd.data must be an array'));
 
         });
+
+        it('throw an error when update is not an object', function () {
+
+            expect(function () {
+                Plotly.extendTraces(gd, undefined, [0], 8);
+            }).toThrow(new Error('update must be a key:value object'));
+
+            expect(function () {
+                Plotly.extendTraces(gd, null, [0]);
+            }).toThrow(new Error('update must be a key:value object'));
+
+        });
+
 
         it('throw an error when indices are omitted', function () {
 
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1]]});
-            }).toThrow(new Error('indices must be an integer or array of integers.'));
+            }).toThrow(new Error('indices must be an integer or array of integers'));
 
         });
 
