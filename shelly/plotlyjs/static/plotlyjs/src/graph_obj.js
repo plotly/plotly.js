@@ -292,9 +292,11 @@
             link.on('click',function(){
                 $(gd).trigger('plotly_beforeexport');
 
+                var baseUrl = (window.ENV && window.ENV.BASE_URL) || 'https://plot.ly';
+
                 var hiddenform = $(
                     '<div id="hiddenform" style="display:none;">' +
-                    '<form action="https://plot.ly/external" ' +
+                    '<form action="' + baseUrl + '/external" ' +
                         'method="post" target="_blank">'+
                     '<input type="text" name="data" /></form></div>'
                 ).appendTo(gd);
