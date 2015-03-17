@@ -1556,7 +1556,13 @@
     };
 
     lib.isPlotDiv = function(el) {
-        return el.classList.contains('js-plotly-plot');
+        var el3 = d3.select(el);
+        return el3.size() && el3.classed('js-plotly-plot');
+    };
+
+    lib.removeElement = function(el) {
+        var elParent = el && el.parentNode;
+        if(elParent) elParent.removeChild(el);
     };
 
     return lib;
