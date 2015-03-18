@@ -455,6 +455,13 @@
                 .style({visibility: 'visible'});
             result = _context.appendSVG(converted);
             if(!result) _context.text(str);
+            if(_context.select('a').size()) {
+                // at least in Chrome, pointer-events does not seem
+                // to be honored in children of <text> elements
+                // so if we have an anchor, we have to make the
+                // whole element respond
+                _context.style('pointer-events', 'all');
+            }
 
             if(_callback) _callback.call(that);
         }

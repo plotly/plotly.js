@@ -238,7 +238,33 @@ describe('Test lib.js:', function() {
             expect(obj).toEqual({a: false, b: '', c: 0, d: NaN});
         });
 
-        it('should have no empty sub-containers', function() {
+        it('should remove containers but not data arrays', function() {
+            var obj = {
+                annotations: [{a: [1,2,3]}],
+                c: [1,2,3],
+                domain: [1,2],
+                range: [2,3],
+                shapes: ['elephant']
+            },
+                propA = np(obj, 'annotations[-1].a'),
+                propC = np(obj, 'c'),
+                propD0 = np(obj, 'domain[0]'),
+                propD1 = np(obj, 'domain[1]'),
+                propR = np(obj, 'range'),
+                propS = np(obj, 'shapes[0]');
+
+            propA.set([]);
+            propC.set([]);
+            propD0.set(undefined);
+            propD1.set(undefined);
+            propR.set([]);
+            propS.set(null);
+
+            expect(obj).toEqual({c:[]});
+        });
+
+
+        it('should have no empty object sub-containers but contain empty data arrays', function() {
             var obj = {},
                 prop = np(obj, 'a[1].b.c'),
                 expectedArr = [];
@@ -254,7 +280,7 @@ describe('Test lib.js:', function() {
 
             prop.set(null);
             expect(prop.get()).toBe(undefined);
-            expect(obj).toEqual({});
+            expect(obj).toEqual({a: []});
         });
 
         it('should get empty, and fail on set, with a bad input object', function() {
@@ -315,4 +341,3 @@ describe('Test lib.js:', function() {
 
     });
 });
-
