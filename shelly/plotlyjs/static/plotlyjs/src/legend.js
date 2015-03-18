@@ -418,6 +418,11 @@
                 }
             });
         }
+        else {
+            // even if it's not editable, still need to be able to
+            // click on the legend to hide/show traces
+            legendsvg.attr('pointer-events', 'all');
+        }
     };
 
     legend.repositionLegend = function(td, traces){
