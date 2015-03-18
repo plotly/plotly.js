@@ -366,6 +366,7 @@
                 traceToggle.enter().append('rect')
                     .classed('legendtoggle', true)
                     .style('cursor', 'pointer')
+                    .attr('pointer-events', 'all')
                     .call(Plotly.Color.fill, 'rgba(0,0,0,0)');
                 traceToggle.on('click', function() {
                     if(td._dragged) return;
@@ -417,11 +418,6 @@
                     }
                 }
             });
-        }
-        else {
-            // even if it's not editable, still need to be able to
-            // click on the legend to hide/show traces
-            legendsvg.attr('pointer-events', 'all');
         }
     };
 
