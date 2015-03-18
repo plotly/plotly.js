@@ -52,7 +52,7 @@
                 body.insertBefore(newDiv, bodyFirstChild);
                 w.fbAsyncInit = function() {
                     FB.init({
-                        appId      : ENV.FACEBOOK_PAGE_APP_ID,
+                        appId      : PLOTLYENV.FACEBOOK_PAGE_APP_ID,
                         /*channelUrl : 'WWW.YOUR_DOMAIN.COM/channel.html'*/
                         status     : true,
                         cookie     : true,
@@ -66,7 +66,7 @@
 
             if (scriptNames.indexOf('googleAnalytics') !== -1){
                 w._gaq = w._gaq || [];
-                w._gaq.push(['_setAccount', ENV.GOOGLEANALYTICS_ACCOUNT]);
+                w._gaq.push(['_setAccount', PLOTLYENV.GOOGLEANALYTICS_ACCOUNT]);
                 w._gaq.push(['_setSiteSpeedSampleRate', 10]);
                 w._gaq.push(['_trackPageview']);
                 loadScript('google-analytics', protocol2 + '.google-analytics.com/ga.js', loadDelay);
