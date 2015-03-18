@@ -932,7 +932,7 @@
     lib.getSources = function(td) {
         var extrarefs = (td.ref_fids||[]).join(',');
         if(!td.fid && !extrarefs) return;
-        if(!window.ENV || !window.ENV.DOMAIN_WEBAPP) return;
+        if(!window.PLOTLYENV || !window.PLOTLYENV.DOMAIN_WEBAPP) return;
 
         $.get('/getsources', {fid: td.fid, extrarefs:extrarefs}, function(res) {
             td.sourcelist = JSON.parse(res);
