@@ -1929,7 +1929,10 @@
             dragCover.onmouseout = null;
             Plotly.Lib.removeElement(dragCover);
 
-            if(!gd._dragging) return;
+            if(!gd._dragging) {
+                gd._dragged = false;
+                return;
+            }
             gd._dragging = false;
 
             // don't count as a dblClick unless the mouseUp is also within
@@ -1947,6 +1950,8 @@
             }
 
             finishDrag(gd);
+
+            gd._dragged = false;
 
             return Plotly.Lib.pauseEvent(e);
         }
