@@ -502,11 +502,25 @@
         };
     }
 
+    /*
+     * Check known non-data-array arrays (containers). Data arrays only contain scalars,
+     * so parts[end] values, such as -1 or n, indicate we are not dealing with a dataArray.
+     * The ONLY case we are looking for is where the entire array is selected, parts[end] === 'x'
+     * AND the replacement value is an array.
+     */
+    function isDataArray(val, key) {
+
+        var containers = ['annotations', 'shapes', 'range', 'domain'],
+            isNotAContainer = containers.indexOf(key) === -1;
+
+        return Array.isArray(val) && isNotAContainer;
+    }
+
     function npSet(cont, parts) {
         return function(val) {
             var curCont = cont,
                 containerLevels = [cont],
-                toDelete = emptyObj(val),
+                toDelete = emptyObj(val)  && !isDataArray(val, parts[parts.length-1]),
                 curPart,
                 i;
 
@@ -603,7 +617,7 @@
                 keys = Object.keys(curCont);
                 remainingKeys = false;
                 for(j = keys.length - 1; j >= 0; j--) {
-                    if(emptyObj(curCont[keys[j]])) delete curCont[keys[j]];
+                    if(emptyObj(curCont[keys[j]]) && !isDataArray(curCont[keys[j]], keys[j])) delete curCont[keys[j]];
                     else remainingKeys = true;
                 }
             }
@@ -932,7 +946,7 @@
     lib.getSources = function(td) {
         var extrarefs = (td.ref_fids||[]).join(',');
         if(!td.fid && !extrarefs) return;
-        if(!window.ENV || !window.ENV.DOMAIN_WEBAPP) return;
+        if(!window.PLOTLYENV || !window.PLOTLYENV.DOMAIN_WEBAPP) return;
 
         $.get('/getsources', {fid: td.fid, extrarefs:extrarefs}, function(res) {
             td.sourcelist = JSON.parse(res);
