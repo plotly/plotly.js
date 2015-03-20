@@ -1,8 +1,7 @@
 'use strict';
 
-var createScatterLine = require('./line-with-markers'),
-    str2RgbaArray = require('./str2rgbarray'),
-    calculateError = require('./calc-errors');
+var str2RgbaArray = require('../lib/str2rgbarray'),
+    calculateError = require('../lib/calc-errors');
 
 function Scatter3D (config) {
 
@@ -309,9 +308,12 @@ function formatParam(paramIn, len, calculate, dflt) {
 }
 
 proto.update = function update (scene, sceneLayout, data, scatter) {
+
+    console.log('update scatter3d called')
     /*jshint camelcase: false */
     // handle visible trace cases
 
+    /*
     var params, i,
         points = [],
         xaxis = sceneLayout.xaxis,
@@ -401,6 +403,7 @@ proto.update = function update (scene, sceneLayout, data, scatter) {
     scatter.uid = data.uid;
 
     return scatter;
+    */
 };
 
 

@@ -37,6 +37,8 @@ var proto = Gl3dLayout.prototype;
 
 proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
+    console.log('gl3dlayout defaults')
+
     if (!layoutOut._hasGL3D) return;
 
     var _this = this;

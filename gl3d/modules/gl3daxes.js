@@ -1,7 +1,6 @@
 module.exports = Gl3dAxes;
 
 function Gl3dAxes (config) {
-
     this.config = config;
     this.axesNames = ['xaxis', 'yaxis', 'zaxis'];
 
@@ -82,6 +81,9 @@ var proto = Gl3dAxes.prototype;
 
 
 proto.supplyLayoutDefaults = function(layoutIn, layoutOut, options) {
+
+    console.log('gl3daxes defaults')
+
     var _this = this;
     var Plotly = this.config.Plotly;
     var Axes = Plotly.Axes;
