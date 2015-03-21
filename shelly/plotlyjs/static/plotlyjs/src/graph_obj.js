@@ -16,7 +16,7 @@
     /* jshint camelcase: false */
 
     // ---Plotly global modules
-    /* global SceneFrame:false, Examples:false, ENV:false */
+    /* global SceneFrame:false, Examples:false, PLOTLYENV:false */
 
     // ---global functions not yet namespaced
     /* global setFileAndCommentsSize:false */
@@ -292,9 +292,11 @@
             link.on('click',function(){
                 $(gd).trigger('plotly_beforeexport');
 
+                var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
+
                 var hiddenform = $(
                     '<div id="hiddenform" style="display:none;">' +
-                    '<form action="https://plot.ly/external" ' +
+                    '<form action="' + baseUrl + '/external" ' +
                         'method="post" target="_blank">'+
                     '<input type="text" name="data" /></form></div>'
                 ).appendTo(gd);
@@ -653,7 +655,7 @@
                     sceneData: sceneData,
                     sceneLayout: sceneLayout,
                     fullLayout: fullLayout,
-                    baseurl: ENV.BASE_URL,
+                    baseurl: PLOTLYENV.BASE_URL,
                     glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
                 };
                 scene = SceneFrame.createScene(sceneFrameOptions);
