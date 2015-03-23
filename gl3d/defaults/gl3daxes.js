@@ -82,8 +82,6 @@ var proto = Gl3dAxes.prototype;
 
 proto.supplyLayoutDefaults = function(layoutIn, layoutOut, options) {
 
-    console.log('gl3daxes defaults')
-
     var _this = this;
     var Plotly = this.config.Plotly;
     var Axes = Plotly.Axes;
@@ -154,5 +152,4 @@ proto.initAxes = function (td) {
             ax._td = td;
         }
     }
-
 };

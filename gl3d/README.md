@@ -1,6 +1,9 @@
 gl3d code organization
 ======================
 
+
+# Legacy system notes
+
 Main external interface is `scene.plot()`
 
 ## Scene management
@@ -34,3 +37,5 @@ Main external interface is `scene.plot()`
 * How are plot types instantiated?
 
 * Which places in the code explicitly reference objects in gl3d?
+
+# 
