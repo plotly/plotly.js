@@ -16,7 +16,7 @@
     /* jshint camelcase: false */
 
     // ---Plotly global modules
-    /* global SceneFrame:false, Examples:false, PLOTLYENV:false */
+    /* global SceneFrame:false, PLOTLYENV:false */
 
     // ---global functions not yet namespaced
     /* global setFileAndCommentsSize:false */
