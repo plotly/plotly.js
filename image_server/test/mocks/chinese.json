@@ -1,0 +1,104 @@
+{
+   "data":[
+      {
+         "name":"熱量ベース食料自給率",
+         "ysrc":"kyslog:73:23110b",
+         "textsrc":"kyslog:73:bcf2d1",
+         "xsrc":"kyslog:73:6bcfd8",
+         "visible":true,
+         "mode":"markers+text",
+         "type":"scatter",
+         "marker":{
+            "color":"rgb(0, 0, 0)",
+            "size":16
+         },
+         "uid":"6c3294",
+         "x": [
+           1,
+           2,
+           3,
+           4
+         ],
+         "y": [
+           10,
+           15,
+           13,
+           17
+         ]
+      },
+      {
+         "name":"金額ベース食料自給率",
+         "ysrc":"kyslog:73:fd9ee2",
+         "textsrc":"kyslog:73:bcf2d1",
+         "xsrc":"kyslog:73:6bcfd8",
+         "visible":true,
+         "mode":"markers+text",
+         "marker":{
+            "color":"rgb(74, 134, 232)",
+            "symbol":"circle-open",
+            "size":16
+         },
+         "type":"scatter",
+         "uid":"73b3c6",
+         "x": [
+           2,
+           3,
+           4,
+           5
+         ],
+         "y": [
+           16,
+           5,
+           11,
+           9
+         ]
+      }
+   ],
+   "layout":{
+      "autosize":true,
+      "title":"可耕地面積あたり人口密度と食料自給率の関係",
+      "yaxis":{
+         "tickfont":{
+            "color":"rgb(0, 0, 0)"
+         },
+         "title":"食料自給率 （%; 農林水産省推計）",
+         "range":[
+            -21.135015884221676,
+            244.13501588422167
+         ],
+         "titlefont":{
+            "color":"rgb(0, 0, 0)",
+            "size":20
+         },
+         "type":"linear",
+         "autorange":true
+      },
+      "showlegend":true,
+      "height":517,
+      "width":792,
+      "xaxis":{
+         "tickfont":{
+            "color":"rgb(0, 0, 0)"
+         },
+         "title":"可耕地面積あたり人口密度　(人/km²;　CIA World Fact Book)",
+         "range":[
+            -180.23615160349857,
+            3211.2361516034985
+         ],
+         "titlefont":{
+            "color":"rgb(0, 0, 0)",
+            "size":20
+         },
+         "type":"linear",
+         "autorange":true
+      },
+      "legend":{
+         "y":0.9525222551928784,
+         "x":0.5300632911392406,
+         "font":{
+            "color":"rgb(0, 0, 0)",
+            "size":20
+         }
+      }
+   }
+}
