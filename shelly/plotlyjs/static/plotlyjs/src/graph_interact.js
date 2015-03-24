@@ -1986,14 +1986,6 @@
         if(csr) { el3.classed('cursor-'+csr, true); }
     };
 
-    // convert text in an input to equivalently displayed html
-    function escaped(val) {
-        return val.replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/\s/g, '&nbsp;');
-    }
-
     // for bar charts and others with finite-size objects: you must be inside
     // it to see its hover info, so distance is infinite outside.
     // But make distance inside be at least 1/4 MAXDIST, and a little bigger
