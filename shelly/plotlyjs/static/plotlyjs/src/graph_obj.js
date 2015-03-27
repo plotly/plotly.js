@@ -608,15 +608,6 @@
         var fullLayout = gd._fullLayout,
             fullData = gd._fullData;
 
-        /*
-         * Once Webgl plays well with other things we can remove this.
-         * Unset examples, they misbehave with 3d plots
-         */
-        var $examplesContainer = $(gd).find('.examples-container');
-        if ($examplesContainer.css('display') === 'block') {
-            Examples.set();
-        }
-
         fullLayout._paperdiv.style({
             width: fullLayout.width+'px',
             height: fullLayout.height+'px',
