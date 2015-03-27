@@ -4,6 +4,8 @@ module.exports = computeTickMarks
 
 var project = require('./project');
 
+var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis']
+
 //Proportional to the scale of the y axis
 function pixelLength(
     camera, 
@@ -11,8 +13,11 @@ function pixelLength(
     centerPoint,
     axis,
     desiredPixelLength) {
-  var p = project(camera, centerPoint)
-  return 2.0 * desiredPixelLength * p[3] / resolution[1]
+    /*
+    var p = project(camera, centerPoint);
+    return 2.0 * desiredPixelLength * p[3] / resolution[1];
+    */
+    return 0.005 * desiredPixelLength
 }
 
 var centerPoint = [0,0,0];
@@ -29,11 +34,13 @@ function solveLength(a, b, cameraParameters, shape) {
 
 function computeTickMarks(scene) {
     var axesOptions = scene.axesOptions;
-    var glRange     = scene.scene.axesPixels
-    var sceneLayout = scene.sceneLayout
+    var glRange     = scene.scene.axesPixels;
+    var sceneLayout = scene.sceneLayout;
+
+    var ticks = [[],[],[]];
 
     for (var i = 0; i < 3; ++i) {
-        axes = sceneLayout[this.axesNames[i]];
+        var axes = sceneLayout[AXES_NAMES[i]];
 
         axes._length = (glRange[i].hi - glRange[i].lo) *
             glRange[i].pixelsPerDataUnit;
@@ -44,14 +51,19 @@ function computeTickMarks(scene) {
             axes.range[0] = glRange[i].lo;
             axes.range[1] = glRange[i].hi;
             axes._m       = 1 / glRange[i].pixelsPerDataUnit;
+
+            if(axes.range[0] === axes.range[1]) {
+                axes.range[0] -= 1
+                axes.range[1] += 1
+            }
             // this is necessary to short-circuit the 'y' handling
             // in autotick part of calcTicks... Treating all axes as 'y' in this case
             // running the autoticks here, then setting
             // autoticks to false to get around the 2D handling in calcTicks.
-            autoTickCached = axes.autotick;
+            var autoTickCached = axes.autotick;
             if (axes.autotick) {
                 axes.autotick = false;
-                nticks = axes.nticks || scene.Plotly.Lib.constrain((axes._length/40), 4, 9);
+                var nticks = axes.nticks || scene.Plotly.Lib.constrain((axes._length/40), 4, 9);
                 scene.Plotly.Axes.autoTicks(axes, Math.abs(axes.range[1]-axes.range[0])/nticks);
             }
             ticks[i] = scene.Plotly.Axes.calcTicks(axes);
@@ -60,12 +72,17 @@ function computeTickMarks(scene) {
         }
     }
 
+    axesOptions.ticks = ticks;
+
     //Calculate tick lengths dynamically
-    for(i=0; i<3; ++i) {
-        centerPoint[i] = 0.5 * (scene.scene.axis.bounds[0][i] + scene.scene.axis.bounds[1][i]);
+    for(var i=0; i<3; ++i) {
+        centerPoint[i] = 0.5 * (scene.scene.bounds[0][i] + scene.scene.bounds[1][i]);
+        for(var j=0; j<2; ++j) {
+            axesOptions.bounds[j][i] = scene.scene.bounds[j][i]
+        }
     }
 
-    solveLength(scene.axesOpts.lineTickLength, scene.axesOpts._defaultLineTickLength, scene.cameraParameters, scene.shape);
-    solveLength(scene.axesOpts.tickPad,        scene.axesOpts._defaultTickPad, scene.cameraParameters, scene.shape);
-    solveLength(scene.axesOpts.labelPad,       scene.axesOpts._defaultLabelPad, scene.cameraParameters, scene.shape);
+    solveLength(scene.axesOptions.lineTickLength, scene.axesOptions._defaultLineTickLength, scene.scene.cameraParams, scene.scene.shape);
+    solveLength(scene.axesOptions.tickPad,        scene.axesOptions._defaultTickPad, scene.scene.cameraParams, scene.scene.shape);
+    solveLength(scene.axesOptions.labelPad,       scene.axesOptions._defaultLabelPad, scene.scene.cameraParams, scene.scene.shape);
 }

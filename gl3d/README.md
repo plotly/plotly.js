@@ -1,6 +1,15 @@
 gl3d code organization
 ======================
 
+General data flow:
+
+1. A user clicks on make plot, updates a trace, etc.
+1. A new plotly JSON object is created with inputs from the user
+1. Default values in these structures are populated using information from the defaults/ folder
+1. Plot is called with the sceneLayout and trace information
+1. These default properties are converted to the format expected by gl-plot3d
+1. The relevant update or constructors are called, then objects are added to the scene
+
 
 # Legacy system notes
 

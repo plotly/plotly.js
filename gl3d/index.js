@@ -10,13 +10,9 @@ var createPlot          = require('gl-plot3d'),
     /*Surface = require('./modules/surface');*/
 
 function render(scene) {
-    //TODO: Recompute tick marks based on view position
-
-
     //Recompute tick markers
     computeTickMarks(scene);
     scene.scene.axes.update(scene.axesOptions);
-    scene.scene.spikes.update(scene.spikeOptions);
 }
 
 function Scene(options) {
@@ -49,8 +45,10 @@ proto.plot = function(sceneData, sceneLayout) {
     this.sceneLayout = sceneLayout;
     this.axesOptions.merge(sceneLayout);
     this.spikeOptions.merge(sceneLayout);
+    this.scene.update({})
 
     //Add trace
+    //TODO
 }
 
 function createScene(options) {
