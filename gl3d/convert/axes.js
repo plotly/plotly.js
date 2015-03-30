@@ -49,7 +49,7 @@ function AxesOptions() {
     this.zeroLineColor  = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
     this.zeroLineWidth  = [ 2, 2, 2 ];
 
-    this.backgroundEnable = [ false, false, false ];
+    this.backgroundEnable = [ true, true, true ];
     this.backgroundColor  = [ [0.8, 0.8, 0.8, 0.5],
                               [0.8, 0.8, 0.8, 0.5],
                               [0.8, 0.8, 0.8, 0.5] ];

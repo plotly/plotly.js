@@ -1,9 +1,6 @@
 'use strict';
-var createSurface = require('gl-surface-plot'),
-    str2RgbaArray = require('./str2rgbarray'),
-    tinycolor = require('tinycolor2'),
-    ndarray = require('ndarray'),
-    fill = require('ndarray-fill');
+var str2RgbaArray = require('../lib/str2rgbarray'),
+    tinycolor = require('tinycolor2');
 
 function Surface (config) {
 
@@ -110,21 +107,6 @@ function Surface (config) {
 module.exports = Surface;
 
 var proto = Surface.prototype;
-
-
-function parseColorScale (colorscale, alpha) {
-    if (alpha === undefined) alpha = 1;
-
-    return colorscale.map( function (elem) {
-        var index = elem[0];
-        var color = tinycolor(elem[1]);
-        var rgb = color.toRgb();
-        return {
-            index: index,
-            rgb: [rgb.r, rgb.g, rgb.b, alpha]
-        };
-    });
-}
 
 proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     var i, j, _this = this;
@@ -235,7 +217,7 @@ proto.update = function update (scene, sceneLayout, data, surface) {
         yc = coords[1],
         hasCoords = false,
         gl = scene.shell.gl,
-        contourLevels = scene.contourLevels;
+        contourLevels = [[],[],[]]; //TODO: figure out where this is initialized/computed
 
     /*
      * Fill and transpose zdata.
@@ -244,7 +226,7 @@ proto.update = function update (scene, sceneLayout, data, surface) {
      * and that the sub-array entries correspond to a x-coords,
      * which is the transpose of 'gl-surface-plot'.
      */
-    fill(field, function(row, col) {
+    fill(coords[2], function(row, col) {
         return zaxis.d2l(z[col][row]);
     });
 
@@ -279,7 +261,6 @@ proto.update = function update (scene, sceneLayout, data, surface) {
     }
 
     var params = {
-        field:          field,
         colormap:       colormap,
         levels:         [[],[],[]],
         showContour:    [ true, true, true ],
@@ -329,6 +310,7 @@ proto.update = function update (scene, sceneLayout, data, surface) {
         params.coords = coords;
     } else {
         params.ticks = ticks;
+        params.field = coords[2]
     }
 
     if (surface) {
@@ -369,9 +351,4 @@ proto.update = function update (scene, sceneLayout, data, surface) {
     if (alpha && alpha < 1) surface.supportsTransparency = true;
 
     return surface;
-
-};
-
-proto.colorbar = function(gd, cd) {
-    this.config.Plotly.Heatmap.colorbar(gd, cd);
-};
+}

@@ -1,11 +1,11 @@
 'use strict';
 
-var createLinePlot    = require('gl-line-plot'),
-    createScatterPlot = require('gl-scatter-plot'),
+var createLinePlot    = require('gl-line3d'),
+    createScatterPlot = require('gl-scatter3d'),
     createErrorBars   = require('gl-error-bars'),
-    createMesh        = require('gl-simplicial-complex'),
+    createMesh        = require('gl-mesh3d'),
     triangulate       = require('delaunay-triangulate'),
-    DASH_PATTERNS     = require('./dashes.json'),
+    DASH_PATTERNS     = require('../lib/dashes.json'),
     proto;
 
 module.exports = createLineWithMarkers;
