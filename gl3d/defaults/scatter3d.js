@@ -1,7 +1,6 @@
 'use strict';
 
-var str2RgbaArray = require('../lib/str2rgbarray'),
-    calculateError = require('../lib/calc-errors');
+var MARKER_SYMBOLS = require('../lib/markers.json');
 
 function Scatter3D (config) {
 
@@ -120,7 +119,6 @@ module.exports = Scatter3D;
 
 var proto = Scatter3D.prototype;
 
-
 proto.handleXYZDefaults = function (traceIn, traceOut, coerce) {
     var len = 0,
         x = coerce('x'),
@@ -136,6 +134,8 @@ proto.handleXYZDefaults = function (traceIn, traceOut, coerce) {
 
     return len;
 };
+
+proto.markerSymbols = MARKER_SYMBOLS;
 
 proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     var _this = this,
@@ -196,224 +196,4 @@ proto.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y', inherit: 'z'});
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
-
-};
-
-function calculateErrorParams(errors) {
-    /*jshint camelcase: false */
-    var capSize = [0.0, 0.0, 0.0], i, e;
-    var color = [[0,0,0],[0,0,0],[0,0,0]];
-    var lineWidth = [0.0, 0.0, 0.0];
-    for(i=0; i<3; ++i) {
-        e = errors[i];
-        if (e && e.copy_zstyle !== false) {
-            e = errors[2];
-        }
-        if(!e) continue;
-        capSize[i] = e.width / 100.0;  //Ballpark rescaling, attempt to make consistent with plot.ly
-        color[i] = str2RgbaArray(e.color);
-        lineWidth = e.thickness;
-
-    }
-    return {capSize: capSize, color: color, lineWidth: lineWidth};
-}
-
-function calculateTextOffset(textposition) {
-    //Read out text properties
-    var textOffset = [0,0];
-    if (textposition.indexOf('bottom') >= 0) {
-        textOffset[1] += 1;
-    }
-    if (textposition.indexOf('top') >= 0) {
-        textOffset[1] -= 1;
-    }
-    if (textposition.indexOf('left') >= 0) {
-        textOffset[0] -= 1;
-    }
-    if (textposition.indexOf('right') >= 0) {
-        textOffset[0] += 1;
-    }
-    return textOffset;
-}
-
-proto.formatColor = function formatColor(colorIn, opacityIn, len) {
-    var colorDflt = this.config.Plotly.Color.defaultLine,
-        opacityDflt = 1,
-        isArrayColorIn = Array.isArray(colorIn),
-        isArrayOpacityIn = Array.isArray(opacityIn),
-        colorOut = [],
-        getColor,
-        getOpacity,
-        colori,
-        opacityi;
-
-    function calculateColor(colorIn, opacityIn) {
-        var colorOut = str2RgbaArray(colorIn);
-        colorOut[3] *= opacityIn;
-        return colorOut;
-    }
-
-    if (isArrayColorIn) {
-        getColor = function(c, i){
-            return (c[i]===undefined) ? colorDflt : c[i];
-        };
-    } else {
-        getColor = function(c) { return c; };
-    }
-
-    if (isArrayOpacityIn) {
-        getOpacity = function(o, i){
-            return (o[i]===undefined) ? opacityDflt : o[i];
-        };
-    } else {
-        getOpacity = function(o){ return o; };
-    }
-
-    if (isArrayColorIn || isArrayOpacityIn) {
-        for (var i = 0; i < len; i++) {
-            colori = getColor(colorIn, i);
-            opacityi = getOpacity(opacityIn, i);
-            colorOut[i] = calculateColor(colori, opacityi);
-        }
-    } else {
-        colorOut = calculateColor(colorIn, opacityIn);
-    }
-
-    return colorOut;
-};
-
-function calculateSize(sizeIn) {
-    // rough parity with Plotly 2D markers
-    return sizeIn * 2;
-}
-
-function calculateSymbol(symbolIn) {
-    return proto.markerSymbols[symbolIn];
-}
-
-function formatParam(paramIn, len, calculate, dflt) {
-    var paramOut = null;
-
-    if (Array.isArray(paramIn)) {
-        paramOut = [];
-
-        for (var i = 0; i < len; i++) {
-            if (paramIn[i]===undefined) paramOut[i] = dflt;
-            else paramOut[i] = calculate(paramIn[i]);
-        }
-
-    } else paramOut = calculate(paramIn);
-
-    return paramOut;
-}
-
-proto.update = function update (scene, sceneLayout, data, scatter) {
-
-    console.log('update scatter3d called')
-    /*jshint camelcase: false */
-    // handle visible trace cases
-
-    /*
-    var params, i,
-        points = [],
-        xaxis = sceneLayout.xaxis,
-        yaxis = sceneLayout.yaxis,
-        zaxis = sceneLayout.zaxis,
-        marker = data.marker,
-        line = data.line,
-        errorParams = calculateErrorParams([ data.error_x, data.error_y, data.error_z ]),
-        xc, x = data.x,
-        yc, y = data.y,
-        zc, z = data.z,
-        len = x.length;
-
-    //Convert points
-    for (i = 0; i < len; i++) {
-        // sanitize numbers and apply transforms based on axes.type
-        xc = xaxis.d2l(x[i]);
-        yc = yaxis.d2l(y[i]);
-        zc = zaxis.d2l(z[i]);
-
-        points[i] = [xc, yc, zc];
-    }
-
-    //Build object parameters
-    params = {
-        position: points,
-        mode:     data.mode
-    };
-
-    if ('line' in data) {
-        params.lineColor     = str2RgbaArray(line.color);
-        params.lineWidth     = line.width;
-        params.lineDashes    = line.dash;
-    }
-
-    if ('marker' in data) {
-        params.scatterColor         = this.formatColor(marker.color, marker.opacity, len);
-        params.scatterSize          = formatParam(marker.size, len, calculateSize, 20);
-        params.scatterMarker        = formatParam(marker.symbol, len, calculateSymbol, '●');
-        params.scatterLineWidth     = marker.line.width;  // arrayOk === false
-        params.scatterLineColor     = this.formatColor(marker.line.color, marker.opacity, len);
-        params.scatterAngle         = 0;
-    }
-
-    if ('textposition' in data) {
-        params.text           = data.text;
-        params.textOffset     = calculateTextOffset(data.textposition);
-        params.textColor      = str2RgbaArray(data.textfont.color);
-        params.textSize       = data.textfont.size;
-        params.textFont       = data.textfont.family;
-        params.textAngle      = 0;
-    }
-
-    var dims = ['x', 'y', 'z'];
-    params.project = [];
-    for (i = 0; i < 3; ++i) {
-        var projection = data.projection[dims[i]];
-        if ((params.project[i] = projection.show)) {
-            // Mikolas API doesn't current support axes dependent
-            // configuration. Its coming though.
-            params.projectOpacity = data.projection.x.opacity;
-            params.projectScale = data.projection.x.scale;
-        }
-    }
-
-    params.errorBounds    = calculateError(data);
-    params.errorColor     = errorParams.color;
-    params.errorLineWidth = errorParams.lineWidth;
-    params.errorCapSize   = errorParams.capSize;
-
-    params.delaunayAxis       = data.surfaceaxis;
-    params.delaunayColor      = str2RgbaArray(data.surfacecolor);
-
-    if (scatter) scatter.update(params);
-    else {
-        var pickIds = scene.allocIds(4);
-
-        params.pickId0   = pickIds.ids[0];
-        params.pickId1   = pickIds.ids[1];
-        params.pickId2   = pickIds.ids[2];
-        params.pickId3   = pickIds.ids[3];
-        scatter          = createScatterLine(scene.shell.gl, params);
-        scatter.groupId  = pickIds.group;
-        scatter.plotlyType  = data.type;
-    }
-
-    scatter.uid = data.uid;
-
-    return scatter;
-    */
-};
-
-
-proto.markerSymbols = {
-    'circle': '●',
-    'circle-open': '○',
-    'square': '■',
-    'square-open': '□',
-    'diamond': '◆',
-    'diamond-open': '◇',
-    'cross': '+',
-    'x': '❌'
 };

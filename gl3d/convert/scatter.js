@@ -1,122 +1,35 @@
 'use strict';
 
+//TODO: error bars
+
 var createLinePlot    = require('gl-line3d'),
     createScatterPlot = require('gl-scatter3d'),
-    createErrorBars   = require('gl-error-bars'),
+    //createErrorBars   = require('gl-error-bars'),
     createMesh        = require('gl-mesh3d'),
     triangulate       = require('delaunay-triangulate'),
+    str2RgbaArray     = require('../lib/str2rgbarray'),
+    calculateError    = require('../lib/calc-errors'),
     DASH_PATTERNS     = require('../lib/dashes.json'),
+    MARKER_SYMBOLS    = require('../lib/markers.json'),
     proto;
 
 module.exports = createLineWithMarkers;
 
-function LineWithMarkers(gl, linePlot, scatterPlot, errorBars, textMarkers, delaunayMesh, mode) {
-    this.gl                 = gl;
-    this.linePlot           = linePlot;
-    this.scatterPlot        = scatterPlot;
-    this.errorBars          = errorBars;
-    this.textMarkers        = textMarkers;
-    this.delaunayMesh       = delaunayMesh;
-    this.mode               = mode;
-    this.bounds             = [[ Infinity, Infinity, Infinity],
-                               [-Infinity,-Infinity,-Infinity]];
-    this.clipBounds         = [[-Infinity,-Infinity,-Infinity],
-                               [ Infinity, Infinity, Infinity]];
-    this.pickId0            = 0;
-    this.pickId1            = 1;
-    this.pickId2            = 2;
-    this.pickId3            = 3;
-    this.lineTransparent    = false;
-    this.scatterTransparent = false;
-    this.errorTransparent   = false;
-    this.textTransparent    = false;
-    this.fillTransparent    = false;
-    this.meshTransparent    = false;
+function LineWithMarkers(scene, uid) {
+    this.scene              = scene;
+    this.uid                = uid;
+    this.linePlot           = null;
+    this.scatterPlot        = null;
+    this.errorBars          = null;
+    this.textMarkers        = null;
+    this.delaunayMesh       = null;
+    this.mode               = '';
     this.dataPoints         = [];
     this.axesBounds         = [[-Infinity,-Infinity,-Infinity],
                                [Infinity,Infinity,Infinity]];
 }
 
 proto = LineWithMarkers.prototype;
-
-proto.supportsTransparency = true;
-
-proto.draw = function(cameraParams, transparent) {
-    if(this.linePlot    && this.lineTransparent === transparent) {
-        this.linePlot.clipBounds = this.clipBounds;
-        this.linePlot.draw(cameraParams);
-    }
-    if(this.scatterPlot && this.scatterTransparent === transparent) {
-        this.scatterPlot.clipBounds = this.clipBounds;
-        this.scatterPlot.axesBounds = this.axesBounds;
-        this.scatterPlot.draw(cameraParams);
-    }
-    if(this.textMarkers && this.textTransparent === transparent) {
-        this.textMarkers.clipBounds = this.clipBounds;
-        this.textMarkers.draw(cameraParams);
-    }
-    if(this.errorBars && this.errorTransparent === transparent) {
-        this.errorBars.clipBounds = this.clipBounds;
-        this.errorBars.draw(cameraParams);
-    }
-    if(this.delaunayMesh && this.meshTransparent === transparent) {
-        this.delaunayMesh.clipBounds = this.clipBounds;
-        this.delaunayMesh.draw(cameraParams);
-    }
-};
-
-proto.drawPick = function(cameraParams) {
-    if(this.linePlot) {
-        this.linePlot.clipBounds = this.clipBounds;
-        this.linePlot.drawPick(cameraParams);
-    }
-    if(this.scatterPlot) {
-        this.scatterPlot.clipBounds = this.clipBounds;
-        this.scatterPlot.axesBounds = this.axesBounds;
-        this.scatterPlot.drawPick(cameraParams);
-    }
-    if(this.textMarkers) {
-        this.textMarkers.clipBounds = this.clipBounds;
-        this.textMarkers.drawPick(cameraParams);
-    }
-    if(this.delaunayMesh) {
-        this.delaunayMesh.clipBounds = this.clipBounds;
-        this.delaunayMesh.drawPick(cameraParams);
-    }
-}
-
-proto.pick = function(pickResult) {
-    var result = null;
-    if(this.linePlot) {
-        result = this.linePlot.pick(pickResult);
-    }
-    if(this.scatterPlot) {
-        result = result || this.scatterPlot.pick(pickResult);
-    }
-    if(this.textMarkers) {
-        result = result || this.textMarkers.pick(pickResult);
-    }
-    if(this.delaunayMesh) {
-        result = result || this.delaunayMesh.pick(pickResult);
-    }
-    return result;
-}
-
-function isTransparent(color) {
-    if(Array.isArray(color[0])) {
-        for(var i=0; i<color.length; ++i) {
-            var c = color[i];
-            if(c.length === 4 && c[3] < 1) {
-                return true;
-            }
-        }
-        return false;
-    }
-    if(color.length === 3) {
-        return false;
-    }
-    return color[3] < 1;
-}
 
 function constructDelaunay(points, color, axis) {
     var u = (axis+1)%3;
@@ -146,68 +59,246 @@ function constructDelaunay(points, color, axis) {
     }
 }
 
-proto.update = function(options) {
-    var gl = this.gl,
+function calculateErrorParams(errors) {
+    /*jshint camelcase: false */
+    var capSize = [0.0, 0.0, 0.0], i, e;
+    var color = [[0,0,0],[0,0,0],[0,0,0]];
+    var lineWidth = [0.0, 0.0, 0.0];
+    for(i=0; i<3; ++i) {
+        e = errors[i];
+        if (e && e.copy_zstyle !== false) {
+            e = errors[2];
+        }
+        if(!e) continue;
+        capSize[i] = e.width / 100.0;  //Ballpark rescaling, attempt to make consistent with plot.ly
+        color[i] = str2RgbaArray(e.color);
+        lineWidth = e.thickness;
+
+    }
+    return {capSize: capSize, color: color, lineWidth: lineWidth};
+}
+
+function calculateTextOffset(textposition) {
+    //Read out text properties
+    var textOffset = [0,0];
+    if (textposition.indexOf('bottom') >= 0) {
+        textOffset[1] += 1;
+    }
+    if (textposition.indexOf('top') >= 0) {
+        textOffset[1] -= 1;
+    }
+    if (textposition.indexOf('left') >= 0) {
+        textOffset[0] -= 1;
+    }
+    if (textposition.indexOf('right') >= 0) {
+        textOffset[0] += 1;
+    }
+    return textOffset;
+}
+
+
+function formatColor(Plotly, colorIn, opacityIn, len) {
+    var colorDflt = Plotly.Color.defaultLine,
+        opacityDflt = 1,
+        isArrayColorIn = Array.isArray(colorIn),
+        isArrayOpacityIn = Array.isArray(opacityIn),
+        colorOut = [],
+        getColor,
+        getOpacity,
+        colori,
+        opacityi;
+
+    function calculateColor(colorIn, opacityIn) {
+        var colorOut = str2RgbaArray(colorIn);
+        colorOut[3] *= opacityIn;
+        return colorOut;
+    }
+
+    if (isArrayColorIn) {
+        getColor = function(c, i){
+            return (c[i]===undefined) ? colorDflt : c[i];
+        };
+    } else {
+        getColor = function(c) { return c; };
+    }
+
+    if (isArrayOpacityIn) {
+        getOpacity = function(o, i){
+            return (o[i]===undefined) ? opacityDflt : o[i];
+        };
+    } else {
+        getOpacity = function(o){ return o; };
+    }
+
+    if (isArrayColorIn || isArrayOpacityIn) {
+        for (var i = 0; i < len; i++) {
+            colori = getColor(colorIn, i);
+            opacityi = getOpacity(opacityIn, i);
+            colorOut[i] = calculateColor(colori, opacityi);
+        }
+    } else {
+        colorOut = calculateColor(colorIn, opacityIn);
+    }
+
+    return colorOut;
+};
+
+function calculateSize(sizeIn) {
+    // rough parity with Plotly 2D markers
+    return sizeIn * 2;
+}
+
+function calculateSymbol(symbolIn) {
+    return MARKER_SYMBOLS[symbolIn];
+}
+
+function formatParam(paramIn, len, calculate, dflt) {
+    var paramOut = null;
+
+    if (Array.isArray(paramIn)) {
+        paramOut = [];
+
+        for (var i = 0; i < len; i++) {
+            if (paramIn[i]===undefined) paramOut[i] = dflt;
+            else paramOut[i] = calculate(paramIn[i]);
+        }
+
+    } else paramOut = calculate(paramIn);
+
+    return paramOut;
+}
+
+
+function convertPlotlyOptions(scene, data) {
+    var params, i,
+        points = [],
+        Plotly = scene.Plotly,
+        sceneLayout = scene.sceneLayout,
+        xaxis = sceneLayout.xaxis,
+        yaxis = sceneLayout.yaxis,
+        zaxis = sceneLayout.zaxis,
+        marker = data.marker,
+        line = data.line,
+        errorParams = calculateErrorParams([ data.error_x, data.error_y, data.error_z ]),
+        xc, x = data.x,
+        yc, y = data.y,
+        zc, z = data.z,
+        len = x.length;
+
+    //Convert points
+    for (i = 0; i < len; i++) {
+        // sanitize numbers and apply transforms based on axes.type
+        xc = xaxis.d2l(x[i]);
+        yc = yaxis.d2l(y[i]);
+        zc = zaxis.d2l(z[i]);
+
+        points[i] = [xc, yc, zc];
+    }
+
+    //Build object parameters
+    params = {
+        position: points,
+        mode:     data.mode
+    };
+
+    if ('line' in data) {
+        params.lineColor     = str2RgbaArray(line.color);
+        params.lineWidth     = line.width;
+        params.lineDashes    = line.dash;
+    }
+
+    if ('marker' in data) {
+        params.scatterColor         = formatColor(Plotly, marker.color, marker.opacity, len);
+        params.scatterSize          = formatParam(marker.size, len, calculateSize, 20);
+        params.scatterMarker        = formatParam(marker.symbol, len, calculateSymbol, '●');
+        params.scatterLineWidth     = marker.line.width;  // arrayOk === false
+        params.scatterLineColor     = formatColor(Plotly, marker.line.color, marker.opacity, len);
+        params.scatterAngle         = 0;
+    }
+
+    if ('textposition' in data) {
+        params.text           = data.text;
+        params.textOffset     = calculateTextOffset(data.textposition);
+        params.textColor      = str2RgbaArray(data.textfont.color);
+        params.textSize       = data.textfont.size;
+        params.textFont       = data.textfont.family;
+        params.textAngle      = 0;
+    }
+
+    var dims = ['x', 'y', 'z'];
+    params.project = [];
+    for (i = 0; i < 3; ++i) {
+        var projection = data.projection[dims[i]];
+        if ((params.project[i] = projection.show)) {
+            // Mikolas API doesn't current support axes dependent
+            // configuration. Its coming though.
+            params.projectOpacity = data.projection.x.opacity;
+            params.projectScale = data.projection.x.scale;
+        }
+    }
+
+    params.errorBounds    = calculateError(data);
+    params.errorColor     = errorParams.color;
+    params.errorLineWidth = errorParams.lineWidth;
+    params.errorCapSize   = errorParams.capSize;
+
+    params.delaunayAxis       = data.surfaceaxis;
+    params.delaunayColor      = str2RgbaArray(data.surfacecolor);
+
+    return params;
+}
+
+proto.update = function(data) {
+    var gl = this.scene.scene.gl,
         lineOptions,
         scatterOptions,
         errorOptions,
         textOptions,
         dashPattern = DASH_PATTERNS['solid'];
 
-    options = options || {};
+    //Run data conversion
+    var options = convertPlotlyOptions(this.scene, data);
 
     if('mode' in options) {
         this.mode = options.mode;
-    }
-    if('clipBounds' in options) {
-        this.clipBounds = options.clipBounds;
     }
     if('lineDashes' in options) {
         if(options.lineDashes in DASH_PATTERNS) {
             dashPattern = DASH_PATTERNS[options.lineDashes];
         }
     }
-    if('pickId0' in options) {
-        this.pickId0 = options.pickId0;
-    }
-    if('pickId1' in options) {
-        this.pickId1 = options.pickId1;
-    }
-    if('pickId2' in options) {
-        this.pickId2 = options.pickId2;
-    }
-    if('pickId3' in options) {
-        this.pickId3 = options.pickId3;
-    }
 
     //Save data points
     this.dataPoints = options.position;
 
     lineOptions = {
+        gl:         gl,
         position:   options.position,
         color:      options.lineColor,
-        pickId:     this.pickId0,
         lineWidth:  options.lineWidth || 1,
         dashes:     dashPattern[0],
         dashScale:  dashPattern[1]
     };
 
     if (this.mode.indexOf('lines') !== -1) {
-        this.lineTransparent = isTransparent(options.lineColor);
         if (this.linePlot) this.linePlot.update(lineOptions);
-        else this.linePlot = createLinePlot(gl, lineOptions);
+        else {
+            this.linePlot = createLinePlot(lineOptions);
+            this.scene.scene.add(this.linePlot);
+        }
     } else if (this.linePlot) {
+        this.scene.scene.remove(this.linePlot);
         this.linePlot.dispose();
         this.linePlot = null;
     }
 
     scatterOptions = {
+        gl:           gl,
         position:     options.position,
         color:        options.scatterColor,
         size:         options.scatterSize,
         glyph:        options.scatterMarker,
         orthographic: true,
-        pickId:       this.pickId1,
         lineWidth:    options.scatterLineWidth,
         lineColor:    options.scatterLineColor,
         project:      options.project,
@@ -216,16 +307,19 @@ proto.update = function(options) {
     };
 
     if(this.mode.indexOf('markers') !== -1) {
-        this.scatterTransparent = isTransparent(options.scatterColor) ||
-            isTransparent(options.scatterLineColor);
         if (this.scatterPlot) this.scatterPlot.update(scatterOptions);
-        else this.scatterPlot = createScatterPlot(gl, scatterOptions);
+        else {
+            this.scatterPlot = createScatterPlot(scatterOptions);
+            this.scene.scene.add(this.scatterPlot);
+        }
     } else if(this.scatterPlot) {
+        this.scene.scene.remove(this.scatterPlot);
         this.scatterPlot.dispose();
         this.scatterPlot = null;
     }
 
     textOptions = {
+        gl:           gl,
         position:     options.position,
         glyph:        options.text,
         color:        options.textColor,
@@ -234,19 +328,22 @@ proto.update = function(options) {
         alignment:    options.textOffset,
         font:         options.textFont,
         orthographic: true,
-        pickId:       this.pickId2,
         lineWidth:    0
     };
 
     if(this.mode.indexOf('text') !== -1) {
-        this.textTransparent = isTransparent(options.textColor);
         if (this.textMarkers) this.textMarkers.update(textOptions);
-        else this.textMarkers = createScatterPlot(gl, textOptions);
+        else {
+            this.textMarkers = createScatterPlot(textOptions);
+            this.scene.scene.add(this.textMarkers)
+        }
     } else if (this.textMarkers) {
+        this.scene.scene.remove(this.textMarkers);
         this.textMarkers.dispose();
         this.textMarkers = null;
     }
 
+    /*
     errorOptions = {
         position:     options.position,
         color:        options.errorColor,
@@ -254,76 +351,65 @@ proto.update = function(options) {
         lineWidth:    options.errorLineWidth,
         capSize:      options.errorCapSize
     };
-
     if(this.errorBars) {
-        this.errorTransparent = isTransparent(options.errorColor);
         if(options.errorBounds) {
             this.errorBars.update(errorOptions);
         } else {
+            this.scene.scene.remove(this.errorBars);
             this.errorBars.dispose();
             this.errorBars = null;
         }
     } else if(options.errorBounds) {
-        this.errorTransparent = isTransparent(options.errorColor);
         this.errorBars = createErrorBars(gl, errorOptions);
     }
+    */
 
     if(options.delaunayAxis >= 0) {
         var delaunayOptions = constructDelaunay(
             options.position,
             options.delaunayColor,
             options.delaunayAxis);
-        delaunayOptions.pickId = this.pickId3;
-        this.meshTransparent = isTransparent(options.delaunayColor);
         if(this.delaunayMesh) {
             this.delaunayMesh.update(delaunayOptions);
         } else {
-            this.delaunayMesh = createMesh(gl, delaunayOptions);
+            delaunayOptions.gl = gl;
+            this.delaunayMesh = createMesh(delaunayOptions);
+            this.scene.scene.add(delaunayMesh);
         }
     } else if(this.delaunayMesh) {
+        this.scene.scene.remove(this.delaunayMesh);
         this.delaunayMesh.dispose();
         this.delaunayMesh = null;
     }
-
-
-    //Update bounding box
-    var bounds = this.bounds = [[Infinity,Infinity,Infinity], [-Infinity,-Infinity,-Infinity]];
-    function mergeBounds(object) {
-        if(object) {
-            var b = object.bounds;
-            for(var i=0; i<3; ++i) {
-                bounds[0][i] = Math.min(bounds[0][i], b[0][i]);
-                bounds[1][i] = Math.max(bounds[1][i], b[1][i]);
-            }
-        }
-    }
-    mergeBounds(this.scatterPlot);
-    mergeBounds(this.errorBars);
-    mergeBounds(this.linePlot);
-    mergeBounds(this.textMarkers);
-    mergeBounds(this.delaunayMesh);
 }
 
 proto.dispose = function() {
     if(this.linePlot) {
+        this.scene.scene.remove(this.linePlot);
         this.linePlot.dispose();
     }
     if(this.scatterPlot) {
+        this.scene.scene.remove(this.scatterPlot);
         this.scatterPlot.dispose();
     }
+    /*
     if(this.errorBars) {
+        this.scene.remove(this.errorBars);
         this.errorBars.dispose();
     }
+    */
     if(this.textMarkers) {
+        this.scene.scene.remove(this.textMarkers);
         this.textMarkers.dispose();
     }
     if(this.delaunayMesh) {
+        this.scene.scene.remove(this.textMarkers);
         this.delaunayMesh.dispose();
     }
 }
 
-function createLineWithMarkers(gl, options) {
-    var plot = new LineWithMarkers(gl, null, null, null, null, '');
-    plot.update(options);
+function createLineWithMarkers(scene, data) {
+    var plot = new LineWithMarkers(scene, data.uid);
+    plot.update(data);
     return plot;
 }

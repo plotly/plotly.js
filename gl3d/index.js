@@ -1,8 +1,7 @@
 'use strict'
 
-//TODO: Error handling (context creation failure)
+//TODO: Context creation failure
 //TODO: Scatter plots
-//TODO: Surface plots
 //TODO: Units for labels (use pixels)
 //TODO: Fix camera (default to turntable)
 //TODO: Add camera buttons
