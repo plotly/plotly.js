@@ -96,7 +96,7 @@
         }
         else {
             var z = coerce('z');
-            if(!z) {
+            if(!(z && z.length && z[0].length)) {
                 traceOut.visible = false;
                 return;
             }
