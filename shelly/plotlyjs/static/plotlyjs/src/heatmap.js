@@ -87,6 +87,21 @@
             return Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
         }
 
+        function isValidZ(z) {
+            var allRowsAreArrays = true,
+                oneRowIsFilled = false,
+                zi;
+
+            if (!(Array.isArray(z) && z.length)) return false;
+
+            for (var i = 0; i < z.length; i++) {
+                zi = z[i];
+                if (!Array.isArray(zi)) allRowsAreArrays = false;
+                if (!oneRowIsFilled && zi.length) oneRowIsFilled = true;
+            }
+            return (allRowsAreArrays && oneRowIsFilled);
+        }
+
         if(Plotly.Plots.isHist2D(traceOut.type)) {
             // x, y, z, marker.color, and x0, dx, y0, dy are coerced
             // in Histogram.supplyDefaults
@@ -96,7 +111,7 @@
         }
         else {
             var z = coerce('z');
-            if(!z) {
+            if(!isValidZ(z)) {
                 traceOut.visible = false;
                 return;
             }
