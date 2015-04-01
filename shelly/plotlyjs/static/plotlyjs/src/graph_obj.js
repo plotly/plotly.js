@@ -1015,6 +1015,35 @@
             (Object.keys(outer[innerStr]).length === 0);
     }
 
+    function sanitizeMargins(fullLayout) {
+        var width = fullLayout.width,
+            height = fullLayout.height,
+            margin = fullLayout.margin,
+            plotWidth = width - (margin.l + margin.r),
+            plotHeight = height - (margin.t + margin.b),
+            correction;
+
+        if (plotWidth < 0) {
+            margin.l = Math.min(margin.l, width);
+            margin.r = Math.min(margin.r, width);
+            correction = (margin.l + margin.r) - width;
+            if (correction > 0) {
+                margin.l -= correction / 2;
+                margin.r -= correction / 2;
+            }
+        }
+
+        if (plotHeight < 0) {
+            margin.t = Math.min(margin.t, height);
+            margin.b = Math.min(margin.b, height);
+            correction = (margin.t + margin.b) - height;
+            if (correction > 0) {
+                margin.t -= correction / 2;
+                margin.b -= correction / 2;
+            }
+        }
+    }
+
     // for use in Plotly.Lib.syncOrAsync, check if there are any
     // pending promises in this plot and wait for them
     plots.previousPromises = function(gd){
@@ -1399,18 +1428,20 @@
             color: globalFont.color
         });
 
-        coerce('autosize', (layoutIn.width && layoutIn.height) ? false : 'initial');
+        var autosize = coerce('autosize',
+            (layoutIn.width && layoutIn.height) ? false : 'initial');
         coerce('width');
         coerce('height');
 
-        // TODO: sanity check that margins leave room for the plot
-        // but this requires fulfilling autosize first
         coerce('margin.l');
         coerce('margin.r');
         coerce('margin.t');
         coerce('margin.b');
         coerce('margin.pad');
         coerce('margin.autoexpand');
+
+        // called in plotAutoSize otherwise
+        if (autosize===false) sanitizeMargins(layoutOut);
 
         coerce('paper_bgcolor');
 
@@ -2955,6 +2986,9 @@
             delete(aobj.autosize);
             fullLayout.autosize = gd.layout.autosize = true;
         }
+
+        sanitizeMargins(fullLayout);
+
         return aobj;
     }
 
