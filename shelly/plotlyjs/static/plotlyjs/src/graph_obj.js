@@ -1023,24 +1023,20 @@
             plotHeight = height - (margin.t + margin.b),
             correction;
 
+        // if margin.l + margin.r = 0 then plotWidth > 0
+        // as width >= 10 by supplyDefaults
+        // similarly for margin.t + margin.b
+
         if (plotWidth < 0) {
-            margin.l = Math.min(margin.l, width);
-            margin.r = Math.min(margin.r, width);
-            correction = (margin.l + margin.r) - width;
-            if (correction > 0) {
-                margin.l -= correction / 2;
-                margin.r -= correction / 2;
-            }
+            correction = (width - 1) / (margin.l + margin.r);
+            margin.l *= correction;
+            margin.r *= correction;
         }
 
         if (plotHeight < 0) {
-            margin.t = Math.min(margin.t, height);
-            margin.b = Math.min(margin.b, height);
-            correction = (margin.t + margin.b) - height;
-            if (correction > 0) {
-                margin.t -= correction / 2;
-                margin.b -= correction / 2;
-            }
+            correction = (height - 1) / (margin.t + margin.b);
+            margin.t *= correction;
+            margin.b *= correction;
         }
     }
 
