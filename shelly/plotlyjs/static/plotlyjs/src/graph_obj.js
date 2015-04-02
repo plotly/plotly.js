@@ -1029,14 +1029,14 @@
 
         if (plotWidth < 0) {
             correction = (width - 1) / (margin.l + margin.r);
-            margin.l *= correction;
-            margin.r *= correction;
+            margin.l = Math.floor(correction * margin.l);
+            margin.r = Math.floor(correction * margin.r);
         }
 
         if (plotHeight < 0) {
             correction = (height - 1) / (margin.t + margin.b);
-            margin.t *= correction;
-            margin.b *= correction;
+            margin.t = Math.floor(correction * margin.t);
+            margin.b = Math.floor(correction * margin.b);
         }
     }
 
