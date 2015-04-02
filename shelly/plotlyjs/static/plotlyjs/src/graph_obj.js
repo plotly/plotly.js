@@ -1437,7 +1437,7 @@
         coerce('margin.autoexpand');
 
         // called in plotAutoSize otherwise
-        if (autosize===false) sanitizeMargins(layoutOut);
+        if (autosize!=='initial') sanitizeMargins(layoutOut);
 
         coerce('paper_bgcolor');
 
