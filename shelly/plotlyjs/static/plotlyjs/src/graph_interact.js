@@ -852,7 +852,7 @@
                 // attached to the DOM
                 var tmp = document.createElement('p');
                 tmp.innerHTML = d.name;
-                name = tmp.textContent;
+                name = tmp.textContent||'';
 
                 if(name.length>15) name = name.substr(0,12)+'...';
             }
