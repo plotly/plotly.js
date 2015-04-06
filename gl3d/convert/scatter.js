@@ -4,7 +4,7 @@
 
 var createLinePlot    = require('gl-line3d'),
     createScatterPlot = require('gl-scatter3d'),
-    //createErrorBars   = require('gl-error-bars'),
+    createErrorBars   = require('gl-error3d'),
     createMesh        = require('gl-mesh3d'),
     triangulate       = require('delaunay-triangulate'),
     str2RgbaArray     = require('../lib/str2rgbarray'),
@@ -343,8 +343,8 @@ proto.update = function(data) {
         this.textMarkers = null;
     }
 
-    /*
     errorOptions = {
+        gl:           gl,
         position:     options.position,
         color:        options.errorColor,
         error:        options.errorBounds,
@@ -360,9 +360,9 @@ proto.update = function(data) {
             this.errorBars = null;
         }
     } else if(options.errorBounds) {
-        this.errorBars = createErrorBars(gl, errorOptions);
+        this.errorBars = createErrorBars(errorOptions);
+        this.scene.scene.add(this.errorBars);
     }
-    */
 
     if(options.delaunayAxis >= 0) {
         var delaunayOptions = constructDelaunay(
@@ -392,12 +392,10 @@ proto.dispose = function() {
         this.scene.scene.remove(this.scatterPlot);
         this.scatterPlot.dispose();
     }
-    /*
     if(this.errorBars) {
         this.scene.remove(this.errorBars);
         this.errorBars.dispose();
     }
-    */
     if(this.textMarkers) {
         this.scene.scene.remove(this.textMarkers);
         this.textMarkers.dispose();

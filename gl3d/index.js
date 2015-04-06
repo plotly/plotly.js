@@ -1,10 +1,5 @@
 'use strict'
 
-//TODO: Context creation failure
-//TODO: Scatter plots
-//TODO: Units for labels (use pixels)
-//TODO: Fix camera (default to turntable)
-//TODO: Add camera buttons
 
 var createPlot          = require('gl-plot3d'),
     Gl3dLayout          = require('./defaults/gl3dlayout'),
@@ -18,7 +13,6 @@ var createPlot          = require('gl-plot3d'),
     computeTickMarks    = require('./lib/tick-marks');
     
 function render(scene) {
-    //Recompute tick markers
     computeTickMarks(scene);
     scene.scene.axes.update(scene.axesOptions);
 }
@@ -40,7 +34,8 @@ function Scene(options) {
         glOptions:  glOptions,
         axes:       this.axesOptions,
         spikes:     this.spikeOptions,
-        pickRadius: 10
+        pickRadius: 10,
+        snapToData: true
     })
 
     this.scene.onrender = render.bind(null, this)
