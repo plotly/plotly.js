@@ -1015,6 +1015,31 @@
             (Object.keys(outer[innerStr]).length === 0);
     }
 
+    function sanitizeMargins(fullLayout) {
+        var width = fullLayout.width,
+            height = fullLayout.height,
+            margin = fullLayout.margin,
+            plotWidth = width - (margin.l + margin.r),
+            plotHeight = height - (margin.t + margin.b),
+            correction;
+
+        // if margin.l + margin.r = 0 then plotWidth > 0
+        // as width >= 10 by supplyDefaults
+        // similarly for margin.t + margin.b
+
+        if (plotWidth < 0) {
+            correction = (width - 1) / (margin.l + margin.r);
+            margin.l = Math.floor(correction * margin.l);
+            margin.r = Math.floor(correction * margin.r);
+        }
+
+        if (plotHeight < 0) {
+            correction = (height - 1) / (margin.t + margin.b);
+            margin.t = Math.floor(correction * margin.t);
+            margin.b = Math.floor(correction * margin.b);
+        }
+    }
+
     // for use in Plotly.Lib.syncOrAsync, check if there are any
     // pending promises in this plot and wait for them
     plots.previousPromises = function(gd){
@@ -1399,18 +1424,20 @@
             color: globalFont.color
         });
 
-        coerce('autosize', (layoutIn.width && layoutIn.height) ? false : 'initial');
+        var autosize = coerce('autosize',
+            (layoutIn.width && layoutIn.height) ? false : 'initial');
         coerce('width');
         coerce('height');
 
-        // TODO: sanity check that margins leave room for the plot
-        // but this requires fulfilling autosize first
         coerce('margin.l');
         coerce('margin.r');
         coerce('margin.t');
         coerce('margin.b');
         coerce('margin.pad');
         coerce('margin.autoexpand');
+
+        // called in plotAutoSize otherwise
+        if (autosize!=='initial') sanitizeMargins(layoutOut);
 
         coerce('paper_bgcolor');
 
@@ -2955,6 +2982,9 @@
             delete(aobj.autosize);
             fullLayout.autosize = gd.layout.autosize = true;
         }
+
+        sanitizeMargins(fullLayout);
+
         return aobj;
     }
 
