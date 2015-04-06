@@ -90,7 +90,7 @@
             // we could try to accept x0 and dx, etc...
             // but that's a pretty weird use case.
             // for now require both x and y explicitly specified.
-            if(!(x && y)) {
+            if(!(x && x.length && y && y.length)) {
                 traceOut.visible = false;
                 return;
             }
@@ -100,16 +100,17 @@
 
             binDirections = ['x','y'];
         } else {
-            coerce('orientation', (y && !x) ? 'h' : 'v');
+            var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
+                sample = traceOut[orientation==='v' ? 'x' : 'y'];
 
-            if(!traceOut[traceOut.orientation==='v' ? 'x' : 'y']) {
+            if(!(sample && sample.length)) {
                 traceOut.visible = false;
                 return;
             }
 
-            if(traceOut.orientation==='h') binDirections = ['y'];
+            if(orientation==='h') binDirections = ['y'];
 
-            hasAggregationData = traceOut[traceOut.orientation==='h' ? 'x' : 'y'];
+            hasAggregationData = traceOut[orientation==='h' ? 'x' : 'y'];
         }
 
         if(hasAggregationData) coerce('histfunc');
