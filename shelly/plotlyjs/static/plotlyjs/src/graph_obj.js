@@ -1016,6 +1016,9 @@
     }
 
     function sanitizeMargins(fullLayout) {
+        // polar doesn't do margins...
+        if(!fullLayout || !fullLayout.margin) return;
+
         var width = fullLayout.width,
             height = fullLayout.height,
             margin = fullLayout.margin,
