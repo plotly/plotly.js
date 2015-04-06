@@ -119,7 +119,8 @@
             autosizable: true,
             scrollZoom: true,
             showTips: false,
-            showLink: false
+            showLink: false,
+            setBackground: 'opaque'
         };
         return Plotly.plot(divid, [], layout, config);
     };
@@ -145,6 +146,20 @@
         },300);
     };
 
+    // where and how the background gets set can be overridden by context
+    // so we define the default (plotlyjs) behavior here
+    function defaultSetBackground(gd, bgColor) {
+        try {
+            gd._fullLayout._paper.style('background', bgColor);
+        }
+        catch(e) { console.log(e); }
+    }
+
+    function opaqueSetBackground(gd, bgColor) {
+        gd._fullLayout._paperdiv.style('background', 'white');
+        defaultSetBackground(gd, bgColor);
+    }
+
     // this will be transfered over to gd and overridden by
     // config args to Plotly.plot
     // the defaults are the appropriate settings for plotly.js,
@@ -160,7 +175,9 @@
         showLink: true, // link to open this plot in plotly
         sendData: true, // if we show a link, does it contain data or just link to a plotly file?
         displayModeBar: 'hover', // display the modebar (true, false, or 'hover')
-        displaylogo: true // add the plotly logo on the end of the modebar
+        displaylogo: true, // add the plotly logo on the end of the modebar
+        setBackground: defaultSetBackground // fn to add the background color to a different container
+                                            // or 'opaque' to ensure there's white behind it
     };
 
     function setPlotContext(gd, config) {
@@ -169,7 +186,12 @@
 
         if(config) {
             Object.keys(config).forEach(function(key) {
-                if(key in context) context[key] = config[key];
+                if(key in context) {
+                    if(key === 'setBackground' && config[key] === 'opaque') {
+                        context[key] = opaqueSetBackground;
+                    }
+                    else context[key] = config[key];
+                }
             });
 
             // cause a remake of the modebar any time we change context
@@ -610,9 +632,10 @@
 
         fullLayout._paperdiv.style({
             width: fullLayout.width+'px',
-            height: fullLayout.height+'px',
-            background: fullLayout.paper_bgcolor
+            height: fullLayout.height+'px'
         });
+
+        gd._context.setBackground(gd, fullLayout.paper_bgcolor);
 
         // Get traces attached to a scene
         function getSceneData(data, sceneKey) {
@@ -685,9 +708,10 @@
         // resize canvas
         paperDiv.style({
             width: (layout.width || 800) + 'px',
-            height: (layout.height || 600) + 'px',
-            background: (layout.paper_bgcolor || 'white')
+            height: (layout.height || 600) + 'px'
         });
+
+        gd._context.setBackground(gd, layout.paper_bgcolor || 'white');
 
         // instantiate framework
         gd.framework = Plotly.micropolar.manager.framework();
@@ -3341,10 +3365,11 @@
         Plotly.Axes.list(gd).forEach(function(ax){ ax._linepositions = {}; });
         fullLayout._paperdiv.style({
             width: fullLayout.width+'px',
-            height: fullLayout.height+'px',
-            background: fullLayout.paper_bgcolor
+            height: fullLayout.height+'px'
         });
         fullLayout._paper.call(Plotly.Drawing.setSize, fullLayout.width, fullLayout.height);
+
+        gd._context.setBackground(gd, fullLayout.paper_bgcolor);
 
         var freefinished = [];
         fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
