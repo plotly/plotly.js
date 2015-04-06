@@ -35,7 +35,15 @@ function Scene(options) {
         axes:       this.axesOptions,
         spikes:     this.spikeOptions,
         pickRadius: 10,
-        snapToData: true
+        snapToData: true,
+        camera:     {
+            center: [0,0,0],
+            eye:    [2,0,0],
+            up:     [0,0,1],
+            zoomMin: 0.1,
+            zoomMax: 100,
+            mode:   'turntable'
+        }
     })
 
     this.scene.onrender = render.bind(null, this)

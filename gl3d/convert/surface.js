@@ -51,7 +51,6 @@ proto.update = function(data) {
         ],
         xc = coords[0],
         yc = coords[1],
-        hasCoords = false,
         gl = scene.gl,
         contourLevels = scene.contourLevels;
 
@@ -69,31 +68,25 @@ proto.update = function(data) {
     // coords x
     if (Array.isArray(x[0])) {
         fill(xc, function(row, col) {
-            return zaxis.d2l(x[col][row]);
+            return xaxis.d2l(x[col][row]);
         });
-
-        hasCoords = true;
-
     } else {
         // ticks x
-        for (i = 0; i < xlen; i++) {
-            ticks[0][i] = xaxis.d2l(x[i]);
-        }
+        fill(xc, function(row, col) {
+            return xaxis.d2l(x[col]);
+        });
     }
 
     // coords y
     if (Array.isArray(y[0])) {
         fill(yc, function(row, col) {
-            return zaxis.d2l(y[col][row]);
+            return yaxis.d2l(y[col][row]);
         });
-
-        hasCoords = true;
-
     } else {
         // ticks y
-        for (i = 0; i < ylen; i++) {
-            ticks[1][i] = yaxis.d2l(y[i]);
-        }
+        fill(yc, function(row, col) {
+            return yaxis.d2l(y[row]);
+        });
     }
 
     var params = {
@@ -142,13 +135,7 @@ proto.update = function(data) {
         }
     }
 
-    if (hasCoords) {
-        params.coords = coords;
-    } else {
-        params.ticks = ticks;
-        params.field = coords[2];
-    }
-
+    params.coords = coords;
     surface.update(params);
 
     surface.highlightEnable  = highlightEnable;
@@ -183,6 +170,7 @@ function createSurfaceTrace(scene, data) {
     gl: gl
   })
   var result = new SurfaceTrace(scene, surface, data.uid)
+  result.update(data)
   scene.scene.add(surface)
   return result
 }
