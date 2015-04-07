@@ -498,7 +498,7 @@
         var labelOpts = {
             hovermode: hovermode,
             rotateLabels: rotateLabels,
-            bgColor: combineColors(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor),
+            bgColor: Plotly.Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor),
             container: fullLayout._hoverlayer,
             outerContainer: fullLayout._paperdiv
         };
@@ -834,7 +834,8 @@
             var g = d3.select(this).attr('transform',''),
                 name = '',
                 // combine possible non-opaque trace color with bgColor
-                traceColor = combineColors(Plotly.Color.opacity(d.color) ? d.color : Plotly.Color.defaultLine, bgColor),
+                baseColor = Plotly.Color.opacity(d.color) ? d.color : Plotly.Color.defaultLine,
+                traceColor = Plotly.Color.combine(baseColor, bgColor),
                 traceRGB = tinycolor(traceColor).toRgb(),
 
                 // find a contrasting color for border and text
@@ -1984,34 +1985,6 @@
         });
         if(csr) { el3.classed('cursor-'+csr, true); }
     };
-
-    // convert text in an input to equivalently displayed html
-    function escaped(val) {
-        return val.replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/\s/g, '&nbsp;');
-    }
-
-    // function to combine two colors into one apparent color
-    // if back has transparency or is missing, white is assumed behind it
-    function combineColors(front,back){
-        var fc = tinycolor(front).toRgb(),
-            bc = tinycolor(back||Plotly.Color.background).toRgb();
-        if(fc.a===1) return tinycolor(front).toRgbString();
-
-        var bcflat = bc.a===1 ? bc : {
-            r:255*(1-bc.a) + bc.r*bc.a,
-            g:255*(1-bc.a) + bc.g*bc.a,
-            b:255*(1-bc.a) + bc.b*bc.a
-        };
-        var fcflat = {
-            r:bcflat.r*(1-fc.a) + fc.r*fc.a,
-            g:bcflat.g*(1-fc.a) + fc.g*fc.a,
-            b:bcflat.b*(1-fc.a) + fc.b*fc.a
-        };
-        return tinycolor(fcflat).toRgbString();
-    }
 
     // for bar charts and others with finite-size objects: you must be inside
     // it to see its hover info, so distance is infinite outside.
