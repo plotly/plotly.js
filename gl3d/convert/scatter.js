@@ -31,6 +31,16 @@ function LineWithMarkers(scene, uid) {
 
 proto = LineWithMarkers.prototype;
 
+proto.handlePick = function(selection) {
+    if( selection.object && 
+        selection.object === this.linePlot ) {
+        if(this.scatterPlot) {
+            selection.object = this.scatterPlot;
+            this.scatterPlot.highlight(selection.data)
+        }
+    }
+}
+
 function constructDelaunay(points, color, axis) {
     var u = (axis+1)%3;
     var v = (axis+2)%3;

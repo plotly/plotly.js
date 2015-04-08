@@ -18,6 +18,11 @@ var createPlot          = require('gl-plot3d'),
 function render(scene) {
     computeTickMarks(scene);
     scene.scene.axes.update(scene.axesOptions);
+
+    var keys = Object.keys(scene.traces);
+    for(var i=0; i<keys.length; ++i) {
+        scene.traces[keys[i]].handlePick(scene.scene.selection);
+    }
 }
 
 function Scene(options) {

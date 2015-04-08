@@ -14,6 +14,9 @@ function SurfaceTrace(scene, surface, uid) {
 
 var proto = SurfaceTrace.prototype
 
+proto.handlePick = function(selection) {
+}
+
 function parseColorScale (colorscale, alpha) {
     if (alpha === undefined) alpha = 1;
 
