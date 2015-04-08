@@ -164,7 +164,6 @@ proto.setCameraPosition = function setCameraPosition (camera) {
     }
 };
 
-/*
 // save camera position to user layout (i.e. gd.layout)
 proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) {
     var lib = this.Plotly.Lib;
@@ -172,23 +171,40 @@ proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) 
     var cameraposition = this.getCameraPosition();
     prop.set(cameraposition);
 };
-*/
 
 function createScene(options) {
     options = options || {};
     
     //Create sub container for plot
-    var container = document.createElement('div')
-    var style = container.style
-    style.position = 'absolute'
-    style.top = style.left = '0px'
-    style.width = style.height = '100%'
+    var container = document.createElement('div');
+    var style = container.style;
+    style.position = 'absolute';
+    style.top = style.left = '0px';
+    style.width = style.height = '100%';
     style.zIndex = '1000';
-        
-    options.container.appendChild(container)
-    options.container = container
+    
+    options.container.appendChild(container);
+    options.container = container;
 
-    return new Scene(options)
+    var result;
+    try {
+        result = new Scene(options);
+    } catch(e) {
+        style.background = '#FFFFFF';
+        container.onclick = function () {
+            window.open('http://get.webgl.org');
+        };
+
+        // Clean up modebar, add flag in fullLayout (for graph_interact.js)
+        var fullLayout = options.fullLayout;
+        if ('_modebar' in fullLayout && fullLayout._modebar) {
+            fullLayout._modebar.cleanup();
+            fullLayout._modebar = null;
+        }
+        fullLayout._noGL3DSupport = true;
+    }
+
+    return result;
 }
 
 

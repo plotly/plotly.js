@@ -2,7 +2,10 @@
 
 var createSurface = require('gl-surface3d'),
     ndarray = require('ndarray'),
+    homography = require('ndarray-homography'),
     fill = require('ndarray-fill');
+
+var MIN_RESOLUTION = 128
 
 module.exports = createSurfaceTrace
 
@@ -29,6 +32,24 @@ function parseColorScale (colorscale, alpha) {
             rgb: [rgb.r, rgb.g, rgb.b, alpha]
         };
     });
+}
+
+function refine(coords) {
+    var minScale = Math.min(coords[0].shape[0], coords[0].shape[1])
+    if(minScale < MIN_RESOLUTION) {
+        var scaleF = MIN_RESOLUTION / minScale
+        var nshape = [ 
+            Math.floor((coords[0].shape[0]-1)*scaleF+1)|0, 
+            Math.floor((coords[0].shape[1]-1)*scaleF+1)|0 ]
+        var nsize = nshape[0]*nshape[1]
+        for(var i=0; i<3; ++i) {
+            var scaledImg = ndarray(new Float32Array(nsize), nshape)
+            homography(scaledImg, coords[i], [scaleF, 0, 0, 
+                                              0, scaleF, 0,
+                                              0, 0, 1])
+            coords[i] = scaledImg
+        }
+    }
 }
 
 proto.update = function(data) {
@@ -91,6 +112,11 @@ proto.update = function(data) {
             return yaxis.d2l(y[row]);
         });
     }
+
+    //Refine if necessary
+    refine(coords)
+
+    console.log(coords[0].shape)
 
     var params = {
         colormap:       colormap,

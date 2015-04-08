@@ -13,6 +13,7 @@
     "gl-surface3d": "^1.0.1",
     "mouse-change": "^1.1.1",
     "mouse-wheel": "^1.0.2",
+    "ndarray-homography": "^1.0.0",
     "right-now": "^1.0.0",
     "tinycolor2": "^1.0.0",
     "uglify-js": "~2.4.13"
