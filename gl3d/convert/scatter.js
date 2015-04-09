@@ -1,7 +1,5 @@
 'use strict';
 
-//TODO: error bars
-
 var createLinePlot    = require('gl-line3d'),
     createScatterPlot = require('gl-scatter3d'),
     createErrorBars   = require('gl-error3d'),
@@ -33,10 +31,14 @@ proto = LineWithMarkers.prototype;
 
 proto.handlePick = function(selection) {
     if( selection.object && 
-        selection.object === this.linePlot ) {
+        (selection.object === this.linePlot || 
+         selection.object === this.delaunayMesh)) {
+        if(selection.object.highlight) {
+            selection.object.highlight(null);
+        }
+        selection.object = this.scatterPlot;
         if(this.scatterPlot) {
-            selection.object = this.scatterPlot;
-            this.scatterPlot.highlight(selection.data)
+            this.scatterPlot.highlight(selection.data);
         }
     }
 }
@@ -384,7 +386,7 @@ proto.update = function(data) {
         } else {
             delaunayOptions.gl = gl;
             this.delaunayMesh = createMesh(delaunayOptions);
-            this.scene.scene.add(delaunayMesh);
+            this.scene.scene.add(this.delaunayMesh);
         }
     } else if(this.delaunayMesh) {
         this.scene.scene.remove(this.delaunayMesh);

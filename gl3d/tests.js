@@ -56,6 +56,20 @@ var plots = {
         }
     },
 
+    'delaunay': {
+        data: [
+            {
+                type:'scatter3d',
+                y:[0, 1, 2],
+                x:[1, 2, 0],
+                z:[2, 0, 1],
+                surfaceaxis: 0
+            }],
+        layout: {
+            title: "Delaunay axis"
+        }
+    },
+
     'log-axis': {
         data: [
             {
