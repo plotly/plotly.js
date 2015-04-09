@@ -44,7 +44,9 @@ function Scene(options) {
         axes:       this.axesOptions,
         spikes:     this.spikeOptions,
         pickRadius: 10,
-        snapToData: true
+        snapToData: true,
+        autoScale:  true,
+        autoBounds: false
     })
 
     this.camera = createCamera(this.container, {
@@ -65,6 +67,8 @@ function Scene(options) {
 }
 
 var proto = Scene.prototype
+
+var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ]
 
 proto.plot = function(sceneData, sceneLayout) {
     //Update layout
@@ -107,6 +111,39 @@ proto.plot = function(sceneData, sceneLayout) {
             }
         }
     }
+
+    //Update ranges (needs to be called *after* objects are added due to updates)
+    var sceneBounds = this.scene.bounds
+    for(var i=0; i<3; ++i) {
+        var axis = sceneLayout[axisProperties[i]]
+        if(axis.autorange) {
+            sceneBounds[0][i] = Infinity
+            sceneBounds[1][i] = -Infinity
+            for(var j=0; j<this.scene.objects.length; ++j) {
+                var objBounds = this.scene.objects[j].bounds
+                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i])
+                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i])
+            }
+            if('rangemode' in axis && axis.rangemode === 'tozero') {
+                sceneBounds[0][i] = Math.min(sceneBounds[0][i], 0)
+                sceneBounds[1][i] = Math.max(sceneBounds[1][i], 0)
+            }
+            if(sceneBounds[0][i] > sceneBounds[1][i]) {
+                sceneBounds[0][i] = -1
+                sceneBounds[1][i] =  1
+            }
+        } else {
+            var range = sceneLayout[axisProperties[i]].range
+            sceneBounds[0][i] = range[0]
+            sceneBounds[1][i] = range[1]
+        }
+        if(sceneBounds[0][i] === sceneBounds[1][i]) {
+            sceneBounds[0][i] -= 1
+            sceneBounds[1][i] += 1
+        }
+    }
+
+
 
     //Update frame position for multi plots
     var domain = this.sceneLayout.domain || null,

@@ -116,8 +116,6 @@ proto.update = function(data) {
     //Refine if necessary
     refine(coords)
 
-    console.log(coords[0].shape)
-
     var params = {
         colormap:       colormap,
         levels:         [[],[],[]],
