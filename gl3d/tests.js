@@ -9,6 +9,9 @@ var gd = null;
 anchor.style.position = 'relative';
 anchor.style.top = '80px';
 
+anchor.style.height = '600px';
+anchor.style.width = '1000px';
+
 function plotButtons(plots) {
 
     Object.keys(plots).forEach( function (plotname) {
@@ -55,5 +58,7 @@ plots['multi-scene'] = require('./testplots/multi-scene.json');
 plots['surface-lighting'] = require('./testplots/surface-lighting.json');
 plots['z-range'] = require('./testplots/z-range.json');
 plots['mirror-ticks'] = require('./testplots/mirror-ticks.json');
+plots['autorange-zero'] = require('./testplots/autorange-zero.json');
+plots['contour-lines'] = require('./testplots/contour-lines.json');
 
 plotButtons(plots);
