@@ -36,8 +36,8 @@ proto.handlePick = function(selection) {
         if(selection.object.highlight) {
             selection.object.highlight(null);
         }
-        selection.object = this.scatterPlot;
         if(this.scatterPlot) {
+            selection.object = this.scatterPlot;
             this.scatterPlot.highlight(selection.data);
         }
     }

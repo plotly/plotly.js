@@ -33,7 +33,6 @@ function Scene(options) {
     this.sceneLayout  = options.sceneLayout
     this.fullLayout   = options.fullLayout
 
-
     this.axesOptions  = createAxesOptions(options.sceneLayout)
     this.spikeOptions = createSpikeOptions(options.sceneLayout)
 
