@@ -64,6 +64,99 @@ module.exports={
 
 },{}],4:[function(require,module,exports){
 module.exports={
+  "data": [
+    {
+      "x": [
+        "1",
+        "2",
+        "3"
+      ],
+      "y": [
+        "3",
+        "2",
+        "3"
+      ],
+      "z": [
+        "2",
+        "3",
+        "2"
+      ],
+      "name": "Col3",
+      "type": "scatter3d",
+      "xsrc": ":d354e6",
+      "ysrc": ":36e26a",
+      "zsrc": ":3f1571",
+      "uid": "a94e2c"
+    }
+  ],
+  "layout": {
+    "yaxis": {
+      "type": "linear",
+      "ticks": "outside",
+      "ticklen": 10,
+      "tickwidth": 5.3,
+      "tickcolor": "rgb(214, 39, 40)",
+      "showline": true,
+      "mirror": "ticks",
+      "linecolor": "rgb(0, 255, 0)",
+      "linewidth": 4.2
+    },
+    "xaxis": {
+      "type": "linear",
+      "ticks": "outside",
+      "ticklen": 10,
+      "tickwidth": 5.3,
+      "tickcolor": "rgb(214, 39, 40)",
+      "showline": true,
+      "mirror": "ticks",
+      "linecolor": "rgb(0, 255, 0)",
+      "linewidth": 4.2
+    },
+    "scene": {
+      "xaxis": {
+        "type": "linear",
+        "ticks": "outside",
+        "ticklen": 10,
+        "tickwidth": 5.3,
+        "tickcolor": "rgb(214, 39, 40)",
+        "showline": true,
+        "mirror": "ticks",
+        "linecolor": "rgb(0, 255, 0)",
+        "linewidth": 4.2
+      },
+      "yaxis": {
+        "type": "linear",
+        "ticks": "outside",
+        "ticklen": 10,
+        "tickwidth": 5.3,
+        "tickcolor": "rgb(214, 39, 40)",
+        "showline": true,
+        "mirror": "ticks",
+        "linecolor": "rgb(0, 255, 0)",
+        "linewidth": 4.2
+      },
+      "zaxis": {
+        "type": "linear",
+        "ticks": "outside",
+        "ticklen": 10,
+        "tickwidth": 5.3,
+        "tickcolor": "rgb(214, 39, 40)",
+        "showline": true,
+        "mirror": "ticks",
+        "linecolor": "rgb(0, 255, 0)",
+        "linewidth": 4.2
+      }
+    },
+    "height": 758,
+    "width": 1310,
+    "autosize": true,
+    "showlegend": false,
+    "dragmode": "pan"
+  }
+}
+
+},{}],5:[function(require,module,exports){
+module.exports={
   "data":  [{
     "type": "scatter3d",
     "x": [1],
@@ -100,7 +193,7 @@ module.exports={
   }
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports={
   "data": [{
     "name":"trace 0",
@@ -152,7 +245,7 @@ module.exports={
   }
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports={
   "data": [{
     "x":["-4","-3","-2","-1","0","1","2","3","4","5","6"],
@@ -223,7 +316,7 @@ module.exports={
   }
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 var plotlist = document.getElementById('plot-list');
@@ -280,7 +373,8 @@ plots['log-axis'] = require('./testplots/log-axis.json');
 plots['multi-scene'] = require('./testplots/multi-scene.json');
 plots['surface-lighting'] = require('./testplots/surface-lighting.json');
 plots['z-range'] = require('./testplots/z-range.json');
+plots['mirror-ticks'] = require('./testplots/mirror-ticks.json');
 
 plotButtons(plots);
 
-},{"./testplots/delaunay.json":1,"./testplots/log-axis.json":2,"./testplots/marker-color.json":3,"./testplots/multi-scene.json":4,"./testplots/surface-lighting.json":5,"./testplots/z-range.json":6}]},{},[7]);
+},{"./testplots/delaunay.json":1,"./testplots/log-axis.json":2,"./testplots/marker-color.json":3,"./testplots/mirror-ticks.json":4,"./testplots/multi-scene.json":5,"./testplots/surface-lighting.json":6,"./testplots/z-range.json":7}]},{},[8]);

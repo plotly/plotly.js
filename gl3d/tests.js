@@ -54,5 +54,6 @@ plots['log-axis'] = require('./testplots/log-axis.json');
 plots['multi-scene'] = require('./testplots/multi-scene.json');
 plots['surface-lighting'] = require('./testplots/surface-lighting.json');
 plots['z-range'] = require('./testplots/z-range.json');
+plots['mirror-ticks'] = require('./testplots/mirror-ticks.json');
 
 plotButtons(plots);
