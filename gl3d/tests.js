@@ -2,6 +2,8 @@
 
 var plotlist = document.getElementById('plot-list');
 var anchor = document.getElementById('embedded-graph');
+var image = document.getElementById('embedded-image');
+
 var gd = null;
 
 anchor.style.position = 'relative';
@@ -23,6 +25,13 @@ function plotButtons(plots) {
 
         button.addEventListener('click', function () {
 
+            var myImage = new Image();
+            myImage.src = 'gl3d/testplots/'+ plotname + '.png';
+
+            image.innerHTML = '';
+            image.appendChild(myImage);
+
+
             anchor.innerHTML = '';
 
             // create a fresh gd
@@ -30,8 +39,8 @@ function plotButtons(plots) {
             anchor.appendChild(gd);
 
             var plot = plots[plotname];
-
             Plotly.plot(gd, plot.data, plot.layout);
+
 
         });
     });
@@ -45,7 +54,5 @@ plots['log-axis'] = require('./testplots/log-axis.json');
 plots['multi-scene'] = require('./testplots/multi-scene.json');
 plots['surface-lighting'] = require('./testplots/surface-lighting.json');
 plots['z-range'] = require('./testplots/z-range.json');
-
-
 
 plotButtons(plots);
