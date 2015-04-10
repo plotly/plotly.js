@@ -6,31 +6,7 @@ var project = require('./project');
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis']
 
-//Proportional to the scale of the y axis
-function pixelLength(
-    camera, 
-    resolution, 
-    centerPoint,
-    axis,
-    desiredPixelLength) {
-    /*
-    var p = project(camera, centerPoint);
-    return 2.0 * desiredPixelLength * p[3] / resolution[1];
-    */
-    return 0.005 * desiredPixelLength
-}
-
 var centerPoint = [0,0,0];
-
-function solveLength(a, b, cameraParameters, shape) {
-    for(var i=0; i<3; ++i) {
-        a[i] = pixelLength(cameraParameters,
-                    shape,
-                    centerPoint,
-                    i,
-                    b[i]) / cameraParameters.model[5*i];
-    }
-}
 
 function computeTickMarks(scene) {
     var axesOptions = scene.axesOptions;
@@ -81,8 +57,4 @@ function computeTickMarks(scene) {
             axesOptions.bounds[j][i] = scene.scene.bounds[j][i]
         }
     }
-
-    solveLength(scene.axesOptions.lineTickLength, scene.axesOptions._defaultLineTickLength, scene.scene.cameraParams, scene.scene.shape);
-    solveLength(scene.axesOptions.tickPad,        scene.axesOptions._defaultTickPad, scene.scene.cameraParams, scene.scene.shape);
-    solveLength(scene.axesOptions.labelPad,       scene.axesOptions._defaultLabelPad, scene.scene.cameraParams, scene.scene.shape);
 }
