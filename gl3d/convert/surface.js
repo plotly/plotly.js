@@ -105,7 +105,7 @@ proto.update = function(data) {
     } else {
         // ticks x
         fill(xc, function(row, col) {
-            return xaxis.d2l(x[col]);
+            return xaxis.d2l(x[row]);
         });
     }
 
@@ -117,7 +117,7 @@ proto.update = function(data) {
     } else {
         // ticks y
         fill(yc, function(row, col) {
-            return yaxis.d2l(y[row]);
+            return yaxis.d2l(y[col]);
         });
     }
 
