@@ -8,7 +8,7 @@ function Gl3dLayout (config) {
     this.layoutAttributes = {
         bgcolor: {
             type: 'color',
-            dflt: Plotly.Color.background
+            dflt: 'rgba(0,0,0,0)'
         },
         cameraposition: {
             type: 'data_array'
