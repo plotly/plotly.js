@@ -136,8 +136,17 @@ proto.update = function(data) {
         contourTint:    [ 1, 1, 1 ],
         dynamicColor:   [ [1,1,1,1], [1,1,1,1], [1,1,1,1] ],
         dynamicWidth:   [ 1, 1, 1 ],
-        dynamicTint:    [ 1, 1, 1 ]
+        dynamicTint:    [ 1, 1, 1 ],
+        opacity:        1
     };
+
+
+    if('opacity' in data) {
+        if(data.opacity < 1) {
+            params.opacity = 0.25 * data.opacity;
+        }
+    }
+
 
     var highlightEnable            = [ true, true, true ];
     var contourEnable              = [ true, true, true ];
