@@ -13,6 +13,8 @@ function SurfaceTrace(scene, surface, uid) {
   this.scene    = scene
   this.uid      = uid
   this.surface  = surface
+  this.data     = null
+  this.showContour = false
 }
 
 var proto = SurfaceTrace.prototype
@@ -49,6 +51,12 @@ function refine(coords) {
                                               0, 0, 1])
             coords[i] = scaledImg
         }
+    }
+}
+
+proto.setContourLevels = function() {
+    if(this.showContour) {
+        this.surface.update({ levels: this.scene.contourLevels })
     }
 }
 
@@ -114,7 +122,7 @@ proto.update = function(data) {
     }
 
     //Refine if necessary
-    refine(coords)
+    refine(coords);
 
     var params = {
         colormap:       colormap,
@@ -128,8 +136,17 @@ proto.update = function(data) {
         contourTint:    [ 1, 1, 1 ],
         dynamicColor:   [ [1,1,1,1], [1,1,1,1], [1,1,1,1] ],
         dynamicWidth:   [ 1, 1, 1 ],
-        dynamicTint:    [ 1, 1, 1 ]
+        dynamicTint:    [ 1, 1, 1 ],
+        opacity:        1
     };
+
+
+    if('opacity' in data) {
+        if(data.opacity < 1) {
+            params.opacity = 0.25 * data.opacity;
+        }
+    }
+
 
     var highlightEnable            = [ true, true, true ];
     var contourEnable              = [ true, true, true ];
@@ -151,9 +168,12 @@ proto.update = function(data) {
             contourParams.project.z ];
 
         if (contourParams.show) {
+            this.showContour = true
             params.levels[i]       = contourLevels[i];
             params.contourColor[i] = contourParams.color;
             params.contourWidth[i] = contourParams.width;
+        } else {
+            this.showContour = false
         }
 
         if (contourParams.highlight) {

@@ -6,30 +6,20 @@ var project = require('./project');
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis']
 
-//Proportional to the scale of the y axis
-function pixelLength(
-    camera, 
-    resolution, 
-    centerPoint,
-    axis,
-    desiredPixelLength) {
-    /*
-    var p = project(camera, centerPoint);
-    return 2.0 * desiredPixelLength * p[3] / resolution[1];
-    */
-    return 0.005 * desiredPixelLength
-}
-
 var centerPoint = [0,0,0];
 
-function solveLength(a, b, cameraParameters, shape) {
+
+function contourLevelsFromTicks(ticks) {
+    var result = new Array(3);
     for(var i=0; i<3; ++i) {
-        a[i] = pixelLength(cameraParameters,
-                    shape,
-                    centerPoint,
-                    i,
-                    b[i]) / cameraParameters.model[5*i];
+        var tlevel = ticks[i];
+        var clevel = new Array(tlevel.length);
+        for(var j=0; j<tlevel.length; ++j) {
+            clevel[j] = tlevel[j].x;
+        }
+        result[i] = clevel
     }
+    return result;
 }
 
 function computeTickMarks(scene) {
@@ -82,7 +72,5 @@ function computeTickMarks(scene) {
         }
     }
 
-    solveLength(scene.axesOptions.lineTickLength, scene.axesOptions._defaultLineTickLength, scene.scene.cameraParams, scene.scene.shape);
-    solveLength(scene.axesOptions.tickPad,        scene.axesOptions._defaultTickPad, scene.scene.cameraParams, scene.scene.shape);
-    solveLength(scene.axesOptions.labelPad,       scene.axesOptions._defaultLabelPad, scene.scene.cameraParams, scene.scene.shape);
+    scene.contourLevels = contourLevelsFromTicks(ticks);
 }

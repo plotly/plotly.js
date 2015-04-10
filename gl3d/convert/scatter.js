@@ -192,9 +192,9 @@ function convertPlotlyOptions(scene, data) {
         marker = data.marker,
         line = data.line,
         errorParams = calculateErrorParams([ data.error_x, data.error_y, data.error_z ]),
-        xc, x = data.x,
-        yc, y = data.y,
-        zc, z = data.z,
+        xc, x = data.x || [],
+        yc, y = data.y || [],
+        zc, z = data.z || [],
         len = x.length;
 
     //Convert points

@@ -13,15 +13,20 @@ var createPlot          = require('gl-plot3d'),
     createScatterTrace  = require('./convert/scatter'),
     createSurfaceTrace  = require('./convert/surface'),
     computeTickMarks    = require('./lib/tick-marks'),
-    createCamera        = require('./lib/camera');
-    
+    createCamera        = require('./lib/camera'),
+    str2RGBAarray       = require('./lib/str2rgbarray');
+
 function render(scene) {
     computeTickMarks(scene);
     scene.scene.axes.update(scene.axesOptions);
 
     var keys = Object.keys(scene.traces);
     for(var i=0; i<keys.length; ++i) {
-        scene.traces[keys[i]].handlePick(scene.scene.selection);
+        var trace = scene.traces[keys[i]];
+        trace.handlePick(scene.scene.selection);
+        if(trace.setContourLevels) {
+            trace.setContourLevels();
+        }
     }
 }
 
@@ -64,6 +69,8 @@ function Scene(options) {
 
     //List of scene objects
     this.traces = {};
+
+    this.contourLevels = [ [], [], [] ];
 }
 
 var proto = Scene.prototype
@@ -71,6 +78,13 @@ var proto = Scene.prototype
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ]
 
 proto.plot = function(sceneData, sceneLayout) {
+
+    if(sceneLayout.bgcolor) {
+        this.scene.clearColor = str2RGBAarray(sceneLayout.bgcolor);
+    } else {
+        this.scene.clearColor = [0,0,0,0];
+    }
+
     //Update layout
     this.sceneLayout = sceneLayout;
     this.axesOptions.merge(sceneLayout);
