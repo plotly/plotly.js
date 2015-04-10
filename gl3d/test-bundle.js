@@ -758,6 +758,118 @@ module.exports={
 
 },{}],9:[function(require,module,exports){
 module.exports={
+  "data": [
+    {
+      "type": "surface",
+      "z": [
+        [
+          "1",
+          "4",
+          "2",
+          "3",
+          "1",
+          "3",
+          "4",
+          "2",
+          "3",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "4",
+          "3",
+          "3",
+          "4",
+          "4",
+          "3",
+          "3",
+          "9",
+          "6",
+          "7",
+          "9",
+          "4"
+        ],
+        [
+          "2",
+          "3",
+          "2",
+          "4",
+          "3",
+          "3",
+          "4",
+          "2",
+          "3",
+          "2",
+          "3",
+          "4"
+        ],
+        [
+          "3",
+          "9",
+          "6",
+          "7",
+          "9",
+          "4",
+          "3",
+          "5",
+          "6",
+          "5",
+          "3",
+          "12"
+        ],
+        [
+          "4",
+          "3",
+          "3",
+          "4",
+          "4",
+          "9",
+          "6",
+          "7",
+          "9",
+          "4",
+          "3",
+          "5"
+        ]
+      ],
+      "zsrc": ":-f5acfc?rows=1-",
+      "y": [
+        "8",
+        "5",
+        "1",
+        "-14",
+        "-32"
+      ],
+      "ysrc": ":f5acfc?rows=1-",
+      "x": [
+        "-1",
+        "3",
+        "4",
+        "7",
+        "13",
+        "22",
+        "32",
+        "33",
+        "42",
+        "44",
+        "45",
+        "51"
+      ],
+      "xsrc": ":-f5acfc?row=0",
+      "uid": "f4949f"
+    }
+  ],
+  "layout": {
+    "showlegend": false,
+    "height": 758,
+    "width": 1310,
+    "autosize": true
+  }
+}
+
+},{}],10:[function(require,module,exports){
+module.exports={
   "data": [{
     "x":["-4","-3","-2","-1","0","1","2","3","4","5","6"],
     "y":["7","5","6","4","2","3","1","3","-1","-4","-2"],
@@ -827,7 +939,7 @@ module.exports={
   }
 }
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 var plotlist = document.getElementById('plot-list');
@@ -890,7 +1002,8 @@ plots['z-range'] = require('./testplots/z-range.json');
 plots['mirror-ticks'] = require('./testplots/mirror-ticks.json');
 plots['autorange-zero'] = require('./testplots/autorange-zero.json');
 plots['contour-lines'] = require('./testplots/contour-lines.json');
+plots['xy-defined-ticks'] = require('./testplots/xy-defined-ticks.json');
 
 plotButtons(plots);
 
-},{"./testplots/autorange-zero.json":1,"./testplots/contour-lines.json":2,"./testplots/delaunay.json":3,"./testplots/log-axis.json":4,"./testplots/marker-color.json":5,"./testplots/mirror-ticks.json":6,"./testplots/multi-scene.json":7,"./testplots/surface-lighting.json":8,"./testplots/z-range.json":9}]},{},[10]);
+},{"./testplots/autorange-zero.json":1,"./testplots/contour-lines.json":2,"./testplots/delaunay.json":3,"./testplots/log-axis.json":4,"./testplots/marker-color.json":5,"./testplots/mirror-ticks.json":6,"./testplots/multi-scene.json":7,"./testplots/surface-lighting.json":8,"./testplots/xy-defined-ticks.json":9,"./testplots/z-range.json":10}]},{},[11]);

@@ -60,5 +60,6 @@ plots['z-range'] = require('./testplots/z-range.json');
 plots['mirror-ticks'] = require('./testplots/mirror-ticks.json');
 plots['autorange-zero'] = require('./testplots/autorange-zero.json');
 plots['contour-lines'] = require('./testplots/contour-lines.json');
+plots['xy-defined-ticks'] = require('./testplots/xy-defined-ticks.json');
 
 plotButtons(plots);
