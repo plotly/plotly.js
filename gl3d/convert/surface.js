@@ -14,6 +14,7 @@ function SurfaceTrace(scene, surface, uid) {
   this.uid      = uid
   this.surface  = surface
   this.data     = null
+  this.showContour = false
 }
 
 var proto = SurfaceTrace.prototype
@@ -54,7 +55,9 @@ function refine(coords) {
 }
 
 proto.setContourLevels = function() {
-    this.surface.update({ levels: this.scene.contourLevels })
+    if(this.showContour) {
+        this.surface.update({ levels: this.scene.contourLevels })
+    }
 }
 
 proto.update = function(data) {
@@ -156,9 +159,12 @@ proto.update = function(data) {
             contourParams.project.z ];
 
         if (contourParams.show) {
+            this.showContour = true
             params.levels[i]       = contourLevels[i];
             params.contourColor[i] = contourParams.color;
             params.contourWidth[i] = contourParams.width;
+        } else {
+            this.showContour = false
         }
 
         if (contourParams.highlight) {
