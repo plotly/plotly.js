@@ -14,14 +14,18 @@ var createPlot          = require('gl-plot3d'),
     createSurfaceTrace  = require('./convert/surface'),
     computeTickMarks    = require('./lib/tick-marks'),
     createCamera        = require('./lib/camera');
-    
+
 function render(scene) {
     computeTickMarks(scene);
     scene.scene.axes.update(scene.axesOptions);
 
     var keys = Object.keys(scene.traces);
     for(var i=0; i<keys.length; ++i) {
-        scene.traces[keys[i]].handlePick(scene.scene.selection);
+        var trace = scene.traces[keys[i]];
+        trace.handlePick(scene.scene.selection);
+        if(trace.setContourLevels) {
+            trace.setContourLevels();
+        }
     }
 }
 
@@ -64,6 +68,8 @@ function Scene(options) {
 
     //List of scene objects
     this.traces = {};
+
+    this.contourLevels = [ [], [], [] ];
 }
 
 var proto = Scene.prototype

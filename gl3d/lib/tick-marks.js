@@ -8,6 +8,20 @@ var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis']
 
 var centerPoint = [0,0,0];
 
+
+function contourLevelsFromTicks(ticks) {
+    var result = new Array(3);
+    for(var i=0; i<3; ++i) {
+        var tlevel = ticks[i];
+        var clevel = new Array(tlevel.length);
+        for(var j=0; j<tlevel.length; ++j) {
+            clevel[j] = tlevel[j].x;
+        }
+        result[i] = clevel
+    }
+    return result;
+}
+
 function computeTickMarks(scene) {
     var axesOptions = scene.axesOptions;
     var glRange     = scene.scene.axesPixels;
@@ -57,4 +71,6 @@ function computeTickMarks(scene) {
             axesOptions.bounds[j][i] = scene.scene.bounds[j][i]
         }
     }
+
+    scene.contourLevels = contourLevelsFromTicks(ticks);
 }

@@ -13,6 +13,7 @@ function SurfaceTrace(scene, surface, uid) {
   this.scene    = scene
   this.uid      = uid
   this.surface  = surface
+  this.data     = null
 }
 
 var proto = SurfaceTrace.prototype
@@ -50,6 +51,10 @@ function refine(coords) {
             coords[i] = scaledImg
         }
     }
+}
+
+proto.setContourLevels = function() {
+    this.surface.update({ levels: this.scene.contourLevels })
 }
 
 proto.update = function(data) {
@@ -114,7 +119,7 @@ proto.update = function(data) {
     }
 
     //Refine if necessary
-    refine(coords)
+    refine(coords);
 
     var params = {
         colormap:       colormap,
