@@ -589,8 +589,8 @@
             });
 
             //styling separate from drawing
-            applyStyle(gd);
-            Plotly.Lib.markTime('done applyStyle');
+            plots.style(gd);
+            Plotly.Lib.markTime('done plots.style');
 
             // show annotations and shapes
             Plotly.Shapes.drawAll(gd);
@@ -1575,7 +1575,7 @@
         });
     }
 
-    function applyStyle(gd) {
+    plots.style = function(gd) {
         var fullLayout = gd._fullLayout;
 
         Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
@@ -1585,7 +1585,7 @@
                 if(module.style) module.style(gp, fullLayout);
             });
         });
-    }
+    };
 
     /**
      * Wrap negative indicies to their positive counterparts.
@@ -2293,7 +2293,7 @@
             docalcAutorange = false,
             doplot = false,
             dolayout = false,
-            doapplystyle = false,
+            dostyle = false,
             docolorbars = false;
         // copies of the change (and previous values of anything affected)
         // for the undo / redo queue
@@ -2485,7 +2485,7 @@
             // box. everything else at least needs to apply styles
             if((['autobinx','autobiny','zauto'].indexOf(ai)===-1) ||
                     vi!==false) {
-                doapplystyle = true;
+                dostyle = true;
             }
             if(['colorbar','line'].indexOf(param.parts[0])!==-1) {
                 docolorbars = true;
@@ -2546,9 +2546,19 @@
         else {
             plots.supplyDefaults(gd);
             seq = [plots.previousPromises];
-            if(doapplystyle) {
-                seq.push(function doApplyStyle(){
-                    applyStyle(gd);
+            if(dostyle) {
+                seq.push(function doStyle(){
+                    // first see if we need to do arraysToCalcdata
+                    // call it regardless of what change we made, in case
+                    // supplyDefaults brought in an array that was already
+                    // in gd.data but not in gd._fullData previously
+                    var i, cdi, arraysToCalcdata;
+                    for(i = 0; i < gd.calcdata.length; i++) {
+                        cdi = gd.calcdata[i];
+                        arraysToCalcdata = (((cdi[0]||{}).trace||{})._module||{}).arraysToCalcdata;
+                        if(arraysToCalcdata) arraysToCalcdata(cdi);
+                    }
+                    plots.style(gd);
                     if(fullLayout.showlegend) Plotly.Legend.draw(gd);
                     return plots.previousPromises(gd);
                 });
