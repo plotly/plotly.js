@@ -1,47 +1,40 @@
+'use strict';
+var Plotly = require('../../plotly');
+var Gl3dLayout = {};
+
 module.exports = Gl3dLayout;
 
+Gl3dLayout.layoutAttributes = {
+    bgcolor: {
+        type: 'color',
+        dflt: 'rgba(0,0,0,0)'
+    },
+    cameraposition: {
+        type: 'data_array'
+    },
+    domain: {
+        x: [
+            {type: 'number', min: 0, max: 1},
+            {type: 'number', min: 0, max: 1}
+        ],
+        y:[
+            {type: 'number', min: 0, max: 1, dflt: 0},
+            {type: 'number', min: 0, max: 1, dflt: 1}
+        ]
+    },
+    _nestedModules: {  // nested module coupling
+        'xaxis': 'Gl3dAxes',
+        'yaxis': 'Gl3dAxes',
+        'zaxis': 'Gl3dAxes'
+    }
+};
 
-function Gl3dLayout (config) {
-
-    this.config = config;
-
-    this.layoutAttributes = {
-        bgcolor: {
-            type: 'color',
-            dflt: 'rgba(0,0,0,0)'
-        },
-        cameraposition: {
-            type: 'data_array'
-        },
-        domain: {
-            x: [
-                {type: 'number', min: 0, max: 1},
-                {type: 'number', min: 0, max: 1}
-            ],
-            y:[
-                {type: 'number', min: 0, max: 1, dflt: 0},
-                {type: 'number', min: 0, max: 1, dflt: 1}
-            ]
-        },
-        _nestedModules: {  // nested module coupling
-            'xaxis': 'Gl3dAxes',
-            'yaxis': 'Gl3dAxes',
-            'zaxis': 'Gl3dAxes'
-        }
-    };
-
-}
-
-var proto = Gl3dLayout.prototype;
-
-
-proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
+Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
     if (!layoutOut._hasGL3D) return;
 
     var _this = this;
     var scenes = [];
-    var Plotly = this.config.Plotly;
 
     for (var i = 0; i < fullData.length; ++i) {
         var d = fullData[i];
@@ -102,8 +95,8 @@ proto.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 };
 
 // Clean scene ids, 'scene1' -> 'scene'
-proto.cleanId = function cleanId(id) {
-    if(!id.match(/^scene[0-9]*$/)) return;
+Gl3dLayout.cleanId = function cleanId(id) {
+    if (!id.match(/^scene[0-9]*$/)) return;
 
     var sceneNum = id.substr(5);
     if (sceneNum === '1') sceneNum = '';

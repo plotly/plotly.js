@@ -1,13 +1,7 @@
-'use strict'
-
+'use strict';
 
 var createPlot          = require('gl-plot3d'),
     m4FromQuat          = require('gl-mat4/fromQuat'),
-    m4Translate         = require('gl-mat4/translate'),
-    Gl3dLayout          = require('./defaults/gl3dlayout'),
-    Gl3dAxes            = require('./defaults/gl3daxes'),
-    Scatter3D           = require('./defaults/scatter3d'),
-    Surface             = require('./defaults/surface'),
     createAxesOptions   = require('./convert/axes'),
     createSpikeOptions  = require('./convert/spikes'),
     createScatterTrace  = require('./convert/scatter'),
@@ -31,17 +25,17 @@ function render(scene) {
 }
 
 function Scene(options) {
-    var glOptions = options.glOptions
-    glOptions.premultipliedAlpha = true
+    var glOptions = options.glOptions;
+    glOptions.premultipliedAlpha = true;
 
-    this.Plotly       = options.Plotly
-    this.sceneLayout  = options.sceneLayout
-    this.fullLayout   = options.fullLayout
+    this.Plotly       = options.Plotly;
+    this.sceneLayout  = options.sceneLayout;
+    this.fullLayout   = options.fullLayout;
 
-    this.axesOptions  = createAxesOptions(options.sceneLayout)
-    this.spikeOptions = createSpikeOptions(options.sceneLayout)
+    this.axesOptions  = createAxesOptions(options.sceneLayout);
+    this.spikeOptions = createSpikeOptions(options.sceneLayout);
 
-    this.container    = options.container
+    this.container    = options.container;
 
     this.scene        = createPlot({
         container:  options.container,
@@ -52,7 +46,7 @@ function Scene(options) {
         snapToData: true,
         autoScale:  true,
         autoBounds: false
-    })
+    });
 
     this.camera = createCamera(this.container, {
         center: [0,0,0],
@@ -61,11 +55,11 @@ function Scene(options) {
         zoomMin: 0.1,
         zoomMax: 100,
         mode:   'orbit'
-    })
+    });
 
     this.scene.camera = this.camera;
 
-    this.scene.onrender = render.bind(null, this)
+    this.scene.onrender = render.bind(null, this);
 
     //List of scene objects
     this.traces = {};
@@ -73,9 +67,9 @@ function Scene(options) {
     this.contourLevels = [ [], [], [] ];
 }
 
-var proto = Scene.prototype
+var proto = Scene.prototype;
 
-var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ]
+var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
 proto.plot = function(sceneData, sceneLayout) {
 
@@ -91,9 +85,9 @@ proto.plot = function(sceneData, sceneLayout) {
     this.spikeOptions.merge(sceneLayout);
 
     //Update camera position
-    var camera = sceneLayout.cameraposition
+    var camera = sceneLayout.cameraposition;
     if(camera) {
-        this.setCameraPosition(camera)
+        this.setCameraPosition(camera);
     }
 
     //Update scene
@@ -102,7 +96,7 @@ proto.plot = function(sceneData, sceneLayout) {
     //Update traces
     if(sceneData) {
         if(!Array.isArray(sceneData)) {
-            sceneData = [sceneData]
+            sceneData = [sceneData];
         }
         for(var i=0; i<sceneData.length; ++i) {
             var data = sceneData[i];
@@ -127,33 +121,33 @@ proto.plot = function(sceneData, sceneLayout) {
     }
 
     //Update ranges (needs to be called *after* objects are added due to updates)
-    var sceneBounds = this.scene.bounds
+    var sceneBounds = this.scene.bounds;
     for(var i=0; i<3; ++i) {
-        var axis = sceneLayout[axisProperties[i]]
+        var axis = sceneLayout[axisProperties[i]];
         if(axis.autorange) {
-            sceneBounds[0][i] = Infinity
-            sceneBounds[1][i] = -Infinity
+            sceneBounds[0][i] = Infinity;
+            sceneBounds[1][i] = -Infinity;
             for(var j=0; j<this.scene.objects.length; ++j) {
-                var objBounds = this.scene.objects[j].bounds
-                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i])
-                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i])
+                var objBounds = this.scene.objects[j].bounds;
+                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i]);
+                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i]);
             }
             if('rangemode' in axis && axis.rangemode === 'tozero') {
-                sceneBounds[0][i] = Math.min(sceneBounds[0][i], 0)
-                sceneBounds[1][i] = Math.max(sceneBounds[1][i], 0)
+                sceneBounds[0][i] = Math.min(sceneBounds[0][i], 0);
+                sceneBounds[1][i] = Math.max(sceneBounds[1][i], 0);
             }
             if(sceneBounds[0][i] > sceneBounds[1][i]) {
-                sceneBounds[0][i] = -1
-                sceneBounds[1][i] =  1
+                sceneBounds[0][i] = -1;
+                sceneBounds[1][i] =  1;
             }
         } else {
-            var range = sceneLayout[axisProperties[i]].range
-            sceneBounds[0][i] = range[0]
-            sceneBounds[1][i] = range[1]
+            var range = sceneLayout[axisProperties[i]].range;
+            sceneBounds[0][i] = range[0];
+            sceneBounds[1][i] = range[1];
         }
         if(sceneBounds[0][i] === sceneBounds[1][i]) {
-            sceneBounds[0][i] -= 1
-            sceneBounds[1][i] += 1
+            sceneBounds[0][i] -= 1;
+            sceneBounds[1][i] += 1;
         }
     }
 
@@ -171,12 +165,12 @@ proto.plot = function(sceneData, sceneLayout) {
         containerStyle.width    = (size.w * (domain.x[1] - domain.x[0])) + 'px';
         containerStyle.height   = (size.h * (domain.y[1] - domain.y[0])) + 'px';
     }
-}
+};
 
 proto.destroy = function() {
     this.scene.dispose();
     this.container.parentNode.removeChild(this.container);
-}
+};
 
 
 // for reset camera button in modebar
@@ -224,7 +218,7 @@ proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) 
 
 function createScene(options) {
     options = options || {};
-    
+
     //Create sub container for plot
     var container = document.createElement('div');
     var style = container.style;
@@ -232,7 +226,7 @@ function createScene(options) {
     style.top = style.left = '0px';
     style.width = style.height = '100%';
     style.zIndex = '1000';
-    
+
     options.container.appendChild(container);
     options.container = container;
 
@@ -258,11 +252,4 @@ function createScene(options) {
 }
 
 
-exports.modules = [
-    {module: Gl3dAxes,   namespace: 'Gl3dAxes'},
-    {module: Gl3dLayout, namespace: 'Gl3dLayout'},
-    {module: Scatter3D,  namespace: 'Scatter3D'},
-    {module: Surface,    namespace: 'Surface'}
-];
-
-exports.createScene = createScene
+module.exports = createScene;

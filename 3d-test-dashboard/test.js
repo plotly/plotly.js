@@ -29,7 +29,7 @@ function plotButtons(plots) {
         button.addEventListener('click', function () {
 
             var myImage = new Image();
-            myImage.src = 'gl3d/testplots/'+ plotname + '.png';
+            myImage.src = './testplots/'+ plotname + '.png';
 
             image.innerHTML = '';
             image.appendChild(myImage);

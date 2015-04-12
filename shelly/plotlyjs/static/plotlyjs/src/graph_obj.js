@@ -16,7 +16,7 @@
     /* jshint camelcase: false */
 
     // ---Plotly global modules
-    /* global SceneFrame:false, Examples:false, PLOTLYENV:false */
+    /* global Examples:false, PLOTLYENV:false */
 
     // ---global functions not yet namespaced
     /* global setFileAndCommentsSize:false */
@@ -639,17 +639,16 @@
 
             // If Scene is not instantiated, create one!
             if (!(scene)) {
-                var sceneFrameOptions = {
+                var sceneOptions = {
                     Plotly: Plotly,
                     container: gd.querySelector('.svg-container'),
                     sceneKey: sceneKey,
                     sceneData: sceneData,
                     sceneLayout: sceneLayout,
                     fullLayout: fullLayout,
-                    baseurl: PLOTLYENV.BASE_URL,
                     glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
                 };
-                scene = SceneFrame.createScene(sceneFrameOptions);
+                scene = Plotly.createScene(sceneOptions);
                 sceneLayout._scene = scene;  // set ref to Scene instance
             }
 
