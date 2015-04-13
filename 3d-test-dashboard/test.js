@@ -64,5 +64,6 @@ plots['xy-defined-ticks'] = require('./testplots/xy-defined-ticks.json');
 plots['opacity-surface'] = require('./testplots/opacity-surface.json');
 plots['projection-traces'] = require('./testplots/projection-traces.json');
 plots['borken-world'] = require('./testplots/borken-world.json');
+plots['marker-opacity-swarm'] = require('./testplots/marker-opacity-swarm.json');
 
 plotButtons(plots);
