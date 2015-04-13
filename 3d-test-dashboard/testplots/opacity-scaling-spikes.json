@@ -2837,7 +2837,15 @@
         2.9089125541536123
       ],
       "type": "scatter3d",
-      "uid": "24980b"
+      "uid": "dc285c",
+      "projection": {
+        "y": {
+          "show": true
+        },
+        "x": {
+          "scale": 7.3
+        }
+      }
     },
     {
       "y": [
@@ -2987,19 +2995,36 @@
         1.4231843273210043
       ],
       "type": "scatter3d",
-      "uid": "54347d"
+      "uid": "9f5973"
     }
   ],
   "layout": {
-    "width": 1310,
-    "autosize": true,
+    "width": 500,
+    "autosize": false,
     "margin": {
       "r": 0,
       "b": 0,
       "t": 65,
       "l": 0
     },
-    "height": 758,
-    "showlegend": true
+    "height": 500,
+    "showlegend": true,
+    "scene": {
+      "xaxis": {
+        "spikethickness": 6.4,
+        "type": "linear",
+        "spikecolor": "rgb(255, 153, 0)"
+      },
+      "yaxis": {
+        "spikethickness": 6.4,
+        "type": "linear",
+        "spikecolor": "rgb(255, 153, 0)"
+      },
+      "zaxis": {
+        "spikethickness": 6.4,
+        "type": "linear",
+        "spikecolor": "rgb(255, 153, 0)"
+      }
+    }
   }
 }
