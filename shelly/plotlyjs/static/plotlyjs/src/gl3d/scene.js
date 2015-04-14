@@ -26,7 +26,9 @@ function render(scene) {
 
 function Scene(options) {
     var glOptions = options.glOptions;
-    glOptions.premultipliedAlpha = true;
+    if(glOptions.preserveDrawingBuffer) {
+        glOptions.premultipliedAlpha = true;
+    }
     
     this.Plotly       = options.Plotly;
     this.sceneLayout  = options.sceneLayout;
@@ -241,6 +243,8 @@ proto.toPNG = function() {
     var gl = scene.gl;
     var w = gl.drawingBufferWidth;
     var h = gl.drawingBufferHeight;
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
 
     var pixels = new Uint8Array(w * h * 4);
     gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
