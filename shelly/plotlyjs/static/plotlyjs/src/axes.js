@@ -346,41 +346,12 @@
             coerce('tickcolor');
         }
 
-        /*
-         * Attributes 'showexponent', 'showtickprefix' and 'showticksuffix'
-         * share values.
-         *
-         * If only 1 attribute is set,
-         * the remaining attributes inherit that value.
-         *
-         * If 2 attributes are set to the same value,
-         * the remaining attribute inherits that value.
-         *
-         * If 2 attributes are set to different values,
-         * the remaining is set to its dflt value.
-         *
-         */
-        function getShowAttrDflt() {
-            var showAttrsAll = ['showexponent',
-                                'showtickprefix',
-                                'showticksuffix'],
-                showAttrs = showAttrsAll.filter(function(a){
-                    return containerIn[a]!==undefined;
-                }),
-                sameVal = function(a){
-                    return containerIn[a]===containerIn[showAttrs[0]];
-                };
-            if (showAttrs.every(sameVal) || showAttrs.length===1) {
-                return containerIn[showAttrs[0]];
-            }
-        }
-
         var showTickLabels = coerce('showticklabels');
         if(showTickLabels) {
             coerce('tickfont', font);
             coerce('tickangle');
 
-            var showAttrDflt = getShowAttrDflt();
+            var showAttrDflt = axes.getShowAttrDflt(containerIn);
 
             if(axType==='date') {
                 coerce('tickformat');
@@ -602,6 +573,35 @@
         if(axes.category(array)) return 'category';
         if(linearOK(array)) return 'linear';
         else return '-';
+    };
+
+    /*
+     * Attributes 'showexponent', 'showtickprefix' and 'showticksuffix'
+     * share values.
+     *
+     * If only 1 attribute is set,
+     * the remaining attributes inherit that value.
+     *
+     * If 2 attributes are set to the same value,
+     * the remaining attribute inherits that value.
+     *
+     * If 2 attributes are set to different values,
+     * the remaining is set to its dflt value.
+     *
+     */
+    axes.getShowAttrDflt = function getShowAttrDflt(containerIn) {
+        var showAttrsAll = ['showexponent',
+                            'showtickprefix',
+                            'showticksuffix'],
+            showAttrs = showAttrsAll.filter(function(a){
+                return containerIn[a]!==undefined;
+            }),
+            sameVal = function(a){
+                return containerIn[a]===containerIn[showAttrs[0]];
+            };
+        if (showAttrs.every(sameVal) || showAttrs.length===1) {
+            return containerIn[showAttrs[0]];
+        }
     };
 
     // is there at least one number in array? If not, we should leave
@@ -1566,7 +1566,7 @@
         function isHidden(showAttr) {
             var first_or_last;
 
-            if (showAttr===undefined) return true
+            if (showAttr===undefined) return true;
             if (hover) return showAttr==='none';
 
             first_or_last = {
