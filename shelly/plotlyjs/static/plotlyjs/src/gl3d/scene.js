@@ -257,7 +257,7 @@ function createScene(options) {
     style.position = 'absolute';
     style.top = style.left = '0px';
     style.width = style.height = '100%';
-    style.zIndex = '1000';
+    //style['z-index'] = '0';
 
     options.container.appendChild(container);
     options.container = container;
