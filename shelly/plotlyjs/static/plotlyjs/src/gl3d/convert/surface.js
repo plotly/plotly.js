@@ -3,7 +3,8 @@
 var createSurface = require('gl-surface3d'),
     ndarray = require('ndarray'),
     homography = require('ndarray-homography'),
-    fill = require('ndarray-fill');
+    fill = require('ndarray-fill'),
+    ops  = require('ndarray-ops');
 
 var MIN_RESOLUTION = 128
 
@@ -36,17 +37,46 @@ function parseColorScale (colorscale, alpha) {
     });
 }
 
+//Pad coords by +1
+function padField(nfield, field) {
+  var shape = field.shape.slice()
+  var nshape = nfield.shape.slice()
+
+  //Center
+  ops.assign(nfield.lo(1,1).hi(shape[0], shape[1]), field)
+
+  //Edges
+  ops.assign(nfield.lo(1).hi(shape[0], 1), 
+              field.hi(shape[0], 1))
+  ops.assign(nfield.lo(1,nshape[1]-1).hi(shape[0],1),
+              field.lo(0,shape[1]-1).hi(shape[0],1))
+  ops.assign(nfield.lo(0,1).hi(1,shape[1]),
+              field.hi(1))
+  ops.assign(nfield.lo(nshape[0]-1,1).hi(1,shape[1]),
+              field.lo(shape[0]-1))
+
+  //Corners
+  nfield.set(0,0, field.get(0,0))
+  nfield.set(0,nshape[1]-1, field.get(0,shape[1]-1))
+  nfield.set(nshape[0]-1,0, field.get(shape[0]-1,0))
+  nfield.set(nshape[0]-1,nshape[1]-1, field.get(shape[0]-1,shape[1]-1))
+}
+
 function refine(coords) {
-    var minScale = Math.min(coords[0].shape[0], coords[0].shape[1])
+    var minScale = Math.min(coords[0].shape[0]+2, coords[0].shape[1]+2)
     if(minScale < MIN_RESOLUTION) {
         var scaleF = MIN_RESOLUTION / minScale
         var nshape = [ 
-            Math.floor((coords[0].shape[0]-1)*scaleF+1)|0, 
-            Math.floor((coords[0].shape[1]-1)*scaleF+1)|0 ]
+            Math.floor((coords[0].shape[0]+1)*scaleF+1)|0, 
+            Math.floor((coords[0].shape[1]+1)*scaleF+1)|0 ]
         var nsize = nshape[0]*nshape[1]
         for(var i=0; i<3; ++i) {
+            var padImg = ndarray(
+                new Float32Array((coords[0].shape[0]+2)*(coords[0].shape[1]+2)),
+                [coords[0].shape[0]+2,coords[0].shape[1]+2])
+            padField(padImg, coords[i])
             var scaledImg = ndarray(new Float32Array(nsize), nshape)
-            homography(scaledImg, coords[i], [scaleF, 0, 0, 
+            homography(scaledImg, padImg, [scaleF, 0, 0, 
                                               0, scaleF, 0,
                                               0, 0, 1])
             coords[i] = scaledImg

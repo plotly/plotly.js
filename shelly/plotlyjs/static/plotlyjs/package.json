@@ -9,7 +9,6 @@
   "license": "ISC",
   "private": true,
   "dependencies": {
-    "promise": "6.1.0",
     "3d-view": "^2.0.0",
     "arraytools": "^1.0.0",
     "browserify": "^6.1.0",
@@ -24,6 +23,8 @@
     "mouse-change": "^1.1.1",
     "mouse-wheel": "^1.0.2",
     "ndarray-homography": "^1.0.0",
+    "ndarray-ops": "^1.2.2",
+    "promise": "6.1.0",
     "right-now": "^1.0.0",
     "tinycolor2": "^1.0.0",
     "uglify-js": "~2.4.13"
@@ -33,5 +34,4 @@
     "ndarray": "^1.0.16",
     "ndarray-fill": "^1.0.1"
   }
-
 }
