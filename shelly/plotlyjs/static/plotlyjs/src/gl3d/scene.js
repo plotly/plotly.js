@@ -139,6 +139,10 @@ proto.plot = function(sceneData, sceneLayout) {
             if(sceneBounds[0][i] > sceneBounds[1][i]) {
                 sceneBounds[0][i] = -1;
                 sceneBounds[1][i] =  1;
+            } else {
+                var d = sceneBounds[1][i] - sceneBounds[0][i]
+                sceneBounds[0][i] -= d/32.0
+                sceneBounds[1][i] += d/32.0
             }
         } else {
             var range = sceneLayout[axisProperties[i]].range;
