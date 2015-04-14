@@ -100,6 +100,9 @@ proto.plot = function(sceneData, sceneLayout) {
         }
         for(var i=0; i<sceneData.length; ++i) {
             var data = sceneData[i];
+            if(!data.visible) {
+                continue;
+            }
             var trace = this.traces[data.uid];
             if(trace) {
                 trace.update(data);
@@ -118,6 +121,21 @@ proto.plot = function(sceneData, sceneLayout) {
                 this.traces[data.uid] = trace;
             }
         }
+    } else {
+        sceneData = [];
+    }
+
+    var traceIds = Object.keys(this.traces)
+trace_id_loop:
+    for(var i=0; i<traceIds.length; ++i) {
+        for(var j=0; j<sceneData.length; ++j) {
+            if(sceneData[j].uid === traceIds[i] && sceneData[j].visible) {
+                continue trace_id_loop
+            }
+        }
+        var trace = this.traces[traceIds[i]];
+        trace.dispose();
+        delete this.traces[traceIds[i]];
     }
 
     //Update ranges (needs to be called *after* objects are added due to updates)
@@ -154,8 +172,6 @@ proto.plot = function(sceneData, sceneLayout) {
             sceneBounds[1][i] += 1;
         }
     }
-
-
 
     //Update frame position for multi plots
     var domain = this.sceneLayout.domain || null,
