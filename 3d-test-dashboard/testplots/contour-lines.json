@@ -442,13 +442,26 @@
       "uid": "42953a",
       "contours": {
         "x": {
-          "show": true
+          "show": true,
+          "width": 4.8,
+          "highlight": true,
+          "highlightColor": "rgb(255, 0, 0)",
+          "highlightWidth": 4.7
         },
         "y": {
-          "show": true
+          "show": true,
+          "color": "rgb(44, 160, 44)",
+          "highlight": true,
+          "highlightColor": "rgb(255, 255, 0)",
+          "highlightWidth": 7.3
         },
         "z": {
-          "show": true
+          "show": true,
+          "color": "rgb(148, 103, 189)",
+          "width": 9.2,
+          "highlight": true,
+          "highlightWidth": 6.2,
+          "highlightColor": "rgb(164, 194, 244)"
         }
       }
     }
