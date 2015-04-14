@@ -4,7 +4,8 @@ var createSurface = require('gl-surface3d'),
     ndarray = require('ndarray'),
     homography = require('ndarray-homography'),
     fill = require('ndarray-fill'),
-    ops  = require('ndarray-ops');
+    ops  = require('ndarray-ops'),
+    str2RgbaArray = require('../lib/str2rgbarray');
 
 var MIN_RESOLUTION = 128
 
@@ -38,9 +39,10 @@ function parseColorScale (colorscale, alpha) {
 }
 
 //Pad coords by +1
-function padField(nfield, field) {
-  var shape = field.shape.slice()
-  var nshape = nfield.shape.slice()
+function padField(field) {
+  var shape = field.shape
+  var nshape = [shape[0]+2, shape[1]+2]
+  var nfield = ndarray(new Float32Array(nshape[0]*nshape[1]), nshape)
 
   //Center
   ops.assign(nfield.lo(1,1).hi(shape[0], shape[1]), field)
@@ -60,21 +62,20 @@ function padField(nfield, field) {
   nfield.set(0,nshape[1]-1, field.get(0,shape[1]-1))
   nfield.set(nshape[0]-1,0, field.get(shape[0]-1,0))
   nfield.set(nshape[0]-1,nshape[1]-1, field.get(shape[0]-1,shape[1]-1))
+
+  return nfield
 }
 
 function refine(coords) {
-    var minScale = Math.min(coords[0].shape[0]+2, coords[0].shape[1]+2)
+    var minScale = Math.min(coords[0].shape[0], coords[0].shape[1])
     if(minScale < MIN_RESOLUTION) {
         var scaleF = MIN_RESOLUTION / minScale
         var nshape = [ 
-            Math.floor((coords[0].shape[0]+1)*scaleF+1)|0, 
-            Math.floor((coords[0].shape[1]+1)*scaleF+1)|0 ]
+            Math.floor((coords[0].shape[0])*scaleF+1)|0, 
+            Math.floor((coords[0].shape[1])*scaleF+1)|0 ]
         var nsize = nshape[0]*nshape[1]
         for(var i=0; i<3; ++i) {
-            var padImg = ndarray(
-                new Float32Array((coords[0].shape[0]+2)*(coords[0].shape[1]+2)),
-                [coords[0].shape[0]+2,coords[0].shape[1]+2])
-            padField(padImg, coords[i])
+            var padImg = padField(coords[i])
             var scaledImg = ndarray(new Float32Array(nsize), nshape)
             homography(scaledImg, padImg, [scaleF, 0, 0, 
                                               0, scaleF, 0,
