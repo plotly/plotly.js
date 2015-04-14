@@ -216,6 +216,10 @@ proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) 
     prop.set(cameraposition);
 };
 
+proto.toPNG = function() {
+    
+}
+
 function createScene(options) {
     options = options || {};
 

@@ -32,7 +32,8 @@ proto = LineWithMarkers.prototype;
 proto.handlePick = function(selection) {
     if( selection.object && 
         (selection.object === this.linePlot || 
-         selection.object === this.delaunayMesh)) {
+         selection.object === this.delaunayMesh ||
+         selection.object === this.textMarkers)) {
         if(selection.object.highlight) {
             selection.object.highlight(null);
         }
@@ -340,7 +341,8 @@ proto.update = function(data) {
         alignment:    options.textOffset,
         font:         options.textFont,
         orthographic: true,
-        lineWidth:    0
+        lineWidth:    0,
+        project:      false
     };
 
     if(this.mode.indexOf('text') !== -1) {

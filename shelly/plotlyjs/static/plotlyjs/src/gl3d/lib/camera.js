@@ -199,7 +199,7 @@ function createCamera(element, options) {
 
     if( (zoom && left && !ctrl && !alt && !shift) || middle || (left && !ctrl && alt && !shift)) {
       //Zoom
-      var kzoom = camera.zoomSpeed * dy / window.innerHeight * (t - view.lastT()) * 100
+      var kzoom = -camera.zoomSpeed * dy / window.innerHeight * (t - view.lastT()) * 100
       view.pan(t, 0, 0, distance * (Math.exp(kzoom) - 1))
     }
 
@@ -214,7 +214,7 @@ function createCamera(element, options) {
     if(Math.abs(dx) > Math.abs(dy)) {
       view.rotate(t, 0, 0, -dx * flipX * Math.PI * camera.rotateSpeed / window.innerWidth)
     } else {
-      var kzoom = camera.zoomSpeed * flipY * dy / window.innerHeight * (t - view.lastT()) / 100.0
+      var kzoom = -camera.zoomSpeed * flipY * dy / window.innerHeight * (t - view.lastT()) / 100.0
       view.pan(t, 0, 0, distance * (Math.exp(kzoom) - 1))
     }
   }, true)
