@@ -27,7 +27,7 @@ function render(scene) {
 function Scene(options) {
     var glOptions = options.glOptions;
     glOptions.premultipliedAlpha = true;
-
+    
     this.Plotly       = options.Plotly;
     this.sceneLayout  = options.sceneLayout;
     this.fullLayout   = options.fullLayout;
@@ -217,7 +217,35 @@ proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) 
 };
 
 proto.toPNG = function() {
-    
+    var scene = this.scene;
+    var gl = scene.gl;
+    var w = gl.drawingBufferWidth;
+    var h = gl.drawingBufferHeight;
+
+    var pixels = new Uint8Array(w * h * 4);
+    gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+    //Flip pixels
+    for(var j=0,k=h-1; j<k; ++j, --k) {
+        for(var i=0; i<w; ++i) {
+            for(var l=0; l<4; ++l) {
+                var tmp = pixels[4*(w*j+i)+l];
+                pixels[4*(w*j+i)+l] = pixels[4*(w*k+i)+l];
+                pixels[4*(w*k+i)+l] = tmp;
+            }
+        }
+    }
+
+    var canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    var context = canvas.getContext('2d');
+    var imageData = context.createImageData(w, h);
+    imageData.data.set(pixels);
+    context.putImageData(imageData, 0, 0);
+
+    var dataURL = canvas.toDataURL('image/png');
+    return dataURL;
 }
 
 function createScene(options) {
