@@ -1,5 +1,3 @@
-'use strict';
-
 var MARKER_SYMBOLS = require('../lib/markers.json');
 var Plotly = require('../../plotly');
 

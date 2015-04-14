@@ -1,5 +1,3 @@
-'use strict';
-
 var createPlot          = require('gl-plot3d'),
     m4FromQuat          = require('gl-mat4/fromQuat'),
     createAxesOptions   = require('./convert/axes'),
@@ -29,7 +27,7 @@ function Scene(options) {
     if(glOptions.preserveDrawingBuffer) {
         glOptions.premultipliedAlpha = true;
     }
-    
+
     this.Plotly       = options.Plotly;
     this.sceneLayout  = options.sceneLayout;
     this.fullLayout   = options.fullLayout;

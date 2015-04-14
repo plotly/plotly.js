@@ -1,4 +1,3 @@
-'use strict';
 var Plotly = require('../../plotly');
 var Gl3dLayout = {};
 

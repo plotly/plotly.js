@@ -1,8 +1,4 @@
-'use strict';
 var Plotly = require('../../plotly');
-
-var str2RgbaArray = require('../lib/str2rgbarray'),
-    tinycolor = require('tinycolor2');
 
 var Surface = {};
 
