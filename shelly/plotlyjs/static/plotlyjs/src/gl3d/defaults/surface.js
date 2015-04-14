@@ -183,9 +183,14 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     if(showScale) {
         Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
     }
+    
 
 };
 
 Surface.flipScale = function (si) {
     return [1 - si[0], si[1]];
+};
+
+Surface.colorbar = function(gd, cd) {
+    Plotly.Heatmap.colorbar(gd, cd);
 };

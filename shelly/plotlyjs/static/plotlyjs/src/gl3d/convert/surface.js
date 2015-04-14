@@ -202,9 +202,6 @@ proto.update = function(data) {
     }
 }
 
-proto.colorbar = function(gd, cd) {
-    this.config.Plotly.Heatmap.colorbar(gd, cd)
-}
 
 proto.dispose = function() {
   this.scene.remove(this.surface)
