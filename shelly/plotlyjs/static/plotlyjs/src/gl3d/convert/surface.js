@@ -48,7 +48,7 @@ function padField(field) {
   ops.assign(nfield.lo(1,1).hi(shape[0], shape[1]), field)
 
   //Edges
-  ops.assign(nfield.lo(1).hi(shape[0], 1), 
+  ops.assign(nfield.lo(1).hi(shape[0], 1),
               field.hi(shape[0], 1))
   ops.assign(nfield.lo(1,nshape[1]-1).hi(shape[0],1),
               field.lo(0,shape[1]-1).hi(shape[0],1))
@@ -70,14 +70,14 @@ function refine(coords) {
     var minScale = Math.min(coords[0].shape[0], coords[0].shape[1])
     if(minScale < MIN_RESOLUTION) {
         var scaleF = MIN_RESOLUTION / minScale
-        var nshape = [ 
-            Math.floor((coords[0].shape[0])*scaleF+1)|0, 
+        var nshape = [
+            Math.floor((coords[0].shape[0])*scaleF+1)|0,
             Math.floor((coords[0].shape[1])*scaleF+1)|0 ]
         var nsize = nshape[0]*nshape[1]
         for(var i=0; i<3; ++i) {
             var padImg = padField(coords[i])
             var scaledImg = ndarray(new Float32Array(nsize), nshape)
-            homography(scaledImg, padImg, [scaleF, 0, 0, 
+            homography(scaledImg, padImg, [scaleF, 0, 0,
                                               0, scaleF, 0,
                                               0, 0, 1])
             coords[i] = scaledImg
@@ -201,7 +201,7 @@ proto.update = function(data) {
         if (contourParams.show) {
             this.showContour = true
             params.levels[i]       = contourLevels[i];
-            params.contourColor[i] = contourParams.color;
+            params.contourColor[i] = str2RgbaArray(contourParams.color);
             params.contourWidth[i] = contourParams.width;
         } else {
             this.showContour = false
