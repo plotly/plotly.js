@@ -2,6 +2,8 @@
 
 module.exports = createSpikeOptions
 
+var str2RGBArray = require('../lib/str2rgbarray');
+
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis']
 
 function SpikeOptions() {
@@ -19,6 +21,15 @@ proto.merge = function(sceneLayout) {
     var opts = this;
     for (var i = 0; i < 3; ++i) {
         var axes = sceneLayout[AXES_NAMES[i]];
+
+        if(axes.showspikes) {
+          this.enable[i] = true;
+          this.colors[i] = str2RGBArray(axes.spikecolor);
+          this.sides[i] = axes.spikesides;
+          this.width[i] = axes.spikethickness;
+        } else {
+          this.enable[i] = false;
+        }
     }
 }
 
