@@ -30,8 +30,8 @@ function LineWithMarkers(scene, uid) {
 proto = LineWithMarkers.prototype;
 
 proto.handlePick = function(selection) {
-    if( selection.object && 
-        (selection.object === this.linePlot || 
+    if( selection.object &&
+        (selection.object === this.linePlot ||
          selection.object === this.delaunayMesh ||
          selection.object === this.textMarkers)) {
         if(selection.object.highlight) {
@@ -69,7 +69,7 @@ function constructDelaunay(points, color, axis) {
         positions:  points,
         cells:      cells,
         meshColor:  color
-    }
+    };
 }
 
 function calculateErrorParams(errors) {
@@ -154,7 +154,7 @@ function formatColor(Plotly, colorIn, opacityIn, len) {
     }
 
     return colorOut;
-};
+}
 
 function calculateSize(sizeIn) {
     // rough parity with Plotly 2D markers
@@ -395,7 +395,7 @@ proto.update = function(data) {
         this.delaunayMesh.dispose();
         this.delaunayMesh = null;
     }
-}
+};
 
 proto.dispose = function() {
     if(this.linePlot) {
