@@ -12,7 +12,7 @@ function SpikeOptions() {
                    [0,0,0,1],
                    [0,0,0,1]];
     this.sides = [true, true, true];
-    this.width = [1,1,1];
+    this.lineWidth = [1,1,1];
 }
 
 var proto = SpikeOptions.prototype
@@ -26,7 +26,7 @@ proto.merge = function(sceneLayout) {
           this.enable[i] = true;
           this.colors[i] = str2RGBArray(axes.spikecolor);
           this.sides[i] = axes.spikesides;
-          this.width[i] = axes.spikethickness;
+          this.lineWidth[i] = axes.spikethickness;
         } else {
           this.enable[i] = false;
         }
