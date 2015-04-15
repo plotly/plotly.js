@@ -178,10 +178,6 @@ Scatter3D.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     for (var i = 0; i < 3; ++i) {
         var projection = 'projection.' + dims[i];
         if (coerce(projection+'.show')) {
-            // adaptor until Mikola makes axes independent projection configs
-            coerce('projection.x.opacity');
-            coerce('projection.x.scale');
-            //
             coerce(projection+'.opacity');
             coerce(projection+'.scale');
         }

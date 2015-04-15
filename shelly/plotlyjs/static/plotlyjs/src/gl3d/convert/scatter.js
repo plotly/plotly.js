@@ -30,8 +30,8 @@ function LineWithMarkers(scene, uid) {
 proto = LineWithMarkers.prototype;
 
 proto.handlePick = function(selection) {
-    if( selection.object && 
-        (selection.object === this.linePlot || 
+    if( selection.object &&
+        (selection.object === this.linePlot ||
          selection.object === this.delaunayMesh ||
          selection.object === this.textMarkers)) {
         if(selection.object.highlight) {
@@ -69,7 +69,7 @@ function constructDelaunay(points, color, axis) {
         positions:  points,
         cells:      cells,
         meshColor:  color
-    }
+    };
 }
 
 function calculateErrorParams(errors) {
@@ -154,7 +154,7 @@ function formatColor(Plotly, colorIn, opacityIn, len) {
     }
 
     return colorOut;
-};
+}
 
 function calculateSize(sizeIn) {
     // rough parity with Plotly 2D markers
@@ -239,14 +239,14 @@ function convertPlotlyOptions(scene, data) {
     }
 
     var dims = ['x', 'y', 'z'];
-    params.project = [];
+    params.project = [false, false, false];
+    params.projectScale = [1,1,1]
+    params.projectOpacity = [1,1,1]
     for (i = 0; i < 3; ++i) {
         var projection = data.projection[dims[i]];
         if ((params.project[i] = projection.show)) {
-            // Mikolas API doesn't current support axes dependent
-            // configuration. Its coming though.
-            params.projectOpacity = data.projection.x.opacity;
-            params.projectScale = data.projection.x.scale;
+            params.projectOpacity[i] = projection.opacity;
+            params.projectScale[i] = projection.scale;
         }
     }
 
@@ -395,7 +395,7 @@ proto.update = function(data) {
         this.delaunayMesh.dispose();
         this.delaunayMesh = null;
     }
-}
+};
 
 proto.dispose = function() {
     if(this.linePlot) {

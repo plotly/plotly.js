@@ -1,14 +1,19 @@
-'use strict'
+'use strict';
 
-var tinycolor = require('tinycolor2'),
-    arrtools = require('arraytools'),
+var arrtools = require('arraytools'),
     arrayCopy1D = arrtools.copy1D,
-    arrayCopy2D = arrtools.copy2D,
     str2RgbaArray = require('../lib/str2rgbarray');
 
-module.exports = createAxesOptions
 
-var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis']
+module.exports = createAxesOptions;
+
+var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
+
+function createAxesOptions(plotlyOptions) {
+    var result = new AxesOptions();
+    result.merge(plotlyOptions);
+    return result;
+}
 
 function AxesOptions() {
     this.bounds         = [ [-10, -10, -10],
@@ -60,7 +65,7 @@ function AxesOptions() {
     this._defaultLineTickLength  = arrayCopy1D(this.lineTickLength);
 }
 
-var proto = AxesOptions.prototype
+var proto = AxesOptions.prototype;
 
 proto.merge = function(sceneLayout) {
     var opts = this;
@@ -128,10 +133,4 @@ proto.merge = function(sceneLayout) {
             opts.backgroundColor[i]     = str2RgbaArray(axes.backgroundcolor);
         } else opts.backgroundEnable[i] = false;
     }
-}
-
-function createAxesOptions(plotlyOptions) {
-    var result = new AxesOptions()
-    result.merge(plotlyOptions)
-    return result
-}
+};

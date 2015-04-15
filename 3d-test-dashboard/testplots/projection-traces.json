@@ -44,7 +44,7 @@
       "projection": {
         "x": {
           "show": true,
-          "scale": 1.1
+          "scale": 10
         },
         "y": {
           "show": true

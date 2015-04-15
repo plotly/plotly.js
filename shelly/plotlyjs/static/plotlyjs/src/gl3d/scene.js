@@ -78,6 +78,8 @@ var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
 proto.plot = function(sceneData, sceneLayout) {
 
+    var data, trace;
+
     if(sceneLayout.bgcolor) {
         this.scene.clearColor = str2RGBAarray(sceneLayout.bgcolor);
     } else {
@@ -107,11 +109,11 @@ proto.plot = function(sceneData, sceneLayout) {
             sceneData = [sceneData];
         }
         for(var i=0; i<sceneData.length; ++i) {
-            var data = sceneData[i];
+            data = sceneData[i];
             if(!data.visible) {
                 continue;
             }
-            var trace = this.traces[data.uid];
+            trace = this.traces[data.uid];
             if(trace) {
                 trace.update(data);
             } else {
@@ -133,15 +135,15 @@ proto.plot = function(sceneData, sceneLayout) {
         sceneData = [];
     }
 
-    var traceIds = Object.keys(this.traces)
+    var traceIds = Object.keys(this.traces);
 trace_id_loop:
     for(var i=0; i<traceIds.length; ++i) {
         for(var j=0; j<sceneData.length; ++j) {
             if(sceneData[j].uid === traceIds[i] && sceneData[j].visible) {
-                continue trace_id_loop
+                continue trace_id_loop;
             }
         }
-        var trace = this.traces[traceIds[i]];
+        trace = this.traces[traceIds[i]];
         trace.dispose();
         delete this.traces[traceIds[i]];
     }
@@ -166,9 +168,9 @@ trace_id_loop:
                 sceneBounds[0][i] = -1;
                 sceneBounds[1][i] =  1;
             } else {
-                var d = sceneBounds[1][i] - sceneBounds[0][i]
-                sceneBounds[0][i] -= d/32.0
-                sceneBounds[1][i] += d/32.0
+                var d = sceneBounds[1][i] - sceneBounds[0][i];
+                sceneBounds[0][i] -= d/32.0;
+                sceneBounds[1][i] += d/32.0;
             }
         } else {
             var range = sceneLayout[axisProperties[i]].range;
@@ -249,7 +251,7 @@ proto.toPNG = function() {
     var w = gl.drawingBufferWidth;
     var h = gl.drawingBufferHeight;
 
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
     var pixels = new Uint8Array(w * h * 4);
     gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
