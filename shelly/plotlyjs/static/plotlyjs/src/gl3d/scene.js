@@ -37,6 +37,11 @@ function Scene(options) {
 
     this.container    = options.container;
 
+    //WARNING!!!! Only set camera position on first call to plot!!!!
+    this.hasPlotBeenCalled = false;
+
+    this.sceneKey     = options.sceneKey || 'scene';
+
     this.scene        = createPlot({
         container:  options.container,
         glOptions:  glOptions,
@@ -85,9 +90,12 @@ proto.plot = function(sceneData, sceneLayout) {
     this.spikeOptions.merge(sceneLayout);
 
     //Update camera position
-    var camera = sceneLayout.cameraposition;
-    if(camera) {
-        this.setCameraPosition(camera);
+    if(!this.hasPlotBeenCalled) {
+      this.hasPlotBeenCalled = true;
+      var camera = sceneLayout.cameraposition;
+      if(camera) {
+          this.setCameraPosition(camera);
+      }
     }
 
     //Update scene
@@ -204,7 +212,6 @@ proto.setCameraToDefault = function setCameraToDefault () {
 
 // get camera position in plotly coords from 'orbit-camera' coords
 proto.getCameraPosition = function getCameraPosition () {
-    //Mik: This is a hack to get things to work with the legacy camera/quaternion api
     this.scene.camera.view.recalcMatrix(this.camera.view.lastT());
     return [
         this.scene.camera.view._active.computedRotation.slice(),
@@ -219,12 +226,12 @@ proto.setCameraPosition = function setCameraPosition (camera) {
         var rotation = camera[0];
         var center   = camera[1];
         var radius   = camera[2];
-        var matrix = m4FromQuat([], rotation);
+        var mat = m4FromQuat([], rotation);
         var eye = [];
         for(var i=0; i<3; ++i) {
-            eye[i] = center[i] + radius * matrix[2+4*i];
+            eye[i] = center[i] + radius * mat[2+4*i];
         }
-        this.scene.camera.lookAt(eye, center, [0,0,1]);
+        this.scene.camera.lookAt(eye, center, [mat[1],mat[5],mat[9]]);
     }
 };
 
