@@ -63,7 +63,6 @@ plots['contour-lines'] = require('./testplots/contour-lines.json');
 plots['xy-defined-ticks'] = require('./testplots/xy-defined-ticks.json');
 plots['opacity-surface'] = require('./testplots/opacity-surface.json');
 plots['projection-traces'] = require('./testplots/projection-traces.json');
-plots['borken-world'] = require('./testplots/borken-world.json');
 plots['opacity-scaling-spikes'] = require('./testplots/opacity-scaling-spikes.json');
 plots['text-weirdness'] = require('./testplots/text-weirdness.json');
 
