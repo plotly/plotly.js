@@ -239,14 +239,14 @@ function convertPlotlyOptions(scene, data) {
     }
 
     var dims = ['x', 'y', 'z'];
-    params.project = [];
+    params.project = [false, false, false];
+    params.projectScale = [1,1,1]
+    params.projectOpacity = [1,1,1]
     for (i = 0; i < 3; ++i) {
         var projection = data.projection[dims[i]];
         if ((params.project[i] = projection.show)) {
-            // Mikolas API doesn't current support axes dependent
-            // configuration. Its coming though.
-            params.projectOpacity = data.projection.x.opacity;
-            params.projectScale = data.projection.x.scale;
+            params.projectOpacity[i] = projection.opacity;
+            params.projectScale[i] = projection.scale;
         }
     }
 
