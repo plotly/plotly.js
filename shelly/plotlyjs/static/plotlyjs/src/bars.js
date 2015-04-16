@@ -372,7 +372,7 @@
     };
 
     // arrayOk attributes, merge them into calcdata array
-    function arraysToCalcdata(cd) {
+    bars.arraysToCalcdata = function(cd) {
         var trace = cd[0].trace,
             marker = trace.marker,
             markerLine = marker.line;
@@ -382,7 +382,7 @@
         Plotly.Lib.mergeArray(marker.color, cd, 'mc');
         Plotly.Lib.mergeArray(markerLine.color, cd, 'mlc');
         Plotly.Lib.mergeArray(markerLine.width, cd, 'mlw');
-    }
+    };
 
     bars.plot = function(gd, plotinfo, cdbar) {
         var xa = plotinfo.x(),
@@ -401,7 +401,7 @@
                 var t = d[0].t,
                     trace = d[0].trace;
 
-                arraysToCalcdata(d);
+                bars.arraysToCalcdata(d);
 
                 d3.select(this).selectAll('path')
                     .data(Plotly.Lib.identity)

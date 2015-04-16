@@ -129,10 +129,10 @@
             x = coerce('x'),
             defaultOrientation;
 
-        if (y) {
+        if (y && y.length) {
             defaultOrientation = 'v';
             if (!x) coerce('x0');
-        } else if (x) {
+        } else if (x && x.length) {
             defaultOrientation = 'h';
             coerce('y0');
         } else {
