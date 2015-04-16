@@ -25,11 +25,17 @@ exports.Shapes = require('./shapes');
 exports.Legend = require('./legend');
 exports.Colorbar = require('./colorbar');
 exports.ModeBar = require('./modebar');
+
+// 3D
+exports.Gl3dLayout = require('./gl3d/defaults/gl3dlayout');
+exports.Gl3dAxes = require('./gl3d/defaults/gl3daxes');
+exports.Scatter3D = require('./gl3d/defaults/scatter3d');
+exports.Surface = require('./gl3d/defaults/surface');
+exports.createScene = require('./gl3d/scene');
+
 // configuration
 exports.Config = require('./config');
 
 // promise polyfill, embed rather than requiring dependencies
 require('../../../../shelly/static/js/plugins/promise-1.0.0.min.js');
 require('../../../../shelly/static/js/plugins/promise-done-1.0.0.js');
-
-
