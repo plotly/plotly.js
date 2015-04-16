@@ -110,7 +110,7 @@ proto.plot = function(sceneData, sceneLayout) {
         }
         for(var i=0; i<sceneData.length; ++i) {
             data = sceneData[i];
-            if(!data.visible) {
+            if(data.visible!==true) {
                 continue;
             }
             trace = this.traces[data.uid];
@@ -139,7 +139,7 @@ proto.plot = function(sceneData, sceneLayout) {
 trace_id_loop:
     for(var i=0; i<traceIds.length; ++i) {
         for(var j=0; j<sceneData.length; ++j) {
-            if(sceneData[j].uid === traceIds[i] && sceneData[j].visible) {
+            if(sceneData[j].uid === traceIds[i] && sceneData[j].visible===true) {
                 continue trace_id_loop;
             }
         }
