@@ -142,6 +142,10 @@
                     tickangle: opts.tickangle,
                     exponentformat: opts.exponentformat,
                     showexponent: opts.showexponent,
+                    showtickprefix: opts.showtickprefix,
+                    tickprefix: opts.tickprefix,
+                    showticksuffix: opts.showticksuffix,
+                    ticksuffix: opts.ticksuffix,
                     title: opts.title,
                     titlefont: opts.titlefont,
                     anchor: 'free',
@@ -605,7 +609,7 @@
             type: 'color',
             dflt: 'rgba(0,0,0,0)'
         },
-        // tick and title properties named and function exactly as in axes,
+        // tick and title properties named and function exactly as in axes
         autotick: axesAttrs.autotick,
         nticks: axesAttrs.nticks,
         tick0: axesAttrs.tick0,
@@ -617,6 +621,10 @@
         showticklabels: axesAttrs.showticklabels,
         tickfont: axesAttrs.tickfont,
         tickangle: axesAttrs.tickangle,
+        tickprefix: axesAttrs.tickprefix,
+        showtickprefix: axesAttrs.showtickprefix,
+        ticksuffix: axesAttrs.ticksuffix,
+        showticksuffix: axesAttrs.showticksuffix,
         exponentformat: axesAttrs.exponentformat,
         showexponent: axesAttrs.showexponent,
         title: {
@@ -675,12 +683,21 @@
             coerce('tickcolor');
         }
 
-        var showticklabels = coerce('showticklabels');
-        if(showticklabels) {
+        var showTickLabels = coerce('showticklabels');
+        if(showTickLabels) {
             coerce('tickfont', layout.font);
             coerce('tickangle');
-            var showexponent = coerce('showexponent');
+
+            var showAttrDflt = Plotly.Axes.getShowAttrDflt(containerIn);
+
+            var showexponent = coerce('showexponent', showAttrDflt);
             if(showexponent!=='none') coerce('exponentformat');
+
+            var tickPrefix = coerce('tickprefix');
+            if(tickPrefix) coerce('showtickprefix', showAttrDflt);
+
+            var tickSuffix = coerce('ticksuffix');
+            if(tickSuffix) coerce('showticksuffix', showAttrDflt);
         }
 
         coerce('title');

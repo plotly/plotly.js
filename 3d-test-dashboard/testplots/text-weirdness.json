@@ -1,0 +1,67 @@
+{
+  "data": [
+    {
+      "uid": "0defda",
+      "text": [
+        "a",
+        "j",
+        "i",
+        "k"
+      ],
+      "mode": "lines+markers+text",
+      "y": [
+        -102.63,
+        -110.53,
+        -96.97,
+        -163.59
+      ],
+      "x": [
+        100.75,
+        157.53,
+        140.72,
+        134.03
+      ],
+      "z": [
+        8.41,
+        28.25,
+        67.78,
+        71.06
+      ],
+      "type": "scatter3d",
+      "projection": {
+        "y": {
+          "show": false
+        },
+        "x": {
+          "show": false
+        },
+        "z": {
+          "show": false
+        }
+      }
+    }
+  ],
+  "layout": {
+    "autosize": true,
+    "undefined": {
+      "cameraposition": [
+        [
+          0.13855639464070454,
+          0.5365430934822464,
+          0.7678929376547012,
+          -0.32134727420767745
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        1.8771354322421991
+      ]
+    },
+    "title": "Scatter3d with text weirdness",
+    "showlegend": false,
+    "height": 758,
+    "width": 1310
+  }
+}
