@@ -27,7 +27,6 @@ func.defaultConfig = {
         //'../../../streaming/static/streaming/build/streamhead-bundle.js',
         shellyStatic + 'plugins/d3.v3.min.js',
         shellyStatic + 'plugins/png.js',
-        shellyStatic + 'plugins/tinycolor.js',
         './build/plotlyjs-bundle.js',
         'tests/*_test.js'
     ],

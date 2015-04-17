@@ -1,9 +1,7 @@
 'use strict';
 
-// ---external global dependencies
-/* global tinycolor:false */
-
-var color = module.exports = {};
+var color = module.exports = {},
+    tinycolor = require('tinycolor2');
 
 // IMPORTANT - default colors should be in hex for grid.js
 color.defaults = [

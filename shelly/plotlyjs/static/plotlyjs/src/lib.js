@@ -7,10 +7,11 @@
 /* global pullf:false */
 
 // ---external global dependencies
-/* global d3:false, tinycolor:false */
+/* global d3:false */
 
 var lib = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    tinycolor = require('tinycolor2');
 
 // dateTime2ms - turn a date object or string s of the form
 // YYYY-mm-dd HH:MM:SS.sss into milliseconds (relative to 1970-01-01,

@@ -1,10 +1,11 @@
 'use strict';
 
 // ---external global dependencies
-/* global d3:false, PNGlib:false, tinycolor:false */
+/* global d3:false, PNGlib:false */
 
 var heatmap = module.exports = {},
     Plotly = require('./plotly'),
+    tinycolor = require('tinycolor2'),
     scatterAttrs = Plotly.Scatter.attributes;
 
 heatmap.attributes = {

@@ -2,10 +2,11 @@
 /* jshint camelcase: false */
 
 // ---external global dependencies
-/* global d3:false, tinycolor:false */
+/* global d3:false */
 
 var fx = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    tinycolor = require('tinycolor2');
 
 fx.layoutAttributes = {
     dragmode: {
