@@ -694,8 +694,6 @@ function plotPolar(gd, data, layout, config) {
         height: (layout.height || 600) + 'px'
     });
 
-    gd._context.setBackground(gd, layout.paper_bgcolor || 'white');
-
     // instantiate framework
     gd.framework = Plotly.micropolar.manager.framework();
     //get rid of gd.layout stashed nodes
@@ -769,6 +767,7 @@ function plotPolar(gd, data, layout, config) {
 
     // fulfill more gd requirements
     gd._fullLayout._paper = polarPlotSVG;
+    gd._context.setBackground(gd, layout.paper_bgcolor || 'white');
     plots.addLinks(gd);
 
     return Promise.resolve();
