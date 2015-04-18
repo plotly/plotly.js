@@ -820,20 +820,17 @@ function createHoverText(hoverData, opts) {
     // then put the text in, position the pointer to the data,
     // and figure out sizes
     hoverLabels.each(function(d){
-        var g = d3.select(this).attr('transform',''),
+        var g = d3.select(this).attr('transform', ''),
             name = '',
+            text = '',
             // combine possible non-opaque trace color with bgColor
-            baseColor = Plotly.Color.opacity(d.color) ? d.color : Plotly.Color.defaultLine,
+            baseColor = Plotly.Color.opacity(d.color) ?
+                d.color : Plotly.Color.defaultLine,
             traceColor = Plotly.Color.combine(baseColor, bgColor),
-            traceRGB = tinycolor(traceColor).toRgb(),
 
             // find a contrasting color for border and text
-            // see http://stackoverflow.com/questions/596216/
-            //      formula-to-determine-brightness-of-rgb-color
-            contrastColor =
-                (0.299*traceRGB.r + 0.587*traceRGB.g + 0.114*traceRGB.b)>128 ?
-                '#000' : Plotly.Color.background,
-            text = '';
+            contrastColor = tinycolor(traceColor).getBrightness()>128 ?
+                '#000' : Plotly.Color.background;
 
 
         if(d.name && d.zLabelVal===undefined) {
@@ -1353,7 +1350,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0};
         lum = gd._hmpixcount ?
             (gd._hmlumcount / gd._hmpixcount) :
-            tinycolor(gd._fullLayout.plot_bgcolor).toHsl().l;
+            tinycolor(gd._fullLayout.plot_bgcolor).getLuminance();
         path0 = path0 = 'M0,0H'+pw+'V'+ph+'H0V0';
         dimmed = false;
         zoomMode = 'xy';

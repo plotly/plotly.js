@@ -741,7 +741,7 @@ function plotOne(gd, plotinfo, cd) {
             pixcount += pixsize;
             if(!colors[vr]) {
                 colors[vr] = [
-                    tinycolor(c).toHsl().l,
+                    tinycolor(c).getLuminance(),
                     p.color('0x'+c.substr(1,2),'0x'+c.substr(3,2),'0x'+c.substr(5,2))
                 ];
             }

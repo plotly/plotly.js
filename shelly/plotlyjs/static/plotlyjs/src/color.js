@@ -115,7 +115,7 @@ color.getScale = function(scl, dflt) {
         if(si.length!==2) return true;
         if(si[0]<highestVal) return true;
         highestVal = si[0];
-        return !tinycolor(si[1]).ok;
+        return !tinycolor(si[1]).isValid();
     });
 
     if(badScale) return dflt;
@@ -193,7 +193,7 @@ function tinyRGB(tc) {
 
 color.rgb = function(cstr) { return tinyRGB(tinycolor(cstr)); };
 
-color.opacity = function(cstr) { return cstr ? tinycolor(cstr).alpha : 0; };
+color.opacity = function(cstr) { return cstr ? tinycolor(cstr).getAlpha() : 0; };
 
 color.addOpacity = function(cstr, op) {
     var c = tinycolor(cstr).toRgb();
@@ -224,10 +224,10 @@ color.combine = function(front, back){
 
 color.stroke = function(s, c) {
     var tc = tinycolor(c);
-    s.style({'stroke': tinyRGB(tc), 'stroke-opacity': tc.alpha});
+    s.style({'stroke': tinyRGB(tc), 'stroke-opacity': tc.getAlpha()});
 };
 
 color.fill = function(s, c) {
     var tc = tinycolor(c);
-    s.style({'fill': tinyRGB(tc), 'fill-opacity': tc.alpha});
+    s.style({'fill': tinyRGB(tc), 'fill-opacity': tc.getAlpha()});
 };

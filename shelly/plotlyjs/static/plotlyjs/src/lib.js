@@ -1323,7 +1323,7 @@ var coerceIt = {
         else propOut.set(String(v));
     },
     color: function(v, propOut, dflt) {
-        if(tinycolor(v).ok) propOut.set(v);
+        if(tinycolor(v).isValid()) propOut.set(v);
         else propOut.set(dflt);
     },
     colorscale: function(v, propOut, dflt) {
