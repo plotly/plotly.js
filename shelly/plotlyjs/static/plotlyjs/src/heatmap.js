@@ -762,17 +762,21 @@ function plotOne(gd, plotinfo, cd) {
             rcount += c[0] * pixsize;
             gcount += c[1] * pixsize;
             bcount += c[2] * pixsize;
-            context.fillStyle = 'rgba(' + c.join(',') + ')';
+            return c;
         }
-        else context.fillStyle = 'transparent';
+        return [0, 0, 0, 0];
+    }
+
+    function putColor(pixels, pxIndex, c) {
+        pixels[pxIndex] = c[0];
+        pixels[pxIndex + 1] = c[1];
+        pixels[pxIndex + 2] = c[2];
+        pixels[pxIndex + 3] = Math.round(c[3] * 255);
     }
 
     function interpColor(r0, r1, xinterp, yinterp) {
         var z00 = r0[xinterp.bin0];
-        if(z00 === undefined) {
-            setColor(undefined, 1);
-            return;
-        }
+        if(z00 === undefined) return setColor(undefined, 1);
 
         var z01 = r0[xinterp.bin1],
             z10 = r1[xinterp.bin0],
@@ -797,7 +801,7 @@ function plotOne(gd, plotinfo, cd) {
         else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2/3;
         else dxy = (z11 + z00 - z01 - z10);
 
-        setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
+        return setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
     }
 
     Plotly.Lib.markTime('done init png');
@@ -817,46 +821,56 @@ function plotOne(gd, plotinfo, cd) {
         j,
         xi,
         v,
-        row;
+        row,
+        c;
 
-    if(zsmooth === 'best') {
-        var xPixArray = new Array(x.length),
-            yPixArray = new Array(y.length),
-            xinterpArray = new Array(imageWidth),
-            yinterp,
-            r0,
-            r1;
+    if(zsmooth) {
+        var pxIndex = 0,
+            pixels = new Uint8Array(imageWidth * imageHeight * 4);
 
-        // first make arrays of x and y pixel locations of brick boundaries
-        for(i = 0; i < x.length; i++) xPixArray[i] = Math.round(xa.c2p(x[i]) - left);
-        for(i = 0; i < y.length; i++) yPixArray[i] = Math.round(ya.c2p(y[i]) - top);
+        if(zsmooth === 'best') {
+            var xPixArray = new Array(x.length),
+                yPixArray = new Array(y.length),
+                xinterpArray = new Array(imageWidth),
+                yinterp,
+                r0,
+                r1;
 
-        // then make arrays of interpolations
-        // (bin0=closest, bin1=next, frac=fractional dist.)
-        for(i = 0; i < imageWidth; i++) xinterpArray[i] = findInterp(i, xPixArray);
+            // first make arrays of x and y pixel locations of brick boundaries
+            for(i = 0; i < x.length; i++) xPixArray[i] = Math.round(xa.c2p(x[i]) - left);
+            for(i = 0; i < y.length; i++) yPixArray[i] = Math.round(ya.c2p(y[i]) - top);
 
-        // now do the interpolations and fill the png
-        for(j = 0; j < imageHeight; j++) {
-            yinterp = findInterp(j, yPixArray);
-            r0 = z[yinterp.bin0];
-            r1 = z[yinterp.bin1];
-            for(i = 0; i < imageWidth; i++) {
-                interpColor(r0, r1, xinterpArray[i], yinterp);
-                context.fillRect(i, j, 1, 1);
+            // then make arrays of interpolations
+            // (bin0=closest, bin1=next, frac=fractional dist.)
+            for(i = 0; i < imageWidth; i++) xinterpArray[i] = findInterp(i, xPixArray);
+
+            // now do the interpolations and fill the png
+            for(j = 0; j < imageHeight; j++) {
+                yinterp = findInterp(j, yPixArray);
+                r0 = z[yinterp.bin0];
+                r1 = z[yinterp.bin1];
+                for(i = 0; i < imageWidth; i++, pxIndex += 4) {
+                    c = interpColor(r0, r1, xinterpArray[i], yinterp);
+                    putColor(pixels, pxIndex, c);
+                }
             }
         }
-    }
-    else if(zsmooth === 'fast') {
-        for(j = 0; j < m; j++) {
-            row = z[j];
-            yb = ypx(j);
-            for(i = 0; i < n; i++) {
-                setColor(row[i],1);
-                context.fillRect(xpx(i), yb, 1, 1);
+        else { // zsmooth = fast
+            for(j = 0; j < m; j++) {
+                row = z[j];
+                yb = ypx(j);
+                for(i = 0; i < n; i++) {
+                    c = setColor(row[i],1);
+                    pxIndex = (yb * imageWidth + xpx(i)) * 4;
+                    putColor(pixels, pxIndex, c);
+                }
             }
         }
-    }
-    else {
+
+        var imageData = context.createImageData(imageWidth, imageHeight);
+        imageData.data.set(pixels);
+        context.putImageData(imageData, 0, 0);
+    } else {
         for(j = 0; j < m; j++) {
             row = z[j];
             yb.reverse();
@@ -874,7 +888,8 @@ function plotOne(gd, plotinfo, cd) {
                     continue;
                 }
                 v = row[i];
-                setColor(v, (xb[1] - xb[0]) * (yb[1] - yb[0]));
+                c = setColor(v, (xb[1] - xb[0]) * (yb[1] - yb[0]));
+                context.fillStyle = 'rgba(' + c.join(',') + ')';
                 context.fillRect(xb[0], yb[0], (xb[1] - xb[0]), (yb[1] - yb[0]));
             }
         }
