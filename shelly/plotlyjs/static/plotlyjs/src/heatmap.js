@@ -824,7 +824,7 @@ function plotOne(gd, plotinfo, cd) {
         row,
         c;
 
-    if(zsmooth) {
+    if(zsmooth) { // best or fast, works fastest with imageData
         var pxIndex = 0,
             pixels = new Uint8Array(imageWidth * imageHeight * 4);
 
@@ -870,7 +870,7 @@ function plotOne(gd, plotinfo, cd) {
         var imageData = context.createImageData(imageWidth, imageHeight);
         imageData.data.set(pixels);
         context.putImageData(imageData, 0, 0);
-    } else {
+    } else { // zsmooth = false -> filling potentially large bricks works fastest with fillRect
         for(j = 0; j < m; j++) {
             row = z[j];
             yb.reverse();
