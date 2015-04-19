@@ -1,7 +1,7 @@
 'use strict';
 
 // ---external global dependencies
-/* global d3:false, PNGlib:false */
+/* global d3:false */
 
 var heatmap = module.exports = {},
     Plotly = require('./plotly'),
@@ -681,16 +681,28 @@ function plotOne(gd, plotinfo, cd) {
     // if image is entirely off-screen, don't even draw it
     if(wd<=0 || ht<=0) return;
 
-    var p = zsmooth==='fast' ? new PNGlib(n,m,256) : new PNGlib(wd,ht, 256);
+    var canvasW, canvasH;
+    if(zsmooth === 'fast') {
+        canvasW = n;
+        canvasH = m;
+    } else {
+        canvasW = wd;
+        canvasH = ht;
+    }
+
+    var canvas = document.createElement('canvas');
+    canvas.width = canvasW;
+    canvas.height = canvasH;
+    var context = canvas.getContext('2d');
 
     // interpolate for color scale
-    // https://github.com/mbostock/d3/wiki/Quantitative-Scales
-    // http://nelsonslog.wordpress.com/2011/04/11/d3-scales-and-interpolation/
-
     var s = d3.scale.linear()
-        .domain(scl.map(function(si){ return si[0]*255; }))
-        .interpolate(d3.interpolateRgb)
-        .range(scl.map(function(si){ return si[1]; }));
+        .domain(scl.map(function(si){ return si[0]; }))
+        .range(scl.map(function(si){
+            var c = tinycolor(si[1]).toRgb();
+            return [c.r, c.g, c.b, c.a];
+        }))
+        .clamp(true);
 
     // map brick boundaries to image pixels
     var xpx,ypx;
@@ -726,34 +738,28 @@ function plotOne(gd, plotinfo, cd) {
         };
     }
 
-    // create a color in the png color table
-    // save p.color and luminosity each time we calculate anew, because
-    // these are the slowest parts
-    var colors = {};
-    // non-numeric shows as transparent TODO: make this an option
-    colors[256] = p.color(0,0,0,0);
-    function setColor(v,pixsize) {
-        if($.isNumeric(v)) {
-            // get z-value, scale for 8-bit color by rounding z to an integer 0-254
-            // (one value reserved for transparent (missing/non-numeric data)
-            var vr = Plotly.Lib.constrain(Math.round((v-min)*254/(max-min)),0,254),
-                c = s(vr);
+    function setColor(v, pixsize) {
+        if(v !== undefined) {
+            var c = s((v - min) / (max - min));
+            c[0] = Math.round(c[0]);
+            c[1] = Math.round(c[1]);
+            c[2] = Math.round(c[2]);
+
             pixcount += pixsize;
-            if(!colors[vr]) {
-                colors[vr] = [
-                    tinycolor(c).getLuminance(),
-                    p.color('0x'+c.substr(1,2),'0x'+c.substr(3,2),'0x'+c.substr(5,2))
-                ];
-            }
-            lumcount += pixsize*colors[vr][0];
-            return colors[vr][1];
+            rcount += c[0] * pixsize;
+            gcount += c[1] * pixsize;
+            bcount += c[2] * pixsize;
+            context.fillStyle = 'rgba(' + c.join(',') + ')';
         }
-        else return colors[256];
+        else context.fillStyle = 'transparent';
     }
 
     function interpColor(r0, r1, xinterp, yinterp) {
         var z00 = r0[xinterp.bin0];
-        if(z00 === undefined) return setColor(null,1);
+        if(z00 === undefined) {
+            setColor(undefined, 1);
+            return;
+        }
 
         var z01 = r0[xinterp.bin1],
             z10 = r1[xinterp.bin0],
@@ -778,8 +784,7 @@ function plotOne(gd, plotinfo, cd) {
         else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2/3;
         else dxy = (z11 + z00 - z01 - z10);
 
-        return setColor(z00 + xinterp.frac * dx +
-            yinterp.frac*(dy + xinterp.frac * dxy));
+        setColor(z00 + xinterp.frac * dx + yinterp.frac*(dy + xinterp.frac * dxy));
     }
 
     Plotly.Lib.markTime('done init png');
@@ -792,13 +797,15 @@ function plotOne(gd, plotinfo, cd) {
         ybi = yrev ? 0 : 1,
         // for collecting an average luminosity of the heatmap
         pixcount = 0,
-        lumcount = 0,
+        rcount = 0,
+        gcount = 0,
+        bcount = 0,
         xb,
         j,
         xi,
-        pc,
         v,
-        row;
+        row,
+        c;
 
     if(zsmooth === 'best') {
         var xPixArray = [],
@@ -822,8 +829,8 @@ function plotOne(gd, plotinfo, cd) {
             r0 = z[yinterp.bin0];
             r1 = z[yinterp.bin1];
             for(i = 0; i < wd; i++) {
-                p.buffer[p.index(i, j)] = interpColor(r0, r1, xinterpArray[i],
-                                                      yinterp);
+                interpColor(r0, r1, xinterpArray[i], yinterp);
+                context.fillRect(i, j, 1, 1);
             }
         }
     }
@@ -832,7 +839,8 @@ function plotOne(gd, plotinfo, cd) {
             row = z[j];
             yb = ypx(j);
             for(i = 0; i < n; i++) {
-                p.buffer[p.index(xpx(i),yb)] = setColor(row[i],1);
+                setColor(row[i],1);
+                context.fillRect(xpx(i), yb, 1, 1);
             }
         }
     }
@@ -854,22 +862,22 @@ function plotOne(gd, plotinfo, cd) {
                     continue;
                 }
                 v = row[i];
-                pc = setColor(v, (xb[1] - xb[0]) * (yb[1] - yb[0]));
-                for(xi = xb[0]; xi < xb[1]; xi++) {
-                    for(yi = yb[0]; yi < yb[1]; yi++) {
-                        p.buffer[p.index(xi, yi)] = pc;
-                    }
-                }
+                setColor(v, (xb[1] - xb[0]) * (yb[1] - yb[0]));
+                context.fillRect(xb[0], yb[0], (xb[1] - xb[0]), (yb[1] - yb[0]));
             }
         }
     }
-    Plotly.Lib.markTime('done filling png');
-    gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
-    gd._hmlumcount = (gd._hmlumcount||0) + lumcount;
 
-    // http://stackoverflow.com/questions/6249664/does-svg-support-embedding-of-bitmap-images
-    // https://groups.google.com/forum/?fromgroups=#!topic/d3-js/aQSWnEDFxIc
-    var imgstr = 'data:image/png;base64,\n' + p.getBase64();
+    Plotly.Lib.markTime('done filling png');
+
+    rcount = Math.round(rcount / pixcount);
+    gcount = Math.round(gcount/ pixcount);
+    bcount = Math.round(bcount / pixcount);
+    var avgColor = tinycolor('rgb(' + rcount + ',' + gcount + ',' + bcount + ')');
+
+    gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
+    gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
+
     // put this right before making the new image, to minimize flicker
     fullLayout._paper.selectAll('.'+id).remove();
     plotinfo.plot.select('.maplayer').append('svg:image')
@@ -877,7 +885,7 @@ function plotOne(gd, plotinfo, cd) {
         .datum(cd[0])
         .attr({
             xmlns:'http://www.w3.org/2000/svg',
-            'xlink:xlink:href':imgstr, // odd d3 quirk, need namespace twice
+            'xlink:xlink:href': canvas.toDataURL('image/png'), // odd d3 quirk, need namespace twice
             height:ht,
             width:wd,
             x:left,
