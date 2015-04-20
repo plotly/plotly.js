@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "type":"scatter3d",
+      "y":[-102.63,-110.53,-96.97,-163.59],
+      "x":[100.75,157.53,140.72,134.03],
+      "z":[100.75,157.53,140.72,134.03],
+      "marker": {
+        "color": ["blue", "orange", "black"],
+        "size": [10, 20, 30, 40]
+      }
+    }],
+  "layout": {
+    "title": "Scatter3d with under-defined marker color array"
+  }
+}
