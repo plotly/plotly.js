@@ -93,7 +93,7 @@ ModeBar.prototype.createButton = function (config) {
             config.click.apply(_this, arguments);
         });
 
-    icon.className = config.icon;
+    icon.className = 'plotlyjsicon-' + config.icon;
     button.appendChild(icon);
 
     return button;
@@ -319,42 +319,42 @@ ModeBar.prototype.config = function config() {
             title: 'Zoom',
             attr: 'dragmode',
             val: 'zoom',
-            icon: 'plotlyjsicon-zoombox',
+            icon: 'zoombox',
             click: this.handleCartesian
         },
         pan2d: {
             title: 'Pan',
             attr: 'dragmode',
             val: 'pan',
-            icon: 'plotlyjsicon-pan',
+            icon: 'pan',
             click: this.handleCartesian
         },
         zoomIn2d: {
             title: 'Zoom in',
             attr: 'zoom',
             val: 'in',
-            icon: 'plotlyjsicon-zoom_plus',
+            icon: 'zoom_plus',
             click: this.handleCartesian
         },
         zoomOut2d: {
             title: 'Zoom out',
             attr: 'zoom',
             val: 'out',
-            icon: 'plotlyjsicon-zoom_minus',
+            icon: 'zoom_minus',
             click: this.handleCartesian
         },
         autoScale2d: {
             title: 'Autoscale',
             attr: 'allaxes.autorange',
             val: '',
-            icon: 'plotlyjsicon-autoscale',
+            icon: 'autoscale',
             click: this.handleCartesian
         },
         hoverClosest2d: {
             title: 'Show closest data on hover',
             attr: 'hovermode',
             val: 'closest',
-            icon: 'plotlyjsicon-tooltip_basic',
+            icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleCartesian
         },
@@ -362,7 +362,7 @@ ModeBar.prototype.config = function config() {
             title: 'Compare data on hover',
             attr: 'hovermode',
             val: this.graphInfo._fullLayout._isHoriz ? 'y' : 'x',
-            icon: 'plotlyjsicon-tooltip_compare',
+            icon: 'tooltip_compare',
             gravity: 'ne',
             click: this.handleCartesian
         },
@@ -370,42 +370,42 @@ ModeBar.prototype.config = function config() {
             title: 'Zoom',
             attr: 'dragmode',
             val: 'zoom',
-            icon: 'plotlyjsicon-zoombox',
+            icon: 'zoombox',
             click: this.handleDrag3d
         },
         pan3d: {
             title: 'Pan',
             attr: 'dragmode',
             val: 'pan',
-            icon: 'plotlyjsicon-pan',
+            icon: 'pan',
             click: this.handleDrag3d
         },
         rotate3d: {
             title: 'Rotate',
             attr: 'dragmode',
             val: 'rotate',
-            icon: 'plotlyjsicon-undo',
+            icon: 'undo',
             click: this.handleDrag3d
         },
         resetCameraDefault3d: {
             title: 'Reset camera to default',
             attr: 'resetDefault',
             val: false,
-            icon: 'plotlyjsicon-home',
+            icon: 'home',
             click: this.handleCamera3d
         },
         resetCameraLastSave3d: {
             title: 'Reset camera to last save',
             attr: 'resetLastSave',
             val: false,
-            icon: 'plotlyjsicon-camera-retro',
+            icon: 'camera-retro',
             click: this.handleCamera3d
         },
         hoverClosest3d: {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
             val: 'closest',
-            icon: 'plotlyjsicon-tooltip_basic',
+            icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleHover3d
         }
