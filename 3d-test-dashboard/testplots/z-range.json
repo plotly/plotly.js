@@ -1,0 +1,69 @@
+{
+  "data": [{
+    "x":["-4","-3","-2","-1","0","1","2","3","4","5","6"],
+    "y":["7","5","6","4","2","3","1","3","-1","-4","-2"],
+    "z":["2","3","4","5","4","3","2","1","0","-1","-2"],
+    "name":"Col3",
+    "type":"scatter3d",
+    "xsrc":":c54135",
+    "ysrc":":a7b14d",
+    "zsrc":":7b7778",
+    "uid":"3e38e6"
+  }],
+  "layout": {
+    "yaxis":{
+      "type":"linear",
+      "autorange":true,
+      "rangemode":"normal",
+      "showline":true,
+      "mirror":true,
+      "showgrid":true,
+      "zeroline":false,
+      "zerolinecolor":"rgb(214, 39, 40)"
+    },"xaxis":{
+      "type":"linear",
+      "autorange":true,
+      "rangemode":"normal",
+      "showline":true,
+      "mirror":true,
+      "showgrid":true,
+      "zeroline":false,
+      "zerolinecolor":"rgb(214, 39, 40)"
+    },"scene":{
+      "xaxis":{
+        "type":"linear",
+        "autorange":true,
+        "rangemode":"normal",
+        "showline":true,
+        "mirror":true,
+        "showgrid":true,
+        "zeroline":false,
+        "zerolinecolor":"rgb(214, 39, 40)"
+      },"yaxis":{
+        "type":"linear",
+        "autorange":true,
+        "rangemode":"normal",
+        "showline":true,
+        "mirror":true,
+        "showgrid":true,
+        "zeroline":false,
+        "zerolinecolor":"rgb(214, 39, 40)"
+      },"zaxis":{
+        "type":"linear",
+        "autorange":false,
+        "rangemode":"normal",
+        "showline":true,
+        "mirror":true,
+        "showgrid":true,
+        "zeroline":false,
+        "zerolinecolor":"rgb(214, 39, 40)",
+        "range":[-1,4]
+      }
+    },
+    "height":758,
+    "width":1310,
+    "autosize":true,
+    "showlegend":false,
+    "dragmode":"rotate"
+  }
+}
