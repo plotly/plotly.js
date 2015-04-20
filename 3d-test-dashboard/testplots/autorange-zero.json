@@ -1,0 +1,45 @@
+{
+  "data": [
+    {
+      "type": "surface",
+      "z": [
+        [
+          "4",
+          "2",
+          "3"
+        ],
+        [
+          "5",
+          "4",
+          "4"
+        ],
+        [
+          "3",
+          "6",
+          "3"
+        ]
+      ],
+      "zsrc": ":",
+      "uid": "782735"
+    }
+  ],
+  "layout": {
+    "showlegend": false,
+    "height": 758,
+    "width": 1310,
+    "autosize": true,
+    "scene": {
+      "xaxis": {
+        "rangemode": "tozero",
+        "type": "linear"
+      },
+      "yaxis": {
+        "rangemode": "tozero",
+        "type": "linear"
+      },
+      "zaxis": {
+        "rangemode": "tozero"
+      }
+    }
+  }
+}

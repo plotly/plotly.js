@@ -3,6 +3,54 @@ describe('Test graph_obj', function () {
 
     /* global Plotly */
 
+    describe('Plotly.restyle', function() {
+        beforeEach(function() {
+            spyOn(Plotly.Plots, 'previousPromises');
+            spyOn(Plotly, 'plot');
+            spyOn(Plotly.Scatter, 'arraysToCalcdata');
+            spyOn(Plotly.Bars, 'arraysToCalcdata');
+            spyOn(Plotly.Plots, 'style');
+            spyOn(Plotly.Legend, 'draw');
+        });
+
+        function mockDefaultsAndCalc(gd) {
+            Plotly.Plots.supplyDefaults(gd);
+            gd.calcdata = gd._fullData.map(function(trace) {
+                return [{x: 1, y: 1, trace: trace}];
+            });
+        }
+
+        it('calls Scatter.arraysToCalcdata and Plots.style on scatter styling', function() {
+            var gd = {
+                data: [{x: [1,2,3], y: [1,2,3]}],
+                layout: {}
+            };
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, {'marker.color': 'red'});
+            expect(Plotly.Scatter.arraysToCalcdata).toHaveBeenCalled();
+            expect(Plotly.Bars.arraysToCalcdata).not.toHaveBeenCalled();
+            expect(Plotly.Plots.style).toHaveBeenCalled();
+            expect(Plotly.plot).not.toHaveBeenCalled();
+            // "docalc" deletes gd.calcdata - make sure this didn't happen
+            expect(gd.calcdata).toBeDefined();
+        });
+
+        it('calls Bars.arraysToCalcdata and Plots.style on bar styling', function() {
+            var gd = {
+                data: [{x: [1,2,3], y: [1,2,3], type: 'bar'}],
+                layout: {}
+            };
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, {'marker.color': 'red'});
+            expect(Plotly.Scatter.arraysToCalcdata).not.toHaveBeenCalled();
+            expect(Plotly.Bars.arraysToCalcdata).toHaveBeenCalled();
+            expect(Plotly.Plots.style).toHaveBeenCalled();
+            expect(Plotly.plot).not.toHaveBeenCalled();
+            expect(gd.calcdata).toBeDefined();
+        });
+
+    });
+
     describe('Plotly.deleteTraces should', function () {
         var gd;
 
