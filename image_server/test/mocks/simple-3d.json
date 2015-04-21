@@ -1,0 +1,63 @@
+{
+    "data": [
+        {
+            "x": [
+                "0",
+                "1",
+                "2",
+                "3"
+            ],
+            "y": [
+                "1",
+                "2",
+                "3",
+                "5"
+            ],
+            "z": [
+                "3",
+                "4",
+                "5",
+                "6"
+            ],
+            "name": "Col3",
+            "type": "scatter3d"
+        }
+    ],
+    "layout": {
+        "showlegend": false,
+        "autosize": true,
+        "width": 792,
+        "height": 517,
+        "xaxis": {
+            "type": "linear"
+        },
+        "yaxis": {
+            "type": "linear"
+        },
+        "scene": {
+            "xaxis": {
+                "type": "linear"
+            },
+            "yaxis": {
+                "type": "linear"
+            },
+            "zaxis": {
+                "type": "linear"
+            },
+            "cameraposition": [
+                [
+                    0.5500869548663079,
+                    0.2304487766678608,
+                    0.3424050913896367,
+                    -0.7259865403770608
+                ],
+                [
+                    0,
+                    0,
+                    0
+                ],
+                2.165063509461097
+            ]
+        }
+    }
+}
