@@ -25,7 +25,7 @@
     ],
     "layout": {
         "showlegend": false,
-        "autosize": true,
+        "autosize": false,
         "width": 792,
         "height": 517,
         "xaxis": {
