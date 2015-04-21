@@ -1,3 +1,5 @@
+'use strict';
+
 var createPlot          = require('gl-plot3d'),
     m4FromQuat          = require('gl-mat4/fromQuat'),
     createAxesOptions   = require('./convert/axes'),
@@ -245,7 +247,9 @@ proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) 
     prop.set(cameraposition);
 };
 
-proto.toPNG = function() {
+proto.toImage = function (format) {
+    if (!format) format = 'png';
+
     var scene = this.scene;
     var gl = scene.gl;
     var w = gl.drawingBufferWidth;
@@ -275,9 +279,21 @@ proto.toPNG = function() {
     imageData.data.set(pixels);
     context.putImageData(imageData, 0, 0);
 
-    var dataURL = canvas.toDataURL('image/png');
+    var dataURL;
+    
+    switch (format) {
+        case 'jpeg':
+            dataURL = canvas.toDataURL('image/jpeg');
+            break;
+        case 'webp':
+            dataURL = canvas.toDataURL('image/webp');
+            break;
+        default:
+        dataURL = canvas.toDataURL('image/png');
+    }
+
     return dataURL;
-}
+};
 
 function createScene(options) {
     options = options || {};
