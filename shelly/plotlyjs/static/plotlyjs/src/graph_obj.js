@@ -3068,7 +3068,7 @@ function makePlotFramework(gd) {
     // Make the graph containers
     // start fresh each time we get here, so we know the order comes out
     // right, rather than enter/exit which can muck up the order
-    fullLayout._paperdiv.selectAll('svg').remove();
+    fullLayout._paperdiv.selectAll('.main-svg').remove();
 
     if(!fullLayout._uid) {
         var otherUids = [];

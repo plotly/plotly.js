@@ -19,7 +19,7 @@
     float: left;
     display: inline-block;
     box-sizing: border-box;
-    margin-left: 9px;
+    margin-left: 8px;
     position: relative;
     vertical-align: middle;
     white-space: nowrap;
@@ -33,31 +33,30 @@
 .modebar-btn {
     position: relative;
     font-size: 16px;
-    color: rgba(0,31,95,0.3);
-    box-shadow: none;
-    -webkit-font-smoothing: antialiased;
-    border: none;
     padding: 3px 4px;
     /* display: inline-block; including this breaks 3d interaction in .embed mode. Chrome bug? */
     cursor: pointer;
-    outline: none;
     line-height: normal;
     box-sizing: border-box;
 
-    &.active, &:hover {
-        color: rgba(0,22,72,0.5);
+    svg {
+        position: relative;
+        top: 2px;
     }
 
-    &:first-child {
-        margin-left: 0px;
+    path {
+        fill: rgba(0,31,95,0.3);
     }
 
-    [class^="ploticon-"]:before {
-        font-style: normal !important;
-        box-sizing: border-box;
+    &.active path, &:hover path {
+        fill: rgba(0,22,72,0.5);
     }
-}
 
-.modebar-btn--logo {
-    padding: 3px 1px;
+    &.modebar-btn--logo {
+        padding: 3px 1px;
+
+        path {
+            fill: $color-brand-primary !important;
+        }
+    }
 }

@@ -79,11 +79,11 @@ ModeBar.prototype.createGroup = function () {
  * @Return {HTMLelement}
  */
 ModeBar.prototype.createButton = function (config) {
-    var button = document.createElement('a');
-    var icon = document.createElement('i');
-    var _this = this;
+    var _this = this,
+        button = document.createElement('a');
+
     button.setAttribute('rel', 'tooltip');
-    button.className = 'modebar-btn plotlyjsicon';
+    button.className = 'modebar-btn';
 
     button.setAttribute('data-attr', config.attr);
     button.setAttribute('data-val', config.val);
@@ -93,10 +93,27 @@ ModeBar.prototype.createButton = function (config) {
             config.click.apply(_this, arguments);
         });
 
-    icon.className = 'plotlyjsicon-' + config.icon;
-    button.appendChild(icon);
+    button.appendChild(this.buttonIcon(this.Plotly.Icon[config.icon]));
 
     return button;
+};
+
+ModeBar.prototype.buttonIcon = function (thisIcon) {
+    var iconDef = this.Plotly.Icon,
+        iconHeight = iconDef.ascent - iconDef.descent,
+        svgNS = 'http://www.w3.org/2000/svg',
+        icon = document.createElementNS(svgNS, 'svg'),
+        path = document.createElementNS(svgNS, 'path');
+
+    icon.setAttribute('height', '1em');
+    icon.setAttribute('width', (thisIcon.width / iconHeight)+'em');
+    icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
+
+    path.setAttribute('d', thisIcon.path);
+    path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + iconDef.ascent + ')');
+    icon.appendChild(path);
+
+    return icon;
 };
 
 /**
@@ -141,17 +158,15 @@ ModeBar.prototype.hasButtons = function (buttons) {
  */
 ModeBar.prototype.getLogo = function(){
     var group = this.createGroup(),
-        a = document.createElement('a'),
-        i = document.createElement('i');
-
+        a = document.createElement('a');
 
     a.href = 'https://plot.ly/';
     a.target = '_blank';
     a.setAttribute('data-title', 'Produced with Plotly');
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
-    i.className = 'plotlyjsicon-plotlylogo';
-    a.appendChild(i);
+    a.appendChild(this.buttonIcon(this.Plotly.Icon.plotlylogo));
+
     group.appendChild(a);
     return group;
 };
