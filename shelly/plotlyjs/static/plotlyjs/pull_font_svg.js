@@ -27,7 +27,7 @@ fs.readFile(__dirname + '/src/fonts/ploticon/ploticon.svg', function(err, data) 
             .replace(/\"/g, '\''); // turn remaining double quotes into single
 
         fs.writeFile(__dirname + '/build/ploticon.js',
-            '\'use strict\';\n\nmodule.exports = ' + charStr,
+            '\'use strict\';\n\nmodule.exports = ' + charStr + ';\n',
             function(err3) { if(err3) throw err3; }
         );
     });
