@@ -19,15 +19,30 @@
                 "5",
                 "6"
             ],
+            "mode": "lines+markers",
             "name": "Col3",
+            "error_z": {
+                "visible": false
+            },
+            "marker": {
+                "color": "rgb(69, 129, 142)",
+                "size": 24,
+                "line": {
+                    "color": "rgb(0, 0, 0)",
+                    "width": 2
+                }
+            },
+            "line": {
+                "width": 10
+            },
             "type": "scatter3d"
         }
     ],
     "layout": {
         "showlegend": false,
         "autosize": false,
-        "width": 792,
-        "height": 517,
+        "width": 1000,
+        "height": 1000,
         "xaxis": {
             "type": "linear"
         },
@@ -36,20 +51,23 @@
         },
         "scene": {
             "xaxis": {
-                "type": "linear"
+                "type": "linear",
+                "zeroline": false
             },
             "yaxis": {
-                "type": "linear"
+                "type": "linear",
+                "zeroline": false
             },
             "zaxis": {
-                "type": "linear"
+                "type": "linear",
+                "zeroline": false
             },
             "cameraposition": [
                 [
-                    0.5500869548663079,
-                    0.2304487766678608,
-                    0.3424050913896367,
-                    -0.7259865403770608
+                    0.2185743973987684,
+                    0.5276852745876336,
+                    0.7583545619145754,
+                    -0.31412074463252443
                 ],
                 [
                     0,
@@ -57,7 +75,8 @@
                     0
                 ],
                 2.165063509461097
-            ]
+            ],
+            "bgcolor": "rgb(255, 255, 255)"
         }
     }
 }
