@@ -38,9 +38,8 @@
     -webkit-font-smoothing: antialiased;
     border: none;
     padding: 3px 4px;
-    display: inline-block;
+    /* display: inline-block; including this breaks 3d interaction in .embed mode. Chrome bug? */
     cursor: pointer;
-    position: relative;
     outline: none;
     line-height: normal;
     box-sizing: border-box;

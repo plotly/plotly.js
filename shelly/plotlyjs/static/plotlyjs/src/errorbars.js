@@ -1,369 +1,354 @@
-(function(root, factory){
-    if (typeof exports == 'object') {
-        // CommonJS
-        module.exports = factory(root, require('./plotly'));
-    } else {
-        // Browser globals
-        if (!root.Plotly) { root.Plotly = {}; }
-        factory(root, root.Plotly);
+'use strict';
+/* jshint camelcase: false */
+
+// ---external global dependencies
+/* global d3:false */
+
+var errorBars = module.exports = {},
+    Plotly = require('./plotly');
+
+errorBars.attributes = {
+    visible: {
+        type: 'boolean'
+    },
+    type: {
+        type: 'enumerated',
+        values: ['percent', 'constant', 'sqrt', 'data']
+    },
+    symmetric: {
+        type: 'boolean'
+    },
+    array: {
+        type: 'data_array'
+    },
+    arrayminus: {
+        type: 'data_array'
+    },
+    value: {
+        type: 'number',
+        min: 0,
+        dflt: 10
+    },
+    valueminus: {
+        type: 'number',
+        min: 0,
+        dflt: 10
+    },
+    traceref: {
+        type: 'integer',
+        min: 0,
+        dflt: 0
+    },
+    tracerefminus: {
+        type: 'integer',
+        min: 0,
+        dflt: 0
+    },
+    copy_ystyle: {
+        type: 'boolean'
+    },
+    copy_zstyle: {
+        type: 'boolean'
+    },
+    color: {
+        type: 'color'
+    },
+    thickness: {
+        type: 'number',
+        min: 0,
+        dflt: 2
+    },
+    width: {
+        type: 'number',
+        min: 0
     }
-}(this, function(exports, Plotly){
-    // `exports` is `window`
-    // `Plotly` is `window.Plotly`
+};
 
-    'use strict';
-    /* jshint camelcase: false */
+errorBars.supplyDefaults = function(traceIn, traceOut, defaultColor, opts) {
+    var objName = 'error_' + opts.axis,
+        containerOut = traceOut[objName] = {},
+        containerIn = traceIn[objName] || {};
 
-    // ---external global dependencies
-    /* global d3:false */
-
-    var errorBars = {};
-
-    errorBars.attributes = {
-        visible: {
-            type: 'boolean'
-        },
-        type: {
-            type: 'enumerated',
-            values: ['percent', 'constant', 'sqrt', 'data']
-        },
-        symmetric: {
-            type: 'boolean'
-        },
-        array: {
-            type: 'data_array'
-        },
-        arrayminus: {
-            type: 'data_array'
-        },
-        value: {
-            type: 'number',
-            min: 0,
-            dflt: 10
-        },
-        valueminus: {
-            type: 'number',
-            min: 0,
-            dflt: 10
-        },
-        traceref: {
-            type: 'integer',
-            min: 0,
-            dflt: 0
-        },
-        tracerefminus: {
-            type: 'integer',
-            min: 0,
-            dflt: 0
-        },
-        copy_ystyle: {
-            type: 'boolean'
-        },
-        copy_zstyle: {
-            type: 'boolean'
-        },
-        color: {
-            type: 'color'
-        },
-        thickness: {
-            type: 'number',
-            min: 0,
-            dflt: 2
-        },
-        width: {
-            type: 'number',
-            min: 0
-        }
-    };
-
-    errorBars.supplyDefaults = function(traceIn, traceOut, defaultColor, opts) {
-        var objName = 'error_' + opts.axis,
-            containerOut = traceOut[objName] = {},
-            containerIn = traceIn[objName] || {};
-
-        function coerce (attr, dflt) {
-            return Plotly.Lib.coerce(containerIn, containerOut, errorBars.attributes, attr, dflt);
-        }
-
-        var visible = coerce('visible', 'array' in containerIn || 'value' in containerIn);
-        if(visible) {
-            var type = coerce('type', 'array' in containerIn ? 'data' : 'percent'),
-                symmetric = true;
-            if(type!=='sqrt') {
-                symmetric = coerce('symmetric',
-                    !((type==='data' ? 'arrayminus' : 'valueminus') in containerIn));
-            }
-
-            if(type==='data') {
-                var array = coerce('array');
-                if(!array) containerOut.array = [];
-                coerce('traceref');
-                if(!symmetric) {
-                    var arrayminus = coerce('arrayminus');
-                    if(!arrayminus) containerOut.arrayminus = [];
-                    coerce('tracerefminus');
-                }
-            }
-            else if(type==='percent' || type==='constant') {
-                coerce('value');
-                if(!symmetric) coerce('valueminus');
-            }
-
-            var copyAttr = 'copy_'+opts.inherit+'style';
-            if(opts.inherit) {
-                var inheritObj = traceOut['error_' + opts.inherit];
-                if((inheritObj||{}).visible) {
-                    coerce(copyAttr, !(containerIn.color ||
-                                       $.isNumeric(containerIn.thickness) ||
-                                       $.isNumeric(containerIn.width)));
-                }
-            }
-            if(!opts.inherit || !containerOut[copyAttr]) {
-                coerce('color', defaultColor);
-                coerce('thickness');
-                coerce('width', Plotly.Plots.isScatter3D(traceOut.type) ? 0 : 4);
-            }
-        }
-    };
-
-    errorBars.pushRef2GDC = function(gd, selCurve, astr, val){
-        // Copy the error bar data into gdc
-        // This is called from the style-box, where
-        // either the reference trace was selected.
-        // This function copies the data from the referenced trace
-        // into the gdc object
-        // selCurve: the selected curve (i.e. gdc = gd[selCurve])
-        // astr: the string that was modified
-        var iRef,
-            various = false,
-            parts = astr.split('.'),
-            container = parts[0],
-            attr = parts[1],
-            letter = container.charAt(container.length-1);
-        if(attr==='type'){
-            if(selCurve==='various'){
-                various = true;
-                selCurve = 0;
-            }
-            // if the 'trace' type was just selected
-            iRef = Number(gd.calcdata[Number(selCurve)][0].trace['error_' + letter].traceref)||0;
-        }
-        else if(attr==='traceref' || attr==='tracerefminus'){
-            if(selCurve==='various') various = true;
-            // if the trace reference was just modified
-            iRef = Number(val)||0;
-        }
-
-        // now copy the appropriate referenced error bar data into gdc
-        // TODO: do this through restyle so we can undo it
-        // the error bar data that we're referencing
-        var newdata = gd.data[iRef][letter].map(Number);
-
-        function setarrays(i) {
-            var eb = gd.data[i][container];
-            eb[attr==='tracerefminus' ? 'arrayminus' : 'array'] = newdata;
-        }
-
-        if(!various) setarrays(Number(selCurve));
-        else{
-            // copy all of the data
-            // TODO: this won't work right if we just select some traces, right?
-            for(var i=0; i<gd.data.length; i++){ setarrays(i); }
-        }
-    };
-
-    // size the error bar itself (for all types except data)
-    function errorval(type,dataval,errval) {
-        if(type==='percent') return Math.abs(dataval*errval/100);
-        if(type==='constant') return Math.abs(errval);
-        if(type==='sqrt') return Math.sqrt(Math.abs(dataval));
-        console.log('unrecognized errorbar type',type,errval,dataval);
-        return 0;
+    function coerce (attr, dflt) {
+        return Plotly.Lib.coerce(containerIn, containerOut, errorBars.attributes, attr, dflt);
     }
 
-    errorBars.calc = function(gd) {
-        (gd.calcdata||[]).forEach(function(cdi){
-            var trace = cdi[0].trace;
+    var visible = coerce('visible', 'array' in containerIn || 'value' in containerIn);
+    if(visible) {
+        var type = coerce('type', 'array' in containerIn ? 'data' : 'percent'),
+            symmetric = true;
+        if(type!=='sqrt') {
+            symmetric = coerce('symmetric',
+                !((type==='data' ? 'arrayminus' : 'valueminus') in containerIn));
+        }
 
-            if(!(trace._module||{}).errorBarsOK) return;
+        if(type==='data') {
+            var array = coerce('array');
+            if(!array) containerOut.array = [];
+            coerce('traceref');
+            if(!symmetric) {
+                var arrayminus = coerce('arrayminus');
+                if(!arrayminus) containerOut.arrayminus = [];
+                coerce('tracerefminus');
+            }
+        }
+        else if(type==='percent' || type==='constant') {
+            coerce('value');
+            if(!symmetric) coerce('valueminus');
+        }
 
-            var xObj = trace.error_x||{},
-                yObj = trace.error_y||{},
-                xa = Plotly.Axes.getFromId(gd, trace.xaxis),
-                ya = Plotly.Axes.getFromId(gd, trace.yaxis),
-                xvis = xObj.visible && ['linear', 'log'].indexOf(xa.type)!==-1,
-                yvis = yObj.visible && ['linear', 'log'].indexOf(ya.type)!==-1;
+        var copyAttr = 'copy_'+opts.inherit+'style';
+        if(opts.inherit) {
+            var inheritObj = traceOut['error_' + opts.inherit];
+            if((inheritObj||{}).visible) {
+                coerce(copyAttr, !(containerIn.color ||
+                                   $.isNumeric(containerIn.thickness) ||
+                                   $.isNumeric(containerIn.width)));
+            }
+        }
+        if(!opts.inherit || !containerOut[copyAttr]) {
+            coerce('color', defaultColor);
+            coerce('thickness');
+            coerce('width', Plotly.Plots.isScatter3D(traceOut.type) ? 0 : 4);
+        }
+    }
+};
 
-            if(!xvis && !yvis) return;
+errorBars.pushRef2GDC = function(gd, selCurve, astr, val){
+    // Copy the error bar data into gdc
+    // This is called from the style-box, where
+    // either the reference trace was selected.
+    // This function copies the data from the referenced trace
+    // into the gdc object
+    // selCurve: the selected curve (i.e. gdc = gd[selCurve])
+    // astr: the string that was modified
+    var iRef,
+        various = false,
+        parts = astr.split('.'),
+        container = parts[0],
+        attr = parts[1],
+        letter = container.charAt(container.length-1);
+    if(attr==='type'){
+        if(selCurve==='various'){
+            various = true;
+            selCurve = 0;
+        }
+        // if the 'trace' type was just selected
+        iRef = Number(gd.calcdata[Number(selCurve)][0].trace['error_' + letter].traceref)||0;
+    }
+    else if(attr==='traceref' || attr==='tracerefminus'){
+        if(selCurve==='various') various = true;
+        // if the trace reference was just modified
+        iRef = Number(val)||0;
+    }
 
-            var xvals = [],
-                yvals = [];
+    // now copy the appropriate referenced error bar data into gdc
+    // TODO: do this through restyle so we can undo it
+    // the error bar data that we're referencing
+    var newdata = gd.data[iRef][letter].map(Number);
 
-            cdi.forEach(function(d,j) {
-                try {
-                    if($.isNumeric(ya.c2l(d.y)) && $.isNumeric(xa.c2l(d.x))){
-                        [
-                            {letter:'x', obj: xObj, visible: xvis, vals: xvals},
-                            {letter:'y', obj: yObj, visible: yvis, vals: yvals}
-                        ].forEach(function(o){
-                            if(o.visible) {
-                                var dataVal = d[o.letter],
-                                    obj = o.obj,
-                                    ep, en;
-                                if(o.obj.type==='data') {
-                                    ep = Number(obj.array[j]);
-                                    en = (obj.symmetric || !('arrayminus' in obj)) ?
-                                        ep : Number(obj.arrayminus[j]);
-                                }
-                                else {
-                                    ep = errorval(obj.type, dataVal, obj.value);
-                                    en = (obj.symmetric || !('valueminus' in obj)) ?
-                                        ep : errorval(obj.type, dataVal, obj.valueminus);
-                                }
-                                if($.isNumeric(ep) && $.isNumeric(en)) {
-                                    var shoe = d[o.letter + 'h'] = dataVal + ep;
-                                    var hat = d[o.letter + 's'] = dataVal - en;
-                                    o.vals.push(shoe, hat);
-                                }
+    function setarrays(i) {
+        var eb = gd.data[i][container];
+        eb[attr==='tracerefminus' ? 'arrayminus' : 'array'] = newdata;
+    }
+
+    if(!various) setarrays(Number(selCurve));
+    else{
+        // copy all of the data
+        // TODO: this won't work right if we just select some traces, right?
+        for(var i=0; i<gd.data.length; i++){ setarrays(i); }
+    }
+};
+
+// size the error bar itself (for all types except data)
+function errorval(type,dataval,errval) {
+    if(type==='percent') return Math.abs(dataval*errval/100);
+    if(type==='constant') return Math.abs(errval);
+    if(type==='sqrt') return Math.sqrt(Math.abs(dataval));
+    console.log('unrecognized errorbar type',type,errval,dataval);
+    return 0;
+}
+
+errorBars.calc = function(gd) {
+    (gd.calcdata||[]).forEach(function(cdi){
+        var trace = cdi[0].trace;
+
+        if(!(trace._module||{}).errorBarsOK) return;
+
+        var xObj = trace.error_x||{},
+            yObj = trace.error_y||{},
+            xa = Plotly.Axes.getFromId(gd, trace.xaxis),
+            ya = Plotly.Axes.getFromId(gd, trace.yaxis),
+            xvis = xObj.visible && ['linear', 'log'].indexOf(xa.type)!==-1,
+            yvis = yObj.visible && ['linear', 'log'].indexOf(ya.type)!==-1;
+
+        if(!xvis && !yvis) return;
+
+        var xvals = [],
+            yvals = [];
+
+        cdi.forEach(function(d,j) {
+            try {
+                if($.isNumeric(ya.c2l(d.y)) && $.isNumeric(xa.c2l(d.x))){
+                    [
+                        {letter:'x', obj: xObj, visible: xvis, vals: xvals},
+                        {letter:'y', obj: yObj, visible: yvis, vals: yvals}
+                    ].forEach(function(o){
+                        if(o.visible) {
+                            var dataVal = d[o.letter],
+                                obj = o.obj,
+                                ep, en;
+                            if(o.obj.type==='data') {
+                                ep = Number(obj.array[j]);
+                                en = (obj.symmetric || !('arrayminus' in obj)) ?
+                                    ep : Number(obj.arrayminus[j]);
                             }
-                        });
-                    }
-                }
-                catch(e) { console.log(e); }
-            });
-            Plotly.Axes.expand(ya, yvals, {padded: true});
-            Plotly.Axes.expand(xa, xvals, {padded: true});
-        });
-    };
-
-    // the main drawing function for errorbars
-    errorBars.plot = function(gd, plotinfo, cd) {
-        //  ___   <-- "errorhats"
-        //   |
-        //   |    <-- "errorbars"
-        //   |
-        //  ___   <-- "errorshoes"
-
-        var xa = plotinfo.x(),
-            ya = plotinfo.y();
-
-        // first remove all existing errorbars
-        // TODO: use enter/exit instead
-        plotinfo.plot.select('.errorlayer').selectAll('g.errorbars').remove();
-        var coords;
-
-        // draw the errorbars
-        plotinfo.plot.select('.errorlayer').selectAll('g.errorbars')
-            .data(cd)
-          .enter().append('g')
-            .attr('class','errorbars')
-            .each(function(d){
-                var trace = d[0].trace,
-                    xObj = trace.error_x,
-                    yObj = trace.error_y,
-                    sparse = Plotly.Scatter.hasMarkers(trace) &&
-                        trace.marker.maxdisplayed>0;
-
-                if(!yObj.visible && !xObj.visible) return;
-
-                d3.select(this).selectAll('g')
-                    .data(Plotly.Lib.identity)
-                  .enter().append('g')
-                    .each(function(d){
-                        coords = errorcoords(d, xa, ya);
-                        var eb = d3.select(this),
-                            path;
-                        if(sparse && !d.vis) return;
-
-                        if(yObj.visible && $.isNumeric(coords.x) &&
-                                $.isNumeric(coords.yh) &&
-                                $.isNumeric(coords.ys)){
-                            var yw = yObj.width;
-                            path = 'M'+(coords.x-yw)+','+coords.yh+'h'+(2*yw) + // hat
-                                'm-'+yw+',0V'+coords.ys; // bar
-                            if(!coords.noYS) path += 'm-'+yw+',0h'+(2*yw); // shoe
-
-                            eb.append('path')
-                                .classed('yerror', true)
-                                .attr('d', path);
-                        }
-                        if(xObj.visible && $.isNumeric(coords.y) &&
-                                $.isNumeric(coords.xh) &&
-                                $.isNumeric(coords.xs)){
-                            var xw = (xObj.copy_ystyle ? yObj : xObj).width;
-                            path = 'M'+coords.xh+','+(coords.y-xw)+'v'+(2*xw) + // hat
-                                'm0,-'+xw+'H'+coords.xs; // bar
-                            if(!coords.noXS) path += 'm0,-'+xw+'v'+(2*xw); // shoe
-
-                            eb.append('path')
-                                .classed('xerror', true)
-                                .attr('d', path);
+                            else {
+                                ep = errorval(obj.type, dataVal, obj.value);
+                                en = (obj.symmetric || !('valueminus' in obj)) ?
+                                    ep : errorval(obj.type, dataVal, obj.valueminus);
+                            }
+                            if($.isNumeric(ep) && $.isNumeric(en)) {
+                                var shoe = d[o.letter + 'h'] = dataVal + ep;
+                                var hat = d[o.letter + 's'] = dataVal - en;
+                                o.vals.push(shoe, hat);
+                            }
                         }
                     });
-            });
-    };
-
-    errorBars.style = function(gp){
-        gp.selectAll('g.errorbars').each(function(d){
-            var eb = d3.select(this),
-                trace = d[0].trace,
-                yObj = trace.error_y||{},
-                xObj = trace.error_x||{};
-
-            eb.selectAll('g path.yerror')
-                .style('stroke-width', yObj.thickness+'px')
-                .call(Plotly.Color.stroke, yObj.color);
-
-            if(xObj.copy_ystyle) xObj = yObj;
-
-            eb.selectAll('g path.xerror')
-                .style('stroke-width', xObj.thickness+'px')
-                .call(Plotly.Color.stroke, xObj.color);
+                }
+            }
+            catch(e) { console.log(e); }
         });
-    };
+        Plotly.Axes.expand(ya, yvals, {padded: true});
+        Plotly.Axes.expand(xa, xvals, {padded: true});
+    });
+};
 
-    function errorcoords(d, xa, ya) {
-        // compute the coordinates of the error-bar objects
-        var out = {
-                x: xa.c2p(d.x),
-                y: ya.c2p(d.y)
-            };
+// the main drawing function for errorbars
+errorBars.plot = function(gd, plotinfo, cd) {
+    //  ___   <-- "errorhats"
+    //   |
+    //   |    <-- "errorbars"
+    //   |
+    //  ___   <-- "errorshoes"
 
-        // calculate the error bar size and hat and shoe locations
-        if(d.yh!==undefined) {
-            out.yh = ya.c2p(d.yh);
-            out.ys = ya.c2p(d.ys);
+    var xa = plotinfo.x(),
+        ya = plotinfo.y();
 
-            // if the shoes go off-scale (ie log scale, error bars past zero)
-            // clip the bar and hide the shoes
-            if(!$.isNumeric(out.ys)) {
-                out.noYS = true;
-                out.ys = ya.c2p(d.ys, true);
-            }
+    // first remove all existing errorbars
+    // TODO: use enter/exit instead
+    plotinfo.plot.select('.errorlayer').selectAll('g.errorbars').remove();
+    var coords;
+
+    // draw the errorbars
+    plotinfo.plot.select('.errorlayer').selectAll('g.errorbars')
+        .data(cd)
+      .enter().append('g')
+        .attr('class','errorbars')
+        .each(function(d){
+            var trace = d[0].trace,
+                xObj = trace.error_x,
+                yObj = trace.error_y,
+                sparse = Plotly.Scatter.hasMarkers(trace) &&
+                    trace.marker.maxdisplayed>0;
+
+            if(!yObj.visible && !xObj.visible) return;
+
+            d3.select(this).selectAll('g')
+                .data(Plotly.Lib.identity)
+              .enter().append('g')
+                .each(function(d){
+                    coords = errorcoords(d, xa, ya);
+                    var eb = d3.select(this),
+                        path;
+                    if(sparse && !d.vis) return;
+
+                    if(yObj.visible && $.isNumeric(coords.x) &&
+                            $.isNumeric(coords.yh) &&
+                            $.isNumeric(coords.ys)){
+                        var yw = yObj.width;
+                        path = 'M'+(coords.x-yw)+','+coords.yh+'h'+(2*yw) + // hat
+                            'm-'+yw+',0V'+coords.ys; // bar
+                        if(!coords.noYS) path += 'm-'+yw+',0h'+(2*yw); // shoe
+
+                        eb.append('path')
+                            .classed('yerror', true)
+                            .attr('d', path);
+                    }
+                    if(xObj.visible && $.isNumeric(coords.y) &&
+                            $.isNumeric(coords.xh) &&
+                            $.isNumeric(coords.xs)){
+                        var xw = (xObj.copy_ystyle ? yObj : xObj).width;
+                        path = 'M'+coords.xh+','+(coords.y-xw)+'v'+(2*xw) + // hat
+                            'm0,-'+xw+'H'+coords.xs; // bar
+                        if(!coords.noXS) path += 'm0,-'+xw+'v'+(2*xw); // shoe
+
+                        eb.append('path')
+                            .classed('xerror', true)
+                            .attr('d', path);
+                    }
+                });
+        });
+};
+
+errorBars.style = function(gp){
+    gp.selectAll('g.errorbars').each(function(d){
+        var eb = d3.select(this),
+            trace = d[0].trace,
+            yObj = trace.error_y||{},
+            xObj = trace.error_x||{};
+
+        eb.selectAll('g path.yerror')
+            .style('stroke-width', yObj.thickness+'px')
+            .call(Plotly.Color.stroke, yObj.color);
+
+        if(xObj.copy_ystyle) xObj = yObj;
+
+        eb.selectAll('g path.xerror')
+            .style('stroke-width', xObj.thickness+'px')
+            .call(Plotly.Color.stroke, xObj.color);
+    });
+};
+
+function errorcoords(d, xa, ya) {
+    // compute the coordinates of the error-bar objects
+    var out = {
+            x: xa.c2p(d.x),
+            y: ya.c2p(d.y)
+        };
+
+    // calculate the error bar size and hat and shoe locations
+    if(d.yh!==undefined) {
+        out.yh = ya.c2p(d.yh);
+        out.ys = ya.c2p(d.ys);
+
+        // if the shoes go off-scale (ie log scale, error bars past zero)
+        // clip the bar and hide the shoes
+        if(!$.isNumeric(out.ys)) {
+            out.noYS = true;
+            out.ys = ya.c2p(d.ys, true);
         }
-        if(d.xh!==undefined) {
-            out.xh = xa.c2p(d.xh);
-            out.xs = xa.c2p(d.xs);
+    }
+    if(d.xh!==undefined) {
+        out.xh = xa.c2p(d.xh);
+        out.xs = xa.c2p(d.xs);
 
-            if(!$.isNumeric(out.xs)) {
-                out.noXS = true;
-                out.xs = xa.c2p(d.xs, true);
-            }
+        if(!$.isNumeric(out.xs)) {
+            out.noXS = true;
+            out.xs = xa.c2p(d.xs, true);
         }
-
-        return out;
     }
 
-    errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
-        if(trace.error_y.visible) {
-            hoverPoint.yerr = calcPoint.yh - calcPoint.y;
-            if(!trace.error_y.symmetric) hoverPoint.yerrneg = calcPoint.y - calcPoint.ys;
-        }
-        if(trace.error_x.visible) {
-            hoverPoint.xerr = calcPoint.xh - calcPoint.x;
-            if(!trace.error_x.symmetric) hoverPoint.xerrneg = calcPoint.x - calcPoint.xs;
-        }
-    };
+    return out;
+}
 
-    return errorBars;
-}));
+errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
+    if(trace.error_y.visible) {
+        hoverPoint.yerr = calcPoint.yh - calcPoint.y;
+        if(!trace.error_y.symmetric) hoverPoint.yerrneg = calcPoint.y - calcPoint.ys;
+    }
+    if(trace.error_x.visible) {
+        hoverPoint.xerr = calcPoint.xh - calcPoint.x;
+        if(!trace.error_x.symmetric) hoverPoint.xerrneg = calcPoint.x - calcPoint.xs;
+    }
+};
