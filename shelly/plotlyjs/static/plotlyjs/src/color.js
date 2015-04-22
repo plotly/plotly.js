@@ -122,69 +122,6 @@ color.getScale = function(scl, dflt) {
     return scl;
 };
 
-
-// add all of these colorscales to css dynamically,
-// so we don't have to keep them in sync manually
-// dynamic stylesheet, see http://davidwalsh.name/add-rules-stylesheets
-// css syntax from http://www.colorzilla.com/gradient-editor/
-(function() {
-    //only on main site - though later we may expand to embeds
-    if(!document.getElementById('plotlyMainMarker')) return;
-
-    var style = document.createElement('style');
-    // WebKit hack :(
-    style.appendChild(document.createTextNode(''));
-    document.head.appendChild(style);
-    var styleSheet = style.sheet;
-
-    function addStyleRule(selector,styleString) {
-        if(styleSheet.insertRule) {
-            styleSheet.insertRule(selector+'{'+styleString+'}',0);
-        }
-        else if(styleSheet.addRule) {
-            styleSheet.addRule(selector,styleString,0);
-        }
-        else console.log('addStyleRule failed');
-    }
-
-    function pct(v){ return String(Math.round((1-v[0])*100))+'%';}
-
-    for(var scaleName in color.scales) {
-        var scale = color.scales[scaleName],
-            list1 = '', // color1 0%, color2 12%, ...
-            list2 = ''; // color-stop(0%,color1), color-stop(12%,color2) ...
-
-        for(var i=scale.length-1; i>=0; i--) {
-            list1 += ', '+scale[i][1]+' '+pct(scale[i]);
-            list2 += ', color-stop('+pct(scale[i])+','+scale[i][1]+')';
-        }
-
-        var rule =
-            // old browsers with no supported gradients -
-            // shouldn't matter to us as they won't have svg anyway?
-            'background: '+scale[scale.length-1][1]+';' +
-            // FF 3.6+
-            'background: -moz-linear-gradient(top'+list1+');' +
-            // Chrome,Safari4+
-            'background: -webkit-gradient(linear, left top, left bottom' +
-                list2 + ');' +
-            // Chrome10+,Safari5.1+
-            'background: -webkit-linear-gradient(top'+list1+');' +
-            // Opera 11.10+
-            'background: -o-linear-gradient(top'+list1+');' +
-            // IE10+
-            'background: -ms-linear-gradient(top'+list1+');' +
-            // W3C
-            'background: linear-gradient(to bottom'+list1+');' +
-            // IE6-9 (only gets start and end colors)
-            'filter: progid:DXImageTransform.Microsoft.gradient(' +
-                'startColorstr="' + scale[scale.length-1][1] +
-                '",endColorstr="'+scale[0][1]+'",GradientType=0);';
-
-        addStyleRule('.' + scaleName, rule);
-    }
-}());
-
 function tinyRGB(tc) {
     var c = tc.toRgb();
     return 'rgb(' + Math.round(c.r) + ', ' +
