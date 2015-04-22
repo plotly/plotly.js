@@ -13,23 +13,6 @@ function func(config){
 
     func.defaultConfig.autoWatch = false;
 
-    // preprocess matching files before serving them to the browser
-    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    func.defaultConfig.preprocessors = {
-        '../themes.js': ['coverage'],
-        '../graph_edit.js': ['coverage']
-    };
-
-    // test results reporter to use
-    // possible values: 'dots', 'progress'
-    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    func.defaultConfig.reporters = ['progress', 'coverage'];
-
-    func.defaultConfig.coverageReporter = {
-        type : 'html',
-        dir : 'htmlcov/'
-    };
-
     config.set(func.defaultConfig);
 }
 
