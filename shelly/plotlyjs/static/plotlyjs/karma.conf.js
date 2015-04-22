@@ -1,6 +1,8 @@
 // Karma configuration
 // Generated on Wed Sep 10 2014 15:06:40 GMT-0700 (PDT)
 
+var shellyStatic = '../../../shelly/static/js/';
+
 function func(config){
 
     // level of logging
@@ -9,8 +11,6 @@ function func(config){
 
     config.set(func.defaultConfig);
 }
-
-var shellyStatic = '../../../shelly/static/js/';
 
 func.defaultConfig = {
 
@@ -45,12 +45,6 @@ func.defaultConfig = {
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['progress'],
-
-    // optionally, configure the reporter
-    coverageReporter: {
-        type : 'html',
-        dir : 'htmlcov/'
-    },
 
     // web server port
     port: 9876,
