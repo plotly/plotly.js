@@ -32,7 +32,7 @@ fs.readFile(__dirname + '/build/plotlyjs-style.css', {encoding: 'utf8'}, functio
             .replace(/\"(\w+)\":/g, '$1:');
 
     fs.writeFile(__dirname + '/build/plotcss.js',
-        '\'use strict\';\n\nvar Plotly = require(\'./plotly\');\nvar rules = ' + rulesStr + ';\n\n' +
+        '\'use strict\';\n\nvar Plotly = require(\'../src/plotly\');\nvar rules = ' + rulesStr + ';\n\n' +
         'for(var selector in rules) {\n' +
         '    var fullSelector = selector.replace(/^,/,\' ,\')\n' +
         '        .replace(/(^|,)\s*/g, \'$1.js-plotly-plot .plotly\');\n' +
