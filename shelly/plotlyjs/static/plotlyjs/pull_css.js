@@ -16,8 +16,8 @@ fs.readFile(__dirname + '/build/plotlyjs-style.css', {encoding: 'utf8'}, functio
         // take off ".js-plotly-plot .plotly", which should be on every selector
         selectorList.split(/,\s*/).forEach(function(selector) {
             if(!selector.match(/^[\.]js-plotly-plot [\.]plotly/)) {
-                throw 'all plotlyjs-style selectors must start .js-plotly-plot .plotly\n' +
-                    'found: ' + selectorList;
+                throw new Error('all plotlyjs-style selectors must start .js-plotly-plot .plotly\n' +
+                    'found: ' + selectorList);
             }
         });
         selectorList = selectorList.replace(/(^|,)\s*[\.]js-plotly-plot [\.]plotly/g, '$1');
