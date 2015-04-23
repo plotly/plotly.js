@@ -8,7 +8,7 @@
 
 .modebar--hover {
     opacity: 0;
-    @include vendor('transition', opacity 0.3s ease 0);
+    @include vendor('transition', opacity 0.3s ease 0s);
 }
 
 &:hover .modebar--hover {
