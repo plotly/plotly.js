@@ -889,6 +889,12 @@ function cleanLayout(layout) {
         }
     }
 
+    // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
+    // supported, but new tinycolor does not because they're not valid css
+    Plotly.Lib.markTime('finished rest of cleanLayout, starting color');
+    Plotly.Color.clean(layout);
+    Plotly.Lib.markTime('finished cleanLayout color.clean');
+
     return layout;
 }
 
@@ -998,6 +1004,12 @@ function cleanData(data, existingData) {
             if(emptyContainer(trace.marker, 'line')) delete trace.marker.line;
             if(emptyContainer(trace, 'marker')) delete trace.marker;
         }
+
+        // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
+        // supported, but new tinycolor does not because they're not valid css
+        Plotly.Lib.markTime('finished rest of cleanData, starting color');
+        Plotly.Color.clean(trace);
+        Plotly.Lib.markTime('finished cleanData color.clean');
     }
 }
 

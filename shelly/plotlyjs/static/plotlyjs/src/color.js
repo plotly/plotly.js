@@ -3,6 +3,8 @@
 var color = module.exports = {},
     tinycolor = require('tinycolor2');
 
+color.tc = tinycolor; // for debugging purposes
+
 // IMPORTANT - default colors should be in hex for grid.js
 color.defaults = [
     '#1f77b4', // muted blue
@@ -168,3 +170,76 @@ color.fill = function(s, c) {
     var tc = tinycolor(c);
     s.style({'fill': tinyRGB(tc), 'fill-opacity': tc.getAlpha()});
 };
+
+// search container for colors with the deprecated rgb(fractions) format
+// and convert them to rgb(0-255 values)
+color.clean = function(container) {
+    if(typeof container !== 'object') return;
+
+    var keys = Object.keys(container),
+        i,
+        j,
+        key,
+        val;
+
+    for(i = 0; i < keys.length; i++) {
+        key = keys[i];
+        val = container[key];
+
+        // only sanitize keys that end in "color" or "colorscale"
+        if(key.substr(key.length - 5) === 'color') {
+            if(Array.isArray(val)) {
+                for(j = 0; j < val.length; j++) val[j] = cleanOne(val[j]);
+            }
+            else container[key] = cleanOne(val);
+        }
+        else if(key.substr(key.length - 10) === 'colorscale' && Array.isArray(val)) {
+            for(j = 0; j < val.length; j++) {
+                if(Array.isArray(val[j])) val[j][1] = cleanOne(val[j][1]);
+            }
+        }
+        // recurse into arrays of objects, and plain objects
+        else if(Array.isArray(val)) {
+            var el0 = val[0];
+            if(!Array.isArray(el0) && typeof el0 === 'object') {
+                for(j = 0; j < val.length; j++) color.clean(val[j]);
+            }
+        }
+        else if(typeof val === 'object') color.clean(val);
+    }
+};
+
+function cleanOne(val) {
+    if($.isNumeric(val) || typeof val !== 'string') return val;
+
+    var valTrim = val.trim();
+    if(valTrim.substr(0,3) !== 'rgb') return val;
+
+    var match = valTrim.match(/^rgba?\s*\(([^()]*)\)$/);
+    if(!match) return val;
+
+    var parts = match[1].trim().split(/\s*[\s,]\s*/),
+        rgba = valTrim.charAt(3) === 'a' && parts.length === 4;
+    if(!rgba && parts.length !== 3) return val;
+
+    for(var i = 0; i < parts.length; i++) {
+        if(!parts[i].length) return val;
+        parts[i] = Number(parts[i]);
+
+        // all parts must be non-negative numbers
+        if(!(parts[i] >= 0)) return val;
+        // alpha>1 gets clipped to 1
+        if(i === 3) {
+            if(parts[i] > 1) parts[i] = 1;
+        }
+        // r, g, b must be < 1 (ie 1 itself is not allowed)
+        else if(parts[i] >= 1) return val;
+    }
+
+    var rgbStr = Math.round(parts[0] * 255) + ', ' +
+        Math.round(parts[1] * 255) + ', ' +
+        Math.round(parts[2] * 255);
+
+    if(rgba) return 'rgba(' + rgbStr + ', ' + parts[3] + ')';
+    return 'rgb(' + rgbStr + ')';
+}
