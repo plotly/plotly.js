@@ -11,6 +11,8 @@ function func(config){
     // if true, Karma captures browsers, runs the tests and exits
     func.defaultConfig.singleRun = true;
 
+    fund.defaultConfig.browserNoActivityTimeout = 30000; // 30 seconds
+
     func.defaultConfig.autoWatch = false;
 
     config.set(func.defaultConfig);
