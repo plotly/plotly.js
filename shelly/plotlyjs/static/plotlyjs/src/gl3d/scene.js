@@ -12,12 +12,12 @@ var createPlot          = require('gl-plot3d'),
 
 function render(scene) {
     computeTickMarks(scene);
-    scene.scene.axes.update(scene.axesOptions);
+    scene.glplot.axes.update(scene.axesOptions);
 
     var keys = Object.keys(scene.traces);
     for(var i=0; i<keys.length; ++i) {
         var trace = scene.traces[keys[i]];
-        trace.handlePick(scene.scene.selection);
+        trace.handlePick(scene.glplot.selection);
         if(trace.setContourLevels) {
             trace.setContourLevels();
         }
@@ -25,7 +25,24 @@ function render(scene) {
 }
 
 function Scene(options) {
+
+
+    //Create sub container for plot
+    var sceneContainer = document.createElement('div');
+    var plotContainer = options.container;
+
+    /*
+     * Tag the container with the sceneID
+     */
+    sceneContainer.id = options.sceneKey;
+    sceneContainer.style.position = 'absolute';
+    sceneContainer.style.top = sceneContainer.style.left = '0px';
+    sceneContainer.style.width = sceneContainer.style.height = '100%';
+
+    plotContainer.appendChild(sceneContainer);
+
     var glOptions = options.glOptions;
+
     if(glOptions.preserveDrawingBuffer) {
         glOptions.premultipliedAlpha = true;
     }
@@ -37,23 +54,59 @@ function Scene(options) {
     this.axesOptions  = createAxesOptions(options.sceneLayout);
     this.spikeOptions = createSpikeOptions(options.sceneLayout);
 
-    this.container    = options.container;
+    this.container    = sceneContainer;
 
-    //WARNING!!!! Only set camera position on first call to plot!!!!
+    /*
+     * WARNING!!!! Only set camera position on first call to plot!!!!
+     * TODO remove this hack
+     */
     this.hasPlotBeenCalled = false;
 
     this.sceneKey     = options.sceneKey || 'scene';
 
-    this.scene        = createPlot({
-        container:  options.container,
-        glOptions:  glOptions,
-        axes:       this.axesOptions,
-        spikes:     this.spikeOptions,
-        pickRadius: 10,
-        snapToData: true,
-        autoScale:  true,
-        autoBounds: false
-    });
+    try {
+        this.glplot = createPlot({
+            container:  sceneContainer,
+            glOptions:  glOptions,
+            axes:       this.axesOptions,
+            spikes:     this.spikeOptions,
+            pickRadius: 10,
+            snapToData: true,
+            autoScale:  true,
+            autoBounds: false
+        });
+    } catch (e) {
+
+        /*
+         * createPlot will throw when webgl is not enabled in the client.
+         * Lets return an instance of the module with all functions noop'd.
+         * The destroy method - which will remove the container from the DOM
+         * is overridden with a function that removes the container only.
+         */
+        var noop = function () {};
+        for (var prop in this) if (typeof this[prop] === 'function') this[prop] = noop;
+        this.destroy = function () {
+            this.container.parentNode.removeChild(this.container);
+        };
+
+        var div = document.createElement('div');
+        div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
+        div.style.cursor = 'pointer';
+        div.style.fontSize = '24px';
+        div.style.color = options.Plotly.Color.defaults[0];
+
+        this.container.appendChild(div);
+        this.container.style.background = '#FFFFFF';
+        this.container.onclick = function () {
+            window.open('http://get.webgl.org');
+        };
+
+        /*
+         * return before setting up camera and onrender methods
+         */
+        return;
+    }
+
 
     this.camera = createCamera(this.container, {
         center: [0,0,0],
@@ -64,9 +117,9 @@ function Scene(options) {
         mode:   'orbit'
     });
 
-    this.scene.camera = this.camera;
+    this.glplot.camera = this.camera;
 
-    this.scene.onrender = render.bind(null, this);
+    this.glplot.onrender = render.bind(null, this);
 
     //List of scene objects
     this.traces = {};
@@ -83,13 +136,13 @@ proto.plot = function(sceneData, sceneLayout) {
     var data, trace;
 
     if(sceneLayout.bgcolor) {
-        this.scene.clearColor = str2RGBAarray(sceneLayout.bgcolor);
+        this.glplot.clearColor = str2RGBAarray(sceneLayout.bgcolor);
     } else {
-        this.scene.clearColor = [0,0,0,0];
+        this.glplot.clearColor = [0,0,0,0];
     }
 
     //Update layout
-    this.sceneLayout = sceneLayout;
+    this.glplotLayout = sceneLayout;
     this.axesOptions.merge(sceneLayout);
     this.spikeOptions.merge(sceneLayout);
 
@@ -103,7 +156,7 @@ proto.plot = function(sceneData, sceneLayout) {
     }
 
     //Update scene
-    this.scene.update({});
+    this.glplot.update({});
 
     //Update traces
     if(sceneData) {
@@ -151,14 +204,14 @@ trace_id_loop:
     }
 
     //Update ranges (needs to be called *after* objects are added due to updates)
-    var sceneBounds = this.scene.bounds;
+    var sceneBounds = this.glplot.bounds;
     for(var i=0; i<3; ++i) {
         var axis = sceneLayout[axisProperties[i]];
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
-            for(var j=0; j<this.scene.objects.length; ++j) {
-                var objBounds = this.scene.objects[j].bounds;
+            for(var j=0; j<this.glplot.objects.length; ++j) {
+                var objBounds = this.glplot.objects[j].bounds;
                 sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i]);
                 sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i]);
             }
@@ -200,14 +253,14 @@ trace_id_loop:
 };
 
 proto.destroy = function() {
-    this.scene.dispose();
+    this.glplot.dispose();
     this.container.parentNode.removeChild(this.container);
 };
 
 
 // for reset camera button in modebar
 proto.setCameraToDefault = function setCameraToDefault () {
-    this.scene.camera.lookAt(
+    this.glplot.camera.lookAt(
         [1.25, 1.25, 1.25],
         [0,0,0],
         [0,0,1]
@@ -216,11 +269,11 @@ proto.setCameraToDefault = function setCameraToDefault () {
 
 // get camera position in plotly coords from 'orbit-camera' coords
 proto.getCameraPosition = function getCameraPosition () {
-    this.scene.camera.view.recalcMatrix(this.camera.view.lastT());
+    this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
     return [
-        this.scene.camera.view._active.computedRotation.slice(),
-        this.scene.camera.view._active.computedCenter.slice(),
-        this.scene.camera.distance
+        this.glplot.camera.view._active.computedRotation.slice(),
+        this.glplot.camera.view._active.computedCenter.slice(),
+        this.glplot.camera.distance
     ];
 };
 
@@ -235,7 +288,7 @@ proto.setCameraPosition = function setCameraPosition (camera) {
         for(var i=0; i<3; ++i) {
             eye[i] = center[i] + radius * mat[2+4*i];
         }
-        this.scene.camera.lookAt(eye, center, [mat[1],mat[5],mat[9]]);
+        this.glplot.camera.lookAt(eye, center, [mat[1],mat[5],mat[9]]);
     }
 };
 
@@ -250,8 +303,7 @@ proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) 
 proto.toImage = function (format) {
     if (!format) format = 'png';
 
-    var scene = this.scene;
-    var gl = scene.gl;
+    var gl = this.glplot.gl;
     var w = gl.drawingBufferWidth;
     var h = gl.drawingBufferHeight;
 
@@ -280,7 +332,7 @@ proto.toImage = function (format) {
     context.putImageData(imageData, 0, 0);
 
     var dataURL;
-    
+
     switch (format) {
         case 'jpeg':
             dataURL = canvas.toDataURL('image/jpeg');
@@ -295,47 +347,4 @@ proto.toImage = function (format) {
     return dataURL;
 };
 
-function createScene(options) {
-    options = options || {};
-
-    //Create sub container for plot
-    var container = document.createElement('div');
-    var style = container.style;
-
-    /*
-     * Tag the container with the sceneID
-     */
-    container.id = options.sceneKey;
-
-    style.position = 'absolute';
-    style.top = style.left = '0px';
-    style.width = style.height = '100%';
-    //style['z-index'] = '0';
-
-    options.container.appendChild(container);
-    options.container = container;
-
-    var result;
-    try {
-        result = new Scene(options);
-    } catch(e) {
-        var div = document.createElement('div');
-        div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
-        div.style.cursor = 'pointer';
-        div.style.fontSize = '24px';
-        div.style.color = options.Plotly.Color.defaults[0];
-
-        container.appendChild(div);
-        container.style.background = '#FFFFFF';
-        container.onclick = function () {
-            window.open('http://get.webgl.org');
-        };
-
-        result = null;
-    }
-
-    return result;
-}
-
-
-module.exports = createScene;
+module.exports = Scene;

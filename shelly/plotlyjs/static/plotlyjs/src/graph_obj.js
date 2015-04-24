@@ -655,14 +655,7 @@ function plot3D(gd) {
                 fullLayout: fullLayout,
                 glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
             };
-            scene = Plotly.createScene(sceneOptions);
-
-            /*
-             * if not scene, webgl is likely disabled - createScene will put up a default
-             * notice about webgl support in the scene container
-             */
-            if (scene === null) return;
-
+            scene = new Plotly.Scene(sceneOptions);
             sceneLayout._scene = scene;  // set ref to Scene instance
         }
 
