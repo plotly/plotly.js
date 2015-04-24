@@ -331,14 +331,6 @@ function createScene(options) {
             window.open('http://get.webgl.org');
         };
 
-        // Clean up modebar, add flag in fullLayout (for graph_interact.js)
-        var fullLayout = options.fullLayout;
-        if ('_modebar' in fullLayout && fullLayout._modebar) {
-            fullLayout._modebar.cleanup();
-            fullLayout._modebar = null;
-        }
-        fullLayout._noGL3DSupport = true;
-
         result = null;
     }
 
