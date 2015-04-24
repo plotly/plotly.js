@@ -1211,13 +1211,16 @@ plots.supplyDefaults = function(gd) {
 };
 
 function cleanScenes(newFullLayout, oldFullLayout) {
-    var oldSceneKeys = Plotly.Lib.getSceneKeys(oldFullLayout);
+    var oldSceneKey,
+        oldSceneKeys = Plotly.Lib.getSceneKeys(oldFullLayout);
 
-    oldSceneKeys.forEach(function(oldSceneKey) {
+    for (var i = 0; i < oldSceneKeys.length; i++) {
+        oldSceneKey = oldSceneKeys[i];
         if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
             oldFullLayout[oldSceneKey]._scene.destroy();
         }
-    });
+    }
+
 }
 
 // relink private _keys and keys with a function value from one layout
