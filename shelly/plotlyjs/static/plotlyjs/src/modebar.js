@@ -306,7 +306,7 @@ ModeBar.prototype.handleCamera3d = function(ev) {
 ModeBar.prototype.cleanup = function(){
     this.element.innerHTML = '';
     var modebarParent = this.element.parentNode;
-    modebarParent.removeChild(this.element);
+    if (modebarParent) modebarParent.removeChild(this.element);
 };
 
 /**
