@@ -653,7 +653,7 @@ function plot3D(gd) {
                 sceneData: sceneData,
                 sceneLayout: sceneLayout,
                 fullLayout: fullLayout,
-                glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
+                staticPlot: gd._context.staticPlot
             };
             scene = new Plotly.Scene(sceneOptions);
             sceneLayout._scene = scene;  // set ref to Scene instance
