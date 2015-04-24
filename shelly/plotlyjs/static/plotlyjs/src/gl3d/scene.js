@@ -319,12 +319,14 @@ function createScene(options) {
     try {
         result = new Scene(options);
     } catch(e) {
-        container.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
-        style.background = '#FFFFFF';
-        style.fontSize = '24px';
-        style.color = options.Plotly.Color.defaults[0];
-        style.cursor = 'pointer';
+        var div = document.createElement('div');
+        div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
+        div.style.cursor = 'pointer';
+        div.style.fontSize = '24px';
+        div.style.color = options.Plotly.Color.defaults[0];
 
+        container.appendChild(div);
+        container.style.background = '#FFFFFF';
         container.onclick = function () {
             window.open('http://get.webgl.org');
         };
