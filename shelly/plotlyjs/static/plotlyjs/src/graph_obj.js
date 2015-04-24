@@ -1067,7 +1067,7 @@ Plotly.redraw = function(divid) {
         return;
     }
     gd.calcdata = undefined;
-    Plotly.plot(gd).then(function () {
+    return Plotly.plot(gd).then(function () {
         $(gd).trigger('plotly_redraw');
     });
 };
