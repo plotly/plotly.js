@@ -301,6 +301,12 @@ function createScene(options) {
     //Create sub container for plot
     var container = document.createElement('div');
     var style = container.style;
+
+    /*
+     * Tag the container with the sceneID
+     */
+    container.id = options.sceneKey;
+
     style.position = 'absolute';
     style.top = style.left = '0px';
     style.width = style.height = '100%';
@@ -313,7 +319,12 @@ function createScene(options) {
     try {
         result = new Scene(options);
     } catch(e) {
+        container.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
         style.background = '#FFFFFF';
+        style.fontSize = '24px';
+        style.color = options.Plotly.Color.defaults[0];
+        style.cursor = 'pointer';
+
         container.onclick = function () {
             window.open('http://get.webgl.org');
         };
@@ -325,6 +336,8 @@ function createScene(options) {
             fullLayout._modebar = null;
         }
         fullLayout._noGL3DSupport = true;
+
+        result = null;
     }
 
     return result;
