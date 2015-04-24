@@ -1747,10 +1747,13 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     // dragAutoRange - set one or both axes to autorange on doubleclick
     function dragAutoRange() {
-        var attrs={};
-        (ew ? xa : []).concat(ns ? ya : []).forEach(function(axi) {
+        var attrs={},
+            axList = (enabledAxes.x ? xa : []).concat(enabledAxes.y ? ya : []);
+
+        axList.forEach(function(axi) {
             attrs[axi._name+'.autorange']=true;
         });
+
         Plotly.relayout(gd,attrs);
     }
 
