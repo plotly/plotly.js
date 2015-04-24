@@ -16,6 +16,11 @@ fx.layoutAttributes = {
     hovermode: {
         type: 'enumerated',
         values: ['x', 'y', 'closest', false]
+    },
+    fixedaxes: {
+        type: 'flaglist',
+        extras: ['all', 'none'],
+        dflt: 'none'
     }
 };
 
@@ -34,6 +39,10 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         if (layoutOut._isHoriz===undefined) layoutOut._isHoriz = fx.isHoriz(fullData);
         coerce('hovermode', layoutOut._isHoriz ? 'y' : 'x');
     }
+
+    var axList = Plotly.Axes.listIds({_fullLayout: layoutOut}, null, true),
+        fixedaxesAttr = Plotly.Lib.extendFlat(fx.layoutAttributes.fixedaxes, {flags: axList});
+    Plotly.Lib.coerce(layoutIn, layoutOut, {fixedaxes: fixedaxesAttr}, 'fixedaxes');
 };
 
 // returns true if ALL traces have orientation 'h' (for 'hovermode')
@@ -1263,6 +1272,39 @@ fx.modeBar = function(gd){
 // Axis dragging functions
 // ----------------------------------------------------
 
+//
+function getEnabledAxes(fixedaxes, xid, yid, ns, ew) {
+    var enabled = {x: ew, y: ns},
+        cornerDrag = ns.length * ew.length === 1;
+
+    if(fixedaxes === 'all') return {x: '', y: ''};
+
+    if(fixedaxes !== 'none') {
+        var fixedList = fixedaxes.split('+');
+        if(fixedList.indexOf(xid) !== -1) {
+            enabled.x = '';
+            // if either axis of a corner has its drag disabled,
+            // disable the whole thing. Otherwise it's too confusing
+            if(cornerDrag) enabled.y = '';
+        }
+        if(fixedList.indexOf(yid) !== -1) {
+            enabled.y = '';
+            if(cornerDrag) enabled.x = '';
+        }
+    }
+
+    return enabled;
+}
+
+function getDragCursor(nsew, dragmode) {
+    if(!nsew) return 'pointer';
+    if(nsew === 'nsew') {
+        if(dragmode === 'pan') return 'move';
+        return 'crosshair';
+    }
+    return nsew.toLowerCase() + '-resize';
+}
+
 // flag for showing "doubleclick to zoom out" only at the beginning
 var SHOWZOOMOUTTIP = true;
 
@@ -1287,28 +1329,36 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         ya = [plotinfo.y()],
         pw = xa[0]._length,
         ph = ya[0]._length,
-        cursor = (ns+ew==='nsew') ?
-            ({pan:'move',zoom:'crosshair'}[fullLayout.dragmode]) :
-            (ns+ew).toLowerCase()+'-resize',
-        dragClass = ns+ew+'drag',
+        enabledAxes = getEnabledAxes(fullLayout.fixedaxes, xa[0]._id, ya[0]._id, ns, ew),
+        cursor = getDragCursor(enabledAxes.y + enabledAxes.x, fullLayout.dragmode),
+        dragClass = ns + ew + 'drag',
         // if we're dragging two axes at once, also drag overlays
         subplots = [plotinfo].concat((ns && ew) ? plotinfo.overlays : []),
-        dragger = plotinfo.draglayer.selectAll('.'+dragClass).data([0]);
+        dragger = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
 
     dragger.enter().append('rect')
-        .classed('drag',true)
-        .classed(dragClass,true)
-        .style({fill:'transparent', 'stroke-width':0})
+        .classed('drag', true)
+        .classed(dragClass, true)
+        .style({fill: 'transparent', 'stroke-width': 0})
         .attr('data-subplot', plotinfo.id);
-    dragger.call(Plotly.Drawing.setRect, x,y,w,h)
+    dragger.call(Plotly.Drawing.setRect, x, y, w, h)
         .call(fx.setCursor,cursor);
     dragger = dragger.node();
+
+    // still need to make the element if the axes are disabled
+    // but nuke its events (except for maindrag which needs them for hover)
+    // and stop there
+    if(!enabledAxes.y && !enabledAxes.x) {
+        dragger.onmousedown = null;
+        dragger.style.pointerEvents = (ns + ew === 'nsew') ? 'all' : 'none';
+        return dragger;
+    }
 
     subplots.forEach(function(subplot) {
         var subplotXa = subplot.x(),
             subplotYa = subplot.y();
-        if(xa.indexOf(subplotXa)===-1) xa.push(subplotXa);
-        if(ya.indexOf(subplotYa)===-1) ya.push(subplotYa);
+        if(xa.indexOf(subplotXa) === -1) xa.push(subplotXa);
+        if(ya.indexOf(subplotYa) === -1) ya.push(subplotYa);
     });
 
     function getAxId(ax) { return ax._id; }
@@ -1393,7 +1443,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // look for small drags in one direction or the other,
         // and only drag the other axis
-        if(dy < Math.min(Math.max(dx * 0.6, fx.MINDRAG), fx.MINZOOM)) {
+        if(!enabledAxes.y || dy < Math.min(Math.max(dx * 0.6, fx.MINDRAG), fx.MINZOOM)) {
             if(dx < fx.MINDRAG) {
                 zoomMode = '';
                 box.r = box.l;
@@ -1411,7 +1461,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     'h3v'+(2*fx.MINZOOM+1)+'h-3Z');
             }
         }
-        else if(dx < Math.min(dy * 0.6, fx.MINZOOM)) {
+        else if(!enabledAxes.x || dx < Math.min(dy * 0.6, fx.MINZOOM)) {
             box.l = 0;
             box.r = pw;
             zoomMode = 'y';
@@ -1612,19 +1662,19 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     // plotDrag: move the plot in response to a drag
     function plotDrag(dx,dy) {
-        if(ew==='ew' || ns==='ns') {
-            if(ew) {
+        if(enabledAxes.x === 'ew' || enabledAxes.y === 'ns') {
+            if(enabledAxes.x) {
                 xa.forEach(function(xai) {
                     xai.range = [xai._r[0]-dx/xai._m, xai._r[1]-dx/xai._m];
                 });
             }
-            if(ns) {
+            if(enabledAxes.y) {
                 ya.forEach(function(yai) {
                     yai.range = [yai._r[0]-dy/yai._m, yai._r[1]-dy/yai._m];
                 });
             }
-            updateViewBoxes([ew?-dx:0, ns?-dy:0, pw, ph]);
-            ticksAndAnnotations(ns,ew);
+            updateViewBoxes([enabledAxes.x ? -dx : 0, enabledAxes.y ? -dy : 0, pw, ph]);
+            ticksAndAnnotations(enabledAxes.y, enabledAxes.x);
             return;
         }
 
@@ -1652,16 +1702,21 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 (ax[0]._r[end]-ax[0]._r[1-end]);
         }
 
-        if(ew==='w') { dx = dz(xa,0,dx); }
-        else if(ew==='e') { dx = dz(xa,1,-dx); }
-        else if(!ew) { dx = 0; }
+        if(enabledAxes.x === 'w') dx = dz(xa, 0, dx);
+        else if(enabledAxes.x === 'e') dx = dz(xa, 1, -dx);
+        else if(!enabledAxes.x) dx = 0;
 
-        if(ns==='n') { dy = dz(ya,1,dy); }
-        else if(ns==='s') { dy = dz(ya,0,-dy); }
-        else if(!ns) { dy = 0; }
+        if(enabledAxes.y === 'n') dy = dz(ya, 1, dy);
+        else if(enabledAxes.y === 's') dy = dz(ya, 0, -dy);
+        else if(!enabledAxes.y) dy = 0;
 
-        updateViewBoxes([(ew==='w')?dx:0, (ns==='n')?dy:0, pw-dx, ph-dy]);
-        ticksAndAnnotations(ns,ew);
+        updateViewBoxes([
+            (enabledAxes.x === 'w') ? dx : 0,
+            (enabledAxes.y === 'n') ? dy : 0,
+            pw - dx,
+            ph - dy
+        ]);
+        ticksAndAnnotations(enabledAxes.y, enabledAxes.x);
     }
 
     function ticksAndAnnotations(ns,ew){
