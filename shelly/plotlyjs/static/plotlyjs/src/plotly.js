@@ -33,7 +33,7 @@ exports.Gl3dLayout = require('./gl3d/defaults/gl3dlayout');
 exports.Gl3dAxes = require('./gl3d/defaults/gl3daxes');
 exports.Scatter3D = require('./gl3d/defaults/scatter3d');
 exports.Surface = require('./gl3d/defaults/surface');
-exports.createScene = require('./gl3d/scene');
+exports.Scene = require('./gl3d/scene');
 
 // configuration
 exports.Config = require('./config');

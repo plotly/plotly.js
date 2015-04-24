@@ -241,12 +241,12 @@ proto.dispose = function() {
 }
 
 function createSurfaceTrace(scene, data) {
-  var gl = scene.scene.gl
+  var gl = scene.glplot.gl
   var surface = createSurface({
     gl: gl
   })
   var result = new SurfaceTrace(scene, surface, data.uid)
   result.update(data)
-  scene.scene.add(surface)
+  scene.glplot.add(surface)
   return result
 }
