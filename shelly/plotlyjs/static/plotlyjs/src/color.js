@@ -174,7 +174,7 @@ color.fill = function(s, c) {
 // search container for colors with the deprecated rgb(fractions) format
 // and convert them to rgb(0-255 values)
 color.clean = function(container) {
-    if(typeof container !== 'object') return;
+    if(!container || typeof container !== 'object') return;
 
     var keys = Object.keys(container),
         i,
@@ -201,11 +201,11 @@ color.clean = function(container) {
         // recurse into arrays of objects, and plain objects
         else if(Array.isArray(val)) {
             var el0 = val[0];
-            if(!Array.isArray(el0) && typeof el0 === 'object') {
+            if(!Array.isArray(el0) && el0 && typeof el0 === 'object') {
                 for(j = 0; j < val.length; j++) color.clean(val[j]);
             }
         }
-        else if(typeof val === 'object') color.clean(val);
+        else if(val && typeof val === 'object') color.clean(val);
     }
 };
 
