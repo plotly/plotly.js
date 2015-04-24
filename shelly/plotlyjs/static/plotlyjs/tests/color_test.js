@@ -119,5 +119,29 @@ describe('Test color:', function () {
             Plotly.Color.clean(container);
             expect(container).toEqual(expectedContainer);
         });
+
+        it('should not barf on nulls', function() {
+            var container1 = null;
+            var expectedContainer1 = null;
+
+            Plotly.Color.clean(container1);
+            expect(container1).toEqual(expectedContainer1);
+
+            var container2 = {
+                anull: null,
+                anundefined: undefined,
+                color: null,
+                anarray: [null, {color: 'rgb(0.1, 0.1, 0.1)'}]
+            };
+            var expectedContainer2 = {
+                anull: null,
+                anundefined: undefined,
+                color: null,
+                anarray: [null, {color: 'rgb(0.1, 0.1, 0.1)'}]
+            };
+
+            Plotly.Color.clean(container2);
+            expect(container2).toEqual(expectedContainer2);
+        });
     });
 });
