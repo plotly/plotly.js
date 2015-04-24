@@ -1,5 +1,8 @@
-/* global Plotly:false */
+var Plotly = require('../src/plotly');
+
 describe('Test lib.js:', function() {
+    'use strict';
+
     describe('parseDate() should', function() {
         it('return false on bad (number) input:', function() {
             expect(Plotly.Lib.parseDate(0)).toBe(false);
