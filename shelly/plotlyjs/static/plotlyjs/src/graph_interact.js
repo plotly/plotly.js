@@ -1226,12 +1226,7 @@ fx.modeBar = function(gd){
     var modebar,
         fullLayout = gd._fullLayout || {};
 
-    // Is modebar forbidden? explicitly turned off, or 3D present but not supported
-    if (!gd._context.displayModeBar ||
-            (fullLayout._hasGL3D && fullLayout._noGL3DSupport)) {
-        deleteModebar();
-        return;
-    }
+    if (!gd._context.displayModeBar) return deleteModebar();
 
     var modeButtons2d = [
             ['zoom2d', 'pan2d'],
