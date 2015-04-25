@@ -160,6 +160,7 @@ plots.defaultConfig = {
     sendData: true, // if we show a link, does it contain data or just link to a plotly file?
     displayModeBar: 'hover', // display the modebar (true, false, or 'hover')
     displaylogo: true, // add the plotly logo on the end of the modebar
+    plot3dPixelRatio: 2, // increase the pixel ratio for 3D plot images
     setBackground: defaultSetBackground // fn to add the background color to a different container
                                         // or 'opaque' to ensure there's white behind it
 };
@@ -653,7 +654,8 @@ function plot3D(gd) {
                 sceneData: sceneData,
                 sceneLayout: sceneLayout,
                 fullLayout: fullLayout,
-                glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
+                staticPlot: gd._context.staticPlot,
+                plot3dPixelRatio: gd._context.plot3dPixelRatio
             };
             scene = new Plotly.Scene(sceneOptions);
             sceneLayout._scene = scene;  // set ref to Scene instance

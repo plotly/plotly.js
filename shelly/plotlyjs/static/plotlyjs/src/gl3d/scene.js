@@ -15,12 +15,11 @@ function render(scene) {
     scene.glplot.axes.update(scene.axesOptions);
 
     var keys = Object.keys(scene.traces);
-    for(var i=0; i<keys.length; ++i) {
+    for (var i = 0; i < keys.length; ++i) {
         var trace = scene.traces[keys[i]];
         trace.handlePick(scene.glplot.selection);
-        if(trace.setContourLevels) {
-            trace.setContourLevels();
-        }
+
+        if (trace.setContourLevels) trace.setContourLevels();
     }
 }
 
@@ -41,12 +40,6 @@ function Scene(options) {
 
     plotContainer.appendChild(sceneContainer);
 
-    var glOptions = options.glOptions;
-
-    if(glOptions.preserveDrawingBuffer) {
-        glOptions.premultipliedAlpha = true;
-    }
-
     this.Plotly       = options.Plotly;
     this.sceneLayout  = options.sceneLayout;
     this.fullLayout   = options.fullLayout;
@@ -61,20 +54,28 @@ function Scene(options) {
      * TODO remove this hack
      */
     this.hasPlotBeenCalled = false;
-
     this.sceneKey     = options.sceneKey || 'scene';
 
-    try {
-        this.glplot = createPlot({
+    var glplotOptions = {
             container:  sceneContainer,
-            glOptions:  glOptions,
             axes:       this.axesOptions,
             spikes:     this.spikeOptions,
             pickRadius: 10,
             snapToData: true,
             autoScale:  true,
             autoBounds: false
-        });
+    };
+
+    if (options.staticPlot) {
+        glplotOptions.pixelRatio = options.plot3dPixelRatio;
+        glplotOptions.glOptions = {
+            preserveDrawingBuffer: true,
+            premultipliedAlpha:true
+        };
+    }
+
+    try {
+        this.glplot = createPlot(glplotOptions);
     } catch (e) {
 
         /*
@@ -109,9 +110,9 @@ function Scene(options) {
 
 
     this.camera = createCamera(this.container, {
-        center: [0,0,0],
-        eye:    [1.25,1.25,1.25],
-        up:     [0,0,1],
+        center: [0, 0, 0],
+        eye:    [1.25, 1.25, 1.25],
+        up:     [0, 0, 1],
         zoomMin: 0.1,
         zoomMax: 100,
         mode:   'orbit'
@@ -135,11 +136,8 @@ proto.plot = function(sceneData, sceneLayout) {
 
     var data, trace;
 
-    if(sceneLayout.bgcolor) {
-        this.glplot.clearColor = str2RGBAarray(sceneLayout.bgcolor);
-    } else {
-        this.glplot.clearColor = [0,0,0,0];
-    }
+    if (sceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(sceneLayout.bgcolor);
+    else this.glplot.clearColor = [0, 0, 0, 0];
 
     //Update layout
     this.glplotLayout = sceneLayout;
@@ -150,19 +148,16 @@ proto.plot = function(sceneData, sceneLayout) {
     if(!this.hasPlotBeenCalled) {
       this.hasPlotBeenCalled = true;
       var camera = sceneLayout.cameraposition;
-      if(camera) {
-          this.setCameraPosition(camera);
-      }
+      if (camera) this.setCameraPosition(camera);
     }
 
     //Update scene
     this.glplot.update({});
 
     //Update traces
-    if(sceneData) {
-        if(!Array.isArray(sceneData)) {
-            sceneData = [sceneData];
-        }
+    if (sceneData) {
+        if(!Array.isArray(sceneData)) sceneData = [sceneData];
+
         for(var i=0; i<sceneData.length; ++i) {
             data = sceneData[i];
             if(data.visible!==true) {
