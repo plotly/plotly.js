@@ -83,7 +83,7 @@ function plotButtons(plots) {
         /*
          * Replot with staticPlot
          */
-        Plotly.plot(gd, data, layout, {staticPlot: true}).then( function () {
+        Plotly.plot(gd, data, layout, {staticPlot: true, plot3dPixelRatio: 2}).then( function () {
 
             setTimeout( function () {
 
