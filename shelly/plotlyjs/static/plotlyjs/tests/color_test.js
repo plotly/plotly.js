@@ -1,7 +1,7 @@
+var Plotly = require('../src/plotly');
+
 describe('Test color:', function () {
     'use strict';
-
-    /* global Plotly */
 
     describe('clean', function() {
         it('should turn rgb and rgba fractions into 0-255 values', function() {
