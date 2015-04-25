@@ -67,7 +67,7 @@ function Scene(options) {
     };
 
     if (options.staticPlot) {
-        glplotOptions.pixelRatio = 2; // this is a static plot, lets make it crisp
+        glplotOptions.pixelRatio = options.plot3dPixelRatio;
         glplotOptions.glOptions = {
             preserveDrawingBuffer: true,
             premultipliedAlpha:true
