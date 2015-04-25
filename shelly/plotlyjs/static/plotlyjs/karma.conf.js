@@ -26,7 +26,6 @@ func.defaultConfig = {
         shellyStatic + 'plugins/jquery-1.8.3.min.js',
         //'../../../streaming/static/streaming/build/streamhead-bundle.js',
         shellyStatic + 'plugins/d3.v3.min.js',
-        './build/plotlyjs-bundle.js',
         'tests/*_test.js'
     ],
 
