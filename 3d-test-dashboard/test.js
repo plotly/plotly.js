@@ -8,7 +8,6 @@ var gd = null;
 
 anchor.style.position = 'relative';
 anchor.style.top = '80px';
-
 anchor.style.height = '600px';
 anchor.style.width = '1000px';
 
@@ -37,7 +36,6 @@ function plotButtons(plots) {
 
             anchor.innerHTML = '';
 
-            // create a fresh gd
             gd = document.createElement('div');
             anchor.appendChild(gd);
 
@@ -47,6 +45,73 @@ function plotButtons(plots) {
 
         });
     });
+
+    var snapshot = document.createElement('button');
+
+    snapshot.style.cssFloat = 'left';
+    snapshot.style.width = '100px';
+    snapshot.style.height = '40px';
+    snapshot.style.marginLeft = '25px';
+    snapshot.innerHTML = 'snapshot';
+    snapshot.style.background = 'blue';
+
+    plotlist.appendChild(snapshot);
+
+    snapshot.addEventListener('click', function () {
+
+        /*
+         * Grab the currently loaded plot and make an image - replacing the plot.
+         */
+        if (!gd) return;
+
+        var layout = gd.layout;
+        var data = gd.data;
+
+        if (!layout || !data) return;
+
+        Plotly.Lib.getSceneKeys(gd._fullLayout).forEach( function (key) {
+            var scene = gd._fullLayout[key]._scene;
+            scene.destroy();
+
+        });
+
+        // create a fresh gd
+        anchor.innerHTML = '';
+        gd = document.createElement('div');
+        anchor.appendChild(gd);
+
+        /*
+         * Replot with staticPlot
+         */
+        Plotly.plot(gd, data, layout, {staticPlot: true, plot3dPixelRatio: 2}).then( function () {
+
+            setTimeout( function () {
+
+                Plotly.Lib.getSceneKeys(gd._fullLayout).forEach( function (key) {
+
+                    var scene = gd._fullLayout[key]._scene;
+                    var dataURL = scene.toImage();
+
+                    var myImage = new Image();
+                    myImage.src = dataURL;
+
+                    myImage.onload = function () {
+                        myImage.height = scene.container.clientHeight;
+                        myImage.width = scene.container.clientWidth;
+                    };
+
+                    image.innerHTML = '';
+                    image.appendChild(myImage);
+
+                });
+
+            }, 500);
+
+        });
+
+
+    });
+
 }
 
 var plots = {};

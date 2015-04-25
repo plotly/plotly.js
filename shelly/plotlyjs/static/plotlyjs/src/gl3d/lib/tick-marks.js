@@ -24,7 +24,7 @@ function contourLevelsFromTicks(ticks) {
 
 function computeTickMarks(scene) {
     var axesOptions = scene.axesOptions;
-    var glRange     = scene.scene.axesPixels;
+    var glRange     = scene.glplot.axesPixels;
     var sceneLayout = scene.sceneLayout;
 
     var ticks = [[],[],[]];
@@ -66,9 +66,9 @@ function computeTickMarks(scene) {
 
     //Calculate tick lengths dynamically
     for(var i=0; i<3; ++i) {
-        centerPoint[i] = 0.5 * (scene.scene.bounds[0][i] + scene.scene.bounds[1][i]);
+        centerPoint[i] = 0.5 * (scene.glplot.bounds[0][i] + scene.glplot.bounds[1][i]);
         for(var j=0; j<2; ++j) {
-            axesOptions.bounds[j][i] = scene.scene.bounds[j][i]
+            axesOptions.bounds[j][i] = scene.glplot.bounds[j][i];
         }
     }
 
