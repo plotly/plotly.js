@@ -25,6 +25,8 @@ exports.Shapes = require('./shapes');
 exports.Legend = require('./legend');
 exports.Colorbar = require('./colorbar');
 exports.ModeBar = require('./modebar');
+exports.Icon = require('../build/ploticon');
+require('../build/plotcss');
 
 // 3D
 exports.Gl3dLayout = require('./gl3d/defaults/gl3dlayout');

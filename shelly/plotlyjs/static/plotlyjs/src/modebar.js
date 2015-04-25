@@ -79,11 +79,11 @@ ModeBar.prototype.createGroup = function () {
  * @Return {HTMLelement}
  */
 ModeBar.prototype.createButton = function (config) {
-    var button = document.createElement('a');
-    var icon = document.createElement('i');
-    var _this = this;
+    var _this = this,
+        button = document.createElement('a');
+
     button.setAttribute('rel', 'tooltip');
-    button.className = 'modebar-btn plotlyjsicon';
+    button.className = 'modebar-btn';
 
     button.setAttribute('data-attr', config.attr);
     button.setAttribute('data-val', config.val);
@@ -93,10 +93,27 @@ ModeBar.prototype.createButton = function (config) {
             config.click.apply(_this, arguments);
         });
 
-    icon.className = config.icon;
-    button.appendChild(icon);
+    button.appendChild(this.buttonIcon(this.Plotly.Icon[config.icon]));
 
     return button;
+};
+
+ModeBar.prototype.buttonIcon = function (thisIcon) {
+    var iconDef = this.Plotly.Icon,
+        iconHeight = iconDef.ascent - iconDef.descent,
+        svgNS = 'http://www.w3.org/2000/svg',
+        icon = document.createElementNS(svgNS, 'svg'),
+        path = document.createElementNS(svgNS, 'path');
+
+    icon.setAttribute('height', '1em');
+    icon.setAttribute('width', (thisIcon.width / iconHeight)+'em');
+    icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
+
+    path.setAttribute('d', thisIcon.path);
+    path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + iconDef.ascent + ')');
+    icon.appendChild(path);
+
+    return icon;
 };
 
 /**
@@ -141,17 +158,15 @@ ModeBar.prototype.hasButtons = function (buttons) {
  */
 ModeBar.prototype.getLogo = function(){
     var group = this.createGroup(),
-        a = document.createElement('a'),
-        i = document.createElement('i');
-
+        a = document.createElement('a');
 
     a.href = 'https://plot.ly/';
     a.target = '_blank';
     a.setAttribute('data-title', 'Produced with Plotly');
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
-    i.className = 'plotlyjsicon-plotlylogo';
-    a.appendChild(i);
+    a.appendChild(this.buttonIcon(this.Plotly.Icon.plotlylogo));
+
     group.appendChild(a);
     return group;
 };
@@ -319,42 +334,42 @@ ModeBar.prototype.config = function config() {
             title: 'Zoom',
             attr: 'dragmode',
             val: 'zoom',
-            icon: 'plotlyjsicon-zoombox',
+            icon: 'zoombox',
             click: this.handleCartesian
         },
         pan2d: {
             title: 'Pan',
             attr: 'dragmode',
             val: 'pan',
-            icon: 'plotlyjsicon-pan',
+            icon: 'pan',
             click: this.handleCartesian
         },
         zoomIn2d: {
             title: 'Zoom in',
             attr: 'zoom',
             val: 'in',
-            icon: 'plotlyjsicon-zoom_plus',
+            icon: 'zoom_plus',
             click: this.handleCartesian
         },
         zoomOut2d: {
             title: 'Zoom out',
             attr: 'zoom',
             val: 'out',
-            icon: 'plotlyjsicon-zoom_minus',
+            icon: 'zoom_minus',
             click: this.handleCartesian
         },
         autoScale2d: {
             title: 'Autoscale',
             attr: 'allaxes.autorange',
             val: '',
-            icon: 'plotlyjsicon-autoscale',
+            icon: 'autoscale',
             click: this.handleCartesian
         },
         hoverClosest2d: {
             title: 'Show closest data on hover',
             attr: 'hovermode',
             val: 'closest',
-            icon: 'plotlyjsicon-tooltip_basic',
+            icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleCartesian
         },
@@ -362,7 +377,7 @@ ModeBar.prototype.config = function config() {
             title: 'Compare data on hover',
             attr: 'hovermode',
             val: this.graphInfo._fullLayout._isHoriz ? 'y' : 'x',
-            icon: 'plotlyjsicon-tooltip_compare',
+            icon: 'tooltip_compare',
             gravity: 'ne',
             click: this.handleCartesian
         },
@@ -370,42 +385,42 @@ ModeBar.prototype.config = function config() {
             title: 'Zoom',
             attr: 'dragmode',
             val: 'zoom',
-            icon: 'plotlyjsicon-zoombox',
+            icon: 'zoombox',
             click: this.handleDrag3d
         },
         pan3d: {
             title: 'Pan',
             attr: 'dragmode',
             val: 'pan',
-            icon: 'plotlyjsicon-pan',
+            icon: 'pan',
             click: this.handleDrag3d
         },
         rotate3d: {
             title: 'Rotate',
             attr: 'dragmode',
             val: 'rotate',
-            icon: 'plotlyjsicon-undo',
+            icon: 'undo',
             click: this.handleDrag3d
         },
         resetCameraDefault3d: {
             title: 'Reset camera to default',
             attr: 'resetDefault',
             val: false,
-            icon: 'plotlyjsicon-home',
+            icon: 'home',
             click: this.handleCamera3d
         },
         resetCameraLastSave3d: {
             title: 'Reset camera to last save',
             attr: 'resetLastSave',
             val: false,
-            icon: 'plotlyjsicon-camera-retro',
+            icon: 'camera-retro',
             click: this.handleCamera3d
         },
         hoverClosest3d: {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
             val: 'closest',
-            icon: 'plotlyjsicon-tooltip_basic',
+            icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleHover3d
         }

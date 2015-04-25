@@ -5,7 +5,8 @@ var createSurface = require('gl-surface3d'),
     homography = require('ndarray-homography'),
     fill = require('ndarray-fill'),
     ops  = require('ndarray-ops'),
-    str2RgbaArray = require('../lib/str2rgbarray');
+    str2RgbaArray = require('../lib/str2rgbarray'),
+    tinycolor = require('tinycolor2');
 
 var MIN_RESOLUTION = 128
 
