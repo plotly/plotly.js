@@ -5,7 +5,8 @@ var createSurface = require('gl-surface3d'),
     homography = require('ndarray-homography'),
     fill = require('ndarray-fill'),
     ops  = require('ndarray-ops'),
-    str2RgbaArray = require('../lib/str2rgbarray');
+    str2RgbaArray = require('../lib/str2rgbarray'),
+    tinycolor = require('tinycolor2');
 
 var MIN_RESOLUTION = 128
 
@@ -240,12 +241,12 @@ proto.dispose = function() {
 }
 
 function createSurfaceTrace(scene, data) {
-  var gl = scene.scene.gl
+  var gl = scene.glplot.gl
   var surface = createSurface({
     gl: gl
   })
   var result = new SurfaceTrace(scene, surface, data.uid)
   result.update(data)
-  scene.scene.add(surface)
+  scene.glplot.add(surface)
   return result
 }

@@ -655,7 +655,7 @@ function plot3D(gd) {
                 fullLayout: fullLayout,
                 glOptions: {preserveDrawingBuffer: gd._context.staticPlot}
             };
-            scene = Plotly.createScene(sceneOptions);
+            scene = new Plotly.Scene(sceneOptions);
             sceneLayout._scene = scene;  // set ref to Scene instance
         }
 
@@ -889,6 +889,12 @@ function cleanLayout(layout) {
         }
     }
 
+    // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
+    // supported, but new tinycolor does not because they're not valid css
+    Plotly.Lib.markTime('finished rest of cleanLayout, starting color');
+    Plotly.Color.clean(layout);
+    Plotly.Lib.markTime('finished cleanLayout color.clean');
+
     return layout;
 }
 
@@ -998,6 +1004,12 @@ function cleanData(data, existingData) {
             if(emptyContainer(trace.marker, 'line')) delete trace.marker.line;
             if(emptyContainer(trace, 'marker')) delete trace.marker;
         }
+
+        // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
+        // supported, but new tinycolor does not because they're not valid css
+        Plotly.Lib.markTime('finished rest of cleanData, starting color');
+        Plotly.Color.clean(trace);
+        Plotly.Lib.markTime('finished cleanData color.clean');
     }
 }
 
@@ -1211,13 +1223,16 @@ plots.supplyDefaults = function(gd) {
 };
 
 function cleanScenes(newFullLayout, oldFullLayout) {
-    var oldSceneKeys = Plotly.Lib.getSceneKeys(oldFullLayout);
+    var oldSceneKey,
+        oldSceneKeys = Plotly.Lib.getSceneKeys(oldFullLayout);
 
-    oldSceneKeys.forEach(function(oldSceneKey) {
+    for (var i = 0; i < oldSceneKeys.length; i++) {
+        oldSceneKey = oldSceneKeys[i];
         if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
             oldFullLayout[oldSceneKey]._scene.destroy();
         }
-    });
+    }
+
 }
 
 // relink private _keys and keys with a function value from one layout
@@ -3068,7 +3083,7 @@ function makePlotFramework(gd) {
     // Make the graph containers
     // start fresh each time we get here, so we know the order comes out
     // right, rather than enter/exit which can muck up the order
-    fullLayout._paperdiv.selectAll('svg').remove();
+    fullLayout._paperdiv.selectAll('.main-svg').remove();
 
     if(!fullLayout._uid) {
         var otherUids = [];
