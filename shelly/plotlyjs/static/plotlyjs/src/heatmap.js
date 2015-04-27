@@ -133,9 +133,9 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
     if(!Plotly.Plots.isContour(traceOut.type) || (traceOut.contours||{}).coloring!=='none') {
         coerce('colorscale');
-        coerce('autocolorscale');
         var reverseScale = coerce('reversescale'),
-            showScale = coerce('showscale');
+            showScale = coerce('showscale'),
+            autoColorScale = coerce('autocolorscale');
 
         // apply the colorscale reversal here, so we don't have to
         // do it in separate modules later
@@ -145,6 +145,10 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
         if(showScale) {
             Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        }
+
+        if(autoColorScale) {
+            if(!!traceIn.colorscale) traceOut.autocolorscale = false;
         }
     }
 
