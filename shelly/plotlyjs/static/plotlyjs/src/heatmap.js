@@ -43,6 +43,10 @@ heatmap.attributes = {
     colorscale: {
         type: 'colorscale'
     },
+    autocolorscale: {
+        type: 'boolean',
+        dflt: false
+    },
     reversescale: {
         type: 'boolean',
         dflt: false
@@ -129,6 +133,7 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
     if(!Plotly.Plots.isContour(traceOut.type) || (traceOut.contours||{}).coloring!=='none') {
         coerce('colorscale');
+        coerce('autocolorscale');
         var reverseScale = coerce('reversescale'),
             showScale = coerce('showscale');
 
@@ -271,6 +276,11 @@ heatmap.calc = function(gd, trace) {
 
     trace._input.zmin = trace.zmin;
     trace._input.zmax = trace.zmax;
+
+    if(trace.autocolorscale) {
+        if(trace.zmin >= 0) trace.colorscale = Plotly.Color.scales.RdBuPos;
+        if(trace.zmax <= 0) trace.colorscale = Plotly.Color.scales.RdBuNeg;
+    }
 
     if(Plotly.Plots.isContour(trace.type) && trace.contours &&
             trace.contours.coloring==='heatmap') {
