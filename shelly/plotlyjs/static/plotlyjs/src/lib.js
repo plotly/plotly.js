@@ -1321,7 +1321,10 @@ lib.stripTrailingSlash = function (str) {
 
 // Helpers for defaults and attribute validation
 var fontAttrs = {
-    family: {type: 'string'},
+    family: {
+        type: 'string',
+        noBlank: true
+    },
     size: {
         type: 'number',
         min: 1
@@ -1381,10 +1384,6 @@ var coerceIt = {
         var vOut = {};
 
         lib.coerce(v, vOut, fontAttrs, 'family', dflt.family);
-        // TODO: do we need better than 'string' for font, or just
-        // a "noBlank" option?
-        if(!vOut.family) vOut.family = dflt.family;
-
         lib.coerce(v, vOut, fontAttrs, 'size', dflt.size);
         lib.coerce(v, vOut, fontAttrs, 'color', dflt.color);
 
