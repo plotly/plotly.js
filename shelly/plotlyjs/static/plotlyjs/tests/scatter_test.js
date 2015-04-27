@@ -1,7 +1,7 @@
+var Plotly = require('../src/plotly');
+
 describe('Test scatter', function () {
     'use strict';
-
-    /* global Plotly */
 
     describe('supplyDefaults', function() {
         var traceIn,
