@@ -1532,7 +1532,12 @@ plots.purge = function(gd) {
 };
 
 function doCalcdata(gd) {
-    gd.calcdata = [];
+    var axList = Plotly.Axes.list(gd),
+        fullData = gd._fullData;
+
+    var i, trace, module, cd;
+
+    var calcdata = gd.calcdata = new Array(fullData.length);
 
     // extra helper variables
     // firstscatter: fill-to-next on the first trace goes to zero
@@ -1547,25 +1552,28 @@ function doCalcdata(gd) {
 
     // delete category list, if there is one, so we start over
     // to be filled in later by ax.d2c
-    Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
+    for (i = 0; i < axList.length; i++) {
+        axList[i]._categories = [];
+    }
 
-    gd.calcdata = gd._fullData.map(function(trace, i) {
-        var module = trace._module,
-            cd = [];
+    for (i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
+        module = trace._module;
+        cd = [];
 
-        if(module && trace.visible === true) {
-            if(module.calc) cd = module.calc(gd,trace);
+        if (module && trace.visible === true) {
+            if (module.calc) cd = module.calc(gd, trace);
         }
 
         // make sure there is a first point
         // this ensures there is a calcdata item for every trace,
         // even if cartesian logic doesn't handle it
-        if(!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
+        if (!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
 
         // add the trace-wide properties to the first point,
         // per point properties to every point
         // t is the holder for trace-wide properties
-        if(!cd[0].t) cd[0].t = {};
+        if (!cd[0].t) cd[0].t = {};
         cd[0].trace = trace;
 
         // this is a kludge to put the array attributes into
@@ -1576,8 +1584,8 @@ function doCalcdata(gd) {
         }
 
         Plotly.Lib.markTime('done with calcdata for '+i);
-        return cd;
-    });
+        calcdata[i] = cd;
+    }
 }
 
 plots.style = function(gd) {
