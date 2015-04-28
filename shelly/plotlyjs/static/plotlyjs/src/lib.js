@@ -7,10 +7,11 @@
 /* global pullf:false */
 
 // ---external global dependencies
-/* global d3:false, tinycolor:false */
+/* global d3:false */
 
 var lib = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    tinycolor = require('tinycolor2');
 
 // dateTime2ms - turn a date object or string s of the form
 // YYYY-mm-dd HH:MM:SS.sss into milliseconds (relative to 1970-01-01,
@@ -1322,7 +1323,7 @@ var coerceIt = {
         else propOut.set(String(v));
     },
     color: function(v, propOut, dflt) {
-        if(tinycolor(v).ok) propOut.set(v);
+        if(tinycolor(v).isValid()) propOut.set(v);
         else propOut.set(dflt);
     },
     colorscale: function(v, propOut, dflt) {
@@ -1565,4 +1566,26 @@ lib.isPlotDiv = function(el) {
 lib.removeElement = function(el) {
     var elParent = el && el.parentNode;
     if(elParent) elParent.removeChild(el);
+};
+
+// for dynamically adding style rules
+// makes one stylesheet that contains all rules added
+// by all calls to this function
+lib.addStyleRule = function(selector, styleString) {
+    if(!lib.styleSheet) {
+        var style = document.createElement('style');
+        // WebKit hack :(
+        style.appendChild(document.createTextNode(''));
+        document.head.appendChild(style);
+        lib.styleSheet = style.sheet;
+    }
+    var styleSheet = lib.styleSheet;
+
+    if(styleSheet.insertRule) {
+        styleSheet.insertRule(selector+'{'+styleString+'}',0);
+    }
+    else if(styleSheet.addRule) {
+        styleSheet.addRule(selector,styleString,0);
+    }
+    else console.warn('addStyleRule failed');
 };
