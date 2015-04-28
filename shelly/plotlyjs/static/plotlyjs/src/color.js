@@ -3,8 +3,6 @@
 var color = module.exports = {},
     tinycolor = require('tinycolor2');
 
-color.tc = tinycolor; // for debugging purposes
-
 // IMPORTANT - default colors should be in hex for grid.js
 color.defaults = [
     '#1f77b4', // muted blue
