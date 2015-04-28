@@ -3,8 +3,6 @@
 var color = module.exports = {},
     tinycolor = require('tinycolor2');
 
-color.tc = tinycolor; // for debugging purposes
-
 // IMPORTANT - default colors should be in hex for grid.js
 color.defaults = [
     '#1f77b4', // muted blue
@@ -194,6 +192,7 @@ color.clean = function(container) {
             else container[key] = cleanOne(val);
         }
         else if(key.substr(key.length - 10) === 'colorscale' && Array.isArray(val)) {
+            // colorscales have the format [[0, color1], [frac, color2], ... [1, colorN]]
             for(j = 0; j < val.length; j++) {
                 if(Array.isArray(val[j])) val[j][1] = cleanOne(val[j][1]);
             }
