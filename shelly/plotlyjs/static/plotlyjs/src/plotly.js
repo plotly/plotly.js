@@ -35,6 +35,9 @@ exports.Scatter3D = require('./gl3d/defaults/scatter3d');
 exports.Surface = require('./gl3d/defaults/surface');
 exports.Scene = require('./gl3d/scene');
 
+// graph reference
+exports.getGraphReference = require('./graph_reference');
+
 // configuration
 exports.Config = require('./config');
 
