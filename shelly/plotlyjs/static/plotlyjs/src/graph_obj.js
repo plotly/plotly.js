@@ -1152,51 +1152,56 @@ plots.attributes = {
 
 plots.supplyDefaults = function(gd) {
     // fill in default values:
-    // gd.data, gd.layout are precisely what the user specified
-    // gd._fullData, gd._fullLayout are complete descriptions
-    //      of how to draw the plot
+    // gd.data, gd.layout:
+    //   are precisely what the user specified
+    // gd._fullData, gd._fullLayout:
+    //   are complete descriptions of how to draw the plot
     var oldFullLayout = gd._fullLayout || {},
         newFullLayout = gd._fullLayout = {},
-        i,
-        modulei;
+        newLayout = gd.layout || {},
+        oldFullData = gd._fullData || [],
+        newFullData = gd._fullData = [],
+        newData = gd.data || [],
+        modules = gd._modules = [];
+
+    var i, trace, fullTrace, module, axList, ax;
 
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
-    plots.supplyLayoutGlobalDefaults(gd.layout||{}, newFullLayout);
+    plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
 
     // then do the data
-    var oldFullData = gd._fullData || [],
-        newData = gd.data || [];
-    gd._modules = [];
-    gd._fullData = newData.map(function(trace, i) {
-        var fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout),
-            module = fullTrace._module;
+    for (i = 0; i < newData.length; i++) {
+        trace  = newData[i];
 
-        if(module && gd._modules.indexOf(module)===-1) gd._modules.push(module);
+        fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout);
+        newFullData.push(fullTrace);
 
-        return fullTrace;
-    });
-
-    // special cases that introduce interactions between traces
-    for(i = 0; i < gd._modules.length; i++) {
-        modulei = gd._modules[i];
-        if(modulei.cleanData) modulei.cleanData(gd._fullData);
-    }
-
-    // DETECT 3D, Cartesian, and Polar
-    gd._fullData.forEach(function(d, i) {
-        if(plots.isGL3D(d.type)) newFullLayout._hasGL3D = true;
-        if(plots.isCartesian(d.type)) {
-            if('r' in d) newFullLayout._hasPolar = true;
+        // DETECT 3D, Cartesian, and Polar
+        if (plots.isGL3D(fullTrace.type)) newFullLayout._hasGL3D = true;
+        if (plots.isCartesian(fullTrace.type)) {
+            if ('r' in fullTrace) newFullLayout._hasPolar = true;
             else newFullLayout._hasCartesian = true;
         }
-        if(oldFullData.length === newData.length) {
-            relinkPrivateKeys(d, oldFullData[i]);
+
+        module = fullTrace._module;
+        if (module && modules.indexOf(module)===-1) modules.push(module);
+    }
+
+    // special cases that introduce interactions between traces
+    for (i = 0; i < modules.length; i++) {
+        module = modules[i];
+        if (module.cleanData) module.cleanData(newFullData);
+    }
+
+    if (oldFullData.length === newData.length) {
+        for (i = 0; i < newFullData.length; i++) {
+            relinkPrivateKeys(newFullData[i], oldFullData[i]);
         }
-    });
+    }
 
     // finally, fill in the pieces of layout that may need to look at data
-    plots.supplyLayoutModuleDefaults(gd.layout||{}, newFullLayout, gd._fullData);
+    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
     cleanScenes(newFullLayout, oldFullLayout);
 
@@ -1207,20 +1212,21 @@ plots.supplyDefaults = function(gd) {
 
     doAutoMargin(gd);
 
-    var axList = Plotly.Axes.list(gd);
-    axList.forEach(function(ax) {
-        // can't quite figure out how to get rid of this... each axis needs
-        // a reference back to the DOM object for just a few purposes
+    // can't quite figure out how to get rid of this... each axis needs
+    // a reference back to the DOM object for just a few purposes
+    axList = Plotly.Axes.list(gd);
+    for (i = 0; i < axList.length; i++) {
+        ax = axList[i];
         ax._td = gd;
-
         ax.setScale();
-    });
+    }
 
     // update object references in calcdata
-    if((gd.calcdata||[]).length===gd._fullData.length) {
-        gd._fullData.forEach(function(trace, i) {
-            (gd.calcdata[i][0]||{}).trace = trace;
-        });
+    if ((gd.calcdata || []).length === newFullData.length) {
+        for (i = 0; i < newFullData.length; i++) {
+            trace = newFullData[i];
+            (gd.calcdata[i][0] || {}).trace = trace;
+        }
     }
 };
 
