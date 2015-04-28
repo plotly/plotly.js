@@ -262,7 +262,7 @@ function convertPlotlyOptions(scene, data) {
 }
 
 proto.update = function(data) {
-    var gl = this.scene.scene.gl,
+    var gl = this.scene.glplot.gl,
         lineOptions,
         scatterOptions,
         errorOptions,
@@ -297,10 +297,10 @@ proto.update = function(data) {
         if (this.linePlot) this.linePlot.update(lineOptions);
         else {
             this.linePlot = createLinePlot(lineOptions);
-            this.scene.scene.add(this.linePlot);
+            this.scene.glplot.add(this.linePlot);
         }
     } else if (this.linePlot) {
-        this.scene.scene.remove(this.linePlot);
+        this.scene.glplot.remove(this.linePlot);
         this.linePlot.dispose();
         this.linePlot = null;
     }
@@ -323,10 +323,10 @@ proto.update = function(data) {
         if (this.scatterPlot) this.scatterPlot.update(scatterOptions);
         else {
             this.scatterPlot = createScatterPlot(scatterOptions);
-            this.scene.scene.add(this.scatterPlot);
+            this.scene.glplot.add(this.scatterPlot);
         }
     } else if(this.scatterPlot) {
-        this.scene.scene.remove(this.scatterPlot);
+        this.scene.glplot.remove(this.scatterPlot);
         this.scatterPlot.dispose();
         this.scatterPlot = null;
     }
@@ -349,10 +349,10 @@ proto.update = function(data) {
         if (this.textMarkers) this.textMarkers.update(textOptions);
         else {
             this.textMarkers = createScatterPlot(textOptions);
-            this.scene.scene.add(this.textMarkers)
+            this.scene.glplot.add(this.textMarkers)
         }
     } else if (this.textMarkers) {
-        this.scene.scene.remove(this.textMarkers);
+        this.scene.glplot.remove(this.textMarkers);
         this.textMarkers.dispose();
         this.textMarkers = null;
     }
@@ -369,13 +369,13 @@ proto.update = function(data) {
         if(options.errorBounds) {
             this.errorBars.update(errorOptions);
         } else {
-            this.scene.scene.remove(this.errorBars);
+            this.scene.glplot.remove(this.errorBars);
             this.errorBars.dispose();
             this.errorBars = null;
         }
     } else if(options.errorBounds) {
         this.errorBars = createErrorBars(errorOptions);
-        this.scene.scene.add(this.errorBars);
+        this.scene.glplot.add(this.errorBars);
     }
 
     if(options.delaunayAxis >= 0) {
@@ -388,10 +388,10 @@ proto.update = function(data) {
         } else {
             delaunayOptions.gl = gl;
             this.delaunayMesh = createMesh(delaunayOptions);
-            this.scene.scene.add(this.delaunayMesh);
+            this.scene.glplot.add(this.delaunayMesh);
         }
     } else if(this.delaunayMesh) {
-        this.scene.scene.remove(this.delaunayMesh);
+        this.scene.glplot.remove(this.delaunayMesh);
         this.delaunayMesh.dispose();
         this.delaunayMesh = null;
     }
@@ -399,11 +399,11 @@ proto.update = function(data) {
 
 proto.dispose = function() {
     if(this.linePlot) {
-        this.scene.scene.remove(this.linePlot);
+        this.scene.glplot.remove(this.linePlot);
         this.linePlot.dispose();
     }
     if(this.scatterPlot) {
-        this.scene.scene.remove(this.scatterPlot);
+        this.scene.glplot.remove(this.scatterPlot);
         this.scatterPlot.dispose();
     }
     if(this.errorBars) {
@@ -411,11 +411,11 @@ proto.dispose = function() {
         this.errorBars.dispose();
     }
     if(this.textMarkers) {
-        this.scene.scene.remove(this.textMarkers);
+        this.scene.glplot.remove(this.textMarkers);
         this.textMarkers.dispose();
     }
     if(this.delaunayMesh) {
-        this.scene.scene.remove(this.textMarkers);
+        this.scene.glplot.remove(this.textMarkers);
         this.delaunayMesh.dispose();
     }
 }
