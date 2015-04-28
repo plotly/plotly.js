@@ -444,9 +444,7 @@ Plotly.plot = function(gd, data, layout, config) {
     if(recalc) doCalcdata(gd);
 
     // in case it has changed, attach fullData traces to calcdata
-    gd.calcdata.forEach(function(cd, i) {
-        cd[0].trace = gd._fullData[i];
-    });
+    attachFullDataToCalcdata();
 
     /*
      * start async-friendly code - now we're actually drawing things
@@ -454,18 +452,30 @@ Plotly.plot = function(gd, data, layout, config) {
 
     var oldmargins = JSON.stringify(fullLayout._size);
 
+    function attachFullDataToCalcdata() {
+        for (var i = 0; i < gd.calcdata.length; i++) {
+            gd.calcdata[i][0].trace = gd._fullData[i];
+        }
+    }
+
     // draw anything that can affect margins.
     // currently this is legend and colorbars
     function marginPushers() {
+        var calcdata = gd.calcdata;
+        var i, cd, trace;
+
         Plotly.Legend.draw(gd, fullLayout.showlegend ||
             (gd.calcdata.length>1 && fullLayout.showlegend!==false));
-        gd.calcdata.forEach(function(cd) {
-            var trace = cd[0].trace;
-            if(trace.visible !== true || !trace._module.colorbar) {
-                plots.autoMargin(gd,'cb'+trace.uid);
+
+        for (i = 0; i < calcdata.length; i++) {
+            cd = calcdata[i];
+            trace = cd[0].trace;
+            if (trace.visible !== true || !trace._module.colorbar) {
+                plots.autoMargin(gd, 'cb'+trace.uid);
             }
-            else trace._module.colorbar(gd,cd);
-        });
+            else trace._module.colorbar(gd, cd);
+        }
+
         doAutoMargin(gd);
         return plots.previousPromises(gd);
     }
@@ -478,18 +488,23 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     function positionAndAutorange(){
+        var i, j, subplots, subplotInfo, modules, module;
+
         if(recalc) {
             // position and range calculations for traces that
             // depend on each other ie bars (stacked or grouped)
             // and boxes (grouped) push each other out of the way
-            Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
-                var plotinfo = gd._fullLayout._plots[subplot];
-                gd._modules.forEach(function(module) {
-                    if(module.setPositions) {
-                        module.setPositions(gd,plotinfo);
+            subplots = Plotly.Axes.getSubplots(gd);
+            modules = gd._modules;
+            for (i = 0; i < subplots.length; i++) {
+                subplotInfo = gd._fullLayout._plots[subplots[i]];
+                for (j = 0; j < modules.length; j++) {
+                    module = modules[j];
+                    if (module.setPositions) {
+                        module.setPositions(gd, subplotInfo);
                     }
-                });
-            });
+                }
+            }
 
             Plotly.Lib.markTime('done with bar/box adjustments');
 
@@ -507,19 +522,23 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     function doAutoRange(){
-        Plotly.Axes.list(gd, '', true).forEach(function(ax) {
+        var axList = Plotly.Axes.list(gd, '', true);
+        var i, ax;
+
+        for (i = 0; i < axList.length; i++) {
+            ax = axList[i];
             Plotly.Axes.doAutoRange(ax);
-            if(!$.isNumeric(ax._m) || !$.isNumeric(ax._b)) {
+            if (!$.isNumeric(ax._m) || !$.isNumeric(ax._b)) {
                 Plotly.Lib.notifier(
                     'Something went wrong with axis scaling',
                     'long');
                 gd._replotting = false;
                 throw new Error('axis scaling');
             }
-        });
+        }
     }
 
-    function drawAxes(){
+    function drawAxes() {
         // draw ticks, titles, and calculate axis scaling (._b, ._m)
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
@@ -1512,15 +1531,19 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
-
     var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Shapes', 'Fx',
                                 'Bars', 'Boxes', 'Gl3dLayout'];
 
+    var i, module;
+
     // don't add a check for 'function in module' as it is better to error out and
     // secure the module API then not apply the default function.
-    moduleLayoutDefaults.forEach( function (module) {
-        if (Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-    });
+    for (i = 0; i < moduleLayoutDefaults.length; i++) {
+        module = moduleLayoutDefaults[i];
+        if (Plotly[module]) {
+            Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        }
+    }
 };
 
 plots.purge = function(gd) {
