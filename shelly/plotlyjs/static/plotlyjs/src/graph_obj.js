@@ -1581,15 +1581,21 @@ function doCalcdata(gd) {
 }
 
 plots.style = function(gd) {
-    var fullLayout = gd._fullLayout;
+    var subplots = Plotly.Axes.getSubplots(gd),
+        modulesWithErrorBars = gd._modules.concat(Plotly.ErrorBars),
+        fullLayout = gd._fullLayout;
 
-    Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
-        var gp = fullLayout._plots[subplot].plot;
+    var i, j, subplot, gp, module;
 
-        gd._modules.concat(Plotly.ErrorBars).forEach(function(module) {
-            if(module.style) module.style(gp, fullLayout);
-        });
-    });
+    for (i = 0; i < subplots.length; i++) {
+        subplot = subplots[i];
+        gp = fullLayout._plots[subplot].plot;
+
+        for (j = 0; j < modulesWithErrorBars.length; j++) {
+            module =  modulesWithErrorBars[j];
+            if (module.style) module.style(gp, fullLayout);
+        }
+    }
 };
 
 /**
