@@ -25,6 +25,8 @@ exports.Shapes = require('./shapes');
 exports.Legend = require('./legend');
 exports.Colorbar = require('./colorbar');
 exports.ModeBar = require('./modebar');
+exports.Icons = require('../build/ploticon');
+require('../build/plotcss');
 
 // 3D
 exports.Gl3dLayout = require('./gl3d/defaults/gl3dlayout');
@@ -32,6 +34,9 @@ exports.Gl3dAxes = require('./gl3d/defaults/gl3daxes');
 exports.Scatter3D = require('./gl3d/defaults/scatter3d');
 exports.Surface = require('./gl3d/defaults/surface');
 exports.Scene = require('./gl3d/scene');
+
+// graph reference
+exports.getGraphReference = require('./graph_reference');
 
 // configuration
 exports.Config = require('./config');
