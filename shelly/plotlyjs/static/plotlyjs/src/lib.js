@@ -1367,10 +1367,10 @@ var coerceIt = {
     },
     string: function(v, propOut, dflt, opts) {
         var s = String(v);
-        if(v===undefined || (opts.noBlank===false && !s)) {
+        if(v===undefined || (opts.noBlank===true && !s)) {
             propOut.set(dflt);
         }
-        else propOut.set(String(v));
+        else propOut.set(s);
     },
     color: function(v, propOut, dflt) {
         if(tinycolor(v).isValid()) propOut.set(v);
@@ -1383,9 +1383,12 @@ var coerceIt = {
         if(!v) v = {};
         var vOut = {};
 
-        lib.coerce(v, vOut, fontAttrs, 'family', dflt.family);
         lib.coerce(v, vOut, fontAttrs, 'size', dflt.size);
         lib.coerce(v, vOut, fontAttrs, 'color', dflt.color);
+
+        // string type will cast anything to a string - but here we want to be strict
+        if(typeof v.family !== 'string') v = {};
+        lib.coerce(v, vOut, fontAttrs, 'family', dflt.family);
 
         propOut.set(vOut);
     },
