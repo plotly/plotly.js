@@ -526,6 +526,38 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function drawData(){
         // Now plot the data
+        var calcdata = gd.calcdata,
+            subplots = Plotly.Axes.getSubplots(gd),
+            modules = gd._modules;
+
+        var i, j, cd, trace, uid, subplot, subplotInfo,
+            cdSubplot, cdError, cdModule, module;
+
+        function getCdSubplot(calcdata, subplot) {
+            var cdSubplot = [];
+            var i, cd, trace;
+            for (i = 0; i < calcdata.length; i++) {
+                cd = calcdata[i];
+                trace = cd[0].trace;
+                if (trace.xaxis+trace.yaxis === subplot) {
+                    cdSubplot.push(cd);
+                }
+            }
+            return cdSubplot;
+        }
+
+        function getCdModule(cdSubplot, module) {
+            var cdModule = [];
+            var i, cd, trace;
+            for (i = 0; i < cdSubplot.length; i++) {
+                cd = cdSubplot[i];
+                trace = cd[0].trace;
+                if (trace._module === module && trace.visible === true) {
+                    cdModule.push(cd);
+                }
+            }
+            return cdModule;
+        }
 
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
@@ -533,47 +565,46 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
-        gd.calcdata.forEach(function(cd) {
-            var trace = cd[0].trace;
-            if(trace.visible !== true || !trace._module.colorbar) {
-                var uid = trace.uid;
+        for (i = 0; i < calcdata.length; i++) {
+            cd = calcdata[i];
+            trace = cd[0].trace;
+            if (trace.visible !== true || !trace._module.colorbar) {
+                uid = trace.uid;
                 fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid)
                     .remove();
             }
-        });
+        }
 
-        Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
-            var plotinfo = gd._fullLayout._plots[subplot],
-                cdSubplot = gd.calcdata.filter(function(cd) {
-                    var trace = cd[0].trace;
-                    return trace.xaxis + trace.yaxis === subplot;
-                }),
-                cdError = [];
+        for (i = 0; i < subplots.length; i++) {
+            subplot = subplots[i];
+            subplotInfo = gd._fullLayout._plots[subplot];
+            cdSubplot = getCdSubplot(calcdata, subplot);
+            cdError = [];
 
             // remove old traces, then redraw everything
             // TODO: use enter/exit appropriately in the plot functions
             // so we don't need this - should sometimes be a big speedup
-            plotinfo.plot.selectAll('g.trace').remove();
+            subplotInfo.plot.selectAll('g.trace').remove();
 
-            gd._modules.forEach(function(module) {
-                if(!module.plot) return;
+            for (j = 0; j < modules.length; j++) {
+                module = modules[j];
+                if (!module.plot) return;
+
                 // plot all traces of this type on this subplot at once
-                var cdmod = cdSubplot.filter(function(cd){
-                    var trace = cd[0].trace;
-                    return trace._module === module && trace.visible === true;
-                });
-                module.plot(gd,plotinfo,cdmod);
-                Plotly.Lib.markTime('done ' + (cdmod[0] && cdmod[0][0].trace.type));
+                cdModule = getCdModule(cdSubplot, module);
+                module.plot(gd, subplotInfo, cdModule);
+                Plotly.Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
 
                 // collect the traces that may have error bars
-                if(module.errorBarsOK) cdError = cdError.concat(cdmod);
-            });
-            // finally do all error bars at once
-            Plotly.ErrorBars.plot(gd,plotinfo,cdError);
-            Plotly.Lib.markTime('done ErrorBars');
-        });
+                if (module.errorBarsOK) cdError = cdError.concat(cdModule);
+            }
 
-        //styling separate from drawing
+            // finally do all error bars at once
+            Plotly.ErrorBars.plot(gd, subplotInfo, cdError);
+            Plotly.Lib.markTime('done ErrorBars');
+        }
+
+        // styling separate from drawing
         plots.style(gd);
         Plotly.Lib.markTime('done plots.style');
 
