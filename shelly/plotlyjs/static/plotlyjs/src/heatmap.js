@@ -279,9 +279,19 @@ heatmap.calc = function(gd, trace) {
     trace._input.zmax = trace.zmax;
 
     if(trace.autocolorscale) {
-        if(trace.zmin >= 0) trace.colorscale = Plotly.Color.scales.RdBuPos;
-        if(trace.zmax <= 0) trace.colorscale = Plotly.Color.scales.RdBuNeg;
+        if(trace.zmin * trace.zmax < 0) {
+            // Data values are > 0 and < 0.
+            trace.colorscale = Plotly.Color.scales.RdBu;
+        } else if(trace.zmin >= 0) {
+            // Non-negative signed data
+            trace.colorscale = Plotly.Color.scales.RdBuPos;
+        } else {
+            // Non-positive signed data
+            trace.colorscale = Plotly.Color.scales.RdBuNeg;
+        }
     }
+
+    trace._input.colorscale = trace.colorscale;
 
     if(Plotly.Plots.isContour(trace.type) && trace.contours &&
             trace.contours.coloring==='heatmap') {
