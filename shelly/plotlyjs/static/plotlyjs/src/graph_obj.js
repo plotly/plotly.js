@@ -523,18 +523,8 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function doAutoRange(){
         var axList = Plotly.Axes.list(gd, '', true);
-        var i, ax;
-
-        for (i = 0; i < axList.length; i++) {
-            ax = axList[i];
-            Plotly.Axes.doAutoRange(ax);
-            if (!$.isNumeric(ax._m) || !$.isNumeric(ax._b)) {
-                Plotly.Lib.notifier(
-                    'Something went wrong with axis scaling',
-                    'long');
-                gd._replotting = false;
-                throw new Error('axis scaling');
-            }
+        for (var i = 0; i < axList.length; i++) {
+            Plotly.Axes.doAutoRange(axList[i]);
         }
     }
 
