@@ -52,6 +52,15 @@ describe('Test heatmap', function () {
             expect(traceOut.visible).toBe(true);
         });
 
+        it('should set visible to false when z is non-numeric', function() {
+            traceIn = {
+                type: 'heatmap',
+                z: [['a', 'b'], ['c', 'd']]
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.visible).toBe(false);
+        });
+
     });
 
 });

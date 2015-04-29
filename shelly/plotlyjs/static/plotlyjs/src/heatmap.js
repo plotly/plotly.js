@@ -90,6 +90,9 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
             zi = z[i];
             if (!Array.isArray(zi)) allRowsAreArrays = false;
             if (!oneRowIsFilled && zi.length) oneRowIsFilled = true;
+            for(var j = 0; j < zi.length; j++) {
+                if(!$.isNumeric(zi[j])) return false;
+            }
         }
         return (allRowsAreArrays && oneRowIsFilled);
     }
