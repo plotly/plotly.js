@@ -444,19 +444,15 @@ Plotly.plot = function(gd, data, layout, config) {
     if(recalc) doCalcdata(gd);
 
     // in case it has changed, attach fullData traces to calcdata
-    attachFullDataToCalcdata();
+    for (var i = 0; i < gd.calcdata.length; i++) {
+        gd.calcdata[i][0].trace = gd._fullData[i];
+    }
 
     /*
      * start async-friendly code - now we're actually drawing things
      */
 
     var oldmargins = JSON.stringify(fullLayout._size);
-
-    function attachFullDataToCalcdata() {
-        for (var i = 0; i < gd.calcdata.length; i++) {
-            gd.calcdata[i][0].trace = gd._fullData[i];
-        }
-    }
 
     // draw anything that can affect margins.
     // currently this is legend and colorbars
@@ -548,9 +544,7 @@ Plotly.plot = function(gd, data, layout, config) {
             for (i = 0; i < calcdata.length; i++) {
                 cd = calcdata[i];
                 trace = cd[0].trace;
-                if (trace.xaxis+trace.yaxis === subplot) {
-                    cdSubplot.push(cd);
-                }
+                if (trace.xaxis+trace.yaxis === subplot) cdSubplot.push(cd);
             }
             return cdSubplot;
         }
@@ -561,9 +555,7 @@ Plotly.plot = function(gd, data, layout, config) {
             for (i = 0; i < cdSubplot.length; i++) {
                 cd = cdSubplot[i];
                 trace = cd[0].trace;
-                if (trace._module === module && trace.visible === true) {
-                    cdModule.push(cd);
-                }
+                if (trace._module===module && trace.visible===true) cdModule.push(cd);
             }
             return cdModule;
         }
@@ -1637,11 +1629,10 @@ plots.style = function(gd) {
         modulesWithErrorBars = gd._modules.concat(Plotly.ErrorBars),
         fullLayout = gd._fullLayout;
 
-    var i, j, subplot, gp, module;
+    var i, j, gp, module;
 
     for (i = 0; i < subplots.length; i++) {
-        subplot = subplots[i];
-        gp = fullLayout._plots[subplot].plot;
+        gp = fullLayout._plots[subplots[i]].plot;
 
         for (j = 0; j < modulesWithErrorBars.length; j++) {
             module =  modulesWithErrorBars[j];
