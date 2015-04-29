@@ -93,13 +93,20 @@ ModeBar.prototype.createButton = function (config) {
             config.click.apply(_this, arguments);
         });
 
-    button.appendChild(this.buttonIcon(this.Plotly.Icon[config.icon]));
+    button.appendChild(this.createIcon(this.Plotly.Icons[config.icon]));
 
     return button;
 };
 
-ModeBar.prototype.buttonIcon = function (thisIcon) {
-    var iconDef = this.Plotly.Icon,
+/**
+ * Add an icon to a button
+ * @Param {object} thisIcon
+ * @Param {number} thisIcon.width
+ * @Param {string} thisIcon.path
+ * @Return {HTMLelement}
+ */
+ModeBar.prototype.createIcon = function (thisIcon) {
+    var iconDef = this.Plotly.Icons,
         iconHeight = iconDef.ascent - iconDef.descent,
         svgNS = 'http://www.w3.org/2000/svg',
         icon = document.createElementNS(svgNS, 'svg'),
@@ -165,7 +172,7 @@ ModeBar.prototype.getLogo = function(){
     a.setAttribute('data-title', 'Produced with Plotly');
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
-    a.appendChild(this.buttonIcon(this.Plotly.Icon.plotlylogo));
+    a.appendChild(this.createIcon(this.Plotly.Icons.plotlylogo));
 
     group.appendChild(a);
     return group;
