@@ -1,3 +1,4 @@
+/* global MathJax:false */
 
 /**
  * Check and configure MathJax
@@ -8,9 +9,9 @@ if (typeof MathJax !== 'undefined'){
     MathJax.Hub.Config({
         messageStyle: 'none',
         skipStartupTypeset: true,
-        displayAlign: "left",
+        displayAlign: 'left',
         tex2jax: {
-            inlineMath: [["$","$"],["\\(","\\)"]]
+            inlineMath: [['$','$'],['\\(','\\)']]
         }
     });
 

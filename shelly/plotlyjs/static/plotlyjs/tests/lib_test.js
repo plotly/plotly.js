@@ -1,5 +1,8 @@
-/* global Plotly:false */
+var Plotly = require('../src/plotly');
+
 describe('Test lib.js:', function() {
+    'use strict';
+
     describe('parseDate() should', function() {
         it('return false on bad (number) input:', function() {
             expect(Plotly.Lib.parseDate(0)).toBe(false);
@@ -339,5 +342,117 @@ describe('Test lib.js:', function() {
             expect(objOut).toEqual({a: 'AA'});
         });
 
+    });
+
+    describe('coerce', function() {
+        var coerce = Plotly.Lib.coerce,
+            out;
+
+        // TODO: I tested font and string because I changed them, but all the other types need tests still
+
+        it('should set a value and return the value it sets', function() {
+            var aVal = 'aaaaah!',
+                cVal = {1: 2, 3: 4},
+                attrs = {a: {type: 'any', dflt: aVal}, b: {c: {type: 'any'}}},
+                obj = {b: {c: cVal}},
+                outObj = {},
+
+                aOut = coerce(obj, outObj, attrs, 'a'),
+                cOut = coerce(obj, outObj, attrs, 'b.c');
+
+            expect(aOut).toBe(aVal);
+            expect(aOut).toBe(outObj.a);
+            expect(cOut).toBe(cVal);
+            expect(cOut).toBe(outObj.b.c);
+        });
+
+        describe('font', function() {
+            var defaultFont = {
+                family: '"Open sans", verdana, arial, sans-serif, DEFAULT',
+                size: 314159,
+                color: 'neon pink with sparkles'
+            },
+            fontAttrs = {
+                fontWithDefault: {type: 'font', dflt: defaultFont},
+                fontNoDefault: {type: 'font'}
+            };
+
+            it('should insert the full default if no or empty input', function() {
+                expect(coerce(undefined, {}, fontAttrs, 'fontWithDefault'))
+                    .toEqual(defaultFont);
+
+                expect(coerce({}, {}, fontAttrs, 'fontNoDefault', defaultFont))
+                    .toEqual(defaultFont);
+
+                expect(coerce({fontWithDefault: {}}, {}, fontAttrs, 'fontWithDefault'))
+                    .toEqual(defaultFont);
+            });
+
+            it('should fill in defaults for bad inputs', function() {
+                out = coerce({fontWithDefault: {family: '', size: 'a million', color: 42}},
+                    {}, fontAttrs, 'fontWithDefault');
+                expect(out).toEqual(defaultFont);
+            });
+
+            it('should pass through individual valid pieces', function() {
+                var goodFamily = 'A fish', // for now any non-blank string is OK
+                    badFamily = 42,
+                    goodSize = 123.456,
+                    badSize = 'ginormous',
+                    goodColor = 'red',
+                    badColor = 'a dark and stormy night';
+
+                out = coerce({fontWithDefault: {family: goodFamily, size: badSize, color: badColor}},
+                    {}, fontAttrs, 'fontWithDefault');
+                expect(out).toEqual({family: goodFamily, size: defaultFont.size, color: defaultFont.color});
+
+                out = coerce({fontWithDefault: {family: badFamily, size: goodSize, color: badColor}},
+                    {}, fontAttrs, 'fontWithDefault');
+                expect(out).toEqual({family: defaultFont.family, size: goodSize, color: defaultFont.color});
+
+                out = coerce({fontWithDefault: {family: badFamily, size: badSize, color: goodColor}},
+                    {}, fontAttrs, 'fontWithDefault');
+                expect(out).toEqual({family: defaultFont.family, size: defaultFont.size, color: goodColor});
+            });
+        });
+
+        describe('string', function() {
+            var dflt = 'Jabberwock',
+                stringAttrs = {
+                    s: {type: 'string', dflt: dflt},
+                    noBlank: {type: 'string', dflt: dflt, noBlank: true}
+                };
+
+            it('should insert the default if input is missing, or blank with noBlank', function() {
+                out = coerce(undefined, {}, stringAttrs, 's');
+                expect(out).toEqual(dflt);
+
+                out = coerce({}, {}, stringAttrs, 's');
+                expect(out).toEqual(dflt);
+
+                out = coerce({s: ''}, {}, stringAttrs, 's');
+                expect(out).toEqual('');
+
+                out = coerce({noBlank: ''}, {}, stringAttrs, 'noBlank');
+                expect(out).toEqual(dflt);
+            });
+
+            it('should always return a string for any input', function() {
+                expect(coerce({s: 'a string!!'}, {}, stringAttrs, 's'))
+                    .toEqual('a string!!');
+
+                expect(coerce({s: 42}, {}, stringAttrs, 's'))
+                    .toEqual('42');
+
+                expect(coerce({s: [1, 2, 3]}, {}, stringAttrs, 's'))
+                    .toEqual('1,2,3');
+
+                expect(coerce({s: true}, {}, stringAttrs, 's'))
+                    .toEqual('true');
+
+                expect(coerce({s: {1: 2}}, {}, stringAttrs, 's'))
+                    .toEqual('[object Object]'); // useless, but that's what it does!!
+            });
+        });
     });
 });
