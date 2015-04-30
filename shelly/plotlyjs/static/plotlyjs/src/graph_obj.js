@@ -444,9 +444,9 @@ Plotly.plot = function(gd, data, layout, config) {
     if(recalc) doCalcdata(gd);
 
     // in case it has changed, attach fullData traces to calcdata
-    gd.calcdata.forEach(function(cd, i) {
-        cd[0].trace = gd._fullData[i];
-    });
+    for (var i = 0; i < gd.calcdata.length; i++) {
+        gd.calcdata[i][0].trace = gd._fullData[i];
+    }
 
     /*
      * start async-friendly code - now we're actually drawing things
@@ -457,15 +457,21 @@ Plotly.plot = function(gd, data, layout, config) {
     // draw anything that can affect margins.
     // currently this is legend and colorbars
     function marginPushers() {
+        var calcdata = gd.calcdata;
+        var i, cd, trace;
+
         Plotly.Legend.draw(gd, fullLayout.showlegend ||
             (gd.calcdata.length>1 && fullLayout.showlegend!==false));
-        gd.calcdata.forEach(function(cd) {
-            var trace = cd[0].trace;
-            if(trace.visible !== true || !trace._module.colorbar) {
-                plots.autoMargin(gd,'cb'+trace.uid);
+
+        for (i = 0; i < calcdata.length; i++) {
+            cd = calcdata[i];
+            trace = cd[0].trace;
+            if (trace.visible !== true || !trace._module.colorbar) {
+                plots.autoMargin(gd, 'cb'+trace.uid);
             }
-            else trace._module.colorbar(gd,cd);
-        });
+            else trace._module.colorbar(gd, cd);
+        }
+
         doAutoMargin(gd);
         return plots.previousPromises(gd);
     }
@@ -478,18 +484,23 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     function positionAndAutorange(){
+        var i, j, subplots, subplotInfo, modules, module;
+
         if(recalc) {
             // position and range calculations for traces that
             // depend on each other ie bars (stacked or grouped)
             // and boxes (grouped) push each other out of the way
-            Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
-                var plotinfo = gd._fullLayout._plots[subplot];
-                gd._modules.forEach(function(module) {
-                    if(module.setPositions) {
-                        module.setPositions(gd,plotinfo);
+            subplots = Plotly.Axes.getSubplots(gd);
+            modules = gd._modules;
+            for (i = 0; i < subplots.length; i++) {
+                subplotInfo = gd._fullLayout._plots[subplots[i]];
+                for (j = 0; j < modules.length; j++) {
+                    module = modules[j];
+                    if (module.setPositions) {
+                        module.setPositions(gd, subplotInfo);
                     }
-                });
-            });
+                }
+            }
 
             Plotly.Lib.markTime('done with bar/box adjustments');
 
@@ -507,25 +518,47 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     function doAutoRange(){
-        Plotly.Axes.list(gd, '', true).forEach(function(ax) {
-            Plotly.Axes.doAutoRange(ax);
-            if(!$.isNumeric(ax._m) || !$.isNumeric(ax._b)) {
-                Plotly.Lib.notifier(
-                    'Something went wrong with axis scaling',
-                    'long');
-                gd._replotting = false;
-                throw new Error('axis scaling');
-            }
-        });
+        var axList = Plotly.Axes.list(gd, '', true);
+        for (var i = 0; i < axList.length; i++) {
+            Plotly.Axes.doAutoRange(axList[i]);
+        }
     }
 
-    function drawAxes(){
+    function drawAxes() {
         // draw ticks, titles, and calculate axis scaling (._b, ._m)
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
     function drawData(){
         // Now plot the data
+        var calcdata = gd.calcdata,
+            subplots = Plotly.Axes.getSubplots(gd),
+            modules = gd._modules;
+
+        var i, j, cd, trace, uid, subplot, subplotInfo,
+            cdSubplot, cdError, cdModule, module;
+
+        function getCdSubplot(calcdata, subplot) {
+            var cdSubplot = [];
+            var i, cd, trace;
+            for (i = 0; i < calcdata.length; i++) {
+                cd = calcdata[i];
+                trace = cd[0].trace;
+                if (trace.xaxis+trace.yaxis === subplot) cdSubplot.push(cd);
+            }
+            return cdSubplot;
+        }
+
+        function getCdModule(cdSubplot, module) {
+            var cdModule = [];
+            var i, cd, trace;
+            for (i = 0; i < cdSubplot.length; i++) {
+                cd = cdSubplot[i];
+                trace = cd[0].trace;
+                if (trace._module===module && trace.visible===true) cdModule.push(cd);
+            }
+            return cdModule;
+        }
 
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
@@ -533,47 +566,46 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
-        gd.calcdata.forEach(function(cd) {
-            var trace = cd[0].trace;
-            if(trace.visible !== true || !trace._module.colorbar) {
-                var uid = trace.uid;
+        for (i = 0; i < calcdata.length; i++) {
+            cd = calcdata[i];
+            trace = cd[0].trace;
+            if (trace.visible !== true || !trace._module.colorbar) {
+                uid = trace.uid;
                 fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid)
                     .remove();
             }
-        });
+        }
 
-        Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
-            var plotinfo = gd._fullLayout._plots[subplot],
-                cdSubplot = gd.calcdata.filter(function(cd) {
-                    var trace = cd[0].trace;
-                    return trace.xaxis + trace.yaxis === subplot;
-                }),
-                cdError = [];
+        for (i = 0; i < subplots.length; i++) {
+            subplot = subplots[i];
+            subplotInfo = gd._fullLayout._plots[subplot];
+            cdSubplot = getCdSubplot(calcdata, subplot);
+            cdError = [];
 
             // remove old traces, then redraw everything
             // TODO: use enter/exit appropriately in the plot functions
             // so we don't need this - should sometimes be a big speedup
-            plotinfo.plot.selectAll('g.trace').remove();
+            subplotInfo.plot.selectAll('g.trace').remove();
 
-            gd._modules.forEach(function(module) {
-                if(!module.plot) return;
+            for (j = 0; j < modules.length; j++) {
+                module = modules[j];
+                if (!module.plot) return;
+
                 // plot all traces of this type on this subplot at once
-                var cdmod = cdSubplot.filter(function(cd){
-                    var trace = cd[0].trace;
-                    return trace._module === module && trace.visible === true;
-                });
-                module.plot(gd,plotinfo,cdmod);
-                Plotly.Lib.markTime('done ' + (cdmod[0] && cdmod[0][0].trace.type));
+                cdModule = getCdModule(cdSubplot, module);
+                module.plot(gd, subplotInfo, cdModule);
+                Plotly.Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
 
                 // collect the traces that may have error bars
-                if(module.errorBarsOK) cdError = cdError.concat(cdmod);
-            });
-            // finally do all error bars at once
-            Plotly.ErrorBars.plot(gd,plotinfo,cdError);
-            Plotly.Lib.markTime('done ErrorBars');
-        });
+                if (module.errorBarsOK) cdError = cdError.concat(cdModule);
+            }
 
-        //styling separate from drawing
+            // finally do all error bars at once
+            Plotly.ErrorBars.plot(gd, subplotInfo, cdError);
+            Plotly.Lib.markTime('done ErrorBars');
+        }
+
+        // styling separate from drawing
         plots.style(gd);
         Plotly.Lib.markTime('done plots.style');
 
@@ -1081,7 +1113,7 @@ Plotly.redraw = function(divid) {
         return;
     }
     gd.calcdata = undefined;
-    Plotly.plot(gd).then(function () {
+    return Plotly.plot(gd).then(function () {
         $(gd).trigger('plotly_redraw');
     });
 };
@@ -1152,51 +1184,56 @@ plots.attributes = {
 
 plots.supplyDefaults = function(gd) {
     // fill in default values:
-    // gd.data, gd.layout are precisely what the user specified
-    // gd._fullData, gd._fullLayout are complete descriptions
-    //      of how to draw the plot
+    // gd.data, gd.layout:
+    //   are precisely what the user specified
+    // gd._fullData, gd._fullLayout:
+    //   are complete descriptions of how to draw the plot
     var oldFullLayout = gd._fullLayout || {},
         newFullLayout = gd._fullLayout = {},
-        i,
-        modulei;
+        newLayout = gd.layout || {},
+        oldFullData = gd._fullData || [],
+        newFullData = gd._fullData = [],
+        newData = gd.data || [],
+        modules = gd._modules = [];
+
+    var i, trace, fullTrace, module, axList, ax;
 
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
-    plots.supplyLayoutGlobalDefaults(gd.layout||{}, newFullLayout);
+    plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
 
     // then do the data
-    var oldFullData = gd._fullData || [],
-        newData = gd.data || [];
-    gd._modules = [];
-    gd._fullData = newData.map(function(trace, i) {
-        var fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout),
-            module = fullTrace._module;
+    for (i = 0; i < newData.length; i++) {
+        trace  = newData[i];
 
-        if(module && gd._modules.indexOf(module)===-1) gd._modules.push(module);
+        fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout);
+        newFullData.push(fullTrace);
 
-        return fullTrace;
-    });
-
-    // special cases that introduce interactions between traces
-    for(i = 0; i < gd._modules.length; i++) {
-        modulei = gd._modules[i];
-        if(modulei.cleanData) modulei.cleanData(gd._fullData);
-    }
-
-    // DETECT 3D, Cartesian, and Polar
-    gd._fullData.forEach(function(d, i) {
-        if(plots.isGL3D(d.type)) newFullLayout._hasGL3D = true;
-        if(plots.isCartesian(d.type)) {
-            if('r' in d) newFullLayout._hasPolar = true;
+        // DETECT 3D, Cartesian, and Polar
+        if (plots.isGL3D(fullTrace.type)) newFullLayout._hasGL3D = true;
+        if (plots.isCartesian(fullTrace.type)) {
+            if ('r' in fullTrace) newFullLayout._hasPolar = true;
             else newFullLayout._hasCartesian = true;
         }
-        if(oldFullData.length === newData.length) {
-            relinkPrivateKeys(d, oldFullData[i]);
+
+        module = fullTrace._module;
+        if (module && modules.indexOf(module)===-1) modules.push(module);
+    }
+
+    // special cases that introduce interactions between traces
+    for (i = 0; i < modules.length; i++) {
+        module = modules[i];
+        if (module.cleanData) module.cleanData(newFullData);
+    }
+
+    if (oldFullData.length === newData.length) {
+        for (i = 0; i < newFullData.length; i++) {
+            relinkPrivateKeys(newFullData[i], oldFullData[i]);
         }
-    });
+    }
 
     // finally, fill in the pieces of layout that may need to look at data
-    plots.supplyLayoutModuleDefaults(gd.layout||{}, newFullLayout, gd._fullData);
+    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
     cleanScenes(newFullLayout, oldFullLayout);
 
@@ -1207,20 +1244,21 @@ plots.supplyDefaults = function(gd) {
 
     doAutoMargin(gd);
 
-    var axList = Plotly.Axes.list(gd);
-    axList.forEach(function(ax) {
-        // can't quite figure out how to get rid of this... each axis needs
-        // a reference back to the DOM object for just a few purposes
+    // can't quite figure out how to get rid of this... each axis needs
+    // a reference back to the DOM object for just a few purposes
+    axList = Plotly.Axes.list(gd);
+    for (i = 0; i < axList.length; i++) {
+        ax = axList[i];
         ax._td = gd;
-
         ax.setScale();
-    });
+    }
 
     // update object references in calcdata
-    if((gd.calcdata||[]).length===gd._fullData.length) {
-        gd._fullData.forEach(function(trace, i) {
-            (gd.calcdata[i][0]||{}).trace = trace;
-        });
+    if ((gd.calcdata || []).length === newFullData.length) {
+        for (i = 0; i < newFullData.length; i++) {
+            trace = newFullData[i];
+            (gd.calcdata[i][0] || {}).trace = trace;
+        }
     }
 };
 
@@ -1475,15 +1513,19 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
-
     var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Shapes', 'Fx',
                                 'Bars', 'Boxes', 'Gl3dLayout'];
 
+    var i, module;
+
     // don't add a check for 'function in module' as it is better to error out and
     // secure the module API then not apply the default function.
-    moduleLayoutDefaults.forEach( function (module) {
-        if (Plotly[module]) Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-    });
+    for (i = 0; i < moduleLayoutDefaults.length; i++) {
+        module = moduleLayoutDefaults[i];
+        if (Plotly[module]) {
+            Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        }
+    }
 };
 
 plots.purge = function(gd) {
@@ -1526,7 +1568,12 @@ plots.purge = function(gd) {
 };
 
 function doCalcdata(gd) {
-    gd.calcdata = [];
+    var axList = Plotly.Axes.list(gd),
+        fullData = gd._fullData;
+
+    var i, trace, module, cd;
+
+    var calcdata = gd.calcdata = new Array(fullData.length);
 
     // extra helper variables
     // firstscatter: fill-to-next on the first trace goes to zero
@@ -1541,25 +1588,28 @@ function doCalcdata(gd) {
 
     // delete category list, if there is one, so we start over
     // to be filled in later by ax.d2c
-    Plotly.Axes.list(gd).forEach(function(ax){ ax._categories = []; });
+    for (i = 0; i < axList.length; i++) {
+        axList[i]._categories = [];
+    }
 
-    gd.calcdata = gd._fullData.map(function(trace, i) {
-        var module = trace._module,
-            cd = [];
+    for (i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
+        module = trace._module;
+        cd = [];
 
-        if(module && trace.visible === true) {
-            if(module.calc) cd = module.calc(gd,trace);
+        if (module && trace.visible === true) {
+            if (module.calc) cd = module.calc(gd, trace);
         }
 
         // make sure there is a first point
         // this ensures there is a calcdata item for every trace,
         // even if cartesian logic doesn't handle it
-        if(!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
+        if (!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
 
         // add the trace-wide properties to the first point,
         // per point properties to every point
         // t is the holder for trace-wide properties
-        if(!cd[0].t) cd[0].t = {};
+        if (!cd[0].t) cd[0].t = {};
         cd[0].trace = trace;
 
         // this is a kludge to put the array attributes into
@@ -1570,20 +1620,25 @@ function doCalcdata(gd) {
         }
 
         Plotly.Lib.markTime('done with calcdata for '+i);
-        return cd;
-    });
+        calcdata[i] = cd;
+    }
 }
 
 plots.style = function(gd) {
-    var fullLayout = gd._fullLayout;
+    var subplots = Plotly.Axes.getSubplots(gd),
+        modulesWithErrorBars = gd._modules.concat(Plotly.ErrorBars),
+        fullLayout = gd._fullLayout;
 
-    Plotly.Axes.getSubplots(gd).forEach(function(subplot) {
-        var gp = fullLayout._plots[subplot].plot;
+    var i, j, gp, module;
 
-        gd._modules.concat(Plotly.ErrorBars).forEach(function(module) {
-            if(module.style) module.style(gp, fullLayout);
-        });
-    });
+    for (i = 0; i < subplots.length; i++) {
+        gp = fullLayout._plots[subplots[i]].plot;
+
+        for (j = 0; j < modulesWithErrorBars.length; j++) {
+            module =  modulesWithErrorBars[j];
+            if (module.style) module.style(gp, fullLayout);
+        }
+    }
 };
 
 /**
