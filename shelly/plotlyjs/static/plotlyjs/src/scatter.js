@@ -756,7 +756,7 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
                     if(Math.abs(pti[0]-lastEntered[0]) < decimationTolerance) {
                         decimationMode = 0;
                     }
-                    else if(Math.abs(pti[0]-lastEntered[1]) < decimationTolerance) {
+                    else if(Math.abs(pti[1]-lastEntered[1]) < decimationTolerance) {
                         decimationMode = 1;
                     }
                     // no decimation here - add this point and move on
