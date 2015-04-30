@@ -743,6 +743,14 @@ axes.setConvert = function(ax) {
             ax._m = ax._length/(ax.range[1]-ax.range[0]);
             ax._b = -ax._m*ax.range[0];
         }
+
+        if (!isFinite(ax._m) || !isFinite(ax._b)) {
+            Plotly.Lib.notifier(
+                'Something went wrong with axis scaling',
+                'long');
+            gd._replotting = false;
+            throw new Error('axis scaling');
+        }
     };
 
     ax.l2p = function(v) {

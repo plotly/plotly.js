@@ -1,7 +1,7 @@
+var Plotly = require('../src/plotly');
+
 describe('Test axes', function () {
     'use strict';
-
-    /* global Plotly */
 
     describe('swap', function() {
         it('should swap most attributes and fix placeholder titles', function() {

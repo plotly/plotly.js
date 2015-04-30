@@ -1,7 +1,7 @@
+var Plotly = require('../src/plotly');
+
 describe('Test graph_obj', function () {
     'use strict';
-
-    /* global Plotly */
 
     describe('Plotly.restyle', function() {
         beforeEach(function() {
