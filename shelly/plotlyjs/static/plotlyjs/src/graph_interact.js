@@ -1285,26 +1285,45 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // dragged stores whether a drag has occurred, so we don't have to
     // redraw unnecessarily, ie if no move bigger than MINDRAG or MINZOOM px
     var fullLayout = gd._fullLayout,
+        // if we're dragging two axes at once, also drag overlays
+        subplots = [plotinfo].concat((ns && ew) ? plotinfo.overlays : []),
         xa = [plotinfo.x()],
         ya = [plotinfo.y()],
         pw = xa[0]._length,
         ph = ya[0]._length,
-        xActive = xa[0].fixedrange ? '' : ew,
-        yActive = ya[0].fixedrange ? '' : ns,
-        cursor = getDragCursor(yActive + xActive, fullLayout.dragmode),
-        dragClass = ns + ew + 'drag',
-        // if we're dragging two axes at once, also drag overlays
-        subplots = [plotinfo].concat((ns && ew) ? plotinfo.overlays : []),
-        dragger = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
+        i,
+        subplotXa,
+        subplotYa;
 
-    dragger.enter().append('rect')
+    for(i = 1; i < subplots.length; i++) {
+        subplotXa = subplots[i].x();
+        subplotYa = subplots[i].y();
+        if(xa.indexOf(subplotXa) === -1) xa.push(subplotXa);
+        if(ya.indexOf(subplotYa) === -1) ya.push(subplotYa);
+    }
+
+    function isDirectionActive(axList, activeVal) {
+        for(i = 0; i < axList.length; i++) {
+            if(!axList[i].fixedrange) return activeVal;
+        }
+        return '';
+    }
+
+    var allaxes = xa.concat(ya),
+        xActive = isDirectionActive(xa, ew),
+        yActive = isDirectionActive(ya, ns),
+        cursor = getDragCursor(yActive + xActive, fullLayout.dragmode),
+        dragClass = ns + ew + 'drag';
+
+    var dragger3 = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
+    dragger3.enter().append('rect')
         .classed('drag', true)
         .classed(dragClass, true)
         .style({fill: 'transparent', 'stroke-width': 0})
         .attr('data-subplot', plotinfo.id);
-    dragger.call(Plotly.Drawing.setRect, x, y, w, h)
+    dragger3.call(Plotly.Drawing.setRect, x, y, w, h)
         .call(fx.setCursor,cursor);
-    dragger = dragger.node();
+    var dragger = dragger3.node();
 
     // still need to make the element if the axes are disabled
     // but nuke its events (except for maindrag which needs them for hover)
@@ -1315,19 +1334,10 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         return dragger;
     }
 
-    subplots.forEach(function(subplot) {
-        var subplotXa = subplot.x(),
-            subplotYa = subplot.y();
-        if(xa.indexOf(subplotXa) === -1) xa.push(subplotXa);
-        if(ya.indexOf(subplotYa) === -1) ya.push(subplotYa);
-    });
-
-    function getAxId(ax) { return ax._id; }
-    var xids = xa.map(getAxId),
-        yids = ya.map(getAxId),
-        allaxes = xa.concat(ya);
-
-    function forceNumber(ax) { ax.range = ax.range.map(Number); }
+    function forceNumbers(axRange) {
+        axRange[0] = Number(axRange[0]);
+        axRange[1] = Number(axRange[1]);
+    }
 
     var dragOptions = {
         element: dragger,
@@ -1386,8 +1396,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             })
             .attr('d','M0,0Z');
 
-        xa.forEach(forceNumber);
-        ya.forEach(forceNumber);
+        for(i = 0; i < allaxes.length; i++) forceNumbers(allaxes[i].range);
     }
 
     function zoomMove(dx0, dy0) {
@@ -1464,6 +1473,23 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
     }
 
+    function zoomAxRanges(axList, r0Fraction, r1Fraction) {
+        var i,
+            axi,
+            axRange;
+
+        for(i = 0; i < axList.length; i++) {
+            axi = axList[i];
+            if(axi.fixedrange) continue;
+
+            axRange = axi.range;
+            axi.range = [
+                axRange[0] + (axRange[1] - axRange[0]) * r0Fraction,
+                axRange[0] + (axRange[1] - axRange[0]) * r1Fraction
+            ];
+        }
+    }
+
     function zoomDone(dragged, numClicks) {
         if(Math.min(box.h, box.w) < fx.MINDRAG * 2) {
             // doubleclick - autoscale
@@ -1473,39 +1499,23 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return removeZoombox(gd);
         }
 
-        if(zoomMode.indexOf('x')>-1) {
-            xa.forEach(function(xai) {
-                var xr = xai.range;
-                xai.range = [
-                    xr[0]+(xr[1]-xr[0])*(box.l)/pw,
-                    xr[0]+(xr[1]-xr[0])*(box.r)/pw
-                ];
-            });
-        }
-        if(zoomMode.indexOf('y')>-1) {
-            ya.forEach(function(yai) {
-                var yr = yai.range;
-                yai.range=[
-                    yr[0]+(yr[1]-yr[0])*(ph-box.b)/ph,
-                    yr[0]+(yr[1]-yr[0])*(ph-box.t)/ph
-                ];
-            });
-        }
+        if(zoomMode === 'xy' || zoomMode === 'x') zoomAxRanges(xa, box.l / pw, box.r / pw);
+        if(zoomMode === 'xy' || zoomMode === 'y') zoomAxRanges(ya, (ph - box.b) / ph, (ph - box.t) / ph);
 
         removeZoombox(gd);
         dragTail(zoomMode);
 
-        if(SHOWZOOMOUTTIP && gd.data && !gd._context.showTips) {
-            Plotly.Lib.notifier(
-                'Double-click to<br>zoom back out','long');
-            SHOWZOOMOUTTIP=false;
+        if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
+            Plotly.Lib.notifier('Double-click to<br>zoom back out','long');
+            SHOWZOOMOUTTIP = false;
         }
     }
 
     function dragDone(dragged, numClicks) {
+        var singleEnd = (ns + ew).length === 1;
         if(dragged) dragTail();
-        else if(numClicks === 2 && (ns+ew).length!==1) dragAutoRange();
-        else if(numClicks===1 &&(ns+ew).length===1) {
+        else if(numClicks === 2 && !singleEnd) dragAutoRange();
+        else if(numClicks === 1 && singleEnd) {
             var ax = ns ? ya[0] : xa[0],
                 end = (ns==='s' || ew==='w') ? 0 : 1,
                 attrStr = ax._name + '.range[' + end + ']',
@@ -1513,13 +1523,15 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 hAlign = 'left',
                 vAlign = 'middle';
 
+            if(ax.fixedrange) return;
+
             if(ns) {
                 vAlign = (ns === 'n') ? 'top' : 'bottom';
                 if(ax.side === 'right') hAlign = 'right';
             }
             else if(ew === 'e') hAlign = 'right';
 
-            d3.select(dragger)
+            dragger3
                 .call(Plotly.util.makeEditable, null, {
                     immediate: true,
                     background: fullLayout.paper_bgcolor,
@@ -1577,27 +1589,26 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             xfrac = (e.clientX - gbb.left) / gbb.width,
             vbx0 = scrollViewBox[0] + scrollViewBox[2]*xfrac,
             yfrac = (gbb.bottom - e.clientY)/gbb.height,
-            vby0 = scrollViewBox[1]+scrollViewBox[3]*(1-yfrac);
+            vby0 = scrollViewBox[1]+scrollViewBox[3]*(1-yfrac),
+            i;
+
+        function zoomWheelOneAxis(ax, centerFraction, zoom) {
+            if(ax.fixedrange) return;
+            forceNumbers(ax.range);
+            var axRange = ax.range,
+                v0 = axRange[0] + (axRange[1] - axRange[0]) * centerFraction;
+            ax.range = [v0 + (axRange[0] - v0) * zoom, v0 + (axRange[1] - v0) * zoom];
+        }
 
         if(ew) {
-            xa.forEach(function(xai) {
-                forceNumber(xai);
-                var x0 = xai.range[0]+(xai.range[1]-xai.range[0])*xfrac;
-                xai.range = [x0+(xai.range[0]-x0)*zoom,
-                    x0+(xai.range[1]-x0)*zoom];
-            });
+            for(i = 0; i < xa.length; i++) zoomWheelOneAxis(xa[i], xfrac, zoom);
             scrollViewBox[2] *= zoom;
-            scrollViewBox[0] = vbx0-scrollViewBox[2]*xfrac;
+            scrollViewBox[0] = vbx0 - scrollViewBox[2] * xfrac;
         }
         if(ns) {
-            ya.forEach(function(yai) {
-                forceNumber(yai);
-                var y0 = yai.range[0]+(yai.range[1]-yai.range[0])*yfrac;
-                yai.range = [y0+(yai.range[0]-y0)*zoom,
-                    y0+(yai.range[1]-y0)*zoom];
-            });
+            for(i = 0; i < ya.length; i++) zoomWheelOneAxis(ya[i], yfrac, zoom);
             scrollViewBox[3] *= zoom;
-            scrollViewBox[1] = vby0-scrollViewBox[3]*(1-yfrac);
+            scrollViewBox[1] = vby0 - scrollViewBox[3] * (1 - yfrac);
         }
 
         // viewbox redraw at first
@@ -1623,17 +1634,18 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     // plotDrag: move the plot in response to a drag
     function plotDrag(dx,dy) {
+        function dragAxList(axList, pix) {
+            for(var i = 0; i < axList.length; i++) {
+                var axi = axList[i];
+                if(!axi.fixedrange) {
+                    axi.range = [axi._r[0] - pix / axi._m, axi._r[1] - pix / axi._m];
+                }
+            }
+        }
+
         if(xActive === 'ew' || yActive === 'ns') {
-            if(xActive) {
-                xa.forEach(function(xai) {
-                    xai.range = [xai._r[0]-dx/xai._m, xai._r[1]-dx/xai._m];
-                });
-            }
-            if(yActive) {
-                ya.forEach(function(yai) {
-                    yai.range = [yai._r[0]-dy/yai._m, yai._r[1]-dy/yai._m];
-                });
-            }
+            if(xActive) dragAxList(xa, dx);
+            if(yActive) dragAxList(ya, dy);
             updateViewBoxes([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
             ticksAndAnnotations(yActive, xActive);
             return;
@@ -1654,13 +1666,18 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // based on pixel drag distance d
         // TODO: this makes (generally non-fatal) errors when you get
         // near floating point limits
-        function dz(ax,end,d) {
-            ax.forEach(function(axi) {
-                axi.range[end] = axi._r[1-end] +
-                    (axi._r[end]-axi._r[1-end])/dZoom(d/axi._length);
-            });
-            return ax[0]._length * (ax[0]._r[end]-ax[0].range[end]) /
-                (ax[0]._r[end]-ax[0]._r[1-end]);
+        function dz(ax, end, d) {
+            var otherEnd = 1 - end,
+                movedi = 0;
+            for(var i = 0; i < ax.length; i++) {
+                var axi = ax[i];
+                if(axi.fixedrange) continue;
+                movedi = i;
+                axi.range[end] = axi._r[otherEnd] +
+                    (axi._r[end] - axi._r[otherEnd]) / dZoom(d / axi._length);
+            }
+            return ax[movedi]._length * (ax[movedi]._r[end] - ax[movedi].range[end]) /
+                (ax[movedi]._r[end] - ax[movedi]._r[otherEnd]);
         }
 
         if(xActive === 'w') dx = dz(xa, 0, dx);
@@ -1680,30 +1697,36 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         ticksAndAnnotations(yActive, xActive);
     }
 
-    function ticksAndAnnotations(ns,ew){
-        var annotations = fullLayout.annotations || [],
-            shapes = fullLayout.shapes || [],
-            i,
-            obji;
+    function ticksAndAnnotations(ns, ew){
+        var activeAxIds = [],
+            i;
 
-        if(ew) Plotly.Axes.doTicks(gd, xa._id, true);
-        if(ns) Plotly.Axes.doTicks(gd, ya._id, true);
-
-        for(i = 0; i < annotations.length; i++) {
-            obji = annotations[i];
-            if( (ew && xids.indexOf(obji.xref)!==-1) ||
-                    (ns && yids.indexOf(obji.yref)!==-1) ) {
-                Plotly.Annotations.draw(gd,i);
+        function pushActiveAxIds(axList) {
+            for(i = 0; i < axList.length; i++) {
+                if(!axList[i].fixedrange) activeAxIds.push(axList[i]._id);
             }
         }
 
-        for(i = 0; i < shapes.length; i++) {
-            obji = shapes[i];
-            if( (ew && xids.indexOf(obji.xref)!==-1) ||
-                    (ns && yids.indexOf(obji.yref)!==-1) ) {
-                Plotly.Shapes.draw(gd,i);
+        if(ew) pushActiveAxIds(xa);
+        if(ns) pushActiveAxIds(ya);
+
+        for(i = 0; i < activeAxIds.length; i++) {
+            Plotly.Axes.doTicks(gd, activeAxIds[i], true);
+        }
+
+        function redrawObjs(objArray, module) {
+            var obji;
+            for(i = 0; i < objArray.length; i++) {
+                obji = objArray[i];
+                if( (ew && activeAxIds.indexOf(obji.xref) !== -1) ||
+                        (ns && activeAxIds.indexOf(obji.yref) !== -1) ) {
+                    module.draw(gd, i);
+                }
             }
         }
+
+        redrawObjs(fullLayout.annotations || [], Plotly.Annotations);
+        redrawObjs(fullLayout.shapes || [], Plotly.Shapes);
     }
 
     // dragAutoRange - set one or both axes to autorange on doubleclick
@@ -1712,10 +1735,10 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             axList = (xActive ? xa : []).concat(yActive ? ya : []);
 
         for(var i = 0; i < axList.length; i++) {
-            attrs[axList[i]._name + '.autorange'] = true;
+            if(!axList[i].fixedrange) attrs[axList[i]._name + '.autorange'] = true;
         }
 
-        Plotly.relayout(gd,attrs);
+        Plotly.relayout(gd, attrs);
     }
 
     // dragTail - finish a drag event with a redraw
@@ -1723,17 +1746,17 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var attrs = {};
         // revert to the previous axis settings, then apply the new ones
         // through relayout - this lets relayout manage undo/redo
-        allaxes.forEach(function(axi) {
+        for(var i = 0; i < allaxes.length; i++) {
+            var axi = allaxes[i];
             if(zoommode && zoommode.indexOf(axi._id.charAt(0))===-1) {
-                return;
+                continue;
             }
-            [0,1].forEach(function(i) {
-                if(axi._r[i]!==axi.range[i]) {
-                    attrs[axi._name+'.range['+i+']']=axi.range[i];
-                }
-            });
+            if(axi._r[0] !== axi.range[0]) attrs[axi._name+'.range[0]'] = axi.range[0];
+            if(axi._r[1] !== axi.range[1]) attrs[axi._name+'.range[1]'] = axi.range[1];
+
             axi.range=axi._r.slice();
-        });
+        }
+
         updateViewBoxes([0,0,pw,ph]);
         Plotly.relayout(gd,attrs);
     }
@@ -1742,12 +1765,21 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // affected by this drag, and update them. look for all plots
     // sharing an affected axis (including the one being dragged)
     function updateViewBoxes(viewBox) {
-        Object.keys(fullLayout._plots).forEach(function(subplot) {
-            var plotinfo2 = fullLayout._plots[subplot],
-                xa2 = plotinfo2.x(),
-                ya2 = plotinfo2.y(),
-                editX = ew && xa.indexOf(xa2)!==-1,
-                editY = ns && ya.indexOf(ya2)!==-1;
+        var plotinfos = fullLayout._plots,
+            subplots = Object.keys(plotinfos),
+            i,
+            plotinfo2,
+            xa2,
+            ya2,
+            editX,
+            editY;
+
+        for(i = 0; i < subplots.length; i++) {
+            plotinfo2 = plotinfos[subplots[i]];
+            xa2 = plotinfo2.x();
+            ya2 = plotinfo2.y();
+            editX = ew && xa.indexOf(xa2)!==-1 && !xa2.fixedrange;
+            editY = ns && ya.indexOf(ya2)!==-1 && !ya2.fixedrange;
 
             if(editX || editY) {
                 var newVB = [0,0,xa2._length,ya2._length];
@@ -1761,7 +1793,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 }
                 plotinfo2.plot.attr('viewBox',newVB.join(' '));
             }
-        });
+        }
     }
 
     return dragger;
