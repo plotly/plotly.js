@@ -64,9 +64,12 @@ function testMock (fileName, t) {
     }
 
     function onEqualityCheck (err, isEqual) {
-        if (err) return console.error(err);
-        if (isEqual) fs.unlinkSync(diffPath);
-        console.error(imageFileName + ' is pixel perfect');
+        if (err) return console.error(err, imageFileName);
+        if (isEqual) {
+            fs.unlinkSync(diffPath);
+            console.error(imageFileName + ' is pixel perfect');
+        }
+
         t.ok(isEqual, savedImagePath + ' should be pixel perfect');
     }
 

@@ -1,7 +1,55 @@
+var Plotly = require('../src/plotly');
+
 describe('Test graph_obj', function () {
     'use strict';
 
-    /* global Plotly */
+    describe('Plotly.restyle', function() {
+        beforeEach(function() {
+            spyOn(Plotly.Plots, 'previousPromises');
+            spyOn(Plotly, 'plot');
+            spyOn(Plotly.Scatter, 'arraysToCalcdata');
+            spyOn(Plotly.Bars, 'arraysToCalcdata');
+            spyOn(Plotly.Plots, 'style');
+            spyOn(Plotly.Legend, 'draw');
+        });
+
+        function mockDefaultsAndCalc(gd) {
+            Plotly.Plots.supplyDefaults(gd);
+            gd.calcdata = gd._fullData.map(function(trace) {
+                return [{x: 1, y: 1, trace: trace}];
+            });
+        }
+
+        it('calls Scatter.arraysToCalcdata and Plots.style on scatter styling', function() {
+            var gd = {
+                data: [{x: [1,2,3], y: [1,2,3]}],
+                layout: {}
+            };
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, {'marker.color': 'red'});
+            expect(Plotly.Scatter.arraysToCalcdata).toHaveBeenCalled();
+            expect(Plotly.Bars.arraysToCalcdata).not.toHaveBeenCalled();
+            expect(Plotly.Plots.style).toHaveBeenCalled();
+            expect(Plotly.plot).not.toHaveBeenCalled();
+            // "docalc" deletes gd.calcdata - make sure this didn't happen
+            expect(gd.calcdata).toBeDefined();
+        });
+
+        it('calls Bars.arraysToCalcdata and Plots.style on bar styling', function() {
+            var gd = {
+                data: [{x: [1,2,3], y: [1,2,3], type: 'bar'}],
+                layout: {}
+            };
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, {'marker.color': 'red'});
+            expect(Plotly.Scatter.arraysToCalcdata).not.toHaveBeenCalled();
+            expect(Plotly.Bars.arraysToCalcdata).toHaveBeenCalled();
+            expect(Plotly.Plots.style).toHaveBeenCalled();
+            expect(Plotly.plot).not.toHaveBeenCalled();
+            expect(gd.calcdata).toBeDefined();
+        });
+
+    });
 
     describe('Plotly.deleteTraces should', function () {
         var gd;
@@ -567,4 +615,65 @@ describe('Test graph_obj', function () {
         });
 
     });
+
+
+    describe('Plotly.Plots.supplyLayoutGlobalDefaults should', function() {
+        var layoutIn,
+            layoutOut,
+            expected;
+
+        var supplyLayoutDefaults = Plotly.Plots.supplyLayoutGlobalDefaults;
+
+        beforeEach(function() {
+            layoutOut = {};
+        });
+
+        it('should sanitize margins when they are wider than the plot', function() {
+            layoutIn = {
+                width: 500,
+                height: 500,
+                margin: {
+                    l: 400,
+                    r: 200
+                }
+            };
+            expected = {
+                l: 332,
+                r: 166,
+                t: 100,
+                b: 80,
+                pad: 0,
+                autoexpand: true
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut);
+            expect(layoutOut.margin).toEqual(expected);
+        });
+
+        it('should sanitize margins when they are taller than the plot', function() {
+            layoutIn = {
+                width: 500,
+                height: 500,
+                margin: {
+                    l: 400,
+                    r: 200,
+                    t: 300,
+                    b: 500
+                }
+            };
+            expected = {
+                l: 332,
+                r: 166,
+                t: 187,
+                b: 311,
+                pad: 0,
+                autoexpand: true
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut);
+            expect(layoutOut.margin).toEqual(expected);
+        });
+
+    });
+
 });
