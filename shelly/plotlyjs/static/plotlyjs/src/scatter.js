@@ -613,6 +613,7 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
             // pts ends at a missing point, and gets restarted at the next
             // point (unless t.connectgaps is truthy, then it just keeps going)
             pts = [],
+            segments = [],
             thispath,
             // fullpath is all paths for this curve, joined together straight
             // across gaps, for filling
@@ -799,7 +800,12 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
             // end of the data is mid-decimation - close it out.
             if(decimationMode>=0) finishDecimation(pti);
 
-            if(pts.length) {
+            if(pts.length) segments.push(pts);
+        }
+
+        if(segments.length) {
+            for(i = 0; i < segments.length; i++) {
+                pts = segments[i];
                 thispath = pathfn(pts);
                 fullpath += fullpath ? ('L'+thispath.substr(1)) : thispath;
                 revpath = revpathfn(pts) + revpath;
@@ -807,8 +813,6 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
                     tr.append('path').classed('js-line',true).attr('d', thispath);
                 }
             }
-        }
-        if(fullpath) {
             if(tozero) {
                 if(pt0 && pt1) {
                     if(trace.fill.charAt(trace.fill.length-1)==='y') {
