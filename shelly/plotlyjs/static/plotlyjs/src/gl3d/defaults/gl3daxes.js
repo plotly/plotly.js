@@ -81,18 +81,19 @@ Gl3dAxes.layoutAttributes = {
 
 Gl3dAxes.supplyLayoutDefaults = function(layoutIn, layoutOut, options) {
 
-    var _this = this;
+    var noop = function () {};
+
     var Axes = Plotly.Axes;
 
     var containerIn, containerOut;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(containerIn, containerOut,
-                                 _this.layoutAttributes, attr, dflt);
+                                 Gl3dAxes.layoutAttributes, attr, dflt);
     }
 
-    for (var j = 0; j < this.axesNames.length; j++) {
-        var axName = this.axesNames[j];
+    for (var j = 0; j < Gl3dAxes.axesNames.length; j++) {
+        var axName = Gl3dAxes.axesNames[j];
         containerIn = layoutIn[axName] || {};
 
         containerOut = {
@@ -114,16 +115,14 @@ Gl3dAxes.supplyLayoutDefaults = function(layoutIn, layoutOut, options) {
         coerce('gridcolor');
         coerce('title', axName[0]);  // shouldn't this be on-par with 2D?
 
-        containerOut.setScale = function () {};
+        containerOut.setScale = noop;
 
         if (coerce('showspikes')) {
             coerce('spikesides');
             coerce('spikethickness');
             coerce('spikecolor');
         }
-        if (coerce('showbackground')) {
-            coerce('backgroundcolor');
-        }
+        if (coerce('showbackground')) coerce('backgroundcolor');
 
         coerce('showaxeslabels');
     }
@@ -144,7 +143,7 @@ Gl3dAxes.initAxes = function (td) {
         var sceneKey = sceneKeys[i];
         var sceneLayout = fullLayout[sceneKey];
         for (var j = 0; j < 3; ++j) {
-            var axisName = this.axesNames[j];
+            var axisName = Gl3dAxes.axesNames[j];
             var ax = sceneLayout[axisName];
             ax._td = td;
         }
