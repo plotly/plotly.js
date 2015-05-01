@@ -643,7 +643,7 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
             return 'L'+revpathbase(pts.reverse()).substr(1);
         };
 
-        var segments = scatter.linePoints(d, xa, ya, trace.connectgaps, line.width);
+        var segments = scatter.linePoints(d, xa, ya, trace.connectgaps, Math.max(line.width || 1, 1));
         if(segments.length) {
             for(var i = 0; i < segments.length; i++) {
                 var pts = segments[i];
@@ -739,7 +739,7 @@ scatter.linePoints = function(d, xa, ya, connectGaps, lineWidth) {
     function getTolerance(x, y) {
         return (0.75 + 10*Math.max(0,
             Math.max(-x, x-xa._length)/xa._length,
-            Math.max(-y, y-ya._length)/ya._length)) * Math.max(lineWidth || 1, 1);
+            Math.max(-y, y-ya._length)/ya._length)) * lineWidth;
     }
 
     // add a single [x,y] to the pts array
