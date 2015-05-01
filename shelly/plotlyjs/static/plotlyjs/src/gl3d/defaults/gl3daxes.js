@@ -43,6 +43,7 @@ Gl3dAxes.layoutAttributes = {
     autorange: axesAttrs.autorange,
     rangemode: axesAttrs.rangemode,
     range: axesAttrs.range,
+    fixedrange: axesAttrs.fixedrange,
     // ticks
     autotick: axesAttrs.autotick,
     nticks: axesAttrs.nticks,
