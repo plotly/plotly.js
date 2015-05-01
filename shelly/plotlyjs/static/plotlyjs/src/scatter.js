@@ -640,11 +640,16 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
         }
 
         revpathfn = function(pts) {
+            // note: this is destructive (reverses pts in place) so can't use pts after this
             return 'L'+revpathbase(pts.reverse()).substr(1);
         };
 
         var segments = scatter.linePoints(d, xa, ya, trace.connectgaps, Math.max(line.width || 1, 1));
         if(segments.length) {
+            var pt0 = segments[0][0],
+                lastSegment = segments[segments.length - 1],
+                pt1 = lastSegment[lastSegment.length - 1];
+
             for(var i = 0; i < segments.length; i++) {
                 var pts = segments[i];
                 thispath = pathfn(pts);
@@ -655,9 +660,6 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
                 }
             }
             if(tozero) {
-                var pt0 = segments[0][0],
-                    lastSegment = segments[segments.length - 1],
-                    pt1 = lastSegment[lastSegment.length - 1];
                 if(pt0 && pt1) {
                     if(trace.fill.charAt(trace.fill.length-1)==='y') {
                         pt0[1]=pt1[1]=ya.c2p(0,true);
