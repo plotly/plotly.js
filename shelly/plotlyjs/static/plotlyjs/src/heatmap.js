@@ -82,7 +82,8 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     function isValidZ(z) {
         var allRowsAreArrays = true,
             oneRowIsFilled = false,
-            zi;
+            zi,
+            noNumbers = true;
 
         if (!(Array.isArray(z) && z.length)) return false;
 
@@ -91,9 +92,16 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
             if (!Array.isArray(zi)) allRowsAreArrays = false;
             if (!oneRowIsFilled && zi.length) oneRowIsFilled = true;
             for(var j = 0; j < zi.length; j++) {
-                if(!$.isNumeric(zi[j])) return false;
+            // Check that there is at least one numeric element...
+                if($.isNumeric(zi[j])) {
+                    noNumbers = false;
+                    break;
+                }
             }
         }
+        // ... otherwise set array as invalid:
+        if(noNumbers) return false;
+
         return (allRowsAreArrays && oneRowIsFilled);
     }
 
