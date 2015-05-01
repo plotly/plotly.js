@@ -105,4 +105,78 @@ describe('Test scatter', function () {
         });
 
     });
+
+    describe('linePoints', function() {
+        // test axes are unit-scaled and 100 units long
+        var ax = {_length: 100, c2p: Plotly.Lib.identity},
+            linePoints = Plotly.Scatter.linePoints;
+
+        function makeCalcData(ptsIn) {
+            return ptsIn.map(function(pt) {
+                return {x: pt[0], y: pt[1]};
+            });
+        }
+
+        it('should pass along well-separated points', function() {
+            var ptsIn = [[0,0], [10,20], [20,10], [30,40], [40,70], [50,30]];
+            var ptsOut = linePoints(makeCalcData(ptsIn), ax, ax, false, 1);
+
+            expect(ptsOut).toEqual([ptsIn]);
+        });
+
+        it('should separate out blanks, unless connectgaps is true', function() {
+            var ptsIn = [
+                [0,0], [10,20], [20,10], [undefined, undefined],
+                [30,40], [undefined, undefined],
+                [40,70], [50,30]];
+            var ptsDisjoint = linePoints(makeCalcData(ptsIn), ax, ax, false, 1);
+            var ptsConnected = linePoints(makeCalcData(ptsIn), ax, ax, true, 1);
+
+            expect(ptsDisjoint).toEqual([[[0,0], [10,20], [20,10]], [[30,40]], [[40,70], [50,30]]]);
+            expect(ptsConnected).toEqual([[[0,0], [10,20], [20,10], [30,40], [40,70], [50,30]]]);
+        });
+
+        it('should collapse a vertical cluster into 4 points', function() {
+            // the four being initial, high, low, and final if the high is before the low
+            var ptsIn = [[-10,0], [0,0], [0,10], [0,20], [0,-10], [0,15], [0,-25], [0,10], [0,5], [10,10]];
+            var ptsOut = linePoints(makeCalcData(ptsIn), ax, ax, false, 1);
+
+            // TODO: [0, 10] should not appear in either of these results - this is OK but not optimal.
+            expect(ptsOut).toEqual([[[-10,0], [0,0], [0,10], [0,20], [0,-25], [0,5], [10,10]]]);
+
+            // or initial, low, high, final if the low is before the high
+            ptsIn = [[-10,0], [0,0], [0,10], [0,-25], [0,-10], [0,15], [0,20], [0,10], [0,5], [10,10]];
+            ptsOut = linePoints(makeCalcData(ptsIn), ax, ax, false, 1);
+
+            expect(ptsOut).toEqual([[[-10,0], [0,0], [0,10], [0,-25], [0,20], [0,5], [10,10]]]);
+        });
+
+        it('should collapse a horizontal cluster into 4 points', function() {
+            // same deal
+            var ptsIn = [[0,-10], [0,0], [10,0], [20,0], [-10,0], [15,0], [-25,0], [10,0], [5,0], [10,10]];
+            var ptsOut = linePoints(makeCalcData(ptsIn), ax, ax, false, 1);
+
+            // TODO: [10, 0] should not appear in either of these results - this is OK but not optimal.
+            // same problem as the test above
+            expect(ptsOut).toEqual([[[0,-10], [0,0], [10,0], [20,0], [-25,0], [5,0], [10,10]]]);
+
+            ptsIn = [[0,-10], [0,0], [10,0], [-25,0], [-10,0], [15,0], [20,0], [10,0], [5,0], [10,10]];
+            ptsOut = linePoints(makeCalcData(ptsIn), ax, ax, false, 1);
+
+            expect(ptsOut).toEqual([[[0,-10], [0,0], [10,0], [-25,0], [20,0], [5,0], [10,10]]]);
+        });
+
+        it('should use lineWidth to determine whether a cluster counts', function() {
+            var ptsIn = [[0,0], [20,0], [21,10], [22,20], [23,-10], [24,15], [25,-25], [26,10], [27,5], [100,10]];
+            var ptsThin = linePoints(makeCalcData(ptsIn), ax, ax, false, 1);
+            var ptsThick = linePoints(makeCalcData(ptsIn), ax, ax, false, 10);
+
+            // thin line, no decimation. thick line yes.
+            expect(ptsThin).toEqual([ptsIn]);
+            // TODO: [21,10] should not appear in this result (same issue again)
+            expect(ptsThick).toEqual([[[0,0], [20,0], [21,10], [22,20], [25,-25], [27,5], [100,10]]]);
+        });
+
+        // TODO: test coarser decimation outside plot, and removing very near duplicates from the four of a cluster
+    });
 });
