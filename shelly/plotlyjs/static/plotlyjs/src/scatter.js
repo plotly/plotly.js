@@ -644,9 +644,13 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
             return 'L'+revpathbase(pts.reverse()).substr(1);
         };
 
-        var tolerance = Math.max(line.width || 1, 3) / 4,
-            linear = line.shape === 'linear',
-            segments = scatter.linePoints(d, xa, ya, trace.connectgaps, tolerance, linear);
+        var segments = scatter.linePoints(d, {
+                xaxis: xa,
+                yaxis: ya,
+                connectGaps: trace.connectgaps,
+                baseTolerance: Math.max(line.width || 1, 3) / 4,
+                linear: line.shape === 'linear'
+            });
         if(segments.length) {
             var pt0 = segments[0][0],
                 lastSegment = segments[segments.length - 1],
@@ -718,8 +722,13 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
         });
 };
 
-scatter.linePoints = function(d, xa, ya, connectGaps, baseTolerance, linear) {
-    var segments = [],
+scatter.linePoints = function(d, opts) {
+    var xa = opts.xaxis,
+        ya = opts.yaxis,
+        connectGaps = opts.connectGaps,
+        baseTolerance = opts.baseTolerance,
+        linear = opts.linear,
+        segments = [],
         badnum = Plotly.Axes.BADNUM,
         minTolerance = 0.2, // fraction of tolerance "so close we don't even consider it a new point"
         pts = new Array(d.length),
