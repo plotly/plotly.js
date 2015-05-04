@@ -644,7 +644,9 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
             return 'L'+revpathbase(pts.reverse()).substr(1);
         };
 
-        var segments = scatter.linePoints(d, xa, ya, trace.connectgaps, Math.max(line.width || 1, 1));
+        var tolerance = Math.max(line.width || 1, 3) / 4,
+            linear = line.shape === 'linear',
+            segments = scatter.linePoints(d, xa, ya, trace.connectgaps, tolerance, linear);
         if(segments.length) {
             var pt0 = segments[0][0],
                 lastSegment = segments[segments.length - 1],
@@ -716,162 +718,150 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
         });
 };
 
-scatter.linePoints = function(d, xa, ya, connectGaps, lineWidth) {
+scatter.linePoints = function(d, xa, ya, connectGaps, baseTolerance, linear) {
     var segments = [],
-        pts = [],
-        atLeastTwo,
-        pt0 = null,
-        pt1 = null,
-        // for decimation: store pixel positions of things
-        // we're working with as [x,y]
-        lastEntered,
-        tryHigh,
-        tryLow,
-        prevPt,
-        pti,
-        // lastEnd: high or low, which is most recent?
-        // decimationMode: -1 (not decimating), 0 (x), 1 (y)
-        // decimationTolerance: max pixels between points
-        // to allow decimation
-        lastEnd,
-        decimationMode,
-        decimationTolerance;
+        badnum = Plotly.Axes.BADNUM,
+        minTolerance = 0.2, // fraction of tolerance "so close we don't even consider it a new point"
+        pts = new Array(d.length),
+        pti = 0,
+        i,
 
-    // determine how close two points need to be to be grouped
-    function getTolerance(x, y) {
-        return (0.75 + 10*Math.max(0,
-            Math.max(-x, x-xa._length)/xa._length,
-            Math.max(-y, y-ya._length)/ya._length)) * lineWidth;
+        // pt variables are pixel coordinates [x,y] of one point
+        clusterStartPt, // these four are the outputs of clustering on a line
+        clusterEndPt,
+        clusterHighPt,
+        clusterLowPt,
+        thisPt, // "this" is the next point we're considering adding to the cluster
+
+        clusterRefDist,
+        clusterHighFirst, // did we encounter the high point first, then a low point, or vice versa?
+        clusterUnitVector, // the first two points in the cluster determine its unit vector
+                           // so the second is always in the "High" direction
+        thisVector, // the pixel delta from clusterStartPt
+
+        // val variables are (signed) pixel distances along the cluster vector
+        clusterHighVal,
+        clusterLowVal,
+        thisVal,
+
+        // deviation variables are (signed) pixel distances normal to the cluster vector
+        clusterMinDeviation,
+        clusterMaxDeviation,
+        thisDeviation;
+
+    // turn one calcdata point into pixel coordinates
+    function getPt(index) {
+        var x = xa.c2p(d[index].x),
+            y = ya.c2p(d[index].y);
+        if(x === badnum || y === badnum) return false;
+        return [x, y];
     }
 
-    // add a single [x,y] to the pts array
-    function addPt(pt) {
-        atLeastTwo = true;
-        add0(pt);
-        pt1 = pt;
+    // if we're off-screen, increase tolerance over baseTolerance
+    function getTolerance(pt) {
+        var xFrac = pt[0] / xa._length,
+            yFrac = pt[1] / ya._length;
+        return (1 + 10 * Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1)) * baseTolerance;
     }
 
-    // simpler version where we don't need the extra assignments
-    function add0(pt) {
-        if(!$.isNumeric(pt[0]) || !$.isNumeric(pt[1])) return;
-        pts.push(pt);
+    function ptDist(pt1, pt2) {
+        var dx = pt1[0] - pt2[0],
+            dy = pt1[1] - pt2[1];
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
-    // finish one decimation step - now decide what to do with
-    // tryHigh, tryLow, and prevPt
-    // (prevPt is the last one before the decimation ended)
-    function finishDecimation(pt) {
-        if(pt) prevPt = pt;
+    // loop over ALL points in this trace
+    for(i = 0; i < d.length; i++) {
+        clusterStartPt = getPt(i);
+        if(!clusterStartPt) continue;
 
-        // ended this decimation on the high point, so add the low first
-        // (unless there was only one point)
-        if(prevPt===tryHigh) {
-            if(tryHigh!==tryLow) add0(tryLow);
-        }
-        // ended on the low point (or high and low are same),
-        // so add high first
-        else if(prevPt===tryLow || tryLow===tryHigh) add0(tryHigh);
-        // low, then high, then prev
-        else if(lastEnd==='high') {
-            add0(tryLow);
-            add0(tryHigh);
-        }
-        // high, low, prev
-        else {
-            add0(tryHigh);
-            add0(tryLow);
-        }
+        pti = 0;
+        pts[pti++] = clusterStartPt;
 
-        // lastly, add the endpoint of this decimation
-        addPt(prevPt);
-
-        // reset status vars
-        lastEntered = prevPt;
-        tryHigh = tryLow = null;
-        decimationMode = -1;
-    }
-
-    var i = -1;
-    while(i<d.length) {
-        pts=[];
-        atLeastTwo = false;
-        lastEntered = null;
-        decimationMode = -1;
-        for(i++; i<d.length; i++) {
-            pti = [xa.c2p(d[i].x), ya.c2p(d[i].y)];
-            // TODO: smart lines going off the edge?
-            if(!$.isNumeric(pti[0])||!$.isNumeric(pti[1])) {
+        // loop over one segment of the trace
+        for(i++; i < d.length; i++) {
+            clusterHighPt = getPt(i);
+            if(!clusterHighPt) {
                 if(connectGaps) continue;
                 else break;
             }
 
-            // DECIMATION
-            // first point: always add it, and prep the other variables
-            if(!lastEntered) {
-                lastEntered = pti;
-                pts.push(lastEntered);
-                if(!pt0) pt0 = lastEntered;
+            // can't decimate if nonlinear line shape
+            // TODO: we *could* decimate [hv]{2,3} shapes if we restricted clusters to horz or vert again
+            // but spline would be verrry awkward to decimate
+            if(!linear) {
+                pts[pti++] = clusterHighPt;
                 continue;
             }
 
-            // figure out the decimation tolerance - on-plot has one value,
-            // then it increases as you get farther off-plot.
-            // the value is in pixels, and is based on the line width, which
-            // means we need to replot if we change the line width
-            decimationTolerance = getTolerance(pti[0], pti[1]);
+            clusterRefDist = ptDist(clusterHighPt, clusterStartPt);
 
-            // if the last move was too much for decimation, see if we're
-            // starting a new decimation block
-            if(decimationMode<0) {
-                // first look for very near x values (decimationMode=0),
-                // then near y values (decimationMode=1)
-                if(Math.abs(pti[0]-lastEntered[0]) < decimationTolerance) {
-                    decimationMode = 0;
+            if(clusterRefDist < getTolerance(clusterHighPt) * minTolerance) continue;
+
+            clusterUnitVector = [
+                (clusterHighPt[0] - clusterStartPt[0]) / clusterRefDist,
+                (clusterHighPt[1] - clusterStartPt[1]) / clusterRefDist
+            ];
+
+            clusterLowPt = clusterStartPt;
+            clusterHighVal = clusterRefDist;
+            clusterLowVal = clusterMinDeviation = clusterMaxDeviation = 0;
+            clusterHighFirst = false;
+            clusterEndPt = clusterHighPt;
+
+            // loop over one cluster of points that collapse onto one line
+            for(i++; i < d.length; i++) {
+                thisPt = getPt(i);
+                if(!thisPt) {
+                    if(connectGaps) continue;
+                    else break;
                 }
-                else if(Math.abs(pti[1]-lastEntered[1]) < decimationTolerance) {
-                    decimationMode = 1;
+                thisVector = [
+                    thisPt[0] - clusterStartPt[0],
+                    thisPt[1] - clusterStartPt[1]
+                ];
+                // cross product (or dot with normal to the cluster vector)
+                thisDeviation = thisVector[0] * clusterUnitVector[1] - thisVector[1] * clusterUnitVector[0];
+                clusterMinDeviation = Math.min(clusterMinDeviation, thisDeviation);
+                clusterMaxDeviation = Math.max(clusterMaxDeviation, thisDeviation);
+
+                if(clusterMaxDeviation - clusterMinDeviation > getTolerance(thisPt)) break;
+
+                clusterEndPt = thisPt;
+                thisVal = thisVector[0] * clusterUnitVector[0] + thisVector[1] * clusterUnitVector[1];
+
+                if(thisVal > clusterHighVal) {
+                    clusterHighVal = thisVal;
+                    clusterHighPt = thisPt;
+                    clusterHighFirst = false;
+                } else if(thisVal < clusterLowVal) {
+                    clusterLowVal = thisVal;
+                    clusterLowPt = thisPt;
+                    clusterHighFirst = true;
                 }
-                // no decimation here - add this point and move on
-                else {
-                    lastEntered = pti;
-                    addPt(lastEntered);
-                    continue;
-                }
-            }
-            else if(Math.abs(pti[decimationMode] - lastEntered[decimationMode]) >=
-                    decimationTolerance) {
-                // we were decimating, now we're done
-                if(Math.abs(pti[decimationMode] - prevPt[decimationMode]) >=
-                    decimationTolerance) {
-                    // a big jump after finishing decimation: end on prevPt
-                    finishDecimation();
-                    // then add the new point
-                    lastEntered = pti;
-                    addPt(lastEntered);
-                }
-                else {
-                    // small change... probably going to start a new
-                    // decimation block.
-                    finishDecimation(pti);
-                }
-                continue;
             }
 
-            // OK, we're collecting points for decimation, for realz now.
-            prevPt = pti;
-            if(!tryHigh || prevPt[1-decimationMode]>tryHigh[1-decimationMode]) {
-                tryHigh = prevPt;
-                lastEnd = 'high';
+            // insert this cluster into pts
+            // we've already inserted the start pt, now check if we have high and low pts
+            if(clusterHighFirst) {
+                pts[pti++] = clusterHighPt;
+                if(clusterEndPt !== clusterLowPt) pts[pti++] = clusterLowPt;
+            } else {
+                if(clusterLowPt !== clusterStartPt) pts[pti++] = clusterLowPt;
+                if(clusterEndPt !== clusterHighPt) pts[pti++] = clusterHighPt;
             }
-            if(!tryLow || prevPt[1-decimationMode]<tryLow[1-decimationMode]) {
-                tryLow = prevPt;
-                lastEnd = 'low';
-            }
+            // and finally insert the end pt
+            pts[pti++] = clusterEndPt;
+
+            // have we reached the end of this segment?
+            if(i >= d.length || !thisPt) break;
+
+            // otherwise we have an out-of-cluster point to insert as next clusterStartPt
+            pts[pti++] = thisPt;
+            clusterStartPt = thisPt;
         }
-        // end of the data is mid-decimation - close it out.
-        if(decimationMode>=0) finishDecimation(pti);
 
-        if(pts.length) segments.push(pts);
+        segments.push(pts.slice(0, pti));
     }
 
     return segments;
