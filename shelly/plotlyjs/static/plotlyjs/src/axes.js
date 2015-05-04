@@ -31,6 +31,10 @@ axes.layoutAttributes = {
         {type: 'number'},
         {type: 'number'}
     ],
+    fixedrange: {
+        type: 'boolean',
+        dflt: false
+    },
     // ticks
     autotick: {
         type: 'boolean',
@@ -318,6 +322,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
         containerOut.range = [range0 - 1, range0 + 1];
     }
     Plotly.Lib.noneOrAll(containerIn.range, containerOut.range, [0, 1]);
+    coerce('fixedrange');
 
     var autoTick = coerce('autotick');
     if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
@@ -742,6 +747,14 @@ axes.setConvert = function(ax) {
             ax._length = gs.w*(ax.domain[1]-ax.domain[0]);
             ax._m = ax._length/(ax.range[1]-ax.range[0]);
             ax._b = -ax._m*ax.range[0];
+        }
+
+        if (!isFinite(ax._m) || !isFinite(ax._b)) {
+            Plotly.Lib.notifier(
+                'Something went wrong with axis scaling',
+                'long');
+            gd._replotting = false;
+            throw new Error('axis scaling');
         }
     };
 

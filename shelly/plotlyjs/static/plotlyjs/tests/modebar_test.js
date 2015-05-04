@@ -1,6 +1,7 @@
+var Plotly = require('../src/plotly');
+
 describe('Test Modebar', function() {
     'use strict';
-    /* global Plotly:false */
 
     var getMockGraphInfo = function() {
         var graphInfo = {

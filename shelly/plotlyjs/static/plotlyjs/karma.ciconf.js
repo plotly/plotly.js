@@ -11,24 +11,9 @@ function func(config){
     // if true, Karma captures browsers, runs the tests and exits
     func.defaultConfig.singleRun = true;
 
+    func.defaultConfig.browserNoActivityTimeout = 30000; // 30 seconds
+
     func.defaultConfig.autoWatch = false;
-
-    // preprocess matching files before serving them to the browser
-    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    func.defaultConfig.preprocessors = {
-        '../themes.js': ['coverage'],
-        '../graph_edit.js': ['coverage']
-    };
-
-    // test results reporter to use
-    // possible values: 'dots', 'progress'
-    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    func.defaultConfig.reporters = ['progress', 'coverage'];
-
-    func.defaultConfig.coverageReporter = {
-        type : 'html',
-        dir : 'htmlcov/'
-    };
 
     config.set(func.defaultConfig);
 }

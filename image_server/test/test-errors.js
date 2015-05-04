@@ -130,33 +130,3 @@ test('test bad body (tailing slash), should get error 422', function (t) {
 
 
 });
-
-
-test('test including wrong data in plotly.js figure. should 525: plotly.js error', function (t) {
-    t.plan(2);
-
-    var bodyMock = {
-        'figure' : {
-            'data': [
-            {
-            'x': [[1,2], [10,20]],
-            'y': [[1,2], [10,20]],
-            'z': [[1,2], [10,20]],
-            'type': 'heatmap'
-            }
-        ],
-        'format' : 'svg'
-        }
-    };
-
-    var options = getOptions(bodyMock);
-
-    request(options, function (err, res) {
-        if (err) return console.error(err);
-        t.equal(res.statusCode, 525, 'plotlyjs handled bad json as expected');
-        t.equal(res.body, 'plotlyjs error', 'error message matches');
-        t.end();
-    });
-
-
-});

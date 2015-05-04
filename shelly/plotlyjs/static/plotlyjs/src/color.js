@@ -1,9 +1,7 @@
 'use strict';
 
-// ---external global dependencies
-/* global tinycolor:false */
-
-var color = module.exports = {};
+var color = module.exports = {},
+    tinycolor = require('tinycolor2');
 
 // IMPORTANT - default colors should be in hex for grid.js
 color.defaults = [
@@ -117,75 +115,12 @@ color.getScale = function(scl, dflt) {
         if(si.length!==2) return true;
         if(si[0]<highestVal) return true;
         highestVal = si[0];
-        return !tinycolor(si[1]).ok;
+        return !tinycolor(si[1]).isValid();
     });
 
     if(badScale) return dflt;
     return scl;
 };
-
-
-// add all of these colorscales to css dynamically,
-// so we don't have to keep them in sync manually
-// dynamic stylesheet, see http://davidwalsh.name/add-rules-stylesheets
-// css syntax from http://www.colorzilla.com/gradient-editor/
-(function() {
-    //only on main site - though later we may expand to embeds
-    if(!document.getElementById('plotlyMainMarker')) return;
-
-    var style = document.createElement('style');
-    // WebKit hack :(
-    style.appendChild(document.createTextNode(''));
-    document.head.appendChild(style);
-    var styleSheet = style.sheet;
-
-    function addStyleRule(selector,styleString) {
-        if(styleSheet.insertRule) {
-            styleSheet.insertRule(selector+'{'+styleString+'}',0);
-        }
-        else if(styleSheet.addRule) {
-            styleSheet.addRule(selector,styleString,0);
-        }
-        else console.log('addStyleRule failed');
-    }
-
-    function pct(v){ return String(Math.round((1-v[0])*100))+'%';}
-
-    for(var scaleName in color.scales) {
-        var scale = color.scales[scaleName],
-            list1 = '', // color1 0%, color2 12%, ...
-            list2 = ''; // color-stop(0%,color1), color-stop(12%,color2) ...
-
-        for(var i=scale.length-1; i>=0; i--) {
-            list1 += ', '+scale[i][1]+' '+pct(scale[i]);
-            list2 += ', color-stop('+pct(scale[i])+','+scale[i][1]+')';
-        }
-
-        var rule =
-            // old browsers with no supported gradients -
-            // shouldn't matter to us as they won't have svg anyway?
-            'background: '+scale[scale.length-1][1]+';' +
-            // FF 3.6+
-            'background: -moz-linear-gradient(top'+list1+');' +
-            // Chrome,Safari4+
-            'background: -webkit-gradient(linear, left top, left bottom' +
-                list2 + ');' +
-            // Chrome10+,Safari5.1+
-            'background: -webkit-linear-gradient(top'+list1+');' +
-            // Opera 11.10+
-            'background: -o-linear-gradient(top'+list1+');' +
-            // IE10+
-            'background: -ms-linear-gradient(top'+list1+');' +
-            // W3C
-            'background: linear-gradient(to bottom'+list1+');' +
-            // IE6-9 (only gets start and end colors)
-            'filter: progid:DXImageTransform.Microsoft.gradient(' +
-                'startColorstr="' + scale[scale.length-1][1] +
-                '",endColorstr="'+scale[0][1]+'",GradientType=0);';
-
-        addStyleRule('.' + scaleName, rule);
-    }
-}());
 
 function tinyRGB(tc) {
     var c = tc.toRgb();
@@ -195,7 +130,7 @@ function tinyRGB(tc) {
 
 color.rgb = function(cstr) { return tinyRGB(tinycolor(cstr)); };
 
-color.opacity = function(cstr) { return cstr ? tinycolor(cstr).alpha : 0; };
+color.opacity = function(cstr) { return cstr ? tinycolor(cstr).getAlpha() : 0; };
 
 color.addOpacity = function(cstr, op) {
     var c = tinycolor(cstr).toRgb();
@@ -226,10 +161,84 @@ color.combine = function(front, back){
 
 color.stroke = function(s, c) {
     var tc = tinycolor(c);
-    s.style({'stroke': tinyRGB(tc), 'stroke-opacity': tc.alpha});
+    s.style({'stroke': tinyRGB(tc), 'stroke-opacity': tc.getAlpha()});
 };
 
 color.fill = function(s, c) {
     var tc = tinycolor(c);
-    s.style({'fill': tinyRGB(tc), 'fill-opacity': tc.alpha});
+    s.style({'fill': tinyRGB(tc), 'fill-opacity': tc.getAlpha()});
 };
+
+// search container for colors with the deprecated rgb(fractions) format
+// and convert them to rgb(0-255 values)
+color.clean = function(container) {
+    if(!container || typeof container !== 'object') return;
+
+    var keys = Object.keys(container),
+        i,
+        j,
+        key,
+        val;
+
+    for(i = 0; i < keys.length; i++) {
+        key = keys[i];
+        val = container[key];
+
+        // only sanitize keys that end in "color" or "colorscale"
+        if(key.substr(key.length - 5) === 'color') {
+            if(Array.isArray(val)) {
+                for(j = 0; j < val.length; j++) val[j] = cleanOne(val[j]);
+            }
+            else container[key] = cleanOne(val);
+        }
+        else if(key.substr(key.length - 10) === 'colorscale' && Array.isArray(val)) {
+            // colorscales have the format [[0, color1], [frac, color2], ... [1, colorN]]
+            for(j = 0; j < val.length; j++) {
+                if(Array.isArray(val[j])) val[j][1] = cleanOne(val[j][1]);
+            }
+        }
+        // recurse into arrays of objects, and plain objects
+        else if(Array.isArray(val)) {
+            var el0 = val[0];
+            if(!Array.isArray(el0) && el0 && typeof el0 === 'object') {
+                for(j = 0; j < val.length; j++) color.clean(val[j]);
+            }
+        }
+        else if(val && typeof val === 'object') color.clean(val);
+    }
+};
+
+function cleanOne(val) {
+    if($.isNumeric(val) || typeof val !== 'string') return val;
+
+    var valTrim = val.trim();
+    if(valTrim.substr(0,3) !== 'rgb') return val;
+
+    var match = valTrim.match(/^rgba?\s*\(([^()]*)\)$/);
+    if(!match) return val;
+
+    var parts = match[1].trim().split(/\s*[\s,]\s*/),
+        rgba = valTrim.charAt(3) === 'a' && parts.length === 4;
+    if(!rgba && parts.length !== 3) return val;
+
+    for(var i = 0; i < parts.length; i++) {
+        if(!parts[i].length) return val;
+        parts[i] = Number(parts[i]);
+
+        // all parts must be non-negative numbers
+        if(!(parts[i] >= 0)) return val;
+        // alpha>1 gets clipped to 1
+        if(i === 3) {
+            if(parts[i] > 1) parts[i] = 1;
+        }
+        // r, g, b must be < 1 (ie 1 itself is not allowed)
+        else if(parts[i] >= 1) return val;
+    }
+
+    var rgbStr = Math.round(parts[0] * 255) + ', ' +
+        Math.round(parts[1] * 255) + ', ' +
+        Math.round(parts[2] * 255);
+
+    if(rgba) return 'rgba(' + rgbStr + ', ' + parts[3] + ')';
+    return 'rgb(' + rgbStr + ')';
+}
