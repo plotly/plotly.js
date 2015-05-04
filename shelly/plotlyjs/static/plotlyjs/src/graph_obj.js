@@ -2265,7 +2265,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // objects need to be made) but not a recalc
     var replotAttrs = [
         'zmin','zmax','zauto','mincolor','maxcolor',
-        'colorscale','reversescale','zsmooth',
+        'colorscale','reversescale','zsmooth', 'autocolorscale',
         'contours.start','contours.end','contours.size',
         'contours.showlines',
         'line.smoothing','line.shape',
