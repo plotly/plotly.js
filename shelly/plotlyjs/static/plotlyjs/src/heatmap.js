@@ -82,8 +82,9 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     function isValidZ(z) {
         var allRowsAreArrays = true,
             oneRowIsFilled = false,
-            zi,
             noNumbers = true;
+
+        var zi;
 
         if (!(Array.isArray(z) && z.length)) return false;
 
