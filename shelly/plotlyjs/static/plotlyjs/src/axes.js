@@ -31,6 +31,10 @@ axes.layoutAttributes = {
         {type: 'number'},
         {type: 'number'}
     ],
+    fixedrange: {
+        type: 'boolean',
+        dflt: false
+    },
     // ticks
     autotick: {
         type: 'boolean',
@@ -318,6 +322,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
         containerOut.range = [range0 - 1, range0 + 1];
     }
     Plotly.Lib.noneOrAll(containerIn.range, containerOut.range, [0, 1]);
+    coerce('fixedrange');
 
     var autoTick = coerce('autotick');
     if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
