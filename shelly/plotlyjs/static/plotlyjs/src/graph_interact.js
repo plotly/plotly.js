@@ -407,7 +407,7 @@ function hover(gd, evt, subplot){
             trace: trace,
             xa: xaArray[subploti],
             ya: yaArray[subploti],
-            name: gd.data.length>1 ? trace.name : undefined,
+            name: (gd.data.length>1 || trace.hoverinfo.indexOf('name')!==-1) ? trace.name : undefined,
             // point properties - override all of these
             index: false, // point index in trace - only used by plotly.js hoverdata consumers
             distance: Math.min(distance, fx.MAXDIST), // pixel distance or pseudo-distance
