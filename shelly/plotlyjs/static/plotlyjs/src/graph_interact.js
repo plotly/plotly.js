@@ -717,6 +717,18 @@ function createHoverText(hoverData, opts) {
     var showCommonLabel = c0.distance<=fx.MAXDIST &&
                           (hovermode==='x' || hovermode==='y');
 
+    // all hover traces hoverinfo must contain the hovermode
+    // to have common labels
+    var i, traceHoverinfo;
+    for (i = 0; i < hoverData.length; i++) {
+        traceHoverinfo = hoverData[i].trace.hoverinfo;
+        if (traceHoverinfo.indexOf('all')===-1 &&
+                traceHoverinfo.indexOf(hovermode)===-1) {
+            showCommonLabel = false;
+            break;
+        }
+    }
+
     var commonLabel = container.selectAll('g.axistext')
         .data(showCommonLabel ? [0] : []);
     commonLabel.enter().append('g')
