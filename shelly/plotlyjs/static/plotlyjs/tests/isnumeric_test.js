@@ -109,11 +109,20 @@ describe('isNumeric', function() {
         '+0e+5',
         '+000',
         '+0.0e-5',
-        '+0.0E5'
+        '+0.0E5',
+        ' 1',
+        '1 ',
+        '\t \r\n0.0 \n\r\t'
     ];
 
     var shouldFail = [
         '',
+        '\t',
+        '\r',
+        '\n',
+        '    \r  \t    \n\r\n',
+        '   some text with spaces   ',
+        '0.0   whats this?',
         '3a',
         'a3',
         '3_4',
