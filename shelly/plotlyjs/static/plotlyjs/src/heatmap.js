@@ -165,6 +165,41 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
 function flipScale(si){ return [1 - si[0], si[1]]; }
 
+
+heatmap.calcColorscale = function(trace, z) {
+
+    // This function has side effects on trace.
+
+    // auto-z for heatmap
+    if(trace.zauto!==false || !('zmin' in trace)) {
+        trace.zmin = Plotly.Lib.aggNums(Math.min, null, z);
+    }
+
+    if(trace.zauto!==false || !('zmax' in trace)) {
+        trace.zmax = Plotly.Lib.aggNums(Math.max, null, z);
+    }
+
+    if(trace.zmin===trace.zmax) {
+        trace.zmin -= 0.5;
+        trace.zmax += 0.5;
+    }
+
+    if(trace.autocolorscale) {
+        if(trace.zmin * trace.zmax < 0) {
+            // Data values are > 0 and < 0.
+            trace.colorscale = Plotly.Color.scales.RdBu;
+        } else if(trace.zmin >= 0) {
+            // Non-negative signed data
+            trace.colorscale = Plotly.Color.scales.RdBuPos;
+        } else {
+            // Non-positive signed data
+            trace.colorscale = Plotly.Color.scales.RdBuNeg;
+        }
+    }
+
+};
+
+
 heatmap.calc = function(gd, trace) {
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
@@ -272,35 +307,11 @@ heatmap.calc = function(gd, trace) {
 
     var cd0 = {x: xArray, y: yArray, z: z};
 
-    // auto-z for heatmap
-    if(trace.zauto!==false || !('zmin' in trace)) {
-        trace.zmin = Plotly.Lib.aggNums(Math.min, null, z);
-    }
-
-    if(trace.zauto!==false || !('zmax' in trace)) {
-        trace.zmax = Plotly.Lib.aggNums(Math.max, null, z);
-    }
-
-    if(trace.zmin===trace.zmax) {
-        trace.zmin -= 0.5;
-        trace.zmax += 0.5;
-    }
+    // auto-z and autocolorscale if applicable
+    heatmap.calcColorscale(trace, z);
 
     trace._input.zmin = trace.zmin;
     trace._input.zmax = trace.zmax;
-
-    if(trace.autocolorscale) {
-        if(trace.zmin * trace.zmax < 0) {
-            // Data values are > 0 and < 0.
-            trace.colorscale = Plotly.Color.scales.RdBu;
-        } else if(trace.zmin >= 0) {
-            // Non-negative signed data
-            trace.colorscale = Plotly.Color.scales.RdBuPos;
-        } else {
-            // Non-positive signed data
-            trace.colorscale = Plotly.Color.scales.RdBuNeg;
-        }
-    }
 
     trace._input.colorscale = trace.colorscale;
 
