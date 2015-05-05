@@ -660,6 +660,14 @@ axes.cleanDatum = function(c){
     return c;
 };
 
+/**
+ * standardize all missing data in calcdata to use undefined
+ * never null or NaN.
+ * that way we can use !==undefined, or !==axes.BADNUM,
+ * to test for real data
+ */
+axes.BADNUM = undefined;
+
 // setConvert: define the conversion functions for an axis
 // data is used in 4 ways:
 //  d: data, in whatever form it's provided
@@ -674,7 +682,6 @@ axes.cleanDatum = function(c){
 // and the autotick constraints ._minDtick, ._forceTick0,
 // and looks for date ranges that aren't yet in numeric format
 axes.setConvert = function(ax) {
-    var BADNUM = undefined;
     // clipMult: how many axis lengths past the edge do we render?
     // for panning, 1-2 would suffice, but for zooming more is nice.
     // also, clipping can affect the direction of lines off the edge...
@@ -691,10 +698,10 @@ axes.setConvert = function(ax) {
             return 0.5*(r0 + r1 - 3 * clipMult * Math.abs(r0 - r1));
         }
 
-        else return BADNUM;
+        else return axes.BADNUM;
     }
     function fromLog(v){ return Math.pow(10,v); }
-    function num(v){ return $.isNumeric(v) ? Number(v) : BADNUM; }
+    function num(v){ return $.isNumeric(v) ? Number(v) : axes.BADNUM; }
 
     ax.c2l = (ax.type==='log') ? toLog : num;
     ax.l2c = (ax.type==='log') ? fromLog : num;
@@ -759,7 +766,7 @@ axes.setConvert = function(ax) {
     };
 
     ax.l2p = function(v) {
-        if(!$.isNumeric(v)) return BADNUM;
+        if(!$.isNumeric(v)) return axes.BADNUM;
         // include 2 fractional digits on pixel, for PDF zooming etc
         return d3.round(Plotly.Lib.constrain(ax._b + ax._m*v,
             -clipMult*ax._length, (1+clipMult)*ax._length), 2);
@@ -774,7 +781,7 @@ axes.setConvert = function(ax) {
         ax.c2d = num;
         ax.d2c = function(v){
             v = axes.cleanDatum(v);
-            return $.isNumeric(v) ? Number(v) : BADNUM;
+            return $.isNumeric(v) ? Number(v) : axes.BADNUM;
         };
         ax.d2l = function (v, clip) {
             if (ax.type === 'log') return ax.c2l(ax.d2c(v), clip);
@@ -783,7 +790,7 @@ axes.setConvert = function(ax) {
     }
     else if(ax.type==='date') {
         ax.c2d = function(v) {
-            return $.isNumeric(v) ? Plotly.Lib.ms2DateTime(v) : BADNUM;
+            return $.isNumeric(v) ? Plotly.Lib.ms2DateTime(v) : axes.BADNUM;
         };
 
         ax.d2c = function(v){
@@ -824,7 +831,7 @@ axes.setConvert = function(ax) {
             if(ax._categories.indexOf(v)===-1) ax._categories.push(v);
 
             var c = ax._categories.indexOf(v);
-            return c===-1 ? BADNUM : c;
+            return c===-1 ? axes.BADNUM : c;
         };
 
         ax.d2l = ax.d2c;

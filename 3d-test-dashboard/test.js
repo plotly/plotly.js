@@ -112,6 +112,43 @@ function plotButtons(plots) {
 
     });
 
+    var pummelButton = document.createElement('button');
+    pummelButton.style.cssFloat = 'left';
+    pummelButton.style.width = '100px';
+    pummelButton.style.height = '40px';
+    pummelButton.style.marginLeft = '25px';
+    pummelButton.innerHTML = 'pummel3d';
+    pummelButton.style.background = 'blue';
+    plotlist.appendChild(pummelButton);
+
+    var i = 0;
+    var mock = require('./testplots/marker-color.json');
+    var statusDiv = document.getElementById('status-info');
+
+    pummelButton.addEventListener('click', function () {
+        setInterval(function () {
+            var plotDiv = document.createElement('div');
+            window.plotDiv = plotDiv;
+
+            plotDiv.id = 'div' + i;
+            document.body.appendChild(plotDiv);
+
+            Plotly.plot(plotDiv, mock.data, mock.layout).then(function () {
+
+                Plotly.Lib.getSceneKeys(plotDiv._fullLayout).forEach( function (key) {
+                    var scene = plotDiv._fullLayout[key]._scene;
+                    scene.destroy();
+                    i ++;
+                    statusDiv.innerHTML = 'Created ' + i + ' webgl contexts.';
+                });
+
+                document.body.removeChild(plotDiv);
+            });
+
+        }, 500);
+    });
+
+
 }
 
 var plots = {};
