@@ -6,7 +6,8 @@
 
 var fx = module.exports = {},
     Plotly = require('./plotly'),
-    tinycolor = require('tinycolor2');
+    tinycolor = require('tinycolor2'),
+    isNumeric = require('./isnumeric');
 
 fx.layoutAttributes = {
     dragmode: {
@@ -88,8 +89,8 @@ fx.init = function(gd) {
             // the x position of the main y axis line
             x0 = (ya._linepositions[subplot]||[])[3];
 
-        if($.isNumeric(y0) && xa.side==='top') y0 -= DRAGGERSIZE;
-        if($.isNumeric(x0) && ya.side!=='right') x0 -= DRAGGERSIZE;
+        if(isNumeric(y0) && xa.side==='top') y0 -= DRAGGERSIZE;
+        if(isNumeric(x0) && ya.side!=='right') x0 -= DRAGGERSIZE;
 
         // main and corner draggers need not be repeated for
         // overlaid subplots - these draggers drag them all
@@ -121,7 +122,7 @@ fx.init = function(gd) {
 
         // x axis draggers - if you have overlaid plots,
         // these drag each axis separately
-        if($.isNumeric(y0)) {
+        if(isNumeric(y0)) {
             if(xa.anchor==='free') y0 -= fullLayout._size.h*(1-ya.domain[1]);
             dragBox(gd, plotinfo, xa._length*0.1, y0,
                 xa._length*0.8, DRAGGERSIZE, '', 'ew');
@@ -131,7 +132,7 @@ fx.init = function(gd) {
                 xa._length*0.1, DRAGGERSIZE, '', 'e');
         }
         // y axis draggers
-        if($.isNumeric(x0)) {
+        if(isNumeric(x0)) {
             if(ya.anchor==='free') x0 -= fullLayout._size.w*xa.domain[0];
             dragBox(gd, plotinfo, x0, ya._length*0.1,
                 DRAGGERSIZE, ya._length*0.8, 'ns', '');
@@ -375,7 +376,7 @@ function hover(gd, evt, subplot){
         if('yval' in evt) yvalArray = flat(subplots, evt.yval);
         else yvalArray = p2c(yaArray, ypx);
 
-        if(!$.isNumeric(xvalArray[0]) || !$.isNumeric(yvalArray[0])) {
+        if(!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
             console.log('Plotly.Fx.hover failed', evt, gd);
             return unhover(gd, evt);
         }
@@ -456,7 +457,7 @@ function hover(gd, evt, subplot){
                 var newPoint;
                 for(var newPointNum=0; newPointNum<newPoints.length; newPointNum++) {
                     newPoint = newPoints[newPointNum];
-                    if($.isNumeric(newPoint.x0) && $.isNumeric(newPoint.y0)) {
+                    if(isNumeric(newPoint.x0) && isNumeric(newPoint.y0)) {
                         hoverData.push(cleanPoint(newPoint, hovermode));
                     }
                 }

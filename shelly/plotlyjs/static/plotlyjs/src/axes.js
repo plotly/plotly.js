@@ -4,7 +4,8 @@
 /* global d3:false, Promise:false */
 
 var axes = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
 axes.layoutAttributes = {
     title: {type: 'string'},
@@ -311,8 +312,8 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     });
 
     var validRange = (containerIn.range||[]).length===2 &&
-            $.isNumeric(containerIn.range[0]) &&
-            $.isNumeric(containerIn.range[1]),
+            isNumeric(containerIn.range[0]) &&
+            isNumeric(containerIn.range[1]),
         autoRange = coerce('autorange', !validRange);
 
     if(autoRange) coerce('rangemode');
@@ -397,7 +398,7 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
             anchor: {
                 type:'enumerated',
                 values: ['free'].concat(counterAxes),
-                dflt: $.isNumeric(containerIn.position) ? 'free' :
+                dflt: isNumeric(containerIn.position) ? 'free' :
                     (counterAxes[0] || 'free')
             }
         },
@@ -601,7 +602,7 @@ axes.getShowAttrDflt = function getShowAttrDflt(containerIn) {
 // is there at least one number in array? If not, we should leave
 // ax.type empty so it can be autoset later
 function linearOK(array) {
-    return array && array.some(function(v){ return $.isNumeric(v); });
+    return array && array.some(function(v){ return isNumeric(v); });
 }
 
 // does the array a have mostly dates rather than numbers?
@@ -617,7 +618,7 @@ axes.moreDates = function(a) {
     for(var i=0; i<a.length; i+=inc) {
         ai = a[Math.round(i)];
         if(Plotly.Lib.isDateTime(ai)) dcnt+=1;
-        if($.isNumeric(ai)) ncnt+=1;
+        if(isNumeric(ai)) ncnt+=1;
     }
     return (dcnt>ncnt*2);
 };
@@ -626,7 +627,7 @@ axes.moreDates = function(a) {
 // require twice as many categories as numbers
 axes.category = function(a) {
     function isStr(v){
-        return !$.isNumeric(v) && ['','None'].indexOf('v')===-1;
+        return !isNumeric(v) && ['','None'].indexOf('v')===-1;
     }
 
         // test at most 1000 points
@@ -636,7 +637,7 @@ axes.category = function(a) {
         ai;
     for(var i=0; i<a.length; i+=inc) {
         ai = axes.cleanDatum(a[Math.round(i)]);
-        if($.isNumeric(ai)) curvenums++;
+        if(isNumeric(ai)) curvenums++;
         else if(ai && isStr(ai)) curvecats++;
     }
     return curvecats>curvenums*2;
@@ -650,7 +651,7 @@ axes.cleanDatum = function(c){
         if(typeof c==='object' && c!==null && c.getTime) {
             return Plotly.Lib.ms2DateTime(c);
         }
-        if(typeof c!=='string' && !$.isNumeric(c)) {
+        if(typeof c!=='string' && !isNumeric(c)) {
             return '';
         }
         c = c.toString().replace(/['"%,$# ]/g,'');
@@ -694,7 +695,7 @@ axes.setConvert = function(ax) {
         else return BADNUM;
     }
     function fromLog(v){ return Math.pow(10,v); }
-    function num(v){ return $.isNumeric(v) ? Number(v) : BADNUM; }
+    function num(v){ return isNumeric(v) ? Number(v) : BADNUM; }
 
     ax.c2l = (ax.type==='log') ? toLog : num;
     ax.l2c = (ax.type==='log') ? fromLog : num;
@@ -721,8 +722,8 @@ axes.setConvert = function(ax) {
             ax.range = [-1,1];
         }
         for(i=0; i<2; i++) {
-            if(!$.isNumeric(ax.range[i])) {
-                ax.range[i] = $.isNumeric(ax.range[1-i]) ?
+            if(!isNumeric(ax.range[i])) {
+                ax.range[i] = isNumeric(ax.range[1-i]) ?
                     (ax.range[1-i] * (i ? 10 : 0.1)) :
                     (i ? 1 : -1);
             }
@@ -759,7 +760,7 @@ axes.setConvert = function(ax) {
     };
 
     ax.l2p = function(v) {
-        if(!$.isNumeric(v)) return BADNUM;
+        if(!isNumeric(v)) return BADNUM;
         // include 2 fractional digits on pixel, for PDF zooming etc
         return d3.round(Plotly.Lib.constrain(ax._b + ax._m*v,
             -clipMult*ax._length, (1+clipMult)*ax._length), 2);
@@ -774,7 +775,7 @@ axes.setConvert = function(ax) {
         ax.c2d = num;
         ax.d2c = function(v){
             v = axes.cleanDatum(v);
-            return $.isNumeric(v) ? Number(v) : BADNUM;
+            return isNumeric(v) ? Number(v) : BADNUM;
         };
         ax.d2l = function (v, clip) {
             if (ax.type === 'log') return ax.c2l(ax.d2c(v), clip);
@@ -783,11 +784,11 @@ axes.setConvert = function(ax) {
     }
     else if(ax.type==='date') {
         ax.c2d = function(v) {
-            return $.isNumeric(v) ? Plotly.Lib.ms2DateTime(v) : BADNUM;
+            return isNumeric(v) ? Plotly.Lib.ms2DateTime(v) : BADNUM;
         };
 
         ax.d2c = function(v){
-            return ($.isNumeric(v)) ? Number(v) : Plotly.Lib.dateTime2ms(v);
+            return (isNumeric(v)) ? Number(v) : Plotly.Lib.dateTime2ms(v);
         };
 
         ax.d2l = ax.d2c;
@@ -797,10 +798,10 @@ axes.setConvert = function(ax) {
         if(ax.range && ax.range.length>1) {
             try {
                 var ar1 = ax.range.map(Plotly.Lib.dateTime2ms);
-                if(!$.isNumeric(ax.range[0]) && $.isNumeric(ar1[0])) {
+                if(!isNumeric(ax.range[0]) && isNumeric(ar1[0])) {
                     ax.range[0] = ar1[0];
                 }
-                if(!$.isNumeric(ax.range[1]) && $.isNumeric(ar1[1])) {
+                if(!isNumeric(ax.range[1]) && isNumeric(ar1[1])) {
                     ax.range[1] = ar1[1];
                 }
             }
@@ -1025,7 +1026,7 @@ axes.expand = function(ax,data,options) {
 
     function addItem(i) {
         di = data[i];
-        if(!$.isNumeric(di)) return;
+        if(!isNumeric(di)) return;
         ppadiplus = ppadplus(i) + extrappad;
         ppadiminus = ppadminus(i) + extrappad;
         vmin = di-vpadminus(i);
@@ -1047,7 +1048,7 @@ axes.expand = function(ax,data,options) {
         // In order to stop overflow errors, don't consider points
         // too close to the limits of js floating point
         function goodNumber(v) {
-            return $.isNumeric(v) && Math.abs(v)<FP_SAFE;
+            return isNumeric(v) && Math.abs(v)<FP_SAFE;
         }
 
         if(goodNumber(dmin)) {
@@ -1156,7 +1157,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
             blankcount = 0;
         for(var i=0; i<data.length; i++) {
             if(data[i]%1===0) intcount++;
-            else if(!$.isNumeric(data[i])) blankcount++;
+            else if(!isNumeric(data[i])) blankcount++;
 
             if(nearEdge(data[i])) edgecount++;
             if(nearEdge(data[i] + dummyax.dtick/2)) midcount++;
@@ -1376,7 +1377,7 @@ axes.autoTicks = function(ax,rt){
     if(ax.dtick===0) ax.dtick = 1;
 
     // TODO: this is from log axis histograms with autorange off
-    if(!$.isNumeric(ax.dtick) && typeof ax.dtick !=='string') {
+    if(!isNumeric(ax.dtick) && typeof ax.dtick !=='string') {
         var olddtick = ax.dtick;
         ax.dtick = 1;
         throw 'ax.dtick error: '+String(olddtick);
@@ -1392,12 +1393,12 @@ function autoTickRound(ax) {
     var dt = ax.dtick,
         maxend;
     ax._tickexponent = 0;
-    if(!$.isNumeric(dt) && typeof dt !=='string') { dt = 1; }
+    if(!isNumeric(dt) && typeof dt !=='string') { dt = 1; }
 
     if(ax.type==='category') {
         ax._tickround = null;
     }
-    else if($.isNumeric(dt) || dt.charAt(0)==='L') {
+    else if(isNumeric(dt) || dt.charAt(0)==='L') {
         if(ax.type==='date') {
             if(dt>=86400000) { ax._tickround = 'd'; }
             else if(dt>=3600000) { ax._tickround = 'H'; }
@@ -1406,7 +1407,7 @@ function autoTickRound(ax) {
             else { ax._tickround = 3-Math.round(Math.log(dt/2)/Math.LN10); }
         }
         else {
-            if(!$.isNumeric(dt)) { dt = Number(dt.substr(1)); }
+            if(!isNumeric(dt)) { dt = Number(dt.substr(1)); }
             // 2 digits past largest digit of dtick
             ax._tickround = 2-Math.floor(Math.log(dt)/Math.LN10+0.01);
             maxend = (ax.type==='log') ?
@@ -1435,7 +1436,7 @@ function autoTickRound(ax) {
 // can all be calculated as constant number of milliseconds
 axes.tickIncrement = function(x,dtick,axrev){
     // includes all dates smaller than month, and pure 10^n in log
-    if($.isNumeric(dtick)) { return x+(axrev?-dtick:dtick); }
+    if(isNumeric(dtick)) { return x+(axrev?-dtick:dtick); }
 
     var tType=dtick.charAt(0);
     var dtnum=Number(dtick.substr(1)),dtSigned=(axrev?-dtnum:dtnum);
@@ -1474,7 +1475,7 @@ axes.tickFirst = function(ax){
         // add a tiny extra bit to make sure we get ticks
         // that may have been rounded out
         r0 = ax.range[0]*1.0001 - ax.range[1]*0.0001;
-    if($.isNumeric(ax.dtick)) {
+    if(isNumeric(ax.dtick)) {
         var tmin = sRound((r0-ax.tick0)/ax.dtick)*ax.dtick+ax.tick0;
 
         // make sure no ticks outside the category list
@@ -1597,7 +1598,7 @@ axes.tickText = function(ax, x, hover){
         }
         else {
             if(hover) {
-                if($.isNumeric(tr)) tr+=2;
+                if(isNumeric(tr)) tr+=2;
                 else tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr];
             }
             if(tr==='y') tt = yearFormat(d);
@@ -1627,10 +1628,10 @@ axes.tickText = function(ax, x, hover){
         }
     }
     else if(ax.type==='log'){
-        if(hover && ($.isNumeric(dt) || dt.charAt(0)!=='L')) {
+        if(hover && (isNumeric(dt) || dt.charAt(0)!=='L')) {
             dt = 'L3';
         }
-        if($.isNumeric(dt)||((dt.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
+        if(isNumeric(dt)||((dt.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
             var p = Math.round(x);
             if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
                 tt = (p===0) ? '1': (p===1) ? '10' : '10'+String(p).sup();
@@ -1720,7 +1721,7 @@ function numFormat(v,ax,fmtoverride,hover) {
         var ah = {
             exponentformat:ax.exponentformat,
             dtick: ax.showexponent==='none' ? ax.dtick :
-                ($.isNumeric(v) ? Math.abs(v)||1 : 1),
+                (isNumeric(v) ? Math.abs(v)||1 : 1),
             // if not showing any exponents, don't change the exponent
             // from what we calculate
             range: ax.showexponent==='none' ? ax.range : [0,v||1]
@@ -2148,7 +2149,7 @@ axes.doTicks = function(td, axid, skipTitle) {
         // tick labels - for now just the main labels.
         // TODO: mirror labels, esp for subplots
         var tickLabels=container.selectAll('g.'+tcls).data(vals, datafn);
-        if(!ax.showticklabels || !$.isNumeric(position)) {
+        if(!ax.showticklabels || !isNumeric(position)) {
             tickLabels.remove();
             Plotly.Plots.titles(td, axid+'title');
             return;
@@ -2164,7 +2165,7 @@ axes.doTicks = function(td, axid, skipTitle) {
                     (axside==='bottom' ? 1 : -0.5);
             };
             labelanchor = function(angle){
-                if(!$.isNumeric(angle) || angle===0 || angle===180) {
+                if(!isNumeric(angle) || angle===0 || angle===180) {
                     return 'middle';
                 }
                 return angle*flipit<0 ? 'end' : 'start';
@@ -2178,7 +2179,7 @@ axes.doTicks = function(td, axid, skipTitle) {
                     (axside==='right' ? 1 : -1);
             };
             labelanchor = function(angle){
-                if($.isNumeric(angle) && Math.abs(angle)===90) {
+                if(isNumeric(angle) && Math.abs(angle)===90) {
                     return 'middle';
                 }
                 return axside==='right' ? 'start' : 'end';
@@ -2229,7 +2230,7 @@ axes.doTicks = function(td, axid, skipTitle) {
                 var thisLabel = d3.select(this),
                     mathjaxGroup = thisLabel.select('.text-math-group'),
                     transform = transfn(d) +
-                        (($.isNumeric(angle) && +angle!==0) ?
+                        ((isNumeric(angle) && +angle!==0) ?
                         (' rotate('+angle+','+labelx(d)+','+
                             (labely(d)-d.fontSize/2)+')') :
                         '');
@@ -2273,7 +2274,7 @@ axes.doTicks = function(td, axid, skipTitle) {
             // check for auto-angling if x labels overlap
             // don't auto-angle at all for log axes with
             // base and digit format
-            if(axletter==='x' && !$.isNumeric(ax.tickangle) &&
+            if(axletter==='x' && !isNumeric(ax.tickangle) &&
                     (ax.type!=='log' || String(ax.dtick).charAt(0)!=='D')) {
                 var lbbArray = [];
                 tickLabels.each(function(d){
@@ -2414,7 +2415,7 @@ axes.doTicks = function(td, axid, skipTitle) {
             ticksides.forEach(function(showside, sidei) {
                 var pos = linepositions[sidei],
                     tsign = ticksign[sidei];
-                if(showside && $.isNumeric(pos)) {
+                if(showside && isNumeric(pos)) {
                     tickpath += tickprefix + (pos+pad*tsign) +
                         tickmid + (tsign*ax.ticklen);
                 }

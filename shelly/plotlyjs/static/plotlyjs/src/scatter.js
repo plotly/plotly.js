@@ -5,7 +5,8 @@
 /* global d3:false */
 
 var scatter = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
 // mark this module as allowing error bars
 scatter.errorBarsOK = true;
@@ -488,7 +489,7 @@ scatter.calc = function(gd,trace) {
     // create the "calculated data" to plot
     var cd = new Array(serieslen);
     for(i = 0; i < serieslen; i++) {
-        cd[i] = ($.isNumeric(x[i]) && $.isNumeric(y[i])) ?
+        cd[i] = (isNumeric(x[i]) && isNumeric(y[i])) ?
             {x: x[i], y: y[i]} : {x: false, y: false};
     }
 
@@ -682,7 +683,7 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
 
         // simpler version where we don't need the extra assignments
         function add0(pt) {
-            if(!$.isNumeric(pt[0]) || !$.isNumeric(pt[1])) return;
+            if(!isNumeric(pt[0]) || !isNumeric(pt[1])) return;
             pts.push(pt);
         }
 
@@ -728,7 +729,7 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
             for(i++; i<d.length; i++) {
                 pti = [xa.c2p(d[i].x), ya.c2p(d[i].y)];
                 // TODO: smart lines going off the edge?
-                if(!$.isNumeric(pti[0])||!$.isNumeric(pti[1])) {
+                if(!isNumeric(pti[0])||!isNumeric(pti[1])) {
                     if(trace.connectgaps) continue;
                     else break;
                 }

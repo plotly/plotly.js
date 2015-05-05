@@ -4,7 +4,8 @@
 /* global d3:false */
 
 var bars = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
 // mark this module as allowing error bars
 bars.errorBarsOK = true;
@@ -170,7 +171,7 @@ bars.calc = function(gd, trace) {
     var serieslen = Math.min(pos.length, size.length),
         cd = [];
     for(i=0; i<serieslen; i++) {
-        if(($.isNumeric(pos[i]) && $.isNumeric(size[i]))) {
+        if((isNumeric(pos[i]) && isNumeric(size[i]))) {
             cd.push({p: pos[i], s: size[i], b: 0});
         }
     }
@@ -307,7 +308,7 @@ bars.setPositions = function(gd, plotinfo) {
                     // store the bar top in each calcdata item
                     if(stack) {
                         ti[j][sLetter] = barEnd;
-                        if(!norm && $.isNumeric(sa.c2l(barEnd))) {
+                        if(!norm && isNumeric(sa.c2l(barEnd))) {
                             sMax = Math.max(sMax,barEnd);
                             sMin = Math.min(sMin,barEnd);
                         }
@@ -330,7 +331,7 @@ bars.setPositions = function(gd, plotinfo) {
                         barEnd = ti[j].b + ti[j].s;
                         ti[j][sLetter] = barEnd;
 
-                        if($.isNumeric(sa.c2l(barEnd))) {
+                        if(isNumeric(sa.c2l(barEnd))) {
                             if(barEnd < sMin - tiny) {
                                 padded = true;
                                 sMin = barEnd;
@@ -414,8 +415,8 @@ bars.plot = function(gd, plotinfo, cdbar) {
                         y0 = ya.c2p(di.b, true);
                     }
 
-                    if(!$.isNumeric(x0) || !$.isNumeric(x1) ||
-                            !$.isNumeric(y0) || !$.isNumeric(y1) ||
+                    if(!isNumeric(x0) || !isNumeric(x1) ||
+                            !isNumeric(y0) || !isNumeric(y1) ||
                             x0===x1 || y0===y1) {
                         d3.select(this).remove();
                         return;
