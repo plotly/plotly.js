@@ -126,6 +126,7 @@ describe('Test scatter', function () {
 
         function callLinePoints(ptsIn, opts) {
             var thisOpts = {};
+            if(!opts) opts = {};
             Object.keys(baseOpts).forEach(function(key) {
                 if(opts[key] !== undefined) thisOpts[key] = opts[key];
                 else thisOpts[key] = baseOpts[key];
