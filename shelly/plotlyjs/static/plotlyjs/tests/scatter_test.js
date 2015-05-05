@@ -134,11 +134,18 @@ describe('Test scatter', function () {
             return linePoints(makeCalcData(ptsIn), thisOpts);
         }
 
-        it('should pass along well-separated points', function() {
-            var ptsIn = [[0,0], [10,20], [20,10], [30,40], [40,70], [50,30]];
+        it('should pass along well-separated non-linear points', function() {
+            var ptsIn = [[0,0], [10,20], [20,10], [30,40], [40,60], [50,30]];
             var ptsOut = callLinePoints(ptsIn);
 
             expect(ptsOut).toEqual([ptsIn]);
+        });
+
+        it('should collapse straight lines to just their endpoints', function() {
+            var ptsIn = [[0,0], [5,10], [13,26], [15,30], [22,16], [28,4], [30,0]];
+            var ptsOut = callLinePoints(ptsIn);
+            // TODO: [22,16] should not appear here. This is ok but not optimal.
+            expect(ptsOut).toEqual([[[0,0], [15,30], [22,16], [30,0]]]);
         });
 
         it('should separate out blanks, unless connectgaps is true', function() {
@@ -186,7 +193,7 @@ describe('Test scatter', function () {
         it('should use lineWidth to determine whether a cluster counts', function() {
             var ptsIn = [[0,0], [20,0], [21,10], [22,20], [23,-10], [24,15], [25,-25], [26,10], [27,5], [100,10]];
             var ptsThin = callLinePoints(ptsIn);
-            var ptsThick = callLinePoints(ptsIn, {baseTolerance: 10});
+            var ptsThick = callLinePoints(ptsIn, {baseTolerance: 8});
 
             // thin line, no decimation. thick line yes.
             expect(ptsThin).toEqual([ptsIn]);
