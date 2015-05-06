@@ -849,19 +849,28 @@ axes.setConvert = function(ax) {
     // in case the expected data isn't there, make a list of
     // integers based on the opposite data
     ax.makeCalcdata = function(tdc,axletter) {
+        var arrayIn,
+            arrayOut,
+            i;
         if(axletter in tdc) {
-            return tdc[axletter].map(ax.d2c);
+            arrayIn = tdc[axletter];
+            arrayOut = new Array(arrayIn.length);
+
+            for(i = 0; i < arrayIn.length; i++) arrayOut[i] = ax.d2c(arrayIn[i]);
         }
         else {
             var v0 = ((axletter+'0') in tdc) ?
                     ax.d2c(tdc[axletter+'0']) : 0,
                 dv = (tdc['d'+axletter]) ?
-                    Number(tdc['d'+axletter]) : 1,
-                // the opposing data, for size if we have x and dx etc
-                counterdata = tdc[{x:'y',y:'x'}[axletter]];
+                    Number(tdc['d'+axletter]) : 1;
 
-            return counterdata.map(function(v,i){ return v0+i*dv; });
+            // the opposing data, for size if we have x and dx etc
+            arrayIn = tdc[{x: 'y',y: 'x'}[axletter]];
+            arrayOut = new Array(arrayIn.length);
+
+            for(i = 0; i < arrayIn.length; i++) arrayOut[i] = v0+i*dv;
         }
+        return arrayOut;
     };
 
     // for autoranging: arrays of objects:
