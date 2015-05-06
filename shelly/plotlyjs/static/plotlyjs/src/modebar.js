@@ -232,30 +232,53 @@ ModeBar.prototype.handleCartesian = function(ev) {
  */
 ModeBar.prototype.handleHover3d = function(ev) {
     var button = ev.currentTarget,
-        attr = button.getAttribute('data-attr'),
+        val = JSON.parse(button.getAttribute('data-val')) || false,
         _this = this,
         Plotly = this.Plotly,
         graphInfo = this.graphInfo,
         fullLayout = graphInfo._fullLayout,
-        sceneLayouts = Plotly.Lib.getSceneLayouts(fullLayout),
-        layoutUpdate = {};
+        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
+        layoutUpdate = {},
 
-    // 3D has only 1 hover mode; toggle it
-    var val = fullLayout[attr]!=='closest' ? 'closest' : false;
-    layoutUpdate[attr] = val;
+        // initialize 'current spike' object to be stored in the DOM
+        currentSpikes = {},
+        axes = ['xaxis', 'yaxis', 'zaxis'],
+        spikeAttrs = ['showspikes', 'spikesides', 'spikethickness', 'spikecolor'];
 
-    // Apply to all scenes
-    for (var i = 0;  i < sceneLayouts.length; ++i) {
-        var sceneLayout = sceneLayouts[i],
-            scene = sceneLayout._scene;
+    var i, sceneId, sceneLayout, sceneSpikes;
+    var j, axis, axisSpikes;
+    var k, spikeAttr;
 
-        scene.spikeEnable = !scene.spikeEnable;
-        scene.container.focus();
+    if (val) {
+        layoutUpdate = val;
+        button.setAttribute('data-val', JSON.stringify(null));
+    }
+    else {
+        layoutUpdate = {'allaxes.showspikes': false};
+
+        for (i = 0;  i < sceneIds.length; i++) {
+            sceneId = sceneIds[i];
+            sceneLayout = fullLayout[sceneId];
+            sceneSpikes = currentSpikes[sceneId] = {};
+
+            // copy all the current spike attrs
+            for (j = 0; j < 3; j++) {
+                axis = axes[j];
+                axisSpikes = sceneSpikes[axis] = {};
+                for (k = 0; k < spikeAttrs.length; k++) {
+                    spikeAttr = spikeAttrs[k];
+                    axisSpikes[spikeAttr] = sceneLayout[axis][spikeAttr];
+                }
+            }
+        }
+
+        button.setAttribute('data-val', JSON.stringify(currentSpikes));
     }
 
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
         _this.updateActiveButton();
     });
+
 };
 
 /**
@@ -424,7 +447,7 @@ ModeBar.prototype.config = function config() {
         hoverClosest3d: {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
-            val: 'closest',
+            val: null,
             icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleHover3d
