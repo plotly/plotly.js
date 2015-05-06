@@ -33,7 +33,7 @@ function Scene(options) {
     /*
      * Tag the container with the sceneID
      */
-    sceneContainer.id = options.sceneKey;
+    sceneContainer.id = options.sceneId;
     sceneContainer.style.position = 'absolute';
     sceneContainer.style.top = sceneContainer.style.left = '0px';
     sceneContainer.style.width = sceneContainer.style.height = '100%';
@@ -54,7 +54,7 @@ function Scene(options) {
      * TODO remove this hack
      */
     this.hasPlotBeenCalled = false;
-    this.sceneKey     = options.sceneKey || 'scene';
+    this.sceneId = options.sceneId || 'scene';
 
     var glplotOptions = {
             container:  sceneContainer,
@@ -288,11 +288,12 @@ proto.setCameraPosition = function setCameraPosition (camera) {
 };
 
 // save camera position to user layout (i.e. gd.layout)
-proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) {
-    var lib = this.Plotly.Lib;
-    var prop = lib.nestedProperty(layout, this.sceneKey + '.cameraposition');
-    var cameraposition = this.getCameraPosition();
-    prop.set(cameraposition);
+proto.saveCamera = function saveCamera(gd) {
+    var cameraposition = this.getCameraPosition(),
+        nestedProp = this.Plotly.Lib.nestedProperty,
+        sceneId = this.sceneId;
+    nestedProp(gd.layout, sceneId + '.cameraposition').set(cameraposition);
+    nestedProp(gd._fullLayout, sceneId + '.cameraposition').set(cameraposition);
 };
 
 proto.toImage = function (format) {

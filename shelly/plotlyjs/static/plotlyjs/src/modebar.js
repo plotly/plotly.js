@@ -301,22 +301,20 @@ ModeBar.prototype.handleCamera3d = function(ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         Plotly = this.Plotly,
-        graphInfo = this.graphInfo,
-        fullLayout = graphInfo._fullLayout,
-        sceneLayouts = Plotly.Lib.getSceneLayouts(fullLayout);
+        fullLayout = this.graphInfo._fullLayout,
+        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
-    // Reset camera of all scenes
-    for (var i = 0;  i < sceneLayouts.length; ++i) {
-        var sceneLayout = sceneLayouts[i],
-            scene = sceneLayout._scene;
+    var i, sceneLayout, scene, cameraposition;
 
-        if (attr === 'resetDefault') {
-            // Reset camera position to default
-            scene.setCameraToDefault();
-        } else if (attr === 'resetLastSave') {
-            // Reset camera back to the position at the last save
-            var cameraPositionLastSave = scene.cameraPositionLastSave;
-            scene.setCameraPosition(cameraPositionLastSave);
+    for (i = 0;  i < sceneIds.length; i++) {
+        sceneLayout = fullLayout[sceneIds[i]];
+        scene = sceneLayout._scene;
+
+        if (attr === 'resetDefault') scene.setCameraToDefault();
+        else if (attr === 'resetLastSave') {
+            cameraposition = sceneLayout.cameraposition;
+            if (cameraposition) scene.setCameraPosition(cameraposition);
+            else scene.setCameraToDefault();
         }
     }
 
