@@ -293,21 +293,16 @@ ModeBar.prototype.handleDrag3d = function(ev) {
         Plotly = this.Plotly,
         graphInfo = this.graphInfo,
         fullLayout = graphInfo._fullLayout,
-        sceneLayouts = Plotly.Lib.getSceneLayouts(fullLayout),
+        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
         layoutUpdate = {};
 
-    // set dragmode to given value
     layoutUpdate[attr] = val;
 
-    // Update the webgl3D key binding of all scenes
-    for (var i = 0;  i < sceneLayouts.length; ++i) {
-        var sceneLayout = sceneLayouts[i],
-            scene = sceneLayout._scene;
+    var i, scene;
 
-        if ('camera' in scene) {
-            scene.camera.keyBindingMode = val;
-            scene.container.focus();
-        }
+    for (i = 0;  i < sceneIds.length; i++) {
+        scene = fullLayout[sceneIds[i]]._scene;
+        if (scene.camera) scene.camera.keyBindingMode = val;
     }
 
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
@@ -433,14 +428,12 @@ ModeBar.prototype.config = function config() {
         resetCameraDefault3d: {
             title: 'Reset camera to default',
             attr: 'resetDefault',
-            val: false,
             icon: 'home',
             click: this.handleCamera3d
         },
         resetCameraLastSave3d: {
             title: 'Reset camera to last save',
             attr: 'resetLastSave',
-            val: false,
             icon: 'camera-retro',
             click: this.handleCamera3d
         },
