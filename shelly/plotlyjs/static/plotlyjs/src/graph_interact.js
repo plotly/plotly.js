@@ -11,8 +11,7 @@ var fx = module.exports = {},
 fx.layoutAttributes = {
     dragmode: {
         type: 'enumerated',
-        values: ['zoom', 'pan'],
-        dflt: 'zoom'
+        values: ['zoom', 'pan', 'rotate']
     },
     hovermode: {
         type: 'enumerated',
@@ -27,7 +26,7 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
                                  attr, dflt);
     }
 
-    coerce('dragmode');
+    coerce('dragmode', layoutOut._hasGL3D ? 'rotate' : 'zoom');
 
     if (layoutOut._hasGL3D) {
         coerce('hovermode', 'closest');
