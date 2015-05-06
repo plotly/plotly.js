@@ -1282,7 +1282,7 @@ axes.calcTicks = function calcTicks (ax) {
     var axrev = (ax.range[1]<ax.range[0]);
 
     // return the full set of tick vals
-    var ticksOut = [],
+    var vals = [],
         // add a tiny bit so we get ticks which may have rounded out
         endtick = ax.range[1] * 1.0001 - ax.range[0]*0.0001;
     if(ax.type==='category') {
@@ -1292,16 +1292,18 @@ axes.calcTicks = function calcTicks (ax) {
     for(var x = ax._tmin;
             (axrev)?(x>=endtick):(x<=endtick);
             x = axes.tickIncrement(x,ax.dtick,axrev)) {
-        ticksOut.push(axes.tickText(ax, x));
-
-        // save the last tick as well as first, so we can
-        // show the exponent only on the last one
-        ax._tmax = x;
+        vals.push(x);
 
         // prevent infinite loops
-        if(ticksOut.length>1000) break;
+        if(vals.length>1000) break;
     }
 
+    // save the last tick as well as first, so we can
+    // show the exponent only on the last one
+    ax._tmax = vals[vals.length - 1];
+
+    var ticksOut = new Array(vals.length);
+    for(var i = 0; i < vals.length; i++) ticksOut[i] = axes.tickText(ax, vals[i]);
 
     return ticksOut;
 };
