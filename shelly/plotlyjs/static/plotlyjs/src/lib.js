@@ -1516,34 +1516,6 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
     }
 };
 
-// retrieve list of scene keys form a layout object
-lib.getSceneKeys = function getSceneKeys(layout) {
-    var keys = Object.keys(layout),
-        key = null,
-        sceneKeys = [],
-        i_key = 0;
-    for (i_key; i_key < keys.length; ++i_key) {
-        key = keys[i_key];
-        if (key.match(/^scene[0-9]*$/)) {
-            sceneKeys.push(key);
-        }
-    }
-    return sceneKeys;
-};
-
-// retrieve list of scene layout object from a layout object
-lib.getSceneLayouts = function getSceneLayouts(layout) {
-    var sceneKeys = lib.getSceneKeys(layout),
-        sceneKey = null,
-        sceneLayouts = [],
-        i_sceneKey = 0;
-    for (i_sceneKey; i_sceneKey < sceneKeys.length; ++i_sceneKey) {
-        sceneKey = sceneKeys[i_sceneKey];
-        sceneLayouts.push(layout[sceneKey]);
-    }
-    return sceneLayouts;
-};
-
 /**
  * modified version of $.extend to strip out private objs and functions,
  * and cut arrays down to first <arraylen> or 1 elements
