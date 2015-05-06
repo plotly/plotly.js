@@ -602,7 +602,11 @@ axes.getShowAttrDflt = function getShowAttrDflt(containerIn) {
 // is there at least one number in array? If not, we should leave
 // ax.type empty so it can be autoset later
 function linearOK(array) {
-    return array && array.some(function(v){ return isNumeric(v); });
+    if(!array) return false;
+    for(var i = 0; i < array.length; i++) {
+        if(isNumeric(array[i])) return true;
+    }
+    return false;
 }
 
 // does the array a have mostly dates rather than numbers?
@@ -626,21 +630,18 @@ axes.moreDates = function(a) {
 // are the (x,y)-values in td.data mostly text?
 // require twice as many categories as numbers
 axes.category = function(a) {
-    function isStr(v){
-        return !isNumeric(v) && ['','None'].indexOf('v')===-1;
-    }
-
-        // test at most 1000 points
-    var inc = Math.max(1,(a.length-1)/1000),
-        curvenums=0,
-        curvecats=0,
+    // test at most 1000 points
+    var inc = Math.max(1, (a.length - 1) / 1000),
+        curvenums = 0,
+        curvecats = 0,
         ai;
-    for(var i=0; i<a.length; i+=inc) {
+
+    for(var i = 0; i < a.length; i += inc) {
         ai = axes.cleanDatum(a[Math.round(i)]);
         if(isNumeric(ai)) curvenums++;
-        else if(ai && isStr(ai)) curvecats++;
+        else if(typeof ai === 'string' && ai !== '' && ai !== 'None') curvecats++;
     }
-    return curvecats>curvenums*2;
+    return curvecats > curvenums * 2;
 };
 
 // cleanDatum: removes characters
