@@ -288,12 +288,10 @@ proto.setCameraPosition = function setCameraPosition (camera) {
 };
 
 // save camera position to user layout (i.e. gd.layout)
-proto.saveCamera = function saveCamera(gd) {
-    var cameraposition = this.getCameraPosition(),
-        nestedProp = this.Plotly.Lib.nestedProperty,
-        sceneId = this.sceneId;
-    nestedProp(gd.layout, sceneId + '.cameraposition').set(cameraposition);
-    nestedProp(gd._fullLayout, sceneId + '.cameraposition').set(cameraposition);
+proto.saveCamera = function saveCamera(layout) {
+    var cameraposition = this.getCameraPosition();
+    this.Plotly.Lib.nestedProperty(layout, this.sceneId + '.cameraposition')
+        .set(cameraposition);
 };
 
 proto.toImage = function (format) {
