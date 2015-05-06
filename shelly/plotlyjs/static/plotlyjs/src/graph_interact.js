@@ -407,7 +407,7 @@ function hover(gd, evt, subplot){
             trace: trace,
             xa: xaArray[subploti],
             ya: yaArray[subploti],
-            name: gd.data.length>1 ? trace.name : undefined,
+            name: (gd.data.length>1 || trace.hoverinfo.indexOf('name')!==-1) ? trace.name : undefined,
             // point properties - override all of these
             index: false, // point index in trace - only used by plotly.js hoverdata consumers
             distance: Math.min(distance, fx.MAXDIST), // pixel distance or pseudo-distance
@@ -717,6 +717,18 @@ function createHoverText(hoverData, opts) {
     var showCommonLabel = c0.distance<=fx.MAXDIST &&
                           (hovermode==='x' || hovermode==='y');
 
+    // all hover traces hoverinfo must contain the hovermode
+    // to have common labels
+    var i, traceHoverinfo;
+    for (i = 0; i < hoverData.length; i++) {
+        traceHoverinfo = hoverData[i].trace.hoverinfo;
+        if (traceHoverinfo.indexOf('all')===-1 &&
+                traceHoverinfo.indexOf(hovermode)===-1) {
+            showCommonLabel = false;
+            break;
+        }
+    }
+
     var commonLabel = container.selectAll('g.axistext')
         .data(showCommonLabel ? [0] : []);
     commonLabel.enter().append('g')
@@ -860,6 +872,15 @@ function createHoverText(hoverData, opts) {
 
         if(d.text) text += (text ? '<br>' : '') + d.text;
 
+        // if 'text' is empty at this point,
+        // put 'name' in main label and don't show secondary label
+        if (text === '') {
+            // if 'name' is also empty, remove entire label
+            if (name === '') g.remove();
+            text = name;
+        }
+
+        // main label
         var tx = g.select('text.nums')
             .style('fill',contrastColor)
             .call(Plotly.Drawing.setPosition,0,0)
@@ -872,7 +893,8 @@ function createHoverText(hoverData, opts) {
         var tx2 = g.select('text.name'),
             tx2width = 0;
 
-        if(name) {
+        // secondary label for non-empty 'name'
+        if (name && name!==text) {
             tx2.style('fill',traceColor)
                 .text(name)
                 .call(Plotly.Drawing.setPosition,0,0)

@@ -1,7 +1,7 @@
 'use strict';
 // ---external global dependencies
 /* global d3:false, MathJax:false, FB:false, PLOTLYENV:false,
-   jsPDF:false, Promise:false */
+   Promise:false */
 
 var util = module.exports = {},
     Plotly = require('./plotly');
@@ -83,7 +83,7 @@ util.scriptLoader = function(d, w){
 // Image exporter
 /////////////////////////////
 
-util.imageExporter = function module() {
+util.imageExporter = function() {
 
     var dispatch = d3.dispatch('success', 'error');
     var imageFormat = 'png',
@@ -149,15 +149,8 @@ util.imageExporter = function module() {
                     imgData = canvasNode.toDataURL('image/webp');
                 }
                 else if (imageFormat === 'svg') imgData = _svg;
-                else if (imageFormat === 'pdf'){
-                    imgData = canvasNode.toDataURL('image/jpeg');
-                    var px2pt = 700/1058;
-                    var orientation = w > h ? 'landscape' : 'portrait';
-                    var doc = new jsPDF(orientation, 'pt', [h*px2pt, w*px2pt]);
-                    doc.addImage(imgData, 'JPEG', 0, 0, w*px2pt, h*px2pt);
-                    imgData = doc.output('dataurlstring');
-                } else {
-                    return sendError({err: 'Image format is not jpeg, png, svg, or pdf', code: 400});
+                else {
+                    return sendError({err: 'Image format is not jpeg, png, or svg', code: 400});
                 }
 
                 if(debugLevel === 0) {
