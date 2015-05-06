@@ -2,6 +2,7 @@
 
 var histogram = module.exports = {},
     Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric'),
     scatterAttrs = Plotly.Scatter.attributes,
     barAttrs = Plotly.Bars.attributes;
 
@@ -126,7 +127,7 @@ var binFunctions = {
 
     sum: function(n, i, size, counterData) {
         var v = counterData[i];
-        if($.isNumeric(v)) {
+        if(isNumeric(v)) {
             size[n] += v;
             return v;
         }
@@ -135,7 +136,7 @@ var binFunctions = {
 
     avg: function(n, i, size, counterData, counts) {
         var v = counterData[i];
-        if($.isNumeric(v)) {
+        if(isNumeric(v)) {
             size[n] += v;
             counts[n]++;
         }
@@ -144,8 +145,8 @@ var binFunctions = {
 
     min: function(n, i, size, counterData) {
         var v = counterData[i];
-        if($.isNumeric(v)) {
-            if(!$.isNumeric(size[n])) {
+        if(isNumeric(v)) {
+            if(!isNumeric(size[n])) {
                 size[n] = v;
                 return v;
             }
@@ -159,8 +160,8 @@ var binFunctions = {
 
     max: function(n, i, size, counterData) {
         var v = counterData[i];
-        if($.isNumeric(v)) {
-            if(!$.isNumeric(size[n])) {
+        if(isNumeric(v)) {
+            if(!isNumeric(size[n])) {
                 size[n] = v;
                 return v;
             }
@@ -308,7 +309,7 @@ histogram.calc = function(gd, trace) {
 
     // create the "calculated data" to plot
     for(i=firstNonzero; i<=lastNonzero; i++) {
-        if(($.isNumeric(pos[i]) && $.isNumeric(size[i]))) {
+        if((isNumeric(pos[i]) && isNumeric(size[i]))) {
             cd.push({p: pos[i], s: size[i], b: 0});
         }
     }

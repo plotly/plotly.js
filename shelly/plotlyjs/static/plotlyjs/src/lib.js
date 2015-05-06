@@ -11,7 +11,8 @@
 
 var lib = module.exports = {},
     Plotly = require('./plotly'),
-    tinycolor = require('tinycolor2');
+    tinycolor = require('tinycolor2'),
+    isNumeric = require('./isnumeric');
 
 /**
  * dateTime2ms - turn a date object or string s of the form
@@ -67,7 +68,7 @@ lib.dateTime2ms = function(s) {
         y = ((Number(p[0]) - yNow + 70)%100 + 200)%100 + yNow - 70;
     }
     else return false;
-    if (!$.isNumeric(y)) return false;
+    if (!isNumeric(y)) return false;
     if (p.length === 1) return new Date(y,0,1).getTime(); // year only
 
     // month
@@ -338,7 +339,7 @@ lib.parseDate = function(v) {
  * the lower bin rather than the default upper bin
  */
 lib.findBin = function(val,bins,linelow) {
-    if($.isNumeric(bins.start)) {
+    if(isNumeric(bins.start)) {
         return linelow ?
             Math.ceil((val-bins.start)/bins.size)-1 :
             Math.floor((val-bins.start)/bins.size);
@@ -429,7 +430,7 @@ lib.roundUp = function(v,a,reverse){
  * but you can do nestedProperty(obj, 'arr').set([5, 5, 5])
  */
 lib.nestedProperty = function(container, propStr) {
-    if($.isNumeric(propStr)) propStr = String(propStr);
+    if(isNumeric(propStr)) propStr = String(propStr);
     else if(typeof propStr !== 'string' ||
             propStr.substr(propStr.length - 4) === '[-1]') {
         throw 'bad property string';
@@ -708,7 +709,7 @@ lib.lpad = function(val,digits){
 lib.aggNums = function(f, v, a, len) {
     var i;
     if (!len) len = a.length;
-    if (!$.isNumeric(v)) v = false;
+    if (!isNumeric(v)) v = false;
     if (Array.isArray(a[0])) {
         a = a.map(function(row) {
             return lib.aggNums(f,v,row);
@@ -716,8 +717,8 @@ lib.aggNums = function(f, v, a, len) {
     }
 
     for (i = 0; i < len; i++) {
-        if (!$.isNumeric(v)) v = a[i];
-        else if ($.isNumeric(a[i])) v = f(+v, +a[i]);
+        if (!isNumeric(v)) v = a[i];
+        else if (isNumeric(a[i])) v = f(+v, +a[i]);
     }
     return v;
 };
@@ -737,7 +738,7 @@ lib.mean = function(data,len) {
 
 lib.variance = function(data, len, mean) {
     if (!len) len = lib.len(data);
-    if (!$.isNumeric(mean)) {
+    if (!isNumeric(mean)) {
         mean = lib.aggNums(function(a, b) {
             return a + b;
         }, 0, data)/len;
@@ -749,7 +750,7 @@ lib.variance = function(data, len, mean) {
 
 lib.stdev = function(data, len, mean) {
     if (!len) len = lib.len(data);
-    if (!$.isNumeric(mean)) {
+    if (!isNumeric(mean)) {
         mean = lib.aggNums(function(a, b) {
             return a + b;
         }, 0, data)/len;
@@ -775,7 +776,7 @@ lib.stdev = function(data, len, mean) {
  * @return {Number} - percentile
  */
 lib.interp = function(arr, n) {
-    if (!$.isNumeric(n)) throw "n should be a finite number";
+    if (!isNumeric(n)) throw "n should be a finite number";
     n = n * arr.length;
     n -= 0.5;
     if (n < 0) return arr[0];
@@ -831,7 +832,7 @@ lib.constrain = function(v,v0,v1) {
 lib.notifier = function(text, displayLength) {
 
     var ts;
-    if ($.isNumeric(displayLength)) ts = displayLength;
+    if (isNumeric(displayLength)) ts = displayLength;
     else if (displayLength === 'long') ts = 2000;
     else ts = 1000;
 
@@ -993,7 +994,7 @@ lib.showSources = function(td) {
     }
     var container = d3.select(td).select('.js-sourcelinks'),
         extsources = allsources.filter(function(v){
-            return $.isNumeric(v.ref_fid);
+            return isNumeric(v.ref_fid);
         }),
         firstsource = extsources[0] || allsources[0];
     container.text('');
@@ -1005,7 +1006,7 @@ lib.showSources = function(td) {
     var extobj = {}, plotlyobj = {};
     extsources.forEach(function(v){ extobj[v.url] = 1; });
     allsources.forEach(function(v){
-        if(!$.isNumeric(v.ref_fid)){ plotlyobj[v.ref_fid] = 1; }
+        if(!isNumeric(v.ref_fid)){ plotlyobj[v.ref_fid] = 1; }
     });
 
     var fidparts = String(firstsource.ref_fid).split(':'),
@@ -1032,7 +1033,7 @@ lib.showSources = function(td) {
         if(td.layout.hidesources) { return; }
         container.append('tspan').text('Source: ');
         mainlink = container.append('a').attr({'xlink:xlink:href':'#'});
-        if($.isNumeric(firstsource.ref_fid)) {
+        if(isNumeric(firstsource.ref_fid)) {
             mainlink.attr({
                 'xlink:xlink:show':'new',
                 'xlink:xlink:href':firstsource.ref_url
@@ -1062,7 +1063,7 @@ lib.showSources = function(td) {
             'href':'#',
             'class': 'link--impt'
         });
-        if($.isNumeric(firstsource.ref_fid)) {
+        if(isNumeric(firstsource.ref_fid)) {
             mainlink.attr({
                 'target':'_blank',
                 'href':firstsource.ref_url
@@ -1140,7 +1141,7 @@ lib.showSources = function(td) {
         allsources.forEach(function(src){
             if(src.ref_by_uid===refByUid) {
                 var linkval;
-                if($.isNumeric(src.ref_fid)) {
+                if(isNumeric(src.ref_fid)) {
                     linkval = '<a href="'+src.ref_url+'" target="_blank">'+
                         src.ref_filename+'</a>';
                 }
@@ -1350,7 +1351,7 @@ var coerceIt = {
         else propOut.set(dflt);
     },
     number: function(v, propOut, dflt, opts) {
-        if(!$.isNumeric(v) ||
+        if(!isNumeric(v) ||
                 (opts.min!==undefined && v<opts.min) ||
                 (opts.max!==undefined && v>opts.max)) {
             propOut.set(dflt);
@@ -1358,7 +1359,7 @@ var coerceIt = {
         else propOut.set(+v);
     },
     integer: function(v, propOut, dflt, opts) {
-        if(v%1 || !$.isNumeric(v) ||
+        if(v%1 || !isNumeric(v) ||
                 (opts.min!==undefined && v<opts.min) ||
                 (opts.max!==undefined && v>opts.max)) {
             propOut.set(dflt);
@@ -1394,7 +1395,7 @@ var coerceIt = {
     },
     angle: function(v, propOut, dflt) {
         if(v==='auto') propOut.set('auto');
-        else if(!$.isNumeric(v)) propOut.set(dflt);
+        else if(!isNumeric(v)) propOut.set(dflt);
         else {
             if(Math.abs(v)>180) v -= Math.round(v/360)*360;
             propOut.set(+v);
