@@ -94,6 +94,25 @@ plots.getModule = function getModule(trace) {
     );
 };
 
+plots.getSubplotIds = function getSubplotIds(layout, type) {
+    var typeToIdMatch = {
+        gl3d: /^scene[0-9]*$/
+    };
+
+    var idMatch = typeToIdMatch[type],
+        layoutKeys = Object.keys(layout),
+        subplotIds = [];
+
+    var i, layoutKey;
+
+    for (i = 0; i < layoutKeys.length; i++) {
+        layoutKey = layoutKeys[i];
+        if (layoutKey.match(idMatch)) subplotIds.push(layoutKey);
+    }
+
+    return subplotIds;
+};
+
 // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
 plots.newTab = function(divid, layout) {
     Plotly.ToolPanel.makeMenu(document.getElementById(divid));
