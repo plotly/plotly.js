@@ -925,10 +925,21 @@ axes.doAutoRange = function(ax) {
 
     if(ax.autorange && ax._min && ax._max &&
             ax._min.length && ax._max.length) {
-        var i,j,minpt,maxpt,minbest,maxbest,dp,dv,
+        var minmin = ax._min[0].val,
+            maxmax = ax._max[0].val,
+            i;
+
+        for(i = 1; i < ax._min.length; i++) {
+            if(minmin !== maxmax) break;
+            minmin = Math.min(minmin, ax._min[i].val);
+        }
+        for(i = 1; i < ax._max.length; i++) {
+            if(minmin !== maxmax) break;
+            maxmax = Math.max(maxmax, ax._max[i].val);
+        }
+
+        var j,minpt,maxpt,minbest,maxbest,dp,dv,
             mbest = 0,
-            minmin = Math.min.apply(null, ax._min.map(pickVal)),
-            maxmax = Math.max.apply(null, ax._max.map(pickVal)),
             axReverse = (ax.range && ax.range[1]<ax.range[0]);
         // one-time setting to easily reverse the axis
         // when plotting from code
@@ -1271,7 +1282,7 @@ axes.calcTicks = function calcTicks (ax) {
     var axrev = (ax.range[1]<ax.range[0]);
 
     // return the full set of tick vals
-    var vals = [],
+    var ticksOut = [],
         // add a tiny bit so we get ticks which may have rounded out
         endtick = ax.range[1] * 1.0001 - ax.range[0]*0.0001;
     if(ax.type==='category') {
@@ -1281,17 +1292,18 @@ axes.calcTicks = function calcTicks (ax) {
     for(var x = ax._tmin;
             (axrev)?(x>=endtick):(x<=endtick);
             x = axes.tickIncrement(x,ax.dtick,axrev)) {
-        vals.push(x);
+        ticksOut.push(axes.tickText(ax, x));
+
+        // save the last tick as well as first, so we can
+        // show the exponent only on the last one
+        ax._tmax = x;
 
         // prevent infinite loops
-        if(vals.length>1000) { break; }
+        if(ticksOut.length>1000) break;
     }
 
-    // save the last tick as well as first, so we can
-    // show the exponent only on the last one
-    ax._tmax=vals[vals.length-1];
 
-    return vals.map(function(x){return axes.tickText(ax, x);});
+    return ticksOut;
 };
 
 // autoTicks: calculate best guess at pleasant ticks for this axis
