@@ -5,7 +5,8 @@
 /* global d3:false */
 
 var scatter = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
 // mark this module as allowing error bars
 scatter.errorBarsOK = true;
@@ -488,7 +489,7 @@ scatter.calc = function(gd,trace) {
     // create the "calculated data" to plot
     var cd = new Array(serieslen);
     for(i = 0; i < serieslen; i++) {
-        cd[i] = ($.isNumeric(x[i]) && $.isNumeric(y[i])) ?
+        cd[i] = (isNumeric(x[i]) && isNumeric(y[i])) ?
             {x: x[i], y: y[i]} : {x: false, y: false};
     }
 

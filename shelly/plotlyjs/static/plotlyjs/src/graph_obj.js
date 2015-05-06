@@ -8,7 +8,8 @@
 /* global Promise:false, d3:false */
 
 var plots = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
@@ -1883,7 +1884,7 @@ function getExtendProperties (gd, update, indices, maxPoints) {
             maxp = maxPointsIsObject ? maxPoints[key][j] : maxPoints;
 
             // could have chosen null here, -1 just tells us to not take a window
-            if (!$.isNumeric(maxp)) maxp = -1;
+            if (!isNumeric(maxp)) maxp = -1;
 
             /*
              * Wrap the nestedProperty in an object containing required data
@@ -2276,7 +2277,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
 
     if(Object.keys(aobj).length) gd.changed = true;
 
-    if($.isNumeric(traces)) traces=[traces];
+    if(isNumeric(traces)) traces=[traces];
     else if(!Array.isArray(traces) || !traces.length) {
         traces=gd._fullData.map(function(v,i){ return i; });
     }
@@ -3369,7 +3370,7 @@ function doAutoMargin(gd) {
                 fb = pushbottom.val,
                 pb = pushbottom.size;
             Object.keys(pm).forEach(function(k2) {
-                if($.isNumeric(pl) && pm[k2].r) {
+                if(isNumeric(pl) && pm[k2].r) {
                     var fr = pm[k2].r.val,
                         pr = pm[k2].r.size;
                     if(fr>fl) {
@@ -3383,7 +3384,7 @@ function doAutoMargin(gd) {
                         }
                     }
                 }
-                if($.isNumeric(pb) && pm[k2].t) {
+                if(isNumeric(pb) && pm[k2].t) {
                     var ft = pm[k2].t.val,
                         pt = pm[k2].t.size;
                     if(ft>fb) {
@@ -3784,7 +3785,7 @@ plots.titles = function(gd,title) {
                 }[avoid.side],
                 shiftSign = (['left','top'].indexOf(avoid.side)!==-1) ?
                     -1 : 1,
-                pad = $.isNumeric(avoid.pad) ? avoid.pad : 2,
+                pad = isNumeric(avoid.pad) ? avoid.pad : 2,
                 titlebb = Plotly.Drawing.bBox(titleGroup.node()),
                 paperbb = {
                     left: 0,

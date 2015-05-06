@@ -2,6 +2,7 @@
 
 var shapes = module.exports = {},
     Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric'),
     scatterLineAttrs = Plotly.Scatter.attributes.line;
 
 shapes.layoutAttributes = {
@@ -167,7 +168,7 @@ shapes.draw = function(gd, index, opt, value) {
         i;
 
     // TODO: abstract out these drawAll, add, and remove blocks for shapes and annotations
-    if(!$.isNumeric(index) || index===-1) {
+    if(!isNumeric(index) || index===-1) {
         // no index provided - we're operating on ALL shapes
         if(!index && Array.isArray(value)) {
             // a whole annotation array is passed in
