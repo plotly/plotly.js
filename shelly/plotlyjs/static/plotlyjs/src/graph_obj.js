@@ -2813,12 +2813,13 @@ Plotly.relayout = function relayout (gd, astr, val) {
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
             doextra(ptrunk+'.autorange', false);
         }
-        else if(pleafPlus.match(/^aspectratio\.[xyz]$/)) {
-            doextra(p.parts[0]+'.aspectmode', 'ratio');
-        }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.autorange$/)) {
             doextra([ptrunk + '.range[0]',ptrunk + '.range[1]'],
                 undefined);
+        }
+        else if(pleafPlus.match(/^aspectratio\.[xyz]$/)) {
+            doextra(p.parts[0]+'.aspectmode', 'ratio');
+            doextra([ptrunk + '.x', ptrunk + '.y', ptrunk + '.z'], undefined);
         }
 
         // toggling log without autorange: need to also recalculate ranges
