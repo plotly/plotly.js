@@ -54,6 +54,7 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
     if (!layoutOut._hasGL3D) return;
 
     var scenes = [];
+    var attributes = Gl3dLayout.layoutAttributes;
     var i;
 
     for (i = 0; i < fullData.length; ++i) {
@@ -93,7 +94,7 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(sceneLayoutIn, sceneLayoutOut,
-                                     Gl3dLayout.layoutAttributes, attr, dflt);
+                                     attributes, attr, dflt);
         }
 
         coerce('bgcolor');
@@ -102,8 +103,6 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
         coerce('domain.x[1]', (i+1) / scenesLength);
         coerce('domain.y[0]');
         coerce('domain.y[1]');
-
-        coerce('aspectmode');
 
         /*
          * coerce to positive number (min 0) but also do not accept 0 (>0 not >=0)
@@ -114,9 +113,23 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
         hasAspect = hasAspect && !!coerce('aspectratio.y');
         hasAspect = hasAspect && !!coerce('aspectratio.z');
 
-        if (!hasAspect) {
+        var aspectRatio = coerce('aspectmode');
+
+        if (hasAspect && attributes.aspectmode.values.indexOf(sceneLayoutIn.aspectmode) === -1) {
+
+            // invalid aspectmode provided with valid aspectratio. Assume mode == 'manual'
+            sceneLayoutOut.aspectmode = 'manual';
+
+        } else if (!hasAspect) {
+
+            /*
+             * we need aspectratio object in all the Layouts as it is dynamically set
+             * in the calculation steps, ie, we cant set the correct data now, it happens later.
+             */
             sceneLayoutIn.aspectratio = sceneLayoutOut.aspectratio = {x: 1, y: 1, z: 1};
-            sceneLayoutOut.aspectmode = 'auto';
+
+            // if manual data provided and manual mode selected but data is bad, switch to auto
+            if (aspectRatio === 'manual') sceneLayoutOut.aspectmode = 'auto';
         }
 
          /*
