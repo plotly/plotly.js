@@ -3132,6 +3132,9 @@ function makePlotFramework(gd) {
         subplots = Plotly.Axes.getSubplots(gd),
         fullLayout = gd._fullLayout;
 
+    /*
+     * TODO - find a better place for 3D to initialize axes
+     */
     if(fullLayout._hasGL3D) Plotly.Gl3dAxes.initAxes(gd);
 
     var outerContainer = fullLayout._fileandcomments =
