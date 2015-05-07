@@ -2818,7 +2818,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
                 undefined);
         }
         else if(pleafPlus.match(/^aspectratio\.[xyz]$/)) {
-            doextra(p.parts[0]+'.aspectmode', 'ratio');
+            doextra(p.parts[0]+'.aspectmode', 'manual');
             doextra([ptrunk + '.x', ptrunk + '.y', ptrunk + '.z'], undefined);
         }
 

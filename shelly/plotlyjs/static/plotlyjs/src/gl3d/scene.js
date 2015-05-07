@@ -262,13 +262,13 @@ trace_id_loop:
             aspectRatio = [1, 1, 1];
         }
 
-    } else if (fullSceneLayout.aspectmode === 'equal') {
+    } else if (fullSceneLayout.aspectmode === 'cube') {
         aspectRatio = [1, 1, 1];
 
     } else if (fullSceneLayout.aspectmode === 'data') {
         aspectRatio = axesScaleRatio;
 
-    } else if (fullSceneLayout.aspectmode === 'ratio') {
+    } else if (fullSceneLayout.aspectmode === 'manual') {
         var userRatio = fullSceneLayout.aspectratio;
         aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
 

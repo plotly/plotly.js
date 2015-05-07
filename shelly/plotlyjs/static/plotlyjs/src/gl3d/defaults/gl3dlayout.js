@@ -30,7 +30,7 @@ Gl3dLayout.layoutAttributes = {
     },
     aspectmode: {
         type: 'enumerated',
-        values: ['auto', 'equal', 'data', 'ratio'],
+        values: ['auto', 'cube', 'data', 'manual'],
         dflt: 'auto'
     },
     aspectratio: { // must be positive (0's are coerced to 1)
