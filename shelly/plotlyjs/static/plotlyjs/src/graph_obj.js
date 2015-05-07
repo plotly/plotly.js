@@ -95,6 +95,25 @@ plots.getModule = function getModule(trace) {
     );
 };
 
+plots.getSubplotIds = function getSubplotIds(layout, type) {
+    var typeToIdRegex = {
+        gl3d: /^scene[0-9]*$/
+    };
+
+    var idRegex = typeToIdRegex[type],
+        layoutKeys = Object.keys(layout),
+        subplotIds = [];
+
+    var i, layoutKey;
+
+    for (i = 0; i < layoutKeys.length; i++) {
+        layoutKey = layoutKeys[i];
+        if (idRegex.test(layoutKey)) subplotIds.push(layoutKey);
+    }
+
+    return subplotIds;
+};
+
 // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
 plots.newTab = function(divid, layout) {
     Plotly.ToolPanel.makeMenu(document.getElementById(divid));
@@ -656,34 +675,31 @@ function plot3D(gd) {
     gd._context.setBackground(gd, fullLayout.paper_bgcolor);
 
     // Get traces attached to a scene
-    function getSceneData(data, sceneKey) {
-        var i_trace = 0,
-            trace = null,
-            sceneData = [];
-        for (i_trace; i_trace < data.length; ++i_trace) {
-            trace = data[i_trace];
-            if (trace.scene === sceneKey) sceneData.push(trace);
+    function getSceneData(data, sceneId) {
+        var sceneData = [];
+        var i, trace;
+        for (i = 0; i < data.length; i++) {
+            trace = data[i];
+            if (trace.scene===sceneId) sceneData.push(trace);
         }
         return sceneData;
     }
 
-    // Get list of scenes from fullLayout
-    var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout),
-        i_sceneKey = 0;
+    var sceneIds = plots.getSubplotIds(fullLayout, 'gl3d');
+    var i, sceneId, sceneData, sceneLayout, scene, sceneOptions;
 
-    // Loop through scenes
-    for (i_sceneKey; i_sceneKey < sceneKeys.length; ++i_sceneKey) {
-        var sceneKey = sceneKeys[i_sceneKey],
-            sceneData = getSceneData(fullData, sceneKey),
-            sceneLayout = fullLayout[sceneKey],
-            scene = sceneLayout._scene;  // ref. to corresp. Scene instance
+    for (i = 0; i < sceneIds.length; i++) {
+        sceneId = sceneIds[i];
+        sceneData = getSceneData(fullData, sceneId);
+        sceneLayout = fullLayout[sceneId];
+        scene = sceneLayout._scene;  // ref. to corresp. Scene instance
 
         // If Scene is not instantiated, create one!
         if (!(scene)) {
-            var sceneOptions = {
+            sceneOptions = {
                 Plotly: Plotly,
                 container: gd.querySelector('.svg-container'),
-                sceneKey: sceneKey,
+                sceneId: sceneId,
                 sceneData: sceneData,
                 sceneLayout: sceneLayout,
                 fullLayout: fullLayout,
@@ -891,9 +907,9 @@ function cleanLayout(layout) {
         delete layout.scene1;
     }
 
-    var sceneKeys = Plotly.Lib.getSceneKeys(layout);
-    for(i = 0; i < sceneKeys.length; i++) {
-        var sceneLayout = layout[sceneKeys[i]];
+    var sceneIds = plots.getSubplotIds(layout, 'gl3d');
+    for(i = 0; i < sceneIds.length; i++) {
+        var sceneLayout = layout[sceneIds[i]];
         // fix for saved float32-arrays
         var camp = sceneLayout.cameraposition;
         if (Array.isArray(camp) && $.isPlainObject(camp[0])) {
@@ -1265,7 +1281,7 @@ plots.supplyDefaults = function(gd) {
 
 function cleanScenes(newFullLayout, oldFullLayout) {
     var oldSceneKey,
-        oldSceneKeys = Plotly.Lib.getSceneKeys(oldFullLayout);
+        oldSceneKeys = plots.getSubplotIds(oldFullLayout, 'gl3d');
 
     for (var i = 0; i < oldSceneKeys.length; i++) {
         oldSceneKey = oldSceneKeys[i];
@@ -2699,10 +2715,6 @@ Plotly.relayout = function relayout (gd, astr, val) {
         docalc = false,
         domodebar = false,
         newkey, axes, keys, xyref, scene, axisAttr;
-
-
-    // for now, if we detect 3D stuff, just re-do the plot
-    // if (gl._hasGL3D) doplot = true;
 
     if(typeof astr === 'string') aobj[astr] = val;
     else if($.isPlainObject(astr)) aobj = astr;

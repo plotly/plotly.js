@@ -1871,14 +1871,14 @@ function listNames(td, axletter, only2d) {
     if(only2d) return axis2d;
 
     var axis3d = [];
-    var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout);
+    var sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
-    if (sceneKeys) {
-        sceneKeys.forEach( function (sceneKey) {
+    if (sceneIds) {
+        sceneIds.forEach( function (sceneId) {
             axis3d = axis3d.concat(
-                filterAxis(fullLayout[sceneKey])
+                filterAxis(fullLayout[sceneId])
                     .map(function(axName) {
-                        return sceneKey + '.' + axName;
+                        return sceneId + '.' + axName;
                     })
                 );
         });

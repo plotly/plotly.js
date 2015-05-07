@@ -232,30 +232,53 @@ ModeBar.prototype.handleCartesian = function(ev) {
  */
 ModeBar.prototype.handleHover3d = function(ev) {
     var button = ev.currentTarget,
-        attr = button.getAttribute('data-attr'),
+        val = JSON.parse(button.getAttribute('data-val')) || false,
         _this = this,
         Plotly = this.Plotly,
         graphInfo = this.graphInfo,
         fullLayout = graphInfo._fullLayout,
-        sceneLayouts = Plotly.Lib.getSceneLayouts(fullLayout),
-        layoutUpdate = {};
+        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
+        layoutUpdate = {},
 
-    // 3D has only 1 hover mode; toggle it
-    var val = fullLayout[attr]!=='closest' ? 'closest' : false;
-    layoutUpdate[attr] = val;
+        // initialize 'current spike' object to be stored in the DOM
+        currentSpikes = {},
+        axes = ['xaxis', 'yaxis', 'zaxis'],
+        spikeAttrs = ['showspikes', 'spikesides', 'spikethickness', 'spikecolor'];
 
-    // Apply to all scenes
-    for (var i = 0;  i < sceneLayouts.length; ++i) {
-        var sceneLayout = sceneLayouts[i],
-            scene = sceneLayout._scene;
+    var i, sceneId, sceneLayout, sceneSpikes;
+    var j, axis, axisSpikes;
+    var k, spikeAttr;
 
-        scene.spikeEnable = !scene.spikeEnable;
-        scene.container.focus();
+    if (val) {
+        layoutUpdate = val;
+        button.setAttribute('data-val', JSON.stringify(null));
+    }
+    else {
+        layoutUpdate = {'allaxes.showspikes': false};
+
+        for (i = 0;  i < sceneIds.length; i++) {
+            sceneId = sceneIds[i];
+            sceneLayout = fullLayout[sceneId];
+            sceneSpikes = currentSpikes[sceneId] = {};
+
+            // copy all the current spike attrs
+            for (j = 0; j < 3; j++) {
+                axis = axes[j];
+                axisSpikes = sceneSpikes[axis] = {};
+                for (k = 0; k < spikeAttrs.length; k++) {
+                    spikeAttr = spikeAttrs[k];
+                    axisSpikes[spikeAttr] = sceneLayout[axis][spikeAttr];
+                }
+            }
+        }
+
+        button.setAttribute('data-val', JSON.stringify(currentSpikes));
     }
 
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
         _this.updateActiveButton();
     });
+
 };
 
 /**
@@ -270,21 +293,16 @@ ModeBar.prototype.handleDrag3d = function(ev) {
         Plotly = this.Plotly,
         graphInfo = this.graphInfo,
         fullLayout = graphInfo._fullLayout,
-        sceneLayouts = Plotly.Lib.getSceneLayouts(fullLayout),
+        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
         layoutUpdate = {};
 
-    // set dragmode to given value
     layoutUpdate[attr] = val;
 
-    // Update the webgl3D key binding of all scenes
-    for (var i = 0;  i < sceneLayouts.length; ++i) {
-        var sceneLayout = sceneLayouts[i],
-            scene = sceneLayout._scene;
+    var i, scene;
 
-        if ('camera' in scene) {
-            scene.camera.keyBindingMode = val;
-            scene.container.focus();
-        }
+    for (i = 0;  i < sceneIds.length; i++) {
+        scene = fullLayout[sceneIds[i]]._scene;
+        if (scene.camera) scene.camera.keyBindingMode = val;
     }
 
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
@@ -301,22 +319,22 @@ ModeBar.prototype.handleCamera3d = function(ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         Plotly = this.Plotly,
-        graphInfo = this.graphInfo,
-        fullLayout = graphInfo._fullLayout,
-        sceneLayouts = Plotly.Lib.getSceneLayouts(fullLayout);
+        layout = this.graphInfo.layout,
+        fullLayout = this.graphInfo._fullLayout,
+        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
-    // Reset camera of all scenes
-    for (var i = 0;  i < sceneLayouts.length; ++i) {
-        var sceneLayout = sceneLayouts[i],
-            scene = sceneLayout._scene;
+    var i, sceneId, sceneLayout, scene, cameraposition;
 
-        if (attr === 'resetDefault') {
-            // Reset camera position to default
-            scene.setCameraToDefault();
-        } else if (attr === 'resetLastSave') {
-            // Reset camera back to the position at the last save
-            var cameraPositionLastSave = scene.cameraPositionLastSave;
-            scene.setCameraPosition(cameraPositionLastSave);
+    for (i = 0;  i < sceneIds.length; i++) {
+        sceneId = sceneIds[i];
+        sceneLayout = layout[sceneId];
+        scene = fullLayout[sceneId]._scene;
+
+        if (attr === 'resetDefault') scene.setCameraToDefault();
+        else if (attr === 'resetLastSave') {
+            cameraposition = sceneLayout ? sceneLayout.cameraposition : false;
+            if (cameraposition) scene.setCameraPosition(cameraposition);
+            else scene.setCameraToDefault();
         }
     }
 
@@ -412,21 +430,19 @@ ModeBar.prototype.config = function config() {
         resetCameraDefault3d: {
             title: 'Reset camera to default',
             attr: 'resetDefault',
-            val: false,
             icon: 'home',
             click: this.handleCamera3d
         },
         resetCameraLastSave3d: {
             title: 'Reset camera to last save',
             attr: 'resetLastSave',
-            val: false,
             icon: 'camera-retro',
             click: this.handleCamera3d
         },
         hoverClosest3d: {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
-            val: 'closest',
+            val: null,
             icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleHover3d
