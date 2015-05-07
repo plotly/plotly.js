@@ -193,25 +193,30 @@ ModeBar.prototype.handleCartesian = function(ev) {
         aobj = {};
 
     if(astr === 'zoom') {
-        var xr = fullLayout.xaxis.range,
-            yr = fullLayout.yaxis.range,
-            mag = (val==='in') ? 0.5 : 2,
-            r0 = (1+mag)/2, r1 = (1-mag)/2;
-        aobj = {
-            'xaxis.range[0]': r0*xr[0] + r1*xr[1],
-            'xaxis.range[1]': r0*xr[1] + r1*xr[0],
-            'yaxis.range[0]': r0*yr[0] + r1*yr[1],
-            'yaxis.range[1]': r0*yr[1] + r1*yr[0]
-        };
-    }
+        var mag = (val==='in') ? 0.5 : 2,
+            r0 = (1+mag)/2, r1 = (1-mag)/2,
+            axList = Plotly.Axes.list(graphInfo, null, true),
+            i,
+            initialRange;
 
-    // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
-    if (astr==='hovermode' && (val==='x' || val==='y')) {
-        val = fullLayout._isHoriz ? 'y' : 'x';
-        button.setAttribute('data-val', val);
-    }
+        for(i = 0; i < axList.length; i++) {
+            if(!axList[i].fixedrange) {
+                initialRange = axList[i].range;
+                aobj[axList[i]._name+ '.range'] = [
+                    r0 * initialRange[0] + r1 * initialRange[1],
+                    r0 * initialRange[1] + r1 * initialRange[0]
+                ];
+            }
+        }
+    } else {
+        // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
+        if (astr==='hovermode' && (val==='x' || val==='y')) {
+            val = fullLayout._isHoriz ? 'y' : 'x';
+            button.setAttribute('data-val', val);
+        }
 
-    aobj[astr] = val;
+        aobj[astr] = val;
+    }
 
     Plotly.relayout(graphInfo, aobj).then( function() {
         _this.updateActiveButton();
