@@ -17,7 +17,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.875,0.125,0.745689655172)"
+                "color": "rgb(223, 32, 190)"
             },
             "line": {
                 "width": 1
@@ -41,7 +41,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.849137931034,0.125,0.875)"
+                "color": "rgb(217, 32, 223)"
             },
             "line": {
                 "width": 1
@@ -65,7 +65,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.693965517241,0.125,0.875)"
+                "color": "rgb(177, 32, 223)"
             },
             "line": {
                 "width": 1
@@ -89,7 +89,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.538793103448,0.125,0.875)"
+                "color": "rgb(137, 32, 223)"
             },
             "line": {
                 "width": 1
@@ -113,7 +113,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.383620689655,0.125,0.875)"
+                "color": "rgb(98, 32, 223)"
             },
             "line": {
                 "width": 1
@@ -137,7 +137,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.228448275862,0.125,0.875)"
+                "color": "rgb(58, 32, 223)"
             },
             "line": {
                 "width": 1
@@ -161,7 +161,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.125,0.176724137931,0.875)"
+                "color": "rgb(32, 45, 223)"
             },
             "line": {
                 "width": 1
@@ -185,7 +185,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.125,0.331896551724,0.875)"
+                "color": "rgb(32, 85, 223)"
             },
             "line": {
                 "width": 1
@@ -209,7 +209,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.125,0.487068965517,0.875)"
+                "color": "rgb(32, 124, 223)"
             },
             "line": {
                 "width": 1
@@ -233,7 +233,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.125,0.64224137931,0.875)"
+                "color": "rgb(32, 164, 223)"
             },
             "line": {
                 "width": 1
@@ -257,7 +257,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.125,0.797413793103,0.875)"
+                "color": "rgb(32, 203, 223)"
             },
             "line": {
                 "width": 1
@@ -281,7 +281,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.125,0.875,0.797413793103)"
+                "color": "rgb(32, 223, 203)"
             },
             "line": {
                 "width": 1
@@ -305,7 +305,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.125,0.875,0.64224137931)"
+                "color": "rgb(32, 223, 164)"
             },
             "line": {
                 "width": 1
@@ -329,7 +329,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.125,0.875,0.487068965517)"
+                "color": "rgb(32, 223, 124)"
             },
             "line": {
                 "width": 1
@@ -353,7 +353,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.125,0.875,0.331896551724)"
+                "color": "rgb(32, 223, 85)"
             },
             "line": {
                 "width": 1
@@ -377,7 +377,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.125,0.875,0.176724137931)"
+                "color": "rgb(32, 223, 45)"
             },
             "line": {
                 "width": 1
@@ -401,7 +401,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.228448275862,0.875,0.125)"
+                "color": "rgb(58, 223, 32)"
             },
             "line": {
                 "width": 1
@@ -425,7 +425,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.383620689655,0.875,0.125)"
+                "color": "rgb(98, 223, 32)"
             },
             "line": {
                 "width": 1
@@ -449,7 +449,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.538793103448,0.875,0.125)"
+                "color": "rgb(137, 223, 32)"
             },
             "line": {
                 "width": 1
@@ -473,7 +473,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.693965517241,0.875,0.125)"
+                "color": "rgb(177, 223, 32)"
             },
             "line": {
                 "width": 1
@@ -497,7 +497,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.849137931034,0.875,0.125)"
+                "color": "rgb(217, 223, 32)"
             },
             "line": {
                 "width": 1
@@ -521,7 +521,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.875,0.745689655172,0.125)"
+                "color": "rgb(223, 190, 32)"
             },
             "line": {
                 "width": 1
@@ -545,7 +545,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.875,0.590517241379,0.125)"
+                "color": "rgb(223, 151, 32)"
             },
             "line": {
                 "width": 1
@@ -569,7 +569,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.875,0.435344827586,0.125)"
+                "color": "rgb(223, 111, 32)"
             },
             "line": {
                 "width": 1
@@ -593,7 +593,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.875,0.280172413793,0.125)"
+                "color": "rgb(223, 71, 32)"
             },
             "line": {
                 "width": 1
@@ -617,7 +617,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.875,0.125,0.125)"
+                "color": "rgb(223, 32, 32)"
             },
             "line": {
                 "width": 1
@@ -641,7 +641,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.875,0.125,0.125)"
+                "color": "rgb(223, 32, 32)"
             },
             "line": {
                 "width": 1
@@ -665,7 +665,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.875,0.125,0.280172413793)"
+                "color": "rgb(223, 32, 71)"
             },
             "line": {
                 "width": 1
@@ -689,7 +689,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.875,0.125,0.435344827586)"
+                "color": "rgb(223, 32, 111)"
             },
             "line": {
                 "width": 1
@@ -713,7 +713,7 @@
             "boxpoints": false,
             "whiskerwidth": 0.75,
             "marker": {
-                "color": "rgb(0.875,0.125,0.590517241379)"
+                "color": "rgb(223, 32, 151)"
             },
             "line": {
                 "width": 1
@@ -729,7 +729,7 @@
             "size": 18
         },
         "font": {
-            "family": "Arial, sans-serif", 
+            "family": "Arial, sans-serif",
             "size": 12,
             "color": "rgb(67, 67, 67)"
         },
