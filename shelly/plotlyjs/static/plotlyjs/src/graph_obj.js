@@ -572,7 +572,7 @@ Plotly.plot = function(gd, data, layout, config) {
             trace = cd[0].trace;
             if (trace.visible !== true || !trace._module.colorbar) {
                 uid = trace.uid;
-                fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid)
+                fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid+',#clip'+uid)
                     .remove();
             }
         }

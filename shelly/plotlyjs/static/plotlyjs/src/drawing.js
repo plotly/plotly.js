@@ -985,3 +985,21 @@ drawing.bBox = function(node) {
 
     return Plotly.Lib.extendFlat(bb);
 };
+
+/*
+ * make a robust clipPath url from a local id
+ * note! We'd better not be exporting from a page
+ * with a <base> or the svg will not be portable!
+ */
+drawing.setClipUrl = function(s, localId) {
+    if(!localId) {
+        s.attr('clip-path', null);
+        return;
+    }
+
+    var url = '#' + localId,
+        base = d3.select('base');
+
+    if(base.size() && base.attr('href')) url = window.location.href + url;
+    s.attr('clip-path', 'url(' + url + ')');
+};
