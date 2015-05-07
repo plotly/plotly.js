@@ -119,16 +119,6 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
             sceneLayoutOut.aspectmode = 'auto';
         }
 
-        /*
-         * write back aspectRatio to userSceneLayout as it is dynamic and needs to be present
-         * to be written to as the scene is modified.
-         */
-        //sceneLayoutIn.aspectratio = sceneLayoutOut.aspectratio;
-
-        // TODO figure out why removing this line forces aspectmode back to ratio if it had
-        // been forced to auto b
-        //sceneLayoutIn.aspectmode = sceneLayoutOut.aspectmode;
-
          /*
           * scene arrangements need to be implemented: For now just splice
           * along the horizontal direction. ie.
