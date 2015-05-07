@@ -1,4 +1,6 @@
-var Plotly = require('../../plotly');
+var Plotly = require('../../plotly'),
+    isNumeric = require('../../isnumeric');
+
 var Gl3dLayout = {};
 
 module.exports = Gl3dLayout;
@@ -25,6 +27,25 @@ Gl3dLayout.layoutAttributes = {
         'xaxis': 'Gl3dAxes',
         'yaxis': 'Gl3dAxes',
         'zaxis': 'Gl3dAxes'
+    },
+    aspectmode: {
+        type: 'enumerated',
+        values: ['auto', 'equal', 'data', 'ratio'],
+        dflt: 'auto'
+    },
+    aspectratio: { // must be positive (0's are coerced to 1)
+        x: {
+            type: 'number',
+            min: 0
+        },
+        y: {
+            type: 'number',
+            min: 0
+        },
+        z: {
+            type: 'number',
+            min: 0
+        }
     }
 };
 
@@ -32,10 +53,10 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
     if (!layoutOut._hasGL3D) return;
 
-    var _this = this;
     var scenes = [];
+    var i;
 
-    for (var i = 0; i < fullData.length; ++i) {
+    for (i = 0; i < fullData.length; ++i) {
         var d = fullData[i];
         if (Plotly.Plots.isGL3D(d.type)) {
             if (scenes.indexOf(d.scene) === -1) {
@@ -51,8 +72,8 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
     // Get number of scenes to compute default scene domain
     var scenesLength = scenes.length;
 
-    for (var i_scene = 0; i_scene < scenesLength; ++i_scene) {
-        var scene = scenes[i_scene];
+    for (i = 0; i < scenesLength; ++i) {
+        var scene = scenes[i];
         /*
          * Scene numbering proceeds as follows
          * scene
@@ -60,21 +81,53 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
          * scene3
          *
          * and d.scene will be undefined or some number or number string
+         *
+         * Also write back a blank scene object to user layout so that some
+         * attributes like aspectratio can be written back dynamically.
          */
-        var sceneLayoutIn = layoutIn[scene] || {};
-        var sceneLayoutOut = {};
+        var sceneLayoutIn;
+        if (scene in layoutIn) sceneLayoutIn = layoutIn[scene];
+        else layoutIn[scene] = sceneLayoutIn = {};
+
+        var sceneLayoutOut = layoutOut[scene] || {};
 
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(sceneLayoutIn, sceneLayoutOut,
-                                     _this.layoutAttributes, attr, dflt);
+                                     Gl3dLayout.layoutAttributes, attr, dflt);
         }
 
         coerce('bgcolor');
         coerce('cameraposition');
-        coerce('domain.x[0]', i_scene / scenesLength);
-        coerce('domain.x[1]', (i_scene+1) / scenesLength);
+        coerce('domain.x[0]', i / scenesLength);
+        coerce('domain.x[1]', (i+1) / scenesLength);
         coerce('domain.y[0]');
         coerce('domain.y[1]');
+
+        coerce('aspectmode');
+
+        /*
+         * coerce to positive number (min 0) but also do not accept 0 (>0 not >=0)
+         * note that 0's go false with the !! call
+         */
+        var hasAspect = true;
+        hasAspect = hasAspect && !!coerce('aspectratio.x');
+        hasAspect = hasAspect && !!coerce('aspectratio.y');
+        hasAspect = hasAspect && !!coerce('aspectratio.z');
+
+        if (!hasAspect) {
+            sceneLayoutOut.aspectratio = {x: 1, y: 1, z: 1};
+            sceneLayoutOut.aspectmode = 'auto';
+        }
+
+        /*
+         * write back aspectRatio to userSceneLayout as it is dynamic and needs to be present
+         * to be written to as the scene is modified.
+         */
+        //sceneLayoutIn.aspectratio = sceneLayoutOut.aspectratio;
+
+        // TODO figure out why removing this line forces aspectmode back to ratio if it had
+        // been forced to auto b
+        //sceneLayoutIn.aspectmode = sceneLayoutOut.aspectmode;
 
          /*
           * scene arrangements need to be implemented: For now just splice
@@ -82,7 +135,6 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
           * x:[0,1] -> x:[0,0.5], x:[0.5,1] ->
           *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
           */
-
         Plotly.Gl3dAxes.supplyLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
             font: layoutOut.font,
             scene: scene,

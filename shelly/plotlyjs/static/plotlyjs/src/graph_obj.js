@@ -1213,6 +1213,7 @@ plots.supplyDefaults = function(gd) {
 
         // DETECT 3D, Cartesian, and Polar
         if (plots.isGL3D(fullTrace.type)) newFullLayout._hasGL3D = true;
+
         if (plots.isCartesian(fullTrace.type)) {
             if ('r' in fullTrace) newFullLayout._hasPolar = true;
             else newFullLayout._hasCartesian = true;
@@ -2796,6 +2797,9 @@ Plotly.relayout = function relayout (gd, astr, val) {
         else if(ai==='autosize') { doextra(hw, undefined); }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
             doextra(ptrunk+'.autorange', false);
+        }
+        else if(pleafPlus.match(/^aspectratio\.[xyz]$/)) {
+            doextra(p.parts[0]+'.aspectmode', 'ratio');
         }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.autorange$/)) {
             doextra([ptrunk + '.range[0]',ptrunk + '.range[1]'],
