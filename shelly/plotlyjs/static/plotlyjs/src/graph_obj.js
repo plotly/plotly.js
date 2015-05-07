@@ -676,6 +676,7 @@ function plot3D(gd) {
         var sceneKey = sceneKeys[i_sceneKey],
             sceneData = getSceneData(fullData, sceneKey),
             sceneLayout = fullLayout[sceneKey],
+            userSceneLayout = gd.layout[sceneKey],
             scene = sceneLayout._scene;  // ref. to corresp. Scene instance
 
         // If Scene is not instantiated, create one!
@@ -694,7 +695,7 @@ function plot3D(gd) {
             sceneLayout._scene = scene;  // set ref to Scene instance
         }
 
-        scene.plot(sceneData, sceneLayout);  // takes care of business
+        scene.plot(sceneData, sceneLayout, userSceneLayout);  // takes care of business
     }
 }
 
