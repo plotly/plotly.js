@@ -40,12 +40,11 @@ function Scene(options) {
 
     plotContainer.appendChild(sceneContainer);
 
-    this.Plotly       = options.Plotly;
-    this.sceneLayout  = options.sceneLayout;
-    this.fullLayout   = options.fullLayout;
-    this.userSceneLayout = options.userSceneLayout;
-    this.axesOptions  = createAxesOptions(options.sceneLayout);
-    this.spikeOptions = createSpikeOptions(options.sceneLayout);
+    this.Plotly           = options.Plotly;
+    this.fullSceneLayout  = options.fullSceneLayout;
+    this.fullLayout       = options.fullLayout;
+    this.axesOptions      = createAxesOptions(options.fullSceneLayout);
+    this.spikeOptions     = createSpikeOptions(options.fullSceneLayout);
 
     this.container    = sceneContainer;
 
@@ -132,23 +131,23 @@ var proto = Scene.prototype;
 
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
-proto.plot = function(sceneData, sceneLayout, userSceneLayout) {
+proto.plot = function(sceneData, fullSceneLayout, sceneLayout) {
 
     var data, trace;
     var i, j;
 
-    if (sceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(sceneLayout.bgcolor);
+    if (fullSceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(fullSceneLayout.bgcolor);
     else this.glplot.clearColor = [0, 0, 0, 0];
 
     //Update layout
-    this.glplotLayout = sceneLayout;
-    this.axesOptions.merge(sceneLayout);
-    this.spikeOptions.merge(sceneLayout);
+    this.glplotLayout = fullSceneLayout;
+    this.axesOptions.merge(fullSceneLayout);
+    this.spikeOptions.merge(fullSceneLayout);
 
     //Update camera position
     if(!this.hasPlotBeenCalled) {
       this.hasPlotBeenCalled = true;
-      var camera = sceneLayout.cameraposition;
+      var camera = fullSceneLayout.cameraposition;
       if (camera) this.setCameraPosition(camera);
     }
 
@@ -204,7 +203,7 @@ trace_id_loop:
         axisDataRange = [];
 
     for(i = 0; i < 3; ++i) {
-        var axis = sceneLayout[axisProperties[i]];
+        var axis = fullSceneLayout[axisProperties[i]];
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
@@ -226,7 +225,7 @@ trace_id_loop:
                 sceneBounds[1][i] += d/32.0;
             }
         } else {
-            var range = sceneLayout[axisProperties[i]].range;
+            var range = fullSceneLayout[axisProperties[i]].range;
             sceneBounds[0][i] = range[0];
             sceneBounds[1][i] = range[1];
         }
@@ -248,7 +247,7 @@ trace_id_loop:
     var axisAutoScaleFactor = 4;
     var aspectRatio;
 
-    if (sceneLayout.aspectmode === 'auto') {
+    if (fullSceneLayout.aspectmode === 'auto') {
         if (Math.max.apply(null, axesScaleRatio)/Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
 
             /*
@@ -263,14 +262,14 @@ trace_id_loop:
             aspectRatio = [1, 1, 1];
         }
 
-    } else if (sceneLayout.aspectmode === 'equal') {
+    } else if (fullSceneLayout.aspectmode === 'equal') {
         aspectRatio = [1, 1, 1];
 
-    } else if (sceneLayout.aspectmode === 'data') {
+    } else if (fullSceneLayout.aspectmode === 'data') {
         aspectRatio = axesScaleRatio;
 
-    } else if (sceneLayout.aspectmode === 'ratio') {
-        var userRatio = sceneLayout.aspectratio;
+    } else if (fullSceneLayout.aspectmode === 'ratio') {
+        var userRatio = fullSceneLayout.aspectratio;
         aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
 
     } else {
@@ -281,9 +280,9 @@ trace_id_loop:
      * Write aspect Ratio back to user data and fullLayout so that it is modifies as user
      * manipulates the aspectmode settings and the fullLayout is up-to-date.
      */
-    sceneLayout.aspectratio.x = userSceneLayout.aspectratio.x = aspectRatio[0];
-    sceneLayout.aspectratio.y = userSceneLayout.aspectratio.y = aspectRatio[1];
-    sceneLayout.aspectratio.z = userSceneLayout.aspectratio.z = aspectRatio[2];
+    fullSceneLayout.aspectratio.x = sceneLayout.aspectratio.x = aspectRatio[0];
+    fullSceneLayout.aspectratio.y = sceneLayout.aspectratio.y = aspectRatio[1];
+    fullSceneLayout.aspectratio.z = sceneLayout.aspectratio.z = aspectRatio[2];
 
     /*
      * Finally assign the computed aspecratio to the glplot module. This will have an effect
@@ -293,7 +292,7 @@ trace_id_loop:
 
 
     //Update frame position for multi plots
-    var domain = this.sceneLayout.domain || null,
+    var domain = this.fullSceneLayout.domain || null,
         size = this.fullLayout._size || null;
 
     if (domain && size) {

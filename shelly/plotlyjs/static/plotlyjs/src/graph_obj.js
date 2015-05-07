@@ -667,6 +667,10 @@ function plot3D(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData;
 
+    var i, sceneId, fullSceneData,
+        fullSceneLayout, sceneLayout,
+        scene, sceneOptions;
+
     fullLayout._paperdiv.style({
         width: fullLayout.width+'px',
         height: fullLayout.height+'px'
@@ -686,14 +690,14 @@ function plot3D(gd) {
     }
 
     var sceneIds = plots.getSubplotIds(fullLayout, 'gl3d');
-    var i, sceneId, sceneData, userSceneLayout, sceneLayout, scene, sceneOptions;
+
 
     for (i = 0; i < sceneIds.length; i++) {
         sceneId = sceneIds[i];
-        sceneData = getSceneData(fullData, sceneId);
-        sceneLayout = fullLayout[sceneId];
-        userSceneLayout = gd.layout[sceneId],
-        scene = sceneLayout._scene;  // ref. to corresp. Scene instance
+        fullSceneData = getSceneData(fullData, sceneId);
+        fullSceneLayout = fullLayout[sceneId];
+        sceneLayout = gd.layout[sceneId],
+        scene = fullSceneLayout._scene;  // ref. to corresp. Scene instance
 
         // If Scene is not instantiated, create one!
         if (!(scene)) {
@@ -701,17 +705,16 @@ function plot3D(gd) {
                 Plotly: Plotly,
                 container: gd.querySelector('.svg-container'),
                 sceneId: sceneId,
-                sceneData: sceneData,
-                sceneLayout: sceneLayout,
+                fullSceneLayout: fullSceneLayout,
                 fullLayout: fullLayout,
                 staticPlot: gd._context.staticPlot,
                 plot3dPixelRatio: gd._context.plot3dPixelRatio
             };
             scene = new Plotly.Scene(sceneOptions);
-            sceneLayout._scene = scene;  // set ref to Scene instance
+            fullSceneLayout._scene = scene;  // set ref to Scene instance
         }
 
-        scene.plot(sceneData, sceneLayout, userSceneLayout);  // takes care of business
+        scene.plot(fullSceneData, fullSceneLayout, sceneLayout);  // takes care of business
     }
 }
 

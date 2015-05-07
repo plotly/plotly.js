@@ -186,7 +186,7 @@ function convertPlotlyOptions(scene, data) {
     var params, i,
         points = [],
         Plotly = scene.Plotly,
-        sceneLayout = scene.sceneLayout,
+        sceneLayout = scene.fullSceneLayout,
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,

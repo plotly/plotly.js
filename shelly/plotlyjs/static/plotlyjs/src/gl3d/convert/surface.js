@@ -95,7 +95,7 @@ proto.setContourLevels = function() {
 proto.update = function(data) {
     var i,
         scene = this.scene,
-        sceneLayout = scene.sceneLayout,
+        sceneLayout = scene.fullSceneLayout,
         surface = this.surface,
         alpha = data.opacity,
         colormap = parseColorScale(data.colorscale, alpha),

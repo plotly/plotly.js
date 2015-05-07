@@ -115,7 +115,7 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
         hasAspect = hasAspect && !!coerce('aspectratio.z');
 
         if (!hasAspect) {
-            sceneLayoutOut.aspectratio = {x: 1, y: 1, z: 1};
+            sceneLayoutIn.aspectratio = sceneLayoutOut.aspectratio = {x: 1, y: 1, z: 1};
             sceneLayoutOut.aspectmode = 'auto';
         }
 
