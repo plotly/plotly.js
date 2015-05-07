@@ -1248,17 +1248,7 @@ fx.modeBar = function(gd){
 
     if (!gd._context.displayModeBar) return deleteModebar();
 
-    var modeButtons2d = [
-            ['zoom2d', 'pan2d'],
-            ['zoomIn2d', 'zoomOut2d', 'autoScale2d'],
-            ['hoverClosest2d', 'hoverCompare2d']
-        ],
-        modeButtons3d = [
-            ['rotate3d', 'zoom3d', 'pan3d'],
-            ['resetCameraDefault3d', 'resetCameraLastSave3d'],
-            ['hoverClosest3d']
-        ],
-        buttons = fullLayout._hasGL3D ? modeButtons3d : modeButtons2d;
+    var buttons = chooseModebarButtons(fullLayout);
 
     if (!fullLayout._modebar){
         deleteModebar();
@@ -1273,6 +1263,38 @@ fx.modeBar = function(gd){
         fullLayout._modebar = initModebar();
     }
 };
+
+function chooseModebarButtons(fullLayout) {
+    if(fullLayout._hasGL3D) {
+        return [
+            ['rotate3d', 'zoom3d', 'pan3d'],
+            ['resetCameraDefault3d', 'resetCameraLastSave3d'],
+            ['hoverClosest3d']
+        ];
+    }
+
+    var axList = Plotly.Axes.list({_fullLayout: fullLayout}, null, true),
+        allFixed = true,
+        i,
+        buttons;
+
+    for(i = 0; i < axList.length; i++) {
+        if(!axList[i].fixedrange) {
+            allFixed = false;
+            break;
+        }
+    }
+
+    if(allFixed) buttons = [];
+    else buttons = [
+        ['zoom2d', 'pan2d'],
+        ['zoomIn2d', 'zoomOut2d', 'autoScale2d']
+    ];
+
+    buttons.push(['hoverClosest2d', 'hoverCompare2d']);
+
+    return buttons;
+}
 
 // ----------------------------------------------------
 // Axis dragging functions
