@@ -316,16 +316,17 @@ shapes.draw = function(gd, index, opt, value) {
             d: shapePath(gd, options)
         },
         clipAxes = (options.xref + options.yref).replace(/paper/g, '');
-    if(clipAxes) attrs['clip-path'] = 'url(#clip' + fullLayout._uid + clipAxes + ')';
 
     var lineColor = options.line.width ? options.line.color : 'rgba(0,0,0,0)';
 
-    fullLayout._shapelayer.append('path')
+    var path = fullLayout._shapelayer.append('path')
         .attr(attrs)
         .style('opacity', options.opacity)
         .call(Plotly.Color.stroke, lineColor)
         .call(Plotly.Color.fill, options.fillcolor)
         .call(Plotly.Drawing.dashLine, options.line.dash, options.line.width);
+
+    if(clipAxes) path.call(Plotly.Drawing.setClipUrl, 'clip' + fullLayout._uid + clipAxes);
 };
 
 function decodeDate(convertToPx) {

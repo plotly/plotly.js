@@ -33,28 +33,28 @@ function Scene(options) {
     /*
      * Tag the container with the sceneID
      */
-    sceneContainer.id = options.sceneKey;
+    sceneContainer.id = options.sceneId;
     sceneContainer.style.position = 'absolute';
     sceneContainer.style.top = sceneContainer.style.left = '0px';
     sceneContainer.style.width = sceneContainer.style.height = '100%';
 
     plotContainer.appendChild(sceneContainer);
 
-    this.Plotly          = options.Plotly;
-    this.sceneLayout     = options.sceneLayout;
-    this.fullLayout      = options.fullLayout;
+    this.Plotly       = options.Plotly;
+    this.sceneLayout  = options.sceneLayout;
+    this.fullLayout   = options.fullLayout;
     this.userSceneLayout = options.userSceneLayout;
-    this.axesOptions     = createAxesOptions(options.sceneLayout);
-    this.spikeOptions    = createSpikeOptions(options.sceneLayout);
+    this.axesOptions  = createAxesOptions(options.sceneLayout);
+    this.spikeOptions = createSpikeOptions(options.sceneLayout);
 
-    this.container       = sceneContainer;
+    this.container    = sceneContainer;
 
     /*
      * WARNING!!!! Only set camera position on first call to plot!!!!
      * TODO remove this hack
      */
     this.hasPlotBeenCalled = false;
-    this.sceneKey          = options.sceneKey || 'scene';
+    this.sceneId = options.sceneId || 'scene';
 
     var glplotOptions = {
             container:  sceneContainer,
@@ -347,11 +347,10 @@ proto.setCameraPosition = function setCameraPosition (camera) {
 };
 
 // save camera position to user layout (i.e. gd.layout)
-proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) {
-    var lib = this.Plotly.Lib;
-    var prop = lib.nestedProperty(layout, this.sceneKey + '.cameraposition');
+proto.saveCamera = function saveCamera(layout) {
     var cameraposition = this.getCameraPosition();
-    prop.set(cameraposition);
+    this.Plotly.Lib.nestedProperty(layout, this.sceneId + '.cameraposition')
+        .set(cameraposition);
 };
 
 proto.toImage = function (format) {
