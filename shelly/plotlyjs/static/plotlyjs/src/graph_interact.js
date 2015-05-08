@@ -6,13 +6,13 @@
 
 var fx = module.exports = {},
     Plotly = require('./plotly'),
-    tinycolor = require('tinycolor2');
+    tinycolor = require('tinycolor2'),
+    isNumeric = require('./isnumeric');
 
 fx.layoutAttributes = {
     dragmode: {
         type: 'enumerated',
-        values: ['zoom', 'pan'],
-        dflt: 'zoom'
+        values: ['zoom', 'pan', 'rotate']
     },
     hovermode: {
         type: 'enumerated',
@@ -27,7 +27,7 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
                                  attr, dflt);
     }
 
-    coerce('dragmode');
+    coerce('dragmode', layoutOut._hasGL3D ? 'rotate' : 'zoom');
 
     if (layoutOut._hasGL3D) {
         coerce('hovermode', 'closest');
@@ -88,8 +88,8 @@ fx.init = function(gd) {
             // the x position of the main y axis line
             x0 = (ya._linepositions[subplot]||[])[3];
 
-        if($.isNumeric(y0) && xa.side==='top') y0 -= DRAGGERSIZE;
-        if($.isNumeric(x0) && ya.side!=='right') x0 -= DRAGGERSIZE;
+        if(isNumeric(y0) && xa.side==='top') y0 -= DRAGGERSIZE;
+        if(isNumeric(x0) && ya.side!=='right') x0 -= DRAGGERSIZE;
 
         // main and corner draggers need not be repeated for
         // overlaid subplots - these draggers drag them all
@@ -121,7 +121,7 @@ fx.init = function(gd) {
 
         // x axis draggers - if you have overlaid plots,
         // these drag each axis separately
-        if($.isNumeric(y0)) {
+        if(isNumeric(y0)) {
             if(xa.anchor==='free') y0 -= fullLayout._size.h*(1-ya.domain[1]);
             dragBox(gd, plotinfo, xa._length*0.1, y0,
                 xa._length*0.8, DRAGGERSIZE, '', 'ew');
@@ -131,7 +131,7 @@ fx.init = function(gd) {
                 xa._length*0.1, DRAGGERSIZE, '', 'e');
         }
         // y axis draggers
-        if($.isNumeric(x0)) {
+        if(isNumeric(x0)) {
             if(ya.anchor==='free') x0 -= fullLayout._size.w*xa.domain[0];
             dragBox(gd, plotinfo, x0, ya._length*0.1,
                 DRAGGERSIZE, ya._length*0.8, 'ns', '');
@@ -375,7 +375,7 @@ function hover(gd, evt, subplot){
         if('yval' in evt) yvalArray = flat(subplots, evt.yval);
         else yvalArray = p2c(yaArray, ypx);
 
-        if(!$.isNumeric(xvalArray[0]) || !$.isNumeric(yvalArray[0])) {
+        if(!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
             console.log('Plotly.Fx.hover failed', evt, gd);
             return unhover(gd, evt);
         }
@@ -407,7 +407,7 @@ function hover(gd, evt, subplot){
             trace: trace,
             xa: xaArray[subploti],
             ya: yaArray[subploti],
-            name: gd.data.length>1 ? trace.name : undefined,
+            name: (gd.data.length>1 || trace.hoverinfo.indexOf('name')!==-1) ? trace.name : undefined,
             // point properties - override all of these
             index: false, // point index in trace - only used by plotly.js hoverdata consumers
             distance: Math.min(distance, fx.MAXDIST), // pixel distance or pseudo-distance
@@ -456,7 +456,7 @@ function hover(gd, evt, subplot){
                 var newPoint;
                 for(var newPointNum=0; newPointNum<newPoints.length; newPointNum++) {
                     newPoint = newPoints[newPointNum];
-                    if($.isNumeric(newPoint.x0) && $.isNumeric(newPoint.y0)) {
+                    if(isNumeric(newPoint.x0) && isNumeric(newPoint.y0)) {
                         hoverData.push(cleanPoint(newPoint, hovermode));
                     }
                 }
@@ -717,6 +717,18 @@ function createHoverText(hoverData, opts) {
     var showCommonLabel = c0.distance<=fx.MAXDIST &&
                           (hovermode==='x' || hovermode==='y');
 
+    // all hover traces hoverinfo must contain the hovermode
+    // to have common labels
+    var i, traceHoverinfo;
+    for (i = 0; i < hoverData.length; i++) {
+        traceHoverinfo = hoverData[i].trace.hoverinfo;
+        if (traceHoverinfo.indexOf('all')===-1 &&
+                traceHoverinfo.indexOf(hovermode)===-1) {
+            showCommonLabel = false;
+            break;
+        }
+    }
+
     var commonLabel = container.selectAll('g.axistext')
         .data(showCommonLabel ? [0] : []);
     commonLabel.enter().append('g')
@@ -860,6 +872,15 @@ function createHoverText(hoverData, opts) {
 
         if(d.text) text += (text ? '<br>' : '') + d.text;
 
+        // if 'text' is empty at this point,
+        // put 'name' in main label and don't show secondary label
+        if (text === '') {
+            // if 'name' is also empty, remove entire label
+            if (name === '') g.remove();
+            text = name;
+        }
+
+        // main label
         var tx = g.select('text.nums')
             .style('fill',contrastColor)
             .call(Plotly.Drawing.setPosition,0,0)
@@ -872,7 +893,8 @@ function createHoverText(hoverData, opts) {
         var tx2 = g.select('text.name'),
             tx2width = 0;
 
-        if(name) {
+        // secondary label for non-empty 'name'
+        if (name && name!==text) {
             tx2.style('fill',traceColor)
                 .text(name)
                 .call(Plotly.Drawing.setPosition,0,0)
@@ -1226,17 +1248,7 @@ fx.modeBar = function(gd){
 
     if (!gd._context.displayModeBar) return deleteModebar();
 
-    var modeButtons2d = [
-            ['zoom2d', 'pan2d'],
-            ['zoomIn2d', 'zoomOut2d', 'autoScale2d'],
-            ['hoverClosest2d', 'hoverCompare2d']
-        ],
-        modeButtons3d = [
-            ['rotate3d', 'zoom3d', 'pan3d'],
-            ['resetCameraDefault3d', 'resetCameraLastSave3d'],
-            ['hoverClosest3d']
-        ],
-        buttons = fullLayout._hasGL3D ? modeButtons3d : modeButtons2d;
+    var buttons = chooseModebarButtons(fullLayout);
 
     if (!fullLayout._modebar){
         deleteModebar();
@@ -1251,6 +1263,38 @@ fx.modeBar = function(gd){
         fullLayout._modebar = initModebar();
     }
 };
+
+function chooseModebarButtons(fullLayout) {
+    if(fullLayout._hasGL3D) {
+        return [
+            ['rotate3d', 'zoom3d', 'pan3d'],
+            ['resetCameraDefault3d', 'resetCameraLastSave3d'],
+            ['hoverClosest3d']
+        ];
+    }
+
+    var axList = Plotly.Axes.list({_fullLayout: fullLayout}, null, true),
+        allFixed = true,
+        i,
+        buttons;
+
+    for(i = 0; i < axList.length; i++) {
+        if(!axList[i].fixedrange) {
+            allFixed = false;
+            break;
+        }
+    }
+
+    if(allFixed) buttons = [];
+    else buttons = [
+        ['zoom2d', 'pan2d'],
+        ['zoomIn2d', 'zoomOut2d', 'autoScale2d']
+    ];
+
+    buttons.push(['hoverClosest2d', 'hoverCompare2d']);
+
+    return buttons;
+}
 
 // ----------------------------------------------------
 // Axis dragging functions

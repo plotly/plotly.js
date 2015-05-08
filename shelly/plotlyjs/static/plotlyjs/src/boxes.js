@@ -4,7 +4,8 @@
 /* global d3:false */
 
 var boxes = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,
@@ -212,7 +213,7 @@ boxes.calc = function(gd, trace) {
             if (posLetter+'0' in trace) pos0 = trace[posLetter+'0'];
             else if ('name' in trace && (
                         posAxis.type==='category' ||
-                        ($.isNumeric(trace.name) &&
+                        (isNumeric(trace.name) &&
                             ['linear','log'].indexOf(posAxis.type)!==-1) ||
                         (Plotly.Lib.isDateTime(trace.name) &&
                          posAxis.type==='date')
@@ -252,7 +253,7 @@ boxes.calc = function(gd, trace) {
         // bin the values
         for (i = 0; i < valLength; ++i) {
             v = val[i];
-            if(!$.isNumeric(v)) continue;
+            if(!isNumeric(v)) continue;
             n = Plotly.Lib.findBin(pos[i], bins);
             if(n>=0 && n<valLength) valBinned[n].push(v);
         }
