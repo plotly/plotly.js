@@ -587,10 +587,11 @@ util.convertToSvg = function(_str){
         .split(/(<[^<>]*>)/).map(function(d){
             var match = d.match(/<(\/?)([^ >]*)[ ]?(.*)>/i);
             if(match && (match[2] in CONVERSION || uppercase.indexOf(match[2]) !== -1)){
-                if((match[2] === 'a' || match[2] === 'A') && match[3]){
-                    return '<a xlink:show="new" xlink:'+ CONVERSION[match[2]] + match[3] + '>';
+                if((match[2] === 'a' || match[2] === 'A')){
+                    if(match[1]) return '</a>';
+                    else if(match[3].substr(0,4) !== 'href') return '<a>';
+                    else return '<a xlink:show="new" xlink:' + match[3] + '>';
                 }
-                else if((match[2] === 'a' || match[2] === 'A') && match[1]) return '</a>';
                 else if(match[1]) {
                     // extra tspan with zero-width space to get back to the right baseline
                     if(match[2] === 'sup' || match[2] === 'SUP') {
