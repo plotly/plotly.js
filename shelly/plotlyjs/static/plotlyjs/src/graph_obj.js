@@ -2824,9 +2824,10 @@ Plotly.relayout = function relayout (gd, astr, val) {
         }
         else if(pleafPlus.match(/^aspectratio\.[xyz]$/)) {
             doextra(p.parts[0]+'.aspectmode', 'manual');
+        }
+        else if(pleafPlus.match(/^aspectmode$/)) {
             doextra([ptrunk + '.x', ptrunk + '.y', ptrunk + '.z'], undefined);
         }
-
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie are we toggling log)
         if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
