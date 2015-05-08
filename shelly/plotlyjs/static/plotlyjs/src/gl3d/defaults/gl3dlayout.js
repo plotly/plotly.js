@@ -108,28 +108,24 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
          * coerce to positive number (min 0) but also do not accept 0 (>0 not >=0)
          * note that 0's go false with the !! call
          */
-        var hasAspect = true;
-        hasAspect = hasAspect && !!coerce('aspectratio.x');
-        hasAspect = hasAspect && !!coerce('aspectratio.y');
-        hasAspect = hasAspect && !!coerce('aspectratio.z');
+        var hasAspect = !!coerce('aspectratio.x') &&
+                        !!coerce('aspectratio.y') &&
+                        !!coerce('aspectratio.z');
 
-        var aspectRatio = coerce('aspectmode');
+        var defaultAspectMode = hasAspect ? 'manual' : 'auto';
+        var aspectMode = coerce('aspectmode', defaultAspectMode);
 
-        if (hasAspect && attributes.aspectmode.values.indexOf(sceneLayoutIn.aspectmode) === -1) {
-
-            // invalid aspectmode provided with valid aspectratio. Assume mode == 'manual'
-            sceneLayoutOut.aspectmode = 'manual';
-
-        } else if (!hasAspect) {
-
-            /*
-             * we need aspectratio object in all the Layouts as it is dynamically set
-             * in the calculation steps, ie, we cant set the correct data now, it happens later.
-             */
+        /*
+         * We need aspectratio object in all the Layouts as it is dynamically set
+         * in the calculation steps, ie, we cant set the correct data now, it happens later.
+         * We must also account for the case the user sends bad ratio data with 'manual' set
+         * for the mode. In this case we must force change it here as the default coerce
+         * misses it above.
+         */
+        if (!hasAspect) {
             sceneLayoutIn.aspectratio = sceneLayoutOut.aspectratio = {x: 1, y: 1, z: 1};
 
-            // if manual data provided and manual mode selected but data is bad, switch to auto
-            if (aspectRatio === 'manual') sceneLayoutOut.aspectmode = 'auto';
+            if (aspectMode === 'manual') sceneLayoutOut.aspectmode = 'auto';
         }
 
          /*
