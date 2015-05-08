@@ -676,4 +676,22 @@ describe('Test graph_obj', function () {
 
     });
 
+    describe('Plotly.Plots.getSubplotIds', function() {
+        var getSubplotIds = Plotly.Plots.getSubplotIds;
+
+        var ids, layout;
+
+        it('it should return scene ids', function() {
+            layout = {
+                scene: {},
+                scene2: {},
+                scene3: {}
+            };
+
+            ids = getSubplotIds(layout, 'gl3d');
+            expect(ids).toEqual(['scene', 'scene2', 'scene3']);
+        });
+
+    });
+
 });

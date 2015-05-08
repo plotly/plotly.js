@@ -733,12 +733,9 @@ function makeLines(plotgroup, pathinfo, contours) {
 }
 
 function clipGaps(plotGroup, plotinfo, cd0, perimeter) {
-    var clipId = 'clip' + cd0.trace.uid,
-        clipUrl = 'url(#' + clipId + ')';
+    var clipId = 'clip' + cd0.trace.uid;
 
-    var mapLayer = d3.select(plotGroup.node().parentNode);
-
-    var defs = mapLayer.selectAll('defs')
+    var defs = plotinfo.plot.selectAll('defs')
         .data([0]);
     defs.enter().append('defs');
 
@@ -776,10 +773,11 @@ function clipGaps(plotGroup, plotinfo, cd0, perimeter) {
         path.enter().append('path');
         path.attr('d', fullpath);
     }
-    else clipUrl = null;
+    else clipId = null;
 
-    plotGroup.attr('clip-path', clipUrl);
-    mapLayer.selectAll('.hm' + cd0.trace.uid).attr('clip-path', clipUrl);
+    plotGroup.call(Plotly.Drawing.setClipUrl, clipId);
+    plotinfo.plot.selectAll('.hm' + cd0.trace.uid)
+        .call(Plotly.Drawing.setClipUrl, clipId);
 }
 
 function makeClipMask(cd0) {

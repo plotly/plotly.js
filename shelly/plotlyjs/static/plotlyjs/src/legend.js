@@ -126,7 +126,7 @@ legend.points = function(d){
             tx: 'Aa',
             mo: Math.max(0.2, (d0.mo+1 || marker.opacity+1 || 2) - 1)
         };
-        if(d0.ms) dEdit.ms = 10; // bubble charts:
+        if(d0.ms+1) dEdit.ms = 10; // bubble charts:
         if(d0.mlw>5) dEdit.mlw = 5;
         dMod = [Plotly.Lib.minExtend(d0, dEdit)];
 
