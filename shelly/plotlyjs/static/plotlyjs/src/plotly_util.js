@@ -434,7 +434,10 @@ util.convertToTspans = function(_context, _callback){
             parent.select('svg.' + svgClass).remove();
         }
         _context.text('')
-            .style({visibility: 'visible'});
+            .style({
+                visibility: 'visible',
+                'white-space': 'pre'
+            });
         result = _context.appendSVG(converted);
         if(!result) _context.text(str);
         if(_context.select('a').size()) {
