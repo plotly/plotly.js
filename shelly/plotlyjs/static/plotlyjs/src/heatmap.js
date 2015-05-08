@@ -6,6 +6,7 @@
 var heatmap = module.exports = {},
     Plotly = require('./plotly'),
     tinycolor = require('tinycolor2'),
+    isNumeric = require('./isnumeric'),
     scatterAttrs = Plotly.Scatter.attributes;
 
 heatmap.attributes = {
@@ -973,8 +974,8 @@ heatmap.colorbar = function(gd,cd) {
         zmin = trace.zmin,
         zmax = trace.zmax;
 
-    if (!$.isNumeric(zmin)) zmin = Plotly.Lib.aggNums(Math.min, null, trace.z);
-    if (!$.isNumeric(zmax)) zmax = Plotly.Lib.aggNums(Math.max, null, trace.z);
+    if (!isNumeric(zmin)) zmin = Plotly.Lib.aggNums(Math.min, null, trace.z);
+    if (!isNumeric(zmax)) zmax = Plotly.Lib.aggNums(Math.max, null, trace.z);
 
     gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
     if(!trace.showscale){
