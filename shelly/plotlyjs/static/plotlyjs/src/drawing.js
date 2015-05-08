@@ -4,7 +4,8 @@
 /* global d3:false */
 
 var drawing = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
 // -----------------------------------------------------
 // styling functions for plot elements
@@ -34,7 +35,7 @@ drawing.translatePoints = function(s, xa, ya){
         var x = d.xp || xa.c2p(d.x),
             y = d.yp || ya.c2p(d.y),
             p = d3.select(this);
-        if($.isNumeric(x) && $.isNumeric(y)) {
+        if(isNumeric(x) && isNumeric(y)) {
             // for multiline text this works better
             if(this.nodeName==='text') p.attr('x',x).attr('y',y);
             else p.attr('transform', 'translate('+x+','+y+')');
@@ -53,7 +54,7 @@ drawing.crispRound = function(td, lineWidth, dflt) {
     // for lines that disable antialiasing we want to
     // make sure the width is an integer, and at least 1 if it's nonzero
 
-    if(!lineWidth || !$.isNumeric(lineWidth)) return dflt || 0;
+    if(!lineWidth || !isNumeric(lineWidth)) return dflt || 0;
 
     // but not for static plots - these don't get antialiased anyway.
     if(td._context.staticPlot) return lineWidth;
@@ -638,7 +639,7 @@ drawing.pointStyle = function(s, trace) {
             d.mrc = r;
 
             // in case of "various" etc... set a visible default
-            if(!$.isNumeric(r) || r<0) r=3;
+            if(!isNumeric(r) || r<0) r=3;
 
             // turn the symbol into a sanitized number
             var x = drawing.symbolNumber(d.mx || marker.symbol) || 0,
@@ -722,11 +723,11 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
         if(typeof scl === 'string') scl = Plotly.Color.scales[scl];
         if(!scl) scl = Plotly.Color.defaultScale;
 
-        if(auto || !$.isNumeric(min) || !$.isNumeric(max)) {
+        if(auto || !isNumeric(min) || !isNumeric(max)) {
             min = Infinity;
             max = -Infinity;
             colorArray.forEach(function(color) {
-                if($.isNumeric(color)) {
+                if(isNumeric(color)) {
                     if(min>color) min = color;
                     if(max<color) max = color;
                 }
@@ -745,7 +746,7 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
             .domain(scl.map(function(si){ return min + si[0]*(max-min); }))
             .interpolate(d3.interpolateRgb)
             .range(scl.map(function(si){ return si[1]; }));
-        return function(v){ return $.isNumeric(v) ? sclfunc(v) : v; };
+        return function(v){ return isNumeric(v) ? sclfunc(v) : v; };
     }
     else return Plotly.Lib.identity;
 };
@@ -983,4 +984,22 @@ drawing.bBox = function(node) {
     savedBBoxes.push(bb);
 
     return Plotly.Lib.extendFlat(bb);
+};
+
+/*
+ * make a robust clipPath url from a local id
+ * note! We'd better not be exporting from a page
+ * with a <base> or the svg will not be portable!
+ */
+drawing.setClipUrl = function(s, localId) {
+    if(!localId) {
+        s.attr('clip-path', null);
+        return;
+    }
+
+    var url = '#' + localId,
+        base = d3.select('base');
+
+    if(base.size() && base.attr('href')) url = window.location.href + url;
+    s.attr('clip-path', 'url(' + url + ')');
 };
