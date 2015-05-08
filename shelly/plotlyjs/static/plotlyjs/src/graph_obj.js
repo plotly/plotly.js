@@ -2447,6 +2447,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             if(zscl.indexOf(ai)!==-1) {
                 doextra(cont,'zauto',false,i);
             }
+            else if(ai === 'colorscale') {
+                doextra(cont, 'autocolorscale', false, i);
+            }
+            else if(ai === 'autocolorscale') {
+                doextra(cont, 'colorscale', undefined, i);
+            }
             else if(ai==='zauto') {
                 doextra(cont,zscl,undefined,i);
             }
