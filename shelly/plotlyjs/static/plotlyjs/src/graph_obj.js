@@ -2309,6 +2309,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'x', 'y', 'z',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
         'line.width','showscale','zauto','connectgaps',
+        'autocolorscale',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
         'autocontour','ncontours','contours.coloring',
@@ -2337,7 +2338,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // objects need to be made) but not a recalc
     var replotAttrs = [
         'zmin','zmax','zauto','mincolor','maxcolor',
-        'colorscale','reversescale','zsmooth', 'autocolorscale',
+        'colorscale','reversescale','zsmooth',
         'contours.start','contours.end','contours.size',
         'contours.showlines',
         'line.smoothing','line.shape',
