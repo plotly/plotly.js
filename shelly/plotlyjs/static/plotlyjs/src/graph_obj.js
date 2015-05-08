@@ -1219,6 +1219,7 @@ plots.supplyDefaults = function(gd) {
 
     var i, trace, fullTrace, module, axList, ax;
 
+
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
     plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
@@ -1254,15 +1255,19 @@ plots.supplyDefaults = function(gd) {
         }
     }
 
-    // finally, fill in the pieces of layout that may need to look at data
-    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
-
     cleanScenes(newFullLayout, oldFullLayout);
 
-    // IN THE CASE OF 3D the underscore modules are Mikola's webgl contexts.
-    // There will be all sorts of pain if we deep copy active webgl scopes.
-    // Since we discard oldFullLayout, lets just copy the references over.
+    /*
+     * Relink functions and underscore attributes to promote consistency between
+     * plots. This must come BEFORE supplyLayoutModuleDefaults as we want new values
+     * to overwrite old values, not the other way around.
+     */
     relinkPrivateKeys(newFullLayout, oldFullLayout);
+
+
+
+    // finally, fill in the pieces of layout that may need to look at data
+    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
     doAutoMargin(gd);
 
