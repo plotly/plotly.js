@@ -664,6 +664,10 @@ util.convertToSvg = function(_str){
     if(splitted.length > 1){
         result = splitted.map(function(d, i){
             // TODO: figure out max font size of this line and alter dy
+            // this requires either:
+            // 1) bringing the base font size into convertToTspans, or
+            // 2) only allowing relative percentage font sizes.
+            // I think #2 is the way to go
             return '<tspan class="line" dy="' + (i*1.3) + 'em">'+ d +'</tspan>';
         });
     }
