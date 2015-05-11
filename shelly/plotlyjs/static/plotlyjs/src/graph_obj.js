@@ -1232,7 +1232,15 @@ plots.supplyDefaults = function(gd) {
         newFullData.push(fullTrace);
 
         // DETECT 3D, Cartesian, and Polar
-        if (plots.isGL3D(fullTrace.type)) newFullLayout._hasGL3D = true;
+        if (plots.isGL3D(fullTrace.type)) {
+            newFullLayout._hasGL3D = true;
+
+            /*
+             * Need to add blank scenes here so that relink private keys has something to
+             * attach the old layouts private keys and functions onto.
+             */
+            newFullLayout[fullTrace.scene] = {};
+        }
 
         if (plots.isCartesian(fullTrace.type)) {
             if ('r' in fullTrace) newFullLayout._hasPolar = true;
