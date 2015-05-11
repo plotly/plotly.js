@@ -69,7 +69,7 @@ function plotButtons(plots) {
 
         if (!layout || !data) return;
 
-        Plotly.Lib.getSceneKeys(gd._fullLayout).forEach( function (key) {
+        Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
             var scene = gd._fullLayout[key]._scene;
             scene.destroy();
 
@@ -87,7 +87,7 @@ function plotButtons(plots) {
 
             setTimeout( function () {
 
-                Plotly.Lib.getSceneKeys(gd._fullLayout).forEach( function (key) {
+              Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
 
                     var scene = gd._fullLayout[key]._scene;
                     var dataURL = scene.toImage();
@@ -135,7 +135,7 @@ function plotButtons(plots) {
 
             Plotly.plot(plotDiv, mock.data, mock.layout).then(function () {
 
-                Plotly.Lib.getSceneKeys(plotDiv._fullLayout).forEach( function (key) {
+                Plotly.Plots.getSubplotIds(plotDiv._fullLayout, 'gl3d').forEach( function (key) {
                     var scene = plotDiv._fullLayout[key]._scene;
                     scene.destroy();
                     i ++;
