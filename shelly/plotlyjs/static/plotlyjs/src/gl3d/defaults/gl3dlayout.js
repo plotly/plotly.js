@@ -6,13 +6,23 @@ var Gl3dLayout = {};
 
 module.exports = Gl3dLayout;
 
+function makeVector(x, y, z) {
+  return {
+    x: {type: 'number', dflt: x},
+    y: {type: 'number', dflt: y},
+    z: {type: 'number', dflt: z}
+  };
+}
+
 Gl3dLayout.layoutAttributes = {
     bgcolor: {
         type: 'color',
         dflt: 'rgba(0,0,0,0)'
     },
     cameraposition: {
-        type: 'data_array'
+        up:     makeVector(0, 0, 1),
+        center: makeVector(0, 0, 0),
+        eye:    makeVector(1.25, 1.25, 1.25)
     },
     domain: {
         x: [
@@ -100,7 +110,13 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
 
         coerce('bgcolor');
-        coerce('cameraposition');
+
+        ['up', 'eye', 'center'].forEach(function(vec) {
+            ['x', 'y', 'z'].forEach(function(component) {
+                coerce('cameraposition.' + vec + '.' + component);
+            });
+        });
+
         coerce('domain.x[0]', i / scenesLength);
         coerce('domain.x[1]', (i+1) / scenesLength);
         coerce('domain.y[0]');
