@@ -762,8 +762,7 @@ util.makeEditable = function(context, _delegate, options){
     var that = this;
     var dispatch = d3.dispatch('edit', 'input', 'cancel');
     var textSelection = d3.select(this.node())
-        .style({'pointer-events': 'all'})
-        .attr({'xml:space': 'preserve'});
+        .style({'pointer-events': 'all'});
 
     var handlerElement = _delegate || textSelection;
     if(_delegate) textSelection.style({'pointer-events': 'none'});

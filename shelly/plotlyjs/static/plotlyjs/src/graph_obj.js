@@ -3167,8 +3167,7 @@ function makePlotFramework(gd) {
         .attr({
             xmlns: 'http://www.w3.org/2000/svg',
             // odd d3 quirk - need namespace twice??
-            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
-            'xml:xml:space': 'preserve'
+            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
         })
         .classed('main-svg', true);
 
