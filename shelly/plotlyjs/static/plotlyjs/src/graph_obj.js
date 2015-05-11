@@ -1255,8 +1255,6 @@ plots.supplyDefaults = function(gd) {
         }
     }
 
-    cleanScenes(newFullLayout, oldFullLayout);
-
     /*
      * Relink functions and underscore attributes to promote consistency between
      * plots. This must come BEFORE supplyLayoutModuleDefaults as we want new values
@@ -1264,10 +1262,14 @@ plots.supplyDefaults = function(gd) {
      */
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
-
-
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
+
+    /*
+     * This must come AFTER supplyLayoutModuleDefaults as it checks to see if there are scenes
+     * in the oldFullLayout but not in the newFullLayout - it deletes those scenes.
+     */
+    cleanScenes(newFullLayout, oldFullLayout);
 
     doAutoMargin(gd);
 
