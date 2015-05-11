@@ -25,7 +25,7 @@ function contourLevelsFromTicks(ticks) {
 function computeTickMarks(scene) {
     var axesOptions = scene.axesOptions;
     var glRange     = scene.glplot.axesPixels;
-    var sceneLayout = scene.sceneLayout;
+    var sceneLayout = scene.fullSceneLayout;
 
     var ticks = [[],[],[]];
 
