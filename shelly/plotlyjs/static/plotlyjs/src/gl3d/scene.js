@@ -10,7 +10,7 @@ var createPlot          = require('gl-plot3d'),
     createCamera        = require('./lib/camera'),
     str2RGBAarray       = require('./lib/str2rgbarray');
 
-var STATIC_CANVAS, STATIC_CONTEXT
+var STATIC_CANVAS, STATIC_CONTEXT;
 
 function render(scene) {
     computeTickMarks(scene);
@@ -374,7 +374,7 @@ proto.toImage = function (format) {
     if (!format) format = 'png';
 
     if(this.staticMode) {
-      this.container.appendChild(STATIC_CANVAS)
+      this.container.appendChild(STATIC_CANVAS);
     }
 
     //Force redraw
@@ -423,7 +423,7 @@ proto.toImage = function (format) {
     }
 
     if(this.staticMode) {
-      this.container.removeChild(STATIC_CANVAS)
+      this.container.removeChild(STATIC_CANVAS);
     }
 
     return dataURL;
