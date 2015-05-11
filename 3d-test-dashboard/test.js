@@ -72,7 +72,6 @@ function plotButtons(plots) {
         Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
             var scene = gd._fullLayout[key]._scene;
             scene.destroy();
-
         });
 
         // create a fresh gd
@@ -99,9 +98,7 @@ function plotButtons(plots) {
                   image.innerHTML = '';
                   image.appendChild(myImage);
               });
-        });
-
-
+        })
     });
 
     var pummelButton = document.createElement('button');
@@ -125,7 +122,7 @@ function plotButtons(plots) {
             plotDiv.id = 'div' + i;
             document.body.appendChild(plotDiv);
 
-            Plotly.plot(plotDiv, mock.data, mock.layout).then(function () {
+            Plotly.plot(plotDiv, mock.data, mock.layout, {staticPlot: true}).then(function () {
 
                 Plotly.Plots.getSubplotIds(plotDiv._fullLayout, 'gl3d').forEach( function (key) {
                     var scene = plotDiv._fullLayout[key]._scene;

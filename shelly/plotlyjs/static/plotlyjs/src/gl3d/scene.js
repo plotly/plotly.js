@@ -70,7 +70,7 @@ function Scene(options) {
 
     //For static plots, we reuse the WebGL context as WebKit doesn't collect them
     //reliably
-    if (options.imageServer) {
+    if (options.staticPlot) {
         if(!STATIC_CONTEXT) {
             STATIC_CANVAS = document.createElement('canvas');
             try {
@@ -86,12 +86,6 @@ function Scene(options) {
         glplotOptions.gl = STATIC_CONTEXT;
         glplotOptions.canvas = STATIC_CANVAS;
         this.staticMode = true;
-    } else if(options.staticPlot) {
-        glplotOptions.pixelRatio = options.plot3dPixelRatio;
-        glplotOptions.glOptions = {
-            preserveDrawingBuffer: true,
-            premultipliedAlpha:true
-        };
     }
 
     try {
