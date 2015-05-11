@@ -17,7 +17,7 @@
     "gl-line3d": "^1.0.1",
     "gl-mat4": "^1.1.2",
     "gl-mesh3d": "^1.0.2",
-    "gl-plot3d": "^1.1.1",
+    "gl-plot3d": "^1.2.0",
     "gl-scatter3d": "^1.0.4",
     "gl-surface3d": "^1.0.1",
     "mouse-change": "^1.1.1",

@@ -25,7 +25,6 @@ function render(scene) {
 
 function Scene(options) {
 
-
     //Create sub container for plot
     var sceneContainer = document.createElement('div');
     var plotContainer = options.container;
@@ -308,6 +307,9 @@ trace_id_loop:
 proto.destroy = function() {
     this.glplot.dispose();
     this.container.parentNode.removeChild(this.container);
+
+    //Remove reference to glplot
+    this.glplot = null
 };
 
 
@@ -355,6 +357,10 @@ proto.saveCamera = function saveCamera(layout) {
 proto.toImage = function (format) {
     if (!format) format = 'png';
 
+    //Force redraw
+    this.glplot.redraw();
+
+    //Grab context and yank out pixels
     var gl = this.glplot.gl;
     var w = gl.drawingBufferWidth;
     var h = gl.drawingBufferHeight;

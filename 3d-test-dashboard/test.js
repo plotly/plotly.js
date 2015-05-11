@@ -84,29 +84,21 @@ function plotButtons(plots) {
          * Replot with staticPlot
          */
         Plotly.plot(gd, data, layout, {staticPlot: true, plot3dPixelRatio: 2}).then( function () {
+            Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
+                  var scene = gd._fullLayout[key]._scene;
+                  var dataURL = scene.toImage();
 
-            setTimeout( function () {
+                  var myImage = new Image();
+                  myImage.src = dataURL;
 
-              Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
+                  myImage.onload = function () {
+                      myImage.height = scene.container.clientHeight;
+                      myImage.width = scene.container.clientWidth;
+                  };
 
-                    var scene = gd._fullLayout[key]._scene;
-                    var dataURL = scene.toImage();
-
-                    var myImage = new Image();
-                    myImage.src = dataURL;
-
-                    myImage.onload = function () {
-                        myImage.height = scene.container.clientHeight;
-                        myImage.width = scene.container.clientWidth;
-                    };
-
-                    image.innerHTML = '';
-                    image.appendChild(myImage);
-
-                });
-
-            }, 500);
-
+                  image.innerHTML = '';
+                  image.appendChild(myImage);
+              });
         });
 
 
