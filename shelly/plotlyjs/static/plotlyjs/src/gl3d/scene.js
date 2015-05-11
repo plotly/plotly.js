@@ -10,6 +10,8 @@ var createPlot          = require('gl-plot3d'),
     createCamera        = require('./lib/camera'),
     str2RGBAarray       = require('./lib/str2rgbarray');
 
+var STATIC_CANVAS, STATIC_CONTEXT
+
 function render(scene) {
     computeTickMarks(scene);
     scene.glplot.axes.update(scene.axesOptions);
@@ -47,6 +49,8 @@ function Scene(options) {
 
     this.container    = sceneContainer;
 
+    this.staticMode   = false;
+
     /*
      * WARNING!!!! Only set camera position on first call to plot!!!!
      * TODO remove this hack
@@ -64,7 +68,25 @@ function Scene(options) {
             autoBounds: false
     };
 
-    if (options.staticPlot) {
+    //For static plots, we reuse the WebGL context as WebKit doesn't collect them
+    //reliably
+    if (options.imageServer) {
+        if(!STATIC_CONTEXT) {
+            STATIC_CANVAS = document.createElement('canvas');
+            try {
+                STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
+                    preserveDrawingBuffer: true,
+                    premultipliedAlpha: true
+                });
+            } catch(e) {
+                throw new Error('error creating static canvas/context for image server')
+            }
+        }
+        glplotOptions.pixelRatio = options.plot3dPixelRatio;
+        glplotOptions.gl = STATIC_CONTEXT;
+        glplotOptions.canvas = STATIC_CANVAS;
+        this.staticMode = true;
+    } else if(options.staticPlot) {
         glplotOptions.pixelRatio = options.plot3dPixelRatio;
         glplotOptions.glOptions = {
             preserveDrawingBuffer: true,
@@ -357,6 +379,10 @@ proto.saveCamera = function saveCamera(layout) {
 proto.toImage = function (format) {
     if (!format) format = 'png';
 
+    if(this.staticMode) {
+      this.container.appendChild(STATIC_CANVAS)
+    }
+
     //Force redraw
     this.glplot.redraw();
 
@@ -400,6 +426,10 @@ proto.toImage = function (format) {
             break;
         default:
         dataURL = canvas.toDataURL('image/png');
+    }
+
+    if(this.staticMode) {
+      this.container.removeChild(STATIC_CANVAS)
     }
 
     return dataURL;
