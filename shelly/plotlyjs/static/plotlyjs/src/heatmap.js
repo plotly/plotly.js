@@ -192,10 +192,10 @@ heatmap.calcColorscale = function(trace, z) {
             trace.colorscale = Plotly.Color.scales.RdBu;
         } else if(trace.zmin >= 0) {
             // Non-negative signed data
-            trace.colorscale = Plotly.Color.scales.RdBuPos;
+            trace.colorscale = Plotly.Color.scales.Reds;
         } else {
             // Non-positive signed data
-            trace.colorscale = Plotly.Color.scales.RdBuNeg;
+            trace.colorscale = Plotly.Color.scales.Blues;
         }
     }
 

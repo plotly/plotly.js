@@ -88,7 +88,7 @@ describe('Test heatmap', function () {
             expect(trace.colorscale[5]).toEqual([1, 'rgb(220, 220, 220)']);
         });
 
-        it('should be RdBuNeg when the only numerical z <= -0.5', function() {
+        it('should be Blues when the only numerical z <= -0.5', function() {
             trace = {
                 type: 'heatmap',
                 z: [['a', 'b'], [-0.5, 'd']],
@@ -100,7 +100,7 @@ describe('Test heatmap', function () {
             expect(trace.colorscale[5]).toEqual([1, 'rgb(220, 220, 220)']);
         });
 
-        it('should be RdBuPos when the only numerical z >= 0.5', function() {
+        it('should be Reds when the only numerical z >= 0.5', function() {
             trace = {
                 type: 'heatmap',
                 z: [['a', 'b'], [0.5, 'd']],
