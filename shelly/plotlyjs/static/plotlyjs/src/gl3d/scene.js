@@ -41,7 +41,7 @@ function Scene(options, fullLayout) {
     plotContainer.appendChild(sceneContainer);
 
     this.fullLayout               = fullLayout;
-    this.id                       = options.sceneId || 'scene';
+    this.id                       = options.id || 'scene';
     /*
      * Move this to calc step? Why does it work here?
      */
