@@ -1,3 +1,4 @@
+/* jshint shadow: true */
 'use strict';
 
 var createPlot          = require('gl-plot3d'),
@@ -25,7 +26,6 @@ function render(scene) {
 }
 
 function Scene(options, fullLayout) {
-
 
     //Create sub container for plot
     var sceneContainer = document.createElement('div');

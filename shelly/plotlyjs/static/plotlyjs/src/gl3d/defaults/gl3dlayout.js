@@ -1,5 +1,6 @@
-var Plotly = require('../../plotly'),
-    isNumeric = require('../../isnumeric');
+'use strict';
+
+var Plotly = require('../../plotly');
 
 var Gl3dLayout = {};
 
@@ -73,6 +74,11 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
     // Get number of scenes to compute default scene domain
     var scenesLength = scenes.length;
 
+    function coerce(attr, dflt) {
+        return Plotly.Lib.coerce(sceneLayoutIn, sceneLayoutOut,
+                                 attributes, attr, dflt);
+    }
+
     for (i = 0; i < scenesLength; ++i) {
         var scene = scenes[i];
         /*
@@ -92,10 +98,6 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
         var sceneLayoutOut = layoutOut[scene] || {};
 
-        function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(sceneLayoutIn, sceneLayoutOut,
-                                     attributes, attr, dflt);
-        }
 
         coerce('bgcolor');
         coerce('cameraposition');

@@ -1,3 +1,5 @@
+/* jshint shadow: true */
+
 'use strict';
 
 module.exports = computeTickMarks;
@@ -8,7 +10,6 @@ var Plotly  = require('../../plotly');
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
 var centerPoint = [0,0,0];
-
 
 function contourLevelsFromTicks(ticks) {
     var result = new Array(3);

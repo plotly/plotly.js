@@ -1,3 +1,5 @@
+'use strict';
+
 var Plotly = require('../../plotly');
 var Gl3dAxes = {};
 var axesAttrs = Plotly.Axes.layoutAttributes;

@@ -11,8 +11,6 @@ var createLinePlot    = require('gl-line3d'),
     MARKER_SYMBOLS    = require('../lib/markers.json'),
     Plotly            = require('../../plotly');
 
-module.exports = createLineWithMarkers;
-
 function LineWithMarkers(scene, uid) {
     this.scene              = scene;
     this.uid                = uid;
@@ -42,7 +40,7 @@ proto.handlePick = function(selection) {
             this.scatterPlot.highlight(selection.data);
         }
     }
-}
+};
 
 function constructDelaunay(points, color, axis) {
     var u = (axis+1)%3;
@@ -239,8 +237,8 @@ function convertPlotlyOptions(scene, data) {
 
     var dims = ['x', 'y', 'z'];
     params.project = [false, false, false];
-    params.projectScale = [1,1,1]
-    params.projectOpacity = [1,1,1]
+    params.projectScale = [1,1,1];
+    params.projectOpacity = [1,1,1];
     for (i = 0; i < 3; ++i) {
         var projection = data.projection[dims[i]];
         if ((params.project[i] = projection.show)) {
@@ -266,7 +264,7 @@ proto.update = function(data) {
         scatterOptions,
         errorOptions,
         textOptions,
-        dashPattern = DASH_PATTERNS['solid'];
+        dashPattern = DASH_PATTERNS.solid;
 
     //Run data conversion
     var options = convertPlotlyOptions(this.scene, data);
@@ -417,10 +415,12 @@ proto.dispose = function() {
         this.scene.glplot.remove(this.textMarkers);
         this.delaunayMesh.dispose();
     }
-}
+};
 
 function createLineWithMarkers(scene, data) {
     var plot = new LineWithMarkers(scene, data.uid);
     plot.update(data);
     return plot;
 }
+
+module.exports = createLineWithMarkers;
