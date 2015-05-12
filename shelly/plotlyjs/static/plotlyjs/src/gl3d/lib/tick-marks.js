@@ -1,3 +1,5 @@
+/* jshint shadow: true */
+
 'use strict';
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];

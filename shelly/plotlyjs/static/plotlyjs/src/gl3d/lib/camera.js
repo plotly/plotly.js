@@ -1,6 +1,6 @@
-'use strict';
+/* jshint shadow: true */
 
-module.exports = createCamera;
+'use strict';
 
 var now         = require('right-now');
 var createView  = require('3d-view');
@@ -221,3 +221,5 @@ function createCamera(element, options) {
 
   return camera;
 }
+
+module.exports = createCamera;

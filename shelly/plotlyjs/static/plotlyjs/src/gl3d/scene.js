@@ -1,3 +1,4 @@
+/* jshint shadow: true */
 'use strict';
 
 var createPlot          = require('gl-plot3d'),
