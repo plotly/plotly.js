@@ -1268,11 +1268,12 @@ plots.supplyDefaults = function(gd) {
 
     /*
      * Relink functions and underscore attributes to promote consistency between
-     * plots. This must come BEFORE supplyLayoutModuleDefaults as we want new values
-     * to overwrite old values, not the other way around.
+     * plots.
      */
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
+    // for some reason 3D wants to supplyDefaults *after* relinkPrivateKeys
+    // but the 2D need to be filled in before...
     if(Plotly.Gl3dLayout) Plotly.Gl3dLayout.supplyLayoutDefaults(newLayout, newFullLayout, newFullData);
 
     /*
@@ -1553,7 +1554,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Shapes', 'Fx',
-                                'Bars', 'Boxes']; //, 'Gl3dLayout'];
+                                'Bars', 'Boxes'];
 
     var i, module;
 
