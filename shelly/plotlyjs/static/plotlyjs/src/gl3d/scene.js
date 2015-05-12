@@ -25,7 +25,6 @@ function render(scene) {
 
 function Scene(options) {
 
-
     //Create sub container for plot
     var sceneContainer = document.createElement('div');
     var plotContainer = options.container;

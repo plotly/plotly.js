@@ -1,13 +1,8 @@
-'use strict'
+'use strict';
 
-module.exports = computeTickMarks
-
-var project = require('./project');
-
-var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis']
+var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
 var centerPoint = [0,0,0];
-
 
 function contourLevelsFromTicks(ticks) {
     var result = new Array(3);
@@ -17,7 +12,7 @@ function contourLevelsFromTicks(ticks) {
         for(var j=0; j<tlevel.length; ++j) {
             clevel[j] = tlevel[j].x;
         }
-        result[i] = clevel
+        result[i] = clevel;
     }
     return result;
 }
@@ -43,8 +38,8 @@ function computeTickMarks(scene) {
             axes._m       = 1 / glRange[i].pixelsPerDataUnit;
 
             if(axes.range[0] === axes.range[1]) {
-                axes.range[0] -= 1
-                axes.range[1] += 1
+                axes.range[0] -= 1;
+                axes.range[1] += 1;
             }
             // this is necessary to short-circuit the 'y' handling
             // in autotick part of calcTicks... Treating all axes as 'y' in this case
@@ -74,3 +69,5 @@ function computeTickMarks(scene) {
 
     scene.contourLevels = contourLevelsFromTicks(ticks);
 }
+
+module.exports = computeTickMarks;
