@@ -2,6 +2,11 @@
 
 'use strict';
 
+module.exports = computeTickMarks;
+
+var project = require('./project');
+var Plotly  = require('../../plotly');
+
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
 var centerPoint = [0,0,0];
@@ -50,10 +55,10 @@ function computeTickMarks(scene) {
             var autoTickCached = axes.autotick;
             if (axes.autotick) {
                 axes.autotick = false;
-                var nticks = axes.nticks || scene.Plotly.Lib.constrain((axes._length/40), 4, 9);
-                scene.Plotly.Axes.autoTicks(axes, Math.abs(axes.range[1]-axes.range[0])/nticks);
+                var nticks = axes.nticks || Plotly.Lib.constrain((axes._length/40), 4, 9);
+                Plotly.Axes.autoTicks(axes, Math.abs(axes.range[1]-axes.range[0])/nticks);
             }
-            ticks[i] = scene.Plotly.Axes.calcTicks(axes);
+            ticks[i] = Plotly.Axes.calcTicks(axes);
 
             axes.autotick = autoTickCached;
         }
@@ -71,5 +76,3 @@ function computeTickMarks(scene) {
 
     scene.contourLevels = contourLevelsFromTicks(ticks);
 }
-
-module.exports = computeTickMarks;

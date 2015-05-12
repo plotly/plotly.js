@@ -9,7 +9,7 @@ var createLinePlot    = require('gl-line3d'),
     calculateError    = require('../lib/calc-errors'),
     DASH_PATTERNS     = require('../lib/dashes.json'),
     MARKER_SYMBOLS    = require('../lib/markers.json'),
-    proto;
+    Plotly            = require('../../plotly');
 
 function LineWithMarkers(scene, uid) {
     this.scene              = scene;
@@ -25,7 +25,7 @@ function LineWithMarkers(scene, uid) {
                                [Infinity,Infinity,Infinity]];
 }
 
-proto = LineWithMarkers.prototype;
+var proto = LineWithMarkers.prototype;
 
 proto.handlePick = function(selection) {
     if( selection.object &&
@@ -108,7 +108,7 @@ function calculateTextOffset(textposition) {
 }
 
 
-function formatColor(Plotly, colorIn, opacityIn, len) {
+function formatColor(colorIn, opacityIn, len) {
     var colorDflt = Plotly.Color.defaultLine,
         opacityDflt = 1,
         isArrayColorIn = Array.isArray(colorIn),
@@ -183,7 +183,6 @@ function formatParam(paramIn, len, calculate, dflt) {
 function convertPlotlyOptions(scene, data) {
     var params, i,
         points = [],
-        Plotly = scene.Plotly,
         sceneLayout = scene.fullSceneLayout,
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
@@ -219,11 +218,11 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if ('marker' in data) {
-        params.scatterColor         = formatColor(Plotly, marker.color, marker.opacity, len);
+        params.scatterColor         = formatColor(marker.color, marker.opacity, len);
         params.scatterSize          = formatParam(marker.size, len, calculateSize, 20);
         params.scatterMarker        = formatParam(marker.symbol, len, calculateSymbol, '●');
         params.scatterLineWidth     = marker.line.width;  // arrayOk === false
-        params.scatterLineColor     = formatColor(Plotly, marker.line.color, marker.opacity, len);
+        params.scatterLineColor     = formatColor(marker.line.color, marker.opacity, len);
         params.scatterAngle         = 0;
     }
 

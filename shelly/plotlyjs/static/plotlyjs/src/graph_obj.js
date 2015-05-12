@@ -660,7 +660,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
     return (donePlotting && donePlotting.then) ?
-        donePlotting : Promise.resolve() ;
+        donePlotting : Promise.resolve();
 };
 
 function plot3D(gd) {
@@ -668,7 +668,6 @@ function plot3D(gd) {
         fullData = gd._fullData;
 
     var i, sceneId, fullSceneData,
-        fullSceneLayout, sceneLayout,
         scene, sceneOptions;
 
     fullLayout._paperdiv.style({
@@ -695,26 +694,21 @@ function plot3D(gd) {
     for (i = 0; i < sceneIds.length; i++) {
         sceneId = sceneIds[i];
         fullSceneData = getSceneData(fullData, sceneId);
-        fullSceneLayout = fullLayout[sceneId];
-        sceneLayout = gd.layout[sceneId],
-        scene = fullSceneLayout._scene;  // ref. to corresp. Scene instance
+        scene = fullLayout[sceneId]._scene;  // ref. to corresp. Scene instance
 
         // If Scene is not instantiated, create one!
         if (!(scene)) {
             sceneOptions = {
-                Plotly: Plotly,
                 container: gd.querySelector('.svg-container'),
-                sceneId: sceneId,
-                fullSceneLayout: fullSceneLayout,
-                fullLayout: fullLayout,
+                id: sceneId,
                 staticPlot: gd._context.staticPlot,
                 plot3dPixelRatio: gd._context.plot3dPixelRatio
             };
-            scene = new Plotly.Scene(sceneOptions);
-            fullSceneLayout._scene = scene;  // set ref to Scene instance
+            scene = new Plotly.Scene(sceneOptions, fullLayout);
+            fullLayout[sceneId]._scene = scene;  // set ref to Scene instance
         }
 
-        scene.plot(fullSceneData, fullSceneLayout, sceneLayout);  // takes care of business
+        scene.plot(fullSceneData, fullLayout, gd.layout);  // takes care of business
     }
 }
 
@@ -1232,15 +1226,7 @@ plots.supplyDefaults = function(gd) {
         newFullData.push(fullTrace);
 
         // DETECT 3D, Cartesian, and Polar
-        if (plots.isGL3D(fullTrace.type)) {
-            newFullLayout._hasGL3D = true;
-
-            /*
-             * Need to add blank scenes here so that relink private keys has something to
-             * attach the old layouts private keys and functions onto.
-             */
-            newFullLayout[fullTrace.scene] = {};
-        }
+        if (plots.isGL3D(fullTrace.type)) newFullLayout._hasGL3D = true;
 
         if (plots.isCartesian(fullTrace.type)) {
             if ('r' in fullTrace) newFullLayout._hasPolar = true;
@@ -1263,21 +1249,16 @@ plots.supplyDefaults = function(gd) {
         }
     }
 
-    /*
-     * Relink functions and underscore attributes to promote consistency between
-     * plots. This must come BEFORE supplyLayoutModuleDefaults as we want new values
-     * to overwrite old values, not the other way around.
-     */
-    relinkPrivateKeys(newFullLayout, oldFullLayout);
-
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
-    /*
-     * This must come AFTER supplyLayoutModuleDefaults as it checks to see if there are scenes
-     * in the oldFullLayout but not in the newFullLayout - it deletes those scenes.
-     */
     cleanScenes(newFullLayout, oldFullLayout);
+
+    /*
+     * Relink functions and underscore attributes to promote consistency between
+     * plots.
+     */
+    relinkPrivateKeys(newFullLayout, oldFullLayout);
 
     doAutoMargin(gd);
 
