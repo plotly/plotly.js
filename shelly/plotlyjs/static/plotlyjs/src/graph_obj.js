@@ -1263,6 +1263,9 @@ plots.supplyDefaults = function(gd) {
         }
     }
 
+    // finally, fill in the pieces of layout that may need to look at data
+    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
+
     /*
      * Relink functions and underscore attributes to promote consistency between
      * plots. This must come BEFORE supplyLayoutModuleDefaults as we want new values
@@ -1270,8 +1273,7 @@ plots.supplyDefaults = function(gd) {
      */
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
-    // finally, fill in the pieces of layout that may need to look at data
-    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
+    if(Plotly.Gl3dLayout) Plotly.Gl3dLayout.supplyLayoutDefaults(newLayout, newFullLayout, newFullData);
 
     /*
      * This must come AFTER supplyLayoutModuleDefaults as it checks to see if there are scenes
@@ -1551,7 +1553,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Shapes', 'Fx',
-                                'Bars', 'Boxes', 'Gl3dLayout'];
+                                'Bars', 'Boxes']; //, 'Gl3dLayout'];
 
     var i, module;
 
