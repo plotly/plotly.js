@@ -8,7 +8,8 @@ var createPlot          = require('gl-plot3d'),
     createSurfaceTrace  = require('./convert/surface'),
     computeTickMarks    = require('./lib/tick-marks'),
     createCamera        = require('./lib/camera'),
-    str2RGBAarray       = require('./lib/str2rgbarray');
+    str2RGBAarray       = require('./lib/str2rgbarray'),
+    Plotly              = require('../plotly');
 
 function render(scene) {
     computeTickMarks(scene);
@@ -23,7 +24,7 @@ function render(scene) {
     }
 }
 
-function Scene(options) {
+function Scene(options, fullLayout) {
 
 
     //Create sub container for plot
@@ -33,27 +34,27 @@ function Scene(options) {
     /*
      * Tag the container with the sceneID
      */
-    sceneContainer.id = options.sceneId;
+    sceneContainer.id             = options.id;
     sceneContainer.style.position = 'absolute';
-    sceneContainer.style.top = sceneContainer.style.left = '0px';
-    sceneContainer.style.width = sceneContainer.style.height = '100%';
-
+    sceneContainer.style.top      = sceneContainer.style.left = '0px';
+    sceneContainer.style.width    = sceneContainer.style.height = '100%';
     plotContainer.appendChild(sceneContainer);
 
-    this.Plotly           = options.Plotly;
-    this.fullSceneLayout  = options.fullSceneLayout;
-    this.fullLayout       = options.fullLayout;
-    this.axesOptions      = createAxesOptions(options.fullSceneLayout);
-    this.spikeOptions     = createSpikeOptions(options.fullSceneLayout);
-
-    this.container    = sceneContainer;
+    this.fullLayout               = fullLayout;
+    this.id                       = options.sceneId || 'scene';
+    /*
+     * Move this to calc step? Why does it work here?
+     */
+    this.axesOptions      = createAxesOptions(fullLayout[this.id]);
+    this.spikeOptions     = createSpikeOptions(fullLayout[this.id]);
+    this.container        = sceneContainer;
 
     /*
      * WARNING!!!! Only set camera position on first call to plot!!!!
      * TODO remove this hack
      */
     this.hasPlotBeenCalled = false;
-    this.sceneId = options.sceneId || 'scene';
+
 
     var glplotOptions = {
             container:  sceneContainer,
@@ -93,7 +94,7 @@ function Scene(options) {
         div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
         div.style.cursor = 'pointer';
         div.style.fontSize = '24px';
-        div.style.color = options.Plotly.Color.defaults[0];
+        div.style.color = Plotly.Color.defaults[0];
 
         this.container.appendChild(div);
         this.container.style.background = '#FFFFFF';
@@ -131,15 +132,20 @@ var proto = Scene.prototype;
 
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
-proto.plot = function(sceneData, fullSceneLayout, sceneLayout) {
+
+proto.plot = function(sceneData, fullLayout, layout) {
 
     var data, trace;
     var i, j;
+    var fullSceneLayout = fullLayout[this.id];
+    var sceneLayout = layout[this.id];
 
     if (fullSceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(fullSceneLayout.bgcolor);
     else this.glplot.clearColor = [0, 0, 0, 0];
 
     //Update layout
+    this.fullSceneLayout = fullSceneLayout;
+
     this.glplotLayout = fullSceneLayout;
     this.axesOptions.merge(fullSceneLayout);
     this.spikeOptions.merge(fullSceneLayout);
@@ -204,6 +210,7 @@ trace_id_loop:
 
     for(i = 0; i < 3; ++i) {
         var axis = fullSceneLayout[axisProperties[i]];
+
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
@@ -292,8 +299,8 @@ trace_id_loop:
 
 
     //Update frame position for multi plots
-    var domain = this.fullSceneLayout.domain || null,
-        size = this.fullLayout._size || null;
+    var domain = fullSceneLayout.domain || null,
+        size = fullLayout._size || null;
 
     if (domain && size) {
         var containerStyle = this.container.style;
@@ -348,7 +355,7 @@ proto.setCameraPosition = function setCameraPosition (camera) {
 // save camera position to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
     var cameraposition = this.getCameraPosition();
-    this.Plotly.Lib.nestedProperty(layout, this.sceneId + '.cameraposition')
+    Plotly.Lib.nestedProperty(layout, this.id + '.cameraposition')
         .set(cameraposition);
 };
 
