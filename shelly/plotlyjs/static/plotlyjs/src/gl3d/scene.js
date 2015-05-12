@@ -160,6 +160,12 @@ proto.plot = function(sceneData, fullLayout, layout) {
     //Update scene
     this.glplot.update({});
 
+    // Update axes functions BEFORE updating traces
+    for (i = 0; i < 3; ++i) {
+        var axis = fullSceneLayout[axisProperties[i]];
+        Plotly.Gl3dAxes.setConvert(axis);
+    }
+
     //Update traces
     if (sceneData) {
         if(!Array.isArray(sceneData)) sceneData = [sceneData];

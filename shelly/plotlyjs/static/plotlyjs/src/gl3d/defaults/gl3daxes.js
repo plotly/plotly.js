@@ -78,13 +78,11 @@ Gl3dAxes.layoutAttributes = {
     zerolinewidth: axesAttrs.zerolinewidth
 };
 
+var noop = function () {};
 
 Gl3dAxes.supplyLayoutDefaults = function(layoutIn, layoutOut, options) {
 
-    var noop = function () {};
-
     var Axes = Plotly.Axes;
-
     var containerIn, containerOut;
 
     function coerce(attr, dflt) {
@@ -129,6 +127,10 @@ Gl3dAxes.supplyLayoutDefaults = function(layoutIn, layoutOut, options) {
 
 };
 
+Gl3dAxes.setConvert = function (containerOut) {
+    Plotly.Axes.setConvert(containerOut);
+    containerOut.setScale = noop;
+};
 
 Gl3dAxes.initAxes = function (td) {
     var fullLayout = td._fullLayout;
