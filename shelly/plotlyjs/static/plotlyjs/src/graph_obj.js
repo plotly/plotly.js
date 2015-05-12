@@ -2329,6 +2329,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'x', 'y', 'z',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
         'line.width','showscale','zauto','connectgaps',
+        'autocolorscale',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
         'autocontour','ncontours','contours.coloring',
@@ -2465,6 +2466,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             // and setting auto should save bin or z settings
             if(zscl.indexOf(ai)!==-1) {
                 doextra(cont,'zauto',false,i);
+            }
+            else if(ai === 'colorscale') {
+                doextra(cont, 'autocolorscale', false, i);
+            }
+            else if(ai === 'autocolorscale') {
+                doextra(cont, 'colorscale', undefined, i);
             }
             else if(ai==='zauto') {
                 doextra(cont,zscl,undefined,i);
