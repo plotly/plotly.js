@@ -667,6 +667,10 @@ function plot3D(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData;
 
+    var i, sceneId, fullSceneData,
+        fullSceneLayout, sceneLayout,
+        scene, sceneOptions;
+
     fullLayout._paperdiv.style({
         width: fullLayout.width+'px',
         height: fullLayout.height+'px'
@@ -686,13 +690,14 @@ function plot3D(gd) {
     }
 
     var sceneIds = plots.getSubplotIds(fullLayout, 'gl3d');
-    var i, sceneId, sceneData, sceneLayout, scene, sceneOptions;
+
 
     for (i = 0; i < sceneIds.length; i++) {
         sceneId = sceneIds[i];
-        sceneData = getSceneData(fullData, sceneId);
-        sceneLayout = fullLayout[sceneId];
-        scene = sceneLayout._scene;  // ref. to corresp. Scene instance
+        fullSceneData = getSceneData(fullData, sceneId);
+        fullSceneLayout = fullLayout[sceneId];
+        sceneLayout = gd.layout[sceneId],
+        scene = fullSceneLayout._scene;  // ref. to corresp. Scene instance
 
         // If Scene is not instantiated, create one!
         if (!(scene)) {
@@ -700,17 +705,16 @@ function plot3D(gd) {
                 Plotly: Plotly,
                 container: gd.querySelector('.svg-container'),
                 sceneId: sceneId,
-                sceneData: sceneData,
-                sceneLayout: sceneLayout,
+                fullSceneLayout: fullSceneLayout,
                 fullLayout: fullLayout,
                 staticPlot: gd._context.staticPlot,
                 plot3dPixelRatio: gd._context.plot3dPixelRatio
             };
             scene = new Plotly.Scene(sceneOptions);
-            sceneLayout._scene = scene;  // set ref to Scene instance
+            fullSceneLayout._scene = scene;  // set ref to Scene instance
         }
 
-        scene.plot(sceneData, sceneLayout);  // takes care of business
+        scene.plot(fullSceneData, fullSceneLayout, sceneLayout);  // takes care of business
     }
 }
 
@@ -1215,6 +1219,7 @@ plots.supplyDefaults = function(gd) {
 
     var i, trace, fullTrace, module, axList, ax;
 
+
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
     plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
@@ -1227,7 +1232,16 @@ plots.supplyDefaults = function(gd) {
         newFullData.push(fullTrace);
 
         // DETECT 3D, Cartesian, and Polar
-        if (plots.isGL3D(fullTrace.type)) newFullLayout._hasGL3D = true;
+        if (plots.isGL3D(fullTrace.type)) {
+            newFullLayout._hasGL3D = true;
+
+            /*
+             * Need to add blank scenes here so that relink private keys has something to
+             * attach the old layouts private keys and functions onto.
+             */
+            newFullLayout[fullTrace.scene] = {};
+        }
+
         if (plots.isCartesian(fullTrace.type)) {
             if ('r' in fullTrace) newFullLayout._hasPolar = true;
             else newFullLayout._hasCartesian = true;
@@ -1249,15 +1263,21 @@ plots.supplyDefaults = function(gd) {
         }
     }
 
+    /*
+     * Relink functions and underscore attributes to promote consistency between
+     * plots. This must come BEFORE supplyLayoutModuleDefaults as we want new values
+     * to overwrite old values, not the other way around.
+     */
+    relinkPrivateKeys(newFullLayout, oldFullLayout);
+
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
+    /*
+     * This must come AFTER supplyLayoutModuleDefaults as it checks to see if there are scenes
+     * in the oldFullLayout but not in the newFullLayout - it deletes those scenes.
+     */
     cleanScenes(newFullLayout, oldFullLayout);
-
-    // IN THE CASE OF 3D the underscore modules are Mikola's webgl contexts.
-    // There will be all sorts of pain if we deep copy active webgl scopes.
-    // Since we discard oldFullLayout, lets just copy the references over.
-    relinkPrivateKeys(newFullLayout, oldFullLayout);
 
     doAutoMargin(gd);
 
@@ -2812,7 +2832,12 @@ Plotly.relayout = function relayout (gd, astr, val) {
             doextra([ptrunk + '.range[0]',ptrunk + '.range[1]'],
                 undefined);
         }
-
+        else if(pleafPlus.match(/^aspectratio\.[xyz]$/)) {
+            doextra(p.parts[0]+'.aspectmode', 'manual');
+        }
+        else if(pleafPlus.match(/^aspectmode$/)) {
+            doextra([ptrunk + '.x', ptrunk + '.y', ptrunk + '.z'], undefined);
+        }
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie are we toggling log)
         if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
@@ -3123,6 +3148,9 @@ function makePlotFramework(gd) {
         subplots = Plotly.Axes.getSubplots(gd),
         fullLayout = gd._fullLayout;
 
+    /*
+     * TODO - find a better place for 3D to initialize axes
+     */
     if(fullLayout._hasGL3D) Plotly.Gl3dAxes.initAxes(gd);
 
     var outerContainer = fullLayout._fileandcomments =
