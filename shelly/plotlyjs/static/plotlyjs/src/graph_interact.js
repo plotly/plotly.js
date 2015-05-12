@@ -21,6 +21,8 @@ fx.layoutAttributes = {
 };
 
 fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
+    var isHoriz;
+
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(layoutIn, layoutOut,
                                  fx.layoutAttributes,
@@ -31,17 +33,26 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 
     if (layoutOut._hasGL3D) {
         coerce('hovermode', 'closest');
-    } else {
-        if (layoutOut._isHoriz===undefined) layoutOut._isHoriz = fx.isHoriz(fullData);
-        coerce('hovermode', layoutOut._isHoriz ? 'y' : 'x');
+    }
+    else {
+        // flag for 'horizontal' plots:
+        // determines the state of the modebar 'compare' hovermode button
+        isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
+        coerce('hovermode', isHoriz ? 'y' : 'x');
     }
 };
 
-// returns true if ALL traces have orientation 'h' (for 'hovermode')
-fx.isHoriz = function isHoriz(fullData) {
-    return fullData.every(function(trace) {
-        return trace.orientation==='h';
-    });
+fx.isHoriz = function(fullData) {
+    var isHoriz = true;
+    var i, trace;
+    for (i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
+        if (trace.orientation !== 'h') {
+            isHoriz = false;
+            break;
+        }
+    }
+    return isHoriz;
 };
 
 // ms between first mousedown and 2nd mouseup to constitute dblclick...
@@ -60,8 +71,6 @@ var DRAGGERSIZE = 20;
 fx.init = function(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData;
-
-    if (fullLayout._isHoriz===undefined) fullLayout._isHoriz = fx.isHoriz(fullData);
 
     if (fullLayout._hasGL3D || gd._context.staticPlot) return;
 
