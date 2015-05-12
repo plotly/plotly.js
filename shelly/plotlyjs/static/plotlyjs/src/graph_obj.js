@@ -141,16 +141,13 @@ plots.redrawText = function(divid) {
         return;
     }
 
-    return new Promise(function(resolve) {
-        setTimeout(function(){
-            Plotly.Annotations.drawAll(gd);
-            Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
-            (gd.calcdata||[]).forEach(function(d){
-                if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
-            });
-            resolve(plots.previousPromises(gd));
-        },300);
-    });
+    setTimeout(function(){
+        Plotly.Annotations.drawAll(gd);
+        Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
+        (gd.calcdata||[]).forEach(function(d){
+            if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
+        });
+    },300);
 };
 
 // where and how the background gets set can be overridden by context
@@ -3198,7 +3195,8 @@ function makePlotFramework(gd) {
         .attr({
             xmlns: 'http://www.w3.org/2000/svg',
             // odd d3 quirk - need namespace twice??
-            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
+            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
+            'xml:xml:space': 'preserve'
         })
         .classed('main-svg', true);
 
