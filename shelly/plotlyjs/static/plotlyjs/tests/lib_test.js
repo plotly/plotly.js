@@ -70,6 +70,26 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('aggNums()', function() {
+        var aggNums = Plotly.Lib.aggNums;
+
+        function summation(a, b) { return a + b; }
+
+        it('should work with 1D and 2D inputs and ignore non-numerics', function() {
+            var in1D = [1,2,3,4,'goose!',5,6],
+                in2D = [[1,2,3],['',4],[5,'hi!',6]];
+
+            expect(aggNums(Math.min, null, in1D)).toEqual(1);
+            expect(aggNums(Math.min, null, in2D)).toEqual(1);
+
+            expect(aggNums(Math.max, null, in1D)).toEqual(6);
+            expect(aggNums(Math.max, null, in2D)).toEqual(6);
+
+            expect(aggNums(summation, 0, in1D)).toEqual(21);
+            expect(aggNums(summation, 0, in2D)).toEqual(21);
+        });
+    });
+
     describe('mean() should', function() {
         it('toss out non-numerics (strings):', function() {
             var input = [1, 2, 'apple', 'orange'],
