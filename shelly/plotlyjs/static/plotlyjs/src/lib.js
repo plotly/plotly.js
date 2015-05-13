@@ -962,14 +962,15 @@ lib.OptionControl = function(opt, optname) {
  * bounce the ends in, so the output has the same length as the input
  */
 lib.smooth = function(arrayIn, FWHM) {
-    var w = [],
+    var alen = arrayIn.length,
+        w = [],
         arrayOut = [],
         i,
         j,
         k,
         v;
 
-    FWHM = Math.round(FWHM); // only makes sense for integers
+    FWHM = Math.round(FWHM) || 0; // only makes sense for integers
     if(FWHM < 2) return arrayIn;
 
     // first make the window array
@@ -978,15 +979,21 @@ lib.smooth = function(arrayIn, FWHM) {
     }
 
     // now do the convolution
-    var wlen = w.length,
-        alen = arrayIn.length;
+    var wlen = w.length;
 
     for(i = 0; i < alen; i++) {
         v = 0;
         for(j = 0; j < wlen; j++) {
             k = i + j + 1 - FWHM;
-            if(k < 0) k = -1-k;
-            else if(k >= alen) k = 2*alen-1-k;
+
+            // multibounce
+            if(k < -alen) k -= 2 * alen * Math.round(k / (2 * alen));
+            else if(k > 2 * alen - 1) k -= 2 * alen * Math.floor(k / (2 * alen));
+
+            // single bounce
+            if(k < 0) k = - 1 - k;
+            else if(k >= alen) k = 2 * alen - 1 - k;
+
             v += arrayIn[k] * w[j];
         }
         arrayOut.push(v);

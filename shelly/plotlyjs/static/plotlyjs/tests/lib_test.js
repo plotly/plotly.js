@@ -134,6 +134,56 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('smooth()', function() {
+        it('should not alter the input for FWHM < 1.5', function() {
+            var input = [1, 2, 1, 2, 1],
+                output = Plotly.Lib.smooth(input.slice(), 1.49);
+
+            expect(output).toEqual(input);
+
+            output = Plotly.Lib.smooth(input.slice(), 'like butter');
+
+            expect(output).toEqual(input);
+        });
+
+        it('should preserve the length and integral even with multiple bounces', function() {
+            var input = [1, 2, 4, 8, 16, 8, 10, 12],
+                output2 = Plotly.Lib.smooth(input.slice(), 2),
+                output30 = Plotly.Lib.smooth(input.slice(), 30),
+                sumIn = 0,
+                sum2 = 0,
+                sum30 = 0;
+
+            for(var i = 0; i < input.length; i++) {
+                sumIn += input[i];
+                sum2 += output2[i];
+                sum30 += output30[i];
+            }
+
+            expect(output2.length).toEqual(input.length);
+            expect(output30.length).toEqual(input.length);
+            expect(sum2).toBeCloseTo(sumIn, 6);
+            expect(sum30).toBeCloseTo(sumIn, 6);
+        });
+
+        it('should use a hann window and bounce', function() {
+            var input = [0, 0, 0, 7, 0, 0, 0],
+                out4 = Plotly.Lib.smooth(input, 4),
+                out7 = Plotly.Lib.smooth(input, 7),
+                expected4 = [
+                    0.2562815664617711, 0.875, 1.4937184335382292, 1.75,
+                    1.493718433538229, 0.875, 0.25628156646177086
+                ],
+                expected7 = [1, 1, 1, 1, 1, 1, 1],
+                i;
+
+            for(i = 0; i < input.length; i++) {
+                expect(out4[i]).toBeCloseTo(expected4[i], 6);
+                expect(out7[i]).toBeCloseTo(expected7[i], 6);
+            }
+        });
+    });
+
     describe('nestedProperty', function() {
         var np = Plotly.Lib.nestedProperty;
 
