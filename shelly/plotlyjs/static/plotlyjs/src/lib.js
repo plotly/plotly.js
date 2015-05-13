@@ -1266,35 +1266,28 @@ lib.transposeRagged = function(z) {
 lib.dot = function(x, y) {
     if (!(x.length && y.length) || x.length !== y.length) return null;
 
-    if (x.length === 0) return x;
+    var len = x.length,
+        out,
+        i;
 
-    // two-arg zip
-    function zip(x, y) {
-        var ret = [];
-        for (var i = 0; i < x.length; ++i)
-            ret = ret.concat([[x[i], y[i]]]);
-        return ret;
+    if(x[0].length) {
+        // mat-vec or mat-mat
+        out = new Array(len);
+        for(i = 0; i < len; i++) out[i] = lib.dot(x[i], y);
     }
-
-    function sumSqr(a,x) { return a + x[0] * x[1]; }
-    function vecMat(y) { return lib.dot(x, y); }
-    function matVec(x) { return lib.dot(x, y); }
-
-    // dot itself
-    if (!x[0].length) {
-        if (!y[0].length) {
-            // vec-vec
-            return zip(x, y).reduce(sumSqr, 0);
-        }
-        else {
-            // vec-mat
-            return lib.transposeRagged(y).map(vecMat);
-        }
+    else if(y[0].length) {
+        // vec-mat
+        var yTranspose = lib.transposeRagged(y);
+        out = new Array(yTranspose.length);
+        for(i = 0; i < yTranspose.length; i++) out[i] = lib.dot(x, yTranspose[i]);
     }
     else {
-        // mat-vec or mat-mat
-        return x.map(matVec);
+        // vec-vec
+        out = 0;
+        for(i = 0; i < len; i++) out += x[i] * y[i];
     }
+
+    return out;
 };
 
 
