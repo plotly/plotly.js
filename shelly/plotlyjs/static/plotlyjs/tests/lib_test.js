@@ -87,6 +87,29 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('dot()', function() {
+        var dot = Plotly.Lib.dot;
+
+        it('should return null for empty or unequal-length inputs', function() {
+            expect(dot([], [])).toBeNull();
+            expect(dot([1], [2, 3])).toBeNull();
+        });
+
+        it('should dot vectors to a scalar', function() {
+            expect(dot([1, 2, 3], [4, 5, 6])).toEqual(32);
+        });
+
+        it('should dot a vector and a matrix to a vector', function() {
+            expect(dot([1, 2], [[3, 4], [5, 6]])).toEqual([13, 16]);
+            expect(dot([[3, 4], [5, 6]], [1, 2])).toEqual([11, 17]);
+        });
+
+        it('should dot two matrices to a matrix', function() {
+            expect(dot([[1, 2], [3, 4]], [[5, 6], [7, 8]]))
+                .toEqual([[19, 22], [43, 50]]);
+        });
+    });
+
     describe('aggNums()', function() {
         var aggNums = Plotly.Lib.aggNums;
 
