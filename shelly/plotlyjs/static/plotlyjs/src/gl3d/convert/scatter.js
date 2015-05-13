@@ -19,7 +19,7 @@ function LineWithMarkers(scene, uid) {
     this.errorBars          = null;
     this.textMarkers        = null;
     this.delaunayMesh       = null;
-    this.color              = '#fff';
+    this.color              = null;
     this.mode               = '';
     this.dataPoints         = [];
     this.axesBounds         = [[-Infinity,-Infinity,-Infinity],
