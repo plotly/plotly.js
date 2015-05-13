@@ -122,7 +122,7 @@ plots.newTab = function(divid, layout) {
         editable: true,
         autosizable: true,
         scrollZoom: true,
-        showTips: false,
+        // showTips: false,
         showLink: false,
         setBackground: 'opaque'
     };

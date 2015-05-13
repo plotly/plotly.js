@@ -829,31 +829,59 @@ lib.constrain = function(v,v0,v1) {
  *          or 'long' which provides 2000 ms delay time.
  * @return {undefined} this function does not return a value
  */
+var NOTEDATA = [];
 lib.notifier = function(text, displayLength) {
 
-    var ts;
-    if (isNumeric(displayLength)) ts = displayLength;
-    else if (displayLength === 'long') ts = 2000;
-    else ts = 1000;
+    if(NOTEDATA.indexOf(text) !== -1) return;
 
-    var notifierContainer = $('.notifier-container');
-    if(!notifierContainer.length) {
-        notifierContainer = $('<div class="notifier-container"></div>')
-            .appendTo('#tabs-one-line,#embedded-graph');
+    NOTEDATA.push(text);
+
+    var ts = 1000;
+    if (isNumeric(displayLength)) ts = displayLength;
+    else if (displayLength === 'long') ts = 3000;
+
+    var notifierContainer = d3.select('body')
+        .selectAll('.plotly-notifier')
+        .data([0]);
+    notifierContainer.enter()
+        .append('div')
+        .classed('plotly-notifier', true);
+
+    var notes = notifierContainer.selectAll('.notifier-note').data(NOTEDATA);
+
+    function killNote(transition) {
+        transition
+            .duration(700)
+            .style('opacity', 0)
+            .each('end', function(thisText) {
+                var thisIndex = NOTEDATA.indexOf(thisText);
+                if(thisIndex !== -1) NOTEDATA.splice(thisIndex, 1);
+                d3.select(this).remove();
+            });
     }
 
-    if( $('div.notifier').text().indexOf(text) > 0 ) return;
+    notes.enter().append('div')
+        .classed('notifier-note', true)
+        .style('opacity', 0)
+        .each(function(thisText) {
+            var note = d3.select(this);
 
-    var n = $('<div class="notifier" style="display:none;">'+
-        '<button class="notifier__close close" data-dismiss="alert">'+
-            '&times;'+
-        '</button>'+
-        '<p class="push-half">'+text+'</p></div>');
+            note.append('button')
+                .classed('notifier-close', true)
+                .html('&times;')
+                .on('click', function() {
+                    note.transition().call(killNote);
+                });
 
-    n.appendTo(notifierContainer)
-        .fadeIn(700)
-        .delay(ts)
-        .fadeOut(700,function(){ n.remove(); });
+            note.append('p').html(thisText);
+
+            note.transition()
+                    .duration(700)
+                    .style('opacity', 1)
+                .transition()
+                    .delay(ts)
+                    .call(killNote);
+        });
 };
 
 /**
