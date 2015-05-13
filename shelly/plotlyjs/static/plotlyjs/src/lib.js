@@ -1241,22 +1241,22 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
 };
 
 /**
- * transpose function inspired by
+ * transpose a (possibly ragged) 2d array z. inspired by
  * http://stackoverflow.com/questions/17428587/
  * transposing-a-2d-array-in-javascript
  */
 lib.transposeRagged = function(z) {
-    // Transposes a (possibly ragged) 2d array z.
-    var maxlen = 0;
+    var maxlen = 0,
+        zlen = z.length,
+        i,
+        j;
     // Maximum row length:
-    for (var i = 0; i < z.length; i++) maxlen = Math.max(maxlen, z[i].length);
+    for (i = 0; i < zlen; i++) maxlen = Math.max(maxlen, z[i].length);
 
-    var t = [];
-    for (var x = 0; x < maxlen; x++) {
-        t[x] = [];
-        for (var y = 0; y < z.length; y++) {
-            t[x][y] = z[y][x];
-        }
+    var t = new Array(maxlen);
+    for (i = 0; i < maxlen; i++) {
+        t[i] = new Array(zlen);
+        for (j = 0; j < zlen; j++) t[i][j] = z[j][i];
     }
 
     return t;
