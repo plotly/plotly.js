@@ -20,7 +20,11 @@ function SurfaceTrace(scene, surface, uid) {
 
 var proto = SurfaceTrace.prototype;
 
-proto.handlePick = function() {};
+proto.handlePick = function(selection) {
+  if(selection.object === this.surface) {
+    return true;
+  }
+};
 
 function parseColorScale (colorscale, alpha) {
     if (alpha === undefined) alpha = 1;
