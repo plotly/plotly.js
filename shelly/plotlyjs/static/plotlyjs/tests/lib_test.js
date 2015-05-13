@@ -70,6 +70,23 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('transposeRagged()', function() {
+        it('should transpose and return a rectangular array', function() {
+            var input = [
+                    [1],
+                    [2, 3, 4],
+                    [5, 6],
+                    [7]],
+                output = [
+                    [1, 2, 5, 7],
+                    [undefined, 3, 6, undefined],
+                    [undefined, 4, undefined, undefined]
+                ];
+
+            expect(Plotly.Lib.transposeRagged(input)).toEqual(output);
+        });
+    });
+
     describe('aggNums()', function() {
         var aggNums = Plotly.Lib.aggNums;
 
