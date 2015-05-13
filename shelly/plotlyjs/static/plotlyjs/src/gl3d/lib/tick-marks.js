@@ -4,7 +4,6 @@
 
 module.exports = computeTickMarks;
 
-var project = require('./project');
 var Plotly  = require('../../plotly');
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
