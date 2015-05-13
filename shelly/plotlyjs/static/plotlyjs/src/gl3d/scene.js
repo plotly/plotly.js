@@ -1,3 +1,4 @@
+/* jshint shadow: true */
 'use strict';
 
 var createPlot          = require('gl-plot3d'),
@@ -8,7 +9,8 @@ var createPlot          = require('gl-plot3d'),
     createSurfaceTrace  = require('./convert/surface'),
     computeTickMarks    = require('./lib/tick-marks'),
     createCamera        = require('./lib/camera'),
-    str2RGBAarray       = require('./lib/str2rgbarray');
+    str2RGBAarray       = require('./lib/str2rgbarray'),
+    Plotly              = require('../plotly');
 
 function render(scene) {
     computeTickMarks(scene);
@@ -23,8 +25,7 @@ function render(scene) {
     }
 }
 
-function Scene(options) {
-
+function Scene(options, fullLayout) {
 
     //Create sub container for plot
     var sceneContainer = document.createElement('div');
@@ -33,28 +34,27 @@ function Scene(options) {
     /*
      * Tag the container with the sceneID
      */
-    sceneContainer.id = options.sceneKey;
+    sceneContainer.id             = options.id;
     sceneContainer.style.position = 'absolute';
-    sceneContainer.style.top = sceneContainer.style.left = '0px';
-    sceneContainer.style.width = sceneContainer.style.height = '100%';
-
+    sceneContainer.style.top      = sceneContainer.style.left = '0px';
+    sceneContainer.style.width    = sceneContainer.style.height = '100%';
     plotContainer.appendChild(sceneContainer);
 
-    this.Plotly       = options.Plotly;
-    this.sceneLayout  = options.sceneLayout;
-    this.fullLayout   = options.fullLayout;
-
-    this.axesOptions  = createAxesOptions(options.sceneLayout);
-    this.spikeOptions = createSpikeOptions(options.sceneLayout);
-
-    this.container    = sceneContainer;
+    this.fullLayout               = fullLayout;
+    this.id                       = options.id || 'scene';
+    /*
+     * Move this to calc step? Why does it work here?
+     */
+    this.axesOptions      = createAxesOptions(fullLayout[this.id]);
+    this.spikeOptions     = createSpikeOptions(fullLayout[this.id]);
+    this.container        = sceneContainer;
 
     /*
      * WARNING!!!! Only set camera position on first call to plot!!!!
      * TODO remove this hack
      */
     this.hasPlotBeenCalled = false;
-    this.sceneKey     = options.sceneKey || 'scene';
+
 
     var glplotOptions = {
             container:  sceneContainer,
@@ -94,7 +94,7 @@ function Scene(options) {
         div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
         div.style.cursor = 'pointer';
         div.style.fontSize = '24px';
-        div.style.color = options.Plotly.Color.defaults[0];
+        div.style.color = Plotly.Color.defaults[0];
 
         this.container.appendChild(div);
         this.container.style.background = '#FFFFFF';
@@ -132,33 +132,45 @@ var proto = Scene.prototype;
 
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
-proto.plot = function(sceneData, sceneLayout) {
+
+proto.plot = function(sceneData, fullLayout, layout) {
 
     var data, trace;
+    var i, j;
+    var fullSceneLayout = fullLayout[this.id];
+    var sceneLayout = layout[this.id];
 
-    if (sceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(sceneLayout.bgcolor);
+    if (fullSceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(fullSceneLayout.bgcolor);
     else this.glplot.clearColor = [0, 0, 0, 0];
 
     //Update layout
-    this.glplotLayout = sceneLayout;
-    this.axesOptions.merge(sceneLayout);
-    this.spikeOptions.merge(sceneLayout);
+    this.fullSceneLayout = fullSceneLayout;
+
+    this.glplotLayout = fullSceneLayout;
+    this.axesOptions.merge(fullSceneLayout);
+    this.spikeOptions.merge(fullSceneLayout);
 
     //Update camera position
     if(!this.hasPlotBeenCalled) {
       this.hasPlotBeenCalled = true;
-      var camera = sceneLayout.cameraposition;
+      var camera = fullSceneLayout.cameraposition;
       if (camera) this.setCameraPosition(camera);
     }
 
     //Update scene
     this.glplot.update({});
 
+    // Update axes functions BEFORE updating traces
+    for (i = 0; i < 3; ++i) {
+        var axis = fullSceneLayout[axisProperties[i]];
+        Plotly.Gl3dAxes.setConvert(axis);
+    }
+
     //Update traces
     if (sceneData) {
         if(!Array.isArray(sceneData)) sceneData = [sceneData];
 
-        for(var i=0; i<sceneData.length; ++i) {
+        for(i = 0; i < sceneData.length; ++i) {
             data = sceneData[i];
             if(data.visible!==true) {
                 continue;
@@ -187,8 +199,8 @@ proto.plot = function(sceneData, sceneLayout) {
 
     var traceIds = Object.keys(this.traces);
 trace_id_loop:
-    for(var i=0; i<traceIds.length; ++i) {
-        for(var j=0; j<sceneData.length; ++j) {
+    for(i = 0; i<traceIds.length; ++i) {
+        for(j = 0; j<sceneData.length; ++j) {
             if(sceneData[j].uid === traceIds[i] && sceneData[j].visible===true) {
                 continue trace_id_loop;
             }
@@ -199,13 +211,16 @@ trace_id_loop:
     }
 
     //Update ranges (needs to be called *after* objects are added due to updates)
-    var sceneBounds = this.glplot.bounds;
-    for(var i=0; i<3; ++i) {
-        var axis = sceneLayout[axisProperties[i]];
+    var sceneBounds = this.glplot.bounds,
+        axisDataRange = [];
+
+    for(i = 0; i < 3; ++i) {
+        var axis = fullSceneLayout[axisProperties[i]];
+
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
-            for(var j=0; j<this.glplot.objects.length; ++j) {
+            for(j = 0; j < this.glplot.objects.length; ++j) {
                 var objBounds = this.glplot.objects[j].bounds;
                 sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i]);
                 sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i]);
@@ -223,7 +238,7 @@ trace_id_loop:
                 sceneBounds[1][i] += d/32.0;
             }
         } else {
-            var range = sceneLayout[axisProperties[i]].range;
+            var range = fullSceneLayout[axisProperties[i]].range;
             sceneBounds[0][i] = range[0];
             sceneBounds[1][i] = range[1];
         }
@@ -231,11 +246,67 @@ trace_id_loop:
             sceneBounds[0][i] -= 1;
             sceneBounds[1][i] += 1;
         }
+        axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
     }
 
+    var axesScaleRatio = [],
+        maxRange = Math.max.apply(null, axisDataRange);
+
+    for (i = 0; i < 3; ++i) axesScaleRatio[i] = axisDataRange[i] / maxRange;
+
+    /*
+     * Dynamically set the aspect ratio depending on the users aspect settings
+     */
+    var axisAutoScaleFactor = 4;
+    var aspectRatio;
+
+    if (fullSceneLayout.aspectmode === 'auto') {
+        if (Math.max.apply(null, axesScaleRatio)/Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
+
+            /*
+             * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
+             */
+            aspectRatio = axesScaleRatio;
+        } else {
+
+            /*
+             * USE EQUAL MODE WHEN AXIS RANGE DIMENSIONS ARE HIGHLY UNEQUAL
+             */
+            aspectRatio = [1, 1, 1];
+        }
+
+    } else if (fullSceneLayout.aspectmode === 'cube') {
+        aspectRatio = [1, 1, 1];
+
+    } else if (fullSceneLayout.aspectmode === 'data') {
+        aspectRatio = axesScaleRatio;
+
+    } else if (fullSceneLayout.aspectmode === 'manual') {
+        var userRatio = fullSceneLayout.aspectratio;
+        aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
+
+    } else {
+        throw new Error('scene.js aspectRatio was not one of the enumerated types');
+    }
+
+    /*
+     * Write aspect Ratio back to user data and fullLayout so that it is modifies as user
+     * manipulates the aspectmode settings and the fullLayout is up-to-date.
+     */
+    fullSceneLayout.aspectratio.x = sceneLayout.aspectratio.x = aspectRatio[0];
+    fullSceneLayout.aspectratio.y = sceneLayout.aspectratio.y = aspectRatio[1];
+    fullSceneLayout.aspectratio.z = sceneLayout.aspectratio.z = aspectRatio[2];
+
+    /*
+     * Finally assign the computed aspecratio to the glplot module. This will have an effect
+     * on the next render cycle.
+     */
+    this.glplot.aspect = aspectRatio;
+
+
     //Update frame position for multi plots
-    var domain = this.sceneLayout.domain || null,
-        size = this.fullLayout._size || null;
+    var domain = fullSceneLayout.domain || null,
+        size = fullLayout._size || null;
 
     if (domain && size) {
         var containerStyle = this.container.style;
@@ -257,8 +328,8 @@ proto.destroy = function() {
 proto.setCameraToDefault = function setCameraToDefault () {
     this.glplot.camera.lookAt(
         [1.25, 1.25, 1.25],
-        [0,0,0],
-        [0,0,1]
+        [0   , 0   , 0   ],
+        [0   , 0   , 1   ]
     );
 };
 
@@ -288,11 +359,10 @@ proto.setCameraPosition = function setCameraPosition (camera) {
 };
 
 // save camera position to user layout (i.e. gd.layout)
-proto.saveCameraPositionToLayout = function saveCameraPositionToLayout (layout) {
-    var lib = this.Plotly.Lib;
-    var prop = lib.nestedProperty(layout, this.sceneKey + '.cameraposition');
+proto.saveCamera = function saveCamera(layout) {
     var cameraposition = this.getCameraPosition();
-    prop.set(cameraposition);
+    Plotly.Lib.nestedProperty(layout, this.id + '.cameraposition')
+        .set(cameraposition);
 };
 
 proto.toImage = function (format) {

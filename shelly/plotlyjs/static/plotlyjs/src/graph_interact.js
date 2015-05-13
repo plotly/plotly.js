@@ -6,13 +6,13 @@
 
 var fx = module.exports = {},
     Plotly = require('./plotly'),
-    tinycolor = require('tinycolor2');
+    tinycolor = require('tinycolor2'),
+    isNumeric = require('./isnumeric');
 
 fx.layoutAttributes = {
     dragmode: {
         type: 'enumerated',
-        values: ['zoom', 'pan'],
-        dflt: 'zoom'
+        values: ['zoom', 'pan', 'rotate']
     },
     hovermode: {
         type: 'enumerated',
@@ -21,27 +21,38 @@ fx.layoutAttributes = {
 };
 
 fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
+    var isHoriz;
+
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(layoutIn, layoutOut,
                                  fx.layoutAttributes,
                                  attr, dflt);
     }
 
-    coerce('dragmode');
+    coerce('dragmode', layoutOut._hasGL3D ? 'rotate' : 'zoom');
 
     if (layoutOut._hasGL3D) {
         coerce('hovermode', 'closest');
-    } else {
-        if (layoutOut._isHoriz===undefined) layoutOut._isHoriz = fx.isHoriz(fullData);
-        coerce('hovermode', layoutOut._isHoriz ? 'y' : 'x');
+    }
+    else {
+        // flag for 'horizontal' plots:
+        // determines the state of the modebar 'compare' hovermode button
+        isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
+        coerce('hovermode', isHoriz ? 'y' : 'x');
     }
 };
 
-// returns true if ALL traces have orientation 'h' (for 'hovermode')
-fx.isHoriz = function isHoriz(fullData) {
-    return fullData.every(function(trace) {
-        return trace.orientation==='h';
-    });
+fx.isHoriz = function(fullData) {
+    var isHoriz = true;
+    var i, trace;
+    for (i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
+        if (trace.orientation !== 'h') {
+            isHoriz = false;
+            break;
+        }
+    }
+    return isHoriz;
 };
 
 // ms between first mousedown and 2nd mouseup to constitute dblclick...
@@ -60,8 +71,6 @@ var DRAGGERSIZE = 20;
 fx.init = function(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData;
-
-    if (fullLayout._isHoriz===undefined) fullLayout._isHoriz = fx.isHoriz(fullData);
 
     if (fullLayout._hasGL3D || gd._context.staticPlot) return;
 
@@ -88,8 +97,8 @@ fx.init = function(gd) {
             // the x position of the main y axis line
             x0 = (ya._linepositions[subplot]||[])[3];
 
-        if($.isNumeric(y0) && xa.side==='top') y0 -= DRAGGERSIZE;
-        if($.isNumeric(x0) && ya.side!=='right') x0 -= DRAGGERSIZE;
+        if(isNumeric(y0) && xa.side==='top') y0 -= DRAGGERSIZE;
+        if(isNumeric(x0) && ya.side!=='right') x0 -= DRAGGERSIZE;
 
         // main and corner draggers need not be repeated for
         // overlaid subplots - these draggers drag them all
@@ -121,7 +130,7 @@ fx.init = function(gd) {
 
         // x axis draggers - if you have overlaid plots,
         // these drag each axis separately
-        if($.isNumeric(y0)) {
+        if(isNumeric(y0)) {
             if(xa.anchor==='free') y0 -= fullLayout._size.h*(1-ya.domain[1]);
             dragBox(gd, plotinfo, xa._length*0.1, y0,
                 xa._length*0.8, DRAGGERSIZE, '', 'ew');
@@ -131,7 +140,7 @@ fx.init = function(gd) {
                 xa._length*0.1, DRAGGERSIZE, '', 'e');
         }
         // y axis draggers
-        if($.isNumeric(x0)) {
+        if(isNumeric(x0)) {
             if(ya.anchor==='free') x0 -= fullLayout._size.w*xa.domain[0];
             dragBox(gd, plotinfo, x0, ya._length*0.1,
                 DRAGGERSIZE, ya._length*0.8, 'ns', '');
@@ -375,7 +384,7 @@ function hover(gd, evt, subplot){
         if('yval' in evt) yvalArray = flat(subplots, evt.yval);
         else yvalArray = p2c(yaArray, ypx);
 
-        if(!$.isNumeric(xvalArray[0]) || !$.isNumeric(yvalArray[0])) {
+        if(!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
             console.log('Plotly.Fx.hover failed', evt, gd);
             return unhover(gd, evt);
         }
@@ -456,7 +465,7 @@ function hover(gd, evt, subplot){
                 var newPoint;
                 for(var newPointNum=0; newPointNum<newPoints.length; newPointNum++) {
                     newPoint = newPoints[newPointNum];
-                    if($.isNumeric(newPoint.x0) && $.isNumeric(newPoint.y0)) {
+                    if(isNumeric(newPoint.x0) && isNumeric(newPoint.y0)) {
                         hoverData.push(cleanPoint(newPoint, hovermode));
                     }
                 }
@@ -1248,17 +1257,7 @@ fx.modeBar = function(gd){
 
     if (!gd._context.displayModeBar) return deleteModebar();
 
-    var modeButtons2d = [
-            ['zoom2d', 'pan2d'],
-            ['zoomIn2d', 'zoomOut2d', 'autoScale2d'],
-            ['hoverClosest2d', 'hoverCompare2d']
-        ],
-        modeButtons3d = [
-            ['rotate3d', 'zoom3d', 'pan3d'],
-            ['resetCameraDefault3d', 'resetCameraLastSave3d'],
-            ['hoverClosest3d']
-        ],
-        buttons = fullLayout._hasGL3D ? modeButtons3d : modeButtons2d;
+    var buttons = chooseModebarButtons(fullLayout);
 
     if (!fullLayout._modebar){
         deleteModebar();
@@ -1273,6 +1272,38 @@ fx.modeBar = function(gd){
         fullLayout._modebar = initModebar();
     }
 };
+
+function chooseModebarButtons(fullLayout) {
+    if(fullLayout._hasGL3D) {
+        return [
+            ['rotate3d', 'zoom3d', 'pan3d'],
+            ['resetCameraDefault3d', 'resetCameraLastSave3d'],
+            ['hoverClosest3d']
+        ];
+    }
+
+    var axList = Plotly.Axes.list({_fullLayout: fullLayout}, null, true),
+        allFixed = true,
+        i,
+        buttons;
+
+    for(i = 0; i < axList.length; i++) {
+        if(!axList[i].fixedrange) {
+            allFixed = false;
+            break;
+        }
+    }
+
+    if(allFixed) buttons = [];
+    else buttons = [
+        ['zoom2d', 'pan2d'],
+        ['zoomIn2d', 'zoomOut2d', 'autoScale2d']
+    ];
+
+    buttons.push(['hoverClosest2d', 'hoverCompare2d']);
+
+    return buttons;
+}
 
 // ----------------------------------------------------
 // Axis dragging functions

@@ -8,7 +8,8 @@
 /* global Promise:false, d3:false */
 
 var plots = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
@@ -94,6 +95,25 @@ plots.getModule = function getModule(trace) {
     );
 };
 
+plots.getSubplotIds = function getSubplotIds(layout, type) {
+    var typeToIdRegex = {
+        gl3d: /^scene[0-9]*$/
+    };
+
+    var idRegex = typeToIdRegex[type],
+        layoutKeys = Object.keys(layout),
+        subplotIds = [];
+
+    var i, layoutKey;
+
+    for (i = 0; i < layoutKeys.length; i++) {
+        layoutKey = layoutKeys[i];
+        if (idRegex.test(layoutKey)) subplotIds.push(layoutKey);
+    }
+
+    return subplotIds;
+};
+
 // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
 plots.newTab = function(divid, layout) {
     Plotly.ToolPanel.makeMenu(document.getElementById(divid));
@@ -102,7 +122,6 @@ plots.newTab = function(divid, layout) {
         editable: true,
         autosizable: true,
         scrollZoom: true,
-        showTips: false,
         showLink: false,
         setBackground: 'opaque'
     };
@@ -121,13 +140,16 @@ plots.redrawText = function(divid) {
         return;
     }
 
-    setTimeout(function(){
-        Plotly.Annotations.drawAll(gd);
-        Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
-        (gd.calcdata||[]).forEach(function(d){
-            if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
-        });
-    },300);
+    return new Promise(function(resolve) {
+        setTimeout(function(){
+            Plotly.Annotations.drawAll(gd);
+            Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
+            (gd.calcdata||[]).forEach(function(d){
+                if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
+            });
+            resolve(plots.previousPromises(gd));
+        },300);
+    });
 };
 
 // where and how the background gets set can be overridden by context
@@ -571,7 +593,7 @@ Plotly.plot = function(gd, data, layout, config) {
             trace = cd[0].trace;
             if (trace.visible !== true || !trace._module.colorbar) {
                 uid = trace.uid;
-                fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid)
+                fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid+',#clip'+uid)
                     .remove();
             }
         }
@@ -640,12 +662,15 @@ Plotly.plot = function(gd, data, layout, config) {
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
     return (donePlotting && donePlotting.then) ?
-        donePlotting : Promise.resolve() ;
+        donePlotting : Promise.resolve();
 };
 
 function plot3D(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData;
+
+    var i, sceneId, fullSceneData,
+        scene, sceneOptions;
 
     fullLayout._paperdiv.style({
         width: fullLayout.width+'px',
@@ -655,45 +680,37 @@ function plot3D(gd) {
     gd._context.setBackground(gd, fullLayout.paper_bgcolor);
 
     // Get traces attached to a scene
-    function getSceneData(data, sceneKey) {
-        var i_trace = 0,
-            trace = null,
-            sceneData = [];
-        for (i_trace; i_trace < data.length; ++i_trace) {
-            trace = data[i_trace];
-            if (trace.scene === sceneKey) sceneData.push(trace);
+    function getSceneData(data, sceneId) {
+        var sceneData = [];
+        var i, trace;
+        for (i = 0; i < data.length; i++) {
+            trace = data[i];
+            if (trace.scene===sceneId) sceneData.push(trace);
         }
         return sceneData;
     }
 
-    // Get list of scenes from fullLayout
-    var sceneKeys = Plotly.Lib.getSceneKeys(fullLayout),
-        i_sceneKey = 0;
+    var sceneIds = plots.getSubplotIds(fullLayout, 'gl3d');
 
-    // Loop through scenes
-    for (i_sceneKey; i_sceneKey < sceneKeys.length; ++i_sceneKey) {
-        var sceneKey = sceneKeys[i_sceneKey],
-            sceneData = getSceneData(fullData, sceneKey),
-            sceneLayout = fullLayout[sceneKey],
-            scene = sceneLayout._scene;  // ref. to corresp. Scene instance
+
+    for (i = 0; i < sceneIds.length; i++) {
+        sceneId = sceneIds[i];
+        fullSceneData = getSceneData(fullData, sceneId);
+        scene = fullLayout[sceneId]._scene;  // ref. to corresp. Scene instance
 
         // If Scene is not instantiated, create one!
         if (!(scene)) {
-            var sceneOptions = {
-                Plotly: Plotly,
+            sceneOptions = {
                 container: gd.querySelector('.svg-container'),
-                sceneKey: sceneKey,
-                sceneData: sceneData,
-                sceneLayout: sceneLayout,
-                fullLayout: fullLayout,
+                id: sceneId,
                 staticPlot: gd._context.staticPlot,
                 plot3dPixelRatio: gd._context.plot3dPixelRatio
             };
-            scene = new Plotly.Scene(sceneOptions);
-            sceneLayout._scene = scene;  // set ref to Scene instance
+            scene = new Plotly.Scene(sceneOptions, fullLayout);
+            fullLayout[sceneId]._scene = scene;  // set ref to Scene instance
         }
 
-        scene.plot(sceneData, sceneLayout);  // takes care of business
+        scene.plot(fullSceneData, fullLayout, gd.layout);  // takes care of business
     }
 }
 
@@ -890,9 +907,9 @@ function cleanLayout(layout) {
         delete layout.scene1;
     }
 
-    var sceneKeys = Plotly.Lib.getSceneKeys(layout);
-    for(i = 0; i < sceneKeys.length; i++) {
-        var sceneLayout = layout[sceneKeys[i]];
+    var sceneIds = plots.getSubplotIds(layout, 'gl3d');
+    for(i = 0; i < sceneIds.length; i++) {
+        var sceneLayout = layout[sceneIds[i]];
         // fix for saved float32-arrays
         var camp = sceneLayout.cameraposition;
         if (Array.isArray(camp) && $.isPlainObject(camp[0])) {
@@ -1198,6 +1215,7 @@ plots.supplyDefaults = function(gd) {
 
     var i, trace, fullTrace, module, axList, ax;
 
+
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
     plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
@@ -1211,6 +1229,7 @@ plots.supplyDefaults = function(gd) {
 
         // DETECT 3D, Cartesian, and Polar
         if (plots.isGL3D(fullTrace.type)) newFullLayout._hasGL3D = true;
+
         if (plots.isCartesian(fullTrace.type)) {
             if ('r' in fullTrace) newFullLayout._hasPolar = true;
             else newFullLayout._hasCartesian = true;
@@ -1237,9 +1256,10 @@ plots.supplyDefaults = function(gd) {
 
     cleanScenes(newFullLayout, oldFullLayout);
 
-    // IN THE CASE OF 3D the underscore modules are Mikola's webgl contexts.
-    // There will be all sorts of pain if we deep copy active webgl scopes.
-    // Since we discard oldFullLayout, lets just copy the references over.
+    /*
+     * Relink functions and underscore attributes to promote consistency between
+     * plots.
+     */
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
     doAutoMargin(gd);
@@ -1264,7 +1284,7 @@ plots.supplyDefaults = function(gd) {
 
 function cleanScenes(newFullLayout, oldFullLayout) {
     var oldSceneKey,
-        oldSceneKeys = Plotly.Lib.getSceneKeys(oldFullLayout);
+        oldSceneKeys = plots.getSubplotIds(oldFullLayout, 'gl3d');
 
     for (var i = 0; i < oldSceneKeys.length; i++) {
         oldSceneKey = oldSceneKeys[i];
@@ -1883,7 +1903,7 @@ function getExtendProperties (gd, update, indices, maxPoints) {
             maxp = maxPointsIsObject ? maxPoints[key][j] : maxPoints;
 
             // could have chosen null here, -1 just tells us to not take a window
-            if (!$.isNumeric(maxp)) maxp = -1;
+            if (!isNumeric(maxp)) maxp = -1;
 
             /*
              * Wrap the nestedProperty in an object containing required data
@@ -2276,7 +2296,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
 
     if(Object.keys(aobj).length) gd.changed = true;
 
-    if($.isNumeric(traces)) traces=[traces];
+    if(isNumeric(traces)) traces=[traces];
     else if(!Array.isArray(traces) || !traces.length) {
         traces=gd._fullData.map(function(v,i){ return i; });
     }
@@ -2292,6 +2312,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'x', 'y', 'z',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
         'line.width','showscale','zauto','connectgaps',
+        'autocolorscale',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
         'autocontour','ncontours','contours.coloring',
@@ -2428,6 +2449,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             // and setting auto should save bin or z settings
             if(zscl.indexOf(ai)!==-1) {
                 doextra(cont,'zauto',false,i);
+            }
+            else if(ai === 'colorscale') {
+                doextra(cont, 'autocolorscale', false, i);
+            }
+            else if(ai === 'autocolorscale') {
+                doextra(cont, 'colorscale', undefined, i);
             }
             else if(ai==='zauto') {
                 doextra(cont,zscl,undefined,i);
@@ -2699,10 +2726,6 @@ Plotly.relayout = function relayout (gd, astr, val) {
         domodebar = false,
         newkey, axes, keys, xyref, scene, axisAttr;
 
-
-    // for now, if we detect 3D stuff, just re-do the plot
-    // if (gl._hasGL3D) doplot = true;
-
     if(typeof astr === 'string') aobj[astr] = val;
     else if($.isPlainObject(astr)) aobj = astr;
     else {
@@ -2799,7 +2822,12 @@ Plotly.relayout = function relayout (gd, astr, val) {
             doextra([ptrunk + '.range[0]',ptrunk + '.range[1]'],
                 undefined);
         }
-
+        else if(pleafPlus.match(/^aspectratio\.[xyz]$/)) {
+            doextra(p.parts[0]+'.aspectmode', 'manual');
+        }
+        else if(pleafPlus.match(/^aspectmode$/)) {
+            doextra([ptrunk + '.x', ptrunk + '.y', ptrunk + '.z'], undefined);
+        }
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie are we toggling log)
         if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
@@ -3110,6 +3138,9 @@ function makePlotFramework(gd) {
         subplots = Plotly.Axes.getSubplots(gd),
         fullLayout = gd._fullLayout;
 
+    /*
+     * TODO - find a better place for 3D to initialize axes
+     */
     if(fullLayout._hasGL3D) Plotly.Gl3dAxes.initAxes(gd);
 
     var outerContainer = fullLayout._fileandcomments =
@@ -3154,8 +3185,7 @@ function makePlotFramework(gd) {
         .attr({
             xmlns: 'http://www.w3.org/2000/svg',
             // odd d3 quirk - need namespace twice??
-            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
-            'xml:xml:space': 'preserve'
+            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
         })
         .classed('main-svg', true);
 
@@ -3369,7 +3399,7 @@ function doAutoMargin(gd) {
                 fb = pushbottom.val,
                 pb = pushbottom.size;
             Object.keys(pm).forEach(function(k2) {
-                if($.isNumeric(pl) && pm[k2].r) {
+                if(isNumeric(pl) && pm[k2].r) {
                     var fr = pm[k2].r.val,
                         pr = pm[k2].r.size;
                     if(fr>fl) {
@@ -3383,7 +3413,7 @@ function doAutoMargin(gd) {
                         }
                     }
                 }
-                if($.isNumeric(pb) && pm[k2].t) {
+                if(isNumeric(pb) && pm[k2].t) {
                     var ft = pm[k2].t.val,
                         pt = pm[k2].t.size;
                     if(ft>fb) {
@@ -3784,7 +3814,7 @@ plots.titles = function(gd,title) {
                 }[avoid.side],
                 shiftSign = (['left','top'].indexOf(avoid.side)!==-1) ?
                     -1 : 1,
-                pad = $.isNumeric(avoid.pad) ? avoid.pad : 2,
+                pad = isNumeric(avoid.pad) ? avoid.pad : 2,
                 titlebb = Plotly.Drawing.bBox(titleGroup.node()),
                 paperbb = {
                     left: 0,
