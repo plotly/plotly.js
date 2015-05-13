@@ -1,7 +1,8 @@
 'use strict';
 
 var color = module.exports = {},
-    tinycolor = require('tinycolor2');
+    tinycolor = require('tinycolor2'),
+    isNumeric = require('./isnumeric');
 
 // IMPORTANT - default colors should be in hex for grid.js
 color.defaults = [
@@ -209,7 +210,7 @@ color.clean = function(container) {
 };
 
 function cleanOne(val) {
-    if($.isNumeric(val) || typeof val !== 'string') return val;
+    if(isNumeric(val) || typeof val !== 'string') return val;
 
     var valTrim = val.trim();
     if(valTrim.substr(0,3) !== 'rgb') return val;

@@ -105,4 +105,102 @@ describe('Test scatter', function () {
         });
 
     });
+
+    describe('linePoints', function() {
+        // test axes are unit-scaled and 100 units long
+        var ax = {_length: 100, c2p: Plotly.Lib.identity},
+            linePoints = Plotly.Scatter.linePoints,
+            baseOpts = {
+                xaxis: ax,
+                yaxis: ax,
+                connectGaps: false,
+                baseTolerance: 1,
+                linear: true
+            };
+
+        function makeCalcData(ptsIn) {
+            return ptsIn.map(function(pt) {
+                return {x: pt[0], y: pt[1]};
+            });
+        }
+
+        function callLinePoints(ptsIn, opts) {
+            var thisOpts = {};
+            if(!opts) opts = {};
+            Object.keys(baseOpts).forEach(function(key) {
+                if(opts[key] !== undefined) thisOpts[key] = opts[key];
+                else thisOpts[key] = baseOpts[key];
+            });
+            return linePoints(makeCalcData(ptsIn), thisOpts);
+        }
+
+        it('should pass along well-separated non-linear points', function() {
+            var ptsIn = [[0,0], [10,20], [20,10], [30,40], [40,60], [50,30]];
+            var ptsOut = callLinePoints(ptsIn);
+
+            expect(ptsOut).toEqual([ptsIn]);
+        });
+
+        it('should collapse straight lines to just their endpoints', function() {
+            var ptsIn = [[0,0], [5,10], [13,26], [15,30], [22,16], [28,4], [30,0]];
+            var ptsOut = callLinePoints(ptsIn);
+            // TODO: [22,16] should not appear here. This is ok but not optimal.
+            expect(ptsOut).toEqual([[[0,0], [15,30], [22,16], [30,0]]]);
+        });
+
+        it('should separate out blanks, unless connectgaps is true', function() {
+            var ptsIn = [
+                [0,0], [10,20], [20,10], [undefined, undefined],
+                [30,40], [undefined, undefined],
+                [40,60], [50,30]];
+            var ptsDisjoint = callLinePoints(ptsIn);
+            var ptsConnected = callLinePoints(ptsIn, {connectGaps: true});
+
+            expect(ptsDisjoint).toEqual([[[0,0], [10,20], [20,10]], [[30,40]], [[40,60], [50,30]]]);
+            expect(ptsConnected).toEqual([[[0,0], [10,20], [20,10], [30,40], [40,60], [50,30]]]);
+        });
+
+        it('should collapse a vertical cluster into 4 points', function() {
+            // the four being initial, high, low, and final if the high is before the low
+            var ptsIn = [[-10,0], [0,0], [0,10], [0,20], [0,-10], [0,15], [0,-25], [0,10], [0,5], [10,10]];
+            var ptsOut = callLinePoints(ptsIn);
+
+            // TODO: [0, 10] should not appear in either of these results - this is OK but not optimal.
+            expect(ptsOut).toEqual([[[-10,0], [0,0], [0,10], [0,20], [0,-25], [0,5], [10,10]]]);
+
+            // or initial, low, high, final if the low is before the high
+            ptsIn = [[-10,0], [0,0], [0,10], [0,-25], [0,-10], [0,15], [0,20], [0,10], [0,5], [10,10]];
+            ptsOut = callLinePoints(ptsIn);
+
+            expect(ptsOut).toEqual([[[-10,0], [0,0], [0,10], [0,-25], [0,20], [0,5], [10,10]]]);
+        });
+
+        it('should collapse a horizontal cluster into 4 points', function() {
+            // same deal
+            var ptsIn = [[0,-10], [0,0], [10,0], [20,0], [-10,0], [15,0], [-25,0], [10,0], [5,0], [10,10]];
+            var ptsOut = callLinePoints(ptsIn);
+
+            // TODO: [10, 0] should not appear in either of these results - this is OK but not optimal.
+            // same problem as the test above
+            expect(ptsOut).toEqual([[[0,-10], [0,0], [10,0], [20,0], [-25,0], [5,0], [10,10]]]);
+
+            ptsIn = [[0,-10], [0,0], [10,0], [-25,0], [-10,0], [15,0], [20,0], [10,0], [5,0], [10,10]];
+            ptsOut = callLinePoints(ptsIn);
+
+            expect(ptsOut).toEqual([[[0,-10], [0,0], [10,0], [-25,0], [20,0], [5,0], [10,10]]]);
+        });
+
+        it('should use lineWidth to determine whether a cluster counts', function() {
+            var ptsIn = [[0,0], [20,0], [21,10], [22,20], [23,-10], [24,15], [25,-25], [26,10], [27,5], [100,10]];
+            var ptsThin = callLinePoints(ptsIn);
+            var ptsThick = callLinePoints(ptsIn, {baseTolerance: 8});
+
+            // thin line, no decimation. thick line yes.
+            expect(ptsThin).toEqual([ptsIn]);
+            // TODO: [21,10] should not appear in this result (same issue again)
+            expect(ptsThick).toEqual([[[0,0], [20,0], [21,10], [22,20], [25,-25], [27,5], [100,10]]]);
+        });
+
+        // TODO: test coarser decimation outside plot, and removing very near duplicates from the four of a cluster
+    });
 });

@@ -143,7 +143,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
 
     coerce('colorscale');
 
-    var dims = ['x','y','z'];
+    var dims = ['x', 'y', 'z'];
     for (i = 0; i < 3; ++i) {
 
         var contourDim = 'contours.' + dims[i];
