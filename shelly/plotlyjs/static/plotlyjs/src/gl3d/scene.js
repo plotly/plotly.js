@@ -10,18 +10,58 @@ var createPlot          = require('gl-plot3d'),
     computeTickMarks    = require('./lib/tick-marks'),
     createCamera        = require('./lib/camera'),
     str2RGBAarray       = require('./lib/str2rgbarray'),
-    Plotly              = require('../plotly');
+    Plotly              = require('../plotly'),
+    project             = require('./lib/project');
 
 function render(scene) {
+
+    //Update size of svg container
+    var svgContainer = scene.svgContainer;
+    var clientRect = scene.container.getBoundingClientRect();
+    var width = clientRect.width, height = clientRect.height;
+    svgContainer.setAttributeNS (null, 'viewBox', '0 0 ' + width + ' ' + height);
+    svgContainer.setAttributeNS (null, 'width', width);
+    svgContainer.setAttributeNS (null, 'height', height);
+
     computeTickMarks(scene);
     scene.glplot.axes.update(scene.axesOptions);
 
+    //Check if pick has changed
     var keys = Object.keys(scene.traces);
+    var lastPicked = null;
+    var lastIndex = null;
+    var selection = scene.glplot.selection;
     for (var i = 0; i < keys.length; ++i) {
         var trace = scene.traces[keys[i]];
-        trace.handlePick(scene.glplot.selection);
+        if(trace.handlePick(selection)) {
+            lastPicked = trace;
+            lastIndex = scene.glplot.selection.index;
+        }
 
         if (trace.setContourLevels) trace.setContourLevels();
+    }
+
+    if(lastPicked !== null) {
+      var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate);
+      Plotly.Fx.loneHover({
+        x: (0.5 + 0.5 * pdata[0]/pdata[3]) * width,
+        y: (0.5 - 0.5 * pdata[1]/pdata[3]) * height,
+        xLabel: selection.dataCoordinate[0] + '',
+        yLabel: selection.dataCoordinate[1] + '',
+        zLabel: selection.dataCoordinate[2] + '',
+        text: selection.textLabel || '',
+        name: lastPicked.name,
+        color: lastPicked.color || '#fff'
+       }, {
+         container: svgContainer
+       });
+    } else {
+      Plotly.Fx.loneHover({
+        x: 1e20,
+        y: 1e20
+       }, {
+         container: svgContainer
+       });
     }
 }
 
@@ -30,6 +70,18 @@ function Scene(options, fullLayout) {
     //Create sub container for plot
     var sceneContainer = document.createElement('div');
     var plotContainer = options.container;
+
+    //Create SVG container for hover text
+    var svgContainer = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'svg');
+    svgContainer.style.position = 'absolute';
+    svgContainer.style.top   = svgContainer.style.left   = '0px';
+    svgContainer.style.width = svgContainer.style.height = '100%';
+    svgContainer.style['z-index'] = 20;
+    svgContainer.style['pointer-events'] = 'none';
+    sceneContainer.appendChild(svgContainer);
+    this.svgContainer = svgContainer;
 
     /*
      * Tag the container with the sceneID
@@ -192,6 +244,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 }
                 this.traces[data.uid] = trace;
             }
+            trace.name = data.name;
         }
     } else {
         sceneData = [];

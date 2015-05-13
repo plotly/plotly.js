@@ -19,10 +19,12 @@ function LineWithMarkers(scene, uid) {
     this.errorBars          = null;
     this.textMarkers        = null;
     this.delaunayMesh       = null;
+    this.color              = '#fff';
     this.mode               = '';
     this.dataPoints         = [];
     this.axesBounds         = [[-Infinity,-Infinity,-Infinity],
                                [Infinity,Infinity,Infinity]];
+    this.textLabels         = null;
 }
 
 var proto = LineWithMarkers.prototype;
@@ -31,7 +33,8 @@ proto.handlePick = function(selection) {
     if( selection.object &&
         (selection.object === this.linePlot ||
          selection.object === this.delaunayMesh ||
-         selection.object === this.textMarkers)) {
+         selection.object === this.textMarkers ||
+         selection.object === this.scatterPlot)) {
         if(selection.object.highlight) {
             selection.object.highlight(null);
         }
@@ -39,6 +42,10 @@ proto.handlePick = function(selection) {
             selection.object = this.scatterPlot;
             this.scatterPlot.highlight(selection.data);
         }
+        if(this.textLabels && this.textLabels[selection.data.index]) {
+            selection.textLabel = this.textLabels[selection.data.index];
+        }
+        return true;
     }
 };
 
@@ -258,6 +265,19 @@ function convertPlotlyOptions(scene, data) {
     return params;
 }
 
+function arrayToColor(color) {
+  if(Array.isArray(color)) {
+    var c = color[0];
+    if(Array.isArray(c)) {
+      color = c;
+    }
+    return 'rgb(' + color.slice(0,3).map(function(x) {
+      return Math.round(x*255);
+    }) + ')';
+  }
+  return null;
+}
+
 proto.update = function(data) {
     var gl = this.scene.glplot.gl,
         lineOptions,
@@ -277,6 +297,10 @@ proto.update = function(data) {
             dashPattern = DASH_PATTERNS[options.lineDashes];
         }
     }
+
+    this.color = arrayToColor(options.lineColor) ||
+                 arrayToColor(options.scatterColor) ||
+                 '#fff';
 
     //Save data points
     this.dataPoints = options.position;
@@ -348,10 +372,12 @@ proto.update = function(data) {
             this.textMarkers = createScatterPlot(textOptions);
             this.scene.glplot.add(this.textMarkers);
         }
+        this.textLabels = options.text;
     } else if (this.textMarkers) {
         this.scene.glplot.remove(this.textMarkers);
         this.textMarkers.dispose();
         this.textMarkers = null;
+        this.textLabels = null;
     }
 
     errorOptions = {
