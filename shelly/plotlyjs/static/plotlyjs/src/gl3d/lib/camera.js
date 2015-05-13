@@ -1,3 +1,5 @@
+/* jshint shadow: true */
+
 'use strict';
 
 module.exports = createCamera;
