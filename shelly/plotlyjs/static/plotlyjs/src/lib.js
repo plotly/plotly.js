@@ -962,42 +962,43 @@ lib.OptionControl = function(opt, optname) {
  * bounce the ends in, so the output has the same length as the input
  */
 lib.smooth = function(arrayIn, FWHM) {
+    FWHM = Math.round(FWHM) || 0; // only makes sense for integers
+    if(FWHM < 2) return arrayIn;
+
     var alen = arrayIn.length,
-        w = [],
-        arrayOut = [],
+        alen2 = 2 * alen,
+        wlen = 2 * FWHM - 1,
+        w = new Array(wlen),
+        arrayOut = new Array(alen),
         i,
         j,
         k,
         v;
 
-    FWHM = Math.round(FWHM) || 0; // only makes sense for integers
-    if(FWHM < 2) return arrayIn;
-
     // first make the window array
-    for(i = 1; i < 2 * FWHM; i++) {
-        w.push((1 - Math.cos(Math.PI * i / FWHM)) / (2 * FWHM));
+    for(i = 0; i < wlen; i++) {
+        w[i] = (1 - Math.cos(Math.PI * (i + 1) / FWHM)) / (2 * FWHM);
     }
 
     // now do the convolution
-    var wlen = w.length;
-
     for(i = 0; i < alen; i++) {
         v = 0;
         for(j = 0; j < wlen; j++) {
             k = i + j + 1 - FWHM;
 
             // multibounce
-            if(k < -alen) k -= 2 * alen * Math.round(k / (2 * alen));
-            else if(k > 2 * alen - 1) k -= 2 * alen * Math.floor(k / (2 * alen));
+            if(k < -alen) k -= alen2 * Math.round(k / alen2);
+            else if(k >= alen2) k -= alen2 * Math.floor(k / alen2);
 
             // single bounce
             if(k < 0) k = - 1 - k;
-            else if(k >= alen) k = 2 * alen - 1 - k;
+            else if(k >= alen) k = alen2 - 1 - k;
 
             v += arrayIn[k] * w[j];
         }
-        arrayOut.push(v);
+        arrayOut[i] = v;
     }
+
     return arrayOut;
 };
 
