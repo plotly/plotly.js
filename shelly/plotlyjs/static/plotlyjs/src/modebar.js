@@ -309,11 +309,28 @@ ModeBar.prototype.handleDrag3d = function(ev) {
 
     layoutUpdate[attr] = val;
 
-    var i, scene;
+    var i, scene, camera;
 
     for (i = 0;  i < sceneIds.length; i++) {
         scene = fullLayout[sceneIds[i]]._scene;
-        if (scene.camera) scene.camera.keyBindingMode = val;
+        camera = scene.camera;
+        if (camera) {
+
+            if (val === 'orbital') {
+                camera.mode = 'orbital';
+                camera.keyBindingMode = 'rotate';
+
+            } else if (val === 'turntable') {
+                camera.up = [0, 0, 1];
+                camera.mode = 'turntable';
+                camera.keyBindingMode = 'rotate';
+
+            } else {
+
+                // none rotation modes
+                camera.keyBindingMode = val;
+            }
+        }
     }
 
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
@@ -431,10 +448,17 @@ ModeBar.prototype.config = function config() {
             icon: 'pan',
             click: this.handleDrag3d
         },
-        rotate3d: {
-            title: 'Rotate',
+        orbitalRotation: {
+            title: 'orbital rotation',
             attr: 'dragmode',
-            val: 'rotate',
+            val: 'orbital',
+            icon: 'undo',
+            click: this.handleDrag3d
+        },
+        tableRotation: {
+            title: 'turn table rotation',
+            attr: 'dragmode',
+            val: 'turntable',
             icon: 'undo',
             click: this.handleDrag3d
         },

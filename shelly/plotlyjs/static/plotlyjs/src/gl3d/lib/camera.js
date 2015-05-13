@@ -7,7 +7,7 @@ module.exports = createCamera;
 var now         = require('right-now');
 var createView  = require('3d-view');
 var mouseChange = require('mouse-change');
-var mouseWheel  = require('mouse-wheel')
+var mouseWheel  = require('mouse-wheel');
 
 function createCamera(element, options) {
   element = element || document.body;
