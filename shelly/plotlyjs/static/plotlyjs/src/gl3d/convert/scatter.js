@@ -298,9 +298,8 @@ proto.update = function(data) {
         }
     }
 
-    this.color = arrayToColor(options.lineColor) ||
-                 arrayToColor(options.scatterColor) ||
-                 '#fff';
+    this.color = arrayToColor(options.scatterColor) ||
+                 arrayToColor(options.lineColor);
 
     //Save data points
     this.dataPoints = options.position;
