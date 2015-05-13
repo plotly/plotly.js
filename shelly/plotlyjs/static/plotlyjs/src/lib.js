@@ -709,13 +709,14 @@ lib.lpad = function(val, digits){
  * @return {Number} - result of f applied to a starting from v
  */
 lib.aggNums = function(f, v, a, len) {
-    var i;
+    var i,
+        b;
     if (!len) len = a.length;
     if (!isNumeric(v)) v = false;
     if (Array.isArray(a[0])) {
-        a = a.map(function(row) {
-            return lib.aggNums(f,v,row);
-        });
+        b = new Array(len);
+        for(i = 0; i < len; i++) b[i] = lib.aggNums(f, v, a[i]);
+        a = b;
     }
 
     for (i = 0; i < len; i++) {
