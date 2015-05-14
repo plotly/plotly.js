@@ -905,17 +905,6 @@ function cleanLayout(layout) {
         delete layout.scene1;
     }
 
-    var sceneIds = plots.getSubplotIds(layout, 'gl3d');
-    for(i = 0; i < sceneIds.length; i++) {
-        var sceneLayout = layout[sceneIds[i]];
-        // fix for saved float32-arrays
-        var camp = sceneLayout.cameraposition;
-        if (Array.isArray(camp) && $.isPlainObject(camp[0])) {
-            camp[0] = [camp[0][0], camp[0][1], camp[0][2], camp[0][3]];
-            camp[1] = [camp[1][0], camp[1][1], camp[1][2]];
-        }
-    }
-
     var legend = layout.legend;
     if(legend) {
         // check for old-style legend positioning (x or y is +/- 100)
