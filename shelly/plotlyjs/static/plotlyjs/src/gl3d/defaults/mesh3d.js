@@ -17,10 +17,7 @@ Mesh3D.attributes = {
     j: {type: 'data_array'},
     k: {type: 'data_array'},
 
-    /*
-    //TODO: Integrate colors and other attributes
     intensity: {type: 'data_array'},
-    */
 
     //Color field
     color: { type: 'color' },
@@ -146,16 +143,21 @@ Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     'contour.width',
     'colorscale',
     'reversescale',
-    'showscale',
     'flatshading'
   ].forEach(function(x) { coerce(x); });
 
-  if('vertexColor' in traceIn) {
-    coerce('vertexColor');
-  } else if('faceColor' in traceIn) {
-    coerce('faceColor');
+  if('intensity' in traceIn) {
+    coerce('intensity');
+    coerce('showscale', true);
   } else {
-    coerce('color', defaultColor);
+    traceOut.showscale = false;
+    if('vertexColor' in traceIn) {
+      coerce('vertexColor');
+    } else if('faceColor' in traceIn) {
+      coerce('faceColor');
+    } else {
+      coerce('color', defaultColor);
+    }
   }
 
   if(traceOut.reversescale) {
@@ -163,6 +165,7 @@ Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
           return [1 - si[0], si[1]];
       }).reverse();
   }
+
   if(traceOut.showscale) {
       Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
   }
