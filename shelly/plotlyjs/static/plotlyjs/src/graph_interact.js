@@ -667,11 +667,8 @@ fx.loneHover = function(hoverItem, opts) {
     //    - container:
     //      a dom <svg> element - must be big enough to contain the whole
     //      hover label
-    var defaultColor = Plotly.Color.combine(Plotly.Color.defaultLine,
-                                            Plotly.Color.background);
-
     var pointData = {
-        color: hoverItem.color || defaultColor,
+        color: hoverItem.color || Plotly.Color.defaultLine,
         x0: hoverItem.x0 || hoverItem.x || 0,
         x1: hoverItem.x1 || hoverItem.x || 0,
         y0: hoverItem.y0 || hoverItem.y || 0,
