@@ -19,10 +19,14 @@ Gl3dLayout.layoutAttributes = {
         type: 'color',
         dflt: 'rgba(0,0,0,0)'
     },
-    cameraposition: {
+    camera: {
         up:     makeVector(0, 0, 1),
         center: makeVector(0, 0, 0),
         eye:    makeVector(1.25, 1.25, 1.25)
+    },
+    // old api -- to be deprecated
+    cameraposition: {
+        type: 'data_array'
     },
     domain: {
         x: [
@@ -103,19 +107,23 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
          * attributes like aspectratio can be written back dynamically.
          */
         var sceneLayoutIn;
-        if (scene in layoutIn) sceneLayoutIn = layoutIn[scene];
+        if(layoutIn[scene] !== undefined) sceneLayoutIn = layoutIn[scene];
         else layoutIn[scene] = sceneLayoutIn = {};
 
         var sceneLayoutOut = layoutOut[scene] || {};
 
-
         coerce('bgcolor');
 
-        ['up', 'eye', 'center'].forEach(function(vec) {
-            ['x', 'y', 'z'].forEach(function(component) {
-                coerce('cameraposition.' + vec + '.' + component);
-            });
-        });
+        // coerce cameraposition in old graphs
+        if(sceneLayoutIn.cameraposition !== undefined) coerce('cameraposition');
+
+        var cameraKeys = Object.keys(attributes.camera);
+
+        for(var j = 0; j < cameraKeys.length; j++) {
+            coerce('camera.' + cameraKeys[j] + '.x');
+            coerce('camera.' + cameraKeys[j] + '.y');
+            coerce('camera.' + cameraKeys[j] + '.z');
+        }
 
         coerce('domain.x[0]', i / scenesLength);
         coerce('domain.x[1]', (i+1) / scenesLength);
