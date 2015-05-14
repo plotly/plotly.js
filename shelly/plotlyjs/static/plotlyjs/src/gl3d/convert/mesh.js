@@ -9,6 +9,7 @@ function Mesh3DTrace(scene, mesh, uid) {
   this.uid      = uid;
   this.mesh     = mesh;
   this.name     = '';
+  this.color    = '#fff';
   this.data     = null;
   this.showContour = false;
 }
@@ -36,6 +37,10 @@ function parseColorScale (colorscale, alpha) {
     });
 }
 */
+
+function parseColorArray(colors) {
+  return colors.map(str2RgbaArray);
+}
 
 function zip3(x, y, z) {
   var result = new Array(x.length);
@@ -66,11 +71,34 @@ proto.update = function(data) {
     //Unpack cell data
     var cells = zip3(data.i, data.j, data.k);
 
+    var config = {
+        positions: positions,
+        cells:     cells,
+        ambient:   data.lighting.ambient,
+        diffuse:   data.lighting.diffuse,
+        specular:  data.lighting.specular,
+        roughness: data.lighting.roughness,
+        fresnel:   data.lighting.fresnel,
+        opacity:   data.opacity,
+        useFacetNormals: data.flatshading
+    };
+
+    if(data.intensity) {
+      this.color = '#fff';
+      config.vertexIntensity = data.vertexIntensity;
+    } else if(data.vertexColor) {
+      this.color = data.vertexColor[0];
+      config.vertexColors = parseColorArray(data.vertexColor);
+    } else if(data.faceColor) {
+      this.color = data.faceColor[0];
+      config.cellColors = parseColorArray(data.faceColor);
+    } else {
+      this.color = data.color;
+      config.meshColor = str2RgbaArray(data.color);
+    }
+
     //Update mesh
-    this.mesh.update({
-      positions: positions,
-      cells:     cells
-    });
+    this.mesh.update(config);
 
 
   /*

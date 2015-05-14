@@ -20,12 +20,12 @@ Mesh3D.attributes = {
     /*
     //TODO: Integrate colors and other attributes
     intensity: {type: 'data_array'},
+    */
 
     //Color field
     color: { type: 'color' },
-    vertexColor: { type: 'color_array' },
-    faceColor: { type: 'color_array' },
-    */
+    vertexColor: { type: 'data_array' },  //FIXME: this should be a color array
+    faceColor: { type: 'data_array' },
 
     //Opacity
     opacity: {
@@ -36,7 +36,7 @@ Mesh3D.attributes = {
     },
 
     //Flat shaded mode
-    flatShaded: {
+    flatshading: {
       type: 'boolean',
       dflt: false
     },
@@ -145,10 +145,18 @@ Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     'contour.color',
     'contour.width',
     'colorscale',
-    'flatShaded',
     'reversescale',
-    'showscale'
+    'showscale',
+    'flatshading'
   ].forEach(function(x) { coerce(x); });
+
+  if('vertexColor' in traceIn) {
+    coerce('vertexColor');
+  } else if('faceColor' in traceIn) {
+    coerce('faceColor');
+  } else {
+    coerce('color', defaultColor);
+  }
 
   if(traceOut.reversescale) {
       traceOut.colorscale = traceOut.colorscale.map(function (si) {
