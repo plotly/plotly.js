@@ -101,7 +101,12 @@ function Scene(options, fullLayout) {
         return;
     }
 
-    var cameraPos = options.fullSceneLayout.cameraposition
+    var cameraPos;
+
+    if(fullLayout.scene.cameraposition !== undefined) {
+        cameraPos = this.cleanCamera(fullLayout.scene.cameraposition);
+    }
+    else cameraPos = fullLayout.scene.camera;
 
     this.camera = createCamera(this.container, {
         center: [cameraPos.center.x, cameraPos.center.y, cameraPos.center.z],
@@ -347,11 +352,36 @@ proto.setCameraPosition = function setCameraPosition (camera) {
     );
 };
 
-// save camera position to user layout (i.e. gd.layout)
+// save camera to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
     var cameraposition = this.getCameraPosition();
-    Plotly.Lib.nestedProperty(layout, this.id + '.cameraposition')
+
+    // save new camera api
+    Plotly.Lib.nestedProperty(layout, this.id + '.camera')
         .set(cameraposition);
+
+    // delete old
+    delete layout.scene.cameraposition;
+};
+
+// convert old camera position api
+proto.cleanCamera = function(cameraposition) {
+    if (Array.isArray(cameraposition) && cameraposition[0].length === 4) {
+        var rotation = cameraposition[0];
+        var center   = cameraposition[1];
+        var radius   = cameraposition[2];
+        var mat = m4FromQuat([], rotation);
+        var eye = [];
+        for (var i = 0; i < 3; ++i) {
+            eye[i] = center[i] + radius * mat[2+4*i];
+        }
+        return {
+            eye: {x: eye[0], y: eye[1], z: eye[2]},
+            center: {x: center[0], y: center[1], z: center[2]},
+            up: {x: mat[1], y: mat[5], z: mat[9]}
+        };
+    }
+    else return null;
 };
 
 proto.toImage = function (format) {
