@@ -10,8 +10,6 @@ var createSurface = require('gl-surface3d'),
 
 var MIN_RESOLUTION = 128;
 
-module.exports = createSurfaceTrace;
-
 function SurfaceTrace(scene, surface, uid) {
   this.scene    = scene;
   this.uid      = uid;
@@ -23,6 +21,9 @@ function SurfaceTrace(scene, surface, uid) {
 var proto = SurfaceTrace.prototype;
 
 proto.handlePick = function(selection) {
+  if(selection.object === this.surface) {
+    return true;
+  }
 };
 
 function parseColorScale (colorscale, alpha) {
@@ -177,7 +178,6 @@ proto.update = function(data) {
         }
     }
 
-
     var highlightEnable            = [ true, true, true ];
     var contourEnable              = [ true, true, true ];
     var axis                       = [ 'x', 'y', 'z' ];
@@ -234,7 +234,7 @@ proto.update = function(data) {
 
 
 proto.dispose = function() {
-  this.scene.remove(this.surface);
+  this.glplot.remove(this.surface);
   this.surface.dispose();
 };
 
@@ -248,3 +248,5 @@ function createSurfaceTrace(scene, data) {
   scene.glplot.add(surface);
   return result;
 }
+
+module.exports = createSurfaceTrace;

@@ -1,3 +1,5 @@
+'use strict';
+
 var Plotly = require('../../plotly');
 
 var Surface = {};
