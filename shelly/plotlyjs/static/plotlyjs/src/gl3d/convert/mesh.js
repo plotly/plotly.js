@@ -75,7 +75,7 @@ proto.update = function(data) {
         fresnel:   data.lighting.fresnel,
         opacity:   data.opacity,
         contourEnable:   data.contour.show,
-        contourColor:    str2RgbaArray(data.contour.color),
+        contourColor:    str2RgbaArray(data.contour.color).slice(0,3),
         contourWidth:    data.contour.width,
         useFacetNormals: data.flatshading
     };
