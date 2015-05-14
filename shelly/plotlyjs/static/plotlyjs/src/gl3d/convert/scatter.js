@@ -19,7 +19,7 @@ function LineWithMarkers(scene, uid) {
     this.errorBars          = null;
     this.textMarkers        = null;
     this.delaunayMesh       = null;
-    this.color              = '#fff';
+    this.color              = null;
     this.mode               = '';
     this.dataPoints         = [];
     this.axesBounds         = [[-Infinity,-Infinity,-Infinity],
@@ -298,9 +298,8 @@ proto.update = function(data) {
         }
     }
 
-    this.color = arrayToColor(options.lineColor) ||
-                 arrayToColor(options.scatterColor) ||
-                 '#fff';
+    this.color = arrayToColor(options.scatterColor) ||
+                 arrayToColor(options.lineColor);
 
     //Save data points
     this.dataPoints = options.position;
