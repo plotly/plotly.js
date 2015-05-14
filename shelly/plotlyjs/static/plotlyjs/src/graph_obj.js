@@ -701,7 +701,7 @@ function plot3D(gd) {
         // If Scene is not instantiated, create one!
         if (!(scene)) {
             sceneOptions = {
-                container: gd.querySelector('.svg-container'),
+                container: gd.querySelector('.gl-container'),
                 id: sceneId,
                 staticPlot: gd._context.staticPlot,
                 plot3dPixelRatio: gd._context.plot3dPixelRatio
@@ -3171,7 +3171,7 @@ function makePlotFramework(gd) {
     // Make the graph containers
     // start fresh each time we get here, so we know the order comes out
     // right, rather than enter/exit which can muck up the order
-    fullLayout._paperdiv.selectAll('.main-svg').remove();
+    fullLayout._paperdiv.selectAll('.main-svg,.gl-container').remove();
 
     if(!fullLayout._uid) {
         var otherUids = [];
@@ -3182,12 +3182,20 @@ function makePlotFramework(gd) {
     }
 
     fullLayout._paper = fullLayout._paperdiv.append('svg')
+        .classed('main-svg', true);
+
+    fullLayout._glcontainer = fullLayout._paperdiv.append('div')
+        .classed('gl-container', true);
+
+    fullLayout._toppaper = fullLayout._paperdiv.append('svg')
+        .classed('main-svg', true);
+
+    fullLayout._paperdiv.selectAll('.main-svg')
         .attr({
             xmlns: 'http://www.w3.org/2000/svg',
             // odd d3 quirk - need namespace twice??
             'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
-        })
-        .classed('main-svg', true);
+        });
 
     fullLayout._defs = fullLayout._paper.append('defs')
         .attr('id', 'defs-' + fullLayout._uid);
@@ -3319,10 +3327,14 @@ function makePlotFramework(gd) {
             .classed('crisp', true);
     });
 
-    // single shape, info (legend, annotations) and hover layers for the whole plot
+    // single shape layer for the whole plot
     fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
-    fullLayout._infolayer = fullLayout._paper.append('g').classed('infolayer', true);
-    fullLayout._hoverlayer = fullLayout._paper.append('g').classed('hoverlayer', true);
+
+    fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
+    // lastly info (legend, annotations) and hover layers go on top
+    // these are in a different svg element normally, but
+    fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
+    fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
 
     // position and style the containers, make main title
     var frameWorkDone = Plotly.Lib.syncOrAsync([
@@ -3453,15 +3465,20 @@ function layoutStyles(gd) {
 
 function lsInner(gd) {
     var fullLayout = gd._fullLayout,
-        gs = fullLayout._size;
+        gs = fullLayout._size,
+        axList = Plotly.Axes.list(gd),
+        i;
 
     // clear axis line positions, to be set in the subplot loop below
-    Plotly.Axes.list(gd).forEach(function(ax){ ax._linepositions = {}; });
-    fullLayout._paperdiv.style({
-        width: fullLayout.width+'px',
-        height: fullLayout.height+'px'
-    });
-    fullLayout._paper.call(Plotly.Drawing.setSize, fullLayout.width, fullLayout.height);
+    for(i = 0; i < axList.length; i++) axList[i]._linepositions = {};
+
+    fullLayout._paperdiv
+        .style({
+            width: fullLayout.width + 'px',
+            height: fullLayout.height + 'px'
+        })
+        .selectAll('.main-svg')
+            .call(Plotly.Drawing.setSize, fullLayout.width, fullLayout.height);
 
     gd._context.setBackground(gd, fullLayout.paper_bgcolor);
 
