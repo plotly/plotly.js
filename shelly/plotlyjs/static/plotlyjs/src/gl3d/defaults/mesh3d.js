@@ -21,8 +21,8 @@ Mesh3D.attributes = {
 
     //Color field
     color: { type: 'color' },
-    vertexColor: { type: 'data_array' },  //FIXME: this should be a color array
-    faceColor: { type: 'data_array' },
+    vertexcolor: { type: 'data_array' },  //FIXME: this should be a color array
+    facecolor: { type: 'data_array' },
 
     //Opacity
     opacity: {
