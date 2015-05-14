@@ -1,6 +1,6 @@
 // common library functions, mostly for plotting but used elsewhere too
 'use strict';
-// TODO: can use camelcase after fixing conf_modal and showSources
+// TODO: can use camelcase after fixing showSources
 /* jshint camelcase: false */
 
 // ---global functions not yet namespaced
@@ -11,35 +11,38 @@
 
 var lib = module.exports = {},
     Plotly = require('./plotly'),
-    tinycolor = require('tinycolor2');
+    tinycolor = require('tinycolor2'),
+    isNumeric = require('./isnumeric');
 
-// dateTime2ms - turn a date object or string s of the form
-// YYYY-mm-dd HH:MM:SS.sss into milliseconds (relative to 1970-01-01,
-// per javascript standard)
-// may truncate after any full field, and sss can be any length
-// even >3 digits, though javascript dates truncate to milliseconds
-// returns false if it doesn't find a date
-
-// 2-digit to 4-digit year conversion, where to cut off?
-// from http://support.microsoft.com/kb/244664:
-//   1930-2029 (the most retro of all...)
-// but in my mac chrome from eg. d=new Date(Date.parse('8/19/50')):
-//   1950-2049
-// by Java, from http://stackoverflow.com/questions/2024273/:
-//   now-80 - now+20
-// or FileMaker Pro, from
-//      http://www.filemaker.com/12help/html/add_view_data.4.21.html:
-//   now-70 - now+30
-// but python strptime etc, via
-//      http://docs.python.org/py3k/library/time.html:
-//   1969-2068 (super forward-looking, but static, not sliding!)
-
-// lets go with now-70 to now+30, and if anyone runs into this problem
-// they can learn the hard way not to use 2-digit years, as no choice we
-// make now will cover all possibilities. mostly this will all be taken
-// care of in initial parsing, should only be an issue for hand-entered data
-// currently (2012) this range is:
-//   1942-2041
+/**
+ * dateTime2ms - turn a date object or string s of the form
+ * YYYY-mm-dd HH:MM:SS.sss into milliseconds (relative to 1970-01-01,
+ * per javascript standard)
+ * may truncate after any full field, and sss can be any length
+ * even >3 digits, though javascript dates truncate to milliseconds
+ * returns false if it doesn't find a date
+ *
+ * 2-digit to 4-digit year conversion, where to cut off?
+ * from http://support.microsoft.com/kb/244664:
+ *   1930-2029 (the most retro of all...)
+ * but in my mac chrome from eg. d=new Date(Date.parse('8/19/50')):
+ *   1950-2049
+ * by Java, from http://stackoverflow.com/questions/2024273/:
+ *   now-80 - now+20
+ * or FileMaker Pro, from
+ *      http://www.filemaker.com/12help/html/add_view_data.4.21.html:
+ *   now-70 - now+30
+ * but python strptime etc, via
+ *      http://docs.python.org/py3k/library/time.html:
+ *   1969-2068 (super forward-looking, but static, not sliding!)
+ *
+ * lets go with now-70 to now+30, and if anyone runs into this problem
+ * they can learn the hard way not to use 2-digit years, as no choice we
+ * make now will cover all possibilities. mostly this will all be taken
+ * care of in initial parsing, should only be an issue for hand-entered data
+ * currently (2012) this range is:
+ *   1942-2041
+ */
 
 lib.dateTime2ms = function(s) {
     // first check if s is a date object
@@ -65,7 +68,7 @@ lib.dateTime2ms = function(s) {
         y = ((Number(p[0]) - yNow + 70)%100 + 200)%100 + yNow - 70;
     }
     else return false;
-    if (!$.isNumeric(y)) return false;
+    if (!isNumeric(y)) return false;
     if (p.length === 1) return new Date(y,0,1).getTime(); // year only
 
     // month
@@ -106,11 +109,13 @@ lib.isDateTime = function(s) {
     return (lib.dateTime2ms(s) !== false);
 };
 
-// Turn ms into string of the form YYYY-mm-dd HH:MM:SS.sss
-// Crop any trailing zeros in time, but always leave full date
-// (we could choose to crop '-01' from date too)...
-// Optional range r is the data range that applies, also in ms.
-// If rng is big, the later parts of time will be omitted
+/**
+ * Turn ms into string of the form YYYY-mm-dd HH:MM:SS.sss
+ * Crop any trailing zeros in time, but always leave full date
+ * (we could choose to crop '-01' from date too)...
+ * Optional range r is the data range that applies, also in ms.
+ * If rng is big, the later parts of time will be omitted
+ */
 lib.ms2DateTime = function(ms,r) {
     if(typeof(d3)==='undefined'){
         console.log('d3 is not defined');
@@ -141,16 +146,18 @@ lib.ms2DateTime = function(ms,r) {
     return s;
 };
 
-// Plotly.Lib.parseDate: forgiving attempt to turn any date string
-// into a javascript date object
-
-// first collate all the date formats we want to support, precompiled
-// to d3 format objects see below for the string cleaning that happens
-// before this separate out 2-digit (y) and 4-digit-year (Y) formats,
-// formats with month names (b), and formats with am/pm (I) or no time (D)
-// (also includes hour only, as the test is really for a colon) so we can
-// cut down the number of tests we need to run for any given string
-// (right now all are between 15 and 32 tests)
+/**
+ * Plotly.Lib.parseDate: forgiving attempt to turn any date string
+ * into a javascript date object
+ *
+ * first collate all the date formats we want to support, precompiled
+ * to d3 format objects see below for the string cleaning that happens
+ * before this separate out 2-digit (y) and 4-digit-year (Y) formats,
+ * formats with month names (b), and formats with am/pm (I) or no time (D)
+ * (also includes hour only, as the test is really for a colon) so we can
+ * cut down the number of tests we need to run for any given string
+ * (right now all are between 15 and 32 tests)
+ */
 
 // TODO: this is way out of date vs. the server-side version
 var timeFormats = {
@@ -158,8 +165,7 @@ var timeFormats = {
     H:['%H:%M:%S~%L', '%H:%M:%S', '%H:%M'],
     // with am/pm
     I:['%I:%M:%S~%L%p', '%I:%M:%S%p', '%I:%M%p'],
-    // no colon, ie only date or date with hour
-    // (could also support eg 12h34m?)
+    // no colon, ie only date or date with hour (could also support eg 12h34m?)
     D:['%H', '%I%p', '%Hh']
 };
 var dateFormats = {
@@ -176,8 +182,10 @@ var dateFormats = {
         '%Y~%d~%b', // eg 2013 21 nov (or 2013 q3, after replacement)
         '%Y~%b~%d' // eg 2013 nov 21
     ],
-    // the two-digit year cases have so many potential ambiguities
-    // it's not even funny, but we'll try them anyway.
+    /**
+     * the two-digit year cases have so many potential ambiguities
+     * it's not even funny, but we'll try them anyway.
+     */
     y:[
         '%m~%d~%y',
         '%d~%m~%y',
@@ -194,9 +202,11 @@ var dateFormats = {
 // use utc formatter since we're ignoring timezone info
 var formatter = d3.time.format.utc;
 
-// ISO8601 and YYYYMMDDHHMMSS are the only ones where date and time
-// are not separated by a space, so they get inserted specially here.
-// Also a couple formats with no day (so time makes no sense)
+/**
+ * ISO8601 and YYYYMMDDHHMMSS are the only ones where date and time
+ * are not separated by a space, so they get inserted specially here.
+ * Also a couple formats with no day (so time makes no sense)
+ */
 var dateTimeFormats = {
     Y: {
         H: ['%Y~%m~%dT%H:%M:%S', '%Y~%m~%dT%H:%M:%S~%L'].map(formatter),
@@ -207,8 +217,7 @@ var dateTimeFormats = {
     y: {H: [], I: [], D: []},
     yb: {H: [], I: [], D: []}
 };
-// all the others get inserted in all possible combinations
-// from dateFormats and timeFormats
+// all others get inserted in all possible combinations from dateFormats and timeFormats
 ['Y', 'Yb', 'y', 'yb'].forEach(function(dateType) {
     dateFormats[dateType].forEach(function(dateFormat) {
         // just a date (don't do just a time)
@@ -256,29 +265,36 @@ function getTimeType(v) {
 lib.parseDate = function(v) {
     // is it already a date? just return it
     if (v.getTime) return v;
-    // otherwise, if it's not a string, return nothing
-    // the case of numbers that just have years will get
-    // dealt with elsewhere.
+    /**
+     * otherwise, if it's not a string, return nothing
+     * the case of numbers that just have years will get
+     * dealt with elsewhere.
+     */
     if (typeof v !== 'string') return false;
 
-    // first clean up the string a bit to reduce the number
-    // of formats we have to test
+    // first clean up the string a bit to reduce the number of formats we have to test
     v = v.toLowerCase()
-        // cut all words down to 3 characters - this will result in
-        // some spurious matches, ie whenever the first three characters
-        // of a word match a month or weekday but that seems more likely
-        // to fix typos than to make dates where they shouldn't be...
-        // and then we can omit the long form of months from our testing
+        /**
+         * cut all words down to 3 characters - this will result in
+         * some spurious matches, ie whenever the first three characters
+         * of a word match a month or weekday but that seems more likely
+         * to fix typos than to make dates where they shouldn't be...
+         * and then we can omit the long form of months from our testing
+         */
         .replace(matchword, shortenword)
-        // remove weekday names, as they get overridden anyway if they're
-        // inconsistent also removes a few more words
-        // (ie "tuesday the 26th of november")
-        // TODO: language support?
-        // for months too, but these seem to be built into d3
+        /**
+         * remove weekday names, as they get overridden anyway if they're
+         * inconsistent also removes a few more words
+         * (ie "tuesday the 26th of november")
+         * TODO: language support?
+         * for months too, but these seem to be built into d3
+         */
         .replace(weekdaymatch, '')
-        // collapse all separators one ~ at a time, except : which seems
-        // pretty consistent for the time part use ~ instead of space or
-        // something since d3 can eat a space as padding on 1-digit numbers
+        /**
+         * collapse all separators one ~ at a time, except : which seems
+         * pretty consistent for the time part use ~ instead of space or
+         * something since d3 can eat a space as padding on 1-digit numbers
+         */
         .replace(separatormatch, '~')
         // in case of a.m. or p.m. (also take off any space before am/pm)
         .replace(ampmmatch, replaceampm)
@@ -287,6 +303,7 @@ lib.parseDate = function(v) {
         .trim()
         // also try to ignore timezone info, at least for now
         .replace(matchTZ, '');
+
     // now test against the various formats that might match
     var out = null,
         dateType = getDateType(v),
@@ -311,19 +328,21 @@ lib.parseDate = function(v) {
     return out;
 };
 
-// findBin - find the bin for val - note that it can return outside the
-// bin range any pos. or neg. integer for linear bins, or -1 or
-// bins.length-1 for explicit.
-// bins is either an object {start,size,end} or an array length #bins+1
-// bins can be either increasing or decreasing but must be monotonic
-// for linear bins, we can just calculate. For listed bins, run a binary
-// search linelow (truthy) says the bin boundary should be attributed to
-// the lower bin rather than the default upper bin
-lib.findBin = function(val,bins,linelow) {
-    if($.isNumeric(bins.start)) {
+/**
+ * findBin - find the bin for val - note that it can return outside the
+ * bin range any pos. or neg. integer for linear bins, or -1 or
+ * bins.length-1 for explicit.
+ * bins is either an object {start,size,end} or an array length #bins+1
+ * bins can be either increasing or decreasing but must be monotonic
+ * for linear bins, we can just calculate. For listed bins, run a binary
+ * search linelow (truthy) says the bin boundary should be attributed to
+ * the lower bin rather than the default upper bin
+ */
+lib.findBin = function(val, bins, linelow) {
+    if(isNumeric(bins.start)) {
         return linelow ?
-            Math.ceil((val-bins.start)/bins.size)-1 :
-            Math.floor((val-bins.start)/bins.size);
+            Math.ceil((val - bins.start) / bins.size) - 1 :
+            Math.floor((val - bins.start) / bins.size);
     }
     else {
         var n1 = 0,
@@ -331,81 +350,89 @@ lib.findBin = function(val,bins,linelow) {
             c = 0,
             n,
             test;
-        if(bins[bins.length-1]>bins[0]) {
-            test = linelow ? function(a,b){return a<b;} :
-                function(a,b){return a<=b;};
-        }
-        else{
-            test = linelow ? function(a,b){return a>=b;} :
-                function(a,b){return a>b;};
+        if(bins[bins.length - 1] > bins[0]) {
+            test = linelow ? lessThan : lessOrEqual;
+        } else {
+            test = linelow ? greaterOrEqual : greaterThan;
         }
         // c is just to avoid infinite loops if there's an error
-        while(n1<n2 && c++<100){
-            n=Math.floor((n1+n2)/2);
-            if(test(bins[n],val)) { n1=n+1; }
-            else { n2=n; }
+        while(n1 < n2 && c++ < 100){
+            n = Math.floor((n1 + n2) / 2);
+            if(test(bins[n], val)) n1 = n + 1;
+            else n2 = n;
         }
-        if(c>90) { console.log('Long binary search...'); }
-        return n1-1;
+        if(c > 90) console.log('Long binary search...');
+        return n1 - 1;
     }
 };
 
-// find distinct values in an array, lumping together ones that appear to
-// just be off by a rounding error
-// return the distinct values and the minimum difference between any two
+function lessThan(a, b) { return a < b; }
+function lessOrEqual(a, b) { return a <= b; }
+function greaterThan(a, b) { return a > b; }
+function greaterOrEqual(a, b) { return a >= b; }
+
+/**
+ * find distinct values in an array, lumping together ones that appear to
+ * just be off by a rounding error
+ * return the distinct values and the minimum difference between any two
+ */
 lib.distinctVals = function(valsIn) {
     var vals = valsIn.slice(); // otherwise we sort the original array...
-    vals.sort(function(a,b){ return a-b; });
-    var l = vals.length-1,
-        minDiff = (vals[l]-vals[0])||1,
-        errDiff = minDiff/(l||1)/10000,
-        v2=[vals[0]];
-    for(var i=0;i<l;i++) {
+    vals.sort(function(a, b){ return a - b; });
+    var l = vals.length - 1,
+        minDiff = (vals[l] - vals[0]) || 1,
+        errDiff = minDiff / (l || 1) / 10000,
+        v2 = [vals[0]];
+    for(var i = 0; i < l; i++) {
         // make sure values aren't just off by a rounding error
-        if(vals[i+1]>vals[i]+errDiff) {
-            minDiff=Math.min(minDiff,vals[i+1]-vals[i]);
-            v2.push(vals[i+1]);
+        if(vals[i + 1] > vals[i] + errDiff) {
+            minDiff = Math.min(minDiff, vals[i + 1] - vals[i]);
+            v2.push(vals[i + 1]);
         }
     }
-    return {vals:v2,minDiff:minDiff};
+    return {vals: v2, minDiff: minDiff};
 };
 
-// return the smallest element from (sorted) array a that's bigger than val,
-// or (reverse) the largest element smaller than val
-// used to find the best tick given the minimum (non-rounded) tick
-// particularly useful for date/time where things are not powers of 10
-// binary search is probably overkill here...
-lib.roundUp = function(v,a,reverse){
-    var l = 0,
-        h = a.length-1,
-        m,
+/**
+ * return the smallest element from (sorted) array arrayIn that's bigger than val,
+ * or (reverse) the largest element smaller than val
+ * used to find the best tick given the minimum (non-rounded) tick
+ * particularly useful for date/time where things are not powers of 10
+ * binary search is probably overkill here...
+ */
+lib.roundUp = function(val, arrayIn, reverse){
+    var low = 0,
+        high = arrayIn.length - 1,
+        mid,
         c = 0,
-        dl = reverse ? 0 : 1,
-        dh = reverse ? 1 : 0,
-        r = reverse ? Math.ceil : Math.floor;
+        dlow = reverse ? 0 : 1,
+        dhigh = reverse ? 1 : 0,
+        rounded = reverse ? Math.ceil : Math.floor;
     // c is just to avoid infinite loops if there's an error
-    while(l<h && c++<100){
-        m = r((l+h)/2);
-        if(a[m]<=v) { l = m+dl; }
-        else { h = m-dh; }
+    while(low < high && c++ < 100){
+        mid = rounded((low + high) / 2);
+        if(arrayIn[mid] <= val) low = mid + dlow;
+        else high = mid - dhigh;
     }
-    return a[l];
+    return arrayIn[low];
 };
 
-// convert a string s (such as 'xaxis.range[0]')
-// representing a property of nested object into set and get methods
-// also return the string and object so we don't have to keep track of them
-// allows [-1] for an array index, to set a property inside all elements
-// of an array
-// eg if obj = {arr: [{a: 1}, {a: 2}]}
-// you can do p = nestedProperty(obj, 'arr[-1].a')
-// but you cannot set the array itself this way, to do that
-// just set the whole array.
-// eg if obj = {arr: [1, 2, 3]}
-// you can't do nestedProperty(obj, 'arr[-1]').set(5)
-// but you can do nestedProperty(obj, 'arr').set([5, 5, 5])
+/**
+ * convert a string s (such as 'xaxis.range[0]')
+ * representing a property of nested object into set and get methods
+ * also return the string and object so we don't have to keep track of them
+ * allows [-1] for an array index, to set a property inside all elements
+ * of an array
+ * eg if obj = {arr: [{a: 1}, {a: 2}]}
+ * you can do p = nestedProperty(obj, 'arr[-1].a')
+ * but you cannot set the array itself this way, to do that
+ * just set the whole array.
+ * eg if obj = {arr: [1, 2, 3]}
+ * you can't do nestedProperty(obj, 'arr[-1]').set(5)
+ * but you can do nestedProperty(obj, 'arr').set([5, 5, 5])
+ */
 lib.nestedProperty = function(container, propStr) {
-    if($.isNumeric(propStr)) propStr = String(propStr);
+    if(isNumeric(propStr)) propStr = String(propStr);
     else if(typeof propStr !== 'string' ||
             propStr.substr(propStr.length - 4) === '[-1]') {
         throw 'bad property string';
@@ -417,8 +444,7 @@ lib.nestedProperty = function(container, propStr) {
         indices,
         i;
 
-    // check for parts of the nesting hierarchy that are numbers
-    // (ie array elements)
+    // check for parts of the nesting hierarchy that are numbers (ie array elements)
     while(j < propParts.length) {
         // look for non-bracket chars, then any number of [##] blocks
         indexed = String(propParts[j]).match(/^([^\[\]]*)((\[\-?[0-9]*\])+)$/);
@@ -571,9 +597,11 @@ function setArrayAll(containerArray, innerParts, val) {
     return allSet;
 }
 
-// make new sub-container as needed.
-// returns false if there's no container and none is needed
-// because we're only deleting an attribute
+/**
+ * make new sub-container as needed.
+ * returns false if there's no container and none is needed
+ * because we're only deleting an attribute
+ */
 function checkNewContainer(container, part, nextPart, toDelete) {
     if(container[part] === undefined) {
         if(toDelete) return false;
@@ -631,8 +659,10 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-// swap x and y of the same attribute in container cont
-// specify attr with a ? in place of x/y
+/**
+ * swap x and y of the same attribute in container cont
+ * specify attr with a ? in place of x/y
+ */
 lib.swapXYAttrs = function(cont,attrList) {
     for(var i = 0; i < attrList.length; i++) {
         var attr = attrList[i],
@@ -644,24 +674,23 @@ lib.swapXYAttrs = function(cont,attrList) {
     }
 };
 
-// to prevent event bubbling, in particular text selection during drag.
-// see http://stackoverflow.com/questions/5429827/
-//      how-can-i-prevent-text-element-selection-with-cursor-drag
-// for maximum effect use:
-//      return pauseEvent(e);
+/**
+ * to prevent event bubbling, in particular text selection during drag.
+ * see http://stackoverflow.com/questions/5429827/
+ *      how-can-i-prevent-text-element-selection-with-cursor-drag
+ * for maximum effect use:
+ *      return pauseEvent(e);
+ */
 lib.pauseEvent = function(e){
     if(e.stopPropagation) e.stopPropagation();
     if(e.preventDefault) e.preventDefault();
-    e.cancelBubble=true;
-    // this started giving a jquery deprecation warning,
-    // so I assume it's now useless
-    // e.returnValue=false;
+    e.cancelBubble = true;
     return false;
 };
 
 // pad a number with zeroes, to given # of digits before the decimal point
-lib.lpad = function(val,digits){
-    return String(val+Math.pow(10,digits)).substr(1);
+lib.lpad = function(val, digits){
+    return String(val + Math.pow(10, digits)).substr(1);
 };
 
 // STATISTICS FUNCTIONS
@@ -680,55 +709,47 @@ lib.lpad = function(val,digits){
  * @return {Number} - result of f applied to a starting from v
  */
 lib.aggNums = function(f, v, a, len) {
-    var i;
+    var i,
+        b;
     if (!len) len = a.length;
-    if (!$.isNumeric(v)) v = false;
+    if (!isNumeric(v)) v = false;
     if (Array.isArray(a[0])) {
-        a = a.map(function(row) {
-            return lib.aggNums(f,v,row);
-        });
+        b = new Array(len);
+        for(i = 0; i < len; i++) b[i] = lib.aggNums(f, v, a[i]);
+        a = b;
     }
 
     for (i = 0; i < len; i++) {
-        if (!$.isNumeric(v)) v = a[i];
-        else if ($.isNumeric(a[i])) v = f(+v, +a[i]);
+        if (!isNumeric(v)) v = a[i];
+        else if (isNumeric(a[i])) v = f(+v, +a[i]);
     }
     return v;
 };
 
-// mean & std dev functions using aggNums, so it handles non-numerics nicely
-// even need to use aggNums instead of .length, to toss out non-numerics
+/**
+ * mean & std dev functions using aggNums, so it handles non-numerics nicely
+ * even need to use aggNums instead of .length, to toss out non-numerics
+ */
 lib.len = function(data) {
-    return lib.aggNums(function(a){return a+1;},0,data);
+    return lib.aggNums(function(a){ return a + 1; }, 0, data);
 };
 
-lib.mean = function(data,len) {
-    if(!len) { len = lib.len(data); }
-    return lib.aggNums(function(a,b){return a+b;},0,data)/len;
+lib.mean = function(data, len) {
+    if(!len) len = lib.len(data);
+    return lib.aggNums(function(a, b){ return a + b; }, 0, data) / len;
 };
 
 lib.variance = function(data, len, mean) {
     if (!len) len = lib.len(data);
-    if (!$.isNumeric(mean)) {
-        mean = lib.aggNums(function(a, b) {
-            return a + b;
-        }, 0, data)/len;
-    }
+    if (!isNumeric(mean)) mean = lib.mean(data, len);
+
     return lib.aggNums(function(a, b) {
-        return a + Math.pow(b-mean, 2);
+        return a + Math.pow(b - mean, 2);
     }, 0, data)/len;
 };
 
 lib.stdev = function(data, len, mean) {
-    if (!len) len = lib.len(data);
-    if (!$.isNumeric(mean)) {
-        mean = lib.aggNums(function(a, b) {
-            return a + b;
-        }, 0, data)/len;
-    }
-    return Math.sqrt(lib.aggNums(function(a, b) {
-        return a + Math.pow(b-mean, 2);
-    }, 0, data)/len);
+    return Math.sqrt(lib.variance(data, len, mean));
 };
 
 /**
@@ -747,17 +768,19 @@ lib.stdev = function(data, len, mean) {
  * @return {Number} - percentile
  */
 lib.interp = function(arr, n) {
-    if (!$.isNumeric(n)) throw "n should be a finite number";
-    n = n * arr.length;
-    n -= 0.5;
+    if (!isNumeric(n)) throw 'n should be a finite number';
+    n = n * arr.length - 0.5;
     if (n < 0) return arr[0];
-    if (n > arr.length-1) return arr[arr.length-1];
-    var frac = n%1;
-    return frac * arr[Math.ceil(n)] + (1-frac) * arr[Math.floor(n)];
+    if (n > arr.length - 1) return arr[arr.length - 1];
+    var frac = n % 1;
+    return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
-// ------------------------------------------
-// debugging tools
-// ------------------------------------------
+
+/**
+ * ------------------------------------------
+ * debugging tools
+ * ------------------------------------------
+ */
 
 // set VERBOSE to true to get a lot more logging and tracing
 lib.VERBOSE = false;
@@ -767,25 +790,25 @@ lib.TIMER = new Date().getTime();
 
 // console.log that only runs if VERBOSE is on
 lib.log = function(){
-    if(lib.VERBOSE){
-        console.log.apply(console,arguments);
-    }
+    if(lib.VERBOSE) console.log.apply(console, arguments);
 };
 
-// markTime - for debugging, mark the number of milliseconds
-// since the previous call to markTime and log arbitrary info too
+/**
+ * markTime - for debugging, mark the number of milliseconds
+ * since the previous call to markTime and log arbitrary info too
+ */
 lib.markTime = function(v){
-    if(!lib.VERBOSE) { return; }
+    if(!lib.VERBOSE) return;
     var t2 = new Date().getTime();
-    console.log(v,t2-lib.TIMER,'(msec)');
-    if(lib.VERBOSE==='trace') { console.trace(); }
-    lib.TIMER=t2;
+    console.log(v, t2 - lib.TIMER, '(msec)');
+    if(lib.VERBOSE === 'trace') console.trace();
+    lib.TIMER = t2;
 };
 
 // constrain - restrict a number v to be between v0 and v1
-lib.constrain = function(v,v0,v1) {
-    if(v0>v1) return Math.max(v1,Math.min(v0,v));
-    return Math.max(v0,Math.min(v1,v));
+lib.constrain = function(v, v0, v1) {
+    if(v0 > v1) return Math.max(v1, Math.min(v0, v));
+    return Math.max(v0, Math.min(v1, v));
 };
 
 /**
@@ -795,46 +818,76 @@ lib.constrain = function(v,v0,v1) {
  *          or 'long' which provides 2000 ms delay time.
  * @return {undefined} this function does not return a value
  */
+var NOTEDATA = [];
 lib.notifier = function(text, displayLength) {
 
-    var ts;
-    if ($.isNumeric(displayLength)) ts = displayLength;
-    else if (displayLength === 'long') ts = 2000;
-    else ts = 1000;
+    if(NOTEDATA.indexOf(text) !== -1) return;
 
-    var notifierContainer = $('.notifier-container');
-    if(!notifierContainer.length) {
-        notifierContainer = $('<div class="notifier-container"></div>')
-            .appendTo('#tabs-one-line,#embedded-graph');
+    NOTEDATA.push(text);
+
+    var ts = 1000;
+    if (isNumeric(displayLength)) ts = displayLength;
+    else if (displayLength === 'long') ts = 3000;
+
+    var notifierContainer = d3.select('body')
+        .selectAll('.plotly-notifier')
+        .data([0]);
+    notifierContainer.enter()
+        .append('div')
+        .classed('plotly-notifier', true);
+
+    var notes = notifierContainer.selectAll('.notifier-note').data(NOTEDATA);
+
+    function killNote(transition) {
+        transition
+            .duration(700)
+            .style('opacity', 0)
+            .each('end', function(thisText) {
+                var thisIndex = NOTEDATA.indexOf(thisText);
+                if(thisIndex !== -1) NOTEDATA.splice(thisIndex, 1);
+                d3.select(this).remove();
+            });
     }
 
-    if( $('div.notifier').text().indexOf(text) > 0 ) return;
+    notes.enter().append('div')
+        .classed('notifier-note', true)
+        .style('opacity', 0)
+        .each(function(thisText) {
+            var note = d3.select(this);
 
-    var n = $('<div class="notifier" style="display:none;">'+
-        '<button class="notifier__close close" data-dismiss="alert">'+
-            '&times;'+
-        '</button>'+
-        '<p class="push-half">'+text+'</p></div>');
+            note.append('button')
+                .classed('notifier-close', true)
+                .html('&times;')
+                .on('click', function() {
+                    note.transition().call(killNote);
+                });
 
-    n.appendTo(notifierContainer)
-        .fadeIn(700)
-        .delay(ts)
-        .fadeOut(700,function(){ n.remove(); });
+            note.append('p').html(thisText);
+
+            note.transition()
+                    .duration(700)
+                    .style('opacity', 1)
+                .transition()
+                    .delay(ts)
+                    .call(killNote);
+        });
 };
 
-// do two bounding boxes from getBoundingClientRect,
-// ie {left,right,top,bottom,width,height}, overlap?
-// takes optional padding pixels
-lib.bBoxIntersect = function(a,b,pad){
-    pad = pad||0;
-    return (a.left<=b.right+pad &&
-            b.left<=a.right+pad &&
-            a.top<=b.bottom+pad &&
-            b.top<=a.bottom+pad);
+/**
+ * do two bounding boxes from getBoundingClientRect,
+ * ie {left,right,top,bottom,width,height}, overlap?
+ * takes optional padding pixels
+ */
+lib.bBoxIntersect = function(a, b, pad){
+    pad = pad || 0;
+    return (a.left <= b.right + pad &&
+            b.left <= a.right + pad &&
+            a.top <= b.bottom + pad &&
+            b.top <= a.bottom + pad);
 };
 
 // minor convenience/performance booster for d3...
-lib.identity = function(d){ return d; };
+lib.identity = function(d) { return d; };
 
 // random string generator
 lib.randstr = function randstr(existing, bits, base) {
@@ -845,16 +898,18 @@ lib.randstr = function randstr(existing, bits, base) {
     if (!base) base = 16;
     if (bits === undefined) bits = 24;
     if (bits <= 0) return '0';
-    var i,b,x;
 
-    var digits = Math.log(Math.pow(2, bits)) / Math.log(base);
+    var digits = Math.log(Math.pow(2, bits)) / Math.log(base),
+        res = '',
+        i,
+        b,
+        x;
+
     for (i = 2; digits === Infinity; i *= 2) {
         digits = Math.log(Math.pow(2, bits / i)) / Math.log(base) * i;
     }
 
     var rem = digits - Math.floor(digits);
-
-    var res = '';
 
     for (i = 0; i < Math.floor(digits); i++) {
         x = Math.floor(Math.random() * base).toString(base);
@@ -886,8 +941,8 @@ lib.OptionControl = function(opt, optname) {
      *
      * See FitOpts for example of usage
      */
-    if (!opt) { opt = {}; }
-    if (!optname) { optname = 'opt'; }
+    if (!opt) opt = {};
+    if (!optname) optname = 'opt';
 
     var self = {};
     self.optionList = [];
@@ -902,38 +957,54 @@ lib.OptionControl = function(opt, optname) {
     return self;
 };
 
-
-// lib.smooth: smooth arrayIn by convolving with
-// a hann window with given full width at half max
-// bounce the ends in, so the output has the same length as the input
+/**
+ * lib.smooth: smooth arrayIn by convolving with
+ * a hann window with given full width at half max
+ * bounce the ends in, so the output has the same length as the input
+ */
 lib.smooth = function(arrayIn, FWHM) {
-    var w = [], arrayOut = [], i, j, k, v;
+    FWHM = Math.round(FWHM) || 0; // only makes sense for integers
+    if(FWHM < 2) return arrayIn;
 
-    FWHM = Math.round(FWHM); // only makes sense for integers
-    if(FWHM<2) { return arrayIn; }
+    var alen = arrayIn.length,
+        alen2 = 2 * alen,
+        wlen = 2 * FWHM - 1,
+        w = new Array(wlen),
+        arrayOut = new Array(alen),
+        i,
+        j,
+        k,
+        v;
 
     // first make the window array
-    for(i=1; i<2*FWHM; i++) {
-        w.push((1-Math.cos(Math.PI*i/FWHM))/(2*FWHM));
+    for(i = 0; i < wlen; i++) {
+        w[i] = (1 - Math.cos(Math.PI * (i + 1) / FWHM)) / (2 * FWHM);
     }
 
     // now do the convolution
-    var wlen = w.length, alen = arrayIn.length;
-    for(i=0; i<alen; i++) {
+    for(i = 0; i < alen; i++) {
         v = 0;
-        for(j=0; j<wlen; j++) {
-            k = i+j+1-FWHM;
-            if(k<0) { k = -1-k; }
-            else if(k>=alen) { k = 2*alen-1-k; }
-            v += arrayIn[k]*w[j];
+        for(j = 0; j < wlen; j++) {
+            k = i + j + 1 - FWHM;
+
+            // multibounce
+            if(k < -alen) k -= alen2 * Math.round(k / alen2);
+            else if(k >= alen2) k -= alen2 * Math.floor(k / alen2);
+
+            // single bounce
+            if(k < 0) k = - 1 - k;
+            else if(k >= alen) k = alen2 - 1 - k;
+
+            v += arrayIn[k] * w[j];
         }
-        arrayOut.push(v);
+        arrayOut[i] = v;
     }
+
     return arrayOut;
 };
 
 lib.getSources = function(td) {
-    var extrarefs = (td.ref_fids||[]).join(',');
+    var extrarefs = (td.ref_fids || []).join(',');
     if(!td.fid && !extrarefs) return;
     if(!window.PLOTLYENV || !window.PLOTLYENV.DOMAIN_WEBAPP) return;
 
@@ -957,19 +1028,19 @@ lib.showSources = function(td) {
     }
     var container = d3.select(td).select('.js-sourcelinks'),
         extsources = allsources.filter(function(v){
-            return $.isNumeric(v.ref_fid);
+            return isNumeric(v.ref_fid);
         }),
         firstsource = extsources[0] || allsources[0];
     container.text('');
     td.shouldshowsources = false;
     // no sources at all? quit
-    if(!firstsource) { return; }
+    if(!firstsource) return;
 
     // find number of unique internal and external sources
     var extobj = {}, plotlyobj = {};
     extsources.forEach(function(v){ extobj[v.url] = 1; });
     allsources.forEach(function(v){
-        if(!$.isNumeric(v.ref_fid)){ plotlyobj[v.ref_fid] = 1; }
+        if(!isNumeric(v.ref_fid)) plotlyobj[v.ref_fid] = 1;
     });
 
     var fidparts = String(firstsource.ref_fid).split(':'),
@@ -987,13 +1058,16 @@ lib.showSources = function(td) {
             return;
         }
         td.shouldshowsources = true;
-        // in case someone REALLY doesn't want to show sources
-        // they can hide them...
-        // but you can always see them by going to the grid
-        if(td.layout.hidesources) { return; }
+
+        /**
+         * in case someone REALLY doesn't want to show sources
+         * they can hide them...
+         * but you can always see them by going to the grid
+         */
+        if(td.layout.hidesources) return;
         container.append('tspan').text('Source: ');
         mainlink = container.append('a').attr({'xlink:xlink:href':'#'});
-        if($.isNumeric(firstsource.ref_fid)) {
+        if(isNumeric(firstsource.ref_fid)) {
             mainlink.attr({
                 'xlink:xlink:show':'new',
                 'xlink:xlink:href':firstsource.ref_url
@@ -1023,7 +1097,7 @@ lib.showSources = function(td) {
             'href':'#',
             'class': 'link--impt'
         });
-        if($.isNumeric(firstsource.ref_fid)) {
+        if(isNumeric(firstsource.ref_fid)) {
             mainlink.attr({
                 'target':'_blank',
                 'href':firstsource.ref_url
@@ -1033,24 +1107,25 @@ lib.showSources = function(td) {
         if(allsources.length>1) {
             container.append('span').text(' - ');
             extraslink = container.append('a')
-            .attr({ href:'#' })
-            .classed('link--impt',true);
+                .attr({href: '#'})
+                .classed('link--impt', true);
         }
     }
 
     mainlink.text(firstsource.ref_filename);
 
     function pullSource(){
-        pullf({fid:firstsource.ref_fid});
+        pullf({fid: firstsource.ref_fid});
         return false;
     }
 
     function fullSourcing(){
-        var sourceModal = $('#sourceModal');
-        var sourceViewer = sourceModal.find('#source-viewer').empty();
+        var sourceModal = $('#sourceModal'),
+            sourceViewer = sourceModal.find('#source-viewer').empty();
+
         sourceViewer.data('jsontree', '')
             .jsontree(JSON.stringify(sourceObj),
-                {terminators:false, collapsibleOuter:false})
+                {terminators: false, collapsibleOuter: false})
             .show();
         if(workspace) {
             sourceModal.find('[data-fid]').click(function(){
@@ -1064,7 +1139,7 @@ lib.showSources = function(td) {
                 fidparts = $(this).attr('data-fid').split(':');
                 $(this).attr({href:'/~'+fidparts[0]+'/'+fidparts[1]});
             });
-            if(window.self!==window.top) {
+            if(window.self !== window.top) {
                 // in an iframe: basically fill the frame
                 sourceModal.css({
                     left: '10px',
@@ -1087,32 +1162,32 @@ lib.showSources = function(td) {
         return false;
     }
 
-    if(!isplot || workspace) {
-        mainlink.on('click',pullSource);
-    }
-    if(extraslink) {
-        extraslink.text('Full list')
-            .on('click',fullSourcing);
-    }
+    if(!isplot || workspace) mainlink.on('click', pullSource);
+
+    if(extraslink) extraslink.text('Full list').on('click', fullSourcing);
 
     function makeSourceObj(container, refByUid) {
-        if(cnt<0) { console.log('infinite loop?'); return container; }
+        if(cnt < 0) {
+            console.log('infinite loop?');
+            return container;
+        }
         cnt--;
+
         allsources.forEach(function(src){
-            if(src.ref_by_uid===refByUid) {
+            if(src.ref_by_uid === refByUid) {
                 var linkval;
-                if($.isNumeric(src.ref_fid)) {
-                    linkval = '<a href="'+src.ref_url+'" target="_blank">'+
-                        src.ref_filename+'</a>';
+                if(isNumeric(src.ref_fid)) {
+                    linkval = '<a href="' + src.ref_url + '" target="_blank">' +
+                        src.ref_filename + '</a>';
                 }
                 else {
                     var refUser = src.ref_fid.split(':')[0],
-                        fn = (refUser!==window.user ? refUser+': ' : '') +
+                        fn = (refUser !== window.user ? refUser + ': ' : '') +
                             src.ref_filename;
-                    linkval = '<a href="#" data-fid="'+src.ref_fid+'">'+
-                        fn+'</a>';
+                    linkval = '<a href="#" data-fid="' + src.ref_fid + '">'+
+                        fn + '</a>';
                 }
-                container[linkval] = makeSourceObj({},src.uid);
+                container[linkval] = makeSourceObj({}, src.uid);
             }
         });
         return container;
@@ -1124,58 +1199,64 @@ lib.showSources = function(td) {
 
 // helpers for promises
 
-// promiseError: log errors properly inside promises
-// use:
-// <promise>.then(undefined,Plotly.Lib.promiseError) (for IE compatibility)
-// or <promise>.catch(Plotly.Lib.promiseError)
-// TODO: I guess we need another step to send this error to Sentry?
+/**
+ * promiseError: log errors properly inside promises
+ * use:
+ * <promise>.then(undefined,Plotly.Lib.promiseError) (for IE compatibility)
+ * or <promise>.catch(Plotly.Lib.promiseError)
+ * TODO: I guess we need another step to send this error to Sentry?
+ */
 lib.promiseError = function(err) { console.log(err, err.stack); };
 
-// syncOrAsync: run a sequence of functions synchronously
-// as long as its returns are not promises (ie have no .then)
-// includes one argument arg to send to all functions...
-// this is mainly just to prevent us having to make wrapper functions
-// when the only purpose of the wrapper is to reference gd / td
-// and a final step to be executed at the end
-// TODO: if there's an error and everything is sync,
-// this doesn't happen yet because we want to make sure
-// that it gets reported
+/**
+ * syncOrAsync: run a sequence of functions synchronously
+ * as long as its returns are not promises (ie have no .then)
+ * includes one argument arg to send to all functions...
+ * this is mainly just to prevent us having to make wrapper functions
+ * when the only purpose of the wrapper is to reference gd / td
+ * and a final step to be executed at the end
+ * TODO: if there's an error and everything is sync,
+ * this doesn't happen yet because we want to make sure
+ * that it gets reported
+ */
 lib.syncOrAsync = function(sequence, arg, finalStep) {
     var ret, fni;
 
     function continueAsync(){
-        lib.markTime('async done '+fni.name);
+        lib.markTime('async done ' + fni.name);
         return lib.syncOrAsync(sequence, arg, finalStep);
     }
     while(sequence.length) {
-        fni = sequence.splice(0,1)[0];
+        fni = sequence.splice(0, 1)[0];
         ret = fni(arg);
         // lib.markTime('done calling '+fni.name)
         if(ret && ret.then) {
             return ret.then(continueAsync)
-                .then(undefined,lib.promiseError);
+                .then(undefined, lib.promiseError);
         }
-        lib.markTime('sync done '+fni.name);
+        lib.markTime('sync done ' + fni.name);
     }
 
     return finalStep && finalStep(arg);
 };
 
-// transpose function inspired by
-// http://stackoverflow.com/questions/17428587/
-// transposing-a-2d-array-in-javascript
+/**
+ * transpose a (possibly ragged) 2d array z. inspired by
+ * http://stackoverflow.com/questions/17428587/
+ * transposing-a-2d-array-in-javascript
+ */
 lib.transposeRagged = function(z) {
-    // Transposes a (possibly ragged) 2d array z.
-    var maxlen = 0;
+    var maxlen = 0,
+        zlen = z.length,
+        i,
+        j;
     // Maximum row length:
-    for (var i = 0; i < z.length; i++) maxlen = Math.max(maxlen, z[i].length);
+    for (i = 0; i < zlen; i++) maxlen = Math.max(maxlen, z[i].length);
 
-    var t = [];
-    for (var x = 0; x < maxlen; x++) {
-        t[x] = [];
-        for (var y = 0; y < z.length; y++) {
-            t[x][y] = z[y][x];
-        }
+    var t = new Array(maxlen);
+    for (i = 0; i < maxlen; i++) {
+        t[i] = new Array(zlen);
+        for (j = 0; j < zlen; j++) t[i][j] = z[j][i];
     }
 
     return t;
@@ -1183,40 +1264,30 @@ lib.transposeRagged = function(z) {
 
 // our own dot function so that we don't need to include numeric
 lib.dot = function(x, y) {
-    if (!(x.length && y.length) || x.length !== y.length) {
-        return null;
-    }
-    if (x.length === 0) {
-        return x;
-    }
+    if (!(x.length && y.length) || x.length !== y.length) return null;
 
-    // two-arg zip
-    function zip(x,y) {
-        var ret = [];
-        for (var i = 0; i < x.length; ++i)
-            ret = ret.concat([[x[i], y[i]]]);
-        return ret;
+    var len = x.length,
+        out,
+        i;
+
+    if(x[0].length) {
+        // mat-vec or mat-mat
+        out = new Array(len);
+        for(i = 0; i < len; i++) out[i] = lib.dot(x[i], y);
     }
-
-    function sumSqr(a,x) { return a + x[0]*x[1]; }
-    function vecMat(y) { return lib.dot(x, y); }
-    function matVec(x) { return lib.dot(x, y); }
-
-    // dot itself
-    if (!x[0].length) {
-        if (!y[0].length) {
-            // vec-vec
-            return zip(x, y).reduce(sumSqr, 0);
-        }
-        else {
-            // vec-mat
-            return lib.transposeRagged(y).map(vecMat);
-        }
+    else if(y[0].length) {
+        // vec-mat
+        var yTranspose = lib.transposeRagged(y);
+        out = new Array(yTranspose.length);
+        for(i = 0; i < yTranspose.length; i++) out[i] = lib.dot(x, yTranspose[i]);
     }
     else {
-        // mat-vec or mat-mat
-        return x.map(matVec);
+        // vec-vec
+        out = 0;
+        for(i = 0; i < len; i++) out += x[i] * y[i];
     }
+
+    return out;
 };
 
 
@@ -1243,8 +1314,7 @@ lib.rotationXYMatrix = function(a, x, y) {
         lib.translationMatrix(-x, -y));
 };
 
-// applies a 2D transformation matrix to either
-// x and y params or an [x,y] array
+// applies a 2D transformation matrix to either x and y params or an [x,y] array
 lib.apply2DTransform = function(transform) {
     return function() {
         var args = arguments;
@@ -1252,31 +1322,33 @@ lib.apply2DTransform = function(transform) {
             args = args[0];
         }//from map
         var xy = arguments.length === 1 ? args[0] : [args[0], args[1]];
-        return lib.dot(transform, [xy[0], xy[1], 1]).slice(0,2);
+        return lib.dot(transform, [xy[0], xy[1], 1]).slice(0, 2);
     };
 };
 
-// applies a 2D transformation matrix to an [x1,y1,x2,y2] array (to
-// transform a segment)
+// applies a 2D transformation matrix to an [x1,y1,x2,y2] array (to transform a segment)
 lib.apply2DTransform2 = function(transform) {
     var at = lib.apply2DTransform(transform);
     return function(xys) {
-        return at(xys.slice(0,2)).concat(at(xys.slice(2,4)));
+        return at(xys.slice(0, 2)).concat(at(xys.slice(2, 4)));
     };
 };
 
-// Helper to strip trailing slash, from
-// http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
+/**
+ * Helper to strip trailing slash, from
+ * http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
+ */
 lib.stripTrailingSlash = function (str) {
-    if (str.substr(-1) === '/') {
-        return str.substr(0, str.length - 1);
-    }
+    if (str.substr(-1) === '/') return str.substr(0, str.length - 1);
     return str;
 };
 
 // Helpers for defaults and attribute validation
 var fontAttrs = {
-    family: {type: 'string'},
+    family: {
+        type: 'string',
+        noBlank: true
+    },
     size: {
         type: 'number',
         min: 1
@@ -1286,8 +1358,10 @@ var fontAttrs = {
 
 var coerceIt = {
     data_array: function(v, propOut, dflt) {
-        // data_array: value MUST be an array, or we ignore it
-        // you can use dflt=[] to force said array to exist though
+        /**
+         * data_array: value MUST be an array, or we ignore it
+         * you can use dflt=[] to force said array to exist though
+         */
         if(Array.isArray(v)) propOut.set(v);
         else if(dflt!==undefined) propOut.set(dflt);
     },
@@ -1300,7 +1374,7 @@ var coerceIt = {
         else propOut.set(dflt);
     },
     number: function(v, propOut, dflt, opts) {
-        if(!$.isNumeric(v) ||
+        if(!isNumeric(v) ||
                 (opts.min!==undefined && v<opts.min) ||
                 (opts.max!==undefined && v>opts.max)) {
             propOut.set(dflt);
@@ -1308,7 +1382,7 @@ var coerceIt = {
         else propOut.set(+v);
     },
     integer: function(v, propOut, dflt, opts) {
-        if(v%1 || !$.isNumeric(v) ||
+        if(v%1 || !isNumeric(v) ||
                 (opts.min!==undefined && v<opts.min) ||
                 (opts.max!==undefined && v>opts.max)) {
             propOut.set(dflt);
@@ -1317,10 +1391,10 @@ var coerceIt = {
     },
     string: function(v, propOut, dflt, opts) {
         var s = String(v);
-        if(v===undefined || (opts.noBlank===false && !s)) {
+        if(v===undefined || (opts.noBlank===true && !s)) {
             propOut.set(dflt);
         }
-        else propOut.set(String(v));
+        else propOut.set(s);
     },
     color: function(v, propOut, dflt) {
         if(tinycolor(v).isValid()) propOut.set(v);
@@ -1333,19 +1407,18 @@ var coerceIt = {
         if(!v) v = {};
         var vOut = {};
 
-        lib.coerce(v, vOut, fontAttrs, 'family', dflt.family);
-        // TODO: do we need better than 'string' for font, or just
-        // a "noBlank" option?
-        if(!vOut.family) vOut.family = dflt.family;
-
         lib.coerce(v, vOut, fontAttrs, 'size', dflt.size);
         lib.coerce(v, vOut, fontAttrs, 'color', dflt.color);
+
+        // string type will cast anything to a string - but here we want to be strict
+        if(typeof v.family !== 'string') v = {};
+        lib.coerce(v, vOut, fontAttrs, 'family', dflt.family);
 
         propOut.set(vOut);
     },
     angle: function(v, propOut, dflt) {
         if(v==='auto') propOut.set('auto');
-        else if(!$.isNumeric(v)) propOut.set(dflt);
+        else if(!isNumeric(v)) propOut.set(dflt);
         else {
             if(Math.abs(v)>180) v -= Math.round(v/360)*360;
             propOut.set(+v);
@@ -1399,15 +1472,17 @@ var coerceIt = {
 };
 
 lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
-    // ensures that container[attribute] has a valid value
-    // attributes[attribute] is an object with possible keys:
-    // - type: data_array, enumerated, boolean, number, integer, string, color, colorscale, any
-    // - values: (enumerated only) array of allowed vals
-    // - min, max: (number, integer only) inclusive bounds on allowed vals
-    //      either or both may be omitted
-    // - dflt: if attribute is invalid or missing, use this default
-    //      if dflt is provided as an argument to lib.coerce it takes precedence
-    // as a convenience, returns the value it finally set
+    /**
+     * ensures that container[attribute] has a valid value
+     * attributes[attribute] is an object with possible keys:
+     * - type: data_array, enumerated, boolean, number, integer, string, color, colorscale, any
+     * - values: (enumerated only) array of allowed vals
+     * - min, max: (number, integer only) inclusive bounds on allowed vals
+     *      either or both may be omitted
+     * - dflt: if attribute is invalid or missing, use this default
+     *      if dflt is provided as an argument to lib.coerce it takes precedence
+     * as a convenience, returns the value it finally set
+     */
 
     var opts = lib.nestedProperty(attributes, attribute).get(),
         propIn = lib.nestedProperty(containerIn, attribute),
@@ -1416,10 +1491,12 @@ lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
 
     if(dflt===undefined) dflt = opts.dflt;
 
-    // arrayOk: value MAY be an array, then we do no value checking
-    // at this point, because it can be more complicated than the
-    // individual form (eg. some array vals can be numbers, even if the
-    // single values must be color strings)
+    /**
+     * arrayOk: value MAY be an array, then we do no value checking
+     * at this point, because it can be more complicated than the
+     * individual form (eg. some array vals can be numbers, even if the
+     * single values must be color strings)
+     */
     if(opts.arrayOk && Array.isArray(v)) {
         propOut.set(v);
         return v;
@@ -1431,9 +1508,11 @@ lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
 };
 
 lib.noneOrAll = function(containerIn, containerOut, attrList) {
-    // some attributes come together, so if you have one of them
-    // in the input, you should copy the default values of the others
-    // to the input as well.
+    /**
+     * some attributes come together, so if you have one of them
+     * in the input, you should copy the default values of the others
+     * to the input as well.
+     */
     if(!containerIn) return;
 
     var hasAny = false,
@@ -1461,38 +1540,12 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
     }
 };
 
-// retrieve list of scene keys form a layout object
-lib.getSceneKeys = function getSceneKeys(layout) {
-    var keys = Object.keys(layout),
-        key = null,
-        sceneKeys = [],
-        i_key = 0;
-    for (i_key; i_key < keys.length; ++i_key) {
-        key = keys[i_key];
-        if (key.match(/^scene[0-9]*$/)) {
-            sceneKeys.push(key);
-        }
-    }
-    return sceneKeys;
-};
-
-// retrieve list of scene layout object from a layout object
-lib.getSceneLayouts = function getSceneLayouts(layout) {
-    var sceneKeys = lib.getSceneKeys(layout),
-        sceneKey = null,
-        sceneLayouts = [],
-        i_sceneKey = 0;
-    for (i_sceneKey; i_sceneKey < sceneKeys.length; ++i_sceneKey) {
-        sceneKey = sceneKeys[i_sceneKey];
-        sceneLayouts.push(layout[sceneKey]);
-    }
-    return sceneLayouts;
-};
-
-// modified version of $.extend to strip out private objs and functions,
-// and cut arrays down to first <arraylen> or 1 elements
-// because $.extend is hella slow
-// obj2 is assumed to already be clean of these things (including no arrays)
+/**
+ * modified version of $.extend to strip out private objs and functions,
+ * and cut arrays down to first <arraylen> or 1 elements
+ * because $.extend is hella slow
+ * obj2 is assumed to already be clean of these things (including no arrays)
+ */
 lib.minExtend = function(obj1, obj2) {
     var objOut = {};
     if(typeof obj2 !== 'object') obj2 = {};
@@ -1550,8 +1603,7 @@ lib.containsAny = function(s, fragments) {
     return false;
 };
 
-// get the parent Plotly plot of any element
-// whoo jquery-free tree climbing!
+// get the parent Plotly plot of any element. Whoo jquery-free tree climbing!
 lib.getPlotDiv = function(el) {
     for(; el && el.removeAttribute; el = el.parentNode) {
         if(lib.isPlotDiv(el)) return el;
@@ -1568,9 +1620,11 @@ lib.removeElement = function(el) {
     if(elParent) elParent.removeChild(el);
 };
 
-// for dynamically adding style rules
-// makes one stylesheet that contains all rules added
-// by all calls to this function
+/**
+ * for dynamically adding style rules
+ * makes one stylesheet that contains all rules added
+ * by all calls to this function
+ */
 lib.addStyleRule = function(selector, styleString) {
     if(!lib.styleSheet) {
         var style = document.createElement('style');

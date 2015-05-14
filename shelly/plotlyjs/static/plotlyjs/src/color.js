@@ -1,9 +1,8 @@
 'use strict';
 
 var color = module.exports = {},
-    tinycolor = require('tinycolor2');
-
-color.tc = tinycolor; // for debugging purposes
+    tinycolor = require('tinycolor2'),
+    isNumeric = require('./isnumeric');
 
 // IMPORTANT - default colors should be in hex for grid.js
 color.defaults = [
@@ -51,6 +50,13 @@ color.scales = {
     'RdBu':[[0,'rgb(5, 10, 172)'],[0.35,'rgb(106, 137, 247)'],
         [0.5,'rgb(190,190,190)'],[0.6,'rgb(220, 170, 132)'],
         [0.7,'rgb(230, 145, 90)'],[1,'rgb(178, 10, 28)']],
+    // Scale for non-negative numeric values
+    'Reds': [[0, 'rgb(220, 220, 220)'], [0.2,'rgb(245, 195, 157)'],
+        [0.4,'rgb(245, 160, 105)'], [1, 'rgb(178, 10, 28)']],
+    // Scale for non-positive numeric values
+    'Blues': [[0, 'rgb(5, 10, 172)'], [0.35, 'rgb(40, 60, 190)'],
+        [0.5, 'rgb(70, 100, 245)'], [0.6, 'rgb(90, 120, 245)'],
+        [0.7, 'rgb(106, 137, 247)'], [1, 'rgb(220, 220, 220)']],
 
     'Picnic':[[0,'rgb(0,0,255)'],[0.1,'rgb(51,153,255)'],
         [0.2,'rgb(102,204,255)'],[0.3,'rgb(153,204,255)'],
@@ -194,6 +200,7 @@ color.clean = function(container) {
             else container[key] = cleanOne(val);
         }
         else if(key.substr(key.length - 10) === 'colorscale' && Array.isArray(val)) {
+            // colorscales have the format [[0, color1], [frac, color2], ... [1, colorN]]
             for(j = 0; j < val.length; j++) {
                 if(Array.isArray(val[j])) val[j][1] = cleanOne(val[j][1]);
             }
@@ -210,7 +217,7 @@ color.clean = function(container) {
 };
 
 function cleanOne(val) {
-    if($.isNumeric(val) || typeof val !== 'string') return val;
+    if(isNumeric(val) || typeof val !== 'string') return val;
 
     var valTrim = val.trim();
     if(valTrim.substr(0,3) !== 'rgb') return val;

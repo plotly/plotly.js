@@ -9,15 +9,15 @@ fs.readFile(__dirname + '/src/fonts/ploticon/ploticon.svg', function(err, data) 
         if(err2) throw err2;
 
         var font_obj = result.svg.defs[0].font[0],
-            default_width = font_obj.$['horiz-adv-x'],
+            default_width = Number(font_obj.$['horiz-adv-x']),
             chars = {
-                ascent: font_obj['font-face'][0].$.ascent,
-                descent: font_obj['font-face'][0].$.descent
+                ascent: Number(font_obj['font-face'][0].$.ascent),
+                descent: Number(font_obj['font-face'][0].$.descent)
             };
 
         font_obj.glyph.forEach(function(glyph) {
             chars[glyph.$['glyph-name']] = {
-                width: glyph.$['horiz-adv-x'] || default_width,
+                width: Number(glyph.$['horiz-adv-x']) || default_width,
                 path: glyph.$.d
             };
         });

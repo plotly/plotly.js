@@ -70,6 +70,66 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('transposeRagged()', function() {
+        it('should transpose and return a rectangular array', function() {
+            var input = [
+                    [1],
+                    [2, 3, 4],
+                    [5, 6],
+                    [7]],
+                output = [
+                    [1, 2, 5, 7],
+                    [undefined, 3, 6, undefined],
+                    [undefined, 4, undefined, undefined]
+                ];
+
+            expect(Plotly.Lib.transposeRagged(input)).toEqual(output);
+        });
+    });
+
+    describe('dot()', function() {
+        var dot = Plotly.Lib.dot;
+
+        it('should return null for empty or unequal-length inputs', function() {
+            expect(dot([], [])).toBeNull();
+            expect(dot([1], [2, 3])).toBeNull();
+        });
+
+        it('should dot vectors to a scalar', function() {
+            expect(dot([1, 2, 3], [4, 5, 6])).toEqual(32);
+        });
+
+        it('should dot a vector and a matrix to a vector', function() {
+            expect(dot([1, 2], [[3, 4], [5, 6]])).toEqual([13, 16]);
+            expect(dot([[3, 4], [5, 6]], [1, 2])).toEqual([11, 17]);
+        });
+
+        it('should dot two matrices to a matrix', function() {
+            expect(dot([[1, 2], [3, 4]], [[5, 6], [7, 8]]))
+                .toEqual([[19, 22], [43, 50]]);
+        });
+    });
+
+    describe('aggNums()', function() {
+        var aggNums = Plotly.Lib.aggNums;
+
+        function summation(a, b) { return a + b; }
+
+        it('should work with 1D and 2D inputs and ignore non-numerics', function() {
+            var in1D = [1,2,3,4,'goose!',5,6],
+                in2D = [[1,2,3],['',4],[5,'hi!',6]];
+
+            expect(aggNums(Math.min, null, in1D)).toEqual(1);
+            expect(aggNums(Math.min, null, in2D)).toEqual(1);
+
+            expect(aggNums(Math.max, null, in1D)).toEqual(6);
+            expect(aggNums(Math.max, null, in2D)).toEqual(6);
+
+            expect(aggNums(summation, 0, in1D)).toEqual(21);
+            expect(aggNums(summation, 0, in2D)).toEqual(21);
+        });
+    });
+
     describe('mean() should', function() {
         it('toss out non-numerics (strings):', function() {
             var input = [1, 2, 'apple', 'orange'],
@@ -131,6 +191,56 @@ describe('Test lib.js:', function() {
             var input = [1, 2, NaN],
                 res = Plotly.Lib.stdev(input);
             expect(res).toEqual(0.5);
+        });
+    });
+
+    describe('smooth()', function() {
+        it('should not alter the input for FWHM < 1.5', function() {
+            var input = [1, 2, 1, 2, 1],
+                output = Plotly.Lib.smooth(input.slice(), 1.49);
+
+            expect(output).toEqual(input);
+
+            output = Plotly.Lib.smooth(input.slice(), 'like butter');
+
+            expect(output).toEqual(input);
+        });
+
+        it('should preserve the length and integral even with multiple bounces', function() {
+            var input = [1, 2, 4, 8, 16, 8, 10, 12],
+                output2 = Plotly.Lib.smooth(input.slice(), 2),
+                output30 = Plotly.Lib.smooth(input.slice(), 30),
+                sumIn = 0,
+                sum2 = 0,
+                sum30 = 0;
+
+            for(var i = 0; i < input.length; i++) {
+                sumIn += input[i];
+                sum2 += output2[i];
+                sum30 += output30[i];
+            }
+
+            expect(output2.length).toEqual(input.length);
+            expect(output30.length).toEqual(input.length);
+            expect(sum2).toBeCloseTo(sumIn, 6);
+            expect(sum30).toBeCloseTo(sumIn, 6);
+        });
+
+        it('should use a hann window and bounce', function() {
+            var input = [0, 0, 0, 7, 0, 0, 0],
+                out4 = Plotly.Lib.smooth(input, 4),
+                out7 = Plotly.Lib.smooth(input, 7),
+                expected4 = [
+                    0.2562815664617711, 0.875, 1.4937184335382292, 1.75,
+                    1.493718433538229, 0.875, 0.25628156646177086
+                ],
+                expected7 = [1, 1, 1, 1, 1, 1, 1],
+                i;
+
+            for(i = 0; i < input.length; i++) {
+                expect(out4[i]).toBeCloseTo(expected4[i], 6);
+                expect(out7[i]).toBeCloseTo(expected7[i], 6);
+            }
         });
     });
 
@@ -342,5 +452,117 @@ describe('Test lib.js:', function() {
             expect(objOut).toEqual({a: 'AA'});
         });
 
+    });
+
+    describe('coerce', function() {
+        var coerce = Plotly.Lib.coerce,
+            out;
+
+        // TODO: I tested font and string because I changed them, but all the other types need tests still
+
+        it('should set a value and return the value it sets', function() {
+            var aVal = 'aaaaah!',
+                cVal = {1: 2, 3: 4},
+                attrs = {a: {type: 'any', dflt: aVal}, b: {c: {type: 'any'}}},
+                obj = {b: {c: cVal}},
+                outObj = {},
+
+                aOut = coerce(obj, outObj, attrs, 'a'),
+                cOut = coerce(obj, outObj, attrs, 'b.c');
+
+            expect(aOut).toBe(aVal);
+            expect(aOut).toBe(outObj.a);
+            expect(cOut).toBe(cVal);
+            expect(cOut).toBe(outObj.b.c);
+        });
+
+        describe('font', function() {
+            var defaultFont = {
+                family: '"Open sans", verdana, arial, sans-serif, DEFAULT',
+                size: 314159,
+                color: 'neon pink with sparkles'
+            },
+            fontAttrs = {
+                fontWithDefault: {type: 'font', dflt: defaultFont},
+                fontNoDefault: {type: 'font'}
+            };
+
+            it('should insert the full default if no or empty input', function() {
+                expect(coerce(undefined, {}, fontAttrs, 'fontWithDefault'))
+                    .toEqual(defaultFont);
+
+                expect(coerce({}, {}, fontAttrs, 'fontNoDefault', defaultFont))
+                    .toEqual(defaultFont);
+
+                expect(coerce({fontWithDefault: {}}, {}, fontAttrs, 'fontWithDefault'))
+                    .toEqual(defaultFont);
+            });
+
+            it('should fill in defaults for bad inputs', function() {
+                out = coerce({fontWithDefault: {family: '', size: 'a million', color: 42}},
+                    {}, fontAttrs, 'fontWithDefault');
+                expect(out).toEqual(defaultFont);
+            });
+
+            it('should pass through individual valid pieces', function() {
+                var goodFamily = 'A fish', // for now any non-blank string is OK
+                    badFamily = 42,
+                    goodSize = 123.456,
+                    badSize = 'ginormous',
+                    goodColor = 'red',
+                    badColor = 'a dark and stormy night';
+
+                out = coerce({fontWithDefault: {family: goodFamily, size: badSize, color: badColor}},
+                    {}, fontAttrs, 'fontWithDefault');
+                expect(out).toEqual({family: goodFamily, size: defaultFont.size, color: defaultFont.color});
+
+                out = coerce({fontWithDefault: {family: badFamily, size: goodSize, color: badColor}},
+                    {}, fontAttrs, 'fontWithDefault');
+                expect(out).toEqual({family: defaultFont.family, size: goodSize, color: defaultFont.color});
+
+                out = coerce({fontWithDefault: {family: badFamily, size: badSize, color: goodColor}},
+                    {}, fontAttrs, 'fontWithDefault');
+                expect(out).toEqual({family: defaultFont.family, size: defaultFont.size, color: goodColor});
+            });
+        });
+
+        describe('string', function() {
+            var dflt = 'Jabberwock',
+                stringAttrs = {
+                    s: {type: 'string', dflt: dflt},
+                    noBlank: {type: 'string', dflt: dflt, noBlank: true}
+                };
+
+            it('should insert the default if input is missing, or blank with noBlank', function() {
+                out = coerce(undefined, {}, stringAttrs, 's');
+                expect(out).toEqual(dflt);
+
+                out = coerce({}, {}, stringAttrs, 's');
+                expect(out).toEqual(dflt);
+
+                out = coerce({s: ''}, {}, stringAttrs, 's');
+                expect(out).toEqual('');
+
+                out = coerce({noBlank: ''}, {}, stringAttrs, 'noBlank');
+                expect(out).toEqual(dflt);
+            });
+
+            it('should always return a string for any input', function() {
+                expect(coerce({s: 'a string!!'}, {}, stringAttrs, 's'))
+                    .toEqual('a string!!');
+
+                expect(coerce({s: 42}, {}, stringAttrs, 's'))
+                    .toEqual('42');
+
+                expect(coerce({s: [1, 2, 3]}, {}, stringAttrs, 's'))
+                    .toEqual('1,2,3');
+
+                expect(coerce({s: true}, {}, stringAttrs, 's'))
+                    .toEqual('true');
+
+                expect(coerce({s: {1: 2}}, {}, stringAttrs, 's'))
+                    .toEqual('[object Object]'); // useless, but that's what it does!!
+            });
+        });
     });
 });

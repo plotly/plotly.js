@@ -2,6 +2,7 @@
 
 var shapes = module.exports = {},
     Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric'),
     scatterLineAttrs = Plotly.Scatter.attributes.line;
 
 shapes.layoutAttributes = {
@@ -167,7 +168,7 @@ shapes.draw = function(gd, index, opt, value) {
         i;
 
     // TODO: abstract out these drawAll, add, and remove blocks for shapes and annotations
-    if(!$.isNumeric(index) || index===-1) {
+    if(!isNumeric(index) || index===-1) {
         // no index provided - we're operating on ALL shapes
         if(!index && Array.isArray(value)) {
             // a whole annotation array is passed in
@@ -315,16 +316,17 @@ shapes.draw = function(gd, index, opt, value) {
             d: shapePath(gd, options)
         },
         clipAxes = (options.xref + options.yref).replace(/paper/g, '');
-    if(clipAxes) attrs['clip-path'] = 'url(#clip' + fullLayout._uid + clipAxes + ')';
 
     var lineColor = options.line.width ? options.line.color : 'rgba(0,0,0,0)';
 
-    fullLayout._shapelayer.append('path')
+    var path = fullLayout._shapelayer.append('path')
         .attr(attrs)
         .style('opacity', options.opacity)
         .call(Plotly.Color.stroke, lineColor)
         .call(Plotly.Color.fill, options.fillcolor)
         .call(Plotly.Drawing.dashLine, options.line.dash, options.line.width);
+
+    if(clipAxes) path.call(Plotly.Drawing.setClipUrl, 'clip' + fullLayout._uid + clipAxes);
 };
 
 function decodeDate(convertToPx) {
