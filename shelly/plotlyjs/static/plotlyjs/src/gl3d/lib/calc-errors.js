@@ -1,7 +1,5 @@
 'use strict';
 
-module.exports = calculateErrors;
-
 function calculateAxisErrors(data, params) {
     if(!params || !params.visible) {
         return null;
@@ -93,3 +91,5 @@ function calculateErrors(data) {
     }
     return errorBounds;
 }
+
+module.exports = calculateErrors;

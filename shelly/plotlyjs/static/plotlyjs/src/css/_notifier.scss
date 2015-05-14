@@ -1,0 +1,41 @@
+.plotly-notifier {
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    z-index: 10000;
+
+    .notifier-note {
+        min-width: 180px;
+        max-width: 250px;
+        border: 1px solid $color-bg-light;
+        z-index: 3000;
+        margin: 0;
+
+        background-color: #8c97af;
+        background-color: rgba(140, 151, 175, 0.9);
+        color: $color-bg-light;
+        padding: 10px;
+    }
+
+    .notifier-close {
+        color: $color-bg-light;
+        opacity: 0.8;
+
+        float: right;
+        padding: 0 5px;
+
+        background: none;
+        border: none;
+        font-size: 20px;
+        font-weight: bold;
+        line-height: 20px;
+
+        &:hover {
+            color: #444;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    }
+}
+
+

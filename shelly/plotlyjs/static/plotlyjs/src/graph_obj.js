@@ -122,7 +122,6 @@ plots.newTab = function(divid, layout) {
         editable: true,
         autosizable: true,
         scrollZoom: true,
-        showTips: false,
         showLink: false,
         setBackground: 'opaque'
     };
@@ -141,13 +140,16 @@ plots.redrawText = function(divid) {
         return;
     }
 
-    setTimeout(function(){
-        Plotly.Annotations.drawAll(gd);
-        Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
-        (gd.calcdata||[]).forEach(function(d){
-            if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
-        });
-    },300);
+    return new Promise(function(resolve) {
+        setTimeout(function(){
+            Plotly.Annotations.drawAll(gd);
+            Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
+            (gd.calcdata||[]).forEach(function(d){
+                if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
+            });
+            resolve(plots.previousPromises(gd));
+        },300);
+    });
 };
 
 // where and how the background gets set can be overridden by context
@@ -660,7 +662,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
     return (donePlotting && donePlotting.then) ?
-        donePlotting : Promise.resolve() ;
+        donePlotting : Promise.resolve();
 };
 
 function plot3D(gd) {
@@ -668,7 +670,6 @@ function plot3D(gd) {
         fullData = gd._fullData;
 
     var i, sceneId, fullSceneData,
-        fullSceneLayout, sceneLayout,
         scene, sceneOptions;
 
     fullLayout._paperdiv.style({
@@ -695,26 +696,21 @@ function plot3D(gd) {
     for (i = 0; i < sceneIds.length; i++) {
         sceneId = sceneIds[i];
         fullSceneData = getSceneData(fullData, sceneId);
-        fullSceneLayout = fullLayout[sceneId];
-        sceneLayout = gd.layout[sceneId],
-        scene = fullSceneLayout._scene;  // ref. to corresp. Scene instance
+        scene = fullLayout[sceneId]._scene;  // ref. to corresp. Scene instance
 
         // If Scene is not instantiated, create one!
         if (!(scene)) {
             sceneOptions = {
-                Plotly: Plotly,
                 container: gd.querySelector('.svg-container'),
-                sceneId: sceneId,
-                fullSceneLayout: fullSceneLayout,
-                fullLayout: fullLayout,
+                id: sceneId,
                 staticPlot: gd._context.staticPlot,
                 plot3dPixelRatio: gd._context.plot3dPixelRatio
             };
-            scene = new Plotly.Scene(sceneOptions);
-            fullSceneLayout._scene = scene;  // set ref to Scene instance
+            scene = new Plotly.Scene(sceneOptions, fullLayout);
+            fullLayout[sceneId]._scene = scene;  // set ref to Scene instance
         }
 
-        scene.plot(fullSceneData, fullSceneLayout, sceneLayout);  // takes care of business
+        scene.plot(fullSceneData, fullLayout, gd.layout);  // takes care of business
     }
 }
 
@@ -1232,15 +1228,7 @@ plots.supplyDefaults = function(gd) {
         newFullData.push(fullTrace);
 
         // DETECT 3D, Cartesian, and Polar
-        if (plots.isGL3D(fullTrace.type)) {
-            newFullLayout._hasGL3D = true;
-
-            /*
-             * Need to add blank scenes here so that relink private keys has something to
-             * attach the old layouts private keys and functions onto.
-             */
-            newFullLayout[fullTrace.scene] = {};
-        }
+        if (plots.isGL3D(fullTrace.type)) newFullLayout._hasGL3D = true;
 
         if (plots.isCartesian(fullTrace.type)) {
             if ('r' in fullTrace) newFullLayout._hasPolar = true;
@@ -1263,21 +1251,16 @@ plots.supplyDefaults = function(gd) {
         }
     }
 
-    /*
-     * Relink functions and underscore attributes to promote consistency between
-     * plots. This must come BEFORE supplyLayoutModuleDefaults as we want new values
-     * to overwrite old values, not the other way around.
-     */
-    relinkPrivateKeys(newFullLayout, oldFullLayout);
-
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
-    /*
-     * This must come AFTER supplyLayoutModuleDefaults as it checks to see if there are scenes
-     * in the oldFullLayout but not in the newFullLayout - it deletes those scenes.
-     */
     cleanScenes(newFullLayout, oldFullLayout);
+
+    /*
+     * Relink functions and underscore attributes to promote consistency between
+     * plots.
+     */
+    relinkPrivateKeys(newFullLayout, oldFullLayout);
 
     doAutoMargin(gd);
 
@@ -2329,6 +2312,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'x', 'y', 'z',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
         'line.width','showscale','zauto','connectgaps',
+        'autocolorscale',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
         'autocontour','ncontours','contours.coloring',
@@ -2465,6 +2449,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             // and setting auto should save bin or z settings
             if(zscl.indexOf(ai)!==-1) {
                 doextra(cont,'zauto',false,i);
+            }
+            else if(ai === 'colorscale') {
+                doextra(cont, 'autocolorscale', false, i);
+            }
+            else if(ai === 'autocolorscale') {
+                doextra(cont, 'colorscale', undefined, i);
             }
             else if(ai==='zauto') {
                 doextra(cont,zscl,undefined,i);
@@ -3195,8 +3185,7 @@ function makePlotFramework(gd) {
         .attr({
             xmlns: 'http://www.w3.org/2000/svg',
             // odd d3 quirk - need namespace twice??
-            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
-            'xml:xml:space': 'preserve'
+            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
         })
         .classed('main-svg', true);
 
