@@ -49,13 +49,6 @@ function Scene(options, fullLayout) {
     this.spikeOptions     = createSpikeOptions(fullLayout[this.id]);
     this.container        = sceneContainer;
 
-    /*
-     * WARNING!!!! Only set camera position on first call to plot!!!!
-     * TODO remove this hack
-     */
-    this.hasPlotBeenCalled = false;
-
-
     var glplotOptions = {
             container:  sceneContainer,
             axes:       this.axesOptions,
@@ -150,13 +143,6 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.glplotLayout = fullSceneLayout;
     this.axesOptions.merge(fullSceneLayout);
     this.spikeOptions.merge(fullSceneLayout);
-
-    //Update camera position
-    if(!this.hasPlotBeenCalled) {
-      this.hasPlotBeenCalled = true;
-      var camera = fullSceneLayout.cameraposition;
-      if (camera) this.setCameraPosition(camera);
-    }
 
     //Update scene
     this.glplot.update({});
