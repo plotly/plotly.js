@@ -351,17 +351,23 @@ ModeBar.prototype.handleCamera3d = function(ev) {
         fullLayout = this.graphInfo._fullLayout,
         sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
-    var i, sceneId, sceneLayout, scene, cameraposition;
+    var i, sceneId, sceneLayout, fullSceneLayout, scene, cameraPos;
 
     for (i = 0;  i < sceneIds.length; i++) {
         sceneId = sceneIds[i];
         sceneLayout = layout[sceneId];
-        scene = fullLayout[sceneId]._scene;
+        fullSceneLayout = fullLayout[sceneId];
+        scene = fullSceneLayout._scene;
 
-        if (attr === 'resetDefault') scene.setCameraToDefault();
+        if (!sceneLayout || attr==='resetDefault') scene.setCameraToDefault();
         else if (attr === 'resetLastSave') {
-            cameraposition = sceneLayout ? sceneLayout.cameraposition : false;
-            if (cameraposition) scene.setCameraPosition(cameraposition);
+
+            if (sceneLayout.cameraposition !== undefined) {
+                cameraPos = scene.cleanCamera(sceneLayout.cameraposition);
+            }
+            else cameraPos = sceneLayout.camera;
+
+            if (cameraPos) scene.setCameraPosition(cameraPos);
             else scene.setCameraToDefault();
         }
     }
