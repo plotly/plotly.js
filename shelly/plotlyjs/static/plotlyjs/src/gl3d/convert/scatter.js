@@ -343,6 +343,7 @@ proto.update = function(data) {
         if (this.scatterPlot) this.scatterPlot.update(scatterOptions);
         else {
             this.scatterPlot = createScatterPlot(scatterOptions);
+            this.scatterPlot.highlightScale = 1;
             this.scene.glplot.add(this.scatterPlot);
         }
     } else if(this.scatterPlot) {
@@ -369,6 +370,7 @@ proto.update = function(data) {
         if (this.textMarkers) this.textMarkers.update(textOptions);
         else {
             this.textMarkers = createScatterPlot(textOptions);
+            this.scatterPlot.highlightScale = 1;
             this.scene.glplot.add(this.textMarkers);
         }
         this.textLabels = options.text;
