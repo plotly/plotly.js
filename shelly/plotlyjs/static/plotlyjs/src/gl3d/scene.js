@@ -52,7 +52,7 @@ function render(scene) {
         zLabel: selection.dataCoordinate[2] + '',
         text: selection.textLabel || '',
         name: lastPicked.name,
-        color: lastPicked.color || '#fff'
+        color: lastPicked.color
        }, {
          container: svgContainer
        });

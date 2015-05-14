@@ -19,7 +19,7 @@ function LineWithMarkers(scene, uid) {
     this.errorBars          = null;
     this.textMarkers        = null;
     this.delaunayMesh       = null;
-    this.color              = '#fff';
+    this.color              = null;
     this.mode               = '';
     this.dataPoints         = [];
     this.axesBounds         = [[-Infinity,-Infinity,-Infinity],
@@ -298,9 +298,8 @@ proto.update = function(data) {
         }
     }
 
-    this.color = arrayToColor(options.lineColor) ||
-                 arrayToColor(options.scatterColor) ||
-                 '#fff';
+    this.color = arrayToColor(options.scatterColor) ||
+                 arrayToColor(options.lineColor);
 
     //Save data points
     this.dataPoints = options.position;
@@ -344,6 +343,7 @@ proto.update = function(data) {
         if (this.scatterPlot) this.scatterPlot.update(scatterOptions);
         else {
             this.scatterPlot = createScatterPlot(scatterOptions);
+            this.scatterPlot.highlightScale = 1;
             this.scene.glplot.add(this.scatterPlot);
         }
     } else if(this.scatterPlot) {
@@ -370,6 +370,7 @@ proto.update = function(data) {
         if (this.textMarkers) this.textMarkers.update(textOptions);
         else {
             this.textMarkers = createScatterPlot(textOptions);
+            this.scatterPlot.highlightScale = 1;
             this.scene.glplot.add(this.textMarkers);
         }
         this.textLabels = options.text;
