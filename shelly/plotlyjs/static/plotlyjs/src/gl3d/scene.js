@@ -318,6 +318,7 @@ proto.destroy = function() {
 
 // for reset camera button in modebar
 proto.setCameraToDefault = function setCameraToDefault () {
+    // as in Gl3dLayout.layoutAttributes
     this.glplot.camera.lookAt(
         [1.25, 1.25, 1.25],
         [0   , 0   , 0   ],
@@ -341,14 +342,14 @@ proto.getCameraPosition = function getCameraPosition () {
 };
 
 // set camera position with a set of plotly coords
-proto.setCameraPosition = function setCameraPosition (camera) {
-    var up      = camera.up;
-    var center  = camera.center;
-    var eye     = camera.eye;
+proto.setCameraPosition = function setCameraPosition (cameraPos) {
+    var up      = cameraPos.up;
+    var center  = cameraPos.center;
+    var eye     = cameraPos.eye;
     this.glplot.camera.lookAt(
-      [eye.x, eye.y, eye.z],
-      [center.x, center.y, center.z],
-      [up.x, up.y, up.z]
+        [eye.x, eye.y, eye.z],
+        [center.x, center.y, center.z],
+        [up.x, up.y, up.z]
     );
 };
 
