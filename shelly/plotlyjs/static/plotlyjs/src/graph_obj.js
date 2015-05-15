@@ -51,7 +51,7 @@ plots.isCartesian = function(type) {
     return CARTESIANTYPES.indexOf(type) !== -1;
 };
 
-var GL3DTYPES = ['scatter3d', 'surface'];
+var GL3DTYPES = ['scatter3d', 'surface', 'mesh3d'];
 plots.isGL3D = function(type) {
     return GL3DTYPES.indexOf(type) !== -1;
 };
@@ -66,6 +66,10 @@ plots.isScatterAny = function(type) {
 
 plots.isSurface = function(type) {
     return type === 'surface';
+};
+
+plots.isMesh3D = function(type) {
+    return type === 'mesh3d';
 };
 
 // ALLTYPES and getModule are used for the graph_reference app
@@ -87,6 +91,7 @@ plots.getModule = function getModule(trace) {
     if (plots.isContour(type)) return Plotly.Contour;
     if (plots.isHeatmap(type)) return Plotly.Heatmap;
     if (plots.isScatter3D(type)) return Plotly.Scatter3D;
+    if (plots.isMesh3D(type)) return Plotly.Mesh3D;
     if (plots.isSurface(type)) return Plotly.Surface;
     if (plots.isBox(type)) return Plotly.Boxes;
 
