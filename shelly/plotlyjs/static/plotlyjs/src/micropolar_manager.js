@@ -1,7 +1,10 @@
+'use strict';
+/* global d3:false */
+
 var manager = module.exports = {},
     Plotly = require('./plotly');
 
-manager.framework = function(){
+manager.framework = function(_gd){
     var config, previousConfigClone, plot, convertedInput, container;
     var undoManager = new Plotly.util.UndoManager();
     function exports(_inputConfig, _container){
@@ -11,6 +14,9 @@ manager.framework = function(){
         if(!plot) plot = Plotly.micropolar.Axis();
         convertedInput = Plotly.micropolar.adapter.plotly().convert(config);
         plot.config(convertedInput).render(container);
+        _gd.data = config.data;
+        _gd.layout = config.layout;
+        manager.fillLayout(_gd);
         return config;
     }
     exports.isPolar = true;
@@ -40,4 +46,20 @@ manager.framework = function(){
     exports.undo = function(){ undoManager.undo(); }; //Tabs.get().framework.undo()
     exports.redo = function(){ undoManager.redo(); };
     return exports;
+};
+
+manager.fillLayout = function(_gd) {
+    var container = d3.select(_gd).selectAll('.plot-container'),
+        paperDiv = container.selectAll('.svg-container'),
+        paper = _gd.framework && _gd.framework.svg && _gd.framework.svg(),
+        dflts = {
+            width: 800,
+            height: 600,
+            paper_bgcolor: Plotly.Color.background,
+            _container: container,
+            _paperdiv: paperDiv,
+            _paper: paper
+        };
+
+    _gd._fullLayout = Plotly.micropolar.util.deepExtend(dflts, _gd.layout);
 };
