@@ -19,7 +19,7 @@
     "gl-mesh3d": "^1.0.2",
     "gl-plot3d": "^1.1.1",
     "gl-scatter3d": "^1.0.4",
-    "gl-surface3d": "^1.0.1",
+    "gl-surface3d": "^1.0.6",
     "mouse-change": "^1.1.1",
     "mouse-wheel": "^1.0.2",
     "ndarray-homography": "^1.0.0",
