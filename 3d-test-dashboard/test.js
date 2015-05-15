@@ -167,5 +167,8 @@ plots['opacity-surface'] = require('./testplots/opacity-surface.json');
 plots['projection-traces'] = require('./testplots/projection-traces.json');
 plots['opacity-scaling-spikes'] = require('./testplots/opacity-scaling-spikes.json');
 plots['text-weirdness'] = require('./testplots/text-weirdness.json');
+plots['triangle-mesh3d'] = require('./testplots/triangle.json');
+plots['snowden'] = require('./testplots/snowden.json');
+plots['bunny'] = require('./testplots/bunny.json');
 
 plotButtons(plots);
