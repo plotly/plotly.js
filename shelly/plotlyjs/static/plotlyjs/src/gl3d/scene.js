@@ -7,11 +7,12 @@ var createPlot          = require('gl-plot3d'),
     createSpikeOptions  = require('./convert/spikes'),
     createScatterTrace  = require('./convert/scatter'),
     createSurfaceTrace  = require('./convert/surface'),
+    createMeshTrace     = require('./convert/mesh'),
     computeTickMarks    = require('./lib/tick-marks'),
     createCamera        = require('./lib/camera'),
     str2RGBAarray       = require('./lib/str2rgbarray'),
-    Plotly              = require('../plotly'),
-    project             = require('./lib/project');
+    project             = require('./lib/project'),
+    Plotly              = require('../plotly');
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 
@@ -254,6 +255,10 @@ proto.plot = function(sceneData, fullLayout, layout) {
 
                     case 'surface':
                         trace = createSurfaceTrace(this, data);
+                    break;
+
+                    case 'mesh3d':
+                        trace = createMeshTrace(this, data);
                     break;
 
                     default:
