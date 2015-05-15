@@ -24,10 +24,13 @@ a {
 svg a { fill: $color-brand-primary; }
 svg a:hover { fill: #3c6dc5; }
 
-.main-svg>g {
+.main-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
     pointer-events: none;
 
-    &.draglayer {
+    .draglayer {
         pointer-events: all;
     }
 }

@@ -15,7 +15,7 @@ function SurfaceTrace(scene, surface, uid) {
   this.uid      = uid;
   this.surface  = surface;
   this.data     = null;
-  this.showContour = false;
+  this.showContour = [false,false,false];
 }
 
 var proto = SurfaceTrace.prototype;
@@ -88,8 +88,16 @@ function refine(coords) {
 }
 
 proto.setContourLevels = function() {
-    if(this.showContour) {
-        this.surface.update({ levels: this.scene.contourLevels });
+    var nlevels = [[], [], []];
+    var needsUpdate = false;
+    for(var i=0; i<3; ++i) {
+        if(this.showContour[i]) {
+            needsUpdate = true;
+            nlevels[i] = this.scene.contourLevels[i];
+        }
+    }
+    if(needsUpdate) {
+        this.surface.update({ levels: nlevels });
     }
 };
 
@@ -159,6 +167,7 @@ proto.update = function(data) {
         colormap:       colormap,
         levels:         [[], [], []],
         showContour:    [ true, true, true ],
+        showSurface:    !data.hidesurface,
         contourProject: [ [ false, false, false ],
                           [ false, false, false ],
                           [ false, false, false ] ],
@@ -198,12 +207,17 @@ proto.update = function(data) {
             contourParams.project.z ];
 
         if (contourParams.show) {
-            this.showContour = true;
-            params.levels[i]       = contourLevels[i];
-            params.contourColor[i] = str2RgbaArray(contourParams.color);
+            this.showContour[i] = true;
+            params.levels[i] = contourLevels[i];
+            surface.highlightColor[i] = params.contourColor[i] = str2RgbaArray(contourParams.color);
+            if(contourParams.usecolormap) {
+              surface.highlightTint[i] = params.contourTint[i] = 0;
+            } else {
+              surface.highlightTint[i] = params.contourTint[i] = 1;
+            }
             params.contourWidth[i] = contourParams.width;
         } else {
-            this.showContour = false;
+            this.showContour[i] = false;
         }
 
         if (contourParams.highlight) {
