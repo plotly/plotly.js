@@ -3166,7 +3166,21 @@ function makePlotFramework(gd) {
     // Make the graph containers
     // start fresh each time we get here, so we know the order comes out
     // right, rather than enter/exit which can muck up the order
-    fullLayout._paperdiv.selectAll('.main-svg,.gl-container').remove();
+    // TODO: sort out all the ordering so we don't have to
+    // explicitly delete anything
+    fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
+        .data([0]);
+    fullLayout._glcontainer.enter().append('div')
+        .classed('gl-container', true);
+
+    fullLayout._paperdiv.selectAll('.main-svg').remove();
+
+    fullLayout._paper = fullLayout._paperdiv.insert('svg', ':first-child')
+        .classed('main-svg', true);
+
+    fullLayout._toppaper = fullLayout._paperdiv.append('svg')
+        .classed('main-svg', true);
+
 
     if(!fullLayout._uid) {
         var otherUids = [];
@@ -3175,15 +3189,6 @@ function makePlotFramework(gd) {
         });
         fullLayout._uid = Plotly.Lib.randstr(otherUids);
     }
-
-    fullLayout._paper = fullLayout._paperdiv.append('svg')
-        .classed('main-svg', true);
-
-    fullLayout._glcontainer = fullLayout._paperdiv.append('div')
-        .classed('gl-container', true);
-
-    fullLayout._toppaper = fullLayout._paperdiv.append('svg')
-        .classed('main-svg', true);
 
     fullLayout._paperdiv.selectAll('.main-svg')
         .attr({
