@@ -714,7 +714,7 @@ function plot3D(gd) {
     }
 }
 
-function plotPolar(gd, data, layout, config) {
+function plotPolar(gd, data, layout) {
     // build or reuse the container skeleton
     var plotContainer = d3.select(gd).selectAll('.plot-container')
         .data([0]);
@@ -732,23 +732,25 @@ function plotPolar(gd, data, layout, config) {
 
     // fulfill gd requirements
     if(data) gd.data = data;
-    gd._fullLayout = layout;
-    gd._fullLayout._container = plotContainer;
-    gd._fullLayout._paperdiv = paperDiv;
-    if(gd._fullLayout.autosize === 'initial' && gd._context.autosizable) {
+    var fullLayout = gd._fullLayout = Plotly.Lib.minExtend(layout);
+    fullLayout._container = plotContainer;
+    fullLayout._paperdiv = paperDiv;
+    if(fullLayout.autosize === 'initial' && gd._context.autosizable) {
         plotAutoSize(gd,{});
-        gd._fullLayout.autosize = gd.layout.autosize = true;
+        fullLayout.autosize = gd.layout.autosize = true;
     }
     // resize canvas
+    if(!fullLayout.width) fullLayout.width = 800;
+    if(!fullLayout.height) fullLayout.height = 600;
     paperDiv.style({
-        width: (layout.width || 800) + 'px',
-        height: (layout.height || 600) + 'px'
+        width: fullLayout.width + 'px',
+        height: fullLayout.height + 'px'
     });
 
     // instantiate framework
     gd.framework = Plotly.micropolar.manager.framework();
     //get rid of gd.layout stashed nodes
-    layout = Plotly.micropolar.util.deepExtend({}, gd._fullLayout);
+    layout = Plotly.micropolar.util.deepExtend({}, fullLayout);
     delete layout._container;
     delete layout._paperdiv;
     delete layout.autosize;
@@ -765,7 +767,7 @@ function plotPolar(gd, data, layout, config) {
 
     // editable title
     var opacity = 1;
-    var txt = gd._fullLayout.title;
+    var txt = fullLayout.title;
     if(txt === '' || !txt) opacity = 0;
     var placeholderText = 'Click to enter title';
 
@@ -811,14 +813,15 @@ function plotPolar(gd, data, layout, config) {
         };
         title.call(setContenteditable);
 
-        gd._fullLayout._paperdiv = paperDiv;
+        fullLayout._paperdiv = paperDiv;
 
         Plotly.ToolPanel.tweakMenu(gd);
     }
 
     // fulfill more gd requirements
-    gd._fullLayout._paper = polarPlotSVG;
-    gd._context.setBackground(gd, layout.paper_bgcolor || 'white');
+    fullLayout._paper = polarPlotSVG;
+    if(!fullLayout.paper_bgcolor) fullLayout.paper_bgcolor = Plotly.Color.background;
+    gd._context.setBackground(gd, fullLayout.paper_bgcolor);
     plots.addLinks(gd);
 
     return Promise.resolve();
