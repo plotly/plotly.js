@@ -14,6 +14,8 @@ var createPlot          = require('gl-plot3d'),
     project             = require('./lib/project'),
     Plotly              = require('../plotly');
 
+var STATIC_CANVAS, STATIC_CONTEXT;
+
 function render(scene) {
 
     //Update size of svg container
@@ -102,6 +104,8 @@ function Scene(options, fullLayout) {
     this.spikeOptions     = createSpikeOptions(fullLayout[this.id]);
     this.container        = sceneContainer;
 
+    this.staticMode   = false;
+
     /*
      * WARNING!!!! Only set camera position on first call to plot!!!!
      * TODO remove this hack
@@ -119,12 +123,24 @@ function Scene(options, fullLayout) {
             autoBounds: false
     };
 
+    //For static plots, we reuse the WebGL context as WebKit doesn't collect them
+    //reliably
     if (options.staticPlot) {
+        if(!STATIC_CONTEXT) {
+            STATIC_CANVAS = document.createElement('canvas');
+            try {
+                STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
+                    preserveDrawingBuffer: true,
+                    premultipliedAlpha: true
+                });
+            } catch(e) {
+                throw new Error('error creating static canvas/context for image server')
+            }
+        }
         glplotOptions.pixelRatio = options.plot3dPixelRatio;
-        glplotOptions.glOptions = {
-            preserveDrawingBuffer: true,
-            premultipliedAlpha:true
-        };
+        glplotOptions.gl = STATIC_CONTEXT;
+        glplotOptions.canvas = STATIC_CANVAS;
+        this.staticMode = true;
     }
 
     try {
@@ -379,6 +395,9 @@ trace_id_loop:
 proto.destroy = function() {
     this.glplot.dispose();
     this.container.parentNode.removeChild(this.container);
+
+    //Remove reference to glplot
+    this.glplot = null
 };
 
 
@@ -426,6 +445,14 @@ proto.saveCamera = function saveCamera(layout) {
 proto.toImage = function (format) {
     if (!format) format = 'png';
 
+    if(this.staticMode) {
+      this.container.appendChild(STATIC_CANVAS);
+    }
+
+    //Force redraw
+    this.glplot.redraw();
+
+    //Grab context and yank out pixels
     var gl = this.glplot.gl;
     var w = gl.drawingBufferWidth;
     var h = gl.drawingBufferHeight;
@@ -465,6 +492,10 @@ proto.toImage = function (format) {
             break;
         default:
         dataURL = canvas.toDataURL('image/png');
+    }
+
+    if(this.staticMode) {
+      this.container.removeChild(STATIC_CANVAS);
     }
 
     return dataURL;

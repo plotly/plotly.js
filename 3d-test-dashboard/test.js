@@ -69,10 +69,9 @@ function plotButtons(plots) {
 
         if (!layout || !data) return;
 
-        Plotly.Lib.getSceneKeys(gd._fullLayout).forEach( function (key) {
+        Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
             var scene = gd._fullLayout[key]._scene;
             scene.destroy();
-
         });
 
         // create a fresh gd
@@ -84,32 +83,22 @@ function plotButtons(plots) {
          * Replot with staticPlot
          */
         Plotly.plot(gd, data, layout, {staticPlot: true, plot3dPixelRatio: 2}).then( function () {
+            Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
+                  var scene = gd._fullLayout[key]._scene;
+                  var dataURL = scene.toImage();
 
-            setTimeout( function () {
+                  var myImage = new Image();
+                  myImage.src = dataURL;
 
-                Plotly.Lib.getSceneKeys(gd._fullLayout).forEach( function (key) {
+                  myImage.onload = function () {
+                      myImage.height = scene.container.clientHeight;
+                      myImage.width = scene.container.clientWidth;
+                  };
 
-                    var scene = gd._fullLayout[key]._scene;
-                    var dataURL = scene.toImage();
-
-                    var myImage = new Image();
-                    myImage.src = dataURL;
-
-                    myImage.onload = function () {
-                        myImage.height = scene.container.clientHeight;
-                        myImage.width = scene.container.clientWidth;
-                    };
-
-                    image.innerHTML = '';
-                    image.appendChild(myImage);
-
-                });
-
-            }, 500);
-
-        });
-
-
+                  image.innerHTML = '';
+                  image.appendChild(myImage);
+              });
+        })
     });
 
     var pummelButton = document.createElement('button');
@@ -133,9 +122,9 @@ function plotButtons(plots) {
             plotDiv.id = 'div' + i;
             document.body.appendChild(plotDiv);
 
-            Plotly.plot(plotDiv, mock.data, mock.layout).then(function () {
+            Plotly.plot(plotDiv, mock.data, mock.layout, {staticPlot: true}).then(function () {
 
-                Plotly.Lib.getSceneKeys(plotDiv._fullLayout).forEach( function (key) {
+                Plotly.Plots.getSubplotIds(plotDiv._fullLayout, 'gl3d').forEach( function (key) {
                     var scene = plotDiv._fullLayout[key]._scene;
                     scene.destroy();
                     i ++;
