@@ -312,7 +312,7 @@ plots.adjustReservedMargins = function (gd, marginName, margins) {
 // note that now this function is only adding the brand in
 // iframes and 3rd-party apps
 function positionPlayWithData(gd,container){
-    container.text('');
+    container.text('').style({'pointer-events': 'all'});
     var link = container.append('a')
         .attr({
             'xlink:xlink:href': '#',
