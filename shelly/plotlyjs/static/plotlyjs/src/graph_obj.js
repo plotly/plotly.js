@@ -235,7 +235,8 @@ plots.addLinks = function(gd) {
         .style({
             'font-family':'"Open Sans",Arial,sans-serif',
             'font-size':'12px',
-            'fill': Plotly.Color.defaultLine
+            'fill': Plotly.Color.defaultLine,
+            'pointer-events': 'all'
         })
         .each(function(){
             var links = d3.select(this);
@@ -312,7 +313,7 @@ plots.adjustReservedMargins = function (gd, marginName, margins) {
 // note that now this function is only adding the brand in
 // iframes and 3rd-party apps
 function positionPlayWithData(gd,container){
-    container.text('').style({'pointer-events': 'all'});
+    container.text('');
     var link = container.append('a')
         .attr({
             'xlink:xlink:href': '#',
