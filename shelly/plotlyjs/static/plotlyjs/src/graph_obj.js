@@ -862,6 +862,14 @@ function cleanLayout(layout) {
 
         // prune empty domain arrays made before the new nestedProperty
         if(emptyContainer(ax, 'domain')) delete ax.domain;
+
+        // autotick -> tickmode
+        if(ax.autotick !== undefined) {
+            if(ax.tickmode === undefined) {
+                ax.tickmode = ax.autotick ? 'auto' : 'regular';
+            }
+            delete ax.autotick;
+        }
     }
 
     if(layout.annotations !== undefined && !Array.isArray(layout.annotations)) {
@@ -2508,6 +2516,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                 doextra(cont,'colorbar.len', contFull.colorbar.len *
                     (vi==='fraction' ? 1/lennorm : lennorm), i);
             }
+            else if(ai === 'colorbar.tick0' || ai === 'colorbar.dtick') {
+                doextra(cont, 'colorbar.tickmode', 'regular');
+            }
+            else if(ai === 'colorbar.tickmode') {
+                doextra(cont, ['colorbar.tick0', 'colorbar.dtick'], undefined);
+            }
 
             // save the old value
             undoit[ai][i] = param.get();
@@ -2802,11 +2816,11 @@ Plotly.relayout = function relayout (gd, astr, val) {
             parentIn = Plotly.Lib.nestedProperty(gd.layout, ptrunk).get(),
             parentFull = Plotly.Lib.nestedProperty(gd._fullLayout, ptrunk).get();
 
-        redoit[ai] = aobj[ai];
+        redoit[ai] = vi;
 
         // axis reverse is special - it is its own inverse
         // op and has no flag.
-        undoit[ai] = (pleaf === 'reverse') ? aobj[ai] : p.get();
+        undoit[ai] = (pleaf === 'reverse') ? vi : p.get();
 
         // check autosize or autorange vs size and range
         if(hw.indexOf(ai)!==-1) { doextra('autosize', false); }
@@ -2824,6 +2838,12 @@ Plotly.relayout = function relayout (gd, astr, val) {
         else if(pleafPlus.match(/^aspectmode$/)) {
             doextra([ptrunk + '.x', ptrunk + '.y', ptrunk + '.z'], undefined);
         }
+        else if(pleaf === 'tick0' || pleaf === 'dtick') {
+            doextra(ptrunk + '.tickmode', 'regular');
+        }
+        else if(pleaf === 'tickmode') {
+            doextra([ptrunk + '.tick0', ptrunk + '.dtick'], undefined);
+        }
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie are we toggling log)
         if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
@@ -2840,7 +2860,6 @@ Plotly.relayout = function relayout (gd, astr, val) {
                         doextra(ptrunk+'.autorange', true);
                     }
                     // if one is negative, set it 6 orders below the other.
-                    // TODO: find the smallest positive val?
                     if(r0 <= 0) r0 = r1/1e6;
                     else if(r1 <= 0) r1 = r0/1e6;
                     // now set the range values as appropriate

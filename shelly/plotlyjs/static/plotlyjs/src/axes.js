@@ -37,15 +37,17 @@ axes.layoutAttributes = {
         dflt: false
     },
     // ticks
-    autotick: {
-        type: 'boolean',
-        dflt: true
+    tickmode: {
+        type: 'enumerated',
+        values: ['auto', 'regular', 'enumerated']
     },
+    // nticks: only used with tickmode='auto'
     nticks: {
         type: 'integer',
         min: 0,
         dflt: 0
     },
+    // tick0, dtick: only used with tickmode='regular'
     tick0: {
         type: 'number',
         dflt: 0
@@ -54,6 +56,9 @@ axes.layoutAttributes = {
         type: 'any',
         dflt: 1
     },
+    // tickvals, ticktext: only used with tickmode='enumerated'
+    tickvals: {type: 'data_array'},
+    ticktext: {type: 'data_array'},
     ticks: {
         type: 'enumerated',
         values: ['outside', 'inside', '']
@@ -325,14 +330,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     Plotly.Lib.noneOrAll(containerIn.range, containerOut.range, [0, 1]);
     coerce('fixedrange');
 
-    var autoTick = coerce('autotick');
-    if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
-    if(autoTick) coerce('nticks');
-
-    // TODO date doesn't work yet, right? axType==='date' ? new Date(2000,0,1).getTime() : 0);
-    coerce('tick0', 0);
-    coerce('dtick');
-
+    axes.handleTickValueDefaults(containerIn, containerOut, coerce, axType);
 
     var showTicks = coerce('ticks', outerTicks ? 'outside' : '');
     if(showTicks) {
@@ -386,6 +384,30 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     }
 
     return containerOut;
+};
+
+axes.handleTickValueDefaults = function(containerIn, containerOut, coerce, axType) {
+    var tickmodeDefault = 'auto';
+    if(Array.isArray(containerIn.tickvals)) tickmodeDefault = 'enumerated';
+    else if(containerIn.tickmode === 'enumerated' ||
+            axType==='log' || axType==='date') {
+        containerIn.tickmode = 'auto';
+    }
+    else if(containerIn.tick0 !== undefined &&
+            containerIn.dtick && isNumeric(containerIn.dtick)) {
+        tickmodeDefault = 'regular';
+    }
+    var tickmode = coerce('tickmode', tickmodeDefault);
+
+    if(tickmode === 'auto') coerce('nticks');
+    else if(tickmode === 'regular') {
+        coerce('tick0', 0);
+        coerce('dtick');
+    }
+    else {
+        coerce('tickvals');
+        coerce('ticktext');
+    }
 };
 
 axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce, options) {
@@ -1244,8 +1266,10 @@ axes.autoBin = function(data,ax,nbins,is2d) {
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
 axes.calcTicks = function calcTicks (ax) {
+    if(ax.tickmode === 'enumerated') return enumeratedTicks(ax);
+
     // calculate max number of (auto) ticks to display based on plot size
-    if(ax.autotick || !ax.dtick){
+    if(ax.tickmode === 'auto' || !ax.dtick){
         var nt = ax.nticks,
             minPx;
         if(!nt) {
@@ -1307,6 +1331,37 @@ axes.calcTicks = function calcTicks (ax) {
 
     return ticksOut;
 };
+
+function enumeratedTicks(ax) {
+    var vals = ax.tickvals,
+        text = ax.ticktext,
+        ticksOut = new Array(vals.length),
+        r0expanded = ax.range[0] * 1.0001 - ax.range[1] * 0.0001,
+        r1expanded = ax.range[1] * 1.0001 - ax.range[0] * 0.0001,
+        tickMin = Math.min(r0expanded, r1expanded),
+        tickMax = Math.max(r0expanded, r1expanded),
+        vali,
+        i,
+        j = 0;
+
+
+    // without a text array, just format the given values as any other ticks
+    // except with more precision to the numbers
+    if(!Array.isArray(text)) text = [];
+
+    for(i = 0; i < vals.length; i++) {
+        vali = ax.d2l(vals[i]);
+        if(vali > tickMin && vali < tickMax) {
+            if(text[i] === undefined) ticksOut[j] = axes.tickText(ax, vali);
+            else ticksOut[j] = tickTextObj(ax, vali, String(text[i]));
+            j++;
+        }
+    }
+
+    if(j < vals.length) ticksOut.splice(j, vals.length - j);
+
+    return ticksOut;
+}
 
 // autoTicks: calculate best guess at pleasant ticks for this axis
 // inputs:
@@ -1582,20 +1637,19 @@ function modDateFormat(fmt,x) {
 // ax is the axis layout, x is the tick value
 // hover is a (truthy) flag for whether to show numbers with a bit
 // more precision for hovertext - and return just the text
+// TODO: if hover, also look to see if there's a ticktext for this x, and use that
 axes.tickText = function(ax, x, hover){
-    var tf = ax.tickfont || ax._td._fullLayout.font,
+    var out = tickTextObj(ax, x),
         tr = ax._tickround,
         dt = ax.dtick,
-        fontSize = tf.size,
-        px = 0,
-        py = 0,
         // completes the full date info, to be included
         // with only the first tick
         suffix = '',
         tt,
         hideexp,
         hideprefix,
-        hidesuffix;
+        hidesuffix,
+        extraPrecision = hover || (ax.tickmode === 'enumerated');
 
     function isHidden(showAttr) {
         var first_or_last;
@@ -1628,7 +1682,7 @@ axes.tickText = function(ax, x, hover){
             // precision to the hover text?
         }
         else {
-            if(hover) {
+            if(extraPrecision) {
                 if(isNumeric(tr)) tr+=2;
                 else tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr];
             }
@@ -1666,21 +1720,21 @@ axes.tickText = function(ax, x, hover){
             var p = Math.round(x);
             if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
                 tt = (p===0) ? '1': (p===1) ? '10' : '10'+String(p).sup();
-                fontSize *= 1.25;
+                out.fontSize *= 1.25;
             }
             else {
                 tt = numFormat(Math.pow(10,x), ax,'','fakehover');
                 if(dt==='D1' && ax._id.charAt(0)==='y') {
-                    py-=fontSize/6;
+                    out.dy -= out.fontSize/6;
                 }
             }
         }
         else if(dt.charAt(0)==='D') {
             tt = Math.round(Math.pow(10,mod(x,1)));
-            fontSize *= 0.75;
+            out.fontSize *= 0.75;
         }
         else if(dt.charAt(0)==='L') {
-            tt=numFormat(Math.pow(10,x),ax,hideexp, hover);
+            tt = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
         }
         else throw 'unrecognized dtick '+String(dt);
     }
@@ -1696,17 +1750,17 @@ axes.tickText = function(ax, x, hover){
         if(ax.showexponent==='all' && Math.abs(x/dt)<1e-6) {
             hideexp = 'hide';
         }
-        tt=numFormat(x,ax,hideexp,hover);
+        tt = numFormat(x, ax, hideexp, extraPrecision);
     }
     // if 9's are printed on log scale, move the 10's away a bit
     if((ax.dtick==='D1') && (['0','1'].indexOf(String(tt).charAt(0))!==-1)){
         if(ax._id.charAt(0)==='y') {
-            px -= fontSize/4;
+            out.dx -= out.fontSize/4;
         }
         else {
-            py+=fontSize/2;
-            px+=(ax.range[1]>ax.range[0] ? 1 : -1) *
-                fontSize * (x<0 ? 0.5 : 0.25);
+            out.dy += out.fontSize/2;
+            out.dx += (ax.range[1]>ax.range[0] ? 1 : -1) *
+                out.fontSize * (x<0 ? 0.5 : 0.25);
         }
     }
 
@@ -1721,16 +1775,23 @@ axes.tickText = function(ax, x, hover){
     // with a true minus sign
     if(ax.type!=='category') tt = tt.replace(/-/g,'\u2212');
 
+    out.text = tt;
+    return out;
+};
+
+function tickTextObj(ax, x, text) {
+    var tf = ax.tickfont || ax._td._fullLayout.font;
+
     return {
-        x:x,
-        dx:px,
-        dy:py,
-        text:tt,
-        fontSize: fontSize,
+        x: x,
+        dx: 0,
+        dy: 0,
+        text: text || '',
+        fontSize: tf.size,
         font: tf.family,
         fontColor: tf.color
     };
-};
+}
 
 // format a number (tick value) according to the axis settings
 // new, more reliable procedure than d3.round or similar:
@@ -1758,7 +1819,7 @@ function numFormat(v,ax,fmtoverride,hover) {
             range: ax.showexponent==='none' ? ax.range : [0,v||1]
         };
         autoTickRound(ah);
-        r = (Number(ah._tickround)||0)+2;
+        r = (Number(ah._tickround) || 0) + 4;
         d = ah._tickexponent;
     }
 
