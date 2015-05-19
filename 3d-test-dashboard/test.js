@@ -8,7 +8,6 @@ var gd = null;
 
 anchor.style.position = 'relative';
 anchor.style.top = '80px';
-
 anchor.style.height = '600px';
 anchor.style.width = '1000px';
 
@@ -37,7 +36,6 @@ function plotButtons(plots) {
 
             anchor.innerHTML = '';
 
-            // create a fresh gd
             gd = document.createElement('div');
             anchor.appendChild(gd);
 
@@ -47,6 +45,99 @@ function plotButtons(plots) {
 
         });
     });
+
+    var snapshot = document.createElement('button');
+
+    snapshot.style.cssFloat = 'left';
+    snapshot.style.width = '100px';
+    snapshot.style.height = '40px';
+    snapshot.style.marginLeft = '25px';
+    snapshot.innerHTML = 'snapshot';
+    snapshot.style.background = 'blue';
+
+    plotlist.appendChild(snapshot);
+
+    snapshot.addEventListener('click', function () {
+
+        /*
+         * Grab the currently loaded plot and make an image - replacing the plot.
+         */
+        if (!gd) return;
+
+        var layout = gd.layout;
+        var data = gd.data;
+
+        if (!layout || !data) return;
+
+        Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
+            var scene = gd._fullLayout[key]._scene;
+            scene.destroy();
+        });
+
+        // create a fresh gd
+        anchor.innerHTML = '';
+        gd = document.createElement('div');
+        anchor.appendChild(gd);
+
+        /*
+         * Replot with staticPlot
+         */
+        Plotly.plot(gd, data, layout, {staticPlot: true, plot3dPixelRatio: 2}).then( function () {
+            Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
+                  var scene = gd._fullLayout[key]._scene;
+                  var dataURL = scene.toImage();
+
+                  var myImage = new Image();
+                  myImage.src = dataURL;
+
+                  myImage.onload = function () {
+                      myImage.height = scene.container.clientHeight;
+                      myImage.width = scene.container.clientWidth;
+                  };
+
+                  image.innerHTML = '';
+                  image.appendChild(myImage);
+              });
+        })
+    });
+
+    var pummelButton = document.createElement('button');
+    pummelButton.style.cssFloat = 'left';
+    pummelButton.style.width = '100px';
+    pummelButton.style.height = '40px';
+    pummelButton.style.marginLeft = '25px';
+    pummelButton.innerHTML = 'pummel3d';
+    pummelButton.style.background = 'blue';
+    plotlist.appendChild(pummelButton);
+
+    var i = 0;
+    var mock = require('./testplots/marker-color.json');
+    var statusDiv = document.getElementById('status-info');
+
+    pummelButton.addEventListener('click', function () {
+        setInterval(function () {
+            var plotDiv = document.createElement('div');
+            window.plotDiv = plotDiv;
+
+            plotDiv.id = 'div' + i;
+            document.body.appendChild(plotDiv);
+
+            Plotly.plot(plotDiv, mock.data, mock.layout, {staticPlot: true}).then(function () {
+
+                Plotly.Plots.getSubplotIds(plotDiv._fullLayout, 'gl3d').forEach( function (key) {
+                    var scene = plotDiv._fullLayout[key]._scene;
+                    scene.destroy();
+                    i ++;
+                    statusDiv.innerHTML = 'Created ' + i + ' webgl contexts.';
+                });
+
+                document.body.removeChild(plotDiv);
+            });
+
+        }, 500);
+    });
+
+
 }
 
 var plots = {};
@@ -65,5 +156,9 @@ plots['opacity-surface'] = require('./testplots/opacity-surface.json');
 plots['projection-traces'] = require('./testplots/projection-traces.json');
 plots['opacity-scaling-spikes'] = require('./testplots/opacity-scaling-spikes.json');
 plots['text-weirdness'] = require('./testplots/text-weirdness.json');
+plots['wire-surface'] = require('./testplots/wire-surface.json');
+plots['triangle-mesh3d'] = require('./testplots/triangle.json');
+plots['snowden'] = require('./testplots/snowden.json');
+plots['bunny'] = require('./testplots/bunny.json');
 
 plotButtons(plots);
