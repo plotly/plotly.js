@@ -1,6 +1,6 @@
 // common library functions, mostly for plotting but used elsewhere too
 'use strict';
-// TODO: can use camelcase after fixing conf_modal and showSources
+// TODO: can use camelcase after fixing showSources
 /* jshint camelcase: false */
 
 // ---global functions not yet namespaced
@@ -11,7 +11,8 @@
 
 var lib = module.exports = {},
     Plotly = require('./plotly'),
-    tinycolor = require('tinycolor2');
+    tinycolor = require('tinycolor2'),
+    isNumeric = require('./isnumeric');
 
 /**
  * dateTime2ms - turn a date object or string s of the form
@@ -67,7 +68,7 @@ lib.dateTime2ms = function(s) {
         y = ((Number(p[0]) - yNow + 70)%100 + 200)%100 + yNow - 70;
     }
     else return false;
-    if (!$.isNumeric(y)) return false;
+    if (!isNumeric(y)) return false;
     if (p.length === 1) return new Date(y,0,1).getTime(); // year only
 
     // month
@@ -337,11 +338,11 @@ lib.parseDate = function(v) {
  * search linelow (truthy) says the bin boundary should be attributed to
  * the lower bin rather than the default upper bin
  */
-lib.findBin = function(val,bins,linelow) {
-    if($.isNumeric(bins.start)) {
+lib.findBin = function(val, bins, linelow) {
+    if(isNumeric(bins.start)) {
         return linelow ?
-            Math.ceil((val-bins.start)/bins.size)-1 :
-            Math.floor((val-bins.start)/bins.size);
+            Math.ceil((val - bins.start) / bins.size) - 1 :
+            Math.floor((val - bins.start) / bins.size);
     }
     else {
         var n1 = 0,
@@ -349,24 +350,26 @@ lib.findBin = function(val,bins,linelow) {
             c = 0,
             n,
             test;
-        if(bins[bins.length-1]>bins[0]) {
-            test = linelow ? function(a,b){return a<b;} :
-                function(a,b){return a<=b;};
-        }
-        else{
-            test = linelow ? function(a,b){return a>=b;} :
-                function(a,b){return a>b;};
+        if(bins[bins.length - 1] > bins[0]) {
+            test = linelow ? lessThan : lessOrEqual;
+        } else {
+            test = linelow ? greaterOrEqual : greaterThan;
         }
         // c is just to avoid infinite loops if there's an error
-        while(n1<n2 && c++<100){
-            n=Math.floor((n1+n2)/2);
-            if(test(bins[n],val)) { n1=n+1; }
-            else { n2=n; }
+        while(n1 < n2 && c++ < 100){
+            n = Math.floor((n1 + n2) / 2);
+            if(test(bins[n], val)) n1 = n + 1;
+            else n2 = n;
         }
-        if(c>90) { console.log('Long binary search...'); }
-        return n1-1;
+        if(c > 90) console.log('Long binary search...');
+        return n1 - 1;
     }
 };
+
+function lessThan(a, b) { return a < b; }
+function lessOrEqual(a, b) { return a <= b; }
+function greaterThan(a, b) { return a > b; }
+function greaterOrEqual(a, b) { return a >= b; }
 
 /**
  * find distinct values in an array, lumping together ones that appear to
@@ -375,43 +378,43 @@ lib.findBin = function(val,bins,linelow) {
  */
 lib.distinctVals = function(valsIn) {
     var vals = valsIn.slice(); // otherwise we sort the original array...
-    vals.sort(function(a,b){ return a-b; });
-    var l = vals.length-1,
-        minDiff = (vals[l]-vals[0])||1,
-        errDiff = minDiff/(l||1)/10000,
-        v2=[vals[0]];
-    for(var i=0;i<l;i++) {
+    vals.sort(function(a, b){ return a - b; });
+    var l = vals.length - 1,
+        minDiff = (vals[l] - vals[0]) || 1,
+        errDiff = minDiff / (l || 1) / 10000,
+        v2 = [vals[0]];
+    for(var i = 0; i < l; i++) {
         // make sure values aren't just off by a rounding error
-        if(vals[i+1]>vals[i]+errDiff) {
-            minDiff=Math.min(minDiff,vals[i+1]-vals[i]);
-            v2.push(vals[i+1]);
+        if(vals[i + 1] > vals[i] + errDiff) {
+            minDiff = Math.min(minDiff, vals[i + 1] - vals[i]);
+            v2.push(vals[i + 1]);
         }
     }
-    return {vals:v2,minDiff:minDiff};
+    return {vals: v2, minDiff: minDiff};
 };
 
 /**
- * return the smallest element from (sorted) array a that's bigger than val,
+ * return the smallest element from (sorted) array arrayIn that's bigger than val,
  * or (reverse) the largest element smaller than val
  * used to find the best tick given the minimum (non-rounded) tick
  * particularly useful for date/time where things are not powers of 10
  * binary search is probably overkill here...
  */
-lib.roundUp = function(v,a,reverse){
-    var l = 0,
-        h = a.length-1,
-        m,
+lib.roundUp = function(val, arrayIn, reverse){
+    var low = 0,
+        high = arrayIn.length - 1,
+        mid,
         c = 0,
-        dl = reverse ? 0 : 1,
-        dh = reverse ? 1 : 0,
-        r = reverse ? Math.ceil : Math.floor;
+        dlow = reverse ? 0 : 1,
+        dhigh = reverse ? 1 : 0,
+        rounded = reverse ? Math.ceil : Math.floor;
     // c is just to avoid infinite loops if there's an error
-    while(l<h && c++<100){
-        m = r((l+h)/2);
-        if(a[m]<=v) { l = m+dl; }
-        else { h = m-dh; }
+    while(low < high && c++ < 100){
+        mid = rounded((low + high) / 2);
+        if(arrayIn[mid] <= val) low = mid + dlow;
+        else high = mid - dhigh;
     }
-    return a[l];
+    return arrayIn[low];
 };
 
 /**
@@ -429,7 +432,7 @@ lib.roundUp = function(v,a,reverse){
  * but you can do nestedProperty(obj, 'arr').set([5, 5, 5])
  */
 lib.nestedProperty = function(container, propStr) {
-    if($.isNumeric(propStr)) propStr = String(propStr);
+    if(isNumeric(propStr)) propStr = String(propStr);
     else if(typeof propStr !== 'string' ||
             propStr.substr(propStr.length - 4) === '[-1]') {
         throw 'bad property string';
@@ -681,13 +684,13 @@ lib.swapXYAttrs = function(cont,attrList) {
 lib.pauseEvent = function(e){
     if(e.stopPropagation) e.stopPropagation();
     if(e.preventDefault) e.preventDefault();
-    e.cancelBubble=true;
+    e.cancelBubble = true;
     return false;
 };
 
 // pad a number with zeroes, to given # of digits before the decimal point
-lib.lpad = function(val,digits){
-    return String(val+Math.pow(10,digits)).substr(1);
+lib.lpad = function(val, digits){
+    return String(val + Math.pow(10, digits)).substr(1);
 };
 
 // STATISTICS FUNCTIONS
@@ -706,18 +709,19 @@ lib.lpad = function(val,digits){
  * @return {Number} - result of f applied to a starting from v
  */
 lib.aggNums = function(f, v, a, len) {
-    var i;
+    var i,
+        b;
     if (!len) len = a.length;
-    if (!$.isNumeric(v)) v = false;
+    if (!isNumeric(v)) v = false;
     if (Array.isArray(a[0])) {
-        a = a.map(function(row) {
-            return lib.aggNums(f,v,row);
-        });
+        b = new Array(len);
+        for(i = 0; i < len; i++) b[i] = lib.aggNums(f, v, a[i]);
+        a = b;
     }
 
     for (i = 0; i < len; i++) {
-        if (!$.isNumeric(v)) v = a[i];
-        else if ($.isNumeric(a[i])) v = f(+v, +a[i]);
+        if (!isNumeric(v)) v = a[i];
+        else if (isNumeric(a[i])) v = f(+v, +a[i]);
     }
     return v;
 };
@@ -727,36 +731,25 @@ lib.aggNums = function(f, v, a, len) {
  * even need to use aggNums instead of .length, to toss out non-numerics
  */
 lib.len = function(data) {
-    return lib.aggNums(function(a){return a+1;},0,data);
+    return lib.aggNums(function(a){ return a + 1; }, 0, data);
 };
 
-lib.mean = function(data,len) {
-    if(!len) { len = lib.len(data); }
-    return lib.aggNums(function(a,b){return a+b;},0,data)/len;
+lib.mean = function(data, len) {
+    if(!len) len = lib.len(data);
+    return lib.aggNums(function(a, b){ return a + b; }, 0, data) / len;
 };
 
 lib.variance = function(data, len, mean) {
     if (!len) len = lib.len(data);
-    if (!$.isNumeric(mean)) {
-        mean = lib.aggNums(function(a, b) {
-            return a + b;
-        }, 0, data)/len;
-    }
+    if (!isNumeric(mean)) mean = lib.mean(data, len);
+
     return lib.aggNums(function(a, b) {
-        return a + Math.pow(b-mean, 2);
+        return a + Math.pow(b - mean, 2);
     }, 0, data)/len;
 };
 
 lib.stdev = function(data, len, mean) {
-    if (!len) len = lib.len(data);
-    if (!$.isNumeric(mean)) {
-        mean = lib.aggNums(function(a, b) {
-            return a + b;
-        }, 0, data)/len;
-    }
-    return Math.sqrt(lib.aggNums(function(a, b) {
-        return a + Math.pow(b-mean, 2);
-    }, 0, data)/len);
+    return Math.sqrt(lib.variance(data, len, mean));
 };
 
 /**
@@ -775,13 +768,12 @@ lib.stdev = function(data, len, mean) {
  * @return {Number} - percentile
  */
 lib.interp = function(arr, n) {
-    if (!$.isNumeric(n)) throw "n should be a finite number";
-    n = n * arr.length;
-    n -= 0.5;
+    if (!isNumeric(n)) throw 'n should be a finite number';
+    n = n * arr.length - 0.5;
     if (n < 0) return arr[0];
-    if (n > arr.length-1) return arr[arr.length-1];
-    var frac = n%1;
-    return frac * arr[Math.ceil(n)] + (1-frac) * arr[Math.floor(n)];
+    if (n > arr.length - 1) return arr[arr.length - 1];
+    var frac = n % 1;
+    return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
 /**
@@ -798,9 +790,7 @@ lib.TIMER = new Date().getTime();
 
 // console.log that only runs if VERBOSE is on
 lib.log = function(){
-    if(lib.VERBOSE){
-        console.log.apply(console,arguments);
-    }
+    if(lib.VERBOSE) console.log.apply(console, arguments);
 };
 
 /**
@@ -808,17 +798,17 @@ lib.log = function(){
  * since the previous call to markTime and log arbitrary info too
  */
 lib.markTime = function(v){
-    if(!lib.VERBOSE) { return; }
+    if(!lib.VERBOSE) return;
     var t2 = new Date().getTime();
-    console.log(v,t2-lib.TIMER,'(msec)');
-    if(lib.VERBOSE==='trace') { console.trace(); }
-    lib.TIMER=t2;
+    console.log(v, t2 - lib.TIMER, '(msec)');
+    if(lib.VERBOSE === 'trace') console.trace();
+    lib.TIMER = t2;
 };
 
 // constrain - restrict a number v to be between v0 and v1
-lib.constrain = function(v,v0,v1) {
-    if(v0>v1) return Math.max(v1,Math.min(v0,v));
-    return Math.max(v0,Math.min(v1,v));
+lib.constrain = function(v, v0, v1) {
+    if(v0 > v1) return Math.max(v1, Math.min(v0, v));
+    return Math.max(v0, Math.min(v1, v));
 };
 
 /**
@@ -828,31 +818,59 @@ lib.constrain = function(v,v0,v1) {
  *          or 'long' which provides 2000 ms delay time.
  * @return {undefined} this function does not return a value
  */
+var NOTEDATA = [];
 lib.notifier = function(text, displayLength) {
 
-    var ts;
-    if ($.isNumeric(displayLength)) ts = displayLength;
-    else if (displayLength === 'long') ts = 2000;
-    else ts = 1000;
+    if(NOTEDATA.indexOf(text) !== -1) return;
 
-    var notifierContainer = $('.notifier-container');
-    if(!notifierContainer.length) {
-        notifierContainer = $('<div class="notifier-container"></div>')
-            .appendTo('#tabs-one-line,#embedded-graph');
+    NOTEDATA.push(text);
+
+    var ts = 1000;
+    if (isNumeric(displayLength)) ts = displayLength;
+    else if (displayLength === 'long') ts = 3000;
+
+    var notifierContainer = d3.select('body')
+        .selectAll('.plotly-notifier')
+        .data([0]);
+    notifierContainer.enter()
+        .append('div')
+        .classed('plotly-notifier', true);
+
+    var notes = notifierContainer.selectAll('.notifier-note').data(NOTEDATA);
+
+    function killNote(transition) {
+        transition
+            .duration(700)
+            .style('opacity', 0)
+            .each('end', function(thisText) {
+                var thisIndex = NOTEDATA.indexOf(thisText);
+                if(thisIndex !== -1) NOTEDATA.splice(thisIndex, 1);
+                d3.select(this).remove();
+            });
     }
 
-    if( $('div.notifier').text().indexOf(text) > 0 ) return;
+    notes.enter().append('div')
+        .classed('notifier-note', true)
+        .style('opacity', 0)
+        .each(function(thisText) {
+            var note = d3.select(this);
 
-    var n = $('<div class="notifier" style="display:none;">'+
-        '<button class="notifier__close close" data-dismiss="alert">'+
-            '&times;'+
-        '</button>'+
-        '<p class="push-half">'+text+'</p></div>');
+            note.append('button')
+                .classed('notifier-close', true)
+                .html('&times;')
+                .on('click', function() {
+                    note.transition().call(killNote);
+                });
 
-    n.appendTo(notifierContainer)
-        .fadeIn(700)
-        .delay(ts)
-        .fadeOut(700,function(){ n.remove(); });
+            note.append('p').html(thisText);
+
+            note.transition()
+                    .duration(700)
+                    .style('opacity', 1)
+                .transition()
+                    .delay(ts)
+                    .call(killNote);
+        });
 };
 
 /**
@@ -860,16 +878,16 @@ lib.notifier = function(text, displayLength) {
  * ie {left,right,top,bottom,width,height}, overlap?
  * takes optional padding pixels
  */
-lib.bBoxIntersect = function(a,b,pad){
-    pad = pad||0;
-    return (a.left<=b.right+pad &&
-            b.left<=a.right+pad &&
-            a.top<=b.bottom+pad &&
-            b.top<=a.bottom+pad);
+lib.bBoxIntersect = function(a, b, pad){
+    pad = pad || 0;
+    return (a.left <= b.right + pad &&
+            b.left <= a.right + pad &&
+            a.top <= b.bottom + pad &&
+            b.top <= a.bottom + pad);
 };
 
 // minor convenience/performance booster for d3...
-lib.identity = function(d){ return d; };
+lib.identity = function(d) { return d; };
 
 // random string generator
 lib.randstr = function randstr(existing, bits, base) {
@@ -880,16 +898,18 @@ lib.randstr = function randstr(existing, bits, base) {
     if (!base) base = 16;
     if (bits === undefined) bits = 24;
     if (bits <= 0) return '0';
-    var i,b,x;
 
-    var digits = Math.log(Math.pow(2, bits)) / Math.log(base);
+    var digits = Math.log(Math.pow(2, bits)) / Math.log(base),
+        res = '',
+        i,
+        b,
+        x;
+
     for (i = 2; digits === Infinity; i *= 2) {
         digits = Math.log(Math.pow(2, bits / i)) / Math.log(base) * i;
     }
 
     var rem = digits - Math.floor(digits);
-
-    var res = '';
 
     for (i = 0; i < Math.floor(digits); i++) {
         x = Math.floor(Math.random() * base).toString(base);
@@ -921,8 +941,8 @@ lib.OptionControl = function(opt, optname) {
      *
      * See FitOpts for example of usage
      */
-    if (!opt) { opt = {}; }
-    if (!optname) { optname = 'opt'; }
+    if (!opt) opt = {};
+    if (!optname) optname = 'opt';
 
     var self = {};
     self.optionList = [];
@@ -943,33 +963,48 @@ lib.OptionControl = function(opt, optname) {
  * bounce the ends in, so the output has the same length as the input
  */
 lib.smooth = function(arrayIn, FWHM) {
-    var w = [], arrayOut = [], i, j, k, v;
+    FWHM = Math.round(FWHM) || 0; // only makes sense for integers
+    if(FWHM < 2) return arrayIn;
 
-    FWHM = Math.round(FWHM); // only makes sense for integers
-    if(FWHM<2) { return arrayIn; }
+    var alen = arrayIn.length,
+        alen2 = 2 * alen,
+        wlen = 2 * FWHM - 1,
+        w = new Array(wlen),
+        arrayOut = new Array(alen),
+        i,
+        j,
+        k,
+        v;
 
     // first make the window array
-    for(i=1; i<2*FWHM; i++) {
-        w.push((1-Math.cos(Math.PI*i/FWHM))/(2*FWHM));
+    for(i = 0; i < wlen; i++) {
+        w[i] = (1 - Math.cos(Math.PI * (i + 1) / FWHM)) / (2 * FWHM);
     }
 
     // now do the convolution
-    var wlen = w.length, alen = arrayIn.length;
-    for(i=0; i<alen; i++) {
+    for(i = 0; i < alen; i++) {
         v = 0;
-        for(j=0; j<wlen; j++) {
-            k = i+j+1-FWHM;
-            if(k<0) { k = -1-k; }
-            else if(k>=alen) { k = 2*alen-1-k; }
-            v += arrayIn[k]*w[j];
+        for(j = 0; j < wlen; j++) {
+            k = i + j + 1 - FWHM;
+
+            // multibounce
+            if(k < -alen) k -= alen2 * Math.round(k / alen2);
+            else if(k >= alen2) k -= alen2 * Math.floor(k / alen2);
+
+            // single bounce
+            if(k < 0) k = - 1 - k;
+            else if(k >= alen) k = alen2 - 1 - k;
+
+            v += arrayIn[k] * w[j];
         }
-        arrayOut.push(v);
+        arrayOut[i] = v;
     }
+
     return arrayOut;
 };
 
 lib.getSources = function(td) {
-    var extrarefs = (td.ref_fids||[]).join(',');
+    var extrarefs = (td.ref_fids || []).join(',');
     if(!td.fid && !extrarefs) return;
     if(!window.PLOTLYENV || !window.PLOTLYENV.DOMAIN_WEBAPP) return;
 
@@ -993,19 +1028,19 @@ lib.showSources = function(td) {
     }
     var container = d3.select(td).select('.js-sourcelinks'),
         extsources = allsources.filter(function(v){
-            return $.isNumeric(v.ref_fid);
+            return isNumeric(v.ref_fid);
         }),
         firstsource = extsources[0] || allsources[0];
     container.text('');
     td.shouldshowsources = false;
     // no sources at all? quit
-    if(!firstsource) { return; }
+    if(!firstsource) return;
 
     // find number of unique internal and external sources
     var extobj = {}, plotlyobj = {};
     extsources.forEach(function(v){ extobj[v.url] = 1; });
     allsources.forEach(function(v){
-        if(!$.isNumeric(v.ref_fid)){ plotlyobj[v.ref_fid] = 1; }
+        if(!isNumeric(v.ref_fid)) plotlyobj[v.ref_fid] = 1;
     });
 
     var fidparts = String(firstsource.ref_fid).split(':'),
@@ -1029,10 +1064,10 @@ lib.showSources = function(td) {
          * they can hide them...
          * but you can always see them by going to the grid
          */
-        if(td.layout.hidesources) { return; }
+        if(td.layout.hidesources) return;
         container.append('tspan').text('Source: ');
         mainlink = container.append('a').attr({'xlink:xlink:href':'#'});
-        if($.isNumeric(firstsource.ref_fid)) {
+        if(isNumeric(firstsource.ref_fid)) {
             mainlink.attr({
                 'xlink:xlink:show':'new',
                 'xlink:xlink:href':firstsource.ref_url
@@ -1062,7 +1097,7 @@ lib.showSources = function(td) {
             'href':'#',
             'class': 'link--impt'
         });
-        if($.isNumeric(firstsource.ref_fid)) {
+        if(isNumeric(firstsource.ref_fid)) {
             mainlink.attr({
                 'target':'_blank',
                 'href':firstsource.ref_url
@@ -1072,24 +1107,25 @@ lib.showSources = function(td) {
         if(allsources.length>1) {
             container.append('span').text(' - ');
             extraslink = container.append('a')
-            .attr({ href:'#' })
-            .classed('link--impt',true);
+                .attr({href: '#'})
+                .classed('link--impt', true);
         }
     }
 
     mainlink.text(firstsource.ref_filename);
 
     function pullSource(){
-        pullf({fid:firstsource.ref_fid});
+        pullf({fid: firstsource.ref_fid});
         return false;
     }
 
     function fullSourcing(){
-        var sourceModal = $('#sourceModal');
-        var sourceViewer = sourceModal.find('#source-viewer').empty();
+        var sourceModal = $('#sourceModal'),
+            sourceViewer = sourceModal.find('#source-viewer').empty();
+
         sourceViewer.data('jsontree', '')
             .jsontree(JSON.stringify(sourceObj),
-                {terminators:false, collapsibleOuter:false})
+                {terminators: false, collapsibleOuter: false})
             .show();
         if(workspace) {
             sourceModal.find('[data-fid]').click(function(){
@@ -1103,7 +1139,7 @@ lib.showSources = function(td) {
                 fidparts = $(this).attr('data-fid').split(':');
                 $(this).attr({href:'/~'+fidparts[0]+'/'+fidparts[1]});
             });
-            if(window.self!==window.top) {
+            if(window.self !== window.top) {
                 // in an iframe: basically fill the frame
                 sourceModal.css({
                     left: '10px',
@@ -1126,32 +1162,32 @@ lib.showSources = function(td) {
         return false;
     }
 
-    if(!isplot || workspace) {
-        mainlink.on('click',pullSource);
-    }
-    if(extraslink) {
-        extraslink.text('Full list')
-            .on('click',fullSourcing);
-    }
+    if(!isplot || workspace) mainlink.on('click', pullSource);
+
+    if(extraslink) extraslink.text('Full list').on('click', fullSourcing);
 
     function makeSourceObj(container, refByUid) {
-        if(cnt<0) { console.log('infinite loop?'); return container; }
+        if(cnt < 0) {
+            console.log('infinite loop?');
+            return container;
+        }
         cnt--;
+
         allsources.forEach(function(src){
-            if(src.ref_by_uid===refByUid) {
+            if(src.ref_by_uid === refByUid) {
                 var linkval;
-                if($.isNumeric(src.ref_fid)) {
-                    linkval = '<a href="'+src.ref_url+'" target="_blank">'+
-                        src.ref_filename+'</a>';
+                if(isNumeric(src.ref_fid)) {
+                    linkval = '<a href="' + src.ref_url + '" target="_blank">' +
+                        src.ref_filename + '</a>';
                 }
                 else {
                     var refUser = src.ref_fid.split(':')[0],
-                        fn = (refUser!==window.user ? refUser+': ' : '') +
+                        fn = (refUser !== window.user ? refUser + ': ' : '') +
                             src.ref_filename;
-                    linkval = '<a href="#" data-fid="'+src.ref_fid+'">'+
-                        fn+'</a>';
+                    linkval = '<a href="#" data-fid="' + src.ref_fid + '">'+
+                        fn + '</a>';
                 }
-                container[linkval] = makeSourceObj({},src.uid);
+                container[linkval] = makeSourceObj({}, src.uid);
             }
         });
         return container;
@@ -1187,40 +1223,40 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
     var ret, fni;
 
     function continueAsync(){
-        lib.markTime('async done '+fni.name);
+        lib.markTime('async done ' + fni.name);
         return lib.syncOrAsync(sequence, arg, finalStep);
     }
     while(sequence.length) {
-        fni = sequence.splice(0,1)[0];
+        fni = sequence.splice(0, 1)[0];
         ret = fni(arg);
         // lib.markTime('done calling '+fni.name)
         if(ret && ret.then) {
             return ret.then(continueAsync)
-                .then(undefined,lib.promiseError);
+                .then(undefined, lib.promiseError);
         }
-        lib.markTime('sync done '+fni.name);
+        lib.markTime('sync done ' + fni.name);
     }
 
     return finalStep && finalStep(arg);
 };
 
 /**
- * transpose function inspired by
+ * transpose a (possibly ragged) 2d array z. inspired by
  * http://stackoverflow.com/questions/17428587/
  * transposing-a-2d-array-in-javascript
  */
 lib.transposeRagged = function(z) {
-    // Transposes a (possibly ragged) 2d array z.
-    var maxlen = 0;
+    var maxlen = 0,
+        zlen = z.length,
+        i,
+        j;
     // Maximum row length:
-    for (var i = 0; i < z.length; i++) maxlen = Math.max(maxlen, z[i].length);
+    for (i = 0; i < zlen; i++) maxlen = Math.max(maxlen, z[i].length);
 
-    var t = [];
-    for (var x = 0; x < maxlen; x++) {
-        t[x] = [];
-        for (var y = 0; y < z.length; y++) {
-            t[x][y] = z[y][x];
-        }
+    var t = new Array(maxlen);
+    for (i = 0; i < maxlen; i++) {
+        t[i] = new Array(zlen);
+        for (j = 0; j < zlen; j++) t[i][j] = z[j][i];
     }
 
     return t;
@@ -1228,40 +1264,30 @@ lib.transposeRagged = function(z) {
 
 // our own dot function so that we don't need to include numeric
 lib.dot = function(x, y) {
-    if (!(x.length && y.length) || x.length !== y.length) {
-        return null;
-    }
-    if (x.length === 0) {
-        return x;
-    }
+    if (!(x.length && y.length) || x.length !== y.length) return null;
 
-    // two-arg zip
-    function zip(x,y) {
-        var ret = [];
-        for (var i = 0; i < x.length; ++i)
-            ret = ret.concat([[x[i], y[i]]]);
-        return ret;
+    var len = x.length,
+        out,
+        i;
+
+    if(x[0].length) {
+        // mat-vec or mat-mat
+        out = new Array(len);
+        for(i = 0; i < len; i++) out[i] = lib.dot(x[i], y);
     }
-
-    function sumSqr(a,x) { return a + x[0]*x[1]; }
-    function vecMat(y) { return lib.dot(x, y); }
-    function matVec(x) { return lib.dot(x, y); }
-
-    // dot itself
-    if (!x[0].length) {
-        if (!y[0].length) {
-            // vec-vec
-            return zip(x, y).reduce(sumSqr, 0);
-        }
-        else {
-            // vec-mat
-            return lib.transposeRagged(y).map(vecMat);
-        }
+    else if(y[0].length) {
+        // vec-mat
+        var yTranspose = lib.transposeRagged(y);
+        out = new Array(yTranspose.length);
+        for(i = 0; i < yTranspose.length; i++) out[i] = lib.dot(x, yTranspose[i]);
     }
     else {
-        // mat-vec or mat-mat
-        return x.map(matVec);
+        // vec-vec
+        out = 0;
+        for(i = 0; i < len; i++) out += x[i] * y[i];
     }
+
+    return out;
 };
 
 
@@ -1296,7 +1322,7 @@ lib.apply2DTransform = function(transform) {
             args = args[0];
         }//from map
         var xy = arguments.length === 1 ? args[0] : [args[0], args[1]];
-        return lib.dot(transform, [xy[0], xy[1], 1]).slice(0,2);
+        return lib.dot(transform, [xy[0], xy[1], 1]).slice(0, 2);
     };
 };
 
@@ -1304,7 +1330,7 @@ lib.apply2DTransform = function(transform) {
 lib.apply2DTransform2 = function(transform) {
     var at = lib.apply2DTransform(transform);
     return function(xys) {
-        return at(xys.slice(0,2)).concat(at(xys.slice(2,4)));
+        return at(xys.slice(0, 2)).concat(at(xys.slice(2, 4)));
     };
 };
 
@@ -1313,9 +1339,7 @@ lib.apply2DTransform2 = function(transform) {
  * http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
  */
 lib.stripTrailingSlash = function (str) {
-    if (str.substr(-1) === '/') {
-        return str.substr(0, str.length - 1);
-    }
+    if (str.substr(-1) === '/') return str.substr(0, str.length - 1);
     return str;
 };
 
@@ -1350,7 +1374,7 @@ var coerceIt = {
         else propOut.set(dflt);
     },
     number: function(v, propOut, dflt, opts) {
-        if(!$.isNumeric(v) ||
+        if(!isNumeric(v) ||
                 (opts.min!==undefined && v<opts.min) ||
                 (opts.max!==undefined && v>opts.max)) {
             propOut.set(dflt);
@@ -1358,7 +1382,7 @@ var coerceIt = {
         else propOut.set(+v);
     },
     integer: function(v, propOut, dflt, opts) {
-        if(v%1 || !$.isNumeric(v) ||
+        if(v%1 || !isNumeric(v) ||
                 (opts.min!==undefined && v<opts.min) ||
                 (opts.max!==undefined && v>opts.max)) {
             propOut.set(dflt);
@@ -1394,7 +1418,7 @@ var coerceIt = {
     },
     angle: function(v, propOut, dflt) {
         if(v==='auto') propOut.set('auto');
-        else if(!$.isNumeric(v)) propOut.set(dflt);
+        else if(!isNumeric(v)) propOut.set(dflt);
         else {
             if(Math.abs(v)>180) v -= Math.round(v/360)*360;
             propOut.set(+v);
@@ -1514,34 +1538,6 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
         var imax = Math.min(traceAttr.length, cd.length);
         for(var i=0; i<imax; i++) cd[i][cdAttr] = traceAttr[i];
     }
-};
-
-// retrieve list of scene keys form a layout object
-lib.getSceneKeys = function getSceneKeys(layout) {
-    var keys = Object.keys(layout),
-        key = null,
-        sceneKeys = [],
-        i_key = 0;
-    for (i_key; i_key < keys.length; ++i_key) {
-        key = keys[i_key];
-        if (key.match(/^scene[0-9]*$/)) {
-            sceneKeys.push(key);
-        }
-    }
-    return sceneKeys;
-};
-
-// retrieve list of scene layout object from a layout object
-lib.getSceneLayouts = function getSceneLayouts(layout) {
-    var sceneKeys = lib.getSceneKeys(layout),
-        sceneKey = null,
-        sceneLayouts = [],
-        i_sceneKey = 0;
-    for (i_sceneKey; i_sceneKey < sceneKeys.length; ++i_sceneKey) {
-        sceneKey = sceneKeys[i_sceneKey];
-        sceneLayouts.push(layout[sceneKey]);
-    }
-    return sceneLayouts;
 };
 
 /**

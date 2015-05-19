@@ -6,6 +6,7 @@
 var heatmap = module.exports = {},
     Plotly = require('./plotly'),
     tinycolor = require('tinycolor2'),
+    isNumeric = require('./isnumeric'),
     scatterAttrs = Plotly.Scatter.attributes;
 
 heatmap.attributes = {
@@ -44,6 +45,10 @@ heatmap.attributes = {
     colorscale: {
         type: 'colorscale'
     },
+    autocolorscale: {
+        type: 'boolean',
+        dflt: false
+    },
     reversescale: {
         type: 'boolean',
         dflt: false
@@ -78,7 +83,9 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     function isValidZ(z) {
         var allRowsAreArrays = true,
             oneRowIsFilled = false,
-            zi;
+            noNumbers = true;
+
+        var zi;
 
         if (!(Array.isArray(z) && z.length)) return false;
 
@@ -86,7 +93,17 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
             zi = z[i];
             if (!Array.isArray(zi)) allRowsAreArrays = false;
             if (!oneRowIsFilled && zi.length) oneRowIsFilled = true;
+            for(var j = 0; j < zi.length; j++) {
+            // Check that there is at least one numeric element...
+                if($.isNumeric(zi[j])) {
+                    noNumbers = false;
+                    break;
+                }
+            }
         }
+        // ... otherwise set array as invalid:
+        if(noNumbers) return false;
+
         return (allRowsAreArrays && oneRowIsFilled);
     }
 
@@ -130,6 +147,7 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
     if(!Plotly.Plots.isContour(traceOut.type) || (traceOut.contours||{}).coloring!=='none') {
         coerce('colorscale');
+        coerce('autocolorscale');
         var reverseScale = coerce('reversescale'),
             showScale = coerce('showscale');
 
@@ -148,6 +166,41 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 };
 
 function flipScale(si){ return [1 - si[0], si[1]]; }
+
+
+heatmap.calcColorscale = function(trace, z) {
+
+    // This function has side effects on trace.
+
+    // auto-z for heatmap
+    if(trace.zauto!==false || !('zmin' in trace)) {
+        trace.zmin = Plotly.Lib.aggNums(Math.min, null, z);
+    }
+
+    if(trace.zauto!==false || !('zmax' in trace)) {
+        trace.zmax = Plotly.Lib.aggNums(Math.max, null, z);
+    }
+
+    if(trace.zmin===trace.zmax) {
+        trace.zmin -= 0.5;
+        trace.zmax += 0.5;
+    }
+
+    if(trace.autocolorscale) {
+        if(trace.zmin * trace.zmax < 0) {
+            // Data values are > 0 and < 0.
+            trace.colorscale = Plotly.Color.scales.RdBu;
+        } else if(trace.zmin >= 0) {
+            // Non-negative signed data
+            trace.colorscale = Plotly.Color.scales.Reds;
+        } else {
+            // Non-positive signed data
+            trace.colorscale = Plotly.Color.scales.Blues;
+        }
+    }
+
+};
+
 
 heatmap.calc = function(gd, trace) {
     // prepare the raw data
@@ -256,22 +309,13 @@ heatmap.calc = function(gd, trace) {
 
     var cd0 = {x: xArray, y: yArray, z: z};
 
-    // auto-z for heatmap
-    if(trace.zauto!==false || !('zmin' in trace)) {
-        trace.zmin = Plotly.Lib.aggNums(Math.min, null, z);
-    }
-
-    if(trace.zauto!==false || !('zmax' in trace)) {
-        trace.zmax = Plotly.Lib.aggNums(Math.max, null, z);
-    }
-
-    if(trace.zmin===trace.zmax) {
-        trace.zmin -= 0.5;
-        trace.zmax += 0.5;
-    }
+    // auto-z and autocolorscale if applicable
+    heatmap.calcColorscale(trace, z);
 
     trace._input.zmin = trace.zmin;
     trace._input.zmax = trace.zmax;
+
+    trace._input.colorscale = trace.colorscale;
 
     if(Plotly.Plots.isContour(trace.type) && trace.contours &&
             trace.contours.coloring==='heatmap') {
@@ -930,8 +974,8 @@ heatmap.colorbar = function(gd,cd) {
         zmin = trace.zmin,
         zmax = trace.zmax;
 
-    if (!$.isNumeric(zmin)) zmin = Plotly.Lib.aggNums(Math.min, null, trace.z);
-    if (!$.isNumeric(zmax)) zmax = Plotly.Lib.aggNums(Math.max, null, trace.z);
+    if (!isNumeric(zmin)) zmin = Plotly.Lib.aggNums(Math.min, null, trace.z);
+    if (!isNumeric(zmax)) zmax = Plotly.Lib.aggNums(Math.max, null, trace.z);
 
     gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
     if(!trace.showscale){
