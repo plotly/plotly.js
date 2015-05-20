@@ -1636,8 +1636,7 @@ function modDateFormat(fmt,x) {
 // prefix is there so the x axis ticks can be dropped a line
 // ax is the axis layout, x is the tick value
 // hover is a (truthy) flag for whether to show numbers with a bit
-// more precision for hovertext - and return just the text
-// TODO: if hover, also look to see if there's a ticktext for this x, and use that
+// more precision for hovertext
 axes.tickText = function(ax, x, hover){
     var out = tickTextObj(ax, x),
         tr = ax._tickround,
@@ -1649,7 +1648,19 @@ axes.tickText = function(ax, x, hover){
         hideexp,
         hideprefix,
         hidesuffix,
-        extraPrecision = hover || (ax.tickmode === 'enumerated');
+        isEnumerated = ax.tickmode === 'enumerated',
+        extraPrecision = hover || isEnumerated;
+
+    if(isEnumerated && Array.isArray(ax.ticktext)) {
+        var minDiff = Math.abs(ax.range[1] - ax.range[0]) / 10000;
+        for(var i = 0; i < ax.ticktext.length; i++) {
+            if(Math.abs(x - ax.d2l(ax.tickvals[i])) < minDiff) break;
+        }
+        if(i < ax.ticktext.length) {
+            out.text = String(ax.ticktext[i]);
+            return out;
+        }
+    }
 
     function isHidden(showAttr) {
         var first_or_last;
