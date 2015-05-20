@@ -1679,10 +1679,6 @@ axes.tickText = function(ax, x, hover){
     if (ax.tickprefix && !isHidden(ax.showtickprefix)) out.text = ax.tickprefix + out.text;
     if (ax.ticksuffix && !isHidden(ax.showticksuffix)) out.text += ax.ticksuffix;
 
-    // replace standard minus character (which is technically a hyphen)
-    // with a true minus sign
-    if(ax.type !== 'category') out.text = out.text.replace(/-/g,'\u2212');
-
     return out;
 };
 
@@ -1903,7 +1899,10 @@ function numFormat(v,ax,fmtoverride,hover) {
         else { console.log('unknown exponent format '+fmt); }
     }
     // put sign back in and return
-    return (n?'-':'')+v;
+    // replace standard minus character (which is technically a hyphen)
+    // with a true minus sign
+    if(n) return '\u2212' + v;
+    return v;
 }
 
 // add arbitrary decimal point and thousands separator
