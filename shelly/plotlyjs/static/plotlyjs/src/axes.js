@@ -1639,15 +1639,7 @@ function modDateFormat(fmt,x) {
 // more precision for hovertext
 axes.tickText = function(ax, x, hover){
     var out = tickTextObj(ax, x),
-        tr = ax._tickround,
-        dt = ax.dtick,
-        // completes the full date info, to be included
-        // with only the first tick
-        suffix = '',
-        tt,
         hideexp,
-        hideprefix,
-        hidesuffix,
         isEnumerated = ax.tickmode === 'enumerated',
         extraPrecision = hover || isEnumerated;
 
@@ -1676,117 +1668,21 @@ axes.tickText = function(ax, x, hover){
         return showAttr!=='all' && x!==first_or_last;
     }
 
-    hideexp = ax.exponentformat!=='none' && isHidden(ax.showexponent);
-    if(hideexp) hideexp = 'hide';
+    hideexp = ax.exponentformat!=='none' && isHidden(ax.showexponent) ? 'hide' : '';
 
-    hideprefix = isHidden(ax.showtickprefix);
-    hidesuffix = isHidden(ax.showticksuffix);
-
-    if(ax.type==='date'){
-        var d = new Date(x);
-        if(hover && ax.hoverformat) {
-            tt = modDateFormat(ax.hoverformat,x);
-        }
-        else if(ax.tickformat) {
-            tt = modDateFormat(ax.tickformat,x);
-            // TODO: potentially hunt for ways to automatically add more
-            // precision to the hover text?
-        }
-        else {
-            if(extraPrecision) {
-                if(isNumeric(tr)) tr+=2;
-                else tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr];
-            }
-            if(tr==='y') tt = yearFormat(d);
-            else if(tr==='m') tt = monthFormat(d);
-            else {
-                if(x===ax._tmin && !hover) {
-                    suffix = '<br>'+yearFormat(d);
-                }
-
-                if(tr==='d') tt = dayFormat(d);
-                else if(tr==='H') tt = hourFormat(d);
-                else {
-                    if(x===ax._tmin && !hover) {
-                        suffix = '<br>'+dayFormat(d)+', '+yearFormat(d);
-                    }
-
-                    tt = minuteFormat(d);
-                    if(tr!=='M'){
-                        tt += secondFormat(d);
-                        if(tr!=='S') {
-                            tt += numFormat(mod(x/1000,1),ax,'none',hover)
-                                .substr(1);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    else if(ax.type==='log'){
-        if(hover && (isNumeric(dt) || dt.charAt(0)!=='L')) {
-            dt = 'L3';
-        }
-        if(isNumeric(dt)||((dt.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
-            var p = Math.round(x);
-            if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
-                tt = (p===0) ? '1': (p===1) ? '10' : '10'+String(p).sup();
-                out.fontSize *= 1.25;
-            }
-            else {
-                tt = numFormat(Math.pow(10,x), ax,'','fakehover');
-                if(dt==='D1' && ax._id.charAt(0)==='y') {
-                    out.dy -= out.fontSize/6;
-                }
-            }
-        }
-        else if(dt.charAt(0)==='D') {
-            tt = Math.round(Math.pow(10,mod(x,1)));
-            out.fontSize *= 0.75;
-        }
-        else if(dt.charAt(0)==='L') {
-            tt = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
-        }
-        else throw 'unrecognized dtick '+String(dt);
-    }
-    else if(ax.type==='category'){
-        var tt0 = ax._categories[Math.round(x)];
-        if(tt0===undefined) tt0='';
-        tt=String(tt0);
-    }
-    else {
-        // don't add an exponent to zero if we're showing all exponents
-        // so the only reason you'd show an exponent on zero is if it's the
-        // ONLY tick to get an exponent (first or last)
-        if(ax.showexponent==='all' && Math.abs(x/dt)<1e-6) {
-            hideexp = 'hide';
-        }
-        tt = numFormat(x, ax, hideexp, extraPrecision);
-    }
-    // if 9's are printed on log scale, move the 10's away a bit
-    if((ax.dtick==='D1') && (['0','1'].indexOf(String(tt).charAt(0))!==-1)){
-        if(ax._id.charAt(0)==='y') {
-            out.dx -= out.fontSize/4;
-        }
-        else {
-            out.dy += out.fontSize/2;
-            out.dx += (ax.range[1]>ax.range[0] ? 1 : -1) *
-                out.fontSize * (x<0 ? 0.5 : 0.25);
-        }
-    }
-
-    // add exponent suffix
-    tt += suffix;
+    if(ax.type==='date') formatDate(ax, out, hover, extraPrecision);
+    else if(ax.type==='log') formatLog(ax, out, hover, extraPrecision, hideexp);
+    else if(ax.type==='category') formatCategory(ax, out);
+    else formatLinear(ax, out, hover, extraPrecision, hideexp);
 
     // add prefix and suffix
-    if (!hideprefix) tt = ax.tickprefix + tt;
-    if (!hidesuffix) tt = tt + ax.ticksuffix;
+    if (ax.tickprefix && !isHidden(ax.showtickprefix)) out.text = ax.tickprefix + out.text;
+    if (ax.ticksuffix && !isHidden(ax.showticksuffix)) out.text += ax.ticksuffix;
 
     // replace standard minus character (which is technically a hyphen)
     // with a true minus sign
-    if(ax.type!=='category') tt = tt.replace(/-/g,'\u2212');
+    if(ax.type !== 'category') out.text = out.text.replace(/-/g,'\u2212');
 
-    out.text = tt;
     return out;
 };
 
@@ -1802,6 +1698,114 @@ function tickTextObj(ax, x, text) {
         font: tf.family,
         fontColor: tf.color
     };
+}
+
+function formatDate(ax, out, hover, extraPrecision) {
+    var x = out.x,
+        tr = ax._tickround,
+        d = new Date(x),
+        // suffix completes the full date info, to be included
+        // with only the first tick
+        suffix = '',
+        tt;
+    if(hover && ax.hoverformat) {
+        tt = modDateFormat(ax.hoverformat,x);
+    }
+    else if(ax.tickformat) {
+        tt = modDateFormat(ax.tickformat,x);
+        // TODO: potentially hunt for ways to automatically add more
+        // precision to the hover text?
+    }
+    else {
+        if(extraPrecision) {
+            if(isNumeric(tr)) tr+=2;
+            else tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr];
+        }
+        if(tr==='y') tt = yearFormat(d);
+        else if(tr==='m') tt = monthFormat(d);
+        else {
+            if(x===ax._tmin && !hover) {
+                suffix = '<br>'+yearFormat(d);
+            }
+
+            if(tr==='d') tt = dayFormat(d);
+            else if(tr==='H') tt = hourFormat(d);
+            else {
+                if(x===ax._tmin && !hover) {
+                    suffix = '<br>'+dayFormat(d)+', '+yearFormat(d);
+                }
+
+                tt = minuteFormat(d);
+                if(tr!=='M'){
+                    tt += secondFormat(d);
+                    if(tr!=='S') {
+                        tt += numFormat(mod(x/1000,1),ax,'none',hover)
+                            .substr(1);
+                    }
+                }
+            }
+        }
+    }
+    out.text = tt + suffix;
+}
+
+function formatLog(ax, out, hover, extraPrecision, hideexp) {
+    var dt = ax.dtick,
+        x = out.x;
+    if(hover && (isNumeric(dt) || dt.charAt(0)!=='L')) dt = 'L3';
+
+    if(isNumeric(dt)||((dt.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
+        var p = Math.round(x);
+        if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
+            out.text = (p===0) ? '1': (p===1) ? '10' : '10'+String(p).sup();
+            out.fontSize *= 1.25;
+        }
+        else {
+            out.text = numFormat(Math.pow(10,x), ax,'','fakehover');
+            if(dt==='D1' && ax._id.charAt(0)==='y') {
+                out.dy -= out.fontSize/6;
+            }
+        }
+    }
+    else if(dt.charAt(0) === 'D') {
+        out.text = String(Math.round(Math.pow(10, mod(x, 1))));
+        out.fontSize *= 0.75;
+    }
+    else if(dt.charAt(0) === 'L') {
+        out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
+    }
+    else throw 'unrecognized dtick ' + String(dt);
+
+    // if 9's are printed on log scale, move the 10's away a bit
+    if(ax.dtick==='D1') {
+        var firstChar = String(out.text).charAt(0);
+        if(firstChar === '0' || firstChar === '1') {
+            if(ax._id.charAt(0) === 'y') {
+                out.dx -= out.fontSize / 4;
+            }
+            else {
+                out.dy += out.fontSize / 2;
+                out.dx += (ax.range[1] > ax.range[0] ? 1 : -1) *
+                    out.fontSize * (x < 0 ? 0.5 : 0.25);
+            }
+        }
+    }
+}
+
+function formatCategory(ax, out) {
+    var tt = ax._categories[Math.round(out.x)];
+    if(tt === undefined) tt = '';
+    out.text = String(tt);
+}
+
+function formatLinear(ax, out, hover, extraPrecision, hideexp) {
+    // don't add an exponent to zero if we're showing all exponents
+    // so the only reason you'd show an exponent on zero is if it's the
+    // ONLY tick to get an exponent (first or last)
+    if(ax.showexponent==='all' && Math.abs(out.x/ax.dtick)<1e-6) {
+        hideexp = 'hide';
+    }
+    out.text = numFormat(out.x, ax, hideexp, extraPrecision);
 }
 
 // format a number (tick value) according to the axis settings
