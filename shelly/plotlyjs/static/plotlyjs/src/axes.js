@@ -1808,14 +1808,14 @@ function formatLinear(ax, out, hover, extraPrecision, hideexp) {
 // new, more reliable procedure than d3.round or similar:
 // add half the rounding increment, then stringify and truncate
 // also automatically switch to sci. notation
-var SIPREFIXES = ['f','p','n','&mu;','m','','k','M','G','T'];
-function numFormat(v,ax,fmtoverride,hover) {
+var SIPREFIXES = ['f', 'p', 'n', '&mu;', 'm', '', 'k', 'M', 'G', 'T'];
+function numFormat(v, ax, fmtoverride, hover) {
         // negative?
-    var n = (v<0),
+    var isNeg = v < 0,
         // max number of digits past decimal point to show
-        r = ax._tickround,
-        fmt = fmtoverride||ax.exponentformat||'B',
-        d = ax._tickexponent;
+        tickRound = ax._tickround,
+        exponentFormat = fmtoverride || ax.exponentformat || 'B',
+        exponent = ax._tickexponent;
 
     // special case for hover: set exponent just for this value, and
     // add a couple more digits of precision over tick labels
@@ -1824,20 +1824,20 @@ function numFormat(v,ax,fmtoverride,hover) {
         var ah = {
             exponentformat:ax.exponentformat,
             dtick: ax.showexponent==='none' ? ax.dtick :
-                (isNumeric(v) ? Math.abs(v)||1 : 1),
+                (isNumeric(v) ? Math.abs(v) || 1 : 1),
             // if not showing any exponents, don't change the exponent
             // from what we calculate
-            range: ax.showexponent==='none' ? ax.range : [0,v||1]
+            range: ax.showexponent === 'none' ? ax.range : [0, v || 1]
         };
         autoTickRound(ah);
-        r = (Number(ah._tickround) || 0) + 4;
-        d = ah._tickexponent;
+        tickRound = (Number(ah._tickround) || 0) + 4;
+        exponent = ah._tickexponent;
     }
 
     // 'epsilon' - rounding increment
-    var e = Math.pow(10,-r)/2;
+    var e = Math.pow(10, -tickRound) / 2;
 
-    // fmt codes:
+    // exponentFormat codes:
     // 'e' (1.2e+6, default)
     // 'E' (1.2E+6)
     // 'SI' (1.2M)
@@ -1846,62 +1846,69 @@ function numFormat(v,ax,fmtoverride,hover) {
     // 'power' (1.2x10^6)
     // 'hide' (1.2, use 3rd argument=='hide' to eg
     //      only show exponent on last tick)
-    if(fmt==='none') { d=0; }
+    if(exponentFormat === 'none') exponent = 0;
 
     // take the sign out, put it back manually at the end
     // - makes cases easier
     v = Math.abs(v);
-    if(v<e) {
+    if(v < e) {
         // 0 is just 0, but may get exponent if it's the last tick
         v = '0';
-        n = false;
+        isNeg = false;
     }
     else {
         v += e;
         // take out a common exponent, if any
-        if(d) {
-            v *= Math.pow(10,-d);
-            r += d;
+        if(exponent) {
+            v *= Math.pow(10, -exponent);
+            tickRound += exponent;
         }
         // round the mantissa
-        if(r===0) { v=String(Math.floor(v)); }
-        else if(r<0) {
+        if(tickRound === 0) v = String(Math.floor(v));
+        else if(tickRound < 0) {
             v = String(Math.round(v));
-            v = v.substr(0,v.length+r);
-            for(var i=r; i<0; i++) { v+='0'; }
+            v = v.substr(0, v.length + tickRound);
+            for(var i = tickRound; i < 0; i++) v += '0';
         }
         else {
             v = String(v);
-            var dp = v.indexOf('.')+1;
-            if(dp) { v = v.substr(0,dp+r).replace(/\.?0+$/,''); }
+            var dp = v.indexOf('.') + 1;
+            if(dp) v = v.substr(0, dp + tickRound).replace(/\.?0+$/, '');
         }
         // insert appropriate decimal point and thousands separator
-        v = numSeparate(v,ax._td._fullLayout.separators);
+        v = numSeparate(v, ax._td._fullLayout.separators);
     }
 
     // add exponent
-    if(d && fmt!=='hide') {
-        if(fmt==='e' || ((fmt==='SI'||fmt==='B') && (d>12 || d<-15))) {
-            v += 'e'+(d>0 ? '+' : '')+d;
+    if(exponent && exponentFormat !== 'hide') {
+        var signedExponent;
+        if(exponent < 0) signedExponent = '\u2212' + -exponent;
+        else if(exponentFormat !== 'power') signedExponent = '+' + exponent;
+        else signedExponent = String(exponent);
+
+        if(exponentFormat === 'e' ||
+                ((exponentFormat === 'SI' || exponentFormat === 'B') &&
+                 (exponent > 12 || exponent < -15))) {
+            v += 'e' + signedExponent;
         }
-        else if(fmt==='E') {
-            v += 'E'+(d>0 ? '+' : '')+d;
+        else if(exponentFormat === 'E') {
+            v += 'E' + signedExponent;
         }
-        else if(fmt==='power') {
-            v += '&times;10'+String(d).sup();
+        else if(exponentFormat === 'power') {
+            v += '&times;10<sup>' + signedExponent + '</sup>';
         }
-        else if(fmt==='B' && d===9) {
+        else if(exponentFormat === 'B' && exponent === 9) {
             v += 'B';
         }
-        else if(fmt==='SI' || fmt==='B') {
-            v += SIPREFIXES[d/3+5];
+        else if(exponentFormat === 'SI' || exponentFormat === 'B') {
+            v += SIPREFIXES[exponent / 3 + 5];
         }
-        else { console.log('unknown exponent format '+fmt); }
     }
+
     // put sign back in and return
     // replace standard minus character (which is technically a hyphen)
     // with a true minus sign
-    if(n) return '\u2212' + v;
+    if(isNeg) return '\u2212' + v;
     return v;
 }
 
