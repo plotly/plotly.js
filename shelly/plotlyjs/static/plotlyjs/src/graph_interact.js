@@ -680,7 +680,10 @@ fx.loneHover = function(hoverItem, opts) {
         name: hoverItem.name,
 
         // filler to make createHoverText happy
-        trace: {index: 0},
+        trace: {
+          index: 0,
+          hoverinfo: ''
+        },
         xa: {_offset:0},
         ya: {_offset:0},
         index: 0
