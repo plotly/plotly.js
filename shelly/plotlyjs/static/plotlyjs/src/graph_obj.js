@@ -927,6 +927,33 @@ function cleanLayout(layout) {
         }
     }
 
+    /*
+     * Convert the old cameraposition key into the new camera key
+     */
+    var sceneIds = plots.getSubplotIds(layout, 'gl3d');
+    var scene, cameraposition, rotation,
+        radius, center, mat, eye;
+    for (i = 0; i < sceneIds.length; i++) {
+        scene = layout[sceneIds[i]];
+        cameraposition = scene.cameraposition;
+        if (Array.isArray(cameraposition) && cameraposition[0].length === 4) {
+            rotation = cameraposition[0];
+            center   = cameraposition[1];
+            radius   = cameraposition[2];
+            mat = m4FromQuat([], rotation);
+            eye = [];
+            for (j = 0; j < 3; ++j) {
+                eye[j] = center[i] + radius * mat[2 + 4 * j];
+            }
+            scene.camera = {
+                eye: {x: eye[0], y: eye[1], z: eye[2]},
+                center: {x: center[0], y: center[1], z: center[2]},
+                up: {x: mat[1], y: mat[5], z: mat[9]}
+            };
+            delete scene.cameraposition;
+        }
+    }
+
     // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
     // supported, but new tinycolor does not because they're not valid css
     Plotly.Lib.markTime('finished rest of cleanLayout, starting color');
