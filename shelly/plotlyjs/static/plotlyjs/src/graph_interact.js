@@ -4,15 +4,16 @@
 // ---external global dependencies
 /* global d3:false */
 
-var fx = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
     tinycolor = require('tinycolor2'),
     isNumeric = require('./isnumeric');
+
+var fx = module.exports = {};
 
 fx.layoutAttributes = {
     dragmode: {
         type: 'enumerated',
-        values: ['zoom', 'pan', 'rotate']
+        values: ['zoom', 'pan', 'rotate', 'orbital', 'turntable']
     },
     hovermode: {
         type: 'enumerated',
@@ -29,7 +30,7 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
                                  attr, dflt);
     }
 
-    coerce('dragmode', layoutOut._hasGL3D ? 'rotate' : 'zoom');
+    coerce('dragmode', layoutOut._hasGL3D ? 'orbital' : 'zoom');
 
     if (layoutOut._hasGL3D) {
         coerce('hovermode', 'closest');

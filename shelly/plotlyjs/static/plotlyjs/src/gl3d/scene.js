@@ -105,7 +105,7 @@ function Scene(options, fullLayout) {
     this.container        = sceneContainer;
 
     this.staticMode   = false;
-   
+
 
     var glplotOptions = {
             container:  sceneContainer,
@@ -128,7 +128,7 @@ function Scene(options, fullLayout) {
                     premultipliedAlpha: true
                 });
             } catch(e) {
-                throw new Error('error creating static canvas/context for image server')
+                throw new Error('error creating static canvas/context for image server');
             }
         }
         glplotOptions.pixelRatio = options.plot3dPixelRatio;
@@ -218,6 +218,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.glplotLayout = fullSceneLayout;
     this.axesOptions.merge(fullSceneLayout);
     this.spikeOptions.merge(fullSceneLayout);
+
+    // Update camera mode
+    this.handleDragMode(fullLayout.dragmode);
 
     //Update scene
     this.glplot.update({});
@@ -390,7 +393,7 @@ proto.destroy = function() {
     this.container.parentNode.removeChild(this.container);
 
     //Remove reference to glplot
-    this.glplot = null
+    this.glplot = null;
 };
 
 
@@ -452,7 +455,7 @@ proto.cleanCamera = function(cameraposition) {
         var mat = m4FromQuat([], rotation);
         var eye = [];
         for (var i = 0; i < 3; ++i) {
-            eye[i] = center[i] + radius * mat[2+4*i];
+            eye[i] = center[i] + radius * mat[2 + 4 * i];
         }
         return {
             eye: {x: eye[0], y: eye[1], z: eye[2]},
@@ -461,6 +464,28 @@ proto.cleanCamera = function(cameraposition) {
         };
     }
     else return null;
+};
+
+proto.handleDragMode = function (dragmode) {
+
+    var camera = this.camera;
+    if (camera) {
+
+        if (dragmode === 'rotate') {
+            camera.mode = 'orbital';
+            camera.keyBindingMode = 'rotate';
+
+        } else if (dragmode === 'turntable') {
+            camera.up = [0, 0, 1];
+            camera.mode = 'turntable';
+            camera.keyBindingMode = 'rotate';
+
+        } else {
+
+            // none rotation modes [pan or zoom]
+            camera.keyBindingMode = dragmode;
+        }
+    }
 };
 
 proto.toImage = function (format) {
