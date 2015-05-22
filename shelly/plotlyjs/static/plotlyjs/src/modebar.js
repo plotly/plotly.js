@@ -334,12 +334,8 @@ ModeBar.prototype.handleCamera3d = function(ev) {
         if (!sceneLayout || attr==='resetDefault') scene.setCameraToDefault();
         else if (attr === 'resetLastSave') {
 
-            if (sceneLayout.cameraposition !== undefined) {
-                cameraPos = scene.cleanCamera(sceneLayout.cameraposition);
-            }
-            else cameraPos = sceneLayout.camera;
-
-            if (cameraPos) scene.setCameraPosition(cameraPos);
+            cameraPos = sceneLayout.camera;
+            if (cameraPos) scene.setCamera(cameraPos);
             else scene.setCameraToDefault();
         }
     }
@@ -426,10 +422,10 @@ ModeBar.prototype.config = function config() {
             icon: 'pan',
             click: this.handleDrag3d
         },
-        orbitalRotation: {
+        orbitRotation: {
             title: 'orbital rotation',
             attr: 'dragmode',
-            val: 'orbital',
+            val: 'orbit',
             icon: 'undo',
             click: this.handleDrag3d
         },

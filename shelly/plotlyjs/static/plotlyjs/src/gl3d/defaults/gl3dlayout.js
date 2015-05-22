@@ -24,10 +24,6 @@ Gl3dLayout.layoutAttributes = {
         center: makeVector(0, 0, 0),
         eye:    makeVector(1.25, 1.25, 1.25)
     },
-    // old api -- to be deprecated
-    cameraposition: {
-        type: 'data_array'
-    },
     domain: {
         x: [
             {type: 'number', min: 0, max: 1},
@@ -113,9 +109,6 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
         var sceneLayoutOut = layoutOut[scene] || {};
 
         coerce('bgcolor');
-
-        // coerce cameraposition in old graphs
-        if(sceneLayoutIn.cameraposition !== undefined) coerce('cameraposition');
 
         var cameraKeys = Object.keys(attributes.camera);
 

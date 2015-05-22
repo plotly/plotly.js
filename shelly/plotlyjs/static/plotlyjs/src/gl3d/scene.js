@@ -2,7 +2,6 @@
 'use strict';
 
 var createPlot          = require('gl-plot3d'),
-    m4FromQuat          = require('gl-mat4/fromQuat'),
     createAxesOptions   = require('./convert/axes'),
     createSpikeOptions  = require('./convert/spikes'),
     createScatterTrace  = require('./convert/scatter'),
@@ -171,17 +170,12 @@ function Scene(options, fullLayout) {
         return;
     }
 
-    var cameraPos;
-
-    if(fullLayout.scene.cameraposition !== undefined) {
-        cameraPos = this.cleanCamera(fullLayout.scene.cameraposition);
-    }
-    else cameraPos = fullLayout.scene.camera;
+    var cameraData = fullLayout.scene.camera;
 
     this.camera = createCamera(this.container, {
-        center: [cameraPos.center.x, cameraPos.center.y, cameraPos.center.z],
-        eye:    [cameraPos.eye.x, cameraPos.eye.y, cameraPos.eye.z],
-        up:     [cameraPos.up.x, cameraPos.up.y, cameraPos.up.z],
+        center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
+        eye:    [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
+        up:     [cameraData.up.x, cameraData.up.y, cameraData.up.z],
         zoomMin: 0.1,
         zoomMax: 100,
         mode:   'orbit'
@@ -220,7 +214,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.spikeOptions.merge(fullSceneLayout);
 
     // Update camera mode
-    this.handleDragMode(fullLayout.dragmode);
+    this.handleDragmode(fullLayout.dragmode);
 
     //Update scene
     this.glplot.update({});
@@ -408,7 +402,7 @@ proto.setCameraToDefault = function setCameraToDefault () {
 };
 
 // get camera position in plotly coords from 'orbit-camera' coords
-proto.getCameraPosition = function getCameraPosition () {
+proto.getCamera = function getCamera () {
     this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
 
     var up     = this.glplot.camera.up;
@@ -423,10 +417,10 @@ proto.getCameraPosition = function getCameraPosition () {
 };
 
 // set camera position with a set of plotly coords
-proto.setCameraPosition = function setCameraPosition (cameraPos) {
-    var up      = cameraPos.up;
-    var center  = cameraPos.center;
-    var eye     = cameraPos.eye;
+proto.setCamera = function setCamera (cameraData) {
+    var up      = cameraData.up;
+    var center  = cameraData.center;
+    var eye     = cameraData.eye;
     this.glplot.camera.lookAt(
         [eye.x, eye.y, eye.z],
         [center.x, center.y, center.z],
@@ -436,43 +430,20 @@ proto.setCameraPosition = function setCameraPosition (cameraPos) {
 
 // save camera to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
-    var cameraposition = this.getCameraPosition();
+    var cameraData = this.getCamera();
 
     // save new camera api
     Plotly.Lib.nestedProperty(layout, this.id + '.camera')
-        .set(cameraposition);
-
-    // delete old
-    delete layout.scene.cameraposition;
+        .set(cameraData);
 };
 
-// convert old camera position api
-proto.cleanCamera = function(cameraposition) {
-    if (Array.isArray(cameraposition) && cameraposition[0].length === 4) {
-        var rotation = cameraposition[0];
-        var center   = cameraposition[1];
-        var radius   = cameraposition[2];
-        var mat = m4FromQuat([], rotation);
-        var eye = [];
-        for (var i = 0; i < 3; ++i) {
-            eye[i] = center[i] + radius * mat[2 + 4 * i];
-        }
-        return {
-            eye: {x: eye[0], y: eye[1], z: eye[2]},
-            center: {x: center[0], y: center[1], z: center[2]},
-            up: {x: mat[1], y: mat[5], z: mat[9]}
-        };
-    }
-    else return null;
-};
-
-proto.handleDragMode = function (dragmode) {
+proto.handleDragmode = function (dragmode) {
 
     var camera = this.camera;
     if (camera) {
-
-        if (dragmode === 'rotate') {
-            camera.mode = 'orbital';
+        // rotate and orbital are synonymous
+        if (dragmode === 'rotate' || dragmode === 'orbit') {
+            camera.mode = 'orbit';
             camera.keyBindingMode = 'rotate';
 
         } else if (dragmode === 'turntable') {

@@ -13,7 +13,7 @@ var fx = module.exports = {};
 fx.layoutAttributes = {
     dragmode: {
         type: 'enumerated',
-        values: ['zoom', 'pan', 'rotate', 'orbital', 'turntable']
+        values: ['zoom', 'pan', 'rotate', 'orbit', 'turntable']
     },
     hovermode: {
         type: 'enumerated',
@@ -30,7 +30,7 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
                                  attr, dflt);
     }
 
-    coerce('dragmode', layoutOut._hasGL3D ? 'orbital' : 'zoom');
+    coerce('dragmode', layoutOut._hasGL3D ? 'orbit' : 'zoom');
 
     if (layoutOut._hasGL3D) {
         coerce('hovermode', 'closest');
@@ -1280,7 +1280,7 @@ fx.modeBar = function(gd){
 function chooseModebarButtons(fullLayout) {
     if(fullLayout._hasGL3D) {
         return [
-            ['orbitalRotation', 'tableRotation', 'zoom3d', 'pan3d'],
+            ['orbitRotation', 'tableRotation', 'zoom3d', 'pan3d'],
             ['resetCameraDefault3d', 'resetCameraLastSave3d'],
             ['hoverClosest3d']
         ];

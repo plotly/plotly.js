@@ -7,10 +7,12 @@
 // ---external global dependencies
 /* global Promise:false, d3:false */
 
-var plots = module.exports = {},
-    Plotly = require('./plotly'),
+
+var Plotly = require('./plotly'),
+    m4FromQuat = require('gl-mat4/fromQuat'),
     isNumeric = require('./isnumeric');
 
+var plots = module.exports = {};
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
 // into Plotly. These are:
@@ -824,7 +826,7 @@ function cleanLayout(layout) {
     // make a few changes to the layout right away
     // before it gets used for anything
     // backward compatibility and cleanup of nonstandard options
-    var i;
+    var i, j;
 
     if(!layout) layout = {};
 
@@ -2709,6 +2711,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
         doplot = false,
         docalc = false,
         domodebar = false,
+        doSceneDragmode = false,
         newkey, axes, keys, xyref, scene, axisAttr;
 
     if(typeof astr === 'string') aobj[astr] = val;
@@ -2926,16 +2929,19 @@ Plotly.relayout = function relayout (gd, astr, val) {
                     ai.match(/^(bar|box|font)/)) {
                 docalc = true;
             }
-            // hovermode and dragmode don't need any redrawing,
-            // since they just
-            // affect reaction to user input. everything else,
-            // assume full replot.
-            // height, width, autosize get dealt with below
+            /*
+             * hovermode and dragmode don't need any redrawing, since they just
+             * affect reaction to user input. everything else, assume full replot.
+             * height, width, autosize get dealt with below. Except for the case of
+             * of subplots - scenes - which require scene.handleDragmode to be called.
+             */
             else if(ai==='hovermode') domodebar = true;
+            else if (ai === 'dragmode') doSceneDragmode = true;
             else if(['hovermode','dragmode','height',
                     'width','autosize'].indexOf(ai)===-1) {
                 doplot = true;
             }
+
             p.set(vi);
         }
     }
@@ -2986,6 +2992,15 @@ Plotly.relayout = function relayout (gd, astr, val) {
         }
         // this is decoupled enough it doesn't need async regardless
         if(domodebar) Plotly.Fx.modeBar(gd);
+
+        var sceneIds;
+        if (doSceneDragmode) {
+            sceneIds = plots.getSubplotIds(gd._fullLayout, 'gl3d');
+            for (i = 0; i < sceneIds.length; i++) {
+                scene = gd._fullLayout[sceneIds[i]]._scene;
+                scene.handleDragmode(gd._fullLayout.dragmode);
+            }
+        }
     }
 
     var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
