@@ -128,6 +128,7 @@ var binFunctions = {
     sum: function(n, i, size, counterData) {
         var v = counterData[i];
         if(isNumeric(v)) {
+            v = Number(v);
             size[n] += v;
             return v;
         }
@@ -137,6 +138,7 @@ var binFunctions = {
     avg: function(n, i, size, counterData, counts) {
         var v = counterData[i];
         if(isNumeric(v)) {
+            v = Number(v);
             size[n] += v;
             counts[n]++;
         }
@@ -146,6 +148,7 @@ var binFunctions = {
     min: function(n, i, size, counterData) {
         var v = counterData[i];
         if(isNumeric(v)) {
+            v = Number(v);
             if(!isNumeric(size[n])) {
                 size[n] = v;
                 return v;
@@ -161,6 +164,7 @@ var binFunctions = {
     max: function(n, i, size, counterData) {
         var v = counterData[i];
         if(isNumeric(v)) {
+            v = Number(v);
             if(!isNumeric(size[n])) {
                 size[n] = v;
                 return v;
@@ -251,10 +255,10 @@ histogram.calc = function(gd, trace) {
         binfunc = binFunctions.count,
         normfunc = normFunctions[norm],
         doavg = false,
-        counter0;
+        rawCounterData;
 
-    if((counterdata in trace) && func!=='count') {
-        counter0 = pa.makeCalcdata(trace, counterdata);
+    if(Array.isArray(trace[counterdata]) && func!=='count') {
+        rawCounterData = trace[counterdata];
         doavg = func==='avg';
         binfunc = binFunctions[func];
     }
@@ -282,7 +286,7 @@ histogram.calc = function(gd, trace) {
     // bin the data
     for(i=0; i<pos0.length; i++) {
         n = Plotly.Lib.findBin(pos0[i], bins);
-        if(n>=0 && n<nMax) total += binfunc(n, i, size, counter0, counts);
+        if(n>=0 && n<nMax) total += binfunc(n, i, size, rawCounterData, counts);
     }
 
     // average and/or normalize the data, if needed
@@ -376,7 +380,7 @@ histogram.calc2d = function(gd, trace) {
         doavg = false,
         xinc = [],
         yinc = [],
-        counter0;
+        rawCounterData;
 
     // set a binning function other than count?
     // for binning functions: check first for 'z',
@@ -388,7 +392,7 @@ histogram.calc2d = function(gd, trace) {
         (('marker' in trace && Array.isArray(trace.marker.color)) ?
             trace.marker.color : '');
     if(counterdata && func!=='count') {
-        counter0 = counterdata.map(Number);
+        rawCounterData = counterdata.map(Number);
         doavg = func==='avg';
         binfunc = binFunctions[func];
     }
@@ -446,7 +450,7 @@ histogram.calc2d = function(gd, trace) {
         n = Plotly.Lib.findBin(x[i],xbins);
         m = Plotly.Lib.findBin(y[i],ybins);
         if(n>=0 && n<nx && m>=0 && m<ny) {
-            total += binfunc(n, i, z[m], counter0, counts[m]);
+            total += binfunc(n, i, z[m], rawCounterData, counts[m]);
         }
     }
     // normalize, if needed
