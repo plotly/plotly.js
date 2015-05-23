@@ -388,11 +388,13 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
 axes.handleTickValueDefaults = function(containerIn, containerOut, coerce, axType) {
     var tickmodeDefault = 'auto';
-    if(Array.isArray(containerIn.tickvals)) tickmodeDefault = 'enumerated';
-    else if(containerIn.tickmode === 'enumerated' ||
-            axType==='log' || axType==='date') {
+
+    if(containerIn.tickmode === 'enumerated' &&
+            (axType === 'log' || axType === 'date')) {
         containerIn.tickmode = 'auto';
     }
+
+    if(Array.isArray(containerIn.tickvals)) tickmodeDefault = 'enumerated';
     else if(containerIn.dtick && isNumeric(containerIn.dtick)) {
         tickmodeDefault = 'regular';
     }
@@ -404,8 +406,9 @@ axes.handleTickValueDefaults = function(containerIn, containerOut, coerce, axTyp
         coerce('dtick');
     }
     else {
-        coerce('tickvals');
-        coerce('ticktext');
+        var tickvals = coerce('tickvals');
+        if(tickvals === undefined) containerOut.tickmode = 'auto';
+        else coerce('ticktext');
     }
 };
 
