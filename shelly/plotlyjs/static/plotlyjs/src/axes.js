@@ -393,8 +393,7 @@ axes.handleTickValueDefaults = function(containerIn, containerOut, coerce, axTyp
             axType==='log' || axType==='date') {
         containerIn.tickmode = 'auto';
     }
-    else if(containerIn.tick0 !== undefined &&
-            containerIn.dtick && isNumeric(containerIn.dtick)) {
+    else if(containerIn.dtick && isNumeric(containerIn.dtick)) {
         tickmodeDefault = 'regular';
     }
     var tickmode = coerce('tickmode', tickmodeDefault);
@@ -1748,7 +1747,7 @@ function formatDate(ax, out, hover, extraPrecision) {
 function formatLog(ax, out, hover, extraPrecision, hideexp) {
     var dt = ax.dtick,
         x = out.x;
-    if(hover && (isNumeric(dt) || dt.charAt(0)!=='L')) dt = 'L3';
+    if(extraPrecision && ((typeof dt !== 'string') || dt.charAt(0)!=='L')) dt = 'L3';
 
     if(isNumeric(dt)||((dt.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
         var p = Math.round(x);
