@@ -1750,9 +1750,13 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
     if(extraPrecision && ((typeof dt !== 'string') || dt.charAt(0)!=='L')) dt = 'L3';
 
     if(isNumeric(dt)||((dt.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
-        var p = Math.round(x);
         if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
-            out.text = (p===0) ? '1': (p===1) ? '10' : '10'+String(p).sup();
+            var p = Math.round(x);
+            if(p === 0) out.text = 1;
+            else if(p === 1) out.text = '10';
+            else if(p > 1) out.text = '10<sup>' + p + '</sup>';
+            else out.text = '10<sup>\u2212' + -p + '</sup>';
+
             out.fontSize *= 1.25;
         }
         else {

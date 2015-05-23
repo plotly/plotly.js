@@ -154,4 +154,72 @@ describe('Test axes', function () {
             expect(gd.layout.annotations).toEqual(expectedAnnotations);
         });
     });
+
+    describe('handleTickValueDefaults', function() {
+        function makeCoerce(objIn, objOut) {
+            return function(attr, dflt) {
+                return Plotly.Lib.coerce(objIn, objOut,
+                                         Plotly.Axes.layoutAttributes,
+                                         attr, dflt);
+            };
+        }
+
+        it('should set default tickmode correctly', function() {
+            var axIn = {},
+                axOut = {};
+            Plotly.Axes.handleTickValueDefaults(axIn, axOut,
+                makeCoerce(axIn, axOut), 'linear');
+            expect(axOut.tickmode).toBe('auto');
+
+            axIn = {tickmode: 'enumerated'};
+            axOut = {};
+            Plotly.Axes.handleTickValueDefaults(axIn, axOut,
+                makeCoerce(axIn, axOut), 'linear');
+            expect(axOut.tickmode).toBe('auto');
+
+            axIn = {tickmode: 'enumerated', tickvals: [1, 2, 3]};
+            axOut = {};
+            Plotly.Axes.handleTickValueDefaults(axIn, axOut,
+                makeCoerce(axIn, axOut), 'date');
+            expect(axOut.tickmode).toBe('auto');
+
+            axIn = {tickvals: [1, 2, 3]};
+            axOut = {};
+            Plotly.Axes.handleTickValueDefaults(axIn, axOut,
+                makeCoerce(axIn, axOut), 'linear');
+            expect(axOut.tickmode).toBe('enumerated');
+
+            axIn = {dtick: 1};
+            axOut = {};
+            Plotly.Axes.handleTickValueDefaults(axIn, axOut,
+                makeCoerce(axIn, axOut), 'linear');
+            expect(axOut.tickmode).toBe('regular');
+        });
+
+        it('should set nticks iff tickmode=auto', function() {
+            var axIn = {},
+                axOut = {};
+            Plotly.Axes.handleTickValueDefaults(axIn, axOut,
+                makeCoerce(axIn, axOut), 'linear');
+            expect(axOut.nticks).toBe(0);
+
+            axIn = {tickmode: 'auto', nticks: 5};
+            axOut = {};
+            Plotly.Axes.handleTickValueDefaults(axIn, axOut,
+                makeCoerce(axIn, axOut), 'linear');
+            expect(axOut.tickmode).toBe(5);
+
+            axIn = {tickmode: 'regular', nticks: 15};
+            axOut = {};
+            Plotly.Axes.handleTickValueDefaults(axIn, axOut,
+                makeCoerce(axIn, axOut), 'linear');
+            expect(axOut.tickmode).toBe(undefined);
+        });
+
+        it('should set tick0 and dtick iff tickmode=regular', function() {
+            var axin = {},
+                axOut = {};
+            // TODO
+        });
+    });
 });
