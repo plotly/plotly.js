@@ -51,15 +51,15 @@ function computeTickMarks(scene) {
             // in autotick part of calcTicks... Treating all axes as 'y' in this case
             // running the autoticks here, then setting
             // autoticks to false to get around the 2D handling in calcTicks.
-            var autoTickCached = axes.autotick;
-            if (axes.autotick) {
-                axes.autotick = false;
+            var tickModeCached = axes.tickmode;
+            if (axes.tickmode === 'auto') {
+                axes.tickmode = 'regular';
                 var nticks = axes.nticks || Plotly.Lib.constrain((axes._length/40), 4, 9);
                 Plotly.Axes.autoTicks(axes, Math.abs(axes.range[1]-axes.range[0])/nticks);
             }
             ticks[i] = Plotly.Axes.calcTicks(axes);
 
-            axes.autotick = autoTickCached;
+            axes.tickmode = tickModeCached;
         }
     }
 
