@@ -13,7 +13,7 @@ describe('Test axes', function () {
                         type: 'log',
                         autorange: 'reversed',
                         rangemode: 'tozero',
-                        autotick: true,
+                        tickmode: 'auto',
                         nticks: 23,
                         ticks: 'outside',
                         mirror: 'ticks',
