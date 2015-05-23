@@ -1,13 +1,14 @@
-'use strict'
+/* jshint shadow: true */
 
-module.exports = computeTickMarks
+'use strict';
 
-var project = require('./project');
+module.exports = computeTickMarks;
 
-var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis']
+var Plotly  = require('../../plotly');
+
+var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
 var centerPoint = [0,0,0];
-
 
 function contourLevelsFromTicks(ticks) {
     var result = new Array(3);
@@ -17,7 +18,7 @@ function contourLevelsFromTicks(ticks) {
         for(var j=0; j<tlevel.length; ++j) {
             clevel[j] = tlevel[j].x;
         }
-        result[i] = clevel
+        result[i] = clevel;
     }
     return result;
 }
@@ -43,8 +44,8 @@ function computeTickMarks(scene) {
             axes._m       = 1 / glRange[i].pixelsPerDataUnit;
 
             if(axes.range[0] === axes.range[1]) {
-                axes.range[0] -= 1
-                axes.range[1] += 1
+                axes.range[0] -= 1;
+                axes.range[1] += 1;
             }
             // this is necessary to short-circuit the 'y' handling
             // in autotick part of calcTicks... Treating all axes as 'y' in this case
@@ -53,10 +54,10 @@ function computeTickMarks(scene) {
             var autoTickCached = axes.autotick;
             if (axes.autotick) {
                 axes.autotick = false;
-                var nticks = axes.nticks || scene.Plotly.Lib.constrain((axes._length/40), 4, 9);
-                scene.Plotly.Axes.autoTicks(axes, Math.abs(axes.range[1]-axes.range[0])/nticks);
+                var nticks = axes.nticks || Plotly.Lib.constrain((axes._length/40), 4, 9);
+                Plotly.Axes.autoTicks(axes, Math.abs(axes.range[1]-axes.range[0])/nticks);
             }
-            ticks[i] = scene.Plotly.Axes.calcTicks(axes);
+            ticks[i] = Plotly.Axes.calcTicks(axes);
 
             axes.autotick = autoTickCached;
         }
