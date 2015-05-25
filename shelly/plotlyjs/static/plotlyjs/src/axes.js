@@ -402,7 +402,7 @@ axes.handleTickValueDefaults = function(containerIn, containerOut, coerce, axTyp
 
     if(tickmode === 'auto') coerce('nticks');
     else if(tickmode === 'regular') {
-        coerce('tick0', 0);
+        coerce('tick0');
         coerce('dtick');
     }
     else {
