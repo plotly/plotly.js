@@ -4,16 +4,7 @@ var arrtools = require('arraytools'),
     arrayCopy1D = arrtools.copy1D,
     str2RgbaArray = require('../lib/str2rgbarray');
 
-
-module.exports = createAxesOptions;
-
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
-
-function createAxesOptions(plotlyOptions) {
-    var result = new AxesOptions();
-    result.merge(plotlyOptions);
-    return result;
-}
 
 function AxesOptions() {
     this.bounds         = [ [-10, -10, -10],
@@ -134,3 +125,12 @@ proto.merge = function(sceneLayout) {
         } else opts.backgroundEnable[i] = false;
     }
 };
+
+
+function createAxesOptions(plotlyOptions) {
+    var result = new AxesOptions();
+    result.merge(plotlyOptions);
+    return result;
+}
+
+module.exports = createAxesOptions;
