@@ -442,7 +442,7 @@ proto.handleDragmode = function (dragmode) {
     var camera = this.camera;
     if (camera) {
         // rotate and orbital are synonymous
-        if (dragmode === 'rotate' || dragmode === 'orbit') {
+        if (dragmode === 'orbit') {
             camera.mode = 'orbit';
             camera.keyBindingMode = 'rotate';
 

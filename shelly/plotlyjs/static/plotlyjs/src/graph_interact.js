@@ -13,7 +13,7 @@ var fx = module.exports = {};
 fx.layoutAttributes = {
     dragmode: {
         type: 'enumerated',
-        values: ['zoom', 'pan', 'rotate', 'orbit', 'turntable']
+        values: ['zoom', 'pan', 'orbit', 'turntable']
     },
     hovermode: {
         type: 'enumerated',

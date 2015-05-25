@@ -899,12 +899,6 @@ function cleanLayout(layout) {
         cleanAxRef(shape, 'yref');
     }
 
-    // cannot have scene1, numbering goes scene, scene2, scene3...
-    if(layout.scene1) {
-        if(!layout.scene) layout.scene = layout.scene1;
-        delete layout.scene1;
-    }
-
     var legend = layout.legend;
     if(legend) {
         // check for old-style legend positioning (x or y is +/- 100)
@@ -928,13 +922,28 @@ function cleanLayout(layout) {
     }
 
     /*
-     * Convert the old cameraposition key into the new camera key
+     * Moved from rotate -> orbit for dragmode
+     */
+    if (layout.dragmode === 'rotate') layout.dragmode = 'orbit';
+
+    // cannot have scene1, numbering goes scene, scene2, scene3...
+    if(layout.scene1) {
+        if(!layout.scene) layout.scene = layout.scene1;
+        delete layout.scene1;
+    }
+
+    /*
+     * Clean up Scene layouts
      */
     var sceneIds = plots.getSubplotIds(layout, 'gl3d');
     var scene, cameraposition, rotation,
         radius, center, mat, eye;
     for (i = 0; i < sceneIds.length; i++) {
         scene = layout[sceneIds[i]];
+
+        /*
+         * Clean old Camera coords
+         */
         cameraposition = scene.cameraposition;
         if (Array.isArray(cameraposition) && cameraposition[0].length === 4) {
             rotation = cameraposition[0];
