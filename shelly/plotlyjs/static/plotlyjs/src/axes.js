@@ -39,7 +39,7 @@ axes.layoutAttributes = {
     // ticks
     tickmode: {
         type: 'enumerated',
-        values: ['auto', 'regular', 'enumerated']
+        values: ['auto', 'linear', 'list']
     },
     // nticks: only used with tickmode='auto'
     nticks: {
@@ -47,7 +47,7 @@ axes.layoutAttributes = {
         min: 0,
         dflt: 0
     },
-    // tick0, dtick: only used with tickmode='regular'
+    // tick0, dtick: only used with tickmode='linear'
     tick0: {
         type: 'number',
         dflt: 0
@@ -56,7 +56,7 @@ axes.layoutAttributes = {
         type: 'any',
         dflt: 1
     },
-    // tickvals, ticktext: only used with tickmode='enumerated'
+    // tickvals, ticktext: only used with tickmode='list'
     tickvals: {type: 'data_array'},
     ticktext: {type: 'data_array'},
     ticks: {
@@ -389,19 +389,19 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 axes.handleTickValueDefaults = function(containerIn, containerOut, coerce, axType) {
     var tickmodeDefault = 'auto';
 
-    if(containerIn.tickmode === 'enumerated' &&
+    if(containerIn.tickmode === 'list' &&
             (axType === 'log' || axType === 'date')) {
         containerIn.tickmode = 'auto';
     }
 
-    if(Array.isArray(containerIn.tickvals)) tickmodeDefault = 'enumerated';
+    if(Array.isArray(containerIn.tickvals)) tickmodeDefault = 'list';
     else if(containerIn.dtick && isNumeric(containerIn.dtick)) {
-        tickmodeDefault = 'regular';
+        tickmodeDefault = 'linear';
     }
     var tickmode = coerce('tickmode', tickmodeDefault);
 
     if(tickmode === 'auto') coerce('nticks');
-    else if(tickmode === 'regular') {
+    else if(tickmode === 'linear') {
         coerce('tick0');
         coerce('dtick');
     }
@@ -1268,7 +1268,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
 axes.calcTicks = function calcTicks (ax) {
-    if(ax.tickmode === 'enumerated') return enumeratedTicks(ax);
+    if(ax.tickmode === 'list') return listedTicks(ax);
 
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.tickmode === 'auto' || !ax.dtick){
@@ -1334,7 +1334,7 @@ axes.calcTicks = function calcTicks (ax) {
     return ticksOut;
 };
 
-function enumeratedTicks(ax) {
+function listedTicks(ax) {
     var vals = ax.tickvals,
         text = ax.ticktext,
         ticksOut = new Array(vals.length),
@@ -1474,7 +1474,7 @@ axes.autoTicks = function(ax,rt){
 
 // after dtick is already known, find tickround = precision
 // to display in tick labels
-//   for regular numeric ticks, integer # digits after . to round to
+//   for numeric ticks, integer # digits after . to round to
 //   for date ticks, the last date part to show (y,m,d,H,M,S)
 //      or an integer # digits past seconds
 function autoTickRound(ax) {
@@ -1642,10 +1642,10 @@ function modDateFormat(fmt,x) {
 axes.tickText = function(ax, x, hover){
     var out = tickTextObj(ax, x),
         hideexp,
-        isEnumerated = ax.tickmode === 'enumerated',
-        extraPrecision = hover || isEnumerated;
+        listMode = ax.tickmode === 'list',
+        extraPrecision = hover || listMode;
 
-    if(isEnumerated && Array.isArray(ax.ticktext)) {
+    if(listMode && Array.isArray(ax.ticktext)) {
         var minDiff = Math.abs(ax.range[1] - ax.range[0]) / 10000;
         for(var i = 0; i < ax.ticktext.length; i++) {
             if(Math.abs(x - ax.d2l(ax.tickvals[i])) < minDiff) break;

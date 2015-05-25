@@ -172,12 +172,12 @@ describe('Test axes', function () {
             handleTickValueDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('auto');
 
-            axIn = {tickmode: 'enumerated', tickvals: 'stuff'};
+            axIn = {tickmode: 'list', tickvals: 'stuff'};
             axOut = {};
             handleTickValueDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('auto');
 
-            axIn = {tickmode: 'enumerated', tickvals: [1, 2, 3]};
+            axIn = {tickmode: 'list', tickvals: [1, 2, 3]};
             axOut = {};
             handleTickValueDefaults(axIn, axOut, 'date');
             expect(axOut.tickmode).toBe('auto');
@@ -185,12 +185,12 @@ describe('Test axes', function () {
             axIn = {tickvals: [1, 2, 3]};
             axOut = {};
             handleTickValueDefaults(axIn, axOut, 'linear');
-            expect(axOut.tickmode).toBe('enumerated');
+            expect(axOut.tickmode).toBe('list');
 
             axIn = {dtick: 1};
             axOut = {};
             handleTickValueDefaults(axIn, axOut, 'linear');
-            expect(axOut.tickmode).toBe('regular');
+            expect(axOut.tickmode).toBe('linear');
         });
 
         it('should set nticks iff tickmode=auto', function() {
@@ -204,13 +204,13 @@ describe('Test axes', function () {
             handleTickValueDefaults(axIn, axOut, 'linear');
             expect(axOut.nticks).toBe(5);
 
-            axIn = {tickmode: 'regular', nticks: 15};
+            axIn = {tickmode: 'linear', nticks: 15};
             axOut = {};
             handleTickValueDefaults(axIn, axOut, 'linear');
             expect(axOut.nticks).toBe(undefined);
         });
 
-        it('should set tick0 and dtick iff tickmode=regular', function() {
+        it('should set tick0 and dtick iff tickmode=linear', function() {
             var axIn = {tickmode: 'auto', tick0: 1, dtick: 1},
                 axOut = {};
             handleTickValueDefaults(axIn, axOut, 'linear');
@@ -229,14 +229,14 @@ describe('Test axes', function () {
             expect(axOut.tick0).toBe(2.71);
             expect(axOut.dtick).toBe(0.00828);
 
-            axIn = {tickmode: 'regular', tick0: 3.14, dtick: 0.00159};
+            axIn = {tickmode: 'linear', tick0: 3.14, dtick: 0.00159};
             axOut = {};
             handleTickValueDefaults(axIn, axOut, 'linear');
             expect(axOut.tick0).toBe(3.14);
             expect(axOut.dtick).toBe(0.00159);
         });
 
-        it('should set tickvals and ticktext iff tickmode=enumerated', function() {
+        it('should set tickvals and ticktext iff tickmode=list', function() {
             var axIn = {tickmode: 'auto', tickvals: [1,2,3], ticktext: [4,5,6]},
                 axOut = {};
             handleTickValueDefaults(axIn, axOut, 'linear');
