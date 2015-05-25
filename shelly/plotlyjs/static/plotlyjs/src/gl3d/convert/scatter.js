@@ -215,7 +215,8 @@ function convertPlotlyOptions(scene, data) {
     //Build object parameters
     params = {
         position: points,
-        mode:     data.mode
+        mode:     data.mode,
+        text:     data.text
     };
 
     if ('line' in data) {
@@ -234,7 +235,6 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if ('textposition' in data) {
-        params.text           = data.text;
         params.textOffset     = calculateTextOffset(data.textposition);
         params.textColor      = str2RgbaArray(data.textfont.color);
         params.textSize       = data.textfont.size;
@@ -366,19 +366,19 @@ proto.update = function(data) {
         project:      false
     };
 
+    this.textLabels = options.text;
+
     if(this.mode.indexOf('text') !== -1) {
         if (this.textMarkers) this.textMarkers.update(textOptions);
         else {
             this.textMarkers = createScatterPlot(textOptions);
-            this.scatterPlot.highlightScale = 1;
+            this.textMarkers.highlightScale = 1;
             this.scene.glplot.add(this.textMarkers);
         }
-        this.textLabels = options.text;
     } else if (this.textMarkers) {
         this.scene.glplot.remove(this.textMarkers);
         this.textMarkers.dispose();
         this.textMarkers = null;
-        this.textLabels = null;
     }
 
     errorOptions = {
