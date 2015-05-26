@@ -23,11 +23,10 @@ fs.readFile(__dirname + '/src/fonts/ploticon/ploticon.svg', function(err, data) 
         });
 
         var charStr = JSON.stringify(chars, null, 4)
-            .replace(/\"(\w+)\":/g, '$1:') // strip unnecessary quotes
             .replace(/\"/g, '\''); // turn remaining double quotes into single
 
         fs.writeFile(__dirname + '/build/ploticon.js',
-            '\'use strict\';\n\nmodule.exports = ' + charStr + ';\n',
+            '/*jshint quotmark:true */\n\'use strict\';\n\nmodule.exports = ' + charStr + ';\n',
             function(err3) { if(err3) throw err3; }
         );
     });

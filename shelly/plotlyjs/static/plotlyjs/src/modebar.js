@@ -426,14 +426,14 @@ ModeBar.prototype.config = function config() {
             title: 'orbital rotation',
             attr: 'dragmode',
             val: 'orbit',
-            icon: 'undo',
+            icon: '3d_rotate',
             click: this.handleDrag3d
         },
         tableRotation: {
-            title: 'turn table rotation',
+            title: 'turntable rotation',
             attr: 'dragmode',
             val: 'turntable',
-            icon: 'undo',
+            icon: 'z-axis',
             click: this.handleDrag3d
         },
         resetCameraDefault3d: {
