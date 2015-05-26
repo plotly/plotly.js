@@ -111,11 +111,7 @@ function createCamera(element, options) {
           //Hacky time warping stuff to generate smooth animation
           var t0 = now();
           view._active.lookAt(t0, curEye, curCenter, curUp);
-          if(curUp[2] < 0) {
-            view._active.lookAt(t0 + 500, curEye, curCenter, [0,0,-1]);
-          } else {
-            view._active.lookAt(t0 + 500, curEye, curCenter, [0,0,1]);
-          }
+          view._active.lookAt(t0 + 500, curEye, curCenter, [0,0,1]);
           view._active.flush(t0);
         }
         return view.getMode();
