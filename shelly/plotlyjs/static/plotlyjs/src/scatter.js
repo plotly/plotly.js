@@ -317,6 +317,11 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
 
     scatter.colorScalableDefaults('marker.', coerce, defaultColor);
 
+    if(traceOut.marker && traceOut.marker.colorscale !== undefined) {
+        scatter.handleColorscaleDefaults(traceIn, traceOut,
+                                         layout, coerce, 'marker.');
+    }
+
     // if there's a line with a different color than the marker, use
     // that line color as the default marker line color
     // mostly this is for transparent markers to behave nicely
@@ -350,6 +355,34 @@ scatter.colorScalableDefaults = function(prefix, coerce, dflt) {
             coerce(attrs[i]);
         }
     }
+};
+
+scatter.handleColorscaleDefaults = function(traceIn, traceOut, layout, coerce, prefix) {
+    if(prefix === undefined) prefix = '';
+
+    function flipScale(si){ return [1 - si[0], si[1]]; }
+
+    var containerIn = prefix ?
+            traceIn[prefix.slice(0, prefix.length-1)] || {} :
+            traceIn,
+        containerOut = prefix ?
+            traceOut[prefix.slice(0, prefix.length-1)] || {} :
+            traceOut;
+
+    coerce(prefix + 'autocolorscale');
+    coerce(prefix + 'colorscale');
+
+    var reverseScale = coerce(prefix + 'reversescale'),
+        showScale = coerce(prefix + 'showscale');
+
+    // apply the colorscale reversal here, so we don't have to
+    // do it in separate modules later
+    if(reverseScale) {
+        containerOut.colorscale = containerOut.colorscale
+                                    .map(flipScale).reverse();
+    }
+
+    if(showScale) Plotly.Colorbar.supplyDefaults(containerIn, containerOut, layout);
 };
 
 scatter.cleanData = function(fullData) {

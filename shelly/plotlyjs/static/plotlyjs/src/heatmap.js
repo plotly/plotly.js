@@ -145,27 +145,13 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('zmin');
     coerce('zmax');
 
-    if(!Plotly.Plots.isContour(traceOut.type) || (traceOut.contours||{}).coloring!=='none') {
-        coerce('colorscale');
-        coerce('autocolorscale');
-        var reverseScale = coerce('reversescale'),
-            showScale = coerce('showscale');
-
-        // apply the colorscale reversal here, so we don't have to
-        // do it in separate modules later
-        if(reverseScale) {
-            traceOut.colorscale = traceOut.colorscale.map(flipScale).reverse();
-        }
-
-        if(showScale) {
-            Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-        }
+    if(!Plotly.Plots.isContour(traceOut.type) ||
+           (traceOut.contours || {}).coloring!=='none') {
+        Plotly.Scatter.handleColorscaleDefaults(traceIn, traceOut, layout, coerce);
     }
 
     if(!Plotly.Plots.isContour(traceOut.type)) coerce('zsmooth');
 };
-
-function flipScale(si){ return [1 - si[0], si[1]]; }
 
 
 heatmap.calcColorscale = function(trace, z) {
