@@ -468,6 +468,57 @@ scatter.colorbar = function(gd, cd) {
     Plotly.Lib.markTime('done colorbar');
 };
 
+scatter.calcColorscale = function(trace, vals, containerStr, cLetter) {
+    var container, inputContainer;
+
+    if(containerStr) {
+        container = trace[containerStr];
+        inputContainer = trace._input[containerStr];
+    } else {
+        container = trace;
+        inputContainer = trace._input;
+    }
+
+    var auto = container[cLetter + 'auto'],
+        autocolorscale = container.autocolorscale,
+        min = container[cLetter + 'min'],
+        max = container[cLetter + 'max'],
+        colorscale = container.colorscale;
+
+    if(auto!==false || min===undefined) {
+        min = Plotly.Lib.aggNums(Math.min, null, vals);
+    }
+
+    if(auto!==false || max===undefined) {
+        max = Plotly.Lib.aggNums(Math.max, null, vals);
+    }
+
+    if(min === max) {
+        min -= 0.5;
+        max += 0.5;
+    }
+
+    if(autocolorscale) {
+        if(min * max < 0) {
+            // Data values are > 0 and < 0.
+            colorscale = Plotly.Color.scales.RdBu;
+        } else if(min >= 0) {
+            // Non-negative signed data
+            colorscale = Plotly.Color.scales.Reds;
+        } else {
+            // Non-positive signed data
+            colorscale = Plotly.Color.scales.Blues;
+        }
+    }
+
+    container[cLetter + 'min'] = min;
+    container[cLetter + 'max'] = max;
+    container.colorscale = colorscale;
+    inputContainer[cLetter + 'min'] = min;
+    inputContainer[cLetter + 'max'] = max;
+    inputContainer.colorscale = colorscale;
+};
+
 scatter.calc = function(gd,trace) {
     var xa = Plotly.Axes.getFromId(gd,trace.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd,trace.yaxis||'y');
@@ -477,6 +528,7 @@ scatter.calc = function(gd,trace) {
     var y = ya.makeCalcdata(trace,'y');
     Plotly.Lib.markTime('finished convert y');
     var serieslen = Math.min(x.length,y.length),
+        marker,
         s,
         i;
 
@@ -496,7 +548,8 @@ scatter.calc = function(gd,trace) {
 
         // Treat size like x or y arrays --- Run d2c
         // this needs to go before ppad computation
-        s = trace.marker.size;
+        marker = trace.marker;
+        s = marker.size;
         if (Array.isArray(s)) {
             // I tried auto-type but category and dates dont make much sense.
             var ax = {type: 'linear'};
@@ -520,7 +573,12 @@ scatter.calc = function(gd,trace) {
         xOptions.ppad = yOptions.ppad = Array.isArray(s) ?
             s.map(markerTrans) : markerTrans(s);
 
+        // auto-z and autocolorscale if applicable
+        if(Array.isArray(marker.color)) {
+            scatter.calcColorscale(trace, marker.color, 'marker', 'c');
+        }
     }
+
     // TODO: text size
 
     // include zero (tight) and extremes (padded) if fill to zero
