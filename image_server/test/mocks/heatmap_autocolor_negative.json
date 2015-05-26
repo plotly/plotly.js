@@ -1,0 +1,20 @@
+{
+    "data": [
+        {
+            "z": [
+                [
+                    "a", 
+                    "-1.5", 
+                    "b"
+                ], 
+                [
+                    "-2.2", 
+                    "d", 
+                    "e"
+                ]
+            ], 
+            "autocolorscale": true,
+            "type": "heatmap"
+        }
+    ] 
+}

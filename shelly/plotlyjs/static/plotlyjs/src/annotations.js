@@ -830,7 +830,7 @@ annotations.draw = function(gd, index, opt, value) {
     }
 
     if(gd._context.editable) {
-        anntext.call(Plotly.util.makeEditable, annbg)
+        anntext.call(Plotly.util.makeEditable, ann)
             .call(textLayout)
             .on('edit', function(_text){
                 options.text = _text;

@@ -51,7 +51,7 @@ plots.isCartesian = function(type) {
     return CARTESIANTYPES.indexOf(type) !== -1;
 };
 
-var GL3DTYPES = ['scatter3d', 'surface'];
+var GL3DTYPES = ['scatter3d', 'surface', 'mesh3d'];
 plots.isGL3D = function(type) {
     return GL3DTYPES.indexOf(type) !== -1;
 };
@@ -66,6 +66,10 @@ plots.isScatterAny = function(type) {
 
 plots.isSurface = function(type) {
     return type === 'surface';
+};
+
+plots.isMesh3D = function(type) {
+    return type === 'mesh3d';
 };
 
 // ALLTYPES and getModule are used for the graph_reference app
@@ -87,6 +91,7 @@ plots.getModule = function getModule(trace) {
     if (plots.isContour(type)) return Plotly.Contour;
     if (plots.isHeatmap(type)) return Plotly.Heatmap;
     if (plots.isScatter3D(type)) return Plotly.Scatter3D;
+    if (plots.isMesh3D(type)) return Plotly.Mesh3D;
     if (plots.isSurface(type)) return Plotly.Surface;
     if (plots.isBox(type)) return Plotly.Boxes;
 
@@ -122,7 +127,6 @@ plots.newTab = function(divid, layout) {
         editable: true,
         autosizable: true,
         scrollZoom: true,
-        showTips: false,
         showLink: false,
         setBackground: 'opaque'
     };
@@ -141,13 +145,16 @@ plots.redrawText = function(divid) {
         return;
     }
 
-    setTimeout(function(){
-        Plotly.Annotations.drawAll(gd);
-        Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
-        (gd.calcdata||[]).forEach(function(d){
-            if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
-        });
-    },300);
+    return new Promise(function(resolve) {
+        setTimeout(function(){
+            Plotly.Annotations.drawAll(gd);
+            Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
+            (gd.calcdata||[]).forEach(function(d){
+                if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
+            });
+            resolve(plots.previousPromises(gd));
+        },300);
+    });
 };
 
 // where and how the background gets set can be overridden by context
@@ -228,7 +235,8 @@ plots.addLinks = function(gd) {
         .style({
             'font-family':'"Open Sans",Arial,sans-serif',
             'font-size':'12px',
-            'fill': Plotly.Color.defaultLine
+            'fill': Plotly.Color.defaultLine,
+            'pointer-events': 'all'
         })
         .each(function(){
             var links = d3.select(this);
@@ -660,7 +668,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
     return (donePlotting && donePlotting.then) ?
-        donePlotting : Promise.resolve() ;
+        donePlotting : Promise.resolve();
 };
 
 function plot3D(gd) {
@@ -668,7 +676,6 @@ function plot3D(gd) {
         fullData = gd._fullData;
 
     var i, sceneId, fullSceneData,
-        fullSceneLayout, sceneLayout,
         scene, sceneOptions;
 
     fullLayout._paperdiv.style({
@@ -695,30 +702,25 @@ function plot3D(gd) {
     for (i = 0; i < sceneIds.length; i++) {
         sceneId = sceneIds[i];
         fullSceneData = getSceneData(fullData, sceneId);
-        fullSceneLayout = fullLayout[sceneId];
-        sceneLayout = gd.layout[sceneId],
-        scene = fullSceneLayout._scene;  // ref. to corresp. Scene instance
+        scene = fullLayout[sceneId]._scene;  // ref. to corresp. Scene instance
 
         // If Scene is not instantiated, create one!
         if (!(scene)) {
             sceneOptions = {
-                Plotly: Plotly,
-                container: gd.querySelector('.svg-container'),
-                sceneId: sceneId,
-                fullSceneLayout: fullSceneLayout,
-                fullLayout: fullLayout,
+                container: gd.querySelector('.gl-container'),
+                id: sceneId,
                 staticPlot: gd._context.staticPlot,
                 plot3dPixelRatio: gd._context.plot3dPixelRatio
             };
-            scene = new Plotly.Scene(sceneOptions);
-            fullSceneLayout._scene = scene;  // set ref to Scene instance
+            scene = new Plotly.Scene(sceneOptions, fullLayout);
+            fullLayout[sceneId]._scene = scene;  // set ref to Scene instance
         }
 
-        scene.plot(fullSceneData, fullSceneLayout, sceneLayout);  // takes care of business
+        scene.plot(fullSceneData, fullLayout, gd.layout);  // takes care of business
     }
 }
 
-function plotPolar(gd, data, layout, config) {
+function plotPolar(gd, data, layout) {
     // build or reuse the container skeleton
     var plotContainer = d3.select(gd).selectAll('.plot-container')
         .data([0]);
@@ -736,30 +738,24 @@ function plotPolar(gd, data, layout, config) {
 
     // fulfill gd requirements
     if(data) gd.data = data;
-    gd._fullLayout = layout;
-    gd._fullLayout._container = plotContainer;
-    gd._fullLayout._paperdiv = paperDiv;
+    if(layout) gd.layout = layout;
+    Plotly.micropolar.manager.fillLayout(gd);
+
     if(gd._fullLayout.autosize === 'initial' && gd._context.autosizable) {
         plotAutoSize(gd,{});
-        gd._fullLayout.autosize = gd.layout.autosize = true;
+        gd._fullLayout.autosize = layout.autosize = true;
     }
     // resize canvas
     paperDiv.style({
-        width: (layout.width || 800) + 'px',
-        height: (layout.height || 600) + 'px'
+        width: gd._fullLayout.width + 'px',
+        height: gd._fullLayout.height + 'px'
     });
 
     // instantiate framework
-    gd.framework = Plotly.micropolar.manager.framework();
-    //get rid of gd.layout stashed nodes
-    layout = Plotly.micropolar.util.deepExtend({}, gd._fullLayout);
-    delete layout._container;
-    delete layout._paperdiv;
-    delete layout.autosize;
-    delete layout._paper;
+    gd.framework = Plotly.micropolar.manager.framework(gd);
 
     // plot
-    gd.framework({data: gd.data, layout: layout}, paperDiv.node());
+    gd.framework({data: gd.data, layout: gd.layout}, paperDiv.node());
 
     // set undo point
     gd.framework.setUndoPoint();
@@ -815,14 +811,10 @@ function plotPolar(gd, data, layout, config) {
         };
         title.call(setContenteditable);
 
-        gd._fullLayout._paperdiv = paperDiv;
-
         Plotly.ToolPanel.tweakMenu(gd);
     }
 
-    // fulfill more gd requirements
-    gd._fullLayout._paper = polarPlotSVG;
-    gd._context.setBackground(gd, layout.paper_bgcolor || 'white');
+    gd._context.setBackground(gd, gd._fullLayout.paper_bgcolor);
     plots.addLinks(gd);
 
     return Promise.resolve();
@@ -870,6 +862,14 @@ function cleanLayout(layout) {
 
         // prune empty domain arrays made before the new nestedProperty
         if(emptyContainer(ax, 'domain')) delete ax.domain;
+
+        // autotick -> tickmode
+        if(ax.autotick !== undefined) {
+            if(ax.tickmode === undefined) {
+                ax.tickmode = ax.autotick ? 'auto' : 'linear';
+            }
+            delete ax.autotick;
+        }
     }
 
     if(layout.annotations !== undefined && !Array.isArray(layout.annotations)) {
@@ -1232,15 +1232,7 @@ plots.supplyDefaults = function(gd) {
         newFullData.push(fullTrace);
 
         // DETECT 3D, Cartesian, and Polar
-        if (plots.isGL3D(fullTrace.type)) {
-            newFullLayout._hasGL3D = true;
-
-            /*
-             * Need to add blank scenes here so that relink private keys has something to
-             * attach the old layouts private keys and functions onto.
-             */
-            newFullLayout[fullTrace.scene] = {};
-        }
+        if (plots.isGL3D(fullTrace.type)) newFullLayout._hasGL3D = true;
 
         if (plots.isCartesian(fullTrace.type)) {
             if ('r' in fullTrace) newFullLayout._hasPolar = true;
@@ -1263,21 +1255,16 @@ plots.supplyDefaults = function(gd) {
         }
     }
 
-    /*
-     * Relink functions and underscore attributes to promote consistency between
-     * plots. This must come BEFORE supplyLayoutModuleDefaults as we want new values
-     * to overwrite old values, not the other way around.
-     */
-    relinkPrivateKeys(newFullLayout, oldFullLayout);
-
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
-    /*
-     * This must come AFTER supplyLayoutModuleDefaults as it checks to see if there are scenes
-     * in the oldFullLayout but not in the newFullLayout - it deletes those scenes.
-     */
     cleanScenes(newFullLayout, oldFullLayout);
+
+    /*
+     * Relink functions and underscore attributes to promote consistency between
+     * plots.
+     */
+    relinkPrivateKeys(newFullLayout, oldFullLayout);
 
     doAutoMargin(gd);
 
@@ -2329,6 +2316,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'x', 'y', 'z',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
         'line.width','showscale','zauto','connectgaps',
+        'autocolorscale',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
         'autocontour','ncontours','contours.coloring',
@@ -2466,6 +2454,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             if(zscl.indexOf(ai)!==-1) {
                 doextra(cont,'zauto',false,i);
             }
+            else if(ai === 'colorscale') {
+                doextra(cont, 'autocolorscale', false, i);
+            }
+            else if(ai === 'autocolorscale') {
+                doextra(cont, 'colorscale', undefined, i);
+            }
             else if(ai==='zauto') {
                 doextra(cont,zscl,undefined,i);
             }
@@ -2521,6 +2515,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                         (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b);
                 doextra(cont,'colorbar.len', contFull.colorbar.len *
                     (vi==='fraction' ? 1/lennorm : lennorm), i);
+            }
+            else if(ai === 'colorbar.tick0' || ai === 'colorbar.dtick') {
+                doextra(cont, 'colorbar.tickmode', 'linear');
+            }
+            else if(ai === 'colorbar.tickmode') {
+                doextra(cont, ['colorbar.tick0', 'colorbar.dtick'], undefined);
             }
 
             // save the old value
@@ -2816,11 +2816,11 @@ Plotly.relayout = function relayout (gd, astr, val) {
             parentIn = Plotly.Lib.nestedProperty(gd.layout, ptrunk).get(),
             parentFull = Plotly.Lib.nestedProperty(gd._fullLayout, ptrunk).get();
 
-        redoit[ai] = aobj[ai];
+        redoit[ai] = vi;
 
         // axis reverse is special - it is its own inverse
         // op and has no flag.
-        undoit[ai] = (pleaf === 'reverse') ? aobj[ai] : p.get();
+        undoit[ai] = (pleaf === 'reverse') ? vi : p.get();
 
         // check autosize or autorange vs size and range
         if(hw.indexOf(ai)!==-1) { doextra('autosize', false); }
@@ -2838,6 +2838,12 @@ Plotly.relayout = function relayout (gd, astr, val) {
         else if(pleafPlus.match(/^aspectmode$/)) {
             doextra([ptrunk + '.x', ptrunk + '.y', ptrunk + '.z'], undefined);
         }
+        else if(pleaf === 'tick0' || pleaf === 'dtick') {
+            doextra(ptrunk + '.tickmode', 'linear');
+        }
+        else if(pleaf === 'tickmode') {
+            doextra([ptrunk + '.tick0', ptrunk + '.dtick'], undefined);
+        }
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie are we toggling log)
         if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
@@ -2854,7 +2860,6 @@ Plotly.relayout = function relayout (gd, astr, val) {
                         doextra(ptrunk+'.autorange', true);
                     }
                     // if one is negative, set it 6 orders below the other.
-                    // TODO: find the smallest positive val?
                     if(r0 <= 0) r0 = r1/1e6;
                     else if(r1 <= 0) r1 = r0/1e6;
                     // now set the range values as appropriate
@@ -3181,7 +3186,21 @@ function makePlotFramework(gd) {
     // Make the graph containers
     // start fresh each time we get here, so we know the order comes out
     // right, rather than enter/exit which can muck up the order
+    // TODO: sort out all the ordering so we don't have to
+    // explicitly delete anything
+    fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
+        .data([0]);
+    fullLayout._glcontainer.enter().append('div')
+        .classed('gl-container', true);
+
     fullLayout._paperdiv.selectAll('.main-svg').remove();
+
+    fullLayout._paper = fullLayout._paperdiv.insert('svg', ':first-child')
+        .classed('main-svg', true);
+
+    fullLayout._toppaper = fullLayout._paperdiv.append('svg')
+        .classed('main-svg', true);
+
 
     if(!fullLayout._uid) {
         var otherUids = [];
@@ -3191,14 +3210,12 @@ function makePlotFramework(gd) {
         fullLayout._uid = Plotly.Lib.randstr(otherUids);
     }
 
-    fullLayout._paper = fullLayout._paperdiv.append('svg')
+    fullLayout._paperdiv.selectAll('.main-svg')
         .attr({
             xmlns: 'http://www.w3.org/2000/svg',
             // odd d3 quirk - need namespace twice??
-            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
-            'xml:xml:space': 'preserve'
-        })
-        .classed('main-svg', true);
+            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
+        });
 
     fullLayout._defs = fullLayout._paper.append('defs')
         .attr('id', 'defs-' + fullLayout._uid);
@@ -3330,10 +3347,14 @@ function makePlotFramework(gd) {
             .classed('crisp', true);
     });
 
-    // single shape, info (legend, annotations) and hover layers for the whole plot
+    // single shape layer for the whole plot
     fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
-    fullLayout._infolayer = fullLayout._paper.append('g').classed('infolayer', true);
-    fullLayout._hoverlayer = fullLayout._paper.append('g').classed('hoverlayer', true);
+
+    fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
+    // lastly info (legend, annotations) and hover layers go on top
+    // these are in a different svg element normally, but
+    fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
+    fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
 
     // position and style the containers, make main title
     var frameWorkDone = Plotly.Lib.syncOrAsync([
@@ -3464,15 +3485,20 @@ function layoutStyles(gd) {
 
 function lsInner(gd) {
     var fullLayout = gd._fullLayout,
-        gs = fullLayout._size;
+        gs = fullLayout._size,
+        axList = Plotly.Axes.list(gd),
+        i;
 
     // clear axis line positions, to be set in the subplot loop below
-    Plotly.Axes.list(gd).forEach(function(ax){ ax._linepositions = {}; });
-    fullLayout._paperdiv.style({
-        width: fullLayout.width+'px',
-        height: fullLayout.height+'px'
-    });
-    fullLayout._paper.call(Plotly.Drawing.setSize, fullLayout.width, fullLayout.height);
+    for(i = 0; i < axList.length; i++) axList[i]._linepositions = {};
+
+    fullLayout._paperdiv
+        .style({
+            width: fullLayout.width + 'px',
+            height: fullLayout.height + 'px'
+        })
+        .selectAll('.main-svg')
+            .call(Plotly.Drawing.setSize, fullLayout.width, fullLayout.height);
 
     gd._context.setBackground(gd, fullLayout.paper_bgcolor);
 

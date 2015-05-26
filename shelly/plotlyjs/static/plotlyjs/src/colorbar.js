@@ -117,10 +117,12 @@ var colorbar = module.exports = function(td,id) {
             cbAxisIn = {
                 type: 'linear',
                 range: zrange,
-                autotick: opts.autotick,
+                tickmode: opts.tickmode,
                 nticks: opts.nticks,
                 tick0: opts.tick0,
                 dtick: opts.dtick,
+                tickvals: opts.tickvals,
+                ticktext: opts.ticktext,
                 ticks: opts.ticks,
                 ticklen: opts.ticklen,
                 tickwidth: opts.tickwidth,
@@ -172,8 +174,8 @@ var colorbar = module.exports = function(td,id) {
                 (opts.titleside==='top' ? lenFrac-ypadFrac : ypadFrac);
         }
 
-        if(opts.line.color && opts.autotick!==false) {
-            cbAxisOut.autotick = false;
+        if(opts.line.color && opts.tickmode === 'auto') {
+            cbAxisOut.tickmode = 'linear';
             cbAxisOut.tick0 = opts.levels.start;
             var dtick = opts.levels.size;
             // expand if too many contours, so we don't get too many ticks
@@ -598,10 +600,12 @@ colorbar.attributes = {
         dflt: 'rgba(0,0,0,0)'
     },
     // tick and title properties named and function exactly as in axes
-    autotick: axesAttrs.autotick,
+    tickmode: axesAttrs.tickmode,
     nticks: axesAttrs.nticks,
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
+    tickvals: axesAttrs.tickvals,
+    ticktext: axesAttrs.ticktext,
     ticks: extendFlat(axesAttrs.ticks, {dflt: ''}),
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
@@ -657,12 +661,7 @@ colorbar.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('borderwidth');
     coerce('bgcolor');
 
-    var autotick = coerce('autotick');
-    if(autotick) coerce('nticks');
-    else {
-        coerce('tick0');
-        coerce('dtick');
-    }
+    Plotly.Axes.handleTickValueDefaults(containerIn, containerOut, coerce, 'linear');
 
     var ticks = coerce('ticks');
     if(ticks) {
