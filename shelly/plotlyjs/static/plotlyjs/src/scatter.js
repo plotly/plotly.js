@@ -247,11 +247,11 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('mode', defaultMode);
 
     if(scatter.hasLines(traceOut)) {
-        scatter.lineDefaults(traceIn, traceOut, defaultColor, layout);
+        scatter.lineDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
     if(scatter.hasMarkers(traceOut)) {
-        scatter.markerDefaults(traceIn, traceOut, defaultColor, layout);
+        scatter.markerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
     }
 
     if(scatter.hasText(traceOut)) {
@@ -278,47 +278,36 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
             (traceOut.line||{}).color ||
             inheritColorFromMarker ||
             defaultColor, 0.5));
-        if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut);
+        if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut, coerce);
     }
 
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
-scatter.lineDefaults = function(traceIn, traceOut, defaultColor) {
-    function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-    }
-
+scatter.lineDefaults = function(traceIn, traceOut, defaultColor, coerce) {
     var markerColor = (traceIn.marker||{}).color;
     // don't try to inherit a color array
     coerce('line.color', (Array.isArray(markerColor) ? false : markerColor) ||
                          defaultColor);
     coerce('line.width');
 
-    lineShapeDefaults(traceIn, traceOut);
+    lineShapeDefaults(traceIn, traceOut, coerce);
 
     coerce('connectgaps');
     coerce('line.dash');
 };
 
-function lineShapeDefaults(traceIn, traceOut) {
-    function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-    }
-
+function lineShapeDefaults(traceIn, traceOut, coerce) {
     var shape = coerce('line.shape');
     if(shape==='spline') coerce('line.smoothing');
 }
 
-scatter.markerDefaults = function(traceIn, traceOut, defaultColor) {
-    function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-    }
-
+scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerce) {
     var isBubble = scatter.isBubble(traceIn),
-        lineColor = (traceIn.line||{}).color,
+        lineColor = (traceIn.line || {}).color,
         defaultMLC;
+
     if(lineColor) defaultColor = lineColor;
 
     coerce('marker.symbol');
