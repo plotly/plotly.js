@@ -30,7 +30,7 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
                                  attr, dflt);
     }
 
-    coerce('dragmode', layoutOut._hasGL3D ? 'orbit' : 'zoom');
+    coerce('dragmode', layoutOut._hasGL3D ? 'turntable' : 'zoom');
 
     if (layoutOut._hasGL3D) {
         coerce('hovermode', 'closest');
