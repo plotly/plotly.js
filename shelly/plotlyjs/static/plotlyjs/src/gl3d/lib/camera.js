@@ -52,10 +52,23 @@ function createCamera(element, options) {
     tick: function() {
       var t = now();
       var delay = this.delay;
-      view.idle(t-delay);
-      view.flush(t - (100+delay * 2));
       var ctime = t - 2 * delay;
+      view._active.idle(t-delay);
       view.recalcMatrix(ctime);
+
+      for(var i=0; i<view._controllerList.length; ++i) {
+        var cc = view._controllerList[i];
+        if(cc !== view._active) {
+          cc.lookAt(
+            ctime,
+            view._active.computedEye,
+            view._active.computedCenter,
+            view._active.computedUp);
+          cc.idle(t-2*delay);
+        }
+      }
+
+      view.flush(t - (100+delay * 2));
       var allEqual = true;
       var matrix = view.computedMatrix;
       for(var i = 0; i < 16; ++i) {
@@ -119,7 +132,6 @@ function createCamera(element, options) {
           }
           var nextUp = [0,0,0];
           nextUp[axis] = (magnitude < 0 ? -1 : 1);
-          console.log(nextUp, curUp.slice());
           view.lookAt(view.lastT(), curEye, curCenter, nextUp);
         }
         return view.getMode();
@@ -225,6 +237,8 @@ function createCamera(element, options) {
 
     lastX = x;
     lastY = y;
+
+    return true;
   });
 
   mouseWheel(element, function(dx, dy, dz) {
