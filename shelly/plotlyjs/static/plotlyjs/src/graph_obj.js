@@ -866,7 +866,7 @@ function cleanLayout(layout) {
         // autotick -> tickmode
         if(ax.autotick !== undefined) {
             if(ax.tickmode === undefined) {
-                ax.tickmode = ax.autotick ? 'auto' : 'regular';
+                ax.tickmode = ax.autotick ? 'auto' : 'linear';
             }
             delete ax.autotick;
         }
@@ -2517,7 +2517,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                     (vi==='fraction' ? 1/lennorm : lennorm), i);
             }
             else if(ai === 'colorbar.tick0' || ai === 'colorbar.dtick') {
-                doextra(cont, 'colorbar.tickmode', 'regular');
+                doextra(cont, 'colorbar.tickmode', 'linear');
             }
             else if(ai === 'colorbar.tickmode') {
                 doextra(cont, ['colorbar.tick0', 'colorbar.dtick'], undefined);
@@ -2839,7 +2839,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
             doextra([ptrunk + '.x', ptrunk + '.y', ptrunk + '.z'], undefined);
         }
         else if(pleaf === 'tick0' || pleaf === 'dtick') {
-            doextra(ptrunk + '.tickmode', 'regular');
+            doextra(ptrunk + '.tickmode', 'linear');
         }
         else if(pleaf === 'tickmode') {
             doextra([ptrunk + '.tick0', ptrunk + '.dtick'], undefined);

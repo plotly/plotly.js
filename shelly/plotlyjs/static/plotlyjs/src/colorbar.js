@@ -175,7 +175,7 @@ var colorbar = module.exports = function(td,id) {
         }
 
         if(opts.line.color && opts.tickmode === 'auto') {
-            cbAxisOut.tickmode = 'regular';
+            cbAxisOut.tickmode = 'linear';
             cbAxisOut.tick0 = opts.levels.start;
             var dtick = opts.levels.size;
             // expand if too many contours, so we don't get too many ticks

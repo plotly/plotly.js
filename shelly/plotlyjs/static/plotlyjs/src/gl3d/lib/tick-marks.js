@@ -53,7 +53,7 @@ function computeTickMarks(scene) {
             // autoticks to false to get around the 2D handling in calcTicks.
             var tickModeCached = axes.tickmode;
             if (axes.tickmode === 'auto') {
-                axes.tickmode = 'regular';
+                axes.tickmode = 'linear';
                 var nticks = axes.nticks || Plotly.Lib.constrain((axes._length/40), 4, 9);
                 Plotly.Axes.autoTicks(axes, Math.abs(axes.range[1]-axes.range[0])/nticks);
             }
