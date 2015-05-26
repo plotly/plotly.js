@@ -103,7 +103,25 @@ function createCamera(element, options) {
         return view.getMode();
       },
       set: function(mode) {
+        var curUp = view.computedUp.slice();
+        var curEye = view.computedEye.slice();
+        var curCenter = view.computedCenter.slice();
         view.setMode(mode);
+        if(mode === 'turntable') {
+          //Snap up axis
+          var axis = 0;
+          var magnitude = 0;
+          for(var i=0; i<3; ++i) {
+            if(Math.abs(curUp[i]) > Math.abs(magnitude)) {
+              magnitude = curUp[i];
+              axis = i;
+            }
+          }
+          var nextUp = [0,0,0];
+          nextUp[axis] = (magnitude < 0 ? -1 : 1);
+          console.log(nextUp, curUp.slice());
+          view.lookAt(view.lastT(), curEye, curCenter, nextUp);
+        }
         return view.getMode();
       },
       enumerable: true
@@ -113,7 +131,7 @@ function createCamera(element, options) {
         return view.computedCenter;
       },
       set: function(ncenter) {
-        view.lookAt(view.lastT(), ncenter);
+        view.lookAt(view.lastT(), null, ncenter);
         return view.computedCenter;
       },
       enumerable: true
@@ -123,7 +141,7 @@ function createCamera(element, options) {
         return view.computedEye;
       },
       set: function(neye) {
-        view.lookAt(view.lastT(), null, neye);
+        view.lookAt(view.lastT(), neye);
         return view.computedEye;
       },
       enumerable: true
