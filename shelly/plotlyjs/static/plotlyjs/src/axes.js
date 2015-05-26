@@ -1365,14 +1365,28 @@ function listedTicks(ax) {
     return ticksOut;
 }
 
+var roundBase10 = [2, 5, 10],
+    roundBase24 = [1, 2, 3, 6, 12],
+    roundBase60 = [1, 2, 5, 10, 15, 30],
+    // 2&3 day ticks are weird, but need something btwn 1&7
+    roundDays = [1, 2, 3, 7, 14],
+    // approx. tick positions for log axes, showing all (1) and just 1, 2, 5 (2)
+    // these don't have to be exact, just close enough to round to the right value
+    roundLog1 = [-0.046, 0, 0.301, 0.477, 0.602, 0.699, 0.778, 0.845, 0.903, 0.954, 1],
+    roundLog2 = [-0.301, 0, 0.301, 0.699, 1];
+
+function roundDTick(roughDTick, base, roundingSet) {
+    return base * Plotly.Lib.roundUp(roughDTick / base, roundingSet);
+}
+
 // autoTicks: calculate best guess at pleasant ticks for this axis
 // inputs:
 //      ax - an axis object
-//      rt - rough tick spacing (to be turned into a nice round number
+//      roughDTick - rough tick spacing (to be turned into a nice round number)
 // outputs (into ax):
 //   tick0: starting point for ticks (not necessarily on the graph)
 //      usually 0 for numeric (=10^0=1 for log) or jan 1, 2000 for dates
-//   dtick: the actual, nice round tick spacing, somewhat larger than rt
+//   dtick: the actual, nice round tick spacing, somewhat larger than roughDTick
 //      if the ticks are spaced linearly (linear scale, categories,
 //          log with only full powers, date ticks < month),
 //          this will just be a number
@@ -1381,94 +1395,88 @@ function listedTicks(ax) {
 //      log with linear ticks: L# where # is the linear tick spacing
 //      log showing powers plus some intermediates:
 //          D1 shows all digits, D2 shows 2 and 5
-axes.autoTicks = function(ax,rt){
-    var base,rtexp;
-    if(ax.type==='date'){
-        ax.tick0 = new Date(2000,0,1).getTime();
-        if(rt>15778800000){
-            // years if rt>6mo
-            rt /= 31557600000;
-            rtexp = Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-            ax.dtick = 'M'+String(12*rtexp*
-                Plotly.Lib.roundUp(rt/rtexp,[2,5,10]));
+axes.autoTicks = function(ax, roughDTick){
+    var base;
+
+    if(ax.type === 'date'){
+        ax.tick0 = new Date(2000, 0, 1).getTime();
+
+        if(roughDTick > 15778800000){
+            // years if roughDTick > 6mo
+            roughDTick /= 31557600000;
+            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            ax.dtick = 'M' + (12 * roundDTick(roughDTick, base, roundBase10));
         }
-        else if(rt>1209600000){
-            // months if rt>2wk
-            rt /= 2629800000;
-            ax.dtick = 'M'+Plotly.Lib.roundUp(rt,[1,2,3,6]);
+        else if(roughDTick > 1209600000){
+            // months if roughDTick > 2wk
+            roughDTick /= 2629800000;
+            ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
         }
-        else if(rt>43200000){
-            // days if rt>12h
-            base = 86400000;
+        else if(roughDTick > 43200000){
+            // days if roughDTick > 12h
+            ax.dtick = roundDTick(roughDTick, 86400000, roundDays);
             // get week ticks on sunday
-            ax.tick0 = new Date(2000,0,2).getTime();
-            // 2&3 day ticks are weird, but need something btwn 1&7
-            ax.dtick = base*Plotly.Lib.roundUp(rt/base,[1,2,3,7,14]);
+            ax.tick0 = new Date(2000, 0, 2).getTime();
         }
-        else if(rt>1800000){
-            // hours if rt>30m
-            base = 3600000;
-            ax.dtick = base*Plotly.Lib.roundUp(rt/base,[1,2,3,6,12]);
+        else if(roughDTick > 1800000){
+            // hours if roughDTick > 30m
+            ax.dtick = roundDTick(roughDTick, 3600000, roundBase24);
         }
-        else if(rt>30000){
-            // minutes if rt>30sec
-            base = 60000;
-            ax.dtick = base*Plotly.Lib.roundUp(rt/base,[1,2,5,10,15,30]);
+        else if(roughDTick > 30000){
+            // minutes if roughDTick > 30sec
+            ax.dtick = roundDTick(roughDTick, 60000, roundBase60);
         }
-        else if(rt>500){
-            // seconds if rt>0.5sec
-            base = 1000;
-            ax.dtick = base*Plotly.Lib.roundUp(rt/base,[1,2,5,10,15,30]);
+        else if(roughDTick > 500){
+            // seconds if roughDTick > 0.5sec
+            ax.dtick = roundDTick(roughDTick, 1000, roundBase60);
         }
         else {
             //milliseconds
-            rtexp = Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-            ax.dtick = rtexp*Plotly.Lib.roundUp(rt/rtexp,[2,5,10]);
+            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            ax.dtick = roundDTick(roughDTick, base, roundBase10);
         }
     }
-    else if(ax.type==='log'){
-        ax.tick0=0;
-        if(rt>0.7){
-            //only show powers of 10
-            ax.dtick=Math.ceil(rt);
-        }
-        else if(Math.abs(ax.range[1]-ax.range[0])<1){
-            // span is less then one power of 10
-            var nt = 1.5*Math.abs((ax.range[1]-ax.range[0])/rt);
+    else if(ax.type === 'log'){
+        ax.tick0 = 0;
+
+        //only show powers of 10
+        if(roughDTick > 0.7) ax.dtick = Math.ceil(roughDTick);
+        else if(Math.abs(ax.range[1] - ax.range[0]) < 1){
+            // span is less than one power of 10
+            var nt = 1.5 * Math.abs((ax.range[1] - ax.range[0]) / roughDTick);
 
             // ticks on a linear scale, labeled fully
-            rt = Math.abs(Math.pow(10,ax.range[1]) -
-                Math.pow(10,ax.range[0]))/nt;
-            rtexp = Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-            ax.dtick = 'L' + String(rtexp*
-                Plotly.Lib.roundUp(rt/rtexp,[2,5,10]));
+            roughDTick = Math.abs(Math.pow(10, ax.range[1]) -
+                Math.pow(10, ax.range[0])) / nt;
+            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            ax.dtick = 'L' + roundDTick(roughDTick, base, roundBase10);
         }
         else {
             // include intermediates between powers of 10,
             // labeled with small digits
-            // ax.dtick="D2" (show 2 and 5) or "D1" (show all digits)
-            ax.dtick = (rt>0.3) ? 'D2' : 'D1';
+            // ax.dtick = "D2" (show 2 and 5) or "D1" (show all digits)
+            ax.dtick = (roughDTick > 0.3) ? 'D2' : 'D1';
         }
     }
     else if(ax.type==='category') {
         ax.tick0 = 0;
-        ax.dtick = Math.ceil(Math.max(rt,1));
+        ax.dtick = Math.ceil(Math.max(roughDTick, 1));
     }
     else{
         // auto ticks always start at 0
         ax.tick0 = 0;
-        rtexp = Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-        ax.dtick = rtexp*Plotly.Lib.roundUp(rt/rtexp,[2,5,10]);
+        base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+        ax.dtick = roundDTick(roughDTick, base, roundBase10);
     }
 
     // prevent infinite loops
-    if(ax.dtick===0) ax.dtick = 1;
+    if(ax.dtick === 0) ax.dtick = 1;
 
     // TODO: this is from log axis histograms with autorange off
     if(!isNumeric(ax.dtick) && typeof ax.dtick !=='string') {
         var olddtick = ax.dtick;
         ax.dtick = 1;
-        throw 'ax.dtick error: '+String(olddtick);
+        throw 'ax.dtick error: ' + String(olddtick);
     }
 };
 
@@ -1478,42 +1486,42 @@ axes.autoTicks = function(ax,rt){
 //   for date ticks, the last date part to show (y,m,d,H,M,S)
 //      or an integer # digits past seconds
 function autoTickRound(ax) {
-    var dt = ax.dtick,
+    var dtick = ax.dtick,
         maxend;
-    ax._tickexponent = 0;
-    if(!isNumeric(dt) && typeof dt !=='string') { dt = 1; }
 
-    if(ax.type==='category') {
-        ax._tickround = null;
-    }
-    else if(isNumeric(dt) || dt.charAt(0)==='L') {
-        if(ax.type==='date') {
-            if(dt>=86400000) { ax._tickround = 'd'; }
-            else if(dt>=3600000) { ax._tickround = 'H'; }
-            else if(dt>=60000) { ax._tickround = 'M'; }
-            else if(dt>=1000) { ax._tickround = 'S'; }
-            else { ax._tickround = 3-Math.round(Math.log(dt/2)/Math.LN10); }
+    ax._tickexponent = 0;
+    if(!isNumeric(dtick) && typeof dtick !== 'string') dtick = 1;
+
+    if(ax.type === 'category') ax._tickround = null;
+    else if(isNumeric(dtick) || dtick.charAt(0) === 'L') {
+        if(ax.type === 'date') {
+            if(dtick >= 86400000) ax._tickround = 'd';
+            else if(dtick >= 3600000) ax._tickround = 'H';
+            else if(dtick >= 60000) ax._tickround = 'M';
+            else if(dtick >= 1000) ax._tickround = 'S';
+            else ax._tickround = 3 - Math.round(Math.log(dtick / 2) / Math.LN10);
         }
         else {
-            if(!isNumeric(dt)) { dt = Number(dt.substr(1)); }
+            if(!isNumeric(dtick)) dtick = Number(dtick.substr(1));
             // 2 digits past largest digit of dtick
-            ax._tickround = 2-Math.floor(Math.log(dt)/Math.LN10+0.01);
-            maxend = (ax.type==='log') ?
-                Math.pow(10,Math.max(ax.range[0],ax.range[1])) :
-                Math.max(Math.abs(ax.range[0]), Math.abs(ax.range[1]));
+            ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.LN10 + 0.01);
 
-            var rangeexp = Math.floor(Math.log(maxend)/Math.LN10+0.01);
-            if(Math.abs(rangeexp)>3) {
-                ax._tickexponent =
-                    (['SI','B'].indexOf(ax.exponentformat)!==-1) ?
-                    3*Math.round((rangeexp-1)/3) : rangeexp;
+            if(ax.type === 'log') {
+                maxend = Math.pow(10, Math.max(ax.range[0], ax.range[1]));
+            }
+            else maxend = Math.max(Math.abs(ax.range[0]), Math.abs(ax.range[1]));
+
+            var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
+            if(Math.abs(rangeexp) > 3) {
+                if(ax.exponentformat === 'SI' || ax.exponentformat === 'B') {
+                    ax._tickexponent = 3 * Math.round((rangeexp - 1) / 3);
+                }
+                else ax._tickexponent = rangeexp;
             }
         }
     }
-    else if(dt.charAt(0)==='M') {
-        ax._tickround = (dt.length===2) ? 'm' : 'y';
-    }
-    else { ax._tickround = null; }
+    else if(dtick.charAt(0) === 'M') ax._tickround = (dtick.length===2) ? 'm' : 'y';
+    else ax._tickround = null;
 }
 
 // months and years don't have constant millisecond values
@@ -1522,90 +1530,92 @@ function autoTickRound(ax) {
 // for pure powers of 10
 // numeric ticks always have constant differences, other datetime ticks
 // can all be calculated as constant number of milliseconds
-axes.tickIncrement = function(x,dtick,axrev){
-    // includes all dates smaller than month, and pure 10^n in log
-    if(isNumeric(dtick)) { return x+(axrev?-dtick:dtick); }
+axes.tickIncrement = function(x, dtick, axrev){
+    var axSign = axrev ? -1 : 1;
 
-    var tType=dtick.charAt(0);
-    var dtnum=Number(dtick.substr(1)),dtSigned=(axrev?-dtnum:dtnum);
+    // includes all dates smaller than month, and pure 10^n in log
+    if(isNumeric(dtick)) return x + axSign * dtick;
+
+    var tType = dtick.charAt(0),
+        dtSigned = axSign * Number(dtick.substr(1));
+
     // Dates: months (or years)
-    if(tType==='M'){
+    if(tType === 'M'){
         var y = new Date(x);
         // is this browser consistent? setMonth edits a date but
         // returns that date's milliseconds
-        return y.setMonth(y.getMonth()+dtSigned);
+        return y.setMonth(y.getMonth() + dtSigned);
     }
 
     // Log scales: Linear, Digits
-    else if(tType==='L') {
-        return Math.log(Math.pow(10,x)+dtSigned)/Math.LN10;
-    }
+    else if(tType === 'L') return Math.log(Math.pow(10, x) + dtSigned) / Math.LN10;
 
     // log10 of 2,5,10, or all digits (logs just have to be
     // close enough to round)
-    else if(tType==='D') {
-        var tickset=(dtick==='D2') ? [-0.301,0,0.301,0.699,1] :
-            [-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
-        var x2=x+(axrev ? -0.01 : 0.01);
-        var frac=Plotly.Lib.roundUp(mod(x2,1), tickset, axrev);
+    else if(tType === 'D') {
+        var tickset = (dtick === 'D2') ? roundLog2 : roundLog1,
+            x2 = x + axSign * 0.01,
+            frac = Plotly.Lib.roundUp(mod(x2, 1), tickset, axrev);
+
         return Math.floor(x2) +
-            Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
+            Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
     }
-    else {
-        throw 'unrecognized dtick '+String(dtick);
-    }
+    else throw 'unrecognized dtick ' + String(dtick);
 };
 
 // calculate the first tick on an axis
 axes.tickFirst = function(ax){
-    var axrev=(ax.range[1]<ax.range[0]),
-        sRound=(axrev ? Math.floor : Math.ceil),
+    var axrev = ax.range[1] < ax.range[0],
+        sRound = axrev ? Math.floor : Math.ceil,
         // add a tiny extra bit to make sure we get ticks
         // that may have been rounded out
-        r0 = ax.range[0]*1.0001 - ax.range[1]*0.0001;
-    if(isNumeric(ax.dtick)) {
-        var tmin = sRound((r0-ax.tick0)/ax.dtick)*ax.dtick+ax.tick0;
+        r0 = ax.range[0] * 1.0001 - ax.range[1] * 0.0001,
+        dtick = ax.dtick,
+        tick0 = ax.tick0;
+    if(isNumeric(dtick)) {
+        var tmin = sRound((r0 - tick0) / dtick) * dtick + tick0;
 
         // make sure no ticks outside the category list
-        if(ax.type==='category') {
-            tmin = Plotly.Lib.constrain(tmin, 0, ax._categories.length-1);
+        if(ax.type === 'category') {
+            tmin = Plotly.Lib.constrain(tmin, 0, ax._categories.length - 1);
         }
         return tmin;
     }
 
-    var tType=ax.dtick.charAt(0),
-        dt=Number(ax.dtick.substr(1)),
-        t0,mdif,t1;
+    var tType = dtick.charAt(0),
+        dtNum = Number(dtick.substr(1)),
+        t0,
+        mdif,
+        t1;
 
     // Dates: months (or years)
-    if(tType==='M'){
-        t0 = new Date(ax.tick0);
+    if(tType === 'M'){
+        t0 = new Date(tick0);
         r0 = new Date(r0);
-        mdif = (r0.getFullYear()-t0.getFullYear())*12 +
-            r0.getMonth()-t0.getMonth();
+        mdif = (r0.getFullYear() - t0.getFullYear()) * 12 +
+            r0.getMonth() - t0.getMonth();
         t1 = t0.setMonth(t0.getMonth() +
-            (Math.round(mdif/dt)+(axrev?1:-1))*dt);
+            (Math.round(mdif / dtNum) + (axrev ? 1 : -1)) * dtNum);
 
-        while(axrev ? t1>r0 : t1<r0) {
-            t1=axes.tickIncrement(t1,ax.dtick,axrev);
+        while(axrev ? t1 > r0 : t1 < r0) {
+            t1 = axes.tickIncrement(t1, dtick, axrev);
         }
         return t1;
     }
 
     // Log scales: Linear, Digits
-    else if(tType==='L') {
+    else if(tType === 'L') {
         return Math.log(sRound(
-            (Math.pow(10,r0)-ax.tick0)/dt)*dt+ax.tick0)/Math.LN10;
+            (Math.pow(10, r0) - tick0) / dtNum) * dtNum + tick0) / Math.LN10;
     }
-    else if(tType==='D') {
-        var tickset=(ax.dtick==='D2')?
-            [-0.301,0,0.301,0.699,1]:
-            [-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
-        var frac=Plotly.Lib.roundUp(mod(r0,1), tickset, axrev);
+    else if(tType === 'D') {
+        var tickset = (dtick === 'D2') ? roundLog2 : roundLog1,
+            frac = Plotly.Lib.roundUp(mod(r0, 1), tickset, axrev);
+
         return Math.floor(r0) +
-            Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
+            Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
     }
-    else { throw 'unrecognized dtick '+String(ax.dtick); }
+    else throw 'unrecognized dtick ' + String(dtick);
 };
 
 var yearFormat = d3.time.format('%Y'),
@@ -1748,11 +1758,11 @@ function formatDate(ax, out, hover, extraPrecision) {
 }
 
 function formatLog(ax, out, hover, extraPrecision, hideexp) {
-    var dt = ax.dtick,
+    var dtick = ax.dtick,
         x = out.x;
-    if(extraPrecision && ((typeof dt !== 'string') || dt.charAt(0)!=='L')) dt = 'L3';
+    if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0)!=='L')) dtick = 'L3';
 
-    if(isNumeric(dt)||((dt.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
+    if(isNumeric(dtick)||((dtick.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
         if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
             var p = Math.round(x);
             if(p === 0) out.text = 1;
@@ -1764,19 +1774,19 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
         }
         else {
             out.text = numFormat(Math.pow(10,x), ax,'','fakehover');
-            if(dt==='D1' && ax._id.charAt(0)==='y') {
+            if(dtick==='D1' && ax._id.charAt(0)==='y') {
                 out.dy -= out.fontSize/6;
             }
         }
     }
-    else if(dt.charAt(0) === 'D') {
+    else if(dtick.charAt(0) === 'D') {
         out.text = String(Math.round(Math.pow(10, mod(x, 1))));
         out.fontSize *= 0.75;
     }
-    else if(dt.charAt(0) === 'L') {
+    else if(dtick.charAt(0) === 'L') {
         out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
     }
-    else throw 'unrecognized dtick ' + String(dt);
+    else throw 'unrecognized dtick ' + String(dtick);
 
     // if 9's are printed on log scale, move the 10's away a bit
     if(ax.dtick==='D1') {
