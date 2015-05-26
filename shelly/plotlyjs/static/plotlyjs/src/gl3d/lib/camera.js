@@ -53,21 +53,8 @@ function createCamera(element, options) {
       var t = now();
       var delay = this.delay;
       var ctime = t - 2 * delay;
-      view._active.idle(t-delay);
+      view.idle(t-delay);
       view.recalcMatrix(ctime);
-
-      for(var i=0; i<view._controllerList.length; ++i) {
-        var cc = view._controllerList[i];
-        if(cc !== view._active) {
-          cc.lookAt(
-            ctime,
-            view._active.computedEye,
-            view._active.computedCenter,
-            view._active.computedUp);
-          cc.idle(t-2*delay);
-        }
-      }
-
       view.flush(t - (100+delay * 2));
       var allEqual = true;
       var matrix = view.computedMatrix;
@@ -121,18 +108,15 @@ function createCamera(element, options) {
         var curCenter = view.computedCenter.slice();
         view.setMode(mode);
         if(mode === 'turntable') {
-          //Snap up axis
-          var axis = 0;
-          var magnitude = 0;
-          for(var i=0; i<3; ++i) {
-            if(Math.abs(curUp[i]) > Math.abs(magnitude)) {
-              magnitude = curUp[i];
-              axis = i;
-            }
+          //Hacky time warping stuff to generate smooth animation
+          var t0 = now();
+          view._active.lookAt(t0, curEye, curCenter, curUp);
+          if(curUp[2] < 0) {
+            view._active.lookAt(t0 + 500, curEye, curCenter, [0,0,-1]);
+          } else {
+            view._active.lookAt(t0 + 500, curEye, curCenter, [0,0,1]);
           }
-          var nextUp = [0,0,0];
-          nextUp[axis] = (magnitude < 0 ? -1 : 1);
-          view.lookAt(view.lastT(), curEye, curCenter, nextUp);
+          view._active.flush(t0);
         }
         return view.getMode();
       },
