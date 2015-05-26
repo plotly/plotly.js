@@ -1,0 +1,50 @@
+{
+    "data": [
+        {
+            "y": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "x": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+            ]
+        }
+    ],
+    "layout": {
+        "yaxis": {
+            "type": "log",
+            "tickvals": [
+                1.5,
+                2.53,
+                5.99999
+            ]
+        },
+        "height": 300,
+        "width": 400,
+        "xaxis": {
+            "ticktext": [
+                "<span style=\"fill:green\">green</span> eggs",
+                "&amp; ham",
+                "H<sub>2</sub>O",
+                "Gorgonzola"
+            ],
+            "tickvals": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+            ]
+        }
+    }
+}
