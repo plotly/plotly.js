@@ -1,3 +1,5 @@
+'use strict';
+
 var Plotly = require('../../plotly');
 var Gl3dAxes = {};
 var axesAttrs = Plotly.Axes.layoutAttributes;
@@ -45,10 +47,12 @@ Gl3dAxes.layoutAttributes = {
     range: axesAttrs.range,
     fixedrange: axesAttrs.fixedrange,
     // ticks
-    autotick: axesAttrs.autotick,
+    tickmode: axesAttrs.tickmode,
     nticks: axesAttrs.nticks,
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
+    tickvals: axesAttrs.tickvals,
+    ticktext: axesAttrs.ticktext,
     ticks: axesAttrs.ticks,
     mirror: axesAttrs.mirror,
     ticklen: axesAttrs.ticklen,
@@ -78,13 +82,11 @@ Gl3dAxes.layoutAttributes = {
     zerolinewidth: axesAttrs.zerolinewidth
 };
 
+var noop = function () {};
 
 Gl3dAxes.supplyLayoutDefaults = function(layoutIn, layoutOut, options) {
 
-    var noop = function () {};
-
     var Axes = Plotly.Axes;
-
     var containerIn, containerOut;
 
     function coerce(attr, dflt) {
@@ -129,6 +131,10 @@ Gl3dAxes.supplyLayoutDefaults = function(layoutIn, layoutOut, options) {
 
 };
 
+Gl3dAxes.setConvert = function (containerOut) {
+    Plotly.Axes.setConvert(containerOut);
+    containerOut.setScale = noop;
+};
 
 Gl3dAxes.initAxes = function (td) {
     var fullLayout = td._fullLayout;

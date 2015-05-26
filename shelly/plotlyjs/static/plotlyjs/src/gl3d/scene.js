@@ -1,3 +1,4 @@
+/* jshint shadow: true */
 'use strict';
 
 var createPlot          = require('gl-plot3d'),
@@ -6,54 +7,111 @@ var createPlot          = require('gl-plot3d'),
     createSpikeOptions  = require('./convert/spikes'),
     createScatterTrace  = require('./convert/scatter'),
     createSurfaceTrace  = require('./convert/surface'),
+    createMeshTrace     = require('./convert/mesh'),
     computeTickMarks    = require('./lib/tick-marks'),
     createCamera        = require('./lib/camera'),
-    str2RGBAarray       = require('./lib/str2rgbarray');
+    str2RGBAarray       = require('./lib/str2rgbarray'),
+    project             = require('./lib/project'),
+    Plotly              = require('../plotly');
+
+var STATIC_CANVAS, STATIC_CONTEXT;
 
 function render(scene) {
+
+    //Update size of svg container
+    var svgContainer = scene.svgContainer;
+    var clientRect = scene.container.getBoundingClientRect();
+    var width = clientRect.width, height = clientRect.height;
+    svgContainer.setAttributeNS (null, 'viewBox', '0 0 ' + width + ' ' + height);
+    svgContainer.setAttributeNS (null, 'width', width);
+    svgContainer.setAttributeNS (null, 'height', height);
+
     computeTickMarks(scene);
     scene.glplot.axes.update(scene.axesOptions);
 
+    //Check if pick has changed
     var keys = Object.keys(scene.traces);
+    var lastPicked = null;
+    var lastIndex = null;
+    var selection = scene.glplot.selection;
     for (var i = 0; i < keys.length; ++i) {
         var trace = scene.traces[keys[i]];
-        trace.handlePick(scene.glplot.selection);
+        if(trace.handlePick(selection)) {
+            lastPicked = trace;
+            lastIndex = scene.glplot.selection.index;
+        }
 
         if (trace.setContourLevels) trace.setContourLevels();
     }
+
+    if(lastPicked !== null) {
+      var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate);
+      Plotly.Fx.loneHover({
+        x: (0.5 + 0.5 * pdata[0]/pdata[3]) * width,
+        y: (0.5 - 0.5 * pdata[1]/pdata[3]) * height,
+        xLabel: selection.dataCoordinate[0] + '',
+        yLabel: selection.dataCoordinate[1] + '',
+        zLabel: selection.dataCoordinate[2] + '',
+        text: selection.textLabel || '',
+        name: lastPicked.name,
+        color: lastPicked.color
+       }, {
+         container: svgContainer
+       });
+    } else {
+      Plotly.Fx.loneHover({
+        x: 1e20,
+        y: 1e20
+       }, {
+         container: svgContainer
+       });
+    }
 }
 
-function Scene(options) {
-
+function Scene(options, fullLayout) {
 
     //Create sub container for plot
     var sceneContainer = document.createElement('div');
     var plotContainer = options.container;
 
+    //Create SVG container for hover text
+    var svgContainer = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'svg');
+    svgContainer.style.position = 'absolute';
+    svgContainer.style.top   = svgContainer.style.left   = '0px';
+    svgContainer.style.width = svgContainer.style.height = '100%';
+    svgContainer.style['z-index'] = 20;
+    svgContainer.style['pointer-events'] = 'none';
+    sceneContainer.appendChild(svgContainer);
+    this.svgContainer = svgContainer;
+
     /*
      * Tag the container with the sceneID
      */
-    sceneContainer.id = options.sceneId;
+    sceneContainer.id             = options.id;
     sceneContainer.style.position = 'absolute';
-    sceneContainer.style.top = sceneContainer.style.left = '0px';
-    sceneContainer.style.width = sceneContainer.style.height = '100%';
-
+    sceneContainer.style.top      = sceneContainer.style.left = '0px';
+    sceneContainer.style.width    = sceneContainer.style.height = '100%';
     plotContainer.appendChild(sceneContainer);
 
-    this.Plotly           = options.Plotly;
-    this.fullSceneLayout  = options.fullSceneLayout;
-    this.fullLayout       = options.fullLayout;
-    this.axesOptions      = createAxesOptions(options.fullSceneLayout);
-    this.spikeOptions     = createSpikeOptions(options.fullSceneLayout);
+    this.fullLayout               = fullLayout;
+    this.id                       = options.id || 'scene';
+    /*
+     * Move this to calc step? Why does it work here?
+     */
+    this.axesOptions      = createAxesOptions(fullLayout[this.id]);
+    this.spikeOptions     = createSpikeOptions(fullLayout[this.id]);
+    this.container        = sceneContainer;
 
-    this.container    = sceneContainer;
+    this.staticMode   = false;
 
     /*
      * WARNING!!!! Only set camera position on first call to plot!!!!
      * TODO remove this hack
      */
     this.hasPlotBeenCalled = false;
-    this.sceneId = options.sceneId || 'scene';
+
 
     var glplotOptions = {
             container:  sceneContainer,
@@ -65,12 +123,24 @@ function Scene(options) {
             autoBounds: false
     };
 
+    //For static plots, we reuse the WebGL context as WebKit doesn't collect them
+    //reliably
     if (options.staticPlot) {
+        if(!STATIC_CONTEXT) {
+            STATIC_CANVAS = document.createElement('canvas');
+            try {
+                STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
+                    preserveDrawingBuffer: true,
+                    premultipliedAlpha: true
+                });
+            } catch(e) {
+                throw new Error('error creating static canvas/context for image server')
+            }
+        }
         glplotOptions.pixelRatio = options.plot3dPixelRatio;
-        glplotOptions.glOptions = {
-            preserveDrawingBuffer: true,
-            premultipliedAlpha:true
-        };
+        glplotOptions.gl = STATIC_CONTEXT;
+        glplotOptions.canvas = STATIC_CANVAS;
+        this.staticMode = true;
     }
 
     try {
@@ -93,7 +163,7 @@ function Scene(options) {
         div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
         div.style.cursor = 'pointer';
         div.style.fontSize = '24px';
-        div.style.color = options.Plotly.Color.defaults[0];
+        div.style.color = Plotly.Color.defaults[0];
 
         this.container.appendChild(div);
         this.container.style.background = '#FFFFFF';
@@ -131,15 +201,20 @@ var proto = Scene.prototype;
 
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
-proto.plot = function(sceneData, fullSceneLayout, sceneLayout) {
+
+proto.plot = function(sceneData, fullLayout, layout) {
 
     var data, trace;
     var i, j;
+    var fullSceneLayout = fullLayout[this.id];
+    var sceneLayout = layout[this.id];
 
     if (fullSceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(fullSceneLayout.bgcolor);
     else this.glplot.clearColor = [0, 0, 0, 0];
 
     //Update layout
+    this.fullSceneLayout = fullSceneLayout;
+
     this.glplotLayout = fullSceneLayout;
     this.axesOptions.merge(fullSceneLayout);
     this.spikeOptions.merge(fullSceneLayout);
@@ -153,6 +228,12 @@ proto.plot = function(sceneData, fullSceneLayout, sceneLayout) {
 
     //Update scene
     this.glplot.update({});
+
+    // Update axes functions BEFORE updating traces
+    for (i = 0; i < 3; ++i) {
+        var axis = fullSceneLayout[axisProperties[i]];
+        Plotly.Gl3dAxes.setConvert(axis);
+    }
 
     //Update traces
     if (sceneData) {
@@ -176,10 +257,15 @@ proto.plot = function(sceneData, fullSceneLayout, sceneLayout) {
                         trace = createSurfaceTrace(this, data);
                     break;
 
+                    case 'mesh3d':
+                        trace = createMeshTrace(this, data);
+                    break;
+
                     default:
                 }
                 this.traces[data.uid] = trace;
             }
+            trace.name = data.name;
         }
     } else {
         sceneData = [];
@@ -204,6 +290,7 @@ trace_id_loop:
 
     for(i = 0; i < 3; ++i) {
         var axis = fullSceneLayout[axisProperties[i]];
+
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
@@ -292,8 +379,8 @@ trace_id_loop:
 
 
     //Update frame position for multi plots
-    var domain = this.fullSceneLayout.domain || null,
-        size = this.fullLayout._size || null;
+    var domain = fullSceneLayout.domain || null,
+        size = fullLayout._size || null;
 
     if (domain && size) {
         var containerStyle = this.container.style;
@@ -308,6 +395,9 @@ trace_id_loop:
 proto.destroy = function() {
     this.glplot.dispose();
     this.container.parentNode.removeChild(this.container);
+
+    //Remove reference to glplot
+    this.glplot = null
 };
 
 
@@ -348,13 +438,21 @@ proto.setCameraPosition = function setCameraPosition (camera) {
 // save camera position to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
     var cameraposition = this.getCameraPosition();
-    this.Plotly.Lib.nestedProperty(layout, this.sceneId + '.cameraposition')
+    Plotly.Lib.nestedProperty(layout, this.id + '.cameraposition')
         .set(cameraposition);
 };
 
 proto.toImage = function (format) {
     if (!format) format = 'png';
 
+    if(this.staticMode) {
+      this.container.appendChild(STATIC_CANVAS);
+    }
+
+    //Force redraw
+    this.glplot.redraw();
+
+    //Grab context and yank out pixels
     var gl = this.glplot.gl;
     var w = gl.drawingBufferWidth;
     var h = gl.drawingBufferHeight;
@@ -394,6 +492,10 @@ proto.toImage = function (format) {
             break;
         default:
         dataURL = canvas.toDataURL('image/png');
+    }
+
+    if(this.staticMode) {
+      this.container.removeChild(STATIC_CANVAS);
     }
 
     return dataURL;
