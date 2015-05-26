@@ -433,6 +433,41 @@ scatter.isBubble = function(trace) {
                 Array.isArray(trace.marker.size));
 };
 
+// TODO unify Scatter.colorbar and Heatmap.colorbar
+// TODO make Plotly[module].colorbar support multiple colorbar per trace
+scatter.colorbar = function(gd, cd) {
+    var trace = cd[0].trace,
+        marker = trace.marker;
+
+    if(marker === undefined) return;
+
+    var cbId = 'cb' + trace.uid,
+        scl = Plotly.Color.getScale(marker.colorscale),
+        vals = marker.color,
+        cmin = marker.cmin,
+        cmax = marker.cmax;
+
+    if(!isNumeric(cmin)) cmin = Plotly.Lib.aggNums(Math.min, null, vals);
+    if(!isNumeric(cmax)) cmax = Plotly.Lib.aggNums(Math.max, null, vals);
+
+    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
+
+    if(!marker.showscale){
+        Plotly.Plots.autoMargin(gd, cbId);
+        return;
+    }
+
+    var cb = cd[0].t.cb = Plotly.Colorbar(gd, cbId);
+
+    cb.fillcolor(d3.scale.linear()
+            .domain(scl.map(function(v){ return cmin + v[0] * (cmax - cmin); }))
+            .range(scl.map(function(v){ return v[1]; })))
+        .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})
+        .options(marker.colorbar)();
+
+    Plotly.Lib.markTime('done colorbar');
+};
+
 scatter.calc = function(gd,trace) {
     var xa = Plotly.Axes.getFromId(gd,trace.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd,trace.yaxis||'y');
