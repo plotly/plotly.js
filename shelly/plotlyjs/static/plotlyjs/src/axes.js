@@ -39,7 +39,7 @@ axes.layoutAttributes = {
     // ticks
     tickmode: {
         type: 'enumerated',
-        values: ['auto', 'linear', 'list']
+        values: ['auto', 'linear', 'array']
     },
     // nticks: only used with tickmode='auto'
     nticks: {
@@ -56,7 +56,7 @@ axes.layoutAttributes = {
         type: 'any',
         dflt: 1
     },
-    // tickvals, ticktext: only used with tickmode='list'
+    // tickvals, ticktext: only used with tickmode = 'array'
     tickvals: {type: 'data_array'},
     ticktext: {type: 'data_array'},
     ticks: {
@@ -389,12 +389,12 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 axes.handleTickValueDefaults = function(containerIn, containerOut, coerce, axType) {
     var tickmodeDefault = 'auto';
 
-    if(containerIn.tickmode === 'list' &&
+    if(containerIn.tickmode === 'array' &&
             (axType === 'log' || axType === 'date')) {
         containerIn.tickmode = 'auto';
     }
 
-    if(Array.isArray(containerIn.tickvals)) tickmodeDefault = 'list';
+    if(Array.isArray(containerIn.tickvals)) tickmodeDefault = 'array';
     else if(containerIn.dtick && isNumeric(containerIn.dtick)) {
         tickmodeDefault = 'linear';
     }
@@ -1268,7 +1268,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
 axes.calcTicks = function calcTicks (ax) {
-    if(ax.tickmode === 'list') return listedTicks(ax);
+    if(ax.tickmode === 'array') return arrayTicks(ax);
 
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.tickmode === 'auto' || !ax.dtick){
@@ -1334,7 +1334,7 @@ axes.calcTicks = function calcTicks (ax) {
     return ticksOut;
 };
 
-function listedTicks(ax) {
+function arrayTicks(ax) {
     var vals = ax.tickvals,
         text = ax.ticktext,
         ticksOut = new Array(vals.length),
@@ -1652,10 +1652,10 @@ function modDateFormat(fmt,x) {
 axes.tickText = function(ax, x, hover){
     var out = tickTextObj(ax, x),
         hideexp,
-        listMode = ax.tickmode === 'list',
-        extraPrecision = hover || listMode;
+        arrayMode = ax.tickmode === 'array',
+        extraPrecision = hover || arrayMode;
 
-    if(listMode && Array.isArray(ax.ticktext)) {
+    if(arrayMode && Array.isArray(ax.ticktext)) {
         var minDiff = Math.abs(ax.range[1] - ax.range[0]) / 10000;
         for(var i = 0; i < ax.ticktext.length; i++) {
             if(Math.abs(x - ax.d2l(ax.tickvals[i])) < minDiff) break;

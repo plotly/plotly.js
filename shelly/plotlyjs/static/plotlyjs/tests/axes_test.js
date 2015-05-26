@@ -172,12 +172,12 @@ describe('Test axes', function () {
             handleTickValueDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('auto');
 
-            axIn = {tickmode: 'list', tickvals: 'stuff'};
+            axIn = {tickmode: 'array', tickvals: 'stuff'};
             axOut = {};
             handleTickValueDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('auto');
 
-            axIn = {tickmode: 'list', tickvals: [1, 2, 3]};
+            axIn = {tickmode: 'array', tickvals: [1, 2, 3]};
             axOut = {};
             handleTickValueDefaults(axIn, axOut, 'date');
             expect(axOut.tickmode).toBe('auto');
@@ -185,7 +185,7 @@ describe('Test axes', function () {
             axIn = {tickvals: [1, 2, 3]};
             axOut = {};
             handleTickValueDefaults(axIn, axOut, 'linear');
-            expect(axOut.tickmode).toBe('list');
+            expect(axOut.tickmode).toBe('array');
 
             axIn = {dtick: 1};
             axOut = {};
@@ -236,8 +236,8 @@ describe('Test axes', function () {
             expect(axOut.dtick).toBe(0.00159);
         });
 
-        it('should set tickvals and ticktext iff tickmode=list', function() {
-            var axIn = {tickmode: 'auto', tickvals: [1,2,3], ticktext: [4,5,6]},
+        it('should set tickvals and ticktext iff tickmode=array', function() {
+            var axIn = {tickmode: 'auto', tickvals: [1,2,3], ticktext: ['4','5','6']},
                 axOut = {};
             handleTickValueDefaults(axIn, axOut, 'linear');
             expect(axOut.tickvals).toBe(undefined);
