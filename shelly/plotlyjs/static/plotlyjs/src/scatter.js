@@ -137,6 +137,21 @@ scatter.attributes = {
             type: 'number',
             dflt: -10
         },
+        autocolorscale: {
+            type: 'boolean',
+            dflt: false  // TODO maybe true here?
+        },
+        reversescale: {
+            type: 'boolean',
+            dflt: false
+        },
+        showscale: {
+            type: 'boolean',
+            dflt: false  // TODO should we preserve backward comp?
+        },
+        _nestedModules: {
+            'colorbar': 'Colorbar'
+        },
         line: {
             color: {
                 type: 'color',
@@ -180,7 +195,6 @@ scatter.attributes = {
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
         'error_x': 'ErrorBars'
-        // TODO: we should add colorbar?
     }
 };
 
