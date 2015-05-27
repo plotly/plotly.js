@@ -2707,7 +2707,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                                     cb._opts.line.color : trace.line.color
                             });
                         }
-                        cb.options(trace.colorbar)();
+                        if(plots.isScatter(trace.type)) cb.options(trace.marker.colorbar)();
+                        else cb.options(trace.colorbar)();
                     }
                 });
                 return plots.previousPromises(gd);
