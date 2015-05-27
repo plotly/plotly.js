@@ -52,10 +52,10 @@ function createCamera(element, options) {
     tick: function() {
       var t = now();
       var delay = this.delay;
-      view.idle(t-delay);
-      view.flush(t - (100+delay * 2));
       var ctime = t - 2 * delay;
+      view.idle(t-delay);
       view.recalcMatrix(ctime);
+      view.flush(t - (100+delay * 2));
       var allEqual = true;
       var matrix = view.computedMatrix;
       for(var i = 0; i < 16; ++i) {
@@ -103,7 +103,17 @@ function createCamera(element, options) {
         return view.getMode();
       },
       set: function(mode) {
+        var curUp = view.computedUp.slice();
+        var curEye = view.computedEye.slice();
+        var curCenter = view.computedCenter.slice();
         view.setMode(mode);
+        if(mode === 'turntable') {
+          //Hacky time warping stuff to generate smooth animation
+          var t0 = now();
+          view._active.lookAt(t0, curEye, curCenter, curUp);
+          view._active.lookAt(t0 + 500, curEye, curCenter, [0,0,1]);
+          view._active.flush(t0);
+        }
         return view.getMode();
       },
       enumerable: true
@@ -113,7 +123,7 @@ function createCamera(element, options) {
         return view.computedCenter;
       },
       set: function(ncenter) {
-        view.lookAt(view.lastT(), ncenter);
+        view.lookAt(view.lastT(), null, ncenter);
         return view.computedCenter;
       },
       enumerable: true
@@ -123,7 +133,7 @@ function createCamera(element, options) {
         return view.computedEye;
       },
       set: function(neye) {
-        view.lookAt(view.lastT(), null, neye);
+        view.lookAt(view.lastT(), neye);
         return view.computedEye;
       },
       enumerable: true
@@ -207,6 +217,8 @@ function createCamera(element, options) {
 
     lastX = x;
     lastY = y;
+
+    return true;
   });
 
   mouseWheel(element, function(dx, dy, dz) {
