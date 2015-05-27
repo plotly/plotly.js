@@ -47,10 +47,12 @@ Gl3dAxes.layoutAttributes = {
     range: axesAttrs.range,
     fixedrange: axesAttrs.fixedrange,
     // ticks
-    autotick: axesAttrs.autotick,
+    tickmode: axesAttrs.tickmode,
     nticks: axesAttrs.nticks,
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
+    tickvals: axesAttrs.tickvals,
+    ticktext: axesAttrs.ticktext,
     ticks: axesAttrs.ticks,
     mirror: axesAttrs.mirror,
     ticklen: axesAttrs.ticklen,
