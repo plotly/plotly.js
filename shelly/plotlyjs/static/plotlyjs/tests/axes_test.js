@@ -13,7 +13,7 @@ describe('Test axes', function () {
                         type: 'log',
                         autorange: 'reversed',
                         rangemode: 'tozero',
-                        autotick: true,
+                        tickmode: 'auto',
                         nticks: 23,
                         ticks: 'outside',
                         mirror: 'ticks',
@@ -152,6 +152,102 @@ describe('Test axes', function () {
             expect(gd.layout.xaxis2).toEqual(expectedXaxis2);
             expect(gd.layout.yaxis).toEqual(expectedYaxis);
             expect(gd.layout.annotations).toEqual(expectedAnnotations);
+        });
+    });
+
+    describe('handleTickValueDefaults', function() {
+        function handleTickValueDefaults(axIn, axOut, axType) {
+            function coerce(attr, dflt) {
+                return Plotly.Lib.coerce(axIn, axOut,
+                                         Plotly.Axes.layoutAttributes,
+                                         attr, dflt);
+            }
+
+            Plotly.Axes.handleTickValueDefaults(axIn, axOut, coerce, axType);
+        }
+
+        it('should set default tickmode correctly', function() {
+            var axIn = {},
+                axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.tickmode).toBe('auto');
+
+            axIn = {tickmode: 'array', tickvals: 'stuff'};
+            axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.tickmode).toBe('auto');
+
+            axIn = {tickmode: 'array', tickvals: [1, 2, 3]};
+            axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'date');
+            expect(axOut.tickmode).toBe('auto');
+
+            axIn = {tickvals: [1, 2, 3]};
+            axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.tickmode).toBe('array');
+
+            axIn = {dtick: 1};
+            axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.tickmode).toBe('linear');
+        });
+
+        it('should set nticks iff tickmode=auto', function() {
+            var axIn = {},
+                axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.nticks).toBe(0);
+
+            axIn = {tickmode: 'auto', nticks: 5};
+            axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.nticks).toBe(5);
+
+            axIn = {tickmode: 'linear', nticks: 15};
+            axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.nticks).toBe(undefined);
+        });
+
+        it('should set tick0 and dtick iff tickmode=linear', function() {
+            var axIn = {tickmode: 'auto', tick0: 1, dtick: 1},
+                axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.tick0).toBe(undefined);
+            expect(axOut.dtick).toBe(undefined);
+
+            axIn = {tickvals: [1,2,3], tick0: 1, dtick: 1};
+            axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.tick0).toBe(undefined);
+            expect(axOut.dtick).toBe(undefined);
+
+            axIn = {tick0: 2.71, dtick: 0.00828};
+            axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.tick0).toBe(2.71);
+            expect(axOut.dtick).toBe(0.00828);
+
+            axIn = {tickmode: 'linear', tick0: 3.14, dtick: 0.00159};
+            axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.tick0).toBe(3.14);
+            expect(axOut.dtick).toBe(0.00159);
+        });
+
+        it('should set tickvals and ticktext iff tickmode=array', function() {
+            var axIn = {tickmode: 'auto', tickvals: [1,2,3], ticktext: ['4','5','6']},
+                axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.tickvals).toBe(undefined);
+            expect(axOut.ticktext).toBe(undefined);
+
+            axIn = {tickvals: [2,4,6,8], ticktext: ['who','do','we','appreciate']};
+            axOut = {};
+            handleTickValueDefaults(axIn, axOut, 'linear');
+            expect(axOut.tickvals).toEqual([2,4,6,8]);
+            expect(axOut.ticktext).toEqual(['who','do','we','appreciate']);
         });
     });
 });
