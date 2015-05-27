@@ -2342,8 +2342,10 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'histfunc','histnorm','text',
         'x', 'y', 'z',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
-        'line.width','showscale','zauto','connectgaps',
-        'autocolorscale',
+        'line.width', 'connectgaps',
+        'showscale', 'marker.showscale',
+        'zauto', 'marker.cauto',
+        'autocolorscale', 'marker.autocolorscale',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
         'autocontour','ncontours','contours.coloring',
@@ -2372,7 +2374,9 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // objects need to be made) but not a recalc
     var replotAttrs = [
         'zmin', 'zmax', 'zauto',
-        'colorscale','reversescale','zsmooth',
+        'colorscale', 'reversescale','zsmooth',
+        'marker.cmin', 'marker.cmax', 'marker.cauto',
+        'marker.colorscale', 'marker.reversescale',
         'contours.start','contours.end','contours.size',
         'contours.showlines',
         'line.smoothing','line.shape',
@@ -2486,6 +2490,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             }
             else if(ai === 'autocolorscale') {
                 doextra(cont, 'colorscale', undefined, i);
+            }
+            else if(ai === 'marker.colorscale') {
+                doextra(cont.marker, 'autocolorscale', false, i);
+            }
+            else if(ai === 'marker.autocolorscale') {
+                doextra(cont.marker, 'colorscale', undefined, i);
             }
             else if(ai==='zauto') {
                 doextra(cont,zscl,undefined,i);
@@ -2605,7 +2615,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                 vi!==false) {
             dostyle = true;
         }
-        if(['colorbar','line'].indexOf(param.parts[0])!==-1) {
+        if(['colorbar', 'line'].indexOf(param.parts[0])!==-1 ||
+            param.parts[0]==='marker' && param.parts[1]==='colorbar') {
             docolorbars = true;
         }
 
