@@ -2,6 +2,8 @@
 
 'use strict';
 
+module.exports = createCamera;
+
 var now         = require('right-now');
 var createView  = require('3d-view');
 var mouseChange = require('mouse-change');
@@ -24,14 +26,14 @@ function createCamera(element, options) {
   }
 
   var view = createView({
-    center: options.center || [0,0,0],
-    up:     options.up     || [0,1,0],
-    eye:    options.eye    || [0,0,10],
+    center: options.center || [0, 0, 0],
+    up:     options.up     || [0, 1, 0],
+    eye:    options.eye    || [0, 0, 10],
     mode:   options.mode   || 'orbit',
     distanceLimits: limits
   });
 
-  var pmatrix = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  var pmatrix = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   var distance = 0.0;
   var width   = element.clientWidth;
   var height  = element.clientHeight;
@@ -50,13 +52,13 @@ function createCamera(element, options) {
     tick: function() {
       var t = now();
       var delay = this.delay;
-      view.idle(t-delay);
-      view.flush(t-(100+delay*2));
       var ctime = t - 2 * delay;
+      view.idle(t-delay);
       view.recalcMatrix(ctime);
+      view.flush(t - (100+delay * 2));
       var allEqual = true;
       var matrix = view.computedMatrix;
-      for(var i=0; i<16; ++i) {
+      for(var i = 0; i < 16; ++i) {
         allEqual = allEqual && (pmatrix[i] === matrix[i]);
         pmatrix[i] = matrix[i];
       }
@@ -101,7 +103,17 @@ function createCamera(element, options) {
         return view.getMode();
       },
       set: function(mode) {
+        var curUp = view.computedUp.slice();
+        var curEye = view.computedEye.slice();
+        var curCenter = view.computedCenter.slice();
         view.setMode(mode);
+        if(mode === 'turntable') {
+          //Hacky time warping stuff to generate smooth animation
+          var t0 = now();
+          view._active.lookAt(t0, curEye, curCenter, curUp);
+          view._active.lookAt(t0 + 500, curEye, curCenter, [0,0,1]);
+          view._active.flush(t0);
+        }
         return view.getMode();
       },
       enumerable: true
@@ -111,7 +123,7 @@ function createCamera(element, options) {
         return view.computedCenter;
       },
       set: function(ncenter) {
-        view.lookAt(view.lastT(), ncenter);
+        view.lookAt(view.lastT(), null, ncenter);
         return view.computedCenter;
       },
       enumerable: true
@@ -121,7 +133,7 @@ function createCamera(element, options) {
         return view.computedEye;
       },
       set: function(neye) {
-        view.lookAt(view.lastT(), null, neye);
+        view.lookAt(view.lastT(), neye);
         return view.computedEye;
       },
       enumerable: true
@@ -205,9 +217,11 @@ function createCamera(element, options) {
 
     lastX = x;
     lastY = y;
+
+    return true;
   });
 
-  mouseWheel(element, function(dx, dy) {
+  mouseWheel(element, function(dx, dy, dz) {
     var flipX = camera.flipX ? 1 : -1;
     var flipY = camera.flipY ? 1 : -1;
     var t = now();
@@ -221,5 +235,3 @@ function createCamera(element, options) {
 
   return camera;
 }
-
-module.exports = createCamera;
