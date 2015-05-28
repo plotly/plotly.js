@@ -346,11 +346,12 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
         var showAttrDflt = axes.getShowAttrDflt(containerIn);
 
-        if(axType==='date') {
+        if(axType !== 'category') {
             coerce('tickformat');
             coerce('hoverformat');
         }
-        else {
+
+        if(axType !== 'date') {
             coerce('showexponent', showAttrDflt);
             coerce('exponentformat');
         }
@@ -1762,7 +1763,10 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
         x = out.x;
     if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0)!=='L')) dtick = 'L3';
 
-    if(isNumeric(dtick)||((dtick.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
+    if(ax.tickformat || (typeof dtick !== 'string' && dtick.charAt(0) === 'L')) {
+        out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
+    }
+    else if(isNumeric(dtick)||((dtick.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
         if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
             var p = Math.round(x);
             if(p === 0) out.text = 1;
@@ -1782,9 +1786,6 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
     else if(dtick.charAt(0) === 'D') {
         out.text = String(Math.round(Math.pow(10, mod(x, 1))));
         out.fontSize *= 0.75;
-    }
-    else if(dtick.charAt(0) === 'L') {
-        out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
     }
     else throw 'unrecognized dtick ' + String(dtick);
 
@@ -1831,7 +1832,8 @@ function numFormat(v, ax, fmtoverride, hover) {
         // max number of digits past decimal point to show
         tickRound = ax._tickround,
         exponentFormat = fmtoverride || ax.exponentformat || 'B',
-        exponent = ax._tickexponent;
+        exponent = ax._tickexponent,
+        tickformat = ax.tickformat;
 
     // special case for hover: set exponent just for this value, and
     // add a couple more digits of precision over tick labels
@@ -1848,7 +1850,10 @@ function numFormat(v, ax, fmtoverride, hover) {
         autoTickRound(ah);
         tickRound = (Number(ah._tickround) || 0) + 4;
         exponent = ah._tickexponent;
+        if(ax.hoverformat) tickformat = ax.hoverformat;
     }
+
+    if(tickformat) return d3.format(tickformat)(v).replace(/-/g,'\u2212');
 
     // 'epsilon' - rounding increment
     var e = Math.pow(10, -tickRound) / 2;
