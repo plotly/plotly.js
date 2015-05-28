@@ -347,13 +347,13 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
         var showAttrDflt = axes.getShowAttrDflt(containerIn);
 
         if(axType !== 'category') {
-            coerce('tickformat');
+            var tickFormat = coerce('tickformat');
             coerce('hoverformat');
-        }
 
-        if(axType !== 'date') {
-            coerce('showexponent', showAttrDflt);
-            coerce('exponentformat');
+            if(!tickFormat && axType !== 'date') {
+                coerce('showexponent', showAttrDflt);
+                coerce('exponentformat');
+            }
         }
 
         var tickPrefix = coerce('tickprefix');
