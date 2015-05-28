@@ -141,13 +141,12 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         coerce('text');
     }
 
-    coerce('zauto');
-    coerce('zmin');
-    coerce('zmax');
-
     if(!Plotly.Plots.isContour(traceOut.type) ||
            (traceOut.contours || {}).coloring!=='none') {
-        Plotly.Scatter.handleColorscaleDefaults(traceIn, traceOut, layout, coerce);
+        Plotly.Scatter.handleColorscaleDefaults(
+            traceIn, traceOut, layout, coerce,
+            {prefix: '', cLetter: 'z'}
+        );
     }
 
     if(!Plotly.Plots.isContour(traceOut.type)) coerce('zsmooth');

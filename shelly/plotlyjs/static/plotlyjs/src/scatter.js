@@ -323,11 +323,12 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
     coerce('marker.size');
     coerce('marker.maxdisplayed');
 
-    scatter.colorScalableDefaults('marker.', coerce, defaultColor);
-
-    if(traceOut.marker && traceOut.marker.colorscale !== undefined) {
-        scatter.handleColorscaleDefaults(traceIn, traceOut,
-                                         layout, coerce, 'marker.');
+    coerce('marker.color', defaultColor);
+    if(scatter.hasColorscale(traceIn, 'marker')) {
+        scatter.handleColorscaleDefaults(
+            traceIn, traceOut, layout, coerce,
+            {prefix: 'marker.', cLetter: 'c'}
+        );
     }
 
     // if there's a line with a different color than the marker, use
@@ -338,7 +339,14 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
     }
     else if(isBubble) defaultMLC = Plotly.Color.background;
     else defaultMLC = Plotly.Color.defaultLine;
-    scatter.colorScalableDefaults('marker.line.', coerce, defaultMLC);
+
+    coerce('marker.line.color', defaultMLC);
+    if(scatter.hasColorscale(traceIn, 'marker.line')) {
+        scatter.handleColorscaleDefaults(
+            traceIn, traceOut, layout, coerce,
+            {prefix: 'marker.line.', cLetter: 'c'}
+        );
+    }
 
     coerce('marker.line.width', isBubble ? 1 : 0);
 
@@ -348,40 +356,33 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
     }
 };
 
-scatter.colorScalableDefaults = function(prefix, coerce, dflt) {
-    var colorAttr = prefix + 'color',
-        colorVal = coerce(colorAttr, dflt),
-        attrs = [
-            prefix + 'colorscale',
-            prefix + 'cauto',
-            prefix + 'cmax',
-            prefix + 'cmin'
-        ];
-
-    if(Array.isArray(colorVal)) {
-        for (var i = 0; i < attrs.length; i++) {
-            coerce(attrs[i]);
-        }
-    }
-};
-
-scatter.handleColorscaleDefaults = function(traceIn, traceOut, layout, coerce, prefix) {
-    if(prefix === undefined) prefix = '';
-
-    function flipScale(si){ return [1 - si[0], si[1]]; }
-
-    var containerIn = prefix ?
-            traceIn[prefix.slice(0, prefix.length-1)] || {} :
+scatter.handleColorscaleDefaults = function(traceIn, traceOut, layout, coerce, opts) {
+    var prefix = opts.prefix,
+        cLetter = opts.cLetter,
+        containerStr = prefix.slice(0, prefix.length-1),
+        containerIn = prefix ?
+            Plotly.Lib.nestedProperty(traceIn, containerStr).get() || {} :
             traceIn,
         containerOut = prefix ?
-            traceOut[prefix.slice(0, prefix.length-1)] || {} :
+            Plotly.Lib.nestedProperty(traceOut, containerStr).get() || {} :
             traceOut;
 
-    coerce(prefix + 'autocolorscale');
-    coerce(prefix + 'colorscale');
+    var minIn, maxIn, validMinMax, showScaleDftl, showScale, reverseScale;
 
-    var reverseScale = coerce(prefix + 'reversescale'),
-        showScale = coerce(prefix + 'showscale');
+    function flipScale(si) { return [1 - si[0], si[1]]; }
+
+    minIn = containerIn[cLetter + 'min'];
+    maxIn = containerIn[cLetter + 'max'];
+
+    validMinMax = isNumeric(minIn) && isNumeric(maxIn) && minIn < maxIn;
+    coerce(prefix + cLetter + 'auto', !validMinMax);
+    coerce(prefix + cLetter + 'min');
+    coerce(prefix + cLetter + 'max');
+
+    coerce(prefix + 'colorscale');
+    coerce(prefix + 'autocolorscale', !Plotly.Color.isValidScale(containerIn.colorscale));
+
+    reverseScale = coerce(prefix + 'reversescale');
 
     // apply the colorscale reversal here, so we don't have to
     // do it in separate modules later
@@ -389,6 +390,12 @@ scatter.handleColorscaleDefaults = function(traceIn, traceOut, layout, coerce, p
         containerOut.colorscale = containerOut.colorscale
                                     .map(flipScale).reverse();
     }
+
+    // until scatter.colorbar can handle marker line colorbars
+    if(prefix === 'marker.line.') return;
+
+    if(typeof containerIn.colorbar==='object') showScaleDftl = true;
+    showScale = coerce(prefix + 'showscale', showScaleDftl);
 
     if(showScale) Plotly.Colorbar.supplyDefaults(containerIn, containerOut, layout);
 };
