@@ -131,15 +131,15 @@ scatter.attributes = {
         },
         cmax: {
             type: 'number',
-            dflt: 10
+            dflt: null
         },
         cmin: {
             type: 'number',
-            dflt: -10
+            dflt: null
         },
         autocolorscale: {
             type: 'boolean',
-            dflt: false  // TODO maybe true here?
+            dflt: true
         },
         reversescale: {
             type: 'boolean',
@@ -147,7 +147,7 @@ scatter.attributes = {
         },
         showscale: {
             type: 'boolean',
-            dflt: false  // TODO should we preserve backward comp?
+            dflt: true
         },
         _nestedModules: {
             'colorbar': 'Colorbar'
@@ -172,12 +172,20 @@ scatter.attributes = {
             },
             cmax: {
                 type: 'number',
-                dflt: 10
+                dflt: null
             },
             cmin: {
                 type: 'number',
-                dflt: -10
-            }
+                dflt: null
+            },
+            autocolorscale: {
+                type: 'boolean',
+                dflt: true
+            },
+            reversescale: {
+                type: 'boolean',
+                dflt: false
+            },
         }
     },
     textposition: {
