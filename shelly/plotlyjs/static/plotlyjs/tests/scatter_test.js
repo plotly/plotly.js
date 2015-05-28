@@ -203,4 +203,56 @@ describe('Test scatter', function () {
 
         // TODO: test coarser decimation outside plot, and removing very near duplicates from the four of a cluster
     });
+
+    describe('calcColorscale', function() {
+        var trace,
+            z;
+
+        var calcColorscale = Plotly.Scatter.calcColorscale;
+
+        beforeEach(function() {
+            trace = {};
+            z = {};
+        });
+
+        it('should be RdBuNeg when autocolorscale and z <= 0', function() {
+            trace = {
+                type: 'heatmap',
+                z: [[0, -1.5], [-2, -10]],
+                autocolorscale: true,
+                _input: {}
+            };
+            z = [[0, -1.5], [-2, -10]];
+            calcColorscale(trace, z, '', 'z');
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale[5]).toEqual([1, 'rgb(220, 220, 220)']);
+        });
+
+        it('should be Blues when the only numerical z <= -0.5', function() {
+            trace = {
+                type: 'heatmap',
+                z: [['a', 'b'], [-0.5, 'd']],
+                autocolorscale: true,
+                _input: {}
+            };
+            z = [[undefined, undefined], [-0.5, undefined]];
+            calcColorscale(trace, z, '', 'z');
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale[5]).toEqual([1, 'rgb(220, 220, 220)']);
+        });
+
+        it('should be Reds when the only numerical z >= 0.5', function() {
+            trace = {
+                type: 'heatmap',
+                z: [['a', 'b'], [0.5, 'd']],
+                autocolorscale: true,
+                _input: {}
+            };
+            z = [[undefined, undefined], [0.5, undefined]];
+            calcColorscale(trace, z, '', 'z');
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale[0]).toEqual([0, 'rgb(220, 220, 220)']);
+        });
+
+    });
 });
