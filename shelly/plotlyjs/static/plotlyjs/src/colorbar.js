@@ -668,7 +668,7 @@ colorbar.supplyDefaults = function(containerIn, containerOut, layout) {
     coerce('borderwidth');
     coerce('bgcolor');
 
-    Plotly.Axes.handleTickValueDefaults(containerIn, containerOut, coerce, 'linear');
+    Plotly.Axes.handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
 
     var ticks = coerce('ticks');
     if(ticks) {
