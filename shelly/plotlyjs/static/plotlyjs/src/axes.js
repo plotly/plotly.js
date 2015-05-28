@@ -276,14 +276,22 @@ axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     }
 };
 
+/**
+ * options: object containing:
+ *      letter: 'x' or 'y'
+ *      title: name of the axis (ie 'Colorbar') to go in default title
+ *      name: axis object name (ie 'xaxis') if one should be stored
+ *      font: the default font to inherit
+ *      outerTicks: boolean, should ticks default to outside?
+ *      showGrid: boolean, should gridlines be shown by default?
+ *      noHover: boolean, this axis doesn't support hover effects?
+ *      data: the plot data to use in choosing auto type
+ */
 axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     var letter = options.letter,
         defaultTitle = 'Click to enter ' +
             (options.title || (letter.toUpperCase() + ' axis')) +
-            ' title',
-        font = options.font||{},
-        outerTicks = options.outerTicks,
-        showGrid = options.showGrid;
+            ' title';
 
     // set up some private properties
     if(options.name) {
@@ -311,9 +319,9 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
     coerce('title', defaultTitle);
     coerce('titlefont', {
-        family: font.family,
-        size: Math.round(font.size * 1.2),
-        color: font.color
+        family: options.font.family,
+        size: Math.round(options.font.size * 1.2),
+        color: options.font.color
     });
 
     var validRange = (containerIn.range||[]).length===2 &&
@@ -332,7 +340,37 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
     axes.handleTickValueDefaults(containerIn, containerOut, coerce, axType);
 
-    var showTicks = coerce('ticks', outerTicks ? 'outside' : '');
+    axes.handleTickDefaults(containerIn, containerOut, coerce, axType, options);
+
+    var showLine = coerce('showline');
+    if(showLine) {
+        coerce('linecolor');
+        coerce('linewidth');
+    }
+
+    if(showLine || containerOut.ticks) coerce('mirror');
+
+
+    var showGridLines = coerce('showgrid', options.showGrid);
+    if(showGridLines) {
+        coerce('gridcolor');
+        coerce('gridwidth');
+    }
+
+    var showZeroLine = coerce('zeroline', options.showGrid);
+    if(showZeroLine) {
+        coerce('zerolinecolor');
+        coerce('zerolinewidth');
+    }
+
+    return containerOut;
+};
+
+/**
+ * options: inherits font, outerTicks, noHover from axes.handleAxisDefaults
+ */
+axes.handleTickDefaults = function(containerIn, containerOut, coerce, axType, options) {
+    var showTicks = coerce('ticks', options.outerTicks ? 'outside' : '');
     if(showTicks) {
         coerce('ticklen');
         coerce('tickwidth');
@@ -341,14 +379,14 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
-        coerce('tickfont', font);
+        coerce('tickfont', options.font);
         coerce('tickangle');
 
         var showAttrDflt = axes.getShowAttrDflt(containerIn);
 
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
-            coerce('hoverformat');
+            if(!options.noHover) coerce('hoverformat');
 
             if(!tickFormat && axType !== 'date') {
                 coerce('showexponent', showAttrDflt);
@@ -362,29 +400,6 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
         var tickSuffix = coerce('ticksuffix');
         if(tickSuffix) coerce('showticksuffix', showAttrDflt);
     }
-
-    var showLine = coerce('showline');
-    if(showLine) {
-        coerce('linecolor');
-        coerce('linewidth');
-    }
-
-    if(showLine || showTicks) coerce('mirror');
-
-
-    var showGridLines = coerce('showgrid', showGrid);
-    if(showGridLines) {
-        coerce('gridcolor');
-        coerce('gridwidth');
-    }
-
-    var showZeroLine = coerce('zeroline', showGrid);
-    if(showZeroLine) {
-        coerce('zerolinecolor');
-        coerce('zerolinewidth');
-    }
-
-    return containerOut;
 };
 
 axes.handleTickValueDefaults = function(containerIn, containerOut, coerce, axType) {
