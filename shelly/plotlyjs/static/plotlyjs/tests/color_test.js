@@ -3,6 +3,26 @@ var Plotly = require('../src/plotly');
 describe('Test color:', function () {
     'use strict';
 
+    describe('isValidScale', function() {
+        var isValidScale = Plotly.Color.isValidScale;
+        var scl;
+
+        it('should accept only array of 2-item arrays', function() {
+            expect(isValidScale('a')).toBe(false)
+            expect(isValidScale(['a'])).toBe(false)
+            expect(isValidScale([['a'], ['b']])).toBe(false)
+            expect(isValidScale([[0, 'rgb(0, 0, 200)'], [1, 'rgb(200, 0, 0)']])).toBe(true)
+        });
+
+        it('should accept ascending order number-color items', function() {
+            expect(isValidScale([['rgb(0, 0, 200)', 0], ['rgb(200, 0, 0)', 1]])).toBe(false)
+            expect(isValidScale([[0, 0], [1, 1]])).toBe(false)
+            expect(isValidScale([[0, 'a'], [1, 'b']])).toBe(false)
+            expect(isValidScale([[10, 'rgb(0, 0, 200)'], [0, 'rgb(200, 0, 0)']])).toBe(false)
+        });
+
+    });
+
     describe('clean', function() {
         it('should turn rgb and rgba fractions into 0-255 values', function() {
             var container = {
