@@ -502,8 +502,8 @@ scatter.calcColorscale = function(trace, vals, containerStr, cLetter) {
     var container, inputContainer;
 
     if(containerStr) {
-        container = trace[containerStr];
-        inputContainer = trace._input[containerStr];
+        container = Plotly.Lib.nestedProperty(trace, containerStr).get();
+        inputContainer = Plotly.Lib.nestedProperty(trace._input, containerStr).get();
     } else {
         container = trace;
         inputContainer = trace._input;
@@ -580,6 +580,7 @@ scatter.calc = function(gd,trace) {
         // this needs to go before ppad computation
         marker = trace.marker;
         s = marker.size;
+
         if (Array.isArray(s)) {
             // I tried auto-type but category and dates dont make much sense.
             var ax = {type: 'linear'};
@@ -604,8 +605,11 @@ scatter.calc = function(gd,trace) {
             s.map(markerTrans) : markerTrans(s);
 
         // auto-z and autocolorscale if applicable
-        if(Array.isArray(marker.color)) {
+        if(Plotly.Scatter.hasColorscale(trace, 'marker')) {
             scatter.calcColorscale(trace, marker.color, 'marker', 'c');
+        }
+        if(Plotly.Scatter.hasColorscale(trace, 'marker.line')) {
+            scatter.calcColorscale(trace, marker.line.color, 'marker.line', 'c');
         }
     }
 
