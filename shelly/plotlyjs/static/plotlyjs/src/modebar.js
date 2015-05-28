@@ -1,4 +1,5 @@
 'use strict';
+var Plotly = require('./plotly');
 /* global d3:false */
 
 /**
@@ -16,7 +17,6 @@ function ModeBar (config) {
 
     var _this = this;
 
-    this.Plotly = config.Plotly;
     this.graphInfo = config.graphInfo;
     this.element = document.createElement('div');
 
@@ -93,7 +93,7 @@ ModeBar.prototype.createButton = function (config) {
             config.click.apply(_this, arguments);
         });
 
-    button.appendChild(this.createIcon(this.Plotly.Icons[config.icon]));
+    button.appendChild(this.createIcon(Plotly.Icons[config.icon]));
 
     return button;
 };
@@ -106,7 +106,7 @@ ModeBar.prototype.createButton = function (config) {
  * @Return {HTMLelement}
  */
 ModeBar.prototype.createIcon = function (thisIcon) {
-    var iconDef = this.Plotly.Icons,
+    var iconDef = Plotly.Icons,
         iconHeight = iconDef.ascent - iconDef.descent,
         svgNS = 'http://www.w3.org/2000/svg',
         icon = document.createElementNS(svgNS, 'svg'),
@@ -172,7 +172,7 @@ ModeBar.prototype.getLogo = function(){
     a.setAttribute('data-title', 'Produced with Plotly');
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
-    a.appendChild(this.createIcon(this.Plotly.Icons.plotlylogo));
+    a.appendChild(this.createIcon(Plotly.Icons.plotlylogo));
 
     group.appendChild(a);
     return group;
@@ -189,7 +189,6 @@ ModeBar.prototype.handleCartesian = function(ev) {
         _this = this,
         graphInfo = this.graphInfo,
         fullLayout = this.graphInfo._fullLayout,
-        Plotly = this.Plotly,
         aobj = {};
 
     if(astr === 'zoom') {
@@ -245,7 +244,6 @@ ModeBar.prototype.handleHover3d = function(ev) {
     var button = ev.currentTarget,
         val = JSON.parse(button.getAttribute('data-val')) || false,
         _this = this,
-        Plotly = this.Plotly,
         graphInfo = this.graphInfo,
         fullLayout = graphInfo._fullLayout,
         sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
@@ -301,21 +299,13 @@ ModeBar.prototype.handleDrag3d = function(ev) {
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
         _this = this,
-        Plotly = this.Plotly,
         graphInfo = this.graphInfo,
-        fullLayout = graphInfo._fullLayout,
-        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
         layoutUpdate = {};
 
     layoutUpdate[attr] = val;
 
-    var i, scene;
-
-    for (i = 0;  i < sceneIds.length; i++) {
-        scene = fullLayout[sceneIds[i]]._scene;
-        if (scene.camera) scene.camera.keyBindingMode = val;
-    }
-
+    // Dragmode will go through the relayout->doplot->scene.plot()
+    // routine where the dragmode will be set in scene.plot()
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
         _this.updateActiveButton();
     });
@@ -329,22 +319,23 @@ ModeBar.prototype.handleDrag3d = function(ev) {
 ModeBar.prototype.handleCamera3d = function(ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
-        Plotly = this.Plotly,
         layout = this.graphInfo.layout,
         fullLayout = this.graphInfo._fullLayout,
         sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
-    var i, sceneId, sceneLayout, scene, cameraposition;
+    var i, sceneId, sceneLayout, fullSceneLayout, scene, cameraPos;
 
     for (i = 0;  i < sceneIds.length; i++) {
         sceneId = sceneIds[i];
         sceneLayout = layout[sceneId];
-        scene = fullLayout[sceneId]._scene;
+        fullSceneLayout = fullLayout[sceneId];
+        scene = fullSceneLayout._scene;
 
-        if (attr === 'resetDefault') scene.setCameraToDefault();
+        if (!sceneLayout || attr==='resetDefault') scene.setCameraToDefault();
         else if (attr === 'resetLastSave') {
-            cameraposition = sceneLayout ? sceneLayout.cameraposition : false;
-            if (cameraposition) scene.setCameraPosition(cameraposition);
+
+            cameraPos = sceneLayout.camera;
+            if (cameraPos) scene.setCamera(cameraPos);
             else scene.setCameraToDefault();
         }
     }
@@ -431,11 +422,18 @@ ModeBar.prototype.config = function config() {
             icon: 'pan',
             click: this.handleDrag3d
         },
-        rotate3d: {
-            title: 'Rotate',
+        orbitRotation: {
+            title: 'orbital rotation',
             attr: 'dragmode',
-            val: 'rotate',
-            icon: 'undo',
+            val: 'orbit',
+            icon: '3d_rotate',
+            click: this.handleDrag3d
+        },
+        tableRotation: {
+            title: 'turntable rotation',
+            attr: 'dragmode',
+            val: 'turntable',
+            icon: 'z-axis',
             click: this.handleDrag3d
         },
         resetCameraDefault3d: {

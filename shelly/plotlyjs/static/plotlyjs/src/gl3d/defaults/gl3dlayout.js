@@ -6,13 +6,23 @@ var Gl3dLayout = {};
 
 module.exports = Gl3dLayout;
 
+function makeVector(x, y, z) {
+  return {
+    x: {type: 'number', dflt: x},
+    y: {type: 'number', dflt: y},
+    z: {type: 'number', dflt: z}
+  };
+}
+
 Gl3dLayout.layoutAttributes = {
     bgcolor: {
         type: 'color',
         dflt: 'rgba(0,0,0,0)'
     },
-    cameraposition: {
-        type: 'data_array'
+    camera: {
+        up:     makeVector(0, 0, 1),
+        center: makeVector(0, 0, 0),
+        eye:    makeVector(1.25, 1.25, 1.25)
     },
     domain: {
         x: [
@@ -93,14 +103,21 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
          * attributes like aspectratio can be written back dynamically.
          */
         var sceneLayoutIn;
-        if (scene in layoutIn) sceneLayoutIn = layoutIn[scene];
+        if(layoutIn[scene] !== undefined) sceneLayoutIn = layoutIn[scene];
         else layoutIn[scene] = sceneLayoutIn = {};
 
         var sceneLayoutOut = layoutOut[scene] || {};
 
-
         coerce('bgcolor');
-        coerce('cameraposition');
+
+        var cameraKeys = Object.keys(attributes.camera);
+
+        for(var j = 0; j < cameraKeys.length; j++) {
+            coerce('camera.' + cameraKeys[j] + '.x');
+            coerce('camera.' + cameraKeys[j] + '.y');
+            coerce('camera.' + cameraKeys[j] + '.z');
+        }
+
         coerce('domain.x[0]', i / scenesLength);
         coerce('domain.x[1]', (i+1) / scenesLength);
         coerce('domain.y[0]');
