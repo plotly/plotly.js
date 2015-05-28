@@ -1763,7 +1763,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
         x = out.x;
     if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0)!=='L')) dtick = 'L3';
 
-    if(ax.tickformat || (typeof dtick !== 'string' && dtick.charAt(0) === 'L')) {
+    if(ax.tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
         out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
     }
     else if(isNumeric(dtick)||((dtick.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
