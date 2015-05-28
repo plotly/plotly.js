@@ -463,16 +463,22 @@ scatter.hasColorscale = function(trace, containerStr) {
     );
 };
 
-// TODO unify Scatter.colorbar and Heatmap.colorbar
-// TODO make Plotly[module].colorbar support multiple colorbar per trace
 scatter.colorbar = function(gd, cd) {
     var trace = cd[0].trace,
-        marker = trace.marker;
+        marker = trace.marker,
+        cbId = 'cb' + trace.uid;
 
-    if(marker === undefined) return;
+    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
-    var cbId = 'cb' + trace.uid,
-        scl = Plotly.Color.getScale(marker.colorscale),
+    // TODO unify Scatter.colorbar and Heatmap.colorbar
+    // TODO make Plotly[module].colorbar support multiple colorbar per trace
+
+    if(marker===undefined || !marker.showscale){
+        Plotly.Plots.autoMargin(gd, cbId);
+        return;
+    }
+
+    var scl = Plotly.Color.getScale(marker.colorscale),
         vals = marker.color,
         cmin = marker.cmin,
         cmax = marker.cmax;
@@ -480,12 +486,6 @@ scatter.colorbar = function(gd, cd) {
     if(!isNumeric(cmin)) cmin = Plotly.Lib.aggNums(Math.min, null, vals);
     if(!isNumeric(cmax)) cmax = Plotly.Lib.aggNums(Math.max, null, vals);
 
-    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
-
-    if(!marker.showscale){
-        Plotly.Plots.autoMargin(gd, cbId);
-        return;
-    }
 
     var cb = cd[0].t.cb = Plotly.Colorbar(gd, cbId);
 
