@@ -2695,7 +2695,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         if(docolorbars) {
             seq.push(function doColorBars(){
                 gd.calcdata.forEach(function(cd) {
-                    if((cd[0].t||{}).cb) {
+                    if((cd[0].t || {}).cb) {
                         var trace = cd[0].trace,
                             cb = cd[0].t.cb;
                         if(plots.isContour(trace.type)) {
@@ -2707,7 +2707,9 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                                     cb._opts.line.color : trace.line.color
                             });
                         }
-                        if(plots.isScatter(trace.type)) cb.options(trace.marker.colorbar)();
+                        if(plots.isScatter(trace.type) || plots.isBar(trace.type)) {
+                            cb.options(trace.marker.colorbar)();
+                        }
                         else cb.options(trace.colorbar)();
                     }
                 });
@@ -3708,7 +3710,7 @@ function lsInner(gd) {
 // titles - (re)draw titles on the axes and plot
 // title can be 'xtitle', 'ytitle', 'gtitle',
 //  or empty to draw all
-plots.titles = function(gd,title) {
+plots.titles = function(gd, title) {
     var options;
     if(typeof gd === 'string') gd = document.getElementById(gd);
     if(!title) {
@@ -3976,7 +3978,12 @@ plots.titles = function(gd,title) {
 
         el.call(Plotly.util.makeEditable)
             .on('edit', function(text){
-                if(colorbar) Plotly.restyle(gd,'colorbar.title',text,cbnum);
+                if(colorbar) {
+                    var traceType = gd._fullData[cbnum].type;
+                    if(plots.isScatter(traceType) || plots.isBar(traceType)) {
+                        Plotly.restyle(gd, 'marker.colorbar.title', text, cbnum);
+                    } else Plotly.restyle(gd, 'colorbar.title', text, cbnum);
+                }
                 else Plotly.relayout(gd,prop,text);
             })
             .on('cancel', function(){
