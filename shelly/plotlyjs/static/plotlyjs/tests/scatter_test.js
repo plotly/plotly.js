@@ -106,6 +106,72 @@ describe('Test scatter', function () {
 
     });
 
+    describe('hasColorscale', function() {
+        var hasColorscale = Plotly.Scatter.hasColorscale,
+            trace;
+
+        it('should return false when marker is not defined', function() {
+            trace = {};
+            expect(hasColorscale(trace, 'marker')).toBe(false);
+            expect(hasColorscale(trace, 'marker.line')).toBe(false);
+        });
+
+        it('should return true when marker color is an Array', function() {
+            trace = {
+                marker: {
+                    color: [1, 2, 3],
+                    line: {
+                        color: [2, 3, 4]
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(true);
+            expect(hasColorscale(trace, 'marker.line')).toBe(true);
+        });
+
+        it('should return true when marker showscale is true', function() {
+            trace = {
+                marker: {
+                    showscale: true,
+                    line: {
+                        showscale: true
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(true);
+            expect(hasColorscale(trace, 'marker.line')).toBe(true);
+        });
+
+
+        it('should return true when marker cmin & cmax are numbers', function() {
+            trace = {
+                marker: {
+                    cmin: 10,
+                    cmax: 20,
+                    line: {
+                        cmin: 10,
+                        cmax: 20
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(true);
+            expect(hasColorscale(trace, 'marker.line')).toBe(true);
+        });
+
+        it('should return true when marker colorbar is defined', function() {
+            trace = {
+                marker: {
+                    colorbar: {},
+                    line: {
+                        colorbar: {}
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(true);
+            expect(hasColorscale(trace, 'marker.line')).toBe(true);
+        });
+    });
+
     describe('linePoints', function() {
         // test axes are unit-scaled and 100 units long
         var ax = {_length: 100, c2p: Plotly.Lib.identity},

@@ -441,6 +441,21 @@ scatter.isBubble = function(trace) {
                 Array.isArray(trace.marker.size));
 };
 
+scatter.hasColorscale = function(trace, containerStr) {
+    var container = containerStr ?
+            Plotly.Lib.nestedProperty(trace, containerStr).get() || {} :
+            trace;
+
+    return (
+        typeof container==='object' && (
+            Array.isArray(container.color) ||
+            container.showscale===true ||
+            isNumeric(container.cmin) && isNumeric(container.cmax) ||
+            typeof container.colorbar==='object'
+        )
+    );
+};
+
 // TODO unify Scatter.colorbar and Heatmap.colorbar
 // TODO make Plotly[module].colorbar support multiple colorbar per trace
 scatter.colorbar = function(gd, cd) {
