@@ -82,7 +82,7 @@ plots.traceIs = function traceIs(traceType, category) {
     var _module = getModuleObj(traceType);
 
     if(!_module) throw new Error('unrecognized trace type');
-    if(!allCategories[category]) throw new Error('unrecognized category');
+    if(!allCategories[category]) console.warn('unrecognized category ' + category);
 
     return _module.categories[category];
 };
