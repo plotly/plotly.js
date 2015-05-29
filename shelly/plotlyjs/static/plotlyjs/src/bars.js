@@ -103,18 +103,16 @@ bars.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     }
 
     coerce('marker.color', defaultColor);
-    if(Plotly.Scatter.hasColorscale(traceIn, 'marker')) {
-        Plotly.Scatter.handleColorscaleDefaults(
-            traceIn, traceOut, layout, coerce,
-            {prefix: 'marker.', cLetter: 'c'}
+    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker')) {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
         );
     }
 
     coerce('marker.line.color', Plotly.Color.defaultLine);
-    if(Plotly.Scatter.hasColorscale(traceIn, 'marker.line')) {
-        Plotly.Scatter.handleColorscaleDefaults(
-            traceIn, traceOut, layout, coerce,
-            {prefix: 'marker.line.', cLetter: 'c'}
+    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker.line')) {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'}
         );
     }
 
@@ -199,11 +197,11 @@ bars.calc = function(gd, trace) {
     }
 
     // auto-z and autocolorscale if applicable
-    if(Plotly.Scatter.hasColorscale(trace, 'marker')) {
-        Plotly.Scatter.calcColorscale(trace, trace.marker.color, 'marker', 'c');
+    if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
+        Plotly.Colorscale.calc(trace, trace.marker.color, 'marker', 'c');
     }
-    if(Plotly.Scatter.hasColorscale(trace, 'marker.line')) {
-        Plotly.Scatter.calcColorscale(trace, trace.marker.line.color, 'marker.line', 'c');
+    if(Plotly.Colorscale.hasColorscale(trace, 'marker.line')) {
+        Plotly.Colorscale.calc(trace, trace.marker.line.color, 'marker.line', 'c');
     }
 
     return cd;

@@ -143,9 +143,8 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
     if(!Plotly.Plots.isContour(traceOut.type) ||
            (traceOut.contours || {}).coloring!=='none') {
-        Plotly.Scatter.handleColorscaleDefaults(
-            traceIn, traceOut, layout, coerce,
-            {prefix: '', cLetter: 'z'}
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
         );
     }
 
@@ -260,7 +259,7 @@ heatmap.calc = function(gd, trace) {
     var cd0 = {x: xArray, y: yArray, z: z};
 
     // auto-z and autocolorscale if applicable
-    Plotly.Scatter.calcColorscale(trace, z, '', 'z');
+    Plotly.Colorscale.calc(trace, z, '', 'z');
 
     if(Plotly.Plots.isContour(trace.type) && trace.contours &&
             trace.contours.coloring==='heatmap') {
@@ -576,7 +575,7 @@ function plotOne(gd, plotinfo, cd) {
     var z = cd[0].z,
         min = trace.zmin,
         max = trace.zmax,
-        scl = Plotly.Color.getScale(trace.colorscale),
+        scl = Plotly.Colorscale.getScale(trace.colorscale),
         x = cd[0].x,
         y = cd[0].y,
         zsmooth = Plotly.Plots.isContour(trace.type) ? 'best' : trace.zsmooth,
@@ -915,7 +914,7 @@ function plotOne(gd, plotinfo, cd) {
 heatmap.colorbar = function(gd,cd) {
     var trace = cd[0].trace,
         cbId = 'cb'+trace.uid,
-        scl = Plotly.Color.getScale(trace.colorscale),
+        scl = Plotly.Colorscale.getScale(trace.colorscale),
         zmin = trace.zmin,
         zmax = trace.zmax;
 
