@@ -2346,6 +2346,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'showscale', 'marker.showscale',
         'zauto', 'marker.cauto',
         'autocolorscale', 'marker.autocolorscale',
+        'colorscale', 'marker.colorscale',
+        'reversescale', 'marker.reversescale',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
         'autocontour','ncontours','contours.coloring',
@@ -2373,10 +2375,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // replotAttrs attributes need a replot (because different
     // objects need to be made) but not a recalc
     var replotAttrs = [
-        'zmin', 'zmax', 'zauto',
-        'colorscale', 'reversescale','zsmooth',
+        'zmin', 'zmax', 'zauto', 'zsmooth',
         'marker.cmin', 'marker.cmax', 'marker.cauto',
-        'marker.colorscale', 'marker.reversescale',
         'contours.start','contours.end','contours.size',
         'contours.showlines',
         'line.smoothing','line.shape',
