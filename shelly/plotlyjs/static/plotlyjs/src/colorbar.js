@@ -130,6 +130,7 @@ var colorbar = module.exports = function(td,id) {
                 showticklabels: opts.showticklabels,
                 tickfont: opts.tickfont,
                 tickangle: opts.tickangle,
+                tickformat: opts.tickformat,
                 exponentformat: opts.exponentformat,
                 showexponent: opts.showexponent,
                 showtickprefix: opts.showtickprefix,
@@ -141,7 +142,12 @@ var colorbar = module.exports = function(td,id) {
                 anchor: 'free',
                 position: 1
             },
-            cbAxisOut = {};
+            cbAxisOut = {},
+            axisOptions = {
+                letter: 'y',
+                font: fullLayout.font,
+                noHover: true
+            };
 
         // Coerce w.r.t. Axes layoutAttributes:
         // re-use axes.js logic without updating _fullData
@@ -153,9 +159,9 @@ var colorbar = module.exports = function(td,id) {
 
         // Prepare the Plotly axis object
         Plotly.Axes.handleAxisDefaults(cbAxisIn, cbAxisOut,
-                                       coerce, {letter: 'y'});
+                                       coerce, axisOptions);
         Plotly.Axes.handleAxisPositioningDefaults(cbAxisIn, cbAxisOut,
-                                                  coerce, {letter: 'y'});
+                                                  coerce, axisOptions);
 
         cbAxisOut._id = 'y' + id;
         cbAxisOut._td = td;
@@ -432,7 +438,6 @@ var colorbar = module.exports = function(td,id) {
         if(cbDone && cbDone.then) (td._promises||[]).push(cbDone);
 
         // dragging...
-        // TODO: abstract this dragging code for everything we drag in svg?
         if(td._context.editable) {
             var t0,
                 xf,
@@ -613,6 +618,7 @@ colorbar.attributes = {
     showticklabels: axesAttrs.showticklabels,
     tickfont: axesAttrs.tickfont,
     tickangle: axesAttrs.tickangle,
+    tickformat: axesAttrs.tickformat,
     tickprefix: axesAttrs.tickprefix,
     showtickprefix: axesAttrs.showtickprefix,
     ticksuffix: axesAttrs.ticksuffix,
@@ -663,29 +669,8 @@ colorbar.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
     Plotly.Axes.handleTickValueDefaults(containerIn, containerOut, coerce, 'linear');
 
-    var ticks = coerce('ticks');
-    if(ticks) {
-        coerce('ticklen');
-        coerce('tickwidth');
-        coerce('tickcolor');
-    }
-
-    var showTickLabels = coerce('showticklabels');
-    if(showTickLabels) {
-        coerce('tickfont', layout.font);
-        coerce('tickangle');
-
-        var showAttrDflt = Plotly.Axes.getShowAttrDflt(containerIn);
-
-        var showexponent = coerce('showexponent', showAttrDflt);
-        if(showexponent!=='none') coerce('exponentformat');
-
-        var tickPrefix = coerce('tickprefix');
-        if(tickPrefix) coerce('showtickprefix', showAttrDflt);
-
-        var tickSuffix = coerce('ticksuffix');
-        if(tickSuffix) coerce('showticksuffix', showAttrDflt);
-    }
+    Plotly.Axes.handleTickDefaults(containerIn, containerOut, coerce, 'linear',
+        {outerTicks: false, font: layout.font, noHover: true});
 
     coerce('title');
     coerce('titlefont', layout.font);
