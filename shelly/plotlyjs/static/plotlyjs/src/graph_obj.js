@@ -80,11 +80,11 @@ plots.getModule = function(trace) {
  */
 plots.traceIs = function traceIs(traceType, category) {
     var _module = getModuleObj(traceType);
-    if(!_module) return false;
 
+    if(!_module) throw new Error('unrecognized trace type');
     if(!allCategories[category]) throw new Error('unrecognized category');
 
-    return _module.attributes[category];
+    return _module.categories[category];
 };
 
 plots.getSubplotIds = function getSubplotIds(layout, type) {
