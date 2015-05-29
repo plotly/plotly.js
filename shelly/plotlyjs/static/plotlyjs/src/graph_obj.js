@@ -35,7 +35,7 @@ var modules = plots.modules = {},
  */
 plots.register = function(_module, thisType, categoriesIn) {
     if(modules[thisType]) {
-        throw new Error('type ' + thisType + 'already registered');
+        throw new Error('type ' + thisType + ' already registered');
     }
 
     var categoryObj = {};
