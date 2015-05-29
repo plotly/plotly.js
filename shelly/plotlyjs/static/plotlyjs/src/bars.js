@@ -7,6 +7,8 @@ var bars = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
+Plotly.Plots.register(bars, ['bar', 'histogram']);
+
 // mark this module as allowing error bars
 bars.errorBarsOK = true;
 

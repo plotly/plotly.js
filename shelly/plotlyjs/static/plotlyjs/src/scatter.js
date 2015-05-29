@@ -8,6 +8,8 @@ var scatter = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
+Plotly.Plots.register(scatter, ['scatter']);
+
 // mark this module as allowing error bars
 scatter.errorBarsOK = true;
 

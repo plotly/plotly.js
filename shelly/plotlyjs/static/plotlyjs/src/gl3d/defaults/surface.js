@@ -6,6 +6,8 @@ var Surface = {};
 
 module.exports = Surface;
 
+Plotly.Plots.register(Surface, ['surface']);
+
 var  heatmapAttrs = Plotly.Heatmap.attributes,
     contourAttributes =  {
         show: {

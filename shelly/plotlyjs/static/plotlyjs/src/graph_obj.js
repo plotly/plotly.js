@@ -20,6 +20,20 @@ var plots = module.exports = {};
 //   restyle
 //   relayout
 
+var modules = plots.modules = {};
+var alltypes = plots.ALLTYPES = [];
+
+plots.register = function(_module, types) {
+    for(var i = 0; i < types.length; i++) {
+        var thisType = types[i];
+        if(modules[thisType]) {
+            throw new Error('type ' + thisType + 'already registered');
+        }
+        modules[thisType] = _module;
+        alltypes.push(thisType);
+    }
+};
+
 plots.isScatter = function(type) {
     return !type || type==='scatter';
 };
@@ -76,30 +90,16 @@ plots.isMesh3D = function(type) {
 
 // ALLTYPES and getModule are used for the graph_reference app
 
-plots.ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
-
 plots.getModule = function getModule(trace) {
-    var type = trace.type;
-
     if('r' in trace) {
-        console.log('Oops, tried to put a polar trace of type ' +
-            type + ' on an incompatible graph of cartesian ' +
-            'data. Ignoring this dataset.'
+        console.log('Oops, tried to put a polar trace ' +
+            'on an incompatible graph of cartesian ' +
+            'data. Ignoring this dataset.', trace
         );
         return;
     }
-    if (plots.isScatter(type)) return Plotly.Scatter;
-    if (plots.isBar(type)) return Plotly.Bars;
-    if (plots.isContour(type)) return Plotly.Contour;
-    if (plots.isHeatmap(type)) return Plotly.Heatmap;
-    if (plots.isScatter3D(type)) return Plotly.Scatter3D;
-    if (plots.isMesh3D(type)) return Plotly.Mesh3D;
-    if (plots.isSurface(type)) return Plotly.Surface;
-    if (plots.isBox(type)) return Plotly.Boxes;
 
-    console.log('Unrecognized plot type ' + type +
-        '. Ignoring this dataset.'
-    );
+    return modules[trace.type || 'scatter'];
 };
 
 plots.getSubplotIds = function getSubplotIds(layout, type) {
