@@ -160,5 +160,6 @@ plots['wire-surface'] = require('./testplots/wire-surface.json');
 plots['triangle-mesh3d'] = require('./testplots/triangle.json');
 plots['snowden'] = require('./testplots/snowden.json');
 plots['bunny'] = require('./testplots/bunny.json');
+plots['ribbons'] = require('./testplots/ribbons.json');
 
 plotButtons(plots);
