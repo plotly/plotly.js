@@ -276,14 +276,23 @@ axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     }
 };
 
+/**
+ * options: object containing:
+ *      letter: 'x' or 'y'
+ *      title: name of the axis (ie 'Colorbar') to go in default title
+ *      name: axis object name (ie 'xaxis') if one should be stored
+ *      font: the default font to inherit
+ *      outerTicks: boolean, should ticks default to outside?
+ *      showGrid: boolean, should gridlines be shown by default?
+ *      noHover: boolean, this axis doesn't support hover effects?
+ *      data: the plot data to use in choosing auto type
+ */
 axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     var letter = options.letter,
+        font = options.font || {},
         defaultTitle = 'Click to enter ' +
             (options.title || (letter.toUpperCase() + ' axis')) +
-            ' title',
-        font = options.font||{},
-        outerTicks = options.outerTicks,
-        showGrid = options.showGrid;
+            ' title';
 
     // set up some private properties
     if(options.name) {
@@ -332,7 +341,37 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
     axes.handleTickValueDefaults(containerIn, containerOut, coerce, axType);
 
-    var showTicks = coerce('ticks', outerTicks ? 'outside' : '');
+    axes.handleTickDefaults(containerIn, containerOut, coerce, axType, options);
+
+    var showLine = coerce('showline');
+    if(showLine) {
+        coerce('linecolor');
+        coerce('linewidth');
+    }
+
+    if(showLine || containerOut.ticks) coerce('mirror');
+
+
+    var showGridLines = coerce('showgrid', options.showGrid);
+    if(showGridLines) {
+        coerce('gridcolor');
+        coerce('gridwidth');
+    }
+
+    var showZeroLine = coerce('zeroline', options.showGrid);
+    if(showZeroLine) {
+        coerce('zerolinecolor');
+        coerce('zerolinewidth');
+    }
+
+    return containerOut;
+};
+
+/**
+ * options: inherits font, outerTicks, noHover from axes.handleAxisDefaults
+ */
+axes.handleTickDefaults = function(containerIn, containerOut, coerce, axType, options) {
+    var showTicks = coerce('ticks', options.outerTicks ? 'outside' : '');
     if(showTicks) {
         coerce('ticklen');
         coerce('tickwidth');
@@ -341,18 +380,19 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
-        coerce('tickfont', font);
+        coerce('tickfont', options.font || {});
         coerce('tickangle');
 
         var showAttrDflt = axes.getShowAttrDflt(containerIn);
 
-        if(axType==='date') {
-            coerce('tickformat');
-            coerce('hoverformat');
-        }
-        else {
-            coerce('showexponent', showAttrDflt);
-            coerce('exponentformat');
+        if(axType !== 'category') {
+            var tickFormat = coerce('tickformat');
+            if(!options.noHover) coerce('hoverformat');
+
+            if(!tickFormat && axType !== 'date') {
+                coerce('showexponent', showAttrDflt);
+                coerce('exponentformat');
+            }
         }
 
         var tickPrefix = coerce('tickprefix');
@@ -361,29 +401,6 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
         var tickSuffix = coerce('ticksuffix');
         if(tickSuffix) coerce('showticksuffix', showAttrDflt);
     }
-
-    var showLine = coerce('showline');
-    if(showLine) {
-        coerce('linecolor');
-        coerce('linewidth');
-    }
-
-    if(showLine || showTicks) coerce('mirror');
-
-
-    var showGridLines = coerce('showgrid', showGrid);
-    if(showGridLines) {
-        coerce('gridcolor');
-        coerce('gridwidth');
-    }
-
-    var showZeroLine = coerce('zeroline', showGrid);
-    if(showZeroLine) {
-        coerce('zerolinecolor');
-        coerce('zerolinewidth');
-    }
-
-    return containerOut;
 };
 
 axes.handleTickValueDefaults = function(containerIn, containerOut, coerce, axType) {
@@ -1762,7 +1779,10 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
         x = out.x;
     if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0)!=='L')) dtick = 'L3';
 
-    if(isNumeric(dtick)||((dtick.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
+    if(ax.tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
+        out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
+    }
+    else if(isNumeric(dtick)||((dtick.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
         if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
             var p = Math.round(x);
             if(p === 0) out.text = 1;
@@ -1782,9 +1802,6 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
     else if(dtick.charAt(0) === 'D') {
         out.text = String(Math.round(Math.pow(10, mod(x, 1))));
         out.fontSize *= 0.75;
-    }
-    else if(dtick.charAt(0) === 'L') {
-        out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
     }
     else throw 'unrecognized dtick ' + String(dtick);
 
@@ -1831,7 +1848,8 @@ function numFormat(v, ax, fmtoverride, hover) {
         // max number of digits past decimal point to show
         tickRound = ax._tickround,
         exponentFormat = fmtoverride || ax.exponentformat || 'B',
-        exponent = ax._tickexponent;
+        exponent = ax._tickexponent,
+        tickformat = ax.tickformat;
 
     // special case for hover: set exponent just for this value, and
     // add a couple more digits of precision over tick labels
@@ -1848,7 +1866,10 @@ function numFormat(v, ax, fmtoverride, hover) {
         autoTickRound(ah);
         tickRound = (Number(ah._tickround) || 0) + 4;
         exponent = ah._tickexponent;
+        if(ax.hoverformat) tickformat = ax.hoverformat;
     }
+
+    if(tickformat) return d3.format(tickformat)(v).replace(/-/g,'\u2212');
 
     // 'epsilon' - rounding increment
     var e = Math.pow(10, -tickRound) / 2;
@@ -2190,15 +2211,17 @@ axes.doTicks = function(td, axid, skipTitle) {
 
     // make sure we only have allowed options for exponents
     // (others can make confusing errors)
-    if(['none','e','E','power','SI','B'].indexOf(ax.exponentformat)===-1) {
-        ax.exponentformat = 'e';
-    }
-    if(['all','first','last','none'].indexOf(ax.showexponent)===-1) {
-        ax.showexponent = 'all';
+    if(!ax.tickformat) {
+        if(['none','e','E','power','SI','B'].indexOf(ax.exponentformat)===-1) {
+            ax.exponentformat = 'e';
+        }
+        if(['all','first','last','none'].indexOf(ax.showexponent)===-1) {
+            ax.showexponent = 'all';
+        }
     }
 
     // in case a val turns into string somehow
-    ax.range = ax.range.map(Number);
+    ax.range = [+ax.range[0], +ax.range[1]];
 
     // set scaling to pixels
     ax.setScale();
