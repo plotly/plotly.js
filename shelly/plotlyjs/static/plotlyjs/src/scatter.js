@@ -147,7 +147,7 @@ scatter.attributes = {
         },
         showscale: {
             type: 'boolean',
-            dflt: true
+            dflt: false
         },
         _nestedModules: {
             'colorbar': 'Colorbar'
@@ -365,27 +365,29 @@ scatter.handleColorscaleDefaults = function(traceIn, traceOut, layout, coerce, o
             traceIn,
         containerOut = prefix ?
             Plotly.Lib.nestedProperty(traceOut, containerStr).get() || {} :
-            traceOut;
+            traceOut,
+        minIn = containerIn[cLetter + 'min'],
+        maxIn = containerIn[cLetter + 'max'],
+        colorscaleIn = containerIn.colorscale;
 
-    var minIn, maxIn, validMinMax, showScaleDftl, showScale, reverseScale;
+    var validMinMax, autoColorscaleDftl, showScaleDftl, showScale, reverseScale;
 
     function flipScale(si) { return [1 - si[0], si[1]]; }
-
-    minIn = containerIn[cLetter + 'min'];
-    maxIn = containerIn[cLetter + 'max'];
 
     validMinMax = isNumeric(minIn) && isNumeric(maxIn) && minIn < maxIn;
     coerce(prefix + cLetter + 'auto', !validMinMax);
     coerce(prefix + cLetter + 'min');
     coerce(prefix + cLetter + 'max');
 
+    // handles both the trace case (autocolorscale is false by default) and
+    // the marker and marker.line case (autocolorscale is true by default)
+    if(colorscaleIn!==undefined) autoColorscaleDftl = !Plotly.Color.isValidScale(colorscaleIn);
+    coerce(prefix + 'autocolorscale', autoColorscaleDftl);
     coerce(prefix + 'colorscale');
-    coerce(prefix + 'autocolorscale', !Plotly.Color.isValidScale(containerIn.colorscale));
-
-    reverseScale = coerce(prefix + 'reversescale');
 
     // apply the colorscale reversal here, so we don't have to
     // do it in separate modules later
+    reverseScale = coerce(prefix + 'reversescale');
     if(reverseScale) {
         containerOut.colorscale = containerOut.colorscale
                                     .map(flipScale).reverse();
@@ -485,7 +487,6 @@ scatter.colorbar = function(gd, cd) {
 
     if(!isNumeric(cmin)) cmin = Plotly.Lib.aggNums(Math.min, null, vals);
     if(!isNumeric(cmax)) cmax = Plotly.Lib.aggNums(Math.max, null, vals);
-
 
     var cb = cd[0].t.cb = Plotly.Colorbar(gd, cbId);
 

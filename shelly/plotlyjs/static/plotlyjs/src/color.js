@@ -97,7 +97,7 @@ color.scales = {
 
 color.defaultScale = color.scales.RdBu;
 
-color.isValidScale = function(scl) {
+function isValidScaleArray(scl) {
     var isValid = true,
         highestVal = 0,
         si;
@@ -112,9 +112,14 @@ color.isValidScale = function(scl) {
             }
             highestVal = si[0];
         }
-    }
+   }
 
-    return isValid;
+   return isValid;
+}
+
+color.isValidScale = function(scl) {
+    if(color.scales[scl] !== undefined) return true;
+    else return isValidScaleArray(scl);
 };
 
 color.getScale = function(scl, dflt) {
@@ -136,7 +141,7 @@ color.getScale = function(scl, dflt) {
         if(typeof scl === 'string') parseScale();
     }
 
-    if(!color.isValidScale) return dflt;
+    if(!isValidScaleArray(scl)) return dflt;
     return scl;
 };
 
