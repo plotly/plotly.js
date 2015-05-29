@@ -22,7 +22,8 @@ var plots = module.exports = {};
 
 // ALLTYPES and getModule are used for the graph_reference app as well as plotting
 var modules = plots.modules = {},
-    alltypes = plots.ALLTYPES = [];
+    alltypes = plots.ALLTYPES = [],
+    allCategories = plots.allCategories = {};
 
 /**
  * plots.register: register a module as the handler for a trace type
@@ -38,7 +39,10 @@ plots.register = function(_module, thisType, categoriesIn) {
     }
 
     var categoryObj = {};
-    for(var i = 0; i < categoriesIn.length; i++) categoryObj[categoriesIn[i]] = true;
+    for(var i = 0; i < categoriesIn.length; i++) {
+        categoryObj[categoriesIn[i]] = true;
+        allCategories[categoriesIn[i]] = true;
+    }
 
     modules[thisType] = {
         module: _module,
@@ -77,6 +81,8 @@ plots.getModule = function(trace) {
 plots.traceIs = function traceIs(traceType, category) {
     var _module = getModuleObj(traceType);
     if(!_module) return false;
+
+    if(!allCategories[category]) throw new Error('unrecognized category');
 
     return _module.attributes[category];
 };
