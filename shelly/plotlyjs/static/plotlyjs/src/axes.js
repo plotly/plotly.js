@@ -183,18 +183,27 @@ axes.layoutAttributes = {
         dflt: 0
     }
 };
+var xAxisMatch = /^xaxis[0-9]*$/,
+    yAxisMatch = /^yaxis[0-9]*$/;
 
 axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     // get the full list of axes already defined
-    var xaList = Object.keys(layoutIn)
-            .filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
-        yaList = Object.keys(layoutIn)
-            .filter(function(k){ return k.match(/^yaxis[0-9]*$/); }),
+    var layoutKeys = Object.keys(layoutIn),
+        xaList = [],
+        yaList = [],
         outerTicks = {},
-        noGrids = {};
+        noGrids = {},
+        i;
 
-    fullData.forEach(function(trace) {
-        var xaName = axes.id2name(trace.xaxis),
+    for(i = 0; i < layoutKeys.length; i++) {
+        var key = layoutKeys[i];
+        if(key.match(xAxisMatch)) xaList.push(key);
+        else if(key.match(yAxisMatch)) yaList.push(key);
+    }
+
+    for(i = 0; i < fullData.length; i++) {
+        var trace = fullData[i],
+            xaName = axes.id2name(trace.xaxis),
             yaName = axes.id2name(trace.yaxis);
 
         // add axes implied by traces
@@ -202,16 +211,16 @@ axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         if(yaName && yaList.indexOf(yaName)===-1) yaList.push(yaName);
 
         // check for default formatting tweaks
-        if(Plotly.Plots.isHeatmap(trace.type)) {
+        if(Plotly.Plots.traceIs(trace, '2dMap')) {
             outerTicks[xaName] = true;
             outerTicks[yaName] = true;
         }
 
-        if(Plotly.Plots.isBar(trace.type) || Plotly.Plots.isBox(trace.type)) {
+        if(Plotly.Plots.traceIs(trace, 'oriented')) {
             var positionAxis = trace.orientation==='h' ? yaName : xaName;
             noGrids[positionAxis] = true;
         }
-    });
+    }
 
     function axSort(a,b) {
         var aNum = Number(a.substr(5)||1),
@@ -545,18 +554,20 @@ function setAutoType(ax, data){
     if(ax.type!=='-') return;
 
     var id = ax._id,
-        axLetter = id.charAt(0);
+        axLetter = id.charAt(0),
+        i,
+        d0;
 
     // support 3d
     if (id.indexOf('scene') !== -1) id = axLetter;
 
-    data = data.filter( function(di) {
-        return (di[axLetter+'axis']||axLetter)===id;
-    });
-
-    if(!data.length) return;
-
-    var d0 = data[0];
+    for(i = 0; i < data.length; i++) {
+        if((data[i][axLetter+'axis'] || axLetter) === id) {
+            d0 = data[i];
+            break;
+        }
+    }
+    if(!d0) return;
 
     // first check for histograms, as the count direction
     // should always default to a linear axis
@@ -567,20 +578,22 @@ function setAutoType(ax, data){
     }
     // then check the data supplied for that axis
     var posLetter = {v:'x', h:'y'}[d0.orientation || 'v'];
-    if(Plotly.Plots.isBox(d0.type) &&
+    if(Plotly.Plots.traceIs(d0, 'box') &&
             axLetter===posLetter &&
             !(posLetter in d0) &&
             !(posLetter+'0' in d0)) {
         // check all boxes on this x axis to see
         // if they're dates, numbers, or categories
-        ax.type = axes.autoType(
-            data.filter(function(d){ return Plotly.Plots.isBox(d.type); })
-                .map(function(d){
-                    if(posLetter in d) return d.pos[0];
-                    if('name' in d) return d.name;
-                    return 'text';
-                })
-        );
+        var boxPositions = [];
+        for(i = 0; i < data.length; i++) {
+            var trace = data[i];
+            if(!Plotly.Plots.traceIs(trace, 'box') || (trace[axLetter+'axis']||axLetter) !== id) continue;
+
+            if(trace.posLetter !== undefined) boxPositions.push(trace[posLetter][0]);
+            else if(trace.name !== undefined) boxPositions.push(trace.name);
+            else boxPositions.push('text');
+        }
+        ax.type = axes.autoType(boxPositions);
     }
     else {
         ax.type = axes.autoType(d0[axLetter] || [d0[axLetter+'0']]);
@@ -2014,7 +2027,7 @@ axes.getFromId = function(td,id,type) {
 axes.getFromTrace = function (td, fullTrace, type) {
     var fullLayout = td._fullLayout;
     var ax = null;
-    if (Plotly.Plots.isGL3D(fullTrace.type)) {
+    if (Plotly.Plots.traceIs(fullTrace, 'gl3d')) {
         var scene = fullTrace.scene;
         if (scene.substr(0,5)==='scene') {
             ax = fullLayout[scene][type + 'axis'];
@@ -2040,7 +2053,7 @@ axes.getSubplots = function(gd,ax) {
     // look for subplots in the data
     (data||[]).forEach(function(trace) {
         if(trace.visible === false || trace.visible === 'legendonly' ||
-                Plotly.Plots.isGL3D(trace.type)) {
+                Plotly.Plots.traceIs(trace, 'gl3d')) {
             return;
         }
         var xid = (trace.xaxis||'x'),
@@ -2460,6 +2473,12 @@ axes.doTicks = function(td, axid, skipTitle) {
         return done;
     }
 
+    function traceHasBarsOrFill(trace, subplot) {
+        if(trace.visible !== true || trace.xaxis + trace.yaxis !== subplot) return false;
+        if(Plotly.Plots.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axletter]) return true;
+        return trace.fill && trace.fill.charAt(trace.fill.length - 1) === axletter;
+    }
+
     function drawGrid(plotinfo, counteraxis, subplot) {
         var gridcontainer = plotinfo.gridlayer,
             zlcontainer = plotinfo.zerolinelayer,
@@ -2483,14 +2502,13 @@ axes.doTicks = function(td, axid, skipTitle) {
         grid.exit().remove();
 
         // zero line
-        var hasBarsOrFill = (td.data || []).filter(function(tdc) {
-            return tdc.visible === true &&
-                ((tdc.xaxis || 'x') + (tdc.yaxis || 'y') === subplot) &&
-                ((Plotly.Plots.isBar(tdc.type) &&
-                    (tdc.orientation || 'v') === {x: 'h', y: 'v'}[axletter]) ||
-                ((tdc.type || 'scatter') === 'scatter' && tdc.fill &&
-                    tdc.fill.charAt(tdc.fill.length - 1) === axletter));
-        }).length;
+        var hasBarsOrFill = false;
+        for(var i = 0; i < td._fullData.length; i++) {
+            if(traceHasBarsOrFill(td._fullData[i], subplot)) {
+                hasBarsOrFill = true;
+                break;
+            }
+        }
         var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline &&
             (ax.type==='linear' || ax.type==='-') && gridvals.length &&
             (hasBarsOrFill || clipEnds({x:0}) || !ax.showline);

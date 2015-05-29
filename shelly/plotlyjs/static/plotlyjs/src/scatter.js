@@ -8,7 +8,7 @@ var scatter = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
-Plotly.Plots.register(scatter, ['scatter']);
+Plotly.Plots.register(scatter, 'scatter', ['cartesian', 'symbols']);
 
 // mark this module as allowing error bars
 scatter.errorBarsOK = true;

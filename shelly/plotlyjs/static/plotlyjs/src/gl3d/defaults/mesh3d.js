@@ -6,7 +6,7 @@ var Mesh3D = {};
 
 module.exports = Mesh3D;
 
-Plotly.Plots.register(Mesh3D, ['mesh3d']);
+Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d', 'nolegend']);
 
 var  heatmapAttrs = Plotly.Heatmap.attributes;
 

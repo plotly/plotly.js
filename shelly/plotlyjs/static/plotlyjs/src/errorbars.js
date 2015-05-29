@@ -110,7 +110,7 @@ errorBars.supplyDefaults = function(traceIn, traceOut, defaultColor, opts) {
         if(!opts.inherit || !containerOut[copyAttr]) {
             coerce('color', defaultColor);
             coerce('thickness');
-            coerce('width', Plotly.Plots.isScatter3D(traceOut.type) ? 0 : 4);
+            coerce('width', Plotly.Plots.traceIs(traceOut, 'gl3d') ? 0 : 4);
         }
     }
 };

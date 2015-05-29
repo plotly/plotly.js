@@ -7,7 +7,7 @@ var boxes = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
-Plotly.Plots.register(boxes, ['box']);
+Plotly.Plots.register(boxes, 'box', ['cartesian', 'symbols', 'oriented', 'box']);
 
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,
@@ -164,10 +164,13 @@ boxes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         return Plotly.Lib.coerce(layoutIn, layoutOut, boxes.layoutAttributes, attr, dflt);
     }
 
-    var hasBoxes = fullData.some(function(trace) {
-        return Plotly.Plots.isBox(trace.type);
-    });
-
+    var hasBoxes;
+    for(var i = 0; i < fullData.length; i++) {
+        if(fullData[i]._module === boxes) {
+            hasBoxes = true;
+            break;
+        }
+    }
     if(!hasBoxes) return;
 
     coerce('boxmode');
@@ -334,7 +337,7 @@ boxes.setPositions = function(gd, plotinfo) {
             t = cd[0].t;
             trace = cd[0].trace;
 
-            if (trace.visible === true && Plotly.Plots.isBox(trace.type) &&
+            if (trace.visible === true && trace._module === boxes &&
                     !t.emptybox &&
                     trace.orientation === orientation &&
                     trace.xaxis === xa._id &&

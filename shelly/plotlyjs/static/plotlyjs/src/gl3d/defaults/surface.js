@@ -6,7 +6,7 @@ var Surface = {};
 
 module.exports = Surface;
 
-Plotly.Plots.register(Surface, ['surface']);
+Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity', 'nolegend']);
 
 var  heatmapAttrs = Plotly.Heatmap.attributes,
     contourAttributes =  {

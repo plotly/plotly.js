@@ -11,7 +11,7 @@ var scatterAttrs = Plotly.Scatter.attributes,
 
 var Scatter3D = {};
 
-Plotly.Plots.register(Scatter3D, ['scatter3d']);
+Plotly.Plots.register(Scatter3D, 'scatter3d', ['gl3d', 'symbols']);
 
 Scatter3D.attributes = {
     x: {type: 'data_array'},
@@ -190,4 +190,13 @@ Scatter3D.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y', inherit: 'z'});
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
+};
+
+Scatter3D.calc = function(gd, trace) {
+    // this is a kludge to put the array attributes into
+    // calcdata the way Scatter.plot does, so that legends and
+    // popovers know what to do with them.
+    var cd = [{x: false, y: false, trace: trace, t: {}}];
+    Plotly.Scatter.arraysToCalcdata(cd);
+    return cd;
 };

@@ -20,78 +20,41 @@ var plots = module.exports = {};
 //   restyle
 //   relayout
 
-var modules = plots.modules = {};
-var alltypes = plots.ALLTYPES = [];
+// ALLTYPES and getModule are used for the graph_reference app as well as plotting
+var modules = plots.modules = {},
+    alltypes = plots.ALLTYPES = [];
 
-plots.register = function(_module, types) {
-    for(var i = 0; i < types.length; i++) {
-        var thisType = types[i];
-        if(modules[thisType]) {
-            throw new Error('type ' + thisType + 'already registered');
-        }
-        modules[thisType] = _module;
-        alltypes.push(thisType);
+/**
+ * plots.register: register a module as the handler for a trace type
+ *
+ * _module: (object) the module that will handle plotting this trace type
+ * thisType: (string)
+ * categoriesIn: (array of strings) all the categories this type is in,
+ *     tested by calls: Plotly.Plots.traceIs(trace, oneCategory)
+ */
+plots.register = function(_module, thisType, categoriesIn) {
+    if(modules[thisType]) {
+        throw new Error('type ' + thisType + 'already registered');
     }
+
+    var categoryObj = {};
+    for(var i = 0; i < categoriesIn.length; i++) categoryObj[categoriesIn[i]] = true;
+
+    modules[thisType] = {
+        module: _module,
+        categories: categoryObj
+    };
+
+    alltypes.push(thisType);
 };
 
-plots.isScatter = function(type) {
-    return !type || type==='scatter';
-};
+function getModuleObj(traceType) {
+    if(typeof traceType === 'object') traceType = traceType.type;
+    return modules[traceType || 'scatter'];
+}
 
-var BARTYPES = ['bar','histogram'];
-plots.isBar = function(type) {
-    return BARTYPES.indexOf(type)!==-1;
-};
-
-plots.isBox = function(type) {
-    return type === 'box';
-};
-
-var HEATMAPTYPES = ['heatmap','histogram2d','contour','histogram2dcontour'];
-plots.isHeatmap = function(type) {
-    return HEATMAPTYPES.indexOf(type) !== -1;
-};
-
-var CONTOURTYPES = ['contour','histogram2dcontour'];
-plots.isContour = function(type) {
-    return CONTOURTYPES.indexOf(type) !== -1;
-};
-
-var HIST2DTYPES = ['histogram2d','histogram2dcontour'];
-plots.isHist2D = function(type) {
-    return HIST2DTYPES.indexOf(type) !== -1;
-};
-
-var CARTESIANTYPES = ['scatter', 'box'].concat(BARTYPES, HEATMAPTYPES);
-plots.isCartesian = function(type) {
-    return CARTESIANTYPES.indexOf(type) !== -1;
-};
-
-var GL3DTYPES = ['scatter3d', 'surface', 'mesh3d'];
-plots.isGL3D = function(type) {
-    return GL3DTYPES.indexOf(type) !== -1;
-};
-
-plots.isScatter3D = function(type) {
-    return type === 'scatter3d';
-};
-
-plots.isScatterAny = function(type) {
-    return plots.isScatter(type) || plots.isScatter3D(type);
-};
-
-plots.isSurface = function(type) {
-    return type === 'surface';
-};
-
-plots.isMesh3D = function(type) {
-    return type === 'mesh3d';
-};
-
-// ALLTYPES and getModule are used for the graph_reference app
-
-plots.getModule = function getModule(trace) {
-    if('r' in trace) {
+plots.getModule = function(trace) {
+    if(trace.r !== undefined) {
         console.log('Oops, tried to put a polar trace ' +
             'on an incompatible graph of cartesian ' +
             'data. Ignoring this dataset.', trace
@@ -99,7 +62,23 @@ plots.getModule = function getModule(trace) {
         return;
     }
 
-    return modules[trace.type || 'scatter'];
+    var _module = getModuleObj(trace);
+    if(!_module) return false;
+    return _module.module;
+};
+
+
+/**
+ * plots.traceIs: is this trace type in this category?
+ *
+ * traceType: a trace (object) or trace type (string)
+ * category: a category (string)
+ */
+plots.traceIs = function traceIs(traceType, category) {
+    var _module = getModuleObj(traceType);
+    if(!_module) return false;
+
+    return _module.attributes[category];
 };
 
 plots.getSubplotIds = function getSubplotIds(layout, type) {
@@ -1029,7 +1008,7 @@ function cleanData(data, existingData) {
         if(trace.error_y && 'opacity' in trace.error_y) {
             var dc = Plotly.Color.defaults,
                 yeColor = trace.error_y.color ||
-                (plots.isBar(trace.type) ? Plotly.Color.defaultLine : dc[tracei % dc.length]);
+                (plots.traceIs(trace, 'bar') ? Plotly.Color.defaultLine : dc[tracei % dc.length]);
             trace.error_y.color = Plotly.Color.addOpacity(
                 Plotly.Color.rgb(yeColor),
                 Plotly.Color.opacity(yeColor) * trace.error_y.opacity);
@@ -1039,7 +1018,7 @@ function cleanData(data, existingData) {
         // convert bardir to orientation, and put the data into
         // the axes it's eventually going to be used with
         if('bardir' in trace) {
-            if(trace.bardir==='h' && (plots.isBar(trace.type) ||
+            if(trace.bardir==='h' && (plots.traceIs(trace, 'bar') ||
                      trace.type.substr(0,9)==='histogram')) {
                 trace.orientation = 'h';
                 swapXYData(trace);
@@ -1259,12 +1238,10 @@ plots.supplyDefaults = function(gd) {
         newFullData.push(fullTrace);
 
         // DETECT 3D, Cartesian, and Polar
-        if (plots.isGL3D(fullTrace.type)) newFullLayout._hasGL3D = true;
+        if (plots.traceIs(fullTrace, 'cartesian')) newFullLayout._hasCartesian = true;
+        else if (plots.traceIs(fullTrace, 'gl3d')) newFullLayout._hasGL3D = true;
+        else if ('r' in fullTrace) newFullLayout._hasPolar = true;
 
-        if (plots.isCartesian(fullTrace.type)) {
-            if ('r' in fullTrace) newFullLayout._hasPolar = true;
-            else newFullLayout._hasCartesian = true;
-        }
 
         module = fullTrace._module;
         if (module && modules.indexOf(module)===-1) modules.push(module);
@@ -1379,17 +1356,17 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
     // module-independent attributes
     traceOut.index = i;
-    var type = coerce('type'),
-        visible = coerce('visible'),
+    var visible = coerce('visible'),
         scene,
         module;
 
+    coerce('type');
     coerce('uid');
 
     // this is necessary otherwise we lose references to scene objects when
     // the traces of a scene are invisible. Also we handle visible/unvisible
     // differently for 3D cases.
-    if (plots.isGL3D(type)) scene = coerce('scene');
+    if (plots.traceIs(traceOut, 'gl3d')) scene = coerce('scene');
 
     // module-specific attributes --- note: we need to send a trace into
     // the 3D modules to have it removed from the webgl context.
@@ -1405,16 +1382,14 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
         coerce('hoverinfo');
 
-        if(!plots.isScatter3D(type)) coerce('opacity');
+        if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
-        if(plots.isCartesian(type)) {
+        if(plots.traceIs(traceOut, 'cartesian')) {
             coerce('xaxis');
             coerce('yaxis');
         }
 
-        if(!plots.isHeatmap(type) && !plots.isSurface(type)) {
-            coerce('showlegend');
-        }
+        if(!plots.traceIs(traceOut, 'nolegend')) coerce('showlegend');
     }
 
     // NOTE: I didn't include fit info at all... for now I think it can stay
@@ -1662,13 +1637,6 @@ function doCalcdata(gd) {
         // t is the holder for trace-wide properties
         if (!cd[0].t) cd[0].t = {};
         cd[0].trace = trace;
-
-        // this is a kludge to put the array attributes into
-        // calcdata the way Scatter.plot does, so that legends and
-        // popovers know what to do with them.
-        if(plots.isScatter3D(trace.type)) {
-            Plotly.Scatter.arraysToCalcdata(cd);
-        }
 
         Plotly.Lib.markTime('done with calcdata for '+i);
         calcdata[i] = cd;
@@ -2355,10 +2323,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
         'swapxy','swapxyaxes','orientationaxes'
     ];
-    var hasBoxes = traces.some(function(v) {
-        return Plotly.Plots.isBox(gd._fullData[v].type);
-    });
-    if(hasBoxes) recalcAttrs.push('name');
+    for(i = 0; i < traces.length; i++) {
+        if(plots.traceIs(gd._fullData[traces[i]], 'box')) {
+            recalcAttrs.push('name');
+            break;
+        }
+    }
 
     // autorangeAttrs attributes need a full redo of calcdata
     // only if an axis is autoranged,
@@ -2687,7 +2657,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                     if((cd[0].t||{}).cb) {
                         var trace = cd[0].trace,
                             cb = cd[0].t.cb;
-                        if(plots.isContour(trace.type)) {
+                        if(plots.traceIs(trace, 'contour')) {
                               cb.line({
                                 width: trace.contours.showlines!==false ?
                                     trace.line.width : 0,
