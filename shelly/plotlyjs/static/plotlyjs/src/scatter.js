@@ -149,9 +149,6 @@ scatter.attributes = {
             type: 'boolean',
             dflt: false
         },
-        _nestedModules: {
-            'colorbar': 'Colorbar'
-        },
         line: {
             color: {
                 type: 'color',
@@ -185,7 +182,7 @@ scatter.attributes = {
             reversescale: {
                 type: 'boolean',
                 dflt: false
-            },
+            }
         }
     },
     textposition: {
@@ -202,7 +199,8 @@ scatter.attributes = {
     textfont: {type: 'font'},
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
-        'error_x': 'ErrorBars'
+        'error_x': 'ErrorBars',
+        'marker.colorbar': 'Colorbar'
     }
 };
 

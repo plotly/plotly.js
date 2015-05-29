@@ -36,9 +36,6 @@ bars.attributes = {
         autocolorscale: scatterMarkerAttrs.autocolorscale,
         reversescale: scatterMarkerAttrs.reversescale,
         showscale: scatterMarkerAttrs.showscale,
-        _nestedModules: {
-            'colorbar': 'Colorbar'
-        },
         line: {
             color: scatterMarkerLineAttrs.color,
             colorscale: scatterMarkerLineAttrs.colorscale,
@@ -52,7 +49,8 @@ bars.attributes = {
     },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
-        'error_x': 'ErrorBars'
+        'error_x': 'ErrorBars',
+        'marker.colorbar': 'Colorbar'
     },
     _composedModules: {  // composed module coupling
         'histogram': 'Histogram'
@@ -205,7 +203,7 @@ bars.calc = function(gd, trace) {
         Plotly.Scatter.calcColorscale(trace, trace.marker.color, 'marker', 'c');
     }
     if(Plotly.Scatter.hasColorscale(trace, 'marker.line')) {
-        scatter.calcColorscale(trace, marker.line.color, 'marker.line', 'c');
+        Plotly.Scatter.calcColorscale(trace, trace.marker.line.color, 'marker.line', 'c');
     }
 
     return cd;
