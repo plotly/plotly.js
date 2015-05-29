@@ -322,10 +322,9 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
     coerce('marker.maxdisplayed');
 
     coerce('marker.color', defaultColor);
-    if(scatter.hasColorscale(traceIn, 'marker')) {
-        scatter.handleColorscaleDefaults(
-            traceIn, traceOut, layout, coerce,
-            {prefix: 'marker.', cLetter: 'c'}
+    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker')) {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
         );
     }
 
@@ -339,10 +338,9 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
     else defaultMLC = Plotly.Color.defaultLine;
 
     coerce('marker.line.color', defaultMLC);
-    if(scatter.hasColorscale(traceIn, 'marker.line')) {
-        scatter.handleColorscaleDefaults(
-            traceIn, traceOut, layout, coerce,
-            {prefix: 'marker.line.', cLetter: 'c'}
+    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker.line')) {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'}
         );
     }
 
@@ -352,52 +350,6 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
         coerce('marker.sizeref');
         coerce('marker.sizemode');
     }
-};
-
-scatter.handleColorscaleDefaults = function(traceIn, traceOut, layout, coerce, opts) {
-    var prefix = opts.prefix,
-        cLetter = opts.cLetter,
-        containerStr = prefix.slice(0, prefix.length-1),
-        containerIn = prefix ?
-            Plotly.Lib.nestedProperty(traceIn, containerStr).get() || {} :
-            traceIn,
-        containerOut = prefix ?
-            Plotly.Lib.nestedProperty(traceOut, containerStr).get() || {} :
-            traceOut,
-        minIn = containerIn[cLetter + 'min'],
-        maxIn = containerIn[cLetter + 'max'],
-        colorscaleIn = containerIn.colorscale;
-
-    var validMinMax, autoColorscaleDftl, showScaleDftl, showScale, reverseScale;
-
-    function flipScale(si) { return [1 - si[0], si[1]]; }
-
-    validMinMax = isNumeric(minIn) && isNumeric(maxIn) && minIn < maxIn;
-    coerce(prefix + cLetter + 'auto', !validMinMax);
-    coerce(prefix + cLetter + 'min');
-    coerce(prefix + cLetter + 'max');
-
-    // handles both the trace case (autocolorscale is false by default) and
-    // the marker and marker.line case (autocolorscale is true by default)
-    if(colorscaleIn!==undefined) autoColorscaleDftl = !Plotly.Color.isValidScale(colorscaleIn);
-    coerce(prefix + 'autocolorscale', autoColorscaleDftl);
-    coerce(prefix + 'colorscale');
-
-    // apply the colorscale reversal here, so we don't have to
-    // do it in separate modules later
-    reverseScale = coerce(prefix + 'reversescale');
-    if(reverseScale) {
-        containerOut.colorscale = containerOut.colorscale
-                                    .map(flipScale).reverse();
-    }
-
-    // until scatter.colorbar can handle marker line colorbars
-    if(prefix === 'marker.line.') return;
-
-    if(typeof containerIn.colorbar==='object') showScaleDftl = true;
-    showScale = coerce(prefix + 'showscale', showScaleDftl);
-
-    if(showScale) Plotly.Colorbar.supplyDefaults(containerIn, containerOut, layout);
 };
 
 scatter.cleanData = function(fullData) {
@@ -448,21 +400,6 @@ scatter.isBubble = function(trace) {
                 Array.isArray(trace.marker.size));
 };
 
-scatter.hasColorscale = function(trace, containerStr) {
-    var container = containerStr ?
-            Plotly.Lib.nestedProperty(trace, containerStr).get() || {} :
-            trace;
-
-    return (
-        typeof container==='object' && (
-            Array.isArray(container.color) ||
-            container.showscale===true ||
-            isNumeric(container.cmin) && isNumeric(container.cmax) ||
-            typeof container.colorbar==='object'
-        )
-    );
-};
-
 scatter.colorbar = function(gd, cd) {
     var trace = cd[0].trace,
         marker = trace.marker,
@@ -478,7 +415,7 @@ scatter.colorbar = function(gd, cd) {
         return;
     }
 
-    var scl = Plotly.Color.getScale(marker.colorscale),
+    var scl = Plotly.Colorscale.getScale(marker.colorscale),
         vals = marker.color,
         cmin = marker.cmin,
         cmax = marker.cmax;
@@ -495,57 +432,6 @@ scatter.colorbar = function(gd, cd) {
         .options(marker.colorbar)();
 
     Plotly.Lib.markTime('done colorbar');
-};
-
-scatter.calcColorscale = function(trace, vals, containerStr, cLetter) {
-    var container, inputContainer;
-
-    if(containerStr) {
-        container = Plotly.Lib.nestedProperty(trace, containerStr).get();
-        inputContainer = Plotly.Lib.nestedProperty(trace._input, containerStr).get();
-    } else {
-        container = trace;
-        inputContainer = trace._input;
-    }
-
-    var auto = container[cLetter + 'auto'],
-        autocolorscale = container.autocolorscale,
-        min = container[cLetter + 'min'],
-        max = container[cLetter + 'max'],
-        colorscale = container.colorscale;
-
-    if(auto!==false || min===undefined) {
-        min = Plotly.Lib.aggNums(Math.min, null, vals);
-    }
-
-    if(auto!==false || max===undefined) {
-        max = Plotly.Lib.aggNums(Math.max, null, vals);
-    }
-
-    if(min === max) {
-        min -= 0.5;
-        max += 0.5;
-    }
-
-    if(autocolorscale) {
-        if(min * max < 0) {
-            // Data values are > 0 and < 0.
-            colorscale = Plotly.Color.scales.RdBu;
-        } else if(min >= 0) {
-            // Non-negative signed data
-            colorscale = Plotly.Color.scales.Reds;
-        } else {
-            // Non-positive signed data
-            colorscale = Plotly.Color.scales.Blues;
-        }
-    }
-
-    container[cLetter + 'min'] = min;
-    container[cLetter + 'max'] = max;
-    container.colorscale = colorscale;
-    inputContainer[cLetter + 'min'] = min;
-    inputContainer[cLetter + 'max'] = max;
-    inputContainer.colorscale = colorscale;
 };
 
 scatter.calc = function(gd,trace) {
@@ -604,11 +490,11 @@ scatter.calc = function(gd,trace) {
             s.map(markerTrans) : markerTrans(s);
 
         // auto-z and autocolorscale if applicable
-        if(Plotly.Scatter.hasColorscale(trace, 'marker')) {
-            scatter.calcColorscale(trace, marker.color, 'marker', 'c');
+        if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
+            Plotly.Colorscale.calc(trace, marker.color, 'marker', 'c');
         }
-        if(Plotly.Scatter.hasColorscale(trace, 'marker.line')) {
-            scatter.calcColorscale(trace, marker.line.color, 'marker.line', 'c');
+        if(Plotly.Colorscale.hasColorscale(trace, 'marker.line')) {
+            Plotly.Colorscale.calc(trace, marker.line.color, 'marker.line', 'c');
         }
     }
 
