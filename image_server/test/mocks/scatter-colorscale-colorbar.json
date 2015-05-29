@@ -88,7 +88,7 @@
                 ],
                 "colorbar": {
                     "title": "WOW"
-                },
+                }
             },
             "y": [
                 5,
@@ -133,7 +133,7 @@
                 5
             ],
             "type": "scatter",
-            "mode": "markers",
+            "mode": "markers"
         }
     ],
     "layout": {
