@@ -289,6 +289,7 @@ axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
  */
 axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     var letter = options.letter,
+        font = options.font || {},
         defaultTitle = 'Click to enter ' +
             (options.title || (letter.toUpperCase() + ' axis')) +
             ' title';
@@ -319,9 +320,9 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
     coerce('title', defaultTitle);
     coerce('titlefont', {
-        family: options.font.family,
-        size: Math.round(options.font.size * 1.2),
-        color: options.font.color
+        family: font.family,
+        size: Math.round(font.size * 1.2),
+        color: font.color
     });
 
     var validRange = (containerIn.range||[]).length===2 &&
@@ -379,7 +380,7 @@ axes.handleTickDefaults = function(containerIn, containerOut, coerce, axType, op
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
-        coerce('tickfont', options.font);
+        coerce('tickfont', options.font || {});
         coerce('tickangle');
 
         var showAttrDflt = axes.getShowAttrDflt(containerIn);
