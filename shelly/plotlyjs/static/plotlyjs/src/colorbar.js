@@ -117,10 +117,12 @@ var colorbar = module.exports = function(td,id) {
             cbAxisIn = {
                 type: 'linear',
                 range: zrange,
-                autotick: opts.autotick,
+                tickmode: opts.tickmode,
                 nticks: opts.nticks,
                 tick0: opts.tick0,
                 dtick: opts.dtick,
+                tickvals: opts.tickvals,
+                ticktext: opts.ticktext,
                 ticks: opts.ticks,
                 ticklen: opts.ticklen,
                 tickwidth: opts.tickwidth,
@@ -128,6 +130,7 @@ var colorbar = module.exports = function(td,id) {
                 showticklabels: opts.showticklabels,
                 tickfont: opts.tickfont,
                 tickangle: opts.tickangle,
+                tickformat: opts.tickformat,
                 exponentformat: opts.exponentformat,
                 showexponent: opts.showexponent,
                 showtickprefix: opts.showtickprefix,
@@ -139,7 +142,12 @@ var colorbar = module.exports = function(td,id) {
                 anchor: 'free',
                 position: 1
             },
-            cbAxisOut = {};
+            cbAxisOut = {},
+            axisOptions = {
+                letter: 'y',
+                font: fullLayout.font,
+                noHover: true
+            };
 
         // Coerce w.r.t. Axes layoutAttributes:
         // re-use axes.js logic without updating _fullData
@@ -151,9 +159,9 @@ var colorbar = module.exports = function(td,id) {
 
         // Prepare the Plotly axis object
         Plotly.Axes.handleAxisDefaults(cbAxisIn, cbAxisOut,
-                                       coerce, {letter: 'y'});
+                                       coerce, axisOptions);
         Plotly.Axes.handleAxisPositioningDefaults(cbAxisIn, cbAxisOut,
-                                                  coerce, {letter: 'y'});
+                                                  coerce, axisOptions);
 
         cbAxisOut._id = 'y' + id;
         cbAxisOut._td = td;
@@ -172,8 +180,8 @@ var colorbar = module.exports = function(td,id) {
                 (opts.titleside==='top' ? lenFrac-ypadFrac : ypadFrac);
         }
 
-        if(opts.line.color && opts.autotick!==false) {
-            cbAxisOut.autotick = false;
+        if(opts.line.color && opts.tickmode === 'auto') {
+            cbAxisOut.tickmode = 'linear';
             cbAxisOut.tick0 = opts.levels.start;
             var dtick = opts.levels.size;
             // expand if too many contours, so we don't get too many ticks
@@ -430,7 +438,6 @@ var colorbar = module.exports = function(td,id) {
         if(cbDone && cbDone.then) (td._promises||[]).push(cbDone);
 
         // dragging...
-        // TODO: abstract this dragging code for everything we drag in svg?
         if(td._context.editable) {
             var t0,
                 xf,
@@ -598,10 +605,12 @@ colorbar.attributes = {
         dflt: 'rgba(0,0,0,0)'
     },
     // tick and title properties named and function exactly as in axes
-    autotick: axesAttrs.autotick,
+    tickmode: axesAttrs.tickmode,
     nticks: axesAttrs.nticks,
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
+    tickvals: axesAttrs.tickvals,
+    ticktext: axesAttrs.ticktext,
     ticks: extendFlat(axesAttrs.ticks, {dflt: ''}),
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
@@ -609,6 +618,7 @@ colorbar.attributes = {
     showticklabels: axesAttrs.showticklabels,
     tickfont: axesAttrs.tickfont,
     tickangle: axesAttrs.tickangle,
+    tickformat: axesAttrs.tickformat,
     tickprefix: axesAttrs.tickprefix,
     showtickprefix: axesAttrs.showtickprefix,
     ticksuffix: axesAttrs.ticksuffix,
@@ -657,36 +667,10 @@ colorbar.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('borderwidth');
     coerce('bgcolor');
 
-    var autotick = coerce('autotick');
-    if(autotick) coerce('nticks');
-    else {
-        coerce('tick0');
-        coerce('dtick');
-    }
+    Plotly.Axes.handleTickValueDefaults(containerIn, containerOut, coerce, 'linear');
 
-    var ticks = coerce('ticks');
-    if(ticks) {
-        coerce('ticklen');
-        coerce('tickwidth');
-        coerce('tickcolor');
-    }
-
-    var showTickLabels = coerce('showticklabels');
-    if(showTickLabels) {
-        coerce('tickfont', layout.font);
-        coerce('tickangle');
-
-        var showAttrDflt = Plotly.Axes.getShowAttrDflt(containerIn);
-
-        var showexponent = coerce('showexponent', showAttrDflt);
-        if(showexponent!=='none') coerce('exponentformat');
-
-        var tickPrefix = coerce('tickprefix');
-        if(tickPrefix) coerce('showtickprefix', showAttrDflt);
-
-        var tickSuffix = coerce('ticksuffix');
-        if(tickSuffix) coerce('showticksuffix', showAttrDflt);
-    }
+    Plotly.Axes.handleTickDefaults(containerIn, containerOut, coerce, 'linear',
+        {outerTicks: false, font: layout.font, noHover: true});
 
     coerce('title');
     coerce('titlefont', layout.font);
