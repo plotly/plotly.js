@@ -335,10 +335,22 @@ trace_id_loop:
 
     //Update ranges (needs to be called *after* objects are added due to updates)
     var sceneBounds = [[0,0,0], [0,0,0]],
-        axisDataRange = [];
+        axisDataRange = [],
+        axisTypeRatios = {};
 
     for(i = 0; i < 3; ++i) {
         var axis = fullSceneLayout[axisProperties[i]];
+        var axisType = axis.type;
+
+        if(axisType in axisTypeRatios) {
+          axisTypeRatios[axisType].acc *= dataScale[i];
+          axisTypeRatios[axisType].count += 1;
+        } else {
+          axisTypeRatios[axisType] = {
+            acc: dataScale[i],
+            count: 1
+          };
+        }
 
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
@@ -380,6 +392,13 @@ trace_id_loop:
 
     var axesScaleRatio = [1, 1, 1];
 
+    //Compute axis scale per category
+    for(var i=0; i<3; ++i) {
+      var axis = fullSceneLayout[axisProperties[i]];
+      var axisType = axis.type;
+      var axisRatio = axisTypeRatios[axisType];
+      axesScaleRatio[i] = Math.pow(axisRatio.acc, 1.0/axisRatio.count) / dataScale[i];
+    }
 
     /*
      * Dynamically set the aspect ratio depending on the users aspect settings
