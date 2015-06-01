@@ -66,7 +66,7 @@ describe('Test Modebar', function() {
             ];
 
             modeButtons3d = [
-                ['rotate3d', 'zoom3d', 'pan3d'],
+                ['orbitRotation', 'tableRotation', 'zoom3d', 'pan3d'],
                 ['resetCameraDefault3d', 'resetCameraLastSave3d'],
                 ['hoverClosest3d']
             ];
