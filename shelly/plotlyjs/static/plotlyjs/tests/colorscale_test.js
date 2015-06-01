@@ -26,8 +26,14 @@ describe('Test colorscale:', function () {
             scl = [[0.2, 'rgb(0, 0, 200)'], [1, 'rgb(200, 0, 0)']];
             expect(isValidScale(scl)).toBe(false);
 
+            scl = [['0', 'rgb(0, 0, 200)'], [1, 'rgb(200, 0, 0)']];
+            expect(isValidScale(scl)).toBe(true);
+
             scl = [[0, 'rgb(0, 0, 200)'], [1.2, 'rgb(200, 0, 0)']];
             expect(isValidScale(scl)).toBe(false);
+
+            scl = [[0, 'rgb(0, 0, 200)'], ['1.0', 'rgb(200, 0, 0)']];
+            expect(isValidScale(scl)).toBe(true);
         });
 
         it('should accept ascending order number-color items', function() {
