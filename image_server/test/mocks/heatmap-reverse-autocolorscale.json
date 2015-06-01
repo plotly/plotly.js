@@ -1,0 +1,44 @@
+{
+    "data": [
+        {
+            "type": "heatmap",
+            "z": [
+                [
+                    1,
+                    2,
+                    3
+                ],
+                [
+                    3,
+                    2,
+                    1
+                ]
+            ],
+            "autocolorscale": true,
+            "reversescale": true
+        }
+    ],
+    "layout": {
+        "title": "reverse auto colorscale",
+        "xaxis": {
+            "type": "linear",
+            "range": [
+                -0.5,
+                2.5
+            ],
+            "autorange": true
+        },
+        "yaxis": {
+            "type": "linear",
+            "range": [
+                -0.5,
+                1.5
+            ],
+            "autorange": true
+        },
+        "height": 598,
+        "width": 1080,
+        "autosize": true,
+        "showlegend": false
+    }
+}
