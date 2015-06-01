@@ -6,6 +6,9 @@ var Plotly = require('./plotly'),
 var graphReference = {},
     Methods = {};
 
+var NESTEDMODULEID = '_nestedModules',
+    COMPOSEDMODULEID = '_composedModules';
+
 function getGraphReference() {
     var Plots = Plotly.Plots;
 
@@ -33,9 +36,10 @@ Methods.getAttributes = function(type) {
 
     // module attributes (+ nested + composed)
     module = Methods.getModule({type: type});
-    attributes = Methods.coupleAttrs(module.attributes, attributes,
-                                     'attributes', type);
-
+    attributes = Methods.coupleAttrs(
+        module.attributes, attributes,
+        'attributes', type
+    );
     attributes.type = type;
     attributes = Methods.removeUnderscoreAttrs(attributes);
 
@@ -58,8 +62,10 @@ Methods.getLayoutAttributes = function(type) {
 
     if (Plots.traceIs(type, 'gl3d')) {
         sceneAttrs = Plotly.Gl3dLayout.layoutAttributes;
-        sceneAttrs = Methods.coupleAttrs(sceneAttrs, {},
-                                         'layoutAttributes', '-');
+        sceneAttrs = Methods.coupleAttrs(
+            sceneAttrs, {},
+            'layoutAttributes', '-'
+        );
         layoutAttributes.scene = sceneAttrs;
     }
     else {
@@ -77,35 +83,40 @@ Methods.getLayoutAttributes = function(type) {
 };
 
 Methods.coupleAttrs = function(attrsIn, attrsOut, whichAttrs, type) {
-    var nestedModule, nestedAttrs,
+    var nestedModule, nestedAttrs, nestedReference,
         composedModule, composedAttrs;
 
     Object.keys(attrsIn).forEach(function(k) {
 
-        if (k === '_nestedModules') {
+        if(k === NESTEDMODULEID) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
                 nestedModule = Methods.getModule({module: attrsIn[k][kk]});
                 nestedAttrs = nestedModule[whichAttrs];
-                attrsOut[kk] = Methods.coupleAttrs(nestedAttrs, {},
-                                                   whichAttrs, type);
+                nestedReference = Methods.coupleAttrs(
+                    nestedAttrs, {},
+                    whichAttrs, type
+                );
+                Plotly.Lib.nestedProperty(attrsOut, kk)
+                    .set(nestedReference);
             });
             return;
         }
 
-        if (k === '_composedModules') {
+        if(k === COMPOSEDMODULEID) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
                 if (kk !== type) return;
                 composedModule = Methods.getModule({module: attrsIn[k][kk]});
                 composedAttrs = composedModule[whichAttrs];
-                composedAttrs = Methods.coupleAttrs(composedAttrs, {},
-                                                    whichAttrs, type);
+                composedAttrs = Methods.coupleAttrs(
+                    composedAttrs, {},
+                    whichAttrs, type
+                );
                 attrsOut = objectAssign(attrsOut, composedAttrs);
             });
             return;
         }
 
         attrsOut[k] = attrsIn[k];
-
     });
 
     return attrsOut;
@@ -114,13 +125,13 @@ Methods.coupleAttrs = function(attrsIn, attrsOut, whichAttrs, type) {
 // helper methods
 
 Methods.getModule = function(arg) {
-    if ('type' in arg) return Plotly.Plots.getModule({type: arg.type});
-    else if ('module' in arg) return Plotly[arg.module];
+    if('type' in arg) return Plotly.Plots.getModule({type: arg.type});
+    else if('module' in arg) return Plotly[arg.module];
 };
 
 Methods.removeUnderscoreAttrs = function(attributes) {
     Object.keys(attributes).forEach(function(k){
-       if (k.charAt(0) === '_') delete attributes[k];
+       if(k.charAt(0) === '_') delete attributes[k];
     });
     return attributes;
 };

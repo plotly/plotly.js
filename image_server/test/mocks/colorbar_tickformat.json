@@ -1,0 +1,23 @@
+{
+    "data": [
+        {
+            "type": "contour",
+            "z": [
+                ["0", "2e6"],
+                ["2e6", "3e7"]
+            ],
+            "colorbar": {
+                "tickformat": ",.1f",
+                "tickprefix": "*** ",
+                "showtickprefix": "first",
+                "ticksuffix": " €",
+                "showticksuffix": "last"
+            }
+        }
+    ],
+    "layout": {
+        "width": 500,
+        "height": 400,
+        "title": "colorbar tickformat"
+    }
+}

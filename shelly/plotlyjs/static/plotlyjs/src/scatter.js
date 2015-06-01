@@ -133,11 +133,23 @@ scatter.attributes = {
         },
         cmax: {
             type: 'number',
-            dflt: 10
+            dflt: null
         },
         cmin: {
             type: 'number',
-            dflt: -10
+            dflt: null
+        },
+        autocolorscale: {
+            type: 'boolean',
+            dflt: true
+        },
+        reversescale: {
+            type: 'boolean',
+            dflt: false
+        },
+        showscale: {
+            type: 'boolean',
+            dflt: false
         },
         line: {
             color: {
@@ -159,11 +171,19 @@ scatter.attributes = {
             },
             cmax: {
                 type: 'number',
-                dflt: 10
+                dflt: null
             },
             cmin: {
                 type: 'number',
-                dflt: -10
+                dflt: null
+            },
+            autocolorscale: {
+                type: 'boolean',
+                dflt: true
+            },
+            reversescale: {
+                type: 'boolean',
+                dflt: false
             }
         }
     },
@@ -181,8 +201,8 @@ scatter.attributes = {
     textfont: {type: 'font'},
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
-        'error_x': 'ErrorBars'
-        // TODO: we should add colorbar?
+        'error_x': 'ErrorBars',
+        'marker.colorbar': 'Colorbar'
     }
 };
 
@@ -235,11 +255,11 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('mode', defaultMode);
 
     if(scatter.hasLines(traceOut)) {
-        scatter.lineDefaults(traceIn, traceOut, defaultColor, layout);
+        scatter.lineDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
     if(scatter.hasMarkers(traceOut)) {
-        scatter.markerDefaults(traceIn, traceOut, defaultColor, layout);
+        scatter.markerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
     }
 
     if(scatter.hasText(traceOut)) {
@@ -266,47 +286,36 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
             (traceOut.line||{}).color ||
             inheritColorFromMarker ||
             defaultColor, 0.5));
-        if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut);
+        if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut, coerce);
     }
 
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
-scatter.lineDefaults = function(traceIn, traceOut, defaultColor) {
-    function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-    }
-
+scatter.lineDefaults = function(traceIn, traceOut, defaultColor, coerce) {
     var markerColor = (traceIn.marker||{}).color;
     // don't try to inherit a color array
     coerce('line.color', (Array.isArray(markerColor) ? false : markerColor) ||
                          defaultColor);
     coerce('line.width');
 
-    lineShapeDefaults(traceIn, traceOut);
+    lineShapeDefaults(traceIn, traceOut, coerce);
 
     coerce('connectgaps');
     coerce('line.dash');
 };
 
-function lineShapeDefaults(traceIn, traceOut) {
-    function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-    }
-
+function lineShapeDefaults(traceIn, traceOut, coerce) {
     var shape = coerce('line.shape');
     if(shape==='spline') coerce('line.smoothing');
 }
 
-scatter.markerDefaults = function(traceIn, traceOut, defaultColor) {
-    function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
-    }
-
+scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerce) {
     var isBubble = scatter.isBubble(traceIn),
-        lineColor = (traceIn.line||{}).color,
+        lineColor = (traceIn.line || {}).color,
         defaultMLC;
+
     if(lineColor) defaultColor = lineColor;
 
     coerce('marker.symbol');
@@ -314,7 +323,12 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor) {
     coerce('marker.size');
     coerce('marker.maxdisplayed');
 
-    scatter.colorScalableDefaults('marker.', coerce, defaultColor);
+    coerce('marker.color', defaultColor);
+    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker')) {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
+        );
+    }
 
     // if there's a line with a different color than the marker, use
     // that line color as the default marker line color
@@ -324,30 +338,19 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor) {
     }
     else if(isBubble) defaultMLC = Plotly.Color.background;
     else defaultMLC = Plotly.Color.defaultLine;
-    scatter.colorScalableDefaults('marker.line.', coerce, defaultMLC);
+
+    coerce('marker.line.color', defaultMLC);
+    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker.line')) {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'}
+        );
+    }
 
     coerce('marker.line.width', isBubble ? 1 : 0);
 
     if(isBubble) {
         coerce('marker.sizeref');
         coerce('marker.sizemode');
-    }
-};
-
-scatter.colorScalableDefaults = function(prefix, coerce, dflt) {
-    var colorAttr = prefix + 'color',
-        colorVal = coerce(colorAttr, dflt),
-        attrs = [
-            prefix + 'colorscale',
-            prefix + 'cauto',
-            prefix + 'cmax',
-            prefix + 'cmin'
-        ];
-
-    if(Array.isArray(colorVal)) {
-        for (var i = 0; i < attrs.length; i++) {
-            coerce(attrs[i]);
-        }
     }
 };
 
@@ -399,6 +402,40 @@ scatter.isBubble = function(trace) {
                 Array.isArray(trace.marker.size));
 };
 
+scatter.colorbar = function(gd, cd) {
+    var trace = cd[0].trace,
+        marker = trace.marker,
+        cbId = 'cb' + trace.uid;
+
+    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
+
+    // TODO unify Scatter.colorbar and Heatmap.colorbar
+    // TODO make Plotly[module].colorbar support multiple colorbar per trace
+
+    if(marker===undefined || !marker.showscale){
+        Plotly.Plots.autoMargin(gd, cbId);
+        return;
+    }
+
+    var scl = Plotly.Colorscale.getScale(marker.colorscale),
+        vals = marker.color,
+        cmin = marker.cmin,
+        cmax = marker.cmax;
+
+    if(!isNumeric(cmin)) cmin = Plotly.Lib.aggNums(Math.min, null, vals);
+    if(!isNumeric(cmax)) cmax = Plotly.Lib.aggNums(Math.max, null, vals);
+
+    var cb = cd[0].t.cb = Plotly.Colorbar(gd, cbId);
+
+    cb.fillcolor(d3.scale.linear()
+            .domain(scl.map(function(v){ return cmin + v[0] * (cmax - cmin); }))
+            .range(scl.map(function(v){ return v[1]; })))
+        .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})
+        .options(marker.colorbar)();
+
+    Plotly.Lib.markTime('done colorbar');
+};
+
 scatter.calc = function(gd,trace) {
     var xa = Plotly.Axes.getFromId(gd,trace.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd,trace.yaxis||'y');
@@ -408,6 +445,7 @@ scatter.calc = function(gd,trace) {
     var y = ya.makeCalcdata(trace,'y');
     Plotly.Lib.markTime('finished convert y');
     var serieslen = Math.min(x.length,y.length),
+        marker,
         s,
         i;
 
@@ -427,7 +465,9 @@ scatter.calc = function(gd,trace) {
 
         // Treat size like x or y arrays --- Run d2c
         // this needs to go before ppad computation
-        s = trace.marker.size;
+        marker = trace.marker;
+        s = marker.size;
+
         if (Array.isArray(s)) {
             // I tried auto-type but category and dates dont make much sense.
             var ax = {type: 'linear'};
@@ -451,7 +491,15 @@ scatter.calc = function(gd,trace) {
         xOptions.ppad = yOptions.ppad = Array.isArray(s) ?
             s.map(markerTrans) : markerTrans(s);
 
+        // auto-z and autocolorscale if applicable
+        if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
+            Plotly.Colorscale.calc(trace, marker.color, 'marker', 'c');
+        }
+        if(Plotly.Colorscale.hasColorscale(trace, 'marker.line')) {
+            Plotly.Colorscale.calc(trace, marker.line.color, 'marker.line', 'c');
+        }
     }
+
     // TODO: text size
 
     // include zero (tight) and extremes (padded) if fill to zero
