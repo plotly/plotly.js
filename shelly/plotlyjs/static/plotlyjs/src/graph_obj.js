@@ -2683,7 +2683,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                                     cb._opts.line.color : trace.line.color
                             });
                         }
-                        if(plots.isScatter(trace.type) || plots.isBar(trace.type)) {
+                        if(plots.traceIs(trace, 'markerColorscale')) {
                             cb.options(trace.marker.colorbar)();
                         }
                         else cb.options(trace.colorbar)();
@@ -3955,8 +3955,8 @@ plots.titles = function(gd, title) {
         el.call(Plotly.util.makeEditable)
             .on('edit', function(text){
                 if(colorbar) {
-                    var traceType = gd._fullData[cbnum].type;
-                    if(plots.isScatter(traceType) || plots.isBar(traceType)) {
+                    var trace = gd._fullData[cbnum];
+                    if(plots.traceIs(trace, 'markerColorscale')) {
                         Plotly.restyle(gd, 'marker.colorbar.title', text, cbnum);
                     } else Plotly.restyle(gd, 'colorbar.title', text, cbnum);
                 }

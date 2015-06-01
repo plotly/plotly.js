@@ -7,7 +7,7 @@ var bars = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
-Plotly.Plots.register(bars, 'bar', ['cartesian', 'bar', 'oriented']);
+Plotly.Plots.register(bars, 'bar', ['cartesian', 'bar', 'oriented', 'markerColorscale']);
 Plotly.Plots.register(bars, 'histogram', ['cartesian', 'bar', 'histogram', 'oriented']);
 
 // mark this module as allowing error bars
