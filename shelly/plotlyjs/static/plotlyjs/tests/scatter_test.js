@@ -203,4 +203,5 @@ describe('Test scatter', function () {
 
         // TODO: test coarser decimation outside plot, and removing very near duplicates from the four of a cluster
     });
+
 });
