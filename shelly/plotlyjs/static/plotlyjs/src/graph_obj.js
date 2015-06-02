@@ -612,7 +612,7 @@ Plotly.plot = function(gd, data, layout, config) {
                 Plotly.Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
 
                 // collect the traces that may have error bars
-                if (module.errorBarsOK) cdError = cdError.concat(cdModule);
+                if (Plotly.Plots.traceIs(cdModule[0], 'errorBarsOK')) cdError = cdError.concat(cdModule);
             }
 
             // finally do all error bars at once

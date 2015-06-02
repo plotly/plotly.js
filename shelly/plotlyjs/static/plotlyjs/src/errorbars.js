@@ -174,7 +174,7 @@ errorBars.calc = function(gd) {
     (gd.calcdata||[]).forEach(function(cdi){
         var trace = cdi[0].trace;
 
-        if(!(trace._module||{}).errorBarsOK) return;
+        if(!Plotly.Plots.traceIs(trace, 'errorBarsOK')) return;
 
         var xObj = trace.error_x||{},
             yObj = trace.error_y||{},

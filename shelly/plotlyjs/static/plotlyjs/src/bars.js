@@ -7,11 +7,16 @@ var bars = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
-Plotly.Plots.register(bars, 'bar', ['cartesian', 'bar', 'oriented', 'markerColorscale']);
-Plotly.Plots.register(bars, 'histogram', ['cartesian', 'bar', 'histogram', 'oriented']);
-
-// mark this module as allowing error bars
-bars.errorBarsOK = true;
+Plotly.Plots.register(bars, 'bar',
+    ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK']);
+/**
+ * histogram errorBarsOK is debatable, but it's put in for backward compat.
+ * there are use cases for it - sqrt for a simple histogram works right now,
+ * constant and % work but they're not so meaningful. I guess it could be cool
+ * to allow quadrature combination of errors in summed histograms...
+ */
+Plotly.Plots.register(bars, 'histogram',
+    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK']);
 
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,
