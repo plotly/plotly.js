@@ -2,7 +2,6 @@
 'use strict';
 
 var createPlot          = require('gl-plot3d'),
-    m4FromQuat          = require('gl-mat4/fromQuat'),
     createAxesOptions   = require('./convert/axes'),
     createSpikeOptions  = require('./convert/spikes'),
     createScatterTrace  = require('./convert/scatter'),
@@ -106,12 +105,6 @@ function Scene(options, fullLayout) {
 
     this.staticMode   = false;
 
-    /*
-     * WARNING!!!! Only set camera position on first call to plot!!!!
-     * TODO remove this hack
-     */
-    this.hasPlotBeenCalled = false;
-
 
     var glplotOptions = {
             container:  sceneContainer,
@@ -134,7 +127,7 @@ function Scene(options, fullLayout) {
                     premultipliedAlpha: true
                 });
             } catch(e) {
-                throw new Error('error creating static canvas/context for image server')
+                throw new Error('error creating static canvas/context for image server');
             }
         }
         glplotOptions.pixelRatio = options.plot3dPixelRatio;
@@ -177,11 +170,12 @@ function Scene(options, fullLayout) {
         return;
     }
 
+    var cameraData = fullLayout.scene.camera;
 
     this.camera = createCamera(this.container, {
-        center: [0, 0, 0],
-        eye:    [1.25, 1.25, 1.25],
-        up:     [0, 0, 1],
+        center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
+        eye:    [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
+        up:     [cameraData.up.x, cameraData.up.y, cameraData.up.z],
         zoomMin: 0.1,
         zoomMax: 100,
         mode:   'orbit'
@@ -219,12 +213,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.axesOptions.merge(fullSceneLayout);
     this.spikeOptions.merge(fullSceneLayout);
 
-    //Update camera position
-    if(!this.hasPlotBeenCalled) {
-      this.hasPlotBeenCalled = true;
-      var camera = fullSceneLayout.cameraposition;
-      if (camera) this.setCameraPosition(camera);
-    }
+    // Update camera mode
+    this.handleDragmode(fullLayout.dragmode);
 
     //Update scene
     this.glplot.update({});
@@ -397,12 +387,13 @@ proto.destroy = function() {
     this.container.parentNode.removeChild(this.container);
 
     //Remove reference to glplot
-    this.glplot = null
+    this.glplot = null;
 };
 
 
 // for reset camera button in modebar
 proto.setCameraToDefault = function setCameraToDefault () {
+    // as in Gl3dLayout.layoutAttributes
     this.glplot.camera.lookAt(
         [1.25, 1.25, 1.25],
         [0   , 0   , 0   ],
@@ -411,35 +402,61 @@ proto.setCameraToDefault = function setCameraToDefault () {
 };
 
 // get camera position in plotly coords from 'orbit-camera' coords
-proto.getCameraPosition = function getCameraPosition () {
+proto.getCamera = function getCamera () {
     this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
-    return [
-        this.glplot.camera.view._active.computedRotation.slice(),
-        this.glplot.camera.view._active.computedCenter.slice(),
-        this.glplot.camera.distance
-    ];
+
+    var up     = this.glplot.camera.up;
+    var center = this.glplot.camera.center;
+    var eye    = this.glplot.camera.eye;
+
+    return {
+        up:     {x:up[0], y:up[1], z:up[2]},
+        center: {x:center[0], y:center[1], z:center[2]},
+        eye:    {x:eye[0], y:eye[1], z:eye[2]}
+    };
 };
 
 // set camera position with a set of plotly coords
-proto.setCameraPosition = function setCameraPosition (camera) {
-    if (Array.isArray(camera) && camera.length === 3) {
-        var rotation = camera[0];
-        var center   = camera[1];
-        var radius   = camera[2];
-        var mat = m4FromQuat([], rotation);
-        var eye = [];
-        for(var i=0; i<3; ++i) {
-            eye[i] = center[i] + radius * mat[2+4*i];
-        }
-        this.glplot.camera.lookAt(eye, center, [mat[1],mat[5],mat[9]]);
-    }
+proto.setCamera = function setCamera (cameraData) {
+    var up      = cameraData.up;
+    var center  = cameraData.center;
+    var eye     = cameraData.eye;
+    this.glplot.camera.lookAt(
+        [eye.x, eye.y, eye.z],
+        [center.x, center.y, center.z],
+        [up.x, up.y, up.z]
+    );
 };
 
-// save camera position to user layout (i.e. gd.layout)
+// save camera to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
-    var cameraposition = this.getCameraPosition();
-    Plotly.Lib.nestedProperty(layout, this.id + '.cameraposition')
-        .set(cameraposition);
+    var cameraData = this.getCamera();
+
+    // save new camera api
+    Plotly.Lib.nestedProperty(layout, this.id + '.camera')
+        .set(cameraData);
+};
+
+proto.handleDragmode = function (dragmode) {
+
+    var camera = this.camera;
+    if (camera) {
+        // rotate and orbital are synonymous
+        if (dragmode === 'orbit') {
+            camera.mode = 'orbit';
+            camera.keyBindingMode = 'rotate';
+
+        } else if (dragmode === 'turntable') {
+            camera.up = [0, 0, 1];
+            camera.mode = 'turntable';
+            camera.keyBindingMode = 'rotate';
+
+        } else {
+
+            // none rotation modes [pan or zoom]
+            camera.keyBindingMode = dragmode;
+        }
+    }
 };
 
 proto.toImage = function (format) {
