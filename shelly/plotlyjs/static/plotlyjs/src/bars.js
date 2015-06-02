@@ -8,7 +8,7 @@ var bars = module.exports = {},
     isNumeric = require('./isnumeric');
 
 Plotly.Plots.register(bars, 'bar',
-    ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK']);
+    ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend']);
 /**
  * histogram errorBarsOK is debatable, but it's put in for backward compat.
  * there are use cases for it - sqrt for a simple histogram works right now,

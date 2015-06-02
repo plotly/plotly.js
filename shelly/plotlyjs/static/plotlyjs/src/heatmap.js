@@ -9,8 +9,8 @@ var heatmap = module.exports = {},
     isNumeric = require('./isnumeric'),
     scatterAttrs = Plotly.Scatter.attributes;
 
-Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap', 'nolegend']);
-Plotly.Plots.register(heatmap, 'histogram2d', ['cartesian', '2dMap', 'histogram', 'nolegend']);
+Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap']);
+Plotly.Plots.register(heatmap, 'histogram2d', ['cartesian', '2dMap', 'histogram']);
 
 heatmap.attributes = {
     z: {type: 'data_array'},

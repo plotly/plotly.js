@@ -9,7 +9,7 @@ var scatter = module.exports = {},
     isNumeric = require('./isnumeric');
 
 Plotly.Plots.register(scatter, 'scatter',
-    ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK']);
+    ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend']);
 
 // traces with < this many points are by default shown
 // with points and lines, > just get lines

@@ -7,7 +7,8 @@ var boxes = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
-Plotly.Plots.register(boxes, 'box', ['cartesian', 'symbols', 'oriented', 'box']);
+Plotly.Plots.register(boxes, 'box',
+    ['cartesian', 'symbols', 'oriented', 'box', 'showLegend']);
 
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,

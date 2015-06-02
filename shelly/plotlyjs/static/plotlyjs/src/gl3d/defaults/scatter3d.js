@@ -11,7 +11,7 @@ var scatterAttrs = Plotly.Scatter.attributes,
 
 var Scatter3D = {};
 
-Plotly.Plots.register(Scatter3D, 'scatter3d', ['gl3d', 'symbols']);
+Plotly.Plots.register(Scatter3D, 'scatter3d', ['gl3d', 'symbols', 'showLegend']);
 
 Scatter3D.attributes = {
     x: {type: 'data_array'},

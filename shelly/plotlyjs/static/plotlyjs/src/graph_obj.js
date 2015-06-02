@@ -1395,7 +1395,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
             coerce('yaxis');
         }
 
-        if(!plots.traceIs(traceOut, 'nolegend')) coerce('showlegend');
+        if(plots.traceIs(traceOut, 'showLegend')) coerce('showlegend');
     }
 
     // NOTE: I didn't include fit info at all... for now I think it can stay
