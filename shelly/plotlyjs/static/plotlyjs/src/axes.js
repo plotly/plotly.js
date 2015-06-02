@@ -197,8 +197,8 @@ axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 
     for(i = 0; i < layoutKeys.length; i++) {
         var key = layoutKeys[i];
-        if(key.match(xAxisMatch)) xaList.push(key);
-        else if(key.match(yAxisMatch)) yaList.push(key);
+        if(xAxisMatch.test(key)) xaList.push(key);
+        else if(yAxisMatch.test(key)) yaList.push(key);
     }
 
     for(i = 0; i < fullData.length; i++) {
