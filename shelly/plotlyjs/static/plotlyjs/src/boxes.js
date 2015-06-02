@@ -166,7 +166,7 @@ boxes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 
     var hasBoxes;
     for(var i = 0; i < fullData.length; i++) {
-        if(fullData[i]._module === boxes) {
+        if(Plotly.Plots.traceIs(fullData[i], 'box')) {
             hasBoxes = true;
             break;
         }
@@ -337,7 +337,7 @@ boxes.setPositions = function(gd, plotinfo) {
             t = cd[0].t;
             trace = cd[0].trace;
 
-            if (trace.visible === true && trace._module === boxes &&
+            if (trace.visible === true && Plotly.Plots.traceIs(trace, 'box') &&
                     !t.emptybox &&
                     trace.orientation === orientation &&
                     trace.xaxis === xa._id &&

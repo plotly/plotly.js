@@ -141,7 +141,7 @@ bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         subploti;
     for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
-        if(trace._module === bars) hasBars = true;
+        if(Plotly.Plots.traceIs(trace, 'bar')) hasBars = true;
         else continue;
 
         // if we have at least 2 grouped bar traces on the same subplot,
@@ -229,7 +229,7 @@ bars.setPositions = function(gd, plotinfo) {
 
         gd._fullData.forEach(function(trace,i) {
             if(trace.visible === true &&
-                    trace._module === bars &&
+                    Plotly.Plots.traceIs(trace, 'bar') &&
                     trace.orientation === dir &&
                     trace.xaxis === xa._id &&
                     trace.yaxis === ya._id) {
