@@ -2342,8 +2342,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'histfunc','histnorm','text',
         'x', 'y', 'z',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
-        'line.width','showscale','zauto','connectgaps',
-        'autocolorscale',
+        'line.width', 'connectgaps',
+        'showscale', 'marker.showscale',
+        'zauto', 'marker.cauto',
+        'autocolorscale', 'marker.autocolorscale',
+        'colorscale', 'marker.colorscale',
+        'reversescale', 'marker.reversescale',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
         'autocontour','ncontours','contours.coloring',
@@ -2371,8 +2375,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // replotAttrs attributes need a replot (because different
     // objects need to be made) but not a recalc
     var replotAttrs = [
-        'zmin','zmax','zauto','mincolor','maxcolor',
-        'colorscale','reversescale','zsmooth',
+        'zmin', 'zmax', 'zauto', 'zsmooth',
+        'marker.cmin', 'marker.cmax', 'marker.cauto',
         'contours.start','contours.end','contours.size',
         'contours.showlines',
         'line.smoothing','line.shape',
@@ -2486,6 +2490,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             }
             else if(ai === 'autocolorscale') {
                 doextra(cont, 'colorscale', undefined, i);
+            }
+            else if(ai === 'marker.colorscale') {
+                doextra(cont.marker, 'autocolorscale', false, i);
+            }
+            else if(ai === 'marker.autocolorscale') {
+                doextra(cont.marker, 'colorscale', undefined, i);
             }
             else if(ai==='zauto') {
                 doextra(cont,zscl,undefined,i);
@@ -2605,7 +2615,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                 vi!==false) {
             dostyle = true;
         }
-        if(['colorbar','line'].indexOf(param.parts[0])!==-1) {
+        if(['colorbar', 'line'].indexOf(param.parts[0])!==-1 ||
+            param.parts[0]==='marker' && param.parts[1]==='colorbar') {
             docolorbars = true;
         }
 
@@ -2684,7 +2695,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         if(docolorbars) {
             seq.push(function doColorBars(){
                 gd.calcdata.forEach(function(cd) {
-                    if((cd[0].t||{}).cb) {
+                    if((cd[0].t || {}).cb) {
                         var trace = cd[0].trace,
                             cb = cd[0].t.cb;
                         if(plots.isContour(trace.type)) {
@@ -2696,7 +2707,10 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                                     cb._opts.line.color : trace.line.color
                             });
                         }
-                        cb.options(trace.colorbar)();
+                        if(plots.isScatter(trace.type) || plots.isBar(trace.type)) {
+                            cb.options(trace.marker.colorbar)();
+                        }
+                        else cb.options(trace.colorbar)();
                     }
                 });
                 return plots.previousPromises(gd);
@@ -3696,7 +3710,7 @@ function lsInner(gd) {
 // titles - (re)draw titles on the axes and plot
 // title can be 'xtitle', 'ytitle', 'gtitle',
 //  or empty to draw all
-plots.titles = function(gd,title) {
+plots.titles = function(gd, title) {
     var options;
     if(typeof gd === 'string') gd = document.getElementById(gd);
     if(!title) {
@@ -3964,7 +3978,12 @@ plots.titles = function(gd,title) {
 
         el.call(Plotly.util.makeEditable)
             .on('edit', function(text){
-                if(colorbar) Plotly.restyle(gd,'colorbar.title',text,cbnum);
+                if(colorbar) {
+                    var traceType = gd._fullData[cbnum].type;
+                    if(plots.isScatter(traceType) || plots.isBar(traceType)) {
+                        Plotly.restyle(gd, 'marker.colorbar.title', text, cbnum);
+                    } else Plotly.restyle(gd, 'colorbar.title', text, cbnum);
+                }
                 else Plotly.relayout(gd,prop,text);
             })
             .on('cancel', function(){
