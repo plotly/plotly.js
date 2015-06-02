@@ -6,6 +6,7 @@ exports.micropolar.manager = require('./micropolar_manager');
 exports.Lib = require('./lib');
 exports.util = require('./plotly_util');
 exports.Color = require('./color');
+exports.Colorscale = require('./colorscale');
 exports.Drawing = require('./drawing');
 // then the plot structure
 exports.Plots = require('./graph_obj');
