@@ -12,7 +12,7 @@ var NESTEDMODULEID = '_nestedModules',
 function getGraphReference() {
     var Plots = Plotly.Plots;
 
-    Plots.ALLTYPES.forEach(function(type) {
+    Plots.allTypes.forEach(function(type) {
 
         graphReference[type] = {};
         Methods.getAttributes(type);

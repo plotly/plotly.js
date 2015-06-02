@@ -20,9 +20,9 @@ var plots = module.exports = {};
 //   restyle
 //   relayout
 
-// ALLTYPES and getModule are used for the graph_reference app as well as plotting
+// allTypes and getModule are used for the graph_reference app as well as plotting
 var modules = plots.modules = {},
-    alltypes = plots.ALLTYPES = [],
+    allTypes = plots.allTypes = [],
     allCategories = plots.allCategories = {};
 
 /**
@@ -49,7 +49,7 @@ plots.register = function(_module, thisType, categoriesIn) {
         categories: categoryObj
     };
 
-    alltypes.push(thisType);
+    allTypes.push(thisType);
 };
 
 function getModuleObj(traceType) {
@@ -1167,7 +1167,7 @@ Plotly.newPlot = function (gd, data, layout, config) {
 plots.attributes = {
     type: {
         type: 'enumerated',
-        values: plots.ALLTYPES,
+        values: allTypes,
         dflt: 'scatter'
     },
     visible: {
