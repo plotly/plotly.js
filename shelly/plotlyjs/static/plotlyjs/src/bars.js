@@ -33,18 +33,24 @@ bars.attributes = {
         cauto: scatterMarkerAttrs.cauto,
         cmax: scatterMarkerAttrs.cmax,
         cmin: scatterMarkerAttrs.cmin,
+        autocolorscale: scatterMarkerAttrs.autocolorscale,
+        reversescale: scatterMarkerAttrs.reversescale,
+        showscale: scatterMarkerAttrs.showscale,
         line: {
             color: scatterMarkerLineAttrs.color,
             colorscale: scatterMarkerLineAttrs.colorscale,
             cauto: scatterMarkerLineAttrs.cauto,
             cmax: scatterMarkerLineAttrs.cmax,
             cmin: scatterMarkerLineAttrs.cmin,
-            width: scatterMarkerLineAttrs.width
+            width: scatterMarkerLineAttrs.width,
+            autocolorscale: scatterMarkerLineAttrs.autocolorscale,
+            reversescale: scatterMarkerLineAttrs.reversescale
         }
     },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
-        'error_x': 'ErrorBars'
+        'error_x': 'ErrorBars',
+        'marker.colorbar': 'Colorbar'
     },
     _composedModules: {  // composed module coupling
         'histogram': 'Histogram'
@@ -72,10 +78,10 @@ bars.layoutAttributes = {
         min: 0,
         max: 1,
         dflt: 0
-    },
+    }
 };
 
-bars.supplyDefaults = function(traceIn, traceOut, defaultColor) {
+bars.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, bars.attributes, attr, dflt);
     }
@@ -96,8 +102,20 @@ bars.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
     }
 
-    Plotly.Scatter.colorScalableDefaults('marker.', coerce, defaultColor);
-    Plotly.Scatter.colorScalableDefaults('marker.line.', coerce, Plotly.Color.defaultLine);
+    coerce('marker.color', defaultColor);
+    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker')) {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
+        );
+    }
+
+    coerce('marker.line.color', Plotly.Color.defaultLine);
+    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker.line')) {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'}
+        );
+    }
+
     coerce('marker.line.width', 0);
     coerce('text');
 
@@ -147,6 +165,8 @@ bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     coerce('bargroupgap');
 };
 
+bars.colorbar = Plotly.Scatter.colorbar;
+
 bars.calc = function(gd, trace) {
     if(trace.type==='histogram') return Plotly.Histogram.calc(gd,trace);
 
@@ -174,6 +194,14 @@ bars.calc = function(gd, trace) {
         if((isNumeric(pos[i]) && isNumeric(size[i]))) {
             cd.push({p: pos[i], s: size[i], b: 0});
         }
+    }
+
+    // auto-z and autocolorscale if applicable
+    if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
+        Plotly.Colorscale.calc(trace, trace.marker.color, 'marker', 'c');
+    }
+    if(Plotly.Colorscale.hasColorscale(trace, 'marker.line')) {
+        Plotly.Colorscale.calc(trace, trace.marker.line.color, 'marker.line', 'c');
     }
 
     return cd;

@@ -189,7 +189,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     }
 
     if(showScale) {
-        Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        Plotly.Colorbar.supplyDefaults(traceIn, traceOut, layout);
     }
 
 

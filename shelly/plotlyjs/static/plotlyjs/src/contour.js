@@ -811,7 +811,7 @@ contour.style = function(gp) {
                 colorLines = contours.coloring==='lines',
                 cs = contours.size||1,
                 nc = Math.floor((contours.end + cs/10 - contours.start)/cs) + 1,
-                scl = Plotly.Color.getScale(trace.colorscale),
+                scl = Plotly.Colorscale.getScale(trace.colorscale),
                 extraLevel = colorLines ? 0 : 1,
                 colormap = d3.scale.linear()
                     .domain(scl.map(function(si){
@@ -856,7 +856,7 @@ contour.colorbar = function(gd, cd) {
         line = trace.line,
         cs = contours.size||1,
         nc = Math.floor((contours.end + cs/10 - contours.start)/cs)+1,
-        scl = Plotly.Color.getScale(trace.colorscale),
+        scl = Plotly.Colorscale.getScale(trace.colorscale),
         extraLevel = contours.coloring==='lines' ? 0 : 1,
         colormap = d3.scale.linear().interpolate(d3.interpolateRgb),
         colorDomain = scl.map(function(si){
