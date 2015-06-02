@@ -46,6 +46,13 @@ proto.handlePick = function(selection) {
       traceCoordinate[2]*this.scene.dataScale[2] - this.scene.dataCenter[2]
     ];
 
+    selection.data.dataCoordinate = selection.dataCoordinate.slice();
+
+    this.surface.highlight(selection.data);
+
+    //Snap spikes to data coordinate
+    this.scene.glplot.spikes.position = selection.dataCoordinate;
+
     return true;
   }
 };
@@ -263,6 +270,8 @@ proto.update = function(data) {
     surface.highlightEnable  = highlightEnable;
     surface.contourEnable    = contourEnable;
     surface.visible          = data.visible;
+
+    surface.snapToData = true;
 
     if ('lighting' in data) {
         surface.ambientLight   = data.lighting.ambient;

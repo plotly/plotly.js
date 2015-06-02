@@ -231,6 +231,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
     if (fullSceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(fullSceneLayout.bgcolor);
     else this.glplot.clearColor = [0, 0, 0, 0];
 
+    this.glplot.snapToData = true;
+
     //Update layout
     this.fullSceneLayout = fullSceneLayout;
 
