@@ -602,9 +602,9 @@ Plotly.plot = function(gd, data, layout, config) {
             // so we don't need this - should sometimes be a big speedup
             subplotInfo.plot.selectAll('g.trace').remove();
 
-            for (j = 0; j < modules.length; j++) {
+            for(j = 0; j < modules.length; j++) {
                 module = modules[j];
-                if (!module.plot) return;
+                if(!module.plot) return;
 
                 // plot all traces of this type on this subplot at once
                 cdModule = getCdModule(cdSubplot, module);
@@ -612,7 +612,9 @@ Plotly.plot = function(gd, data, layout, config) {
                 Plotly.Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
 
                 // collect the traces that may have error bars
-                if (Plotly.Plots.traceIs(cdModule[0], 'errorBarsOK')) cdError = cdError.concat(cdModule);
+                if(cdModule[0] && cdModule[0][0].trace && plots.traceIs(cdModule[0][0].trace, 'errorBarsOK')) {
+                    cdError = cdError.concat(cdModule);
+                }
             }
 
             // finally do all error bars at once
