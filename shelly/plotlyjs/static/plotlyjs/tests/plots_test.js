@@ -80,4 +80,69 @@ describe('Test Plotly.Plots', function () {
 
     });
 
+    describe('Plotly.Plots.register, getModule, and traceIs', function() {
+        beforeEach(function() {
+            this.modulesKeys = Object.keys(Plotly.Plots.modules);
+            this.allTypesKeys = Object.keys(Plotly.Plots.allTypes);
+            this.allCategoriesKeys = Object.keys(Plotly.Plots.allCategories);
+
+            this.fakeModule = {
+                calc: function() { return 42; },
+                plot: function() { return 1000000; }
+            };
+            this.fakeModule2 = {
+                plot: function() { throw new Error('nope!'); }
+            };
+
+            Plotly.Plots.register(this.fakeModule, 'newtype', ['red', 'green']);
+
+            spyOn(console, 'warn');
+        });
+
+        afterEach(function() {
+            function revertObj(obj, initialKeys) {
+                Object.keys(obj).forEach(function(k) {
+                    if(initialKeys.indexOf(k) === -1) delete obj[k];
+                });
+            }
+
+            revertObj(Plotly.Plots.modules, this.modulesKeys);
+            revertObj(Plotly.Plots.allTypes, this.allTypesKeys);
+            revertObj(Plotly.Plots.allCategories, this.allCategoriesKeys);
+        });
+
+        it('should error on attempts to reregister a type', function() {
+            var fm2 = this.fakeModule2;
+            expect(function() { Plotly.Plots.register(fm2, 'newtype', ['yellow', 'blue']); })
+                .toThrow(new Error('type newtype already registered'));
+            expect(Plotly.Plots.allCategories.yellow).toBeUndefined();
+        });
+
+        it('should find the module for a type', function() {
+            expect(Plotly.Plots.getModule('newtype')).toBe(this.fakeModule);
+            expect(Plotly.Plots.getModule({type: 'newtype'})).toBe(this.fakeModule);
+        });
+
+        it('should return false for types it doesn\'t know', function() {
+            expect(Plotly.Plots.getModule('notatype')).toBe(false);
+            expect(Plotly.Plots.getModule({type: 'notatype'})).toBe(false);
+            expect(Plotly.Plots.getModule({type: 'newtype', r: 'this is polar'})).toBe(false);
+        });
+
+        it('should find the categories for this type', function() {
+            expect(Plotly.Plots.traceIs('newtype', 'red')).toBe(true);
+            expect(Plotly.Plots.traceIs({type: 'newtype'}, 'red')).toBe(true);
+        });
+
+        it('should not find other real categories', function() {
+            expect(Plotly.Plots.traceIs('newtype', 'cartesian')).toBe(false);
+            expect(Plotly.Plots.traceIs({type: 'newtype'}, 'cartesian')).toBe(false);
+            expect(console.warn).not.toHaveBeenCalled();
+        });
+
+        it('should warn on nonexistent categories', function() {
+            expect(Plotly.Plots.traceIs('newtype', 'yellow')).toBe(false);
+            expect(console.warn).toHaveBeenCalledWith('unrecognized category yellow');
+        });
+    });
 });
