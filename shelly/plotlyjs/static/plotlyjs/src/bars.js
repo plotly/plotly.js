@@ -16,7 +16,7 @@ Plotly.Plots.register(bars, 'bar',
  * to allow quadrature combination of errors in summed histograms...
  */
 Plotly.Plots.register(bars, 'histogram',
-    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK']);
+    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend']);
 
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,
