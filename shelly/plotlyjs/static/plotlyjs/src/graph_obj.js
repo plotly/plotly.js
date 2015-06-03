@@ -84,7 +84,7 @@ plots.traceIs = function traceIs(traceType, category) {
     if(!_module) throw new Error('unrecognized trace type');
     if(!allCategories[category]) console.warn('unrecognized category ' + category);
 
-    return _module.categories[category];
+    return !!_module.categories[category];
 };
 
 plots.getSubplotIds = function getSubplotIds(layout, type) {
