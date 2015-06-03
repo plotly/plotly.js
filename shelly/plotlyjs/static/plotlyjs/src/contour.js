@@ -6,6 +6,11 @@
 var contour = module.exports = {},
     Plotly = require('./plotly');
 
+Plotly.Plots.register(contour, 'contour',
+    ['cartesian', '2dMap', 'contour']);
+Plotly.Plots.register(contour, 'histogram2dcontour',
+    ['cartesian', '2dMap', 'contour', 'histogram']);
+
 // For coerce-level coupling
 var scatterLineAttrs = Plotly.Scatter.attributes.line;
 
