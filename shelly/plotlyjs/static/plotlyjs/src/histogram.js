@@ -75,7 +75,7 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
         x = coerce('x'),
         y = coerce('y');
 
-    if(Plotly.Plots.isHist2D(traceOut.type)) {
+    if(Plotly.Plots.traceIs(traceOut, '2dMap')) {
         // we could try to accept x0 and dx, etc...
         // but that's a pretty weird use case.
         // for now require both x and y explicitly specified.

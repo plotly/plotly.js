@@ -6,6 +6,8 @@ var Mesh3D = {};
 
 module.exports = Mesh3D;
 
+Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d']);
+
 var  heatmapAttrs = Plotly.Heatmap.attributes;
 
 Mesh3D.attributes = {
@@ -167,7 +169,7 @@ Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
   }
 
   if(traceOut.showscale) {
-      Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+      Plotly.Colorbar.supplyDefaults(traceIn, traceOut, layout);
   }
 };
 
