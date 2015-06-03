@@ -63,7 +63,7 @@ plots.getModule = function(trace) {
             'on an incompatible graph of cartesian ' +
             'data. Ignoring this dataset.', trace
         );
-        return;
+        return false;
     }
 
     var _module = getModuleObj(trace);
