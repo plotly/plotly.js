@@ -12,7 +12,7 @@ var NESTEDMODULEID = '_nestedModules',
 function getGraphReference() {
     var Plots = Plotly.Plots;
 
-    Plots.ALLTYPES.forEach(function(type) {
+    Plots.allTypes.forEach(function(type) {
 
         graphReference[type] = {};
         Methods.getAttributes(type);
@@ -60,7 +60,7 @@ Methods.getLayoutAttributes = function(type) {
     layoutAttributes = objectAssign(layoutAttributes, Plotly.Fx.layoutAttributes);
     layoutAttributes.legend = Plotly.Legend.layoutAttributes;
 
-    if(Plots.isGL3D(type)) {
+    if (Plots.traceIs(type, 'gl3d')) {
         sceneAttrs = Plotly.Gl3dLayout.layoutAttributes;
         sceneAttrs = Methods.coupleAttrs(
             sceneAttrs, {},
