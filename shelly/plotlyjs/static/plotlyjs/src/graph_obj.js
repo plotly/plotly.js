@@ -79,6 +79,8 @@ plots.getModule = function(trace) {
  * category: a category (string)
  */
 plots.traceIs = function traceIs(traceType, category) {
+    if(traceType.type === 'various') return false;  // FIXME
+
     var _module = getModuleObj(traceType);
 
     if(!_module) throw new Error('unrecognized trace type');
