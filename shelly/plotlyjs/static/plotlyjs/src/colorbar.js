@@ -5,7 +5,7 @@
 
 var Plotly = require('./plotly');
 
-var colorbar = module.exports = function(td,id) {
+var colorbar = module.exports = function(td, id) {
     // opts: options object, containing everything from attributes
     // plus a few others that are the equivalent of the colorbar "data"
     var opts = {};
@@ -47,25 +47,25 @@ var colorbar = module.exports = function(td,id) {
 
         var l0 = opts.levels.end + opts.levels.size/100,
             ls = opts.levels.size,
-            zr0 = (1.001*zrange[0]-0.001*zrange[1]),
-            zr1 = (1.001*zrange[1]-0.001*zrange[0]);
-        for(l=opts.levels.start; (l-l0)*ls<0; l+=ls) {
-            if(l>zr0 && l<zr1) linelevels.push(l);
+            zr0 = (1.001 * zrange[0] - 0.001 * zrange[1]),
+            zr1 = (1.001 * zrange[1] - 0.001 * zrange[0]);
+        for(l = opts.levels.start; (l - l0) * ls < 0; l += ls) {
+            if(l > zr0 && l < zr1) linelevels.push(l);
         }
 
         if(typeof opts.fillcolor === 'function') {
             if(opts.filllevels) {
-                l0 = opts.filllevels.end + opts.filllevels.size/100;
+                l0 = opts.filllevels.end + opts.filllevels.size / 100;
                 ls = opts.filllevels.size;
-                for(l=opts.filllevels.start; (l-l0)*ls<0; l+=ls) {
-                    if(l>zrange[0] && l<zrange[1]) filllevels.push(l);
+                for(l = opts.filllevels.start; (l - l0) * ls < 0; l += ls) {
+                    if(l > zrange[0] && l < zrange[1]) filllevels.push(l);
                 }
             }
             else {
                 filllevels = linelevels.map(function(v){
-                    return v-opts.levels.size/2;
+                    return v-opts.levels.size / 2;
                 });
-                filllevels.push(filllevels[filllevels.length-1] +
+                filllevels.push(filllevels[filllevels.length - 1] +
                     opts.levels.size);
             }
         }
@@ -239,7 +239,7 @@ var colorbar = module.exports = function(td,id) {
         if(['top','bottom'].indexOf(opts.titleside)!==-1) {
             // draw the title so we know how much room it needs
             // when we squish the axis
-            Plotly.Plots.titles(td,cbAxisOut._id+'title');
+            Plotly.Plots.titles(td, cbAxisOut._id + 'title');
         }
 
         function drawAxis(){
@@ -352,7 +352,7 @@ var colorbar = module.exports = function(td,id) {
                 (opts.outlinewidth||0)/2 - (opts.ticks==='outside' ? 1 : 0);
             cbAxisOut.side = opts.orient;
 
-            return Plotly.Axes.doTicks(td,cbAxisOut);
+            return Plotly.Axes.doTicks(td, cbAxisOut);
         }
 
         function positionCB(){
@@ -419,7 +419,7 @@ var colorbar = module.exports = function(td,id) {
                 'translate('+(fullLayout._size.l-xoffset)+','+fullLayout._size.t+')');
 
             //auto margin adjustment
-            Plotly.Plots.autoMargin(td,id,{
+            Plotly.Plots.autoMargin(td, id,{
                 x: opts.x,
                 y: opts.y,
                 l: outerwidth*({right:1, center:0.5}[opts.xanchor]||0),
@@ -435,7 +435,7 @@ var colorbar = module.exports = function(td,id) {
             Plotly.Plots.previousPromises,
             positionCB
         ], td);
-        if(cbDone && cbDone.then) (td._promises||[]).push(cbDone);
+        if(cbDone && cbDone.then) (td._promises || []).push(cbDone);
 
         // dragging...
         if(td._context.editable) {
@@ -637,21 +637,28 @@ colorbar.attributes = {
     }
 };
 
-colorbar.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
-    var containerOut = traceOut.colorbar = {},
-        containerIn = traceIn.colorbar || {};
+colorbar.supplyDefaults = function(containerIn, containerOut, layout) {
+    var colorbarOut = containerOut.colorbar = {},
+        colorbarIn = containerIn.colorbar || {};
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(containerIn, containerOut, colorbar.attributes, attr, dflt);
+        return Plotly.Lib.coerce(colorbarIn, colorbarOut,
+                                 colorbar.attributes, attr, dflt);
     }
 
     coerce('orient');
+
     var thicknessmode = coerce('thicknessmode');
-    coerce('thickness', thicknessmode==='fraction' ?
-        30/(layout.width-layout.margin.l-layout.margin.r) : 30);
+    coerce('thickness', thicknessmode === 'fraction' ?
+        30 / (layout.width - layout.margin.l - layout.margin.r) :
+        30
+    );
+
     var lenmode = coerce('lenmode');
-    coerce('len', lenmode==='fraction' ?
-        1 : layout.height-layout.margin.t-layout.margin.b);
+    coerce('len', lenmode === 'fraction' ?
+        1 :
+        layout.height - layout.margin.t - layout.margin.b
+    );
 
     coerce('x');
     coerce('xanchor');
@@ -659,7 +666,7 @@ colorbar.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('y');
     coerce('yanchor');
     coerce('ypad');
-    Plotly.Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
+    Plotly.Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
 
     coerce('outlinecolor');
     coerce('outlinewidth');
@@ -667,9 +674,9 @@ colorbar.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('borderwidth');
     coerce('bgcolor');
 
-    Plotly.Axes.handleTickValueDefaults(containerIn, containerOut, coerce, 'linear');
+    Plotly.Axes.handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
 
-    Plotly.Axes.handleTickDefaults(containerIn, containerOut, coerce, 'linear',
+    Plotly.Axes.handleTickDefaults(colorbarIn, colorbarOut, coerce, 'linear',
         {outerTicks: false, font: layout.font, noHover: true});
 
     coerce('title');
