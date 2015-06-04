@@ -161,5 +161,6 @@ plots['triangle-mesh3d'] = require('./testplots/triangle.json');
 plots['snowden'] = require('./testplots/snowden.json');
 plots['bunny'] = require('./testplots/bunny.json');
 plots['ribbons'] = require('./testplots/ribbons.json');
+plots['date-time'] = require('./testplots/scatter-date.json');
 
 plotButtons(plots);
