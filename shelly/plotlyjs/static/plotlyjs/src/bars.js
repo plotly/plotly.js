@@ -7,8 +7,16 @@ var bars = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
-// mark this module as allowing error bars
-bars.errorBarsOK = true;
+Plotly.Plots.register(bars, 'bar',
+    ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend']);
+/**
+ * histogram errorBarsOK is debatable, but it's put in for backward compat.
+ * there are use cases for it - sqrt for a simple histogram works right now,
+ * constant and % work but they're not so meaningful. I guess it could be cool
+ * to allow quadrature combination of errors in summed histograms...
+ */
+Plotly.Plots.register(bars, 'histogram',
+    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend']);
 
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,
@@ -138,7 +146,7 @@ bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         subploti;
     for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
-        if(Plotly.Plots.isBar(trace.type)) hasBars = true;
+        if(Plotly.Plots.traceIs(trace, 'bar')) hasBars = true;
         else continue;
 
         // if we have at least 2 grouped bar traces on the same subplot,
@@ -226,7 +234,7 @@ bars.setPositions = function(gd, plotinfo) {
 
         gd._fullData.forEach(function(trace,i) {
             if(trace.visible === true &&
-                    Plotly.Plots.isBar(trace.type) &&
+                    Plotly.Plots.traceIs(trace, 'bar') &&
                     trace.orientation === dir &&
                     trace.xaxis === xa._id &&
                     trace.yaxis === ya._id) {
