@@ -1,0 +1,233 @@
+{
+    "data": [
+        {
+            "z": [
+                [
+                    0.1189977,
+                    0.3403857,
+                    0.7512671,
+                    0.6990767,
+                    0.5472155
+                ],
+                [
+                    0.4983641,
+                    0.5852678,
+                    0.2550951,
+                    0.8909033,
+                    0.1386244
+                ],
+                [
+                    0.959744,
+                    0.2238119,
+                    0.5059571,
+                    0.9592914,
+                    0.149294
+                ]
+            ],
+            "x": [
+                "Mon",
+                "Tues",
+                "Wed",
+                "Th",
+                "Fri"
+            ],
+            "y": [
+                "8am",
+                "12pm",
+                "6pm"
+            ],
+            "name": "trace 0",
+            "zauto": true,
+            "zmin": 0.1189977,
+            "zmax": 0.959744,
+            "scl": [
+                [
+                    0,
+                    "rgb(128, 0, 38)"
+                ],
+                [
+                    0.125,
+                    "rgb(189, 0, 38)"
+                ],
+                [
+                    0.25,
+                    "rgb(227, 26, 28)"
+                ],
+                [
+                    0.375,
+                    "rgb(252, 78, 42)"
+                ],
+                [
+                    0.5,
+                    "rgb(253, 141, 60)"
+                ],
+                [
+                    0.625,
+                    "rgb(254, 178, 76)"
+                ],
+                [
+                    0.75,
+                    "rgb(254, 217, 118)"
+                ],
+                [
+                    0.875,
+                    "rgb(255, 237, 160)"
+                ],
+                [
+                    1,
+                    "rgb(255, 255, 204)"
+                ]
+            ],
+            "x0": 0,
+            "dx": 1,
+            "y0": 0,
+            "dy": 1,
+            "type": "heatmap"
+        }
+    ],
+    "layout": {
+        "title": "User Traffic",
+        "titlefont": {
+            "color": "",
+            "family": "",
+            "size": 0
+        },
+        "font": {
+            "family": "Arial, sans-serif",
+            "size": 12,
+            "color": "#000"
+        },
+        "showlegend": false,
+        "autosize": false,
+        "width": 600,
+        "height": 350,
+        "xaxis": {
+            "title": "",
+            "titlefont": {
+                "color": "",
+                "family": "",
+                "size": 16
+            },
+            "range": [
+                -0.5,
+                4.5
+            ],
+            "domain": [
+                0,
+                1
+            ],
+            "type": "category",
+            "rangemode": "normal",
+            "showgrid": true,
+            "zeroline": true,
+            "showline": true,
+            "autotick": true,
+            "nticks": 0,
+            "ticks": "",
+            "showticklabels": true,
+            "tick0": 0,
+            "dtick": 1,
+            "ticklen": 5,
+            "tickwidth": 1,
+            "tickcolor": "#000",
+            "tickangle": 0,
+            "tickfont": {
+                "size": 14,
+                "color": ""
+            },
+            "exponentformat": "e",
+            "showexponent": "all",
+            "gridcolor": "#ddd",
+            "gridwidth": 1,
+            "zerolinecolor": "#000",
+            "zerolinewidth": 1,
+            "linecolor": "rgb(255, 255, 255)",
+            "linewidth": 0.1,
+            "anchor": "y",
+            "position": 0,
+            "mirror": true,
+            "overlaying": false,
+            "autorange": true
+        },
+        "yaxis": {
+            "title": "",
+            "titlefont": {
+                "color": "",
+                "family": "",
+                "size": 16
+            },
+            "range": [
+                -0.5,
+                2.5
+            ],
+            "domain": [
+                0,
+                1
+            ],
+            "type": "category",
+            "rangemode": "normal",
+            "showgrid": true,
+            "zeroline": true,
+            "showline": true,
+            "autotick": true,
+            "nticks": 0,
+            "ticks": "",
+            "showticklabels": true,
+            "tick0": 0,
+            "dtick": 1,
+            "ticklen": 5,
+            "tickwidth": 1,
+            "tickcolor": "#000",
+            "tickangle": 0,
+            "tickfont": {
+                "family": "Arial, sans-serif", 
+                "size": 14,
+                "color": ""
+            },
+            "exponentformat": "e",
+            "showexponent": "all",
+            "gridcolor": "#ddd",
+            "gridwidth": 1,
+            "zerolinecolor": "#000",
+            "zerolinewidth": 1,
+            "linecolor": "rgb(255, 255, 255)",
+            "linewidth": 0.1,
+            "anchor": "x",
+            "position": 0,
+            "mirror": true,
+            "overlaying": false,
+            "autorange": true
+        },
+        "legend": {
+            "x": 0.98,
+            "y": 0.98,
+            "traceorder": "normal",
+            "font": {
+                "family": "",
+                "size": 0,
+                "color": ""
+            },
+            "bgcolor": "#fff",
+            "bordercolor": "#000",
+            "borderwidth": 1
+        },
+        "margin": {
+            "l": 110,
+            "r": 200,
+            "b": 80,
+            "t": 80,
+            "pad": 2,
+            "autoexpand": true
+        },
+        "paper_bgcolor": "#fff",
+        "plot_bgcolor": "#fff",
+        "hovermode": "x",
+        "dragmode": "zoom",
+        "barmode": "stack",
+        "bargap": 0.2,
+        "bargroupgap": 0,
+        "boxmode": "overlay",
+        "separators": ".,",
+        "hidesources": false
+    }
+}

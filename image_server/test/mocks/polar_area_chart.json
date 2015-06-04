@@ -1,0 +1,128 @@
+{
+  "data": [
+    {
+      "r": [
+        77.5,
+        72.5,
+        70,
+        45,
+        22.5,
+        42.5,
+        40,
+        62.5
+      ],
+      "t": [
+        "North",
+        "N-E",
+        "East",
+        "S-E",
+        "South",
+        "S-W",
+        "West",
+        "N-W"
+      ],
+      "name": "11-14 m/s",
+      "marker": {
+        "color": "rgb(106,81,163)"
+      },
+      "type": "area"
+    },
+    {
+      "r": [
+        57.5,
+        50,
+        45,
+        35,
+        20,
+        22.5,
+        37.5,
+        55
+      ],
+      "t": [
+        "North",
+        "N-E",
+        "East",
+        "S-E",
+        "South",
+        "S-W",
+        "West",
+        "N-W"
+      ],
+      "name": "8-11 m/s",
+      "marker": {
+        "color": "rgb(158,154,200)"
+      },
+      "type": "area"
+    },
+    {
+      "r": [
+        40,
+        30,
+        30,
+        35,
+        7.5,
+        7.5,
+        32.5,
+        40
+      ],
+      "t": [
+        "North",
+        "N-E",
+        "East",
+        "S-E",
+        "South",
+        "S-W",
+        "West",
+        "N-W"
+      ],
+      "name": "5-8 m/s",
+      "marker": {
+        "color": "rgb(203,201,226)"
+      },
+      "type": "area"
+    },
+    {
+      "r": [
+        20,
+        7.5,
+        15,
+        22.5,
+        2.5,
+        2.5,
+        12.5,
+        22.5
+      ],
+      "t": [
+        "North",
+        "N-E",
+        "East",
+        "S-E",
+        "South",
+        "S-W",
+        "West",
+        "N-W"
+      ],
+      "name": "< 5 m/s",
+      "marker": {
+        "color": "rgb(242,240,247)"
+      },
+      "font": {
+        "family": "Arial, sans-serif",
+        "size": 16
+      },
+      "type": "area"
+    }
+  ],
+  "layout": {
+    "title": "Wind Speed Distribution in Laurel, NE",
+    "font": {
+      "family": "Arial, sans-serif",
+      "size": 16
+    },
+    "showlegend": false,
+    "radialaxis": {
+      "ticksuffix": "%"
+    },
+    "orientation": 270
+  }
+}

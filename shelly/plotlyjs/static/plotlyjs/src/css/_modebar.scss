@@ -1,0 +1,62 @@
+.modebar {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    z-index: 1001;
+    background: rgba(255,255,255,0.7);
+}
+
+.modebar--hover {
+    opacity: 0;
+    @include vendor('transition', opacity 0.3s ease 0s);
+}
+
+&:hover .modebar--hover {
+    opacity: 1;
+}
+
+.modebar-group {
+    float: left;
+    display: inline-block;
+    box-sizing: border-box;
+    margin-left: 8px;
+    position: relative;
+    vertical-align: middle;
+    white-space: nowrap;
+
+    &:first-child {
+        margin-left: 0px;
+    }
+}
+
+
+.modebar-btn {
+    position: relative;
+    font-size: 16px;
+    padding: 3px 4px;
+    /* display: inline-block; including this breaks 3d interaction in .embed mode. Chrome bug? */
+    cursor: pointer;
+    line-height: normal;
+    box-sizing: border-box;
+
+    svg {
+        position: relative;
+        top: 2px;
+    }
+
+    path {
+        fill: rgba(0,31,95,0.3);
+    }
+
+    &.active path, &:hover path {
+        fill: rgba(0,22,72,0.5);
+    }
+
+    &.modebar-btn--logo {
+        padding: 3px 1px;
+
+        path {
+            fill: $color-brand-primary !important;
+        }
+    }
+}

@@ -1,0 +1,67 @@
+{
+    "data":[
+        {
+            "name":"Col2",
+            "visible":false,
+            "y":["1","2"],
+            "x":["1","2"]
+        }
+    ],
+    "layout":{
+        "autosize":false,
+        "xaxis":{
+            "domain":[0,0.3],
+            "mirror":true,
+            "zeroline":false,
+            "showline":true
+        },
+        "xaxis2":{
+            "domain":[0.35,0.65],
+            "anchor":"y2",
+            "mirror":true,
+            "zeroline":false,
+            "showline":true
+        },
+        "xaxis3":{
+            "domain":[0.7,1],
+            "anchor":"y3",
+            "mirror":true,
+            "zeroline":false,
+            "showline":true
+        },
+        "yaxis":{
+            "mirror":true,
+            "zeroline":false,
+            "showline":true
+        },
+        "yaxis2":{
+            "anchor":"x2",
+            "mirror":true,
+            "zeroline":false,
+            "showline":true
+        },
+        "yaxis3":{
+            "anchor":"x3",
+            "mirror":true,
+            "zeroline":false,
+            "showline":true
+        },
+        "height":300,
+        "width":800,
+        "margin":{"r":40,"b":40,"l":40,"t":40},
+        "annotations":[
+            {"ay":0,"ax":50,"x":1,"y":1.5,"text":"Left"},
+            {"ay":0,"ax":-50,"x":2,"y":1.5,"text":"Right"},
+            {"x":1.5,"y":2,"text":"Top","ay":50,"ax":0},
+            {"x":1.5,"y":1,"text":"Bottom","ay":-50,"ax":0},
+            {"xref":"x2","yref":"y2","text":"From left","y":1.5,"ax":-50,"ay":0,"x":1},
+            {"xref":"x2","yref":"y2","text":"From right","y":1.5,"x":2,"ay":0,"ax":50},
+            {"xref":"x2","yref":"y2","text":"From top","y":2,"ax":0,"ay":-50,"x":1.5},
+            {"xref":"x2","yref":"y2","text":"From Bottom","y":1,"ax":0,"ay":50,"x":1.5},
+            {"xref":"x3","yref":"y3","text":"Left<br>no<br>arrow","y":1.5,"x":1,"showarrow":false},
+            {"xref":"x3","yref":"y3","text":"Right<br>no<br>arrow","y":1.5,"x":2,"showarrow":false},
+            {"xref":"x3","yref":"y3","text":"Bottom<br>no<br>arrow","y":1,"x":1.5,"showarrow":false},
+            {"xref":"x3","yref":"y3","text":"Top<br>no<br>arrow","y":2,"x":1.5,"showarrow":false}
+        ]
+    }
+}

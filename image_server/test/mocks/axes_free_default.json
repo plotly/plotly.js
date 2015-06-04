@@ -1,0 +1,15 @@
+{
+  "data":[{"x": [1, 2], "y": [1, 2]}],
+  "layout": {
+    "xaxis": {
+      "anchor": "free",
+      "side": "top"
+    },
+    "yaxis": {
+      "anchor": "free",
+      "side": "right"
+    },
+    "width": 400,
+    "height": 400
+  }
+}

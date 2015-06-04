@@ -1,0 +1,16 @@
+{
+	"data": [
+        {
+            "x": [1,2,3,4,5,6,7],
+            "y": [1e5,1e5,2e6,2e6,2e6,3e7,3e7]
+        }
+	],
+    "layout": {
+        "yaxis": {
+            "tickprefix": "*** ",
+            "ticksuffix": " €",
+            "showexponent": "first"
+        }
+    }
+
+}

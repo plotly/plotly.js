@@ -1,0 +1,376 @@
+{
+    "data": [
+        {
+            "y": [
+                0.9501838421644467,
+                0.167880554087384,
+                1.315487125780977,
+                -0.08020170468721913,
+                0.669733047354819,
+                -0.8740087156415399,
+                -1.1940805542953659,
+                -0.38781418241174287,
+                -0.255461150807681,
+                -0.25597595662203515
+            ],
+            "name": "Trial 1",
+            "boxpoints": "all",
+            "pointpos": -1.5,
+            "jitter": 0,
+            "fillcolor": "rgba(255, 255, 255, 0)",
+            "marker": {
+                "color": "rgb(255, 255, 255)",
+                "size": 4,
+                "line": {
+                    "color": "rgb(0, 0, 0)",
+                    "width": 1
+                }
+            },
+            "line": {
+                "color": "rgb(0, 0, 255)",
+                "width": 1
+            },
+            "type": "box"
+        },
+        {
+            "y": [
+                1.9883977191953546,
+                2.14601840493157,
+                1.9544306066647052,
+                2.2094020022580962,
+                2.164245040069763,
+                2.2970808591445544,
+                2.05454320891286,
+                1.926091070805104,
+                2.2237747316232417,
+                2.0456528234898133
+            ],
+            "name": "Trial 2",
+            "boxpoints": "all",
+            "pointpos": -1.5,
+            "jitter": 0,
+            "fillcolor": "rgba(255, 255, 255, 0)",
+            "marker": {
+                "color": "rgb(255, 255, 255)",
+                "size": 4,
+                "line": {
+                    "color": "rgb(0, 0, 0)",
+                    "width": 1
+                }
+            },
+            "line": {
+                "color": "rgb(0, 0, 255)",
+                "width": 1
+            },
+            "type": "box"
+        },
+        {
+            "y": [
+                1.0928163633773065,
+                0.7861477713702435,
+                -0.7814749404967023,
+                1.6166610944461772,
+                1.2741930150754033,
+                1.2224169004668473,
+                0.83799501293941,
+                3.9551378212722277,
+                1.114484992405051,
+                0.577777449231605
+            ],
+            "name": "Trial 3",
+            "boxpoints": "all",
+            "pointpos": -1.5,
+            "jitter": 0,
+            "fillcolor": "rgba(255, 255, 255, 0)",
+            "marker": {
+                "color": "rgb(255, 255, 255)",
+                "size": 4,
+                "line": {
+                    "color": "rgb(0, 0, 0)",
+                    "width": 1
+                }
+            },
+            "line": {
+                "color": "rgb(0, 0, 255)",
+                "width": 1
+            },
+            "type": "box"
+        },
+        {
+            "y": [
+                3.24422317934961,
+                2.0367534159756104,
+                2.9367719325654456,
+                3.274094136977906,
+                3.121394900534835,
+                3.8381687168217944,
+                3.6503485784628187,
+                3.397922408741549,
+                3.01289053296517,
+                2.8335761244537614
+            ],
+            "name": "Trial 4",
+            "boxpoints": "all",
+            "pointpos": -1.5,
+            "jitter": 0,
+            "fillcolor": "rgba(255, 255, 255, 0)",
+            "marker": {
+                "color": "rgb(255, 255, 255)",
+                "size": 4,
+                "line": {
+                    "color": "rgb(0, 0, 0)",
+                    "width": 1
+                }
+            },
+            "line": {
+                "color": "rgb(0, 0, 255)",
+                "width": 1
+            },
+            "type": "box"
+        },
+        {
+            "y": [
+                5.582335912004155,
+                5.908398412838684,
+                5.415122721613807,
+                5.603926913237979,
+                5.656051326912155,
+                5.903545325386073,
+                5.954194645577178,
+                5.669835495769557,
+                5.687207835036456,
+                5.718713550485276
+            ],
+            "name": "Trial 5",
+            "boxpoints": "all",
+            "pointpos": -1.5,
+            "jitter": 0,
+            "fillcolor": "rgba(255, 255, 255, 0)",
+            "marker": {
+                "color": "rgb(255, 255, 255)",
+                "size": 4,
+                "line": {
+                    "color": "rgb(0, 0, 0)",
+                    "width": 1
+                }
+            },
+            "line": {
+                "color": "rgb(0, 0, 255)",
+                "width": 1
+            },
+            "type": "box"
+        },
+        {
+            "y": [
+                5.204928847102308,
+                4.35506132906006,
+                5.73983728407709,
+                5.597678434847857,
+                6.29484600625918,
+                4.7998098139085705,
+                6.123922696698237,
+                5.871606201243214,
+                6.146408206163261,
+                6.726224574612897
+            ],
+            "name": "Trial 6",
+            "boxpoints": "all",
+            "pointpos": -1.5,
+            "jitter": 0,
+            "fillcolor": "rgba(255, 255, 255, 0)",
+            "marker": {
+                "color": "rgb(255, 255, 255)",
+                "size": 4,
+                "line": {
+                    "color": "rgb(0, 0, 0)",
+                    "width": 1
+                }
+            },
+            "line": {
+                "color": "rgb(0, 0, 255)",
+                "width": 1
+            },
+            "type": "box"
+        },
+        {
+            "x": [
+                "Trial 1",
+                "Trial 2",
+                "Trial 3",
+                "Trial 4",
+                "Trial 5",
+                "Trial 6"
+            ],
+            "y": [
+                -0.16783142774745008,
+                2.100280806922215,
+                1.1036506778911788,
+                3.1828090399422226,
+                5.678521665403006,
+                5.805721742660152
+            ],
+            "mode": "lines+markers",
+            "name": "Medians",
+            "marker": {
+                "color": "rgb(255, 255, 255)",
+                "size": 4,
+                "line": {
+                    "color": "rgb(255, 0, 0)",
+                    "width": 1
+                }
+            },
+            "line": {
+                "color": "rgba(255, 0, 0, 0.5)",
+                "width": 2
+            },
+            "fillcolor": "rgba(255, 255, 255, 0)",
+            "type": "scatter"
+        }
+    ],
+    "layout": {
+        "title": "Math Score Box Plots",
+        "titlefont": {
+            "color": "",
+            "family": "",
+            "size": 16
+        },
+        "font": {
+            "family": "Arial, sans-serif",
+            "size": 14,
+            "color": "rgb(67, 67, 67)"
+        },
+        "showlegend": false,
+        "autosize": false,
+        "width": 600,
+        "height": 440,
+        "xaxis": {
+            "title": "",
+            "titlefont": {
+                "color": "",
+                "family": "",
+                "size": 0
+            },
+            "range": [
+                -0.6575,
+                5.5
+            ],
+            "domain": [
+                0,
+                1
+            ],
+            "type": "category",
+            "rangemode": "normal",
+            "showgrid": false,
+            "zeroline": false,
+            "showline": false,
+            "autotick": true,
+            "nticks": 0,
+            "ticks": "",
+            "showticklabels": true,
+            "tick0": 0,
+            "dtick": 1,
+            "ticklen": 5,
+            "tickwidth": 1,
+            "tickcolor": "#000",
+            "tickangle": 0,
+            "tickfont": {
+                "family": "",
+                "size": 0,
+                "color": ""
+            },
+            "exponentformat": "e",
+            "showexponent": "all",
+            "gridcolor": "rgb(255, 255, 255)",
+            "gridwidth": 1,
+            "zerolinecolor": "#000",
+            "zerolinewidth": 1,
+            "linecolor": "rgba(0, 0, 0, 0)",
+            "linewidth": 1,
+            "anchor": "y",
+            "position": 0,
+            "mirror": true,
+            "overlaying": false,
+            "autorange": true
+        },
+        "yaxis": {
+            "title": "Score",
+            "titlefont": {
+                "color": "",
+                "family": "",
+                "size": 0
+            },
+            "range": [
+                -1.6340975059013805,
+                7.166241526218911
+            ],
+            "domain": [
+                0,
+                1
+            ],
+            "type": "linear",
+            "rangemode": "normal",
+            "showgrid": true,
+            "zeroline": false,
+            "showline": false,
+            "autotick": true,
+            "nticks": 0,
+            "ticks": "",
+            "showticklabels": true,
+            "tick0": 0,
+            "dtick": 2,
+            "ticklen": 5,
+            "tickwidth": 1,
+            "tickcolor": "#000",
+            "tickangle": 0,
+            "tickfont": {
+                "family": "",
+                "size": 0,
+                "color": ""
+            },
+            "exponentformat": "e",
+            "showexponent": "all",
+            "gridcolor": "rgb(204, 204, 204)",
+            "gridwidth": 1,
+            "zerolinecolor": "#000",
+            "zerolinewidth": 1,
+            "linecolor": "rgba(0, 0, 0, 0)",
+            "linewidth": 2,
+            "anchor": "x",
+            "position": 0,
+            "mirror": true,
+            "overlaying": false,
+            "autorange": true
+        },
+        "legend": {
+            "x": 1.1837209302325582,
+            "y": 1.0189344262295081,
+            "traceorder": "normal",
+            "font": {
+                "family": "",
+                "size": 0,
+                "color": "rgb(67, 67, 67)"
+            },
+            "bgcolor": "rgba(255, 255, 255, 0)",
+            "bordercolor": "rgba(0, 0, 0, 0)",
+            "borderwidth": 1
+        },
+        "margin": {
+            "l": 80,
+            "r": 40,
+            "b": 80,
+            "t": 80,
+            "pad": 2,
+            "autoexpand": true
+        },
+        "paper_bgcolor": "rgb(255, 255, 255)",
+        "plot_bgcolor": "rgb(255, 255, 255)",
+        "hovermode": "x",
+        "dragmode": "zoom",
+        "barmode": "stack",
+        "bargap": 0.2,
+        "bargroupgap": 0,
+        "boxmode": "overlay",
+        "separators": ".,",
+        "hidesources": false
+    }
+}

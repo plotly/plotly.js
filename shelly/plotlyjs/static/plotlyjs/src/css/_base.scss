@@ -1,0 +1,36 @@
+&, div {
+    font-family: 'Open Sans', verdana, arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+input, button {
+    font-family: 'Open Sans', verdana, arial, sans-serif;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+a {
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+.crisp { shape-rendering: crispEdges; }
+svg a { fill: $color-brand-primary; }
+svg a:hover { fill: #3c6dc5; }
+
+.main-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+
+    .draglayer {
+        pointer-events: all;
+    }
+}

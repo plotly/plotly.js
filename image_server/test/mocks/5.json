@@ -1,0 +1,372 @@
+{
+    "data": [
+        {
+            "x": [
+                1860, 
+                1870, 
+                1880, 
+                1890, 
+                1900, 
+                1910, 
+                1920, 
+                1930, 
+                1940, 
+                1950, 
+                1960, 
+                1970, 
+                1980, 
+                1990, 
+                2000
+            ], 
+            "y": [
+                4842271, 
+                5513847, 
+                6921498, 
+                7679621, 
+                9195343, 
+                10668782, 
+                11522457, 
+                11418079, 
+                10533542, 
+                16124617, 
+                20263518, 
+                17069801, 
+                16311297, 
+                18901950, 
+                19136689
+            ], 
+            "mode": "lines", 
+            "name": "<5", 
+            "line": {
+                "color": "rgb(0, 0, 0)"
+            }, 
+            "fill": "tonexty", 
+            "fillcolor": "rgb(0, 0, 238)", 
+            "type": "scatter"
+        }, 
+        {
+            "x": [
+                1860, 
+                1870, 
+                1880, 
+                1890, 
+                1900, 
+                1910, 
+                1920, 
+                1930, 
+                1940, 
+                1950, 
+                1960, 
+                1970, 
+                1980, 
+                1990, 
+                2000
+            ], 
+            "y": [
+                16098979, 
+                19163510, 
+                24124931, 
+                29018896, 
+                33741590, 
+                38628350, 
+                43024221, 
+                47636717, 
+                45294230, 
+                51086404, 
+                68860098, 
+                77017319, 
+                72494656, 
+                71877152, 
+                80486664
+            ], 
+            "mode": "lines", 
+            "name": "5-19", 
+            "line": {
+                "color": "rgb(0, 0, 0)"
+            }, 
+            "fill": "tonexty", 
+            "fillcolor": "rgb(0, 64, 222)", 
+            "type": "scatter"
+        }, 
+        {
+            "x": [
+                1860, 
+                1870, 
+                1880, 
+                1890, 
+                1900, 
+                1910, 
+                1920, 
+                1930, 
+                1940, 
+                1950, 
+                1960, 
+                1970, 
+                1980, 
+                1990, 
+                2000
+            ], 
+            "y": [
+                27324244, 
+                32813173, 
+                42130857, 
+                52246602, 
+                62391544, 
+                74497533, 
+                83617099, 
+                94659559, 
+                96513577, 
+                107748611, 
+                126602160, 
+                141435499, 
+                156543149, 
+                171609811, 
+                184612769
+            ], 
+            "mode": "lines", 
+            "name": "20-44", 
+            "line": {
+                "color": "rgb(0, 0, 0)"
+            }, 
+            "fill": "tonexty", 
+            "fillcolor": "rgb(0, 129, 190)", 
+            "type": "scatter"
+        }, 
+        {
+            "x": [
+                1860, 
+                1870, 
+                1880, 
+                1890, 
+                1900, 
+                1910, 
+                1920, 
+                1930, 
+                1940, 
+                1950, 
+                1960, 
+                1970, 
+                1980, 
+                1990, 
+                2000
+            ], 
+            "y": [
+                30594349, 
+                37401619, 
+                48450485, 
+                60492752, 
+                72802800, 
+                87925483, 
+                100636508, 
+                116022417, 
+                122584093, 
+                138340175, 
+                162646118, 
+                183297155, 
+                200946126, 
+                217869847, 
+                246525588
+            ], 
+            "mode": "lines", 
+            "name": "45-64", 
+            "line": {
+                "color": "rgb(0, 0, 0)"
+            }, 
+            "fill": "tonexty", 
+            "fillcolor": "rgb(0, 194, 157)", 
+            "type": "scatter"
+        }, 
+        {
+            "x": [
+                1860, 
+                1870, 
+                1880, 
+                1890, 
+                1900, 
+                1910, 
+                1920, 
+                1930, 
+                1940, 
+                1950, 
+                1960, 
+                1970, 
+                1980, 
+                1990, 
+                2000
+            ], 
+            "y": [
+                31443318, 
+                38558370, 
+                50155781, 
+                62947712, 
+                75918577, 
+                91880290, 
+                105604907, 
+                122652269, 
+                131537603, 
+                150546661, 
+                179143850, 
+                203211923, 
+                226545801, 
+                248958581, 
+                281421904
+            ], 
+            "mode": "lines", 
+            "name": "65+", 
+            "line": {
+                "color": "rgb(0, 0, 0)"
+            }, 
+            "fill": "tonexty", 
+            "fillcolor": "rgb(0, 255, 127)", 
+            "type": "scatter"
+        }
+    ], 
+    "layout": {
+        "title": "US Population<br>Area Plot", 
+        "titlefont": {
+            "color": "", 
+            "family": "", 
+            "size": 0
+        }, 
+        "font": {
+            "family": "Arial, sans-serif", 
+            "size": 12, 
+            "color": "#000"
+        }, 
+        "showlegend": true, 
+        "autosize": false, 
+        "width": 540, 
+        "height": 440, 
+        "xaxis": {
+            "title": "Year", 
+            "titlefont": {
+                "color": "", 
+                "family": "", 
+                "size": 0
+            }, 
+            "range": [
+                1860, 
+                2000
+            ], 
+            "domain": [
+                0, 
+                1
+            ], 
+            "type": "linear", 
+            "rangemode": "normal", 
+            "showgrid": true, 
+            "zeroline": true, 
+            "showline": false, 
+            "autotick": true, 
+            "nticks": 10, 
+            "ticks": "", 
+            "showticklabels": true, 
+            "tick0": 0, 
+            "dtick": 20, 
+            "ticklen": 5, 
+            "tickwidth": 1, 
+            "tickcolor": "#000", 
+            "tickangle": 0, 
+            "tickfont": {
+                "family": "", 
+                "size": 0, 
+                "color": ""
+            }, 
+            "exponentformat": "e", 
+            "showexponent": "all", 
+            "gridcolor": "#ddd", 
+            "gridwidth": 1, 
+            "zerolinecolor": "#000", 
+            "zerolinewidth": 1, 
+            "linecolor": "#000", 
+            "linewidth": 1, 
+            "anchor": "y", 
+            "position": 0, 
+            "mirror": true, 
+            "overlaying": false, 
+            "autorange": true
+        }, 
+        "yaxis": {
+            "title": "Population", 
+            "titlefont": {
+                "color": "", 
+                "family": "", 
+                "size": 0
+            }, 
+            "range": [
+                0, 
+                296233583.15789473
+            ], 
+            "domain": [
+                0, 
+                1
+            ], 
+            "type": "linear", 
+            "rangemode": "normal", 
+            "showgrid": true, 
+            "zeroline": true, 
+            "showline": false, 
+            "autotick": true, 
+            "nticks": 10, 
+            "ticks": "", 
+            "showticklabels": true, 
+            "tick0": 0, 
+            "dtick": 50000000, 
+            "ticklen": 5, 
+            "tickwidth": 1, 
+            "tickcolor": "#000", 
+            "tickangle": 0, 
+            "tickfont": {
+                "family": "", 
+                "size": 0, 
+                "color": ""
+            }, 
+            "exponentformat": "e", 
+            "showexponent": "all", 
+            "gridcolor": "#ddd", 
+            "gridwidth": 1, 
+            "zerolinecolor": "#000", 
+            "zerolinewidth": 1, 
+            "linecolor": "#000", 
+            "linewidth": 1, 
+            "anchor": "x", 
+            "position": 0, 
+            "mirror": true, 
+            "overlaying": false, 
+            "autorange": true
+        }, 
+        "legend": {
+            "x": 1.02, 
+            "y": 1.0178571428571428, 
+            "traceorder": "normal", 
+            "font": {
+                "family": "", 
+                "size": 14, 
+                "color": ""
+            }, 
+            "bgcolor": "rgba(255, 255, 255, 0)", 
+            "bordercolor": "rgba(255, 255, 255, 0)", 
+            "borderwidth": 0.1, 
+            "xanchor": "left", 
+            "yanchor": "auto"
+        }, 
+        "margin": {
+            "l": 80, 
+            "r": 0, 
+            "b": 80, 
+            "t": 80, 
+            "pad": 2, 
+            "autoexpand": true
+        }, 
+        "paper_bgcolor": "#fff", 
+        "plot_bgcolor": "#fff", 
+        "hovermode": "x", 
+        "dragmode": "zoom", 
+        "barmode": "stack", 
+        "bargap": 0.2, 
+        "bargroupgap": 0, 
+        "boxmode": "overlay", 
+        "separators": ".,", 
+        "hidesources": false
+    }
+}

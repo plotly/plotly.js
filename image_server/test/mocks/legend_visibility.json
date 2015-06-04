@@ -1,0 +1,24 @@
+{
+    "data":[
+        {"name":"bar A","type":"bar","y":["2","3","5","4","1"]},
+        {"name":"bar B","type":"bar","visible":"legendonly","y":["3","5","7","6","8"]},
+        {"name":"bar C","type":"bar","y":["2","4","6","3","8"]},
+        {"name":"line A","yaxis":"y2","y":["2","3","5","4","1"]},
+        {"name":"line B","yaxis":"y2","visible":"legendonly","y":["3","5","7","6","8"]},
+        {"name":"line C","yaxis":"y2","y":["2","4","6","3","8"]},
+        {"name":"box A","type":"box","xaxis":"x2","yaxis":"y3","y":[1,2,3,4,5,6,7,8,9]},
+        {"name":"box B","type":"box","xaxis":"x2","yaxis":"y3","visible":"legendonly","y":[2,3,3,4,4,4,5,5,6]},
+        {"name":"box C","type":"box","xaxis":"x2","yaxis":"y3","y":[1,4,6,7,7,8,8,8,9]}
+    ],
+    "layout": {
+        "showlegend":true,
+        "height":400,
+        "width":600,
+        "barnorm":"fraction",
+        "barmode":"stack",
+        "xaxis":{"domain":[0,0.45]},
+        "xaxis2":{"anchor":"y3","domain":[0.55,1]},
+        "yaxis2":{"overlaying":"y","side":"right"},
+        "yaxis3":{"anchor":"x2"}
+    }
+}
