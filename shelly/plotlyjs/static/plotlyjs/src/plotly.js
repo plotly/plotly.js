@@ -20,6 +20,7 @@ exports.Contour = require('./contour');
 exports.ErrorBars = require('./errorbars');
 exports.Heatmap = require('./heatmap');
 exports.Histogram = require('./histogram');
+exports.Pie = require('./pie');
 // and extra plot components
 exports.Annotations = require('./annotations');
 exports.Shapes = require('./shapes');
