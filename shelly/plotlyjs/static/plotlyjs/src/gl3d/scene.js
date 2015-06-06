@@ -203,13 +203,17 @@ function coordinateBound(axis, coord, d, bounds) {
     if(Array.isArray(coord[i])) {
       for(var j=0; j<coord[i].length; ++j) {
         var x = axis.d2l(coord[i][j]);
-        bounds[0][d] = Math.min(bounds[0][d], x);
-        bounds[1][d] = Math.max(bounds[1][d], x);
+        if(!isNaN(x) && isFinite(x)) {
+          bounds[0][d] = Math.min(bounds[0][d], x);
+          bounds[1][d] = Math.max(bounds[1][d], x);
+        }
       }
     } else {
       var x = axis.d2l(coord[i]);
-      bounds[0][d] = Math.min(bounds[0][d], x);
-      bounds[1][d] = Math.max(bounds[1][d], x);
+      if(!isNaN(x) && isFinite(x)) {
+        bounds[0][d] = Math.min(bounds[0][d], x);
+        bounds[1][d] = Math.max(bounds[1][d], x);
+      }
     }
   }
 }

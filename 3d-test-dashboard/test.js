@@ -163,5 +163,6 @@ plots['snowden'] = require('./testplots/snowden.json');
 plots['bunny'] = require('./testplots/bunny.json');
 plots['ribbons'] = require('./testplots/ribbons.json');
 plots['date-time'] = require('./testplots/scatter-date.json');
+plots['cufflinks'] = require('./testplots/cufflinks.json');
 
 plotButtons(plots);
