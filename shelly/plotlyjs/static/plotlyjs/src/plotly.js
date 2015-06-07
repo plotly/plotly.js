@@ -6,6 +6,7 @@ exports.micropolar.manager = require('./micropolar_manager');
 exports.Lib = require('./lib');
 exports.util = require('./plotly_util');
 exports.Color = require('./color');
+exports.Colorscale = require('./colorscale');
 exports.Drawing = require('./drawing');
 // then the plot structure
 exports.Plots = require('./graph_obj');
@@ -33,6 +34,7 @@ exports.Gl3dLayout = require('./gl3d/defaults/gl3dlayout');
 exports.Gl3dAxes = require('./gl3d/defaults/gl3daxes');
 exports.Scatter3D = require('./gl3d/defaults/scatter3d');
 exports.Surface = require('./gl3d/defaults/surface');
+exports.Mesh3D = require('./gl3d/defaults/mesh3d');
 exports.Scene = require('./gl3d/scene');
 
 // graph reference

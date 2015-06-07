@@ -70,6 +70,66 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('transposeRagged()', function() {
+        it('should transpose and return a rectangular array', function() {
+            var input = [
+                    [1],
+                    [2, 3, 4],
+                    [5, 6],
+                    [7]],
+                output = [
+                    [1, 2, 5, 7],
+                    [undefined, 3, 6, undefined],
+                    [undefined, 4, undefined, undefined]
+                ];
+
+            expect(Plotly.Lib.transposeRagged(input)).toEqual(output);
+        });
+    });
+
+    describe('dot()', function() {
+        var dot = Plotly.Lib.dot;
+
+        it('should return null for empty or unequal-length inputs', function() {
+            expect(dot([], [])).toBeNull();
+            expect(dot([1], [2, 3])).toBeNull();
+        });
+
+        it('should dot vectors to a scalar', function() {
+            expect(dot([1, 2, 3], [4, 5, 6])).toEqual(32);
+        });
+
+        it('should dot a vector and a matrix to a vector', function() {
+            expect(dot([1, 2], [[3, 4], [5, 6]])).toEqual([13, 16]);
+            expect(dot([[3, 4], [5, 6]], [1, 2])).toEqual([11, 17]);
+        });
+
+        it('should dot two matrices to a matrix', function() {
+            expect(dot([[1, 2], [3, 4]], [[5, 6], [7, 8]]))
+                .toEqual([[19, 22], [43, 50]]);
+        });
+    });
+
+    describe('aggNums()', function() {
+        var aggNums = Plotly.Lib.aggNums;
+
+        function summation(a, b) { return a + b; }
+
+        it('should work with 1D and 2D inputs and ignore non-numerics', function() {
+            var in1D = [1,2,3,4,'goose!',5,6],
+                in2D = [[1,2,3],['',4],[5,'hi!',6]];
+
+            expect(aggNums(Math.min, null, in1D)).toEqual(1);
+            expect(aggNums(Math.min, null, in2D)).toEqual(1);
+
+            expect(aggNums(Math.max, null, in1D)).toEqual(6);
+            expect(aggNums(Math.max, null, in2D)).toEqual(6);
+
+            expect(aggNums(summation, 0, in1D)).toEqual(21);
+            expect(aggNums(summation, 0, in2D)).toEqual(21);
+        });
+    });
+
     describe('mean() should', function() {
         it('toss out non-numerics (strings):', function() {
             var input = [1, 2, 'apple', 'orange'],
@@ -131,6 +191,56 @@ describe('Test lib.js:', function() {
             var input = [1, 2, NaN],
                 res = Plotly.Lib.stdev(input);
             expect(res).toEqual(0.5);
+        });
+    });
+
+    describe('smooth()', function() {
+        it('should not alter the input for FWHM < 1.5', function() {
+            var input = [1, 2, 1, 2, 1],
+                output = Plotly.Lib.smooth(input.slice(), 1.49);
+
+            expect(output).toEqual(input);
+
+            output = Plotly.Lib.smooth(input.slice(), 'like butter');
+
+            expect(output).toEqual(input);
+        });
+
+        it('should preserve the length and integral even with multiple bounces', function() {
+            var input = [1, 2, 4, 8, 16, 8, 10, 12],
+                output2 = Plotly.Lib.smooth(input.slice(), 2),
+                output30 = Plotly.Lib.smooth(input.slice(), 30),
+                sumIn = 0,
+                sum2 = 0,
+                sum30 = 0;
+
+            for(var i = 0; i < input.length; i++) {
+                sumIn += input[i];
+                sum2 += output2[i];
+                sum30 += output30[i];
+            }
+
+            expect(output2.length).toEqual(input.length);
+            expect(output30.length).toEqual(input.length);
+            expect(sum2).toBeCloseTo(sumIn, 6);
+            expect(sum30).toBeCloseTo(sumIn, 6);
+        });
+
+        it('should use a hann window and bounce', function() {
+            var input = [0, 0, 0, 7, 0, 0, 0],
+                out4 = Plotly.Lib.smooth(input, 4),
+                out7 = Plotly.Lib.smooth(input, 7),
+                expected4 = [
+                    0.2562815664617711, 0.875, 1.4937184335382292, 1.75,
+                    1.493718433538229, 0.875, 0.25628156646177086
+                ],
+                expected7 = [1, 1, 1, 1, 1, 1, 1],
+                i;
+
+            for(i = 0; i < input.length; i++) {
+                expect(out4[i]).toBeCloseTo(expected4[i], 6);
+                expect(out7[i]).toBeCloseTo(expected7[i], 6);
+            }
         });
     });
 

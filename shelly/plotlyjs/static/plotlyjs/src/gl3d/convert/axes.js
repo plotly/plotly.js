@@ -1,19 +1,11 @@
 'use strict';
 
 var arrtools = require('arraytools'),
+    convertHTML = require('../lib/html2unicode'),
     arrayCopy1D = arrtools.copy1D,
     str2RgbaArray = require('../lib/str2rgbarray');
 
-
-module.exports = createAxesOptions;
-
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
-
-function createAxesOptions(plotlyOptions) {
-    var result = new AxesOptions();
-    result.merge(plotlyOptions);
-    return result;
-}
 
 function AxesOptions() {
     this.bounds         = [ [-10, -10, -10],
@@ -73,7 +65,7 @@ proto.merge = function(sceneLayout) {
         var axes = sceneLayout[AXES_NAMES[i]];
 
         /////// Axes labels //
-        opts.labels[i] = axes.title;
+        opts.labels[i] = convertHTML(axes.title);
         if ('titlefont' in axes) {
             if (axes.titlefont.color)  opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
             if (axes.titlefont.family) opts.labelFont[i]  = axes.titlefont.family;
@@ -134,3 +126,12 @@ proto.merge = function(sceneLayout) {
         } else opts.backgroundEnable[i] = false;
     }
 };
+
+
+function createAxesOptions(plotlyOptions) {
+    var result = new AxesOptions();
+    result.merge(plotlyOptions);
+    return result;
+}
+
+module.exports = createAxesOptions;

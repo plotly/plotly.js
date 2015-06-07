@@ -2,6 +2,7 @@
 
 var histogram = module.exports = {},
     Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric'),
     scatterAttrs = Plotly.Scatter.attributes,
     barAttrs = Plotly.Bars.attributes;
 
@@ -74,7 +75,7 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
         x = coerce('x'),
         y = coerce('y');
 
-    if(Plotly.Plots.isHist2D(traceOut.type)) {
+    if(Plotly.Plots.traceIs(traceOut, '2dMap')) {
         // we could try to accept x0 and dx, etc...
         // but that's a pretty weird use case.
         // for now require both x and y explicitly specified.
@@ -126,7 +127,8 @@ var binFunctions = {
 
     sum: function(n, i, size, counterData) {
         var v = counterData[i];
-        if($.isNumeric(v)) {
+        if(isNumeric(v)) {
+            v = Number(v);
             size[n] += v;
             return v;
         }
@@ -135,7 +137,8 @@ var binFunctions = {
 
     avg: function(n, i, size, counterData, counts) {
         var v = counterData[i];
-        if($.isNumeric(v)) {
+        if(isNumeric(v)) {
+            v = Number(v);
             size[n] += v;
             counts[n]++;
         }
@@ -144,8 +147,9 @@ var binFunctions = {
 
     min: function(n, i, size, counterData) {
         var v = counterData[i];
-        if($.isNumeric(v)) {
-            if(!$.isNumeric(size[n])) {
+        if(isNumeric(v)) {
+            v = Number(v);
+            if(!isNumeric(size[n])) {
                 size[n] = v;
                 return v;
             }
@@ -159,8 +163,9 @@ var binFunctions = {
 
     max: function(n, i, size, counterData) {
         var v = counterData[i];
-        if($.isNumeric(v)) {
-            if(!$.isNumeric(size[n])) {
+        if(isNumeric(v)) {
+            v = Number(v);
+            if(!isNumeric(size[n])) {
                 size[n] = v;
                 return v;
             }
@@ -250,10 +255,10 @@ histogram.calc = function(gd, trace) {
         binfunc = binFunctions.count,
         normfunc = normFunctions[norm],
         doavg = false,
-        counter0;
+        rawCounterData;
 
-    if((counterdata in trace) && func!=='count') {
-        counter0 = pa.makeCalcdata(trace, counterdata);
+    if(Array.isArray(trace[counterdata]) && func!=='count') {
+        rawCounterData = trace[counterdata];
         doavg = func==='avg';
         binfunc = binFunctions[func];
     }
@@ -281,7 +286,7 @@ histogram.calc = function(gd, trace) {
     // bin the data
     for(i=0; i<pos0.length; i++) {
         n = Plotly.Lib.findBin(pos0[i], bins);
-        if(n>=0 && n<nMax) total += binfunc(n, i, size, counter0, counts);
+        if(n>=0 && n<nMax) total += binfunc(n, i, size, rawCounterData, counts);
     }
 
     // average and/or normalize the data, if needed
@@ -308,7 +313,7 @@ histogram.calc = function(gd, trace) {
 
     // create the "calculated data" to plot
     for(i=firstNonzero; i<=lastNonzero; i++) {
-        if(($.isNumeric(pos[i]) && $.isNumeric(size[i]))) {
+        if((isNumeric(pos[i]) && isNumeric(size[i]))) {
             cd.push({p: pos[i], s: size[i], b: 0});
         }
     }
@@ -374,20 +379,18 @@ histogram.calc2d = function(gd, trace) {
         normfunc = normFunctions[norm],
         doavg = false,
         xinc = [],
-        yinc = [],
-        counter0;
+        yinc = [];
 
     // set a binning function other than count?
     // for binning functions: check first for 'z',
     // then 'mc' in case we had a colored scatter plot
     // and want to transfer these colors to the 2D histo
     // TODO: this is why we need a data picker in the popover...
-    var counterdata = ('z' in trace) ?
+    var rawCounterData = ('z' in trace) ?
         trace.z :
         (('marker' in trace && Array.isArray(trace.marker.color)) ?
             trace.marker.color : '');
-    if(counterdata && func!=='count') {
-        counter0 = counterdata.map(Number);
+    if(rawCounterData && func!=='count') {
         doavg = func==='avg';
         binfunc = binFunctions[func];
     }
@@ -445,7 +448,7 @@ histogram.calc2d = function(gd, trace) {
         n = Plotly.Lib.findBin(x[i],xbins);
         m = Plotly.Lib.findBin(y[i],ybins);
         if(n>=0 && n<nx && m>=0 && m<ny) {
-            total += binfunc(n, i, z[m], counter0, counts[m]);
+            total += binfunc(n, i, z[m], rawCounterData, counts[m]);
         }
     }
     // normalize, if needed

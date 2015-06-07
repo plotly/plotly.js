@@ -5,7 +5,8 @@
 /* global d3:false */
 
 var errorBars = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
 errorBars.attributes = {
     visible: {
@@ -102,14 +103,14 @@ errorBars.supplyDefaults = function(traceIn, traceOut, defaultColor, opts) {
             var inheritObj = traceOut['error_' + opts.inherit];
             if((inheritObj||{}).visible) {
                 coerce(copyAttr, !(containerIn.color ||
-                                   $.isNumeric(containerIn.thickness) ||
-                                   $.isNumeric(containerIn.width)));
+                                   isNumeric(containerIn.thickness) ||
+                                   isNumeric(containerIn.width)));
             }
         }
         if(!opts.inherit || !containerOut[copyAttr]) {
             coerce('color', defaultColor);
             coerce('thickness');
-            coerce('width', Plotly.Plots.isScatter3D(traceOut.type) ? 0 : 4);
+            coerce('width', Plotly.Plots.traceIs(traceOut, 'gl3d') ? 0 : 4);
         }
     }
 };
@@ -173,7 +174,7 @@ errorBars.calc = function(gd) {
     (gd.calcdata||[]).forEach(function(cdi){
         var trace = cdi[0].trace;
 
-        if(!(trace._module||{}).errorBarsOK) return;
+        if(!Plotly.Plots.traceIs(trace, 'errorBarsOK')) return;
 
         var xObj = trace.error_x||{},
             yObj = trace.error_y||{},
@@ -189,7 +190,7 @@ errorBars.calc = function(gd) {
 
         cdi.forEach(function(d,j) {
             try {
-                if($.isNumeric(ya.c2l(d.y)) && $.isNumeric(xa.c2l(d.x))){
+                if(isNumeric(ya.c2l(d.y)) && isNumeric(xa.c2l(d.x))){
                     [
                         {letter:'x', obj: xObj, visible: xvis, vals: xvals},
                         {letter:'y', obj: yObj, visible: yvis, vals: yvals}
@@ -208,7 +209,7 @@ errorBars.calc = function(gd) {
                                 en = (obj.symmetric || !('valueminus' in obj)) ?
                                     ep : errorval(obj.type, dataVal, obj.valueminus);
                             }
-                            if($.isNumeric(ep) && $.isNumeric(en)) {
+                            if(isNumeric(ep) && isNumeric(en)) {
                                 var shoe = d[o.letter + 'h'] = dataVal + ep;
                                 var hat = d[o.letter + 's'] = dataVal - en;
                                 o.vals.push(shoe, hat);
@@ -263,9 +264,9 @@ errorBars.plot = function(gd, plotinfo, cd) {
                         path;
                     if(sparse && !d.vis) return;
 
-                    if(yObj.visible && $.isNumeric(coords.x) &&
-                            $.isNumeric(coords.yh) &&
-                            $.isNumeric(coords.ys)){
+                    if(yObj.visible && isNumeric(coords.x) &&
+                            isNumeric(coords.yh) &&
+                            isNumeric(coords.ys)){
                         var yw = yObj.width;
                         path = 'M'+(coords.x-yw)+','+coords.yh+'h'+(2*yw) + // hat
                             'm-'+yw+',0V'+coords.ys; // bar
@@ -275,9 +276,9 @@ errorBars.plot = function(gd, plotinfo, cd) {
                             .classed('yerror', true)
                             .attr('d', path);
                     }
-                    if(xObj.visible && $.isNumeric(coords.y) &&
-                            $.isNumeric(coords.xh) &&
-                            $.isNumeric(coords.xs)){
+                    if(xObj.visible && isNumeric(coords.y) &&
+                            isNumeric(coords.xh) &&
+                            isNumeric(coords.xs)){
                         var xw = (xObj.copy_ystyle ? yObj : xObj).width;
                         path = 'M'+coords.xh+','+(coords.y-xw)+'v'+(2*xw) + // hat
                             'm0,-'+xw+'H'+coords.xs; // bar
@@ -324,7 +325,7 @@ function errorcoords(d, xa, ya) {
 
         // if the shoes go off-scale (ie log scale, error bars past zero)
         // clip the bar and hide the shoes
-        if(!$.isNumeric(out.ys)) {
+        if(!isNumeric(out.ys)) {
             out.noYS = true;
             out.ys = ya.c2p(d.ys, true);
         }
@@ -333,7 +334,7 @@ function errorcoords(d, xa, ya) {
         out.xh = xa.c2p(d.xh);
         out.xs = xa.c2p(d.xs);
 
-        if(!$.isNumeric(out.xs)) {
+        if(!isNumeric(out.xs)) {
             out.noXS = true;
             out.xs = xa.c2p(d.xs, true);
         }

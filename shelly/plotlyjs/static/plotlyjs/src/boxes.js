@@ -4,7 +4,11 @@
 /* global d3:false */
 
 var boxes = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
+
+Plotly.Plots.register(boxes, 'box',
+    ['cartesian', 'symbols', 'oriented', 'box', 'showLegend']);
 
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,
@@ -161,10 +165,13 @@ boxes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         return Plotly.Lib.coerce(layoutIn, layoutOut, boxes.layoutAttributes, attr, dflt);
     }
 
-    var hasBoxes = fullData.some(function(trace) {
-        return Plotly.Plots.isBox(trace.type);
-    });
-
+    var hasBoxes;
+    for(var i = 0; i < fullData.length; i++) {
+        if(Plotly.Plots.traceIs(fullData[i], 'box')) {
+            hasBoxes = true;
+            break;
+        }
+    }
     if(!hasBoxes) return;
 
     coerce('boxmode');
@@ -212,7 +219,7 @@ boxes.calc = function(gd, trace) {
             if (posLetter+'0' in trace) pos0 = trace[posLetter+'0'];
             else if ('name' in trace && (
                         posAxis.type==='category' ||
-                        ($.isNumeric(trace.name) &&
+                        (isNumeric(trace.name) &&
                             ['linear','log'].indexOf(posAxis.type)!==-1) ||
                         (Plotly.Lib.isDateTime(trace.name) &&
                          posAxis.type==='date')
@@ -252,7 +259,7 @@ boxes.calc = function(gd, trace) {
         // bin the values
         for (i = 0; i < valLength; ++i) {
             v = val[i];
-            if(!$.isNumeric(v)) continue;
+            if(!isNumeric(v)) continue;
             n = Plotly.Lib.findBin(pos[i], bins);
             if(n>=0 && n<valLength) valBinned[n].push(v);
         }
@@ -331,7 +338,7 @@ boxes.setPositions = function(gd, plotinfo) {
             t = cd[0].t;
             trace = cd[0].trace;
 
-            if (trace.visible === true && Plotly.Plots.isBox(trace.type) &&
+            if (trace.visible === true && Plotly.Plots.traceIs(trace, 'box') &&
                     !t.emptybox &&
                     trace.orientation === orientation &&
                     trace.xaxis === xa._id &&

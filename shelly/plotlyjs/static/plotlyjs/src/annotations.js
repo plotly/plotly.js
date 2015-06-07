@@ -4,7 +4,8 @@
 /* global d3:false */
 
 var annotations = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
 // centerx is a center of scaling tuned for maximum scalability of
 // the arrowhead ie throughout mag=0.3..3 the head is joined smoothly
@@ -254,7 +255,7 @@ annotations.draw = function(gd, index, opt, value) {
         fullLayout = gd._fullLayout,
         i;
 
-    if(!$.isNumeric(index) || index===-1) {
+    if(!isNumeric(index) || index===-1) {
         // no index provided - we're operating on ALL annotations
         if(!index && Array.isArray(value)) {
             // a whole annotation array is passed in
@@ -829,7 +830,7 @@ annotations.draw = function(gd, index, opt, value) {
     }
 
     if(gd._context.editable) {
-        anntext.call(Plotly.util.makeEditable, annbg)
+        anntext.call(Plotly.util.makeEditable, ann)
             .call(textLayout)
             .on('edit', function(_text){
                 options.text = _text;
@@ -859,7 +860,7 @@ annotations.draw = function(gd, index, opt, value) {
 // ends is 'start', 'end' (default), 'start+end'
 // mag is magnification vs. default (default 1)
 annotations.arrowhead = function(el3, style, ends, mag) {
-    if(!$.isNumeric(mag)) mag = 1;
+    if(!isNumeric(mag)) mag = 1;
     var el = el3.node(),
         headStyle = annotations.ARROWPATHS[style||0];
     if(!headStyle) return;

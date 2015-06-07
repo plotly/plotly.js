@@ -4,10 +4,19 @@
 /* global d3:false */
 
 var bars = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
-// mark this module as allowing error bars
-bars.errorBarsOK = true;
+Plotly.Plots.register(bars, 'bar',
+    ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend']);
+/**
+ * histogram errorBarsOK is debatable, but it's put in for backward compat.
+ * there are use cases for it - sqrt for a simple histogram works right now,
+ * constant and % work but they're not so meaningful. I guess it could be cool
+ * to allow quadrature combination of errors in summed histograms...
+ */
+Plotly.Plots.register(bars, 'histogram',
+    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend']);
 
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,
@@ -32,18 +41,24 @@ bars.attributes = {
         cauto: scatterMarkerAttrs.cauto,
         cmax: scatterMarkerAttrs.cmax,
         cmin: scatterMarkerAttrs.cmin,
+        autocolorscale: scatterMarkerAttrs.autocolorscale,
+        reversescale: scatterMarkerAttrs.reversescale,
+        showscale: scatterMarkerAttrs.showscale,
         line: {
             color: scatterMarkerLineAttrs.color,
             colorscale: scatterMarkerLineAttrs.colorscale,
             cauto: scatterMarkerLineAttrs.cauto,
             cmax: scatterMarkerLineAttrs.cmax,
             cmin: scatterMarkerLineAttrs.cmin,
-            width: scatterMarkerLineAttrs.width
+            width: scatterMarkerLineAttrs.width,
+            autocolorscale: scatterMarkerLineAttrs.autocolorscale,
+            reversescale: scatterMarkerLineAttrs.reversescale
         }
     },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
-        'error_x': 'ErrorBars'
+        'error_x': 'ErrorBars',
+        'marker.colorbar': 'Colorbar'
     },
     _composedModules: {  // composed module coupling
         'histogram': 'Histogram'
@@ -71,10 +86,10 @@ bars.layoutAttributes = {
         min: 0,
         max: 1,
         dflt: 0
-    },
+    }
 };
 
-bars.supplyDefaults = function(traceIn, traceOut, defaultColor) {
+bars.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, bars.attributes, attr, dflt);
     }
@@ -95,8 +110,20 @@ bars.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
     }
 
-    Plotly.Scatter.colorScalableDefaults('marker.', coerce, defaultColor);
-    Plotly.Scatter.colorScalableDefaults('marker.line.', coerce, Plotly.Color.defaultLine);
+    coerce('marker.color', defaultColor);
+    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker')) {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
+        );
+    }
+
+    coerce('marker.line.color', Plotly.Color.defaultLine);
+    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker.line')) {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'}
+        );
+    }
+
     coerce('marker.line.width', 0);
     coerce('text');
 
@@ -119,7 +146,7 @@ bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         subploti;
     for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
-        if(Plotly.Plots.isBar(trace.type)) hasBars = true;
+        if(Plotly.Plots.traceIs(trace, 'bar')) hasBars = true;
         else continue;
 
         // if we have at least 2 grouped bar traces on the same subplot,
@@ -146,6 +173,8 @@ bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     coerce('bargroupgap');
 };
 
+bars.colorbar = Plotly.Scatter.colorbar;
+
 bars.calc = function(gd, trace) {
     if(trace.type==='histogram') return Plotly.Histogram.calc(gd,trace);
 
@@ -170,9 +199,17 @@ bars.calc = function(gd, trace) {
     var serieslen = Math.min(pos.length, size.length),
         cd = [];
     for(i=0; i<serieslen; i++) {
-        if(($.isNumeric(pos[i]) && $.isNumeric(size[i]))) {
+        if((isNumeric(pos[i]) && isNumeric(size[i]))) {
             cd.push({p: pos[i], s: size[i], b: 0});
         }
+    }
+
+    // auto-z and autocolorscale if applicable
+    if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
+        Plotly.Colorscale.calc(trace, trace.marker.color, 'marker', 'c');
+    }
+    if(Plotly.Colorscale.hasColorscale(trace, 'marker.line')) {
+        Plotly.Colorscale.calc(trace, trace.marker.line.color, 'marker.line', 'c');
     }
 
     return cd;
@@ -197,7 +234,7 @@ bars.setPositions = function(gd, plotinfo) {
 
         gd._fullData.forEach(function(trace,i) {
             if(trace.visible === true &&
-                    Plotly.Plots.isBar(trace.type) &&
+                    Plotly.Plots.traceIs(trace, 'bar') &&
                     trace.orientation === dir &&
                     trace.xaxis === xa._id &&
                     trace.yaxis === ya._id) {
@@ -307,7 +344,7 @@ bars.setPositions = function(gd, plotinfo) {
                     // store the bar top in each calcdata item
                     if(stack) {
                         ti[j][sLetter] = barEnd;
-                        if(!norm && $.isNumeric(sa.c2l(barEnd))) {
+                        if(!norm && isNumeric(sa.c2l(barEnd))) {
                             sMax = Math.max(sMax,barEnd);
                             sMin = Math.min(sMin,barEnd);
                         }
@@ -330,7 +367,7 @@ bars.setPositions = function(gd, plotinfo) {
                         barEnd = ti[j].b + ti[j].s;
                         ti[j][sLetter] = barEnd;
 
-                        if($.isNumeric(sa.c2l(barEnd))) {
+                        if(isNumeric(sa.c2l(barEnd))) {
                             if(barEnd < sMin - tiny) {
                                 padded = true;
                                 sMin = barEnd;
@@ -414,8 +451,8 @@ bars.plot = function(gd, plotinfo, cdbar) {
                         y0 = ya.c2p(di.b, true);
                     }
 
-                    if(!$.isNumeric(x0) || !$.isNumeric(x1) ||
-                            !$.isNumeric(y0) || !$.isNumeric(y1) ||
+                    if(!isNumeric(x0) || !isNumeric(x1) ||
+                            !isNumeric(y0) || !isNumeric(y1) ||
                             x0===x1 || y0===y1) {
                         d3.select(this).remove();
                         return;

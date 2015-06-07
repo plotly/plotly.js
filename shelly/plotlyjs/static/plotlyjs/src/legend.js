@@ -56,7 +56,7 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
     fullData.forEach(function(trace) {
         if(legendGetsTrace(trace)) visibleTraces++;
 
-        if((Plotly.Plots.isBar(trace.type) && layoutOut.barmode==='stack') ||
+        if((Plotly.Plots.traceIs(trace, 'bar') && layoutOut.barmode==='stack') ||
                 ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
             defaultOrder = 'reversed';
         }
@@ -91,9 +91,8 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
 
 legend.lines = function(d){
     var trace = d[0].trace,
-        isScatter = Plotly.Plots.isScatterAny(trace.type) && trace.visible,
-        showFill = isScatter && trace.fill && trace.fill!=='none',
-        showLine = isScatter && Plotly.Scatter.hasLines(trace);
+        showFill = trace.visible && trace.fill && trace.fill!=='none',
+        showLine = Plotly.Scatter.hasLines(trace);
 
     var fill = d3.select(this).select('.legendfill').selectAll('path')
         .data(showFill ? [d] : []);
@@ -114,19 +113,18 @@ legend.points = function(d){
     var d0 = d[0],
         trace = d0.trace,
         marker = trace.marker||{},
-        isScatter = Plotly.Plots.isScatterAny(trace.type) && trace.visible,
-        showMarkers = isScatter && Plotly.Scatter.hasMarkers(trace),
-        showText = isScatter && Plotly.Scatter.hasText(trace),
-        showLines = isScatter && Plotly.Scatter.hasLines(trace);
+        showMarkers = Plotly.Scatter.hasMarkers(trace),
+        showText = Plotly.Scatter.hasText(trace),
+        showLines = Plotly.Scatter.hasLines(trace);
 
     var dMod, tMod;
-    if(isScatter) {
+    if(showMarkers || showText || showLines) {
         // constrain text, markers, etc so they'll fit on the legend
         var dEdit = {
             tx: 'Aa',
             mo: Math.max(0.2, (d0.mo+1 || marker.opacity+1 || 2) - 1)
         };
-        if(d0.ms) dEdit.ms = 10; // bubble charts:
+        if(d0.ms+1) dEdit.ms = 10; // bubble charts:
         if(d0.mlw>5) dEdit.mlw = 5;
         dMod = [Plotly.Lib.minExtend(d0, dEdit)];
 
@@ -170,7 +168,7 @@ legend.bars = function(d){
         markerLine = marker.line||{},
         barpath = d3.select(this).select('g.legendpoints')
             .selectAll('path.legendbar')
-            .data(Plotly.Plots.isBar(trace.type) ? [d] : []);
+            .data(Plotly.Plots.traceIs(trace, 'bar') ? [d] : []);
     barpath.enter().append('path').classed('legendbar',true)
         .attr('d','M6,6H-6V-6H6Z')
         .attr('transform','translate(20,0)');
@@ -190,7 +188,7 @@ legend.boxes = function(d){
     var trace = d[0].trace,
         pts = d3.select(this).select('g.legendpoints')
             .selectAll('path.legendbox')
-            .data(Plotly.Plots.isBox(trace.type) && trace.visible ? [d] : []);
+            .data(Plotly.Plots.traceIs(trace, 'box') && trace.visible ? [d] : []);
     pts.enter().append('path').classed('legendbox', true)
         // if we want the median bar, prepend M6,0H-6
         .attr('d', 'M6,6H-6V-6H6Z')

@@ -1,8 +1,12 @@
+'use strict';
+
 var Plotly = require('../../plotly');
 
 var Surface = {};
 
 module.exports = Surface;
+
+Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity']);
 
 var  heatmapAttrs = Plotly.Heatmap.attributes,
     contourAttributes =  {
@@ -27,6 +31,10 @@ var  heatmapAttrs = Plotly.Heatmap.attributes,
         color: {
             type: 'color',
             dflt: '#000'
+        },
+        usecolormap: {
+            type: 'boolean',
+            dflt: false
         },
         width: {
             type: 'number',
@@ -62,6 +70,10 @@ Surface.attributes = {
         x: contourAttributes,
         y: contourAttributes,
         z: contourAttributes
+    },
+    hidesurface: {
+      type: 'boolean',
+      dflt: false
     },
     lighting: {
         ambient: {
@@ -140,10 +152,11 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     coerce('lighting.specular');
     coerce('lighting.roughness');
     coerce('lighting.fresnel');
+    coerce('hidesurface');
 
     coerce('colorscale');
 
-    var dims = ['x','y','z'];
+    var dims = ['x', 'y', 'z'];
     for (i = 0; i < 3; ++i) {
 
         var contourDim = 'contours.' + dims[i];
@@ -159,6 +172,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         if (show) {
             coerce(contourDim + '.color');
             coerce(contourDim + '.width');
+            coerce(contourDim + '.usecolormap');
         }
 
         if (highlight) {
@@ -177,7 +191,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     }
 
     if(showScale) {
-        Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        Plotly.Colorbar.supplyDefaults(traceIn, traceOut, layout);
     }
 
 
