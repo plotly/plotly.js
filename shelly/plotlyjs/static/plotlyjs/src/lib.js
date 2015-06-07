@@ -1401,7 +1401,7 @@ var coerceIt = {
         else propOut.set(dflt);
     },
     colorscale: function(v, propOut, dflt) {
-        propOut.set(Plotly.Color.getScale(v, dflt));
+        propOut.set(Plotly.Colorscale.getScale(v, dflt));
     },
     font: function(v, propOut, dflt) {
         if(!v) v = {};

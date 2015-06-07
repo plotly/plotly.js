@@ -142,7 +142,8 @@ function plotButtons(plots) {
 
 var plots = {};
 
-plots['log-axis'] = require('./testplots/marker-color.json');
+plots['marker-color'] = require('./testplots/marker-color.json');
+plots['log-axis-big'] = require('./testplots/log-axis-big.json');
 plots['delaunay'] = require('./testplots/delaunay.json');
 plots['log-axis'] = require('./testplots/log-axis.json');
 plots['multi-scene'] = require('./testplots/multi-scene.json');
@@ -161,5 +162,7 @@ plots['triangle-mesh3d'] = require('./testplots/triangle.json');
 plots['snowden'] = require('./testplots/snowden.json');
 plots['bunny'] = require('./testplots/bunny.json');
 plots['ribbons'] = require('./testplots/ribbons.json');
+plots['date-time'] = require('./testplots/scatter-date.json');
+plots['cufflinks'] = require('./testplots/cufflinks.json');
 
 plotButtons(plots);

@@ -70,7 +70,7 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
     for (i = 0; i < fullData.length; ++i) {
         var d = fullData[i];
-        if (Plotly.Plots.isGL3D(d.type)) {
+        if (Plotly.Plots.traceIs(d, 'gl3d')) {
             if (scenes.indexOf(d.scene) === -1) {
                 scenes.push(d.scene);
             }

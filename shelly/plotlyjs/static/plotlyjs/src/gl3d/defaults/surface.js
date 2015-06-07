@@ -6,6 +6,8 @@ var Surface = {};
 
 module.exports = Surface;
 
+Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity']);
+
 var  heatmapAttrs = Plotly.Heatmap.attributes,
     contourAttributes =  {
         show: {
@@ -189,7 +191,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     }
 
     if(showScale) {
-        Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        Plotly.Colorbar.supplyDefaults(traceIn, traceOut, layout);
     }
 
 
