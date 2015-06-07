@@ -18,6 +18,14 @@ var proto = Mesh3DTrace.prototype;
 
 proto.handlePick = function(selection) {
   if(selection.object === this.mesh) {
+
+    var selectIndex = selection.data.index;
+    selection.traceCoordinate = [
+      this.data.x[selectIndex],
+      this.data.y[selectIndex],
+      this.data.z[selectIndex]
+    ];
+
     return true;
   }
 };
@@ -51,16 +59,18 @@ proto.update = function(data) {
     var scene = this.scene,
         layout = scene.fullSceneLayout;
 
+    this.data = data;
+
     //Unpack position data
-    function toDataCoords(axis, coord) {
+    function toDataCoords(axis, coord, scale, offset) {
       return coord.map(function(x) {
-        return axis.d2l(x);
+        return axis.d2l(x) * scale - offset;
       });
     }
     var positions = zip3(
-      toDataCoords(layout.xaxis, data.x),
-      toDataCoords(layout.yaxis, data.y),
-      toDataCoords(layout.zaxis, data.z));
+      toDataCoords(layout.xaxis, data.x, scene.dataScale[0], scene.dataCenter[0]),
+      toDataCoords(layout.yaxis, data.y, scene.dataScale[1], scene.dataCenter[1]),
+      toDataCoords(layout.zaxis, data.z, scene.dataScale[2], scene.dataCenter[2]));
 
     //Unpack cell data
     var cells = zip3(data.i, data.j, data.k);

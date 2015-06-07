@@ -7,10 +7,12 @@
 // ---external global dependencies
 /* global Promise:false, d3:false */
 
-var plots = module.exports = {},
-    Plotly = require('./plotly'),
+
+var Plotly = require('./plotly'),
+    m4FromQuat = require('gl-mat4/fromQuat'),
     isNumeric = require('./isnumeric');
 
+var plots = module.exports = {};
 // Most of the generic plotting functions get put into Plotly.Plots,
 // but some - the ones we want 3rd-party developers to use - go directly
 // into Plotly. These are:
@@ -18,86 +20,73 @@ var plots = module.exports = {},
 //   restyle
 //   relayout
 
-plots.isScatter = function(type) {
-    return !type || type==='scatter';
-};
+// allTypes and getModule are used for the graph_reference app as well as plotting
+var modules = plots.modules = {},
+    allTypes = plots.allTypes = [],
+    allCategories = plots.allCategories = {};
 
-var BARTYPES = ['bar','histogram'];
-plots.isBar = function(type) {
-    return BARTYPES.indexOf(type)!==-1;
-};
-
-plots.isBox = function(type) {
-    return type === 'box';
-};
-
-var HEATMAPTYPES = ['heatmap','histogram2d','contour','histogram2dcontour'];
-plots.isHeatmap = function(type) {
-    return HEATMAPTYPES.indexOf(type) !== -1;
-};
-
-var CONTOURTYPES = ['contour','histogram2dcontour'];
-plots.isContour = function(type) {
-    return CONTOURTYPES.indexOf(type) !== -1;
-};
-
-var HIST2DTYPES = ['histogram2d','histogram2dcontour'];
-plots.isHist2D = function(type) {
-    return HIST2DTYPES.indexOf(type) !== -1;
-};
-
-var CARTESIANTYPES = ['scatter', 'box'].concat(BARTYPES, HEATMAPTYPES);
-plots.isCartesian = function(type) {
-    return CARTESIANTYPES.indexOf(type) !== -1;
-};
-
-var GL3DTYPES = ['scatter3d', 'surface', 'mesh3d'];
-plots.isGL3D = function(type) {
-    return GL3DTYPES.indexOf(type) !== -1;
-};
-
-plots.isScatter3D = function(type) {
-    return type === 'scatter3d';
-};
-
-plots.isScatterAny = function(type) {
-    return plots.isScatter(type) || plots.isScatter3D(type);
-};
-
-plots.isSurface = function(type) {
-    return type === 'surface';
-};
-
-plots.isMesh3D = function(type) {
-    return type === 'mesh3d';
-};
-
-// ALLTYPES and getModule are used for the graph_reference app
-
-plots.ALLTYPES = CARTESIANTYPES.concat(GL3DTYPES);
-
-plots.getModule = function getModule(trace) {
-    var type = trace.type;
-
-    if('r' in trace) {
-        console.log('Oops, tried to put a polar trace of type ' +
-            type + ' on an incompatible graph of cartesian ' +
-            'data. Ignoring this dataset.'
-        );
-        return;
+/**
+ * plots.register: register a module as the handler for a trace type
+ *
+ * _module: (object) the module that will handle plotting this trace type
+ * thisType: (string)
+ * categoriesIn: (array of strings) all the categories this type is in,
+ *     tested by calls: Plotly.Plots.traceIs(trace, oneCategory)
+ */
+plots.register = function(_module, thisType, categoriesIn) {
+    if(modules[thisType]) {
+        throw new Error('type ' + thisType + ' already registered');
     }
-    if (plots.isScatter(type)) return Plotly.Scatter;
-    if (plots.isBar(type)) return Plotly.Bars;
-    if (plots.isContour(type)) return Plotly.Contour;
-    if (plots.isHeatmap(type)) return Plotly.Heatmap;
-    if (plots.isScatter3D(type)) return Plotly.Scatter3D;
-    if (plots.isMesh3D(type)) return Plotly.Mesh3D;
-    if (plots.isSurface(type)) return Plotly.Surface;
-    if (plots.isBox(type)) return Plotly.Boxes;
 
-    console.log('Unrecognized plot type ' + type +
-        '. Ignoring this dataset.'
-    );
+    var categoryObj = {};
+    for(var i = 0; i < categoriesIn.length; i++) {
+        categoryObj[categoriesIn[i]] = true;
+        allCategories[categoriesIn[i]] = true;
+    }
+
+    modules[thisType] = {
+        module: _module,
+        categories: categoryObj
+    };
+
+    allTypes.push(thisType);
+};
+
+function getModuleObj(traceType) {
+    if(typeof traceType === 'object') traceType = traceType.type;
+    return modules[traceType || 'scatter'];
+}
+
+plots.getModule = function(trace) {
+    if(trace.r !== undefined) {
+        console.log('Oops, tried to put a polar trace ' +
+            'on an incompatible graph of cartesian ' +
+            'data. Ignoring this dataset.', trace
+        );
+        return false;
+    }
+
+    var _module = getModuleObj(trace);
+    if(!_module) return false;
+    return _module.module;
+};
+
+
+/**
+ * plots.traceIs: is this trace type in this category?
+ *
+ * traceType: a trace (object) or trace type (string)
+ * category: a category (string)
+ */
+plots.traceIs = function traceIs(traceType, category) {
+    if(traceType.type === 'various') return false;  // FIXME
+
+    var _module = getModuleObj(traceType);
+
+    if(!_module) throw new Error('unrecognized trace type');
+    if(!allCategories[category]) console.warn('unrecognized category ' + category);
+
+    return !!_module.categories[category];
 };
 
 plots.getSubplotIds = function getSubplotIds(layout, type) {
@@ -235,7 +224,8 @@ plots.addLinks = function(gd) {
         .style({
             'font-family':'"Open Sans",Arial,sans-serif',
             'font-size':'12px',
-            'fill': Plotly.Color.defaultLine
+            'fill': Plotly.Color.defaultLine,
+            'pointer-events': 'all'
         })
         .each(function(){
             var links = d3.select(this);
@@ -614,9 +604,9 @@ Plotly.plot = function(gd, data, layout, config) {
             // so we don't need this - should sometimes be a big speedup
             subplotInfo.plot.selectAll('g.trace').remove();
 
-            for (j = 0; j < modules.length; j++) {
+            for(j = 0; j < modules.length; j++) {
                 module = modules[j];
-                if (!module.plot) return;
+                if(!module.plot) return;
 
                 // plot all traces of this type on this subplot at once
                 cdModule = getCdModule(cdSubplot, module);
@@ -624,7 +614,9 @@ Plotly.plot = function(gd, data, layout, config) {
                 Plotly.Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
 
                 // collect the traces that may have error bars
-                if (module.errorBarsOK) cdError = cdError.concat(cdModule);
+                if(cdModule[0] && cdModule[0][0].trace && plots.traceIs(cdModule[0][0].trace, 'errorBarsOK')) {
+                    cdError = cdError.concat(cdModule);
+                }
             }
 
             // finally do all error bars at once
@@ -823,7 +815,7 @@ function cleanLayout(layout) {
     // make a few changes to the layout right away
     // before it gets used for anything
     // backward compatibility and cleanup of nonstandard options
-    var i;
+    var i, j;
 
     if(!layout) layout = {};
 
@@ -861,6 +853,14 @@ function cleanLayout(layout) {
 
         // prune empty domain arrays made before the new nestedProperty
         if(emptyContainer(ax, 'domain')) delete ax.domain;
+
+        // autotick -> tickmode
+        if(ax.autotick !== undefined) {
+            if(ax.tickmode === undefined) {
+                ax.tickmode = ax.autotick ? 'auto' : 'linear';
+            }
+            delete ax.autotick;
+        }
     }
 
     if(layout.annotations !== undefined && !Array.isArray(layout.annotations)) {
@@ -896,23 +896,6 @@ function cleanLayout(layout) {
         cleanAxRef(shape, 'yref');
     }
 
-    // cannot have scene1, numbering goes scene, scene2, scene3...
-    if(layout.scene1) {
-        if(!layout.scene) layout.scene = layout.scene1;
-        delete layout.scene1;
-    }
-
-    var sceneIds = plots.getSubplotIds(layout, 'gl3d');
-    for(i = 0; i < sceneIds.length; i++) {
-        var sceneLayout = layout[sceneIds[i]];
-        // fix for saved float32-arrays
-        var camp = sceneLayout.cameraposition;
-        if (Array.isArray(camp) && $.isPlainObject(camp[0])) {
-            camp[0] = [camp[0][0], camp[0][1], camp[0][2], camp[0][3]];
-            camp[1] = [camp[1][0], camp[1][1], camp[1][2]];
-        }
-    }
-
     var legend = layout.legend;
     if(legend) {
         // check for old-style legend positioning (x or y is +/- 100)
@@ -932,6 +915,48 @@ function cleanLayout(layout) {
         else if(legend.y < -2) {
             legend.y = -0.02;
             legend.yanchor = 'top';
+        }
+    }
+
+    /*
+     * Moved from rotate -> orbit for dragmode
+     */
+    if (layout.dragmode === 'rotate') layout.dragmode = 'orbit';
+
+    // cannot have scene1, numbering goes scene, scene2, scene3...
+    if(layout.scene1) {
+        if(!layout.scene) layout.scene = layout.scene1;
+        delete layout.scene1;
+    }
+
+    /*
+     * Clean up Scene layouts
+     */
+    var sceneIds = plots.getSubplotIds(layout, 'gl3d');
+    var scene, cameraposition, rotation,
+        radius, center, mat, eye;
+    for (i = 0; i < sceneIds.length; i++) {
+        scene = layout[sceneIds[i]];
+
+        /*
+         * Clean old Camera coords
+         */
+        cameraposition = scene.cameraposition;
+        if (Array.isArray(cameraposition) && cameraposition[0].length === 4) {
+            rotation = cameraposition[0];
+            center   = cameraposition[1];
+            radius   = cameraposition[2];
+            mat = m4FromQuat([], rotation);
+            eye = [];
+            for (j = 0; j < 3; ++j) {
+                eye[j] = center[i] + radius * mat[2 + 4 * j];
+            }
+            scene.camera = {
+                eye: {x: eye[0], y: eye[1], z: eye[2]},
+                center: {x: center[0], y: center[1], z: center[2]},
+                up: {x: mat[1], y: mat[5], z: mat[9]}
+            };
+            delete scene.cameraposition;
         }
     }
 
@@ -993,7 +1018,7 @@ function cleanData(data, existingData) {
         if(trace.error_y && 'opacity' in trace.error_y) {
             var dc = Plotly.Color.defaults,
                 yeColor = trace.error_y.color ||
-                (plots.isBar(trace.type) ? Plotly.Color.defaultLine : dc[tracei % dc.length]);
+                (plots.traceIs(trace, 'bar') ? Plotly.Color.defaultLine : dc[tracei % dc.length]);
             trace.error_y.color = Plotly.Color.addOpacity(
                 Plotly.Color.rgb(yeColor),
                 Plotly.Color.opacity(yeColor) * trace.error_y.opacity);
@@ -1003,7 +1028,7 @@ function cleanData(data, existingData) {
         // convert bardir to orientation, and put the data into
         // the axes it's eventually going to be used with
         if('bardir' in trace) {
-            if(trace.bardir==='h' && (plots.isBar(trace.type) ||
+            if(trace.bardir==='h' && (plots.traceIs(trace, 'bar') ||
                      trace.type.substr(0,9)==='histogram')) {
                 trace.orientation = 'h';
                 swapXYData(trace);
@@ -1146,7 +1171,7 @@ Plotly.newPlot = function (gd, data, layout, config) {
 plots.attributes = {
     type: {
         type: 'enumerated',
-        values: plots.ALLTYPES,
+        values: allTypes,
         dflt: 'scatter'
     },
     visible: {
@@ -1223,12 +1248,10 @@ plots.supplyDefaults = function(gd) {
         newFullData.push(fullTrace);
 
         // DETECT 3D, Cartesian, and Polar
-        if (plots.isGL3D(fullTrace.type)) newFullLayout._hasGL3D = true;
+        if (plots.traceIs(fullTrace, 'cartesian')) newFullLayout._hasCartesian = true;
+        else if (plots.traceIs(fullTrace, 'gl3d')) newFullLayout._hasGL3D = true;
+        else if ('r' in fullTrace) newFullLayout._hasPolar = true;
 
-        if (plots.isCartesian(fullTrace.type)) {
-            if ('r' in fullTrace) newFullLayout._hasPolar = true;
-            else newFullLayout._hasCartesian = true;
-        }
 
         module = fullTrace._module;
         if (module && modules.indexOf(module)===-1) modules.push(module);
@@ -1343,17 +1366,17 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
     // module-independent attributes
     traceOut.index = i;
-    var type = coerce('type'),
-        visible = coerce('visible'),
+    var visible = coerce('visible'),
         scene,
         module;
 
+    coerce('type');
     coerce('uid');
 
     // this is necessary otherwise we lose references to scene objects when
     // the traces of a scene are invisible. Also we handle visible/unvisible
     // differently for 3D cases.
-    if (plots.isGL3D(type)) scene = coerce('scene');
+    if (plots.traceIs(traceOut, 'gl3d')) scene = coerce('scene');
 
     // module-specific attributes --- note: we need to send a trace into
     // the 3D modules to have it removed from the webgl context.
@@ -1369,16 +1392,14 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
         coerce('hoverinfo');
 
-        if(!plots.isScatter3D(type)) coerce('opacity');
+        if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
-        if(plots.isCartesian(type)) {
+        if(plots.traceIs(traceOut, 'cartesian')) {
             coerce('xaxis');
             coerce('yaxis');
         }
 
-        if(!plots.isHeatmap(type) && !plots.isSurface(type)) {
-            coerce('showlegend');
-        }
+        if(plots.traceIs(traceOut, 'showLegend')) coerce('showlegend');
     }
 
     // NOTE: I didn't include fit info at all... for now I think it can stay
@@ -1626,13 +1647,6 @@ function doCalcdata(gd) {
         // t is the holder for trace-wide properties
         if (!cd[0].t) cd[0].t = {};
         cd[0].trace = trace;
-
-        // this is a kludge to put the array attributes into
-        // calcdata the way Scatter.plot does, so that legends and
-        // popovers know what to do with them.
-        if(plots.isScatter3D(trace.type)) {
-            Plotly.Scatter.arraysToCalcdata(cd);
-        }
 
         Plotly.Lib.markTime('done with calcdata for '+i);
         calcdata[i] = cd;
@@ -2306,8 +2320,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'histfunc','histnorm','text',
         'x', 'y', 'z',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
-        'line.width','showscale','zauto','connectgaps',
-        'autocolorscale',
+        'line.width', 'connectgaps',
+        'showscale', 'marker.showscale',
+        'zauto', 'marker.cauto',
+        'autocolorscale', 'marker.autocolorscale',
+        'colorscale', 'marker.colorscale',
+        'reversescale', 'marker.reversescale',
         'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
         'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
         'autocontour','ncontours','contours.coloring',
@@ -2319,10 +2337,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
         'swapxy','swapxyaxes','orientationaxes'
     ];
-    var hasBoxes = traces.some(function(v) {
-        return Plotly.Plots.isBox(gd._fullData[v].type);
-    });
-    if(hasBoxes) recalcAttrs.push('name');
+    for(i = 0; i < traces.length; i++) {
+        if(plots.traceIs(gd._fullData[traces[i]], 'box')) {
+            recalcAttrs.push('name');
+            break;
+        }
+    }
 
     // autorangeAttrs attributes need a full redo of calcdata
     // only if an axis is autoranged,
@@ -2335,8 +2355,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // replotAttrs attributes need a replot (because different
     // objects need to be made) but not a recalc
     var replotAttrs = [
-        'zmin','zmax','zauto','mincolor','maxcolor',
-        'colorscale','reversescale','zsmooth',
+        'zmin', 'zmax', 'zauto', 'zsmooth',
+        'marker.cmin', 'marker.cmax', 'marker.cauto',
         'contours.start','contours.end','contours.size',
         'contours.showlines',
         'line.smoothing','line.shape',
@@ -2451,6 +2471,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             else if(ai === 'autocolorscale') {
                 doextra(cont, 'colorscale', undefined, i);
             }
+            else if(ai === 'marker.colorscale') {
+                doextra(cont.marker, 'autocolorscale', false, i);
+            }
+            else if(ai === 'marker.autocolorscale') {
+                doextra(cont.marker, 'colorscale', undefined, i);
+            }
             else if(ai==='zauto') {
                 doextra(cont,zscl,undefined,i);
             }
@@ -2506,6 +2532,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                         (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b);
                 doextra(cont,'colorbar.len', contFull.colorbar.len *
                     (vi==='fraction' ? 1/lennorm : lennorm), i);
+            }
+            else if(ai === 'colorbar.tick0' || ai === 'colorbar.dtick') {
+                doextra(cont, 'colorbar.tickmode', 'linear');
+            }
+            else if(ai === 'colorbar.tickmode') {
+                doextra(cont, ['colorbar.tick0', 'colorbar.dtick'], undefined);
             }
 
             // save the old value
@@ -2563,7 +2595,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                 vi!==false) {
             dostyle = true;
         }
-        if(['colorbar','line'].indexOf(param.parts[0])!==-1) {
+        if(['colorbar', 'line'].indexOf(param.parts[0])!==-1 ||
+            param.parts[0]==='marker' && param.parts[1]==='colorbar') {
             docolorbars = true;
         }
 
@@ -2642,10 +2675,10 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         if(docolorbars) {
             seq.push(function doColorBars(){
                 gd.calcdata.forEach(function(cd) {
-                    if((cd[0].t||{}).cb) {
+                    if((cd[0].t || {}).cb) {
                         var trace = cd[0].trace,
                             cb = cd[0].t.cb;
-                        if(plots.isContour(trace.type)) {
+                        if(plots.traceIs(trace, 'contour')) {
                               cb.line({
                                 width: trace.contours.showlines!==false ?
                                     trace.line.width : 0,
@@ -2654,7 +2687,10 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                                     cb._opts.line.color : trace.line.color
                             });
                         }
-                        cb.options(trace.colorbar)();
+                        if(plots.traceIs(trace, 'markerColorscale')) {
+                            cb.options(trace.marker.colorbar)();
+                        }
+                        else cb.options(trace.colorbar)();
                     }
                 });
                 return plots.previousPromises(gd);
@@ -2719,6 +2755,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
         doplot = false,
         docalc = false,
         domodebar = false,
+        doSceneDragmode = false,
         newkey, axes, keys, xyref, scene, axisAttr;
 
     if(typeof astr === 'string') aobj[astr] = val;
@@ -2801,11 +2838,11 @@ Plotly.relayout = function relayout (gd, astr, val) {
             parentIn = Plotly.Lib.nestedProperty(gd.layout, ptrunk).get(),
             parentFull = Plotly.Lib.nestedProperty(gd._fullLayout, ptrunk).get();
 
-        redoit[ai] = aobj[ai];
+        redoit[ai] = vi;
 
         // axis reverse is special - it is its own inverse
         // op and has no flag.
-        undoit[ai] = (pleaf === 'reverse') ? aobj[ai] : p.get();
+        undoit[ai] = (pleaf === 'reverse') ? vi : p.get();
 
         // check autosize or autorange vs size and range
         if(hw.indexOf(ai)!==-1) { doextra('autosize', false); }
@@ -2823,6 +2860,12 @@ Plotly.relayout = function relayout (gd, astr, val) {
         else if(pleafPlus.match(/^aspectmode$/)) {
             doextra([ptrunk + '.x', ptrunk + '.y', ptrunk + '.z'], undefined);
         }
+        else if(pleaf === 'tick0' || pleaf === 'dtick') {
+            doextra(ptrunk + '.tickmode', 'linear');
+        }
+        else if(pleaf === 'tickmode') {
+            doextra([ptrunk + '.tick0', ptrunk + '.dtick'], undefined);
+        }
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie are we toggling log)
         if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
@@ -2839,7 +2882,6 @@ Plotly.relayout = function relayout (gd, astr, val) {
                         doextra(ptrunk+'.autorange', true);
                     }
                     // if one is negative, set it 6 orders below the other.
-                    // TODO: find the smallest positive val?
                     if(r0 <= 0) r0 = r1/1e6;
                     else if(r1 <= 0) r1 = r0/1e6;
                     // now set the range values as appropriate
@@ -2936,16 +2978,19 @@ Plotly.relayout = function relayout (gd, astr, val) {
                     ai.match(/^(bar|box|font)/)) {
                 docalc = true;
             }
-            // hovermode and dragmode don't need any redrawing,
-            // since they just
-            // affect reaction to user input. everything else,
-            // assume full replot.
-            // height, width, autosize get dealt with below
+            /*
+             * hovermode and dragmode don't need any redrawing, since they just
+             * affect reaction to user input. everything else, assume full replot.
+             * height, width, autosize get dealt with below. Except for the case of
+             * of subplots - scenes - which require scene.handleDragmode to be called.
+             */
             else if(ai==='hovermode') domodebar = true;
+            else if (ai === 'dragmode') doSceneDragmode = true;
             else if(['hovermode','dragmode','height',
                     'width','autosize'].indexOf(ai)===-1) {
                 doplot = true;
             }
+
             p.set(vi);
         }
     }
@@ -2996,6 +3041,15 @@ Plotly.relayout = function relayout (gd, astr, val) {
         }
         // this is decoupled enough it doesn't need async regardless
         if(domodebar) Plotly.Fx.modeBar(gd);
+
+        var sceneIds;
+        if (doSceneDragmode) {
+            sceneIds = plots.getSubplotIds(gd._fullLayout, 'gl3d');
+            for (i = 0; i < sceneIds.length; i++) {
+                scene = gd._fullLayout[sceneIds[i]]._scene;
+                scene.handleDragmode(gd._fullLayout.dragmode);
+            }
+        }
     }
 
     var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
@@ -3636,7 +3690,7 @@ function lsInner(gd) {
 // titles - (re)draw titles on the axes and plot
 // title can be 'xtitle', 'ytitle', 'gtitle',
 //  or empty to draw all
-plots.titles = function(gd,title) {
+plots.titles = function(gd, title) {
     var options;
     if(typeof gd === 'string') gd = document.getElementById(gd);
     if(!title) {
@@ -3904,7 +3958,12 @@ plots.titles = function(gd,title) {
 
         el.call(Plotly.util.makeEditable)
             .on('edit', function(text){
-                if(colorbar) Plotly.restyle(gd,'colorbar.title',text,cbnum);
+                if(colorbar) {
+                    var trace = gd._fullData[cbnum];
+                    if(plots.traceIs(trace, 'markerColorscale')) {
+                        Plotly.restyle(gd, 'marker.colorbar.title', text, cbnum);
+                    } else Plotly.restyle(gd, 'colorbar.title', text, cbnum);
+                }
                 else Plotly.relayout(gd,prop,text);
             })
             .on('cancel', function(){

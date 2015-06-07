@@ -25,6 +25,7 @@ function LineWithMarkers(scene, uid) {
     this.axesBounds         = [[-Infinity,-Infinity,-Infinity],
                                [Infinity,Infinity,Infinity]];
     this.textLabels         = null;
+    this.data               = null;
 }
 
 var proto = LineWithMarkers.prototype;
@@ -45,6 +46,14 @@ proto.handlePick = function(selection) {
         if(this.textLabels && this.textLabels[selection.data.index]) {
             selection.textLabel = this.textLabels[selection.data.index];
         }
+
+        var selectIndex = selection.data.index;
+        selection.traceCoordinate = [
+          this.data.x[selectIndex],
+          this.data.y[selectIndex],
+          this.data.z[selectIndex]
+        ];
+
         return true;
     }
 };
@@ -191,6 +200,8 @@ function convertPlotlyOptions(scene, data) {
     var params, i,
         points = [],
         sceneLayout = scene.fullSceneLayout,
+        scaleFactor = scene.dataScale,
+        offset = scene.dataCenter,
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
@@ -205,9 +216,9 @@ function convertPlotlyOptions(scene, data) {
     //Convert points
     for (i = 0; i < len; i++) {
         // sanitize numbers and apply transforms based on axes.type
-        xc = xaxis.d2l(x[i]);
-        yc = yaxis.d2l(y[i]);
-        zc = zaxis.d2l(z[i]);
+        xc = xaxis.d2l(x[i]) * scaleFactor[0] - offset[0];
+        yc = yaxis.d2l(y[i]) * scaleFactor[1] - offset[1];
+        zc = zaxis.d2l(z[i]) * scaleFactor[2] - offset[2];
 
         points[i] = [xc, yc, zc];
     }
@@ -215,7 +226,8 @@ function convertPlotlyOptions(scene, data) {
     //Build object parameters
     params = {
         position: points,
-        mode:     data.mode
+        mode:     data.mode,
+        text:     data.text
     };
 
     if ('line' in data) {
@@ -234,7 +246,6 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if ('textposition' in data) {
-        params.text           = data.text;
         params.textOffset     = calculateTextOffset(data.textposition);
         params.textColor      = str2RgbaArray(data.textfont.color);
         params.textSize       = data.textfont.size;
@@ -285,6 +296,9 @@ proto.update = function(data) {
         errorOptions,
         textOptions,
         dashPattern = DASH_PATTERNS.solid;
+
+    //Save data
+    this.data = data;
 
     //Run data conversion
     var options = convertPlotlyOptions(this.scene, data);
@@ -366,19 +380,19 @@ proto.update = function(data) {
         project:      false
     };
 
+    this.textLabels = options.text;
+
     if(this.mode.indexOf('text') !== -1) {
         if (this.textMarkers) this.textMarkers.update(textOptions);
         else {
             this.textMarkers = createScatterPlot(textOptions);
-            this.scatterPlot.highlightScale = 1;
+            this.textMarkers.highlightScale = 1;
             this.scene.glplot.add(this.textMarkers);
         }
-        this.textLabels = options.text;
     } else if (this.textMarkers) {
         this.scene.glplot.remove(this.textMarkers);
         this.textMarkers.dispose();
         this.textMarkers = null;
-        this.textLabels = null;
     }
 
     errorOptions = {
