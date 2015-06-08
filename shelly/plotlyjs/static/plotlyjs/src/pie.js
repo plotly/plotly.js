@@ -21,26 +21,38 @@ pie.attributes = {
     color: {type: 'data_array'},
 
     // position and shape
-
-    // center/size is different from how we do axis domains...
-    // should we just copy that instead?
-    // domainx: [left,right] and domainy: [bottom, top] ?
-    center: [
-        {type: 'number', min: 0, max: 1, dflt: 0.5},
-        {type: 'number', min: 0, max: 1, dflt: 0.5}
-    ],
-    size: [
-        {type: 'number', min: 0, max: 1, dflt: 1},
-        {type: 'number', min: 0, max: 1, dflt: 1}
-    ],
-    aspect: {
-        // the ratio of r_y to r_y... then we make the biggest
-        // pie that fits in sizex, sizey (also accounting for
-        // depth, below)
+    domain: {
+        x: [
+            {type: 'number', min: 0, max: 1, dflt: 0},
+            {type: 'number', min: 0, max: 1, dflt: 1}
+        ],
+        y: [
+            {type: 'number', min: 0, max: 1, dflt: 0},
+            {type: 'number', min: 0, max: 1, dflt: 1}
+        ]
+    },
+    tilt: {
+        // degrees to tilt the pie back from straight on
         type: 'number',
-        min: 0.1,
+        min: 0,
+        max: 90,
+        dflt: 0
+    },
+    tiltaxis: {
+        // degrees away from straight up to tilt the pie
+        // only has an effect if tilt is nonzero
+        type: 'number',
+        min: -360,
+        max: 360,
+        dflt: 0
+    },
+    depth: {
+        // "3D" size, as a fraction of radius
+        // only has an effect if tilt is nonzero
+        type: 'number',
+        min: 0,
         max: 10,
-        dflt: 1
+        dflt: 0.5
     },
     hole: {
         // fraction of the radius to cut out and make a donut
@@ -49,24 +61,18 @@ pie.attributes = {
         max: 1,
         dflt: 0
     },
-    depth: {
-        // "3D" size, in the direction of the smaller radius,
-        // as a fraction of the larger radius
-        type: 'number',
-        min: 0,
-        max: 10,
-        dflt: 0
-    },
 
     // style
     line: {
         color: {
-            type: 'color'
+            type: 'color',
+            arrayOk: true
         },
         width: {
             type: 'number',
             min: 0,
-            dflt: 0
+            dflt: 0,
+            arrayOk: true
         }
     },
     shade: {
