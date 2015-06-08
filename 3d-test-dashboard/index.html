@@ -41,6 +41,25 @@
     });
   </script>
 
+  <script>
+    var Tabs = {
+        get: function() {
+            return document.getElementById('embedded-graph').children[0];
+        },
+        fresh: function() {
+            var anchor = document.getElementById('embedded-graph'),
+                plotDiv = Tabs.get();
+            anchor.removeChild(plotDiv);
+            plotDiv = document.createElement('div');
+            anchor.appendChild(plotDiv);
+        }
+    };
+
+    var Themes = {
+        reTileLock: null
+    };
+  </script>
+
 
 </body>
 </html>
