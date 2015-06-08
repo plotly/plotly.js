@@ -8,18 +8,19 @@ var Plotly = require('../../plotly'),
 
 var plotChoropleth = module.exports = {};
 
-plotChoropleth.calcGeoJSON = function(trace) {
+plotChoropleth.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
-        N = trace.loc.length,
-        fromTopojson = getFromTopojson(trace),
+        locations = trace.locations,
+        N = locations.length,
+        fromTopojson = getFromTopojson(trace, topojson),
         features = fromTopojson.features,
         ids = fromTopojson.ids,
-        markerLine = trace.marker.line;
+        markerLine = (trace.marker || {}).line || {};
          
     var indexOfId, feature;
 
     for (var i = 0; i < N; i++) {
-        indexOfId = ids.indexOf(trace.loc[i]);
+        indexOfId = ids.indexOf(locations[i]);
         if(indexOfId === -1) continue;
 
         feature = features[indexOfId];
@@ -36,17 +37,18 @@ plotChoropleth.calcGeoJSON = function(trace) {
 
 plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
     var framework = geo.framework,
+        topojson = geo.topojson,
         gChoropleth = framework.select('g.choroplethlayer'),
         gBaseLayer = framework.select('g.baselayer'),
         gBaseLayerOverChoropleth = framework.select('g.baselayeroverchoropleth'),
-        baselayersOverChoropleth = params.baselayersOverChoropleth,
+        baseLayersOverChoropleth = params.baseLayersOverChoropleth,
         layer;
 
     gChoropleth.append('g')
         .data(choroplethData)
         .attr('class', 'trace choropleth')
         .each(function(trace) {
-            var cdi = plotChoropleth.calcGeoJSON(trace);
+            var cdi = plotChoropleth.calcGeoJSON(trace, topojson);
 
             d3.select(this)
                 .selectAll('path.choroplethlocation')
@@ -56,8 +58,8 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         });
         
     // some baselayers are drawn over choropleth
-    for(var i = 0; i < baselayersOverChoropleth.length; i++) {
-        layer = baselayersOverChoropleth[i];
+    for(var i = 0; i < baseLayersOverChoropleth.length; i++) {
+        layer = baseLayersOverChoropleth[i];
         gBaseLayer.select('g.' + layer).remove();
         geo.drawBaseLayer(gBaseLayerOverChoropleth, layer, geoLayout);
     }
@@ -67,10 +69,10 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
 
 plotChoropleth.style = function(geo) {
     geo.framework.selectAll('g.trace.choropleth')
-        .each(function(d) {
+        .each(function(trace) {
             var s = d3.select(this),
-                trace = d[0].trace,
-                marker = trace.marker,
+                marker = trace.marker || {},
+                markerLine = marker.line || {},
                 zmin = trace.zmin,
                 zmax = trace.zmax,
                 scl = Plotly.Colorscale.getScale(trace.colorscale),
@@ -80,12 +82,12 @@ plotChoropleth.style = function(geo) {
                     }))
                     .range(scl.map(function(v) { return v[1]; }));
 
-            s.selectAll('path.choroplethloc')
+            s.selectAll('path.choroplethlocation')
                 .each(function(d) {
                     d3.select(this)
                         .attr('fill', function(d) { return colormap(d.z); })
-                        .attr('stroke', d.mlc || marker.line.color)
-                        .attr('stroke-width', d.mlw || marker.line.width);
+                        .attr('stroke', d.mlc || markerLine.color)
+                        .attr('stroke-width', d.mlw || markerLine.width);
                 });
         });
 };

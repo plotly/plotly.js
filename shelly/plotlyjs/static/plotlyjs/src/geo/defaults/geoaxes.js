@@ -11,7 +11,8 @@ GeoAxes.layoutAttributes = {
         {type: 'number'}
     ],
     showgrid: {
-        type: 'boolean'
+        type: 'boolean',
+        dflt: true
     },
     tick0: {
         type: 'number'
@@ -21,7 +22,7 @@ GeoAxes.layoutAttributes = {
     },
     gridcolor: {
         type: 'color',
-        dftl: Plotly.Color.defaultLine
+        dflt: Plotly.Color.lightLine
     },
     gridwidth: {
         type: 'number',
@@ -33,7 +34,7 @@ GeoAxes.layoutAttributes = {
 GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
     var axesNames = params.axesNames;
 
-    var axisIn, axisOut, axisName, isLonAxis, rangeDflt, range0;
+    var axisIn, axisOut, axisName, rangeDflt, range0, showGrid;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(axisIn, axisOut,
@@ -65,18 +66,20 @@ GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
         axisIn = geoLayoutIn[axisName] || {};
         axisOut = {};
 
-        isLonAxis = axisName==='lonaxis';
         rangeDflt = getRangeDflt(axisName);
 
         range0 = coerce('range[0]', rangeDflt[0]);
         coerce('range[1]', rangeDflt[1]);
         Plotly.Lib.noneOrAll(axisIn.range, axisOut.range, [0, 1]);
 
-        coerce('showgrid', isLonAxis);
         coerce('tick0', range0);
-        coerce('dtick', isLonAxis ? 30 : 10);
-        coerce('gridcolor');
-        coerce('gridwidth');
+        coerce('dtick', axisName==='lonaxis' ? 30 : 10);
+
+        showGrid = coerce('showgrid');
+        if(showGrid) {
+            coerce('gridcolor');
+            coerce('gridwidth');
+        }
 
         geoLayoutOut[axisName] = axisOut;
         geoLayoutOut[axisName]._fullRange = rangeDflt;

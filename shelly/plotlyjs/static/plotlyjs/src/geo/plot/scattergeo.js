@@ -8,7 +8,8 @@ var Plotly = require('../../plotly'),
 var plotScatterGeo = module.exports = {};
 
 plotScatterGeo.calcGeoJSON = function(trace, topojson) {
-    var cdi = [];
+    var cdi = [],
+        marker = trace.marker;
 
     var N, fromTopojson, features, ids, getLonLat, lonlat, indexOfId;
 
@@ -36,9 +37,10 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
         cdi.push({lon: lonlat[0], lat: lonlat[1]});
     }
 
+    cdi[0].trace = trace;
+    if(marker !== undefined) Plotly.Lib.mergeArray(marker.size, cdi, 'ms');
     Plotly.Scatter.arraysToCalcdata(cdi);
 
-    cdi[0].trace = trace;
     return cdi;
 };
 
@@ -51,47 +53,51 @@ function makeLineGeoJSON(trace) {
 }
 
 plotScatterGeo.plot = function(geo, scattergeoData) {
-    var gScatterGeo = geo.framework.select('scattegeolayer'),
-        Scatter = Plotly.Scatter;
-        
-    gScatterGeo
-        .append('g')
-        .data(scattergeoData)
-        .attr('class', 'trace scattergeo')
+    var Scatter = Plotly.Scatter,
+        topojson = geo.topojson;
+
+    // TODO remove this hack!!!
+    d3.select('g.scattergeolayer').selectAll('*').remove();
+
+    var gScatterGeoTraces = geo.framework.select('g.scattergeolayer')
+        .selectAll('g.trace.scatter')
+        .data(scattergeoData);
+    gScatterGeoTraces.enter().append('g')
+            .attr('class', 'trace scattergeo');
+
+    gScatterGeoTraces.each(function(trace) {
+        if(!Scatter.hasLines(trace)) return;
+        d3.select(this)
+            .append('path')
+            .datum(makeLineGeoJSON(trace))
+            .attr('class', 'js-line');
+    });
+
+    gScatterGeoTraces.append('g')
+        .attr('class', 'points')
         .each(function(trace) {
             var s = d3.select(this),
-                cdi = plotScatterGeo.calcGeoJSON(trace);
+                showMarkers = Scatter.hasMarkers(trace),
+                showText = Scatter.hasText(trace),
+                cdi = plotScatterGeo.calcGeoJSON(trace, topojson);
 
-            if(Scatter.hasLines(trace)) {
-                s.append('path')
-                    .datum(makeLineGeoJSON(trace))
-                    .attr('class', 'js-line');
+            if((!showMarkers && !showText) || trace.visible !== true) {
+                s.remove();
+                return;
             }
 
-            if(Scatter.hasMarkers(trace)) {
-                s.append('g')
+            if(showMarkers) {
+                s.selectAll('path.point')
                     .data(cdi)
-                    .attr('class', 'points')
-                    .each(function() {
-                        d3.select(this)
-                            .selectAll('path.point')
-                                .data(Object)
-                            .enter().append('path')
-                                .attr('class', 'point');
-                    });
+                    .enter().append('path')
+                        .attr('class', 'point');
             }
 
-            if(Scatter.hasText(trace)) {
-                s.append('g')
-                    .data(cdi)
-                    .attr('class', 'points')
-                    .each(function() {
-                        d3.select(this)
-                            .selectAll('g')
-                                .data(Object)
-                            .enter().append('g')
-                                .append('text');
-                    });
+            if(showText) {
+                s.selectAll('g')
+                    .data(Object)
+                    .enter().append('g')
+                        .append('text');
             }
         });
 
@@ -101,16 +107,14 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
 plotScatterGeo.style = function(geo) {
     var s = geo.framework.selectAll('g.trace.scattergeo');
 
-    // TODO merge with Plotly.Scatter.style
-
-    s.style('opacity', function(d) { return d[0].trace.opacity; });
+    s.style('opacity', function(trace) { return trace.opacity; });
 
     s.selectAll('g.points')
-        .each(function(d){
+        .each(function(trace){
             d3.select(this).selectAll('path.point')
-                .call(Plotly.Drawing.pointStyle, d.trace || d[0].trace);
+                .call(Plotly.Drawing.pointStyle, trace);
             d3.select(this).selectAll('text')
-                .call(Plotly.Drawing.textPointStyle, d.trace || d[0].trace);
+                .call(Plotly.Drawing.textPointStyle, trace);
         });
 
     s.selectAll('g.trace path.js-line')

@@ -92,23 +92,42 @@ plots.traceIs = function traceIs(traceType, category) {
     return !!_module.categories[category];
 };
 
+plots.subplotsRegistry = {
+    gl3d: {
+        attr: 'scene',
+        idRegex: /^scene[0-9]*$/
+    },
+    geo: {
+        attr: 'geo',
+        idRegex: /^geo[0-9]*$/
+    }
+};
+
 plots.getSubplotIds = function getSubplotIds(layout, type) {
-    var typeToIdRegex = {
-        gl3d: /^scene[0-9]*$/
-    };
-
-    var idRegex = typeToIdRegex[type],
+    var idRegex = plots.subplotsRegistry[type].idRegex,
         layoutKeys = Object.keys(layout),
-        subplotIds = [];
+        subplotIds = [],
+        layoutKey;
 
-    var i, layoutKey;
-
-    for (i = 0; i < layoutKeys.length; i++) {
+    for(var i = 0; i < layoutKeys.length; i++) {
         layoutKey = layoutKeys[i];
-        if (idRegex.test(layoutKey)) subplotIds.push(layoutKey);
+        if(idRegex.test(layoutKey)) subplotIds.push(layoutKey);
     }
 
     return subplotIds;
+};
+
+plots.getSubplotData = function getSubplotData(data, type, subplotId) {
+    var attr = plots.subplotsRegistry[type].attr,
+        subplotData = [],
+        trace;
+
+    for(var i = 0; i < data.length; i++) {
+        trace = data[i];
+        if(trace[attr] === subplotId) subplotData.push(trace);
+    }
+
+    return subplotData;
 };
 
 // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
@@ -582,7 +601,10 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
-        if (gd._fullLayout._hasGL3D) plot3D(gd);
+        if(gd._fullLayout._hasGL3D) plot3D(gd);
+
+        // !!!
+        if(gd._fullLayout._hasGeo) plotGeo(gd);
 
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
@@ -667,39 +689,25 @@ Plotly.plot = function(gd, data, layout, config) {
 
 function plot3D(gd) {
     var fullLayout = gd._fullLayout,
-        fullData = gd._fullData;
+        fullData = gd._fullData,
+        sceneIds = plots.getSubplotIds(fullLayout, 'gl3d');
 
-    var i, sceneId, fullSceneData,
-        scene, sceneOptions;
+    var i, sceneId, fullSceneData, scene, sceneOptions;
 
     fullLayout._paperdiv.style({
-        width: fullLayout.width+'px',
-        height: fullLayout.height+'px'
+        width: fullLayout.width + 'px',
+        height: fullLayout.height + 'px'
     });
 
     gd._context.setBackground(gd, fullLayout.paper_bgcolor);
 
-    // Get traces attached to a scene
-    function getSceneData(data, sceneId) {
-        var sceneData = [];
-        var i, trace;
-        for (i = 0; i < data.length; i++) {
-            trace = data[i];
-            if (trace.scene===sceneId) sceneData.push(trace);
-        }
-        return sceneData;
-    }
-
-    var sceneIds = plots.getSubplotIds(fullLayout, 'gl3d');
-
-
     for (i = 0; i < sceneIds.length; i++) {
         sceneId = sceneIds[i];
-        fullSceneData = getSceneData(fullData, sceneId);
+        fullSceneData = plots.getSubplotData(fullData, 'gl3d', sceneId);
         scene = fullLayout[sceneId]._scene;  // ref. to corresp. Scene instance
 
         // If Scene is not instantiated, create one!
-        if (!(scene)) {
+        if(scene === undefined) {
             sceneOptions = {
                 container: gd.querySelector('.gl-container'),
                 id: sceneId,
@@ -711,6 +719,39 @@ function plot3D(gd) {
         }
 
         scene.plot(fullSceneData, fullLayout, gd.layout);  // takes care of business
+    }
+}
+
+function plotGeo(gd) {
+    var fullLayout = gd._fullLayout,
+        fullData = gd._fullData,
+        geoIds = plots.getSubplotIds(fullLayout, 'geo');
+
+    var i, geoId, fullGeoData, geo, geoOptions;
+
+    fullLayout._paperdiv.style({
+        width: fullLayout.width + 'px',
+        height: fullLayout.height + 'px'
+    });
+
+//     gd._context.setBackground(gd, fullLayout.paper_bgcolor);
+
+    for (i = 0; i < geoIds.length; i++) {
+        geoId = geoIds[i];
+        fullGeoData = plots.getSubplotData(fullData, 'geo', geoId);
+        geo = fullLayout[geoId]._geo;  // ref. to corresp. geo instance
+
+        // If geo is not instantiated, create one!
+        if(geo === undefined) {
+            geoOptions = {
+                id: geoId,
+                container: gd.querySelector('.gl-container')
+            };
+            geo = new Plotly.Geo(geoOptions, fullLayout);
+            fullLayout[geoId]._geo = geo;
+        }
+
+        geo.plot(fullGeoData, fullLayout);
     }
 }
 
@@ -1182,11 +1223,6 @@ plots.attributes = {
         values: [true, false, 'legendonly'],
         dflt: true
     },
-    scene: {
-        // TODO should not be available in 2d layouts
-        type: 'sceneid',
-        dflt: 'scene'
-    },
     showlegend: {
         type: 'boolean',
         dflt: true
@@ -1201,14 +1237,20 @@ plots.attributes = {
         type: 'string'
     },
     xaxis: {
-        // TODO should not be available in 3d layouts
         type: 'axisid',
         dflt: 'x'
     },
     yaxis: {
-        // TODO should not be available in 3d layouts
         type: 'axisid',
         dflt: 'y'
+    },
+    scene: {
+        type: 'sceneid',
+        dflt: 'scene'
+    },
+    geo: {
+        type: 'geoid',
+        dflt: 'geo'
     },
     uid: {
         type: 'string',
@@ -1251,10 +1293,10 @@ plots.supplyDefaults = function(gd) {
         newFullData.push(fullTrace);
 
         // DETECT 3D, Cartesian, and Polar
-        if (plots.traceIs(fullTrace, 'cartesian')) newFullLayout._hasCartesian = true;
-        else if (plots.traceIs(fullTrace, 'gl3d')) newFullLayout._hasGL3D = true;
-        else if ('r' in fullTrace) newFullLayout._hasPolar = true;
-
+        if(plots.traceIs(fullTrace, 'cartesian')) newFullLayout._hasCartesian = true;
+        else if(plots.traceIs(fullTrace, 'gl3d')) newFullLayout._hasGL3D = true;
+        else if(plots.traceIs(fullTrace, 'geo')) newFullLayout._hasGeo = true;
+        else if('r' in fullTrace) newFullLayout._hasPolar = true;
 
         module = fullTrace._module;
         if (module && modules.indexOf(module)===-1) modules.push(module);
@@ -1380,6 +1422,8 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     // the traces of a scene are invisible. Also we handle visible/unvisible
     // differently for 3D cases.
     if (plots.traceIs(traceOut, 'gl3d')) scene = coerce('scene');
+
+    if (plots.traceIs(traceOut, 'geo')) scene = coerce('geo');
 
     // module-specific attributes --- note: we need to send a trace into
     // the 3D modules to have it removed from the webgl context.
@@ -1511,6 +1555,10 @@ plots.layoutAttributes = {
     _hasGL3D: {
         type: 'boolean',
         dflt: false
+    },
+    _hasGeo: {
+        type: 'boolean',
+        dflt: false
     }
 };
 
@@ -1549,11 +1597,12 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('smith');
     coerce('_hasCartesian');
     coerce('_hasGL3D');
+    coerce('_hasGeo');
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Shapes', 'Fx',
-                                'Bars', 'Boxes', 'Gl3dLayout'];
+                                'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout'];
 
     var i, module;
 
@@ -3259,6 +3308,9 @@ function makePlotFramework(gd) {
 
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
+
+    fullLayout._geolayer = fullLayout._paper.append('g')
+        .classed('geolayer', true);
 
     // Layers to keep plot types in the right order.
     // from back to front:

@@ -29,7 +29,7 @@ function initZoom(projection, projLayout) {
 
 function zoomScoped(geo, projLayout) {
     var projection = geo.projection,
-        zoom = initZoom(geo, projLayout);
+        zoom = initZoom(projection, projLayout);
 
     function handleZoomstart() {
         d3.select(this).style('cursor', 'pointer');
@@ -55,7 +55,7 @@ function zoomScoped(geo, projLayout) {
 
 function zoomNonClipped(geo, projLayout) {
     var projection = geo.projection,
-        zoom = initZoom(geo, projLayout);
+        zoom = initZoom(projection, projLayout);
 
     var INSIDETOLORANCEPXS = 2;
     

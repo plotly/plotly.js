@@ -20,7 +20,7 @@ ScatterGeo.attributes = {
     locationmode: {
         type: 'enumerated',
         values: ['ISO-3', 'USA-states'],
-        dflt: 'IS0-3'
+        dflt: 'ISO-3'
     },
     mode: extendFlat(scatterAttrs.mode,
                      {dflt: 'markers'}),
@@ -59,7 +59,6 @@ ScatterGeo.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         traceOut.visible = false;
         return;
     }
-    coerce('locationmode');
 
     coerce('text');
     coerce('mode');
@@ -98,6 +97,7 @@ ScatterGeo.handleLonLatLocDefaults = function(traceIn, traceOut, coerce) {
     var lon, lat;
 
     if(locations) {
+        coerce('locationmode');
         len = locations.length;
         return len;
     }

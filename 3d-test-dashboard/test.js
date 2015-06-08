@@ -169,5 +169,6 @@ plots['marker-arrays'] = require('./testplots/marker-arrays.json');
 plots['scatter3d-colorscale'] = require('./testplots/scatter3d-colorscale.json');
 plots['autocolorscale'] = require('./testplots/autocolorscale.json');
 
+plots['first'] = require('./testplots-geo/first.json');
 
 plotButtons(plots);

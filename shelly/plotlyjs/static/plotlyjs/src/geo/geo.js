@@ -2,8 +2,7 @@
 
 /* global d3:false */
 
-var Plotly = require('../plotly'),
-    params = require('./lib/params'),
+var params = require('./lib/params'),
     getTopojsonPath = require('./lib/get-topojson-path'),
     createGeoScale = require('./lib/set-scale'),
     createGeoZoom = require('./lib/zoom'),
@@ -21,13 +20,16 @@ function Geo(options, fullLayout) {
     this.framework = null;
     this.projection = null;
     this.path = null;
-    this.topojsonPath = null;
     this.topojson = null;
+    this.topojsonPath = null;
+    this.topojsonIsLoading = false;
     this.clipAngle = null;
 
     this.setScale = createGeoScale(geoLayout, fullLayout._size);
-    this.zoom = createGeoZoom(geoLayout);
+    this.makeProjection(geoLayout);
+    this.zoom = createGeoZoom(this, geoLayout);
     this.makeFramework(geoLayout);
+
 }
 
 module.exports = Geo;
@@ -42,30 +44,34 @@ proto.plot = function(geoData, fullLayout) {
     // 'geoLayout' is unambiguous, no need for 'user' geo layout here
 
     _this.topojsonPath = getTopojsonPath(geoLayout);
-    _this.makeProjection(geoLayout);
     _this.makePath();
 
-    // TODO skip if topojson is already loaded
+    if(_this.topojson === null) {
+        _this.topojsonIsLoading = true;
+        d3.json(_this.topojsonPath, function(error, topojson) {
+            _this.topojson = topojson;
+            _this.onceTopojsonIsLoaded(geoData, geoLayout);
+        });
+    }
+    else _this.onceTopojsonIsLoaded(geoData, geoLayout);
 
-    d3.json(_this.topojsonPath, function(error, topojson) {
-        _this.topojson = topojson;
-        _this.onceTopojsonIsLoaded(geoData, geoLayout);
-    });
-
+    // TODO handle topojsonIsLoading case
 };
 
 proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
     var scattergeoData = [],
-        choroplethData = [],
-        trace;
+        choroplethData = [];
+
+    var trace, traceType;
 
     this.drawLayout(geoLayout);
 
     for(var i = 0; i < geoData.length; i++) {
         trace = geoData[i];
+        traceType = trace.type;
 
-        if(Plotly.Plots.traceIs(trace, 'scattergeo')) scattergeoData.push(trace);
-        else if(Plotly.Plots.traceIs(trace, 'choropleth')) choroplethData.push(trace);
+        if(trace.type === 'scattergeo') scattergeoData.push(trace);
+        else if(trace.type === 'choropleth') choroplethData.push(trace);
     }
 
     if(scattergeoData.length>0) plotScatterGeo.plot(this, scattergeoData);
@@ -113,41 +119,49 @@ proto.makePath = function() {
 };
 
 proto.makeFramework = function(geoLayout) {
-    var framework = this.framework = d3.select(this.container).append('svg');
+    var _this = this,
+        projection = this.projection,
+        zoom = this.zoom;
+
+    var framework = _this.framework = d3.select(_this.container).append('svg');
+
+    _this.container.style.position = 'absolute';
+    _this.container.style.top   = _this.container.style.left   = '0px';
+    _this.container.style.width = _this.container.style.height = '100%';
+    _this.container.style['z-index'] = 20;
 
     // TODO use clip paths instead of nested SVG
 
     // TODO how to handle 'gs' (from figure size, domain and setScale)
+    // TODO handle 'framelinewidth' also
 
     framework
         .attr('width', geoLayout._width)
         .attr('height', geoLayout._height);
 
     framework.append('g').attr('class', 'baselayer');
-    framework.append('g').attr('class', 'graticule');
+    framework.append('g').attr('class', 'graticulelayer');
 
     framework.append('g').attr('class', 'choroplethlayer');
     framework.append('g').attr('class', 'baselayeroverchoropleth');
     framework.append('g').attr('class', 'scattergeolayer');
 
+    function handleDblClick() {
+        _this.makeProjection(geoLayout);
+        _this.makePath();
+
+        // N.B. let the zoom event know!
+        zoom.scale(projection.scale());
+        zoom.translate(projection.translate());
+
+        _this.render();
+    }
+
     // attach zoom and dblclick event to svg container
     framework
-        .call(this.zoom)
+        .call(zoom)
         .on('dblclick.zoom', null)  // N.B. disable dblclick zoom default
-        .on('dblclick', this.handleDblclick(geoLayout));
-};
-
-proto.handleDblClick = function(geoLayout) {
-    var projection = this.projection;
-
-    this.makeProjection(geoLayout);
-    this.makePath();
-
-    // N.B. let the zoom event know!
-    this.zoom.scale(projection.scale());
-    this.zoom.translate(projection.translate());
-
-    this.render();
+        .on('dblclick', handleDblClick);
 };
 
 proto.drawBaseLayer = function(selection, layerName, geoLayout) {
@@ -158,10 +172,11 @@ proto.drawBaseLayer = function(selection, layerName, geoLayout) {
             params.sphereSVG :
             topojsonPackage.feature(topojson, topojson.objects[layerName]);
 
-    selection.append('g').datum(datum)
+    selection.append('g')
+        .datum(datum)
         .attr('class', layerName)
-      .append('path')
-        .attr('class', layerName);
+          .append('path')
+            .attr('class', 'basepath');
 };
 
 function makeGraticule(lonaxisRange, lataxisRange, step) {
@@ -186,23 +201,30 @@ proto.drawGraticule = function(selection, axisName, geoLayout) {
             [0, axisLayout.dtick],
         graticule = makeGraticule(lonaxisRange, lataxisRange, step);
 
-    selection.append('path')
+    selection.append('g')
         .datum(graticule)
-        .attr('class', axisName + 'graticule');
+        .attr('class', axisName + 'graticule')
+            .append('path')
+                .attr('class', 'graticulepath');
 };
 
 proto.drawLayout = function(geoLayout) {
     var gBaseLayer = this.framework.select('g.baselayer'),
+        gGraticuleLayer = this.framework.select('g.graticulelayer'),
         baseLayers = params.baseLayers,
         axesNames = params.axesNames,
         i;
+
+    // TODO remove this hack!!!
+    gBaseLayer.selectAll('*').remove();
+    gGraticuleLayer.selectAll('*').remove();
 
     for(i = 0;  i < baseLayers.length; i++) {
         this.drawBaseLayer(gBaseLayer, baseLayers[i], geoLayout);
     }
 
     for(i = 0; i < axesNames.length; i++) {
-        this.drawGraticule(gBaseLayer, axesNames[i], geoLayout);
+        this.drawGraticule(gGraticuleLayer, axesNames[i], geoLayout);
     }
 
     this.styleLayout(geoLayout);
@@ -210,36 +232,40 @@ proto.drawLayout = function(geoLayout) {
 
 proto.styleLayout = function(geoLayout) {
     var gBaseLayer = this.framework.select('g.baselayer'),
+        gGraticuleLayer = this.framework.select('g.graticulelayer'),
         fillLayers = params.fillLayers,
         lineLayers = params.lineLayers,
         axesNames = params.axesNames;
     
-    var i, layer, axisName;
+    var i, layer, layerAttr, axisName;
 
     for(i = 0;  i < fillLayers.length; i++) {
         layer = fillLayers[i];
-        gBaseLayer.select('path.' + layer)
-            .attr('stroke', 'none')
-            .attr('fill', geoLayout[layer + 'fillcolor']);
+        gBaseLayer.select('.' + layer)
+            .selectAll('path')
+                .attr('stroke', 'none')
+                .attr('fill', geoLayout[layer + 'fillcolor']);
     }
 
     for(i = 0;  i < lineLayers.length; i++) {
         layer = lineLayers[i];
-        if(layer !== 'coastlines') layer += 'line'; 
+        layerAttr = layer!=='coastlines' ?  layer + 'line' : layer;
 
-        gBaseLayer.select('path.' + layer)
-            .attr('fill', 'none')
-            .attr('stroke', geoLayout[layer + 'color'])
-            .attr('stroke-width', geoLayout[layer + 'width']);
+        gBaseLayer.select('.' + layer)
+            .selectAll('path')
+                .attr('fill', 'none')
+                .attr('stroke', geoLayout[layerAttr + 'color'])
+                .attr('stroke-width', geoLayout[layerAttr + 'width']);
     }
 
     for(i = 0;  i < axesNames.length; i++) {
         axisName = axesNames[i];
-        gBaseLayer.select('path.' + axisName + 'graticule')
-            .attr('fill', 'none')
-            .attr('stroke', geoLayout[axisName].gridcolor)
-            .attr('stroke-width', geoLayout[axisName].gridwidth)
-            .attr('stroke-opacity', 0.5);  // TODO generalize
+        gGraticuleLayer.select('.' + axisName + 'graticule')
+            .selectAll('path')
+                .attr('fill', 'none')
+                .attr('stroke', geoLayout[axisName].gridcolor)
+                .attr('stroke-width', geoLayout[axisName].gridwidth)
+                .attr('stroke-opacity', 0.5);  // TODO generalize
     }
 
 };
@@ -260,7 +286,7 @@ proto.render = function() {
     }
 
     // hide paths over edges of clipped projections
-    if(clipAngle) {
+    if(clipAngle !== null) {
         framework.selectAll('path.point')
             .attr('opacity', function(d) {
                 var p = projection.rotate(),
@@ -270,8 +296,9 @@ proto.render = function() {
             });
     }
 
-    framework.selectAll('g.baselayer path').attr('d', path);
-    framework.selectAll('g.graticule path').attr('d', path);
+
+    framework.selectAll('path.basepath').attr('d', path);
+    framework.selectAll('path.graticulepath').attr('d', path);
 
     gChoropleth.selectAll('path.choroplethlocation').attr('d', path);
     gChoropleth.selectAll('g.baselayeroverchoropleth path').attr('d', path);

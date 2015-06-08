@@ -1444,6 +1444,16 @@ var coerceIt = {
         }
         propOut.set(dflt);
     },
+    geoid: function(v, propOut, dflt) {
+        if(typeof v === 'string' && v.substr(0,3)===dflt) {
+            var geonum = Number(v.substr(3));
+            if(geonum%1 === 0 && geonum>1) {
+                propOut.set(v);
+                return;
+            }
+        }
+        propOut.set(dflt);
+    },
     flaglist: function(v, propOut, dflt, opts) {
         if(typeof v !== 'string') {
             propOut.set(dflt);

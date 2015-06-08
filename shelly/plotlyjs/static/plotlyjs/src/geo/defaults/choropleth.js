@@ -18,8 +18,16 @@ Choropleth.attributes = {
         line: ScatterGeoAttrs.marker.line
     },
     zauto: heatmapAttrs.zauto,
-    zmin: heatmapAttrs.zmin,
-    zmax: heatmapAttrs.zmax,
+//     zmin: heatmapAttrs.zmin,
+//     zmax: heatmapAttrs.zmax,
+    zmin: {
+        type: 'number',
+        dflt: 0
+    },
+    zmax: {
+        type: 'number',
+        dflt: 10
+    },
     colorscale: heatmapAttrs.colorscale,
     autocolorscale: {
         type: 'boolean',
@@ -32,7 +40,7 @@ Choropleth.attributes = {
     }
 };
 
-Choropleth.supplyDefaults = function(traceIn, traceOut, layout) {
+Choropleth.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     var locations, len, z;
 
     function coerce(attr, dflt) {
@@ -66,6 +74,6 @@ Choropleth.calc = function(gd, trace) {
 
     // TODO sanitize data
 
-    Plotly.Colorscale.calc();
+//     Plotly.Colorscale.calc();
 
 };

@@ -106,6 +106,8 @@ params.locationmodeToLayer = {
 // SVG element for a sphere (use to frame maps)
 params.sphereSVG = {type: 'Sphere'};
 
+// base layer names must be the same as in the topojson files
+
 // base layer with a fill color
 params.fillLayers = ['ocean', 'land', 'lakes'];
 

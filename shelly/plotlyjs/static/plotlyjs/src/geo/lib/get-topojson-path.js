@@ -2,8 +2,10 @@
 
 function getTopojsonPath(geoLayout) {
     return [
-        '../topojson/',
-        geoLayout.scope, '_', geoLayout.resolution.toString(),
+//         'static/plotlyjs/src/geo/topojson/',
+        '../shelly/plotlyjs/static/plotlyjs/src/geo/topojson/',
+        geoLayout.scope.replace(/ /g, '-'), '_',
+        geoLayout.resolution.toString(), 'm',
         '.json'
     ].join('');
 }

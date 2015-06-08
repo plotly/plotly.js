@@ -60,7 +60,7 @@ GeoLayout.layoutAttributes = {
     coastlineswidth: {
         type: 'number',
         min: 0,
-        dflt: 2
+        dflt: 1
     },
     showland: {
         type: 'boolean',

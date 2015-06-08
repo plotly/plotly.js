@@ -2071,6 +2071,8 @@ axes.getSubplots = function(gd,ax) {
     var data = gd.data,
         subplots = [];
 
+    if(gd._fullLayout._hasGeo) return [];
+
     // look for subplots in the data
     (data||[]).forEach(function(trace) {
         if(trace.visible === false || trace.visible === 'legendonly' ||
