@@ -738,12 +738,7 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
             Plotly.Lib.nestedProperty(contIn, prefix + 'cmin').set(min);
             Plotly.Lib.nestedProperty(contIn, prefix + 'cmax').set(max);
         }
-
-        var sclfunc = d3.scale.linear()
-            .domain(scl.map(function(si){ return min + si[0]*(max-min); }))
-            .interpolate(d3.interpolateRgb)
-            .range(scl.map(function(si){ return si[1]; }));
-        return function(v){ return isNumeric(v) ? sclfunc(v) : v; };
+        return Plotly.Colorscale.makeScaleFunction(scl, min, max);
     }
     else return Plotly.Lib.identity;
 };

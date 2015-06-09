@@ -1,5 +1,7 @@
 'use strict';
 
+/* global d3:false */
+
 var colorscale = module.exports = {},
     Plotly = require('./plotly'),
     tinycolor = require('tinycolor2'),
@@ -135,7 +137,7 @@ colorscale.hasColorscale = function(trace, containerStr) {
 
     return (
         (typeof container==='object' && container!==null) && (
-            Array.isArray(container.color) ||
+            (Array.isArray(container.color) && isNumeric(container.color[0])) ||
             container.showscale===true ||
             (isNumeric(container.cmin) && isNumeric(container.cmax)) ||
             colorscale.isValidScale(container.colorscale) ||
@@ -233,4 +235,24 @@ colorscale.calc = function(trace, vals, containerStr, cLetter) {
     container[cLetter + 'min'] = min;
     container[cLetter + 'max'] = max;
     container.colorscale = scl;
+};
+
+colorscale.makeScaleFunction = function(scl, cmin, cmax) {
+    var N = scl.length,
+        domain = new Array(N),
+        range = new Array(N),
+        si;
+
+    for(var i = 0; i < N; i++) {
+        si = scl[i];
+        domain[i] = cmin + si[0] * (cmax - cmin);
+        range[i] = si[1];
+    }
+
+    var sclFunc = d3.scale.linear()
+        .domain(domain)
+        .interpolate(d3.interpolateRgb)
+        .range(range);
+
+    return function(v) { return isNumeric(v) ? sclFunc(v) : v; };
 };
