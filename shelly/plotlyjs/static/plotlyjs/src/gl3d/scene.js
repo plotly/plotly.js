@@ -48,9 +48,9 @@ function render(scene) {
       Plotly.Fx.loneHover({
         x: (0.5 + 0.5 * pdata[0]/pdata[3]) * width,
         y: (0.5 - 0.5 * pdata[1]/pdata[3]) * height,
-        xLabel: selection.dataCoordinate[0] + '',
-        yLabel: selection.dataCoordinate[1] + '',
-        zLabel: selection.dataCoordinate[2] + '',
+        xLabel: selection.traceCoordinate[0] + '',
+        yLabel: selection.traceCoordinate[1] + '',
+        zLabel: selection.traceCoordinate[2] + '',
         text: selection.textLabel || '',
         name: lastPicked.name,
         color: lastPicked.color
@@ -105,6 +105,9 @@ function Scene(options, fullLayout) {
 
     this.staticMode   = false;
 
+    //Coordinate rescaling
+    this.dataScale    = [1,1,1];
+    this.dataCenter   = [0,0,0];
 
     var glplotOptions = {
             container:  sceneContainer,
@@ -195,6 +198,32 @@ var proto = Scene.prototype;
 
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
+function coordinateBound(axis, coord, d, bounds) {
+  for(var i=0; i<coord.length; ++i) {
+    if(Array.isArray(coord[i])) {
+      for(var j=0; j<coord[i].length; ++j) {
+        var x = axis.d2l(coord[i][j]);
+        if(!isNaN(x) && isFinite(x)) {
+          bounds[0][d] = Math.min(bounds[0][d], x);
+          bounds[1][d] = Math.max(bounds[1][d], x);
+        }
+      }
+    } else {
+      var x = axis.d2l(coord[i]);
+      if(!isNaN(x) && isFinite(x)) {
+        bounds[0][d] = Math.min(bounds[0][d], x);
+        bounds[1][d] = Math.max(bounds[1][d], x);
+      }
+    }
+  }
+}
+
+function computeTraceBounds(scene, trace, bounds) {
+  var sceneLayout = scene.fullSceneLayout;
+  coordinateBound(sceneLayout.xaxis, trace.x, 0, bounds);
+  coordinateBound(sceneLayout.yaxis, trace.y, 1, bounds);
+  coordinateBound(sceneLayout.zaxis, trace.z, 2, bounds);
+}
 
 proto.plot = function(sceneData, fullLayout, layout) {
 
@@ -205,6 +234,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
 
     if (fullSceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(fullSceneLayout.bgcolor);
     else this.glplot.clearColor = [0, 0, 0, 0];
+
+    this.glplot.snapToData = true;
 
     //Update layout
     this.fullSceneLayout = fullSceneLayout;
@@ -225,42 +256,76 @@ proto.plot = function(sceneData, fullLayout, layout) {
         Plotly.Gl3dAxes.setConvert(axis);
     }
 
-    //Update traces
-    if (sceneData) {
-        if(!Array.isArray(sceneData)) sceneData = [sceneData];
-
-        for(i = 0; i < sceneData.length; ++i) {
-            data = sceneData[i];
-            if(data.visible!==true) {
-                continue;
-            }
-            trace = this.traces[data.uid];
-            if(trace) {
-                trace.update(data);
-            } else {
-                switch(data.type) {
-                    case 'scatter3d':
-                        trace = createScatterTrace(this, data);
-                    break;
-
-                    case 'surface':
-                        trace = createSurfaceTrace(this, data);
-                    break;
-
-                    case 'mesh3d':
-                        trace = createMeshTrace(this, data);
-                    break;
-
-                    default:
-                }
-                this.traces[data.uid] = trace;
-            }
-            trace.name = data.name;
-        }
-    } else {
-        sceneData = [];
+    //Convert scene data
+    if(!sceneData) {
+      sceneData = [];
+    } else if(!Array.isArray(sceneData)) {
+      sceneData = [sceneData];
     }
 
+    //Compute trace bounding box
+    var dataBounds = [
+      [ Infinity,  Infinity,  Infinity],
+      [-Infinity, -Infinity, -Infinity]
+    ];
+    for(var i=0; i<sceneData.length; ++i) {
+      var data = sceneData[i];
+      if(data.visible !== true) {
+        continue;
+      }
+      computeTraceBounds(this, data, dataBounds);
+    }
+    var dataScale = [1,1,1];
+    var dataCenter = [0,0,0];
+    for(var j=0; j<3; ++j) {
+      if(dataBounds[0][j] > dataBounds[1][j]) {
+        dataScale[j] = 1.0;
+        dataCenter[j] = 0.0;
+      } else {
+        if(dataBounds[1][j] === dataBounds[0][j]) {
+          dataScale[j] = 1.0;
+        } else {
+          dataScale[j] = 1.0/(dataBounds[1][j] - dataBounds[0][j]);
+        }
+        dataCenter[j] = 0.5 * (dataBounds[0][j] + dataBounds[1][j]) * dataScale[j];
+      }
+    }
+
+    //Save scale and offset factors
+    this.dataScale = dataScale;
+    this.dataCenter = dataCenter;
+
+    //Update traces
+    for(var i = 0; i < sceneData.length; ++i) {
+        data = sceneData[i];
+        if(data.visible!==true) {
+            continue;
+        }
+        trace = this.traces[data.uid];
+        if(trace) {
+            trace.update(data);
+        } else {
+            switch(data.type) {
+                case 'scatter3d':
+                    trace = createScatterTrace(this, data);
+                break;
+
+                case 'surface':
+                    trace = createSurfaceTrace(this, data);
+                break;
+
+                case 'mesh3d':
+                    trace = createMeshTrace(this, data);
+                break;
+
+                default:
+            }
+            this.traces[data.uid] = trace;
+        }
+        trace.name = data.name;
+    }
+
+    //Remove empty traces
     var traceIds = Object.keys(this.traces);
 trace_id_loop:
     for(i = 0; i<traceIds.length; ++i) {
@@ -275,19 +340,33 @@ trace_id_loop:
     }
 
     //Update ranges (needs to be called *after* objects are added due to updates)
-    var sceneBounds = this.glplot.bounds,
-        axisDataRange = [];
+    var sceneBounds = [[0,0,0], [0,0,0]],
+        axisDataRange = [],
+        axisTypeRatios = {};
 
     for(i = 0; i < 3; ++i) {
         var axis = fullSceneLayout[axisProperties[i]];
+        var axisType = axis.type;
+
+        if(axisType in axisTypeRatios) {
+          axisTypeRatios[axisType].acc *= dataScale[i];
+          axisTypeRatios[axisType].count += 1;
+        } else {
+          axisTypeRatios[axisType] = {
+            acc: dataScale[i],
+            count: 1
+          };
+        }
 
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
             for(j = 0; j < this.glplot.objects.length; ++j) {
                 var objBounds = this.glplot.objects[j].bounds;
-                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i]);
-                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i]);
+                sceneBounds[0][i] = Math.min(sceneBounds[0][i],
+                  (objBounds[0][i] + dataCenter[i]) / dataScale[i]);
+                sceneBounds[1][i] = Math.max(sceneBounds[1][i],
+                  (objBounds[1][i] + dataCenter[i]) / dataScale[i]);
             }
             if('rangemode' in axis && axis.rangemode === 'tozero') {
                 sceneBounds[0][i] = Math.min(sceneBounds[0][i], 0);
@@ -311,12 +390,21 @@ trace_id_loop:
             sceneBounds[1][i] += 1;
         }
         axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
+
+        //Update plot bounds
+        this.glplot.bounds[0][i] = sceneBounds[0][i] * dataScale[i] - dataCenter[i];
+        this.glplot.bounds[1][i] = sceneBounds[1][i] * dataScale[i] - dataCenter[i];
     }
 
-    var axesScaleRatio = [],
-        maxRange = Math.max.apply(null, axisDataRange);
+    var axesScaleRatio = [1, 1, 1];
 
-    for (i = 0; i < 3; ++i) axesScaleRatio[i] = axisDataRange[i] / maxRange;
+    //Compute axis scale per category
+    for(var i=0; i<3; ++i) {
+      var axis = fullSceneLayout[axisProperties[i]];
+      var axisType = axis.type;
+      var axisRatio = axisTypeRatios[axisType];
+      axesScaleRatio[i] = Math.pow(axisRatio.acc, 1.0/axisRatio.count) / dataScale[i];
+    }
 
     /*
      * Dynamically set the aspect ratio depending on the users aspect settings
@@ -325,11 +413,13 @@ trace_id_loop:
     var aspectRatio;
 
     if (fullSceneLayout.aspectmode === 'auto') {
+
         if (Math.max.apply(null, axesScaleRatio)/Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
 
             /*
              * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
              */
+
             aspectRatio = axesScaleRatio;
         } else {
 
