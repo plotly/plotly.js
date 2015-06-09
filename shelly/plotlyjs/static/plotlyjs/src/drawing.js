@@ -720,9 +720,6 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
         max = maxProp.get();
 
     if(scl && Array.isArray(colorArray)) {
-        if(typeof scl === 'string') scl = Plotly.Color.scales[scl];
-        if(!scl) scl = Plotly.Color.defaultScale;
-
         if(auto || !isNumeric(min) || !isNumeric(max)) {
             min = Infinity;
             max = -Infinity;
