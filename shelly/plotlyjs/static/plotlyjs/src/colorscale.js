@@ -133,11 +133,22 @@ colorscale.getScale = function(scl, dflt) {
 colorscale.hasColorscale = function(trace, containerStr) {
     var container = containerStr ?
             Plotly.Lib.nestedProperty(trace, containerStr).get() || {} :
-            trace;
+            trace,
+        color = container.color,
+        isArrayWithOneNumber = false;
+
+    if(Array.isArray(color)) {
+        for(var i = 0; i < color.length; i++) {
+            if(isNumeric(color[i])) {
+                isArrayWithOneNumber = true;
+                break;
+            }
+        }
+    }
 
     return (
         (typeof container==='object' && container!==null) && (
-            (Array.isArray(container.color) && isNumeric(container.color[0])) ||
+            isArrayWithOneNumber ||
             container.showscale===true ||
             (isNumeric(container.cmin) && isNumeric(container.cmax)) ||
             colorscale.isValidScale(container.colorscale) ||
