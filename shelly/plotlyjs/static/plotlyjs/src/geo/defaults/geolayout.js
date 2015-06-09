@@ -46,7 +46,7 @@ GeoLayout.layoutAttributes = {
         scale: {
             type: 'number',
             min: 0,
-            max: 1,
+            max: 10,
             dflt: 1
         }
     },

@@ -4,6 +4,7 @@
 
 var params = require('./lib/params'),
     getTopojsonPath = require('./lib/get-topojson-path'),
+    addProjectionsToD3 = require('./lib/projections'),
     createGeoScale = require('./lib/set-scale'),
     createGeoZoom = require('./lib/zoom'),
     plotScatterGeo = require('./plot/scattergeo'),
@@ -16,6 +17,10 @@ function Geo(options, fullLayout) {
     this.container = options.container;
 
     var geoLayout = fullLayout[this.id];
+
+    // add a few projection type to d3.geo,
+    // a subset of https://github.com/d3/d3-geo-projection
+    addProjectionsToD3();
 
     this.framework = null;
     this.projection = null;
@@ -84,7 +89,9 @@ proto.makeProjection = function(geoLayout) {
     var projLayout = geoLayout.projection,
         isNew = this.projection===null;
 
-    if(isNew) this.projection = d3.geo[params.projNames[projLayout.type]]();
+    if(isNew) {
+        this.projection = d3.geo[params.projNames[projLayout.type]]();
+    }
     var projection = this.projection;
 
     projection
@@ -120,15 +127,16 @@ proto.makePath = function() {
 
 proto.makeFramework = function(geoLayout) {
     var _this = this,
-        projection = this.projection,
-        zoom = this.zoom;
+        projection = _this.projection,
+        container = _this.container,
+        zoom = _this.zoom;
 
-    var framework = _this.framework = d3.select(_this.container).append('svg');
+    var framework = _this.framework = d3.select(container).append('svg');
 
-    _this.container.style.position = 'absolute';
-    _this.container.style.top   = _this.container.style.left   = '0px';
-    _this.container.style.width = _this.container.style.height = '100%';
-    _this.container.style['z-index'] = 20;
+    container.style.position = 'absolute';
+    container.style.top = container.style.left = '0px';
+    container.style.width = container.style.height = '100%';
+    container.style['z-index'] = 20;
 
     // TODO use clip paths instead of nested SVG
 
@@ -215,10 +223,6 @@ proto.drawLayout = function(geoLayout) {
         axesNames = params.axesNames,
         i;
 
-    // TODO remove this hack!!!
-    gBaseLayer.selectAll('*').remove();
-    gGraticuleLayer.selectAll('*').remove();
-
     for(i = 0;  i < baseLayers.length; i++) {
         this.drawBaseLayer(gBaseLayer, baseLayers[i], geoLayout);
     }
@@ -230,44 +234,60 @@ proto.drawLayout = function(geoLayout) {
     this.styleLayout(geoLayout);
 };
 
+function styleFillLayer(selection, layerName, geoLayout) {
+    selection.select('.' + layerName)
+        .selectAll('path')
+            .attr('stroke', 'none')
+            .attr('fill', geoLayout[layerName + 'fillcolor']);
+}
+
+function styleLineLayer(selection, layerName, geoLayout) {
+    var layerAttr = layerName!=='coastlines' ?
+            layerName + 'line' :
+            layerName;
+
+    selection.select('.' + layerName)
+        .selectAll('path')
+            .attr('fill', 'none')
+            .attr('stroke', geoLayout[layerAttr + 'color'])
+            .attr('stroke-width', geoLayout[layerAttr + 'width']);
+}
+
+proto.styleLayer = function(selection, layerName, geoLayout) {
+    var fillLayers = params.fillLayers,
+        lineLayers = params.lineLayers;
+
+    if(fillLayers.indexOf(layerName)!==-1) {
+        styleFillLayer(selection, layerName, geoLayout);
+    }
+    else if(lineLayers.indexOf(layerName)!==-1) {
+        styleLineLayer(selection, layerName, geoLayout);
+    }
+};
+
+function styleGraticule(selection, axisName, geoLayout) {
+    selection.select('.' + axisName + 'graticule')
+        .selectAll('path')
+            .attr('fill', 'none')
+            .attr('stroke', geoLayout[axisName].gridcolor)
+            .attr('stroke-width', geoLayout[axisName].gridwidth)
+            .attr('stroke-opacity', 0.5);  // TODO generalize
+}
+
 proto.styleLayout = function(geoLayout) {
     var gBaseLayer = this.framework.select('g.baselayer'),
         gGraticuleLayer = this.framework.select('g.graticulelayer'),
-        fillLayers = params.fillLayers,
-        lineLayers = params.lineLayers,
-        axesNames = params.axesNames;
-    
-    var i, layer, layerAttr, axisName;
+        baseLayers = params.baseLayers,
+        axesNames = params.axesNames,
+        i;
 
-    for(i = 0;  i < fillLayers.length; i++) {
-        layer = fillLayers[i];
-        gBaseLayer.select('.' + layer)
-            .selectAll('path')
-                .attr('stroke', 'none')
-                .attr('fill', geoLayout[layer + 'fillcolor']);
-    }
-
-    for(i = 0;  i < lineLayers.length; i++) {
-        layer = lineLayers[i];
-        layerAttr = layer!=='coastlines' ?  layer + 'line' : layer;
-
-        gBaseLayer.select('.' + layer)
-            .selectAll('path')
-                .attr('fill', 'none')
-                .attr('stroke', geoLayout[layerAttr + 'color'])
-                .attr('stroke-width', geoLayout[layerAttr + 'width']);
+    for(i = 0; i < baseLayers.length; i++) {
+        this.styleLayer(gBaseLayer, baseLayers[i], geoLayout);
     }
 
     for(i = 0;  i < axesNames.length; i++) {
-        axisName = axesNames[i];
-        gGraticuleLayer.select('.' + axisName + 'graticule')
-            .selectAll('path')
-                .attr('fill', 'none')
-                .attr('stroke', geoLayout[axisName].gridcolor)
-                .attr('stroke-width', geoLayout[axisName].gridwidth)
-                .attr('stroke-opacity', 0.5);  // TODO generalize
+        styleGraticule(gGraticuleLayer, axesNames[i], geoLayout);
     }
-
 };
 
 // [hot code path] (re)draw all paths which depend on the projection
@@ -301,7 +321,7 @@ proto.render = function() {
     framework.selectAll('path.graticulepath').attr('d', path);
 
     gChoropleth.selectAll('path.choroplethlocation').attr('d', path);
-    gChoropleth.selectAll('g.baselayeroverchoropleth path').attr('d', path);
+    gChoropleth.selectAll('path.basepath').attr('d', path);
 
     gScatterGeo.selectAll('path.js-line').attr('d', path);
     gScatterGeo.selectAll('path.point').attr('transform', translatePoints);

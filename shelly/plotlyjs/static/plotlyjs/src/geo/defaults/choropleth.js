@@ -7,6 +7,7 @@ var Choropleth = module.exports = {};
 Plotly.Plots.register(Choropleth, 'choropleth', ['geo', 'noOpacity']);
 
 var ScatterGeoAttrs = Plotly.ScatterGeo.attributes,
+    ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line,
     heatmapAttrs = Plotly.Heatmap.attributes;
 
 Choropleth.attributes = {
@@ -15,7 +16,10 @@ Choropleth.attributes = {
     z: {type: 'data_array'},
     text: heatmapAttrs.text,
     marker: {
-        line: ScatterGeoAttrs.marker.line
+        line: {
+            color: ScatterGeoMarkerLineAttrs.color,
+            width: ScatterGeoMarkerLineAttrs.width
+        }
     },
     zauto: heatmapAttrs.zauto,
 //     zmin: heatmapAttrs.zmin,

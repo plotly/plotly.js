@@ -18,7 +18,12 @@ params.projNames = {
     'transverse mercator': 'transverseMercator',
     'albers usa': 'albersUsa',
     // d3.geo.projection plugin
-    'kavrayskiy7': 'kavrayskiy7'
+    'kavrayskiy7': 'kavrayskiy7',
+    'mollweide': 'mollweide',
+    'hammer': 'hammer',
+    'miller': 'miller',
+    'robinson': 'robinson',
+    'eckert4': 'eckert4'
 };
 
 // name of the axes

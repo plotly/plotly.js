@@ -42,7 +42,15 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         gBaseLayer = framework.select('g.baselayer'),
         gBaseLayerOverChoropleth = framework.select('g.baselayeroverchoropleth'),
         baseLayersOverChoropleth = params.baseLayersOverChoropleth,
-        layer;
+        layerName;
+
+    function handleMouseOver(d) {
+        console.log('choropleth: ', d.properties.centroid);
+    }
+
+    function handleMouseOut(d) {
+        console.log('-- out')
+    }
 
     gChoropleth.append('g')
         .data(choroplethData)
@@ -54,16 +62,19 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                 .selectAll('path.choroplethlocation')
                     .data(cdi)
                 .enter().append('path')
-                    .attr('class', 'choroplethlocation');
+                    .attr('class', 'choroplethlocation')
+                    .on('mouseover', handleMouseOver)
+                    .on('mouseout', handleMouseOut);
         });
         
     // some baselayers are drawn over choropleth
     for(var i = 0; i < baseLayersOverChoropleth.length; i++) {
-        layer = baseLayersOverChoropleth[i];
-        gBaseLayer.select('g.' + layer).remove();
-        geo.drawBaseLayer(gBaseLayerOverChoropleth, layer, geoLayout);
+        layerName = baseLayersOverChoropleth[i];
+        gBaseLayer.select('g.' + layerName).remove();
+        geo.drawBaseLayer(gBaseLayerOverChoropleth, layerName, geoLayout);
+        geo.styleLayer(gBaseLayerOverChoropleth, layerName, geoLayout);
     }
-    
+
     plotChoropleth.style(geo);
 };
 

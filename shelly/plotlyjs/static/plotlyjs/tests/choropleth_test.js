@@ -9,9 +9,10 @@ describe('Test choropleth', function () {
         var traceIn,
             traceOut;
 
-        var layout = {
-            font: Plotly.Plots.layoutAttributes.font
-        };
+        var defaultColor = '#444',
+            layout = {
+                font: Plotly.Plots.layoutAttributes.font
+            };
 
         beforeEach(function() {
             traceOut = {};
@@ -23,7 +24,7 @@ describe('Test choropleth', function () {
                 z: [1, 2, 3]
             };
 
-            Choropleth.supplyDefaults(traceIn, traceOut, layout);
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
             expect(traceOut.z).toEqual([1, 2]);
         });
 
@@ -32,7 +33,7 @@ describe('Test choropleth', function () {
                 z: [1, 2, 3]
             };
 
-            Choropleth.supplyDefaults(traceIn, traceOut, layout);
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);
         });
 
