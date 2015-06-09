@@ -124,16 +124,15 @@ function calculateTextOffset(textposition) {
 }
 
 
-function formatColor(colorIn, opacityIn, len) {
+function formatColor(containerIn, opacityIn, len) {
     var colorDflt = Plotly.Color.defaultLine,
         opacityDflt = 1,
+        colorIn = containerIn.color,
         isArrayColorIn = Array.isArray(colorIn),
         isArrayOpacityIn = Array.isArray(opacityIn),
-        colorOut = [],
-        getColor,
-        getOpacity,
-        colori,
-        opacityi;
+        colorOut = [];
+
+    var sclFunc, getColor, getOpacity, colori, opacityi;
 
     function calculateColor(colorIn, opacityIn) {
         var colorOut = str2RgbaArray(colorIn);
@@ -141,31 +140,35 @@ function formatColor(colorIn, opacityIn, len) {
         return colorOut;
     }
 
-    if (isArrayColorIn) {
-        getColor = function(c, i){
-            return (c[i]===undefined) ? colorDflt : c[i];
-        };
-    } else {
-        getColor = function(c) { return c; };
+    if(containerIn.colorscale !== undefined) {
+        sclFunc = Plotly.Colorscale.makeScaleFunction(
+            containerIn.colorscale, containerIn.cmin, containerIn.cmax
+        );
     }
+    else sclFunc = Plotly.Lib.identity;
 
-    if (isArrayOpacityIn) {
-        getOpacity = function(o, i){
-            return (o[i]===undefined) ? opacityDflt : o[i];
+    if(isArrayColorIn) {
+        getColor = function(c, i) {
+            return c[i]===undefined ? colorDflt : sclFunc(c[i]);
         };
-    } else {
-        getOpacity = function(o){ return o; };
     }
+    else getColor = function(c) { return c; };
 
-    if (isArrayColorIn || isArrayOpacityIn) {
-        for (var i = 0; i < len; i++) {
+    if(isArrayOpacityIn) {
+        getOpacity = function(o, i) {
+            return o[i]===undefined ? opacityDflt : o[i];
+        };
+    }
+    else getOpacity = function(o){ return o; };
+
+    if(isArrayColorIn || isArrayOpacityIn) {
+        for(var i = 0; i < len; i++) {
             colori = getColor(colorIn, i);
             opacityi = getOpacity(opacityIn, i);
             colorOut[i] = calculateColor(colori, opacityi);
         }
-    } else {
-        colorOut = calculateColor(colorIn, opacityIn);
     }
+    else colorOut = calculateColor(colorIn, opacityIn);
 
     return colorOut;
 }
@@ -237,11 +240,11 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if ('marker' in data) {
-        params.scatterColor         = formatColor(marker.color, marker.opacity, len);
+        params.scatterColor         = formatColor(marker, marker.opacity, len);
         params.scatterSize          = formatParam(marker.size, len, calculateSize, 20);
         params.scatterMarker        = formatParam(marker.symbol, len, calculateSymbol, '●');
         params.scatterLineWidth     = marker.line.width;  // arrayOk === false
-        params.scatterLineColor     = formatColor(marker.line.color, marker.opacity, len);
+        params.scatterLineColor     = formatColor(marker.line, marker.opacity, len);
         params.scatterAngle         = 0;
     }
 
