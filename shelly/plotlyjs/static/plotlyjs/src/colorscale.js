@@ -96,8 +96,8 @@ function isValidScaleArray(scl) {
             }
             highestVal = +si[0];
         }
-       return isValid;
-   }
+        return isValid;
+    }
 }
 
 colorscale.isValidScale = function(scl) {
