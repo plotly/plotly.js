@@ -100,7 +100,7 @@ function padField(field) {
 }
 
 function refine(coords) {
-    var minScale = Math.min(coords[0].shape[0], coords[0].shape[1]);
+    var minScale = Math.max(coords[0].shape[0], coords[0].shape[1]);
     if(minScale < MIN_RESOLUTION) {
         var scaleF = MIN_RESOLUTION / minScale;
         var nshape = [
