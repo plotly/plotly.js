@@ -54,7 +54,7 @@ plots.register = function(_module, thisType, categoriesIn) {
 
 function getModuleObj(traceType) {
     if(typeof traceType === 'object') traceType = traceType.type;
-    return modules[traceType || 'scatter'];
+    return modules[traceType];
 }
 
 plots.getModule = function(trace) {
@@ -83,7 +83,10 @@ plots.traceIs = function traceIs(traceType, category) {
 
     var _module = getModuleObj(traceType);
 
-    if(!_module) throw new Error('unrecognized trace type');
+    if(!_module) {
+        console.warn('unrecognized trace type');
+        _module = modules[plots.attributes.type.dflt];
+    }
     if(!allCategories[category]) console.warn('unrecognized category ' + category);
 
     return !!_module.categories[category];
