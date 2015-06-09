@@ -265,5 +265,9 @@ colorscale.makeScaleFunction = function(scl, cmin, cmax) {
         .interpolate(d3.interpolateRgb)
         .range(range);
 
-    return function(v) { return isNumeric(v) ? sclFunc(v) : v; };
+    return function(v) {
+        if(isNumeric(v)) return sclFunc(v);
+        else if(tinycolor(v).isValid()) return v;
+        else return Plotly.Color.defaultLine;
+    };
 };

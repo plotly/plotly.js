@@ -6,10 +6,10 @@ var createLinePlot    = require('gl-line3d'),
     createMesh        = require('gl-mesh3d'),
     triangulate       = require('delaunay-triangulate'),
     str2RgbaArray     = require('../lib/str2rgbarray'),
+    formatColor       = require('../lib/format-color'),
     calculateError    = require('../lib/calc-errors'),
     DASH_PATTERNS     = require('../lib/dashes.json'),
-    MARKER_SYMBOLS    = require('../lib/markers.json'),
-    Plotly            = require('../../plotly');
+    MARKER_SYMBOLS    = require('../lib/markers.json');
 
 function LineWithMarkers(scene, uid) {
     this.scene              = scene;
@@ -123,55 +123,6 @@ function calculateTextOffset(textposition) {
     return textOffset;
 }
 
-
-function formatColor(containerIn, opacityIn, len) {
-    var colorDflt = Plotly.Color.defaultLine,
-        opacityDflt = 1,
-        colorIn = containerIn.color,
-        isArrayColorIn = Array.isArray(colorIn),
-        isArrayOpacityIn = Array.isArray(opacityIn),
-        colorOut = [];
-
-    var sclFunc, getColor, getOpacity, colori, opacityi;
-
-    function calculateColor(colorIn, opacityIn) {
-        var colorOut = str2RgbaArray(colorIn);
-        colorOut[3] *= opacityIn;
-        return colorOut;
-    }
-
-    if(containerIn.colorscale !== undefined) {
-        sclFunc = Plotly.Colorscale.makeScaleFunction(
-            containerIn.colorscale, containerIn.cmin, containerIn.cmax
-        );
-    }
-    else sclFunc = Plotly.Lib.identity;
-
-    if(isArrayColorIn) {
-        getColor = function(c, i) {
-            return c[i]===undefined ? colorDflt : sclFunc(c[i]);
-        };
-    }
-    else getColor = function(c) { return c; };
-
-    if(isArrayOpacityIn) {
-        getOpacity = function(o, i) {
-            return o[i]===undefined ? opacityDflt : o[i];
-        };
-    }
-    else getOpacity = function(o){ return o; };
-
-    if(isArrayColorIn || isArrayOpacityIn) {
-        for(var i = 0; i < len; i++) {
-            colori = getColor(colorIn, i);
-            opacityi = getOpacity(opacityIn, i);
-            colorOut[i] = calculateColor(colori, opacityi);
-        }
-    }
-    else colorOut = calculateColor(colorIn, opacityIn);
-
-    return colorOut;
-}
 
 function calculateSize(sizeIn) {
     // rough parity with Plotly 2D markers
