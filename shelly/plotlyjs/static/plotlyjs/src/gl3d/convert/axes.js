@@ -1,6 +1,7 @@
 'use strict';
 
 var arrtools = require('arraytools'),
+    convertHTML = require('../lib/html2unicode'),
     arrayCopy1D = arrtools.copy1D,
     str2RgbaArray = require('../lib/str2rgbarray');
 
@@ -64,7 +65,7 @@ proto.merge = function(sceneLayout) {
         var axes = sceneLayout[AXES_NAMES[i]];
 
         /////// Axes labels //
-        opts.labels[i] = axes.title;
+        opts.labels[i] = convertHTML(axes.title);
         if ('titlefont' in axes) {
             if (axes.titlefont.color)  opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
             if (axes.titlefont.family) opts.labelFont[i]  = axes.titlefont.family;
