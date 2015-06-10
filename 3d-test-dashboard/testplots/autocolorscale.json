@@ -1,0 +1,39 @@
+{
+    "data": [
+        {
+            "type": "surface",
+            "z": [
+                [
+                    8.41,
+                    3,
+                    4
+                ],
+                [
+                    1,
+                    2,
+                    3
+                ],
+                [
+                    2,
+                    43,
+                    1
+                ]
+            ],
+            "autocolorscale": true
+        }
+    ],
+    "layout": {
+        "title": "Simple surface",
+        "scene": {
+            "aspectratio": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            }
+        },
+        "height": 598,
+        "width": 1080,
+        "autosize": true,
+        "showlegend": false
+    }
+}
