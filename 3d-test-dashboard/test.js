@@ -106,10 +106,11 @@ function plotButtons(plots) {
     loseContextButton.style.width = '100px';
     loseContextButton.style.height = '40px';
     loseContextButton.style.marginLeft = '25px';
-    loseContextButton.innerHTML = 'lose context';
+    loseContextButton.innerHTML = 'lose/restore context';
     loseContextButton.style.background = 'blue';
     plotlist.appendChild(loseContextButton);
 
+    var ext = null;
     loseContextButton.addEventListener('click', function() {
       if(!gd) {
         return;
@@ -117,8 +118,12 @@ function plotButtons(plots) {
       Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
           var scene = gd._fullLayout[key]._scene;
           var gl = scene.glplot.gl;
-          var ext = gl.getExtension('WEBGL_lose_context');
-          ext.loseContext();
+          if(gl.isContextLost()) {
+            ext.restoreContext();
+          } else {
+            ext = gl.getExtension('WEBGL_lose_context');
+            ext.loseContext();
+          }
       });
     });
 
