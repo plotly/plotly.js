@@ -3387,9 +3387,12 @@ function makePlotFramework(gd) {
     // single shape layer for the whole plot
     fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
 
+    // for flattening 3D into static images within the SVG, insert a layer here
     fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
+
     // lastly info (legend, annotations) and hover layers go on top
-    // these are in a different svg element normally, but
+    // these are in a different svg element normally, but get collapsed into a single
+    // svg when exporting (after inserting 3D)
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
     fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
 
