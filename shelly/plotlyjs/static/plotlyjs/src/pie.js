@@ -5,10 +5,7 @@
 
 var pie = module.exports = {},
     Plotly = require('./plotly'),
-    Legend = require('./legend'),
-    isNumeric = require('./isnumeric'),
-    legendAttrs = Legend.layoutAttributes,
-    extendFlat = Plotly.Lib.extendFlat;
+    isNumeric = require('./isnumeric');
 
 Plotly.Plots.register(pie, 'pie', ['pie']);
 
@@ -159,4 +156,59 @@ pie.attributes = {
         dflt: 0,
         arrayOk: true
     }
+};
+
+pie.supplyDefaults = function(traceIn, traceOut) {
+    function coerce(attr, dflt) {
+        return Plotly.Lib.coerce(traceIn, traceOut, pie.attributes, attr, dflt);
+    }
+
+    var vals = coerce('value');
+    if(!Array.isArray(vals) || !vals.length) {
+        traceOut.visible = false;
+        return;
+    }
+
+    var labels = coerce('label');
+    if(!Array.isArray(labels)) { // TODO: what if labels is shorter than vals?
+        coerce('label0');
+        coerce('dlabel');
+    }
+
+    var colors = coerce('color');
+    if(!Array.isArray(colors)) traceOut.color = []; // later this will get padded with default colors
+
+    coerce('scalegroup');
+    // TODO: tilt, depth, and hole all need to be coerced to the same values within a sharegroup
+    // and if colors aren't specified we should match these up - potentially even if separate pies
+    // are NOT in the same sharegroup
+
+    var insideMode = coerce('insideinfo.mode');
+    if(insideMode !== 'none') coerce('insideinfo.font');
+
+    var outsideMode = coerce('outsideinfo.mode');
+    if(outsideMode !== 'none') coerce('outsideinfo.font');
+
+    coerce('domain.x[0]');
+    coerce('domain.x[1]');
+    coerce('domain.y[0]');
+    coerce('domain.y[1]');
+
+    var tilt = coerce('tilt');
+    if(tilt) {
+        coerce('tiltaxis');
+        coerce('depth');
+        coerce('shade');
+    }
+
+    coerce('hole');
+
+    coerce('sort');
+    coerce('orientation');
+    coerce('rotation');
+
+    var lineWidth = coerce('line.width');
+    if(lineWidth) coerce('line.color');
+
+    coerce('pull');
 };
