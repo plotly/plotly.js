@@ -3384,8 +3384,9 @@ function makePlotFramework(gd) {
             .classed('crisp', true);
     });
 
-    // single shape layer for the whole plot
+    // single shape and pie layers for the whole plot
     fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
+    fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
     // for flattening 3D into static images within the SVG, insert a layer here
     fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
