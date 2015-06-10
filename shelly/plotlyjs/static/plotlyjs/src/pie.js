@@ -5,7 +5,10 @@
 
 var pie = module.exports = {},
     Plotly = require('./plotly'),
-    isNumeric = require('./isnumeric');
+    Legend = require('./legend'),
+    isNumeric = require('./isnumeric'),
+    legendAttrs = Legend.layoutAttributes,
+    extendFlat = Plotly.Lib.extendFlat;
 
 Plotly.Plots.register(pie, 'pie', ['pie']);
 
@@ -19,6 +22,55 @@ pie.attributes = {
     value: {type: 'data_array'},
     // if color is missing, use default trace color set
     color: {type: 'data_array'},
+
+    scalewith: {
+        /**
+         * if there are multiple pies that should be sized according to
+         * their totals, link them by providing a trace number here
+         * see eg:
+         * https://www.e-education.psu.edu/natureofgeoinfo/sites/www.e-education.psu.edu.natureofgeoinfo/files/image/hisp_pies.gif
+         * (this example involves a map too - may someday be a whole trace type
+         * of its own. but the point is the size of the whole pie is important.)
+         */
+        type: 'enumerated',
+        dflt: false
+    },
+
+    // labels & legend
+    inside: {
+        // text to show in the slices
+        info: {
+            type: 'enumerated',
+            values: ['label', 'percent', 'value', 'none'],
+            dflt: 'percent'
+        },
+        font: {type: 'font'}
+    },
+    outside: {
+        // text to show around the outside of the slices
+        info: {
+            type: 'enumerated',
+            values: ['label', 'percent', 'value', 'none'],
+            dflt: 'none'
+        },
+        font: {type: 'font'}
+    },
+    legend: {
+        // text to show in a legend
+        info: {
+            type: 'enumerated',
+            values: ['label', 'percent', 'value', 'none'],
+            dflt: 'value'
+        },
+        font: {type: 'font'},
+        bgcolor: legendAttrs.bgcolor,
+        bordercolor: legendAttrs.bordercolor,
+        borderwidth: legendAttrs.borderwidth,
+        x: legendAttrs.x,
+        xanchor: legendAttrs.xanchor,
+        y: extendFlat(legendAttrs.y, {dflt: 0.5}),
+        yanchor: legendAttrs.yanchor
+    },
 
     // position and shape
     domain: {
@@ -59,6 +111,32 @@ pie.attributes = {
         type: 'number',
         min: 0,
         max: 1,
+        dflt: 0
+    },
+
+    // ordering and orientation
+    sort: {
+        // reorder slices from largest to smallest?
+        type: 'boolean',
+        dflt: true
+    },
+    orientation: {
+        /**
+         * there are two common conventions, both of which place the first
+         * (largest, if sorted) slice with its left edge at 12 o'clock but
+         * succeeding slices follow either cw or ccw from there.
+         *
+         * see http://visage.co/data-visualization-101-pie-charts/
+         */
+        type: 'enumerated',
+        values: ['cw', 'ccw'],
+        dflt: 'ccw'
+    },
+    rotation: {
+        // instead of the first slice starting at 12 o'clock, rotate to some other angle
+        type: 'number',
+        min: -360,
+        max: 360,
         dflt: 0
     },
 
