@@ -122,8 +122,7 @@ scatter.attributes = {
             dflt: 'diameter'
         },
         colorscale: {
-            type: 'colorscale',
-            dflt: Plotly.Color.defaultScale
+            type: 'colorscale'
         },
         cauto: {
             type: 'boolean',
@@ -160,8 +159,7 @@ scatter.attributes = {
                 arrayOk: true
             },
             colorscale: {
-                type: 'colorscale',
-                dflt: Plotly.Color.defaultScale
+                type: 'colorscale'
             },
             cauto: {
                 type: 'boolean',

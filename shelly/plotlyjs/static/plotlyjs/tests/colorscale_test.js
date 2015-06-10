@@ -77,7 +77,7 @@ describe('Test colorscale:', function () {
             });
         });
 
-        it('should return true when marker color is an Array', function() {
+        it('should return true when marker color is an Array with at least one number', function() {
             trace = {
                 marker: {
                     color: [1, 2, 3],
@@ -88,6 +88,28 @@ describe('Test colorscale:', function () {
             };
             expect(hasColorscale(trace, 'marker')).toBe(true);
             expect(hasColorscale(trace, 'marker.line')).toBe(true);
+
+            trace = {
+                marker: {
+                    color: ['1', 'red', '#d0d0d0'],
+                    line: {
+                        color: ['blue', '3', '#fff']
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(true);
+            expect(hasColorscale(trace, 'marker.line')).toBe(true);
+
+            trace = {
+                marker: {
+                    color: ['green', 'red', 'blue'],
+                    line: {
+                        color: ['rgb(100, 100, 100)', '#d0d0d0', '#fff']
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(false);
+            expect(hasColorscale(trace, 'marker.line')).toBe(false);
         });
 
         it('should return true when marker showscale is true', function() {
