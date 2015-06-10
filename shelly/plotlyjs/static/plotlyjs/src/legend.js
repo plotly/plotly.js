@@ -44,7 +44,14 @@ legend.layoutAttributes = {
         type: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'auto'
-    }
+    },
+
+    /**
+     * hiddenslices is the pie chart analog of visible:'legendonly'
+     * but it can contain many labels, and can hide slices
+     * from several pies simultaneously
+     */
+    hiddenslices: {type: 'data_array'}
 };
 
 legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){

@@ -23,53 +23,38 @@ pie.attributes = {
     // if color is missing, use default trace color set
     color: {type: 'data_array'},
 
-    scalewith: {
+    scalegroup: {
         /**
          * if there are multiple pies that should be sized according to
-         * their totals, link them by providing a trace number here
+         * their totals, link them by providing a non-false group id here
+         * shared by every trace in the same group
          * see eg:
          * https://www.e-education.psu.edu/natureofgeoinfo/sites/www.e-education.psu.edu.natureofgeoinfo/files/image/hisp_pies.gif
          * (this example involves a map too - may someday be a whole trace type
          * of its own. but the point is the size of the whole pie is important.)
          */
-        type: 'enumerated',
+        type: 'any',
         dflt: false
     },
 
-    // labels & legend
-    inside: {
+    // labels (legend is handled by plots.attributes.showlegend and layout.legend.hiddenslices)
+    insideinfo: {
         // text to show in the slices
-        info: {
+        mode: {
             type: 'enumerated',
             values: ['label', 'percent', 'value', 'none'],
             dflt: 'percent'
         },
         font: {type: 'font'}
     },
-    outside: {
+    outsideinfo: {
         // text to show around the outside of the slices
-        info: {
+        mode: {
             type: 'enumerated',
             values: ['label', 'percent', 'value', 'none'],
             dflt: 'none'
         },
         font: {type: 'font'}
-    },
-    legend: {
-        // text to show in a legend
-        info: {
-            type: 'enumerated',
-            values: ['label', 'percent', 'value', 'none'],
-            dflt: 'value'
-        },
-        font: {type: 'font'},
-        bgcolor: legendAttrs.bgcolor,
-        bordercolor: legendAttrs.bordercolor,
-        borderwidth: legendAttrs.borderwidth,
-        x: legendAttrs.x,
-        xanchor: legendAttrs.xanchor,
-        y: extendFlat(legendAttrs.y, {dflt: 0.5}),
-        yanchor: legendAttrs.yanchor
     },
 
     // position and shape
