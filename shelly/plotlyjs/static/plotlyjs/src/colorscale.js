@@ -1,5 +1,7 @@
 'use strict';
 
+/* global d3:false */
+
 var colorscale = module.exports = {},
     Plotly = require('./plotly'),
     tinycolor = require('tinycolor2'),
@@ -96,8 +98,8 @@ function isValidScaleArray(scl) {
             }
             highestVal = +si[0];
         }
-       return isValid;
-   }
+        return isValid;
+    }
 }
 
 colorscale.isValidScale = function(scl) {
@@ -131,11 +133,22 @@ colorscale.getScale = function(scl, dflt) {
 colorscale.hasColorscale = function(trace, containerStr) {
     var container = containerStr ?
             Plotly.Lib.nestedProperty(trace, containerStr).get() || {} :
-            trace;
+            trace,
+        color = container.color,
+        isArrayWithOneNumber = false;
+
+    if(Array.isArray(color)) {
+        for(var i = 0; i < color.length; i++) {
+            if(isNumeric(color[i])) {
+                isArrayWithOneNumber = true;
+                break;
+            }
+        }
+    }
 
     return (
         (typeof container==='object' && container!==null) && (
-            Array.isArray(container.color) ||
+            isArrayWithOneNumber ||
             container.showscale===true ||
             (isNumeric(container.cmin) && isNumeric(container.cmax)) ||
             colorscale.isValidScale(container.colorscale) ||
@@ -233,4 +246,28 @@ colorscale.calc = function(trace, vals, containerStr, cLetter) {
     container[cLetter + 'min'] = min;
     container[cLetter + 'max'] = max;
     container.colorscale = scl;
+};
+
+colorscale.makeScaleFunction = function(scl, cmin, cmax) {
+    var N = scl.length,
+        domain = new Array(N),
+        range = new Array(N),
+        si;
+
+    for(var i = 0; i < N; i++) {
+        si = scl[i];
+        domain[i] = cmin + si[0] * (cmax - cmin);
+        range[i] = si[1];
+    }
+
+    var sclFunc = d3.scale.linear()
+        .domain(domain)
+        .interpolate(d3.interpolateRgb)
+        .range(range);
+
+    return function(v) {
+        if(isNumeric(v)) return sclFunc(v);
+        else if(tinycolor(v).isValid()) return v;
+        else return Plotly.Color.defaultLine;
+    };
 };
