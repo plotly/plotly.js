@@ -1,0 +1,58 @@
+{
+    "data": [
+        {
+            "type": "choropleth",
+            "locations": [
+                "CAN",
+                "USA",
+                "RUS",
+                "AUS",
+                "FRA"
+            ],
+            "z": [
+                80,
+                20,
+                100,
+                60,
+                40
+            ],
+            "colorscale": "Greens",
+            "reversescale": true,
+            "zmin": 0,
+            "zmax": 100,
+            "uid": "3e8d2d"
+        }
+    ],
+    "layout": {
+        "geo": {
+            "projection": {
+                "type": "mollweide",
+                "rotate": [
+                    -180,
+                    0
+                ]
+            },
+            "showcoastlines": true,
+            "coastlinescolor": "black",
+            "coastlineswidth": 1.5,
+            "showcountries": true,
+            "showland": true,
+            "landfillcolor": "#aaa",
+            "showocean": true,
+            "lonaxis": {
+                "showgrid": true,
+                "gridwidth": 2,
+                "gridcolor": "black"
+            },
+            "lataxis": {
+                "showgrid": true,
+                "gridwidth": 2,
+                "gridcolor": "black"
+            }
+        },
+        "autosize": false,
+        "width": 500,
+        "height": 500,
+        "showlegend": false
+    }
+}

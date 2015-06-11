@@ -3,17 +3,19 @@
 /* global d3:false */
 
 var Plotly = require('../../plotly'),
-    getFromTopojson = require('../lib/get-from-topojson');
+    getFromTopojson = require('../lib/get-from-topojson'),
+    clearHover = require('../lib/clear-hover');
 
 var plotScatterGeo = module.exports = {};
 
 plotScatterGeo.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
-        marker = trace.marker || {};
+        marker = trace.marker || {},
+        hasLocationData = Array.isArray(trace.locations);
 
     var N, fromTopojson, features, ids, getLonLat, lonlat, indexOfId;
 
-    if(trace.locations) {
+    if(hasLocationData) {
         N = trace.locations.length;
         fromTopojson = getFromTopojson(trace, topojson);
         features = fromTopojson.features;
@@ -37,9 +39,12 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
 
         cdi.push({
             lon: lonlat[0],
-            lat: lonlat[1]
+            lat: lonlat[1],
+            location: hasLocationData ? trace.locations[i] : null
         });
     }
+
+    // TODO handle cdi[0] empty
 
     cdi[0].trace = trace;
     Plotly.Lib.mergeArray(marker.size, cdi, 'ms');
@@ -64,27 +69,49 @@ function makeLineGeoJSON(trace) {
 }
 
 plotScatterGeo.plot = function(geo, scattergeoData) {
-    var Scatter = Plotly.Scatter,
+    var gScatterGeo = geo.framework.select('g.scattergeolayer'),
+        Scatter = Plotly.Scatter,
         topojson = geo.topojson;
 
+    // For Plotly.plot into an existing map. Better solution?
+    gScatterGeo.selectAll('*').remove();
+
     function handleMouseOver(d) {
-        console.log('scattergeo: ', d.lon, d.lat);
+        if(!geo.showHover) return;
+
+        var xy = geo.projection([d.lon, d.lat]),
+            trace = d3.select(this.parentNode).data()[0],
+            text;
+        
+        // TODO incorporate 'hoverinfo'
+        if(Array.isArray(trace.locations)) text = d.location;
+        else text = '(' + d.lon + ', ' + d.lat + ')';
+
+        if(d.tx) text += '<br>' + d.tx;
+
+        Plotly.Fx.loneHover(
+            {
+                x: xy[0],
+                y: xy[1],
+                text: text,
+                name: trace.name,  // TODO should only appear if data.length>1
+                color: d.mc || (trace.marker || {}).color
+            }, 
+            {container: geo.framework[0][0]}
+        );
     }
 
-    function handleMouseOut(d) {
-        console.log('-- out')
-    }
-
-    var gScatterGeoTraces = geo.framework.select('g.scattergeolayer')
+    var gScatterGeoTraces = gScatterGeo
         .selectAll('g.trace.scatter')
         .data(scattergeoData);
 
     gScatterGeoTraces.enter().append('g')
             .attr('class', 'trace scattergeo');
 
+    // TODO add hover - how?
     gScatterGeoTraces
         .each(function(trace) {
-            if(!Scatter.hasLines(trace)) return;
+            if(!Scatter.hasLines(trace) || trace.visible !== true) return;
             d3.select(this)
                 .append('path')
                 .datum(makeLineGeoJSON(trace))
@@ -110,7 +137,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                     .enter().append('path')
                         .attr('class', 'point')
                         .on('mouseover', handleMouseOver)
-                        .on('mouseout', handleMouseOut);
+                        .on('mouseout', clearHover(geo.framework));
             }
 
             if(showText) {

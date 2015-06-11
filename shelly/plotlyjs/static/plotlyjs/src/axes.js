@@ -1988,7 +1988,8 @@ function numSeparate(nStr, separators) {
 // and optionally 2D axes only, not those inside 3D scenes
 function listNames(td, axletter, only2d) {
     var fullLayout = td._fullLayout;
-    if (!fullLayout) return [];
+    if(!fullLayout) return [];
+    if(fullLayout._hasGeo) return [];
     function filterAxis (obj) {
         return Object.keys(obj)
             .filter( function(k) {

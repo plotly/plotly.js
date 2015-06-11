@@ -344,20 +344,6 @@ function addProjectionToD3() {
   (d3.geo.naturalEarth = function() {
     return projection(naturalEarth);
   }).raw = naturalEarth;
-  function nellHammer(λ, φ) {
-    return [ λ * (1 + Math.cos(φ)) / 2, 2 * (φ - Math.tan(φ / 2)) ];
-  }
-  nellHammer.invert = function(x, y) {
-    var p = y / 2;
-    for (var i = 0, δ = Infinity; i < 10 && Math.abs(δ) > ε; i++) {
-      var c = Math.cos(y / 2);
-      y -= δ = (y - Math.tan(y / 2) - p) / (1 - .5 / (c * c));
-    }
-    return [ 2 * x / (1 + Math.cos(y)), y ];
-  };
-  (d3.geo.nellHammer = function() {
-    return projection(nellHammer);
-  }).raw = nellHammer;
   var robinsonConstants = [ [ .9986, -.062 ], [ 1, 0 ], [ .9986, .062 ], [ .9954, .124 ], [ .99, .186 ], [ .9822, .248 ], [ .973, .31 ], [ .96, .372 ], [ .9427, .434 ], [ .9216, .4958 ], [ .8962, .5571 ], [ .8679, .6176 ], [ .835, .6769 ], [ .7986, .7346 ], [ .7597, .7903 ], [ .7186, .8435 ], [ .6732, .8936 ], [ .6213, .9394 ], [ .5722, .9761 ], [ .5322, 1 ] ];
   robinsonConstants.forEach(function(d) {
     d[1] *= 1.0144;

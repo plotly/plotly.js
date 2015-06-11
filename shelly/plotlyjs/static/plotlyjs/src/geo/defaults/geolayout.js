@@ -175,17 +175,17 @@ GeoLayout.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
     var scope, resolution, projType,
         scopeParams, dfltProjRotate, dfltProjParallels,
-        isWorldScope, isAlbersUsa, isConic;
+        isScoped, isAlbersUsa, isConic;
 
     scope = coerce('scope');
-    isWorldScope = (scope === 'world');
+    isScoped = scope!=='world';
     scopeParams = params.scopeDefaults[scope];
 
     resolution = coerce('resolution');
 
     projType = coerce('projection.type', scopeParams.projType);
-    isAlbersUsa = (projType === 'albers usa');
-    isConic = (projType.indexOf('conic') !== -1);
+    isAlbersUsa = projType==='albers usa';
+    isConic = projType.indexOf('conic')!==-1;
 
     if(isConic) {
         dfltProjParallels = scopeParams.projParallels || [0, 60];
@@ -199,7 +199,7 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
         coerce('projection.rotate[1]', dfltProjRotate[1]);
         coerce('projection.rotate[2]', dfltProjRotate[2]);
 
-        coerce('showcoastlines', isWorldScope);
+        coerce('showcoastlines', !isScoped);
         coerce('coastlinescolor');
         coerce('coastlineswidth');
 
@@ -220,7 +220,7 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
     coerce('riverslinecolor');
     coerce('riverslinewidth');
 
-    coerce('showcountries', !isWorldScope);
+    coerce('showcountries', isScoped);
     coerce('countrieslinecolor');
     coerce('countrieslinewidth');
 
@@ -233,7 +233,7 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
         coerce('subunitslinewidth');
     }
 
-    if(isWorldScope) {
+    if(!isScoped) {
         // Does not work in non-world scopes
         coerce('showframe');
         coerce('framelinecolor');
@@ -250,7 +250,7 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
     geoLayoutOut._clipAngle = params.lonaxisSpan[projType] / 2;
     geoLayoutOut._isAlbersUsa = isAlbersUsa;
     geoLayoutOut._isConic = isConic;
-    geoLayoutOut._isWorldScope = isWorldScope;
+    geoLayoutOut._isScoped = isScoped;
 };
 
 function findGeosInData(fullData) {

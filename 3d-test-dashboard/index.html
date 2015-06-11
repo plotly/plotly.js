@@ -49,7 +49,7 @@
         fresh: function() {
             var anchor = document.getElementById('embedded-graph'),
                 plotDiv = Tabs.get();
-            anchor.removeChild(plotDiv);
+            if(plotDiv) anchor.removeChild(plotDiv);
             plotDiv = document.createElement('div');
             anchor.appendChild(plotDiv);
             return plotDiv;

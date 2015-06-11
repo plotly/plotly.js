@@ -10,8 +10,7 @@ function createGeoScale(geoLayout, graphSize) {
         lataxisLayout = geoLayout.lataxis,
         geoDomain = geoLayout.domain;
 
-    // map width & height within domain
-    // TODO consider margins!!
+    // width & height the geo div
     var geoWidth = graphSize.w * (geoDomain.x[1] - geoDomain.x[0]),
         geoHeight = graphSize.h * (geoDomain.y[1] - geoDomain.y[0]);
 
@@ -32,7 +31,7 @@ function createGeoScale(geoLayout, graphSize) {
 
     // is this more intuitive?
     var rotate = projLayout.rotate;
-    projLayout._rotate = [-rotate[0], -rotate[1]];
+    projLayout._rotate = rotate ? [-rotate[0], -rotate[1]] : [0, 0];
 
     // center of the projection is given by
     // the lon/lat ranges and the rotate angle
@@ -47,11 +46,7 @@ function createGeoScale(geoLayout, graphSize) {
         var scale0 = projection.scale(),
             translate0 = projLayout._translate0,
             rangeBox = makeRangeBox(lon0, lat0, lon1, lat1),
-            fullRangeBox = makeRangeBox(lonfull0, latfull0, lonfull1, latfull1),
-            
-            // TODO
-//             autosize = fullLayout.autosize;
-            autosize = false;
+            fullRangeBox = makeRangeBox(lonfull0, latfull0, lonfull1, latfull1);
 
        var scale, translate, bounds, fullBounds;
 
@@ -60,16 +55,10 @@ function createGeoScale(geoLayout, graphSize) {
         // these to determine better values for the scale and translation
 
         function getScale(bounds) {
-            function scaleFromWidth() {
-                return scale0 * geoWidth / (bounds[1][0] - bounds[0][0]);
-            }
-            function scaleFromHeight() {
-                 return scale0 * geoHeight / (bounds[1][1] - bounds[0][1]);
-            }
-
-            if(autosize === 'height') return scaleFromWidth();
-            else if(autosize === 'width') return scaleFromHeight();
-            else return Math.min(scaleFromWidth(), scaleFromHeight());
+            return Math.min(
+                scale0 * geoWidth / (bounds[1][0] - bounds[0][0]),
+                scale0 * geoHeight / (bounds[1][1] - bounds[0][1])
+            );
         }
 
         // scale projection given how range box get deformed
@@ -95,14 +84,7 @@ function createGeoScale(geoLayout, graphSize) {
         // clip regions out of the range box
         // (these are clipping along horizontal/vertical lines)
         bounds = getBounds(projection, rangeBox);
-        if(!projLayout._isAlbersUsa) projection.clipExtent(bounds);
-
-        geoLayout._width = autosize==='height' ?
-            Math.round(bounds[1][0]) :
-            geoWidth;
-        geoLayout._height = autosize==='width' ?
-            Math.round(bounds[1][1]) :
-            geoHeight;
+        if(!geoLayout._isAlbersUsa) projection.clipExtent(bounds);
 
         // adjust scale one more time with the 'scale' attribute
         scale = projLayout.scale * scale;
@@ -110,8 +92,13 @@ function createGeoScale(geoLayout, graphSize) {
         // set projection scale and save it
         projLayout._scale = scale;
 
-        // TODO add clipping along meridian/parallels option
-        //      doable along meridian using projection.clipAngle!!!
+        // save the width & height of the geo div
+        geoLayout._widthDiv = geoWidth;
+        geoLayout._heightDiv = geoHeight;
+
+        // save the effective width & height of the geo framework
+        geoLayout._widthFramework = Math.round(bounds[1][0]);
+        geoLayout._heightFramework = Math.round(bounds[1][1]);
     };
     
     return setScale;

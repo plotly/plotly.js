@@ -18,6 +18,7 @@ params.projNames = {
     'transverse mercator': 'transverseMercator',
     'albers usa': 'albersUsa',
     // d3.geo.projection plugin
+    'natural earth': 'naturalEarth',
     'kavrayskiy7': 'kavrayskiy7',
     'mollweide': 'mollweide',
     'hammer': 'hammer',
@@ -29,20 +30,21 @@ params.projNames = {
 // name of the axes
 params.axesNames = ['lonaxis', 'lataxis'];
 
-// max longitudinal angular span
+// max longitudinal angular span (EXPERIMENTAL)
 params.lonaxisSpan = {
     'orthographic': 180,
     'azimuthal equal area': 360,
     'azimuthal equidistant': 360,
-    'gnomonic': 160,  // TODO appears to make things work; is this correct?
-    'stereographic': 360,
+    'gnomonic': 160,
+    'stereographic': 350,
     '*': 360
 };
 
-// max latitudinal angular span
+// max latitudinal angular span (EXPERIMENTAL)
 params.lataxisSpan = {
-    'conic conformal': 150, // TODO appears to make things work; is this correct?
-    '*': 180                // all other projections
+    'conic conformal': 150,
+    'stereographic': 90,
+    '*': 180
 };
 
 // defaults for each scope
@@ -56,7 +58,7 @@ params.scopeDefaults = {
     usa: {
         lonaxisRange: [-180, -50],
         lataxisRange: [15, 80],
-        projType: 'albers-usa'
+        projType: 'albers usa'
     },
     europe: {
         lonaxisRange: [-30, 60],
@@ -92,6 +94,13 @@ params.scopeDefaults = {
     }
 };
 
+
+params.typeDefaults = {
+    'stereographic': {
+        projRotate: [0, 90]
+    }
+};
+
 // angular pad to avoid rounding error around clip angles
 params.clippad = 1e-3;
 
@@ -99,7 +108,7 @@ params.clippad = 1e-3;
 params.precision = 0.1;
 
 // default land and water fill colors
-params.landFillColor = '#3B5323';
+params.landFillColor = '#F0DC82';
 params.waterFillColor = '#3399FF';
 
 // locationmode to layer name
@@ -119,8 +128,13 @@ params.fillLayers = ['ocean', 'land', 'lakes'];
 // base layer with a only a line color
 params.lineLayers = ['subunits', 'countries', 'coastlines', 'rivers', 'frame'];
 
-// all base layers
-params.baseLayers = params.fillLayers.concat(params.lineLayers);
+// all base layers - in order
+params.baseLayers = [
+    'ocean', 'land', 'lakes',
+    'subunits', 'countries', 'coastlines', 'rivers',
+    'lataxis', 'lonaxis',
+    'frame'
+];
 
 // base layers drawn over choropleth
 params.baseLayersOverChoropleth = ['rivers', 'lakes'];

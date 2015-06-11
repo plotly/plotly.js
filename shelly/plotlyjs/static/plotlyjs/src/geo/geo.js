@@ -2,11 +2,13 @@
 
 /* global d3:false */
 
-var params = require('./lib/params'),
+var Plotly = require('../plotly'),
+    params = require('./lib/params'),
     getTopojsonPath = require('./lib/get-topojson-path'),
     addProjectionsToD3 = require('./lib/projections'),
     createGeoScale = require('./lib/set-scale'),
     createGeoZoom = require('./lib/zoom'),
+    clearHover = require('./lib/clear-hover'),
     plotScatterGeo = require('./plot/scattergeo'),
     plotChoropleth = require('./plot/choropleth'),
     topojsonPackage = require('topojson');
@@ -18,23 +20,28 @@ function Geo(options, fullLayout) {
 
     var geoLayout = fullLayout[this.id];
 
-    // add a few projection type to d3.geo,
+    // add a few projection types to d3.geo,
     // a subset of https://github.com/d3/d3-geo-projection
     addProjectionsToD3();
 
+    this.showHover = fullLayout.hovermode==='closest';
+
     this.framework = null;
-    this.projection = null;
-    this.path = null;
     this.topojson = null;
     this.topojsonPath = null;
     this.topojsonIsLoading = false;
     this.clipAngle = null;
+    this.setScale = null;
+    this.projection = null;
+    this.path = null;
+    this.zoom = null;
 
+    // TODO move to proto.plot
     this.setScale = createGeoScale(geoLayout, fullLayout._size);
     this.makeProjection(geoLayout);
     this.zoom = createGeoZoom(this, geoLayout);
-    this.makeFramework(geoLayout);
 
+    this.makeFramework(geoLayout);
 }
 
 module.exports = Geo;
@@ -48,6 +55,8 @@ proto.plot = function(geoData, fullLayout) {
 
     // 'geoLayout' is unambiguous, no need for 'user' geo layout here
 
+    _this.adjustMargins(fullLayout._size, geoLayout.domain);
+
     _this.topojsonPath = getTopojsonPath(geoLayout);
     _this.makePath();
 
@@ -60,7 +69,10 @@ proto.plot = function(geoData, fullLayout) {
     }
     else _this.onceTopojsonIsLoaded(geoData, geoLayout);
 
-    // TODO handle topojsonIsLoading case
+    // TODO handle topojsonIsLoading case (for streaming)
+
+    // TODO if more than 1 geo uses the same topojson,
+    //      that topojson should be loaded only once.
 };
 
 proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
@@ -125,54 +137,83 @@ proto.makePath = function() {
     this.path = d3.geo.path().projection(this.projection);
 };
 
+/*
+ * <div this.container>
+ *   <div geoDiv>
+ *     <svg framework>
+ */
 proto.makeFramework = function(geoLayout) {
-    var _this = this,
-        projection = _this.projection,
-        container = _this.container,
-        zoom = _this.zoom;
-
-    var framework = _this.framework = d3.select(container).append('svg');
-
-    container.style.position = 'absolute';
-    container.style.top = container.style.left = '0px';
-    container.style.width = container.style.height = '100%';
-    container.style['z-index'] = 20;
+    var geoDiv = this.geoDiv = d3.select(this.container).append('div');
+    geoDiv
+        .attr('id', this.id)
+        .style({
+            position: 'absolute',
+            top: '0px',
+            left: '0px',
+            width: '100%',
+            height: '100%'
+        });
 
     // TODO use clip paths instead of nested SVG
-
-    // TODO how to handle 'gs' (from figure size, domain and setScale)
-    // TODO handle 'framelinewidth' also
+    var framework = this.framework = geoDiv.append('svg');
 
     framework
-        .attr('width', geoLayout._width)
-        .attr('height', geoLayout._height);
+        .attr('width', geoLayout._widthFramework)
+        .attr('height', geoLayout._heightFramework)
+        .style({
+            position: 'absolute',
+            top: (geoLayout._heightDiv - geoLayout._heightFramework) / 2,
+            left: (geoLayout._widthDiv - geoLayout._widthFramework) / 2,
+            width: geoLayout._widthFramework,
+            height: geoLayout._heightFramework
+        });
 
     framework.append('g').attr('class', 'baselayer');
-    framework.append('g').attr('class', 'graticulelayer');
 
     framework.append('g').attr('class', 'choroplethlayer');
     framework.append('g').attr('class', 'baselayeroverchoropleth');
     framework.append('g').attr('class', 'scattergeolayer');
 
-    function handleDblClick() {
-        _this.makeProjection(geoLayout);
-        _this.makePath();
-
-        // N.B. let the zoom event know!
-        zoom.scale(projection.scale());
-        zoom.translate(projection.translate());
-
-        _this.render();
-    }
+    this.zoomReset = this.createZoomReset(geoLayout, framework);
 
     // attach zoom and dblclick event to svg container
     framework
-        .call(zoom)
+        .call(this.zoom)
         .on('dblclick.zoom', null)  // N.B. disable dblclick zoom default
-        .on('dblclick', handleDblClick);
+        .on('dblclick', this.zoomReset);
 };
 
-proto.drawBaseLayer = function(selection, layerName, geoLayout) {
+proto.createZoomReset = function(geoLayout, framework) {
+    var _this = this,
+        projection = _this.projection,
+        zoom = _this.zoom;
+    
+    var zoomReset = function() {
+        _this.makeProjection(geoLayout);
+        _this.makePath();
+
+        zoom.scale(projection.scale());
+        zoom.translate(projection.translate());
+        clearHover(framework);
+
+        _this.render();
+    };
+
+    return zoomReset;
+};
+
+proto.adjustMargins = function(size, domain) {
+    this.geoDiv
+        .style({
+            position: 'absolute',
+            left: (size.l + domain.x[0] * size.w) + 'px',
+            top: (size.t + (1 - domain.y[1]) * size.h) + 'px',
+            width: (size.w * (domain.x[1] - domain.x[0])) + 'px',
+            height: (size.h * (domain.y[1] - domain.y[0])) + 'px'
+        });
+};
+
+proto.drawTopo = function(selection, layerName, geoLayout) {
     if(geoLayout['show' + layerName] !== true) return;
 
     var topojson = this.topojson,
@@ -198,7 +239,7 @@ function makeGraticule(lonaxisRange, lataxisRange, step) {
 
 proto.drawGraticule = function(selection, axisName, geoLayout) {
     var axisLayout = geoLayout[axisName];
-    
+
     if(axisLayout.showgrid !== true) return;
 
     var scopeDefaults = params.scopeDefaults[geoLayout.scope],
@@ -218,17 +259,20 @@ proto.drawGraticule = function(selection, axisName, geoLayout) {
 
 proto.drawLayout = function(geoLayout) {
     var gBaseLayer = this.framework.select('g.baselayer'),
-        gGraticuleLayer = this.framework.select('g.graticulelayer'),
         baseLayers = params.baseLayers,
         axesNames = params.axesNames,
-        i;
+        layerName;
 
-    for(i = 0;  i < baseLayers.length; i++) {
-        this.drawBaseLayer(gBaseLayer, baseLayers[i], geoLayout);
-    }
+    // For Plotly.plot into an existing map. Better solution?
+    gBaseLayer.selectAll('*').remove();
 
-    for(i = 0; i < axesNames.length; i++) {
-        this.drawGraticule(gGraticuleLayer, axesNames[i], geoLayout);
+    for(var i = 0;  i < baseLayers.length; i++) {
+        layerName = baseLayers[i];
+
+        if(axesNames.indexOf(layerName)!==-1) {
+            this.drawGraticule(gBaseLayer, layerName, geoLayout);
+        }
+        else this.drawTopo(gBaseLayer, layerName, geoLayout);
     }
 
     this.styleLayout(geoLayout);
@@ -238,7 +282,7 @@ function styleFillLayer(selection, layerName, geoLayout) {
     selection.select('.' + layerName)
         .selectAll('path')
             .attr('stroke', 'none')
-            .attr('fill', geoLayout[layerName + 'fillcolor']);
+            .call(Plotly.Color.fill, geoLayout[layerName + 'fillcolor']);
 }
 
 function styleLineLayer(selection, layerName, geoLayout) {
@@ -249,8 +293,16 @@ function styleLineLayer(selection, layerName, geoLayout) {
     selection.select('.' + layerName)
         .selectAll('path')
             .attr('fill', 'none')
-            .attr('stroke', geoLayout[layerAttr + 'color'])
-            .attr('stroke-width', geoLayout[layerAttr + 'width']);
+            .call(Plotly.Color.stroke, geoLayout[layerAttr + 'color'])
+            .call(Plotly.Drawing.dashLine, '', geoLayout[layerAttr + 'width']);
+}
+
+function styleGraticule(selection, axisName, geoLayout) {
+    selection.select('.' + axisName + 'graticule')
+        .selectAll('path')
+            .attr('fill', 'none')
+            .call(Plotly.Color.stroke, geoLayout[axisName].gridcolor)
+            .call(Plotly.Drawing.dashLine, '', geoLayout[axisName].width);
 }
 
 proto.styleLayer = function(selection, layerName, geoLayout) {
@@ -265,28 +317,19 @@ proto.styleLayer = function(selection, layerName, geoLayout) {
     }
 };
 
-function styleGraticule(selection, axisName, geoLayout) {
-    selection.select('.' + axisName + 'graticule')
-        .selectAll('path')
-            .attr('fill', 'none')
-            .attr('stroke', geoLayout[axisName].gridcolor)
-            .attr('stroke-width', geoLayout[axisName].gridwidth)
-            .attr('stroke-opacity', 0.5);  // TODO generalize
-}
-
 proto.styleLayout = function(geoLayout) {
     var gBaseLayer = this.framework.select('g.baselayer'),
-        gGraticuleLayer = this.framework.select('g.graticulelayer'),
         baseLayers = params.baseLayers,
         axesNames = params.axesNames,
-        i;
+        layerName;
 
-    for(i = 0; i < baseLayers.length; i++) {
-        this.styleLayer(gBaseLayer, baseLayers[i], geoLayout);
-    }
+    for(var i = 0; i < baseLayers.length; i++) {
+        layerName = baseLayers[i];
 
-    for(i = 0;  i < axesNames.length; i++) {
-        styleGraticule(gGraticuleLayer, axesNames[i], geoLayout);
+        if(axesNames.indexOf(layerName)!==-1) {
+            styleGraticule(gBaseLayer, layerName, geoLayout);
+        }
+        else this.styleLayer(gBaseLayer, layerName, geoLayout);
     }
 };
 
@@ -315,7 +358,6 @@ proto.render = function() {
                 return (angle > maxAngle) ? '0' : '1.0';
             });
     }
-
 
     framework.selectAll('path.basepath').attr('d', path);
     framework.selectAll('path.graticulepath').attr('d', path);

@@ -745,7 +745,7 @@ function plotGeo(gd) {
         if(geo === undefined) {
             geoOptions = {
                 id: geoId,
-                container: gd.querySelector('.gl-container')
+                container: gd.querySelector('.geo-container')
             };
             geo = new Plotly.Geo(geoOptions, fullLayout);
             fullLayout[geoId]._geo = geo;
@@ -1601,16 +1601,18 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
-    var moduleLayoutDefaults = ['Axes', 'Legend', 'Annotations', 'Shapes', 'Fx',
-                                'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout'];
+    var moduleLayoutDefaults = [
+        'Axes', 'Legend', 'Annotations', 'Shapes', 'Fx',
+        'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout'
+    ];
 
     var i, module;
 
     // don't add a check for 'function in module' as it is better to error out and
     // secure the module API then not apply the default function.
-    for (i = 0; i < moduleLayoutDefaults.length; i++) {
+    for(i = 0; i < moduleLayoutDefaults.length; i++) {
         module = moduleLayoutDefaults[i];
-        if (Plotly[module]) {
+        if(Plotly[module]) {
             Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         }
     }
@@ -2443,8 +2445,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         undoit = {},
         axlist;
 
-    // for now, if we detect 3D stuff, just re-do the plot
-    if (fullLayout._hasGL3D) doplot = true;
+    // for now, if we detect 3D or geo stuff, just re-do the plot
+    if(fullLayout._hasGL3D || fullLayout._hasGeo) doplot = true;
 
     // make a new empty vals array for undoit
     function a0(){ return traces.map(function(){ return undefined; }); }
@@ -2808,6 +2810,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
         docalc = false,
         domodebar = false,
         doSceneDragmode = false,
+        doGeo = false,
         newkey, axes, keys, xyref, scene, axisAttr;
 
     if(typeof astr === 'string') aobj[astr] = val;
@@ -2873,6 +2876,9 @@ Plotly.relayout = function relayout (gd, astr, val) {
     }
 
     var hw = ['height','width'];
+
+    // !!!
+    if(gd._fullLayout._hasGeo) doGeo = true;
 
     // alter gd.layout
     for(var ai in aobj) {
@@ -3095,11 +3101,20 @@ Plotly.relayout = function relayout (gd, astr, val) {
         if(domodebar) Plotly.Fx.modeBar(gd);
 
         var sceneIds;
-        if (doSceneDragmode) {
+        if(doSceneDragmode) {
             sceneIds = plots.getSubplotIds(gd._fullLayout, 'gl3d');
             for (i = 0; i < sceneIds.length; i++) {
                 scene = gd._fullLayout[sceneIds[i]]._scene;
                 scene.handleDragmode(gd._fullLayout.dragmode);
+            }
+        }
+
+        var geoIds, geoLayout;
+        if(doGeo) {
+            geoIds = plots.getSubplotIds(gd._fullLayout, 'geo');
+            for (i = 0; i < geoIds.length; i++) {
+                geoLayout = gd._fullLayout[geoIds[i]];
+                geoLayout._geo.drawLayout(geoLayout);
             }
         }
     }
@@ -3279,6 +3294,11 @@ function makePlotFramework(gd) {
     fullLayout._glcontainer.enter().append('div')
         .classed('gl-container', true);
 
+    fullLayout._geocontainer = fullLayout._paperdiv.selectAll('.geo-container')
+        .data([0]);
+    fullLayout._glcontainer.enter().append('div')
+        .classed('geo-container', true);
+
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 
     fullLayout._paper = fullLayout._paperdiv.insert('svg', ':first-child')
@@ -3286,7 +3306,6 @@ function makePlotFramework(gd) {
 
     fullLayout._toppaper = fullLayout._paperdiv.append('svg')
         .classed('main-svg', true);
-
 
     if(!fullLayout._uid) {
         var otherUids = [];

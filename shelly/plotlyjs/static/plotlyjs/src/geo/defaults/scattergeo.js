@@ -4,7 +4,8 @@ var Plotly = require('../../plotly');
 
 var ScatterGeo = module.exports = {};
 
-Plotly.Plots.register(ScatterGeo, 'scattergeo', ['geo', 'symbols', 'showLegend']);
+Plotly.Plots.register(ScatterGeo, 'scattergeo', 
+                      ['geo', 'symbols', 'markerColorscale', 'showLegend']);
 
 var scatterAttrs = Plotly.Scatter.attributes,
     scatterMarkerAttrs = scatterAttrs.marker,
@@ -37,10 +38,21 @@ ScatterGeo.attributes = {
         opacity: scatterMarkerAttrs.opacity,
         size: scatterMarkerAttrs.size,
         color: scatterMarkerAttrs.color,
+        colorscale: scatterMarkerAttrs.colorscale,
+        cauto: scatterMarkerAttrs.cauto,
+        cmax: scatterMarkerAttrs.cmax,
+        cmin: scatterMarkerAttrs.cmin,
+        autocolorscale: scatterMarkerAttrs.autocolorscale,
+        reversescale: scatterMarkerAttrs.reversescale,
+        showscale: scatterMarkerAttrs.showscale,
         line: {
             color: scatterMarkerLineAttrs.color,
             width: scatterMarkerLineAttrs.width
         }
+    },
+    _nestedModules: {
+        'marker.colorbar': 'Colorbar'
+        // TODO error bars?
     }
 };
 
@@ -68,6 +80,13 @@ ScatterGeo.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     // TODO refactor -> Scatter.isBubble for 2d, 3d and geo
     if(Scatter.hasMarkers(traceOut)) {
         markerColor = coerce('marker.color', defaultColor);
+
+        if(Plotly.Colorscale.hasColorscale(traceIn, 'marker')) {
+            Plotly.Colorscale.handleDefaults(
+                traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
+            );
+        }
+
         coerce('marker.symbol');
         coerce('marker.size');
         coerce('marker.opacity', isBubble ? 0.7 : 1);
@@ -112,8 +131,17 @@ ScatterGeo.handleLonLatLocDefaults = function(traceIn, traceOut, coerce) {
     return len;
 };
 
+ScatterGeo.colorbar = Plotly.Scatter.colorbar;
+
 ScatterGeo.calc = function(gd, trace) {
+    var marker;
 
-    // TODO sanitize data
+    if(Plotly.Scatter.hasMarkers(trace)) {
+        marker = trace.marker;
 
+        // auto-z and autocolorscale if applicable
+        if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
+            Plotly.Colorscale.calc(trace, marker.color, 'marker', 'c');
+        }
+    }
 };

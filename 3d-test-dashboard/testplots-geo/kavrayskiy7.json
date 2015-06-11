@@ -29,6 +29,7 @@
                 39,
                 24
             ],
+            "name": "mah trace!",
             "line": {
                 "color": "rgb(0, 255, 255)",
                 "width": 5
@@ -69,10 +70,12 @@
             "landfillcolor": "#aaa",
             "showocean": true,
             "lonaxis": {
+                "showgrid": true,
                 "gridwidth": 2,
                 "gridcolor": "black"
             },
             "lataxis": {
+                "showgrid": true,
                 "range": [
                     -75,
                     85

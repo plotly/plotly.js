@@ -4,7 +4,8 @@
 
 var Plotly = require('../../plotly'),
     params = require('../lib/params'),
-    getFromTopojson = require('../lib/get-from-topojson');
+    getFromTopojson = require('../lib/get-from-topojson'),
+    clearHover = require('../lib/clear-hover');
 
 var plotChoropleth = module.exports = {};
 
@@ -28,6 +29,7 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
         cdi.push(feature);
     }
 
+    Plotly.Lib.mergeArray(trace.text, cdi, 'tx');
     Plotly.Lib.mergeArray(markerLine.color, cdi, 'mlc');
     Plotly.Lib.mergeArray(markerLine.width, cdi, 'mlw');
 
@@ -44,12 +46,30 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         baseLayersOverChoropleth = params.baseLayersOverChoropleth,
         layerName;
 
+    // For Plotly.plot into an existing map. Better solution?
+    gChoropleth.selectAll('*').remove();
+    gBaseLayerOverChoropleth.selectAll('*').remove();
+
+    // TODO incorporate 'hoverinfo'
     function handleMouseOver(d) {
-        console.log('choropleth: ', d.properties.centroid);
+        if(!geo.showHover) return;
+
+        var xy = geo.projection(d.properties.centroid);
+        Plotly.Fx.loneHover(
+            {
+                x: xy[0],
+                y: xy[1],
+                name: d.id,
+                zLabel: d.z,
+                text: d.tx
+            }, 
+            {container: geo.framework[0][0]}
+        );
     }
 
-    function handleMouseOut(d) {
-        console.log('-- out')
+    function handleZoom(d) {
+        clearHover(geo.framework);
+        handleMouseOver(d);
     }
 
     gChoropleth.append('g')
@@ -64,14 +84,15 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                 .enter().append('path')
                     .attr('class', 'choroplethlocation')
                     .on('mouseover', handleMouseOver)
-                    .on('mouseout', handleMouseOut);
+                    .on('mouseout', clearHover(geo.framework))
+                    .on('mousewheel.zoom', handleZoom);
         });
         
     // some baselayers are drawn over choropleth
     for(var i = 0; i < baseLayersOverChoropleth.length; i++) {
         layerName = baseLayersOverChoropleth[i];
         gBaseLayer.select('g.' + layerName).remove();
-        geo.drawBaseLayer(gBaseLayerOverChoropleth, layerName, geoLayout);
+        geo.drawTopo(gBaseLayerOverChoropleth, layerName, geoLayout);
         geo.styleLayer(gBaseLayerOverChoropleth, layerName, geoLayout);
     }
 
@@ -87,18 +108,14 @@ plotChoropleth.style = function(geo) {
                 zmin = trace.zmin,
                 zmax = trace.zmax,
                 scl = Plotly.Colorscale.getScale(trace.colorscale),
-                colormap = d3.scale.linear()
-                    .domain(scl.map(function(v) {
-                        return zmin + v[0] * (zmax - zmin);
-                    }))
-                    .range(scl.map(function(v) { return v[1]; }));
+                sclFunc = Plotly.Colorscale.makeScaleFunction(scl, zmin, zmax);
 
             s.selectAll('path.choroplethlocation')
                 .each(function(d) {
                     d3.select(this)
-                        .attr('fill', function(d) { return colormap(d.z); })
-                        .attr('stroke', d.mlc || markerLine.color)
-                        .attr('stroke-width', d.mlw || markerLine.width);
+                        .attr('fill', function(d) { return sclFunc(d.z); })
+                        .call(Plotly.Color.stroke, d.mlc || markerLine.color)
+                        .call(Plotly.Drawing.dashLine, '', d.mlw || markerLine.width);
                 });
         });
 };

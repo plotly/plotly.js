@@ -64,6 +64,7 @@ Choropleth.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('locationmode');
 
     coerce('text');
+
     coerce('marker.line.color');
     coerce('marker.line.width');
 
@@ -76,8 +77,6 @@ Choropleth.colorbar = Plotly.Heatmap.colorbar;
 
 Choropleth.calc = function(gd, trace) {
 
-    // TODO sanitize data
-
-//     Plotly.Colorscale.calc();
+    Plotly.Colorscale.calc(trace, trace.z, '', 'z');
 
 };

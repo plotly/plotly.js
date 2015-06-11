@@ -12,7 +12,7 @@ GeoAxes.layoutAttributes = {
     ],
     showgrid: {
         type: 'boolean',
-        dflt: true
+        dflt: false
     },
     tick0: {
         type: 'number'
@@ -53,7 +53,7 @@ GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
             dfltSpans = params[axisName + 'Span'];
             halfSpan = dfltSpans[projType]!==undefined ?
                 dfltSpans[projType] / 2 :
-                dfltSpans['*'] /2;
+                dfltSpans['*'] / 2;
 
             return [projRotate[rotateInd] - halfSpan,
                     projRotate[rotateInd] + halfSpan];
@@ -70,6 +70,9 @@ GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
 
         range0 = coerce('range[0]', rangeDflt[0]);
         coerce('range[1]', rangeDflt[1]);
+
+        // TODO handle lataxisSpan
+
         Plotly.Lib.noneOrAll(axisIn.range, axisOut.range, [0, 1]);
 
         coerce('tick0', range0);
