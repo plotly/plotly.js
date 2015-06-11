@@ -1,0 +1,66 @@
+{
+    "data": [
+        {
+            "type": "scatter3d",
+            "x": [
+                100.75,
+                157.53,
+                140.72,
+                134.03
+            ],
+            "y": [
+                -102.63,
+                -110.53,
+                -96.97,
+                -163.59
+            ],
+            "z": [
+                -102.63,
+                -110.53,
+                -96.97,
+                -163.59
+            ],
+            "marker": {
+                "color": [
+                    "blue",
+                    "red",
+                    "orange",
+                    "black"
+                ],
+                "line": {
+                    "color": [
+                        "black",
+                        "blue"
+                    ],
+                    "width": 1
+                },
+                "size": [
+                    10,
+                    20,
+                    30,
+                    40
+                ],
+                "symbol": [
+                    "circle",
+                    "square",
+                    "cross"
+                ]
+            },
+            "uid": "2899cc"
+        }
+    ],
+    "layout": {
+        "title": "Scatter3d arrayOk",
+        "scene": {
+            "aspectratio": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            }
+        },
+        "height": 579,
+        "width": 1071,
+        "autosize": true,
+        "showlegend": false
+    }
+}
