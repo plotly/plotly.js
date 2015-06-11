@@ -5,7 +5,8 @@
 
 var pie = module.exports = {},
     Plotly = require('./plotly'),
-    isNumeric = require('./isnumeric');
+    isNumeric = require('./isnumeric'),
+    tinycolor = require('tinycolor2');
 
 Plotly.Plots.register(pie, 'pie', ['pie']);
 
@@ -158,7 +159,7 @@ pie.attributes = {
     }
 };
 
-pie.supplyDefaults = function(traceIn, traceOut) {
+pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, pie.attributes, attr, dflt);
     }
@@ -212,3 +213,97 @@ pie.supplyDefaults = function(traceIn, traceOut) {
 
     coerce('pull');
 };
+
+pie.supplyLayoutDefaults  = function(layoutIn, layoutOut){
+    // clear out stashed label -> color mappings to be used by calc
+    layoutOut._piecolormap = {};
+    layoutOut._piedefaultcolorcount = 0;
+};
+
+pie.calc = function(gd, trace) {
+    var vals = trace.value,
+        cd = [],
+        fullLayout = gd._fullLayout,
+        colorMap = fullLayout._piecolormap,
+        allLabels = {},
+        needDefaults = false,
+        i,
+        v,
+        label,
+        color;
+
+    for(i = 0; i < vals.length; i++) {
+        v = vals[i];
+        if(!isNumeric(v)) continue;
+        v = +v;
+        if(v < 0) continue;
+
+        label = trace.labels[i];
+        if(label === undefined || label === '') label = i;
+        label = String(label);
+        // only take the first occurrence of any given label.
+        // TODO: perhaps (optionally?) sum values for a repeated label?
+        if(allLabels[label] === undefined) allLabels[label] = true;
+        else continue;
+
+        color = tinycolor(trace.colors[i]);
+        if(color.isValid()) {
+            color = Plotly.Color.tinyRGB(color);
+            colorMap[label] = color;
+        }
+        // have we seen this label and assigned a color to it in a previous trace?
+        else if(colorMap[label]) color = colorMap[label];
+        // color needs a default - mark it false, come back after sorting
+        else {
+            color = false;
+            needDefaults = true;
+        }
+
+        cd.push({
+            v: v,
+            label: label,
+            color: color
+        });
+    }
+
+    if(trace.sort) cd.sort(function(a, b) { return b.v - a.v; });
+
+    /**
+     * now go back and fill in colors we're still missing
+     * this is done after sorting, so we pick defaults
+     * in the order slices will be displayed
+     */
+
+    if(needDefaults) {
+        for(i = 0; i < cd.length; i++) {
+            if(cd[i].color === false) {
+                colorMap[cd[i].label] = cd[i].color = nextDefaultColor(fullLayout._piedefaultcolorcount);
+                fullLayout._piedefaultcolorcount++;
+            }
+        }
+    }
+
+    return cd;
+};
+
+/**
+ * pick a default color from the main default set, augmented by
+ * itself lighter then darker before repeating
+ */
+var pieDefaultColors;
+
+function nextDefaultColor(index) {
+    if(!pieDefaultColors) {
+        // generate this default set on demand (but then it gets saved in the module)
+        var mainDefaults = Plotly.Color.defaults;
+        pieDefaultColors = mainDefaults.slice();
+        for(var i = 0; i < mainDefaults.length; i++) {
+            pieDefaultColors.push(tinycolor(mainDefaults[i]).lighten(20).toHexString());
+        }
+        for(i = 0; i < Plotly.Color.defaults.length; i++) {
+            pieDefaultColors.push(tinycolor(mainDefaults[i]).darken(20).toHexString());
+        }
+    }
+
+    return pieDefaultColors[index % pieDefaultColors.length];
+}

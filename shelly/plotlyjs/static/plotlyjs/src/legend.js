@@ -88,6 +88,7 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
         coerce('y');
         coerce('yanchor');
         Plotly.Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
+        coerce('hiddenslices');
     }
 };
 
