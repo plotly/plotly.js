@@ -227,6 +227,7 @@ pie.calc = function(gd, trace) {
         colorMap = fullLayout._piecolormap,
         allLabels = {},
         needDefaults = false,
+        vTotal = 0,
         i,
         v,
         label,
@@ -259,6 +260,8 @@ pie.calc = function(gd, trace) {
             needDefaults = true;
         }
 
+        vTotal += v;
+
         cd.push({
             v: v,
             label: label,
@@ -282,6 +285,9 @@ pie.calc = function(gd, trace) {
             }
         }
     }
+
+    // include the sum of all values in the first point
+    if(cd[0]) cd[0].vTotal = vTotal;
 
     return cd;
 };
