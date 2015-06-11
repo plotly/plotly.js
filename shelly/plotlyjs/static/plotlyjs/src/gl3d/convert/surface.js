@@ -40,10 +40,11 @@ proto.handlePick = function(selection) {
     traceCoordinate[2] = this.data.z[selectIndex[1]][selectIndex[0]];
     selection.traceCoordinate = traceCoordinate;
 
+    var sceneLayout = this.scene.fullSceneLayout;
     selection.dataCoordinate = [
-      traceCoordinate[0]*this.scene.dataScale[0] - this.scene.dataCenter[0],
-      traceCoordinate[1]*this.scene.dataScale[1] - this.scene.dataCenter[1],
-      traceCoordinate[2]*this.scene.dataScale[2] - this.scene.dataCenter[2]
+      sceneLayout.xaxis.d2l(traceCoordinate[0])*this.scene.dataScale[0] - this.scene.dataCenter[0],
+      sceneLayout.yaxis.d2l(traceCoordinate[1])*this.scene.dataScale[1] - this.scene.dataCenter[1],
+      sceneLayout.zaxis.d2l(traceCoordinate[2])*this.scene.dataScale[2] - this.scene.dataCenter[2]
     ];
 
     selection.data.dataCoordinate = selection.dataCoordinate.slice();
