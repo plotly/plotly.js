@@ -1,13 +1,19 @@
-var plotly = require('plotly')('BenPostlethwaite','hqsfedlbhi');
+/*
+ * Enter your username and api key of your local instance.
+ */
+var plotly = require('plotly')('etpinard','rmkfg621kv');
+plotly.host = 'local.plot.ly';
+
 var ProgressBar = require('progress');
 var fs = require('fs');
-
 
 var imgOpts = {
     format: 'png',
     width: 1000,
     height: 600
 };
+
+var figDir = './testplots/';
 
 var Bert = {
 
@@ -65,7 +71,7 @@ var Bert = {
                 return;
             }
 
-            var fileStream = fs.createWriteStream(job.name + '.png');
+            var fileStream = fs.createWriteStream(figDir + job.name + '.png');
             imageStream.pipe(fileStream);
 
             self.checkJobProgress();
@@ -74,11 +80,11 @@ var Bert = {
     }
 };
 
-fs.readdirSync('./').filter(function (plotjson) {
+fs.readdirSync(figDir).filter(function (plotjson) {
     return plotjson.indexOf('json') !== -1;
 
 }).forEach(function (plotjson) {
-    var figure = require('./'+plotjson);
+    var figure = require(figDir + plotjson);
     Bert.addsJob({
         name:  plotjson.split('.json')[0],
         workload: figure
