@@ -165,6 +165,9 @@ plots['ribbons'] = require('./testplots/ribbons.json');
 plots['date-time'] = require('./testplots/scatter-date.json');
 plots['cufflinks'] = require('./testplots/cufflinks.json');
 plots['chrisp-nan-1'] = require('./testplots/chrisp-nan-1.json');
+plots['marker-arrays'] = require('./testplots/marker-arrays.json');
+plots['scatter3d-colorscale'] = require('./testplots/scatter3d-colorscale.json');
+plots['autocolorscale'] = require('./testplots/autocolorscale.json');
 
 
 plotButtons(plots);
