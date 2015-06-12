@@ -175,7 +175,7 @@ GeoLayout.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
     var scope, resolution, projType,
         scopeParams, dfltProjRotate, dfltProjParallels,
-        isScoped, isAlbersUsa, isConic;
+        isScoped, isAlbersUsa, isConic, show;
 
     scope = coerce('scope');
     isScoped = scope!=='world';
@@ -199,45 +199,55 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
         coerce('projection.rotate[1]', dfltProjRotate[1]);
         coerce('projection.rotate[2]', dfltProjRotate[2]);
 
-        coerce('showcoastlines', !isScoped);
-        coerce('coastlinescolor');
-        coerce('coastlineswidth');
+        show = coerce('showcoastlines', !isScoped);
+        if(show) {
+            coerce('coastlinescolor');
+            coerce('coastlineswidth');
+        }
 
-        coerce('showocean');
-        coerce('oceanfillcolor');
+        show = coerce('showocean');
+        if(show) coerce('oceanfillcolor');
     }
     else geoLayoutOut.scope = 'usa';
 
     coerce('projection.scale');
 
-    coerce('showland');
-    coerce('landfillcolor');
+    show = coerce('showland');
+    if(show) coerce('landfillcolor');
 
-    coerce('showlakes');
-    coerce('lakesfillcolor');
+    show = coerce('showlakes');
+    if(show) coerce('lakesfillcolor');
 
-    coerce('showrivers');
-    coerce('riverslinecolor');
-    coerce('riverslinewidth');
+    show = coerce('showrivers');
+    if(show) {
+        coerce('riverslinecolor');
+        coerce('riverslinewidth');
+    }
 
-    coerce('showcountries', isScoped);
-    coerce('countrieslinecolor');
-    coerce('countrieslinewidth');
+    show = coerce('showcountries', isScoped);
+    if(show) {
+        coerce('countrieslinecolor');
+        coerce('countrieslinewidth');
+    }
 
     if(scope==='usa' || (scope==='north america' && +resolution===50)) {
         // Only works for:
         //   USA states at 110m
         //   USA states + Canada provinces at 50m
-        coerce('showsubunits', scope==='usa');
-        coerce('subunitslinecolor');
-        coerce('subunitslinewidth');
+        show =coerce('showsubunits', scope==='usa');
+        if(show) {
+            coerce('subunitslinecolor');
+            coerce('subunitslinewidth');
+        }
     }
 
     if(!isScoped) {
         // Does not work in non-world scopes
-        coerce('showframe');
-        coerce('framelinecolor');
-        coerce('framelinewidth');
+        show = coerce('showframe');
+        if(show) {
+            coerce('framelinecolor');
+            coerce('framelinewidth');
+        }
     }
 
     coerce('bgcolor');

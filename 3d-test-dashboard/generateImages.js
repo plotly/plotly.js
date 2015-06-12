@@ -13,7 +13,8 @@ var imgOpts = {
     height: 600
 };
 
-var figDir = './testplots-geo/';
+var figDir = process.argv[2]==='geo' ? './testplots-geo/' : './testplots/';
+console.log('using ' + figDir);
 
 var Bert = {
 

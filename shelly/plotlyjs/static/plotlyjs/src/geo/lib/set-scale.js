@@ -2,7 +2,7 @@
 
 /* global d3:false */
 
-var CLIPPAD = require('./params').clippad;
+var clipPad = require('./params').clipPad;
 
 function createGeoScale(geoLayout, graphSize) {
     var projLayout = geoLayout.projection,
@@ -15,14 +15,14 @@ function createGeoScale(geoLayout, graphSize) {
         geoHeight = graphSize.h * (geoDomain.y[1] - geoDomain.y[0]);
 
     // add padding around range to avoid aliasing
-    var lon0 = lonaxisLayout.range[0] + CLIPPAD,
-        lon1 = lonaxisLayout.range[1] - CLIPPAD,
-        lat0 = lataxisLayout.range[0] + CLIPPAD,
-        lat1 = lataxisLayout.range[1] - CLIPPAD,
-        lonfull0 = lonaxisLayout._fullRange[0] + CLIPPAD,
-        lonfull1 = lonaxisLayout._fullRange[1] - CLIPPAD,
-        latfull0 = lataxisLayout._fullRange[0] + CLIPPAD,
-        latfull1 = lataxisLayout._fullRange[1] - CLIPPAD;
+    var lon0 = lonaxisLayout.range[0] + clipPad,
+        lon1 = lonaxisLayout.range[1] - clipPad,
+        lat0 = lataxisLayout.range[0] + clipPad,
+        lat1 = lataxisLayout.range[1] - clipPad,
+        lonfull0 = lonaxisLayout._fullRange[0] + clipPad,
+        lonfull1 = lonaxisLayout._fullRange[1] - clipPad,
+        latfull0 = lataxisLayout._fullRange[0] + clipPad,
+        latfull1 = lataxisLayout._fullRange[1] - clipPad;
     
     // initial translation (makes the math easier)
     projLayout._translate0 = [

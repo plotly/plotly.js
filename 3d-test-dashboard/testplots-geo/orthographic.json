@@ -19,6 +19,22 @@
             "colorscale": "Portland",
             "zmin": 0,
             "zmax": 100
+        },
+        {
+            "type": "scattergeo",
+            "mode": "markers+text",
+            "name": "some marker trace",
+            "lon": [0, -75, 100],
+            "lat": [0, 45, -30],
+            "marker": {
+                "size": [20, 30, 15],
+                "symbol": ["square", "cross", "diamond"]
+            },
+            "text": ["A", "B", "C"],
+            "textfont": {
+                "size": 20
+            },
+            "textposition": "top right"
         }
     ],
     "layout": {

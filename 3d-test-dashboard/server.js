@@ -8,6 +8,9 @@ var path = require('path');
 var outpipe = require('outpipe');
 var outfile = path.join(__dirname, '../shelly/plotlyjs/static/plotlyjs/build/plotlyjs-bundle.js');
 
+var testFile = process.argv[2]==='geo' ? './test-geo' : './test';
+console.log('using ' + testFile);
+
 var b = browserify(path.join(__dirname, '../shelly/plotlyjs/static/plotlyjs/src/plotly.js'), {
   debug: true,
   verbose: true,
@@ -51,15 +54,15 @@ function bundle () {
     });
 }
 
-
 ////// build the test examples
 
-browserify({
-    debug: true,
-    verbose: true
-}).add('./test.js').bundle()
-    .pipe(fs.createWriteStream('test-bundle.js'));
-
+fs.unlink('./test-bundle.js', function(error) {
+    browserify({
+        debug: true,
+        verbose: true
+    }).add(testFile).bundle()
+        .pipe(fs.createWriteStream('test-bundle.js'));
+});
 
 http.createServer(
   ecstatic({ root: '../.'  })

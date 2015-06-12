@@ -8,7 +8,7 @@ var Plotly = require('../plotly'),
     addProjectionsToD3 = require('./lib/projections'),
     createGeoScale = require('./lib/set-scale'),
     createGeoZoom = require('./lib/zoom'),
-    clearHover = require('./lib/clear-hover'),
+    createGeoZoomReset = require('./lib/zoom-reset'),
     plotScatterGeo = require('./plot/scattergeo'),
     plotChoropleth = require('./plot/choropleth'),
     topojsonPackage = require('topojson');
@@ -18,30 +18,25 @@ function Geo(options, fullLayout) {
     this.id = options.id;
     this.container = options.container;
 
-    var geoLayout = fullLayout[this.id];
-
     // add a few projection types to d3.geo,
     // a subset of https://github.com/d3/d3-geo-projection
     addProjectionsToD3();
 
     this.showHover = fullLayout.hovermode==='closest';
 
-    this.framework = null;
     this.topojson = null;
     this.topojsonPath = null;
     this.topojsonIsLoading = false;
+
     this.clipAngle = null;
     this.setScale = null;
     this.projection = null;
     this.path = null;
+
     this.zoom = null;
+    this.zoomReset = null;
 
-    // TODO move to proto.plot
-    this.setScale = createGeoScale(geoLayout, fullLayout._size);
-    this.makeProjection(geoLayout);
-    this.zoom = createGeoZoom(this, geoLayout);
-
-    this.makeFramework(geoLayout);
+    this.makeFramework();
 }
 
 module.exports = Geo;
@@ -51,14 +46,24 @@ var proto = Geo.prototype;
 
 proto.plot = function(geoData, fullLayout) {
     var _this = this,
-        geoLayout = fullLayout[this.id];
+        geoLayout = fullLayout[_this.id],
+        graphSize = fullLayout._size;
 
-    // 'geoLayout' is unambiguous, no need for 'user' geo layout here
+    // N.B. 'geoLayout' is unambiguous, no need for 'user' geo layout here
 
-    _this.adjustMargins(fullLayout._size, geoLayout.domain);
+    _this.setScale = createGeoScale(geoLayout, graphSize);
+    _this.makeProjection(geoLayout);
+    _this.makePath();
+    _this.adjustLayout(geoLayout, graphSize);
+
+    _this.zoom = createGeoZoom(_this, geoLayout);
+    _this.zoomReset = createGeoZoomReset(_this, geoLayout);
+
+    _this.framework
+        .call(_this.zoom)
+        .on('dblclick', _this.zoomReset);
 
     _this.topojsonPath = getTopojsonPath(geoLayout);
-    _this.makePath();
 
     if(_this.topojson === null) {
         _this.topojsonIsLoading = true;
@@ -118,8 +123,8 @@ proto.makeProjection = function(geoLayout) {
 
     if(geoLayout._isClipped) {
         projection
-            .clipAngle(geoLayout._clipAngle - params.clippad);
-        this.clipAngle = geoLayout.clipAngle;
+            .clipAngle(geoLayout._clipAngle - params.clipPad);
+        this.clipAngle = geoLayout._clipAngle;
     }
 
     if(geoLayout.parallels) {
@@ -142,7 +147,7 @@ proto.makePath = function() {
  *   <div geoDiv>
  *     <svg framework>
  */
-proto.makeFramework = function(geoLayout) {
+proto.makeFramework = function() {
     var geoDiv = this.geoDiv = d3.select(this.container).append('div');
     geoDiv
         .attr('id', this.id)
@@ -157,7 +162,19 @@ proto.makeFramework = function(geoLayout) {
     // TODO use clip paths instead of nested SVG
     var framework = this.framework = geoDiv.append('svg');
 
-    framework
+    framework.append('g').attr('class', 'baselayer');
+    framework.append('g').attr('class', 'choroplethlayer');
+    framework.append('g').attr('class', 'baselayeroverchoropleth');
+    framework.append('g').attr('class', 'scattergeolayer');
+
+    // N.B. disable dblclick zoom default
+    framework.on('dblclick.zoom', null);
+};
+
+proto.adjustLayout = function(geoLayout, graphSize) {
+    var domain = geoLayout.domain;
+
+    this.framework
         .attr('width', geoLayout._widthFramework)
         .attr('height', geoLayout._heightFramework)
         .style({
@@ -165,51 +182,17 @@ proto.makeFramework = function(geoLayout) {
             top: (geoLayout._heightDiv - geoLayout._heightFramework) / 2,
             left: (geoLayout._widthDiv - geoLayout._widthFramework) / 2,
             width: geoLayout._widthFramework,
-            height: geoLayout._heightFramework
+            height: geoLayout._heightFramework,
+            'background-color': geoLayout.bgcolor
         });
 
-    framework.append('g').attr('class', 'baselayer');
-
-    framework.append('g').attr('class', 'choroplethlayer');
-    framework.append('g').attr('class', 'baselayeroverchoropleth');
-    framework.append('g').attr('class', 'scattergeolayer');
-
-    this.zoomReset = this.createZoomReset(geoLayout, framework);
-
-    // attach zoom and dblclick event to svg container
-    framework
-        .call(this.zoom)
-        .on('dblclick.zoom', null)  // N.B. disable dblclick zoom default
-        .on('dblclick', this.zoomReset);
-};
-
-proto.createZoomReset = function(geoLayout, framework) {
-    var _this = this,
-        projection = _this.projection,
-        zoom = _this.zoom;
-    
-    var zoomReset = function() {
-        _this.makeProjection(geoLayout);
-        _this.makePath();
-
-        zoom.scale(projection.scale());
-        zoom.translate(projection.translate());
-        clearHover(framework);
-
-        _this.render();
-    };
-
-    return zoomReset;
-};
-
-proto.adjustMargins = function(size, domain) {
     this.geoDiv
         .style({
             position: 'absolute',
-            left: (size.l + domain.x[0] * size.w) + 'px',
-            top: (size.t + (1 - domain.y[1]) * size.h) + 'px',
-            width: (size.w * (domain.x[1] - domain.x[0])) + 'px',
-            height: (size.h * (domain.y[1] - domain.y[0])) + 'px'
+            left: (graphSize.l + domain.x[0] * graphSize.w) + 'px',
+            top: (graphSize.t + (1 - domain.y[1]) * graphSize.h) + 'px',
+            width: (graphSize.w * (domain.x[1] - domain.x[0])) + 'px',
+            height: (graphSize.h * (domain.y[1] - domain.y[0])) + 'px'
         });
 };
 
@@ -349,14 +332,11 @@ proto.render = function() {
     }
 
     // hide paths over edges of clipped projections
-    if(clipAngle !== null) {
-        framework.selectAll('path.point')
-            .attr('opacity', function(d) {
-                var p = projection.rotate(),
-                    angle = d3.geo.distance([d.lon, d.lat], [-p[0], -p[1]]),
-                    maxAngle = clipAngle * Math.PI / 180;
-                return (angle > maxAngle) ? '0' : '1.0';
-            });
+    function hideShowPoints(d) {
+        var p = projection.rotate(),
+            angle = d3.geo.distance([d.lon, d.lat], [-p[0], -p[1]]),
+            maxAngle = clipAngle * Math.PI / 180;
+        return (angle > maxAngle) ? '0' : '1.0';
     }
 
     framework.selectAll('path.basepath').attr('d', path);
@@ -366,6 +346,19 @@ proto.render = function() {
     gChoropleth.selectAll('path.basepath').attr('d', path);
 
     gScatterGeo.selectAll('path.js-line').attr('d', path);
-    gScatterGeo.selectAll('path.point').attr('transform', translatePoints);
-    gScatterGeo.selectAll('text').attr('transform', translatePoints);
+
+    if(clipAngle !== null) {
+        gScatterGeo.selectAll('path.point')
+            .style('opacity', hideShowPoints)
+            .attr('transform', translatePoints);
+        gScatterGeo.selectAll('text')
+            .style('opacity', hideShowPoints)
+            .attr('transform', translatePoints);
+    }
+    else {
+        gScatterGeo.selectAll('path.point')
+            .attr('transform', translatePoints);
+        gScatterGeo.selectAll('text')
+            .attr('transform', translatePoints);
+    }
 };

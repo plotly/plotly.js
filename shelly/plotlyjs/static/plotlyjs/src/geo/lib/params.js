@@ -94,15 +94,18 @@ params.scopeDefaults = {
     }
 };
 
-
+// TODO projection type defaults
 params.typeDefaults = {
     'stereographic': {
         projRotate: [0, 90]
     }
 };
 
+// TODO pixel pad between div and svg
+params.frameworkPad = 2;
+
 // angular pad to avoid rounding error around clip angles
-params.clippad = 1e-3;
+params.clipPad = 1e-3;
 
 // map projection precision
 params.precision = 0.1;
@@ -120,7 +123,7 @@ params.locationmodeToLayer = {
 // SVG element for a sphere (use to frame maps)
 params.sphereSVG = {type: 'Sphere'};
 
-// base layer names must be the same as in the topojson files
+// N.B. base layer names must be the same as in the topojson files
 
 // base layer with a fill color
 params.fillLayers = ['ocean', 'land', 'lakes'];

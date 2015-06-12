@@ -602,8 +602,8 @@ Plotly.plot = function(gd, data, layout, config) {
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
         if(gd._fullLayout._hasGL3D) plot3D(gd);
-
-        // !!!
+    
+        // ... until subplot of different type play better together
         if(gd._fullLayout._hasGeo) plotGeo(gd);
 
         // in case of traces that were heatmaps or contour maps
@@ -733,8 +733,6 @@ function plotGeo(gd) {
         width: fullLayout.width + 'px',
         height: fullLayout.height + 'px'
     });
-
-//     gd._context.setBackground(gd, fullLayout.paper_bgcolor);
 
     for (i = 0; i < geoIds.length; i++) {
         geoId = geoIds[i];
@@ -3109,14 +3107,17 @@ Plotly.relayout = function relayout (gd, astr, val) {
             }
         }
 
-        var geoIds, geoLayout;
-        if(doGeo) {
-            geoIds = plots.getSubplotIds(gd._fullLayout, 'geo');
-            for (i = 0; i < geoIds.length; i++) {
-                geoLayout = gd._fullLayout[geoIds[i]];
-                geoLayout._geo.drawLayout(geoLayout);
-            }
-        }
+//         var geoIds, geoLayout;
+//         if(doGeo) {
+//             geoIds = plots.getSubplotIds(gd._fullLayout, 'geo');
+//             for (i = 0; i < geoIds.length; i++) {
+//                 geoLayout = gd._fullLayout[geoIds[i]];
+//             
+//                 console.log(geoIds[i], geoLayout.showocean)
+// 
+//                 geoLayout._geo.drawLayout(geoLayout);
+//             }
+//         }
     }
 
     var plotDone = Plotly.Lib.syncOrAsync(seq, gd);

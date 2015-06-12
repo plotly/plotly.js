@@ -34,7 +34,7 @@ GeoAxes.layoutAttributes = {
 GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
     var axesNames = params.axesNames;
 
-    var axisIn, axisOut, axisName, rangeDflt, range0, showGrid;
+    var axisIn, axisOut, axisName, rangeDflt, range0, show;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(axisIn, axisOut,
@@ -78,8 +78,8 @@ GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
         coerce('tick0', range0);
         coerce('dtick', axisName==='lonaxis' ? 30 : 10);
 
-        showGrid = coerce('showgrid');
-        if(showGrid) {
+        show = coerce('showgrid');
+        if(show) {
             coerce('gridcolor');
             coerce('gridwidth');
         }
