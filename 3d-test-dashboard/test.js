@@ -4,6 +4,8 @@ var plotButtons = require('./test-buttons');
 
 var plots = {};
 
+plots['bunny-hull'] = require('./testplots/bunny-hull.json');
+plots['ibm-plot'] = require('./testplots/ibm-plot.json');
 plots['marker-color'] = require('./testplots/marker-color.json');
 plots['log-axis-big'] = require('./testplots/log-axis-big.json');
 plots['delaunay'] = require('./testplots/delaunay.json');

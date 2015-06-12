@@ -67,6 +67,107 @@ function render(scene) {
     }
 }
 
+function initializeGLPlot(scene, fullLayout, canvas, gl) {
+      var glplotOptions = {
+              canvas:     canvas,
+              gl:         gl,
+              container:  scene.container,
+              axes:       scene.axesOptions,
+              spikes:     scene.spikeOptions,
+              pickRadius: 10,
+              snapToData: true,
+              autoScale:  true,
+              autoBounds: false
+      };
+
+      //For static plots, we reuse the WebGL context as WebKit doesn't collect them
+      //reliably
+      if (scene.staticMode) {
+          if(!STATIC_CONTEXT) {
+              STATIC_CANVAS = document.createElement('canvas');
+              try {
+                  STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
+                      preserveDrawingBuffer: true,
+                      premultipliedAlpha: true
+                  });
+              } catch(e) {
+                  throw new Error('error creating static canvas/context for image server');
+              }
+          }
+          glplotOptions.pixelRatio = scene.pixelRatio;
+          glplotOptions.gl = STATIC_CONTEXT;
+          glplotOptions.canvas = STATIC_CANVAS;
+      }
+
+      try {
+          scene.glplot = createPlot(glplotOptions);
+      } catch (e) {
+
+          /*
+           * createPlot will throw when webgl is not enabled in the client.
+           * Lets return an instance of the module with all functions noop'd.
+           * The destroy method - which will remove the container from the DOM
+           * is overridden with a function that removes the container only.
+           */
+          var noop = function () {};
+          for (var prop in this) if (typeof this[prop] === 'function') scene[prop] = noop;
+          this.destroy = function () {
+              scene.container.parentNode.removeChild(this.container);
+          };
+
+          var div = document.createElement('div');
+          div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
+          div.style.cursor = 'pointer';
+          div.style.fontSize = '24px';
+          div.style.color = Plotly.Color.defaults[0];
+
+          scene.container.appendChild(div);
+          scene.container.style.background = '#FFFFFF';
+          scene.container.onclick = function () {
+              window.open('http://get.webgl.org');
+          };
+
+          /*
+           * return before setting up camera and onrender methods
+           */
+          return false;
+      }
+
+      if(!scene.staticMode) {
+        scene.glplot.canvas.addEventListener('webglcontextlost', function(ev) {
+          console.log('lost context');
+          ev.preventDefault();
+        });
+      }
+
+      if(!scene.camera) {
+        var cameraData = fullLayout.scene.camera;
+        scene.camera = createCamera(scene.container, {
+            center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
+            eye:    [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
+            up:     [cameraData.up.x, cameraData.up.y, cameraData.up.z],
+            zoomMin: 0.1,
+            zoomMax: 100,
+            mode:   'orbit'
+        });
+      }
+
+      scene.glplot.mouseListener.enabled = false;
+      scene.glplot.camera = scene.camera;
+
+      scene.glplot.oncontextloss = function() {
+        scene.recoverContext();
+      };
+
+
+      scene.glplot.onrender = render.bind(null, scene);
+
+      //List of scene objects
+      scene.traces = {};
+
+      return true;
+}
+
 function Scene(options, fullLayout) {
 
     //Create sub container for plot
@@ -96,6 +197,10 @@ function Scene(options, fullLayout) {
 
     this.fullLayout               = fullLayout;
     this.id                       = options.id || 'scene';
+
+    //Saved from last call to plot()
+    this.plotArgs = [ [], {}, {} ];
+
     /*
      * Move this to calc step? Why does it work here?
      */
@@ -103,98 +208,39 @@ function Scene(options, fullLayout) {
     this.spikeOptions     = createSpikeOptions(fullLayout[this.id]);
     this.container        = sceneContainer;
 
-    this.staticMode   = false;
+    this.staticMode       = !!options.staticMode;
 
     //Coordinate rescaling
     this.dataScale    = [1,1,1];
     this.dataCenter   = [0,0,0];
 
-    var glplotOptions = {
-            container:  sceneContainer,
-            axes:       this.axesOptions,
-            spikes:     this.spikeOptions,
-            pickRadius: 10,
-            snapToData: true,
-            autoScale:  true,
-            autoBounds: false
-    };
-
-    //For static plots, we reuse the WebGL context as WebKit doesn't collect them
-    //reliably
-    if (options.staticPlot) {
-        if(!STATIC_CONTEXT) {
-            STATIC_CANVAS = document.createElement('canvas');
-            try {
-                STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
-                    preserveDrawingBuffer: true,
-                    premultipliedAlpha: true
-                });
-            } catch(e) {
-                throw new Error('error creating static canvas/context for image server');
-            }
-        }
-        glplotOptions.pixelRatio = options.plot3dPixelRatio;
-        glplotOptions.gl = STATIC_CONTEXT;
-        glplotOptions.canvas = STATIC_CANVAS;
-        this.staticMode = true;
-    }
-
-    try {
-        this.glplot = createPlot(glplotOptions);
-    } catch (e) {
-
-        /*
-         * createPlot will throw when webgl is not enabled in the client.
-         * Lets return an instance of the module with all functions noop'd.
-         * The destroy method - which will remove the container from the DOM
-         * is overridden with a function that removes the container only.
-         */
-        var noop = function () {};
-        for (var prop in this) if (typeof this[prop] === 'function') this[prop] = noop;
-        this.destroy = function () {
-            this.container.parentNode.removeChild(this.container);
-        };
-
-        var div = document.createElement('div');
-        div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
-        div.style.cursor = 'pointer';
-        div.style.fontSize = '24px';
-        div.style.color = Plotly.Color.defaults[0];
-
-        this.container.appendChild(div);
-        this.container.style.background = '#FFFFFF';
-        this.container.onclick = function () {
-            window.open('http://get.webgl.org');
-        };
-
-        /*
-         * return before setting up camera and onrender methods
-         */
-        return;
-    }
-
-    var cameraData = fullLayout.scene.camera;
-
-    this.camera = createCamera(this.container, {
-        center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
-        eye:    [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
-        up:     [cameraData.up.x, cameraData.up.y, cameraData.up.z],
-        zoomMin: 0.1,
-        zoomMax: 100,
-        mode:   'orbit'
-    });
-
-    this.glplot.camera = this.camera;
-
-    this.glplot.onrender = render.bind(null, this);
-
-    //List of scene objects
-    this.traces = {};
-
     this.contourLevels = [ [], [], [] ];
+
+    if(!initializeGLPlot(this, fullLayout)) {
+      return;
+    }
 }
 
 var proto = Scene.prototype;
+
+proto.recoverContext = function() {
+  var scene = this;
+  var gl = this.glplot.gl;
+  var canvas = this.glplot.canvas;
+  this.glplot.dispose();
+  function tryRecover() {
+    if(gl.isContextLost()) {
+      requestAnimationFrame(tryRecover);
+      return;
+    }
+    if(!initializeGLPlot(scene, scene.fullLayout, canvas, gl)) {
+      console.error('catastrophic/unrecoverable webgl error.  context lost.');
+      return;
+    }
+    scene.plot.apply(scene, scene.plotArgs);
+  }
+  requestAnimationFrame(tryRecover);
+};
 
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
@@ -226,6 +272,13 @@ function computeTraceBounds(scene, trace, bounds) {
 }
 
 proto.plot = function(sceneData, fullLayout, layout) {
+
+    //Save parameters
+    this.plotArgs = [ sceneData, fullLayout, layout ];
+
+    if(this.glplot.contextLost) {
+      return;
+    }
 
     var data, trace;
     var i, j;
