@@ -24,13 +24,14 @@ function Geo(options, fullLayout) {
 
     this.showHover = fullLayout.hovermode==='closest';
 
-    this.topojson = null;
     this.topojsonPath = null;
-    this.topojsonIsLoading = false;
+    this.topojson = null;
+
+    this.projectionType = null;
+    this.projection = null;
 
     this.clipAngle = null;
     this.setScale = null;
-    this.projection = null;
     this.path = null;
 
     this.zoom = null;
@@ -47,9 +48,12 @@ var proto = Geo.prototype;
 proto.plot = function(geoData, fullLayout) {
     var _this = this,
         geoLayout = fullLayout[_this.id],
-        graphSize = fullLayout._size;
+        graphSize = fullLayout._size,
+        topojsonPathNew;
 
     // N.B. 'geoLayout' is unambiguous, no need for 'user' geo layout here
+
+    // TODO don't reset projection on graph edit
 
     _this.setScale = createGeoScale(geoLayout, graphSize);
     _this.makeProjection(geoLayout);
@@ -63,10 +67,13 @@ proto.plot = function(geoData, fullLayout) {
         .call(_this.zoom)
         .on('dblclick', _this.zoomReset);
 
-    _this.topojsonPath = getTopojsonPath(geoLayout);
+    topojsonPathNew = getTopojsonPath(geoLayout);
 
-    if(_this.topojson === null) {
-        _this.topojsonIsLoading = true;
+    if(_this.topojson===null || topojsonPathNew!==_this.topojsonPath) {
+
+        _this.topojsonPath = topojsonPathNew;
+
+        // N.B this is async
         d3.json(_this.topojsonPath, function(error, topojson) {
             _this.topojson = topojson;
             _this.onceTopojsonIsLoaded(geoData, geoLayout);
@@ -74,7 +81,7 @@ proto.plot = function(geoData, fullLayout) {
     }
     else _this.onceTopojsonIsLoaded(geoData, geoLayout);
 
-    // TODO handle topojsonIsLoading case (for streaming)
+    // TODO handle topojson-is-loading case (for streaming)
 
     // TODO if more than 1 geo uses the same topojson,
     //      that topojson should be loaded only once.
@@ -104,12 +111,15 @@ proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
 
 proto.makeProjection = function(geoLayout) {
     var projLayout = geoLayout.projection,
-        isNew = this.projection===null;
+        projType = projLayout.type,
+        isNew = this.projection===null || projType!==this.projectionType,
+        projection;
 
     if(isNew) {
-        this.projection = d3.geo[params.projNames[projLayout.type]]();
+        this.projectionType = projType;
+        projection = this.projection = d3.geo[params.projNames[projType]]();
     }
-    var projection = this.projection;
+    else projection = this.projection;
 
     projection
         .translate(projLayout._translate0)
@@ -122,9 +132,9 @@ proto.makeProjection = function(geoLayout) {
     }
 
     if(geoLayout._isClipped) {
+        this.clipAngle = geoLayout._clipAngle;  // needed in proto.render
         projection
             .clipAngle(geoLayout._clipAngle - params.clipPad);
-        this.clipAngle = geoLayout._clipAngle;
     }
 
     if(geoLayout.parallels) {
@@ -133,6 +143,7 @@ proto.makeProjection = function(geoLayout) {
     }
 
     if(isNew) this.setScale(projection);
+
     projection
         .translate(projLayout._translate)
         .scale(projLayout._scale);

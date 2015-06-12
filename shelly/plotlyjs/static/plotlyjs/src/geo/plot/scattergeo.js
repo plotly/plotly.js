@@ -56,7 +56,7 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
 function makeLineGeoJSON(trace) {
     var N = trace.lon.length,
         coordinates = new Array(N);
-    
+
     for (var i = 0; i < N; i++) {
         coordinates[i] = [trace.lon[i], trace.lat[i]];
     }
@@ -82,7 +82,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
         var xy = geo.projection([d.lon, d.lat]),
             trace = d3.select(this.parentNode).data()[0],
             text;
-        
+
         // TODO incorporate 'hoverinfo'
         if(Array.isArray(trace.locations)) text = d.location;
         else text = '(' + d.lon + ', ' + d.lat + ')';
@@ -96,7 +96,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 text: text,
                 name: trace.name,  // TODO should only appear if data.length>1
                 color: d.mc || (trace.marker || {}).color
-            }, 
+            },
             {container: geo.framework[0][0]}
         );
     }
@@ -123,13 +123,14 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
         .each(function(trace) {
             var s = d3.select(this),
                 showMarkers = Scatter.hasMarkers(trace),
-                showText = Scatter.hasText(trace),
-                cdi = plotScatterGeo.calcGeoJSON(trace, topojson);
+                showText = Scatter.hasText(trace);
 
             if((!showMarkers && !showText) || trace.visible !== true) {
                 s.remove();
                 return;
             }
+
+           var  cdi = plotScatterGeo.calcGeoJSON(trace, topojson);
 
             if(showMarkers) {
                 s.selectAll('path.point')

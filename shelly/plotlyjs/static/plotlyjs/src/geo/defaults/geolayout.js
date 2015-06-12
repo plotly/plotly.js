@@ -234,11 +234,9 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
         // Only works for:
         //   USA states at 110m
         //   USA states + Canada provinces at 50m
-        show =coerce('showsubunits', scope==='usa');
-        if(show) {
-            coerce('subunitslinecolor');
-            coerce('subunitslinewidth');
-        }
+        coerce('showsubunits', true);
+        coerce('subunitslinecolor');
+        coerce('subunitslinewidth');
     }
 
     if(!isScoped) {
