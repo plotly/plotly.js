@@ -1657,19 +1657,13 @@ function doCalcdata(gd) {
 }
 
 plots.style = function(gd) {
-    var subplots = Plotly.Axes.getSubplots(gd),
-        modulesWithErrorBars = gd._modules.concat(Plotly.ErrorBars),
-        fullLayout = gd._fullLayout;
+    var modulesWithErrorBars = gd._modules.concat(Plotly.ErrorBars),
+        i,
+        module;
 
-    var i, j, gp, module;
-
-    for (i = 0; i < subplots.length; i++) {
-        gp = fullLayout._plots[subplots[i]].plot;
-
-        for (j = 0; j < modulesWithErrorBars.length; j++) {
-            module =  modulesWithErrorBars[j];
-            if (module.style) module.style(gp, fullLayout);
-        }
+    for (i = 0; i < modulesWithErrorBars.length; i++) {
+        module = modulesWithErrorBars[i];
+        if (module.style) module.style(gd);
     }
 };
 

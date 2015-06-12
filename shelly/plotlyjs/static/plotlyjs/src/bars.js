@@ -497,9 +497,10 @@ bars.plot = function(gd, plotinfo, cdbar) {
         });
 };
 
-bars.style = function(gp, fullLayout) {
-    var s = gp.selectAll('g.trace.bars'),
-        barcount = s.size();
+bars.style = function(gd) {
+    var s = d3.select(gd).selectAll('g.trace.bars'),
+        barcount = s.size(),
+        fullLayout = gd._fullLayout;
 
     // trace styling
     s.style('opacity',function(d){ return d[0].trace.opacity; })
