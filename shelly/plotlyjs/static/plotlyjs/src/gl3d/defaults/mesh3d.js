@@ -19,6 +19,17 @@ Mesh3D.attributes = {
     j: {type: 'data_array'},
     k: {type: 'data_array'},
 
+    delaunayaxis: {
+      type: 'enumerated',
+      values: [ 'x', 'y', 'z' ],
+      dflt: 'z'
+    },
+
+    alphahull: {
+      type: 'number',
+      dflt: -1
+    },
+
     intensity: {type: 'data_array'},
 
     //Color field
@@ -122,17 +133,19 @@ Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
   var coords  = readComponents(['x', 'y', 'z']);
   var indices = readComponents(['i', 'j', 'k']);
 
-  if(!coords || !indices) {
+  if(!coords) {
     traceOut.visible = false;
     return;
   }
 
-  //Convert all face indices to ints
-  indices.forEach(function(index) {
-    for(var i=0; i<index.length; ++i) {
-      index[i] |= 0;
-    }
-  });
+  if(indices) {
+    //Otherwise, convert all face indices to ints
+    indices.forEach(function(index) {
+      for(var i=0; i<index.length; ++i) {
+        index[i] |= 0;
+      }
+    });
+  }
 
   //Coerce remaining properties
   [ 'lighting.ambient',
@@ -145,7 +158,9 @@ Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     'contour.width',
     'colorscale',
     'reversescale',
-    'flatshading'
+    'flatshading',
+    'alphahull',
+    'delaunayaxis'
   ].forEach(function(x) { coerce(x); });
 
   if('intensity' in traceIn) {
