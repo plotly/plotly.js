@@ -2369,7 +2369,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'marker.maxdisplayed',
         'hole', 'scalegroup', 'domain', 'domain.x', 'domain.y',
         'domain.x[0]', 'domain.x[1]', 'domain.y[0]', 'domain.y[1]',
-        'tilt', 'tiltaxis', 'depth', 'orientation', 'rotation', 'pull'
+        'tilt', 'tiltaxis', 'depth', 'rotation', 'pull'
     ];
     // these ones show up in restyle because they make more sense
     // in the style box, but they're graph-wide attributes, so set
@@ -2555,7 +2555,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             var swapAttrs = [
                 'swapxy','swapxyaxes','orientation','orientationaxes'
             ];
-            if(swapAttrs.indexOf(ai)!==-1) {
+            if(swapAttrs.indexOf(ai)!==-1 && plots.traceIs(cont, 'cartesian')) {
                 // setting an orientation: make sure it's changing
                 // before we swap everything else
                 if(ai==='orientation') {
@@ -2615,6 +2615,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                 axlist = [];
                 for(i=0; i<traces.length; i++) {
                     var trace = gd.data[traces[i]];
+                    if(!plots.traceIs(trace, 'cartesian')) continue;
                     addToAxlist(trace.xaxis||'x');
                     addToAxlist(trace.yaxis||'y');
 
