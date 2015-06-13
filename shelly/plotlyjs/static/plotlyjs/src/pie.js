@@ -461,7 +461,7 @@ function setCoords(cd) {
         tiltRads,
         crossTilt,
         inPlane,
-        currentAngle = trace.rotation,
+        currentAngle = trace.rotation * Math.PI / 180,
         angleFactor = 2 * Math.PI / cd0.vTotal,
         firstPt = 'px0',
         lastPt = 'px1',
