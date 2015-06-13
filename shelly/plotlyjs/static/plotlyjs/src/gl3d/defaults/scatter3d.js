@@ -11,7 +11,7 @@ var scatterAttrs = Plotly.Scatter.attributes,
 
 var Scatter3D = {};
 
-Plotly.Plots.register(Scatter3D, 'scatter3d', ['gl3d', 'symbols', 'showLegend']);
+Plotly.Plots.register(Scatter3D, 'scatter3d', ['gl3d', 'symbols', 'markerColorscale', 'showLegend']);
 
 Scatter3D.attributes = {
     x: {type: 'data_array'},
@@ -96,6 +96,13 @@ Scatter3D.attributes = {
                          {dflt: 8}),
         opacity: extendFlat(scatterMarkerAttrs.opacity,
                             {dflt: 1}),
+        colorscale: scatterMarkerAttrs.colorscale,
+        cauto: scatterMarkerAttrs.cauto,
+        cmax: scatterMarkerAttrs.cmax,
+        cmin: scatterMarkerAttrs.cmin,
+        autocolorscale: scatterMarkerAttrs.autocolorscale,
+        reversescale: scatterMarkerAttrs.reversescale,
+        showscale: scatterMarkerAttrs.showscale,
         line: {
             color: extendFlat(scatterMarkerLineAttrs.color,
                               {dflt: 'rgb(0,0,0)'}),
@@ -110,7 +117,8 @@ Scatter3D.attributes = {
     _nestedModules: {  // nested module coupling
         'error_x': 'ErrorBars',
         'error_y': 'ErrorBars',
-        'error_z': 'ErrorBars'
+        'error_z': 'ErrorBars',
+        'marker.colorbar': 'Colorbar'
     }
 };
 
@@ -156,6 +164,13 @@ Scatter3D.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
 
     if (Scatter.hasMarkers(traceOut)) {
         markerColor = coerce('marker.color', defaultColor);
+
+        if(Plotly.Colorscale.hasColorscale(traceIn, 'marker')) {
+            Plotly.Colorscale.handleDefaults(
+                traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
+            );
+        }
+
         coerce('marker.symbol');
         coerce('marker.size');
         coerce('marker.opacity', isBubble ? 0.7 : 1);
@@ -199,4 +214,19 @@ Scatter3D.calc = function(gd, trace) {
     var cd = [{x: false, y: false, trace: trace, t: {}}];
     Plotly.Scatter.arraysToCalcdata(cd);
     return cd;
+};
+
+Scatter3D.colorbar = Plotly.Scatter.colorbar;
+
+Scatter3D.calc = function(gd, trace) {
+    var marker;
+
+    if(Plotly.Scatter.hasMarkers(trace)) {
+        marker = trace.marker;
+
+        // auto-z and autocolorscale if applicable
+        if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
+            Plotly.Colorscale.calc(trace, marker.color, 'marker', 'c');
+        }
+    }
 };

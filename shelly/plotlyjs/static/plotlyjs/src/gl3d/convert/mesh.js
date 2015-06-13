@@ -2,7 +2,11 @@
 
 var createMesh = require('gl-mesh3d'),
     str2RgbaArray = require('../lib/str2rgbarray'),
-    tinycolor = require('tinycolor2');
+    tinycolor = require('tinycolor2'),
+    triangulate = require('delaunay-triangulate'),
+    alphaShape = require('alpha-shape'),
+    convexHull = require('convex-hull');
+
 
 function Mesh3DTrace(scene, mesh, uid) {
   this.scene    = scene;
@@ -72,8 +76,20 @@ proto.update = function(data) {
       toDataCoords(layout.yaxis, data.y, scene.dataScale[1], scene.dataCenter[1]),
       toDataCoords(layout.zaxis, data.z, scene.dataScale[2], scene.dataCenter[2]));
 
-    //Unpack cell data
-    var cells = zip3(data.i, data.j, data.k);
+
+    var cells;
+    if(data.i && data.j && data.k) {
+      cells = zip3(data.i, data.j, data.k);
+    } else if(data.alphahull === 0) {
+      cells = convexHull(positions);
+    } else if(data.alphahull > 0) {
+      cells = alphaShape(data.alphahull, positions);
+    } else {
+      var d = ['x', 'y', 'z'].indexOf(data.delaunayaxis);
+      cells = triangulate(positions.map(function(c) {
+        return [c[(d+1)%3], c[(d+2)%3]];
+      }));
+    }
 
     var config = {
         positions: positions,

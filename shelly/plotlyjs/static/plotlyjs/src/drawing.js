@@ -95,7 +95,7 @@ drawing.dashLine = function(s, dash, lineWidth) {
         'stroke-dasharray': dash,
         'stroke-width': lineWidth + 'px'
     });
-}
+};
 
 drawing.fillGroupStyle = function(s) {
     s.style('stroke-width',0)
@@ -568,7 +568,7 @@ var SYMBOLDEFS = {
         },
         needLine: true,
         noDot: true
-    },
+    }
 };
 
 drawing.symbolNames = [];
@@ -711,18 +711,15 @@ drawing.pointStyle = function(s, trace) {
 // have a colorscale for it (ie mscl, mcmin, mcmax) - if we do, translate
 // all numeric color values according to that scale
 drawing.tryColorscale = function(cont, contIn, prefix) {
-    var colorArray = Plotly.Lib.nestedProperty(cont, prefix+'color').get(),
-        scl = Plotly.Lib.nestedProperty(cont, prefix+'colorscale').get(),
-        auto = Plotly.Lib.nestedProperty(cont, prefix+'cauto').get(),
-        minProp = Plotly.Lib.nestedProperty(cont, prefix+'cmin'),
-        maxProp = Plotly.Lib.nestedProperty(cont, prefix+'cmax'),
+    var colorArray = Plotly.Lib.nestedProperty(cont, prefix + 'color').get(),
+        scl = Plotly.Lib.nestedProperty(cont, prefix + 'colorscale').get(),
+        auto = Plotly.Lib.nestedProperty(cont, prefix + 'cauto').get(),
+        minProp = Plotly.Lib.nestedProperty(cont, prefix + 'cmin'),
+        maxProp = Plotly.Lib.nestedProperty(cont, prefix + 'cmax'),
         min = minProp.get(),
         max = maxProp.get();
 
     if(scl && Array.isArray(colorArray)) {
-        if(typeof scl === 'string') scl = Plotly.Color.scales[scl];
-        if(!scl) scl = Plotly.Color.defaultScale;
-
         if(auto || !isNumeric(min) || !isNumeric(max)) {
             min = Infinity;
             max = -Infinity;
@@ -738,15 +735,10 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
             }
             minProp.set(min);
             maxProp.set(max);
-            Plotly.Lib.nestedProperty(contIn, prefix+'cmin').set(min);
-            Plotly.Lib.nestedProperty(contIn, prefix+'cmax').set(max);
+            Plotly.Lib.nestedProperty(contIn, prefix + 'cmin').set(min);
+            Plotly.Lib.nestedProperty(contIn, prefix + 'cmax').set(max);
         }
-
-        var sclfunc = d3.scale.linear()
-            .domain(scl.map(function(si){ return min + si[0]*(max-min); }))
-            .interpolate(d3.interpolateRgb)
-            .range(scl.map(function(si){ return si[1]; }));
-        return function(v){ return isNumeric(v) ? sclfunc(v) : v; };
+        return Plotly.Colorscale.makeScaleFunction(scl, min, max);
     }
     else return Plotly.Lib.identity;
 };

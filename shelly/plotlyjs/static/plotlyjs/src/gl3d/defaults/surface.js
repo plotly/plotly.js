@@ -63,6 +63,10 @@ Surface.attributes = {
     x: {type: 'data_array'},
     y: {type: 'data_array'},
     z: {type: 'data_array'},
+    zauto: heatmapAttrs.zauto,
+    zmin: heatmapAttrs.zmin,
+    zmax: heatmapAttrs.zmax,
+    autocolorscale: heatmapAttrs.autocolorscale,
     colorscale: heatmapAttrs.colorscale,
     showscale: heatmapAttrs.showscale,
     reversescale: heatmapAttrs.reversescale,
@@ -107,6 +111,7 @@ Surface.attributes = {
             dflt: 0.2
         }
     },
+
     _nestedModules: {  // nested module coupling
         'colorbar': 'Colorbar'
     }
@@ -181,26 +186,16 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         }
     }
 
-    var reverseScale = coerce('reversescale'),
-        showScale = coerce('showscale');
-
-    // apply the colorscale reversal here, so we don't have to
-    // do it in separate modules later
-    if(reverseScale) {
-        traceOut.colorscale = traceOut.colorscale.map(this.flipScale).reverse();
-    }
-
-    if(showScale) {
-        Plotly.Colorbar.supplyDefaults(traceIn, traceOut, layout);
-    }
-
-
+    Plotly.Colorscale.handleDefaults(
+        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
+    );
 };
 
-Surface.flipScale = function (si) {
-    return [1 - si[0], si[1]];
-};
+Surface.colorbar = Plotly.Heatmap.colorbar;
 
-Surface.colorbar = function(gd, cd) {
-    Plotly.Heatmap.colorbar(gd, cd);
+Surface.calc = function(gd, trace) {
+
+    // auto-z and autocolorscale if applicable
+    Plotly.Colorscale.calc(trace, trace.z, '', 'z');
+
 };
