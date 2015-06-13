@@ -2328,18 +2328,19 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'autocolorscale', 'marker.autocolorscale',
         'colorscale', 'marker.colorscale',
         'reversescale', 'marker.reversescale',
-        'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
-        'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
-        'autocontour','ncontours','contours.coloring',
-        'error_y.visible','error_y.value','error_y.type',
+        'autobinx','nbinsx','xbins','xbins.start','xbins.end','xbins.size',
+        'autobiny','nbinsy','ybins','ybins.start','ybins.end','ybins.size',
+        'autocontour','ncontours','contours','contours.coloring',
+        'error_y','error_y.visible','error_y.value','error_y.type',
         'error_y.traceref','error_y.array','error_y.symmetric',
         'error_y.arrayminus','error_y.valueminus','error_y.tracerefminus',
-        'error_x.visible','error_x.value','error_x.type',
+        'error_x','error_x.visible','error_x.value','error_x.type',
         'error_x.traceref','error_x.array','error_x.symmetric',
         'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
         'swapxy','swapxyaxes','orientationaxes',
         'colors', 'values', 'labels', 'label0', 'dlabel', 'sort',
-        'insideinfo.mode', 'insideinfo.font', 'outsideinfo.mode', 'outsideinfo.font'
+        'insideinfo', 'insideinfo.mode', 'insideinfo.font',
+        'outsideinfo', 'outsideinfo.mode', 'outsideinfo.font'
     ];
     for(i = 0; i < traces.length; i++) {
         if(plots.traceIs(gd._fullData[traces[i]], 'box')) {
@@ -2353,7 +2354,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // because .calc() is where the autorange gets determined
     // TODO: could we break this out as well?
     var autorangeAttrs = [
-        'marker.size','textfont.size','textposition',
+        'marker', 'marker.size', 'textfont', 'textfont.size','textposition',
         'boxpoints','jitter','pointpos','whiskerwidth','boxmean'
     ];
     // replotAttrs attributes need a replot (because different
@@ -2363,10 +2364,11 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'marker.cmin', 'marker.cmax', 'marker.cauto',
         'contours.start','contours.end','contours.size',
         'contours.showlines',
-        'line.smoothing','line.shape',
+        'line','line.smoothing','line.shape',
         'error_y.width','error_x.width','error_x.copy_ystyle',
         'marker.maxdisplayed',
-        'hole', 'scalegroup', 'domain.x[0]', 'domain.x[1]', 'domain.y[0]', 'domain.y[1]',
+        'hole', 'scalegroup', 'domain', 'domain.x', 'domain.y',
+        'domain.x[0]', 'domain.x[1]', 'domain.y[0]', 'domain.y[1]',
         'tilt', 'tiltaxis', 'depth', 'orientation', 'rotation', 'pull'
     ];
     // these ones show up in restyle because they make more sense
@@ -2376,7 +2378,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     var layoutAttrs = [
         'barmode', 'barnorm','bargap', 'bargroupgap',
         'boxmode', 'boxgap', 'boxgroupgap',
-        '?axis.autorange', '?axis.range', '?axis.rangemode'
+        '?axis.autorange', '?axis.range', '?axis.rangemode' // TODO: this will fail for extra axes
     ];
     // these ones may alter the axis type
     // (at least if the first trace is involved)
