@@ -12,14 +12,15 @@ Plotly.Plots.register(pie, 'pie', ['pie']);
 
 pie.attributes = {
     // data
-    label: {type: 'data_array'},
+    labels: {type: 'data_array'},
     // equivalent of x0 and dx, if label is missing
     label0: {type: 'any', dflt: 0},
     dlabel: {type: 'number', dflt: 1},
 
-    value: {type: 'data_array'},
+    values: {type: 'data_array'},
+
     // if color is missing, use default trace color set
-    color: {type: 'data_array'},
+    colors: {type: 'data_array'},
 
     scalegroup: {
         /**
@@ -34,6 +35,8 @@ pie.attributes = {
         type: 'any',
         dflt: false
     },
+
+    // TODO: after this add to restyle lists
 
     // labels (legend is handled by plots.attributes.showlegend and layout.legend.hiddenslices)
     insideinfo: {
@@ -164,20 +167,20 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         return Plotly.Lib.coerce(traceIn, traceOut, pie.attributes, attr, dflt);
     }
 
-    var vals = coerce('value');
+    var vals = coerce('values');
     if(!Array.isArray(vals) || !vals.length) {
         traceOut.visible = false;
         return;
     }
 
-    var labels = coerce('label');
+    var labels = coerce('labels');
     if(!Array.isArray(labels)) { // TODO: what if labels is shorter than vals?
         coerce('label0');
         coerce('dlabel');
     }
 
-    var colors = coerce('color');
-    if(!Array.isArray(colors)) traceOut.color = []; // later this will get padded with default colors
+    var colors = coerce('colors');
+    if(!Array.isArray(colors)) traceOut.colors = []; // later this will get padded with default colors
 
     coerce('scalegroup');
     // TODO: tilt, depth, and hole all need to be coerced to the same values within a sharegroup
@@ -185,10 +188,10 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     // are NOT in the same sharegroup
 
     var insideMode = coerce('insideinfo.mode');
-    if(insideMode !== 'none') coerce('insideinfo.font');
+    if(insideMode !== 'none') coerce('insideinfo.font', layout.font);
 
     var outsideMode = coerce('outsideinfo.mode');
-    if(outsideMode !== 'none') coerce('outsideinfo.font');
+    if(outsideMode !== 'none') coerce('outsideinfo.font', layout.font);
 
     coerce('domain.x[0]');
     coerce('domain.x[1]');
@@ -221,7 +224,8 @@ pie.supplyLayoutDefaults  = function(layoutIn, layoutOut){
 };
 
 pie.calc = function(gd, trace) {
-    var vals = trace.value,
+    var vals = trace.values,
+        labels = trace.labels,
         cd = [],
         fullLayout = gd._fullLayout,
         colorMap = fullLayout._piecolormap,
@@ -239,7 +243,7 @@ pie.calc = function(gd, trace) {
         v = +v;
         if(v < 0) continue;
 
-        label = trace.labels[i];
+        label = labels[i];
         if(label === undefined || label === '') label = i;
         label = String(label);
         // only take the first occurrence of any given label.
@@ -320,7 +324,7 @@ pie.plot = function(gd, cdpie) {
 
     scalePies(cdpie, fullLayout._size);
 
-    var pieGroups = fullLayout._pieLayer.selectAll('g').data(cdpie);
+    var pieGroups = fullLayout._pielayer.selectAll('g.trace').data(cdpie);
 
     pieGroups.enter().append('g')
         .attr({
@@ -336,7 +340,7 @@ pie.plot = function(gd, cdpie) {
             cd0 = cd[0],
             trace = cd0.trace,
             tiltRads = trace.tilt * Math.PI / 180,
-            depthLength = trace.depth * cd0.r * Math.sin(tiltRads) / 2,
+            depthLength = (trace.depth||0) * cd0.r * Math.sin(tiltRads) / 2,
             tiltAxis = trace.tiltaxis || 0,
             tiltAxisRads = tiltAxis * Math.PI / 180,
             depthVector = [
@@ -345,16 +349,18 @@ pie.plot = function(gd, cdpie) {
             ],
             rSmall = cd0.r * Math.cos(tiltRads);
 
-        var pieParts = pieGroup.selectAll('g')
+        var pieParts = pieGroup.selectAll('g.part')
             .data(trace.tilt ? ['top', 'sides'] : ['top']);
 
-        pieParts.enter().append('g').attr('class', Plotly.Lib.identity);
+        pieParts.enter().append('g').attr('class', function(d) {
+            return d + ' part';
+        });
         pieParts.exit().remove();
         pieParts.order();
 
         setCoords(cd);
 
-        pieParts.selectAll('.top').each(function() {
+        pieGroup.selectAll('.top').each(function() {
             var slices = d3.select(this).selectAll('path').data(cd);
 
             slices.enter().append('path');
@@ -369,9 +375,21 @@ pie.plot = function(gd, cdpie) {
                     cx += pull * pt.pxmid[0];
                     cy += pull * pt.pxmid[1];
                 }
+                var outerArc = 'a' + cd0.r + ',' + rSmall + ' ' + tiltAxis + ' ' + pt.largeArc + ' 1 ' +
+                    (pt.px1[0] - pt.px0[0]) + ',' + (pt.px1[1] - pt.px0[1]);
+
+                if(trace.hole) {
+                    var hole = trace.hole,
+                        rim = 1 - hole;
+                    return 'M' + (cx + hole * pt.px1[0]) + ',' + (cy + hole * pt.px1[1]) +
+                        'a' + (hole * cd0.r) + ',' + (hole * rSmall) + ' ' + tiltAxis + ' ' +
+                            pt.largeArc + ' 0 ' +
+                            (hole * (pt.px0[0] - pt.px1[0])) + ',' + (hole * (pt.px0[1] - pt.px1[1])) +
+                        'l' + (rim * pt.px0[0]) + ',' + (rim * pt.px0[1]) +
+                        outerArc + 'Z';
+                }
                 return 'M' + cx + ',' + cy + 'l' + pt.px0[0] + ',' + pt.px0[1] +
-                    'a' + cd0.r + ',' + rSmall + ' ' + tiltAxis + pt.largeArc + ' 1 ' +
-                    (pt.px1[0] - pt.px0[0]) + ',' + (pt.px1[1] - pt.px0[1]) + 'Z';
+                    outerArc + 'Z';
             });
         });
     });
@@ -400,7 +418,7 @@ function scalePies(cdpie, plotSize) {
         // TODO: does not account for trace.pull yet
         cd0.r = Math.min(
             pieBoxWidth / maxExtent(trace.tilt, Math.sin(tiltAxisRads), trace.depth),
-            pieBoxHeight / maxExtent(trace.tilt, Math.cos(tiltAxisRads), trace.depth));
+            pieBoxHeight / maxExtent(trace.tilt, Math.cos(tiltAxisRads), trace.depth)) / 2;
 
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0])/2;
         cd0.cy = plotSize.t + plotSize.h * (2 - trace.domain.y[1] - trace.domain.y[0])/2;
@@ -506,5 +524,36 @@ function maxExtent(tilt, tiltAxisFraction, depth) {
 }
 
 pie.style = function(gd) {
-    gd._pieLayer.selectAll
+    gd._fullLayout._pielayer.selectAll('.trace').each(function(cd) {
+        var cd0 = cd[0],
+            trace = cd0.trace,
+            getLineColor,
+            getLineWidth;
+
+        if(Array.isArray(trace.line.color)) {
+            getLineColor = function(pt) {
+                return Plotly.Color.rgb(trace.line.color[pt.i] || Plotly.Color.defaultLine);
+            };
+        } else {
+            var lineColor = Plotly.Color.rgb(trace.line.color);
+            getLineColor = function() { return lineColor; };
+        }
+
+        if(Array.isArray(trace.line.width)) {
+            getLineWidth = function(pt) {
+                return trace.line.width[pt.i] || 0;
+            };
+        } else {
+            var lineWidth = trace.line.width || 0;
+            getLineWidth = function() { return lineWidth; };
+        }
+
+        d3.select(this).selectAll('.top path').each(function(pt) {
+            d3.select(this).style({
+                stroke: getLineColor(pt),
+                'stroke-width': getLineWidth(pt),
+                fill: pt.color
+            });
+        });
+    });
 };

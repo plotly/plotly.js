@@ -627,6 +627,11 @@ Plotly.plot = function(gd, data, layout, config) {
             Plotly.Lib.markTime('done ErrorBars');
         }
 
+        // now draw stuff not on subplots (ie, pies)
+        // TODO: gotta be a better way to handle this
+        var cdPie = getCdModule(calcdata, Plotly.Pie);
+        if(cdPie.length) Plotly.Pie.plot(gd, cdPie);
+
         // styling separate from drawing
         plots.style(gd);
         Plotly.Lib.markTime('done plots.style');
@@ -2332,7 +2337,9 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'error_x.visible','error_x.value','error_x.type',
         'error_x.traceref','error_x.array','error_x.symmetric',
         'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
-        'swapxy','swapxyaxes','orientationaxes'
+        'swapxy','swapxyaxes','orientationaxes',
+        'colors', 'values', 'labels', 'label0', 'dlabel', 'sort',
+        'insideinfo.mode', 'insideinfo.font', 'outsideinfo.mode', 'outsideinfo.font'
     ];
     for(i = 0; i < traces.length; i++) {
         if(plots.traceIs(gd._fullData[traces[i]], 'box')) {
@@ -2358,7 +2365,9 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'contours.showlines',
         'line.smoothing','line.shape',
         'error_y.width','error_x.width','error_x.copy_ystyle',
-        'marker.maxdisplayed'
+        'marker.maxdisplayed',
+        'hole', 'scalegroup', 'domain.x[0]', 'domain.x[1]', 'domain.y[0]', 'domain.y[1]',
+        'tilt', 'tiltaxis', 'depth', 'orientation', 'rotation', 'pull'
     ];
     // these ones show up in restyle because they make more sense
     // in the style box, but they're graph-wide attributes, so set
