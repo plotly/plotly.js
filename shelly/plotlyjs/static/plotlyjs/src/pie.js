@@ -265,7 +265,8 @@ pie.calc = function(gd, trace) {
         cd.push({
             v: v,
             label: label,
-            color: color
+            color: color,
+            i: i
         });
     }
 
@@ -313,3 +314,197 @@ function nextDefaultColor(index) {
 
     return pieDefaultColors[index % pieDefaultColors.length];
 }
+
+pie.plot = function(gd, cdpie) {
+    var fullLayout = gd._fullLayout;
+
+    scalePies(cdpie, fullLayout._size);
+
+    var pieGroups = fullLayout._pieLayer.selectAll('g').data(cdpie);
+
+    pieGroups.enter().append('g')
+        .attr({
+            'stroke-linejoin': 'round', // TODO: miter might look better but can sometimes cause problems
+                                        // maybe miter with a small-ish stroke-miterlimit?
+            'class': 'trace'
+        });
+    pieGroups.exit().remove();
+    pieGroups.order();
+
+    pieGroups.each(function(cd) {
+        var pieGroup = d3.select(this),
+            cd0 = cd[0],
+            trace = cd0.trace,
+            tiltRads = trace.tilt * Math.PI / 180,
+            depthLength = trace.depth * cd0.r * Math.sin(tiltRads) / 2,
+            tiltAxis = trace.tiltaxis || 0,
+            tiltAxisRads = tiltAxis * Math.PI / 180,
+            depthVector = [
+                depthLength * Math.sin(tiltAxisRads),
+                depthLength * Math.cos(tiltAxisRads)
+            ],
+            rSmall = cd0.r * Math.cos(tiltRads);
+
+        var pieParts = pieGroup.selectAll('g')
+            .data(trace.tilt ? ['top', 'sides'] : ['top']);
+
+        pieParts.enter().append('g').attr('class', Plotly.Lib.identity);
+        pieParts.exit().remove();
+        pieParts.order();
+
+        setCoords(cd);
+
+        pieParts.selectAll('.top').each(function() {
+            var slices = d3.select(this).selectAll('path').data(cd);
+
+            slices.enter().append('path');
+            slices.exit().remove();
+
+            slices.attr('d', function(pt) {
+                var cx = cd0.cx + depthVector[0],
+                    cy = cd0.cy + depthVector[1];
+
+                if(trace.pull) {
+                    var pull = (Array.isArray(trace.pull) ? trace.pull[pt.i] : trace.pull) || 0;
+                    cx += pull * pt.pxmid[0];
+                    cy += pull * pt.pxmid[1];
+                }
+                return 'M' + cx + ',' + cy + 'l' + pt.px0[0] + ',' + pt.px0[1] +
+                    'a' + cd0.r + ',' + rSmall + ' ' + tiltAxis + pt.largeArc + ' 1 ' +
+                    (pt.px1[0] - pt.px0[0]) + ',' + (pt.px1[1] - pt.px0[1]) + 'Z';
+            });
+        });
+    });
+};
+
+function scalePies(cdpie, plotSize) {
+    var pieBoxWidth,
+        pieBoxHeight,
+        i,
+        j,
+        cd0,
+        trace,
+        tiltAxisRads,
+        scaleGroups = [],
+        scaleGroup,
+        minPxPerValUnit;
+
+    // first figure out the center and maximum radius for each pie
+    for(i = 0; i < cdpie.length; i++) {
+        cd0 = cdpie[i][0];
+        trace = cd0.trace;
+        pieBoxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
+        pieBoxHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
+        tiltAxisRads = trace.tiltaxis * Math.PI / 180;
+
+        // TODO: does not account for trace.pull yet
+        cd0.r = Math.min(
+            pieBoxWidth / maxExtent(trace.tilt, Math.sin(tiltAxisRads), trace.depth),
+            pieBoxHeight / maxExtent(trace.tilt, Math.cos(tiltAxisRads), trace.depth));
+
+        cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0])/2;
+        cd0.cy = plotSize.t + plotSize.h * (2 - trace.domain.y[1] - trace.domain.y[0])/2;
+
+        if(trace.scalegroup !== false && scaleGroups.indexOf(trace.scalegroup) === -1) {
+            scaleGroups.push(trace.scalegroup);
+        }
+    }
+
+    // Then scale any pies that are grouped
+    for(j = 0; j < scaleGroups.length; j++) {
+        minPxPerValUnit = Infinity;
+        scaleGroup = scaleGroups[j];
+
+        for(i = 0; i < cdpie.length; i++) {
+            cd0 = cdpie[i][0];
+            if(cd0.trace.scalegroup === scaleGroup) {
+                minPxPerValUnit = Math.min(minPxPerValUnit,
+                    cd0.r * cd0.r / cd0.vTotal);
+            }
+        }
+
+        for(i = 0; i < cdpie.length; i++) {
+            cd0 = cdpie[i][0];
+            if(cd0.trace.scalegroup === scaleGroup) {
+                cd0.r = Math.sqrt(minPxPerValUnit * cd0.vTotal);
+            }
+        }
+    }
+
+}
+
+function setCoords(cd) {
+    var cd0 = cd[0],
+        trace = cd0.trace,
+        tilt = trace.tilt,
+        tiltAxisRads,
+        tiltAxisSin,
+        tiltAxisCos,
+        tiltRads,
+        crossTilt,
+        inPlane,
+        currentAngle = trace.rotation,
+        angleFactor = 2 * Math.PI / cd0.vTotal,
+        firstPt = 'px0',
+        lastPt = 'px1',
+        i,
+        cdi,
+        currentCoords;
+
+    if(trace.orientation === 'ccw') {
+        currentAngle += angleFactor * cd0.v;
+        angleFactor *= -1;
+        firstPt = 'px1';
+        lastPt = 'px0';
+    }
+
+    if(tilt) {
+        tiltRads = tilt * Math.PI / 180;
+        tiltAxisRads = trace.tiltaxis * Math.PI / 180;
+        crossTilt = Math.sin(tiltAxisRads) * Math.cos(tiltAxisRads);
+        inPlane = 1 - Math.cos(tiltRads);
+        tiltAxisSin = Math.sin(tiltAxisRads);
+        tiltAxisCos = Math.cos(tiltAxisRads);
+    }
+
+    function getCoords(angle) {
+        var xFlat = cd0.r * Math.sin(angle),
+            yFlat = -cd0.r * Math.cos(angle);
+
+        if(!tilt) return [xFlat, yFlat];
+
+        return [
+            xFlat * (1 - inPlane * tiltAxisSin * tiltAxisSin) + yFlat * crossTilt * inPlane,
+            xFlat * crossTilt * inPlane + yFlat * (1 - inPlane * tiltAxisCos * tiltAxisCos),
+            Math.sin(tiltRads) * (yFlat * tiltAxisCos - xFlat * tiltAxisSin)
+        ];
+    }
+
+    currentCoords = getCoords(currentAngle);
+
+    for(i = 0; i < cd.length; i++) {
+        cdi = cd[i];
+        cdi[firstPt] = currentCoords;
+
+        if(trace.pull) cdi.pxmid = getCoords(currentAngle + cdi.v / 2);
+
+        currentAngle += angleFactor * cdi.v;
+        currentCoords = getCoords(currentAngle);
+
+        cdi[lastPt] = currentCoords;
+
+        cdi.largeArc = (cdi.v > cd0.vTotal / 2) ? 1 : 0;
+    }
+}
+
+function maxExtent(tilt, tiltAxisFraction, depth) {
+    if(!tilt) return 1;
+    var sinTilt = Math.sin(tilt * Math.PI / 180);
+    return Math.max(0.01, // don't let it go crazy if you tilt the pie totally on its side
+        depth * sinTilt * Math.abs(tiltAxisFraction) +
+        2 * Math.sqrt(1 - sinTilt * sinTilt * tiltAxisFraction * tiltAxisFraction));
+}
+
+pie.style = function(gd) {
+    gd._pieLayer.selectAll
+};
