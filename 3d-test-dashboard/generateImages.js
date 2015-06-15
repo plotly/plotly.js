@@ -13,7 +13,8 @@ var imgOpts = {
     height: 600
 };
 
-var figDir = './testplots/';
+var figDir = process.argv[2]==='geo' ? './testplots-geo/' : './testplots/';
+console.log('using ' + figDir);
 
 var Bert = {
 
@@ -66,7 +67,7 @@ var Bert = {
 
         plotly.getImage(job.workload, imgOpts, function (error, imageStream) {
             if (error) {
-                self.errors.push('error with ' + job.name + 'skipped');
+                self.errors.push('error with ' + job.name + ' skipped');
                 self.checkJobProgress();
                 return;
             }
