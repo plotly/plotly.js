@@ -375,5 +375,19 @@ describe('Test colorscale:', function () {
             expect(trace.colorscale[0]).toEqual([0, 'rgb(220, 220, 220)']);
         });
 
+        it('should be reverse the auto scale when reversescale is true', function() {
+            trace = {
+                type: 'heatmap',
+                z: [['a', 'b'], [0.5, 'd']],
+                autocolorscale: true,
+                reversescale: true,
+                _input: {}
+            };
+            z = [[undefined, undefined], [0.5, undefined]];
+            calcColorscale(trace, z, '', 'z');
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale[trace.colorscale.length-1]).toEqual([1, 'rgb(220, 220, 220)']);
+        });
+
     });
 });

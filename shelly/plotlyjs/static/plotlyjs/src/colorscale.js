@@ -188,7 +188,7 @@ colorscale.handleDefaults = function(traceIn, traceOut, layout, coerce, opts) {
         maxIn = containerIn[cLetter + 'max'],
         sclIn = containerIn.colorscale;
 
-    var validMinMax, autoColorscaleDftl, showScaleDftl, showScale;
+    var validMinMax, autoColorscaleDftl, showScaleDftl, sclOut, reverseScale, showScale;
 
     validMinMax = isNumeric(minIn) && isNumeric(maxIn) && minIn < maxIn;
     coerce(prefix + cLetter + 'auto', !validMinMax);
@@ -199,8 +199,11 @@ colorscale.handleDefaults = function(traceIn, traceOut, layout, coerce, opts) {
     // the marker and marker.line case (autocolorscale is true by default)
     if(sclIn!==undefined) autoColorscaleDftl = !colorscale.isValidScale(sclIn);
     coerce(prefix + 'autocolorscale', autoColorscaleDftl);
-    coerce(prefix + 'colorscale');
-    coerce(prefix + 'reversescale');
+    sclOut = coerce(prefix + 'colorscale');
+
+    // reversescale is handled at the containerOut level
+    reverseScale = coerce(prefix + 'reversescale');
+    if(reverseScale) containerOut.colorscale = colorscale.flipScale(sclOut);
 
     // until scatter.colorbar can handle marker line colorbars
     if(prefix === 'marker.line.') return;
@@ -242,21 +245,22 @@ colorscale.calc = function(trace, vals, containerStr, cLetter) {
         max += 0.5;
     }
 
+    container[cLetter + 'min'] = min;
+    container[cLetter + 'max'] = max;
+
+    inputContainer[cLetter + 'min'] = min;
+    inputContainer[cLetter + 'max'] = max;
+
     if(container.autocolorscale) {
         if(min * max < 0) scl = colorscale.scales.RdBu;
         else if(min >= 0) scl = colorscale.scales.Reds;
         else scl = colorscale.scales.Blues;
-    }
 
-    inputContainer[cLetter + 'min'] = min;
-    inputContainer[cLetter + 'max'] = max;
-    inputContainer.colorscale = scl;
-
-
-    container[cLetter + 'min'] = min;
-    container[cLetter + 'max'] = max;
-    container.colorscale = scl;
+        // reversescale is handled at the containerOut level
+        inputContainer.colorscale = scl;
         if(container.reversescale) scl = colorscale.flipScale(scl);
+        container.colorscale = scl;
+    }
 };
 
 colorscale.makeScaleFunction = function(scl, cmin, cmax) {
