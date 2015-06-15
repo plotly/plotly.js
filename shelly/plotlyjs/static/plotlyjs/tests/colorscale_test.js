@@ -52,6 +52,19 @@ describe('Test colorscale:', function () {
         });
     });
 
+    describe('flipScale', function() {
+        var flipScale = Plotly.Colorscale.flipScale,
+            scl;
+
+        it('should flip a colorscale', function() {
+            scl = [[0, 'rgb(0, 0, 200)'], ['0.5', 'rgb(0, 0, 0)'], ['1.0', 'rgb(200, 0, 0)']];
+            expect(flipScale(scl)).toEqual(
+                [[0, 'rgb(200, 0, 0)'], [0.5, 'rgb(0, 0, 0)'], [1, 'rgb(0, 0, 200)']]
+            );
+
+        });
+    });
+
     describe('hasColorscale', function() {
         var hasColorscale = Plotly.Colorscale.hasColorscale,
             trace;

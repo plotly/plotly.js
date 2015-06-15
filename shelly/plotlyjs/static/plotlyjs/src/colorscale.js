@@ -130,6 +130,19 @@ colorscale.getScale = function(scl, dflt) {
     return scl;
 };
 
+colorscale.flipScale = function(scl) {
+    var N = scl.length,
+        sclNew = new Array(N),
+        si;
+
+    for(var i = N-1, j = 0; i >= 0; i--, j++) {
+        si = scl[i];
+        sclNew[j] = [1 - si[0], si[1]];
+    }
+
+    return sclNew;
+};
+
 colorscale.hasColorscale = function(trace, containerStr) {
     var container = containerStr ?
             Plotly.Lib.nestedProperty(trace, containerStr).get() || {} :
@@ -200,8 +213,6 @@ colorscale.handleDefaults = function(traceIn, traceOut, layout, coerce, opts) {
     if(showScale) Plotly.Colorbar.supplyDefaults(containerIn, containerOut, layout);
 };
 
-function flipScale(si) { return [1 - si[0], si[1]]; }
-
 colorscale.calc = function(trace, vals, containerStr, cLetter) {
     var container, inputContainer;
 
@@ -241,11 +252,11 @@ colorscale.calc = function(trace, vals, containerStr, cLetter) {
     inputContainer[cLetter + 'max'] = max;
     inputContainer.colorscale = scl;
 
-    if(container.reversescale) scl = scl.map(flipScale).reverse();
 
     container[cLetter + 'min'] = min;
     container[cLetter + 'max'] = max;
     container.colorscale = scl;
+        if(container.reversescale) scl = colorscale.flipScale(scl);
 };
 
 colorscale.makeScaleFunction = function(scl, cmin, cmax) {
