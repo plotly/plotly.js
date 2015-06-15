@@ -54,15 +54,15 @@ function bundle () {
     });
 }
 
-
 ////// build the test examples
 
-browserify({
-    debug: true,
-    verbose: true
-}).add('./test.js').bundle()
-    .pipe(fs.createWriteStream('test-bundle.js'));
-
+fs.unlink('./test-bundle.js', function(error) {
+    browserify({
+        debug: true,
+        verbose: true
+    }).add(testFile).bundle()
+        .pipe(fs.createWriteStream('test-bundle.js'));
+});
 
 http.createServer(
   ecstatic({ root: '../.'  })
