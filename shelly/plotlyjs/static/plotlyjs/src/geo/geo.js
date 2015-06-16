@@ -53,7 +53,8 @@ proto.plot = function(geoData, fullLayout) {
 
     // N.B. 'geoLayout' is unambiguous, no need for 'user' geo layout here
 
-    // TODO don't reset projection on graph edit
+    // TODO don't reset projection on all graph edits
+    _this.projection = null;
 
     _this.setScale = createGeoScale(geoLayout, graphSize);
     _this.makeProjection(geoLayout);
