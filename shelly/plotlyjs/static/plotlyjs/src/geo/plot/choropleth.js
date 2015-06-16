@@ -29,11 +29,13 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
         cdi.push(feature);
     }
 
-    Plotly.Lib.mergeArray(trace.text, cdi, 'tx');
-    Plotly.Lib.mergeArray(markerLine.color, cdi, 'mlc');
-    Plotly.Lib.mergeArray(markerLine.width, cdi, 'mlw');
+    if(cdi.length > 0) {
+        cdi[0].trace = trace;
+        Plotly.Lib.mergeArray(trace.text, cdi, 'tx');
+        Plotly.Lib.mergeArray(markerLine.color, cdi, 'mlc');
+        Plotly.Lib.mergeArray(markerLine.width, cdi, 'mlw');
+    }
 
-    cdi[0].trace = trace;
     return cdi;
 };
 
@@ -63,7 +65,7 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                 zLabel: d.z,
                 text: d.tx
             }, 
-            {container: geo.framework[0][0]}
+            {container: geo.framework.node()}
         );
     }
 

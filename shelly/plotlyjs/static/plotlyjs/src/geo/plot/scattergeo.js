@@ -44,11 +44,11 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
         });
     }
 
-    // TODO handle cdi[0] empty
-
-    cdi[0].trace = trace;
-    Plotly.Lib.mergeArray(marker.size, cdi, 'ms');
-    Plotly.Scatter.arraysToCalcdata(cdi);
+    if(cdi.length > 0) {
+        cdi[0].trace = trace;
+        Plotly.Lib.mergeArray(marker.size, cdi, 'ms');
+        Plotly.Scatter.arraysToCalcdata(cdi);
+    }
 
     return cdi;
 };

@@ -2873,10 +2873,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
         return (gd._fullLayout[axName]||{}).autorange;
     }
 
-    var hw = ['height','width'];
-
-    // !!!
-    if(gd._fullLayout._hasGeo) doGeo = true;
+    var hw = ['height', 'width'];
 
     // alter gd.layout
     for(var ai in aobj) {
@@ -3101,25 +3098,13 @@ Plotly.relayout = function relayout (gd, astr, val) {
         if(domodebar) Plotly.Fx.modeBar(gd);
 
         var sceneIds;
-        if(doSceneDragmode) {
+        if (doSceneDragmode) {
             sceneIds = plots.getSubplotIds(gd._fullLayout, 'gl3d');
             for (i = 0; i < sceneIds.length; i++) {
                 scene = gd._fullLayout[sceneIds[i]]._scene;
                 scene.handleDragmode(gd._fullLayout.dragmode);
             }
         }
-
-//         var geoIds, geoLayout;
-//         if(doGeo) {
-//             geoIds = plots.getSubplotIds(gd._fullLayout, 'geo');
-//             for (i = 0; i < geoIds.length; i++) {
-//                 geoLayout = gd._fullLayout[geoIds[i]];
-//             
-//                 console.log(geoIds[i], geoLayout.showocean)
-// 
-//                 geoLayout._geo.drawLayout(geoLayout);
-//             }
-//         }
     }
 
     var plotDone = Plotly.Lib.syncOrAsync(seq, gd);

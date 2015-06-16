@@ -22,16 +22,8 @@ Choropleth.attributes = {
         }
     },
     zauto: heatmapAttrs.zauto,
-//     zmin: heatmapAttrs.zmin,
-//     zmax: heatmapAttrs.zmax,
-    zmin: {
-        type: 'number',
-        dflt: 0
-    },
-    zmax: {
-        type: 'number',
-        dflt: 10
-    },
+    zmin: heatmapAttrs.zmin,
+    zmax: heatmapAttrs.zmax,
     colorscale: heatmapAttrs.colorscale,
     autocolorscale: {
         type: 'boolean',

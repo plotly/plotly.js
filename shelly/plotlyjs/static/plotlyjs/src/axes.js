@@ -1988,8 +1988,7 @@ function numSeparate(nStr, separators) {
 // and optionally 2D axes only, not those inside 3D scenes
 function listNames(td, axletter, only2d) {
     var fullLayout = td._fullLayout;
-    if(!fullLayout) return [];
-    if(fullLayout._hasGeo) return [];
+    if (!fullLayout) return [];
     function filterAxis (obj) {
         return Object.keys(obj)
             .filter( function(k) {
@@ -2072,12 +2071,10 @@ axes.getSubplots = function(gd,ax) {
     var data = gd.data,
         subplots = [];
 
-    if(gd._fullLayout._hasGeo) return [];
-
     // look for subplots in the data
     (data||[]).forEach(function(trace) {
         if(trace.visible === false || trace.visible === 'legendonly' ||
-                Plotly.Plots.traceIs(trace, 'gl3d')) {
+                !Plotly.Plots.traceIs(trace, 'cartesian')) {
             return;
         }
         var xid = (trace.xaxis||'x'),
