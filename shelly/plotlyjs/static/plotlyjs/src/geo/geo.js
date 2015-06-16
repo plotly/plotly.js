@@ -11,7 +11,7 @@ var Plotly = require('../plotly'),
     createGeoZoomReset = require('./lib/zoom-reset'),
     plotScatterGeo = require('./plot/scattergeo'),
     plotChoropleth = require('./plot/choropleth'),
-    topojsonPackage = require('topojson');
+    topojsonFeature = require('topojson').feature;
 
 function Geo(options, fullLayout) {
 
@@ -213,7 +213,7 @@ proto.drawTopo = function(selection, layerName, geoLayout) {
     var topojson = this.topojson,
         datum = layerName==='frame' ?
             params.sphereSVG :
-            topojsonPackage.feature(topojson, topojson.objects[layerName]);
+            topojsonFeature(topojson, topojson.objects[layerName]);
 
     selection.append('g')
         .datum(datum)
