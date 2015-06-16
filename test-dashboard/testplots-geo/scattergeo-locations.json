@@ -1,0 +1,49 @@
+{
+    "data": [
+        {
+            "type": "scattergeo",
+            "mode": "markers",
+            "locations": [
+                "CAN",
+                "USA",
+                "RUS"
+            ],
+            "marker": {
+                "size": [
+                    20,
+                    30,
+                    15
+                ]
+            },
+            "text": [
+                20,
+                30,
+                15
+            ]
+        }
+    ],
+    "layout": {
+        "geo": {
+            "projection": {
+                "type": "natural earth"
+            },
+            "showframe": true,
+            "showrivers": true,
+            "showlakes": true,
+            "showocean": true,
+            "showland": false,
+            "showcountries": true,
+            "lataxis": {
+                "range": [
+                    0,
+                    80
+                ],
+                "dtick": 10
+            }
+        },
+        "height": 450,
+        "width": 1000,
+        "autosize": true,
+        "showlegend": false
+    }
+}
