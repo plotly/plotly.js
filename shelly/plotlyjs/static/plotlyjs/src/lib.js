@@ -1366,6 +1366,7 @@ var coerceIt = {
         else if(dflt!==undefined) propOut.set(dflt);
     },
     enumerated: function(v, propOut, dflt, opts) {
+        if(opts.coerceNumber) v = +v;
         if(opts.values.indexOf(v)===-1) propOut.set(dflt);
         else propOut.set(v);
     },

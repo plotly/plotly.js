@@ -21,8 +21,9 @@ GeoLayout.layoutAttributes = {
         // the values have units km/mm
         // e.g. 110 corresponds to a scale ratio of 1:110,000,000
         type: 'enumerated',
-        values: [110, 50, '110', '50'],
-        dflt: 110
+        values: [110, 50],
+        dflt: 110,
+        coerceNumber: true
     },
     scope: {
         type: 'enumerated',
@@ -230,7 +231,7 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
         coerce('countrieslinewidth');
     }
 
-    if(scope==='usa' || (scope==='north america' && +resolution===50)) {
+    if(scope==='usa' || (scope==='north america' && resolution===50)) {
         // Only works for:
         //   USA states at 110m
         //   USA states + Canada provinces at 50m
@@ -253,7 +254,7 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
     Plotly.GeoAxes.supplyLayoutDefaults(geoLayoutIn, geoLayoutOut);
 
     // bind a few helper variables
-    geoLayoutOut._isHighRes = +resolution===50;
+    geoLayoutOut._isHighRes = resolution===50;
     geoLayoutOut._isClipped = params.lonaxisSpan[projType];
     geoLayoutOut._clipAngle = params.lonaxisSpan[projType] / 2;
     geoLayoutOut._isAlbersUsa = isAlbersUsa;
