@@ -52,6 +52,19 @@ describe('Test colorscale:', function () {
         });
     });
 
+    describe('flipScale', function() {
+        var flipScale = Plotly.Colorscale.flipScale,
+            scl;
+
+        it('should flip a colorscale', function() {
+            scl = [[0, 'rgb(0, 0, 200)'], ['0.5', 'rgb(0, 0, 0)'], ['1.0', 'rgb(200, 0, 0)']];
+            expect(flipScale(scl)).toEqual(
+                [[0, 'rgb(200, 0, 0)'], [0.5, 'rgb(0, 0, 0)'], [1, 'rgb(0, 0, 200)']]
+            );
+
+        });
+    });
+
     describe('hasColorscale', function() {
         var hasColorscale = Plotly.Colorscale.hasColorscale,
             trace;
@@ -77,7 +90,7 @@ describe('Test colorscale:', function () {
             });
         });
 
-        it('should return true when marker color is an Array', function() {
+        it('should return true when marker color is an Array with at least one number', function() {
             trace = {
                 marker: {
                     color: [1, 2, 3],
@@ -88,6 +101,28 @@ describe('Test colorscale:', function () {
             };
             expect(hasColorscale(trace, 'marker')).toBe(true);
             expect(hasColorscale(trace, 'marker.line')).toBe(true);
+
+            trace = {
+                marker: {
+                    color: ['1', 'red', '#d0d0d0'],
+                    line: {
+                        color: ['blue', '3', '#fff']
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(true);
+            expect(hasColorscale(trace, 'marker.line')).toBe(true);
+
+            trace = {
+                marker: {
+                    color: ['green', 'red', 'blue'],
+                    line: {
+                        color: ['rgb(100, 100, 100)', '#d0d0d0', '#fff']
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(false);
+            expect(hasColorscale(trace, 'marker.line')).toBe(false);
         });
 
         it('should return true when marker showscale is true', function() {
@@ -338,6 +373,20 @@ describe('Test colorscale:', function () {
             calcColorscale(trace, z, '', 'z');
             expect(trace.autocolorscale).toBe(true);
             expect(trace.colorscale[0]).toEqual([0, 'rgb(220, 220, 220)']);
+        });
+
+        it('should be reverse the auto scale when reversescale is true', function() {
+            trace = {
+                type: 'heatmap',
+                z: [['a', 'b'], [0.5, 'd']],
+                autocolorscale: true,
+                reversescale: true,
+                _input: {}
+            };
+            z = [[undefined, undefined], [0.5, undefined]];
+            calcColorscale(trace, z, '', 'z');
+            expect(trace.autocolorscale).toBe(true);
+            expect(trace.colorscale[trace.colorscale.length-1]).toEqual([1, 'rgb(220, 220, 220)']);
         });
 
     });
