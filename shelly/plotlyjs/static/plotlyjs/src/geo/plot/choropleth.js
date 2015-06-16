@@ -48,9 +48,9 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         baseLayersOverChoropleth = params.baseLayersOverChoropleth,
         layerName;
 
-    // For Plotly.plot into an existing map. Better solution?
-    gChoropleth.selectAll('*').remove();
-    gBaseLayerOverChoropleth.selectAll('*').remove();
+    // TODO move to more d3-idiomatic pattern (that's work on replot)
+    gChoropleth.html('');
+    gBaseLayerOverChoropleth.html('');
 
     // TODO incorporate 'hoverinfo'
     function handleMouseOver(d) {

@@ -73,8 +73,8 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
         Scatter = Plotly.Scatter,
         topojson = geo.topojson;
 
-    // For Plotly.plot into an existing map. Better solution?
-    gScatterGeo.selectAll('*').remove();
+    // TODO move to more d3-idiomatic pattern (that's work on replot)
+    gScatterGeo.html('');
 
     function handleMouseOver(d) {
         if(!geo.showHover) return;

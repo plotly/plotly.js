@@ -258,8 +258,8 @@ proto.drawLayout = function(geoLayout) {
         axesNames = params.axesNames,
         layerName;
 
-    // For Plotly.plot into an existing map. Better solution?
-    gBaseLayer.selectAll('*').remove();
+    // TODO move to more d3-idiomatic pattern (that's work on replot)
+    gBaseLayer.html('');
 
     for(var i = 0;  i < baseLayers.length; i++) {
         layerName = baseLayers[i];
