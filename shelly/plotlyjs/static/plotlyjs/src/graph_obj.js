@@ -117,6 +117,21 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
     return subplotIds;
 };
 
+plots.getSubplotIdsInData = function getSubplotsInData(data, type) {
+    var attr = plots.subplotsRegistry[type].attr,
+        subplotIds = [],
+        trace;
+
+    for (var i = 0; i < data.length; i++) {
+        trace = data[i];
+        if(Plotly.Plots.traceIs(trace, type) && subplotIds.indexOf(trace[attr])===-1) {
+            subplotIds.push(trace[attr]);
+        }
+    }
+
+    return subplotIds;
+};
+
 plots.getSubplotData = function getSubplotData(data, type, subplotId) {
     var attr = plots.subplotsRegistry[type].attr,
         subplotData = [],

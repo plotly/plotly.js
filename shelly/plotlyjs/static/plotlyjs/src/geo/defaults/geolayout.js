@@ -148,7 +148,7 @@ GeoLayout.layoutAttributes = {
 };
 
 GeoLayout.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
-    var geos = findGeosInData(fullData),
+    var geos = Plotly.Plots.getSubplotIdsInData(fullData, 'geo'),
         geosLength = geos.length;
     
     var geo, geoLayoutIn, geoLayoutOut;
@@ -261,17 +261,3 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
     geoLayoutOut._isConic = isConic;
     geoLayoutOut._isScoped = isScoped;
 };
-
-function findGeosInData(fullData) {
-    var geos = [],
-        d;
-
-    for (var i = 0; i < fullData.length; i++) {
-        d = fullData[i];
-        if(Plotly.Plots.traceIs(d, 'geo')) {
-            if(geos.indexOf(d.geo) === -1) geos.push(d.geo);
-        }
-    }
-
-    return geos;
-}
