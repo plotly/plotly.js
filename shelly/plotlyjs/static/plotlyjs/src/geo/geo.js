@@ -145,8 +145,9 @@ proto.makeProjection = function(geoLayout) {
         projection
             .clipAngle(geoLayout._clipAngle - params.clipPad);
     }
+    else this.clipAngle = null;  // for graph edits
 
-    if(geoLayout.parallels) {
+    if(projLayout.parallels) {
         projection
             .parallels(projLayout.parallels);
     }

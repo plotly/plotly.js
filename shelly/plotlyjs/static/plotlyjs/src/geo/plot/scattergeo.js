@@ -129,7 +129,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 return;
             }
 
-           var  cdi = plotScatterGeo.calcGeoJSON(trace, topojson);
+           var cdi = plotScatterGeo.calcGeoJSON(trace, topojson);
 
             if(showMarkers) {
                 s.selectAll('path.point')

@@ -3,7 +3,14 @@
 /* global d3:false */
 
 var radians = Math.PI / 180,
-    degrees = 180 / Math.PI;
+    degrees = 180 / Math.PI,
+    zoomstartStyle = {
+        cursor: 'pointer'
+    },
+    zoomendStyle = {
+        cursor: 'auto'
+    };
+
 
 function createGeoZoom(geo, geoLayout) {
     var zoomConstructor;
@@ -35,18 +42,19 @@ function zoomScoped(geo, projLayout) {
         zoom = initZoom(projection, projLayout);
 
     function handleZoomstart() {
-        d3.select(this).style('cursor', 'pointer');
+        d3.select(this).style(zoomstartStyle);
     }
 
     function handleZoom() {
         projection
             .scale(d3.event.scale)
             .translate(d3.event.translate);
+
         geo.render();
     }
 
     function handleZoomend() {
-        d3.select(this).style('cursor', 'auto');
+        d3.select(this).style(zoomendStyle);
     }
 
     zoom
@@ -76,7 +84,7 @@ function zoomNonClipped(geo, projLayout) {
     }
 
     function handleZoomstart() {
-        d3.select(this).style('cursor', 'pointer');
+        d3.select(this).style(zoomstartStyle);
 
         mouse0 = d3.mouse(this);
         rotate0 = projection.rotate();
@@ -113,7 +121,7 @@ function zoomNonClipped(geo, projLayout) {
     }
 
     function handleZoomend() {
-        d3.select(this).style('cursor', 'auto');
+        d3.select(this).style(zoomendStyle);
 
         // or something like
         // http://www.jasondavies.com/maps/gilbert/
@@ -141,6 +149,8 @@ function zoomClipped(geo, projLayout) {
     var zoomPoint;
 
     zoom.on('zoomstart', function() {
+        d3.select(this).style(zoomstartStyle);
+
         var mouse0 = d3.mouse(this),
             rotate0 = projection.rotate(),
             lastRotate = rotate0,
@@ -194,6 +204,7 @@ function zoomClipped(geo, projLayout) {
         zoomstarted(event.of(this, arguments));
     })
     .on('zoomend', function() {
+        d3.select(this).style(zoomendStyle);
         zoomOn.call(zoom, 'zoom', null);
         zoomended(event.of(this, arguments));
     })

@@ -727,25 +727,22 @@ function plotGeo(gd) {
         fullData = gd._fullData,
         geoIds = plots.getSubplotIds(fullLayout, 'geo');
 
-    var i, geoId, fullGeoData, geo, geoOptions;
-
-    fullLayout._paperdiv.style({
-        width: fullLayout.width + 'px',
-        height: fullLayout.height + 'px'
-    });
+    var i, geoId, fullGeoData, geo;
 
     for (i = 0; i < geoIds.length; i++) {
         geoId = geoIds[i];
         fullGeoData = plots.getSubplotData(fullData, 'geo', geoId);
-        geo = fullLayout[geoId]._geo;  // ref. to corresp. geo instance
+        geo = fullLayout[geoId]._geo;
 
         // If geo is not instantiated, create one!
         if(geo === undefined) {
-            geoOptions = {
-                id: geoId,
-                container: gd.querySelector('.geo-container')
-            };
-            geo = new Plotly.Geo(geoOptions, fullLayout);
+            geo = new Plotly.Geo(
+                {
+                    id: geoId,
+                    container: fullLayout._geocontainer.node()
+                },
+                fullLayout
+            );
             fullLayout[geoId]._geo = geo;
         }
 
@@ -2808,7 +2805,6 @@ Plotly.relayout = function relayout (gd, astr, val) {
         docalc = false,
         domodebar = false,
         doSceneDragmode = false,
-        doGeo = false,
         newkey, axes, keys, xyref, scene, axisAttr;
 
     if(typeof astr === 'string') aobj[astr] = val;
@@ -3446,6 +3442,7 @@ function makePlotFramework(gd) {
     // fill in image server scrape-svg
     fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
     fullLayout._geoimages = fullLayout._paper.append('g').classed('geoimages', true);
+
     // lastly info (legend, annotations) and hover layers go on top
     // these are in a different svg element normally, but
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
