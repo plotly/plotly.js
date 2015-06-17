@@ -1,5 +1,7 @@
 'use strict';
 
+var scrapeSVG = require('../image_server/server_app/lib/scrape-svg');
+
 var plotlist = document.getElementById('plot-list');
 var anchor = document.getElementById('embedded-graph');
 var image = document.getElementById('embedded-image');
@@ -137,6 +139,19 @@ function plotButtons(plots, figDir) {
         }, 500);
     });
 
+    var scrapeButton = document.createElement('button');
+    scrapeButton.style.cssFloat = 'left';
+    scrapeButton.style.width = '100px';
+    scrapeButton.style.height = '40px';
+    scrapeButton.style.marginLeft = '25px';
+    scrapeButton.innerHTML = 'scrape SVG';
+    scrapeButton.style.background = 'blue';
+    plotlist.appendChild(scrapeButton);
+
+    scrapeButton.addEventListener('click', function () {
+        scrapeSVG(Tabs.get());
+        return;
+    });
 
 }
 

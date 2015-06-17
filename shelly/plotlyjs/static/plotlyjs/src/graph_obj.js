@@ -3284,7 +3284,7 @@ function makePlotFramework(gd) {
 
     fullLayout._geocontainer = fullLayout._paperdiv.selectAll('.geo-container')
         .data([0]);
-    fullLayout._glcontainer.enter().append('div')
+    fullLayout._geocontainer.enter().append('div')
         .classed('geo-container', true);
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
@@ -3315,9 +3315,6 @@ function makePlotFramework(gd) {
 
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
-
-    fullLayout._geolayer = fullLayout._paper.append('g')
-        .classed('geolayer', true);
 
     // Layers to keep plot types in the right order.
     // from back to front:
@@ -3446,7 +3443,9 @@ function makePlotFramework(gd) {
     // single shape layer for the whole plot
     fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
 
+    // fill in image server scrape-svg
     fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
+    fullLayout._geoimages = fullLayout._paper.append('g').classed('geoimages', true);
     // lastly info (legend, annotations) and hover layers go on top
     // these are in a different svg element normally, but
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
