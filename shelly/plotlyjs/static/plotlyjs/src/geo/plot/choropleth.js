@@ -68,11 +68,6 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         );
     }
 
-    function handleZoom(d) {
-        clearHover(geo.framework);
-        handleMouseOver(d);
-    }
-
     gChoropleth.append('g')
         .data(choroplethData)
         .attr('class', 'trace choropleth')
@@ -88,7 +83,11 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                     .on('mouseout', function() {
                         Plotly.Fx.loneUnhover(geo.hoverContainer);
                     })
-                    .on('mousewheel.zoom', handleZoom);
+                    .on('mousedown', function() {
+                        // to simulate the 'zoomon' event
+                        Plotly.Fx.loneUnhover(geo.hoverContainer);
+                    })
+                    .on('mouseup', handleMouseOver);  // ~ 'zoomend'
         });
         
     // some baselayers are drawn over choropleth

@@ -140,6 +140,11 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                         .on('mouseout', function() {
                             Plotly.Fx.loneUnhover(geo.hoverContainer);
                         })
+                        .on('mousedown', function() {
+                            // to simulate the 'zoomon' event
+                            Plotly.Fx.loneUnhover(geo.hoverContainer);
+                        })
+                        .on('mouseup', handleMouseOver);  // ~ 'zoomend'
             }
 
             if(showText) {
