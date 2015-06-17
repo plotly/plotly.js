@@ -4,7 +4,7 @@
 
 var Plotly = require('../../plotly'),
     params = require('../lib/params'),
-    getFromTopojson = require('../lib/get-from-topojson'),
+    extractTopojson = require('../lib/topojson-utils').extractTopojson,
     clearHover = require('../lib/clear-hover');
 
 var plotChoropleth = module.exports = {};
@@ -13,7 +13,7 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
         locations = trace.locations,
         N = locations.length,
-        fromTopojson = getFromTopojson(trace, topojson),
+        fromTopojson = extractTopojson(trace, topojson),
         features = fromTopojson.features,
         ids = fromTopojson.ids,
         markerLine = (trace.marker || {}).line || {};

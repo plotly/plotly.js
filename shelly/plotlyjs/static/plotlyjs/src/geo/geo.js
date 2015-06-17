@@ -4,13 +4,13 @@
 
 var Plotly = require('../plotly'),
     params = require('./lib/params'),
-    getTopojsonPath = require('./lib/get-topojson-path'),
     addProjectionsToD3 = require('./lib/projections'),
     createGeoScale = require('./lib/set-scale'),
     createGeoZoom = require('./lib/zoom'),
     createGeoZoomReset = require('./lib/zoom-reset'),
     plotScatterGeo = require('./plot/scattergeo'),
     plotChoropleth = require('./plot/choropleth'),
+    topojsonUtils = require('./lib/topojson-utils'),
     topojsonFeature = require('topojson').feature;
 
 function Geo(options, fullLayout) {
@@ -24,7 +24,7 @@ function Geo(options, fullLayout) {
 
     this.showHover = fullLayout.hovermode==='closest';
 
-    this.topojsonPath = null;
+    this.topojsonName = null;
     this.topojson = null;
 
     this.projectionType = null;
@@ -48,8 +48,9 @@ var proto = Geo.prototype;
 proto.plot = function(geoData, fullLayout) {
     var _this = this,
         geoLayout = fullLayout[_this.id],
-        graphSize = fullLayout._size,
-        topojsonPathNew;
+        graphSize = fullLayout._size;
+
+    var topojsonNameNew, topojsonPath;
 
     // N.B. 'geoLayout' is unambiguous, no need for 'user' geo layout here
 
@@ -68,17 +69,18 @@ proto.plot = function(geoData, fullLayout) {
         .call(_this.zoom)
         .on('dblclick', _this.zoomReset);
 
-    topojsonPathNew = getTopojsonPath(geoLayout);
+    topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
 
-    if(_this.topojson===null || topojsonPathNew!==_this.topojsonPath) {
+    if(_this.topojson===null || topojsonNameNew!==_this.topojsonName) {
+        _this.topojsonName = topojsonNameNew;
 
-        _this.topojsonPath = topojsonPathNew;
-
-        // N.B this is async
-        d3.json(_this.topojsonPath, function(error, topojson) {
-            _this.topojson = topojson;
             _this.onceTopojsonIsLoaded(geoData, geoLayout);
-        });
+            topojsonPath = topojsonUtils.getTopojsonPath(_this.topojsonName);
+            d3.json(topojsonPath, function(error, topojson) {
+                // N.B this is async
+                _this.topojson = topojson;
+                _this.onceTopojsonIsLoaded(geoData, geoLayout);
+            });
     }
     else _this.onceTopojsonIsLoaded(geoData, geoLayout);
 

@@ -3,7 +3,7 @@
 /* global d3:false */
 
 var Plotly = require('../../plotly'),
-    getFromTopojson = require('../lib/get-from-topojson'),
+    extractTopojson = require('../lib/topojson-utils').extractTopojson,
     clearHover = require('../lib/clear-hover');
 
 var plotScatterGeo = module.exports = {};
@@ -17,7 +17,7 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
 
     if(hasLocationData) {
         N = trace.locations.length;
-        fromTopojson = getFromTopojson(trace, topojson);
+        fromTopojson = extractTopojson(trace, topojson);
         features = fromTopojson.features;
         ids = fromTopojson.ids;
         getLonLat = function(trace, i) {
