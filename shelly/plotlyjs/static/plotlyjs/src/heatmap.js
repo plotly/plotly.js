@@ -98,7 +98,7 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
             if (!oneRowIsFilled && zi.length) oneRowIsFilled = true;
             for(var j = 0; j < zi.length; j++) {
             // Check that there is at least one numeric element...
-                if($.isNumeric(zi[j])) {
+                if(isNumeric(zi[j])) {
                     noNumbers = false;
                     break;
                 }
