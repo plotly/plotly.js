@@ -1,6 +1,7 @@
 'use strict';
 
 /* global d3:false */
+/* global PlotlyGeoAssets:false */
 
 var Plotly = require('../plotly'),
     params = require('./lib/params'),
@@ -44,7 +45,6 @@ module.exports = Geo;
 
 var proto = Geo.prototype;
 
-
 proto.plot = function(geoData, fullLayout) {
     var _this = this,
         geoLayout = fullLayout[_this.id],
@@ -74,13 +74,18 @@ proto.plot = function(geoData, fullLayout) {
     if(_this.topojson===null || topojsonNameNew!==_this.topojsonName) {
         _this.topojsonName = topojsonNameNew;
 
+        try {
+            _this.topojson = PlotlyGeoAssets.topojsons[_this.topojsonName];
             _this.onceTopojsonIsLoaded(geoData, geoLayout);
+        }
+        catch(error) {
             topojsonPath = topojsonUtils.getTopojsonPath(_this.topojsonName);
             d3.json(topojsonPath, function(error, topojson) {
                 // N.B this is async
                 _this.topojson = topojson;
                 _this.onceTopojsonIsLoaded(geoData, geoLayout);
             });
+        }
     }
     else _this.onceTopojsonIsLoaded(geoData, geoLayout);
 
