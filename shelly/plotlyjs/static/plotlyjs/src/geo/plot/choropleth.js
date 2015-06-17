@@ -4,8 +4,7 @@
 
 var Plotly = require('../../plotly'),
     params = require('../lib/params'),
-    extractTopojson = require('../lib/topojson-utils').extractTopojson,
-    clearHover = require('../lib/clear-hover');
+    extractTopojson = require('../lib/topojson-utils').extractTopojson;
 
 var plotChoropleth = module.exports = {};
 
@@ -86,7 +85,9 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                 .enter().append('path')
                     .attr('class', 'choroplethlocation')
                     .on('mouseover', handleMouseOver)
-                    .on('mouseout', clearHover(geo.framework))
+                    .on('mouseout', function() {
+                        Plotly.Fx.loneUnhover(geo.hoverContainer);
+                    })
                     .on('mousewheel.zoom', handleZoom);
         });
         

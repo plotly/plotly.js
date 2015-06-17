@@ -706,6 +706,14 @@ fx.loneHover = function(hoverItem, opts) {
     return hoverLabel.node();
 };
 
+fx.loneUnhover = function(containerOrSelection) {
+    var selection = containerOrSelection instanceof d3.selection ?
+            containerOrSelection :
+            d3.select(containerOrSelection);
+
+    selection.selectAll('g.hovertext').remove();
+};
+
 function createHoverText(hoverData, opts) {
     var hovermode = opts.hovermode,
         rotateLabels = opts.rotateLabels,

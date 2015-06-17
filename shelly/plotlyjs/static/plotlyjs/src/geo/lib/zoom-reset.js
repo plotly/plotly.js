@@ -1,6 +1,6 @@
 'use strict';
 
-var clearHover = require('./clear-hover');
+var loneUnhover = require('../../plotly').loneUnhover;
 
 
 function createGeoZoomReset(geo, geoLayout) {
@@ -13,7 +13,8 @@ function createGeoZoomReset(geo, geoLayout) {
 
         zoom.scale(projection.scale());
         zoom.translate(projection.translate());
-        clearHover(geo.framework);
+
+        loneUnhover(geo.hoverContainer);
 
         geo.render();
     };

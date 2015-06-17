@@ -3,8 +3,7 @@
 /* global d3:false */
 
 var Plotly = require('../../plotly'),
-    extractTopojson = require('../lib/topojson-utils').extractTopojson,
-    clearHover = require('../lib/clear-hover');
+    extractTopojson = require('../lib/topojson-utils').extractTopojson;
 
 var plotScatterGeo = module.exports = {};
 
@@ -138,7 +137,9 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                     .enter().append('path')
                         .attr('class', 'point')
                         .on('mouseover', handleMouseOver)
-                        .on('mouseout', clearHover(geo.framework));
+                        .on('mouseout', function() {
+                            Plotly.Fx.loneUnhover(geo.hoverContainer);
+                        })
             }
 
             if(showText) {
