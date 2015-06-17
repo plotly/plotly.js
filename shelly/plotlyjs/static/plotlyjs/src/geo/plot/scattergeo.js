@@ -97,7 +97,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 name: trace.name,  // TODO should only appear if data.length>1
                 color: d.mc || (trace.marker || {}).color
             },
-            {container: geo.framework[0][0]}
+            {container: geo.hoverContainer.node()}
         );
     }
 

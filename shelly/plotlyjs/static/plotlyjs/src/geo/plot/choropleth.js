@@ -65,7 +65,7 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                 zLabel: d.z,
                 text: d.tx
             }, 
-            {container: geo.framework.node()}
+            {container: geo.hoverContainer.node()}
         );
     }
 

@@ -24,6 +24,7 @@ function Geo(options, fullLayout) {
     addProjectionsToD3();
 
     this.showHover = fullLayout.hovermode==='closest';
+    this.hoverContainer = null;
 
     this.topojsonName = null;
     this.topojson = null;
@@ -163,23 +164,40 @@ proto.makePath = function() {
 
 /*
  * <div this.container>
- *   <div geoDiv>
- *     <svg framework>
+ *   <div this.geoDiv>
+ *     <svg this.hoverContainer>
+ *     <svg this.framework>
  */
 proto.makeFramework = function() {
     var geoDiv = this.geoDiv = d3.select(this.container).append('div');
     geoDiv
         .attr('id', this.id)
         .style({
-            position: 'absolute',
-            top: '0px',
-            left: '0px',
-            width: '100%',
-            height: '100%'
+            position: 'absolute'
         });
 
-    // TODO use clip paths instead of nested SVG
+    var hoverContainer = this.hoverContainer = geoDiv.append('svg');
+    hoverContainer
+        .attr({
+            xmlns:'http://www.w3.org/2000/svg',
+            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
+        })
+        .style({
+            position: 'absolute',
+            'z-index': 20,
+            'pointer-events': 'none'
+        });
+
     var framework = this.framework = geoDiv.append('svg');
+    framework
+        .attr({
+            xmlns:'http://www.w3.org/2000/svg',
+            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
+            preserveAspectRatio: 'none'
+        })
+        .style({
+            position: 'absolute'
+        });
 
     framework.append('g').attr('class', 'baselayer');
     framework.append('g').attr('class', 'choroplethlayer');
@@ -188,30 +206,36 @@ proto.makeFramework = function() {
 
     // N.B. disable dblclick zoom default
     framework.on('dblclick.zoom', null);
+
+    // TODO use clip paths instead of nested SVG
 };
 
 proto.adjustLayout = function(geoLayout, graphSize) {
     var domain = geoLayout.domain;
 
-    this.framework
-        .attr('width', geoLayout._widthFramework)
-        .attr('height', geoLayout._heightFramework)
+    this.geoDiv
         .style({
-            position: 'absolute',
-            top: (geoLayout._heightDiv - geoLayout._heightFramework) / 2,
+            left: (graphSize.l + domain.x[0] * graphSize.w) + 'px',
+            top: (graphSize.t + (1 - domain.y[1]) * graphSize.h) + 'px',
+            width: geoLayout._widthDiv + 'px',
+            height: geoLayout._heightDiv + 'px'
+        });
+
+    this.hoverContainer
+        .style({
             left: (geoLayout._widthDiv - geoLayout._widthFramework) / 2,
+            top: (geoLayout._heightDiv - geoLayout._heightFramework) / 2,
+            width: geoLayout._widthFramework,
+            height: geoLayout._heightFramework
+        });
+
+    this.framework
+        .style({
+            left: (geoLayout._widthDiv - geoLayout._widthFramework) / 2,
+            top: (geoLayout._heightDiv - geoLayout._heightFramework) / 2,
             width: geoLayout._widthFramework,
             height: geoLayout._heightFramework,
             'background-color': geoLayout.bgcolor
-        });
-
-    this.geoDiv
-        .style({
-            position: 'absolute',
-            left: (graphSize.l + domain.x[0] * graphSize.w) + 'px',
-            top: (graphSize.t + (1 - domain.y[1]) * graphSize.h) + 'px',
-            width: (graphSize.w * (domain.x[1] - domain.x[0])) + 'px',
-            height: (graphSize.h * (domain.y[1] - domain.y[0])) + 'px'
         });
 };
 
