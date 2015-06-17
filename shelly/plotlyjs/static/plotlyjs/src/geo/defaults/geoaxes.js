@@ -71,8 +71,6 @@ GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
         range0 = coerce('range[0]', rangeDflt[0]);
         coerce('range[1]', rangeDflt[1]);
 
-        // TODO handle lataxisSpan
-
         Plotly.Lib.noneOrAll(axisIn.range, axisOut.range, [0, 1]);
 
         coerce('tick0', range0);

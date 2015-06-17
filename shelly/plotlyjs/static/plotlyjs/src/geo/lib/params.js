@@ -7,6 +7,12 @@ params.projNames = {
     // d3.geo.projection
     'equirectangular': 'equirectangular',
     'mercator': 'mercator',
+    'orthographic': 'orthographic',
+    'natural earth': 'naturalEarth',
+    'kavrayskiy7': 'kavrayskiy7',
+    'miller': 'miller',
+    'robinson': 'robinson',
+    'eckert4': 'eckert4',
     'azimuthal equal area': 'azimuthalEqualArea',
     'azimuthal equidistant': 'azimuthalEquidistant',
     'conic equal area': 'conicEqualArea',
@@ -14,17 +20,10 @@ params.projNames = {
     'conic equidistant': 'conicEquidistant',
     'gnomonic': 'gnomonic',
     'stereographic': 'stereographic',
-    'orthographic': 'orthographic',
-    'transverse mercator': 'transverseMercator',
-    'albers usa': 'albersUsa',
-    // d3.geo.projection plugin
-    'natural earth': 'naturalEarth',
-    'kavrayskiy7': 'kavrayskiy7',
     'mollweide': 'mollweide',
     'hammer': 'hammer',
-    'miller': 'miller',
-    'robinson': 'robinson',
-    'eckert4': 'eckert4'
+    'transverse mercator': 'transverseMercator',
+    'albers usa': 'albersUsa'
 };
 
 // name of the axes
@@ -35,15 +34,17 @@ params.lonaxisSpan = {
     'orthographic': 180,
     'azimuthal equal area': 360,
     'azimuthal equidistant': 360,
+    'conic conformal': 180,
     'gnomonic': 160,
-    'stereographic': 350,
+    'stereographic': 180,
+    'transverse mercator': 180,
     '*': 360
 };
 
 // max latitudinal angular span (EXPERIMENTAL)
 params.lataxisSpan = {
     'conic conformal': 150,
-    'stereographic': 90,
+    'stereographic': 179.5,
     '*': 180
 };
 
@@ -91,13 +92,6 @@ params.scopeDefaults = {
         lataxisRange: [-60, 15],
         projType: 'mercator',
         projRotate: [0, 0, 0]
-    }
-};
-
-// TODO projection type defaults
-params.typeDefaults = {
-    'stereographic': {
-        projRotate: [0, 90]
     }
 };
 
