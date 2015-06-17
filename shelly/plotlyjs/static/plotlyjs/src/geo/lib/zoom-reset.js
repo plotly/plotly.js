@@ -1,6 +1,6 @@
 'use strict';
 
-var loneUnhover = require('../../plotly').loneUnhover;
+var loneUnhover = require('../../plotly').Fx.loneUnhover;
 
 
 function createGeoZoomReset(geo, geoLayout) {
