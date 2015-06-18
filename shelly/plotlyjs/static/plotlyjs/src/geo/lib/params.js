@@ -95,9 +95,6 @@ params.scopeDefaults = {
     }
 };
 
-// TODO pixel pad between div and svg
-params.frameworkPad = 2;
-
 // angular pad to avoid rounding error around clip angles
 params.clipPad = 1e-3;
 

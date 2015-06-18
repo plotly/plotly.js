@@ -8,7 +8,8 @@ function createGeoScale(geoLayout, graphSize) {
     var projLayout = geoLayout.projection,
         lonaxisLayout = geoLayout.lonaxis,
         lataxisLayout = geoLayout.lataxis,
-        geoDomain = geoLayout.domain;
+        geoDomain = geoLayout.domain,
+        frameWidth = geoLayout.framelinewidth || 0;
 
     // width & height the geo div
     var geoWidth = graphSize.w * (geoDomain.x[1] - geoDomain.x[0]),
@@ -76,7 +77,8 @@ function createGeoScale(geoLayout, graphSize) {
         // of the range box is at the top-left corner of the viewbox
         bounds = getBounds(projection, rangeBox);
         translate = [
-            translate0[0] - bounds[0][0], translate0[1] - bounds[0][1]
+            translate0[0] - bounds[0][0] + frameWidth,
+            translate0[1] - bounds[0][1] + frameWidth
         ];
         projLayout._translate = translate;
         projection.translate(translate);
@@ -93,12 +95,12 @@ function createGeoScale(geoLayout, graphSize) {
         projLayout._scale = scale;
 
         // save the width & height of the geo div
-        geoLayout._widthDiv = geoWidth;
-        geoLayout._heightDiv = geoHeight;
+        geoLayout._widthDiv = geoWidth + frameWidth;
+        geoLayout._heightDiv = geoHeight + frameWidth;
 
         // save the effective width & height of the geo framework
-        geoLayout._widthFramework = Math.round(bounds[1][0]);
-        geoLayout._heightFramework = Math.round(bounds[1][1]);
+        geoLayout._widthFramework = Math.round(bounds[1][0]) + frameWidth;
+        geoLayout._heightFramework = Math.round(bounds[1][1]) + frameWidth;
     };
     
     return setScale;
