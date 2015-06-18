@@ -14,5 +14,6 @@ plots['usa-states'] = require('./testplots-geo/usa-states.json');
 plots['legendonly'] = require('./testplots-geo/legendonly.json');
 plots['europe-bubbles'] = require('./testplots-geo/europe-bubbles.json');
 plots['orthographic'] = require('./testplots-geo/orthographic.json');
+plots['big-frame'] = require('./testplots-geo/big-frame.json');
 
 plotButtons(plots, './testplots-geo/');
