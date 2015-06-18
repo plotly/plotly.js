@@ -51,7 +51,7 @@ describe('Test geoaxes', function () {
             });
         });
 
-        it('should adjust default lon(lat)range to projection.rotate in world scopes', function() {
+        it('should adjust default lon(lat)range to projection.rotation in world scopes', function() {
             var expectedLonaxisRange, expectedLataxisRange;
 
             function testOne() {
@@ -65,7 +65,10 @@ describe('Test geoaxes', function () {
                 scope: 'world',
                 projection: {
                     type: 'equirectangular',
-                    rotate: [-75, 45]
+                    rotation: {
+                        lon: -75,
+                        lat: 45
+                    }
                 }
             };
             expectedLonaxisRange = [-255, 105];  // => -75 +/- 180
@@ -77,7 +80,10 @@ describe('Test geoaxes', function () {
                 scope: 'world',
                 projection: {
                     type: 'orthographic',
-                    rotate: [-75, 45]
+                    rotation: {
+                        lon: -75,
+                        lat: 45
+                    }
                 }
             };
             expectedLonaxisRange = [-165, 15];  // => -75 +/- 90

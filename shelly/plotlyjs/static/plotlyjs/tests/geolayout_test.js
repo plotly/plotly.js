@@ -17,23 +17,26 @@ describe('Test geolayout', function () {
             layoutOut = {};
         });
 
-        it('should not coerce projection.rotate if type is albers usa', function() {
+        it('should not coerce projection.rotation if type is albers usa', function() {
             layoutIn = {
                 geo: {
                     projection: {
                         type: 'albers usa',
-                        rotate: [10, 10]
+                        rotation: {
+                            lon: 10,
+                            lat: 10
+                        }
                     }
                 }
             };
 
             GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.geo.projection.rotate).toBeUndefined();
+            expect(layoutOut.geo.projection.rotation).toBeUndefined();
 
             delete layoutIn.geo.projection.type;
             layoutOut = {};
             GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.geo.projection.rotate).toBeDefined();
+            expect(layoutOut.geo.projection.rotation).toBeDefined();
         });
 
         it('should not coerce coastlines and ocean if type is albers usa', function() {

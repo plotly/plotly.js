@@ -112,7 +112,7 @@ function zoomNonClipped(geo, projLayout) {
         }
         else if(position(mouse1)) {
             point1 = position(mouse1);
-            rotate1 = [lastRotate[0] + (point1[0] - zoomPoint[0]), rotate0[1]];
+            rotate1 = [lastRotate[0] + (point1[0] - zoomPoint[0]), rotate0[1], rotate0[2]];
             projection.rotate(rotate1);
             lastRotate = rotate1;
         }

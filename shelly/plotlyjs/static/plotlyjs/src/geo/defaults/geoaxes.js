@@ -44,19 +44,22 @@ GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
     function getRangeDflt(axisName) {
         var scope = geoLayoutOut.scope;
 
-        var projType, projRotate, rotateInd, dfltSpans, halfSpan;
+        var projLayout, projType, projRotation, rotateAngle, dfltSpans, halfSpan;
 
         if(scope === 'world') {
-            projType = geoLayoutOut.projection.type;
-            projRotate = geoLayoutOut.projection.rotate;
-            rotateInd = {lonaxis: 0, lataxis: 1}[axisName];
+            projLayout = geoLayoutOut.projection;
+            projType = projLayout.type;
+            projRotation = projLayout.rotation;
             dfltSpans = params[axisName + 'Span'];
+
             halfSpan = dfltSpans[projType]!==undefined ?
                 dfltSpans[projType] / 2 :
                 dfltSpans['*'] / 2;
+            rotateAngle = axisName==='lonaxis' ?
+                projRotation.lon :
+                projRotation.lat;
 
-            return [projRotate[rotateInd] - halfSpan,
-                    projRotate[rotateInd] + halfSpan];
+            return [rotateAngle - halfSpan, rotateAngle + halfSpan];
         }
         else return params.scopeDefaults[scope][axisName + 'Range'];
     }

@@ -35,11 +35,11 @@ GeoLayout.layoutAttributes = {
             type: 'enumerated',
             values: Object.keys(params.projNames)
         },
-        rotate: [
-            {type: 'number'},
-            {type: 'number'},
-            {type: 'number'}
-        ],
+        rotation: {
+            lon: {type: 'number'},
+            lat: {type: 'number'},
+            roll: {type: 'number'}
+        },
         parallels: [
             {type: 'number'},
             {type: 'number'}
@@ -195,9 +195,9 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
 
     if(!isAlbersUsa) {
         dfltProjRotate = scopeParams.projRotate || [0, 0, 0];
-        coerce('projection.rotate[0]', dfltProjRotate[0]);
-        coerce('projection.rotate[1]', dfltProjRotate[1]);
-        coerce('projection.rotate[2]', dfltProjRotate[2]);
+        coerce('projection.rotation.lon', dfltProjRotate[0]);
+        coerce('projection.rotation.lat', dfltProjRotate[1]);
+        coerce('projection.rotation.roll', dfltProjRotate[2]);
 
         show = coerce('showcoastlines', !isScoped);
         if(show) {
@@ -259,4 +259,11 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
     geoLayoutOut._isAlbersUsa = isAlbersUsa;
     geoLayoutOut._isConic = isConic;
     geoLayoutOut._isScoped = isScoped;
+
+    var rotation = geoLayoutOut.projection.rotation || {};
+    geoLayoutOut.projection._rotate = [
+        -rotation.lon || 0,
+        -rotation.lat || 0,
+        rotation.roll || 0
+    ];
 };
