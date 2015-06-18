@@ -125,8 +125,7 @@ GeoLayout.layoutAttributes = {
         dflt: 1
     },
     showframe: {
-        type: 'boolean',
-        dflt: true
+        type: 'boolean'
     },
     framelinecolor: {
         type: 'color',
@@ -135,7 +134,7 @@ GeoLayout.layoutAttributes = {
     framelinewidth: {
         type: 'number',
         min: 0,
-        dflt: 2
+        dflt: 1
     },
     bgcolor: {
         type: 'color',
@@ -242,7 +241,7 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
 
     if(!isScoped) {
         // Does not work in non-world scopes
-        show = coerce('showframe');
+        show = coerce('showframe', true);
         if(show) {
             coerce('framelinecolor');
             coerce('framelinewidth');
