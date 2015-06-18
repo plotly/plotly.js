@@ -306,22 +306,22 @@ proto.drawLayout = function(geoLayout) {
 };
 
 function styleFillLayer(selection, layerName, geoLayout) {
+    var layerAdj = params.layerNameToAdjective[layerName];
+
     selection.select('.' + layerName)
         .selectAll('path')
             .attr('stroke', 'none')
-            .call(Plotly.Color.fill, geoLayout[layerName + 'fillcolor']);
+            .call(Plotly.Color.fill, geoLayout[layerAdj + 'color']);
 }
 
 function styleLineLayer(selection, layerName, geoLayout) {
-    var layerAttr = layerName!=='coastlines' ?
-            layerName + 'line' :
-            layerName;
+    var layerAdj = params.layerNameToAdjective[layerName];
 
     selection.select('.' + layerName)
         .selectAll('path')
             .attr('fill', 'none')
-            .call(Plotly.Color.stroke, geoLayout[layerAttr + 'color'])
-            .call(Plotly.Drawing.dashLine, '', geoLayout[layerAttr + 'width']);
+            .call(Plotly.Color.stroke, geoLayout[layerAdj + 'color'])
+            .call(Plotly.Drawing.dashLine, '', geoLayout[layerAdj + 'width']);
 }
 
 function styleGraticule(selection, axisName, geoLayout) {

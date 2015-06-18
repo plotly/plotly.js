@@ -9,7 +9,7 @@ function createGeoScale(geoLayout, graphSize) {
         lonaxisLayout = geoLayout.lonaxis,
         lataxisLayout = geoLayout.lataxis,
         geoDomain = geoLayout.domain,
-        frameWidth = geoLayout.framelinewidth || 0;
+        frameWidth = geoLayout.framewidth || 0;
 
     // width & height the geo div
     var geoWidth = graphSize.w * (geoDomain.x[1] - geoDomain.x[0]),

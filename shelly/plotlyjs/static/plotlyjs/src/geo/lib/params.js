@@ -102,8 +102,8 @@ params.clipPad = 1e-3;
 params.precision = 0.1;
 
 // default land and water fill colors
-params.landFillColor = '#F0DC82';
-params.waterFillColor = '#3399FF';
+params.landColor = '#F0DC82';
+params.waterColor = '#3399FF';
 
 // locationmode to layer name
 params.locationmodeToLayer = {
@@ -129,6 +129,17 @@ params.baseLayers = [
     'lataxis', 'lonaxis',
     'frame'
 ];
+
+params.layerNameToAdjective = {
+    ocean: 'ocean',
+    land: 'land',
+    lakes: 'lake',
+    subunits: 'subunit',
+    countries: 'country',
+    coastlines: 'coastline',
+    rivers: 'river',
+    frame: 'frame'
+};
 
 // base layers drawn over choropleth
 params.baseLayersOverChoropleth = ['rivers', 'lakes'];

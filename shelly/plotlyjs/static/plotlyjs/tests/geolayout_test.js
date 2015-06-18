@@ -41,8 +41,8 @@ describe('Test geolayout', function () {
 
         it('should not coerce coastlines and ocean if type is albers usa', function() {
             var fields = [
-                'showcoastlines', 'coastlinescolor', 'coastlineswidth',
-                'showocean', 'oceanfillcolor'
+                'showcoastlines', 'coastlinecolor', 'coastlinewidth',
+                'showocean', 'oceancolor'
             ];
 
             layoutIn = {
@@ -96,7 +96,7 @@ describe('Test geolayout', function () {
 
         it('should coerce subunits only when available ', function() {
             var fields = [
-                'showsubunits', 'subunitslinecolor', 'subunitslinewidth'
+                'showsubunits', 'subunitcolor', 'subunitwidth'
             ];
 
             layoutIn = {
@@ -149,7 +149,7 @@ describe('Test geolayout', function () {
 
         it('should not coerce frame unless for world scope', function() {
             var fields = [
-                'showframe', 'framelinecolor', 'framelinewidth'
+                'showframe', 'framecolor', 'framewidth'
             ],
             scopes = GeoLayout.layoutAttributes.scope.values;
 

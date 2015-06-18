@@ -54,11 +54,11 @@ GeoLayout.layoutAttributes = {
     showcoastlines: {
         type: 'boolean'
     },
-    coastlinescolor: {
+    coastlinecolor: {
         type: 'color',
         dflt: Plotly.Color.defaultLine
     },
-    coastlineswidth: {
+    coastlinewidth: {
         type: 'number',
         min: 0,
         dflt: 1
@@ -67,35 +67,35 @@ GeoLayout.layoutAttributes = {
         type: 'boolean',
         dflt: false
     },
-    landfillcolor: {
+    landcolor: {
         type: 'color',
-        dflt: params.landFillColor
+        dflt: params.landColor
     },
     showocean: {
         type: 'boolean',
         dflt: false
     },
-    oceanfillcolor: {
+    oceancolor: {
         type: 'color',
-        dflt: params.waterFillColor
+        dflt: params.waterColor
     },
     showlakes: {
         type: 'boolean',
         dflt: false
     },
-    lakesfillcolor: {
+    lakecolor: {
         type: 'color',
-        dflt: params.waterFillColor
+        dflt: params.waterColor
     },
     showrivers: {
         type: 'boolean',
         dflt: false
     },
-    riverslinecolor: {
+    rivercolor: {
         type: 'color',
-        dflt: params.waterFillColor
+        dflt: params.waterColor
     },
-    riverslinewidth: {
+    riverwidth: {
         type: 'number',
         min: 0,
         dflt: 1
@@ -103,11 +103,11 @@ GeoLayout.layoutAttributes = {
     showcountries: {
         type: 'boolean'
     },
-    countrieslinecolor: {
+    countrycolor: {
         type: 'color',
         dflt: Plotly.Color.defaultLine
     },
-    countrieslinewidth: {
+    countrywidth: {
         type: 'number',
         min: 0,
         dflt: 1
@@ -115,11 +115,11 @@ GeoLayout.layoutAttributes = {
     showsubunits: {
         type: 'boolean'
     },
-    subunitslinecolor: {
+    subunitcolor: {
         type: 'color',
         dflt: Plotly.Color.defaultLine
     },
-    subunitslinewidth: {
+    subunitwidth: {
         type: 'number',
         min: 0,
         dflt: 1
@@ -127,11 +127,11 @@ GeoLayout.layoutAttributes = {
     showframe: {
         type: 'boolean'
     },
-    framelinecolor: {
+    framecolor: {
         type: 'color',
         dflt: Plotly.Color.defaultLine
     },
-    framelinewidth: {
+    framewidth: {
         type: 'number',
         min: 0,
         dflt: 1
@@ -201,33 +201,33 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
 
         show = coerce('showcoastlines', !isScoped);
         if(show) {
-            coerce('coastlinescolor');
-            coerce('coastlineswidth');
+            coerce('coastlinecolor');
+            coerce('coastlinewidth');
         }
 
         show = coerce('showocean');
-        if(show) coerce('oceanfillcolor');
+        if(show) coerce('oceancolor');
     }
     else geoLayoutOut.scope = 'usa';
 
     coerce('projection.scale');
 
     show = coerce('showland');
-    if(show) coerce('landfillcolor');
+    if(show) coerce('landcolor');
 
     show = coerce('showlakes');
-    if(show) coerce('lakesfillcolor');
+    if(show) coerce('lakecolor');
 
     show = coerce('showrivers');
     if(show) {
-        coerce('riverslinecolor');
-        coerce('riverslinewidth');
+        coerce('rivercolor');
+        coerce('riverwidth');
     }
 
     show = coerce('showcountries', isScoped);
     if(show) {
-        coerce('countrieslinecolor');
-        coerce('countrieslinewidth');
+        coerce('countrycolor');
+        coerce('countrywidth');
     }
 
     if(scope==='usa' || (scope==='north america' && resolution===50)) {
@@ -235,16 +235,16 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
         //   USA states at 110m
         //   USA states + Canada provinces at 50m
         coerce('showsubunits', true);
-        coerce('subunitslinecolor');
-        coerce('subunitslinewidth');
+        coerce('subunitcolor');
+        coerce('subunitwidth');
     }
 
     if(!isScoped) {
         // Does not work in non-world scopes
         show = coerce('showframe', true);
         if(show) {
-            coerce('framelinecolor');
-            coerce('framelinewidth');
+            coerce('framecolor');
+            coerce('framewidth');
         }
     }
 
