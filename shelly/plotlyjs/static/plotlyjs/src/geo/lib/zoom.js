@@ -16,7 +16,7 @@ function createGeoZoom(geo, geoLayout) {
     var zoomConstructor;
 
     if(geoLayout._isScoped) zoomConstructor = zoomScoped;
-    else if(geoLayout._isClipped) zoomConstructor = zoomClipped;
+    else if(geoLayout._clipAngle) zoomConstructor = zoomClipped;
     else zoomConstructor = zoomNonClipped;
 
     // TODO add a conic-specific zoom

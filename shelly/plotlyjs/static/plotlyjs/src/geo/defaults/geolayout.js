@@ -254,7 +254,6 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
 
     // bind a few helper variables
     geoLayoutOut._isHighRes = resolution===50;
-    geoLayoutOut._isClipped = params.lonaxisSpan[projType];
     geoLayoutOut._clipAngle = params.lonaxisSpan[projType] / 2;
     geoLayoutOut._isAlbersUsa = isAlbersUsa;
     geoLayoutOut._isConic = isConic;

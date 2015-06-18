@@ -140,7 +140,7 @@ proto.makeProjection = function(geoLayout) {
             .center(projLayout._center);
     }
 
-    if(geoLayout._isClipped) {
+    if(geoLayout._clipAngle) {
         this.clipAngle = geoLayout._clipAngle;  // needed in proto.render
         projection
             .clipAngle(geoLayout._clipAngle - params.clipPad);
