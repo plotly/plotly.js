@@ -329,7 +329,7 @@ function styleGraticule(selection, axisName, geoLayout) {
         .selectAll('path')
             .attr('fill', 'none')
             .call(Plotly.Color.stroke, geoLayout[axisName].gridcolor)
-            .call(Plotly.Drawing.dashLine, '', geoLayout[axisName].width);
+            .call(Plotly.Drawing.dashLine, '', geoLayout[axisName].gridwidth);
 }
 
 proto.styleLayer = function(selection, layerName, geoLayout) {
