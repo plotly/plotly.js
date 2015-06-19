@@ -1,7 +1,5 @@
 'use strict';
 
-/* global ENV:false */
-
 var topojsonUtils = module.exports = {};
 
 var locationmodeToLayer = require('./params').locationmodeToLayer,
@@ -16,19 +14,10 @@ topojsonUtils.getTopojsonName = function(geoLayout) {
 };
 
 topojsonUtils.getTopojsonPath = function(topojsonName) {
-    var pathMiddle = 'plotlyjs/src/geo/topojson/',
-        pathStart;
+    var topojsonUrl = (window.PLOTLYENV &&
+                       window.PLOTLYENV.TOPOJSON_URL) || './topojson/';
 
-    try {
-        // for prod
-        pathStart = ENV.STATIC_URL;
-    }
-    catch(error) {
-        // for test-dashboard
-        pathStart = '../shelly/plotlyjs/static/';
-    }
-
-    return pathStart + pathMiddle + topojsonName + '.json';
+    return topojsonUrl + topojsonName + '.json';
 };
 
 topojsonUtils.extractTopojson = function(trace, topojson) {
