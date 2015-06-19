@@ -744,6 +744,12 @@ function plotGeo(gd) {
 
     var i, geoId, fullGeoData, geo;
 
+    // if plotlyjs-geo-assets-bundle is not included,
+    // initialize object to keep reference to every loaded topojsons
+    if(window.PlotlyGeoAssets === undefined) {
+        window.PlotlyGeoAssets = { topojsons : {} };
+    }
+
     for (i = 0; i < geoIds.length; i++) {
         geoId = geoIds[i];
         fullGeoData = plots.getSubplotData(fullData, 'geo', geoId);

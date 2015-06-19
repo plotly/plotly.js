@@ -75,15 +75,17 @@ proto.plot = function(geoData, fullLayout) {
     if(_this.topojson===null || topojsonNameNew!==_this.topojsonName) {
         _this.topojsonName = topojsonNameNew;
 
-        try {
+        if(PlotlyGeoAssets.topojsons[_this.topojsonName] !== undefined) {
             _this.topojson = PlotlyGeoAssets.topojsons[_this.topojsonName];
             _this.onceTopojsonIsLoaded(geoData, geoLayout);
         }
-        catch(error) {
+        else {
             topojsonPath = topojsonUtils.getTopojsonPath(_this.topojsonName);
+
+            // N.B this is async
             d3.json(topojsonPath, function(error, topojson) {
-                // N.B this is async
                 _this.topojson = topojson;
+                PlotlyGeoAssets.topojsons[_this.topojsonName] = topojson;
                 _this.onceTopojsonIsLoaded(geoData, geoLayout);
             });
         }
@@ -91,9 +93,6 @@ proto.plot = function(geoData, fullLayout) {
     else _this.onceTopojsonIsLoaded(geoData, geoLayout);
 
     // TODO handle topojson-is-loading case (for streaming)
-
-    // TODO if more than 1 geo uses the same topojson,
-    //      that topojson should be loaded only once.
 };
 
 proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
