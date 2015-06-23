@@ -195,6 +195,9 @@ proto.makeFramework = function() {
             'preserveAspectRatio': 'none'
         });
 
+    framework.append('g').attr('class', 'bglayer')
+        .append('rect');
+
     framework.append('g').attr('class', 'baselayer');
     framework.append('g').attr('class', 'choroplethlayer');
     framework.append('g').attr('class', 'baselayeroverchoropleth');
@@ -223,10 +226,17 @@ proto.adjustLayout = function(geoLayout, graphSize) {
 
     this.framework.attr({
         width: geoLayout._width,
-        height: geoLayout._height,
+        height: geoLayout._height
     });
 
+    this.framework.select('.bglayer').select('rect')
+        .attr({
+            width: geoLayout._width,
+            height: geoLayout._height
+        })
         .style({
+            'fill': geoLayout.bgcolor,
+            'stroke-width': 0
         });
 };
 
