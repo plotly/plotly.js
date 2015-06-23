@@ -15,5 +15,9 @@ plots['legendonly'] = require('./testplots-geo/legendonly.json');
 plots['europe-bubbles'] = require('./testplots-geo/europe-bubbles.json');
 plots['orthographic'] = require('./testplots-geo/orthographic.json');
 plots['big-frame'] = require('./testplots-geo/big-frame.json');
+plots['bg-color'] = require('./testplots-geo/bg-color.json');
+plots['canadian-cites'] = require('./testplots-geo/canadian-cites.json');
+plots['conic-conformal'] = require('./testplots-geo/conic-conformal.json');
+plots['stereographic'] = require('./testplots-geo/stereographic.json');
 
 plotButtons(plots, './testplots-geo/');
