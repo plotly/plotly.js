@@ -290,7 +290,8 @@ proto.drawLayout = function(geoLayout) {
         layerName;
 
     // TODO move to more d3-idiomatic pattern (that's work on replot)
-    gBaseLayer.html('');
+    // N.B. html('') does not work in IE11
+    gBaseLayer.selectAll('*').remove();
 
     for(var i = 0;  i < baseLayers.length; i++) {
         layerName = baseLayers[i];
