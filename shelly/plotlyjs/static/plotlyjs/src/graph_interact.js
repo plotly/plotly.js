@@ -32,7 +32,7 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 
     coerce('dragmode', layoutOut._hasGL3D ? 'turntable' : 'zoom');
 
-    if (layoutOut._hasGL3D) {
+    if(layoutOut._hasGL3D || layoutOut._hasGeo) {
         coerce('hovermode', 'closest');
     }
     else {
@@ -73,7 +73,7 @@ fx.init = function(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData;
 
-    if (fullLayout._hasGL3D || gd._context.staticPlot) return;
+    if(fullLayout._hasGL3D || fullLayout._hasGeo || gd._context.staticPlot) return;
 
     var subplots = Object.keys(fullLayout._plots).sort(function(a,b) {
         // sort overlays last, then by x axis number, then y axis number
@@ -706,6 +706,14 @@ fx.loneHover = function(hoverItem, opts) {
     return hoverLabel.node();
 };
 
+fx.loneUnhover = function(containerOrSelection) {
+    var selection = containerOrSelection instanceof d3.selection ?
+            containerOrSelection :
+            d3.select(containerOrSelection);
+
+    selection.selectAll('g.hovertext').remove();
+};
+
 function createHoverText(hoverData, opts) {
     var hovermode = opts.hovermode,
         rotateLabels = opts.rotateLabels,
@@ -1283,6 +1291,12 @@ function chooseModebarButtons(fullLayout) {
             ['orbitRotation', 'tableRotation', 'zoom3d', 'pan3d'],
             ['resetCameraDefault3d', 'resetCameraLastSave3d'],
             ['hoverClosest3d']
+        ];
+    }
+    else if(fullLayout._hasGeo) {
+        return [
+            ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
+            ['hoverClosestGeo']
         ];
     }
 

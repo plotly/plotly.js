@@ -2074,7 +2074,7 @@ axes.getSubplots = function(gd,ax) {
     // look for subplots in the data
     (data||[]).forEach(function(trace) {
         if(trace.visible === false || trace.visible === 'legendonly' ||
-                Plotly.Plots.traceIs(trace, 'gl3d')) {
+                !Plotly.Plots.traceIs(trace, 'cartesian')) {
             return;
         }
         var xid = (trace.xaxis||'x'),
