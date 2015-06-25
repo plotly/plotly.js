@@ -2,22 +2,25 @@
 
 var plotButtons = require('./buttons');
 
+var mockDir = '../image_server/test/mocks/geo_',
+    figDir = '../image_server/test/test-images-baseline/geo_';
+
 var plots = {};
 
-plots['first'] = require('./testplots-geo/first.json');
-plots['second'] = require('./testplots-geo/second.json');
-plots['kavrayskiy7'] = require('./testplots-geo/kavrayskiy7.json');
-plots['custom-colorscale'] = require('./testplots-geo/custom-colorscale.json');
-plots['scattergeo-locations'] = require('./testplots-geo/scattergeo-locations.json');
-plots['multi-geos'] = require('./testplots-geo/multi-geos.json');
-plots['usa-states'] = require('./testplots-geo/usa-states.json');
-plots['legendonly'] = require('./testplots-geo/legendonly.json');
-plots['europe-bubbles'] = require('./testplots-geo/europe-bubbles.json');
-plots['orthographic'] = require('./testplots-geo/orthographic.json');
-plots['big-frame'] = require('./testplots-geo/big-frame.json');
-plots['bg-color'] = require('./testplots-geo/bg-color.json');
-plots['canadian-cites'] = require('./testplots-geo/canadian-cites.json');
-plots['conic-conformal'] = require('./testplots-geo/conic-conformal.json');
-plots['stereographic'] = require('./testplots-geo/stereographic.json');
+plots['first'] = require('../image_server/test/mocks/geo_first.json');
+plots['second'] = require('../image_server/test/mocks/geo_second.json');
+plots['kavrayskiy7'] = require('../image_server/test/mocks/geo_kavrayskiy7.json');
+plots['custom-colorscale'] = require('../image_server/test/mocks/geo_custom-colorscale.json');
+plots['scattergeo-locations'] = require('../image_server/test/mocks/geo_scattergeo-locations.json');
+plots['multi-geos'] = require('../image_server/test/mocks/geo_multi-geos.json');
+plots['usa-states'] = require('../image_server/test/mocks/geo_usa-states.json');
+plots['legendonly'] = require('../image_server/test/mocks/geo_legendonly.json');
+plots['europe-bubbles'] = require('../image_server/test/mocks/geo_europe-bubbles.json');
+plots['orthographic'] = require('../image_server/test/mocks/geo_orthographic.json');
+plots['big-frame'] = require('../image_server/test/mocks/geo_big-frame.json');
+plots['bg-color'] = require('../image_server/test/mocks/geo_bg-color.json');
+plots['canadian-cites'] = require('../image_server/test/mocks/geo_canadian-cites.json');
+plots['conic-conformal'] = require('../image_server/test/mocks/geo_conic-conformal.json');
+plots['stereographic'] = require('../image_server/test/mocks/geo_stereographic.json');
 
-plotButtons(plots, './testplots-geo/');
+plotButtons(plots, figDir);
