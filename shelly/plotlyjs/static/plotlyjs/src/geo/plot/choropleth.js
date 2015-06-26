@@ -48,8 +48,9 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         layerName;
 
     // TODO move to more d3-idiomatic pattern (that's work on replot)
-    gChoropleth.html('');
-    gBaseLayerOverChoropleth.html('');
+    // N.B. html('') does not work in IE11
+    gChoropleth.selectAll('*').remove();
+    gBaseLayerOverChoropleth.selectAll('*').remove();
 
     // TODO incorporate 'hoverinfo'
     function handleMouseOver(d) {
