@@ -92,13 +92,13 @@ function createGeoScale(geoLayout, graphSize) {
         // set projection scale and save it
         projLayout._scale = scale;
 
-        // save the width & height of the geo div
-        geoLayout._widthDiv = geoWidth + frameWidth;
-        geoLayout._heightDiv = geoHeight + frameWidth;
-
         // save the effective width & height of the geo framework
-        geoLayout._widthFramework = Math.round(bounds[1][0]) + frameWidth;
-        geoLayout._heightFramework = Math.round(bounds[1][1]) + frameWidth;
+        geoLayout._width = Math.round(bounds[1][0]) + frameWidth;
+        geoLayout._height = Math.round(bounds[1][1]) + frameWidth;
+
+        // save the margin length induced by the map scaling
+        geoLayout._marginX = (geoWidth - Math.round(bounds[1][0])) / 2;
+        geoLayout._marginY = (geoHeight - Math.round(bounds[1][1])) / 2;
     };
     
     return setScale;
