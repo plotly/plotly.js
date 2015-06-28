@@ -14,7 +14,7 @@ pie.attributes = {
     // data
     labels: {type: 'data_array'},
     // equivalent of x0 and dx, if label is missing
-    label0: {type: 'any', dflt: 0},
+    label0: {type: 'number', dflt: 0},
     dlabel: {type: 'number', dflt: 1},
 
     values: {type: 'data_array'},
