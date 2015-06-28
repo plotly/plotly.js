@@ -403,6 +403,7 @@ function scalePies(cdpie, plotSize) {
         cd0,
         trace,
         tiltAxisRads,
+        maxPull,
         scaleGroups = [],
         scaleGroup,
         minPxPerValUnit;
@@ -415,10 +416,18 @@ function scalePies(cdpie, plotSize) {
         pieBoxHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
         tiltAxisRads = trace.tiltaxis * Math.PI / 180;
 
-        // TODO: does not account for trace.pull yet
+        maxPull = trace.pull;
+        if(Array.isArray(maxPull)) {
+            maxPull = 0;
+            for(j = 0; i < trace.pull.length; j++) {
+                if(trace.pull[j] > maxPull) maxPull = trace.pull[j];
+            }
+        }
+
         cd0.r = Math.min(
-            pieBoxWidth / maxExtent(trace.tilt, Math.sin(tiltAxisRads), trace.depth),
-            pieBoxHeight / maxExtent(trace.tilt, Math.cos(tiltAxisRads), trace.depth)) / 2;
+                pieBoxWidth / maxExtent(trace.tilt, Math.sin(tiltAxisRads), trace.depth),
+                pieBoxHeight / maxExtent(trace.tilt, Math.cos(tiltAxisRads), trace.depth)
+            ) / (2 + 2 * maxPull);
 
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0])/2;
         cd0.cy = plotSize.t + plotSize.h * (2 - trace.domain.y[1] - trace.domain.y[0])/2;
