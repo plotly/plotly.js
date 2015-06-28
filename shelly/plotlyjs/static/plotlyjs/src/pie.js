@@ -25,15 +25,15 @@ pie.attributes = {
     scalegroup: {
         /**
          * if there are multiple pies that should be sized according to
-         * their totals, link them by providing a non-false group id here
+         * their totals, link them by providing a non-empty group id here
          * shared by every trace in the same group
          * see eg:
          * https://www.e-education.psu.edu/natureofgeoinfo/sites/www.e-education.psu.edu.natureofgeoinfo/files/image/hisp_pies.gif
          * (this example involves a map too - may someday be a whole trace type
          * of its own. but the point is the size of the whole pie is important.)
          */
-        type: 'any',
-        dflt: false
+        type: 'string',
+        dflt: ''
     },
 
     // TODO: after this add to restyle lists
@@ -432,7 +432,7 @@ function scalePies(cdpie, plotSize) {
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0])/2;
         cd0.cy = plotSize.t + plotSize.h * (2 - trace.domain.y[1] - trace.domain.y[0])/2;
 
-        if(trace.scalegroup !== false && scaleGroups.indexOf(trace.scalegroup) === -1) {
+        if(trace.scalegroup && scaleGroups.indexOf(trace.scalegroup) === -1) {
             scaleGroups.push(trace.scalegroup);
         }
     }
