@@ -4,9 +4,11 @@
 
 var Plotly = require('../../plotly'),
     params = require('../lib/params'),
-    extractTopojson = require('../lib/topojson-utils').extractTopojson;
+    extractTopojson = require('../lib/topojson-utils').extractTopojson,
+    locationToId = require('../lib/location-utils').locationToId;
 
 var plotChoropleth = module.exports = {};
+
 
 plotChoropleth.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
@@ -19,8 +21,8 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
          
     var indexOfId, feature;
 
-    for (var i = 0; i < N; i++) {
-        indexOfId = ids.indexOf(locations[i]);
+    for(var i = 0; i < N; i++) {
+        indexOfId = ids.indexOf(locationToId(trace.locationmode, locations[i]));
         if(indexOfId === -1) continue;
 
         feature = features[indexOfId];
