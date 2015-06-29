@@ -24,16 +24,19 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
         if(indexOfId === -1) continue;
 
         feature = features[indexOfId];
+
+        // 'data_array' attributes
         feature.z = trace.z[i];
+        if(trace.text!==undefined) feature.tx = trace.text[i];
+
+        // 'arrayOK' attributes
+        mergeArray(markerLine.color, feature, 'mlc', i);
+        mergeArray(markerLine.width, feature, 'mlw', i);
+
         cdi.push(feature);
     }
 
-    if(cdi.length > 0) {
-        cdi[0].trace = trace;
-        Plotly.Lib.mergeArray(trace.text, cdi, 'tx');
-        Plotly.Lib.mergeArray(markerLine.color, cdi, 'mlc');
-        Plotly.Lib.mergeArray(markerLine.width, cdi, 'mlw');
-    }
+    if(cdi.length > 0) cdi[0].trace = trace;
 
     return cdi;
 };
@@ -73,6 +76,8 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         .data(choroplethData)
         .attr('class', 'trace choropleth')
         .each(function(trace) {
+            if(trace.visible !== true) return;
+
             var cdi = plotChoropleth.calcGeoJSON(trace, topojson);
 
             d3.select(this)
@@ -122,3 +127,8 @@ plotChoropleth.style = function(geo) {
                 });
         });
 };
+
+// similar to Lib.mergeArray, but using inside a loop
+function mergeArray(traceAttr, feature, featureAttr, i) {
+    if(Array.isArray(traceAttr)) feature[featureAttr] = traceAttr[i];
+}

@@ -37,6 +37,15 @@ describe('Test choropleth', function () {
             expect(traceOut.visible).toBe(false);
         });
 
+        it('should make trace invisible if z is not an array', function() {
+            traceIn = {
+                z: 'no gonna work'
+            };
+
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.visible).toBe(false);
+        });
+
     });
 
 });
