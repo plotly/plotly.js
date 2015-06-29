@@ -73,7 +73,8 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
         topojson = geo.topojson;
 
     // TODO move to more d3-idiomatic pattern (that's work on replot)
-    gScatterGeo.html('');
+    // N.B. html('') does not work in IE11
+    gScatterGeo.selectAll('*').remove();
 
     function handleMouseOver(d) {
         if(!geo.showHover) return;

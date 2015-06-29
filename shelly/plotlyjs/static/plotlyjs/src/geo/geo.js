@@ -172,9 +172,7 @@ proto.makeFramework = function() {
     var geoDiv = this.geoDiv = d3.select(this.container).append('div');
     geoDiv
         .attr('id', this.id)
-        .style({
-            position: 'absolute'
-        });
+        .style('position', 'absolute');
 
     var hoverContainer = this.hoverContainer = geoDiv.append('svg');
     hoverContainer
@@ -183,7 +181,7 @@ proto.makeFramework = function() {
             'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
         })
         .style({
-            position: 'absolute',
+            'position': 'absolute',
             'z-index': 20,
             'pointer-events': 'none'
         });
@@ -191,13 +189,14 @@ proto.makeFramework = function() {
     var framework = this.framework = geoDiv.append('svg');
     framework
         .attr({
-            xmlns:'http://www.w3.org/2000/svg',
+            'xmlns':'http://www.w3.org/2000/svg',
             'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
-            preserveAspectRatio: 'none'
-        })
-        .style({
-            position: 'absolute'
+            'position': 'absolute',
+            'preserveAspectRatio': 'none'
         });
+
+    framework.append('g').attr('class', 'bglayer')
+        .append('rect');
 
     framework.append('g').attr('class', 'baselayer');
     framework.append('g').attr('class', 'choroplethlayer');
@@ -213,29 +212,31 @@ proto.makeFramework = function() {
 proto.adjustLayout = function(geoLayout, graphSize) {
     var domain = geoLayout.domain;
 
-    this.geoDiv
-        .style({
-            left: (graphSize.l + domain.x[0] * graphSize.w) + 'px',
-            top: (graphSize.t + (1 - domain.y[1]) * graphSize.h) + 'px',
-            width: geoLayout._widthDiv + 'px',
-            height: geoLayout._heightDiv + 'px'
-        });
+    this.geoDiv.style({
+        left: graphSize.l + graphSize.w * domain.x[0] + geoLayout._marginX + 'px',
+        top: graphSize.t + graphSize.h * (1 - domain.y[1]) + geoLayout._marginY + 'px',
+        width: geoLayout._width + 'px',
+        height: geoLayout._height + 'px'
+    });
 
-    this.hoverContainer
-        .style({
-            left: (geoLayout._widthDiv - geoLayout._widthFramework) / 2,
-            top: (geoLayout._heightDiv - geoLayout._heightFramework) / 2,
-            width: geoLayout._widthFramework,
-            height: geoLayout._heightFramework
-        });
+    this.hoverContainer.attr({
+        width: geoLayout._width,
+        height: geoLayout._height
+    });
 
-    this.framework
+    this.framework.attr({
+        width: geoLayout._width,
+        height: geoLayout._height
+    });
+
+    this.framework.select('.bglayer').select('rect')
+        .attr({
+            width: geoLayout._width,
+            height: geoLayout._height
+        })
         .style({
-            left: (geoLayout._widthDiv - geoLayout._widthFramework) / 2,
-            top: (geoLayout._heightDiv - geoLayout._heightFramework) / 2,
-            width: geoLayout._widthFramework,
-            height: geoLayout._heightFramework,
-            'background-color': geoLayout.bgcolor
+            'fill': geoLayout.bgcolor,
+            'stroke-width': 0
         });
 };
 
@@ -290,7 +291,8 @@ proto.drawLayout = function(geoLayout) {
         layerName;
 
     // TODO move to more d3-idiomatic pattern (that's work on replot)
-    gBaseLayer.html('');
+    // N.B. html('') does not work in IE11
+    gBaseLayer.selectAll('*').remove();
 
     for(var i = 0;  i < baseLayers.length; i++) {
         layerName = baseLayers[i];

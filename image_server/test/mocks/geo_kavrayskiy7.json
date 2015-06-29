@@ -58,16 +58,15 @@
         "geo": {
             "projection": {
                 "type": "kavrayskiy7",
-                "rotate": [
-                    -90,
-                    0
-                ]
+                "rotation": {
+                    "lon": -90
+                }
             },
             "showcoastlines": true,
-            "coastlinescolor": "black",
-            "coastlineswidth": 1.5,
+            "coastlinecolor": "black",
+            "coastlinewidth": 2,
             "showland": true,
-            "landfillcolor": "#aaa",
+            "landcolor": "#aaa",
             "showocean": true,
             "lonaxis": {
                 "showgrid": true,
