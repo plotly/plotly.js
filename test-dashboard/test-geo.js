@@ -22,5 +22,7 @@ plots['bg-color'] = require('../image_server/test/mocks/geo_bg-color.json');
 plots['canadian-cites'] = require('../image_server/test/mocks/geo_canadian-cites.json');
 plots['conic-conformal'] = require('../image_server/test/mocks/geo_conic-conformal.json');
 plots['stereographic'] = require('../image_server/test/mocks/geo_stereographic.json');
+plots['choropleth-text'] = require('../image_server/test/mocks/geo_choropleth-text.json');
+plots['choropleth-usa'] = require('../image_server/test/mocks/geo_choropleth-usa.json');
 
 plotButtons(plots, figDir);
