@@ -76,6 +76,8 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         .data(choroplethData)
         .attr('class', 'trace choropleth')
         .each(function(trace) {
+            if(trace.visible !== true) return;
+
             var cdi = plotChoropleth.calcGeoJSON(trace, topojson);
 
             d3.select(this)
