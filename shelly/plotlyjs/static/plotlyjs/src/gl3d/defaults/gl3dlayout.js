@@ -64,18 +64,9 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
     if (!layoutOut._hasGL3D) return;
 
-    var scenes = [];
+    var scenes = Plotly.Plots.getSubplotIdsInData(fullData, 'gl3d');
     var attributes = Gl3dLayout.layoutAttributes;
     var i;
-
-    for (i = 0; i < fullData.length; ++i) {
-        var d = fullData[i];
-        if (Plotly.Plots.traceIs(d, 'gl3d')) {
-            if (scenes.indexOf(d.scene) === -1) {
-                scenes.push(d.scene);
-            }
-        }
-    }
 
     // until they play better together
     delete layoutOut.xaxis;

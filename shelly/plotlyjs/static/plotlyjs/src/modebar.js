@@ -1,6 +1,8 @@
 'use strict';
-var Plotly = require('./plotly');
+
 /* global d3:false */
+
+var Plotly = require('./plotly');
 
 /**
  * UI controller for interactive plots
@@ -58,11 +60,13 @@ function ModeBar (config) {
 
 }
 
+var proto = ModeBar.prototype;
+
 /**
  * Empty div for containing a group of buttons
  * @Return {HTMLelement}
  */
-ModeBar.prototype.createGroup = function () {
+proto.createGroup = function () {
     var group = document.createElement('div');
     group.className = 'modebar-group';
 
@@ -78,7 +82,7 @@ ModeBar.prototype.createGroup = function () {
  * @Param {function} config.click
  * @Return {HTMLelement}
  */
-ModeBar.prototype.createButton = function (config) {
+proto.createButton = function (config) {
     var _this = this,
         button = document.createElement('a');
 
@@ -105,7 +109,7 @@ ModeBar.prototype.createButton = function (config) {
  * @Param {string} thisIcon.path
  * @Return {HTMLelement}
  */
-ModeBar.prototype.createIcon = function (thisIcon) {
+proto.createIcon = function (thisIcon) {
     var iconDef = Plotly.Icons,
         iconHeight = iconDef.ascent - iconDef.descent,
         svgNS = 'http://www.w3.org/2000/svg',
@@ -128,7 +132,7 @@ ModeBar.prototype.createIcon = function (thisIcon) {
  * @Param {object} graphInfo plot object containing data and layout
  * @Return {HTMLelement}
  */
-ModeBar.prototype.updateActiveButton = function () {
+proto.updateActiveButton = function () {
     var graphInfo = this.graphInfo;
     this.buttonElements.forEach( function (button) {
         var thisval = button.getAttribute('data-val') || true,
@@ -145,7 +149,7 @@ ModeBar.prototype.updateActiveButton = function () {
  * @Param {object} buttons 2d array of grouped button names
  * @Return {boolean}
  */
-ModeBar.prototype.hasButtons = function (buttons) {
+proto.hasButtons = function (buttons) {
     var currentButtons = this.buttons;
 
     if (buttons.length !== currentButtons.length) return false;
@@ -163,7 +167,7 @@ ModeBar.prototype.hasButtons = function (buttons) {
 /**
  * @return {HTMLDivElement} The logo image wrapped in a group
  */
-ModeBar.prototype.getLogo = function(){
+proto.getLogo = function(){
     var group = this.createGroup(),
         a = document.createElement('a');
 
@@ -182,7 +186,7 @@ ModeBar.prototype.getLogo = function(){
  * Apply D3 cartesian mode attributes to layout to update hover functionality
  * @Param {object} ev event object
  */
-ModeBar.prototype.handleCartesian = function(ev) {
+proto.handleCartesian = function(ev) {
     var button = ev.currentTarget,
         astr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
@@ -240,7 +244,7 @@ ModeBar.prototype.handleCartesian = function(ev) {
  * Toggle the data hover mode
  * @Param {object} ev event object
  */
-ModeBar.prototype.handleHover3d = function(ev) {
+proto.handleHover3d = function(ev) {
     var button = ev.currentTarget,
         val = JSON.parse(button.getAttribute('data-val')) || false,
         _this = this,
@@ -294,7 +298,7 @@ ModeBar.prototype.handleHover3d = function(ev) {
  * Reconfigure keyboard bindings for webgl3D camera control on drag
  * @Param {object} ev event object
  */
-ModeBar.prototype.handleDrag3d = function(ev) {
+proto.handleDrag3d = function(ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
@@ -316,7 +320,7 @@ ModeBar.prototype.handleDrag3d = function(ev) {
  * Reset the position of the webgl3D camera
  * @Param {object} ev event object
  */
-ModeBar.prototype.handleCamera3d = function(ev) {
+proto.handleCamera3d = function(ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         layout = this.graphInfo.layout,
@@ -345,7 +349,32 @@ ModeBar.prototype.handleCamera3d = function(ev) {
      */
 };
 
-ModeBar.prototype.cleanup = function(){
+proto.handleGeo = function(ev) {
+    var button = ev.currentTarget,
+        attr = button.getAttribute('data-attr'),
+        val = button.getAttribute('data-val') || true,
+        fullLayout = this.graphInfo._fullLayout,
+        geoIds = Plotly.Plots.getSubplotIds(fullLayout, 'geo');
+
+    var geo, scale, newScale;
+
+    for(var i = 0;  i < geoIds.length; i++) {
+        geo = fullLayout[geoIds[i]]._geo;
+
+        if(attr === 'zoom') {
+            scale = geo.projection.scale();
+            newScale = val==='in' ? 2 * scale : 0.5 * scale;
+            geo.projection.scale(newScale);
+            geo.zoom.scale(newScale);
+            geo.render();
+        }
+        else if(attr === 'reset') geo.zoomReset();
+        else if(attr === 'hovermode') geo.showHover = !geo.showHover;
+    }
+
+};
+
+proto.cleanup = function(){
     this.element.innerHTML = '';
     var modebarParent = this.element.parentNode;
     if (modebarParent) modebarParent.removeChild(this.element);
@@ -355,7 +384,7 @@ ModeBar.prototype.cleanup = function(){
  *
  * @Property config specification hash of button parameters
  */
-ModeBar.prototype.config = function config() {
+proto.config = function config() {
     return {
         zoom2d: {
             title: 'Zoom',
@@ -408,6 +437,7 @@ ModeBar.prototype.config = function config() {
             gravity: 'ne',
             click: this.handleCartesian
         },
+        // gl3d
         zoom3d: {
             title: 'Zoom',
             attr: 'dragmode',
@@ -455,6 +485,35 @@ ModeBar.prototype.config = function config() {
             icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleHover3d
+        },
+        // geo
+        zoomInGeo: {
+            title: 'Zoom in',
+            attr: 'zoom',
+            val: 'in',
+            icon: 'zoom_plus',
+            click: this.handleGeo
+        },
+        zoomOutGeo: {
+            title: 'Zoom out',
+            attr: 'zoom',
+            val: 'out',
+            icon: 'zoom_minus',
+            click: this.handleGeo
+        },
+        resetGeo: {
+            title: 'Reset',
+            attr: 'reset',
+            icon: 'autoscale',
+            click: this.handleGeo
+        },
+        hoverClosestGeo: {
+            title: 'Toggle show closest data on hover',
+            attr: 'hovermode',
+            val: null,
+            icon: 'tooltip_basic',
+            gravity: 'ne',
+            click: this.handleGeo
         }
     };
 };
