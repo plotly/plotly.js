@@ -24,10 +24,7 @@ function countryNameToISO3(countryName) {
         item = countryNameData[i];
         regex = new RegExp(item.regex);
 
-        if(regex.test(countryName.toLowerCase())) {
-            return item.iso3;
-            console.log(countryName, item.iso3);
-        }
+        if(regex.test(countryName.toLowerCase())) return item.iso3;
     }
 
     console.warn('unrecognized country name ' + countryName);
