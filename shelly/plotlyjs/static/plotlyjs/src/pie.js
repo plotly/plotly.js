@@ -537,7 +537,10 @@ pie.style = function(gd) {
         var cd0 = cd[0],
             trace = cd0.trace,
             getLineColor,
-            getLineWidth;
+            getLineWidth,
+            traceSelection = d3.select(this);
+
+        traceSelection.style({opacity: trace.opacity});
 
         if(Array.isArray(trace.line.color)) {
             getLineColor = function(pt) {
@@ -557,7 +560,7 @@ pie.style = function(gd) {
             getLineWidth = function() { return lineWidth; };
         }
 
-        d3.select(this).selectAll('.top path').each(function(pt) {
+        traceSelection.selectAll('.top path').each(function(pt) {
             d3.select(this).style({
                 stroke: getLineColor(pt),
                 'stroke-width': getLineWidth(pt),
