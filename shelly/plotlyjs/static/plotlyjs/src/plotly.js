@@ -38,6 +38,13 @@ exports.Surface = require('./gl3d/defaults/surface');
 exports.Mesh3D = require('./gl3d/defaults/mesh3d');
 exports.Scene = require('./gl3d/scene');
 
+// Geo
+exports.GeoLayout = require('./geo/defaults/geolayout');
+exports.GeoAxes = require('./geo/defaults/geoaxes');
+exports.ScatterGeo = require('./geo/defaults/scattergeo');
+exports.Choropleth = require('./geo/defaults/choropleth');
+exports.Geo = require('./geo/geo');
+
 // graph reference
 exports.getGraphReference = require('./graph_reference');
 

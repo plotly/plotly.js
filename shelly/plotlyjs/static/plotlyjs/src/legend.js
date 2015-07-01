@@ -291,7 +291,7 @@ legend.texts = function(context, td, d, i, traces){
 // -----------------------------------------------------
 
 // all types we currently support in legends
-var LEGENDTYPES = ['scatter', 'scatter3d', 'box', 'bar', 'histogram'];
+var LEGENDTYPES = ['scatter', 'scatter3d', 'scattergeo', 'box', 'bar', 'histogram'];
 
 function legendGetsTrace(trace) {
     return trace.visible &&

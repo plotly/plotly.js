@@ -35,7 +35,8 @@
     "superscript-text": "^1.0.0",
     "tinycolor2": "1.1.2",
     "uglify-js": "~2.4.13",
-    "xml2js": "0.4.8"
+    "xml2js": "0.4.8",
+    "topojson": "1.6.19"
   },
   "devDependencies": {}
 }
