@@ -513,7 +513,7 @@ function setCoords(cd) {
         cdi = cd[i];
         cdi[firstPt] = currentCoords;
 
-        if(trace.pull) cdi.pxmid = getCoords(currentAngle + cdi.v / 2);
+        if(trace.pull) cdi.pxmid = getCoords(currentAngle + angleFactor * cdi.v / 2);
 
         currentAngle += angleFactor * cdi.v;
         currentCoords = getCoords(currentAngle);
