@@ -419,7 +419,7 @@ function scalePies(cdpie, plotSize) {
         maxPull = trace.pull;
         if(Array.isArray(maxPull)) {
             maxPull = 0;
-            for(j = 0; i < trace.pull.length; j++) {
+            for(j = 0; j < trace.pull.length; j++) {
                 if(trace.pull[j] > maxPull) maxPull = trace.pull[j];
             }
         }
