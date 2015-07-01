@@ -130,6 +130,7 @@ pie.attributes = {
     line: {
         color: {
             type: 'color',
+            dflt: Plotly.Color.defaultLine,
             arrayOk: true
         },
         width: {
