@@ -517,10 +517,8 @@ axes.clearTypes = function(gd, traces) {
     }
     traces.forEach(function(tracenum) {
         var trace = gd.data[tracenum];
-        if(Plotly.Plots.traceIs(trace, 'cartesian')) {
-            delete (axes.getFromId(gd, trace.xaxis)||{}).type;
-            delete (axes.getFromId(gd, trace.yaxis)||{}).type;
-        }
+        delete (axes.getFromId(gd, trace.xaxis)||{}).type;
+        delete (axes.getFromId(gd, trace.yaxis)||{}).type;
     });
 };
 

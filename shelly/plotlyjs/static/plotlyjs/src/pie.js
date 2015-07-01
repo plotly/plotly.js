@@ -100,13 +100,13 @@ pie.attributes = {
         dflt: 0
     },
 
-    // ordering and orientation
+    // ordering and direction
     sort: {
         // reorder slices from largest to smallest?
         type: 'boolean',
         dflt: true
     },
-    orientation: {
+    direction: {
         /**
          * there are two common conventions, both of which place the first
          * (largest, if sorted) slice with its left edge at 12 o'clock but
@@ -139,7 +139,7 @@ pie.attributes = {
             arrayOk: true
         }
     },
-    shade: {
+    shading: {
         // how much darker to make the sides than the top,
         // with a 3D effect. We could of course get all
         // fancy with lighting effects, but maybe this is
@@ -202,13 +202,13 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     if(tilt) {
         coerce('tiltaxis');
         coerce('depth');
-        coerce('shade');
+        coerce('shading');
     }
 
     coerce('hole');
 
     coerce('sort');
-    coerce('orientation');
+    coerce('direction');
     coerce('rotation');
 
     var lineWidth = coerce('line.width');
@@ -478,7 +478,7 @@ function setCoords(cd) {
         cdi,
         currentCoords;
 
-    if(trace.orientation === 'ccw') {
+    if(trace.direction === 'ccw') {
         currentAngle += angleFactor * cd0.v;
         angleFactor *= -1;
         firstPt = 'px1';
