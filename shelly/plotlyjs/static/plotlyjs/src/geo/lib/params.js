@@ -108,7 +108,8 @@ params.waterColor = '#3399FF';
 // locationmode to layer name
 params.locationmodeToLayer = {
     'ISO-3': 'countries',
-    'USA-states': 'subunits'
+    'USA-states': 'subunits',
+    'country names': 'countries'
 };
 
 // SVG element for a sphere (use to frame maps)

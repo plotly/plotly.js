@@ -52,7 +52,13 @@ Choropleth.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     }
 
     z = coerce('z');
+    if(!Array.isArray(z)) {
+        traceOut.visible = false;
+        return;
+    }
+
     if(z.length > len) traceOut.z = z.slice(0, len);
+
     coerce('locationmode');
 
     coerce('text');
