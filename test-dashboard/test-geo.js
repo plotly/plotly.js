@@ -24,5 +24,6 @@ plots['conic-conformal'] = require('../image_server/test/mocks/geo_conic-conform
 plots['stereographic'] = require('../image_server/test/mocks/geo_stereographic.json');
 plots['choropleth-text'] = require('../image_server/test/mocks/geo_choropleth-text.json');
 plots['choropleth-usa'] = require('../image_server/test/mocks/geo_choropleth-usa.json');
+plots['country-names'] = require('../image_server/test/mocks/geo_country-names.json');
 
 plotButtons(plots, figDir);
