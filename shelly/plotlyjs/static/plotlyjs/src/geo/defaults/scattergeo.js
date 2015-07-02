@@ -4,8 +4,8 @@ var Plotly = require('../../plotly');
 
 var ScatterGeo = module.exports = {};
 
-Plotly.Plots.register(ScatterGeo, 'scattergeo', 
-                      ['geo', 'symbols', 'markerColorscale', 'showLegend']);
+Plotly.Plots.register(ScatterGeo, 'scattergeo',
+    ['geo', 'symbols', 'markerColorscale', 'showLegend']);
 
 var scatterAttrs = Plotly.Scatter.attributes,
     scatterMarkerAttrs = scatterAttrs.marker,
@@ -20,7 +20,7 @@ ScatterGeo.attributes = {
     locations: {type: 'data_array'},
     locationmode: {
         type: 'enumerated',
-        values: ['ISO-3', 'USA-states'],
+        values: ['ISO-3', 'USA-states', 'country names'],
         dflt: 'ISO-3'
     },
     mode: extendFlat(scatterAttrs.mode,
