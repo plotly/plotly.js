@@ -188,13 +188,15 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     var textInfo = coerce('textinfo');
     if(textInfo && textInfo !== 'none') {
         var textPosition = coerce('textposition'),
-            hasInside = Array.isArray(textPosition) || textPosition === 'inside' || textPosition === 'auto',
-            hasOutside = Array.isArray(textPosition) || textPosition === 'outside' || textPosition === 'auto',
-            dfltFont;
+            hasBoth = Array.isArray(textPosition) || textPosition === 'auto',
+            hasInside = hasBoth || textPosition === 'inside',
+            hasOutside = hasBoth || textPosition === 'outside';
 
-        if(hasInside || hasOutside) dfltFont = coerce('textfont');
-        if(hasInside) coerce('insidetextfont', dfltFont);
-        if(hasOutside) coerce('outsidetextfont', dfltFont);
+        if(hasInside || hasOutside) {
+            var dfltFont = coerce('textfont');
+            if(hasInside) coerce('insidetextfont', dfltFont);
+            if(hasOutside) coerce('outsidetextfont', dfltFont);
+        }
     }
 
     coerce('domain.x[0]');
