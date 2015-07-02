@@ -539,20 +539,10 @@ pie.style = function(gd) {
     gd._fullLayout._pielayer.selectAll('.trace').each(function(cd) {
         var cd0 = cd[0],
             trace = cd0.trace,
-            getLineColor,
             getLineWidth,
             traceSelection = d3.select(this);
 
         traceSelection.style({opacity: trace.opacity});
-
-        if(Array.isArray(trace.line.color)) {
-            getLineColor = function(pt) {
-                return Plotly.Color.rgb(trace.line.color[pt.i] || Plotly.Color.defaultLine);
-            };
-        } else {
-            var lineColor = Plotly.Color.rgb(trace.line.color);
-            getLineColor = function() { return lineColor; };
-        }
 
         if(Array.isArray(trace.line.width)) {
             getLineWidth = function(pt) {
@@ -564,11 +554,14 @@ pie.style = function(gd) {
         }
 
         traceSelection.selectAll('.top path').each(function(pt) {
+            var lineColor = trace.line.color;
+            if(Array.isArray(lineColor)) lineColor = lineColor[pt.i] || Plotly.Color.defaultLine;
+
             d3.select(this).style({
-                stroke: getLineColor(pt),
                 'stroke-width': getLineWidth(pt),
                 fill: pt.color
-            });
+            })
+            .call(Plotly.Color.stroke, lineColor);
         });
     });
 };
