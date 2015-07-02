@@ -372,9 +372,11 @@ pie.plot = function(gd, cdpie) {
                     cy = cd0.cy + depthVector[1];
 
                 if(trace.pull) {
-                    var pull = (Array.isArray(trace.pull) ? trace.pull[pt.i] : trace.pull) || 0;
-                    cx += pull * pt.pxmid[0];
-                    cy += pull * pt.pxmid[1];
+                    var pull = +(Array.isArray(trace.pull) ? trace.pull[pt.i] : trace.pull) || 0;
+                    if(pull > 0) {
+                        cx += pull * pt.pxmid[0];
+                        cy += pull * pt.pxmid[1];
+                    }
                 }
                 var outerArc = 'a' + cd0.r + ',' + rSmall + ' ' + tiltAxis + ' ' + pt.largeArc + ' 1 ' +
                     (pt.px1[0] - pt.px0[0]) + ',' + (pt.px1[1] - pt.px0[1]);
