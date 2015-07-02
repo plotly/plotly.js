@@ -358,10 +358,20 @@ legend.draw = function(td, showlegend) {
             traceToggle.on('click', function() {
                 if(td._dragged) return;
 
-                var trace = d[0].trace,
-                    newVisible = trace.visible === true ?
+                var fullData = td._fullData,
+                    trace = d[0].trace,
+                    traceIndicesInGroup = [],
+                    tracei;
+
+                for(var i = 0; i < fullData.length; i++) {
+                    tracei = fullData[i];
+                    if(tracei.legendgroup === trace.legendgroup) traceIndicesInGroup.push(tracei.index);
+                }
+
+                var newVisible = trace.visible === true ?
                         'legendonly' : true;
-                Plotly.restyle(td, 'visible', newVisible, trace.index);
+
+                Plotly.restyle(td, 'visible', newVisible, traceIndicesInGroup);
             });
         });
 

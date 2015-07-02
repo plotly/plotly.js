@@ -1243,6 +1243,9 @@ plots.attributes = {
         type: 'boolean',
         dflt: true
     },
+    legendgroup: {
+        type: 'string'
+    },
     opacity: {
         type: 'number',
         min: 0,
@@ -1462,7 +1465,10 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
             coerce('yaxis');
         }
 
-        if(plots.traceIs(traceOut, 'showLegend')) coerce('showlegend');
+        if(plots.traceIs(traceOut, 'showLegend')) {
+            coerce('showlegend');
+            coerce('legendgroup', 'group ' + i);
+        }
     }
 
     // NOTE: I didn't include fit info at all... for now I think it can stay
