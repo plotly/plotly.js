@@ -22,6 +22,8 @@ pie.attributes = {
     // if color is missing, use default trace color set
     colors: {type: 'data_array'},
 
+    text: {type: 'data_array'},
+
     scalegroup: {
         /**
          * if there are multiple pies that should be sized according to
@@ -36,27 +38,22 @@ pie.attributes = {
         dflt: ''
     },
 
-    // TODO: after this add to restyle lists
-
     // labels (legend is handled by plots.attributes.showlegend and layout.legend.hiddenslices)
-    insideinfo: {
-        // text to show in the slices
-        mode: {
-            type: 'enumerated',
-            values: ['label', 'percent', 'value', 'none'],
-            dflt: 'percent'
-        },
-        font: {type: 'font'}
+    textinfo: {
+        type: 'flaglist',
+        flags: ['label', 'percent', 'value', 'text'],
+        extras: ['none'],
+        dflt: 'percent'
     },
-    outsideinfo: {
-        // text to show around the outside of the slices
-        mode: {
-            type: 'enumerated',
-            values: ['label', 'percent', 'value', 'none'],
-            dflt: 'none'
-        },
-        font: {type: 'font'}
+    textposition: {
+        type: 'enumerated',
+        values: ['inside', 'outside', 'auto', 'none'],
+        dflt: 'auto',
+        arrayOk: true
     },
+    textfont: {type: 'font'},
+    insidetextfont: {type: 'font'},
+    outsidetextfont: {type: 'font'},
 
     // position and shape
     domain: { // TODO: this breaks filehst.utils.DATA_ARRAY_KEYS because we need x and y to be data.
@@ -188,11 +185,17 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     // and if colors aren't specified we should match these up - potentially even if separate pies
     // are NOT in the same sharegroup
 
-    var insideMode = coerce('insideinfo.mode');
-    if(insideMode !== 'none') coerce('insideinfo.font', layout.font);
+    var textInfo = coerce('textinfo');
+    if(textInfo && textInfo !== 'none') {
+        var textPosition = coerce('textposition'),
+            hasInside = Array.isArray(textPosition) || textPosition === 'inside' || textPosition === 'auto',
+            hasOutside = Array.isArray(textPosition) || textPosition === 'outside' || textPosition === 'auto',
+            dfltFont;
 
-    var outsideMode = coerce('outsideinfo.mode');
-    if(outsideMode !== 'none') coerce('outsideinfo.font', layout.font);
+        if(hasInside || hasOutside) dfltFont = coerce('textfont');
+        if(hasInside) coerce('insidetextfont', dfltFont);
+        if(hasOutside) coerce('outsidetextfont', dfltFont);
+    }
 
     coerce('domain.x[0]');
     coerce('domain.x[1]');
