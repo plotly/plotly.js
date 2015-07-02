@@ -1244,7 +1244,8 @@ plots.attributes = {
         dflt: true
     },
     legendgroup: {
-        type: 'string'
+        type: 'string',
+        dflt: ''
     },
     opacity: {
         type: 'number',
@@ -1467,7 +1468,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
         if(plots.traceIs(traceOut, 'showLegend')) {
             coerce('showlegend');
-            coerce('legendgroup', 'group ' + i);
+            coerce('legendgroup');
         }
     }
 
