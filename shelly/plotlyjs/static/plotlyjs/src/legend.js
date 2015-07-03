@@ -52,15 +52,19 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
         containerOut = layoutOut.legend = {};
 
     var visibleTraces = 0,
-        defaultOrder = 'normal';
-    fullData.forEach(function(trace) {
+        defaultOrder = 'normal',
+        trace;
+
+    for(var i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
+
         if(legendGetsTrace(trace)) visibleTraces++;
 
         if((Plotly.Plots.traceIs(trace, 'bar') && layoutOut.barmode==='stack') ||
                 ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
             defaultOrder = 'reversed';
         }
-    });
+    }
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(containerIn, containerOut,
