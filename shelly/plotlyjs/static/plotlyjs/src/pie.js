@@ -193,7 +193,7 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
             hasOutside = hasBoth || textPosition === 'outside';
 
         if(hasInside || hasOutside) {
-            var dfltFont = coerce('textfont');
+            var dfltFont = coerce('textfont', layout.font);
             if(hasInside) coerce('insidetextfont', dfltFont);
             if(hasOutside) coerce('outsidetextfont', dfltFont);
         }
