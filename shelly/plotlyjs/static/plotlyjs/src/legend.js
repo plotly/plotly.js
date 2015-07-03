@@ -447,9 +447,7 @@ legend.draw = function(td, showlegend) {
                     tracei,
                     newVisible;
 
-                if(legendgroup==='' || !opts.tracegroup) {
-                    traceIndicesInGroup = [trace.index];
-                }
+                if(legendgroup === '') traceIndicesInGroup = [trace.index];
                 else {
                     for(var i = 0; i < fullData.length; i++) {
                         tracei = fullData[i];
