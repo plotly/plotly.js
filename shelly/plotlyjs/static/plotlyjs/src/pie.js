@@ -41,7 +41,7 @@ pie.attributes = {
     // labels (legend is handled by plots.attributes.showlegend and layout.legend.hiddenslices)
     textinfo: {
         type: 'flaglist',
-        flags: ['label', 'percent', 'value', 'text'],
+        flags: ['label', 'text', 'value', 'percent'],
         extras: ['none'],
         dflt: 'percent'
     },
