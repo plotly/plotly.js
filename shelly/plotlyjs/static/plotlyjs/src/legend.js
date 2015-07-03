@@ -333,6 +333,9 @@ legend.getLegendData = function(calcdata, opts) {
         else lgroupToTraces[lgroup].push([cd0]);
     }
 
+    // won't draw a legend in this case
+    if(!lgroups.length) return [];
+
     // rearrange lgroupToTraces into a d3-friendly array of arrays
     var lgroupsLength = lgroups.length,
         isReversed = opts.traceorder==='reversed',
