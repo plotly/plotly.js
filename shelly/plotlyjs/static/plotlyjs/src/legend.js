@@ -23,6 +23,15 @@ legend.layoutAttributes = {
         type: 'enumerated',
         values: ['normal', 'reversed']
     },
+    tracegroup: {
+        type: 'boolean',
+        dflt: true
+    },
+    tracegroupgap: {
+       type: 'number',
+       min: 0,
+       dflt: 10
+    },
     x: {
         type: 'number',
         min: -2,
@@ -82,6 +91,9 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
     coerce('font', layoutOut.font);
 
     coerce('traceorder', defaultOrder);
+
+    var tracegroup = coerce('tracegroup');
+    if(tracegroup) coerce('tracegroupgap');
 
     coerce('x');
     coerce('xanchor');
