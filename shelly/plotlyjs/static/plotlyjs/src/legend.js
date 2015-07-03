@@ -20,12 +20,9 @@ legend.layoutAttributes = {
     },
     font:{type: 'font'},
     traceorder: {
-        type: 'enumerated',
-        values: ['normal', 'reversed']
-    },
-    tracegroup: {
-        type: 'boolean',
-        dflt: true
+        type: 'flaglist',
+        flags: ['reversed', 'grouped'],
+        extras: ['normal']
     },
     tracegroupgap: {
        type: 'number',
@@ -73,6 +70,8 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
                 ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
             defaultOrder = 'reversed';
         }
+
+        if(trace.legendgroup !== '') defaultOrder = 'grouped';
     }
 
     function coerce(attr, dflt) {
@@ -91,9 +90,7 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
     coerce('font', layoutOut.font);
 
     coerce('traceorder', defaultOrder);
-
-    var tracegroup = coerce('tracegroup');
-    if(tracegroup) coerce('tracegroupgap');
+    if(isGrouped(layoutOut.legend)) coerce('tracegroupgap');
 
     coerce('x');
     coerce('xanchor');
@@ -304,6 +301,14 @@ function legendGetsTrace(trace) {
     return trace.visible && Plotly.Plots.traceIs(trace, 'showLegend');
 }
 
+function isGrouped(legendLayout) {
+    return (legendLayout.traceorder || '').indexOf('grouped') !== -1;
+}
+
+function isReversed(legendLayout) {
+    return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
+}
+
 legend.getLegendData = function(calcdata, opts) {
 
     // build an { legendgroup: [cd0, cd0], ... } object
@@ -321,7 +326,7 @@ legend.getLegendData = function(calcdata, opts) {
         if(!legendGetsTrace(trace) || !trace.showlegend) continue;
 
         // each '' legend group is treated as a separate group
-        if(lgroup==='' || !opts.tracegroup) {
+        if(lgroup==='' || !isGrouped(opts)) {
             lgroups.push(i);
             lgroupToTraces[i] = [[cd0]];
         }
@@ -338,14 +343,13 @@ legend.getLegendData = function(calcdata, opts) {
 
     // rearrange lgroupToTraces into a d3-friendly array of arrays
     var lgroupsLength = lgroups.length,
-        isReversed = opts.traceorder==='reversed',
         legendData;
 
     function getIndex(i) {
-        return isReversed ? lgroupsLength - i - 1 : i;
+        return isReversed(opts) ? lgroupsLength - i - 1 : i;
     }
 
-    if(hasOneNonBlankGroup && opts.tracegroup) {
+    if(hasOneNonBlankGroup && isGrouped(opts)) {
         legendData = new Array(lgroupsLength);
         for(i = 0; i < lgroupsLength; i++) {
             legendData[getIndex(i)] = lgroupToTraces[lgroups[i]];
@@ -407,9 +411,11 @@ legend.draw = function(td, showlegend) {
     groups.enter().append('g').attr('class', 'groups');
     groups.exit().remove();
 
-    groups.attr('transform', function(d, i) {
-        if(opts.tracegroup) return 'translate(0,' + i * opts.tracegroupgap + ')';
-    });
+    if(isGrouped(opts)) {
+        groups.attr('transform', function(d, i) {
+            return 'translate(0,' + i * opts.tracegroupgap + ')';
+        });
+    }
 
     var traces = groups.selectAll('g.traces')
         .data(Plotly.Lib.identity);
@@ -557,7 +563,7 @@ legend.repositionLegend = function(td, traces){
         legendwidth = Math.max(legendwidth, tWidth||0);
     });
 
-    if(opts.tracegroup) legendheight += (opts._lgroupsLength-1) * opts.tracegroupgap;
+    if(isGrouped(opts)) legendheight += (opts._lgroupsLength-1) * opts.tracegroupgap;
 
     traces.selectAll('.legendtoggle')
         .attr('width', (td._context.editable ? 0 : legendwidth) + 40);
