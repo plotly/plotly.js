@@ -308,6 +308,7 @@ legend.getLegendData = function(calcdata, opts) {
 
     // build an { legendgroup: [cd0, cd0], ... } object
     var lgroupToTraces = {},
+        lgroups = [],
         hasOneNonBlankGroup = false;
 
     var cd0, trace, lgroup, i;
@@ -320,8 +321,12 @@ legend.getLegendData = function(calcdata, opts) {
         if(!legendGetsTrace(trace) || !trace.showlegend) continue;
 
         // each '' legend group is treated as a separate group
-        if(lgroup==='' || !opts.tracegroup) lgroupToTraces[i] = [[cd0]];
-        else if(Object.keys(lgroupToTraces).indexOf(lgroup) === -1) {
+        if(lgroup==='' || !opts.tracegroup) {
+            lgroups.push(i);
+            lgroupToTraces[i] = [[cd0]];
+        }
+        else if(lgroups.indexOf(lgroup) === -1) {
+            lgroups.push(lgroup);
             hasOneNonBlankGroup = true;
             lgroupToTraces[lgroup] = [[cd0]];
         }
@@ -329,8 +334,7 @@ legend.getLegendData = function(calcdata, opts) {
     }
 
     // rearrange lgroupToTraces into a d3-friendly array of arrays
-    var lgroups = Object.keys(lgroupToTraces),
-        lgroupsLength = lgroups.length,
+    var lgroupsLength = lgroups.length,
         isReversed = opts.traceorder==='reversed',
         legendData;
 
@@ -350,6 +354,7 @@ legend.getLegendData = function(calcdata, opts) {
         for(i = 0; i < lgroupsLength; i++) {
             legendData[0][getIndex(i)] = lgroupToTraces[lgroups[i]][0];
         }
+        lgroupsLength = 1;
     }
 
     // needed in repositionLegend
