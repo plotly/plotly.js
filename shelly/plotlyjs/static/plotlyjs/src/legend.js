@@ -347,23 +347,22 @@ legend.getLegendData = function(calcdata, opts) {
 
     // rearrange lgroupToTraces into a d3-friendly array of arrays
     var lgroupsLength = lgroups.length,
+        ltraces,
         legendData;
-
-    function getIndex(i) {
-        return isReversed(opts) ? lgroupsLength - i - 1 : i;
-    }
 
     if(hasOneNonBlankGroup && isGrouped(opts)) {
         legendData = new Array(lgroupsLength);
         for(i = 0; i < lgroupsLength; i++) {
-            legendData[getIndex(i)] = lgroupToTraces[lgroups[i]];
+            ltraces = lgroupToTraces[lgroups[i]];
+            legendData[i] = isReversed(opts) ? ltraces.reverse() : ltraces;
         }
     }
     else {
         // collapse all groups into one if all groups are blank
         legendData = [new Array(lgroupsLength)];
         for(i = 0; i < lgroupsLength; i++) {
-            legendData[0][getIndex(i)] = lgroupToTraces[lgroups[i]][0];
+            ltraces = lgroupToTraces[lgroups[i]][0];
+            legendData[0][isReversed(opts) ? lgroupsLength-i-1 : i] = ltraces;
         }
         lgroupsLength = 1;
     }
