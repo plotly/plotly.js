@@ -278,7 +278,8 @@ proto.update = function(data) {
         color:      options.lineColor,
         lineWidth:  options.lineWidth || 1,
         dashes:     dashPattern[0],
-        dashScale:  dashPattern[1]
+        dashScale:  dashPattern[1],
+        opacity:    data.marker.opacity
     };
 
     if (this.mode.indexOf('lines') !== -1) {
@@ -299,6 +300,7 @@ proto.update = function(data) {
         color:        options.scatterColor,
         size:         options.scatterSize,
         glyph:        options.scatterMarker,
+        opacity:      data.marker.opacity,
         orthographic: true,
         lineWidth:    options.scatterLineWidth,
         lineColor:    options.scatterLineColor,
@@ -331,7 +333,8 @@ proto.update = function(data) {
         font:         options.textFont,
         orthographic: true,
         lineWidth:    0,
-        project:      false
+        project:      false,
+        opacity:      data.marker.opacity
     };
 
     this.textLabels = options.text;
@@ -355,7 +358,8 @@ proto.update = function(data) {
         color:        options.errorColor,
         error:        options.errorBounds,
         lineWidth:    options.errorLineWidth,
-        capSize:      options.errorCapSize
+        capSize:      options.errorCapSize,
+        opacity:      data.marker.opacity
     };
     if(this.errorBars) {
         if(options.errorBounds) {
