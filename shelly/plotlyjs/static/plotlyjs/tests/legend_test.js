@@ -180,7 +180,7 @@ describe('Test legend:', function () {
             expect(opts._lgroupsLength).toEqual(1);
         });
 
-        it('should return empty array when data legend traces', function() {
+        it('should return empty array when legend data has no traces', function() {
             calcdata = [
                 [{trace: {
                     type: 'histogram',
