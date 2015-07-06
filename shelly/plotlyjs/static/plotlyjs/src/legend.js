@@ -53,7 +53,7 @@ legend.layoutAttributes = {
     }
 };
 
-legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
+legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     var containerIn = layoutIn.legend || {},
         containerOut = layoutOut.legend = {};
 
@@ -68,10 +68,14 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
 
         if((Plotly.Plots.traceIs(trace, 'bar') && layoutOut.barmode==='stack') ||
                 ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
-            defaultOrder = 'reversed';
+            defaultOrder = isGrouped({traceorder: defaultOrder}) ?
+                'grouped+reversed' : 'reversed';
         }
 
-        if(trace.legendgroup !== '') defaultOrder = 'grouped';
+        if(trace.legendgroup !== undefined && trace.legendgroup !== '') {
+            defaultOrder = isReversed({traceorder: defaultOrder}) ?
+                'reversed+grouped' : 'grouped';
+        }
     }
 
     function coerce(attr, dflt) {
