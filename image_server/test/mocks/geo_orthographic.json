@@ -41,14 +41,12 @@
         "geo": {
             "projection": {
                 "type": "orthographic",
-                "rotate": [
-                    -75,
-                    45
-                ]
+                "rotation": {
+                    "lon": -75,
+                    "lat": 45
+                }
             },
             "showcoastlines": true,
-            "coastlinescolor": "black",
-            "coastlineswidth": 1.5,
             "showcountries": true,
             "showland": true,
             "showocean": true,

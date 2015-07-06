@@ -719,17 +719,18 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
         min = minProp.get(),
         max = maxProp.get();
 
+    // TODO handle this in Colorscale.calc
     if(scl && Array.isArray(colorArray)) {
         if(auto || !isNumeric(min) || !isNumeric(max)) {
             min = Infinity;
             max = -Infinity;
             colorArray.forEach(function(color) {
                 if(isNumeric(color)) {
-                    if(min>color) min = color;
-                    if(max<color) max = color;
+                    if(min > color) min = +color;
+                    if(max < color) max = +color;
                 }
             });
-            if(min>max) {
+            if(min > max) {
                 min = 0;
                 max = 1;
             }
