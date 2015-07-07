@@ -94,8 +94,9 @@ Scatter3D.attributes = {
         color: scatterMarkerAttrs.color,
         symbol: scatterMarkerAttrs.symbol,
         size: extendFlat(scatterMarkerAttrs.size, {dflt: 8}),
-        opacity: extendFlat(scatterMarkerAttrs.opacity,
-                            {dflt: 1}),
+        sizeref: scatterMarkerAttrs.sizeref,
+        sizemode: scatterMarkerAttrs.sizemode,
+        opacity: scatterMarkerAttrs.opacity,
         colorscale: scatterMarkerAttrs.colorscale,
         cauto: scatterMarkerAttrs.cauto,
         cmax: scatterMarkerAttrs.cmax,
@@ -104,11 +105,15 @@ Scatter3D.attributes = {
         reversescale: scatterMarkerAttrs.reversescale,
         showscale: scatterMarkerAttrs.showscale,
         line: {
-            color: extendFlat(scatterMarkerLineAttrs.color,
-                              {dflt: 'rgb(0,0,0)'}),
+            color: scatterMarkerLineAttrs.color,
             width: extendFlat(scatterMarkerLineAttrs.width, {arrayOk: false}),
+            colorscale: scatterMarkerLineAttrs.colorscale,
+            cauto: scatterMarkerLineAttrs.cauto,
+            cmax: scatterMarkerLineAttrs.cmax,
+            cmin: scatterMarkerLineAttrs.cmin,
+            autocolorscale: scatterMarkerLineAttrs.autocolorscale,
+            reversescale: scatterMarkerLineAttrs.reversescale
         }
-
     },
     textposition: extendFlat(scatterAttrs.textposition, {dflt: 'top center'}),
     textfont: scatterAttrs.textfont,
@@ -143,11 +148,7 @@ Scatter3D.handleXYZDefaults = function(traceIn, traceOut, coerce) {
 Scatter3D.markerSymbols = MARKER_SYMBOLS;
 
 Scatter3D.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
-    var _this = this,
-        Scatter = Plotly.Scatter,
-        lineColor,
-        markerColor,
-        isBubble;
+    var Scatter = Plotly.Scatter;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut,
@@ -163,38 +164,21 @@ Scatter3D.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     coerce('text');
     coerce('mode');
 
-    isBubble = Scatter.isBubble(traceIn);
-
-    if (Scatter.hasMarkers(traceOut)) {
-        markerColor = coerce('marker.color', defaultColor);
-
-        if(Plotly.Colorscale.hasColorscale(traceIn, 'marker')) {
-            Plotly.Colorscale.handleDefaults(
-                traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
-            );
-        }
-
-        coerce('marker.symbol');
-        coerce('marker.size');
-        coerce('marker.opacity', isBubble ? 0.7 : 1);
-        coerce('marker.line.width', isBubble ? 1 : 0);
-        coerce('marker.line.color', isBubble ? Plotly.Color.background : Plotly.Color.defaultLine);
+    if(Scatter.hasLines(traceOut)) {
+        Scatter.lineDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
-    if (Scatter.hasLines(traceOut)) {
-        // don't try to inherit a color array
-        lineColor = coerce('line.color', (Array.isArray(markerColor) ? false : markerColor) ||
-                             defaultColor);
-        coerce('line.width');
-        coerce('line.dash');
+    if(Scatter.hasMarkers(traceOut)) {
+        Scatter.markerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
     }
 
-    if (Scatter.hasText(traceOut)) {
-        coerce('textposition');
-        coerce('textfont', layout.font);
+    if(Scatter.hasText(traceOut)) {
+        Scatter.textDefaults(traceIn, traceOut, layout, coerce);
     }
 
-    if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', lineColor || markerColor);
+    var lineColor = (traceOut.line || {}).color ,
+        markerColor = (traceOut.marker || {}).color;
+    if(coerce('surfaceaxis') >= 0) coerce('surfacecolor', lineColor || markerColor);
 
     var dims = ['x', 'y', 'z'];
     for(var i = 0; i < 3; ++i) {
