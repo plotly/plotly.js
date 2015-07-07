@@ -95,6 +95,7 @@ Scatter3D.attributes = {
         symbol: scatterMarkerAttrs.symbol,
         size: extendFlat(scatterMarkerAttrs.size, {dflt: 8}),
         sizeref: scatterMarkerAttrs.sizeref,
+        sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
         opacity: scatterMarkerAttrs.opacity,
         colorscale: scatterMarkerAttrs.colorscale,

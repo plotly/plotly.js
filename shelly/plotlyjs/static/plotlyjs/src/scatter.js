@@ -116,6 +116,11 @@ scatter.attributes = {
             type: 'number',
             dflt: 1
         },
+        sizemin: {
+            type: 'number',
+            min: 0,
+            dflt: 0
+        },
         sizemode: {
             type: 'enumerated',
             values: ['diameter', 'area'],
@@ -348,6 +353,7 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
 
     if(isBubble) {
         coerce('marker.sizeref');
+        coerce('marker.sizemin');
         coerce('marker.sizemode');
     }
 };

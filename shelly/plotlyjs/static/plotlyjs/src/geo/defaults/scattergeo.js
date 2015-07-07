@@ -35,6 +35,7 @@ ScatterGeo.attributes = {
         opacity: scatterMarkerAttrs.opacity,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
+        sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
         color: scatterMarkerAttrs.color,
         colorscale: scatterMarkerAttrs.colorscale,
