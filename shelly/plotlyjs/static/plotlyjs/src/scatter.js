@@ -252,6 +252,8 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
     if(scatter.hasLines(traceOut)) {
         scatter.lineDefaults(traceIn, traceOut, defaultColor, coerce);
+        lineShapeDefaults(traceIn, traceOut, coerce);
+        coerce('connectgaps');
     }
 
     if(scatter.hasMarkers(traceOut)) {
@@ -259,9 +261,11 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     }
 
     if(scatter.hasText(traceOut)) {
-        coerce('textposition');
-        coerce('textfont', layout.font);
-        if(!scatter.hasMarkers(traceOut)) coerce('marker.maxdisplayed');
+        scatter.textDefaults(traceIn, traceOut, layout, coerce);
+    }
+
+    if(scatter.hasMarkers(traceOut) || scatter.hasText(traceOut)) {
+        coerce('marker.maxdisplayed');
     }
 
     coerce('fill');
@@ -289,16 +293,14 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
+// common to 'scatter', 'scatter3d' and 'scattergeo'
 scatter.lineDefaults = function(traceIn, traceOut, defaultColor, coerce) {
-    var markerColor = (traceIn.marker||{}).color;
+    var markerColor = (traceIn.marker || {}).color;
+
     // don't try to inherit a color array
     coerce('line.color', (Array.isArray(markerColor) ? false : markerColor) ||
                          defaultColor);
     coerce('line.width');
-
-    lineShapeDefaults(traceIn, traceOut, coerce);
-
-    coerce('connectgaps');
     coerce('line.dash');
 };
 
@@ -307,6 +309,7 @@ function lineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape==='spline') coerce('line.smoothing');
 }
 
+// common to 'scatter', 'scatter3d' and 'scattergeo'
 scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerce) {
     var isBubble = scatter.isBubble(traceIn),
         lineColor = (traceIn.line || {}).color,
@@ -317,7 +320,6 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
     coerce('marker.symbol');
     coerce('marker.opacity', isBubble ? 0.7 : 1);
     coerce('marker.size');
-    coerce('marker.maxdisplayed');
 
     coerce('marker.color', defaultColor);
     if(Plotly.Colorscale.hasColorscale(traceIn, 'marker')) {
@@ -348,6 +350,12 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
         coerce('marker.sizeref');
         coerce('marker.sizemode');
     }
+};
+
+// common to 'scatter', 'scatter3d' and 'scattergeo'
+scatter.textDefaults = function(traceIn, traceOut, layout, coerce) {
+    coerce('textposition');
+    coerce('textfont', layout.font);
 };
 
 scatter.cleanData = function(fullData) {
