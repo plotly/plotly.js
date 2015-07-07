@@ -1243,6 +1243,10 @@ plots.attributes = {
         type: 'boolean',
         dflt: true
     },
+    legendgroup: {
+        type: 'string',
+        dflt: ''
+    },
     opacity: {
         type: 'number',
         min: 0,
@@ -1437,21 +1441,21 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     // this is necessary otherwise we lose references to scene objects when
     // the traces of a scene are invisible. Also we handle visible/unvisible
     // differently for 3D cases.
-    if (plots.traceIs(traceOut, 'gl3d')) scene = coerce('scene');
+    if(plots.traceIs(traceOut, 'gl3d')) scene = coerce('scene');
 
-    if (plots.traceIs(traceOut, 'geo')) scene = coerce('geo');
+    if(plots.traceIs(traceOut, 'geo')) scene = coerce('geo');
 
     // module-specific attributes --- note: we need to send a trace into
     // the 3D modules to have it removed from the webgl context.
-    if (visible || scene) {
+    if(visible || scene) {
         module = plots.getModule(traceOut);
         traceOut._module = module;
     }
 
-    if (module && visible) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+    if(module && visible) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
     if(visible) {
-        coerce('name', 'trace '+i);
+        coerce('name', 'trace ' + i);
 
         coerce('hoverinfo');
 
@@ -1462,7 +1466,10 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
             coerce('yaxis');
         }
 
-        if(plots.traceIs(traceOut, 'showLegend')) coerce('showlegend');
+        if(plots.traceIs(traceOut, 'showLegend')) {
+            coerce('showlegend');
+            coerce('legendgroup');
+        }
     }
 
     // NOTE: I didn't include fit info at all... for now I think it can stay
