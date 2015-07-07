@@ -440,7 +440,7 @@ scatter.colorbar = function(gd, cd) {
     Plotly.Lib.markTime('done colorbar');
 };
 
-scatter.calc = function(gd,trace) {
+scatter.calc = function(gd, trace) {
     var xa = Plotly.Axes.getFromId(gd,trace.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd,trace.yaxis||'y');
     Plotly.Lib.markTime('in Scatter.calc');
@@ -494,15 +494,9 @@ scatter.calc = function(gd,trace) {
         }
         xOptions.ppad = yOptions.ppad = Array.isArray(s) ?
             s.map(markerTrans) : markerTrans(s);
-
-        // auto-z and autocolorscale if applicable
-        if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
-            Plotly.Colorscale.calc(trace, marker.color, 'marker', 'c');
-        }
-        if(Plotly.Colorscale.hasColorscale(trace, 'marker.line')) {
-            Plotly.Colorscale.calc(trace, marker.line.color, 'marker.line', 'c');
-        }
     }
+
+    scatter.calcMarkerColorscales(trace);
 
     // TODO: text size
 
@@ -552,6 +546,22 @@ scatter.calc = function(gd,trace) {
 
     gd.firstscatter = false;
     return cd;
+};
+
+// common to 'scatter', 'scatter3d' and 'scattergeo'
+scatter.calcMarkerColorscales = function(trace) {
+    if(!scatter.hasMarkers(trace)) return;
+
+    var marker = trace.marker;
+
+    // auto-z and autocolorscale if applicable
+    if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
+        Plotly.Colorscale.calc(trace, marker.color, 'marker', 'c');
+    }
+    if(Plotly.Colorscale.hasColorscale(trace, 'marker.line')) {
+        Plotly.Colorscale.calc(trace, marker.line.color, 'marker.line', 'c');
+    }
+
 };
 
 scatter.selectMarkers = function(gd, plotinfo, cdscatter) {

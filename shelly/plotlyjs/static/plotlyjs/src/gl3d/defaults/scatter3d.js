@@ -194,26 +194,16 @@ Scatter3D.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
 };
 
+Scatter3D.colorbar = Plotly.Scatter.colorbar;
+
 Scatter3D.calc = function(gd, trace) {
     // this is a kludge to put the array attributes into
     // calcdata the way Scatter.plot does, so that legends and
     // popovers know what to do with them.
     var cd = [{x: false, y: false, trace: trace, t: {}}];
     Plotly.Scatter.arraysToCalcdata(cd);
+
+    Plotly.Scatter.calcMarkerColorscales(trace);
+
     return cd;
-};
-
-Scatter3D.colorbar = Plotly.Scatter.colorbar;
-
-Scatter3D.calc = function(gd, trace) {
-    var marker;
-
-    if(Plotly.Scatter.hasMarkers(trace)) {
-        marker = trace.marker;
-
-        // auto-z and autocolorscale if applicable
-        if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
-            Plotly.Colorscale.calc(trace, marker.color, 'marker', 'c');
-        }
-    }
 };

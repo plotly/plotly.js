@@ -118,14 +118,7 @@ ScatterGeo.handleLonLatLocDefaults = function(traceIn, traceOut, coerce) {
 ScatterGeo.colorbar = Plotly.Scatter.colorbar;
 
 ScatterGeo.calc = function(gd, trace) {
-    var marker;
 
-    if(Plotly.Scatter.hasMarkers(trace)) {
-        marker = trace.marker;
+    Plotly.Scatter.calcMarkerColorscales(trace);
 
-        // auto-z and autocolorscale if applicable
-        if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
-            Plotly.Colorscale.calc(trace, marker.color, 'marker', 'c');
-        }
-    }
 };
