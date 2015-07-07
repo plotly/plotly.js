@@ -11,7 +11,8 @@ var scatterAttrs = Plotly.Scatter.attributes,
 
 var Scatter3D = {};
 
-Plotly.Plots.register(Scatter3D, 'scatter3d', ['gl3d', 'symbols', 'markerColorscale', 'showLegend']);
+Plotly.Plots.register(Scatter3D,
+    'scatter3d', ['gl3d', 'symbols', 'markerColorscale', 'showLegend']);
 
 Scatter3D.attributes = {
     x: {type: 'data_array'},
@@ -92,8 +93,7 @@ Scatter3D.attributes = {
     marker: {  // Parity with scatter.js?
         color: scatterMarkerAttrs.color,
         symbol: scatterMarkerAttrs.symbol,
-        size: extendFlat(scatterMarkerAttrs.size,
-                         {dflt: 8}),
+        size: extendFlat(scatterMarkerAttrs.size, {dflt: 8}),
         opacity: extendFlat(scatterMarkerAttrs.opacity,
                             {dflt: 1}),
         colorscale: scatterMarkerAttrs.colorscale,
@@ -106,13 +106,11 @@ Scatter3D.attributes = {
         line: {
             color: extendFlat(scatterMarkerLineAttrs.color,
                               {dflt: 'rgb(0,0,0)'}),
-            width: extendFlat(scatterMarkerLineAttrs.width,
-                              {dflt: 0, arrayOk: false})
+            width: extendFlat(scatterMarkerLineAttrs.width, {arrayOk: false}),
         }
 
     },
-    textposition: extendFlat(scatterAttrs.textposition,
-                             {dflt: 'top center'}),
+    textposition: extendFlat(scatterAttrs.textposition, {dflt: 'top center'}),
     textfont: scatterAttrs.textfont,
     _nestedModules: {  // nested module coupling
         'error_x': 'ErrorBars',
@@ -126,17 +124,17 @@ Scatter3D.attributes = {
 module.exports = Scatter3D;
 
 
-Scatter3D.handleXYZDefaults = function (traceIn, traceOut, coerce) {
+Scatter3D.handleXYZDefaults = function(traceIn, traceOut, coerce) {
     var len = 0,
         x = coerce('x'),
         y = coerce('y'),
         z = coerce('z');
 
-    if (x && y && z) {
+    if(x && y && z) {
         len = Math.min(x.length, y.length, z.length);
-        if(len<x.length) traceOut.x = x.slice(0, len);
-        if(len<y.length) traceOut.y = y.slice(0, len);
-        if(len<z.length) traceOut.z = z.slice(0, len);
+        if(len < x.length) traceOut.x = x.slice(0, len);
+        if(len < y.length) traceOut.y = y.slice(0, len);
+        if(len < z.length) traceOut.z = z.slice(0, len);
     }
 
     return len;
@@ -152,10 +150,15 @@ Scatter3D.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         isBubble;
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, _this.attributes, attr, dflt);
+        return Plotly.Lib.coerce(traceIn, traceOut,
+                                 Scatter3D.attributes, attr, dflt);
     }
 
-    this.handleXYZDefaults(traceIn, traceOut, coerce);
+    var len = Scatter3D.handleXYZDefaults(traceIn, traceOut, coerce);
+    if(!len) {
+        traceOut.visible = false;
+        return;
+    }
 
     coerce('text');
     coerce('mode');
@@ -193,12 +196,12 @@ Scatter3D.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
 
     if (coerce('surfaceaxis') >= 0) coerce('surfacecolor', lineColor || markerColor);
 
-    var dims = ['x','y','z'];
-    for (var i = 0; i < 3; ++i) {
+    var dims = ['x', 'y', 'z'];
+    for(var i = 0; i < 3; ++i) {
         var projection = 'projection.' + dims[i];
-        if (coerce(projection+'.show')) {
-            coerce(projection+'.opacity');
-            coerce(projection+'.scale');
+        if(coerce(projection + '.show')) {
+            coerce(projection + '.opacity');
+            coerce(projection + '.scale');
         }
     }
 

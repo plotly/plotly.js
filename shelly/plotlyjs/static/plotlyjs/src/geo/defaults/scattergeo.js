@@ -23,11 +23,8 @@ ScatterGeo.attributes = {
         values: ['ISO-3', 'USA-states', 'country names'],
         dflt: 'ISO-3'
     },
-    mode: extendFlat(scatterAttrs.mode,
-                     {dflt: 'markers'}),
+    mode: extendFlat(scatterAttrs.mode, {dflt: 'markers'}),
     text: scatterAttrs.text,
-    textfont: scatterAttrs.textfont,
-    textposition: scatterAttrs.textposition,
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
@@ -50,6 +47,8 @@ ScatterGeo.attributes = {
             width: scatterMarkerLineAttrs.width
         }
     },
+    textfont: scatterAttrs.textfont,
+    textposition: scatterAttrs.textposition,
     _nestedModules: {
         'marker.colorbar': 'Colorbar'
         // TODO error bars?
