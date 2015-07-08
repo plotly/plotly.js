@@ -461,13 +461,14 @@ scatter.getBubbleSizeFn = function(trace) {
             function(v) { return Math.sqrt(v / sizeRef); } :
             function(v) { return v / sizeRef; };
 
-    // TODO add support for position/negative bubbles
+    // TODO add support for position/negative bubbles?
+    // TODO add 'sizeoffset' attribute?
     return function(v) {
         var baseSize = baseFn(v / 2);
 
         // don't show non-numeric and negative sizes
         return (isNumeric(baseSize) && baseSize>0) ?
-            baseSize + sizeMin : 0;
+            Math.max(baseSize, sizeMin) : 0;
     };
 };
 
