@@ -140,11 +140,10 @@ legend.points = function(d){
     // 'scatter3d' and 'scattergeo' don't use gd.calcdata yet;
     // use d0.trace to infer arrayOk attributes
 
-    function boundVal(attrIn, bounds) {
+    function boundVal(attrIn, bounds, arrayToValFn) {
         var valIn = Plotly.Lib.nestedProperty(trace, attrIn).get(),
-            valToBound = Array.isArray(valIn) ? valIn[0] : valIn;
-
-        // TODO use something more representative than first item?
+            valToBound = (Array.isArray(valIn) && arrayToValFn) ?
+                arrayToValFn(valIn) : valIn;
 
         if(bounds) {
             if(valToBound < bounds[0]) return bounds[0];
@@ -152,6 +151,8 @@ legend.points = function(d){
         }
         return valToBound;
     }
+
+    function pickFirst(array) { return array[0]; }
 
     // constrain text, markers, etc so they'll fit on the legend
     if(showMarkers || showText || showLines) {
@@ -162,11 +163,11 @@ legend.points = function(d){
         tEdit.textfont = {size: 10};
 
         if(showMarkers) {
-            dEdit.mc = boundVal('marker.color');
-            dEdit.mo = boundVal('marker.opacity', [0.2, 1]);
-            dEdit.ms = boundVal('marker.size', [2, 16]);
-            dEdit.mlc = boundVal('marker.line.color');
-            dEdit.mlw = boundVal('marker.line.width', [0, 5]);
+            dEdit.mc = boundVal('marker.color', pickFirst);
+            dEdit.mo = boundVal('marker.opacity', [0.2, 1], Plotly.Lib.mean);
+            dEdit.ms = boundVal('marker.size', [2, 16], Plotly.Lib.mean);
+            dEdit.mlc = boundVal('marker.line.color', pickFirst);
+            dEdit.mlw = boundVal('marker.line.width', [0, 5], Plotly.Lib.mean);
             tEdit.marker = {
                 sizeref: 1,
                 sizemode: 'diameter'
