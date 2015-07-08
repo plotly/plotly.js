@@ -461,10 +461,9 @@ scatter.getBubbleSizeFn = function(trace) {
             function(v) { return Math.sqrt(v / sizeRef); } :
             function(v) { return v / sizeRef; };
 
+    // TODO add support for position/negative bubbles
     return function(v) {
         var baseSize = baseFn(v / 2);
-
-        // TODO add support for position/negative bubbles
 
         // don't show non-numeric and negative sizes
         return (isNumeric(baseSize) && baseSize>0) ?
@@ -593,7 +592,6 @@ scatter.calcMarkerColorscales = function(trace) {
     if(Plotly.Colorscale.hasColorscale(trace, 'marker.line')) {
         Plotly.Colorscale.calc(trace, marker.line.color, 'marker.line', 'c');
     }
-
 };
 
 scatter.selectMarkers = function(gd, plotinfo, cdscatter) {

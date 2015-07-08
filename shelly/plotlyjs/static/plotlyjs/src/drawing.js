@@ -627,14 +627,14 @@ drawing.pointStyle = function(s, trace) {
         var sizeFn = Plotly.Scatter.getBubbleSizeFn(trace);
 
         s.attr('d', function(d) {
-            var r = d.ms!==undefined ? sizeFn(d.ms) : marker.size / 2;
+            var r;
+
+            // handle multi-trace graph edit case
+            if(d.ms==='various' || marker.size==='various') r = 3;
+            else r = d.ms!==undefined ? sizeFn(d.ms) : marker.size / 2;
 
             // store the calculated size so hover can use it
             d.mrc = r;
-
-            // in case of "various" etc... set a visible default
-            //if(!isNumeric(r) || r<0) r=3;
-            // TODO make sure this doesn't break graph edit
 
             // turn the symbol into a sanitized number
             var x = drawing.symbolNumber(d.mx || marker.symbol) || 0,
