@@ -140,7 +140,7 @@ legend.points = function(d){
     // 'scatter3d' and 'scattergeo' don't use gd.calcdata yet;
     // use d0.trace to infer arrayOk attributes
 
-    function boundVal(attrIn, bounds, arrayToValFn) {
+    function boundVal(attrIn, arrayToValFn, bounds) {
         var valIn = Plotly.Lib.nestedProperty(trace, attrIn).get(),
             valToBound = (Array.isArray(valIn) && arrayToValFn) ?
                 arrayToValFn(valIn) : valIn;
@@ -164,19 +164,20 @@ legend.points = function(d){
 
         if(showMarkers) {
             dEdit.mc = boundVal('marker.color', pickFirst);
-            dEdit.mo = boundVal('marker.opacity', [0.2, 1], Plotly.Lib.mean);
-            dEdit.ms = boundVal('marker.size', [2, 16], Plotly.Lib.mean);
+            dEdit.mo = boundVal('marker.opacity', Plotly.Lib.mean, [0.2, 1]);
+            dEdit.ms = boundVal('marker.size', Plotly.Lib.mean, [2, 16]);
             dEdit.mlc = boundVal('marker.line.color', pickFirst);
-            dEdit.mlw = boundVal('marker.line.width', [0, 5], Plotly.Lib.mean);
+            dEdit.mlw = boundVal('marker.line.width', Plotly.Lib.mean, [0, 5]);
             tEdit.marker = {
                 sizeref: 1,
+                sizemin: 1,
                 sizemode: 'diameter'
             };
         }
 
         if(showLines) {
             tEdit.line = {
-                width: boundVal('line.width', [0, 10])
+                width: boundVal('line.width', pickFirst, [0, 10])
             };
         }
 
