@@ -631,7 +631,8 @@ drawing.pointStyle = function(s, trace) {
 
             // handle multi-trace graph edit case
             if(d.ms==='various' || marker.size==='various') r = 3;
-            else r = d.ms!==undefined ? sizeFn(d.ms) : marker.size / 2;
+            else r = Plotly.Scatter.isBubble(trace) ?
+                        sizeFn(d.ms) : marker.size / 2;
 
             // store the calculated size so hover can use it
             d.mrc = r;
