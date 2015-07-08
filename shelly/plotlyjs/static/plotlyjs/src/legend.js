@@ -131,34 +131,55 @@ legend.lines = function(d){
 legend.points = function(d){
     var d0 = d[0],
         trace = d0.trace,
-        marker = trace.marker||{},
         showMarkers = Plotly.Scatter.hasMarkers(trace),
         showText = Plotly.Scatter.hasText(trace),
         showLines = Plotly.Scatter.hasLines(trace);
 
     var dMod, tMod;
-    if(showMarkers || showText || showLines) {
-        // constrain text, markers, etc so they'll fit on the legend
-        var dEdit = {
-            tx: 'Aa',
-            mo: Math.max(0.2, (d0.mo+1 || marker.opacity+1 || 2) - 1)
-        };
-        if(d0.ms+1) dEdit.ms = 10; // bubble charts:
-        if(d0.mlw>5) dEdit.mlw = 5;
-        dMod = [Plotly.Lib.minExtend(d0, dEdit)];
 
-        var tEdit = {textfont: {size: 10}};
+    // 'scatter3d' and 'scattergeo' don't use gd.calcdata yet;
+    // use d0.trace to infer arrayOk attributes
+
+    function boundVal(attrIn, bounds) {
+        var valIn = Plotly.Lib.nestedProperty(trace, attrIn).get(),
+            valToBound = Array.isArray(valIn) ? valIn[0] : valIn;
+
+        // TODO use something more representative than first item?
+
+        if(bounds) {
+            if(valToBound < bounds[0]) return bounds[0];
+            else if(valToBound > bounds[1]) return bounds[1];
+        }
+        return valToBound;
+    }
+
+    // constrain text, markers, etc so they'll fit on the legend
+    if(showMarkers || showText || showLines) {
+        var dEdit = {},
+            tEdit = {};
+
+        dEdit.tx = 'Aa';
+        tEdit.textfont = {size: 10};
+
         if(showMarkers) {
+            dEdit.mc = boundVal('marker.color');
+            dEdit.mo = boundVal('marker.opacity', [0.2, 1]);
+            dEdit.ms = boundVal('marker.size', [2, 16]);
+            dEdit.mlc = boundVal('marker.line.color');
+            dEdit.mlw = boundVal('marker.line.width', [0, 5]);
             tEdit.marker = {
-                size: Math.max(Math.min(marker.size, 16), 2),
                 sizeref: 1,
-                sizemode: 'diameter',
-                line: {width: Math.min(marker.line.width, marker.size)}
+                sizemode: 'diameter'
             };
         }
+
         if(showLines) {
-            tEdit.line = {width: Math.min(trace.line.width, 10)};
+            tEdit.line = {
+                width: boundVal('line.width', [0, 10])
+            };
         }
+
+        dMod = [Plotly.Lib.minExtend(d0, dEdit)];
         tMod = Plotly.Lib.minExtend(trace, tEdit);
     }
 
@@ -166,18 +187,22 @@ legend.points = function(d){
 
     var pts = ptgroup.selectAll('path.scatterpts')
         .data(showMarkers ? dMod : []);
-    pts.enter().append('path').classed('scatterpts',true)
-        .attr('transform','translate(20,0)');
+    pts.enter().append('path').classed('scatterpts', true)
+        .attr('transform', 'translate(20,0)');
     pts.exit().remove();
     pts.call(Plotly.Drawing.pointStyle, tMod);
+
+    // 'mrc' is set in pointStyle and used in textPointStyle:
+    // constrain it here
+    if(showMarkers) dMod[0].mrc = 3;
 
     var txt = ptgroup.selectAll('g.pointtext')
         .data(showText ? dMod : []);
     txt.enter()
         .append('g').classed('pointtext',true)
-            .append('text').attr('transform','translate(20,0)');
+            .append('text').attr('transform', 'translate(20,0)');
     txt.exit().remove();
-    txt.selectAll('text').call(Plotly.Drawing.textPointStyle,tMod);
+    txt.selectAll('text').call(Plotly.Drawing.textPointStyle, tMod);
 
 };
 
