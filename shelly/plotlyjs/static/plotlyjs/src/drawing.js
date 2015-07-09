@@ -762,6 +762,8 @@ drawing.textPointStyle = function(s, trace) {
             // ie 2/1.6 * nominal, bcs some markers are a bit bigger
             r = d.mrc ? (d.mrc/0.8 + 1) : 0;
 
+        fontSize = (isNumeric(fontSize) && fontSize>0) ? fontSize : 0;
+
         p.call(drawing.font,
                 d.tf || trace.textfont.family,
                 fontSize,
