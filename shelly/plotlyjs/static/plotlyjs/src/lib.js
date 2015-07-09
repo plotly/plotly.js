@@ -1410,13 +1410,19 @@ var coerceIt = {
     colorscale: function(v, propOut, dflt) {
         propOut.set(Plotly.Colorscale.getScale(v, dflt));
     },
-    font: function(v, propOut, dflt) {
+    font: function(v, propOut, dflt, opts) {
         if(!v) v = {};
-        var vOut = {};
+        var vOut = {},
+            fontAttrsUpdate = (opts && opts.arrayOk) ? {arrayOk: true} : {},
+            fontAttrsUpdated = {
+                size: lib.extendFlat(fontAttrs.size, fontAttrsUpdate),
+                color: lib.extendFlat(fontAttrs.color, fontAttrsUpdate),
+                family: lib.extendFlat(fontAttrs.family, fontAttrsUpdate)
+            };
 
-        lib.coerce(v, vOut, fontAttrs, 'size', dflt.size);
-        lib.coerce(v, vOut, fontAttrs, 'color', dflt.color);
-        lib.coerce(v, vOut, fontAttrs, 'family', dflt.family);
+        lib.coerce(v, vOut, fontAttrsUpdated, 'size', dflt.size);
+        lib.coerce(v, vOut, fontAttrsUpdated, 'color', dflt.color);
+        lib.coerce(v, vOut, fontAttrsUpdated, 'family', dflt.family);
 
         propOut.set(vOut);
     },
