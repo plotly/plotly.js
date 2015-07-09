@@ -1347,7 +1347,8 @@ lib.stripTrailingSlash = function (str) {
 var fontAttrs = {
     family: {
         type: 'string',
-        noBlank: true
+        noBlank: true,
+        strict: true
     },
     size: {
         type: 'number',
@@ -1391,6 +1392,11 @@ var coerceIt = {
         else propOut.set(+v);
     },
     string: function(v, propOut, dflt, opts) {
+        if(opts.strict===true && typeof v !== 'string') {
+            propOut.set(dflt);
+            return;
+        }
+
         var s = String(v);
         if(v===undefined || (opts.noBlank===true && !s)) {
             propOut.set(dflt);
@@ -1410,9 +1416,6 @@ var coerceIt = {
 
         lib.coerce(v, vOut, fontAttrs, 'size', dflt.size);
         lib.coerce(v, vOut, fontAttrs, 'color', dflt.color);
-
-        // string type will cast anything to a string - but here we want to be strict
-        if(typeof v.family !== 'string') v = {};
         lib.coerce(v, vOut, fontAttrs, 'family', dflt.family);
 
         propOut.set(vOut);
