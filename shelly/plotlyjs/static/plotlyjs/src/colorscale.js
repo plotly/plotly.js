@@ -205,11 +205,11 @@ colorscale.handleDefaults = function(traceIn, traceOut, layout, coerce, opts) {
     reverseScale = coerce(prefix + 'reversescale');
     if(reverseScale) containerOut.colorscale = colorscale.flipScale(sclOut);
 
-    // until scatter.colorbar can handle marker line colorbars
+    // ... until Scatter.colorbar can handle marker line colorbars
     if(prefix === 'marker.line.') return;
 
-    // handle both the trace case where the dftl is listed in attributes and
-    // the marker case where the dftl is determined by hasColorbar
+    // handle both the trace case where the dflt is listed in attributes and
+    // the marker case where the dflt is determined by hasColorbar
     if(prefix) showScaleDftl = colorscale.hasColorbar(containerIn);
     showScale = coerce(prefix + 'showscale', showScaleDftl);
 

@@ -9,7 +9,8 @@ var createLinePlot    = require('gl-line3d'),
     formatColor       = require('../lib/format-color'),
     calculateError    = require('../lib/calc-errors'),
     DASH_PATTERNS     = require('../lib/dashes.json'),
-    MARKER_SYMBOLS    = require('../lib/markers.json');
+    MARKER_SYMBOLS    = require('../lib/markers.json'),
+    Plotly            = require('../../plotly');
 
 function LineWithMarkers(scene, uid) {
     this.scene              = scene;
@@ -124,27 +125,28 @@ function calculateTextOffset(textposition) {
 }
 
 
-function calculateSize(sizeIn) {
+function calculateSize(sizeIn, sizeFn) {
     // rough parity with Plotly 2D markers
-    return sizeIn * 2;
+    return sizeFn(sizeIn * 4);
 }
 
 function calculateSymbol(symbolIn) {
     return MARKER_SYMBOLS[symbolIn];
 }
 
-function formatParam(paramIn, len, calculate, dflt) {
+function formatParam(paramIn, len, calculate, dflt, extraFn) {
     var paramOut = null;
 
-    if (Array.isArray(paramIn)) {
+    if(Array.isArray(paramIn)) {
         paramOut = [];
 
-        for (var i = 0; i < len; i++) {
-            if (paramIn[i]===undefined) paramOut[i] = dflt;
-            else paramOut[i] = calculate(paramIn[i]);
+        for(var i = 0; i < len; i++) {
+            if(paramIn[i]===undefined) paramOut[i] = dflt;
+            else paramOut[i] = calculate(paramIn[i], extraFn);
         }
 
-    } else paramOut = calculate(paramIn);
+    }
+    else paramOut = calculate(paramIn, Plotly.Lib.identity);
 
     return paramOut;
 }
@@ -191,8 +193,10 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if ('marker' in data) {
+        var sizeFn = Plotly.Scatter.getBubbleSizeFn(data);
+
         params.scatterColor         = formatColor(marker, marker.opacity, len);
-        params.scatterSize          = formatParam(marker.size, len, calculateSize, 20);
+        params.scatterSize          = formatParam(marker.size, len, calculateSize, 20, sizeFn);
         params.scatterMarker        = formatParam(marker.symbol, len, calculateSymbol, '●');
         params.scatterLineWidth     = marker.line.width;  // arrayOk === false
         params.scatterLineColor     = formatColor(marker.line, marker.opacity, len);
