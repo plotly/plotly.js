@@ -130,6 +130,19 @@ colorscale.getScale = function(scl, dflt) {
     return scl;
 };
 
+colorscale.flipScale = function(scl) {
+    var N = scl.length,
+        sclNew = new Array(N),
+        si;
+
+    for(var i = N-1, j = 0; i >= 0; i--, j++) {
+        si = scl[i];
+        sclNew[j] = [1 - si[0], si[1]];
+    }
+
+    return sclNew;
+};
+
 colorscale.hasColorscale = function(trace, containerStr) {
     var container = containerStr ?
             Plotly.Lib.nestedProperty(trace, containerStr).get() || {} :
@@ -175,7 +188,7 @@ colorscale.handleDefaults = function(traceIn, traceOut, layout, coerce, opts) {
         maxIn = containerIn[cLetter + 'max'],
         sclIn = containerIn.colorscale;
 
-    var validMinMax, autoColorscaleDftl, showScaleDftl, showScale;
+    var validMinMax, autoColorscaleDftl, showScaleDftl, sclOut, reverseScale, showScale;
 
     validMinMax = isNumeric(minIn) && isNumeric(maxIn) && minIn < maxIn;
     coerce(prefix + cLetter + 'auto', !validMinMax);
@@ -186,21 +199,22 @@ colorscale.handleDefaults = function(traceIn, traceOut, layout, coerce, opts) {
     // the marker and marker.line case (autocolorscale is true by default)
     if(sclIn!==undefined) autoColorscaleDftl = !colorscale.isValidScale(sclIn);
     coerce(prefix + 'autocolorscale', autoColorscaleDftl);
-    coerce(prefix + 'colorscale');
-    coerce(prefix + 'reversescale');
+    sclOut = coerce(prefix + 'colorscale');
 
-    // until scatter.colorbar can handle marker line colorbars
+    // reversescale is handled at the containerOut level
+    reverseScale = coerce(prefix + 'reversescale');
+    if(reverseScale) containerOut.colorscale = colorscale.flipScale(sclOut);
+
+    // ... until Scatter.colorbar can handle marker line colorbars
     if(prefix === 'marker.line.') return;
 
-    // handle both the trace case where the dftl is listed in attributes and
-    // the marker case where the dftl is determined by hasColorbar
+    // handle both the trace case where the dflt is listed in attributes and
+    // the marker case where the dflt is determined by hasColorbar
     if(prefix) showScaleDftl = colorscale.hasColorbar(containerIn);
     showScale = coerce(prefix + 'showscale', showScaleDftl);
 
     if(showScale) Plotly.Colorbar.supplyDefaults(containerIn, containerOut, layout);
 };
-
-function flipScale(si) { return [1 - si[0], si[1]]; }
 
 colorscale.calc = function(trace, vals, containerStr, cLetter) {
     var container, inputContainer;
@@ -231,21 +245,22 @@ colorscale.calc = function(trace, vals, containerStr, cLetter) {
         max += 0.5;
     }
 
+    container[cLetter + 'min'] = min;
+    container[cLetter + 'max'] = max;
+
+    inputContainer[cLetter + 'min'] = min;
+    inputContainer[cLetter + 'max'] = max;
+
     if(container.autocolorscale) {
         if(min * max < 0) scl = colorscale.scales.RdBu;
         else if(min >= 0) scl = colorscale.scales.Reds;
         else scl = colorscale.scales.Blues;
+
+        // reversescale is handled at the containerOut level
+        inputContainer.colorscale = scl;
+        if(container.reversescale) scl = colorscale.flipScale(scl);
+        container.colorscale = scl;
     }
-
-    inputContainer[cLetter + 'min'] = min;
-    inputContainer[cLetter + 'max'] = max;
-    inputContainer.colorscale = scl;
-
-    if(container.reversescale) scl = scl.map(flipScale).reverse();
-
-    container[cLetter + 'min'] = min;
-    container[cLetter + 'max'] = max;
-    container.colorscale = scl;
 };
 
 colorscale.makeScaleFunction = function(scl, cmin, cmax) {

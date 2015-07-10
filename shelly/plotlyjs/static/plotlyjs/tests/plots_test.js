@@ -80,6 +80,36 @@ describe('Test Plotly.Plots', function () {
 
     });
 
+    describe('Plotly.Plots.getSubplotIdsInData', function() {
+        var getSubplotIdsInData = Plotly.Plots.getSubplotIdsInData;
+
+        var ids, data;
+
+        it('it should return scene ids', function() {
+            data = [
+                {
+                    type: 'scatter3d',
+                    scene: 'scene'
+                },
+                {
+                    type: 'surface',
+                    scene: 'scene2'
+                },
+                {
+                    type: 'choropleth',
+                    geo: 'geo'
+                }
+            ];
+
+            ids = getSubplotIdsInData(data, 'geo');
+            expect(ids).toEqual(['geo']);
+
+            ids = getSubplotIdsInData(data, 'gl3d');
+            expect(ids).toEqual(['scene', 'scene2']);
+        });
+
+    });
+
     describe('Plotly.Plots.register, getModule, and traceIs', function() {
         beforeEach(function() {
             this.modulesKeys = Object.keys(Plotly.Plots.modules);
