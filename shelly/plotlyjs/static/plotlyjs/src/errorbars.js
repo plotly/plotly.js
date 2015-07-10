@@ -110,7 +110,7 @@ errorBars.supplyDefaults = function(traceIn, traceOut, defaultColor, opts) {
         if(!opts.inherit || !containerOut[copyAttr]) {
             coerce('color', defaultColor);
             coerce('thickness');
-            coerce('width', Plotly.Plots.isScatter3D(traceOut.type) ? 0 : 4);
+            coerce('width', Plotly.Plots.traceIs(traceOut, 'gl3d') ? 0 : 4);
         }
     }
 };
@@ -174,7 +174,7 @@ errorBars.calc = function(gd) {
     (gd.calcdata||[]).forEach(function(cdi){
         var trace = cdi[0].trace;
 
-        if(!(trace._module||{}).errorBarsOK) return;
+        if(!Plotly.Plots.traceIs(trace, 'errorBarsOK')) return;
 
         var xObj = trace.error_x||{},
             yObj = trace.error_y||{},

@@ -6,6 +6,7 @@ var createLinePlot    = require('gl-line3d'),
     createMesh        = require('gl-mesh3d'),
     triangulate       = require('delaunay-triangulate'),
     str2RgbaArray     = require('../lib/str2rgbarray'),
+    formatColor       = require('../lib/format-color'),
     calculateError    = require('../lib/calc-errors'),
     DASH_PATTERNS     = require('../lib/dashes.json'),
     MARKER_SYMBOLS    = require('../lib/markers.json'),
@@ -25,6 +26,7 @@ function LineWithMarkers(scene, uid) {
     this.axesBounds         = [[-Infinity,-Infinity,-Infinity],
                                [Infinity,Infinity,Infinity]];
     this.textLabels         = null;
+    this.data               = null;
 }
 
 var proto = LineWithMarkers.prototype;
@@ -45,6 +47,14 @@ proto.handlePick = function(selection) {
         if(this.textLabels && this.textLabels[selection.data.index]) {
             selection.textLabel = this.textLabels[selection.data.index];
         }
+
+        var selectIndex = selection.data.index;
+        selection.traceCoordinate = [
+          this.data.x[selectIndex],
+          this.data.y[selectIndex],
+          this.data.z[selectIndex]
+        ];
+
         return true;
     }
 };
@@ -115,73 +125,28 @@ function calculateTextOffset(textposition) {
 }
 
 
-function formatColor(colorIn, opacityIn, len) {
-    var colorDflt = Plotly.Color.defaultLine,
-        opacityDflt = 1,
-        isArrayColorIn = Array.isArray(colorIn),
-        isArrayOpacityIn = Array.isArray(opacityIn),
-        colorOut = [],
-        getColor,
-        getOpacity,
-        colori,
-        opacityi;
-
-    function calculateColor(colorIn, opacityIn) {
-        var colorOut = str2RgbaArray(colorIn);
-        colorOut[3] *= opacityIn;
-        return colorOut;
-    }
-
-    if (isArrayColorIn) {
-        getColor = function(c, i){
-            return (c[i]===undefined) ? colorDflt : c[i];
-        };
-    } else {
-        getColor = function(c) { return c; };
-    }
-
-    if (isArrayOpacityIn) {
-        getOpacity = function(o, i){
-            return (o[i]===undefined) ? opacityDflt : o[i];
-        };
-    } else {
-        getOpacity = function(o){ return o; };
-    }
-
-    if (isArrayColorIn || isArrayOpacityIn) {
-        for (var i = 0; i < len; i++) {
-            colori = getColor(colorIn, i);
-            opacityi = getOpacity(opacityIn, i);
-            colorOut[i] = calculateColor(colori, opacityi);
-        }
-    } else {
-        colorOut = calculateColor(colorIn, opacityIn);
-    }
-
-    return colorOut;
-}
-
-function calculateSize(sizeIn) {
+function calculateSize(sizeIn, sizeFn) {
     // rough parity with Plotly 2D markers
-    return sizeIn * 2;
+    return sizeFn(sizeIn * 4);
 }
 
 function calculateSymbol(symbolIn) {
     return MARKER_SYMBOLS[symbolIn];
 }
 
-function formatParam(paramIn, len, calculate, dflt) {
+function formatParam(paramIn, len, calculate, dflt, extraFn) {
     var paramOut = null;
 
-    if (Array.isArray(paramIn)) {
+    if(Array.isArray(paramIn)) {
         paramOut = [];
 
-        for (var i = 0; i < len; i++) {
-            if (paramIn[i]===undefined) paramOut[i] = dflt;
-            else paramOut[i] = calculate(paramIn[i]);
+        for(var i = 0; i < len; i++) {
+            if(paramIn[i]===undefined) paramOut[i] = dflt;
+            else paramOut[i] = calculate(paramIn[i], extraFn);
         }
 
-    } else paramOut = calculate(paramIn);
+    }
+    else paramOut = calculate(paramIn, Plotly.Lib.identity);
 
     return paramOut;
 }
@@ -191,6 +156,8 @@ function convertPlotlyOptions(scene, data) {
     var params, i,
         points = [],
         sceneLayout = scene.fullSceneLayout,
+        scaleFactor = scene.dataScale,
+        offset = scene.dataCenter,
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
@@ -205,9 +172,9 @@ function convertPlotlyOptions(scene, data) {
     //Convert points
     for (i = 0; i < len; i++) {
         // sanitize numbers and apply transforms based on axes.type
-        xc = xaxis.d2l(x[i]);
-        yc = yaxis.d2l(y[i]);
-        zc = zaxis.d2l(z[i]);
+        xc = xaxis.d2l(x[i]) * scaleFactor[0] - offset[0];
+        yc = yaxis.d2l(y[i]) * scaleFactor[1] - offset[1];
+        zc = zaxis.d2l(z[i]) * scaleFactor[2] - offset[2];
 
         points[i] = [xc, yc, zc];
     }
@@ -215,7 +182,8 @@ function convertPlotlyOptions(scene, data) {
     //Build object parameters
     params = {
         position: points,
-        mode:     data.mode
+        mode:     data.mode,
+        text:     data.text
     };
 
     if ('line' in data) {
@@ -225,16 +193,17 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if ('marker' in data) {
-        params.scatterColor         = formatColor(marker.color, marker.opacity, len);
-        params.scatterSize          = formatParam(marker.size, len, calculateSize, 20);
+        var sizeFn = Plotly.Scatter.getBubbleSizeFn(data);
+
+        params.scatterColor         = formatColor(marker, marker.opacity, len);
+        params.scatterSize          = formatParam(marker.size, len, calculateSize, 20, sizeFn);
         params.scatterMarker        = formatParam(marker.symbol, len, calculateSymbol, '●');
         params.scatterLineWidth     = marker.line.width;  // arrayOk === false
-        params.scatterLineColor     = formatColor(marker.line.color, marker.opacity, len);
+        params.scatterLineColor     = formatColor(marker.line, marker.opacity, len);
         params.scatterAngle         = 0;
     }
 
     if ('textposition' in data) {
-        params.text           = data.text;
         params.textOffset     = calculateTextOffset(data.textposition);
         params.textColor      = str2RgbaArray(data.textfont.color);
         params.textSize       = data.textfont.size;
@@ -285,6 +254,9 @@ proto.update = function(data) {
         errorOptions,
         textOptions,
         dashPattern = DASH_PATTERNS.solid;
+
+    //Save data
+    this.data = data;
 
     //Run data conversion
     var options = convertPlotlyOptions(this.scene, data);
@@ -366,19 +338,19 @@ proto.update = function(data) {
         project:      false
     };
 
+    this.textLabels = options.text;
+
     if(this.mode.indexOf('text') !== -1) {
         if (this.textMarkers) this.textMarkers.update(textOptions);
         else {
             this.textMarkers = createScatterPlot(textOptions);
-            this.scatterPlot.highlightScale = 1;
+            this.textMarkers.highlightScale = 1;
             this.scene.glplot.add(this.textMarkers);
         }
-        this.textLabels = options.text;
     } else if (this.textMarkers) {
         this.scene.glplot.remove(this.textMarkers);
         this.textMarkers.dispose();
         this.textMarkers = null;
-        this.textLabels = null;
     }
 
     errorOptions = {

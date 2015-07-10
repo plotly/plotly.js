@@ -1,0 +1,13 @@
+{
+  "data": [
+    {
+      "type":"mesh3d",
+      "y":[0, 1, 2],
+      "x":[1, 2, 0],
+      "z":[2, 0, 1],
+      "delaunayaxis": "x"
+    }],
+  "layout": {
+    "title": "Delaunay axis"
+  }
+}

@@ -2,7 +2,6 @@
 'use strict';
 
 var createPlot          = require('gl-plot3d'),
-    m4FromQuat          = require('gl-mat4/fromQuat'),
     createAxesOptions   = require('./convert/axes'),
     createSpikeOptions  = require('./convert/spikes'),
     createScatterTrace  = require('./convert/scatter'),
@@ -49,9 +48,9 @@ function render(scene) {
       Plotly.Fx.loneHover({
         x: (0.5 + 0.5 * pdata[0]/pdata[3]) * width,
         y: (0.5 - 0.5 * pdata[1]/pdata[3]) * height,
-        xLabel: selection.dataCoordinate[0] + '',
-        yLabel: selection.dataCoordinate[1] + '',
-        zLabel: selection.dataCoordinate[2] + '',
+        xLabel: selection.traceCoordinate[0] + '',
+        yLabel: selection.traceCoordinate[1] + '',
+        zLabel: selection.traceCoordinate[2] + '',
         text: selection.textLabel || '',
         name: lastPicked.name,
         color: lastPicked.color
@@ -66,6 +65,107 @@ function render(scene) {
          container: svgContainer
        });
     }
+}
+
+function initializeGLPlot(scene, fullLayout, canvas, gl) {
+      var glplotOptions = {
+              canvas:     canvas,
+              gl:         gl,
+              container:  scene.container,
+              axes:       scene.axesOptions,
+              spikes:     scene.spikeOptions,
+              pickRadius: 10,
+              snapToData: true,
+              autoScale:  true,
+              autoBounds: false
+      };
+
+      //For static plots, we reuse the WebGL context as WebKit doesn't collect them
+      //reliably
+      if (scene.staticMode) {
+          if(!STATIC_CONTEXT) {
+              STATIC_CANVAS = document.createElement('canvas');
+              try {
+                  STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
+                      preserveDrawingBuffer: true,
+                      premultipliedAlpha: true
+                  });
+              } catch(e) {
+                  throw new Error('error creating static canvas/context for image server');
+              }
+          }
+          glplotOptions.pixelRatio = scene.pixelRatio;
+          glplotOptions.gl = STATIC_CONTEXT;
+          glplotOptions.canvas = STATIC_CANVAS;
+      }
+
+      try {
+          scene.glplot = createPlot(glplotOptions);
+      } catch (e) {
+
+          /*
+           * createPlot will throw when webgl is not enabled in the client.
+           * Lets return an instance of the module with all functions noop'd.
+           * The destroy method - which will remove the container from the DOM
+           * is overridden with a function that removes the container only.
+           */
+          var noop = function () {};
+          for (var prop in scene) if (typeof scene[prop] === 'function') scene[prop] = noop;
+          scene.destroy = function () {
+              scene.container.parentNode.removeChild(scene.container);
+          };
+
+          var div = document.createElement('div');
+          div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
+          div.style.cursor = 'pointer';
+          div.style.fontSize = '24px';
+          div.style.color = Plotly.Color.defaults[0];
+
+          scene.container.appendChild(div);
+          scene.container.style.background = '#FFFFFF';
+          scene.container.onclick = function () {
+              window.open('http://get.webgl.org');
+          };
+
+          /*
+           * return before setting up camera and onrender methods
+           */
+          return false;
+      }
+
+      if(!scene.staticMode) {
+        scene.glplot.canvas.addEventListener('webglcontextlost', function(ev) {
+          console.log('lost context');
+          ev.preventDefault();
+        });
+      }
+
+      if(!scene.camera) {
+        var cameraData = fullLayout.scene.camera;
+        scene.camera = createCamera(scene.container, {
+            center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
+            eye:    [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
+            up:     [cameraData.up.x, cameraData.up.y, cameraData.up.z],
+            zoomMin: 0.1,
+            zoomMax: 100,
+            mode:   'orbit'
+        });
+      }
+
+      scene.glplot.mouseListener.enabled = false;
+      scene.glplot.camera = scene.camera;
+
+      scene.glplot.oncontextloss = function() {
+        scene.recoverContext();
+      };
+
+
+      scene.glplot.onrender = render.bind(null, scene);
+
+      //List of scene objects
+      scene.traces = {};
+
+      return true;
 }
 
 function Scene(options, fullLayout) {
@@ -97,6 +197,10 @@ function Scene(options, fullLayout) {
 
     this.fullLayout               = fullLayout;
     this.id                       = options.id || 'scene';
+
+    //Saved from last call to plot()
+    this.plotArgs = [ [], {}, {} ];
+
     /*
      * Move this to calc step? Why does it work here?
      */
@@ -104,105 +208,77 @@ function Scene(options, fullLayout) {
     this.spikeOptions     = createSpikeOptions(fullLayout[this.id]);
     this.container        = sceneContainer;
 
-    this.staticMode   = false;
+    this.staticMode       = !!options.staticMode;
 
-    /*
-     * WARNING!!!! Only set camera position on first call to plot!!!!
-     * TODO remove this hack
-     */
-    this.hasPlotBeenCalled = false;
-
-
-    var glplotOptions = {
-            container:  sceneContainer,
-            axes:       this.axesOptions,
-            spikes:     this.spikeOptions,
-            pickRadius: 10,
-            snapToData: true,
-            autoScale:  true,
-            autoBounds: false
-    };
-
-    //For static plots, we reuse the WebGL context as WebKit doesn't collect them
-    //reliably
-    if (options.staticPlot) {
-        if(!STATIC_CONTEXT) {
-            STATIC_CANVAS = document.createElement('canvas');
-            try {
-                STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
-                    preserveDrawingBuffer: true,
-                    premultipliedAlpha: true
-                });
-            } catch(e) {
-                throw new Error('error creating static canvas/context for image server')
-            }
-        }
-        glplotOptions.pixelRatio = options.plot3dPixelRatio;
-        glplotOptions.gl = STATIC_CONTEXT;
-        glplotOptions.canvas = STATIC_CANVAS;
-        this.staticMode = true;
-    }
-
-    try {
-        this.glplot = createPlot(glplotOptions);
-    } catch (e) {
-
-        /*
-         * createPlot will throw when webgl is not enabled in the client.
-         * Lets return an instance of the module with all functions noop'd.
-         * The destroy method - which will remove the container from the DOM
-         * is overridden with a function that removes the container only.
-         */
-        var noop = function () {};
-        for (var prop in this) if (typeof this[prop] === 'function') this[prop] = noop;
-        this.destroy = function () {
-            this.container.parentNode.removeChild(this.container);
-        };
-
-        var div = document.createElement('div');
-        div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
-        div.style.cursor = 'pointer';
-        div.style.fontSize = '24px';
-        div.style.color = Plotly.Color.defaults[0];
-
-        this.container.appendChild(div);
-        this.container.style.background = '#FFFFFF';
-        this.container.onclick = function () {
-            window.open('http://get.webgl.org');
-        };
-
-        /*
-         * return before setting up camera and onrender methods
-         */
-        return;
-    }
-
-
-    this.camera = createCamera(this.container, {
-        center: [0, 0, 0],
-        eye:    [1.25, 1.25, 1.25],
-        up:     [0, 0, 1],
-        zoomMin: 0.1,
-        zoomMax: 100,
-        mode:   'orbit'
-    });
-
-    this.glplot.camera = this.camera;
-
-    this.glplot.onrender = render.bind(null, this);
-
-    //List of scene objects
-    this.traces = {};
+    //Coordinate rescaling
+    this.dataScale    = [1,1,1];
+    this.dataCenter   = [0,0,0];
 
     this.contourLevels = [ [], [], [] ];
+
+    if(!initializeGLPlot(this, fullLayout)) {
+      return;
+    }
 }
 
 var proto = Scene.prototype;
 
+proto.recoverContext = function() {
+  var scene = this;
+  var gl = this.glplot.gl;
+  var canvas = this.glplot.canvas;
+  this.glplot.dispose();
+  function tryRecover() {
+    if(gl.isContextLost()) {
+      requestAnimationFrame(tryRecover);
+      return;
+    }
+    if(!initializeGLPlot(scene, scene.fullLayout, canvas, gl)) {
+      console.error('catastrophic/unrecoverable webgl error.  context lost.');
+      return;
+    }
+    scene.plot.apply(scene, scene.plotArgs);
+  }
+  requestAnimationFrame(tryRecover);
+};
+
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
+function coordinateBound(axis, coord, d, bounds) {
+  for(var i=0; i<coord.length; ++i) {
+    if(Array.isArray(coord[i])) {
+      for(var j=0; j<coord[i].length; ++j) {
+        var x = axis.d2l(coord[i][j]);
+        if(!isNaN(x) && isFinite(x)) {
+          bounds[0][d] = Math.min(bounds[0][d], x);
+          bounds[1][d] = Math.max(bounds[1][d], x);
+        }
+      }
+    } else {
+      var x = axis.d2l(coord[i]);
+      if(!isNaN(x) && isFinite(x)) {
+        bounds[0][d] = Math.min(bounds[0][d], x);
+        bounds[1][d] = Math.max(bounds[1][d], x);
+      }
+    }
+  }
+}
+
+function computeTraceBounds(scene, trace, bounds) {
+  var sceneLayout = scene.fullSceneLayout;
+  coordinateBound(sceneLayout.xaxis, trace.x, 0, bounds);
+  coordinateBound(sceneLayout.yaxis, trace.y, 1, bounds);
+  coordinateBound(sceneLayout.zaxis, trace.z, 2, bounds);
+}
 
 proto.plot = function(sceneData, fullLayout, layout) {
+
+    //Save parameters
+    this.plotArgs = [ sceneData, fullLayout, layout ];
+
+    if(this.glplot.contextLost) {
+      return;
+    }
 
     var data, trace;
     var i, j;
@@ -212,6 +288,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
     if (fullSceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(fullSceneLayout.bgcolor);
     else this.glplot.clearColor = [0, 0, 0, 0];
 
+    this.glplot.snapToData = true;
+
     //Update layout
     this.fullSceneLayout = fullSceneLayout;
 
@@ -219,12 +297,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.axesOptions.merge(fullSceneLayout);
     this.spikeOptions.merge(fullSceneLayout);
 
-    //Update camera position
-    if(!this.hasPlotBeenCalled) {
-      this.hasPlotBeenCalled = true;
-      var camera = fullSceneLayout.cameraposition;
-      if (camera) this.setCameraPosition(camera);
-    }
+    // Update camera mode
+    this.handleDragmode(fullLayout.dragmode);
 
     //Update scene
     this.glplot.update({});
@@ -235,42 +309,76 @@ proto.plot = function(sceneData, fullLayout, layout) {
         Plotly.Gl3dAxes.setConvert(axis);
     }
 
-    //Update traces
-    if (sceneData) {
-        if(!Array.isArray(sceneData)) sceneData = [sceneData];
-
-        for(i = 0; i < sceneData.length; ++i) {
-            data = sceneData[i];
-            if(data.visible!==true) {
-                continue;
-            }
-            trace = this.traces[data.uid];
-            if(trace) {
-                trace.update(data);
-            } else {
-                switch(data.type) {
-                    case 'scatter3d':
-                        trace = createScatterTrace(this, data);
-                    break;
-
-                    case 'surface':
-                        trace = createSurfaceTrace(this, data);
-                    break;
-
-                    case 'mesh3d':
-                        trace = createMeshTrace(this, data);
-                    break;
-
-                    default:
-                }
-                this.traces[data.uid] = trace;
-            }
-            trace.name = data.name;
-        }
-    } else {
-        sceneData = [];
+    //Convert scene data
+    if(!sceneData) {
+      sceneData = [];
+    } else if(!Array.isArray(sceneData)) {
+      sceneData = [sceneData];
     }
 
+    //Compute trace bounding box
+    var dataBounds = [
+      [ Infinity,  Infinity,  Infinity],
+      [-Infinity, -Infinity, -Infinity]
+    ];
+    for(var i=0; i<sceneData.length; ++i) {
+      var data = sceneData[i];
+      if(data.visible !== true) {
+        continue;
+      }
+      computeTraceBounds(this, data, dataBounds);
+    }
+    var dataScale = [1,1,1];
+    var dataCenter = [0,0,0];
+    for(var j=0; j<3; ++j) {
+      if(dataBounds[0][j] > dataBounds[1][j]) {
+        dataScale[j] = 1.0;
+        dataCenter[j] = 0.0;
+      } else {
+        if(dataBounds[1][j] === dataBounds[0][j]) {
+          dataScale[j] = 1.0;
+        } else {
+          dataScale[j] = 1.0/(dataBounds[1][j] - dataBounds[0][j]);
+        }
+        dataCenter[j] = 0.5 * (dataBounds[0][j] + dataBounds[1][j]) * dataScale[j];
+      }
+    }
+
+    //Save scale and offset factors
+    this.dataScale = dataScale;
+    this.dataCenter = dataCenter;
+
+    //Update traces
+    for(var i = 0; i < sceneData.length; ++i) {
+        data = sceneData[i];
+        if(data.visible!==true) {
+            continue;
+        }
+        trace = this.traces[data.uid];
+        if(trace) {
+            trace.update(data);
+        } else {
+            switch(data.type) {
+                case 'scatter3d':
+                    trace = createScatterTrace(this, data);
+                break;
+
+                case 'surface':
+                    trace = createSurfaceTrace(this, data);
+                break;
+
+                case 'mesh3d':
+                    trace = createMeshTrace(this, data);
+                break;
+
+                default:
+            }
+            this.traces[data.uid] = trace;
+        }
+        trace.name = data.name;
+    }
+
+    //Remove empty traces
     var traceIds = Object.keys(this.traces);
 trace_id_loop:
     for(i = 0; i<traceIds.length; ++i) {
@@ -285,19 +393,33 @@ trace_id_loop:
     }
 
     //Update ranges (needs to be called *after* objects are added due to updates)
-    var sceneBounds = this.glplot.bounds,
-        axisDataRange = [];
+    var sceneBounds = [[0,0,0], [0,0,0]],
+        axisDataRange = [],
+        axisTypeRatios = {};
 
     for(i = 0; i < 3; ++i) {
         var axis = fullSceneLayout[axisProperties[i]];
+        var axisType = axis.type;
+
+        if(axisType in axisTypeRatios) {
+          axisTypeRatios[axisType].acc *= dataScale[i];
+          axisTypeRatios[axisType].count += 1;
+        } else {
+          axisTypeRatios[axisType] = {
+            acc: dataScale[i],
+            count: 1
+          };
+        }
 
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
             for(j = 0; j < this.glplot.objects.length; ++j) {
                 var objBounds = this.glplot.objects[j].bounds;
-                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i]);
-                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i]);
+                sceneBounds[0][i] = Math.min(sceneBounds[0][i],
+                  (objBounds[0][i] + dataCenter[i]) / dataScale[i]);
+                sceneBounds[1][i] = Math.max(sceneBounds[1][i],
+                  (objBounds[1][i] + dataCenter[i]) / dataScale[i]);
             }
             if('rangemode' in axis && axis.rangemode === 'tozero') {
                 sceneBounds[0][i] = Math.min(sceneBounds[0][i], 0);
@@ -321,12 +443,21 @@ trace_id_loop:
             sceneBounds[1][i] += 1;
         }
         axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
+
+        //Update plot bounds
+        this.glplot.bounds[0][i] = sceneBounds[0][i] * dataScale[i] - dataCenter[i];
+        this.glplot.bounds[1][i] = sceneBounds[1][i] * dataScale[i] - dataCenter[i];
     }
 
-    var axesScaleRatio = [],
-        maxRange = Math.max.apply(null, axisDataRange);
+    var axesScaleRatio = [1, 1, 1];
 
-    for (i = 0; i < 3; ++i) axesScaleRatio[i] = axisDataRange[i] / maxRange;
+    //Compute axis scale per category
+    for(var i=0; i<3; ++i) {
+      var axis = fullSceneLayout[axisProperties[i]];
+      var axisType = axis.type;
+      var axisRatio = axisTypeRatios[axisType];
+      axesScaleRatio[i] = Math.pow(axisRatio.acc, 1.0/axisRatio.count) / dataScale[i];
+    }
 
     /*
      * Dynamically set the aspect ratio depending on the users aspect settings
@@ -335,11 +466,13 @@ trace_id_loop:
     var aspectRatio;
 
     if (fullSceneLayout.aspectmode === 'auto') {
+
         if (Math.max.apply(null, axesScaleRatio)/Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
 
             /*
              * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
              */
+
             aspectRatio = axesScaleRatio;
         } else {
 
@@ -397,12 +530,13 @@ proto.destroy = function() {
     this.container.parentNode.removeChild(this.container);
 
     //Remove reference to glplot
-    this.glplot = null
+    this.glplot = null;
 };
 
 
 // for reset camera button in modebar
 proto.setCameraToDefault = function setCameraToDefault () {
+    // as in Gl3dLayout.layoutAttributes
     this.glplot.camera.lookAt(
         [1.25, 1.25, 1.25],
         [0   , 0   , 0   ],
@@ -411,35 +545,61 @@ proto.setCameraToDefault = function setCameraToDefault () {
 };
 
 // get camera position in plotly coords from 'orbit-camera' coords
-proto.getCameraPosition = function getCameraPosition () {
+proto.getCamera = function getCamera () {
     this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
-    return [
-        this.glplot.camera.view._active.computedRotation.slice(),
-        this.glplot.camera.view._active.computedCenter.slice(),
-        this.glplot.camera.distance
-    ];
+
+    var up     = this.glplot.camera.up;
+    var center = this.glplot.camera.center;
+    var eye    = this.glplot.camera.eye;
+
+    return {
+        up:     {x:up[0], y:up[1], z:up[2]},
+        center: {x:center[0], y:center[1], z:center[2]},
+        eye:    {x:eye[0], y:eye[1], z:eye[2]}
+    };
 };
 
 // set camera position with a set of plotly coords
-proto.setCameraPosition = function setCameraPosition (camera) {
-    if (Array.isArray(camera) && camera.length === 3) {
-        var rotation = camera[0];
-        var center   = camera[1];
-        var radius   = camera[2];
-        var mat = m4FromQuat([], rotation);
-        var eye = [];
-        for(var i=0; i<3; ++i) {
-            eye[i] = center[i] + radius * mat[2+4*i];
-        }
-        this.glplot.camera.lookAt(eye, center, [mat[1],mat[5],mat[9]]);
-    }
+proto.setCamera = function setCamera (cameraData) {
+    var up      = cameraData.up;
+    var center  = cameraData.center;
+    var eye     = cameraData.eye;
+    this.glplot.camera.lookAt(
+        [eye.x, eye.y, eye.z],
+        [center.x, center.y, center.z],
+        [up.x, up.y, up.z]
+    );
 };
 
-// save camera position to user layout (i.e. gd.layout)
+// save camera to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
-    var cameraposition = this.getCameraPosition();
-    Plotly.Lib.nestedProperty(layout, this.id + '.cameraposition')
-        .set(cameraposition);
+    var cameraData = this.getCamera();
+
+    // save new camera api
+    Plotly.Lib.nestedProperty(layout, this.id + '.camera')
+        .set(cameraData);
+};
+
+proto.handleDragmode = function (dragmode) {
+
+    var camera = this.camera;
+    if (camera) {
+        // rotate and orbital are synonymous
+        if (dragmode === 'orbit') {
+            camera.mode = 'orbit';
+            camera.keyBindingMode = 'rotate';
+
+        } else if (dragmode === 'turntable') {
+            camera.up = [0, 0, 1];
+            camera.mode = 'turntable';
+            camera.keyBindingMode = 'rotate';
+
+        } else {
+
+            // none rotation modes [pan or zoom]
+            camera.keyBindingMode = dragmode;
+        }
+    }
 };
 
 proto.toImage = function (format) {

@@ -1366,6 +1366,7 @@ var coerceIt = {
         else if(dflt!==undefined) propOut.set(dflt);
     },
     enumerated: function(v, propOut, dflt, opts) {
+        if(opts.coerceNumber) v = +v;
         if(opts.values.indexOf(v)===-1) propOut.set(dflt);
         else propOut.set(v);
     },
@@ -1401,7 +1402,7 @@ var coerceIt = {
         else propOut.set(dflt);
     },
     colorscale: function(v, propOut, dflt) {
-        propOut.set(Plotly.Color.getScale(v, dflt));
+        propOut.set(Plotly.Colorscale.getScale(v, dflt));
     },
     font: function(v, propOut, dflt) {
         if(!v) v = {};
@@ -1438,6 +1439,16 @@ var coerceIt = {
         if(typeof v === 'string' && v.substr(0,5)===dflt) {
             var scenenum = Number(v.substr(5));
             if(scenenum%1 === 0 && scenenum>1) {
+                propOut.set(v);
+                return;
+            }
+        }
+        propOut.set(dflt);
+    },
+    geoid: function(v, propOut, dflt) {
+        if(typeof v === 'string' && v.substr(0,3)===dflt) {
+            var geonum = Number(v.substr(3));
+            if(geonum%1 === 0 && geonum>1) {
                 propOut.set(v);
                 return;
             }

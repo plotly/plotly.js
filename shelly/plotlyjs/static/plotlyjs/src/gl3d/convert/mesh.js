@@ -2,7 +2,11 @@
 
 var createMesh = require('gl-mesh3d'),
     str2RgbaArray = require('../lib/str2rgbarray'),
-    tinycolor = require('tinycolor2');
+    tinycolor = require('tinycolor2'),
+    triangulate = require('delaunay-triangulate'),
+    alphaShape = require('alpha-shape'),
+    convexHull = require('convex-hull');
+
 
 function Mesh3DTrace(scene, mesh, uid) {
   this.scene    = scene;
@@ -18,6 +22,14 @@ var proto = Mesh3DTrace.prototype;
 
 proto.handlePick = function(selection) {
   if(selection.object === this.mesh) {
+
+    var selectIndex = selection.data.index;
+    selection.traceCoordinate = [
+      this.data.x[selectIndex],
+      this.data.y[selectIndex],
+      this.data.z[selectIndex]
+    ];
+
     return true;
   }
 };
@@ -51,19 +63,33 @@ proto.update = function(data) {
     var scene = this.scene,
         layout = scene.fullSceneLayout;
 
+    this.data = data;
+
     //Unpack position data
-    function toDataCoords(axis, coord) {
+    function toDataCoords(axis, coord, scale, offset) {
       return coord.map(function(x) {
-        return axis.d2l(x);
+        return axis.d2l(x) * scale - offset;
       });
     }
     var positions = zip3(
-      toDataCoords(layout.xaxis, data.x),
-      toDataCoords(layout.yaxis, data.y),
-      toDataCoords(layout.zaxis, data.z));
+      toDataCoords(layout.xaxis, data.x, scene.dataScale[0], scene.dataCenter[0]),
+      toDataCoords(layout.yaxis, data.y, scene.dataScale[1], scene.dataCenter[1]),
+      toDataCoords(layout.zaxis, data.z, scene.dataScale[2], scene.dataCenter[2]));
 
-    //Unpack cell data
-    var cells = zip3(data.i, data.j, data.k);
+
+    var cells;
+    if(data.i && data.j && data.k) {
+      cells = zip3(data.i, data.j, data.k);
+    } else if(data.alphahull === 0) {
+      cells = convexHull(positions);
+    } else if(data.alphahull > 0) {
+      cells = alphaShape(data.alphahull, positions);
+    } else {
+      var d = ['x', 'y', 'z'].indexOf(data.delaunayaxis);
+      cells = triangulate(positions.map(function(c) {
+        return [c[(d+1)%3], c[(d+2)%3]];
+      }));
+    }
 
     var config = {
         positions: positions,

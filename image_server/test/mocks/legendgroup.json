@@ -1,0 +1,127 @@
+{
+    "data": [
+        {
+            "type": "scatter",
+            "x": [
+                1,
+                2,
+                3
+            ],
+            "y": [
+                2,
+                1,
+                2
+            ],
+            "legendgroup": "group",
+            "uid": "481c07",
+            "visible": true
+        },
+        {
+            "type": "box",
+            "x": [
+                1,
+                2,
+                3
+            ],
+            "y": [
+                1,
+                2,
+                1
+            ],
+            "legendgroup": "group",
+            "showlegend": false,
+            "uid": "e2b9ee",
+            "visible": true
+        },
+        {
+            "type": "bar",
+            "x": [
+                1,
+                2,
+                3
+            ],
+            "y": [
+                2,
+                1,
+                2
+            ],
+            "legendgroup": "group 2",
+            "uid": "f9e22c",
+            "visible": true
+        },
+        {
+            "type": "scatter",
+            "x": [
+                3,
+                4,
+                5
+            ],
+            "y": [
+                2,
+                1,
+                2
+            ],
+            "legendgroup": "group",
+            "uid": "e08ed1",
+            "visible": true
+        },
+        {
+            "type": "scatter",
+            "x": [
+                3,
+                4,
+                5
+            ],
+            "y": [
+                1,
+                2,
+                1
+            ],
+            "uid": "c61b60",
+            "visible": true
+        },
+        {
+            "type": "bar",
+            "x": [
+                3,
+                4,
+                5
+            ],
+            "y": [
+                2,
+                1,
+                2
+            ],
+            "legendgroup": "group 2",
+            "showlegend": false,
+            "uid": "4d660d",
+            "visible": true
+        }
+    ],
+    "layout": {
+        "title": "Toggle legend group",
+        "legend": {
+            "tracegroupgap": 20
+        },
+        "xaxis": {
+            "type": "linear",
+            "range": [
+                0.5,
+                5.5
+            ],
+            "autorange": true
+        },
+        "yaxis": {
+            "type": "linear",
+            "range": [
+                0,
+                2.136498516320475
+            ],
+            "autorange": true
+        },
+        "height": 450,
+        "width": 1000,
+        "autosize": true,
+        "showlegend": true
+    }
+}

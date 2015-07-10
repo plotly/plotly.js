@@ -7,6 +7,9 @@ var boxes = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
+Plotly.Plots.register(boxes, 'box',
+    ['cartesian', 'symbols', 'oriented', 'box', 'showLegend']);
+
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,
     scatterMarkerAttrs = scatterAttrs.marker,
@@ -162,10 +165,13 @@ boxes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         return Plotly.Lib.coerce(layoutIn, layoutOut, boxes.layoutAttributes, attr, dflt);
     }
 
-    var hasBoxes = fullData.some(function(trace) {
-        return Plotly.Plots.isBox(trace.type);
-    });
-
+    var hasBoxes;
+    for(var i = 0; i < fullData.length; i++) {
+        if(Plotly.Plots.traceIs(fullData[i], 'box')) {
+            hasBoxes = true;
+            break;
+        }
+    }
     if(!hasBoxes) return;
 
     coerce('boxmode');
@@ -332,7 +338,7 @@ boxes.setPositions = function(gd, plotinfo) {
             t = cd[0].t;
             trace = cd[0].trace;
 
-            if (trace.visible === true && Plotly.Plots.isBox(trace.type) &&
+            if (trace.visible === true && Plotly.Plots.traceIs(trace, 'box') &&
                     !t.emptybox &&
                     trace.orientation === orientation &&
                     trace.xaxis === xa._id &&
