@@ -2,7 +2,7 @@
     "data": [
         {
             "type": "scattergeo",
-            "mode": "markers+text",
+            "mode": "markers",
             "name": "mah trace",
             "lon": [
                 0,
