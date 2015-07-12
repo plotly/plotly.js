@@ -42,8 +42,7 @@ pie.attributes = {
     textinfo: {
         type: 'flaglist',
         flags: ['label', 'text', 'value', 'percent'],
-        extras: ['none'],
-        dflt: 'percent'
+        extras: ['none']
     },
     textposition: {
         type: 'enumerated',
@@ -185,7 +184,10 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     // and if colors aren't specified we should match these up - potentially even if separate pies
     // are NOT in the same sharegroup
 
-    var textInfo = coerce('textinfo');
+
+    var textData = coerce('text');
+    var textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
+
     if(textInfo && textInfo !== 'none') {
         var textPosition = coerce('textposition'),
             hasBoth = Array.isArray(textPosition) || textPosition === 'auto',
@@ -300,8 +302,37 @@ pie.calc = function(gd, trace) {
     // include the sum of all values in the first point
     if(cd[0]) cd[0].vTotal = vTotal;
 
+    // now insert text
+    if(trace.textinfo && trace.textinfo !== 'none') {
+        var hasLabel = trace.textinfo.indexOf('label') !== -1,
+            hasText = trace.textinfo.indexOf('text') !== -1,
+            hasPercent = trace.textinfo.indexOf('percent') !== -1,
+            hasValue = trace.textinfo.indexOf('value') !== -1,
+            thisText;
+
+        for(i = 0; i < cd.length; i++) {
+            thisText = hasLabel ? [cd[i].label] : [];
+            if(hasText && trace.text[i]) thisText.push(trace.text[i]);
+            if(hasPercent) thisText.push(formatPiePercent(cd[i].v / vTotal));
+            if(hasValue) thisText.push(formatPieValue(cd[i].v));
+            cd[i].text = thisText.join('<br>');
+        }
+    }
+
     return cd;
 };
+
+function formatPiePercent(v) {
+    var vRounded = (v * 100).toPrecision(3);
+    if(vRounded.indexOf('.') !== -1) return vRounded.replace(/[.]?0+$/,'') + '%';
+    return vRounded + '%';
+}
+
+function formatPieValue(v) {
+    var vRounded = v.toPrecision(10);
+    if(vRounded.indexOf('.') !== -1) return vRounded.replace(/[.]?0+$/,'');
+    return vRounded;
+}
 
 /**
  * pick a default color from the main default set, augmented by
@@ -367,14 +398,20 @@ pie.plot = function(gd, cdpie) {
         setCoords(cd);
 
         pieGroup.selectAll('.top').each(function() {
-            var slices = d3.select(this).selectAll('path').data(cd);
+            var slices = d3.select(this).selectAll('g.slice').data(cd);
 
-            slices.enter().append('path');
+            slices.enter().append('g')
+                .classed('slice', true)
+                .each(function() {
+                    d3.select(this).append('path'); // the top surface of the slice
+                });
             slices.exit().remove();
 
-            slices.attr('d', function(pt) {
+            slices.each(function(pt) {
                 var cx = cd0.cx + depthVector[0],
-                    cy = cd0.cy + depthVector[1];
+                    cy = cd0.cy + depthVector[1],
+                    sliceTop = d3.select(this),
+                    slicePath = sliceTop.select('path');
 
                 if(trace.pull) {
                     var pull = +(Array.isArray(trace.pull) ? trace.pull[pt.i] : trace.pull) || 0;
@@ -383,21 +420,97 @@ pie.plot = function(gd, cdpie) {
                         cy += pull * pt.pxmid[1];
                     }
                 }
+
                 var outerArc = 'a' + cd0.r + ',' + rSmall + ' ' + tiltAxis + ' ' + pt.largeArc + ' 1 ' +
                     (pt.px1[0] - pt.px0[0]) + ',' + (pt.px1[1] - pt.px0[1]);
 
                 if(trace.hole) {
                     var hole = trace.hole,
                         rim = 1 - hole;
-                    return 'M' + (cx + hole * pt.px1[0]) + ',' + (cy + hole * pt.px1[1]) +
+                    slicePath.attr('d',
+                        'M' + (cx + hole * pt.px1[0]) + ',' + (cy + hole * pt.px1[1]) +
                         'a' + (hole * cd0.r) + ',' + (hole * rSmall) + ' ' + tiltAxis + ' ' +
                             pt.largeArc + ' 0 ' +
                             (hole * (pt.px0[0] - pt.px1[0])) + ',' + (hole * (pt.px0[1] - pt.px1[1])) +
                         'l' + (rim * pt.px0[0]) + ',' + (rim * pt.px0[1]) +
-                        outerArc + 'Z';
+                        outerArc +
+                        'Z');
+                } else {
+                    slicePath.attr('d',
+                        'M' + cx + ',' + cy +
+                        'l' + pt.px0[0] + ',' + pt.px0[1] +
+                        outerArc +
+                        'Z');
                 }
-                return 'M' + cx + ',' + cy + 'l' + pt.px0[0] + ',' + pt.px0[1] +
-                    outerArc + 'Z';
+
+                // add text
+                var sliceTextGroup = sliceTop.selectAll('g.slicetext')
+                    .data(pt.text ? [0] : []);
+
+                sliceTextGroup.enter().append('g')
+                    .classed('slicetext', true);
+                sliceTextGroup.exit().remove();
+
+                sliceTextGroup.each(function() {
+                    var sliceText = d3.select(this).selectAll('text').data([0]);
+
+                    sliceText.enter().append('text')
+                        // prohibit tex interpretation until we can handle
+                        // tex and regular text together
+                        .attr('data-notex', 1);
+                    sliceText.exit().remove();
+
+                    sliceText.text(pt.text)
+                        .attr({
+                            'class': 'slicetext',
+                            transform: '',
+                            'data-bb': '',
+                            'text-anchor': 'middle',
+                            x: 0,
+                            y: 0
+                        })
+                        .call(Plotly.Drawing.font, trace.insidetextfont)
+                        .call(Plotly.util.convertToTspans);
+                    sliceText.selectAll('tspan.line').attr({x: 0, y: 0});
+
+                    // position the text relative to the slice
+                    // TODO: so far this only accounts for flat, inside, with no donut hole
+                    var textBB = Plotly.Drawing.bBox(sliceText.node()),
+                        textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height),
+                        textAspect = textBB.width / textBB.height,
+                        halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5),
+                        rInscribed = 1 / (1 + 1 / Math.sin(halfAngle)),
+                        rCenter = 1 - rInscribed,
+                        scale = 1,
+                        rotate = 0;
+
+                    if((halfAngle > Math.PI / 5) || (textAspect < 2) ||
+                            (rInscribed * cd0.r > textDiameter/2)) {
+                        // put the text inside without rotating it
+                        scale = rInscribed * cd0.r * 2 / textDiameter;
+                    } else {
+                        // put the text inside rotated to best fit
+                        var heightConstrictor = textAspect + 1 / (2 * Math.tan(halfAngle)),
+                            maxHeight = 2 * cd0.r /
+                                (Math.sqrt(heightConstrictor * heightConstrictor + 0.5) + heightConstrictor);
+
+                        rCenter = maxHeight / (2 * cd0.r) * (1 / Math.tan(halfAngle) + textAspect);
+                        scale = maxHeight / textBB.height;
+                        rotate = (180 / Math.PI * pt.midangle + 720) % 180 - 90;
+                    }
+
+                    sliceText.attr('transform',
+                        'translate(' +
+                            (cx + pt.pxmid[0] * rCenter) + ',' +
+                            (cy + pt.pxmid[1] * rCenter) +
+                        ')' +
+                        (scale < 1 ? ('scale(' + scale + ')') : '') +
+                        (rotate ? ('rotate(' + rotate + ')') : '') +
+                        'translate(' +
+                            (-(textBB.left + textBB.right) / 2) + ',' +
+                            (-(textBB.top + textBB.bottom) / 2) +
+                        ')');
+                });
             });
         });
     });
@@ -521,9 +634,11 @@ function setCoords(cd) {
         cdi = cd[i];
         cdi[firstPt] = currentCoords;
 
-        if(trace.pull) cdi.pxmid = getCoords(currentAngle + angleFactor * cdi.v / 2);
+        currentAngle += angleFactor * cdi.v / 2;
+        cdi.pxmid = getCoords(currentAngle);
+        cdi.midangle = currentAngle;
 
-        currentAngle += angleFactor * cdi.v;
+        currentAngle += angleFactor * cdi.v / 2;
         currentCoords = getCoords(currentAngle);
 
         cdi[lastPt] = currentCoords;

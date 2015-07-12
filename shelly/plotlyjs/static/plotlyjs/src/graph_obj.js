@@ -2406,8 +2406,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
         'swapxy','swapxyaxes','orientationaxes',
         'colors', 'values', 'labels', 'label0', 'dlabel', 'sort',
-        'insideinfo', 'insideinfo.mode', 'insideinfo.font',
-        'outsideinfo', 'outsideinfo.mode', 'outsideinfo.font'
+        'textinfo', 'textposition', 'textfont.size',
+        'insidetextfont.size', 'outsidetextfont.size'
     ];
     for(i = 0; i < traces.length; i++) {
         if(plots.traceIs(gd._fullData[traces[i]], 'box')) {
@@ -2421,7 +2421,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // because .calc() is where the autorange gets determined
     // TODO: could we break this out as well?
     var autorangeAttrs = [
-        'marker', 'marker.size', 'textfont', 'textfont.size','textposition',
+        'marker', 'marker.size', 'textfont',
         'boxpoints','jitter','pointpos','whiskerwidth','boxmean'
     ];
     // replotAttrs attributes need a replot (because different
