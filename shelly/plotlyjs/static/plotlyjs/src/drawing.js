@@ -95,7 +95,7 @@ drawing.dashLine = function(s, dash, lineWidth) {
         'stroke-dasharray': dash,
         'stroke-width': lineWidth + 'px'
     });
-}
+};
 
 drawing.fillGroupStyle = function(s) {
     s.style('stroke-width',0)
@@ -568,7 +568,7 @@ var SYMBOLDEFS = {
         },
         needLine: true,
         noDot: true
-    },
+    }
 };
 
 drawing.symbolNames = [];
@@ -623,23 +623,19 @@ drawing.pointStyle = function(s, trace) {
 
     // only scatter & box plots get marker path and opacity
     // bars, histograms don't
-    if(Plotly.Plots.isScatterAny(trace.type) || Plotly.Plots.isBox(trace.type)) {
-        var r,
-            // for bubble charts, allow scaling the provided value linearly
-            // and by area or diameter.
-            // Note this only applies to the array-value sizes
-            sizeRef = marker.sizeref || 1,
-            sizeFn = (marker.sizemode==='area') ?
-                function(v){ return Math.sqrt(v/sizeRef); } :
-                function(v){ return v/sizeRef; };
-        s.attr('d',function(d){
-            r = (d.ms+1) ? sizeFn(d.ms/2) : marker.size/2;
+    if(Plotly.Plots.traceIs(trace, 'symbols')) {
+        var sizeFn = Plotly.Scatter.getBubbleSizeFn(trace);
+
+        s.attr('d', function(d) {
+            var r;
+
+            // handle multi-trace graph edit case
+            if(d.ms==='various' || marker.size==='various') r = 3;
+            else r = Plotly.Scatter.isBubble(trace) ?
+                        sizeFn(d.ms) : marker.size / 2;
 
             // store the calculated size so hover can use it
             d.mrc = r;
-
-            // in case of "various" etc... set a visible default
-            if(!isNumeric(r) || r<0) r=3;
 
             // turn the symbol into a sanitized number
             var x = drawing.symbolNumber(d.mx || marker.symbol) || 0,
@@ -711,42 +707,35 @@ drawing.pointStyle = function(s, trace) {
 // have a colorscale for it (ie mscl, mcmin, mcmax) - if we do, translate
 // all numeric color values according to that scale
 drawing.tryColorscale = function(cont, contIn, prefix) {
-    var colorArray = Plotly.Lib.nestedProperty(cont, prefix+'color').get(),
-        scl = Plotly.Lib.nestedProperty(cont, prefix+'colorscale').get(),
-        auto = Plotly.Lib.nestedProperty(cont, prefix+'cauto').get(),
-        minProp = Plotly.Lib.nestedProperty(cont, prefix+'cmin'),
-        maxProp = Plotly.Lib.nestedProperty(cont, prefix+'cmax'),
+    var colorArray = Plotly.Lib.nestedProperty(cont, prefix + 'color').get(),
+        scl = Plotly.Lib.nestedProperty(cont, prefix + 'colorscale').get(),
+        auto = Plotly.Lib.nestedProperty(cont, prefix + 'cauto').get(),
+        minProp = Plotly.Lib.nestedProperty(cont, prefix + 'cmin'),
+        maxProp = Plotly.Lib.nestedProperty(cont, prefix + 'cmax'),
         min = minProp.get(),
         max = maxProp.get();
 
+    // TODO handle this in Colorscale.calc
     if(scl && Array.isArray(colorArray)) {
-        if(typeof scl === 'string') scl = Plotly.Color.scales[scl];
-        if(!scl) scl = Plotly.Color.defaultScale;
-
         if(auto || !isNumeric(min) || !isNumeric(max)) {
             min = Infinity;
             max = -Infinity;
             colorArray.forEach(function(color) {
                 if(isNumeric(color)) {
-                    if(min>color) min = color;
-                    if(max<color) max = color;
+                    if(min > color) min = +color;
+                    if(max < color) max = +color;
                 }
             });
-            if(min>max) {
+            if(min > max) {
                 min = 0;
                 max = 1;
             }
             minProp.set(min);
             maxProp.set(max);
-            Plotly.Lib.nestedProperty(contIn, prefix+'cmin').set(min);
-            Plotly.Lib.nestedProperty(contIn, prefix+'cmax').set(max);
+            Plotly.Lib.nestedProperty(contIn, prefix + 'cmin').set(min);
+            Plotly.Lib.nestedProperty(contIn, prefix + 'cmax').set(max);
         }
-
-        var sclfunc = d3.scale.linear()
-            .domain(scl.map(function(si){ return min + si[0]*(max-min); }))
-            .interpolate(d3.interpolateRgb)
-            .range(scl.map(function(si){ return si[1]; }));
-        return function(v){ return isNumeric(v) ? sclfunc(v) : v; };
+        return Plotly.Colorscale.makeScaleFunction(scl, min, max);
     }
     else return Plotly.Lib.identity;
 };
