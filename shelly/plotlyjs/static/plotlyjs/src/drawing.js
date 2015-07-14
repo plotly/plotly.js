@@ -19,7 +19,7 @@ drawing.font = function(s, family, size, color) {
         family = family.family;
     }
     if(family) s.style('font-family', family);
-    if(size) s.style('font-size', size+'px');
+    if(size+1) s.style('font-size', size + 'px');
     if(color) s.call(Plotly.Color.fill, color);
 };
 
