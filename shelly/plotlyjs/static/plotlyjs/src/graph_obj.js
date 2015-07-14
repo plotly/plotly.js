@@ -210,7 +210,7 @@ plots.defaultConfig = {
     scrollZoom: false, // mousewheel or two-finger scroll zooms the plot
     showTips: true, // new users see some hints about interactivity
     showLink: true, // link to open this plot in plotly
-    sendData: false, // if we show a link, does it contain data or just link to a plotly file?
+    sendData: true, // if we show a link, does it contain data or just link to a plotly file?
     linkText: 'Edit chart', // text appearing in the sendData link
     displayModeBar: 'hover', // display the modebar (true, false, or 'hover')
     displaylogo: true, // add the plotly logo on the end of the modebar
