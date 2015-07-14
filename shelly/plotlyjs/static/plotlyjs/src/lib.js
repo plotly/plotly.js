@@ -1357,6 +1357,19 @@ var fontAttrs = {
     color: {type: 'color'}
 };
 
+var fontAttrsArrayOk = null;
+function getFontAttrsArrayOk() {
+    if(fontAttrsArrayOk === null) {
+        var arrayOkExtend = {arrayOk: true};
+        fontAttrsArrayOk = {
+            family: lib.extendFlat(fontAttrs.family, arrayOkExtend),
+            size: lib.extendFlat(fontAttrs.size, arrayOkExtend),
+            color: lib.extendFlat(fontAttrs.color, arrayOkExtend)
+        };
+    }
+   return fontAttrsArrayOk;
+}
+
 var coerceIt = {
     data_array: function(v, propOut, dflt) {
         /**
@@ -1413,16 +1426,12 @@ var coerceIt = {
     font: function(v, propOut, dflt, opts) {
         if(!v) v = {};
         var vOut = {},
-            fontAttrsUpdate = (opts && opts.arrayOk) ? {arrayOk: true} : {},
-            fontAttrsUpdated = {
-                size: lib.extendFlat(fontAttrs.size, fontAttrsUpdate),
-                color: lib.extendFlat(fontAttrs.color, fontAttrsUpdate),
-                family: lib.extendFlat(fontAttrs.family, fontAttrsUpdate)
-            };
+            _fontAttrs = (opts && opts.arrayOk) ?
+                getFontAttrsArrayOk() : fontAttrs;
 
-        lib.coerce(v, vOut, fontAttrsUpdated, 'size', dflt.size);
-        lib.coerce(v, vOut, fontAttrsUpdated, 'color', dflt.color);
-        lib.coerce(v, vOut, fontAttrsUpdated, 'family', dflt.family);
+        lib.coerce(v, vOut, _fontAttrs, 'size', dflt.size);
+        lib.coerce(v, vOut, _fontAttrs, 'color', dflt.color);
+        lib.coerce(v, vOut, _fontAttrs, 'family', dflt.family);
 
         propOut.set(vOut);
     },
