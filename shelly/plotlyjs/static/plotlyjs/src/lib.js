@@ -1352,7 +1352,7 @@ var fontAttrs = {
     },
     size: {
         type: 'number',
-        min: 1
+        min: 0
     },
     color: {type: 'color'}
 };
