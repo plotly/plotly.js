@@ -211,6 +211,7 @@ plots.defaultConfig = {
     showTips: true, // new users see some hints about interactivity
     showLink: true, // link to open this plot in plotly
     sendData: true, // if we show a link, does it contain data or just link to a plotly file?
+    linkText: 'Edit chart', // text appearing in the sendData link
     displayModeBar: 'hover', // display the modebar (true, false, or 'hover')
     displaylogo: true, // add the plotly logo on the end of the modebar
     plot3dPixelRatio: 2, // increase the pixel ratio for 3D plot images
@@ -338,7 +339,7 @@ plots.adjustReservedMargins = function (gd, marginName, margins) {
 
 // note that now this function is only adding the brand in
 // iframes and 3rd-party apps
-function positionPlayWithData(gd,container){
+function positionPlayWithData(gd, container){
     container.text('');
     var link = container.append('a')
         .attr({
@@ -346,8 +347,7 @@ function positionPlayWithData(gd,container){
             'class': 'link--impt link--embedview',
             'font-weight':'bold'
         })
-        .text((Plotly.LINKTEXT || 'Play with this data!') +
-              ' ' + String.fromCharCode(187));
+        .text(gd._context.linkText + ' ' + String.fromCharCode(187));
 
     if(gd._context.sendData) {
         link.on('click',function(){
@@ -371,10 +371,10 @@ function positionPlayWithData(gd,container){
         });
     }
     else {
-        var path=window.location.pathname.split('/');
+        var path = window.location.pathname.split('/');
         link.attr({
             'xlink:xlink:show': 'new',
-            'xlink:xlink:href': '/'+path[1]+'/'+path[2].split('.')[0]
+            'xlink:xlink:href': '/' + path[2].split('.')[0] + '/' + path[1]
         });
     }
 }
