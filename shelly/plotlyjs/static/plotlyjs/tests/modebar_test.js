@@ -1,6 +1,7 @@
+var Plotly = require('../src/plotly');
+
 describe('Test Modebar', function() {
     'use strict';
-    /* global Plotly:false */
 
     var getMockGraphInfo = function() {
         var graphInfo = {
@@ -65,7 +66,7 @@ describe('Test Modebar', function() {
             ];
 
             modeButtons3d = [
-                ['rotate3d', 'zoom3d', 'pan3d'],
+                ['orbitRotation', 'tableRotation', 'zoom3d', 'pan3d'],
                 ['resetCameraDefault3d', 'resetCameraLastSave3d'],
                 ['hoverClosest3d']
             ];
