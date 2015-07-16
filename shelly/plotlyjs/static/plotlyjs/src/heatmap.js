@@ -12,6 +12,8 @@ var heatmap = module.exports = {},
 Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap']);
 Plotly.Plots.register(heatmap, 'histogram2d', ['cartesian', '2dMap', 'histogram']);
 
+var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+
 heatmap.attributes = {
     z: {type: 'data_array'},
     x: scatterAttrs.x,
@@ -33,33 +35,16 @@ heatmap.attributes = {
         type: 'enumerated',
         values: ['array', 'scaled']
     },
-    zauto: {
-        type: 'boolean',
-        dflt: true
-    },
-    zmin: {
-        type: 'number',
-        dflt: null
-    },
-    zmax: {
-        type: 'number',
-        dflt: null
-    },
-    colorscale: {
-        type: 'colorscale'
-    },
+    zauto: traceColorbarAttrs.zauto,
+    zmin: traceColorbarAttrs.zmin,
+    zmax: traceColorbarAttrs.zmax,
+    colorscale: traceColorbarAttrs.colorscale,
     autocolorscale: {
         type: 'boolean',
         dflt: false
     },
-    reversescale: {
-        type: 'boolean',
-        dflt: false
-    },
-    showscale: {
-        type: 'boolean',
-        dflt: true
-    },
+    reversescale: traceColorbarAttrs.reversescale,
+    showscale: traceColorbarAttrs.showscale,
     zsmooth: {
         type: 'enumerated',
         values: ['fast', 'best', false],

@@ -8,6 +8,8 @@ module.exports = Surface;
 
 Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity']);
 
+var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+
 var contourAttributes =  {
         show: {
             type: 'boolean',
@@ -62,33 +64,16 @@ Surface.attributes = {
     x: {type: 'data_array'},
     y: {type: 'data_array'},
     z: {type: 'data_array'},
-    zauto: {
-        type: 'boolean',
-        dflt: true
-    },
-    zmin: {
-        type: 'number',
-        dflt: null
-    },
-    zmax: {
-        type: 'number',
-        dflt: null
-    },
-    colorscale: {
-        type: 'colorscale'
-    },
+    zauto: traceColorbarAttrs.zauto,
+    zmin: traceColorbarAttrs.zmin,
+    zmax: traceColorbarAttrs.zmax,
+    colorscale: traceColorbarAttrs.colorscale,
     autocolorscale: {
         type: 'boolean',
         dflt: false
     },
-    reversescale: {
-        type: 'boolean',
-        dflt: false
-    },
-    showscale: {
-        type: 'boolean',
-        dflt: true
-    },
+    reversescale: traceColorbarAttrs.reversescale,
+    showscale: traceColorbarAttrs.showscale,
     contours: {
         x: contourAttributes,
         y: contourAttributes,

@@ -710,3 +710,30 @@ colorbar.traceColorbar = function(gd, cd) {
 
     Plotly.Lib.markTime('done colorbar');
 };
+
+colorbar.traceColorbarAttributes = {
+    zauto: {
+        type: 'boolean',
+        dflt: true
+    },
+    zmin: {
+        type: 'number',
+        dflt: null
+    },
+    zmax: {
+        type: 'number',
+        dflt: null
+    },
+    colorscale: {
+        type: 'colorscale'
+    },
+    // autocolorscale isn't in here as the dflt varies from trace to trace
+    reversescale: {
+        type: 'boolean',
+        dflt: false
+    },
+    showscale: {
+        type: 'boolean',
+        dflt: true
+    }
+};

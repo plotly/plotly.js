@@ -8,6 +8,8 @@ module.exports = Mesh3D;
 
 Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d']);
 
+var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+
 Mesh3D.attributes = {
     x: {type: 'data_array'},
     y: {type: 'data_array'},
@@ -66,17 +68,9 @@ Mesh3D.attributes = {
         }
     },
 
-    colorscale: {
-        type: 'colorscale'
-    },
-    showscale: {
-        type: 'boolean',
-        dflt: true
-    },
-    reversescale: {
-        type: 'boolean',
-        dflt: false
-    },
+    colorscale: traceColorbarAttrs.colorscale,
+    reversescale: traceColorbarAttrs.reversescale,
+    showscale: traceColorbarAttrs.showscale,
 
     lighting: {
         ambient: {
