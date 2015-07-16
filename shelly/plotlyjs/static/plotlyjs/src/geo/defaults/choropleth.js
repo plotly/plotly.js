@@ -7,30 +7,46 @@ var Choropleth = module.exports = {};
 Plotly.Plots.register(Choropleth, 'choropleth', ['geo', 'noOpacity']);
 
 var ScatterGeoAttrs = Plotly.ScatterGeo.attributes,
-    ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line,
-    heatmapAttrs = Plotly.Heatmap.attributes;
+    ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;
 
 Choropleth.attributes = {
     locations: {type: 'data_array'},
     locationmode: ScatterGeoAttrs.locationmode,
     z: {type: 'data_array'},
-    text: heatmapAttrs.text,
+    text: {type: 'data_array'},
     marker: {
         line: {
             color: ScatterGeoMarkerLineAttrs.color,
             width: ScatterGeoMarkerLineAttrs.width
         }
     },
-    zauto: heatmapAttrs.zauto,
-    zmin: heatmapAttrs.zmin,
-    zmax: heatmapAttrs.zmax,
-    colorscale: heatmapAttrs.colorscale,
+    zauto: {
+        type: 'boolean',
+        dflt: true
+    },
+    zmin: {
+        type: 'number',
+        dflt: null
+    },
+    zmax: {
+        type: 'number',
+        dflt: null
+    },
+    colorscale: {
+        type: 'colorscale'
+    },
     autocolorscale: {
         type: 'boolean',
         dflt: true
     },
-    reversescale: heatmapAttrs.reversescale,
-    showscale: heatmapAttrs.showscale,
+    reversescale: {
+        type: 'boolean',
+        dflt: false
+    },
+    showscale: {
+        type: 'boolean',
+        dflt: true
+    },
     _nestedModules: {
         'colorbar': 'Colorbar'
     }
@@ -71,7 +87,7 @@ Choropleth.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     );
 };
 
-Choropleth.colorbar = Plotly.Heatmap.colorbar;
+Choropleth.colorbar = Plotly.Colorbar.traceColorbar;
 
 Choropleth.calc = function(gd, trace) {
 

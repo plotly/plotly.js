@@ -8,8 +8,7 @@ module.exports = Surface;
 
 Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity']);
 
-var  heatmapAttrs = Plotly.Heatmap.attributes,
-    contourAttributes =  {
+var contourAttributes =  {
         show: {
             type: 'boolean',
             dflt: false
@@ -63,13 +62,33 @@ Surface.attributes = {
     x: {type: 'data_array'},
     y: {type: 'data_array'},
     z: {type: 'data_array'},
-    zauto: heatmapAttrs.zauto,
-    zmin: heatmapAttrs.zmin,
-    zmax: heatmapAttrs.zmax,
-    autocolorscale: heatmapAttrs.autocolorscale,
-    colorscale: heatmapAttrs.colorscale,
-    showscale: heatmapAttrs.showscale,
-    reversescale: heatmapAttrs.reversescale,
+    zauto: {
+        type: 'boolean',
+        dflt: true
+    },
+    zmin: {
+        type: 'number',
+        dflt: null
+    },
+    zmax: {
+        type: 'number',
+        dflt: null
+    },
+    colorscale: {
+        type: 'colorscale'
+    },
+    autocolorscale: {
+        type: 'boolean',
+        dflt: false
+    },
+    reversescale: {
+        type: 'boolean',
+        dflt: false
+    },
+    showscale: {
+        type: 'boolean',
+        dflt: true
+    },
     contours: {
         x: contourAttributes,
         y: contourAttributes,
@@ -191,7 +210,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     );
 };
 
-Surface.colorbar = Plotly.Heatmap.colorbar;
+Surface.colorbar = Plotly.Colorbar.traceColorbar;
 
 Surface.calc = function(gd, trace) {
 

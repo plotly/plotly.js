@@ -8,8 +8,6 @@ module.exports = Mesh3D;
 
 Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d']);
 
-var  heatmapAttrs = Plotly.Heatmap.attributes;
-
 Mesh3D.attributes = {
     x: {type: 'data_array'},
     y: {type: 'data_array'},
@@ -68,9 +66,17 @@ Mesh3D.attributes = {
         }
     },
 
-    colorscale:   heatmapAttrs.colorscale,
-    showscale:    heatmapAttrs.showscale,
-    reversescale: heatmapAttrs.reversescale,
+    colorscale: {
+        type: 'colorscale'
+    },
+    showscale: {
+        type: 'boolean',
+        dflt: true
+    },
+    reversescale: {
+        type: 'boolean',
+        dflt: false
+    },
 
     lighting: {
         ambient: {
@@ -188,4 +194,4 @@ Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
   }
 };
 
-Mesh3D.colorbar = Plotly.Heatmap.colorbar.bind(Plotly.Heatmap);
+Mesh3D.colorbar = Plotly.Colorbar.traceColorbar;
