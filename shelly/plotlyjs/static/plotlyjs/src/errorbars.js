@@ -8,6 +8,8 @@ var errorBars = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
+Plotly.hasErrorBars = true;
+
 errorBars.attributes = {
     visible: {
         type: 'boolean'
