@@ -1,0 +1,141 @@
+{
+    "data": [
+        {
+            "type": "scattergeo",
+            "mode": "markers+text",
+            "lon": [
+                -73.57,
+                -79.24,
+                -123.06,
+                -114.1,
+                -113.28,
+                -75.43,
+                -63.57,
+                -123.21,
+                -97.13,
+                -104.6
+            ],
+            "lat": [
+                45.5,
+                43.4,
+                49.13,
+                51.1,
+                53.34,
+                45.24,
+                44.64,
+                48.25,
+                49.89,
+                50.45
+            ],
+            "text": [
+                "Montreal",
+                "Toronto",
+                "Vancouver",
+                "Calgary",
+                "Edmonton",
+                "Ottawa",
+                "Halifax",
+                "Victoria",
+                "Winnepeg",
+                "Regina"
+            ],
+            "marker": {
+                "size": 10,
+                "color": [
+                    "#bebada",
+                    "#fdb462",
+                    "#fb8072",
+                    "#d9d9d9",
+                    "#bc80bd",
+                    "#b3de69",
+                    "#8dd3c7",
+                    "#80b1d3",
+                    "#fccde5",
+                    "#ffffb3"
+                ],
+                "line": {
+                    "width": 1
+                }
+            },
+            "name": "",
+            "textposition": [
+                "top center",
+                "middle left",
+                "top center",
+                "bottom center",
+                "top right",
+                "middle left",
+                "bottom right",
+                "bottom left",
+                "top right",
+                "top right"
+            ],
+            "textfont": {
+                "size": [
+                    22,
+                    21,
+                    20,
+                    19,
+                    18,
+                    17,
+                    16,
+                    15,
+                    14,
+                    13
+                ],
+                "color": [
+                    "#bebada",
+                    "#fdb462",
+                    "#fb8072",
+                    "#d9d9d9",
+                    "#bc80bd",
+                    "#b3de69",
+                    "#8dd3c7",
+                    "#80b1d3",
+                    "#fccde5",
+                    "#ffffb3"
+                ],
+                "family": [
+                    "Arial, sans-serif",
+                    "Balto, sans-serif",
+                    "Courier New, monospace",
+                    "Droid Sans, sans-serif",
+                    "Droid Serif, serif",
+                    "Droid Sans Mono, sans-serif",
+                    "Gravitas One, cursive",
+                    "Old Standard TT, serif",
+                    "Open Sans, sans-serif",
+                    "PT Sans Narrow, sans-serif",
+                    "Raleway, sans-serif",
+                    "Times New Roman, Times, serif"
+                ]
+            },
+            "uid": "2db7c3"
+        }
+    ],
+    "layout": {
+        "title": "Canadian cities",
+        "font": {},
+        "titlefont": {
+            "size": 28
+        },
+        "geo": {
+            "scope": "north america",
+            "lonaxis": {
+                "range": [
+                    -130,
+                    -55
+                ]
+            },
+            "lataxis": {
+                "range": [
+                    40,
+                    70
+                ]
+            }
+        },
+        "width": 800,
+        "height": 600,
+        "showlegend": false
+    }
+}
