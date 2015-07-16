@@ -120,7 +120,7 @@ bars.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('text');
 
     // override defaultColor for error bars with defaultLine
-    if(Plotly.hasErrorBars) {
+    if(Plotly.ErrorBars) {
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'y'});
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'x', inherit: 'y'});
     }
@@ -616,7 +616,7 @@ bars.hoverPoints = function(pointData, xval, yval, hovermode) {
 
     if(di.tx) pointData.text = di.tx;
 
-    if(Plotly.hasErrorBars) Plotly.ErrorBars.hoverInfo(di, trace, pointData);
+    if(Plotly.ErrorBars) Plotly.ErrorBars.hoverInfo(di, trace, pointData);
 
     return [pointData];
 };

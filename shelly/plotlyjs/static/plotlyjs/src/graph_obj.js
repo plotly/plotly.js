@@ -559,7 +559,7 @@ Plotly.plot = function(gd, data, layout, config) {
             Plotly.Lib.markTime('done with bar/box adjustments');
 
             // calc and autorange for errorbars
-            if(Plotly.hasErrorBars) {
+            if(Plotly.ErrorBars) {
                 Plotly.ErrorBars.calc(gd);
                 Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
             }
@@ -1736,7 +1736,7 @@ function doCalcdata(gd) {
 
 plots.style = function(gd) {
     var subplots = Plotly.Axes.getSubplots(gd),
-        modulesWithErrorBars = Plotly.hasErrorBars ?
+        modulesWithErrorBars = Plotly.ErrorBars ?
             gd._modules.concat(Plotly.ErrorBars) : gd._modules,
         fullLayout = gd._fullLayout;
 
