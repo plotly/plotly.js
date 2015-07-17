@@ -306,15 +306,15 @@ pie.calc = function(gd, trace) {
     if(trace.textinfo && trace.textinfo !== 'none') {
         var hasLabel = trace.textinfo.indexOf('label') !== -1,
             hasText = trace.textinfo.indexOf('text') !== -1,
-            hasPercent = trace.textinfo.indexOf('percent') !== -1,
             hasValue = trace.textinfo.indexOf('value') !== -1,
+            hasPercent = trace.textinfo.indexOf('percent') !== -1,
             thisText;
 
         for(i = 0; i < cd.length; i++) {
             thisText = hasLabel ? [cd[i].label] : [];
             if(hasText && trace.text[i]) thisText.push(trace.text[i]);
-            if(hasPercent) thisText.push(formatPiePercent(cd[i].v / vTotal));
             if(hasValue) thisText.push(formatPieValue(cd[i].v));
+            if(hasPercent) thisText.push(formatPiePercent(cd[i].v / vTotal));
             cd[i].text = thisText.join('<br>');
         }
     }
