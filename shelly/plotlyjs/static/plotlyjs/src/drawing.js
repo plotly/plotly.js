@@ -19,7 +19,7 @@ drawing.font = function(s, family, size, color) {
         family = family.family;
     }
     if(family) s.style('font-family', family);
-    if(size) s.style('font-size', size+'px');
+    if(size+1) s.style('font-size', size + 'px');
     if(color) s.call(Plotly.Color.fill, color);
 };
 
@@ -761,6 +761,8 @@ drawing.textPointStyle = function(s, trace) {
             // the nominal marker size
             // ie 2/1.6 * nominal, bcs some markers are a bit bigger
             r = d.mrc ? (d.mrc/0.8 + 1) : 0;
+
+        fontSize = (isNumeric(fontSize) && fontSize>0) ? fontSize : 0;
 
         p.call(drawing.font,
                 d.tf || trace.textfont.family,
