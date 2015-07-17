@@ -474,38 +474,17 @@ pie.plot = function(gd, cdpie) {
                     sliceText.selectAll('tspan.line').attr({x: 0, y: 0});
 
                     // position the text relative to the slice
-                    // TODO: so far this only accounts for flat, inside, with no donut hole
+                    // TODO: so far this only accounts for flat, inside
                     var textBB = Plotly.Drawing.bBox(sliceText.node()),
-                        textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height),
-                        textAspect = textBB.width / textBB.height,
-                        halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5),
-                        rInscribed = 1 / (1 + 1 / Math.sin(halfAngle)),
-                        rCenter = 1 - rInscribed,
-                        scale = 1,
-                        rotate = 0;
-
-                    if((halfAngle > Math.PI / 5) || (textAspect < 2) ||
-                            (rInscribed * cd0.r > textDiameter/2)) {
-                        // put the text inside without rotating it
-                        scale = rInscribed * cd0.r * 2 / textDiameter;
-                    } else {
-                        // put the text inside rotated to best fit
-                        var heightConstrictor = textAspect + 1 / (2 * Math.tan(halfAngle)),
-                            maxHeight = 2 * cd0.r /
-                                (Math.sqrt(heightConstrictor * heightConstrictor + 0.5) + heightConstrictor);
-
-                        rCenter = maxHeight / (2 * cd0.r) * (1 / Math.tan(halfAngle) + textAspect);
-                        scale = maxHeight / textBB.height;
-                        rotate = (180 / Math.PI * pt.midangle + 720) % 180 - 90;
-                    }
+                        transform = transformInsideText(textBB, pt, cd0, trace);
 
                     sliceText.attr('transform',
                         'translate(' +
-                            (cx + pt.pxmid[0] * rCenter) + ',' +
-                            (cy + pt.pxmid[1] * rCenter) +
+                            (cx + pt.pxmid[0] * transform.rCenter) + ',' +
+                            (cy + pt.pxmid[1] * transform.rCenter) +
                         ')' +
-                        (scale < 1 ? ('scale(' + scale + ')') : '') +
-                        (rotate ? ('rotate(' + rotate + ')') : '') +
+                        (transform.scale < 1 ? ('scale(' + transform.scale + ')') : '') +
+                        (transform.rotate ? ('rotate(' + transform.rotate + ')') : '') +
                         'translate(' +
                             (-(textBB.left + textBB.right) / 2) + ',' +
                             (-(textBB.top + textBB.bottom) / 2) +
@@ -515,6 +494,62 @@ pie.plot = function(gd, cdpie) {
         });
     });
 };
+
+function transformInsideText(textBB, pt, cd0, trace) {
+    var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height),
+        textAspect = textBB.width / textBB.height,
+        halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5),
+        ring = 1 - trace.hole,
+        rInscribed = Math.min(1 / (1 + 1 / Math.sin(halfAngle)), ring / 2),
+
+        // max size text can be inserted inside without rotating it
+        // this inscribes the text rectangle in a circle, which is then inscribed
+        // in the slice, so it will be an underestimate, which some day we may want
+        // to improve so this case can get more use
+        transform = {
+            scale: rInscribed * cd0.r * 2 / textDiameter,
+
+            // and the center position and rotation in this case
+            rCenter: 1 - rInscribed,
+            rotate: 0
+        };
+
+    if(transform.scale >= 1) return transform;
+
+        // max size if text is rotated radially
+    var Qr = textAspect + 1 / (2 * Math.tan(halfAngle)),
+        maxHalfHeightRotRadial = cd0.r * Math.min(
+            1 / (Math.sqrt(Qr * Qr + 0.5) + Qr),
+            ring / (Math.sqrt(textAspect * textAspect + ring / 2) + textAspect)
+        ),
+        radialTransform = {
+            scale: maxHalfHeightRotRadial * 2 / textBB.height,
+            rCenter: Math.cos(maxHalfHeightRotRadial / cd0.r) -
+                maxHalfHeightRotRadial * textAspect / cd0.r,
+            rotate: (180 / Math.PI * pt.midangle + 720) % 180 - 90
+        },
+
+        // max size if text is rotated tangentially
+        aspectInv = 1 / textAspect,
+        Qt = aspectInv + 1 / (2 * Math.tan(halfAngle)),
+        maxHalfWidthTangential = cd0.r * Math.min(
+            1 / (Math.sqrt(Qt * Qt + 0.5) + Qt),
+            ring / (Math.sqrt(aspectInv * aspectInv + ring / 2) + aspectInv)
+        ),
+        tangentialTransform = {
+            scale: maxHalfWidthTangential * 2 / textBB.width,
+            rCenter: Math.cos(maxHalfWidthTangential / cd0.r) -
+                maxHalfWidthTangential / textAspect / cd0.r,
+            rotate: (180 / Math.PI * pt.midangle + 810) % 180 - 90
+        },
+        // if we need a rotated transform, pick the biggest one
+        // even if both are bigger than 1
+        rotatedTransform = tangentialTransform.scale > radialTransform.scale ?
+            tangentialTransform : radialTransform;
+
+    if(transform.scale < 1 && rotatedTransform.scale > transform.scale) return rotatedTransform;
+    return transform;
+}
 
 function scalePies(cdpie, plotSize) {
     var pieBoxWidth,
