@@ -159,9 +159,6 @@ legend.points = function(d){
         var dEdit = {},
             tEdit = {};
 
-        dEdit.tx = 'Aa';
-        tEdit.textfont = {size: 10};
-
         if(showMarkers) {
             dEdit.mc = boundVal('marker.color', pickFirst);
             dEdit.mo = boundVal('marker.opacity', Plotly.Lib.mean, [0.2, 1]);
@@ -179,6 +176,14 @@ legend.points = function(d){
             tEdit.line = {
                 width: boundVal('line.width', pickFirst, [0, 10])
             };
+        }
+
+        if(showText) {
+            dEdit.tx = 'Aa';
+            dEdit.tp = boundVal('textposition', pickFirst);
+            dEdit.ts = 10;
+            dEdit.tc = boundVal('textfont.color', pickFirst);
+            dEdit.tf = boundVal('textfont.family', pickFirst);
         }
 
         dMod = [Plotly.Lib.minExtend(d0, dEdit)];

@@ -106,21 +106,14 @@ function calculateErrorParams(errors) {
     return {capSize: capSize, color: color, lineWidth: lineWidth};
 }
 
-function calculateTextOffset(textposition) {
+function calculateTextOffset(tp) {
     //Read out text properties
-    var textOffset = [0,0];
-    if (textposition.indexOf('bottom') >= 0) {
-        textOffset[1] += 1;
-    }
-    if (textposition.indexOf('top') >= 0) {
-        textOffset[1] -= 1;
-    }
-    if (textposition.indexOf('left') >= 0) {
-        textOffset[0] -= 1;
-    }
-    if (textposition.indexOf('right') >= 0) {
-        textOffset[0] += 1;
-    }
+    var textOffset = [0, 0];
+    if(Array.isArray(tp)) return [0, -1];
+    if(tp.indexOf('bottom') >= 0) textOffset[1] += 1;
+    if(tp.indexOf('top') >= 0) textOffset[1] -= 1;
+    if(tp.indexOf('left') >= 0) textOffset[0] -= 1;
+    if(tp.indexOf('right') >= 0) textOffset[0] += 1;
     return textOffset;
 }
 
@@ -195,19 +188,19 @@ function convertPlotlyOptions(scene, data) {
     if ('marker' in data) {
         var sizeFn = Plotly.Scatter.getBubbleSizeFn(data);
 
-        params.scatterColor         = formatColor(marker, marker.opacity, len);
+        params.scatterColor         = formatColor(marker, 1, len);
         params.scatterSize          = formatParam(marker.size, len, calculateSize, 20, sizeFn);
         params.scatterMarker        = formatParam(marker.symbol, len, calculateSymbol, '●');
         params.scatterLineWidth     = marker.line.width;  // arrayOk === false
-        params.scatterLineColor     = formatColor(marker.line, marker.opacity, len);
+        params.scatterLineColor     = formatColor(marker.line, 1, len);
         params.scatterAngle         = 0;
     }
 
     if ('textposition' in data) {
-        params.textOffset     = calculateTextOffset(data.textposition);
-        params.textColor      = str2RgbaArray(data.textfont.color);
-        params.textSize       = data.textfont.size;
-        params.textFont       = data.textfont.family;
+        params.textOffset     = calculateTextOffset(data.textposition);  // arrayOk === false
+        params.textColor      = formatColor(data.textfont, 1, len);
+        params.textSize       = formatParam(data.textfont.size, len, Plotly.Lib.identity, 12);
+        params.textFont       = data.textfont.family;  // arrayOk === false
         params.textAngle      = 0;
     }
 
@@ -282,7 +275,8 @@ proto.update = function(data) {
         color:      options.lineColor,
         lineWidth:  options.lineWidth || 1,
         dashes:     dashPattern[0],
-        dashScale:  dashPattern[1]
+        dashScale:  dashPattern[1],
+        opacity:    data.opacity
     };
 
     if (this.mode.indexOf('lines') !== -1) {
@@ -297,12 +291,18 @@ proto.update = function(data) {
         this.linePlot = null;
     }
 
+    var scatterOpacity = data.opacity;
+    if(data.marker && typeof data.marker.opacity === 'number') {
+      scatterOpacity *= data.marker.opacity;
+    }
+
     scatterOptions = {
         gl:           gl,
         position:     options.position,
         color:        options.scatterColor,
         size:         options.scatterSize,
         glyph:        options.scatterMarker,
+        opacity:      scatterOpacity,
         orthographic: true,
         lineWidth:    options.scatterLineWidth,
         lineColor:    options.scatterLineColor,
@@ -335,7 +335,8 @@ proto.update = function(data) {
         font:         options.textFont,
         orthographic: true,
         lineWidth:    0,
-        project:      false
+        project:      false,
+        opacity:      data.opacity
     };
 
     this.textLabels = options.text;
@@ -359,7 +360,8 @@ proto.update = function(data) {
         color:        options.errorColor,
         error:        options.errorBounds,
         lineWidth:    options.errorLineWidth,
-        capSize:      options.errorCapSize
+        capSize:      options.errorCapSize,
+        opacity:      data.opacity
     };
     if(this.errorBars) {
         if(options.errorBounds) {

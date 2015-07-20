@@ -198,8 +198,10 @@ scatter.attributes = {
         dflt: 'middle center',
         arrayOk: true
     },
-    // TODO: all three of the sub-attributes here should be arrayOk
-    textfont: {type: 'font'},
+    textfont: {
+        type: 'font',
+        arrayOk: true
+    },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
         'error_x': 'ErrorBars',

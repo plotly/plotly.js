@@ -160,7 +160,8 @@ Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     'reversescale',
     'flatshading',
     'alphahull',
-    'delaunayaxis'
+    'delaunayaxis',
+    'opacity'
   ].forEach(function(x) { coerce(x); });
 
   if('intensity' in traceIn) {
