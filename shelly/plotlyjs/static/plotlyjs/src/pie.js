@@ -180,7 +180,8 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     if(!Array.isArray(colors)) traceOut.colors = []; // later this will get padded with default colors
 
     coerce('scalegroup');
-    // TODO: tilt, depth, and hole all need to be coerced to the same values within a sharegroup
+    // TODO: tilt, depth, and hole all need to be coerced to the same values within a scaleegroup
+    // (ideally actually, depth would get set the same *after* scaling, ie the same absolute depth)
     // and if colors aren't specified we should match these up - potentially even if separate pies
     // are NOT in the same sharegroup
 
