@@ -55,7 +55,7 @@ pie.attributes = {
     outsidetextfont: {type: 'font'},
 
     // position and shape
-    domain: { // TODO: this breaks filehst.utils.DATA_ARRAY_KEYS because we need x and y to be data.
+    domain: {
         x: [
             {type: 'number', min: 0, max: 1, dflt: 0},
             {type: 'number', min: 0, max: 1, dflt: 1}
