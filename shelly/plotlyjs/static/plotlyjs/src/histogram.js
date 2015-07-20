@@ -15,6 +15,8 @@ var histogram = module.exports = {},
 Plotly.Plots.register(Plotly.Bars, 'histogram',
     ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend']);
 
+Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
+    ['cartesian', '2dMap', 'histogram']);
 
 // histogram has its own calc function,
 // but uses Bars.plot to display

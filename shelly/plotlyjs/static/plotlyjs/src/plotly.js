@@ -17,10 +17,10 @@ exports.Fx = require('./graph_interact');
 exports.Scatter = require('./scatter');
 exports.Bars = require('./bars');
 exports.Boxes = require('./boxes');
-exports.Contour = require('./contour');
 exports.ErrorBars = require('./errorbars');
 exports.Heatmap = require('./heatmap');
 exports.Histogram = require('./histogram');
+exports.Contour = require('./contour');
 // and extra plot components
 exports.Annotations = require('./annotations');
 exports.Shapes = require('./shapes');

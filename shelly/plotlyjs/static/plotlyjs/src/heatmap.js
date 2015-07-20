@@ -10,7 +10,6 @@ var heatmap = module.exports = {},
     scatterAttrs = Plotly.Scatter.attributes;
 
 Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap']);
-Plotly.Plots.register(heatmap, 'histogram2d', ['cartesian', '2dMap', 'histogram']);
 
 var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
 
