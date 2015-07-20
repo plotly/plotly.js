@@ -1624,7 +1624,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var moduleLayoutDefaults = [
         'Axes', 'Legend', 'Annotations', 'Shapes', 'Fx',
-        'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout', 'Pie'
+        'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout'
     ];
 
     var i, module;
@@ -1680,7 +1680,8 @@ plots.purge = function(gd) {
 
 function doCalcdata(gd) {
     var axList = Plotly.Axes.list(gd),
-        fullData = gd._fullData;
+        fullData = gd._fullData,
+        fullLayout = gd._fullLayout;
 
     var i, trace, module, cd;
 
@@ -1696,6 +1697,11 @@ function doCalcdata(gd) {
     // for calculating avg luminosity of heatmaps
     gd._hmpixcount = 0;
     gd._hmlumcount = 0;
+
+    // for sharing colors across pies (and for legend)
+    fullLayout._piecolormap = {};
+    fullLayout._pielabels = [];
+    fullLayout._piedefaultcolorcount = 0;
 
     // delete category list, if there is one, so we start over
     // to be filled in later by ax.d2c

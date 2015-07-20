@@ -226,11 +226,12 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('pull');
 };
 
-pie.supplyLayoutDefaults  = function(layoutIn, layoutOut){
-    // clear out stashed label -> color mappings to be used by calc
-    layoutOut._piecolormap = {};
-    layoutOut._piedefaultcolorcount = 0;
-};
+// pie.supplyLayoutDefaults  = function(layoutIn, layoutOut){
+//     // clear out stashed label -> color mappings to be used by calc
+//     layoutOut._piecolormap = {};
+//     layoutOut._pielabels = [];
+//     layoutOut._piedefaultcolorcount = 0;
+// };
 
 pie.calc = function(gd, trace) {
     var vals = trace.values,
@@ -238,7 +239,8 @@ pie.calc = function(gd, trace) {
         cd = [],
         fullLayout = gd._fullLayout,
         colorMap = fullLayout._piecolormap,
-        allLabels = {},
+        allLabels = fullLayout._pielabels,
+        allThisTraceLabels = {},
         needDefaults = false,
         vTotal = 0,
         i,
@@ -257,13 +259,16 @@ pie.calc = function(gd, trace) {
         label = String(label);
         // only take the first occurrence of any given label.
         // TODO: perhaps (optionally?) sum values for a repeated label?
-        if(allLabels[label] === undefined) allLabels[label] = true;
+        if(allThisTraceLabels[label] === undefined) allThisTraceLabels[label] = true;
         else continue;
 
         color = tinycolor(trace.colors[i]);
         if(color.isValid()) {
             color = Plotly.Color.tinyRGB(color);
-            colorMap[label] = color;
+            if(!colorMap[label]) {
+                colorMap[label] = color;
+                allLabels.push(label);
+            }
         }
         // have we seen this label and assigned a color to it in a previous trace?
         else if(colorMap[label]) color = colorMap[label];
