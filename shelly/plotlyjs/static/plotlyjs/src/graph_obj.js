@@ -52,9 +52,9 @@ plots.register = function(_module, thisType, categoriesIn) {
     allTypes.push(thisType);
 };
 
-function getModuleObj(traceType) {
+function getTraceType(traceType) {
     if(typeof traceType === 'object') traceType = traceType.type;
-    return modules[traceType];
+    return traceType;
 }
 
 plots.getModule = function(trace) {
@@ -66,7 +66,7 @@ plots.getModule = function(trace) {
         return false;
     }
 
-    var _module = getModuleObj(trace);
+    var _module = modules[getTraceType(trace)];
     if(!_module) return false;
     return _module.module;
 };
@@ -79,15 +79,18 @@ plots.getModule = function(trace) {
  * category: a category (string)
  */
 plots.traceIs = function traceIs(traceType, category) {
-    if(traceType.type === 'various') return false;  // FIXME
+    traceType = getTraceType(traceType);
 
-    var _module = getModuleObj(traceType);
+    if(traceType === 'various') return false;  // FIXME
+
+    var _module = modules[traceType];
 
     if(!_module) {
-        console.warn('unrecognized trace type');
+        if(traceType !== undefined) {
+            console.warn('unrecognized trace type ' + traceType);
+        }
         _module = modules[plots.attributes.type.dflt];
     }
-    if(!allCategories[category]) console.warn('unrecognized category ' + category);
 
     return !!_module.categories[category];
 };
@@ -559,8 +562,10 @@ Plotly.plot = function(gd, data, layout, config) {
             Plotly.Lib.markTime('done with bar/box adjustments');
 
             // calc and autorange for errorbars
-            Plotly.ErrorBars.calc(gd);
-            Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
+            if(Plotly.ErrorBars) {
+                Plotly.ErrorBars.calc(gd);
+                Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
+            }
 
             // TODO: autosize extra for text markers
             return Plotly.Lib.syncOrAsync([
@@ -617,7 +622,7 @@ Plotly.plot = function(gd, data, layout, config) {
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
         if(gd._fullLayout._hasGL3D) plot3D(gd);
-    
+
         // ... until subplot of different type play better together
         if(gd._fullLayout._hasGeo) plotGeo(gd);
 
@@ -660,8 +665,10 @@ Plotly.plot = function(gd, data, layout, config) {
             }
 
             // finally do all error bars at once
-            Plotly.ErrorBars.plot(gd, subplotInfo, cdError);
-            Plotly.Lib.markTime('done ErrorBars');
+            if(Plotly.ErrorBars) {
+                Plotly.ErrorBars.plot(gd, subplotInfo, cdError);
+                Plotly.Lib.markTime('done ErrorBars');
+            }
         }
 
         // styling separate from drawing
@@ -1732,7 +1739,8 @@ function doCalcdata(gd) {
 
 plots.style = function(gd) {
     var subplots = Plotly.Axes.getSubplots(gd),
-        modulesWithErrorBars = gd._modules.concat(Plotly.ErrorBars),
+        modulesWithErrorBars = Plotly.ErrorBars ?
+            gd._modules.concat(Plotly.ErrorBars) : gd._modules,
         fullLayout = gd._fullLayout;
 
     var i, j, gp, module;
