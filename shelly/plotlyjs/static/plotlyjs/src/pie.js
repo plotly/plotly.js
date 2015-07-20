@@ -661,12 +661,12 @@ function scootLabels(outsideTextQuadrants) {
 
     function scootOneLabel(thisPt, prevPt) {
         if(yHalf) {
-            var prevBottom = prevPt.cyFinal + prevPt.yLabelMax + prevPt.labelExtraY,
-                thisTop = thisPt.cyFinal + thisPt.yLabelMin;
+            var prevBottom = prevPt.yLabelMax + prevPt.labelExtraY,
+                thisTop = thisPt.yLabelMin;
             if(thisTop < prevBottom) thisPt.labelExtraY = prevBottom - thisTop;
         } else {
-            var prevTop = prevPt.cyFinal + prevPt.yLabelMin + prevPt.labelExtraY,
-                thisBottom = thisPt.cyFinal + thisPt.yLabelMax;
+            var prevTop = prevPt.yLabelMin + prevPt.labelExtraY,
+                thisBottom = thisPt.yLabelMax;
             if(thisBottom > prevTop) thisPt.labelExtraY = prevTop - thisBottom;
         }
     }
