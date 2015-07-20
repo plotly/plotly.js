@@ -188,11 +188,11 @@ function convertPlotlyOptions(scene, data) {
     if ('marker' in data) {
         var sizeFn = Plotly.Scatter.getBubbleSizeFn(data);
 
-        params.scatterColor         = formatColor(marker, marker.opacity, len);
+        params.scatterColor         = formatColor(marker, 1, len);
         params.scatterSize          = formatParam(marker.size, len, calculateSize, 20, sizeFn);
         params.scatterMarker        = formatParam(marker.symbol, len, calculateSymbol, '●');
         params.scatterLineWidth     = marker.line.width;  // arrayOk === false
-        params.scatterLineColor     = formatColor(marker.line, marker.opacity, len);
+        params.scatterLineColor     = formatColor(marker.line, 1, len);
         params.scatterAngle         = 0;
     }
 
@@ -275,7 +275,8 @@ proto.update = function(data) {
         color:      options.lineColor,
         lineWidth:  options.lineWidth || 1,
         dashes:     dashPattern[0],
-        dashScale:  dashPattern[1]
+        dashScale:  dashPattern[1],
+        opacity:    data.opacity
     };
 
     if (this.mode.indexOf('lines') !== -1) {
@@ -290,12 +291,18 @@ proto.update = function(data) {
         this.linePlot = null;
     }
 
+    var scatterOpacity = data.opacity;
+    if(data.marker && typeof data.marker.opacity === 'number') {
+      scatterOpacity *= data.marker.opacity;
+    }
+
     scatterOptions = {
         gl:           gl,
         position:     options.position,
         color:        options.scatterColor,
         size:         options.scatterSize,
         glyph:        options.scatterMarker,
+        opacity:      scatterOpacity,
         orthographic: true,
         lineWidth:    options.scatterLineWidth,
         lineColor:    options.scatterLineColor,
@@ -328,7 +335,8 @@ proto.update = function(data) {
         font:         options.textFont,
         orthographic: true,
         lineWidth:    0,
-        project:      false
+        project:      false,
+        opacity:      data.opacity
     };
 
     this.textLabels = options.text;
@@ -352,7 +360,8 @@ proto.update = function(data) {
         color:        options.errorColor,
         error:        options.errorBounds,
         lineWidth:    options.errorLineWidth,
-        capSize:      options.errorCapSize
+        capSize:      options.errorCapSize,
+        opacity:      data.opacity
     };
     if(this.errorBars) {
         if(options.errorBounds) {

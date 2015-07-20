@@ -112,6 +112,13 @@ Surface.attributes = {
         }
     },
 
+    opacity: {
+      type: 'number',
+      min: 0,
+      max: 1,
+      dflt: 1
+    },
+
     _nestedModules: {  // nested module coupling
         'colorbar': 'Colorbar'
     }
@@ -158,6 +165,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     coerce('lighting.roughness');
     coerce('lighting.fresnel');
     coerce('hidesurface');
+    coerce('opacity');
 
     coerce('colorscale');
 
