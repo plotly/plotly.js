@@ -403,15 +403,22 @@ pie.plot = function(gd, cdpie) {
             slices.enter().append('g')
                 .classed('slice', true)
                 .each(function() {
-                    d3.select(this).append('path'); // the top surface of the slice
+                    d3.select(this).append('path').classed('surface', true); // the top surface of the slice
                 });
             slices.exit().remove();
+
+            var outsideTextQuadrants = [
+                [[],[]], // y<0: x<0, x>=0
+                [[],[]] // y>=0: x<0, x>=0
+            ];
 
             slices.each(function(pt) {
                 var cx = cd0.cx + depthVector[0],
                     cy = cd0.cy + depthVector[1],
                     sliceTop = d3.select(this),
-                    slicePath = sliceTop.select('path');
+                    slicePath = sliceTop.select('path.surface');
+
+                sliceTop.select('path.textline').remove();
 
                 if(trace.pull) {
                     var pull = +(Array.isArray(trace.pull) ? trace.pull[pt.i] : trace.pull) || 0;
@@ -444,8 +451,10 @@ pie.plot = function(gd, cdpie) {
                 }
 
                 // add text
-                var sliceTextGroup = sliceTop.selectAll('g.slicetext')
-                    .data(pt.text ? [0] : []);
+                var textPosition = Array.isArray(trace.textposition) ?
+                        trace.textposition[pt.i] : trace.textposition,
+                    sliceTextGroup = sliceTop.selectAll('g.slicetext')
+                    .data(pt.text && (textPosition !== 'none') ? [0] : []);
 
                 sliceTextGroup.enter().append('g')
                     .classed('slicetext', true);
@@ -469,20 +478,48 @@ pie.plot = function(gd, cdpie) {
                             x: 0,
                             y: 0
                         })
-                        .call(Plotly.Drawing.font, trace.insidetextfont)
+                        .call(Plotly.Drawing.font, textPosition === 'outside' ?
+                            trace.outsidetextfont : trace.insidetextfont)
                         .call(Plotly.util.convertToTspans);
                     sliceText.selectAll('tspan.line').attr({x: 0, y: 0});
 
                     // position the text relative to the slice
-                    // TODO: so far this only accounts for flat, inside
+                    // TODO: so far this only accounts for flat
                     var textBB = Plotly.Drawing.bBox(sliceText.node()),
+                        transform;
+
+                    if(textPosition === 'outside') {
+                        transform = transformOutsideText(textBB, pt);
+                    } else {
                         transform = transformInsideText(textBB, pt, cd0, trace);
+                        if(textPosition === 'auto' && transform.scale < 1) {
+                            sliceText.call(Plotly.Drawing.font, trace.outsidetextfont);
+                            if(trace.outsidetextfont.family !== trace.insidetextfont.family ||
+                                    trace.outsidetextfont.size !== trace.insidetextfont.size) {
+                                sliceText.attr({'data-bb': ''});
+                                textBB = Plotly.Drawing.bBox(sliceText.node());
+                            }
+                            transform = transformOutsideText(textBB, pt);
+                        }
+                    }
+
+                    var translateX = cx + pt.pxmid[0] * transform.rCenter + (transform.x || 0),
+                        translateY = cy + pt.pxmid[1] * transform.rCenter + (transform.y || 0);
+
+                    // save some stuff to use later ensure no labels overlap
+                    if(transform.outside) {
+                        pt.cxFinal = cx;
+                        pt.cyFinal = cy;
+                        pt.yLabelMin = translateY - textBB.height / 2;
+                        pt.yLabelMid = translateY;
+                        pt.yLabelMax = translateY + textBB.height / 2;
+                        pt.labelExtraX = 0;
+                        pt.labelExtraY = 0;
+                        outsideTextQuadrants[transform.y < 0 ? 0 : 1][transform.x < 0 ? 0 : 1].push(pt);
+                    }
 
                     sliceText.attr('transform',
-                        'translate(' +
-                            (cx + pt.pxmid[0] * transform.rCenter) + ',' +
-                            (cy + pt.pxmid[1] * transform.rCenter) +
-                        ')' +
+                        'translate(' + translateX + ',' + translateY + ')' +
                         (transform.scale < 1 ? ('scale(' + transform.scale + ')') : '') +
                         (transform.rotate ? ('rotate(' + transform.rotate + ')') : '') +
                         'translate(' +
@@ -490,6 +527,46 @@ pie.plot = function(gd, cdpie) {
                             (-(textBB.top + textBB.bottom) / 2) +
                         ')');
                 });
+            });
+
+            // now make sure no labels overlap (at least within one pie)
+            scootLabels(outsideTextQuadrants);
+            slices.each(function(pt) {
+                if(pt.labelExtraX || pt.labelExtraY) {
+                    // first move the text to its new location
+                    var sliceTop = d3.select(this),
+                        sliceText = sliceTop.select('g.slicetext text');
+
+                    sliceText.attr('transform', 'translate(' + pt.labelExtraX + ',' + pt.labelExtraY + ')' +
+                        sliceText.attr('transform'));
+
+                    // then add a line to the new location
+                    var textLinePath = 'M' + (pt.cxFinal + pt.pxmid[0]) + ',' + (pt.cyFinal + pt.pxmid[1]),
+                        finalX = (pt.yLabelMax - pt.yLabelMin) * (pt.pxmid[0] < 0 ? -1 : 1) / 4;
+                    if(pt.labelExtraX) {
+                        if(Math.abs((pt.yLabelMid + pt.labelExtraY - pt.cyFinal - pt.pxmid[1]) / pt.labelExtraX) >
+                                Math.abs(pt.pxmid[1] / pt.pxmid[0])) {
+                            textLinePath += 'l' + pt.labelExtraX + ',' + (pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0]) +
+                                'V' + (pt.cyFinal + pt.pxmid[1] + pt.labelExtraY) +
+                                'h' + finalX;
+                        } else {
+                            textLinePath += 'l' + (pt.labelExtraY * pt.pxmid[0] / pt.pxmid[1]) + ',' + pt.labelExtraY +
+                                'H' + (pt.cxFinal + pt.pxmid[0] + pt.labelExtraX + finalX);
+                        }
+                    } else {
+                        textLinePath += 'V' + (pt.yLabelMid + pt.labelExtraY) +
+                            'h' + finalX;
+                    }
+
+                    sliceTop.append('path')
+                        .classed('textline', true)
+                        .call(Plotly.Color.stroke, trace.outsidetextfont.color)
+                        .attr({
+                            'stroke-width': Math.min(2, trace.outsidetextfont.size / 8),
+                            d: textLinePath,
+                            fill: 'none'
+                        });
+                }
             });
         });
     });
@@ -549,6 +626,76 @@ function transformInsideText(textBB, pt, cd0, trace) {
 
     if(transform.scale < 1 && rotatedTransform.scale > transform.scale) return rotatedTransform;
     return transform;
+}
+
+function transformOutsideText(textBB, pt) {
+    var x = pt.pxmid[0],
+        y = pt.pxmid[1],
+        dx = textBB.width / 2,
+        dy = textBB.height / 2;
+
+    if(x < 0) dx *= -1;
+    if(y < 0) dy *= -1;
+
+    return {
+        scale: 1,
+        rCenter: 1,
+        rotate: 0,
+        x: dx + Math.abs(dy) * (dx > 0 ? 1 : -1) / 2,
+        y: dy / (1 + x * x / (y * y)),
+        outside: true
+    };
+}
+
+function scootLabels(outsideTextQuadrants) {
+    var xHalf,
+        yHalf,
+        equatorFirst,
+        farthestX,
+        farthestY,
+        i;
+
+    function topFirst (a, b) { return a.pxmid[1] - b.pxmid[1]; }
+    function bottomFirst (a, b) { return b.pxmid[1] - a.pxmid[1]; }
+
+    function scootOneLabel(thisPt, prevPt) {
+        if(yHalf) {
+            var prevBottom = prevPt.cyFinal + prevPt.yLabelMax + prevPt.labelExtraY,
+                thisTop = thisPt.cyFinal + thisPt.yLabelMin;
+            if(thisTop < prevBottom) thisPt.labelExtraY = prevBottom - thisTop;
+        } else {
+            var prevTop = prevPt.cyFinal + prevPt.yLabelMin + prevPt.labelExtraY,
+                thisBottom = thisPt.cyFinal + thisPt.yLabelMax;
+            if(thisBottom > prevTop) thisPt.labelExtraY = prevTop - thisBottom;
+        }
+    }
+
+    for(yHalf = 0; yHalf < 2; yHalf++) {
+        equatorFirst = yHalf ? topFirst : bottomFirst;
+        farthestY = yHalf ? Math.max : Math.min;
+        for(xHalf = 0; xHalf < 2; xHalf++) {
+            farthestX = xHalf ? Math.max : Math.min;
+            // first sort the array
+            // note this is a copy of cd, so cd itself doesn't get sorted
+            // but we can still modify points in place.
+            var thisQuad = outsideTextQuadrants[yHalf][xHalf];
+            thisQuad.sort(equatorFirst);
+            if(yHalf) {
+                // bottom half needs to avoid the top half
+                var topQuad = outsideTextQuadrants[1 - yHalf][xHalf];
+                if(thisQuad.length && topQuad.length) {
+                    scootOneLabel(thisQuad[0], topQuad[0]);
+                }
+            }
+
+            // then each needs to avoid the previous
+            for(i = 1; i < thisQuad.length; i++) {
+                scootOneLabel(thisQuad[i], thisQuad[i - 1]);
+            }
+
+            // TODO: uneven pulls may need labelExtraX
+        }
+    }
 }
 
 function scalePies(cdpie, plotSize) {
@@ -708,7 +855,7 @@ pie.style = function(gd) {
             getLineWidth = function() { return lineWidth; };
         }
 
-        traceSelection.selectAll('.top path').each(function(pt) {
+        traceSelection.selectAll('.top path.surface').each(function(pt) {
             var lineColor = trace.line.color;
             if(Array.isArray(lineColor)) lineColor = lineColor[pt.i] || Plotly.Color.defaultLine;
 

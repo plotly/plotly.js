@@ -934,7 +934,7 @@ drawing.bBox = function(node) {
     // cache elements we've already measured so we don't have to
     // remeasure the same thing many times
     var saveNum = node.attributes['data-bb'];
-    if(saveNum) {
+    if(saveNum && saveNum.value) {
         return $.extend({}, savedBBoxes[saveNum.value]);
     }
 

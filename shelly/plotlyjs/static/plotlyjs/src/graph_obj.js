@@ -2406,8 +2406,9 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
         'swapxy','swapxyaxes','orientationaxes',
         'colors', 'values', 'labels', 'label0', 'dlabel', 'sort',
-        'textinfo', 'textposition', 'textfont.size',
-        'insidetextfont.size', 'outsidetextfont.size'
+        'textinfo', 'textposition', 'textfont.size', 'textfont.family', 'textfont.color',
+        'insidetextfont.size', 'insidetextfont.family', 'insidetextfont.color',
+        'outsidetextfont.size', 'outsidetextfont.family', 'outsidetextfont.color'
     ];
     for(i = 0; i < traces.length; i++) {
         if(plots.traceIs(gd._fullData[traces[i]], 'box')) {
