@@ -531,7 +531,7 @@ pie.plot = function(gd, cdpie) {
             });
 
             // now make sure no labels overlap (at least within one pie)
-            scootLabels(outsideTextQuadrants);
+            scootLabels(outsideTextQuadrants, trace);
             slices.each(function(pt) {
                 if(pt.labelExtraX || pt.labelExtraY) {
                     // first move the text to its new location
@@ -542,20 +542,26 @@ pie.plot = function(gd, cdpie) {
                         sliceText.attr('transform'));
 
                     // then add a line to the new location
-                    var textLinePath = 'M' + (pt.cxFinal + pt.pxmid[0]) + ',' + (pt.cyFinal + pt.pxmid[1]),
+                    var lineStartX = pt.cxFinal + pt.pxmid[0],
+                        lineStartY = pt.cyFinal + pt.pxmid[1],
+                        textLinePath = 'M' + lineStartX + ',' + lineStartY,
                         finalX = (pt.yLabelMax - pt.yLabelMin) * (pt.pxmid[0] < 0 ? -1 : 1) / 4;
                     if(pt.labelExtraX) {
-                        if(Math.abs((pt.yLabelMid + pt.labelExtraY - pt.cyFinal - pt.pxmid[1]) / pt.labelExtraX) >
-                                Math.abs(pt.pxmid[1] / pt.pxmid[0])) {
-                            textLinePath += 'l' + pt.labelExtraX + ',' + (pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0]) +
-                                'V' + (pt.cyFinal + pt.pxmid[1] + pt.labelExtraY) +
-                                'h' + finalX;
+                        var yFromX = pt.labelExtraX * pt.pxmid[1] / pt.pxmid[0],
+                            yNet = pt.yLabelMid + pt.labelExtraY - (pt.cyFinal + pt.pxmid[1]);
+
+                        if(Math.abs(yFromX) > Math.abs(yNet)) {
+                            textLinePath +=
+                                'l' + (yNet * pt.pxmid[0] / pt.pxmid[1]) + ',' + yNet +
+                                'H' + (lineStartX + pt.labelExtraX + finalX);
                         } else {
-                            textLinePath += 'l' + (pt.labelExtraY * pt.pxmid[0] / pt.pxmid[1]) + ',' + pt.labelExtraY +
-                                'H' + (pt.cxFinal + pt.pxmid[0] + pt.labelExtraX + finalX);
+                            textLinePath += 'l' + pt.labelExtraX + ',' + yFromX +
+                                'v' + (yNet - yFromX) +
+                                'h' + finalX;
                         }
                     } else {
-                        textLinePath += 'V' + (pt.yLabelMid + pt.labelExtraY) +
+                        textLinePath +=
+                            'V' + (pt.yLabelMid + pt.labelExtraY) +
                             'h' + finalX;
                     }
 
@@ -648,53 +654,101 @@ function transformOutsideText(textBB, pt) {
     };
 }
 
-function scootLabels(outsideTextQuadrants) {
+function scootLabels(outsideTextQuadrants, trace) {
     var xHalf,
         yHalf,
         equatorFirst,
         farthestX,
         farthestY,
+        xDiffSign,
+        yDiffSign,
+        thisQuad,
+        oppositeQuad,
+        wholeSide,
         i;
 
     function topFirst (a, b) { return a.pxmid[1] - b.pxmid[1]; }
     function bottomFirst (a, b) { return b.pxmid[1] - a.pxmid[1]; }
 
     function scootOneLabel(thisPt, prevPt) {
-        if(yHalf) {
-            var prevBottom = prevPt.yLabelMax + prevPt.labelExtraY,
-                thisTop = thisPt.yLabelMin;
-            if(thisTop < prevBottom) thisPt.labelExtraY = prevBottom - thisTop;
-        } else {
-            var prevTop = prevPt.yLabelMin + prevPt.labelExtraY,
-                thisBottom = thisPt.yLabelMax;
-            if(thisBottom > prevTop) thisPt.labelExtraY = prevTop - thisBottom;
+        if(!prevPt) prevPt = {};
+
+        var prevOuterY = prevPt.labelExtraY + (yHalf ? prevPt.yLabelMax : prevPt.yLabelMin),
+            thisInnerY = yHalf ? thisPt.yLabelMin : thisPt.yLabelMax,
+            thisOuterY = yHalf ? thisPt.yLabelMax : thisPt.yLabelMin,
+            thisSliceOuterY = farthestY(thisPt.px0[1], thisPt.px1[1]),
+            newExtraY = prevOuterY - thisInnerY,
+            xBuffer,
+            i,
+            otherPt,
+            otherOuterY,
+            otherOuterX,
+            newExtraX;
+        // make sure this label doesn't overlap other labels
+        // this *only* has us move these labels vertically
+        if(newExtraY * yDiffSign > 0) thisPt.labelExtraY = newExtraY;
+
+        // make sure this label doesn't overlap any slices
+        if(!Array.isArray(trace.pull)) return; // this can only happen with array pulls
+
+        for(i = 0; i < wholeSide.length; i++) {
+            otherPt = wholeSide[i];
+
+            // overlap can only happen if the other point is pulled more than this one
+            if(otherPt === thisPt || ((trace.pull[thisPt.i] || 0) >= trace.pull[otherPt.i] || 0)) continue;
+
+            if((thisPt.pxmid[1] - otherPt.pxmid[1]) * yDiffSign > 0) {
+                // closer to the equator - by construction all of these happen first
+                // move the text vertically to get away from these slices
+                otherOuterY = otherPt.cyFinal + farthestY(otherPt.px0[1], otherPt.px1[1]);
+                newExtraY = otherOuterY - thisInnerY - thisPt.labelExtraY;
+
+                if(newExtraY * yDiffSign > 0) thisPt.labelExtraY += newExtraY;
+
+            } else if((thisOuterY + thisPt.labelExtraY - thisSliceOuterY) * yDiffSign < 0) {
+                // farther from the equator - happens after we've done all the
+                // vertical moving we're going to do
+                // move horizontally to get away from these more polar slices
+
+                // if we're moving horz. based on a slice that's several slices away from this one
+                // then we need some extra space for the lines to labels between them
+                xBuffer = 3 * xDiffSign * Math.abs(i - wholeSide.indexOf(thisPt));
+
+                otherOuterX = otherPt.cxFinal + farthestX(otherPt.px0[0], otherPt.px1[0]);
+                newExtraX = otherOuterX + xBuffer - (thisPt.cxFinal + thisPt.pxmid[0]) - thisPt.labelExtraX;
+
+                if(newExtraX * xDiffSign > 0) thisPt.labelExtraX += newExtraX;
+            }
         }
     }
 
     for(yHalf = 0; yHalf < 2; yHalf++) {
         equatorFirst = yHalf ? topFirst : bottomFirst;
         farthestY = yHalf ? Math.max : Math.min;
+        yDiffSign = yHalf ? 1 : -1;
+
         for(xHalf = 0; xHalf < 2; xHalf++) {
             farthestX = xHalf ? Math.max : Math.min;
+            xDiffSign = xHalf ? 1 : -1;
+
             // first sort the array
             // note this is a copy of cd, so cd itself doesn't get sorted
             // but we can still modify points in place.
-            var thisQuad = outsideTextQuadrants[yHalf][xHalf];
+            thisQuad = outsideTextQuadrants[yHalf][xHalf];
             thisQuad.sort(equatorFirst);
-            if(yHalf) {
-                // bottom half needs to avoid the top half
-                var topQuad = outsideTextQuadrants[1 - yHalf][xHalf];
-                if(thisQuad.length && topQuad.length) {
-                    scootOneLabel(thisQuad[0], topQuad[0]);
-                }
-            }
 
-            // then each needs to avoid the previous
-            for(i = 1; i < thisQuad.length; i++) {
-                scootOneLabel(thisQuad[i], thisQuad[i - 1]);
-            }
+            oppositeQuad = outsideTextQuadrants[1 - yHalf][xHalf];
+            wholeSide = oppositeQuad.concat(thisQuad);
 
-            // TODO: uneven pulls may need labelExtraX
+            // each needs to avoid the previous
+            for(i = 0; i < thisQuad.length; i++) {
+                var prevPt = i && thisQuad[i - 1];
+                // bottom half needs to avoid the first label of the top half
+                // top half we still need to call scootOneLabel on the first slice
+                // so we can avoid other slices, but we don't pass a prevPt
+                if(yHalf && !i) prevPt = oppositeQuad[0];
+                scootOneLabel(thisQuad[i], prevPt);
+            }
         }
     }
 }
