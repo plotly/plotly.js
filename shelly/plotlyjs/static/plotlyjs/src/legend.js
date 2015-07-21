@@ -213,6 +213,19 @@ legend.boxes = function(d){
     });
 };
 
+legend.pie = function(d) {
+    var trace = d[0].trace,
+        pts = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendpie')
+            .data(Plotly.Plots.traceIs(trace, 'pie') && trace.visible ? [d] : []);
+    pts.enter().append('path').classed('legendpie', true)
+        .attr('d', 'M6,6H-6V-6H6Z')
+        .attr('transform', 'translate(20,0)');
+    pts.exit().remove();
+
+    if(pts.size()) pts.call(Plotly.Pie.styleOne, d[0], trace);
+};
+
 legend.style = function(s) {
     s.each(function(d){
         var traceGroup = d3.select(this);
@@ -243,6 +256,7 @@ legend.style = function(s) {
     })
     .each(legend.bars)
     .each(legend.boxes)
+    .each(legend.pie)
     .each(legend.lines)
     .each(legend.points);
 };
@@ -250,8 +264,9 @@ legend.style = function(s) {
 legend.texts = function(context, td, d, i, traces){
     var fullLayout = td._fullLayout,
         trace = d[0].trace,
+        isPie = Plotly.Plots.traceIs(trace, 'pie'),
         traceIndex = trace.index,
-        name = trace.name;
+        name = isPie ? d[0].label : trace.name;
 
     var text = d3.select(context).selectAll('text.legendtext')
         .data([0]);
@@ -272,7 +287,7 @@ legend.texts = function(context, td, d, i, traces){
         s.selectAll('tspan.line').attr({x: s.attr('x')});
     }
 
-    if(td._context.editable){
+    if(td._context.editable && !isPie){
         text.call(Plotly.util.makeEditable)
             .call(textLayout)
             .on('edit', function(text){
@@ -300,7 +315,10 @@ function legendGetsTrace(trace) {
 
 legend.draw = function(td, showlegend) {
     var layout = td.layout,
-        fullLayout = td._fullLayout;
+        fullLayout = td._fullLayout,
+        i,
+        j,
+        labelj;
 
     if(!fullLayout._infolayer || !td.calcdata) return;
 
@@ -308,14 +326,32 @@ legend.draw = function(td, showlegend) {
     legend.supplyLayoutDefaults(layout, fullLayout, td._fullData);
     showlegend = fullLayout.showlegend;
 
-    var opts = fullLayout.legend;
+    var opts = fullLayout.legend,
+        hiddenSlices = opts.hiddenslices || [];
 
-    var ldata = [];
-    for(var i = 0; i < td.calcdata.length; i++) {
-        var cd0 = td.calcdata[i][0],
+    var ldata = [],
+        slicesShown = {};
+    for(i = 0; i < td.calcdata.length; i++) {
+        var cd = td.calcdata[i],
+            cd0 = cd[0],
             trace = cd0.trace;
 
-        if(legendGetsTrace(trace) && trace.showlegend) {
+        if(Plotly.Plots.traceIs(trace, 'pie')) {
+            for(j = 0; j < cd.length; j++) {
+                labelj = cd[j].label;
+                if(!slicesShown[labelj]) {
+                    ldata.push([{
+                        label: labelj,
+                        color: cd[j].color,
+                        i: cd[j].i,
+                        trace: trace
+                    }]);
+                    slicesShown[labelj] = true;
+                }
+            }
+        }
+
+        else if(legendGetsTrace(trace) && trace.showlegend) {
             ldata.push([cd0]);
         }
     }
@@ -351,7 +387,12 @@ legend.draw = function(td, showlegend) {
     traces.exit().remove();
     traces.call(legend.style)
         .style('opacity', function(d) {
-            return d[0].trace.visible === 'legendonly' ? 0.5 : 1;
+            var trace = d[0].trace;
+            if(Plotly.Plots.traceIs(trace, 'pie')) {
+                return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
+            } else {
+                return trace.visible === 'legendonly' ? 0.5 : 1;
+            }
         })
         .each(function(d, i) {
             legend.texts(this, td, d, i, traces);
@@ -366,10 +407,21 @@ legend.draw = function(td, showlegend) {
             traceToggle.on('click', function() {
                 if(td._dragged) return;
 
-                var trace = d[0].trace,
-                    newVisible = trace.visible === true ?
+                var trace = d[0].trace;
+                if(Plotly.Plots.traceIs(trace, 'pie')) {
+                    var thisLabel = d[0].label,
+                        newHiddenSlices = hiddenSlices.slice(),
+                        thisLabelIndex = newHiddenSlices.indexOf(thisLabel);
+
+                    if(thisLabelIndex === -1) newHiddenSlices.push(thisLabel);
+                    else newHiddenSlices.splice(thisLabelIndex, 1);
+
+                    Plotly.relayout(td, 'legend.hiddenslices', newHiddenSlices);
+                } else {
+                    var newVisible = trace.visible === true ?
                         'legendonly' : true;
-                Plotly.restyle(td, 'visible', newVisible, trace.index);
+                    Plotly.restyle(td, 'visible', newVisible, trace.index);
+                }
             });
         });
 

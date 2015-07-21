@@ -8,7 +8,7 @@ var pie = module.exports = {},
     isNumeric = require('./isnumeric'),
     tinycolor = require('tinycolor2');
 
-Plotly.Plots.register(pie, 'pie', ['pie']);
+Plotly.Plots.register(pie, 'pie', ['pie', 'showLegend']);
 
 pie.attributes = {
     // data
@@ -235,10 +235,12 @@ pie.calc = function(gd, trace) {
         allThisTraceLabels = {},
         needDefaults = false,
         vTotal = 0,
+        hiddenSlices = ((fullLayout.legend || {}).hiddenslices || []),
         i,
         v,
         label,
-        color;
+        color,
+        hidden;
 
     for(i = 0; i < vals.length; i++) {
         v = vals[i];
@@ -269,13 +271,16 @@ pie.calc = function(gd, trace) {
             needDefaults = true;
         }
 
-        vTotal += v;
+        hidden = hiddenSlices.indexOf(label) !== -1;
+
+        if(!hidden) vTotal += v;
 
         cd.push({
             v: v,
             label: label,
             color: color,
-            i: i
+            i: i,
+            hidden: hidden
         });
     }
 
@@ -398,10 +403,7 @@ pie.plot = function(gd, cdpie) {
             var slices = d3.select(this).selectAll('g.slice').data(cd);
 
             slices.enter().append('g')
-                .classed('slice', true)
-                .each(function() {
-                    d3.select(this).append('path').classed('surface', true); // the top surface of the slice
-                });
+                .classed('slice', true);
             slices.exit().remove();
 
             var outsideTextQuadrants = [
@@ -410,10 +412,17 @@ pie.plot = function(gd, cdpie) {
             ];
 
             slices.each(function(pt) {
+                if(pt.hidden) {
+                    d3.select(this).selectAll('path,g').remove();
+                    return;
+                }
+
                 var cx = cd0.cx + depthVector[0],
                     cy = cd0.cy + depthVector[1],
                     sliceTop = d3.select(this),
-                    slicePath = sliceTop.select('path.surface');
+                    slicePath = sliceTop.selectAll('path.surface').data([pt]);
+
+                slicePath.enter().append('path').classed('surface', true);
 
                 sliceTop.select('path.textline').remove();
 
@@ -833,7 +842,12 @@ function setCoords(cd) {
         currentCoords;
 
     if(trace.direction === 'ccw') {
-        currentAngle += angleFactor * cd0.v;
+        for(i = 0; i < cd.length; i++) {
+            if(!cd[i].hidden) break; // find the first non-hidden slice
+        }
+        if(i === cd.length) return; // all slices hidden
+
+        currentAngle += angleFactor * cd[i].v;
         angleFactor *= -1;
         firstPt = 'px1';
         lastPt = 'px0';
@@ -865,6 +879,8 @@ function setCoords(cd) {
 
     for(i = 0; i < cd.length; i++) {
         cdi = cd[i];
+        if(cdi.hidden) continue;
+
         cdi[firstPt] = currentCoords;
 
         currentAngle += angleFactor * cdi.v / 2;
