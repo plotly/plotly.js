@@ -232,7 +232,6 @@ pie.calc = function(gd, trace) {
         cd = [],
         fullLayout = gd._fullLayout,
         colorMap = fullLayout._piecolormap,
-        allLabels = fullLayout._pielabels,
         allThisTraceLabels = {},
         needDefaults = false,
         vTotal = 0,
@@ -260,7 +259,6 @@ pie.calc = function(gd, trace) {
             color = Plotly.Color.tinyRGB(color);
             if(!colorMap[label]) {
                 colorMap[label] = color;
-                allLabels.push(label);
             }
         }
         // have we seen this label and assigned a color to it in a previous trace?

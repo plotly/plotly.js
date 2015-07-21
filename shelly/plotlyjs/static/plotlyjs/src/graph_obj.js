@@ -1700,7 +1700,6 @@ function doCalcdata(gd) {
 
     // for sharing colors across pies (and for legend)
     fullLayout._piecolormap = {};
-    fullLayout._pielabels = [];
     fullLayout._piedefaultcolorcount = 0;
 
     // delete category list, if there is one, so we start over
