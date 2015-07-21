@@ -892,26 +892,19 @@ pie.style = function(gd) {
     gd._fullLayout._pielayer.selectAll('.trace').each(function(cd) {
         var cd0 = cd[0],
             trace = cd0.trace,
-            getLineWidth,
             traceSelection = d3.select(this);
 
         traceSelection.style({opacity: trace.opacity});
-
-        if(Array.isArray(trace.line.width)) {
-            getLineWidth = function(pt) {
-                return trace.line.width[pt.i] || 0;
-            };
-        } else {
-            var lineWidth = trace.line.width || 0;
-            getLineWidth = function() { return lineWidth; };
-        }
 
         traceSelection.selectAll('.top path.surface').each(function(pt) {
             var lineColor = trace.line.color;
             if(Array.isArray(lineColor)) lineColor = lineColor[pt.i] || Plotly.Color.defaultLine;
 
+            var lineWidth = trace.line.width || 0;
+            if(Array.isArray(lineWidth)) lineWidth = lineWidth[pt.i] || 0;
+
             d3.select(this).style({
-                'stroke-width': getLineWidth(pt),
+                'stroke-width': lineWidth,
                 fill: pt.color
             })
             .call(Plotly.Color.stroke, lineColor);
