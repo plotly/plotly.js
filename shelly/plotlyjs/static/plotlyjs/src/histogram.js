@@ -6,6 +6,18 @@ var histogram = module.exports = {},
     scatterAttrs = Plotly.Scatter.attributes,
     barAttrs = Plotly.Bars.attributes;
 
+/**
+ * histogram errorBarsOK is debatable, but it's put in for backward compat.
+ * there are use cases for it - sqrt for a simple histogram works right now,
+ * constant and % work but they're not so meaningful. I guess it could be cool
+ * to allow quadrature combination of errors in summed histograms...
+ */
+Plotly.Plots.register(Plotly.Bars, 'histogram',
+    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend']);
+
+Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
+    ['cartesian', '2dMap', 'histogram']);
+
 // histogram has its own calc function,
 // but uses Bars.plot to display
 // and Bars.setPositions for stacking and grouping

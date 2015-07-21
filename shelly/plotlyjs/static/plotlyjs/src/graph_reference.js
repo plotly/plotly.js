@@ -9,6 +9,7 @@ var graphReference = {},
 var NESTEDMODULEID = '_nestedModules',
     COMPOSEDMODULEID = '_composedModules';
 
+
 function getGraphReference() {
     var Plots = Plotly.Plots;
 
@@ -91,6 +92,7 @@ Methods.coupleAttrs = function(attrsIn, attrsOut, whichAttrs, type) {
         if(k === NESTEDMODULEID) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
                 nestedModule = Methods.getModule({module: attrsIn[k][kk]});
+                if(nestedModule === undefined) return;
                 nestedAttrs = nestedModule[whichAttrs];
                 nestedReference = Methods.coupleAttrs(
                     nestedAttrs, {},
@@ -106,6 +108,7 @@ Methods.coupleAttrs = function(attrsIn, attrsOut, whichAttrs, type) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
                 if (kk !== type) return;
                 composedModule = Methods.getModule({module: attrsIn[k][kk]});
+                if(composedModule === undefined) return;
                 composedAttrs = composedModule[whichAttrs];
                 composedAttrs = Methods.coupleAttrs(
                     composedAttrs, {},

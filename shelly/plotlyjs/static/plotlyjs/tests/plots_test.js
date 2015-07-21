@@ -169,10 +169,5 @@ describe('Test Plotly.Plots', function () {
             expect(Plotly.Plots.traceIs({type: 'newtype'}, 'cartesian')).toBe(false);
             expect(console.warn).not.toHaveBeenCalled();
         });
-
-        it('should warn on nonexistent categories', function() {
-            expect(Plotly.Plots.traceIs('newtype', 'yellow')).toBe(false);
-            expect(console.warn).toHaveBeenCalledWith('unrecognized category yellow');
-        });
     });
 });
