@@ -207,8 +207,8 @@ function Scene(options, fullLayout) {
     this.axesOptions      = createAxesOptions(fullLayout[this.id]);
     this.spikeOptions     = createSpikeOptions(fullLayout[this.id]);
     this.container        = sceneContainer;
-
-    this.staticMode       = !!options.staticMode;
+    this.staticMode       = !!options.staticPlot;
+    this.pixelRatio       = options.plot3dPixelRatio || 2;
 
     //Coordinate rescaling
     this.dataScale    = [1,1,1];
