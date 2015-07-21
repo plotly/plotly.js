@@ -226,13 +226,6 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('pull');
 };
 
-// pie.supplyLayoutDefaults  = function(layoutIn, layoutOut){
-//     // clear out stashed label -> color mappings to be used by calc
-//     layoutOut._piecolormap = {};
-//     layoutOut._pielabels = [];
-//     layoutOut._piedefaultcolorcount = 0;
-// };
-
 pie.calc = function(gd, trace) {
     var vals = trace.values,
         labels = trace.labels,
