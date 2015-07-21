@@ -681,7 +681,7 @@ function scootLabels(outsideTextQuadrants, trace) {
         var prevOuterY = prevPt.labelExtraY + (yHalf ? prevPt.yLabelMax : prevPt.yLabelMin),
             thisInnerY = yHalf ? thisPt.yLabelMin : thisPt.yLabelMax,
             thisOuterY = yHalf ? thisPt.yLabelMax : thisPt.yLabelMin,
-            thisSliceOuterY = farthestY(thisPt.px0[1], thisPt.px1[1]),
+            thisSliceOuterY = thisPt.cyFinal + farthestY(thisPt.px0[1], thisPt.px1[1]),
             newExtraY = prevOuterY - thisInnerY,
             xBuffer,
             i,
@@ -710,7 +710,7 @@ function scootLabels(outsideTextQuadrants, trace) {
 
                 if(newExtraY * yDiffSign > 0) thisPt.labelExtraY += newExtraY;
 
-            } else if((thisOuterY + thisPt.labelExtraY - thisSliceOuterY) * yDiffSign < 0) {
+            } else if((thisOuterY + thisPt.labelExtraY - thisSliceOuterY) * yDiffSign > 0) {
                 // farther from the equator - happens after we've done all the
                 // vertical moving we're going to do
                 // move horizontally to get away from these more polar slices
