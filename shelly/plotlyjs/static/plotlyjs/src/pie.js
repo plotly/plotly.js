@@ -434,26 +434,44 @@ pie.plot = function(gd, cdpie) {
                     }
                 }
 
-                var outerArc = 'a' + cd0.r + ',' + rSmall + ' ' + tiltAxis + ' ' + pt.largeArc + ' 1 ' +
-                    (pt.px1[0] - pt.px0[0]) + ',' + (pt.px1[1] - pt.px0[1]);
+                function arc(start, finish, cw, scale) {
+                    return 'a' + (scale * cd0.r) + ',' + (scale * rSmall) + ' ' + tiltAxis + ' ' +
+                        pt.largeArc + (cw ? ' 1 ' : ' 0 ') +
+                        (scale * (finish[0] - start[0])) + ',' + (scale * (finish[1] - start[1]));
+                }
 
-                if(trace.hole) {
-                    var hole = trace.hole,
-                        rim = 1 - hole;
-                    slicePath.attr('d',
-                        'M' + (cx + hole * pt.px1[0]) + ',' + (cy + hole * pt.px1[1]) +
-                        'a' + (hole * cd0.r) + ',' + (hole * rSmall) + ' ' + tiltAxis + ' ' +
-                            pt.largeArc + ' 0 ' +
-                            (hole * (pt.px0[0] - pt.px1[0])) + ',' + (hole * (pt.px0[1] - pt.px1[1])) +
-                        'l' + (rim * pt.px0[0]) + ',' + (rim * pt.px0[1]) +
-                        outerArc +
-                        'Z');
+                var hole = trace.hole;
+                if(pt.v === cd0.vTotal) { // 100% fails bcs arc start and end are identical
+                    var outerCircle = 'M' + (cx + pt.px0[0]) + ',' + (cy + pt.px0[1]) +
+                        arc(pt.px0, pt.pxmid, true, 1) +
+                        arc(pt.pxmid, pt.px0, true, 1) + 'Z';
+                    if(hole) {
+                        slicePath.attr('d',
+                            'M' + (cx + hole * pt.px0[0]) + ',' + (cy + hole * pt.px0[1]) +
+                            arc(pt.px0, pt.pxmid, false, hole) +
+                            arc(pt.pxmid, pt.px0, false, hole) +
+                            'Z' + outerCircle);
+                    }
+                    else slicePath.attr('d', outerCircle);
                 } else {
-                    slicePath.attr('d',
-                        'M' + cx + ',' + cy +
-                        'l' + pt.px0[0] + ',' + pt.px0[1] +
-                        outerArc +
-                        'Z');
+
+                    var outerArc = arc(pt.px0, pt.px1, true, 1);
+
+                    if(hole) {
+                        var rim = 1 - hole;
+                        slicePath.attr('d',
+                            'M' + (cx + hole * pt.px1[0]) + ',' + (cy + hole * pt.px1[1]) +
+                            arc(pt.px1, pt.px0, false, hole) +
+                            'l' + (rim * pt.px0[0]) + ',' + (rim * pt.px0[1]) +
+                            outerArc +
+                            'Z');
+                    } else {
+                        slicePath.attr('d',
+                            'M' + cx + ',' + cy +
+                            'l' + pt.px0[0] + ',' + pt.px0[1] +
+                            outerArc +
+                            'Z');
+                    }
                 }
 
                 // add text
@@ -589,7 +607,8 @@ function transformInsideText(textBB, pt, cd0, trace) {
         textAspect = textBB.width / textBB.height,
         halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5),
         ring = 1 - trace.hole,
-        rInscribed = Math.min(1 / (1 + 1 / Math.sin(halfAngle)), ring / 2),
+        rInscribed = (pt.v === cd0.vTotal && !trace.hole) ? 1 : // special case of 100% with no hole
+            Math.min(1 / (1 + 1 / Math.sin(halfAngle)), ring / 2),
 
         // max size text can be inserted inside without rotating it
         // this inscribes the text rectangle in a circle, which is then inscribed
