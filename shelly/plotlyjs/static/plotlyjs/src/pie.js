@@ -897,17 +897,21 @@ pie.style = function(gd) {
         traceSelection.style({opacity: trace.opacity});
 
         traceSelection.selectAll('.top path.surface').each(function(pt) {
-            var lineColor = trace.line.color;
-            if(Array.isArray(lineColor)) lineColor = lineColor[pt.i] || Plotly.Color.defaultLine;
-
-            var lineWidth = trace.line.width || 0;
-            if(Array.isArray(lineWidth)) lineWidth = lineWidth[pt.i] || 0;
-
-            d3.select(this).style({
-                'stroke-width': lineWidth,
-                fill: pt.color
-            })
-            .call(Plotly.Color.stroke, lineColor);
+            d3.select(this).call(pie.styleOne, pt, trace);
         });
     });
+};
+
+pie.styleOne = function(s, pt, trace) {
+    var lineColor = trace.line.color;
+    if(Array.isArray(lineColor)) lineColor = lineColor[pt.i] || Plotly.Color.defaultLine;
+
+    var lineWidth = trace.line.width || 0;
+    if(Array.isArray(lineWidth)) lineWidth = lineWidth[pt.i] || 0;
+
+    s.style({
+        'stroke-width': lineWidth,
+        fill: pt.color
+    })
+    .call(Plotly.Color.stroke, lineColor);
 };
