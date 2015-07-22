@@ -4,10 +4,10 @@ var Plotly = require('./plotly'),
     objectAssign = require('object-assign');
 
 var NESTEDMODULEID = '_nestedModules',
-    COMPOSEDMODULEID = '_composedModules';
-
-
+    COMPOSEDMODULEID = '_composedModules',
     ANYTYPE = '*',
+    ISLINKEDTOARRAY = '_isLinkedToArray',
+    ISSUBPLOTOBJ = '_isSubplotObj';
 
 var graphReference = {
     traces: {},
@@ -67,9 +67,15 @@ function getLayoutAttributes() {
     );
 
     layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
-    // TODO how to present keys '{x,y}axis[1-9]' or 'scene[1-9]'?
-    // TODO how to present 'annotations' Array ?
 
+    // add ISSUBPLOTOBJ key
+    Object.keys(layoutAttributes).forEach(function(k) {
+        if(subplotsRegistry.gl3d.idRegex.test(k) ||
+            subplotsRegistry.geo.idRegex.test(k) ||
+            /^xaxis[0-9]*$/.test(k) ||
+            /^yaxis[0-9]*$/.test(k)
+          ) layoutAttributes[k][ISSUBPLOTOBJ] = true;
+    });
 
     graphReference.layout = {
         layoutAttributes: layoutAttributes
@@ -130,7 +136,7 @@ function getModule(arg) {
 
 function removeUnderscoreAttrs(attributes) {
     Object.keys(attributes).forEach(function(k){
-       if(k.charAt(0) === '_') delete attributes[k];
+        if(k.charAt(0) === '_' && k !== ISLINKEDTOARRAY) delete attributes[k];
     });
     return attributes;
 }
