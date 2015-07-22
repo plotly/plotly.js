@@ -1134,11 +1134,13 @@ function cleanData(data, existingData) {
             trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
         }
 
-        if(Array.isArray(trace.textposition)) {
-            trace.textposition = trace.textposition.map(cleanTextPosition);
-        }
-        else if(trace.textposition) {
-            trace.textposition = cleanTextPosition(trace.textposition);
+        if(!plots.traceIs(trace, 'pie')) {
+            if(Array.isArray(trace.textposition)) {
+                trace.textposition = trace.textposition.map(cleanTextPosition);
+            }
+            else if(trace.textposition) {
+                trace.textposition = cleanTextPosition(trace.textposition);
+            }
         }
 
         // prune empty containers made before the new nestedProperty
