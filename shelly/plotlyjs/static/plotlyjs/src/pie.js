@@ -600,6 +600,19 @@ pie.plot = function(gd, cdpie) {
             });
         });
     });
+
+    // This is for a bug in Chrome (as of 2015-07-22, and does not affect FF)
+    // if insidetextfont and outsidetextfont are different sizes, sometimes the size
+    // of an "em" gets taken from the wrong element at first so lines are
+    // spaced wrong. You just have to tell it to try again later and it gets fixed.
+    // I have no idea why we haven't seen this in other contexts. Also, sometimes
+    // it gets the initial draw correct but on redraw it gets confused.
+    setTimeout(function() {
+        pieGroups.selectAll('tspan').each(function() {
+            var s = d3.select(this);
+            if(s.attr('dy')) s.attr('dy', s.attr('dy'));
+        });
+    }, 0);
 };
 
 function transformInsideText(textBB, pt, cd0, trace) {
