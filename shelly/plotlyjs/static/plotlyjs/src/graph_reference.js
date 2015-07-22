@@ -4,7 +4,6 @@ var Plotly = require('./plotly'),
     objectAssign = require('object-assign');
 
 var graphReference = {},
-    Methods = {};
 
 var NESTEDMODULEID = '_nestedModules',
     COMPOSEDMODULEID = '_composedModules';
@@ -26,32 +25,30 @@ function getGraphReference() {
 
 module.exports = getGraphReference;
 
-Methods.getAttributes = function(type) {
+function getTraceAttributes(type) {
     var globalAttributes = Plotly.Plots.attributes,
         attributes = {};
 
-    var module;
+        module = getModule({type: type}),
 
     // global attributes
     attributes = objectAssign(attributes, globalAttributes);
 
     // module attributes (+ nested + composed)
-    module = Methods.getModule({type: type});
-    attributes = Methods.coupleAttrs(
-        module.attributes, attributes,
-        'attributes', type
+    attributes = coupleAttrs(
+        module.attributes, attributes, 'attributes', type
     );
     attributes.type = type;
-    attributes = Methods.removeUnderscoreAttrs(attributes);
+    attributes = removeUnderscoreAttrs(attributes);
 
     graphReference[type].attributes = attributes;
-};
 
-Methods.getLayoutAttributes = function(type) {
     var Plots = Plotly.Plots,
         globalLayoutAttributes = Plots.layoutAttributes,
         layoutAttributes = {};
+}
 
+function getLayoutAttributes() {
     var sceneAttrs;
 
     // global layout attributes
@@ -75,15 +72,15 @@ Methods.getLayoutAttributes = function(type) {
         layoutAttributes.annotations = Plotly.Annotations.layoutAttributes;
     }
 
+    layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
     // TODO how to present keys '{x,y}axis[1-9]' or 'scene[1-9]'?
     // TODO how to present 'annotations' Array ?
 
-    layoutAttributes = Methods.removeUnderscoreAttrs(layoutAttributes);
 
     graphReference[type].layoutAttributes = layoutAttributes;
-};
+}
 
-Methods.coupleAttrs = function(attrsIn, attrsOut, whichAttrs, type) {
+function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
     var nestedModule, nestedAttrs, nestedReference,
         composedModule, composedAttrs;
 
@@ -91,13 +88,14 @@ Methods.coupleAttrs = function(attrsIn, attrsOut, whichAttrs, type) {
 
         if(k === NESTEDMODULEID) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
-                nestedModule = Methods.getModule({module: attrsIn[k][kk]});
+                nestedModule = getModule({module: attrsIn[k][kk]});
                 if(nestedModule === undefined) return;
+
                 nestedAttrs = nestedModule[whichAttrs];
-                nestedReference = Methods.coupleAttrs(
-                    nestedAttrs, {},
-                    whichAttrs, type
+                nestedReference = coupleAttrs(
+                    nestedAttrs, {}, whichAttrs, type
                 );
+
                 Plotly.Lib.nestedProperty(attrsOut, kk)
                     .set(nestedReference);
             });
@@ -106,14 +104,16 @@ Methods.coupleAttrs = function(attrsIn, attrsOut, whichAttrs, type) {
 
         if(k === COMPOSEDMODULEID) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
-                if (kk !== type) return;
-                composedModule = Methods.getModule({module: attrsIn[k][kk]});
+                if(kk !== type) return;
+
+                composedModule = getModule({module: attrsIn[k][kk]});
                 if(composedModule === undefined) return;
+
                 composedAttrs = composedModule[whichAttrs];
-                composedAttrs = Methods.coupleAttrs(
-                    composedAttrs, {},
-                    whichAttrs, type
+                composedAttrs = coupleAttrs(
+                    composedAttrs, {}, whichAttrs, type
                 );
+
                 attrsOut = objectAssign(attrsOut, composedAttrs);
             });
             return;
@@ -123,18 +123,18 @@ Methods.coupleAttrs = function(attrsIn, attrsOut, whichAttrs, type) {
     });
 
     return attrsOut;
-};
+}
 
 // helper methods
 
-Methods.getModule = function(arg) {
+function getModule(arg) {
     if('type' in arg) return Plotly.Plots.getModule({type: arg.type});
     else if('module' in arg) return Plotly[arg.module];
-};
+}
 
-Methods.removeUnderscoreAttrs = function(attributes) {
+function removeUnderscoreAttrs(attributes) {
     Object.keys(attributes).forEach(function(k){
        if(k.charAt(0) === '_') delete attributes[k];
     });
     return attributes;
-};
+}
