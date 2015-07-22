@@ -65,29 +65,40 @@ pie.attributes = {
             {type: 'number', min: 0, max: 1, dflt: 1}
         ]
     },
-    tilt: {
-        // degrees to tilt the pie back from straight on
-        type: 'number',
-        min: 0,
-        max: 90,
-        dflt: 0
-    },
-    tiltaxis: {
-        // degrees away from straight up to tilt the pie
-        // only has an effect if tilt is nonzero
-        type: 'number',
-        min: -360,
-        max: 360,
-        dflt: 0
-    },
-    depth: {
-        // "3D" size, as a fraction of radius
-        // only has an effect if tilt is nonzero
-        type: 'number',
-        min: 0,
-        max: 10,
-        dflt: 0.5
-    },
+    // 3D attributes commented out until I finish them in a later PR
+    // tilt: {
+    //     // degrees to tilt the pie back from straight on
+    //     type: 'number',
+    //     min: 0,
+    //     max: 90,
+    //     dflt: 0
+    // },
+    // tiltaxis: {
+    //     // degrees away from straight up to tilt the pie
+    //     // only has an effect if tilt is nonzero
+    //     type: 'number',
+    //     min: -360,
+    //     max: 360,
+    //     dflt: 0
+    // },
+    // depth: {
+    //     // "3D" size, as a fraction of radius
+    //     // only has an effect if tilt is nonzero
+    //     type: 'number',
+    //     min: 0,
+    //     max: 10,
+    //     dflt: 0.5
+    // },
+    // shading: {
+    //     // how much darker to make the sides than the top,
+    //     // with a 3D effect. We could of course get all
+    //     // fancy with lighting effects, but maybe this is
+    //     // sufficient.
+    //     type: 'number',
+    //     min: 0,
+    //     max: 1,
+    //     dflt: 0.2
+    // },
     hole: {
         // fraction of the radius to cut out and make a donut
         type: 'number',
@@ -135,16 +146,6 @@ pie.attributes = {
             dflt: 0,
             arrayOk: true
         }
-    },
-    shading: {
-        // how much darker to make the sides than the top,
-        // with a 3D effect. We could of course get all
-        // fancy with lighting effects, but maybe this is
-        // sufficient.
-        type: 'number',
-        min: 0,
-        max: 1,
-        dflt: 0.2
     },
     pull: {
         // fraction of larger radius to pull the slices
@@ -207,12 +208,13 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('domain.y[0]');
     coerce('domain.y[1]');
 
-    var tilt = coerce('tilt');
-    if(tilt) {
-        coerce('tiltaxis');
-        coerce('depth');
-        coerce('shading');
-    }
+    // 3D attributes commented out until I finish them in a later PR
+    // var tilt = coerce('tilt');
+    // if(tilt) {
+    //     coerce('tiltaxis');
+    //     coerce('depth');
+    //     coerce('shading');
+    // }
 
     coerce('hole');
 
@@ -394,7 +396,7 @@ pie.plot = function(gd, cdpie) {
         var pieGroup = d3.select(this),
             cd0 = cd[0],
             trace = cd0.trace,
-            tiltRads = trace.tilt * Math.PI / 180,
+            tiltRads = 0, //trace.tilt * Math.PI / 180,
             depthLength = (trace.depth||0) * cd0.r * Math.sin(tiltRads) / 2,
             tiltAxis = trace.tiltaxis || 0,
             tiltAxisRads = tiltAxis * Math.PI / 180,
