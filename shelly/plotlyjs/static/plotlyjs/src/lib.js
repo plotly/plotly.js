@@ -371,18 +371,22 @@ function lessOrEqual(a, b) { return a <= b; }
 function greaterThan(a, b) { return a > b; }
 function greaterOrEqual(a, b) { return a >= b; }
 
+lib.sorterAsc = function(a, b) { return a - b; }
+
 /**
  * find distinct values in an array, lumping together ones that appear to
  * just be off by a rounding error
  * return the distinct values and the minimum difference between any two
  */
 lib.distinctVals = function(valsIn) {
-    var vals = valsIn.slice(); // otherwise we sort the original array...
-    vals.sort(function(a, b){ return a - b; });
+    var vals = valsIn.slice();  // otherwise we sort the original array...
+    vals.sort(lib.sorterAsc);
+
     var l = vals.length - 1,
         minDiff = (vals[l] - vals[0]) || 1,
         errDiff = minDiff / (l || 1) / 10000,
         v2 = [vals[0]];
+
     for(var i = 0; i < l; i++) {
         // make sure values aren't just off by a rounding error
         if(vals[i + 1] > vals[i] + errDiff) {
@@ -390,6 +394,7 @@ lib.distinctVals = function(valsIn) {
             v2.push(vals[i + 1]);
         }
     }
+
     return {vals: v2, minDiff: minDiff};
 };
 

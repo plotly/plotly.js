@@ -274,7 +274,7 @@ boxes.calc = function(gd, trace) {
         var v, l, cdi, i;
 
         for (i = 0; i < valBinned.length; ++i) {
-            v = valBinned[i].sort(function(a, b){ return a - b; });
+            v = valBinned[i].sort(Plotly.Lib.sorterAsc);
             l = v.length;
             cdi = cd[i];
 

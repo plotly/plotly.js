@@ -11,7 +11,6 @@ Plotly.Plots.register(contour, 'contour',
 Plotly.Plots.register(contour, 'histogram2dcontour',
     ['cartesian', '2dMap', 'contour', 'histogram']);
 
-// For coerce-level coupling
 var scatterLineAttrs = Plotly.Scatter.attributes.line;
 
 contour.attributes = {
