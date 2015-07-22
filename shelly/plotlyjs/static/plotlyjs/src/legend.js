@@ -50,14 +50,7 @@ legend.layoutAttributes = {
         type: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'auto'
-    },
-
-    /**
-     * hiddenslices is the pie chart analog of visible:'legendonly'
-     * but it can contain many labels, and can hide slices
-     * from several pies simultaneously
-     */
-    hiddenslices: {type: 'data_array'}
+    }
 };
 
 legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
@@ -108,7 +101,6 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     coerce('y');
     coerce('yanchor');
     Plotly.Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
-    coerce('hiddenslices');
 };
 
 // -----------------------------------------------------
@@ -465,7 +457,7 @@ legend.draw = function(td, showlegend) {
 
     var opts = fullLayout.legend,
         legendData = legend.getLegendData(td.calcdata, opts),
-        hiddenSlices = opts.hiddenslices || [];
+        hiddenSlices = fullLayout.hiddenslices || [];
 
     if(!showlegend || !legendData.length) {
         fullLayout._infolayer.selectAll('.legend').remove();
@@ -545,7 +537,7 @@ legend.draw = function(td, showlegend) {
                     if(thisLabelIndex === -1) newHiddenSlices.push(thisLabel);
                     else newHiddenSlices.splice(thisLabelIndex, 1);
 
-                    Plotly.relayout(td, 'legend.hiddenslices', newHiddenSlices);
+                    Plotly.relayout(td, 'hiddenslices', newHiddenSlices);
                 } else {
                     if(legendgroup === '') {
                         traceIndicesInGroup = [trace.index];
