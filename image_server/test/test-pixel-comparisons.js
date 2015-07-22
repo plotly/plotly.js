@@ -6,6 +6,7 @@ var fs = require('fs');
 var path = require('path');
 var getOptions = require('./tools/get-options');
 var gm = require('gm');
+var statusMsg485 = require('../server_app/config/statusmsgs')['485'];
 
 if (!fs.existsSync('./test-images-diffs')) fs.mkdirSync('./test-images-diffs');
 if (!fs.existsSync('./test-images')) fs.mkdirSync('./test-images');
@@ -53,6 +54,7 @@ function testMock (fileName, t) {
     var diffPath = 'test-images-diffs/' + 'diff-' + imageFileName;
     var savedImageStream = fs.createWriteStream(savedImagePath);
     var options = getOptions(bodyMock, 'http://localhost:9010/');
+    var statusCode;
 
     function checkImage () {
         var options = {
@@ -60,7 +62,13 @@ function testMock (fileName, t) {
             highlightColor: 'purple',
             tolerance: 0.0
         };
-        gm.compare(savedImagePath, 'test-images-baseline/' + imageFileName, options, onEqualityCheck);
+
+        if(statusCode === 485) {
+            console.error(imageFileName, '-', statusMsg485, '- skip');
+        }
+        else {
+            gm.compare(savedImagePath, 'test-images-baseline/' + imageFileName, options, onEqualityCheck);
+        }
     }
 
     function onEqualityCheck (err, isEqual) {
@@ -74,6 +82,9 @@ function testMock (fileName, t) {
     }
 
     request(options)
+        .on('response', function(response) {
+            statusCode = response.statusCode;
+        })
         .pipe(savedImageStream)
         .on('close', checkImage);
 }

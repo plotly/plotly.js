@@ -20,8 +20,14 @@ legend.layoutAttributes = {
     },
     font:{type: 'font'},
     traceorder: {
-        type: 'enumerated',
-        values: ['normal', 'reversed']
+        type: 'flaglist',
+        flags: ['reversed', 'grouped'],
+        extras: ['normal']
+    },
+    tracegroupgap: {
+       type: 'number',
+       min: 0,
+       dflt: 10
     },
     x: {
         type: 'number',
@@ -54,20 +60,30 @@ legend.layoutAttributes = {
     hiddenslices: {type: 'data_array'}
 };
 
-legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
+legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     var containerIn = layoutIn.legend || {},
         containerOut = layoutOut.legend = {};
 
     var visibleTraces = 0,
-        defaultOrder = 'normal';
-    fullData.forEach(function(trace) {
+        defaultOrder = 'normal',
+        trace;
+
+    for(var i = 0; i < fullData.length; i++) {
+        trace = fullData[i];
+
         if(legendGetsTrace(trace)) visibleTraces++;
 
         if((Plotly.Plots.traceIs(trace, 'bar') && layoutOut.barmode==='stack') ||
                 ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
-            defaultOrder = 'reversed';
+            defaultOrder = isGrouped({traceorder: defaultOrder}) ?
+                'grouped+reversed' : 'reversed';
         }
-    });
+
+        if(trace.legendgroup !== undefined && trace.legendgroup !== '') {
+            defaultOrder = isReversed({traceorder: defaultOrder}) ?
+                'reversed+grouped' : 'grouped';
+        }
+    }
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(containerIn, containerOut,
@@ -77,19 +93,22 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData){
     var showLegend = Plotly.Lib.coerce(layoutIn, layoutOut,
         Plotly.Plots.layoutAttributes, 'showlegend', visibleTraces > 1);
 
-    if(showLegend) {
-        coerce('bgcolor', layoutOut.paper_bgcolor);
-        coerce('bordercolor');
-        coerce('borderwidth');
-        coerce('font', layoutOut.font);
-        coerce('traceorder', defaultOrder);
-        coerce('x');
-        coerce('xanchor');
-        coerce('y');
-        coerce('yanchor');
-        Plotly.Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
-        coerce('hiddenslices');
-    }
+    if(showLegend === false) return;
+
+    coerce('bgcolor', layoutOut.paper_bgcolor);
+    coerce('bordercolor');
+    coerce('borderwidth');
+    coerce('font', layoutOut.font);
+
+    coerce('traceorder', defaultOrder);
+    if(isGrouped(layoutOut.legend)) coerce('tracegroupgap');
+
+    coerce('x');
+    coerce('xanchor');
+    coerce('y');
+    coerce('yanchor');
+    Plotly.Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
+    coerce('hiddenslices');
 };
 
 // -----------------------------------------------------
@@ -120,34 +139,62 @@ legend.lines = function(d){
 legend.points = function(d){
     var d0 = d[0],
         trace = d0.trace,
-        marker = trace.marker||{},
         showMarkers = Plotly.Scatter.hasMarkers(trace),
         showText = Plotly.Scatter.hasText(trace),
         showLines = Plotly.Scatter.hasLines(trace);
 
     var dMod, tMod;
-    if(showMarkers || showText || showLines) {
-        // constrain text, markers, etc so they'll fit on the legend
-        var dEdit = {
-            tx: 'Aa',
-            mo: Math.max(0.2, (d0.mo+1 || marker.opacity+1 || 2) - 1)
-        };
-        if(d0.ms+1) dEdit.ms = 10; // bubble charts:
-        if(d0.mlw>5) dEdit.mlw = 5;
-        dMod = [Plotly.Lib.minExtend(d0, dEdit)];
 
-        var tEdit = {textfont: {size: 10}};
+    // 'scatter3d' and 'scattergeo' don't use gd.calcdata yet;
+    // use d0.trace to infer arrayOk attributes
+
+    function boundVal(attrIn, arrayToValFn, bounds) {
+        var valIn = Plotly.Lib.nestedProperty(trace, attrIn).get(),
+            valToBound = (Array.isArray(valIn) && arrayToValFn) ?
+                arrayToValFn(valIn) : valIn;
+
+        if(bounds) {
+            if(valToBound < bounds[0]) return bounds[0];
+            else if(valToBound > bounds[1]) return bounds[1];
+        }
+        return valToBound;
+    }
+
+    function pickFirst(array) { return array[0]; }
+
+    // constrain text, markers, etc so they'll fit on the legend
+    if(showMarkers || showText || showLines) {
+        var dEdit = {},
+            tEdit = {};
+
         if(showMarkers) {
+            dEdit.mc = boundVal('marker.color', pickFirst);
+            dEdit.mo = boundVal('marker.opacity', Plotly.Lib.mean, [0.2, 1]);
+            dEdit.ms = boundVal('marker.size', Plotly.Lib.mean, [2, 16]);
+            dEdit.mlc = boundVal('marker.line.color', pickFirst);
+            dEdit.mlw = boundVal('marker.line.width', Plotly.Lib.mean, [0, 5]);
             tEdit.marker = {
-                size: Math.max(Math.min(marker.size, 16), 2),
                 sizeref: 1,
-                sizemode: 'diameter',
-                line: {width: Math.min(marker.line.width, marker.size)}
+                sizemin: 1,
+                sizemode: 'diameter'
             };
         }
+
         if(showLines) {
-            tEdit.line = {width: Math.min(trace.line.width, 10)};
+            tEdit.line = {
+                width: boundVal('line.width', pickFirst, [0, 10])
+            };
         }
+
+        if(showText) {
+            dEdit.tx = 'Aa';
+            dEdit.tp = boundVal('textposition', pickFirst);
+            dEdit.ts = 10;
+            dEdit.tc = boundVal('textfont.color', pickFirst);
+            dEdit.tf = boundVal('textfont.family', pickFirst);
+        }
+
+        dMod = [Plotly.Lib.minExtend(d0, dEdit)];
         tMod = Plotly.Lib.minExtend(trace, tEdit);
     }
 
@@ -155,18 +202,22 @@ legend.points = function(d){
 
     var pts = ptgroup.selectAll('path.scatterpts')
         .data(showMarkers ? dMod : []);
-    pts.enter().append('path').classed('scatterpts',true)
-        .attr('transform','translate(20,0)');
+    pts.enter().append('path').classed('scatterpts', true)
+        .attr('transform', 'translate(20,0)');
     pts.exit().remove();
     pts.call(Plotly.Drawing.pointStyle, tMod);
+
+    // 'mrc' is set in pointStyle and used in textPointStyle:
+    // constrain it here
+    if(showMarkers) dMod[0].mrc = 3;
 
     var txt = ptgroup.selectAll('g.pointtext')
         .data(showText ? dMod : []);
     txt.enter()
         .append('g').classed('pointtext',true)
-            .append('text').attr('transform','translate(20,0)');
+            .append('text').attr('transform', 'translate(20,0)');
     txt.exit().remove();
-    txt.selectAll('text').call(Plotly.Drawing.textPointStyle,tMod);
+    txt.selectAll('text').call(Plotly.Drawing.textPointStyle, tMod);
 
 };
 
@@ -305,60 +356,118 @@ legend.texts = function(context, td, d, i, traces){
 // legend drawing
 // -----------------------------------------------------
 
-// all types we currently support in legends
-var LEGENDTYPES = ['scatter', 'scatter3d', 'scattergeo', 'box', 'bar', 'histogram'];
-
 function legendGetsTrace(trace) {
-    return trace.visible &&
-        LEGENDTYPES.indexOf(trace.type) !== -1;
+    return trace.visible && Plotly.Plots.traceIs(trace, 'showLegend');
 }
 
-legend.draw = function(td, showlegend) {
-    var layout = td.layout,
-        fullLayout = td._fullLayout,
-        i,
-        j,
-        labelj;
+function isGrouped(legendLayout) {
+    return (legendLayout.traceorder || '').indexOf('grouped') !== -1;
+}
 
-    if(!fullLayout._infolayer || !td.calcdata) return;
+function isReversed(legendLayout) {
+    return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
+}
 
-    if(showlegend!==undefined) layout.showlegend = showlegend;
-    legend.supplyLayoutDefaults(layout, fullLayout, td._fullData);
-    showlegend = fullLayout.showlegend;
+legend.getLegendData = function(calcdata, opts) {
 
-    var opts = fullLayout.legend,
-        hiddenSlices = opts.hiddenslices || [];
+    // build an { legendgroup: [cd0, cd0], ... } object
+    var lgroupToTraces = {},
+        lgroups = [],
+        hasOneNonBlankGroup = false,
+        slicesShown = {},
+        lgroupi = 0;
 
-    var ldata = [],
-        slicesShown = {};
-    for(i = 0; i < td.calcdata.length; i++) {
-        var cd = td.calcdata[i],
-            cd0 = cd[0],
-            trace = cd0.trace;
+    var cd, cd0, trace, lgroup, i, j, labelj;
+
+    function addOneItem(legendGroup, legendItem) {
+        // each '' legend group is treated as a separate group
+        if(legendGroup==='' || !isGrouped(opts)) {
+            var uniqueGroup = '~~i' + lgroupi; // TODO: check this against fullData legendgroups?
+            lgroups.push(uniqueGroup);
+            lgroupToTraces[uniqueGroup] = [[legendItem]];
+            lgroupi++;
+        }
+        else if(lgroups.indexOf(legendGroup) === -1) {
+            lgroups.push(legendGroup);
+            hasOneNonBlankGroup = true;
+            lgroupToTraces[legendGroup] = [[legendItem]];
+        }
+        else lgroupToTraces[legendGroup].push([legendItem]);
+    }
+
+    for(i = 0; i < calcdata.length; i++) {
+        cd = calcdata[i];
+        cd0 = cd[0];
+        trace = cd0.trace;
+        lgroup = trace.legendgroup;
+
+        if(!legendGetsTrace(trace) || !trace.showlegend) continue;
 
         if(Plotly.Plots.traceIs(trace, 'pie')) {
+            if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
             for(j = 0; j < cd.length; j++) {
                 labelj = cd[j].label;
-                if(!slicesShown[labelj]) {
-                    ldata.push([{
+                if(!slicesShown[lgroup][labelj]) {
+                    addOneItem(lgroup, {
                         label: labelj,
                         color: cd[j].color,
                         i: cd[j].i,
                         trace: trace
-                    }]);
-                    slicesShown[labelj] = true;
+                    });
+
+                    slicesShown[lgroup][labelj] = true;
                 }
             }
         }
 
-        else if(legendGetsTrace(trace) && trace.showlegend) {
-            ldata.push([cd0]);
-        }
+        else addOneItem(lgroup, cd0);
     }
 
-    if(opts.traceorder==='reversed') ldata.reverse();
+    // won't draw a legend in this case
+    if(!lgroups.length) return [];
 
-    if(!showlegend || !ldata.length) {
+    // rearrange lgroupToTraces into a d3-friendly array of arrays
+    var lgroupsLength = lgroups.length,
+        ltraces,
+        legendData;
+
+    if(hasOneNonBlankGroup && isGrouped(opts)) {
+        legendData = new Array(lgroupsLength);
+        for(i = 0; i < lgroupsLength; i++) {
+            ltraces = lgroupToTraces[lgroups[i]];
+            legendData[i] = isReversed(opts) ? ltraces.reverse() : ltraces;
+        }
+    }
+    else {
+        // collapse all groups into one if all groups are blank
+        legendData = [new Array(lgroupsLength)];
+        for(i = 0; i < lgroupsLength; i++) {
+            ltraces = lgroupToTraces[lgroups[i]][0];
+            legendData[0][isReversed(opts) ? lgroupsLength-i-1 : i] = ltraces;
+        }
+        lgroupsLength = 1;
+    }
+
+    // needed in repositionLegend
+    opts._lgroupsLength = lgroupsLength;
+    return legendData;
+};
+
+legend.draw = function(td, showlegend) {
+    var layout = td.layout,
+        fullLayout = td._fullLayout;
+
+    if(!fullLayout._infolayer || !td.calcdata) return;
+
+    if(showlegend !== undefined) layout.showlegend = showlegend;
+    legend.supplyLayoutDefaults(layout, fullLayout, td._fullData);
+    showlegend = fullLayout.showlegend;
+
+    var opts = fullLayout.legend,
+        legendData = legend.getLegendData(td.calcdata, opts),
+        hiddenSlices = opts.hiddenslices || [];
+
+    if(!showlegend || !legendData.length) {
         fullLayout._infolayer.selectAll('.legend').remove();
         Plotly.Plots.autoMargin(td, 'legend');
         return;
@@ -381,10 +490,24 @@ legend.draw = function(td, showlegend) {
         .call(Plotly.Color.fill, opts.bgcolor)
         .style('stroke-width', opts.borderwidth+'px');
 
-    var traces = legendsvg.selectAll('g.traces')
-        .data(ldata);
-    traces.enter().append('g').attr('class','traces');
+    var groups = legendsvg.selectAll('g.groups')
+        .data(legendData);
+
+    groups.enter().append('g').attr('class', 'groups');
+    groups.exit().remove();
+
+    if(isGrouped(opts)) {
+        groups.attr('transform', function(d, i) {
+            return 'translate(0,' + i * opts.tracegroupgap + ')';
+        });
+    }
+
+    var traces = groups.selectAll('g.traces')
+        .data(Plotly.Lib.identity);
+
+    traces.enter().append('g').attr('class', 'traces');
     traces.exit().remove();
+
     traces.call(legend.style)
         .style('opacity', function(d) {
             var trace = d[0].trace;
@@ -407,7 +530,13 @@ legend.draw = function(td, showlegend) {
             traceToggle.on('click', function() {
                 if(td._dragged) return;
 
-                var trace = d[0].trace;
+                var fullData = td._fullData,
+                    trace = d[0].trace,
+                    legendgroup = trace.legendgroup,
+                    traceIndicesInGroup = [],
+                    tracei,
+                    newVisible;
+
                 if(Plotly.Plots.traceIs(trace, 'pie')) {
                     var thisLabel = d[0].label,
                         newHiddenSlices = hiddenSlices.slice(),
@@ -418,9 +547,19 @@ legend.draw = function(td, showlegend) {
 
                     Plotly.relayout(td, 'legend.hiddenslices', newHiddenSlices);
                 } else {
-                    var newVisible = trace.visible === true ?
-                        'legendonly' : true;
-                    Plotly.restyle(td, 'visible', newVisible, trace.index);
+                    if(legendgroup === '') {
+                        traceIndicesInGroup = [trace.index];
+                    } else {
+                        for(var i = 0; i < fullData.length; i++) {
+                            tracei = fullData[i];
+                            if(tracei.legendgroup === legendgroup) {
+                                traceIndicesInGroup.push(tracei.index);
+                            }
+                        }
+                    }
+
+                    newVisible = trace.visible === true ?  'legendonly' : true;
+                    Plotly.restyle(td, 'visible', newVisible, traceIndicesInGroup);
                 }
             });
         });
@@ -511,14 +650,20 @@ legend.repositionLegend = function(td, traces){
             tspans.attr('y',textY);
         }
 
-        tHeightFull = Math.max(tHeight*tLines, 16)+3;
-        g.attr('transform','translate('+borderwidth+',' +
-            (5+borderwidth+legendheight+tHeightFull/2)+')');
+        tHeightFull = Math.max(tHeight*tLines, 16) + 3;
+
+        g.attr('transform',
+            'translate(' + borderwidth + ',' +
+                (5 + borderwidth + legendheight + tHeightFull/2) +
+            ')'
+        );
         bg.attr({x: 0, y: -tHeightFull / 2, height: tHeightFull});
 
         legendheight += tHeightFull;
         legendwidth = Math.max(legendwidth, tWidth||0);
     });
+
+    if(isGrouped(opts)) legendheight += (opts._lgroupsLength-1) * opts.tracegroupgap;
 
     traces.selectAll('.legendtoggle')
         .attr('width', (td._context.editable ? 0 : legendwidth) + 40);

@@ -9,14 +9,6 @@ var bars = module.exports = {},
 
 Plotly.Plots.register(bars, 'bar',
     ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend']);
-/**
- * histogram errorBarsOK is debatable, but it's put in for backward compat.
- * there are use cases for it - sqrt for a simple histogram works right now,
- * constant and % work but they're not so meaningful. I guess it could be cool
- * to allow quadrature combination of errors in summed histograms...
- */
-Plotly.Plots.register(bars, 'histogram',
-    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend']);
 
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,
@@ -128,8 +120,10 @@ bars.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('text');
 
     // override defaultColor for error bars with defaultLine
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'y'});
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'x', inherit: 'y'});
+    if(Plotly.ErrorBars) {
+        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'y'});
+        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'x', inherit: 'y'});
+    }
 };
 
 bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
@@ -623,7 +617,7 @@ bars.hoverPoints = function(pointData, xval, yval, hovermode) {
 
     if(di.tx) pointData.text = di.tx;
 
-    Plotly.ErrorBars.hoverInfo(di, trace, pointData);
+    if(Plotly.ErrorBars) Plotly.ErrorBars.hoverInfo(di, trace, pointData);
 
     return [pointData];
 };
