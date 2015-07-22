@@ -679,6 +679,7 @@ fx.loneHover = function(hoverItem, opts) {
         zLabel: hoverItem.zLabel,
         text: hoverItem.text,
         name: hoverItem.name,
+        idealAlign: hoverItem.idealAlign,
 
         // filler to make createHoverText happy
         trace: {
@@ -690,14 +691,16 @@ fx.loneHover = function(hoverItem, opts) {
         index: 0
     };
 
-    var container3 = d3.select(opts.container);
+    var container3 = d3.select(opts.container),
+        outerContainer3 = opts.outerContainer ?
+            d3.select(opts.outerContainer) : container3;
 
     var fullOpts = {
         hovermode: 'closest',
         rotateLabels: false,
         bgColor: opts.bgColor || Plotly.Color.background,
         container: container3,
-        outerContainer: container3
+        outerContainer: outerContainer3
     };
 
     var hoverLabel = createHoverText([pointData], fullOpts);
@@ -959,13 +962,28 @@ function createHoverText(hoverData, opts) {
         }
         else {
             d.pos = hty;
-            htx += dx/2;
-            if(htx+txTotalWidth > outerWidth) {
+            // TODO: simplify this
+            if(d.idealAlign === 'left') {
                 d.anchor = 'end';
-                htx -=dx;
+                htx -= dx/2;
                 if(htx-txTotalWidth<0) {
-                    d.anchor = 'middle';
-                    htx += dx/2;
+                    d.anchor = 'start';
+                    htx +=dx;
+                    if(htx+txTotalWidth > outerWidth) {
+                        d.anchor = 'middle';
+                        htx -= dx/2;
+                    }
+                }
+            } else {
+                d.anchor = 'start';
+                htx += dx/2;
+                if(htx+txTotalWidth > outerWidth) {
+                    d.anchor = 'end';
+                    htx -=dx;
+                    if(htx-txTotalWidth<0) {
+                        d.anchor = 'middle';
+                        htx += dx/2;
+                    }
                 }
             }
         }

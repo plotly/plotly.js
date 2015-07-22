@@ -436,9 +436,51 @@ pie.plot = function(gd, cdpie) {
                 var cx = cd0.cx + depthVector[0],
                     cy = cd0.cy + depthVector[1],
                     sliceTop = d3.select(this),
-                    slicePath = sliceTop.selectAll('path.surface').data([pt]);
+                    slicePath = sliceTop.selectAll('path.surface').data([pt]),
+                    hasHoverData = false;
 
-                slicePath.enter().append('path').classed('surface', true);
+                function handleMouseOver() {
+                    if(gd._dragging) return; // in case we dragged over the pie from another subplot
+
+                    var rInscribed = getInscribedRadiusFraction(pt, cd0),
+                        hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed),
+                        hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed),
+                        thisText = [pt.label];
+                    if(trace.text && trace.text[pt.i]) thisText.push(trace.text[pt.i]);
+                    thisText.push(formatPieValue(pt.v));
+                    thisText.push(formatPiePercent(pt.v / cd0.vTotal));
+
+                    Plotly.Fx.loneHover({
+                            x0: hoverCenterX - rInscribed * cd0.r,
+                            x1: hoverCenterX + rInscribed * cd0.r,
+                            y: hoverCenterY,
+                            text: thisText.join('<br>'),
+                            name: trace.name,
+                            color: pt.color,
+                            idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right'
+                        },
+                        {
+                            container: fullLayout._hoverlayer.node(),
+                            outerContainer: fullLayout._paper.node()
+                        }
+                    );
+
+
+                    hasHoverData = true;
+                }
+
+                function handleMouseOut() {
+                    if(hasHoverData) {
+                        Plotly.Fx.loneUnhover(fullLayout._hoverlayer.node());
+                        hasHoverData = false;
+                    }
+                }
+
+                slicePath.enter().append('path')
+                    .classed('surface', true)
+                    .style({'pointer-events': 'all'})
+                    .on('mouseover', handleMouseOver)
+                    .on('mouseout', handleMouseOut);
 
                 sliceTop.select('path.textline').remove();
 
@@ -531,7 +573,7 @@ pie.plot = function(gd, cdpie) {
                     if(textPosition === 'outside') {
                         transform = transformOutsideText(textBB, pt);
                     } else {
-                        transform = transformInsideText(textBB, pt, cd0, trace);
+                        transform = transformInsideText(textBB, pt, cd0);
                         if(textPosition === 'auto' && transform.scale < 1) {
                             sliceText.call(Plotly.Drawing.font, trace.outsidetextfont);
                             if(trace.outsidetextfont.family !== trace.insidetextfont.family ||
@@ -631,13 +673,19 @@ pie.plot = function(gd, cdpie) {
     }, 0);
 };
 
-function transformInsideText(textBB, pt, cd0, trace) {
+function getInscribedRadiusFraction(pt, cd0) {
+    if(pt.v === cd0.vTotal && !cd0.trace.hole) return 1;// special case of 100% with no hole
+
+    var halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5);
+    return Math.min(1 / (1 + 1 / Math.sin(halfAngle)), (1 - cd0.trace.hole) / 2);
+}
+
+function transformInsideText(textBB, pt, cd0) {
     var textDiameter = Math.sqrt(textBB.width * textBB.width + textBB.height * textBB.height),
         textAspect = textBB.width / textBB.height,
         halfAngle = Math.PI * Math.min(pt.v / cd0.vTotal, 0.5),
-        ring = 1 - trace.hole,
-        rInscribed = (pt.v === cd0.vTotal && !trace.hole) ? 1 : // special case of 100% with no hole
-            Math.min(1 / (1 + 1 / Math.sin(halfAngle)), ring / 2),
+        ring = 1 - cd0.trace.hole,
+        rInscribed = getInscribedRadiusFraction(pt, cd0),
 
         // max size text can be inserted inside without rotating it
         // this inscribes the text rectangle in a circle, which is then inscribed
