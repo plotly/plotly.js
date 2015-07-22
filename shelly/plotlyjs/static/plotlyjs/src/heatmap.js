@@ -67,33 +67,6 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         return Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
     }
 
-    function isValidZ(z) {
-        var allRowsAreArrays = true,
-            oneRowIsFilled = false,
-            noNumbers = true;
-
-        var zi;
-
-        if (!(Array.isArray(z) && z.length)) return false;
-
-        for (var i = 0; i < z.length; i++) {
-            zi = z[i];
-            if (!Array.isArray(zi)) allRowsAreArrays = false;
-            if (!oneRowIsFilled && zi.length) oneRowIsFilled = true;
-            for(var j = 0; j < zi.length; j++) {
-            // Check that there is at least one numeric element...
-                if(isNumeric(zi[j])) {
-                    noNumbers = false;
-                    break;
-                }
-            }
-        }
-        // ... otherwise set array as invalid:
-        if(noNumbers) return false;
-
-        return (allRowsAreArrays && oneRowIsFilled);
-    }
-
     if(Plotly.Plots.traceIs(traceOut, 'histogram')) {
         // x, y, z, marker.color, and x0, dx, y0, dy are coerced
         // in Histogram.supplyDefaults
@@ -102,28 +75,13 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         if(traceOut.visible === false) return;
     }
     else {
-        var z = coerce('z');
-        if(!isValidZ(z)) {
+        var z = heatmap.handleXYZDefaults(traceIn, traceOut, coerce);
+        if(!z.length) {
             traceOut.visible = false;
             return;
         }
 
         coerce('transpose');
-
-        var x = coerce('x'),
-            xtype = x ? coerce('xtype', 'array') : 'scaled';
-        if(xtype==='scaled') {
-            coerce('x0');
-            coerce('dx');
-        }
-
-        var y = coerce('y'),
-            ytype = y ? coerce('ytype', 'array') : 'scaled';
-        if(ytype==='scaled') {
-            coerce('y0');
-            coerce('dy');
-        }
-
         coerce('connectgaps');
         coerce('text');
     }
@@ -138,6 +96,95 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
     if(!isContour) coerce('zsmooth');
 };
+
+heatmap.handleXYZDefaults = function(traceIn, traceOut, coerce) {
+    var z = coerce('z');
+    var x, y;
+
+    if(z===undefined || !z.length) return [];
+
+    if(!Array.isArray(z[0])) {
+        x = coerce('x');
+        y = coerce('y');
+
+        // column z must be accompanied by 'x' and 'y' arrays
+        if(!x || !y) return [];
+
+        convertColumnXYZ(x, y, z, traceOut);
+    }
+    else {
+        x = coordDefaults('x', coerce);
+        y = coordDefaults('y', coerce);
+
+        // Validate z? In a way not redundant with calc?
+        if(!isValidZ(z)) return [];
+    }
+
+    return traceOut.z;
+};
+
+function coordDefaults(coordStr, coerce) {
+    var coord = coerce(coordStr),
+        coordType = coord ?
+            coerce(coordStr + 'type', 'array') :
+            'scaled';
+
+    if(coordType === 'scaled') {
+        coerce(coordStr + '0');
+        coerce('d' + coordStr);
+    }
+
+    return coord;
+}
+
+function convertColumnXYZ(xCol, yCol, zCol, traceOut) {
+    var coordsLen = Math.min(xCol.length, yCol.length, zCol.length);
+
+    if(coordsLen < xCol.length) xCol = xCol.slice(0, coordsLen);
+    if(coordsLen < yCol.length) yCol = yCol.slice(0, coordsLen);
+
+    var x = Plotly.Lib.distinctVals(xCol).vals,
+        y = Plotly.Lib.distinctVals(yCol).vals,
+        z = Plotly.Lib.init2dArray(y.length, x.length);
+
+    for(var i = 0; i < coordsLen; i++) {
+        z[y.indexOf(yCol[i])][x.indexOf(xCol[i])] = zCol[i];
+    }
+
+    traceOut.x = x;
+    traceOut.y = y;
+    traceOut.z = z;
+
+    return z.length;
+}
+
+function isValidZ(z) {
+    var allRowsAreArrays = true,
+        oneRowIsFilled = false,
+        noNumbers = true;
+
+    var zi;
+
+    if (!(Array.isArray(z) && z.length)) return false;
+
+    for (var i = 0; i < z.length; i++) {
+        zi = z[i];
+        if (!Array.isArray(zi)) allRowsAreArrays = false;
+        if (!oneRowIsFilled && zi.length) oneRowIsFilled = true;
+        for(var j = 0; j < zi.length; j++) {
+        // Check that there is at least one numeric element...
+            if(isNumeric(zi[j])) {
+                noNumbers = false;
+                break;
+            }
+        }
+    }
+    // ... otherwise set array as invalid:
+    if(noNumbers) return false;
+
+    return (allRowsAreArrays && oneRowIsFilled);
+}
+
 
 heatmap.calc = function(gd, trace) {
     // prepare the raw data
@@ -181,6 +228,7 @@ heatmap.calc = function(gd, trace) {
         y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
         y0 = trace.y0||0;
         dy = trace.dy||1;
+
 
         if(trace.transpose) {
             var maxcols = Plotly.Lib.aggNums(Math.max,0,

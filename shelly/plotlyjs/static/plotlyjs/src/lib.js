@@ -1245,6 +1245,12 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
     return finalStep && finalStep(arg);
 };
 
+lib.init2dArray = function(rowLength, colLength) {
+    var array = new Array(rowLength);
+    for(var i = 0; i < rowLength; i++) array[i] = new Array(colLength);
+    return array;
+};
+
 /**
  * transpose a (possibly ragged) 2d array z. inspired by
  * http://stackoverflow.com/questions/17428587/
