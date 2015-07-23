@@ -258,7 +258,8 @@ pie.calc = function(gd, trace) {
         v,
         label,
         color,
-        hidden;
+        hidden,
+        pt;
 
     if(trace.dlabel) {
         labels = new Array(vals.length);
@@ -319,8 +320,9 @@ pie.calc = function(gd, trace) {
 
     if(needDefaults) {
         for(i = 0; i < cd.length; i++) {
-            if(cd[i].color === false) {
-                colorMap[cd[i].label] = cd[i].color = nextDefaultColor(fullLayout._piedefaultcolorcount);
+            pt = cd[i];
+            if(pt.color === false) {
+                colorMap[pt.label] = pt.color = nextDefaultColor(fullLayout._piedefaultcolorcount);
                 fullLayout._piedefaultcolorcount++;
             }
         }
@@ -338,11 +340,12 @@ pie.calc = function(gd, trace) {
             thisText;
 
         for(i = 0; i < cd.length; i++) {
-            thisText = hasLabel ? [cd[i].label] : [];
-            if(hasText && trace.text[i]) thisText.push(trace.text[i]);
-            if(hasValue) thisText.push(formatPieValue(cd[i].v));
-            if(hasPercent) thisText.push(formatPiePercent(cd[i].v / vTotal));
-            cd[i].text = thisText.join('<br>');
+            pt = cd[i];
+            thisText = hasLabel ? [pt.label] : [];
+            if(hasText && trace.text[pt.i]) thisText.push(trace.text[pt.i]);
+            if(hasValue) thisText.push(formatPieValue(pt.v));
+            if(hasPercent) thisText.push(formatPiePercent(pt.v / vTotal));
+            pt.text = thisText.join('<br>');
         }
     }
 
