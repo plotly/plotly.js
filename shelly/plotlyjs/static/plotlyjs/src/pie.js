@@ -434,16 +434,19 @@ pie.plot = function(gd, cdpie) {
                 .classed('slice', true);
             slices.exit().remove();
 
-            var outsideTextQuadrants = [
-                [[],[]], // y<0: x<0, x>=0
-                [[],[]] // y>=0: x<0, x>=0
-            ];
+            var quadrants = [
+                    [[],[]], // y<0: x<0, x>=0
+                    [[],[]] // y>=0: x<0, x>=0
+                ],
+                hasOutsideText = false;
 
             slices.each(function(pt) {
                 if(pt.hidden) {
                     d3.select(this).selectAll('path,g').remove();
                     return;
                 }
+
+                quadrants[pt.pxmid[1] < 0 ? 0 : 1][pt.pxmid[0] < 0 ? 0 : 1].push(pt);
 
                 var cx = cd0.cx + depthVector[0],
                     cy = cd0.cy + depthVector[1],
@@ -503,6 +506,9 @@ pie.plot = function(gd, cdpie) {
                         cy += pull * pt.pxmid[1];
                     }
                 }
+
+                pt.cxFinal = cx;
+                pt.cyFinal = cy;
 
                 function arc(start, finish, cw, scale) {
                     return 'a' + (scale * cd0.r) + ',' + (scale * rSmall) + ' ' + tiltAxis + ' ' +
@@ -602,14 +608,12 @@ pie.plot = function(gd, cdpie) {
 
                     // save some stuff to use later ensure no labels overlap
                     if(transform.outside) {
-                        pt.cxFinal = cx;
-                        pt.cyFinal = cy;
                         pt.yLabelMin = translateY - textBB.height / 2;
                         pt.yLabelMid = translateY;
                         pt.yLabelMax = translateY + textBB.height / 2;
                         pt.labelExtraX = 0;
                         pt.labelExtraY = 0;
-                        outsideTextQuadrants[transform.y < 0 ? 0 : 1][transform.x < 0 ? 0 : 1].push(pt);
+                        hasOutsideText = true;
                     }
 
                     sliceText.attr('transform',
@@ -624,7 +628,7 @@ pie.plot = function(gd, cdpie) {
             });
 
             // now make sure no labels overlap (at least within one pie)
-            scootLabels(outsideTextQuadrants, trace);
+            if(hasOutsideText) scootLabels(quadrants, trace);
             slices.each(function(pt) {
                 if(pt.labelExtraX || pt.labelExtraY) {
                     // first move the text to its new location
@@ -767,7 +771,7 @@ function transformOutsideText(textBB, pt) {
     };
 }
 
-function scootLabels(outsideTextQuadrants, trace) {
+function scootLabels(quadrants, trace) {
     var xHalf,
         yHalf,
         equatorFirst,
@@ -778,7 +782,9 @@ function scootLabels(outsideTextQuadrants, trace) {
         thisQuad,
         oppositeQuad,
         wholeSide,
-        i;
+        i,
+        thisQuadOutside,
+        firstOppositeOutsidePt;
 
     function topFirst (a, b) { return a.pxmid[1] - b.pxmid[1]; }
     function bottomFirst (a, b) { return b.pxmid[1] - a.pxmid[1]; }
@@ -847,20 +853,33 @@ function scootLabels(outsideTextQuadrants, trace) {
             // first sort the array
             // note this is a copy of cd, so cd itself doesn't get sorted
             // but we can still modify points in place.
-            thisQuad = outsideTextQuadrants[yHalf][xHalf];
+            thisQuad = quadrants[yHalf][xHalf];
             thisQuad.sort(equatorFirst);
 
-            oppositeQuad = outsideTextQuadrants[1 - yHalf][xHalf];
+            oppositeQuad = quadrants[1 - yHalf][xHalf];
             wholeSide = oppositeQuad.concat(thisQuad);
 
-            // each needs to avoid the previous
+            thisQuadOutside = [];
             for(i = 0; i < thisQuad.length; i++) {
-                var prevPt = i && thisQuad[i - 1];
+                if(thisQuad[i].yLabelMid !== undefined) thisQuadOutside.push(thisQuad[i]);
+            }
+
+            firstOppositeOutsidePt = false;
+            for(i = 0; yHalf && i < oppositeQuad.length; i++) {
+                if(oppositeQuad[i].yLabelMid !== undefined) {
+                    firstOppositeOutsidePt = oppositeQuad[i];
+                    break;
+                }
+            }
+
+            // each needs to avoid the previous
+            for(i = 0; i < thisQuadOutside.length; i++) {
+                var prevPt = i && thisQuadOutside[i - 1];
                 // bottom half needs to avoid the first label of the top half
                 // top half we still need to call scootOneLabel on the first slice
                 // so we can avoid other slices, but we don't pass a prevPt
-                if(yHalf && !i) prevPt = oppositeQuad[0];
-                scootOneLabel(thisQuad[i], prevPt);
+                if(firstOppositeOutsidePt && !i) prevPt = firstOppositeOutsidePt;
+                scootOneLabel(thisQuadOutside[i], prevPt);
             }
         }
     }
