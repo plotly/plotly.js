@@ -172,7 +172,7 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     }
 
     var labels = coerce('labels');
-    if(!Array.isArray(labels)) { // TODO: what if labels is shorter than vals?
+    if(!Array.isArray(labels)) {
         coerce('label0');
         coerce('dlabel');
     }
@@ -259,6 +259,13 @@ pie.calc = function(gd, trace) {
         label,
         color,
         hidden;
+
+    if(trace.dlabel) {
+        labels = new Array(vals.length);
+        for(i = 0; i < vals.length; i++) {
+            labels[i] = String(trace.label0 + i * trace.dlabel);
+        }
+    }
 
     for(i = 0; i < vals.length; i++) {
         v = vals[i];
