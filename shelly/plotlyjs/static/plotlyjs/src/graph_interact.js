@@ -940,7 +940,10 @@ function createHoverText(hoverData, opts) {
             hty = ya._offset+(d.y0+d.y1)/2,
             dx = Math.abs(d.x1-d.x0),
             dy = Math.abs(d.y1-d.y0),
-            txTotalWidth = tbb.width+HOVERARROWSIZE+HOVERTEXTPAD+tx2width;
+            txTotalWidth = tbb.width+HOVERARROWSIZE+HOVERTEXTPAD+tx2width,
+            anchorStartOK,
+            anchorEndOK;
+
         d.ty0 = outerTop-tbb.top;
         d.bx = tbb.width+2*HOVERTEXTPAD;
         d.by = tbb.height+2*HOVERTEXTPAD;
@@ -948,45 +951,32 @@ function createHoverText(hoverData, opts) {
         d.txwidth = tbb.width;
         d.tx2width = tx2width;
         d.offset = 0;
+
         if(rotateLabels) {
             d.pos = htx;
-            hty += dy/2;
-            if(hty+txTotalWidth > outerHeight) {
+            anchorStartOK = hty + dy / 2 + txTotalWidth <= outerHeight;
+            anchorEndOK = hty - dy / 2 - txTotalWidth >= 0;
+            if((d.idealAlign === 'top' || !anchorStartOK) && anchorEndOK) {
+                hty -= dy / 2;
                 d.anchor = 'end';
-                hty -= dy;
-                if(hty-txTotalWidth<0) {
-                    d.anchor = 'middle';
-                    hty +=dy/2;
-                }
-            }
+            } else if(anchorStartOK) {
+                hty += dy / 2;
+                d.anchor = 'start';
+            } else d.anchor = 'middle';
         }
         else {
             d.pos = hty;
-            // TODO: simplify this
-            if(d.idealAlign === 'left') {
+            anchorStartOK = htx + dx / 2 + txTotalWidth <= outerWidth;
+            anchorEndOK = htx - dx / 2 - txTotalWidth >= 0;
+            if((d.idealAlign === 'left' || !anchorStartOK) && anchorEndOK) {
+                htx -= dx / 2;
                 d.anchor = 'end';
-                htx -= dx/2;
-                if(htx-txTotalWidth<0) {
-                    d.anchor = 'start';
-                    htx +=dx;
-                    if(htx+txTotalWidth > outerWidth) {
-                        d.anchor = 'middle';
-                        htx -= dx/2;
-                    }
-                }
-            } else {
+            } else if(anchorStartOK) {
+                htx += dx / 2;
                 d.anchor = 'start';
-                htx += dx/2;
-                if(htx+txTotalWidth > outerWidth) {
-                    d.anchor = 'end';
-                    htx -=dx;
-                    if(htx-txTotalWidth<0) {
-                        d.anchor = 'middle';
-                        htx += dx/2;
-                    }
-                }
-            }
+            } else d.anchor = 'middle';
         }
+
         tx.attr('text-anchor',d.anchor);
         if(tx2width) tx2.attr('text-anchor',d.anchor);
         g.attr('transform','translate('+htx+','+hty+')'+
