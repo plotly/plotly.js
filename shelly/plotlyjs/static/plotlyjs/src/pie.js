@@ -493,11 +493,13 @@ pie.plot = function(gd, cdpie) {
 
                 slicePath.enter().append('path')
                     .classed('surface', true)
-                    .style({'pointer-events': 'all'})
-                    .on('mouseover', handleMouseOver)
-                    .on('mouseout', handleMouseOut);
+                    .style({'pointer-events': 'all'});
 
                 sliceTop.select('path.textline').remove();
+
+                sliceTop
+                    .on('mouseover', handleMouseOver)
+                    .on('mouseout', handleMouseOut);
 
                 if(trace.pull) {
                     var pull = +(Array.isArray(trace.pull) ? trace.pull[pt.i] : trace.pull) || 0;
