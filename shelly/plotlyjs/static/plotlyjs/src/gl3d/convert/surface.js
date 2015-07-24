@@ -47,9 +47,11 @@ proto.handlePick = function(selection) {
       sceneLayout.zaxis.d2l(traceCoordinate[2])*this.scene.dataScale[2] - this.scene.dataCenter[2]
     ];
 
-    if(this.data.text && this.data.text[selectIndex[1]][selectIndex[0]]!==undefined) {
-        selection.textLabel = this.data.text[selectIndex[1]][selectIndex[0]];
+    var text = this.data.text;
+    if(text && text[selectIndex[1]] && text[selectIndex[1]][selectIndex[0]]!==undefined) {
+        selection.textLabel = text[selectIndex[1]][selectIndex[0]];
     }
+    else selection.textLabel = '';
 
     selection.data.dataCoordinate = selection.dataCoordinate.slice();
 

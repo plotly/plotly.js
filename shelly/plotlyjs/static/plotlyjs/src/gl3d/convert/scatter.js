@@ -47,6 +47,7 @@ proto.handlePick = function(selection) {
         if(this.textLabels && this.textLabels[selection.data.index]!==undefined) {
             selection.textLabel = this.textLabels[selection.data.index];
         }
+        else selection.textLabel = '';
 
         var selectIndex = selection.data.index;
         selection.traceCoordinate = [
