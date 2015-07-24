@@ -576,7 +576,7 @@ function setAutoType(ax, data){
         d0;
 
     // support 3d
-    if (id.indexOf('scene') !== -1) id = axLetter;
+    if(id.indexOf('scene') !== -1) id = axLetter;
 
     for(i = 0; i < data.length; i++) {
         if((data[i][axLetter+'axis'] || axLetter) === id) {
@@ -606,7 +606,7 @@ function setAutoType(ax, data){
             var trace = data[i];
             if(!Plotly.Plots.traceIs(trace, 'box') || (trace[axLetter+'axis']||axLetter) !== id) continue;
 
-            if(trace.posLetter !== undefined) boxPositions.push(trace[posLetter][0]);
+            if(trace[posLetter] !== undefined) boxPositions.push(trace[posLetter][0]);
             else if(trace.name !== undefined) boxPositions.push(trace.name);
             else boxPositions.push('text');
         }
