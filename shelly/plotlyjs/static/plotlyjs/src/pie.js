@@ -455,7 +455,12 @@ pie.plot = function(gd, cdpie) {
                     hasHoverData = false;
 
                 function handleMouseOver() {
-                    if(gd._dragging) return; // in case we dragged over the pie from another subplot
+                    // in case fullLayout has changed without a replot
+                    var fullLayout = gd._fullLayout;
+
+                    // in case we dragged over the pie from another subplot,
+                    // or if hover is turned off
+                    if(gd._dragging || fullLayout.hovermode === false) return;
 
                     var rInscribed = getInscribedRadiusFraction(pt, cd0),
                         hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed),

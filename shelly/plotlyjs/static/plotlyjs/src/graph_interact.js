@@ -1326,7 +1326,11 @@ function chooseModebarButtons(fullLayout) {
         ['zoomIn2d', 'zoomOut2d', 'autoScale2d']
     ];
 
-    buttons.push(['hoverClosest2d', 'hoverCompare2d']);
+    if(fullLayout._hasCartesian) {
+        buttons.push(['hoverClosest2d', 'hoverCompare2d']);
+    } else if(fullLayout._hasPie) {
+        buttons.push(['hoverClosestPie']);
+    }
 
     return buttons;
 }
