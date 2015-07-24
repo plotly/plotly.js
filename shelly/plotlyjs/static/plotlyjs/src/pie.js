@@ -38,7 +38,7 @@ pie.attributes = {
         dflt: ''
     },
 
-    // labels (legend is handled by plots.attributes.showlegend and layout.hiddenslices)
+    // labels (legend is handled by plots.attributes.showlegend and layout.hiddenlabels)
     textinfo: {
         type: 'flaglist',
         flags: ['label', 'text', 'value', 'percent'],
@@ -230,18 +230,18 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
 pie.layoutAttributes = {
     /**
-     * hiddenslices is the pie chart analog of visible:'legendonly'
+     * hiddenlabels is the pie chart analog of visible:'legendonly'
      * but it can contain many labels, and can hide slices
      * from several pies simultaneously
      */
-    hiddenslices: {type: 'data_array'}
+    hiddenlabels: {type: 'data_array'}
 };
 
 pie.supplyLayoutDefaults = function(layoutIn, layoutOut) {
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(layoutIn, layoutOut, pie.layoutAttributes, attr, dflt);
     }
-    coerce('hiddenslices');
+    coerce('hiddenlabels');
 };
 
 pie.calc = function(gd, trace) {
@@ -253,7 +253,7 @@ pie.calc = function(gd, trace) {
         allThisTraceLabels = {},
         needDefaults = false,
         vTotal = 0,
-        hiddenSlices = fullLayout.hiddenslices || [],
+        hiddenLabels = fullLayout.hiddenlabels || [],
         i,
         v,
         label,
@@ -297,7 +297,7 @@ pie.calc = function(gd, trace) {
             needDefaults = true;
         }
 
-        hidden = hiddenSlices.indexOf(label) !== -1;
+        hidden = hiddenLabels.indexOf(label) !== -1;
 
         if(!hidden) vTotal += v;
 

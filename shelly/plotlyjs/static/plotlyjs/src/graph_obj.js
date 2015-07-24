@@ -3101,7 +3101,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
             // 3d or geo at this point just needs to redraw.
             if (p.parts[0].indexOf('scene') === 0) doplot = true;
             else if (p.parts[0].indexOf('geo') === 0) doplot = true;
-            else if(ai === 'hiddenslices') docalc = true;
+            else if(ai === 'hiddenlabels') docalc = true;
             else if(p.parts[0].indexOf('legend')!==-1) dolegend = true;
             else if(ai.indexOf('title')!==-1) doticks = true;
             else if(p.parts[0].indexOf('bgcolor')!==-1) dolayoutstyle = true;

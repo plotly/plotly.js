@@ -84,6 +84,6 @@
     "width": 600,
     "showlegend": true,
     "font": {"size": 20},
-    "hiddenslices": ["x","y"]
+    "hiddenlabels": ["x","y"]
   }
 }

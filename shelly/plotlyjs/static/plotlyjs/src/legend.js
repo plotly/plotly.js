@@ -457,7 +457,7 @@ legend.draw = function(td, showlegend) {
 
     var opts = fullLayout.legend,
         legendData = legend.getLegendData(td.calcdata, opts),
-        hiddenSlices = fullLayout.hiddenslices || [];
+        hiddenSlices = fullLayout.hiddenlabels || [];
 
     if(!showlegend || !legendData.length) {
         fullLayout._infolayer.selectAll('.legend').remove();
@@ -537,7 +537,7 @@ legend.draw = function(td, showlegend) {
                     if(thisLabelIndex === -1) newHiddenSlices.push(thisLabel);
                     else newHiddenSlices.splice(thisLabelIndex, 1);
 
-                    Plotly.relayout(td, 'hiddenslices', newHiddenSlices);
+                    Plotly.relayout(td, 'hiddenlabels', newHiddenSlices);
                 } else {
                     if(legendgroup === '') {
                         traceIndicesInGroup = [trace.index];
