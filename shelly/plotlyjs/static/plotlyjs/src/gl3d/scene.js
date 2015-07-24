@@ -57,14 +57,8 @@ function render(scene) {
        }, {
          container: svgContainer
        });
-    } else {
-      Plotly.Fx.loneHover({
-        x: 1e20,
-        y: 1e20
-       }, {
-         container: svgContainer
-       });
     }
+    else Plotly.Fx.loneUnhover(svgContainer)
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {

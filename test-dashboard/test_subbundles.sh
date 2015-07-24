@@ -4,7 +4,7 @@
 #
 # -------------------------------------------------------------------------------
 
-bundle_type='scientific'  # the only bundle to include gl3d
+bundle_type='webgl'  # the only bundle to include gl3d
 
 tmp_dir="test_subbundles"  # in .gitingore
 jsbuilds="../shelly/plotlyjs/static/plotlyjs/jsbuilds/"
