@@ -15,7 +15,6 @@
   ],
   "layout": {
     "height": 300,
-    "width": 400,
-    "showlegend": true
+    "width": 400
   }
 }

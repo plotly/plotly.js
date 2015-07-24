@@ -27,6 +27,7 @@
   "layout": {
     "height": 400,
     "width": 500,
-    "paper_bgcolor": "#ddd"
+    "paper_bgcolor": "#ddd",
+    "showlegend": false
   }
 }

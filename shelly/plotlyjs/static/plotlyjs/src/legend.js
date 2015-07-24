@@ -64,7 +64,11 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     for(var i = 0; i < fullData.length; i++) {
         trace = fullData[i];
 
-        if(legendGetsTrace(trace)) visibleTraces++;
+        if(legendGetsTrace(trace)) {
+            visibleTraces++;
+            // always show the legend by default if there's a pie
+            if(Plotly.Plots.traceIs(trace, 'pie')) visibleTraces++;
+        }
 
         if((Plotly.Plots.traceIs(trace, 'bar') && layoutOut.barmode==='stack') ||
                 ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
