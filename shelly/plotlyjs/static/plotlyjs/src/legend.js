@@ -449,21 +449,16 @@ legend.getLegendData = function(calcdata, opts) {
     return legendData;
 };
 
-legend.draw = function(td, showlegend) {
-    var layout = td.layout,
-        fullLayout = td._fullLayout;
+legend.draw = function(td) {
+    var fullLayout = td._fullLayout;
 
     if(!fullLayout._infolayer || !td.calcdata) return;
 
-    if(showlegend !== undefined) layout.showlegend = showlegend;
-    legend.supplyLayoutDefaults(layout, fullLayout, td._fullData);
-    showlegend = fullLayout.showlegend;
-
     var opts = fullLayout.legend,
-        legendData = legend.getLegendData(td.calcdata, opts),
+        legendData = fullLayout.showlegend && legend.getLegendData(td.calcdata, opts),
         hiddenSlices = fullLayout.hiddenlabels || [];
 
-    if(!showlegend || !legendData.length) {
+    if(!fullLayout.showlegend || !legendData.length) {
         fullLayout._infolayer.selectAll('.legend').remove();
         Plotly.Plots.autoMargin(td, 'legend');
         return;

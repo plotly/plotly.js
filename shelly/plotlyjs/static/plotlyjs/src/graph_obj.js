@@ -177,7 +177,7 @@ plots.redrawText = function(divid) {
     return new Promise(function(resolve) {
         setTimeout(function(){
             Plotly.Annotations.drawAll(gd);
-            Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
+            Plotly.Legend.draw(gd);
             (gd.calcdata||[]).forEach(function(d){
                 if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
             });
@@ -517,8 +517,7 @@ Plotly.plot = function(gd, data, layout, config) {
         var calcdata = gd.calcdata;
         var i, cd, trace;
 
-        Plotly.Legend.draw(gd, fullLayout.showlegend ||
-            (gd.calcdata.length>1 && fullLayout.showlegend!==false));
+        Plotly.Legend.draw(gd);
 
         for (i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
@@ -2828,7 +2827,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                     if(arraysToCalcdata) arraysToCalcdata(cdi);
                 }
                 plots.style(gd);
-                if(fullLayout.showlegend) Plotly.Legend.draw(gd);
+                Plotly.Legend.draw(gd);
                 return plots.previousPromises(gd);
             });
         }
@@ -3188,7 +3187,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
         plots.supplyDefaults(gd);
         if(dolegend) {
             seq.push(function doLegend(){
-                Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
+                Plotly.Legend.draw(gd);
                 return plots.previousPromises(gd);
             });
         }
