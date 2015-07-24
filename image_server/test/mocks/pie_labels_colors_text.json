@@ -15,13 +15,15 @@
         "lemons",
         "watermelon"
       ],
-      "colors": [
-        "red",
-        "orange",
-        "blue",
-        "yellow",
-        "green"
-      ],
+      "marker": {
+        "colors": [
+          "red",
+          "orange",
+          "blue",
+          "yellow",
+          "green"
+        ]
+      },
       "text": [
         "red delicious",
         "mandarin",

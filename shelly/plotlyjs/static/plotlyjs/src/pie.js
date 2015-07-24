@@ -19,8 +19,24 @@ pie.attributes = {
 
     values: {type: 'data_array'},
 
-    // if color is missing, use default trace color set
-    colors: {type: 'data_array'},
+    marker: {
+        // if color is missing, use default trace color set
+        colors: {type: 'data_array'},
+
+        line: {
+            color: {
+                type: 'color',
+                dflt: Plotly.Color.defaultLine,
+                arrayOk: true
+            },
+            width: {
+                type: 'number',
+                min: 0,
+                dflt: 0,
+                arrayOk: true
+            }
+        }
+    },
 
     text: {type: 'data_array'},
 
@@ -139,20 +155,6 @@ pie.attributes = {
         dflt: 0
     },
 
-    // style
-    line: {
-        color: {
-            type: 'color',
-            dflt: Plotly.Color.defaultLine,
-            arrayOk: true
-        },
-        width: {
-            type: 'number',
-            min: 0,
-            dflt: 0,
-            arrayOk: true
-        }
-    },
     pull: {
         // fraction of larger radius to pull the slices
         // out from the center. This can be a constant
@@ -183,8 +185,11 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         coerce('dlabel');
     }
 
-    var colors = coerce('colors');
-    if(!Array.isArray(colors)) traceOut.colors = []; // later this will get padded with default colors
+    var lineWidth = coerce('marker.line.width');
+    if(lineWidth) coerce('marker.line.color');
+
+    var colors = coerce('marker.colors');
+    if(!Array.isArray(colors)) traceOut.marker.colors = []; // later this will get padded with default colors
 
     coerce('scalegroup');
     // TODO: tilt, depth, and hole all need to be coerced to the same values within a scaleegroup
@@ -228,9 +233,6 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('sort');
     coerce('direction');
     coerce('rotation');
-
-    var lineWidth = coerce('line.width');
-    if(lineWidth) coerce('line.color');
 
     coerce('pull');
 };
@@ -289,7 +291,7 @@ pie.calc = function(gd, trace) {
         if(allThisTraceLabels[label] === undefined) allThisTraceLabels[label] = true;
         else continue;
 
-        color = tinycolor(trace.colors[i]);
+        color = tinycolor(trace.marker.colors[i]);
         if(color.isValid()) {
             color = Plotly.Color.tinyRGB(color);
             if(!colorMap[label]) {
@@ -1069,10 +1071,10 @@ pie.style = function(gd) {
 };
 
 pie.styleOne = function(s, pt, trace) {
-    var lineColor = trace.line.color;
+    var lineColor = trace.marker.line.color;
     if(Array.isArray(lineColor)) lineColor = lineColor[pt.i] || Plotly.Color.defaultLine;
 
-    var lineWidth = trace.line.width || 0;
+    var lineWidth = trace.marker.line.width || 0;
     if(Array.isArray(lineWidth)) lineWidth = lineWidth[pt.i] || 0;
 
     s.style({

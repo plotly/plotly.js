@@ -16,9 +16,11 @@
       ],
       "hole": 0.5,
       "rotation": 45,
-      "line": {
-        "color": "#fff",
-        "width": 3
+      "marker": {
+        "line": {
+          "color": "#fff",
+          "width": 3
+        }
       },
       "pull": 0.2,
       "type": "pie"
