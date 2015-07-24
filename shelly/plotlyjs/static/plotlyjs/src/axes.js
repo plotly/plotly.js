@@ -2713,7 +2713,7 @@ function swapAxisGroup(gd, xIds, yIds) {
         var ann = gd._fullLayout.annotations[i];
         if(xIds.indexOf(ann.xref) !== -1 &&
                 yIds.indexOf(ann.yref) !== -1) {
-            Plotly.Lib.swapXYAttrs(layout.annotations[i],['?']);
+            Plotly.Lib.swapAttrs(layout.annotations[i],['?']);
         }
     }
 }

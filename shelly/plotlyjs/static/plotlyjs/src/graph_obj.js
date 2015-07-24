@@ -1330,6 +1330,7 @@ plots.supplyDefaults = function(gd) {
         if(plots.traceIs(fullTrace, 'cartesian')) newFullLayout._hasCartesian = true;
         else if(plots.traceIs(fullTrace, 'gl3d')) newFullLayout._hasGL3D = true;
         else if(plots.traceIs(fullTrace, 'geo')) newFullLayout._hasGeo = true;
+        else if(plots.traceIs(fullTrace, 'pie')) newFullLayout._hasPie = true;
         else if('r' in fullTrace) newFullLayout._hasPolar = true;
 
         module = fullTrace._module;
@@ -1596,6 +1597,10 @@ plots.layoutAttributes = {
     _hasGeo: {
         type: 'boolean',
         dflt: false
+    },
+    _hasPie: {
+        type: 'boolean',
+        dflt: false
     }
 };
 
@@ -1635,6 +1640,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('_hasCartesian');
     coerce('_hasGL3D');
     coerce('_hasGeo');
+    coerce('_hasPie');
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
@@ -2487,7 +2493,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // for the undo / redo queue
     var redoit = {},
         undoit = {},
-        axlist;
+        axlist,
+        flagAxForDelete = [];
 
     // for now, if we detect 3D or geo stuff, just re-do the plot
     if(fullLayout._hasGL3D || fullLayout._hasGeo) doplot = true;
@@ -2506,6 +2513,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // for attrs that interact (like scales & autoscales), save the
     // old vals before making the change
     // val=undefined will not set a value, just record what the value was.
+    // val=null will delete the attribute
     // attr can be an array to set several at once (all to the same val)
     function doextra(cont,attr,val,i) {
         if(Array.isArray(attr)) {
@@ -2536,7 +2544,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         var vi = aobj[ai],
             cont,
             contFull,
-            param;
+            param,
+            oldVal;
         redoit[ai] = vi;
 
         if(layoutAttrs.indexOf(ai.replace(/[xyz]axis[0-9]*/g, '?axis'))!==-1){
@@ -2557,6 +2566,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             cont = gd.data[traces[i]];
             contFull = gd._fullData[traces[i]];
             param = Plotly.Lib.nestedProperty(cont,ai);
+            oldVal = param.get();
 
             // setting bin or z settings should turn off auto
             // and setting auto should save bin or z settings
@@ -2638,8 +2648,29 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                 doextra(cont, ['colorbar.tick0', 'colorbar.dtick'], undefined);
             }
 
-            // save the old value
-            undoit[ai][i] = param.get();
+
+            if(ai === 'type' && (vi === 'pie') !== (oldVal === 'pie')) {
+                var labelsTo = 'x',
+                    valuesTo = 'y';
+                if((vi === 'bar' || oldVal === 'bar') && cont.orientation === 'h') {
+                    labelsTo = 'y';
+                    valuesTo = 'x';
+                }
+                Plotly.Lib.swapAttrs(cont, ['?', '?src'], 'labels', labelsTo);
+                Plotly.Lib.swapAttrs(cont, ['d?', '?0'], 'label', labelsTo);
+                Plotly.Lib.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
+
+                if(oldVal === 'pie') {
+                    // super kludgy - but if all pies are gone we won't remove them otherwise
+                    fullLayout._pielayer.selectAll('g.trace').remove();
+                } else if(plots.traceIs(cont, 'cartesian')) {
+                    //look for axes that are no longer in use and delete them
+                    flagAxForDelete.push(cont.xaxis || 'x');
+                    flagAxForDelete.push(cont.yaxis || 'y');
+                }
+            }
+
+            undoit[ai][i] = oldVal;
             // set the new value - if val is an array, it's one el per trace
             // first check for attributes that get more complex alterations
             var swapAttrs = [
@@ -2706,12 +2737,14 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                 for(i=0; i<traces.length; i++) {
                     var trace = gd.data[traces[i]];
 
-                    addToAxlist(trace.xaxis||'x');
-                    addToAxlist(trace.yaxis||'y');
+                    if(plots.traceIs(trace, 'cartesian')) {
+                        addToAxlist(trace.xaxis||'x');
+                        addToAxlist(trace.yaxis||'y');
 
-                    if(astr==='type') {
-                        doextra(gd.data[traces[i]],
-                            ['autobinx','autobiny'],true,i);
+                        if(astr==='type') {
+                            doextra(gd.data[traces[i]],
+                                ['autobinx','autobiny'],true,i);
+                        }
                     }
                 }
 
@@ -2723,6 +2756,24 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         else if(replotAttrs.indexOf(ai)!==-1) doplot = true;
         else if(autorangeAttrs.indexOf(ai)!==-1) docalcAutorange = true;
     }
+
+    // check axes we've flagged for possible deletion
+    axisLoop:
+    for(i = 0; i < flagAxForDelete.length; i++) {
+        var axId = flagAxForDelete[i],
+            axLetter = axId.charAt(0),
+            axAttr = axLetter + 'axis';
+        for(var j = 0; j < gd.data.length; j++) {
+            if(plots.traceIs(gd.data[j], 'cartesian') &&
+                    (gd.data[j][axAttr] || axLetter) === axId) {
+                continue axisLoop;
+            }
+        }
+
+        // no data on this axis - delete it.
+        doextra(gd.layout, Plotly.Axes.id2name(axId), null, 0);
+    }
+
     // now all attribute mods are done, as are redo and undo
     // so we can save them
     if(Plotly.Queue) {
@@ -2809,7 +2860,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
 // swap all the data and data attributes associated with x and y
 function swapXYData(trace) {
     var i;
-    Plotly.Lib.swapXYAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
+    Plotly.Lib.swapAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
     if(Array.isArray(trace.z) && Array.isArray(trace.z[0])) {
         if(trace.transpose) delete trace.transpose;
         else trace.transpose = true;
@@ -2818,9 +2869,9 @@ function swapXYData(trace) {
         var errorY = trace.error_y,
             copyYstyle = ('copy_ystyle' in errorY) ? errorY.copy_ystyle :
                 !(errorY.color || errorY.thickness || errorY.width);
-        Plotly.Lib.swapXYAttrs(trace, ['error_?.copy_ystyle']);
+        Plotly.Lib.swapAttrs(trace, ['error_?.copy_ystyle']);
         if(copyYstyle) {
-            Plotly.Lib.swapXYAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
+            Plotly.Lib.swapAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
         }
     }
     if(trace.hoverinfo) {
