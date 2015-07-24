@@ -44,6 +44,12 @@ pie.attributes = {
         flags: ['label', 'text', 'value', 'percent'],
         extras: ['none']
     },
+    hoverinfo: {
+        type: 'flaglist',
+        flags: ['label', 'text', 'value', 'percent', 'name'],
+        extras: ['all', 'none'],
+        dflt: 'all'
+    },
     textposition: {
         type: 'enumerated',
         values: ['inside', 'outside', 'auto', 'none'],
@@ -189,6 +195,7 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
     var textData = coerce('text');
     var textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
+    coerce('hoverinfo');
 
     if(textInfo && textInfo !== 'none') {
         var textPosition = coerce('textposition'),
@@ -455,36 +462,45 @@ pie.plot = function(gd, cdpie) {
                     hasHoverData = false;
 
                 function handleMouseOver() {
-                    // in case fullLayout has changed without a replot
-                    var fullLayout = gd._fullLayout;
+                    // in case fullLayout or fullData has changed without a replot
+                    var fullLayout2 = gd._fullLayout,
+                        trace2 = gd._fullData[trace.index],
+                        hoverinfo = trace2.hoverinfo;
+
+                    if(hoverinfo === 'all') hoverinfo = 'label+text+value+percent+name';
 
                     // in case we dragged over the pie from another subplot,
                     // or if hover is turned off
-                    if(gd._dragging || fullLayout.hovermode === false) return;
+                    if(gd._dragging || fullLayout2.hovermode === false ||
+                            hoverinfo === 'none' || !hoverinfo) {
+                        return;
+                    }
 
                     var rInscribed = getInscribedRadiusFraction(pt, cd0),
                         hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed),
                         hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed),
-                        thisText = [pt.label];
-                    if(trace.text && trace.text[pt.i]) thisText.push(trace.text[pt.i]);
-                    thisText.push(formatPieValue(pt.v));
-                    thisText.push(formatPiePercent(pt.v / cd0.vTotal));
+                        thisText = [];
+                    if(hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
+                    if(trace2.text && trace2.text[pt.i] && hoverinfo.indexOf('text') !== -1) {
+                        thisText.push(trace2.text[pt.i]);
+                    }
+                    if(hoverinfo.indexOf('value') !== -1) thisText.push(formatPieValue(pt.v));
+                    if(hoverinfo.indexOf('percent') !== -1) thisText.push(formatPiePercent(pt.v / cd0.vTotal));
 
                     Plotly.Fx.loneHover({
                             x0: hoverCenterX - rInscribed * cd0.r,
                             x1: hoverCenterX + rInscribed * cd0.r,
                             y: hoverCenterY,
                             text: thisText.join('<br>'),
-                            name: trace.name,
+                            name: hoverinfo.indexOf('name') !== -1 ? trace2.name : undefined,
                             color: pt.color,
                             idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right'
                         },
                         {
-                            container: fullLayout._hoverlayer.node(),
-                            outerContainer: fullLayout._paper.node()
+                            container: fullLayout2._hoverlayer.node(),
+                            outerContainer: fullLayout2._paper.node()
                         }
                     );
-
 
                     hasHoverData = true;
                 }

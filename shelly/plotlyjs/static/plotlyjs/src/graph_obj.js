@@ -1472,7 +1472,8 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     if(visible) {
         coerce('name', 'trace ' + i);
 
-        coerce('hoverinfo');
+        // pies get a different hoverinfo flaglist, handled in their module
+        if(!plots.traceIs(traceOut, 'pie')) coerce('hoverinfo');
 
         if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
