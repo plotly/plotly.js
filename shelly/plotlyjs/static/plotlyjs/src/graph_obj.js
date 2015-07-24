@@ -2553,7 +2553,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             cont,
             contFull,
             param,
-            oldVal;
+            oldVal,
+            newVal;
         redoit[ai] = vi;
 
         if(ai.substr(0,6)==='LAYOUT'){
@@ -2575,6 +2576,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             contFull = gd._fullData[traces[i]];
             param = Plotly.Lib.nestedProperty(cont,ai);
             oldVal = param.get();
+            newVal = Array.isArray(vi) ? vi[i%vi.length] : vi;
 
             // setting bin or z settings should turn off auto
             // and setting auto should save bin or z settings
@@ -2629,25 +2631,25 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             // note that colorbar fractional sizing is based on the
             // original plot size, before anything (like a colorbar)
             // increases the margins
-            else if(ai==='colorbar.thicknessmode' && param.get()!==vi &&
-                        ['fraction','pixels'].indexOf(vi)!==-1 &&
+            else if(ai==='colorbar.thicknessmode' && param.get() !== newVal &&
+                        ['fraction','pixels'].indexOf(newVal) !== -1 &&
                         contFull.colorbar) {
                 var thicknorm =
                     ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
                         (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b) :
                         (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r);
                 doextra('colorbar.thickness', contFull.colorbar.thickness *
-                    (vi==='fraction' ? 1/thicknorm : thicknorm), i);
+                    (newVal === 'fraction' ? 1/thicknorm : thicknorm), i);
             }
-            else if(ai==='colorbar.lenmode' && param.get()!==vi &&
-                        ['fraction','pixels'].indexOf(vi)!==-1 &&
+            else if(ai==='colorbar.lenmode' && param.get() !== newVal &&
+                        ['fraction','pixels'].indexOf(newVal) !== -1 &&
                         contFull.colorbar) {
                 var lennorm =
                     ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
                         (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r) :
                         (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b);
                 doextra('colorbar.len', contFull.colorbar.len *
-                    (vi==='fraction' ? 1/lennorm : lennorm), i);
+                    (newVal === 'fraction' ? 1/lennorm : lennorm), i);
             }
             else if(ai === 'colorbar.tick0' || ai === 'colorbar.dtick') {
                 doextra('colorbar.tickmode', 'linear', i);
@@ -2657,10 +2659,10 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             }
 
 
-            if(ai === 'type' && (vi === 'pie') !== (oldVal === 'pie')) {
+            if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
                 var labelsTo = 'x',
                     valuesTo = 'y';
-                if((vi === 'bar' || oldVal === 'bar') && cont.orientation === 'h') {
+                if((newVal === 'bar' || oldVal === 'bar') && cont.orientation === 'h') {
                     labelsTo = 'y';
                     valuesTo = 'x';
                 }
@@ -2688,7 +2690,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                 // setting an orientation: make sure it's changing
                 // before we swap everything else
                 if(ai==='orientation') {
-                    param.set(Array.isArray(vi) ? vi[i%vi.length] : vi);
+                    param.set(newVal);
                     if(param.get()===undoit[ai][i]) continue;
                 }
                 // orientationaxes has no value,
@@ -2700,7 +2702,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                 swapXYData(cont);
             }
             // all the other ones, just modify that one attribute
-            else param.set(Array.isArray(vi) ? vi[i%vi.length] : vi);
+            else param.set(newVal);
 
         }
 
@@ -2729,7 +2731,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         // actually do anything but change what you see in the styling
         // box. everything else at least needs to apply styles
         if((['autobinx','autobiny','zauto'].indexOf(ai)===-1) ||
-                vi!==false) {
+                newVal!==false) {
             dostyle = true;
         }
         if(['colorbar', 'line'].indexOf(param.parts[0])!==-1 ||
