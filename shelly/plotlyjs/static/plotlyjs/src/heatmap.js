@@ -103,14 +103,12 @@ heatmap.handleXYZDefaults = function(traceIn, traceOut, coerce) {
 
     if(z===undefined || !z.length) return [];
 
-    if(!Array.isArray(z[0])) {
+    if(heatmap.hasColumns(traceIn)) {
         x = coerce('x');
         y = coerce('y');
 
         // column z must be accompanied by 'x' and 'y' arrays
         if(!x || !y) return [];
-
-        convertColumnXYZ(x, y, z, traceOut);
     }
     else {
         x = coordDefaults('x', coerce);
@@ -135,27 +133,6 @@ function coordDefaults(coordStr, coerce) {
     }
 
     return coord;
-}
-
-function convertColumnXYZ(xCol, yCol, zCol, traceOut) {
-    var coordsLen = Math.min(xCol.length, yCol.length, zCol.length);
-
-    if(coordsLen < xCol.length) xCol = xCol.slice(0, coordsLen);
-    if(coordsLen < yCol.length) yCol = yCol.slice(0, coordsLen);
-
-    var x = Plotly.Lib.distinctVals(xCol).vals,
-        y = Plotly.Lib.distinctVals(yCol).vals,
-        z = Plotly.Lib.init2dArray(y.length, x.length);
-
-    for(var i = 0; i < coordsLen; i++) {
-        z[y.indexOf(yCol[i])][x.indexOf(xCol[i])] = zCol[i];
-    }
-
-    traceOut.x = x;
-    traceOut.y = y;
-    traceOut.z = z;
-
-    return z.length;
 }
 
 function isValidZ(z) {
@@ -185,6 +162,34 @@ function isValidZ(z) {
     return (allRowsAreArrays && oneRowIsFilled);
 }
 
+heatmap.hasColumns = function(trace) {
+    return !Array.isArray(trace.z[0]);
+};
+
+heatmap.convertColumnXYZ = function(trace) {
+    var xCol = trace.x,
+        yCol = trace.y,
+        zCol = trace.z,
+        colLen = Math.min(xCol.length, yCol.length, zCol.length);
+
+    if(colLen < xCol.length) xCol = xCol.slice(0, colLen);
+    if(colLen < yCol.length) yCol = yCol.slice(0, colLen);
+
+    var xColdv = Plotly.Lib.distinctVals(xCol),
+        x = xColdv.vals,
+        yColdv = Plotly.Lib.distinctVals(yCol),
+        y = yColdv.vals,
+        z = Plotly.Lib.init2dArray(y.length, x.length);
+
+    for(var i = 0; i < colLen; i++) {
+        z[Plotly.Lib.findBin(yCol[i] + yColdv.minDiff / 2, y)]
+            [Plotly.Lib.findBin(xCol[i] + xColdv.minDiff / 2, x)] = zCol[i];
+    }
+
+    trace.x = x;
+    trace.y = y;
+    trace.z = z;
+};
 
 heatmap.calc = function(gd, trace) {
     // prepare the raw data
@@ -221,14 +226,15 @@ heatmap.calc = function(gd, trace) {
         z = binned.z;
     }
     else {
+        if(heatmap.hasColumns(trace)) heatmap.convertColumnXYZ(trace);
+
+
         x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
-        x0 = trace.x0||0;
-        dx = trace.dx||1;
-
         y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
-        y0 = trace.y0||0;
-        dy = trace.dy||1;
-
+        x0 = trace.x0 || 0;
+        dx = trace.dx || 1;
+        y0 = trace.y0 || 0;
+        dy = trace.dy || 1;
 
         if(trace.transpose) {
             var maxcols = Plotly.Lib.aggNums(Math.max,0,
