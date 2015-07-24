@@ -1645,8 +1645,8 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var moduleLayoutDefaults = [
-        'Axes', 'Legend', 'Annotations', 'Shapes', 'Fx',
-        'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout', 'Pie'
+        'Axes', 'Annotations', 'Shapes', 'Fx',
+        'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout', 'Pie', 'Legend'
     ];
 
     var i, module;
