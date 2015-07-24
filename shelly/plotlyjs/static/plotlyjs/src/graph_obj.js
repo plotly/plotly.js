@@ -2495,7 +2495,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     var redoit = {},
         undoit = {},
         axlist,
-        flagAxForDelete = [];
+        flagAxForDelete = {};
 
     // for now, if we detect 3D or geo stuff, just re-do the plot
     if(fullLayout._hasGL3D || fullLayout._hasGeo) doplot = true;
@@ -2666,8 +2666,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                     fullLayout._pielayer.selectAll('g.trace').remove();
                 } else if(plots.traceIs(cont, 'cartesian')) {
                     //look for axes that are no longer in use and delete them
-                    flagAxForDelete.push(cont.xaxis || 'x');
-                    flagAxForDelete.push(cont.yaxis || 'y');
+                    flagAxForDelete[cont.xaxis || 'x'] = true;
+                    flagAxForDelete[cont.yaxis || 'y'] = true;
                 }
             }
 
@@ -2759,9 +2759,11 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     }
 
     // check axes we've flagged for possible deletion
+    // flagAxForDelete is a hash so we can make sure we only get each axis once
+    var axListForDelete = Object.keys(flagAxForDelete);
     axisLoop:
-    for(i = 0; i < flagAxForDelete.length; i++) {
-        var axId = flagAxForDelete[i],
+    for(i = 0; i < axListForDelete.length; i++) {
+        var axId = axListForDelete[i],
             axLetter = axId.charAt(0),
             axAttr = axLetter + 'axis';
         for(var j = 0; j < gd.data.length; j++) {
