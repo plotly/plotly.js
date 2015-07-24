@@ -2472,11 +2472,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // in the style box, but they're graph-wide attributes, so set
     // in gd.layout also axis scales and range show up here because
     // we may need to undo them. These all trigger a recalc
-    var layoutAttrs = [
-        'barmode', 'barnorm','bargap', 'bargroupgap',
-        'boxmode', 'boxgap', 'boxgroupgap',
-        '?axis.autorange', '?axis.range', '?axis.rangemode' // TODO: this will fail for extra axes
-    ];
+    // var layoutAttrs = [
+    //     'barmode', 'barnorm','bargap', 'bargroupgap',
+    //     'boxmode', 'boxgap', 'boxgroupgap',
+    //     '?axis.autorange', '?axis.range', '?axis.rangemode'
+    // ];
+
     // these ones may alter the axis type
     // (at least if the first trace is involved)
     var axtypeAttrs = [
@@ -2508,22 +2509,29 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         var axName = Plotly.Axes.id2name(axid);
         if(axlist.indexOf(axName)===-1) { axlist.push(axName); }
     }
-    function autorangeAttr(axName) { return axName+'.autorange'; }
-    function rangeAttr(axName) { return axName+'.range'; }
+    function autorangeAttr(axName) { return 'LAYOUT' + axName + '.autorange'; }
+    function rangeAttr(axName) { return 'LAYOUT' + axName + '.range'; }
 
     // for attrs that interact (like scales & autoscales), save the
     // old vals before making the change
     // val=undefined will not set a value, just record what the value was.
     // val=null will delete the attribute
     // attr can be an array to set several at once (all to the same val)
-    function doextra(cont,attr,val,i) {
+    function doextra(attr,val,i) {
         if(Array.isArray(attr)) {
-            attr.forEach(function(a){ doextra(cont,a,val,i); });
+            attr.forEach(function(a){ doextra(a,val,i); });
             return;
         }
         // quit if explicitly setting this elsewhere
         if(attr in aobj) { return; }
-        var extraparam = Plotly.Lib.nestedProperty(cont,attr);
+
+        var extraparam;
+        if(attr.substr(0, 6) === 'LAYOUT') {
+            extraparam = Plotly.Lib.nestedProperty(gd.layout, attr.replace('LAYOUT', ''));
+        } else {
+            extraparam = Plotly.Lib.nestedProperty(gd.data[traces[i]], attr);
+        }
+
         if(!(attr in undoit)) {
             undoit[attr] = a0();
         }
@@ -2549,8 +2557,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             oldVal;
         redoit[ai] = vi;
 
-        if(layoutAttrs.indexOf(ai.replace(/[xyz]axis[0-9]*/g, '?axis'))!==-1){
-            param = Plotly.Lib.nestedProperty(gd.layout, ai);
+        if(ai.substr(0,6)==='LAYOUT'){
+            param = Plotly.Lib.nestedProperty(gd.layout, ai.replace('LAYOUT', ''));
             undoit[ai] = [param.get()];
             // since we're allowing val to be an array, allow it here too,
             // even though that's meaningless
@@ -2572,50 +2580,50 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             // setting bin or z settings should turn off auto
             // and setting auto should save bin or z settings
             if(zscl.indexOf(ai)!==-1) {
-                doextra(cont,'zauto',false,i);
+                doextra('zauto', false, i);
             }
             else if(ai === 'colorscale') {
-                doextra(cont, 'autocolorscale', false, i);
+                doextra('autocolorscale', false, i);
             }
             else if(ai === 'autocolorscale') {
-                doextra(cont, 'colorscale', undefined, i);
+                doextra('colorscale', undefined, i);
             }
             else if(ai === 'marker.colorscale') {
-                doextra(cont.marker, 'autocolorscale', false, i);
+                doextra('marker.autocolorscale', false, i);
             }
             else if(ai === 'marker.autocolorscale') {
-                doextra(cont.marker, 'colorscale', undefined, i);
+                doextra('marker.colorscale', undefined, i);
             }
             else if(ai==='zauto') {
-                doextra(cont,zscl,undefined,i);
+                doextra(zscl, undefined, i);
             }
             else if(xbins.indexOf(ai)!==-1) {
-                doextra(cont,'autobinx',false,i);
+                doextra('autobinx', false, i);
             }
             else if(ai==='autobinx') {
-                doextra(cont,xbins,undefined,i);
+                doextra(xbins, undefined, i);
             }
             else if(ybins.indexOf(ai)!==-1) {
-                doextra(cont,'autobiny',false,i);
+                doextra('autobiny', false, i);
             }
             else if(ai==='autobiny') {
-                doextra(cont,ybins,undefined,i);
+                doextra(ybins, undefined, i);
             }
             else if(contourAttrs.indexOf(ai)!==-1) {
-                doextra(cont, 'autocontour', false, i);
+                doextra('autocontour', false, i);
             }
             else if(ai==='autocontour') {
-                doextra(cont, contourAttrs, undefined, i);
+                doextra(contourAttrs, undefined, i);
             }
             // heatmaps: setting x0 or dx, y0 or dy,
             // should turn xtype/ytype to 'scaled' if 'array'
             else if(['x0','dx'].indexOf(ai)!==-1 &&
                     contFull.x && contFull.xtype!=='scaled') {
-                doextra(cont,'xtype','scaled',i);
+                doextra('xtype', 'scaled', i);
             }
             else if(['y0','dy'].indexOf(ai)!==-1 &&
                     contFull.y && contFull.ytype!=='scaled') {
-                doextra(cont,'ytype','scaled',i);
+                doextra('ytype', 'scaled', i);
             }
             // changing colorbar size modes,
             // make the resulting size not change
@@ -2629,7 +2637,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                     ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
                         (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b) :
                         (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r);
-                doextra(cont,'colorbar.thickness', contFull.colorbar.thickness *
+                doextra('colorbar.thickness', contFull.colorbar.thickness *
                     (vi==='fraction' ? 1/thicknorm : thicknorm), i);
             }
             else if(ai==='colorbar.lenmode' && param.get()!==vi &&
@@ -2639,14 +2647,14 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                     ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
                         (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r) :
                         (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b);
-                doextra(cont,'colorbar.len', contFull.colorbar.len *
+                doextra('colorbar.len', contFull.colorbar.len *
                     (vi==='fraction' ? 1/lennorm : lennorm), i);
             }
             else if(ai === 'colorbar.tick0' || ai === 'colorbar.dtick') {
-                doextra(cont, 'colorbar.tickmode', 'linear');
+                doextra('colorbar.tickmode', 'linear', i);
             }
             else if(ai === 'colorbar.tickmode') {
-                doextra(cont, ['colorbar.tick0', 'colorbar.dtick'], undefined);
+                doextra(['colorbar.tick0', 'colorbar.dtick'], undefined, i);
             }
 
 
@@ -2742,15 +2750,14 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                         addToAxlist(trace.xaxis||'x');
                         addToAxlist(trace.yaxis||'y');
 
-                        if(astr==='type') {
-                            doextra(gd.data[traces[i]],
-                                ['autobinx','autobiny'],true,i);
+                        if(astr === 'type') {
+                            doextra(['autobinx','autobiny'], true, i);
                         }
                     }
                 }
 
-                doextra(gd.layout, axlist.map(autorangeAttr), true, 0);
-                doextra(gd.layout, axlist.map(rangeAttr), [0, 1], 0);
+                doextra(axlist.map(autorangeAttr), true, 0);
+                doextra(axlist.map(rangeAttr), [0, 1], 0);
             }
             docalc = true;
         }
@@ -2774,7 +2781,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         }
 
         // no data on this axis - delete it.
-        doextra(gd.layout, Plotly.Axes.id2name(axId), null, 0);
+        doextra('LAYOUT' + Plotly.Axes.id2name(axId), null, 0);
     }
 
     // now all attribute mods are done, as are redo and undo
