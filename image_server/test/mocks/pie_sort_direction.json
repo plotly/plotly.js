@@ -14,7 +14,7 @@
         "y": [0.6, 1]
       },
       "sort": true,
-      "direction": "ccw",
+      "direction": "counterclockwise",
       "name": "sorted ccw (default)"
     },
     {
@@ -31,7 +31,7 @@
         "y": [0.6, 1]
       },
       "sort": true,
-      "direction": "cw",
+      "direction": "clockwise",
       "name": "sorted cw"
     },
     {
@@ -48,7 +48,7 @@
         "y": [0, 0.4]
       },
       "sort": false,
-      "direction": "ccw",
+      "direction": "counterclockwise",
       "name": "unsorted ccw"
     },
     {
@@ -65,7 +65,7 @@
         "y": [0, 0.4]
       },
       "sort": false,
-      "direction": "cw",
+      "direction": "clockwise",
       "name": "unsorted cw"
     }
   ],
