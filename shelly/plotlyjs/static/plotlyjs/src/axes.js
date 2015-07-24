@@ -571,19 +571,12 @@ function setAutoType(ax, data){
     if(ax.type!=='-') return;
 
     var id = ax._id,
-        axLetter = id.charAt(0),
-        i,
-        d0;
+        axLetter = id.charAt(0);
 
     // support 3d
     if(id.indexOf('scene') !== -1) id = axLetter;
 
-    for(i = 0; i < data.length; i++) {
-        if((data[i][axLetter+'axis'] || axLetter) === id) {
-            d0 = data[i];
-            break;
-        }
-    }
+    var d0 = getFirstNonEmptyTrace(data, id, axLetter);
     if(!d0) return;
 
     // first check for histograms, as the count direction
@@ -593,27 +586,50 @@ function setAutoType(ax, data){
         ax.type='linear';
         return;
     }
+
     // then check the data supplied for that axis
     var posLetter = {v:'x', h:'y'}[d0.orientation || 'v'];
+
     if(Plotly.Plots.traceIs(d0, 'box') &&
             axLetter===posLetter &&
             !(posLetter in d0) &&
             !(posLetter+'0' in d0)) {
+
         // check all boxes on this x axis to see
         // if they're dates, numbers, or categories
-        var boxPositions = [];
-        for(i = 0; i < data.length; i++) {
-            var trace = data[i];
+        var boxPositions = [],
+            trace;
+
+        for(var i = 0; i < data.length; i++) {
+            trace = data[i];
             if(!Plotly.Plots.traceIs(trace, 'box') || (trace[axLetter+'axis']||axLetter) !== id) continue;
 
             if(trace[posLetter] !== undefined) boxPositions.push(trace[posLetter][0]);
             else if(trace.name !== undefined) boxPositions.push(trace.name);
             else boxPositions.push('text');
         }
+
         ax.type = axes.autoType(boxPositions);
     }
     else {
         ax.type = axes.autoType(d0[axLetter] || [d0[axLetter+'0']]);
+    }
+}
+
+function getFirstNonEmptyTrace(data, id, axLetter) {
+    var trace;
+
+    for(var i = 0; i < data.length; i++) {
+        trace = data[i];
+
+        if((trace[axLetter+'axis'] || axLetter) === id) {
+            if(Plotly.Plots.traceIs(trace, 'box')) {
+                return trace;
+            }
+            else if((trace[axLetter] || []).length || trace[axLetter + 0]) {
+                return trace;
+            }
+        }
     }
 }
 
