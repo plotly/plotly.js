@@ -122,8 +122,8 @@ pie.attributes = {
          * see http://visage.co/data-visualization-101-pie-charts/
          */
         type: 'enumerated',
-        values: ['cw', 'ccw'],
-        dflt: 'ccw'
+        values: ['clockwise', 'counterclockwise'],
+        dflt: 'counterclockwise'
     },
     rotation: {
         // instead of the first slice starting at 12 o'clock, rotate to some other angle
@@ -968,7 +968,7 @@ function setCoords(cd) {
         cdi,
         currentCoords;
 
-    if(trace.direction === 'ccw') {
+    if(trace.direction === 'counterclockwise') {
         for(i = 0; i < cd.length; i++) {
             if(!cd[i].hidden) break; // find the first non-hidden slice
         }
