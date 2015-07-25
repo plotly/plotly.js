@@ -632,7 +632,7 @@ drawing.pointStyle = function(s, trace) {
             // handle multi-trace graph edit case
             if(d.ms==='various' || marker.size==='various') r = 3;
             else r = Plotly.Scatter.isBubble(trace) ?
-                        sizeFn(d.ms) : marker.size / 2;
+                        sizeFn(d.ms) : (marker.size || 6) / 2;
 
             // store the calculated size so hover can use it
             d.mrc = r;
@@ -680,7 +680,7 @@ drawing.pointStyle = function(s, trace) {
 
             if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
             else if(Array.isArray(marker.color)) fillColor = Plotly.Color.defaultLine;
-            else fillColor = marker.color;
+            else fillColor = marker.color || 'rgba(0,0,0,0)';
         }
 
         var p = d3.select(this);
