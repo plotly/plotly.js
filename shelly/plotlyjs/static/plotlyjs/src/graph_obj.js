@@ -2436,7 +2436,10 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'colors', 'values', 'labels', 'label0', 'dlabel', 'sort',
         'textinfo', 'textposition', 'textfont.size', 'textfont.family', 'textfont.color',
         'insidetextfont.size', 'insidetextfont.family', 'insidetextfont.color',
-        'outsidetextfont.size', 'outsidetextfont.family', 'outsidetextfont.color'
+        'outsidetextfont.size', 'outsidetextfont.family', 'outsidetextfont.color',
+        'hole', 'scalegroup', 'domain', 'domain.x', 'domain.y',
+        'domain.x[0]', 'domain.x[1]', 'domain.y[0]', 'domain.y[1]',
+        'tilt', 'tiltaxis', 'depth', 'direction', 'rotation', 'pull'
     ];
     for(i = 0; i < traces.length; i++) {
         if(plots.traceIs(gd._fullData[traces[i]], 'box')) {
@@ -2462,10 +2465,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'contours.showlines',
         'line','line.smoothing','line.shape',
         'error_y.width','error_x.width','error_x.copy_ystyle',
-        'marker.maxdisplayed',
-        'hole', 'scalegroup', 'domain', 'domain.x', 'domain.y',
-        'domain.x[0]', 'domain.x[1]', 'domain.y[0]', 'domain.y[1]',
-        'tilt', 'tiltaxis', 'depth', 'direction', 'rotation', 'pull'
+        'marker.maxdisplayed'
     ];
     // these ones show up in restyle because they make more sense
     // in the style box, but they're graph-wide attributes, so set
