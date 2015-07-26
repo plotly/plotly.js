@@ -805,8 +805,8 @@ function makeClipMask(cd0) {
     return z;
 }
 
-contour.style = function(gp) {
-    gp.selectAll('g.contour')
+contour.style = function(gd) {
+    d3.select(gd).selectAll('g.contour')
         .style('opacity',function(d){ return d.trace.opacity; })
         .each(function(d) {
             var c = d3.select(this),
@@ -840,7 +840,7 @@ contour.style = function(gp) {
                     return colormap(contours.start + (i+0.5)*cs);
                 });
         });
-    Plotly.Heatmap.style(gp);
+    Plotly.Heatmap.style(gd);
 };
 
 contour.colorbar = function(gd, cd) {
