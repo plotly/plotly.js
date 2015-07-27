@@ -292,8 +292,8 @@ errorBars.plot = function(gd, plotinfo, cd) {
         });
 };
 
-errorBars.style = function(gp){
-    gp.selectAll('g.errorbars').each(function(d){
+errorBars.style = function(gd){
+    d3.select(gd).selectAll('g.errorbars').each(function(d){
         var eb = d3.select(this),
             trace = d[0].trace,
             yObj = trace.error_y||{},

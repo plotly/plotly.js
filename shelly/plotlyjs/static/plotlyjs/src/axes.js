@@ -502,11 +502,11 @@ axes.coerceRef = function(containerIn, containerOut, td, axLetter) {
     attrDef[refAttr] = {
         type: 'enumerated',
         values: axlist.concat(['paper']),
-        dflt: axlist[0]
+        dflt: axlist[0] || 'paper'
     };
 
     // xref, yref
-    return Plotly.Lib.coerce(containerIn, containerOut, attrDef, refAttr, axLetter);
+    return Plotly.Lib.coerce(containerIn, containerOut, attrDef, refAttr);
 };
 
 // empty out types for all axes containing these traces
@@ -2713,7 +2713,7 @@ function swapAxisGroup(gd, xIds, yIds) {
         var ann = gd._fullLayout.annotations[i];
         if(xIds.indexOf(ann.xref) !== -1 &&
                 yIds.indexOf(ann.yref) !== -1) {
-            Plotly.Lib.swapXYAttrs(layout.annotations[i],['?']);
+            Plotly.Lib.swapAttrs(layout.annotations[i],['?']);
         }
     }
 }
