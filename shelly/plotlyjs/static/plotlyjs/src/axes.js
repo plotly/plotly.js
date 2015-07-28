@@ -589,7 +589,7 @@ function setAutoType(ax, data){
 
     // check all boxes on this x axis to see
     // if they're dates, numbers, or categories
-    if(isBoxWithoutPositonCoords(d0, axLetter)) {
+    if(isBoxWithoutPositionCoords(d0, axLetter)) {
         var posLetter = getBoxPosLetter(d0),
             boxPositions = [],
             trace;
@@ -615,7 +615,7 @@ function getBoxPosLetter(trace) {
     return {v:'x', h:'y'}[trace.orientation || 'v'];
 }
 
-function isBoxWithoutPositonCoords(trace, axLetter) {
+function isBoxWithoutPositionCoords(trace, axLetter) {
     var posLetter = getBoxPosLetter(trace);
     return Plotly.Plots.traceIs(trace, 'box') && axLetter===posLetter &&
             trace[posLetter]===undefined && trace[posLetter + '0']===undefined;
@@ -628,7 +628,7 @@ function getFirstNonEmptyTrace(data, id, axLetter) {
         trace = data[i];
 
         if((trace[axLetter + 'axis'] || axLetter) === id) {
-            if(isBoxWithoutPositonCoords(trace, axLetter)) {
+            if(isBoxWithoutPositionCoords(trace, axLetter)) {
                 return trace;
             }
             else if((trace[axLetter] || []).length || trace[axLetter + '0']) {
