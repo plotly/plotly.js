@@ -426,6 +426,13 @@ proto.config = function config() {
             icon: 'autoscale',
             click: this.handleCartesian
         },
+        resetScale2d: {
+            title: 'Reset axes',
+            attr: 'zoom',
+            val: 'reset',
+            icon: 'home',
+            click: this.handleCartesian
+        },
         hoverClosest2d: {
             title: 'Show closest data on hover',
             attr: 'hovermode',

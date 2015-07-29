@@ -1323,7 +1323,7 @@ function chooseModebarButtons(fullLayout) {
     if(allFixed) buttons = [];
     else buttons = [
         ['zoom2d', 'pan2d'],
-        ['zoomIn2d', 'zoomOut2d', 'autoScale2d']
+        ['zoomIn2d', 'zoomOut2d', 'resetScale2d', 'autoScale2d']
     ];
 
     if(fullLayout._hasCartesian) {
