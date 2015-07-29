@@ -199,17 +199,20 @@ proto.handleCartesian = function(ev) {
         var mag = (val === 'in') ? 0.5 : 2,
             r0 = (1 + mag) / 2,
             r1 = (1 - mag) / 2,
-            axList = Plotly.Axes.list(graphInfo, null, true),
-            i,
-            axName,
-            initialRange;
+            axList = Plotly.Axes.list(graphInfo, null, true);
 
-        for(i = 0; i < axList.length; i++) {
-            if(!axList[i].fixedrange) {
-                axName = axList[i]._name;
+        var ax, axName, initialRange;
+
+        for(var i = 0; i < axList.length; i++) {
+            ax = axList[i];
+            if(!ax.fixedrange) {
+                axName = ax._name;
                 if(val === 'auto') aobj[axName + '.autorange'] = true;
+                else if(val === 'reset') {
+                    aobj[axName + '.range'] = graphInfo['_rangeInitial' + axName].slice();
+                }
                 else {
-                    initialRange = axList[i].range;
+                    initialRange = ax.range;
                     aobj[axName + '.range'] = [
                         r0 * initialRange[0] + r1 * initialRange[1],
                         r0 * initialRange[1] + r1 * initialRange[0]

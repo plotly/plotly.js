@@ -1576,7 +1576,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     function zoomDone(dragged, numClicks) {
         if(Math.min(box.h, box.w) < fx.MINDRAG * 2) {
             // doubleclick - autoscale
-            if(numClicks === 2) dragAutoRange();
+            if(numClicks === 2) dragResetRange();
             else pauseForDrag(gd);
 
             return removeZoombox(gd);
@@ -1597,7 +1597,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     function dragDone(dragged, numClicks) {
         var singleEnd = (ns + ew).length === 1;
         if(dragged) dragTail();
-        else if(numClicks === 2 && !singleEnd) dragAutoRange();
+        else if(numClicks === 2 && !singleEnd) dragResetRange();
         else if(numClicks === 1 && singleEnd) {
             var ax = ns ? ya[0] : xa[0],
                 end = (ns==='s' || ew==='w') ? 0 : 1,
@@ -1813,12 +1813,30 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     // dragAutoRange - set one or both axes to autorange on doubleclick
+    // TODO use somewhere else or remove
     function dragAutoRange() {
-        var attrs={},
+        var attrs = {},
             axList = (xActive ? xa : []).concat(yActive ? ya : []);
 
         for(var i = 0; i < axList.length; i++) {
             if(!axList[i].fixedrange) attrs[axList[i]._name + '.autorange'] = true;
+        }
+
+        Plotly.relayout(gd, attrs);
+    }
+
+    function dragResetRange() {
+        var attrs = {},
+            axList = (xActive ? xa : []).concat(yActive ? ya : []),
+            ax,
+            axName;
+
+        for(var i = 0; i < axList.length; i++) {
+            ax = axList[i];
+            if(!ax.fixedrange) {
+                axName = ax._name;
+                attrs[axName + '.range'] = gd['_rangeInitial' + axName].slice();
+           }
         }
 
         Plotly.relayout(gd, attrs);

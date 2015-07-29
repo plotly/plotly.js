@@ -576,9 +576,18 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     function doAutoRange(){
-        var axList = Plotly.Axes.list(gd, '', true);
-        for (var i = 0; i < axList.length; i++) {
-            Plotly.Axes.doAutoRange(axList[i]);
+        var axList = Plotly.Axes.list(gd, '', true),
+            ax;
+
+        for(var i = 0; i < axList.length; i++) {
+            ax = axList[i];
+            Plotly.Axes.doAutoRange(ax);
+
+            // save a copy of the initial axis ranges in gd,
+            // use them in modebar and dblclick events
+            if(gd['_rangeInitial' + ax._name] === undefined) {
+                gd['_rangeInitial' + ax._name] = ax.range.slice();
+            }
         }
     }
 
