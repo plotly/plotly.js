@@ -994,8 +994,6 @@ axes.minDtick = function(ax,newDiff,newFirst,allow) {
 };
 
 axes.doAutoRange = function(ax) {
-    function pickVal(v){ return v.val; }
-
     if(!ax._length) ax.setScale();
 
     if(ax.autorange && ax._min && ax._max &&
