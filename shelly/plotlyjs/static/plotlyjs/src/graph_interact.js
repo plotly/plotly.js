@@ -70,8 +70,7 @@ fx.MINZOOM = 20;
 var DRAGGERSIZE = 20;
 
 fx.init = function(gd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData;
+    var fullLayout = gd._fullLayout;
 
     if(fullLayout._hasGL3D || fullLayout._hasGeo || gd._context.staticPlot) return;
 

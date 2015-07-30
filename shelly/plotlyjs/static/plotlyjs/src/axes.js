@@ -263,10 +263,9 @@ axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
                                      attr, dflt);
         }
 
-        axes.handleAxisDefaults(axLayoutIn, axLayoutOut,
-                               coerce, defaultOptions);
-        axes.handleAxisPositioningDefaults(axLayoutIn, axLayoutOut,
-                                     coerce, positioningOptions);
+
+        axes.handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
+        axes.handleAxisPositioningDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
         layoutOut[axName] = axLayoutOut;
 
         // so we don't have to repeat autotype unnecessarily,
@@ -346,6 +345,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
         containerOut.range = [range0 - 1, range0 + 1];
     }
     Plotly.Lib.noneOrAll(containerIn.range, containerOut.range, [0, 1]);
+
     coerce('fixedrange');
 
     axes.handleTickValueDefaults(containerIn, containerOut, coerce, axType);
