@@ -1574,8 +1574,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     function zoomDone(dragged, numClicks) {
         if(Math.min(box.h, box.w) < fx.MINDRAG * 2) {
-            // doubleclick - autoscale
-            if(numClicks === 2) dragResetRange();
+            if(numClicks === 2) doubleClick();
             else pauseForDrag(gd);
 
             return removeZoombox(gd);
@@ -1596,7 +1595,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     function dragDone(dragged, numClicks) {
         var singleEnd = (ns + ew).length === 1;
         if(dragged) dragTail();
-        else if(numClicks === 2 && !singleEnd) dragResetRange();
+        else if(numClicks === 2 && !singleEnd) doubleClick();
         else if(numClicks === 1 && singleEnd) {
             var ax = ns ? ya[0] : xa[0],
                 end = (ns==='s' || ew==='w') ? 0 : 1,
@@ -1811,31 +1810,34 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         redrawObjs(fullLayout.shapes || [], Plotly.Shapes);
     }
 
-    // dragAutoRange - set one or both axes to autorange on doubleclick
-    // TODO use somewhere else or remove
-    function dragAutoRange() {
-        var attrs = {},
-            axList = (xActive ? xa : []).concat(yActive ? ya : []);
-
-        for(var i = 0; i < axList.length; i++) {
-            if(!axList[i].fixedrange) attrs[axList[i]._name + '.autorange'] = true;
-        }
-
-        Plotly.relayout(gd, attrs);
-    }
-
-    function dragResetRange() {
-        var attrs = {},
+    function doubleClick() {
+        var doubleClickConfig = gd._context.doubleClick,
             axList = (xActive ? xa : []).concat(yActive ? ya : []),
-            ax,
-            axName;
+            attrs = {};
 
-        for(var i = 0; i < axList.length; i++) {
-            ax = axList[i];
-            if(!ax.fixedrange) {
-                axName = ax._name;
-                attrs[axName + '.range'] = gd['_rangeInitial' + axName].slice();
-           }
+        var ax, i;
+
+        if(doubleClickConfig === 'autosize') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                if(!ax.fixedrange) attrs[ax._name + '.autorange'] = true;
+            }
+        }
+        else if(doubleClickConfig === 'reset') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+            }
+        }
+        else if(doubleClickConfig === 'reset+autosize') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                if(ax.fixedrange) continue;
+                if(ax.range[0]===ax._rangeInitial[0] && ax.range[1]===ax._rangeInitial[1]) {
+                    attrs[ax._name + '.autorange'] = true;
+                }
+                else attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+            }
         }
 
         Plotly.relayout(gd, attrs);

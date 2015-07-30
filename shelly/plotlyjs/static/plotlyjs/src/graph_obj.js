@@ -593,18 +593,20 @@ Plotly.plot = function(gd, data, layout, config) {
         }
     }
 
-    function doAutoRange(){
+    function doAutoRange() {
         var axList = Plotly.Axes.list(gd, '', true),
+            saveRangeInitial = gd._context.doubleClick!==false ||
+                gd._context.displayModeBar!==false,
             ax;
 
         for(var i = 0; i < axList.length; i++) {
             ax = axList[i];
             Plotly.Axes.doAutoRange(ax);
 
-            // save a copy of the initial axis ranges in gd,
+            // save a copy of the initial axis ranges in fullLayout
             // use them in modebar and dblclick events
-            if(gd['_rangeInitial' + ax._name] === undefined) {
-                gd['_rangeInitial' + ax._name] = ax.range.slice();
+            if(saveRangeInitial && ax._rangeInitial === undefined) {
+                ax._rangeInitial = ax.range.slice();
             }
         }
     }

@@ -209,7 +209,7 @@ proto.handleCartesian = function(ev) {
                 axName = ax._name;
                 if(val === 'auto') aobj[axName + '.autorange'] = true;
                 else if(val === 'reset') {
-                    aobj[axName + '.range'] = graphInfo['_rangeInitial' + axName].slice();
+                    aobj[axName + '.range'] = ax._rangeInitial.slice();
                 }
                 else {
                     initialRange = ax.range;
