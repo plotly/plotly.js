@@ -516,7 +516,13 @@ Plotly.plot = function(gd, data, layout, config) {
     // generate calcdata, if we need to
     // to force redoing calcdata, just delete it before calling Plotly.plot
     var recalc = !gd.calcdata || gd.calcdata.length!==(gd.data||[]).length;
-    if(recalc) doCalcdata(gd);
+    if(recalc) {
+        doCalcdata(gd);
+
+        if(gd._context.doubleClick!==false || gd._context.displayModeBar!==false) {
+            Plotly.Axes.saveRangeInitial(gd);
+        }
+    }
 
     // in case it has changed, attach fullData traces to calcdata
     for (var i = 0; i < gd.calcdata.length; i++) {
