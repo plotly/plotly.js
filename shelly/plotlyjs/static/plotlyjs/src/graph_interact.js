@@ -679,6 +679,7 @@ fx.loneHover = function(hoverItem, opts) {
         zLabel: hoverItem.zLabel,
         text: hoverItem.text,
         name: hoverItem.name,
+        idealAlign: hoverItem.idealAlign,
 
         // filler to make createHoverText happy
         trace: {
@@ -690,14 +691,16 @@ fx.loneHover = function(hoverItem, opts) {
         index: 0
     };
 
-    var container3 = d3.select(opts.container);
+    var container3 = d3.select(opts.container),
+        outerContainer3 = opts.outerContainer ?
+            d3.select(opts.outerContainer) : container3;
 
     var fullOpts = {
         hovermode: 'closest',
         rotateLabels: false,
         bgColor: opts.bgColor || Plotly.Color.background,
         container: container3,
-        outerContainer: container3
+        outerContainer: outerContainer3
     };
 
     var hoverLabel = createHoverText([pointData], fullOpts);
@@ -937,7 +940,10 @@ function createHoverText(hoverData, opts) {
             hty = ya._offset+(d.y0+d.y1)/2,
             dx = Math.abs(d.x1-d.x0),
             dy = Math.abs(d.y1-d.y0),
-            txTotalWidth = tbb.width+HOVERARROWSIZE+HOVERTEXTPAD+tx2width;
+            txTotalWidth = tbb.width+HOVERARROWSIZE+HOVERTEXTPAD+tx2width,
+            anchorStartOK,
+            anchorEndOK;
+
         d.ty0 = outerTop-tbb.top;
         d.bx = tbb.width+2*HOVERTEXTPAD;
         d.by = tbb.height+2*HOVERTEXTPAD;
@@ -945,30 +951,32 @@ function createHoverText(hoverData, opts) {
         d.txwidth = tbb.width;
         d.tx2width = tx2width;
         d.offset = 0;
+
         if(rotateLabels) {
             d.pos = htx;
-            hty += dy/2;
-            if(hty+txTotalWidth > outerHeight) {
+            anchorStartOK = hty + dy / 2 + txTotalWidth <= outerHeight;
+            anchorEndOK = hty - dy / 2 - txTotalWidth >= 0;
+            if((d.idealAlign === 'top' || !anchorStartOK) && anchorEndOK) {
+                hty -= dy / 2;
                 d.anchor = 'end';
-                hty -= dy;
-                if(hty-txTotalWidth<0) {
-                    d.anchor = 'middle';
-                    hty +=dy/2;
-                }
-            }
+            } else if(anchorStartOK) {
+                hty += dy / 2;
+                d.anchor = 'start';
+            } else d.anchor = 'middle';
         }
         else {
             d.pos = hty;
-            htx += dx/2;
-            if(htx+txTotalWidth > outerWidth) {
+            anchorStartOK = htx + dx / 2 + txTotalWidth <= outerWidth;
+            anchorEndOK = htx - dx / 2 - txTotalWidth >= 0;
+            if((d.idealAlign === 'left' || !anchorStartOK) && anchorEndOK) {
+                htx -= dx / 2;
                 d.anchor = 'end';
-                htx -=dx;
-                if(htx-txTotalWidth<0) {
-                    d.anchor = 'middle';
-                    htx += dx/2;
-                }
-            }
+            } else if(anchorStartOK) {
+                htx += dx / 2;
+                d.anchor = 'start';
+            } else d.anchor = 'middle';
         }
+
         tx.attr('text-anchor',d.anchor);
         if(tx2width) tx2.attr('text-anchor',d.anchor);
         g.attr('transform','translate('+htx+','+hty+')'+
@@ -1318,7 +1326,11 @@ function chooseModebarButtons(fullLayout) {
         ['zoomIn2d', 'zoomOut2d', 'autoScale2d']
     ];
 
-    buttons.push(['hoverClosest2d', 'hoverCompare2d']);
+    if(fullLayout._hasCartesian) {
+        buttons.push(['hoverClosest2d', 'hoverCompare2d']);
+    } else if(fullLayout._hasPie) {
+        buttons.push(['hoverClosestPie']);
+    }
 
     return buttons;
 }

@@ -662,12 +662,15 @@ function badContainer(container, propStr, propParts) {
 /**
  * swap x and y of the same attribute in container cont
  * specify attr with a ? in place of x/y
+ * you can also swap other things than x/y by providing part1 and part2
  */
-lib.swapXYAttrs = function(cont,attrList) {
+lib.swapAttrs = function(cont, attrList, part1, part2) {
+    if(!part1) part1 = 'x';
+    if(!part2) part2 = 'y';
     for(var i = 0; i < attrList.length; i++) {
         var attr = attrList[i],
-            xp = lib.nestedProperty(cont, attr.replace('?', 'x')),
-            yp = lib.nestedProperty(cont, attr.replace('?', 'y')),
+            xp = lib.nestedProperty(cont, attr.replace('?', part1)),
+            yp = lib.nestedProperty(cont, attr.replace('?', part2)),
             temp = xp.get();
         xp.set(yp.get());
         yp.set(temp);
@@ -1347,7 +1350,8 @@ lib.stripTrailingSlash = function (str) {
 var fontAttrs = {
     family: {
         type: 'string',
-        noBlank: true
+        noBlank: true,
+        strict: true
     },
     size: {
         type: 'number',
@@ -1355,6 +1359,19 @@ var fontAttrs = {
     },
     color: {type: 'color'}
 };
+
+var fontAttrsArrayOk = null;
+function getFontAttrsArrayOk() {
+    if(fontAttrsArrayOk === null) {
+        var arrayOkExtend = {arrayOk: true};
+        fontAttrsArrayOk = {
+            family: lib.extendFlat(fontAttrs.family, arrayOkExtend),
+            size: lib.extendFlat(fontAttrs.size, arrayOkExtend),
+            color: lib.extendFlat(fontAttrs.color, arrayOkExtend)
+        };
+    }
+   return fontAttrsArrayOk;
+}
 
 var coerceIt = {
     data_array: function(v, propOut, dflt) {
@@ -1391,6 +1408,11 @@ var coerceIt = {
         else propOut.set(+v);
     },
     string: function(v, propOut, dflt, opts) {
+        if(opts.strict===true && typeof v !== 'string') {
+            propOut.set(dflt);
+            return;
+        }
+
         var s = String(v);
         if(v===undefined || (opts.noBlank===true && !s)) {
             propOut.set(dflt);
@@ -1404,16 +1426,15 @@ var coerceIt = {
     colorscale: function(v, propOut, dflt) {
         propOut.set(Plotly.Colorscale.getScale(v, dflt));
     },
-    font: function(v, propOut, dflt) {
+    font: function(v, propOut, dflt, opts) {
         if(!v) v = {};
-        var vOut = {};
+        var vOut = {},
+            _fontAttrs = (opts && opts.arrayOk) ?
+                getFontAttrsArrayOk() : fontAttrs;
 
-        lib.coerce(v, vOut, fontAttrs, 'size', dflt.size);
-        lib.coerce(v, vOut, fontAttrs, 'color', dflt.color);
-
-        // string type will cast anything to a string - but here we want to be strict
-        if(typeof v.family !== 'string') v = {};
-        lib.coerce(v, vOut, fontAttrs, 'family', dflt.family);
+        lib.coerce(v, vOut, _fontAttrs, 'size', dflt.size);
+        lib.coerce(v, vOut, _fontAttrs, 'color', dflt.color);
+        lib.coerce(v, vOut, _fontAttrs, 'family', dflt.family);
 
         propOut.set(vOut);
     },

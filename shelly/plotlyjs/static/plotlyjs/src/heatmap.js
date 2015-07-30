@@ -10,7 +10,8 @@ var heatmap = module.exports = {},
     scatterAttrs = Plotly.Scatter.attributes;
 
 Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap']);
-Plotly.Plots.register(heatmap, 'histogram2d', ['cartesian', '2dMap', 'histogram']);
+
+var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
 
 heatmap.attributes = {
     z: {type: 'data_array'},
@@ -33,33 +34,16 @@ heatmap.attributes = {
         type: 'enumerated',
         values: ['array', 'scaled']
     },
-    zauto: {
-        type: 'boolean',
-        dflt: true
-    },
-    zmin: {
-        type: 'number',
-        dflt: null
-    },
-    zmax: {
-        type: 'number',
-        dflt: null
-    },
-    colorscale: {
-        type: 'colorscale'
-    },
+    zauto: traceColorbarAttrs.zauto,
+    zmin: traceColorbarAttrs.zmin,
+    zmax: traceColorbarAttrs.zmax,
+    colorscale: traceColorbarAttrs.colorscale,
     autocolorscale: {
         type: 'boolean',
         dflt: false
     },
-    reversescale: {
-        type: 'boolean',
-        dflt: false
-    },
-    showscale: {
-        type: 'boolean',
-        dflt: true
-    },
+    reversescale: traceColorbarAttrs.reversescale,
+    showscale: traceColorbarAttrs.showscale,
     zsmooth: {
         type: 'enumerated',
         values: ['fast', 'best', false],
@@ -915,33 +899,10 @@ function plotOne(gd, plotinfo, cd) {
     Plotly.Lib.markTime('done showing png');
 }
 
-heatmap.colorbar = function(gd,cd) {
-    var trace = cd[0].trace,
-        cbId = 'cb'+trace.uid,
-        scl = Plotly.Colorscale.getScale(trace.colorscale),
-        zmin = trace.zmin,
-        zmax = trace.zmax;
+heatmap.colorbar = Plotly.Colorbar.traceColorbar;
 
-    if (!isNumeric(zmin)) zmin = Plotly.Lib.aggNums(Math.min, null, trace.z);
-    if (!isNumeric(zmax)) zmax = Plotly.Lib.aggNums(Math.max, null, trace.z);
-
-    gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
-    if(!trace.showscale){
-        Plotly.Plots.autoMargin(gd, cbId);
-        return;
-    }
-
-    var cb = cd[0].t.cb = Plotly.Colorbar(gd,cbId);
-    cb.fillcolor(d3.scale.linear()
-            .domain(scl.map(function(v){ return zmin + v[0]*(zmax-zmin); }))
-            .range(scl.map(function(v){ return v[1]; })))
-        .filllevels({start: zmin, end: zmax, size: (zmax-zmin)/254})
-        .options(trace.colorbar)();
-    Plotly.Lib.markTime('done colorbar');
-};
-
-heatmap.style = function(gp) {
-    gp.selectAll('image').style('opacity',function(d){ return d.trace.opacity; });
+heatmap.style = function(gd) {
+    d3.select(gd).selectAll('image').style('opacity',function(d){ return d.trace.opacity; });
 };
 
 heatmap.hoverPoints = function(pointData, xval, yval, hovermode, contour) {

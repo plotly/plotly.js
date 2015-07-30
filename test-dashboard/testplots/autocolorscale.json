@@ -19,6 +19,11 @@
                     1
                 ]
             ],
+            "text": [
+                ["zero zero", "one zero", "two zero"],
+                ["zero two", "one one", "two one"],
+                ["zero two", "one two", "two two"]
+            ],
             "autocolorscale": true
         }
     ],

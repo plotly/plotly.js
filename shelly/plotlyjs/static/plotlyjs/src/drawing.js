@@ -19,7 +19,7 @@ drawing.font = function(s, family, size, color) {
         family = family.family;
     }
     if(family) s.style('font-family', family);
-    if(size) s.style('font-size', size+'px');
+    if(size+1) s.style('font-size', size + 'px');
     if(color) s.call(Plotly.Color.fill, color);
 };
 
@@ -632,7 +632,7 @@ drawing.pointStyle = function(s, trace) {
             // handle multi-trace graph edit case
             if(d.ms==='various' || marker.size==='various') r = 3;
             else r = Plotly.Scatter.isBubble(trace) ?
-                        sizeFn(d.ms) : marker.size / 2;
+                        sizeFn(d.ms) : (marker.size || 6) / 2;
 
             // store the calculated size so hover can use it
             d.mrc = r;
@@ -680,7 +680,7 @@ drawing.pointStyle = function(s, trace) {
 
             if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
             else if(Array.isArray(marker.color)) fillColor = Plotly.Color.defaultLine;
-            else fillColor = marker.color;
+            else fillColor = marker.color || 'rgba(0,0,0,0)';
         }
 
         var p = d3.select(this);
@@ -761,6 +761,8 @@ drawing.textPointStyle = function(s, trace) {
             // the nominal marker size
             // ie 2/1.6 * nominal, bcs some markers are a bit bigger
             r = d.mrc ? (d.mrc/0.8 + 1) : 0;
+
+        fontSize = (isNumeric(fontSize) && fontSize>0) ? fontSize : 0;
 
         p.call(drawing.font,
                 d.tf || trace.textfont.family,
@@ -931,7 +933,7 @@ drawing.bBox = function(node) {
     // cache elements we've already measured so we don't have to
     // remeasure the same thing many times
     var saveNum = node.attributes['data-bb'];
-    if(saveNum) {
+    if(saveNum && saveNum.value) {
         return $.extend({}, savedBBoxes[saveNum.value]);
     }
 
