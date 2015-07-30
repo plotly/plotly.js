@@ -1,0 +1,89 @@
+{
+  "data": [
+    {
+      "values": [
+        0.1,
+        2,
+        5
+      ],
+      "labels": [
+        "a",
+        "b",
+        "x"
+      ],
+      "type": "pie",
+      "domain": {
+        "x": [0, 0.4],
+        "y": [0.6, 1]
+      },
+      "scalegroup": 1,
+      "textposition": "auto"
+    },
+    {
+      "values": [
+        0.3,
+        4,
+        6
+      ],
+      "labels": [
+        "a",
+        "b",
+        "x"
+      ],
+      "type": "pie",
+      "domain": {
+        "x": [0.6, 1],
+        "y": [0.6, 1]
+      },
+      "scalegroup": 1,
+      "textposition": "inside"
+    },
+    {
+      "values": [
+        5,
+        6,
+        10
+      ],
+      "labels": [
+        "c",
+        "d",
+        "x"
+      ],
+      "type": "pie",
+      "domain": {
+        "x": [0, 0.4],
+        "y": [0, 0.4]
+      },
+      "scalegroup": 2,
+      "textposition": "outside"
+    },
+    {
+      "values": [
+        7,
+        8,
+        20,
+        22
+      ],
+      "labels": [
+        "c",
+        "d",
+        "x",
+        "y"
+      ],
+      "type": "pie",
+      "domain": {
+        "x": [0.6, 1],
+        "y": [0, 0.4]
+      },
+      "scalegroup": 2,
+      "textposition": "none"
+    }
+  ],
+  "layout": {
+    "height": 500,
+    "width": 600,
+    "showlegend": true,
+    "font": {"size": 20},
+    "hiddenlabels": ["x","y"]
+  }
+}

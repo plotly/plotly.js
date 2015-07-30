@@ -22,13 +22,13 @@ color.defaultLine = '#444';
 color.lightLine = '#eee';
 color.background = '#fff';
 
-function tinyRGB(tc) {
+color.tinyRGB = function(tc) {
     var c = tc.toRgb();
     return 'rgb(' + Math.round(c.r) + ', ' +
         Math.round(c.g) + ', ' + Math.round(c.b) + ')';
-}
+};
 
-color.rgb = function(cstr) { return tinyRGB(tinycolor(cstr)); };
+color.rgb = function(cstr) { return color.tinyRGB(tinycolor(cstr)); };
 
 color.opacity = function(cstr) { return cstr ? tinycolor(cstr).getAlpha() : 0; };
 
@@ -61,12 +61,12 @@ color.combine = function(front, back){
 
 color.stroke = function(s, c) {
     var tc = tinycolor(c);
-    s.style({'stroke': tinyRGB(tc), 'stroke-opacity': tc.getAlpha()});
+    s.style({'stroke': color.tinyRGB(tc), 'stroke-opacity': tc.getAlpha()});
 };
 
 color.fill = function(s, c) {
     var tc = tinycolor(c);
-    s.style({'fill': tinyRGB(tc), 'fill-opacity': tc.getAlpha()});
+    s.style({'fill': color.tinyRGB(tc), 'fill-opacity': tc.getAlpha()});
 };
 
 // search container for colors with the deprecated rgb(fractions) format

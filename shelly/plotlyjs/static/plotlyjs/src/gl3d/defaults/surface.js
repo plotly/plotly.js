@@ -8,8 +8,9 @@ module.exports = Surface;
 
 Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity']);
 
-var  heatmapAttrs = Plotly.Heatmap.attributes,
-    contourAttributes =  {
+var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+
+var contourAttributes =  {
         show: {
             type: 'boolean',
             dflt: false
@@ -63,13 +64,17 @@ Surface.attributes = {
     x: {type: 'data_array'},
     y: {type: 'data_array'},
     z: {type: 'data_array'},
-    zauto: heatmapAttrs.zauto,
-    zmin: heatmapAttrs.zmin,
-    zmax: heatmapAttrs.zmax,
-    autocolorscale: heatmapAttrs.autocolorscale,
-    colorscale: heatmapAttrs.colorscale,
-    showscale: heatmapAttrs.showscale,
-    reversescale: heatmapAttrs.reversescale,
+    text: {type: 'data_array'},
+    zauto: traceColorbarAttrs.zauto,
+    zmin: traceColorbarAttrs.zmin,
+    zmax: traceColorbarAttrs.zmax,
+    colorscale: traceColorbarAttrs.colorscale,
+    autocolorscale: {
+        type: 'boolean',
+        dflt: false
+    },
+    reversescale: traceColorbarAttrs.reversescale,
+    showscale: traceColorbarAttrs.showscale,
     contours: {
         x: contourAttributes,
         y: contourAttributes,
@@ -112,6 +117,13 @@ Surface.attributes = {
         }
     },
 
+    opacity: {
+      type: 'number',
+      min: 0,
+      max: 1,
+      dflt: 1
+    },
+
     _nestedModules: {  // nested module coupling
         'colorbar': 'Colorbar'
     }
@@ -145,6 +157,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         }
     }
 
+    coerce('text');
     if (!Array.isArray(traceOut.y)) {
         traceOut.y = [];
         for (i = 0; i < ylen; ++i) {
@@ -158,6 +171,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     coerce('lighting.roughness');
     coerce('lighting.fresnel');
     coerce('hidesurface');
+    coerce('opacity');
 
     coerce('colorscale');
 
@@ -191,7 +205,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     );
 };
 
-Surface.colorbar = Plotly.Heatmap.colorbar;
+Surface.colorbar = Plotly.Colorbar.traceColorbar;
 
 Surface.calc = function(gd, trace) {
 
