@@ -557,40 +557,40 @@ Plotly.plot = function(gd, data, layout, config) {
         return Plotly.Lib.syncOrAsync(seq.concat(Plotly.Fx.init),gd);
     }
 
-    function positionAndAutorange(){
+    function positionAndAutorange() {
         var i, j, subplots, subplotInfo, modules, module;
 
-        if(recalc) {
-            // position and range calculations for traces that
-            // depend on each other ie bars (stacked or grouped)
-            // and boxes (grouped) push each other out of the way
-            subplots = Plotly.Axes.getSubplots(gd);
-            modules = gd._modules;
-            for (i = 0; i < subplots.length; i++) {
-                subplotInfo = gd._fullLayout._plots[subplots[i]];
-                for (j = 0; j < modules.length; j++) {
-                    module = modules[j];
-                    if (module.setPositions) {
-                        module.setPositions(gd, subplotInfo);
-                    }
+        if(!recalc) return;
+
+        // position and range calculations for traces that
+        // depend on each other ie bars (stacked or grouped)
+        // and boxes (grouped) push each other out of the way
+        subplots = Plotly.Axes.getSubplots(gd);
+        modules = gd._modules;
+        for (i = 0; i < subplots.length; i++) {
+            subplotInfo = gd._fullLayout._plots[subplots[i]];
+            for (j = 0; j < modules.length; j++) {
+                module = modules[j];
+                if (module.setPositions) {
+                    module.setPositions(gd, subplotInfo);
                 }
             }
-
-            Plotly.Lib.markTime('done with bar/box adjustments');
-
-            // calc and autorange for errorbars
-            if(Plotly.ErrorBars) {
-                Plotly.ErrorBars.calc(gd);
-                Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
-            }
-
-            // TODO: autosize extra for text markers
-            return Plotly.Lib.syncOrAsync([
-                Plotly.Shapes.calcAutorange,
-                Plotly.Annotations.calcAutorange,
-                doAutoRange
-            ], gd);
         }
+
+        Plotly.Lib.markTime('done with bar/box adjustments');
+
+        // calc and autorange for errorbars
+        if(Plotly.ErrorBars) {
+            Plotly.ErrorBars.calc(gd);
+            Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
+        }
+
+        // TODO: autosize extra for text markers
+        return Plotly.Lib.syncOrAsync([
+            Plotly.Shapes.calcAutorange,
+            Plotly.Annotations.calcAutorange,
+            doAutoRange
+        ], gd);
     }
 
     function doAutoRange() {
@@ -3192,7 +3192,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
     var ak = Object.keys(aobj),
         seq = [plots.previousPromises];
 
-    if(doplot||docalc) {
+    if(doplot || docalc) {
         seq.push(function layoutReplot(){
             // force plot() to redo the layout
             gd.layout = undefined;
