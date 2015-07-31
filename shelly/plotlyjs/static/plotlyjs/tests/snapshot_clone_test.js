@@ -56,7 +56,7 @@ describe('Test Snapshot.clone', function() {
                 tileClass: 'themes__thumb'
             };
 
-            // Default from plot_tile.js
+            // Defaults from clone()
             var THEMETILE_DEFAULT_LAYOUT = {
                 autosize: true,
                 width: 150,
@@ -88,7 +88,6 @@ describe('Test Snapshot.clone', function() {
                 tileClass: 'thumbnail'
             };
 
-            // Default from plot_tile.js
             var THUMBNAIL_DEFAULT_LAYOUT = {
                 'title': '',
                 'hidesources': true,
