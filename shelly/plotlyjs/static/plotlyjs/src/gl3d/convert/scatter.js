@@ -44,9 +44,10 @@ proto.handlePick = function(selection) {
             selection.object = this.scatterPlot;
             this.scatterPlot.highlight(selection.data);
         }
-        if(this.textLabels && this.textLabels[selection.data.index]) {
+        if(this.textLabels && this.textLabels[selection.data.index]!==undefined) {
             selection.textLabel = this.textLabels[selection.data.index];
         }
+        else selection.textLabel = '';
 
         var selectIndex = selection.data.index;
         selection.traceCoordinate = [

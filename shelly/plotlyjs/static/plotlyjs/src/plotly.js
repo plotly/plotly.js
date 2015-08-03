@@ -20,6 +20,7 @@ exports.Boxes = require('./boxes');
 exports.ErrorBars = require('./errorbars');
 exports.Heatmap = require('./heatmap');
 exports.Histogram = require('./histogram');
+exports.Pie = require('./pie');
 exports.Contour = require('./contour');
 // and extra plot components
 exports.Annotations = require('./annotations');
@@ -49,6 +50,9 @@ exports.getGraphReference = require('./graph_reference');
 
 // configuration
 exports.Config = require('./config');
+
+// imaging Routines
+exports.Snapshot = require('./snapshot/snapshot');
 
 // promise polyfill, embed rather than requiring dependencies
 require('../../../../shelly/static/js/plugins/promise-1.0.0.min.js');
