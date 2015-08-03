@@ -1098,7 +1098,6 @@ axes.saveRangeInitial = function(gd, overwrite) {
 
         if((isNew && ax.autorange===false) || (overwrite && hasChanged)) {
             ax._rangeInitial = ax.range.slice();
-            console.log('saving range initial');
         }
     }
 
