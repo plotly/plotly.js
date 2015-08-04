@@ -15,17 +15,15 @@ var graphReference = {
 };
 
 
-function getGraphReference() {
+module.exports = function getGraphReference() {
     Plotly.Plots.allTypes.forEach(getTraceAttributes);
     getLayoutAttributes();
     return graphReference;
-}
-
-module.exports = getGraphReference;
+};
 
 function getTraceAttributes(type) {
     var globalAttributes = Plotly.Plots.attributes,
-        module = getModule({type: type}),
+        _module = getModule({type: type}),
         attributes = {},
         layoutAttributes = {};
 
@@ -34,20 +32,18 @@ function getTraceAttributes(type) {
 
     // module attributes (+ nested + composed)
     attributes = coupleAttrs(
-        module.attributes, attributes, 'attributes', type
+        _module.attributes, attributes, 'attributes', type
     );
 
     attributes.type = type;
     attributes = removeUnderscoreAttrs(attributes);
 
-    graphReference.traces[type] = {
-        attribures: attributes
-    };
+    graphReference.traces[type] = { attributes: attributes };
 
     // trace-specific layout attributes
-    if(module.layoutAttributes !== undefined) {
+    if(_module.layoutAttributes !== undefined) {
         layoutAttributes = coupleAttrs(
-            module.layoutAttributes, layoutAttributes, 'layoutAttributes', type
+            _module.layoutAttributes, layoutAttributes, 'layoutAttributes', type
         );
         graphReference.traces[type].layoutAttributes = layoutAttributes;
     }
@@ -77,9 +73,7 @@ function getLayoutAttributes() {
           ) layoutAttributes[k][ISSUBPLOTOBJ] = true;
     });
 
-    graphReference.layout = {
-        layoutAttributes: layoutAttributes
-    };
+    graphReference.layout = { layoutAttributes: layoutAttributes };
 }
 
 function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
