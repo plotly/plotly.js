@@ -250,4 +250,63 @@ describe('Test axes', function () {
             expect(axOut.ticktext).toEqual(['who','do','we','appreciate']);
         });
     });
+
+    describe('saveRangeInitial', function() {
+        var saveRangeInitial = Plotly.Axes.saveRangeInitial;
+        var gd, hasOneAxisChanged;
+
+        beforeEach(function() {
+            gd = {
+                _fullLayout: {
+                    xaxis: { range: [0, 0.5] },
+                    yaxis: { range: [0, 0.5] },
+                    xaxis2: { range: [0.5, 1] },
+                    yaxis2: { range: [0.5, 1] }
+                }
+            };
+        });
+
+        it('should save range when autosize turned off and rangeInitial isn\'t defined', function() {
+            ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(ax) {
+                gd._fullLayout[ax].autorange = false;
+            });
+
+            hasOneAxisChanged = saveRangeInitial(gd);
+
+            expect(hasOneAxisChanged).toBe(true);
+            expect(gd._fullLayout.xaxis._rangeInitial).toEqual([0, 0.5]);
+            expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
+            expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.5, 1]);
+            expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+        });
+
+        it('should not overwrite saved range if rangeInitial is defined', function() {
+            ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(ax) {
+                gd._fullLayout[ax]._rangeInitial = gd._fullLayout[ax].range.slice();
+                gd._fullLayout[ax].range = [0, 1];
+            });
+
+            hasOneAxisChanged = saveRangeInitial(gd);
+
+            expect(hasOneAxisChanged).toBe(false);
+            expect(gd._fullLayout.xaxis._rangeInitial).toEqual([0, 0.5]);
+            expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
+            expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.5, 1]);
+            expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+        });
+
+        it('should save range when overwrite option is on and range has changed', function() {
+            ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(ax) {
+                gd._fullLayout[ax]._rangeInitial = gd._fullLayout[ax].range.slice();
+            });
+            gd._fullLayout.xaxis2.range = [0.2, 0.4];
+
+            hasOneAxisChanged = saveRangeInitial(gd, true);
+            expect(hasOneAxisChanged).toBe(true);
+            expect(gd._fullLayout.xaxis._rangeInitial).toEqual([0, 0.5]);
+            expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
+            expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.2, 0.4]);
+            expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+        });
+    });
 });
