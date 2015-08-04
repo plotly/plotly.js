@@ -1086,7 +1086,9 @@ axes.doAutoRange = function(ax) {
 // save a copy of the initial axis ranges in fullLayout
 // use them in modebar and dblclick events
 axes.saveRangeInitial = function(gd, overwrite) {
-    var axList = Plotly.Axes.list(gd, '', true);
+    var axList = Plotly.Axes.list(gd, '', true),
+        hasOneAxisChanged = false;
+
     var ax, isNew, hasChanged;
 
     for(var i = 0; i < axList.length; i++) {
@@ -1098,10 +1100,11 @@ axes.saveRangeInitial = function(gd, overwrite) {
 
         if((isNew && ax.autorange===false) || (overwrite && hasChanged)) {
             ax._rangeInitial = ax.range.slice();
+            hasOneAxisChanged = true;
         }
     }
 
-    return hasChanged;
+    return hasOneAxisChanged;
 };
 
 // axes.expand: if autoranging, include new data in the outer limits
