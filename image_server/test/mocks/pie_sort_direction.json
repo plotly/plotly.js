@@ -1,0 +1,77 @@
+{
+  "data": [
+    {
+      "values": [
+        3,
+        1,
+        5,
+        2,
+        4
+      ],
+      "type": "pie",
+      "domain": {
+        "x": [0, 0.4],
+        "y": [0.6, 1]
+      },
+      "sort": true,
+      "direction": "counterclockwise",
+      "name": "sorted ccw (default)"
+    },
+    {
+      "values": [
+        3,
+        1,
+        5,
+        2,
+        4
+      ],
+      "type": "pie",
+      "domain": {
+        "x": [0.6, 1],
+        "y": [0.6, 1]
+      },
+      "sort": true,
+      "direction": "clockwise",
+      "name": "sorted cw"
+    },
+    {
+      "values": [
+        3,
+        1,
+        5,
+        2,
+        4
+      ],
+      "type": "pie",
+      "domain": {
+        "x": [0, 0.4],
+        "y": [0, 0.4]
+      },
+      "sort": false,
+      "direction": "counterclockwise",
+      "name": "unsorted ccw"
+    },
+    {
+      "values": [
+        3,
+        1,
+        5,
+        2,
+        4
+      ],
+      "type": "pie",
+      "domain": {
+        "x": [0.6, 1],
+        "y": [0, 0.4]
+      },
+      "sort": false,
+      "direction": "clockwise",
+      "name": "unsorted cw"
+    }
+  ],
+  "layout": {
+    "height": 500,
+    "width": 600,
+    "showlegend": false
+  }
+}

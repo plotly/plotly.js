@@ -177,7 +177,7 @@ plots.redrawText = function(divid) {
     return new Promise(function(resolve) {
         setTimeout(function(){
             Plotly.Annotations.drawAll(gd);
-            Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
+            Plotly.Legend.draw(gd);
             (gd.calcdata||[]).forEach(function(d){
                 if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
             });
@@ -205,21 +205,38 @@ function opaqueSetBackground(gd, bgColor) {
 // the defaults are the appropriate settings for plotly.js,
 // so we get the right experience without any config argument
 plots.defaultConfig = {
-    staticPlot: false, // no interactivity, for export or image generation
-    workspace: false, // we're in the workspace, so need toolbar etc TODO describe functionality instead?
-    editable: false, // we can edit titles, move annotations, etc
-    autosizable: false, // plot will respect layout.autosize=true and infer its container size
-    fillFrame: false, // if we DO autosize, do we fill the container or the screen?
-    scrollZoom: false, // mousewheel or two-finger scroll zooms the plot
-    showTips: true, // new users see some hints about interactivity
-    showLink: true, // link to open this plot in plotly
-    sendData: true, // if we show a link, does it contain data or just link to a plotly file?
-    linkText: 'Edit chart', // text appearing in the sendData link
-    displayModeBar: 'hover', // display the modebar (true, false, or 'hover')
-    displaylogo: true, // add the plotly logo on the end of the modebar
-    plot3dPixelRatio: 2, // increase the pixel ratio for 3D plot images
-    setBackground: defaultSetBackground // fn to add the background color to a different container
-                                        // or 'opaque' to ensure there's white behind it
+    // no interactivity, for export or image generation
+    staticPlot: false,
+    // we're in the workspace, so need toolbar etc
+    // TODO describe functionality instead?
+    workspace: false,
+    // we can edit titles, move annotations, etc
+    editable: false,
+    // plot will respect layout.autosize=true and infer its container size
+    autosizable: false,
+    // if we DO autosize, do we fill the container or the screen?
+    fillFrame: false,
+    // mousewheel or two-finger scroll zooms the plot
+    scrollZoom: false,
+    // double click interaction (false, 'reset', 'autosize' or 'reset+autosize')
+    doubleClick: 'reset+autosize',
+    // new users see some hints about interactivity
+    showTips: true,
+    // link to open this plot in plotly
+    showLink: true,
+    // if we show a link, does it contain data or just link to a plotly file?
+    sendData: true,
+    // text appearing in the sendData link
+    linkText: 'Edit chart',
+    // display the modebar (true, false, or 'hover')
+    displayModeBar: 'hover',
+    // add the plotly logo on the end of the modebar
+    displaylogo: true,
+    // increase the pixel ratio for 3D plot images
+    plot3dPixelRatio: 2,
+    // fn to add the background color to a different container
+    // or 'opaque' to ensure there's white behind it
+    setBackground: defaultSetBackground
 };
 
 function setPlotContext(gd, config) {
@@ -248,6 +265,7 @@ function setPlotContext(gd, config) {
         context.editable = false;
         context.autosizable = false;
         context.scrollZoom = false;
+        context.doubleClick = false;
         context.showTips = false;
         context.showLink = false;
         context.displayModeBar = false;
@@ -498,7 +516,13 @@ Plotly.plot = function(gd, data, layout, config) {
     // generate calcdata, if we need to
     // to force redoing calcdata, just delete it before calling Plotly.plot
     var recalc = !gd.calcdata || gd.calcdata.length!==(gd.data||[]).length;
-    if(recalc) doCalcdata(gd);
+    if(recalc) {
+        doCalcdata(gd);
+
+        if(gd._context.doubleClick!==false || gd._context.displayModeBar!==false) {
+            Plotly.Axes.saveRangeInitial(gd);
+        }
+    }
 
     // in case it has changed, attach fullData traces to calcdata
     for (var i = 0; i < gd.calcdata.length; i++) {
@@ -517,8 +541,7 @@ Plotly.plot = function(gd, data, layout, config) {
         var calcdata = gd.calcdata;
         var i, cd, trace;
 
-        Plotly.Legend.draw(gd, fullLayout.showlegend ||
-            (gd.calcdata.length>1 && fullLayout.showlegend!==false));
+        Plotly.Legend.draw(gd);
 
         for (i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
@@ -540,45 +563,45 @@ Plotly.plot = function(gd, data, layout, config) {
         return Plotly.Lib.syncOrAsync(seq.concat(Plotly.Fx.init),gd);
     }
 
-    function positionAndAutorange(){
+    function positionAndAutorange() {
         var i, j, subplots, subplotInfo, modules, module;
 
-        if(recalc) {
-            // position and range calculations for traces that
-            // depend on each other ie bars (stacked or grouped)
-            // and boxes (grouped) push each other out of the way
-            subplots = Plotly.Axes.getSubplots(gd);
-            modules = gd._modules;
-            for (i = 0; i < subplots.length; i++) {
-                subplotInfo = gd._fullLayout._plots[subplots[i]];
-                for (j = 0; j < modules.length; j++) {
-                    module = modules[j];
-                    if (module.setPositions) {
-                        module.setPositions(gd, subplotInfo);
-                    }
+        if(!recalc) return;
+
+        // position and range calculations for traces that
+        // depend on each other ie bars (stacked or grouped)
+        // and boxes (grouped) push each other out of the way
+        subplots = Plotly.Axes.getSubplots(gd);
+        modules = gd._modules;
+        for (i = 0; i < subplots.length; i++) {
+            subplotInfo = gd._fullLayout._plots[subplots[i]];
+            for (j = 0; j < modules.length; j++) {
+                module = modules[j];
+                if (module.setPositions) {
+                    module.setPositions(gd, subplotInfo);
                 }
             }
-
-            Plotly.Lib.markTime('done with bar/box adjustments');
-
-            // calc and autorange for errorbars
-            if(Plotly.ErrorBars) {
-                Plotly.ErrorBars.calc(gd);
-                Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
-            }
-
-            // TODO: autosize extra for text markers
-            return Plotly.Lib.syncOrAsync([
-                Plotly.Shapes.calcAutorange,
-                Plotly.Annotations.calcAutorange,
-                doAutoRange
-            ], gd);
         }
+
+        Plotly.Lib.markTime('done with bar/box adjustments');
+
+        // calc and autorange for errorbars
+        if(Plotly.ErrorBars) {
+            Plotly.ErrorBars.calc(gd);
+            Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
+        }
+
+        // TODO: autosize extra for text markers
+        return Plotly.Lib.syncOrAsync([
+            Plotly.Shapes.calcAutorange,
+            Plotly.Annotations.calcAutorange,
+            doAutoRange
+        ], gd);
     }
 
-    function doAutoRange(){
+    function doAutoRange() {
         var axList = Plotly.Axes.list(gd, '', true);
-        for (var i = 0; i < axList.length; i++) {
+        for(var i = 0; i < axList.length; i++) {
             Plotly.Axes.doAutoRange(axList[i]);
         }
     }
@@ -670,6 +693,11 @@ Plotly.plot = function(gd, data, layout, config) {
                 Plotly.Lib.markTime('done ErrorBars');
             }
         }
+
+        // now draw stuff not on subplots (ie, pies)
+        // TODO: gotta be a better way to handle this
+        var cdPie = getCdModule(calcdata, Plotly.Pie);
+        if(cdPie.length) Plotly.Pie.plot(gd, cdPie);
 
         // styling separate from drawing
         plots.style(gd);
@@ -1129,11 +1157,13 @@ function cleanData(data, existingData) {
             trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
         }
 
-        if(Array.isArray(trace.textposition)) {
-            trace.textposition = trace.textposition.map(cleanTextPosition);
-        }
-        else if(trace.textposition) {
-            trace.textposition = cleanTextPosition(trace.textposition);
+        if(!plots.traceIs(trace, 'pie')) {
+            if(Array.isArray(trace.textposition)) {
+                trace.textposition = trace.textposition.map(cleanTextPosition);
+            }
+            else if(trace.textposition) {
+                trace.textposition = cleanTextPosition(trace.textposition);
+            }
         }
 
         // prune empty containers made before the new nestedProperty
@@ -1323,6 +1353,7 @@ plots.supplyDefaults = function(gd) {
         if(plots.traceIs(fullTrace, 'cartesian')) newFullLayout._hasCartesian = true;
         else if(plots.traceIs(fullTrace, 'gl3d')) newFullLayout._hasGL3D = true;
         else if(plots.traceIs(fullTrace, 'geo')) newFullLayout._hasGeo = true;
+        else if(plots.traceIs(fullTrace, 'pie')) newFullLayout._hasPie = true;
         else if('r' in fullTrace) newFullLayout._hasPolar = true;
 
         module = fullTrace._module;
@@ -1464,7 +1495,8 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     if(visible) {
         coerce('name', 'trace ' + i);
 
-        coerce('hoverinfo');
+        // pies get a different hoverinfo flaglist, handled in their module
+        if(!plots.traceIs(traceOut, 'pie')) coerce('hoverinfo');
 
         if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
@@ -1590,6 +1622,10 @@ plots.layoutAttributes = {
         type: 'boolean',
         dflt: false
     },
+    _hasPie: {
+        type: 'boolean',
+        dflt: false
+    },
     _composedModules: {
         '*': 'Fx'
     },
@@ -1640,12 +1676,13 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('_hasCartesian');
     coerce('_hasGL3D');
     coerce('_hasGeo');
+    coerce('_hasPie');
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var moduleLayoutDefaults = [
-        'Axes', 'Legend', 'Annotations', 'Shapes', 'Fx',
-        'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout'
+        'Axes', 'Annotations', 'Shapes', 'Fx',
+        'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout', 'Pie', 'Legend'
     ];
 
     var i, module;
@@ -1701,7 +1738,8 @@ plots.purge = function(gd) {
 
 function doCalcdata(gd) {
     var axList = Plotly.Axes.list(gd),
-        fullData = gd._fullData;
+        fullData = gd._fullData,
+        fullLayout = gd._fullLayout;
 
     var i, trace, module, cd;
 
@@ -1717,6 +1755,10 @@ function doCalcdata(gd) {
     // for calculating avg luminosity of heatmaps
     gd._hmpixcount = 0;
     gd._hmlumcount = 0;
+
+    // for sharing colors across pies (and for legend)
+    fullLayout._piecolormap = {};
+    fullLayout._piedefaultcolorcount = 0;
 
     // delete category list, if there is one, so we start over
     // to be filled in later by ax.d2c
@@ -1750,20 +1792,14 @@ function doCalcdata(gd) {
 }
 
 plots.style = function(gd) {
-    var subplots = Plotly.Axes.getSubplots(gd),
-        modulesWithErrorBars = Plotly.ErrorBars ?
+    var modulesWithErrorBars = Plotly.ErrorBars ?
             gd._modules.concat(Plotly.ErrorBars) : gd._modules,
-        fullLayout = gd._fullLayout;
+        i,
+        module;
 
-    var i, j, gp, module;
-
-    for (i = 0; i < subplots.length; i++) {
-        gp = fullLayout._plots[subplots[i]].plot;
-
-        for (j = 0; j < modulesWithErrorBars.length; j++) {
-            module =  modulesWithErrorBars[j];
-            if (module.style) module.style(gp, fullLayout);
-        }
+    for (i = 0; i < modulesWithErrorBars.length; i++) {
+        module = modulesWithErrorBars[i];
+        if (module.style) module.style(gd);
     }
 };
 
@@ -2423,16 +2459,23 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'autocolorscale', 'marker.autocolorscale',
         'colorscale', 'marker.colorscale',
         'reversescale', 'marker.reversescale',
-        'autobinx','nbinsx','xbins.start','xbins.end','xbins.size',
-        'autobiny','nbinsy','ybins.start','ybins.end','ybins.size',
-        'autocontour','ncontours','contours.coloring',
-        'error_y.visible','error_y.value','error_y.type',
+        'autobinx','nbinsx','xbins','xbins.start','xbins.end','xbins.size',
+        'autobiny','nbinsy','ybins','ybins.start','ybins.end','ybins.size',
+        'autocontour','ncontours','contours','contours.coloring',
+        'error_y','error_y.visible','error_y.value','error_y.type',
         'error_y.traceref','error_y.array','error_y.symmetric',
         'error_y.arrayminus','error_y.valueminus','error_y.tracerefminus',
-        'error_x.visible','error_x.value','error_x.type',
+        'error_x','error_x.visible','error_x.value','error_x.type',
         'error_x.traceref','error_x.array','error_x.symmetric',
         'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
-        'swapxy','swapxyaxes','orientationaxes'
+        'swapxy','swapxyaxes','orientationaxes',
+        'colors', 'values', 'labels', 'label0', 'dlabel', 'sort',
+        'textinfo', 'textposition', 'textfont.size', 'textfont.family', 'textfont.color',
+        'insidetextfont.size', 'insidetextfont.family', 'insidetextfont.color',
+        'outsidetextfont.size', 'outsidetextfont.family', 'outsidetextfont.color',
+        'hole', 'scalegroup', 'domain', 'domain.x', 'domain.y',
+        'domain.x[0]', 'domain.x[1]', 'domain.y[0]', 'domain.y[1]',
+        'tilt', 'tiltaxis', 'depth', 'direction', 'rotation', 'pull'
     ];
     for(i = 0; i < traces.length; i++) {
         if(plots.traceIs(gd._fullData[traces[i]], 'box')) {
@@ -2446,7 +2489,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // because .calc() is where the autorange gets determined
     // TODO: could we break this out as well?
     var autorangeAttrs = [
-        'marker.size','textfont.size','textposition',
+        'marker', 'marker.size', 'textfont',
         'boxpoints','jitter','pointpos','whiskerwidth','boxmean'
     ];
     // replotAttrs attributes need a replot (because different
@@ -2456,7 +2499,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'marker.cmin', 'marker.cmax', 'marker.cauto',
         'contours.start','contours.end','contours.size',
         'contours.showlines',
-        'line.smoothing','line.shape',
+        'line','line.smoothing','line.shape',
         'error_y.width','error_x.width','error_x.copy_ystyle',
         'marker.maxdisplayed'
     ];
@@ -2464,11 +2507,12 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // in the style box, but they're graph-wide attributes, so set
     // in gd.layout also axis scales and range show up here because
     // we may need to undo them. These all trigger a recalc
-    var layoutAttrs = [
-        'barmode', 'barnorm','bargap', 'bargroupgap',
-        'boxmode', 'boxgap', 'boxgroupgap',
-        '?axis.autorange', '?axis.range', '?axis.rangemode'
-    ];
+    // var layoutAttrs = [
+    //     'barmode', 'barnorm','bargap', 'bargroupgap',
+    //     'boxmode', 'boxgap', 'boxgroupgap',
+    //     '?axis.autorange', '?axis.range', '?axis.rangemode'
+    // ];
+
     // these ones may alter the axis type
     // (at least if the first trace is involved)
     var axtypeAttrs = [
@@ -2486,7 +2530,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // for the undo / redo queue
     var redoit = {},
         undoit = {},
-        axlist;
+        axlist,
+        flagAxForDelete = {};
 
     // for now, if we detect 3D or geo stuff, just re-do the plot
     if(fullLayout._hasGL3D || fullLayout._hasGeo) doplot = true;
@@ -2499,21 +2544,29 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         var axName = Plotly.Axes.id2name(axid);
         if(axlist.indexOf(axName)===-1) { axlist.push(axName); }
     }
-    function autorangeAttr(axName) { return axName+'.autorange'; }
-    function rangeAttr(axName) { return axName+'.range'; }
+    function autorangeAttr(axName) { return 'LAYOUT' + axName + '.autorange'; }
+    function rangeAttr(axName) { return 'LAYOUT' + axName + '.range'; }
 
     // for attrs that interact (like scales & autoscales), save the
     // old vals before making the change
     // val=undefined will not set a value, just record what the value was.
+    // val=null will delete the attribute
     // attr can be an array to set several at once (all to the same val)
-    function doextra(cont,attr,val,i) {
+    function doextra(attr,val,i) {
         if(Array.isArray(attr)) {
-            attr.forEach(function(a){ doextra(cont,a,val,i); });
+            attr.forEach(function(a){ doextra(a,val,i); });
             return;
         }
         // quit if explicitly setting this elsewhere
         if(attr in aobj) { return; }
-        var extraparam = Plotly.Lib.nestedProperty(cont,attr);
+
+        var extraparam;
+        if(attr.substr(0, 6) === 'LAYOUT') {
+            extraparam = Plotly.Lib.nestedProperty(gd.layout, attr.replace('LAYOUT', ''));
+        } else {
+            extraparam = Plotly.Lib.nestedProperty(gd.data[traces[i]], attr);
+        }
+
         if(!(attr in undoit)) {
             undoit[attr] = a0();
         }
@@ -2535,11 +2588,13 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         var vi = aobj[ai],
             cont,
             contFull,
-            param;
+            param,
+            oldVal,
+            newVal;
         redoit[ai] = vi;
 
-        if(layoutAttrs.indexOf(ai.replace(/[xyz]axis[0-9]*/g, '?axis'))!==-1){
-            param = Plotly.Lib.nestedProperty(gd.layout, ai);
+        if(ai.substr(0,6)==='LAYOUT'){
+            param = Plotly.Lib.nestedProperty(gd.layout, ai.replace('LAYOUT', ''));
             undoit[ai] = [param.get()];
             // since we're allowing val to be an array, allow it here too,
             // even though that's meaningless
@@ -2556,89 +2611,112 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
             cont = gd.data[traces[i]];
             contFull = gd._fullData[traces[i]];
             param = Plotly.Lib.nestedProperty(cont,ai);
+            oldVal = param.get();
+            newVal = Array.isArray(vi) ? vi[i%vi.length] : vi;
 
             // setting bin or z settings should turn off auto
             // and setting auto should save bin or z settings
             if(zscl.indexOf(ai)!==-1) {
-                doextra(cont,'zauto',false,i);
+                doextra('zauto', false, i);
             }
             else if(ai === 'colorscale') {
-                doextra(cont, 'autocolorscale', false, i);
+                doextra('autocolorscale', false, i);
             }
             else if(ai === 'autocolorscale') {
-                doextra(cont, 'colorscale', undefined, i);
+                doextra('colorscale', undefined, i);
             }
             else if(ai === 'marker.colorscale') {
-                doextra(cont.marker, 'autocolorscale', false, i);
+                doextra('marker.autocolorscale', false, i);
             }
             else if(ai === 'marker.autocolorscale') {
-                doextra(cont.marker, 'colorscale', undefined, i);
+                doextra('marker.colorscale', undefined, i);
             }
             else if(ai==='zauto') {
-                doextra(cont,zscl,undefined,i);
+                doextra(zscl, undefined, i);
             }
             else if(xbins.indexOf(ai)!==-1) {
-                doextra(cont,'autobinx',false,i);
+                doextra('autobinx', false, i);
             }
             else if(ai==='autobinx') {
-                doextra(cont,xbins,undefined,i);
+                doextra(xbins, undefined, i);
             }
             else if(ybins.indexOf(ai)!==-1) {
-                doextra(cont,'autobiny',false,i);
+                doextra('autobiny', false, i);
             }
             else if(ai==='autobiny') {
-                doextra(cont,ybins,undefined,i);
+                doextra(ybins, undefined, i);
             }
             else if(contourAttrs.indexOf(ai)!==-1) {
-                doextra(cont, 'autocontour', false, i);
+                doextra('autocontour', false, i);
             }
             else if(ai==='autocontour') {
-                doextra(cont, contourAttrs, undefined, i);
+                doextra(contourAttrs, undefined, i);
             }
             // heatmaps: setting x0 or dx, y0 or dy,
             // should turn xtype/ytype to 'scaled' if 'array'
             else if(['x0','dx'].indexOf(ai)!==-1 &&
                     contFull.x && contFull.xtype!=='scaled') {
-                doextra(cont,'xtype','scaled',i);
+                doextra('xtype', 'scaled', i);
             }
             else if(['y0','dy'].indexOf(ai)!==-1 &&
                     contFull.y && contFull.ytype!=='scaled') {
-                doextra(cont,'ytype','scaled',i);
+                doextra('ytype', 'scaled', i);
             }
             // changing colorbar size modes,
             // make the resulting size not change
             // note that colorbar fractional sizing is based on the
             // original plot size, before anything (like a colorbar)
             // increases the margins
-            else if(ai==='colorbar.thicknessmode' && param.get()!==vi &&
-                        ['fraction','pixels'].indexOf(vi)!==-1 &&
+            else if(ai==='colorbar.thicknessmode' && param.get() !== newVal &&
+                        ['fraction','pixels'].indexOf(newVal) !== -1 &&
                         contFull.colorbar) {
                 var thicknorm =
                     ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
                         (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b) :
                         (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r);
-                doextra(cont,'colorbar.thickness', contFull.colorbar.thickness *
-                    (vi==='fraction' ? 1/thicknorm : thicknorm), i);
+                doextra('colorbar.thickness', contFull.colorbar.thickness *
+                    (newVal === 'fraction' ? 1/thicknorm : thicknorm), i);
             }
-            else if(ai==='colorbar.lenmode' && param.get()!==vi &&
-                        ['fraction','pixels'].indexOf(vi)!==-1 &&
+            else if(ai==='colorbar.lenmode' && param.get() !== newVal &&
+                        ['fraction','pixels'].indexOf(newVal) !== -1 &&
                         contFull.colorbar) {
                 var lennorm =
                     ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
                         (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r) :
                         (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b);
-                doextra(cont,'colorbar.len', contFull.colorbar.len *
-                    (vi==='fraction' ? 1/lennorm : lennorm), i);
+                doextra('colorbar.len', contFull.colorbar.len *
+                    (newVal === 'fraction' ? 1/lennorm : lennorm), i);
             }
             else if(ai === 'colorbar.tick0' || ai === 'colorbar.dtick') {
-                doextra(cont, 'colorbar.tickmode', 'linear');
+                doextra('colorbar.tickmode', 'linear', i);
             }
             else if(ai === 'colorbar.tickmode') {
-                doextra(cont, ['colorbar.tick0', 'colorbar.dtick'], undefined);
+                doextra(['colorbar.tick0', 'colorbar.dtick'], undefined, i);
             }
 
-            // save the old value
-            undoit[ai][i] = param.get();
+
+            if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
+                var labelsTo = 'x',
+                    valuesTo = 'y';
+                if((newVal === 'bar' || oldVal === 'bar') && cont.orientation === 'h') {
+                    labelsTo = 'y';
+                    valuesTo = 'x';
+                }
+                Plotly.Lib.swapAttrs(cont, ['?', '?src'], 'labels', labelsTo);
+                Plotly.Lib.swapAttrs(cont, ['d?', '?0'], 'label', labelsTo);
+                Plotly.Lib.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
+
+                if(oldVal === 'pie') {
+                    // super kludgy - but if all pies are gone we won't remove them otherwise
+                    fullLayout._pielayer.selectAll('g.trace').remove();
+                } else if(plots.traceIs(cont, 'cartesian')) {
+                    //look for axes that are no longer in use and delete them
+                    flagAxForDelete[cont.xaxis || 'x'] = true;
+                    flagAxForDelete[cont.yaxis || 'y'] = true;
+                }
+            }
+
+            undoit[ai][i] = oldVal;
             // set the new value - if val is an array, it's one el per trace
             // first check for attributes that get more complex alterations
             var swapAttrs = [
@@ -2648,7 +2726,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                 // setting an orientation: make sure it's changing
                 // before we swap everything else
                 if(ai==='orientation') {
-                    param.set(Array.isArray(vi) ? vi[i%vi.length] : vi);
+                    param.set(newVal);
                     if(param.get()===undoit[ai][i]) continue;
                 }
                 // orientationaxes has no value,
@@ -2660,7 +2738,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                 swapXYData(cont);
             }
             // all the other ones, just modify that one attribute
-            else param.set(Array.isArray(vi) ? vi[i%vi.length] : vi);
+            else param.set(newVal);
 
         }
 
@@ -2689,7 +2767,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         // actually do anything but change what you see in the styling
         // box. everything else at least needs to apply styles
         if((['autobinx','autobiny','zauto'].indexOf(ai)===-1) ||
-                vi!==false) {
+                newVal!==false) {
             dostyle = true;
         }
         if(['colorbar', 'line'].indexOf(param.parts[0])!==-1 ||
@@ -2704,23 +2782,45 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                 axlist = [];
                 for(i=0; i<traces.length; i++) {
                     var trace = gd.data[traces[i]];
-                    addToAxlist(trace.xaxis||'x');
-                    addToAxlist(trace.yaxis||'y');
 
-                    if(astr==='type') {
-                        doextra(gd.data[traces[i]],
-                            ['autobinx','autobiny'],true,i);
+                    if(plots.traceIs(trace, 'cartesian')) {
+                        addToAxlist(trace.xaxis||'x');
+                        addToAxlist(trace.yaxis||'y');
+
+                        if(astr === 'type') {
+                            doextra(['autobinx','autobiny'], true, i);
+                        }
                     }
                 }
 
-                doextra(gd.layout, axlist.map(autorangeAttr), true, 0);
-                doextra(gd.layout, axlist.map(rangeAttr), [0, 1], 0);
+                doextra(axlist.map(autorangeAttr), true, 0);
+                doextra(axlist.map(rangeAttr), [0, 1], 0);
             }
             docalc = true;
         }
         else if(replotAttrs.indexOf(ai)!==-1) doplot = true;
         else if(autorangeAttrs.indexOf(ai)!==-1) docalcAutorange = true;
     }
+
+    // check axes we've flagged for possible deletion
+    // flagAxForDelete is a hash so we can make sure we only get each axis once
+    var axListForDelete = Object.keys(flagAxForDelete);
+    axisLoop:
+    for(i = 0; i < axListForDelete.length; i++) {
+        var axId = axListForDelete[i],
+            axLetter = axId.charAt(0),
+            axAttr = axLetter + 'axis';
+        for(var j = 0; j < gd.data.length; j++) {
+            if(plots.traceIs(gd.data[j], 'cartesian') &&
+                    (gd.data[j][axAttr] || axLetter) === axId) {
+                continue axisLoop;
+            }
+        }
+
+        // no data on this axis - delete it.
+        doextra('LAYOUT' + Plotly.Axes.id2name(axId), null, 0);
+    }
+
     // now all attribute mods are done, as are redo and undo
     // so we can save them
     if(Plotly.Queue) {
@@ -2765,7 +2865,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
                     if(arraysToCalcdata) arraysToCalcdata(cdi);
                 }
                 plots.style(gd);
-                if(fullLayout.showlegend) Plotly.Legend.draw(gd);
+                Plotly.Legend.draw(gd);
                 return plots.previousPromises(gd);
             });
         }
@@ -2807,7 +2907,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
 // swap all the data and data attributes associated with x and y
 function swapXYData(trace) {
     var i;
-    Plotly.Lib.swapXYAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
+    Plotly.Lib.swapAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
     if(Array.isArray(trace.z) && Array.isArray(trace.z[0])) {
         if(trace.transpose) delete trace.transpose;
         else trace.transpose = true;
@@ -2816,9 +2916,9 @@ function swapXYData(trace) {
         var errorY = trace.error_y,
             copyYstyle = ('copy_ystyle' in errorY) ? errorY.copy_ystyle :
                 !(errorY.color || errorY.thickness || errorY.width);
-        Plotly.Lib.swapXYAttrs(trace, ['error_?.copy_ystyle']);
+        Plotly.Lib.swapAttrs(trace, ['error_?.copy_ystyle']);
         if(copyYstyle) {
-            Plotly.Lib.swapXYAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
+            Plotly.Lib.swapAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
         }
     }
     if(trace.hoverinfo) {
@@ -3048,6 +3148,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
             // 3d or geo at this point just needs to redraw.
             if (p.parts[0].indexOf('scene') === 0) doplot = true;
             else if (p.parts[0].indexOf('geo') === 0) doplot = true;
+            else if(ai === 'hiddenlabels') docalc = true;
             else if(p.parts[0].indexOf('legend')!==-1) dolegend = true;
             else if(ai.indexOf('title')!==-1) doticks = true;
             else if(p.parts[0].indexOf('bgcolor')!==-1) dolayoutstyle = true;
@@ -3109,7 +3210,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
     var ak = Object.keys(aobj),
         seq = [plots.previousPromises];
 
-    if(doplot||docalc) {
+    if(doplot || docalc) {
         seq.push(function layoutReplot(){
             // force plot() to redo the layout
             gd.layout = undefined;
@@ -3124,7 +3225,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
         plots.supplyDefaults(gd);
         if(dolegend) {
             seq.push(function doLegend(){
-                Plotly.Legend.draw(gd, gd._fullLayout.showlegend);
+                Plotly.Legend.draw(gd);
                 return plots.previousPromises(gd);
             });
         }
@@ -3484,15 +3585,17 @@ function makePlotFramework(gd) {
             .classed('crisp', true);
     });
 
-    // single shape layer for the whole plot
+    // single shape and pie layers for the whole plot
     fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
+    fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
     // fill in image server scrape-svg
     fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
     fullLayout._geoimages = fullLayout._paper.append('g').classed('geoimages', true);
 
     // lastly info (legend, annotations) and hover layers go on top
-    // these are in a different svg element normally, but
+    // these are in a different svg element normally, but get collapsed into a single
+    // svg when exporting (after inserting 3D)
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
     fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
 

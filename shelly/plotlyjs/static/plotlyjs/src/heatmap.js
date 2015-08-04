@@ -901,8 +901,8 @@ function plotOne(gd, plotinfo, cd) {
 
 heatmap.colorbar = Plotly.Colorbar.traceColorbar;
 
-heatmap.style = function(gp) {
-    gp.selectAll('image').style('opacity',function(d){ return d.trace.opacity; });
+heatmap.style = function(gd) {
+    d3.select(gd).selectAll('image').style('opacity',function(d){ return d.trace.opacity; });
 };
 
 heatmap.hoverPoints = function(pointData, xval, yval, hovermode, contour) {
