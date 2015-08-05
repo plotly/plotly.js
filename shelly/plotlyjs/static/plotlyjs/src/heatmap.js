@@ -170,7 +170,9 @@ heatmap.convertColumnXYZ = function(trace) {
     var xCol = trace.x,
         yCol = trace.y,
         zCol = trace.z,
-        colLen = Math.min(xCol.length, yCol.length, zCol.length);
+        textCol = trace.text,
+        colLen = Math.min(xCol.length, yCol.length, zCol.length),
+        hasColumnText = (textCol!==undefined && !Array.isArray(textCol[0]));
 
     if(colLen < xCol.length) xCol = xCol.slice(0, colLen);
     if(colLen < yCol.length) yCol = yCol.slice(0, colLen);
@@ -181,14 +183,22 @@ heatmap.convertColumnXYZ = function(trace) {
         y = yColdv.vals,
         z = Plotly.Lib.init2dArray(y.length, x.length);
 
+    var ix, iy, text;
+
+    if(hasColumnText) text = Plotly.Lib.init2dArray(y.length, x.length);
+
     for(var i = 0; i < colLen; i++) {
-        z[Plotly.Lib.findBin(yCol[i] + yColdv.minDiff / 2, y)]
-            [Plotly.Lib.findBin(xCol[i] + xColdv.minDiff / 2, x)] = zCol[i];
+        ix = Plotly.Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
+        iy = Plotly.Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
+
+        z[iy][ix] = zCol[i];
+        if(hasColumnText) text[iy][ix] = textCol[i];
     }
 
     trace.x = x;
     trace.y = y;
     trace.z = z;
+    if(hasColumnText) trace.text = text;
 };
 
 heatmap.calc = function(gd, trace) {
