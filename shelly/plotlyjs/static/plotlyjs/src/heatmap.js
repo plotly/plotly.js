@@ -63,9 +63,13 @@ heatmap.attributes = {
 };
 
 heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
+    var isContour = Plotly.Plots.traceIs(traceOut, 'contour');
+
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
     }
+
+    if(!isContour) coerce('zsmooth');
 
     if(Plotly.Plots.traceIs(traceOut, 'histogram')) {
         // x, y, z, marker.color, and x0, dx, y0, dy are coerced
@@ -82,19 +86,17 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         }
 
         coerce('transpose');
-        coerce('connectgaps');
         coerce('text');
-    }
 
-    var isContour = Plotly.Plots.traceIs(traceOut, 'contour');
+        coerce('connectgaps', heatmap.hasColumns(traceIn) &&
+            (isContour || traceOut.zsmooth !== false));
+    }
 
     if(!isContour || (traceOut.contours || {}).coloring!=='none') {
         Plotly.Colorscale.handleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
         );
     }
-
-    if(!isContour) coerce('zsmooth');
 };
 
 heatmap.handleXYZDefaults = function(traceIn, traceOut, coerce) {
