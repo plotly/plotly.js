@@ -980,8 +980,8 @@ scatter.linePoints = function(d, opts) {
     return segments;
 };
 
-scatter.style = function(gp) {
-    var s = gp.selectAll('g.trace.scatter');
+scatter.style = function(gd) {
+    var s = d3.select(gd).selectAll('g.trace.scatter');
 
     s.style('opacity',function(d){ return d[0].trace.opacity; });
 

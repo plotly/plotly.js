@@ -64,6 +64,7 @@ Surface.attributes = {
     x: {type: 'data_array'},
     y: {type: 'data_array'},
     z: {type: 'data_array'},
+    text: {type: 'data_array'},
     zauto: traceColorbarAttrs.zauto,
     zmin: traceColorbarAttrs.zmin,
     zmax: traceColorbarAttrs.zmax,
@@ -156,6 +157,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         }
     }
 
+    coerce('text');
     if (!Array.isArray(traceOut.y)) {
         traceOut.y = [];
         for (i = 0; i < ylen; ++i) {

@@ -70,8 +70,7 @@ fx.MINZOOM = 20;
 var DRAGGERSIZE = 20;
 
 fx.init = function(gd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData;
+    var fullLayout = gd._fullLayout;
 
     if(fullLayout._hasGL3D || fullLayout._hasGeo || gd._context.staticPlot) return;
 
@@ -679,6 +678,7 @@ fx.loneHover = function(hoverItem, opts) {
         zLabel: hoverItem.zLabel,
         text: hoverItem.text,
         name: hoverItem.name,
+        idealAlign: hoverItem.idealAlign,
 
         // filler to make createHoverText happy
         trace: {
@@ -690,14 +690,16 @@ fx.loneHover = function(hoverItem, opts) {
         index: 0
     };
 
-    var container3 = d3.select(opts.container);
+    var container3 = d3.select(opts.container),
+        outerContainer3 = opts.outerContainer ?
+            d3.select(opts.outerContainer) : container3;
 
     var fullOpts = {
         hovermode: 'closest',
         rotateLabels: false,
         bgColor: opts.bgColor || Plotly.Color.background,
         container: container3,
-        outerContainer: container3
+        outerContainer: outerContainer3
     };
 
     var hoverLabel = createHoverText([pointData], fullOpts);
@@ -937,7 +939,10 @@ function createHoverText(hoverData, opts) {
             hty = ya._offset+(d.y0+d.y1)/2,
             dx = Math.abs(d.x1-d.x0),
             dy = Math.abs(d.y1-d.y0),
-            txTotalWidth = tbb.width+HOVERARROWSIZE+HOVERTEXTPAD+tx2width;
+            txTotalWidth = tbb.width+HOVERARROWSIZE+HOVERTEXTPAD+tx2width,
+            anchorStartOK,
+            anchorEndOK;
+
         d.ty0 = outerTop-tbb.top;
         d.bx = tbb.width+2*HOVERTEXTPAD;
         d.by = tbb.height+2*HOVERTEXTPAD;
@@ -945,30 +950,32 @@ function createHoverText(hoverData, opts) {
         d.txwidth = tbb.width;
         d.tx2width = tx2width;
         d.offset = 0;
+
         if(rotateLabels) {
             d.pos = htx;
-            hty += dy/2;
-            if(hty+txTotalWidth > outerHeight) {
+            anchorStartOK = hty + dy / 2 + txTotalWidth <= outerHeight;
+            anchorEndOK = hty - dy / 2 - txTotalWidth >= 0;
+            if((d.idealAlign === 'top' || !anchorStartOK) && anchorEndOK) {
+                hty -= dy / 2;
                 d.anchor = 'end';
-                hty -= dy;
-                if(hty-txTotalWidth<0) {
-                    d.anchor = 'middle';
-                    hty +=dy/2;
-                }
-            }
+            } else if(anchorStartOK) {
+                hty += dy / 2;
+                d.anchor = 'start';
+            } else d.anchor = 'middle';
         }
         else {
             d.pos = hty;
-            htx += dx/2;
-            if(htx+txTotalWidth > outerWidth) {
+            anchorStartOK = htx + dx / 2 + txTotalWidth <= outerWidth;
+            anchorEndOK = htx - dx / 2 - txTotalWidth >= 0;
+            if((d.idealAlign === 'left' || !anchorStartOK) && anchorEndOK) {
+                htx -= dx / 2;
                 d.anchor = 'end';
-                htx -=dx;
-                if(htx-txTotalWidth<0) {
-                    d.anchor = 'middle';
-                    htx += dx/2;
-                }
-            }
+            } else if(anchorStartOK) {
+                htx += dx / 2;
+                d.anchor = 'start';
+            } else d.anchor = 'middle';
         }
+
         tx.attr('text-anchor',d.anchor);
         if(tx2width) tx2.attr('text-anchor',d.anchor);
         g.attr('transform','translate('+htx+','+hty+')'+
@@ -1315,10 +1322,14 @@ function chooseModebarButtons(fullLayout) {
     if(allFixed) buttons = [];
     else buttons = [
         ['zoom2d', 'pan2d'],
-        ['zoomIn2d', 'zoomOut2d', 'autoScale2d']
+        ['zoomIn2d', 'zoomOut2d', 'resetScale2d', 'autoScale2d']
     ];
 
-    buttons.push(['hoverClosest2d', 'hoverCompare2d']);
+    if(fullLayout._hasCartesian) {
+        buttons.push(['hoverClosest2d', 'hoverCompare2d']);
+    } else if(fullLayout._hasPie) {
+        buttons.push(['hoverClosestPie']);
+    }
 
     return buttons;
 }
@@ -1563,8 +1574,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     function zoomDone(dragged, numClicks) {
         if(Math.min(box.h, box.w) < fx.MINDRAG * 2) {
-            // doubleclick - autoscale
-            if(numClicks === 2) dragAutoRange();
+            if(numClicks === 2) doubleClick();
             else pauseForDrag(gd);
 
             return removeZoombox(gd);
@@ -1585,7 +1595,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     function dragDone(dragged, numClicks) {
         var singleEnd = (ns + ew).length === 1;
         if(dragged) dragTail();
-        else if(numClicks === 2 && !singleEnd) dragAutoRange();
+        else if(numClicks === 2 && !singleEnd) doubleClick();
         else if(numClicks === 1 && singleEnd) {
             var ax = ns ? ya[0] : xa[0],
                 end = (ns==='s' || ew==='w') ? 0 : 1,
@@ -1800,13 +1810,35 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         redrawObjs(fullLayout.shapes || [], Plotly.Shapes);
     }
 
-    // dragAutoRange - set one or both axes to autorange on doubleclick
-    function dragAutoRange() {
-        var attrs={},
-            axList = (xActive ? xa : []).concat(yActive ? ya : []);
+    function doubleClick() {
+        var doubleClickConfig = gd._context.doubleClick,
+            axList = (xActive ? xa : []).concat(yActive ? ya : []),
+            attrs = {};
 
-        for(var i = 0; i < axList.length; i++) {
-            if(!axList[i].fixedrange) attrs[axList[i]._name + '.autorange'] = true;
+        var ax, i;
+
+        if(doubleClickConfig === 'autosize') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                if(!ax.fixedrange) attrs[ax._name + '.autorange'] = true;
+            }
+        }
+        else if(doubleClickConfig === 'reset') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+            }
+        }
+        else if(doubleClickConfig === 'reset+autosize') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                if(ax.fixedrange) continue;
+                if(ax._rangeInitial === undefined ||
+                    ax.range[0]===ax._rangeInitial[0] && ax.range[1]===ax._rangeInitial[1]) {
+                    attrs[ax._name + '.autorange'] = true;
+                }
+                else attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+            }
         }
 
         Plotly.relayout(gd, attrs);

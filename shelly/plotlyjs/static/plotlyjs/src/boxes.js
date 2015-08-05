@@ -596,8 +596,8 @@ boxes.plot = function(gd, plotinfo, cdbox) {
     });
 };
 
-boxes.style = function(gp) {
-    var s = gp.selectAll('g.trace.boxes');
+boxes.style = function(gd) {
+    var s = d3.select(gd).selectAll('g.trace.boxes');
 
     s.style('opacity', function(d){ return d[0].trace.opacity; })
         .each(function(d){

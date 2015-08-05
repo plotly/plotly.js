@@ -64,7 +64,11 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     for(var i = 0; i < fullData.length; i++) {
         trace = fullData[i];
 
-        if(legendGetsTrace(trace)) visibleTraces++;
+        if(legendGetsTrace(trace)) {
+            visibleTraces++;
+            // always show the legend by default if there's a pie
+            if(Plotly.Plots.traceIs(trace, 'pie')) visibleTraces++;
+        }
 
         if((Plotly.Plots.traceIs(trace, 'bar') && layoutOut.barmode==='stack') ||
                 ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
@@ -256,6 +260,19 @@ legend.boxes = function(d){
     });
 };
 
+legend.pie = function(d) {
+    var trace = d[0].trace,
+        pts = d3.select(this).select('g.legendpoints')
+            .selectAll('path.legendpie')
+            .data(Plotly.Plots.traceIs(trace, 'pie') && trace.visible ? [d] : []);
+    pts.enter().append('path').classed('legendpie', true)
+        .attr('d', 'M6,6H-6V-6H6Z')
+        .attr('transform', 'translate(20,0)');
+    pts.exit().remove();
+
+    if(pts.size()) pts.call(Plotly.Pie.styleOne, d[0], trace);
+};
+
 legend.style = function(s) {
     s.each(function(d){
         var traceGroup = d3.select(this);
@@ -286,6 +303,7 @@ legend.style = function(s) {
     })
     .each(legend.bars)
     .each(legend.boxes)
+    .each(legend.pie)
     .each(legend.lines)
     .each(legend.points);
 };
@@ -293,8 +311,9 @@ legend.style = function(s) {
 legend.texts = function(context, td, d, i, traces){
     var fullLayout = td._fullLayout,
         trace = d[0].trace,
+        isPie = Plotly.Plots.traceIs(trace, 'pie'),
         traceIndex = trace.index,
-        name = trace.name;
+        name = isPie ? d[0].label : trace.name;
 
     var text = d3.select(context).selectAll('text.legendtext')
         .data([0]);
@@ -315,7 +334,7 @@ legend.texts = function(context, td, d, i, traces){
         s.selectAll('tspan.line').attr({x: s.attr('x')});
     }
 
-    if(td._context.editable){
+    if(td._context.editable && !isPie){
         text.call(Plotly.util.makeEditable)
             .call(textLayout)
             .on('edit', function(text){
@@ -350,28 +369,54 @@ legend.getLegendData = function(calcdata, opts) {
     // build an { legendgroup: [cd0, cd0], ... } object
     var lgroupToTraces = {},
         lgroups = [],
-        hasOneNonBlankGroup = false;
+        hasOneNonBlankGroup = false,
+        slicesShown = {},
+        lgroupi = 0;
 
-    var cd0, trace, lgroup, i;
+    var cd, cd0, trace, lgroup, i, j, labelj;
+
+    function addOneItem(legendGroup, legendItem) {
+        // each '' legend group is treated as a separate group
+        if(legendGroup==='' || !isGrouped(opts)) {
+            var uniqueGroup = '~~i' + lgroupi; // TODO: check this against fullData legendgroups?
+            lgroups.push(uniqueGroup);
+            lgroupToTraces[uniqueGroup] = [[legendItem]];
+            lgroupi++;
+        }
+        else if(lgroups.indexOf(legendGroup) === -1) {
+            lgroups.push(legendGroup);
+            hasOneNonBlankGroup = true;
+            lgroupToTraces[legendGroup] = [[legendItem]];
+        }
+        else lgroupToTraces[legendGroup].push([legendItem]);
+    }
 
     for(i = 0; i < calcdata.length; i++) {
-        cd0 = calcdata[i][0];
+        cd = calcdata[i];
+        cd0 = cd[0];
         trace = cd0.trace;
         lgroup = trace.legendgroup;
 
         if(!legendGetsTrace(trace) || !trace.showlegend) continue;
 
-        // each '' legend group is treated as a separate group
-        if(lgroup==='' || !isGrouped(opts)) {
-            lgroups.push(i);
-            lgroupToTraces[i] = [[cd0]];
+        if(Plotly.Plots.traceIs(trace, 'pie')) {
+            if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
+            for(j = 0; j < cd.length; j++) {
+                labelj = cd[j].label;
+                if(!slicesShown[lgroup][labelj]) {
+                    addOneItem(lgroup, {
+                        label: labelj,
+                        color: cd[j].color,
+                        i: cd[j].i,
+                        trace: trace
+                    });
+
+                    slicesShown[lgroup][labelj] = true;
+                }
+            }
         }
-        else if(lgroups.indexOf(lgroup) === -1) {
-            lgroups.push(lgroup);
-            hasOneNonBlankGroup = true;
-            lgroupToTraces[lgroup] = [[cd0]];
-        }
-        else lgroupToTraces[lgroup].push([cd0]);
+
+        else addOneItem(lgroup, cd0);
     }
 
     // won't draw a legend in this case
@@ -404,20 +449,16 @@ legend.getLegendData = function(calcdata, opts) {
     return legendData;
 };
 
-legend.draw = function(td, showlegend) {
-    var layout = td.layout,
-        fullLayout = td._fullLayout;
+legend.draw = function(td) {
+    var fullLayout = td._fullLayout;
 
     if(!fullLayout._infolayer || !td.calcdata) return;
 
-    if(showlegend !== undefined) layout.showlegend = showlegend;
-    legend.supplyLayoutDefaults(layout, fullLayout, td._fullData);
-    showlegend = fullLayout.showlegend;
-
     var opts = fullLayout.legend,
-        legendData = legend.getLegendData(td.calcdata, opts);
+        legendData = fullLayout.showlegend && legend.getLegendData(td.calcdata, opts),
+        hiddenSlices = fullLayout.hiddenlabels || [];
 
-    if(!showlegend || !legendData.length) {
+    if(!fullLayout.showlegend || !legendData.length) {
         fullLayout._infolayer.selectAll('.legend').remove();
         Plotly.Plots.autoMargin(td, 'legend');
         return;
@@ -460,7 +501,12 @@ legend.draw = function(td, showlegend) {
 
     traces.call(legend.style)
         .style('opacity', function(d) {
-            return d[0].trace.visible === 'legendonly' ? 0.5 : 1;
+            var trace = d[0].trace;
+            if(Plotly.Plots.traceIs(trace, 'pie')) {
+                return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
+            } else {
+                return trace.visible === 'legendonly' ? 0.5 : 1;
+            }
         })
         .each(function(d, i) {
             legend.texts(this, td, d, i, traces);
@@ -482,18 +528,30 @@ legend.draw = function(td, showlegend) {
                     tracei,
                     newVisible;
 
-                if(legendgroup === '') traceIndicesInGroup = [trace.index];
-                else {
-                    for(var i = 0; i < fullData.length; i++) {
-                        tracei = fullData[i];
-                        if(tracei.legendgroup === legendgroup) {
-                            traceIndicesInGroup.push(tracei.index);
+                if(Plotly.Plots.traceIs(trace, 'pie')) {
+                    var thisLabel = d[0].label,
+                        newHiddenSlices = hiddenSlices.slice(),
+                        thisLabelIndex = newHiddenSlices.indexOf(thisLabel);
+
+                    if(thisLabelIndex === -1) newHiddenSlices.push(thisLabel);
+                    else newHiddenSlices.splice(thisLabelIndex, 1);
+
+                    Plotly.relayout(td, 'hiddenlabels', newHiddenSlices);
+                } else {
+                    if(legendgroup === '') {
+                        traceIndicesInGroup = [trace.index];
+                    } else {
+                        for(var i = 0; i < fullData.length; i++) {
+                            tracei = fullData[i];
+                            if(tracei.legendgroup === legendgroup) {
+                                traceIndicesInGroup.push(tracei.index);
+                            }
                         }
                     }
-                }
 
-                newVisible = trace.visible === true ?  'legendonly' : true;
-                Plotly.restyle(td, 'visible', newVisible, traceIndicesInGroup);
+                    newVisible = trace.visible === true ?  'legendonly' : true;
+                    Plotly.restyle(td, 'visible', newVisible, traceIndicesInGroup);
+                }
             });
         });
 

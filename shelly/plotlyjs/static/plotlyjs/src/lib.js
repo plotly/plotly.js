@@ -667,12 +667,15 @@ function badContainer(container, propStr, propParts) {
 /**
  * swap x and y of the same attribute in container cont
  * specify attr with a ? in place of x/y
+ * you can also swap other things than x/y by providing part1 and part2
  */
-lib.swapXYAttrs = function(cont,attrList) {
+lib.swapAttrs = function(cont, attrList, part1, part2) {
+    if(!part1) part1 = 'x';
+    if(!part2) part2 = 'y';
     for(var i = 0; i < attrList.length; i++) {
         var attr = attrList[i],
-            xp = lib.nestedProperty(cont, attr.replace('?', 'x')),
-            yp = lib.nestedProperty(cont, attr.replace('?', 'y')),
+            xp = lib.nestedProperty(cont, attr.replace('?', part1)),
+            yp = lib.nestedProperty(cont, attr.replace('?', part2)),
             temp = xp.get();
         xp.set(yp.get());
         yp.set(temp);
