@@ -248,19 +248,7 @@ heatmap.calc = function(gd, trace) {
         y0 = trace.y0 || 0;
         dy = trace.dy || 1;
 
-        if(trace.transpose) {
-            var maxcols = Plotly.Lib.aggNums(Math.max,0,
-                    trace.z.map(function(r){return r.length;}));
-            z = [];
-            for(var c = 0; c < maxcols; c++) {
-                var newrow = [];
-                for(var r = 0; r < trace.z.length; r++) {
-                    newrow.push(cleanZ(trace.z[r][c]));
-                }
-                z.push(newrow);
-            }
-        }
-        else z = trace.z.map(function(row){return row.map(cleanZ); });
+        z = heatmap.cleanZ(trace);
 
         if(isContour || trace.connectgaps) {
             trace._emptypoints = findEmpties(z);
@@ -326,12 +314,39 @@ heatmap.calc = function(gd, trace) {
     return [cd0];
 };
 
-function cleanZ(v) {
-    if(!v && v!==0) return undefined;
-    v = Number(v);
-    if(isNaN(v)) return undefined;
-    return v;
+function cleanZvalue(v) {
+    if(!isNumeric(v)) return undefined;
+    return +v;
 }
+
+heatmap.cleanZ = function(trace) {
+    var zOld = trace.z;
+
+    var rowlen, collen, getCollen, old2new, i, j;
+
+    if(trace.transpose) {
+        rowlen = 0;
+        for(i = 0; i < zOld.length; i++) rowlen = Math.max(rowlen, zOld[i].length);
+        if(rowlen === 0) return false;
+        getCollen = function(zOld) { return zOld.length; };
+        old2new = function(zOld, i, j) { return zOld[j][i]; };
+    }
+    else {
+        rowlen = zOld.length;
+        getCollen = function(zOld, i) { return zOld[i].length; };
+        old2new = function(zOld, i, j) { return zOld[i][j]; };
+    }
+
+    var zNew = new Array(rowlen);
+
+    for(i = 0; i < rowlen; i++) {
+        collen = getCollen(zOld, i);
+        zNew[i] = new Array(collen);
+        for(j = 0; j < collen; j++) zNew[i][j] = cleanZvalue(old2new(zOld, i, j));
+    }
+
+    return zNew;
+};
 
 function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     var arrayOut = [],
