@@ -140,28 +140,30 @@ function coordDefaults(coordStr, coerce) {
 function isValidZ(z) {
     var allRowsAreArrays = true,
         oneRowIsFilled = false,
-        noNumbers = true;
+        hasOneNumber = false,
+        zi;
 
-    var zi;
+    // without this step:
+    // hasOneNumber = false breaks contour but not heatmap
+    // allRowsAreArrays = false breaks contour but not heatmap
+    // oneRowIsFilled = false breaks both
 
-    if (!(Array.isArray(z) && z.length)) return false;
-
-    for (var i = 0; i < z.length; i++) {
+    for(var i = 0; i < z.length; i++) {
         zi = z[i];
-        if (!Array.isArray(zi)) allRowsAreArrays = false;
-        if (!oneRowIsFilled && zi.length) oneRowIsFilled = true;
+        if(!Array.isArray(zi)) {
+            allRowsAreArrays = false;
+            break;
+        }
+        if(zi.length > 0) oneRowIsFilled = true;
         for(var j = 0; j < zi.length; j++) {
-        // Check that there is at least one numeric element...
             if(isNumeric(zi[j])) {
-                noNumbers = false;
+                hasOneNumber = true;
                 break;
             }
         }
     }
-    // ... otherwise set array as invalid:
-    if(noNumbers) return false;
 
-    return (allRowsAreArrays && oneRowIsFilled);
+    return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
 }
 
 heatmap.hasColumns = function(trace) {
