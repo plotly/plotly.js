@@ -75,8 +75,8 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         if(traceOut.visible === false) return;
     }
     else {
-        var z = heatmap.handleXYZDefaults(traceIn, traceOut, coerce);
-        if(!z.length) {
+        var len = heatmap.handleXYZDefaults(traceIn, traceOut, coerce);
+        if(!len) {
             traceOut.visible = false;
             return;
         }
@@ -101,24 +101,24 @@ heatmap.handleXYZDefaults = function(traceIn, traceOut, coerce) {
     var z = coerce('z');
     var x, y;
 
-    if(z===undefined || !z.length) return [];
+    if(z===undefined || !z.length) return 0;
 
     if(heatmap.hasColumns(traceIn)) {
         x = coerce('x');
         y = coerce('y');
 
         // column z must be accompanied by 'x' and 'y' arrays
-        if(!x || !y) return [];
+        if(!x || !y) return 0;
     }
     else {
         x = coordDefaults('x', coerce);
         y = coordDefaults('y', coerce);
 
-        // Validate z? In a way not redundant with calc?
-        if(!isValidZ(z)) return [];
+        // TODO put z validation elsewhere
+        if(!isValidZ(z)) return 0;
     }
 
-    return traceOut.z;
+    return traceOut.z.length;
 };
 
 function coordDefaults(coordStr, coerce) {
