@@ -51,6 +51,9 @@ exports.getGraphReference = require('./graph_reference');
 // configuration
 exports.Config = require('./config');
 
+// imaging Routines
+exports.Snapshot = require('./snapshot/snapshot');
+
 // promise polyfill, embed rather than requiring dependencies
 require('../../../../shelly/static/js/plugins/promise-1.0.0.min.js');
 require('../../../../shelly/static/js/plugins/promise-done-1.0.0.js');
