@@ -1,8 +1,7 @@
-'use strict';
-
 var Plotly = require('../src/plotly');
 
 describe('Test heatmap', function () {
+    'use strict';
 
     describe('supplyDefaults', function() {
         var traceIn,
@@ -57,6 +56,24 @@ describe('Test heatmap', function () {
             traceIn = {
                 type: 'heatmap',
                 z: [['a', 'b'], ['c', 'd']]
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.visible).toBe(false);
+        });
+
+        it('should set visible to false when z isn\'t column not a 2d array', function() {
+            traceIn = {
+                x: [1, 1, 1, 2, 2],
+                y: [1, 2, 3, 1, 2],
+                z: [1, ['this is considered a column'], 1, 2, 3]
+            };
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.visible).not.toBe(false);
+
+            traceIn = {
+                x: [1, 1, 1, 2, 2],
+                y: [1, 2, 3, 1, 2],
+                z: [[0], ['this is not considered a column'], 1, ['nor 2d']]
             };
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
             expect(traceOut.visible).toBe(false);

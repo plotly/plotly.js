@@ -242,7 +242,6 @@ heatmap.calc = function(gd, trace) {
     else {
         if(heatmap.hasColumns(trace)) heatmap.convertColumnXYZ(trace);
 
-
         x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
         y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
         x0 = trace.x0 || 0;
