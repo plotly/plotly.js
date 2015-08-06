@@ -199,17 +199,23 @@ proto.handleCartesian = function(ev) {
         var mag = (val === 'in') ? 0.5 : 2,
             r0 = (1 + mag) / 2,
             r1 = (1 - mag) / 2,
-            axList = Plotly.Axes.list(graphInfo, null, true),
-            i,
-            axName,
-            initialRange;
+            axList = Plotly.Axes.list(graphInfo, null, true);
 
-        for(i = 0; i < axList.length; i++) {
-            if(!axList[i].fixedrange) {
-                axName = axList[i]._name;
+        var ax, axName, initialRange;
+
+        for(var i = 0; i < axList.length; i++) {
+            ax = axList[i];
+            if(!ax.fixedrange) {
+                axName = ax._name;
                 if(val === 'auto') aobj[axName + '.autorange'] = true;
+                else if(val === 'reset') {
+                    if(ax._rangeInitial === undefined) {
+                        aobj[axName + '.autorange'] = true;
+                    }
+                    else aobj[axName + '.range'] = ax._rangeInitial.slice();
+                }
                 else {
-                    initialRange = axList[i].range;
+                    initialRange = ax.range;
                     aobj[axName + '.range'] = [
                         r0 * initialRange[0] + r1 * initialRange[1],
                         r0 * initialRange[1] + r1 * initialRange[0]
@@ -424,6 +430,13 @@ proto.config = function config() {
             attr: 'zoom',
             val: 'auto',
             icon: 'autoscale',
+            click: this.handleCartesian
+        },
+        resetScale2d: {
+            title: 'Reset axes',
+            attr: 'zoom',
+            val: 'reset',
+            icon: 'home',
             click: this.handleCartesian
         },
         hoverClosest2d: {
