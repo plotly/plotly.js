@@ -85,10 +85,12 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
             return;
         }
 
-        coerce('transpose');
         coerce('text');
 
-        coerce('connectgaps', heatmap.hasColumns(traceIn) &&
+        var hasColumns = heatmap.hasColumns(traceOut);
+
+        if(!hasColumns) coerce('transpose');
+        coerce('connectgaps', hasColumns &&
             (isContour || traceOut.zsmooth !== false));
     }
 
