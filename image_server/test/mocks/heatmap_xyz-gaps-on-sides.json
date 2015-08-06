@@ -140,11 +140,10 @@
                 4.299876
             ],
             "colorscale": "Viridis",
-            "transpose": true,
             "type": "heatmap"
         }
     ],
     "layout": {
-        "title": "transposed heatmap with x/y/z columns with gaps on the sides"
+        "title": "heatmap with x/y/z columns with gaps on the sides"
     }
 }
