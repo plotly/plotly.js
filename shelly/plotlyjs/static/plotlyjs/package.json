@@ -4,9 +4,7 @@
   "description": "plotly.js library",
   "repository": "",
   "main": "plotschema/index.html",
-  "scripts": {
-    "build-plotschema": "/usr/local/nwjs-v0.12.0-linux-x64/nw ./"
-  },
+  "scripts": {},
   "author": "Plotly amazing team",
   "license": "ISC",
   "private": true,
