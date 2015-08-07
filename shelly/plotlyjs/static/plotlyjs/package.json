@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "plotly.js library",
   "repository": "",
-  "main": "index.html",
+  "main": "plotschema/index.html",
   "scripts": {
-    "build-graph-reference": "/usr/local/nwjs-v0.12.0-linux-x64/nw ."
+    "build-plotschema": "/usr/local/nwjs-v0.12.0-linux-x64/nw ./"
   },
   "author": "Plotly amazing team",
   "license": "ISC",
