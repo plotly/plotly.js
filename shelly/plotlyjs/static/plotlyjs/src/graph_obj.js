@@ -5,10 +5,11 @@
 /* global setFileAndCommentsSize:false */
 
 // ---external global dependencies
-/* global Promise:false, d3:false */
+/* global Promise:false */
 
 
 var Plotly = require('./plotly'),
+    d3 = require('d3'),
     m4FromQuat = require('gl-mat4/fromQuat'),
     isNumeric = require('./isnumeric');
 

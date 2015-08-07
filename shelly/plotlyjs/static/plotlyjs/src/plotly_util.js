@@ -1,10 +1,12 @@
 'use strict';
 // ---external global dependencies
-/* global d3:false, MathJax:false, FB:false, PLOTLYENV:false,
+/* global MathJax:false, FB:false, PLOTLYENV:false,
    Promise:false */
 
-var util = module.exports = {},
-    Plotly = require('./plotly');
+var Plotly = require('./plotly'),
+    d3 = require('d3');
+
+var util = module.exports = {};
 
 // Script Loader
 /////////////////////////////

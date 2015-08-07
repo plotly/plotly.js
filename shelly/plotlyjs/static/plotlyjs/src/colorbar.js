@@ -1,9 +1,7 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
 var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
 
 var colorbar = module.exports = function(td, id) {

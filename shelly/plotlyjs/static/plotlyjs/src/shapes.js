@@ -1,9 +1,10 @@
 'use strict';
 
-var shapes = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
     isNumeric = require('./isnumeric'),
     scatterLineAttrs = Plotly.Scatter.attributes.line;
+
+var shapes = module.exports = {};
 
 shapes.layoutAttributes = {
     opacity: {

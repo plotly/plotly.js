@@ -1,8 +1,9 @@
 'use strict';
-/* global d3:false */
 
-var manager = module.exports = {},
-    Plotly = require('./plotly');
+var Plotly = require('./plotly'),
+    d3 = require('d3');
+
+var manager = module.exports = {};
 
 manager.framework = function(_gd){
     var config, previousConfigClone, plot, convertedInput, container;

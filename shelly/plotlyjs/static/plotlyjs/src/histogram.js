@@ -1,10 +1,12 @@
 'use strict';
 
-var histogram = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric'),
     scatterAttrs = Plotly.Scatter.attributes,
     barAttrs = Plotly.Bars.attributes;
+
+var histogram = module.exports = {};
 
 /**
  * histogram errorBarsOK is debatable, but it's put in for backward compat.

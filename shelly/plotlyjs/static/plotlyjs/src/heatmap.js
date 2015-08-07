@@ -1,13 +1,12 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
-var heatmap = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     tinycolor = require('tinycolor2'),
     isNumeric = require('./isnumeric'),
     scatterAttrs = Plotly.Scatter.attributes;
+
+var heatmap = module.exports = {};
 
 Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap']);
 

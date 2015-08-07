@@ -1,6 +1,6 @@
 'use strict';
 
-/* global d3:false */
+var d3 = require('d3');
 
 var clipPad = require('./params').clipPad;
 

@@ -1,11 +1,10 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
-var boxes = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
+
+var boxes = module.exports = {};
 
 Plotly.Plots.register(boxes, 'box',
     ['cartesian', 'symbols', 'oriented', 'box', 'showLegend']);

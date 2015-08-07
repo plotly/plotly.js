@@ -1,10 +1,9 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
+var Plotly = require('./plotly'),
+    d3 = require('d3');
 
-var contour = module.exports = {},
-    Plotly = require('./plotly');
+var contour = module.exports = {};
 
 Plotly.Plots.register(contour, 'contour',
     ['cartesian', '2dMap', 'contour']);
