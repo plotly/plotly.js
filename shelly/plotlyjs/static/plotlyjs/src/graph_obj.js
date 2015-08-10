@@ -1257,6 +1257,7 @@ Plotly.redraw = function(gd) {
  * @param {Object} config
  */
 Plotly.newPlot = function (gd, data, layout, config) {
+    gd = getGraphDiv(gd);
     Plotly.Plots.purge(gd);
     Plotly.plot(gd, data, layout, config);
 };
@@ -1682,8 +1683,6 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
 };
 
 plots.purge = function(gd) {
-    gd = getGraphDiv(gd);
-
     // remove all plotly attributes from a div so it can be replotted fresh
     // TODO: these really need to be encapsulated into a much smaller set...
 
