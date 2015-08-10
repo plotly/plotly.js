@@ -2134,6 +2134,7 @@ function spliceTraces (gd, update, indices, maxPoints, lengthenArray, spliceArra
  *
  */
 Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
+    gd = getGraphDiv(gd);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
 
@@ -2160,6 +2161,7 @@ Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
 };
 
 Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) {
+    gd = getGraphDiv(gd);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
 
@@ -2195,6 +2197,8 @@ Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) 
  *
  */
 Plotly.addTraces = function addTraces (gd, traces, newIndices) {
+    gd = getGraphDiv(gd);
+
     var currentIndices = [],
         undoFunc = Plotly.deleteTraces,
         redoFunc = addTraces,
@@ -2261,6 +2265,8 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
  * @param {Number|Number[]} indices The indices
  */
 Plotly.deleteTraces = function deleteTraces (gd, indices) {
+    gd = getGraphDiv(gd);
+
     var traces = [],
         undoFunc = Plotly.addTraces,
         redoFunc = deleteTraces,
@@ -2324,6 +2330,8 @@ Plotly.deleteTraces = function deleteTraces (gd, indices) {
  *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
  */
 Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
+    gd = getGraphDiv(gd);
+
     var newData = [],
         movingTraceMap = [],
         undoFunc = moveTraces,
