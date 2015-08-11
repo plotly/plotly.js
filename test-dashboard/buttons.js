@@ -1,7 +1,5 @@
 'use strict';
 
-var scrapeSVG = require('../image_server/server_app/lib/scrape-svg');
-
 var plotlist = document.getElementById('plot-list');
 var anchor = document.getElementById('embedded-graph');
 var image = document.getElementById('embedded-image');
@@ -149,7 +147,7 @@ function plotButtons(plots, figDir) {
     plotlist.appendChild(scrapeButton);
 
     scrapeButton.addEventListener('click', function () {
-        scrapeSVG(Tabs.get());
+        Plotly.toSVG(Tabs.get());
         return;
     });
 
