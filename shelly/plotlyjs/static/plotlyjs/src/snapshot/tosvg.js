@@ -1,4 +1,3 @@
-/*jslint node: true */
 'use strict';
 var Plotly = require('../plotly');
 
