@@ -147,7 +147,7 @@ function plotButtons(plots, figDir) {
     plotlist.appendChild(scrapeButton);
 
     scrapeButton.addEventListener('click', function () {
-        Plotly.toSVG(Tabs.get());
+        Plotly.Snapshot.toSVG(Tabs.get());
         return;
     });
 
