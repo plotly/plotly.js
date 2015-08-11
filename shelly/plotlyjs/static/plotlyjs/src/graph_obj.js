@@ -2448,7 +2448,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         'x', 'y', 'z',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
         'line.width',
-        'connectgaps', 'transpose',
+        'connectgaps', 'transpose', 'zsmooth',
         'showscale', 'marker.showscale',
         'zauto', 'marker.cauto',
         'autocolorscale', 'marker.autocolorscale',
@@ -2490,7 +2490,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     // replotAttrs attributes need a replot (because different
     // objects need to be made) but not a recalc
     var replotAttrs = [
-        'zmin', 'zmax', 'zauto', 'zsmooth',
+        'zmin', 'zmax', 'zauto',
         'marker.cmin', 'marker.cmax', 'marker.cauto',
         'contours.start','contours.end','contours.size',
         'contours.showlines',
