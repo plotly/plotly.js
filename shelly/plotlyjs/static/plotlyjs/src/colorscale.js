@@ -77,7 +77,17 @@ colorscale.scales = {
 
     'Electric':[[0,'rgb(0,0,0)'],[0.15,'rgb(30,0,100)'],
         [0.4,'rgb(120,0,100)'],[0.6,'rgb(160,90,0)'],
-        [0.8,'rgb(230,200,0)'],[1,'rgb(255,250,220)']]
+        [0.8,'rgb(230,200,0)'],[1,'rgb(255,250,220)']],
+
+    'Viridis': [[0,'#440154'],[0.06274509803921569,'#48186a'],
+        [0.12549019607843137,'#472d7b'],[0.18823529411764706,'#424086'],
+        [0.25098039215686274,'#3b528b'],[0.3137254901960784,'#33638d'],
+        [0.3764705882352941,'#2c728e'],[0.4392156862745098,'#26828e'],
+        [0.5019607843137255,'#21918c'],[0.5647058823529412,'#1fa088'],
+        [0.6274509803921569,'#28ae80'],[0.6901960784313725,'#3fbc73'],
+        [0.7529411764705882,'#5ec962'],[0.8156862745098039,'#84d44b'],
+        [0.8784313725490196,'#addc30'],[0.9411764705882353,'#d8e219'],
+        [1,'#fde725']]
 };
 
 colorscale.defaultScale = colorscale.scales.RdBu;
@@ -205,11 +215,11 @@ colorscale.handleDefaults = function(traceIn, traceOut, layout, coerce, opts) {
     reverseScale = coerce(prefix + 'reversescale');
     if(reverseScale) containerOut.colorscale = colorscale.flipScale(sclOut);
 
-    // until scatter.colorbar can handle marker line colorbars
+    // ... until Scatter.colorbar can handle marker line colorbars
     if(prefix === 'marker.line.') return;
 
-    // handle both the trace case where the dftl is listed in attributes and
-    // the marker case where the dftl is determined by hasColorbar
+    // handle both the trace case where the dflt is listed in attributes and
+    // the marker case where the dflt is determined by hasColorbar
     if(prefix) showScaleDftl = colorscale.hasColorbar(containerIn);
     showScale = coerce(prefix + 'showscale', showScaleDftl);
 

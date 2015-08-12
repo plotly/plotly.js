@@ -565,4 +565,13 @@ describe('Test lib.js:', function() {
             });
         });
     });
+
+    describe('init2dArray', function() {
+        it('should initialize a 2d array with the correct dimenstions', function() {
+            var array = Plotly.Lib.init2dArray(4, 5);
+            expect(array.length).toEqual(4);
+            expect(array[0].length).toEqual(5);
+            expect(array[3].length).toEqual(5);
+        });
+    });
 });

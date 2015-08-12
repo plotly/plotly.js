@@ -57,14 +57,8 @@ function render(scene) {
        }, {
          container: svgContainer
        });
-    } else {
-      Plotly.Fx.loneHover({
-        x: 1e20,
-        y: 1e20
-       }, {
-         container: svgContainer
-       });
     }
+    else Plotly.Fx.loneUnhover(svgContainer);
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
@@ -110,9 +104,9 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
            * is overridden with a function that removes the container only.
            */
           var noop = function () {};
-          for (var prop in this) if (typeof this[prop] === 'function') scene[prop] = noop;
-          this.destroy = function () {
-              scene.container.parentNode.removeChild(this.container);
+          for (var prop in scene) if (typeof scene[prop] === 'function') scene[prop] = noop;
+          scene.destroy = function () {
+              scene.container.parentNode.removeChild(scene.container);
           };
 
           var div = document.createElement('div');
@@ -207,8 +201,8 @@ function Scene(options, fullLayout) {
     this.axesOptions      = createAxesOptions(fullLayout[this.id]);
     this.spikeOptions     = createSpikeOptions(fullLayout[this.id]);
     this.container        = sceneContainer;
-
-    this.staticMode       = !!options.staticMode;
+    this.staticMode       = !!options.staticPlot;
+    this.pixelRatio       = options.plot3dPixelRatio || 2;
 
     //Coordinate rescaling
     this.dataScale    = [1,1,1];
@@ -573,11 +567,32 @@ proto.setCamera = function setCamera (cameraData) {
 
 // save camera to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
-    var cameraData = this.getCamera();
+    var cameraData = this.getCamera(),
+        cameraNestedProp = Plotly.Lib.nestedProperty(layout, this.id + '.camera'),
+        cameraDataLastSave = cameraNestedProp.get(),
+        hasChanged = false;
 
-    // save new camera api
-    Plotly.Lib.nestedProperty(layout, this.id + '.camera')
-        .set(cameraData);
+    function same(x, y, i, j) {
+        var vectors = ['up', 'center', 'eye'],
+            components = ['x', 'y', 'z'];
+        return x[vectors[i]][components[j]] === y[vectors[i]][components[j]];
+    }
+
+    if(cameraDataLastSave === undefined) hasChanged = true;
+    else {
+        for(var i = 0; i < 3; i++) {
+            for(var j = 0; j < 3; j++) {
+                if(!same(cameraData, cameraDataLastSave, i, j)) {
+                    hasChanged = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if(hasChanged) cameraNestedProp.set(cameraData);
+
+    return hasChanged;
 };
 
 proto.handleDragmode = function (dragmode) {

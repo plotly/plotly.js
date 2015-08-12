@@ -27,18 +27,18 @@
         "geo": {
             "projection": {
                 "type": "mollweide",
-                "rotate": [
-                    -180,
-                    0
-                ]
+                "rotation": {
+                    "lon": -180
+                }
             },
             "showcoastlines": true,
-            "coastlinescolor": "black",
-            "coastlineswidth": 1.5,
+            "coastlinewidth": 1.5,
             "showcountries": true,
+            "countrycolor": "red",
             "showland": true,
-            "landfillcolor": "#aaa",
+            "landcolor": "#aaa",
             "showocean": true,
+            "oceancolor": "#b2b2ff",
             "lonaxis": {
                 "showgrid": true,
                 "gridwidth": 2,

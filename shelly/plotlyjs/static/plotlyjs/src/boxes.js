@@ -274,7 +274,7 @@ boxes.calc = function(gd, trace) {
         var v, l, cdi, i;
 
         for (i = 0; i < valBinned.length; ++i) {
-            v = valBinned[i].sort(function(a, b){ return a - b; });
+            v = valBinned[i].sort(Plotly.Lib.sorterAsc);
             l = v.length;
             cdi = cd[i];
 
@@ -596,8 +596,8 @@ boxes.plot = function(gd, plotinfo, cdbox) {
     });
 };
 
-boxes.style = function(gp) {
-    var s = gp.selectAll('g.trace.boxes');
+boxes.style = function(gd) {
+    var s = d3.select(gd).selectAll('g.trace.boxes');
 
     s.style('opacity', function(d){ return d[0].trace.opacity; })
         .each(function(d){

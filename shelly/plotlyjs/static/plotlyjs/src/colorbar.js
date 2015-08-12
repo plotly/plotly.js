@@ -3,7 +3,8 @@
 // ---external global dependencies
 /* global d3:false */
 
-var Plotly = require('./plotly');
+var Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
 var colorbar = module.exports = function(td, id) {
     // opts: options object, containing everything from attributes
@@ -682,4 +683,57 @@ colorbar.supplyDefaults = function(containerIn, containerOut, layout) {
     coerce('title');
     coerce('titlefont', layout.font);
     coerce('titleside');
+};
+
+colorbar.traceColorbar = function(gd, cd) {
+    var trace = cd[0].trace,
+        cbId = 'cb' + trace.uid,
+        scl = Plotly.Colorscale.getScale(trace.colorscale),
+        zmin = trace.zmin,
+        zmax = trace.zmax;
+
+    if(!isNumeric(zmin)) zmin = Plotly.Lib.aggNums(Math.min, null, trace.z);
+    if(!isNumeric(zmax)) zmax = Plotly.Lib.aggNums(Math.max, null, trace.z);
+
+    gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
+    if(!trace.showscale){
+        Plotly.Plots.autoMargin(gd, cbId);
+        return;
+    }
+
+    var cb = cd[0].t.cb = colorbar(gd, cbId);
+    cb.fillcolor(d3.scale.linear()
+            .domain(scl.map(function(v){ return zmin + v[0]*(zmax-zmin); }))
+            .range(scl.map(function(v){ return v[1]; })))
+        .filllevels({start: zmin, end: zmax, size: (zmax-zmin)/254})
+        .options(trace.colorbar)();
+
+    Plotly.Lib.markTime('done colorbar');
+};
+
+colorbar.traceColorbarAttributes = {
+    zauto: {
+        type: 'boolean',
+        dflt: true
+    },
+    zmin: {
+        type: 'number',
+        dflt: null
+    },
+    zmax: {
+        type: 'number',
+        dflt: null
+    },
+    colorscale: {
+        type: 'colorscale'
+    },
+    // autocolorscale isn't in here as the dflt varies from trace to trace
+    reversescale: {
+        type: 'boolean',
+        dflt: false
+    },
+    showscale: {
+        type: 'boolean',
+        dflt: true
+    }
 };

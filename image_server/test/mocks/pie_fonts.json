@@ -1,0 +1,94 @@
+{
+  "data": [
+    {
+      "values": [
+        1,
+        9
+      ],
+      "text": [
+        "inherit from<br><b>global...</b>",
+        "font"
+      ],
+      "type": "pie",
+      "domain": {
+        "x": [0, 0.4],
+        "y": [0.6, 1]
+      }
+    },
+    {
+      "values": [
+        1,
+        9
+      ],
+      "text": [
+        "a font of...",
+        "my own"
+      ],
+      "type": "pie",
+      "domain": {
+        "x": [0.6, 1],
+        "y": [0.6, 1]
+      },
+      "textfont": {
+        "family": "Times New Roman, Times, serif",
+        "size": 15,
+        "color": "#cc0"
+      }
+    },
+    {
+      "values": [
+        1,
+        9
+      ],
+      "text": [
+        "outside and textfont<br>both modify...",
+        "global"
+      ],
+      "type": "pie",
+      "domain": {
+        "x": [0, 0.4],
+        "y": [0, 0.4]
+      },
+      "textfont": {
+        "size": 12
+      },
+      "outsidetextfont": {
+        "color": "#c80"
+      }
+    },
+    {
+      "values": [
+        1,
+        9
+      ],
+      "text": [
+        "independent fonts<br>outside and...",
+        "inside"
+      ],
+      "type": "pie",
+      "domain": {
+        "x": [0.6, 1],
+        "y": [0, 0.4]
+      },
+      "outsidetextfont": {
+        "family": "Raleway, sans-serif",
+        "size": 10,
+        "color": "#800"
+      },
+      "insidetextfont": {
+        "family": "Courier New, monospace",
+        "size": 14,
+        "color": "#fff"
+      }
+    }
+  ],
+  "layout": {
+    "height": 500,
+    "width": 600,
+    "font": {
+      "family": "Old Standard TT, serif",
+      "size": 20
+    },
+    "showlegend": true
+  }
+}

@@ -19,7 +19,7 @@ drawing.font = function(s, family, size, color) {
         family = family.family;
     }
     if(family) s.style('font-family', family);
-    if(size) s.style('font-size', size+'px');
+    if(size+1) s.style('font-size', size + 'px');
     if(color) s.call(Plotly.Color.fill, color);
 };
 
@@ -624,22 +624,18 @@ drawing.pointStyle = function(s, trace) {
     // only scatter & box plots get marker path and opacity
     // bars, histograms don't
     if(Plotly.Plots.traceIs(trace, 'symbols')) {
-        var r,
-            // for bubble charts, allow scaling the provided value linearly
-            // and by area or diameter.
-            // Note this only applies to the array-value sizes
-            sizeRef = marker.sizeref || 1,
-            sizeFn = (marker.sizemode==='area') ?
-                function(v){ return Math.sqrt(v/sizeRef); } :
-                function(v){ return v/sizeRef; };
-        s.attr('d',function(d){
-            r = (d.ms+1) ? sizeFn(d.ms/2) : marker.size/2;
+        var sizeFn = Plotly.Scatter.getBubbleSizeFn(trace);
+
+        s.attr('d', function(d) {
+            var r;
+
+            // handle multi-trace graph edit case
+            if(d.ms==='various' || marker.size==='various') r = 3;
+            else r = Plotly.Scatter.isBubble(trace) ?
+                        sizeFn(d.ms) : (marker.size || 6) / 2;
 
             // store the calculated size so hover can use it
             d.mrc = r;
-
-            // in case of "various" etc... set a visible default
-            if(!isNumeric(r) || r<0) r=3;
 
             // turn the symbol into a sanitized number
             var x = drawing.symbolNumber(d.mx || marker.symbol) || 0,
@@ -684,7 +680,7 @@ drawing.pointStyle = function(s, trace) {
 
             if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
             else if(Array.isArray(marker.color)) fillColor = Plotly.Color.defaultLine;
-            else fillColor = marker.color;
+            else fillColor = marker.color || 'rgba(0,0,0,0)';
         }
 
         var p = d3.select(this);
@@ -719,17 +715,18 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
         min = minProp.get(),
         max = maxProp.get();
 
+    // TODO handle this in Colorscale.calc
     if(scl && Array.isArray(colorArray)) {
         if(auto || !isNumeric(min) || !isNumeric(max)) {
             min = Infinity;
             max = -Infinity;
             colorArray.forEach(function(color) {
                 if(isNumeric(color)) {
-                    if(min>color) min = color;
-                    if(max<color) max = color;
+                    if(min > color) min = +color;
+                    if(max < color) max = +color;
                 }
             });
-            if(min>max) {
+            if(min > max) {
                 min = 0;
                 max = 1;
             }
@@ -764,6 +761,8 @@ drawing.textPointStyle = function(s, trace) {
             // the nominal marker size
             // ie 2/1.6 * nominal, bcs some markers are a bit bigger
             r = d.mrc ? (d.mrc/0.8 + 1) : 0;
+
+        fontSize = (isNumeric(fontSize) && fontSize>0) ? fontSize : 0;
 
         p.call(drawing.font,
                 d.tf || trace.textfont.family,
@@ -934,7 +933,7 @@ drawing.bBox = function(node) {
     // cache elements we've already measured so we don't have to
     // remeasure the same thing many times
     var saveNum = node.attributes['data-bb'];
-    if(saveNum) {
+    if(saveNum && saveNum.value) {
         return $.extend({}, savedBBoxes[saveNum.value]);
     }
 

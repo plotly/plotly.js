@@ -11,20 +11,21 @@ exports.Drawing = require('./drawing');
 // then the plot structure
 exports.Plots = require('./graph_obj');
 exports.Axes = require('./axes');
+exports.Colorbar = require('./colorbar');
 exports.Fx = require('./graph_interact');
 // then trace modules - scatter has to come first
 exports.Scatter = require('./scatter');
 exports.Bars = require('./bars');
 exports.Boxes = require('./boxes');
-exports.Contour = require('./contour');
 exports.ErrorBars = require('./errorbars');
 exports.Heatmap = require('./heatmap');
 exports.Histogram = require('./histogram');
+exports.Pie = require('./pie');
+exports.Contour = require('./contour');
 // and extra plot components
 exports.Annotations = require('./annotations');
 exports.Shapes = require('./shapes');
 exports.Legend = require('./legend');
-exports.Colorbar = require('./colorbar');
 exports.ModeBar = require('./modebar');
 exports.Icons = require('../build/ploticon');
 require('../build/plotcss');
@@ -49,6 +50,9 @@ exports.getGraphReference = require('./graph_reference');
 
 // configuration
 exports.Config = require('./config');
+
+// imaging Routines
+exports.Snapshot = require('./snapshot/snapshot');
 
 // promise polyfill, embed rather than requiring dependencies
 require('../../../../shelly/static/js/plugins/promise-1.0.0.min.js');

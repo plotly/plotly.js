@@ -3,7 +3,8 @@
 /* global d3:false */
 
 var Plotly = require('../../plotly'),
-    extractTopojson = require('../lib/topojson-utils').extractTopojson;
+    extractTopojson = require('../lib/topojson-utils').extractTopojson,
+    locationToId = require('../lib/location-utils').locationToId;
 
 var plotScatterGeo = module.exports = {};
 
@@ -12,15 +13,16 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
         marker = trace.marker || {},
         hasLocationData = Array.isArray(trace.locations);
 
-    var N, fromTopojson, features, ids, getLonLat, lonlat, indexOfId;
+    var N, fromTopojson, features, ids, getLonLat, lonlat, locations, indexOfId;
 
     if(hasLocationData) {
-        N = trace.locations.length;
+        locations = trace.locations;
+        N = locations.length;
         fromTopojson = extractTopojson(trace, topojson);
         features = fromTopojson.features;
         ids = fromTopojson.ids;
         getLonLat = function(trace, i) {
-            indexOfId = ids.indexOf(trace.locations[i]);
+            indexOfId = ids.indexOf(locationToId(trace.locationmode, locations[i]));
             if(indexOfId === -1) return;
             return features[indexOfId].properties.centroid;
         };
@@ -73,7 +75,8 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
         topojson = geo.topojson;
 
     // TODO move to more d3-idiomatic pattern (that's work on replot)
-    gScatterGeo.html('');
+    // N.B. html('') does not work in IE11
+    gScatterGeo.selectAll('*').remove();
 
     function handleMouseOver(d) {
         if(!geo.showHover) return;
