@@ -113,7 +113,18 @@ fx.init = function(gd) {
                     fullLayout._lasthover = maindrag;
                     fullLayout._hoversubplot = subplot;
                 })
-                .mouseout(function(evt){
+                .mouseout(function(evt) {
+                /*
+                 * !!! TERRIBLE HACK !!!
+                 * For some reason, a 'mouseout' event is fired in IE on clicks
+                 * on the maindrag container before reaching the 'click' handler.
+                 * This hack bypasses the 'mouseout' handler in IE.
+                 * Note that the 'mouseout' handler is called only when the mouse
+                 * cursor gets lost. Most 'unhover' calls happen from 'mousemove'.
+                 * Without this hack, the 'mouseout' would clear gd._hoverdata
+                 * and the 'click' had no data to show.
+                 */
+                    if(typeof window.navigator.msSaveBlob !== 'undefined') return;
                     fx.unhover(gd,evt);
                 })
                 .click(function(evt){ fx.click(gd,evt); });
