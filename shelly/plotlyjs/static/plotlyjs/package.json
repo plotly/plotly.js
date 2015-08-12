@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "plotly.js library",
   "repository": "",
-  "main": "plotschema/index.html",
   "scripts": {},
   "author": "Plotly amazing team",
   "license": "ISC",
