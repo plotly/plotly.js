@@ -381,8 +381,14 @@ proto.handleGeo = function(ev) {
 };
 
 proto.handleHoverPie = function() {
-    var oldHover = this.graphInfo._fullLayout.hovermode;
-    Plotly.relayout(this.graphInfo, 'hovermode', oldHover ? false : 'closest');
+    var _this = this,
+        oldHover = _this.graphInfo._fullLayout.hovermode;
+
+    Plotly.relayout(
+        _this.graphInfo, 'hovermode', oldHover ? false : 'closest'
+    ).then(function() {
+        _this.updateActiveButton();
+    });
 };
 
 proto.cleanup = function(){
@@ -537,7 +543,7 @@ proto.config = function config() {
         hoverClosestPie: {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
-            val: null,
+            val: 'closest',
             icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleHoverPie
