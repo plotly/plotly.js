@@ -400,11 +400,12 @@ proto.handleGeo = function(ev) {
 
 proto.handleHoverPie = function() {
     var _this = this,
-        oldHover = _this.graphInfo._fullLayout.hovermode;
+        graphInfo = _this.graphInfo,
+        newHover = graphInfo._fullLayout.hovermode ?
+            false :
+            'closest';
 
-    Plotly.relayout(
-        _this.graphInfo, 'hovermode', oldHover ? false : 'closest'
-    ).then(function() {
+    Plotly.relayout(graphInfo, 'hovermode', newHover).then(function() {
         _this.updateActiveButton();
     });
 };
