@@ -57,7 +57,6 @@ function ModeBar (config) {
     config.container.appendChild(this.element);
 
     this.updateActiveButton();
-
 }
 
 var proto = ModeBar.prototype;
@@ -97,6 +96,9 @@ proto.createButton = function (config) {
             config.click.apply(_this, arguments);
         });
 
+    button.setAttribute('data-toggle', config.toggle);
+    if(config.toggle) button.classList.add('active');
+
     button.appendChild(this.createIcon(Plotly.Icons[config.icon]));
 
     return button;
@@ -132,14 +134,29 @@ proto.createIcon = function (thisIcon) {
  * @Param {object} graphInfo plot object containing data and layout
  * @Return {HTMLelement}
  */
-proto.updateActiveButton = function () {
-    var graphInfo = this.graphInfo;
-    this.buttonElements.forEach( function (button) {
+proto.updateActiveButton = function(buttonClicked) {
+    var fullLayout = this.graphInfo._fullLayout,
+        dataAttrClicked = buttonClicked!==undefined ?
+            buttonClicked.getAttribute('data-attr') :
+            null;
+
+    this.buttonElements.forEach(function(button) {
         var thisval = button.getAttribute('data-val') || true,
             dataAttr = button.getAttribute('data-attr'),
-            curval = graphInfo._fullLayout[dataAttr];
+            isToggleButton = button.getAttribute('data-toggle')==='true',
+            button3 = d3.select(button);
 
-        d3.select(button).classed('active', curval===thisval);
+        // Use 'data-toggle' and 'buttonClicked' to toggle buttons
+        // that have no one-to-one equivalent in fullLayout
+        if(isToggleButton) {
+            if(dataAttr === dataAttrClicked) {
+                button3.classed('active', !button3.classed('active'));
+            }
+        }
+        else {
+            button3.classed('active', fullLayout[dataAttr]===thisval);
+        }
+
     });
 };
 
@@ -295,7 +312,7 @@ proto.handleHover3d = function(ev) {
     }
 
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
-        _this.updateActiveButton();
+        _this.updateActiveButton(button);
     });
 
 };
@@ -378,6 +395,7 @@ proto.handleGeo = function(ev) {
         else if(attr === 'hovermode') geo.showHover = !geo.showHover;
     }
 
+    this.updateActiveButton(button);
 };
 
 proto.handleHoverPie = function() {
@@ -506,6 +524,7 @@ proto.config = function config() {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
             val: null,
+            toggle: true,
             icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleHover3d
@@ -528,6 +547,7 @@ proto.config = function config() {
         resetGeo: {
             title: 'Reset',
             attr: 'reset',
+            val: null,
             icon: 'autoscale',
             click: this.handleGeo
         },
@@ -535,6 +555,7 @@ proto.config = function config() {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
             val: null,
+            toggle: true,
             icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleGeo
