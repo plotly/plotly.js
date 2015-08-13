@@ -1,6 +1,7 @@
 var Snapshot = {
     clone: require('./cloneplot'),
-    toSVG: require('./tosvg')
+    toSVG: require('./tosvg'),
+    svgToImg: require('./svgtoimg')
 };
 
 module.exports = Snapshot;
