@@ -34,10 +34,12 @@
     "promise": "6.1.0",
     "right-now": "^1.0.0",
     "superscript-text": "^1.0.0",
+    "through2": "^2.0.0",
     "tinycolor2": "1.1.2",
     "topojson": "1.6.19",
     "uglify-js": "~2.4.13",
     "xml2js": "0.4.8"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "browserify": { "transform": [ "./compress_attributes" ] }
 }
