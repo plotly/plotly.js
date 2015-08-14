@@ -30,7 +30,7 @@ exports.ModeBar = require('./modebar');
 exports.Icons = require('../build/ploticon');
 require('../build/plotcss');
 
-// 3D
+// GL3D
 exports.Gl3dLayout = require('./gl3d/defaults/gl3dlayout');
 exports.Gl3dAxes = require('./gl3d/defaults/gl3daxes');
 exports.Scatter3D = require('./gl3d/defaults/scatter3d');
@@ -44,6 +44,12 @@ exports.GeoAxes = require('./geo/defaults/geoaxes');
 exports.ScatterGeo = require('./geo/defaults/scattergeo');
 exports.Choropleth = require('./geo/defaults/choropleth');
 exports.Geo = require('./geo/geo');
+
+// GL2D
+exports.Gl2dLayout = require('./gl2d/defaults/gl2dlayout');
+exports.Gl2dAxes = require('./gl2d/defaults/gl2daxes');
+exports.ScatterGl = require('./gl2d/defaults/scattergl');
+exports.Scene2D = require('./gl2d/scene2d');
 
 // graph reference
 exports.getGraphReference = require('./graph_reference');
