@@ -48,9 +48,9 @@ function svgToImg(opts) {
         ev.emit('success', imgData);
     };
 
-    img.onerror = function() {
+    img.onerror = function(err) {
         DOMURL.revokeObjectURL(url);
-        return ev.emit('error', 'Image failed on load');
+        return ev.emit('error', err);
     };
 
     img.src = url;
