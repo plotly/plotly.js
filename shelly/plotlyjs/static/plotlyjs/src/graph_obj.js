@@ -1351,6 +1351,7 @@ plots.supplyDefaults = function(gd) {
         else if(plots.traceIs(fullTrace, 'gl3d')) newFullLayout._hasGL3D = true;
         else if(plots.traceIs(fullTrace, 'geo')) newFullLayout._hasGeo = true;
         else if(plots.traceIs(fullTrace, 'pie')) newFullLayout._hasPie = true;
+        else if(plots.traceIs(fullTrace, 'gl2d')) newFullLayout._hasGL2D = true;
         else if('r' in fullTrace) newFullLayout._hasPolar = true;
 
         module = fullTrace._module;
@@ -1622,7 +1623,11 @@ plots.layoutAttributes = {
     _hasPie: {
         type: 'boolean',
         dflt: false
-    }
+    },
+    _hasGL2D: {
+        type: 'boolean',
+        dflt: false
+    },
 };
 
 plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
@@ -1662,6 +1667,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('_hasGL3D');
     coerce('_hasGeo');
     coerce('_hasPie');
+    coerce('_hasGL2D');
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
