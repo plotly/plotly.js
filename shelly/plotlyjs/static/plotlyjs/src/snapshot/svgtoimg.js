@@ -4,7 +4,7 @@ var EventEmitter = require('events').EventEmitter;
 
 function svgToImg(opts) {
 
-    var ev = new EventEmitter();
+    var ev = opts.emitter ? opts.emitter : new EventEmitter();
 
     var Image = window.Image;
     var Blob = window.Blob;
