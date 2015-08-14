@@ -103,6 +103,10 @@ plots.subplotsRegistry = {
     geo: {
         attr: 'geo',
         idRegex: /^geo[0-9]*$/
+    },
+    gl2d: {
+        attr: 'scene2d',
+        idRegex: /^scene2d[0-9]*$/
     }
 };
 
@@ -645,6 +649,8 @@ Plotly.plot = function(gd, data, layout, config) {
         // ... until subplot of different type play better together
         if(gd._fullLayout._hasGeo) plotGeo(gd);
 
+        if(gd._fullLayout._hasGL2D) plotGl2d(gd);
+
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
         for (i = 0; i < calcdata.length; i++) {
@@ -799,6 +805,31 @@ function plotGeo(gd) {
         }
 
         geo.plot(fullGeoData, fullLayout);
+    }
+}
+
+function plotGl2d(gd) {
+    var fullLayout = gd._fullLayout,
+        fullData = gd._fullData,
+        scene2dIds = plots.getSubplotIds(fullLayout, 'gl2d');
+
+    var i, scene2dId, fullScene2dData, scene2d, scene2dOptions;
+
+    for(i = 0; i < scene2dIds.length; i++) {
+        scene2dId = scene2dIds[i];
+        fullScene2dData = plots.getSubplotData(fullData, 'gl2d', scene2dId);
+        scene2d = fullLayout[scene2dId]._scene2d;
+
+        if(scene2d === undefined) {
+            scene2dOptions = {
+                container: gd.querySelector('.gl-container'),
+                id: scene2dId
+            };
+            scene2d = new Plotly.Scene2d(scene2dOptions, fullLayout);
+            fullLayout[scene2dId]._scene2d = scene2d;
+        }
+
+        scene2d.plot(fullScene2dData, fullLayout, gd.layout);
     }
 }
 
@@ -1306,6 +1337,10 @@ plots.attributes = {
         type: 'geoid',
         dflt: 'geo'
     },
+    scene2d: {
+        type: 'scene2did',
+        dflt: 'scene2d'
+    },
     uid: {
         type: 'string',
         dflt: ''
@@ -1480,6 +1515,8 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     if(plots.traceIs(traceOut, 'gl3d')) scene = coerce('scene');
 
     if(plots.traceIs(traceOut, 'geo')) scene = coerce('geo');
+
+    if(plots.traceIs(traceOut, 'gl2d')) scene = coerce('scene2d');
 
     // module-specific attributes --- note: we need to send a trace into
     // the 3D modules to have it removed from the webgl context.
