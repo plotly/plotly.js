@@ -61,7 +61,7 @@ describe('Test Modebar', function() {
         beforeEach( function() {
             modeButtons2d = [
                 ['zoom2d', 'pan2d'],
-                ['zoomIn2d', 'zoomOut2d', 'autoScale2d'],
+                ['zoomIn2d', 'zoomOut2d', 'resetScale2d', 'autoScale2d'],
                 ['hoverClosest2d', 'hoverCompare2d']
             ];
 
