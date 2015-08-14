@@ -391,6 +391,29 @@ proto.cleanup = function(){
     if (modebarParent) modebarParent.removeChild(this.element);
 };
 
+proto.toImage = function() {
+    var format = 'png';
+    var ev = Plotly.Snapshot.toImage(this.graphInfo, {format: format});
+
+    var filename = this.graphInfo.fn || "newplot";
+    filename += '.' + format;
+
+    ev.on('success', function(result) {
+        var downloadLink = document.createElement("a");
+        downloadLink.href = result;
+        downloadLink.download = filename; // only supported by FF and Chrome
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    });
+
+    ev.on('error', function (err) {
+        Plotly.Lib.notifier('Sorry there was a problem downloading your ' + format);
+        console.error(err);
+    });
+};
+
 /**
  *
  * @Property config specification hash of button parameters
@@ -454,6 +477,11 @@ proto.config = function config() {
             icon: 'tooltip_compare',
             gravity: 'ne',
             click: this.handleCartesian
+        },
+        toImage: {
+            title: 'download plot as a png',
+            icon: 'camera-retro',
+            click: this.toImage
         },
         // gl3d
         zoom3d: {
