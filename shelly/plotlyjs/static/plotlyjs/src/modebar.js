@@ -89,8 +89,8 @@ proto.createButton = function (config) {
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
 
-    button.setAttribute('data-attr', config.attr);
-    button.setAttribute('data-val', config.val);
+    if (config.attr !== undefined) button.setAttribute('data-attr', config.attr);
+    if (config.val !== undefined) button.setAttribute('data-val', config.val);
     button.setAttribute('data-title', config.title);
     button.setAttribute('data-gravity', config.gravity || 'n');
     button.addEventListener('click', function () {
