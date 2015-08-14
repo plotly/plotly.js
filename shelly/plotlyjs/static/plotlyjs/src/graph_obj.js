@@ -640,7 +640,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
-        if(gd._fullLayout._hasGL3D) plot3D(gd);
+        if(gd._fullLayout._hasGL3D) plotGl3d(gd);
 
         // ... until subplot of different type play better together
         if(gd._fullLayout._hasGeo) plotGeo(gd);
@@ -733,7 +733,7 @@ Plotly.plot = function(gd, data, layout, config) {
         donePlotting : Promise.resolve();
 };
 
-function plot3D(gd) {
+function plotGl3d(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData,
         sceneIds = plots.getSubplotIds(fullLayout, 'gl3d');
