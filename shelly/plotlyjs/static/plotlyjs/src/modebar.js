@@ -397,6 +397,12 @@ proto.toImage = function() {
     var format = 'png';
     var _this = this;
 
+    if ( Plotly.Lib.isIE() ) {
+        Plotly.Lib.notifier('Snapshotting is unavailable in Internet Explorer. ' +
+                            'Consider Firefox or Chrome', 'long');
+        return;
+    }
+
     if (this._snapshotInProgress) {
         Plotly.Lib.notifier('Snapshotting is still in progress - please hold', 'long');
         return;
@@ -410,7 +416,7 @@ proto.toImage = function() {
     var filename = this.graphInfo.fn || "newplot";
     filename += '.' + format;
 
-    ev.on('success', function(result) {
+    ev.once('success', function(result) {
 
         _this._snapshotInProgress = false;
 
@@ -421,13 +427,17 @@ proto.toImage = function() {
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
+
+        ev.clean();
     });
 
-    ev.on('error', function (err) {
+    ev.once('error', function (err) {
         _this._snapshotInProgress = false;
 
         Plotly.Lib.notifier('Sorry there was a problem downloading your ' + format, 'long');
         console.error(err);
+
+        ev.clean();
     });
 };
 

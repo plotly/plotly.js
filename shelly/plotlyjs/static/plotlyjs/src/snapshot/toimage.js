@@ -47,9 +47,7 @@ function toImage(gd, opts) {
             });
 
             ev.clean = function() {
-                [clonedGd, canvas, canvasContainer].forEach( function (elem) {
-                    if (elem) elem.remove();
-                });
+                if (clonedGd) clonedGd.remove();
             };
 
         }, delay);
