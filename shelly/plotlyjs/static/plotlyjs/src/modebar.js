@@ -19,6 +19,7 @@ function ModeBar (config) {
 
     var _this = this;
 
+    this._snapshotInProgress = false;
     this.graphInfo = config.graphInfo;
     this.element = document.createElement('div');
 
@@ -392,13 +393,27 @@ proto.cleanup = function(){
 };
 
 proto.toImage = function() {
+
     var format = 'png';
+    var _this = this;
+
+    if (this._snapshotInProgress) {
+        Plotly.Lib.notifier('Snapshotting is still in progress - please hold', 'long');
+        return;
+    }
+
+    this._snapshotInProgress = true;
+    Plotly.Lib.notifier('Taking snapshot - this may take a few seconds', 'long');
+
     var ev = Plotly.Snapshot.toImage(this.graphInfo, {format: format});
 
     var filename = this.graphInfo.fn || "newplot";
     filename += '.' + format;
 
     ev.on('success', function(result) {
+
+        _this._snapshotInProgress = false;
+
         var downloadLink = document.createElement("a");
         downloadLink.href = result;
         downloadLink.download = filename; // only supported by FF and Chrome
@@ -409,7 +424,9 @@ proto.toImage = function() {
     });
 
     ev.on('error', function (err) {
-        Plotly.Lib.notifier('Sorry there was a problem downloading your ' + format);
+        _this._snapshotInProgress = false;
+
+        Plotly.Lib.notifier('Sorry there was a problem downloading your ' + format, 'long');
         console.error(err);
     });
 };
