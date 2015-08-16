@@ -131,7 +131,7 @@ fx.init = function(gd) {
                  * cursor gets lost. Most 'unhover' calls happen from 'mousemove':
                  * these are not affected by the hack below.
                  */
-                    if(typeof window.navigator.msSaveBlob !== 'undefined') return;
+                    if( Plotly.Lib.isIE() ) return;
 
                     fx.unhover(gd,evt);
                 })
