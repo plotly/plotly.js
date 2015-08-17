@@ -74,9 +74,14 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         );
     }
 
-    gChoropleth.append('g')
-        .data(choroplethData)
-        .attr('class', 'trace choropleth')
+    var gChoroplethTraces = gChoropleth
+        .selectAll('g.trace.scatter')
+        .data(choroplethData);
+
+    gChoroplethTraces.enter().append('g')
+            .attr('class', 'trace choropleth');
+
+    gChoroplethTraces
         .each(function(trace) {
             if(trace.visible !== true) return;
 

@@ -63,36 +63,13 @@ heatmap.attributes = {
 };
 
 heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
+    var isContour = Plotly.Plots.traceIs(traceOut, 'contour');
+
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
     }
 
-    function isValidZ(z) {
-        var allRowsAreArrays = true,
-            oneRowIsFilled = false,
-            noNumbers = true;
-
-        var zi;
-
-        if (!(Array.isArray(z) && z.length)) return false;
-
-        for (var i = 0; i < z.length; i++) {
-            zi = z[i];
-            if (!Array.isArray(zi)) allRowsAreArrays = false;
-            if (!oneRowIsFilled && zi.length) oneRowIsFilled = true;
-            for(var j = 0; j < zi.length; j++) {
-            // Check that there is at least one numeric element...
-                if(isNumeric(zi[j])) {
-                    noNumbers = false;
-                    break;
-                }
-            }
-        }
-        // ... otherwise set array as invalid:
-        if(noNumbers) return false;
-
-        return (allRowsAreArrays && oneRowIsFilled);
-    }
+    if(!isContour) coerce('zsmooth');
 
     if(Plotly.Plots.traceIs(traceOut, 'histogram')) {
         // x, y, z, marker.color, and x0, dx, y0, dy are coerced
@@ -102,41 +79,132 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         if(traceOut.visible === false) return;
     }
     else {
-        var z = coerce('z');
-        if(!isValidZ(z)) {
+        var len = heatmap.handleXYZDefaults(traceIn, traceOut, coerce);
+        if(!len) {
             traceOut.visible = false;
             return;
         }
 
-        coerce('transpose');
-
-        var x = coerce('x'),
-            xtype = x ? coerce('xtype', 'array') : 'scaled';
-        if(xtype==='scaled') {
-            coerce('x0');
-            coerce('dx');
-        }
-
-        var y = coerce('y'),
-            ytype = y ? coerce('ytype', 'array') : 'scaled';
-        if(ytype==='scaled') {
-            coerce('y0');
-            coerce('dy');
-        }
-
-        coerce('connectgaps');
         coerce('text');
-    }
 
-    var isContour = Plotly.Plots.traceIs(traceOut, 'contour');
+        var hasColumns = heatmap.hasColumns(traceOut);
+
+        if(!hasColumns) coerce('transpose');
+        coerce('connectgaps', hasColumns &&
+            (isContour || traceOut.zsmooth !== false));
+    }
 
     if(!isContour || (traceOut.contours || {}).coloring!=='none') {
         Plotly.Colorscale.handleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
         );
     }
+};
 
-    if(!isContour) coerce('zsmooth');
+heatmap.handleXYZDefaults = function(traceIn, traceOut, coerce) {
+    var z = coerce('z');
+    var x, y;
+
+    if(z===undefined || !z.length) return 0;
+
+    if(heatmap.hasColumns(traceIn)) {
+        x = coerce('x');
+        y = coerce('y');
+
+        // column z must be accompanied by 'x' and 'y' arrays
+        if(!x || !y) return 0;
+    }
+    else {
+        x = coordDefaults('x', coerce);
+        y = coordDefaults('y', coerce);
+
+        // TODO put z validation elsewhere
+        if(!isValidZ(z)) return 0;
+    }
+
+    return traceOut.z.length;
+};
+
+function coordDefaults(coordStr, coerce) {
+    var coord = coerce(coordStr),
+        coordType = coord ?
+            coerce(coordStr + 'type', 'array') :
+            'scaled';
+
+    if(coordType === 'scaled') {
+        coerce(coordStr + '0');
+        coerce('d' + coordStr);
+    }
+
+    return coord;
+}
+
+function isValidZ(z) {
+    var allRowsAreArrays = true,
+        oneRowIsFilled = false,
+        hasOneNumber = false,
+        zi;
+
+    // without this step:
+    // hasOneNumber = false breaks contour but not heatmap
+    // allRowsAreArrays = false breaks contour but not heatmap
+    // oneRowIsFilled = false breaks both
+
+    for(var i = 0; i < z.length; i++) {
+        zi = z[i];
+        if(!Array.isArray(zi)) {
+            allRowsAreArrays = false;
+            break;
+        }
+        if(zi.length > 0) oneRowIsFilled = true;
+        for(var j = 0; j < zi.length; j++) {
+            if(isNumeric(zi[j])) {
+                hasOneNumber = true;
+                break;
+            }
+        }
+    }
+
+    return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
+}
+
+heatmap.hasColumns = function(trace) {
+    return !Array.isArray(trace.z[0]);
+};
+
+heatmap.convertColumnXYZ = function(trace) {
+    var xCol = trace.x,
+        yCol = trace.y,
+        zCol = trace.z,
+        textCol = trace.text,
+        colLen = Math.min(xCol.length, yCol.length, zCol.length),
+        hasColumnText = (textCol!==undefined && !Array.isArray(textCol[0]));
+
+    if(colLen < xCol.length) xCol = xCol.slice(0, colLen);
+    if(colLen < yCol.length) yCol = yCol.slice(0, colLen);
+
+    var xColdv = Plotly.Lib.distinctVals(xCol),
+        x = xColdv.vals,
+        yColdv = Plotly.Lib.distinctVals(yCol),
+        y = yColdv.vals,
+        z = Plotly.Lib.init2dArray(y.length, x.length);
+
+    var ix, iy, text;
+
+    if(hasColumnText) text = Plotly.Lib.init2dArray(y.length, x.length);
+
+    for(var i = 0; i < colLen; i++) {
+        ix = Plotly.Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
+        iy = Plotly.Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
+
+        z[iy][ix] = zCol[i];
+        if(hasColumnText) text[iy][ix] = textCol[i];
+    }
+
+    trace.x = x;
+    trace.y = y;
+    trace.z = z;
+    if(hasColumnText) trace.text = text;
 };
 
 heatmap.calc = function(gd, trace) {
@@ -174,27 +242,16 @@ heatmap.calc = function(gd, trace) {
         z = binned.z;
     }
     else {
+        if(heatmap.hasColumns(trace)) heatmap.convertColumnXYZ(trace);
+
         x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
-        x0 = trace.x0||0;
-        dx = trace.dx||1;
-
         y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
-        y0 = trace.y0||0;
-        dy = trace.dy||1;
+        x0 = trace.x0 || 0;
+        dx = trace.dx || 1;
+        y0 = trace.y0 || 0;
+        dy = trace.dy || 1;
 
-        if(trace.transpose) {
-            var maxcols = Plotly.Lib.aggNums(Math.max,0,
-                    trace.z.map(function(r){return r.length;}));
-            z = [];
-            for(var c = 0; c < maxcols; c++) {
-                var newrow = [];
-                for(var r = 0; r < trace.z.length; r++) {
-                    newrow.push(cleanZ(trace.z[r][c]));
-                }
-                z.push(newrow);
-            }
-        }
-        else z = trace.z.map(function(row){return row.map(cleanZ); });
+        z = heatmap.cleanZ(trace);
 
         if(isContour || trace.connectgaps) {
             trace._emptypoints = findEmpties(z);
@@ -260,12 +317,39 @@ heatmap.calc = function(gd, trace) {
     return [cd0];
 };
 
-function cleanZ(v) {
-    if(!v && v!==0) return undefined;
-    v = Number(v);
-    if(isNaN(v)) return undefined;
-    return v;
+function cleanZvalue(v) {
+    if(!isNumeric(v)) return undefined;
+    return +v;
 }
+
+heatmap.cleanZ = function(trace) {
+    var zOld = trace.z;
+
+    var rowlen, collen, getCollen, old2new, i, j;
+
+    if(trace.transpose) {
+        rowlen = 0;
+        for(i = 0; i < zOld.length; i++) rowlen = Math.max(rowlen, zOld[i].length);
+        if(rowlen === 0) return false;
+        getCollen = function(zOld) { return zOld.length; };
+        old2new = function(zOld, i, j) { return zOld[j][i]; };
+    }
+    else {
+        rowlen = zOld.length;
+        getCollen = function(zOld, i) { return zOld[i].length; };
+        old2new = function(zOld, i, j) { return zOld[i][j]; };
+    }
+
+    var zNew = new Array(rowlen);
+
+    for(i = 0; i < rowlen; i++) {
+        collen = getCollen(zOld, i);
+        zNew[i] = new Array(collen);
+        for(j = 0; j < collen; j++) zNew[i][j] = cleanZvalue(old2new(zOld, i, j));
+    }
+
+    return zNew;
+};
 
 function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     var arrayOut = [],
