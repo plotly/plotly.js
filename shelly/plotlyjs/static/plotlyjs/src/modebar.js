@@ -399,7 +399,7 @@ proto.toImage = function() {
 
     if ( Plotly.Lib.isIE() ) {
         Plotly.Lib.notifier('Snapshotting is unavailable in Internet Explorer. ' +
-                            'Consider Firefox or Chrome', 'long');
+                            'Consider exporting your images using the Plotly Cloud', 'long');
         return;
     }
 
