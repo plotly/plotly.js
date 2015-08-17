@@ -507,7 +507,7 @@ proto.config = function config() {
         },
         toImage: {
             title: 'download plot as a png',
-            icon: 'camera-retro',
+            icon: 'camera',
             click: this.toImage
         },
         // gl3d
@@ -548,7 +548,7 @@ proto.config = function config() {
         resetCameraLastSave3d: {
             title: 'Reset camera to last save',
             attr: 'resetLastSave',
-            icon: 'camera-retro',
+            icon: 'movie',
             click: this.handleCamera3d
         },
         hoverClosest3d: {
