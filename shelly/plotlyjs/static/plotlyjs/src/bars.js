@@ -93,7 +93,7 @@ bars.layoutAttributes = {
         min: 0,
         max: 1,
         description: [
-            'Sets the gap [in plot fraction] between bars of',
+            'Sets the gap (in plot fraction) between bars of',
             'adjacent location coordinates.'
         ].join(' ')
     },
@@ -103,7 +103,7 @@ bars.layoutAttributes = {
         max: 1,
         dflt: 0,
         description: [
-            'Sets the gap [in plot fraction] between bars of',
+            'Sets the gap (in plot fraction) between bars of',
             'the same location coordinate.'
         ].join(' ')
     }

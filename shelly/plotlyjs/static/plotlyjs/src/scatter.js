@@ -80,7 +80,7 @@ scatter.attributes = {
             type: 'number',
             min: 0,
             dflt: 2,
-            description: 'Sets the line width [in px]'
+            description: 'Sets the line width (in px)'
         },
         shape: {
             type: 'enumerated',
@@ -147,7 +147,7 @@ scatter.attributes = {
                 'Adding 200 is equivalent to appending *-dot* to a symbol name.',
                 'Adding 300 is equivalent to appending *-open-dot*',
                 'or *dot-open* to a symbol name.'
-            ]
+            ].join(' ')
         },
         opacity: {
             type: 'number',
@@ -161,7 +161,7 @@ scatter.attributes = {
             min: 0,
             dflt: 6,
             arrayOk: true,
-            description: 'Sets the marker size [in px].'
+            description: 'Sets the marker size (in px).'
         },
         color: {
             type: 'color',
@@ -192,7 +192,7 @@ scatter.attributes = {
             dflt: 0,
             description: [
                 'Has only an effect if `marker.size` is set to a numerical array.',
-                'Sets the minimum size [in px] of the rendered marker points.'
+                'Sets the minimum size (in px) of the rendered marker points.'
             ].join(' ')
         },
         sizemode: {
@@ -272,7 +272,7 @@ scatter.attributes = {
                 type: 'number',
                 min: 0,
                 arrayOk: true,
-                description: 'Sets the width [in px] of the lines bounding the marker points'
+                description: 'Sets the width (in px) of the lines bounding the marker points'
             },
             colorscale: {
                 type: 'colorscale',
