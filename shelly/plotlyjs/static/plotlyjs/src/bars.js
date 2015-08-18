@@ -74,7 +74,7 @@ bars.layoutAttributes = {
             'With *group*, the bars are plotted next to one another',
             'centered around the shared location.',
             'With *overlay*, the bars are plotted over one another,',
-            'you might need to an *opacity* to see them in full.'
+            'you might need to an *opacity* to see multiple bars.'
         ].join(' ')
     },
     barnorm: {
