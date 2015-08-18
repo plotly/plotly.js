@@ -807,27 +807,23 @@ function plotGeo(gd) {
 
 function plotGl2d(gd) {
     var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
-        scene2dIds = plots.getSubplotIds(fullLayout, 'gl2d');
+        fullData = gd._fullData;
 
-    var i, scene2dId, fullScene2dData, scene2d, scene2dOptions;
+    // TODO add support for gl2d subplots
 
-    for(i = 0; i < scene2dIds.length; i++) {
-        scene2dId = scene2dIds[i];
-        fullScene2dData = plots.getSubplotData(fullData, 'gl2d', scene2dId);
-        scene2d = fullLayout[scene2dId]._scene2d;
+    var scene2d = fullLayout._scene2d;
 
-        if(scene2d === undefined) {
-            scene2dOptions = {
+    if(scene2d === undefined) {
+        scene2d = new Plotly.Scene2D(
+            {
                 container: gd.querySelector('.gl-container'),
-                id: scene2dId
-            };
-            scene2d = new Plotly.Scene2d(scene2dOptions, fullLayout);
-            fullLayout[scene2dId]._scene2d = scene2d;
-        }
-
-        scene2d.plot(fullScene2dData, fullLayout, gd.layout);
+                id: 'scene2dxy'
+            },
+            fullLayout
+        );
     }
+
+    scene2d.plot(fullData, fullLayout);
 }
 
 function plotPolar(gd, data, layout) {
