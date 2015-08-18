@@ -72,7 +72,7 @@ axes.layoutAttributes = {
             'a starting position `tick0` and a tick step `dtick`',
             '(*linear* is the default value if `tick0` and `dtick` are provided).',
             'If *array*, the placement of the ticks is set via `tickvals`',
-            'and their displayed text via `ticktext.',
+            'and the tick text is `ticktext`.',
             '(*array* is the default value if `tickvals` is provided).'
         ].join(' ')
     },
@@ -82,7 +82,7 @@ axes.layoutAttributes = {
         dflt: 0,
         description: [
             'Sets the number of ticks.',
-            'Has only an effect if `tickmode` is set to *auto*.'
+            'Has an effect only if `tickmode` is set to *auto*.'
         ].join(' ')
     },
     tick0: {
@@ -100,19 +100,22 @@ axes.layoutAttributes = {
     },
     tickvals: {
         type: 'data_array',
-        description: 'Sets the values at which ticks on this axis appear.'
+        description: ['Sets the values at which ticks on this axis appear.',
+            'Only has an effect if `tickmode` is set to *array*.',
+            'Used with `ticktext`.'].join(' ')
     },
     ticktext: {
         type: 'data_array',
         description: [
-            'Sets the text displayed at the ticks position via `tickvals`.'
-        ].join(' ')
+            'Sets the text displayed at the ticks position via `tickvals`.',
+            'Only has an effect if `tickmode` is set to *array*.',
+            'Used with `ticktext`.'].join(' ')
     },
     ticks: {
         type: 'enumerated',
         values: ['outside', 'inside', ''],
         description: [
-            'Determines whether ticks are drawn or not and whether.',
+            'Determines whether ticks are drawn or not.',
             'If **, this axis\' ticks are not drawn.',
             'If *outside* (*inside*), this axis\' are drawn outside (inside)',
             'the axis lines.'
@@ -125,11 +128,11 @@ axes.layoutAttributes = {
         description: [
             'Determines if the axis lines or/and ticks are mirrored to',
             'the opposite side of the plotting area.',
-            'If *true*, the axis lines are mirrored',
-            'If *ticks*, the axis lines and ticks are mirrored',
-            'If *false*, mirroring is disable',
-            'If *all*, axis lines are mirrored on all shared-axes subplots',
-            'If *allticks, axis lines and ticks are mirrored',
+            'If *true*, the axis lines are mirrored.',
+            'If *ticks*, the axis lines and ticks are mirrored.',
+            'If *false*, mirroring is disable.',
+            'If *all*, axis lines are mirrored on all shared-axes subplots.',
+            'If *allticks*, axis lines and ticks are mirrored',
             'on all shared-axes subplots'
         ].join(' ')
     },
@@ -165,7 +168,7 @@ axes.layoutAttributes = {
         description: [
             'Sets the angle of the tick labels with respect to the horizontal.',
             'For example, a `tickangle` of -90 draws the tick labels',
-            'to bottom to top.'
+            'vertically.'
         ].join(' ')
     },
     tickprefix: {
@@ -201,9 +204,9 @@ axes.layoutAttributes = {
         dflt: 'all',
         description: [
             'If *all*, all exponents are shown besides their significands.',
-            'If *first*, only the exponent of the first tick is shown',
-            'If *last*, only the exponent of the last tick is shown',
-            'If *none*, no exponents appears.'
+            'If *first*, only the exponent of the first tick is shown.',
+            'If *last*, only the exponent of the last tick is shown.',
+            'If *none*, no exponents appear.'
         ].join(' ')
     },
     exponentformat: {
@@ -212,13 +215,13 @@ axes.layoutAttributes = {
         dflt: 'B',
         description: [
             'Determines a formatting rule for the tick exponents.',
-            'For example, use the number 1,000,000,000',
-            'If *none*, it appears as 1,000,000,000',
-            'If *e*, 1e+9',
-            'If *E*, 1E+9',
-            'If *power*, 1x10^9 (with 9 in a super script)',
-            'If *SI*, 1G',
-            'If *B*, 1B'
+            'For example, consider the number 1,000,000,000.',
+            'If *none*, it appears as 1,000,000,000.',
+            'If *e*, 1e+9.',
+            'If *E*, 1E+9.',
+            'If *power*, 1x10^9 (with 9 in a super script).',
+            'If *SI*, 1G.',
+            'If *B*, 1B.'
         ].join(' ')
     },
     tickformat: {
@@ -262,7 +265,7 @@ axes.layoutAttributes = {
     showgrid: {
         type: 'boolean',
         description: [
-            'Determines whether or not grid line are drawn.',
+            'Determines whether or not grid lines are drawn.',
             'If *true*, the grid lines are drawn at every tick mark.'
         ].join(' ')
     },
@@ -281,7 +284,7 @@ axes.layoutAttributes = {
         type: 'boolean',
         description: [
             'Determines whether or not a line is drawn at along the 0 value',
-            'of this axis',
+            'of this axis.',
             'If *true*, the zero line is drawn on top of the grid lines.'
         ].join(' ')
     },
@@ -301,7 +304,7 @@ axes.layoutAttributes = {
     anchor: {
         type: 'enumerated',
         description: [
-            'If set to an opposite-letter axis id, this axis is bound to',
+            'If set to an opposite-letter axis id (e.g. `xaxis2`, `yaxis`), this axis is bound to',
             'the corresponding opposite-letter axis.',
             'If set to *free*, this axis\' position is determined by `position`.'
         ].join(' ')
@@ -313,7 +316,7 @@ axes.layoutAttributes = {
         description: [
             'Determines whether a x (y) axis is positioned',
             'at the *bottom* (*left*) or *top* (*right*)',
-            'of the plotting area'
+            'of the plotting area.'
         ].join(' ')
     },
     // overlaying: not used directly, just put here for reference
@@ -339,7 +342,7 @@ axes.layoutAttributes = {
         description: [
             'Sets the position of this axis in the plotting space',
             '(in normalized coordinates).',
-            'Has an only an effect if `anchor` is set to *free*.'
+            'Only has an effect if `anchor` is set to *free*.'
         ].join(' ')
     }
 };
