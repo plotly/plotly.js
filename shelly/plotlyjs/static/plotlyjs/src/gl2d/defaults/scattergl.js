@@ -10,4 +10,6 @@ Plotly.Plots.register(ScatterGl, 'scattergl', ['gl2d']);
 
 ScatterGl.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
 
+    console.log('Supplying the scattergl defaults')
+
 };

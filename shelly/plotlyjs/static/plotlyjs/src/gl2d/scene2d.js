@@ -2,6 +2,8 @@
 
 function Scene2D(options, fullLayout) {
 
+    console.log('Instantiating Scene2d')
+
     return null;
 }
 
@@ -11,4 +13,5 @@ var proto = Scene2D.prototype;
 
 proto.plot = function(fullData, fullLayout) {
 
+    console.log('Calling Scene2d.plot')
 };
