@@ -60,7 +60,7 @@ annotations.layoutAttributes = {
         blankOk: false,
         description: [
             'Sets the text associated with this annotation.',
-            'Plotly uses a subset of HTML tags to do things like ',
+            'Plotly uses a subset of HTML tags to do things like',
             'newline (<br>), bold (<b></b>), italics (<i></i>),',
             'hyperlinks (<a href=\'...\'></a>). Tags <em>, <sup>, <sub>',
             '<span> are also supported.'
@@ -71,7 +71,7 @@ annotations.layoutAttributes = {
         dflt: 0,
         description: [
             'Sets the angle at which the `text` is drawn',
-            'which respect to the horizontal.'
+            'with respect to the horizontal.'
         ].join(' ')
     },
     font: {
@@ -83,7 +83,7 @@ annotations.layoutAttributes = {
         min: 0,
         max: 1,
         dflt: 1,
-        description: 'Sets the opacity of annotation (text + arrow).'
+        description: 'Sets the opacity of the annotation (text + arrow).'
     },
     align: {
         type: 'enumerated',
@@ -99,7 +99,7 @@ annotations.layoutAttributes = {
     bgcolor: {
         type: 'color',
         dflt: 'rgba(0,0,0,0)',
-        description: 'Sets the background color of this annotation.'
+        description: 'Sets the background color of the annotation.'
     },
     bordercolor: {
         type: 'color',
@@ -131,7 +131,7 @@ annotations.layoutAttributes = {
         type: 'boolean',
         dflt: true,
         description: [
-            'Determines whether or not this annotation is drawn with an arrow.',
+            'Determines whether or not the annotation is drawn with an arrow.',
             'If true, `text` is placed near the arrow\'s tail.',
             'If false, `text` lines up with the `x` and `y` provided.'
         ].join(' ')
@@ -183,7 +183,7 @@ annotations.layoutAttributes = {
             'Sets the annotation\'s x coordinate axis.',
             'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
             'refers to an x coordinate',
-            'If set to *paper*, the `x` position refers ton distance from',
+            'If set to *paper*, the `x` position refers to the distance from',
             'the left side of the plotting area in normalized coordinates',
             'where 0 (1) corresponds to the left (right) side.'
         ].join(' ')
@@ -214,7 +214,7 @@ annotations.layoutAttributes = {
             'Sets the annotation\'s y coordinate axis.',
             'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
             'refers to an y coordinate',
-            'If set to *paper*, the `y` position refers ton distance from',
+            'If set to *paper*, the `y` position refers to the distance from',
             'the bottom of the plotting area in normalized coordinates',
             'where 0 (1) corresponds to the bottom (top).'
         ].join(' ')
