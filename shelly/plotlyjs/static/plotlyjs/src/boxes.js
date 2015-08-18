@@ -24,7 +24,7 @@ boxes.attributes = {
         'is drawn',
         'If no `x` (`y`) array is provided, a single box is drawn.',
         'That box position is then positioned with',
-        'with `name` or with `x0` (`y0`) is provided.',
+        'with `name` or with `x0` (`y0`) if provided.',
         'Each box spans from quartile 1 (Q1) to quartile 3 (Q3).',
         'The second quartile (Q2) is marked by a line inside the box.',
         'By default, the whiskers correspond to the box\' edges',
@@ -79,7 +79,7 @@ boxes.attributes = {
         dflt: false,
         description: [
             'With true, the mean of the box(es)\' underlying distribution is',
-            'drawn as dashed line inside the box(es).',
+            'drawn as a dashed line inside the box(es).',
             'With *sd* the standard deviation is also drawn.'
         ].join(' ')
     },
@@ -135,13 +135,13 @@ boxes.attributes = {
                 {arrayOk: false, dflt: 0}),
             outliercolor: {
                 type: 'color',
-                description: 'Sets the line color of the outlier sample points.'
+                description: 'Sets the border line color of the outlier sample points.'
             },
             outlierwidth: {
                 type: 'number',
                 min: 0,
                 dflt: 1,
-                description: 'Sets the line width (in px) of the outlier sample points.'
+                description: 'Sets the border line width (in px) of the outlier sample points.'
             }
         }
     },
@@ -171,7 +171,7 @@ boxes.layoutAttributes = {
             'With *group*, the boxes are plotted next to one another',
             'centered around the shared location.',
             'With *overlay*, the boxes are plotted over one another,',
-            'you might need to an *opacity* to see them in full.'
+            'you might need to set *opacity* to see them multiple boxes.'
         ].join(' ')
     },
     boxgap: {
