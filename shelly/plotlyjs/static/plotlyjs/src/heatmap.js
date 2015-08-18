@@ -59,9 +59,9 @@ heatmap.attributes = {
         values: ['array', 'scaled'],
         description: [
             'If *array*, the heatmap\'s x coordinates are given by *x*',
-            '(the default behavior when `x` is provided)',
+            '(the default behavior when `x` is provided).',
             'If *scaled*, the heatmap\'s x coordinates are given by *x0* and *dx*',
-            '(the default behavior when `x` is not provided)'
+            '(the default behavior when `x` is not provided).'
         ].join(' ')
     },
     ytype: {
