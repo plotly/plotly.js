@@ -47,7 +47,7 @@ module.exports = {
         }),
         eye: extendFlat(makeVector(1.25, 1.25, 1.25), {
             description: [
-                'Sets the (x,y,z) components of the \'eye\' camera vector',
+                'Sets the (x,y,z) components of the \'eye\' camera vector.',
                 'This vector determines the view point about the origin',
                 'of this scene.'
             ].join(' ')
@@ -69,12 +69,12 @@ module.exports = {
         dflt: 'auto',
         description: [
             'If *cube*, this scene\'s axes are drawn as a cube,',
-            'regardless of the axes\' ranges',
+            'regardless of the axes\' ranges.',
             'If *data*, this scene\'s axes are drawn',
-            'in proportion with the axes\' ranges',
+            'in proportion with the axes\' ranges.',
             'If *manual*, this scene\'s axes are drawn',
             'in proportion with the input of *aspectratio*',
-            '(the default behavior if *aspectratio* is provided)',
+            '(the default behavior if *aspectratio* is provided).',
             'If *auto*, this scene\'s axes are drawn',
             'using the results of *data* except when one axis',
             'is more than four times the size of the two others,',
