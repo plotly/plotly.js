@@ -20,7 +20,7 @@ module.exports = {
         description: [
             'Sets the resolution of the base layers.',
             'The values have units of km/mm',
-            'e.g. 110 corresponds to a scale ratio of 1:110,000,000'
+            'e.g. 110 corresponds to a scale ratio of 1:110,000,000.'
         ].join(' ')
     },
     scope: {
@@ -84,7 +84,7 @@ module.exports = {
     landcolor: {
         type: 'color',
         dflt: params.landColor,
-        description: 'Sets the color and the land masses.'
+        description: 'Sets the land mass color.'
     },
     showocean: {
         type: 'boolean',
