@@ -95,6 +95,7 @@ plots.traceIs = function traceIs(traceType, category) {
     return !!_module.categories[category];
 };
 
+// TODO generalize this to include 'cartesian' and 'gl2d' subplots
 plots.subplotsRegistry = {
     gl3d: {
         attr: 'scene',
@@ -103,10 +104,6 @@ plots.subplotsRegistry = {
     geo: {
         attr: 'geo',
         idRegex: /^geo[0-9]*$/
-    },
-    gl2d: {
-        attr: 'scene2d',
-        idRegex: /^scene2d[0-9]*$/
     }
 };
 
@@ -1516,8 +1513,6 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
     if(plots.traceIs(traceOut, 'geo')) scene = coerce('geo');
 
-    if(plots.traceIs(traceOut, 'gl2d')) scene = coerce('scene2d');
-
     // module-specific attributes --- note: we need to send a trace into
     // the 3D modules to have it removed from the webgl context.
     if(visible || scene) {
@@ -1535,7 +1530,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
         if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
-        if(plots.traceIs(traceOut, 'cartesian')) {
+        if(plots.traceIs(traceOut, 'cartesian') || plots.traceIs(traceOut, 'gl2d')) {
             coerce('xaxis');
             coerce('yaxis');
         }
@@ -1664,7 +1659,7 @@ plots.layoutAttributes = {
     _hasGL2D: {
         type: 'boolean',
         dflt: false
-    },
+    }
 };
 
 plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
