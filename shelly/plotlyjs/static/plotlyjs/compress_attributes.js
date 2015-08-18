@@ -1,21 +1,23 @@
 'use strict';
 
 /*
- * Browserify transform to strips meta attributes out of the plotlyjs bundle
+ * Browserify transform that strips meta attributes out of the plotlyjs bundle
  *
  */
 
 var through = require('through2');
 
-var attributeNamesToRemove = ['description'],
+var attributeNamesToRemove = ['description', 'overview'],
     regexStr = '';
 
 // ref: http://www.regexr.com/3bj6p
-attributeNamesToRemove.forEach(function(attr) {
+attributeNamesToRemove.forEach(function(attr, i) {
     // one line string with or without trailing comma
     regexStr += attr + ': \'.*\'' + ',?' + '|';
     // array of strings with or without trailing comma
     regexStr += attr + ': \\[[\\s\\S]*?\\].*' + ',?';
+
+    if(i !== attributeNamesToRemove.length-1) regexStr += '|';
 });
 
 var regex = new RegExp(regexStr, 'g');
