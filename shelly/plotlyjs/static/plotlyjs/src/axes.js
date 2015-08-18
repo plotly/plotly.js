@@ -58,7 +58,8 @@ axes.layoutAttributes = {
     fixedrange: {
         type: 'boolean',
         dflt: false,
-        description: 'Determines whether or not this axis is zoom-able.'
+        description: ['Determines whether or not this axis is zoom-able.',
+            'If true, then zoom is disabled.'].join(' ')
     },
     // ticks
     tickmode: {
