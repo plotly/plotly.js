@@ -136,7 +136,7 @@ proto.createIcon = function (thisIcon) {
  */
 proto.updateActiveButton = function(buttonClicked) {
     var fullLayout = this.graphInfo._fullLayout,
-        dataAttrClicked = buttonClicked!==undefined ?
+        dataAttrClicked = (buttonClicked !== undefined) ?
             buttonClicked.getAttribute('data-attr') :
             null;
 
