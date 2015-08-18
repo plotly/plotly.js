@@ -1686,3 +1686,7 @@ lib.addStyleRule = function(selector, styleString) {
     }
     else console.warn('addStyleRule failed');
 };
+
+lib.isIE = function() {
+    return typeof window.navigator.msSaveBlob !== 'undefined';
+};
