@@ -48,7 +48,7 @@ axes.layoutAttributes = {
             'If *tozero*`, the range extends to 0,',
             'regardless of the input data',
             'If *nonnegative*, the range is non-negative,',
-            'regardless of the input data'
+            'regardless of the input data.'
         ].join(' ')
     },
     range: [
@@ -133,7 +133,7 @@ axes.layoutAttributes = {
             'If *false*, mirroring is disable.',
             'If *all*, axis lines are mirrored on all shared-axes subplots.',
             'If *allticks*, axis lines and ticks are mirrored',
-            'on all shared-axes subplots'
+            'on all shared-axes subplots.'
         ].join(' ')
     },
     ticklen: {
