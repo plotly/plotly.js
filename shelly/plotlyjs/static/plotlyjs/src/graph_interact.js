@@ -131,7 +131,7 @@ fx.init = function(gd) {
                  * cursor gets lost. Most 'unhover' calls happen from 'mousemove':
                  * these are not affected by the hack below.
                  */
-                    if(typeof window.navigator.msSaveBlob !== 'undefined') return;
+                    if( Plotly.Lib.isIE() ) return;
 
                     fx.unhover(gd,evt);
                 })
@@ -1314,6 +1314,7 @@ fx.modeBar = function(gd){
 function chooseModebarButtons(fullLayout) {
     if(fullLayout._hasGL3D) {
         return [
+            ['toImage'],
             ['orbitRotation', 'tableRotation', 'zoom3d', 'pan3d'],
             ['resetCameraDefault3d', 'resetCameraLastSave3d'],
             ['hoverClosest3d']
@@ -1321,6 +1322,7 @@ function chooseModebarButtons(fullLayout) {
     }
     else if(fullLayout._hasGeo) {
         return [
+            ['toImage'],
             ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
             ['hoverClosestGeo']
         ];
@@ -1338,8 +1340,9 @@ function chooseModebarButtons(fullLayout) {
         }
     }
 
-    if(allFixed) buttons = [];
+    if(allFixed) buttons = [['toImage']];
     else buttons = [
+        ['toImage'],
         ['zoom2d', 'pan2d'],
         ['zoomIn2d', 'zoomOut2d', 'resetScale2d', 'autoScale2d']
     ];

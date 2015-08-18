@@ -19,6 +19,7 @@ function ModeBar (config) {
 
     var _this = this;
 
+    this._snapshotInProgress = false;
     this.graphInfo = config.graphInfo;
     this.element = document.createElement('div');
 
@@ -89,8 +90,8 @@ proto.createButton = function (config) {
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
 
-    button.setAttribute('data-attr', config.attr);
-    button.setAttribute('data-val', config.val);
+    if (config.attr !== undefined) button.setAttribute('data-attr', config.attr);
+    if (config.val !== undefined) button.setAttribute('data-val', config.val);
     button.setAttribute('data-title', config.title);
     button.setAttribute('data-gravity', config.gravity || 'n');
     button.addEventListener('click', function () {
@@ -391,6 +392,55 @@ proto.cleanup = function(){
     if (modebarParent) modebarParent.removeChild(this.element);
 };
 
+proto.toImage = function() {
+
+    var format = 'png';
+    var _this = this;
+
+    if ( Plotly.Lib.isIE() ) {
+        Plotly.Lib.notifier('Snapshotting is unavailable in Internet Explorer. ' +
+                            'Consider exporting your images using the Plotly Cloud', 'long');
+        return;
+    }
+
+    if (this._snapshotInProgress) {
+        Plotly.Lib.notifier('Snapshotting is still in progress - please hold', 'long');
+        return;
+    }
+
+    this._snapshotInProgress = true;
+    Plotly.Lib.notifier('Taking snapshot - this may take a few seconds', 'long');
+
+    var ev = Plotly.Snapshot.toImage(this.graphInfo, {format: format});
+
+    var filename = this.graphInfo.fn || "newplot";
+    filename += '.' + format;
+
+    ev.once('success', function(result) {
+
+        _this._snapshotInProgress = false;
+
+        var downloadLink = document.createElement("a");
+        downloadLink.href = result;
+        downloadLink.download = filename; // only supported by FF and Chrome
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        ev.clean();
+    });
+
+    ev.once('error', function (err) {
+        _this._snapshotInProgress = false;
+
+        Plotly.Lib.notifier('Sorry there was a problem downloading your ' + format, 'long');
+        console.error(err);
+
+        ev.clean();
+    });
+};
+
 /**
  *
  * @Property config specification hash of button parameters
@@ -455,6 +505,11 @@ proto.config = function config() {
             gravity: 'ne',
             click: this.handleCartesian
         },
+        toImage: {
+            title: 'download plot as a png',
+            icon: 'camera',
+            click: this.toImage
+        },
         // gl3d
         zoom3d: {
             title: 'Zoom',
@@ -493,7 +548,7 @@ proto.config = function config() {
         resetCameraLastSave3d: {
             title: 'Reset camera to last save',
             attr: 'resetLastSave',
-            icon: 'camera-retro',
+            icon: 'movie',
             click: this.handleCamera3d
         },
         hoverClosest3d: {
