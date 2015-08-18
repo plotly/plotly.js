@@ -13,20 +13,20 @@ module.exports = {
     tick0: {
         type: 'number',
         description: [
-            'Sets the graticule\'s starting tick longitude/latitude'
+            'Sets the graticule\'s starting tick longitude/latitude.'
         ].join(' ')
     },
     dtick: {
         type: 'number',
         description: [
-            'Sets the graticule\'s longitude/latitude tick step'
+            'Sets the graticule\'s longitude/latitude tick step.'
         ].join(' ')
     },
     gridcolor: {
         type: 'color',
         dflt: Plotly.Color.lightLine,
         description: [
-            'Sets the graticule\'s stroke color'
+            'Sets the graticule\'s stroke color.'
         ].join(' ')
     },
     gridwidth: {
@@ -34,7 +34,7 @@ module.exports = {
         min: 0,
         dflt: 1,
         description: [
-            'Sets the graticule\'s stroke width'
+            'Sets the graticule\'s stroke width.'
         ].join(' ')
     }
 };
