@@ -34,7 +34,7 @@ module.exports = {
         min: 0,
         dflt: 1,
         description: [
-            'Sets the graticule\'s stroke width.'
+            'Sets the graticule\'s stroke width (in px).'
         ].join(' ')
     }
 };

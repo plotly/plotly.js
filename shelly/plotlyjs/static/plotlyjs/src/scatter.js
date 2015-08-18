@@ -58,16 +58,16 @@ scatter.attributes = {
         type: 'string',  // TODO 'data_array' ?
         dflt: '',
         arrayOk: true,
-        description: 'Sets text elements associated with each (x.y) pair.'
+        description: 'Sets text elements associated with each (x,y) pair.'
     },
     mode: {
         type: 'flaglist',
         flags: ['lines','markers','text'],
         extras: ['none'],
         description: [
-            'Sets the drawing mode for this scatter trace.',
+            'Determines the drawing mode for this scatter trace.',
             'If the provided `mode` includes *text* then the `text` elements',
-            'appear at the (x,y) pairs. Otherwise, the `text` elements',
+            'appear at the coordinates. Otherwise, the `text` elements',
             'appear on hover.'
         ].join(' ')
     },
@@ -87,7 +87,7 @@ scatter.attributes = {
             values: ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'],
             dflt: 'linear',
             description: [
-                'Sets the line shape.',
+                'Determines the line shape.',
                 'With *spline* the lines are drawn using spline interpolation.',
                 'The other available values correspond to step-wise line shapes.'
             ].join(' ')
@@ -118,8 +118,8 @@ scatter.attributes = {
         type: 'boolean',
         dflt: false,
         description: [
-            'Sets whether or not gaps in the provided data arrays',
-            'are connected.'
+            'Determines whether or not gaps (i.e. {nan} values)',
+            'in the provided data arrays are connected.'
         ].join(' ')
     },
     fill: {
@@ -217,7 +217,7 @@ scatter.attributes = {
             dflt: true,
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
-                'Sets the whether or not the color domain is computed',
+                'Determines the whether or not the color domain is computed',
                 'automatically.'
             ].join(' ')
         },
@@ -242,8 +242,8 @@ scatter.attributes = {
             dflt: true,
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
-                'Sets whether or not the colorscale is determined by values',
-                'inside `marker.color`.'
+                'Determines whether or not the colorscale is picked using',
+                'values inside `marker.color`.'
             ].join(' ')
         },
         reversescale: {
@@ -286,8 +286,8 @@ scatter.attributes = {
                 dflt: true,
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
-                    'Sets the whether or not the color domain is computed',
-                    'automatically.'
+                    'Determines the whether or not the color domain is computed',
+                    'with respect to the input data.'
                 ].join(' ')
             },
             cmax: {
@@ -311,8 +311,8 @@ scatter.attributes = {
                 dflt: true,
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
-                    'Sets whether or not the colorscale is determined by values',
-                    'inside `marker.line.color`.'
+                    'Determines whether or not the colorscale is picked using',
+                    'the sign of values inside `marker.line.color`.'
                 ].join(' ')
             },
             reversescale: {

@@ -34,19 +34,31 @@ boxes.attributes = {
 
     y: {
         type: 'data_array',
-        description: 'See overview.'
+        description: [
+            'Sets the y sample data or coordinates.',
+            'See overview for more info.'
+        ].join(' ')
     },
     x: {
         type: 'data_array',
-        description: 'See overview.'
+        description: [
+            'Sets the x sample data or coordinates.',
+            'See overview for more info.'
+        ].join(' ')
     },
     x0: {
         type: 'any',
-        description: 'See overview.'
+        description: [
+            'Sets the x coordinate of the box.',
+            'See overview for more info.'
+        ].join(' ')
     },
     y0: {
         type: 'any',
-        description: 'See overview.'
+        description: [
+            'Sets the y coordinate of the box.',
+            'See overview for more info.'
+        ].join(' ')
     },
     whiskerwidth: {
         type: 'number',

@@ -28,11 +28,15 @@ heatmap.attributes = {
         'is mapped to the i-th partition of the y axis',
         '(starting from the bottom of the plot) and the j-th partition',
         'of the x-axis (starting from the left of the plot).',
-
         'This behavior can be flipped by using `transpose`.',
+        'Moreover, `x` (`y`) can be provided with M or M+1 (N or N+1) elements',
+        'If M (N), then the coordinates correspond to the center of the',
+        'heatmap cells and the cells have equal width.',
+        'If M+1 (N+1), then the coordinates correspond to the edges of the',
+        'heatmap cells.',
 
         'In the case where `z` is a 1D {array}, the x and y coordinates must be',
-        'provided in `x` and `y` respectively.'
+        'provided in `x` and `y` respectively to form data triplets.'
     ].join(' '),
 
     z: {

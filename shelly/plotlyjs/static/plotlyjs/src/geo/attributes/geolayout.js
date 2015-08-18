@@ -74,7 +74,7 @@ module.exports = {
         type: 'number',
         min: 0,
         dflt: 1,
-        description: 'Sets the coastline stroke width [in px].'
+        description: 'Sets the coastline stroke width (in px).'
     },
     showland: {
         type: 'boolean',
@@ -120,7 +120,7 @@ module.exports = {
         type: 'number',
         min: 0,
         dflt: 1,
-        description: 'Sets the stroke width [in px] of the rivers.'
+        description: 'Sets the stroke width (in px) of the rivers.'
     },
     showcountries: {
         type: 'boolean',
@@ -135,7 +135,7 @@ module.exports = {
         type: 'number',
         min: 0,
         dflt: 1,
-        description: 'Sets line width [in px] of the country boundaries.'
+        description: 'Sets line width (in px) of the country boundaries.'
     },
     showsubunits: {
         type: 'boolean',
@@ -153,7 +153,7 @@ module.exports = {
         type: 'number',
         min: 0,
         dflt: 1,
-        description: 'Sets the stroke width [in px] of the subunits boundaries.'
+        description: 'Sets the stroke width (in px) of the subunits boundaries.'
     },
     showframe: {
         type: 'boolean',
@@ -168,7 +168,7 @@ module.exports = {
         type: 'number',
         min: 0,
         dflt: 1,
-        description: 'Sets the stroke width [in px] of the frame.'
+        description: 'Sets the stroke width (in px) of the frame.'
     },
     bgcolor: {
         type: 'color',

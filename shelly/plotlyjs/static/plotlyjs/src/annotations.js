@@ -179,6 +179,7 @@ annotations.layoutAttributes = {
     // positioning
     xref: {
         type: 'enumerated',
+        values: ['paper', '/^x[0-9]/*$'],
         description: [
             'Sets the annotation\'s x coordinate axis.',
             'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
@@ -205,11 +206,16 @@ annotations.layoutAttributes = {
             'For example, if `x` is set to 1, `xref` to *paper* and',
             '`xanchor` to *right* then the right-most portion of the',
             'annotation lines up with the right-most edge of the',
-            'plotting area.'
+            'plotting area.',
+            'If *auto*, the anchor is equivalent to *center* for',
+            'data-referenced annotations',
+            'whereas for paper-referenced, the anchor picked corresponds',
+            'to the closest side.'
         ].join(' ')
     },
     yref: {
         type: 'enumerated',
+        values: ['paper', '/^y[0-9]/*$'],
         description: [
             'Sets the annotation\'s y coordinate axis.',
             'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
@@ -236,7 +242,11 @@ annotations.layoutAttributes = {
             'For example, if `y` is set to 1, `yref` to *paper* and',
             '`yanchor` to *top* then the top-most portion of the',
             'annotation lines up with the top-most edge of the',
-            'plotting area.'
+            'plotting area.',
+            'If *auto*, the anchor is equivalent to *middle* for',
+            'data-referenced annotations',
+            'whereas for paper-referenced, the anchor picked corresponds',
+            'to the closest side.'
         ].join(' ')
     }
 };
