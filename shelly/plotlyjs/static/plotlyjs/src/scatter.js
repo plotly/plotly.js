@@ -80,7 +80,7 @@ scatter.attributes = {
             type: 'number',
             min: 0,
             dflt: 2,
-            description: 'Sets the line width (in px)'
+            description: 'Sets the line width (in px).'
         },
         shape: {
             type: 'enumerated',
@@ -111,7 +111,7 @@ scatter.attributes = {
             // dash lengths in px, and it will be honored
             values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
             dflt: 'solid',
-            description: 'Sets the drawing style.'
+            description: 'Sets the style of the lines.'
         }
     },
     connectgaps: {
@@ -119,7 +119,7 @@ scatter.attributes = {
         dflt: false,
         description: [
             'Sets whether or not gaps in the provided data arrays',
-            'are connected'
+            'are connected.'
         ].join(' ')
     },
     fill: {
@@ -266,13 +266,13 @@ scatter.attributes = {
             color: {
                 type: 'color',
                 arrayOk: true,
-                description: 'Sets the color of the lines bounding the marker points'
+                description: 'Sets the color of the lines bounding the marker points.'
             },
             width: {
                 type: 'number',
                 min: 0,
                 arrayOk: true,
-                description: 'Sets the width (in px) of the lines bounding the marker points'
+                description: 'Sets the width (in px) of the lines bounding the marker points.'
             },
             colorscale: {
                 type: 'colorscale',
