@@ -8,48 +8,82 @@ var legend = module.exports = {},
     Plotly = require('./plotly');
 
 legend.layoutAttributes = {
-    bgcolor: {type: 'color'},
+    bgcolor: {
+        type: 'color',
+        description: 'Sets the legend background color.'
+    },
     bordercolor: {
         type: 'color',
-        dflt: Plotly.Color.defaultLine
+        dflt: Plotly.Color.defaultLine,
+        description: 'Sets the color of the border enclosing the legend.'
     },
     borderwidth: {
         type: 'number',
         min: 0,
-        dflt: 0
+        dflt: 0,
+        description: 'Sets the width (in px) of the border enclosing the legend.'
     },
-    font:{type: 'font'},
+    font: {
+        type: 'font',
+        description: 'Sets the font used to text the legend items.'
+    },
     traceorder: {
         type: 'flaglist',
         flags: ['reversed', 'grouped'],
-        extras: ['normal']
+        extras: ['normal'],
+        description: [
+            'Determines the order at which the legend items are displayed.',
+            'If *normal*, the items are displayed top-to-bottom in the same',
+            'order as the input data.',
+            'If *reversed*, the items are displayed in the opposite order',
+            'as *normal*',
+            'If *grouped*, the items are displayed in groups',
+            '(when a trace `legendgroup` is provided)',
+            'if *grouped+reversed*, the items are displayed in the opposite order',
+            'as *grouped*.'
+        ].join(' ')
     },
     tracegroupgap: {
-       type: 'number',
-       min: 0,
-       dflt: 10
+        type: 'number',
+        min: 0,
+        dflt: 10,
+        description: [
+            'Sets the amount of vertical space (in px) between legend groups.' 
+        ].join(' ')
     },
     x: {
         type: 'number',
         min: -2,
         max: 3,
-        dflt: 1.02
+        dflt: 1.02,
+        description: 'Sets the x position (in normalized coordinates) of the legend.'
     },
     xanchor: {
         type: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
-        dflt: 'left'
+        dflt: 'left',
+        description: [
+            'Sets the legend\'s horizontal position anchor',
+            'This anchor binds the `x` position to the *left*, *center*',
+            'or *right* of the legend.'
+        ].join(' ')
     },
     y: {
         type: 'number',
         min: -2,
         max: 3,
-        dflt: 1
+        dflt: 1,
+        description: 'Sets the y position (in normalized coordinates) of the legend.'
     },
     yanchor: {
         type: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
-        dflt: 'auto'
+        dflt: 'auto',
+        description: [
+            'Sets the legend\'s vertical position anchor',
+            'This anchor binds the `y` position to the *top*, *middle*',
+            'or *bottom* of the legend.'
+        ].join(' ')
     }
 };
 
