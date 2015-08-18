@@ -40,6 +40,5 @@
     "uglify-js": "~2.4.13",
     "xml2js": "0.4.8"
   },
-  "devDependencies": {},
-  "browserify": { "transform": [ "./compress_attributes" ] }
+  "devDependencies": {}
 }
