@@ -6,6 +6,7 @@ var shapes = module.exports = {},
     scatterLineAttrs = Plotly.Scatter.attributes.line;
 
 shapes.layoutAttributes = {
+    _isLinkedToArray: true,
     opacity: {
         type: 'number',
         min: 0,

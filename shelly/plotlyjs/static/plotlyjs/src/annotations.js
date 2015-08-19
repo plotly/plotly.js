@@ -55,6 +55,7 @@ annotations.ARROWPATHS = [
 ];
 
 annotations.layoutAttributes = {
+    _isLinkedToArray: true,
     text: {
         type: 'string',
         blankOk: false
