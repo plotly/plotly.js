@@ -1622,6 +1622,18 @@ plots.layoutAttributes = {
     _hasPie: {
         type: 'boolean',
         dflt: false
+    },
+    _composedModules: {
+        '*': 'Fx'
+    },
+    _nestedModules: {
+        'xaxis': 'Axes',
+        'yaxis': 'Axes',
+        'scene': 'Gl3dLayout',
+        'geo': 'GeoLayout',
+        'legend': 'Legend',
+        'annotations': 'Annotations',
+        'shapes': 'Shapes'
     }
 };
 
@@ -3377,9 +3389,24 @@ plots.resize = function(gd) {
 
 // Get the container div: we store all variables for this plot as
 // properties of this div
-// some callers send this in by dom element, others by id (string)
+// some callers send this in by DOM element, others by id (string)
 function getGraphDiv(gd) {
-    return (typeof gd === 'string') ? document.getElementById(gd) : gd;
+    var gdElement;
+
+    if(typeof gd === 'string') {
+        gdElement = document.getElementById(gd);
+
+        if(gdElement === null) {
+            throw new Error('No DOM element with id \'' + gd + '\' exits on the page.');
+        }
+
+        return gdElement;
+    }
+    else if(gd===null || gd===undefined) {
+        throw new Error('DOM element provided is null or undefined');
+    }
+
+    return gd;  // otherwise assume that gd is a DOM element
 }
 
 // -------------------------------------------------------
