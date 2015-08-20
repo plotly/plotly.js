@@ -15,6 +15,7 @@ var b = browserify(path.join(__dirname, '../shelly/plotlyjs/static/plotlyjs/src/
   debug: true,
   verbose: true,
   standalone: 'Plotly',
+  transform: path.join(__dirname, '../shelly/plotlyjs/static/plotlyjs/compress_attributes.js'),
   cache: {},
   packageCache: {}
 });
