@@ -1271,40 +1271,88 @@ plots.attributes = {
     visible: {
         type: 'enumerated',
         values: [true, false, 'legendonly'],
-        dflt: true
+        dflt: true,
+        description: [
+            'Determines whether or not this trace is visible.',
+            'If *legendonly*, the trace can only appear as a legend item.'
+        ].join(' ')
     },
     showlegend: {
         type: 'boolean',
-        dflt: true
+        dflt: true,
+        description: [
+            'Determines whether or not an item corresponding to this',
+            'trace is shown in the legend.'
+        ].join(' ')
     },
     legendgroup: {
         type: 'string',
-        dflt: ''
+        dflt: '',
+        description: [
+            'Sets the legend group for this trace.',
+            'Traces part of the same legend group hide/show at the same time',
+            'when toggling legend items.'
+        ].join(' ')
     },
     opacity: {
         type: 'number',
         min: 0,
         max: 1,
-        dflt: 1
+        dflt: 1,
+        description: 'Sets the opacity of the trace.'
     },
     name: {
-        type: 'string'
+        type: 'string',
+        description: [
+            'Sets the trace name.',
+            'The trace name appear as the legend item and on hover.'
+        ].join(' ')
     },
     xaxis: {
         type: 'axisid',
-        dflt: 'x'
+        dflt: 'x',
+        description: [
+            'Sets a reference between this trace\'s x coordinates and',
+            'a 2D cartesian x axis.',
+            'If *x* (the default value), the x coordinates refer to',
+            '`layout.xaxis`.',
+            'If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.'
+        ].join(' ')
     },
     yaxis: {
         type: 'axisid',
-        dflt: 'y'
+        dflt: 'y',
+        description: [
+            'Sets a reference between this trace\'s y coordinates and',
+            'a 2D cartesian y axis.',
+            'If *y* (the default value), the y coordinates refer to',
+            '`layout.yaxis`.',
+            'If *y2*, the y coordinates refer to `layout.xaxis2`, and so on.'
+        ].join(' ')
     },
     scene: {
         type: 'sceneid',
-        dflt: 'scene'
+        dflt: 'scene',
+        description: [
+            'Sets a reference between this trace\'s 3D coordinate system and',
+            'a 3D scene.',
+            'If *scene* (the default value), the (x,y,z) coordinates refer to',
+            '`layout.scene`.',
+            'If *scene2*, the (x,y,z) coordinates refer to `layout.scene2`,',
+            'and so on.'
+        ].join(' ')
     },
     geo: {
         type: 'geoid',
-        dflt: 'geo'
+        dflt: 'geo',
+        description: [
+            'Sets a reference between this trace\'s geospatial coordinates and',
+            'a geographic map.',
+            'If *geo* (the default value), the geospatial coordinates refer to',
+            '`layout.geo`.',
+            'If *geo2*, the geospatial coordinates refer to `layout.geo2`,',
+            'and so on.'
+        ].join(' ')
     },
     uid: {
         type: 'string',
@@ -1314,7 +1362,8 @@ plots.attributes = {
         type: 'flaglist',
         flags: ['x', 'y', 'z', 'text', 'name'],
         extras: ['all', 'none'],
-        dflt: 'all'
+        dflt: 'all',
+        description: 'Determines which trace information appear on hover.'
     }
 };
 
@@ -1525,53 +1574,82 @@ plots.layoutAttributes = {
             family: '"Open sans", verdana, arial, sans-serif',
             size: 12,
             color: Plotly.Color.defaultLine
-        }
+        },
+        description: [
+            'Sets the global font.',
+            'Fonts used in traces and other layout component inherit from',
+            'the global font'
+        ].join(' ')
     },
     title: {
         type: 'string',
-        dflt: 'Click to enter Plot title'
+        dflt: 'Click to enter Plot title',
+        description: [
+            'Sets the plot\'s title.'
+        ].join(' ')
     },
-    titlefont: {type: 'font'},
+    titlefont: {
+        type: 'font',
+        description: 'Sets the title font.'
+    },
     autosize: {
         type: 'enumerated',
         // TODO: better handling of 'initial'
-        values: [true, false, 'initial']
+        values: [true, false, 'initial'],
+        description: [
+            'Determines whether or not the dimensions of the figure are',
+            'computed as a function of the display size.'
+        ].join(' ')
     },
     width: {
         type: 'number',
         min: 10,
-        dflt: 700
+        dflt: 700,
+        description: [
+            'Sets the plot\'s width (in px).'
+        ].join(' ')
     },
     height: {
         type: 'number',
         min: 10,
-        dflt: 450
+        dflt: 450,
+        description: [
+            'Sets the plot\'s height (in px).'
+        ].join(' ')
     },
     margin: {
         l: {
             type: 'number',
             min: 0,
-            dflt: 80
+            dflt: 80,
+            description: 'Sets the left margin (in px).'
         },
         r: {
             type: 'number',
             min: 0,
-            dflt: 80
+            dflt: 80,
+            description: 'Sets the right margin (in px).'
         },
         t: {
             type: 'number',
             min: 0,
-            dflt: 100
+            dflt: 100,
+            description: 'Sets the top margin (in px).'
         },
         b: {
             type: 'number',
             min: 0,
-            dflt: 80
+            dflt: 80,
+            description: 'Sets the bottom margin (in px).'
         },
         pad: {
             type: 'number',
             min: 0,
-            dflt: 0
+            dflt: 0,
+            description: [
+                'Sets the amount of padding (in px)',
+                'between the plotting area and the axis lines'
+            ].join(' ')
         },
         autoexpand: {
             type: 'boolean',
@@ -1580,21 +1658,34 @@ plots.layoutAttributes = {
     },
     paper_bgcolor: {
         type: 'color',
-        dflt: Plotly.Color.background
+        dflt: Plotly.Color.background,
+        description: 'Sets the color of paper where the graph is drawn.'
     },
     plot_bgcolor: {
         // defined here, but set in Axes.supplyLayoutDefaults
         // because it needs to know if there are (2D) axes or not
         type: 'color',
-        dflt: Plotly.Color.background
+        dflt: Plotly.Color.background,
+        description: [
+            'Sets the color of plotting area in-between x and y axes.'
+        ].join(' ')
     },
     separators: {
         type: 'string',
-        dflt: '.,'
+        dflt: '.,',
+        description: [
+            'Sets the decimal and thousand separators.'
+        ].join(' ')
     },
     hidesources: {
         type: 'boolean',
-        dflt: false
+        dflt: false,
+        description: [
+            'Determines whether or not a text link citing the data source is',
+            'placed at the bottom-right cored of the figure.',
+            'Has only an effect only on graphs that have been generated via',
+            'forked graphs from the plotly cloud.'
+        ].join(' ')
     },
     smith: {
         // will become a boolean if/when we implement this
@@ -1605,7 +1696,8 @@ plots.layoutAttributes = {
     showlegend: {
         // handled in legend.supplyLayoutDefaults
         // but included here because it's not in the legend object
-        type: 'boolean'
+        type: 'boolean',
+        description: 'Determines whether or not a legend is drawn.'
     },
     _hasCartesian: {
         type: 'boolean',

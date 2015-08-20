@@ -1,86 +1,12 @@
 'use strict';
 
 var Plotly = require('../../plotly');
-var Gl3dAxes = {};
-var axesAttrs = Plotly.Axes.layoutAttributes;
-var extendFlat = Plotly.Lib.extendFlat;
 
-module.exports = Gl3dAxes;
+var Gl3dAxes = module.exports = {};
 
 Gl3dAxes.axesNames = ['xaxis', 'yaxis', 'zaxis'];
 
-Gl3dAxes.layoutAttributes = {
-    showspikes: {
-        type: 'boolean',
-        dflt: true
-    },
-    spikesides: {
-        type: 'boolean',
-        dflt: true
-    },
-    spikethickness: {
-        type: 'number',
-        min: 0,
-        dflt: 2
-    },
-    spikecolor: {
-        type: 'color',
-        dflt: 'rgb(0,0,0)'
-    },
-    showbackground: {
-        type: 'boolean',
-        dflt: false
-    },
-    backgroundcolor: {
-        type: 'color',
-        dflt: 'rgba(204, 204, 204, 0.5)'
-    },
-    showaxeslabels: {
-        type: 'boolean',
-        dflt: true
-    },
-    title: axesAttrs.title,
-    titlefont: axesAttrs.titlefont,
-    type: axesAttrs.type,
-    autorange: axesAttrs.autorange,
-    rangemode: axesAttrs.rangemode,
-    range: axesAttrs.range,
-    fixedrange: axesAttrs.fixedrange,
-    // ticks
-    tickmode: axesAttrs.tickmode,
-    nticks: axesAttrs.nticks,
-    tick0: axesAttrs.tick0,
-    dtick: axesAttrs.dtick,
-    tickvals: axesAttrs.tickvals,
-    ticktext: axesAttrs.ticktext,
-    ticks: axesAttrs.ticks,
-    mirror: axesAttrs.mirror,
-    ticklen: axesAttrs.ticklen,
-    tickwidth: axesAttrs.tickwidth,
-    tickcolor: axesAttrs.tickcolor,
-    showticklabels: axesAttrs.showticklabels,
-    tickfont: axesAttrs.tickfont,
-    tickangle: axesAttrs.tickangle,
-    tickprefix: axesAttrs.tickprefix,
-    showtickprefix: axesAttrs.showtickprefix,
-    ticksuffix: axesAttrs.ticksuffix,
-    showticksuffix: axesAttrs.showticksuffix,
-    showexponent: axesAttrs.showexponent,
-    exponentformat: axesAttrs.exponentformat,
-    tickformat: axesAttrs.tickformat,
-    hoverformat: axesAttrs.hoverformat,
-    // lines and grids
-    showline: axesAttrs.showline,
-    linecolor: axesAttrs.linecolor,
-    linewidth: axesAttrs.linewidth,
-    showgrid: axesAttrs.showgrid,
-    gridcolor: extendFlat(axesAttrs.gridcolor,  // shouldn't this be on-par with 2D?
-                          {dflt: 'rgb(204, 204, 204)'}),
-    gridwidth: axesAttrs.gridwidth,
-    zeroline: axesAttrs.zeroline,
-    zerolinecolor: axesAttrs.zerolinecolor,
-    zerolinewidth: axesAttrs.zerolinewidth
-};
+Gl3dAxes.layoutAttributes = require('../attributes/gl3daxes');
 
 var noop = function () {};
 

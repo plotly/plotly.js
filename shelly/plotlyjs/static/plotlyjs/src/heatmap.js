@@ -14,44 +14,92 @@ Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap']);
 var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
 
 heatmap.attributes = {
-    z: {type: 'data_array'},
+    overview: [
+        'The data the describes the heatmap value-to-color mapping',
+        'is set in `z`.',
+        'Data in `z` can either be a {2D array} of values (ragged or not)',
+        'or a 1D array of values.',
+
+        'In the case where `z` is a {2D array},',
+        'say that `z` has N rows and M columns.',
+        'Then, by default, the resulting heatmap will have N partitions along',
+        'the y axis and M partitions along the x axis.',
+        'In other words, the i-th row/ j-th column cell in `z`',
+        'is mapped to the i-th partition of the y axis',
+        '(starting from the bottom of the plot) and the j-th partition',
+        'of the x-axis (starting from the left of the plot).',
+        'This behavior can be flipped by using `transpose`.',
+        'Moreover, `x` (`y`) can be provided with M or M+1 (N or N+1) elements',
+        'If M (N), then the coordinates correspond to the center of the',
+        'heatmap cells and the cells have equal width.',
+        'If M+1 (N+1), then the coordinates correspond to the edges of the',
+        'heatmap cells.',
+
+        'In the case where `z` is a 1D {array}, the x and y coordinates must be',
+        'provided in `x` and `y` respectively to form data triplets.'
+    ].join(' '),
+
+    z: {
+        type: 'data_array',
+        description: 'Sets the z data.'
+    },
     x: scatterAttrs.x,
     x0: scatterAttrs.x0,
     dx: scatterAttrs.dx,
     y: scatterAttrs.y,
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
-    text: {type: 'data_array'},
+    text: {
+        type: 'data_array',
+        description: 'Sets the text elements associated with each z value.'
+    },
     transpose: {
         type: 'boolean',
-        dflt: false
+        dflt: false,
+        description: 'Transposes the z data.'
     },
     xtype: {
         type: 'enumerated',
-        values: ['array', 'scaled']
+        values: ['array', 'scaled'],
+        description: [
+            'If *array*, the heatmap\'s x coordinates are given by *x*',
+            '(the default behavior when `x` is provided).',
+            'If *scaled*, the heatmap\'s x coordinates are given by *x0* and *dx*',
+            '(the default behavior when `x` is not provided).'
+        ].join(' ')
     },
     ytype: {
         type: 'enumerated',
-        values: ['array', 'scaled']
+        values: ['array', 'scaled'],
+        description: [
+            'If *array*, the heatmap\'s y coordinates are given by *y*',
+            '(the default behavior when `y` is provided)',
+            'If *scaled*, the heatmap\'s y coordinates are given by *y0* and *dy*',
+            '(the default behavior when `y` is not provided)'
+        ].join(' ')
     },
     zauto: traceColorbarAttrs.zauto,
     zmin: traceColorbarAttrs.zmin,
     zmax: traceColorbarAttrs.zmax,
     colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: {
-        type: 'boolean',
-        dflt: false
-    },
+    autocolorscale: Plotly.Lib.extendFlat(traceColorbarAttrs.autocolorscale, {
+        dflt: false}),
     reversescale: traceColorbarAttrs.reversescale,
     showscale: traceColorbarAttrs.showscale,
     zsmooth: {
         type: 'enumerated',
         values: ['fast', 'best', false],
-        dflt: false
+        dflt: false,
+        description: [
+            'Picks a smoothing algorithm use to smooth `z` data.'
+        ].join(' ')
     },
     connectgaps: {
         type: 'boolean',
-        dflt: false
+        dflt: false,
+        description: [
+            'Determines whether or not gaps in the `z` data are filled in.'
+        ].join(' ')
     },
     _nestedModules: {  // nested module coupling
         'colorbar': 'Colorbar'

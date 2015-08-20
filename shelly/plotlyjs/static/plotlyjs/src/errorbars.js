@@ -10,30 +10,70 @@ var errorBars = module.exports = {},
 
 errorBars.attributes = {
     visible: {
-        type: 'boolean'
+        type: 'boolean',
+        description: [
+            'Determines whether or not this set of error bars is visible.'
+        ].join(' ')
     },
     type: {
         type: 'enumerated',
-        values: ['percent', 'constant', 'sqrt', 'data']
+        values: ['percent', 'constant', 'sqrt', 'data'],
+        description: [
+            'Determines the rule used to generate the error bars.',
+            'If *constant`, the bar lengths are of a constant value.',
+            'Set this constant in `value`.',
+            'If *percent*, the bar lengths correspond to a percentage of',
+            'underlying data. Set this percentage in `value`.',
+            'If *sqrt*, the bar lengths correspond to the sqaure of the',
+            'underlying data.',
+            'If *array*, the bar lengths are set with data set `array`.'
+        ].join(' ')
     },
     symmetric: {
-        type: 'boolean'
+        type: 'boolean',
+        description: [
+            'Determines whether or not the error bars have the same length',
+            'in both direction',
+            '(top/bottom for vertical bars, left/right for horizontal bars.'
+        ].join(' ')
     },
     array: {
-        type: 'data_array'
+        type: 'data_array',
+        description: [
+            'Sets the data corresponding the length of each error bar.',
+            'Values are plotted relative to the underlying data.'
+        ].join(' ')
     },
     arrayminus: {
-        type: 'data_array'
+        type: 'data_array',
+        description: [
+            'Sets the data corresponding the length of each error bar in the',
+            'bottom (left) direction for vertical (horizontal) bars',
+            'Values are plotted relative to the underlying data.'
+        ].join(' ')
     },
     value: {
         type: 'number',
         min: 0,
-        dflt: 10
+        dflt: 10,
+        description: [
+            'Sets the value of either the percentage',
+            '(if `type` is set to *percent*) or the constant',
+            '(if `type` is set to *constant*) corresponding to the lengths of',
+            'the error bars.'
+        ].join(' ')
     },
     valueminus: {
         type: 'number',
         min: 0,
-        dflt: 10
+        dflt: 10,
+        description: [
+            'Sets the value of either the percentage',
+            '(if `type` is set to *percent*) or the constant',
+            '(if `type` is set to *constant*) corresponding to the lengths of',
+            'the error bars in the',
+            'bottom (left) direction for vertical (horizontal) bars'
+        ].join(' ')
     },
     traceref: {
         type: 'integer',
@@ -52,16 +92,22 @@ errorBars.attributes = {
         type: 'boolean'
     },
     color: {
-        type: 'color'
+        type: 'color',
+        description: 'Sets the stoke color of the error bars.'
     },
     thickness: {
         type: 'number',
         min: 0,
-        dflt: 2
+        dflt: 2,
+        description: 'Sets the thickness (in px) of the error bars.'
     },
     width: {
         type: 'number',
-        min: 0
+        min: 0,
+        description: [
+            'Sets the width (in px) of the cross-bar at both ends',
+            'of the error bars.'
+        ].join(' ')
     }
 };
 
