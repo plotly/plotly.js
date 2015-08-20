@@ -133,8 +133,8 @@ annotations.layoutAttributes = {
         dflt: true,
         description: [
             'Determines whether or not the annotation is drawn with an arrow.',
-            'If true, `text` is placed near the arrow\'s tail.',
-            'If false, `text` lines up with the `x` and `y` provided.'
+            'If *true*, `text` is placed near the arrow\'s tail.',
+            'If *false*, `text` lines up with the `x` and `y` provided.'
         ].join(' ')
     },
     arrowcolor: {

@@ -20,12 +20,16 @@ errorBars.attributes = {
         values: ['percent', 'constant', 'sqrt', 'data'],
         description: [
             'Determines the rule used to generate the error bars.',
+
             'If *constant`, the bar lengths are of a constant value.',
             'Set this constant in `value`.',
+
             'If *percent*, the bar lengths correspond to a percentage of',
             'underlying data. Set this percentage in `value`.',
+
             'If *sqrt*, the bar lengths correspond to the sqaure of the',
             'underlying data.',
+
             'If *array*, the bar lengths are set with data set `array`.'
         ].join(' ')
     },

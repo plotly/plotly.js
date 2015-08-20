@@ -576,7 +576,7 @@ colorbar.attributes = {
         type: 'number',
         dflt: 1.02,
         description: [
-            'Sets the x position of the color bar (in normalized coordinates)'
+            'Sets the x position of the color bar (in plot fraction).'
         ].join(' ')
     },
     xanchor: {
@@ -599,7 +599,7 @@ colorbar.attributes = {
         type: 'number',
         dflt: 0.5,
         description: [
-            'Sets the y position of the color bar (in normalized coordinates)'
+            'Sets the y position of the color bar (in plot fraction).'
         ].join(' ')
     },
     yanchor: {

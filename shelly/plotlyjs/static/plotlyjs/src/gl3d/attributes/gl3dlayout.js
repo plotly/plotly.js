@@ -36,7 +36,6 @@ module.exports = {
                 'the z axis points up.'
             ].join(' ')
         }),
-
         center: extendFlat(makeVector(0, 0, 0), {
             description: [
                 'Sets the (x,y,z) components of the \'center\' camera vector',
@@ -70,11 +69,14 @@ module.exports = {
         description: [
             'If *cube*, this scene\'s axes are drawn as a cube,',
             'regardless of the axes\' ranges.',
+
             'If *data*, this scene\'s axes are drawn',
             'in proportion with the axes\' ranges.',
+
             'If *manual*, this scene\'s axes are drawn',
             'in proportion with the input of *aspectratio*',
             '(the default behavior if *aspectratio* is provided).',
+
             'If *auto*, this scene\'s axes are drawn',
             'using the results of *data* except when one axis',
             'is more than four times the size of the two others,',

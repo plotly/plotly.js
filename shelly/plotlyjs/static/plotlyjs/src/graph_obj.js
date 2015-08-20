@@ -1274,7 +1274,9 @@ plots.attributes = {
         dflt: true,
         description: [
             'Determines whether or not this trace is visible.',
-            'If *legendonly*, the trace can only appear as a legend item.'
+            'If *legendonly*, the trace is not drawn,',
+            'but can appear as a legend item',
+            '(provided that the legend itself is visible).'
         ].join(' ')
     },
     showlegend: {
@@ -1577,8 +1579,8 @@ plots.layoutAttributes = {
         },
         description: [
             'Sets the global font.',
-            'Fonts used in traces and other layout component inherit from',
-            'the global font'
+            'Note that fonts used in traces and other',
+            'layout components inherit from the global font.'
         ].join(' ')
     },
     title: {
@@ -1674,7 +1676,9 @@ plots.layoutAttributes = {
         type: 'string',
         dflt: '.,',
         description: [
-            'Sets the decimal and thousand separators.'
+            'Sets the decimal and thousand separators.',
+            'For example, *. * puts a \'.\' before decimals and',
+            'a space between thousands.'
         ].join(' ')
     },
     hidesources: {

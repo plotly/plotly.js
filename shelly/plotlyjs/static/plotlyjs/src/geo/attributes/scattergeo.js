@@ -10,11 +10,11 @@ var extendFlat = Plotly.Lib.extendFlat;
 module.exports = {
     lon: {
         type: 'data_array',
-        description: 'Sets the longitude coordinates [in degrees East].'
+        description: 'Sets the longitude coordinates (in degrees East).'
     },
     lat: {
         type: 'data_array',
-        description: 'Sets the latitude coordinates [in degrees North].'
+        description: 'Sets the latitude coordinates (in degrees North).'
     },
     locations: {
         type: 'data_array',

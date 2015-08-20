@@ -20,8 +20,8 @@ pie.attributes = {
         type: 'number',
         dflt: 0,
         description: [
-            'Alternate to `labels`,',
-            'builds a numeric set of labels.',
+            'Alternate to `labels`.',
+            'Builds a numeric set of labels.',
             'Use with `dlabel`',
             'where `label0` is the starting label and `dlabel` the step.'
         ].join(' ')
@@ -83,7 +83,7 @@ pie.attributes = {
         description: [
             'If there are multiple pies that should be sized according to',
             'their totals, link them by providing a non-empty group id here',
-            'shared by every trace in the same group'
+            'shared by every trace in the same group.'
         ].join(' ')
     },
 
@@ -229,7 +229,7 @@ pie.attributes = {
             'Sets the fraction of larger radius to pull the sectors',
             'out from the center. This can be a constant',
             'to pull all slices apart from each other equally',
-            'or an array to highlight one or more slices'
+            'or an array to highlight one or more slices.'
         ].join(' ')
     }
 };

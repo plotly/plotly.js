@@ -38,15 +38,24 @@ module.exports = {
         rotation: {
             lon: {
                 type: 'number',
-                description: 'Rotates the map along parallels [in degrees].'
+                description: [
+                    'Rotates the map along parallels',
+                    '(in degrees East).'
+                ].join(' ')
             },
             lat: {
                 type: 'number',
-                description: 'Rotates the map along meridians [in degrees].'
+                description: [
+                    'Rotates the map along meridians',
+                    '(in degrees North).'
+                ].join(' ')
             },
             roll: {
                 type: 'number',
-                description: 'Rotates the map '
+                description: [
+                    'Roll the map (in degrees)',
+                    'For example, a roll of *180* makes the map appear upside down.'
+                ].join(' ')
             }
         },
         parallels: [

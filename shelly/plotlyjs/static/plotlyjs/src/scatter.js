@@ -24,8 +24,8 @@ scatter.attributes = {
         type: 'any',
         dflt: 0,
         description: [
-            'Alternate to `x`,',
-            'builds a linear space of x coordinates.',
+            'Alternate to `x`.',
+            'Builds a linear space of x coordinates.',
             'Use with `dx`',
             'where `x0` is the starting coordinate and `dx` the step.'
         ].join(' ')
@@ -33,7 +33,10 @@ scatter.attributes = {
     dx: {
         type: 'number',
         dflt: 1,
-        description: 'See `x0`.'
+        description: [
+            'Sets the x coordinate step.',
+            'See `x0` for more info.'
+        ].join(' ')
     },
     y: {
         type: 'data_array',
@@ -43,8 +46,8 @@ scatter.attributes = {
         type: 'any',
         dflt: 0,
         description: [
-            'Alternate to `y`,',
-            'builds a linear space of y coordinates.',
+            'Alternate to `y`.',
+            'Builds a linear space of y coordinates.',
             'Use with `dy`',
             'where `y0` is the starting coordinate and `dy` the step.'
         ].join(' ')
@@ -52,7 +55,10 @@ scatter.attributes = {
     dy: {
         type: 'number',
         dflt: 1,
-        description: 'See `y0`.'
+        description: [
+            'Sets the y coordinate step.',
+            'See `y0` for more info.'
+        ].join(' ')
     },
     text: {
         type: 'string',  // TODO 'data_array' ?
@@ -100,7 +106,7 @@ scatter.attributes = {
             description: [
                 'Has only an effect if `shape` is set to *spline*',
                 'Sets the amount of smoothing.',
-                '0 corresponds to no smoothing (equivalent to a *linear* shape).'
+                '*0* corresponds to no smoothing (equivalent to a *linear* shape).'
             ].join(' ')
         },
         dash: {
@@ -118,7 +124,8 @@ scatter.attributes = {
         type: 'boolean',
         dflt: false,
         description: [
-            'Determines whether or not gaps (i.e. {nan} values)',
+            'Determines whether or not gaps',
+            '(i.e. {nan} or missing values)',
             'in the provided data arrays are connected.'
         ].join(' ')
     },
@@ -174,7 +181,7 @@ scatter.attributes = {
             dflt: 0,
             description: [
                 'Sets a maximum number of points to be drawn on the graph.',
-                '0 corresponds to no limit.'
+                '*0* corresponds to no limit.'
             ].join(' ')
         },
         sizeref: {

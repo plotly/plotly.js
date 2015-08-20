@@ -14,12 +14,12 @@ fx.layoutAttributes = {
     dragmode: {
         type: 'enumerated',
         values: ['zoom', 'pan', 'orbit', 'turntable'],
-        description: 'Determines the mode of drag interaction.'
+        description: 'Determines the mode of drag interactions.'
     },
     hovermode: {
         type: 'enumerated',
         values: ['x', 'y', 'closest', false],
-        description: 'Determines the mode of hover interaction'
+        description: 'Determines the mode of hover interactions.'
     }
 };
 

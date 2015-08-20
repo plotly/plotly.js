@@ -25,7 +25,12 @@ axes.layoutAttributes = {
         // to td.data like the others are.
         values: ['-', 'linear', 'log', 'date', 'category'],
         dflt: '-',
-        description: 'Sets the axis type.'
+        description: [
+            'Sets the axis type.',
+            'By default, plotly attempts to determined the axis type',
+            'by looking into the data of the traces that referenced',
+            'the axis in question.'
+        ].join(' ')
     },
     autorange: {
         type: 'enumerated',
@@ -35,7 +40,7 @@ axes.layoutAttributes = {
             'Determines whether or not the range of this axis is',
             'computed in relation to the input data.',
             'See `rangemode` for more info.',
-            'If `range` is provided, then `autorange` is set to false.'
+            'If `range` is provided, then `autorange` is set to *false*.'
         ].join(' ')
     },
     rangemode: {
@@ -58,8 +63,10 @@ axes.layoutAttributes = {
     fixedrange: {
         type: 'boolean',
         dflt: false,
-        description: ['Determines whether or not this axis is zoom-able.',
-            'If true, then zoom is disabled.'].join(' ')
+        description: [
+            'Determines whether or not this axis is zoom-able.',
+            'If true, then zoom is disabled.'
+        ].join(' ')
     },
     // ticks
     tickmode: {
@@ -100,16 +107,19 @@ axes.layoutAttributes = {
     },
     tickvals: {
         type: 'data_array',
-        description: ['Sets the values at which ticks on this axis appear.',
+        description: [
+            'Sets the values at which ticks on this axis appear.',
             'Only has an effect if `tickmode` is set to *array*.',
-            'Used with `ticktext`.'].join(' ')
+            'Used with `ticktext`.'
+        ].join(' ')
     },
     ticktext: {
         type: 'data_array',
         description: [
             'Sets the text displayed at the ticks position via `tickvals`.',
             'Only has an effect if `tickmode` is set to *array*.',
-            'Used with `ticktext`.'].join(' ')
+            'Used with `ticktext`.'
+        ].join(' ')
     },
     ticks: {
         type: 'enumerated',
@@ -240,7 +250,10 @@ axes.layoutAttributes = {
         dflt: '',
         description: [
             'Sets the hover text formatting rule for data values on this axis,',
-            'as in `tickformat`.'
+            'using the python/d3 number formatting language.',
+            'See https://github.com/mbostock/d3/wiki/Formatting#numbers',
+            'or https://docs.python.org/release/3.1.3/library/string.html#formatspec',
+            'for more info.'
         ].join(' ')
     },
     // lines and grids

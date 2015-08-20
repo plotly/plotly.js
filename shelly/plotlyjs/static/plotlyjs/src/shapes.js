@@ -35,9 +35,9 @@ shapes.layoutAttributes = {
             'If *line*, a line is drawn from (`x0`,`y0`) to (`x1`,`y1`)',
 
             'If *circle*, a circle is drawn from',
-            '((`x0`+`x1`)/2, (`y0`+y1)/2))',
+            '((`x0`+`x1`)/2, (`y0`+`y1`)/2))',
             'with radius',
-            '(|(`x0`+`x1`)/2 - `x0`|, |(`y0`+y1)/2 -`y0`)|)',
+            '(|(`x0`+`x1`)/2 - `x0`|, |(`y0`+`y1`)/2 -`y0`)|)',
 
             'If *rect*, a rectangle is drawn linking',
             '(`x0`,`y0`), (`x1`,`y0`), (`x1`,`y1`), (`x0`,`y1`), (`x0`,`y0`)',
@@ -54,7 +54,7 @@ shapes.layoutAttributes = {
             'refers to an x coordinate',
             'If set to *paper*, the `x` position refers to the distance from',
             'the left side of the plotting area in normalized coordinates',
-            'where 0 (1) corresponds to the left (right) side.'
+            'where *0* (*1*) corresponds to the left (right) side.'
         ].join(' ')
     },
     x0: {
@@ -80,7 +80,7 @@ shapes.layoutAttributes = {
             'refers to an y coordinate',
             'If set to *paper*, the `y` position refers to the distance from',
             'the bottom of the plotting area in normalized coordinates',
-            'where 0 (1) corresponds to the bottom (top).'
+            'where *0* (*1*) corresponds to the bottom (top).'
         ].join(' ')
     },
     y0: {
@@ -106,12 +106,14 @@ shapes.layoutAttributes = {
             'only absolute instructions, not relative. So the allowed segments',
             'are: M, L, H, V, Q, C, T, S, and Z',
             'arcs (A) are not allowed because radius rx and ry are relative.',
+
             'In the future we could consider supporting relative commands,',
             'but we would have to decide on how to handle date and log axes.',
             'Note that even as is, Q and C Bezier paths that are smooth on',
             'linear axes may not be smooth on log, and vice versa.',
             'no chained "polybezier" commands - specify the segment type for',
             'each one.',
+
             'On category axes, values are numbers scaled to the serial numbers',
             'of categories because using the categories themselves there would',
             'be no way to describe fractional positions',

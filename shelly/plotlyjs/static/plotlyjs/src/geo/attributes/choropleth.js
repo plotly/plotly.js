@@ -33,7 +33,7 @@ module.exports = {
     zmin: traceColorbarAttrs.zmin,
     zmax: traceColorbarAttrs.zmax,
     colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: extendFlat(traceColorbarAttrs.autocolorscale, {dflt: true}),
+    autocolorscale: traceColorbarAttrs.autocolorscale,
     reversescale: traceColorbarAttrs.reversescale,
     showscale: traceColorbarAttrs.showscale,
     _nestedModules: {

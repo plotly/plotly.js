@@ -99,15 +99,16 @@ histogram.attributes = {
 
             'If *percent*, the span of each bar corresponds to the percentage',
             'of occurrences with respect to the total number of sample points',
-            '(here, the sum of all bin area equals 100%)',
+            '(here, the sum of all bin area equals 100%).',
 
             'If *density*, the span of each bar corresponds to the number of',
             'occurrences in a bin divided by the size of the bin interval',
-            '(here, the sum of all bin area equals the total number of sample points)',
+            '(here, the sum of all bin area equals the',
+            'total number of sample points).',
 
             'If *probability density*, the span of each bar corresponds to the',
             'probability that an event will fall into the corresponding bin',
-            '(here, the sum of all bin area equals 1)'
+            '(here, the sum of all bin area equals 1).'
         ].join(' ')
     },
     autobinx: {

@@ -63,11 +63,14 @@ module.exports = {
         values: [-1, 0, 1, 2],
         dflt: -1,
         description: [
-            'If 0, the '
+            'If *-1*, the scatter points are not fill with a surface',
+            'If *0*, *1*, *2*, the scatter points are filled with',
+            'a Delaunay surface about the x, y, z respectively.'
         ].join(' ')
     },
     surfacecolor: {
-        type: 'color'
+        type: 'color',
+        description: 'Sets the surface fill color.'
     },
     projection: {
         x: makeProjectionAttr('x'),

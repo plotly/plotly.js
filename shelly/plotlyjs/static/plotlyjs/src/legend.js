@@ -33,12 +33,16 @@ legend.layoutAttributes = {
         extras: ['normal'],
         description: [
             'Determines the order at which the legend items are displayed.',
+
             'If *normal*, the items are displayed top-to-bottom in the same',
             'order as the input data.',
+
             'If *reversed*, the items are displayed in the opposite order',
-            'as *normal*',
+            'as *normal*.',
+
             'If *grouped*, the items are displayed in groups',
-            '(when a trace `legendgroup` is provided)',
+            '(when a trace `legendgroup` is provided).',
+
             'if *grouped+reversed*, the items are displayed in the opposite order',
             'as *grouped*.'
         ].join(' ')

@@ -22,7 +22,7 @@ boxes.attributes = {
         'statistics are computed using `y` (`x`) values.',
         'By supplying an `x` (`y`) array, one box per distinct x (y) value',
         'is drawn',
-        'If no `x` (`y`) array is provided, a single box is drawn.',
+        'If no `x` (`y`) {array} is provided, a single box is drawn.',
         'That box position is then positioned with',
         'with `name` or with `x0` (`y0`) if provided.',
         'Each box spans from quartile 1 (Q1) to quartile 3 (Q3).',
@@ -76,13 +76,13 @@ boxes.attributes = {
         values: ['all', 'outliers', 'suspectedoutliers', false],
         dflt: 'outliers',
         description: [
-            'With *outliers*, only the sample points lying outside the whiskers',
+            'If *outliers*, only the sample points lying outside the whiskers',
             'are shown',
-            'With *suspectedoutliers*, the outlier points are shown and',
+            'If *suspectedoutliers*, the outlier points are shown and',
             'points either less than 4*Q1-3*Q3 or greater than 4*Q3-3*Q1',
             'are highlighted (see `outliercolor`)',
-            'With *all*, all sample points are shown',
-            'With false, only the box(es) are shown with no sample points'
+            'If *all*, all sample points are shown',
+            'If *false*, only the box(es) are shown with no sample points'
         ].join(' ')
     },
     boxmean: {
@@ -90,9 +90,9 @@ boxes.attributes = {
         values: [true, 'sd', false],
         dflt: false,
         description: [
-            'With true, the mean of the box(es)\' underlying distribution is',
+            'If *true*, the mean of the box(es)\' underlying distribution is',
             'drawn as a dashed line inside the box(es).',
-            'With *sd* the standard deviation is also drawn.'
+            'If *sd* the standard deviation is also drawn.'
         ].join(' ')
     },
     jitter: {
@@ -101,8 +101,8 @@ boxes.attributes = {
         max: 1,
         description: [
             'Sets the amount of jitter in the sample points drawn.',
-            'If 0, the sample points align along the distribution axis.',
-            'If 1, the sample points are drawn in a random jitter of width',
+            'If *0*, the sample points align along the distribution axis.',
+            'If *1*, the sample points are drawn in a random jitter of width',
             'equal to the width of the box(es).'
         ].join(' ')
     },
@@ -112,7 +112,7 @@ boxes.attributes = {
         max: 2,
         description: [
             'Sets the position of the sample points in relation to the box(es).',
-            'If 0, the sample points are places over the center of the box(es).',
+            'If *0*, the sample points are places over the center of the box(es).',
             'Positive (negative) values correspond to positions to the',
             'right (left) for vertical boxes and above (below) for horizontal boxes'
         ].join(' ')
@@ -122,7 +122,7 @@ boxes.attributes = {
         values: ['v', 'h'],
         description: [
             'Sets the orientation of the box(es).',
-            'With *v* (*h*), the distribution is visualized along',
+            'If *v* (*h*), the distribution is visualized along',
             'the vertical (horizontal).'
         ].join(' ')
     },
@@ -153,7 +153,9 @@ boxes.attributes = {
                 type: 'number',
                 min: 0,
                 dflt: 1,
-                description: 'Sets the border line width (in px) of the outlier sample points.'
+                description: [
+                    'Sets the border line width (in px) of the outlier sample points.'
+                ].join(' ')
             }
         }
     },
@@ -180,9 +182,9 @@ boxes.layoutAttributes = {
         description: [
             'Determines how boxes at the same location coordinate',
             'are displayed on the graph.',
-            'With *group*, the boxes are plotted next to one another',
+            'If *group*, the boxes are plotted next to one another',
             'centered around the shared location.',
-            'With *overlay*, the boxes are plotted over one another,',
+            'If *overlay*, the boxes are plotted over one another,',
             'you might need to set *opacity* to see them multiple boxes.'
         ].join(' ')
     },

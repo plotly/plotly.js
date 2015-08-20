@@ -82,8 +82,8 @@ heatmap.attributes = {
     zmin: traceColorbarAttrs.zmin,
     zmax: traceColorbarAttrs.zmax,
     colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: Plotly.Lib.extendFlat(traceColorbarAttrs.autocolorscale, {
-        dflt: false}),
+    autocolorscale: Plotly.Lib.extendFlat(traceColorbarAttrs.autocolorscale,
+        {dflt: false}),
     reversescale: traceColorbarAttrs.reversescale,
     showscale: traceColorbarAttrs.showscale,
     zsmooth: {
@@ -98,7 +98,9 @@ heatmap.attributes = {
         type: 'boolean',
         dflt: false,
         description: [
-            'Determines whether or not gaps in the `z` data are filled in.'
+            'Determines whether or not gaps',
+            '(i.e. {nan} or missing values)',
+            'in the `z` data are filled in.'
         ].join(' ')
     },
     _nestedModules: {  // nested module coupling
