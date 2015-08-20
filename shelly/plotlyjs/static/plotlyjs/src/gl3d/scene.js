@@ -58,7 +58,7 @@ function render(scene) {
          container: svgContainer
        });
     }
-    else Plotly.Fx.loneUnhover(svgContainer)
+    else Plotly.Fx.loneUnhover(svgContainer);
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
@@ -567,11 +567,32 @@ proto.setCamera = function setCamera (cameraData) {
 
 // save camera to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
-    var cameraData = this.getCamera();
+    var cameraData = this.getCamera(),
+        cameraNestedProp = Plotly.Lib.nestedProperty(layout, this.id + '.camera'),
+        cameraDataLastSave = cameraNestedProp.get(),
+        hasChanged = false;
 
-    // save new camera api
-    Plotly.Lib.nestedProperty(layout, this.id + '.camera')
-        .set(cameraData);
+    function same(x, y, i, j) {
+        var vectors = ['up', 'center', 'eye'],
+            components = ['x', 'y', 'z'];
+        return x[vectors[i]][components[j]] === y[vectors[i]][components[j]];
+    }
+
+    if(cameraDataLastSave === undefined) hasChanged = true;
+    else {
+        for(var i = 0; i < 3; i++) {
+            for(var j = 0; j < 3; j++) {
+                if(!same(cameraData, cameraDataLastSave, i, j)) {
+                    hasChanged = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if(hasChanged) cameraNestedProp.set(cameraData);
+
+    return hasChanged;
 };
 
 proto.handleDragmode = function (dragmode) {

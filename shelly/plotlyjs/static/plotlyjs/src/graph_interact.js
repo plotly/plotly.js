@@ -22,7 +22,7 @@ fx.layoutAttributes = {
 };
 
 fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
-    var isHoriz;
+    var isHoriz, hovermodeDflt;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(layoutIn, layoutOut,
@@ -32,15 +32,15 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 
     coerce('dragmode', layoutOut._hasGL3D ? 'turntable' : 'zoom');
 
-    if(layoutOut._hasGL3D || layoutOut._hasGeo) {
-        coerce('hovermode', 'closest');
-    }
-    else {
+    if(layoutOut._hasCartesian) {
         // flag for 'horizontal' plots:
         // determines the state of the modebar 'compare' hovermode button
         isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
-        coerce('hovermode', isHoriz ? 'y' : 'x');
+        hovermodeDflt = isHoriz ? 'y' : 'x';
     }
+    else hovermodeDflt = 'closest';
+
+    coerce('hovermode', hovermodeDflt);
 };
 
 fx.isHoriz = function(fullData) {
@@ -70,8 +70,7 @@ fx.MINZOOM = 20;
 var DRAGGERSIZE = 20;
 
 fx.init = function(gd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData;
+    var fullLayout = gd._fullLayout;
 
     if(fullLayout._hasGL3D || fullLayout._hasGeo || gd._context.staticPlot) return;
 
@@ -114,7 +113,26 @@ fx.init = function(gd) {
                     fullLayout._lasthover = maindrag;
                     fullLayout._hoversubplot = subplot;
                 })
-                .mouseout(function(evt){
+                .mouseout(function(evt) {
+                /*
+                 * !!! TERRIBLE HACK !!!
+                 *
+                 * For some reason, a 'mouseout' event is fired in IE on clicks
+                 * on the maindrag container before reaching the 'click' handler.
+                 *
+                 * This results in a call to `fx.unhover` before `fx.click` where
+                 * `unhover` sets `gd._hoverdata` to `undefined` causing the call
+                 * to `fx.click` to return early.
+                 *
+                 * The hack below makes the 'mouseout' handler bypass
+                 * `fx.unhover` in IE.
+                 *
+                 * Note that the 'mouseout' handler is called only when the mouse
+                 * cursor gets lost. Most 'unhover' calls happen from 'mousemove':
+                 * these are not affected by the hack below.
+                 */
+                    if( Plotly.Lib.isIE() ) return;
+
                     fx.unhover(gd,evt);
                 })
                 .click(function(evt){ fx.click(gd,evt); });
@@ -1296,6 +1314,7 @@ fx.modeBar = function(gd){
 function chooseModebarButtons(fullLayout) {
     if(fullLayout._hasGL3D) {
         return [
+            ['toImage'],
             ['orbitRotation', 'tableRotation', 'zoom3d', 'pan3d'],
             ['resetCameraDefault3d', 'resetCameraLastSave3d'],
             ['hoverClosest3d']
@@ -1303,6 +1322,7 @@ function chooseModebarButtons(fullLayout) {
     }
     else if(fullLayout._hasGeo) {
         return [
+            ['toImage'],
             ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
             ['hoverClosestGeo']
         ];
@@ -1320,10 +1340,11 @@ function chooseModebarButtons(fullLayout) {
         }
     }
 
-    if(allFixed) buttons = [];
+    if(allFixed) buttons = [['toImage']];
     else buttons = [
+        ['toImage'],
         ['zoom2d', 'pan2d'],
-        ['zoomIn2d', 'zoomOut2d', 'autoScale2d']
+        ['zoomIn2d', 'zoomOut2d', 'resetScale2d', 'autoScale2d']
     ];
 
     if(fullLayout._hasCartesian) {
@@ -1575,8 +1596,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     function zoomDone(dragged, numClicks) {
         if(Math.min(box.h, box.w) < fx.MINDRAG * 2) {
-            // doubleclick - autoscale
-            if(numClicks === 2) dragAutoRange();
+            if(numClicks === 2) doubleClick();
             else pauseForDrag(gd);
 
             return removeZoombox(gd);
@@ -1597,7 +1617,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     function dragDone(dragged, numClicks) {
         var singleEnd = (ns + ew).length === 1;
         if(dragged) dragTail();
-        else if(numClicks === 2 && !singleEnd) dragAutoRange();
+        else if(numClicks === 2 && !singleEnd) doubleClick();
         else if(numClicks === 1 && singleEnd) {
             var ax = ns ? ya[0] : xa[0],
                 end = (ns==='s' || ew==='w') ? 0 : 1,
@@ -1812,13 +1832,35 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         redrawObjs(fullLayout.shapes || [], Plotly.Shapes);
     }
 
-    // dragAutoRange - set one or both axes to autorange on doubleclick
-    function dragAutoRange() {
-        var attrs={},
-            axList = (xActive ? xa : []).concat(yActive ? ya : []);
+    function doubleClick() {
+        var doubleClickConfig = gd._context.doubleClick,
+            axList = (xActive ? xa : []).concat(yActive ? ya : []),
+            attrs = {};
 
-        for(var i = 0; i < axList.length; i++) {
-            if(!axList[i].fixedrange) attrs[axList[i]._name + '.autorange'] = true;
+        var ax, i;
+
+        if(doubleClickConfig === 'autosize') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                if(!ax.fixedrange) attrs[ax._name + '.autorange'] = true;
+            }
+        }
+        else if(doubleClickConfig === 'reset') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+            }
+        }
+        else if(doubleClickConfig === 'reset+autosize') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                if(ax.fixedrange) continue;
+                if(ax._rangeInitial === undefined ||
+                    ax.range[0]===ax._rangeInitial[0] && ax.range[1]===ax._rangeInitial[1]) {
+                    attrs[ax._name + '.autorange'] = true;
+                }
+                else attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+            }
         }
 
         Plotly.relayout(gd, attrs);

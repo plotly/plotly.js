@@ -165,9 +165,8 @@ plots.newTab = function(divid, layout) {
 // in some cases the browser doesn't seem to know how big
 // the text is at first, so it needs to draw it,
 // then wait a little, then draw it again
-plots.redrawText = function(divid) {
-    var gd = (typeof divid === 'string') ?
-        document.getElementById(divid) : divid;
+plots.redrawText = function(gd) {
+    gd = getGraphDiv(gd);
 
     // doesn't work presently (and not needed) for polar or 3d
     if(gd._fullLayout._hasGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
@@ -205,21 +204,38 @@ function opaqueSetBackground(gd, bgColor) {
 // the defaults are the appropriate settings for plotly.js,
 // so we get the right experience without any config argument
 plots.defaultConfig = {
-    staticPlot: false, // no interactivity, for export or image generation
-    workspace: false, // we're in the workspace, so need toolbar etc TODO describe functionality instead?
-    editable: false, // we can edit titles, move annotations, etc
-    autosizable: false, // plot will respect layout.autosize=true and infer its container size
-    fillFrame: false, // if we DO autosize, do we fill the container or the screen?
-    scrollZoom: false, // mousewheel or two-finger scroll zooms the plot
-    showTips: true, // new users see some hints about interactivity
-    showLink: true, // link to open this plot in plotly
-    sendData: true, // if we show a link, does it contain data or just link to a plotly file?
-    linkText: 'Edit chart', // text appearing in the sendData link
-    displayModeBar: 'hover', // display the modebar (true, false, or 'hover')
-    displaylogo: true, // add the plotly logo on the end of the modebar
-    plot3dPixelRatio: 2, // increase the pixel ratio for 3D plot images
-    setBackground: defaultSetBackground // fn to add the background color to a different container
-                                        // or 'opaque' to ensure there's white behind it
+    // no interactivity, for export or image generation
+    staticPlot: false,
+    // we're in the workspace, so need toolbar etc
+    // TODO describe functionality instead?
+    workspace: false,
+    // we can edit titles, move annotations, etc
+    editable: false,
+    // plot will respect layout.autosize=true and infer its container size
+    autosizable: false,
+    // if we DO autosize, do we fill the container or the screen?
+    fillFrame: false,
+    // mousewheel or two-finger scroll zooms the plot
+    scrollZoom: false,
+    // double click interaction (false, 'reset', 'autosize' or 'reset+autosize')
+    doubleClick: 'reset+autosize',
+    // new users see some hints about interactivity
+    showTips: true,
+    // link to open this plot in plotly
+    showLink: true,
+    // if we show a link, does it contain data or just link to a plotly file?
+    sendData: true,
+    // text appearing in the sendData link
+    linkText: 'Edit chart',
+    // display the modebar (true, false, or 'hover')
+    displayModeBar: 'hover',
+    // add the plotly logo on the end of the modebar
+    displaylogo: true,
+    // increase the pixel ratio for 3D plot images
+    plot3dPixelRatio: 2,
+    // fn to add the background color to a different container
+    // or 'opaque' to ensure there's white behind it
+    setBackground: defaultSetBackground
 };
 
 function setPlotContext(gd, config) {
@@ -248,6 +264,7 @@ function setPlotContext(gd, config) {
         context.editable = false;
         context.autosizable = false;
         context.scrollZoom = false;
+        context.doubleClick = false;
         context.showTips = false;
         context.showLink = false;
         context.displayModeBar = false;
@@ -395,10 +412,7 @@ function positionPlayWithData(gd, container){
 Plotly.plot = function(gd, data, layout, config) {
     Plotly.Lib.markTime('in plot');
 
-    // Get the container div: we store all variables for this plot as
-    // properties of this div
-    // some callers send this in by dom element, others by id (string)
-    if(typeof gd === 'string') gd = document.getElementById(gd);
+    gd = getGraphDiv(gd);
 
     var okToPlot = $(gd).triggerHandler('plotly_beforeplot', [data, layout, config]);
     if(okToPlot===false) return;
@@ -498,7 +512,13 @@ Plotly.plot = function(gd, data, layout, config) {
     // generate calcdata, if we need to
     // to force redoing calcdata, just delete it before calling Plotly.plot
     var recalc = !gd.calcdata || gd.calcdata.length!==(gd.data||[]).length;
-    if(recalc) doCalcdata(gd);
+    if(recalc) {
+        doCalcdata(gd);
+
+        if(gd._context.doubleClick!==false || gd._context.displayModeBar!==false) {
+            Plotly.Axes.saveRangeInitial(gd);
+        }
+    }
 
     // in case it has changed, attach fullData traces to calcdata
     for (var i = 0; i < gd.calcdata.length; i++) {
@@ -539,45 +559,45 @@ Plotly.plot = function(gd, data, layout, config) {
         return Plotly.Lib.syncOrAsync(seq.concat(Plotly.Fx.init),gd);
     }
 
-    function positionAndAutorange(){
+    function positionAndAutorange() {
         var i, j, subplots, subplotInfo, modules, module;
 
-        if(recalc) {
-            // position and range calculations for traces that
-            // depend on each other ie bars (stacked or grouped)
-            // and boxes (grouped) push each other out of the way
-            subplots = Plotly.Axes.getSubplots(gd);
-            modules = gd._modules;
-            for (i = 0; i < subplots.length; i++) {
-                subplotInfo = gd._fullLayout._plots[subplots[i]];
-                for (j = 0; j < modules.length; j++) {
-                    module = modules[j];
-                    if (module.setPositions) {
-                        module.setPositions(gd, subplotInfo);
-                    }
+        if(!recalc) return;
+
+        // position and range calculations for traces that
+        // depend on each other ie bars (stacked or grouped)
+        // and boxes (grouped) push each other out of the way
+        subplots = Plotly.Axes.getSubplots(gd);
+        modules = gd._modules;
+        for (i = 0; i < subplots.length; i++) {
+            subplotInfo = gd._fullLayout._plots[subplots[i]];
+            for (j = 0; j < modules.length; j++) {
+                module = modules[j];
+                if (module.setPositions) {
+                    module.setPositions(gd, subplotInfo);
                 }
             }
-
-            Plotly.Lib.markTime('done with bar/box adjustments');
-
-            // calc and autorange for errorbars
-            if(Plotly.ErrorBars) {
-                Plotly.ErrorBars.calc(gd);
-                Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
-            }
-
-            // TODO: autosize extra for text markers
-            return Plotly.Lib.syncOrAsync([
-                Plotly.Shapes.calcAutorange,
-                Plotly.Annotations.calcAutorange,
-                doAutoRange
-            ], gd);
         }
+
+        Plotly.Lib.markTime('done with bar/box adjustments');
+
+        // calc and autorange for errorbars
+        if(Plotly.ErrorBars) {
+            Plotly.ErrorBars.calc(gd);
+            Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
+        }
+
+        // TODO: autosize extra for text markers
+        return Plotly.Lib.syncOrAsync([
+            Plotly.Shapes.calcAutorange,
+            Plotly.Annotations.calcAutorange,
+            doAutoRange
+        ], gd);
     }
 
-    function doAutoRange(){
+    function doAutoRange() {
         var axList = Plotly.Axes.list(gd, '', true);
-        for (var i = 0; i < axList.length; i++) {
+        for(var i = 0; i < axList.length; i++) {
             Plotly.Axes.doAutoRange(axList[i]);
         }
     }
@@ -1215,11 +1235,11 @@ plots.previousPromises = function(gd){
 };
 
 // convenience function to force a full redraw, mostly for use by plotly.js
-Plotly.redraw = function(divid) {
-    var gd = (typeof divid === 'string') ?
-        document.getElementById(divid) : divid;
+Plotly.redraw = function(gd) {
+    gd = getGraphDiv(gd);
+
     if(!Plotly.Lib.isPlotDiv(gd)) {
-        console.log('This element is not a Plotly Plot', divid, gd);
+        console.log('This element is not a Plotly Plot', gd);
         return;
     }
     gd.calcdata = undefined;
@@ -1237,6 +1257,7 @@ Plotly.redraw = function(divid) {
  * @param {Object} config
  */
 Plotly.newPlot = function (gd, data, layout, config) {
+    gd = getGraphDiv(gd);
     Plotly.Plots.purge(gd);
     Plotly.plot(gd, data, layout, config);
 };
@@ -1601,6 +1622,18 @@ plots.layoutAttributes = {
     _hasPie: {
         type: 'boolean',
         dflt: false
+    },
+    _composedModules: {
+        '*': 'Fx'
+    },
+    _nestedModules: {
+        'xaxis': 'Axes',
+        'yaxis': 'Axes',
+        'scene': 'Gl3dLayout',
+        'geo': 'GeoLayout',
+        'legend': 'Legend',
+        'annotations': 'Annotations',
+        'shapes': 'Shapes'
     }
 };
 
@@ -2112,6 +2145,7 @@ function spliceTraces (gd, update, indices, maxPoints, lengthenArray, spliceArra
  *
  */
 Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
+    gd = getGraphDiv(gd);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
 
@@ -2138,6 +2172,7 @@ Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
 };
 
 Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) {
+    gd = getGraphDiv(gd);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
 
@@ -2173,6 +2208,8 @@ Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) 
  *
  */
 Plotly.addTraces = function addTraces (gd, traces, newIndices) {
+    gd = getGraphDiv(gd);
+
     var currentIndices = [],
         undoFunc = Plotly.deleteTraces,
         redoFunc = addTraces,
@@ -2239,6 +2276,8 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
  * @param {Number|Number[]} indices The indices
  */
 Plotly.deleteTraces = function deleteTraces (gd, indices) {
+    gd = getGraphDiv(gd);
+
     var traces = [],
         undoFunc = Plotly.addTraces,
         redoFunc = deleteTraces,
@@ -2302,6 +2341,8 @@ Plotly.deleteTraces = function deleteTraces (gd, indices) {
  *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
  */
 Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
+    gd = getGraphDiv(gd);
+
     var newData = [],
         movingTraceMap = [],
         undoFunc = moveTraces,
@@ -2385,11 +2426,12 @@ Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
 //  to apply different values to each trace
 // if the array is too short, it will wrap around (useful for
 //  style files that want to specify cyclical default values)
-Plotly.restyle = function restyle (gd,astr,val,traces) {
-    if(typeof gd === 'string') gd = document.getElementById(gd);
+Plotly.restyle = function restyle(gd, astr, val, traces) {
+    gd = getGraphDiv(gd);
 
     var i, fullLayout = gd._fullLayout,
         aobj = {};
+
     if(typeof astr === 'string') aobj[astr] = val;
     else if($.isPlainObject(astr)) {
         aobj = astr;
@@ -2417,7 +2459,8 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'histfunc','histnorm','text',
         'x', 'y', 'z',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
-        'line.width', 'connectgaps',
+        'line.width',
+        'connectgaps', 'transpose', 'zsmooth',
         'showscale', 'marker.showscale',
         'zauto', 'marker.cauto',
         'autocolorscale', 'marker.autocolorscale',
@@ -2459,7 +2502,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // replotAttrs attributes need a replot (because different
     // objects need to be made) but not a recalc
     var replotAttrs = [
-        'zmin', 'zmax', 'zauto', 'zsmooth',
+        'zmin', 'zmax', 'zauto',
         'marker.cmin', 'marker.cmax', 'marker.cauto',
         'contours.start','contours.end','contours.size',
         'contours.showlines',
@@ -2904,9 +2947,10 @@ function swapXYData(trace) {
 // relayout(gd,aobj)
 //      aobj - {astr1:val1, astr2:val2...}
 //          allows setting multiple attributes simultaneously
-Plotly.relayout = function relayout (gd, astr, val) {
+Plotly.relayout = function relayout(gd, astr, val) {
+    gd = getGraphDiv(gd);
+
     if(gd.framework && gd.framework.isPolar) return;
-    if(typeof gd === 'string') gd = document.getElementById(gd);
 
     var layout = gd.layout,
         aobj = {},
@@ -3174,7 +3218,7 @@ Plotly.relayout = function relayout (gd, astr, val) {
     var ak = Object.keys(aobj),
         seq = [plots.previousPromises];
 
-    if(doplot||docalc) {
+    if(doplot || docalc) {
         seq.push(function layoutReplot(){
             // force plot() to redo the layout
             gd.layout = undefined;
@@ -3322,7 +3366,7 @@ function plotAutoSize(gd, aobj) {
 
 // check whether to resize a tab (if it's a plot) to the container
 plots.resize = function(gd) {
-    if(typeof gd === 'string') gd = document.getElementById(gd);
+    gd = getGraphDiv(gd);
 
     if(gd._context.workspace) setFileAndCommentsSize(gd);
 
@@ -3342,6 +3386,28 @@ plots.resize = function(gd) {
 
     setGraphContainerScroll(gd);
 };
+
+// Get the container div: we store all variables for this plot as
+// properties of this div
+// some callers send this in by DOM element, others by id (string)
+function getGraphDiv(gd) {
+    var gdElement;
+
+    if(typeof gd === 'string') {
+        gdElement = document.getElementById(gd);
+
+        if(gdElement === null) {
+            throw new Error('No DOM element with id \'' + gd + '\' exits on the page.');
+        }
+
+        return gdElement;
+    }
+    else if(gd===null || gd===undefined) {
+        throw new Error('DOM element provided is null or undefined');
+    }
+
+    return gd;  // otherwise assume that gd is a DOM element
+}
 
 // -------------------------------------------------------
 // makePlotFramework: Create the plot container and axes
@@ -3864,8 +3930,8 @@ function lsInner(gd) {
 // title can be 'xtitle', 'ytitle', 'gtitle',
 //  or empty to draw all
 plots.titles = function(gd, title) {
-    var options;
-    if(typeof gd === 'string') gd = document.getElementById(gd);
+    gd = getGraphDiv(gd);
+
     if(!title) {
         Plotly.Axes.listIds(gd).forEach(function(axId) {
             plots.titles(gd, axId+'title');
@@ -3877,8 +3943,9 @@ plots.titles = function(gd, title) {
     var fullLayout = gd._fullLayout,
         gs = fullLayout._size,
         axletter = title.charAt(0),
-        colorbar = title.substr(1,2)==='cb',
-        cbnum, cont;
+        colorbar = title.substr(1,2)==='cb';
+
+    var cbnum, cont, options;
 
     if(colorbar) {
         var uid = title.substr(3).replace('title','');
@@ -4182,8 +4249,7 @@ plots.titles = function(gd, title) {
  * @returns {Object|String}
  */
 plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
-
-    if(typeof gd === 'string') { gd = document.getElementById(gd); }
+    gd = getGraphDiv(gd);
 
     // if the defaults aren't supplied yet, we need to do that...
     if ((useDefaults && dataonly && !gd._fullData) ||

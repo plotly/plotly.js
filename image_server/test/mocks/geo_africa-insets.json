@@ -1,0 +1,290 @@
+{
+    "data": [
+        {
+            "textposition": "bottom center",
+            "name": "Sept",
+            "tick0": 0,
+            "text": [
+                "1022 Guinea",
+                "3362 Liberia",
+                "3 Senegal",
+                "1940 Sierra Leone"
+            ],
+            "zmin": 0,
+            "lon": [
+                -9.7,
+                -9.43,
+                -14.45,
+                -11.78
+            ],
+            "dtick": 1000,
+            "colorbar": {
+                "tickprefix": "",
+                "autotick": false,
+                "title": ""
+            },
+            "lat": [
+                9.95,
+                6.43,
+                14.5,
+                8.46
+            ],
+            "sizemode": "diameter",
+            "mode": "markers+text",
+            "marker": {
+                "color": "rgb(33,113,181)",
+                "line": {
+                    "width": 0
+                },
+                "size": [
+                    20.44,
+                    67.24,
+                    0.06,
+                    38.8
+                ]
+            },
+            "type": "scattergeo",
+            "uid": "918e2e"
+        },
+        {
+            "name": "Aug",
+            "tick0": 0,
+            "text": [
+                771,
+                1395,
+                1,
+                1216
+            ],
+            "zmin": 0,
+            "lon": [
+                -9.7,
+                -9.43,
+                -14.45,
+                -11.78
+            ],
+            "dtick": 1000,
+            "colorbar": {
+                "tickprefix": "",
+                "autotick": false,
+                "title": ""
+            },
+            "lat": [
+                9.95,
+                6.43,
+                14.5,
+                8.46
+            ],
+            "sizemode": "diameter",
+            "marker": {
+                "color": "rgb(107,174,214)",
+                "line": {
+                    "width": 0
+                },
+                "size": [
+                    15.42,
+                    27.9,
+                    0.02,
+                    24.32
+                ]
+            },
+            "type": "scattergeo",
+            "uid": "36b913"
+        },
+        {
+            "name": "July",
+            "tick0": 0,
+            "text": [
+                460,
+                329,
+                533
+            ],
+            "zmin": 0,
+            "lon": [
+                -9.7,
+                -9.43,
+                -11.78
+            ],
+            "dtick": 1000,
+            "colorbar": {
+                "tickprefix": "",
+                "autotick": false,
+                "title": ""
+            },
+            "lat": [
+                9.95,
+                6.43,
+                8.46
+            ],
+            "sizemode": "diameter",
+            "marker": {
+                "color": "rgb(189,215,231)",
+                "line": {
+                    "width": 0
+                },
+                "size": [
+                    9.2,
+                    6.58,
+                    10.66
+                ]
+            },
+            "type": "scattergeo",
+            "uid": "d13611"
+        },
+        {
+            "name": "June",
+            "tick0": 0,
+            "text": [
+                413,
+                107,
+                239
+            ],
+            "zmin": 0,
+            "lon": [
+                -9.7,
+                -9.43,
+                -11.78
+            ],
+            "dtick": 1000,
+            "colorbar": {
+                "tickprefix": "",
+                "autotick": false,
+                "title": ""
+            },
+            "lat": [
+                9.95,
+                6.43,
+                8.46
+            ],
+            "sizemode": "diameter",
+            "marker": {
+                "color": "rgb(239,243,255)",
+                "line": {
+                    "width": 0
+                },
+                "size": [
+                    8.26,
+                    2.14,
+                    4.78
+                ]
+            },
+            "type": "scattergeo",
+            "uid": "899c06"
+        },
+        {
+            "autocolorscale": false,
+            "colorscale": [
+                [
+                    0,
+                    "rgb(0, 0, 0)"
+                ],
+                [
+                    1,
+                    "rgb(0, 0, 0)"
+                ]
+            ],
+            "text": [
+                "Guinea",
+                "Liberia",
+                "Senegal",
+                "Sierra Leone"
+            ],
+            "locations": [
+                "Guinea",
+                "Liberia",
+                "Senegal",
+                "Sierra Leone"
+            ],
+            "geo": "geo2",
+            "showscale": false,
+            "type": "choropleth",
+            "z": [
+                1022,
+                3362,
+                3,
+                1940
+            ],
+            "locationmode": "country names",
+            "uid": "5c567c",
+            "zmin": 3,
+            "zmax": 3362
+        },
+        {
+            "showlegend": false,
+            "text": [
+                "Africa"
+            ],
+            "lon": [
+                21.0936
+            ],
+            "geo": "geo2",
+            "mode": "text",
+            "lat": [
+                7.1881
+            ],
+            "type": "scattergeo",
+            "uid": "5a4310"
+        }
+    ],
+    "layout": {
+        "geo2": {
+            "showland": true,
+            "domain": {
+                "y": [
+                    0,
+                    0.6
+                ],
+                "x": [
+                    0,
+                    0.6
+                ]
+            },
+            "landcolor": "rgb(229, 229, 229)",
+            "showframe": false,
+            "bgcolor": "rgba(255, 255, 255, 0.0)",
+            "showcountries": false,
+            "scope": "africa"
+        },
+        "geo": {
+            "showland": true,
+            "domain": {
+                "y": [
+                    0,
+                    1
+                ],
+                "x": [
+                    0,
+                    1
+                ]
+            },
+            "lonaxis": {
+                "range": [
+                    -15,
+                    -5
+                ]
+            },
+            "projection": {
+                "type": "Mercator"
+            },
+            "lataxis": {
+                "range": [
+                    0,
+                    12
+                ]
+            },
+            "showframe": false,
+            "landcolor": "rgb(229, 229, 229)",
+            "countrycolor": "rgb(255, 255, 255)",
+            "showcoastlines": true,
+            "coastlinecolor": "rgb(255, 255, 255)",
+            "scope": "africa",
+            "resolution": 50
+        },
+        "legend": {
+            "traceorder": "reversed"
+        },
+        "title": "Ebola cases reported by month in West Africa 2014<br> Source: <a href=\"https://data.hdx.rwlabs.org/dataset/rowca-ebola-cases\">HDX</a>",
+        "autosize": true,
+        "height": 791,
+        "width": 1600
+    }
+}
