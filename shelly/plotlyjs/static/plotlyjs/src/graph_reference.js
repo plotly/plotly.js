@@ -27,15 +27,20 @@ function getTraceAttributes(type) {
         attributes = {},
         layoutAttributes = {};
 
-    // global attributes (same for all trace types)
-    attributes = objectAssign(attributes, globalAttributes);
+    // make 'type' the first attribute in the object
+    attributes.type = type;
 
     // module attributes (+ nested + composed)
     attributes = coupleAttrs(
         _module.attributes, attributes, 'attributes', type
     );
 
+    // global attributes (same for all trace types)
+    attributes = objectAssign(attributes, globalAttributes);
+
+    // 'type' gets overwritten by globalAttributes; reset it here
     attributes.type = type;
+
     attributes = removeUnderscoreAttrs(attributes);
 
     graphReference.traces[type] = { attributes: attributes };
