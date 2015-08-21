@@ -61,9 +61,7 @@ scatter.attributes = {
         ].join(' ')
     },
     text: {
-        valType: 'string',  // TODO 'data_array' ?
-        dflt: '',
-        arrayOk: true,
+        valType: 'data_array',
         description: 'Sets text elements associated with each (x,y) pair.'
     },
     mode: {
