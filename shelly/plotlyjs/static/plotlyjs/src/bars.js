@@ -25,7 +25,12 @@ bars.attributes = {
     text: scatterAttrs.text,
     orientation: {
         type: 'enumerated',
-        values: ['v', 'h']
+        values: ['v', 'h'],
+        description: [
+            'Sets the orientation of the bars.',
+            'With *v* (*h*), the value of the each bar spans',
+            'along the vertical (horizontal).'
+        ].join(' ')
     },
     marker: {
         color: scatterMarkerAttrs.color,
@@ -61,23 +66,46 @@ bars.layoutAttributes = {
     barmode: {
         type: 'enumerated',
         values: ['stack', 'group', 'overlay'],
-        dflt: 'group'
+        dflt: 'group',
+        description: [
+            'Determines how bars at the same location coordinate',
+            'are displayed on the graph.',
+            'With *stack*, the bars are stacked on top of one another',
+            'With *group*, the bars are plotted next to one another',
+            'centered around the shared location.',
+            'With *overlay*, the bars are plotted over one another,',
+            'you might need to an *opacity* to see multiple bars.'
+        ].join(' ')
     },
     barnorm: {
         type: 'enumerated',
         values: ['', 'fraction', 'percent'],
-        dflt: ''
+        dflt: '',
+        description: [
+            'Sets the normalization for bar traces on the graph.',
+            'With *fraction*, the value of each bar is divide by the sum of the',
+            'values at the location coordinate.',
+            'With *percent*, the results form *fraction* are presented in percents.'
+        ].join(' ')
     },
     bargap: {
         type: 'number',
         min: 0,
-        max: 1
+        max: 1,
+        description: [
+            'Sets the gap (in plot fraction) between bars of',
+            'adjacent location coordinates.'
+        ].join(' ')
     },
     bargroupgap: {
         type: 'number',
         min: 0,
         max: 1,
-        dflt: 0
+        dflt: 0,
+        description: [
+            'Sets the gap (in plot fraction) between bars of',
+            'the same location coordinate.'
+        ].join(' ')
     }
 };
 

@@ -60,12 +60,14 @@ describe('Test Modebar', function() {
         // Same as in ../graph_interact.js
         beforeEach( function() {
             modeButtons2d = [
+                ['toImage'],
                 ['zoom2d', 'pan2d'],
                 ['zoomIn2d', 'zoomOut2d', 'resetScale2d', 'autoScale2d'],
                 ['hoverClosest2d', 'hoverCompare2d']
             ];
 
             modeButtons3d = [
+                ['toImage'],
                 ['orbitRotation', 'tableRotation', 'zoom3d', 'pan3d'],
                 ['resetCameraDefault3d', 'resetCameraLastSave3d'],
                 ['hoverClosest3d']

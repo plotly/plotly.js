@@ -4,7 +4,7 @@ var EventEmitter = require('events').EventEmitter;
 
 function svgToImg(opts) {
 
-    var ev = new EventEmitter();
+    var ev = opts.emitter ? opts.emitter : new EventEmitter();
 
     var Image = window.Image;
     var Blob = window.Blob;
@@ -48,9 +48,9 @@ function svgToImg(opts) {
         ev.emit('success', imgData);
     };
 
-    img.onerror = function() {
+    img.onerror = function(err) {
         DOMURL.revokeObjectURL(url);
-        return ev.emit('error', 'Image failed on load');
+        return ev.emit('error', err);
     };
 
     img.src = url;

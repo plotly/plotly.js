@@ -13,16 +13,18 @@ var fx = module.exports = {};
 fx.layoutAttributes = {
     dragmode: {
         type: 'enumerated',
-        values: ['zoom', 'pan', 'orbit', 'turntable']
+        values: ['zoom', 'pan', 'orbit', 'turntable'],
+        description: 'Determines the mode of drag interactions.'
     },
     hovermode: {
         type: 'enumerated',
-        values: ['x', 'y', 'closest', false]
+        values: ['x', 'y', 'closest', false],
+        description: 'Determines the mode of hover interactions.'
     }
 };
 
 fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
-    var isHoriz;
+    var isHoriz, hovermodeDflt;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(layoutIn, layoutOut,
@@ -32,15 +34,15 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 
     coerce('dragmode', layoutOut._hasGL3D ? 'turntable' : 'zoom');
 
-    if(layoutOut._hasGL3D || layoutOut._hasGeo) {
-        coerce('hovermode', 'closest');
-    }
-    else {
+    if(layoutOut._hasCartesian) {
         // flag for 'horizontal' plots:
         // determines the state of the modebar 'compare' hovermode button
         isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
-        coerce('hovermode', isHoriz ? 'y' : 'x');
+        hovermodeDflt = isHoriz ? 'y' : 'x';
     }
+    else hovermodeDflt = 'closest';
+
+    coerce('hovermode', hovermodeDflt);
 };
 
 fx.isHoriz = function(fullData) {
@@ -131,7 +133,7 @@ fx.init = function(gd) {
                  * cursor gets lost. Most 'unhover' calls happen from 'mousemove':
                  * these are not affected by the hack below.
                  */
-                    if(typeof window.navigator.msSaveBlob !== 'undefined') return;
+                    if( Plotly.Lib.isIE() ) return;
 
                     fx.unhover(gd,evt);
                 })
@@ -1314,6 +1316,7 @@ fx.modeBar = function(gd){
 function chooseModebarButtons(fullLayout) {
     if(fullLayout._hasGL3D) {
         return [
+            ['toImage'],
             ['orbitRotation', 'tableRotation', 'zoom3d', 'pan3d'],
             ['resetCameraDefault3d', 'resetCameraLastSave3d'],
             ['hoverClosest3d']
@@ -1321,6 +1324,7 @@ function chooseModebarButtons(fullLayout) {
     }
     else if(fullLayout._hasGeo) {
         return [
+            ['toImage'],
             ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
             ['hoverClosestGeo']
         ];
@@ -1338,8 +1342,9 @@ function chooseModebarButtons(fullLayout) {
         }
     }
 
-    if(allFixed) buttons = [];
+    if(allFixed) buttons = [['toImage']];
     else buttons = [
+        ['toImage'],
         ['zoom2d', 'pan2d'],
         ['zoomIn2d', 'zoomOut2d', 'resetScale2d', 'autoScale2d']
     ];
