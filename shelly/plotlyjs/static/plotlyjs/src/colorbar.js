@@ -531,63 +531,92 @@ colorbar.attributes = {
         dflt: 'right'
     },
     thicknessmode: {
-        // sizing has two modes: 'fraction' and 'pixels'
-        // the size in the constant color direction
-        // this is the actual bar thickness.
-        // padding, ticks, and labels are additional
         type: 'enumerated',
         values: ['fraction', 'pixels'],
-        dflt: 'pixels'
+        dflt: 'pixels',
+        description: [
+            'Determines whether this color bar\'s thickness',
+            '(i.e. the measure in the constant color direction)',
+            'is set in units of plot *fraction* or in *pixels.',
+            'Use `thickness` to set the value.'
+        ].join(' ')
     },
     thickness: {
         type: 'number',
         min: 0,
-        dflt: 30
+        dflt: 30,
+        description: [
+            'Sets the thickness of the color bar',
+            'This measure excludes the size of the padding, ticks and labels.'
+        ].join(' ')
     },
     lenmode: {
-        // the total size in the color variation direction
-        // the colorbar length is this length MINUS padding on both ends
         type: 'enumerated',
         values: ['fraction', 'pixels'],
-        dflt: 'fraction'
+        dflt: 'fraction',
+        description: [
+            'Determines whether this color bar\'s length',
+            '(i.e. the measure in the color variation direction)',
+            'is set in units of plot *fraction* or in *pixels.',
+            'Use `len` to set the value.'
+        ].join(' ')
     },
     len: {
         type: 'number',
         min: 0,
-        dflt: 1
+        dflt: 1,
+        description: [
+            'Sets the length of the color bar',
+            'This measure excludes the padding of both ends.',
+            'That is, the color bar length is this length minus the',
+            'padding on both ends.'
+        ].join(' ')
     },
-    // anchors are x:left|center|right, y:top|middle|bottom
     x: {
-        // positioning is in fraction of plot size
         type: 'number',
-        dflt: 1.02
+        dflt: 1.02,
+        description: [
+            'Sets the x position of the color bar (in plot fraction).'
+        ].join(' ')
     },
     xanchor: {
         type: 'enumerated',
         values: ['left', 'center', 'right'],
-        dflt: 'left'
+        dflt: 'left',
+        description: [
+            'Sets this color bar\'s horizontal position anchor',
+            'This anchor binds the `x` position to the *left*, *center*',
+            'or *right* of the color bar.'
+        ].join(' ')
     },
     xpad: {
-        // padding is in pixels
         type: 'number',
         min: 0,
-        dflt: 10
+        dflt: 10,
+        description: 'Sets the amount of padding (in px) along the x direction.'
     },
     y: {
-        // positioning is in fraction of plot size
         type: 'number',
-        dflt: 0.5
+        dflt: 0.5,
+        description: [
+            'Sets the y position of the color bar (in plot fraction).'
+        ].join(' ')
     },
     yanchor: {
         type: 'enumerated',
         values: ['top', 'middle', 'bottom'],
-        dflt: 'middle'
+        dflt: 'middle',
+        description: [
+            'Sets this color bar\'s vertical position anchor',
+            'This anchor binds the `y` position to the *top*, *middle*',
+            'or *bottom* of the color bar.'
+        ].join(' ')
     },
     ypad: {
-        // padding is in pixels
         type: 'number',
         min: 0,
-        dflt: 10
+        dflt: 10,
+        description: 'Sets the amount of padding (in px) along the y direction.'
     },
     // a possible line around the bar itself
     outlinecolor: axesAttrs.linecolor,
@@ -598,12 +627,15 @@ colorbar.attributes = {
     borderwidth: {
         type: 'number',
         min: 0,
-        dflt: 0
+        dflt: 0,
+        description: [
+            'Sets the width (in px) or the border enclosing this color bar.'
+        ].join(' ')
     },
-    // color of the padded area
     bgcolor: {
         type: 'color',
-        dflt: 'rgba(0,0,0,0)'
+        dflt: 'rgba(0,0,0,0)',
+        description: 'Sets the color of padded area.'
     },
     // tick and title properties named and function exactly as in axes
     tickmode: axesAttrs.tickmode,
@@ -628,9 +660,15 @@ colorbar.attributes = {
     showexponent: axesAttrs.showexponent,
     title: {
         type: 'string',
-        dflt: 'Click to enter colorscale title'
+        dflt: 'Click to enter colorscale title',
+        description: 'Sets the title of the color bar.'
     },
-    titlefont: axesAttrs.titlefont,
+    titlefont: {
+        type: 'font',
+        description: [
+            'Sets this color bar\'s title font.'
+        ].join(' ')
+    },
     titleside: {
         type: 'enumerated',
         values: ['right', 'top', 'bottom'],
@@ -714,26 +752,44 @@ colorbar.traceColorbar = function(gd, cd) {
 colorbar.traceColorbarAttributes = {
     zauto: {
         type: 'boolean',
-        dflt: true
+        dflt: true,
+        description: [
+            'Determines the whether or not the color domain is computed',
+            'with respect to the input data.'
+        ].join(' ')
     },
     zmin: {
         type: 'number',
-        dflt: null
+        dflt: null,
+        description: 'Sets the lower bound of color domain.'
     },
     zmax: {
         type: 'number',
-        dflt: null
+        dflt: null,
+        description: 'Sets the upper bound of color domain.'
     },
     colorscale: {
-        type: 'colorscale'
+        type: 'colorscale',
+        description: 'Sets the colorscale.'
     },
-    // autocolorscale isn't in here as the dflt varies from trace to trace
+    autocolorscale: {
+        type: 'boolean',
+        dflt: true,  // gets overrode in 'heatmap' & 'surface' for backwards comp.
+        description: [
+            'Determines whether or not the colorscale is picked using the sign of',
+            'the input z values.'
+        ].join(' ')
+    },
     reversescale: {
         type: 'boolean',
-        dflt: false
+        dflt: false,
+        description: 'Reverses the colorscale.'
     },
     showscale: {
         type: 'boolean',
-        dflt: true
+        dflt: true,
+        description: [
+            'Determines whether or not a colorbar is displayed for this trace.'
+        ].join(' ')
     }
 };

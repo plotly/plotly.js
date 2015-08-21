@@ -8,25 +8,53 @@ var axes = module.exports = {},
     isNumeric = require('./isnumeric');
 
 axes.layoutAttributes = {
-    title: {type: 'string'},
-    titlefont: {type: 'font'},
+    title: {
+        type: 'string',
+        description: 'Sets the title of this axis.'
+    },
+    titlefont: {
+        type: 'font',
+        description: [
+            'Sets this axis\' title font.'
+        ].join(' ')
+    },
     type: {
         type: 'enumerated',
         // '-' means we haven't yet run autotype or couldn't find any data
         // it gets turned into linear in td._fullLayout but not copied back
         // to td.data like the others are.
         values: ['-', 'linear', 'log', 'date', 'category'],
-        dflt: '-'
+        dflt: '-',
+        description: [
+            'Sets the axis type.',
+            'By default, plotly attempts to determined the axis type',
+            'by looking into the data of the traces that referenced',
+            'the axis in question.'
+        ].join(' ')
     },
     autorange: {
         type: 'enumerated',
         values: [true, false, 'reversed'],
-        dflt: true
+        dflt: true,
+        description: [
+            'Determines whether or not the range of this axis is',
+            'computed in relation to the input data.',
+            'See `rangemode` for more info.',
+            'If `range` is provided, then `autorange` is set to *false*.'
+        ].join(' ')
     },
     rangemode: {
         type: 'enumerated',
         values: ['normal', 'tozero', 'nonnegative'],
-        dflt: 'normal'
+        dflt: 'normal',
+        description: [
+            'If *normal*, the range is computed in relation to the extrema',
+            'of the input data.',
+            'If *tozero*`, the range extends to 0,',
+            'regardless of the input data',
+            'If *nonnegative*, the range is non-negative,',
+            'regardless of the input data.'
+        ].join(' ')
     },
     range: [
         {type: 'number'},
@@ -34,144 +62,287 @@ axes.layoutAttributes = {
     ],
     fixedrange: {
         type: 'boolean',
-        dflt: false
+        dflt: false,
+        description: [
+            'Determines whether or not this axis is zoom-able.',
+            'If true, then zoom is disabled.'
+        ].join(' ')
     },
     // ticks
     tickmode: {
         type: 'enumerated',
-        values: ['auto', 'linear', 'array']
+        values: ['auto', 'linear', 'array'],
+        description: [
+            'Sets the tick mode for this axis.',
+            'If *auto*, the number of ticks is set via `nticks`.',
+            'If *linear*, the placement of the ticks is determined by',
+            'a starting position `tick0` and a tick step `dtick`',
+            '(*linear* is the default value if `tick0` and `dtick` are provided).',
+            'If *array*, the placement of the ticks is set via `tickvals`',
+            'and the tick text is `ticktext`.',
+            '(*array* is the default value if `tickvals` is provided).'
+        ].join(' ')
     },
-    // nticks: only used with tickmode='auto'
     nticks: {
         type: 'integer',
         min: 0,
-        dflt: 0
+        dflt: 0,
+        description: [
+            'Sets the number of ticks.',
+            'Has an effect only if `tickmode` is set to *auto*.'
+        ].join(' ')
     },
-    // tick0, dtick: only used with tickmode='linear'
     tick0: {
         type: 'number',
-        dflt: 0
+        dflt: 0,
+        description: [
+            'Sets the placement of the first tick on this axis.',
+            'Use with `dtick`.'
+       ].join(' ')
     },
     dtick: {
         type: 'any',
-        dflt: 1
+        dflt: 1,
+        description: 'Sets the step in-between ticks on this axis'
     },
-    // tickvals, ticktext: only used with tickmode = 'array'
-    tickvals: {type: 'data_array'},
-    ticktext: {type: 'data_array'},
+    tickvals: {
+        type: 'data_array',
+        description: [
+            'Sets the values at which ticks on this axis appear.',
+            'Only has an effect if `tickmode` is set to *array*.',
+            'Used with `ticktext`.'
+        ].join(' ')
+    },
+    ticktext: {
+        type: 'data_array',
+        description: [
+            'Sets the text displayed at the ticks position via `tickvals`.',
+            'Only has an effect if `tickmode` is set to *array*.',
+            'Used with `ticktext`.'
+        ].join(' ')
+    },
     ticks: {
         type: 'enumerated',
-        values: ['outside', 'inside', '']
+        values: ['outside', 'inside', ''],
+        description: [
+            'Determines whether ticks are drawn or not.',
+            'If **, this axis\' ticks are not drawn.',
+            'If *outside* (*inside*), this axis\' are drawn outside (inside)',
+            'the axis lines.'
+        ].join(' ')
     },
     mirror: {
         type: 'enumerated',
-        // all and allticks: only if there are multiple subplots using this axis
         values: [true, 'ticks', false, 'all', 'allticks'],
-        dflt: false
+        dflt: false,
+        description: [
+            'Determines if the axis lines or/and ticks are mirrored to',
+            'the opposite side of the plotting area.',
+            'If *true*, the axis lines are mirrored.',
+            'If *ticks*, the axis lines and ticks are mirrored.',
+            'If *false*, mirroring is disable.',
+            'If *all*, axis lines are mirrored on all shared-axes subplots.',
+            'If *allticks*, axis lines and ticks are mirrored',
+            'on all shared-axes subplots.'
+        ].join(' ')
     },
     ticklen: {
         type: 'number',
         min: 0,
-        dflt: 5
+        dflt: 5,
+        description: 'Sets the tick length (in px).'
     },
     tickwidth: {
         type: 'number',
         min: 0,
-        dflt: 1
+        dflt: 1,
+        description: 'Sets the tick width (in px).'
     },
     tickcolor: {
         type: 'color',
-        dflt: Plotly.Color.defaultLine
+        dflt: Plotly.Color.defaultLine,
+        description: 'Sets the tick color.'
     },
     showticklabels: {
         type: 'boolean',
-        dflt: true
+        dflt: true,
+        description: 'Determines whether or not the tick labels are drawn.'
     },
-    tickfont: {type: 'font'},
+    tickfont: {
+        type: 'font',
+        description: 'Sets the tick font.'
+    },
     tickangle: {
         type: 'angle',
-        dflt: 'auto'
+        dflt: 'auto',
+        description: [
+            'Sets the angle of the tick labels with respect to the horizontal.',
+            'For example, a `tickangle` of -90 draws the tick labels',
+            'vertically.'
+        ].join(' ')
     },
     tickprefix: {
         type: 'string',
-        dflt: ''
+        dflt: '',
+        description: 'Sets a tick label prefix.'
     },
     showtickprefix: {
         type: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
-        dflt: 'all'
+        dflt: 'all',
+        description: [
+            'If *all*, all tick labels are displayed with a prefix.',
+            'If *first*, only the first tick is displayed with a prefix.',
+            'If *last*, only the last tick is displayed with a suffix.',
+            'If *none*, tick prefixes are hidden.'
+        ].join(' ')
     },
     ticksuffix: {
         type: 'string',
-        dflt: ''
+        dflt: '',
+        description: 'Sets a tick label suffix.'
     },
     showticksuffix: {
         type: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
-        dflt: 'all'
+        dflt: 'all',
+        description: 'Same as `showtickprefix` but for tick suffixes.'
     },
     showexponent: {
         type: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
-        dflt: 'all'
+        dflt: 'all',
+        description: [
+            'If *all*, all exponents are shown besides their significands.',
+            'If *first*, only the exponent of the first tick is shown.',
+            'If *last*, only the exponent of the last tick is shown.',
+            'If *none*, no exponents appear.'
+        ].join(' ')
     },
     exponentformat: {
         type: 'enumerated',
         values: ['none', 'e', 'E', 'power', 'SI', 'B'],
-        dflt: 'B'
+        dflt: 'B',
+        description: [
+            'Determines a formatting rule for the tick exponents.',
+            'For example, consider the number 1,000,000,000.',
+            'If *none*, it appears as 1,000,000,000.',
+            'If *e*, 1e+9.',
+            'If *E*, 1E+9.',
+            'If *power*, 1x10^9 (with 9 in a super script).',
+            'If *SI*, 1G.',
+            'If *B*, 1B.'
+        ].join(' ')
     },
     tickformat: {
         type: 'string',
-        dflt: ''
+        dflt: '',
+        description: [
+            'Sets the tick label formatting rule using the',
+            'python/d3 number formatting language.',
+            'See https://github.com/mbostock/d3/wiki/Formatting#numbers',
+            'or https://docs.python.org/release/3.1.3/library/string.html#formatspec',
+            'for more info.'
+        ].join(' ')
     },
     hoverformat: {
         type: 'string',
-        dflt: ''
+        dflt: '',
+        description: [
+            'Sets the hover text formatting rule for data values on this axis,',
+            'using the python/d3 number formatting language.',
+            'See https://github.com/mbostock/d3/wiki/Formatting#numbers',
+            'or https://docs.python.org/release/3.1.3/library/string.html#formatspec',
+            'for more info.'
+        ].join(' ')
     },
     // lines and grids
     showline: {
         type: 'boolean',
-        dflt: false
+        dflt: false,
+        description: [
+            'Determines whether or not a line bounding this axis is drawn.'
+        ]
     },
     linecolor: {
         type: 'color',
-        dflt: Plotly.Color.defaultLine
+        dflt: Plotly.Color.defaultLine,
+        description: 'Sets the axis line color.'
     },
     linewidth: {
         type: 'number',
         min: 0,
-        dflt: 1
+        dflt: 1,
+        description: 'Sets the width (in px) of the axis line.'
     },
-    showgrid: {type: 'boolean'},
+    showgrid: {
+        type: 'boolean',
+        description: [
+            'Determines whether or not grid lines are drawn.',
+            'If *true*, the grid lines are drawn at every tick mark.'
+        ].join(' ')
+    },
     gridcolor: {
         type: 'color',
-        dflt: Plotly.Color.lightLine
+        dflt: Plotly.Color.lightLine,
+        description: 'Sets the color of the grid lines.'
     },
     gridwidth: {
         type: 'number',
         min: 0,
-        dflt: 1
+        dflt: 1,
+        description: 'Sets the width (in px) of the grid lines.'
     },
-    zeroline: {type: 'boolean'},
+    zeroline: {
+        type: 'boolean',
+        description: [
+            'Determines whether or not a line is drawn at along the 0 value',
+            'of this axis.',
+            'If *true*, the zero line is drawn on top of the grid lines.'
+        ].join(' ')
+    },
     zerolinecolor: {
         type: 'color',
-        dflt: Plotly.Color.defaultLine
+        dflt: Plotly.Color.defaultLine,
+        description: 'Sets the line color of the zero line.'
     },
     zerolinewidth: {
         type: 'number',
-        dflt: 1
+        dflt: 1,
+        description: 'Sets the width (in px) of the zero line.'
     },
     // positioning attributes
     // anchor: not used directly, just put here for reference
     // values are any opposite-letter axis id
-    anchor: {type: 'enumerated'},
+    anchor: {
+        type: 'enumerated',
+        description: [
+            'If set to an opposite-letter axis id (e.g. `xaxis2`, `yaxis`), this axis is bound to',
+            'the corresponding opposite-letter axis.',
+            'If set to *free*, this axis\' position is determined by `position`.'
+        ].join(' ')
+    },
     // side: not used directly, as values depend on direction
     // values are top, bottom for x axes, and left, right for y
-    side: {type: 'enumerated'},
+    side: {
+        type: 'enumerated',
+        description: [
+            'Determines whether a x (y) axis is positioned',
+            'at the *bottom* (*left*) or *top* (*right*)',
+            'of the plotting area.'
+        ].join(' ')
+    },
     // overlaying: not used directly, just put here for reference
     // values are false and any other same-letter axis id that's not
     // itself overlaying anything
-    overlaying: {type: 'enumerated'},
+    overlaying: {
+        type: 'enumerated',
+        description: [
+            'If set a same-letter axis id, this axis is overlaid on top of',
+            'the corresponding same-letter axis.',
+            'If *false*, this axis does not overlay any same-letter axes.'
+        ].join(' ')
+    },
     domain: [
         {type: 'number', min: 0, max: 1, dflt: 0},
         {type: 'number', min: 0, max: 1, dflt: 1}
@@ -180,9 +351,15 @@ axes.layoutAttributes = {
         type: 'number',
         min: 0,
         max: 1,
-        dflt: 0
+        dflt: 0,
+        description: [
+            'Sets the position of this axis in the plotting space',
+            '(in normalized coordinates).',
+            'Only has an effect if `anchor` is set to *free*.'
+        ].join(' ')
     }
 };
+
 var xAxisMatch = /^xaxis[0-9]*$/,
     yAxisMatch = /^yaxis[0-9]*$/;
 
