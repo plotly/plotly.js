@@ -5,31 +5,7 @@ var Plotly = require('../../plotly'),
 
 var GeoAxes = module.exports = {};
 
-GeoAxes.layoutAttributes = {
-    range: [
-        {type: 'number'},
-        {type: 'number'}
-    ],
-    showgrid: {
-        type: 'boolean',
-        dflt: false
-    },
-    tick0: {
-        type: 'number'
-    },
-    dtick: {
-        type: 'number'
-    },
-    gridcolor: {
-        type: 'color',
-        dflt: Plotly.Color.lightLine
-    },
-    gridwidth: {
-        type: 'number',
-        min: 0,
-        dflt: 1
-    }
-};
+GeoAxes.layoutAttributes = require('../attributes/geoaxes');
 
 GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
     var axesNames = params.axesNames;
