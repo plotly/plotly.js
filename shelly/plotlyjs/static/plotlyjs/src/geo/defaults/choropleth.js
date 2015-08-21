@@ -6,35 +6,7 @@ var Choropleth = module.exports = {};
 
 Plotly.Plots.register(Choropleth, 'choropleth', ['geo', 'noOpacity']);
 
-var ScatterGeoAttrs = Plotly.ScatterGeo.attributes,
-    ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line,
-    traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
-
-Choropleth.attributes = {
-    locations: {type: 'data_array'},
-    locationmode: ScatterGeoAttrs.locationmode,
-    z: {type: 'data_array'},
-    text: {type: 'data_array'},
-    marker: {
-        line: {
-            color: ScatterGeoMarkerLineAttrs.color,
-            width: ScatterGeoMarkerLineAttrs.width
-        }
-    },
-    zauto: traceColorbarAttrs.zauto,
-    zmin: traceColorbarAttrs.zmin,
-    zmax: traceColorbarAttrs.zmax,
-    colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: {
-        type: 'boolean',
-        dflt: true
-    },
-    reversescale: traceColorbarAttrs.reversescale,
-    showscale: traceColorbarAttrs.showscale,
-    _nestedModules: {
-        'colorbar': 'Colorbar'
-    }
-};
+Choropleth.attributes = require('../attributes/choropleth');
 
 Choropleth.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     var locations, len, z;
