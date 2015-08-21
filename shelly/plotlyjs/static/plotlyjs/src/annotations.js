@@ -191,9 +191,10 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     x: {
-        valType: 'number',  // but we will convert dates or categories to numbers
+        valType: 'number',
         description: [
-            'Sets the annotation\'s x position'
+            'Sets the annotation\'s x position.',
+            'Note that dates and categories are converted to numbers.'
         ].join(' ')
     },
     xanchor: {
@@ -227,9 +228,10 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     y: {
-        valType: 'number',  // but we will convert dates or categories to numbers
+        valType: 'number',
         description: [
-            'Sets the annotation\'s y position'
+            'Sets the annotation\'s y position.',
+            'Note that dates and categories are converted to numbers.'
         ].join(' ')
     },
     yanchor: {

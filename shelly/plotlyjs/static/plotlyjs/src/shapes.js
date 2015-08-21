@@ -48,6 +48,7 @@ shapes.layoutAttributes = {
 
     xref: {
         valType: 'enumerated',
+        values: ['paper', '/^x[0-9]/*$'],
         description: [
             'Sets the shape\'s x coordinate axis.',
             'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
@@ -74,6 +75,7 @@ shapes.layoutAttributes = {
 
     yref: {
         valType: 'enumerated',
+        values: ['paper', '/^y[0-9]/*$'],
         description: [
             'Sets the annotation\'s y coordinate axis.',
             'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
