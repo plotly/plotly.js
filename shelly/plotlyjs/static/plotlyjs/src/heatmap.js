@@ -40,7 +40,7 @@ heatmap.attributes = {
     ].join(' '),
 
     z: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the z data.'
     },
     x: scatterAttrs.x,
@@ -50,16 +50,16 @@ heatmap.attributes = {
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
     text: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the text elements associated with each z value.'
     },
     transpose: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false,
         description: 'Transposes the z data.'
     },
     xtype: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['array', 'scaled'],
         description: [
             'If *array*, the heatmap\'s x coordinates are given by *x*',
@@ -69,7 +69,7 @@ heatmap.attributes = {
         ].join(' ')
     },
     ytype: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['array', 'scaled'],
         description: [
             'If *array*, the heatmap\'s y coordinates are given by *y*',
@@ -87,7 +87,7 @@ heatmap.attributes = {
     reversescale: traceColorbarAttrs.reversescale,
     showscale: traceColorbarAttrs.showscale,
     zsmooth: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['fast', 'best', false],
         dflt: false,
         description: [
@@ -95,7 +95,7 @@ heatmap.attributes = {
         ].join(' ')
     },
     connectgaps: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false,
         description: [
             'Determines whether or not gaps',

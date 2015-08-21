@@ -1360,15 +1360,15 @@ lib.stripTrailingSlash = function (str) {
 // Helpers for defaults and attribute validation
 var fontAttrs = {
     family: {
-        type: 'string',
+        valType: 'string',
         noBlank: true,
         strict: true
     },
     size: {
-        type: 'number',
+        valType: 'number',
         min: 1
     },
-    color: {type: 'color'}
+    color: {valType: 'color'}
 };
 
 var fontAttrsArrayOk = null;

@@ -5,7 +5,7 @@ var extendFlat = Plotly.Lib.extendFlat;
 
 module.exports = {
     showspikes: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: true,
         description: [
             'Sets whether or not spikes starting from',
@@ -13,7 +13,7 @@ module.exports = {
         ].join(' ')
     },
     spikesides: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: true,
         description: [
             'Sets whether or not spikes extending from the',
@@ -22,18 +22,18 @@ module.exports = {
         ].join(' ')
     },
     spikethickness: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 2,
         description: 'Sets the thickness (in px) of the spikes.'
     },
     spikecolor: {
-        type: 'color',
+        valType: 'color',
         dflt: 'rgb(0,0,0)',
         description: 'Sets the color of the spikes.'
     },
     showbackground: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false,
         description: [
             'Sets whether or not this axis\' wall',
@@ -41,12 +41,12 @@ module.exports = {
         ].join(' ')
     },
     backgroundcolor: {
-        type: 'color',
+        valType: 'color',
         dflt: 'rgba(204, 204, 204, 0.5)',
         description: 'Sets the background color of this axis\' wall.'
     },
     showaxeslabels: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: true,
         description: 'Sets whether or not this axis is labeled'
     },

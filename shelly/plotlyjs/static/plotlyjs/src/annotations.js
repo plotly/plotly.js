@@ -57,7 +57,7 @@ annotations.ARROWPATHS = [
 annotations.layoutAttributes = {
     _isLinkedToArray: true,
     text: {
-        type: 'string',
+        valType: 'string',
         blankOk: false,
         description: [
             'Sets the text associated with this annotation.',
@@ -68,7 +68,7 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     textangle: {
-        type: 'angle',
+        valType: 'angle',
         dflt: 0,
         description: [
             'Sets the angle at which the `text` is drawn',
@@ -76,18 +76,18 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     font: {
-        type: 'font',
+        valType: 'font',
         description: 'Sets the annotation text font.'
     },
     opacity: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         dflt: 1,
         description: 'Sets the opacity of the annotation (text + arrow).'
     },
     align: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['left', 'center', 'right'],
         dflt: 'center',
         description: [
@@ -98,19 +98,19 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     bgcolor: {
-        type: 'color',
+        valType: 'color',
         dflt: 'rgba(0,0,0,0)',
         description: 'Sets the background color of the annotation.'
     },
     bordercolor: {
-        type: 'color',
+        valType: 'color',
         dflt: 'rgba(0,0,0,0)',
         description: [
             'Sets the color of the border enclosing the annotation `text`.'
         ].join(' ')
     },
     borderpad: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 1,
         description: [
@@ -119,7 +119,7 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     borderwidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 1,
         description: [
@@ -129,7 +129,7 @@ annotations.layoutAttributes = {
     },
     // arrow
     showarrow: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: true,
         description: [
             'Determines whether or not the annotation is drawn with an arrow.',
@@ -138,29 +138,29 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     arrowcolor: {
-        type: 'color',
+        valType: 'color',
         description: 'Sets the color of the annotation arrow.'
     },
     arrowhead: {
-        type: 'integer',
+        valType: 'integer',
         min: 0,
         max: annotations.ARROWPATHS.length,
         dflt: 1,
         description: 'Sets the annotation arrow head style.'
     },
     arrowsize: {
-        type: 'number',
+        valType: 'number',
         min: 0.3,
         dflt: 1,
         description: 'Sets the size (in px) of annotation arrow head.'
     },
     arrowwidth: {
-        type: 'number',
+        valType: 'number',
         min: 0.1,
         description: 'Sets the width (in px) of annotation arrow.'
     },
     ax: {
-        type: 'number',
+        valType: 'number',
         dflt: -10,
         description: [
             'Sets the x component of the arrow tail about the arrow head.',
@@ -169,7 +169,7 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     ay: {
-        type: 'number',
+        valType: 'number',
         dflt: -30,
         description: [
             'Sets the y component of the arrow tail about the arrow head.',
@@ -179,7 +179,7 @@ annotations.layoutAttributes = {
     },
     // positioning
     xref: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['paper', '/^x[0-9]/*$'],
         description: [
             'Sets the annotation\'s x coordinate axis.',
@@ -191,13 +191,13 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     x: {
-        type: 'number',  // but we will convert dates or categories to numbers
+        valType: 'number',  // but we will convert dates or categories to numbers
         description: [
             'Sets the annotation\'s x position'
         ].join(' ')
     },
     xanchor: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'auto',
         description: [
@@ -215,7 +215,7 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     yref: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['paper', '/^y[0-9]/*$'],
         description: [
             'Sets the annotation\'s y coordinate axis.',
@@ -227,13 +227,13 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     y: {
-        type: 'number',  // but we will convert dates or categories to numbers
+        valType: 'number',  // but we will convert dates or categories to numbers
         description: [
             'Sets the annotation\'s y position'
         ].join(' ')
     },
     yanchor: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'auto',
         description: [

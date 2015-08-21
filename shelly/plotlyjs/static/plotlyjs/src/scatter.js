@@ -17,11 +17,11 @@ scatter.PTS_LINESONLY = 20;
 
 scatter.attributes = {
     x: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the x coordinates.'
     },
     x0: {
-        type: 'any',
+        valType: 'any',
         dflt: 0,
         description: [
             'Alternate to `x`.',
@@ -31,7 +31,7 @@ scatter.attributes = {
         ].join(' ')
     },
     dx: {
-        type: 'number',
+        valType: 'number',
         dflt: 1,
         description: [
             'Sets the x coordinate step.',
@@ -39,11 +39,11 @@ scatter.attributes = {
         ].join(' ')
     },
     y: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the y coordinates.'
     },
     y0: {
-        type: 'any',
+        valType: 'any',
         dflt: 0,
         description: [
             'Alternate to `y`.',
@@ -53,7 +53,7 @@ scatter.attributes = {
         ].join(' ')
     },
     dy: {
-        type: 'number',
+        valType: 'number',
         dflt: 1,
         description: [
             'Sets the y coordinate step.',
@@ -61,13 +61,13 @@ scatter.attributes = {
         ].join(' ')
     },
     text: {
-        type: 'string',  // TODO 'data_array' ?
+        valType: 'string',  // TODO 'data_array' ?
         dflt: '',
         arrayOk: true,
         description: 'Sets text elements associated with each (x,y) pair.'
     },
     mode: {
-        type: 'flaglist',
+        valType: 'flaglist',
         flags: ['lines','markers','text'],
         extras: ['none'],
         description: [
@@ -79,17 +79,17 @@ scatter.attributes = {
     },
     line: {
         color: {
-            type: 'color',
+            valType: 'color',
             description: 'Sets the line color.'
         },
         width: {
-            type: 'number',
+            valType: 'number',
             min: 0,
             dflt: 2,
             description: 'Sets the line width (in px).'
         },
         shape: {
-            type: 'enumerated',
+            valType: 'enumerated',
             values: ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'],
             dflt: 'linear',
             description: [
@@ -99,7 +99,7 @@ scatter.attributes = {
             ].join(' ')
         },
         smoothing: {
-            type: 'number',
+            valType: 'number',
             min: 0,
             max: 1.3,
             dflt: 1,
@@ -110,7 +110,7 @@ scatter.attributes = {
             ].join(' ')
         },
         dash: {
-            type: 'string',
+            valType: 'string',
             // string type usually doesn't take values... this one should really be
             // a special type or at least a special coercion function, from the GUI
             // you only get these values but elsewhere the user can supply a list of
@@ -121,7 +121,7 @@ scatter.attributes = {
         }
     },
     connectgaps: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false,
         description: [
             'Determines whether or not gaps',
@@ -130,7 +130,7 @@ scatter.attributes = {
         ].join(' ')
     },
     fill: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx'],
         dflt: 'none',
         description: [
@@ -139,12 +139,12 @@ scatter.attributes = {
         ].join(' ')
     },
     fillcolor: {
-        type: 'color',
+        valType: 'color',
         description: 'Sets the fill color.'
     },
     marker: {
         symbol: {
-            type: 'enumerated',
+            valType: 'enumerated',
             values: Plotly.Drawing.symbolList,
             dflt: 'circle',
             arrayOk: true,
@@ -157,26 +157,26 @@ scatter.attributes = {
             ].join(' ')
         },
         opacity: {
-            type: 'number',
+            valType: 'number',
             min: 0,
             max: 1,
             arrayOk: true,
             description: 'Sets the marker opacity.'
         },
         size: {
-            type: 'number',
+            valType: 'number',
             min: 0,
             dflt: 6,
             arrayOk: true,
             description: 'Sets the marker size (in px).'
         },
         color: {
-            type: 'color',
+            valType: 'color',
             arrayOk: true,
             description: 'Sets the marker color.'
         },
         maxdisplayed: {
-            type: 'number',
+            valType: 'number',
             min: 0,
             dflt: 0,
             description: [
@@ -185,7 +185,7 @@ scatter.attributes = {
             ].join(' ')
         },
         sizeref: {
-            type: 'number',
+            valType: 'number',
             dflt: 1,
             description: [
                 'Has only an effect if `marker.size` is set to a numerical array.',
@@ -194,7 +194,7 @@ scatter.attributes = {
             ].join(' ')
         },
         sizemin: {
-            type: 'number',
+            valType: 'number',
             min: 0,
             dflt: 0,
             description: [
@@ -203,7 +203,7 @@ scatter.attributes = {
             ].join(' ')
         },
         sizemode: {
-            type: 'enumerated',
+            valType: 'enumerated',
             values: ['diameter', 'area'],
             dflt: 'diameter',
             description: [
@@ -213,14 +213,14 @@ scatter.attributes = {
             ].join(' ')
         },
         colorscale: {
-            type: 'colorscale',
+            valType: 'colorscale',
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
                 'Sets the colorscale.'
             ].join(' ')
         },
         cauto: {
-            type: 'boolean',
+            valType: 'boolean',
             dflt: true,
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
@@ -229,7 +229,7 @@ scatter.attributes = {
             ].join(' ')
         },
         cmax: {
-            type: 'number',
+            valType: 'number',
             dflt: null,
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
@@ -237,7 +237,7 @@ scatter.attributes = {
             ].join(' ')
         },
         cmin: {
-            type: 'number',
+            valType: 'number',
             dflt: null,
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
@@ -245,7 +245,7 @@ scatter.attributes = {
             ].join(' ')
         },
         autocolorscale: {
-            type: 'boolean',
+            valType: 'boolean',
             dflt: true,
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
@@ -254,7 +254,7 @@ scatter.attributes = {
             ].join(' ')
         },
         reversescale: {
-            type: 'boolean',
+            valType: 'boolean',
             dflt: false,
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
@@ -262,7 +262,7 @@ scatter.attributes = {
             ].join(' ')
         },
         showscale: {
-            type: 'boolean',
+            valType: 'boolean',
             dflt: false,
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
@@ -271,25 +271,25 @@ scatter.attributes = {
         },
         line: {
             color: {
-                type: 'color',
+                valType: 'color',
                 arrayOk: true,
                 description: 'Sets the color of the lines bounding the marker points.'
             },
             width: {
-                type: 'number',
+                valType: 'number',
                 min: 0,
                 arrayOk: true,
                 description: 'Sets the width (in px) of the lines bounding the marker points.'
             },
             colorscale: {
-                type: 'colorscale',
+                valType: 'colorscale',
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
                     'Sets the colorscale.'
                 ].join(' ')
             },
             cauto: {
-                type: 'boolean',
+                valType: 'boolean',
                 dflt: true,
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
@@ -298,7 +298,7 @@ scatter.attributes = {
                 ].join(' ')
             },
             cmax: {
-                type: 'number',
+                valType: 'number',
                 dflt: null,
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
@@ -306,7 +306,7 @@ scatter.attributes = {
                 ].join(' ')
             },
             cmin: {
-                type: 'number',
+                valType: 'number',
                 dflt: null,
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
@@ -314,7 +314,7 @@ scatter.attributes = {
                 ].join(' ')
             },
             autocolorscale: {
-                type: 'boolean',
+                valType: 'boolean',
                 dflt: true,
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
@@ -323,7 +323,7 @@ scatter.attributes = {
                 ].join(' ')
             },
             reversescale: {
-                type: 'boolean',
+                valType: 'boolean',
                 dflt: false,
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
@@ -333,7 +333,7 @@ scatter.attributes = {
         }
     },
     textposition: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [
             'top left', 'top center', 'top right',
             'middle left', 'middle center', 'middle right',
@@ -347,7 +347,7 @@ scatter.attributes = {
         ].join(' ')
     },
     textfont: {
-        type: 'font',
+        valType: 'font',
         arrayOk: true,
         description: 'Sets the text font.'
     },

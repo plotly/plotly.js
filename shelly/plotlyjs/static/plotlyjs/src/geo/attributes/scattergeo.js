@@ -9,15 +9,15 @@ var extendFlat = Plotly.Lib.extendFlat;
 
 module.exports = {
     lon: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the longitude coordinates (in degrees East).'
     },
     lat: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the latitude coordinates (in degrees North).'
     },
     locations: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the coordinates via location IDs or names.',
             'Coordinates correspond to the centroid of each location given.',
@@ -25,7 +25,7 @@ module.exports = {
         ].join(' ')
     },
     locationmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['ISO-3', 'USA-states', 'country names'],
         dflt: 'ISO-3',
         description: [
