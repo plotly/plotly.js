@@ -56,9 +56,9 @@ annotations.ARROWPATHS = [
 
 annotations.layoutAttributes = {
     _isLinkedToArray: true,
+
     text: {
         valType: 'string',
-        blankOk: false,
         description: [
             'Sets the text associated with this annotation.',
             'Plotly uses a subset of HTML tags to do things like',
