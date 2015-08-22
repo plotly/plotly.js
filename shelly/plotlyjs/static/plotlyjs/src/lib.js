@@ -1413,7 +1413,7 @@ lib.valObjects = {
             else propOut.set(v);
         }
     },
-    boolean: {
+    'boolean': {
         description: 'A boolean (true/false) value.',
         requiredOpts: [],
         otherOpts: ['dflt'],
