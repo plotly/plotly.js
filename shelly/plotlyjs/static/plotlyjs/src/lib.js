@@ -1465,7 +1465,7 @@ lib.valObjects = {
         ].join(' '),
         requiredOpts: [],
         // TODO 'values shouldn't be in there (edge case: 'dash' in Scatter)
-        otherOpts: ['dflt', 'noBlank', 'strict', 'values'],
+        otherOpts: ['dflt', 'noBlank', 'strict', 'arrayOk', 'values'],
         coerceFunction: function(v, propOut, dflt, opts) {
             if(opts.strict===true && typeof v !== 'string') {
                 propOut.set(dflt);
