@@ -3,35 +3,35 @@ var Plotly = require('../../plotly');
 var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
 
 module.exports = {
-    x: {type: 'data_array'},
-    y: {type: 'data_array'},
-    z: {type: 'data_array'},
+    x: {valType: 'data_array'},
+    y: {valType: 'data_array'},
+    z: {valType: 'data_array'},
 
-    i: {type: 'data_array'},
-    j: {type: 'data_array'},
-    k: {type: 'data_array'},
+    i: {valType: 'data_array'},
+    j: {valType: 'data_array'},
+    k: {valType: 'data_array'},
 
     delaunayaxis: {
-      type: 'enumerated',
+      valType: 'enumerated',
       values: [ 'x', 'y', 'z' ],
       dflt: 'z'
     },
 
     alphahull: {
-      type: 'number',
+      valType: 'number',
       dflt: -1
     },
 
-    intensity: {type: 'data_array'},
+    intensity: {valType: 'data_array'},
 
     //Color field
-    color: { type: 'color' },
-    vertexcolor: { type: 'data_array' },  //FIXME: this should be a color array
-    facecolor: { type: 'data_array' },
+    color: { valType: 'color' },
+    vertexcolor: { valType: 'data_array' },  //FIXME: this should be a color array
+    facecolor: { valType: 'data_array' },
 
     //Opacity
     opacity: {
-      type: 'number',
+      valType: 'number',
       min: 0,
       max: 1,
       dflt: 1
@@ -39,21 +39,21 @@ module.exports = {
 
     //Flat shaded mode
     flatshading: {
-      type: 'boolean',
+      valType: 'boolean',
       dflt: false
     },
 
     contour: {
         show: {
-            type: 'boolean',
+            valType: 'boolean',
             dflt: false
         },
         color: {
-            type: 'color',
+            valType: 'color',
             dflt: '#000'
         },
         width: {
-            type: 'number',
+            valType: 'number',
             min: 1,
             max: 16,
             dflt: 2
@@ -66,31 +66,31 @@ module.exports = {
 
     lighting: {
         ambient: {
-            type: 'number',
+            valType: 'number',
             min: 0.00,
             max: 1.0,
             dflt: 0.8
         },
         diffuse: {
-            type: 'number',
+            valType: 'number',
             min: 0.00,
             max: 1.00,
             dflt: 0.8
         },
         specular: {
-            type: 'number',
+            valType: 'number',
             min: 0.00,
             max: 2.00,
             dflt: 0.05
         },
         roughness: {
-            type: 'number',
+            valType: 'number',
             min: 0.00,
             max: 1.00,
             dflt: 0.5
         },
         fresnel: {
-            type: 'number',
+            valType: 'number',
             min: 0.00,
             max: 5.00,
             dflt: 0.2

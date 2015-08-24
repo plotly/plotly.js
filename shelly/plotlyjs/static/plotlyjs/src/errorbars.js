@@ -10,13 +10,13 @@ var errorBars = module.exports = {},
 
 errorBars.attributes = {
     visible: {
-        type: 'boolean',
+        valType: 'boolean',
         description: [
             'Determines whether or not this set of error bars is visible.'
         ].join(' ')
     },
     type: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['percent', 'constant', 'sqrt', 'data'],
         description: [
             'Determines the rule used to generate the error bars.',
@@ -34,7 +34,7 @@ errorBars.attributes = {
         ].join(' ')
     },
     symmetric: {
-        type: 'boolean',
+        valType: 'boolean',
         description: [
             'Determines whether or not the error bars have the same length',
             'in both direction',
@@ -42,14 +42,14 @@ errorBars.attributes = {
         ].join(' ')
     },
     array: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the data corresponding the length of each error bar.',
             'Values are plotted relative to the underlying data.'
         ].join(' ')
     },
     arrayminus: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the data corresponding the length of each error bar in the',
             'bottom (left) direction for vertical (horizontal) bars',
@@ -57,7 +57,7 @@ errorBars.attributes = {
         ].join(' ')
     },
     value: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 10,
         description: [
@@ -68,7 +68,7 @@ errorBars.attributes = {
         ].join(' ')
     },
     valueminus: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 10,
         description: [
@@ -80,33 +80,33 @@ errorBars.attributes = {
         ].join(' ')
     },
     traceref: {
-        type: 'integer',
+        valType: 'integer',
         min: 0,
         dflt: 0
     },
     tracerefminus: {
-        type: 'integer',
+        valType: 'integer',
         min: 0,
         dflt: 0
     },
     copy_ystyle: {
-        type: 'boolean'
+        valType: 'boolean'
     },
     copy_zstyle: {
-        type: 'boolean'
+        valType: 'boolean'
     },
     color: {
-        type: 'color',
+        valType: 'color',
         description: 'Sets the stoke color of the error bars.'
     },
     thickness: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 2,
         description: 'Sets the thickness (in px) of the error bars.'
     },
     width: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         description: [
             'Sets the width (in px) of the cross-bar at both ends',

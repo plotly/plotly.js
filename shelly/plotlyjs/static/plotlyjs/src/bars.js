@@ -24,7 +24,7 @@ bars.attributes = {
     dy: scatterAttrs.dy,
     text: scatterAttrs.text,
     orientation: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['v', 'h'],
         description: [
             'Sets the orientation of the bars.',
@@ -64,7 +64,7 @@ bars.attributes = {
 
 bars.layoutAttributes = {
     barmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['stack', 'group', 'overlay'],
         dflt: 'group',
         description: [
@@ -78,7 +78,7 @@ bars.layoutAttributes = {
         ].join(' ')
     },
     barnorm: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['', 'fraction', 'percent'],
         dflt: '',
         description: [
@@ -89,7 +89,7 @@ bars.layoutAttributes = {
         ].join(' ')
     },
     bargap: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         description: [
@@ -98,7 +98,7 @@ bars.layoutAttributes = {
         ].join(' ')
     },
     bargroupgap: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         dflt: 0,
