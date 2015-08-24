@@ -1502,8 +1502,9 @@ lib.valObjects = {
             'A Plotly colorscale either picked by a name:',
             '(any of', colorscaleNames.join(', '), ')',
             'customized as an {array} of 2-element {arrays} where',
-            'the first element is the normalized color level value and the,',
-            'second item is a valid color string.'
+            'the first element is the normalized color level value',
+            '(starting at *0* and ending at *1*),'
+            'and the second item is a valid color string.'
         ].join(' '),
         requiredOpts: [],
         otherOpts: ['dflt'],
@@ -1603,7 +1604,7 @@ lib.valObjects = {
     flaglist: {
         description: [
             'A string representing a combination of flags',
-            '(other does not matter here).',
+            '(order does not matter here).',
             'Combine any of the available `flags` with *+*.',
             '(e.g. (\'lines+markers\')).',
             'Values in `extras` cannot be combined.'
