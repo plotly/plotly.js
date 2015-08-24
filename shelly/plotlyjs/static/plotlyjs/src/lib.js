@@ -1503,7 +1503,7 @@ lib.valObjects = {
             '(any of', colorscaleNames.join(', '), ')',
             'customized as an {array} of 2-element {arrays} where',
             'the first element is the normalized color level value',
-            '(starting at *0* and ending at *1*),'
+            '(starting at *0* and ending at *1*),',
             'and the second item is a valid color string.'
         ].join(' '),
         requiredOpts: [],
