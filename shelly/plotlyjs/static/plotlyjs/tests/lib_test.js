@@ -476,7 +476,7 @@ describe('Test lib.js:', function() {
             expect(cOut).toBe(outObj.b.c);
         });
 
-        describe('font', function() {
+        describe('font valType', function() {
             var defaultFont = {
                 family: '"Open sans", verdana, arial, sans-serif, DEFAULT',
                 size: 314159,
@@ -526,7 +526,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        describe('string', function() {
+        describe('string valType', function() {
             var dflt = 'Jabberwock',
                 stringAttrs = {
                     s: {valType: 'string', dflt: dflt},
@@ -563,6 +563,49 @@ describe('Test lib.js:', function() {
                 expect(coerce({s: {1: 2}}, {}, stringAttrs, 's'))
                     .toEqual('[object Object]'); // useless, but that's what it does!!
             });
+        });
+
+        describe('info_array valType', function() {
+            var infoArrayAttrs = {
+                    range: {
+                        valType: 'info_array',
+                        items: [
+                            { valType: 'number' },
+                            { valType: 'number' }
+                        ]
+                    },
+                    domain: {
+                        valType: 'info_array',
+                        items: [
+                            { valType: 'number', min: 0, max: 1 },
+                            { valType: 'number', min: 0, max: 1 }
+                        ],
+                        dflt: [0, 1]
+                    }
+                };
+
+            it('should insert the default if input is missing', function() {
+                expect(coerce(undefined, {}, infoArrayAttrs, 'domain'))
+                    .toEqual([0, 1]);
+                expect(coerce(undefined, {}, infoArrayAttrs, 'domain', [0, 0.5]))
+                    .toEqual([0, 0.5]);
+            });
+
+            it('should dive into the items and coerce accordingly', function() {
+                expect(coerce({range: ['-10', 100]}, {}, infoArrayAttrs, 'range'))
+                    .toEqual([-10, 100]);
+
+                expect(coerce({domain: [0, 0.5]}, {}, infoArrayAttrs, 'domain'))
+                    .toEqual([0, 0.5]);
+
+                expect(coerce({domain: [-5, 0.5]}, {}, infoArrayAttrs, 'domain'))
+                    .toEqual([0, 0.5]);
+
+                expect(coerce({domain: [0.5, 4.5]}, {}, infoArrayAttrs, 'domain'))
+                    .toEqual([0.5, 1]);
+            });
+
+
         });
     });
 
