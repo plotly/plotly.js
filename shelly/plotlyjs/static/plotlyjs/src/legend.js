@@ -9,26 +9,26 @@ var legend = module.exports = {},
 
 legend.layoutAttributes = {
     bgcolor: {
-        type: 'color',
+        valType: 'color',
         description: 'Sets the legend background color.'
     },
     bordercolor: {
-        type: 'color',
+        valType: 'color',
         dflt: Plotly.Color.defaultLine,
         description: 'Sets the color of the border enclosing the legend.'
     },
     borderwidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 0,
         description: 'Sets the width (in px) of the border enclosing the legend.'
     },
     font: {
-        type: 'font',
+        valType: 'font',
         description: 'Sets the font used to text the legend items.'
     },
     traceorder: {
-        type: 'flaglist',
+        valType: 'flaglist',
         flags: ['reversed', 'grouped'],
         extras: ['normal'],
         description: [
@@ -48,7 +48,7 @@ legend.layoutAttributes = {
         ].join(' ')
     },
     tracegroupgap: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 10,
         description: [
@@ -56,14 +56,14 @@ legend.layoutAttributes = {
         ].join(' ')
     },
     x: {
-        type: 'number',
+        valType: 'number',
         min: -2,
         max: 3,
         dflt: 1.02,
         description: 'Sets the x position (in normalized coordinates) of the legend.'
     },
     xanchor: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'left',
         description: [
@@ -73,14 +73,14 @@ legend.layoutAttributes = {
         ].join(' ')
     },
     y: {
-        type: 'number',
+        valType: 'number',
         min: -2,
         max: 3,
         dflt: 1,
         description: 'Sets the y position (in normalized coordinates) of the legend.'
     },
     yanchor: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'auto',
         description: [

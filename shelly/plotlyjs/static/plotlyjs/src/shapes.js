@@ -8,7 +8,7 @@ var shapes = module.exports = {},
 shapes.layoutAttributes = {
     _isLinkedToArray: true,
     opacity: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         dflt: 1,
@@ -20,14 +20,14 @@ shapes.layoutAttributes = {
         dash: scatterLineAttrs.dash
     },
     fillcolor: {
-        type: 'color',
+        valType: 'color',
         dflt: 'rgba(0,0,0,0)',
         description: [
             'Sets the color filling the shape\'s interior.'
         ].join(' ')
     },
     type: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['circle', 'rect', 'path', 'line'],
         description: [
             'Specifies the shape type to be drawn.',
@@ -47,7 +47,7 @@ shapes.layoutAttributes = {
     },
 
     xref: {
-        type: 'enumerated',
+        valType: 'enumerated',
         description: [
             'Sets the shape\'s x coordinate axis.',
             'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
@@ -58,14 +58,14 @@ shapes.layoutAttributes = {
         ].join(' ')
     },
     x0: {
-        type: 'any',
+        valType: 'any',
         description: [
             'Sets the shape\'s starting x position.',
             'See `type` for more info.'
         ].join(' ')
     },
     x1: {
-        type: 'any',
+        valType: 'any',
         description: [
             'Sets the shape\'s end x position.',
             'See `type` for more info.'
@@ -73,7 +73,7 @@ shapes.layoutAttributes = {
     },
 
     yref: {
-        type: 'enumerated',
+        valType: 'enumerated',
         description: [
             'Sets the annotation\'s y coordinate axis.',
             'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
@@ -84,14 +84,14 @@ shapes.layoutAttributes = {
         ].join(' ')
     },
     y0: {
-        type: 'any',
+        valType: 'any',
         description: [
             'Sets the shape\'s starting y position.',
             'See `type` for more info.'
         ].join(' ')
     },
     y1: {
-        type: 'any',
+        valType: 'any',
         description: [
             'Sets the shape\'s end y position.',
             'See `type` for more info.'
@@ -99,7 +99,7 @@ shapes.layoutAttributes = {
     },
 
     path: {
-        type: 'string',
+        valType: 'string',
         dflt: [
             'For `type` *path* - a valid SVG path but with the pixel values',
             'replaced by data values. There are a few restrictions / quirks',

@@ -12,12 +12,12 @@ Plotly.Plots.register(pie, 'pie', ['pie', 'showLegend']);
 
 pie.attributes = {
     labels: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the sector labels.'
     },
     // equivalent of x0 and dx, if label is missing
     label0: {
-        type: 'number',
+        valType: 'number',
         dflt: 0,
         description: [
             'Alternate to `labels`.',
@@ -27,19 +27,19 @@ pie.attributes = {
         ].join(' ')
     },
     dlabel: {
-        type: 'number',
+        valType: 'number',
         dflt: 1,
         description: 'Sets the label step. See `label0` for more info.'
     },
 
     values: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the values of the sectors of this pie chart.'
     },
 
     marker: {
         colors: {
-            type: 'data_array',
+            valType: 'data_array',
             description: [
                 'Sets the color of each sector of this pie chart.',
                 'If not specified, the default trace color set is used',
@@ -49,7 +49,7 @@ pie.attributes = {
 
         line: {
             color: {
-                type: 'color',
+                valType: 'color',
                 dflt: Plotly.Color.defaultLine,
                 arrayOk: true,
                 description: [
@@ -57,7 +57,7 @@ pie.attributes = {
                 ].join(' ')
             },
             width: {
-                type: 'number',
+                valType: 'number',
                 min: 0,
                 dflt: 0,
                 arrayOk: true,
@@ -69,7 +69,7 @@ pie.attributes = {
     },
 
     text: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets text elements associated with each sector.'
     },
 
@@ -78,7 +78,7 @@ pie.attributes = {
 // '(this example involves a map too - may someday be a whole trace type',
 // 'of its own. but the point is the size of the whole pie is important.)'
     scalegroup: {
-        type: 'string',
+        valType: 'string',
         dflt: '',
         description: [
             'If there are multiple pies that should be sized according to',
@@ -89,7 +89,7 @@ pie.attributes = {
 
     // labels (legend is handled by plots.attributes.showlegend and layout.hiddenlabels)
     textinfo: {
-        type: 'flaglist',
+        valType: 'flaglist',
         flags: ['label', 'text', 'value', 'percent'],
         extras: ['none'],
         description: [
@@ -97,7 +97,7 @@ pie.attributes = {
         ].join(' ')
     },
     hoverinfo: {
-        type: 'flaglist',
+        valType: 'flaglist',
         flags: ['label', 'text', 'value', 'percent', 'name'],
         extras: ['all', 'none'],
         dflt: 'all',
@@ -106,7 +106,7 @@ pie.attributes = {
         ].join(' ')
     },
     textposition: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['inside', 'outside', 'auto', 'none'],
         dflt: 'auto',
         arrayOk: true,
@@ -115,33 +115,33 @@ pie.attributes = {
         ].join(' ')
     },
     textfont: {
-        type: 'font',
+        valType: 'font',
         description: 'Sets the font used for `textinfo`.'
     },
     insidetextfont: {
-        type: 'font',
+        valType: 'font',
         description: 'Sets the font used for `textinfo` lying inside the pie.'
     },
     outsidetextfont: {
-        type: 'font',
+        valType: 'font',
         description: 'Sets the font used for `textinfo` lying outside the pie.'
     },
 
     // position and shape
     domain: {
         x: [
-            {type: 'number', min: 0, max: 1, dflt: 0},
-            {type: 'number', min: 0, max: 1, dflt: 1}
+            {valType: 'number', min: 0, max: 1, dflt: 0},
+            {valType: 'number', min: 0, max: 1, dflt: 1}
         ],
         y: [
-            {type: 'number', min: 0, max: 1, dflt: 0},
-            {type: 'number', min: 0, max: 1, dflt: 1}
+            {valType: 'number', min: 0, max: 1, dflt: 0},
+            {valType: 'number', min: 0, max: 1, dflt: 1}
         ]
     },
     // 3D attributes commented out until I finish them in a later PR
     // tilt: {
     //     // degrees to tilt the pie back from straight on
-    //     type: 'number',
+    //     valType: 'number',
     //     min: 0,
     //     max: 90,
     //     dflt: 0
@@ -149,7 +149,7 @@ pie.attributes = {
     // tiltaxis: {
     //     // degrees away from straight up to tilt the pie
     //     // only has an effect if tilt is nonzero
-    //     type: 'number',
+    //     valType: 'number',
     //     min: -360,
     //     max: 360,
     //     dflt: 0
@@ -157,7 +157,7 @@ pie.attributes = {
     // depth: {
     //     // "3D" size, as a fraction of radius
     //     // only has an effect if tilt is nonzero
-    //     type: 'number',
+    //     valType: 'number',
     //     min: 0,
     //     max: 10,
     //     dflt: 0.5
@@ -167,13 +167,13 @@ pie.attributes = {
     //     // with a 3D effect. We could of course get all
     //     // fancy with lighting effects, but maybe this is
     //     // sufficient.
-    //     type: 'number',
+    //     valType: 'number',
     //     min: 0,
     //     max: 1,
     //     dflt: 0.2
     // },
     hole: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         dflt: 0,
@@ -185,7 +185,7 @@ pie.attributes = {
 
     // ordering and direction
     sort: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: true,
         description: [
             'Determines whether or not the sectors of reordered',
@@ -200,7 +200,7 @@ pie.attributes = {
          *
          * see http://visage.co/data-visualization-101-pie-charts/
          */
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['clockwise', 'counterclockwise'],
         dflt: 'counterclockwise',
         description: [
@@ -209,7 +209,7 @@ pie.attributes = {
         ].join(' ')
     },
     rotation: {
-        type: 'number',
+        valType: 'number',
         min: -360,
         max: 360,
         dflt: 0,
@@ -220,7 +220,7 @@ pie.attributes = {
     },
 
     pull: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         dflt: 0,
@@ -309,7 +309,7 @@ pie.layoutAttributes = {
      * but it can contain many labels, and can hide slices
      * from several pies simultaneously
      */
-    hiddenlabels: {type: 'data_array'}
+    hiddenlabels: {valType: 'data_array'}
 };
 
 pie.supplyLayoutDefaults = function(layoutIn, layoutOut) {
