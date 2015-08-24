@@ -1264,57 +1264,108 @@ Plotly.newPlot = function (gd, data, layout, config) {
 
 plots.attributes = {
     type: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: allTypes,
         dflt: 'scatter'
     },
     visible: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [true, false, 'legendonly'],
-        dflt: true
+        dflt: true,
+        description: [
+            'Determines whether or not this trace is visible.',
+            'If *legendonly*, the trace is not drawn,',
+            'but can appear as a legend item',
+            '(provided that the legend itself is visible).'
+        ].join(' ')
     },
     showlegend: {
-        type: 'boolean',
-        dflt: true
+        valType: 'boolean',
+        dflt: true,
+        description: [
+            'Determines whether or not an item corresponding to this',
+            'trace is shown in the legend.'
+        ].join(' ')
     },
     legendgroup: {
-        type: 'string',
-        dflt: ''
+        valType: 'string',
+        dflt: '',
+        description: [
+            'Sets the legend group for this trace.',
+            'Traces part of the same legend group hide/show at the same time',
+            'when toggling legend items.'
+        ].join(' ')
     },
     opacity: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
-        dflt: 1
+        dflt: 1,
+        description: 'Sets the opacity of the trace.'
     },
     name: {
-        type: 'string'
+        valType: 'string',
+        description: [
+            'Sets the trace name.',
+            'The trace name appear as the legend item and on hover.'
+        ].join(' ')
     },
     xaxis: {
-        type: 'axisid',
-        dflt: 'x'
+        valType: 'axisid',
+        dflt: 'x',
+        description: [
+            'Sets a reference between this trace\'s x coordinates and',
+            'a 2D cartesian x axis.',
+            'If *x* (the default value), the x coordinates refer to',
+            '`layout.xaxis`.',
+            'If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.'
+        ].join(' ')
     },
     yaxis: {
-        type: 'axisid',
-        dflt: 'y'
+        valType: 'axisid',
+        dflt: 'y',
+        description: [
+            'Sets a reference between this trace\'s y coordinates and',
+            'a 2D cartesian y axis.',
+            'If *y* (the default value), the y coordinates refer to',
+            '`layout.yaxis`.',
+            'If *y2*, the y coordinates refer to `layout.xaxis2`, and so on.'
+        ].join(' ')
     },
     scene: {
-        type: 'sceneid',
-        dflt: 'scene'
+        valType: 'sceneid',
+        dflt: 'scene',
+        description: [
+            'Sets a reference between this trace\'s 3D coordinate system and',
+            'a 3D scene.',
+            'If *scene* (the default value), the (x,y,z) coordinates refer to',
+            '`layout.scene`.',
+            'If *scene2*, the (x,y,z) coordinates refer to `layout.scene2`,',
+            'and so on.'
+        ].join(' ')
     },
     geo: {
-        type: 'geoid',
-        dflt: 'geo'
+        valType: 'geoid',
+        dflt: 'geo',
+        description: [
+            'Sets a reference between this trace\'s geospatial coordinates and',
+            'a geographic map.',
+            'If *geo* (the default value), the geospatial coordinates refer to',
+            '`layout.geo`.',
+            'If *geo2*, the geospatial coordinates refer to `layout.geo2`,',
+            'and so on.'
+        ].join(' ')
     },
     uid: {
-        type: 'string',
+        valType: 'string',
         dflt: ''
     },
     hoverinfo: {
-        type: 'flaglist',
+        valType: 'flaglist',
         flags: ['x', 'y', 'z', 'text', 'name'],
         extras: ['all', 'none'],
-        dflt: 'all'
+        dflt: 'all',
+        description: 'Determines which trace information appear on hover.'
     }
 };
 
@@ -1520,107 +1571,152 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
 plots.layoutAttributes = {
     font: {
-        type: 'font',
+        valType: 'font',
         dflt: {
             family: '"Open sans", verdana, arial, sans-serif',
             size: 12,
             color: Plotly.Color.defaultLine
-        }
+        },
+        description: [
+            'Sets the global font.',
+            'Note that fonts used in traces and other',
+            'layout components inherit from the global font.'
+        ].join(' ')
     },
     title: {
-        type: 'string',
-        dflt: 'Click to enter Plot title'
+        valType: 'string',
+        dflt: 'Click to enter Plot title',
+        description: [
+            'Sets the plot\'s title.'
+        ].join(' ')
     },
-    titlefont: {type: 'font'},
+    titlefont: {
+        valType: 'font',
+        description: 'Sets the title font.'
+    },
     autosize: {
-        type: 'enumerated',
+        valType: 'enumerated',
         // TODO: better handling of 'initial'
-        values: [true, false, 'initial']
+        values: [true, false, 'initial'],
+        description: [
+            'Determines whether or not the dimensions of the figure are',
+            'computed as a function of the display size.'
+        ].join(' ')
     },
     width: {
-        type: 'number',
+        valType: 'number',
         min: 10,
-        dflt: 700
+        dflt: 700,
+        description: [
+            'Sets the plot\'s width (in px).'
+        ].join(' ')
     },
     height: {
-        type: 'number',
+        valType: 'number',
         min: 10,
-        dflt: 450
+        dflt: 450,
+        description: [
+            'Sets the plot\'s height (in px).'
+        ].join(' ')
     },
     margin: {
         l: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 80
+            dflt: 80,
+            description: 'Sets the left margin (in px).'
         },
         r: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 80
+            dflt: 80,
+            description: 'Sets the right margin (in px).'
         },
         t: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 100
+            dflt: 100,
+            description: 'Sets the top margin (in px).'
         },
         b: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 80
+            dflt: 80,
+            description: 'Sets the bottom margin (in px).'
         },
         pad: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 0
+            dflt: 0,
+            description: [
+                'Sets the amount of padding (in px)',
+                'between the plotting area and the axis lines'
+            ].join(' ')
         },
         autoexpand: {
-            type: 'boolean',
+            valType: 'boolean',
             dflt: true
         }
     },
     paper_bgcolor: {
-        type: 'color',
-        dflt: Plotly.Color.background
+        valType: 'color',
+        dflt: Plotly.Color.background,
+        description: 'Sets the color of paper where the graph is drawn.'
     },
     plot_bgcolor: {
         // defined here, but set in Axes.supplyLayoutDefaults
         // because it needs to know if there are (2D) axes or not
-        type: 'color',
-        dflt: Plotly.Color.background
+        valType: 'color',
+        dflt: Plotly.Color.background,
+        description: [
+            'Sets the color of plotting area in-between x and y axes.'
+        ].join(' ')
     },
     separators: {
-        type: 'string',
-        dflt: '.,'
+        valType: 'string',
+        dflt: '.,',
+        description: [
+            'Sets the decimal and thousand separators.',
+            'For example, *. * puts a \'.\' before decimals and',
+            'a space between thousands.'
+        ].join(' ')
     },
     hidesources: {
-        type: 'boolean',
-        dflt: false
+        valType: 'boolean',
+        dflt: false,
+        description: [
+            'Determines whether or not a text link citing the data source is',
+            'placed at the bottom-right cored of the figure.',
+            'Has only an effect only on graphs that have been generated via',
+            'forked graphs from the plotly cloud.'
+        ].join(' ')
     },
     smith: {
         // will become a boolean if/when we implement this
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [false],
         dflt: false
     },
     showlegend: {
         // handled in legend.supplyLayoutDefaults
         // but included here because it's not in the legend object
-        type: 'boolean'
+        valType: 'boolean',
+        description: 'Determines whether or not a legend is drawn.'
     },
     _hasCartesian: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false
     },
     _hasGL3D: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false
     },
     _hasGeo: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false
     },
     _hasPie: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false
     },
     _composedModules: {
