@@ -344,12 +344,12 @@ heatmap.calc = function(gd, trace) {
     }
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
-    var xlen = Plotly.Lib.aggNums(Math.max,null,
-            z.map(function(row) { return row.length; })),
+    var xlen = heatmap.maxRowLength(z),
         xIn = trace.xtype==='scaled' ? '' : trace.x,
         xArray = makeBoundArray(trace, xIn, x0, dx, xlen, xa),
         yIn = trace.ytype==='scaled' ? '' : trace.y,
         yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
+
     Plotly.Axes.expand(xa, xArray);
     Plotly.Axes.expand(ya, yArray);
 
