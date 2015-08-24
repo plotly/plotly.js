@@ -33,35 +33,35 @@ boxes.attributes = {
     ].join(' '),
 
     y: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the y sample data or coordinates.',
             'See overview for more info.'
         ].join(' ')
     },
     x: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the x sample data or coordinates.',
             'See overview for more info.'
         ].join(' ')
     },
     x0: {
-        type: 'any',
+        valType: 'any',
         description: [
             'Sets the x coordinate of the box.',
             'See overview for more info.'
         ].join(' ')
     },
     y0: {
-        type: 'any',
+        valType: 'any',
         description: [
             'Sets the y coordinate of the box.',
             'See overview for more info.'
         ].join(' ')
     },
     whiskerwidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         dflt: 0.5,
@@ -72,7 +72,7 @@ boxes.attributes = {
         ].join(' ')
     },
     boxpoints: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['all', 'outliers', 'suspectedoutliers', false],
         dflt: 'outliers',
         description: [
@@ -86,7 +86,7 @@ boxes.attributes = {
         ].join(' ')
     },
     boxmean: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [true, 'sd', false],
         dflt: false,
         description: [
@@ -96,7 +96,7 @@ boxes.attributes = {
         ].join(' ')
     },
     jitter: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         description: [
@@ -107,7 +107,7 @@ boxes.attributes = {
         ].join(' ')
     },
     pointpos: {
-        type: 'number',
+        valType: 'number',
         min: -2,
         max: 2,
         description: [
@@ -118,7 +118,7 @@ boxes.attributes = {
         ].join(' ')
     },
     orientation: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['v', 'h'],
         description: [
             'Sets the orientation of the box(es).',
@@ -128,7 +128,7 @@ boxes.attributes = {
     },
     marker: {
         outliercolor: {
-            type: 'color',
+            valType: 'color',
             dflt: 'rgba(0,0,0,0)',
             description: 'Sets the color of the outlier sample points.'
         },
@@ -146,11 +146,11 @@ boxes.attributes = {
             width: extendFlat(scatterMarkerLineAttrs.width,
                 {arrayOk: false, dflt: 0}),
             outliercolor: {
-                type: 'color',
+                valType: 'color',
                 description: 'Sets the border line color of the outlier sample points.'
             },
             outlierwidth: {
-                type: 'number',
+                valType: 'number',
                 min: 0,
                 dflt: 1,
                 description: [
@@ -161,11 +161,11 @@ boxes.attributes = {
     },
     line: {
         color: {
-            type: 'color',
+            valType: 'color',
             description: 'Sets the color of line bounding the box(es).'
         },
         width: {
-            type: 'number',
+            valType: 'number',
             min: 0,
             dflt: 2,
             description: 'Sets the width (in px) of line bounding the box(es).'
@@ -176,7 +176,7 @@ boxes.attributes = {
 
 boxes.layoutAttributes = {
     boxmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['group', 'overlay'],
         dflt: 'overlay',
         description: [
@@ -189,7 +189,7 @@ boxes.layoutAttributes = {
         ].join(' ')
     },
     boxgap: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         dflt: 0.3,
@@ -199,7 +199,7 @@ boxes.layoutAttributes = {
         ].join(' ')
     },
     boxgroupgap: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         dflt: 0.3,

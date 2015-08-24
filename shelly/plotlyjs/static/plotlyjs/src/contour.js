@@ -20,7 +20,7 @@ contour.attributes = {
         'histogram2dcontour': 'Heatmap'
     },
     autocontour: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: true,
         description: [
             'Determines whether of not the contour level attributes at',
@@ -30,28 +30,28 @@ contour.attributes = {
         ].join(' ')
     },
     ncontours: {
-        type: 'integer',
+        valType: 'integer',
         dflt: 0,
         description: 'Sets the number of contour levels.'
     },
     contours: {
         start: {
-            type: 'number',
+            valType: 'number',
             dflt: null,
             description: 'Sets the starting contour level value.'
         },
         end: {
-            type: 'number',
+            valType: 'number',
             dflt: null,
             description: 'Sets the end contour level value.'
         },
         size: {
-            type: 'number',
+            valType: 'number',
             dflt: null,
             description: 'Sets the step between each contour level.'
         },
         coloring: {
-            type: 'enumerated',
+            valType: 'enumerated',
             values: ['fill', 'heatmap', 'lines', 'none'],
             dflt: 'fill',
             description: [
@@ -64,7 +64,7 @@ contour.attributes = {
             ].join(' ')
         },
         showlines: {
-            type: 'boolean',
+            valType: 'boolean',
             dflt: true,
             description: [
                 'Determines whether or not the contour lines are drawn.',

@@ -463,7 +463,7 @@ describe('Test lib.js:', function() {
         it('should set a value and return the value it sets', function() {
             var aVal = 'aaaaah!',
                 cVal = {1: 2, 3: 4},
-                attrs = {a: {type: 'any', dflt: aVal}, b: {c: {type: 'any'}}},
+                attrs = {a: {valType: 'any', dflt: aVal}, b: {c: {valType: 'any'}}},
                 obj = {b: {c: cVal}},
                 outObj = {},
 
@@ -483,8 +483,8 @@ describe('Test lib.js:', function() {
                 color: 'neon pink with sparkles'
             },
             fontAttrs = {
-                fontWithDefault: {type: 'font', dflt: defaultFont},
-                fontNoDefault: {type: 'font'}
+                fontWithDefault: {valType: 'font', dflt: defaultFont},
+                fontNoDefault: {valType: 'font'}
             };
 
             it('should insert the full default if no or empty input', function() {
@@ -529,8 +529,8 @@ describe('Test lib.js:', function() {
         describe('string', function() {
             var dflt = 'Jabberwock',
                 stringAttrs = {
-                    s: {type: 'string', dflt: dflt},
-                    noBlank: {type: 'string', dflt: dflt, noBlank: true}
+                    s: {valType: 'string', dflt: dflt},
+                    noBlank: {valType: 'string', dflt: dflt, noBlank: true}
                 };
 
             it('should insert the default if input is missing, or blank with noBlank', function() {

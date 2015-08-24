@@ -8,7 +8,7 @@ var extendFlat = Plotly.Lib.extendFlat;
 
 module.exports = {
     locations: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the coordinates via location IDs or names.',
             'See `locationmode` for more info.'
@@ -16,11 +16,11 @@ module.exports = {
     },
     locationmode: ScatterGeoAttrs.locationmode,
     z: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the color values.'
     },
     text: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the text elements associated with each location.'
     },
     marker: {
