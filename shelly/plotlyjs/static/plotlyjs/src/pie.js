@@ -129,14 +129,30 @@ pie.attributes = {
 
     // position and shape
     domain: {
-        x: [
-            {valType: 'number', min: 0, max: 1, dflt: 0},
-            {valType: 'number', min: 0, max: 1, dflt: 1}
-        ],
-        y: [
-            {valType: 'number', min: 0, max: 1, dflt: 0},
-            {valType: 'number', min: 0, max: 1, dflt: 1}
-        ]
+        x: {
+            valType: 'info_array',
+            items: [
+                {valType: 'number', min: 0, max: 1},
+                {valType: 'number', min: 0, max: 1}
+            ],
+            dflt: [0, 1],
+            description: [
+                'Sets the horizontal domain of this pie trace',
+                '(in plot fraction).'
+            ].join(' ')
+        },
+        y: {
+            valType: 'info_array',
+            items: [
+                {valType: 'number', min: 0, max: 1},
+                {valType: 'number', min: 0, max: 1}
+            ],
+            dflt: [0, 1],
+            description: [
+                'Sets the vertical domain of this pie trace',
+                '(in plot fraction).'
+            ].join(' ')
+        }
     },
     // 3D attributes commented out until I finish them in a later PR
     // tilt: {
@@ -281,10 +297,8 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         }
     }
 
-    coerce('domain.x[0]');
-    coerce('domain.x[1]');
-    coerce('domain.y[0]');
-    coerce('domain.y[1]');
+    coerce('domain.x');
+    coerce('domain.y');
 
     // 3D attributes commented out until I finish them in a later PR
     // var tilt = coerce('tilt');
