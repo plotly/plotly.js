@@ -6,7 +6,7 @@ var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
 
 function makeContourProjAttr(axLetter) {
     return {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false,
         description: [
             'Sets whether or not the dynamic contours are projected',
@@ -18,7 +18,7 @@ function makeContourProjAttr(axLetter) {
 function makeContourAttr(axLetter) {
     return {
         show: {
-            type: 'boolean',
+            valType: 'boolean',
             dflt: false,
             description: [
                 'Sets whether or not dynamic contours are shown along the',
@@ -31,29 +31,29 @@ function makeContourAttr(axLetter) {
             z: makeContourProjAttr('z')
         },
         color: {
-            type: 'color',
+            valType: 'color',
             dflt: '#000'
         },
         usecolormap: {
-            type: 'boolean',
+            valType: 'boolean',
             dflt: false
         },
         width: {
-            type: 'number',
+            valType: 'number',
             min: 1,
             max: 16,
             dflt: 2
         },
         highlight: {
-            type: 'boolean',
+            valType: 'boolean',
             dflt: false
         },
         highlightColor: {
-            type: 'color',
+            valType: 'color',
             dflt: '#000'
         },
         highlightWidth: {
-            type: 'number',
+            valType: 'number',
             min: 1,
             max: 16,
             dflt: 2
@@ -75,19 +75,19 @@ module.exports = {
 
 
     z: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the z coordinates.'
     },
     x: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the x coordinates.'
     },
     y: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the y coordinates.'
     },
     text: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the text elements associated with each z value.'
     },
     zauto: traceColorbarAttrs.zauto,
@@ -104,36 +104,36 @@ module.exports = {
         z: makeContourAttr('z')
     },
     hidesurface: {
-      type: 'boolean',
+      valType: 'boolean',
       dflt: false
     },
     lighting: {
         ambient: {
-            type: 'number',
+            valType: 'number',
             min: 0.00,
             max: 1.0,
             dflt: 0.8
         },
         diffuse: {
-            type: 'number',
+            valType: 'number',
             min: 0.00,
             max: 1.00,
             dflt: 0.8
         },
         specular: {
-            type: 'number',
+            valType: 'number',
             min: 0.00,
             max: 2.00,
             dflt: 0.05
         },
         roughness: {
-            type: 'number',
+            valType: 'number',
             min: 0.00,
             max: 1.00,
             dflt: 0.5
         },
         fresnel: {
-            type: 'number',
+            valType: 'number',
             min: 0.00,
             max: 5.00,
             dflt: 0.2
@@ -141,7 +141,7 @@ module.exports = {
     },
 
     opacity: {
-      type: 'number',
+      valType: 'number',
       min: 0,
       max: 1,
       dflt: 1

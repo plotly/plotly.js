@@ -24,7 +24,7 @@ Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
 function makeBinsAttr(axLetter) {
     return {
         start: {
-            type: 'number',
+            valType: 'number',
             dflt: 0,
             description: [
                 'Sets the starting value for the', axLetter,
@@ -32,7 +32,7 @@ function makeBinsAttr(axLetter) {
             ].join(' ')
         },
         end: {
-            type: 'number',
+            valType: 'number',
             dflt: 1,
             description: [
                 'Sets the end value for the', axLetter,
@@ -40,7 +40,7 @@ function makeBinsAttr(axLetter) {
             ].join(' ')
         },
         size: {
-            type: 'any', // for date axes
+            valType: 'any', // for date axes
             dflt: 1,
             description: [
                 'Sets the step in-between value each', axLetter,
@@ -52,27 +52,27 @@ function makeBinsAttr(axLetter) {
 
 histogram.attributes = {
     x: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the sample data to be binned on the x axis.'
         ].join(' ')
     },
     y: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the sample data to be binned on the y axis.'
         ].join(' ')
     },
     z: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the aggregation data.'
     },
     marker: {
-        color: {type: 'data_array'}
+        color: {valType: 'data_array'}
     },
     orientation: barAttrs.orientation,
     histfunc: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['count', 'sum', 'avg', 'min', 'max'],
         dflt: 'count',
         description: [
@@ -88,7 +88,7 @@ histogram.attributes = {
         ].join(' ')
     },
     histnorm: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['', 'percent', 'probability', 'density', 'probability density'],
         dflt: '',
         description: [
@@ -112,7 +112,7 @@ histogram.attributes = {
         ].join(' ')
     },
     autobinx: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: true,
         description: [
             'Determines whether or not the x axis bin attributes are picked',
@@ -120,14 +120,14 @@ histogram.attributes = {
         ].join(' ')
     },
     nbinsx: {
-        type: 'integer',
+        valType: 'integer',
         min: 0,
         dflt: 0,
         description: 'Sets the number of x axis bins.'
     },
     xbins: makeBinsAttr('x'),
     autobiny: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: true,
         description: [
             'Determines whether or not the y axis bin attributes are picked',
@@ -135,7 +135,7 @@ histogram.attributes = {
         ].join(' ')
     },
     nbinsy: {
-        type: 'integer',
+        valType: 'integer',
         min: 0,
         dflt: 0,
         description: 'Sets the number of y axis bins.'
