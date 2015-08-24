@@ -3,87 +3,85 @@
 var Plotly = require('./plotly'),
     objectAssign = require('object-assign');
 
-var graphReference = {},
-    Methods = {};
-
 var NESTEDMODULEID = '_nestedModules',
-    COMPOSEDMODULEID = '_composedModules';
+    COMPOSEDMODULEID = '_composedModules',
+    ANYTYPE = '*',
+    ISLINKEDTOARRAY = '_isLinkedToArray',
+    ISSUBPLOTOBJ = '_isSubplotObj';
 
-
-function getGraphReference() {
-    var Plots = Plotly.Plots;
-
-    Plots.allTypes.forEach(function(type) {
-
-        graphReference[type] = {};
-        Methods.getAttributes(type);
-        Methods.getLayoutAttributes(type);
-
-    });
-
-    return graphReference;
-}
-
-module.exports = getGraphReference;
-
-Methods.getAttributes = function(type) {
-    var globalAttributes = Plotly.Plots.attributes,
-        attributes = {};
-
-    var module;
-
-    // global attributes
-    attributes = objectAssign(attributes, globalAttributes);
-
-    // module attributes (+ nested + composed)
-    module = Methods.getModule({type: type});
-    attributes = Methods.coupleAttrs(
-        module.attributes, attributes,
-        'attributes', type
-    );
-    attributes.type = type;
-    attributes = Methods.removeUnderscoreAttrs(attributes);
-
-    graphReference[type].attributes = attributes;
+var graphReference = {
+    traces: {},
+    layout: {}
 };
 
-Methods.getLayoutAttributes = function(type) {
-    var Plots = Plotly.Plots,
-        globalLayoutAttributes = Plots.layoutAttributes,
+
+module.exports = function getGraphReference() {
+    Plotly.Plots.allTypes.forEach(getTraceAttributes);
+    getLayoutAttributes();
+    return graphReference;
+};
+
+function getTraceAttributes(type) {
+    var globalAttributes = Plotly.Plots.attributes,
+        _module = getModule({type: type}),
+        attributes = {},
         layoutAttributes = {};
 
-    var sceneAttrs;
+    // make 'type' the first attribute in the object
+    attributes.type = type;
 
-    // global layout attributes
+    // module attributes (+ nested + composed)
+    attributes = coupleAttrs(
+        _module.attributes, attributes, 'attributes', type
+    );
+
+    // global attributes (same for all trace types)
+    attributes = objectAssign(attributes, globalAttributes);
+
+    // 'type' gets overwritten by globalAttributes; reset it here
+    attributes.type = type;
+
+    attributes = removeUnderscoreAttrs(attributes);
+
+    graphReference.traces[type] = { attributes: attributes };
+
+    // trace-specific layout attributes
+    if(_module.layoutAttributes !== undefined) {
+        layoutAttributes = coupleAttrs(
+            _module.layoutAttributes, layoutAttributes, 'layoutAttributes', type
+        );
+        graphReference.traces[type].layoutAttributes = layoutAttributes;
+    }
+}
+
+function getLayoutAttributes() {
+    var globalLayoutAttributes = Plotly.Plots.layoutAttributes,
+        subplotsRegistry = Plotly.Plots.subplotsRegistry,
+        layoutAttributes = {};
+
+    // global attributes (same for all trace types)
     layoutAttributes = objectAssign(layoutAttributes, globalLayoutAttributes);
 
-    // more global (maybe list these in graph_obj ??)
-    layoutAttributes = objectAssign(layoutAttributes, Plotly.Fx.layoutAttributes);
-    layoutAttributes.legend = Plotly.Legend.layoutAttributes;
+    // layout module attributes (+ nested + composed)
+    layoutAttributes = coupleAttrs(
+        globalLayoutAttributes, layoutAttributes, 'layoutAttributes', ANYTYPE
+    );
 
-    if (Plots.traceIs(type, 'gl3d')) {
-        sceneAttrs = Plotly.Gl3dLayout.layoutAttributes;
-        sceneAttrs = Methods.coupleAttrs(
-            sceneAttrs, {},
-            'layoutAttributes', '-'
-        );
-        layoutAttributes.scene = sceneAttrs;
-    }
-    else {
-        layoutAttributes.xaxis = Plotly.Axes.layoutAttributes;
-        layoutAttributes.yaxis = Plotly.Axes.layoutAttributes;
-        layoutAttributes.annotations = Plotly.Annotations.layoutAttributes;
-    }
+    layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
 
-    // TODO how to present keys '{x,y}axis[1-9]' or 'scene[1-9]'?
-    // TODO how to present 'annotations' Array ?
+    // add ISSUBPLOTOBJ key
+    Object.keys(layoutAttributes).forEach(function(k) {
+        if(subplotsRegistry.gl3d.idRegex.test(k) ||
+            subplotsRegistry.geo.idRegex.test(k) ||
+            /^xaxis[0-9]*$/.test(k) ||
+            /^yaxis[0-9]*$/.test(k)
+          ) layoutAttributes[k][ISSUBPLOTOBJ] = true;
+    });
 
-    layoutAttributes = Methods.removeUnderscoreAttrs(layoutAttributes);
+    graphReference.layout = { layoutAttributes: layoutAttributes };
+}
 
-    graphReference[type].layoutAttributes = layoutAttributes;
-};
-
-Methods.coupleAttrs = function(attrsIn, attrsOut, whichAttrs, type) {
+function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
     var nestedModule, nestedAttrs, nestedReference,
         composedModule, composedAttrs;
 
@@ -91,13 +89,14 @@ Methods.coupleAttrs = function(attrsIn, attrsOut, whichAttrs, type) {
 
         if(k === NESTEDMODULEID) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
-                nestedModule = Methods.getModule({module: attrsIn[k][kk]});
+                nestedModule = getModule({module: attrsIn[k][kk]});
                 if(nestedModule === undefined) return;
+
                 nestedAttrs = nestedModule[whichAttrs];
-                nestedReference = Methods.coupleAttrs(
-                    nestedAttrs, {},
-                    whichAttrs, type
+                nestedReference = coupleAttrs(
+                    nestedAttrs, {}, whichAttrs, type
                 );
+
                 Plotly.Lib.nestedProperty(attrsOut, kk)
                     .set(nestedReference);
             });
@@ -106,14 +105,16 @@ Methods.coupleAttrs = function(attrsIn, attrsOut, whichAttrs, type) {
 
         if(k === COMPOSEDMODULEID) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
-                if (kk !== type) return;
-                composedModule = Methods.getModule({module: attrsIn[k][kk]});
+                if(kk !== type) return;
+
+                composedModule = getModule({module: attrsIn[k][kk]});
                 if(composedModule === undefined) return;
+
                 composedAttrs = composedModule[whichAttrs];
-                composedAttrs = Methods.coupleAttrs(
-                    composedAttrs, {},
-                    whichAttrs, type
+                composedAttrs = coupleAttrs(
+                    composedAttrs, {}, whichAttrs, type
                 );
+
                 attrsOut = objectAssign(attrsOut, composedAttrs);
             });
             return;
@@ -123,18 +124,18 @@ Methods.coupleAttrs = function(attrsIn, attrsOut, whichAttrs, type) {
     });
 
     return attrsOut;
-};
+}
 
 // helper methods
 
-Methods.getModule = function(arg) {
+function getModule(arg) {
     if('type' in arg) return Plotly.Plots.getModule({type: arg.type});
     else if('module' in arg) return Plotly[arg.module];
-};
+}
 
-Methods.removeUnderscoreAttrs = function(attributes) {
+function removeUnderscoreAttrs(attributes) {
     Object.keys(attributes).forEach(function(k){
-       if(k.charAt(0) === '_') delete attributes[k];
+        if(k.charAt(0) === '_' && k !== ISLINKEDTOARRAY) delete attributes[k];
     });
     return attributes;
-};
+}

@@ -114,7 +114,6 @@ module.exports = function clonePlot(graphObj, options) {
 
     var td = document.createElement('div');
     if (options.tileClass) td.className = options.tileClass;
-    if (options.hidden) td.display = 'none';
 
     var plotTile = {
         td: td,

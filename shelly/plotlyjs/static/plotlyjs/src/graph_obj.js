@@ -165,9 +165,8 @@ plots.newTab = function(divid, layout) {
 // in some cases the browser doesn't seem to know how big
 // the text is at first, so it needs to draw it,
 // then wait a little, then draw it again
-plots.redrawText = function(divid) {
-    var gd = (typeof divid === 'string') ?
-        document.getElementById(divid) : divid;
+plots.redrawText = function(gd) {
+    gd = getGraphDiv(gd);
 
     // doesn't work presently (and not needed) for polar or 3d
     if(gd._fullLayout._hasGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
@@ -413,10 +412,7 @@ function positionPlayWithData(gd, container){
 Plotly.plot = function(gd, data, layout, config) {
     Plotly.Lib.markTime('in plot');
 
-    // Get the container div: we store all variables for this plot as
-    // properties of this div
-    // some callers send this in by dom element, others by id (string)
-    if(typeof gd === 'string') gd = document.getElementById(gd);
+    gd = getGraphDiv(gd);
 
     var okToPlot = $(gd).triggerHandler('plotly_beforeplot', [data, layout, config]);
     if(okToPlot===false) return;
@@ -1239,11 +1235,11 @@ plots.previousPromises = function(gd){
 };
 
 // convenience function to force a full redraw, mostly for use by plotly.js
-Plotly.redraw = function(divid) {
-    var gd = (typeof divid === 'string') ?
-        document.getElementById(divid) : divid;
+Plotly.redraw = function(gd) {
+    gd = getGraphDiv(gd);
+
     if(!Plotly.Lib.isPlotDiv(gd)) {
-        console.log('This element is not a Plotly Plot', divid, gd);
+        console.log('This element is not a Plotly Plot', gd);
         return;
     }
     gd.calcdata = undefined;
@@ -1261,63 +1257,115 @@ Plotly.redraw = function(divid) {
  * @param {Object} config
  */
 Plotly.newPlot = function (gd, data, layout, config) {
+    gd = getGraphDiv(gd);
     Plotly.Plots.purge(gd);
     Plotly.plot(gd, data, layout, config);
 };
 
 plots.attributes = {
     type: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: allTypes,
         dflt: 'scatter'
     },
     visible: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [true, false, 'legendonly'],
-        dflt: true
+        dflt: true,
+        description: [
+            'Determines whether or not this trace is visible.',
+            'If *legendonly*, the trace is not drawn,',
+            'but can appear as a legend item',
+            '(provided that the legend itself is visible).'
+        ].join(' ')
     },
     showlegend: {
-        type: 'boolean',
-        dflt: true
+        valType: 'boolean',
+        dflt: true,
+        description: [
+            'Determines whether or not an item corresponding to this',
+            'trace is shown in the legend.'
+        ].join(' ')
     },
     legendgroup: {
-        type: 'string',
-        dflt: ''
+        valType: 'string',
+        dflt: '',
+        description: [
+            'Sets the legend group for this trace.',
+            'Traces part of the same legend group hide/show at the same time',
+            'when toggling legend items.'
+        ].join(' ')
     },
     opacity: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
-        dflt: 1
+        dflt: 1,
+        description: 'Sets the opacity of the trace.'
     },
     name: {
-        type: 'string'
+        valType: 'string',
+        description: [
+            'Sets the trace name.',
+            'The trace name appear as the legend item and on hover.'
+        ].join(' ')
     },
     xaxis: {
-        type: 'axisid',
-        dflt: 'x'
+        valType: 'axisid',
+        dflt: 'x',
+        description: [
+            'Sets a reference between this trace\'s x coordinates and',
+            'a 2D cartesian x axis.',
+            'If *x* (the default value), the x coordinates refer to',
+            '`layout.xaxis`.',
+            'If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.'
+        ].join(' ')
     },
     yaxis: {
-        type: 'axisid',
-        dflt: 'y'
+        valType: 'axisid',
+        dflt: 'y',
+        description: [
+            'Sets a reference between this trace\'s y coordinates and',
+            'a 2D cartesian y axis.',
+            'If *y* (the default value), the y coordinates refer to',
+            '`layout.yaxis`.',
+            'If *y2*, the y coordinates refer to `layout.xaxis2`, and so on.'
+        ].join(' ')
     },
     scene: {
-        type: 'sceneid',
-        dflt: 'scene'
+        valType: 'sceneid',
+        dflt: 'scene',
+        description: [
+            'Sets a reference between this trace\'s 3D coordinate system and',
+            'a 3D scene.',
+            'If *scene* (the default value), the (x,y,z) coordinates refer to',
+            '`layout.scene`.',
+            'If *scene2*, the (x,y,z) coordinates refer to `layout.scene2`,',
+            'and so on.'
+        ].join(' ')
     },
     geo: {
-        type: 'geoid',
-        dflt: 'geo'
+        valType: 'geoid',
+        dflt: 'geo',
+        description: [
+            'Sets a reference between this trace\'s geospatial coordinates and',
+            'a geographic map.',
+            'If *geo* (the default value), the geospatial coordinates refer to',
+            '`layout.geo`.',
+            'If *geo2*, the geospatial coordinates refer to `layout.geo2`,',
+            'and so on.'
+        ].join(' ')
     },
     uid: {
-        type: 'string',
+        valType: 'string',
         dflt: ''
     },
     hoverinfo: {
-        type: 'flaglist',
+        valType: 'flaglist',
         flags: ['x', 'y', 'z', 'text', 'name'],
         extras: ['all', 'none'],
-        dflt: 'all'
+        dflt: 'all',
+        description: 'Determines which trace information appear on hover.'
     }
 };
 
@@ -1523,108 +1571,165 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
 plots.layoutAttributes = {
     font: {
-        type: 'font',
+        valType: 'font',
         dflt: {
             family: '"Open sans", verdana, arial, sans-serif',
             size: 12,
             color: Plotly.Color.defaultLine
-        }
+        },
+        description: [
+            'Sets the global font.',
+            'Note that fonts used in traces and other',
+            'layout components inherit from the global font.'
+        ].join(' ')
     },
     title: {
-        type: 'string',
-        dflt: 'Click to enter Plot title'
+        valType: 'string',
+        dflt: 'Click to enter Plot title',
+        description: [
+            'Sets the plot\'s title.'
+        ].join(' ')
     },
-    titlefont: {type: 'font'},
+    titlefont: {
+        valType: 'font',
+        description: 'Sets the title font.'
+    },
     autosize: {
-        type: 'enumerated',
+        valType: 'enumerated',
         // TODO: better handling of 'initial'
-        values: [true, false, 'initial']
+        values: [true, false, 'initial'],
+        description: [
+            'Determines whether or not the dimensions of the figure are',
+            'computed as a function of the display size.'
+        ].join(' ')
     },
     width: {
-        type: 'number',
+        valType: 'number',
         min: 10,
-        dflt: 700
+        dflt: 700,
+        description: [
+            'Sets the plot\'s width (in px).'
+        ].join(' ')
     },
     height: {
-        type: 'number',
+        valType: 'number',
         min: 10,
-        dflt: 450
+        dflt: 450,
+        description: [
+            'Sets the plot\'s height (in px).'
+        ].join(' ')
     },
     margin: {
         l: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 80
+            dflt: 80,
+            description: 'Sets the left margin (in px).'
         },
         r: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 80
+            dflt: 80,
+            description: 'Sets the right margin (in px).'
         },
         t: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 100
+            dflt: 100,
+            description: 'Sets the top margin (in px).'
         },
         b: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 80
+            dflt: 80,
+            description: 'Sets the bottom margin (in px).'
         },
         pad: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 0
+            dflt: 0,
+            description: [
+                'Sets the amount of padding (in px)',
+                'between the plotting area and the axis lines'
+            ].join(' ')
         },
         autoexpand: {
-            type: 'boolean',
+            valType: 'boolean',
             dflt: true
         }
     },
     paper_bgcolor: {
-        type: 'color',
-        dflt: Plotly.Color.background
+        valType: 'color',
+        dflt: Plotly.Color.background,
+        description: 'Sets the color of paper where the graph is drawn.'
     },
     plot_bgcolor: {
         // defined here, but set in Axes.supplyLayoutDefaults
         // because it needs to know if there are (2D) axes or not
-        type: 'color',
-        dflt: Plotly.Color.background
+        valType: 'color',
+        dflt: Plotly.Color.background,
+        description: [
+            'Sets the color of plotting area in-between x and y axes.'
+        ].join(' ')
     },
     separators: {
-        type: 'string',
-        dflt: '.,'
+        valType: 'string',
+        dflt: '.,',
+        description: [
+            'Sets the decimal and thousand separators.',
+            'For example, *. * puts a \'.\' before decimals and',
+            'a space between thousands.'
+        ].join(' ')
     },
     hidesources: {
-        type: 'boolean',
-        dflt: false
+        valType: 'boolean',
+        dflt: false,
+        description: [
+            'Determines whether or not a text link citing the data source is',
+            'placed at the bottom-right cored of the figure.',
+            'Has only an effect only on graphs that have been generated via',
+            'forked graphs from the plotly cloud.'
+        ].join(' ')
     },
     smith: {
         // will become a boolean if/when we implement this
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [false],
         dflt: false
     },
     showlegend: {
         // handled in legend.supplyLayoutDefaults
         // but included here because it's not in the legend object
-        type: 'boolean'
+        valType: 'boolean',
+        description: 'Determines whether or not a legend is drawn.'
     },
     _hasCartesian: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false
     },
     _hasGL3D: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false
     },
     _hasGeo: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false
     },
     _hasPie: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false
+    },
+    _composedModules: {
+        '*': 'Fx'
+    },
+    _nestedModules: {
+        'xaxis': 'Axes',
+        'yaxis': 'Axes',
+        'scene': 'Gl3dLayout',
+        'geo': 'GeoLayout',
+        'legend': 'Legend',
+        'annotations': 'Annotations',
+        'shapes': 'Shapes'
     }
 };
 
@@ -2136,6 +2241,7 @@ function spliceTraces (gd, update, indices, maxPoints, lengthenArray, spliceArra
  *
  */
 Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
+    gd = getGraphDiv(gd);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
 
@@ -2162,6 +2268,7 @@ Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
 };
 
 Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) {
+    gd = getGraphDiv(gd);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
 
@@ -2197,6 +2304,8 @@ Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) 
  *
  */
 Plotly.addTraces = function addTraces (gd, traces, newIndices) {
+    gd = getGraphDiv(gd);
+
     var currentIndices = [],
         undoFunc = Plotly.deleteTraces,
         redoFunc = addTraces,
@@ -2263,6 +2372,8 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
  * @param {Number|Number[]} indices The indices
  */
 Plotly.deleteTraces = function deleteTraces (gd, indices) {
+    gd = getGraphDiv(gd);
+
     var traces = [],
         undoFunc = Plotly.addTraces,
         redoFunc = deleteTraces,
@@ -2326,6 +2437,8 @@ Plotly.deleteTraces = function deleteTraces (gd, indices) {
  *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
  */
 Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
+    gd = getGraphDiv(gd);
+
     var newData = [],
         movingTraceMap = [],
         undoFunc = moveTraces,
@@ -2409,11 +2522,12 @@ Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
 //  to apply different values to each trace
 // if the array is too short, it will wrap around (useful for
 //  style files that want to specify cyclical default values)
-Plotly.restyle = function restyle (gd,astr,val,traces) {
-    if(typeof gd === 'string') gd = document.getElementById(gd);
+Plotly.restyle = function restyle(gd, astr, val, traces) {
+    gd = getGraphDiv(gd);
 
     var i, fullLayout = gd._fullLayout,
         aobj = {};
+
     if(typeof astr === 'string') aobj[astr] = val;
     else if($.isPlainObject(astr)) {
         aobj = astr;
@@ -2442,7 +2556,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
         'x', 'y', 'z',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
         'line.width',
-        'connectgaps', 'transpose',
+        'connectgaps', 'transpose', 'zsmooth',
         'showscale', 'marker.showscale',
         'zauto', 'marker.cauto',
         'autocolorscale', 'marker.autocolorscale',
@@ -2484,7 +2598,7 @@ Plotly.restyle = function restyle (gd,astr,val,traces) {
     // replotAttrs attributes need a replot (because different
     // objects need to be made) but not a recalc
     var replotAttrs = [
-        'zmin', 'zmax', 'zauto', 'zsmooth',
+        'zmin', 'zmax', 'zauto',
         'marker.cmin', 'marker.cmax', 'marker.cauto',
         'contours.start','contours.end','contours.size',
         'contours.showlines',
@@ -2929,9 +3043,10 @@ function swapXYData(trace) {
 // relayout(gd,aobj)
 //      aobj - {astr1:val1, astr2:val2...}
 //          allows setting multiple attributes simultaneously
-Plotly.relayout = function relayout (gd, astr, val) {
+Plotly.relayout = function relayout(gd, astr, val) {
+    gd = getGraphDiv(gd);
+
     if(gd.framework && gd.framework.isPolar) return;
-    if(typeof gd === 'string') gd = document.getElementById(gd);
 
     var layout = gd.layout,
         aobj = {},
@@ -3347,7 +3462,7 @@ function plotAutoSize(gd, aobj) {
 
 // check whether to resize a tab (if it's a plot) to the container
 plots.resize = function(gd) {
-    if(typeof gd === 'string') gd = document.getElementById(gd);
+    gd = getGraphDiv(gd);
 
     if(gd._context.workspace) setFileAndCommentsSize(gd);
 
@@ -3367,6 +3482,28 @@ plots.resize = function(gd) {
 
     setGraphContainerScroll(gd);
 };
+
+// Get the container div: we store all variables for this plot as
+// properties of this div
+// some callers send this in by DOM element, others by id (string)
+function getGraphDiv(gd) {
+    var gdElement;
+
+    if(typeof gd === 'string') {
+        gdElement = document.getElementById(gd);
+
+        if(gdElement === null) {
+            throw new Error('No DOM element with id \'' + gd + '\' exits on the page.');
+        }
+
+        return gdElement;
+    }
+    else if(gd===null || gd===undefined) {
+        throw new Error('DOM element provided is null or undefined');
+    }
+
+    return gd;  // otherwise assume that gd is a DOM element
+}
 
 // -------------------------------------------------------
 // makePlotFramework: Create the plot container and axes
@@ -3889,8 +4026,8 @@ function lsInner(gd) {
 // title can be 'xtitle', 'ytitle', 'gtitle',
 //  or empty to draw all
 plots.titles = function(gd, title) {
-    var options;
-    if(typeof gd === 'string') gd = document.getElementById(gd);
+    gd = getGraphDiv(gd);
+
     if(!title) {
         Plotly.Axes.listIds(gd).forEach(function(axId) {
             plots.titles(gd, axId+'title');
@@ -3902,8 +4039,9 @@ plots.titles = function(gd, title) {
     var fullLayout = gd._fullLayout,
         gs = fullLayout._size,
         axletter = title.charAt(0),
-        colorbar = title.substr(1,2)==='cb',
-        cbnum, cont;
+        colorbar = title.substr(1,2)==='cb';
+
+    var cbnum, cont, options;
 
     if(colorbar) {
         var uid = title.substr(3).replace('title','');
@@ -4207,8 +4345,7 @@ plots.titles = function(gd, title) {
  * @returns {Object|String}
  */
 plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
-
-    if(typeof gd === 'string') { gd = document.getElementById(gd); }
+    gd = getGraphDiv(gd);
 
     // if the defaults aren't supplied yet, we need to do that...
     if ((useDefaults && dataonly && !gd._fullData) ||

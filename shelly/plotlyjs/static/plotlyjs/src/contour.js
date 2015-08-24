@@ -11,7 +11,8 @@ Plotly.Plots.register(contour, 'contour',
 Plotly.Plots.register(contour, 'histogram2dcontour',
     ['cartesian', '2dMap', 'contour', 'histogram']);
 
-var scatterLineAttrs = Plotly.Scatter.attributes.line;
+var scatterLineAttrs = Plotly.Scatter.attributes.line,
+    extendFlat = Plotly.Lib.extendFlat;
 
 contour.attributes = {
     _composedModules: {  // composed module coupling
@@ -19,41 +20,73 @@ contour.attributes = {
         'histogram2dcontour': 'Heatmap'
     },
     autocontour: {
-        type: 'boolean',
-        dflt: true
+        valType: 'boolean',
+        dflt: true,
+        description: [
+            'Determines whether of not the contour level attributes at',
+            'picked by an algorithm.',
+            'If *true*, the number of contour levels can be set in `ncontours`.',
+            'If *false*, set the contour level attributes in `contours`.'
+        ].join(' ')
     },
     ncontours: {
-        type: 'integer',
-        dflt: 0
+        valType: 'integer',
+        dflt: 0,
+        description: 'Sets the number of contour levels.'
     },
     contours: {
         start: {
-            type: 'number',
-            dflt: null
+            valType: 'number',
+            dflt: null,
+            description: 'Sets the starting contour level value.'
         },
         end: {
-            type: 'number',
-            dflt: null
+            valType: 'number',
+            dflt: null,
+            description: 'Sets the end contour level value.'
         },
         size: {
-            type: 'number',
-            dflt: null
+            valType: 'number',
+            dflt: null,
+            description: 'Sets the step between each contour level.'
         },
         coloring: {
-            type: 'enumerated',
+            valType: 'enumerated',
             values: ['fill', 'heatmap', 'lines', 'none'],
-            dflt: 'fill'
+            dflt: 'fill',
+            description: [
+                'Determines the coloring method showing the contour values.',
+                'If *fill*, coloring is done evenly between each contour level',
+                'If *heatmap*, a heatmap gradient is coloring is applied',
+                'between each contour level.',
+                'If *lines*, coloring is done on the contour lines.',
+                'If *none*, no coloring is applied on this trace.'
+            ].join(' ')
         },
         showlines: {
-            type: 'boolean',
-            dflt: true
+            valType: 'boolean',
+            dflt: true,
+            description: [
+                'Determines whether or not the contour lines are drawn.',
+                'Has only an effect if `contours.coloring` is set to *fill*.'
+            ].join(' ')
         }
     },
     line: {
-        color: scatterLineAttrs.color,
+        color: extendFlat(scatterLineAttrs.color, {
+            description: [
+                'Sets the color of the contour level.',
+                'Has no if `contours.coloring` is set to *lines*.'
+            ].join(' ')
+        }),
         width: scatterLineAttrs.width,
         dash: scatterLineAttrs.dash,
-        smoothing: scatterLineAttrs.smoothing
+        smoothing: extendFlat(scatterLineAttrs.smoothing, {
+            description: [
+                'Sets the amount of smoothing for the contour lines,',
+                'where *0* corresponds to no smoothing.'
+            ].join(' ')
+        })
     }
 };
 

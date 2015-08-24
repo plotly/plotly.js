@@ -1360,15 +1360,15 @@ lib.stripTrailingSlash = function (str) {
 // Helpers for defaults and attribute validation
 var fontAttrs = {
     family: {
-        type: 'string',
+        valType: 'string',
         noBlank: true,
         strict: true
     },
     size: {
-        type: 'number',
+        valType: 'number',
         min: 1
     },
-    color: {type: 'color'}
+    color: {valType: 'color'}
 };
 
 var fontAttrsArrayOk = null;
@@ -1518,7 +1518,7 @@ lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
     /**
      * ensures that container[attribute] has a valid value
      * attributes[attribute] is an object with possible keys:
-     * - type: data_array, enumerated, boolean, number, integer, string, color, colorscale, any
+     * - valType: data_array, enumerated, boolean, number, integer, string, color, colorscale, any
      * - values: (enumerated only) array of allowed vals
      * - min, max: (number, integer only) inclusive bounds on allowed vals
      *      either or both may be omitted
@@ -1545,7 +1545,7 @@ lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
         return v;
     }
 
-    coerceIt[opts.type](v, propOut, dflt, opts);
+    coerceIt[opts.valType](v, propOut, dflt, opts);
 
     return propOut.get();
 };
@@ -1685,4 +1685,8 @@ lib.addStyleRule = function(selector, styleString) {
         styleSheet.addRule(selector,styleString,0);
     }
     else console.warn('addStyleRule failed');
+};
+
+lib.isIE = function() {
+    return typeof window.navigator.msSaveBlob !== 'undefined';
 };
