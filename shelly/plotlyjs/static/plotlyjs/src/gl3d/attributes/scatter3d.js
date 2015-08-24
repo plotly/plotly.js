@@ -52,10 +52,15 @@ module.exports = {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
     },
-    text: {
-        valType: 'data_array',
-        description: 'Sets text elements associated with each (x,y,z) triplet.'
-    },
+    text: extendFlat(scatterAttrs.text, {
+        description: [
+            'Sets text elements associated with each (x,y,z) triplet.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (x,y,z) coordinates.'
+        ].join(' ')
+    }),
     mode: extendFlat(scatterAttrs.mode,  // shouldn't this be on-par with 2D?
         {dflt: 'lines+markers'}),
     surfaceaxis: {

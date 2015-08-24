@@ -1236,6 +1236,7 @@ scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
     pointData.yLabelVal = di.y;
 
     if(di.tx) pointData.text = di.tx;
+    else if(trace.text) pointData.text = trace.text;
 
     if(Plotly.ErrorBars) Plotly.ErrorBars.hoverInfo(di, trace, pointData);
 
