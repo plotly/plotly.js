@@ -279,10 +279,10 @@ shapes.draw = function(gd, index, opt, value) {
             }
             return;
         }
-        else if(value==='add' || $.isPlainObject(value)) {
+        else if(value==='add' || Plotly.Lib.isPlainObject(value)) {
             fullLayout.shapes.splice(index,0,{});
 
-            var rule = $.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
+            var rule = Plotly.Lib.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
 
             if (layout.shapes) {
                 layout.shapes.splice(index, 0, rule);
@@ -315,7 +315,7 @@ shapes.draw = function(gd, index, opt, value) {
     // alter the input shape as requested
     var optionsEdit = {};
     if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
-    else if($.isPlainObject(opt)) optionsEdit = opt;
+    else if(Plotly.Lib.isPlainObject(opt)) optionsEdit = opt;
 
     var optionKeys = Object.keys(optionsEdit);
     for(i = 0; i < optionsEdit.length; i++) {
