@@ -588,6 +588,7 @@ describe('Test lib.js:', function() {
             expect(isPlainObject(document)).toBe(false);
             expect(isPlainObject(window)).toBe(false);
             expect(isPlainObject(null)).toBe(false);
+            expect(isPlainObject(undefined)).toBe(false);
             expect(isPlainObject([])).toBe(false);
             expect(isPlainObject('string')).toBe(false);
             expect(isPlainObject(true)).toBe(false);
