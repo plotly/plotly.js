@@ -8,16 +8,8 @@ var boxes = module.exports = {},
     isNumeric = require('./isnumeric');
 
 Plotly.Plots.register(boxes, 'box',
-    ['cartesian', 'symbols', 'oriented', 'box', 'showLegend']);
-
-var scatterAttrs = Plotly.Scatter.attributes,
-    scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line,
-    extendFlat = Plotly.Lib.extendFlat;
-
-
-boxes.attributes = {
-    overview: [
+    ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'], {
+    description: [
         'In vertical (horizontal) box plots,',
         'statistics are computed using `y` (`x`) values.',
         'By supplying an `x` (`y`) array, one box per distinct x (y) value',
@@ -30,8 +22,15 @@ boxes.attributes = {
         'By default, the whiskers correspond to the box\' edges',
         '+/- 1.5 times the interquartile range (IQR = Q3-Q1),',
         'see *boxpoints* for other options.'
-    ].join(' '),
+    ].join(' ')
+});
 
+var scatterAttrs = Plotly.Scatter.attributes,
+    scatterMarkerAttrs = scatterAttrs.marker,
+    scatterMarkerLineAttrs = scatterMarkerAttrs.line,
+    extendFlat = Plotly.Lib.extendFlat;
+
+boxes.attributes = {
     y: {
         valType: 'data_array',
         description: [

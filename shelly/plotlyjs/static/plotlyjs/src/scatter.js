@@ -9,7 +9,14 @@ var scatter = module.exports = {},
     isNumeric = require('./isnumeric');
 
 Plotly.Plots.register(scatter, 'scatter',
-    ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend']);
+    ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
+    description: [
+        'The data visualized as scatter point or lines is set in `x` and `y`',
+        'Text (appearing either on the chart or on hover only) is via `text`.',
+        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+        'to a numerical arrays.'
+    ].join(' ')
+});
 
 // traces with < this many points are by default shown
 // with points and lines, > just get lines

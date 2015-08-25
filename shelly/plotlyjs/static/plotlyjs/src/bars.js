@@ -8,7 +8,15 @@ var bars = module.exports = {},
     isNumeric = require('./isnumeric');
 
 Plotly.Plots.register(bars, 'bar',
-    ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend']);
+    ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
+    description: [
+        'The data visualized by the span of the bars is set in `y`',
+        'if `orientation` is set th *v* (the default)',
+        'and the labels are set in `x`.',
+
+        'By setting `orientation` to *h*, the roles are interchanged.'
+    ].join(' ')
+});
 
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,

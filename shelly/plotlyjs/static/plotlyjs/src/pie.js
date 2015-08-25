@@ -8,7 +8,13 @@ var pie = module.exports = {},
     isNumeric = require('./isnumeric'),
     tinycolor = require('tinycolor2');
 
-Plotly.Plots.register(pie, 'pie', ['pie', 'showLegend']);
+Plotly.Plots.register(pie, 'pie', ['pie', 'showLegend'], {
+    description: [
+        'A data visualized by the sectors of the pie is set in `values`.',
+        'The sector labels are set in `labels`.',
+        'The sector colors are set in `marker.colors`'
+    ].join(' ')
+});
 
 pie.attributes = {
     labels: {

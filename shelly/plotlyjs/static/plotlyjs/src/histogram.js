@@ -12,10 +12,29 @@ var histogram = module.exports = {},
  * to allow quadrature combination of errors in summed histograms...
  */
 Plotly.Plots.register(Plotly.Bars, 'histogram',
-    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend']);
+    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'], {
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'for vertically spanning histograms and',
+        'in `y` for horizontally spanning histograms.',
+
+        'Binning options are set `xbins` and `ybins` respectively',
+        'if no aggregation data is provided.'
+    ].join(' ')
+});
 
 Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
-    ['cartesian', '2dMap', 'histogram']);
+    ['cartesian', '2dMap', 'histogram'], {
+    hrName: 'histogram_2d',
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'and `y` (where `x` and `y` represent marginal distributions,',
+        'binning is set in `xbins` and `ybins` in this case)',
+        'or `z` (where `z` represent the 2D distribution and binning set,',
+        'binning is set by `x` and `y` in this case).',
+        'The resulting distribution is visualized as a heatmap.'
+    ].join(' ')
+});
 
 // histogram has its own calc function,
 // but uses Bars.plot to display
@@ -68,7 +87,7 @@ histogram.attributes = {
         description: 'Sets the aggregation data.'
     },
     marker: {
-        color: {valType: 'data_array'}
+        color: {valType: 'data_array'}  // FIXME this overrides 'bar'
     },
     orientation: barAttrs.orientation,
     histfunc: {
