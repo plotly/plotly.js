@@ -90,6 +90,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
         else text = '(' + d.lon + ', ' + d.lat + ')';
 
         if(d.tx) text += '<br>' + d.tx;
+        else if(trace.text) text += '<br>' + trace.text;
 
         Plotly.Fx.loneHover(
             {

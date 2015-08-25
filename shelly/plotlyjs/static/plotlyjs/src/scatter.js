@@ -61,10 +61,16 @@ scatter.attributes = {
         ].join(' ')
     },
     text: {
-        valType: 'string',  // TODO 'data_array' ?
+        valType: 'string',
         dflt: '',
         arrayOk: true,
-        description: 'Sets text elements associated with each (x,y) pair.'
+        description: [
+            'Sets text elements associated with each (x,y) pair.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (x,y) coordinates.'
+        ].join(' ')
     },
     mode: {
         valType: 'flaglist',
@@ -1230,6 +1236,7 @@ scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
     pointData.yLabelVal = di.y;
 
     if(di.tx) pointData.text = di.tx;
+    else if(trace.text) pointData.text = trace.text;
 
     if(Plotly.ErrorBars) Plotly.ErrorBars.hoverInfo(di, trace, pointData);
 

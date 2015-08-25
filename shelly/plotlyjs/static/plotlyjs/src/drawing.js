@@ -746,7 +746,7 @@ var TEXTOFFSETSIGN = {start:1, end:-1, middle:0, bottom:1, top:-1},
 drawing.textPointStyle = function(s, trace) {
     s.each(function(d){
         var p = d3.select(this);
-        if(!d.tx) {
+        if(!d.tx && !trace.text) {
             p.remove();
             return;
         }
@@ -769,7 +769,7 @@ drawing.textPointStyle = function(s, trace) {
                 fontSize,
                 d.tc || trace.textfont.color)
             .attr('text-anchor',h)
-            .text(d.tx)
+            .text(d.tx || trace.text)
             .call(Plotly.util.convertToTspans);
         var pgroup = d3.select(this.parentNode),
             tspans = p.selectAll('tspan.line'),
