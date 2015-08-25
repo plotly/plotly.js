@@ -344,12 +344,12 @@ heatmap.calc = function(gd, trace) {
     }
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
-    var xlen = Plotly.Lib.aggNums(Math.max,null,
-            z.map(function(row) { return row.length; })),
+    var xlen = heatmap.maxRowLength(z),
         xIn = trace.xtype==='scaled' ? '' : trace.x,
         xArray = makeBoundArray(trace, xIn, x0, dx, xlen, xa),
         yIn = trace.ytype==='scaled' ? '' : trace.y,
         yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
+
     Plotly.Axes.expand(xa, xArray);
     Plotly.Axes.expand(ya, yArray);
 
@@ -417,7 +417,7 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
         // and extend it linearly based on the last two points
         if(len <= numbricks) {
             // contour plots only want the centers
-            if(isContour) arrayOut = arrayIn.slice(0,numbricks);
+            if(isContour) arrayOut = arrayIn.slice(0, numbricks);
             else if(numbricks === 1) arrayOut = [arrayIn[0]-0.5,arrayIn[0]+0.5];
             else {
                 arrayOut = [1.5*arrayIn[0]-0.5*arrayIn[1]];
@@ -436,9 +436,13 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
                 }
             }
         }
-        // hopefully length==numbricks+1, but do something regardless:
-        // given vals are brick boundaries
-        else return arrayIn.slice(0, numbricks+1);
+        else {
+            // hopefully length==numbricks+1, but do something regardless:
+            // given vals are brick boundaries
+            return isContour ?
+                arrayIn.slice(0, numbricks) :  // we must be strict for contours
+                arrayIn.slice(0, numbricks + 1);
+       }
     }
     else {
         dv = dvIn || 1;

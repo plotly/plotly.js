@@ -45,8 +45,8 @@ exports.ScatterGeo = require('./geo/defaults/scattergeo');
 exports.Choropleth = require('./geo/defaults/choropleth');
 exports.Geo = require('./geo/geo');
 
-// graph reference
-exports.getGraphReference = require('./graph_reference');
+// plot schema
+exports.getPlotSchema= require('./plotschema');
 
 // configuration
 exports.Config = require('./config');

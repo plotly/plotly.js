@@ -3,22 +3,23 @@
 var Plotly = require('./plotly'),
     objectAssign = require('object-assign');
 
-var NESTEDMODULEID = '_nestedModules',
-    COMPOSEDMODULEID = '_composedModules',
-    ANYTYPE = '*',
-    ISLINKEDTOARRAY = '_isLinkedToArray',
-    ISSUBPLOTOBJ = '_isSubplotObj';
+var NESTED_MODULE_ID = '_nestedModules',
+    COMPOSED_MODULE_ID = '_composedModules',
+    IS_LINKED_TO_ARRAY = '_isLinkedToArray',
+    IS_SUBPLOT_OBJ = '_isSubplotObj';
 
-var graphReference = {
+var plotSchema = {
     traces: {},
-    layout: {}
+    layout: {},
+    defs: {}
 };
 
 
-module.exports = function getGraphReference() {
+module.exports = function getPlotSchema() {
     Plotly.Plots.allTypes.forEach(getTraceAttributes);
     getLayoutAttributes();
-    return graphReference;
+    getDefs();
+    return plotSchema;
 };
 
 function getTraceAttributes(type) {
@@ -43,14 +44,14 @@ function getTraceAttributes(type) {
 
     attributes = removeUnderscoreAttrs(attributes);
 
-    graphReference.traces[type] = { attributes: attributes };
+    plotSchema.traces[type] = { attributes: attributes };
 
     // trace-specific layout attributes
     if(_module.layoutAttributes !== undefined) {
         layoutAttributes = coupleAttrs(
             _module.layoutAttributes, layoutAttributes, 'layoutAttributes', type
         );
-        graphReference.traces[type].layoutAttributes = layoutAttributes;
+        plotSchema.traces[type].layoutAttributes = layoutAttributes;
     }
 }
 
@@ -64,21 +65,25 @@ function getLayoutAttributes() {
 
     // layout module attributes (+ nested + composed)
     layoutAttributes = coupleAttrs(
-        globalLayoutAttributes, layoutAttributes, 'layoutAttributes', ANYTYPE
+        globalLayoutAttributes, layoutAttributes, 'layoutAttributes', '*'
     );
 
     layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
 
-    // add ISSUBPLOTOBJ key
+    // add IS_SUBPLOT_OBJ key
     Object.keys(layoutAttributes).forEach(function(k) {
         if(subplotsRegistry.gl3d.idRegex.test(k) ||
             subplotsRegistry.geo.idRegex.test(k) ||
             /^xaxis[0-9]*$/.test(k) ||
             /^yaxis[0-9]*$/.test(k)
-          ) layoutAttributes[k][ISSUBPLOTOBJ] = true;
+          ) layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
     });
 
-    graphReference.layout = { layoutAttributes: layoutAttributes };
+    plotSchema.layout = { layoutAttributes: layoutAttributes };
+}
+
+function getDefs() {
+    plotSchema.defs = { valObjects: Plotly.Lib.valObjects };
 }
 
 function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
@@ -87,7 +92,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
 
     Object.keys(attrsIn).forEach(function(k) {
 
-        if(k === NESTEDMODULEID) {
+        if(k === NESTED_MODULE_ID) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
                 nestedModule = getModule({module: attrsIn[k][kk]});
                 if(nestedModule === undefined) return;
@@ -103,7 +108,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             return;
         }
 
-        if(k === COMPOSEDMODULEID) {
+        if(k === COMPOSED_MODULE_ID) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
                 if(kk !== type) return;
 
@@ -135,7 +140,7 @@ function getModule(arg) {
 
 function removeUnderscoreAttrs(attributes) {
     Object.keys(attributes).forEach(function(k){
-        if(k.charAt(0) === '_' && k !== ISLINKEDTOARRAY) delete attributes[k];
+        if(k.charAt(0) === '_' && k !== IS_LINKED_TO_ARRAY) delete attributes[k];
     });
     return attributes;
 }
