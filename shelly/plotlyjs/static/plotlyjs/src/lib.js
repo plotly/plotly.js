@@ -1649,17 +1649,14 @@ lib.valObjects = {
         requiredOpts: ['items'],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt, opts) {
-            var items = opts.items,
-                len = items.length;
-
             if(!Array.isArray(v)) {
                 propOut.set(dflt);
                 return;
             }
 
-            dflt = Array.isArray(dflt) ? dflt : new Array(len);
-
-            var vOut = new Array(len);
+            var items = opts.items,
+                vOut = [];
+            dflt = Array.isArray(dflt) ? dflt : [];
 
             for(var i = 0; i < items.length; i++) {
                 lib.coerce(v, vOut, items, '[' + i + ']', dflt[i]);
