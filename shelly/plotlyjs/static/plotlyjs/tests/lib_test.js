@@ -574,4 +574,26 @@ describe('Test lib.js:', function() {
             expect(array[3].length).toEqual(5);
         });
     });
+
+    describe('isPlainObject', function() {
+        var isPlainObject = Plotly.Lib.isPlainObject;
+
+        it('should return true when input is a plain object', function() {
+            expect(isPlainObject({})).toBe(true);
+            expect(isPlainObject({a: 'A', 'B': 'b'})).toBe(true);
+        });
+
+        it('should return false when input is not a plain object', function() {
+            expect(isPlainObject(function(){ return null; })).toBe(false);
+            expect(isPlainObject(document)).toBe(false);
+            expect(isPlainObject(window)).toBe(false);
+            expect(isPlainObject(null)).toBe(false);
+            expect(isPlainObject([])).toBe(false);
+            expect(isPlainObject('string')).toBe(false);
+            expect(isPlainObject(true)).toBe(false);
+            expect(isPlainObject(false)).toBe(false);
+        });
+
+    });
+
 });
