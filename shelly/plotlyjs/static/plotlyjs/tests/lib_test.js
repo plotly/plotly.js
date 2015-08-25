@@ -584,9 +584,7 @@ describe('Test lib.js:', function() {
         });
 
         it('should return false when input is not a plain object', function() {
-            function A() {
-                return null;
-            }
+            function A() {}
 
             expect(isPlainObject(A)).toBe(false);
             expect(isPlainObject(new A())).toBe(false);
