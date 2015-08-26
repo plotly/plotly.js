@@ -23,6 +23,7 @@ scatter.attributes = {
     x0: {
         valType: 'any',
         dflt: 0,
+        role: 'info',
         description: [
             'Alternate to `x`.',
             'Builds a linear space of x coordinates.',
@@ -33,6 +34,7 @@ scatter.attributes = {
     dx: {
         valType: 'number',
         dflt: 1,
+        role: 'info',
         description: [
             'Sets the x coordinate step.',
             'See `x0` for more info.'
@@ -45,6 +47,7 @@ scatter.attributes = {
     y0: {
         valType: 'any',
         dflt: 0,
+        role: 'info',
         description: [
             'Alternate to `y`.',
             'Builds a linear space of y coordinates.',
@@ -55,6 +58,7 @@ scatter.attributes = {
     dy: {
         valType: 'number',
         dflt: 1,
+        role: 'info',
         description: [
             'Sets the y coordinate step.',
             'See `y0` for more info.'
@@ -64,6 +68,7 @@ scatter.attributes = {
         valType: 'string',
         dflt: '',
         arrayOk: true,
+        role: 'data',
         description: [
             'Sets text elements associated with each (x,y) pair.',
             'If a single string, the same string appears over',
@@ -76,6 +81,7 @@ scatter.attributes = {
         valType: 'flaglist',
         flags: ['lines','markers','text'],
         extras: ['none'],
+        role: 'info',
         description: [
             'Determines the drawing mode for this scatter trace.',
             'If the provided `mode` includes *text* then the `text` elements',
@@ -86,18 +92,21 @@ scatter.attributes = {
     line: {
         color: {
             valType: 'color',
+            role: 'style',
             description: 'Sets the line color.'
         },
         width: {
             valType: 'number',
             min: 0,
             dflt: 2,
+            role: 'style',
             description: 'Sets the line width (in px).'
         },
         shape: {
             valType: 'enumerated',
             values: ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'],
             dflt: 'linear',
+            role: 'style',
             description: [
                 'Determines the line shape.',
                 'With *spline* the lines are drawn using spline interpolation.',
@@ -109,6 +118,7 @@ scatter.attributes = {
             min: 0,
             max: 1.3,
             dflt: 1,
+            role: 'style',
             description: [
                 'Has only an effect if `shape` is set to *spline*',
                 'Sets the amount of smoothing.',
@@ -123,12 +133,14 @@ scatter.attributes = {
             // dash lengths in px, and it will be honored
             values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
             dflt: 'solid',
+            role: 'style',
             description: 'Sets the style of the lines.'
         }
     },
     connectgaps: {
         valType: 'boolean',
         dflt: false,
+        role: 'info',
         description: [
             'Determines whether or not gaps',
             '(i.e. {nan} or missing values)',
@@ -139,6 +151,7 @@ scatter.attributes = {
         valType: 'enumerated',
         values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx'],
         dflt: 'none',
+        role: 'style',
         description: [
             'Sets the area to fill with a solid color.',
             'Use with `fillcolor`.'
@@ -146,6 +159,7 @@ scatter.attributes = {
     },
     fillcolor: {
         valType: 'color',
+        role: 'style',
         description: 'Sets the fill color.'
     },
     marker: {
@@ -154,6 +168,7 @@ scatter.attributes = {
             values: Plotly.Drawing.symbolList,
             dflt: 'circle',
             arrayOk: true,
+            role: 'style',
             description: [
                 'Sets the marker symbol type.',
                 'Adding 100 is equivalent to appending *-open* to a symbol name.',
@@ -167,6 +182,7 @@ scatter.attributes = {
             min: 0,
             max: 1,
             arrayOk: true,
+            role: 'style',
             description: 'Sets the marker opacity.'
         },
         size: {
@@ -174,17 +190,20 @@ scatter.attributes = {
             min: 0,
             dflt: 6,
             arrayOk: true,
+            role: 'style',
             description: 'Sets the marker size (in px).'
         },
         color: {
             valType: 'color',
             arrayOk: true,
+            role: 'style',
             description: 'Sets the marker color.'
         },
         maxdisplayed: {
             valType: 'number',
             min: 0,
             dflt: 0,
+            role: 'style',
             description: [
                 'Sets a maximum number of points to be drawn on the graph.',
                 '*0* corresponds to no limit.'
@@ -193,6 +212,7 @@ scatter.attributes = {
         sizeref: {
             valType: 'number',
             dflt: 1,
+            role: 'style',
             description: [
                 'Has only an effect if `marker.size` is set to a numerical array.',
                 'Sets the scale factor used to determine the rendered size of',
@@ -212,6 +232,7 @@ scatter.attributes = {
             valType: 'enumerated',
             values: ['diameter', 'area'],
             dflt: 'diameter',
+            role: 'info',
             description: [
                 'Has only an effect if `marker.size` is set to a numerical array.',
                 'Sets the rule for which the data in `size` is converted',
@@ -220,6 +241,7 @@ scatter.attributes = {
         },
         colorscale: {
             valType: 'colorscale',
+            role: 'style',
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
                 'Sets the colorscale.'
@@ -228,6 +250,7 @@ scatter.attributes = {
         cauto: {
             valType: 'boolean',
             dflt: true,
+            role: 'style',
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
                 'Determines the whether or not the color domain is computed',
@@ -237,6 +260,7 @@ scatter.attributes = {
         cmax: {
             valType: 'number',
             dflt: null,
+            role: 'info',
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
                 'Sets the upper bound of the color domain.'
@@ -245,6 +269,7 @@ scatter.attributes = {
         cmin: {
             valType: 'number',
             dflt: null,
+            role: 'info',
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
                 'Sets the lower bound of the color domain.'
@@ -279,16 +304,19 @@ scatter.attributes = {
             color: {
                 valType: 'color',
                 arrayOk: true,
+                role: 'style',
                 description: 'Sets the color of the lines bounding the marker points.'
             },
             width: {
                 valType: 'number',
                 min: 0,
                 arrayOk: true,
+                role: 'style',
                 description: 'Sets the width (in px) of the lines bounding the marker points.'
             },
             colorscale: {
                 valType: 'colorscale',
+                role: 'style',
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
                     'Sets the colorscale.'
@@ -297,6 +325,7 @@ scatter.attributes = {
             cauto: {
                 valType: 'boolean',
                 dflt: true,
+                role: 'style',
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
                     'Determines the whether or not the color domain is computed',
@@ -306,6 +335,7 @@ scatter.attributes = {
             cmax: {
                 valType: 'number',
                 dflt: null,
+                role: 'info',
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
                     'Sets the upper bound of the color domain.'
@@ -314,6 +344,7 @@ scatter.attributes = {
             cmin: {
                 valType: 'number',
                 dflt: null,
+                role: 'info',
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
                     'Sets the lower bound of the color domain.'
@@ -347,6 +378,7 @@ scatter.attributes = {
         ],
         dflt: 'middle center',
         arrayOk: true,
+        role: 'style',
         description: [
             'Sets the positions of the `text` elements',
             'with respects to the (x,y) coordinates.'
