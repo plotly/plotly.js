@@ -59,7 +59,6 @@ annotations.layoutAttributes = {
 
     text: {
         valType: 'string',
-        blankOk: false,
         role: 'info',
         description: [
             'Sets the text associated with this annotation.',
@@ -208,7 +207,7 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     x: {
-        valType: 'number',  // but we will convert dates or categories to numbers
+        valType: 'number',
         role: 'info',
         description: [
             'Sets the annotation\'s x position.',
@@ -248,7 +247,7 @@ annotations.layoutAttributes = {
         ].join(' ')
     },
     y: {
-        valType: 'number',  // but we will convert dates or categories to numbers
+        valType: 'number',
         role: 'info',
         description: [
             'Sets the annotation\'s y position.',
