@@ -7,7 +7,7 @@
 
 var through = require('through2');
 
-var attributeNamesToRemove = ['description', 'overview'],
+var attributeNamesToRemove = ['description', 'overview', 'requiredOpts', 'otherOpts'],
     regexStr = '';
 
 // ref: http://www.regexr.com/3bj6p

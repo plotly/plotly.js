@@ -2,35 +2,35 @@ var Plotly = require('../../plotly');
 
 module.exports = {
     range: [
-        {type: 'number'},
-        {type: 'number'}
+        {valType: 'number'},
+        {valType: 'number'}
     ],
     showgrid: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false,
         description: 'Sets whether or not graticule are shown on the map.'
     },
     tick0: {
-        type: 'number',
+        valType: 'number',
         description: [
             'Sets the graticule\'s starting tick longitude/latitude.'
         ].join(' ')
     },
     dtick: {
-        type: 'number',
+        valType: 'number',
         description: [
             'Sets the graticule\'s longitude/latitude tick step.'
         ].join(' ')
     },
     gridcolor: {
-        type: 'color',
+        valType: 'color',
         dflt: Plotly.Color.lightLine,
         description: [
             'Sets the graticule\'s stroke color.'
         ].join(' ')
     },
     gridwidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 1,
         description: [

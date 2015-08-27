@@ -7,15 +7,15 @@ var extendFlat = Plotly.Lib.extendFlat;
 function makeVector(x, y, z) {
     return {
         x: {
-            type: 'number',
+            valType: 'number',
             dflt: x
         },
         y: {
-            type: 'number',
+            valType: 'number',
             dflt: y
         },
         z: {
-            type: 'number',
+            valType: 'number',
             dflt: z
         }
     };
@@ -23,7 +23,7 @@ function makeVector(x, y, z) {
 
 module.exports = {
     bgcolor: {
-        type: 'color',
+        valType: 'color',
         dflt: 'rgba(0,0,0,0)'
     },
     camera: {
@@ -54,16 +54,16 @@ module.exports = {
     },
     domain: {
         x: [
-            {type: 'number', min: 0, max: 1},
-            {type: 'number', min: 0, max: 1}
+            {valType: 'number', min: 0, max: 1},
+            {valType: 'number', min: 0, max: 1}
         ],
         y:[
-            {type: 'number', min: 0, max: 1, dflt: 0},
-            {type: 'number', min: 0, max: 1, dflt: 1}
+            {valType: 'number', min: 0, max: 1, dflt: 0},
+            {valType: 'number', min: 0, max: 1, dflt: 1}
         ]
     },
     aspectmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['auto', 'cube', 'data', 'manual'],
         dflt: 'auto',
         description: [
@@ -85,15 +85,15 @@ module.exports = {
     },
     aspectratio: { // must be positive (0's are coerced to 1)
         x: {
-            type: 'number',
+            valType: 'number',
             min: 0
         },
         y: {
-            type: 'number',
+            valType: 'number',
             min: 0
         },
         z: {
-            type: 'number',
+            valType: 'number',
             min: 0
         },
         description: [
