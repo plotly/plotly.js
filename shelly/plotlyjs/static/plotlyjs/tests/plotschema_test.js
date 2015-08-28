@@ -6,14 +6,16 @@ describe('plot schema', function() {
     var plotSchema = Plotly.PlotSchema.get(),
         valObjects = plotSchema.defs.valObjects;
 
-    function assertPlotSchema(check) {
+    function assertPlotSchema(checkOnValObject, checkOnPlainObject) {
         var traces = plotSchema.traces;
 
         Object.keys(traces).forEach(function(traceName) {
-            Plotly.PlotSchema.crawl(traces[traceName].attributes, check);
+            Plotly.PlotSchema.crawl(traces[traceName].attributes,
+                checkOnValObject, checkOnPlainObject);
         });
 
-        Plotly.PlotSchema.crawl(plotSchema.layout.layoutAttributes, check);
+        Plotly.PlotSchema.crawl(plotSchema.layout.layoutAttributes,
+                checkOnValObject, checkOnPlainObject);
     }
 
     it('all attributes should have a valid `valType`', function() {
@@ -23,6 +25,19 @@ describe('plot schema', function() {
             expect(valTypes.indexOf(attr.valType) !== -1).toBe(true);
         });
 
+    });
+
+    it('all attributes should only have valid `role`', function() {
+        var roles = ['info', 'style', 'data', 'object'];
+
+        assertPlotSchema(
+            function(attr) {
+                expect(roles.indexOf(attr.role) !== -1).toBe(true);
+            },
+            function(attr) {
+                expect(roles.indexOf(attr.role) === 'object').toBe(true);
+            }
+        );
     });
 
     it('all attributes should have the required options', function() {
