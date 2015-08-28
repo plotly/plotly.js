@@ -47,7 +47,7 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
         coerce('bgcolor');
 
-        var cameraKeys = Object.keys(attributes.camera);
+        var cameraKeys = ['up', 'center', 'eye'];
 
         for(var j = 0; j < cameraKeys.length; j++) {
             coerce('camera.' + cameraKeys[j] + '.x');
