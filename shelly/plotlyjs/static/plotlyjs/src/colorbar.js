@@ -496,7 +496,7 @@ var colorbar = module.exports = function(td, id) {
 
             // setter - for multi-part properties,
             // set only the parts that are provided
-            if($.isPlainObject(opts[name])) $.extend(opts[name],v);
+            if(Plotly.Lib.isPlainObject(opts[name])) $.extend(opts[name],v);
             else opts[name] = v;
             return component;
         };

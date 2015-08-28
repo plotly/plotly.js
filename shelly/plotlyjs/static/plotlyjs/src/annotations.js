@@ -437,10 +437,10 @@ annotations.draw = function(gd, index, opt, value) {
             }
             return;
         }
-        else if(value==='add' || $.isPlainObject(value)) {
+        else if(value==='add' || Plotly.Lib.isPlainObject(value)) {
             fullLayout.annotations.splice(index,0,{});
 
-            var rule = $.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
+            var rule = Plotly.Lib.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
 
             if (layout.annotations) {
                 layout.annotations.splice(index, 0, rule);
@@ -473,7 +473,7 @@ annotations.draw = function(gd, index, opt, value) {
     // alter the input annotation as requested
     var optionsEdit = {};
     if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
-    else if($.isPlainObject(opt)) optionsEdit = opt;
+    else if(Plotly.Lib.isPlainObject(opt)) optionsEdit = opt;
 
     var optionKeys = Object.keys(optionsEdit);
     for(i = 0; i < optionKeys.length; i++) {

@@ -1498,7 +1498,7 @@ function relinkPrivateKeys(toLayout, fromLayout) {
         else if (Array.isArray(fromLayout[k]) &&
                  Array.isArray(toLayout[k]) &&
                  fromLayout[k].length &&
-                 $.isPlainObject(fromLayout[k][0])) {
+                 Plotly.Lib.isPlainObject(fromLayout[k][0])) {
             if(fromLayout[k].length !== toLayout[k].length) {
                 // this should be handled elsewhere, it causes
                 // ambiguity if we try to deal with it here.
@@ -1510,8 +1510,8 @@ function relinkPrivateKeys(toLayout, fromLayout) {
                 relinkPrivateKeys(toLayout[k][j], fromLayout[k][j]);
             }
         }
-        else if ($.isPlainObject(fromLayout[k]) &&
-                 $.isPlainObject(toLayout[k])) {
+        else if (Plotly.Lib.isPlainObject(fromLayout[k]) &&
+                 Plotly.Lib.isPlainObject(toLayout[k])) {
             // recurse into objects, but only if they still exist
             relinkPrivateKeys(toLayout[k], fromLayout[k]);
             if (!Object.keys(toLayout[k]).length) delete toLayout[k];
@@ -2077,12 +2077,12 @@ function checkAddTracesArgs(gd, traces, newIndices) {
  */
 function assertExtendTracesArgs(gd, update, indices, maxPoints) {
 
-    var maxPointsIsObject = $.isPlainObject(maxPoints);
+    var maxPointsIsObject = Plotly.Lib.isPlainObject(maxPoints);
 
     if (!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array');
     }
-    if (!$.isPlainObject(update)) {
+    if (!Plotly.Lib.isPlainObject(update)) {
         throw new Error('update must be a key:value object');
     }
 
@@ -2125,7 +2125,7 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
  */
 function getExtendProperties (gd, update, indices, maxPoints) {
 
-    var maxPointsIsObject = $.isPlainObject(maxPoints),
+    var maxPointsIsObject = Plotly.Lib.isPlainObject(maxPoints),
         updateProps = [];
     var trace, target, prop, insert, maxp;
 
@@ -2559,7 +2559,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         aobj = {};
 
     if(typeof astr === 'string') aobj[astr] = val;
-    else if($.isPlainObject(astr)) {
+    else if(Plotly.Lib.isPlainObject(astr)) {
         aobj = astr;
         if(traces===undefined) traces = val; // the 3-arg form
     }
@@ -3090,7 +3090,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         newkey, axes, keys, xyref, scene, axisAttr;
 
     if(typeof astr === 'string') aobj[astr] = val;
-    else if($.isPlainObject(astr)) aobj = astr;
+    else if(Plotly.Lib.isPlainObject(astr)) aobj = astr;
     else {
         console.log('relayout fail',astr,val);
         return;
@@ -3255,7 +3255,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // 'add' or an entire annotation to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
             if(p.parts.length === 2) {
-                if(aobj[ai] === 'add' || $.isPlainObject(aobj[ai])) {
+                if(aobj[ai] === 'add' || Plotly.Lib.isPlainObject(aobj[ai])) {
                     undoit[ai] = 'remove';
                 }
                 else if(aobj[ai] === 'remove') {
@@ -4391,7 +4391,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
             return null;
         }
 
-        if($.isPlainObject(d)) {
+        if(Plotly.Lib.isPlainObject(d)) {
             var o={}, v;
             for(v in d) {
                 // remove private elements and functions
