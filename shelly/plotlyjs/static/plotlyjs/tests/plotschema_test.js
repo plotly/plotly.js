@@ -6,10 +6,6 @@ describe('plot schema', function() {
     var plotSchema = Plotly.getPlotSchema(),
         valObjects = plotSchema.defs.valObjects;
 
-    function isPlainObject(o) {
-        return Object.prototype.toString.call(o) === '[object Object]';
-    }
-
     function isValObject(o) {
         return Object.keys(o).indexOf('valType') !== -1;
     }
@@ -28,7 +24,7 @@ describe('plot schema', function() {
             var attr = attrs[attrName];
 
             if(isValObject(attr)) check(attr);
-            else if(isPlainObject(attr)) crawl(attr, check);
+            else if(Plotly.Lib.isPlainObject(attr)) crawl(attr, check);
         });
     }
 
