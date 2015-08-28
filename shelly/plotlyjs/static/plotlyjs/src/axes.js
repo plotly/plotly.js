@@ -60,10 +60,14 @@ axes.layoutAttributes = {
             'regardless of the input data.'
         ].join(' ')
     },
-    range: [
-        {valType: 'number'},
-        {valType: 'number'}
-    ],
+    range: {
+        valType: 'info_array',
+        items: [
+            {valType: 'number'},
+            {valType: 'number'}
+        ],
+        description: 'Sets the range of this axis.'
+    },
     fixedrange: {
         valType: 'boolean',
         dflt: false,
@@ -380,10 +384,17 @@ axes.layoutAttributes = {
             'If *false*, this axis does not overlay any same-letter axes.'
         ].join(' ')
     },
-    domain: [
-        {valType: 'number', min: 0, max: 1, dflt: 0, role: 'info'},
-        {valType: 'number', min: 0, max: 1, dflt: 1, role: 'info'}
-    ],
+    domain: {
+        valType: 'info_array',
+        items: [
+            {valType: 'number', min: 0, max: 1},
+            {valType: 'number', min: 0, max: 1}
+        ],
+        dflt: [0, 1],
+        description: [
+            'Sets the domain of this axis (in plot fraction).'
+        ].join(' ')
+    },
     position: {
         valType: 'number',
         min: 0,
@@ -554,10 +565,9 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
         autoRange = coerce('autorange', !validRange);
 
     if(autoRange) coerce('rangemode');
-    var range0 = coerce('range[0]', -1),
-        range1 = coerce('range[1]', letter==='x' ? 6 : 4);
-    if(range0===range1) {
-        containerOut.range = [range0 - 1, range0 + 1];
+    var range = coerce('range', [-1, letter==='x' ? 6 : 4]);
+    if(range[0] === range[1]) {
+        containerOut.range = [range[0] - 1, range[0] + 1];
     }
     Plotly.Lib.noneOrAll(containerIn.range, containerOut.range, [0, 1]);
 
@@ -659,7 +669,7 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
         letter = options.letter;
 
     var anchor = Plotly.Lib.coerce(containerIn, containerOut,
-        {   // TODO incorporate into layoutAttributes
+        {
             anchor: {
                 valType:'enumerated',
                 values: ['free'].concat(counterAxes),
@@ -672,7 +682,7 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
     if(anchor==='free') coerce('position');
 
     Plotly.Lib.coerce(containerIn, containerOut,
-        {   // TODO incorporate into layoutAttributes
+        {
             side: {
                 valType: 'enumerated',
                 values: letter==='x' ? ['bottom', 'top'] : ['left', 'right'],
@@ -684,7 +694,7 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
     var overlaying = false;
     if(overlayableAxes.length) {
         overlaying = Plotly.Lib.coerce(containerIn, containerOut,
-        {   // TODO incorporate into layoutAttributes
+        {
             overlaying: {
                 valType: 'enumerated',
                 values: [false].concat(overlayableAxes),
@@ -699,9 +709,8 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
         // in ax.setscale()... but this means we still need (imperfect) logic
         // in the axes popover to hide domain for the overlaying axis.
         // perhaps I should make a private version _domain that all axes get???
-        var domainStart = coerce('domain[0]'),
-            domainEnd = coerce('domain[1]');
-        if(domainStart > domainEnd - 0.01) containerOut.domain = [0,1];
+        var domain = coerce('domain');
+        if(domain[0] > domain[1] - 0.01) containerOut.domain = [0,1];
         Plotly.Lib.noneOrAll(containerIn.domain, containerOut.domain, [0, 1]);
     }
 

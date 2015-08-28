@@ -1641,6 +1641,29 @@ lib.valObjects = {
             if(v===undefined) propOut.set(dflt);
             else propOut.set(v);
         }
+    },
+    info_array: {
+        description: [
+            'An {array} of plot information.'
+        ].join(' '),
+        requiredOpts: ['items'],
+        otherOpts: ['dflt'],
+        coerceFunction: function(v, propOut, dflt, opts) {
+            if(!Array.isArray(v)) {
+                propOut.set(dflt);
+                return;
+            }
+
+            var items = opts.items,
+                vOut = [];
+            dflt = Array.isArray(dflt) ? dflt : [];
+
+            for(var i = 0; i < items.length; i++) {
+                lib.coerce(v, vOut, items, '[' + i + ']', dflt[i]);
+            }
+
+            propOut.set(vOut);
+        }
     }
 };
 

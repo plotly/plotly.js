@@ -1,10 +1,14 @@
 var Plotly = require('../../plotly');
 
 module.exports = {
-    range: [
-        {valType: 'number'},
-        {valType: 'number'}
-    ],
+    range: {
+        valType: 'info_array',
+        items: [
+            {valType: 'number'},
+            {valType: 'number'}
+        ],
+        description: 'Sets the range of this axis (in degrees).'
+    },
     showgrid: {
         valType: 'boolean',
         dflt: false,

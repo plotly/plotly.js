@@ -27,8 +27,6 @@ describe('plot schema', function() {
         Object.keys(attrs).forEach(function(attrName) {
             var attr = attrs[attrName];
 
-            if(Array.isArray(attr)) return;  // FIXME
-
             if(isValObject(attr)) check(attr);
             else if(isPlainObject(attr)) crawl(attr, check);
         });
