@@ -66,9 +66,9 @@ scatter.attributes = {
     },
     text: {
         valType: 'string',
+        role: 'info',
         dflt: '',
         arrayOk: true,
-        role: 'data',
         description: [
             'Sets text elements associated with each (x,y) pair.',
             'If a single string, the same string appears over',
@@ -386,6 +386,7 @@ scatter.attributes = {
     },
     textfont: {
         valType: 'font',
+        role: 'style',
         arrayOk: true,
         description: 'Sets the text font.'
     },

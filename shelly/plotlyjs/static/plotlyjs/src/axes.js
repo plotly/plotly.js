@@ -386,6 +386,7 @@ axes.layoutAttributes = {
     },
     domain: {
         valType: 'info_array',
+        role: 'info',
         items: [
             {valType: 'number', min: 0, max: 1},
             {valType: 'number', min: 0, max: 1}

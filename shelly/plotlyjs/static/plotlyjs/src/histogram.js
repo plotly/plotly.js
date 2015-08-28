@@ -77,6 +77,7 @@ histogram.attributes = {
     histfunc: {
         valType: 'enumerated',
         values: ['count', 'sum', 'avg', 'min', 'max'],
+        role: 'style',
         dflt: 'count',
         description: [
             'Specifies the binning function used for this histogram trace.',

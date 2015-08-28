@@ -25,6 +25,7 @@ bars.attributes = {
     text: scatterAttrs.text,
     orientation: {
         valType: 'enumerated',
+        role: 'info',
         values: ['v', 'h'],
         description: [
             'Sets the orientation of the bars.',
