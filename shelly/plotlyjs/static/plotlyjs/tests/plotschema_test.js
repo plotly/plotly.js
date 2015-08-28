@@ -6,30 +6,14 @@ describe('plot schema', function() {
     var plotSchema = Plotly.PlotSchema.get(),
         valObjects = plotSchema.defs.valObjects;
 
-    function isPlainObject(o) {
-        return Object.prototype.toString.call(o) === '[object Object]';
-    }
-
-    function isValObject(o) {
-        return Object.keys(o).indexOf('valType') !== -1;
-    }
-
     function assertPlotSchema(check) {
         var traces = plotSchema.traces;
+
         Object.keys(traces).forEach(function(traceName) {
-            crawl(traces[traceName].attributes, check);
+            Plotly.PlotSchema.crawl(traces[traceName].attributes, check);
         });
 
-        crawl(plotSchema.layout.layoutAttributes, check);
-    }
-
-    function crawl(attrs, check) {
-        Object.keys(attrs).forEach(function(attrName) {
-            var attr = attrs[attrName];
-
-            if(isValObject(attr)) check(attr);
-            else if(isPlainObject(attr)) crawl(attr, check);
-        });
+        Plotly.PlotSchema.crawl(plotSchema.layout.layoutAttributes, check);
     }
 
     it('all attributes should have a valid `valType`', function() {
