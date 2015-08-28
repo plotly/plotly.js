@@ -173,10 +173,12 @@ boxes.attributes = {
     line: {
         color: {
             valType: 'color',
+            role: 'style',
             description: 'Sets the color of line bounding the box(es).'
         },
         width: {
             valType: 'number',
+            role: 'style',
             min: 0,
             dflt: 2,
             description: 'Sets the width (in px) of line bounding the box(es).'

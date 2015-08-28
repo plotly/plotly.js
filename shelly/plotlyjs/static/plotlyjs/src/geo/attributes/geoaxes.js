@@ -3,6 +3,7 @@ var Plotly = require('../../plotly');
 module.exports = {
     range: {
         valType: 'info_array',
+        role: 'info',
         items: [
             {valType: 'number'},
             {valType: 'number'}

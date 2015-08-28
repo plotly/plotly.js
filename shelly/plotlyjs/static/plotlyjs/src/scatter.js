@@ -223,6 +223,7 @@ scatter.attributes = {
             valType: 'number',
             min: 0,
             dflt: 0,
+            role: 'style',
             description: [
                 'Has only an effect if `marker.size` is set to a numerical array.',
                 'Sets the minimum size (in px) of the rendered marker points.'
@@ -278,6 +279,7 @@ scatter.attributes = {
         autocolorscale: {
             valType: 'boolean',
             dflt: true,
+            role: 'style',
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
                 'Determines whether or not the colorscale is picked using',
@@ -286,6 +288,7 @@ scatter.attributes = {
         },
         reversescale: {
             valType: 'boolean',
+            role: 'style',
             dflt: false,
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
@@ -294,6 +297,7 @@ scatter.attributes = {
         },
         showscale: {
             valType: 'boolean',
+            role: 'info',
             dflt: false,
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
@@ -353,6 +357,7 @@ scatter.attributes = {
             autocolorscale: {
                 valType: 'boolean',
                 dflt: true,
+                role: 'style',
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
                     'Determines whether or not the colorscale is picked using',
@@ -362,6 +367,7 @@ scatter.attributes = {
             reversescale: {
                 valType: 'boolean',
                 dflt: false,
+                role: 'style',
                 description: [
                     'Has only an effect if `marker.color.line` is set to a numerical array.',
                     'Reverses the colorscale.'

@@ -79,6 +79,7 @@ annotations.layoutAttributes = {
     },
     font: {
         valType: 'font',
+        role: 'style',
         description: 'Sets the annotation text font.'
     },
     opacity: {

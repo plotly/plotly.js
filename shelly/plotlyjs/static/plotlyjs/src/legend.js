@@ -28,6 +28,7 @@ legend.layoutAttributes = {
     },
     font: {
         valType: 'font',
+        role: 'style',
         description: 'Sets the font used to text the legend items.'
     },
     traceorder: {
@@ -55,6 +56,7 @@ legend.layoutAttributes = {
         valType: 'number',
         min: 0,
         dflt: 10,
+        role: 'style',
         description: [
             'Sets the amount of vertical space (in px) between legend groups.'
         ].join(' ')

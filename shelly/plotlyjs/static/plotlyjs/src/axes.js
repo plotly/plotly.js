@@ -15,6 +15,7 @@ axes.layoutAttributes = {
     },
     titlefont: {
         valType: 'font',
+        role: 'style',
         description: [
             'Sets this axis\' title font.'
         ].join(' ')
@@ -62,6 +63,7 @@ axes.layoutAttributes = {
     },
     range: {
         valType: 'info_array',
+        role: 'info',
         items: [
             {valType: 'number'},
             {valType: 'number'}
@@ -81,6 +83,7 @@ axes.layoutAttributes = {
     tickmode: {
         valType: 'enumerated',
         values: ['auto', 'linear', 'array'],
+        role: 'info',
         description: [
             'Sets the tick mode for this axis.',
             'If *auto*, the number of ticks is set via `nticks`.',
@@ -188,6 +191,7 @@ axes.layoutAttributes = {
     },
     tickfont: {
         valType: 'font',
+        role: 'style',
         description: 'Sets the tick font.'
     },
     tickangle: {
@@ -378,6 +382,7 @@ axes.layoutAttributes = {
     overlaying: {
         valType: 'enumerated',
         values: [false, '/^x[0-9]/*$', '/^y[0-9]/*$'],
+        role: 'info',
         description: [
             'If set a same-letter axis id, this axis is overlaid on top of',
             'the corresponding same-letter axis.',

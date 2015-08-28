@@ -5,6 +5,7 @@ module.exports = {
     domain: {
         x: {
             valType: 'info_array',
+            role: 'info',
             items: [
                 {valType: 'number', min: 0, max: 1},
                 {valType: 'number', min: 0, max: 1}
@@ -17,6 +18,7 @@ module.exports = {
         },
         y: {
             valType: 'info_array',
+            role: 'info',
             items: [
                 {valType: 'number', min: 0, max: 1},
                 {valType: 'number', min: 0, max: 1}
@@ -82,6 +84,7 @@ module.exports = {
         },
         parallels: {
             valType: 'info_array',
+            role: 'info',
             items: [
                 {valType: 'number'},
                 {valType: 'number'}
