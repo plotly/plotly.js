@@ -23,6 +23,25 @@ PlotSchema.get =  function() {
     return plotSchema;
 };
 
+PlotSchema.crawl = function(attrs, actionOnValObject, actionOnPlainObject) {
+    var noop = function () {};
+
+    actionOnValObject = typeof actionOnValObject === 'function' ?
+        actionOnValObject : noop;
+    actionOnPlainObject = typeof actionOnPlainObject === 'function' ?
+        actionOnPlainObject : noop;
+
+    Object.keys(attrs).forEach(function(attrName) {
+        var attr = attrs[attrName];
+
+        if(isValObject(attr)) actionOnValObject(attr, attrName);
+        else if(isPlainObject(attr)) {
+            actionOnPlainObject(attr, attrName);
+            PlotSchema.crawl(attr, actionOnValObject, actionOnPlainObject);
+        }
+    });
+};
+
 function getTraceAttributes(type) {
     var globalAttributes = Plotly.Plots.attributes,
         _module = getModule({type: type}),
@@ -45,6 +64,7 @@ function getTraceAttributes(type) {
 
     attributes = removeUnderscoreAttrs(attributes);
 
+    mergeValTypeAndRole(attributes);
     plotSchema.traces[type] = { attributes: attributes };
 
     // trace-specific layout attributes
@@ -52,6 +72,8 @@ function getTraceAttributes(type) {
         layoutAttributes = coupleAttrs(
             _module.layoutAttributes, layoutAttributes, 'layoutAttributes', type
         );
+
+        mergeValTypeAndRole(layoutAttributes);
         plotSchema.traces[type].layoutAttributes = layoutAttributes;
     }
 }
@@ -80,6 +102,7 @@ function getLayoutAttributes() {
           ) layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
     });
 
+    mergeValTypeAndRole(layoutAttributes);
     plotSchema.layout = { layoutAttributes: layoutAttributes };
 }
 
@@ -132,6 +155,18 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
     return attrsOut;
 }
 
+function mergeValTypeAndRole(attrs) {
+    function actionOnValObject(attr) {
+        if(attr.valType === 'data_array') attr.role = 'data';
+    }
+
+    function actionOnPlainObject(attr) {
+        attr.role = 'object';
+    }
+
+    PlotSchema.crawl(attrs, actionOnValObject, actionOnPlainObject);
+}
+
 // helper methods
 
 function getModule(arg) {
@@ -144,4 +179,12 @@ function removeUnderscoreAttrs(attributes) {
         if(k.charAt(0) === '_' && k !== IS_LINKED_TO_ARRAY) delete attributes[k];
     });
     return attributes;
+}
+
+function isValObject(o) {
+    return Object.keys(o).indexOf('valType') !== -1;
+}
+
+function isPlainObject(o) {
+    Object.prototype.toString.call(o) === "[object Object]"
 }
