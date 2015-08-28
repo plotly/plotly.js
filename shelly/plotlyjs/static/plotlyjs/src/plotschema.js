@@ -23,23 +23,16 @@ PlotSchema.get =  function() {
     return plotSchema;
 };
 
-PlotSchema.crawl = function(attrs, actionOnValObject, actionOnPlainObject) {
-    var noop = function () {};
-
-    actionOnValObject = typeof actionOnValObject === 'function' ?
-        actionOnValObject : noop;
-    actionOnPlainObject = typeof actionOnPlainObject === 'function' ?
-        actionOnPlainObject : noop;
-
+PlotSchema.crawl = function(attrs, callback) {
     Object.keys(attrs).forEach(function(attrName) {
         var attr = attrs[attrName];
 
-        if(isValObject(attr)) actionOnValObject(attr, attrName);
-        else if(Plotly.Lib.isPlainObject(attr)) {
-            actionOnPlainObject(attr, attrName);
-            PlotSchema.crawl(attr, actionOnValObject, actionOnPlainObject);
-        }
+        callback(attr, attrName);
     });
+};
+
+PlotSchema.isValObject = function(obj) {
+    return Object.keys(obj).indexOf('valType') !== -1;
 };
 
 function getTraceAttributes(type) {
@@ -156,6 +149,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
 }
 
 function mergeValTypeAndRole(attrs) {
+
     function actionOnValObject(attr) {
         if(attr.valType === 'data_array') attr.role = 'data';
     }
@@ -164,7 +158,15 @@ function mergeValTypeAndRole(attrs) {
         attr.role = 'object';
     }
 
-    PlotSchema.crawl(attrs, actionOnValObject, actionOnPlainObject);
+    function callback(attr) {
+        if(PlotSchema.isValObject(attr)) actionOnValObject(attr);
+        else if(Plotly.Lib.isPlainObject(attr)) {
+            actionOnPlainObject(attr);
+            PlotSchema.crawl(attr, callback);
+        }
+    }
+
+    PlotSchema.crawl(attrs, callback);
 }
 
 // helper methods
@@ -179,8 +181,4 @@ function removeUnderscoreAttrs(attributes) {
         if(k.charAt(0) === '_' && k !== IS_LINKED_TO_ARRAY) delete attributes[k];
     });
     return attributes;
-}
-
-function isValObject(o) {
-    return Object.keys(o).indexOf('valType') !== -1;
 }
