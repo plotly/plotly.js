@@ -15,7 +15,7 @@ describe('plot schema', function() {
         });
 
         Plotly.PlotSchema.crawl(plotSchema.layout.layoutAttributes,
-                checkOnValObject, checkOnPlainObject);
+            checkOnValObject, checkOnPlainObject);
     }
 
     it('all attributes should have a valid `valType`', function() {
@@ -34,8 +34,8 @@ describe('plot schema', function() {
             function(attr) {
                 expect(roles.indexOf(attr.role) !== -1).toBe(true);
             },
-            function(attr) {
-                expect(roles.indexOf(attr.role) === 'object').toBe(true);
+            function(attr, attrName) {
+                expect(attr.role === 'object').toBe(true);
             }
         );
     });
