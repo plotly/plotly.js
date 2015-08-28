@@ -578,26 +578,44 @@ describe('Test lib.js:', function() {
     describe('isPlainObject', function() {
         var isPlainObject = Plotly.Lib.isPlainObject;
 
-        it('should return true when input is a plain object', function() {
-            expect(isPlainObject({})).toBe(true);
-            expect(isPlainObject({a: 'A', 'B': 'b'})).toBe(true);
+        function A() {}
+
+        var shouldPass = [
+            {},
+            {a: 'A', 'B': 'b'}
+        ];
+
+        var shouldFail = [
+            A,
+            new A(),
+            document,
+            window,
+            null,
+            undefined,
+            [],
+            'string',
+            true,
+            false,
+            NaN,
+            Infinity,
+            /foo/,
+            '\n',
+            new Array(10),
+            new Date(),
+            new RegExp('foo'),
+            new String('string')
+        ];
+
+        shouldPass.forEach(function(obj) {
+            it('treats ' + JSON.stringify(obj) + ' as a plain object', function () {
+                expect(isPlainObject(obj)).toBe(true);
+            });
         });
 
-        it('should return false when input is not a plain object', function() {
-            function A() {}
-
-            expect(isPlainObject(A)).toBe(false);
-            expect(isPlainObject(new A())).toBe(false);
-            expect(isPlainObject(document)).toBe(false);
-            expect(isPlainObject(window)).toBe(false);
-            expect(isPlainObject(null)).toBe(false);
-            expect(isPlainObject(undefined)).toBe(false);
-            expect(isPlainObject([])).toBe(false);
-            expect(isPlainObject('string')).toBe(false);
-            expect(isPlainObject(true)).toBe(false);
-            expect(isPlainObject(false)).toBe(false);
+        shouldFail.forEach(function(obj) {
+            it('treats ' + JSON.stringify(obj!==window ? obj: 'window') + ' as NOT a plain object', function () {
+                expect(isPlainObject(obj)).toBe(false);
+            });
         });
-
     });
-
 });
