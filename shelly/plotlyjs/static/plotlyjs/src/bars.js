@@ -53,13 +53,13 @@ bars.attributes = {
             reversescale: scatterMarkerLineAttrs.reversescale
         }
     },
+    _composedModules: {  // composed module coupling
+        'histogram': 'Histogram'
+    },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
         'error_x': 'ErrorBars',
         'marker.colorbar': 'Colorbar'
-    },
-    _composedModules: {  // composed module coupling
-        'histogram': 'Histogram'
     }
 };
 
