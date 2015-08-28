@@ -149,7 +149,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             return;
         }
 
-        attrsOut[k] = attrsIn[k];
+        attrsOut[k] = objectAssign({}, attrsIn[k]);
     });
 
     return attrsOut;
