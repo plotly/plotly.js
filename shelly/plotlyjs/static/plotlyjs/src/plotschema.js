@@ -14,8 +14,9 @@ var plotSchema = {
     defs: {}
 };
 
+var PlotSchema = module.exports = {};
 
-module.exports = function getPlotSchema() {
+PlotSchema.get =  function() {
     Plotly.Plots.allTypes.forEach(getTraceAttributes);
     getLayoutAttributes();
     getDefs();

@@ -3,7 +3,7 @@ var Plotly = require('../src/plotly');
 describe('plot schema', function() {
     'use strict';
 
-    var plotSchema = Plotly.getPlotSchema(),
+    var plotSchema = Plotly.PlotSchema.get(),
         valObjects = plotSchema.defs.valObjects;
 
     function isPlainObject(o) {
