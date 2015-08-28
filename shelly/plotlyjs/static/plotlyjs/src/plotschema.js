@@ -35,7 +35,7 @@ PlotSchema.crawl = function(attrs, actionOnValObject, actionOnPlainObject) {
         var attr = attrs[attrName];
 
         if(isValObject(attr)) actionOnValObject(attr, attrName);
-        else if(isPlainObject(attr)) {
+        else if(Plotly.Lib.isPlainObject(attr)) {
             actionOnPlainObject(attr, attrName);
             PlotSchema.crawl(attr, actionOnValObject, actionOnPlainObject);
         }
@@ -183,8 +183,4 @@ function removeUnderscoreAttrs(attributes) {
 
 function isValObject(o) {
     return Object.keys(o).indexOf('valType') !== -1;
-}
-
-function isPlainObject(o) {
-    Object.prototype.toString.call(o) === "[object Object]"
 }
