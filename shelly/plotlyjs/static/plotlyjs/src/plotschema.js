@@ -28,11 +28,14 @@ PlotSchema.crawl = function(attrs, callback) {
         var attr = attrs[attrName];
 
         callback(attr, attrName);
+
+        if(PlotSchema.isValObject(attr)) return;
+        if(Plotly.Lib.isPlainObject(attr)) PlotSchema.crawl(attr, callback);
     });
 };
 
 PlotSchema.isValObject = function(obj) {
-    return Object.keys(obj).indexOf('valType') !== -1;
+    return obj && obj.valType !== undefined;
 };
 
 function getTraceAttributes(type) {
@@ -150,20 +153,11 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
 
 function mergeValTypeAndRole(attrs) {
 
-    function actionOnValObject(attr) {
-        if(attr.valType === 'data_array') attr.role = 'data';
-    }
-
-    function actionOnPlainObject(attr) {
-        attr.role = 'object';
-    }
-
     function callback(attr) {
-        if(PlotSchema.isValObject(attr)) actionOnValObject(attr);
-        else if(Plotly.Lib.isPlainObject(attr)) {
-            actionOnPlainObject(attr);
-            PlotSchema.crawl(attr, callback);
+        if(PlotSchema.isValObject(attr)) {
+           if(attr.valType === 'data_array') attr.role = 'data';
         }
+        else if(Plotly.Lib.isPlainObject(attr)) attr.role = 'object';
     }
 
     PlotSchema.crawl(attrs, callback);

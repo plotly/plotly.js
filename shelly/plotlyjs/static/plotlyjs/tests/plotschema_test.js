@@ -6,18 +6,10 @@ describe('plot schema', function() {
     var plotSchema = Plotly.PlotSchema.get(),
         valObjects = plotSchema.defs.valObjects;
 
-    var noop = function() {};
+    var isValObject = Plotly.PlotSchema.isValObject,
+        isPlainObject = Plotly.Lib.isPlainObject;
 
-    function assertPlotSchema(checkOnValObject, checkOnPlainObject) {
-
-        function callback(attr) {
-            if(Plotly.PlotSchema.isValObject(attr)) checkOnValObject(attr);
-            else if(Plotly.Lib.isPlainObject(attr)) {
-                checkOnPlainObject(attr);
-                Plotly.PlotSchema.crawl(attr, callback);
-            }
-        }
-
+    function assertPlotSchema(callback) {
         var traces = plotSchema.traces;
 
         Object.keys(traces).forEach(function(traceName) {
@@ -32,22 +24,32 @@ describe('plot schema', function() {
 
         assertPlotSchema(
             function(attr) {
-                expect(valTypes.indexOf(attr.valType) !== -1).toBe(true);
-            },
-            noop
+                if(isValObject(attr)) {
+                    expect(valTypes.indexOf(attr.valType) !== -1).toBe(true);
+                }
+            }
         );
 
     });
 
     it('all attributes should only have valid `role`', function() {
-        var roles = ['info', 'style', 'data', 'object'];
+        var roles = ['info', 'style', 'data'];
 
         assertPlotSchema(
             function(attr) {
-                expect(roles.indexOf(attr.role) !== -1).toBe(true);
-            },
+                if(isValObject(attr)) {
+                    expect(roles.indexOf(attr.role) !== -1).toBe(true);
+                }
+            }
+        );
+    });
+
+    it('all nested objects should have the *object* `role`', function() {
+        assertPlotSchema(
             function(attr) {
-                expect(attr.role === 'object').toBe(true);
+                if(!isValObject(attr) && isPlainObject(attr)) {
+                    expect(attr.role === 'object').toBe(true);
+                }
             }
         );
     });
@@ -55,29 +57,31 @@ describe('plot schema', function() {
     it('all attributes should have the required options', function() {
         assertPlotSchema(
             function(attr) {
-                var keys = Object.keys(attr);
+                if(isValObject(attr)) {
+                    var keys = Object.keys(attr);
 
-                valObjects[attr.valType].requiredOpts.forEach(function(opt) {
-                    expect(keys.indexOf(opt) !== -1).toBe(true);
-                });
-            },
-            noop
+                    valObjects[attr.valType].requiredOpts.forEach(function(opt) {
+                        expect(keys.indexOf(opt) !== -1).toBe(true);
+                    });
+                }
+            }
         );
     });
 
     it('all attributes should only have compatible options', function() {
         assertPlotSchema(
             function(attr) {
-                var valObject = valObjects[attr.valType],
-                    opts = valObject.requiredOpts
-                        .concat(valObject.otherOpts)
-                        .concat(['valType', 'description', 'role']);
+                if(isValObject(attr)) {
+                    var valObject = valObjects[attr.valType],
+                        opts = valObject.requiredOpts
+                            .concat(valObject.otherOpts)
+                            .concat(['valType', 'description', 'role']);
 
-                Object.keys(attr).forEach(function(key) {
-                    expect(opts.indexOf(key) !== -1).toBe(true);
-                });
-            },
-            noop
+                    Object.keys(attr).forEach(function(key) {
+                        expect(opts.indexOf(key) !== -1).toBe(true);
+                    });
+                }
+            }
         );
     });
 });
