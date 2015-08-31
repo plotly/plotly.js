@@ -56,11 +56,13 @@ heatmap.attributes = {
     transpose: {
         valType: 'boolean',
         dflt: false,
+        role: 'info',
         description: 'Transposes the z data.'
     },
     xtype: {
         valType: 'enumerated',
         values: ['array', 'scaled'],
+        role: 'info',
         description: [
             'If *array*, the heatmap\'s x coordinates are given by *x*',
             '(the default behavior when `x` is provided).',
@@ -71,6 +73,7 @@ heatmap.attributes = {
     ytype: {
         valType: 'enumerated',
         values: ['array', 'scaled'],
+        role: 'info',
         description: [
             'If *array*, the heatmap\'s y coordinates are given by *y*',
             '(the default behavior when `y` is provided)',
@@ -90,6 +93,7 @@ heatmap.attributes = {
         valType: 'enumerated',
         values: ['fast', 'best', false],
         dflt: false,
+        role: 'style',
         description: [
             'Picks a smoothing algorithm use to smooth `z` data.'
         ].join(' ')
@@ -97,6 +101,7 @@ heatmap.attributes = {
     connectgaps: {
         valType: 'boolean',
         dflt: false,
+        role: 'info',
         description: [
             'Determines whether or not gaps',
             '(i.e. {nan} or missing values)',

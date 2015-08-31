@@ -46,7 +46,7 @@ exports.Choropleth = require('./geo/defaults/choropleth');
 exports.Geo = require('./geo/geo');
 
 // plot schema
-exports.getPlotSchema= require('./plotschema');
+exports.PlotSchema= require('./plotschema');
 
 // configuration
 exports.Config = require('./config');

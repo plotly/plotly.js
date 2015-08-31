@@ -45,6 +45,7 @@ contour.attributes = {
     autocontour: {
         valType: 'boolean',
         dflt: true,
+        role: 'style',
         description: [
             'Determines whether of not the contour level attributes at',
             'picked by an algorithm.',
@@ -55,28 +56,33 @@ contour.attributes = {
     ncontours: {
         valType: 'integer',
         dflt: 0,
+        role: 'style',
         description: 'Sets the number of contour levels.'
     },
     contours: {
         start: {
             valType: 'number',
             dflt: null,
+            role: 'style',
             description: 'Sets the starting contour level value.'
         },
         end: {
             valType: 'number',
             dflt: null,
+            role: 'style',
             description: 'Sets the end contour level value.'
         },
         size: {
             valType: 'number',
             dflt: null,
+            role: 'style',
             description: 'Sets the step between each contour level.'
         },
         coloring: {
             valType: 'enumerated',
             values: ['fill', 'heatmap', 'lines', 'none'],
             dflt: 'fill',
+            role: 'style',
             description: [
                 'Determines the coloring method showing the contour values.',
                 'If *fill*, coloring is done evenly between each contour level',
@@ -89,6 +95,7 @@ contour.attributes = {
         showlines: {
             valType: 'boolean',
             dflt: true,
+            role: 'style',
             description: [
                 'Determines whether or not the contour lines are drawn.',
                 'Has only an effect if `contours.coloring` is set to *fill*.'

@@ -27,6 +27,7 @@ module.exports = {
     locationmode: {
         valType: 'enumerated',
         values: ['ISO-3', 'USA-states', 'country names'],
+        role: 'info',
         dflt: 'ISO-3',
         description: [
             'Determines the set of locations used to match entries in `locations`',
@@ -34,7 +35,16 @@ module.exports = {
         ].join(' ')
     },
     mode: extendFlat(scatterAttrs.mode, {dflt: 'markers'}),
-    text: scatterAttrs.text,
+    text: extendFlat(scatterAttrs.text, {
+        description: [
+            'Sets text elements associated with each (lon,lat) pair.',
+            'or item in `locations`.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (lon,lat) or `locations` coordinates.'
+        ].join(' ')
+    }),
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,

@@ -33,6 +33,7 @@ bars.attributes = {
     text: scatterAttrs.text,
     orientation: {
         valType: 'enumerated',
+        role: 'info',
         values: ['v', 'h'],
         description: [
             'Sets the orientation of the bars.',
@@ -60,13 +61,13 @@ bars.attributes = {
             reversescale: scatterMarkerLineAttrs.reversescale
         }
     },
+    _composedModules: {  // composed module coupling
+        'histogram': 'Histogram'
+    },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
         'error_x': 'ErrorBars',
         'marker.colorbar': 'Colorbar'
-    },
-    _composedModules: {  // composed module coupling
-        'histogram': 'Histogram'
     }
 };
 
@@ -75,6 +76,7 @@ bars.layoutAttributes = {
         valType: 'enumerated',
         values: ['stack', 'group', 'overlay'],
         dflt: 'group',
+        role: 'info',
         description: [
             'Determines how bars at the same location coordinate',
             'are displayed on the graph.',
@@ -89,6 +91,7 @@ bars.layoutAttributes = {
         valType: 'enumerated',
         values: ['', 'fraction', 'percent'],
         dflt: '',
+        role: 'info',
         description: [
             'Sets the normalization for bar traces on the graph.',
             'With *fraction*, the value of each bar is divide by the sum of the',
@@ -100,6 +103,7 @@ bars.layoutAttributes = {
         valType: 'number',
         min: 0,
         max: 1,
+        role: 'style',
         description: [
             'Sets the gap (in plot fraction) between bars of',
             'adjacent location coordinates.'
@@ -110,6 +114,7 @@ bars.layoutAttributes = {
         min: 0,
         max: 1,
         dflt: 0,
+        role: 'style',
         description: [
             'Sets the gap (in plot fraction) between bars of',
             'the same location coordinate.'

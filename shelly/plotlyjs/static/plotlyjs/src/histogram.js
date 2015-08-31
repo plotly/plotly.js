@@ -45,6 +45,7 @@ function makeBinsAttr(axLetter) {
         start: {
             valType: 'number',
             dflt: 0,
+            role: 'style',
             description: [
                 'Sets the starting value for the', axLetter,
                 'axis bins.'
@@ -53,6 +54,7 @@ function makeBinsAttr(axLetter) {
         end: {
             valType: 'number',
             dflt: 1,
+            role: 'style',
             description: [
                 'Sets the end value for the', axLetter,
                 'axis bins.'
@@ -61,6 +63,7 @@ function makeBinsAttr(axLetter) {
         size: {
             valType: 'any', // for date axes
             dflt: 1,
+            role: 'style',
             description: [
                 'Sets the step in-between value each', axLetter,
                 'axis bin.'
@@ -93,6 +96,7 @@ histogram.attributes = {
     histfunc: {
         valType: 'enumerated',
         values: ['count', 'sum', 'avg', 'min', 'max'],
+        role: 'style',
         dflt: 'count',
         description: [
             'Specifies the binning function used for this histogram trace.',
@@ -110,6 +114,7 @@ histogram.attributes = {
         valType: 'enumerated',
         values: ['', 'percent', 'probability', 'density', 'probability density'],
         dflt: '',
+        role: 'style',
         description: [
             'Specifies the type of normalization used for this histogram trace.',
 
@@ -133,6 +138,7 @@ histogram.attributes = {
     autobinx: {
         valType: 'boolean',
         dflt: true,
+        role: 'style',
         description: [
             'Determines whether or not the x axis bin attributes are picked',
             'by an algorithm.'
@@ -142,12 +148,14 @@ histogram.attributes = {
         valType: 'integer',
         min: 0,
         dflt: 0,
+        role: 'style',
         description: 'Sets the number of x axis bins.'
     },
     xbins: makeBinsAttr('x'),
     autobiny: {
         valType: 'boolean',
         dflt: true,
+        role: 'style',
         description: [
             'Determines whether or not the y axis bin attributes are picked',
             'by an algorithm.'
@@ -157,6 +165,7 @@ histogram.attributes = {
         valType: 'integer',
         min: 0,
         dflt: 0,
+        role: 'style',
         description: 'Sets the number of y axis bins.'
     },
     ybins: makeBinsAttr('y')
