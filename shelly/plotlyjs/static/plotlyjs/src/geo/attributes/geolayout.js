@@ -2,15 +2,31 @@ var Plotly = require('../../plotly'),
     params = require('../lib/params');
 
 module.exports = {
-    domain:  {
-        x: [
-            {valType: 'number', min: 0, max: 1, dflt: 0},
-            {valType: 'number', min: 0, max: 1, dflt: 1}
-        ],
-        y: [
-            {valType: 'number', min: 0, max: 1},
-            {valType: 'number', min: 0, max: 1}
-        ]
+    domain: {
+        x: {
+            valType: 'info_array',
+            items: [
+                {valType: 'number', min: 0, max: 1},
+                {valType: 'number', min: 0, max: 1}
+            ],
+            dflt: [0, 1],
+            description: [
+                'Sets the horizontal domain of this map',
+                '(in plot fraction).'
+            ].join(' ')
+        },
+        y: {
+            valType: 'info_array',
+            items: [
+                {valType: 'number', min: 0, max: 1},
+                {valType: 'number', min: 0, max: 1}
+            ],
+            dflt: [0, 1],
+            description: [
+                'Sets the vertical domain of this map',
+                '(in plot fraction).'
+            ].join(' ')
+        }
     },
     resolution: {
         valType: 'enumerated',
@@ -58,10 +74,18 @@ module.exports = {
                 ].join(' ')
             }
         },
-        parallels: [
-            {valType: 'number'},
-            {valType: 'number'}
-        ],
+        parallels: {
+            valType: 'info_array',
+            items: [
+                {valType: 'number'},
+                {valType: 'number'}
+            ],
+            description: [
+                'For conic projection types only.',
+                'Sets the parallels (tangent, secant)',
+                'where the cone intersects the sphere.'
+            ].join(' ')
+        },
         scale: {
             valType: 'number',
             min: 0,

@@ -53,14 +53,30 @@ module.exports = {
         })
     },
     domain: {
-        x: [
-            {valType: 'number', min: 0, max: 1},
-            {valType: 'number', min: 0, max: 1}
-        ],
-        y:[
-            {valType: 'number', min: 0, max: 1, dflt: 0},
-            {valType: 'number', min: 0, max: 1, dflt: 1}
-        ]
+        x: {
+            valType: 'info_array',
+            items: [
+                {valType: 'number', min: 0, max: 1},
+                {valType: 'number', min: 0, max: 1}
+            ],
+            dflt: [0, 1],
+            description: [
+                'Sets the horizontal domain of this scene',
+                '(in plot fraction).'
+            ].join(' ')
+        },
+        y: {
+            valType: 'info_array',
+            items: [
+                {valType: 'number', min: 0, max: 1},
+                {valType: 'number', min: 0, max: 1}
+            ],
+            dflt: [0, 1],
+            description: [
+                'Sets the vertical domain of this scene',
+                '(in plot fraction).'
+            ].join(' ')
+        }
     },
     aspectmode: {
         valType: 'enumerated',
