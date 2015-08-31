@@ -18,6 +18,7 @@ pie.attributes = {
     // equivalent of x0 and dx, if label is missing
     label0: {
         valType: 'number',
+        role: 'info',
         dflt: 0,
         description: [
             'Alternate to `labels`.',
@@ -28,6 +29,7 @@ pie.attributes = {
     },
     dlabel: {
         valType: 'number',
+        role: 'info',
         dflt: 1,
         description: 'Sets the label step. See `label0` for more info.'
     },
@@ -39,7 +41,7 @@ pie.attributes = {
 
     marker: {
         colors: {
-            valType: 'data_array',
+            valType: 'data_array',  // TODO 'color_array' ?
             description: [
                 'Sets the color of each sector of this pie chart.',
                 'If not specified, the default trace color set is used',
@@ -50,6 +52,7 @@ pie.attributes = {
         line: {
             color: {
                 valType: 'color',
+                role: 'style',
                 dflt: Plotly.Color.defaultLine,
                 arrayOk: true,
                 description: [
@@ -58,6 +61,7 @@ pie.attributes = {
             },
             width: {
                 valType: 'number',
+                role: 'style',
                 min: 0,
                 dflt: 0,
                 arrayOk: true,
@@ -79,6 +83,7 @@ pie.attributes = {
 // 'of its own. but the point is the size of the whole pie is important.)'
     scalegroup: {
         valType: 'string',
+        role: 'info',
         dflt: '',
         description: [
             'If there are multiple pies that should be sized according to',
@@ -90,6 +95,7 @@ pie.attributes = {
     // labels (legend is handled by plots.attributes.showlegend and layout.hiddenlabels)
     textinfo: {
         valType: 'flaglist',
+        role: 'info',
         flags: ['label', 'text', 'value', 'percent'],
         extras: ['none'],
         description: [
@@ -98,6 +104,7 @@ pie.attributes = {
     },
     hoverinfo: {
         valType: 'flaglist',
+        role: 'info',
         flags: ['label', 'text', 'value', 'percent', 'name'],
         extras: ['all', 'none'],
         dflt: 'all',
@@ -107,6 +114,7 @@ pie.attributes = {
     },
     textposition: {
         valType: 'enumerated',
+        role: 'info',
         values: ['inside', 'outside', 'auto', 'none'],
         dflt: 'auto',
         arrayOk: true,
@@ -116,14 +124,17 @@ pie.attributes = {
     },
     textfont: {
         valType: 'font',
+        role: 'style',
         description: 'Sets the font used for `textinfo`.'
     },
     insidetextfont: {
         valType: 'font',
+        role: 'style',
         description: 'Sets the font used for `textinfo` lying inside the pie.'
     },
     outsidetextfont: {
         valType: 'font',
+        role: 'style',
         description: 'Sets the font used for `textinfo` lying outside the pie.'
     },
 
@@ -131,6 +142,7 @@ pie.attributes = {
     domain: {
         x: {
             valType: 'info_array',
+            role: 'info',
             items: [
                 {valType: 'number', min: 0, max: 1},
                 {valType: 'number', min: 0, max: 1}
@@ -143,6 +155,7 @@ pie.attributes = {
         },
         y: {
             valType: 'info_array',
+            role: 'info',
             items: [
                 {valType: 'number', min: 0, max: 1},
                 {valType: 'number', min: 0, max: 1}
@@ -190,6 +203,7 @@ pie.attributes = {
     // },
     hole: {
         valType: 'number',
+        role: 'style',
         min: 0,
         max: 1,
         dflt: 0,
@@ -202,6 +216,7 @@ pie.attributes = {
     // ordering and direction
     sort: {
         valType: 'boolean',
+        role: 'style',
         dflt: true,
         description: [
             'Determines whether or not the sectors of reordered',
@@ -218,6 +233,7 @@ pie.attributes = {
          */
         valType: 'enumerated',
         values: ['clockwise', 'counterclockwise'],
+        role: 'style',
         dflt: 'counterclockwise',
         description: [
             'Specifies the direction at which succeeding sectors follow',
@@ -226,6 +242,7 @@ pie.attributes = {
     },
     rotation: {
         valType: 'number',
+        role: 'style',
         min: -360,
         max: 360,
         dflt: 0,
@@ -237,6 +254,7 @@ pie.attributes = {
 
     pull: {
         valType: 'number',
+        role: 'style',
         min: 0,
         max: 1,
         dflt: 0,

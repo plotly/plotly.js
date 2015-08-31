@@ -527,12 +527,14 @@ colorbar.attributes = {
         // which side are the labels on (so left and right make vertical bars, etc.)
         // TODO: only right is supported currently
         valType: 'enumerated',
+        role: 'info',
         values: ['left', 'right', 'top', 'bottom'],
         dflt: 'right'
     },
     thicknessmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
+        role: 'style',
         dflt: 'pixels',
         description: [
             'Determines whether this color bar\'s thickness',
@@ -543,6 +545,7 @@ colorbar.attributes = {
     },
     thickness: {
         valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 30,
         description: [
@@ -553,6 +556,7 @@ colorbar.attributes = {
     lenmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
+        role: 'info',
         dflt: 'fraction',
         description: [
             'Determines whether this color bar\'s length',
@@ -565,6 +569,7 @@ colorbar.attributes = {
         valType: 'number',
         min: 0,
         dflt: 1,
+        role: 'style',
         description: [
             'Sets the length of the color bar',
             'This measure excludes the padding of both ends.',
@@ -575,6 +580,7 @@ colorbar.attributes = {
     x: {
         valType: 'number',
         dflt: 1.02,
+        role: 'style',
         description: [
             'Sets the x position of the color bar (in plot fraction).'
         ].join(' ')
@@ -583,6 +589,7 @@ colorbar.attributes = {
         valType: 'enumerated',
         values: ['left', 'center', 'right'],
         dflt: 'left',
+        role: 'style',
         description: [
             'Sets this color bar\'s horizontal position anchor',
             'This anchor binds the `x` position to the *left*, *center*',
@@ -591,12 +598,14 @@ colorbar.attributes = {
     },
     xpad: {
         valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 10,
         description: 'Sets the amount of padding (in px) along the x direction.'
     },
     y: {
         valType: 'number',
+        role: 'style',
         dflt: 0.5,
         description: [
             'Sets the y position of the color bar (in plot fraction).'
@@ -605,6 +614,7 @@ colorbar.attributes = {
     yanchor: {
         valType: 'enumerated',
         values: ['top', 'middle', 'bottom'],
+        role: 'style',
         dflt: 'middle',
         description: [
             'Sets this color bar\'s vertical position anchor',
@@ -614,6 +624,7 @@ colorbar.attributes = {
     },
     ypad: {
         valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 10,
         description: 'Sets the amount of padding (in px) along the y direction.'
@@ -626,6 +637,7 @@ colorbar.attributes = {
     bordercolor: axesAttrs.linecolor,
     borderwidth: {
         valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 0,
         description: [
@@ -634,6 +646,7 @@ colorbar.attributes = {
     },
     bgcolor: {
         valType: 'color',
+        role: 'style',
         dflt: 'rgba(0,0,0,0)',
         description: 'Sets the color of padded area.'
     },
@@ -660,11 +673,13 @@ colorbar.attributes = {
     showexponent: axesAttrs.showexponent,
     title: {
         valType: 'string',
+        role: 'info',
         dflt: 'Click to enter colorscale title',
         description: 'Sets the title of the color bar.'
     },
     titlefont: {
         valType: 'font',
+        role: 'style',
         description: [
             'Sets this color bar\'s title font.'
         ].join(' ')
@@ -672,6 +687,7 @@ colorbar.attributes = {
     titleside: {
         valType: 'enumerated',
         values: ['right', 'top', 'bottom'],
+        role: 'style',
         dflt: 'top'
     }
 };
@@ -752,6 +768,7 @@ colorbar.traceColorbar = function(gd, cd) {
 colorbar.traceColorbarAttributes = {
     zauto: {
         valType: 'boolean',
+        role: 'info',
         dflt: true,
         description: [
             'Determines the whether or not the color domain is computed',
@@ -760,20 +777,24 @@ colorbar.traceColorbarAttributes = {
     },
     zmin: {
         valType: 'number',
+        role: 'info',
         dflt: null,
         description: 'Sets the lower bound of color domain.'
     },
     zmax: {
         valType: 'number',
+        role: 'info',
         dflt: null,
         description: 'Sets the upper bound of color domain.'
     },
     colorscale: {
         valType: 'colorscale',
+        role: 'style',
         description: 'Sets the colorscale.'
     },
     autocolorscale: {
         valType: 'boolean',
+        role: 'style',
         dflt: true,  // gets overrode in 'heatmap' & 'surface' for backwards comp.
         description: [
             'Determines whether or not the colorscale is picked using the sign of',
@@ -782,11 +803,13 @@ colorbar.traceColorbarAttributes = {
     },
     reversescale: {
         valType: 'boolean',
+        role: 'style',
         dflt: false,
         description: 'Reverses the colorscale.'
     },
     showscale: {
         valType: 'boolean',
+        role: 'info',
         dflt: true,
         description: [
             'Determines whether or not a colorbar is displayed for this trace.'

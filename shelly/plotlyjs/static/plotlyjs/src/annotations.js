@@ -59,6 +59,7 @@ annotations.layoutAttributes = {
 
     text: {
         valType: 'string',
+        role: 'info',
         description: [
             'Sets the text associated with this annotation.',
             'Plotly uses a subset of HTML tags to do things like',
@@ -70,6 +71,7 @@ annotations.layoutAttributes = {
     textangle: {
         valType: 'angle',
         dflt: 0,
+        role: 'style',
         description: [
             'Sets the angle at which the `text` is drawn',
             'with respect to the horizontal.'
@@ -77,6 +79,7 @@ annotations.layoutAttributes = {
     },
     font: {
         valType: 'font',
+        role: 'style',
         description: 'Sets the annotation text font.'
     },
     opacity: {
@@ -84,12 +87,14 @@ annotations.layoutAttributes = {
         min: 0,
         max: 1,
         dflt: 1,
+        role: 'style',
         description: 'Sets the opacity of the annotation (text + arrow).'
     },
     align: {
         valType: 'enumerated',
         values: ['left', 'center', 'right'],
         dflt: 'center',
+        role: 'style',
         description: [
             'Sets the vertical alignment of the `text` with',
             'respect to the set `x` and `y` position.',
@@ -100,11 +105,13 @@ annotations.layoutAttributes = {
     bgcolor: {
         valType: 'color',
         dflt: 'rgba(0,0,0,0)',
+        role: 'style',
         description: 'Sets the background color of the annotation.'
     },
     bordercolor: {
         valType: 'color',
         dflt: 'rgba(0,0,0,0)',
+        role: 'style',
         description: [
             'Sets the color of the border enclosing the annotation `text`.'
         ].join(' ')
@@ -113,6 +120,7 @@ annotations.layoutAttributes = {
         valType: 'number',
         min: 0,
         dflt: 1,
+        role: 'style',
         description: [
             'Sets the padding (in px) between the `text`',
             'and the enclosing border.'
@@ -122,6 +130,7 @@ annotations.layoutAttributes = {
         valType: 'number',
         min: 0,
         dflt: 1,
+        role: 'style',
         description: [
             'Sets the width (in px) of the border enclosing',
             'the annotation `text`.'
@@ -131,6 +140,7 @@ annotations.layoutAttributes = {
     showarrow: {
         valType: 'boolean',
         dflt: true,
+        role: 'style',
         description: [
             'Determines whether or not the annotation is drawn with an arrow.',
             'If *true*, `text` is placed near the arrow\'s tail.',
@@ -139,6 +149,7 @@ annotations.layoutAttributes = {
     },
     arrowcolor: {
         valType: 'color',
+        role: 'style',
         description: 'Sets the color of the annotation arrow.'
     },
     arrowhead: {
@@ -146,22 +157,26 @@ annotations.layoutAttributes = {
         min: 0,
         max: annotations.ARROWPATHS.length,
         dflt: 1,
+        role: 'style',
         description: 'Sets the annotation arrow head style.'
     },
     arrowsize: {
         valType: 'number',
         min: 0.3,
         dflt: 1,
+        role: 'style',
         description: 'Sets the size (in px) of annotation arrow head.'
     },
     arrowwidth: {
         valType: 'number',
         min: 0.1,
+        role: 'style',
         description: 'Sets the width (in px) of annotation arrow.'
     },
     ax: {
         valType: 'number',
         dflt: -10,
+        role: 'info',
         description: [
             'Sets the x component of the arrow tail about the arrow head.',
             'A positive (negative) component corresponds to an arrow pointing',
@@ -171,6 +186,7 @@ annotations.layoutAttributes = {
     ay: {
         valType: 'number',
         dflt: -30,
+        role: 'info',
         description: [
             'Sets the y component of the arrow tail about the arrow head.',
             'A positive (negative) component corresponds to an arrow pointing',
@@ -181,6 +197,7 @@ annotations.layoutAttributes = {
     xref: {
         valType: 'enumerated',
         values: ['paper', '/^x[0-9]/*$'],
+        role: 'info',
         description: [
             'Sets the annotation\'s x coordinate axis.',
             'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
@@ -192,6 +209,7 @@ annotations.layoutAttributes = {
     },
     x: {
         valType: 'number',
+        role: 'info',
         description: [
             'Sets the annotation\'s x position.',
             'Note that dates and categories are converted to numbers.'
@@ -201,6 +219,7 @@ annotations.layoutAttributes = {
         valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'auto',
+        role: 'info',
         description: [
             'Sets the annotation\'s horizontal position anchor',
             'This anchor binds the `x` position to the *left*, *center*',
@@ -218,6 +237,7 @@ annotations.layoutAttributes = {
     yref: {
         valType: 'enumerated',
         values: ['paper', '/^y[0-9]/*$'],
+        role: 'info',
         description: [
             'Sets the annotation\'s y coordinate axis.',
             'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
@@ -229,6 +249,7 @@ annotations.layoutAttributes = {
     },
     y: {
         valType: 'number',
+        role: 'info',
         description: [
             'Sets the annotation\'s y position.',
             'Note that dates and categories are converted to numbers.'
@@ -238,6 +259,7 @@ annotations.layoutAttributes = {
         valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'auto',
+        role: 'info',
         description: [
             'Sets the annotation\'s vertical position anchor',
             'This anchor binds the `y` position to the *top*, *middle*',

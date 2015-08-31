@@ -10,10 +10,12 @@ var axes = module.exports = {},
 axes.layoutAttributes = {
     title: {
         valType: 'string',
+        role: 'info',
         description: 'Sets the title of this axis.'
     },
     titlefont: {
         valType: 'font',
+        role: 'style',
         description: [
             'Sets this axis\' title font.'
         ].join(' ')
@@ -25,6 +27,7 @@ axes.layoutAttributes = {
         // to td.data like the others are.
         values: ['-', 'linear', 'log', 'date', 'category'],
         dflt: '-',
+        role: 'info',
         description: [
             'Sets the axis type.',
             'By default, plotly attempts to determined the axis type',
@@ -36,6 +39,7 @@ axes.layoutAttributes = {
         valType: 'enumerated',
         values: [true, false, 'reversed'],
         dflt: true,
+        role: 'style',
         description: [
             'Determines whether or not the range of this axis is',
             'computed in relation to the input data.',
@@ -47,6 +51,7 @@ axes.layoutAttributes = {
         valType: 'enumerated',
         values: ['normal', 'tozero', 'nonnegative'],
         dflt: 'normal',
+        role: 'style',
         description: [
             'If *normal*, the range is computed in relation to the extrema',
             'of the input data.',
@@ -58,6 +63,7 @@ axes.layoutAttributes = {
     },
     range: {
         valType: 'info_array',
+        role: 'info',
         items: [
             {valType: 'number'},
             {valType: 'number'}
@@ -67,6 +73,7 @@ axes.layoutAttributes = {
     fixedrange: {
         valType: 'boolean',
         dflt: false,
+        role: 'info',
         description: [
             'Determines whether or not this axis is zoom-able.',
             'If true, then zoom is disabled.'
@@ -76,6 +83,7 @@ axes.layoutAttributes = {
     tickmode: {
         valType: 'enumerated',
         values: ['auto', 'linear', 'array'],
+        role: 'info',
         description: [
             'Sets the tick mode for this axis.',
             'If *auto*, the number of ticks is set via `nticks`.',
@@ -91,6 +99,7 @@ axes.layoutAttributes = {
         valType: 'integer',
         min: 0,
         dflt: 0,
+        role: 'style',
         description: [
             'Sets the number of ticks.',
             'Has an effect only if `tickmode` is set to *auto*.'
@@ -99,6 +108,7 @@ axes.layoutAttributes = {
     tick0: {
         valType: 'number',
         dflt: 0,
+        role: 'style',
         description: [
             'Sets the placement of the first tick on this axis.',
             'Use with `dtick`.'
@@ -107,6 +117,7 @@ axes.layoutAttributes = {
     dtick: {
         valType: 'any',
         dflt: 1,
+        role: 'style',
         description: 'Sets the step in-between ticks on this axis'
     },
     tickvals: {
@@ -128,6 +139,7 @@ axes.layoutAttributes = {
     ticks: {
         valType: 'enumerated',
         values: ['outside', 'inside', ''],
+        role: 'style',
         description: [
             'Determines whether ticks are drawn or not.',
             'If **, this axis\' ticks are not drawn.',
@@ -139,6 +151,7 @@ axes.layoutAttributes = {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],
         dflt: false,
+        role: 'style',
         description: [
             'Determines if the axis lines or/and ticks are mirrored to',
             'the opposite side of the plotting area.',
@@ -154,31 +167,37 @@ axes.layoutAttributes = {
         valType: 'number',
         min: 0,
         dflt: 5,
+        role: 'style',
         description: 'Sets the tick length (in px).'
     },
     tickwidth: {
         valType: 'number',
         min: 0,
         dflt: 1,
+        role: 'style',
         description: 'Sets the tick width (in px).'
     },
     tickcolor: {
         valType: 'color',
         dflt: Plotly.Color.defaultLine,
+        role: 'style',
         description: 'Sets the tick color.'
     },
     showticklabels: {
         valType: 'boolean',
         dflt: true,
+        role: 'style',
         description: 'Determines whether or not the tick labels are drawn.'
     },
     tickfont: {
         valType: 'font',
+        role: 'style',
         description: 'Sets the tick font.'
     },
     tickangle: {
         valType: 'angle',
         dflt: 'auto',
+        role: 'style',
         description: [
             'Sets the angle of the tick labels with respect to the horizontal.',
             'For example, a `tickangle` of -90 draws the tick labels',
@@ -188,12 +207,14 @@ axes.layoutAttributes = {
     tickprefix: {
         valType: 'string',
         dflt: '',
+        role: 'style',
         description: 'Sets a tick label prefix.'
     },
     showtickprefix: {
         valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
+        role: 'style',
         description: [
             'If *all*, all tick labels are displayed with a prefix.',
             'If *first*, only the first tick is displayed with a prefix.',
@@ -204,18 +225,21 @@ axes.layoutAttributes = {
     ticksuffix: {
         valType: 'string',
         dflt: '',
+        role: 'style',
         description: 'Sets a tick label suffix.'
     },
     showticksuffix: {
         valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
+        role: 'style',
         description: 'Same as `showtickprefix` but for tick suffixes.'
     },
     showexponent: {
         valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
+        role: 'style',
         description: [
             'If *all*, all exponents are shown besides their significands.',
             'If *first*, only the exponent of the first tick is shown.',
@@ -227,6 +251,7 @@ axes.layoutAttributes = {
         valType: 'enumerated',
         values: ['none', 'e', 'E', 'power', 'SI', 'B'],
         dflt: 'B',
+        role: 'style',
         description: [
             'Determines a formatting rule for the tick exponents.',
             'For example, consider the number 1,000,000,000.',
@@ -241,6 +266,7 @@ axes.layoutAttributes = {
     tickformat: {
         valType: 'string',
         dflt: '',
+        role: 'style',
         description: [
             'Sets the tick label formatting rule using the',
             'python/d3 number formatting language.',
@@ -252,6 +278,7 @@ axes.layoutAttributes = {
     hoverformat: {
         valType: 'string',
         dflt: '',
+        role: 'style',
         description: [
             'Sets the hover text formatting rule for data values on this axis,',
             'using the python/d3 number formatting language.',
@@ -264,6 +291,7 @@ axes.layoutAttributes = {
     showline: {
         valType: 'boolean',
         dflt: false,
+        role: 'style',
         description: [
             'Determines whether or not a line bounding this axis is drawn.'
         ]
@@ -271,16 +299,19 @@ axes.layoutAttributes = {
     linecolor: {
         valType: 'color',
         dflt: Plotly.Color.defaultLine,
+        role: 'style',
         description: 'Sets the axis line color.'
     },
     linewidth: {
         valType: 'number',
         min: 0,
         dflt: 1,
+        role: 'style',
         description: 'Sets the width (in px) of the axis line.'
     },
     showgrid: {
         valType: 'boolean',
+        role: 'style',
         description: [
             'Determines whether or not grid lines are drawn.',
             'If *true*, the grid lines are drawn at every tick mark.'
@@ -289,16 +320,19 @@ axes.layoutAttributes = {
     gridcolor: {
         valType: 'color',
         dflt: Plotly.Color.lightLine,
+        role: 'style',
         description: 'Sets the color of the grid lines.'
     },
     gridwidth: {
         valType: 'number',
         min: 0,
         dflt: 1,
+        role: 'style',
         description: 'Sets the width (in px) of the grid lines.'
     },
     zeroline: {
         valType: 'boolean',
+        role: 'style',
         description: [
             'Determines whether or not a line is drawn at along the 0 value',
             'of this axis.',
@@ -308,11 +342,13 @@ axes.layoutAttributes = {
     zerolinecolor: {
         valType: 'color',
         dflt: Plotly.Color.defaultLine,
+        role: 'style',
         description: 'Sets the line color of the zero line.'
     },
     zerolinewidth: {
         valType: 'number',
         dflt: 1,
+        role: 'style',
         description: 'Sets the width (in px) of the zero line.'
     },
     // positioning attributes
@@ -321,6 +357,7 @@ axes.layoutAttributes = {
     anchor: {
         valType: 'enumerated',
         values: ['free', '/^x[0-9]/*$', '/^y[0-9]/*$'],
+        role: 'info',
         description: [
             'If set to an opposite-letter axis id (e.g. `xaxis2`, `yaxis`), this axis is bound to',
             'the corresponding opposite-letter axis.',
@@ -332,6 +369,7 @@ axes.layoutAttributes = {
     side: {
         valType: 'enumerated',
         values: ['top', 'bottom', 'left', 'right'],
+        role: 'info',
         description: [
             'Determines whether a x (y) axis is positioned',
             'at the *bottom* (*left*) or *top* (*right*)',
@@ -344,6 +382,7 @@ axes.layoutAttributes = {
     overlaying: {
         valType: 'enumerated',
         values: [false, '/^x[0-9]/*$', '/^y[0-9]/*$'],
+        role: 'info',
         description: [
             'If set a same-letter axis id, this axis is overlaid on top of',
             'the corresponding same-letter axis.',
@@ -352,6 +391,7 @@ axes.layoutAttributes = {
     },
     domain: {
         valType: 'info_array',
+        role: 'info',
         items: [
             {valType: 'number', min: 0, max: 1},
             {valType: 'number', min: 0, max: 1}
@@ -366,6 +406,7 @@ axes.layoutAttributes = {
         min: 0,
         max: 1,
         dflt: 0,
+        role: 'style',
         description: [
             'Sets the position of this axis in the plotting space',
             '(in normalized coordinates).',

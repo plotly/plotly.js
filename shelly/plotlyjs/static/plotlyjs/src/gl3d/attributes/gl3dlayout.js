@@ -8,14 +8,17 @@ function makeVector(x, y, z) {
     return {
         x: {
             valType: 'number',
+            role: 'info',
             dflt: x
         },
         y: {
             valType: 'number',
+            role: 'info',
             dflt: y
         },
         z: {
             valType: 'number',
+            role: 'info',
             dflt: z
         }
     };
@@ -24,6 +27,7 @@ function makeVector(x, y, z) {
 module.exports = {
     bgcolor: {
         valType: 'color',
+        role: 'style',
         dflt: 'rgba(0,0,0,0)'
     },
     camera: {
@@ -55,6 +59,7 @@ module.exports = {
     domain: {
         x: {
             valType: 'info_array',
+            role: 'info',
             items: [
                 {valType: 'number', min: 0, max: 1},
                 {valType: 'number', min: 0, max: 1}
@@ -67,6 +72,7 @@ module.exports = {
         },
         y: {
             valType: 'info_array',
+            role: 'info',
             items: [
                 {valType: 'number', min: 0, max: 1},
                 {valType: 'number', min: 0, max: 1}
@@ -80,6 +86,7 @@ module.exports = {
     },
     aspectmode: {
         valType: 'enumerated',
+        role: 'info',
         values: ['auto', 'cube', 'data', 'manual'],
         dflt: 'auto',
         description: [
@@ -102,14 +109,17 @@ module.exports = {
     aspectratio: { // must be positive (0's are coerced to 1)
         x: {
             valType: 'number',
+            role: 'info',
             min: 0
         },
         y: {
             valType: 'number',
+            role: 'info',
             min: 0
         },
         z: {
             valType: 'number',
+            role: 'info',
             min: 0
         },
         description: [
