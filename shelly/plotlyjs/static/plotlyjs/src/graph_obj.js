@@ -4383,7 +4383,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
                     // in a trace, we will keep the data array.
                     src = d[v+'src'];
                     if(typeof src==='string' && src.indexOf(':')>0) {
-                        if(Plotly.Lib.isPlainObject(d.stream)) {
+                        if(!Plotly.Lib.isPlainObject(d.stream)) {
                             continue;
                         }
                     }
