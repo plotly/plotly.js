@@ -1265,7 +1265,8 @@ axes.doAutoRange = function(ax) {
         }
         if(minmin===maxmax) {
             ax.range = axReverse ?
-                [minmin+1,minmin-1] : [minmin-1,minmin+1];
+                [minmin+1, ax.rangemode!=='normal' ? 0 : minmin-1] :
+                [ax.rangemode!=='normal' ? 0 : minmin-1, minmin+1];
         }
         else if(mbest) {
             if(ax.type==='linear' || ax.type==='-') {
