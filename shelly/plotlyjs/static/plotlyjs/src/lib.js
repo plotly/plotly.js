@@ -1641,6 +1641,29 @@ lib.valObjects = {
             if(v===undefined) propOut.set(dflt);
             else propOut.set(v);
         }
+    },
+    info_array: {
+        description: [
+            'An {array} of plot information.'
+        ].join(' '),
+        requiredOpts: ['items'],
+        otherOpts: ['dflt'],
+        coerceFunction: function(v, propOut, dflt, opts) {
+            if(!Array.isArray(v)) {
+                propOut.set(dflt);
+                return;
+            }
+
+            var items = opts.items,
+                vOut = [];
+            dflt = Array.isArray(dflt) ? dflt : [];
+
+            for(var i = 0; i < items.length; i++) {
+                lib.coerce(v, vOut, items, '[' + i + ']', dflt[i]);
+            }
+
+            propOut.set(vOut);
+        }
     }
 };
 
@@ -1819,4 +1842,12 @@ lib.addStyleRule = function(selector, styleString) {
 
 lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
+};
+
+// more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
+lib.isPlainObject = function(obj) {
+    return (
+        Object.prototype.toString.call(obj) === "[object Object]" &&
+        Object.getPrototypeOf(obj) === Object.prototype
+    );
 };

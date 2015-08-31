@@ -7,9 +7,32 @@ var contour = module.exports = {},
     Plotly = require('./plotly');
 
 Plotly.Plots.register(contour, 'contour',
-    ['cartesian', '2dMap', 'contour']);
+    ['cartesian', '2dMap', 'contour'], {
+    description: [
+        'The data from which contour lines are computed is set in `z`.',
+        'Data in `z` must be a {2D array} of numbers.',
+
+        'Say that `z` has N rows and M columns, then by default,',
+        'these N rows correspond to N y coordinates',
+        '(set in `y` or auto-generated) and the M columns',
+        'correspond to M x coordinates (set in `x` or auto-generated).',
+
+        'By setting `transpose` to *true*, the above behavior is flipped.'
+    ].join(' ')
+});
+
 Plotly.Plots.register(contour, 'histogram2dcontour',
-    ['cartesian', '2dMap', 'contour', 'histogram']);
+    ['cartesian', '2dMap', 'contour', 'histogram'], {
+    hrName: 'histogram_2d_contour',
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'and `y` (where `x` and `y` represent marginal distributions,',
+        'binning is set in `xbins` and `ybins` in this case)',
+        'or `z` (where `z` represent the 2D distribution and binning set,',
+        'binning is set by `x` and `y` in this case).',
+        'The resulting distribution is visualized as a contour plot.'
+    ].join(' ')
+});
 
 var scatterLineAttrs = Plotly.Scatter.attributes.line,
     extendFlat = Plotly.Lib.extendFlat;
@@ -22,6 +45,7 @@ contour.attributes = {
     autocontour: {
         valType: 'boolean',
         dflt: true,
+        role: 'style',
         description: [
             'Determines whether of not the contour level attributes at',
             'picked by an algorithm.',
@@ -32,28 +56,33 @@ contour.attributes = {
     ncontours: {
         valType: 'integer',
         dflt: 0,
+        role: 'style',
         description: 'Sets the number of contour levels.'
     },
     contours: {
         start: {
             valType: 'number',
             dflt: null,
+            role: 'style',
             description: 'Sets the starting contour level value.'
         },
         end: {
             valType: 'number',
             dflt: null,
+            role: 'style',
             description: 'Sets the end contour level value.'
         },
         size: {
             valType: 'number',
             dflt: null,
+            role: 'style',
             description: 'Sets the step between each contour level.'
         },
         coloring: {
             valType: 'enumerated',
             values: ['fill', 'heatmap', 'lines', 'none'],
             dflt: 'fill',
+            role: 'style',
             description: [
                 'Determines the coloring method showing the contour values.',
                 'If *fill*, coloring is done evenly between each contour level',
@@ -66,6 +95,7 @@ contour.attributes = {
         showlines: {
             valType: 'boolean',
             dflt: true,
+            role: 'style',
             description: [
                 'Determines whether or not the contour lines are drawn.',
                 'Has only an effect if `contours.coloring` is set to *fill*.'

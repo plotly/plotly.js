@@ -11,6 +11,7 @@ var errorBars = module.exports = {},
 errorBars.attributes = {
     visible: {
         valType: 'boolean',
+        role: 'info',
         description: [
             'Determines whether or not this set of error bars is visible.'
         ].join(' ')
@@ -18,6 +19,7 @@ errorBars.attributes = {
     type: {
         valType: 'enumerated',
         values: ['percent', 'constant', 'sqrt', 'data'],
+        role: 'info',
         description: [
             'Determines the rule used to generate the error bars.',
 
@@ -35,6 +37,7 @@ errorBars.attributes = {
     },
     symmetric: {
         valType: 'boolean',
+        role: 'info',
         description: [
             'Determines whether or not the error bars have the same length',
             'in both direction',
@@ -60,6 +63,7 @@ errorBars.attributes = {
         valType: 'number',
         min: 0,
         dflt: 10,
+        role: 'info',
         description: [
             'Sets the value of either the percentage',
             '(if `type` is set to *percent*) or the constant',
@@ -71,6 +75,7 @@ errorBars.attributes = {
         valType: 'number',
         min: 0,
         dflt: 10,
+        role: 'info',
         description: [
             'Sets the value of either the percentage',
             '(if `type` is set to *percent*) or the constant',
@@ -82,32 +87,39 @@ errorBars.attributes = {
     traceref: {
         valType: 'integer',
         min: 0,
-        dflt: 0
+        dflt: 0,
+        role: 'info'
     },
     tracerefminus: {
         valType: 'integer',
         min: 0,
-        dflt: 0
+        dflt: 0,
+        role: 'info'
     },
     copy_ystyle: {
-        valType: 'boolean'
+        valType: 'boolean',
+        role: 'style'
     },
     copy_zstyle: {
-        valType: 'boolean'
+        valType: 'boolean',
+        role: 'style'
     },
     color: {
         valType: 'color',
+        role: 'style',
         description: 'Sets the stoke color of the error bars.'
     },
     thickness: {
         valType: 'number',
         min: 0,
         dflt: 2,
+        role: 'style',
         description: 'Sets the thickness (in px) of the error bars.'
     },
     width: {
         valType: 'number',
         min: 0,
+        role: 'style',
         description: [
             'Sets the width (in px) of the cross-bar at both ends',
             'of the error bars.'
