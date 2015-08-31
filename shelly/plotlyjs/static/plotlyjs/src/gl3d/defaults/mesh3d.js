@@ -4,7 +4,11 @@ var Plotly = require('../../plotly');
 
 var Mesh3D = module.exports = {};
 
-Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d']);
+Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d'], {
+    description: [
+        ''
+    ].join(' ')
+});
 
 Mesh3D.attributes = require('../attributes/mesh3d');
 

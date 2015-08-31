@@ -32,8 +32,9 @@ var modules = plots.modules = {},
  * thisType: (string)
  * categoriesIn: (array of strings) all the categories this type is in,
  *     tested by calls: Plotly.Plots.traceIs(trace, oneCategory)
+ * meta: (object) add meta information about the trace type
  */
-plots.register = function(_module, thisType, categoriesIn) {
+plots.register = function(_module, thisType, categoriesIn, meta) {
     if(modules[thisType]) {
         throw new Error('type ' + thisType + ' already registered');
     }
@@ -48,6 +49,10 @@ plots.register = function(_module, thisType, categoriesIn) {
         module: _module,
         categories: categoryObj
     };
+
+    if(meta && Object.keys(meta).length) {
+        modules[thisType].meta = meta;
+    }
 
     allTypes.push(thisType);
 };

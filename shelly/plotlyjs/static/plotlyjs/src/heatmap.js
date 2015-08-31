@@ -9,13 +9,9 @@ var heatmap = module.exports = {},
     isNumeric = require('./isnumeric'),
     scatterAttrs = Plotly.Scatter.attributes;
 
-Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap']);
-
-var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
-
-heatmap.attributes = {
-    overview: [
-        'The data the describes the heatmap value-to-color mapping',
+Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap'], {
+    description: [
+        'The data that describes the heatmap value-to-color mapping',
         'is set in `z`.',
         'Data in `z` can either be a {2D array} of values (ragged or not)',
         'or a 1D array of values.',
@@ -37,8 +33,12 @@ heatmap.attributes = {
 
         'In the case where `z` is a 1D {array}, the x and y coordinates must be',
         'provided in `x` and `y` respectively to form data triplets.'
-    ].join(' '),
+    ].join(' ')
+});
 
+var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+
+heatmap.attributes = {
     z: {
         valType: 'data_array',
         description: 'Sets the z data.'

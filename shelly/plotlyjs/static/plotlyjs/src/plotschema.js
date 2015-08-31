@@ -41,11 +41,12 @@ PlotSchema.isValObject = function(obj) {
 function getTraceAttributes(type) {
     var globalAttributes = Plotly.Plots.attributes,
         _module = getModule({type: type}),
+        meta = Plotly.Plots.modules[type].meta || {},
         attributes = {},
         layoutAttributes = {};
 
     // make 'type' the first attribute in the object
-    attributes.type = type;
+    attributes.type = null;
 
     // module attributes (+ nested + composed)
     attributes = coupleAttrs(
@@ -61,7 +62,10 @@ function getTraceAttributes(type) {
     attributes = removeUnderscoreAttrs(attributes);
 
     mergeValTypeAndRole(attributes);
-    plotSchema.traces[type] = { attributes: attributes };
+    plotSchema.traces[type] = objectAssign(
+        meta,
+        { attributes: attributes }
+    );
 
     // trace-specific layout attributes
     if(_module.layoutAttributes !== undefined) {
