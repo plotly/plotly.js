@@ -4360,9 +4360,8 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
         if(typeof d === 'function') {
             return null;
         }
-
         if(Plotly.Lib.isPlainObject(d)) {
-            var o={}, v;
+            var o={}, v, src;
             for(v in d) {
                 // remove private elements and functions
                 // _ is for private, [ is a mistake ie [object Object]
@@ -4378,10 +4377,21 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
                         continue;
                     }
                 }
+                else if(mode==='keepstream') {
+                    // keep sourced data if it's being streamed.
+                    // similar to keepref, but if the 'stream' object exists
+                    // in a trace, we will keep the data array.
+                    src = d[v+'src'];
+                    if(typeof src==='string' && src.indexOf(':')>0) {
+                        if(!Plotly.Lib.isPlainObject(d.stream)) {
+                            continue;
+                        }
+                    }
+                }
                 else if(mode!=='keepall') {
                     // keepref: remove sourced data but only
                     // if the source tag is well-formed
-                    var src = d[v+'src'];
+                    src = d[v+'src'];
                     if(typeof src==='string' && src.indexOf(':')>0) {
                         continue;
                     }
