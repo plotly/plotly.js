@@ -13,11 +13,13 @@ var fx = module.exports = {};
 fx.layoutAttributes = {
     dragmode: {
         valType: 'enumerated',
+        role: 'info',
         values: ['zoom', 'pan', 'orbit', 'turntable'],
         description: 'Determines the mode of drag interactions.'
     },
     hovermode: {
         valType: 'enumerated',
+        role: 'info',
         values: ['x', 'y', 'closest', false],
         description: 'Determines the mode of hover interactions.'
     }

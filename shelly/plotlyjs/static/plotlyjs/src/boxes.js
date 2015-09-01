@@ -8,16 +8,8 @@ var boxes = module.exports = {},
     isNumeric = require('./isnumeric');
 
 Plotly.Plots.register(boxes, 'box',
-    ['cartesian', 'symbols', 'oriented', 'box', 'showLegend']);
-
-var scatterAttrs = Plotly.Scatter.attributes,
-    scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line,
-    extendFlat = Plotly.Lib.extendFlat;
-
-
-boxes.attributes = {
-    overview: [
+    ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'], {
+    description: [
         'In vertical (horizontal) box plots,',
         'statistics are computed using `y` (`x`) values.',
         'By supplying an `x` (`y`) array, one box per distinct x (y) value',
@@ -30,8 +22,15 @@ boxes.attributes = {
         'By default, the whiskers correspond to the box\' edges',
         '+/- 1.5 times the interquartile range (IQR = Q3-Q1),',
         'see *boxpoints* for other options.'
-    ].join(' '),
+    ].join(' ')
+});
 
+var scatterAttrs = Plotly.Scatter.attributes,
+    scatterMarkerAttrs = scatterAttrs.marker,
+    scatterMarkerLineAttrs = scatterMarkerAttrs.line,
+    extendFlat = Plotly.Lib.extendFlat;
+
+boxes.attributes = {
     y: {
         valType: 'data_array',
         description: [
@@ -48,6 +47,7 @@ boxes.attributes = {
     },
     x0: {
         valType: 'any',
+        role: 'info',
         description: [
             'Sets the x coordinate of the box.',
             'See overview for more info.'
@@ -55,6 +55,7 @@ boxes.attributes = {
     },
     y0: {
         valType: 'any',
+        role: 'info',
         description: [
             'Sets the y coordinate of the box.',
             'See overview for more info.'
@@ -65,6 +66,7 @@ boxes.attributes = {
         min: 0,
         max: 1,
         dflt: 0.5,
+        role: 'style',
         description: [
             'Sets the width of the whiskers relative to',
             'the box\' width.',
@@ -75,6 +77,7 @@ boxes.attributes = {
         valType: 'enumerated',
         values: ['all', 'outliers', 'suspectedoutliers', false],
         dflt: 'outliers',
+        role: 'style',
         description: [
             'If *outliers*, only the sample points lying outside the whiskers',
             'are shown',
@@ -89,6 +92,7 @@ boxes.attributes = {
         valType: 'enumerated',
         values: [true, 'sd', false],
         dflt: false,
+        role: 'style',
         description: [
             'If *true*, the mean of the box(es)\' underlying distribution is',
             'drawn as a dashed line inside the box(es).',
@@ -99,6 +103,7 @@ boxes.attributes = {
         valType: 'number',
         min: 0,
         max: 1,
+        role: 'style',
         description: [
             'Sets the amount of jitter in the sample points drawn.',
             'If *0*, the sample points align along the distribution axis.',
@@ -110,6 +115,7 @@ boxes.attributes = {
         valType: 'number',
         min: -2,
         max: 2,
+        role: 'style',
         description: [
             'Sets the position of the sample points in relation to the box(es).',
             'If *0*, the sample points are places over the center of the box(es).',
@@ -120,6 +126,7 @@ boxes.attributes = {
     orientation: {
         valType: 'enumerated',
         values: ['v', 'h'],
+        role: 'style',
         description: [
             'Sets the orientation of the box(es).',
             'If *v* (*h*), the distribution is visualized along',
@@ -130,6 +137,7 @@ boxes.attributes = {
         outliercolor: {
             valType: 'color',
             dflt: 'rgba(0,0,0,0)',
+            role: 'style',
             description: 'Sets the color of the outlier sample points.'
         },
         symbol: extendFlat(scatterMarkerAttrs.symbol,
@@ -147,12 +155,14 @@ boxes.attributes = {
                 {arrayOk: false, dflt: 0}),
             outliercolor: {
                 valType: 'color',
+                role: 'style',
                 description: 'Sets the border line color of the outlier sample points.'
             },
             outlierwidth: {
                 valType: 'number',
                 min: 0,
                 dflt: 1,
+                role: 'style',
                 description: [
                     'Sets the border line width (in px) of the outlier sample points.'
                 ].join(' ')
@@ -162,10 +172,12 @@ boxes.attributes = {
     line: {
         color: {
             valType: 'color',
+            role: 'style',
             description: 'Sets the color of line bounding the box(es).'
         },
         width: {
             valType: 'number',
+            role: 'style',
             min: 0,
             dflt: 2,
             description: 'Sets the width (in px) of line bounding the box(es).'
@@ -179,6 +191,7 @@ boxes.layoutAttributes = {
         valType: 'enumerated',
         values: ['group', 'overlay'],
         dflt: 'overlay',
+        role: 'info',
         description: [
             'Determines how boxes at the same location coordinate',
             'are displayed on the graph.',
@@ -193,6 +206,7 @@ boxes.layoutAttributes = {
         min: 0,
         max: 1,
         dflt: 0.3,
+        role: 'style',
         description: [
             'Sets the gap (in plot fraction) between boxes of',
             'adjacent location coordinates.'
@@ -203,6 +217,7 @@ boxes.layoutAttributes = {
         min: 0,
         max: 1,
         dflt: 0.3,
+        role: 'style',
         description: [
             'Sets the gap (in plot fraction) between boxes of',
             'the same location coordinate.'

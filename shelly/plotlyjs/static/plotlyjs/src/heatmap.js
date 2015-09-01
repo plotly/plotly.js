@@ -9,13 +9,9 @@ var heatmap = module.exports = {},
     isNumeric = require('./isnumeric'),
     scatterAttrs = Plotly.Scatter.attributes;
 
-Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap']);
-
-var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
-
-heatmap.attributes = {
-    overview: [
-        'The data the describes the heatmap value-to-color mapping',
+Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap'], {
+    description: [
+        'The data that describes the heatmap value-to-color mapping',
         'is set in `z`.',
         'Data in `z` can either be a {2D array} of values (ragged or not)',
         'or a 1D array of values.',
@@ -37,8 +33,12 @@ heatmap.attributes = {
 
         'In the case where `z` is a 1D {array}, the x and y coordinates must be',
         'provided in `x` and `y` respectively to form data triplets.'
-    ].join(' '),
+    ].join(' ')
+});
 
+var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+
+heatmap.attributes = {
     z: {
         valType: 'data_array',
         description: 'Sets the z data.'
@@ -56,11 +56,13 @@ heatmap.attributes = {
     transpose: {
         valType: 'boolean',
         dflt: false,
+        role: 'info',
         description: 'Transposes the z data.'
     },
     xtype: {
         valType: 'enumerated',
         values: ['array', 'scaled'],
+        role: 'info',
         description: [
             'If *array*, the heatmap\'s x coordinates are given by *x*',
             '(the default behavior when `x` is provided).',
@@ -71,6 +73,7 @@ heatmap.attributes = {
     ytype: {
         valType: 'enumerated',
         values: ['array', 'scaled'],
+        role: 'info',
         description: [
             'If *array*, the heatmap\'s y coordinates are given by *y*',
             '(the default behavior when `y` is provided)',
@@ -90,6 +93,7 @@ heatmap.attributes = {
         valType: 'enumerated',
         values: ['fast', 'best', false],
         dflt: false,
+        role: 'style',
         description: [
             'Picks a smoothing algorithm use to smooth `z` data.'
         ].join(' ')
@@ -97,6 +101,7 @@ heatmap.attributes = {
     connectgaps: {
         valType: 'boolean',
         dflt: false,
+        role: 'info',
         description: [
             'Determines whether or not gaps',
             '(i.e. {nan} or missing values)',
