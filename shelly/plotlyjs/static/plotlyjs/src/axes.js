@@ -316,6 +316,7 @@ axes.layoutAttributes = {
     // values are any opposite-letter axis id
     anchor: {
         valType: 'enumerated',
+        values: ['free', '/^x[0-9]/*$', '/^y[0-9]/*$'],
         description: [
             'If set to an opposite-letter axis id (e.g. `xaxis2`, `yaxis`), this axis is bound to',
             'the corresponding opposite-letter axis.',
@@ -326,6 +327,7 @@ axes.layoutAttributes = {
     // values are top, bottom for x axes, and left, right for y
     side: {
         valType: 'enumerated',
+        values: ['top', 'bottom', 'left', 'right'],
         description: [
             'Determines whether a x (y) axis is positioned',
             'at the *bottom* (*left*) or *top* (*right*)',
@@ -337,6 +339,7 @@ axes.layoutAttributes = {
     // itself overlaying anything
     overlaying: {
         valType: 'enumerated',
+        values: [false, '/^x[0-9]/*$', '/^y[0-9]/*$'],
         description: [
             'If set a same-letter axis id, this axis is overlaid on top of',
             'the corresponding same-letter axis.',
