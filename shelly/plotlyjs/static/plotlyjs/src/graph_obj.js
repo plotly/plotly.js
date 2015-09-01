@@ -32,8 +32,9 @@ var modules = plots.modules = {},
  * thisType: (string)
  * categoriesIn: (array of strings) all the categories this type is in,
  *     tested by calls: Plotly.Plots.traceIs(trace, oneCategory)
+ * meta: (object) add meta information about the trace type
  */
-plots.register = function(_module, thisType, categoriesIn) {
+plots.register = function(_module, thisType, categoriesIn, meta) {
     if(modules[thisType]) {
         throw new Error('type ' + thisType + ' already registered');
     }
@@ -48,6 +49,10 @@ plots.register = function(_module, thisType, categoriesIn) {
         module: _module,
         categories: categoryObj
     };
+
+    if(meta && Object.keys(meta).length) {
+        modules[thisType].meta = meta;
+    }
 
     allTypes.push(thisType);
 };
@@ -1265,12 +1270,14 @@ Plotly.newPlot = function (gd, data, layout, config) {
 plots.attributes = {
     type: {
         valType: 'enumerated',
+        role: 'info',
         values: allTypes,
         dflt: 'scatter'
     },
     visible: {
         valType: 'enumerated',
         values: [true, false, 'legendonly'],
+        role: 'info',
         dflt: true,
         description: [
             'Determines whether or not this trace is visible.',
@@ -1281,6 +1288,7 @@ plots.attributes = {
     },
     showlegend: {
         valType: 'boolean',
+        role: 'info',
         dflt: true,
         description: [
             'Determines whether or not an item corresponding to this',
@@ -1289,6 +1297,7 @@ plots.attributes = {
     },
     legendgroup: {
         valType: 'string',
+        role: 'info',
         dflt: '',
         description: [
             'Sets the legend group for this trace.',
@@ -1298,6 +1307,7 @@ plots.attributes = {
     },
     opacity: {
         valType: 'number',
+        role: 'style',
         min: 0,
         max: 1,
         dflt: 1,
@@ -1305,6 +1315,7 @@ plots.attributes = {
     },
     name: {
         valType: 'string',
+        role: 'info',
         description: [
             'Sets the trace name.',
             'The trace name appear as the legend item and on hover.'
@@ -1312,6 +1323,7 @@ plots.attributes = {
     },
     xaxis: {
         valType: 'axisid',
+        role: 'info',
         dflt: 'x',
         description: [
             'Sets a reference between this trace\'s x coordinates and',
@@ -1323,6 +1335,7 @@ plots.attributes = {
     },
     yaxis: {
         valType: 'axisid',
+        role: 'info',
         dflt: 'y',
         description: [
             'Sets a reference between this trace\'s y coordinates and',
@@ -1334,6 +1347,7 @@ plots.attributes = {
     },
     scene: {
         valType: 'sceneid',
+        role: 'info',
         dflt: 'scene',
         description: [
             'Sets a reference between this trace\'s 3D coordinate system and',
@@ -1346,6 +1360,7 @@ plots.attributes = {
     },
     geo: {
         valType: 'geoid',
+        role: 'info',
         dflt: 'geo',
         description: [
             'Sets a reference between this trace\'s geospatial coordinates and',
@@ -1358,10 +1373,12 @@ plots.attributes = {
     },
     uid: {
         valType: 'string',
+        role: 'info',
         dflt: ''
     },
     hoverinfo: {
         valType: 'flaglist',
+        role: 'info',
         flags: ['x', 'y', 'z', 'text', 'name'],
         extras: ['all', 'none'],
         dflt: 'all',
@@ -1486,7 +1503,7 @@ function relinkPrivateKeys(toLayout, fromLayout) {
         else if (Array.isArray(fromLayout[k]) &&
                  Array.isArray(toLayout[k]) &&
                  fromLayout[k].length &&
-                 $.isPlainObject(fromLayout[k][0])) {
+                 Plotly.Lib.isPlainObject(fromLayout[k][0])) {
             if(fromLayout[k].length !== toLayout[k].length) {
                 // this should be handled elsewhere, it causes
                 // ambiguity if we try to deal with it here.
@@ -1498,8 +1515,8 @@ function relinkPrivateKeys(toLayout, fromLayout) {
                 relinkPrivateKeys(toLayout[k][j], fromLayout[k][j]);
             }
         }
-        else if ($.isPlainObject(fromLayout[k]) &&
-                 $.isPlainObject(toLayout[k])) {
+        else if (Plotly.Lib.isPlainObject(fromLayout[k]) &&
+                 Plotly.Lib.isPlainObject(toLayout[k])) {
             // recurse into objects, but only if they still exist
             relinkPrivateKeys(toLayout[k], fromLayout[k]);
             if (!Object.keys(toLayout[k]).length) delete toLayout[k];
@@ -1572,6 +1589,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 plots.layoutAttributes = {
     font: {
         valType: 'font',
+        role: 'style',
         dflt: {
             family: '"Open sans", verdana, arial, sans-serif',
             size: 12,
@@ -1585,6 +1603,7 @@ plots.layoutAttributes = {
     },
     title: {
         valType: 'string',
+        role: 'info',
         dflt: 'Click to enter Plot title',
         description: [
             'Sets the plot\'s title.'
@@ -1592,10 +1611,12 @@ plots.layoutAttributes = {
     },
     titlefont: {
         valType: 'font',
+        role: 'style',
         description: 'Sets the title font.'
     },
     autosize: {
         valType: 'enumerated',
+        role: 'info',
         // TODO: better handling of 'initial'
         values: [true, false, 'initial'],
         description: [
@@ -1605,6 +1626,7 @@ plots.layoutAttributes = {
     },
     width: {
         valType: 'number',
+        role: 'info',
         min: 10,
         dflt: 700,
         description: [
@@ -1613,6 +1635,7 @@ plots.layoutAttributes = {
     },
     height: {
         valType: 'number',
+        role: 'info',
         min: 10,
         dflt: 450,
         description: [
@@ -1622,30 +1645,35 @@ plots.layoutAttributes = {
     margin: {
         l: {
             valType: 'number',
+            role: 'info',
             min: 0,
             dflt: 80,
             description: 'Sets the left margin (in px).'
         },
         r: {
             valType: 'number',
+            role: 'info',
             min: 0,
             dflt: 80,
             description: 'Sets the right margin (in px).'
         },
         t: {
             valType: 'number',
+            role: 'info',
             min: 0,
             dflt: 100,
             description: 'Sets the top margin (in px).'
         },
         b: {
             valType: 'number',
+            role: 'info',
             min: 0,
             dflt: 80,
             description: 'Sets the bottom margin (in px).'
         },
         pad: {
             valType: 'number',
+            role: 'info',
             min: 0,
             dflt: 0,
             description: [
@@ -1655,11 +1683,13 @@ plots.layoutAttributes = {
         },
         autoexpand: {
             valType: 'boolean',
+            role: 'info',
             dflt: true
         }
     },
     paper_bgcolor: {
         valType: 'color',
+        role: 'style',
         dflt: Plotly.Color.background,
         description: 'Sets the color of paper where the graph is drawn.'
     },
@@ -1667,6 +1697,7 @@ plots.layoutAttributes = {
         // defined here, but set in Axes.supplyLayoutDefaults
         // because it needs to know if there are (2D) axes or not
         valType: 'color',
+        role: 'style',
         dflt: Plotly.Color.background,
         description: [
             'Sets the color of plotting area in-between x and y axes.'
@@ -1674,6 +1705,7 @@ plots.layoutAttributes = {
     },
     separators: {
         valType: 'string',
+        role: 'style',
         dflt: '.,',
         description: [
             'Sets the decimal and thousand separators.',
@@ -1683,6 +1715,7 @@ plots.layoutAttributes = {
     },
     hidesources: {
         valType: 'boolean',
+        role: 'info',
         dflt: false,
         description: [
             'Determines whether or not a text link citing the data source is',
@@ -1694,6 +1727,7 @@ plots.layoutAttributes = {
     smith: {
         // will become a boolean if/when we implement this
         valType: 'enumerated',
+        role: 'info',
         values: [false],
         dflt: false
     },
@@ -1701,6 +1735,7 @@ plots.layoutAttributes = {
         // handled in legend.supplyLayoutDefaults
         // but included here because it's not in the legend object
         valType: 'boolean',
+        role: 'info',
         description: 'Determines whether or not a legend is drawn.'
     },
     _hasCartesian: {
@@ -2047,12 +2082,12 @@ function checkAddTracesArgs(gd, traces, newIndices) {
  */
 function assertExtendTracesArgs(gd, update, indices, maxPoints) {
 
-    var maxPointsIsObject = $.isPlainObject(maxPoints);
+    var maxPointsIsObject = Plotly.Lib.isPlainObject(maxPoints);
 
     if (!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array');
     }
-    if (!$.isPlainObject(update)) {
+    if (!Plotly.Lib.isPlainObject(update)) {
         throw new Error('update must be a key:value object');
     }
 
@@ -2095,7 +2130,7 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
  */
 function getExtendProperties (gd, update, indices, maxPoints) {
 
-    var maxPointsIsObject = $.isPlainObject(maxPoints),
+    var maxPointsIsObject = Plotly.Lib.isPlainObject(maxPoints),
         updateProps = [];
     var trace, target, prop, insert, maxp;
 
@@ -2529,7 +2564,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         aobj = {};
 
     if(typeof astr === 'string') aobj[astr] = val;
-    else if($.isPlainObject(astr)) {
+    else if(Plotly.Lib.isPlainObject(astr)) {
         aobj = astr;
         if(traces===undefined) traces = val; // the 3-arg form
     }
@@ -3060,7 +3095,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         newkey, axes, keys, xyref, scene, axisAttr;
 
     if(typeof astr === 'string') aobj[astr] = val;
-    else if($.isPlainObject(astr)) aobj = astr;
+    else if(Plotly.Lib.isPlainObject(astr)) aobj = astr;
     else {
         console.log('relayout fail',astr,val);
         return;
@@ -3225,7 +3260,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // 'add' or an entire annotation to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
             if(p.parts.length === 2) {
-                if(aobj[ai] === 'add' || $.isPlainObject(aobj[ai])) {
+                if(aobj[ai] === 'add' || Plotly.Lib.isPlainObject(aobj[ai])) {
                     undoit[ai] = 'remove';
                 }
                 else if(aobj[ai] === 'remove') {
@@ -4360,9 +4395,8 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
         if(typeof d === 'function') {
             return null;
         }
-
-        if($.isPlainObject(d)) {
-            var o={}, v;
+        if(Plotly.Lib.isPlainObject(d)) {
+            var o={}, v, src;
             for(v in d) {
                 // remove private elements and functions
                 // _ is for private, [ is a mistake ie [object Object]
@@ -4378,10 +4412,21 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
                         continue;
                     }
                 }
+                else if(mode==='keepstream') {
+                    // keep sourced data if it's being streamed.
+                    // similar to keepref, but if the 'stream' object exists
+                    // in a trace, we will keep the data array.
+                    src = d[v+'src'];
+                    if(typeof src==='string' && src.indexOf(':')>0) {
+                        if(!Plotly.Lib.isPlainObject(d.stream)) {
+                            continue;
+                        }
+                    }
+                }
                 else if(mode!=='keepall') {
                     // keepref: remove sourced data but only
                     // if the source tag is well-formed
-                    var src = d[v+'src'];
+                    src = d[v+'src'];
                     if(typeof src==='string' && src.indexOf(':')>0) {
                         continue;
                     }

@@ -7,6 +7,7 @@ var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
 function makeContourProjAttr(axLetter) {
     return {
         valType: 'boolean',
+        role: 'info',
         dflt: false,
         description: [
             'Sets whether or not the dynamic contours are projected',
@@ -19,6 +20,7 @@ function makeContourAttr(axLetter) {
     return {
         show: {
             valType: 'boolean',
+            role: 'info',
             dflt: false,
             description: [
                 'Sets whether or not dynamic contours are shown along the',
@@ -32,28 +34,34 @@ function makeContourAttr(axLetter) {
         },
         color: {
             valType: 'color',
+            role: 'style',
             dflt: '#000'
         },
         usecolormap: {
             valType: 'boolean',
+            role: 'info',
             dflt: false
         },
         width: {
             valType: 'number',
+            role: 'style',
             min: 1,
             max: 16,
             dflt: 2
         },
         highlight: {
             valType: 'boolean',
+            role: 'info',
             dflt: false
         },
         highlightColor: {
             valType: 'color',
+            role: 'style',
             dflt: '#000'
         },
         highlightWidth: {
             valType: 'number',
+            role: 'style',
             min: 1,
             max: 16,
             dflt: 2
@@ -62,18 +70,6 @@ function makeContourAttr(axLetter) {
 }
 
 module.exports = {
-    overview: [
-        'The data the describes the coordinates of the surface is set in `z`.',
-        'Data in `z` should be a {2D array}.',
-
-        'Coordinates in `x` and `y` can either be 1D {arrays}',
-        'or {2D arrays} (e.g. to graph parametric surfaces).',
-
-        'If not provided in `x` and `y`, the x and y coordinates are assumed',
-        'to be linear starting at 0 with a unit step.'
-    ].join(' '),
-
-
     z: {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
@@ -104,36 +100,42 @@ module.exports = {
         z: makeContourAttr('z')
     },
     hidesurface: {
-      valType: 'boolean',
-      dflt: false
+        valType: 'boolean',
+        role: 'info',
+        dflt: false
     },
     lighting: {
         ambient: {
             valType: 'number',
+            role: 'style',
             min: 0.00,
             max: 1.0,
             dflt: 0.8
         },
         diffuse: {
             valType: 'number',
+            role: 'style',
             min: 0.00,
             max: 1.00,
             dflt: 0.8
         },
         specular: {
             valType: 'number',
+            role: 'style',
             min: 0.00,
             max: 2.00,
             dflt: 0.05
         },
         roughness: {
             valType: 'number',
+            role: 'style',
             min: 0.00,
             max: 1.00,
             dflt: 0.5
         },
         fresnel: {
             valType: 'number',
+            role: 'style',
             min: 0.00,
             max: 5.00,
             dflt: 0.2
@@ -141,10 +143,11 @@ module.exports = {
     },
 
     opacity: {
-      valType: 'number',
-      min: 0,
-      max: 1,
-      dflt: 1
+        valType: 'number',
+        role: 'style',
+        min: 0,
+        max: 1,
+        dflt: 1
     },
 
     _nestedModules: {  // nested module coupling

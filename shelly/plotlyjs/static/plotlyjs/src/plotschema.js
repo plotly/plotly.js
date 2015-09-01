@@ -14,22 +14,39 @@ var plotSchema = {
     defs: {}
 };
 
+var PlotSchema = module.exports = {};
 
-module.exports = function getPlotSchema() {
+PlotSchema.get =  function() {
     Plotly.Plots.allTypes.forEach(getTraceAttributes);
     getLayoutAttributes();
     getDefs();
     return plotSchema;
 };
 
+PlotSchema.crawl = function(attrs, callback) {
+    Object.keys(attrs).forEach(function(attrName) {
+        var attr = attrs[attrName];
+
+        callback(attr, attrName);
+
+        if(PlotSchema.isValObject(attr)) return;
+        if(Plotly.Lib.isPlainObject(attr)) PlotSchema.crawl(attr, callback);
+    });
+};
+
+PlotSchema.isValObject = function(obj) {
+    return obj && obj.valType !== undefined;
+};
+
 function getTraceAttributes(type) {
     var globalAttributes = Plotly.Plots.attributes,
         _module = getModule({type: type}),
+        meta = Plotly.Plots.modules[type].meta || {},
         attributes = {},
         layoutAttributes = {};
 
     // make 'type' the first attribute in the object
-    attributes.type = type;
+    attributes.type = null;
 
     // module attributes (+ nested + composed)
     attributes = coupleAttrs(
@@ -44,13 +61,19 @@ function getTraceAttributes(type) {
 
     attributes = removeUnderscoreAttrs(attributes);
 
-    plotSchema.traces[type] = { attributes: attributes };
+    mergeValTypeAndRole(attributes);
+    plotSchema.traces[type] = objectAssign(
+        meta,
+        { attributes: attributes }
+    );
 
     // trace-specific layout attributes
     if(_module.layoutAttributes !== undefined) {
         layoutAttributes = coupleAttrs(
             _module.layoutAttributes, layoutAttributes, 'layoutAttributes', type
         );
+
+        mergeValTypeAndRole(layoutAttributes);
         plotSchema.traces[type].layoutAttributes = layoutAttributes;
     }
 }
@@ -79,6 +102,7 @@ function getLayoutAttributes() {
           ) layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
     });
 
+    mergeValTypeAndRole(layoutAttributes);
     plotSchema.layout = { layoutAttributes: layoutAttributes };
 }
 
@@ -125,10 +149,22 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             return;
         }
 
-        attrsOut[k] = attrsIn[k];
+        attrsOut[k] = objectAssign({}, attrsIn[k]);
     });
 
     return attrsOut;
+}
+
+function mergeValTypeAndRole(attrs) {
+
+    function callback(attr) {
+        if(PlotSchema.isValObject(attr)) {
+           if(attr.valType === 'data_array') attr.role = 'data';
+        }
+        else if(Plotly.Lib.isPlainObject(attr)) attr.role = 'object';
+    }
+
+    PlotSchema.crawl(attrs, callback);
 }
 
 // helper methods

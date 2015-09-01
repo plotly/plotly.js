@@ -55,10 +55,8 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
             coerce('camera.' + cameraKeys[j] + '.z');
         }
 
-        coerce('domain.x[0]', i / scenesLength);
-        coerce('domain.x[1]', (i+1) / scenesLength);
-        coerce('domain.y[0]');
-        coerce('domain.y[1]');
+        coerce('domain.x', [i / scenesLength, (i+1) / scenesLength]);
+        coerce('domain.y');
 
         /*
          * coerce to positive number (min 0) but also do not accept 0 (>0 not >=0)
