@@ -2607,7 +2607,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         'error_x.traceref','error_x.array','error_x.symmetric',
         'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
         'swapxy','swapxyaxes','orientationaxes',
-        'colors', 'values', 'labels', 'label0', 'dlabel', 'sort',
+        'marker.colors', 'values', 'labels', 'label0', 'dlabel', 'sort',
         'textinfo', 'textposition', 'textfont.size', 'textfont.family', 'textfont.color',
         'insidetextfont.size', 'insidetextfont.family', 'insidetextfont.color',
         'outsidetextfont.size', 'outsidetextfont.family', 'outsidetextfont.color',
