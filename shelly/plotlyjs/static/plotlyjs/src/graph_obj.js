@@ -2845,9 +2845,14 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                 Plotly.Lib.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
 
                 if(oldVal === 'pie') {
+                    Plotly.Lib.nestedProperty(cont, 'marker.color')
+                        .set(Plotly.Lib.nestedProperty(cont, 'marker.colors').get());
+
                     // super kludgy - but if all pies are gone we won't remove them otherwise
                     fullLayout._pielayer.selectAll('g.trace').remove();
                 } else if(plots.traceIs(cont, 'cartesian')) {
+                    Plotly.Lib.nestedProperty(cont, 'marker.colors')
+                        .set(Plotly.Lib.nestedProperty(cont, 'marker.color').get());
                     //look for axes that are no longer in use and delete them
                     flagAxForDelete[cont.xaxis || 'x'] = true;
                     flagAxForDelete[cont.yaxis || 'y'] = true;
