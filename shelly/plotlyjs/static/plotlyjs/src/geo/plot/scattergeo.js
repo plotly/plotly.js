@@ -120,16 +120,15 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 var xy = geo.projection([d.lon, d.lat]);
                 cleanHoverLabelsFunc(d);
 
-                Plotly.Fx.loneHover(
-                    {
-                        x: xy[0],
-                        y: xy[1],
-                        name: hasNameLabel ? trace.name : undefined,
-                        text: d.textLabel,
-                        color: d.mc || (trace.marker || {}).color
-                    },
-                    {container: geo.hoverContainer.node()}
-                );
+                Plotly.Fx.loneHover({
+                    x: xy[0],
+                    y: xy[1],
+                    name: hasNameLabel ? trace.name : undefined,
+                    text: d.textLabel,
+                    color: d.mc || (trace.marker || {}).color
+                }, {
+                    container: geo.hoverContainer.node()
+                });
             }
 
             if(showMarkers) {
@@ -189,7 +188,7 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     var hoverinfo = trace.hoverinfo;
 
     if(hoverinfo === 'none') {
-        return function cleanHoverLabelsFunc(d) { d.textLabel = undefined; };
+        return function cleanHoverLabelsFunc(d) { delete d.textLabel; };
     }
 
     var hoverinfoParts = (hoverinfo === 'all') ?

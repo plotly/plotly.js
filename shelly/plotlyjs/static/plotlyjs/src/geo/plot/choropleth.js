@@ -77,15 +77,14 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                 var xy = geo.projection(d.properties.centroid);
                 cleanHoverLabelsFunc(d);
 
-                Plotly.Fx.loneHover(
-                    {
-                        x: xy[0],
-                        y: xy[1],
-                        name: d.nameLabel,
-                        text: d.textLabel
-                    },
-                    {container: geo.hoverContainer.node()}
-                );
+                Plotly.Fx.loneHover({
+                    x: xy[0],
+                    y: xy[1],
+                    name: d.nameLabel,
+                    text: d.textLabel
+                }, {
+                    container: geo.hoverContainer.node()
+                });
             }
 
             d3.select(this)
@@ -146,14 +145,14 @@ function makeCleanHoverLabelsFunc(geo, trace) {
 
     if(hoverinfo === 'none') {
         return function cleanHoverLabelsFunc(d) {
-            d.nameLabel = undefined;
-            d.textLabel = undefined;
+            delete d.nameLabel;
+            delete d.textLabel;
         };
     }
 
     var hoverinfoParts = (hoverinfo === 'all') ?
-        Plotly.Choropleth.attributes.hoverinfo.flags :
-        hoverinfo.split('+');
+            Plotly.Choropleth.attributes.hoverinfo.flags :
+            hoverinfo.split('+');
 
     var hasName = (hoverinfoParts.indexOf('name') !== -1),
         hasLocation = (hoverinfoParts.indexOf('location') !== -1),
