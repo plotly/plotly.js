@@ -78,8 +78,10 @@ module.exports = {
     },
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
+    hoverinfo: Plotly.Lib.extendFlat(Plotly.Plots.attributes.hoverinfo, {
+        flags: ['lon', 'lat', 'location', 'text', 'name']
+    }),
     _nestedModules: {
         'marker.colorbar': 'Colorbar'
-        // TODO error bars?
     }
 };

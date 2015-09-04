@@ -44,6 +44,8 @@ ScatterGeo.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     if(Scatter.hasText(traceOut)) {
         Scatter.textDefaults(traceIn, traceOut, layout, coerce);
     }
+
+    coerce('hoverinfo', (layout._dataLength === 1) ? 'lon+lat+location+text' : undefined);
 };
 
 ScatterGeo.handleLonLatLocDefaults = function(traceIn, traceOut, coerce) {

@@ -108,16 +108,9 @@ pie.attributes = {
             'Determines which trace information appear on the graph.'
         ].join(' ')
     },
-    hoverinfo: {
-        valType: 'flaglist',
-        role: 'info',
-        flags: ['label', 'text', 'value', 'percent', 'name'],
-        extras: ['all', 'none'],
-        dflt: 'all',
-        description: [
-            'Determines which trace information appear on hover.'
-        ].join(' ')
-    },
+    hoverinfo: Plotly.Lib.extendFlat(Plotly.Plots.attributes.hoverinfo, {
+        flags: ['label', 'text', 'value', 'percent', 'name']
+    }),
     textposition: {
         valType: 'enumerated',
         role: 'info',
@@ -306,7 +299,8 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
     var textData = coerce('text');
     var textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
-    coerce('hoverinfo');
+
+    coerce('hoverinfo', (layout._dataLength === 1) ? 'label+text+value+percent' : undefined);
 
     if(textInfo && textInfo !== 'none') {
         var textPosition = coerce('textposition'),
