@@ -299,7 +299,8 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
     var textData = coerce('text');
     var textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
-    coerce('hoverinfo');
+
+    coerce('hoverinfo', (layout._dataLength === 1) ? 'label+text+value+percent' : undefined);
 
     if(textInfo && textInfo !== 'none') {
         var textPosition = coerce('textposition'),
