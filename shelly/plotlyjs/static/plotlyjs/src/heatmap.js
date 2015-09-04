@@ -235,10 +235,12 @@ heatmap.convertColumnXYZ = function(trace, xa, ya) {
         colLen = Math.min(xCol.length, yCol.length, zCol.length),
         hasColumnText = (textCol!==undefined && !Array.isArray(textCol[0]));
 
+    var i;
+
     if(colLen < xCol.length) xCol = xCol.slice(0, colLen);
     if(colLen < yCol.length) yCol = yCol.slice(0, colLen);
 
-    for(var i = 0; i < colLen; i++) {
+    for(i = 0; i < colLen; i++) {
         xCol[i] = xa.d2c(xCol[i]);
         yCol[i] = ya.d2c(yCol[i]);
     }
@@ -306,7 +308,6 @@ heatmap.calc = function(gd, trace) {
 
         x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
         y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
-
         x0 = trace.x0 || 0;
         dx = trace.dx || 1;
         y0 = trace.y0 || 0;
