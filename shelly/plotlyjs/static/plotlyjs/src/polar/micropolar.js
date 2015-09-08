@@ -3,7 +3,7 @@ var micropolar = module.exports = {
 };
 
 var µ = micropolar,
-    Plotly = require('./plotly');
+    Plotly = require('../plotly');
 
 µ.Axis = function module() {
     var config = {

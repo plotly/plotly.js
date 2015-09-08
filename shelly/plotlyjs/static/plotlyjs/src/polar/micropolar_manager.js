@@ -2,7 +2,7 @@
 /* global d3:false */
 
 var manager = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('../plotly');
 
 manager.framework = function(_gd){
     var config, previousConfigClone, plot, convertedInput, container;
