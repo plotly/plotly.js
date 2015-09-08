@@ -14,10 +14,17 @@ var plotSchema = {
     defs: {}
 };
 
+// FIXME polar attribute are not part of Plotly yet
+var polarAreaAttrs = require('./polar/attributes/area'),
+    polarAxisAttrs = require('./polar/attributes/polaraxes');
+
 var PlotSchema = module.exports = {};
 
 PlotSchema.get =  function() {
-    Plotly.Plots.allTypes.forEach(getTraceAttributes);
+    Plotly.Plots.allTypes
+        .concat('area')  // FIXME polar 'area' attributes
+        .forEach(getTraceAttributes);
+
     getLayoutAttributes();
     getDefs();
     return plotSchema;
@@ -41,7 +48,7 @@ PlotSchema.isValObject = function(obj) {
 function getTraceAttributes(type) {
     var globalAttributes = Plotly.Plots.attributes,
         _module = getModule({type: type}),
-        meta = Plotly.Plots.modules[type].meta || {},
+        meta = getMeta(type),
         attributes = {},
         layoutAttributes = {};
 
@@ -91,6 +98,8 @@ function getLayoutAttributes() {
         globalLayoutAttributes, layoutAttributes, 'layoutAttributes', '*'
     );
 
+    // FIXME polar layout attributes
+    layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
     layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
 
     // add IS_SUBPLOT_OBJ key
@@ -170,7 +179,11 @@ function mergeValTypeAndRole(attrs) {
 // helper methods
 
 function getModule(arg) {
-    if('type' in arg) return Plotly.Plots.getModule({type: arg.type});
+    if('type' in arg) {
+        return (arg.type === 'area') ?  // FIXME
+            { attributes: polarAreaAttrs } :
+            Plotly.Plots.getModule({type: arg.type});
+    }
     else if('module' in arg) return Plotly[arg.module];
 }
 
@@ -179,4 +192,19 @@ function removeUnderscoreAttrs(attributes) {
         if(k.charAt(0) === '_' && k !== IS_LINKED_TO_ARRAY) delete attributes[k];
     });
     return attributes;
+}
+function getMeta(type) {
+    if(type === 'area') return {};  // FIXME
+    return Plotly.Plots.modules[type].meta || {};
+}
+
+function assignPolarLayoutAttrs(layoutAttributes) {
+    layoutAttributes = objectAssign(layoutAttributes, {
+        radialaxis: polarAxisAttrs.radialaxis,
+        angularaxis: polarAxisAttrs.angularaxis
+    });
+
+    layoutAttributes = objectAssign(layoutAttributes, polarAxisAttrs.layout);
+
+    return layoutAttributes;
 }
