@@ -104,6 +104,10 @@ plots.subplotsRegistry = {
     geo: {
         attr: 'geo',
         idRegex: /^geo[0-9]*$/
+    },
+    gl2d: {
+        attr:    'gl2d',
+        idRegex: /^gl2d[0-9]*$/
     }
 };
 

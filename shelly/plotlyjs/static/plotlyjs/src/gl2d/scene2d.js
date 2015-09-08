@@ -1,6 +1,7 @@
 'use strict';
 
 var createPlot2D = require('gl-plot2d');
+var createOptions = require('./convert/axes2dgl');
 
 function Scene2D(options, fullLayout) {
 
@@ -43,11 +44,12 @@ function Scene2D(options, fullLayout) {
     //Append canvas to conatiner
     container.appendChild(canvas);
 
+    //Update options
+    this.glplotOptions = createOptions(this);
+    this.glplotOptions.merge(fullLayout);
+
     //Create the plot
-    this.glplot = createPlot2D({
-      gl: gl,
-      pixelRatio: pixelRatio
-    });
+    this.glplot = createPlot2D(this.glplotOptions);
 
     //Redraw the plot
     this.redraw = this.draw.bind(this);
@@ -57,6 +59,10 @@ function Scene2D(options, fullLayout) {
 module.exports = Scene2D;
 
 var proto = Scene2D.prototype;
+
+proto.computeTickMarks = function() {
+  return [[], []];
+};
 
 proto.plot = function(fullData, fullLayout) {
     //Check for resize
@@ -72,10 +78,16 @@ proto.plot = function(fullData, fullLayout) {
     if(canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
       canvas.width        = pixelWidth;
       canvas.height       = pixelHeight;
-
-      glplot.setScreenBox([0,0,width,height]);
-      glplot.setViewBox([0.125*width,0.125*height,0.875*width,0.875*height]);
     }
+
+    //Update plot
+    var options       = this.glplotOptions;
+    options.merge(fullLayout);
+    options.screenBox = [0,0,width,height];
+    options.viewBox   = [0.125*width,0.125*height,0.875*width,0.875*height];
+    options.ticks     = this.computeTickMarks();
+
+    glplot.update(options);
 };
 
 proto.draw = function() {
