@@ -1,4 +1,5 @@
 'use strict';
+
 /* global d3:false */
 
 var manager = module.exports = {},
