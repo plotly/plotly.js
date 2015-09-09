@@ -15,11 +15,23 @@ var locationmodeToIdFinder = {
     'country names': countryNameToISO3
 };
 
-locationUtils.locationToId = function(locationmode, location) {
-    var idFinder = locationmodeToIdFinder[locationmode];
-    return idFinder(location);
+locationUtils.locationToFeature = function(locationmode, location, features) {
+    var locationId = getLocationId(locationmode, location);
+    var feature;
+
+    for(var i = 0; i < features.length; i++) {
+        feature = features[i];
+
+        if(feature.id === locationId) return feature;
+    }
+
+    return undefined;
 };
 
+function getLocationId(locationmode, location) {
+    var idFinder = locationmodeToIdFinder[locationmode];
+    return idFinder(location);
+}
 
 function countryNameToISO3(countryName) {
     var iso3, regex;
