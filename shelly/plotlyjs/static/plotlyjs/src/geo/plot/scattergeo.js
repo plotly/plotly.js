@@ -202,7 +202,8 @@ function makeCleanHoverLabelsFunc(geo, trace) {
         hasText = (hoverinfoParts.indexOf('text') !== -1);
 
     function formatter(val) {
-        return Plotly.Axes.tickText(geo.mockAxis, val, 'hover').text + '\u00B0';
+        var axis = geo.mockAxis;
+        return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text + '\u00B0';
     }
 
     return function cleanHoverLabelsFunc(d) {

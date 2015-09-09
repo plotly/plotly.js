@@ -413,6 +413,8 @@ proto.render = function() {
 function createMockAxis(fullLayout) {
     var mockAxis = {
         type: 'linear',
+        showexponent: 'all',
+        exponentformat: Plotly.Axes.layoutAttributes.exponentformat.dflt,
         _td: { _fullLayout: fullLayout }
     };
 

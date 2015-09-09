@@ -161,7 +161,8 @@ function makeCleanHoverLabelsFunc(geo, trace) {
         hasIdAsNameLabel = !hasName && hasLocation;
 
     function formatter(val) {
-        return Plotly.Axes.tickText(geo.mockAxis, val, 'hover').text;
+        var axis = geo.mockAxis;
+        return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text;
     }
 
     return function cleanHoverLabelsFunc(d) {
