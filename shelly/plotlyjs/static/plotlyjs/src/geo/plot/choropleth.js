@@ -70,7 +70,7 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
             function handleMouseOver(d) {
                 if(!geo.showHover) return;
 
-                var xy = geo.projection(d.properties.centroid);
+                var xy = geo.projection(d.properties.ct);
                 cleanHoverLabelsFunc(d);
 
                 Plotly.Fx.loneHover({
