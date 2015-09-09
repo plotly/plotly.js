@@ -3,10 +3,11 @@
 var Plotly = require('./plotly'),
     objectAssign = require('object-assign');
 
-var NESTED_MODULE_ID = '_nestedModules',
-    COMPOSED_MODULE_ID = '_composedModules',
-    IS_LINKED_TO_ARRAY = '_isLinkedToArray',
-    IS_SUBPLOT_OBJ = '_isSubplotObj';
+var NESTED_MODULE = '_nestedModules',
+    COMPOSED_MODULE = '_composedModules';
+
+// list of underscore attributes to keep in schema as is
+var UNDERSCORE_ATTRS = ['_isLinkedToArray', '_isSubplotObj'];
 
 var plotSchema = {
     traces: {},
@@ -125,7 +126,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
 
     Object.keys(attrsIn).forEach(function(k) {
 
-        if(k === NESTED_MODULE_ID) {
+        if(k === NESTED_MODULE) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
                 nestedModule = getModule({module: attrsIn[k][kk]});
                 if(nestedModule === undefined) return;
@@ -141,7 +142,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             return;
         }
 
-        if(k === COMPOSED_MODULE_ID) {
+        if(k === COMPOSED_MODULE) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
                 if(kk !== type) return;
 
@@ -158,7 +159,10 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             return;
         }
 
-        attrsOut[k] = objectAssign({}, attrsIn[k]);
+        // underscore attributes are booleans
+        attrsOut[k] = (UNDERSCORE_ATTRS.indexOf(k) !== -1) ?
+            attrsIn[k] :
+            objectAssign({}, attrsIn[k]);
     });
 
     return attrsOut;
@@ -189,10 +193,12 @@ function getModule(arg) {
 
 function removeUnderscoreAttrs(attributes) {
     Object.keys(attributes).forEach(function(k){
-        if(k.charAt(0) === '_' && k !== IS_LINKED_TO_ARRAY) delete attributes[k];
+        if(k.charAt(0) === '_' &&
+            UNDERSCORE_ATTRS.indexOf(k) === -1) delete attributes[k];
     });
     return attributes;
 }
+
 function getMeta(type) {
     if(type === 'area') return {};  // FIXME
     return Plotly.Plots.modules[type].meta || {};
