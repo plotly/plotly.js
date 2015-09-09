@@ -13,11 +13,11 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
         marker = trace.marker || {},
         hasLocationData = Array.isArray(trace.locations);
 
-    var N, fromTopojson, features, ids, getLonLat, lonlat, locations, indexOfId;
+    var len, features, getLonLat, lonlat, locations;
 
     if(hasLocationData) {
         locations = trace.locations;
-        N = locations.length;
+        len = locations.length;
         features = getTopojsonFeatures(trace, topojson);
         getLonLat = function(trace, i) {
             var feature = locationToFeature(trace.locationmode, locations[i], features);
@@ -28,13 +28,13 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
         };
     }
     else {
-        N = trace.lon.length;
+        len = trace.lon.length;
         getLonLat = function(trace, i) {
             return [trace.lon[i], trace.lat[i]];
         };
     }
 
-    for(var i = 0; i < N; i++) {
+    for(var i = 0; i < len; i++) {
         lonlat = getLonLat(trace, i);
         if(!lonlat) continue;
 

@@ -13,19 +13,19 @@ var plotChoropleth = module.exports = {};
 plotChoropleth.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
         locations = trace.locations,
-        N = locations.length,
+        len = locations.length,
         features = getTopojsonFeatures(trace, topojson),
         markerLine = (trace.marker || {}).line || {};
 
     var feature;
 
-    for(var i = 0; i < N; i++) {
+    for(var i = 0; i < len; i++) {
         feature = locationToFeature(trace.locationmode, locations[i], features);
         if(feature === undefined) continue;
 
         // 'data_array' attributes
         feature.z = trace.z[i];
-        if(trace.text!==undefined) feature.tx = trace.text[i];
+        if(trace.text !== undefined) feature.tx = trace.text[i];
 
         // 'arrayOK' attributes
         mergeArray(markerLine.color, feature, 'mlc', i);
