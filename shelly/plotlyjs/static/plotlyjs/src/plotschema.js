@@ -50,6 +50,7 @@ function getTraceAttributes(type) {
     var globalAttributes = Plotly.Plots.attributes,
         _module = getModule({type: type}),
         meta = getMeta(type),
+        subplotRegistry = getSubplotRegistry(type),
         attributes = {},
         layoutAttributes = {};
 
@@ -60,6 +61,11 @@ function getTraceAttributes(type) {
     attributes = coupleAttrs(
         _module.attributes, attributes, 'attributes', type
     );
+
+    // subplot attributes
+    if(subplotRegistry.attributes !== undefined) {
+        attributes = objectAssign(attributes, subplotRegistry.attributes);
+    }
 
     // global attributes (same for all trace types)
     attributes = objectAssign(attributes, globalAttributes);
@@ -210,4 +216,16 @@ function assignPolarLayoutAttrs(layoutAttributes) {
     layoutAttributes = objectAssign(layoutAttributes, polarAxisAttrs.layout);
 
     return layoutAttributes;
+}
+
+function getSubplotRegistry(traceType) {
+    var subplotsRegistry = Plotly.Plots.subplotsRegistry,
+        subplotType = Object.keys(subplotsRegistry).filter(function(subplotType) {
+            return Plotly.Plots.traceIs({type: traceType}, subplotType);
+        })[0];
+
+    if(traceType === 'area') return {};  // FIXME
+    if(subplotType === undefined) return {};
+
+    return subplotsRegistry[subplotType];
 }

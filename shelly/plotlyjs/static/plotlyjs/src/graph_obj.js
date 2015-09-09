@@ -101,13 +101,71 @@ plots.traceIs = function traceIs(traceType, category) {
 };
 
 plots.subplotsRegistry = {
+    cartesian: {
+        attributes: {
+            xaxis: {
+                valType: 'axisid',
+                role: 'info',
+                dflt: 'x',
+                description: [
+                    'Sets a reference between this trace\'s x coordinates and',
+                    'a 2D cartesian x axis.',
+                    'If *x* (the default value), the x coordinates refer to',
+                    '`layout.xaxis`.',
+                    'If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.'
+                ].join(' ')
+            },
+            yaxis: {
+                valType: 'axisid',
+                role: 'info',
+                dflt: 'y',
+                description: [
+                    'Sets a reference between this trace\'s y coordinates and',
+                    'a 2D cartesian y axis.',
+                    'If *y* (the default value), the y coordinates refer to',
+                    '`layout.yaxis`.',
+                    'If *y2*, the y coordinates refer to `layout.xaxis2`, and so on.'
+                ].join(' ')
+            }
+        }
+    },
     gl3d: {
         attr: 'scene',
-        idRegex: /^scene[0-9]*$/
+        idRegex: /^scene[0-9]*$/,
+        attributes: {
+            scene: {
+                valType: 'sceneid',
+                role: 'info',
+                dflt: 'scene',
+                description: [
+                    'Sets a reference between this trace\'s 3D coordinate system and',
+                    'a 3D scene.',
+                    'If *scene* (the default value), the (x,y,z) coordinates refer to',
+                    '`layout.scene`.',
+                    'If *scene2*, the (x,y,z) coordinates refer to `layout.scene2`,',
+                    'and so on.'
+                ].join(' ')
+            }
+        }
     },
     geo: {
         attr: 'geo',
-        idRegex: /^geo[0-9]*$/
+        idRegex: /^geo[0-9]*$/,
+        attributes: {
+            geo: {
+                valType: 'geoid',
+                role: 'info',
+                dflt: 'geo',
+                description: [
+                    'Sets a reference between this trace\'s geospatial coordinates and',
+                    'a geographic map.',
+                    'If *geo* (the default value), the geospatial coordinates refer to',
+                    '`layout.geo`.',
+                    'If *geo2*, the geospatial coordinates refer to `layout.geo2`,',
+                    'and so on.'
+                ].join(' ')
+            }
+        }
     }
 };
 
@@ -1321,56 +1379,6 @@ plots.attributes = {
             'The trace name appear as the legend item and on hover.'
         ].join(' ')
     },
-    xaxis: {
-        valType: 'axisid',
-        role: 'info',
-        dflt: 'x',
-        description: [
-            'Sets a reference between this trace\'s x coordinates and',
-            'a 2D cartesian x axis.',
-            'If *x* (the default value), the x coordinates refer to',
-            '`layout.xaxis`.',
-            'If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.'
-        ].join(' ')
-    },
-    yaxis: {
-        valType: 'axisid',
-        role: 'info',
-        dflt: 'y',
-        description: [
-            'Sets a reference between this trace\'s y coordinates and',
-            'a 2D cartesian y axis.',
-            'If *y* (the default value), the y coordinates refer to',
-            '`layout.yaxis`.',
-            'If *y2*, the y coordinates refer to `layout.xaxis2`, and so on.'
-        ].join(' ')
-    },
-    scene: {
-        valType: 'sceneid',
-        role: 'info',
-        dflt: 'scene',
-        description: [
-            'Sets a reference between this trace\'s 3D coordinate system and',
-            'a 3D scene.',
-            'If *scene* (the default value), the (x,y,z) coordinates refer to',
-            '`layout.scene`.',
-            'If *scene2*, the (x,y,z) coordinates refer to `layout.scene2`,',
-            'and so on.'
-        ].join(' ')
-    },
-    geo: {
-        valType: 'geoid',
-        role: 'info',
-        dflt: 'geo',
-        description: [
-            'Sets a reference between this trace\'s geospatial coordinates and',
-            'a geographic map.',
-            'If *geo* (the default value), the geospatial coordinates refer to',
-            '`layout.geo`.',
-            'If *geo2*, the geospatial coordinates refer to `layout.geo2`,',
-            'and so on.'
-        ].join(' ')
-    },
     uid: {
         valType: 'string',
         role: 'info',
@@ -1558,6 +1566,12 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
         return Plotly.Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
     }
 
+    function coerceSubplotAttr(subplotType, subplotAttr) {
+        if(!plots.traceIs(traceOut, subplotType)) return;
+        return Plotly.Lib.coerce(traceIn, traceOut,
+            plots.subplotsRegistry[subplotType].attributes, subplotAttr);
+    }
+
     // module-independent attributes
     traceOut.index = i;
     var visible = coerce('visible'),
@@ -1570,9 +1584,9 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     // this is necessary otherwise we lose references to scene objects when
     // the traces of a scene are invisible. Also we handle visible/unvisible
     // differently for 3D cases.
-    if(plots.traceIs(traceOut, 'gl3d')) scene = coerce('scene');
+    coerceSubplotAttr('gl3d', 'scene');
 
-    if(plots.traceIs(traceOut, 'geo')) scene = coerce('geo');
+    coerceSubplotAttr('geo', 'geo');
 
     // module-specific attributes --- note: we need to send a trace into
     // the 3D modules to have it removed from the webgl context.
@@ -1591,10 +1605,8 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
         if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
-        if(plots.traceIs(traceOut, 'cartesian')) {
-            coerce('xaxis');
-            coerce('yaxis');
-        }
+        coerceSubplotAttr('cartesian', 'xaxis');
+        coerceSubplotAttr('cartesian', 'yaxis');
 
         if(plots.traceIs(traceOut, 'showLegend')) {
             coerce('showlegend');
