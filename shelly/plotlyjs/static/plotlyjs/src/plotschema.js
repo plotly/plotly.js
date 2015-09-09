@@ -4,7 +4,8 @@ var Plotly = require('./plotly'),
     objectAssign = require('object-assign');
 
 var NESTED_MODULE = '_nestedModules',
-    COMPOSED_MODULE = '_composedModules';
+    COMPOSED_MODULE = '_composedModules',
+    IS_SUBPLOT_OBJ = '_isSubplotObj';
 
 // list of underscore attributes to keep in schema as is
 var UNDERSCORE_ATTRS = ['_isLinkedToArray', '_isSubplotObj'];
@@ -104,9 +105,8 @@ function getLayoutAttributes() {
 
     // FIXME polar layout attributes
     layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
-    layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
 
-    // add IS_SUBPLOT_OBJ key
+    // add IS_SUBPLOT_OBJ attribute
     Object.keys(layoutAttributes).forEach(function(k) {
         if(subplotsRegistry.gl3d.idRegex.test(k) ||
             subplotsRegistry.geo.idRegex.test(k) ||
@@ -114,6 +114,8 @@ function getLayoutAttributes() {
             /^yaxis[0-9]*$/.test(k)
           ) layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
     });
+
+    layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
 
     mergeValTypeAndRole(layoutAttributes);
     plotSchema.layout = { layoutAttributes: layoutAttributes };
@@ -176,7 +178,9 @@ function mergeValTypeAndRole(attrs) {
     function callback(attr, attrName, attrs) {
         if(PlotSchema.isValObject(attr)) {
             if(attr.valType === 'data_array') {
+                // all 'data_array' attrs have role 'data'
                 attr.role = 'data';
+                // all 'data_array' attrs have a corresponding 'src' attr
                 attrs[attrName + 'src'] = {
                     valType: 'string',
                     role: 'data',
@@ -186,7 +190,10 @@ function mergeValTypeAndRole(attrs) {
                 };
            }
         }
-        else if(Plotly.Lib.isPlainObject(attr)) attr.role = 'object';
+        else if(Plotly.Lib.isPlainObject(attr)) {
+            // all attrs container objects get role 'object'
+            attr.role = 'object';
+        }
     }
 
     PlotSchema.crawl(attrs, callback);
@@ -224,7 +231,7 @@ function assignPolarLayoutAttrs(layoutAttributes) {
 
     layoutAttributes = objectAssign(layoutAttributes, polarAxisAttrs.layout);
 
-    return layoutAttributes;
+    return layoutAttributes;  // FIXME
 }
 
 function getSubplotRegistry(traceType) {
