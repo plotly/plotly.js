@@ -2,6 +2,7 @@
 
 var createPlot2D = require('gl-plot2d');
 var createOptions = require('./convert/axes2dgl');
+var createCamera  = require('./lib/camera');
 
 function Scene2D(options, fullLayout) {
 
@@ -44,12 +45,16 @@ function Scene2D(options, fullLayout) {
     //Append canvas to conatiner
     container.appendChild(canvas);
 
+
     //Update options
     this.glplotOptions = createOptions(this);
     this.glplotOptions.merge(fullLayout);
 
     //Create the plot
     this.glplot = createPlot2D(this.glplotOptions);
+
+    //Create camera
+    this.camera = createCamera(canvas, this.glplot);
 
     //Redraw the plot
     this.redraw = this.draw.bind(this);
