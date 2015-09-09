@@ -91,9 +91,6 @@ function getLayoutAttributes() {
         subplotsRegistry = Plotly.Plots.subplotsRegistry,
         layoutAttributes = {};
 
-    // global attributes (same for all trace types)
-    layoutAttributes = objectAssign(layoutAttributes, globalLayoutAttributes);
-
     // layout module attributes (+ nested + composed)
     layoutAttributes = coupleAttrs(
         globalLayoutAttributes, layoutAttributes, 'layoutAttributes', '*'
