@@ -4,7 +4,7 @@
 
 var Plotly = require('../../plotly'),
     params = require('../lib/params'),
-    extractTopojson = require('../lib/topojson-utils').extractTopojson,
+    getTopojsonFeatures = require('../lib/topojson-utils').getTopojsonFeatures,
     locationToId = require('../lib/location-utils').locationToId;
 
 var plotChoropleth = module.exports = {};
@@ -14,9 +14,7 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
         locations = trace.locations,
         N = locations.length,
-        fromTopojson = extractTopojson(trace, topojson),
-        features = fromTopojson.features,
-        ids = fromTopojson.ids,
+        features = getTopojsonFeatures(trace, topojson),
         markerLine = (trace.marker || {}).line || {};
 
     var indexOfId, feature;
