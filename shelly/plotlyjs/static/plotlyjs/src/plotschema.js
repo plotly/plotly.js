@@ -35,7 +35,7 @@ PlotSchema.crawl = function(attrs, callback) {
     Object.keys(attrs).forEach(function(attrName) {
         var attr = attrs[attrName];
 
-        callback(attr, attrName);
+        callback(attr, attrName, attrs);
 
         if(PlotSchema.isValObject(attr)) return;
         if(Plotly.Lib.isPlainObject(attr)) PlotSchema.crawl(attr, callback);
@@ -173,9 +173,18 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
 
 function mergeValTypeAndRole(attrs) {
 
-    function callback(attr) {
+    function callback(attr, attrName, attrs) {
         if(PlotSchema.isValObject(attr)) {
-           if(attr.valType === 'data_array') attr.role = 'data';
+            if(attr.valType === 'data_array') {
+                attr.role = 'data';
+                attrs[attrName + 'src'] = {
+                    valType: 'string',
+                    role: 'data',
+                    description: [
+                        'Sets the source for ', attrName, '.'
+                    ].join(' ')
+                };
+           }
         }
         else if(Plotly.Lib.isPlainObject(attr)) attr.role = 'object';
     }
