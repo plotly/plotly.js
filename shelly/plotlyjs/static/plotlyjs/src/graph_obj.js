@@ -1589,15 +1589,37 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     return traceOut;
 };
 
+plots.fontAttrs = {
+    family: {
+        valType: 'string',
+        role: 'style',
+        noBlank: true,
+        strict: true
+    },
+    size: {
+        valType: 'number',
+        role: 'style',
+        min: 1
+    },
+    color: {
+        valType: 'color',
+        role: 'style'
+    }
+};
+
+var extendFlat = Plotly.Lib.extendFlat;
+
 plots.layoutAttributes = {
     font: {
-        valType: 'font',
-        role: 'style',
-        dflt: {
-            family: '"Open sans", verdana, arial, sans-serif',
-            size: 12,
-            color: Plotly.Color.defaultLine
-        },
+        family: extendFlat(plots.fontAttrs.family, {
+            dflt: '"Open sans", verdana, arial, sans-serif'
+        }),
+        size: extendFlat(plots.fontAttrs.size, {
+            dflt: 12
+        }),
+        color: extendFlat(plots.fontAttrs.color, {
+            dflt: Plotly.Color.defaultLine
+        }),
         description: [
             'Sets the global font.',
             'Note that fonts used in traces and other',
@@ -1612,11 +1634,9 @@ plots.layoutAttributes = {
             'Sets the plot\'s title.'
         ].join(' ')
     },
-    titlefont: {
-        valType: 'font',
-        role: 'style',
+    titlefont: extendFlat(plots.fontAttrs, {
         description: 'Sets the title font.'
-    },
+    }),
     autosize: {
         valType: 'enumerated',
         role: 'info',

@@ -7,19 +7,19 @@ var axes = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
+var extendFlat = Plotly.Lib.extendFlat;
+
 axes.layoutAttributes = {
     title: {
         valType: 'string',
         role: 'info',
         description: 'Sets the title of this axis.'
     },
-    titlefont: {
-        valType: 'font',
-        role: 'style',
+    titlefont: extendFlat(Plotly.Plots.fontAttrs, {
         description: [
             'Sets this axis\' title font.'
         ].join(' ')
-    },
+    }),
     type: {
         valType: 'enumerated',
         // '-' means we haven't yet run autotype or couldn't find any data
@@ -189,11 +189,9 @@ axes.layoutAttributes = {
         role: 'style',
         description: 'Determines whether or not the tick labels are drawn.'
     },
-    tickfont: {
-        valType: 'font',
-        role: 'style',
+    tickfont: extendFlat(Plotly.Plots.fontAttrs, {
         description: 'Sets the tick font.'
-    },
+    }),
     tickangle: {
         valType: 'angle',
         dflt: 'auto',
