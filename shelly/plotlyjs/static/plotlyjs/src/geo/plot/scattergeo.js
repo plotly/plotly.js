@@ -3,38 +3,39 @@
 /* global d3:false */
 
 var Plotly = require('../../plotly'),
-    extractTopojson = require('../lib/topojson-utils').extractTopojson,
-    locationToId = require('../lib/location-utils').locationToId;
+    getTopojsonFeatures = require('../lib/topojson-utils').getTopojsonFeatures,
+    locationToFeature = require('../lib/location-utils').locationToFeature;
 
 var plotScatterGeo = module.exports = {};
+
 
 plotScatterGeo.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
         marker = trace.marker || {},
         hasLocationData = Array.isArray(trace.locations);
 
-    var N, fromTopojson, features, ids, getLonLat, lonlat, locations, indexOfId;
+    var len, features, getLonLat, lonlat, locations;
 
     if(hasLocationData) {
         locations = trace.locations;
-        N = locations.length;
-        fromTopojson = extractTopojson(trace, topojson);
-        features = fromTopojson.features;
-        ids = fromTopojson.ids;
+        len = locations.length;
+        features = getTopojsonFeatures(trace, topojson);
         getLonLat = function(trace, i) {
-            indexOfId = ids.indexOf(locationToId(trace.locationmode, locations[i]));
-            if(indexOfId === -1) return;
-            return features[indexOfId].properties.centroid;
+            var feature = locationToFeature(trace.locationmode, locations[i], features);
+
+            return (feature !== undefined) ?
+                feature.properties.ct :
+                undefined;
         };
     }
     else {
-        N = trace.lon.length;
+        len = trace.lon.length;
         getLonLat = function(trace, i) {
             return [trace.lon[i], trace.lat[i]];
         };
     }
 
-    for(var i = 0; i < N; i++) {
+    for(var i = 0; i < len; i++) {
         lonlat = getLonLat(trace, i);
         if(!lonlat) continue;
 
