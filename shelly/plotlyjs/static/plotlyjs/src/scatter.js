@@ -398,9 +398,24 @@ scatter.attributes = {
         ].join(' ')
     },
     textfont: {
-        valType: 'font',
-        role: 'style',
-        arrayOk: true,
+        family: {
+            valType: 'string',
+            role: 'style',
+            noBlank: true,
+            strict: true,
+            arrayOk: true
+        },
+        size: {
+            valType: 'number',
+            role: 'style',
+            min: 1,
+            arrayOk: true
+        },
+        color: {
+            valType: 'color',
+            role: 'style',
+            arrayOk: true
+        },
         description: 'Sets the text font.'
     },
     _nestedModules: {  // nested module coupling
