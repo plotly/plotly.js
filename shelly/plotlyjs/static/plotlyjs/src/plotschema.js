@@ -178,19 +178,28 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
 
 function mergeValTypeAndRole(attrs) {
 
+    function makeSrcAttr(attrName) {
+        return {
+            valType: 'string',
+            role: 'data',
+            description: [
+                'Sets the source reference on plot.ly for ',
+                attrName, '.'
+            ].join(' ')
+        };
+    }
+
     function callback(attr, attrName, attrs) {
         if(PlotSchema.isValObject(attr)) {
             if(attr.valType === 'data_array') {
                 // all 'data_array' attrs have role 'data'
                 attr.role = 'data';
                 // all 'data_array' attrs have a corresponding 'src' attr
-                attrs[attrName + 'src'] = {
-                    valType: 'string',
-                    role: 'data',
-                    description: [
-                        'Sets the source for ', attrName, '.'
-                    ].join(' ')
-                };
+                attrs[attrName + 'src'] = makeSrcAttr(attrName);
+           }
+           else if(attr.arrayOk === true) {
+                // all 'arrayOk' attrs have a corresponding 'src' attr
+                attrs[attrName + 'src'] = makeSrcAttr(attrName);
            }
         }
         else if(Plotly.Lib.isPlainObject(attr)) {
