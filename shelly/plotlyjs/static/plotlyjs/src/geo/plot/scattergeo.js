@@ -8,6 +8,7 @@ var Plotly = require('../../plotly'),
 
 var plotScatterGeo = module.exports = {};
 
+
 plotScatterGeo.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
         marker = trace.marker || {},
@@ -22,7 +23,7 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
         getLonLat = function(trace, i) {
             var feature = locationToFeature(trace.locationmode, locations[i], features);
 
-            return feature.properties.ct;(feature !== undefined) ?
+            return (feature !== undefined) ?
                 feature.properties.ct :
                 undefined;
         };
