@@ -167,6 +167,44 @@ plots.subplotsRegistry = {
             }
         }
     }
+
+/**
+ * plots.registerSubplot: register a subplot type
+ *
+ * subplotType: (string) subplot type
+ *   (these must also be categories defined with plots.register)
+ * attr: (string or array of strings) attribute name in traces and layout
+ * idRoot: (string or array of strings) root of id
+ *   (setting the possible value for attrName)
+ * attributes (object) attribute for traces of this subplot type
+ *
+ * TODO use these in Lib.coerce
+ */
+plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
+    if(subplotsRegistry[subplotType]) {
+        throw new Error('subplot ' + subplotType + ' already registered');
+    }
+
+    var regexStart = '^',
+        regexEnd = '([2-9]|[1-9][0-9]+)?$',
+        isCartesian = (subplotType === 'cartesian');
+
+    function makeRegex(mid) {
+        return new RegExp(regexStart + mid + regexEnd);
+    }
+
+    // not sure what's best for the 'cartesian' type at this point
+    subplotsRegistry[subplotType] = {
+        attr: attr,
+        idRoot: idRoot,
+        attributes: attributes,
+        attrRegex: isCartesian ?
+            [ makeRegex(attr[0]), makeRegex(attr[1]) ] :
+            makeRegex(attr),
+        idRegex: isCartesian ?
+            [ makeRegex(idRoot[0]), makeRegex(idRoot[1]) ] :
+            makeRegex(idRoot)
+    };
 };
 
 plots.getSubplotIds = function getSubplotIds(layout, type) {
