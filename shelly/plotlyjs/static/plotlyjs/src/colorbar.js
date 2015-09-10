@@ -733,7 +733,7 @@ colorbar.supplyDefaults = function(containerIn, containerOut, layout) {
         {outerTicks: false, font: layout.font, noHover: true});
 
     coerce('title');
-    coerce('titlefont', layout.font);
+    Plotly.Lib.coerceFont(coerce, 'titlefont', layout.font);
     coerce('titleside');
 };
 

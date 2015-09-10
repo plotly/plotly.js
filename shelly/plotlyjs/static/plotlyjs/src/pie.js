@@ -269,6 +269,8 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         return Plotly.Lib.coerce(traceIn, traceOut, pie.attributes, attr, dflt);
     }
 
+    var coerceFont = Plotly.Lib.coerceFont;
+
     var vals = coerce('values');
     if(!Array.isArray(vals) || !vals.length) {
         traceOut.visible = false;
@@ -306,9 +308,9 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
             hasOutside = hasBoth || textPosition === 'outside';
 
         if(hasInside || hasOutside) {
-            var dfltFont = coerce('textfont', layout.font);
-            if(hasInside) coerce('insidetextfont', dfltFont);
-            if(hasOutside) coerce('outsidetextfont', dfltFont);
+            var dfltFont = coerceFont(coerce, 'textfont', layout.font);
+            if(hasInside) coerceFont(coerce, 'insidetextfont', dfltFont);
+            if(hasOutside) coerceFont(coerce, 'outsidetextfont', dfltFont);
         }
     }
 

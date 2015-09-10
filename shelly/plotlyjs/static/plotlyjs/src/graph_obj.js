@@ -1796,9 +1796,11 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
         return Plotly.Lib.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
     }
 
-    var globalFont = coerce('font');
+    var globalFont = Plotly.Lib.coerceFont(coerce, 'font');
+
     coerce('title');
-    coerce('titlefont', {
+
+    Plotly.Lib.coerceFont(coerce, 'titlefont', {
         family: globalFont.family,
         size: Math.round(globalFont.size * 1.4),
         color: globalFont.color

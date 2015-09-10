@@ -141,7 +141,7 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     coerce('bgcolor', layoutOut.paper_bgcolor);
     coerce('bordercolor');
     coerce('borderwidth');
-    coerce('font', layoutOut.font);
+    Plotly.Lib.coerceFont(coerce, 'font', layoutOut.font);
 
     coerce('traceorder', defaultOrder);
     if(isGrouped(layoutOut.legend)) coerce('tracegroupgap');

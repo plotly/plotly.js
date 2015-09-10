@@ -581,7 +581,7 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
 // common to 'scatter', 'scatter3d' and 'scattergeo'
 scatter.textDefaults = function(traceIn, traceOut, layout, coerce) {
     coerce('textposition');
-    coerce('textfont', layout.font);
+    Plotly.Lib.coerceFont(coerce, 'textfont', layout.font);
 };
 
 scatter.cleanData = function(fullData) {

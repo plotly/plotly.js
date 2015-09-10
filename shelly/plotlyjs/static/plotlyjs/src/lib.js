@@ -1653,6 +1653,20 @@ lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
     return propOut.get();
 };
 
+// shortcut to coerce the three font attributes
+// 'coerce' is a lib.coerce wrapper with implied first three arguments
+lib.coerceFont = function(coerce, attr, dfltObj) {
+    var out = {};
+
+    dfltObj = dfltObj || {};
+
+    out.family = coerce(attr + '.family', dfltObj.family);
+    out.size = coerce(attr + '.size', dfltObj.size);
+    out.color = coerce(attr + '.color', dfltObj.color);
+
+    return out;
+};
+
 lib.noneOrAll = function(containerIn, containerOut, attrList) {
     /**
      * some attributes come together, so if you have one of them

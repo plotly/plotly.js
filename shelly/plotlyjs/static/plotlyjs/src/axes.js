@@ -557,7 +557,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     axes.setConvert(containerOut);
 
     coerce('title', defaultTitle);
-    coerce('titlefont', {
+    Plotly.Lib.coerceFont(coerce, 'titlefont', {
         family: font.family,
         size: Math.round(font.size * 1.2),
         color: font.color
@@ -618,7 +618,7 @@ axes.handleTickDefaults = function(containerIn, containerOut, coerce, axType, op
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
-        coerce('tickfont', options.font || {});
+        Plotly.Lib.coerceFont(coerce, 'tickfont', options.font || {});
         coerce('tickangle');
 
         var showAttrDflt = axes.getShowAttrDflt(containerIn);
