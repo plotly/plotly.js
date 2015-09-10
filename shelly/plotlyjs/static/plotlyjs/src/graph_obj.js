@@ -1407,6 +1407,9 @@ plots.supplyDefaults = function(gd) {
     // because fullData needs a few things from layout
     plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
 
+    // keep track of how many traces are inputted
+    newFullLayout._dataLength = newData.length;
+
     // then do the data
     for (i = 0; i < newData.length; i++) {
         trace  = newData[i];
@@ -1555,13 +1558,13 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
         traceOut._module = module;
     }
 
+    // gets overwritten in pie and geo
+    if(visible) coerce('hoverinfo', (layout._dataLength === 1) ? 'x+y+z+text' : undefined);
+
     if(module && visible) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
     if(visible) {
         coerce('name', 'trace ' + i);
-
-        // pies get a different hoverinfo flaglist, handled in their module
-        if(!plots.traceIs(traceOut, 'pie')) coerce('hoverinfo');
 
         if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 

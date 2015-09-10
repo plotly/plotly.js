@@ -751,7 +751,7 @@ function createHoverText(hoverData, opts) {
         ya = c0.ya,
         commonAttr = hovermode==='y' ? 'yLabel' : 'xLabel',
         t0 = c0[commonAttr],
-        t00 = (t0||'').split(' ')[0],
+        t00 = (String(t0)||'').split(' ')[0],
         outerContainerBB = outerContainer.node().getBoundingClientRect(),
         outerTop = outerContainerBB.top,
         outerWidth = outerContainerBB.width,

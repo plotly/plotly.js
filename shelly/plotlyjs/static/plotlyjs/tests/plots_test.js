@@ -62,6 +62,39 @@ describe('Test Plotly.Plots', function () {
 
     });
 
+    describe('Plotly.Plots.supplyDataDefaults', function() {
+        var supplyDataDefaults = Plotly.Plots.supplyDataDefaults,
+            layout = {};
+
+        var traceIn, traceOut;
+
+        describe('should coerce hoverinfo', function() {
+            it('without *name* for single-trace graphs by default', function() {
+                layout._dataLength = 1;
+
+                traceIn = {};
+                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                expect(traceOut.hoverinfo).toEqual('x+y+z+text');
+
+                traceIn = { hoverinfo: 'name' };
+                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                expect(traceOut.hoverinfo).toEqual('name');
+            });
+
+            it('without *name* for single-trace graphs by default', function() {
+                layout._dataLength = 2;
+
+                traceIn = {};
+                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                expect(traceOut.hoverinfo).toEqual('all');
+
+                traceIn = { hoverinfo: 'name' };
+                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                expect(traceOut.hoverinfo).toEqual('name');
+            });
+        });
+    });
+
     describe('Plotly.Plots.getSubplotIds', function() {
         var getSubplotIds = Plotly.Plots.getSubplotIds;
 
