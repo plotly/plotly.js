@@ -107,12 +107,15 @@ function getLayoutAttributes() {
     layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
 
     // add IS_SUBPLOT_OBJ attribute
+    var gl3dRegex = subplotsRegistry.gl3d.attrRegex,
+        geoRegex = subplotsRegistry.geo.attrRegex,
+        xaxisRegex = subplotsRegistry.cartesian.attrRegex[0],
+        yaxisRegex = subplotsRegistry.cartesian.attrRegex[1];
+
     Object.keys(layoutAttributes).forEach(function(k) {
-        if(subplotsRegistry.gl3d.idRegex.test(k) ||
-            subplotsRegistry.geo.idRegex.test(k) ||
-            /^xaxis[0-9]*$/.test(k) ||
-            /^yaxis[0-9]*$/.test(k)
-          ) layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
+        if(gl3dRegex.test(k) || geoRegex.test(k) || xaxisRegex.test(k) || yaxisRegex.test(k)) {
+             layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
+        }
     });
 
     layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
