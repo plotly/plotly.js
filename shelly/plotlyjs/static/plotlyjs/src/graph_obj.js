@@ -23,7 +23,8 @@ var plots = module.exports = {};
 // allTypes and getModule are used for the graph_reference app as well as plotting
 var modules = plots.modules = {},
     allTypes = plots.allTypes = [],
-    allCategories = plots.allCategories = {};
+    allCategories = plots.allCategories = {},
+    subplotsRegistry = plots.subplotsRegistry = {};
 
 /**
  * plots.register: register a module as the handler for a trace type
@@ -100,73 +101,6 @@ plots.traceIs = function traceIs(traceType, category) {
     return !!_module.categories[category];
 };
 
-plots.subplotsRegistry = {
-    cartesian: {
-        attributes: {
-            xaxis: {
-                valType: 'axisid',
-                role: 'info',
-                dflt: 'x',
-                description: [
-                    'Sets a reference between this trace\'s x coordinates and',
-                    'a 2D cartesian x axis.',
-                    'If *x* (the default value), the x coordinates refer to',
-                    '`layout.xaxis`.',
-                    'If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.'
-                ].join(' ')
-            },
-            yaxis: {
-                valType: 'axisid',
-                role: 'info',
-                dflt: 'y',
-                description: [
-                    'Sets a reference between this trace\'s y coordinates and',
-                    'a 2D cartesian y axis.',
-                    'If *y* (the default value), the y coordinates refer to',
-                    '`layout.yaxis`.',
-                    'If *y2*, the y coordinates refer to `layout.xaxis2`, and so on.'
-                ].join(' ')
-            }
-        }
-    },
-    gl3d: {
-        attr: 'scene',
-        idRegex: /^scene[0-9]*$/,
-        attributes: {
-            scene: {
-                valType: 'sceneid',
-                role: 'info',
-                dflt: 'scene',
-                description: [
-                    'Sets a reference between this trace\'s 3D coordinate system and',
-                    'a 3D scene.',
-                    'If *scene* (the default value), the (x,y,z) coordinates refer to',
-                    '`layout.scene`.',
-                    'If *scene2*, the (x,y,z) coordinates refer to `layout.scene2`,',
-                    'and so on.'
-                ].join(' ')
-            }
-        }
-    },
-    geo: {
-        attr: 'geo',
-        idRegex: /^geo[0-9]*$/,
-        attributes: {
-            geo: {
-                valType: 'geoid',
-                role: 'info',
-                dflt: 'geo',
-                description: [
-                    'Sets a reference between this trace\'s geospatial coordinates and',
-                    'a geographic map.',
-                    'If *geo* (the default value), the geospatial coordinates refer to',
-                    '`layout.geo`.',
-                    'If *geo2*, the geospatial coordinates refer to `layout.geo2`,',
-                    'and so on.'
-                ].join(' ')
-            }
-        }
-    }
 
 /**
  * plots.registerSubplot: register a subplot type
