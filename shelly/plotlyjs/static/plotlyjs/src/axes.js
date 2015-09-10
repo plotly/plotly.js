@@ -383,7 +383,11 @@ axes.layoutAttributes = {
     // values are any opposite-letter axis id
     anchor: {
         valType: 'enumerated',
-        values: ['free', '/^x[0-9]/*$', '/^y[0-9]/*$'],
+        values: [
+            'free',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex[0].toString(),
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex[1].toString()
+        ],
         role: 'info',
         description: [
             'If set to an opposite-letter axis id (e.g. `xaxis2`, `yaxis`), this axis is bound to',
@@ -408,7 +412,11 @@ axes.layoutAttributes = {
     // itself overlaying anything
     overlaying: {
         valType: 'enumerated',
-        values: [false, '/^x[0-9]/*$', '/^y[0-9]/*$'],
+        values: [
+            'free',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex[0].toString(),
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex[1].toString()
+        ],
         role: 'info',
         description: [
             'If set a same-letter axis id, this axis is overlaid on top of',
