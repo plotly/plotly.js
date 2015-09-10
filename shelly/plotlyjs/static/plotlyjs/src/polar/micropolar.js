@@ -1,22 +1,24 @@
+/* global d3:false */
+
 var micropolar = module.exports = {
-    version: "0.2.2"
+    version: '0.2.2'
 };
 
 var µ = micropolar,
-    Plotly = require('./plotly');
+    Plotly = require('../plotly');
 
 µ.Axis = function module() {
     var config = {
         data: [],
         layout: {}
     }, inputConfig = {}, liveConfig = {};
-    var svg, container, dispatch = d3.dispatch("hover"), radialScale, angularScale;
+    var svg, container, dispatch = d3.dispatch('hover'), radialScale, angularScale;
     var exports = {};
     function render(_container) {
         container = _container || container;
         var data = config.data;
         var axisConfig = config.layout;
-        if (typeof container == "string" || container.nodeName) container = d3.select(container);
+        if (typeof container == 'string' || container.nodeName) container = d3.select(container);
         container.datum(data).each(function(_data, _index) {
             var dataOriginal = _data.slice();
             liveConfig = {
@@ -30,7 +32,7 @@ var µ = micropolar,
                     colorIndex = (colorIndex + 1) % axisConfig.defaultColorRange.length;
                 }
                 if (!d.strokeColor) {
-                    d.strokeColor = d.geometry === "LinePlot" ? d.color : d3.rgb(d.color).darker().toString();
+                    d.strokeColor = d.geometry === 'LinePlot' ? d.color : d3.rgb(d.color).darker().toString();
                 }
                 liveConfig.data[i].color = d.color;
                 liveConfig.data[i].strokeColor = d.strokeColor;
@@ -39,20 +41,20 @@ var µ = micropolar,
             });
             var data = dataOriginal.filter(function(d, i) {
                 var visible = d.visible;
-                return typeof visible === "undefined" || visible === true;
+                return typeof visible === 'undefined' || visible === true;
             });
             var isStacked = false;
             var dataWithGroupId = data.map(function(d, i) {
-                isStacked = isStacked || typeof d.groupId !== "undefined";
+                isStacked = isStacked || typeof d.groupId !== 'undefined';
                 return d;
             });
             if (isStacked) {
                 var grouped = d3.nest().key(function(d, i) {
-                    return typeof d.groupId != "undefined" ? d.groupId : "unstacked";
+                    return typeof d.groupId != 'undefined' ? d.groupId : 'unstacked';
                 }).entries(dataWithGroupId);
                 var dataYStack = [];
                 var stacked = grouped.map(function(d, i) {
-                    if (d.key === "unstacked") return d.values; else {
+                    if (d.key === 'unstacked') return d.values; else {
                         var prevArray = d.values[0].r.map(function(d, i) {
                             return 0;
                         });
@@ -86,7 +88,7 @@ var µ = micropolar,
             var angularDataMerged = µ.util.flattenArray(data.map(function(d, i) {
                 return d.t;
             }));
-            var isOrdinal = typeof angularDataMerged[0] === "string";
+            var isOrdinal = typeof angularDataMerged[0] === 'string';
             var ticks;
             if (isOrdinal) {
                 angularDataMerged = µ.util.deduplicate(angularDataMerged);
@@ -100,7 +102,7 @@ var µ = micropolar,
                 });
             }
             var hasOnlyLineOrDotPlot = data.filter(function(d, i) {
-                return d.geometry === "LinePlot" || d.geometry === "DotPlot";
+                return d.geometry === 'LinePlot' || d.geometry === 'DotPlot';
             }).length === data.length;
             var needsEndSpacing = axisConfig.needsEndSpacing === null ? isOrdinal || !hasOnlyLineOrDotPlot : axisConfig.needsEndSpacing;
             var useProvidedDomain = axisConfig.angularAxis.domain && axisConfig.angularAxis.domain != µ.DATAEXTENT && !isOrdinal && axisConfig.angularAxis.domain[0] >= 0;
@@ -121,50 +123,50 @@ var µ = micropolar,
             angularAxisRange = angularAxisRange.map(function(d, i) {
                 return parseFloat(d.toPrecision(12));
             });
-            angularScale = d3.scale.linear().domain(angularDomainWithPadding.slice(0, 2)).range(axisConfig.direction === "clockwise" ? [ 0, 360 ] : [ 360, 0 ]);
+            angularScale = d3.scale.linear().domain(angularDomainWithPadding.slice(0, 2)).range(axisConfig.direction === 'clockwise' ? [ 0, 360 ] : [ 360, 0 ]);
             liveConfig.layout.angularAxis.domain = angularScale.domain();
             liveConfig.layout.angularAxis.endPadding = needsEndSpacing ? angularDomainStep : 0;
-            svg = d3.select(this).select("svg.chart-root");
-            if (typeof svg === "undefined" || svg.empty()) {
-                var skeleton = '<svg xmlns="http://www.w3.org/2000/svg" class="chart-root">' + '<g class="outer-group">' + '<g class="chart-group">' + '<circle class="background-circle"></circle>' + '<g class="geometry-group"></g>' + '<g class="radial axis-group">' + '<circle class="outside-circle"></circle>' + "</g>" + '<g class="angular axis-group"></g>' + '<g class="guides-group"><line></line><circle r="0"></circle></g>' + "</g>" + '<g class="legend-group"></g>' + '<g class="tooltips-group"></g>' + '<g class="title-group"><text></text></g>' + "</g>" + "</svg>";
-                var doc = new DOMParser().parseFromString(skeleton, "application/xml");
+            svg = d3.select(this).select('svg.chart-root');
+            if (typeof svg === 'undefined' || svg.empty()) {
+                var skeleton = "<svg xmlns='http://www.w3.org/2000/svg' class='chart-root'>' + '<g class='outer-group'>' + '<g class='chart-group'>' + '<circle class='background-circle'></circle>' + '<g class='geometry-group'></g>' + '<g class='radial axis-group'>' + '<circle class='outside-circle'></circle>' + '</g>' + '<g class='angular axis-group'></g>' + '<g class='guides-group'><line></line><circle r='0'></circle></g>' + '</g>' + '<g class='legend-group'></g>' + '<g class='tooltips-group'></g>' + '<g class='title-group'><text></text></g>' + '</g>' + '</svg>";
+                var doc = new DOMParser().parseFromString(skeleton, 'application/xml');
                 var newSvg = this.appendChild(this.ownerDocument.importNode(doc.documentElement, true));
                 svg = d3.select(newSvg);
             }
-            svg.select(".guides-group").style({
-                "pointer-events": "none"
+            svg.select('.guides-group').style({
+                'pointer-events': 'none'
             });
-            svg.select(".angular.axis-group").style({
-                "pointer-events": "none"
+            svg.select('.angular.axis-group').style({
+                'pointer-events': 'none'
             });
-            svg.select(".radial.axis-group").style({
-                "pointer-events": "none"
+            svg.select('.radial.axis-group').style({
+                'pointer-events': 'none'
             });
-            var chartGroup = svg.select(".chart-group");
+            var chartGroup = svg.select('.chart-group');
             var lineStyle = {
-                fill: "none",
+                fill: 'none',
                 stroke: axisConfig.tickColor
             };
             var fontStyle = {
-                "font-size": axisConfig.font.size,
-                "font-family": axisConfig.font.family,
+                'font-size': axisConfig.font.size,
+                'font-family': axisConfig.font.family,
                 fill: axisConfig.font.color,
-                "text-shadow": [ "-1px 0px", "1px -1px", "-1px 1px", "1px 1px" ].map(function(d, i) {
-                    return " " + d + " 0 " + axisConfig.font.outlineColor;
-                }).join(",")
+                'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {
+                    return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;
+                }).join(',')
             };
             var legendContainer;
             if (axisConfig.showLegend) {
-                legendContainer = svg.select(".legend-group").attr({
-                    transform: "translate(" + [ radius, axisConfig.margin.top ] + ")"
+                legendContainer = svg.select('.legend-group').attr({
+                    transform: 'translate(' + [ radius, axisConfig.margin.top ] + ')'
                 }).style({
-                    display: "block"
+                    display: 'block'
                 });
                 var elements = data.map(function(d, i) {
                     var datumClone = µ.util.cloneJson(d);
-                    datumClone.symbol = d.geometry === "DotPlot" ? d.dotType || "circle" : d.geometry != "LinePlot" ? "square" : "line";
-                    datumClone.visibleInLegend = typeof d.visibleInLegend === "undefined" || d.visibleInLegend;
-                    datumClone.color = d.geometry === "LinePlot" ? d.strokeColor : d.color;
+                    datumClone.symbol = d.geometry === 'DotPlot' ? d.dotType || 'circle' : d.geometry != 'LinePlot' ? 'square' : 'line';
+                    datumClone.visibleInLegend = typeof d.visibleInLegend === 'undefined' || d.visibleInLegend;
+                    datumClone.color = d.geometry === 'LinePlot' ? d.strokeColor : d.color;
                     return datumClone;
                 });
                 var legendConfigMixin1 = µ.util.deepExtend({}, µ.Legend.defaultConfig().legendConfig);
@@ -175,7 +177,7 @@ var µ = micropolar,
                 });
                 var legendConfigMixin3 = {
                     data: data.map(function(d, i) {
-                        return d.name || "Element" + i;
+                        return d.name || 'Element' + i;
                     }),
                     legendConfig: legendConfigMixin2
                 };
@@ -186,10 +188,10 @@ var µ = micropolar,
                 chartCenter = [ axisConfig.margin.left + radius, axisConfig.margin.top + radius ];
                 radialScale.range([ 0, radius ]);
                 liveConfig.layout.radialAxis.domain = radialScale.domain();
-                legendContainer.attr("transform", "translate(" + [ chartCenter[0] + radius, chartCenter[1] - radius ] + ")");
+                legendContainer.attr('transform', 'translate(' + [ chartCenter[0] + radius, chartCenter[1] - radius ] + ')');
             } else {
-                legendContainer = svg.select(".legend-group").style({
-                    display: "none"
+                legendContainer = svg.select('.legend-group').style({
+                    display: 'none'
                 });
             }
             svg.attr({
@@ -198,34 +200,34 @@ var µ = micropolar,
             }).style({
                 opacity: axisConfig.opacity
             });
-            chartGroup.attr("transform", "translate(" + chartCenter + ")").style({
-                cursor: "crosshair"
+            chartGroup.attr('transform', 'translate(' + chartCenter + ')').style({
+                cursor: 'crosshair'
             });
             var centeringOffset = [ (axisConfig.width - (axisConfig.margin.left + axisConfig.margin.right + radius * 2 + (legendBBox ? legendBBox.width : 0))) / 2, (axisConfig.height - (axisConfig.margin.top + axisConfig.margin.bottom + radius * 2)) / 2 ];
             centeringOffset[0] = Math.max(0, centeringOffset[0]);
             centeringOffset[1] = Math.max(0, centeringOffset[1]);
-            svg.select(".outer-group").attr("transform", "translate(" + centeringOffset + ")");
+            svg.select('.outer-group').attr('transform', 'translate(' + centeringOffset + ')');
             if (axisConfig.title) {
-                var title = svg.select("g.title-group text").style(fontStyle).text(axisConfig.title);
+                var title = svg.select('g.title-group text').style(fontStyle).text(axisConfig.title);
                 var titleBBox = title.node().getBBox();
                 title.attr({
                     x: chartCenter[0] - titleBBox.width / 2,
                     y: chartCenter[1] - radius - 20
                 });
             }
-            var radialAxis = svg.select(".radial.axis-group");
+            var radialAxis = svg.select('.radial.axis-group');
             if (axisConfig.radialAxis.gridLinesVisible) {
-                var gridCircles = radialAxis.selectAll("circle.grid-circle").data(radialScale.ticks(5));
-                gridCircles.enter().append("circle").attr({
-                    "class": "grid-circle"
+                var gridCircles = radialAxis.selectAll('circle.grid-circle').data(radialScale.ticks(5));
+                gridCircles.enter().append('circle').attr({
+                    'class': 'grid-circle'
                 }).style(lineStyle);
-                gridCircles.attr("r", radialScale);
+                gridCircles.attr('r', radialScale);
                 gridCircles.exit().remove();
             }
-            radialAxis.select("circle.outside-circle").attr({
+            radialAxis.select('circle.outside-circle').attr({
                 r: radius
             }).style(lineStyle);
-            var backgroundCircle = svg.select("circle.background-circle").attr({
+            var backgroundCircle = svg.select('circle.background-circle').attr({
                 r: radius
             }).style({
                 fill: axisConfig.backgroundColor,
@@ -237,86 +239,86 @@ var µ = micropolar,
             if (axisConfig.radialAxis.visible) {
                 var axis = d3.svg.axis().scale(radialScale).ticks(5).tickSize(5);
                 radialAxis.call(axis).attr({
-                    transform: "rotate(" + axisConfig.radialAxis.orientation + ")"
+                    transform: 'rotate(' + axisConfig.radialAxis.orientation + ')'
                 });
-                radialAxis.selectAll(".domain").style(lineStyle);
-                radialAxis.selectAll("g>text").text(function(d, i) {
+                radialAxis.selectAll('.domain').style(lineStyle);
+                radialAxis.selectAll('g>text').text(function(d, i) {
                     return this.textContent + axisConfig.radialAxis.ticksSuffix;
                 }).style(fontStyle).style({
-                    "text-anchor": "start"
+                    'text-anchor': 'start'
                 }).attr({
                     x: 0,
                     y: 0,
                     dx: 0,
                     dy: 0,
                     transform: function(d, i) {
-                        if (axisConfig.radialAxis.tickOrientation === "horizontal") {
-                            return "rotate(" + -axisConfig.radialAxis.orientation + ") translate(" + [ 0, fontStyle["font-size"] ] + ")";
-                        } else return "translate(" + [ 0, fontStyle["font-size"] ] + ")";
+                        if (axisConfig.radialAxis.tickOrientation === 'horizontal') {
+                            return 'rotate(' + -axisConfig.radialAxis.orientation + ') translate(' + [ 0, fontStyle['font-size'] ] + ')';
+                        } else return 'translate(' + [ 0, fontStyle['font-size'] ] + ')';
                     }
                 });
-                radialAxis.selectAll("g>line").style({
-                    stroke: "black"
+                radialAxis.selectAll('g>line').style({
+                    stroke: 'black'
                 });
             }
-            var angularAxis = svg.select(".angular.axis-group").selectAll("g.angular-tick").data(angularAxisRange);
-            var angularAxisEnter = angularAxis.enter().append("g").classed("angular-tick", true);
+            var angularAxis = svg.select('.angular.axis-group').selectAll('g.angular-tick').data(angularAxisRange);
+            var angularAxisEnter = angularAxis.enter().append('g').classed('angular-tick', true);
             angularAxis.attr({
                 transform: function(d, i) {
-                    return "rotate(" + currentAngle(d, i) + ")";
+                    return 'rotate(' + currentAngle(d, i) + ')';
                 }
             }).style({
-                display: axisConfig.angularAxis.visible ? "block" : "none"
+                display: axisConfig.angularAxis.visible ? 'block' : 'none'
             });
             angularAxis.exit().remove();
-            angularAxisEnter.append("line").classed("grid-line", true).classed("major", function(d, i) {
+            angularAxisEnter.append('line').classed('grid-line', true).classed('major', function(d, i) {
                 return i % (axisConfig.minorTicks + 1) == 0;
-            }).classed("minor", function(d, i) {
+            }).classed('minor', function(d, i) {
                 return !(i % (axisConfig.minorTicks + 1) == 0);
             }).style(lineStyle);
-            angularAxisEnter.selectAll(".minor").style({
+            angularAxisEnter.selectAll('.minor').style({
                 stroke: axisConfig.minorTickColor
             });
-            angularAxis.select("line.grid-line").attr({
+            angularAxis.select('line.grid-line').attr({
                 x1: axisConfig.tickLength ? radius - axisConfig.tickLength : 0,
                 x2: radius
             }).style({
-                display: axisConfig.angularAxis.gridLinesVisible ? "block" : "none"
+                display: axisConfig.angularAxis.gridLinesVisible ? 'block' : 'none'
             });
-            angularAxisEnter.append("text").classed("axis-text", true).style(fontStyle);
-            var ticksText = angularAxis.select("text.axis-text").attr({
+            angularAxisEnter.append('text').classed('axis-text', true).style(fontStyle);
+            var ticksText = angularAxis.select('text.axis-text').attr({
                 x: radius + axisConfig.labelOffset,
-                dy: ".35em",
+                dy: '.35em',
                 transform: function(d, i) {
                     var angle = currentAngle(d, i);
                     var rad = radius + axisConfig.labelOffset;
                     var orient = axisConfig.angularAxis.tickOrientation;
-                    if (orient == "horizontal") return "rotate(" + -angle + " " + rad + " 0)"; else if (orient == "radial") return angle < 270 && angle > 90 ? "rotate(180 " + rad + " 0)" : null; else return "rotate(" + (angle <= 180 && angle > 0 ? -90 : 90) + " " + rad + " 0)";
+                    if (orient == 'horizontal') return 'rotate(' + -angle + ' ' + rad + ' 0)'; else if (orient == 'radial') return angle < 270 && angle > 90 ? 'rotate(180 ' + rad + ' 0)' : null; else return 'rotate(' + (angle <= 180 && angle > 0 ? -90 : 90) + ' ' + rad + ' 0)';
                 }
             }).style({
-                "text-anchor": "middle",
-                display: axisConfig.angularAxis.labelsVisible ? "block" : "none"
+                'text-anchor': 'middle',
+                display: axisConfig.angularAxis.labelsVisible ? 'block' : 'none'
             }).text(function(d, i) {
-                if (i % (axisConfig.minorTicks + 1) != 0) return "";
+                if (i % (axisConfig.minorTicks + 1) != 0) return '';
                 if (ticks) {
                     return ticks[d] + axisConfig.angularAxis.ticksSuffix;
                 } else return d + axisConfig.angularAxis.ticksSuffix;
             }).style(fontStyle);
             if (axisConfig.angularAxis.rewriteTicks) ticksText.text(function(d, i) {
-                if (i % (axisConfig.minorTicks + 1) != 0) return "";
+                if (i % (axisConfig.minorTicks + 1) != 0) return '';
                 return axisConfig.angularAxis.rewriteTicks(this.textContent, i);
             });
-            var rightmostTickEndX = d3.max(chartGroup.selectAll(".angular-tick text")[0].map(function(d, i) {
+            var rightmostTickEndX = d3.max(chartGroup.selectAll('.angular-tick text')[0].map(function(d, i) {
                 return d.getCTM().e + d.getBBox().width;
             }));
             legendContainer.attr({
-                transform: "translate(" + [ radius + rightmostTickEndX, axisConfig.margin.top ] + ")"
+                transform: 'translate(' + [ radius + rightmostTickEndX, axisConfig.margin.top ] + ')'
             });
-            var hasGeometry = svg.select("g.geometry-group").selectAll("g").size() > 0;
-            var geometryContainer = svg.select("g.geometry-group").selectAll("g.geometry").data(data);
-            geometryContainer.enter().append("g").attr({
-                "class": function(d, i) {
-                    return "geometry geometry" + i;
+            var hasGeometry = svg.select('g.geometry-group').selectAll('g').size() > 0;
+            var geometryContainer = svg.select('g.geometry-group').selectAll('g.geometry').data(data);
+            geometryContainer.enter().append('g').attr({
+                'class': function(d, i) {
+                    return 'geometry geometry' + i;
                 }
             });
             geometryContainer.exit().remove();
@@ -339,11 +341,11 @@ var µ = micropolar,
                     });
                 });
                 var geometryConfigsGrouped = d3.nest().key(function(d, i) {
-                    return typeof d.data.groupId != "undefined" || "unstacked";
+                    return typeof d.data.groupId != 'undefined' || 'unstacked';
                 }).entries(geometryConfigs);
                 var geometryConfigsGrouped2 = [];
                 geometryConfigsGrouped.forEach(function(d, i) {
-                    if (d.key === "unstacked") geometryConfigsGrouped2 = geometryConfigsGrouped2.concat(d.values.map(function(d, i) {
+                    if (d.key === 'unstacked') geometryConfigsGrouped2 = geometryConfigsGrouped2.concat(d.values.map(function(d, i) {
                         return [ d ];
                     })); else geometryConfigsGrouped2.push(d.values);
                 });
@@ -356,8 +358,8 @@ var µ = micropolar,
                     µ[geometry]().config(finalGeometryConfig)();
                 });
             }
-            var guides = svg.select(".guides-group");
-            var tooltipContainer = svg.select(".tooltips-group");
+            var guides = svg.select('.guides-group');
+            var tooltipContainer = svg.select('.tooltips-group');
             var angularTooltip = µ.tooltipPanel().config({
                 container: tooltipContainer,
                 fontSize: 8
@@ -372,19 +374,19 @@ var µ = micropolar,
             })();
             var angularValue, radialValue;
             if (!isOrdinal) {
-                var angularGuideLine = guides.select("line").attr({
+                var angularGuideLine = guides.select('line').attr({
                     x1: 0,
                     y1: 0,
                     y2: 0
                 }).style({
-                    stroke: "grey",
-                    "pointer-events": "none"
+                    stroke: 'grey',
+                    'pointer-events': 'none'
                 });
-                chartGroup.on("mousemove.angular-guide", function(d, i) {
+                chartGroup.on('mousemove.angular-guide', function(d, i) {
                     var mouseAngle = µ.util.getMousePos(backgroundCircle).angle;
                     angularGuideLine.attr({
                         x2: -radius,
-                        transform: "rotate(" + mouseAngle + ")"
+                        transform: 'rotate(' + mouseAngle + ')'
                     }).style({
                         opacity: .5
                     });
@@ -392,17 +394,17 @@ var µ = micropolar,
                     angularValue = angularScale.invert(angleWithOriginOffset);
                     var pos = µ.util.convertToCartesian(radius + 12, mouseAngle + 180);
                     angularTooltip.text(µ.util.round(angularValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
-                }).on("mouseout.angular-guide", function(d, i) {
-                    guides.select("line").style({
+                }).on('mouseout.angular-guide', function(d, i) {
+                    guides.select('line').style({
                         opacity: 0
                     });
                 });
             }
-            var angularGuideCircle = guides.select("circle").style({
-                stroke: "grey",
-                fill: "none"
+            var angularGuideCircle = guides.select('circle').style({
+                stroke: 'grey',
+                fill: 'none'
             });
-            chartGroup.on("mousemove.radial-guide", function(d, i) {
+            chartGroup.on('mousemove.radial-guide', function(d, i) {
                 var r = µ.util.getMousePos(backgroundCircle).radius;
                 angularGuideCircle.attr({
                     r: r
@@ -412,7 +414,7 @@ var µ = micropolar,
                 radialValue = radialScale.invert(µ.util.getMousePos(backgroundCircle).radius);
                 var pos = µ.util.convertToCartesian(r, axisConfig.radialAxis.orientation);
                 radialTooltip.text(µ.util.round(radialValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
-            }).on("mouseout.radial-guide", function(d, i) {
+            }).on('mouseout.radial-guide', function(d, i) {
                 angularGuideCircle.style({
                     opacity: 0
                 });
@@ -420,17 +422,17 @@ var µ = micropolar,
                 angularTooltip.hide();
                 radialTooltip.hide();
             });
-            svg.selectAll(".geometry-group .mark").on("mouseover.tooltip", function(d, i) {
+            svg.selectAll('.geometry-group .mark').on('mouseover.tooltip', function(d, i) {
                 var el = d3.select(this);
-                var color = el.style("fill");
-                var newColor = "black";
-                var opacity = el.style("opacity") || 1;
+                var color = el.style('fill');
+                var newColor = 'black';
+                var opacity = el.style('opacity') || 1;
                 el.attr({
-                    "data-opacity": opacity
+                    'data-opacity': opacity
                 });
-                if (color != "none") {
+                if (color != 'none') {
                     el.attr({
-                        "data-fill": color
+                        'data-fill': color
                     });
                     newColor = d3.hsl(color).darker().toString();
                     el.style({
@@ -442,7 +444,7 @@ var µ = micropolar,
                         r: µ.util.round(d[1])
                     };
                     if (isOrdinal) textData.t = ticks[d[0]];
-                    var text = "t: " + textData.t + ", r: " + textData.r;
+                    var text = 't: ' + textData.t + ', r: ' + textData.r;
                     var bbox = this.getBoundingClientRect();
                     var svgBBox = svg.node().getBoundingClientRect();
                     var pos = [ bbox.left + bbox.width / 2 - centeringOffset[0] - svgBBox.left, bbox.top + bbox.height / 2 - centeringOffset[1] - svgBBox.top ];
@@ -451,9 +453,9 @@ var µ = micropolar,
                     }).text(text);
                     geometryTooltip.move(pos);
                 } else {
-                    color = el.style("stroke");
+                    color = el.style('stroke');
                     el.attr({
-                        "data-stroke": color
+                        'data-stroke': color
                     });
                     newColor = d3.hsl(color).darker().toString();
                     el.style({
@@ -461,19 +463,19 @@ var µ = micropolar,
                         opacity: 1
                     });
                 }
-            }).on("mousemove.tooltip", function(d, i) {
+            }).on('mousemove.tooltip', function(d, i) {
                 if (d3.event.which != 0) return false;
-                if (d3.select(this).attr("data-fill")) geometryTooltip.show();
-            }).on("mouseout.tooltip", function(d, i) {
+                if (d3.select(this).attr('data-fill')) geometryTooltip.show();
+            }).on('mouseout.tooltip', function(d, i) {
                 geometryTooltip.hide();
                 var el = d3.select(this);
-                var fillColor = el.attr("data-fill");
+                var fillColor = el.attr('data-fill');
                 if (fillColor) el.style({
                     fill: fillColor,
-                    opacity: el.attr("data-opacity")
+                    opacity: el.attr('data-opacity')
                 }); else el.style({
-                    stroke: el.attr("data-stroke"),
-                    opacity: el.attr("data-opacity")
+                    stroke: el.attr('data-stroke'),
+                    opacity: el.attr('data-opacity')
                 });
             });
         });
@@ -510,7 +512,7 @@ var µ = micropolar,
     exports.svg = function() {
         return svg;
     };
-    d3.rebind(exports, dispatch, "on");
+    d3.rebind(exports, dispatch, 'on');
     return exports;
 };
 
@@ -519,12 +521,12 @@ var µ = micropolar,
         data: [ {
             t: [ 1, 2, 3, 4 ],
             r: [ 10, 11, 12, 13 ],
-            name: "Line1",
-            geometry: "LinePlot",
+            name: 'Line1',
+            geometry: 'LinePlot',
             color: null,
-            strokeDash: "solid",
+            strokeDash: 'solid',
             strokeColor: null,
-            strokeSize: "1",
+            strokeSize: '1',
             visibleInLegend: true,
             opacity: 1
         } ],
@@ -541,38 +543,38 @@ var µ = micropolar,
             },
             font: {
                 size: 12,
-                color: "gray",
-                outlineColor: "white",
-                family: "Tahoma, sans-serif"
+                color: 'gray',
+                outlineColor: 'white',
+                family: 'Tahoma, sans-serif'
             },
-            direction: "clockwise",
+            direction: 'clockwise',
             orientation: 0,
             labelOffset: 10,
             radialAxis: {
                 domain: null,
                 orientation: -45,
-                ticksSuffix: "",
+                ticksSuffix: '',
                 visible: true,
                 gridLinesVisible: true,
-                tickOrientation: "horizontal",
+                tickOrientation: 'horizontal',
                 rewriteTicks: null
             },
             angularAxis: {
                 domain: [ 0, 360 ],
-                ticksSuffix: "",
+                ticksSuffix: '',
                 visible: true,
                 gridLinesVisible: true,
                 labelsVisible: true,
-                tickOrientation: "horizontal",
+                tickOrientation: 'horizontal',
                 rewriteTicks: null,
                 ticksCount: null,
                 ticksStep: null
             },
             minorTicks: 0,
             tickLength: null,
-            tickColor: "silver",
-            minorTickColor: "#eee",
-            backgroundColor: "none",
+            tickColor: 'silver',
+            minorTickColor: '#eee',
+            backgroundColor: 'none',
             needsEndSpacing: null,
             showLegend: true,
             legend: {
@@ -586,15 +588,15 @@ var µ = micropolar,
 
 µ.util = {};
 
-µ.DATAEXTENT = "dataExtent";
+µ.DATAEXTENT = 'dataExtent';
 
-µ.AREA = "AreaChart";
+µ.AREA = 'AreaChart';
 
-µ.LINE = "LinePlot";
+µ.LINE = 'LinePlot';
 
-µ.DOT = "DotPlot";
+µ.DOT = 'DotPlot';
 
-µ.BAR = "BarChart";
+µ.BAR = 'BarChart';
 
 µ.util._override = function(_objA, _objB) {
     for (var x in _objA) if (x in _objB) _objB[x] = _objA[x];
@@ -636,7 +638,7 @@ var µ = micropolar,
 };
 
 µ.util.ensureArray = function(_val, _count) {
-    if (typeof _val === "undefined") return null;
+    if (typeof _val === 'undefined') return null;
     var arr = [].concat(_val);
     return d3.range(_count).map(function(d, i) {
         return arr[i] || arr[0];
@@ -667,7 +669,7 @@ var µ = micropolar,
 };
 
 µ.util.validateKeys = function(obj, keys) {
-    if (typeof keys === "string") keys = keys.split(".");
+    if (typeof keys === 'string') keys = keys.split('.');
     var next = keys.shift();
     return obj[next] && (!keys.length || objHasKeys(obj[next], keys));
 };
@@ -755,16 +757,16 @@ var µ = micropolar,
         sourceBranch = targetBranchCopy;
     }
     var value = sourceBranch.reduce(function(previousValue, currentValue) {
-        if (typeof previousValue != "undefined") return previousValue[currentValue];
+        if (typeof previousValue != 'undefined') return previousValue[currentValue];
     }, obj);
-    if (typeof value === "undefined") return;
+    if (typeof value === 'undefined') return;
     sourceBranch.reduce(function(previousValue, currentValue, index) {
-        if (typeof previousValue == "undefined") return;
+        if (typeof previousValue == 'undefined') return;
         if (index === sourceBranch.length - 1) delete previousValue[currentValue];
         return previousValue[currentValue];
     }, obj);
     targetBranch.reduce(function(previousValue, currentValue, index) {
-        if (typeof previousValue[currentValue] === "undefined") previousValue[currentValue] = {};
+        if (typeof previousValue[currentValue] === 'undefined') previousValue[currentValue] = {};
         if (index === targetBranch.length - 1) previousValue[currentValue] = value;
         return previousValue[currentValue];
     }, obj);
@@ -772,9 +774,9 @@ var µ = micropolar,
 
 µ.PolyChart = function module() {
     var config = [ µ.PolyChart.defaultConfig() ];
-    var dispatch = d3.dispatch("hover");
+    var dispatch = d3.dispatch('hover');
     var dashArray = {
-        solid: "none",
+        solid: 'none',
         dash: [ 5, 2 ],
         dot: [ 2, 5 ]
     };
@@ -782,7 +784,7 @@ var µ = micropolar,
     function exports() {
         var geometryConfig = config[0].geometryConfig;
         var container = geometryConfig.container;
-        if (typeof container == "string") container = d3.select(container);
+        if (typeof container == 'string') container = d3.select(container);
         container.datum(config).each(function(_config, _index) {
             var isStack = !!_config[0].data.yStack;
             var data = _config.map(function(d, i) {
@@ -797,10 +799,10 @@ var µ = micropolar,
                 var stackTop = geometryConfig.radialScale(d[2] || 0);
                 var w = dataConfig.barWidth;
                 d3.select(this).attr({
-                    "class": "mark bar",
-                    d: "M" + [ [ h + stackTop, -w / 2 ], [ h + stackTop, w / 2 ], [ stackTop, w / 2 ], [ stackTop, -w / 2 ] ].join("L") + "Z",
+                    'class': 'mark bar',
+                    d: 'M' + [ [ h + stackTop, -w / 2 ], [ h + stackTop, w / 2 ], [ stackTop, w / 2 ], [ stackTop, -w / 2 ] ].join('L') + 'Z',
                     transform: function(d, i) {
-                        return "rotate(" + (geometryConfig.orientation + angularScale(d[0])) + ")";
+                        return 'rotate(' + (geometryConfig.orientation + angularScale(d[0])) + ')';
                     }
                 });
             };
@@ -808,11 +810,11 @@ var µ = micropolar,
                 var stackedData = d[2] ? [ d[0], d[1] + d[2] ] : d;
                 var symbol = d3.svg.symbol().size(_config[pI].data.dotSize).type(_config[pI].data.dotType)(d, i);
                 d3.select(this).attr({
-                    "class": "mark dot",
+                    'class': 'mark dot',
                     d: symbol,
                     transform: function(d, i) {
                         var coord = convertToCartesian(getPolarCoordinates(stackedData));
-                        return "translate(" + [ coord.x, coord.y ] + ")";
+                        return 'translate(' + [ coord.x, coord.y ] + ')';
                     }
                 });
             };
@@ -825,37 +827,37 @@ var µ = micropolar,
                 var lineData = d[2] ? data[pI].map(function(d, i) {
                     return [ d[0], d[1] + d[2] ];
                 }) : data[pI];
-                d3.select(this).each(generator["dot"]).style({
+                d3.select(this).each(generator['dot']).style({
                     opacity: function(dB, iB) {
                         return +_config[pI].data.dotVisible;
                     },
                     fill: markStyle.stroke(d, i, pI)
                 }).attr({
-                    "class": "mark dot"
+                    'class': 'mark dot'
                 });
                 if (i > 0) return;
-                var lineSelection = d3.select(this.parentNode).selectAll("path.line").data([ 0 ]);
-                lineSelection.enter().insert("path");
+                var lineSelection = d3.select(this.parentNode).selectAll('path.line').data([ 0 ]);
+                lineSelection.enter().insert('path');
                 lineSelection.attr({
-                    "class": "line",
+                    'class': 'line',
                     d: line(lineData),
                     transform: function(dB, iB) {
-                        return "rotate(" + (geometryConfig.orientation + 90) + ")";
+                        return 'rotate(' + (geometryConfig.orientation + 90) + ')';
                     },
-                    "pointer-events": "none"
+                    'pointer-events': 'none'
                 }).style({
                     fill: function(dB, iB) {
                         return markStyle.fill(d, i, pI);
                     },
-                    "fill-opacity": 0,
+                    'fill-opacity': 0,
                     stroke: function(dB, iB) {
                         return markStyle.stroke(d, i, pI);
                     },
-                    "stroke-width": function(dB, iB) {
-                        return markStyle["stroke-width"](d, i, pI);
+                    'stroke-width': function(dB, iB) {
+                        return markStyle['stroke-width'](d, i, pI);
                     },
-                    "stroke-dasharray": function(dB, iB) {
-                        return markStyle["stroke-dasharray"](d, i, pI);
+                    'stroke-dasharray': function(dB, iB) {
+                        return markStyle['stroke-dasharray'](d, i, pI);
                     },
                     opacity: function(dB, iB) {
                         return markStyle.opacity(d, i, pI);
@@ -878,10 +880,10 @@ var µ = micropolar,
             });
             generator.arc = function(d, i, pI) {
                 d3.select(this).attr({
-                    "class": "mark arc",
+                    'class': 'mark arc',
                     d: arc,
                     transform: function(d, i) {
-                        return "rotate(" + (geometryConfig.orientation + angularScale(d[0]) + 90) + ")";
+                        return 'rotate(' + (geometryConfig.orientation + angularScale(d[0]) + 90) + ')';
                     }
                 });
             };
@@ -892,28 +894,28 @@ var µ = micropolar,
                 stroke: function(d, i, pI) {
                     return _config[pI].data.strokeColor;
                 },
-                "stroke-width": function(d, i, pI) {
-                    return _config[pI].data.strokeSize + "px";
+                'stroke-width': function(d, i, pI) {
+                    return _config[pI].data.strokeSize + 'px';
                 },
-                "stroke-dasharray": function(d, i, pI) {
+                'stroke-dasharray': function(d, i, pI) {
                     return dashArray[_config[pI].data.strokeDash];
                 },
                 opacity: function(d, i, pI) {
                     return _config[pI].data.opacity;
                 },
                 display: function(d, i, pI) {
-                    return typeof _config[pI].data.visible === "undefined" || _config[pI].data.visible ? "block" : "none";
+                    return typeof _config[pI].data.visible === 'undefined' || _config[pI].data.visible ? 'block' : 'none';
                 }
             };
-            var geometryLayer = d3.select(this).selectAll("g.layer").data(data);
-            geometryLayer.enter().append("g").attr({
-                "class": "layer"
+            var geometryLayer = d3.select(this).selectAll('g.layer').data(data);
+            geometryLayer.enter().append('g').attr({
+                'class': 'layer'
             });
-            var geometry = geometryLayer.selectAll("path.mark").data(function(d, i) {
+            var geometry = geometryLayer.selectAll('path.mark').data(function(d, i) {
                 return d;
             });
-            geometry.enter().append("path").attr({
-                "class": "mark"
+            geometry.enter().append('path').attr({
+                'class': 'mark'
             });
             geometry.style(markStyle).each(generator[geometryConfig.geometryType]);
             geometry.exit().remove();
@@ -948,35 +950,35 @@ var µ = micropolar,
     exports.getColorScale = function() {
         return colorScale;
     };
-    d3.rebind(exports, dispatch, "on");
+    d3.rebind(exports, dispatch, 'on');
     return exports;
 };
 
 µ.PolyChart.defaultConfig = function() {
     var config = {
         data: {
-            name: "geom1",
+            name: 'geom1',
             t: [ [ 1, 2, 3, 4 ] ],
             r: [ [ 1, 2, 3, 4 ] ],
-            dotType: "circle",
+            dotType: 'circle',
             dotSize: 64,
             dotVisible: false,
             barWidth: 20,
-            color: "#ffa500",
+            color: '#ffa500',
             strokeSize: 1,
-            strokeColor: "silver",
-            strokeDash: "solid",
+            strokeColor: 'silver',
+            strokeDash: 'solid',
             opacity: 1,
             index: 0,
             visible: true,
             visibleInLegend: true
         },
         geometryConfig: {
-            geometry: "LinePlot",
-            geometryType: "arc",
-            direction: "clockwise",
+            geometry: 'LinePlot',
+            geometryType: 'arc',
+            direction: 'clockwise',
             orientation: 0,
-            container: "body",
+            container: 'body',
             radialScale: null,
             angularScale: null,
             colorScale: d3.scale.category20()
@@ -992,7 +994,7 @@ var µ = micropolar,
 µ.BarChart.defaultConfig = function() {
     var config = {
         geometryConfig: {
-            geometryType: "bar"
+            geometryType: 'bar'
         }
     };
     return config;
@@ -1005,7 +1007,7 @@ var µ = micropolar,
 µ.AreaChart.defaultConfig = function() {
     var config = {
         geometryConfig: {
-            geometryType: "arc"
+            geometryType: 'arc'
         }
     };
     return config;
@@ -1018,8 +1020,8 @@ var µ = micropolar,
 µ.DotPlot.defaultConfig = function() {
     var config = {
         geometryConfig: {
-            geometryType: "dot",
-            dotType: "circle"
+            geometryType: 'dot',
+            dotType: 'circle'
         }
     };
     return config;
@@ -1032,7 +1034,7 @@ var µ = micropolar,
 µ.LinePlot.defaultConfig = function() {
     var config = {
         geometryConfig: {
-            geometryType: "line"
+            geometryType: 'line'
         }
     };
     return config;
@@ -1040,7 +1042,7 @@ var µ = micropolar,
 
 µ.Legend = function module() {
     var config = µ.Legend.defaultConfig();
-    var dispatch = d3.dispatch("hover");
+    var dispatch = d3.dispatch('hover');
     function exports() {
         var legendConfig = config.legendConfig;
         var flattenData = config.data.map(function(d, i) {
@@ -1053,66 +1055,66 @@ var µ = micropolar,
         });
         var data = d3.merge(flattenData);
         data = data.filter(function(d, i) {
-            return legendConfig.elements[i] && (legendConfig.elements[i].visibleInLegend || typeof legendConfig.elements[i].visibleInLegend === "undefined");
+            return legendConfig.elements[i] && (legendConfig.elements[i].visibleInLegend || typeof legendConfig.elements[i].visibleInLegend === 'undefined');
         });
         if (legendConfig.reverseOrder) data = data.reverse();
         var container = legendConfig.container;
-        if (typeof container == "string" || container.nodeName) container = d3.select(container);
+        if (typeof container == 'string' || container.nodeName) container = d3.select(container);
         var colors = data.map(function(d, i) {
             return d.color;
         });
         var lineHeight = legendConfig.fontSize;
-        var isContinuous = legendConfig.isContinuous == null ? typeof data[0] === "number" : legendConfig.isContinuous;
+        var isContinuous = legendConfig.isContinuous == null ? typeof data[0] === 'number' : legendConfig.isContinuous;
         var height = isContinuous ? legendConfig.height : lineHeight * data.length;
-        var legendContainerGroup = container.classed("legend-group", true);
-        var svg = legendContainerGroup.selectAll("svg").data([ 0 ]);
-        var svgEnter = svg.enter().append("svg").attr({
+        var legendContainerGroup = container.classed('legend-group', true);
+        var svg = legendContainerGroup.selectAll('svg').data([ 0 ]);
+        var svgEnter = svg.enter().append('svg').attr({
             width: 300,
             height: height + lineHeight,
-            xmlns: "http://www.w3.org/2000/svg",
-            "xmlns:xmlns:xlink": "http://www.w3.org/1999/xlink",
-            version: "1.1"
+            xmlns: 'http://www.w3.org/2000/svg',
+            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
+            version: '1.1'
         });
-        svgEnter.append("g").classed("legend-axis", true);
-        svgEnter.append("g").classed("legend-marks", true);
+        svgEnter.append('g').classed('legend-axis', true);
+        svgEnter.append('g').classed('legend-marks', true);
         var dataNumbered = d3.range(data.length);
-        var colorScale = d3.scale[isContinuous ? "linear" : "ordinal"]().domain(dataNumbered).range(colors);
-        var dataScale = d3.scale[isContinuous ? "linear" : "ordinal"]().domain(dataNumbered)[isContinuous ? "range" : "rangePoints"]([ 0, height ]);
+        var colorScale = d3.scale[isContinuous ? 'linear' : 'ordinal']().domain(dataNumbered).range(colors);
+        var dataScale = d3.scale[isContinuous ? 'linear' : 'ordinal']().domain(dataNumbered)[isContinuous ? 'range' : 'rangePoints']([ 0, height ]);
         var shapeGenerator = function(_type, _size) {
             var squareSize = _size * 3;
-            if (_type === "line") {
-                return "M" + [ [ -_size / 2, -_size / 12 ], [ _size / 2, -_size / 12 ], [ _size / 2, _size / 12 ], [ -_size / 2, _size / 12 ] ] + "Z";
-            } else if (d3.svg.symbolTypes.indexOf(_type) != -1) return d3.svg.symbol().type(_type).size(squareSize)(); else return d3.svg.symbol().type("square").size(squareSize)();
+            if (_type === 'line') {
+                return 'M' + [ [ -_size / 2, -_size / 12 ], [ _size / 2, -_size / 12 ], [ _size / 2, _size / 12 ], [ -_size / 2, _size / 12 ] ] + 'Z';
+            } else if (d3.svg.symbolTypes.indexOf(_type) != -1) return d3.svg.symbol().type(_type).size(squareSize)(); else return d3.svg.symbol().type('square').size(squareSize)();
         };
         if (isContinuous) {
-            var gradient = svg.select(".legend-marks").append("defs").append("linearGradient").attr({
-                id: "grad1",
-                x1: "0%",
-                y1: "0%",
-                x2: "0%",
-                y2: "100%"
-            }).selectAll("stop").data(colors);
-            gradient.enter().append("stop");
+            var gradient = svg.select('.legend-marks').append('defs').append('linearGradient').attr({
+                id: 'grad1',
+                x1: '0%',
+                y1: '0%',
+                x2: '0%',
+                y2: '100%'
+            }).selectAll('stop').data(colors);
+            gradient.enter().append('stop');
             gradient.attr({
                 offset: function(d, i) {
-                    return i / (colors.length - 1) * 100 + "%";
+                    return i / (colors.length - 1) * 100 + '%';
                 }
             }).style({
-                "stop-color": function(d, i) {
+                'stop-color': function(d, i) {
                     return d;
                 }
             });
-            svg.append("rect").classed("legend-mark", true).attr({
+            svg.append('rect').classed('legend-mark', true).attr({
                 height: legendConfig.height,
                 width: legendConfig.colorBandWidth,
-                fill: "url(#grad1)"
+                fill: 'url(#grad1)'
             });
         } else {
-            var legendElement = svg.select(".legend-marks").selectAll("path.legend-mark").data(data);
-            legendElement.enter().append("path").classed("legend-mark", true);
+            var legendElement = svg.select('.legend-marks').selectAll('path.legend-mark').data(data);
+            legendElement.enter().append('path').classed('legend-mark', true);
             legendElement.attr({
                 transform: function(d, i) {
-                    return "translate(" + [ lineHeight / 2, dataScale(i) + lineHeight / 2 ] + ")";
+                    return 'translate(' + [ lineHeight / 2, dataScale(i) + lineHeight / 2 ] + ')';
                 },
                 d: function(d, i) {
                     var symbolType = d.symbol;
@@ -1124,21 +1126,21 @@ var µ = micropolar,
             });
             legendElement.exit().remove();
         }
-        var legendAxis = d3.svg.axis().scale(dataScale).orient("right");
-        var axis = svg.select("g.legend-axis").attr({
-            transform: "translate(" + [ isContinuous ? legendConfig.colorBandWidth : lineHeight, lineHeight / 2 ] + ")"
+        var legendAxis = d3.svg.axis().scale(dataScale).orient('right');
+        var axis = svg.select('g.legend-axis').attr({
+            transform: 'translate(' + [ isContinuous ? legendConfig.colorBandWidth : lineHeight, lineHeight / 2 ] + ')'
         }).call(legendAxis);
-        axis.selectAll(".domain").style({
-            fill: "none",
-            stroke: "none"
+        axis.selectAll('.domain').style({
+            fill: 'none',
+            stroke: 'none'
         });
-        axis.selectAll("line").style({
-            fill: "none",
-            stroke: isContinuous ? legendConfig.textColor : "none"
+        axis.selectAll('line').style({
+            fill: 'none',
+            stroke: isContinuous ? legendConfig.textColor : 'none'
         });
-        axis.selectAll("text").style({
+        axis.selectAll('text').style({
             fill: legendConfig.textColor,
-            "font-size": legendConfig.fontSize
+            'font-size': legendConfig.fontSize
         }).text(function(d, i) {
             return data[i].name;
         });
@@ -1149,30 +1151,30 @@ var µ = micropolar,
         µ.util.deepExtend(config, _x);
         return this;
     };
-    d3.rebind(exports, dispatch, "on");
+    d3.rebind(exports, dispatch, 'on');
     return exports;
 };
 
 µ.Legend.defaultConfig = function(d, i) {
     var config = {
-        data: [ "a", "b", "c" ],
+        data: [ 'a', 'b', 'c' ],
         legendConfig: {
             elements: [ {
-                symbol: "line",
-                color: "red"
+                symbol: 'line',
+                color: 'red'
             }, {
-                symbol: "square",
-                color: "yellow"
+                symbol: 'square',
+                color: 'yellow'
             }, {
-                symbol: "diamond",
-                color: "limegreen"
+                symbol: 'diamond',
+                color: 'limegreen'
             } ],
             height: 150,
             colorBandWidth: 30,
             fontSize: 12,
-            container: "body",
+            container: 'body',
             isContinuous: null,
-            textColor: "grey",
+            textColor: 'grey',
             reverseOrder: false
         }
     };
@@ -1185,24 +1187,24 @@ var µ = micropolar,
         container: null,
         hasTick: false,
         fontSize: 12,
-        color: "white",
+        color: 'white',
         padding: 5
     };
-    var id = "tooltip-" + µ.tooltipPanel.uid++;
+    var id = 'tooltip-' + µ.tooltipPanel.uid++;
     var tickSize = 10;
     var exports = function() {
-        tooltipEl = config.container.selectAll("g." + id).data([ 0 ]);
-        var tooltipEnter = tooltipEl.enter().append("g").classed(id, true).style({
-            "pointer-events": "none",
-            display: "none"
+        tooltipEl = config.container.selectAll('g.' + id).data([ 0 ]);
+        var tooltipEnter = tooltipEl.enter().append('g').classed(id, true).style({
+            'pointer-events': 'none',
+            display: 'none'
         });
-        backgroundEl = tooltipEnter.append("path").style({
-            fill: "white",
-            "fill-opacity": .9
+        backgroundEl = tooltipEnter.append('path').style({
+            fill: 'white',
+            'fill-opacity': .9
         }).attr({
-            d: "M0 0"
+            d: 'M0 0'
         });
-        tooltipTextEl = tooltipEnter.append("text").attr({
+        tooltipTextEl = tooltipEnter.append('text').attr({
             dx: config.padding + tickSize,
             dy: +config.fontSize * .3
         });
@@ -1210,53 +1212,53 @@ var µ = micropolar,
     };
     exports.text = function(_text) {
         var l = d3.hsl(config.color).l;
-        var strokeColor = l >= .5 ? "#aaa" : "white";
-        var fillColor = l >= .5 ? "black" : "white";
-        var text = _text || "";
+        var strokeColor = l >= .5 ? '#aaa' : 'white';
+        var fillColor = l >= .5 ? 'black' : 'white';
+        var text = _text || '';
         tooltipTextEl.style({
             fill: fillColor,
-            "font-size": config.fontSize + "px"
+            'font-size': config.fontSize + 'px'
         }).text(text);
         var padding = config.padding;
         var bbox = tooltipTextEl.node().getBBox();
         var boxStyle = {
             fill: config.color,
             stroke: strokeColor,
-            "stroke-width": "2px"
+            'stroke-width': '2px'
         };
         var backGroundW = bbox.width + padding * 2 + tickSize;
         var backGroundH = bbox.height + padding * 2;
         backgroundEl.attr({
-            d: "M" + [ [ tickSize, -backGroundH / 2 ], [ tickSize, -backGroundH / 4 ], [ config.hasTick ? 0 : tickSize, 0 ], [ tickSize, backGroundH / 4 ], [ tickSize, backGroundH / 2 ], [ backGroundW, backGroundH / 2 ], [ backGroundW, -backGroundH / 2 ] ].join("L") + "Z"
+            d: 'M' + [ [ tickSize, -backGroundH / 2 ], [ tickSize, -backGroundH / 4 ], [ config.hasTick ? 0 : tickSize, 0 ], [ tickSize, backGroundH / 4 ], [ tickSize, backGroundH / 2 ], [ backGroundW, backGroundH / 2 ], [ backGroundW, -backGroundH / 2 ] ].join('L') + 'Z'
         }).style(boxStyle);
         tooltipEl.attr({
-            transform: "translate(" + [ tickSize, -backGroundH / 2 + padding * 2 ] + ")"
+            transform: 'translate(' + [ tickSize, -backGroundH / 2 + padding * 2 ] + ')'
         });
         tooltipEl.style({
-            display: "block"
+            display: 'block'
         });
         return exports;
     };
     exports.move = function(_pos) {
         if (!tooltipEl) return;
         tooltipEl.attr({
-            transform: "translate(" + [ _pos[0], _pos[1] ] + ")"
+            transform: 'translate(' + [ _pos[0], _pos[1] ] + ')'
         }).style({
-            display: "block"
+            display: 'block'
         });
         return exports;
     };
     exports.hide = function() {
         if (!tooltipEl) return;
         tooltipEl.style({
-            display: "none"
+            display: 'none'
         });
         return exports;
     };
     exports.show = function() {
         if (!tooltipEl) return;
         tooltipEl.style({
-            display: "block"
+            display: 'block'
         });
         return exports;
     };
@@ -1278,37 +1280,49 @@ var µ = micropolar,
         if (_inputConfig.data) {
             outputConfig.data = _inputConfig.data.map(function(d, i) {
                 var r = µ.util.deepExtend({}, d);
-                var toTranslate = [ [ r, [ "marker", "color" ], [ "color" ] ], [ r, [ "marker", "opacity" ], [ "opacity" ] ], [ r, [ "marker", "line", "color" ], [ "strokeColor" ] ], [ r, [ "marker", "line", "dash" ], [ "strokeDash" ] ], [ r, [ "marker", "line", "width" ], [ "strokeSize" ] ], [ r, [ "marker", "symbol" ], [ "dotType" ] ], [ r, [ "marker", "size" ], [ "dotSize" ] ], [ r, [ "marker", "barWidth" ], [ "barWidth" ] ], [ r, [ "line", "interpolation" ], [ "lineInterpolation" ] ], [ r, [ "showlegend" ], [ "visibleInLegend" ] ] ];
+                var toTranslate = [
+                    [ r, [ 'marker', 'color' ], [ 'color' ] ],
+                    [ r, [ 'marker', 'opacity' ], [ 'opacity' ] ],
+                    [ r, [ 'marker', 'line', 'color' ], [ 'strokeColor' ] ],
+                    [ r, [ 'marker', 'line', 'dash' ], [ 'strokeDash' ] ],
+                    [ r, [ 'marker', 'line', 'width' ], [ 'strokeSize' ] ],
+                    [ r, [ 'marker', 'symbol' ], [ 'dotType' ] ],
+                    [ r, [ 'marker', 'size' ], [ 'dotSize' ] ],
+                    [ r, [ 'marker', 'barWidth' ], [ 'barWidth' ] ],
+                    [ r, [ 'line', 'interpolation' ], [ 'lineInterpolation' ] ],
+                    [ r, [ 'showlegend' ], [ 'visibleInLegend' ] ]
+                ];
                 toTranslate.forEach(function(d, i) {
                     µ.util.translator.apply(null, d.concat(reverse));
                 });
+
                 if (!reverse) delete r.marker;
                 if (reverse) delete r.groupId;
                 if (!reverse) {
-                    if (r.type === "scatter") {
-                        if (r.mode === "lines") r.geometry = "LinePlot"; else if (r.mode === "markers") r.geometry = "DotPlot"; else if (r.mode === "lines+markers") {
-                            r.geometry = "LinePlot";
+                    if (r.type === 'scatter') {
+                        if (r.mode === 'lines') r.geometry = 'LinePlot'; else if (r.mode === 'markers') r.geometry = 'DotPlot'; else if (r.mode === 'lines+markers') {
+                            r.geometry = 'LinePlot';
                             r.dotVisible = true;
                         }
-                    } else if (r.type === "area") r.geometry = "AreaChart"; else if (r.type === "bar") r.geometry = "BarChart";
+                    } else if (r.type === 'area') r.geometry = 'AreaChart'; else if (r.type === 'bar') r.geometry = 'BarChart';
                     delete r.mode;
                     delete r.type;
                 } else {
-                    if (r.geometry === "LinePlot") {
-                        r.type = "scatter";
+                    if (r.geometry === 'LinePlot') {
+                        r.type = 'scatter';
                         if (r.dotVisible === true) {
                             delete r.dotVisible;
-                            r.mode = "lines+markers";
-                        } else r.mode = "lines";
-                    } else if (r.geometry === "DotPlot") {
-                        r.type = "scatter";
-                        r.mode = "markers";
-                    } else if (r.geometry === "AreaChart") r.type = "area"; else if (r.geometry === "BarChart") r.type = "bar";
+                            r.mode = 'lines+markers';
+                        } else r.mode = 'lines';
+                    } else if (r.geometry === 'DotPlot') {
+                        r.type = 'scatter';
+                        r.mode = 'markers';
+                    } else if (r.geometry === 'AreaChart') r.type = 'area'; else if (r.geometry === 'BarChart') r.type = 'bar';
                     delete r.geometry;
                 }
                 return r;
             });
-            if (!reverse && _inputConfig.layout && _inputConfig.layout.barmode === "stack") {
+            if (!reverse && _inputConfig.layout && _inputConfig.layout.barmode === 'stack') {
                 var duplicates = µ.util.duplicates(outputConfig.data.map(function(d, i) {
                     return d.geometry;
                 }));
@@ -1320,15 +1334,47 @@ var µ = micropolar,
         }
         if (_inputConfig.layout) {
             var r = µ.util.deepExtend({}, _inputConfig.layout);
-            var toTranslate = [ [ r, [ "plot_bgcolor" ], [ "backgroundColor" ] ], [ r, [ "showlegend" ], [ "showLegend" ] ], [ r, [ "radialaxis" ], [ "radialAxis" ] ], [ r, [ "angularaxis" ], [ "angularAxis" ] ], [ r.angularaxis, [ "showline" ], [ "gridLinesVisible" ] ], [ r.angularaxis, [ "showticklabels" ], [ "labelsVisible" ] ], [ r.angularaxis, [ "nticks" ], [ "ticksCount" ] ], [ r.angularaxis, [ "tickorientation" ], [ "tickOrientation" ] ], [ r.angularaxis, [ "ticksuffix" ], [ "ticksSuffix" ] ], [ r.angularaxis, [ "range" ], [ "domain" ] ], [ r.angularaxis, [ "endpadding" ], [ "endPadding" ] ], [ r.radialaxis, [ "showline" ], [ "gridLinesVisible" ] ], [ r.radialaxis, [ "tickorientation" ], [ "tickOrientation" ] ], [ r.radialaxis, [ "ticksuffix" ], [ "ticksSuffix" ] ], [ r.radialaxis, [ "range" ], [ "domain" ] ], [ r.angularAxis, [ "showline" ], [ "gridLinesVisible" ] ], [ r.angularAxis, [ "showticklabels" ], [ "labelsVisible" ] ], [ r.angularAxis, [ "nticks" ], [ "ticksCount" ] ], [ r.angularAxis, [ "tickorientation" ], [ "tickOrientation" ] ], [ r.angularAxis, [ "ticksuffix" ], [ "ticksSuffix" ] ], [ r.angularAxis, [ "range" ], [ "domain" ] ], [ r.angularAxis, [ "endpadding" ], [ "endPadding" ] ], [ r.radialAxis, [ "showline" ], [ "gridLinesVisible" ] ], [ r.radialAxis, [ "tickorientation" ], [ "tickOrientation" ] ], [ r.radialAxis, [ "ticksuffix" ], [ "ticksSuffix" ] ], [ r.radialAxis, [ "range" ], [ "domain" ] ], [ r.font, [ "outlinecolor" ], [ "outlineColor" ] ], [ r.legend, [ "traceorder" ], [ "reverseOrder" ] ], [ r, [ "labeloffset" ], [ "labelOffset" ] ], [ r, [ "defaultcolorrange" ], [ "defaultColorRange" ] ] ];
+            var toTranslate = [
+                [ r, [ 'plot_bgcolor' ], [ 'backgroundColor' ] ],
+                [ r, [ 'showlegend' ], [ 'showLegend' ] ],
+                [ r, [ 'radialaxis' ], [ 'radialAxis' ] ],
+                [ r, [ 'angularaxis' ], [ 'angularAxis' ] ],
+                [ r.angularaxis, [ 'showline' ], [ 'gridLinesVisible' ] ],
+                [ r.angularaxis, [ 'showticklabels' ], [ 'labelsVisible' ] ],
+                [ r.angularaxis, [ 'nticks' ], [ 'ticksCount' ] ],
+                [ r.angularaxis, [ 'tickorientation' ], [ 'tickOrientation' ] ],
+                [ r.angularaxis, [ 'ticksuffix' ], [ 'ticksSuffix' ] ],
+                [ r.angularaxis, [ 'range' ], [ 'domain' ] ],
+                [ r.angularaxis, [ 'endpadding' ], [ 'endPadding' ] ],
+                [ r.radialaxis, [ 'showline' ], [ 'gridLinesVisible' ] ],
+                [ r.radialaxis, [ 'tickorientation' ], [ 'tickOrientation' ] ],
+                [ r.radialaxis, [ 'ticksuffix' ], [ 'ticksSuffix' ] ],
+                [ r.radialaxis, [ 'range' ], [ 'domain' ] ],
+                [ r.angularAxis, [ 'showline' ], [ 'gridLinesVisible' ] ],
+                [ r.angularAxis, [ 'showticklabels' ], [ 'labelsVisible' ] ],
+                [ r.angularAxis, [ 'nticks' ], [ 'ticksCount' ] ],
+                [ r.angularAxis, [ 'tickorientation' ], [ 'tickOrientation' ] ],
+                [ r.angularAxis, [ 'ticksuffix' ], [ 'ticksSuffix' ] ],
+                [ r.angularAxis, [ 'range' ], [ 'domain' ] ],
+                [ r.angularAxis, [ 'endpadding' ], [ 'endPadding' ] ],
+                [ r.radialAxis, [ 'showline' ], [ 'gridLinesVisible' ] ],
+                [ r.radialAxis, [ 'tickorientation' ], [ 'tickOrientation' ] ],
+                [ r.radialAxis, [ 'ticksuffix' ], [ 'ticksSuffix' ] ],
+                [ r.radialAxis, [ 'range' ], [ 'domain' ] ],
+                [ r.font, [ 'outlinecolor' ], [ 'outlineColor' ] ],
+                [ r.legend, [ 'traceorder' ], [ 'reverseOrder' ] ],
+                [ r, [ 'labeloffset' ], [ 'labelOffset' ] ],
+                [ r, [ 'defaultcolorrange' ], [ 'defaultColorRange' ] ]
+            ];
             toTranslate.forEach(function(d, i) {
                 µ.util.translator.apply(null, d.concat(reverse));
             });
+
             if (!reverse) {
-                if (r.angularAxis && typeof r.angularAxis.ticklen !== "undefined") r.tickLength = r.angularAxis.ticklen;
-                if (r.angularAxis && typeof r.angularAxis.tickcolor !== "undefined") r.tickColor = r.angularAxis.tickcolor;
+                if (r.angularAxis && typeof r.angularAxis.ticklen !== 'undefined') r.tickLength = r.angularAxis.ticklen;
+                if (r.angularAxis && typeof r.angularAxis.tickcolor !== 'undefined') r.tickColor = r.angularAxis.tickcolor;
             } else {
-                if (typeof r.tickLength !== "undefined") {
+                if (typeof r.tickLength !== 'undefined') {
                     r.angularaxis.ticklen = r.tickLength;
                     delete r.tickLength;
                 }
@@ -1337,16 +1383,16 @@ var µ = micropolar,
                     delete r.tickColor;
                 }
             }
-            if (r.legend && typeof r.legend.reverseOrder != "boolean") {
-                r.legend.reverseOrder = r.legend.reverseOrder != "normal";
+            if (r.legend && typeof r.legend.reverseOrder != 'boolean') {
+                r.legend.reverseOrder = r.legend.reverseOrder != 'normal';
             }
-            if (r.legend && typeof r.legend.traceorder == "boolean") {
-                r.legend.traceorder = r.legend.traceorder ? "reversed" : "normal";
+            if (r.legend && typeof r.legend.traceorder == 'boolean') {
+                r.legend.traceorder = r.legend.traceorder ? 'reversed' : 'normal';
                 delete r.legend.reverseOrder;
             }
-            if (r.margin && typeof r.margin.t != "undefined") {
-                var source = [ "t", "r", "b", "l", "pad" ];
-                var target = [ "top", "right", "bottom", "left", "pad" ];
+            if (r.margin && typeof r.margin.t != 'undefined') {
+                var source = [ 't', 'r', 'b', 'l', 'pad' ];
+                var target = [ 'top', 'right', 'bottom', 'left', 'pad' ];
                 var margin = {};
                 d3.entries(r.margin).forEach(function(dB, iB) {
                     margin[target[source.indexOf(dB.key)]] = dB.value;
