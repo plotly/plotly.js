@@ -8,7 +8,9 @@ var NESTED_MODULE = '_nestedModules',
     IS_SUBPLOT_OBJ = '_isSubplotObj';
 
 // list of underscore attributes to keep in schema as is
-var UNDERSCORE_ATTRS = ['_isLinkedToArray', '_isSubplotObj'];
+var UNDERSCORE_ATTRS = [
+    '_isLinkedToArray', '_isSubplotObj', '_deprecated'
+];
 
 var plotSchema = {
     traces: {},

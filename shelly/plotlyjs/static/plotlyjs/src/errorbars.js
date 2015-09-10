@@ -124,7 +124,16 @@ errorBars.attributes = {
             'Sets the width (in px) of the cross-bar at both ends',
             'of the error bars.'
         ].join(' ')
-    }
+    },
+
+    _deprecated: {
+        opacity: {
+            description: [
+                'Obsolete.',
+                'Use the alpha channel in error bar `color` to set the opacity.'
+            ].join(' ')
+        }
+    } // to delete
 };
 
 errorBars.supplyDefaults = function(traceIn, traceOut, defaultColor, opts) {

@@ -445,7 +445,17 @@ axes.layoutAttributes = {
             '(in normalized coordinates).',
             'Only has an effect if `anchor` is set to *free*.'
         ].join(' ')
-    }
+    },
+
+    _deprecated: {
+        autotick: {
+            description: [
+                'Obsolete.',
+                'Set `tickmode` to *auto* for old `autotick` *true* behavior.',
+                'Set `tickmode` to *linear* for `autotick` *false*.'
+            ].join(' ')
+        }
+    } // to delete
 };
 
 var xAxisMatch = /^xaxis[0-9]*$/,

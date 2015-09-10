@@ -812,5 +812,14 @@ colorbar.traceColorbarAttributes = {
         description: [
             'Determines whether or not a colorbar is displayed for this trace.'
         ].join(' ')
-    }
+    },
+
+    _deprecated: {
+        scl: {
+            description: 'Renamed to `colorscale`.'
+        },
+        reversescl: {
+            description: 'Renamed to `reversescale`.'
+        }
+    } // to delete
 };
