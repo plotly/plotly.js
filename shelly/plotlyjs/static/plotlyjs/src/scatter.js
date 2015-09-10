@@ -403,6 +403,20 @@ scatter.attributes = {
         arrayOk: true,
         description: 'Sets the text font.'
     },
+    r: {
+        valType: 'data_array',
+        description: [
+            'For polar chart only.',
+            'Sets the radial coordinates.'
+        ].join('')
+    },
+    t: {
+        valType: 'data_array',
+        description: [
+            'For polar chart only.',
+            'Sets the angular coordinates.'
+        ].join('')
+    },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
         'error_x': 'ErrorBars',

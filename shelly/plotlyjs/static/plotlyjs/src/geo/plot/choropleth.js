@@ -4,8 +4,8 @@
 
 var Plotly = require('../../plotly'),
     params = require('../lib/params'),
-    extractTopojson = require('../lib/topojson-utils').extractTopojson,
-    locationToId = require('../lib/location-utils').locationToId;
+    getTopojsonFeatures = require('../lib/topojson-utils').getTopojsonFeatures,
+    locationToFeature = require('../lib/location-utils').locationToFeature;
 
 var plotChoropleth = module.exports = {};
 
@@ -13,23 +13,19 @@ var plotChoropleth = module.exports = {};
 plotChoropleth.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
         locations = trace.locations,
-        N = locations.length,
-        fromTopojson = extractTopojson(trace, topojson),
-        features = fromTopojson.features,
-        ids = fromTopojson.ids,
+        len = locations.length,
+        features = getTopojsonFeatures(trace, topojson),
         markerLine = (trace.marker || {}).line || {};
 
-    var indexOfId, feature;
+    var feature;
 
-    for(var i = 0; i < N; i++) {
-        indexOfId = ids.indexOf(locationToId(trace.locationmode, locations[i]));
-        if(indexOfId === -1) continue;
-
-        feature = features[indexOfId];
+    for(var i = 0; i < len; i++) {
+        feature = locationToFeature(trace.locationmode, locations[i], features);
+        if(feature === undefined) continue;
 
         // 'data_array' attributes
         feature.z = trace.z[i];
-        if(trace.text!==undefined) feature.tx = trace.text[i];
+        if(trace.text !== undefined) feature.tx = trace.text[i];
 
         // 'arrayOK' attributes
         mergeArray(markerLine.color, feature, 'mlc', i);
@@ -74,7 +70,7 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
             function handleMouseOver(d) {
                 if(!geo.showHover) return;
 
-                var xy = geo.projection(d.properties.centroid);
+                var xy = geo.projection(d.properties.ct);
                 cleanHoverLabelsFunc(d);
 
                 Plotly.Fx.loneHover({

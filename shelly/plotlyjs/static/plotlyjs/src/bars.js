@@ -61,6 +61,10 @@ bars.attributes = {
             reversescale: scatterMarkerLineAttrs.reversescale
         }
     },
+
+    r: scatterAttrs.r,  // FIXME this shouldn't get included in 'histogram'
+    t: scatterAttrs.t,
+
     _composedModules: {  // composed module coupling
         'histogram': 'Histogram'
     },
