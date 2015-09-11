@@ -46,7 +46,7 @@ exports.Choropleth = require('./geo/defaults/choropleth');
 exports.Geo = require('./geo/geo');
 
 // plot schema
-exports.PlotSchema= require('./plotschema');
+exports.PlotSchema = require('./plotschema');
 
 // configuration
 exports.Config = require('./config');
@@ -57,3 +57,6 @@ exports.Snapshot = require('./snapshot/snapshot');
 // promise polyfill, embed rather than requiring dependencies
 require('../../../../shelly/static/js/plugins/promise-1.0.0.min.js');
 require('../../../../shelly/static/js/plugins/promise-done-1.0.0.js');
+
+// exports d3 used in the bundle
+exports.d3 = require('d3');
