@@ -25,7 +25,7 @@ function makeBinsAttr(axLetter) {
     return {
         start: {
             valType: 'number',
-            dflt: 0,
+            dflt: null,
             description: [
                 'Sets the starting value for the', axLetter,
                 'axis bins.'
@@ -33,7 +33,7 @@ function makeBinsAttr(axLetter) {
         },
         end: {
             valType: 'number',
-            dflt: 1,
+            dflt: null,
             description: [
                 'Sets the end value for the', axLetter,
                 'axis bins.'
@@ -41,7 +41,7 @@ function makeBinsAttr(axLetter) {
         },
         size: {
             valType: 'any', // for date axes
-            dflt: 1,
+            dflt: null,
             description: [
                 'Sets the step in-between value each', axLetter,
                 'axis bin.'
@@ -186,7 +186,14 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
     binDirections.forEach(function(binDirection){
         // data being binned - note that even though it's a little weird,
         // it's possible to have bins without data, if there's inferred data
-        var autobin = coerce('autobin' + binDirection);
+        var binstrt = coerce(binDirection + 'bins.start');
+        var binend = coerce(binDirection + 'bins.end');
+
+        if(binstrt===null && binend===null) {
+            var autobin = coerce('autobin' + binDirection);
+        } else {
+            var autobin = coerce('autobin' + binDirection, false);
+        }
 
         if(autobin) coerce('nbins' + binDirection);
         else {
