@@ -1,6 +1,6 @@
 'use strict';
 
-var Plotly = require('./plotly'),
+var Plotly = require('../plotly'),
     d3 = require('d3');
 
 var manager = module.exports = {};

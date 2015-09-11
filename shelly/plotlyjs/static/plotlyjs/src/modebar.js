@@ -18,6 +18,7 @@ function ModeBar (config) {
 
     var _this = this;
 
+    this._snapshotInProgress = false;
     this.graphInfo = config.graphInfo;
     this.element = document.createElement('div');
 
@@ -56,7 +57,6 @@ function ModeBar (config) {
     config.container.appendChild(this.element);
 
     this.updateActiveButton();
-
 }
 
 var proto = ModeBar.prototype;
@@ -88,13 +88,16 @@ proto.createButton = function (config) {
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
 
-    button.setAttribute('data-attr', config.attr);
-    button.setAttribute('data-val', config.val);
+    if (config.attr !== undefined) button.setAttribute('data-attr', config.attr);
+    if (config.val !== undefined) button.setAttribute('data-val', config.val);
     button.setAttribute('data-title', config.title);
     button.setAttribute('data-gravity', config.gravity || 'n');
     button.addEventListener('click', function () {
             config.click.apply(_this, arguments);
         });
+
+    button.setAttribute('data-toggle', config.toggle);
+    if(config.toggle) button.classList.add('active');
 
     button.appendChild(this.createIcon(Plotly.Icons[config.icon]));
 
@@ -131,14 +134,29 @@ proto.createIcon = function (thisIcon) {
  * @Param {object} graphInfo plot object containing data and layout
  * @Return {HTMLelement}
  */
-proto.updateActiveButton = function () {
-    var graphInfo = this.graphInfo;
-    this.buttonElements.forEach( function (button) {
+proto.updateActiveButton = function(buttonClicked) {
+    var fullLayout = this.graphInfo._fullLayout,
+        dataAttrClicked = (buttonClicked !== undefined) ?
+            buttonClicked.getAttribute('data-attr') :
+            null;
+
+    this.buttonElements.forEach(function(button) {
         var thisval = button.getAttribute('data-val') || true,
             dataAttr = button.getAttribute('data-attr'),
-            curval = graphInfo._fullLayout[dataAttr];
+            isToggleButton = button.getAttribute('data-toggle')==='true',
+            button3 = d3.select(button);
 
-        d3.select(button).classed('active', curval===thisval);
+        // Use 'data-toggle' and 'buttonClicked' to toggle buttons
+        // that have no one-to-one equivalent in fullLayout
+        if(isToggleButton) {
+            if(dataAttr === dataAttrClicked) {
+                button3.classed('active', !button3.classed('active'));
+            }
+        }
+        else {
+            button3.classed('active', fullLayout[dataAttr]===thisval);
+        }
+
     });
 };
 
@@ -294,7 +312,7 @@ proto.handleHover3d = function(ev) {
     }
 
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
-        _this.updateActiveButton();
+        _this.updateActiveButton(button);
     });
 
 };
@@ -377,17 +395,74 @@ proto.handleGeo = function(ev) {
         else if(attr === 'hovermode') geo.showHover = !geo.showHover;
     }
 
+    this.updateActiveButton(button);
 };
 
 proto.handleHoverPie = function() {
-    var oldHover = this.graphInfo._fullLayout.hovermode;
-    Plotly.relayout(this.graphInfo, 'hovermode', oldHover ? false : 'closest');
+    var _this = this,
+        graphInfo = _this.graphInfo,
+        newHover = graphInfo._fullLayout.hovermode ?
+            false :
+            'closest';
+
+    Plotly.relayout(graphInfo, 'hovermode', newHover).then(function() {
+        _this.updateActiveButton();
+    });
 };
 
 proto.cleanup = function(){
     this.element.innerHTML = '';
     var modebarParent = this.element.parentNode;
     if (modebarParent) modebarParent.removeChild(this.element);
+};
+
+proto.toImage = function() {
+
+    var format = 'png';
+    var _this = this;
+
+    if ( Plotly.Lib.isIE() ) {
+        Plotly.Lib.notifier('Snapshotting is unavailable in Internet Explorer. ' +
+                            'Consider exporting your images using the Plotly Cloud', 'long');
+        return;
+    }
+
+    if (this._snapshotInProgress) {
+        Plotly.Lib.notifier('Snapshotting is still in progress - please hold', 'long');
+        return;
+    }
+
+    this._snapshotInProgress = true;
+    Plotly.Lib.notifier('Taking snapshot - this may take a few seconds', 'long');
+
+    var ev = Plotly.Snapshot.toImage(this.graphInfo, {format: format});
+
+    var filename = this.graphInfo.fn || "newplot";
+    filename += '.' + format;
+
+    ev.once('success', function(result) {
+
+        _this._snapshotInProgress = false;
+
+        var downloadLink = document.createElement("a");
+        downloadLink.href = result;
+        downloadLink.download = filename; // only supported by FF and Chrome
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        ev.clean();
+    });
+
+    ev.once('error', function (err) {
+        _this._snapshotInProgress = false;
+
+        Plotly.Lib.notifier('Sorry there was a problem downloading your ' + format, 'long');
+        console.error(err);
+
+        ev.clean();
+    });
 };
 
 /**
@@ -454,6 +529,11 @@ proto.config = function config() {
             gravity: 'ne',
             click: this.handleCartesian
         },
+        toImage: {
+            title: 'download plot as a png',
+            icon: 'camera',
+            click: this.toImage
+        },
         // gl3d
         zoom3d: {
             title: 'Zoom',
@@ -492,13 +572,14 @@ proto.config = function config() {
         resetCameraLastSave3d: {
             title: 'Reset camera to last save',
             attr: 'resetLastSave',
-            icon: 'camera-retro',
+            icon: 'movie',
             click: this.handleCamera3d
         },
         hoverClosest3d: {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
             val: null,
+            toggle: true,
             icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleHover3d
@@ -521,6 +602,7 @@ proto.config = function config() {
         resetGeo: {
             title: 'Reset',
             attr: 'reset',
+            val: null,
             icon: 'autoscale',
             click: this.handleGeo
         },
@@ -528,6 +610,7 @@ proto.config = function config() {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
             val: null,
+            toggle: true,
             icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleGeo
@@ -536,7 +619,7 @@ proto.config = function config() {
         hoverClosestPie: {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
-            val: null,
+            val: 'closest',
             icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleHoverPie

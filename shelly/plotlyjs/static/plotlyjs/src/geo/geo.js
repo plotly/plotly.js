@@ -65,6 +65,7 @@ proto.plot = function(geoData, fullLayout) {
 
     _this.zoom = createGeoZoom(_this, geoLayout);
     _this.zoomReset = createGeoZoomReset(_this, geoLayout);
+    _this.mockAxis = createMockAxis(fullLayout);
 
     _this.framework
         .call(_this.zoom)
@@ -410,3 +411,16 @@ proto.render = function() {
             .attr('transform', translatePoints);
     }
 };
+
+// create a mock axis used to format hover text
+function createMockAxis(fullLayout) {
+    var mockAxis = {
+        type: 'linear',
+        showexponent: 'all',
+        exponentformat: Plotly.Axes.layoutAttributes.exponentformat.dflt,
+        _td: { _fullLayout: fullLayout }
+    };
+
+    Plotly.Axes.setConvert(mockAxis);
+    return mockAxis;
+}

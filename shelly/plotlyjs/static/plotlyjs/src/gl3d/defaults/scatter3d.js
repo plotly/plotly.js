@@ -1,134 +1,25 @@
 'use strict';
 
-var MARKER_SYMBOLS = require('../lib/markers.json');
 var Plotly = require('../../plotly');
+var MARKER_SYMBOLS = require('../lib/markers.json');
 
-var scatterAttrs = Plotly.Scatter.attributes,
-    scatterLineAttrs = scatterAttrs.line,
-    scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line,
-    extendFlat = Plotly.Lib.extendFlat;
-
-var Scatter3D = {};
+var Scatter3D = module.exports = {};
 
 Plotly.Plots.register(Scatter3D,
-    'scatter3d', ['gl3d', 'symbols', 'markerColorscale', 'showLegend']);
+    'scatter3d', ['gl3d', 'symbols', 'markerColorscale', 'showLegend'], {
+    hrName: 'scatter_3d',
+    description: [
+        'The data visualized as scatter point or lines in 3D dimension', 
+        'is set in `x`, `y`, `z`.',
+        'Text (appearing either on the chart or on hover only) is via `text`.',
+        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+        'Projections are achieved via `projection`.',
+        'Surface fills are achieved via `surfaceaxis`.'
+    ].join(' ')
+});
 
-Scatter3D.attributes = {
-    x: {type: 'data_array'},
-    y: {type: 'data_array'},
-    z: {type: 'data_array'},
-    text: scatterAttrs.text,
-    surfaceaxis: {
-        type: 'enumerated',
-        values: [-1,0,1,2],
-        dflt: -1
-    },
-    surfacecolor: {
-        type: 'color'
-    },
-    projection: {
-        x: {
-            show: {
-                type: 'boolean',
-                dflt: false
-            },
-            opacity: {
-                type: 'number',
-                min: 0,
-                max: 1,
-                dflt: 1
-            },
-            scale: {
-                type: 'number',
-                min: 0,
-                max: 10,
-                dflt: 2/3
-            }
-        },
-        y: {
-            show: {
-                type: 'boolean',
-                dflt: false
-            },
-            opacity: {
-                type: 'number',
-                min: 0,
-                max: 1,
-                dflt: 1
-            },
-            scale: {
-                type: 'number',
-                min: 0,
-                max: 10,
-                dflt: 2/3
-            }
-        },
-        z: {
-            show: {
-                type: 'boolean',
-                dflt: false
-            },
-            opacity: {
-                type: 'number',
-                min: 0,
-                max: 1,
-                dflt: 1
-            },
-            scale: {
-                type: 'number',
-                min: 0,
-                max: 10,
-                dflt: 2/3
-            }
-        }
-    },
-    mode: extendFlat(scatterAttrs.mode,  // shouldn't this be on-par with 2D?
-                     {dflt: 'lines+markers'}),
-    line: {
-        color: scatterLineAttrs.color,
-        width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash
-    },
-    marker: {  // Parity with scatter.js?
-        color: scatterMarkerAttrs.color,
-        symbol: scatterMarkerAttrs.symbol,
-        size: extendFlat(scatterMarkerAttrs.size, {dflt: 8}),
-        sizeref: scatterMarkerAttrs.sizeref,
-        sizemin: scatterMarkerAttrs.sizemin,
-        sizemode: scatterMarkerAttrs.sizemode,
-        opacity: scatterMarkerAttrs.opacity,
-        colorscale: scatterMarkerAttrs.colorscale,
-        cauto: scatterMarkerAttrs.cauto,
-        cmax: scatterMarkerAttrs.cmax,
-        cmin: scatterMarkerAttrs.cmin,
-        autocolorscale: scatterMarkerAttrs.autocolorscale,
-        reversescale: scatterMarkerAttrs.reversescale,
-        showscale: scatterMarkerAttrs.showscale,
-        line: {
-            color: scatterMarkerLineAttrs.color,
-            width: extendFlat(scatterMarkerLineAttrs.width, {arrayOk: false}),
-            colorscale: scatterMarkerLineAttrs.colorscale,
-            cauto: scatterMarkerLineAttrs.cauto,
-            cmax: scatterMarkerLineAttrs.cmax,
-            cmin: scatterMarkerLineAttrs.cmin,
-            autocolorscale: scatterMarkerLineAttrs.autocolorscale,
-            reversescale: scatterMarkerLineAttrs.reversescale
-        }
-    },
-    textposition: extendFlat(scatterAttrs.textposition, {dflt: 'top center'}),
-    textfont: scatterAttrs.textfont,
-    _nestedModules: {  // nested module coupling
-        'error_x': 'ErrorBars',
-        'error_y': 'ErrorBars',
-        'error_z': 'ErrorBars',
-        'marker.colorbar': 'Colorbar'
-    }
-};
-
-
-module.exports = Scatter3D;
-
+Scatter3D.attributes = require('../attributes/scatter3d');
+Scatter3D.markerSymbols = MARKER_SYMBOLS;
 
 Scatter3D.handleXYZDefaults = function(traceIn, traceOut, coerce) {
     var len = 0,
@@ -145,8 +36,6 @@ Scatter3D.handleXYZDefaults = function(traceIn, traceOut, coerce) {
 
     return len;
 };
-
-Scatter3D.markerSymbols = MARKER_SYMBOLS;
 
 Scatter3D.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     var Scatter = Plotly.Scatter;

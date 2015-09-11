@@ -3,54 +3,109 @@
 var Plotly = require('./plotly'),
     d3 = require('d3'),
     tinycolor = require('tinycolor2'),
-    isNumeric = require('./isnumeric'),
-    scatterAttrs = Plotly.Scatter.attributes;
+    isNumeric = require('./isnumeric');
 
 var heatmap = module.exports = {};
 
-Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap']);
+Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap'], {
+    description: [
+        'The data that describes the heatmap value-to-color mapping',
+        'is set in `z`.',
+        'Data in `z` can either be a {2D array} of values (ragged or not)',
+        'or a 1D array of values.',
 
-var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+        'In the case where `z` is a {2D array},',
+        'say that `z` has N rows and M columns.',
+        'Then, by default, the resulting heatmap will have N partitions along',
+        'the y axis and M partitions along the x axis.',
+        'In other words, the i-th row/ j-th column cell in `z`',
+        'is mapped to the i-th partition of the y axis',
+        '(starting from the bottom of the plot) and the j-th partition',
+        'of the x-axis (starting from the left of the plot).',
+        'This behavior can be flipped by using `transpose`.',
+        'Moreover, `x` (`y`) can be provided with M or M+1 (N or N+1) elements',
+        'If M (N), then the coordinates correspond to the center of the',
+        'heatmap cells and the cells have equal width.',
+        'If M+1 (N+1), then the coordinates correspond to the edges of the',
+        'heatmap cells.',
+
+        'In the case where `z` is a 1D {array}, the x and y coordinates must be',
+        'provided in `x` and `y` respectively to form data triplets.'
+    ].join(' ')
+});
+
+var scatterAttrs = Plotly.Scatter.attributes,
+    traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
 
 heatmap.attributes = {
-    z: {type: 'data_array'},
+    z: {
+        valType: 'data_array',
+        description: 'Sets the z data.'
+    },
     x: scatterAttrs.x,
     x0: scatterAttrs.x0,
     dx: scatterAttrs.dx,
     y: scatterAttrs.y,
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
-    text: {type: 'data_array'},
+    text: {
+        valType: 'data_array',
+        description: 'Sets the text elements associated with each z value.'
+    },
     transpose: {
-        type: 'boolean',
-        dflt: false
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        description: 'Transposes the z data.'
     },
     xtype: {
-        type: 'enumerated',
-        values: ['array', 'scaled']
+        valType: 'enumerated',
+        values: ['array', 'scaled'],
+        role: 'info',
+        description: [
+            'If *array*, the heatmap\'s x coordinates are given by *x*',
+            '(the default behavior when `x` is provided).',
+            'If *scaled*, the heatmap\'s x coordinates are given by *x0* and *dx*',
+            '(the default behavior when `x` is not provided).'
+        ].join(' ')
     },
     ytype: {
-        type: 'enumerated',
-        values: ['array', 'scaled']
+        valType: 'enumerated',
+        values: ['array', 'scaled'],
+        role: 'info',
+        description: [
+            'If *array*, the heatmap\'s y coordinates are given by *y*',
+            '(the default behavior when `y` is provided)',
+            'If *scaled*, the heatmap\'s y coordinates are given by *y0* and *dy*',
+            '(the default behavior when `y` is not provided)'
+        ].join(' ')
     },
     zauto: traceColorbarAttrs.zauto,
     zmin: traceColorbarAttrs.zmin,
     zmax: traceColorbarAttrs.zmax,
     colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: {
-        type: 'boolean',
-        dflt: false
-    },
+    autocolorscale: Plotly.Lib.extendFlat(traceColorbarAttrs.autocolorscale,
+        {dflt: false}),
     reversescale: traceColorbarAttrs.reversescale,
     showscale: traceColorbarAttrs.showscale,
     zsmooth: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['fast', 'best', false],
-        dflt: false
+        dflt: false,
+        role: 'style',
+        description: [
+            'Picks a smoothing algorithm use to smooth `z` data.'
+        ].join(' ')
     },
     connectgaps: {
-        type: 'boolean',
-        dflt: false
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        description: [
+            'Determines whether or not gaps',
+            '(i.e. {nan} or missing values)',
+            'in the `z` data are filled in.'
+        ].join(' ')
     },
     _nestedModules: {  // nested module coupling
         'colorbar': 'Colorbar'
@@ -171,16 +226,23 @@ heatmap.hasColumns = function(trace) {
     return !Array.isArray(trace.z[0]);
 };
 
-heatmap.convertColumnXYZ = function(trace) {
-    var xCol = trace.x,
-        yCol = trace.y,
+heatmap.convertColumnXYZ = function(trace, xa, ya) {
+    var xCol = trace.x.slice(),
+        yCol = trace.y.slice(),
         zCol = trace.z,
         textCol = trace.text,
         colLen = Math.min(xCol.length, yCol.length, zCol.length),
         hasColumnText = (textCol!==undefined && !Array.isArray(textCol[0]));
 
+    var i;
+
     if(colLen < xCol.length) xCol = xCol.slice(0, colLen);
     if(colLen < yCol.length) yCol = yCol.slice(0, colLen);
+
+    for(i = 0; i < colLen; i++) {
+        xCol[i] = xa.d2c(xCol[i]);
+        yCol[i] = ya.d2c(yCol[i]);
+    }
 
     var xColdv = Plotly.Lib.distinctVals(xCol),
         x = xColdv.vals,
@@ -192,7 +254,7 @@ heatmap.convertColumnXYZ = function(trace) {
 
     if(hasColumnText) text = Plotly.Lib.init2dArray(y.length, x.length);
 
-    for(var i = 0; i < colLen; i++) {
+    for(i = 0; i < colLen; i++) {
         ix = Plotly.Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
         iy = Plotly.Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
 
@@ -241,7 +303,7 @@ heatmap.calc = function(gd, trace) {
         z = binned.z;
     }
     else {
-        if(heatmap.hasColumns(trace)) heatmap.convertColumnXYZ(trace);
+        if(heatmap.hasColumns(trace)) heatmap.convertColumnXYZ(trace, xa, ya);
 
         x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
         y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
@@ -293,12 +355,12 @@ heatmap.calc = function(gd, trace) {
     }
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
-    var xlen = Plotly.Lib.aggNums(Math.max,null,
-            z.map(function(row) { return row.length; })),
+    var xlen = heatmap.maxRowLength(z),
         xIn = trace.xtype==='scaled' ? '' : trace.x,
         xArray = makeBoundArray(trace, xIn, x0, dx, xlen, xa),
         yIn = trace.ytype==='scaled' ? '' : trace.y,
         yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
+
     Plotly.Axes.expand(xa, xArray);
     Plotly.Axes.expand(ya, yArray);
 
@@ -366,7 +428,7 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
         // and extend it linearly based on the last two points
         if(len <= numbricks) {
             // contour plots only want the centers
-            if(isContour) arrayOut = arrayIn.slice(0,numbricks);
+            if(isContour) arrayOut = arrayIn.slice(0, numbricks);
             else if(numbricks === 1) arrayOut = [arrayIn[0]-0.5,arrayIn[0]+0.5];
             else {
                 arrayOut = [1.5*arrayIn[0]-0.5*arrayIn[1]];
@@ -385,9 +447,13 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
                 }
             }
         }
-        // hopefully length==numbricks+1, but do something regardless:
-        // given vals are brick boundaries
-        else return arrayIn.slice(0, numbricks+1);
+        else {
+            // hopefully length==numbricks+1, but do something regardless:
+            // given vals are brick boundaries
+            return isContour ?
+                arrayIn.slice(0, numbricks) :  // we must be strict for contours
+                arrayIn.slice(0, numbricks + 1);
+       }
     }
     else {
         dv = dvIn || 1;

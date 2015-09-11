@@ -2,63 +2,9 @@
 
 var Plotly = require('../../plotly');
 
-var Gl3dLayout = {};
+var Gl3dLayout = module.exports = {};
 
-module.exports = Gl3dLayout;
-
-function makeVector(x, y, z) {
-  return {
-    x: {type: 'number', dflt: x},
-    y: {type: 'number', dflt: y},
-    z: {type: 'number', dflt: z}
-  };
-}
-
-Gl3dLayout.layoutAttributes = {
-    bgcolor: {
-        type: 'color',
-        dflt: 'rgba(0,0,0,0)'
-    },
-    camera: {
-        up:     makeVector(0, 0, 1),
-        center: makeVector(0, 0, 0),
-        eye:    makeVector(1.25, 1.25, 1.25)
-    },
-    domain: {
-        x: [
-            {type: 'number', min: 0, max: 1},
-            {type: 'number', min: 0, max: 1}
-        ],
-        y:[
-            {type: 'number', min: 0, max: 1, dflt: 0},
-            {type: 'number', min: 0, max: 1, dflt: 1}
-        ]
-    },
-    _nestedModules: {  // nested module coupling
-        'xaxis': 'Gl3dAxes',
-        'yaxis': 'Gl3dAxes',
-        'zaxis': 'Gl3dAxes'
-    },
-    aspectmode: {
-        type: 'enumerated',
-        values: ['auto', 'cube', 'data', 'manual'],
-        dflt: 'auto'
-    },
-    aspectratio: { // must be positive (0's are coerced to 1)
-        x: {
-            type: 'number',
-            min: 0
-        },
-        y: {
-            type: 'number',
-            min: 0
-        },
-        z: {
-            type: 'number',
-            min: 0
-        }
-    }
-};
+Gl3dLayout.layoutAttributes = require('../attributes/gl3dlayout');
 
 Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
@@ -109,10 +55,8 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
             coerce('camera.' + cameraKeys[j] + '.z');
         }
 
-        coerce('domain.x[0]', i / scenesLength);
-        coerce('domain.x[1]', (i+1) / scenesLength);
-        coerce('domain.y[0]');
-        coerce('domain.y[1]');
+        coerce('domain.x', [i / scenesLength, (i+1) / scenesLength]);
+        coerce('domain.y');
 
         /*
          * coerce to positive number (min 0) but also do not accept 0 (>0 not >=0)

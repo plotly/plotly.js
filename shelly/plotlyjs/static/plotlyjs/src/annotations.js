@@ -54,89 +54,222 @@ annotations.ARROWPATHS = [
 ];
 
 annotations.layoutAttributes = {
+    _isLinkedToArray: true,
+
     text: {
-        type: 'string',
-        blankOk: false
+        valType: 'string',
+        role: 'info',
+        description: [
+            'Sets the text associated with this annotation.',
+            'Plotly uses a subset of HTML tags to do things like',
+            'newline (<br>), bold (<b></b>), italics (<i></i>),',
+            'hyperlinks (<a href=\'...\'></a>). Tags <em>, <sup>, <sub>',
+            '<span> are also supported.'
+        ].join(' ')
     },
     textangle: {
-        type: 'angle',
-        dflt: 0
+        valType: 'angle',
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Sets the angle at which the `text` is drawn',
+            'with respect to the horizontal.'
+        ].join(' ')
     },
-    font: {type: 'font'},
+    font: Plotly.Lib.extendFlat(Plotly.Plots.fontAttrs, {
+        description: 'Sets the annotation text font.'
+    }),
     opacity: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
-        dflt: 1
+        dflt: 1,
+        role: 'style',
+        description: 'Sets the opacity of the annotation (text + arrow).'
     },
     align: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['left', 'center', 'right'],
-        dflt: 'center'
+        dflt: 'center',
+        role: 'style',
+        description: [
+            'Sets the vertical alignment of the `text` with',
+            'respect to the set `x` and `y` position.',
+            'Has only an effect if `text` spans more two or more lines',
+            '(i.e. `text` contains one or more <br> HTML tags).'
+        ].join(' ')
     },
     bgcolor: {
-        type: 'color',
-        dflt: 'rgba(0,0,0,0)'
+        valType: 'color',
+        dflt: 'rgba(0,0,0,0)',
+        role: 'style',
+        description: 'Sets the background color of the annotation.'
     },
     bordercolor: {
-        type: 'color',
-        dflt: 'rgba(0,0,0,0)'
+        valType: 'color',
+        dflt: 'rgba(0,0,0,0)',
+        role: 'style',
+        description: [
+            'Sets the color of the border enclosing the annotation `text`.'
+        ].join(' ')
     },
     borderpad: {
-        type: 'number',
+        valType: 'number',
         min: 0,
-        dflt: 1
+        dflt: 1,
+        role: 'style',
+        description: [
+            'Sets the padding (in px) between the `text`',
+            'and the enclosing border.'
+        ].join(' ')
     },
     borderwidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
-        dflt: 1
+        dflt: 1,
+        role: 'style',
+        description: [
+            'Sets the width (in px) of the border enclosing',
+            'the annotation `text`.'
+        ].join(' ')
     },
     // arrow
     showarrow: {
-        type: 'boolean',
-        dflt: true
+        valType: 'boolean',
+        dflt: true,
+        role: 'style',
+        description: [
+            'Determines whether or not the annotation is drawn with an arrow.',
+            'If *true*, `text` is placed near the arrow\'s tail.',
+            'If *false*, `text` lines up with the `x` and `y` provided.'
+        ].join(' ')
     },
     arrowcolor: {
-        type: 'color'
+        valType: 'color',
+        role: 'style',
+        description: 'Sets the color of the annotation arrow.'
     },
     arrowhead: {
-        type: 'integer',
+        valType: 'integer',
         min: 0,
         max: annotations.ARROWPATHS.length,
-        dflt: 1
+        dflt: 1,
+        role: 'style',
+        description: 'Sets the annotation arrow head style.'
     },
     arrowsize: {
-        type: 'number',
+        valType: 'number',
         min: 0.3,
-        dflt: 1
+        dflt: 1,
+        role: 'style',
+        description: 'Sets the size (in px) of annotation arrow head.'
     },
     arrowwidth: {
-        type: 'number',
-        min: 0.1
+        valType: 'number',
+        min: 0.1,
+        role: 'style',
+        description: 'Sets the width (in px) of annotation arrow.'
     },
     ax: {
-        type: 'number',
-        dflt: -10
+        valType: 'number',
+        dflt: -10,
+        role: 'info',
+        description: [
+            'Sets the x component of the arrow tail about the arrow head.',
+            'A positive (negative) component corresponds to an arrow pointing',
+            'from right to left (left to right)'
+        ].join(' ')
     },
     ay: {
-        type: 'number',
-        dflt: -30
+        valType: 'number',
+        dflt: -30,
+        role: 'info',
+        description: [
+            'Sets the y component of the arrow tail about the arrow head.',
+            'A positive (negative) component corresponds to an arrow pointing',
+            'from bottom to top (top to bottom)'
+        ].join(' ')
     },
     // positioning
-    xref: {type: 'enumerated'},
-    x: {type: 'number'}, // but we will convert dates or categories to numbers
-    xanchor: {
-        type: 'enumerated',
-        values: ['auto', 'left', 'center', 'right'],
-        dflt: 'auto'
+    xref: {
+        valType: 'enumerated',
+        values: ['paper', '/^x[0-9]/*$'],
+        role: 'info',
+        description: [
+            'Sets the annotation\'s x coordinate axis.',
+            'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
+            'refers to an x coordinate',
+            'If set to *paper*, the `x` position refers to the distance from',
+            'the left side of the plotting area in normalized coordinates',
+            'where 0 (1) corresponds to the left (right) side.'
+        ].join(' ')
     },
-    yref: {type: 'enumerated'},
-    y: {type: 'number'}, // but we will convert dates or categories to numbers
+    x: {
+        valType: 'number',
+        role: 'info',
+        description: [
+            'Sets the annotation\'s x position.',
+            'Note that dates and categories are converted to numbers.'
+        ].join(' ')
+    },
+    xanchor: {
+        valType: 'enumerated',
+        values: ['auto', 'left', 'center', 'right'],
+        dflt: 'auto',
+        role: 'info',
+        description: [
+            'Sets the annotation\'s horizontal position anchor',
+            'This anchor binds the `x` position to the *left*, *center*',
+            'or *right* of the annotation.',
+            'For example, if `x` is set to 1, `xref` to *paper* and',
+            '`xanchor` to *right* then the right-most portion of the',
+            'annotation lines up with the right-most edge of the',
+            'plotting area.',
+            'If *auto*, the anchor is equivalent to *center* for',
+            'data-referenced annotations',
+            'whereas for paper-referenced, the anchor picked corresponds',
+            'to the closest side.'
+        ].join(' ')
+    },
+    yref: {
+        valType: 'enumerated',
+        values: ['paper', '/^y[0-9]/*$'],
+        role: 'info',
+        description: [
+            'Sets the annotation\'s y coordinate axis.',
+            'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
+            'refers to an y coordinate',
+            'If set to *paper*, the `y` position refers to the distance from',
+            'the bottom of the plotting area in normalized coordinates',
+            'where 0 (1) corresponds to the bottom (top).'
+        ].join(' ')
+    },
+    y: {
+        valType: 'number',
+        role: 'info',
+        description: [
+            'Sets the annotation\'s y position.',
+            'Note that dates and categories are converted to numbers.'
+        ].join(' ')
+    },
     yanchor: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
-        dflt: 'auto'
+        dflt: 'auto',
+        role: 'info',
+        description: [
+            'Sets the annotation\'s vertical position anchor',
+            'This anchor binds the `y` position to the *top*, *middle*',
+            'or *bottom* of the annotation.',
+            'For example, if `y` is set to 1, `yref` to *paper* and',
+            '`yanchor` to *top* then the top-most portion of the',
+            'annotation lines up with the top-most edge of the',
+            'plotting area.',
+            'If *auto*, the anchor is equivalent to *middle* for',
+            'data-referenced annotations',
+            'whereas for paper-referenced, the anchor picked corresponds',
+            'to the closest side.'
+        ].join(' ')
     }
 };
 
@@ -180,7 +313,7 @@ function handleAnnotationDefaults(annIn, fullLayout) {
     }
     coerce('text', showArrow ? '&nbsp;' : 'new text');
     coerce('textangle');
-    coerce('font', fullLayout.font);
+    Plotly.Lib.coerceFont(coerce, 'font', fullLayout.font);
 
     // positioning
     var axLetters = ['x','y'];
@@ -302,10 +435,10 @@ annotations.draw = function(gd, index, opt, value) {
             }
             return;
         }
-        else if(value==='add' || $.isPlainObject(value)) {
+        else if(value==='add' || Plotly.Lib.isPlainObject(value)) {
             fullLayout.annotations.splice(index,0,{});
 
-            var rule = $.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
+            var rule = Plotly.Lib.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
 
             if (layout.annotations) {
                 layout.annotations.splice(index, 0, rule);
@@ -338,7 +471,7 @@ annotations.draw = function(gd, index, opt, value) {
     // alter the input annotation as requested
     var optionsEdit = {};
     if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
-    else if($.isPlainObject(opt)) optionsEdit = opt;
+    else if(Plotly.Lib.isPlainObject(opt)) optionsEdit = opt;
 
     var optionKeys = Object.keys(optionsEdit);
     for(i = 0; i < optionKeys.length; i++) {
