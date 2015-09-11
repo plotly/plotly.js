@@ -1,7 +1,6 @@
 'use strict';
 
 var Plotly = require('./plotly'),
-    d3 = require('d3'),
     isNumeric = require('./isnumeric'),
     barAttrs = Plotly.Bars.attributes;
 
