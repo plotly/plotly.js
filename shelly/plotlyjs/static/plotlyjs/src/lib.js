@@ -1357,33 +1357,6 @@ lib.stripTrailingSlash = function (str) {
     return str;
 };
 
-// Helpers for defaults and attribute validation
-var fontAttrs = {
-    family: {
-        valType: 'string',
-        noBlank: true,
-        strict: true
-    },
-    size: {
-        valType: 'number',
-        min: 1
-    },
-    color: {valType: 'color'}
-};
-
-var fontAttrsArrayOk = null;
-function getFontAttrsArrayOk() {
-    if(fontAttrsArrayOk === null) {
-        var arrayOkExtend = {arrayOk: true};
-        fontAttrsArrayOk = {
-            family: lib.extendFlat(fontAttrs.family, arrayOkExtend),
-            size: lib.extendFlat(fontAttrs.size, arrayOkExtend),
-            color: lib.extendFlat(fontAttrs.color, arrayOkExtend)
-        };
-    }
-   return fontAttrsArrayOk;
-}
-
 var colorscaleNames = Object.keys(require('./colorscale').scales);
 
 lib.valObjects = {
@@ -1510,29 +1483,6 @@ lib.valObjects = {
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
             propOut.set(Plotly.Colorscale.getScale(v, dflt));
-        }
-    },
-    font: {
-        description: [
-            'An {object} describing a font.',
-            'The valid inner keys are:',
-            '- \'size\' (a number greater than *0*)',
-            '- \'color\' (a color string)',
-            '- \'family\' (a CSS font family name).'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt', 'arrayOk'],
-        coerceFunction: function(v, propOut, dflt, opts) {
-            if(!v) v = {};
-            var vOut = {},
-                _fontAttrs = (opts && opts.arrayOk) ?
-                    getFontAttrsArrayOk() : fontAttrs;
-
-            lib.coerce(v, vOut, _fontAttrs, 'size', dflt.size);
-            lib.coerce(v, vOut, _fontAttrs, 'color', dflt.color);
-            lib.coerce(v, vOut, _fontAttrs, 'family', dflt.family);
-
-            propOut.set(vOut);
         }
     },
     angle: {
@@ -1701,6 +1651,20 @@ lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
     lib.valObjects[opts.valType].coerceFunction(v, propOut, dflt, opts);
 
     return propOut.get();
+};
+
+// shortcut to coerce the three font attributes
+// 'coerce' is a lib.coerce wrapper with implied first three arguments
+lib.coerceFont = function(coerce, attr, dfltObj) {
+    var out = {};
+
+    dfltObj = dfltObj || {};
+
+    out.family = coerce(attr + '.family', dfltObj.family);
+    out.size = coerce(attr + '.size', dfltObj.size);
+    out.color = coerce(attr + '.color', dfltObj.color);
+
+    return out;
 };
 
 lib.noneOrAll = function(containerIn, containerOut, attrList) {
