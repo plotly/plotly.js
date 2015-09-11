@@ -188,11 +188,11 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
         // it's possible to have bins without data, if there's inferred data
         var binstrt = coerce(binDirection + 'bins.start');
         var binend = coerce(binDirection + 'bins.end');
-
-        if(binstrt===null && binend===null) {
-            var autobin = coerce('autobin' + binDirection);
-        } else {
+ 
+        if(binstrt!==undefined && binend!==undefined) {
             var autobin = coerce('autobin' + binDirection, false);
+        } else {
+            var autobin = coerce('autobin' + binDirection);
         }
 
         if(autobin) coerce('nbins' + binDirection);
