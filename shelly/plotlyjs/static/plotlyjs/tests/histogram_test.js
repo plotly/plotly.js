@@ -85,9 +85,9 @@ describe('Test histogram', function () {
 
         });
 
-        it('should set autobinx to false when xbins is supplied', function() {
+        it('should set autobinx to false if xbins is supplied and true if not', function() {
             traceIn = {
-                x: [1, 2, 2]
+                x: [1, 2, 2],
                 xbins:{
                     start: 1,
                     end: 3,
@@ -96,19 +96,17 @@ describe('Test histogram', function () {
             };
             supplyDefaults(traceIn, traceOut);
             expect(traceOut.autobinx).toBe(false);
-        });
 
-        it('should set autobinx to true when no xbins', function() {
             traceIn = {
-                x: [1, 2, 2]
+                x: [1, 2, 2],
             };
             supplyDefaults(traceIn, traceOut);
             expect(traceOut.autobinx).toBe(true);
         });
 
-        it('should set autobiny to false when ybins is supplied', function() {
+        it('should set autobiny to false if ybins is supplied and true if not', function() {
             traceIn = {
-                y: [1, 2, 2]
+                y: [1, 2, 2],
                 ybins:{
                     start: 1,
                     end: 3,
@@ -117,11 +115,9 @@ describe('Test histogram', function () {
             };
             supplyDefaults(traceIn, traceOut);
             expect(traceOut.autobiny).toBe(false);
-        });
 
-        it('should set autobiny to true when no ybins is supplied', function() {
             traceIn = {
-                y: [1, 2, 2]
+                y: [1, 2, 2],
             };
             supplyDefaults(traceIn, traceOut);
             expect(traceOut.autobiny).toBe(true);
