@@ -181,7 +181,7 @@ function mergeValTypeAndRole(attrs) {
     function makeSrcAttr(attrName) {
         return {
             valType: 'string',
-            role: 'data',
+            role: 'info',
             description: [
                 'Sets the source reference on plot.ly for ',
                 attrName, '.'
