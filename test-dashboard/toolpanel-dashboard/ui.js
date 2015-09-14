@@ -1,12 +1,13 @@
 'use strict';
 
-Plotly = window.Plotly;
+var Plotly = window.Plotly;
+var ToolPanel = window.ToolPanel;
 
 (function createPlot (divId) {
-
+    var containerDiv = document.getElementById('main');
     var graphDiv = document.createElement('div');
     graphDiv.id = divId;
-    document.body.appendChild(graphDiv);
+    containerDiv.appendChild(graphDiv);
 
     var trace1 = {
         x: [1, 2, 3, 4],
@@ -24,7 +25,7 @@ Plotly = window.Plotly;
 
     Plotly.newPlot(divId, data);
 
-    var toolPanel = new ToolPanel({Plotly: Plotly});
-    toolPanel.makeMenu(graphDiv);
+    graphDiv.toolPanel = new ToolPanel(Plotly, graphDiv);
+    graphDiv.toolPanel.makeMenu(graphDiv);
 
 })('yo');
