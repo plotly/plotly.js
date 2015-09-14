@@ -677,13 +677,11 @@ colorbar.attributes = {
         dflt: 'Click to enter colorscale title',
         description: 'Sets the title of the color bar.'
     },
-    titlefont: {
-        valType: 'font',
-        role: 'style',
+    titlefont: extendFlat(Plotly.Plots.fontAttrs, {
         description: [
             'Sets this color bar\'s title font.'
         ].join(' ')
-    },
+    }),
     titleside: {
         valType: 'enumerated',
         values: ['right', 'top', 'bottom'],
@@ -735,7 +733,7 @@ colorbar.supplyDefaults = function(containerIn, containerOut, layout) {
         {outerTicks: false, font: layout.font, noHover: true});
 
     coerce('title');
-    coerce('titlefont', layout.font);
+    Plotly.Lib.coerceFont(coerce, 'titlefont', layout.font);
     coerce('titleside');
 };
 
