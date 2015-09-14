@@ -218,16 +218,13 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
         var binend = coerce(binDirection + 'bins.end');
  
         if(binstrt!==undefined && binend!==undefined) {
-            var autobin = coerce('autobin' + binDirection, false);
-        } else {
-            var autobin = coerce('autobin' + binDirection);
-        }
-
-        if(autobin) coerce('nbins' + binDirection);
-        else {
-            coerce(binDirection + 'bins.start');
-            coerce(binDirection + 'bins.end');
+            binstrt;
+            binend;
             coerce(binDirection + 'bins.size');
+            coerce('autobin' + binDirection, false);
+        } else {
+            coerce('autobin' + binDirection);
+            coerce('nbins' + binDirection);
         }
     });
 };
