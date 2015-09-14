@@ -34,19 +34,19 @@ Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'], {
     }
 });
 
+var extendFlat = Plotly.Lib.extendFlat;
+
 axes.layoutAttributes = {
     title: {
         valType: 'string',
         role: 'info',
         description: 'Sets the title of this axis.'
     },
-    titlefont: {
-        valType: 'font',
-        role: 'style',
+    titlefont: extendFlat(Plotly.Plots.fontAttrs, {
         description: [
             'Sets this axis\' title font.'
         ].join(' ')
-    },
+    }),
     type: {
         valType: 'enumerated',
         // '-' means we haven't yet run autotype or couldn't find any data
@@ -216,11 +216,9 @@ axes.layoutAttributes = {
         role: 'style',
         description: 'Determines whether or not the tick labels are drawn.'
     },
-    tickfont: {
-        valType: 'font',
-        role: 'style',
+    tickfont: extendFlat(Plotly.Plots.fontAttrs, {
         description: 'Sets the tick font.'
-    },
+    }),
     tickangle: {
         valType: 'angle',
         dflt: 'auto',
@@ -594,7 +592,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     axes.setConvert(containerOut);
 
     coerce('title', defaultTitle);
-    coerce('titlefont', {
+    Plotly.Lib.coerceFont(coerce, 'titlefont', {
         family: font.family,
         size: Math.round(font.size * 1.2),
         color: font.color
@@ -655,7 +653,7 @@ axes.handleTickDefaults = function(containerIn, containerOut, coerce, axType, op
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
-        coerce('tickfont', options.font || {});
+        Plotly.Lib.coerceFont(coerce, 'tickfont', options.font || {});
         coerce('tickangle');
 
         var showAttrDflt = axes.getShowAttrDflt(containerIn);
