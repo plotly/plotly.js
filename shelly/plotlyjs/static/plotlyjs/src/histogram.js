@@ -218,7 +218,8 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
             binend = coerce(binDirection + 'bins.end'),
             validbin = binstrt!==undefined && binend!==undefined,
             autobin = validbin ? 
-            coerce('autobin' + binDirection, false) : coerce('autobin' + binDirection);
+                coerce('autobin' + binDirection, false) : 
+                coerce('autobin' + binDirection);
  
         if(autobin) coerce('nbins' + binDirection);
         else coerce(binDirection + 'bins.size');
