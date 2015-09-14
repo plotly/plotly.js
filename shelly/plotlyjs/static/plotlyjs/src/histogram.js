@@ -214,18 +214,14 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
     binDirections.forEach(function(binDirection){
         // data being binned - note that even though it's a little weird,
         // it's possible to have bins without data, if there's inferred data
-        var binstrt = coerce(binDirection + 'bins.start');
-        var binend = coerce(binDirection + 'bins.end');
+        var binstrt = coerce(binDirection + 'bins.start'),
+            binend = coerce(binDirection + 'bins.end'),
+            validbin = binstrt!==undefined && binend!==undefined,
+            autobin = validbin ? 
+            coerce('autobin' + binDirection, false) : coerce('autobin' + binDirection);
  
-        if(binstrt!==undefined && binend!==undefined) {
-            binstrt;
-            binend;
-            coerce(binDirection + 'bins.size');
-            coerce('autobin' + binDirection, false);
-        } else {
-            coerce('autobin' + binDirection);
-            coerce('nbins' + binDirection);
-        }
+        if(autobin) coerce('nbins' + binDirection);
+        else coerce(binDirection + 'bins.size');
     });
 };
 
