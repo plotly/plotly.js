@@ -112,6 +112,13 @@ plots.traceIs = function traceIs(traceType, category) {
  *   (setting the possible value for attrName)
  * attributes (object) attribute for traces of this subplot type
  *
+ * In trace objects `attr` is the object key taking a valid `id` as value
+ * (the set of all valid ids is generated below and stored in idRegex).
+ *
+ * In the layout object, a or several valid `attr` name(s) can be keys linked
+ * to a nested attribute objects
+ * (the set of all valid attr names is generated below and stored in attrRegex).
+ *
  * TODO use these in Lib.coerce
  */
 plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
@@ -132,11 +139,13 @@ plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
         attr: attr,
         idRoot: idRoot,
         attributes: attributes,
+        // register the regex representing the set of all valid attribute names
         attrRegex: isCartesian ?
-            [ makeRegex(attr[0]), makeRegex(attr[1]) ] :
+            { x: makeRegex(attr[0]), y: makeRegex(attr[1]) } :
             makeRegex(attr),
+        // register the regex representing the set of all valid attribute ids
         idRegex: isCartesian ?
-            [ makeRegex(idRoot[0]), makeRegex(idRoot[1]) ] :
+            { x: makeRegex(idRoot[0]), y: makeRegex(idRoot[1]) } :
             makeRegex(idRoot)
     };
 };

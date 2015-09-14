@@ -109,8 +109,8 @@ function getLayoutAttributes() {
     // add IS_SUBPLOT_OBJ attribute
     var gl3dRegex = subplotsRegistry.gl3d.attrRegex,
         geoRegex = subplotsRegistry.geo.attrRegex,
-        xaxisRegex = subplotsRegistry.cartesian.attrRegex[0],
-        yaxisRegex = subplotsRegistry.cartesian.attrRegex[1];
+        xaxisRegex = subplotsRegistry.cartesian.attrRegex.x,
+        yaxisRegex = subplotsRegistry.cartesian.attrRegex.y;
 
     Object.keys(layoutAttributes).forEach(function(k) {
         if(gl3dRegex.test(k) || geoRegex.test(k) || xaxisRegex.test(k) || yaxisRegex.test(k)) {

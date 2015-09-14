@@ -196,7 +196,7 @@ annotations.layoutAttributes = {
         valType: 'enumerated',
         values: [
             'paper',
-            Plotly.Plots.subplotsRegistry.cartesian.idRegex[0].toString()
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString()
         ],
         role: 'info',
         description: [
@@ -239,7 +239,7 @@ annotations.layoutAttributes = {
         valType: 'enumerated',
         values: [
             'paper',
-            Plotly.Plots.subplotsRegistry.cartesian.idRegex[1].toString()
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
         ],
         role: 'info',
         description: [
