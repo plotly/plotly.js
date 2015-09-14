@@ -155,7 +155,11 @@ plots.getSubplotData = function getSubplotData(data, type, subplotId) {
 
 // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
 plots.newTab = function(divid, layout) {
-    Plotly.ToolPanel.makeMenu(document.getElementById(divid));
+    var gd = document.getElementById(divid);
+    var toolPanel = new Plotly.ToolPanel(Plotly, gd);
+
+    toolPanel.makeMenu();
+
     var config = {
         workspace: true,
         editable: true,
@@ -484,7 +488,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // Polar plots
     if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
 
-    if(gd._context.editable) Plotly.ToolPanel.tweakMenu(gd);
+    if(gd._context.editable) gd.toolPanel.tweakMenu();
 
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
@@ -898,7 +902,7 @@ function plotPolar(gd, data, layout) {
         };
         title.call(setContenteditable);
 
-        Plotly.ToolPanel.tweakMenu(gd);
+        gd.toolPanel.tweakMenu();
     }
 
     gd._context.setBackground(gd, gd._fullLayout.paper_bgcolor);
