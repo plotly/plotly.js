@@ -41,7 +41,7 @@ function makeBinsAttr(axLetter) {
         },
         size: {
             valType: 'any', // for date axes
-            dflt: null,
+            dflt: 1,
             description: [
                 'Sets the step in-between value each', axLetter,
                 'axis bin.'
