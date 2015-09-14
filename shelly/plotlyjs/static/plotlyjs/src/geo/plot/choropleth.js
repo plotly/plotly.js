@@ -4,8 +4,8 @@
 
 var Plotly = require('../../plotly'),
     params = require('../lib/params'),
-    extractTopojson = require('../lib/topojson-utils').extractTopojson,
-    locationToId = require('../lib/location-utils').locationToId;
+    getTopojsonFeatures = require('../lib/topojson-utils').getTopojsonFeatures,
+    locationToFeature = require('../lib/location-utils').locationToFeature;
 
 var plotChoropleth = module.exports = {};
 
@@ -13,23 +13,19 @@ var plotChoropleth = module.exports = {};
 plotChoropleth.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
         locations = trace.locations,
-        N = locations.length,
-        fromTopojson = extractTopojson(trace, topojson),
-        features = fromTopojson.features,
-        ids = fromTopojson.ids,
+        len = locations.length,
+        features = getTopojsonFeatures(trace, topojson),
         markerLine = (trace.marker || {}).line || {};
-         
-    var indexOfId, feature;
 
-    for(var i = 0; i < N; i++) {
-        indexOfId = ids.indexOf(locationToId(trace.locationmode, locations[i]));
-        if(indexOfId === -1) continue;
+    var feature;
 
-        feature = features[indexOfId];
+    for(var i = 0; i < len; i++) {
+        feature = locationToFeature(trace.locationmode, locations[i], features);
+        if(feature === undefined) continue;
 
         // 'data_array' attributes
         feature.z = trace.z[i];
-        if(trace.text!==undefined) feature.tx = trace.text[i];
+        if(trace.text !== undefined) feature.tx = trace.text[i];
 
         // 'arrayOK' attributes
         mergeArray(markerLine.color, feature, 'mlc', i);
@@ -57,23 +53,6 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
     gChoropleth.selectAll('*').remove();
     gBaseLayerOverChoropleth.selectAll('*').remove();
 
-    // TODO incorporate 'hoverinfo'
-    function handleMouseOver(d) {
-        if(!geo.showHover) return;
-
-        var xy = geo.projection(d.properties.centroid);
-        Plotly.Fx.loneHover(
-            {
-                x: xy[0],
-                y: xy[1],
-                name: d.id,
-                zLabel: d.z,
-                text: d.tx
-            }, 
-            {container: geo.hoverContainer.node()}
-        );
-    }
-
     var gChoroplethTraces = gChoropleth
         .selectAll('g.trace.scatter')
         .data(choroplethData);
@@ -85,7 +64,24 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         .each(function(trace) {
             if(trace.visible !== true) return;
 
-            var cdi = plotChoropleth.calcGeoJSON(trace, topojson);
+            var cdi = plotChoropleth.calcGeoJSON(trace, topojson),
+                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace);
+
+            function handleMouseOver(d) {
+                if(!geo.showHover) return;
+
+                var xy = geo.projection(d.properties.ct);
+                cleanHoverLabelsFunc(d);
+
+                Plotly.Fx.loneHover({
+                    x: xy[0],
+                    y: xy[1],
+                    name: d.nameLabel,
+                    text: d.textLabel
+                }, {
+                    container: geo.hoverContainer.node()
+                });
+            }
 
             d3.select(this)
                 .selectAll('path.choroplethlocation')
@@ -102,7 +98,7 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                     })
                     .on('mouseup', handleMouseOver);  // ~ 'zoomend'
         });
-        
+
     // some baselayers are drawn over choropleth
     for(var i = 0; i < baseLayersOverChoropleth.length; i++) {
         layerName = baseLayersOverChoropleth[i];
@@ -138,4 +134,47 @@ plotChoropleth.style = function(geo) {
 // similar to Lib.mergeArray, but using inside a loop
 function mergeArray(traceAttr, feature, featureAttr, i) {
     if(Array.isArray(traceAttr)) feature[featureAttr] = traceAttr[i];
+}
+
+function makeCleanHoverLabelsFunc(geo, trace) {
+    var hoverinfo = trace.hoverinfo;
+
+    if(hoverinfo === 'none') {
+        return function cleanHoverLabelsFunc(d) {
+            delete d.nameLabel;
+            delete d.textLabel;
+        };
+    }
+
+    var hoverinfoParts = (hoverinfo === 'all') ?
+            Plotly.Choropleth.attributes.hoverinfo.flags :
+            hoverinfo.split('+');
+
+    var hasName = (hoverinfoParts.indexOf('name') !== -1),
+        hasLocation = (hoverinfoParts.indexOf('location') !== -1),
+        hasZ = (hoverinfoParts.indexOf('z') !== -1),
+        hasText = (hoverinfoParts.indexOf('text') !== -1),
+        hasIdAsNameLabel = !hasName && hasLocation;
+
+    function formatter(val) {
+        var axis = geo.mockAxis;
+        return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text;
+    }
+
+    return function cleanHoverLabelsFunc(d) {
+        // put location id in name label container
+        // if name isn't part of hoverinfo
+        var thisText = [];
+
+        if(hasIdAsNameLabel) d.nameLabel = d.id;
+        else {
+            if(hasName) d.nameLabel = trace.name;
+            if(hasLocation) thisText.push(d.id);
+        }
+
+        if(hasZ) thisText.push(formatter(d.z));
+        if(hasText) thisText.push(d.tx);
+
+        d.textLabel = thisText.join('<br>');
+    };
 }

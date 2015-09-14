@@ -9,13 +9,9 @@ var heatmap = module.exports = {},
     isNumeric = require('./isnumeric'),
     scatterAttrs = Plotly.Scatter.attributes;
 
-Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap']);
-
-var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
-
-heatmap.attributes = {
-    overview: [
-        'The data the describes the heatmap value-to-color mapping',
+Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap'], {
+    description: [
+        'The data that describes the heatmap value-to-color mapping',
         'is set in `z`.',
         'Data in `z` can either be a {2D array} of values (ragged or not)',
         'or a 1D array of values.',
@@ -37,8 +33,12 @@ heatmap.attributes = {
 
         'In the case where `z` is a 1D {array}, the x and y coordinates must be',
         'provided in `x` and `y` respectively to form data triplets.'
-    ].join(' '),
+    ].join(' ')
+});
 
+var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+
+heatmap.attributes = {
     z: {
         valType: 'data_array',
         description: 'Sets the z data.'
@@ -56,11 +56,13 @@ heatmap.attributes = {
     transpose: {
         valType: 'boolean',
         dflt: false,
+        role: 'info',
         description: 'Transposes the z data.'
     },
     xtype: {
         valType: 'enumerated',
         values: ['array', 'scaled'],
+        role: 'info',
         description: [
             'If *array*, the heatmap\'s x coordinates are given by *x*',
             '(the default behavior when `x` is provided).',
@@ -71,6 +73,7 @@ heatmap.attributes = {
     ytype: {
         valType: 'enumerated',
         values: ['array', 'scaled'],
+        role: 'info',
         description: [
             'If *array*, the heatmap\'s y coordinates are given by *y*',
             '(the default behavior when `y` is provided)',
@@ -90,6 +93,7 @@ heatmap.attributes = {
         valType: 'enumerated',
         values: ['fast', 'best', false],
         dflt: false,
+        role: 'style',
         description: [
             'Picks a smoothing algorithm use to smooth `z` data.'
         ].join(' ')
@@ -97,6 +101,7 @@ heatmap.attributes = {
     connectgaps: {
         valType: 'boolean',
         dflt: false,
+        role: 'info',
         description: [
             'Determines whether or not gaps',
             '(i.e. {nan} or missing values)',
@@ -222,16 +227,23 @@ heatmap.hasColumns = function(trace) {
     return !Array.isArray(trace.z[0]);
 };
 
-heatmap.convertColumnXYZ = function(trace) {
-    var xCol = trace.x,
-        yCol = trace.y,
+heatmap.convertColumnXYZ = function(trace, xa, ya) {
+    var xCol = trace.x.slice(),
+        yCol = trace.y.slice(),
         zCol = trace.z,
         textCol = trace.text,
         colLen = Math.min(xCol.length, yCol.length, zCol.length),
         hasColumnText = (textCol!==undefined && !Array.isArray(textCol[0]));
 
+    var i;
+
     if(colLen < xCol.length) xCol = xCol.slice(0, colLen);
     if(colLen < yCol.length) yCol = yCol.slice(0, colLen);
+
+    for(i = 0; i < colLen; i++) {
+        xCol[i] = xa.d2c(xCol[i]);
+        yCol[i] = ya.d2c(yCol[i]);
+    }
 
     var xColdv = Plotly.Lib.distinctVals(xCol),
         x = xColdv.vals,
@@ -243,7 +255,7 @@ heatmap.convertColumnXYZ = function(trace) {
 
     if(hasColumnText) text = Plotly.Lib.init2dArray(y.length, x.length);
 
-    for(var i = 0; i < colLen; i++) {
+    for(i = 0; i < colLen; i++) {
         ix = Plotly.Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
         iy = Plotly.Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
 
@@ -292,7 +304,7 @@ heatmap.calc = function(gd, trace) {
         z = binned.z;
     }
     else {
-        if(heatmap.hasColumns(trace)) heatmap.convertColumnXYZ(trace);
+        if(heatmap.hasColumns(trace)) heatmap.convertColumnXYZ(trace, xa, ya);
 
         x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
         y = trace.y ? ya.makeCalcdata(trace, 'y') : [];

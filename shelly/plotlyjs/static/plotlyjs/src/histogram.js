@@ -12,10 +12,29 @@ var histogram = module.exports = {},
  * to allow quadrature combination of errors in summed histograms...
  */
 Plotly.Plots.register(Plotly.Bars, 'histogram',
-    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend']);
+    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'], {
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'for vertically spanning histograms and',
+        'in `y` for horizontally spanning histograms.',
+
+        'Binning options are set `xbins` and `ybins` respectively',
+        'if no aggregation data is provided.'
+    ].join(' ')
+});
 
 Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
-    ['cartesian', '2dMap', 'histogram']);
+    ['cartesian', '2dMap', 'histogram'], {
+    hrName: 'histogram_2d',
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'and `y` (where `x` and `y` represent marginal distributions,',
+        'binning is set in `xbins` and `ybins` in this case)',
+        'or `z` (where `z` represent the 2D distribution and binning set,',
+        'binning is set by `x` and `y` in this case).',
+        'The resulting distribution is visualized as a heatmap.'
+    ].join(' ')
+});
 
 // histogram has its own calc function,
 // but uses Bars.plot to display
@@ -26,6 +45,7 @@ function makeBinsAttr(axLetter) {
         start: {
             valType: 'number',
             dflt: null,
+            role: 'style',
             description: [
                 'Sets the starting value for the', axLetter,
                 'axis bins.'
@@ -34,6 +54,7 @@ function makeBinsAttr(axLetter) {
         end: {
             valType: 'number',
             dflt: null,
+            role: 'style',
             description: [
                 'Sets the end value for the', axLetter,
                 'axis bins.'
@@ -42,6 +63,7 @@ function makeBinsAttr(axLetter) {
         size: {
             valType: 'any', // for date axes
             dflt: 1,
+            role: 'style',
             description: [
                 'Sets the step in-between value each', axLetter,
                 'axis bin.'
@@ -68,12 +90,13 @@ histogram.attributes = {
         description: 'Sets the aggregation data.'
     },
     marker: {
-        color: {valType: 'data_array'}
+        color: {valType: 'data_array'}  // FIXME this overrides 'bar'
     },
     orientation: barAttrs.orientation,
     histfunc: {
         valType: 'enumerated',
         values: ['count', 'sum', 'avg', 'min', 'max'],
+        role: 'style',
         dflt: 'count',
         description: [
             'Specifies the binning function used for this histogram trace.',
@@ -91,6 +114,7 @@ histogram.attributes = {
         valType: 'enumerated',
         values: ['', 'percent', 'probability', 'density', 'probability density'],
         dflt: '',
+        role: 'style',
         description: [
             'Specifies the type of normalization used for this histogram trace.',
 
@@ -114,6 +138,7 @@ histogram.attributes = {
     autobinx: {
         valType: 'boolean',
         dflt: true,
+        role: 'style',
         description: [
             'Determines whether or not the x axis bin attributes are picked',
             'by an algorithm.'
@@ -123,12 +148,14 @@ histogram.attributes = {
         valType: 'integer',
         min: 0,
         dflt: 0,
+        role: 'style',
         description: 'Sets the number of x axis bins.'
     },
     xbins: makeBinsAttr('x'),
     autobiny: {
         valType: 'boolean',
         dflt: true,
+        role: 'style',
         description: [
             'Determines whether or not the y axis bin attributes are picked',
             'by an algorithm.'
@@ -138,6 +165,7 @@ histogram.attributes = {
         valType: 'integer',
         min: 0,
         dflt: 0,
+        role: 'style',
         description: 'Sets the number of y axis bins.'
     },
     ybins: makeBinsAttr('y')

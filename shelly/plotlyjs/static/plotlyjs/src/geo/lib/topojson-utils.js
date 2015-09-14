@@ -20,12 +20,9 @@ topojsonUtils.getTopojsonPath = function(topojsonName) {
     return topojsonUrl + topojsonName + '.json';
 };
 
-topojsonUtils.extractTopojson = function(trace, topojson) {
+topojsonUtils.getTopojsonFeatures = function(trace, topojson) {
     var layer = locationmodeToLayer[trace.locationmode],
         obj = topojson.objects[layer];
 
-    return {
-        features: topojsonFeature(topojson, obj).features,
-        ids: obj.properties.ids
-    };
+    return topojsonFeature(topojson, obj).features;
 };
