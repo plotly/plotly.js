@@ -88,7 +88,7 @@ describe('Test histogram', function () {
         it('should set autobinx to false if xbins is supplied and true if not', function() {
             traceIn = {
                 x: [1, 2, 2],
-                xbins:{
+                xbins: {
                     start: 1,
                     end: 3,
                     size: 1
@@ -107,7 +107,7 @@ describe('Test histogram', function () {
         it('should set autobiny to false if ybins is supplied and true if not', function() {
             traceIn = {
                 y: [1, 2, 2],
-                ybins:{
+                ybins: {
                     start: 1,
                     end: 3,
                     size: 1
