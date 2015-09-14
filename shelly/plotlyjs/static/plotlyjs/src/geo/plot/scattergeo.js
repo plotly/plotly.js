@@ -4,17 +4,17 @@
 
 var Plotly = require('../../plotly'),
     getTopojsonFeatures = require('../lib/topojson-utils').getTopojsonFeatures,
-    locationToFeature = require('../lib/location-utils').locationToFeature;
+    locationToFeature = require('../lib/location-utils').locationToFeature,
+    arrayToCalcItem = require('../lib/array-to-calc-item');
 
 var plotScatterGeo = module.exports = {};
 
 
 plotScatterGeo.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
-        marker = trace.marker || {},
         hasLocationData = Array.isArray(trace.locations);
 
-    var len, features, getLonLat, lonlat, locations;
+    var len, features, getLonLat, lonlat, locations, calcItem;
 
     if(hasLocationData) {
         locations = trace.locations;
@@ -37,23 +37,51 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
 
     for(var i = 0; i < len; i++) {
         lonlat = getLonLat(trace, i);
-        if(!lonlat) continue;
 
-        cdi.push({
+        if(!lonlat) continue;  // filter the blank points here
+
+        calcItem = {
             lon: lonlat[0],
             lat: lonlat[1],
             location: hasLocationData ? trace.locations[i] : null
-        });
+        };
+
+        arrayItemToCalcdata(trace, calcItem, i);
+
+        cdi.push(calcItem);
     }
 
-    if(cdi.length > 0) {
-        cdi[0].trace = trace;
-        Plotly.Lib.mergeArray(marker.size, cdi, 'ms');
-        Plotly.Scatter.arraysToCalcdata(cdi);
-    }
+    if(cdi.length > 0) cdi[0].trace = trace;
 
     return cdi;
 };
+
+// similar Scatter.arraysToCalcdata but inside a filter loop
+function arrayItemToCalcdata(trace, calcItem, i) {
+    var marker = trace.marker;
+
+    function merge(traceAttr, calcAttr) {
+        arrayToCalcItem(traceAttr, calcItem, calcAttr, i);
+    }
+
+    merge(trace.text, 'tx');
+    merge(trace.textposition, 'tp');
+    if(trace.textfont) {
+        merge(trace.textfont.size, 'ts');
+        merge(trace.textfont.color, 'tc');
+        merge(trace.textfont.family, 'tf');
+    }
+
+    if(marker && marker.line) {
+        var markerLine = marker.line;
+        merge(marker.opacity, 'mo');
+        merge(marker.symbol, 'mx');
+        merge(marker.color, 'mc');
+        merge(marker.size, 'ms');
+        merge(markerLine.color, 'mlc');
+        merge(markerLine.width, 'mlw');
+    }
+}
 
 function makeLineGeoJSON(trace) {
     var N = trace.lon.length,
@@ -108,8 +136,8 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 return;
             }
 
-           var cdi = plotScatterGeo.calcGeoJSON(trace, topojson),
-               cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace);
+            var cdi = plotScatterGeo.calcGeoJSON(trace, topojson),
+                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace);
 
             var hoverinfo = trace.hoverinfo,
                 hasNameLabel = (hoverinfo === 'all' ||
