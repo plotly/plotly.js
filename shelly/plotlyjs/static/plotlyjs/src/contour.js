@@ -125,10 +125,11 @@ contour.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         return Plotly.Lib.coerce(traceIn, traceOut, contour.attributes, attr, dflt);
     }
 
-    var autocontour = coerce('autocontour');
+    var contourstart = coerce('contours.start'),
+        contourend = coerce('contours.end'),
+        validcont = contourstart!==undefined && contourend!==undefined,
+        autocontour = validcont ? coerce('autocontour', false) : coerce('autocontour');
     if(autocontour) coerce('ncontours');
-    coerce('contours.start');
-    coerce('contours.end');
     coerce('contours.size');
 
     var coloring = coerce('contours.coloring');
