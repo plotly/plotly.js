@@ -130,7 +130,7 @@ contour.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         validcont = contourstart!==undefined && contourend!==undefined,
         autocontour = validcont ? coerce('autocontour', false) : coerce('autocontour');
     if(autocontour) coerce('ncontours');
-    coerce('contours.size');
+    else coerce('contours.size');
 
     var coloring = coerce('contours.coloring');
 
@@ -155,8 +155,7 @@ contour.calc = function(gd, trace) {
         contours = trace.contours;
 
     // check if we need to auto-choose contour levels
-    if(trace.autocontour!==false || !contours.size ||
-            contours.start===undefined || contours.end===undefined) {
+    if(trace.autocontour!==false) {
         var dummyAx = {
             type: 'linear',
             range: [trace.zmin, trace.zmax]
