@@ -3,10 +3,12 @@
 var Plotly = require('./plotly'),
     objectAssign = require('object-assign');
 
-var NESTED_MODULE_ID = '_nestedModules',
-    COMPOSED_MODULE_ID = '_composedModules',
-    IS_LINKED_TO_ARRAY = '_isLinkedToArray',
+var NESTED_MODULE = '_nestedModules',
+    COMPOSED_MODULE = '_composedModules',
     IS_SUBPLOT_OBJ = '_isSubplotObj';
+
+// list of underscore attributes to keep in schema as is
+var UNDERSCORE_ATTRS = ['_isLinkedToArray', '_isSubplotObj'];
 
 var plotSchema = {
     traces: {},
@@ -34,7 +36,7 @@ PlotSchema.crawl = function(attrs, callback) {
     Object.keys(attrs).forEach(function(attrName) {
         var attr = attrs[attrName];
 
-        callback(attr, attrName);
+        callback(attr, attrName, attrs);
 
         if(PlotSchema.isValObject(attr)) return;
         if(Plotly.Lib.isPlainObject(attr)) PlotSchema.crawl(attr, callback);
@@ -49,6 +51,7 @@ function getTraceAttributes(type) {
     var globalAttributes = Plotly.Plots.attributes,
         _module = getModule({type: type}),
         meta = getMeta(type),
+        subplotRegistry = getSubplotRegistry(type),
         attributes = {},
         layoutAttributes = {};
 
@@ -59,6 +62,11 @@ function getTraceAttributes(type) {
     attributes = coupleAttrs(
         _module.attributes, attributes, 'attributes', type
     );
+
+    // subplot attributes
+    if(subplotRegistry.attributes !== undefined) {
+        attributes = objectAssign(attributes, subplotRegistry.attributes);
+    }
 
     // global attributes (same for all trace types)
     attributes = objectAssign(attributes, globalAttributes);
@@ -90,9 +98,6 @@ function getLayoutAttributes() {
         subplotsRegistry = Plotly.Plots.subplotsRegistry,
         layoutAttributes = {};
 
-    // global attributes (same for all trace types)
-    layoutAttributes = objectAssign(layoutAttributes, globalLayoutAttributes);
-
     // layout module attributes (+ nested + composed)
     layoutAttributes = coupleAttrs(
         globalLayoutAttributes, layoutAttributes, 'layoutAttributes', '*'
@@ -100,23 +105,30 @@ function getLayoutAttributes() {
 
     // FIXME polar layout attributes
     layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
-    layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
 
-    // add IS_SUBPLOT_OBJ key
+    // add IS_SUBPLOT_OBJ attribute
+    var gl3dRegex = subplotsRegistry.gl3d.attrRegex,
+        geoRegex = subplotsRegistry.geo.attrRegex,
+        xaxisRegex = subplotsRegistry.cartesian.attrRegex.x,
+        yaxisRegex = subplotsRegistry.cartesian.attrRegex.y;
+
     Object.keys(layoutAttributes).forEach(function(k) {
-        if(subplotsRegistry.gl3d.idRegex.test(k) ||
-            subplotsRegistry.geo.idRegex.test(k) ||
-            /^xaxis[0-9]*$/.test(k) ||
-            /^yaxis[0-9]*$/.test(k)
-          ) layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
+        if(gl3dRegex.test(k) || geoRegex.test(k) || xaxisRegex.test(k) || yaxisRegex.test(k)) {
+             layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
+        }
     });
+
+    layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
 
     mergeValTypeAndRole(layoutAttributes);
     plotSchema.layout = { layoutAttributes: layoutAttributes };
 }
 
 function getDefs() {
-    plotSchema.defs = { valObjects: Plotly.Lib.valObjects };
+    plotSchema.defs = {
+        valObjects: Plotly.Lib.valObjects,
+        metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role'])
+    };
 }
 
 function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
@@ -125,7 +137,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
 
     Object.keys(attrsIn).forEach(function(k) {
 
-        if(k === NESTED_MODULE_ID) {
+        if(k === NESTED_MODULE) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
                 nestedModule = getModule({module: attrsIn[k][kk]});
                 if(nestedModule === undefined) return;
@@ -141,7 +153,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             return;
         }
 
-        if(k === COMPOSED_MODULE_ID) {
+        if(k === COMPOSED_MODULE) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
                 if(kk !== type) return;
 
@@ -158,7 +170,10 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             return;
         }
 
-        attrsOut[k] = objectAssign({}, attrsIn[k]);
+        // underscore attributes are booleans
+        attrsOut[k] = (UNDERSCORE_ATTRS.indexOf(k) !== -1) ?
+            attrsIn[k] :
+            objectAssign({}, attrsIn[k]);
     });
 
     return attrsOut;
@@ -166,11 +181,34 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
 
 function mergeValTypeAndRole(attrs) {
 
-    function callback(attr) {
+    function makeSrcAttr(attrName) {
+        return {
+            valType: 'string',
+            role: 'info',
+            description: [
+                'Sets the source reference on plot.ly for ',
+                attrName, '.'
+            ].join(' ')
+        };
+    }
+
+    function callback(attr, attrName, attrs) {
         if(PlotSchema.isValObject(attr)) {
-           if(attr.valType === 'data_array') attr.role = 'data';
+            if(attr.valType === 'data_array') {
+                // all 'data_array' attrs have role 'data'
+                attr.role = 'data';
+                // all 'data_array' attrs have a corresponding 'src' attr
+                attrs[attrName + 'src'] = makeSrcAttr(attrName);
+           }
+           else if(attr.arrayOk === true) {
+                // all 'arrayOk' attrs have a corresponding 'src' attr
+                attrs[attrName + 'src'] = makeSrcAttr(attrName);
+           }
         }
-        else if(Plotly.Lib.isPlainObject(attr)) attr.role = 'object';
+        else if(Plotly.Lib.isPlainObject(attr)) {
+            // all attrs container objects get role 'object'
+            attr.role = 'object';
+        }
     }
 
     PlotSchema.crawl(attrs, callback);
@@ -189,10 +227,12 @@ function getModule(arg) {
 
 function removeUnderscoreAttrs(attributes) {
     Object.keys(attributes).forEach(function(k){
-        if(k.charAt(0) === '_' && k !== IS_LINKED_TO_ARRAY) delete attributes[k];
+        if(k.charAt(0) === '_' &&
+            UNDERSCORE_ATTRS.indexOf(k) === -1) delete attributes[k];
     });
     return attributes;
 }
+
 function getMeta(type) {
     if(type === 'area') return {};  // FIXME
     return Plotly.Plots.modules[type].meta || {};
@@ -206,5 +246,17 @@ function assignPolarLayoutAttrs(layoutAttributes) {
 
     layoutAttributes = objectAssign(layoutAttributes, polarAxisAttrs.layout);
 
-    return layoutAttributes;
+    return layoutAttributes;  // FIXME
+}
+
+function getSubplotRegistry(traceType) {
+    var subplotsRegistry = Plotly.Plots.subplotsRegistry,
+        subplotType = Object.keys(subplotsRegistry).filter(function(subplotType) {
+            return Plotly.Plots.traceIs({type: traceType}, subplotType);
+        })[0];
+
+    if(traceType === 'area') return {};  // FIXME
+    if(subplotType === undefined) return {};
+
+    return subplotsRegistry[subplotType];
 }
