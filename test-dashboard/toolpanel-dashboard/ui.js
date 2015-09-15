@@ -3,10 +3,14 @@
 var Plotly = window.Plotly;
 var ToolPanel = window.ToolPanel;
 
-(function createPlot (divId) {
+function createPlot (divId) {
     var containerDiv = document.getElementById('main');
     var graphDiv = document.createElement('div');
     graphDiv.id = divId;
+    graphDiv.style.width = '600px';
+    graphDiv.style.display = 'inline-block';
+    graphDiv.style.margin = '10px';
+    graphDiv.style.position = 'relative';
     containerDiv.appendChild(graphDiv);
 
     var trace1 = {
@@ -25,7 +29,13 @@ var ToolPanel = window.ToolPanel;
 
     Plotly.newPlot(divId, data);
 
-    graphDiv.toolPanel = new ToolPanel(Plotly, graphDiv);
+    graphDiv.toolPanel = new ToolPanel(Plotly, graphDiv, {
+        standalone: true
+    });
     graphDiv.toolPanel.makeMenu(graphDiv);
 
-})('yo');
+}
+
+['one', 'two'].forEach(function (index) {
+    createPlot(index);
+});
