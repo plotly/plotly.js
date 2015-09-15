@@ -84,4 +84,50 @@ describe('plot schema', function() {
             }
         );
     });
+
+    it('all subplot objects should contain _isSubplotObj', function() {
+        var IS_SUBPLOT_OBJ = '_isSubplotObj',
+            astrs = ['xaxis', 'yaxis', 'scene', 'geo'],
+            list = [];
+
+        // check if the subplot objects have '_isSubplotObj'
+        astrs.forEach(function(astr) {
+            expect(
+                Plotly.Lib.nestedProperty(
+                    plotSchema.layout.layoutAttributes,
+                    astr + '.' + IS_SUBPLOT_OBJ
+                ).get()
+            ).toBe(true);
+        });
+
+        // check that no other object has '_isSubplotObj'
+        assertPlotSchema(
+            function(attr, attrName) {
+                if(attr[IS_SUBPLOT_OBJ] === true) list.push(attrName);
+            }
+        );
+        expect(list).toEqual(astrs);
+    });
+
+    it('layout.annotations and layout.shapes should contain _isLinkedToArray', function() {
+        var IS_LINKED_TO_ARRAY = '_isLinkedToArray',
+            astrs = ['annotations', 'shapes'],
+            list = [];
+
+        astrs.forEach(function(astr) {
+            expect(
+                Plotly.Lib.nestedProperty(
+                    plotSchema.layout.layoutAttributes,
+                    astr + '.' + IS_LINKED_TO_ARRAY
+                ).get()
+            ).toBe(true);
+        });
+
+        assertPlotSchema(
+            function(attr, attrName) {
+                if(attr[IS_LINKED_TO_ARRAY] === true) list.push(attrName);
+            }
+        );
+        expect(list).toEqual(astrs);
+    });
 });
