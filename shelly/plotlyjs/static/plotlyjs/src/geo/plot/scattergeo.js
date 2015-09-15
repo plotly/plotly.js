@@ -3,56 +3,85 @@
 /* global d3:false */
 
 var Plotly = require('../../plotly'),
-    extractTopojson = require('../lib/topojson-utils').extractTopojson,
-    locationToId = require('../lib/location-utils').locationToId;
+    getTopojsonFeatures = require('../lib/topojson-utils').getTopojsonFeatures,
+    locationToFeature = require('../lib/location-utils').locationToFeature,
+    arrayToCalcItem = require('../lib/array-to-calc-item');
 
 var plotScatterGeo = module.exports = {};
 
+
 plotScatterGeo.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
-        marker = trace.marker || {},
         hasLocationData = Array.isArray(trace.locations);
 
-    var N, fromTopojson, features, ids, getLonLat, lonlat, locations, indexOfId;
+    var len, features, getLonLat, lonlat, locations, calcItem;
 
     if(hasLocationData) {
         locations = trace.locations;
-        N = locations.length;
-        fromTopojson = extractTopojson(trace, topojson);
-        features = fromTopojson.features;
-        ids = fromTopojson.ids;
+        len = locations.length;
+        features = getTopojsonFeatures(trace, topojson);
         getLonLat = function(trace, i) {
-            indexOfId = ids.indexOf(locationToId(trace.locationmode, locations[i]));
-            if(indexOfId === -1) return;
-            return features[indexOfId].properties.centroid;
+            var feature = locationToFeature(trace.locationmode, locations[i], features);
+
+            return (feature !== undefined) ?
+                feature.properties.ct :
+                undefined;
         };
     }
     else {
-        N = trace.lon.length;
+        len = trace.lon.length;
         getLonLat = function(trace, i) {
             return [trace.lon[i], trace.lat[i]];
         };
     }
 
-    for(var i = 0; i < N; i++) {
+    for(var i = 0; i < len; i++) {
         lonlat = getLonLat(trace, i);
-        if(!lonlat) continue;
 
-        cdi.push({
+        if(!lonlat) continue;  // filter the blank points here
+
+        calcItem = {
             lon: lonlat[0],
             lat: lonlat[1],
             location: hasLocationData ? trace.locations[i] : null
-        });
+        };
+
+        arrayItemToCalcdata(trace, calcItem, i);
+
+        cdi.push(calcItem);
     }
 
-    if(cdi.length > 0) {
-        cdi[0].trace = trace;
-        Plotly.Lib.mergeArray(marker.size, cdi, 'ms');
-        Plotly.Scatter.arraysToCalcdata(cdi);
-    }
+    if(cdi.length > 0) cdi[0].trace = trace;
 
     return cdi;
 };
+
+// similar Scatter.arraysToCalcdata but inside a filter loop
+function arrayItemToCalcdata(trace, calcItem, i) {
+    var marker = trace.marker;
+
+    function merge(traceAttr, calcAttr) {
+        arrayToCalcItem(traceAttr, calcItem, calcAttr, i);
+    }
+
+    merge(trace.text, 'tx');
+    merge(trace.textposition, 'tp');
+    if(trace.textfont) {
+        merge(trace.textfont.size, 'ts');
+        merge(trace.textfont.color, 'tc');
+        merge(trace.textfont.family, 'tf');
+    }
+
+    if(marker && marker.line) {
+        var markerLine = marker.line;
+        merge(marker.opacity, 'mo');
+        merge(marker.symbol, 'mx');
+        merge(marker.color, 'mc');
+        merge(marker.size, 'ms');
+        merge(markerLine.color, 'mlc');
+        merge(markerLine.width, 'mlw');
+    }
+}
 
 function makeLineGeoJSON(trace) {
     var N = trace.lon.length,
@@ -77,31 +106,6 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
     // TODO move to more d3-idiomatic pattern (that's work on replot)
     // N.B. html('') does not work in IE11
     gScatterGeo.selectAll('*').remove();
-
-    function handleMouseOver(d) {
-        if(!geo.showHover) return;
-
-        var xy = geo.projection([d.lon, d.lat]),
-            trace = d3.select(this.parentNode).data()[0],
-            text;
-
-        // TODO incorporate 'hoverinfo'
-        if(Array.isArray(trace.locations)) text = d.location;
-        else text = '(' + d.lon + ', ' + d.lat + ')';
-
-        if(d.tx) text += '<br>' + d.tx;
-
-        Plotly.Fx.loneHover(
-            {
-                x: xy[0],
-                y: xy[1],
-                text: text,
-                name: trace.name,  // TODO should only appear if data.length>1
-                color: d.mc || (trace.marker || {}).color
-            },
-            {container: geo.hoverContainer.node()}
-        );
-    }
 
     var gScatterGeoTraces = gScatterGeo
         .selectAll('g.trace.scatter')
@@ -132,7 +136,29 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 return;
             }
 
-           var cdi = plotScatterGeo.calcGeoJSON(trace, topojson);
+            var cdi = plotScatterGeo.calcGeoJSON(trace, topojson),
+                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace);
+
+            var hoverinfo = trace.hoverinfo,
+                hasNameLabel = (hoverinfo === 'all' ||
+                    hoverinfo.indexOf('name') !== -1);
+
+            function handleMouseOver(d) {
+                if(!geo.showHover) return;
+
+                var xy = geo.projection([d.lon, d.lat]);
+                cleanHoverLabelsFunc(d);
+
+                Plotly.Fx.loneHover({
+                    x: xy[0],
+                    y: xy[1],
+                    name: hasNameLabel ? trace.name : undefined,
+                    text: d.textLabel,
+                    color: d.mc || (trace.marker || {}).color
+                }, {
+                    container: geo.hoverContainer.node()
+                });
+            }
 
             if(showMarkers) {
                 s.selectAll('path.point')
@@ -186,3 +212,41 @@ plotScatterGeo.style = function(geo) {
                 .call(Plotly.Drawing.dashLine, line.dash || '', line.width || 0);
         });
 };
+
+function makeCleanHoverLabelsFunc(geo, trace) {
+    var hoverinfo = trace.hoverinfo;
+
+    if(hoverinfo === 'none') {
+        return function cleanHoverLabelsFunc(d) { delete d.textLabel; };
+    }
+
+    var hoverinfoParts = (hoverinfo === 'all') ?
+        Plotly.ScatterGeo.attributes.hoverinfo.flags :
+        hoverinfo.split('+');
+
+    var hasLocation = (hoverinfoParts.indexOf('location') !== -1 &&
+           Array.isArray(trace.locations)),
+        hasLon = (hoverinfoParts.indexOf('lon') !== -1),
+        hasLat = (hoverinfoParts.indexOf('lat') !== -1),
+        hasText = (hoverinfoParts.indexOf('text') !== -1);
+
+    function formatter(val) {
+        var axis = geo.mockAxis;
+        return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text + '\u00B0';
+    }
+
+    return function cleanHoverLabelsFunc(d) {
+        var thisText = [];
+
+        if(hasLocation) thisText.push(d.location);
+        else if(hasLon && hasLat) {
+            thisText.push('(' + formatter(d.lon) + ', ' + formatter(d.lat) + ')');
+        }
+        else if(hasLon) thisText.push('lon: ' + formatter(d.lon));
+        else if(hasLat) thisText.push('lat: ' + formatter(d.lat));
+
+        if(hasText) thisText.push(d.tx || trace.text);
+
+        d.textLabel = thisText.join('<br>');
+    };
+}

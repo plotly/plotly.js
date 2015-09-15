@@ -2,133 +2,22 @@
 
 var Plotly = require('../../plotly');
 
-var Surface = {};
+var Surface = module.exports = {};
 
-module.exports = Surface;
+Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity'], {
+    description: [
+        'The data the describes the coordinates of the surface is set in `z`.',
+        'Data in `z` should be a {2D array}.',
 
-Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity']);
+        'Coordinates in `x` and `y` can either be 1D {arrays}',
+        'or {2D arrays} (e.g. to graph parametric surfaces).',
 
-var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+        'If not provided in `x` and `y`, the x and y coordinates are assumed',
+        'to be linear starting at 0 with a unit step.'
+    ].join(' ')
+});
 
-var contourAttributes =  {
-        show: {
-            type: 'boolean',
-            dflt: false
-        },
-        project: {
-            x: {
-                type: 'boolean',
-                dflt: false
-            },
-            y: {
-                type: 'boolean',
-                dflt: false
-            },
-            z: {
-                type: 'boolean',
-                dflt: false
-            }
-        },
-        color: {
-            type: 'color',
-            dflt: '#000'
-        },
-        usecolormap: {
-            type: 'boolean',
-            dflt: false
-        },
-        width: {
-            type: 'number',
-            min: 1,
-            max: 16,
-            dflt: 2
-        },
-        highlight: {
-            type: 'boolean',
-            dflt: false
-        },
-        highlightColor: {
-            type: 'color',
-            dflt: '#000'
-        },
-        highlightWidth: {
-            type: 'number',
-            min: 1,
-            max: 16,
-            dflt: 2
-        }
-    };
-
-
-Surface.attributes = {
-    x: {type: 'data_array'},
-    y: {type: 'data_array'},
-    z: {type: 'data_array'},
-    text: {type: 'data_array'},
-    zauto: traceColorbarAttrs.zauto,
-    zmin: traceColorbarAttrs.zmin,
-    zmax: traceColorbarAttrs.zmax,
-    colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: {
-        type: 'boolean',
-        dflt: false
-    },
-    reversescale: traceColorbarAttrs.reversescale,
-    showscale: traceColorbarAttrs.showscale,
-    contours: {
-        x: contourAttributes,
-        y: contourAttributes,
-        z: contourAttributes
-    },
-    hidesurface: {
-      type: 'boolean',
-      dflt: false
-    },
-    lighting: {
-        ambient: {
-            type: 'number',
-            min: 0.00,
-            max: 1.0,
-            dflt: 0.8
-        },
-        diffuse: {
-            type: 'number',
-            min: 0.00,
-            max: 1.00,
-            dflt: 0.8
-        },
-        specular: {
-            type: 'number',
-            min: 0.00,
-            max: 2.00,
-            dflt: 0.05
-        },
-        roughness: {
-            type: 'number',
-            min: 0.00,
-            max: 1.00,
-            dflt: 0.5
-        },
-        fresnel: {
-            type: 'number',
-            min: 0.00,
-            max: 5.00,
-            dflt: 0.2
-        }
-    },
-
-    opacity: {
-      type: 'number',
-      min: 0,
-      max: 1,
-      dflt: 1
-    },
-
-    _nestedModules: {  // nested module coupling
-        'colorbar': 'Colorbar'
-    }
-};
-
+Surface.attributes = require('../attributes/surface');
 
 Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     var i, j, _this = this;

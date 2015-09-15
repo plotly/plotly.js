@@ -12,17 +12,21 @@ var fx = module.exports = {};
 
 fx.layoutAttributes = {
     dragmode: {
-        type: 'enumerated',
-        values: ['zoom', 'pan', 'orbit', 'turntable']
+        valType: 'enumerated',
+        role: 'info',
+        values: ['zoom', 'pan', 'orbit', 'turntable'],
+        description: 'Determines the mode of drag interactions.'
     },
     hovermode: {
-        type: 'enumerated',
-        values: ['x', 'y', 'closest', false]
+        valType: 'enumerated',
+        role: 'info',
+        values: ['x', 'y', 'closest', false],
+        description: 'Determines the mode of hover interactions.'
     }
 };
 
 fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
-    var isHoriz;
+    var isHoriz, hovermodeDflt;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(layoutIn, layoutOut,
@@ -32,15 +36,15 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 
     coerce('dragmode', layoutOut._hasGL3D ? 'turntable' : 'zoom');
 
-    if(layoutOut._hasGL3D || layoutOut._hasGeo) {
-        coerce('hovermode', 'closest');
-    }
-    else {
+    if(layoutOut._hasCartesian) {
         // flag for 'horizontal' plots:
         // determines the state of the modebar 'compare' hovermode button
         isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
-        coerce('hovermode', isHoriz ? 'y' : 'x');
+        hovermodeDflt = isHoriz ? 'y' : 'x';
     }
+    else hovermodeDflt = 'closest';
+
+    coerce('hovermode', hovermodeDflt);
 };
 
 fx.isHoriz = function(fullData) {
@@ -747,7 +751,7 @@ function createHoverText(hoverData, opts) {
         ya = c0.ya,
         commonAttr = hovermode==='y' ? 'yLabel' : 'xLabel',
         t0 = c0[commonAttr],
-        t00 = (t0||'').split(' ')[0],
+        t00 = (String(t0)||'').split(' ')[0],
         outerContainerBB = outerContainer.node().getBoundingClientRect(),
         outerTop = outerContainerBB.top,
         outerWidth = outerContainerBB.width,

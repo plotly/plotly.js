@@ -5,64 +5,16 @@ var Plotly = require('../../plotly');
 var ScatterGeo = module.exports = {};
 
 Plotly.Plots.register(ScatterGeo, 'scattergeo',
-    ['geo', 'symbols', 'markerColorscale', 'showLegend']);
+    ['geo', 'symbols', 'markerColorscale', 'showLegend'], {
+    hrName: 'scatter_geo',
+    description: [
+        'The data visualized as scatter point or lines on a geographic map',
+        'is provided either by longitude/latitude pairs in `lon` and `lat`',
+        'respectively or by geographic location IDs or names in `locations`.'
+    ].join(' ')
+});
 
-var scatterAttrs = Plotly.Scatter.attributes,
-    scatterMarkerAttrs = scatterAttrs.marker,
-    scatterLineAttrs = scatterAttrs.line,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
-
-var extendFlat = Plotly.Lib.extendFlat;
-
-ScatterGeo.attributes = {
-    lon: {type: 'data_array'},
-    lat: {type: 'data_array'},
-    locations: {type: 'data_array'},
-    locationmode: {
-        type: 'enumerated',
-        values: ['ISO-3', 'USA-states', 'country names'],
-        dflt: 'ISO-3'
-    },
-    mode: extendFlat(scatterAttrs.mode, {dflt: 'markers'}),
-    text: scatterAttrs.text,
-    line: {
-        color: scatterLineAttrs.color,
-        width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash
-    },
-    marker: {
-        symbol: scatterMarkerAttrs.symbol,
-        opacity: scatterMarkerAttrs.opacity,
-        size: scatterMarkerAttrs.size,
-        sizeref: scatterMarkerAttrs.sizeref,
-        sizemin: scatterMarkerAttrs.sizemin,
-        sizemode: scatterMarkerAttrs.sizemode,
-        color: scatterMarkerAttrs.color,
-        colorscale: scatterMarkerAttrs.colorscale,
-        cauto: scatterMarkerAttrs.cauto,
-        cmax: scatterMarkerAttrs.cmax,
-        cmin: scatterMarkerAttrs.cmin,
-        autocolorscale: scatterMarkerAttrs.autocolorscale,
-        reversescale: scatterMarkerAttrs.reversescale,
-        showscale: scatterMarkerAttrs.showscale,
-        line: {
-            color: scatterMarkerLineAttrs.color,
-            width: scatterMarkerLineAttrs.width,
-            colorscale: scatterMarkerLineAttrs.colorscale,
-            cauto: scatterMarkerLineAttrs.cauto,
-            cmax: scatterMarkerLineAttrs.cmax,
-            cmin: scatterMarkerLineAttrs.cmin,
-            autocolorscale: scatterMarkerLineAttrs.autocolorscale,
-            reversescale: scatterMarkerLineAttrs.reversescale
-        }
-    },
-    textfont: scatterAttrs.textfont,
-    textposition: scatterAttrs.textposition,
-    _nestedModules: {
-        'marker.colorbar': 'Colorbar'
-        // TODO error bars?
-    }
-};
+ScatterGeo.attributes = require('../attributes/scattergeo');
 
 ScatterGeo.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     var Scatter = Plotly.Scatter;
@@ -92,6 +44,8 @@ ScatterGeo.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     if(Scatter.hasText(traceOut)) {
         Scatter.textDefaults(traceIn, traceOut, layout, coerce);
     }
+
+    coerce('hoverinfo', (layout._dataLength === 1) ? 'lon+lat+location+text' : undefined);
 };
 
 ScatterGeo.handleLonLatLocDefaults = function(traceIn, traceOut, coerce) {

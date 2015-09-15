@@ -2,113 +2,15 @@
 
 var Plotly = require('../../plotly');
 
-var Mesh3D = {};
+var Mesh3D = module.exports = {};
 
-module.exports = Mesh3D;
+Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d'], {
+    description: [
+        ''
+    ].join(' ')
+});
 
-Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d']);
-
-var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
-
-Mesh3D.attributes = {
-    x: {type: 'data_array'},
-    y: {type: 'data_array'},
-    z: {type: 'data_array'},
-
-    i: {type: 'data_array'},
-    j: {type: 'data_array'},
-    k: {type: 'data_array'},
-
-    delaunayaxis: {
-      type: 'enumerated',
-      values: [ 'x', 'y', 'z' ],
-      dflt: 'z'
-    },
-
-    alphahull: {
-      type: 'number',
-      dflt: -1
-    },
-
-    intensity: {type: 'data_array'},
-
-    //Color field
-    color: { type: 'color' },
-    vertexcolor: { type: 'data_array' },  //FIXME: this should be a color array
-    facecolor: { type: 'data_array' },
-
-    //Opacity
-    opacity: {
-      type: 'number',
-      min: 0,
-      max: 1,
-      dflt: 1
-    },
-
-    //Flat shaded mode
-    flatshading: {
-      type: 'boolean',
-      dflt: false
-    },
-
-    contour: {
-        show: {
-            type: 'boolean',
-            dflt: false
-        },
-        color: {
-            type: 'color',
-            dflt: '#000'
-        },
-        width: {
-            type: 'number',
-            min: 1,
-            max: 16,
-            dflt: 2
-        }
-    },
-
-    colorscale: traceColorbarAttrs.colorscale,
-    reversescale: traceColorbarAttrs.reversescale,
-    showscale: traceColorbarAttrs.showscale,
-
-    lighting: {
-        ambient: {
-            type: 'number',
-            min: 0.00,
-            max: 1.0,
-            dflt: 0.8
-        },
-        diffuse: {
-            type: 'number',
-            min: 0.00,
-            max: 1.00,
-            dflt: 0.8
-        },
-        specular: {
-            type: 'number',
-            min: 0.00,
-            max: 2.00,
-            dflt: 0.05
-        },
-        roughness: {
-            type: 'number',
-            min: 0.00,
-            max: 1.00,
-            dflt: 0.5
-        },
-        fresnel: {
-            type: 'number',
-            min: 0.00,
-            max: 5.00,
-            dflt: 0.2
-        }
-    },
-
-    _nestedModules: {  // nested module coupling
-        'colorbar': 'Colorbar'
-    }
-};
+Mesh3D.attributes = require('../attributes/mesh3d');
 
 Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
   var self = this;
