@@ -10,6 +10,6 @@ module.exports = {
         color: scatterMarkerAttrs.color,
         size: scatterMarkerAttrs.size,
         symbol: scatterMarkerAttrs.symbol,
-        opacity: scatterAttrs.opacity
+        opacity: scatterMarkerAttrs.opacity
     }
 };
