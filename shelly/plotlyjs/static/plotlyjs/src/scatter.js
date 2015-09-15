@@ -9,198 +9,428 @@ var scatter = module.exports = {},
     isNumeric = require('./isnumeric');
 
 Plotly.Plots.register(scatter, 'scatter',
-    ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend']);
+    ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
+    description: [
+        'The data visualized as scatter point or lines is set in `x` and `y`',
+        'Text (appearing either on the chart or on hover only) is via `text`.',
+        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+        'to a numerical arrays.'
+    ].join(' ')
+});
 
 // traces with < this many points are by default shown
 // with points and lines, > just get lines
 scatter.PTS_LINESONLY = 20;
 
 scatter.attributes = {
-    x: {type: 'data_array'},
+    x: {
+        valType: 'data_array',
+        description: 'Sets the x coordinates.'
+    },
     x0: {
-        type: 'any',
-        dflt: 0
+        valType: 'any',
+        dflt: 0,
+        role: 'info',
+        description: [
+            'Alternate to `x`.',
+            'Builds a linear space of x coordinates.',
+            'Use with `dx`',
+            'where `x0` is the starting coordinate and `dx` the step.'
+        ].join(' ')
     },
     dx: {
-        type: 'number',
-        dflt: 1
+        valType: 'number',
+        dflt: 1,
+        role: 'info',
+        description: [
+            'Sets the x coordinate step.',
+            'See `x0` for more info.'
+        ].join(' ')
     },
-    y: {type: 'data_array'},
+    y: {
+        valType: 'data_array',
+        description: 'Sets the y coordinates.'
+    },
     y0: {
-        type: 'any',
-        dflt: 0
+        valType: 'any',
+        dflt: 0,
+        role: 'info',
+        description: [
+            'Alternate to `y`.',
+            'Builds a linear space of y coordinates.',
+            'Use with `dy`',
+            'where `y0` is the starting coordinate and `dy` the step.'
+        ].join(' ')
     },
     dy: {
-        type: 'number',
-        dflt: 1
+        valType: 'number',
+        dflt: 1,
+        role: 'info',
+        description: [
+            'Sets the y coordinate step.',
+            'See `y0` for more info.'
+        ].join(' ')
     },
     text: {
-        type: 'string',
+        valType: 'string',
+        role: 'info',
         dflt: '',
-        arrayOk: true
+        arrayOk: true,
+        description: [
+            'Sets text elements associated with each (x,y) pair.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (x,y) coordinates.'
+        ].join(' ')
     },
     mode: {
-        type: 'flaglist',
+        valType: 'flaglist',
         flags: ['lines','markers','text'],
-        extras: ['none']
+        extras: ['none'],
+        role: 'info',
+        description: [
+            'Determines the drawing mode for this scatter trace.',
+            'If the provided `mode` includes *text* then the `text` elements',
+            'appear at the coordinates. Otherwise, the `text` elements',
+            'appear on hover.'
+        ].join(' ')
     },
     line: {
         color: {
-            type: 'color'
+            valType: 'color',
+            role: 'style',
+            description: 'Sets the line color.'
         },
         width: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 2
+            dflt: 2,
+            role: 'style',
+            description: 'Sets the line width (in px).'
         },
         shape: {
-            type: 'enumerated',
+            valType: 'enumerated',
             values: ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'],
-            dflt: 'linear'
+            dflt: 'linear',
+            role: 'style',
+            description: [
+                'Determines the line shape.',
+                'With *spline* the lines are drawn using spline interpolation.',
+                'The other available values correspond to step-wise line shapes.'
+            ].join(' ')
         },
         smoothing: {
-            type: 'number',
+            valType: 'number',
             min: 0,
             max: 1.3,
-            dflt: 1
+            dflt: 1,
+            role: 'style',
+            description: [
+                'Has only an effect if `shape` is set to *spline*',
+                'Sets the amount of smoothing.',
+                '*0* corresponds to no smoothing (equivalent to a *linear* shape).'
+            ].join(' ')
         },
         dash: {
-            type: 'string',
+            valType: 'string',
             // string type usually doesn't take values... this one should really be
             // a special type or at least a special coercion function, from the GUI
             // you only get these values but elsewhere the user can supply a list of
             // dash lengths in px, and it will be honored
             values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
-            dflt: 'solid'
+            dflt: 'solid',
+            role: 'style',
+            description: 'Sets the style of the lines.'
         }
     },
     connectgaps: {
-        type: 'boolean',
-        dflt: false
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        description: [
+            'Determines whether or not gaps',
+            '(i.e. {nan} or missing values)',
+            'in the provided data arrays are connected.'
+        ].join(' ')
     },
     fill: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx'],
-        dflt: 'none'
+        dflt: 'none',
+        role: 'style',
+        description: [
+            'Sets the area to fill with a solid color.',
+            'Use with `fillcolor`.'
+        ].join(' ')
     },
-    fillcolor: {type: 'color'},
+    fillcolor: {
+        valType: 'color',
+        role: 'style',
+        description: 'Sets the fill color.'
+    },
     marker: {
         symbol: {
-            type: 'enumerated',
+            valType: 'enumerated',
             values: Plotly.Drawing.symbolList,
             dflt: 'circle',
-            arrayOk: true
+            arrayOk: true,
+            role: 'style',
+            description: [
+                'Sets the marker symbol type.',
+                'Adding 100 is equivalent to appending *-open* to a symbol name.',
+                'Adding 200 is equivalent to appending *-dot* to a symbol name.',
+                'Adding 300 is equivalent to appending *-open-dot*',
+                'or *dot-open* to a symbol name.'
+            ].join(' ')
         },
         opacity: {
-            type: 'number',
+            valType: 'number',
             min: 0,
             max: 1,
-            arrayOk: true
+            arrayOk: true,
+            role: 'style',
+            description: 'Sets the marker opacity.'
         },
         size: {
-            type: 'number',
+            valType: 'number',
             min: 0,
             dflt: 6,
-            arrayOk: true
+            arrayOk: true,
+            role: 'style',
+            description: 'Sets the marker size (in px).'
         },
         color: {
-            type: 'color',
-            arrayOk: true
+            valType: 'color',
+            arrayOk: true,
+            role: 'style',
+            description: 'Sets the marker color.'
         },
         maxdisplayed: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 0
+            dflt: 0,
+            role: 'style',
+            description: [
+                'Sets a maximum number of points to be drawn on the graph.',
+                '*0* corresponds to no limit.'
+            ].join(' ')
         },
         sizeref: {
-            type: 'number',
-            dflt: 1
+            valType: 'number',
+            dflt: 1,
+            role: 'style',
+            description: [
+                'Has only an effect if `marker.size` is set to a numerical array.',
+                'Sets the scale factor used to determine the rendered size of',
+                'marker points. Use with `sizemin` and `sizemode`.'
+            ].join(' ')
         },
         sizemin: {
-            type: 'number',
+            valType: 'number',
             min: 0,
-            dflt: 0
+            dflt: 0,
+            role: 'style',
+            description: [
+                'Has only an effect if `marker.size` is set to a numerical array.',
+                'Sets the minimum size (in px) of the rendered marker points.'
+            ].join(' ')
         },
         sizemode: {
-            type: 'enumerated',
+            valType: 'enumerated',
             values: ['diameter', 'area'],
-            dflt: 'diameter'
+            dflt: 'diameter',
+            role: 'info',
+            description: [
+                'Has only an effect if `marker.size` is set to a numerical array.',
+                'Sets the rule for which the data in `size` is converted',
+                'to pixels.'
+            ].join(' ')
         },
         colorscale: {
-            type: 'colorscale'
+            valType: 'colorscale',
+            role: 'style',
+            description: [
+                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Sets the colorscale.'
+            ].join(' ')
         },
         cauto: {
-            type: 'boolean',
-            dflt: true
+            valType: 'boolean',
+            dflt: true,
+            role: 'style',
+            description: [
+                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Determines the whether or not the color domain is computed',
+                'automatically.'
+            ].join(' ')
         },
         cmax: {
-            type: 'number',
-            dflt: null
+            valType: 'number',
+            dflt: null,
+            role: 'info',
+            description: [
+                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Sets the upper bound of the color domain.'
+            ].join(' ')
         },
         cmin: {
-            type: 'number',
-            dflt: null
+            valType: 'number',
+            dflt: null,
+            role: 'info',
+            description: [
+                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Sets the lower bound of the color domain.'
+            ].join(' ')
         },
         autocolorscale: {
-            type: 'boolean',
-            dflt: true
+            valType: 'boolean',
+            dflt: true,
+            role: 'style',
+            description: [
+                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Determines whether or not the colorscale is picked using',
+                'values inside `marker.color`.'
+            ].join(' ')
         },
         reversescale: {
-            type: 'boolean',
-            dflt: false
+            valType: 'boolean',
+            role: 'style',
+            dflt: false,
+            description: [
+                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Reverses the colorscale.'
+            ].join(' ')
         },
         showscale: {
-            type: 'boolean',
-            dflt: false
+            valType: 'boolean',
+            role: 'info',
+            dflt: false,
+            description: [
+                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Determines whether or not a colorbar is displayed.'
+            ].join(' ')
         },
         line: {
             color: {
-                type: 'color',
-                arrayOk: true
+                valType: 'color',
+                arrayOk: true,
+                role: 'style',
+                description: 'Sets the color of the lines bounding the marker points.'
             },
             width: {
-                type: 'number',
+                valType: 'number',
                 min: 0,
-                arrayOk: true
+                arrayOk: true,
+                role: 'style',
+                description: 'Sets the width (in px) of the lines bounding the marker points.'
             },
             colorscale: {
-                type: 'colorscale'
+                valType: 'colorscale',
+                role: 'style',
+                description: [
+                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Sets the colorscale.'
+                ].join(' ')
             },
             cauto: {
-                type: 'boolean',
-                dflt: true
+                valType: 'boolean',
+                dflt: true,
+                role: 'style',
+                description: [
+                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Determines the whether or not the color domain is computed',
+                    'with respect to the input data.'
+                ].join(' ')
             },
             cmax: {
-                type: 'number',
-                dflt: null
+                valType: 'number',
+                dflt: null,
+                role: 'info',
+                description: [
+                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Sets the upper bound of the color domain.'
+                ].join(' ')
             },
             cmin: {
-                type: 'number',
-                dflt: null
+                valType: 'number',
+                dflt: null,
+                role: 'info',
+                description: [
+                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Sets the lower bound of the color domain.'
+                ].join(' ')
             },
             autocolorscale: {
-                type: 'boolean',
-                dflt: true
+                valType: 'boolean',
+                dflt: true,
+                role: 'style',
+                description: [
+                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Determines whether or not the colorscale is picked using',
+                    'the sign of values inside `marker.line.color`.'
+                ].join(' ')
             },
             reversescale: {
-                type: 'boolean',
-                dflt: false
+                valType: 'boolean',
+                dflt: false,
+                role: 'style',
+                description: [
+                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Reverses the colorscale.'
+                ].join(' ')
             }
         }
     },
     textposition: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [
             'top left', 'top center', 'top right',
             'middle left', 'middle center', 'middle right',
             'bottom left', 'bottom center', 'bottom right'
         ],
         dflt: 'middle center',
-        arrayOk: true
+        arrayOk: true,
+        role: 'style',
+        description: [
+            'Sets the positions of the `text` elements',
+            'with respects to the (x,y) coordinates.'
+        ].join(' ')
     },
     textfont: {
-        type: 'font',
-        arrayOk: true
+        family: {
+            valType: 'string',
+            role: 'style',
+            noBlank: true,
+            strict: true,
+            arrayOk: true
+        },
+        size: {
+            valType: 'number',
+            role: 'style',
+            min: 1,
+            arrayOk: true
+        },
+        color: {
+            valType: 'color',
+            role: 'style',
+            arrayOk: true
+        },
+        description: 'Sets the text font.'
+    },
+    r: {
+        valType: 'data_array',
+        description: [
+            'For polar chart only.',
+            'Sets the radial coordinates.'
+        ].join('')
+    },
+    t: {
+        valType: 'data_array',
+        description: [
+            'For polar chart only.',
+            'Sets the angular coordinates.'
+        ].join('')
     },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
@@ -365,7 +595,7 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
 // common to 'scatter', 'scatter3d' and 'scattergeo'
 scatter.textDefaults = function(traceIn, traceOut, layout, coerce) {
     coerce('textposition');
-    coerce('textfont', layout.font);
+    Plotly.Lib.coerceFont(coerce, 'textfont', layout.font);
 };
 
 scatter.cleanData = function(fullData) {
@@ -1081,6 +1311,7 @@ scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
     pointData.yLabelVal = di.y;
 
     if(di.tx) pointData.text = di.tx;
+    else if(trace.text) pointData.text = trace.text;
 
     if(Plotly.ErrorBars) Plotly.ErrorBars.hoverInfo(di, trace, pointData);
 

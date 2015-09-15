@@ -8,7 +8,15 @@ var bars = module.exports = {},
     isNumeric = require('./isnumeric');
 
 Plotly.Plots.register(bars, 'bar',
-    ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend']);
+    ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
+    description: [
+        'The data visualized by the span of the bars is set in `y`',
+        'if `orientation` is set th *v* (the default)',
+        'and the labels are set in `x`.',
+
+        'By setting `orientation` to *h*, the roles are interchanged.'
+    ].join(' ')
+});
 
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,
@@ -24,8 +32,14 @@ bars.attributes = {
     dy: scatterAttrs.dy,
     text: scatterAttrs.text,
     orientation: {
-        type: 'enumerated',
-        values: ['v', 'h']
+        valType: 'enumerated',
+        role: 'info',
+        values: ['v', 'h'],
+        description: [
+            'Sets the orientation of the bars.',
+            'With *v* (*h*), the value of the each bar spans',
+            'along the vertical (horizontal).'
+        ].join(' ')
     },
     marker: {
         color: scatterMarkerAttrs.color,
@@ -47,37 +61,74 @@ bars.attributes = {
             reversescale: scatterMarkerLineAttrs.reversescale
         }
     },
+
+    r: scatterAttrs.r,  // FIXME this shouldn't get included in 'histogram'
+    t: scatterAttrs.t,
+
+    _composedModules: {  // composed module coupling
+        'histogram': 'Histogram'
+    },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
         'error_x': 'ErrorBars',
         'marker.colorbar': 'Colorbar'
     },
-    _composedModules: {  // composed module coupling
-        'histogram': 'Histogram'
+
+    _deprecated: {
+        bardir: {
+            description: 'Renamed to `orientation`.'
+        }
     }
 };
 
 bars.layoutAttributes = {
     barmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['stack', 'group', 'overlay'],
-        dflt: 'group'
+        dflt: 'group',
+        role: 'info',
+        description: [
+            'Determines how bars at the same location coordinate',
+            'are displayed on the graph.',
+            'With *stack*, the bars are stacked on top of one another',
+            'With *group*, the bars are plotted next to one another',
+            'centered around the shared location.',
+            'With *overlay*, the bars are plotted over one another,',
+            'you might need to an *opacity* to see multiple bars.'
+        ].join(' ')
     },
     barnorm: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['', 'fraction', 'percent'],
-        dflt: ''
+        dflt: '',
+        role: 'info',
+        description: [
+            'Sets the normalization for bar traces on the graph.',
+            'With *fraction*, the value of each bar is divide by the sum of the',
+            'values at the location coordinate.',
+            'With *percent*, the results form *fraction* are presented in percents.'
+        ].join(' ')
     },
     bargap: {
-        type: 'number',
-        min: 0,
-        max: 1
-    },
-    bargroupgap: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
-        dflt: 0
+        role: 'style',
+        description: [
+            'Sets the gap (in plot fraction) between bars of',
+            'adjacent location coordinates.'
+        ].join(' ')
+    },
+    bargroupgap: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Sets the gap (in plot fraction) between bars of',
+            'the same location coordinate.'
+        ].join(' ')
     }
 };
 

@@ -1,5 +1,5 @@
-exports.micropolar = require('./micropolar');
-exports.micropolar.manager = require('./micropolar_manager');
+exports.micropolar = require('./polar/micropolar');
+exports.micropolar.manager = require('./polar/micropolar_manager');
 
 // order of requires should matter only for interdependencies
 // in attributes definitions. put the common modules first
@@ -45,8 +45,8 @@ exports.ScatterGeo = require('./geo/defaults/scattergeo');
 exports.Choropleth = require('./geo/defaults/choropleth');
 exports.Geo = require('./geo/geo');
 
-// graph reference
-exports.getGraphReference = require('./graph_reference');
+// plot schema
+exports.PlotSchema= require('./plotschema');
 
 // configuration
 exports.Config = require('./config');

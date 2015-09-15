@@ -161,7 +161,8 @@ function convertPlotlyOptions(scene, data) {
         xc, x = data.x || [],
         yc, y = data.y || [],
         zc, z = data.z || [],
-        len = x.length;
+        len = x.length,
+        text;
 
     //Convert points
     for (i = 0; i < len; i++) {
@@ -173,11 +174,18 @@ function convertPlotlyOptions(scene, data) {
         points[i] = [xc, yc, zc];
     }
 
+    // convert text
+    if(Array.isArray(data.text)) text = data.text;
+    else if(data.text !== undefined) {
+        text = new Array(len);
+        for(i = 0; i < len; i++) text[i] = data.text;
+    }
+
     //Build object parameters
     params = {
         position: points,
         mode:     data.mode,
-        text:     data.text
+        text:     text
     };
 
     if ('line' in data) {

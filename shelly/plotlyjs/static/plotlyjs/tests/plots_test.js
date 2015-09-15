@@ -62,6 +62,39 @@ describe('Test Plotly.Plots', function () {
 
     });
 
+    describe('Plotly.Plots.supplyDataDefaults', function() {
+        var supplyDataDefaults = Plotly.Plots.supplyDataDefaults,
+            layout = {};
+
+        var traceIn, traceOut;
+
+        describe('should coerce hoverinfo', function() {
+            it('without *name* for single-trace graphs by default', function() {
+                layout._dataLength = 1;
+
+                traceIn = {};
+                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                expect(traceOut.hoverinfo).toEqual('x+y+z+text');
+
+                traceIn = { hoverinfo: 'name' };
+                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                expect(traceOut.hoverinfo).toEqual('name');
+            });
+
+            it('without *name* for single-trace graphs by default', function() {
+                layout._dataLength = 2;
+
+                traceIn = {};
+                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                expect(traceOut.hoverinfo).toEqual('all');
+
+                traceIn = { hoverinfo: 'name' };
+                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                expect(traceOut.hoverinfo).toEqual('name');
+            });
+        });
+    });
+
     describe('Plotly.Plots.getSubplotIds', function() {
         var getSubplotIds = Plotly.Plots.getSubplotIds;
 
@@ -169,5 +202,73 @@ describe('Test Plotly.Plots', function () {
             expect(Plotly.Plots.traceIs({type: 'newtype'}, 'cartesian')).toBe(false);
             expect(console.warn).not.toHaveBeenCalled();
         });
+    });
+
+    describe('Plotly.Plots.registerSubplot', function() {
+        Plotly.Plots.registerSubplot('fake', 'abc', 'cba', {
+            stuff: { 'more stuff': 102102 }
+        });
+
+        var subplotsRegistry = Plotly.Plots.subplotsRegistry;
+
+        it('should register attr, idRoot and attributes', function() {
+            expect(subplotsRegistry.fake.attr).toEqual('abc');
+            expect(subplotsRegistry.fake.idRoot).toEqual('cba');
+            expect(subplotsRegistry.fake.attributes)
+                .toEqual({stuff: { 'more stuff': 102102 }});
+        });
+
+        describe('registered subplot type attribute regex', function() {
+            it('should compile to correct attribute regex string', function() {
+                expect(subplotsRegistry.fake.attrRegex.toString())
+                    .toEqual('/^abc([2-9]|[1-9][0-9]+)?$/');
+            });
+
+            var shouldPass = [
+                'abc', 'abc2', 'abc3', 'abc10', 'abc9', 'abc100', 'abc2002'
+            ];
+            var shouldFail = [
+                '0abc', 'abc0', 'abc1', 'abc021321', 'abc00021321'
+            ];
+
+            shouldPass.forEach(function(s) {
+                it('considers ' + JSON.stringify(s) + 'as a correct attribute name', function () {
+                    expect(subplotsRegistry.fake.attrRegex.test(s)).toBe(true);
+                });
+            });
+
+            shouldFail.forEach(function(s) {
+                it('considers ' + JSON.stringify(s) + 'as an incorrect attribute name', function () {
+                    expect(subplotsRegistry.fake.attrRegex.test(s)).toBe(false);
+                });
+            });
+        });
+
+        describe('registered subplot type id regex', function() {
+            it('should compile to correct id regular expression', function() {
+                expect(subplotsRegistry.fake.idRegex.toString())
+                    .toEqual('/^cba([2-9]|[1-9][0-9]+)?$/');
+            });
+
+            var shouldPass = [
+                'cba', 'cba2', 'cba3', 'cba10', 'cba9', 'cba100', 'cba2002'
+            ];
+            var shouldFail = [
+                '0cba', 'cba0', 'cba1', 'cba021321', 'cba00021321'
+            ];
+
+            shouldPass.forEach(function(s) {
+                it('considers ' + JSON.stringify(s) + 'as a correct attribute name', function () {
+                    expect(subplotsRegistry.fake.idRegex.test(s)).toBe(true);
+                });
+            });
+
+            shouldFail.forEach(function(s) {
+                it('considers ' + JSON.stringify(s) + 'as an incorrect attribute name', function () {
+                    expect(subplotsRegistry.fake.idRegex.test(s)).toBe(false);
+                });
+            });
+        });
+
     });
 });

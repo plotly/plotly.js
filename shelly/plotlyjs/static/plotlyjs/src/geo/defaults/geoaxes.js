@@ -5,36 +5,12 @@ var Plotly = require('../../plotly'),
 
 var GeoAxes = module.exports = {};
 
-GeoAxes.layoutAttributes = {
-    range: [
-        {type: 'number'},
-        {type: 'number'}
-    ],
-    showgrid: {
-        type: 'boolean',
-        dflt: false
-    },
-    tick0: {
-        type: 'number'
-    },
-    dtick: {
-        type: 'number'
-    },
-    gridcolor: {
-        type: 'color',
-        dflt: Plotly.Color.lightLine
-    },
-    gridwidth: {
-        type: 'number',
-        min: 0,
-        dflt: 1
-    }
-};
+GeoAxes.layoutAttributes = require('../attributes/geoaxes');
 
 GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
     var axesNames = params.axesNames;
 
-    var axisIn, axisOut, axisName, rangeDflt, range0, show;
+    var axisIn, axisOut, axisName, rangeDflt, range, show;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(axisIn, axisOut,
@@ -71,12 +47,11 @@ GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
 
         rangeDflt = getRangeDflt(axisName);
 
-        range0 = coerce('range[0]', rangeDflt[0]);
-        coerce('range[1]', rangeDflt[1]);
+        range = coerce('range', rangeDflt);
 
         Plotly.Lib.noneOrAll(axisIn.range, axisOut.range, [0, 1]);
 
-        coerce('tick0', range0);
+        coerce('tick0', range[0]);
         coerce('dtick', axisName==='lonaxis' ? 30 : 10);
 
         show = coerce('showgrid');
