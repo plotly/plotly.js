@@ -25,7 +25,10 @@ locationUtils.locationToFeature = function(locationmode, location, features) {
         if(feature.id === locationId) return feature;
     }
 
-    return undefined;
+    console.warn([
+        'location with id', locationId,
+        'does not have a matching topojson feature at this resolution.'
+    ].join(' '));
 };
 
 function getLocationId(locationmode, location) {
@@ -43,5 +46,5 @@ function countryNameToISO3(countryName) {
         if(regex.test(countryName.toLowerCase())) return iso3;
     }
 
-    console.warn('unrecognized country name ' + countryName);
+    console.warn('unrecognized country name: ' + countryName + '.');
 }

@@ -194,7 +194,10 @@ annotations.layoutAttributes = {
     // positioning
     xref: {
         valType: 'enumerated',
-        values: ['paper', '/^x[0-9]/*$'],
+        values: [
+            'paper',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString()
+        ],
         role: 'info',
         description: [
             'Sets the annotation\'s x coordinate axis.',
@@ -234,7 +237,10 @@ annotations.layoutAttributes = {
     },
     yref: {
         valType: 'enumerated',
-        values: ['paper', '/^y[0-9]/*$'],
+        values: [
+            'paper',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+        ],
         role: 'info',
         description: [
             'Sets the annotation\'s y coordinate axis.',

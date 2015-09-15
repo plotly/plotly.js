@@ -7,6 +7,33 @@ var axes = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
+Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'], {
+    xaxis: {
+        valType: 'axisid',
+        role: 'info',
+        dflt: 'x',
+        description: [
+            'Sets a reference between this trace\'s x coordinates and',
+            'a 2D cartesian x axis.',
+            'If *x* (the default value), the x coordinates refer to',
+            '`layout.xaxis`.',
+            'If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.'
+        ].join(' ')
+    },
+    yaxis: {
+        valType: 'axisid',
+        role: 'info',
+        dflt: 'y',
+        description: [
+            'Sets a reference between this trace\'s y coordinates and',
+            'a 2D cartesian y axis.',
+            'If *y* (the default value), the y coordinates refer to',
+            '`layout.yaxis`.',
+            'If *y2*, the y coordinates refer to `layout.xaxis2`, and so on.'
+        ].join(' ')
+    }
+});
+
 var extendFlat = Plotly.Lib.extendFlat;
 
 axes.layoutAttributes = {
@@ -354,7 +381,11 @@ axes.layoutAttributes = {
     // values are any opposite-letter axis id
     anchor: {
         valType: 'enumerated',
-        values: ['free', '/^x[0-9]/*$', '/^y[0-9]/*$'],
+        values: [
+            'free',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString(),
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+        ],
         role: 'info',
         description: [
             'If set to an opposite-letter axis id (e.g. `xaxis2`, `yaxis`), this axis is bound to',
@@ -379,7 +410,11 @@ axes.layoutAttributes = {
     // itself overlaying anything
     overlaying: {
         valType: 'enumerated',
-        values: [false, '/^x[0-9]/*$', '/^y[0-9]/*$'],
+        values: [
+            'free',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString(),
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+        ],
         role: 'info',
         description: [
             'If set a same-letter axis id, this axis is overlaid on top of',
