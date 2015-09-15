@@ -125,7 +125,10 @@ function getLayoutAttributes() {
 }
 
 function getDefs() {
-    plotSchema.defs = { valObjects: Plotly.Lib.valObjects };
+    plotSchema.defs = {
+        valObjects: Plotly.Lib.valObjects,
+        metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role'])
+    };
 }
 
 function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
