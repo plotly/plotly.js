@@ -202,11 +202,6 @@ queue.plotDo = function (gd, func, args) {
 
     // call the supplied function
     func.apply(null, args);
-
-    // do we need to update a popover?
-    var po = $('.popover');
-    if (po.length) po[0].redraw(po[0].selectedObj);
-
 };
 
 module.exports = queue;
