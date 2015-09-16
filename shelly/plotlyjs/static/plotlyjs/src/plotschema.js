@@ -38,6 +38,8 @@ PlotSchema.crawl = function(attrs, callback) {
     Object.keys(attrs).forEach(function(attrName) {
         var attr = attrs[attrName];
 
+        if(UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
+
         callback(attr, attrName, attrs);
 
         if(PlotSchema.isValObject(attr)) return;
@@ -172,10 +174,9 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             return;
         }
 
-        // underscore attributes are booleans
-        attrsOut[k] = (UNDERSCORE_ATTRS.indexOf(k) !== -1) ?
-            attrsIn[k] :
-            objectAssign({}, attrsIn[k]);
+        attrsOut[k] = Plotly.Lib.isPlainObject(attrsIn[k]) ?
+            objectAssign({}, attrsIn[k]) :
+            attrsIn[k];  // some underscore attributes are booleans
     });
 
     return attrsOut;
