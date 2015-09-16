@@ -455,7 +455,7 @@ axes.layoutAttributes = {
                 'Set `tickmode` to *linear* for `autotick` *false*.'
             ].join(' ')
         }
-    } // to delete
+    }
 };
 
 var xAxisMatch = /^xaxis[0-9]*$/,

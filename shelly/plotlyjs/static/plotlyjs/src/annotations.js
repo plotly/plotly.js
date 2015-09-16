@@ -285,7 +285,7 @@ annotations.layoutAttributes = {
                 'Obsolete. Set `xref` and `yref` separately instead.'
             ].join(' ')
         }
-    } // to delete
+    }
 };
 
 annotations.supplyLayoutDefaults = function(layoutIn, layoutOut) {

@@ -78,7 +78,7 @@ bars.attributes = {
         bardir: {
             description: 'Renamed to `orientation`.'
         }
-    } // to delete
+    }
 };
 
 bars.layoutAttributes = {

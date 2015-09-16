@@ -137,5 +137,5 @@ module.exports = {
         cameraposition: {
             description: 'Obsolete. Use `camera` instead.'
         }
-    } // to delete
+    }
 };

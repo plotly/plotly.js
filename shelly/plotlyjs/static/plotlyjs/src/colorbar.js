@@ -821,5 +821,5 @@ colorbar.traceColorbarAttributes = {
         reversescl: {
             description: 'Renamed to `reversescale`.'
         }
-    } // to delete
+    }
 };
