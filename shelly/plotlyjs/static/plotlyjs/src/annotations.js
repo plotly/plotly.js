@@ -193,7 +193,10 @@ annotations.layoutAttributes = {
     // positioning
     xref: {
         valType: 'enumerated',
-        values: ['paper', '/^x[0-9]/*$'],
+        values: [
+            'paper',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString()
+        ],
         role: 'info',
         description: [
             'Sets the annotation\'s x coordinate axis.',
@@ -233,7 +236,10 @@ annotations.layoutAttributes = {
     },
     yref: {
         valType: 'enumerated',
-        values: ['paper', '/^y[0-9]/*$'],
+        values: [
+            'paper',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+        ],
         role: 'info',
         description: [
             'Sets the annotation\'s y coordinate axis.',
@@ -270,6 +276,14 @@ annotations.layoutAttributes = {
             'whereas for paper-referenced, the anchor picked corresponds',
             'to the closest side.'
         ].join(' ')
+    },
+
+    _deprecated: {
+        ref: {
+            description: [
+                'Obsolete. Set `xref` and `yref` separately instead.'
+            ].join(' ')
+        }
     }
 };
 

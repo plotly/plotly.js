@@ -1810,7 +1810,7 @@ lib.isIE = function() {
 // more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
 lib.isPlainObject = function(obj) {
     return (
-        Object.prototype.toString.call(obj) === "[object Object]" &&
+        Object.prototype.toString.call(obj) === '[object Object]' &&
         Object.getPrototypeOf(obj) === Object.prototype
     );
 };

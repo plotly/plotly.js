@@ -4,7 +4,8 @@ var Plotly = require('../../plotly'),
     d3 = require('d3'),
     params = require('../lib/params'),
     getTopojsonFeatures = require('../lib/topojson-utils').getTopojsonFeatures,
-    locationToFeature = require('../lib/location-utils').locationToFeature;
+    locationToFeature = require('../lib/location-utils').locationToFeature,
+    arrayToCalcItem = require('../lib/array-to-calc-item');
 
 var plotChoropleth = module.exports = {};
 
@@ -20,15 +21,16 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
 
     for(var i = 0; i < len; i++) {
         feature = locationToFeature(trace.locationmode, locations[i], features);
-        if(feature === undefined) continue;
+
+        if(feature === undefined) continue;  // filter the blank features here
 
         // 'data_array' attributes
         feature.z = trace.z[i];
         if(trace.text !== undefined) feature.tx = trace.text[i];
 
-        // 'arrayOK' attributes
-        mergeArray(markerLine.color, feature, 'mlc', i);
-        mergeArray(markerLine.width, feature, 'mlw', i);
+        // 'arrayOk' attributes
+        arrayToCalcItem(markerLine.color, feature, 'mlc', i);
+        arrayToCalcItem(markerLine.width, feature, 'mlw', i);
 
         cdi.push(feature);
     }
@@ -129,11 +131,6 @@ plotChoropleth.style = function(geo) {
                 });
         });
 };
-
-// similar to Lib.mergeArray, but using inside a loop
-function mergeArray(traceAttr, feature, featureAttr, i) {
-    if(Array.isArray(traceAttr)) feature[featureAttr] = traceAttr[i];
-}
 
 function makeCleanHoverLabelsFunc(geo, trace) {
     var hoverinfo = trace.hoverinfo;

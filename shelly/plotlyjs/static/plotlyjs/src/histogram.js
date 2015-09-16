@@ -45,7 +45,7 @@ function makeBinsAttr(axLetter) {
     return {
         start: {
             valType: 'number',
-            dflt: 0,
+            dflt: null,
             role: 'style',
             description: [
                 'Sets the starting value for the', axLetter,
@@ -54,7 +54,7 @@ function makeBinsAttr(axLetter) {
         },
         end: {
             valType: 'number',
-            dflt: 1,
+            dflt: null,
             role: 'style',
             description: [
                 'Sets the end value for the', axLetter,
@@ -215,14 +215,15 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
     binDirections.forEach(function(binDirection){
         // data being binned - note that even though it's a little weird,
         // it's possible to have bins without data, if there's inferred data
-        var autobin = coerce('autobin' + binDirection);
-
+        var binstrt = coerce(binDirection + 'bins.start'),
+            binend = coerce(binDirection + 'bins.end'),
+            validbin = binstrt!==undefined && binend!==undefined,
+            autobin = validbin ? 
+                coerce('autobin' + binDirection, false) : 
+                coerce('autobin' + binDirection);
+ 
         if(autobin) coerce('nbins' + binDirection);
-        else {
-            coerce(binDirection + 'bins.start');
-            coerce(binDirection + 'bins.end');
-            coerce(binDirection + 'bins.size');
-        }
+        else coerce(binDirection + 'bins.size');
     });
 };
 
