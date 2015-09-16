@@ -2,12 +2,13 @@
 
 var Plotly = window.Plotly;
 var ToolPanel = window.ToolPanel;
+var divs = [];
 
 function createPlot (divId) {
     var containerDiv = document.getElementById('main');
     var graphDiv = document.createElement('div');
     graphDiv.id = divId;
-    graphDiv.style.width = '600px';
+    graphDiv.style.width = '45%';
     graphDiv.style.display = 'inline-block';
     graphDiv.style.margin = '10px';
     graphDiv.style.position = 'relative';
@@ -33,6 +34,8 @@ function createPlot (divId) {
         standalone: true
     });
     graphDiv.toolPanel.makeMenu(graphDiv);
+
+    divs.push(graphDiv);
 
 }
 
