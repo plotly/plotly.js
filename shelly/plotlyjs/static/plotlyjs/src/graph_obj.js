@@ -548,7 +548,7 @@ Plotly.plot = function(gd, data, layout, config) {
     else if(graphwasempty) makePlotFramework(gd);
 
     // enable or disable formatting buttons
-    $(gd).find('.data-only').attr('disabled', !hasData);
+    d3.select(gd).select('.data-only').attr('disabled', !hasData);
 
     var fullLayout = gd._fullLayout;
 
