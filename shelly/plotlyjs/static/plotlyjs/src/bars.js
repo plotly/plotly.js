@@ -72,6 +72,12 @@ bars.attributes = {
         'error_y': 'ErrorBars',
         'error_x': 'ErrorBars',
         'marker.colorbar': 'Colorbar'
+    },
+
+    _deprecated: {
+        bardir: {
+            description: 'Renamed to `orientation`.'
+        }
     }
 };
 

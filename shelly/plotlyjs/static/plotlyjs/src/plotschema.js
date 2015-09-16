@@ -8,7 +8,9 @@ var NESTED_MODULE = '_nestedModules',
     IS_SUBPLOT_OBJ = '_isSubplotObj';
 
 // list of underscore attributes to keep in schema as is
-var UNDERSCORE_ATTRS = ['_isLinkedToArray', '_isSubplotObj'];
+var UNDERSCORE_ATTRS = [
+    '_isLinkedToArray', '_isSubplotObj', '_deprecated'
+];
 
 var plotSchema = {
     traces: {},
@@ -35,6 +37,8 @@ PlotSchema.get =  function() {
 PlotSchema.crawl = function(attrs, callback) {
     Object.keys(attrs).forEach(function(attrName) {
         var attr = attrs[attrName];
+
+        if(UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
 
         callback(attr, attrName, attrs);
 
@@ -170,10 +174,9 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             return;
         }
 
-        // underscore attributes are booleans
-        attrsOut[k] = (UNDERSCORE_ATTRS.indexOf(k) !== -1) ?
-            attrsIn[k] :
-            objectAssign({}, attrsIn[k]);
+        attrsOut[k] = Plotly.Lib.isPlainObject(attrsIn[k]) ?
+            objectAssign({}, attrsIn[k]) :
+            attrsIn[k];  // some underscore attributes are booleans
     });
 
     return attrsOut;
