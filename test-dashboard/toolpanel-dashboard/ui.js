@@ -1,12 +1,18 @@
 'use strict';
 
-Plotly = window.Plotly;
+var Plotly = window.Plotly;
+var ToolPanel = window.ToolPanel;
+var divs = [];
 
-(function createPlot (divId) {
-
+function createPlot (divId) {
+    var containerDiv = document.getElementById('main');
     var graphDiv = document.createElement('div');
     graphDiv.id = divId;
-    document.body.appendChild(graphDiv);
+    graphDiv.style.width = '45%';
+    graphDiv.style.display = 'inline-block';
+    graphDiv.style.margin = '10px';
+    graphDiv.style.position = 'relative';
+    containerDiv.appendChild(graphDiv);
 
     var trace1 = {
         x: [1, 2, 3, 4],
@@ -24,7 +30,15 @@ Plotly = window.Plotly;
 
     Plotly.newPlot(divId, data);
 
-    var toolPanel = new ToolPanel({Plotly: Plotly});
-    toolPanel.makeMenu(graphDiv);
+    graphDiv.toolPanel = new ToolPanel(Plotly, graphDiv, {
+        standalone: true
+    });
+    graphDiv.toolPanel.makeMenu(graphDiv);
 
-})('yo');
+    divs.push(graphDiv);
+
+}
+
+['one', 'two'].forEach(function (index) {
+    createPlot(index);
+});
