@@ -277,6 +277,14 @@ annotations.layoutAttributes = {
             'whereas for paper-referenced, the anchor picked corresponds',
             'to the closest side.'
         ].join(' ')
+    },
+
+    _deprecated: {
+        ref: {
+            description: [
+                'Obsolete. Set `xref` and `yref` separately instead.'
+            ].join(' ')
+        }
     }
 };
 
