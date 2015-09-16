@@ -496,8 +496,10 @@ var colorbar = module.exports = function(td, id) {
 
             // setter - for multi-part properties,
             // set only the parts that are provided
-            if(Plotly.Lib.isPlainObject(opts[name])) $.extend(opts[name],v);
-            else opts[name] = v;
+            opts[name] = Plotly.Lib.isPlainObject(opts[name]) ?
+                 Plotly.Lib.extendFlat(opts[name], v) :
+                 v;
+
             return component;
         };
     });

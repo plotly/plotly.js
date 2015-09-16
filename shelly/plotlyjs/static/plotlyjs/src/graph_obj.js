@@ -283,7 +283,7 @@ plots.defaultConfig = {
 };
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = $.extend({}, plots.defaultConfig);
+    if(!gd._context) gd._context = Plotly.Lib.extendFlat(plots.defaultConfig);
     var context = gd._context;
 
     if(config) {
