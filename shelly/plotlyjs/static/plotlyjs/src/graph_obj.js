@@ -548,9 +548,6 @@ Plotly.plot = function(gd, data, layout, config) {
     }
     else if(graphwasempty) makePlotFramework(gd);
 
-    // enable or disable formatting buttons
-    d3.select(gd).select('.data-only').attr('disabled', !hasData);
-
     var fullLayout = gd._fullLayout;
 
     // prepare the data and find the autorange
