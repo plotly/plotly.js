@@ -87,7 +87,8 @@ queue.undo = function undo (gd) {
     var queueObj,
         i;
 
-    if (!gd) { gd = Tabs.get(); }
+    if(!gd) gd = Tabs.get();  // FIXME
+
     if(gd.framework && gd.framework.isPolar){
         gd.framework.undo();
         return;
@@ -122,7 +123,8 @@ queue.redo = function redo (gd) {
     var queueObj,
         i;
 
-    if (!gd) { gd = Tabs.get(); }
+    if(!gd) gd = Tabs.get();  // FIXME
+
     if(gd.framework && gd.framework.isPolar){
         gd.framework.redo();
         return;
