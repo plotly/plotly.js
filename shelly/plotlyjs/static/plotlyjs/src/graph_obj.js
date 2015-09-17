@@ -195,7 +195,10 @@ plots.getSubplotData = function getSubplotData(data, type, subplotId) {
 // new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
 plots.newTab = function(divid, layout) {
     var gd = document.getElementById(divid);
-    var toolPanel = new Plotly.ToolPanel(Plotly, gd);
+    var toolPanel = new Plotly.ToolPanel(Plotly, gd, {
+        standalone: false,
+        popoverContainer: 'body'
+    });
 
     toolPanel.makeMenu();
 
