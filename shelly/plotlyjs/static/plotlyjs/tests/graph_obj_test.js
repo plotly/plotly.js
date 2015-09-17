@@ -63,6 +63,7 @@ describe('Test graph_obj', function () {
                     {'name': 'd'}
                 ]
             };
+            Plotly.Queue = null;
             spyOn(Plotly, 'redraw');
         });
 
