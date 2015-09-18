@@ -7,11 +7,23 @@ var divs = [];
 function createPlot (divId) {
     var containerDiv = document.getElementById('main');
     var graphDiv = document.createElement('div');
+    var toolDiv = document.createElement('div');
+    containerDiv.style.width = '100%';
+    containerDiv.style.height = '100%';
+    containerDiv.style.clear = 'both';
+
     graphDiv.id = divId;
-    graphDiv.style.width = '45%';
+    graphDiv.style.width = '80%';
     graphDiv.style.display = 'inline-block';
-    graphDiv.style.margin = '10px';
+    graphDiv.style.margin = '0px';
     graphDiv.style.position = 'relative';
+    graphDiv.style.verticalAlign = 'top';
+
+    toolDiv.style.verticalAlign = 'top';
+    toolDiv.style.width = '130px';
+    toolDiv.style.display = 'inline-block';
+
+    containerDiv.appendChild(toolDiv);
     containerDiv.appendChild(graphDiv);
 
     var trace1 = {
@@ -30,17 +42,17 @@ function createPlot (divId) {
 
     Plotly.newPlot(divId, data);
 
-    graphDiv.toolPanel = new ToolPanel(Plotly, graphDiv, {
+    graphDiv.toolPanel = new ToolPanel(Plotly, toolDiv, {
         standalone: true,
         popoverContainer: containerDiv
     });
 
-    graphDiv.toolPanel.makeMenu(graphDiv);
+    graphDiv.toolPanel.makeMenu(toolDiv);
 
-    divs.push(graphDiv);
+    divs.push(graphDiv, toolDiv);
 
 }
 
-['one', 'two'].forEach(function (index) {
+['one'].forEach(function (index) {
     createPlot(index);
 });
