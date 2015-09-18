@@ -449,6 +449,8 @@ axes.layoutAttributes = {
 
     _deprecated: {
         autotick: {
+            valType: 'boolean',
+            role: 'info',
             description: [
                 'Obsolete.',
                 'Set `tickmode` to *auto* for old `autotick` *true* behavior.',

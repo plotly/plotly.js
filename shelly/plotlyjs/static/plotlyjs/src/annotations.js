@@ -281,6 +281,8 @@ annotations.layoutAttributes = {
 
     _deprecated: {
         ref: {
+            valType: 'string',
+            role: 'info',
             description: [
                 'Obsolete. Set `xref` and `yref` separately instead.'
             ].join(' ')

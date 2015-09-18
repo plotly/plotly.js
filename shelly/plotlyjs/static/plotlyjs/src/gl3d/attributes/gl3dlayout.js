@@ -135,6 +135,8 @@ module.exports = {
 
     _deprecated: {
         cameraposition: {
+            valType: 'info_array',
+            role: 'info',
             description: 'Obsolete. Use `camera` instead.'
         }
     }
