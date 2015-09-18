@@ -269,6 +269,7 @@ boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         coerce('marker.line.width');
 
         if(boxpoints==='suspectedoutliers') {
+            coerce('marker.outliercolor', 'rgba(0, 0, 0, 0)')
             coerce('marker.line.outliercolor', traceOut.marker.color);
             coerce('marker.line.outlierwidth');
         }
