@@ -44,16 +44,6 @@ util.xml_entity_encode = function(str){
     return str.replace(/&(?!\w+;|\#[0-9]+;| \#x[0-9A-F]+;)/g,'&amp;');
 };
 
-util.toCamelCase = function(_str){
-    return _str.toLowerCase().replace(/-(.)/g, function(match, group1){ return group1.toUpperCase(); });
-};
-
-util.jsHook = function(_el){
-    var jsHook = _el.className.match(/js-[^ ]+/);
-    return (jsHook) ? jsHook[0] : null;
-};
-
-
 // text converter
 /////////////////////////////
 
