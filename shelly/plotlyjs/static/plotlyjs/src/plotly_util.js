@@ -1,8 +1,7 @@
 'use strict';
 
 // ---external global dependencies
-/* global d3:false, MathJax:false
-   Promise:false */
+/* global d3:false, MathJax:false, Promise:false */
 
 var util = module.exports = {},
     Plotly = require('./plotly');
@@ -139,15 +138,13 @@ util.jsHook = function(_el){
 // text converter
 /////////////////////////////
 
-util.getSize = function(_selection, _dimension){
+function getSize(_selection, _dimension){
     return _selection.node().getBoundingClientRect()[_dimension];
-};
-
-
+}
 
 util.convertToTspans = function(_context, _callback){
     var str = _context.text();
-    var converted = Plotly.util.convertToSvg(str);
+    var converted = convertToSVG(str);
     var that = _context;
     // Until we get tex integrated more fully (so it can be used along with non-tex)
     // allow some elements to prohibit it by attaching 'data-notex' to the original
@@ -193,7 +190,8 @@ util.convertToTspans = function(_context, _callback){
         ((td && td._promises)||[]).push(new Promise(function(resolve) {
             that.style({visibility: 'hidden'});
             var config = {fontSize: parseInt(that.style('font-size'), 10)};
-            Plotly.util.texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox){
+
+            texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox) {
                 parent.selectAll('svg.' + svgClass).remove();
                 parent.selectAll('g.' + svgClass + '-group').remove();
 
@@ -225,13 +223,13 @@ util.convertToTspans = function(_context, _callback){
                 var fill = that.style('fill') || 'black';
                 newSvg.select('g').attr({fill: fill, stroke: fill});
 
-                var newSvgW = Plotly.util.getSize(newSvg, 'width'),
-                    newSvgH = Plotly.util.getSize(newSvg, 'height'),
+                var newSvgW = getSize(newSvg, 'width'),
+                    newSvgH = getSize(newSvg, 'height'),
                     newX = +that.attr('x') - newSvgW *
                         {start:0, middle:0.5, end:1}[that.attr('text-anchor') || 'start'],
                     // font baseline is about 1/4 fontSize below centerline
                     textHeight = parseInt(that.style('font-size'), 10) ||
-                        Plotly.util.getSize(that, 'height'),
+                        getSize(that, 'height'),
                     dy = -textHeight/4;
 
                 if(svgClass[0] === 'y'){
@@ -270,7 +268,7 @@ function cleanEscapesForTex(s) {
         .replace(/(>|&gt;|&#62;)/g, '\\gt ');
 }
 
-util.texToSVG = function(_texString, _config, _callback){
+function texToSVG(_texString, _config, _callback){
     var randomID = 'math-output-' + Plotly.Lib.randstr([],64);
     var tmpDiv = d3.select('body').append('div')
         .attr({id: randomID})
@@ -292,7 +290,7 @@ util.texToSVG = function(_texString, _config, _callback){
 
         tmpDiv.remove();
     });
-};
+}
 
 var TAG_STYLES = {
     // would like to use baseline-shift but FF doesn't support it yet
@@ -316,7 +314,7 @@ util.plainText = function(_str){
     return (_str||'').replace(STRIP_TAGS, ' ');
 };
 
-util.convertToSvg = function(_str){
+function convertToSVG(_str){
     var htmlEntitiesDecoded = Plotly.util.html_entity_decode(_str);
     var result = htmlEntitiesDecoded
         .split(/(<[^<>]*>)/).map(function(d){
@@ -410,10 +408,9 @@ util.convertToSvg = function(_str){
     }
 
     return result.join('');
-};
+}
 
-
-util.alignHTMLWith = function (_base, container, options){
+function alignHTMLWith(_base, container, options){
     var alignH = options.horizontalAlign,
         alignV = options.verticalAlign || 'top',
         bRect = _base.node().getBoundingClientRect(),
@@ -447,7 +444,7 @@ util.alignHTMLWith = function (_base, container, options){
         });
         return this;
     };
-};
+}
 
 // Editable title
 /////////////////////////////
@@ -504,7 +501,7 @@ util.makeEditable = function(context, _delegate, options){
             })
             .attr({contenteditable: true})
             .text(options.text || that.attr('data-unformatted'))
-            .call(util.alignHTMLWith(that, container, options))
+            .call(alignHTMLWith(that, container, options))
             .on('blur', function(){
                 that.text(this.textContent)
                     .style({opacity: 1});
@@ -538,7 +535,7 @@ util.makeEditable = function(context, _delegate, options){
                 }
                 else{
                     dispatch.input.call(that, this.textContent);
-                    d3.select(this).call(util.alignHTMLWith(that, container, options));
+                    d3.select(this).call(alignHTMLWith(that, container, options));
                 }
             })
             .on('keydown', function(){
