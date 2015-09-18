@@ -289,7 +289,9 @@ shapes.draw = function(gd, index, opt, value) {
         else if(value==='add' || Plotly.Lib.isPlainObject(value)) {
             fullLayout.shapes.splice(index,0,{});
 
-            var rule = Plotly.Lib.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
+            var rule = Plotly.Lib.isPlainObject(value) ?
+                    Plotly.Lib.extendFlat({}, value) :
+                    {text: 'New text'};
 
             if (layout.shapes) {
                 layout.shapes.splice(index, 0, rule);
