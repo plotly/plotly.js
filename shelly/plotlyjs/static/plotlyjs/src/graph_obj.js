@@ -10,7 +10,8 @@
 
 var Plotly = require('./plotly'),
     m4FromQuat = require('gl-mat4/fromQuat'),
-    isNumeric = require('./isnumeric');
+    isNumeric = require('./isnumeric'),
+    clone = require('clone');
 
 var plots = module.exports = {};
 // Most of the generic plotting functions get put into Plotly.Plots,
@@ -290,7 +291,7 @@ plots.defaultConfig = {
 };
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = $.extend({}, plots.defaultConfig);
+    if(!gd._context) gd._context = Plotly.Lib.extendFlat(plots.defaultConfig);
     var context = gd._context;
 
     if(config) {
@@ -553,9 +554,6 @@ Plotly.plot = function(gd, data, layout, config) {
         }
     }
     else if(graphwasempty) makePlotFramework(gd);
-
-    // enable or disable formatting buttons
-    $(gd).find('.data-only').attr('disabled', !hasData);
 
     var fullLayout = gd._fullLayout;
 
@@ -2243,7 +2241,7 @@ function getExtendProperties (gd, update, indices, maxPoints) {
 }
 
 /**
- * A private function to keey Extend and Prepend traces DRY
+ * A private function to key Extend and Prepend traces DRY
  *
  * @param {Object|HTMLDivElement} gd
  * @param {Object} update
@@ -2593,19 +2591,22 @@ Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
 
 // restyle: change styling of an existing plot
 // can be called two ways:
-// restyle(gd,astr,val[,traces])
-//      gd - graph div (dom element)
+//
+// restyle(gd, astr, val [,traces])
+//      gd - graph div (string id or dom element)
 //      astr - attribute string (like 'marker.symbol')
 //      val - value to give this attribute
 //      traces - integer or array of integers for the traces
 //          to alter (all if omitted)
-// relayout(gd,aobj[,traces])
+//
+// restyle(gd, aobj [,traces])
 //      aobj - {astr1:val1, astr2:val2...} allows setting
 //          multiple attributes simultaneously
+//
 // val (or val1, val2... in the object form) can be an array,
-//  to apply different values to each trace
-// if the array is too short, it will wrap around (useful for
-//  style files that want to specify cyclical default values)
+// to apply different values to each trace.
+// If the array is too short, it will wrap around (useful for
+// style files that want to specify cyclical default values).
 Plotly.restyle = function restyle(gd, astr, val, traces) {
     gd = getGraphDiv(gd);
 
@@ -3085,9 +3086,9 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+
     return plotDone.then(function(){
-        $(gd).trigger('plotly_restyle',
-                      $.extend(true, [], [redoit, traces]));
+        $(gd).trigger('plotly_restyle', clone([redoit, traces]));
     });
 };
 
@@ -3120,10 +3121,12 @@ function swapXYData(trace) {
 
 // relayout: change layout in an existing plot
 // can be called two ways:
-// relayout(gd,astr,val)
-//      gd - graph div (dom element)
+//
+// relayout(gd, astr, val)
+//      gd - graph div (string id or dom element)
 //      astr - attribute string (like 'xaxis.range[0]')
 //      val - value to give this attribute
+//
 // relayout(gd,aobj)
 //      aobj - {astr1:val1, astr2:val2...}
 //          allows setting multiple attributes simultaneously
@@ -3443,8 +3446,9 @@ Plotly.relayout = function relayout(gd, astr, val) {
     var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+
     return plotDone.then(function(){
-        $(gd).trigger('plotly_relayout', $.extend(true, {}, redoit));
+        $(gd).trigger('plotly_relayout', clone(redoit));
     });
 };
 

@@ -1,43 +1,6 @@
 'use strict';
 
-/**
- * Copy arg array *without* removing `undefined` values from objects.
- *
- * `$.extend(true, *, *)` ignores `undefined` object properties, which we
- * depend on in relayout and restyle. This function exists *purely* to
- * conserve these undefined properties.
- *
- * Note, it doesn't bother with undefined properties inside an object in
- * an array. We don't have a use-case for this, so it doesn't matter.
- *
- * @param gd
- * @param args
- * @returns {Array}
- */
-function copyArgArray (gd, args) {
-    var copy = [],
-        i,
-        arg,
-        ai;
-    for (i = 0; i < args.length; i++) {
-        arg = args[i];
-        if (arg === gd) {
-            copy[i] = arg;
-        } else if (typeof arg === 'object') {
-            if (Array.isArray(arg)) {
-                copy[i] = $.extend(true, [], arg);
-            } else {
-                copy[i] = {};
-
-                // this is the important line! `undefined` things are kept!
-                for(ai in arg) copy[i][ai] = arg[ai];
-            }
-        } else {
-            copy[i] = arg;
-        }
-    }
-    return copy;
-}
+var clone = require('clone');
 
 
 // -----------------------------------------------------
@@ -124,7 +87,8 @@ queue.undo = function undo (gd) {
     var queueObj,
         i;
 
-    if (!gd) { gd = Tabs.get(); }
+    if(!gd) gd = Tabs.get();  // FIXME
+
     if(gd.framework && gd.framework.isPolar){
         gd.framework.undo();
         return;
@@ -159,7 +123,8 @@ queue.redo = function redo (gd) {
     var queueObj,
         i;
 
-    if (!gd) { gd = Tabs.get(); }
+    if(!gd) gd = Tabs.get();  // FIXME
+
     if(gd.framework && gd.framework.isPolar){
         gd.framework.redo();
         return;
@@ -197,11 +162,8 @@ queue.redo = function redo (gd) {
 queue.plotDo = function (gd, func, args) {
     gd.autoplay = true;
 
-    // this *won't* copy gd and it preserves `undefined` properties!
-    args = copyArgArray(gd, args);
-
-    // call the supplied function
-    func.apply(null, args);
+    // call the supplied function with a cloned args
+    func.apply(null, clone(args));
 };
 
 module.exports = queue;
