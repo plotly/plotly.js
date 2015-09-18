@@ -816,9 +816,13 @@ colorbar.traceColorbarAttributes = {
 
     _deprecated: {
         scl: {
+            valType: 'colorscale',
+            role: 'style',
             description: 'Renamed to `colorscale`.'
         },
         reversescl: {
+            valType: 'boolean',
+            role: 'style',
             description: 'Renamed to `reversescale`.'
         }
     }
