@@ -106,8 +106,8 @@ plots.subplotsRegistry = {
         idRegex: /^geo[0-9]*$/
     },
     gl2d: {
-        attr:    'gl2d',
-        idRegex: /^gl2d[0-9]*$/
+        attr:    'scene2d',
+        idRegex: /^scene2d[0-9]*$/
     }
 };
 
@@ -811,23 +811,35 @@ function plotGeo(gd) {
 
 function plotGl2d(gd) {
     var fullLayout = gd._fullLayout,
-        fullData = gd._fullData;
+        fullData = gd._fullData,
+        sceneIds = plots.getSubplotIds(fullLayout, 'gl2d');
 
-    // TODO add support for gl2d subplots
+    var i, sceneId, fullSceneData, scene, sceneOptions;
 
-    var scene2d = fullLayout._scene2d;
+    fullLayout._paperdiv.style({
+        width: fullLayout.width + 'px',
+        height: fullLayout.height + 'px'
+    });
 
-    if(scene2d === undefined) {
-        scene2d = new Plotly.Scene2D(
-            {
+    gd._context.setBackground(gd, fullLayout.paper_bgcolor);
+
+    for (i = 0; i < sceneIds.length; i++) {
+        sceneId = sceneIds[i];
+        fullSceneData = plots.getSubplotData(fullData, 'gl2d', sceneId);
+        scene = fullLayout[sceneId]._scene2d;  // ref. to corresp. Scene instance
+
+        // If Scene is not instantiated, create one!
+        if(scene === undefined) {
+            sceneOptions = {
                 container: gd.querySelector('.gl-container'),
-                id: 'scene2dxy'
-            },
-            fullLayout
-        );
-    }
+                id: sceneId
+            };
+            scene = new Plotly.Scene2D(sceneOptions, fullLayout);
+            fullLayout[sceneId]._scene2d = scene;  // set ref to Scene instance
+        }
 
-    scene2d.plot(fullData, fullLayout);
+        scene.plot(fullSceneData, fullLayout, gd.layout);  // takes care of business
+    }
 }
 
 function plotPolar(gd, data, layout) {
@@ -1179,6 +1191,9 @@ function cleanData(data, existingData) {
         // scene ids scene1 -> scene
         if (trace.scene) {
             trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
+        }
+        if (trace.scene2d) {
+            trace.scene2d = Plotly.Gl2dLayout.cleanId(trace.scene2d);
         }
 
         if(!plots.traceIs(trace, 'pie')) {
@@ -1561,6 +1576,8 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     // the traces of a scene are invisible. Also we handle visible/unvisible
     // differently for 3D cases.
     if(plots.traceIs(traceOut, 'gl3d')) scene = coerce('scene');
+
+    if(plots.traceIs(traceOut, 'gl2d')) scene = coerce('scene2d');
 
     if(plots.traceIs(traceOut, 'geo')) scene = coerce('geo');
 
@@ -3556,6 +3573,7 @@ function makePlotFramework(gd) {
      * TODO - find a better place for 3D to initialize axes
      */
     if(fullLayout._hasGL3D) Plotly.Gl3dAxes.initAxes(gd);
+    if(fullLayout._hasGL2D) Plotly.Gl2dAxes.initAxes(gd);
 
     var outerContainer = fullLayout._fileandcomments =
             gd3.selectAll('.file-and-comments');

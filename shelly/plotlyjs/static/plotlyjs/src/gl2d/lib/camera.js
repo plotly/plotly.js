@@ -25,7 +25,9 @@ Camera2D.prototype.syncDataBox = function() {
   dataBox[3] = plot.dataBox[3];
 };
 
-function createCamera(element, plot) {
+function createCamera(scene) {
+  var element = scene.canvas;
+  var plot = scene.glplot;
   var result = new Camera2D(element, plot);
   result.syncDataBox();
 
@@ -40,8 +42,10 @@ function createCamera(element, plot) {
     var lastY = result.lastPos[1];
 
     if(buttons & 1) {
-      var dx = (lastX - x) * (dataBox[2] - dataBox[0]) / (plot.viewBox[2]-plot.viewBox[0]);
-      var dy = (lastY - y) * (dataBox[3] - dataBox[1]) / (plot.viewBox[3] - plot.viewBox[1]);
+      var dx = (lastX - x) * (dataBox[2] - dataBox[0]) /
+        (plot.viewBox[2] - plot.viewBox[0]);
+      var dy = (lastY - y) * (dataBox[3] - dataBox[1]) /
+        (plot.viewBox[3] - plot.viewBox[1]);
 
       dataBox[0] += dx;
       dataBox[1] += dy;
@@ -49,7 +53,8 @@ function createCamera(element, plot) {
       dataBox[3] += dy;
 
       result.lastInputTime = Date.now();
-      plot.setDataBox(dataBox);
+
+      scene.cameraChanged();
     }
 
     result.lastPos[0] = x;
@@ -72,7 +77,7 @@ function createCamera(element, plot) {
     dataBox[3] = (dataBox[3] - cy) * scale + cy;
 
     result.lastInputTime = Date.now();
-    plot.setDataBox(dataBox);
+    scene.cameraChanged();
 
     return true;
   });

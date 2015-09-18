@@ -266,7 +266,6 @@ function computeTraceBounds(scene, trace, bounds) {
 }
 
 proto.plot = function(sceneData, fullLayout, layout) {
-
     //Save parameters
     this.plotArgs = [ sceneData, fullLayout, layout ];
 

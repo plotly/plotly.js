@@ -1,14 +1,18 @@
 'use strict';
 
+var Plotly = require('../plotly');
 var createPlot2D = require('gl-plot2d');
 var createOptions = require('./convert/axes2dgl');
 var createCamera  = require('./lib/camera');
+
+var AXES = [ 'xaxis', 'yaxis' ];
 
 function Scene2D(options, fullLayout) {
 
     console.log('Instantiating Scene2d', options);
 
     var container = this.container = options.container;
+    this.fullLayout = fullLayout;
 
     var width       = fullLayout.width;
     var height      = fullLayout.height;
@@ -54,7 +58,7 @@ function Scene2D(options, fullLayout) {
     this.glplot = createPlot2D(this.glplotOptions);
 
     //Create camera
-    this.camera = createCamera(canvas, this.glplot);
+    this.camera = createCamera(this);
 
     //Redraw the plot
     this.redraw = this.draw.bind(this);
@@ -66,13 +70,58 @@ module.exports = Scene2D;
 var proto = Scene2D.prototype;
 
 proto.computeTickMarks = function() {
-  return [[], []];
+  this.fullLayout.scene2d.xaxis._length =
+    this.glplot.viewBox[2] - this.glplot.viewBox[0];
+  this.fullLayout.scene2d.yaxis._length =
+    this.glplot.viewBox[3] - this.glplot.viewBox[1];
+  return [
+    Plotly.Axes.calcTicks(this.fullLayout.scene2d.xaxis),
+    Plotly.Axes.calcTicks(this.fullLayout.scene2d.yaxis)
+  ];
+};
+
+function compareTicks(a, b) {
+  for(var i=0; i<2; ++i) {
+    var aticks = a[i];
+    var bticks = b[i];
+    if(aticks.length !== bticks.length) {
+      return true;
+    }
+    for(var j=0; j<aticks.length; ++j) {
+      if(aticks[j].x !== bticks[j].x) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+proto.cameraChanged = function() {
+  var fullLayout = this.fullLayout;
+  var camera = this.camera;
+  fullLayout.scene2d.xaxis.range[0] = camera.dataBox[0];
+  fullLayout.scene2d.yaxis.range[0] = camera.dataBox[1];
+  fullLayout.scene2d.xaxis.range[1] = camera.dataBox[2];
+  fullLayout.scene2d.yaxis.range[1] = camera.dataBox[3];
+
+  this.glplot.setDataBox(camera.dataBox);
+
+  var nextTicks = this.computeTickMarks();
+  var curTicks = this.glplotOptions.ticks;
+
+  if(compareTicks(nextTicks, curTicks)) {
+    this.glplotOptions.ticks = nextTicks;
+    this.glplotOptions.dataBox = camera.dataBox;
+    this.glplot.update(this.glplotOptions);
+  }
 };
 
 proto.plot = function(fullData, fullLayout) {
     //Check for resize
     var glplot     = this.glplot;
     var pixelRatio = this.pixelRatio;
+
+    this.fullLayout = fullLayout;
 
     var width       = fullLayout.width;
     var height      = fullLayout.height;
@@ -85,12 +134,23 @@ proto.plot = function(fullData, fullLayout) {
       canvas.height       = pixelHeight;
     }
 
+    for(var i=0; i<2; ++i) {
+      Plotly.Axes.doAutoRange(fullLayout.scene2d[AXES[i]]);
+    }
+
+    var camera = this.camera;
+    camera.dataBox[0] = fullLayout.scene2d.xaxis.range[0];
+    camera.dataBox[1] = fullLayout.scene2d.yaxis.range[0];
+    camera.dataBox[2] = fullLayout.scene2d.xaxis.range[1];
+    camera.dataBox[3] = fullLayout.scene2d.yaxis.range[1];
+
     //Update plot
     var options       = this.glplotOptions;
     options.merge(fullLayout);
     options.screenBox = [0,0,width,height];
     options.viewBox   = [0.125*width,0.125*height,0.875*width,0.875*height];
     options.ticks     = this.computeTickMarks();
+    options.dataBox   = camera.dataBox;
 
     glplot.update(options);
 };

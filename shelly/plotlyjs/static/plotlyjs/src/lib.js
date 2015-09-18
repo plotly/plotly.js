@@ -1487,6 +1487,16 @@ var coerceIt = {
         }
         propOut.set(dflt);
     },
+    scene2did: function(v, propOut, dflt) {
+      if(typeof v === 'string' && v.substr(0,7)===dflt) {
+          var scenenum = Number(v.substr(7));
+          if(scenenum%1 === 0 && scenenum>1) {
+              propOut.set(v);
+              return;
+          }
+      }
+      propOut.set(dflt);
+    },
     flaglist: function(v, propOut, dflt, opts) {
         if(typeof v !== 'string') {
             propOut.set(dflt);

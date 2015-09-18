@@ -12,10 +12,11 @@ function noop() {}
 
 Gl2dAxes.supplyLayoutDefaults = function(layoutIn, layoutOut, options) {
   var Axes = Plotly.Axes;
+  console.log('Supply axis defaults');
   Gl2dAxes.axesNames.forEach(function(axName) {
     var containerIn  = layoutIn[axName] || {};
     var containerOut =  {
-      _id:   axName[0] + options.scene,
+      _id:   axName[0] + options.scene2d,
       _name: axName
     };
 
@@ -60,7 +61,7 @@ Gl2dAxes.initAxes = function (td) {
     for (var i = 0; i < sceneIds.length; ++i) {
         var sceneId = sceneIds[i];
         var sceneLayout = fullLayout[sceneId];
-        for (var j = 0; j < 3; ++j) {
+        for (var j = 0; j < 2; ++j) {
             var axisName = Gl2dAxes.axesNames[j];
             var ax = sceneLayout[axisName];
             ax._td = td;
