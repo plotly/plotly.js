@@ -1137,7 +1137,7 @@ heatmap.hoverPoints = function(pointData, xval, yval, hovermode, contour) {
         text = trace.text[ny][nx];
     }
 
-    return [$.extend(pointData,{
+    return [Plotly.Lib.extendFlat(pointData, {
         index: [ny, nx],
         // never let a 2D override 1D type as closest point
         distance: Plotly.Fx.MAXDIST+10,

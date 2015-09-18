@@ -31,9 +31,11 @@ function createPlot (divId) {
     Plotly.newPlot(divId, data);
 
     graphDiv.toolPanel = new ToolPanel(Plotly, graphDiv, {
-        standalone: true
+        standalone: true,
+        popoverContainer: containerDiv
     });
-    graphDiv.toolPanel.makeMenu(graphDiv);
+
+    graphDiv.toolPanel.makeMenu();
 
     divs.push(graphDiv);
 

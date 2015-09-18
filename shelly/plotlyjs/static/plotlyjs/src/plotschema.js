@@ -1,7 +1,9 @@
 'use strict';
 
 var Plotly = require('./plotly'),
-    objectAssign = require('object-assign');
+    clone = require('clone');
+
+var extendFlat = Plotly.Lib.extendFlat;
 
 var NESTED_MODULE = '_nestedModules',
     COMPOSED_MODULE = '_composedModules',
@@ -23,6 +25,7 @@ var polarAreaAttrs = require('./polar/attributes/area'),
     polarAxisAttrs = require('./polar/attributes/polaraxes');
 
 var PlotSchema = module.exports = {};
+
 
 PlotSchema.get =  function() {
     Plotly.Plots.allTypes
@@ -69,11 +72,11 @@ function getTraceAttributes(type) {
 
     // subplot attributes
     if(subplotRegistry.attributes !== undefined) {
-        attributes = objectAssign(attributes, subplotRegistry.attributes);
+        attributes = extendFlat(attributes, clone(subplotRegistry.attributes));
     }
 
     // global attributes (same for all trace types)
-    attributes = objectAssign(attributes, globalAttributes);
+    attributes = extendFlat(attributes, clone(globalAttributes));
 
     // 'type' gets overwritten by globalAttributes; reset it here
     attributes.type = type;
@@ -81,7 +84,7 @@ function getTraceAttributes(type) {
     attributes = removeUnderscoreAttrs(attributes);
 
     mergeValTypeAndRole(attributes);
-    plotSchema.traces[type] = objectAssign(
+    plotSchema.traces[type] = extendFlat(
         meta,
         { attributes: attributes }
     );
@@ -152,7 +155,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
                 );
 
                 Plotly.Lib.nestedProperty(attrsOut, kk)
-                    .set(nestedReference);
+                    .set(clone(nestedReference));
             });
             return;
         }
@@ -169,14 +172,12 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
                     composedAttrs, {}, whichAttrs, type
                 );
 
-                attrsOut = objectAssign(attrsOut, composedAttrs);
+                attrsOut = extendFlat(attrsOut, clone(composedAttrs));
             });
             return;
         }
 
-        attrsOut[k] = Plotly.Lib.isPlainObject(attrsIn[k]) ?
-            objectAssign({}, attrsIn[k]) :
-            attrsIn[k];  // some underscore attributes are booleans
+        attrsOut[k] = clone(attrsIn[k]);
     });
 
     return attrsOut;
@@ -242,12 +243,12 @@ function getMeta(type) {
 }
 
 function assignPolarLayoutAttrs(layoutAttributes) {
-    layoutAttributes = objectAssign(layoutAttributes, {
-        radialaxis: polarAxisAttrs.radialaxis,
-        angularaxis: polarAxisAttrs.angularaxis
+    layoutAttributes = extendFlat(layoutAttributes, {
+        radialaxis: clone(polarAxisAttrs.radialaxis),
+        angularaxis: clone(polarAxisAttrs.angularaxis)
     });
 
-    layoutAttributes = objectAssign(layoutAttributes, polarAxisAttrs.layout);
+    layoutAttributes = extendFlat(layoutAttributes, clone(polarAxisAttrs.layout));
 
     return layoutAttributes;  // FIXME
 }

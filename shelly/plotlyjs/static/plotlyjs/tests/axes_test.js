@@ -1,4 +1,5 @@
 var Plotly = require('../src/plotly');
+var clone = require('clone');
 
 describe('Test axes', function () {
     'use strict';
@@ -27,7 +28,7 @@ describe('Test axes', function () {
                     }
                 }
             };
-            var expectedYaxis = $.extend(true, {}, gd.layout.xaxis),
+            var expectedYaxis = clone(gd.layout.xaxis),
                 expectedXaxis = {
                     title: 'Click to enter X axis title',
                     type: 'date'
@@ -60,7 +61,7 @@ describe('Test axes', function () {
                     }
                 }
             };
-            var expectedLayoutAfter = $.extend(true, {}, gd.layout);
+            var expectedLayoutAfter = clone(gd.layout);
             expectedLayoutAfter.xaxis.type = 'linear';
             expectedLayoutAfter.yaxis.type = 'linear';
 

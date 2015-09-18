@@ -1701,9 +1701,9 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
 };
 
 /**
- * modified version of $.extend to strip out private objs and functions,
+ * modified version of jQuery's extend to strip out private objs and functions,
  * and cut arrays down to first <arraylen> or 1 elements
- * because $.extend is hella slow
+ * because extend-like algorithms are hella slow
  * obj2 is assumed to already be clean of these things (including no arrays)
  */
 lib.minExtend = function(obj1, obj2) {
