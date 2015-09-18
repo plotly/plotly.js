@@ -193,27 +193,6 @@ plots.getSubplotData = function getSubplotData(data, type, subplotId) {
     return subplotData;
 };
 
-// new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
-plots.newTab = function(divid, layout) {
-    var gd = document.getElementById(divid);
-    var toolPanel = new Plotly.ToolPanel(Plotly, gd, {
-        standalone: false,
-        popoverContainer: 'body'
-    });
-
-    toolPanel.makeMenu();
-
-    var config = {
-        workspace: true,
-        editable: true,
-        autosizable: true,
-        scrollZoom: true,
-        showLink: false,
-        setBackground: 'opaque'
-    };
-    return Plotly.plot(divid, [], layout, config);
-};
-
 // in some cases the browser doesn't seem to know how big
 // the text is at first, so it needs to draw it,
 // then wait a little, then draw it again

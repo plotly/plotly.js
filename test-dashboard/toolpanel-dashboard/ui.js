@@ -35,7 +35,7 @@ function createPlot (divId) {
         popoverContainer: containerDiv
     });
 
-    graphDiv.toolPanel.makeMenu(graphDiv);
+    graphDiv.toolPanel.makeMenu();
 
     divs.push(graphDiv);
 
