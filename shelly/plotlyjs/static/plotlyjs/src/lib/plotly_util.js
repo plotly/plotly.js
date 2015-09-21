@@ -4,7 +4,7 @@
 /* global d3:false, MathJax:false, Promise:false */
 
 var util = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('../plotly');
 
 // Append SVG
 /////////////////////////////
