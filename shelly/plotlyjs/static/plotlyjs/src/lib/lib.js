@@ -1736,22 +1736,6 @@ lib.minExtend = function(obj1, obj2) {
     return objOut;
 };
 
-// Flat extend function (only copies values of first level keys)
-lib.extendFlat = function extendFlat(obj1, obj2) {
-    var objOut = {};
-
-    function copyToOut(obj) {
-        var keys = Object.keys(obj);
-        for(var i = 0; i < keys.length; i++) {
-            objOut[keys[i]] = obj[keys[i]];
-        }
-    }
-    if(typeof obj1 === 'object') copyToOut(obj1);
-    if(typeof obj2 === 'object') copyToOut(obj2);
-
-    return objOut;
-};
-
 lib.titleCase = function(s) {
     return s.charAt(0).toUpperCase() + s.substr(1);
 };
@@ -1809,3 +1793,8 @@ lib.isIE = function() {
 };
 
 lib.isPlainObject = require('./is_plain_object');
+
+var extendModule = require('./extend.js');
+lib.extendFlat = extendModule.extendFlat;
+lib.extendDeep = extendModule.extendDeep;
+lib.extendDeepAll = extendModule.extendDeepAll;
