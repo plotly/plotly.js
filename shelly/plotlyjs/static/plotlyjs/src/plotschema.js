@@ -7,12 +7,11 @@ var extendFlat = Plotly.Lib.extendFlat;
 
 var NESTED_MODULE = '_nestedModules',
     COMPOSED_MODULE = '_composedModules',
-    IS_SUBPLOT_OBJ = '_isSubplotObj';
+    IS_SUBPLOT_OBJ = '_isSubplotObj',
+    IS_LINKED_TO_ARRAY = '_isLinkedToArray';
 
 // list of underscore attributes to keep in schema as is
-var UNDERSCORE_ATTRS = [
-    '_isLinkedToArray', '_isSubplotObj', '_deprecated'
-];
+var UNDERSCORE_ATTRS = ['_isSubplotObj', '_deprecated'];
 
 var plotSchema = {
     traces: {},
@@ -82,7 +81,6 @@ function getTraceAttributes(type) {
     attributes.type = type;
 
     attributes = removeUnderscoreAttrs(attributes);
-
     mergeValTypeAndRole(attributes);
     plotSchema.traces[type] = extendFlat(
         meta,
@@ -115,9 +113,10 @@ function getLayoutAttributes() {
     // add IS_SUBPLOT_OBJ attribute
     layoutAttributes = handleSubplotObjs(layoutAttributes);
 
+    // generate IS_LINKED_TO_ARRAY structure
+    layoutAttributes = handleLinkedToArray(layoutAttributes);
 
     layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
-
     mergeValTypeAndRole(layoutAttributes);
     plotSchema.layout = { layoutAttributes: layoutAttributes };
 }
@@ -273,3 +272,22 @@ function handleSubplotObjs(layoutAttributes) {
     return layoutAttributes;
 }
 
+function handleLinkedToArray(layoutAttributes) {
+    Object.keys(layoutAttributes).forEach(function(k) {
+        var attr = clone(layoutAttributes[k]);
+
+        if(attr[IS_LINKED_TO_ARRAY] !== true) return;
+
+        var itemName = k.substr(0, k.length-1);  // TODO more robust logic
+
+        delete attr[IS_LINKED_TO_ARRAY];
+
+        layoutAttributes[k] = {
+            role: 'object',
+            items: {}
+        };
+        layoutAttributes[k].items[itemName] = attr;
+    });
+
+    return layoutAttributes;
+}

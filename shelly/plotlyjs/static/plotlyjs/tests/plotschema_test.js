@@ -108,26 +108,18 @@ describe('plot schema', function() {
         expect(list).toEqual(astrs);
     });
 
-    it('layout.annotations and layout.shapes should contain _isLinkedToArray', function() {
-        var IS_LINKED_TO_ARRAY = '_isLinkedToArray',
-            astrs = ['annotations', 'shapes'],
-            list = [];
+    it('layout.annotations and layout.shapes should contain `items`', function() {
+        var astrs = ['annotations', 'shapes'];
 
         astrs.forEach(function(astr) {
             expect(
-                Plotly.Lib.nestedProperty(
-                    plotSchema.layout.layoutAttributes,
-                    astr + '.' + IS_LINKED_TO_ARRAY
-                ).get()
+                isPlainObject(
+                    Plotly.Lib.nestedProperty(
+                        plotSchema.layout.layoutAttributes, astr
+                    ).get().items
+                )
             ).toBe(true);
         });
-
-        assertPlotSchema(
-            function(attr, attrName) {
-                if(attr[IS_LINKED_TO_ARRAY] === true) list.push(attrName);
-            }
-        );
-        expect(list).toEqual(astrs);
     });
 
     it('valObjects descriptions should be strings', function() {
