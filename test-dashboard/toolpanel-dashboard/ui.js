@@ -4,6 +4,18 @@ var Plotly = window.Plotly;
 var ToolPanel = window.ToolPanel;
 var divs = [];
 
+function createRemoveButton () {
+    var removeButton = document.createElement('button');
+    removeButton.innerHTML = 'remove toolpanel';
+    removeButton.id = 'removeButton';
+    document.body.appendChild(removeButton);
+
+    removeButton.onclick = function () {
+        debugger;
+        divs[0].toolPanel.remove();
+    };
+}
+
 function createPlot (divId) {
     var containerDiv = document.getElementById('main');
     var graphDiv = document.createElement('div');
@@ -58,3 +70,5 @@ function createPlot (divId) {
 ['one'].forEach(function (index) {
     createPlot(index);
 });
+
+createRemoveButton();
