@@ -179,7 +179,9 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             return;
         }
 
-        attrsOut[k] = extendDeep({}, attrsIn[k]);
+        attrsOut[k] = Plotly.Lib.isPlainObject(attrsIn[k]) ?
+            extendDeep({}, attrsIn[k]) :
+            attrsIn[k];
     });
 
     return attrsOut;
