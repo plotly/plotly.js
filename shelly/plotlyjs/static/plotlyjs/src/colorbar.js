@@ -351,7 +351,7 @@ var colorbar = module.exports = function(td, id) {
 
             cbAxisOut._pos = xLeft+thickPx +
                 (opts.outlinewidth||0)/2 - (opts.ticks==='outside' ? 1 : 0);
-            cbAxisOut.side = opts.orient;
+            cbAxisOut.side = 'right';
 
             return Plotly.Axes.doTicks(td, cbAxisOut);
         }
@@ -525,6 +525,7 @@ var axesAttrs = Plotly.Axes.layoutAttributes,
     extendFlat = Plotly.Lib.extendFlat;
 
 colorbar.attributes = {
+// TODO: only right is supported currently
 //     orient: {
 //         valType: 'enumerated',
 //         role: 'info',
@@ -706,9 +707,6 @@ colorbar.supplyDefaults = function(containerIn, containerOut, layout) {
         return Plotly.Lib.coerce(colorbarIn, colorbarOut,
                                  colorbar.attributes, attr, dflt);
     }
-
-//     coerce('orient');
-    colorbarOut.orient = 'right'; // TODO: only right is supported currently
 
     var thicknessmode = coerce('thicknessmode');
     coerce('thickness', thicknessmode === 'fraction' ?
