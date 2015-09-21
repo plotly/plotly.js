@@ -155,6 +155,7 @@ boxes.attributes = {
                 {arrayOk: false, dflt: 0}),
             outliercolor: {
                 valType: 'color',
+                dflt: null,
                 role: 'style',
                 description: 'Sets the border line color of the outlier sample points.'
             },
@@ -255,7 +256,8 @@ boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
     coerce('boxmean');
     
     var outliercolor = coerce('marker.outliercolor'),
-        boxpoints = outliercolor ? coerce('boxpoints', 'suspectedoutliers') : coerce('boxpoints');
+        outlierlinecolor = coerce('marker.line.outliercolor'),
+        boxpoints = outliercolor || outlierlinecolor ? coerce('boxpoints', 'suspectedoutliers') : coerce('boxpoints');
 
     if(boxpoints) {
         coerce('jitter', boxpoints==='all' ? 0.3 : 0);
