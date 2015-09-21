@@ -1808,10 +1808,4 @@ lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
 
-// more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
-lib.isPlainObject = function(obj) {
-    return (
-        Object.prototype.toString.call(obj) === '[object Object]' &&
-        Object.getPrototypeOf(obj) === Object.prototype
-    );
-};
+lib.isPlainObject = require('./is_plain_object');
