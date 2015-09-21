@@ -688,7 +688,11 @@ colorbar.attributes = {
         valType: 'enumerated',
         values: ['right', 'top', 'bottom'],
         role: 'style',
-        dflt: 'top'
+        dflt: 'top',
+        description: [
+            'Determines the location of the colorbar title',
+            'with respect to the color bar.'
+        ].join(' ')
     }
 };
 
