@@ -130,4 +130,20 @@ describe('plot schema', function() {
         );
         expect(list).toEqual(astrs);
     });
+
+    it('valObjects descriptions should be strings', function() {
+        assertPlotSchema(
+            function(attr) {
+                var isValid;
+
+                if(isValObject(attr)) {
+                    // attribute don't have to have a description (for now)
+                    isValid = (typeof attr.description === 'string') ||
+                        (attr.description === undefined);
+
+                    expect(isValid).toBe(true);
+                }
+            }
+        );
+    });
 });
