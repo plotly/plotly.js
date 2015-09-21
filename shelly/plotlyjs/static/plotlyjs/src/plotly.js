@@ -1,10 +1,11 @@
-exports.micropolar = require('./polar/micropolar');
-exports.micropolar.manager = require('./polar/micropolar_manager');
-
 // order of requires should matter only for interdependencies
 // in attributes definitions. put the common modules first
 exports.Lib = require('./lib/lib');
 exports.util = require('./lib/plotly_util');
+
+exports.micropolar = require('./polar/micropolar');
+exports.micropolar.manager = require('./polar/micropolar_manager');
+
 exports.Color = require('./color');
 exports.Colorscale = require('./colorscale');
 exports.Drawing = require('./drawing');
