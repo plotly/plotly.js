@@ -9,6 +9,9 @@ describe('plot schema', function() {
     var isValObject = Plotly.PlotSchema.isValObject,
         isPlainObject = Plotly.Lib.isPlainObject;
 
+    var VALTYPES = Object.keys(valObjects),
+        ROLES = ['info', 'style', 'data'];
+
     function assertPlotSchema(callback) {
         var traces = plotSchema.traces;
 
@@ -20,12 +23,10 @@ describe('plot schema', function() {
     }
 
     it('all attributes should have a valid `valType`', function() {
-        var valTypes = Object.keys(valObjects);
-
         assertPlotSchema(
             function(attr) {
                 if(isValObject(attr)) {
-                    expect(valTypes.indexOf(attr.valType) !== -1).toBe(true);
+                    expect(VALTYPES.indexOf(attr.valType) !== -1).toBe(true);
                 }
             }
         );
@@ -33,12 +34,10 @@ describe('plot schema', function() {
     });
 
     it('all attributes should only have valid `role`', function() {
-        var roles = ['info', 'style', 'data'];
-
         assertPlotSchema(
             function(attr) {
                 if(isValObject(attr)) {
-                    expect(roles.indexOf(attr.role) !== -1).toBe(true);
+                    expect(ROLES.indexOf(attr.role) !== -1).toBe(true);
                 }
             }
         );
@@ -142,6 +141,23 @@ describe('plot schema', function() {
                         (attr.description === undefined);
 
                     expect(isValid).toBe(true);
+                }
+            }
+        );
+    });
+
+    it('deprecated attributes should have a `valType` and `role`', function() {
+        var DEPRECATED = '_deprecated';
+
+        assertPlotSchema(
+            function(attr) {
+                if(isPlainObject(attr[DEPRECATED])) {
+                    Object.keys(attr[DEPRECATED]).forEach(function(dAttrName) {
+                        var dAttr = attr[DEPRECATED][dAttrName];
+
+                        expect(VALTYPES.indexOf(dAttr.valType) !== -1).toBe(true);
+                        expect(ROLES.indexOf(dAttr.role) !== -1).toBe(true);
+                    });
                 }
             }
         );
