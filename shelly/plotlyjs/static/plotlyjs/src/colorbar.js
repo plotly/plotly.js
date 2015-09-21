@@ -525,14 +525,16 @@ var axesAttrs = Plotly.Axes.layoutAttributes,
     extendFlat = Plotly.Lib.extendFlat;
 
 colorbar.attributes = {
-    orient: {
-        // which side are the labels on (so left and right make vertical bars, etc.)
-        // TODO: only right is supported currently
-        valType: 'enumerated',
-        role: 'info',
-        values: ['left', 'right', 'top', 'bottom'],
-        dflt: 'right'
-    },
+//     orient: {
+//         valType: 'enumerated',
+//         role: 'info',
+//         values: ['left', 'right', 'top', 'bottom'],
+//         dflt: 'right',
+//         description: [
+//             'Determines which side are the labels on',
+//             '(so left and right make vertical bars, etc.)'
+//         ].join(' ')
+//     },
     thicknessmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
@@ -705,7 +707,8 @@ colorbar.supplyDefaults = function(containerIn, containerOut, layout) {
                                  colorbar.attributes, attr, dflt);
     }
 
-    coerce('orient');
+//     coerce('orient');
+    colorbarOut.orient = 'right'; // TODO: only right is supported currently
 
     var thicknessmode = coerce('thicknessmode');
     coerce('thickness', thicknessmode === 'fraction' ?
