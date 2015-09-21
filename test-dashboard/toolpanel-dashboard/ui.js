@@ -59,8 +59,20 @@ function createPlot (divId) {
         popoverContainer: containerDiv
     });
 
+    var menuButtons = [
+        {
+            eventName: 'click',
+            labelContent: 'View data',
+            handler: function () {
+                debugger;
+            },
+            iconClass: 'icon-grid'
+        }
+    ];
+
     graphDiv.toolPanel.makeMenu({
-        toolMenuContainer: toolDiv
+        toolMenuContainer: toolDiv,
+        menuButtons: menuButtons
     });
 
     divs.push(graphDiv, toolDiv);
