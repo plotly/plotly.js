@@ -1,41 +1,30 @@
 'use strict';
 
+var Plotly = require('./plotly');
+
 /**
  * Copy arg array *without* removing `undefined` values from objects.
- *
- * `$.extend(true, *, *)` ignores `undefined` object properties, which we
- * depend on in relayout and restyle. This function exists *purely* to
- * conserve these undefined properties.
- *
- * Note, it doesn't bother with undefined properties inside an object in
- * an array. We don't have a use-case for this, so it doesn't matter.
  *
  * @param gd
  * @param args
  * @returns {Array}
  */
 function copyArgArray (gd, args) {
-    var copy = [],
-        i,
-        arg,
-        ai;
-    for (i = 0; i < args.length; i++) {
-        arg = args[i];
-        if (arg === gd) {
-            copy[i] = arg;
-        } else if (typeof arg === 'object') {
-            if (Array.isArray(arg)) {
-                copy[i] = $.extend(true, [], arg);
-            } else {
-                copy[i] = {};
+    var copy = [];
+    var arg;
 
-                // this is the important line! `undefined` things are kept!
-                for(ai in arg) copy[i][ai] = arg[ai];
-            }
-        } else {
-            copy[i] = arg;
+    for(var i = 0; i < args.length; i++) {
+        arg = args[i];
+
+        if(arg === gd) copy[i] = arg;
+        else if(typeof arg === 'object') {
+            copy[i] = Array.isArray(arg) ?
+                Plotly.Lib.extendDeep([], arg) :
+                Plotly.Lib.extendDeepAll({}, arg);
         }
+        else copy[i] = arg;
     }
+
     return copy;
 }
 
