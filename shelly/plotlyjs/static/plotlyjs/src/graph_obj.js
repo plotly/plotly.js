@@ -10,8 +10,7 @@
 
 var Plotly = require('./plotly'),
     m4FromQuat = require('gl-mat4/fromQuat'),
-    isNumeric = require('./isnumeric'),
-    clone = require('clone');
+    isNumeric = require('./isnumeric');
 
 var plots = module.exports = {};
 // Most of the generic plotting functions get put into Plotly.Plots,
@@ -3067,7 +3066,8 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function(){
-        $(gd).trigger('plotly_restyle', clone([redoit, traces]));
+        $(gd).trigger('plotly_restyle',
+            Plotly.Lib.extendDeep([], [redoit, traces]));
     });
 };
 
@@ -3427,7 +3427,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function(){
-        $(gd).trigger('plotly_relayout', clone(redoit));
+        $(gd).trigger('plotly_relayout',
+            Plotly.Lib.extendDeep({}, redoit));
     });
 };
 
