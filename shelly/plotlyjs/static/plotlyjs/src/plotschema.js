@@ -102,7 +102,6 @@ function getTraceAttributes(type) {
 
 function getLayoutAttributes() {
     var globalLayoutAttributes = Plotly.Plots.layoutAttributes,
-        subplotsRegistry = Plotly.Plots.subplotsRegistry,
         layoutAttributes = {};
 
     // layout module attributes (+ nested + composed)
@@ -114,16 +113,8 @@ function getLayoutAttributes() {
     layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
 
     // add IS_SUBPLOT_OBJ attribute
-    var gl3dRegex = subplotsRegistry.gl3d.attrRegex,
-        geoRegex = subplotsRegistry.geo.attrRegex,
-        xaxisRegex = subplotsRegistry.cartesian.attrRegex.x,
-        yaxisRegex = subplotsRegistry.cartesian.attrRegex.y;
+    layoutAttributes = handleSubplotObjs(layoutAttributes);
 
-    Object.keys(layoutAttributes).forEach(function(k) {
-        if(gl3dRegex.test(k) || geoRegex.test(k) || xaxisRegex.test(k) || yaxisRegex.test(k)) {
-             layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
-        }
-    });
 
     layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
 
@@ -264,3 +255,21 @@ function getSubplotRegistry(traceType) {
 
     return subplotsRegistry[subplotType];
 }
+
+function handleSubplotObjs(layoutAttributes) {
+    var subplotsRegistry = Plotly.Plots.subplotsRegistry;
+
+    var gl3dRegex = subplotsRegistry.gl3d.attrRegex,
+        geoRegex = subplotsRegistry.geo.attrRegex,
+        xaxisRegex = subplotsRegistry.cartesian.attrRegex.x,
+        yaxisRegex = subplotsRegistry.cartesian.attrRegex.y;
+
+    Object.keys(layoutAttributes).forEach(function(k) {
+        if(gl3dRegex.test(k) || geoRegex.test(k) || xaxisRegex.test(k) || yaxisRegex.test(k)) {
+             layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
+        }
+    });
+
+    return layoutAttributes;
+}
+
