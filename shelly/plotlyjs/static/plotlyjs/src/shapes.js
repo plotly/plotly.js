@@ -109,7 +109,7 @@ shapes.layoutAttributes = {
     path: {
         valType: 'string',
         role: 'info',
-        dflt: [
+        description: [
             'For `type` *path* - a valid SVG path but with the pixel values',
             'replaced by data values. There are a few restrictions / quirks',
             'only absolute instructions, not relative. So the allowed segments',
