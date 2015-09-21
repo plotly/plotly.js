@@ -10,9 +10,9 @@
 /* global d3:false */
 
 var lib = module.exports = {},
-    Plotly = require('./plotly'),
+    Plotly = require('../plotly'),
     tinycolor = require('tinycolor2'),
-    isNumeric = require('./isnumeric');
+    isNumeric = require('../isnumeric');
 
 /**
  * dateTime2ms - turn a date object or string s of the form
@@ -1357,7 +1357,7 @@ lib.stripTrailingSlash = function (str) {
     return str;
 };
 
-var colorscaleNames = Object.keys(require('./colorscale').scales);
+var colorscaleNames = Object.keys(require('../colorscale').scales);
 
 lib.valObjects = {
     data_array: {
