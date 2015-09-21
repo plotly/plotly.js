@@ -42,6 +42,9 @@ Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
 
 function makeBinsAttr(axLetter) {
     return {
+        _hrName: [
+            axLetter, '_bins'
+        ].join(''),
         start: {
             valType: 'number',
             dflt: null,
