@@ -6,7 +6,7 @@ var ScatterGeo = module.exports = {};
 
 Plotly.Plots.register(ScatterGeo, 'scattergeo',
     ['geo', 'symbols', 'markerColorscale', 'showLegend'], {
-    hrName: 'scatter_geo',
+    _hrName: 'scatter_geo',
     description: [
         'The data visualized as scatter point or lines on a geographic map',
         'is provided either by longitude/latitude pairs in `lon` and `lat`',

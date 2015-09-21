@@ -8,10 +8,11 @@ var extendFlat = Plotly.Lib.extendFlat;
 var NESTED_MODULE = '_nestedModules',
     COMPOSED_MODULE = '_composedModules',
     IS_SUBPLOT_OBJ = '_isSubplotObj',
-    IS_LINKED_TO_ARRAY = '_isLinkedToArray';
+    IS_LINKED_TO_ARRAY = '_isLinkedToArray',
+    HR_NAME = '_hrName';
 
 // list of underscore attributes to keep in schema as is
-var UNDERSCORE_ATTRS = ['_isSubplotObj', '_deprecated'];
+var UNDERSCORE_ATTRS = ['_isSubplotObj', '_deprecated', '_hrName'];
 
 var plotSchema = {
     traces: {},

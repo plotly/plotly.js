@@ -23,7 +23,7 @@ Plotly.Plots.register(contour, 'contour',
 
 Plotly.Plots.register(contour, 'histogram2dcontour',
     ['cartesian', '2dMap', 'contour', 'histogram'], {
-    hrName: 'histogram_2d_contour',
+    _hrName: 'histogram_2d_contour',
     description: [
         'The sample data from which statistics are computed is set in `x`',
         'and `y` (where `x` and `y` represent marginal distributions,',

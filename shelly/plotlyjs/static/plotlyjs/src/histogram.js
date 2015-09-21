@@ -25,7 +25,7 @@ Plotly.Plots.register(Plotly.Bars, 'histogram',
 
 Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
     ['cartesian', '2dMap', 'histogram'], {
-    hrName: 'histogram_2d',
+    _hrName: 'histogram_2d',
     description: [
         'The sample data from which statistics are computed is set in `x`',
         'and `y` (where `x` and `y` represent marginal distributions,',

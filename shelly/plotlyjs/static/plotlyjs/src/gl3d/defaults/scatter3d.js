@@ -7,7 +7,7 @@ var Scatter3D = module.exports = {};
 
 Plotly.Plots.register(Scatter3D,
     'scatter3d', ['gl3d', 'symbols', 'markerColorscale', 'showLegend'], {
-    hrName: 'scatter_3d',
+    _hrName: 'scatter_3d',
     description: [
         'The data visualized as scatter point or lines in 3D dimension', 
         'is set in `x`, `y`, `z`.',
