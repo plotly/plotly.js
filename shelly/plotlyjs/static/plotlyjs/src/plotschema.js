@@ -203,6 +203,11 @@ function mergeValTypeAndRole(attrs) {
         else if(Plotly.Lib.isPlainObject(attr)) {
             // all attrs container objects get role 'object'
             attr.role = 'object';
+
+            // add human-readable attrName for axis object
+            if(attrName.indexOf('axis') !== -1) {
+                attr[HR_NAME] = attrName.split('axis')[0] + '_' + 'axis'
+            }
         }
     }
 
