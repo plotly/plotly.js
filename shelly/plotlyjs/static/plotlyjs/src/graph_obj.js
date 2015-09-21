@@ -270,7 +270,7 @@ plots.defaultConfig = {
 };
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = Plotly.Lib.extendFlat(plots.defaultConfig);
+    if(!gd._context) gd._context = Plotly.Lib.extendFlat({}, plots.defaultConfig);
     var context = gd._context;
 
     if(config) {
@@ -1612,13 +1612,13 @@ var extendFlat = Plotly.Lib.extendFlat;
 
 plots.layoutAttributes = {
     font: {
-        family: extendFlat(plots.fontAttrs.family, {
+        family: extendFlat({}, plots.fontAttrs.family, {
             dflt: '"Open sans", verdana, arial, sans-serif'
         }),
-        size: extendFlat(plots.fontAttrs.size, {
+        size: extendFlat({}, plots.fontAttrs.size, {
             dflt: 12
         }),
-        color: extendFlat(plots.fontAttrs.color, {
+        color: extendFlat({}, plots.fontAttrs.color, {
             dflt: Plotly.Color.defaultLine
         }),
         description: [
@@ -1635,7 +1635,7 @@ plots.layoutAttributes = {
             'Sets the plot\'s title.'
         ].join(' ')
     },
-    titlefont: extendFlat(plots.fontAttrs, {
+    titlefont: extendFlat({}, plots.fontAttrs, {
         description: 'Sets the title font.'
     }),
     autosize: {
