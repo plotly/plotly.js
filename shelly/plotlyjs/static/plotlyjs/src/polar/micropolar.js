@@ -172,19 +172,21 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                     datumClone.color = d.geometry === 'LinePlot' ? d.strokeColor : d.color;
                     return datumClone;
                 });
-                var legendConfigMixin1 = extendDeepAll({}, µ.Legend.defaultConfig().legendConfig);
-                var legendConfigMixin2 = extendDeepAll(legendConfigMixin1, {
-                    container: legendContainer,
-                    elements: elements,
-                    reverseOrder: axisConfig.legend.reverseOrder
-                });
-                var legendConfigMixin3 = {
+
+                µ.Legend().config({
                     data: data.map(function(d, i) {
                         return d.name || 'Element' + i;
                     }),
-                    legendConfig: legendConfigMixin2
-                };
-                µ.Legend().config(legendConfigMixin3)();
+                    legendConfig: extendDeepAll({},
+                        µ.Legend.defaultConfig().legendConfig,
+                        {
+                            container: legendContainer,
+                            elements: elements,
+                            reverseOrder: axisConfig.legend.reverseOrder
+                        }
+                    )
+                })();
+
                 var legendBBox = legendContainer.node().getBBox();
                 radius = Math.min(axisConfig.width - legendBBox.width - axisConfig.margin.left - axisConfig.margin.right, axisConfig.height - axisConfig.margin.top - axisConfig.margin.bottom) / 2;
                 radius = Math.max(10, radius);
