@@ -136,7 +136,7 @@ boxes.attributes = {
     marker: {
         outliercolor: {
             valType: 'color',
-            dflt: null,
+            dflt: 'rgba(0, 0, 0, 0)',
             role: 'style',
             description: 'Sets the color of the outlier sample points.'
         },
@@ -155,7 +155,6 @@ boxes.attributes = {
                 {arrayOk: false, dflt: 0}),
             outliercolor: {
                 valType: 'color',
-                dflt: null,
                 role: 'style',
                 description: 'Sets the border line color of the outlier sample points.'
             },
@@ -256,8 +255,17 @@ boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
     coerce('boxmean');
     
     var outliercolor = coerce('marker.outliercolor'),
-        outlierlinecolor = coerce('marker.line.outliercolor'),
-        boxpoints = outliercolor || outlierlinecolor ? coerce('boxpoints', 'suspectedoutliers') : coerce('boxpoints');
+        lineoutliercolor = coerce('marker.line.outliercolor'),
+        setoutliercolor;
+    
+    if(outliercolor !== 'rgba(0, 0, 0, 0)' || 
+      (traceIn.marker||{}).outliercolor === 'rgba(0, 0, 0, 0)') {
+        setoutliercolor = true;
+    }
+    
+    var boxpoints = setoutliercolor || 
+                    lineoutliercolor ? coerce('boxpoints', 'suspectedoutliers') : 
+                    coerce('boxpoints');
 
     if(boxpoints) {
         coerce('jitter', boxpoints==='all' ? 0.3 : 0);
@@ -271,7 +279,6 @@ boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         coerce('marker.line.width');
 
         if(boxpoints==='suspectedoutliers') {
-            coerce('marker.outliercolor', 'rgba(0, 0, 0, 0)')
             coerce('marker.line.outliercolor', traceOut.marker.color);
             coerce('marker.line.outlierwidth');
         }
