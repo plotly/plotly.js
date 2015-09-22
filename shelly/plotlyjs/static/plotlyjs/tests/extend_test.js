@@ -206,16 +206,14 @@ describe('extendFlat', function() {
     it('does not handle null inputs', function() {
         try { extendFlat(null, obj); }
         catch(err) {
-            expect(err.toString())
-                .toEqual('TypeError: Cannot read property \'str\' of null');
+            expect(err.toString().indexOf('TypeError:') !== 1).toBe(true);
         }
     });
 
     it('does not handle string targets', function() {
         try { extendFlat('str', obj); }
         catch(err) {
-            expect(err.toString())
-                .toEqual('TypeError: Cannot assign to read only property \'str\' of str');
+            expect(err.toString().indexOf('TypeError:') !== 1).toBe(true);
         }
     });
 });
@@ -402,8 +400,10 @@ describe('extendDeep', function() {
 
         try { extendDeep({}, circ); }
         catch(err) {
-            expect(err.toString())
-                .toEqual('RangeError: Maximum call stack size exceeded');
+            expect(
+                err.toString().indexOf('InternalError:') !== 1 ||  // firefox
+                err.toString().indexOf('RangeError:') !== 1        // chrome
+            ).toBe(true);
         }
     });
 });
