@@ -105,9 +105,9 @@ module.exports = function clonePlot(graphObj, options) {
         // presumes webgl plots won't have 2D plots.
         for (i = 0; i < sceneIds.length; i++) {
             var sceneId = sceneIds[i];
-            newLayout[sceneId].xaxis = extendFlat(newLayout[sceneId].xaxis, axesImageOverride);
-            newLayout[sceneId].yaxis = extendFlat(newLayout[sceneId].yaxis, axesImageOverride);
-            newLayout[sceneId].zaxis = extendFlat(newLayout[sceneId].zaxis, axesImageOverride);
+            extendFlat(newLayout[sceneId].xaxis, axesImageOverride);
+            extendFlat(newLayout[sceneId].yaxis, axesImageOverride);
+            extendFlat(newLayout[sceneId].zaxis, axesImageOverride);
             newLayout[sceneId]._scene = null;
         }
 
