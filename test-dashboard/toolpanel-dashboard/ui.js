@@ -11,7 +11,6 @@ function createRemoveButton () {
     document.body.appendChild(removeButton);
 
     removeButton.onclick = function () {
-        debugger;
         divs[0].toolPanel.remove();
     };
 }

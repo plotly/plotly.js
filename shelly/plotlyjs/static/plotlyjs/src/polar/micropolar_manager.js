@@ -3,11 +3,13 @@
 /* global d3:false */
 
 var manager = module.exports = {},
-    Plotly = require('../plotly');
+    Plotly = require('../plotly'),
+    UndoManager = require('./utils/undo_manager');
 
 manager.framework = function(_gd){
     var config, previousConfigClone, plot, convertedInput, container;
-    var undoManager = new Plotly.util.UndoManager();
+    var undoManager = new UndoManager();
+
     function exports(_inputConfig, _container){
         if(_container) container = _container;
         d3.select(d3.select(container).node().parentNode).selectAll('.svg-container>*:not(.chart-root)').remove();
