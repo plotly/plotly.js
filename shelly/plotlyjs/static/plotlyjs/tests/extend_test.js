@@ -36,6 +36,15 @@ var deep = {
     }
 };
 
+var undef = {
+    str: undefined,
+    layer: {
+       date: undefined
+    },
+    arr: [1, 2, undefined]
+};
+
+
 
 describe('extendFlat', function() {
     'use strict';
@@ -46,8 +55,8 @@ describe('extendFlat', function() {
         ori = [1, 2, 3, 4, 5, 6];
         target = extendFlat(ori, arr);
 
-        expect(ori, [1, 'what', new Date(81, 8, 4), 4, 5, 6]);
-        expect(arr, [1, 'what', new Date(81, 8, 4)]);
+        expect(ori).toEqual([1, 'what', new Date(81, 8, 4), 4, 5, 6]);
+        expect(arr).toEqual([1, 'what', new Date(81, 8, 4)]);
         expect(target).toEqual([1, 'what', new Date(81, 8, 4), 4, 5, 6]);
 
     });
@@ -56,8 +65,8 @@ describe('extendFlat', function() {
         ori = [1, 2, 3, 4, 5, 6];
         target = extendFlat([], ori, arr);
 
-        expect(ori, [1, 2, 3, 4, 5, 6]);
-        expect(arr, [1, 'what', new Date(81, 8, 4)]);
+        expect(ori).toEqual([1, 2, 3, 4, 5, 6]);
+        expect(arr).toEqual([1, 'what', new Date(81, 8, 4)]);
         expect(target).toEqual([1, 'what', new Date(81, 8, 4), 4, 5, 6]);
     });
 
@@ -167,10 +176,47 @@ describe('extendFlat', function() {
         };
 
         target = extendFlat(defaults, override);
-    
+
         expect(defaults).toEqual({arr: ['x']});
         expect(override).toEqual({arr: ['x']});
         expect(target).toEqual({arr: ['x']});
+    });
+
+    it('ignores keys with undefined values', function() {
+        ori = {};
+        target = extendFlat(ori, undef);
+
+        expect(ori).toEqual({
+            layer: { date: undefined },
+            arr: [1, 2, undefined]
+        });
+        expect(undef).toEqual({
+            str: undefined,
+            layer: {
+               date: undefined
+            },
+            arr: [1, 2, undefined]
+        });
+        expect(target).toEqual({
+            layer: { date: undefined },
+            arr: [1, 2, undefined]
+        });
+    });
+
+    it('does not handle null inputs', function() {
+        try { extendFlat(null, obj); }
+        catch(err) {
+            expect(err.toString())
+                .toEqual('TypeError: Cannot read property \'str\' of null');
+        }
+    });
+
+    it('does not handle string targets', function() {
+        try { extendFlat('str', obj); }
+        catch(err) {
+            expect(err.toString())
+                .toEqual('TypeError: Cannot assign to read only property \'str\' of str');
+        }
     });
 });
 
@@ -323,30 +369,56 @@ describe('extendDeep', function() {
         };
 
         target = extendDeep(defaults, override);
-    
+
         expect(defaults).toEqual({arr: ['x', 2, 3]});
         expect(override).toEqual({arr: ['x']});
         expect(target).toEqual({arr: ['x', 2, 3]});
+    });
+
+    it('ignores keys with undefined values', function() {
+        ori = {};
+        target = extendDeep(ori, undef);
+
+        expect(ori).toEqual({
+            layer: { },
+            arr: [1, 2 ]
+        });
+        expect(undef).toEqual({
+            str: undefined,
+            layer: {
+               date: undefined
+            },
+            arr: [1, 2, undefined]
+        });
+        expect(target).toEqual({
+            layer: { },
+            arr: [1, 2 ]
+        });
+    });
+
+    it('does not handle circular structure', function() {
+        var circ = { a: {b: null} };
+        circ.a.b = circ;
+
+        try { extendDeep({}, circ); }
+        catch(err) {
+            expect(err.toString())
+                .toEqual('RangeError: Maximum call stack size exceeded');
+        }
     });
 });
 
 describe('extendDeepAll', function() {
     'use strict';
 
-    var objUndefined, target;
+    var ori, target;
 
     it('extends object with another other containing keys undefined values', function() {
-        objUndefined = {
-            str: undefined,
-            layer: {
-               date: undefined
-            },
-            arr: [1, 2, undefined]
-        };
-        target = extendDeepAll(deep, objUndefined);
+        ori = {};
+        target = extendDeepAll(ori, deep, undef);
 
-        expect(deep.str).toBe(undefined);
-        expect(deep.layer.date).toBe(undefined);
-        expect(deep.arr[2]).toBe(undefined);
+        expect(ori.str).toBe(undefined);
+        expect(ori.layer.date).toBe(undefined);
+        expect(ori.arr[2]).toBe(undefined);
     });
 });
