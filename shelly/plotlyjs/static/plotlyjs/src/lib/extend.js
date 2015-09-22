@@ -19,7 +19,17 @@ exports.extendDeepAll = function() {
  * Inspired by https://github.com/justmoon/node-extend/blob/master/index.js
  * All credit to the jQuery authors for perfecting this amazing utility.
  *
- * Expected to work only with objects and arrays inputs.
+ * API difference with jQuery version:
+ * - No optional boolean (true -> deep extend) first argument,
+ *   use `extendFlat` for first-level only extend and
+ *   use `extendDeep` for a deep extend.
+ *
+ * Other differences with jQuery version:
+ * - Uses a modern (and faster) isPlainObject routine.
+ * - Expected to work with object {} and array [] arguments only.
+ * - Does not check for circular structure.
+ *   FYI: jQuery only does a check across one level.
+ *   Warning: this might result in infinite loops.
  *
  */
 function _extend(inputs, isDeep, keepAllKeys) {
@@ -31,35 +41,26 @@ function _extend(inputs, isDeep, keepAllKeys) {
     for(var i = 1; i < length; i++) {
         input = inputs[i];
 
-        // only deal with non-null/undefined values
-        if(input != null) {
+        for(key in input) {
+            src = target[key];
+            copy = input[key];
 
-            // extend the base object
-            for(key in input) {
-                src = target[key];
-                copy = input[key];
-
-                // prevent never-ending loop
-                if(target !== copy) {
-
-                    // recurse if we're merging plain objects or arrays
-                    if(isDeep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
-                        if(copyIsArray) {
-                            copyIsArray = false;
-                            clone = src && isArray(src) ? src : [];
-                        } else {
-                            clone = src && isPlainObject(src) ? src : {};
-                        }
-
-                        // never move original objects, clone them
-                        target[key] = _extend([clone, copy], isDeep, keepAllKeys);
-                    }
-
-                    // don't bring in undefined values, except for extendDeepAll
-                    else if(typeof copy !== 'undefined' || keepAllKeys) {
-                        target[key] = copy;
-                    }
+            // recurse if we're merging plain objects or arrays
+            if(isDeep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+                if(copyIsArray) {
+                    copyIsArray = false;
+                    clone = src && isArray(src) ? src : [];
+                } else {
+                    clone = src && isPlainObject(src) ? src : {};
                 }
+
+                // never move original objects, clone them
+                target[key] = _extend([clone, copy], isDeep, keepAllKeys);
+            }
+
+            // don't bring in undefined values, except for extendDeepAll
+            else if(typeof copy !== 'undefined' || keepAllKeys) {
+                target[key] = copy;
             }
         }
     }
