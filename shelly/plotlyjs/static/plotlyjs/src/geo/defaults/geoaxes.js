@@ -10,7 +10,7 @@ GeoAxes.layoutAttributes = require('../attributes/geoaxes');
 GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
     var axesNames = params.axesNames;
 
-    var axisIn, axisOut, axisName, rangeDflt, range0, show;
+    var axisIn, axisOut, axisName, rangeDflt, range, show;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(axisIn, axisOut,
@@ -47,12 +47,11 @@ GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
 
         rangeDflt = getRangeDflt(axisName);
 
-        range0 = coerce('range[0]', rangeDflt[0]);
-        coerce('range[1]', rangeDflt[1]);
+        range = coerce('range', rangeDflt);
 
         Plotly.Lib.noneOrAll(axisIn.range, axisOut.range, [0, 1]);
 
-        coerce('tick0', range0);
+        coerce('tick0', range[0]);
         coerce('dtick', axisName==='lonaxis' ? 30 : 10);
 
         show = coerce('showgrid');

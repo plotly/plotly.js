@@ -5,6 +5,22 @@ var Plotly = require('../../plotly'),
 
 var GeoLayout = module.exports = {};
 
+Plotly.Plots.registerSubplot('geo', 'geo', 'geo', {
+    geo: {
+        valType: 'geoid',
+        role: 'info',
+        dflt: 'geo',
+        description: [
+            'Sets a reference between this trace\'s geospatial coordinates and',
+            'a geographic map.',
+            'If *geo* (the default value), the geospatial coordinates refer to',
+            '`layout.geo`.',
+            'If *geo2*, the geospatial coordinates refer to `layout.geo2`,',
+            'and so on.'
+        ].join(' ')
+    }
+});
+
 GeoLayout.layoutAttributes = require('../attributes/geolayout');
 
 GeoLayout.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
@@ -23,10 +39,8 @@ GeoLayout.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         geoLayoutIn = layoutIn[geo] || {};
         geoLayoutOut = {};
 
-        coerce('domain.x[0]');
-        coerce('domain.x[1]');
-        coerce('domain.y[0]', i / geosLength);
-        coerce('domain.y[1]', (i + 1) / geosLength);
+        coerce('domain.x');
+        coerce('domain.y', [i / geosLength, (i + 1) / geosLength]);
 
         GeoLayout.handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce);
         layoutOut[geo] = geoLayoutOut;
@@ -50,8 +64,7 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
 
     if(isConic) {
         dfltProjParallels = scopeParams.projParallels || [0, 60];
-        coerce('projection.parallels[0]', dfltProjParallels[0]);
-        coerce('projection.parallels[1]', dfltProjParallels[1]);
+        coerce('projection.parallels', dfltProjParallels);
     }
 
     if(!isAlbersUsa) {

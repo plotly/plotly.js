@@ -5,6 +5,8 @@ var shapes = module.exports = {},
     isNumeric = require('./isnumeric'),
     scatterLineAttrs = Plotly.Scatter.attributes.line;
 
+var extendFlat = Plotly.Lib.extendFlat;
+
 shapes.layoutAttributes = {
     _isLinkedToArray: true,
     opacity: {
@@ -12,16 +14,19 @@ shapes.layoutAttributes = {
         min: 0,
         max: 1,
         dflt: 1,
+        role: 'info',
         description: 'Sets the opacity of the shape.'
     },
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash
+        dash: scatterLineAttrs.dash,
+        role: 'info'
     },
     fillcolor: {
         valType: 'color',
         dflt: 'rgba(0,0,0,0)',
+        role: 'info',
         description: [
             'Sets the color filling the shape\'s interior.'
         ].join(' ')
@@ -29,6 +34,7 @@ shapes.layoutAttributes = {
     type: {
         valType: 'enumerated',
         values: ['circle', 'rect', 'path', 'line'],
+        role: 'info',
         description: [
             'Specifies the shape type to be drawn.',
 
@@ -46,9 +52,7 @@ shapes.layoutAttributes = {
         ].join(' ')
     },
 
-    xref: {
-        valType: 'enumerated',
-        values: ['paper', '/^x[0-9]/*$'],
+    xref: extendFlat(Plotly.Annotations.layoutAttributes.xref, {
         description: [
             'Sets the shape\'s x coordinate axis.',
             'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
@@ -57,9 +61,10 @@ shapes.layoutAttributes = {
             'the left side of the plotting area in normalized coordinates',
             'where *0* (*1*) corresponds to the left (right) side.'
         ].join(' ')
-    },
+    }),
     x0: {
         valType: 'any',
+        role: 'info',
         description: [
             'Sets the shape\'s starting x position.',
             'See `type` for more info.'
@@ -67,15 +72,14 @@ shapes.layoutAttributes = {
     },
     x1: {
         valType: 'any',
+        role: 'info',
         description: [
             'Sets the shape\'s end x position.',
             'See `type` for more info.'
         ].join(' ')
     },
 
-    yref: {
-        valType: 'enumerated',
-        values: ['paper', '/^y[0-9]/*$'],
+    yref: extendFlat(Plotly.Annotations.layoutAttributes.yref, {
         description: [
             'Sets the annotation\'s y coordinate axis.',
             'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
@@ -84,9 +88,10 @@ shapes.layoutAttributes = {
             'the bottom of the plotting area in normalized coordinates',
             'where *0* (*1*) corresponds to the bottom (top).'
         ].join(' ')
-    },
+    }),
     y0: {
         valType: 'any',
+        role: 'info',
         description: [
             'Sets the shape\'s starting y position.',
             'See `type` for more info.'
@@ -94,6 +99,7 @@ shapes.layoutAttributes = {
     },
     y1: {
         valType: 'any',
+        role: 'info',
         description: [
             'Sets the shape\'s end y position.',
             'See `type` for more info.'
@@ -102,6 +108,7 @@ shapes.layoutAttributes = {
 
     path: {
         valType: 'string',
+        role: 'info',
         dflt: [
             'For `type` *path* - a valid SVG path but with the pixel values',
             'replaced by data values. There are a few restrictions / quirks',
@@ -279,10 +286,12 @@ shapes.draw = function(gd, index, opt, value) {
             }
             return;
         }
-        else if(value==='add' || $.isPlainObject(value)) {
+        else if(value==='add' || Plotly.Lib.isPlainObject(value)) {
             fullLayout.shapes.splice(index,0,{});
 
-            var rule = $.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
+            var rule = Plotly.Lib.isPlainObject(value) ?
+                    Plotly.Lib.extendFlat({}, value) :
+                    {text: 'New text'};
 
             if (layout.shapes) {
                 layout.shapes.splice(index, 0, rule);
@@ -315,7 +324,7 @@ shapes.draw = function(gd, index, opt, value) {
     // alter the input shape as requested
     var optionsEdit = {};
     if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
-    else if($.isPlainObject(opt)) optionsEdit = opt;
+    else if(Plotly.Lib.isPlainObject(opt)) optionsEdit = opt;
 
     var optionKeys = Object.keys(optionsEdit);
     for(i = 0; i < optionsEdit.length; i++) {
