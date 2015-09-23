@@ -204,17 +204,15 @@ describe('extendFlat', function() {
     });
 
     it('does not handle null inputs', function() {
-        try { extendFlat(null, obj); }
-        catch(err) {
-            expect(err.toString().indexOf('TypeError:') !== 1).toBe(true);
-        }
+        expect(function() {
+            extendFlat(null, obj);
+        }).toThrowError(TypeError);
     });
 
     it('does not handle string targets', function() {
-        try { extendFlat('str', obj); }
-        catch(err) {
-            expect(err.toString().indexOf('TypeError:') !== 1).toBe(true);
-        }
+        expect(function() {
+            extendFlat(null, obj);
+        }).toThrowError(TypeError);
     });
 });
 
@@ -398,13 +396,12 @@ describe('extendDeep', function() {
         var circ = { a: {b: null} };
         circ.a.b = circ;
 
-        try { extendDeep({}, circ); }
-        catch(err) {
-            expect(
-                err.toString().indexOf('InternalError:') !== 1 ||  // firefox
-                err.toString().indexOf('RangeError:') !== 1        // chrome
-            ).toBe(true);
-        }
+        expect(function() {
+            extendDeep({}, circ);
+        }).toThrow();
+
+        // results in an InternalError on Chrome and
+        // a RangeError on Firefox
     });
 });
 
