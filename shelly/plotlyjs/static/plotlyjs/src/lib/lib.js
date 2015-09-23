@@ -1794,7 +1794,7 @@ lib.isIE = function() {
 
 lib.isPlainObject = require('./is_plain_object');
 
-var extendModule = require('./extend.js');
+var extendModule = require('./extend');
 lib.extendFlat = extendModule.extendFlat;
 lib.extendDeep = extendModule.extendDeep;
 lib.extendDeepAll = extendModule.extendDeepAll;
