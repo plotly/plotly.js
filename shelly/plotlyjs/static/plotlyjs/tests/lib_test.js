@@ -436,7 +436,7 @@ describe('Test lib.js:', function() {
     describe('extendFlat', function() {
         var extendFlat = Plotly.Lib.extendFlat;
 
-        it('it should extend 2 objects with mutually exclusive keys)', function() {
+        it('should extend 2 objects with mutually exclusive keys)', function() {
             var obj1 = {a: 'A'},
                 obj2 = {b: 'B'},
                 objOut = extendFlat(obj1, obj2);
@@ -444,7 +444,7 @@ describe('Test lib.js:', function() {
             expect(objOut).toEqual({a: 'A', b: 'B'});
         });
 
-        it('it should extend 2 objects with overlapping keys)', function() {
+        it('should extend 2 objects with overlapping keys)', function() {
             var obj1 = {a: 'A'},
                 obj2 = {a: 'AA'},
                 objOut = extendFlat(obj1, obj2);
@@ -452,6 +452,29 @@ describe('Test lib.js:', function() {
             expect(objOut).toEqual({a: 'AA'});
         });
 
+        it('should make a flat copy of the first object if no second object is given', function() {
+            var obj1 = {a: 'A', b: {b: 'B'}},
+                objOut = extendFlat(obj1);
+
+            objOut.a = 'AA';
+            objOut.b.b = 'BB';  // should propagate to obj1
+
+            expect(obj1).toEqual({a: 'A', b: {b: 'BB'}});
+            expect(objOut).toEqual({a: 'AA', b: {b: 'BB'}});
+        });
+
+        it('should handle non-object values', function() {
+            var foo = function() { return 'sup'; },
+                Bar = function() {};
+
+            var obj1 = {a: foo, c: 'sup'},
+                obj2 = {a: 'sup', b: new Bar()},
+                objOut = extendFlat(obj1, obj2);
+
+            expect(obj1).toEqual({a: foo, c: 'sup'});
+            expect(obj2).toEqual({a: 'sup', b: new Bar()});
+            expect(objOut).toEqual({a: 'sup', b: new Bar(), c: 'sup'});
+        });
     });
 
     describe('coerce', function() {

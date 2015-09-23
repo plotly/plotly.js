@@ -810,7 +810,7 @@ boxes.hoverPoints = function(pointData, xval, yval, hovermode) {
 
         // copy out to a new object for each value to label
         val = valAxis.c2p(di[attr], true);
-        pointData2 = $.extend({}, pointData);
+        pointData2 = Plotly.Lib.extendFlat({}, pointData);
         pointData2[valLetter+'0'] = pointData2[valLetter+'1'] = val;
         pointData2[valLetter+'LabelVal'] = di[attr];
         pointData2.attr = attr;
